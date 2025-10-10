@@ -12,7 +12,7 @@ import type { Project } from '../workspace/ProjectsManager'
 const logger = rootLogger.getChild('manual-layouts')
 
 function fileName(view: LayoutedView): string {
-  return `${view.id}.${view._type}-c4-view.json5`
+  return `${view.id}.${view._type}-view.json5`
 }
 
 export interface LikeC4ManualLayouts {
@@ -73,10 +73,12 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     )
     const file = UriUtils.joinPath(outDir, fileName(layouted))
     const content = JSON5.stringify(layouted, null, 2)
-    const lines = content.split('\n')
+    // from vscode-languageserver-types
+    const MAX_VALUE = 2147483647
+
     const range = Range.create(
       Position.create(0, 0),
-      Position.create(lines.length - 1, lines[lines.length - 1]?.length ?? 0),
+      Position.create(MAX_VALUE, 1),
     )
 
     let applied = false
@@ -100,7 +102,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
               kind: 'create',
               uri: file.toString(),
               options: {
-                overwrite: true,
+                ignoreIfExists: true,
               },
             },
             {
@@ -121,11 +123,14 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       applied = applyResult.applied
       if (!applyResult.applied) {
         logger.warn(loggable(applyResult))
+      } else {
+        logger.debug(`Manual layout ${layouted.id} saved to ${file.toString()}`)
       }
     }
 
     // If not applied, force write the file
     if (!applied) {
+      logger.debug(`force write manual layout ${layouted.id} to ${file.toString()}`)
       const fs = this.services.shared.workspace.FileSystemProvider
       await fs.writeFile(file, content)
     }

@@ -124,6 +124,98 @@ describe('BBox', () => {
       expect(back).toEqual(original)
     })
   })
+
+  describe('includes', () => {
+    it('should return true when bbox a completely includes bbox b', () => {
+      const a: BBox = { x: 0, y: 0, width: 100, height: 100 }
+      const b: BBox = { x: 10, y: 10, width: 80, height: 80 }
+
+      expect(BBox.includes(a, b)).toBe(true)
+    })
+
+    it('should return true when bboxes are identical', () => {
+      const bbox: BBox = { x: 10, y: 20, width: 30, height: 40 }
+
+      expect(BBox.includes(bbox, bbox)).toBe(true)
+    })
+
+    it('should return true when bbox b touches the edges of bbox a', () => {
+      const a: BBox = { x: 0, y: 0, width: 100, height: 100 }
+      const b: BBox = { x: 0, y: 0, width: 100, height: 100 }
+
+      expect(BBox.includes(a, b)).toBe(true)
+    })
+
+    it('should return false when bbox b extends beyond the left edge of bbox a', () => {
+      const a: BBox = { x: 10, y: 10, width: 90, height: 90 }
+      const b: BBox = { x: 5, y: 20, width: 80, height: 70 }
+
+      expect(BBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when bbox b extends beyond the right edge of bbox a', () => {
+      const a: BBox = { x: 0, y: 0, width: 100, height: 100 }
+      const b: BBox = { x: 10, y: 10, width: 100, height: 80 }
+
+      expect(BBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when bbox b extends beyond the top edge of bbox a', () => {
+      const a: BBox = { x: 0, y: 10, width: 100, height: 90 }
+      const b: BBox = { x: 10, y: 5, width: 80, height: 80 }
+
+      expect(BBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when bbox b extends beyond the bottom edge of bbox a', () => {
+      const a: BBox = { x: 0, y: 0, width: 100, height: 100 }
+      const b: BBox = { x: 10, y: 10, width: 80, height: 100 }
+
+      expect(BBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when bboxes only partially overlap', () => {
+      const a: BBox = { x: 0, y: 0, width: 50, height: 50 }
+      const b: BBox = { x: 25, y: 25, width: 50, height: 50 }
+
+      expect(BBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when bboxes do not overlap at all', () => {
+      const a: BBox = { x: 0, y: 0, width: 50, height: 50 }
+      const b: BBox = { x: 100, y: 100, width: 50, height: 50 }
+
+      expect(BBox.includes(a, b)).toBe(false)
+    })
+
+    it('should handle negative coordinates correctly', () => {
+      const a: BBox = { x: -100, y: -100, width: 200, height: 200 }
+      const b: BBox = { x: -50, y: -50, width: 100, height: 100 }
+
+      expect(BBox.includes(a, b)).toBe(true)
+    })
+
+    it('should return false when bbox b extends beyond negative boundaries', () => {
+      const a: BBox = { x: -50, y: -50, width: 100, height: 100 }
+      const b: BBox = { x: -60, y: -40, width: 100, height: 80 }
+
+      expect(BBox.includes(a, b)).toBe(false)
+    })
+
+    it('should handle zero-area bboxes (points)', () => {
+      const a: BBox = { x: 0, y: 0, width: 100, height: 100 }
+      const point: BBox = { x: 50, y: 50, width: 0, height: 0 }
+
+      expect(BBox.includes(a, point)).toBe(true)
+    })
+
+    it('should return false when point is outside bbox', () => {
+      const a: BBox = { x: 0, y: 0, width: 100, height: 100 }
+      const point: BBox = { x: 150, y: 150, width: 0, height: 0 }
+
+      expect(BBox.includes(a, point)).toBe(false)
+    })
+  })
 })
 
 describe('RectBox', () => {
@@ -246,6 +338,98 @@ describe('RectBox', () => {
         width: 30, // 20 - (-10)
         height: 40, // 20 - (-20)
       })
+    })
+  })
+
+  describe('includes', () => {
+    it('should return true when rectangle a completely includes rectangle b', () => {
+      const a: RectBox = { x1: 0, y1: 0, x2: 100, y2: 100 }
+      const b: RectBox = { x1: 10, y1: 10, x2: 90, y2: 90 }
+
+      expect(RectBox.includes(a, b)).toBe(true)
+    })
+
+    it('should return true when rectangles are identical', () => {
+      const rect: RectBox = { x1: 10, y1: 20, x2: 50, y2: 60 }
+
+      expect(RectBox.includes(rect, rect)).toBe(true)
+    })
+
+    it('should return true when rectangle b touches the edges of rectangle a', () => {
+      const a: RectBox = { x1: 0, y1: 0, x2: 100, y2: 100 }
+      const b: RectBox = { x1: 0, y1: 0, x2: 100, y2: 100 }
+
+      expect(RectBox.includes(a, b)).toBe(true)
+    })
+
+    it('should return false when rectangle b extends beyond the left edge of rectangle a', () => {
+      const a: RectBox = { x1: 10, y1: 10, x2: 100, y2: 100 }
+      const b: RectBox = { x1: 5, y1: 20, x2: 90, y2: 90 }
+
+      expect(RectBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when rectangle b extends beyond the right edge of rectangle a', () => {
+      const a: RectBox = { x1: 0, y1: 0, x2: 100, y2: 100 }
+      const b: RectBox = { x1: 10, y1: 10, x2: 110, y2: 90 }
+
+      expect(RectBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when rectangle b extends beyond the top edge of rectangle a', () => {
+      const a: RectBox = { x1: 0, y1: 10, x2: 100, y2: 100 }
+      const b: RectBox = { x1: 10, y1: 5, x2: 90, y2: 90 }
+
+      expect(RectBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when rectangle b extends beyond the bottom edge of rectangle a', () => {
+      const a: RectBox = { x1: 0, y1: 0, x2: 100, y2: 100 }
+      const b: RectBox = { x1: 10, y1: 10, x2: 90, y2: 110 }
+
+      expect(RectBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when rectangles only partially overlap', () => {
+      const a: RectBox = { x1: 0, y1: 0, x2: 50, y2: 50 }
+      const b: RectBox = { x1: 25, y1: 25, x2: 75, y2: 75 }
+
+      expect(RectBox.includes(a, b)).toBe(false)
+    })
+
+    it('should return false when rectangles do not overlap at all', () => {
+      const a: RectBox = { x1: 0, y1: 0, x2: 50, y2: 50 }
+      const b: RectBox = { x1: 100, y1: 100, x2: 150, y2: 150 }
+
+      expect(RectBox.includes(a, b)).toBe(false)
+    })
+
+    it('should handle negative coordinates correctly', () => {
+      const a: RectBox = { x1: -100, y1: -100, x2: 100, y2: 100 }
+      const b: RectBox = { x1: -50, y1: -50, x2: 50, y2: 50 }
+
+      expect(RectBox.includes(a, b)).toBe(true)
+    })
+
+    it('should return false when rectangle b extends beyond negative boundaries', () => {
+      const a: RectBox = { x1: -50, y1: -50, x2: 50, y2: 50 }
+      const b: RectBox = { x1: -60, y1: -40, x2: 40, y2: 40 }
+
+      expect(RectBox.includes(a, b)).toBe(false)
+    })
+
+    it('should handle zero-area rectangles (points)', () => {
+      const a: RectBox = { x1: 0, y1: 0, x2: 100, y2: 100 }
+      const point: RectBox = { x1: 50, y1: 50, x2: 50, y2: 50 }
+
+      expect(RectBox.includes(a, point)).toBe(true)
+    })
+
+    it('should return false when point is outside rectangle', () => {
+      const a: RectBox = { x1: 0, y1: 0, x2: 100, y2: 100 }
+      const point: RectBox = { x1: 150, y1: 150, x2: 150, y2: 150 }
+
+      expect(RectBox.includes(a, point)).toBe(false)
     })
   })
 })

@@ -1,6 +1,5 @@
 import type { Simplify } from 'type-fest'
-import type * as aux from './_aux'
-import type { AnyAux } from './_aux'
+import type { scalar } from '.'
 import type { _stage, _type } from './const'
 import type { BBox } from './geometry'
 import type {
@@ -11,17 +10,17 @@ import type {
 import type { DiagramEdge, DiagramNode, LayoutedDynamicView } from './view-layouted'
 // import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
-// export type DiagramNodeDriftReason =
-//   | 'not-exists'
-//   | 'properties-changed'
-//   | 'relationships-changed'
-//   | 'shape-changed'
+export type DiagramNodeDriftReason =
+  | 'not-exists' // exists in snapshot but not in view, and visa versa
+  | 'properties-changed'
+  | 'relationships-changed'
+  | 'shape-changed'
 
-type ViewManualLayoutSnapshotPerType<A extends AnyAux> =
+type ViewManualLayoutSnapshotPerType =
   | {
     readonly [_type]: 'element'
-    readonly viewOf?: aux.Fqn<A>
-    readonly extends?: aux.StrictViewId<A>
+    readonly viewOf?: scalar.Fqn
+    readonly extends?: scalar.ViewId
   }
   | {
     readonly [_type]: 'deployment'
@@ -32,17 +31,19 @@ type ViewManualLayoutSnapshotPerType<A extends AnyAux> =
   }
 
 export type ViewManualLayoutSnapshot<
-  A extends AnyAux = AnyAux,
   Type extends ViewType = ViewType,
 > = Simplify<
-  & ViewManualLayoutSnapshotPerType<A>
+  & ViewManualLayoutSnapshotPerType
   & {
+    readonly id: scalar.ViewId
+    readonly title: string | null
+    readonly description: scalar.MarkdownOrString | null
     readonly [_type]: Type
     readonly [_stage]: 'layouted'
     // Object hash of previous layout
     readonly hash: string
-    readonly nodes: DiagramNode<A>[]
-    readonly edges: DiagramEdge<A>[]
+    readonly nodes: DiagramNode[]
+    readonly edges: DiagramEdge[]
     readonly bounds: BBox
     readonly autoLayout: ViewAutoLayout
   }

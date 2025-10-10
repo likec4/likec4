@@ -17,13 +17,18 @@ import * as z from 'zod4'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
 import { LikeC4StylesConfigSchema } from './schema.theme'
 
-export const ManualLayoutsConfigSchema = z.object({
-  outDir: z.string()
-    .meta({
-      description:
-        'Path to the directory where manual layouts will be stored, relative to the folder containing the project config',
-    }),
-})
+export const ManualLayoutsConfigSchema = z
+  .object({
+    outDir: z.string()
+      .meta({
+        description:
+          'Path to the directory where manual layouts will be stored, relative to the folder containing the project config',
+      }),
+  })
+  .meta({
+    id: 'manual-layouts-config',
+    description: 'Configuration for manual layouts',
+  })
 
 export type ManualLayoutsConfig = z.infer<typeof ManualLayoutsConfigSchema>
 
@@ -55,8 +60,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),
   manualLayouts: ManualLayoutsConfigSchema
-    .optional()
-    .meta({ description: 'Configuration for manual layouts' }),
+    .optional(),
 })
   .meta({
     description: 'LikeC4 project configuration',

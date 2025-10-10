@@ -89,6 +89,16 @@ export namespace BBox {
       height: box.height - minus * 2,
     }
   }
+
+  /**
+   * Returns true if `a` includes `b` (i.e. `b` is inside `a`)
+   */
+  export function includes(a: BBox, b: BBox): boolean {
+    if (a === b) {
+      return true
+    }
+    return a.x <= b.x && a.y <= b.y && (a.x + a.width) >= (b.x + b.width) && (a.y + a.height) >= (b.y + b.height)
+  }
 }
 
 export interface RectBox {
@@ -155,5 +165,15 @@ export namespace RectBox {
       width: box.x2 - box.x1,
       height: box.y2 - box.y1,
     }
+  }
+
+  /**
+   * Returns true if `a` includes `b` (i.e. `b` is inside `a`)
+   */
+  export function includes(a: RectBox, b: RectBox): boolean {
+    if (a === b) {
+      return true
+    }
+    return a.x1 <= b.x1 && a.y1 <= b.y1 && a.x2 >= b.x2 && a.y2 >= b.y2
   }
 }

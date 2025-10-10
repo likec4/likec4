@@ -82,7 +82,7 @@ export class Rpc extends ADisposable {
           const uris = docs.toArray().map(d => d.uri)
           await DocumentBuilder.update(uris, [], cancelToken)
         }
-        const likec4model = await likec4Services.ModelBuilder.buildLikeC4Model(projectId as ProjectId, cancelToken)
+        const likec4model = await likec4Services.ModelBuilder.computeModel(projectId as ProjectId, cancelToken)
         if (likec4model !== LikeC4Model.EMPTY) {
           return { model: likec4model.$model as ComputedLikeC4ModelData }
         }
@@ -244,7 +244,7 @@ export class Rpc extends ADisposable {
       connection.onRequest(FetchTelemetryMetrics.req, async (cancelToken) => {
         const projectsIds = [...projects.all]
         const promises = projectsIds.map(async projectId => {
-          const model = await likec4Services.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
+          const model = await likec4Services.ModelBuilder.computeModel(projectId, cancelToken)
           if (model === LikeC4Model.EMPTY) {
             return Promise.reject(new Error(`Model is empty`))
           }

@@ -126,10 +126,10 @@ export class EdgeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
 
 namespace EdgeModel {
   export interface StepEdge<A extends Any, V extends $View<A>> extends EdgeModel<A, V> {
-    id: StepEdgeId
-    stepNumber: number
+    readonly id: StepEdgeId
+    readonly stepNumber: number
   }
   export interface WithParent<A extends Any, V extends $View<A>> extends EdgeModel<A, V> {
-    parent: NodeModel<A, V>
+    readonly parent: NodeModel<A, V>
   }
 }

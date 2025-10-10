@@ -135,7 +135,7 @@ export function createTestServices(options?: {
     if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       await validateAll()
     }
-    const likec4model = await modelBuilder.buildLikeC4Model()
+    const likec4model = await modelBuilder.computeModel()
     if (!likec4model) throw new Error('No model found')
     return likec4model.$data
   }
@@ -144,7 +144,7 @@ export function createTestServices(options?: {
     if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       await validateAll()
     }
-    const likec4model = await modelBuilder.buildLikeC4Model()
+    const likec4model = await modelBuilder.computeModel()
     if (!likec4model) throw new Error('No model found')
     return likec4model
   }
@@ -226,7 +226,7 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     if (services.shared.workspace.LangiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       await validateAll()
     }
-    const likec4model = await services.likec4.ModelBuilder.buildLikeC4Model(projectId as ProjectId)
+    const likec4model = await services.likec4.ModelBuilder.computeModel(projectId as ProjectId)
     if (!likec4model) throw new Error('No model found')
     return likec4model
   }

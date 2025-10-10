@@ -196,7 +196,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
    */
   async computedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed> {
     const projectId = this.projectsManager.ensureProjectId(project)
-    return await this.builder.buildLikeC4Model(projectId, cancelToken)
+    return await this.builder.computeModel(projectId, cancelToken)
   }
 
   /**
@@ -205,7 +205,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
    */
   async layoutedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Layouted> {
     const projectId = this.projectsManager.ensureProjectId(project)
-    const model = await this.builder.buildLikeC4Model(projectId, cancelToken)
+    const model = await this.builder.computeModel(projectId, cancelToken)
     if (!model) {
       throw new Error('Failed to parse model')
     }

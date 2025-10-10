@@ -105,6 +105,11 @@ export function activateMessenger(
         logger.warn(`rpc.changeView returned null`)
         return
       }
+      // Do not open snapshot file (it is too big)
+      if (change.op === 'save-view-snapshot') {
+        logger.debug(`View snapshot ${viewId} saved to ${loc.uri}`)
+        return
+      }
       const location = rpc.client.protocol2CodeConverter.asLocation(loc)
       let viewColumn = activeTextEditor.value?.viewColumn ?? vscode.ViewColumn.One
       // if (PreviewPanel.current?.panel.viewColumn === viewColumn) {

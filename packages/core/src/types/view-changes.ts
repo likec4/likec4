@@ -16,13 +16,14 @@ export namespace ViewChange {
     targets: NonEmptyArray<scalar.Fqn | scalar.DeploymentFqn>
   }
 
+  /** @deprecated */
   export interface SaveManualLayout {
     op: 'save-manual-layout'
     layout: ViewManualLayout
   }
 
-  export interface SaveLayout {
-    op: 'save-layout'
+  export interface SaveViewSnapshot {
+    op: 'save-view-snapshot'
     layout: LayoutedView
   }
 
@@ -38,5 +39,5 @@ export namespace ViewChange {
 export type ViewChange =
   | ViewChange.ChangeElementStyle
   | ViewChange.SaveManualLayout
-  | ViewChange.SaveLayout
+  | ViewChange.SaveViewSnapshot
   | ViewChange.ChangeAutoLayout

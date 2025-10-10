@@ -251,25 +251,25 @@ export namespace NodeModel {
     never
 
   export interface WithParent<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
-    parent: NodeModel<A, V>
+    readonly parent: NodeModel<A, V>
   }
   export interface WithElement<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
-    kind: aux.ElementKind<A>
-    element: ElementModel<A>
+    readonly kind: aux.ElementKind<A>
+    readonly element: ElementModel<A>
   }
   export interface WithDeploymentElement<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
-    kind: aux.DeploymentKind<A>
-    deployment: DeploymentElementModel<A>
+    readonly kind: aux.DeploymentKind<A>
+    readonly deployment: DeploymentElementModel<A>
   }
   export interface WithDeployedInstance<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
-    kind: 'instance'
-    element: ElementModel<A>
-    deployment: DeployedInstanceModel<A>
+    readonly kind: 'instance'
+    readonly element: ElementModel<A>
+    readonly deployment: DeployedInstanceModel<A>
   }
 
   export interface IsGroup<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
-    kind: typeof GroupElementKind
-    element: null
-    deployment: null
+    readonly kind: typeof GroupElementKind
+    readonly element: null
+    readonly deployment: null
   }
 }

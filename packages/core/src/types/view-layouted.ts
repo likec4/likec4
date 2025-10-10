@@ -63,9 +63,11 @@ export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> 
 
 export type LayoutedViewDriftReason =
   | 'not-exists'
+  | 'type-changed'
+  | 'includes-more-nodes'
+  | 'includes-more-edges'
   | 'nodes-drift'
   | 'edges-drift'
-  | 'properties-changed'
 
 interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
   readonly [_stage]: 'layouted'
@@ -91,7 +93,7 @@ export interface LayoutedElementView<A extends AnyAux = AnyAux> extends BaseLayo
   /**
    * If the view is changed manually this field contains the layout data.
    */
-  readonly manualLayout?: ViewManualLayoutSnapshot<A, 'element'>
+  readonly manualLayout?: ViewManualLayoutSnapshot<'element'>
 }
 
 export interface LayoutedDeploymentView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
@@ -100,7 +102,7 @@ export interface LayoutedDeploymentView<A extends AnyAux = AnyAux> extends BaseL
   /**
    * If the view is changed manually this field contains the layout data.
    */
-  readonly manualLayout?: ViewManualLayoutSnapshot<A, 'deployment'>
+  readonly manualLayout?: ViewManualLayoutSnapshot<'deployment'>
 }
 
 export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
@@ -120,7 +122,7 @@ export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayo
   /**
    * If the view is changed manually this field contains the layout data.
    */
-  readonly manualLayout?: ViewManualLayoutSnapshot<A, 'dynamic'>
+  readonly manualLayout?: ViewManualLayoutSnapshot<'dynamic'>
 }
 
 export namespace LayoutedDynamicView {

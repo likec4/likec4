@@ -52,8 +52,8 @@ export interface LikeC4ModelBuilder extends Disposable {
     projectId?: c4.ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<LikeC4Model.Parsed | null>
-  unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model.Computed
-  buildLikeC4Model(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed>
+  unsafeSyncComputeModel(projectId: c4.ProjectId): LikeC4Model.Computed
+  computeModel(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed>
   computeView(
     viewId: ViewId,
     projectId?: c4.ProjectId | undefined,
@@ -138,11 +138,11 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    */
   private unsafeSyncJoinedModel(
     projectId: c4.ProjectId,
-    manualLayouts: ManualLayouts,
+    // manualLayouts: ManualLayouts,
   ): LikeC4Model.Parsed | null {
     const logger = builderLogger.getChild(projectId)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Parsed | null>
-    const key = parsedModelCacheKey(projectId) + (manualLayouts ? '+manualLayouts' : '')
+    const key = parsedModelCacheKey(projectId)
     if (cache.has(key)) {
       logger.debug`unsafeSyncJoinedModel from cache`
     }
@@ -172,13 +172,6 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           imports,
         }
       }
-      if (manualLayouts) {
-        // we mutate parsedData, so we need to make a copy
-        if (parsedData === result.data) {
-          parsedData = { ...parsedData }
-        }
-        parsedData.manualLayouts = manualLayouts
-      }
       return LikeC4Model.create(parsedData)
     })
   }
@@ -194,9 +187,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       if (cancelToken?.isCancellationRequested) {
         await interruptAndCheck(cancelToken)
       }
-      const project = this.projects.getProject(projectId)
-      const manualLayouts = await this.manualLayouts.read(project)
-      const parsedModel = this.unsafeSyncJoinedModel(projectId, manualLayouts)
+      const parsedModel = this.unsafeSyncJoinedModel(projectId)
       logger.debug`parseModel in ${t0.pretty}`
       return parsedModel
     })
@@ -209,7 +200,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    * This method is internal and should to be called only when all documents are known to be parsed.
    * Otherwise, the model may be incomplete.
    */
-  public unsafeSyncBuildModel(
+  public unsafeSyncComputeModel(
     projectId: c4.ProjectId,
     manualLayouts?: ManualLayouts,
   ): LikeC4Model.Computed {
@@ -221,7 +212,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       logger.debug`unsafeSyncBuildModel from cache`
     }
     return cache.get(key, () => {
-      const parsedModel = this.unsafeSyncJoinedModel(projectId, manualLayouts ?? null)
+      const parsedModel = this.unsafeSyncJoinedModel(projectId)
       if (!parsedModel) {
         return LikeC4Model.EMPTY.asComputed
       }
@@ -248,17 +239,14 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         [_stage]: 'computed',
         views,
       }
-      if (data.manualLayouts) {
-        // data.manualLayouts = mapValues(data.manualLayouts, (v, id) => {
-        //   const computed = views[id]
-        //   return computed ? applyStylesToManualLayout(v, computed) : v
-        // })
+      if (manualLayouts) {
+        data.manualLayouts = manualLayouts
       }
       return LikeC4Model.create(data)
     })
   }
 
-  public async buildLikeC4Model(
+  public async computeModel(
     projectId?: c4.ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<LikeC4Model.Computed> {
@@ -271,7 +259,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       }
       const project = this.projects.getProject(projectId)
       const manualLayouts = await this.manualLayouts.read(project)
-      const result = this.unsafeSyncBuildModel(projectId, manualLayouts)
+      const result = this.unsafeSyncComputeModel(projectId, manualLayouts)
       logger.debug(`buildLikeC4Model in ${t0.pretty}`)
       return result
     })
@@ -347,6 +335,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
 
   public clearCache(): void {
     this.cache.clear()
+    this.previousViews = {}
   }
 
   private documents(projectId: c4.ProjectId) {

@@ -34,6 +34,12 @@ export type ViewsIterator<A extends Any, V extends $View<A> = $View<A>> = Iterat
 
 export type InferViewType<V> = V extends AnyView<any> ? V[_type] : never
 
+// type Mode<V extends AnyView<any>> = 'dynamic' extends V[_type]
+//   // dprint-ignore
+//   ? DynamicViewDisplayVariant | null
+//   : V[_type] extends 'dynamic' ? DynamicViewDisplayVariant
+//   : never
+
 export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>> implements WithTags<A> {
   /**
    * Don't use in runtime, only for type inference
@@ -71,11 +77,10 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     model: LikeC4Model<A>,
     folder: LikeC4ViewsFolder<A>,
     view: V,
-    manualLayout?: ViewManualLayoutSnapshot<Any, V[_type]> | undefined,
+    private manualLayout?: ViewManualLayoutSnapshot | undefined,
   ) {
     this.$model = model
     this.$view = view
-    // this.$view = manualLayouted ?? view
     this.folder = folder
     for (const node of this.$view.nodes) {
       const el = new NodeModel<A, V>(this, Object.freeze(node))
@@ -200,11 +205,11 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
    * Available for dynamic views only
    * throws error if view is not dynamic
    */
-  get mode(): DynamicViewDisplayVariant {
+  get mode(): DynamicViewDisplayVariant | null{
     if (this.isDynamicView()) {
       return this.$view.variant ?? 'diagram'
     }
-    throw new Error('View is not dynamic')
+    return null
   }
 
   /**
@@ -383,18 +388,26 @@ export namespace LikeC4ViewModel {
   export interface ElementView<A extends Any, V extends $View<A> = $View<A>>
     extends LikeC4ViewModel<A, ViewWithType<V, 'element'>>
   {
+    readonly mode: never
   }
 
   export interface ScopedElementView<A extends Any>
     extends LikeC4ViewModel<A, ViewWithType<$View<A>, 'element'> & { viewOf: aux.StrictFqn<A> }>
   {
-    viewOf: ElementModel<A>
+    readonly mode: never
+    readonly viewOf: ElementModel<A>
   }
 
   export interface DeploymentView<A extends Any, V extends $View<A> = $View<A>>
     extends LikeC4ViewModel<A, ViewWithType<V, 'deployment'>>
   {
+    readonly mode: never
   }
 
-  export type DynamicView<A extends Any, V extends $View<A> = $View<A>> = LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
+  export interface DynamicView<A extends Any, V extends $View<A>>
+    extends LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
+  {
+    readonly mode: DynamicViewDisplayVariant
+    readonly viewOf: never
+  }
 }

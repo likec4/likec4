@@ -37,7 +37,7 @@ interface BaseLikeC4ModelData<A extends Any> {
    * If project contains saved manual layouts
    * For {@link LayoutedLikeC4ModelData} or {@link ComputedLikeC4ModelData} this includes only drifted views
    */
-  manualLayouts?: Record<scalar.ViewId, ViewManualLayoutSnapshot<UnknownLayouted>>
+  manualLayouts?: Record<scalar.ViewId, ViewManualLayoutSnapshot>
 }
 
 export type AuxFromLikeC4ModelData<D> =

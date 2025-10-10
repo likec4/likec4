@@ -83,7 +83,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     projectId?: ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<ComputedView[]> {
-    const likeC4Model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
+    const likeC4Model = await this.ModelBuilder.computeModel(projectId, cancelToken)
     return values(likeC4Model.$data.views)
   }
 
@@ -91,7 +91,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     projectId?: ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<GraphvizOut[]> {
-    const likeC4Model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
+    const likeC4Model = await this.ModelBuilder.computeModel(projectId, cancelToken)
     const views = values(likeC4Model.$data.views)
     if (views.length === 0) {
       return []
@@ -147,7 +147,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     projectId?: ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<GraphvizOut | null> {
-    const model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
+    const model = await this.ModelBuilder.computeModel(projectId, cancelToken)
     const view = model.findView(viewId)?.$view
     projectId = model.project.id
     const logger = viewsLogger.getChild(projectId)
@@ -194,7 +194,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     if (cache.has(KEY)) {
       return await Promise.resolve(cache.get(KEY)!)
     }
-    const likeC4Model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
+    const likeC4Model = await this.ModelBuilder.computeModel(projectId, cancelToken)
     const views = values(likeC4Model.$data.views)
     if (views.length === 0) {
       return []

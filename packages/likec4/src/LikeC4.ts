@@ -202,7 +202,7 @@ ${k.red('Please specify a project folder')}
    */
   computedModel(project?: ProjectId | undefined): LikeC4Model.Computed {
     const projectId = this.langium.shared.workspace.ProjectsManager.ensureProjectId(project)
-    return this.langium.likec4.ModelBuilder.unsafeSyncBuildModel(projectId)
+    return this.langium.likec4.ModelBuilder.unsafeSyncComputeModel(projectId)
   }
 
   projects(): NonEmptyArray<ProjectId> {

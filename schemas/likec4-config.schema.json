@@ -41,17 +41,7 @@
       }
     },
     "manualLayouts": {
-      "description": "Configuration for manual layouts",
-      "type": "object",
-      "properties": {
-        "outDir": {
-          "description": "Path to the directory where manual layouts will be stored, relative to the folder containing the project config",
-          "type": "string"
-        }
-      },
-      "required": [
-        "outDir"
-      ]
+      "$ref": "#/$defs/manual-layouts-config"
     }
   },
   "required": [
@@ -418,6 +408,20 @@
         "crow",
         "open",
         "vee"
+      ]
+    },
+    "manual-layouts-config": {
+      "id": "manual-layouts-config",
+      "description": "Configuration for manual layouts",
+      "type": "object",
+      "properties": {
+        "outDir": {
+          "description": "Path to the directory where manual layouts will be stored, relative to the folder containing the project config",
+          "type": "string"
+        }
+      },
+      "required": [
+        "outDir"
       ]
     }
   }

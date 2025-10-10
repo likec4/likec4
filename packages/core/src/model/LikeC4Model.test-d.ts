@@ -13,6 +13,7 @@ import {
   type ComputedLikeC4ModelData,
   type ComputedView,
   type DiagramView,
+  type DynamicViewDisplayVariant,
   type Fqn,
   type IteratorLike,
   type LayoutedDeploymentView,
@@ -331,7 +332,7 @@ test('LikeC4Model type guards', () => {
       | LikeC4ViewModel<A, ComputedElementView<A>>
     >()
     expectTypeOf(unknownModel.deployment.views()).toEqualTypeOf<
-      IteratorLike<LikeC4ViewModel<A, ComputedDeploymentView<A>>>
+      IteratorLike<LikeC4ViewModel.DeploymentView<A, ComputedDeploymentView<A>>>
     >()
   }
   if (unknownModel.isLayouted()) {
@@ -379,14 +380,14 @@ test('LikeC4Model type guards', () => {
       expectTypeOf(v.viewOf).toEqualTypeOf<ElementModel<A>>()
     }
     if (v.isDynamicView()) {
-      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, LayoutedDynamicView<A>>>()
+      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel.DynamicView<A, LayoutedDynamicView<A>>>()
     }
     if (v.isDeploymentView()) {
-      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, LayoutedDeploymentView<A>>>()
+      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel.DeploymentView<A, LayoutedDeploymentView<A>>>()
     }
 
     expectTypeOf(unknownModel.deployment.views()).toEqualTypeOf<
-      IteratorLike<LikeC4ViewModel<A, LayoutedDeploymentView<A>>>
+      IteratorLike<LikeC4ViewModel.DeploymentView<A, LayoutedDeploymentView<A>>>
     >()
   }
 
@@ -420,25 +421,36 @@ test('LikeC4Model type guards', () => {
   const v = layouted.view('index')
   type L = typeof layouted.Aux
   expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<L, DiagramView<L>>>()
+  expectTypeOf(v.mode).toEqualTypeOf<DynamicViewDisplayVariant | null>()
   if (v.isDynamicView()) {
-    expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<L, LayoutedDynamicView<L>>>()
+    expectTypeOf(v._type).toEqualTypeOf<'dynamic'>()
+    expectTypeOf(v.mode).toEqualTypeOf<DynamicViewDisplayVariant>()
+    expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel.DynamicView<L, LayoutedDynamicView<L>>>()
   }
   if (v.isDeploymentView()) {
-    expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<L, LayoutedDeploymentView<L>>>()
+    expectTypeOf(v._type).toEqualTypeOf<'deployment'>()
+    expectTypeOf(v.mode).toBeNever()
+    expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel.DeploymentView<L, LayoutedDeploymentView<L>>>()
   }
   if (v.isElementView()) {
+    expectTypeOf(v._type).toEqualTypeOf<'element'>()
+    expectTypeOf(v.mode).toBeNever()
     expectTypeOf(v).toEqualTypeOf<
-      LikeC4ViewModel<
+      LikeC4ViewModel.ElementView<
         L,
         LayoutedElementView<L>
       >
     >()
+    expectTypeOf(v.viewOf).toEqualTypeOf<ElementModel<L> | null>()
   }
   if (v.isScopedElementView()) {
+    expectTypeOf(v._type).toEqualTypeOf<'element'>()
+    expectTypeOf(v.mode).toBeNever()
     expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel.ScopedElementView<L>>()
     expectTypeOf(v.$view).toEqualTypeOf<LayoutedElementView<L> & { viewOf: aux.StrictFqn<L> }>()
     expectTypeOf(v.viewOf).toEqualTypeOf<ElementModel<L>>()
   }
+  expectTypeOf(v.mode).toEqualTypeOf<DynamicViewDisplayVariant | null>()
 })
 
 test('LikeC4Model<Any> type guards', () => {
