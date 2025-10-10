@@ -138,7 +138,7 @@ jobs:
           NODE_ENV: development
 
       - name: 🛠️ Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: .tool-versions
           cache: "pnpm"
@@ -201,7 +201,7 @@ jobs:
           NODE_ENV: development
 
       - name: 🛠️ Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: .tool-versions
           cache: "pnpm"
