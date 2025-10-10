@@ -17,7 +17,8 @@ export const [computedIndexView, computedCloudView, computedCloud3levels, comput
   computeElementView(indexView),
   computeElementView(cloudView),
   computeElementView(cloud3levels),
-  computeElementView(amazonView),
+  // Add hasManualLayout to verify that it is preserved
+  Object.assign(computeElementView(amazonView), { hasManualLayout: true }),
 ]
 
 export const issue577_fail = computeElementView(issue577View('https://icons/aws%20&%20CloudFront.svg'))

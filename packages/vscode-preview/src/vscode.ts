@@ -7,7 +7,7 @@ import type {
 } from '@likec4/core/types'
 import { CancellationTokenImpl, HOST_EXTENSION } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'
-import { type LocateParams, FetchComputedModel, FetchDiagramView, ReadLocalIcon, WebviewMsgs } from '../protocol'
+import { type LocateParams, FetchComputedModel, FetchLayoutedView, ReadLocalIcon, WebviewMsgs } from '../protocol'
 
 export type VscodeState = {
   viewId: ViewId
@@ -47,7 +47,7 @@ export const ExtensionApi = {
   fetchDiagramView: async (viewId: ViewId, signal: AbortSignal) => {
     const cancellationToken = new CancellationTokenImpl()
     signal.onabort = () => cancellationToken.cancel()
-    return await messenger.sendRequest(FetchDiagramView, HOST_EXTENSION, viewId, cancellationToken)
+    return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, { viewId }, cancellationToken)
   },
 
   // Read local icon file and convert to base64 data URI

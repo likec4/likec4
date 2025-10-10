@@ -1,7 +1,6 @@
 import {
   type ViewId,
   _stage,
-  isScopedElementView,
 } from '@likec4/core'
 import { computeView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
@@ -18,10 +17,9 @@ import {
   WorkspaceCache,
 } from 'langium'
 import {
-  filter,
   flatMap,
-  groupBy,
   hasAtLeast,
+  isEmpty,
   mapToObj,
   pipe,
   values,
@@ -54,11 +52,6 @@ export interface LikeC4ModelBuilder extends Disposable {
   ): Promise<LikeC4Model.Parsed | null>
   unsafeSyncComputeModel(projectId: c4.ProjectId): LikeC4Model.Computed
   computeModel(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed>
-  computeView(
-    viewId: ViewId,
-    projectId?: c4.ProjectId | undefined,
-    cancelToken?: CancellationToken,
-  ): Promise<c4.ComputedView | null>
   onModelParsed(callback: ModelParsedListener): Disposable
   clearCache(): void
 }
@@ -138,7 +131,6 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    */
   private unsafeSyncJoinedModel(
     projectId: c4.ProjectId,
-    // manualLayouts: ManualLayouts,
   ): LikeC4Model.Parsed | null {
     const logger = builderLogger.getChild(projectId)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Parsed | null>
@@ -207,7 +199,8 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     const logger = builderLogger.getChild(projectId)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
     const viewsCache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
-    const key = computedModelCacheKey(projectId) + (manualLayouts ? '+manualLayouts' : '')
+    const hasManualLayouts = !!manualLayouts && !isEmpty(manualLayouts)
+    const key = computedModelCacheKey(projectId) + (hasManualLayouts ? '+manualLayouts' : '')
     if (cache.has(key)) {
       logger.debug`unsafeSyncBuildModel from cache`
     }
@@ -222,6 +215,13 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         if (!result.isSuccess) {
           logger.warn(loggable(result.error))
           continue
+        }
+        if (manualLayouts?.[view.id]) {
+          Object.assign(
+            result.view,
+            // satisfies enforces that the object has the property
+            { hasManualLayout: true } satisfies Partial<c4.ComputedView>,
+          )
         }
         allViews.push(result.view)
       }
@@ -239,7 +239,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         [_stage]: 'computed',
         views,
       }
-      if (manualLayouts) {
+      if (hasManualLayouts) {
         data.manualLayouts = manualLayouts
       }
       return LikeC4Model.create(data)
@@ -262,64 +262,6 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       const result = this.unsafeSyncComputeModel(projectId, manualLayouts)
       logger.debug(`buildLikeC4Model in ${t0.pretty}`)
       return result
-    })
-  }
-
-  public async computeView(
-    viewId: ViewId,
-    projectId?: c4.ProjectId | undefined,
-    cancelToken?: CancellationToken,
-  ): Promise<c4.ComputedView | null> {
-    const project = this.projects.ensureProjectId(projectId)
-    const logger = builderLogger.getChild(project)
-    const cache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
-    const cacheKey = computedViewKey(project, viewId)
-    if (cache.has(cacheKey)) {
-      return cache.get(cacheKey)!
-    }
-    const parsed = await this.parseModel(project, cancelToken)
-    if (!parsed) {
-      return null
-    }
-    return cache.get(cacheKey, () => {
-      const view = parsed.$data.views[viewId]
-      if (!view) {
-        logger.warn`computeView: cant find view ${viewId}`
-        return null
-      }
-      logger.debug`computeView: ${viewId}`
-      const result = computeView(view, parsed)
-      if (!result.isSuccess) {
-        logWarnError(result.error)
-        return null
-      }
-      let computedView = result.view
-
-      const allElementViews = pipe(
-        parsed.$data.views,
-        values(),
-        filter(isScopedElementView),
-        filter(v => v.id !== viewId),
-        groupBy(v => v.viewOf),
-      )
-
-      for (const node of computedView.nodes) {
-        if (!node.navigateTo) {
-          const viewsOfNode = allElementViews[node.id]
-          if (viewsOfNode) {
-            node.navigateTo = viewsOfNode[0].id
-          }
-        }
-      }
-
-      const previous = this.previousViews[cacheKey]
-      if (previous && eq(computedView, previous)) {
-        computedView = previous
-      } else {
-        this.previousViews[cacheKey] = computedView
-      }
-
-      return computedView
     })
   }
 

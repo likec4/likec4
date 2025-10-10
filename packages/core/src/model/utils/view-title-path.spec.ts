@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { extractViewTitleFromPath, getViewFolderPath, normalizeViewPath } from './utils'
+import { extractViewTitleFromPath, getViewFolderPath, normalizeViewPath } from './view-title-path'
 
 describe('normalizeViewPath', () => {
   it('should remove spaces from path segments', () => {

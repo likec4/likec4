@@ -106,6 +106,10 @@ interface BaseComputedViewProperties<A extends AnyAux> extends BaseViewPropertie
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode<A>[]
   readonly edges: ComputedEdge<A>[]
+  /**
+   * If the view has manual layout
+   */
+  readonly hasManualLayout?: boolean
 }
 
 export interface ComputedElementView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {

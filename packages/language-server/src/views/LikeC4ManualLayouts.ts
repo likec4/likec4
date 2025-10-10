@@ -15,6 +15,13 @@ function fileName(view: LayoutedView): string {
   return `${view.id}.${view._type}-view.json5`
 }
 
+function getManualLayoutsOutDir(project: Project): URI {
+  return UriUtils.resolvePath(
+    project.folderUri,
+    project.config.manualLayouts?.outDir ?? '.likec4',
+  )
+}
+
 export interface LikeC4ManualLayouts {
   read(project: Project): Promise<Record<ViewId, LayoutedView> | null>
   write(project: Project, layouted: LayoutedView): Promise<Location>
@@ -37,27 +44,25 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   async read(project: Project): Promise<Record<ViewId, LayoutedView> | null> {
     return await getOrCreate(this.manualLayouts, project.folderUri, async _ => {
       const fs = this.services.shared.workspace.FileSystemProvider
-      const outDir = UriUtils.resolvePath(
-        project.folderUri,
-        project.config.manualLayouts?.outDir ?? '.likec4',
-      )
+      const outDir = getManualLayoutsOutDir(project)
       const manualLayouts = [] as LayoutedView[]
       try {
         const files = await fs.readDirectory(outDir, { onlyLikeC4Files: false })
         for (const file of files) {
-          if (file.isFile && file.uri.path.endsWith('c4-view.json5')) {
+          if (file.isFile && file.uri.path.endsWith('-view.json5')) {
             try {
               const content = await fs.readFile(file.uri)
-              manualLayouts.push(JSON5.parse<LayoutedView>(content))
-            } catch (e) {
-              logger.warn(`Failed to read manual layout ${file.uri.fsPath}`)
-              logger.warn(loggable(e))
+              manualLayouts.push({
+                ...JSON5.parse<LayoutedView>(content),
+                _layout: 'manual',
+              })
+            } catch (err) {
+              logger.warn(`Failed to read view snapshot ${file.uri.fsPath}`, { err })
             }
           }
         }
-      } catch (e) {
-        logger.warn(`Failed to read manual layouts for ${project.folderUri.fsPath}`)
-        logger.warn(loggable(e))
+      } catch (err) {
+        logger.warn(`Failed to read manual layouts for ${project.folderUri.fsPath}`, { err })
       }
       if (manualLayouts.length === 0) {
         return null
@@ -67,10 +72,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   }
 
   async write(project: Project, layouted: LayoutedView): Promise<Location> {
-    const outDir = UriUtils.resolvePath(
-      project.folderUri,
-      project.config.manualLayouts?.outDir ?? '.likec4',
-    )
+    const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(layouted))
     const content = JSON5.stringify(layouted, null, 2)
     // from vscode-languageserver-types

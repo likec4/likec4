@@ -5,6 +5,7 @@ import {
   type LayoutedView,
   type LayoutedViewDriftReason,
   type ViewManualLayoutSnapshot,
+  _layout,
   _type,
   BBox,
 } from '../../types'
@@ -20,12 +21,11 @@ const MAX_ALLOWED_DRIFT = 5
  *
  * @returns The snapshot with the next view applied
  */
-export function applyManualLayoutSnapshot<
+export function applyManualLayout<
   V extends LayoutedView,
-  Snapshot extends ViewManualLayoutSnapshot<V['_type']>,
 >(
   nextView: V,
-  snapshot: Snapshot,
+  snapshot: ViewManualLayoutSnapshot,
 ): V {
   if (nextView.hash === snapshot.hash && isShallowEqual(nextView.bounds, snapshot.bounds)) {
     return nextView
@@ -135,6 +135,7 @@ export function applyManualLayoutSnapshot<
     title: snapshot.title,
     description: snapshot.description,
     [_type]: snapshot._type,
+    [_layout]: 'manual',
     hash: snapshot.hash,
     bounds: snapshot.bounds,
     autoLayout: snapshot.autoLayout,

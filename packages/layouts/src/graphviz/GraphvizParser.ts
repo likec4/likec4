@@ -8,6 +8,7 @@ import {
   type EdgeId,
   type LayoutedView,
   type Point,
+  _layout,
   _stage,
 } from '@likec4/core'
 import { invariant } from '@likec4/core/utils'
@@ -173,8 +174,7 @@ export function parseGraphvizJson<A extends Any, V extends ComputedView<A>>(
   const {
     nodes: computedNodes,
     edges: computedEdges,
-    // exclude
-    manualLayout: _manualLayout,
+    hasManualLayout,
     ...view
   } = computedView
 
@@ -202,6 +202,10 @@ export function parseGraphvizJson<A extends Any, V extends ComputedView<A>>(
       nodes: [],
       edges: [],
     }
+  }
+  // If the view has manual layout, we must indicate that current one is auto-layouted
+  if (hasManualLayout) {
+    Object.assign(diagram, { [_layout]: 'auto' } satisfies Partial<LayoutedView<A>>)
   }
 
   const graphvizObjects = graphvizJson.objects ?? []

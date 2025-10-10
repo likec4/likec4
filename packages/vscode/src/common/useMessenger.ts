@@ -1,9 +1,10 @@
+import { applyManualLayout } from '@likec4/core/model'
 import type { ProjectId } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import {
   BroadcastModelUpdate,
   FetchComputedModel,
-  FetchDiagramView,
+  FetchLayoutedView,
   ReadLocalIcon,
   WebviewMsgs,
 } from '@likec4/vscode-preview/protocol'
@@ -11,6 +12,7 @@ import {
   createSingletonComposable,
   executeCommand,
   toValue,
+  triggerRef,
   useActiveTextEditor,
   useDisposable,
 } from 'reactive-vscode'
@@ -20,6 +22,7 @@ import { BROADCAST } from 'vscode-messenger-common'
 import { logger as rootLogger } from '../logger'
 import { commands } from '../meta'
 import type { Rpc } from '../Rpc'
+import { computedModels } from '../state'
 import { performanceMark } from '../utils'
 import type { DiagramPanel } from './useDiagramPanel'
 
@@ -51,6 +54,10 @@ export function activateMessenger(
       const projectId = toValue(preview.projectId) ?? 'default'
       const result = await rpc.fetchComputedModel(projectId)
       logger.debug(`request {req} in ${t0.pretty}`, { req: 'fetchComputedModel' })
+      if (result.model) {
+        computedModels.value[projectId] = result.model
+        triggerRef(computedModels)
+      }
       return result
     } catch (err) {
       logger.warn(`request {req} failed after ${t0.pretty}`, { req: 'fetchComputedModel', err })
@@ -58,21 +65,31 @@ export function activateMessenger(
     }
   }))
 
-  useDisposable(messenger.onRequest(FetchDiagramView, async (viewId) => {
+  useDisposable(messenger.onRequest(FetchLayoutedView, async (params) => {
     const t0 = performanceMark()
+    const { viewId, layoutType = 'manual' } = params
     try {
       const projectId = toValue(preview.projectId) ?? 'default'
       const result = await rpc.layoutView({ viewId, projectId })
       logger.debug(`request {req} of {viewId} in ${t0.pretty}`, { req: 'layoutView', viewId })
-      return result
-        ? {
-          view: result.diagram,
-          error: null,
-        }
-        : {
+      if (!result) {
+        return {
           view: null,
           error: `View "${viewId}" not found`,
         }
+      }
+      let view = result.diagram
+      if (layoutType === 'manual' && view._layout !== 'manual') {
+        const modelData = computedModels.value[projectId]
+        const snapshot = modelData?.manualLayouts?.[viewId]
+        if (snapshot) {
+          view = applyManualLayout(view, snapshot)
+        }
+      }
+      return {
+        view,
+        error: null,
+      }
     } catch (err) {
       logger.warn(`request {req} of {viewId} failed after ${t0.pretty}`, { req: 'layoutView', err, viewId })
       const error = loggable(err)
@@ -105,12 +122,12 @@ export function activateMessenger(
         logger.warn(`rpc.changeView returned null`)
         return
       }
-      // Do not open snapshot file (it is too big)
+      const location = rpc.client.protocol2CodeConverter.asLocation(loc)
+      // Do not show snapshot file (it is too big)
       if (change.op === 'save-view-snapshot') {
-        logger.debug(`View snapshot ${viewId} saved to ${loc.uri}`)
+        vscode.workspace.save(location.uri)
         return
       }
-      const location = rpc.client.protocol2CodeConverter.asLocation(loc)
       let viewColumn = activeTextEditor.value?.viewColumn ?? vscode.ViewColumn.One
       // if (PreviewPanel.current?.panel.viewColumn === viewColumn) {
       //   viewColumn = vscode.ViewColumn.Beside

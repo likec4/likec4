@@ -95,11 +95,11 @@ views {
     }
 
     include
-        amazon._,
-        cloud.* -> amazon.* with {
-          color indigo
-          line solid
-        }
+      amazon._,
+      cloud.* -> amazon.* with {
+        color indigo
+        line solid
+      }
 
     exclude
       cloud.ui -> amazon
@@ -119,6 +119,7 @@ views {
   }
 
   view backend of backend {
+    title 'Backend V2 arsar'
     include
       *,
       cloud,

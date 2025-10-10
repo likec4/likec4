@@ -905,7 +905,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(diagnostics).toHaveLength(0)
 
     // Check that computeView method does not change navigateTo
-    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewId)
+    const indexView = await services.likec4.ModelBuilder.computeModel().then(m => m.view('index').$view)
     let system1Node = indexView!.nodes.find(n => n.id === 'system1')
     expect(system1Node).toMatchObject({
       title: 'system1',
@@ -961,7 +961,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(diagnostics).toHaveLength(0)
 
     // Check that computeView method does not change navigateTo
-    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewId)
+    const indexView = await services.likec4.ModelBuilder.computeModel().then(m => m.view('index').$view)
     const [step1, step2, step3] = indexView!.edges
 
     expect(step1).not.toHaveProperty('notes')
@@ -1264,7 +1264,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(errors).toEqual([])
     expect(warnings).toEqual([])
 
-    const indexView = withReadableEdges((await services.likec4.ModelBuilder.computeView('index' as ViewId))!)
+    const model = await services.likec4.ModelBuilder.computeModel()
+    const indexView = withReadableEdges(model.view('index').$view)
 
     expect(indexView.nodes.map(x => x.id)).toStrictEqual(['sys1', 'sys2', 'sys3'])
     expect(indexView.edges.map(x => [x.id, x.color])).toStrictEqual([['sys1:sys2', 'red'], ['sys2:sys3', 'green']])

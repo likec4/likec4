@@ -3,6 +3,7 @@ import {
   type aux,
   type ComputedView,
   type DiagramView,
+  type LayoutedDynamicView,
   type LikeC4Styles,
   isDeploymentView,
   isDynamicView,
@@ -10,8 +11,6 @@ import {
 } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger } from '@likec4/log'
-import type { Writable } from 'type-fest'
-import { applyManualLayout } from '../manual/applyManualLayout'
 import { calcSequenceLayout } from '../sequence'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
@@ -109,7 +108,12 @@ export class GraphvizLayouter implements Disposable {
       // }
 
       if (isDynamicView(diagram)) {
-        ;(diagram as Writable<typeof diagram>).sequenceLayout = calcSequenceLayout(diagram)
+        Object.assign(
+          diagram,
+          {
+            sequenceLayout: calcSequenceLayout(diagram),
+          } satisfies Partial<LayoutedDynamicView<A>>,
+        )
       }
 
       dot = dot

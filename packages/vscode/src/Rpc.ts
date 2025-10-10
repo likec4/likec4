@@ -69,14 +69,7 @@ export const useRpc = createSingletonComposable(() => {
   }
 
   async function fetchComputedModel(projectId: string) {
-    const result = await queue(() => client.sendRequest(FetchComputedModel.req, { projectId }))
-    if (result.model) {
-      computedModels.value[projectId] = result.model
-      void nextTick(() => {
-        triggerRef(computedModels)
-      })
-    }
-    return result
+    return await queue(() => client.sendRequest(FetchComputedModel.req, { projectId }))
   }
 
   async function fetchMetrics() {

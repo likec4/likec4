@@ -8,12 +8,13 @@ import type {
   DynamicViewDisplayVariant,
   IteratorLike,
   LayoutedView,
+  LayoutType,
   Link,
   scalar,
   ViewManualLayoutSnapshot,
   ViewWithType,
 } from '../../types'
-import { type RichTextOrEmpty, _stage, _type, RichText } from '../../types'
+import { type RichTextOrEmpty, _layout, _stage, _type, RichText } from '../../types'
 import type * as aux from '../../types/_aux'
 import type { AnyComputed, AnyLayouted } from '../../types/_aux'
 import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
@@ -26,6 +27,7 @@ import type {
   WithTags,
 } from '../types'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
+import { applyManualLayout } from '../utils/view-apply-manual-layout'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
@@ -33,12 +35,6 @@ import { type NodesIterator, NodeModel } from './NodeModel'
 export type ViewsIterator<A extends Any, V extends $View<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>
 
 export type InferViewType<V> = V extends AnyView<any> ? V[_type] : never
-
-// type Mode<V extends AnyView<any>> = 'dynamic' extends V[_type]
-//   // dprint-ignore
-//   ? DynamicViewDisplayVariant | null
-//   : V[_type] extends 'dynamic' ? DynamicViewDisplayVariant
-//   : never
 
 export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>> implements WithTags<A> {
   /**
@@ -77,7 +73,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     model: LikeC4Model<A>,
     folder: LikeC4ViewsFolder<A>,
     view: V,
-    private manualLayout?: ViewManualLayoutSnapshot | undefined,
+    private manualLayoutSnapshot?: ViewManualLayoutSnapshot | undefined,
   ) {
     this.$model = model
     this.$view = view
@@ -205,7 +201,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
    * Available for dynamic views only
    * throws error if view is not dynamic
    */
-  get mode(): DynamicViewDisplayVariant | null{
+  get mode(): DynamicViewDisplayVariant | null {
     if (this.isDynamicView()) {
       return this.$view.variant ?? 'diagram'
     }
@@ -217,6 +213,19 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
    */
   get includedTags(): aux.Tags<A> {
     return [...this.#allTags.keys()] as unknown as aux.Tags<A>
+  }
+
+  get manualLayout(): V | null {
+    return memoizeProp(this, 'snapshotWithManualLayout', () => {
+      if (!this.isLayouted()) {
+        return null
+      }
+      const snapshot = this.manualLayout
+      if (snapshot) {
+        return applyManualLayout(this.$view, snapshot)
+      }
+      return null
+    })
   }
 
   public roots(): NodesIterator<A, V> {

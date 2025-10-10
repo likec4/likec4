@@ -42,7 +42,7 @@ const _syncManualLayoutActorLogic = setup({
     tags: '' as 'pending' | 'ready',
   },
   delays: {
-    'timeout': 2_000,
+    'timeout': 1_000,
   },
   actions: {
     'trigger:OnChange': (_, _params: { change: ViewChange }) => {
@@ -129,7 +129,7 @@ export interface SyncLayoutActorLogic extends ActorLogicFrom<typeof _syncManualL
 
 export const syncManualLayoutActorLogic: SyncLayoutActorLogic = _syncManualLayoutActorLogic
 
-function createViewChange(parentContext: DiagramContext): ViewChange.SaveLayout {
+function createViewChange(parentContext: DiagramContext): ViewChange.SaveViewSnapshot {
   const { view, xynodes, xyedges, xystore } = parentContext
 
   const { nodeLookup } = xystore.getState()
@@ -221,7 +221,7 @@ function createViewChange(parentContext: DiagramContext): ViewChange.SaveLayout 
   bounds ??= view.bounds
 
   return {
-    op: 'save-layout',
+    op: 'save-view-snapshot',
     layout: {
       ...view,
       bounds,

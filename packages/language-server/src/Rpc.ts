@@ -17,7 +17,6 @@ import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import {
   BuildDocuments,
   ChangeView,
-  ComputeView,
   DidChangeModelNotification,
   DidRequestOpenViewNotification,
   FetchComputedModel,
@@ -87,11 +86,6 @@ export class Rpc extends ADisposable {
           return { model: likec4model.$model as ComputedLikeC4ModelData }
         }
         return { model: null }
-      }),
-      connection.onRequest(ComputeView.req, async ({ viewId, projectId }, cancelToken) => {
-        logger.debug`received request ${'computeView'} for view ${viewId} from project ${projectId}`
-        const view = await likec4Services.ModelBuilder.computeView(viewId, projectId as ProjectId, cancelToken)
-        return { view }
       }),
       connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {
         logger.debug`received request ${'fetchLayoutedModel'} for project ${projectId}`

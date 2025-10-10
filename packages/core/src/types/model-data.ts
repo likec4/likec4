@@ -20,6 +20,14 @@ import type * as scalar from './scalar'
 import type { ComputedView, LayoutedView, ParsedView } from './view'
 import type { ViewManualLayoutSnapshot } from './view-manual-layout'
 
+/**
+ * Represents a LikeC4 model data, in different stages of processing
+ * - {@link ParsedLikeC4ModelData} - parsed from DSL or result from Builder
+ * - {@link ComputedLikeC4ModelData} - computed from parsed model
+ * - {@link LayoutedLikeC4ModelData} - layouted from computed model
+ *
+ * !IMPORTANT: This is a low-level type, use `LikeC4Model` instead.
+ */
 interface BaseLikeC4ModelData<A extends Any> {
   [_stage]: A['Stage']
   projectId: aux.ProjectId<A>
@@ -35,9 +43,9 @@ interface BaseLikeC4ModelData<A extends Any> {
   imports: Record<string, NonEmptyArray<Element<A>>>
   /**
    * If project contains saved manual layouts
-   * For {@link LayoutedLikeC4ModelData} or {@link ComputedLikeC4ModelData} this includes only drifted views
+   * This is not set for {@link ParsedLikeC4ModelData}
    */
-  manualLayouts?: Record<scalar.ViewId, ViewManualLayoutSnapshot>
+  // manualLayouts?: Record<scalar.ViewId, ViewManualLayoutSnapshot>
 }
 
 export type AuxFromLikeC4ModelData<D> =
@@ -48,37 +56,28 @@ export type AuxFromLikeC4ModelData<D> =
       : A
     : never
 
-/**
- * Represents a LikeC4 model with customizable type parameters,
- * parsed from DSL or result from Builder
- *
- * !IMPORTANT: This is a low-level type, use `LikeC4Model` instead.
- * !NOTE: Views are not computed yet.
- *
- * @typeParam ElementKinds - Types of elements in the model (defaults to string)
- * @typeParam RelationKinds - Types of relationships (defaults to string)
- * @typeParam Tags - Types of tags that can be applied (defaults to string)
- * @typeParam Fqns - Fully Qualified Names for elements (defaults to string)
- * @typeParam Views - Types of views in the model (defaults to string)
- * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
- */
 export interface ParsedLikeC4ModelData<A extends AnyParsed = UnknownParsed> extends BaseLikeC4ModelData<A> {
   [_stage]: 'parsed'
-  // globals: ModelGlobals<A
   views: Record<aux.ViewId<A>, ParsedView<A>>
 }
 
 export interface ComputedLikeC4ModelData<A extends AnyComputed = UnknownComputed> extends BaseLikeC4ModelData<A> {
   [_stage]: 'computed'
-  // specification: Specification<A>
-  // globals: ModelGlobals<A>
   views: Record<aux.ViewId<A>, ComputedView<A>>
+  /**
+   * If project contains saved manual layouts
+   */
+  manualLayouts?: Record<scalar.ViewId, ViewManualLayoutSnapshot>
 }
 
 export interface LayoutedLikeC4ModelData<A extends AnyLayouted = UnknownLayouted> extends BaseLikeC4ModelData<A> {
   [_stage]: 'layouted'
   // globals: ModelGlobals<A>
   views: Record<aux.ViewId<A>, LayoutedView<A>>
+  /**
+   * If this model contains saved manual layouts
+   */
+  manualLayouts?: Record<scalar.ViewId, ViewManualLayoutSnapshot>
 }
 
 export type LikeC4ModelData<A extends Any> =

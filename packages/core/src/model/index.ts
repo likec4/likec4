@@ -57,6 +57,7 @@ export type {
 export * from './guards'
 
 export {
+  applyManualLayout,
   extractViewTitleFromPath,
   getViewFolderPath,
   normalizeViewPath,

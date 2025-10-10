@@ -193,6 +193,9 @@ export class LikeC4Model<A extends Any = Any> {
 
     if (isOnStage($data, 'computed') || isOnStage($data, 'layouted')) {
       const compare = compareNaturalHierarchically(VIEW_FOLDERS_SEPARATOR)
+
+      const viewsFromModel = values($data.views as Record<string, $View<A>>)
+
       const views = pipe(
         values($data.views as Record<string, $View<A>>),
         map(view => ({

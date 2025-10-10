@@ -5,3 +5,5 @@ export {
   normalizeViewPath,
   VIEW_FOLDERS_SEPARATOR,
 } from './view-title-path'
+
+export { applyManualLayout } from './view-apply-manual-layout'

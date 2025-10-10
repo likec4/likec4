@@ -77,8 +77,8 @@ export function computeParsedModelData<A extends AnyParsed, B extends aux.toComp
   const views = mapValues(_views as unknown as Record<string, ParsedView<B>>, v => unsafeComputeView(v, likec4model))
 
   return {
-    ...rest,
     [_stage]: 'computed',
+    ...rest,
     views: views as unknown as Record<ViewId<B>, ComputedView<B>>,
   }
 }

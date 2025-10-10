@@ -2,6 +2,7 @@
 
 exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
 {
+  "_layout": "auto",
   "_stage": "layouted",
   "_type": "element",
   "autoLayout": {

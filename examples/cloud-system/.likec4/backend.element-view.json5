@@ -41,9 +41,9 @@
   },
   hash: 'e45142199da989e5ce1f9d1b61952473a483f3cb',
   bounds: {
-    x: -256,
+    x: -76,
     y: 241,
-    width: 1459,
+    width: 1279,
     height: 1084,
   },
   nodes: [
@@ -502,8 +502,8 @@
         ],
       ],
       labelBBox: {
-        x: -157,
-        y: 816,
+        x: 339,
+        y: 788.5,
         width: 49,
         height: 38,
       },
@@ -517,8 +517,8 @@
       technology: 'REST',
       controlPoints: [
         {
-          x: -255.5,
-          y: 827.5,
+          x: 400.5,
+          y: 797,
         },
         {
           x: 212,
@@ -565,4 +565,5 @@
       head: 'normal',
     },
   ],
+  _layout: 'manual',
 }

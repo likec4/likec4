@@ -22,11 +22,15 @@ export const FetchComputedModel: RequestType<never, { model: ComputedLikeC4Model
   method: 'fetch-computed-model',
 }
 
-export const FetchDiagramView: RequestType<ViewId, {
+export const FetchLayoutedView: RequestType<{
+  viewId: ViewId
+  // by default, prefer manual layout if available
+  layoutType?: 'manual' | 'auto'
+}, {
   view: DiagramView | null
   error: string | null
 }> = {
-  method: 'fetch-diagram-view',
+  method: 'fetch-layouted-view',
 }
 
 export const OnOpenView: NotificationType<{ viewId: ViewId; projectId: ProjectId }> = {

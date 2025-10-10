@@ -32,3 +32,10 @@ export type _stage = typeof _stage
  */
 export const _type = '_type'
 export type _type = typeof _type
+
+/**
+ * Property name to store layout type information, used to identify the type of the layout*
+ * @internal
+ */
+export const _layout = '_layout'
+export type _layout = typeof _layout

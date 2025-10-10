@@ -66,24 +66,6 @@ export namespace FetchViewsFromAllProjects {
 }
 
 /**
- * Request to compute a view.
- * If LSP has multiple projects, the projectId is required.
- * otherwise throws an error.
- */
-export namespace ComputeView {
-  export type Params = {
-    viewId: ViewId
-    projectId?: string
-  }
-  export type Result = {
-    view: ComputedView | null
-  }
-
-  export const req = new RequestType<Params, Result, void>('likec4/computeView')
-  export type Req = typeof req
-}
-
-/**
  * Request to fetch the layouted model data
  * If LSP has multiple projects, the projectId is required.
  * otherwise throws an error.

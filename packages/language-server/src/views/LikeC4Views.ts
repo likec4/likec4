@@ -1,4 +1,5 @@
-import type { ComputedView, DiagramView, ProjectId, ViewId } from '@likec4/core'
+import type { ComputedView, DiagramView, LayoutedView, ProjectId, ViewId } from '@likec4/core'
+import { type LikeC4Model, applyManualLayout } from '@likec4/core/model'
 import { type LayoutResult, type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache, interruptAndCheck } from 'langium'
@@ -11,7 +12,7 @@ import { performanceMark } from '../utils'
 
 export type GraphvizOut = {
   readonly dot: string
-  readonly diagram: DiagramView
+  readonly diagram: LayoutedView
 }
 
 type GraphvizSvgOut = {
@@ -27,16 +28,15 @@ export interface LikeC4Views {
    */
   computedViews(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<ComputedView[]>
   /**
-   * Returns all layouted views (i.e. views with layout computed)
-   * Result includes dot and diagram
+   * Returns all layouted views (without manual layout)
    */
   layoutAllViews(
     projectId?: ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<GraphvizOut[]>
   /**
-   * Returns layouted view (i.e. view with layout computed)
-   * Result includes dot and diagram
+   * Layouts a view (from sources, i.e. without manual layout)
+   * If view not found in model, but there is a snapshot - it will be returned (with empty DOT)
    */
   layoutView(
     viewId: ViewId,
@@ -44,7 +44,8 @@ export interface LikeC4Views {
     cancelToken?: CancellationToken,
   ): Promise<GraphvizOut | null>
   /**
-   * Returns diagrams (i.e. views with layout computed)
+   * Returns diagrams.
+   * If diagram has manual layout, it will be used.
    */
   diagrams(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<DiagramView>>
   /**
@@ -87,17 +88,16 @@ export class DefaultLikeC4Views implements LikeC4Views {
     return values(likeC4Model.$data.views)
   }
 
-  async layoutAllViews(
-    projectId?: ProjectId | undefined,
+  private async _layoutAllViews(
+    likeC4Model: LikeC4Model.Computed,
     cancelToken?: CancellationToken,
   ): Promise<GraphvizOut[]> {
-    const likeC4Model = await this.ModelBuilder.computeModel(projectId, cancelToken)
     const views = values(likeC4Model.$data.views)
     if (views.length === 0) {
       return []
     }
     const m0 = performanceMark()
-    projectId = likeC4Model.project.id
+    const projectId = likeC4Model.project.id
     const logger = viewsLogger.getChild(projectId)
     logger.debug`layoutAll: ${views.length} views`
 
@@ -141,6 +141,13 @@ export class DefaultLikeC4Views implements LikeC4Views {
 
     return results
   }
+  async layoutAllViews(
+    projectId?: ProjectId | undefined,
+    cancelToken?: CancellationToken,
+  ): Promise<GraphvizOut[]> {
+    const likeC4Model = await this.ModelBuilder.computeModel(projectId, cancelToken)
+    return await this._layoutAllViews(likeC4Model, cancelToken)
+  }
 
   async layoutView(
     viewId: ViewId,
@@ -153,6 +160,16 @@ export class DefaultLikeC4Views implements LikeC4Views {
     const logger = viewsLogger.getChild(projectId)
     if (!view) {
       logger.warn`layoutView ${viewId} not found`
+      const project = this.services.shared.workspace.ProjectsManager.getProject(projectId)
+      const manualLayouts = await this.services.likec4.ManualLayouts.read(project)
+      const snapshot = manualLayouts?.[viewId]
+      if (snapshot) {
+        logger.debug`found manual layout for ${viewId}`
+        return {
+          diagram: snapshot,
+          dot: '# manual layout',
+        }
+      }
       return null
     }
     let cached = this.cache.get(view)
@@ -180,9 +197,17 @@ export class DefaultLikeC4Views implements LikeC4Views {
   async diagrams(
     projectId?: ProjectId | undefined,
     cancelToken?: CancellationToken,
-  ): Promise<Array<DiagramView>> {
-    const layouted = await this.layoutAllViews(projectId, cancelToken)
-    return layouted.map(l => l.diagram)
+  ): Promise<Array<LayoutedView>> {
+    const likeC4Model = await this.ModelBuilder.computeModel(projectId, cancelToken)
+    const layouted = await this._layoutAllViews(likeC4Model, cancelToken)
+
+    return layouted.map(({ diagram }) => {
+      const manualLayout = likeC4Model.$data.manualLayouts?.[diagram.id]
+      if (manualLayout) {
+        return applyManualLayout(diagram, manualLayout)
+      }
+      return diagram
+    })
   }
 
   async viewsAsGraphvizOut(

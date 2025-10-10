@@ -182,7 +182,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
 
   /**
    * Diagram is a computed view, layouted using Graphviz
-   * Used in React components
+   * If diagram has manual layout, it will be used.
    */
   async diagrams(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<DiagramView[]> {
     const projectId = this.projectsManager.ensureProjectId(project)
@@ -209,11 +209,15 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     if (!model) {
       throw new Error('Failed to parse model')
     }
-    const diagrams = await this.views.diagrams(projectId, cancelToken)
+    const layouted = await this.views.layoutAllViews(projectId, cancelToken)
     return LikeC4Model.create({
       ...model.$data,
       _stage: 'layouted' as const,
-      views: indexBy(diagrams, prop('id')),
+      views: pipe(
+        layouted,
+        map(prop('diagram')),
+        indexBy(prop('id')),
+      ),
     })
   }
 
