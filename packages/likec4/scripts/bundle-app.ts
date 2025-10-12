@@ -28,11 +28,10 @@ export async function bundleApp() {
     configFile: false,
     clearScreen: false,
     resolve: {
-      conditions: ['sources'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
-        // '@likec4/diagram': 'likec4/react',
+        '@likec4/diagram': resolve('../diagram/src'),
       },
     },
     mode: 'production',
@@ -46,6 +45,7 @@ export async function bundleApp() {
     },
     build: {
       emptyOutDir: true,
+      target: 'esnext',
       outDir,
       chunkSizeWarningLimit: 2000,
       cssCodeSplit: true,
@@ -99,7 +99,7 @@ export async function bundleApp() {
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from motion
           resolve(cwd, 'app/src/const.js'),
-          /@likec4\/.core*/,
+          /@likec4\/core.*/,
           /likec4:/,
         ],
       },
