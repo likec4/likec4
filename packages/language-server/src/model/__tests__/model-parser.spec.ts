@@ -349,7 +349,9 @@ describe.concurrent('LikeC4ModelParser', () => {
           }
           el el2 "el2 title" {
             title "el2 ignored title"
-            summary """ el2 summary """
+            summary """ 
+              el2 summary
+            """
             description """ el2 description """
           }
           el el3 "el3 title" "el3 summary" {

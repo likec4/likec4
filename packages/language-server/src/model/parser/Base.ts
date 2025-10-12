@@ -89,14 +89,14 @@ export function removeIndent(
   }
   switch (true) {
     case isString(str):
-      return dedent(str)
+      return dedent(str).trim()
     case ast.isMarkdownOrString(str) && isTruthy(str.markdown):
       return {
-        md: dedent(str.markdown),
+        md: dedent(str.markdown).trim(),
       }
     case ast.isMarkdownOrString(str) && isTruthy(str.text):
       return {
-        txt: dedent(str.text),
+        txt: dedent(str.text).trim(),
       }
     default:
       return undefined
