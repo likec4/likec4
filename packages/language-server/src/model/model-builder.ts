@@ -53,6 +53,7 @@ export interface LikeC4ModelBuilder extends Disposable {
   unsafeSyncComputeModel(projectId: c4.ProjectId): LikeC4Model.Computed
   computeModel(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed>
   onModelParsed(callback: ModelParsedListener): Disposable
+  // rebuildProject(projectId?: c4.ProjectId | undefined): Promise<void>
   clearCache(): void
 }
 
@@ -265,6 +266,16 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     })
   }
 
+  // public async rebuildProject(projectId?: c4.ProjectId | undefined): Promise<void> {
+  //   await this.mutex.write(async (token) => {
+  //     projectId = this.projects.ensureProjectId(projectId)
+  //     this.clearCache()
+  //     builderLogger.debug(`rebuildProject ${projectId}`)
+  //     const docs = this.documents(projectId).map(doc => doc.uri)
+  //     await this.DocumentBuilder.update(docs, [], token)
+  //   })
+  // }
+
   public onModelParsed(callback: ModelParsedListener): Disposable {
     this.listeners.push(callback)
     return Disposable.create(() => {
@@ -276,6 +287,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   }
 
   public clearCache(): void {
+    builderLogger.debug(`clearCache`)
     this.cache.clear()
     this.previousViews = {}
   }

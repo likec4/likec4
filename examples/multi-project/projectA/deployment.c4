@@ -102,8 +102,8 @@ views {
       prod.**
 
     exclude
-      us.sqs,
-      server1.ui -> zone1.rds,
+    // us.sqs,
+    // server1.ui -> zone1.rds,
       server2.ui -> zone1.rds,
       serv1.ui -> us.rds,
       serv1.ui -> zone1.rds,

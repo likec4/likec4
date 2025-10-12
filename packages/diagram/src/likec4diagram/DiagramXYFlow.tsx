@@ -49,25 +49,30 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   }
 }
 
-const selectXYProps = (ctx: DiagramContext) => ({
-  initialized: ctx.initialized.xydata && ctx.initialized.xyflow,
-  nodes: ctx.xynodes,
-  edges: ctx.xyedges,
-  pannable: ctx.pannable,
-  zoomable: ctx.zoomable,
-  fitViewPadding: ctx.fitViewPadding,
-  enableFitView: ctx.features.enableFitView,
-  enableReadOnly: ctx.features.enableReadOnly || ctx.toggledFeatures.enableReadOnly
+const selectXYProps = (ctx: DiagramContext) => {
+  const enableReadOnly = ctx.features.enableReadOnly || ctx.toggledFeatures.enableReadOnly
     // if dynamic view display mode is sequence, enable readonly
-    || (ctx.dynamicViewVariant === 'sequence' && ctx.view._type === 'dynamic'),
-  ...(!ctx.features.enableFitView && {
-    viewport: {
-      x: -Math.min(ctx.view.bounds.x, 0),
-      y: -Math.min(ctx.view.bounds.y, 0),
-      zoom: 1,
-    },
-  }),
-})
+    || (ctx.dynamicViewVariant === 'sequence' && ctx.view._type === 'dynamic')
+
+  return ({
+    initialized: ctx.initialized.xydata && ctx.initialized.xyflow,
+    nodes: ctx.xynodes,
+    edges: ctx.xyedges,
+    pannable: ctx.pannable,
+    zoomable: ctx.zoomable,
+    fitViewPadding: ctx.fitViewPadding,
+    enableFitView: ctx.features.enableFitView,
+    enableReadOnly,
+    nodesDraggable: !enableReadOnly && ctx.view._layout !== 'auto',
+    ...(!ctx.features.enableFitView && {
+      viewport: {
+        x: -Math.min(ctx.view.bounds.x, 0),
+        y: -Math.min(ctx.view.bounds.y, 0),
+        zoom: 1,
+      },
+    }),
+  })
+}
 const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof selectXYProps>): boolean =>
   a.initialized === b.initialized &&
   a.pannable === b.pannable &&
@@ -93,21 +98,24 @@ export type LikeC4DiagramXYFlowProps = PropsWithChildren<
 >
 export function LikeC4DiagramXYFlow({
   background = 'dots',
-  nodesDraggable = false,
+  nodesDraggable: _nodesDraggable = false,
   nodesSelectable = false,
   reactFlowProps = {},
   children,
   renderNodes,
 }: LikeC4DiagramXYFlowProps) {
   const diagram = useDiagram()
-  const {
+  let {
     initialized,
     nodes,
     edges,
     enableReadOnly,
     enableFitView,
+    nodesDraggable,
     ...props
   } = useDiagramContext(selectXYProps, equalsXYProps)
+
+  nodesDraggable = nodesDraggable && _nodesDraggable
 
   const {
     onNodeContextMenu,
@@ -119,8 +127,7 @@ export function LikeC4DiagramXYFlow({
     onCanvasDblClick,
   } = useDiagramEventHandlers()
 
-  const notReadOnly = !enableReadOnly,
-    isReducedGraphics = useIsReducedGraphics(),
+  const isReducedGraphics = useIsReducedGraphics(),
     layoutConstraints = useLayoutConstraints(),
     $isPanning = usePanningAtom(),
     isPanning = useTimeout(() => {
@@ -244,10 +251,11 @@ export function LikeC4DiagramXYFlow({
       {...enableFitView && {
         onViewportResize,
       }}
-      nodesDraggable={notReadOnly && nodesDraggable}
+      nodesDraggable={nodesDraggable}
       nodesSelectable={nodesSelectable}
       edgesFocusable={false}
-      {...(notReadOnly && nodesDraggable && layoutConstraints)}
+      elevateEdgesOnSelect={!enableReadOnly}
+      {...(nodesDraggable && layoutConstraints)}
       {...props}
       {...reactFlowProps}>
       {children}

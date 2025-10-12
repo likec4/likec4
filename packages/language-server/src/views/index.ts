@@ -7,7 +7,9 @@ export const NoopLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
   manualLayouts: () => {
     return {
       read: () => Promise.resolve().then(() => ({})),
-      write: () => Promise.resolve().then(() => undefined),
+      write: () => Promise.resolve().then(() => ({}) as any),
+      remove: () => Promise.resolve().then(() => null),
+      clearCaches: () => {},
     }
   },
 }

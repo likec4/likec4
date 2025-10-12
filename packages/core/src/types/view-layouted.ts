@@ -73,7 +73,6 @@ export type LayoutedViewDriftReason =
   | 'includes-more-nodes'
   | 'includes-more-edges'
   | 'nodes-mismatch'
-  | 'nodes-resized'
   | 'edges-mismatch'
 
 interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {

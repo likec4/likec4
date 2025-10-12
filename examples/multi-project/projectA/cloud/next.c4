@@ -125,6 +125,10 @@ views {
       color amber
       opacity 20%
     }
+    autoLayout TopBottom
+    style graphql {
+      color sky
+    }
   }
 
   view backend of cloud.next.backend {

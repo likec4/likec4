@@ -134,6 +134,7 @@ export class Rpc extends ADisposable {
       }),
       connection.onRequest(ReloadProjects.req, async () => {
         logger.debug`received request ${'ReloadProjects'}`
+        likec4Services.ManualLayouts.clearCaches()
         await projects.reloadProjects()
         return
       }),

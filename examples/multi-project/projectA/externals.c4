@@ -130,8 +130,8 @@ views 'External' {
 
     include
       *,
-      cloud,
-      cloud.* -> amazon.rds.pg.*,
+    // cloud,
+    // cloud.* -> amazon.rds.pg.*,
       cloud.* -> amazon.rds.aurora.*,
 
     style * {

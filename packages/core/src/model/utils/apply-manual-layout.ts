@@ -1,5 +1,5 @@
 import { produce } from 'immer'
-import { hasSubObject, isDeepEqual, isShallowEqual, pick } from 'remeda'
+import { hasSubObject, isShallowEqual, pick } from 'remeda'
 import { buildElementNotations } from '../../compute-view/utils/buildElementNotations'
 import {
   type LayoutedView,
@@ -77,11 +77,14 @@ export function applyManualLayout<
         draft.navigateTo = next.navigateTo
       }
 
+      if (next.parent !== draft.parent) {
+        drifts.add('nodes-mismatch')
+      }
+
       // TODO check modelRef/deploymentRef
       // The following properties are updated only if the node from the snapshot
       // is same size or larger than the node from auto-layouted view
       if (!BBox.includes(BBox.expand(node, MAX_ALLOWED_DRIFT), next)) {
-        drifts.add('nodes-resized')
         return
       }
       draft.shape = next.shape
@@ -122,21 +125,15 @@ export function applyManualLayout<
   const edges = snapshot.edges.map(edge => {
     const next = nextEdges.get(edge.id)
     if (!next || next.source !== edge.source || next.target !== edge.target) {
+      drifts.add('edges-mismatch')
       return edge
     }
 
     return produce(edge, draft => {
       draft.color = next.color
+      draft.line = next.line
     })
   })
-
-  // Deep checks
-  if (!drifts.has('nodes-mismatch') && !isDeepEqual(autoLayouted.nodes, nodes)) {
-    drifts.add('nodes-mismatch')
-  }
-  if (!drifts.has('edges-mismatch') && !isDeepEqual(autoLayouted.edges, edges)) {
-    drifts.add('edges-mismatch')
-  }
 
   let nodeNotations = isShallowEqual(snapshot.nodes, nodes) ? snapshot.notation?.nodes : buildElementNotations(nodes)
 

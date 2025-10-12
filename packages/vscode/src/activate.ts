@@ -262,17 +262,27 @@ function activateLc() {
     }
   })
 
-  const fsWatcher = useFsWatcher(toRef(`**/{${ConfigFilenames.join(',')}}`))
-  fsWatcher.onDidChange((uri) => {
+  const configWatcher = useFsWatcher(toRef(`**/{${ConfigFilenames.join(',')}}`))
+  configWatcher.onDidChange((uri) => {
     logger.debug(`Config file changed: ${uri}`)
     void rpc.reloadProjects()
   })
-  fsWatcher.onDidCreate((uri) => {
+  configWatcher.onDidCreate((uri) => {
     logger.debug(`Config file created: ${uri}`)
     void rpc.reloadProjects()
   })
-  fsWatcher.onDidDelete((uri) => {
+  configWatcher.onDidDelete((uri) => {
     logger.debug(`Config file deleted: ${uri}`)
+    void rpc.reloadProjects()
+  })
+
+  const viewSnapshotWatcher = useFsWatcher(toRef(`**/*.view.json5`))
+  viewSnapshotWatcher.onDidCreate((uri) => {
+    logger.debug`View snapshot created: ${uri.fsPath}`
+    void rpc.reloadProjects()
+  })
+  viewSnapshotWatcher.onDidDelete((uri) => {
+    logger.debug`View snapshot deleted: ${uri.fsPath}`
     void rpc.reloadProjects()
   })
 }

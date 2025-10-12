@@ -64,6 +64,7 @@ export function applyManualLayout(
     return safeApplyLayout(diagramView, manualLayout)
   }
 
+  // @ts-expect-error hasLayoutDrift is deprecated
   diagramView.hasLayoutDrift = true
 
   // Place new nodes

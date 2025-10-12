@@ -26,6 +26,7 @@ export interface LikeC4ManualLayouts {
   read(project: Project): Promise<Record<ViewId, LayoutedView> | null>
   write(project: Project, layouted: LayoutedView): Promise<Location>
   remove(project: Project, view: ViewId): Promise<Pick<Location, 'uri'> | null>
+  clearCaches(): void
 }
 
 export interface LikeC4ManualLayoutsModuleContext {
@@ -49,6 +50,9 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       const manualLayouts = [] as LayoutedView[]
       try {
         const files = await fs.readDirectory(outDir, { onlyLikeC4Files: false })
+        if (files.length === 0) {
+          return null
+        }
         for (const file of files) {
           if (file.isFile && file.uri.path.endsWith('.view.json5')) {
             try {
@@ -62,6 +66,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
             }
           }
         }
+        logger.debug`read manual layouts for ${project.id}, found ${manualLayouts.length}`
       } catch (err) {
         logger.warn(`Failed to read manual layouts for ${project.folderUri.fsPath}`, { err })
       }
@@ -76,6 +81,10 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(layouted.id))
     const content = JSON5.stringify(layouted, null, 2)
+    const manualLayouts = await this.read(project)
+    const existing = !!manualLayouts?.[layouted.id]
+    let applied = false
+
     // from vscode-languageserver-types
     const MAX_VALUE = 2147483647
 
@@ -84,61 +93,40 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       Position.create(MAX_VALUE, 1),
     )
 
-    let applied = false
     const lspConnection = this.services.shared.lsp.Connection
     // Apply edits if possible
     // Otherwise, write the file
-    if (lspConnection) {
+    if (lspConnection && existing) {
+      const uri = file.toString()
       const applyResult = await lspConnection.workspace.applyEdit({
         label: `LikeC4 - write manual layout ${layouted.id}`,
         edit: {
           changes: {
-            [file.toString()]: [
+            [uri]: [
               TextEdit.replace(
                 range,
                 content,
               ),
             ],
           },
-          documentChanges: [
-            {
-              kind: 'create',
-              uri: file.toString(),
-              options: {
-                ignoreIfExists: true,
-              },
-            },
-            {
-              textDocument: {
-                uri: file.toString(),
-                version: null,
-              },
-              edits: [
-                TextEdit.replace(
-                  range,
-                  content,
-                ),
-              ],
-            },
-          ],
         },
       })
       applied = applyResult.applied
       if (!applyResult.applied) {
         logger.warn(loggable(applyResult))
       } else {
-        logger.debug(`Manual layout ${layouted.id} saved to ${file.toString()}`)
+        logger.debug`Manual layout of ${layouted.id} in project ${project.id} saved to ${file.fsPath}`
       }
     }
 
     // If not applied, force write the file
     if (!applied) {
-      logger.debug(`force write manual layout ${layouted.id} to ${file.toString()}`)
+      logger.debug`force write manual layout of ${layouted.id} in project ${project.id} to ${file.fsPath}`
       const fs = this.services.shared.workspace.FileSystemProvider
       try {
         await fs.writeFile(file, content)
       } catch (err) {
-        logger.warn(`Failed to write manual layout ${layouted.id} to ${file.toString()}`, { err })
+        logger.warn(`Failed to write manual layout ${layouted.id} to ${file.fsPath}`, { err })
       }
     }
 
@@ -182,13 +170,13 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       if (!applyResult.applied) {
         logger.warn(loggable(applyResult))
       } else {
-        logger.debug(`Manual layout ${view} removed ${file.toString()}`)
+        logger.debug`manual layout of ${view} in project ${project.id} removed. File: ${file.toString()}`
       }
     }
 
     // If not applied, force delete the file
     if (!applied) {
-      logger.debug(`force delete manual layout ${view} from ${file.toString()}`)
+      logger.debug`force delete manual layout of ${view} in project ${project.id}. File: ${file.toString()}`
       try {
         const fs = this.services.shared.workspace.FileSystemProvider
         applied = await fs.deleteFile(file)
@@ -208,5 +196,9 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   private clearCache(project: Project): void {
     this.manualLayouts.delete(project.folderUri)
     this.services.likec4.ModelBuilder.clearCache()
+  }
+
+  clearCaches(): void {
+    this.manualLayouts = new WeakMap()
   }
 }

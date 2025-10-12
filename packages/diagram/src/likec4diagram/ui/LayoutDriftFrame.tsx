@@ -99,7 +99,13 @@ export function LayoutDriftFrame({ onLayoutTypeChange }: { onLayoutTypeChange: O
             title="Manual layout out of sync">
             <Text mt={2} size="sm" lh="xs">
               View contains new elements or their sizes have changed,<br />
-              Switch to the "auto" for current state.
+              Switch to the "auto" for current state.<br />
+              {drifts.map((drift, i, all) => (
+                <>
+                  <span key={drift}>- {drift}</span>
+                  {i < all.length - 1 && <br />}
+                </>
+              ))}
             </Text>
             <IfNotReadOnly>
               <Button

@@ -11,6 +11,7 @@ import {
 import {
   createSingletonComposable,
   executeCommand,
+  nextTick,
   toValue,
   triggerRef,
   useActiveTextEditor,
@@ -36,9 +37,14 @@ export function activateMessenger(
   { rpc, preview, messenger }: { rpc: Rpc; preview: DiagramPanel; messenger: Messenger },
 ) {
   logger.debug('useMessenger activation')
-  rpc.onDidChangeModel(() => {
+
+  const broadcastModelUpdate = () => {
     logger.debug`broadcast ${'onDidChangeModel'}`
     messenger.sendNotification(BroadcastModelUpdate, BROADCAST)
+  }
+
+  rpc.onDidChangeModel(() => {
+    broadcastModelUpdate()
   })
 
   rpc.onRequestOpenView((params) => {
@@ -50,17 +56,23 @@ export function activateMessenger(
 
   useDisposable(messenger.onRequest(FetchComputedModel, async () => {
     const t0 = performanceMark()
+    const projectId = toValue(preview.projectId) ?? 'default'
     try {
-      const projectId = toValue(preview.projectId) ?? 'default'
       const result = await rpc.fetchComputedModel(projectId)
-      logger.debug(`request {req} in ${t0.pretty}`, { req: 'fetchComputedModel' })
+      logger.debug(`request {req} of {projectId} in ${t0.pretty}`, { req: 'fetchComputedModel', projectId })
       if (result.model) {
         computedModels.value[projectId] = result.model
-        triggerRef(computedModels)
+        void nextTick(() => {
+          triggerRef(computedModels)
+        })
       }
       return result
     } catch (err) {
-      logger.warn(`request {req} failed after ${t0.pretty}`, { req: 'fetchComputedModel', err })
+      logger.warn(`request {req} of {projectId} failed after ${t0.pretty}`, {
+        req: 'fetchComputedModel',
+        projectId,
+        err,
+      })
       throw err // propagate to client
     }
   }))
@@ -71,7 +83,6 @@ export function activateMessenger(
     try {
       const projectId = toValue(preview.projectId) ?? 'default'
       const result = await rpc.layoutView({ viewId, projectId })
-      logger.debug(`request {req} of {viewId} in ${t0.pretty}`, { req: 'layoutView', viewId })
       if (!result) {
         return {
           view: null,
@@ -88,6 +99,10 @@ export function activateMessenger(
           view = applyManualLayout(view, snapshot)
         }
       }
+      logger.debug(
+        `{req} of {viewId} in {projectId} (requested: {layoutType}, actual: {viewlayout}) in ${t0.pretty}`,
+        { req: 'layoutView', viewId, projectId, layoutType, viewlayout: view._layout },
+      )
 
       return {
         view,
@@ -121,14 +136,20 @@ export function activateMessenger(
     try {
       const projectId = toValue(preview.projectId) ?? 'default' as ProjectId
       let loc = await rpc.changeView({ viewId, projectId, change })
+      logger.debug`done ${change.op} of ${viewId} in project ${projectId}`
+      if (change.op === 'reset-manual-layout') {
+        broadcastModelUpdate()
+        return
+      }
       if (!loc) {
         logger.warn(`rpc.changeView returned null`)
         return
       }
       const location = rpc.client.protocol2CodeConverter.asLocation(loc)
+      await vscode.workspace.save(location.uri)
       // Do not show snapshot file (it is too big)
       if (change.op === 'save-view-snapshot') {
-        vscode.workspace.save(location.uri)
+        broadcastModelUpdate()
         return
       }
       let viewColumn = activeTextEditor.value?.viewColumn ?? vscode.ViewColumn.One
@@ -143,8 +164,6 @@ export function activateMessenger(
         preserveFocus,
       })
       editor.revealRange(selection)
-
-      await vscode.workspace.save(location.uri)
     } catch (error) {
       logger.error(`[Messenger] onChange error`, { error })
       throw error // propagate to client
