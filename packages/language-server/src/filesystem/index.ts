@@ -39,6 +39,12 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
    * Used by manual layouts.
    */
   writeFile(uri: URI, content: string): Promise<void>
+
+  /**
+   * Deletes the file from the file system.
+   * Used by manual layouts.
+   */
+  deleteFile(uri: URI): Promise<boolean>
 }
 
 export interface FileSystemModuleContext extends FileSystemWatcherModuleContext {
@@ -63,6 +69,10 @@ export class NoopFileSystemProvider implements FileSystemProvider {
   }
 
   writeFile(): Promise<void> {
+    throw new Error('No file system is available.')
+  }
+
+  deleteFile(): Promise<boolean> {
     throw new Error('No file system is available.')
   }
 }

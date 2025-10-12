@@ -119,7 +119,7 @@ views {
   }
 
   view backend of backend {
-    title 'Backend V2 arsar'
+    title 'Backend V2'
     include
       *,
       cloud,

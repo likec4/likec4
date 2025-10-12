@@ -5,7 +5,6 @@ import * as m from 'motion/react-m'
 import { useEnabledFeatures } from '../../context'
 import { CenterCamera } from './CenterCamera'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
-import { LayoutDriftNotification } from './LayoutDriftNotification'
 import { ManualLayoutToolsButton } from './ManualLayoutToolsButton'
 
 export function EditorPanel() {
@@ -39,7 +38,6 @@ export function EditorPanel() {
           <TooltipGroup openDelay={600} closeDelay={120}>
             <ChangeAutoLayoutButton />
             <ManualLayoutToolsButton />
-            <LayoutDriftNotification />
             <CenterCamera />
           </TooltipGroup>
         </m.div>

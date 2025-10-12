@@ -1,6 +1,7 @@
 import type {
   ComputedLikeC4ModelData,
   DiagramView,
+  LayoutType,
   ProjectId,
   ViewChange,
   ViewId,
@@ -44,10 +45,10 @@ export const ExtensionApi = {
   },
 
   // Layoted vuew
-  fetchDiagramView: async (viewId: ViewId, signal: AbortSignal) => {
+  fetchDiagramView: async (viewId: ViewId, layoutType: LayoutType, signal: AbortSignal) => {
     const cancellationToken = new CancellationTokenImpl()
     signal.onabort = () => cancellationToken.cancel()
-    return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, { viewId }, cancellationToken)
+    return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, { viewId, layoutType }, cancellationToken)
   },
 
   // Read local icon file and convert to base64 data URI

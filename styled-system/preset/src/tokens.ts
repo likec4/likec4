@@ -9,6 +9,11 @@ export const tokens = defineTokens({
       value: '1',
     },
   },
+  sizes: {
+    full: {
+      value: '100%',
+    },
+  },
   borders: {
     none: { value: 'none' },
     transparent: { value: '0px solid transparent' },

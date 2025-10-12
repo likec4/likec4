@@ -1,6 +1,5 @@
 export { BurgerButton } from './BurgerButton'
 export { DetailsControls } from './DetailsControls'
-export { LayoutDriftControl } from './LayoutDriftControl'
 export { NavigationButtons } from './NavigationButtons'
 export { OpenSource } from './OpenSource'
 export { SearchControl } from './SearchControl'

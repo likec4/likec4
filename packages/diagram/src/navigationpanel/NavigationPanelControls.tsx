@@ -13,7 +13,6 @@ import type { NavigationPanelActorSnapshot } from './actor'
 import {
   BurgerButton,
   DetailsControls,
-  LayoutDriftControl,
   NavigationButtons,
   OpenSource,
   SearchControl,
@@ -127,11 +126,8 @@ export const NavigationPanelControls = () => {
             display: 'none',
           },
         })}>
-        <DetailsControls
-          onOpen={() => actor.closeDropdown()}
-        />
+        <DetailsControls onOpen={() => actor.closeDropdown()} />
         <OpenSource />
-        <LayoutDriftControl />
         <ToggleReadonly />
       </m.div>
       {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}

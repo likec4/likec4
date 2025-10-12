@@ -8,6 +8,7 @@ import type {
   DynamicViewDisplayVariant,
   IteratorLike,
   LayoutedView,
+  LayoutedViewDriftReason,
   Link,
   scalar,
   ViewManualLayoutSnapshot,
@@ -26,7 +27,7 @@ import type {
   WithTags,
 } from '../types'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
-import { applyManualLayout } from '../utils/apply-manual-layout'
+import { applyLayoutDriftReasons, applyManualLayout } from '../utils/apply-manual-layout'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
@@ -41,6 +42,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
    */
   readonly Aux!: A
 
+  readonly #view: V
   readonly #rootnodes = new Set<NodeModel<A, V>>()
   readonly #nodes = new Map<scalar.NodeId, NodeModel<A, V>>()
   readonly #edges = new Map<scalar.EdgeId, EdgeModel<A, V>>()
@@ -51,12 +53,6 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   readonly #manualLayoutSnapshot: ViewManualLayoutSnapshot | undefined
 
   public readonly id: aux.StrictViewId<A>
-
-  /**
-   * The original view (auto-layouted).
-   * @see {@link $layouted} should be used for rendering in the UI
-   */
-  public readonly $view: V
 
   /**
    * The model this view belongs to
@@ -88,29 +84,29 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     manualLayoutSnapshot?: ViewManualLayoutSnapshot | undefined,
   ) {
     this.$model = model
-    this.$view = view
+    this.#view = view
     this.id = view.id
     this.folder = folder
     this.#manualLayoutSnapshot = manualLayoutSnapshot
 
-    for (const node of this.$view.nodes) {
+    for (const node of this.#view.nodes) {
       const el = new NodeModel<A, V>(this, Object.freeze(node))
       this.#nodes.set(node.id, el)
       if (!node.parent) {
         this.#rootnodes.add(el)
       }
-      if (el.hasDeployment()) {
-        this.#includeDeployments.add(el.deployment.id)
+      if (node.deploymentRef) {
+        this.#includeDeployments.add(node.deploymentRef)
       }
-      if (el.hasElement()) {
-        this.#includeElements.add(el.element.id)
+      if (node.modelRef) {
+        this.#includeElements.add(node.modelRef)
       }
       for (const tag of el.tags) {
         this.#allTags.get(tag).add(el)
       }
     }
 
-    for (const edge of this.$view.edges) {
+    for (const edge of this.#view.edges) {
       const edgeModel = new EdgeModel(
         this,
         Object.freeze(edge),
@@ -131,6 +127,23 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   /**
+   * The original view (auto-layouted).
+   * @see {@link $layouted} should be used for rendering in the UI
+   */
+  get $view(): V {
+    if (!this.isLayouted() || 'drifts' in this.#view) {
+      return this.#view
+    }
+    return memoizeProp(this, 'withDriftReasons', () => {
+      const snapshot = this.#manualLayoutSnapshot
+      if (snapshot) {
+        return applyLayoutDriftReasons(this.#view, snapshot)
+      }
+      return this.#view
+    })
+  }
+
+  /**
    * Returns the styles configuration for the project.
    */
   get $styles(): LikeC4Styles {
@@ -138,16 +151,19 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   get _type(): V[_type] {
-    return this.$view[_type]
+    return this.#view[_type]
   }
 
   get stage(): V[_stage] {
-    return this.$view[_stage]
+    return this.#view[_stage]
   }
 
   get bounds(): Readonly<BBox> {
-    if ('bounds' in this.$view) {
-      return this.$view.bounds
+    if ('bounds' in this.#view) {
+      return this.#view.bounds
+    }
+    if (this.#manualLayoutSnapshot) {
+      return this.#manualLayoutSnapshot.bounds
     }
     throw new Error('View is not layouted')
   }
@@ -189,20 +205,20 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.$view.description)
+    return RichText.memoize(this, 'description', this.#view.description)
   }
 
   get tags(): aux.Tags<A> {
-    return this.$view.tags ?? []
+    return this.#view.tags ?? []
   }
 
   get links(): ReadonlyArray<Link> {
-    return this.$view.links ?? []
+    return this.#view.links ?? []
   }
 
   get viewOf(): ElementModel<A> | null {
     if (this.isElementView()) {
-      const viewOf = this.$view.viewOf
+      const viewOf = this.#view.viewOf
       return viewOf ? this.$model.element(viewOf) : null
     }
     return null
@@ -214,7 +230,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
    */
   get mode(): DynamicViewDisplayVariant | null {
     if (this.isDynamicView()) {
-      return this.$view.variant ?? 'diagram'
+      return this.#view.variant ?? 'diagram'
     }
     return null
   }
@@ -234,7 +250,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     if (!this.isLayouted()) {
       throw new Error('View is not layouted')
     }
-    return this.manualLayouted ?? this.$view
+    return this.manualLayouted ?? this.#view
   }
 
   get hasManualLayout(): boolean {
@@ -251,10 +267,20 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     return memoizeProp(this, 'snapshotWithManualLayout', () => {
       const snapshot = this.#manualLayoutSnapshot
       if (snapshot) {
-        return applyManualLayout(this.$view, snapshot)
+        return applyManualLayout(this.#view, snapshot)
       }
       return null
     })
+  }
+
+  /**
+   * Returns the layout drift reasons, if any
+   */
+  get driftReasons(): readonly LayoutedViewDriftReason[] {
+    if (!this.isLayouted()) {
+      return []
+    }
+    return this.$view.drifts ?? []
   }
 
   public roots(): NodesIterator<A, V> {
@@ -279,7 +305,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
    */
   public node(node: NodeOrId): NodeModel<A, V> {
     const nodeId = getId(node)
-    return nonNullable(this.#nodes.get(nodeId), `Node ${nodeId} not found in view ${this.$view.id}`)
+    return nonNullable(this.#nodes.get(nodeId), `Node ${nodeId} not found in view ${this.#view.id}`)
   }
 
   /**
@@ -316,7 +342,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
    */
   public edge(edge: EdgeOrId): EdgeModel<A, V> {
     const edgeId = getId(edge)
-    return nonNullable(this.#edges.get(edgeId), `Edge ${edgeId} not found in view ${this.$view.id}`)
+    return nonNullable(this.#edges.get(edgeId), `Edge ${edgeId} not found in view ${this.#view.id}`)
   }
 
   /**
@@ -385,36 +411,36 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   public isComputed(
     this: LikeC4ViewModel<any, any>,
   ): this is LikeC4ViewModel.Computed<aux.toComputed<A>> {
-    return this.$view[_stage] === 'computed'
+    return this.#view[_stage] === 'computed'
   }
 
   public isLayouted(): this is LikeC4ViewModel.Layouted<A> {
-    return this.$view[_stage] === 'layouted'
+    return this.#view[_stage] === 'layouted'
   }
 
   /**
    * @deprecated Use {@link isLayouted} instead
    */
   public isDiagram(): this is LikeC4ViewModel.Layouted<A> {
-    return this.$view[_stage] === 'layouted'
+    return this.#view[_stage] === 'layouted'
   }
 
   public isElementView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel.ElementView<A, V> {
-    return this.$view[_type] === 'element'
+    return this.#view[_type] === 'element'
   }
 
   public isScopedElementView(
     this: LikeC4ViewModel<any, any>,
   ): this is LikeC4ViewModel.ScopedElementView<A> {
-    return this.$view[_type] === 'element' && isTruthy(this.$view.viewOf)
+    return this.#view[_type] === 'element' && isTruthy(this.#view.viewOf)
   }
 
   public isDeploymentView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel.DeploymentView<A, V> {
-    return this.$view[_type] === 'deployment'
+    return this.#view[_type] === 'deployment'
   }
 
   public isDynamicView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel.DynamicView<A, V> {
-    return this.$view[_type] === 'dynamic'
+    return this.#view[_type] === 'dynamic'
   }
 }
 

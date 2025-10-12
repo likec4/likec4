@@ -1,6 +1,7 @@
 import { LikeC4Model } from '@likec4/core/model'
 import type {
   DiagramNode,
+  LayoutType,
   scalar,
 } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
@@ -14,6 +15,11 @@ import { type VscodeState, getVscodeState, messenger, saveVscodeState } from './
 
 const vscodeState = getVscodeState()
 
+const $layoutType = atom('manual' as LayoutType)
+export function setLayoutType(layoutType: LayoutType) {
+  $layoutType.set(layoutType)
+}
+
 if (vscodeState.model) {
   queryClient.setQueryData(
     queries.fetchComputedModel(vscodeState.model.projectId).queryKey,
@@ -25,7 +31,7 @@ if (vscodeState.model) {
 }
 if (vscodeState.view) {
   queryClient.setQueryData(
-    queries.fetchDiagramView(vscodeState.projectId, vscodeState.viewId).queryKey,
+    queries.fetchDiagramView(vscodeState.projectId, vscodeState.viewId, vscodeState.view._layout ?? 'manual').queryKey,
     vscodeState.view,
     {
       updatedAt: vscodeState.updatedAt,
@@ -77,7 +83,10 @@ export const changeViewId = (viewId: scalar.ViewId, projectId?: scalar.ProjectId
   if ($projectId.get() !== projectId) {
     $projectId.set(projectId)
   }
-  $viewId.set(viewId)
+  if ($viewId.get() !== viewId) {
+    $layoutType.set('manual')
+    $viewId.set(viewId)
+  }
 }
 
 messenger.onNotification(OnOpenView, ({ viewId, projectId }) => {
@@ -104,7 +113,10 @@ messenger.onNotification(BroadcastModelUpdate, () => {
   })
 })
 
-const projectAndView = batched([$projectId, $viewId], (projectId, viewId) => ({ projectId, viewId }))
+const projectAndView = batched(
+  [$projectId, $viewId, $layoutType],
+  (projectId, viewId, layoutType) => ({ projectId, viewId, layoutType }),
+)
 
 export function useComputedModel() {
   const { projectId } = useStore(projectAndView)
@@ -137,12 +149,12 @@ export function useComputedModel() {
 }
 
 export function useDiagramView() {
-  const { projectId, viewId } = useStore(projectAndView)
+  const { projectId, viewId, layoutType } = useStore(projectAndView)
   const {
     data: view,
     error,
   } = useQuery({
-    ...queries.fetchDiagramView(projectId, viewId),
+    ...queries.fetchDiagramView(projectId, viewId, layoutType),
   })
 
   const viewRef = useRef(view)

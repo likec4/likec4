@@ -72,8 +72,9 @@ export type LayoutedViewDriftReason =
   | 'type-changed'
   | 'includes-more-nodes'
   | 'includes-more-edges'
-  | 'nodes-drift'
-  | 'edges-drift'
+  | 'nodes-mismatch'
+  | 'nodes-resized'
+  | 'edges-mismatch'
 
 interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
   readonly [_stage]: 'layouted'

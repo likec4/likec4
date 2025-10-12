@@ -8,6 +8,7 @@ import { IconRenderer } from './IconRenderer'
 import { ErrorMessage, QueryErrorBoundary } from './QueryErrorBoundary'
 import {
   setLastClickedNode,
+  setLayoutType,
   useComputedModel,
   useDiagramView,
   useVscodeAppState,
@@ -72,8 +73,6 @@ function Initialized({ likec4Model }: { likec4Model: LikeC4Model }) {
     )
   }
 
-  view = likec4Model.$data.manualLayouts?.[view.id] ?? view
-
   return (
     <>
       <div className={likec4Container} data-vscode-context='{"preventDefaultContextMenuItems": true}'>
@@ -136,6 +135,7 @@ function Initialized({ likec4Model }: { likec4Model: LikeC4Model }) {
             setLastClickedNode()
             extensionApi.locate(params)
           }}
+          onLayoutTypeChange={setLayoutType}
         />
       </div>
       {error && <ErrorMessage error={error} />}

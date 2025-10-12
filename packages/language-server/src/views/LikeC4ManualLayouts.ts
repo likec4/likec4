@@ -11,8 +11,8 @@ import type { Project } from '../workspace/ProjectsManager'
 
 const logger = rootLogger.getChild('manual-layouts')
 
-function fileName(view: LayoutedView): string {
-  return `${view.id}.${view._type}-view.json5`
+function fileName(view: ViewId): string {
+  return `${view}.view.json5`
 }
 
 function getManualLayoutsOutDir(project: Project): URI {
@@ -25,6 +25,7 @@ function getManualLayoutsOutDir(project: Project): URI {
 export interface LikeC4ManualLayouts {
   read(project: Project): Promise<Record<ViewId, LayoutedView> | null>
   write(project: Project, layouted: LayoutedView): Promise<Location>
+  remove(project: Project, view: ViewId): Promise<Pick<Location, 'uri'> | null>
 }
 
 export interface LikeC4ManualLayoutsModuleContext {
@@ -49,7 +50,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       try {
         const files = await fs.readDirectory(outDir, { onlyLikeC4Files: false })
         for (const file of files) {
-          if (file.isFile && file.uri.path.endsWith('-view.json5')) {
+          if (file.isFile && file.uri.path.endsWith('.view.json5')) {
             try {
               const content = await fs.readFile(file.uri)
               manualLayouts.push({
@@ -73,7 +74,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
 
   async write(project: Project, layouted: LayoutedView): Promise<Location> {
     const outDir = getManualLayoutsOutDir(project)
-    const file = UriUtils.joinPath(outDir, fileName(layouted))
+    const file = UriUtils.joinPath(outDir, fileName(layouted.id))
     const content = JSON5.stringify(layouted, null, 2)
     // from vscode-languageserver-types
     const MAX_VALUE = 2147483647
@@ -134,14 +135,78 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     if (!applied) {
       logger.debug(`force write manual layout ${layouted.id} to ${file.toString()}`)
       const fs = this.services.shared.workspace.FileSystemProvider
-      await fs.writeFile(file, content)
+      try {
+        await fs.writeFile(file, content)
+      } catch (err) {
+        logger.warn(`Failed to write manual layout ${layouted.id} to ${file.toString()}`, { err })
+      }
     }
 
-    this.manualLayouts.delete(project.folderUri)
-    this.services.likec4.ModelBuilder.clearCache()
+    this.clearCache(project)
     return {
       uri: file.toString(),
-      range,
+      range: Range.create(
+        Position.create(0, 0),
+        Position.create(content.split('\n').length - 1, 1),
+      ),
     }
+  }
+
+  async remove(project: Project, view: ViewId): Promise<Pick<Location, 'uri'> | null> {
+    const outDir = getManualLayoutsOutDir(project)
+
+    const manualLayouts = await this.read(project)
+    if (!manualLayouts?.[view]) {
+      logger.debug(`Project ${project.id} does not have manual layout for ${view}`)
+      return null
+    }
+
+    const file = UriUtils.joinPath(outDir, fileName(view))
+    let applied = false
+    const lspConnection = this.services.shared.lsp.Connection
+    // Apply workspace edits if possible
+    // Otherwise, delete the file
+    if (lspConnection) {
+      const applyResult = await lspConnection.workspace.applyEdit({
+        label: `LikeC4 - remove manual layout ${view}`,
+        edit: {
+          documentChanges: [
+            {
+              kind: 'delete',
+              uri: file.toString(),
+            },
+          ],
+        },
+      })
+      applied = applyResult.applied
+      if (!applyResult.applied) {
+        logger.warn(loggable(applyResult))
+      } else {
+        logger.debug(`Manual layout ${view} removed ${file.toString()}`)
+      }
+    }
+
+    // If not applied, force delete the file
+    if (!applied) {
+      logger.debug(`force delete manual layout ${view} from ${file.toString()}`)
+      try {
+        const fs = this.services.shared.workspace.FileSystemProvider
+        applied = await fs.deleteFile(file)
+      } catch (err) {
+        logger.warn(`Failed to delete manual layout ${view} from ${file.toString()}`, { err })
+      }
+    }
+    if (!applied) {
+      return null
+    }
+    this.clearCache(project)
+    return {
+      uri: file.toString(),
+    }
+  }
+
+  private clearCache(project: Project): void {
+    this.manualLayouts.delete(project.folderUri)
+    this.services.likec4.ModelBuilder.clearCache()
   }
 }

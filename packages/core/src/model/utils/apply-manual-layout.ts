@@ -1,12 +1,11 @@
 import { produce } from 'immer'
-import { hasSubObject, isShallowEqual, pick } from 'remeda'
+import { hasSubObject, isDeepEqual, isShallowEqual, pick } from 'remeda'
 import { buildElementNotations } from '../../compute-view/utils/buildElementNotations'
 import {
   type LayoutedView,
   type LayoutedViewDriftReason,
   type ViewManualLayoutSnapshot,
   _layout,
-  _type,
   BBox,
 } from '../../types'
 import { difference, invariant, symmetricDifference } from '../../utils'
@@ -33,10 +32,10 @@ export function applyManualLayout<
   invariant(autoLayouted._stage === 'layouted', 'applyManualLayout: expected layouted view')
   invariant(autoLayouted._layout !== 'manual', 'applyManualLayout: expected auto-layouted view')
 
-  const drifts: LayoutedViewDriftReason[] = []
+  const drifts = new Set<LayoutedViewDriftReason>()
 
   if (autoLayouted._type !== snapshot._type) {
-    drifts.push('type-changed')
+    drifts.add('type-changed')
   }
 
   const nextNodes = new Map(autoLayouted.nodes.map(n => [n.id, n]))
@@ -49,16 +48,16 @@ export function applyManualLayout<
   const snapshotEdgeIds = new Set(snapshot.edges.map(e => e.id))
 
   if (difference(nextNodeIds, snapshotNodeIds).size > 0) {
-    drifts.push('includes-more-nodes')
+    drifts.add('includes-more-nodes')
   }
   if (difference(nextEdgeIds, snapshotEdgeIds).size > 0) {
-    drifts.push('includes-more-edges')
+    drifts.add('includes-more-edges')
   }
   if (symmetricDifference(nextNodeIds, snapshotNodeIds).size > 0) {
-    drifts.push('nodes-drift')
+    drifts.add('nodes-mismatch')
   }
   if (symmetricDifference(nextEdgeIds, snapshotEdgeIds).size > 0) {
-    drifts.push('edges-drift')
+    drifts.add('edges-mismatch')
   }
 
   const nodes = snapshot.nodes.map(node => {
@@ -82,6 +81,7 @@ export function applyManualLayout<
       // The following properties are updated only if the node from the snapshot
       // is same size or larger than the node from auto-layouted view
       if (!BBox.includes(BBox.expand(node, MAX_ALLOWED_DRIFT), next)) {
+        drifts.add('nodes-resized')
         return
       }
       draft.shape = next.shape
@@ -130,23 +130,55 @@ export function applyManualLayout<
     })
   })
 
+  // Deep checks
+  if (!drifts.has('nodes-mismatch') && !isDeepEqual(autoLayouted.nodes, nodes)) {
+    drifts.add('nodes-mismatch')
+  }
+  if (!drifts.has('edges-mismatch') && !isDeepEqual(autoLayouted.edges, edges)) {
+    drifts.add('edges-mismatch')
+  }
+
   let nodeNotations = isShallowEqual(snapshot.nodes, nodes) ? snapshot.notation?.nodes : buildElementNotations(nodes)
 
-  return {
-    ...autoLayouted,
-    ...(snapshot as V),
-    title: autoLayouted.title,
-    description: autoLayouted.description,
-    tags: autoLayouted.tags,
-    links: autoLayouted.links,
-    [_type]: snapshot._type,
-    [_layout]: 'manual',
-    hash: snapshot.hash,
-    bounds: snapshot.bounds,
-    autoLayout: snapshot.autoLayout,
-    ...(nodeNotations && nodeNotations.length > 0 ? { notation: { nodes: nodeNotations } } : {}),
-    nodes,
-    edges,
-    drifts,
+  return Object.assign(
+    {},
+    autoLayouted,
+    snapshot,
+    {
+      title: autoLayouted.title,
+      description: autoLayouted.description,
+      tags: autoLayouted.tags ?? null,
+      links: autoLayouted.links ?? null,
+      [_layout]: 'manual' as const,
+      ...(nodeNotations && nodeNotations.length > 0 ? { notation: { nodes: nodeNotations } } : {}),
+      nodes,
+      edges,
+      drifts: [...drifts],
+    } satisfies Partial<LayoutedView>,
+  )
+}
+
+/**
+ * Applies drift reasons to autoLayouted view if there are any.
+ */
+export function applyLayoutDriftReasons<V extends LayoutedView>(
+  autoLayouted: V,
+  snapshot: ViewManualLayoutSnapshot,
+): V {
+  const { drifts } = applyManualLayout(autoLayouted, snapshot)
+  if (drifts && drifts.length > 0) {
+    // Mutable for performance
+    Object.assign(
+      autoLayouted,
+      {
+        [_layout]: 'auto' as const,
+        drifts,
+      } satisfies Partial<LayoutedView>,
+    )
+    // return {
+    //   ...autoLayouted,
+    //   drifts,
+    // }
   }
+  return autoLayouted
 }

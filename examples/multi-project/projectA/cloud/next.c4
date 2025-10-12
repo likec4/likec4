@@ -63,7 +63,7 @@ model {
   ## Reads/writes users table.
 
   [deprecated, moving to Aurora]
-  
+
   '''
     }
     backend -> cloud.legacy.backend.services
@@ -73,7 +73,7 @@ model {
         title 'publishes events'
         technology 'JSON'
         description '
-          
+
         '
         navigateTo cloud-to-amazon
       }
@@ -101,9 +101,7 @@ views {
 
     include cloud.ui
 
-    group {
-      include *
-    }
+    include *
 
     include
       amazon._,

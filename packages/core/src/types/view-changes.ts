@@ -27,6 +27,10 @@ export namespace ViewChange {
     layout: LayoutedView
   }
 
+  export interface ResetManualLayout {
+    op: 'reset-manual-layout'
+  }
+
   export interface ChangeAutoLayout {
     op: 'change-autolayout'
     layout: {
@@ -40,4 +44,5 @@ export type ViewChange =
   | ViewChange.ChangeElementStyle
   | ViewChange.SaveManualLayout
   | ViewChange.SaveViewSnapshot
+  | ViewChange.ResetManualLayout
   | ViewChange.ChangeAutoLayout

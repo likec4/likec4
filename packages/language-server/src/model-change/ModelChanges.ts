@@ -22,17 +22,20 @@ export class LikeC4ModelChanges {
     let result: Location | null = null
     try {
       await this.services.shared.workspace.WorkspaceLock.write(async () => {
-        let { viewId, projectId: projectId_, change } = changeView
+        let { viewId, projectId: _projectId, change } = changeView
+        const project = this.services.shared.workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
         if (change.op === 'save-view-snapshot') {
           invariant(viewId === change.layout.id, 'View ID does not match')
-          const project = this.services.shared.workspace.ProjectsManager.ensureProject(projectId_ as ProjectId)
           result = await this.services.likec4.ManualLayouts.write(project, change.layout)
           return
         }
-        const projectId = this.services.shared.workspace.ProjectsManager.ensureProjectId(projectId_ as ProjectId)
+        if (change.op === 'reset-manual-layout') {
+          await this.services.likec4.ManualLayouts.remove(project, viewId)
+          return
+        }
         const { doc, edits, modifiedRange } = this.convertToTextEdit({
           viewId,
-          projectId,
+          projectId: project.id,
           change,
         })
         const textDocument = {
@@ -68,7 +71,7 @@ export class LikeC4ModelChanges {
   protected convertToTextEdit({ viewId, projectId, change }: {
     viewId: ViewId
     projectId: ProjectId
-    change: Exclude<ViewChange, ViewChange.SaveViewSnapshot>
+    change: Exclude<ViewChange, ViewChange.SaveViewSnapshot | ViewChange.ResetManualLayout>
   }): {
     doc: ParsedLikeC4LangiumDocument
     modifiedRange: Range

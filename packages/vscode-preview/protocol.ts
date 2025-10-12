@@ -24,7 +24,7 @@ export const FetchComputedModel: RequestType<never, { model: ComputedLikeC4Model
 
 export const FetchLayoutedView: RequestType<{
   viewId: ViewId
-  // by default, prefer manual layout if available
+  // by default, prefers manual layout if available
   layoutType?: 'manual' | 'auto'
 }, {
   view: DiagramView | null

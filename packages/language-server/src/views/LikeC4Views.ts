@@ -1,5 +1,5 @@
-import type { ComputedView, DiagramView, LayoutedView, ProjectId, ViewId } from '@likec4/core'
-import { type LikeC4Model, applyManualLayout } from '@likec4/core/model'
+import type { ComputedView, DiagramView, LayoutedView, ProjectId, ViewId, ViewManualLayoutSnapshot } from '@likec4/core'
+import { type LikeC4Model, applyLayoutDriftReasons, applyManualLayout } from '@likec4/core/model'
 import { type LayoutResult, type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache, interruptAndCheck } from 'langium'
@@ -122,8 +122,9 @@ export class DefaultLikeC4Views implements LikeC4Views {
         batch: tasks,
         cancelToken,
         onSuccess: (task, result) => {
-          this.viewSucceed(task.view, projectId, result)
-          results.push(result)
+          results.push(
+            this.viewSucceed(task.view, likeC4Model, result),
+          )
         },
         onError: (task, error) => {
           logger.warn(`Fail layout view ${task.view.id}`, { error })
@@ -166,7 +167,10 @@ export class DefaultLikeC4Views implements LikeC4Views {
       if (snapshot) {
         logger.debug`found manual layout for ${viewId}`
         return {
-          diagram: snapshot,
+          diagram: {
+            ...snapshot,
+            drifts: ['not-exists'],
+          },
           dot: '# manual layout',
         }
       }
@@ -183,9 +187,8 @@ export class DefaultLikeC4Views implements LikeC4Views {
         view,
         styles: model.$styles,
       })
-      this.viewSucceed(view, projectId, result)
       logger.debug(`layout {viewId} ready in ${m0.pretty}`, { viewId })
-      return result
+      return this.viewSucceed(view, model, result)
     } catch (e) {
       const errMessage = loggable(e)
       logger.warn(errMessage)
@@ -263,10 +266,20 @@ export class DefaultLikeC4Views implements LikeC4Views {
     }
   }
 
-  private viewSucceed(view: ComputedView, projectId: ProjectId, result: LayoutResult): void {
+  private viewSucceed(
+    view: ComputedView,
+    likec4model: LikeC4Model.Computed,
+    result: LayoutResult,
+  ): LayoutResult & { snapshot?: ViewManualLayoutSnapshot } {
+    const projectId = likec4model.project.id
     const key = `${projectId}-${view.id}`
+    const snapshot = likec4model.$data.manualLayouts?.[view.id]
+    if (snapshot) {
+      result.diagram = applyLayoutDriftReasons(result.diagram, snapshot)
+    }
     this.viewsWithReportedErrors.delete(key)
     this.cache.set(view, result)
+    return result
   }
 
   // async overviewGraph(): Promise<OverviewGraph> {

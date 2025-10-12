@@ -3,7 +3,7 @@ import { fdir } from 'fdir'
 import { type FileSystemNode, URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
 import { existsSync } from 'node:fs'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, stat, unlink, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { LikeC4LanguageMetaData } from '../generated/module'
 import { Content, isLikeC4Builtin } from '../likec4lib'
@@ -118,5 +118,22 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       encoding: 'utf-8',
       flush: true,
     })
+  }
+
+  async deleteFile(uri: URI): Promise<boolean> {
+    try {
+      const path = uri.fsPath
+      const exists = await stat(path)
+      if (exists.isFile() || exists.isSymbolicLink()) {
+        await unlink(path)
+        logger.debug('deleted file {path}', { path })
+        return true
+      } else {
+        logger.warn('deleteFile failed: {path} does not exist, or is not a file', { path })
+      }
+    } catch (error) {
+      logger.warn(`Failed to delete file ${uri.fsPath}`, { error })
+    }
+    return false
   }
 }

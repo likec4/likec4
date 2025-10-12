@@ -17,6 +17,7 @@ import type {
   NodeId,
   NodeNotation as ElementNotation,
   StepEdgeId,
+  ViewChange,
   ViewId,
   XYPoint,
 } from '@likec4/core/types'
@@ -176,6 +177,7 @@ export type Events =
   | { type: 'navigate.forward' }
   | { type: 'layout.align'; mode: AlignmentMode }
   | { type: 'layout.resetEdgeControlPoints' }
+  | { type: 'layout.resetManualLayout' }
   | { type: 'saveManualLayout.schedule' }
   | { type: 'saveManualLayout.cancel' }
   | { type: 'focus.node'; nodeId: NodeId }
@@ -278,6 +280,8 @@ const _diagramMachine = setup({
       type: 'navigateTo',
       viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
     })),
+    'trigger:OnChange': (_, _params: { change: ViewChange }) => {
+    },
     'assign lastClickedNode': assign(({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return {
@@ -828,6 +832,20 @@ const _diagramMachine = setup({
           actions: [
             assign(resetEdgeControlPoints),
             raise({ type: 'saveManualLayout.schedule' }),
+          ],
+        },
+        'layout.resetManualLayout': {
+          guard: 'not readonly',
+          actions: [
+            raise({ type: 'saveManualLayout.cancel' }),
+            {
+              type: 'trigger:OnChange',
+              params: {
+                change: {
+                  op: 'reset-manual-layout',
+                },
+              },
+            },
           ],
         },
         'xyflow.resized': {

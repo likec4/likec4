@@ -48,6 +48,11 @@ export function DiagramActorProvider({
   const machineRef = useRef<DiagramMachineLogic | null>(null)
   if (!machineRef.current) {
     machineRef.current = diagramMachine.provide({
+      actions: {
+        'trigger:OnChange': ((_, params) => {
+          handlersRef.current.onChange?.(params)
+        }),
+      },
       actors: {
         syncManualLayoutActorLogic: syncManualLayoutActorLogic.provide({
           actions: {

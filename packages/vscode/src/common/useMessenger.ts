@@ -1,4 +1,4 @@
-import { applyManualLayout } from '@likec4/core/model'
+import { applyLayoutDriftReasons, applyManualLayout } from '@likec4/core/model'
 import type { ProjectId } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import {
@@ -79,13 +79,16 @@ export function activateMessenger(
         }
       }
       let view = result.diagram
-      if (layoutType === 'manual' && view._layout !== 'manual') {
-        const modelData = computedModels.value[projectId]
-        const snapshot = modelData?.manualLayouts?.[viewId]
-        if (snapshot) {
+      const modelData = computedModels.value[projectId]
+      const snapshot = modelData?.manualLayouts?.[viewId]
+      if (snapshot) {
+        if (layoutType === 'auto') {
+          view = applyLayoutDriftReasons(view, snapshot)
+        } else if (view._layout !== 'manual') {
           view = applyManualLayout(view, snapshot)
         }
       }
+
       return {
         view,
         error: null,

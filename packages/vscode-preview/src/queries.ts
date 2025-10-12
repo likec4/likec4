@@ -1,4 +1,4 @@
-import type { ViewId } from '@likec4/core/types'
+import type { LayoutType, ViewId } from '@likec4/core/types'
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 import { isDeepEqual } from 'remeda'
 import { ExtensionApi } from './vscode'
@@ -28,11 +28,11 @@ export const queries = {
         return model
       },
     }),
-  fetchDiagramView: (projectId: string, viewId: string) =>
+  fetchDiagramView: (projectId: string, viewId: string, layoutType: LayoutType = 'manual') =>
     queryOptions({
-      queryKey: [projectId, 'diagram-view', viewId],
+      queryKey: [projectId, 'diagram-view', viewId, layoutType],
       queryFn: async ({ signal }) => {
-        const data = await ExtensionApi.fetchDiagramView(viewId as ViewId, signal)
+        const data = await ExtensionApi.fetchDiagramView(viewId as ViewId, layoutType, signal)
         if (data.error) {
           throw new Error(data.error)
         }
