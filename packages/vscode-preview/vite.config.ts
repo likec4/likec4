@@ -54,6 +54,7 @@ export default defineConfig(({ mode }) => {
         },
         external: [
           'vscode',
+          'react-dom/server',
           '@emotion/is-prop-valid', // dev-only import from motion
         ],
       },
