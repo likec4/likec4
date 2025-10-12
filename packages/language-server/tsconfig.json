@@ -6,6 +6,7 @@
       "sources"
     ],
     "composite": true,
+    "emitDeclarationOnly": false,
     "lib": [
       "ES2022",
       "WebWorker"

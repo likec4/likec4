@@ -69,7 +69,7 @@
     "bundle-require": "catalog:utils",
     "defu": "catalog:utils",
     "json5": "catalog:utils",
-    "zod4": "catalog:utils",
+    "zod": "catalog:zod4",
     "type-fest": "catalog:utils"
   },
   "peerDependencies": {

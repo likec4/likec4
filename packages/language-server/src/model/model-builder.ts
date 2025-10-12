@@ -1,4 +1,8 @@
 import {
+  type LayoutedView,
+  type ProjectId,
+  type UnknownComputed,
+  type UnknownParsed,
   type ViewId,
   _stage,
 } from '@likec4/core'
@@ -43,15 +47,18 @@ const builderLogger = mainLogger.getChild('model-builder')
 
 type ModelParsedListener = (docs: URI[]) => void
 
-type ManualLayouts = Record<ViewId, c4.LayoutedView> | null
+type ManualLayouts = Record<ViewId, LayoutedView> | null
 
 export interface LikeC4ModelBuilder extends Disposable {
   parseModel(
-    projectId?: c4.ProjectId | undefined,
+    projectId?: ProjectId | undefined,
     cancelToken?: CancellationToken,
-  ): Promise<LikeC4Model.Parsed | null>
-  unsafeSyncComputeModel(projectId: c4.ProjectId): LikeC4Model.Computed
-  computeModel(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed>
+  ): Promise<LikeC4Model<UnknownParsed> | null>
+  unsafeSyncComputeModel(projectId: ProjectId): LikeC4Model<UnknownComputed>
+  computeModel(
+    projectId?: ProjectId | undefined,
+    cancelToken?: CancellationToken,
+  ): Promise<LikeC4Model<UnknownComputed>>
   onModelParsed(callback: ModelParsedListener): Disposable
   // rebuildProject(projectId?: c4.ProjectId | undefined): Promise<void>
   clearCache(): void
@@ -132,9 +139,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    */
   private unsafeSyncJoinedModel(
     projectId: c4.ProjectId,
-  ): LikeC4Model.Parsed | null {
+  ): LikeC4Model<UnknownParsed> | null {
     const logger = builderLogger.getChild(projectId)
-    const cache = this.cache as WorkspaceCache<string, LikeC4Model.Parsed | null>
+    const cache = this.cache as WorkspaceCache<string, LikeC4Model<UnknownParsed> | null>
     const key = parsedModelCacheKey(projectId)
     if (cache.has(key)) {
       logger.debug`unsafeSyncJoinedModel from cache`
@@ -172,7 +179,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   public async parseModel(
     projectId?: c4.ProjectId | undefined,
     cancelToken?: CancellationToken,
-  ): Promise<LikeC4Model.Parsed | null> {
+  ): Promise<LikeC4Model<UnknownParsed> | null> {
     projectId = this.projects.ensureProjectId(projectId)
     const logger = builderLogger.getChild(projectId)
     const t0 = performanceMark()
@@ -196,9 +203,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   public unsafeSyncComputeModel(
     projectId: c4.ProjectId,
     manualLayouts?: ManualLayouts,
-  ): LikeC4Model.Computed {
+  ): LikeC4Model<UnknownComputed> {
     const logger = builderLogger.getChild(projectId)
-    const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
+    const cache = this.cache as WorkspaceCache<string, LikeC4Model<UnknownComputed>>
     const viewsCache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
     const hasManualLayouts = !!manualLayouts && !isEmpty(manualLayouts)
     const key = computedModelCacheKey(projectId) + (hasManualLayouts ? '+manualLayouts' : '')
@@ -250,7 +257,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   public async computeModel(
     projectId?: c4.ProjectId | undefined,
     cancelToken?: CancellationToken,
-  ): Promise<LikeC4Model.Computed> {
+  ): Promise<LikeC4Model<UnknownComputed>> {
     projectId = this.projects.ensureProjectId(projectId)
     const logger = builderLogger.getChild(projectId)
     const t0 = performanceMark()

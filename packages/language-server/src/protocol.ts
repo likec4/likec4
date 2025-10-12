@@ -1,7 +1,6 @@
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type {
   ComputedLikeC4ModelData,
-  ComputedView,
   DeploymentFqn,
   DiagramView,
   Fqn,

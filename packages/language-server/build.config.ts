@@ -1,22 +1,6 @@
+import spawn from 'nano-spawn'
 import { resolve } from 'node:path'
 import { type BuildEntry, defineBuildConfig } from 'unbuild'
-
-const mkdist: BuildEntry = {
-  input: './src/',
-  outDir: './dist/',
-  builder: 'mkdist',
-  ext: 'mjs',
-  addRelativeDeclarationExtensions: false,
-  declaration: true,
-  globOptions: {
-    ignore: [
-      'src/empty.ts',
-      '**/*.langium',
-      '**/__*/**',
-      '**/*.spec.ts',
-    ],
-  },
-}
 
 const bundled: BuildEntry = {
   input: './src/bundled.ts',
@@ -26,7 +10,7 @@ const bundled: BuildEntry = {
 }
 
 export default defineBuildConfig({
-  entries: [mkdist, bundled],
+  entries: [bundled],
   clean: true,
   stub: false,
   alias: {
@@ -42,6 +26,14 @@ export default defineBuildConfig({
     inlineDependencies: true,
     resolve: {
       exportConditions: ['node', 'sources'],
+    },
+  },
+  hooks: {
+    'rollup:done': async () => {
+      console.log('Building types...')
+      await spawn('tsc', ['-p', 'tsconfig.build.json'], {
+        stdout: 'inherit',
+      })
     },
   },
 })
