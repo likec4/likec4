@@ -3,11 +3,12 @@ import {
   nonNullable,
 } from '@likec4/core'
 import { cx as clsx } from '@likec4/styles/css'
-import { useDebouncedEffect } from '@react-hookz/web'
+import { useCallbackRef } from '@mantine/hooks'
+import { useDebouncedEffect, useRafEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
-import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
+import { type PointerEvent as ReactPointerEvent, use, useEffect, useRef, useState } from 'react'
 import { first, isTruthy, last } from 'remeda'
 import {
   EdgeActionButton,
@@ -30,8 +31,8 @@ import { getNodeIntersectionFromCenterToPoint } from './utils'
 
 const curve = d3line<XYPosition>()
   .curve(curveCatmullRomOpen)
-  .x(d => d.x)
-  .y(d => d.y)
+  .x(d => roundDpr(d.x))
+  .y(d => roundDpr(d.y))
 
 export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props) => {
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
@@ -111,7 +112,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   })
 
   const svgPathRef = useRef<SVGPathElement>(null)
-  useEffect(() => {
+  useRafEffect(() => {
     const path = svgPathRef.current
     if (!path) return
     const dompoint = path.getPointAtLength(path.getTotalLength() * 0.5)
@@ -155,6 +156,8 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     let hasMoved = false
     let pointer = { x: e.clientX, y: e.clientY }
 
+    let animationFrameId: number | null = null
+
     const onPointerMove = (e: PointerEvent) => {
       const clientPoint = {
         x: e.clientX,
@@ -173,8 +176,14 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           x: roundDpr(x),
           y: roundDpr(y),
         }
-        diagram.updateEdgeData(id as EdgeId, {
-          controlPoints: cp,
+        if (animationFrameId != null) {
+          cancelAnimationFrame(animationFrameId)
+        }
+        animationFrameId = requestAnimationFrame(() => {
+          animationFrameId = null
+          diagram.updateEdgeData(id as EdgeId, {
+            controlPoints: cp,
+          })
         })
       }
       e.stopPropagation()
@@ -236,10 +245,14 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     e.stopPropagation()
   }
 
-  const onControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
+  const onControlPointerDown = useCallbackRef((e: ReactPointerEvent<SVGCircleElement>) => {
     const { domNode } = xyflowStore.getState()
     if (!domNode || e.pointerType !== 'mouse') {
       return
+    }
+    const index = Number(e.currentTarget.getAttribute('data-control-point-index'))
+    if (isNaN(index)) {
+      throw new Error('data-control-point-index is not a number')
     }
 
     switch (e.button) {
@@ -250,12 +263,13 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
         onRmbControlPointerDown(index, e, domNode)
         break
     }
-  }
+  })
 
-  const onEdgePointerDown = (e: ReactPointerEvent<SVGElement>) => {
-    const { domNode } = xyflowStore.getState()
-
-    if (!domNode || e.pointerType !== 'mouse') {
+  /**
+   * Handle pointer down event on the edge to add new control points
+   */
+  const onEdgePointerDown = useCallbackRef((e: ReactPointerEvent<SVGElement>) => {
+    if (e.pointerType !== 'mouse') {
       return
     }
     if (e.button !== 2) {
@@ -299,12 +313,23 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     diagram.scheduleSaveManualLayout()
 
     e.stopPropagation()
-  }
+  })
 
   let zIndex = ZIndexes.Edge
-  if (hovered || active) {
+  if (hovered || active || isControlPointDragging) {
     // Move above the elements
-    zIndex = ZIndexes.Element + 1
+    zIndex = ZIndexes.Element + 50
+  }
+
+  // Force hovered state when dragging control point
+  if (isControlPointDragging && !props.data.hovered) {
+    props = {
+      ...props,
+      data: {
+        ...props.data,
+        hovered: true,
+      },
+    }
   }
 
   return (
@@ -314,6 +339,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           edgeProps={props}
           svgPath={edgePath}
           ref={svgPathRef}
+          isDragging={isControlPointDragging}
           {...enableEdgeEditing && {
             onEdgePointerDown,
           }} />
@@ -325,7 +351,9 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
             translate: isModified ? 'translate(-50%, 0)' : undefined,
           }}
         >
-          <EdgeLabel edgeProps={props}>
+          <EdgeLabel
+            pointerEvents={enableEdgeEditing ? 'none' : 'all'}
+            edgeProps={props}>
             {navigateTo && (
               <EdgeActionButton
                 onClick={e => {
@@ -355,7 +383,8 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
               }}>
               {controlPoints.map((p, i) => (
                 <circle
-                  onPointerDown={e => onControlPointerDown(i, e)}
+                  data-control-point-index={i}
+                  onPointerDown={onControlPointerDown}
                   className={clsx('nodrag nopan', edgesCss.controlPoint)}
                   key={'controlPoints' + edgeId + '#' + i}
                   cx={Math.round(p.x)}

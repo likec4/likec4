@@ -1,5 +1,5 @@
 import type { Any } from '@likec4/core/types'
-import { useCustomCompareMemo } from '@react-hookz/web'
+import { type DependenciesComparator, useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { type PropsWithChildren, useRef } from 'react'
@@ -208,7 +208,7 @@ const toLiteralPaddingWithUnit = (value: PaddingWithUnit): PaddingWithUnit & str
 }
 
 /**
- * Converts number values to px
+ * Converts number values to px and keep referential integrity
  */
 function useNormalizedViewPadding(raw: ViewPadding): ViewPadding {
   return useCustomCompareMemo(
@@ -219,6 +219,15 @@ function useNormalizedViewPadding(raw: ViewPadding): ViewPadding {
       return toLiteralPaddingWithUnit(raw)
     },
     [raw],
-    deepEqual,
+    compareViewPaddingObject,
   )
+}
+const compareViewPaddingObject: DependenciesComparator<[ViewPadding]> = ([a], [b]) => {
+  return a === b ||
+    (isPlainObject(a)
+      && isPlainObject(b)
+      && a.bottom == b.bottom
+      && a.left == b.left
+      && a.right == b.right
+      && a.top == b.top)
 }

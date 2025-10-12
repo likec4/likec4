@@ -1,5 +1,6 @@
 import type { DiagramEdge } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
+import type { isDragging } from 'motion'
 import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
@@ -19,6 +20,10 @@ type Data = UndefinedOnPartialDeep<
 type EdgePathProps = {
   edgeProps: BaseEdgePropsWithData<Data>
   svgPath: string
+  /**
+   * If true, the edge is being dragged (used to disable animations)
+   */
+  isDragging?: boolean
   strokeWidth?: number
   onEdgePointerDown?: PointerEventHandler<SVGGElement> | undefined
 }
@@ -36,6 +41,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
     style,
     interactionWidth,
   },
+  isDragging = false, // omit
   onEdgePointerDown,
   strokeWidth,
   svgPath,
@@ -72,15 +78,15 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
 
   return (
     <>
-      {selectable && (
+      {selectable && !isDragging && (
         <path
           className={cx(
             'react-flow__edge-interaction',
-            'hide-on-reduced-graphics',
             css({
               fill: 'none',
             }),
           )}
+          onPointerDown={onEdgePointerDown}
           d={svgPath}
           style={{
             strokeWidth: interactionWidth ?? 10,
@@ -94,17 +100,21 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
           {MarkerStart && <MarkerStart id={'start' + id} />}
           {MarkerEnd && <MarkerEnd id={'end' + id} />}
         </defs>
+        {!isDragging && (
+          <path
+            key={'edge-path-bg'}
+            className={cx(
+              'react-flow__edge-path',
+              'hide-on-reduced-graphics',
+              edgePathBg,
+            )}
+            d={svgPath}
+            style={style}
+            strokeLinecap={'round'}
+          />
+        )}
         <path
-          className={cx(
-            'react-flow__edge-path',
-            'hide-on-reduced-graphics',
-            edgePathBg,
-          )}
-          d={svgPath}
-          style={style}
-          strokeLinecap={'round'}
-        />
-        <path
+          key={'edge-path'}
           ref={svgPathRef}
           className={cx(
             'react-flow__edge-path',

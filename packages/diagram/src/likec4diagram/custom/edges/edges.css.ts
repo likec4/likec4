@@ -22,7 +22,7 @@ export const controlPoint = css({
   _hover: {
     fillOpacity: 1,
     stroke: 'mantine.colors.primary.filledHover',
-    strokeWidth: 10,
+    strokeWidth: 16,
     transition: 'stroke 100ms ease-out, stroke-width 100ms ease-out',
   },
   [`:where(${isSelected}, [data-likec4-hovered='true']) &`]: {
@@ -30,7 +30,7 @@ export const controlPoint = css({
     transition: 'fill-opacity 150ms ease-out, stroke 150ms ease-out, stroke-width 150ms ease-out',
     transitionDelay: '50ms',
     fillOpacity: 1,
-    strokeWidth: 5,
+    strokeWidth: 10,
   },
 })
 

@@ -217,7 +217,6 @@ export function createLayoutConstraints(
     }
     animationFrameId ??= requestAnimationFrame(() => {
       animationFrameId = null
-      const { nodeLookup } = xyflowApi.getState()
       for (const id of editingNodeIds) {
         const rect = nonNullable(rects.get(id))
         const node = nonNullable(nodeLookup.get(id))

@@ -79,7 +79,8 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   a.zoomable === b.zoomable &&
   a.enableFitView === b.enableFitView &&
   a.enableReadOnly === b.enableReadOnly &&
-  deepEqual(a.fitViewPadding, b.fitViewPadding) &&
+  a.nodesDraggable === b.nodesDraggable &&
+  shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges) &&
   shallowEqual(a.viewport ?? null, b.viewport ?? null)
@@ -115,7 +116,7 @@ export function LikeC4DiagramXYFlow({
     ...props
   } = useDiagramContext(selectXYProps, equalsXYProps)
 
-  nodesDraggable = nodesDraggable && _nodesDraggable
+  nodesDraggable = _nodesDraggable && nodesDraggable
 
   const {
     onNodeContextMenu,
@@ -135,9 +136,7 @@ export function LikeC4DiagramXYFlow({
     }, isReducedGraphics ? 120 : 400),
     notPanning = useDebouncedCallback(() => {
       isPanning.clear()
-      if ($isPanning.get()) {
-        $isPanning.set(false)
-      }
+      $isPanning.set(false)
     }, isReducedGraphics ? 350 : 200),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {

@@ -1,9 +1,9 @@
-import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
+import type { DiagramView, DynamicViewDisplayVariant, ViewId, WhereOperator } from '@likec4/core/types'
 import { useCustomCompareEffect, useRafEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
+import { type PropsWithChildren, memo, useEffect, useMemo, useRef } from 'react'
 import type { Subscription } from 'xstate'
 import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
@@ -18,10 +18,28 @@ import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
 import { type DiagramMachineLogic, diagramMachine } from './diagram-machine'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import type { DiagramActorRef, DiagramActorSnapshot } from './types'
+import type { DiagramActorSnapshot } from './types'
 
-const selectDynamicViewVariant = (state: DiagramActorSnapshot) => {
-  return state.context.dynamicViewVariant
+const selectFromActor = (state: DiagramActorSnapshot) => {
+  if (state.context.features.enableReadOnly || state.context.activeWalkthrough) {
+    return {
+      dynamicViewVariant: state.context.dynamicViewVariant,
+      viewId: state.context.view.id,
+      toggledFeatures: {
+        ...state.context.toggledFeatures,
+        enableReadOnly: true,
+      },
+    }
+  }
+  return {
+    dynamicViewVariant: state.context.dynamicViewVariant,
+    viewId: state.context.view.id,
+    toggledFeatures: state.context.toggledFeatures,
+  }
+}
+const compareSelected = <T extends ReturnType<typeof selectFromActor>>(a: T, b: T): boolean => {
+  return a.viewId === b.viewId && a.dynamicViewVariant === b.dynamicViewVariant &&
+    shallowEqual(a.toggledFeatures, b.toggledFeatures)
 }
 
 export function DiagramActorProvider({
@@ -84,81 +102,64 @@ export function DiagramActorProvider({
   )
 
   const features = useEnabledFeatures()
-  useCustomCompareEffect(
-    () => {
-      actorRef.send({ type: 'update.features', features })
-    },
+  useEffect(
+    () => actorRef.send({ type: 'update.features', features }),
     [features],
-    shallowEqual,
   )
 
   useEffect(
-    () => {
-      actorRef.send({ type: 'update.inputs', inputs: { zoomable, pannable, fitViewPadding, nodesSelectable } })
-    },
+    () =>
+      actorRef.send({
+        type: 'update.inputs',
+        inputs: { zoomable, pannable, fitViewPadding, nodesSelectable },
+      }),
     [zoomable, pannable, fitViewPadding, nodesSelectable],
   )
 
-  const dynamicViewVariant = useSelector(actorRef, selectDynamicViewVariant)
-
-  const update = useMemo(
-    () => convertToXYFlow({ view, where, nodesSelectable, dynamicViewVariant }),
-    [view, where, nodesSelectable, dynamicViewVariant],
+  const { dynamicViewVariant, viewId, toggledFeatures } = useSelector(
+    actorRef,
+    selectFromActor,
+    compareSelected,
   )
-
-  useRafEffect(() => {
-    actorRef.send({
-      type: 'update.view',
-      ...update,
-    })
-  }, [actorRef, update])
 
   useUpdateEffect(() => {
     if (!_defaultVariant) return
     actorRef.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
   }, [_defaultVariant])
 
+  useEffect(() => {
+    actorRef.send({
+      type: 'update.view',
+      ...convertToXYFlow({ view, where, nodesSelectable, dynamicViewVariant }),
+    })
+  }, [actorRef, view, where, nodesSelectable, dynamicViewVariant])
+
   return (
     <DiagramActorContextProvider value={actorRef}>
       <ErrorBoundary>
-        <CurrentViewModelProvider actorRef={actorRef}>
-          {children}
-        </CurrentViewModelProvider>
+        <DiagramFeatures overrides={toggledFeatures}>
+          {/* Important - we use "viewId" from actor context, not from props */}
+          <CurrentViewModelProvider viewId={viewId}>
+            {children}
+          </CurrentViewModelProvider>
+        </DiagramFeatures>
       </ErrorBoundary>
-      <DiagramActorEventListener actorRef={actorRef} />
+      <DiagramActorEventListener />
     </DiagramActorContextProvider>
   )
 }
 
-const selectViewIdAndToggledFeatures = (state: DiagramActorSnapshot) => {
-  if (state.context.features.enableReadOnly || state.context.activeWalkthrough) {
-    return {
-      viewId: state.context.view.id,
-      toggledFeatures: {
-        ...state.context.toggledFeatures,
-        enableReadOnly: true,
-      },
-    }
-  }
-  return {
-    viewId: state.context.view.id,
-    toggledFeatures: state.context.toggledFeatures,
-  }
-}
-function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ actorRef: DiagramActorRef }>) {
-  const { viewId, toggledFeatures } = useSelector(actorRef, selectViewIdAndToggledFeatures, deepEqual)
+function CurrentViewModelProvider({ children, viewId }: PropsWithChildren<{ viewId: ViewId }>) {
   const likec4model = useLikeC4Model()
   const viewmodel = likec4model.findView(viewId)
   return (
     <CurrentViewModelContext.Provider value={viewmodel}>
-      <DiagramFeatures overrides={toggledFeatures}>
-        {children}
-      </DiagramFeatures>
+      {children}
     </CurrentViewModelContext.Provider>
   )
 }
 
-function DiagramActorEventListener({ actorRef }: { actorRef: DiagramActorRef }) {
+const DiagramActorEventListener = memo(() => {
   const diagram = useDiagram()
 
   const {
@@ -175,7 +176,7 @@ function DiagramActorEventListener({ actorRef }: { actorRef: DiagramActorRef }) 
   useEffect(() => {
     if (wasEmitted.current) return
 
-    let subscription: Subscription | null = actorRef.on(
+    let subscription: Subscription | null = diagram.actor.on(
       'initialized',
       ({ instance: xyflow }) => {
         try {
@@ -192,7 +193,7 @@ function DiagramActorEventListener({ actorRef }: { actorRef: DiagramActorRef }) 
     return () => {
       subscription?.unsubscribe()
     }
-  }, [actorRef, diagram])
+  }, [diagram.actor, diagram])
 
   return null
-}
+})

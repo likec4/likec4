@@ -23,6 +23,7 @@ type EdgeLabelProps =
   & {
     children?: React.ReactNode
     edgeProps: BaseEdgePropsWithData<Data>
+    pointerEvents?: 'all' | 'none'
   }
 
 export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
@@ -37,6 +38,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
       selected = false,
       selectable = false,
     },
+    pointerEvents = 'all',
     className,
     style: _style, // omit
     children,
@@ -46,6 +48,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
 ) => {
   const stepNum = isStepEdgeId(id) ? extractStep(id) : null
   const classes = edgeLabel({
+    pointerEvents,
     isStepEdge: stepNum !== null,
     cursor: selectable || stepNum !== null ? 'pointer' : 'default',
   })

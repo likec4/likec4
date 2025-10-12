@@ -5,6 +5,7 @@ import type { BaseNodeProps } from '../base/types'
 function nodePropsEqual<P extends BaseNodeProps>(prev: Readonly<P>, next: Readonly<P>) {
   return (
     prev.id === next.id
+    && eq(prev.type, next.type)
     && eq(prev.selected ?? false, next.selected ?? false)
     && eq(prev.dragging ?? false, next.dragging ?? false)
     && eq(prev.width ?? 0, next.width ?? 0)
@@ -20,6 +21,7 @@ function nodePropsEqual<P extends BaseNodeProps>(prev: Readonly<P>, next: Readon
 const isMemoized = Symbol.for('isMemoized')
 export function memoNode<P extends BaseNodeProps>(
   Node: FunctionComponent<P>,
+  displayName = 'Node',
 ): FunctionComponent<P> {
   if (Node.hasOwnProperty(isMemoized)) {
     return Node
@@ -28,7 +30,7 @@ export function memoNode<P extends BaseNodeProps>(
     Node,
     nodePropsEqual,
   )
-  NodeComponent.displayName = 'Node'
+  NodeComponent.displayName = displayName
   // To avoid memoizing the same node multiple times
   Object.defineProperty(NodeComponent, isMemoized, {
     enumerable: false,

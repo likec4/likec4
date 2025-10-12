@@ -5,7 +5,6 @@ export const edgeLabel = defineSlotRecipe({
   slots: ['root', 'stepNumber', 'labelContents', 'labelText', 'labelTechnology'],
   base: {
     root: {
-      pointerEvents: 'all',
       fontFamily: 'likec4.relation',
       paddingBlock: '1',
       paddingInline: '1.5',
@@ -64,6 +63,18 @@ export const edgeLabel = defineSlotRecipe({
     },
   },
   variants: {
+    pointerEvents: {
+      none: {
+        root: {
+          pointerEvents: 'none',
+        },
+      },
+      all: {
+        root: {
+          pointerEvents: 'all',
+        },
+      },
+    },
     cursor: {
       pointer: {
         root: {
@@ -101,11 +112,14 @@ export const edgeLabel = defineSlotRecipe({
     },
   },
   defaultVariants: {
+    pointerEvents: 'all',
     isStepEdge: false,
     cursor: 'default',
   },
   staticCss: [{
     conditions: ['*'],
     isStepEdge: ['*'],
+    cursor: ['*'],
+    pointerEvents: ['*'],
   }],
 })

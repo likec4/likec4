@@ -1,24 +1,24 @@
 import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
-import { useRouter } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { isDevelopment } from '../const'
 import { useCurrentView } from '../hooks'
 
 export function ViewEditor() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const [view, setLayoutType] = useCurrentView()
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
-    const loc = router.buildLocation({
-      to: '.',
-      params: (current: any) => ({
+    void navigate({
+      to: './',
+      viewTransition: false,
+      params: (current) => ({
         ...current,
         viewId,
       }),
       search: true,
     })
-    void router.commitLocation(loc)
   })
 
   if (!view) {
@@ -56,7 +56,7 @@ export function ViewEditor() {
       onLayoutTypeChange={setLayoutType}
       onChange={(e) => console.log(e)}
       onBurgerMenuClick={() => {
-        void router.navigate({
+        void navigate({
           to: '/',
         })
       }}

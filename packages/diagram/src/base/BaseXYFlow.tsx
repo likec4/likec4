@@ -7,6 +7,7 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
+import { useRef } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
@@ -75,6 +76,16 @@ export function BaseXYFlow<
     ...props
   }: BaseXYFlowProps<NodeType, EdgeType>,
 ) {
+  const fitViewOptions = useRef<ReactFlowProps['fitViewOptions']>(null)
+  if (!fitViewOptions.current || fitViewOptions.current.padding !== fitViewPadding) {
+    fitViewOptions.current = {
+      minZoom: MinZoom,
+      maxZoom: 1,
+      padding: fitViewPadding,
+      includeHiddenNodes: false,
+    }
+  }
+
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
   const xystore = useXYStoreApi()
@@ -104,12 +115,7 @@ export function BaseXYFlow<
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
-      fitViewOptions={{
-        minZoom: MinZoom,
-        maxZoom: 1,
-        padding: fitViewPadding,
-        includeHiddenNodes: false,
-      }}
+      fitViewOptions={fitViewOptions.current}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"
