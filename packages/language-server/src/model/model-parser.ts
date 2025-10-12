@@ -1,7 +1,7 @@
 import type { ProjectId } from '@likec4/core'
 import { DefaultWeakMap, invariant, MultiMap } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
-import { type LangiumDocument, type Stream, DocumentState } from 'langium'
+import { type LangiumDocument, type Stream, DocumentState, UriUtils } from 'langium'
 import { pipe } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4DocumentProps, type ParsedLikeC4LangiumDocument, isLikeC4LangiumDocument } from '../ast'
@@ -59,12 +59,16 @@ export class LikeC4ModelParser {
       },
     )
 
-    // We need to clean up cached parser after document is validated
+    // We need to clean up cached parser when document is validated and has errors
     // Because after that parser takes into account validation results
     services.shared.workspace.DocumentBuilder.onDocumentPhase(
       DocumentState.Validated,
       doc => {
-        if (doc.diagnostics?.some(d => d.severity === DiagnosticSeverity.Error)) {
+        if (doc.diagnostics?.some(d => d.severity === DiagnosticSeverity.Error) && this.cachedParsers.has(doc)) {
+          logger.debug('clear cached parser {projectId} document {doc}', {
+            projectId: doc.likec4ProjectId,
+            doc: UriUtils.basename(doc.uri),
+          })
           this.cachedParsers.delete(doc)
         }
       },
@@ -98,10 +102,10 @@ export class LikeC4ModelParser {
     if (doc.likec4ProjectId) {
       logger.debug(`create parser {projectId} document {doc}`, {
         projectId: doc.likec4ProjectId,
-        doc: doc.uri.toString(),
+        doc: UriUtils.basename(doc.uri),
       })
     } else {
-      logger.warn(`create parser for document without project {doc}`, { doc: doc.uri.toString() })
+      logger.warn(`create parser for document without project {doc}`, { doc: doc.uri.fsPath })
     }
 
     const props: Required<Omit<LikeC4DocumentProps, 'diagnostics'>> = {

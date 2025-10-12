@@ -4,6 +4,7 @@ import type {
   DiagramNode,
   DynamicViewDisplayVariant,
   LayoutedView,
+  LayoutType,
   ViewChange,
   WhereOperator,
 } from '@likec4/core/types'
@@ -330,6 +331,8 @@ export type OnChange = (event: ChangeEvent) => void
 
 export type OnInitialized = (params: { diagram: DiagramApi; xyflow: XYFlowInstance }) => void
 
+export type OnLayoutTypeChange = (layoutType: LayoutType) => void
+
 export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
   onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo<A> | null | undefined
@@ -347,4 +350,12 @@ export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
   onOpenSource?: OnOpenSource<A> | null | undefined
 
   onInitialized?: OnInitialized | null | undefined
+
+  /**
+   * Triggered when user changes layout type (e.g. from 'manual' to 'auto')
+   * Expected another `view` to be passed to the diagram
+   *
+   * @param layoutType new layout type
+   */
+  onLayoutTypeChange?: OnLayoutTypeChange | null | undefined
 }

@@ -14,8 +14,9 @@ export {
   useEnabledFeatures,
 } from '../context/DiagramFeatures'
 export {
+  useCurrentView,
   useCurrentViewId,
-} from '../hooks/useCurrentViewId'
+} from '../hooks/useCurrentView'
 export {
   type DiagramApi,
   useDiagram,

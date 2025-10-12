@@ -4,6 +4,7 @@ import {
   exact,
   GlobalFqn,
   isNonEmptyArray,
+  memoizeProp,
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
@@ -22,7 +23,7 @@ import {
   pipe,
   unique,
 } from 'remeda'
-import stripIndent from 'strip-indent'
+import { dedent } from 'strip-indent'
 import { hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, joinURL } from 'ufo'
 import {
   type ParsedElementStyle,
@@ -88,14 +89,14 @@ export function removeIndent(
   }
   switch (true) {
     case isString(str):
-      return stripIndent(str).trim()
+      return dedent(str)
     case ast.isMarkdownOrString(str) && isTruthy(str.markdown):
       return {
-        md: stripIndent(str.markdown).trim(),
+        md: dedent(str.markdown),
       }
     case ast.isMarkdownOrString(str) && isTruthy(str.text):
       return {
-        txt: stripIndent(str.text).trim(),
+        txt: dedent(str.text),
       }
     default:
       return undefined
@@ -116,7 +117,7 @@ export class BaseParser {
   }
 
   get project(): Project {
-    return this.services.shared.workspace.ProjectsManager.getProject(this.doc)
+    return memoizeProp(this, 'project', () => this.services.shared.workspace.ProjectsManager.getProject(this.doc))
   }
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
@@ -225,7 +226,7 @@ export class BaseParser {
     const { libicon, value } = prop
     switch (true) {
       case !!libicon: {
-        return libicon.ref?.name as c4.IconUrl
+        return nonNullable(libicon.ref, `Library icon ${libicon.$refText} has empty ref`).name as c4.IconUrl
       }
       case value && value === 'none': {
         return value as c4.IconUrl

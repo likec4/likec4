@@ -1,7 +1,7 @@
 import { IconFileSymlink } from '@tabler/icons-react'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { useCurrentViewId } from '../../hooks/useCurrentViewId'
+import { useCurrentViewId } from '../../hooks/useCurrentView'
 import { PanelActionIcon, Tooltip } from '../_common'
 
 export const OpenSource = () => {

@@ -3,11 +3,11 @@ import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
 import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { pageTitle as defaultPageTitle } from '../const'
-import { useCurrentDiagram } from '../hooks'
+import { useCurrentView } from '../hooks'
 
 export function ViewReact() {
   const navigate = useNavigate()
-  const view = useCurrentDiagram()
+  const [view, setLayoutType] = useCurrentView()
   const model = useLikeC4Model()
   const { dynamic } = useSearch({
     from: '__root__',
@@ -63,6 +63,7 @@ export function ViewReact() {
       nodesDraggable={false}
       nodesSelectable
       onNavigateTo={onNavigateTo}
+      onLayoutTypeChange={setLayoutType}
       onBurgerMenuClick={() => {
         void navigate({
           to: '/',

@@ -31,7 +31,7 @@ const selector = ({ context }: NavigationPanelActorSnapshot) => {
 
 type ViewDetailsCardData = ReturnType<typeof selector>
 
-export const ViewDetailsCard = (props: PopoverProps) => {
+export const DetailsControls = (props: PopoverProps) => {
   const [opened, setOpened] = useState(false)
   const data = useNavigationActorSnapshot(selector)
   const portalProps = useMantinePortalProps()

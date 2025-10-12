@@ -10,7 +10,15 @@ import * as m from 'motion/react-m'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { BreadcrumbsSeparator } from './_common'
 import type { NavigationPanelActorSnapshot } from './actor'
-import { BurgerButton, NavigationButtons, OpenSource, SearchControl, ToggleReadonly, ViewDetailsCard } from './controls'
+import {
+  BurgerButton,
+  DetailsControls,
+  LayoutDriftControl,
+  NavigationButtons,
+  OpenSource,
+  SearchControl,
+  ToggleReadonly,
+} from './controls'
 import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 import { DynamicViewControls } from './walkthrough'
@@ -119,10 +127,11 @@ export const NavigationPanelControls = () => {
             display: 'none',
           },
         })}>
-        <ViewDetailsCard
+        <DetailsControls
           onOpen={() => actor.closeDropdown()}
         />
         <OpenSource />
+        <LayoutDriftControl />
         <ToggleReadonly />
       </m.div>
       {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}

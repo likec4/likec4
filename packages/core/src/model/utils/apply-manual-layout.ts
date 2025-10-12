@@ -9,7 +9,7 @@ import {
   _type,
   BBox,
 } from '../../types'
-import { difference, symmetricDifference } from '../../utils'
+import { difference, invariant, symmetricDifference } from '../../utils'
 
 /**
  * Maximum allowed drift per coordinate (top, left, bottom, right)
@@ -17,24 +17,30 @@ import { difference, symmetricDifference } from '../../utils'
 const MAX_ALLOWED_DRIFT = 5
 
 /**
- * Use layout from the snapshot, but apply style properties from the next view
+ * Use layout from the snapshot, and 'safe'-apply style properties from the `autoLayouted` view
  *
+ * @param autoLayouted Auto-layouted view
+ * @param snapshot The view snapshot with manual-layout
  * @returns The snapshot with the next view applied
  */
 export function applyManualLayout<
   V extends LayoutedView,
 >(
-  nextView: V,
+  autoLayouted: V,
   snapshot: ViewManualLayoutSnapshot,
 ): V {
-  if (nextView.hash === snapshot.hash && isShallowEqual(nextView.bounds, snapshot.bounds)) {
-    return nextView
+  invariant(autoLayouted.id === snapshot.id, 'applyManualLayout: view ids do not match')
+  invariant(autoLayouted._stage === 'layouted', 'applyManualLayout: expected layouted view')
+  invariant(autoLayouted._layout !== 'manual', 'applyManualLayout: expected auto-layouted view')
+
+  const drifts: LayoutedViewDriftReason[] = []
+
+  if (autoLayouted._type !== snapshot._type) {
+    drifts.push('type-changed')
   }
 
-  const viewDriftReasons: LayoutedViewDriftReason[] = []
-
-  const nextNodes = new Map(nextView.nodes.map(n => [n.id, n]))
-  const nextEdges = new Map(nextView.edges.map(e => [e.id, e]))
+  const nextNodes = new Map(autoLayouted.nodes.map(n => [n.id, n]))
+  const nextEdges = new Map(autoLayouted.edges.map(e => [e.id, e]))
 
   const nextNodeIds = new Set(nextNodes.keys())
   const nextEdgeIds = new Set(nextEdges.keys())
@@ -42,21 +48,17 @@ export function applyManualLayout<
   const snapshotNodeIds = new Set(snapshot.nodes.map(n => n.id))
   const snapshotEdgeIds = new Set(snapshot.edges.map(e => e.id))
 
-  if (nextView._type !== snapshot._type) {
-    viewDriftReasons.push('type-changed')
-  }
-
   if (difference(nextNodeIds, snapshotNodeIds).size > 0) {
-    viewDriftReasons.push('includes-more-nodes')
+    drifts.push('includes-more-nodes')
   }
   if (difference(nextEdgeIds, snapshotEdgeIds).size > 0) {
-    viewDriftReasons.push('includes-more-edges')
+    drifts.push('includes-more-edges')
   }
   if (symmetricDifference(nextNodeIds, snapshotNodeIds).size > 0) {
-    viewDriftReasons.push('nodes-drift')
+    drifts.push('nodes-drift')
   }
   if (symmetricDifference(nextEdgeIds, snapshotEdgeIds).size > 0) {
-    viewDriftReasons.push('edges-drift')
+    drifts.push('edges-drift')
   }
 
   const nodes = snapshot.nodes.map(node => {
@@ -68,17 +70,17 @@ export function applyManualLayout<
       draft.color = next.color
       draft.kind = next.kind
       // Update title if next node has a shorter title
-      if (next.title.length < draft.title.length) {
+      if (next.title.length <= draft.title.length) {
         draft.title = next.title
       }
 
-      if (next.navigateTo && next.navigateTo !== draft.navigateTo) {
+      if (next.navigateTo) {
         draft.navigateTo = next.navigateTo
       }
 
       // TODO check modelRef/deploymentRef
       // The following properties are updated only if the node from the snapshot
-      // is same size or larger than the node from the view
+      // is same size or larger than the node from auto-layouted view
       if (!BBox.includes(BBox.expand(node, MAX_ALLOWED_DRIFT), next)) {
         return
       }
@@ -128,20 +130,23 @@ export function applyManualLayout<
     })
   })
 
-  let nodeNotations = buildElementNotations(nodes)
+  let nodeNotations = isShallowEqual(snapshot.nodes, nodes) ? snapshot.notation?.nodes : buildElementNotations(nodes)
 
   return {
-    ...nextView,
-    title: snapshot.title,
-    description: snapshot.description,
+    ...autoLayouted,
+    ...(snapshot as V),
+    title: autoLayouted.title,
+    description: autoLayouted.description,
+    tags: autoLayouted.tags,
+    links: autoLayouted.links,
     [_type]: snapshot._type,
     [_layout]: 'manual',
     hash: snapshot.hash,
     bounds: snapshot.bounds,
     autoLayout: snapshot.autoLayout,
-    ...(nodeNotations.length > 0 ? { notation: { nodes: nodeNotations } } : {}),
+    ...(nodeNotations && nodeNotations.length > 0 ? { notation: { nodes: nodeNotations } } : {}),
     nodes,
     edges,
-    viewDriftReasons,
+    drifts,
   }
 }

@@ -11,7 +11,7 @@ import {
   TabsTab,
 } from '@mantine/core'
 import { useState } from 'react'
-import { useCurrentDiagram } from '../../hooks'
+import { useCurrentView } from '../../hooks'
 import { EmbedPanel } from './share-modal/EmbedPanel'
 import { WebcomponentsPanel } from './share-modal/WebcomponentsPanel'
 
@@ -22,7 +22,7 @@ type ShareModalOpts = {
 export function ShareModal({
   onClose,
 }: ShareModalOpts) {
-  const diagram = useCurrentDiagram()
+  const [diagram] = useCurrentView()
   const [activeTab, setActiveTab] = useState('webcomponent')
   if (!diagram) {
     return null

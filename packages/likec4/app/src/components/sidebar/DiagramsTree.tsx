@@ -22,7 +22,7 @@ import {
 } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect } from 'react'
-import { useCurrentDiagram, useLikeC4Views } from '../../hooks'
+import { useCurrentView, useLikeC4Views } from '../../hooks'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
@@ -60,7 +60,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
       }),
     })
   }
-  const diagram = useCurrentDiagram()
+  const [diagram] = useCurrentView()
   const viewId = diagram?.id ?? null
 
   const tree = useTree({

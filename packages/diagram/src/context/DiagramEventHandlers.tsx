@@ -21,6 +21,7 @@ const defaultHandlers: Required<LikeC4DiagramEventHandlers> = {
   onBurgerMenuClick: null,
   onOpenSource: null,
   onInitialized: null,
+  onLayoutTypeChange: null,
 }
 
 const HandlerNames = keys(defaultHandlers)

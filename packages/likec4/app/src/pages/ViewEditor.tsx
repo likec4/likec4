@@ -3,11 +3,11 @@ import { useCallbackRef } from '@mantine/hooks'
 import { useRouter } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { isDevelopment } from '../const'
-import { useCurrentDiagram } from '../hooks'
+import { useCurrentView } from '../hooks'
 
 export function ViewEditor() {
   const router = useRouter()
-  const view = useCurrentDiagram()
+  const [view, setLayoutType] = useCurrentView()
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
     const loc = router.buildLocation({
@@ -53,6 +53,7 @@ export function ViewEditor() {
       enableRelationshipBrowser
       enableElementTags
       onNavigateTo={onNavigateTo}
+      onLayoutTypeChange={setLayoutType}
       onChange={(e) => console.log(e)}
       onBurgerMenuClick={() => {
         void router.navigate({

@@ -5,7 +5,7 @@ import { useDebouncedCallback } from '@react-hookz/web'
 import { useSearch } from '@tanstack/react-router'
 import { toBlob } from 'html-to-image'
 import { useRef } from 'react'
-import { useCurrentDiagram, useTransparentBackground } from '../hooks'
+import { useCurrentView, useTransparentBackground } from '../hooks'
 
 async function downloadAsPng({
   pngFilename,
@@ -59,7 +59,7 @@ export function ExportPage() {
   } = useSearch({
     strict: false,
   })
-  const diagram = useCurrentDiagram()
+  const [diagram] = useCurrentView()
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
 

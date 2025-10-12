@@ -1,8 +1,8 @@
-import type { DiagramView } from '@likec4/core/types'
-import { useLikeC4Projects } from '@likec4/diagram'
+import type { LayoutedView, LayoutType } from '@likec4/core/types'
+import { useLikeC4Projects, useUpdateEffect } from '@likec4/diagram'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useParams } from '@tanstack/react-router'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { useEffect, useState } from 'react'
 import { useLikeC4ModelAtom } from './context/safeCtx'
 
@@ -21,13 +21,17 @@ export function useTransparentBackground(enabled = true) {
   }, [enabled])
 }
 
-export function useLikeC4Views(): ReadonlyArray<DiagramView> {
+export function useLikeC4Views(): ReadonlyArray<LayoutedView> {
   const $likec4model = useLikeC4ModelAtom()
-  const [views, setViews] = useState([] as DiagramView[])
+  const [views, setViews] = useState([] as LayoutedView[])
   useEffect(() => {
     return $likec4model.subscribe((next) => {
       setViews(prev => {
-        const nextViews = [...next.views()].map(v => v.$view)
+        const nextViews = [...next.views()].map((v) => {
+          const n = v.$layouted
+          const p = prev.find(_ => _.id === v.id)
+          return !!p && deepEqual(n, p) ? p : n
+        })
         if (shallowEqual(prev, nextViews)) {
           return prev
         }
@@ -45,10 +49,30 @@ export function useCurrentViewId(): string {
   })
 }
 
-export function useCurrentDiagram(): DiagramView | null {
+export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType) => void] {
   const viewId = useCurrentViewId()
-  const views = useLikeC4Views()
-  return views.find(v => v.id === viewId) ?? null
+  const $likec4model = useLikeC4ModelAtom()
+  const [layoutType, setLayoutType] = useState('manual' as LayoutType)
+
+  useUpdateEffect(() => {
+    setLayoutType('manual')
+  }, [viewId])
+
+  const [view, setView] = useState($likec4model.value?.findView(viewId)?.$layouted ?? null)
+  useEffect(() => {
+    return $likec4model.subscribe((next) => {
+      setView(current => {
+        const vm = next.findView(viewId)
+        const nextView = (layoutType === 'manual' ? vm?.$layouted : vm?.$view) ?? null
+        if (deepEqual(current, nextView)) {
+          return current
+        }
+        return nextView
+      })
+    })
+  }, [$likec4model, viewId, layoutType])
+
+  return [view, setLayoutType] as const
 }
 
 export function useCurrentProject() {

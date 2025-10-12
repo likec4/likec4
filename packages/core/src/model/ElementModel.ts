@@ -26,6 +26,11 @@ import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
 export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMetadata<A> {
+  /**
+   * Don't use in runtime, only for type inference
+   */
+  readonly Aux!: A
+
   readonly id: aux.Fqn<A>
   readonly _literalId: aux.ElementId<A>
   readonly hierarchyLevel: number

@@ -36,6 +36,11 @@ export type DeploymentNodesIterator<A extends Any> = IteratorLike<DeploymentNode
 export type DeploymentElementModel<A extends Any = Any> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
 abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags<A>, WithMetadata<A> {
+  /**
+   * Don't use in runtime, only for type inference
+   */
+  readonly Aux!: A
+
   abstract readonly id: aux.DeploymentFqn<A>
   abstract readonly _literalId: aux.DeploymentId<A>
   abstract readonly parent: DeploymentNodeModel<A> | null

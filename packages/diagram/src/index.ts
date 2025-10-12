@@ -69,6 +69,6 @@ export type { LikeC4BrowserProps, LikeC4ViewProps } from './LikeC4View'
 
 export { ReactLikeC4, type ReactLikeC4Props } from './ReactLikeC4'
 
-export { useCurrentViewId } from './hooks/useCurrentViewId'
+export { useCurrentViewId } from './hooks/useCurrentView'
 
 export { getViewBounds } from './utils/get-view-bounds'

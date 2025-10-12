@@ -148,11 +148,6 @@ export function activateMessenger(
     }
   }))
 
-  // useDisposable(messenger.onNotification(WebviewMsgs.SaveLayout, async ({ view }) => {
-  //   const projectId = toValue(preview.projectId) ?? 'default' as ProjectId
-  //   await rpc.saveManualLayout({ view, projectId })
-  // }))
-
   useDisposable(messenger.onRequest(ReadLocalIcon, async (uri) => {
     const t0 = performanceMark()
     try {

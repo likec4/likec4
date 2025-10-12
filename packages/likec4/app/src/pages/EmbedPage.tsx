@@ -1,6 +1,6 @@
 import { getViewBounds, StaticLikeC4Diagram } from '@likec4/diagram'
 import { useSearch } from '@tanstack/react-router'
-import { useCurrentDiagram, useTransparentBackground } from '../hooks'
+import { useCurrentView, useTransparentBackground } from '../hooks'
 
 export function EmbedPage() {
   const {
@@ -9,7 +9,7 @@ export function EmbedPage() {
   } = useSearch({
     strict: false,
   })
-  const diagram = useCurrentDiagram()
+  const [diagram] = useCurrentView()
 
   useTransparentBackground(!!diagram)
 

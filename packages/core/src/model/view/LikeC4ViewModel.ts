@@ -8,13 +8,12 @@ import type {
   DynamicViewDisplayVariant,
   IteratorLike,
   LayoutedView,
-  LayoutType,
   Link,
   scalar,
   ViewManualLayoutSnapshot,
   ViewWithType,
 } from '../../types'
-import { type RichTextOrEmpty, _layout, _stage, _type, RichText } from '../../types'
+import { type RichTextOrEmpty, _stage, _type, RichText } from '../../types'
 import type * as aux from '../../types/_aux'
 import type { AnyComputed, AnyLayouted } from '../../types/_aux'
 import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
@@ -27,7 +26,7 @@ import type {
   WithTags,
 } from '../types'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
-import { applyManualLayout } from '../utils/view-apply-manual-layout'
+import { applyManualLayout } from '../utils/apply-manual-layout'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
@@ -49,11 +48,24 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   readonly #includeDeployments = new Set<aux.DeploymentFqn<A>>()
   readonly #includeRelations = new Set<scalar.RelationId>()
   readonly #allTags = new DefaultMap((_key: aux.Tag<A>) => new Set<NodeModel<A, V> | EdgeModel<A, V>>())
+  readonly #manualLayoutSnapshot: ViewManualLayoutSnapshot | undefined
 
+  public readonly id: aux.StrictViewId<A>
+
+  /**
+   * The original view (auto-layouted).
+   * @see {@link $layouted} should be used for rendering in the UI
+   */
   public readonly $view: V
 
+  /**
+   * The model this view belongs to
+   */
   public readonly $model: LikeC4Model<A>
 
+  /**
+   * The title of the view
+   */
   public readonly title: string | null
 
   /**
@@ -73,11 +85,14 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     model: LikeC4Model<A>,
     folder: LikeC4ViewsFolder<A>,
     view: V,
-    private manualLayoutSnapshot?: ViewManualLayoutSnapshot | undefined,
+    manualLayoutSnapshot?: ViewManualLayoutSnapshot | undefined,
   ) {
     this.$model = model
     this.$view = view
+    this.id = view.id
     this.folder = folder
+    this.#manualLayoutSnapshot = manualLayoutSnapshot
+
     for (const node of this.$view.nodes) {
       const el = new NodeModel<A, V>(this, Object.freeze(node))
       this.#nodes.set(node.id, el)
@@ -128,10 +143,6 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 
   get stage(): V[_stage] {
     return this.$view[_stage]
-  }
-
-  get id(): aux.StrictViewId<A> {
-    return this.$view.id
   }
 
   get bounds(): Readonly<BBox> {
@@ -215,12 +226,30 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     return [...this.#allTags.keys()] as unknown as aux.Tags<A>
   }
 
-  get manualLayout(): V | null {
+  /**
+   * Returns the view with manual layout applied if it exists, otherwise returns the original view
+   * This should be used for rendering in the UI
+   */
+  get $layouted(): V {
+    if (!this.isLayouted()) {
+      throw new Error('View is not layouted')
+    }
+    return this.manualLayouted ?? this.$view
+  }
+
+  get hasManualLayout(): boolean {
+    return this.#manualLayoutSnapshot !== undefined
+  }
+
+  /**
+   * If view has manual layout, returns it with manual layout applied
+   */
+  get manualLayouted(): V | null {
+    if (!this.isLayouted()) {
+      return null
+    }
     return memoizeProp(this, 'snapshotWithManualLayout', () => {
-      if (!this.isLayouted()) {
-        return null
-      }
-      const snapshot = this.manualLayout
+      const snapshot = this.#manualLayoutSnapshot
       if (snapshot) {
         return applyManualLayout(this.$view, snapshot)
       }

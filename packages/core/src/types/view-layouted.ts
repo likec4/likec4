@@ -89,9 +89,13 @@ interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewPropertie
   /**
    * If diagram has manual layout
    * But was changed and layout should be recalculated
+   * @deprecated use {@link drifts}
    */
   readonly hasLayoutDrift?: boolean
 
+  /**
+   * List of reasons why the view has layout drift (i.e "outdated")
+   */
   readonly drifts?: ReadonlyArray<LayoutedViewDriftReason>
 }
 

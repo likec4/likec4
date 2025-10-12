@@ -1,7 +1,7 @@
 import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { ElementActionButtons } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
-import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
+import { useCurrentViewId } from '../../../hooks/useCurrentView'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes as Types } from '../_types'
 import { useRelationshipsBrowser, useRelationshipsBrowserState } from '../hooks'

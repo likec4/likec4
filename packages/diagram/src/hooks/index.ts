@@ -5,7 +5,7 @@ export { useUpdateEffect } from './useUpdateEffect'
 export { useCurrentZoom, useIsZoomTooSmall, useXYFlow, useXYInternalNode, useXYStore, useXYStoreApi } from './useXYFlow'
 export type { XYFlowInstance, XYStoreApi, XYStoreState } from './useXYFlow'
 
-export { useCurrentViewId } from './useCurrentViewId'
+export { useCurrentView, useCurrentViewId } from './useCurrentView'
 export { useCurrentViewModel } from './useCurrentViewModel'
 export { useLikeC4Model, useLikeC4Specification, useLikeC4ViewModel } from './useLikeC4Model'
 export {

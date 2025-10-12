@@ -1,4 +1,5 @@
 import type * as t from '@likec4/core/types'
+import type { LayoutType } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { ActionIcon, Box } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
@@ -340,7 +341,15 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   ...props
 }: LikeC4ViewProps<A>) {
   const likec4model = useOptionalLikeC4Model()
-  const [browserViewId, onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
+  const [layoutType, setLayoutType] = useState<LayoutType>('manual')
+  const [browserViewId, _onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
+  const onNavigateTo = useCallbackRef((viewId: t.aux.ViewId<t.aux.UnknownLayouted> | null) => {
+    // reset layout type if we navigate to a different view
+    if (viewId !== browserViewId) {
+      setLayoutType('manual')
+    }
+    _onNavigateTo(viewId)
+  })
   const onNavigateToThisView = useCallbackRef(() => {
     onNavigateTo(viewId)
   })
@@ -353,7 +362,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
     )
   }
 
-  const view = likec4model.findView(viewId)?.$view
+  const view = likec4model.findView(viewId)?.$layouted
 
   if (!view) {
     return <ViewNotFound viewId={viewId} />
@@ -367,7 +376,8 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
     )
   }
 
-  const browserView = browserViewId ? likec4model.findView(browserViewId)?.$view : null
+  const browserViewModel = browserViewId ? likec4model.findView(browserViewId) : null
+  const browserView = layoutType === 'manual' ? browserViewModel?.$layouted : browserViewModel?.$view
 
   const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
@@ -452,6 +462,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
               {...browserProps}
               showNotations={browserProps.showNotations ?? showNotations}
               renderNodes={renderNodes}
+              onLayoutTypeChange={setLayoutType}
             />
             <Box pos="absolute" top={'1rem'} right={'1rem'}>
               <ActionIcon
