@@ -227,7 +227,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
   }
 
   public getMetadata(): aux.Metadata<A>
-  public getMetadata(field: aux.MetadataKey<A>): string | undefined
+  public getMetadata(field: aux.MetadataKey<A>): string | string[] | undefined
   public getMetadata(field?: aux.MetadataKey<A>) {
     if (field) {
       return this.$node.metadata?.[field]
@@ -633,7 +633,7 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
   }
 
   public getMetadata(): aux.Metadata<A>
-  public getMetadata(field: aux.MetadataKey<A>): string | undefined
+  public getMetadata(field: aux.MetadataKey<A>): string | string[] | undefined
   public getMetadata(field?: aux.MetadataKey<A>) {
     if (field) {
       return this.$relationship.metadata?.[field]
