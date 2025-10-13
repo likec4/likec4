@@ -116,7 +116,7 @@ Example response:
       kind: string
       shape: string
       tags: readonly string[]
-      getMetadata: (key: string) => string | undefined
+      getMetadata: (key: string) => string | string[] | undefined
     },
   >(
     el: E,
