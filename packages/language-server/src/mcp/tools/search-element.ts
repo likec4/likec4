@@ -15,7 +15,7 @@ const searchResultSchema = z.array(
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
-      metadata: z.record(z.string()),
+      metadata: z.record(z.union([z.string(), z.array(z.string())])),
       tags: z.array(z.string()),
     }),
     z.object({
@@ -28,7 +28,7 @@ const searchResultSchema = z.array(
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
-      metadata: z.record(z.string()),
+      metadata: z.record(z.union([z.string(), z.array(z.string())])),
       tags: z.array(z.string()),
     }),
   ]),
@@ -116,7 +116,7 @@ Example response:
       kind: string
       shape: string
       tags: readonly string[]
-      getMetadata: (key: string) => string | undefined
+      getMetadata: (key: string) => string | string[] | undefined
     },
   >(
     el: E,

@@ -63,5 +63,5 @@ export interface WithTags<A extends AnyAux> {
 export interface WithMetadata<A extends AnyAux> {
   hasMetadata(): boolean
   getMetadata(): aux.Metadata<A>
-  getMetadata(field: aux.MetadataKey<A>): string | undefined
+  getMetadata(field: aux.MetadataKey<A>): string | string[] | undefined
 }

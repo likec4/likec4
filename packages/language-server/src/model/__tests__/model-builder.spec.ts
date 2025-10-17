@@ -220,6 +220,105 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 
+  it('builds model with array metadata using array syntax', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        metadata {
+          tags ['tag1', 'tag2', 'tag3']
+          version '1.1.1'
+          environments ['dev', 'staging', 'prod']
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'component',
+        metadata: {
+          tags: ['tag1', 'tag2', 'tag3'],
+          version: '1.1.1',
+          environments: ['dev', 'staging', 'prod'],
+        },
+      },
+    })
+  })
+
+  it('builds model with mixed array and single metadata values', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        metadata {
+          tags ['primary', 'backend']
+          version '2.0.0'
+          owner 'team-a'
+          owner 'team-b'
+          ports ['8080', '9090', '3000']
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'component',
+        metadata: {
+          tags: ['primary', 'backend'],
+          version: '2.0.0',
+          owner: ['team-a', 'team-b'],
+          ports: ['8080', '9090', '3000'],
+        },
+      },
+    })
+  })
+
+  it('builds model with mixed array and single of same name and merges metadata values', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        metadata {
+          tags ['primary', 'backend']
+          version '2.0.0'
+          owner ['team-a', 'team-b']
+          owner 'team-c'
+          ports ['8080', '9090', '3000']
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'component',
+        metadata: {
+          tags: ['primary', 'backend'],
+          version: '2.0.0',
+          owner: ['team-a', 'team-b', 'team-c'],
+          ports: ['8080', '9090', '3000'],
+        },
+      },
+    })
+  })
+
   it('builds model with icon', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { errors, warnings } = await validate(`
@@ -1042,6 +1141,45 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       metadata: {
         rps: '100',
         messageSize: '10',
+      },
+    })
+  })
+
+  it('builds relations with array metadata', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1
+      component system2 {
+        -> system1 {
+          metadata {
+            protocols ['http', 'grpc']
+            rps '100'
+            ports ['8080', '9090']
+          }
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    const relations = values(model.relations)
+    expect(relations).toHaveLength(1)
+    expect(relations[0]).toMatchObject({
+      source: {
+        model: 'system2',
+      },
+      target: {
+        model: 'system1',
+      },
+      metadata: {
+        protocols: ['http', 'grpc'],
+        rps: '100',
+        ports: ['8080', '9090'],
       },
     })
   })
