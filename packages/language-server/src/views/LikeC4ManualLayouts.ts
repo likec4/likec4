@@ -1,9 +1,9 @@
-import type { LayoutedView, ViewId } from '@likec4/core'
+import type { ComputedView, LayoutedView, ViewId } from '@likec4/core'
 import { getOrCreate } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import JSON5 from 'json5'
 import { type URI, UriUtils } from 'langium'
-import { indexBy, prop } from 'remeda'
+import { indexBy, omit, prop } from 'remeda'
 import { type Location, Position, Range, TextEdit } from 'vscode-languageserver-types'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -66,7 +66,9 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
             }
           }
         }
-        logger.debug`read manual layouts for ${project.id}, found ${manualLayouts.length}`
+        if (manualLayouts.length) {
+          logger.debug`read manual layouts for ${project.id}, found ${manualLayouts.length}`
+        }
       } catch (err) {
         logger.warn(`Failed to read manual layouts for ${project.folderUri.fsPath}`, { err })
       }
@@ -80,7 +82,12 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   async write(project: Project, layouted: LayoutedView): Promise<Location> {
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(layouted.id))
-    const content = JSON5.stringify(layouted, null, 2)
+    // Ensure the manualLayout field is omitted (may exist in migration)
+    const withoutManualLayout = omit(layouted as unknown as ComputedView, ['manualLayout'])
+    const content = JSON5.stringify(withoutManualLayout, {
+      space: 2,
+      quote: '\'',
+    })
     const manualLayouts = await this.read(project)
     const existing = !!manualLayouts?.[layouted.id]
     let applied = false
@@ -88,6 +95,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     // from vscode-languageserver-types
     const MAX_VALUE = 2147483647
 
+    // Create a range that covers the whole file, the maximum size supported by LSP
     const range = Range.create(
       Position.create(0, 0),
       Position.create(MAX_VALUE, 1),
@@ -113,7 +121,9 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       })
       applied = applyResult.applied
       if (!applyResult.applied) {
-        logger.warn(loggable(applyResult))
+        logger.warn`Failed to apply manual layout edit for ${layouted.id} in project ${project.id}: ${
+          loggable(applyResult)
+        }`
       } else {
         logger.debug`Manual layout of ${layouted.id} in project ${project.id} saved to ${file.fsPath}`
       }

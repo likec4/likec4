@@ -218,7 +218,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     cancelToken?: CancellationToken,
   ): Promise<Array<GraphvizSvgOut>> {
     const KEY = 'All-LayoutedViews-DotWithSvg'
-    const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, GraphvizSvgOut[]>
+    const cache = this.services.shared.workspace.Cache as WorkspaceCache<string, GraphvizSvgOut[]>
     if (cache.has(KEY)) {
       return await Promise.resolve(cache.get(KEY)!)
     }

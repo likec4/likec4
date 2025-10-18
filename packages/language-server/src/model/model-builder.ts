@@ -30,7 +30,7 @@ import {
 } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
 import { isLikeC4Builtin } from '../likec4lib'
-import { logger as mainLogger, logWarnError } from '../logger'
+import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
 import { assignNavigateTo } from '../view-utils'
@@ -77,7 +77,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     super()
     this.projects = services.shared.workspace.ProjectsManager
     this.parser = services.likec4.ModelParser
-    this.cache = services.ValidatedWorkspaceCache
+    this.cache = services.shared.workspace.Cache
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
     this.mutex = services.shared.workspace.WorkspaceLock
     this.manualLayouts = services.likec4.ManualLayouts
@@ -127,8 +127,8 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         }
         logger.debug`unsafeSyncParseModelData`
         return buildModelData(project, docs)
-      } catch (e) {
-        logWarnError(e)
+      } catch (err) {
+        builderLogger.warn(`unsafeSyncParseModelData failed for project ${projectId}`, { err })
         return null
       }
     })
@@ -308,7 +308,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       try {
         listener(docs)
       } catch (e) {
-        logWarnError(e)
+        builderLogger.warn(loggable(e))
       }
     }
   }

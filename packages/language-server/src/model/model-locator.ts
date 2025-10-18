@@ -23,6 +23,12 @@ const { getDocument, streamAllContents } = AstUtils
 
 const logger = serverLogger.getChild('ModelLocator')
 
+export type ViewLocateResult = {
+  doc: ParsedLikeC4LangiumDocument
+  view: ParsedAstView
+  viewAst: ast.LikeC4View
+}
+
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
   private deploymentsIndex: DeploymentsIndex
@@ -147,7 +153,7 @@ export class LikeC4ModelLocator {
   public locateViewAst(
     viewId: c4.ViewId,
     projectId?: c4.ProjectId | undefined,
-  ): null | { doc: ParsedLikeC4LangiumDocument; view: ParsedAstView; viewAst: ast.LikeC4View } {
+  ): null | ViewLocateResult {
     const project = this.projects.ensureProjectId(projectId)
     for (const doc of this.documents(project)) {
       const view = doc.c4Views.find(r => r.id === viewId)

@@ -1,13 +1,14 @@
-import { type ProjectId, type ViewChange, type ViewId, invariant, nonexhaustive } from '@likec4/core'
-import { logger } from '@likec4/log'
+import { type ProjectId, type ViewChange, invariant, nonexhaustive } from '@likec4/core'
 import { Location, Range, TextEdit } from 'vscode-languageserver-types'
-import type { ParsedLikeC4LangiumDocument } from '../ast'
-import type { LikeC4ModelLocator } from '../model'
+import { logger as mainLogger } from '../logger'
+import type { LikeC4ModelLocator, ViewLocateResult } from '../model'
 import type { LikeC4Services } from '../module'
 import type { ChangeView } from '../protocol'
 import { changeElementStyle } from './changeElementStyle'
 import { changeViewLayout } from './changeViewLayout'
-import { saveManualLayout } from './saveManualLayout'
+import { removeManualLayoutV1 } from './removeManualLayoutV1'
+
+const logger = mainLogger.getChild('model-changes')
 
 export class LikeC4ModelChanges {
   private locator: LikeC4ModelLocator
@@ -23,25 +24,38 @@ export class LikeC4ModelChanges {
     try {
       await this.services.shared.workspace.WorkspaceLock.write(async () => {
         let { viewId, projectId: _projectId, change } = changeView
+        logger.debug`Applying model change ${change.op} to view ${viewId} in project ${_projectId}`
         const project = this.services.shared.workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
+
+        const lookup = this.locator.locateViewAst(viewId, project.id)
+        if (!lookup) {
+          throw new Error(`LikeC4ModelChanges: view not found: ${viewId}`)
+        }
+        const textDocument = {
+          uri: lookup.doc.textDocument.uri,
+          version: lookup.doc.textDocument.version,
+        }
+
         if (change.op === 'save-view-snapshot') {
           invariant(viewId === change.layout.id, 'View ID does not match')
           result = await this.services.likec4.ManualLayouts.write(project, change.layout)
+          // If there is an existing manual layout v1
+          if (lookup.view.manualLayout) {
+            // We clean it up
+            await removeManualLayoutV1(this.services, { lookup }).catch(err => {
+              logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
+            })
+          }
           return
         }
         if (change.op === 'reset-manual-layout') {
           await this.services.likec4.ManualLayouts.remove(project, viewId)
           return
         }
-        const { doc, edits, modifiedRange } = this.convertToTextEdit({
-          viewId,
-          projectId: project.id,
+        const { edits, modifiedRange } = this.convertToTextEdit({
+          lookup,
           change,
         })
-        const textDocument = {
-          uri: doc.textDocument.uri,
-          version: doc.textDocument.version,
-        }
         if (!edits.length) {
           return
         }
@@ -68,29 +82,20 @@ export class LikeC4ModelChanges {
     return result
   }
 
-  protected convertToTextEdit({ viewId, projectId, change }: {
-    viewId: ViewId
-    projectId: ProjectId
+  protected convertToTextEdit({ lookup, change }: {
+    lookup: ViewLocateResult
     change: Exclude<ViewChange, ViewChange.SaveViewSnapshot | ViewChange.ResetManualLayout>
   }): {
-    doc: ParsedLikeC4LangiumDocument
     modifiedRange: Range
     edits: TextEdit[]
   } {
-    const lookup = this.locator.locateViewAst(viewId, projectId)
-    if (!lookup) {
-      throw new Error(`LikeC4ModelChanges: view not found: ${viewId}`)
-    }
     switch (change.op) {
       case 'change-element-style': {
-        return {
-          doc: lookup.doc,
-          ...changeElementStyle(this.services, {
-            ...lookup,
-            targets: change.targets,
-            style: change.style,
-          }),
-        }
+        return changeElementStyle(this.services, {
+          ...lookup,
+          targets: change.targets,
+          style: change.style,
+        })
       }
       case 'change-autolayout': {
         const edit = changeViewLayout(this.services, {
@@ -98,21 +103,10 @@ export class LikeC4ModelChanges {
           layout: change.layout,
         })
         return {
-          doc: lookup.doc,
           modifiedRange: edit.range,
           edits: [edit],
         }
       }
-      case 'save-manual-layout':
-        const edit = saveManualLayout(this.services, {
-          ...lookup,
-          layout: change.layout,
-        })
-        return {
-          doc: lookup.doc,
-          modifiedRange: edit.range,
-          edits: [edit],
-        }
       default:
         nonexhaustive(change)
     }

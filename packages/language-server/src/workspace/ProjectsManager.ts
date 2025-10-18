@@ -426,6 +426,7 @@ export class ProjectsManager {
 
   protected async rebuidDocuments(cancelToken?: Cancellation.CancellationToken): Promise<void> {
     const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
+    this.services.workspace.Cache.clear()
     logger.info('invalidate and rebuild all {docs} documents', { docs: docs.length })
     await this.services.workspace.DocumentBuilder.update(docs, [], cancelToken)
   }

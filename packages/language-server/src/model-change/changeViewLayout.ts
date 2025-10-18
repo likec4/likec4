@@ -1,11 +1,11 @@
-import { invariant, type ViewChange } from '@likec4/core'
+import { type ViewChange, invariant } from '@likec4/core'
 import { GrammarUtils } from 'langium'
 import { findLast, isNumber } from 'remeda'
 import { TextEdit } from 'vscode-languageserver-types'
-import { ast, type ParsedAstView, type ParsedLikeC4LangiumDocument, toAstViewLayoutDirection } from '../ast'
+import { type ParsedAstView, type ParsedLikeC4LangiumDocument, ast, toAstViewLayoutDirection } from '../ast'
 import type { LikeC4Services } from '../module'
 
-const { findNodeForProperty, findNodeForKeyword } = GrammarUtils
+const { findNodeForKeyword } = GrammarUtils
 
 type ChangeViewLayoutArg = {
   view: ParsedAstView
@@ -17,7 +17,7 @@ type ChangeViewLayoutArg = {
 export function changeViewLayout(_services: LikeC4Services, {
   view,
   viewAst,
-  layout
+  layout,
 }: ChangeViewLayoutArg): TextEdit {
   // Should never happen
   invariant(viewAst.body, `View ${view.id} has no body`)

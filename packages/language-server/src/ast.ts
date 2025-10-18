@@ -175,6 +175,7 @@ export interface ParsedAstDeploymentView {
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   rules: Array<c4.DeploymentViewRule>
+  manualLayout?: c4.ViewManualLayout
 }
 
 export type ParsedAstView = ParsedAstElementView | ParsedAstDynamicView | ParsedAstDeploymentView

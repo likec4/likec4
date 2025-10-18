@@ -6,13 +6,15 @@ import { URI } from 'langium'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './FileSystemWatcher'
-import { isAnyLikeC4File, isLikeC4File } from './LikeC4FileSystem'
+import { isLikeC4File, isManualLayoutFile } from './LikeC4FileSystem'
 
 const logger = mainLogger.getChild('chokidar')
 
 export const chokidarFileSystemWatcher: FileSystemWatcherModuleContext = {
   fileSystemWatcher: (services: LikeC4SharedServices) => new ChokidarFileSystemWatcher(services),
 }
+
+const isAnyLikeC4File = (path: string) => isLikeC4File(path) || isLikeC4Config(path) || isManualLayoutFile(path)
 
 /**
  * A no-op file system watcher.
@@ -57,6 +59,12 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         } else if (isLikeC4File(path)) {
           logger.debug`file changed: ${path}`
           await this.services.workspace.DocumentBuilder.update([URI.file(path)], [])
+        } else if (isManualLayoutFile(path)) {
+          logger.debug`manual layout file changed: ${path}`
+          // TODO: optimize to only reload manual layouts instead of all projects
+          await this.services.workspace.ProjectsManager.reloadProjects()
+        } else {
+          logger.warn`Unknown file change: ${path}`
         }
       } catch (error) {
         logger.error(loggable(error))
@@ -71,6 +79,12 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         } else if (isLikeC4File(path)) {
           logger.debug`file removed: ${path}`
           await this.services.workspace.DocumentBuilder.update([], [URI.file(path)])
+        } else if (isManualLayoutFile(path)) {
+          logger.debug`manual layout file removed: ${path}`
+          // TODO: optimize to only reload manual layouts instead of all projects
+          await this.services.workspace.ProjectsManager.reloadProjects()
+        } else {
+          logger.warn`Unknown file removal: ${path}`
         }
       } catch (error) {
         logger.error(loggable(error))

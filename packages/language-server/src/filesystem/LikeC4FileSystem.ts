@@ -2,8 +2,8 @@ import { type LikeC4ProjectConfig, isLikeC4Config, loadConfig } from '@likec4/co
 import { fdir } from 'fdir'
 import { type FileSystemNode, URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
-import { existsSync } from 'node:fs'
-import { mkdir, stat, unlink, writeFile } from 'node:fs/promises'
+import { mkdirSync } from 'node:fs'
+import { stat, unlink, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { LikeC4LanguageMetaData } from '../generated/module'
 import { Content, isLikeC4Builtin } from '../likec4lib'
@@ -23,7 +23,7 @@ export const LikeC4FileSystem = (
 
 export const isLikeC4File = (path: string) => LikeC4LanguageMetaData.fileExtensions.some((ext) => path.endsWith(ext))
 
-export const isAnyLikeC4File = (path: string) => isLikeC4File(path) || isLikeC4Config(path)
+export const isManualLayoutFile = (path: string) => path.endsWith('.view.json5')
 
 /**
  * A file system provider that follows symbolic links.
@@ -108,15 +108,20 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
   }
 
   async writeFile(uri: URI, content: string): Promise<void> {
-    logger.debug('writing file {path}', { path: uri.fsPath })
     const dir = dirname(uri.fsPath)
-    if (!existsSync(dir)) {
-      logger.debug('creating directory {path}', { path: dir })
-      await mkdir(dir, { recursive: true })
+    const exists = await stat(dir).catch(() => null)
+    if (exists?.isFile()) {
+      throw new Error(`Cannot create directory ${dir} because a file with the same name exists.`)
     }
+    if (!exists) {
+      logger.debug('creating directory {path}', { path: dir })
+      // Create the directory synchronously on purpose
+      // to prevent watchers from picking up the change too early
+      mkdirSync(dir, { recursive: true })
+    }
+    logger.debug('writing file {path}', { path: uri.fsPath })
     return await writeFile(uri.fsPath, content, {
       encoding: 'utf-8',
-      flush: true,
     })
   }
 

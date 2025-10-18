@@ -2,7 +2,7 @@
   "typescript.tsdk": "./node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "eslint.enable": false,
-  "oxc.enable": false,
+  "oxc.enable": true,
   "oxc.typeAware": true,
   "oxc.lint.run": "onSave",
   "[typescript]": {

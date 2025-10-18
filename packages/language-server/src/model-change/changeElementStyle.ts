@@ -6,7 +6,6 @@ import {
   _type,
   invariant,
   isAncestor,
-  isScopedElementView,
 } from '@likec4/core'
 import { type AstNode, GrammarUtils } from 'langium'
 import { entries, filter, findLast, isTruthy, last } from 'remeda'
@@ -15,7 +14,7 @@ import { type ParsedAstView, type ParsedLikeC4LangiumDocument, ast } from '../as
 import type { FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
 
-const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
+const { findNodeForKeyword } = GrammarUtils
 
 const asViewStyleRule = (target: string, style: ViewChange.ChangeElementStyle['style'], indent = 0) => {
   const indentStr = indent > 0 ? ' '.repeat(indent) : ''

@@ -29,6 +29,7 @@ import {
 } from './generated/module'
 import { type LikeC4LanguageServices, DefaultLikeC4LanguageServices } from './LikeC4LanguageServices'
 import {
+  LikeC4CodeActionProvider,
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,
   LikeC4DocumentHighlightProvider,
@@ -89,6 +90,8 @@ interface LikeC4AddedSharedServices {
     WorkspaceSymbolProvider: WorkspaceSymbolProvider
   }
   workspace: {
+    // WorkspaceCache on Validated state
+    Cache: WorkspaceCache<string, any>
     ProjectsManager: ProjectsManager
     IndexManager: IndexManager
     LangiumDocuments: LangiumDocuments
@@ -109,6 +112,7 @@ const createLikeC4SharedModule = (context: LanguageServicesContext): Module<
     WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services),
   },
   workspace: {
+    Cache: services => new WorkspaceCache(services, DocumentState.Validated),
     IndexManager: services => new IndexManager(services),
     LangiumDocuments: services => new LangiumDocuments(services),
     ProjectsManager: services => new ProjectsManager(services),
@@ -125,7 +129,6 @@ export interface LikeC4AddedServices {
   documentation: {
     DocumentationProvider: LikeC4DocumentationProvider
   }
-  ValidatedWorkspaceCache: WorkspaceCache<string, any>
   validation: {
     DocumentValidator: LikeC4DocumentValidator
   }
@@ -155,6 +158,8 @@ export interface LikeC4AddedServices {
     HoverProvider: LikeC4HoverProvider
     CodeLensProvider: LikeC4CodeLensProvider
     DocumentLinkProvider: LikeC4DocumentLinkProvider
+    Formatter: LikeC4Formatter
+    CodeActionProvider: LikeC4CodeActionProvider
   }
   references: {
     NameProvider: LikeC4NameProvider
@@ -184,7 +189,6 @@ export const createLikeC4Module = (
   validation: {
     DocumentValidator: bind(LikeC4DocumentValidator),
   },
-  ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),
   mcp: {
     Server: (services: LikeC4Services) => context.mcpServer(services),
@@ -216,6 +220,7 @@ export const createLikeC4Module = (
     CodeLensProvider: bind(LikeC4CodeLensProvider),
     DocumentLinkProvider: bind(LikeC4DocumentLinkProvider),
     Formatter: bind(LikeC4Formatter),
+    CodeActionProvider: bind(LikeC4CodeActionProvider),
   },
   workspace: {
     AstNodeDescriptionProvider: bind(AstNodeDescriptionProvider),
