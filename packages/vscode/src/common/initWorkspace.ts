@@ -4,7 +4,7 @@ import { joinRelativeURL } from 'ufo'
 import * as vscode from 'vscode'
 import { globPattern, isVirtual, isWebUi } from '../const'
 import { logger, logWarn } from '../logger'
-import { type Rpc, useRpc } from '../Rpc'
+import type { Rpc } from '../Rpc'
 
 // LSP web extensions does not have access to the file system
 // so we do this trick (find all files and open them)

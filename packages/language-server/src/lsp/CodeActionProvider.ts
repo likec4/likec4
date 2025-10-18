@@ -2,13 +2,10 @@ import type { LangiumDocument } from 'langium'
 import type { CodeActionProvider } from 'langium/lsp'
 import {
   type CodeActionParams,
-  CodeActionKind,
+  CodeAction,
   Command,
-  Diagnostic,
   TextEdit,
-  WorkspaceEdit,
 } from 'vscode-languageserver-protocol'
-import { CodeAction } from 'vscode-languageserver-protocol'
 
 type CommandOrCodeAction = Command | CodeAction
 
