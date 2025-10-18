@@ -10,14 +10,14 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { IconAlertTriangle } from '@tabler/icons-react'
-import { Fragment } from 'react'
+import { Fragment, memo } from 'react'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useCurrentView } from '../../hooks/useCurrentView'
 import { useDiagramActorRef } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import type { OnLayoutTypeChange } from '../../LikeC4Diagram.props'
 
-export function LayoutDriftFrame({ onLayoutTypeChange }: { onLayoutTypeChange: OnLayoutTypeChange }) {
+export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>(({ onLayoutTypeChange }) => {
   const {
     _layout: layout,
     drifts,
@@ -52,8 +52,8 @@ export function LayoutDriftFrame({ onLayoutTypeChange }: { onLayoutTypeChange: O
     >
       <HoverCard
         position="bottom"
-        openDelay={500}
-        closeDelay={200}
+        openDelay={800}
+        closeDelay={150}
         floatingStrategy="absolute"
         offset={2}
         {...portalProps}>
@@ -104,7 +104,7 @@ export function LayoutDriftFrame({ onLayoutTypeChange }: { onLayoutTypeChange: O
             <Text mt={2} size="sm" lh="xs">
               View contains new elements or their sizes have changed,<br />
               Switch to the "auto" for current state.
-              {drifts.map((drift, i, all) => (
+              {drifts.map((drift) => (
                 <Fragment key={drift}>
                   <br />
                   <span>- {drift}</span>
@@ -116,7 +116,7 @@ export function LayoutDriftFrame({ onLayoutTypeChange }: { onLayoutTypeChange: O
                 Unlock editing to reset layout.
               </Text>
             )}
-            {enableReadOnly && (
+            {!enableReadOnly && enableVscode && (
               <Button
                 mt={'xs'}
                 size="compact-xs"
@@ -134,7 +134,7 @@ export function LayoutDriftFrame({ onLayoutTypeChange }: { onLayoutTypeChange: O
       </HoverCard>
     </Box>
   )
-}
+})
 
 const Btn = UnstyledButton.withProps({
   className: css({

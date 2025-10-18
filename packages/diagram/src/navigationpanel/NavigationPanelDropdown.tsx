@@ -28,15 +28,28 @@ import {
   IconZoomScan,
 } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
-import { deepEqual } from 'fast-equals'
-import { type ComponentPropsWithoutRef, type KeyboardEventHandler, useRef } from 'react'
+import { deepEqual, shallowEqual } from 'fast-equals'
+import {
+  type ComponentPropsWithoutRef,
+  type KeyboardEventHandler,
+  memo,
+  useDeferredValue,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
 import { useOnDiagramEvent } from '../custom'
 import { useLikeC4Model } from '../hooks/useLikeC4Model'
-import type { NavigationPanelActorContext } from './actor'
+import type { NavigationPanelActorContext, NavigationPanelActorSnapshot } from './actor'
 import { ProjectsMenu } from './dropdown/ProjectsMenu'
-import { useNavigationActor, useNavigationActorContext, useNavigationActorRef } from './hooks'
+import {
+  useNavigationActor,
+  useNavigationActorContext,
+  useNavigationActorRef,
+  useNavigationActorSnapshot,
+} from './hooks'
 import { breadcrumbTitle } from './styles.css'
 
 const scopedKeydownHandler = createScopedKeydownHandler({
@@ -47,9 +60,13 @@ const scopedKeydownHandler = createScopedKeydownHandler({
   orientation: 'vertical',
 })
 
+function hasSearchQuerySelector(s: NavigationPanelActorSnapshot) {
+  return s.context.searchQuery.trim().length >= 2
+}
+
 export function NavigationPanelDropdown() {
   const actor = useNavigationActor()
-  const searchQuery = useSelector(actor.actorRef, s => s.context.searchQuery)
+  const hasSearchQuery = useNavigationActorSnapshot(hasSearchQuerySelector)
 
   useOnDiagramEvent('paneClick', () => {
     actor.closeDropdown()
@@ -62,8 +79,6 @@ export function NavigationPanelDropdown() {
   const setSearchQuery = useThrottledCallback((value: string) => {
     actor.send({ type: 'searchQuery.change', value })
   }, 250)
-
-  const hasSearchQuery = searchQuery.trim().length >= 2
 
   return (
     <PopoverDropdown
@@ -82,9 +97,8 @@ export function NavigationPanelDropdown() {
       <ProjectsMenu />
       <HStack gap="xs">
         <SearchInput
-          value={searchQuery}
+          defaultValue={actor.actorRef.getSnapshot().context.searchQuery}
           onChange={setSearchQuery}
-          data-likec4-focusable
           onKeyDown={scopedKeydownHandler}
         />
         {
@@ -119,35 +133,50 @@ export function NavigationPanelDropdown() {
         }}
       >
         {hasSearchQuery
-          ? <SearchResults searchQuery={normalizeViewPath(searchQuery).toLowerCase()} />
+          ? <SearchResults />
           : <FolderColumns />}
       </ScrollAreaAutosize>
     </PopoverDropdown>
   )
 }
 
+function selectSearchQuery(s: NavigationPanelActorSnapshot) {
+  return normalizeViewPath(s.context.searchQuery)
+}
+
 const compare = compareNaturalHierarchically(VIEW_FOLDERS_SEPARATOR)
-function SearchResults({ searchQuery }: { searchQuery: string }) {
+
+const SearchResults = memo(() => {
   const likec4model = useLikeC4Model()
   const actor = useNavigationActor()
-  const isSearchByPath = searchQuery.includes(VIEW_FOLDERS_SEPARATOR)
+  const searchQuery = useSelector(actor.actorRef, selectSearchQuery)
+  const deferredSearchQuery = useDeferredValue(searchQuery)
+  const isSearchByPath = deferredSearchQuery.includes(VIEW_FOLDERS_SEPARATOR)
+  const highlight = isSearchByPath ? deferredSearchQuery.split(VIEW_FOLDERS_SEPARATOR) : deferredSearchQuery
 
-  const found = pipe(
-    likec4model.views(),
-    ifilter(v => {
-      // if search query contains folder separator, search in view data
-      if (isSearchByPath && v.$view.title) {
-        return normalizeViewPath(v.$view.title).toLowerCase().includes(searchQuery)
-      }
-      return v.id.toLowerCase().includes(searchQuery) || !!v.title?.toLowerCase().includes(searchQuery)
-    }),
-    ifirst(20),
-    toArray(),
-    sort((a, b) => compare(a.folder.path, b.folder.path)),
-  )
+  const [found, setFound] = useState<LikeC4ViewModel[]>([])
+
+  useEffect(() => {
+    setFound(current => {
+      const results = pipe(
+        likec4model.views(),
+        ifilter(v => {
+          // if search query contains folder separator, search in view data
+          if (isSearchByPath && v.$view.title) {
+            return normalizeViewPath(v.$view.title).toLowerCase().includes(deferredSearchQuery)
+          }
+          return v.id.toLowerCase().includes(deferredSearchQuery) ||
+            !!v.title?.toLowerCase().includes(deferredSearchQuery)
+        }),
+        ifirst(20),
+        toArray(),
+        sort((a, b) => compare(a.folder.path, b.folder.path)),
+      )
+      return shallowEqual(results, current) ? current : results
+    })
+  }, [likec4model, deferredSearchQuery, isSearchByPath])
+
   if (found.length === 0) return <div>no results</div>
-
-  const highlight = isSearchByPath ? searchQuery.split(VIEW_FOLDERS_SEPARATOR) : searchQuery
 
   return (
     <ScrollAreaAutosize
@@ -181,7 +210,8 @@ function SearchResults({ searchQuery }: { searchQuery: string }) {
       </VStack>
     </ScrollAreaAutosize>
   )
-}
+})
+
 interface FoundedViewProps {
   view: LikeC4ViewModel
   highlight: string | string[]
@@ -406,7 +436,7 @@ const selectColumns = (context: NavigationPanelActorContext): FolderColumnData[]
   return columns
 }
 
-function FolderColumns() {
+const FolderColumns = memo(() => {
   const columns = useNavigationActorContext(selectColumns, deepEqual)
   return (
     <HStack gap="xs" alignItems="stretch">
@@ -420,7 +450,7 @@ function FolderColumns() {
       ])}
     </HStack>
   )
-}
+})
 
 function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -515,6 +545,7 @@ function SearchInput({ onKeyDown, ...props }: {
       value={_value}
       onKeyDown={onKeyDown}
       onChange={e => handleChange(e.currentTarget.value)}
+      data-likec4-focusable
       classNames={{
         wrapper: css({
           flexGrow: 1,

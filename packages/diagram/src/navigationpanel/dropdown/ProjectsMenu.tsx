@@ -1,10 +1,11 @@
 import { css } from '@likec4/styles/css'
 import { Box, HStack } from '@likec4/styles/jsx'
-import { type ButtonProps, Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
+import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
+import { memo } from 'react'
 import { useLikeC4ProjectId, useLikeC4ProjectsContext } from '../../hooks/useLikeC4Project'
 
-export function ProjectsMenu(props: ButtonProps) {
+export const ProjectsMenu = memo(_ => {
   const { projects, onProjectChange } = useLikeC4ProjectsContext()
   const projectId = useLikeC4ProjectId()
 
@@ -51,8 +52,7 @@ export function ProjectsMenu(props: ButtonProps) {
                 },
               }),
             }}
-            rightSection={<IconChevronDown opacity={0.5} size={12} stroke={1.5} />}
-            {...props}>
+            rightSection={<IconChevronDown opacity={0.5} size={12} stroke={1.5} />}>
             {projectId}
           </Button>
         </MenuTarget>
@@ -75,4 +75,4 @@ export function ProjectsMenu(props: ButtonProps) {
       </Menu>
     </HStack>
   )
-}
+})

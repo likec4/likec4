@@ -342,12 +342,12 @@ const _relationshipsBrowserLogic = setup({
       }
     }),
     'open relationship source': enqueueActions(({ context, event }) => {
-      if (event.type !== 'xyflow.edgeClick') {
+      if (event.type !== 'xyflow.edgeClick' || !context.openSourceActor) {
         return
       }
       const relations = event.edge.data.relations
       if (hasAtLeast(relations, 1)) {
-        context.openSourceActor?.send({ type: 'open.source', relation: relations[0] })
+        context.openSourceActor.send({ type: 'open.source', relation: relations[0] })
       }
     }),
   },
@@ -420,27 +420,30 @@ const _relationshipsBrowserLogic = setup({
             }
           }),
         },
-        'xyflow.edgeClick': {
-          guard: 'hasViewId',
-          actions: enqueueActions(({ event, context, system, enqueue }) => {
-            if (
-              event.edge.selected || event.edge.data.relations.length > 1
-              // (context.xyedges.some(e => e.data.dimmed === true || e.data.dimmed === 'immediate') && !event.edge.data.dimmed)
-            ) {
-              enqueue.sendTo(typedSystem(system).overlaysActorRef!, {
-                type: 'open.relationshipDetails',
-                viewId: context.viewId!,
-                source: event.edge.data.sourceFqn,
-                target: event.edge.data.targetFqn,
-                openSourceActor: context.openSourceActor,
-              })
-            } else {
-              enqueue({
-                type: 'open relationship source',
-              })
-            }
-          }),
-        },
+        'xyflow.edgeClick': [
+          {
+            guard: 'hasViewId',
+            actions: enqueueActions(({ event, context, system, enqueue }) => {
+              if (
+                event.edge.selected || event.edge.data.relations.length > 1
+                // (context.xyedges.some(e => e.data.dimmed === true || e.data.dimmed === 'immediate') && !event.edge.data.dimmed)
+              ) {
+                enqueue.sendTo(typedSystem(system).overlaysActorRef!, {
+                  type: 'open.relationshipDetails',
+                  viewId: context.viewId!,
+                  source: event.edge.data.sourceFqn,
+                  target: event.edge.data.targetFqn,
+                  openSourceActor: context.openSourceActor,
+                })
+              } else {
+                enqueue('open relationship source')
+              }
+            }),
+          },
+          {
+            actions: 'open relationship source',
+          },
+        ],
         'navigate.to': {
           actions: [
             assign({

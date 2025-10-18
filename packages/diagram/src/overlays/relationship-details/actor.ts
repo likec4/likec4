@@ -207,12 +207,12 @@ const _relationshipDetailsLogic = setup({
       }
     }),
     'open relationship source': enqueueActions(({ context, event }) => {
-      if (event.type !== 'xyflow.edgeClick') {
+      if (event.type !== 'xyflow.edgeClick' || !context.openSourceActor) {
         return
       }
       const relationId = event.edge.data.relationId
       if (relationId) {
-        context.openSourceActor?.send({ type: 'open.source', relation: relationId })
+        context.openSourceActor.send({ type: 'open.source', relation: relationId })
       }
     }),
   },
