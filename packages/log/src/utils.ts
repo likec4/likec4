@@ -16,9 +16,10 @@ export const parseStack = (stack: string): string[] => {
   return lines
 }
 
-export function ident(value: string | string[], identation = 2): string {
+export function indent(value: string | string[], indentation = 2): string {
   value = Array.isArray(value) ? value : value.split('\n')
-  return value.map((l) => `${' '.repeat(identation)}${l}`).join('\n')
+  const prefix = ' '.repeat(indentation)
+  return value.map((l) => `${prefix}${l}`).join('\n')
 }
 
 export function loggable(error: unknown): string {
@@ -29,9 +30,9 @@ export function loggable(error: unknown): string {
     const mergedErr = mergeErrorCause(error)
     if (mergedErr.stack) {
       const stack = parseStack(mergedErr.stack)
-      return mergedErr.message + '\n' + ident(stack.slice(1))
+      return mergedErr.message + '\n' + indent(stack.slice(1))
     }
     return mergedErr.message
   }
-  return safeStringify(error)
+  return safeStringify(error, { indentation: '\t' })
 }

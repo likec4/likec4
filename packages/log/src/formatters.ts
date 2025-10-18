@@ -13,7 +13,7 @@ import {
 } from '@logtape/logtape'
 import mergeErrorCause from 'merge-error-cause'
 import wrapErrorMessage from 'wrap-error-message'
-import { ident, parseStack } from './utils'
+import { indent, parseStack } from './utils'
 
 function gerErrorFromLogRecord(record: LogRecord): Error | null {
   const errors = Object
@@ -45,14 +45,14 @@ export function appendErrorToMessage(values: FormattedValues, color?: boolean): 
   if (error) {
     let errorMessge = error.message
     if (error.stack) {
-      errorMessge = errorMessge + '\n' + ident(error.stack.split('\n').slice(1))
+      errorMessge = errorMessge + '\n' + indent(error.stack.split('\n').slice(1))
     }
     if (color) {
       errorMessge = `${ansiColors.red}${errorMessge}${RESET}`
     }
     return {
       ...values,
-      message: values.message + '\n' + ident(errorMessge),
+      message: values.message + '\n' + indent(errorMessge),
     }
   }
   return values
