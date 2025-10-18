@@ -11,8 +11,10 @@ import {
 } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger } from '@likec4/log'
+import { applyManualLayout } from '../manual/applyManualLayout'
 import { calcSequenceLayout } from '../sequence'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
+import { GraphClusterSpace } from './DotPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson } from './GraphvizParser'
@@ -103,9 +105,9 @@ export class GraphvizLayouter implements Disposable {
       const json = await this.dotToJson(dot)
       let diagram = parseGraphvizJson(json, view)
 
-      // if (view.manualLayout) {
-      //   diagram = applyManualLayout(diagram, view.manualLayout)
-      // }
+      if (view.manualLayout) {
+        diagram = applyManualLayout(diagram, view.manualLayout)
+      }
 
       if (isDynamicView(diagram)) {
         Object.assign(
@@ -118,7 +120,7 @@ export class GraphvizLayouter implements Disposable {
 
       dot = dot
         .split('\n')
-        .filter((l) => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
+        .filter((l) => !(l.includes('margin') && l.includes(`${GraphClusterSpace}`))) // see DotPrinter.ts#L175
         .join('\n') as DotSource
 
       logger.debug`layouting view ${params.view.id} done`
@@ -132,7 +134,7 @@ export class GraphvizLayouter implements Disposable {
     let dot = await this.dot(params)
     dot = dot
       .split('\n')
-      .filter((l) => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
+      .filter((l) => !(l.includes('margin') && l.includes(`${GraphClusterSpace}`))) // see DotPrinter.ts#L175
       .join('\n') as DotSource
     const svg = await this.graphviz.svg(dot)
     return {

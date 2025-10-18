@@ -98,6 +98,9 @@ type GraphologyEdgeAttributes = {
   hierarchyDistance: number
 }
 
+// space around clusters, but SVG output requires hack
+export const GraphClusterSpace = 50.1
+
 export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   private ids = new Set<string>()
   private subgraphs = new Map<NodeId, SubgraphModel>()
@@ -293,7 +296,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.fontsize]: pxToPoints(15),
       [_.labeljust]: autoLayout.direction === 'RL' ? 'r' : 'l',
       [_.labelloc]: autoLayout.direction === 'BT' ? 'b' : 't',
-      [_.margin]: 50.1, // space around clusters, but SVG output requires hack
+      [_.margin]: GraphClusterSpace,
     })
 
     return G
