@@ -89,12 +89,14 @@ interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewPropertie
   /**
    * If diagram has manual layout
    * But was changed and layout should be recalculated
-   * @deprecated use {@link drifts}
+   * @deprecated manual layout v2 uses {@link drifts}
    */
   readonly hasLayoutDrift?: boolean
 
   /**
-   * List of reasons why the view has layout drift (i.e "outdated")
+   * List of reasons causing layout drift
+   * If undefined, there is no layout drift or view is auto-layouted
+   * May be empty array if {@link _layout} is 'manual', but view did not change
    */
   readonly drifts?: ReadonlyArray<LayoutedViewDriftReason>
 }
@@ -112,8 +114,8 @@ export interface LayoutedDeploymentView<A extends AnyAux = AnyAux> extends BaseL
 export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
   readonly [_type]: 'dynamic'
   /**
-   * How to display the dynamic view
-   * - `diagram`: display as a regular likec4 view
+   * Default variant of this dynamic view
+   * - `diagram`: display as a regular likec4 view (default if not specified)
    * - `sequence`: display as a sequence diagram
    */
   readonly variant: DynamicViewDisplayVariant

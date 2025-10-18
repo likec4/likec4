@@ -76,6 +76,9 @@ export interface ViewAutoLayout {
 }
 
 /**
+ * v1 Manual layout of a view, stored in the block comment to the view definition.
+ * Keeping this type for backward compatibility and migration purposes.
+ *
  * @deprecated Use {@link ViewManualLayoutSnapshot} instead
  */
 export type ViewManualLayout = {

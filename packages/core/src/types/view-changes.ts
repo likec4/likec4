@@ -2,7 +2,7 @@ import type { NonEmptyArray } from './_common'
 import type * as scalar from './scalar'
 import type { BorderStyle, ElementShape, ThemeColor } from './styles'
 import type { LayoutedView } from './view'
-import type { AutoLayoutDirection, ViewManualLayout } from './view-common'
+import type { AutoLayoutDirection } from './view-common'
 
 export namespace ViewChange {
   export interface ChangeElementStyle {
@@ -14,12 +14,6 @@ export namespace ViewChange {
       color?: ThemeColor
     }
     targets: NonEmptyArray<scalar.Fqn | scalar.DeploymentFqn>
-  }
-
-  /** @deprecated */
-  export interface SaveManualLayout {
-    op: 'save-manual-layout'
-    layout: ViewManualLayout
   }
 
   export interface SaveViewSnapshot {
@@ -42,7 +36,6 @@ export namespace ViewChange {
 }
 export type ViewChange =
   | ViewChange.ChangeElementStyle
-  | ViewChange.SaveManualLayout
   | ViewChange.SaveViewSnapshot
   | ViewChange.ResetManualLayout
   | ViewChange.ChangeAutoLayout
