@@ -13,26 +13,22 @@ const useDocumentSelector = createSingletonComposable(() => {
       const workspaceFolders = wFolders.value ?? []
 
       const isVirtual = workspaceFolders.every(f => f.uri.scheme !== 'file') || false
+
       if (workspaceFolders.length === 0) {
         logger.warn(`No workspace folder found`)
       }
 
       // The glob pattern used to find likec4 source files inside the workspace
-      // const scheme = isVirtual ? 'vscode-vfs' : 'file'
-      const documentSelector: TextDocumentFilter[] = [
-        { language: languageId, scheme: 'file' },
-        { language: languageId, scheme: 'vscode-vfs' },
-        { language: languageId, scheme: 'vscode-remote' },
-      ]
-      // const documentSelector = workspaceFolders.map((w): TextDocumentFilter => {
-      //   return { language: languageId, scheme }
-      // })
+      const scheme = isVirtual ? 'vscode-vfs' : 'file'
+      const documentSelector = workspaceFolders.map((w): TextDocumentFilter => {
+        return { language: languageId, scheme, pattern: new vscode.RelativePattern(w, globPattern).pattern }
+      })
 
-      // if (documentSelector.length === 0) {
-      //   documentSelector.push({ language: languageId, scheme: 'vscode-vfs', pattern: globPattern })
-      // }
+      if (documentSelector.length === 0) {
+        documentSelector.push({ language: languageId, scheme: 'vscode-vfs', pattern: globPattern })
+      }
 
-      // documentSelector.push({ language: languageId, scheme: 'vscode-remote', pattern: globPattern })
+      documentSelector.push({ language: languageId, scheme: 'vscode-remote', pattern: globPattern })
 
       return old && deepEqual(old, documentSelector) ? old : documentSelector
     } catch (error) {
