@@ -210,6 +210,10 @@
         {
           "command": "likec4.validate-layout",
           "when": "likec4.activated"
+        },
+        {
+          "command": "likec4.migrate-manual-layouts",
+          "when": "likec4.activated"
         }
       ]
     },
@@ -247,6 +251,11 @@
       {
         "command": "likec4.validate-layout",
         "title": "%ext.cmd.validate-layout%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.migrate-manual-layouts",
+        "title": "%ext.cmd.migrate-manual-layouts%",
         "category": "%ext.title%"
       }
     ]

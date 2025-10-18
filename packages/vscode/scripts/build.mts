@@ -82,7 +82,7 @@ configs.push({
   target: 'node20',
   external: ['vscode', 'esbuild', 'bundle-require'],
   platform: 'node',
-  conditions: ['node', 'sources', 'import'],
+  conditions: ['sources', 'node', 'import'],
 }, {
   ...base,
   entryPoints: [
@@ -92,7 +92,7 @@ configs.push({
   target: 'node20',
   external: ['vscode', 'esbuild', 'bundle-require'],
   platform: 'node',
-  conditions: ['node', 'sources', 'import'],
+  conditions: ['sources', 'node', 'import'],
 })
 
 // ----------- Browser

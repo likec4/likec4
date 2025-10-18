@@ -6,7 +6,6 @@ import {
   createSingletonComposable,
   effectScope,
   extensionContext,
-  nextTick,
   ref,
   shallowRef,
   triggerRef,
@@ -35,12 +34,12 @@ const logger = rootLogger.getChild('diagram-panel')
 
 export const useDiagramPanel = createSingletonComposable(() => {
   const panel = shallowRef<WebviewPanel | null>(null)
-  const panelVisible = ref(false)
   let panelScope: EffectScope | null = null
 
   const panelState = {
     viewId: ref<ViewId | null>(null),
     projectId: ref<ProjectId | null>(null),
+    visible: ref(false),
   }
 
   // vscode-messenger participant id
@@ -53,19 +52,19 @@ export const useDiagramPanel = createSingletonComposable(() => {
     const panelExists = panel.value !== null
     const _panel = panel.value ??= useDisposable(createWebviewPanel())
 
-    panelVisible.value = _panel.visible
+    panelState.visible.value = _panel.visible
 
-    _panel.onDidDispose(() => {
+    useDisposable(_panel.onDidDispose(() => {
       // if panel is not disposed by close() call, call close() to dispose it
       if (panel.value) {
         logger.debug`panel closed by user`
         panel.value = null
         close()
       }
-    })
+    }))
     useDisposable(_panel.onDidChangeViewState((e) => {
-      if (panelVisible.value !== e.webviewPanel.visible) {
-        panelVisible.value = e.webviewPanel.visible
+      if (panelState.visible.value !== e.webviewPanel.visible) {
+        panelState.visible.value = e.webviewPanel.visible
         logger.debug`panel visible changed: ${e.webviewPanel.visible}`
         triggerRef(panel)
       }
@@ -90,21 +89,13 @@ export const useDiagramPanel = createSingletonComposable(() => {
         projectId,
         viewId,
       })
+    }, {
+      immediate: panelExists,
     })
 
-    if (panelExists) {
-      void nextTick(() => {
-        logger.debug`panel exists, sending OpenView notification`
-        logger.debug`sendNotification ${'OpenView ' + viewId} from ${projectId}`
-        messenger.sendNotification(OnOpenView, participant, {
-          projectId,
-          viewId,
-        })
-      })
-    }
-
     tryOnScopeDispose(() => {
-      panelVisible.value = false
+      logger.debug`disposing scope for view ${panelState.viewId.value} (project: ${panelState.projectId.value})`
+      panelState.visible.value = false
       participantId.value = null
     })
   }
@@ -167,6 +158,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
     try {
       const _panel = panel.value
       // reset panel value to null to prevent dispose loop
+      // see runInPanelScope
       panel.value = null
       if (_panel) {
         logger.debug`close view ${panelState.viewId.value} (project: ${panelState.projectId.value})`
@@ -179,6 +171,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
       panelScope = null
       panelState.viewId.value = null
       panelState.projectId.value = null
+      panelState.visible.value = false
     }
   }
 
@@ -210,7 +203,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
     close,
     viewId: computed(() => panelState.viewId.value),
     projectId: computed(() => panelState.projectId.value),
-    visible: computed(() => panelVisible.value),
+    visible: computed(() => panelState.visible.value),
     deserialize,
     getLastClickedElement: async () => {
       if (participantId.value) {
@@ -235,6 +228,7 @@ function createWebviewPanel() {
     },
     {
       enableScripts: true,
+      enableCommandUris: true,
     },
   )
 }
@@ -257,8 +251,8 @@ function writeHTMLToDiagramPreview(
 
   const stylesUri = getUri(panel.webview, ['dist', 'preview', 'index.css'])
   const scriptUri = getUri(panel.webview, ['dist', 'preview', 'index.js'])
-  // const isDarkTheme = useIsDarkTheme()
-  const theme = computed(() => useIsDarkTheme().value ? 'dark' : 'light')
+  const isDarkTheme = useIsDarkTheme()
+  const theme = computed(() => isDarkTheme.value ? 'dark' : 'light')
   const cspSource = panel.webview.cspSource.replaceAll('"', '\'')
   const cspDirectives = [
     `default-src 'none';`,
@@ -278,7 +272,7 @@ function writeHTMLToDiagramPreview(
     <meta http-equiv="Content-Security-Policy" content="${cspDirectives.join(' ')}">
     <link rel="stylesheet" type="text/css" href="${stylesUri}" nonce="${nonce}">
   </head>
-  <body class="${theme.value}">
+  <body class="${_theme}">
     <script nonce="${nonce}">
       var __VIEW_ID = ${JSON.stringify(viewId)};
       var __PROJECT_ID = ${JSON.stringify(projectId)};

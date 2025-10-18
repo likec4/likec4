@@ -8,9 +8,8 @@ import { type Rpc, useRpc } from '../Rpc'
 
 // LSP web extensions does not have access to the file system
 // so we do this trick (find all files and open them)
-export async function initWorkspace() {
+export async function initWorkspace(rpc: Rpc) {
   try {
-    const rpc = useRpc()
     const docs = await findSources(rpc)
     if (docs.length <= 0) {
       logger.warn('[InitWorkspace] with pattern {globPattern} no docs found', { globPattern })

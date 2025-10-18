@@ -10,7 +10,7 @@ import {
 import { keys } from 'remeda'
 import { isDev } from '../const'
 import { logger as root, logWarn } from '../logger'
-import { type Rpc, useRpc } from '../Rpc'
+import { useRpc } from '../Rpc'
 import { whenExtensionActive } from './useIsActivated'
 
 // Application insights key (also known as instrumentation key)
@@ -22,28 +22,33 @@ const logger = root.getChild('telemetry')
 export const useTelemetry = createSingletonComposable(() => {
   const reporter = useDisposable(new TelemetryReporter(TelemetryConnectionString))
   const isEnabled = useIsTelemetryEnabled()
-  whenExtensionActive(() => {
-    watch(isEnabled, (_isEnabled) => {
-      if (!_isEnabled) {
-        logger.debug('telemetry disabled')
-        return
-      }
-      if (isDev) {
-        logger.debug('useTelemetry activation (dev)')
-        return
-      }
-      logger.debug('useTelemetry activation')
-      activateTelemetry(useRpc(), reporter)
-    }, {
-      immediate: true,
-    })
-  }, () => {
-    logger.debug('useTelemetry deactivation')
+  whenExtensionActive({
+    onStart() {
+      watch(isEnabled, (_isEnabled) => {
+        if (!_isEnabled) {
+          logger.debug('telemetry disabled')
+          return
+        }
+        if (isDev) {
+          logger.debug('useTelemetry activation (dev)')
+          return
+        }
+        logger.debug('useTelemetry activation')
+        activateTelemetry(reporter)
+      }, {
+        immediate: true,
+      })
+    },
+    onStop() {
+      logger.info('telemetry stopped')
+    },
   })
   return reporter
 })
 
-function activateTelemetry(rpc: Rpc, telemetry: TelemetryReporter) {
+function activateTelemetry(telemetry: TelemetryReporter) {
+  const rpc = useRpc()
+
   async function fetchMetrics() {
     const t0 = performance.now()
     const { metrics } = await rpc.fetchMetrics()

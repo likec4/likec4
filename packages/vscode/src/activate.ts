@@ -1,27 +1,21 @@
 import useDocumentSelector from '#useDocumentSelector'
 import useLanguageClient from '#useLanguageClient'
 import { ConfigFilenames } from '@likec4/config'
-import type { ProjectId, ViewId } from '@likec4/core'
-import type { Locate } from '@likec4/language-server/protocol'
 import {
-  executeCommand,
   nextTick,
   onDeactivate,
   shallowRef,
   toRef,
   toValue,
+  triggerRef,
   tryOnScopeDispose,
-  useCommand,
   useDisposable,
   useFsWatcher,
   watch,
 } from 'reactive-vscode'
-import { countBy, entries, groupBy, keys, map, pipe, prop } from 'remeda'
 import * as vscode from 'vscode'
-import {
-  type DiagnosticSeverity as lcDiagnosticSeverity,
-  State,
-} from 'vscode-languageclient'
+import { State } from 'vscode-languageclient'
+import { registerCommands } from './commands'
 import { useBuiltinFileSystem } from './common/useBuiltinFileSystem'
 import { useDiagramPanel, ViewType } from './common/useDiagramPanel'
 import { useExtensionLogger } from './common/useExtensionLogger'
@@ -30,7 +24,6 @@ import { activateMessenger, useMessenger } from './common/useMessenger'
 import { useTelemetry } from './common/useTelemetry'
 import { isDev } from './const'
 import { logger, logWarn } from './logger'
-import { commands } from './meta'
 import { useRpc } from './Rpc'
 import { performanceMark } from './utils'
 
@@ -39,9 +32,9 @@ export function activateExtension(extensionKind: 'node' | 'web') {
   useBuiltinFileSystem()
   useExtensionLogger()
   logger.info(`activateExtension: ${extensionKind}`)
-  const telemetry = useTelemetry()
 
   whenExtensionActive(() => {
+    const telemetry = useTelemetry()
     logger.info(`activateExtension done in ${m.pretty}`)
     telemetry.sendTelemetryEvent('activation', { extensionKind })
   })
@@ -90,10 +83,6 @@ function activateLc() {
 
   const documentSelector = useDocumentSelector()
 
-  function sendTelemetryAboutCommand(command: string) {
-    telemetry.sendTelemetryEvent('command', { command })
-  }
-
   useDisposable(client.onTelemetry((event) => {
     try {
       const { eventName, ...properties } = event
@@ -101,6 +90,9 @@ function activateLc() {
       if (eventName === 'error') {
         if ('stack' in properties) {
           properties.stack = new vscode.TelemetryTrustedValue(properties.stack)
+        }
+        if ('message' in properties) {
+          properties.message = new vscode.TelemetryTrustedValue(properties.message)
         }
         telemetry.sendTelemetryErrorEvent('error', properties)
         return
@@ -133,133 +125,8 @@ function activateLc() {
     await restartServer()
   })
 
-  // const preview = useDiagramPreview()
-  useCommand(commands.restart, () => {
-    sendTelemetryAboutCommand(commands.restart)
-    void restartServer()
-  })
-  useCommand(commands.openPreview, async (viewId?: ViewId, projectId = 'default' as ProjectId) => {
-    sendTelemetryAboutCommand(commands.openPreview)
-    if (!viewId) {
-      try {
-        logger.debug('fetching views from all projects')
-        const views = await rpc.fetchViewsFromAllProjects()
-        if (views.length === 0) {
-          await vscode.window.showWarningMessage('No views found', { modal: true })
-          return
-        }
-        const isSingleProject = keys(countBy(views, (v) => v.projectId)).length === 1
-        const items = views.map((v) => ({
-          label: isSingleProject ? v.id : `${v.projectId}: ${v.id}`,
-          description: v.title ?? '',
-          viewId: v.id,
-          projectId: v.projectId,
-        }))
-        const selected = await vscode.window.showQuickPick(items, {
-          canPickMany: false,
-          title: 'Select a view',
-        })
-        if (!selected) {
-          return
-        }
-        viewId = selected.viewId
-        projectId = selected.projectId
-      } catch (e) {
-        logWarn(e)
-        return
-      }
-    }
-    preview.open(viewId, projectId)
-  })
-
-  useCommand(commands.locate, async (params: Locate.Params) => {
-    sendTelemetryAboutCommand(commands.locate)
-    const loc = await rpc.locate(params)
-    if (!loc) return
-    const location = rpc.client.protocol2CodeConverter.asLocation(loc)
-    let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
-    // if (PreviewPanel.current?.panel.viewColumn === viewColumn) {
-    //   viewColumn = vscode.ViewColumn.Beside
-    // }
-    const editor = await vscode.window.showTextDocument(location.uri, {
-      viewColumn,
-      selection: location.range,
-      preserveFocus: viewColumn === vscode.ViewColumn.Beside,
-    })
-    editor.revealRange(location.range)
-  })
-
-  useCommand(commands.previewContextOpenSource, async () => {
-    sendTelemetryAboutCommand(commands.previewContextOpenSource)
-    const { element, deployment } = await preview.getLastClickedElement()
-    if (deployment) {
-      executeCommand(commands.locate, { deployment })
-    } else if (element) {
-      executeCommand(commands.locate, { element })
-    }
-  })
-
-  useCommand(commands.printDotOfCurrentview, async () => {
-    sendTelemetryAboutCommand(commands.printDotOfCurrentview)
-    const viewId = toValue(preview.viewId)
-    const projectId = toValue(preview.projectId)
-    if (!viewId || !projectId) {
-      logger.warn(`No preview panel found`)
-      return
-    }
-    const result = await rpc.layoutView({ viewId, projectId })
-    if (!result) {
-      logger.warn(`Failed to layout view ${viewId}`)
-      return
-    }
-    const { loggerOutput } = useExtensionLogger()
-    loggerOutput.info(`DOT of view "${viewId}"`)
-    loggerOutput.info('\n' + result.dot)
-    loggerOutput.show(false)
-  })
-
-  const layoutDiagnosticsCollection = vscode.languages.createDiagnosticCollection(
-    'likec4:layout',
-  )
-  useDisposable(layoutDiagnosticsCollection)
-
-  useCommand(commands.validateLayout, async () => {
-    const { loggerOutput } = useExtensionLogger()
-    sendTelemetryAboutCommand(commands.validateLayout)
-    const { result } = await rpc.validateLayout()
-
-    if (!result) {
-      logger.error('Failed to validate layout - no result returned')
-      loggerOutput.show()
-      return
-    }
-
-    const diagnostic = pipe(
-      result,
-      groupBy(prop('uri')),
-      entries(),
-      map(([uri, messages]) => ([
-        vscode.Uri.parse(uri),
-        messages.map(m =>
-          new vscode.Diagnostic(
-            rpc.client.protocol2CodeConverter.asRange(m.range),
-            m.message,
-            convertSeverity(m.severity ?? 1),
-          )
-        ),
-      ] satisfies [vscode.Uri, vscode.Diagnostic[]])),
-    )
-    layoutDiagnosticsCollection.clear()
-    layoutDiagnosticsCollection.set(diagnostic)
-  })
-
-  useCommand(commands.reloadProjects, async () => {
-    sendTelemetryAboutCommand(commands.reloadProjects)
-    try {
-      await rpc.reloadProjects()
-    } catch (e) {
-      logWarn(e)
-    }
+  registerCommands({
+    restartServer,
   })
 
   const configWatcher = useFsWatcher(toRef(`**/{${ConfigFilenames.join(',')}}`))
@@ -285,19 +152,6 @@ function activateLc() {
     logger.debug`View snapshot deleted: ${uri.fsPath}`
     void rpc.reloadProjects()
   })
-}
-
-function convertSeverity(severity: lcDiagnosticSeverity): vscode.DiagnosticSeverity {
-  switch (severity) {
-    case 1:
-      return vscode.DiagnosticSeverity.Error
-    case 2:
-      return vscode.DiagnosticSeverity.Warning
-    case 3:
-      return vscode.DiagnosticSeverity.Information
-    case 4:
-      return vscode.DiagnosticSeverity.Hint
-  }
 }
 
 function createWebviewPanelSerializer(onActivate: () => void) {
@@ -331,6 +185,7 @@ function createWebviewPanelSerializer(onActivate: () => void) {
       ) {
         deserializeState.value = state
         deserializePanel.value = panel
+        triggerRef(deserializePanel)
         onActivate()
       }
     }(),

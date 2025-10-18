@@ -7,6 +7,7 @@ import { initWorkspace } from '../common/initWorkspace'
 import { useExtensionLogger } from '../common/useExtensionLogger'
 import { whenExtensionActive } from '../common/useIsActivated'
 import { logError } from '../logger'
+import { useRpc } from '../Rpc'
 
 export const { activate, deactivate } = defineExtension(() => {
   const { logger } = useExtensionLogger()
@@ -15,11 +16,10 @@ export const { activate, deactivate } = defineExtension(() => {
   } catch (e) {
     logger.error(loggable(e))
   }
-  whenExtensionActive(async () => {
-    try {
-      await initWorkspace()
-    } catch (e) {
+  whenExtensionActive(() => {
+    const rpc = useRpc()
+    initWorkspace(rpc).catch((e) => {
       logError(e)
-    }
+    })
   })
 })

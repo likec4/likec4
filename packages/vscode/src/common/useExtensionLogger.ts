@@ -15,10 +15,12 @@ export const useExtensionLogger = createSingletonComposable(() => {
       telemetry: getTelemetrySink(telemetry),
     },
     loggers: [
+      // Telemetry logger, only sends logs to console and output channel
       {
         category: ['likec4', 'vscode', 'telemetry'],
         sinks: ['console', 'vscode'],
       },
+      // sends logs to all sinks
       {
         category: 'likec4',
         sinks: ['console', 'vscode', 'telemetry'],
