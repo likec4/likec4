@@ -62,12 +62,12 @@ catalogs:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 8.3.1
-    "@mantine/core": 8.3.1
-    "@mantine/hooks": 8.3.1
-    "@mantine/modals": 8.3.1
-    "@mantine/notifications": 8.3.1
-    "@mantine/vanilla-extract": 8.3.1
+    "@mantine/colors-generator": 8.3.5
+    "@mantine/core": 8.3.5
+    "@mantine/hooks": 8.3.5
+    "@mantine/modals": 8.3.5
+    "@mantine/notifications": 8.3.5
+    "@mantine/vanilla-extract": 8.3.5
   mcp:
     "@modelcontextprotocol/sdk": ^1.17.5
   react:
