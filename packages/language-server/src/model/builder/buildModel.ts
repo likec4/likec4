@@ -180,6 +180,7 @@ export function buildModelData(
       let {
         id,
         title,
+        summary,
         description,
         // ignore this property
         astPath: _ignore,
@@ -200,6 +201,7 @@ export function buildModelData(
         [_stage]: 'parsed',
         sourcePath: UriUtils.relative(project.folderUri, docUri),
         docUri,
+        summary,
         description,
         title,
         id,
@@ -216,6 +218,7 @@ export function buildModelData(
       [_type]: 'element',
       id: 'index' as ViewId,
       title: 'Landscape view',
+      summary: null,
       description: null,
       rules: [
         {
