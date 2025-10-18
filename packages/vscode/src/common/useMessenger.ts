@@ -146,9 +146,9 @@ export function activateMessenger(
         return
       }
       const location = rpc.client.protocol2CodeConverter.asLocation(loc)
-      await vscode.workspace.save(location.uri)
       // Do not show snapshot file (it is too big)
       if (change.op === 'save-view-snapshot') {
+        await vscode.workspace.save(location.uri)
         broadcastModelUpdate()
         return
       }
@@ -163,6 +163,7 @@ export function activateMessenger(
         selection,
         preserveFocus,
       })
+      await vscode.workspace.save(location.uri)
       editor.revealRange(selection)
     } catch (error) {
       logger.error(`[Messenger] onChange error`, { error })
