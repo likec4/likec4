@@ -148,7 +148,7 @@ export function activateMessenger(
       const location = rpc.client.protocol2CodeConverter.asLocation(loc)
       // Do not show snapshot file (it is too big)
       if (change.op === 'save-view-snapshot') {
-        await vscode.workspace.save(location.uri)
+        // await vscode.workspace.save(location.uri)
         broadcastModelUpdate()
         return
       }

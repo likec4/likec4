@@ -143,7 +143,7 @@ function activateLc() {
     void rpc.reloadProjects()
   })
 
-  const viewSnapshotWatcher = useFsWatcher(toRef(`**/*.view.json5`))
+  const viewSnapshotWatcher = useFsWatcher(toRef(`**/*.likec4.snap`))
   viewSnapshotWatcher.onDidCreate((uri) => {
     logger.debug`View snapshot created: ${uri.fsPath}`
     void rpc.reloadProjects()

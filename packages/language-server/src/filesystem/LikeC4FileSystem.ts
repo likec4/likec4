@@ -23,8 +23,6 @@ export const LikeC4FileSystem = (
 
 export const isLikeC4File = (path: string) => LikeC4LanguageMetaData.fileExtensions.some((ext) => path.endsWith(ext))
 
-export const isManualLayoutFile = (path: string) => path.endsWith('.view.json5')
-
 /**
  * A file system provider that follows symbolic links.
  * @see https://github.com/likec4/likec4/pull/1213

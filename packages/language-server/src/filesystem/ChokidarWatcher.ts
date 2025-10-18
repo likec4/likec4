@@ -5,8 +5,9 @@ import chokidar from 'chokidar'
 import { URI } from 'langium'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
+import { isManualLayoutFile } from '../views/LikeC4ManualLayouts'
 import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './FileSystemWatcher'
-import { isLikeC4File, isManualLayoutFile } from './LikeC4FileSystem'
+import { isLikeC4File } from './LikeC4FileSystem'
 
 const logger = mainLogger.getChild('chokidar')
 
