@@ -11,10 +11,12 @@ import {
   stopChild,
 } from 'xstate'
 import { relationshipsBrowserLogic } from '../relationships-browser/actor'
+import type { OpenSourceActorRef } from '../types'
 
 export type Input = {
   subject: Fqn
   currentView: DiagramView
+  openSourceActor: OpenSourceActorRef | null
   initiatedFrom?: {
     node?: NodeId
     clientRect?: Rect
@@ -24,6 +26,7 @@ export type Input = {
 export type Context = {
   subject: Fqn
   currentView: DiagramView
+  openSourceActor: OpenSourceActorRef | null
   initiatedFrom: {
     node: NodeId | null
     clientRect: Rect | null
@@ -67,6 +70,7 @@ const _elementDetailsLogic = setup({
           enableSelectSubject: false,
           enableChangeScope: true,
           closeable: false,
+          openSourceActor: context.openSourceActor,
         }),
       }),
       exit: [

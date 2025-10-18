@@ -9,7 +9,7 @@ import {
   applyNodeChanges,
 } from '@xyflow/react'
 import { type InternalNodeUpdate, getViewportForBounds } from '@xyflow/system'
-import { isNullish, omit, prop } from 'remeda'
+import { hasAtLeast, isNullish, omit, prop } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRefFromLogic,
@@ -29,6 +29,7 @@ import { updateEdges } from '../../base/updateEdges'
 import { updateNodes } from '../../base/updateNodes'
 import { typedSystem } from '../../likec4diagram/state/utils'
 import { centerXYInternalNode } from '../../utils'
+import type { OpenSourceActorRef } from '../types'
 import type { RelationshipsBrowserTypes } from './_types'
 import { ViewPadding } from './const'
 import type { LayoutRelationshipsViewResult } from './layout'
@@ -188,6 +189,7 @@ export type Input = {
   closeable?: boolean
   enableSelectSubject?: boolean
   enableChangeScope?: boolean
+  openSourceActor: OpenSourceActorRef | null
   // parentRef?: AnyActorRef| null
 }
 
@@ -198,6 +200,7 @@ export interface Context {
   closeable: boolean
   enableSelectSubject: boolean
   enableChangeScope: boolean
+  openSourceActor: OpenSourceActorRef | null
   // parentRef: AnyActorRef | null
   xyflow: XYFLowInstance | null
   xystore: XYStoreApi | null
@@ -234,6 +237,17 @@ export type Events =
   | { type: 'update.view'; layouted: LayoutRelationshipsViewResult }
   | { type: 'close' }
 
+// export type EmittedEvents = { type: 'openSource'; params: OpenSourceParams }
+// | { type: 'paneClick' }
+// | { type: 'nodeClick'; node: DiagramNode; xynode: Types.Node }
+// | { type: 'edgeClick'; edge: DiagramEdge; xyedge: Types.Edge }
+// | { type: 'edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
+// | { type: 'edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
+// | { type: 'edgeEditingStarted'; edge: Types.Edge }
+// | { type: 'walkthroughStarted'; edge: Types.Edge }
+// | { type: 'walkthroughStep'; edge: Types.Edge }
+// | { type: 'walkthroughStopped' }
+
 const _relationshipsBrowserLogic = setup({
   types: {
     context: {} as Context,
@@ -243,6 +257,7 @@ const _relationshipsBrowserLogic = setup({
     },
     input: {} as Input,
     events: {} as Events,
+    // emitted: {} as EmittedEvents,
   },
   actors: {
     layouter,
@@ -326,6 +341,15 @@ const _relationshipsBrowserLogic = setup({
         xyedges: applyEdgeChanges(event.changes, context.xyedges),
       }
     }),
+    'open relationship source': enqueueActions(({ context, event }) => {
+      if (event.type !== 'xyflow.edgeClick') {
+        return
+      }
+      const relations = event.edge.data.relations
+      if (hasAtLeast(relations, 1)) {
+        context.openSourceActor?.send({ type: 'open.source', relation: relations[0] })
+      }
+    }),
   },
 }).createMachine({
   id: 'relationships-browser',
@@ -336,6 +360,7 @@ const _relationshipsBrowserLogic = setup({
     closeable: input.closeable ?? true,
     enableSelectSubject: input.enableSelectSubject ?? true,
     enableChangeScope: input.enableChangeScope ?? true,
+    openSourceActor: input.openSourceActor,
     xyflow: null,
     xystore: null,
     layouted: null,
@@ -407,6 +432,11 @@ const _relationshipsBrowserLogic = setup({
                 viewId: context.viewId!,
                 source: event.edge.data.sourceFqn,
                 target: event.edge.data.targetFqn,
+                openSourceActor: context.openSourceActor,
+              })
+            } else {
+              enqueue({
+                type: 'open relationship source',
               })
             }
           }),

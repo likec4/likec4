@@ -587,7 +587,7 @@ const _diagramMachine = setup({
     'update active walkthrough': assign(updateActiveWalkthrough),
     'open element details': sendTo(
       ({ system }) => typedSystem(system).overlaysActorRef!,
-      ({ context, event }, params?: { fqn: Fqn; fromNode?: NodeId | undefined }) => {
+      ({ context, event, self }, params?: { fqn: Fqn; fromNode?: NodeId | undefined }) => {
         let initiatedFrom = null as null | {
           node: NodeId
           clientRect: Rect
@@ -637,6 +637,7 @@ const _diagramMachine = setup({
           subject,
           currentView: context.view,
           ...(initiatedFrom && { initiatedFrom }),
+          openSourceActor: self,
         })
       },
     ),
@@ -861,7 +862,7 @@ const _diagramMachine = setup({
           actions: 'open element details',
         },
         'open.relationshipsBrowser': {
-          actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
+          actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event, self }) => ({
             type: 'open.relationshipsBrowser',
             subject: event.fqn,
             viewId: context.view.id,
@@ -869,12 +870,14 @@ const _diagramMachine = setup({
             closeable: true,
             enableChangeScope: true,
             enableSelectSubject: true,
+            openSourceActor: self,
           })),
         },
         'open.relationshipDetails': {
-          actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
+          actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event, self }) => ({
             type: 'open.relationshipDetails',
             viewId: context.view.id,
+            openSourceActor: self,
             ...event.params,
           })),
         },

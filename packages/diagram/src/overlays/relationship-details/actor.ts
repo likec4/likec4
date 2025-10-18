@@ -33,6 +33,7 @@ import { Base } from '../../base'
 import { MinZoom } from '../../base/const'
 import { updateEdges } from '../../base/updateEdges'
 import { updateNodes } from '../../base/updateNodes'
+import type { OpenSourceActorRef } from '../types'
 import type { RelationshipDetailsTypes } from './_types'
 import type { LayoutResult } from './layout'
 import { layoutResultToXYFlow } from './layout-to-xyflow'
@@ -43,17 +44,21 @@ type XYStoreApi = {
   getState: () => XYStoreState
 }
 
-export type Input = ExclusiveUnion<{
-  Edge: {
-    edgeId: EdgeId
-    viewId: ViewId
+export type Input =
+  & ExclusiveUnion<{
+    Edge: {
+      edgeId: EdgeId
+      viewId: ViewId
+    }
+    Between: {
+      source: Fqn
+      target: Fqn
+      viewId: ViewId
+    }
+  }>
+  & {
+    openSourceActor: OpenSourceActorRef | null
   }
-  Between: {
-    source: Fqn
-    target: Fqn
-    viewId: ViewId
-  }
-}>
 
 type Subject = {
   edgeId: EdgeId
@@ -81,6 +86,7 @@ export type Context = Readonly<{
   xynodes: RelationshipDetailsTypes.Node[]
   xyedges: RelationshipDetailsTypes.Edge[]
   bounds: BBox
+  openSourceActor: OpenSourceActorRef | null
 }>
 
 function inputToSubject(input: { edgeId: EdgeId } | { source: Fqn; target: Fqn }): Context['subject'] {
@@ -200,6 +206,15 @@ const _relationshipDetailsLogic = setup({
         bounds: shallowEqual(context.bounds, bounds) ? context.bounds : bounds,
       }
     }),
+    'open relationship source': enqueueActions(({ context, event }) => {
+      if (event.type !== 'xyflow.edgeClick') {
+        return
+      }
+      const relationId = event.edge.data.relationId
+      if (relationId) {
+        context.openSourceActor?.send({ type: 'open.source', relation: relationId })
+      }
+    }),
   },
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
@@ -224,6 +239,7 @@ const _relationshipDetailsLogic = setup({
     xystore: null,
     xynodes: [],
     xyedges: [],
+    openSourceActor: input.openSourceActor,
   }),
   states: {
     'initializing': {
@@ -348,6 +364,9 @@ const _relationshipDetailsLogic = setup({
         },
         'xyflow.paneDblClick': {
           actions: 'xyflow:fitDiagram',
+        },
+        'xyflow.edgeClick': {
+          actions: 'open relationship source',
         },
         'navigate.to': {
           actions: assign({

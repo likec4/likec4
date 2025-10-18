@@ -64,6 +64,7 @@
       "sources": "./react/index.ts",
       "default": {
         "types": "./react/index.d.ts",
+        "import": "./react/index.js",
         "default": "./react/index.js"
       }
     },
