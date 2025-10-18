@@ -63,7 +63,6 @@ const selectXYProps = (ctx: DiagramContext) => {
     fitViewPadding: ctx.fitViewPadding,
     enableFitView: ctx.features.enableFitView,
     enableReadOnly,
-    nodesDraggable: !enableReadOnly && ctx.view._layout !== 'auto',
     ...(!ctx.features.enableFitView && {
       viewport: {
         x: -Math.min(ctx.view.bounds.x, 0),
@@ -79,7 +78,6 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   a.zoomable === b.zoomable &&
   a.enableFitView === b.enableFitView &&
   a.enableReadOnly === b.enableReadOnly &&
-  a.nodesDraggable === b.nodesDraggable &&
   shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges) &&
@@ -99,7 +97,7 @@ export type LikeC4DiagramXYFlowProps = PropsWithChildren<
 >
 export function LikeC4DiagramXYFlow({
   background = 'dots',
-  nodesDraggable: _nodesDraggable = false,
+  nodesDraggable = false,
   nodesSelectable = false,
   reactFlowProps = {},
   children,
@@ -112,11 +110,10 @@ export function LikeC4DiagramXYFlow({
     edges,
     enableReadOnly,
     enableFitView,
-    nodesDraggable,
     ...props
   } = useDiagramContext(selectXYProps, equalsXYProps)
 
-  nodesDraggable = _nodesDraggable && nodesDraggable
+  nodesDraggable = nodesDraggable && !enableReadOnly
 
   const {
     onNodeContextMenu,
