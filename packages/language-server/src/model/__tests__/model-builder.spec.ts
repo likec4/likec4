@@ -1189,7 +1189,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
   // Base64 taken from saveManualLayout.spec.ts
   it('parses manual layout', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+    const { errors, warnings } = await validate(`
       specification {
         element component
       }
@@ -1208,7 +1208,10 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `)
-    expect(diagnostics).toHaveLength(0)
+    expect(errors).toEqual([])
+    expect(warnings).toEqual([
+      'Migrate to the new manual layout snapshots (run LikeC4: Migrate manual layouts)',
+    ])
     const model = await buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
