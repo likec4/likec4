@@ -100,12 +100,14 @@ export function TabPanelRelationships({
                     subject,
                     scope,
                     viewId,
+                    openSourceActor,
                   } = relationshipsBrowserActor.getSnapshot().context
                   overlaysActor.send({
                     type: 'open.relationshipsBrowser',
                     subject: subject,
                     scope,
                     viewId,
+                    openSourceActor,
                   })
                 }}
               >
