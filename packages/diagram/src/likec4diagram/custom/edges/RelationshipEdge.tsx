@@ -8,7 +8,7 @@ import { useDebouncedEffect, useRafEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
-import { type PointerEvent as ReactPointerEvent, use, useEffect, useRef, useState } from 'react'
+import { type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
 import { first, isTruthy, last } from 'remeda'
 import {
   EdgeActionButton,
@@ -173,8 +173,8 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
         const cp = controlPoints.slice()
         cp[index] = {
-          x: roundDpr(x),
-          y: roundDpr(y),
+          x: Math.round(x),
+          y: Math.round(y),
         }
         if (animationFrameId != null) {
           cancelAnimationFrame(animationFrameId)

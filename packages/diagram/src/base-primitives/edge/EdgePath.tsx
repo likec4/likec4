@@ -1,6 +1,5 @@
 import type { DiagramEdge } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import type { isDragging } from 'motion'
 import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
