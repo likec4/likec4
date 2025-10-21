@@ -21,54 +21,45 @@ import { fromKeys } from 'remeda'
 import z from 'zod/v4'
 
 const opacity = z
-  .number()
+  .int()
   .min(0, 'Opacity must be between 0 and 100')
   .max(100, 'Opacity must be between 0 and 100')
   .meta({
     id: 'Opacity',
-    description: 'Opacity 0%-100%',
+    description: 'Opacity 0-100%',
   })
 
-const shape = z.literal(ElementShapes).meta({
-  id: 'ElementShape',
-  description: 'Element shape',
-})
+const shape = z
+  .literal(ElementShapes)
+  .meta({ id: 'ElementShape' })
 
-const border = z.literal(BorderStyles).meta({
-  id: 'BorderStyle',
-  description: 'Border style',
-})
+const border = z
+  .literal(BorderStyles)
+  .meta({ id: 'BorderStyle' })
 
-const size = z.literal(Sizes).meta({
-  id: 'ElementSize',
-  description: 'Element size',
-})
+const size = z
+  .literal(Sizes)
+  .meta({ id: 'ElementSize' })
 
-const arrow = z.literal(RelationshipArrowTypes).meta({
-  id: 'ArrowType',
-  description: 'Relationship arrow type',
-})
+const arrow = z
+  .literal(RelationshipArrowTypes)
+  .meta({ id: 'ArrowType' })
+
 const line = z
   .literal(['dashed', 'solid', 'dotted'])
-  .meta({
-    id: 'LineType',
-    description: 'Default line type for relationships',
-  })
+  .meta({ id: 'LineType' })
 
-const themeColor = z.literal(ThemeColors).meta({
-  id: 'ThemeColor',
-  description: 'Reserved theme color name',
-})
+const themeColor = z
+  .literal(ThemeColors)
+  .meta({ id: 'ThemeColor' })
 
-const color = z.union([
-  themeColor,
-  z.string().nonempty('Color name cannot be empty'),
-])
+const color = z
+  .union([
+    themeColor,
+    z.string().nonempty('Color name cannot be empty'),
+  ])
   .transform(value => value as ThemeColor)
-  .meta({
-    id: 'ColorName',
-    description: 'Color name (Theme color name or custom color name)',
-  })
+  .meta({ id: 'ColorName' })
 
 const colorValue = z
   .string()
@@ -84,20 +75,17 @@ const colorSchema = colorValue
 // type ColorValue = z.infer<typeof colorSchema>
 
 const ElementColorValuesSchema = z
-  .object({
+  .strictObject({
     fill: colorSchema.meta({ description: 'Background color' }),
     stroke: colorSchema.meta({ description: 'Stroke color (border, paths above background)' }),
     hiContrast: colorSchema.meta({ description: 'High contrast text color (title)' }),
     loContrast: colorSchema.meta({ description: 'Low contrast text color (description)' }),
   })
-  .meta({
-    id: 'ElementColorValues',
-    description: 'Specific element colors',
-  })
+  .meta({ id: 'ElementColorValues' })
   .transform(value => value as ElementColorValues)
 
 const RelationshipColorValuesSchema = z
-  .object({
+  .strictObject({
     line: colorSchema.meta({ description: 'Line color' }),
     label: colorSchema.meta({ description: 'Label text color' }),
     labelBg: colorSchema
@@ -105,18 +93,16 @@ const RelationshipColorValuesSchema = z
       .default('rgba(0, 0, 0, 0)')
       .meta({ description: 'Label background color' }),
   })
-  .meta({
-    id: 'RelationshipColorValues',
-    description: 'Specefic relationship colors',
-  })
+  .meta({ id: 'RelationshipColorValues' })
   .transform(value => value as RelationshipColorValues)
 
 export const ThemeColorValuesSchema = z
   .union([
     colorSchema,
-    z.object({
+    z.strictObject({
       elements: z
         .union([colorSchema, ElementColorValuesSchema])
+        .meta({ description: 'Element color value (or a breakdown of specific color values)' })
         .transform((value): ElementColorValues => {
           if (typeof value === 'string') {
             return computeColorValues(value).elements
@@ -125,6 +111,7 @@ export const ThemeColorValuesSchema = z
         }),
       relationships: z
         .union([colorSchema, RelationshipColorValuesSchema])
+        .meta({ description: 'Relationship color value (or a breakdown of specific color values)' })
         .transform((value): RelationshipColorValues => {
           if (typeof value === 'string') {
             return computeColorValues(value).relationships
@@ -155,25 +142,31 @@ const ThemeColorsSchema = z.union([
   ),
 ]).meta({
   id: 'ThemeColors',
-  description: 'Override of theme colors',
+  description: 'Override theme colors',
 })
 
-const DimensionsSchema = z.object({
-  width: z.number(),
-  height: z.number(),
+const DimensionsSchema = z.strictObject({
+  width: z.number().min(50),
+  height: z.number().min(50),
 }).meta({
   id: 'Dimensions',
   description: 'Dimensions',
 })
 
-export const LikeC4Config_Styles_Theme = z
-  .object({
-    colors: ThemeColorsSchema,
-    sizes: z
-      .object(fromKeys(Sizes, () => DimensionsSchema.optional()))
-      .meta({ description: 'Map of theme sizes.' }),
+const LikeC4Config_Styles_Theme_Sizes = z
+  .strictObject(
+    fromKeys(Sizes, () => DimensionsSchema.optional()),
+  )
+  .meta({
+    id: 'ThemeSizes',
+    description: 'Override theme sizes',
   })
-  .partial()
+
+export const LikeC4Config_Styles_Theme = z
+  .strictObject({
+    colors: ThemeColorsSchema.optional(),
+    sizes: LikeC4Config_Styles_Theme_Sizes.optional(),
+  })
   .meta({
     id: 'ThemeCustomization',
     description: 'Theme customization',
@@ -186,25 +179,52 @@ export const LikeC4Config_Styles_Theme = z
   })
 export type LikeC4ConfigThemeInput = z.input<typeof LikeC4Config_Styles_Theme>
 
-const LikeC4Config_Styles_Defaults = z
-  .object({
-    color,
-    opacity,
-    border,
-    size,
-    shape,
-    group: z.object({
-      color,
-      opacity,
-      border,
-    }).partial(),
-    relationship: z.object({
-      color,
-      line,
-      arrow,
-    }).partial(),
+const LikeC4Config_Styles_Defaults_Group = z
+  .strictObject({
+    color: color.optional().meta({
+      description: 'Default color for groups\n(must be a valid color name from the theme)',
+    }),
+    opacity: opacity.optional().meta({ description: 'Default opacity for groups' }),
+    border: border.optional().meta({ description: 'Default border for groups' }),
   })
-  .partial()
+  .meta({
+    id: 'GroupDefaultStyleValues',
+    description:
+      'Override default values for group style properties\nThese values will be used if such property is not defined',
+  })
+
+const LikeC4Config_Styles_Defaults_Relationship = z
+  .strictObject({
+    color: color.optional().meta({
+      description: 'Default color for relationships\n(must be a valid color name from the theme)',
+    }),
+    line: line.optional().meta({ description: 'Default line style for relationships' }),
+    arrow: arrow.optional().meta({ description: 'Default arrow style for relationships' }),
+  })
+  .meta({
+    id: 'RelationshipDefaultStyleValues',
+    description:
+      'Override default values for relationship style properties\nThese values will be used if such property is not defined',
+  })
+
+const LikeC4Config_Styles_Defaults = z
+  .strictObject({
+    color: color.optional().meta({
+      description: 'Default color for elements\n(must be a valid color name from the theme)',
+    }),
+    opacity: opacity.optional().meta({
+      description: 'Default opacity (0-100%) for elements when displayed as a group (like a container)',
+    }),
+    border: border.optional().meta({
+      description: 'Default border style for elements when displayed as a group (like a container)',
+    }),
+    size: size.optional().meta({ description: 'Default size for elements' }),
+    shape: shape.optional().meta({ description: 'Default shape for elements' }),
+    group: LikeC4Config_Styles_Defaults_Group.optional().meta({ description: 'Default style values for groups' }),
+    relationship: LikeC4Config_Styles_Defaults_Relationship.optional().meta({
+      description: 'Default style values for relationships',
+    }),
+  })
   .meta({
     id: 'DefaultStyleValues',
     description:
@@ -212,14 +232,13 @@ const LikeC4Config_Styles_Defaults = z
   })
 
 export const LikeC4StylesConfigSchema = z
-  .object({
-    theme: LikeC4Config_Styles_Theme,
-    defaults: LikeC4Config_Styles_Defaults,
+  .strictObject({
+    theme: LikeC4Config_Styles_Theme.optional(),
+    defaults: LikeC4Config_Styles_Defaults.optional(),
     // customCss: z
     //   .array(z.string())
     //   .meta({ description: 'List of custom CSS files' }),
   })
-  .partial()
   .meta({
     id: 'StylesConfiguration',
     description: 'Project styles customization',
