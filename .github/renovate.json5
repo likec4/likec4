@@ -6,8 +6,8 @@
     'group:monorepos',
     'npm:unpublishSafe'
   ],
-  "prHourlyLimit": 20,
-  "prConcurrentLimit": 5,
+  "prHourlyLimit": 30,
+  "prConcurrentLimit": 8,
   "rangeStrategy": 'bump',
   "postUpdateOptions": [
     "pnpmDedupe"

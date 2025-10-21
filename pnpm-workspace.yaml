@@ -11,7 +11,7 @@ catalog:
   graphology: ^0.25.4
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  oxlint: 1.19.0
+  oxlint: 1.23.0
   oxlint-tsgolint: ^0.2.0
   playwright: 1.54.2
   tsx: 4.20.6
@@ -164,3 +164,5 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - workerd
+  - oxlint
+  - wrangler
