@@ -1,0 +1,24 @@
+model {
+  extend api {
+    metadata {
+      tags 'rest'                    // Merges with 'backend' -> ['backend', 'rest']
+      owner 'platform-team'          // New key
+      port '9090'                    // Merges with '8080' -> ['8080', '9090']
+    }
+  }
+
+  extend frontend {
+    metadata {
+      version '1.5.0'                // Duplicate value, will be de-duplicated to single string
+      deployment_target 'production' // Merges with 'staging' -> ['staging', 'production']
+      build_tool 'Vite'              // New key
+    }
+  }
+
+  extend database {
+    metadata {
+      replicas ['replica-1', 'replica-2']  // Merges with 'primary' -> ['primary', 'replica-1', 'replica-2']
+      backup_schedule 'daily'              // New key
+    }
+  }
+}
