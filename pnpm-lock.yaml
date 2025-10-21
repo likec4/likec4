@@ -25,8 +25,8 @@ catalogs:
       specifier: 5.14.3
       version: 5.14.3
     astro-og-canvas:
-      specifier: ^0.7.0
-      version: 0.7.0
+      specifier: ^0.7.2
+      version: 0.7.2
     shiki:
       specifier: ^3.13.0
       version: 3.13.0
@@ -458,7 +458,7 @@ importers:
         version: 5.14.3(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)
       astro-og-canvas:
         specifier: catalog:astro
-        version: 0.7.0(astro@5.14.3(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
+        version: 0.7.2(astro@5.14.3(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
       canvaskit-wasm:
         specifier: 0.40.0
         version: 0.40.0
@@ -1938,7 +1938,7 @@ importers:
         version: 3.25.76
       zx:
         specifier: lite
-        version: 8.8.4-lite
+        version: 8.8.5-lite
 
   packages/vscode-preview:
     devDependencies:
@@ -4572,8 +4572,8 @@ packages:
     peerDependencies:
       astro: ^4.0.0-beta || ^5.0.0-beta || ^3.3.0
 
-  astro-og-canvas@0.7.0:
-    resolution: {integrity: sha512-aamARDNDORPxXlPt+VJakzj4WpNUDjQqUZ06eE82pGMad4aTR/KMm8Ho12qvprgJcM8K7fgSOMg5OHa7KcX0pw==}
+  astro-og-canvas@0.7.2:
+    resolution: {integrity: sha512-i7sWbdpl2MMF7wUZqSfzMnhW4c7GQz6s7T4BUJ7E06MqasZRHjJytn0n6D0JJkGDeTpZnU7E00A6Ffx0pRB4kg==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       astro: ^3.0.0 || ^4.0.0 || ^5.0.0
@@ -4783,9 +4783,6 @@ packages:
 
   caniuse-lite@1.0.30001749:
     resolution: {integrity: sha512-0rw2fJOmLfnzCRbkm8EyHL8SvI2Apu5UbnQuTsJ0ClgrH8hcwFooJ1s5R0EP8o8aVrFu8++ae29Kt9/gZAZp/Q==}
-
-  canvaskit-wasm@0.39.1:
-    resolution: {integrity: sha512-Gy3lCmhUdKq+8bvDrs9t8+qf7RvcjuQn+we7vTVVyqgOVO1UVfHpsnBxkTZw+R4ApEJ3D5fKySl9TU11hmjl/A==}
 
   canvaskit-wasm@0.40.0:
     resolution: {integrity: sha512-Od2o+ZmoEw9PBdN/yCGvzfu0WVqlufBPEWNG452wY7E9aT8RBE+ChpZF526doOlg7zumO4iCS+RAeht4P0Gbpw==}
@@ -5402,6 +5399,10 @@ packages:
 
   entities@4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
+    engines: {node: '>=0.12'}
+
+  entities@7.0.0:
+    resolution: {integrity: sha512-FDWG5cmEYf2Z00IkYRhbFrwIwvdFKH07uV8dvNy0omp/Qb1xcyCWp2UDtcwJF4QZZvk0sLudP6/hAu42TaqVhQ==}
     engines: {node: '>=0.12'}
 
   env-paths@3.0.0:
@@ -8159,6 +8160,7 @@ packages:
   sitemap@8.0.0:
     resolution: {integrity: sha512-+AbdxhM9kJsHtruUF39bwS/B0Fytw6Fr1o4ZAIAEqA6cke2xcoO2GleBw9Zw7nRzILVEgz7zBM5GiTJjie1G9A==}
     engines: {node: '>=14.0.0', npm: '>=6.0.0'}
+    deprecated: 'SECURITY: Multiple vulnerabilities fixed in 8.0.1 (XML injection, path traversal, command injection, protocol injection). Upgrade immediately: npm install sitemap@8.0.1'
     hasBin: true
 
   slash@3.0.0:
@@ -9400,8 +9402,8 @@ packages:
     engines: {node: '>= 12.17.0'}
     hasBin: true
 
-  zx@8.8.4-lite:
-    resolution: {integrity: sha512-NaH101NH/XG5jP2cWvr/AFyd7EE1mQ6ZvqBzvJ4ceXwxfmchhPX4RjudB3MXa/+thcxR6xB9znZUiX2u/Tq+AA==}
+  zx@8.8.5-lite:
+    resolution: {integrity: sha512-A/u82oc3sd9SZ46hig3NZKh5V1u0tXOwev5AK+3yH0zdqhiJmhd7NcWS0lq19RLOofagpDBS8K77aXLNAkBESQ==}
     engines: {node: '>= 12.17.0'}
 
 snapshots:
@@ -12674,12 +12676,12 @@ snapshots:
       astro: 5.14.3(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)
       rehype-expressive-code: 0.41.2
 
-  astro-og-canvas@0.7.0(astro@5.14.3(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)):
+  astro-og-canvas@0.7.2(astro@5.14.3(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)):
     dependencies:
       astro: 5.14.3(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)
-      canvaskit-wasm: 0.39.1
+      canvaskit-wasm: 0.40.0
       deterministic-object-hash: 2.0.2
-      entities: 4.5.0
+      entities: 7.0.0
 
   astro@5.14.3(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0):
     dependencies:
@@ -13035,10 +13037,6 @@ snapshots:
       lodash.uniq: 4.5.0
 
   caniuse-lite@1.0.30001749: {}
-
-  canvaskit-wasm@0.39.1:
-    dependencies:
-      '@webgpu/types': 0.1.21
 
   canvaskit-wasm@0.40.0:
     dependencies:
@@ -13724,6 +13722,8 @@ snapshots:
       once: 1.4.0
 
   entities@4.5.0: {}
+
+  entities@7.0.0: {}
 
   env-paths@3.0.0: {}
 
@@ -18414,4 +18414,4 @@ snapshots:
 
   zx@8.8.4: {}
 
-  zx@8.8.4-lite: {}
+  zx@8.8.5-lite: {}
