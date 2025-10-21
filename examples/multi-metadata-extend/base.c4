@@ -1,0 +1,31 @@
+specification {
+  element component
+  element service
+  element database
+}
+
+model {
+  component api {
+    metadata {
+      version '2.0.0'
+      tags 'backend'
+      port '8080'
+    }
+  }
+
+  component frontend {
+    metadata {
+      version '1.5.0'
+      framework 'React'
+      deployment_target 'staging'
+    }
+  }
+
+  service database {
+    metadata {
+      engine 'PostgreSQL'
+      version '15.3'
+      replicas 'primary'
+    }
+  }
+}

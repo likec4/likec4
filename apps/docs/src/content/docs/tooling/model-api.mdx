@@ -412,6 +412,18 @@ for (const element of model.elements()) {
 console.log('All unique tags:', Array.from(allTags).sort())
 ```
 
+:::note[Metadata Merging with Extends]
+When using [`extend`](/dsl/extend/) to add metadata to elements, duplicate metadata keys are automatically merged:
+
+- String + String = Array (if different values)
+- String + Array = Array (merged)
+- Array + Array = Array (merged)
+- Duplicate values are automatically de-duplicated
+- Single-value arrays are converted back to strings
+
+This allows you to progressively build up metadata across multiple files. See the [extend documentation](/dsl/extend/#metadata-merging) for more details.
+:::
+
 ### LikeC4DeploymentModel
 
 API provides methods to query and traverse deployment model.
