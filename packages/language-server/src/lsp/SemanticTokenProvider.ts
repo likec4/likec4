@@ -8,9 +8,10 @@ import { isTruthy } from 'remeda'
 import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 import { logger } from '../logger'
+import type { LikeC4Services } from '../module'
 
 type Predicate<T extends AstNode> = (x: unknown) => x is T
-interface Highlighter<T extends AstNode> {
+type Highlighter<T extends AstNode> = {
   /**
    * Current AST node being highlighted.
    */
@@ -69,11 +70,176 @@ function createSemanticTypeMethods(
 }
 
 const PRUNE = 'Stop Highlighting'
+/**
+ * Used to stop further highlighting for the current node (processing of its children
+ */
 const stopHighlight = (): never => {
   throw PRUNE
 }
 
+type Rule<T extends AstNode> = {
+  predicate: Predicate<T>
+  highlightFn: (highlight: Highlighter<T>) => void
+}
+
 export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
+  private rules = [] as Rule<AstNode>[]
+
+  constructor(services: LikeC4Services) {
+    super(services)
+    this.initRules()
+  }
+
+  protected initRules(): void {
+    this.rules = []
+
+    const when = <T extends AstNode>(
+      predicate: Predicate<T>,
+      highlightFn: (highlight: Highlighter<T>) => void,
+    ): void => {
+      const rule: Rule<T> = { predicate, highlightFn }
+      this.rules.push(rule as unknown as Rule<AstNode>)
+    }
+
+    when(ast.isRelationshipKind, mark => {
+      mark.property('name').function()
+    })
+
+    when(isAnyOf(ast.isRelation, ast.isOutgoingRelationExpr, ast.isDeploymentRelation), mark => {
+      mark.property('kind').function()
+    })
+
+    when(ast.isLibIcon, mark => {
+      mark.property('name').definition.function()
+      stopHighlight()
+    })
+
+    when(isAnyOf(ast.isNavigateToProperty, ast.isRelationNavigateToProperty), mark => {
+      mark.property('value').readonly.definition.interface()
+      stopHighlight()
+    })
+    when(isAnyOf(ast.isFqnRefExpr, ast.isWildcardExpression), mark => {
+      mark.cst().readonly.definition.variable()
+      stopHighlight()
+    })
+    when(ast.isTagRef, mark => {
+      mark.cst().type()
+      stopHighlight()
+    })
+    when(ast.isRelationKindDotRef, mark => {
+      mark.cst().function()
+      stopHighlight()
+    })
+
+    when(ast.isWhereRelationKind, mark => {
+      if (isTruthy(mark.node.value)) {
+        mark.property('value').function()
+      }
+    })
+    when(isAnyOf(ast.isWhereElement, ast.isWhereRelation), mark => {
+      if (isTruthy(mark.node.value)) {
+        mark.property('value').readonly.definition.type()
+      }
+    })
+    when(isAnyOf(ast.isWhereRelationParticipantKind, ast.isWhereRelationParticipantTag), mark => {
+      mark.property('participant').keyword()
+    })
+    when(ast.isElementKindExpression, mark => {
+      if (isTruthy(mark.node.kind)) {
+        mark.property('kind').definition.type()
+      }
+    })
+    when(isAnyOf(ast.isGlobalStyleGroup, ast.isGlobalStyle), mark => {
+      mark.property('id').readonly.definition.variable()
+    })
+    when(ast.isViewRuleGlobalStyle, mark => {
+      mark.property('style').readonly.definition.variable()
+    })
+    when(isAnyOf(ast.isGlobalPredicateGroup, ast.isGlobalDynamicPredicateGroup), mark => {
+      mark.property('name').readonly.definition.variable()
+    })
+    when(ast.isViewRuleGlobalPredicateRef, mark => {
+      mark.property('predicate').readonly.definition.variable()
+    })
+    when(ast.isElementTagExpression, mark => {
+      if (isTruthy(mark.node.tag)) {
+        mark.property('tag').definition.type()
+      }
+    })
+    when(isAnyOf(ast.isFqnRef, ast.isStrictFqnRef), mark => {
+      mark.property('value').readonly.definition.variable()
+      if (!mark.node.parent) {
+        stopHighlight()
+      }
+    })
+    when(ast.isStrictFqnElementRef, mark => {
+      mark.property('el').readonly.definition.variable()
+      if (!mark.node.parent) {
+        stopHighlight()
+      }
+    })
+    when(ast.isSpecificationColor, mark => {
+      mark.keyword('color').keyword()
+      mark.property('name').readonly.declaration.type()
+    })
+    when(ast.isSpecificationTag, mark => {
+      if (isTruthy(mark.node.color)) {
+        mark.keyword('color').property()
+      }
+    })
+    when(
+      isAnyOf(
+        ast.isSpecificationElementKind,
+        ast.isSpecificationRelationshipKind,
+        ast.isSpecificationDeploymentNodeKind,
+      ),
+      mark => {
+        mark.property('kind').readonly.declaration.type()
+      },
+    )
+    when(ast.isTag, mark => {
+      mark.property('name').definition.type()
+    })
+    when(ast.isOpacityProperty, mark => {
+      mark.property('value').number()
+    })
+    when(ast.isIconProperty, mark => {
+      if (mark.node.libicon || mark.node.value === 'none') {
+        mark.property(mark.node.libicon ? 'libicon' : 'value').defaultLibrary.enum()
+        return
+      }
+      mark.property('value').string()
+    })
+    when(ast.isLinkProperty, mark => {
+      if (isTruthy(mark.node.value)) {
+        mark.property('value').string()
+      }
+    })
+    when(ast.isColorProperty, mark => {
+      if (isTruthy(mark.node.customColor)) {
+        mark.property('customColor').enum()
+      }
+      if (isTruthy(mark.node.themeColor)) {
+        mark.property('themeColor').enum()
+      }
+    })
+    when(
+      isAnyOf(
+        ast.isShapeProperty,
+        ast.isArrowProperty,
+        ast.isLineProperty,
+        ast.isBorderProperty,
+        ast.isSizeProperty,
+        ast.isDynamicViewDisplayVariantProperty,
+      ),
+      mark => {
+        if (isTruthy(mark.node.value)) {
+          mark.property('value').enum()
+        }
+      },
+    )
+  }
+
   protected override highlightElement(
     node: AstNode,
     acceptor: SemanticTokenAcceptor,
@@ -102,145 +268,12 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         })
       }
 
-      this.when(node, ast.isRelationshipKind, mark => {
-        mark.property('name').function()
-      })
-
-      this.when(node, isAnyOf(ast.isRelation, ast.isOutgoingRelationExpr, ast.isDeploymentRelation), mark => {
-        mark.property('kind').function()
-      })
-
-      this.when(node, ast.isLibIcon, mark => {
-        mark.property('name').definition.function()
-        stopHighlight()
-      })
-
-      this.when(node, isAnyOf(ast.isNavigateToProperty, ast.isRelationNavigateToProperty), mark => {
-        mark.property('value').readonly.definition.interface()
-        stopHighlight()
-      })
-      this.when(node, isAnyOf(ast.isFqnRefExpr, ast.isWildcardExpression), mark => {
-        mark.cst().readonly.definition.variable()
-        stopHighlight()
-      })
-      this.when(node, ast.isTagRef, mark => {
-        mark.cst().type()
-        stopHighlight()
-      })
-      this.when(node, ast.isRelationKindDotRef, mark => {
-        mark.cst().function()
-        stopHighlight()
-      })
-
-      this.when(node, ast.isWhereRelationKind, mark => {
-        if (isTruthy(mark.node.value)) {
-          mark.property('value').function()
+      for (const { predicate, highlightFn } of this.rules) {
+        if (predicate(node)) {
+          highlightFn(this.mark(node))
+          break
         }
-      })
-      this.when(node, isAnyOf(ast.isWhereElement, ast.isWhereRelation), mark => {
-        if (isTruthy(mark.node.value)) {
-          mark.property('value').readonly.definition.type()
-        }
-      })
-      this.when(node, isAnyOf(ast.isWhereRelationParticipantKind, ast.isWhereRelationParticipantTag), mark => {
-        mark.property('participant').keyword()
-      })
-      this.when(node, ast.isElementKindExpression, mark => {
-        if (isTruthy(mark.node.kind)) {
-          mark.property('kind').definition.type()
-        }
-      })
-      this.when(node, isAnyOf(ast.isGlobalStyleGroup, ast.isGlobalStyle), mark => {
-        mark.property('id').readonly.definition.variable()
-      })
-      this.when(node, ast.isViewRuleGlobalStyle, mark => {
-        mark.property('style').readonly.definition.variable()
-      })
-      this.when(node, isAnyOf(ast.isGlobalPredicateGroup, ast.isGlobalDynamicPredicateGroup), mark => {
-        mark.property('name').readonly.definition.variable()
-      })
-      this.when(node, ast.isViewRuleGlobalPredicateRef, mark => {
-        mark.property('predicate').readonly.definition.variable()
-      })
-      this.when(node, ast.isElementTagExpression, mark => {
-        if (isTruthy(mark.node.tag)) {
-          mark.property('tag').definition.type()
-        }
-      })
-      this.when(node, isAnyOf(ast.isFqnRef, ast.isStrictFqnRef), mark => {
-        mark.property('value').readonly.definition.variable()
-        if (!mark.node.parent) {
-          stopHighlight()
-        }
-      })
-      this.when(node, ast.isStrictFqnElementRef, mark => {
-        mark.property('el').readonly.definition.variable()
-        if (!mark.node.parent) {
-          stopHighlight()
-        }
-      })
-      this.when(node, ast.isSpecificationColor, mark => {
-        mark.keyword('color').keyword()
-        mark.property('name').readonly.declaration.type()
-      })
-      this.when(node, ast.isSpecificationTag, mark => {
-        if (isTruthy(mark.node.color)) {
-          mark.keyword('color').property()
-        }
-      })
-      this.when(
-        node,
-        isAnyOf(
-          ast.isSpecificationElementKind,
-          ast.isSpecificationRelationshipKind,
-          ast.isSpecificationDeploymentNodeKind,
-        ),
-        mark => {
-          mark.property('kind').readonly.declaration.type()
-        },
-      )
-      this.when(node, ast.isTag, mark => {
-        mark.property('name').definition.type()
-      })
-      this.when(node, ast.isOpacityProperty, mark => {
-        mark.property('value').number()
-      })
-      this.when(node, ast.isIconProperty, mark => {
-        if (mark.node.libicon || mark.node.value === 'none') {
-          mark.property(mark.node.libicon ? 'libicon' : 'value').defaultLibrary.enum()
-          return
-        }
-        mark.property('value').string()
-      })
-      this.when(node, ast.isLinkProperty, mark => {
-        if (isTruthy(mark.node.value)) {
-          mark.property('value').string()
-        }
-      })
-      this.when(node, ast.isColorProperty, mark => {
-        if (isTruthy(mark.node.customColor)) {
-          mark.property('customColor').enum()
-        }
-        if (isTruthy(mark.node.themeColor)) {
-          mark.property('themeColor').enum()
-        }
-      })
-      this.when(
-        node,
-        isAnyOf(
-          ast.isShapeProperty,
-          ast.isArrowProperty,
-          ast.isLineProperty,
-          ast.isBorderProperty,
-          ast.isSizeProperty,
-          ast.isDynamicViewDisplayVariantProperty,
-        ),
-        mark => {
-          if (isTruthy(mark.node.value)) {
-            mark.property('value').enum()
-          }
-        },
-      )
+      }
     } catch (error) {
       if (error === PRUNE) {
         return 'prune'
@@ -278,17 +311,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         .readonly
         .interface()
     }
-  }
-
-  private when<T extends AstNode>(
-    node: AstNode,
-    predicate: Predicate<T>,
-    highlightFn: (highlight: Highlighter<T>) => void,
-  ): void {
-    if (!predicate(node)) {
-      return
-    }
-    highlightFn(this.mark<T>(node))
   }
 
   private mark<T extends AstNode>(node: T): Highlighter<T> {
