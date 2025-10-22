@@ -218,6 +218,14 @@ describe.concurrent('LikeC4', () => {
           ],
           "folder": "issue-1624",
         },
+        "multi-metadata-extend": {
+          "documents": [
+            "base.c4",
+            "extend-1.c4",
+            "extend-2.c4",
+          ],
+          "folder": "multi-metadata-extend",
+        },
         "projectA": {
           "documents": [
             "_spec.c4",

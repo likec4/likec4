@@ -12,6 +12,7 @@ import {
   filter,
   flatMap,
   fromEntries,
+  groupBy,
   isArray,
   isBoolean,
   isEmpty,
@@ -19,6 +20,7 @@ import {
   isString,
   isTruthy,
   map,
+  mapValues,
   pipe,
   unique,
 } from 'remeda'
@@ -144,17 +146,68 @@ export class BaseParser {
     return this.services.workspace.AstNodeLocator.getAstNodePath(node)
   }
 
-  getMetadata(metadataAstNode: ast.MetadataProperty | undefined): { [key: string]: string } | undefined {
+  getMetadata(metadataAstNode: ast.MetadataProperty | undefined): { [key: string]: string | string[] } | undefined {
     if (!metadataAstNode || !this.isValid(metadataAstNode) || isEmpty(metadataAstNode.props)) {
       return undefined
     }
-    const data = pipe(
+
+    // Helper function to extract string values from MetadataValue
+    const extractValues = (value: ast.MetadataValue): string[] => {
+      if (ast.isMarkdownOrString(value)) {
+        const mdOrStr = removeIndent(value)
+        if (!mdOrStr) return []
+
+        // Handle both string and MarkdownOrString types
+        if (typeof mdOrStr === 'string') {
+          return isTruthy(mdOrStr) ? [mdOrStr] : []
+        } else {
+          // MarkdownOrString object with txt or md property
+          const strValue = mdOrStr.md || mdOrStr.txt
+          return isTruthy(strValue) ? [strValue] : []
+        }
+      } else if (ast.isMetadataArray(value)) {
+        return value.values
+          .map(v => removeIndent(v))
+          .map(v => {
+            if (typeof v === 'string') {
+              return v
+            } else {
+              // MarkdownOrString object
+              return v.md || v.txt
+            }
+          })
+          .filter(isTruthy)
+      }
+      return []
+    }
+
+    // Transform metadata attributes into key-value pairs
+    const keyValuePairs = pipe(
       metadataAstNode.props,
-      map(p => [p.key, removeIndent(p.value)] as [string, MarkdownOrString]),
-      map(([key, value]) => [key, value.md || value.txt] as [string, string]),
+      flatMap(p => extractValues(p.value).map(v => [p.key, v] as [string, string])),
       filter(([_, value]) => isTruthy(value)),
     )
-    return data.length > 0 ? fromEntries(data) : undefined
+
+    if (isEmpty(keyValuePairs)) {
+      return undefined
+    }
+
+    // Group by key to handle duplicate keys
+    const groupedData = pipe(
+      keyValuePairs,
+      groupBy(([key]) => key),
+      mapValues(pairs => pairs.map(([_, value]) => value)),
+    )
+
+    // Convert to final format: single values as string, multiple values as string[]
+    const data: { [key: string]: string | string[] } = {}
+    for (const [key, values] of Object.entries(groupedData)) {
+      if (values && values.length > 0) {
+        data[key] = values.length === 1 ? values[0]! : values
+      }
+    }
+
+    return isEmpty(data) ? undefined : data
   }
 
   parseMarkdownOrString(markdownOrString: ast.MarkdownOrString | undefined): c4.MarkdownOrString | undefined {

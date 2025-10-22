@@ -74,8 +74,8 @@ describe('Aux', () => {
     }>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly ('tag1' | 'tag2')[]>()
     expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<{
-      k1?: string
-      k2?: string
+      k1?: string | string[]
+      k2?: string | string[]
     }>()
 
     expectTypeOf<aux.AllKinds<A>>().toEqualTypeOf<
@@ -157,7 +157,7 @@ describe('Aux', () => {
       }
     }>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
-    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | string[]>>()
   })
 
   it('should work with NEVER', () => {
@@ -243,7 +243,7 @@ describe('Aux', () => {
       }
     }>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
-    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | string[]>>()
   })
 
   it('should work with any', () => {
@@ -272,7 +272,7 @@ describe('Aux', () => {
       }
     }>()
     expectTypeOf<aux.Tags<any>>().toEqualTypeOf<readonly string[]>()
-    expectTypeOf<aux.Metadata<any>>().toEqualTypeOf<Record<string, string>>()
+    expectTypeOf<aux.Metadata<any>>().toEqualTypeOf<Record<string, string | string[]>>()
 
     // Check StrictTypes from aux.*
     expectTypeOf<aux.StrictFqn<any>>().toEqualTypeOf<scalar.Fqn<string>>()

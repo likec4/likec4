@@ -143,3 +143,111 @@ model {
   }
 }
 ```
+
+#### Metadata merging
+
+When extending elements with metadata, duplicate keys from both the original element and the extension are merged into arrays:
+
+```likec4
+model {
+  component api {
+    metadata {
+      version '1.0.0'
+      tags 'backend'
+      regions 'us-east-1'
+    }
+  }
+}
+
+// In another file
+model {
+  extend api {
+    metadata {
+      tags 'microservice'        // Merges with existing 'backend'
+      regions ['eu-west-1']      // Merges with existing 'us-east-1'
+      owner 'platform-team'      // New key
+    }
+  }
+}
+
+// Result:
+{
+  version: '1.0.0',
+  tags: ['backend', 'microservice'],     // Merged and kept as array
+   regions: ['us-east-1', 'eu-west-1'],   // Merged and kept as array
+   owner: 'platform-team'
+}
+```
+
+**Merging behavior:**
+- Duplicate values are automatically de-duplicated
+- If after de-duplication there's only one unique value, it's stored as a string (not an array)
+- Arrays from both sides are merged and de-duplicated
+
+```likec4
+model {
+  component api {
+    metadata {
+      environment 'production'
+      tags ['backend', 'api']
+    }
+  }
+}
+
+model {
+  extend api {
+    metadata {
+      environment 'production'   // Duplicate value
+      tags ['api', 'critical']   // 'api' is duplicate
+    }
+  }
+}
+
+// Result:
+{
+  environment: 'production',           // Single value (de-duplicated)
+  tags: ['backend', 'api', 'critical'] // Merged and de-duplicated
+}
+```
+
+You can extend the same element multiple times across different files, and all metadata will be properly merged:
+
+```likec4
+// file1.c4
+model {
+  component api {
+    metadata {
+      version '2.0.0'
+      tags 'backend'
+    }
+  }
+}
+
+// file2.c4
+model {
+  extend api {
+    metadata {
+      tags 'rest'
+      owner 'team-a'
+    }
+  }
+}
+
+// file3.c4
+model {
+  extend api {
+    metadata {
+      tags 'microservice'
+      regions ['us', 'eu']
+    }
+  }
+}
+
+// Result:
+{
+  version: '2.0.0',
+  tags: ['backend', 'rest', 'microservice'],
+  owner: 'team-a',
+  regions: ['us', 'eu']
+}
+```

@@ -1,0 +1,22 @@
+model {
+  extend api {
+    metadata {
+      tags 'microservice'            // Further extends tags -> ['backend', 'rest', 'microservice']
+      regions ['us-east-1', 'eu-west-1']  // New key with array
+    }
+  }
+
+  extend frontend {
+    metadata {
+      deployment_target 'preview'    // Further extends -> ['staging', 'production', 'preview']
+      cdn 'CloudFlare'               // New key
+    }
+  }
+
+  extend database {
+    metadata {
+      replicas 'replica-1'           // Duplicate value, already exists, no change
+      monitoring 'enabled'           // New key
+    }
+  }
+}
