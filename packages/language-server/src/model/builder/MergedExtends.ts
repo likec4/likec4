@@ -12,8 +12,35 @@ export class MergedExtends {
   private mergedData = new Map<string, {
     links: c4.Link[]
     tags: c4.Tag[]
-    metadata: Record<string, string>
+    metadata: Record<string, string | string[]>
   }>()
+
+  private mergeMetadata(
+    existing: Record<string, string | string[]>,
+    incoming: Record<string, string | string[]>,
+  ): Record<string, string | string[]> {
+    const result: Record<string, string | string[]> = { ...existing }
+
+    for (const [key, incomingValue] of Object.entries(incoming)) {
+      const existingValue = result[key]
+
+      if (existingValue === undefined) {
+        result[key] = incomingValue
+        continue
+      }
+
+      // Convert both values to arrays to make merging easier.
+      const existingArray = Array.isArray(existingValue) ? existingValue : [existingValue]
+      const incomingArray = Array.isArray(incomingValue) ? incomingValue : [incomingValue]
+
+      // Merge and deduplicate based on value.
+      const merged = unique([...existingArray, ...incomingArray])
+
+      result[key] = merged.length === 1 ? merged[0]! : merged
+    }
+
+    return result
+  }
 
   merge(parsedExtends: ParsedAstExtend[]): void {
     for (const parsedExtend of parsedExtends) {
@@ -33,10 +60,7 @@ export class MergedExtends {
         ])
       }
       if (metadata) {
-        existing.metadata = {
-          ...existing.metadata,
-          ...metadata,
-        }
+        existing.metadata = this.mergeMetadata(existing.metadata, metadata)
       }
       this.mergedData.set(id, existing)
     }
@@ -47,7 +71,7 @@ export class MergedExtends {
       id: string
       tags?: readonly string[] | null
       links?: readonly c4.Link[] | null
-      metadata?: Record<string, string>
+      metadata?: Record<string, string | string[]>
     },
   >(el: E): E {
     const extendData = this.mergedData.get(el.id)
@@ -73,14 +97,9 @@ export class MergedExtends {
 
     let metadata = extendData.metadata
     if (el.metadata) {
-      metadata = {
-        ...el.metadata,
-        ...extendData.metadata,
-      }
+      metadata = this.mergeMetadata(el.metadata, extendData.metadata)
     }
-    // const links = [...(el.links ?? []), ...extendData.links]
-    // const tags = unique([...(el.tags ?? []), ...extendData.tags)
-    // const metadata = { ...el.metadata, ...extendData.metadata }
+
     return {
       ...el,
       tags: hasAtLeast(tags, 1) ? tags : null,

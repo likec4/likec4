@@ -217,9 +217,9 @@ export type Metadata<A extends Any> =
     ? never
     : IsLiteral<A['MetadataKey']> extends true
       ? {
-        [key in A['MetadataKey']]?: string
+        [key in A['MetadataKey']]?: string | string[]
       }
-      : Record<string, string>
+      : Record<string, string | string[]>
 
 /**
  * All known kinds from Aux as a literal union.

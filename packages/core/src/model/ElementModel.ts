@@ -309,7 +309,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
   }
 
   public getMetadata(): aux.Metadata<A>
-  public getMetadata(field: aux.MetadataKey<A>): string | undefined
+  public getMetadata(field: aux.MetadataKey<A>): string | string[] | undefined
   public getMetadata(field?: aux.MetadataKey<A>) {
     if (field) {
       return this.$element.metadata?.[field]

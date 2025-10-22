@@ -59,7 +59,8 @@
         "defaults": {
           "$ref": "#/$defs/DefaultStyleValues"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "ThemeCustomization": {
       "id": "ThemeCustomization",
@@ -70,31 +71,14 @@
           "$ref": "#/$defs/ThemeColors"
         },
         "sizes": {
-          "description": "Map of theme sizes.",
-          "type": "object",
-          "properties": {
-            "xs": {
-              "$ref": "#/$defs/Dimensions"
-            },
-            "sm": {
-              "$ref": "#/$defs/Dimensions"
-            },
-            "md": {
-              "$ref": "#/$defs/Dimensions"
-            },
-            "lg": {
-              "$ref": "#/$defs/Dimensions"
-            },
-            "xl": {
-              "$ref": "#/$defs/Dimensions"
-            }
-          }
+          "$ref": "#/$defs/ThemeSizes"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "ThemeColors": {
       "id": "ThemeColors",
-      "description": "Override of theme colors",
+      "description": "Override theme colors",
       "anyOf": [
         {
           "type": "object",
@@ -147,7 +131,6 @@
     },
     "ColorName": {
       "id": "ColorName",
-      "description": "Color name (Theme color name or custom color name)",
       "anyOf": [
         {
           "$ref": "#/$defs/ThemeColor"
@@ -160,7 +143,6 @@
     },
     "ThemeColor": {
       "id": "ThemeColor",
-      "description": "Reserved theme color name",
       "type": "string",
       "enum": [
         "amber",
@@ -187,6 +169,7 @@
           "type": "object",
           "properties": {
             "elements": {
+              "description": "Element color value (or a breakdown of specific color values)",
               "anyOf": [
                 {
                   "$ref": "#/$defs/ColorLiteral"
@@ -197,6 +180,7 @@
               ]
             },
             "relationships": {
+              "description": "Relationship color value (or a breakdown of specific color values)",
               "anyOf": [
                 {
                   "$ref": "#/$defs/ColorLiteral"
@@ -210,7 +194,8 @@
           "required": [
             "elements",
             "relationships"
-          ]
+          ],
+          "additionalProperties": false
         }
       ]
     },
@@ -222,7 +207,6 @@
     },
     "ElementColorValues": {
       "id": "ElementColorValues",
-      "description": "Specific element colors",
       "type": "object",
       "properties": {
         "fill": {
@@ -247,11 +231,11 @@
         "stroke",
         "hiContrast",
         "loContrast"
-      ]
+      ],
+      "additionalProperties": false
     },
     "RelationshipColorValues": {
       "id": "RelationshipColorValues",
-      "description": "Specefic relationship colors",
       "type": "object",
       "properties": {
         "line": {
@@ -270,7 +254,31 @@
       "required": [
         "line",
         "label"
-      ]
+      ],
+      "additionalProperties": false
+    },
+    "ThemeSizes": {
+      "id": "ThemeSizes",
+      "description": "Override theme sizes",
+      "type": "object",
+      "properties": {
+        "xs": {
+          "$ref": "#/$defs/Dimensions"
+        },
+        "sm": {
+          "$ref": "#/$defs/Dimensions"
+        },
+        "md": {
+          "$ref": "#/$defs/Dimensions"
+        },
+        "lg": {
+          "$ref": "#/$defs/Dimensions"
+        },
+        "xl": {
+          "$ref": "#/$defs/Dimensions"
+        }
+      },
+      "additionalProperties": false
     },
     "Dimensions": {
       "id": "Dimensions",
@@ -278,16 +286,19 @@
       "type": "object",
       "properties": {
         "width": {
-          "type": "number"
+          "type": "number",
+          "minimum": 50
         },
         "height": {
-          "type": "number"
+          "type": "number",
+          "minimum": 50
         }
       },
       "required": [
         "width",
         "height"
-      ]
+      ],
+      "additionalProperties": false
     },
     "DefaultStyleValues": {
       "id": "DefaultStyleValues",
@@ -295,60 +306,45 @@
       "type": "object",
       "properties": {
         "color": {
+          "description": "Default color for elements\n(must be a valid color name from the theme)",
           "$ref": "#/$defs/ColorName"
         },
         "opacity": {
+          "description": "Default opacity (0-100%) for elements when displayed as a group (like a container)",
           "$ref": "#/$defs/Opacity"
         },
         "border": {
+          "description": "Default border style for elements when displayed as a group (like a container)",
           "$ref": "#/$defs/BorderStyle"
         },
         "size": {
+          "description": "Default size for elements",
           "$ref": "#/$defs/ElementSize"
         },
         "shape": {
+          "description": "Default shape for elements",
           "$ref": "#/$defs/ElementShape"
         },
         "group": {
-          "type": "object",
-          "properties": {
-            "color": {
-              "$ref": "#/$defs/ColorName"
-            },
-            "opacity": {
-              "$ref": "#/$defs/Opacity"
-            },
-            "border": {
-              "$ref": "#/$defs/BorderStyle"
-            }
-          }
+          "description": "Default style values for groups",
+          "$ref": "#/$defs/GroupDefaultStyleValues"
         },
         "relationship": {
-          "type": "object",
-          "properties": {
-            "color": {
-              "$ref": "#/$defs/ColorName"
-            },
-            "line": {
-              "$ref": "#/$defs/LineType"
-            },
-            "arrow": {
-              "$ref": "#/$defs/ArrowType"
-            }
-          }
+          "description": "Default style values for relationships",
+          "$ref": "#/$defs/RelationshipDefaultStyleValues"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "Opacity": {
       "id": "Opacity",
-      "description": "Opacity 0%-100%",
-      "type": "number",
+      "description": "Opacity 0-100%",
+      "type": "integer",
       "minimum": 0,
       "maximum": 100
     },
     "BorderStyle": {
       "id": "BorderStyle",
-      "description": "Border style",
       "type": "string",
       "enum": [
         "solid",
@@ -359,7 +355,6 @@
     },
     "ElementSize": {
       "id": "ElementSize",
-      "description": "Element size",
       "type": "string",
       "enum": [
         "xs",
@@ -371,7 +366,6 @@
     },
     "ElementShape": {
       "id": "ElementShape",
-      "description": "Element shape",
       "type": "string",
       "enum": [
         "rectangle",
@@ -383,9 +377,48 @@
         "queue"
       ]
     },
+    "GroupDefaultStyleValues": {
+      "id": "GroupDefaultStyleValues",
+      "description": "Override default values for group style properties\nThese values will be used if such property is not defined",
+      "type": "object",
+      "properties": {
+        "color": {
+          "description": "Default color for groups\n(must be a valid color name from the theme)",
+          "$ref": "#/$defs/ColorName"
+        },
+        "opacity": {
+          "description": "Default opacity for groups",
+          "$ref": "#/$defs/Opacity"
+        },
+        "border": {
+          "description": "Default border for groups",
+          "$ref": "#/$defs/BorderStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RelationshipDefaultStyleValues": {
+      "id": "RelationshipDefaultStyleValues",
+      "description": "Override default values for relationship style properties\nThese values will be used if such property is not defined",
+      "type": "object",
+      "properties": {
+        "color": {
+          "description": "Default color for relationships\n(must be a valid color name from the theme)",
+          "$ref": "#/$defs/ColorName"
+        },
+        "line": {
+          "description": "Default line style for relationships",
+          "$ref": "#/$defs/LineType"
+        },
+        "arrow": {
+          "description": "Default arrow style for relationships",
+          "$ref": "#/$defs/ArrowType"
+        }
+      },
+      "additionalProperties": false
+    },
     "LineType": {
       "id": "LineType",
-      "description": "Default line type for relationships",
       "type": "string",
       "enum": [
         "dashed",
@@ -395,7 +428,6 @@
     },
     "ArrowType": {
       "id": "ArrowType",
-      "description": "Relationship arrow type",
       "type": "string",
       "enum": [
         "none",

@@ -234,8 +234,8 @@ describe('AuxFromDump', () => {
     expectTypeOf<A['MetadataKey']>().toEqualTypeOf<'version' | 'owner'>()
     expectTypeOf<aux.MetadataKey<A>>().toEqualTypeOf<'version' | 'owner'>()
     expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<{
-      version?: string
-      owner?: string
+      version?: string | string[]
+      owner?: string | string[]
     }>()
   })
 

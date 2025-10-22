@@ -39,7 +39,8 @@ test('Builder types - style 2', () => {
             component('db', {
               metadata: {
                 // @ts-expect-error
-                unknown: 'value1',
+                unknown: ['value1'],
+                key1: ['value1'],
               },
             }),
           ),

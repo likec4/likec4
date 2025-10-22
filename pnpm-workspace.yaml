@@ -11,7 +11,7 @@ catalog:
   graphology: ^0.25.4
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  oxlint: 1.22.0
+  oxlint: 1.23.0
   oxlint-tsgolint: ^0.2.0
   playwright: 1.54.2
   tsx: 4.20.6
@@ -32,7 +32,7 @@ catalogs:
     "@astrojs/starlight": 0.36.0
     "@expressive-code/plugin-collapsible-sections": ^0.41.3
     "@expressive-code/plugin-line-numbers": ^0.41.3
-    astro: 5.14.1
+    astro: 5.14.3
     astro-og-canvas: ^0.7.0
     shiki: ^3.13.0
     starlight-heading-badges: ^0.6.0
@@ -62,12 +62,12 @@ catalogs:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 8.3.1
-    "@mantine/core": 8.3.1
-    "@mantine/hooks": 8.3.1
-    "@mantine/modals": 8.3.1
-    "@mantine/notifications": 8.3.1
-    "@mantine/vanilla-extract": 8.3.1
+    "@mantine/colors-generator": 8.3.5
+    "@mantine/core": 8.3.5
+    "@mantine/hooks": 8.3.5
+    "@mantine/modals": 8.3.5
+    "@mantine/notifications": 8.3.5
+    "@mantine/vanilla-extract": 8.3.5
   mcp:
     "@modelcontextprotocol/sdk": ^1.19.1
   react:
@@ -166,3 +166,5 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - workerd
+  - oxlint
+  - wrangler
