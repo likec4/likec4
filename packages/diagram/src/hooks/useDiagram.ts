@@ -7,6 +7,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { type DependencyList, useCallback, useEffect, useMemo, useRef } from 'react'
+import { hasAtLeast } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
@@ -310,4 +311,28 @@ export function useOnDiagramEvent<T extends DiagramEmittedEvents['type']>(
       subscription.unsubscribe()
     }
   }, [actorRef])
+}
+
+const selectCompareState = ({ context }: DiagramActorSnapshot) => {
+  const drifts = context.view.drifts
+  if (!context.features.enableCompareWithLatest || !drifts || !hasAtLeast(drifts, 1)) {
+    return ({
+      isEnabled: false as const,
+      isActive: false as const,
+      drifts: [] as never[],
+      layout: context.view._layout,
+    })
+  }
+
+  return ({
+    isEnabled: true as const,
+    isActive: !!context.toggledFeatures.enableCompareWithLatest,
+    drifts,
+    layout: context.view._layout,
+  })
+}
+
+export function useDiagramCompareState(): ReturnType<typeof selectCompareState> {
+  const actorRef = useDiagramActorRef()
+  return useXstateSelector(actorRef, selectCompareState, shallowEqual)
 }

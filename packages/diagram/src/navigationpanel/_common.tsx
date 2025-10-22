@@ -52,12 +52,13 @@ export const Breadcrumbs = MantineBreadcrumbs.withProps({
 export type PanelActionIconProps =
   & Partial<NavigationPanelActionIconVariant>
   & Omit<ActionIconProps, keyof NavigationPanelActionIconVariant>
-  & HTMLMotionProps<'button'>
+  & Omit<HTMLMotionProps<'button'>, keyof NavigationPanelActionIconVariant>
 
 export const PanelActionIcon = forwardRef<HTMLButtonElement, PanelActionIconProps>(({
   variant = 'default',
   className,
   disabled = false,
+  type,
   ...others
 }, ref) => (
   <ActionIcon
@@ -78,7 +79,7 @@ export const PanelActionIcon = forwardRef<HTMLButtonElement, PanelActionIconProp
     {...others}
     className={cx(
       className,
-      navigationPanelActionIcon({ variant }),
+      navigationPanelActionIcon({ variant, type }),
     )}
     ref={ref} />
 ))

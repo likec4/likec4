@@ -1,7 +1,6 @@
 import type { Any } from '@likec4/core/types'
 import { type DependenciesComparator, useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
-import { deepEqual } from 'fast-equals'
 import { type PropsWithChildren, useRef } from 'react'
 import { isPlainObject, mapValues } from 'remeda'
 import { FitViewPaddings, MaxZoom, MinZoom } from './base'
@@ -67,6 +66,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   enableElementDetails = false,
   enableRelationshipDetails = false,
   enableRelationshipBrowser = false,
+  enableCompareWithLatest = false,
   nodesDraggable = !readonly,
   nodesSelectable = !readonly || enableFocusMode || !!onNavigateTo || !!onNodeClick,
   showNotations = true,
@@ -144,6 +144,7 @@ export function LikeC4Diagram<A extends Any = Any>({
               enableVscode: !!onOpenSource,
               enableControls: controls,
               enableElementTags,
+              enableCompareWithLatest,
             }}
           >
             <DiagramEventHandlers

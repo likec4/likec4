@@ -3,7 +3,6 @@ import { memo } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
-import { EnsureCurrentViewModel } from '../context/LikeC4ModelContext'
 import { useOverlaysActorRef } from '../hooks/useOverlaysActor'
 import { useSearchActorRef } from '../hooks/useSearchActor'
 import { NavigationPanel } from '../navigationpanel'
@@ -27,11 +26,7 @@ export const LikeC4DiagramUI = memo(() => {
 
   return (
     <ErrorBoundary onReset={rerender}>
-      {enableControls && (
-        <EnsureCurrentViewModel>
-          <NavigationPanel />
-        </EnsureCurrentViewModel>
-      )}
+      {enableControls && <NavigationPanel />}
       {overlaysActorRef && <Overlays overlaysActorRef={overlaysActorRef} />}
       {enableNotations && <NotationPanel />}
       {enableSearch && searchActorRef && <Search searchActorRef={searchActorRef} />}

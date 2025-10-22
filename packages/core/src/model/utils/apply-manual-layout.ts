@@ -82,7 +82,7 @@ export function applyManualLayout<
       }
 
       // TODO check modelRef/deploymentRef
-      // The following properties are updated only if the node from the snapshot
+      // The following properties are updated if only the node from the snapshot
       // is same size or larger than the node from auto-layouted view
       if (!BBox.includes(BBox.expand(node, MAX_ALLOWED_DRIFT), next)) {
         return

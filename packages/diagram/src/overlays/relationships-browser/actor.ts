@@ -177,7 +177,7 @@ export const layouter = fromPromise<{
   if (signal.aborted) {
     return updateXYData()
   }
-  await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 300 })
+  await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 300, interpolate: 'smooth' })
   await xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
   return updateXYData()
 })
@@ -299,10 +299,11 @@ const _relationshipsBrowserLogic = setup({
 
       const updates = new Map<string, InternalNodeUpdate>()
 
-      for (const updateId of nodeIds) {
-        const nodeElement = domNode.querySelector(`.react-flow__node[data-id="${updateId}"]`) as HTMLDivElement
-        if (nodeElement) {
-          updates.set(updateId, { id: updateId, nodeElement, force: true })
+      const domNodes = domNode.querySelectorAll('.react-flow__node') as NodeListOf<HTMLDivElement>
+      for (const nodeElement of domNodes) {
+        const nodeId = nodeElement.getAttribute('data-id')
+        if (nodeId && nodeIds.has(nodeId)) {
+          updates.set(nodeId, { id: nodeId, nodeElement, force: true })
         }
       }
 
@@ -319,13 +320,15 @@ const _relationshipsBrowserLogic = setup({
       if (bounds) {
         const { width, height } = xystore.getState()
         const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, ViewPadding)
-        xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined).catch(console.error)
+        xyflow.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined).catch(
+          console.error,
+        )
       } else {
         xyflow.fitView({
           minZoom: MinZoom,
           maxZoom,
           padding: ViewPadding,
-          ...(duration > 0 && { duration }),
+          ...(duration > 0 && { duration, interpolate: 'smooth' }),
         }).catch(console.error)
       }
     },
@@ -349,6 +352,13 @@ const _relationshipsBrowserLogic = setup({
       if (hasAtLeast(relations, 1)) {
         context.openSourceActor.send({ type: 'open.source', relation: relations[0] })
       }
+    }),
+    'dispose': assign({
+      xyflow: null,
+      layouted: null,
+      xystore: null,
+      xyedges: [],
+      xynodes: [],
     }),
   },
 }).createMachine({
@@ -585,8 +595,8 @@ const _relationshipsBrowserLogic = setup({
                   navigateFromNode: null,
                 })
                 enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 50 })
-                for (let i = 0; i < 6; i++) {
-                  enqueue.raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 + i * 100 })
+                for (let i = 1; i < 8; i++) {
+                  enqueue.raise({ type: 'xyflow.updateNodeInternals' }, { delay: 120 + i * 75 })
                 }
               }),
             },
@@ -611,15 +621,10 @@ const _relationshipsBrowserLogic = setup({
     closed: {
       id: 'closed',
       type: 'final',
+      entry: 'dispose',
     },
   },
-  exit: assign({
-    xyflow: null,
-    layouted: null,
-    xystore: null,
-    xyedges: [],
-    xynodes: [],
-  }),
+  exit: 'dispose',
 })
 
 export interface RelationshipsBrowserLogic extends ActorLogicFrom<typeof _relationshipsBrowserLogic> {}

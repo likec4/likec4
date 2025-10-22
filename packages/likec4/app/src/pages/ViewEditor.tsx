@@ -1,6 +1,6 @@
 import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
-import { useNavigate, useRouter } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { isDevelopment } from '../const'
 import { useCurrentView } from '../hooks'
@@ -52,6 +52,7 @@ export function ViewEditor() {
       enableRelationshipDetails
       enableRelationshipBrowser
       enableElementTags
+      enableCompareWithLatest
       onNavigateTo={onNavigateTo}
       onLayoutTypeChange={setLayoutType}
       onChange={(e) => console.log(e)}

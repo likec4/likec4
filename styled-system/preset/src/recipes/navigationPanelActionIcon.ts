@@ -35,9 +35,29 @@ export const navigationPanelActionIcon = defineRecipe({
         },
       },
     },
+    type: {
+      'default': {},
+      'warning': {
+        color: {
+          base: 'likec4.panel.action-icon.warning.text',
+          _hover: 'likec4.panel.action-icon.warning.text.hover',
+        },
+      },
+    },
   },
+  compoundVariants: [{
+    type: 'warning',
+    variant: 'filled',
+    css: {
+      backgroundColor: {
+        base: 'likec4.panel.action-icon.warning.bg',
+        _hover: 'likec4.panel.action-icon.warning.bg.hover',
+      },
+    },
+  }],
   defaultVariants: {
     variant: 'default',
+    type: 'default',
   },
   staticCss: [{
     variant: ['*'],

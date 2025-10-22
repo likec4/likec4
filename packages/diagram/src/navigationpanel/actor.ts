@@ -1,4 +1,4 @@
-import type { ViewId } from '@likec4/core/types'
+import type { LayoutedView, ViewId } from '@likec4/core/types'
 import { isEmpty } from 'remeda'
 import {
   type ActorLogicFrom,
@@ -13,7 +13,8 @@ import {
 import type { CurrentViewModel } from '../hooks/useCurrentViewModel'
 
 export interface NavigationPanelActorInput {
-  viewModel: CurrentViewModel
+  view: LayoutedView
+  viewModel: CurrentViewModel | null
 }
 
 export type NavigationPanelActorEvent =
@@ -63,7 +64,9 @@ export type DropdownColumnItem =
   }
 
 export interface NavigationPanelActorContext {
-  viewModel: CurrentViewModel
+  view: LayoutedView
+
+  viewModel: CurrentViewModel | null
   /**
    * Who activated the dropdown
    * (if `click` then the dropdown is always open until dismissed)
@@ -116,16 +119,17 @@ const _actorLogic = setup({
       return { selectedFolder: event.folderPath }
     }),
     'reset selected folder': assign({
-      selectedFolder: ({ context }) => context.viewModel.folder.path,
+      selectedFolder: ({ context }) => context.viewModel?.folder.path ?? '',
     }),
     'update inputs': assign(({ context, event }) => {
       assertEvent(event, 'update.inputs')
-      const viewChanged = event.inputs.viewModel.id !== context.viewModel.id
+      const viewChanged = event.inputs.viewModel?.id !== context.viewModel?.id
       let selectedFolder = context.selectedFolder
-      if (!event.inputs.viewModel.folder.path.startsWith(selectedFolder)) {
-        selectedFolder = event.inputs.viewModel.folder.path
+      if (!event.inputs.viewModel?.folder.path.startsWith(selectedFolder)) {
+        selectedFolder = event.inputs.viewModel?.folder.path ?? ''
       }
       return {
+        view: event.inputs.view,
         viewModel: event.inputs.viewModel,
         selectedFolder,
         // allow dropdown to close on mouse leave if view changed

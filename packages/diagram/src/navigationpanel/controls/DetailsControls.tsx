@@ -1,3 +1,5 @@
+import { extractViewTitleFromPath } from '@likec4/core/model'
+import { RichText } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, styled } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
@@ -9,6 +11,7 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { IconId, IconLink } from '@tabler/icons-react'
+import { deepEqual } from 'fast-equals'
 import * as m from 'motion/react-m'
 import { useState } from 'react'
 import { ElementTag, Markdown } from '../../base-primitives'
@@ -19,13 +22,13 @@ import type { NavigationPanelActorSnapshot } from '../actor'
 import { useNavigationActorSnapshot } from '../hooks'
 
 const selector = ({ context }: NavigationPanelActorSnapshot) => {
-  const view = context.viewModel
+  const view = context.view
   return {
     id: view.id,
-    title: view.titleOrUntitled,
-    description: view.description,
-    tags: view.tags,
-    links: view.links,
+    title: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
+    description: context.viewModel?.description ?? RichText.from(view.description),
+    tags: view.tags ?? [],
+    links: view.links ?? [],
   }
 }
 
@@ -33,7 +36,7 @@ type ViewDetailsCardData = ReturnType<typeof selector>
 
 export const DetailsControls = (props: PopoverProps) => {
   const [opened, setOpened] = useState(false)
-  const data = useNavigationActorSnapshot(selector)
+  const data = useNavigationActorSnapshot(selector, deepEqual)
   const portalProps = useMantinePortalProps()
 
   return (

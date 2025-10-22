@@ -1,3 +1,4 @@
+import { extractViewTitleFromPath } from '@likec4/core/model'
 import { css, cx } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import {
@@ -15,6 +16,7 @@ import {
   DetailsControls,
   NavigationButtons,
   OpenSource,
+  OutdatedManualLayoutWarning,
   SearchControl,
   ToggleReadonly,
 } from './controls'
@@ -23,15 +25,16 @@ import { breadcrumbTitle } from './styles.css'
 import { DynamicViewControls } from './walkthrough'
 
 const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
-  const folder = context.viewModel.folder
+  const view = context.view
+  const folder = context.viewModel?.folder
   return {
-    folders: folder.isRoot ? [] : folder.breadcrumbs.map(s => ({
+    folders: !folder || folder.isRoot ? [] : folder.breadcrumbs.map(s => ({
       folderPath: s.path,
       title: s.title,
     })),
-    viewId: context.viewModel.id,
-    viewTitle: context.viewModel.titleOrUntitled,
-    isDynamicView: context.viewModel.isDynamicView(),
+    viewId: view.id,
+    viewTitle: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
+    isDynamicView: (context.viewModel?._type ?? view._type) === 'dynamic',
   }
 }
 
@@ -132,6 +135,7 @@ export const NavigationPanelControls = () => {
       </m.div>
       {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
       {enableSearch && <SearchControl key="search-control" />}
+      <OutdatedManualLayoutWarning key="outdated-manual-layout-warning" />
     </AnimatePresence>
   )
 }

@@ -10,7 +10,8 @@ import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
 import { useDiagramActorRef } from '../hooks/safeContext'
-import { useCurrentViewModel } from '../hooks/useCurrentViewModel'
+import { useCurrentView } from '../hooks/useCurrentView'
+import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { useDiagramContext } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
 import { type NavigationPanelActorRef, navigationPanelActorLogic } from './actor'
@@ -23,12 +24,14 @@ import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 
 export const NavigationPanel = memo(() => {
   const diagramActor = useDiagramActorRef()
-  const viewModel = useCurrentViewModel()
+  const view = useCurrentView()
+  const viewModel = useOptionalCurrentViewModel()
 
   const actorRef = useActorRef(
     navigationPanelActorLogic,
     {
       input: {
+        view,
         viewModel,
       },
     },
@@ -43,8 +46,8 @@ export const NavigationPanel = memo(() => {
   }, [actorRef, diagramActor])
 
   useUpdateEffect(() => {
-    actorRef.send({ type: 'update.inputs', inputs: { viewModel } })
-  }, [viewModel])
+    actorRef.send({ type: 'update.inputs', inputs: { viewModel, view } })
+  }, [viewModel, view])
 
   return (
     <VStack

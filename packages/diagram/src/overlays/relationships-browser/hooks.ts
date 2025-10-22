@@ -31,10 +31,12 @@ export function useRelationshipsBrowser() {
     getState: () => actor.getSnapshot().context,
     send: actor.send,
     updateView: (layouted: LayoutRelationshipsViewResult) => {
-      actor.send({
-        type: 'update.view',
-        layouted,
-      })
+      if (actor.getSnapshot().status === 'active') {
+        actor.send({
+          type: 'update.view',
+          layouted,
+        })
+      }
     },
     changeScope: (scope: 'global' | 'view') => {
       actor.send({

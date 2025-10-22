@@ -229,6 +229,12 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   enableDynamicViewWalkthrough?: boolean | undefined
 
   /**
+   * Enable "Compare with auto layout" action when view was manually modified and out of sync with latest model
+   * @default false
+   */
+  enableCompareWithLatest?: boolean | undefined
+
+  /**
    * Default dynamic view display variant
    * @default 'diagram'
    */

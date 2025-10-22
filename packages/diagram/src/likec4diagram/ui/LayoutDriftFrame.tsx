@@ -6,22 +6,45 @@ import {
   HoverCardDropdown,
   HoverCardTarget,
   Notification,
+  Popover,
+  PopoverDropdown,
+  PopoverTarget,
   Text,
   UnstyledButton,
 } from '@mantine/core'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import { Fragment, memo } from 'react'
+import { hasAtLeast } from 'remeda'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useCurrentView } from '../../hooks/useCurrentView'
-import { useDiagramActorRef } from '../../hooks/useDiagram'
+import {
+  type DiagramContext,
+  useDiagramActorRef,
+  useDiagramCompareState,
+  useDiagramContext,
+} from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import type { OnLayoutTypeChange } from '../../LikeC4Diagram.props'
 
-export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>(({ onLayoutTypeChange }) => {
-  const {
-    _layout: layout,
+const selector = (state: DiagramContext) => {
+  const drifts = state.view.drifts
+  if (!state.features.enableCompareWithLatest || !drifts || !hasAtLeast(drifts, 1)) {
+    return ({
+      isCompareActive: false as const,
+      drifts: [] as never[],
+      layout: state.view._layout,
+    })
+  }
+
+  return ({
+    isCompareActive: state.toggledFeatures.enableCompareWithLatest,
     drifts,
-  } = useCurrentView()
+    layout: state.view._layout,
+  })
+}
+
+export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>(({ onLayoutTypeChange }) => {
+  const { drifts, layout, isActive } = useDiagramCompareState()
   const {
     enableReadOnly,
     enableVscode,
@@ -30,7 +53,7 @@ export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>
 
   const portalProps = useMantinePortalProps()
 
-  if (!drifts || drifts.length === 0) return null
+  if (!isActive) return null
 
   const bgColor = layout === 'manual' ? 'var(--mantine-color-orange-6)' : 'var(--mantine-color-green-6)'
 
@@ -50,14 +73,17 @@ export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>
         borderColor: bgColor,
       }}
     >
-      <HoverCard
-        position="bottom"
-        openDelay={800}
-        closeDelay={150}
+      <Popover
+        position="right-start"
+        opened
         floatingStrategy="absolute"
-        offset={2}
+        w
+        offset={{
+          mainAxis: 2,
+          crossAxis: 4,
+        }}
         {...portalProps}>
-        <HoverCardTarget>
+        <PopoverTarget>
           <HStack
             css={{
               position: 'absolute',
@@ -94,44 +120,20 @@ export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>
               auto
             </Btn>
           </HStack>
-        </HoverCardTarget>
-        <HoverCardDropdown p={'0'}>
-          <Notification
-            color="orange"
-            withBorder={false}
-            withCloseButton={false}
-            title="Manual layout out of sync">
-            <Text mt={2} size="sm" lh="xs">
-              View contains new elements or their sizes have changed,<br />
-              Switch to the "auto" for current state.
-              {drifts.map((drift) => (
-                <Fragment key={drift}>
-                  <br />
-                  <span>- {drift}</span>
-                </Fragment>
-              ))}
-            </Text>
-            {enableReadOnly && enableVscode && (
-              <Text mt={'xs'} size="sm" lh="xs">
-                Unlock editing to reset layout.
-              </Text>
-            )}
-            {!enableReadOnly && enableVscode && (
-              <Button
-                mt={'xs'}
-                size="compact-xs"
-                variant="default"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  diagramActorRef.send({ type: 'layout.resetManualLayout' })
-                }}
-              >
-                Reset layout
-              </Button>
-            )}
-          </Notification>
-        </HoverCardDropdown>
-      </HoverCard>
+        </PopoverTarget>
+        <PopoverDropdown p={3}>
+          <Button
+            size="compact-xs"
+            variant="default"
+            onClick={(e) => {
+              e.stopPropagation()
+              diagramActorRef.send({ type: 'layout.resetManualLayout' })
+            }}
+          >
+            Reset layout
+          </Button>
+        </PopoverDropdown>
+      </Popover>
     </Box>
   )
 })

@@ -150,7 +150,7 @@ const _relationshipDetailsLogic = setup({
           minZoom: MinZoom,
           maxZoom,
           padding: 0.1,
-          ...(duration > 0 && { duration }),
+          ...(duration > 0 && { duration, interpolate: 'smooth' }),
         }).catch(console.error)
       }
     },

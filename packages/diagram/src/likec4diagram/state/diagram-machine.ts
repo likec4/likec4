@@ -52,7 +52,7 @@ import {
 } from 'xstate'
 import { MinZoom } from '../../base/const'
 import { Base } from '../../base/types'
-import { type EnabledFeatures, type FeatureName, AllDisabled } from '../../context/DiagramFeatures'
+import { type EnabledFeatures, type FeatureName, DefaultFeatures } from '../../context/DiagramFeatures'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPadding } from '../../LikeC4Diagram.props'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
@@ -339,7 +339,9 @@ const _diagramMachine = setup({
       )
       viewport.x = Math.round(viewport.x)
       viewport.y = Math.round(viewport.y)
-      panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined).catch(console.error)
+      panZoom?.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined).catch(
+        console.error,
+      )
     },
 
     'xyflow:fitFocusedBounds': ({ context }) => {
@@ -360,14 +362,20 @@ const _diagramMachine = setup({
       )
       viewport.x = Math.round(viewport.x)
       viewport.y = Math.round(viewport.y)
-      panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
+      panZoom?.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined)
     },
 
-    'xyflow:setViewportCenter': ({ context }, params: { x: number; y: number }) => {
-      const { x, y } = params
+    'xyflow:setViewportCenter': ({ context, event }, params?: { x: number; y: number }) => {
+      let center: XYPoint
+      if (params) {
+        center = params
+      } else {
+        assertEvent(event, 'update.view')
+        center = BBox.center(event.view.bounds)
+      }
       invariant(context.xyflow, 'xyflow is not initialized')
       const zoom = context.xyflow.getZoom()
-      context.xyflow.setCenter(Math.round(x), Math.round(y), { zoom })
+      context.xyflow.setCenter(Math.round(center.x), Math.round(center.y), { zoom })
     },
 
     'xyflow:setViewport': ({ context }, params: { viewport: Viewport; duration?: number }) => {
@@ -376,7 +384,7 @@ const _diagramMachine = setup({
         duration = 350,
       } = params
       const panZoom = context.xystore?.getState().panZoom
-      panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
+      panZoom?.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined)
     },
 
     'xyflow:alignNodeFromToAfterNavigate': ({ context }, params: { fromNode: NodeId; toPosition: XYPoint }) => {
@@ -461,6 +469,14 @@ const _diagramMachine = setup({
     'updateInputs': assign(({ event }) => {
       assertEvent(event, 'update.inputs')
       return { ...event.inputs }
+    }),
+    'update XYNodesEdges': assign(({ context, event }) => {
+      assertEvent(event, 'update.view')
+
+      return {
+        ...mergeXYNodesEdges({ context, event }),
+        lastClickedNode: null,
+      }
     }),
     'closeSearch': sendTo(
       ({ system }) => typedSystem(system).searchActorRef!,
@@ -713,7 +729,7 @@ const _diagramMachine = setup({
     ...input,
     xyedges: [],
     xynodes: [],
-    features: { ...AllDisabled },
+    features: { ...DefaultFeatures },
     toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
       enableReadOnly: true,
     },
@@ -1263,16 +1279,10 @@ const _diagramMachine = setup({
                 },
               })
             } else {
-              enqueue({
-                type: 'xyflow:setViewportCenter',
-                params: BBox.center(event.view.bounds),
-              })
+              enqueue('xyflow:setViewportCenter')
             }
             enqueue.assign(updateNavigationHistory)
-            enqueue.assign({
-              ...mergeXYNodesEdges({ context, event }),
-              lastOnNavigate: null,
-            })
+            enqueue('update XYNodesEdges')
             enqueue('startSyncLayout')
             enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 25 })
           }),
@@ -1329,9 +1339,9 @@ const _diagramMachine = setup({
         enqueueActions(({ enqueue, event, check, context }) => {
           const isAnotherView = check('is another view')
           if (isAnotherView) {
+            enqueue('stopSyncLayout')
             enqueue('closeAllOverlays')
             enqueue('closeSearch')
-            enqueue('stopSyncLayout')
             enqueue.assign({
               focusedNode: null,
             })
@@ -1349,37 +1359,42 @@ const _diagramMachine = setup({
               })
               enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
             } else {
-              enqueue({
-                type: 'xyflow:setViewportCenter',
-                params: BBox.center(event.view.bounds),
-              })
+              enqueue('xyflow:setViewportCenter')
               enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
             }
-          } else {
-            // Check if dynamic view mode changed
-            const nextView = event.view
-            if (
-              nextView._type === 'dynamic' &&
-              context.view._type === 'dynamic' &&
-              nextView.variant !== context.view.variant
-            ) {
-              enqueue({
-                type: 'xyflow:setViewportCenter',
-                params: BBox.center(nextView.bounds),
-              })
-            }
-          }
-          enqueue.assign({
-            ...mergeXYNodesEdges({ context, event }),
-            lastOnNavigate: null,
-          })
-          if (isAnotherView) {
+            enqueue('update XYNodesEdges')
             enqueue('startSyncLayout')
-          } else {
-            enqueue.sendTo(c => c.context.syncLayoutActorRef!, { type: 'synced' })
-            if (!context.viewportChangedManually) {
-              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
-            }
+            return
+          }
+
+          enqueue('update XYNodesEdges')
+          enqueue.sendTo(c => c.context.syncLayoutActorRef!, { type: 'synced' })
+
+          const nextView = event.view
+
+          let recenter = !context.viewportChangedManually
+
+          // Check if dynamic view mode changed
+          recenter = recenter || (
+            nextView._type === 'dynamic' &&
+            context.view._type === 'dynamic' &&
+            nextView.variant !== context.view.variant
+          )
+
+          // Check if comparing layouts is enabled and layout changed
+          recenter = recenter || (
+            !!context.toggledFeatures.enableCompareWithLatest &&
+            !!nextView.drifts &&
+            hasAtLeast(nextView.drifts, 1) &&
+            context.view._layout !== nextView._layout
+          )
+
+          if (recenter) {
+            enqueue({
+              type: 'xyflow:setViewportCenter',
+              params: BBox.center(nextView.bounds),
+            })
+            enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
           }
         }),
       ],

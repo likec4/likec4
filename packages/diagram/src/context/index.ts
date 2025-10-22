@@ -1,6 +1,6 @@
 export { DiagramEventHandlers, useDiagramEventHandlers } from './DiagramEventHandlers'
 export {
-  AllDisabled,
+  DefaultFeatures,
   DiagramFeatures,
   IfEnabled,
   IfNotEnabled,

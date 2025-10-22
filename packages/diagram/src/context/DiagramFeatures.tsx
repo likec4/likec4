@@ -1,7 +1,6 @@
 import type { ExclusiveUnion } from '@likec4/core/types'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, createContext, useContext, useEffect, useState } from 'react'
-import { mapToObj } from 'remeda'
 
 const FeatureNames = [
   'Controls',
@@ -17,6 +16,7 @@ const FeatureNames = [
   'DynamicViewWalkthrough',
   'EdgeEditing',
   'FitView',
+  'CompareWithLatest',
   /**
    * Running in VSCode
    */
@@ -33,11 +33,25 @@ export type EnabledFeatures = {
   [P in `enable${FeatureName}`]: P extends keyof CustomFeatures ? CustomFeatures[P] : boolean
 }
 
-export const AllDisabled: EnabledFeatures = mapToObj(
-  FeatureNames,
-  (name) => [`enable${name}`, false] as const,
-)
-const DiagramFeaturesContext = createContext<EnabledFeatures>(AllDisabled)
+export const DefaultFeatures: EnabledFeatures = {
+  enableReadOnly: true,
+  enableCompareWithLatest: false,
+  enableControls: false,
+  enableDynamicViewWalkthrough: false,
+  enableEdgeEditing: false,
+  enableElementDetails: false,
+  enableFocusMode: false,
+  enableNavigateTo: false,
+  enableNotations: false,
+  enableRelationshipBrowser: false,
+  enableRelationshipDetails: false,
+  enableSearch: false,
+  enableNavigationButtons: false,
+  enableFitView: false,
+  enableVscode: false,
+  enableElementTags: false,
+}
+const DiagramFeaturesContext = createContext<EnabledFeatures>(DefaultFeatures)
 
 const validate = (features: EnabledFeatures) => {
   let {

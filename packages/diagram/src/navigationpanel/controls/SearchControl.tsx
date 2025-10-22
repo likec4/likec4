@@ -9,9 +9,10 @@ import {
 } from '@tabler/icons-react'
 import { isMacOs } from '@xyflow/system'
 import * as m from 'motion/react-m'
+import { memo } from 'react'
 import { useDiagram } from '../../hooks/useDiagram'
 
-export function SearchControl() {
+export const SearchControl = memo(() => {
   const diagram = useDiagram()
   const isMac = isMacOs()
 
@@ -63,4 +64,5 @@ export function SearchControl() {
       </Box>
     </UnstyledButton>
   )
-}
+})
+SearchControl.displayName = 'SearchControl'
