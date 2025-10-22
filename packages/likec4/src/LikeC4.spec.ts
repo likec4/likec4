@@ -195,14 +195,6 @@ describe.concurrent('LikeC4', () => {
           ],
           "folder": "cloud-system",
         },
-        "default": {
-          "documents": [
-            "multi-metadata-extend/base.c4",
-            "multi-metadata-extend/extend-1.c4",
-            "multi-metadata-extend/extend-2.c4",
-          ],
-          "folder": "examples",
-        },
         "diagrams-dev": {
           "documents": [
             "_spec.c4",
@@ -225,6 +217,14 @@ describe.concurrent('LikeC4', () => {
             "model.c4",
           ],
           "folder": "issue-1624",
+        },
+        "multi-metadata-extend": {
+          "documents": [
+            "base.c4",
+            "extend-1.c4",
+            "extend-2.c4",
+          ],
+          "folder": "multi-metadata-extend",
         },
         "projectA": {
           "documents": [
