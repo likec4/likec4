@@ -135,7 +135,7 @@ catalogs:
   vite:
     "@vitejs/plugin-react": ^5.0.4
     rollup: ^4.52.4
-    vite: ^7.1.9
+    vite: ^7.1.11
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.24.0
     vite-tsconfig-paths: ^5.1.4
@@ -153,8 +153,8 @@ catalogs:
     vscode-textmate: 9.2.0
     vscode-uri: 3.1.0
   xstate:
-    "@xstate/react": ^5.0.5
-    xstate: ^5.20.2
+    "@xstate/react": ^6.0.0
+    xstate: ^5.23.0
   xyflow:
     "@xyflow/react": 12.8.6
     "@xyflow/system": 0.0.70

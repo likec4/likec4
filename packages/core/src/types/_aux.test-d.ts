@@ -191,14 +191,14 @@ describe('Aux', () => {
     type A = aux.UnknownComputed
     expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'computed'>>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
-    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | string[]>>()
   })
 
   it('should work with UnknownLayouted', () => {
     type A = aux.UnknownLayouted
     expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'layouted'>>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
-    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | string[]>>()
   })
 
   it('should work with UnknownParsed', () => {
