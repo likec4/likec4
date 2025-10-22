@@ -118,7 +118,7 @@ catalogs:
       version: 0.7.3
     hono:
       specifier: ^4.9.10
-      version: 4.9.10
+      version: 4.10.2
     hono-sessions:
       specifier: ^0.8.0
       version: 0.8.0
@@ -536,10 +536,10 @@ importers:
         version: 16.1.1
       '@hono/oauth-providers':
         specifier: catalog:hono
-        version: 0.8.5(hono@4.9.10)
+        version: 0.8.5(hono@4.10.2)
       '@hono/zod-validator':
         specifier: catalog:hono
-        version: 0.7.3(hono@4.9.10)(zod@3.25.76)
+        version: 0.7.3(hono@4.10.2)(zod@3.25.76)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.12.0
@@ -632,7 +632,7 @@ importers:
         version: 5.3.2
       hono:
         specifier: catalog:hono
-        version: 4.9.10
+        version: 4.10.2
       hono-sessions:
         specifier: catalog:hono
         version: 0.8.0
@@ -1193,7 +1193,7 @@ importers:
     devDependencies:
       '@hono/node-server':
         specifier: catalog:hono
-        version: 1.19.5(hono@4.9.10)
+        version: 1.19.5(hono@4.10.2)
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -1259,7 +1259,7 @@ importers:
         version: 2.1.0
       hono:
         specifier: catalog:hono
-        version: 4.9.10
+        version: 4.10.2
       indent-string:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1938,7 +1938,7 @@ importers:
         version: 3.25.76
       zx:
         specifier: lite
-        version: 8.8.4-lite
+        version: 8.8.5-lite
 
   packages/vscode-preview:
     devDependencies:
@@ -5974,8 +5974,8 @@ packages:
   hono-sessions@0.8.0:
     resolution: {integrity: sha512-44nDuxcGTlk1hKE+7vH8KnNleKYnr8p3i/vkT8640jU8V0F1Tm873F5NdfXpctZax3CtnQ4cUKyEF1axXdkZrw==}
 
-  hono@4.9.10:
-    resolution: {integrity: sha512-AlI15ijFyKTXR7eHo7QK7OR4RoKIedZvBuRjO8iy4zrxvlY5oFCdiRG/V/lFJHCNXJ0k72ATgnyzx8Yqa5arug==}
+  hono@4.10.2:
+    resolution: {integrity: sha512-p6fyzl+mQo6uhESLxbF5WlBOAJMDh36PljwlKtP5V1v09NxlqGru3ShK+4wKhSuhuYf8qxMmrivHOa/M7q0sMg==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -8159,6 +8159,7 @@ packages:
   sitemap@8.0.0:
     resolution: {integrity: sha512-+AbdxhM9kJsHtruUF39bwS/B0Fytw6Fr1o4ZAIAEqA6cke2xcoO2GleBw9Zw7nRzILVEgz7zBM5GiTJjie1G9A==}
     engines: {node: '>=14.0.0', npm: '>=6.0.0'}
+    deprecated: 'SECURITY: Multiple vulnerabilities fixed in 8.0.1 (XML injection, path traversal, command injection, protocol injection). Upgrade immediately: npm install sitemap@8.0.1'
     hasBin: true
 
   slash@3.0.0:
@@ -9400,8 +9401,8 @@ packages:
     engines: {node: '>= 12.17.0'}
     hasBin: true
 
-  zx@8.8.4-lite:
-    resolution: {integrity: sha512-NaH101NH/XG5jP2cWvr/AFyd7EE1mQ6ZvqBzvJ4ceXwxfmchhPX4RjudB3MXa/+thcxR6xB9znZUiX2u/Tq+AA==}
+  zx@8.8.5-lite:
+    resolution: {integrity: sha512-A/u82oc3sd9SZ46hig3NZKh5V1u0tXOwev5AK+3yH0zdqhiJmhd7NcWS0lq19RLOofagpDBS8K77aXLNAkBESQ==}
     engines: {node: '>= 12.17.0'}
 
 snapshots:
@@ -10977,17 +10978,17 @@ snapshots:
 
   '@fontsource/ibm-plex-sans@5.2.8': {}
 
-  '@hono/node-server@1.19.5(hono@4.9.10)':
+  '@hono/node-server@1.19.5(hono@4.10.2)':
     dependencies:
-      hono: 4.9.10
+      hono: 4.10.2
 
-  '@hono/oauth-providers@0.8.5(hono@4.9.10)':
+  '@hono/oauth-providers@0.8.5(hono@4.10.2)':
     dependencies:
-      hono: 4.9.10
+      hono: 4.10.2
 
-  '@hono/zod-validator@0.7.3(hono@4.9.10)(zod@3.25.76)':
+  '@hono/zod-validator@0.7.3(hono@4.10.2)(zod@3.25.76)':
     dependencies:
-      hono: 4.9.10
+      hono: 4.10.2
       zod: 3.25.76
 
   '@hpcc-js/wasm-graphviz@1.12.0': {}
@@ -14509,11 +14510,11 @@ snapshots:
 
   hono-sessions@0.8.0:
     dependencies:
-      hono: 4.9.10
+      hono: 4.10.2
       iron-webcrypto: 1.2.1
       ohash: 2.0.11
 
-  hono@4.9.10: {}
+  hono@4.10.2: {}
 
   hookable@5.5.3: {}
 
@@ -18414,4 +18415,4 @@ snapshots:
 
   zx@8.8.4: {}
 
-  zx@8.8.4-lite: {}
+  zx@8.8.5-lite: {}
