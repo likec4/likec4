@@ -320,6 +320,14 @@ type StringProperty =
   NotesProperty
 ;
 
+type AnyProperty =
+  StringProperty |
+  ViewProperty |
+  DynamicViewProperty |
+  ElementProperty |
+  RelationProperty
+;
+
 ViewProperty:
   ViewStringProperty | LinkProperty
 ;

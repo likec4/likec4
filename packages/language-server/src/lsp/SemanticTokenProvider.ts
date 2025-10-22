@@ -1,386 +1,334 @@
-import type { AstNode } from 'langium'
-import { type SemanticTokenAcceptor, AbstractSemanticTokenProvider } from 'langium/lsp'
+import { invariant, isAnyOf, nonNullable } from '@likec4/core/utils'
+import type { AstNode, CstNode, Properties } from 'langium'
+import {
+  type SemanticTokenAcceptor,
+  AbstractSemanticTokenProvider,
+} from 'langium/lsp'
 import { isTruthy } from 'remeda'
 import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-types'
 import { ast } from '../ast'
+import { logger } from '../logger'
+
+type Predicate<T extends AstNode> = (x: unknown) => x is T
+interface Highlighter<T extends AstNode> {
+  /**
+   * Current AST node being highlighted.
+   */
+  node: T
+  /**
+   * Highlight a CST node (or whole current AST node if no argument provided).
+   */
+  cst: (cstNode?: CstNode) => SemanticTypeMethods
+  /**
+   * Highlight a keyword within the current AST node.
+   */
+  keyword: (keyword: string) => SemanticTypeMethods
+  /**
+   * Highlight a property of the current AST node.
+   */
+  property: (property: Properties<T>, index?: number) => SemanticTypeMethods
+}
+
+type SemanticTypeMethods =
+  & {
+    [K in keyof typeof SemanticTokenTypes]: () => void
+  }
+  & {
+    [M in keyof typeof SemanticTokenModifiers]: SemanticTypeMethods
+  }
+  & {
+    modifier: (modifier: string) => SemanticTypeMethods
+  }
+
+const SemanticTypes = { ...SemanticTokenTypes }
+const SemanticModifiers = { ...SemanticTokenModifiers }
+
+function createSemanticTypeMethods(
+  applyHighlight: (type: SemanticTokenTypes, modifier: SemanticTokenModifiers[]) => void,
+): SemanticTypeMethods {
+  const modifier = [] as SemanticTokenModifiers[]
+  const self = new Proxy({} as SemanticTypeMethods, {
+    get(_, prop: string) {
+      if (prop === 'modifier') {
+        return (mod: string) => {
+          modifier.push(mod as SemanticTokenModifiers)
+          return self
+        }
+      }
+      if (prop in SemanticModifiers) {
+        modifier.push(SemanticModifiers[prop as keyof typeof SemanticTokenModifiers])
+        return self
+      }
+      if (prop in SemanticTypes) {
+        return () => applyHighlight(SemanticTypes[prop as keyof typeof SemanticTokenTypes], modifier)
+      }
+      throw new Error(`Unknown semantic token type or modifier: ${prop}`)
+    },
+  })
+  return self
+}
+
+const PRUNE = 'Stop Highlighting'
+const stopHighlight = (): never => {
+  throw PRUNE
+}
 
 export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   protected override highlightElement(
     node: AstNode,
     acceptor: SemanticTokenAcceptor,
   ): void | undefined | 'prune' {
-    if (ast.isElement(node) || ast.isDeploymentNode(node) || ast.isDeployedInstance(node)) {
-      return this.highlightNameAndKind(node, acceptor)
-    }
-    if (ast.isLikeC4View(node)) {
-      return this.highlightView(node, acceptor)
-    }
-    if (ast.isRelationshipKind(node)) {
-      return acceptor({
-        node,
-        property: 'name',
-        type: SemanticTokenTypes.function,
-      })
-    }
-    if (ast.isLibIcon(node)) {
-      acceptor({
-        node,
-        property: 'name',
-        type: SemanticTokenTypes.type,
-        modifier: [SemanticTokenModifiers.definition],
-      })
-      return 'prune'
-    }
+    try {
+      if (isAnyOf(ast.isElement, ast.isDeploymentNode, ast.isDeployedInstance)(node)) {
+        return this.highlightNameAndKind(node)
+      }
+      if (ast.isLikeC4View(node)) {
+        return this.highlightView(node)
+      }
 
-    if (
-      (ast.isRelation(node) || ast.isOutgoingRelationExpr(node) || ast.isDeploymentRelation(node)) && 'kind' in node
-    ) {
-      acceptor({
-        node,
-        property: 'kind',
-        type: SemanticTokenTypes.function,
-      })
-    }
-    if (ast.isNavigateToProperty(node) || ast.isRelationNavigateToProperty(node)) {
-      acceptor({
-        node,
-        property: 'key',
-        type: SemanticTokenTypes.property,
-      })
-      acceptor({
-        node,
-        property: 'value',
-        type: SemanticTokenTypes.interface,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return 'prune'
-    }
-    if ((ast.isFqnRefExpr(node) || ast.isWildcardExpression(node))) {
-      acceptor({
-        cst: node.$cstNode!,
-        type: SemanticTokenTypes.variable,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return 'prune'
-    }
-    if (ast.isRelationKindDotRef(node)) {
-      acceptor({
-        cst: node.$cstNode!,
-        type: SemanticTokenTypes.function,
-      })
-      return 'prune'
-    }
-    if (ast.isWhereRelationKind(node) && isTruthy(node.value)) {
-      acceptor({
-        node,
-        property: 'value',
-        type: SemanticTokenTypes.function,
-      })
-      return
-    }
-    if ((ast.isWhereElement(node) || ast.isWhereRelation(node)) && isTruthy(node.value)) {
-      acceptor({
-        node,
-        property: 'value',
-        type: SemanticTokenTypes.type,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return
-    }
-    if ((ast.isWhereRelationParticipantKind(node) || ast.isWhereRelationParticipantTag(node))) {
-      acceptor({
-        node,
-        property: 'participant',
-        type: SemanticTokenTypes.keyword,
-      })
-    }
-    if (ast.isElementKindExpression(node) && isTruthy(node.kind)) {
-      acceptor({
-        node,
-        property: 'kind',
-        type: SemanticTokenTypes.type,
-        modifier: [SemanticTokenModifiers.definition],
-      })
-      return
-    }
-    if (
-      ast.isGlobalStyleGroup(node)
-      || ast.isGlobalStyle(node)
-    ) {
-      acceptor({
-        node,
-        property: 'id',
-        type: SemanticTokenTypes.variable,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return
-    }
-    if (ast.isViewRuleGlobalStyle(node)) {
-      acceptor({
-        node,
-        property: 'style',
-        type: SemanticTokenTypes.variable,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return
-    }
-    if (
-      ast.isGlobalPredicateGroup(node)
-      || ast.isGlobalDynamicPredicateGroup(node)
-    ) {
-      acceptor({
-        node,
-        property: 'name',
-        type: SemanticTokenTypes.variable,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return
-    }
-    if (ast.isViewRuleGlobalPredicateRef(node)) {
-      acceptor({
-        node,
-        property: 'predicate',
-        type: SemanticTokenTypes.variable,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return
-    }
-    if (ast.isElementTagExpression(node) && isTruthy(node.tag)) {
-      acceptor({
-        node,
-        property: 'tag',
-        type: SemanticTokenTypes.type,
-        modifier: [SemanticTokenModifiers.definition],
-      })
-      return
-    }
-    if (ast.isFqnRef(node) || ast.isStrictFqnRef(node)) {
-      acceptor({
-        node,
-        property: 'value',
-        type: SemanticTokenTypes.variable,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return !node.parent ? 'prune' : undefined
-    }
-    if (ast.isStrictFqnElementRef(node)) {
-      acceptor({
-        node,
-        property: 'el',
-        type: SemanticTokenTypes.variable,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return !node.parent ? 'prune' : undefined
-    }
-    if (ast.isSpecificationColor(node)) {
-      acceptor({
-        node,
-        keyword: 'color',
-        type: SemanticTokenTypes.keyword,
-      })
-      acceptor({
-        node,
-        property: 'name',
-        type: SemanticTokenTypes.type,
-        modifier: [
-          SemanticTokenModifiers.declaration,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return
-    }
-    if (ast.isSpecificationTag(node) && isTruthy(node.color)) {
-      acceptor({
-        node,
-        keyword: 'color',
-        type: SemanticTokenTypes.property,
-      })
-      return
-    }
-    if (
-      ast.isSpecificationElementKind(node)
-      || ast.isSpecificationRelationshipKind(node)
-      || ast.isSpecificationDeploymentNodeKind(node)
-    ) {
-      acceptor({
-        node,
-        property: 'kind',
-        type: SemanticTokenTypes.type,
-        modifier: [
-          SemanticTokenModifiers.declaration,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-    }
-    if (ast.isTagRef(node)) {
-      acceptor({
-        cst: node.$cstNode!,
-        type: SemanticTokenTypes.type,
-      })
-      return 'prune'
-    }
-    if (ast.isTag(node)) {
-      return acceptor({
-        node,
-        property: 'name',
-        type: SemanticTokenTypes.type,
-        modifier: [SemanticTokenModifiers.definition],
-      })
-    }
-    if (ast.isRelationStyleProperty(node) || ast.isElementStyleProperty(node)) {
-      acceptor({
-        node,
-        property: 'key',
-        type: SemanticTokenTypes.property,
-      })
-    }
-    if (ast.isOpacityProperty(node)) {
-      acceptor({
-        node,
-        property: 'key',
-        type: SemanticTokenTypes.property,
-      })
-      acceptor({
-        node,
-        property: 'value',
-        type: SemanticTokenTypes.number,
-      })
-      return 'prune'
-    }
-    if (
-      ast.isLinkProperty(node)
-      || ast.isIconProperty(node)
-      || ast.isStringProperty(node)
-    ) {
-      acceptor({
-        node,
-        property: 'key',
-        type: SemanticTokenTypes.property,
-      })
-      if (ast.isIconProperty(node) && (node.libicon || node.value === 'none')) {
+      if (
+        ast.isAnyProperty(node) &&
+        !isAnyOf(
+          ast.isMetadataProperty,
+          ast.isElementStyleProperty,
+          ast.isRelationStyleProperty,
+        )(node)
+      ) {
+        invariant(node.key)
         acceptor({
           node,
-          property: node.libicon ? 'libicon' : 'value',
-          type: SemanticTokenTypes.enum,
-          modifier: [SemanticTokenModifiers.defaultLibrary],
+          property: 'key',
+          type: SemanticTokenTypes.property,
         })
+      }
+
+      this.when(node, ast.isRelationshipKind, mark => {
+        mark.property('name').function()
+      })
+
+      this.when(node, isAnyOf(ast.isRelation, ast.isOutgoingRelationExpr, ast.isDeploymentRelation), mark => {
+        mark.property('kind').function()
+      })
+
+      this.when(node, ast.isLibIcon, mark => {
+        mark.property('name').definition.function()
+        stopHighlight()
+      })
+
+      this.when(node, isAnyOf(ast.isNavigateToProperty, ast.isRelationNavigateToProperty), mark => {
+        mark.property('value').readonly.definition.interface()
+        stopHighlight()
+      })
+      this.when(node, isAnyOf(ast.isFqnRefExpr, ast.isWildcardExpression), mark => {
+        mark.cst().readonly.definition.variable()
+        stopHighlight()
+      })
+      this.when(node, ast.isTagRef, mark => {
+        mark.cst().type()
+        stopHighlight()
+      })
+      this.when(node, ast.isRelationKindDotRef, mark => {
+        mark.cst().function()
+        stopHighlight()
+      })
+
+      this.when(node, ast.isWhereRelationKind, mark => {
+        if (isTruthy(mark.node.value)) {
+          mark.property('value').function()
+        }
+      })
+      this.when(node, isAnyOf(ast.isWhereElement, ast.isWhereRelation), mark => {
+        if (isTruthy(mark.node.value)) {
+          mark.property('value').readonly.definition.type()
+        }
+      })
+      this.when(node, isAnyOf(ast.isWhereRelationParticipantKind, ast.isWhereRelationParticipantTag), mark => {
+        mark.property('participant').keyword()
+      })
+      this.when(node, ast.isElementKindExpression, mark => {
+        if (isTruthy(mark.node.kind)) {
+          mark.property('kind').definition.type()
+        }
+      })
+      this.when(node, isAnyOf(ast.isGlobalStyleGroup, ast.isGlobalStyle), mark => {
+        mark.property('id').readonly.definition.variable()
+      })
+      this.when(node, ast.isViewRuleGlobalStyle, mark => {
+        mark.property('style').readonly.definition.variable()
+      })
+      this.when(node, isAnyOf(ast.isGlobalPredicateGroup, ast.isGlobalDynamicPredicateGroup), mark => {
+        mark.property('name').readonly.definition.variable()
+      })
+      this.when(node, ast.isViewRuleGlobalPredicateRef, mark => {
+        mark.property('predicate').readonly.definition.variable()
+      })
+      this.when(node, ast.isElementTagExpression, mark => {
+        if (isTruthy(mark.node.tag)) {
+          mark.property('tag').definition.type()
+        }
+      })
+      this.when(node, isAnyOf(ast.isFqnRef, ast.isStrictFqnRef), mark => {
+        mark.property('value').readonly.definition.variable()
+        if (!mark.node.parent) {
+          stopHighlight()
+        }
+      })
+      this.when(node, ast.isStrictFqnElementRef, mark => {
+        mark.property('el').readonly.definition.variable()
+        if (!mark.node.parent) {
+          stopHighlight()
+        }
+      })
+      this.when(node, ast.isSpecificationColor, mark => {
+        mark.keyword('color').keyword()
+        mark.property('name').readonly.declaration.type()
+      })
+      this.when(node, ast.isSpecificationTag, mark => {
+        if (isTruthy(mark.node.color)) {
+          mark.keyword('color').property()
+        }
+      })
+      this.when(
+        node,
+        isAnyOf(
+          ast.isSpecificationElementKind,
+          ast.isSpecificationRelationshipKind,
+          ast.isSpecificationDeploymentNodeKind,
+        ),
+        mark => {
+          mark.property('kind').readonly.declaration.type()
+        },
+      )
+      this.when(node, ast.isTag, mark => {
+        mark.property('name').definition.type()
+      })
+      this.when(node, ast.isOpacityProperty, mark => {
+        mark.property('value').number()
+      })
+      this.when(node, ast.isIconProperty, mark => {
+        if (mark.node.libicon || mark.node.value === 'none') {
+          mark.property(mark.node.libicon ? 'libicon' : 'value').defaultLibrary.enum()
+          return
+        }
+        mark.property('value').string()
+      })
+      this.when(node, ast.isLinkProperty, mark => {
+        if (isTruthy(mark.node.value)) {
+          mark.property('value').string()
+        }
+      })
+      this.when(node, ast.isColorProperty, mark => {
+        if (isTruthy(mark.node.customColor)) {
+          mark.property('customColor').enum()
+        }
+        if (isTruthy(mark.node.themeColor)) {
+          mark.property('themeColor').enum()
+        }
+      })
+      this.when(
+        node,
+        isAnyOf(
+          ast.isShapeProperty,
+          ast.isArrowProperty,
+          ast.isLineProperty,
+          ast.isBorderProperty,
+          ast.isSizeProperty,
+          ast.isDynamicViewDisplayVariantProperty,
+        ),
+        mark => {
+          if (isTruthy(mark.node.value)) {
+            mark.property('value').enum()
+          }
+        },
+      )
+    } catch (error) {
+      if (error === PRUNE) {
         return 'prune'
       }
-      if ('value' in node && node.value && !ast.isStringProperty(node)) {
-        acceptor({
-          node,
-          property: 'value',
-          type: SemanticTokenTypes.string,
-        })
-      }
-      return 'prune'
-    }
-    if (
-      ast.isColorProperty(node)
-      || ast.isShapeProperty(node)
-      || ast.isArrowProperty(node)
-      || ast.isLineProperty(node)
-      || ast.isBorderProperty(node)
-      || ast.isSizeProperty(node)
-      || ast.isDynamicViewDisplayVariantProperty(node)
-    ) {
-      acceptor({
-        node,
-        property: 'key',
-        type: SemanticTokenTypes.property,
-      })
-      if ('value' in node) {
-        acceptor({
-          node,
-          property: 'value',
-          type: SemanticTokenTypes.enum,
-        })
-      }
-      return 'prune'
+      logger.warn(`Error highlighting node of type ${(node as any)._type}`, { error })
     }
   }
 
   private highlightNameAndKind(
     node: ast.Element | ast.DeploymentNode | ast.DeployedInstance,
-    acceptor: SemanticTokenAcceptor,
   ) {
-    acceptor({
-      node,
-      property: 'name',
-      type: SemanticTokenTypes.variable,
-      modifier: [
-        SemanticTokenModifiers.declaration,
-        SemanticTokenModifiers.readonly,
-      ],
-    })
+    const mark = this.mark(node)
+    mark.property('name').declaration.readonly.variable()
     if (!ast.isDeployedInstance(node)) {
-      acceptor({
-        node,
-        property: 'kind',
-        type: SemanticTokenTypes.keyword,
-        modifier: [],
-      })
+      this.mark(node).property('kind').keyword()
     }
     if (ast.isElement(node)) {
       if (node.props.length > 0) {
-        acceptor({
-          node,
-          property: 'props',
-          type: SemanticTokenTypes.string,
-        })
+        this.mark(node).property('props').string()
       }
       return
     }
     // This is DeploymentNode
     if (node.title) {
-      acceptor({
-        node,
-        property: 'title',
-        type: SemanticTokenTypes.string,
-      })
+      this.mark(node).property('title').string()
     }
   }
 
-  private highlightView(node: ast.LikeC4View, acceptor: SemanticTokenAcceptor) {
+  private highlightView(node: ast.LikeC4View) {
     if (node.name) {
-      acceptor({
-        node,
-        property: 'name',
-        type: SemanticTokenTypes.interface,
-        modifier: [
-          SemanticTokenModifiers.declaration,
-          SemanticTokenModifiers.readonly,
-          'local',
-        ],
-      })
+      const mark = this.mark(node)
+      mark.property('name')
+        .modifier('local')
+        .declaration
+        .readonly
+        .interface()
+    }
+  }
+
+  private when<T extends AstNode>(
+    node: AstNode,
+    predicate: Predicate<T>,
+    highlightFn: (highlight: Highlighter<T>) => void,
+  ): void {
+    if (!predicate(node)) {
+      return
+    }
+    highlightFn(this.mark<T>(node))
+  }
+
+  private mark<T extends AstNode>(node: T): Highlighter<T> {
+    const cst = (cstNode?: CstNode): SemanticTypeMethods => {
+      return createSemanticTypeMethods((type, modifier) =>
+        this.highlightToken({
+          range: nonNullable(cstNode ?? node.$cstNode, 'AST node has no CST node').range,
+          type,
+          modifier,
+        })
+      )
+    }
+
+    const keyword = (keyword: string): SemanticTypeMethods => {
+      return createSemanticTypeMethods((type, modifier) =>
+        this.highlightKeyword({
+          node,
+          keyword,
+          type,
+          modifier,
+        })
+      )
+    }
+    const property = (property: Properties<T>, index?: number): SemanticTypeMethods => {
+      return createSemanticTypeMethods((type, modifier) =>
+        this.highlightProperty({
+          node,
+          property,
+          type,
+          modifier,
+          ...(index !== undefined ? { index } : {}),
+        })
+      )
+    }
+
+    return {
+      node,
+      cst,
+      keyword,
+      property,
     }
   }
 }
