@@ -1,6 +1,6 @@
 export const ViewPadding = {
   top: '40px',
-  bottom: '16px',
-  left: '16px',
-  right: '16px',
+  bottom: '22px',
+  left: '22px',
+  right: '22px',
 } as const

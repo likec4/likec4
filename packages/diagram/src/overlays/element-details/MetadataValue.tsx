@@ -1,5 +1,5 @@
 import { css } from '@likec4/styles/css'
-import { Box, Flex, ScrollAreaAutosize, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core'
+import { Box, Flex, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core'
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
 

@@ -143,7 +143,7 @@ export function ExportPage() {
         pannable={false}
         zoomable={false}
         controls={false}
-        showNotations={false}
+        enableNotations={false}
         enableElementDetails={false}
         enableRelationshipDetails={false}
         enableRelationshipBrowser={false}

@@ -92,7 +92,7 @@ function Initialized() {
           enableElementTags
           enableSearch
           showNavigationButtons
-          showNotations
+          enableNotations
           enableRelationshipDetails
           renderIcon={IconRenderer}
           onNavigateTo={(_to, event) => {

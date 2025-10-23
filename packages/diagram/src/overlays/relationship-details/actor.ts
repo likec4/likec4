@@ -120,6 +120,11 @@ export type Events =
   | { type: 'navigate.to'; params: { edgeId: EdgeId; viewId?: ViewId } | { source: Fqn; target: Fqn; viewId?: ViewId } }
   | { type: 'close' }
 
+const ViewPadding = {
+  x: '22px',
+  y: '22px',
+} as const
+
 const _relationshipDetailsLogic = setup({
   types: {
     context: {} as Context,
@@ -137,13 +142,13 @@ const _relationshipDetailsLogic = setup({
       const maxZoom = Math.max(xyflow.getZoom(), 1)
       if (bounds) {
         const { width, height } = xystore.getState()
-        const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, 0.1)
+        const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, ViewPadding)
         xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined).catch(console.error)
       } else {
         xyflow.fitView({
           minZoom: MinZoom,
           maxZoom,
-          padding: 0.1,
+          padding: ViewPadding,
           ...(duration > 0 && { duration }),
         }).catch(console.error)
       }

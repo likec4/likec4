@@ -80,6 +80,11 @@ export type PaddingWithUnit = `${number}${PaddingUnit}` | number
  *   bottom: '8px',
  *   left: '8px',
  * }
+ *
+ * {
+ *   x: '16px',
+ *   y: '16px',
+ * }
  */
 export type ViewPadding = PaddingWithUnit | {
   top?: PaddingWithUnit
@@ -123,8 +128,8 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   fitView?: boolean | undefined
 
   /**
-   * Padding around the diagram
-   * @default '8px'
+   * Padding around the diagram (number - pixels)
+   * @default 16 - 16px
    *
    * @see {@link ViewPadding}
    *
@@ -133,15 +138,15 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
    * <LikeC4Diagram
    *   fitViewPadding={{
    *     x: '16px',
-   *     y: '16px',
+   *     y: 16,
    *   }}
    * />
    *
    * <LikeC4Diagram
    *   fitViewPadding={{
-   *     top: '8px',
+   *     top: 8,
    *     right: '8px',
-   *     bottom: '8px',
+   *     bottom: '1px',
    *     left: '8px',
    *   }}
    * />
@@ -186,9 +191,9 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
    * Display notations in the bottom right corner
    * (Active if only notations are present)
    *
-   * @default true
+   * @default false
    */
-  showNotations?: boolean | undefined
+  enableNotations?: boolean | undefined
 
   /**
    * Display dropdown with details on relationship's label click

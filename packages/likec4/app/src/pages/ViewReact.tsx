@@ -59,7 +59,7 @@ export function ViewReact() {
       enableRelationshipBrowser
       enableElementTags
       experimentalEdgeEditing={false}
-      showNotations={hasNotations}
+      enableNotations={hasNotations}
       nodesDraggable={false}
       nodesSelectable
       onNavigateTo={onNavigateTo}

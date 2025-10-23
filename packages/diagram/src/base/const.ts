@@ -14,7 +14,7 @@ export const MaxZoom = 3
 export const FitViewPaddings = {
   default: '16px',
   withControls: {
-    top: '50px',
+    top: '58px',
     left: '16px',
     right: '16px',
     bottom: '16px',
