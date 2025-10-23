@@ -11,9 +11,9 @@ catalog:
   graphology: ^0.25.4
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  oxlint: 1.23.0
-  oxlint-tsgolint: ^0.2.0
-  playwright: 1.54.2
+  oxlint: 1.24.0
+  oxlint-tsgolint: ^0.2.1
+  playwright: 1.56.1
   tsx: 4.20.6
   turbo: 2.5.8
   typescript: 5.9.3
@@ -45,9 +45,9 @@ catalogs:
     "@cloudflare/vite-plugin": 1.11.7
     wrangler: ~4.35.0
   css:
-    "@pandacss/dev": ^1.4.1
-    "@pandacss/preset-panda": ^1.4.1
-    "@pandacss/types": ^1.4.1
+    "@pandacss/dev": ^1.4.3
+    "@pandacss/preset-panda": ^1.4.3
+    "@pandacss/types": ^1.4.3
     "@tailwindcss/vite": ^4.1.14
     postcss: 8.5.6
     tailwindcss: ^4.1.14
@@ -82,7 +82,7 @@ catalogs:
     "@types/react": 19.1.16
     "@types/react-dom": 19.1.9
     clsx: ^2.1.1
-    motion: ^12.23.22
+    motion: ^12.23.24
     nanostores: 1.0.1
     react: 19.1.1
     react-dom: 19.1.1
@@ -138,7 +138,7 @@ catalogs:
   vite:
     "@vitejs/plugin-react": ^5.0.4
     rollup: ^4.52.3
-    vite: ^7.1.9
+    vite: ^7.1.11
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.24.0
     vite-tsconfig-paths: ^5.1.4
@@ -156,11 +156,11 @@ catalogs:
     vscode-textmate: 9.2.0
     vscode-uri: 3.1.0
   xstate:
-    "@xstate/react": ^5.0.5
-    xstate: ^5.20.2
+    "@xstate/react": ^6.0.0
+    xstate: ^5.23.0
   xyflow:
-    "@xyflow/react": 12.8.6
-    "@xyflow/system": 0.0.70
+    "@xyflow/react": 12.9.0
+    "@xyflow/system": 0.0.71
 
 onlyBuiltDependencies:
   - dprint
