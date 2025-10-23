@@ -129,7 +129,7 @@ catalogs:
       specifier: ^0.7.4
       version: 0.7.4
     hono:
-      specifier: ^4.9.10
+      specifier: ^4.10.1
       version: 4.10.2
     hono-sessions:
       specifier: ^0.8.0
