@@ -1,14 +1,13 @@
 ---
-import AstrolightSiteTitle from "@astrojs/starlight/components/SiteTitle.astro";
-import type { Props } from "@astrojs/starlight/props";
+import AstrolightSiteTitle from '@astrojs/starlight/components/SiteTitle.astro'
 
 const menuItems = [
-	{ name: "Docs", href: "/tutorial" },
-	{ name: "Playground", href: "https://playground.likec4.dev/w/tutorial/" },
-];
+  { name: 'Docs', href: '/tutorial' },
+  { name: 'Playground', href: 'https://playground.likec4.dev/w/tutorial/' },
+]
 
 function pathsMatch(pathA: string, pathB: string): boolean {
-	return pathB.includes(pathA);
+  return pathB.includes(pathA)
 }
 ---
 
@@ -22,9 +21,7 @@ function pathsMatch(pathA: string, pathB: string): boolean {
       menuItems.map((menuItem) => (
         <a
           href={menuItem.href}
-          aria-current={
-            pathsMatch(encodeURI(menuItem.href), Astro.url.pathname) && "page"
-          }
+          aria-current={pathsMatch(encodeURI(menuItem.href), Astro.url.pathname) && 'page'}
         >
           <span>{menuItem.name}</span>
         </a>
@@ -34,41 +31,41 @@ function pathsMatch(pathA: string, pathB: string): boolean {
 </div>
 
 <style>
-  div {
+div {
+  display: flex;
+  gap: var(--sl-content-pad-x);
+  align-items: center;
+}
+
+div.separator {
+  content: "";
+  height: 2rem;
+  border-inline-end: 1px solid var(--sl-color-gray-5);
+}
+
+div a {
+  text-decoration: none;
+  color: var(--sl-color-white);
+  font-size: var(--sl-text-base);
+  font-weight: 500;
+}
+
+div a:hover {
+  color: var(--sl-color-text-accent);
+}
+
+[aria-current="page"],
+[aria-current="page"]:hover,
+[aria-current="page"]:focus {
+  color: var(--sl-color-text-accent);
+}
+
+@media (min-width: 50rem) {
+  .menu-items {
     display: flex;
-    gap: var(--sl-content-pad-x);
-    align-items: center;
   }
-
-  div.separator {
-    content: "";
-    height: 2rem;
-    border-inline-end: 1px solid var(--sl-color-gray-5);
+  .separator {
+    display: block;
   }
-
-  div a {
-    text-decoration: none;
-    color: var(--sl-color-white);
-    font-size: var(--sl-text-base);
-    font-weight: 500;
-  }
-
-  div a:hover {
-    color: var(--sl-color-text-accent);
-  }
-
-  [aria-current="page"],
-  [aria-current="page"]:hover,
-  [aria-current="page"]:focus {
-    color: var(--sl-color-text-accent);
-  }
-
-	@media (min-width: 50rem) {
-		.menu-items {
-			display: flex;
-		}
-		.separator {
-			display: block;
-		}
-	}
+}
 </style>
