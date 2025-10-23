@@ -88,9 +88,28 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
 
   /**
    * Padding around the diagram
-   * @default '8px'
+   * @default '16px'
    *
    * @see {@link ViewPadding}
+   *
+   * @example
+   * ```tsx
+   * <LikeC4View
+   *   fitViewPadding={{
+   *     x: '16px',
+   *     y: 16,
+   *   }}
+   * />
+   *
+   * <LikeC4View
+   *   fitViewPadding={{
+   *     top: 8,
+   *     right: '8px',
+   *     bottom: '1px',
+   *     left: '8px',
+   *   }}
+   * />
+   * ```
    */
   fitViewPadding?: ViewPadding | undefined
 
@@ -104,7 +123,7 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
    * Display notations of the view
    * @default false
    */
-  showNotations?: boolean | undefined
+  enableNotations?: boolean | undefined
 
   /**
    * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
@@ -273,7 +292,7 @@ export interface LikeC4BrowserProps {
    * Display notations of the view
    * @default true
    */
-  showNotations?: boolean | undefined
+  enableNotations?: boolean | undefined
 
   /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
@@ -325,7 +344,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   background = 'transparent',
   browser = true,
   showNavigationButtons = false,
-  showNotations,
+  enableNotations,
   enableFocusMode = false,
   enableDynamicViewWalkthrough = false,
   enableElementDetails = false,
@@ -379,9 +398,9 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   const browserViewModel = browserViewId ? likec4model.findView(browserViewId) : null
   const browserView = layoutType === 'manual' ? browserViewModel?.$layouted : browserViewModel?.$view
 
-  const notations = view.notation?.nodes ?? []
-  const hasNotations = notations.length > 0
-  showNotations ??= hasNotations
+  const hasNotations = !!enableNotations && (view.notation?.nodes?.length ?? 0) > 0
+
+  const browserViewHasNotations = (browserView?.notation?.nodes?.length ?? 0) > 0
 
   const isBrowserEnabled = browser !== false
 
@@ -410,7 +429,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
           background={background}
           fitView={true}
           fitViewPadding={FitViewPaddings.default}
-          showNotations={showNotations}
+          enableNotations={hasNotations}
           enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
           showNavigationButtons={showNavigationButtons}
           experimentalEdgeEditing={false}
@@ -456,11 +475,12 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
               enableElementTags
               controls
               readonly
+              nodesDraggable={false}
               fitView
               {...props}
               fitViewPadding={FitViewPaddings.withControls}
               {...browserProps}
-              showNotations={browserProps.showNotations ?? showNotations}
+              enableNotations={browserViewHasNotations && (browserProps.enableNotations ?? true)}
               renderNodes={renderNodes}
               onLayoutTypeChange={setLayoutType}
             />

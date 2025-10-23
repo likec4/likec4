@@ -97,7 +97,8 @@ function Initialized({ likec4Model }: { likec4Model: LikeC4Model }) {
           enableRelationshipDetails
           enableCompareWithLatest
           showNavigationButtons
-          showNotations
+          enableNotations
+          enableRelationshipDetails
           renderIcon={IconRenderer}
           onNavigateTo={(_to, event) => {
             const to = _to as scalar.ViewId

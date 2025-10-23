@@ -44,7 +44,7 @@ export function ViewEditor() {
         right: '32px',
       }}
       showNavigationButtons
-      showNotations={isDevelopment || hasNotations}
+      enableNotations={isDevelopment || hasNotations}
       enableSearch
       enableDynamicViewWalkthrough
       enableFocusMode

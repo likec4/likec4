@@ -33,6 +33,7 @@ export { getOrCreate } from './getOrCreate'
 
 export {
   hasProp,
+  isAnyOf,
   isNonEmptyArray,
   isString,
 } from './guards'

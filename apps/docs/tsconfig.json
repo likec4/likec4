@@ -18,6 +18,9 @@
       "likec4/model": [
         "../../packages/likec4/src/model/index.ts"
       ],
+      "@likec4/core": [
+        "../../packages/core/src"
+      ],
       "likec4/react": [
         "../../packages/likec4/react/index.ts"
       ]
@@ -26,16 +29,18 @@
     "jsxImportSource": "react"
   },
   "include": [
-    "./src"
+    ".astro/types.d.ts",
+    "**/*"
   ],
   "exclude": [
-    "node_modules",
-    "**/node_modules/**",
     "dist"
   ],
   "references": [
     {
       "path": "../../packages/likec4/tsconfig.json"
+    },
+    {
+      "path": "../../packages/core/tsconfig.json"
     },
   ]
 }

@@ -60,7 +60,7 @@ export function ViewReact() {
       enableElementTags
       enableCompareWithLatest
       experimentalEdgeEditing={false}
-      showNotations={hasNotations}
+      enableNotations={hasNotations}
       nodesDraggable={false}
       nodesSelectable
       onNavigateTo={onNavigateTo}

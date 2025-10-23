@@ -120,8 +120,6 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
 const selector = (s: DiagramContext) => ({
   id: s.view.id,
   notations: s.view.notation?.nodes ?? [],
-  isVisible: true,
-  // isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough),
 })
 
 export const NotationPanel = memo(() => {
@@ -129,7 +127,6 @@ export const NotationPanel = memo(() => {
   const {
     id,
     notations,
-    isVisible,
   } = useDiagramContext(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'notation-webview-collapsed',
@@ -140,7 +137,7 @@ export const NotationPanel = memo(() => {
 
   return (
     <AnimatePresence>
-      {!hasNotations && isVisible && (
+      {!hasNotations && (
         <m.div
           key={'empty'}
           initial={{ opacity: 0.75, translateX: '50%' }}
@@ -162,7 +159,7 @@ export const NotationPanel = memo(() => {
           </Tooltip>
         </m.div>
       )}
-      {hasNotations && isVisible && isCollapsed && (
+      {hasNotations && isCollapsed && (
         <m.div
           key={'collapsed'}
           initial={{ opacity: 0.75, translateX: '50%' }}
@@ -187,7 +184,7 @@ export const NotationPanel = memo(() => {
         </m.div>
       )}
 
-      {hasNotations && isVisible && !isCollapsed && (
+      {hasNotations && !isCollapsed && (
         <m.div
           key={id}
           initial={{

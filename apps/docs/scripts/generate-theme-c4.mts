@@ -4,11 +4,11 @@
  * - views for each theme color
  * - nested shapes (6 levels)
  */
-import { defaultTheme } from '@likec4/core'
+import { LikeC4Styles } from '@likec4/core'
 import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 
-const colors = Object.keys(defaultTheme.elements)
+const colors = Object.keys(LikeC4Styles.DEFAULT.colors)
 
 const shapes = [
   'rectangle',
@@ -28,13 +28,15 @@ specification {
       opacity 20%
     }
   }
-${shapes.map(shape => `
+${
+  shapes.map(shape => `
   element ${shape} {
     style {
       shape ${shape}
     }
   }
-`).join('')}
+`).join('')
+}
 }
 model {
 
@@ -57,7 +59,8 @@ ${
       style {
         color ${key}
       }
-${shapes.map(shape => `
+${
+        shapes.map(shape => `
       ${shape} = ${shape} {
         title: '${shape.charAt(0).toUpperCase() + shape.slice(1)}'
         technology: '[${key}]'
@@ -70,8 +73,11 @@ ${shapes.map(shape => `
           color ${key}
         }
       }
-`).join('')}
-    }`).join('')}
+`).join('')
+      }
+    }`,
+    ).join('')
+}
   }
 }
 
@@ -82,22 +88,26 @@ views {
     include *
   }
 
-${shapes.map(shape => `
+${
+  shapes.map(shape => `
   view ${shape} {
     title "Shape: ${shape.charAt(0).toUpperCase() + shape.slice(1)}"
     include
       colors with {
         title "Shape: ${shape.charAt(0).toUpperCase() + shape.slice(1)}"
       },
-${colors.map(key => `
+${
+    colors.map(key => `
       ${key}.${shape} with {
         title '${key.charAt(0).toUpperCase() + key.slice(1)}'
         technology '[${shape}]'
         navigateTo themecolor_${key}
       },
-`).join('')}
+`).join('')
   }
-`).join('')}
+  }
+`).join('')
+}
 
 ${
   colors
@@ -110,13 +120,17 @@ ${
         title "Theme Color: ${key}"
         navigateTo index
       },
-${shapes.map(shape => `
+${
+        shapes.map(shape => `
       ${shape} with {
         navigateTo ${shape}
       },
-`).join('')}
+`).join('')
+      }
   }
-`).join('')}
+`,
+    ).join('')
+}
 }
 `
 

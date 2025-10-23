@@ -57,8 +57,8 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
   className,
   colorScheme,
   injectFontCss = true,
+  enableNotations,
   keepAspectRatio,
-  showNotations,
   style,
   mantineTheme,
   styleNonce,
@@ -86,12 +86,9 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
       </ErrorMessage>
     )
   }
-
-  const notations = view.notation?.nodes ?? []
-  const hasNotations = notations.length > 0
-  showNotations ??= hasNotations
-
   const bounds = getViewBounds(view, props.dynamicViewVariant)
+
+  const hasNotations = !!enableNotations && (view.notation?.nodes?.length ?? 0) > 0
 
   return (
     <ShadowRoot
@@ -107,7 +104,7 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
       style={style}>
       <LikeC4Diagram
         view={view}
-        showNotations={showNotations}
+        enableNotations={hasNotations}
         {...props}
       />
     </ShadowRoot>

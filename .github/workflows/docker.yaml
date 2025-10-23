@@ -135,8 +135,6 @@ jobs:
             ${{ env.REGISTRY_IMAGE }}
             likec4/likec4
           tags: |
-            type=ref,event=branch
-            type=sha
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}

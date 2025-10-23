@@ -7,13 +7,13 @@ packages:
 
 catalog:
   "@dagrejs/dagre": 1.1.5
-  "@types/node": ~20.19.19
+  "@types/node": ~20.19.22
   graphology: ^0.25.4
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  oxlint: 1.23.0
-  oxlint-tsgolint: ^0.2.0
-  playwright: 1.54.2
+  oxlint: 1.24.0
+  oxlint-tsgolint: ^0.2.1
+  playwright: 1.56.1
   tsx: 4.20.6
   turbo: 2.5.8
   typescript: 5.9.3
@@ -27,36 +27,40 @@ catalogMode: prefer
 
 catalogs:
   astro:
-    "@astrojs/check": ^0.9.4
+    "@astrojs/check": ^0.9.5
     "@astrojs/react": 4.4.0
-    "@astrojs/starlight": 0.36.0
+    "@astrojs/starlight": 0.36.1
+    "@astrojs/starlight-tailwind": ^4.0.1
     "@expressive-code/plugin-collapsible-sections": ^0.41.3
     "@expressive-code/plugin-line-numbers": ^0.41.3
-    astro: 5.14.3
-    astro-og-canvas: ^0.7.0
+    astro: 5.14.8
+    astro-og-canvas: ^0.7.2
     shiki: ^3.13.0
-    starlight-heading-badges: ^0.6.0
-    starlight-image-zoom: ^0.13.1
-    starlight-links-validator: ^0.18.0
-    starlight-package-managers: ^0.11.0
+    starlight-heading-badges: ^0.6.1
+    starlight-image-zoom: ^0.13.2
+    starlight-links-validator: ^0.19.0
+    starlight-package-managers: ^0.11.1
+    starlight-toc-overview-customizer: ^0.1.0
   cloudflare:
     "@cloudflare/vite-plugin": 1.11.7
     wrangler: ~4.35.0
   css:
-    "@pandacss/dev": ^1.4.1
-    "@pandacss/preset-panda": ^1.4.1
-    "@pandacss/types": ^1.4.1
+    "@pandacss/dev": ^1.4.3
+    "@pandacss/preset-panda": ^1.4.3
+    "@pandacss/types": ^1.4.3
+    "@tailwindcss/vite": ^4.1.14
     postcss: 8.5.6
+    tailwindcss: ^4.1.14
   esbuild:
-    esbuild: 0.25.10
+    esbuild: 0.25.11
     esbuild-node-externals: 1.18.0
     esbuild-plugins-node-modules-polyfill: 1.7.1
   hono:
     "@hono/node-server": ^1.19.5
     "@hono/oauth-providers": ^0.8.5
     "@hono/valibot-validator": ^0.5.3
-    "@hono/zod-validator": ^0.7.3
-    hono: ^4.9.10
+    "@hono/zod-validator": ^0.7.4
+    hono: ^4.10.1
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
@@ -78,7 +82,7 @@ catalogs:
     "@types/react": 19.1.16
     "@types/react-dom": 19.1.9
     clsx: ^2.1.1
-    motion: ^12.23.22
+    motion: ^12.23.24
     nanostores: 1.0.1
     react: 19.1.1
     react-dom: 19.1.1
@@ -98,7 +102,7 @@ catalogs:
     "@types/picomatch": ^4.0.2
     "@valibot/to-json-schema": ^1.3.0
     bundle-require: ^5.1.0
-    caniuse-lite: ^1.0.30001748
+    caniuse-lite: ^1.0.30001751
     chokidar: ^4.0.3
     chroma-js: ^3.1.2
     citty: ^0.1.6
@@ -127,7 +131,7 @@ catalogs:
     safe-stringify: ^1.2.0
     sharp: 0.34.3
     std-env: ^3.9.0
-    strip-indent: ^4.1.0
+    strip-indent: ^4.1.1
     type-fest: ^4.41.0
     ufo: 1.6.1
     valibot: ^1.1.0
@@ -156,8 +160,8 @@ catalogs:
     "@xstate/react": ^6.0.0
     xstate: ^5.23.0
   xyflow:
-    "@xyflow/react": 12.8.6
-    "@xyflow/system": 0.0.70
+    "@xyflow/react": 12.9.0
+    "@xyflow/system": 0.0.71
   zod4:
     zod: ^4.1.12
 

@@ -43,7 +43,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Copy Graphviz binaries
 COPY --from=graphviz /install /
 
-ARG PLAYWRIGHT_VER=1.54.2
+ARG PLAYWRIGHT_VER=1.56.1
 # Install runtime dependencies
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \

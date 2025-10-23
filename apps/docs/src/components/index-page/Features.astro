@@ -1,0 +1,82 @@
+---
+const features = [
+  {
+    title: 'Your Language',
+    description: 'Define your system using a clean, readable DSL designed for clarity and control.',
+    icon: 'code',
+  },
+  {
+    title: 'Instant Visual Feedback',
+    description: 'See diagrams update as you type — real-time visualization, no manual sync needed.',
+    icon: 'refresh',
+  },
+  {
+    title: 'Versioned Like Code',
+    description: 'Store diagrams in Git, track diffs, and collaborate with familiar developer workflows.',
+    icon: 'git',
+  },
+  {
+    title: 'AI-Friendly',
+    description: 'Expose your architecture to AI agents via MCP or API — no extra effort.',
+    icon: 'zap',
+  },
+  {
+    title: 'C4 — Evolved',
+    description: 'Built on the proven C4 model, extended with flexibility and modern customization options.',
+    icon: 'shield',
+  },
+  {
+    title: 'Integrate Anywhere',
+    description: 'Embed interactive diagrams into docs, websites or apps - React or Webcomponents.',
+    icon: 'puzzle',
+  },
+]
+
+const getIcon = (iconName: string) => {
+  const icons = {
+    code: '<polyline points="16,18 22,12 16,6"></polyline><polyline points="8,6 2,12 8,18"></polyline>',
+    refresh:
+      '<polyline points="23,4 23,10 17,10"></polyline><polyline points="1,20 1,14 7,14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>',
+    git:
+      '<line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path>',
+    zap: '<polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>',
+    shield: '<path d="M12,22s8-4 8-10V5l-8-3-8,3v7c0,6 8,10 8,10z"></path>',
+    puzzle:
+      '<path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z"></path>',
+  }
+  return icons[iconName as keyof typeof icons] || icons.code
+}
+---
+
+<section id="features" class="py-24 px-6 bg-white dark:bg-slate-900">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-5xl md:text-6xl font-bold text-slate-900 dark:text-white mb-10">
+        Everything you need
+      </h2>
+      <p class="text-xl text-slate-600 dark:text-slate-400 max-w-4xl mx-auto">
+        Built for modern development teams who value clarity, collaboration, and code-first workflows.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {
+        features.map((feature) => (
+          <div class="group p-8 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <Fragment set:html={getIcon(feature.icon)} />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+              {feature.title}
+            </h3>
+            <p class="text-md text-slate-600 dark:text-slate-400 leading-relaxed">
+              {feature.description}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

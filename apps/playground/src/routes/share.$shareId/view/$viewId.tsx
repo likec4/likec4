@@ -45,8 +45,7 @@ function RouteComponent() {
     )
   }
 
-  const notations = view.notation?.nodes ?? []
-  const hasNotations = notations.length > 0
+  const hasNotations = (view.notation?.nodes?.length ?? 0) > 0
 
   return (
     <>
@@ -71,7 +70,7 @@ function RouteComponent() {
         experimentalEdgeEditing={false}
         enableElementTags
         enableSearch
-        showNotations={hasNotations}
+        enableNotations={hasNotations}
         nodesDraggable={false}
         nodesSelectable
         renderIcon={IconRenderer}

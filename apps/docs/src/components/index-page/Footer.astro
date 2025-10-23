@@ -1,0 +1,106 @@
+---
+import Logo from '../Logo.astro'
+const currentYear = new Date().getFullYear()
+
+const footerSections = [
+  {
+    title: 'Documentation',
+    icon: 'book',
+    links: [
+      { label: 'Getting Started', href: '/tutorial/' },
+      { label: 'Language Reference', href: '/dsl/intro/' },
+      { label: 'Examples', href: '/showcases/bigbank/' },
+      { label: 'API Reference', href: '/tooling/model-api/' },
+    ],
+  },
+  {
+    title: 'Resources',
+    icon: 'code',
+    links: [
+      { label: 'Playground', href: 'https://playground.likec4.dev/w/tutorial/' },
+      { label: 'MCP Server', href: '/tooling/mcp/' },
+      { label: 'CLI Tools', href: '/tooling/cli/' },
+      { label: 'Vite Plugin', href: '/tooling/vite-plugin/' },
+    ],
+  },
+  {
+    title: 'Community',
+    icon: 'users',
+    links: [
+      { label: 'GitHub Discussions', href: 'https://github.com/likec4/likec4/discussions' },
+      { label: 'Discord Server', href: 'https://discord.gg/86ZSpjKAdA' },
+      { label: 'Contributing', href: 'https://github.com/likec4/likec4/blob/main/CONTRIBUTING.md' },
+      { label: 'Changelog', href: 'https://github.com/likec4/likec4/blob/main/CHANGELOG.md' },
+    ],
+  },
+]
+
+const getSectionIcon = (iconName: string) => {
+  const icons = {
+    book:
+      '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>',
+    code: '<polyline points="16,18 22,12 16,6"></polyline><polyline points="8,6 2,12 8,18"></polyline>',
+    users:
+      '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
+  }
+  return icons[iconName as keyof typeof icons] || icons.book
+}
+---
+
+<footer id="community" class="bg-slate-900 dark:bg-slate-950 text-slate-300 py-16 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+      <div>
+        <div class="flex items-center gap-3 mb-6">
+          <Logo variant="dark" />
+        </div>
+        <p class="text-slate-400 leading-relaxed mb-6">
+          Built for clarity. Powered by code.
+        </p>
+      </div>
+
+      {
+        footerSections.map((section) => (
+          <div>
+            <h3 class="text-white font-semibold text-lg mb-2 flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <Fragment set:html={getSectionIcon(section.icon)} />
+              </svg>
+              {section.title}
+            </h3>
+            <ul class="space-y-1 list-none ml-0 pl-7">
+              {
+                section.links.map((link) => (
+                  <li>
+                    <a
+                      href={link.href}
+                      class="text-sm text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors no-underline hover:underline"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="pt-8 border-t border-slate-800">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-slate-400 text-sm">
+          &copy; 2023-{currentYear} LikeC4. Released under the MIT License.
+        </p>
+        <!-- <div class="flex gap-6 text-sm">
+          <a href="#" class="hover:text-white transition-colors">
+            Privacy Policy
+          </a>
+          <a href="#" class="hover:text-white transition-colors">
+            Terms of Service
+          </a>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</footer>
