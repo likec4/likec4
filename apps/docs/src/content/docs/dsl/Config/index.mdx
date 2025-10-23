@@ -169,22 +169,38 @@ Simply override the `@` to change the default location.
 ## Styles customization
 
 LikeC4 provides advanced style customization capabilities.  
-You can override default theme in project config file.
 
-Example:
+### Theme overrides
+
+You can override default theme colors and sizes by adding a `styles.theme` section to the config file.
+Each definition can be either a CSS value or a detailed object specifying color for specific parts.
+
+Example of simple color definition:
 
 ```jsonc
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
   "styles": {
-    // Theme section allows you to override default colors and sizes
     "theme": {
       "colors": {
-        // Simple color definition - automatically generates element/relationship colors
         "primary": "#FF6B6B",
-        "secondary": "#4ECDC4",
-        // Detailed color definition with specific values
+        "secondary": "rgba(37,99,235,1)",
+      }
+    },
+  }
+}
+```
+
+Example of detailed color definition:
+
+```jsonc
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "styles": {
+    "theme": {
+      "colors": {
         "muted": {
           "elements": {
             "fill": "#2563eb", // Background color
@@ -198,34 +214,68 @@ Example:
             "labelBg": "rgba(37,99,235,0.1)" // Label background color
           }
         },
-        // Give detailed definitions for a color from your specification
+        // You can give detailed definitions for a custom color in your specification
         "custom-color-from-your-spec": { 
           // ...
         }
-      },
-      "sizes": { // override dimensions
+      }
+    },
+  }
+}
+```
+
+You can override sizes used in LikeC4:
+
+```jsonc
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "styles": {
+    "theme": {
+      "sizes": {
         "md": {
           "width": 200,
           "height": 200
+        },
+        "lg": {
+          "width": 300,
+          "height": 300
         }
       }
-    },
-    // Override default values for style properties,
-    // These values will be used if such property is not defined
+    }
+  }
+}
+```
+
+### Default styles
+
+You can override default values for style properties by adding a `styles.defaults` section to the config file.  
+These values will be applied to all elements and relationships, unless properties are explicitly defined in the specification.
+
+```jsonc
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "styles": {
     "defaults": {
-      "border": "dotted",
+      // Defaults for all elements
+      "border": "dashed",
       "opacity": 100,
       "size": "md",
-      "color": "slate",
+      "color": "primary", // theme color name
+
+      // Defaults for groups
       "group": {
-        "color": "green",
+        "color": "primary",
         "opacity": 10,
-        "border": "solid"
+        "border": "dashed"
       },
+
+      // Defaults for relationships
       "relationship": {
-        "color": "indigo",
-        "line": "solid",
-        "arrow": "diamond"
+        "color": "gray",
+        "line": "dashed",
+        "arrow": "normal"
       }
     }
   }
