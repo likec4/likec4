@@ -1,15 +1,32 @@
 ---
 import config from 'virtual:starlight/user-config'
 import { logos } from 'virtual:starlight/user-images'
+
+interface Props {
+  variant?: 'light' | 'dark' | 'auto'
+}
+
+const { variant = 'auto' } = Astro.props
+
 const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute
+
+const logo = variant !== 'auto' ? logos[variant] : null
 ---
 
 <a href={siteTitleHref} class="site-title sl-flex">
   {
-    config.logo && logos.dark && (
+    config.logo && (
+      logo ? (
+      <img
+        alt={config.logo.alt}
+        src={logo.src}
+        width={logo.width}
+        height={logo.height}
+      />
+    ) : (
       <>
         <img
-          class:list={{ 'light:sl-hidden print:hidden': !('src' in config.logo) }}
+          class={'light:sl-hidden print:hidden'}
           alt={config.logo.alt}
           src={logos.dark.src}
           width={logos.dark.width}
@@ -19,7 +36,7 @@ const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute
         {
           !('src' in config.logo) && (
             <img
-              class="dark:sl-hidden print:block"
+              class={'dark:sl-hidden print:block'}
               alt={config.logo.alt}
               src={logos.light?.src}
               width={logos.light?.width}
@@ -28,6 +45,7 @@ const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute
           )
         }
       </>
+    )
     )
   }
   <span class:list={{ 'sr-only': config.logo?.replacesTitle }} translate="no">

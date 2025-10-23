@@ -1,9 +1,9 @@
 ---
 const stats = [
-  { label: 'Use your own notation', value: 'DSL' },
-  { label: 'Extendable for your needs', value: 'API' },
-  { label: 'Provide architectural context for agents', value: 'MCP' },
-  { label: 'Works inside your editor', value: 'IDE' },
+  { label: 'Simple language to describe your model, LLM-friendly', value: 'DSL' },
+  { label: 'Access your model from the code and extend capabilities', value: 'API' },
+  { label: 'Provide architectural context for your developers and agents', value: 'MCP' },
+  { label: 'Immediate feedback, preview and validation in your editor', value: 'IDE' },
 ]
 ---
 
@@ -30,13 +30,12 @@ const stats = [
       </span>
     </div>
 
-    <h1 class="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white leading-tight">
+    <h1 class="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-14 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white leading-tight">
       Architecture-as-a-Code
     </h1>
 
-    <p class="text-md sm:text-xl md:text-2xl text-slate-600 dark:text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-      Design, visualize, and maintain your software architecture with a modern DSL. Version controlled diagrams that
-      evolve with your codebase.
+    <p class="text-md sm:text-xl md:text-2xl text-slate-600 dark:text-slate-400 mb-8 md:mb-16 max-w-100 md:max-w-150 mx-auto leading-relaxed">
+      Design, visualize, and maintain your software architecture with a modern DSL. Version controlled with your code.
     </p>
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
@@ -68,17 +67,34 @@ const stats = [
       </a>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto">
       {
         stats.map((stat) => (
-          <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
-            <div class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">
-              {stat.value}
-            </div>
-            <div class="text-sm text-slate-600 dark:text-slate-400">
+  (
+          <div
+            class="
+              flex flex-col items-center justify-start p-4 rounded-xl transition-all
+              bg-slate-400/5
+              dark:bg-white/5
+              hover:bg-white/10
+              hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]
+              backdrop-blur-sm border border-white/10 shadow-sm
+            "
+          >
+            <h3 class="text-slate-900 dark:text-white font-medium">{stat.value}</h3>
+            <p class="text-sm text-slate-900 dark:text-white/60 mt-1 text-center">
               {stat.label}
-            </div>
+            </p>
           </div>
+        )
+          // <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+          //   <div class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+          //     {stat.value}
+          //   </div>
+          //   <div class="text-md text-slate-600 dark:text-slate-400">
+          //     {stat.label}
+          //   </div>
+          // </div>
         ))
       }
     </div>

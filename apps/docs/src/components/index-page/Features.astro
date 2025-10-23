@@ -1,37 +1,33 @@
 ---
 const features = [
   {
-    title: 'Your DSL',
-    description: 'Express your architecture with a clean domain-specific language, with your own notation.',
+    title: 'Your Language',
+    description: 'Define your system using a clean, readable DSL designed for clarity and control.',
     icon: 'code',
   },
   {
-    title: 'Live Diagrams',
-    description:
-      'Watch your diagrams update in real-time as you write code. Instant visual feedback for faster iteration.',
+    title: 'Instant Visual Feedback',
+    description: 'See diagrams update as you type — real-time visualization, no manual sync needed.',
     icon: 'refresh',
   },
   {
-    title: 'Version Control Ready',
-    description:
-      'Architecture diagrams stored as code. Track changes, review diffs, and collaborate using Git workflows.',
+    title: 'Versioned Like Code',
+    description: 'Store diagrams in Git, track diffs, and collaborate with familiar developer workflows.',
     icon: 'git',
   },
   {
-    title: 'Fast & Efficient',
-    description: 'Optimized rendering engine delivers smooth performance even with complex, large-scale architectures.',
+    title: 'AI-Friendly',
+    description: 'Expose your architecture to AI agents via MCP or API — no extra effort.',
     icon: 'zap',
   },
   {
-    title: 'C4 Model',
-    description:
-      'Inspired by C4 model principles, while extending and offering enhanced flexibility and customization.',
+    title: 'C4 — Evolved',
+    description: 'Built on the proven C4 model, extended with flexibility and modern customization options.',
     icon: 'shield',
   },
   {
-    title: 'Embedded',
-    description:
-      'Embed diagrams into your documentation websites, either as static images or interactive React and Webcomponents.',
+    title: 'Integrate Anywhere',
+    description: 'Embed interactive diagrams into docs, websites or apps - React or Webcomponents.',
     icon: 'puzzle',
   },
 ]
@@ -55,10 +51,10 @@ const getIcon = (iconName: string) => {
 <section id="features" class="py-24 px-6 bg-white dark:bg-slate-900">
   <div class="max-w-7xl mx-auto">
     <div class="text-center mb-16">
-      <h2 class="text-5xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6">
+      <h2 class="text-5xl md:text-6xl font-bold text-slate-900 dark:text-white mb-10">
         Everything you need
       </h2>
-      <p class="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+      <p class="text-xl text-slate-600 dark:text-slate-400 max-w-4xl mx-auto">
         Built for modern development teams who value clarity, collaboration, and code-first workflows.
       </p>
     </div>
@@ -68,14 +64,14 @@ const getIcon = (iconName: string) => {
         features.map((feature) => (
           <div class="group p-8 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
             <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <Fragment set:html={getIcon(feature.icon)} />
               </svg>
             </div>
             <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">
               {feature.title}
             </h3>
-            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p class="text-md text-slate-600 dark:text-slate-400 leading-relaxed">
               {feature.description}
             </p>
           </div>
