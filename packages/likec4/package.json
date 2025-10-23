@@ -220,7 +220,7 @@
     "react-resizable-panels": "^3.0.5",
     "react-shadow": "^20.6.0",
     "remeda": "catalog:utils",
-    "semver": "^7.7.2",
+    "semver": "^7.7.3",
     "strip-indent": "catalog:utils",
     "tinyrainbow": "^2.0.0",
     "tsx": "catalog:",
