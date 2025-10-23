@@ -11,7 +11,6 @@ import type { AstNode } from 'langium'
 import {
   filter,
   flatMap,
-  fromEntries,
   groupBy,
   isArray,
   isBoolean,
@@ -19,7 +18,6 @@ import {
   isNumber,
   isString,
   isTruthy,
-  map,
   mapValues,
   pipe,
   unique,
