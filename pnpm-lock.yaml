@@ -109,8 +109,8 @@ catalogs:
       specifier: 0.14.12
       version: 0.14.12
     zx:
-      specifier: 8.8.4
-      version: 8.8.4
+      specifier: 8.8.5
+      version: 8.8.5
   esbuild:
     esbuild-node-externals:
       specifier: 1.18.0
@@ -794,7 +794,7 @@ importers:
         version: 4.20.6
       zx:
         specifier: 'catalog:'
-        version: 8.8.4
+        version: 8.8.5
     devDependencies:
       '@likec4/tsconfig':
         specifier: workspace:*
@@ -1131,7 +1131,7 @@ importers:
         version: 0.14.12
       zx:
         specifier: 'catalog:'
-        version: 8.8.4
+        version: 8.8.5
 
   packages/generators:
     dependencies:
@@ -1201,7 +1201,7 @@ importers:
         version: 0.14.12
       zx:
         specifier: 'catalog:'
-        version: 8.8.4
+        version: 8.8.5
 
   packages/language-server:
     dependencies:
@@ -9600,8 +9600,8 @@ packages:
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
-  zx@8.8.4:
-    resolution: {integrity: sha512-44GcD+ZlM/v1OQtbwnSxLPcoE1ZEUICmR+RSbJZLAqfIixNLuMjLyh0DcS75OyfJ/sWYAwCWDmDvJ4hdnANAPQ==}
+  zx@8.8.5:
+    resolution: {integrity: sha512-SNgDF5L0gfN7FwVOdEFguY3orU5AkfFZm9B5YSHog/UDHv+lvmd82ZAsOenOkQixigwH2+yyH198AwNdKhj+RA==}
     engines: {node: '>= 12.17.0'}
     hasBin: true
 
@@ -18712,6 +18712,6 @@ snapshots:
 
   zwitch@2.0.4: {}
 
-  zx@8.8.4: {}
+  zx@8.8.5: {}
 
   zx@8.8.5-lite: {}
