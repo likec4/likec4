@@ -109,7 +109,7 @@ function WorkspaceDiagramPage() {
             enableDynamicViewWalkthrough
             enableRelationshipBrowser
             enableRelationshipDetails
-            showNotations
+            enableNotations
             enableElementTags
             enableFocusMode
             enableSearch
