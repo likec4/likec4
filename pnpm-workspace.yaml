@@ -59,7 +59,7 @@ catalogs:
     "@hono/node-server": ^1.19.5
     "@hono/oauth-providers": ^0.8.5
     "@hono/valibot-validator": ^0.5.3
-    "@hono/zod-validator": ^0.7.3
+    "@hono/zod-validator": ^0.7.4
     hono: ^4.9.10
     hono-sessions: ^0.8.0
   langium:
