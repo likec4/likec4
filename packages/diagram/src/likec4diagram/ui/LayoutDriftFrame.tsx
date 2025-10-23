@@ -16,6 +16,7 @@ import { IconAlertTriangle } from '@tabler/icons-react'
 import { Fragment, memo } from 'react'
 import { hasAtLeast } from 'remeda'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
+import { useOptionalLikeC4Editor } from '../../editor'
 import { useCurrentView } from '../../hooks/useCurrentView'
 import {
   type DiagramContext,
@@ -26,29 +27,12 @@ import {
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import type { OnLayoutTypeChange } from '../../LikeC4Diagram.props'
 
-const selector = (state: DiagramContext) => {
-  const drifts = state.view.drifts
-  if (!state.features.enableCompareWithLatest || !drifts || !hasAtLeast(drifts, 1)) {
-    return ({
-      isCompareActive: false as const,
-      drifts: [] as never[],
-      layout: state.view._layout,
-    })
-  }
-
-  return ({
-    isCompareActive: state.toggledFeatures.enableCompareWithLatest,
-    drifts,
-    layout: state.view._layout,
-  })
-}
-
 export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>(({ onLayoutTypeChange }) => {
   const { drifts, layout, isActive } = useDiagramCompareState()
   const {
     enableReadOnly,
-    enableVscode,
   } = useEnabledFeatures()
+  const enableEditor = !!useOptionalLikeC4Editor() && !enableReadOnly
   const diagramActorRef = useDiagramActorRef()
 
   const portalProps = useMantinePortalProps()
@@ -75,9 +59,9 @@ export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>
     >
       <Popover
         position="right-start"
-        opened
+        opened={enableEditor}
+        disabled={!enableEditor}
         floatingStrategy="absolute"
-        w
         offset={{
           mainAxis: 2,
           crossAxis: 4,
