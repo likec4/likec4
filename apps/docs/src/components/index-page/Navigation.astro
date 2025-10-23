@@ -43,49 +43,17 @@ const navLinks = [
       <div class="flex items-center gap-4">
         <SocialIcons />
         <ThemeSelect />
-        <!-- <button
-          id="theme-toggle"
-          class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-          aria-label="Toggle theme"
-        >
-          <svg
-            id="sun-icon"
-            class="w-5 h-5 text-slate-900 dark:text-white hidden"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-          <svg
-            id="moon-icon"
-            class="w-5 h-5 text-slate-900 dark:text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </button> -->
-
         <button
           id="mobile-menu-toggle"
-          class="md:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+          class="w-10 h-10 md:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
           aria-label="Toggle menu"
         >
           <svg
             id="menu-icon"
-            class="w-5 h-5 text-slate-900 dark:text-white"
+            class="w-6 h-6 text-slate-900 dark:text-white"
             fill="none"
             stroke="currentColor"
+            stroke-width="2"
             viewBox="0 0 24 24"
           >
             <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -94,9 +62,10 @@ const navLinks = [
           </svg>
           <svg
             id="close-icon"
-            class="w-5 h-5 text-slate-900 dark:text-white hidden"
+            class="w-6 h-6 text-slate-900 dark:text-white hidden"
             fill="none"
             stroke="currentColor"
+            stroke-width="2"
             viewBox="0 0 24 24"
           >
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -106,13 +75,22 @@ const navLinks = [
       </div>
     </div>
 
-    <div id="mobile-menu" class="md:hidden mt-4 py-4 border-t border-slate-200 dark:border-slate-700 hidden">
+    <div
+      id="mobile-menu"
+      class="md:hidden mt-4 py-4 border-t border-slate-200 dark:border-slate-700 hidden"
+    >
       <div class="flex flex-col gap-4">
         {
           navLinks.map((link) => (
             <a
               href={link.href}
-              class="mobile-nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+              class="
+                mobile-nav-link
+                text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white
+                no-underline hover:underline
+                font-medium
+                transition-colors
+              "
             >
               {link.label}
             </a>
@@ -126,21 +104,23 @@ const navLinks = [
 <script>
 // Scroll handling
 function handleScroll(): void {
+  const mobileMenu = document.getElementById('mobile-menu')
   const nav = document.getElementById('main-navigation')
-  const isScrolled = window.scrollY > 20
+  if (!nav || !mobileMenu) return
 
-  if (nav) {
-    if (isScrolled) {
-      nav.className = nav.className.replace(
-        'bg-transparent',
-        'bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg',
-      )
-    } else {
-      nav.className = nav.className.replace(
-        'bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg',
-        'bg-transparent',
-      )
-    }
+  const isScrolled = window.scrollY > 20
+  const mobileMenuVisible = !mobileMenu.classList.contains('hidden')
+
+  if (isScrolled || mobileMenuVisible) {
+    nav.className = nav.className.replace(
+      'bg-transparent',
+      'bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg',
+    )
+  } else {
+    nav.className = nav.className.replace(
+      'bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg',
+      'bg-transparent',
+    )
   }
 }
 
@@ -162,6 +142,9 @@ function toggleMobileMenu(): void {
       menuIcon.classList.remove('hidden')
       closeIcon.classList.add('hidden')
     }
+
+    // Update nav background on toggle
+    handleScroll()
   }
 }
 
@@ -175,6 +158,9 @@ function closeMobileMenu(): void {
     menuIcon.classList.remove('hidden')
     closeIcon.classList.add('hidden')
   }
+
+  // Update nav background on toggle
+  handleScroll()
 }
 
 // Initialize on DOM content loaded
