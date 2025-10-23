@@ -130,7 +130,7 @@ catalogs:
     safe-stringify: ^1.2.0
     sharp: 0.34.3
     std-env: ^3.9.0
-    strip-indent: ^4.1.0
+    strip-indent: ^4.1.1
     type-fest: ^4.41.0
     ufo: 1.6.1
     valibot: ^1.1.0

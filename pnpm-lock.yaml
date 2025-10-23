@@ -303,8 +303,8 @@ catalogs:
       specifier: ^3.9.0
       version: 3.9.0
     strip-indent:
-      specifier: ^4.1.0
-      version: 4.1.0
+      specifier: ^4.1.1
+      version: 4.1.1
     ufo:
       specifier: 1.6.1
       version: 1.6.1
@@ -707,7 +707,7 @@ importers:
         version: 3.9.0
       strip-indent:
         specifier: catalog:utils
-        version: 4.1.0
+        version: 4.1.1
       tsx:
         specifier: 'catalog:'
         version: 4.20.6
@@ -1322,7 +1322,7 @@ importers:
         version: 2.32.0
       strip-indent:
         specifier: catalog:utils
-        version: 4.1.0
+        version: 4.1.1
       tsx:
         specifier: 'catalog:'
         version: 4.20.6
@@ -1403,7 +1403,7 @@ importers:
         version: 2.32.0
       strip-indent:
         specifier: catalog:utils
-        version: 4.1.0
+        version: 4.1.1
       ts-graphviz:
         specifier: ^1.8.2
         version: 1.8.2
@@ -1678,7 +1678,7 @@ importers:
         version: 7.7.2
       strip-indent:
         specifier: catalog:utils
-        version: 4.1.0
+        version: 4.1.1
       tinyrainbow:
         specifier: ^2.0.0
         version: 2.0.0
@@ -8501,8 +8501,8 @@ packages:
     resolution: {integrity: sha512-laJTa3Jb+VQpaC6DseHhF7dXVqHTfJPCRDaEbid/drOhgitgYku/letMUqOXFoWV0zIIUbjpdH2t+tYj4bQMRQ==}
     engines: {node: '>=8'}
 
-  strip-indent@4.1.0:
-    resolution: {integrity: sha512-OA95x+JPmL7kc7zCu+e+TeYxEiaIyndRx0OrBcK2QPPH09oAndr2ALvymxWA+Lx1PYYvFUm4O63pRkdJAaW96w==}
+  strip-indent@4.1.1:
+    resolution: {integrity: sha512-SlyRoSkdh1dYP0PzclLE7r0M9sgbFKKMFXpFRUMNuKhQSbC6VQIGzq3E0qsfvGJaUFJPGv6Ws1NZ/haTAjfbMA==}
     engines: {node: '>=12'}
 
   strip-json-comments@3.1.1:
@@ -17572,7 +17572,7 @@ snapshots:
     dependencies:
       min-indent: 1.0.1
 
-  strip-indent@4.1.0: {}
+  strip-indent@4.1.1: {}
 
   strip-json-comments@3.1.1: {}
 
