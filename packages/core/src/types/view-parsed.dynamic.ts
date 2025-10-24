@@ -125,7 +125,10 @@ export function isDynamicStepsSeries<A extends AnyAux>(
 export function isDynamicBranchCollection<A extends AnyAux>(
   step: DynamicViewStep<A> | undefined,
 ): step is DynamicBranchCollection<A> {
-  return !!step && 'paths' in step && isArray((step as DynamicBranchCollection<A>).paths)
+  return !!step
+    && 'paths' in step
+    && isArray((step as DynamicBranchCollection<A>).paths)
+    && (step as DynamicBranchCollection<A>).paths.length > 0
 }
 
 export function isDynamicBranchPath<A extends AnyAux>(
