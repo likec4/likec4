@@ -223,13 +223,13 @@ class DynamicViewCompute<A extends AnyAux> {
       ? stepNavigateTo
       : derivedNavigateTo
 
-    const branchTrail = branchStack && branchStack.length > 0 ? this.buildBranchTrail(branchStack) : undefined
-    if (branchStack && branchStack.length > 0) {
+    const hasBranchStack = branchStack && branchStack.length > 0
+    const branchTrail = hasBranchStack ? this.buildBranchTrail(branchStack) : undefined
+    if (hasBranchStack) {
       this.registerBranchStep(branchStack, id)
       for (const entry of branchStack) {
         entry.stepCounter++
       }
-    }
 
     this.steps.push(exact({
       ...derived,
