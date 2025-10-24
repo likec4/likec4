@@ -420,11 +420,12 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           kind,
           paths,
           parallelId: branchId,
-          ...(isNonEmptyArray(legacyParallel) && node.paths.length === 0
-            ? { __parallel: legacyParallel, isLegacyParallel: true }
-            : isNonEmptyArray(legacyParallel)
-            ? { __parallel: legacyParallel }
-            : {}),
+        }
+        if (isNonEmptyArray(legacyParallel)) {
+          parallel.__parallel = legacyParallel
+          if (node.paths.length === 0) {
+            parallel.isLegacyParallel = true
+          }
         }
         return parallel
       }
