@@ -142,11 +142,42 @@ export function EdgeId(id: string): EdgeId {
   return id as any
 }
 
-export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
+export type StepEdgeIdLiteral = `step-${string}`
 export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
+
+export type StepEdgeIndex = string | number
+
+function formatIndex(segment: StepEdgeIndex, { isFirst }: { isFirst: boolean }): string {
+  const raw = typeof segment === 'number' ? segment.toString() : segment
+  if (!isFirst && !/^\d+$/u.test(raw)) {
+    return raw
+  }
+  return raw.padStart(2, '0')
+}
+
+export function stepEdgePath(indices: readonly StepEdgeIndex[]): StepEdgeId {
+  invariant(indices.length > 0, 'stepEdgePath expects at least one index')
+  const [head, ...rest] = indices as [StepEdgeIndex, ...StepEdgeIndex[]]
+  const prefix = `step-${formatIndex(head, { isFirst: true })}`
+  if (rest.length === 0) {
+    return prefix as StepEdgeId
+  }
+  let id = prefix
+  for (const segment of rest) {
+    const raw = typeof segment === 'number' ? segment.toString() : segment
+    if (/^\d+$/u.test(raw)) {
+      id += `.${formatIndex(raw, { isFirst: false })}`
+      continue
+    }
+    id += raw
+  }
+  return id as StepEdgeId
+}
+
 export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
-  const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
-  return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
+  return parallelStep !== undefined
+    ? stepEdgePath([step, parallelStep])
+    : stepEdgePath([step])
 }
 export const StepEdgeKind = '@step'
 
