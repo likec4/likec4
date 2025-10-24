@@ -1,6 +1,15 @@
 import { findLast, isTruthy, map, pipe } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../model'
-import type { AnyAux, aux, DynamicStep, DynamicStepsSeries, scalar } from '../../types'
+import type {
+  AnyAux,
+  aux,
+  DynamicBranchCollection,
+  DynamicBranchEntry,
+  DynamicStep,
+  DynamicStepsSeries,
+  DynamicViewStep,
+  scalar,
+} from '../../types'
 import {
   type Color,
   type ComputedDynamicView,
@@ -12,10 +21,12 @@ import {
   _stage,
   _type,
   exact,
-  isDynamicStepsParallel,
+  isDynamicBranchCollection,
+  isDynamicStep,
   isDynamicStepsSeries,
   isViewRuleAutoLayout,
   stepEdgeId,
+  toLegacyParallel,
 } from '../../types'
 import { intersection, invariant, nonNullable, toArray, union } from '../../utils'
 import { ancestorsFqn, commonAncestor, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
@@ -158,16 +169,55 @@ class DynamicViewCompute<A extends AnyAux> {
 
     let stepNum = 1
     for (const step of viewSteps) {
-      if (isDynamicStepsParallel(step)) {
+      const legacyParallel = toLegacyParallel(step)
+      if (legacyParallel) {
         let nestedStepNum = 1
-        for (const s of step.__parallel) {
+        for (const s of legacyParallel.__parallel ?? []) {
           nestedStepNum = processStep(s, nestedStepNum, stepNum)
         }
-        // Increment stepNum after processing all parallel steps
         stepNum++
         continue
       }
-      stepNum = processStep(step, stepNum)
+      if (isDynamicStepsSeries(step)) {
+        stepNum = processStep(step, stepNum)
+        continue
+      }
+      if (isDynamicStep(step)) {
+        stepNum = processStep(step, stepNum)
+        continue
+      }
+      if (isDynamicBranchCollection(step)) {
+        const walkBranchEntries = (entries: readonly DynamicBranchEntry<A>[], prefix?: number) => {
+          for (const entry of entries) {
+            const legacyNested = toLegacyParallel(entry as unknown as DynamicViewStep<A>)
+            if (legacyNested) {
+              let nested = 1
+              for (const nestedEntry of legacyNested.__parallel ?? []) {
+                nested = processStep(nestedEntry, nested, prefix ?? stepNum)
+              }
+              stepNum++
+              continue
+            }
+            if (isDynamicStepsSeries(entry)) {
+              stepNum = processStep(entry, stepNum, prefix)
+              continue
+            }
+            if (isDynamicStep(entry)) {
+              stepNum = processStep(entry, stepNum, prefix)
+              continue
+            }
+            if (isDynamicBranchCollection(entry)) {
+              for (const nestedPath of entry.paths) {
+                walkBranchEntries(nestedPath.steps, prefix)
+              }
+            }
+          }
+        }
+        for (const path of step.paths) {
+          walkBranchEntries(path.steps)
+        }
+        continue
+      }
     }
 
     const nodesMap = buildComputedNodes(

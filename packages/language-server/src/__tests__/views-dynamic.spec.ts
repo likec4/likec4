@@ -239,9 +239,9 @@ describe.concurrent('dynamic views', () => {
     `)
   })
 
-  it('invalid dynamic view with nested parallel steps', async ctx => {
-    const { invalid } = await mkTestServices(ctx)
-    await invalid(`
+  it('valid dynamic view with nested parallel steps', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
       dynamic view parallelSteps {
         parallel {
           user -> system.frontend 'User uses System'
