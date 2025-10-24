@@ -185,7 +185,19 @@ const likec4 = await LikeC4.fromSource(`....`)
 const model = await likec4.layoutedModel()
 
 const diagram = model.view('index')
+```
 
+:::note[Experimental: Enhanced Layout Fields for Dynamic Views]
+Future versions will include additional layout fields for dynamic views with branch collections:
+
+- **Branch Metadata**: Layouted sequence views will expose `branchId`, `pathId`, `pathIndex`, `kind`, and `isDefaultPath` for each branch region
+- **Hierarchical Step IDs**: Step identifiers will support arbitrary nesting depth (e.g., `step-04.01.02`)
+- **Branch Trail**: Edge data will include ancestry information for navigation through nested decision points
+
+These enhancements enable richer visualization and interaction patterns for complex dynamic flows with parallel and alternate execution paths. The layout engine changes maintain full backward compatibility with existing dynamic views.
+:::
+
+```ts
 // Working with metadata (including array values)
 const element = model.element('cloud.backend.api')
 
