@@ -13,9 +13,11 @@ import {
   type RelationshipLineType,
   type ViewRuleGlobalStyle,
   exact,
-  isDynamicStepsParallel,
+  isDynamicBranchCollection,
+  isDynamicStep,
   isDynamicStepsSeries,
   isViewRulePredicate,
+  toLegacyParallel,
 } from '../../types'
 import { compareRelations, isNonEmptyArray } from '../../utils'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
@@ -40,12 +42,13 @@ export function elementsFromIncludeProperties<A extends Any>(
   return explicits
 }
 
-export const flattenSteps = <A extends Any>(s: DynamicViewStep<A>): DynamicStep<A> | DynamicStep<A>[] => {
-  if (isDynamicStepsParallel(s)) {
+export const flattenSteps = <A extends Any>(s: DynamicViewStep<A>): DynamicStep<A>[] => {
+  const legacyParallel = toLegacyParallel(s)
+  if (legacyParallel) {
     // Parallel steps are flattened by taking the first step of each parallel step and the rest of the steps
     const heads = [] as DynamicStep<A>[]
     const tails = [] as DynamicStep<A>[]
-    for (const step of s.__parallel) {
+    for (const step of legacyParallel.__parallel ?? []) {
       if (isDynamicStepsSeries(step)) {
         const [head, ...tail] = step.__series
         heads.push(head)
@@ -56,10 +59,13 @@ export const flattenSteps = <A extends Any>(s: DynamicViewStep<A>): DynamicStep<
     }
     return [...heads, ...tails]
   }
+  if (isDynamicBranchCollection(s)) {
+    return flatMap(s.paths, path => flatMap(path.steps, entry => flattenSteps(entry as DynamicViewStep<A>)))
+  }
   if (isDynamicStepsSeries(s)) {
     return [...s.__series]
   }
-  return s
+  return isDynamicStep(s) ? [s] : []
 }
 
 export function elementsFromSteps<A extends Any>(

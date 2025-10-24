@@ -1,3 +1,34 @@
+## [Unreleased]
+
+### 🧪 Experimental Features
+
+#### Unified Branch Collections - Sequence Layout Support
+
+**Foundation for parallel and alternate execution paths in dynamic views**
+
+This release introduces enhanced sequence diagram layouts to support branch collections (parallel and alternate paths) with visual representation as distinct regions. This is part of a multi-phase implementation to deliver unified branching capabilities for richer dynamic view storytelling.
+
+**What's New:**
+- **Extended Layout Types**: Layouted dynamic views now include branch metadata (`branchId`, `pathId`, `pathIndex`, `kind`, `isDefaultPath`)
+- **Enhanced Sequence Layouter**: `SequenceViewLayouter` processes branch collections from computed views and generates constraint-based layouts for branch path rectangles
+- **UI State Preparation**: Diagram state machine updated to track branch trails for future navigation features
+- **Backward Compatible**: Falls back to legacy parallel detection when branch metadata is absent
+
+**Technical Details:**
+- 18 files changed: +656 insertions, -89 deletions
+- Comprehensive test coverage with +154 test lines
+- Constraint-based positioning using Kiwi solver
+- Feature-flag compatible (defaults OFF via `dynamicBranchCollections`)
+
+**Packages Affected:**
+- `@likec4/core` - Layout type extensions
+- `@likec4/layouts` - Sequence layout engine
+- `@likec4/diagram` - XY conversion and state management
+
+**Status**: This is foundational work. Visual rendering and interactive controls for branch navigation will be added in future releases.
+
+---
+
 ## [1.42.1](https://github.com/likec4/likec4/compare/v1.42.0...v1.42.1) (2025-10-07)
 
 ### 🐞 Bug Fixes

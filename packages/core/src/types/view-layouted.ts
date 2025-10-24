@@ -9,7 +9,7 @@ import type {
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
-import type { ComputedEdge, ComputedNode } from './view-computed'
+import type { ComputedBranchCollection, ComputedEdge, ComputedNode } from './view-computed'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
 export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
@@ -97,6 +97,7 @@ export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayo
    * Sequence layout of this dynamic view
    */
   readonly sequenceLayout: LayoutedDynamicView.Sequence.Layout
+  readonly branchCollections?: readonly ComputedBranchCollection<A>[]
 }
 
 export namespace LayoutedDynamicView {
@@ -134,6 +135,14 @@ export namespace LayoutedDynamicView {
 
     export interface ParallelArea {
       readonly parallelPrefix: string
+      readonly branchId?: string
+      readonly branchLabel?: string | null
+      readonly pathId?: string
+      readonly pathIndex?: number
+      readonly pathName?: string | null
+      readonly pathTitle?: string | null
+      readonly kind?: 'parallel' | 'alternate'
+      readonly isDefaultPath?: boolean
       readonly x: number
       readonly y: number
       readonly width: number

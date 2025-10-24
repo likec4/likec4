@@ -1,28 +1,58 @@
-import type { DiagramNode } from '@likec4/core/types'
+import type { ComputedBranchCollection, DiagramNode } from '@likec4/core/types'
 import { isAncestor, nonNullable, Stack } from '@likec4/core/utils'
-import { groupBy, mapValues, pipe, values } from 'remeda'
 import type { Compound, ParallelRect, Step } from './_types'
 
 /**
  * From steps find boxes that must be marked as parallel on the layout
  */
-export function findParallelRects(steps: Array<Step>): Array<ParallelRect> {
-  return pipe(
-    steps,
-    groupBy(s => s.parallelPrefix ?? undefined),
-    mapValues((steps, parallelPrefix) => {
-      return steps.reduce(
-        (acc, step) => {
-          acc.min.column = Math.min(acc.min.column, step.from.column, step.to.column)
-          acc.min.row = Math.min(acc.min.row, step.from.row, step.to.row)
+export function findParallelRects(
+  steps: Array<Step>,
+  options?: {
+    branchCollections?: ReadonlyArray<ComputedBranchCollection<any>>
+  },
+): Array<ParallelRect> {
+  const rects = new Map<string, ParallelRect>()
+  const branchLookup = new Map<string, ComputedBranchCollection<any>>()
 
-          acc.max.column = Math.max(acc.max.column, step.from.column, step.to.column)
-          acc.max.row = Math.max(acc.max.row, step.from.row, step.to.row)
+  for (const branch of options?.branchCollections ?? []) {
+    branchLookup.set(branch.branchId, branch)
+  }
 
-          return acc
-        },
-        {
-          parallelPrefix,
+  const ensureRect = (key: string, init: () => ParallelRect): ParallelRect => {
+    const rect = rects.get(key)
+    if (rect) {
+      return rect
+    }
+    const created = init()
+    rects.set(key, created)
+    return created
+  }
+
+  for (const step of steps) {
+    const { from, to } = step
+    const updateBounds = (rect: ParallelRect) => {
+      rect.min.column = Math.min(rect.min.column, from.column, to.column)
+      rect.min.row = Math.min(rect.min.row, from.row, to.row)
+      rect.max.column = Math.max(rect.max.column, from.column, to.column)
+      rect.max.row = Math.max(rect.max.row, from.row, to.row)
+    }
+
+    const trail = step.edge.branchTrail
+    if (trail && trail.length > 0) {
+      for (const entry of trail) {
+        const key = `branch:${entry.branchId}|${entry.pathId}`
+        const branch = branchLookup.get(entry.branchId)
+        const pathInfo = branch?.paths.find(p => p.pathId === entry.pathId)
+        const rect = ensureRect(key, () => ({
+          parallelPrefix: step.parallelPrefix ?? entry.branchId,
+          branchId: entry.branchId,
+          branchLabel: branch?.label ?? null,
+          pathId: entry.pathId,
+          pathIndex: entry.pathIndex,
+          pathName: entry.pathName ?? pathInfo?.pathName ?? null,
+          pathTitle: entry.pathTitle ?? pathInfo?.pathTitle ?? null,
+          kind: entry.kind,
+          isDefaultPath: entry.isDefaultPath ?? pathInfo?.isDefaultPath ?? false,
           min: {
             column: Infinity,
             row: Infinity,
@@ -31,11 +61,31 @@ export function findParallelRects(steps: Array<Step>): Array<ParallelRect> {
             column: -Infinity,
             row: -Infinity,
           },
-        } as ParallelRect,
-      )
-    }),
-    values(),
-  )
+        }))
+        updateBounds(rect)
+      }
+      continue
+    }
+
+    const prefix = step.parallelPrefix
+    if (!prefix) {
+      continue
+    }
+    const rect = ensureRect(`parallel:${prefix}`, () => ({
+      parallelPrefix: prefix,
+      min: {
+        column: Infinity,
+        row: Infinity,
+      },
+      max: {
+        column: -Infinity,
+        row: -Infinity,
+      },
+    }))
+    updateBounds(rect)
+  }
+
+  return [...rects.values()]
 }
 
 /**

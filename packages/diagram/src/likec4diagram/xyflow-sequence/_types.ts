@@ -34,6 +34,14 @@ export type Compound = {
 
 export type ParallelRect = {
   parallelPrefix: string
+  branchId?: string
+  branchLabel?: string | null
+  pathId?: string
+  pathIndex?: number
+  pathName?: string | null
+  pathTitle?: string | null
+  kind?: 'parallel' | 'alternate'
+  isDefaultPath?: boolean
   min: {
     column: number
     row: number

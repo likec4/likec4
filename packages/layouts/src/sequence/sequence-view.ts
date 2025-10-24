@@ -110,6 +110,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     actors,
     steps,
     compounds: buildCompounds(actors, view.nodes),
+    ...(view.branchCollections && { branchCollections: view.branchCollections }),
   })
 
   const bounds = layout.getViewBounds()

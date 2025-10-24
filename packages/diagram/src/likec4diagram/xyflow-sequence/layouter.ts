@@ -1,5 +1,6 @@
 import type {
   BBox,
+  ComputedBranchCollection,
   DiagramNode,
   NonEmptyArray,
 } from '@likec4/core/types'
@@ -86,6 +87,14 @@ export class SequenceViewLayouter {
 
   #parallelBoxes = [] as Array<{
     parallelPrefix: string
+    branchId?: string
+    branchLabel?: string | null
+    pathId?: string
+    pathIndex?: number
+    pathName?: string | null
+    pathTitle?: string | null
+    kind?: 'parallel' | 'alternate'
+    isDefaultPath?: boolean
     x1: kiwi.Expression
     y1: kiwi.Expression | kiwi.Variable
     x2: kiwi.Expression
@@ -96,10 +105,12 @@ export class SequenceViewLayouter {
     actors,
     steps,
     compounds,
+    branchCollections,
   }: {
     actors: NonEmptyArray<DiagramNode>
     steps: Array<Step>
     compounds: Array<Compound>
+    branchCollections?: ReadonlyArray<ComputedBranchCollection<any>>
   }) {
     this.#rowsTop = this.newVar(FIRST_STEP_OFFSET)
     this.#viewportRight = this.newVar(0)
@@ -121,7 +132,7 @@ export class SequenceViewLayouter {
       this.addStep(step)
     }
 
-    for (const parallelRect of findParallelRects(steps)) {
+    for (const parallelRect of findParallelRects(steps, branchCollections ? { branchCollections } : {})) {
       this.addParallelRect(parallelRect)
     }
 
@@ -157,14 +168,50 @@ export class SequenceViewLayouter {
     this.#solver.updateVariables()
   }
 
-  getParallelBoxes(): Array<BBox & { parallelPrefix: string }> {
-    return this.#parallelBoxes.map(({ parallelPrefix, x1, y1, x2, y2 }) => ({
-      parallelPrefix,
-      x: x1.value(),
-      y: y1.value(),
-      width: x2.value() - x1.value(),
-      height: y2.value() - y1.value(),
-    }))
+  getParallelBoxes(): Array<
+    BBox & {
+      parallelPrefix: string
+      branchId?: string
+      branchLabel?: string | null
+      pathId?: string
+      pathIndex?: number
+      pathName?: string | null
+      pathTitle?: string | null
+      kind?: 'parallel' | 'alternate'
+      isDefaultPath?: boolean
+    }
+  > {
+    return this.#parallelBoxes.map(
+      ({
+        parallelPrefix,
+        branchId,
+        branchLabel,
+        pathId,
+        pathIndex,
+        pathName,
+        pathTitle,
+        kind,
+        isDefaultPath,
+        x1,
+        y1,
+        x2,
+        y2,
+      }) => ({
+        parallelPrefix,
+        ...(branchId && { branchId }),
+        ...(typeof branchLabel !== 'undefined' && { branchLabel }),
+        ...(pathId && { pathId }),
+        ...(typeof pathIndex !== 'undefined' && { pathIndex }),
+        ...(typeof pathName !== 'undefined' && { pathName }),
+        ...(typeof pathTitle !== 'undefined' && { pathTitle }),
+        ...(kind && { kind }),
+        ...(typeof isDefaultPath !== 'undefined' && { isDefaultPath }),
+        x: x1.value(),
+        y: y1.value(),
+        width: x2.value() - x1.value(),
+        height: y2.value() - y1.value(),
+      }),
+    )
   }
 
   getActorBox(actor: DiagramNode): BBox {
@@ -304,6 +351,14 @@ export class SequenceViewLayouter {
 
   private addParallelRect({
     parallelPrefix,
+    branchId,
+    branchLabel,
+    pathId,
+    pathIndex,
+    pathName,
+    pathTitle,
+    kind,
+    isDefaultPath,
     min,
     max,
   }: ParallelRect) {
@@ -330,6 +385,14 @@ export class SequenceViewLayouter {
 
     this.#parallelBoxes.push({
       parallelPrefix,
+      ...(branchId !== undefined && { branchId }),
+      branchLabel: branchLabel ?? null,
+      ...(pathId !== undefined && { pathId }),
+      ...(pathIndex !== undefined && { pathIndex }),
+      pathName: pathName ?? null,
+      pathTitle: pathTitle ?? null,
+      ...(kind !== undefined && { kind }),
+      ...(isDefaultPath !== undefined && { isDefaultPath }),
       x1,
       y1,
       x2,
