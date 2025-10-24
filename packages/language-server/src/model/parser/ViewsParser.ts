@@ -368,9 +368,13 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       return this.parseDynamicStep(node)
     }
 
+    // Helper to map AST kind to normalized branch kind
+    getBranchKind(astKind: string): 'parallel' | 'alternate' {
+      return astKind === 'alternate' || astKind === 'alt' ? 'alternate' : 'parallel'
+    }
+
     parseDynamicBranchCollection(node: ast.DynamicViewBranchCollection): c4.DynamicBranchCollection | null {
-      const astKind = node.kind
-      const kind: 'parallel' | 'alternate' = astKind === 'alternate' || astKind === 'alt' ? 'alternate' : 'parallel'
+      const kind = this.getBranchKind(node.kind)
       const branchId = pathInsideDynamicView(node)
       const astPath = branchId
       const paths: c4.DynamicBranchPath[] = []
@@ -414,19 +418,24 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       }
 
       if (kind === 'parallel') {
-        const parallel: c4.DynamicParallelBranch = {
+        // Build parallel branch with legacy compatibility
+        const base: c4.DynamicParallelBranch = {
           branchId,
           astPath,
           kind,
           paths,
           parallelId: branchId,
-          ...(isNonEmptyArray(legacyParallel) && node.paths.length === 0
-            ? { __parallel: legacyParallel, isLegacyParallel: true }
-            : isNonEmptyArray(legacyParallel)
-            ? { __parallel: legacyParallel }
-            : {}),
         }
-        return parallel
+        // Populate __parallel for legacy compatibility if applicable
+        if (isNonEmptyArray(legacyParallel)) {
+          if (node.paths.length === 0) {
+            // Legacy anonymous parallel syntax
+            return { ...base, __parallel: legacyParallel, isLegacyParallel: true }
+          }
+          // Mixed: named paths with legacy array
+          return { ...base, __parallel: legacyParallel }
+        }
+        return base
       }
 
       const alternate: c4.DynamicAlternateBranch = {

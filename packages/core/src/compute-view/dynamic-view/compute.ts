@@ -189,13 +189,21 @@ class DynamicViewCompute<A extends AnyAux> {
       if (isDynamicBranchCollection(step)) {
         const walkBranchEntries = (entries: readonly DynamicBranchEntry<A>[], prefix?: number) => {
           for (const entry of entries) {
-            const legacyNested = toLegacyParallel(entry as unknown as DynamicViewStep<A>)
-            if (legacyNested) {
-              let nested = 1
-              for (const nestedEntry of legacyNested.__parallel ?? []) {
-                nested = processStep(nestedEntry, nested, prefix ?? stepNum)
+            // Check for legacy parallel format in branch entries
+            if (isDynamicBranchCollection(entry)) {
+              const legacyNested = toLegacyParallel(entry)
+              if (legacyNested) {
+                let nested = 1
+                for (const nestedEntry of legacyNested.__parallel ?? []) {
+                  nested = processStep(nestedEntry, nested, prefix ?? stepNum)
+                }
+                stepNum++
+                continue
               }
-              stepNum++
+              // Recurse into nested branch collection paths
+              for (const nestedPath of entry.paths) {
+                walkBranchEntries(nestedPath.steps, prefix)
+              }
               continue
             }
             if (isDynamicStepsSeries(entry)) {
@@ -205,11 +213,6 @@ class DynamicViewCompute<A extends AnyAux> {
             if (isDynamicStep(entry)) {
               stepNum = processStep(entry, stepNum, prefix)
               continue
-            }
-            if (isDynamicBranchCollection(entry)) {
-              for (const nestedPath of entry.paths) {
-                walkBranchEntries(nestedPath.steps, prefix)
-              }
             }
           }
         }

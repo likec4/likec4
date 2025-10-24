@@ -62,7 +62,16 @@ export const flattenSteps = <A extends Any>(s: DynamicViewStep<A>): DynamicStep<
     const steps: DynamicStep<A>[] = []
     for (const path of s.paths) {
       for (const entry of path.steps) {
-        const flattened = flattenSteps(entry as DynamicViewStep<A>)
+        let flattened: DynamicStep<A> | DynamicStep<A>[]
+        if (isDynamicBranchCollection(entry)) {
+          // Recursively flatten nested branch collections
+          flattened = flattenSteps(entry)
+        } else if (isDynamicStepsSeries(entry)) {
+          flattened = [...entry.__series]
+        } else {
+          // Must be DynamicStep
+          flattened = entry
+        }
         if (Array.isArray(flattened)) {
           steps.push(...flattened)
         } else {

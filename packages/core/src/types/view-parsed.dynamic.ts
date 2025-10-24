@@ -102,7 +102,11 @@ export type DynamicViewStep<A extends AnyAux = AnyAux> = ExclusiveUnion<{
 export function isDynamicStep<A extends AnyAux>(
   step: DynamicViewStep<A> | undefined,
 ): step is DynamicStep<A> {
-  return !!step && !('__series' in step || isDynamicBranchCollection(step))
+  return (
+    !!step &&
+    !('__series' in step) &&
+    !isDynamicBranchCollection(step)
+  )
 }
 
 export function isDynamicStepsParallel<A extends AnyAux>(
@@ -134,6 +138,12 @@ export function isDynamicBranchPath<A extends AnyAux>(
   return !!item && 'steps' in item && 'pathId' in item
 }
 
+/**
+ * Extracts legacy parallel format from a branch collection if present.
+ * Returns non-null only for parallel branches that have the __parallel array populated.
+ * This is used for backward compatibility with the legacy parallel step syntax.
+ * Does NOT convert - only returns existing legacy data if present.
+ */
 export function toLegacyParallel<A extends AnyAux>(
   step: DynamicViewStep<A>,
 ): DynamicStepsParallel<A> | null {

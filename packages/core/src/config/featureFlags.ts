@@ -6,6 +6,9 @@ type FeatureFlagState = {
 
 type FeatureFlagName = keyof FeatureFlagState
 
+// Check both LIKEC4_UNIFIED_BRANCHES (preferred) and LIKEC4_EXPERIMENTAL_UNIFIED_BRANCHES (legacy)
+// for backward compatibility during migration period.
+// LIKEC4_EXPERIMENTAL_UNIFIED_BRANCHES will be removed in a future version.
 const dynamicBranchCollectionsEnv = typeof process !== 'undefined' && process?.env
   ? process.env['LIKEC4_UNIFIED_BRANCHES'] ?? process.env['LIKEC4_EXPERIMENTAL_UNIFIED_BRANCHES']
   : undefined
