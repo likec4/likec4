@@ -408,10 +408,10 @@ export function updateActiveWalkthrough({ context }: ActionArg): Partial<Diagram
   return {
     xyedges: context.xyedges.map(edge => {
       const edgeBranchTrail = edge.type === 'seq-step' ? edge.data.branchTrail ?? null : null
-      const sharesBranch = branchIds && edgeBranchTrail?.some(entry => branchIds.has(entry.branchId))
+      const sharesBranch = !!(branchIds && edgeBranchTrail?.some(entry => branchIds.has(entry.branchId)))
       const active = stepId === edge.id
         || (!!parallelPrefix && edge.id.startsWith(parallelPrefix))
-        || !!sharesBranch
+        || sharesBranch
       return Base.setData(edge, {
         active,
         dimmed: !active,
