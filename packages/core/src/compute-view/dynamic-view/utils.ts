@@ -63,7 +63,7 @@ export const flattenSteps = <A extends Any>(s: DynamicViewStep<A>): DynamicStep<
     return flatMap(s.paths, path => flatMap(path.steps, entry => flattenSteps(entry as DynamicViewStep<A>)))
   }
   if (isDynamicStepsSeries(s)) {
-    return flatMap(s.__series, flattenSteps)
+    return [...s.__series]
   }
   return isDynamicStep(s) ? [s] : []
 }

@@ -425,8 +425,8 @@ class DynamicViewCompute<A extends AnyAux> {
       if (isDynamicStepsSeries(step)) {
         for (const item of step.__series) {
           emitAtRoot(item, rootIndex)
-          rootIndex++
         }
+        rootIndex++
         continue
       }
       if (isDynamicStep(step)) {
