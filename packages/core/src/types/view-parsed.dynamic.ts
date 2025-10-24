@@ -79,7 +79,6 @@ export interface DynamicParallelBranch<A extends AnyAux = AnyAux> extends Dynami
 
 export interface DynamicAlternateBranch<A extends AnyAux = AnyAux> extends DynamicBranchCollectionBase<A> {
   readonly kind: 'alternate'
-  readonly label?: string
 }
 
 export type DynamicBranchCollection<A extends AnyAux = AnyAux> = DynamicParallelBranch<A> | DynamicAlternateBranch<A>
