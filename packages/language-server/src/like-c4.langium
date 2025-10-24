@@ -238,7 +238,7 @@ MetadataBody: '{'
 ;
 
 MetadataAttribute:
-  key=('path' | IdTerminal) ':'? value=MetadataValue ';'?
+  key=IdTerminal ':'? value=MetadataValue ';'?
 ;
 
 MetadataValue:
