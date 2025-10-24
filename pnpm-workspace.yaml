@@ -60,7 +60,7 @@ catalogs:
     "@hono/oauth-providers": ^0.8.5
     "@hono/valibot-validator": ^0.5.3
     "@hono/zod-validator": ^0.7.4
-    hono: ^4.10.1
+    hono: ^4.10.3
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
@@ -138,7 +138,7 @@ catalogs:
   vite:
     "@vitejs/plugin-react": ^5.0.4
     rollup: ^4.52.3
-    vite: ^7.1.11
+    vite: ^6.4.1
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.24.0
     vite-tsconfig-paths: ^5.1.4
