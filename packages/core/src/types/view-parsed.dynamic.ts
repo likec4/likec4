@@ -105,7 +105,7 @@ export function isDynamicStep<A extends AnyAux>(
   return (
     !!step &&
     !('__series' in step) &&
-    !isDynamicBranchCollection(step)
+    !('paths' in step)
   )
 }
 
