@@ -117,9 +117,24 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
 }
 
 export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
+  const {
+    data: {
+      color,
+      kind = 'parallel',
+      pathIndex,
+      isDefaultPath,
+      pathTitle,
+      pathName,
+      branchLabel,
+    },
+  } = props
+  const displayTitle = pathTitle ?? pathName ?? branchLabel ?? 'PARALLEL'
+  const headline = kind === 'alternate' ? 'ALTERNATE' : 'PARALLEL'
   return (
     <Box
-      data-likec4-color={props.data.color}
+      data-likec4-color={color}
+      data-likec4-branch-kind={kind}
+      data-likec4-branch-default={isDefaultPath ? 'true' : undefined}
       css={{
         width: '100%',
         height: '100%',
@@ -134,14 +149,33 @@ export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
         backgroundColor: 'var(--likec4-palette-fill)/15',
         pointerEvents: 'none',
         paddingLeft: '2',
-        paddingTop: '0.5',
+        paddingTop: '1',
+        paddingRight: '2',
+        paddingBottom: '1',
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: '0.5',
         fontSize: 'xs',
         fontWeight: 'bold',
         letterSpacing: '.75px',
         color: '[var(--_color)/75]',
       }}
     >
-      PARALLEL
+      <Box
+        as="span"
+        css={{
+          fontSize: '2xs',
+          letterSpacing: '1px',
+          textTransform: 'uppercase',
+        }}
+      >
+        {headline}
+        {pathIndex ? ` ${pathIndex}` : ''}
+        {isDefaultPath ? ' • DEFAULT' : ''}
+      </Box>
+      <Box as="span" css={{ textTransform: 'uppercase', lineHeight: 'shorter' }}>
+        {displayTitle}
+      </Box>
     </Box>
   )
 }

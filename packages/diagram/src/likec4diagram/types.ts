@@ -103,6 +103,14 @@ export namespace Types {
     & LeafNodeData
     & {
       parallelPrefix: string
+      branchId: string | null
+      branchLabel: string | null
+      pathId: string | null
+      pathIndex: number | null
+      pathName: string | null
+      pathTitle: string | null
+      kind: 'parallel' | 'alternate'
+      isDefaultPath: boolean
     }
   >
 
@@ -232,6 +240,7 @@ export namespace Types {
       notes: RichTextOrEmpty
       labelXY: XYPosition | null
       controlPoints: XYPosition[] | undefined | null
+      branchTrail?: DiagramEdge['branchTrail']
     }
   >
 
@@ -258,6 +267,7 @@ export namespace Types {
       labelXY: XYPosition | null
       labelBBox: BBox
       controlPoints: XYPosition[] | undefined | null
+      branchTrail?: DiagramEdge['branchTrail']
     }
   >
 

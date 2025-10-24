@@ -1,6 +1,7 @@
-import type { DiagramNode } from '@likec4/core/types'
+import type { DiagramEdge, DiagramNode, EdgeId } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
-import { buildCompounds } from './utils'
+import type { Step } from './_types'
+import { buildCompounds, findParallelRects } from './utils'
 
 // Helpers
 const node = (id: string, parent: string | null = null): DiagramNode => ({
@@ -160,5 +161,77 @@ describe('buildCompounds', () => {
       to: a2,
       nested: [],
     })
+  })
+})
+
+describe('findParallelRects', () => {
+  const actor = (id: string): DiagramNode => ({ id } as unknown as DiagramNode)
+
+  it('returns branch metadata when branchTrail is present', () => {
+    const branchId = '/branch@0'
+    const pathId = '/branch@0/path@0'
+    const step = {
+      id: 'step-01.01' as EdgeId,
+      from: { column: 0, row: 0 },
+      to: { column: 1, row: 0 },
+      source: actor('source'),
+      target: actor('target'),
+      label: null,
+      isSelfLoop: false,
+      isBack: false,
+      parallelPrefix: 'step-01.',
+      offset: 0,
+      edge: {
+        id: 'step-01.01' as EdgeId,
+        source: 'source',
+        target: 'target',
+        label: null,
+        relations: [],
+        points: [] as any,
+        color: 'gray',
+        line: 'solid',
+        branchTrail: [
+          {
+            branchId,
+            pathId,
+            kind: 'parallel' as const,
+            pathIndex: 1,
+            indexWithinPath: 1,
+            isDefaultPath: true,
+            pathName: 'happy',
+            pathTitle: 'Happy path',
+          },
+        ],
+      } as unknown as DiagramEdge,
+    } satisfies Step
+
+    const rects = findParallelRects([step], {
+      branchCollections: [
+        {
+          branchId,
+          label: 'Customer decisions',
+          paths: [
+            {
+              pathId,
+              pathIndex: 1,
+              pathName: 'happy',
+              pathTitle: 'Happy path',
+              edgeIds: [],
+              isDefaultPath: true,
+            },
+          ],
+        } as unknown as any,
+      ],
+    })
+
+    expect(rects).toHaveLength(1)
+    const [rect] = rects
+    expect(rect).toBeDefined()
+    expect(rect!.branchId).toBe(branchId)
+    expect(rect!.pathId).toBe(pathId)
+    expect(rect!.kind).toBe('parallel')
+    expect(rect!.branchLabel).toBe('Customer decisions')
+    expect(rect!.isDefaultPath).toBe(true)
+    expect(rect!.pathTitle).toBe('Happy path')
   })
 })

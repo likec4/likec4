@@ -399,26 +399,38 @@ export function resetEdgeControlPoints({ context }: ActionArg): Partial<DiagramC
 }
 
 export function updateActiveWalkthrough({ context }: ActionArg): Partial<DiagramContext> {
-  const { stepId, parallelPrefix } = nonNullable(context.activeWalkthrough, 'activeWalkthrough is null')
-  const step = nonNullable(context.xyedges.find(x => x.id === stepId))
+  const { stepId, parallelPrefix, branchTrail } = nonNullable(context.activeWalkthrough, 'activeWalkthrough is null')
+  const stepEdge = nonNullable(context.xyedges.find(x => x.id === stepId))
+  const activeStep = stepEdge.type === 'seq-step' ? stepEdge : null
+  const trail = branchTrail ?? activeStep?.data.branchTrail ?? null
+  const branchIds = trail ? new Set(trail.map(entry => entry.branchId)) : null
+  const innermostBranch = trail?.at(-1) ?? null
   return {
     xyedges: context.xyedges.map(edge => {
-      const active = stepId === edge.id || (!!parallelPrefix && edge.id.startsWith(parallelPrefix))
+      const edgeBranchTrail = edge.type === 'seq-step' ? edge.data.branchTrail ?? null : null
+      const sharesBranch = branchIds && edgeBranchTrail?.some(entry => branchIds.has(entry.branchId))
+      const active = stepId === edge.id
+        || (!!parallelPrefix && edge.id.startsWith(parallelPrefix))
+        || !!sharesBranch
       return Base.setData(edge, {
         active,
-        dimmed: stepId !== edge.id,
+        dimmed: !active,
       })
     }),
     xynodes: context.xynodes.map(node => {
-      const dimmed = step.source !== node.id && step.target !== node.id
       if (node.type === 'seq-parallel') {
+        const matchesInnermost = innermostBranch
+          ? node.data.branchId === innermostBranch.branchId
+            && node.data.pathId === innermostBranch.pathId
+          : false
+        const matchesPrefix = !!parallelPrefix && node.data.parallelPrefix === parallelPrefix
+        const isActive = matchesInnermost || matchesPrefix
         return Base.setData(node, {
-          color: parallelPrefix === node.data.parallelPrefix
-            ? SeqParallelAreaColor.active
-            : SeqParallelAreaColor.default,
-          dimmed,
+          color: isActive ? SeqParallelAreaColor.active : SeqParallelAreaColor.default,
+          dimmed: !isActive,
         })
       }
+      const dimmed = activeStep ? activeStep.source !== node.id && activeStep.target !== node.id : true
       return Base.setDimmed(node, dimmed)
     }),
   }

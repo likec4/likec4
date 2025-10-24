@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, expectTypeOf, it } from 'vitest'
 import {
   disableDynamicBranchCollections,
   enableDynamicBranchCollections,
@@ -7,6 +7,7 @@ import type {
   DynamicBranchCollection,
   DynamicBranchPath,
   DynamicViewStep,
+  LayoutedDynamicView,
   ParsedDynamicView,
   ViewId,
 } from '../../../types'
@@ -138,5 +139,13 @@ describe('DynamicViewCompute branch traversal', () => {
     expect(computed.edges.map(edge => edge.id)).toEqual(['step-01', 'step-02'])
     expect(computed.edges.every(edge => !edge.branchTrail)).toBe(true)
     expect(computed).not.toHaveProperty('branchCollections')
+  })
+
+  it('sequence layout parallel areas expose branch metadata fields', () => {
+    type Area = LayoutedDynamicView.Sequence.ParallelArea
+    expectTypeOf<Area>().toHaveProperty('branchId').toEqualTypeOf<string | undefined>()
+    expectTypeOf<Area>().toHaveProperty('pathId').toEqualTypeOf<string | undefined>()
+    expectTypeOf<Area>().toHaveProperty('kind').toEqualTypeOf<'parallel' | 'alternate' | undefined>()
+    expectTypeOf<Area>().toHaveProperty('isDefaultPath').toEqualTypeOf<boolean | undefined>()
   })
 })

@@ -94,7 +94,25 @@ export function activeSequenceBounds(params: { context: Context }): { bounds: BB
   const actorsBounds = getNodesBounds([sourceNode, targetNode], xystate)
 
   let stepBounds: BBox | undefined | null
-  if (activeWalkthrough.parallelPrefix) {
+  const trail = activeWalkthrough.branchTrail ??
+    (stepEdge.type === 'seq-step' ? stepEdge.data.branchTrail ?? null : null)
+  const innermost = trail?.at(-1)
+  if (innermost) {
+    const parallelArea = params.context.xynodes.find(n =>
+      n.type === 'seq-parallel'
+      && n.data.branchId === innermost.branchId
+      && n.data.pathId === innermost.pathId
+    )
+    if (parallelArea) {
+      stepBounds = {
+        x: parallelArea.position.x,
+        y: parallelArea.position.y,
+        ...getNodeDimensions(parallelArea),
+      }
+    }
+  }
+
+  if (!stepBounds && activeWalkthrough.parallelPrefix) {
     const parallelArea = params.context.xynodes.find(n =>
       n.type === 'seq-parallel' && n.data.parallelPrefix === activeWalkthrough.parallelPrefix
     )

@@ -8,6 +8,7 @@ import {
   nonNullable,
 } from '@likec4/core'
 import type {
+  ComputedBranchTrailEntry,
   DiagramEdge,
   DiagramNode,
   DiagramView,
@@ -140,8 +141,15 @@ export interface Context extends Input {
   activeWalkthrough: null | {
     stepId: StepEdgeId
     parallelPrefix: string | null
+    branchTrail: readonly ComputedBranchTrailEntry[] | null
   }
 }
+
+const findSequenceEdge = (edges: Types.Edge[], id: StepEdgeId): Types.SequenceStepEdge | undefined =>
+  edges.find((edge): edge is Types.SequenceStepEdge => edge.type === 'seq-step' && edge.id === id)
+
+const getBranchTrail = (edges: Types.Edge[], id: StepEdgeId): readonly ComputedBranchTrailEntry[] | null =>
+  findSequenceEdge(edges, id)?.data.branchTrail ?? null
 
 export type Events =
   | HotKeyEvent
@@ -1106,6 +1114,7 @@ const _diagramMachine = setup({
                 return {
                   stepId,
                   parallelPrefix: getParallelStepsPrefix(stepId),
+                  branchTrail: getBranchTrail(context.xyedges, stepId),
                 }
               },
             }),
@@ -1168,6 +1177,7 @@ const _diagramMachine = setup({
                     activeWalkthrough: {
                       stepId: nextStepId,
                       parallelPrefix: getParallelStepsPrefix(nextStepId),
+                      branchTrail: getBranchTrail(context.xyedges, nextStepId),
                     },
                   }
                 }),
@@ -1186,6 +1196,9 @@ const _diagramMachine = setup({
                     activeWalkthrough: {
                       stepId: event.edge.id,
                       parallelPrefix: getParallelStepsPrefix(event.edge.id),
+                      branchTrail: event.edge.type === 'seq-step'
+                        ? event.edge.data.branchTrail ?? null
+                        : getBranchTrail(context.xyedges, event.edge.id as StepEdgeId),
                     },
                   }
                 }),

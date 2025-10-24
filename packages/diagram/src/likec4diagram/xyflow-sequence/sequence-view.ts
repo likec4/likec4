@@ -29,6 +29,13 @@ type Port = {
   position: 'left' | 'right' | 'top' | 'bottom'
 }
 
+const sanitizeIdSegment = (segment: string) => segment.replace(/[^a-zA-Z0-9_-]+/g, '-')
+
+const makeSeqParallelNodeId = (parallelPrefix: string, branchId?: string, pathId?: string): NodeId => {
+  const key = branchId && pathId ? `${branchId}--${pathId}` : parallelPrefix
+  return `seq-parallel-${sanitizeIdSegment(key)}` as NodeId
+}
+
 export function sequenceViewToXY(
   view: LayoutedDynamicView,
 ): {
@@ -140,6 +147,7 @@ export function sequenceViewToXY(
     actors,
     steps,
     compounds: buildCompounds(actors, view.nodes),
+    ...(view.branchCollections && { branchCollections: view.branchCollections }),
   })
 
   const bounds = layout.getViewBounds()
@@ -183,6 +191,7 @@ export function sequenceViewToXY(
         head: edge.head ?? 'normal',
         tail: edge.tail ?? 'none',
         astPath: edge.astPath,
+        branchTrail: edge.branchTrail,
       },
       selectable: true,
       focusable: false,
@@ -239,15 +248,31 @@ function toCompoundArea(
 }
 
 function toSeqParallelArea(
-  { parallelPrefix, x, y, width, height }: BBox & { parallelPrefix: string },
+  {
+    parallelPrefix,
+    branchId,
+    branchLabel,
+    pathId,
+    pathIndex,
+    pathName,
+    pathTitle,
+    kind,
+    isDefaultPath,
+    x,
+    y,
+    width,
+    height,
+  }: LayoutedDynamicView.Sequence.ParallelArea,
   view: LayoutedDynamicView,
 ): Types.SequenceParallelArea {
+  const nodeId = makeSeqParallelNodeId(parallelPrefix, branchId ?? undefined, pathId ?? undefined)
+  const displayTitle = pathTitle ?? pathName ?? branchLabel ?? 'PARALLEL'
   return {
-    id: `seq-parallel-${parallelPrefix}` as NodeId,
+    id: nodeId,
     type: 'seq-parallel',
     data: {
-      id: `seq-parallel-${parallelPrefix}` as NodeId,
-      title: 'PARALLEL',
+      id: nodeId,
+      title: displayTitle ?? 'PARALLEL',
       technology: null,
       color: SeqParallelAreaColor.default,
       shape: 'rectangle',
@@ -262,6 +287,14 @@ function toSeqParallelArea(
       description: RichText.EMPTY,
       viewId: view.id,
       parallelPrefix,
+      branchId: branchId ?? null,
+      branchLabel: branchLabel ?? null,
+      pathId: pathId ?? null,
+      pathIndex: typeof pathIndex === 'number' ? pathIndex : null,
+      pathName: typeof pathName !== 'undefined' ? pathName : null,
+      pathTitle: typeof pathTitle !== 'undefined' ? pathTitle : null,
+      kind: kind ?? 'parallel',
+      isDefaultPath: !!isDefaultPath,
     },
     zIndex: SeqZIndex.parallel,
     position: {
