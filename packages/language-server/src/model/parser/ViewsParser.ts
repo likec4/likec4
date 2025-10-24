@@ -373,6 +373,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       return astKind === 'alternate' || astKind === 'alt' ? 'alternate' : 'parallel'
     }
 
+    // Helper to parse and filter valid steps
+    parseValidSteps(steps: readonly ast.DynamicViewStepLike[]): c4.DynamicBranchEntry[] {
+      return steps
+        .filter(step => this.isValid(step))
+        .map(step => this.parseDynamicStepLike(step))
+        .filter((step): step is c4.DynamicBranchEntry => step !== null)
+    }
+
     parseDynamicBranchCollection(node: ast.DynamicViewBranchCollection): c4.DynamicBranchCollection | null {
       const kind = this.getBranchKind(node.kind)
       const branchId = pathInsideDynamicView(node)
@@ -449,10 +457,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseDynamicBranchPath(node: ast.DynamicViewBranchPath): c4.DynamicBranchPath | null {
       const astPath = pathInsideDynamicView(node)
-      const steps = node.steps
-        .filter(step => this.isValid(step))
-        .map(step => this.parseDynamicStepLike(step))
-        .filter((step): step is c4.DynamicBranchEntry => step !== null)
+      const steps = this.parseValidSteps(node.steps)
       if (!isNonEmptyArray(steps)) {
         logger.warn('Dynamic branch path has no steps, skipping')
         return null
