@@ -1,4 +1,4 @@
-import { type BBox, type NodeId, type NonEmptyArray, type Point, DefaultMap, exact, nonNullable } from '@likec4/core'
+import { type BBox, type NonEmptyArray, type Point, DefaultMap, nonNullable } from '@likec4/core'
 import type {
   EdgeReplaceChange,
   InternalNode as RFInternalNode,
@@ -8,11 +8,11 @@ import type {
 } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
-import { filter, first, flatMap, forEach, hasAtLeast, map, pipe, take } from 'remeda'
-import { type DiagramApi, type XYStoreApi, useXYStoreApi } from '../hooks'
+import { filter, forEach, hasAtLeast, last, map, pipe } from 'remeda'
+import { type XYStoreApi, useXYStoreApi } from '../hooks'
 // import { type XYStoreApi } from '../hooks/useXYFlow'
-import { change } from 'khroma'
-import { s } from 'motion/react-m'
+import { produce } from 'immer'
+import { Vector } from 'vecti'
 import { useDiagram } from '../hooks/useDiagram'
 import { isSamePoint } from '../utils'
 import type { Types } from './types'
@@ -287,6 +287,90 @@ export function createLayoutConstraints(
       if (r) {
         edgeModifiers.set(edge, makeEdgeRelativeModifier(edge, r))
       }
+    }
+  }
+
+  // When source is being moved, but target is not
+  for (const edge of edges) {
+    if (edgeModifiers.has(edge)) {
+      continue
+    }
+    if (movingNodes.has(edge.source)) {
+      const s = rects.get(edge.source) ?? ancestorsOf.get(edge.source).map(id => rects.get(id)).find(s => !!s)
+      if (!s) {
+        continue
+      }
+      edgeModifiers.set(edge, () => {
+        const diff = s.diff
+        if (!diff) {
+          return null
+        }
+        const d = new Vector(diff.x, diff.y)
+        return {
+          id: edge.id,
+          type: 'replace',
+          item: produce(edge, draft => {
+            const [[x1, y1], ...rest] = edge.data.points
+            draft.data.points[0] = [x1 + diff.x, y1 + diff.y]
+            if (!hasAtLeast(rest, 3)) {
+              return
+            }
+            const targetPoint = last(rest)
+            const sourceP = new Vector(x1, y1)
+            const targetP = new Vector(targetPoint![0], targetPoint![1])
+            const toTarget = targetP.subtract(sourceP).normalize()
+
+            for (let i = 0; i < rest.length - 2; i++) {
+              const p = new Vector(rest[i]![0], rest[i]![1])
+              // const toPoint = p.subtract(sourceP).normalize()
+              const projLength = p.subtract(sourceP).dot(toTarget)
+              const projPoint = sourceP.add(toTarget.multiply(projLength))
+              const perp = p.subtract(projPoint)
+              const newPoint = projPoint.add(perp)
+              const movedPoint = newPoint.add(d)
+              draft.data.points[i + 1] = [movedPoint.x, movedPoint.y]
+            }
+          }),
+        }
+      })
+      continue
+    }
+    if (movingNodes.has(edge.target)) {
+      const s = rects.get(edge.target) ?? ancestorsOf.get(edge.target).map(id => rects.get(id)).find(s => !!s)
+      if (!s) {
+        continue
+      }
+      edgeModifiers.set(edge, () => {
+        const diff = s.diff
+        if (!diff) {
+          return null
+        }
+        const d = new Vector(diff.x, diff.y)
+        return {
+          id: edge.id,
+          type: 'replace',
+          item: produce(edge, draft => {
+            const points = edge.data.points
+            const lastPoint = last(points)!
+            draft.data.points[points.length - 1] = [lastPoint[0] + diff.x, lastPoint[1] + diff.y]
+            if (!hasAtLeast(points, 3)) {
+              return
+            }
+            const targetP = new Vector(lastPoint[0], lastPoint[1])
+            const sourceP = new Vector(points[0][0], points[0][1])
+            const toSource = sourceP.subtract(targetP).normalize()
+            for (let i = 1; i < points.length - 1; i++) {
+              const p = new Vector(points[i]![0], points[i]![1])
+              const projLength = p.subtract(targetP).dot(toSource)
+              const projPoint = targetP.add(toSource.multiply(projLength))
+              const perp = p.subtract(projPoint)
+              const newPoint = projPoint.add(perp)
+              const movedPoint = newPoint.add(d)
+              draft.data.points[i] = [movedPoint.x, movedPoint.y]
+            }
+          }),
+        }
+      })
     }
   }
 
