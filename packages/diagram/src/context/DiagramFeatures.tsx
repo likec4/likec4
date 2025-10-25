@@ -14,7 +14,6 @@ const FeatureNames = [
   'NavigationButtons',
   'Notations',
   'DynamicViewWalkthrough',
-  'EdgeEditing',
   'FitView',
   'CompareWithLatest',
   /**
@@ -25,12 +24,8 @@ const FeatureNames = [
 ] as const
 export type FeatureName = typeof FeatureNames[number]
 
-type CustomFeatures = {
-  enableControls: 'next' | boolean
-}
-
 export type EnabledFeatures = {
-  [P in `enable${FeatureName}`]: P extends keyof CustomFeatures ? CustomFeatures[P] : boolean
+  [P in `enable${FeatureName}`]: boolean
 }
 
 export const DefaultFeatures: EnabledFeatures = {
@@ -53,24 +48,6 @@ export const DefaultFeatures: EnabledFeatures = {
 }
 const DiagramFeaturesContext = createContext<EnabledFeatures>(DefaultFeatures)
 
-const validate = (features: EnabledFeatures) => {
-  let {
-    enableReadOnly,
-    enableEdgeEditing,
-    ...rest
-  } = features
-
-  if (enableReadOnly) {
-    enableEdgeEditing = false
-  }
-
-  return {
-    enableReadOnly,
-    enableEdgeEditing,
-    ...rest,
-  }
-}
-
 export function DiagramFeatures({
   children,
   features,
@@ -91,11 +68,11 @@ export function DiagramFeatures({
   useEffect(
     () => {
       setScope(current => {
-        const next = validate({
+        const next = {
           ...outerScope,
           ...features,
           ...overrides,
-        })
+        }
         return shallowEqual(current, next) ? current : next
       })
     },
@@ -115,7 +92,6 @@ DiagramFeatures.Overlays = ({ children }: PropsWithChildren) => {
       overrides={{
         enableControls: false,
         enableReadOnly: true,
-        enableEdgeEditing: false,
       }}>
       {children}
     </DiagramFeatures>

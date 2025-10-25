@@ -6,7 +6,6 @@
       color: 'secondary',
       opacity: 5,
       relationship: {
-        line: 'solid',
         arrow: 'open'
       }
     }

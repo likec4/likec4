@@ -41,8 +41,9 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   const diagram = useDiagram()
   const {
     enableNavigateTo,
-    enableEdgeEditing,
+    enableReadOnly,
   } = useEnabledFeatures()
+  const enableEdgeEditing = !enableReadOnly
   const {
     id,
     source,
@@ -66,39 +67,40 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const navigateTo = enableNavigateTo ? data.navigateTo : undefined
 
-  const sourceNode = nonNullable(useXYInternalNode(source)!, `source node ${source} not found`)
-  const targetNode = nonNullable(useXYInternalNode(target)!, `target node ${target} not found`)
+  // const sourceNode = nonNullable(useXYInternalNode(source)!, `source node ${source} not found`)
+  // const targetNode = nonNullable(useXYInternalNode(target)!, `target node ${target} not found`)
 
-  const isModified = isTruthy(data.controlPoints)
-    || !isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data)
-    || !isSamePoint(targetNode.internals.positionAbsolute, targetNode.data)
+  const isModified = false
+  // const isModified = isTruthy(data.controlPoints)
+  //   || !isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data)
+  //   || !isSamePoint(targetNode.internals.positionAbsolute, targetNode.data)
 
   let controlPoints = data.controlPoints ?? bezierControlPoints(props.data)
 
-  let edgePath: string
+  let edgePath: string = ''
 
   if (isModified) {
-    const sourceCenterPos = { x: sourceX, y: sourceY }
-    const targetCenterPos = { x: targetX, y: targetY }
+    // const sourceCenterPos = { x: sourceX, y: sourceY }
+    // const targetCenterPos = { x: targetX, y: targetY }
 
-    const nodeMargin = 6
-    const points = data.dir === 'back'
-      ? [
-        targetCenterPos,
-        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos, nodeMargin),
-        ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos, nodeMargin),
-        sourceCenterPos,
-      ]
-      : [
-        sourceCenterPos,
-        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos, nodeMargin),
-        ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos, nodeMargin),
-        targetCenterPos,
-      ]
+    // const nodeMargin = 6
+    // const points = data.dir === 'back'
+    //   ? [
+    //     targetCenterPos,
+    //     getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos, nodeMargin),
+    //     ...controlPoints,
+    //     getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos, nodeMargin),
+    //     sourceCenterPos,
+    //   ]
+    //   : [
+    //     sourceCenterPos,
+    //     getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos, nodeMargin),
+    //     ...controlPoints,
+    //     getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos, nodeMargin),
+    //     targetCenterPos,
+    //   ]
 
-    edgePath = nonNullable(curve(points))
+    // edgePath = nonNullable(curve(points))
   } else {
     edgePath = bezierPath(points)
   }

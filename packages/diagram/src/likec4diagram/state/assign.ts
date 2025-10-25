@@ -38,7 +38,8 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
     if (existing) {
       const { width: existingWidth, height: existingHeight } = getNodeDimensions(existing)
       if (
-        eq(existing.type, update.type)
+        isSameView
+        && eq(existing.type, update.type)
         && eq(existingWidth, update.initialWidth)
         && eq(existingHeight, update.initialHeight)
         && eq(existing.hidden ?? false, update.hidden ?? false)
@@ -49,15 +50,12 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
         return existing
       }
       return {
-        ...omit(existing, ['measured', 'parentId']),
+        ...omit(existing, ['measured', 'parentId', 'hidden']),
         ...update,
         // Force dimensions from update
         width: update.initialWidth,
         height: update.initialHeight,
-        data: {
-          ...existing.data,
-          ...update.data,
-        },
+        // data: update.data,
       } as Types.Node
     }
     return update
@@ -93,23 +91,23 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
     })
   }
 
-  if (!isSameView) {
-    for (const node of xynodes) {
-      node.data = {
-        ...node.data,
-        dimmed: false,
-        hovered: false,
-      }
-    }
-    for (const edge of xyedges) {
-      edge.data = {
-        ...edge.data,
-        dimmed: false,
-        hovered: false,
-        active: false,
-      }
-    }
-  }
+  // if (!isSameView) {
+  //   for (const node of xynodes) {
+  //     node.data = {
+  //       ...node.data,
+  //       dimmed: false,
+  //       hovered: false,
+  //     }
+  //   }
+  //   for (const edge of xyedges) {
+  //     edge.data = {
+  //       ...edge.data,
+  //       dimmed: false,
+  //       hovered: false,
+  //       active: false,
+  //     }
+  //   }
+  // }
 
   return {
     xynodes,

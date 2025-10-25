@@ -21,7 +21,6 @@ import type { Types } from '../types'
 export function diagramToXY(opts: {
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | 'bounds' | '_type'>
   where: WhereOperator | null
-  nodesSelectable: boolean
 }): {
   bounds: BBox
   xynodes: Types.Node[]
@@ -29,7 +28,6 @@ export function diagramToXY(opts: {
 } {
   const {
     view,
-    nodesSelectable: selectable,
   } = opts
   const xynodes = [] as Types.Node[],
     xyedges = [] as Types.Edge[],
@@ -93,8 +91,6 @@ export function diagramToXY(opts: {
 
     const base = {
       id,
-      selectable: selectable && node.kind !== GroupElementKind,
-      focusable: selectable && node.kind !== GroupElementKind,
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
@@ -245,7 +241,6 @@ export function diagramToXY(opts: {
       source: ns + source,
       target: ns + target,
       zIndex: ZIndexes.Edge,
-      selectable: selectable,
       hidden: !visiblePredicate(edge),
       deletable: false,
       data: {

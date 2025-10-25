@@ -93,7 +93,6 @@ export interface Input {
   zoomable: boolean
   pannable: boolean
   fitViewPadding: ViewPadding
-  nodesSelectable: boolean
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
 }
 
@@ -231,14 +230,15 @@ const _diagramMachine = setup({
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
     'enabled: FitView': ({ context }) => context.features.enableFitView,
     'enabled: FocusMode': ({ context }) =>
-      context.features.enableFocusMode &&
+      (context.features.enableReadOnly || !!context.toggledFeatures.enableReadOnly) &&
       (context.view._type !== 'dynamic' || context.dynamicViewVariant !== 'sequence'),
-    'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
+    'enabled: Readonly': ({ context }) => context.features.enableReadOnly || !!context.toggledFeatures.enableReadOnly,
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'enabled: Search': ({ context }) => context.features.enableSearch,
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
     'enabled: DynamicViewWalkthrough': ({ context }) => context.features.enableDynamicViewWalkthrough,
-    'not readonly': ({ context }) => !context.features.enableReadOnly,
+    'not readonly': ({ context }) =>
+      !(context.features.enableReadOnly || (context.toggledFeatures.enableReadOnly ?? context.features.enableReadOnly)),
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is another view': ({ context, event }) => {
       assertEvent(event, ['update.view', 'navigate.to'])
@@ -657,6 +657,19 @@ const _diagramMachine = setup({
         })
       },
     ),
+    'toggle feature': assign(({ context, event }) => {
+      assertEvent(event, 'toggle.feature')
+      const currentValue = context.toggledFeatures[`enable${event.feature}`] ??
+        context.features[`enable${event.feature}`]
+      const nextValue = event.forceValue ?? !currentValue
+
+      return {
+        toggledFeatures: {
+          ...context.toggledFeatures,
+          [`enable${event.feature}`]: nextValue,
+        },
+      }
+    }),
     'emit: walkthroughStarted': emit(({ context }) => {
       const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
       invariant(edge, 'Invalid walkthrough state')
@@ -874,7 +887,10 @@ const _diagramMachine = setup({
           ],
         },
         'open.elementDetails': {
-          guard: 'enabled: ElementDetails',
+          guard: and([
+            'enabled: ElementDetails',
+            'click: node has modelFqn',
+          ]) as any,
           actions: 'open element details',
         },
         'open.relationshipsBrowser': {
@@ -908,15 +924,7 @@ const _diagramMachine = setup({
           target: '.walkthrough',
         },
         'toggle.feature': {
-          actions: assign({
-            toggledFeatures: ({ context, event }) => {
-              return DiagramToggledFeaturesPersistence.write({
-                ...context.toggledFeatures,
-                [`enable${event.feature}`]: event.forceValue ??
-                  !(context.toggledFeatures[`enable${event.feature}`] ?? context.features[`enable${event.feature}`]),
-              })
-            },
-          }),
+          actions: 'toggle feature',
         },
         'xyflow.nodeMouseEnter': {
           actions: {

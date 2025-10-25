@@ -1,8 +1,8 @@
-import type { DiagramView, DynamicViewDisplayVariant, ViewId, WhereOperator } from '@likec4/core/types'
+import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, memo, useEffect, useRef } from 'react'
+import { type PropsWithChildren, memo, useEffect, useMemo, useRef } from 'react'
 import type { Subscription } from 'xstate'
 import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
@@ -17,36 +17,13 @@ import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
 import { type DiagramMachineLogic, diagramMachine } from './diagram-machine'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import type { DiagramActorSnapshot } from './types'
-
-const selectFromActor = (state: DiagramActorSnapshot) => {
-  if (state.context.features.enableReadOnly || state.context.activeWalkthrough) {
-    return {
-      dynamicViewVariant: state.context.dynamicViewVariant,
-      viewId: state.context.view.id,
-      toggledFeatures: {
-        ...state.context.toggledFeatures,
-        enableReadOnly: true,
-      },
-    }
-  }
-  return {
-    dynamicViewVariant: state.context.dynamicViewVariant,
-    viewId: state.context.view.id,
-    toggledFeatures: state.context.toggledFeatures,
-  }
-}
-const compareSelected = <T extends ReturnType<typeof selectFromActor>>(a: T, b: T): boolean => {
-  return a.viewId === b.viewId && a.dynamicViewVariant === b.dynamicViewVariant &&
-    shallowEqual(a.toggledFeatures, b.toggledFeatures)
-}
+import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
 export function DiagramActorProvider({
   view,
   zoomable,
   pannable,
   fitViewPadding,
-  nodesSelectable,
   where,
   children,
   dynamicViewVariant: _defaultVariant,
@@ -55,7 +32,6 @@ export function DiagramActorProvider({
   zoomable: boolean
   pannable: boolean
   fitViewPadding: ViewPadding
-  nodesSelectable: boolean
   where: WhereOperator | null
   dynamicViewVariant: DynamicViewDisplayVariant | undefined
 }>) {
@@ -94,7 +70,6 @@ export function DiagramActorProvider({
         zoomable,
         pannable,
         fitViewPadding,
-        nodesSelectable,
         dynamicViewVariant: _defaultVariant,
       },
     },
@@ -110,15 +85,9 @@ export function DiagramActorProvider({
     () =>
       actorRef.send({
         type: 'update.inputs',
-        inputs: { zoomable, pannable, fitViewPadding, nodesSelectable },
+        inputs: { zoomable, pannable, fitViewPadding },
       }),
-    [zoomable, pannable, fitViewPadding, nodesSelectable],
-  )
-
-  const { dynamicViewVariant, viewId, toggledFeatures } = useSelector(
-    actorRef,
-    selectFromActor,
-    compareSelected,
+    [zoomable, pannable, fitViewPadding],
   )
 
   useUpdateEffect(() => {
@@ -126,36 +95,85 @@ export function DiagramActorProvider({
     actorRef.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
   }, [_defaultVariant])
 
-  useEffect(() => {
-    actorRef.send({
-      type: 'update.view',
-      ...convertToXYFlow({ view, where, nodesSelectable, dynamicViewVariant }),
-    })
-  }, [actorRef, view, where, nodesSelectable, dynamicViewVariant])
-
   return (
     <DiagramActorContextProvider value={actorRef}>
       <ErrorBoundary>
-        <DiagramFeatures overrides={toggledFeatures}>
-          {/* Important - we use "viewId" from actor context, not from props */}
-          <CurrentViewModelProvider viewId={viewId}>
-            {children}
-          </CurrentViewModelProvider>
-        </DiagramFeatures>
+        <CurrentViewModelProvider actorRef={actorRef}>
+          {children}
+          <DiagramXYFlowSyncProvider
+            view={view}
+            where={where}
+            actorRef={actorRef}
+          />
+        </CurrentViewModelProvider>
       </ErrorBoundary>
       <DiagramActorEventListener />
     </DiagramActorContextProvider>
   )
 }
 
-function CurrentViewModelProvider({ children, viewId }: PropsWithChildren<{ viewId: ViewId }>) {
+const selectFromActor = (state: DiagramActorSnapshot) => {
+  const isReadOnly = state.context.features.enableReadOnly || !!state.context.activeWalkthrough
+  if (isReadOnly !== state.context.toggledFeatures.enableReadOnly) {
+    return {
+      toggledFeatures: {
+        ...state.context.toggledFeatures,
+        enableReadOnly: true,
+      },
+      viewId: state.context.view.id,
+    }
+  }
+  return {
+    toggledFeatures: state.context.toggledFeatures,
+    viewId: state.context.view.id,
+  }
+}
+const compareSelected = <T extends ReturnType<typeof selectFromActor>>(a: T, b: T): boolean => {
+  return a.viewId === b.viewId &&
+    shallowEqual(a.toggledFeatures, b.toggledFeatures)
+}
+
+function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ actorRef: DiagramActorRef }>) {
+  {/* Important - we use "viewId" from actor context, not from props */}
+  const { viewId, toggledFeatures } = useSelector(
+    actorRef,
+    selectFromActor,
+    compareSelected,
+  )
   const likec4model = useLikeC4Model()
   const viewmodel = likec4model.findView(viewId)
   return (
     <CurrentViewModelContext.Provider value={viewmodel}>
-      {children}
+      <DiagramFeatures overrides={toggledFeatures}>
+        {children}
+      </DiagramFeatures>
     </CurrentViewModelContext.Provider>
   )
+}
+
+const selectFromActor2 = (state: DiagramActorSnapshot) => {
+  return {
+    dynamicViewVariant: state.context.dynamicViewVariant,
+  }
+}
+function DiagramXYFlowSyncProvider(
+  { view, where, actorRef }: {
+    view: DiagramView
+    where: WhereOperator | null
+    actorRef: DiagramActorRef
+  },
+) {
+  // const { enableReadOnly } = useEnabledFeatures()
+  const { dynamicViewVariant } = useSelector(actorRef, selectFromActor2, shallowEqual)
+
+  useEffect(() => {
+    actorRef.send({
+      type: 'update.view',
+      ...convertToXYFlow({ view, where, dynamicViewVariant }),
+    })
+  }, [view, where, dynamicViewVariant])
+
+  return null
 }
 
 const DiagramActorEventListener = memo(() => {

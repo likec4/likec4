@@ -1,7 +1,7 @@
 import type { scalar } from '@likec4/core'
-import type { LikeC4Model } from '@likec4/core/model'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { Button } from '@mantine/core'
+import { memo } from 'react'
 import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen } from './App.css'
 import { IconRenderer } from './IconRenderer'
@@ -40,13 +40,13 @@ export function App() {
     <LikeC4ModelProvider likec4model={likec4Model}>
       {error && <ErrorMessage error={error} />}
       <QueryErrorBoundary>
-        <Initialized likec4Model={likec4Model} />
+        <Initialized />
       </QueryErrorBoundary>
     </LikeC4ModelProvider>
   )
 }
 
-function Initialized({ likec4Model }: { likec4Model: LikeC4Model }) {
+const Initialized = memo(() => {
   const [{
     nodesDraggable,
     edgesEditable,
@@ -87,7 +87,6 @@ function Initialized({ likec4Model }: { likec4Model: LikeC4Model }) {
           readonly={false}
           controls
           nodesDraggable={nodesDraggable}
-          experimentalEdgeEditing={edgesEditable}
           enableFocusMode
           enableDynamicViewWalkthrough
           enableElementDetails
@@ -98,7 +97,6 @@ function Initialized({ likec4Model }: { likec4Model: LikeC4Model }) {
           enableCompareWithLatest
           showNavigationButtons
           enableNotations
-          enableRelationshipDetails
           renderIcon={IconRenderer}
           onNavigateTo={(_to, event) => {
             const to = _to as scalar.ViewId
@@ -143,4 +141,4 @@ function Initialized({ likec4Model }: { likec4Model: LikeC4Model }) {
       {error && <ErrorMessage error={error} />}
     </>
   )
-}
+})

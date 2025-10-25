@@ -6,7 +6,6 @@ import { sequenceLayoutToXY } from './xyflow-sequence/sequence-layout'
 type ConvertToXYFlowInput = {
   view: LayoutedView
   where: WhereOperator | null
-  nodesSelectable: boolean
   dynamicViewVariant: DynamicViewDisplayVariant
 }
 

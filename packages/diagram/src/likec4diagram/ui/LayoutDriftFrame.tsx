@@ -2,27 +2,18 @@ import { css } from '@likec4/styles/css'
 import { Box, HStack } from '@likec4/styles/jsx'
 import {
   Button,
-  HoverCard,
-  HoverCardDropdown,
-  HoverCardTarget,
-  Notification,
   Popover,
   PopoverDropdown,
   PopoverTarget,
-  Text,
   UnstyledButton,
 } from '@mantine/core'
 import { IconAlertTriangle } from '@tabler/icons-react'
-import { Fragment, memo } from 'react'
-import { hasAtLeast } from 'remeda'
+import { memo } from 'react'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useOptionalLikeC4Editor } from '../../editor'
-import { useCurrentView } from '../../hooks/useCurrentView'
 import {
-  type DiagramContext,
   useDiagramActorRef,
   useDiagramCompareState,
-  useDiagramContext,
 } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import type { OnLayoutTypeChange } from '../../LikeC4Diagram.props'
