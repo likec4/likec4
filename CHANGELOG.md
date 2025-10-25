@@ -1,17 +1,33 @@
 # [1.43.0](https://github.com/likec4/likec4/compare/v1.42.1...v1.43.0) (2025-10-25)
 
+### 🚀 Features
 
-### Bug Fixes
+- **Multi-metadata support**  
+  You can also use arrays for metadata values 
+  ```zig
+  model {
+    app = application 'App' {
+      metadata {
+        tags ['frontend', 'react', 'typescript']
+        environments ['dev', 'staging', 'prod']
+        version '2.1.0'
+      }
+    }
+  }
+  ```
+  
+  [📖 Documentation](https://likec4.dev/dsl/model/#array-values)
 
-* **config:** make config json schema stricter to avoid invalid configs ([#2318](https://github.com/likec4/likec4/issues/2318)) ([426c3d1](https://github.com/likec4/likec4/commit/426c3d1e542f3cde1f9637e97e7ed4e88799232c))
+  Thanks to @kieronlanning for such a great contribution  
+  PR: [#2306](https://github.com/likec4/likec4/issues/2306) and [#2313](https://github.com/likec4/likec4/issues/2313)
 
+- **Revamp landing page**  
+  ![SCR-20251025-czqz](https://github.com/user-attachments/assets/59822d1e-5892-4306-9ce7-a9e0ba57880a)
+  
 
-### Features
+### 🐞 Bug Fixes
 
-* **core:** add isAnyOf type guard ([99ad1ae](https://github.com/likec4/likec4/commit/99ad1ae02b14de70475b51fb88b770fdc0f944e6))
-* multi-metadata extends support ([3909e61](https://github.com/likec4/likec4/commit/3909e61bc56b71e7064029a3d5d96e7c10e5fe05))
-* multi-metadata support ([#2305](https://github.com/likec4/likec4/issues/2305)) ([#2306](https://github.com/likec4/likec4/issues/2306)) ([13c8806](https://github.com/likec4/likec4/commit/13c8806516203187048f6949a591e9326b953232)), closes [#7](https://github.com/likec4/likec4/issues/7) [#2247](https://github.com/likec4/likec4/issues/2247) [#2257](https://github.com/likec4/likec4/issues/2257) [#2265](https://github.com/likec4/likec4/issues/2265) [#2267](https://github.com/likec4/likec4/issues/2267) [#2270](https://github.com/likec4/likec4/issues/2270)
-* revamp landing page with responsive design and new navigation ([0ef54c2](https://github.com/likec4/likec4/commit/0ef54c2cbe0ec9c90bd05cc481c23728be95a706))
+* **config:** make json schema stricter ([#2318](https://github.com/likec4/likec4/issues/2318))
 
 
 
