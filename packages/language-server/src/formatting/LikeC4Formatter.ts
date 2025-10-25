@@ -248,7 +248,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isCustomElementProperties(node)
       || ast.isCustomRelationProperties(node)
       || ast.isElementStyleProperty(node)
-      || ast.isDynamicViewParallelSteps(node)
+      || ast.isDynamicViewBranchCollection(node)
       || ast.isModelDeployments(node)
       || ast.isDeploymentNodeBody(node)
       || ast.isDeploymentRelationBody(node)

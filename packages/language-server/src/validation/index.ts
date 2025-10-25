@@ -66,7 +66,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isRelationExprWith,
   ast.isFqnExpr,
   ast.isRelationExpr,
-  ast.isDynamicViewParallelSteps,
+  ast.isDynamicViewBranchCollection,
   ast.isDynamicStepChain,
   ast.isDynamicStepSingle,
   ast.isDeploymentViewRule,
