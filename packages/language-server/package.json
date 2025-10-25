@@ -113,7 +113,7 @@
     "@likec4/devops": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@msgpack/msgpack": "^3.1.2",
-    "@smithy/util-base64": "^4.0.0",
+    "@smithy/util-base64": "^4.3.0",
     "@types/natural-compare-lite": "catalog:utils",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:utils",
