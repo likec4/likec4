@@ -79,13 +79,13 @@ catalogs:
     "@nanostores/react": 1.0.0
     "@react-hookz/web": ^25.1.1
     "@tabler/icons-react": 3.35.0
-    "@types/react": 19.1.16
-    "@types/react-dom": 19.1.9
+    "@types/react": 19.2.2
+    "@types/react-dom": 19.2.2
     clsx: ^2.1.1
     motion: ^12.23.24
     nanostores: 1.0.1
-    react: 19.1.1
-    react-dom: 19.1.1
+    react: 19.2.0
+    react-dom: 19.2.0
     react-error-boundary: ^6.0.0
     react-shadow: ^20.6.0
   tanstack:
