@@ -492,6 +492,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
     index: {
       id: 'index',
       title: null,
+      summary: null,
       description: null,
       tags: [],
       _stage: 'parsed',
@@ -509,6 +510,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
     cloud: {
       id: 'cloud',
       title: null,
+      summary: null,
       description: null,
       tags: [],
       _stage: 'parsed',
@@ -536,6 +538,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
     prod: {
       id: 'prod',
       title: 'prod',
+      summary: null,
       description: null,
       tags: [],
       _stage: 'parsed',
