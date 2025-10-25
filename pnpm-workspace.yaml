@@ -137,7 +137,7 @@ catalogs:
     zod: ^3.25.76
   vite:
     "@vitejs/plugin-react": ^5.0.4
-    rollup: ^4.52.3
+    rollup: ^4.52.5
     vite: ^7.1.11
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.24.0
