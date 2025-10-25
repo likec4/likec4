@@ -217,7 +217,7 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-resizable-panels": "^3.0.5",
+    "react-resizable-panels": "^3.0.6",
     "react-shadow": "^20.6.0",
     "remeda": "catalog:utils",
     "semver": "^7.7.3",
