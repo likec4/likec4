@@ -1,3 +1,20 @@
+# [1.43.0](https://github.com/likec4/likec4/compare/v1.42.1...v1.43.0) (2025-10-25)
+
+
+### Bug Fixes
+
+* **config:** make config json schema stricter to avoid invalid configs ([#2318](https://github.com/likec4/likec4/issues/2318)) ([426c3d1](https://github.com/likec4/likec4/commit/426c3d1e542f3cde1f9637e97e7ed4e88799232c))
+
+
+### Features
+
+* **core:** add isAnyOf type guard ([99ad1ae](https://github.com/likec4/likec4/commit/99ad1ae02b14de70475b51fb88b770fdc0f944e6))
+* multi-metadata extends support ([3909e61](https://github.com/likec4/likec4/commit/3909e61bc56b71e7064029a3d5d96e7c10e5fe05))
+* multi-metadata support ([#2305](https://github.com/likec4/likec4/issues/2305)) ([#2306](https://github.com/likec4/likec4/issues/2306)) ([13c8806](https://github.com/likec4/likec4/commit/13c8806516203187048f6949a591e9326b953232)), closes [#7](https://github.com/likec4/likec4/issues/7) [#2247](https://github.com/likec4/likec4/issues/2247) [#2257](https://github.com/likec4/likec4/issues/2257) [#2265](https://github.com/likec4/likec4/issues/2265) [#2267](https://github.com/likec4/likec4/issues/2267) [#2270](https://github.com/likec4/likec4/issues/2270)
+* revamp landing page with responsive design and new navigation ([0ef54c2](https://github.com/likec4/likec4/commit/0ef54c2cbe0ec9c90bd05cc481c23728be95a706))
+
+
+
 ## [1.42.1](https://github.com/likec4/likec4/compare/v1.42.0...v1.42.1) (2025-10-07)
 
 ### 🐞 Bug Fixes
