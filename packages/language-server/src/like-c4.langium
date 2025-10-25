@@ -294,7 +294,7 @@ DynamicViewBody: '{'
   tags=Tags?
   props+=DynamicViewProperty*
   (
-    steps+=(DynamicViewParallelSteps | DynamicViewStep) |
+    steps+=DynamicViewStepLike |
     rules+=DynamicViewRule
   )*
 '}'
@@ -366,9 +366,22 @@ DynamicViewRule:
   ViewRuleAutoLayout
 ;
 
-DynamicViewParallelSteps:
-  ('parallel'|'par') '{'
-    (steps+=DynamicViewStep)*
+DynamicViewStepLike:
+  DynamicViewBranchCollection | DynamicViewStep
+;
+
+DynamicViewBranchCollection:
+  kind=('parallel'|'par'|'alternate'|'alt') '{'
+    (
+      paths+=DynamicViewBranchPath |
+      steps+=DynamicViewStepLike
+    )*
+  '}'
+;
+
+DynamicViewBranchPath:
+  'path' name=Id? title=String? '{'
+    steps+=DynamicViewStepLike+
   '}'
 ;
 

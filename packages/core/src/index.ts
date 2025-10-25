@@ -6,6 +6,7 @@ export type {
   ThemeColorValues,
 } from './styles'
 
+export * from './config/featureFlags'
 export * from './types'
 
 export {
