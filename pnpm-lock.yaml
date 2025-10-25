@@ -661,7 +661,7 @@ importers:
         specifier: catalog:hono
         version: 0.8.0
       import-meta-resolve:
-        specifier: ^4.1.0
+        specifier: ^4.2.0
         version: 4.2.0
       langium:
         specifier: catalog:langium
