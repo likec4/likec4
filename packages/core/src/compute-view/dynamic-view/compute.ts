@@ -1,5 +1,4 @@
 import { findLast, isTruthy, map, pipe } from 'remeda'
-import { isDynamicBranchCollectionsEnabled } from '../../config/featureFlags'
 import type { ElementModel, LikeC4Model } from '../../model'
 import type {
   AnyAux,
@@ -477,7 +476,13 @@ class DynamicViewCompute<A extends AnyAux> {
     this.actors = actors
     this.compounds = compounds
 
-    const branchFeatureEnabled = isDynamicBranchCollectionsEnabled()
+    // Check project config for branch collections feature flag
+    // Falls back to environment variable for backward compatibility
+    const configEnabled = this.model.$data.project.experimental?.dynamicBranchCollections
+    const envEnabled = typeof process !== 'undefined' && process?.env
+      ? isTruthy(process.env['LIKEC4_UNIFIED_BRANCHES'] ?? process.env['LIKEC4_EXPERIMENTAL_UNIFIED_BRANCHES'])
+      : false
+    const branchFeatureEnabled = configEnabled ?? envEnabled
 
     if (branchFeatureEnabled) {
       this.processBranchAwareSteps(viewSteps)
