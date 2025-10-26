@@ -1,6 +1,7 @@
 import { isString, isTruthy } from 'remeda'
 import type { Tagged } from 'type-fest'
 import { invariant } from '../utils'
+import type { NonEmptyArray } from './_common'
 
 export type ProjectId<T = string> = Tagged<T, 'ProjectID'>
 export function ProjectId(name: string): ProjectId {
@@ -155,21 +156,24 @@ function formatIndex(segment: StepEdgeIndex, { isFirst }: { isFirst: boolean }):
   return raw.padStart(2, '0')
 }
 
-export function stepEdgePath(indices: readonly StepEdgeIndex[]): StepEdgeId {
-  invariant(indices.length > 0, 'stepEdgePath expects at least one index')
-  const [head, ...rest] = indices as [StepEdgeIndex, ...StepEdgeIndex[]]
+export function stepEdgePath(indices: Readonly<NonEmptyArray<StepEdgeIndex>>): StepEdgeId {
+  const [head, ...rest] = indices
   const prefix = `step-${formatIndex(head, { isFirst: true })}`
   if (rest.length === 0) {
     return prefix as StepEdgeId
   }
   let id = prefix
   for (const segment of rest) {
-    const raw = typeof segment === 'number' ? segment.toString() : segment
-    if (/^\d+$/u.test(raw)) {
-      id += `.${formatIndex(raw, { isFirst: false })}`
+    if (typeof segment === 'number') {
+      id += `.${formatIndex(segment.toString(), { isFirst: false })}`
       continue
     }
-    id += raw
+    // segment is a string, check if it's numeric
+    if (/^\d+$/u.test(segment)) {
+      id += `.${formatIndex(segment, { isFirst: false })}`
+      continue
+    }
+    id += segment
   }
   return id as StepEdgeId
 }

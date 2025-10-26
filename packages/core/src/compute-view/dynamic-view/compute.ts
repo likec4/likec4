@@ -255,7 +255,7 @@ class DynamicViewCompute<A extends AnyAux> {
     }
     const innermost = branchStack[branchStack.length - 1]!
     segments.push(innermost.stepCounter + 1)
-    return stepEdgePath(segments)
+    return stepEdgePath(segments as [number, ...number[]])
   }
 
   private processLegacySteps(viewSteps: DynamicViewStep<A>[]): void {
@@ -425,8 +425,8 @@ class DynamicViewCompute<A extends AnyAux> {
       if (isDynamicStepsSeries(step)) {
         for (const item of step.__series) {
           emitAtRoot(item, rootIndex)
+          rootIndex++
         }
-        rootIndex++
         continue
       }
       if (isDynamicStep(step)) {
