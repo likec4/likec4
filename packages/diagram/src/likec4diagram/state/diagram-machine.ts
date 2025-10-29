@@ -27,6 +27,7 @@ import {
   getViewportForBounds,
 } from '@xyflow/react'
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
+import { produce } from 'immer'
 import type { MouseEvent } from 'react'
 import { clamp, first, hasAtLeast, prop } from 'remeda'
 import type { PartialDeep } from 'type-fest'
@@ -63,6 +64,7 @@ import { SeqParallelAreaColor } from '../xyflow-sequence/const'
 import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
 import {
   focusNodesEdges,
+  getControlPointForEdge,
   lastClickedNode,
   mergeXYNodesEdges,
   navigateBack,
@@ -151,6 +153,7 @@ export type Events =
   | { type: 'xyflow.viewportMoved'; viewport: Viewport; manually: boolean }
   | { type: 'xyflow.nodeClick'; node: Types.Node }
   | { type: 'xyflow.edgeClick'; edge: Types.Edge }
+  | { type: 'xyflow.edgeDoubleClick'; edge: Types.Edge }
   | { type: 'xyflow.paneClick' }
   | { type: 'xyflow.paneDblClick' }
   | { type: 'xyflow.resized' }
@@ -207,7 +210,7 @@ export type EmittedEvents =
 export type ActionArg = { context: Context; event: Events }
 
 // TODO: naming convention for actors
-const _diagramMachine = setup({
+const machine = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -238,7 +241,7 @@ const _diagramMachine = setup({
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
     'enabled: DynamicViewWalkthrough': ({ context }) => context.features.enableDynamicViewWalkthrough,
     'not readonly': ({ context }) =>
-      !(context.features.enableReadOnly || (context.toggledFeatures.enableReadOnly ?? context.features.enableReadOnly)),
+      !(context.features.enableReadOnly || context.toggledFeatures.enableReadOnly === true),
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is another view': ({ context, event }) => {
       assertEvent(event, ['update.view', 'navigate.to'])
@@ -271,7 +274,7 @@ const _diagramMachine = setup({
       return context.xyedges.some(e => e.source === event.node.id || e.target === event.node.id)
     },
     'click: selected edge': ({ event }) => {
-      assertEvent(event, 'xyflow.edgeClick')
+      assertEvent(event, ['xyflow.edgeClick', 'xyflow.edgeDoubleClick'])
       return event.edge.selected === true || event.edge.data.active === true
     },
   },
@@ -430,7 +433,7 @@ const _diagramMachine = setup({
           ...aligner.applyPosition(toNodeRect(node)),
         }
       }
-      constraints.updateXYFlowNodes()
+      constraints.updateXYFlow()
     },
     'ensure overlays actor state': enqueueActions(({ enqueue, context: { features }, system }) => {
       const enableOverlays = features.enableElementDetails || features.enableRelationshipDetails ||
@@ -531,6 +534,7 @@ const _diagramMachine = setup({
       enqueue.assign({
         xyedges: context.xyedges.map(e => {
           if (e.id === event.edge.id) {
+            // Set hovered state (will be used in emitted event)
             edge = Base.setHovered(e, true)
             return edge
           }
@@ -601,9 +605,11 @@ const _diagramMachine = setup({
       })),
     })),
     'update active walkthrough': assign(updateActiveWalkthrough),
-    'open element details': sendTo(
-      ({ system }) => typedSystem(system).overlaysActorRef!,
-      ({ context, event, self }, params?: { fqn: Fqn; fromNode?: NodeId | undefined }) => {
+    'open element details': enqueueActions(
+      ({ context, event, self, enqueue, system }, params?: { fqn: Fqn; fromNode?: NodeId | undefined }) => {
+        // sendTo(
+        //   ({ system }) => typedSystem(system).overlaysActorRef!,
+        //   ({ context, event, self }, params?: { fqn: Fqn; fromNode?: NodeId | undefined }) => {
         let initiatedFrom = null as null | {
           node: NodeId
           clientRect: Rect
@@ -616,7 +622,10 @@ const _diagramMachine = setup({
         }
         // Use from event if available
         else if (event.type === 'xyflow.nodeClick') {
-          invariant('modelFqn' in event.node.data && !!event.node.data.modelFqn, 'No modelFqn in event node data')
+          if (!('modelFqn' in event.node.data) || !event.node.data.modelFqn) {
+            console.warn('No modelFqn in clicked node data')
+            return
+          }
           subject = event.node.data.modelFqn
           fromNodeId = event.node.data.id
         }
@@ -648,13 +657,17 @@ const _diagramMachine = setup({
             clientRect,
           }
         }
-        return ({
-          type: 'open.elementDetails' as const,
-          subject,
-          currentView: context.view,
-          ...(initiatedFrom && { initiatedFrom }),
-          openSourceActor: self,
-        })
+
+        enqueue.sendTo(
+          typedSystem(system).overlaysActorRef!,
+          {
+            type: 'open.elementDetails' as const,
+            subject,
+            currentView: context.view,
+            ...(initiatedFrom && { initiatedFrom }),
+            openSourceActor: self,
+          },
+        )
       },
     ),
     'toggle feature': assign(({ context, event }) => {
@@ -736,7 +749,98 @@ const _diagramMachine = setup({
       }
     }),
   },
-}).createMachine({
+})
+
+const initializing = machine.createStateConfig({
+  on: {
+    'xyflow.init': {
+      actions: assign(({ context, event }) => ({
+        initialized: {
+          ...context.initialized,
+          xyflow: true,
+        },
+        xyflow: event.instance,
+      })),
+      target: 'isReady',
+    },
+    'update.view': {
+      actions: assign(({ context, event }) => ({
+        initialized: {
+          ...context.initialized,
+          xydata: true,
+        },
+        view: event.view,
+        xynodes: event.xynodes,
+        xyedges: event.xyedges,
+      })),
+      target: 'isReady',
+    },
+  },
+})
+
+// Navigating to another view (after `navigateTo` event)
+const navigating = machine.createStateConfig({
+  id: 'navigating',
+  entry: [
+    'closeAllOverlays',
+    'closeSearch',
+    'stopSyncLayout',
+    'trigger:NavigateTo',
+  ],
+  on: {
+    'update.view': {
+      actions: enqueueActions(({ enqueue, context, event }) => {
+        const { fromNode, toNode } = findCorrespondingNode(context, event)
+        if (fromNode && toNode) {
+          enqueue({
+            type: 'xyflow:alignNodeFromToAfterNavigate',
+            params: {
+              fromNode: fromNode.id as NodeId,
+              toPosition: {
+                x: toNode.data.x,
+                y: toNode.data.y,
+              },
+            },
+          })
+        } else {
+          enqueue('xyflow:setViewportCenter')
+        }
+        enqueue.assign(updateNavigationHistory)
+        enqueue('update XYNodesEdges')
+        enqueue('startSyncLayout')
+        enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 25 })
+      }),
+      target: '#idle',
+    },
+  },
+})
+
+const onEdgeDoubleClick = machine.createAction(
+  assign(({ context, event }) => {
+    assertEvent(event, 'xyflow.edgeDoubleClick')
+    if (!event.edge.data.controlPoints) {
+      return {}
+    }
+    return {
+      xyedges: context.xyedges.map(e => {
+        if (e.id === event.edge.id) {
+          return produce(e, draft => {
+            const cp = getControlPointForEdge(context, e)
+            draft.data.controlPoints = cp
+            if (hasAtLeast(cp, 1) && draft.data.labelBBox) {
+              draft.data.labelBBox.x = cp[0].x
+              draft.data.labelBBox.y = cp[0].y
+              draft.data.labelXY = cp[0]
+            }
+          })
+        }
+        return e
+      }),
+    }
+  }),
+)
+
+const _diagramMachine = machine.createMachine({
   initial: 'initializing',
   context: ({ input }): Context => ({
     ...input,
@@ -768,34 +872,8 @@ const _diagramMachine = setup({
     ) ?? 'diagram',
     activeWalkthrough: null,
   }),
-  // entry: ({ spawn }) => spawn(layoutActor, { id: 'layout', input: { parent: self } }),
   states: {
-    initializing: {
-      on: {
-        'xyflow.init': {
-          actions: assign(({ context, event }) => ({
-            initialized: {
-              ...context.initialized,
-              xyflow: true,
-            },
-            xyflow: event.instance,
-          })),
-          target: 'isReady',
-        },
-        'update.view': {
-          actions: assign(({ context, event }) => ({
-            initialized: {
-              ...context.initialized,
-              xydata: true,
-            },
-            view: event.view,
-            xynodes: event.xynodes,
-            xyedges: event.xyedges,
-          })),
-          target: 'isReady',
-        },
-      },
-    },
+    initializing,
     isReady: {
       always: [{
         guard: 'isReady',
@@ -887,10 +965,7 @@ const _diagramMachine = setup({
           ],
         },
         'open.elementDetails': {
-          guard: and([
-            'enabled: ElementDetails',
-            'click: node has modelFqn',
-          ]) as any,
+          guard: 'enabled: ElementDetails',
           actions: 'open element details',
         },
         'open.relationshipsBrowser': {
@@ -943,6 +1018,10 @@ const _diagramMachine = setup({
         },
         'xyflow.edgeMouseLeave': {
           actions: 'onEdgeMouseLeave',
+        },
+        'xyflow.edgeDoubleClick': {
+          guard: 'not readonly',
+          actions: [onEdgeDoubleClick],
         },
         'notations.highlight': {
           actions: {
@@ -1262,42 +1341,7 @@ const _diagramMachine = setup({
         },
       },
     },
-    // Navigating to another view (after `navigateTo` event)
-    navigating: {
-      id: 'navigating',
-      entry: [
-        'closeAllOverlays',
-        'closeSearch',
-        'stopSyncLayout',
-        'trigger:NavigateTo',
-      ],
-      on: {
-        'update.view': {
-          actions: enqueueActions(({ enqueue, context, event }) => {
-            const { fromNode, toNode } = findCorrespondingNode(context, event)
-            if (fromNode && toNode) {
-              enqueue({
-                type: 'xyflow:alignNodeFromToAfterNavigate',
-                params: {
-                  fromNode: fromNode.id as NodeId,
-                  toPosition: {
-                    x: toNode.data.x,
-                    y: toNode.data.y,
-                  },
-                },
-              })
-            } else {
-              enqueue('xyflow:setViewportCenter')
-            }
-            enqueue.assign(updateNavigationHistory)
-            enqueue('update XYNodesEdges')
-            enqueue('startSyncLayout')
-            enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 25 })
-          }),
-          target: '#idle',
-        },
-      },
-    },
+    navigating,
   },
   on: {
     'xyflow.paneClick': {

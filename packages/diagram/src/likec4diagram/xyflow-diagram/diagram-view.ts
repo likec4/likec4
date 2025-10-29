@@ -147,7 +147,7 @@ export function diagramToXY(opts: {
           isViewGroup: true,
           ...compoundData,
         },
-        dragHandle: '.likec4-compound-title',
+        dragHandle: '.likec4-compound-title-container',
       })
       continue
     }
@@ -173,7 +173,6 @@ export function diagramToXY(opts: {
               deploymentFqn: deploymentFqn,
               modelFqn,
             },
-            dragHandle: '.likec4-compound-title',
           } satisfies Types.CompoundDeploymentNode,
         )
         break
@@ -189,7 +188,6 @@ export function diagramToXY(opts: {
               ...navigateTo,
               modelFqn,
             },
-            dragHandle: '.likec4-compound-title',
           } satisfies Types.CompoundElementNode,
         )
         break

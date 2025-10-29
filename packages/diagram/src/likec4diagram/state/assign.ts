@@ -1,10 +1,12 @@
 import { type NodeId, type XYPoint, invariant, nonNullable } from '@likec4/core'
+import type { InternalNode } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
-import { isEmpty, mergeDeep, omit } from 'remeda'
+import { mergeDeep, omit } from 'remeda'
 import { assertEvent } from 'xstate'
 import { Base } from '../../base/types'
 import { type Vector, vector, VectorImpl } from '../../utils/vector'
+import { getNodeCenter } from '../custom/edges/utils'
 import type { Types } from '../types'
 import { SeqParallelAreaColor } from '../xyflow-sequence/const'
 import type { ActionArg, Context as DiagramContext } from './diagram-machine'
@@ -313,83 +315,62 @@ export function updateEdgeData({ context, event }: ActionArg): Partial<DiagramCo
   return { xyedges }
 }
 
+function getBorderPointOnVector(node: InternalNode, nodeCenter: Vector, v: Vector) {
+  const dimensions = getNodeDimensions(node)
+  const xScale = dimensions.width / 2 / v.x
+  const yScale = dimensions.height / 2 / v.y
+
+  const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
+
+  return vector(v).mul(scale).add(nodeCenter)
+}
+
+export function getControlPointForEdge(context: DiagramContext, edge: Types.Edge): [] | [XYPoint] | [XYPoint, XYPoint] {
+  const { nodeLookup } = context.xystore.getState()
+
+  const source = nodeLookup.get(edge.source)
+  const target = nodeLookup.get(edge.target)
+  if (!source || !target) {
+    return []
+  }
+
+  const sourceCenterXY = getNodeCenter(source)
+  const targetCenterXY = getNodeCenter(target)
+
+  const sourceCenter = new VectorImpl(sourceCenterXY.x, sourceCenterXY.y)
+  const targetCenter = new VectorImpl(targetCenterXY.x, targetCenterXY.y)
+
+  // Edge is a loop
+  if (source === target) {
+    const loopSize = 80
+    const centerOfTopBoundary = new VectorImpl(0, source.height || 0)
+      .mul(-0.5)
+      .add(sourceCenter)
+
+    return [
+      centerOfTopBoundary.add(new VectorImpl(-loopSize / 2.5, -loopSize)),
+      centerOfTopBoundary.add(new VectorImpl(loopSize / 2.5, -loopSize)),
+    ]
+  }
+
+  const sourceToTargetVector = targetCenter.sub(sourceCenter)
+  const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
+  const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.mul(-1))
+
+  return [sourceBorderPoint.add(targetBorderPoint.sub(sourceBorderPoint).mul(0.4))]
+}
+
 export function resetEdgeControlPoints({ context }: ActionArg): Partial<DiagramContext> {
-  const { xynodes } = context
-
-  function getNodeCenter(node: Types.Node, nodes: Types.Node[]) {
-    const dimensions = vector({ x: node.width || 0, y: node.height || 0 })
-    let position = vector(node.position)
-      .add(dimensions.mul(0.5))
-
-    let currentNode = node
-    do {
-      const parent = currentNode.parentId && nodes.find(x => x.id == currentNode.parentId)
-
-      if (!parent) {
-        break
-      }
-
-      currentNode = parent
-      position = position.add(parent.position)
-      // oxlint-disable-next-line no-constant-condition
-    } while (true)
-
-    return position
-  }
-
-  function getControlPointForEdge(edge: Types.Edge): XYPoint[] {
-    const source = xynodes.find(x => x.id == edge.source)
-    const target = xynodes.find(x => x.id == edge.target)
-    if (!source || !target) {
-      return []
-    }
-
-    const sourceCenter = getNodeCenter(source, xynodes)
-    const targetCenter = getNodeCenter(target, xynodes)
-
-    if (!sourceCenter || !targetCenter) {
-      return []
-    }
-
-    // Edge is a loop
-    if (source === target) {
-      const loopSize = 80
-      const centerOfTopBoundary = new VectorImpl(0, source.height || 0)
-        .mul(-0.5)
-        .add(sourceCenter)
-
-      return [
-        centerOfTopBoundary.add(new VectorImpl(-loopSize / 2.5, -loopSize)),
-        centerOfTopBoundary.add(new VectorImpl(loopSize / 2.5, -loopSize)),
-      ]
-    }
-
-    const sourceToTargetVector = targetCenter.sub(sourceCenter)
-    const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
-    const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.mul(-1))
-
-    return [sourceBorderPoint.add(targetBorderPoint.sub(sourceBorderPoint).mul(0.3))]
-  }
-
-  function getBorderPointOnVector(node: Types.Node, nodeCenter: Vector, v: Vector) {
-    const xScale = (node.width || 0) / 2 / v.x
-    const yScale = (node.height || 0) / 2 / v.y
-
-    const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
-
-    return vector(v).mul(scale).add(nodeCenter)
-  }
-
   return {
     xyedges: context.xyedges.map(edge => {
-      if (!edge.data.controlPoints || isEmpty(edge.data.controlPoints)) {
+      if (!edge.data.controlPoints) {
         return edge
       }
       return ({
         ...edge,
         data: {
           ...edge.data,
-          controlPoints: getControlPointForEdge(edge),
+          controlPoints: getControlPointForEdge(context, edge),
         },
       } as Types.Edge)
     }),

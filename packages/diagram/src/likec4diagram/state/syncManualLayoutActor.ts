@@ -34,7 +34,7 @@ export type Events =
   | { type: 'cancel' }
   | { type: 'stop' }
 
-const _syncManualLayoutActorLogic = setup({
+const syncManualLayout = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -51,55 +51,63 @@ const _syncManualLayoutActorLogic = setup({
   guards: {
     'same view': ({ context }) => context.parent.getSnapshot().context.view.id === context.viewId,
   },
-}).createMachine({
+})
+
+const idle = syncManualLayout.createStateConfig({
+  tags: 'ready',
+  on: {
+    sync: {
+      target: 'pending',
+    },
+  },
+})
+
+const paused = syncManualLayout.createStateConfig({
+  tags: 'pending',
+  on: {
+    sync: {
+      target: 'pending',
+    },
+  },
+})
+
+const pending = syncManualLayout.createStateConfig({
+  tags: 'pending',
+  on: {
+    sync: {
+      target: 'pending',
+      reenter: true,
+    },
+    cancel: {
+      target: 'paused',
+    },
+  },
+  after: {
+    'timeout': [{
+      guard: 'same view',
+      actions: {
+        type: 'trigger:OnChange',
+        params: ({ context }) => {
+          const change = createViewChange(context.parent.getSnapshot().context)
+          return { change }
+        },
+      },
+      target: 'synced',
+    }, {
+      target: 'stopped',
+    }],
+  },
+})
+
+const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
   initial: 'idle',
   context: ({ input }) => ({
     ...input,
   }),
   states: {
-    idle: {
-      tags: 'ready',
-      on: {
-        sync: {
-          target: 'pending',
-        },
-      },
-    },
-    paused: {
-      tags: 'pending',
-      on: {
-        sync: {
-          target: 'pending',
-        },
-      },
-    },
-    pending: {
-      tags: 'pending',
-      on: {
-        sync: {
-          target: 'pending',
-          reenter: true,
-        },
-        cancel: {
-          target: 'paused',
-        },
-      },
-      after: {
-        'timeout': [{
-          guard: 'same view',
-          actions: {
-            type: 'trigger:OnChange',
-            params: ({ context }) => {
-              const change = createViewChange(context.parent.getSnapshot().context)
-              return { change }
-            },
-          },
-          target: 'synced',
-        }, {
-          target: 'stopped',
-        }],
-      },
-    },
+    idle,
+    paused,
+    pending,
     synced: {
       tags: 'ready',
       on: {
@@ -108,7 +116,7 @@ const _syncManualLayoutActorLogic = setup({
         },
       },
     },
-    'stopped': {
+    stopped: {
       entry: assign({
         parent: null as any,
       }),
@@ -174,7 +182,7 @@ function createViewChange(parentContext: DiagramContext): ViewChange.SaveViewSna
     const sourceOrTargetMoved = movedNodes.has(xyedge.source) || movedNodes.has(xyedge.target)
     // If edge control points are not set, but the source or target node was moved
     if (controlPoints.length === 0 && sourceOrTargetMoved) {
-      controlPoints = bezierControlPoints(data)
+      controlPoints = bezierControlPoints(data.points)
     }
     if (data.points.length === 0 && controlPoints.length === 0) {
       return edge

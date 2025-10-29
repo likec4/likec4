@@ -35,8 +35,6 @@ export type BaseXYFlowProps<NodeType extends BaseNode, EdgeType extends BaseEdge
       // Omited props
       | 'defaultNodes'
       | 'defaultEdges'
-      | 'onNodeDoubleClick'
-      | 'onEdgeDoubleClick'
       | 'fitViewOptions'
     >,
     // Required props
@@ -135,7 +133,7 @@ export function BaseXYFlow<
       nodeClickDistance={3}
       paneClickDistance={3}
       elevateNodesOnSelect={false} // or edges are not visible after select\
-      selectNodesOnDrag={false}
+      // selectNodesOnDrag={false}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onMoveEnd={useCallbackRef((event, { x, y, zoom }) => {
@@ -156,52 +154,44 @@ export function BaseXYFlow<
           onNodeMouseEnter(_event, node)
           return
         }
-        if (!node.data.hovered) {
-          onNodesChange([{
-            id: node.id,
-            type: 'replace',
-            item: Base.setHovered(node, true),
-          }])
-        }
+        onNodesChange([{
+          id: node.id,
+          type: 'replace',
+          item: Base.setHovered(node, true),
+        }])
       })}
       onNodeMouseLeave={useCallbackRef((_event, node) => {
         if (onNodeMouseLeave) {
           onNodeMouseLeave(_event, node)
           return
         }
-        if (node.data.hovered) {
-          onNodesChange([{
-            id: node.id,
-            type: 'replace',
-            item: Base.setHovered(node, false),
-          }])
-        }
+        onNodesChange([{
+          id: node.id,
+          type: 'replace',
+          item: Base.setHovered(node, false),
+        }])
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
         if (onEdgeMouseEnter) {
           onEdgeMouseEnter(_event, edge)
           return
         }
-        if (!edge.data.hovered) {
-          onEdgesChange([{
-            id: edge.id,
-            type: 'replace',
-            item: Base.setHovered(edge, true),
-          }])
-        }
+        onEdgesChange([{
+          id: edge.id,
+          type: 'replace',
+          item: Base.setHovered(edge, true),
+        }])
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
         if (onEdgeMouseLeave) {
           onEdgeMouseLeave(_event, edge)
           return
         }
-        if (edge.data.hovered) {
-          onEdgesChange([{
-            id: edge.id,
-            type: 'replace',
-            item: Base.setHovered(edge, false),
-          }])
-        }
+        onEdgesChange([{
+          id: edge.id,
+          type: 'replace',
+          item: Base.setHovered(edge, false),
+        }])
       })}
       onNodeDoubleClick={stopPropagation}
       onEdgeDoubleClick={stopPropagation}

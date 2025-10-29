@@ -1,4 +1,4 @@
-import { type DiagramEdge, type NonEmptyArray, type Point, BBox } from '@likec4/core'
+import { type NonEmptyArray, type Point, BBox } from '@likec4/core'
 import { invariant } from '@likec4/core/utils'
 import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
 import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
@@ -32,8 +32,8 @@ export const isInside = (test: Rect, target: Rect) => {
   )
 }
 
-export function bezierControlPoints(diagramEdge: Pick<DiagramEdge, 'points'>) {
-  let [start, ...bezierPoints] = diagramEdge.points
+export function bezierControlPoints(points: NonEmptyArray<Point>) {
+  let [start, ...bezierPoints] = points
   invariant(start, 'start should be defined')
   const handles = [
     // start

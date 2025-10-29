@@ -187,6 +187,10 @@ export function LikeC4DiagramXYFlow({
         diagram.send({ type: 'xyflow.edgeClick', edge })
         onEdgeClick?.(diagram.findDiagramEdge(edge.id as EdgeId)!, e)
       })}
+      onEdgeDoubleClick={useCallbackRef((e, edge) => {
+        e.stopPropagation()
+        diagram.send({ type: 'xyflow.edgeDoubleClick', edge })
+      })}
       onPaneClick={useCallbackRef((e) => {
         e.stopPropagation()
         diagram.send({ type: 'xyflow.paneClick' })
@@ -200,27 +204,19 @@ export function LikeC4DiagramXYFlow({
       })}
       onNodeMouseEnter={useCallbackRef((_event, node) => {
         _event.stopPropagation()
-        if (!node.data.hovered) {
-          diagram.send({ type: 'xyflow.nodeMouseEnter', node })
-        }
+        diagram.send({ type: 'xyflow.nodeMouseEnter', node })
       })}
       onNodeMouseLeave={useCallbackRef((_event, node) => {
         _event.stopPropagation()
-        if (node.data.hovered) {
-          diagram.send({ type: 'xyflow.nodeMouseLeave', node })
-        }
+        diagram.send({ type: 'xyflow.nodeMouseLeave', node })
       })}
       onEdgeMouseEnter={useCallbackRef((event, edge) => {
         event.stopPropagation()
-        if (!edge.data.hovered) {
-          diagram.send({ type: 'xyflow.edgeMouseEnter', edge, event })
-        }
+        diagram.send({ type: 'xyflow.edgeMouseEnter', edge, event })
       })}
       onEdgeMouseLeave={useCallbackRef((event, edge) => {
         event.stopPropagation()
-        if (edge.data.hovered) {
-          diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
-        }
+        diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
       })}
       onMove={onMove}
       onMoveEnd={onMoveEnd}
@@ -249,7 +245,6 @@ export function LikeC4DiagramXYFlow({
       }}
       nodesDraggable={nodesDraggable}
       nodesSelectable={nodesSelectable}
-      edgesFocusable={false}
       elevateEdgesOnSelect={!enableReadOnly}
       {...(nodesDraggable && layoutConstraints)}
       {...props}
