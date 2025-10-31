@@ -7,12 +7,13 @@ digraph {
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
+  ordering = "in";
   nodesep = 1.528;
   ranksep = 1.667;
   pad = 0.209;
   fontname = "Arial";
   graph [
-    fontsize = 15;
+    fontsize = 20;
     labeljust = "l";
     labelloc = "t";
     margin = 50.1;
@@ -151,7 +152,6 @@ digraph {
     arrowhead = "normal";
     arrowtail = "odiamond";
     dir = "both";
-    minlen = 0;
   ];
   "graphql" -> "storage" [
     likec4_id = "cloud.backend.graphql:cloud.backend.storage";

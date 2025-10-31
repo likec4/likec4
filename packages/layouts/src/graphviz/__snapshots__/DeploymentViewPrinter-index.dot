@@ -6,6 +6,7 @@ digraph {
   rankdir = "TB";
   splines = "spline";
   outputorder = "nodesfirst";
+  ordering = "in";
   nodesep = 1.806;
   ranksep = 1.806;
   pad = 0.209;
@@ -13,7 +14,7 @@ digraph {
   newrank = true;
   clusterrank = "global";
   graph [
-    fontsize = 15;
+    fontsize = 20;
     labeljust = "l";
     labelloc = "t";
     margin = 50.1;
