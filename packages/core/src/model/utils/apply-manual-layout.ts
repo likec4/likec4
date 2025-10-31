@@ -62,10 +62,12 @@ export function applyManualLayout<
 
   const nodes = snapshot.nodes.map(node => {
     const next = nextNodes.get(node.id)
-    if (!next) {
-      return node
-    }
     return produce(node, draft => {
+      // const nodedrifts = []
+      if (!next) {
+        draft.drifts = ['not-exists']
+        return
+      }
       draft.color = next.color
       draft.kind = next.kind
       // Update title if next node has a shorter title
