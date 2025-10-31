@@ -10,6 +10,9 @@ export const tokens = defineTokens({
     },
   },
   sizes: {
+    '100%': {
+      value: '100%',
+    },
     full: {
       value: '100%',
     },

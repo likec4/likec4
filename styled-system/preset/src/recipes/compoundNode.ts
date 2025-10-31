@@ -104,10 +104,10 @@ export const compoundNode = defineRecipe({
       alignItems: 'center',
       gap: '1.5', // 6px
       left: '2.5',
-      top: '0.5',
-      right: '[30px]',
+      top: '1',
+      right: '30px',
       width: 'auto',
-      minHeight: '40px',
+      minHeight: '28px',
       [`:where(.react-flow__node.draggable) &`]: {
         pointerEvents: 'all',
         cursor: 'grab',
