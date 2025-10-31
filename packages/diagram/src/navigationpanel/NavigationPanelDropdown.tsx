@@ -415,7 +415,7 @@ function folderColumn(
         viewId: s.id,
         title: s.title ?? s.id,
         description: s.description.nonEmpty && s.description.text || null,
-        selected: s.id === context.viewModel.id,
+        selected: s.id === context.viewModel?.id,
       })),
     ],
   }
@@ -423,6 +423,9 @@ function folderColumn(
 
 const selectColumns = (context: NavigationPanelActorContext): FolderColumnData[] => {
   const viewModel = context.viewModel
+  if (!viewModel) {
+    return []
+  }
   const likec4model = viewModel.$model
   const columns = [
     folderColumn(likec4model.rootViewFolder, context),
