@@ -1078,9 +1078,6 @@ importers:
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
-      vecti:
-        specifier: ^3.1.1
-        version: 3.1.1
       xstate:
         specifier: catalog:xstate
         version: 5.23.0

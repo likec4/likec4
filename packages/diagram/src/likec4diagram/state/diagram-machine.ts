@@ -1125,8 +1125,8 @@ const _diagramMachine = machine.createMachine({
                 target: 'focused',
               },
               {
-                // TODO: xstate fails to infer the type of the guard
                 guard: and([
+                  'enabled: Readonly',
                   'enabled: ElementDetails',
                   'click: node has modelFqn',
                   or([
@@ -1387,13 +1387,22 @@ const _diagramMachine = machine.createMachine({
   },
   on: {
     'xyflow.paneClick': {
-      actions: 'emit: paneClick',
+      actions: [
+        'reset lastClickedNode',
+        'emit: paneClick',
+      ],
     },
     'xyflow.nodeClick': {
-      actions: 'emit: nodeClick',
+      actions: [
+        'assign lastClickedNode',
+        'emit: nodeClick',
+      ],
     },
     'xyflow.edgeClick': {
-      actions: 'emit: edgeClick',
+      actions: [
+        'reset lastClickedNode',
+        'emit: edgeClick',
+      ],
     },
     'xyflow.applyNodeChanges': {
       actions: assign({
