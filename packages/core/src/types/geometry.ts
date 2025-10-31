@@ -57,6 +57,15 @@ export namespace BBox {
     }
   }
 
+  export function fromRectBox(rect: RectBox): BBox {
+    return {
+      x: Math.min(rect.x1, rect.x2),
+      y: Math.min(rect.y1, rect.y2),
+      width: Math.abs(rect.x2 - rect.x1),
+      height: Math.abs(rect.y2 - rect.y1),
+    }
+  }
+
   export function toRectBox(box: BBox): RectBox {
     return {
       x1: box.x,

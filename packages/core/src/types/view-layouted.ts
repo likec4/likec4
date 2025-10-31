@@ -1,6 +1,6 @@
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
-import type { NonEmptyArray } from './_common'
+import type { NonEmptyArray, NonEmptyReadonlyArray } from './_common'
 import type { _layout, _stage, _type } from './const'
 import type { BBox, Point, XYPoint } from './geometry'
 import type {
@@ -11,6 +11,18 @@ import type {
 } from './view-common'
 import type { ComputedEdge, ComputedNode } from './view-computed'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
+
+export type DiagramNodeDriftReason =
+  | 'not-exists' // exists in snapshot but not in view, and visa versa
+  | 'label-changed' // title/description/technology changed
+  | 'relationships-changed' // has different inEdges/outEdges
+  | 'parent-changed'
+  | 'children-changed'
+  | 'become-compound'
+  | 'become-leaf'
+  | 'shape-changed'
+  | 'size-changed'
+  | 'position-changed'
 
 export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
   /**
@@ -28,6 +40,11 @@ export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>,
    * (Absolute coordinates)
    */
   labelBBox: BBox
+
+  /**
+   * List of reasons causing node drift
+   */
+  drifts?: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
 }
 
 export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> {

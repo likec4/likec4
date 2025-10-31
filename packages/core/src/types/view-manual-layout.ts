@@ -8,13 +8,6 @@ import type {
   ViewWithNotation,
 } from './view-common'
 import type { DiagramEdge, DiagramNode, LayoutedDynamicView } from './view-layouted'
-// import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
-
-export type DiagramNodeDriftReason =
-  | 'not-exists' // exists in snapshot but not in view, and visa versa
-  | 'properties-changed'
-  | 'relationships-changed'
-  | 'shape-changed'
 
 type ViewManualLayoutSnapshotPerType =
   | {
