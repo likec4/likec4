@@ -25,7 +25,7 @@ import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import { DiagramActorProvider } from './likec4diagram/state/DiagramActorProvider'
 import type { Types } from './likec4diagram/types'
 import { LikeC4Styles } from './LikeC4Styles'
-import { getViewBounds } from './utils/get-view-bounds'
+import { getViewBounds } from './utils/view-bounds'
 
 export type LikeC4DiagramProps<A extends Any = Any> = PropsWithChildren<
   & LikeC4DiagramProperties<A>
@@ -66,7 +66,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   enableElementDetails = false,
   enableRelationshipDetails = false,
   enableRelationshipBrowser = false,
-  enableCompareWithLatest = false,
+  enableCompareWithLatest = !!onLayoutTypeChange,
   nodesDraggable = !readonly,
   nodesSelectable = !readonly || enableFocusMode || !!onNavigateTo || !!onNodeClick,
   enableNotations = false,
@@ -142,7 +142,7 @@ export function LikeC4Diagram<A extends Any = Any>({
               enableVscode: !!onOpenSource,
               enableControls: controls,
               enableElementTags,
-              enableCompareWithLatest,
+              enableCompareWithLatest: enableCompareWithLatest && !!onLayoutTypeChange,
             }}
           >
             <DiagramEventHandlers

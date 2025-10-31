@@ -15,20 +15,22 @@ const edgePropsEqual = <P extends BaseEdgeProps>(
   && eq(prev.selected ?? false, next.selected ?? false)
   && eq(prev.animated ?? false, next.animated ?? false)
   && eq(prev.source, next.source)
+  && isSame(prev.sourceX, next.sourceX)
+  && isSame(prev.sourceY, next.sourceY)
   && eq(prev.sourceHandleId ?? null, next.sourceHandleId ?? null)
   && eq(prev.sourcePosition, next.sourcePosition)
   && eq(prev.target, next.target)
+  && isSame(prev.targetY, next.targetY)
+  && isSame(prev.targetX, next.targetX)
   && eq(prev.targetHandleId ?? null, next.targetHandleId ?? null)
   && eq(prev.targetPosition, next.targetPosition)
-  && isSame(prev.sourceX, next.sourceX)
-  && isSame(prev.sourceY, next.sourceY)
-  && isSame(prev.targetX, next.targetX)
-  && isSame(prev.targetY, next.targetY)
   && eq(prev.data, next.data)
 )
 
 export function memoEdge<P extends BaseEdgeProps>(
   Edge: FunctionComponent<P>,
 ): FunctionComponent<P> {
-  return memo(Edge, edgePropsEqual)
+  const Memo = memo(Edge, edgePropsEqual)
+  Memo.displayName = `MemoEdge(${Edge.displayName || Edge.name})`
+  return Memo
 }

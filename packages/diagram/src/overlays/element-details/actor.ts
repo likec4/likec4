@@ -100,10 +100,9 @@ const _elementDetailsLogic = setup({
   //   xynodes: [],
   // }),
 })
-
-export interface ElementDetailsLogic extends ActorLogicFrom<typeof _elementDetailsLogic> {
-}
-export const elementDetailsLogic: ElementDetailsLogic = _elementDetailsLogic
+type InferredMachine = typeof _elementDetailsLogic
+export interface ElementDetailsLogic extends InferredMachine {}
+export const elementDetailsLogic: ElementDetailsLogic = _elementDetailsLogic as any
 export interface ElementDetailsActorRef extends ActorRefFromLogic<ElementDetailsLogic> {
 }
 export type ElementDetailsSnapshot = SnapshotFrom<ElementDetailsLogic>

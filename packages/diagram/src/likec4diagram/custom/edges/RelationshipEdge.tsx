@@ -24,18 +24,22 @@ import { useDiagram } from '../../../hooks/useDiagram'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks/useXYFlow'
 import { roundDpr } from '../../../utils/roundDpr'
-import { vector, VectorImpl } from '../../../utils/vector'
-import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
+import { Vector, vector } from '../../../utils/vector'
+import {
+  bezierControlPoints,
+  bezierPath,
+  getNodeIntersectionFromCenterToPoint,
+  isSamePoint,
+} from '../../../utils/xyflow'
 import type { Types } from '../../types'
 import * as edgesCss from './edges.css'
-import { getNodeIntersectionFromCenterToPoint } from './utils'
 
 const curve = d3line<XYPosition>()
   .curve(curveCatmullRomOpen.alpha(0.7))
   .x(d => roundDpr(d.x))
   .y(d => roundDpr(d.y))
 
-const getLabelPosition = (path: SVGPathElement) => {
+const getEdgeCenter = (path: SVGPathElement) => {
   const dompoint = path.getPointAtLength(path.getTotalLength() * 0.5)
   return {
     x: Math.round(dompoint.x),
@@ -45,7 +49,6 @@ const getLabelPosition = (path: SVGPathElement) => {
 
 export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props) => {
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
-  const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
   const diagram = useDiagram()
   const {
@@ -63,7 +66,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     targetY,
     selected = false,
     data: {
-      id: edgeId,
       points,
       hovered = false,
       active = false,
@@ -71,7 +73,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
       labelXY,
       ...data
     },
-    style = {},
   } = props
 
   const navigateTo = enableNavigateTo ? data.navigateTo : undefined
@@ -139,8 +140,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   useRafEffect(() => {
     const path = svgPathRef.current
     if (!path || !isControlPointDragging) return
-    const point = getLabelPosition(path)
-    setLabelPos(current => isSamePoint(current, point) ? current : point)
+    setLabelPos(getEdgeCenter(path))
   }, [edgePath, isControlPointDragging])
 
   if (isControlPointDragging) {
@@ -148,134 +148,41 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     labelY = labelPos.y
   }
 
-  const onLmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
-    const { addSelectedEdges } = xyflowStore.getState()
+  const wasDiagramSyncCancelledRef = useRef(false)
 
-    addSelectedEdges([id])
-
-    const wasCanceled = diagram.cancelSaveManualLayout()
-    e.stopPropagation()
-    let hasMoved = false
-    let pointer = { x: e.clientX, y: e.clientY }
-
-    let animationFrameId: number | null = null
-
-    let cp = controlPoints.slice()
-
-    const onPointerMove = (e: PointerEvent) => {
-      const clientPoint = {
-        x: e.clientX,
-        y: e.clientY,
-      }
-      if (!isSamePoint(pointer, clientPoint)) {
-        if (!hasMoved) {
-          diagram.send({ type: 'xyflow.edgeEditingStarted', edge: props.data })
-          hasMoved = true
-          setIsControlPointDragging(true)
-        }
-        pointer = clientPoint
-        // if (animationFrameId) {
-        //   cancelAnimationFrame(animationFrameId)
-        // }
-        animationFrameId ??= requestAnimationFrame(() => {
-          animationFrameId = null
-          cp = cp.slice()
-          const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
-          cp[index] = {
-            x: Math.round(x),
-            y: Math.round(y),
-          }
-          setControlPoints(cp)
-        })
-      }
-      e.stopPropagation()
+  const onControlPointerStartMove = useCallbackRef(() => {
+    wasDiagramSyncCancelledRef.current = diagram.cancelSaveManualLayout()
+    setIsControlPointDragging(true)
+    diagram.send({ type: 'xyflow.edgeEditingStarted', edge: props.data })
+  })
+  const onControlPointerCancelMove = useCallbackRef(() => {
+    if (wasDiagramSyncCancelledRef.current) {
+      diagram.scheduleSaveManualLayout()
     }
+    wasDiagramSyncCancelledRef.current = false
+    setIsControlPointDragging(false)
+  })
 
-    const onPointerUp = (e: PointerEvent) => {
-      domNode.removeEventListener('pointermove', onPointerMove, {
-        capture: true,
-      })
-      if (hasMoved) {
-        e.stopPropagation()
-        const point = svgPathRef.current ? getLabelPosition(svgPathRef.current) : null
-        diagram.updateEdgeData(id as EdgeId, {
-          controlPoints: cp,
-          ...(labelBBox && point && {
-            labelBBox: {
-              ...labelBBox,
-              ...point,
-            },
-            labelXY: point,
-          }),
-        })
-      }
-      if (hasMoved || wasCanceled) {
-        diagram.scheduleSaveManualLayout()
-      }
-      setIsControlPointDragging(false)
-    }
-
-    const onClick = (e: MouseEvent) => {
-      e.stopPropagation()
-      e.preventDefault()
-    }
-
-    domNode.addEventListener('pointermove', onPointerMove, {
-      capture: true,
+  const onControlPointerFinishMove = useCallbackRef((points: XYPosition[]) => {
+    setControlPoints(points)
+    const point = svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
+    diagram.updateEdgeData(id as EdgeId, {
+      controlPoints: points,
+      ...(labelBBox && point && {
+        labelBBox: {
+          ...labelBBox,
+          ...point,
+        },
+        labelXY: point,
+      }),
     })
-    domNode.addEventListener('pointerup', onPointerUp, {
-      once: true,
-      capture: true,
-    })
-    // Handle click to prevent it from being handled by the edge #1945
-    domNode.addEventListener('click', onClick, {
-      capture: true,
-      once: true,
-    })
-  }
-
-  const onRmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
-    if (controlPoints.length <= 1) {
-      return
-    }
-
-    const onPointerUp = (e: PointerEvent) => {
-      const newControlPoints = controlPoints.slice()
-      newControlPoints.splice(index, 1)
-      e.stopPropagation()
-      // Defer the update to avoid conflict with the pointerup event
-      setTimeout(() => {
-        diagram.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
-        diagram.scheduleSaveManualLayout()
-      }, 10)
-    }
-
-    domNode.addEventListener('pointerup', onPointerUp, {
-      once: true,
-      capture: true,
-    })
-
-    e.stopPropagation()
-  }
-
-  const onControlPointerDown = useCallbackRef((e: ReactPointerEvent<SVGCircleElement>) => {
-    const { domNode } = xyflowStore.getState()
-    if (!domNode || e.pointerType !== 'mouse') {
-      return
-    }
-    const index = Number(e.currentTarget.getAttribute('data-control-point-index'))
-    if (isNaN(index)) {
-      throw new Error('data-control-point-index is not a number')
-    }
-
-    switch (e.button) {
-      case 0:
-        onLmbControlPointerDown(index, e, domNode)
-        break
-      case 2:
-        onRmbControlPointerDown(index, e, domNode)
-        break
-    }
+    diagram.scheduleSaveManualLayout()
+    setIsControlPointDragging(false)
+  })
+  const onControlPointerDelete = useCallbackRef((points: XYPosition[]) => {
+    setControlPoints(points)
+    diagram.updateEdgeData(id as EdgeId, { controlPoints: points })
+    diagram.scheduleSaveManualLayout()
   })
 
   /**
@@ -288,10 +195,10 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     if (e.button !== 2) {
       return
     }
-    const points: VectorImpl[] = [
-      new VectorImpl(sourceX, sourceY),
+    const points: Vector[] = [
+      new Vector(sourceX, sourceY),
       ...controlPoints.map(vector) || [],
-      new VectorImpl(targetX, targetY),
+      new Vector(targetX, targetY),
     ]
 
     let pointer = { x: e.clientX, y: e.clientY }
@@ -302,14 +209,14 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     for (let i = 0; i < points.length - 1; i++) {
       const a = points[i]!,
         b = points[i + 1]!,
-        fromCurrentToNext = b.sub(a),
-        fromCurrentToNew = newPoint.sub(a),
-        fromNextToNew = newPoint.sub(b)
+        fromCurrentToNext = b.subtract(a),
+        fromCurrentToNew = newPoint.subtract(a),
+        fromNextToNew = newPoint.subtract(b)
 
       // Is pointer above the current segment?
       if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
         // Calculate distance by approximating edge segment with a staight line
-        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).abs() / fromCurrentToNext.abs())
+        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).length() / fromCurrentToNext.length())
 
         if (distanceToEdge < minDistance) {
           minDistance = distanceToEdge
@@ -357,59 +264,209 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           {...enabledEditing && {
             onEdgePointerDown,
           }} />
-        <EdgeLabelContainer
-          edgeProps={props}
-          labelPosition={{
-            x: labelX,
-            y: labelY,
-            // translate: isModified ? 'translate(-50%, 0)' : undefined,
-          }}
-        >
-          <EdgeLabel
-            pointerEvents={enabledEditing ? 'none' : 'all'}
-            edgeProps={props}>
-            {navigateTo && (
-              <EdgeActionButton
-                onClick={e => {
-                  e.stopPropagation()
-                  diagram.navigateTo(navigateTo)
-                }} />
-            )}
-          </EdgeLabel>
-        </EdgeLabelContainer>
+        {labelBBox && (
+          <EdgeLabelContainer
+            edgeProps={props}
+            labelPosition={{ x: labelX, y: labelY }}
+          >
+            <EdgeLabel
+              pointerEvents={enabledEditing ? 'none' : 'all'}
+              edgeProps={props}>
+              {navigateTo && (
+                <EdgeActionButton
+                  onClick={e => {
+                    e.stopPropagation()
+                    diagram.navigateTo(navigateTo)
+                  }} />
+              )}
+            </EdgeLabel>
+          </EdgeLabelContainer>
+        )}
       </EdgeContainer>
       {/* Render control points above edge label  */}
       {enabledEditing && controlPoints.length > 0 && (selected || hovered || isControlPointDragging) && (
-        <EdgeLabelRenderer>
-          <EdgeContainer
-            component="svg"
-            className={edgesCss.controlPointsContainer}
-            {...props}
-            style={{
-              ...style,
-              zIndex,
-            }}
-          >
-            <g
-              onContextMenu={e => {
-                e.preventDefault()
-                e.stopPropagation()
-              }}>
-              {controlPoints.map((p, i) => (
-                <circle
-                  data-control-point-index={i}
-                  onPointerDown={onControlPointerDown}
-                  className={clsx('nodrag nopan', edgesCss.controlPoint)}
-                  key={'controlPoints' + edgeId + '#' + i}
-                  cx={Math.round(p.x)}
-                  cy={Math.round(p.y)}
-                  r={3}
-                />
-              ))}
-            </g>
-          </EdgeContainer>
-        </EdgeLabelRenderer>
+        <ControlPoints
+          edgeProps={props}
+          controlPoints={controlPoints}
+          onMove={setControlPoints}
+          onStartMove={onControlPointerStartMove}
+          onCancelMove={onControlPointerCancelMove}
+          onFinishMove={onControlPointerFinishMove}
+          onDelete={onControlPointerDelete}
+          zIndex={zIndex}
+        />
       )}
     </>
   )
 })
+RelationshipEdge.displayName = 'RelationshipEdge'
+
+function ControlPoints({
+  edgeProps,
+  controlPoints,
+  onMove,
+  onStartMove,
+  onCancelMove,
+  onFinishMove,
+  onDelete,
+  zIndex,
+}: {
+  edgeProps: Types.EdgeProps<'relationship'>
+  controlPoints: XYPosition[]
+  onMove: (points: XYPosition[]) => void
+  onStartMove: () => void
+  onCancelMove: () => void
+  onFinishMove: (points: XYPosition[]) => void
+  onDelete: (points: XYPosition[]) => void
+  zIndex: number
+}) {
+  const xyflowStore = useXYStoreApi()
+  const xyflow = useXYFlow()
+  const edgeId = edgeProps.data.id
+
+  const onLmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
+    let hasMoved = false
+    let pointer = { x: e.clientX, y: e.clientY }
+
+    let animationFrameId: number | null = null
+
+    let cp = controlPoints.slice()
+
+    const onPointerMove = (e: PointerEvent) => {
+      const clientPoint = {
+        x: e.clientX,
+        y: e.clientY,
+      }
+      if (!isSamePoint(pointer, clientPoint)) {
+        if (!hasMoved) {
+          hasMoved = true
+          onStartMove()
+        }
+        pointer = clientPoint
+        animationFrameId ??= requestAnimationFrame(() => {
+          animationFrameId = null
+          cp = cp.slice()
+          const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
+          cp[index] = {
+            x: Math.round(x),
+            y: Math.round(y),
+          }
+          onMove(cp)
+        })
+      }
+      e.stopPropagation()
+    }
+
+    const onClick = (e: MouseEvent) => {
+      e.stopPropagation()
+      e.preventDefault()
+    }
+
+    const onPointerUp = (e: PointerEvent) => {
+      e.stopPropagation()
+      domNode.removeEventListener('pointermove', onPointerMove, {
+        capture: true,
+      })
+      domNode.removeEventListener('click', onClick, {
+        capture: true,
+      })
+      if (hasMoved) {
+        onFinishMove(cp)
+      } else {
+        onCancelMove()
+      }
+    }
+
+    domNode.addEventListener('pointermove', onPointerMove, {
+      capture: true,
+    })
+    domNode.addEventListener('pointerup', onPointerUp, {
+      once: true,
+      capture: true,
+    })
+    // Handle click to prevent it from being handled by the edge #1945
+    domNode.addEventListener('click', onClick, {
+      capture: true,
+      once: true,
+    })
+  }
+
+  const onRmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
+    if (controlPoints.length <= 1) {
+      return
+    }
+    e.stopPropagation()
+
+    const onPointerUp = (e: PointerEvent) => {
+      e.stopPropagation()
+      // Defer the update to avoid conflict with the pointerup event
+      setTimeout(() => {
+        const newControlPoints = controlPoints.slice()
+        newControlPoints.splice(index, 1)
+        onDelete(newControlPoints)
+      }, 10)
+    }
+
+    domNode.addEventListener('pointerup', onPointerUp, {
+      once: true,
+      capture: true,
+    })
+  }
+
+  const onControlPointerDown = useCallbackRef((e: ReactPointerEvent<SVGCircleElement>) => {
+    const { domNode, addSelectedEdges } = xyflowStore.getState()
+    if (!domNode || e.pointerType !== 'mouse') {
+      return
+    }
+    const index = Number(e.currentTarget.getAttribute('data-control-point-index'))
+    if (isNaN(index)) {
+      throw new Error('data-control-point-index is not a number')
+    }
+
+    switch (e.button) {
+      case 0: {
+        e.stopPropagation()
+        addSelectedEdges([edgeId])
+        onLmbControlPointerDown(index, e, domNode)
+        break
+      }
+      case 2:
+        onRmbControlPointerDown(index, e, domNode)
+        break
+    }
+  })
+
+  return (
+    <EdgeLabelRenderer>
+      <EdgeContainer
+        component="svg"
+        className={edgesCss.controlPointsContainer}
+        {...edgeProps}
+        style={{
+          ...edgeProps.style,
+          zIndex,
+        }}
+      >
+        <g
+          onContextMenu={stopAndPrevent}>
+          {controlPoints.map((p, i) => (
+            <circle
+              data-control-point-index={i}
+              onPointerDown={onControlPointerDown}
+              className={clsx('nodrag nopan', edgesCss.controlPoint)}
+              key={'controlPoints' + edgeId + '#' + i}
+              cx={Math.round(p.x)}
+              cy={Math.round(p.y)}
+              r={3}
+            />
+          ))}
+        </g>
+      </EdgeContainer>
+    </EdgeLabelRenderer>
+  )
+}
+
+const stopAndPrevent = (e: React.MouseEvent) => {
+  e.stopPropagation()
+  e.preventDefault()
+}

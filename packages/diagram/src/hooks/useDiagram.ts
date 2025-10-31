@@ -2,6 +2,7 @@ import type * as t from '@likec4/core/types'
 import type {
   DynamicViewDisplayVariant,
   NodeNotation as ElementNotation,
+  ViewChange,
 } from '@likec4/core/types'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
@@ -120,7 +121,7 @@ export interface DiagramApi<A extends Any = Unknown> {
   highlightNotation(notation: ElementNotation, kind?: string): void
   unhighlightNotation(): void
   openSearch(searchValue?: string): void
-
+  triggerChange(viewChange: ViewChange): void
   /**
    * Switch dynamic view display variant
    */
@@ -184,8 +185,13 @@ export function useDiagram<A extends Any = Unknown>(): DiagramApi<A> {
      */
     cancelSaveManualLayout: () => {
       const syncState = actor.getSnapshot().children.syncLayout?.getSnapshot().value
-      actor.send({ type: 'saveManualLayout.cancel' })
-      return syncState === 'pending' || syncState === 'paused'
+      const isPending = syncState === 'pending' || syncState === 'paused'
+      if (isPending) {
+        actor.send({ type: 'saveManualLayout.pause' })
+      } else {
+        actor.send({ type: 'saveManualLayout.cancel' })
+      }
+      return isPending
     },
 
     align: (mode: AlignmentMode) => {
@@ -255,6 +261,10 @@ export function useDiagram<A extends Any = Unknown>(): DiagramApi<A> {
 
     openSearch: (searchValue?: string) => {
       actor.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
+    },
+
+    triggerChange: (viewChange: ViewChange) => {
+      actor.send({ type: 'emit.onChange', viewChange })
     },
 
     switchDynamicViewVariant: (variant: DynamicViewDisplayVariant) => {

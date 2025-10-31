@@ -1,11 +1,14 @@
-import type { ViewChange, ViewId } from '@likec4/core/types'
+import type { DiagramEdge, ViewChange, ViewId } from '@likec4/core/types'
 import { type Rect, boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
-import { hasAtLeast, indexBy, map } from 'remeda'
+import { hasAtLeast, indexBy, map, omit } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRef,
+  type ActorRefFromLogic,
   type MachineSnapshot,
+  type SnapshotFrom,
   assign,
+  enqueueActions,
   setup,
 } from 'xstate'
 import { bezierControlPoints, isSamePoint } from '../../utils'
@@ -31,6 +34,8 @@ export type Context = Readonly<
 export type Events =
   | { type: 'sync' }
   | { type: 'synced' }
+  | { type: 'pause' }
+  | { type: 'resume' }
   | { type: 'cancel' }
   | { type: 'stop' }
 
@@ -43,10 +48,6 @@ const syncManualLayout = setup({
   },
   delays: {
     'timeout': 1_000,
-  },
-  actions: {
-    'trigger:OnChange': (_, _params: { change: ViewChange }) => {
-    },
   },
   guards: {
     'same view': ({ context }) => context.parent.getSnapshot().context.view.id === context.viewId,
@@ -65,8 +66,14 @@ const idle = syncManualLayout.createStateConfig({
 const paused = syncManualLayout.createStateConfig({
   tags: 'pending',
   on: {
+    resume: {
+      target: 'pending',
+    },
     sync: {
       target: 'pending',
+    },
+    cancel: {
+      target: 'idle',
     },
   },
 })
@@ -78,24 +85,46 @@ const pending = syncManualLayout.createStateConfig({
       target: 'pending',
       reenter: true,
     },
+    resume: {
+      target: 'pending',
+      reenter: true,
+    },
     cancel: {
+      target: 'idle',
+    },
+    pause: {
       target: 'paused',
     },
   },
   after: {
     'timeout': [{
       guard: 'same view',
-      actions: {
-        type: 'trigger:OnChange',
-        params: ({ context }) => {
-          const change = createViewChange(context.parent.getSnapshot().context)
-          return { change }
-        },
-      },
-      target: 'synced',
+      target: 'syncing',
     }, {
       target: 'stopped',
     }],
+  },
+})
+
+const syncing = syncManualLayout.createStateConfig({
+  always: {
+    actions: enqueueActions(({ context, enqueue }) => {
+      const parentContext = context.parent.getSnapshot().context
+      enqueue.sendTo(context.parent, {
+        type: 'emit.onChange',
+        viewChange: createViewChange(parentContext),
+      })
+    }),
+    target: 'synced',
+  },
+})
+
+const synced = syncManualLayout.createStateConfig({
+  tags: 'ready',
+  on: {
+    sync: {
+      target: 'pending',
+    },
   },
 })
 
@@ -108,14 +137,8 @@ const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
     idle,
     paused,
     pending,
-    synced: {
-      tags: 'ready',
-      on: {
-        sync: {
-          target: 'pending',
-        },
-      },
-    },
+    syncing,
+    synced,
     stopped: {
       entry: assign({
         parent: null as any,
@@ -133,9 +156,16 @@ const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
   },
 })
 
-export interface SyncLayoutActorLogic extends ActorLogicFrom<typeof _syncManualLayoutActorLogic> {}
+/**
+ * Here is a trick to reduce inference types
+ */
+type InferredMachine = ActorLogicFrom<typeof _syncManualLayoutActorLogic>
+export interface SyncLayoutActorLogic extends InferredMachine {}
 
-export const syncManualLayoutActorLogic: SyncLayoutActorLogic = _syncManualLayoutActorLogic
+export type SyncLayoutActorRef = ActorRefFromLogic<SyncLayoutActorLogic>
+export type SyncLayoutActorSnapshot = SnapshotFrom<SyncLayoutActorLogic>
+
+export const syncManualLayoutActorLogic: SyncLayoutActorLogic = _syncManualLayoutActorLogic as any
 
 function createViewChange(parentContext: DiagramContext): ViewChange.SaveViewSnapshot {
   const { view, xynodes, xyedges, xystore } = parentContext
@@ -187,8 +217,8 @@ function createViewChange(parentContext: DiagramContext): ViewChange.SaveViewSna
     if (data.points.length === 0 && controlPoints.length === 0) {
       return edge
     }
-    const _updated = {
-      ...edge,
+    const _updated: DiagramEdge = {
+      ...omit(edge, ['controlPoints']),
       points: data.points,
     }
     if (data.labelXY && data.labelBBox) {

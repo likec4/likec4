@@ -6,9 +6,11 @@ import * as m from 'motion/react-m'
 import type { DiagramContext } from '../../hooks/useDiagram'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
 
-const selector = (state: DiagramContext) => ({
-  visible: state.features.enableReadOnly !== true,
-  isReadOnly: state.toggledFeatures.enableReadOnly ?? state.features.enableReadOnly,
+const selector = (ctx: DiagramContext) => ({
+  visible: ctx.features.enableReadOnly !== true &&
+    // Disable toggle in sequence mode
+    (ctx.view._type !== 'dynamic' || ctx.dynamicViewVariant !== 'sequence'),
+  isReadOnly: ctx.toggledFeatures.enableReadOnly ?? ctx.features.enableReadOnly,
 })
 
 export const ToggleReadonly = () => {
@@ -51,7 +53,6 @@ export const ToggleReadonly = () => {
       {isReadOnly ? <IconLock size={14} stroke={2} /> : <IconLockOpen2 size={14} stroke={2} />}
       {isReadOnly && (
         <m.div
-          // layout="position"
           className={css({
             fontSize: '11px',
             fontWeight: 600,

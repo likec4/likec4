@@ -3,10 +3,11 @@ import { Box, SegmentedControl } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import type { Types } from '../../../types'
-import type { OnStyleChange } from './_shared'
-import { BrowseRelationshipsButton, GoToSourceButton, useHandlers } from './_shared'
+import { BrowseRelationshipsButton, GoToSourceButton } from './_shared'
 import { ColorButton } from './ColorButton'
 import { Toolbar } from './Toolbar'
+import type { OnStyleChange } from './types'
+import { useHandlers } from './useHandlers'
 
 export function CompoundElementToolbar(props: Types.NodeProps<'compound-element'>) {
   const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()

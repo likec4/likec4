@@ -33,9 +33,6 @@ import { clamp, first, hasAtLeast, prop } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import type {
   ActorLogicFrom,
-  ActorRef,
-  AnyEventObject,
-  Snapshot,
 } from 'xstate'
 import {
   and,
@@ -64,12 +61,12 @@ import { SeqParallelAreaColor } from '../xyflow-sequence/const'
 import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
 import {
   focusNodesEdges,
-  getControlPointForEdge,
   lastClickedNode,
   mergeXYNodesEdges,
   navigateBack,
   navigateForward,
   resetEdgeControlPoints,
+  resetEdgesControlPoints,
   updateActiveWalkthrough,
   updateEdgeData,
   updateNavigationHistory,
@@ -77,7 +74,7 @@ import {
 } from './assign'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { DiagramToggledFeaturesPersistence } from './persistence'
-import { type Events as SyncLayoutEvents, syncManualLayoutActorLogic } from './syncManualLayoutActor'
+import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import { activeSequenceBounds, findDiagramEdge, findDiagramNode, focusedBounds, typedSystem } from './utils'
 
 export interface NavigationHistory {
@@ -135,8 +132,6 @@ export interface Context extends Input {
   viewportBeforeFocus: null | Viewport
   xyflow: XYFlowInstance | null
 
-  syncLayoutActorRef: null | ActorRef<Snapshot<unknown>, SyncLayoutEvents, AnyEventObject>
-
   // If Dynamic View
   dynamicViewVariant: DynamicViewDisplayVariant
   activeWalkthrough: null | {
@@ -181,6 +176,8 @@ export type Events =
   | { type: 'layout.resetEdgeControlPoints' }
   | { type: 'layout.resetManualLayout' }
   | { type: 'saveManualLayout.schedule' }
+  | { type: 'saveManualLayout.pause' }
+  | { type: 'saveManualLayout.resume' }
   | { type: 'saveManualLayout.cancel' }
   | { type: 'focus.node'; nodeId: NodeId }
   | { type: 'switch.dynamicViewVariant'; variant: DynamicViewDisplayVariant }
@@ -192,6 +189,7 @@ export type Events =
   | { type: 'tag.highlight'; tag: string }
   | { type: 'tag.unhighlight' }
   | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
+  | { type: 'emit.onChange'; viewChange: ViewChange }
 
 export type EmittedEvents =
   | { type: 'initialized'; instance: XYFlowInstance }
@@ -206,8 +204,13 @@ export type EmittedEvents =
   | { type: 'walkthroughStarted'; edge: Types.Edge }
   | { type: 'walkthroughStep'; edge: Types.Edge }
   | { type: 'walkthroughStopped' }
+  | { type: 'onChange'; viewChange: ViewChange }
 
 export type ActionArg = { context: Context; event: Events }
+
+const isReadOnly = (context: Context) =>
+  (context.features.enableReadOnly || context.toggledFeatures.enableReadOnly === true) &&
+  (context.view._type !== 'dynamic' || context.dynamicViewVariant !== 'sequence')
 
 // TODO: naming convention for actors
 const machine = setup({
@@ -233,15 +236,15 @@ const machine = setup({
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
     'enabled: FitView': ({ context }) => context.features.enableFitView,
     'enabled: FocusMode': ({ context }) =>
-      (context.features.enableReadOnly || !!context.toggledFeatures.enableReadOnly) &&
-      (context.view._type !== 'dynamic' || context.dynamicViewVariant !== 'sequence'),
-    'enabled: Readonly': ({ context }) => context.features.enableReadOnly || !!context.toggledFeatures.enableReadOnly,
+      ((context.toggledFeatures.enableFocusMode ?? context.features.enableFocusMode) === true) &&
+      isReadOnly(context),
+    'enabled: Readonly': ({ context }) => isReadOnly(context),
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'enabled: Search': ({ context }) => context.features.enableSearch,
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
-    'enabled: DynamicViewWalkthrough': ({ context }) => context.features.enableDynamicViewWalkthrough,
-    'not readonly': ({ context }) =>
-      !(context.features.enableReadOnly || context.toggledFeatures.enableReadOnly === true),
+    'enabled: DynamicViewWalkthrough': ({ context }) =>
+      isReadOnly(context) && context.features.enableDynamicViewWalkthrough,
+    'not readonly': ({ context }) => !isReadOnly(context),
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is another view': ({ context, event }) => {
       assertEvent(event, ['update.view', 'navigate.to'])
@@ -283,8 +286,6 @@ const machine = setup({
       type: 'navigateTo',
       viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
     })),
-    'trigger:OnChange': (_, _params: { change: ViewChange }) => {
-    },
     'assign lastClickedNode': assign(({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return {
@@ -493,19 +494,57 @@ const machine = setup({
         type: 'close.all',
       },
     ),
-    'startSyncLayout': assign(({ context, spawn, self }) => ({
-      syncLayoutActorRef: spawn('syncManualLayoutActorLogic', {
-        id: 'syncLayout',
-        input: { parent: self, viewId: context.view.id },
-      }),
-    })),
 
-    'stopSyncLayout': enqueueActions(({ context, enqueue }) => {
-      enqueue.sendTo(context.syncLayoutActorRef!, { type: 'stop' })
-      enqueue.stopChild(context.syncLayoutActorRef!)
-      enqueue.assign({
-        syncLayoutActorRef: null as any,
+    'stopSyncLayout': enqueueActions(({ enqueue, system }) => {
+      const syncLayoutActor = typedSystem(system).syncLayoutActorRef
+      if (!syncLayoutActor) return
+      enqueue.sendTo(syncLayoutActor, { type: 'stop' })
+      enqueue.stopChild(syncLayoutActor)
+    }),
+
+    'startSyncLayout': enqueueActions(({ context, enqueue, system, self }) => {
+      const syncLayoutActor = typedSystem(system).syncLayoutActorRef
+      if (syncLayoutActor) {
+        enqueue.stopChild(syncLayoutActor)
+      }
+      enqueue.spawnChild('syncManualLayoutActorLogic', {
+        id: 'syncLayout',
+        systemId: 'syncLayout',
+        input: {
+          parent: self,
+          viewId: context.view.id,
+        },
       })
+    }),
+
+    'delegate to syncLayoutActor': enqueueActions(({ system, enqueue, event }) => {
+      const syncLayoutActor = typedSystem(system).syncLayoutActorRef
+      if (!syncLayoutActor) {
+        console.warn('syncLayoutActor is not running')
+        return
+      }
+      switch (event.type) {
+        case 'saveManualLayout.schedule': {
+          enqueue.sendTo(syncLayoutActor, { type: 'sync' })
+          break
+        }
+        case 'saveManualLayout.pause': {
+          enqueue.sendTo(syncLayoutActor, { type: 'pause' })
+          break
+        }
+        case 'saveManualLayout.resume': {
+          enqueue.sendTo(syncLayoutActor, { type: 'resume' })
+          break
+        }
+        case 'saveManualLayout.cancel': {
+          enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
+          break
+        }
+        default: {
+          console.warn(`Unexpected event type: ${event.type} in action 'delegate to syncLayoutActor'`)
+          break
+        }
+      }
     }),
 
     'onNodeMouseEnter': assign(({ context }, params: { node: Types.Node }) => {
@@ -742,6 +781,18 @@ const machine = setup({
       type: 'openSource',
       params: _params,
     })),
+    'emit: onChange': enqueueActions(({ enqueue, event }) => {
+      assertEvent(event, 'emit.onChange')
+      if (event.viewChange.op === 'save-view-snapshot') {
+        enqueue.assign({
+          view: event.viewChange.layout,
+        })
+      }
+      enqueue.emit({
+        type: 'onChange',
+        viewChange: event.viewChange,
+      })
+    }),
     'assign: dynamicViewVariant': assign(({ event }) => {
       assertEvent(event, 'switch.dynamicViewVariant')
       return {
@@ -821,11 +872,12 @@ const onEdgeDoubleClick = machine.createAction(
     if (!event.edge.data.controlPoints) {
       return {}
     }
+    const { nodeLookup } = context.xystore.getState()
     return {
       xyedges: context.xyedges.map(e => {
         if (e.id === event.edge.id) {
           return produce(e, draft => {
-            const cp = getControlPointForEdge(context, e)
+            const cp = resetEdgeControlPoints(nodeLookup, e)
             draft.data.controlPoints = cp
             if (hasAtLeast(cp, 1) && draft.data.labelBBox) {
               draft.data.labelBBox.x = cp[0].x
@@ -866,7 +918,6 @@ const _diagramMachine = machine.createMachine({
     },
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
-    syncLayoutActorRef: null,
     dynamicViewVariant: input.dynamicViewVariant ?? (
       input.view._type === 'dynamic' ? input.view.variant : 'diagram'
     ) ?? 'diagram',
@@ -938,7 +989,7 @@ const _diagramMachine = machine.createMachine({
         'layout.resetEdgeControlPoints': {
           guard: 'not readonly',
           actions: [
-            assign(resetEdgeControlPoints),
+            assign(resetEdgesControlPoints),
             raise({ type: 'saveManualLayout.schedule' }),
           ],
         },
@@ -946,14 +997,12 @@ const _diagramMachine = machine.createMachine({
           guard: 'not readonly',
           actions: [
             raise({ type: 'saveManualLayout.cancel' }),
-            {
-              type: 'trigger:OnChange',
-              params: {
-                change: {
-                  op: 'reset-manual-layout',
-                },
+            emit({
+              type: 'onChange',
+              viewChange: {
+                op: 'reset-manual-layout',
               },
-            },
+            }),
           ],
         },
         'xyflow.resized': {
@@ -1040,15 +1089,7 @@ const _diagramMachine = machine.createMachine({
         },
         'saveManualLayout.*': {
           guard: 'not readonly',
-          actions: sendTo((c) => c.context.syncLayoutActorRef!, ({ event }) => {
-            if (event.type === 'saveManualLayout.schedule') {
-              return { type: 'sync' }
-            }
-            if (event.type === 'saveManualLayout.cancel') {
-              return { type: 'cancel' }
-            }
-            nonexhaustive(event)
-          }),
+          actions: 'delegate to syncLayoutActor',
         },
         'open.search': {
           guard: 'enabled: Search',
@@ -1128,6 +1169,7 @@ const _diagramMachine = machine.createMachine({
             },
             'xyflow.edgeClick': {
               guard: and([
+                'enabled: Readonly',
                 'is dynamic view',
                 'enabled: DynamicViewWalkthrough',
                 'click: selected edge',
@@ -1388,7 +1430,7 @@ const _diagramMachine = machine.createMachine({
     'update.view': {
       actions: [
         assign(updateNavigationHistory),
-        enqueueActions(({ enqueue, event, check, context }) => {
+        enqueueActions(({ enqueue, event, check, context, system }) => {
           const isAnotherView = check('is another view')
           if (isAnotherView) {
             enqueue('stopSyncLayout')
@@ -1420,7 +1462,7 @@ const _diagramMachine = machine.createMachine({
           }
 
           enqueue('update XYNodesEdges')
-          enqueue.sendTo(c => c.context.syncLayoutActorRef!, { type: 'synced' })
+          enqueue.sendTo(typedSystem(system).syncLayoutActorRef!, { type: 'synced' })
 
           const nextView = event.view
 
@@ -1464,6 +1506,10 @@ const _diagramMachine = machine.createMachine({
     'switch.dynamicViewVariant': {
       actions: 'assign: dynamicViewVariant',
     },
+    'emit.onChange': {
+      guard: 'not readonly',
+      actions: 'emit: onChange',
+    },
   },
   exit: [
     'stopSyncLayout',
@@ -1480,7 +1526,6 @@ const _diagramMachine = machine.createMachine({
         xydata: false,
         xyflow: false,
       },
-      syncLayoutActorRef: null as any,
     }),
   ],
 })
@@ -1512,6 +1557,6 @@ function findCorrespondingNode(context: Context, event: { view: DiagramView; xyn
 /**
  * Here is a trick to reduce inference types
  */
-type InferredDiagramMachine = ActorLogicFrom<typeof _diagramMachine>
+type InferredDiagramMachine = typeof _diagramMachine
 export interface DiagramMachineLogic extends InferredDiagramMachine {}
-export const diagramMachine: DiagramMachineLogic = _diagramMachine
+export const diagramMachine: DiagramMachineLogic = _diagramMachine as any

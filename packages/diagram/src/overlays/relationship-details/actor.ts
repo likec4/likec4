@@ -417,9 +417,11 @@ const _relationshipDetailsLogic = setup({
   },
 })
 
-export interface RelationshipDetailsLogic extends ActorLogicFrom<typeof _relationshipDetailsLogic> {
+type InferredMachine = typeof _relationshipDetailsLogic
+
+export interface RelationshipDetailsLogic extends InferredMachine {
 }
-export const relationshipDetailsLogic: RelationshipDetailsLogic = _relationshipDetailsLogic
+export const relationshipDetailsLogic: RelationshipDetailsLogic = _relationshipDetailsLogic as any
 export interface RelationshipDetailsActorRef extends ActorRefFromLogic<RelationshipDetailsLogic> {
 }
 export type RelationshipDetailsSnapshot = SnapshotFrom<RelationshipDetailsLogic>

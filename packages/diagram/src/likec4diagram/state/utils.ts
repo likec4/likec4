@@ -7,10 +7,14 @@ import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { Context } from './diagram-machine'
+import type { SyncLayoutActorRef } from './syncManualLayoutActor'
 import type { DiagramActorRef, System } from './types'
 
 export function typedSystem(system: ActorSystem<any>) {
   return {
+    get syncLayoutActorRef(): SyncLayoutActorRef | null {
+      return (system as System).get('syncLayout') ?? null
+    },
     get overlaysActorRef(): OverlaysActorRef | null {
       return (system as System).get('overlays') ?? null
     },

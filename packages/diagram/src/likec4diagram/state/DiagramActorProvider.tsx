@@ -1,12 +1,13 @@
-import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
+import type { DiagramView, DynamicViewDisplayVariant, ViewId, WhereOperator } from '@likec4/core/types'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, memo, useEffect, useMemo, useRef } from 'react'
+import { type PropsWithChildren, memo, useEffect, useRef } from 'react'
+import { isNullish } from 'remeda'
 import type { Subscription } from 'xstate'
 import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
-import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
+import { type EnabledFeatures, DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { CurrentViewModelContext } from '../../context/LikeC4ModelContext'
 import { DiagramActorContextProvider } from '../../hooks/safeContext'
 import { useDiagram, useOnDiagramEvent } from '../../hooks/useDiagram'
@@ -15,8 +16,7 @@ import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPadding } from '../../LikeC4Diagram.props'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
-import { type DiagramMachineLogic, diagramMachine } from './diagram-machine'
-import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
+import { diagramMachine } from './diagram-machine'
 import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
 export function DiagramActorProvider({
@@ -35,31 +35,10 @@ export function DiagramActorProvider({
   where: WhereOperator | null
   dynamicViewVariant: DynamicViewDisplayVariant | undefined
 }>) {
-  const { handlersRef } = useDiagramEventHandlers()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
-  const machineRef = useRef<DiagramMachineLogic | null>(null)
-  if (!machineRef.current) {
-    machineRef.current = diagramMachine.provide({
-      actions: {
-        'trigger:OnChange': ((_, params) => {
-          handlersRef.current.onChange?.(params)
-        }),
-      },
-      actors: {
-        syncManualLayoutActorLogic: syncManualLayoutActorLogic.provide({
-          actions: {
-            'trigger:OnChange': ((_, params) => {
-              handlersRef.current.onChange?.(params)
-            }),
-          },
-        }),
-      },
-    })
-  }
-
   const actorRef = useActorRef(
-    machineRef.current,
+    diagramMachine,
     {
       id: `diagram`,
       systemId: 'diagram',
@@ -112,20 +91,32 @@ export function DiagramActorProvider({
   )
 }
 
-const selectFromActor = (state: DiagramActorSnapshot) => {
-  const isReadOnly = state.context.features.enableReadOnly || !!state.context.activeWalkthrough
-  if (isReadOnly !== state.context.toggledFeatures.enableReadOnly) {
-    return {
-      toggledFeatures: {
-        ...state.context.toggledFeatures,
-        enableReadOnly: true,
-      },
-      viewId: state.context.view.id,
-    }
-  }
+const selectFromActor = (
+  { context }: DiagramActorSnapshot,
+): {
+  toggledFeatures: Partial<EnabledFeatures>
+  viewId: ViewId
+} => {
+  const toggledFeatures = context.toggledFeatures
+  const enableReadOnly = context.features.enableReadOnly
+    || toggledFeatures.enableReadOnly
+    // Active walkthrough forces readonly
+    || !!context.activeWalkthrough
+    // if dynamic view display mode is sequence, enable readonly
+    || (context.dynamicViewVariant === 'sequence' && context.view._type === 'dynamic')
+
+  // Compare with latest is disabled during active walkthrough
+  const enableCompareWithLatest =
+    (context.toggledFeatures.enableCompareWithLatest ?? context.features.enableCompareWithLatest) &&
+    isNullish(context.activeWalkthrough)
+
   return {
-    toggledFeatures: state.context.toggledFeatures,
-    viewId: state.context.view.id,
+    toggledFeatures: {
+      ...toggledFeatures,
+      enableCompareWithLatest,
+      enableReadOnly,
+    },
+    viewId: context.view.id,
   }
 }
 const compareSelected = <T extends ReturnType<typeof selectFromActor>>(a: T, b: T): boolean => {
@@ -182,11 +173,13 @@ const DiagramActorEventListener = memo(() => {
   const {
     onNavigateTo,
     onOpenSource,
+    onChange,
     handlersRef,
   } = useDiagramEventHandlers()
 
   useOnDiagramEvent('openSource', ({ params }) => onOpenSource?.(params))
   useOnDiagramEvent('navigateTo', ({ viewId }) => onNavigateTo?.(viewId))
+  useOnDiagramEvent('onChange', ({ viewChange }) => onChange?.({ change: viewChange }))
 
   const wasEmitted = useRef(false)
 
@@ -200,10 +193,11 @@ const DiagramActorEventListener = memo(() => {
           handlersRef.current.onInitialized?.({ diagram, xyflow })
         } catch (error) {
           console.error(error)
+        } finally {
+          wasEmitted.current = true
+          subscription?.unsubscribe()
+          subscription = null
         }
-        wasEmitted.current = true
-        subscription?.unsubscribe()
-        subscription = null
       },
     )
 

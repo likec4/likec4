@@ -8,6 +8,7 @@ import {
 import type { HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
+import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
 import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
@@ -102,6 +103,7 @@ function DynamicViewModeSwitcher({
 }
 
 export function DynamicViewControls() {
+  const { enableReadOnly } = useEnabledFeatures()
   const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
   const diagram = useDiagram()
   return (
@@ -113,7 +115,7 @@ export function DynamicViewControls() {
           diagram.switchDynamicViewVariant(mode)
         }}
       />
-      <StartWalkthroughButton key="trigger-dynamic-walkthrough" />
+      {enableReadOnly && <StartWalkthroughButton key="trigger-dynamic-walkthrough" />}
     </>
   )
 }

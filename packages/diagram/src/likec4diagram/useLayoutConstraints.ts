@@ -10,11 +10,10 @@ import { type EdgeLookup, getNodeDimensions } from '@xyflow/system'
 import { produce } from 'immer'
 import { useMemo, useRef } from 'react'
 import { filter, forEach, hasAtLeast, map, pipe } from 'remeda'
-import { Vector } from 'vecti'
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
 import { useDiagram } from '../hooks/useDiagram'
-import { bezierControlPoints, isSamePoint } from '../utils'
-import { getNodeCenter } from './custom/edges/utils'
+import { bezierControlPoints, vector } from '../utils'
+import { getNodeIntersection } from '../utils/xyflow'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
@@ -65,14 +64,11 @@ abstract class Rect {
     }
   }
 
-  get diff(): XYPosition | null {
-    if (!isSamePoint(this.positionAbsolute, this.initialPositionAbsolute)) {
-      return {
-        x: this.positionAbsolute.x - this.initialX,
-        y: this.positionAbsolute.y - this.initialY,
-      }
+  get diff(): XYPosition {
+    return {
+      x: this.positionAbsolute.x - this.initialX,
+      y: this.positionAbsolute.y - this.initialY,
     }
-    return null
   }
 
   // Position relative to parent
@@ -133,7 +129,7 @@ class Leaf extends Rect {
   }
 }
 
-type EdgeModifier = (edgeLookup: EdgeLookup<Types.AnyEdge>) => EdgeReplaceChange<Types.AnyEdge> | null
+type EdgeModifier = (edgeLookup: EdgeLookup<Types.AnyEdge>) => EdgeReplaceChange<Types.AnyEdge>
 
 /**
  * Creates a modifier function that moves edge points according to the given rectangle's diff.
@@ -142,33 +138,42 @@ function makeEdgeModifier(
   edge: Types.AnyEdge,
   anchor: Rect,
 ): EdgeModifier {
-  return (edgeLookup: EdgeLookup<Types.AnyEdge>): EdgeReplaceChange<Types.AnyEdge> | null => {
-    const current = edgeLookup.get(edge.id)
-    const diff = anchor.diff
-    if (!diff || !current) {
-      return null
+  return (edgeLookup) => {
+    const current = nonNullable(edgeLookup.get(edge.id), `Edge ${edge.id} not found`)
+    const { x: dx, y: dy } = anchor.diff
+    if (dx === 0 && dy === 0) {
+      return {
+        id: edge.id,
+        type: 'replace',
+        item: produce(current, draft => {
+          draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
+          draft.data.controlPoints = edge.data.controlPoints
+          draft.data.labelXY = edge.data.labelXY
+          draft.data.labelBBox = edge.data.labelBBox
+        }),
+      }
     }
     return {
       id: edge.id,
       type: 'replace',
       item: produce(current, draft => {
-        draft.data.points = map(edge.data.points, pt => [pt[0] + diff.x, pt[1] + diff.y] satisfies [number, number])
+        draft.data.points = map(edge.data.points, pt => [pt[0] + dx, pt[1] + dy] satisfies [number, number])
         if (edge.data.controlPoints) {
           draft.data.controlPoints = (edge.data.controlPoints ?? []).map(pt => ({
-            x: pt.x + diff.x,
-            y: pt.y + diff.y,
+            x: pt.x + dx,
+            y: pt.y + dy,
           }))
         }
         if (edge.data.labelXY) {
           draft.data.labelXY = {
-            x: edge.data.labelXY.x + diff.x,
-            y: edge.data.labelXY.y + diff.y,
+            x: edge.data.labelXY.x + dx,
+            y: edge.data.labelXY.y + dy,
           }
         }
         if (edge.data.labelBBox) {
           draft.data.labelBBox = {
-            x: edge.data.labelBBox.x + diff.x,
-            y: edge.data.labelBBox.y + diff.y,
+            x: edge.data.labelBBox.x + dx,
+            y: edge.data.labelBBox.y + dy,
             width: edge.data.labelBBox.width,
             height: edge.data.labelBBox.height,
           }
@@ -252,7 +257,7 @@ export function createLayoutConstraints(
 
   // First, find edges inside moving compound nodes (selected compound nodes)
   for (const r of rectsToUpdate) {
-    // Moving compound node will be Leaf
+    // Skip compound rectangles, only consider leaf nodes (that may have nested nodes)
     if (r instanceof CompoundRect) {
       continue
     }
@@ -264,37 +269,35 @@ export function createLayoutConstraints(
     // Find edges that have both ends inside nested nodes
     pipe(
       edges,
-      filter(e => nested.has(e.source) && nested.has(e.target)),
+      filter(e => !edgeModifiers.has(e) && nested.has(e.source) && nested.has(e.target)),
       map((edge) => [edge, makeEdgeModifier(edge, r)] as const),
       forEach(([edge, modifier]) => edgeModifiers.set(edge, modifier)),
     )
-  }
-
-  // moving nodes may have nested nodes as well
-  const movingNodes = new Set(editingNodeIds.flatMap(id => [id, ...nestedOf.get(id)]))
-
-  // When multiple nodes are moved, we update edges between them
-  if (editingNodeIds.length > 1) {
-    for (const edge of edges) {
-      if (edgeModifiers.has(edge) || !(movingNodes.has(edge.source) && movingNodes.has(edge.target))) {
-        continue
-      }
-      // Find the anchor rectangle for the edge
-      let r = rects.get(edge.source)
-        ?? rects.get(edge.target)
-        ?? ancestorsOf.get(edge.source).map(id => rects.get(id)).find(s => !!s)
-        ?? ancestorsOf.get(edge.target).map(id => rects.get(id)).find(s => !!s)
-      if (r) {
-        edgeModifiers.set(edge, makeEdgeModifier(edge, r))
-      }
-    }
   }
 
   const findMovingAncestor = (nodeId: string): Rect | null => {
     return rects.get(nodeId) ?? ancestorsOf.get(nodeId).map(id => rects.get(id)).find(s => !!s) ?? null
   }
 
-  // When source or target is moved, move control points and label position accordingly
+  // moving nodes may have nested nodes as well
+  const movingNodes = new Set(editingNodeIds.flatMap(id => [id, ...nestedOf.get(id)]))
+
+  // We update edges, where both source and target are moving nodes
+  for (const edge of edges) {
+    if (edgeModifiers.has(edge) || !(movingNodes.has(edge.source) && movingNodes.has(edge.target))) {
+      continue
+    }
+    // Find the anchor rectangle for the edge
+    let r = rects.get(edge.source)
+      ?? rects.get(edge.target)
+      ?? ancestorsOf.get(edge.source).map(id => rects.get(id)).find(s => !!s)
+      ?? ancestorsOf.get(edge.target).map(id => rects.get(id)).find(s => !!s)
+    if (r) {
+      edgeModifiers.set(edge, makeEdgeModifier(edge, r))
+    }
+  }
+
+  // When source OR target is moved, move control points and label position relatively
   for (const edge of edges) {
     if (edgeModifiers.has(edge)) {
       continue
@@ -308,48 +311,46 @@ export function createLayoutConstraints(
       }
       const controlPoints = edge.data.controlPoints ?? bezierControlPoints(edge.data.points)
 
-      const sourceCenter = getNodeCenter(nodeLookup.get(edge.source)!)
-      const sourceCenterV = new Vector(
-        sourceCenter.x,
-        sourceCenter.y,
-      )
-      const targetCenter = getNodeCenter(nodeLookup.get(edge.target)!)
-      const targetCenterV = new Vector(
-        targetCenter.x,
-        targetCenter.y,
-      )
+      const sourceNode = nonNullable(nodeLookup.get(edge.source), `Source node ${edge.source} not found`)
+      const targetNode = nonNullable(nodeLookup.get(edge.target), `Target node ${edge.target} not found`)
+
+      const sourceIntersectionPoint = vector(getNodeIntersection(sourceNode, targetNode))
+      const targetIntersectionPoint = vector(getNodeIntersection(targetNode, sourceNode))
 
       // Determine anchor (moving point) and static point
-      const [anchorCenter, staticCenter] = isSourceMoving
-        ? [sourceCenterV, targetCenterV]
-        : [targetCenterV, sourceCenterV]
+      const [anchorV, staticV] = isSourceMoving
+        ? [sourceIntersectionPoint, targetIntersectionPoint]
+        : [targetIntersectionPoint, sourceIntersectionPoint]
 
-      const toStatic = anchorCenter.subtract(staticCenter).normalize()
+      const staticToAnchor = anchorV.subtract(staticV)
+      const staticToAnchorLength = staticToAnchor.length()
 
       edgeModifiers.set(edge, (edgeLookup) => {
-        const current = edgeLookup.get(edge.id)
-        const diff = movingRect.diff
-        if (!diff || !current) {
-          return null
-        }
-        const d = new Vector(diff.x, diff.y)
-
-        const newAnchorCenter = new Vector(
-          anchorCenter.x + diff.x,
-          anchorCenter.y + diff.y,
-        )
-        const toStaticNew = newAnchorCenter.subtract(staticCenter).normalize()
-
-        const relativePoint = (pt: { x: number; y: number }) => {
-          const p = new Vector(pt.x, pt.y)
-          const projLength = p.subtract(anchorCenter).dot(toStatic)
-          const projPoint = newAnchorCenter.add(toStaticNew.multiply(projLength))
-          const perp = p.subtract(projPoint)
-          const newPoint = projPoint.add(perp)
-          const movedPoint = newPoint.add(d)
+        const current = nonNullable(edgeLookup.get(edge.id), `Edge ${edge.id} not found`)
+        const { x: dx, y: dy } = movingRect.diff
+        if (dx === 0 && dy === 0) {
           return {
-            x: movedPoint.x,
-            y: movedPoint.y,
+            id: edge.id,
+            type: 'replace',
+            item: produce(current, draft => {
+              draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
+              draft.data.controlPoints = edge.data.controlPoints
+              draft.data.labelXY = edge.data.labelXY
+              draft.data.labelBBox = edge.data.labelBBox
+            }),
+          }
+        }
+        const d = vector(dx, dy)
+        const relativePoint = (pt: { x: number; y: number }) => {
+          const p = vector(pt)
+          const staticToP = p.subtract(staticV)
+          const projLength = staticToP.dot(staticToAnchor)
+          // relative coefficient of the point between static and anchor
+          const coeff = projLength / (staticToAnchorLength ** 2)
+          const newP = p.add(d.multiply(coeff))
+          return {
+            x: Math.round(newP.x),
+            y: Math.round(newP.y),
           }
         }
 
@@ -357,15 +358,13 @@ export function createLayoutConstraints(
           id: edge.id,
           type: 'replace',
           item: produce(current, draft => {
-            draft.data.controlPoints = controlPoints.map(pt => {
-              return relativePoint(pt)
-            })
+            draft.data.controlPoints = controlPoints.map(relativePoint)
 
             if (edge.data.labelBBox) {
-              const movedPoint = relativePoint(edge.data.labelBBox)
+              const { x, y } = relativePoint(edge.data.labelBBox)
               draft.data.labelBBox = {
-                x: movedPoint.x,
-                y: movedPoint.y,
+                x,
+                y,
                 width: edge.data.labelBBox.width,
                 height: edge.data.labelBBox.height,
               }
@@ -434,7 +433,7 @@ export function createLayoutConstraints(
     }, [] as NodeChange<Types.Node>[])
     xyflowApi.getState().triggerNodeChanges(nodeUpdates)
 
-    const changes = _edgeModifiers.flatMap(fm => fm(edgeLookup) ?? [])
+    const changes = _edgeModifiers.map(fm => fm(edgeLookup))
     if (changes.length > 0) {
       xyflowApi.getState().triggerEdgeChanges(changes)
     }

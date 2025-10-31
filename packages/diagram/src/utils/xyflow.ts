@@ -4,6 +4,7 @@ import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow
 import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import { flatMap, hasAtLeast, isArray } from 'remeda'
+import { vector } from './vector'
 
 export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
@@ -15,6 +16,56 @@ export const nodeToRect = (nd: InternalNode): Rect => ({
   width: nd.measured.width ?? nd.width ?? nd.initialWidth ?? 0,
   height: nd.measured.height ?? nd.height ?? nd.initialHeight ?? 0,
 })
+
+export function getNodeCenter(node: InternalNode): XYPosition {
+  const { width, height } = getNodeDimensions(node)
+  const { x, y } = node.internals.positionAbsolute
+
+  return {
+    x: x + width / 2,
+    y: y + height / 2,
+  }
+}
+
+/**
+ * Helper function returns the intersection point
+ * of the line between the center of the intersectionNode and the target
+ *
+ * @param intersectionNode the node that is the center of the line
+ * @param target position of the target
+ * @param nodeMargin the margin of the intersectionNode. The point will be placed at nodeMargin distance from the border of the node
+ * @returns coordinates of the intersection point
+ */
+export function getNodeIntersectionFromCenterToPoint(
+  intersectionNode: InternalNode,
+  target: XYPosition,
+  nodeMargin: number = 0,
+) {
+  const nodeCenter = getNodeCenter(intersectionNode)
+  const { width, height } = getNodeDimensions(intersectionNode)
+  const v = vector(target.x, target.y).subtract(nodeCenter)
+  const xScale = (nodeMargin + (width || 0) / 2) / v.x
+  const yScale = (nodeMargin + (height || 0) / 2) / v.y
+
+  const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
+
+  return vector(v).multiply(scale).add(nodeCenter)
+}
+
+/**
+ * Helper function returns the intersection point
+ * of the line between the center of the intersectionNode and the target
+ *
+ * @param intersectionNode the node that is the center of the line
+ * @param targetNode the target node
+ * @returns coordinates of the intersection point
+ */
+export function getNodeIntersection(
+  intersectionNode: InternalNode,
+  targetNode: InternalNode,
+): XYPosition {
+  return getNodeIntersectionFromCenterToPoint(intersectionNode, getNodeCenter(targetNode))
+}
 
 /**
  * Checks if a rectangle is completely inside another rectangle.

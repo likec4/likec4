@@ -5,6 +5,7 @@ import { isString, last, reverse } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRefFrom,
+  type ActorRefFromLogic,
   type SnapshotFrom,
   assertEvent,
   enqueueActions,
@@ -277,8 +278,9 @@ const _overlaysActorLogic = setup({
   ],
 })
 
-export interface OverlaysActorLogic extends ActorLogicFrom<typeof _overlaysActorLogic> {}
-export const overlaysActorLogic: OverlaysActorLogic = _overlaysActorLogic
+type InferredMachine = typeof _overlaysActorLogic
+export interface OverlaysActorLogic extends InferredMachine {}
+export const overlaysActorLogic: OverlaysActorLogic = _overlaysActorLogic as any
 
 export type OverlaysActorSnapshot = SnapshotFrom<OverlaysActorLogic>
-export interface OverlaysActorRef extends ActorRefFrom<OverlaysActorLogic> {}
+export interface OverlaysActorRef extends ActorRefFromLogic<OverlaysActorLogic> {}

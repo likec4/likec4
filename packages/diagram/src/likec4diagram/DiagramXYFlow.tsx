@@ -9,7 +9,7 @@ import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { memoNode } from '../base-primitives/memoNode'
 import { BaseXYFlow } from '../base/BaseXYFlow'
-import { useDiagramEventHandlers } from '../context'
+import { useDiagramEventHandlers, useEnabledFeatures } from '../context'
 import { useIsReducedGraphics, usePanningAtom } from '../context/RootContainerContext'
 import { useUpdateEffect } from '../hooks'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
@@ -50,10 +50,6 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
 }
 
 const selectXYProps = (ctx: DiagramContext) => {
-  const enableReadOnly = ctx.features.enableReadOnly || ctx.toggledFeatures.enableReadOnly
-    // if dynamic view display mode is sequence, enable readonly
-    || (ctx.dynamicViewVariant === 'sequence' && ctx.view._type === 'dynamic')
-
   return ({
     initialized: ctx.initialized.xydata && ctx.initialized.xyflow,
     nodes: ctx.xynodes,
@@ -61,8 +57,7 @@ const selectXYProps = (ctx: DiagramContext) => {
     pannable: ctx.pannable,
     zoomable: ctx.zoomable,
     fitViewPadding: ctx.fitViewPadding,
-    enableFitView: ctx.features.enableFitView,
-    enableReadOnly,
+    enableFitView: ctx.toggledFeatures.enableFitView ?? ctx.features.enableFitView,
     ...(!ctx.features.enableFitView && {
       viewport: {
         x: -Math.min(ctx.view.bounds.x, 0),
@@ -77,7 +72,6 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   a.pannable === b.pannable &&
   a.zoomable === b.zoomable &&
   a.enableFitView === b.enableFitView &&
-  a.enableReadOnly === b.enableReadOnly &&
   shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges) &&
@@ -104,11 +98,11 @@ export function LikeC4DiagramXYFlow({
   renderNodes,
 }: LikeC4DiagramXYFlowProps) {
   const diagram = useDiagram()
+  const { enableReadOnly } = useEnabledFeatures()
   let {
     initialized,
     nodes,
     edges,
-    enableReadOnly,
     enableFitView,
     ...props
   } = useDiagramContext(selectXYProps, equalsXYProps)
@@ -202,12 +196,12 @@ export function LikeC4DiagramXYFlow({
         diagram.send({ type: 'xyflow.paneDblClick' })
         onCanvasDblClick?.(e as any)
       })}
-      onNodeMouseEnter={useCallbackRef((_event, node) => {
-        _event.stopPropagation()
+      onNodeMouseEnter={useCallbackRef((event, node) => {
+        event.stopPropagation()
         diagram.send({ type: 'xyflow.nodeMouseEnter', node })
       })}
-      onNodeMouseLeave={useCallbackRef((_event, node) => {
-        _event.stopPropagation()
+      onNodeMouseLeave={useCallbackRef((event, node) => {
+        event.stopPropagation()
         diagram.send({ type: 'xyflow.nodeMouseLeave', node })
       })}
       onEdgeMouseEnter={useCallbackRef((event, edge) => {
@@ -237,9 +231,9 @@ export function LikeC4DiagramXYFlow({
         )
         onEdgeContextMenu?.(diagramEdge, event)
       })}
-      onPaneContextMenu={useCallbackRef((event) => {
-        onCanvasContextMenu?.(event as any)
-      })}
+      {...onCanvasContextMenu && {
+        onPaneContextMenu: onCanvasContextMenu,
+      }}
       {...enableFitView && {
         onViewportResize,
       }}

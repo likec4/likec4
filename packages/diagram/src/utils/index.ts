@@ -1,5 +1,5 @@
-export { vector, VectorImpl } from './vector'
-export type { Vector } from './vector'
+export { Vector, vector } from './vector'
+export type { VectorValue } from './vector'
 export {
   bezierControlPoints,
   bezierPath,
@@ -12,5 +12,5 @@ export {
   stopPropagation,
 } from './xyflow'
 
-export { getViewBounds } from './get-view-bounds'
 export { roundDpr } from './roundDpr'
+export { getViewBounds } from './view-bounds'

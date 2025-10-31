@@ -627,8 +627,9 @@ const _relationshipsBrowserLogic = setup({
   exit: 'dispose',
 })
 
-export interface RelationshipsBrowserLogic extends ActorLogicFrom<typeof _relationshipsBrowserLogic> {}
-export const relationshipsBrowserLogic: RelationshipsBrowserLogic = _relationshipsBrowserLogic
+type InferredMachine = typeof _relationshipsBrowserLogic
+export interface RelationshipsBrowserLogic extends InferredMachine {}
+export const relationshipsBrowserLogic: RelationshipsBrowserLogic = _relationshipsBrowserLogic as any
 
 export interface RelationshipsBrowserActorRef extends ActorRefFromLogic<RelationshipsBrowserLogic> {}
 export type RelationshipsBrowserSnapshot = SnapshotFrom<RelationshipsBrowserLogic>

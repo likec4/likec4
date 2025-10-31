@@ -20,7 +20,7 @@ import { useUpdateEffect } from '@react-hookz/web'
 import { useState } from 'react'
 import { keys } from 'remeda'
 import { useLikeC4Styles } from '../../../../hooks/useLikeC4Styles'
-import { type ColorKey, type OnStyleChange, type ThemeColorKey, SemanticColors } from './_shared'
+import { type ColorKey, type OnStyleChange, type ThemeColorKey, SemanticColors } from './types'
 
 type ColorButtonProps = Omit<PopoverProps, 'onChange'> & {
   elementColor: ThemeColor

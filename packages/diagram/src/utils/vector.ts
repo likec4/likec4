@@ -1,57 +1,138 @@
-export interface Vector {
-  x: number
-  y: number
+export interface VectorValue {
+  readonly x: number
+  readonly y: number
 }
 
-export class VectorImpl implements Vector {
-  constructor(public x: number, public y: number) {}
+export class Vector implements VectorValue {
+  constructor(
+    public readonly x: number,
+    public readonly y: number,
+  ) {}
 
-  static create(position: Vector): VectorImpl {
-    return new VectorImpl(position.x, position.y)
+  static create(position: VectorValue): Vector
+  static create(x: number, y: number): Vector
+  static create(...args: [VectorValue] | [number, number]): Vector {
+    if (args.length === 2) {
+      return new Vector(args[0], args[1])
+    }
+    return new Vector(args[0].x, args[0].y)
   }
 
-  static add(a: Vector, b: Vector): Vector {
+  /**
+   * Adds two vectors.
+   * @param a The first vector.
+   * @param b The second vector.
+   * @returns The sum of the two vectors.
+   */
+  static add(a: VectorValue, b: VectorValue): VectorValue {
     return { x: a.x + b.x, y: a.y + b.y }
   }
-  static sub(a: Vector, b: Vector): Vector {
+  /**
+   * Subtracts two vectors.
+   * @param a The first vector.
+   * @param b The second vector.
+   * @returns The difference of the two vectors.
+   */
+  static subtract(a: VectorValue, b: VectorValue): VectorValue {
     return { x: a.x - b.x, y: a.y - b.y }
   }
-  static mul(a: Vector, b: number): Vector {
+  /**
+   * Multiplies a vector by a scalar.
+   * @param a The vector.
+   * @param b The scalar.
+   * @returns The scaled vector.
+   */
+  static multiply(a: VectorValue, b: number): VectorValue {
     return { x: a.x * b, y: a.y * b }
   }
-  static dot(a: Vector, b: Vector): number {
+
+  /**
+   * Calculates the dot product of the vectors.
+   * @param a The first vector.
+   * @param b The second vector.
+   * @returns The dot product.
+   */
+  static dot(a: VectorValue, b: VectorValue): number {
     return a.x * b.x + a.y * b.y
   }
-  static cross(a: Vector, b: Vector): VectorImpl {
-    return new VectorImpl(a.y * b.x - a.x * b.y, a.x * b.y - a.y * b.x)
-  }
-  static setLength(a: Vector, length: number): Vector {
-    return vector(a).setLength(length)
+
+  /**
+   * Adds the given vector to this vector.
+   * @param b The vector to add.
+   * @returns A new vector that is the sum of this vector and the given vector.
+   */
+  add(b: VectorValue): Vector {
+    return new Vector(this.x + b.x, this.y + b.y)
   }
 
-  add(b: Vector): VectorImpl {
-    return new VectorImpl(this.x + b.x, this.y + b.y)
+  /**
+   * Subtracts the given vector from this vector.
+   * @param b The vector to subtract.
+   * @returns A new vector that is the difference of this vector and the given vector.
+   */
+  subtract(b: VectorValue): Vector {
+    return new Vector(this.x - b.x, this.y - b.y)
   }
-  sub(b: Vector): VectorImpl {
-    return new VectorImpl(this.x - b.x, this.y - b.y)
+
+  /**
+   * Multiplies this vector by a scalar.
+   * @param b The scalar to multiply by.
+   * @returns A new vector that is the product of this vector and the given scalar.
+   */
+  multiply(b: number): Vector {
+    return new Vector(this.x * b, this.y * b)
   }
-  mul(b: number): VectorImpl {
-    return new VectorImpl(this.x * b, this.y * b)
-  }
-  dot(b: Vector): number {
+
+  /**
+   * Calculates the dot product of this vector and another vector.
+   * @param b The other vector.
+   * @returns The dot product.
+   */
+  dot(b: VectorValue): number {
     return this.x * b.x + this.y * b.y
   }
-  cross(b: Vector): VectorImpl {
-    return new VectorImpl(this.y * b.x - this.x * b.y, this.x * b.y - this.y * b.x)
+
+  /**
+   * Calculates the cross product of this vector and another vector.
+   * @param b The other vector.
+   * @returns The cross product as a new vector.
+   */
+  cross(b: VectorValue): Vector {
+    return new Vector(this.y * b.x - this.x * b.y, this.x * b.y - this.y * b.x)
   }
-  abs(): number {
-    return Math.sqrt(this.x * this.x + this.y * this.y)
+
+  /**
+   * Calculates the length (magnitude) of this vector.
+   * @returns The length of the vector.
+   */
+  length(): number {
+    if (this.x === 0 && this.y === 0) {
+      return 0
+    }
+    return Math.sqrt(this.x ** 2 + this.y ** 2)
   }
-  setLength(length: number): VectorImpl {
-    return this.mul(length / this.abs())
+
+  /**
+   * Normalizes the vector (makes it unit length, i.e., has a length of 1).
+   * @returns A new vector that is the normalized version of this vector.
+   */
+  normalize(): Vector {
+    const len = this.length()
+    if (len === 0) {
+      return new Vector(0, 0)
+    }
+    return new Vector(this.x / len, this.y / len)
   }
 }
 
-export function vector(source: Vector): VectorImpl {
-  return VectorImpl.create(source)
+export function vector(source: VectorValue | Vector): Vector
+export function vector(x: number, y: number): Vector
+export function vector(...args: [VectorValue | Vector] | [number, number]): Vector {
+  if (args.length === 1 && args[0] instanceof Vector) {
+    return args[0]
+  }
+  if (args.length === 2) {
+    return new Vector(args[0], args[1])
+  }
+  return new Vector(args[0].x, args[0].y)
 }

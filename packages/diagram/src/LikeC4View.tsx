@@ -21,7 +21,7 @@ import type {
 } from './LikeC4Diagram.props'
 import { Overlay } from './overlays/overlay/Overlay'
 import { ShadowRoot } from './shadowroot/ShadowRoot'
-import { getViewBounds } from './utils/get-view-bounds'
+import { getViewBounds } from './utils/view-bounds'
 
 export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   /**
@@ -295,6 +295,12 @@ export interface LikeC4BrowserProps {
   enableNotations?: boolean | undefined
 
   /**
+   * Enable "Compare with auto layout" action when view was manually modified and out of sync with latest model
+   * @default true
+   */
+  enableCompareWithLatest?: boolean | undefined
+
+  /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
    *
    * @default 'auto' - will be set to true if view is pannable and has more than 3000 * 2000 pixels
@@ -432,7 +438,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
           enableNotations={hasNotations}
           enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
           showNavigationButtons={showNavigationButtons}
-          experimentalEdgeEditing={false}
+          enableCompareWithLatest={false}
           enableFocusMode={enableFocusMode}
           enableRelationshipDetails={enableRelationshipDetails}
           enableElementDetails={enableElementDetails}
@@ -473,6 +479,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
               enableRelationshipDetails
               enableSearch
               enableElementTags
+              enableCompareWithLatest
               controls
               readonly
               nodesDraggable={false}

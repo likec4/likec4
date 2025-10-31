@@ -71,4 +71,4 @@ export { ReactLikeC4, type ReactLikeC4Props } from './ReactLikeC4'
 
 export { useCurrentViewId } from './hooks/useCurrentView'
 
-export { getViewBounds } from './utils/get-view-bounds'
+export { getViewBounds } from './utils/view-bounds'

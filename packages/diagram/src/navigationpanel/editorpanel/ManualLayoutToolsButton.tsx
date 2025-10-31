@@ -1,7 +1,6 @@
 import { css } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import {
-  type PopoverProps,
   Popover,
   PopoverDropdown,
   PopoverTarget,
@@ -18,6 +17,7 @@ import {
   IconLayoutCollage,
   IconRouteOff,
 } from '@tabler/icons-react'
+import { memo } from 'react'
 import { useDiagram } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { PanelActionIcon } from '../_common'
@@ -49,7 +49,7 @@ const Action = ({
   </Tooltip>
 )
 
-export const ManualLayoutToolsButton = (props: PopoverProps) => {
+export const ManualLayoutToolsButton = memo(() => {
   const diagram = useDiagram()
   const portalProps = useMantinePortalProps()
   return (
@@ -61,8 +61,7 @@ export const ManualLayoutToolsButton = (props: PopoverProps) => {
       clickOutsideEvents={[
         'pointerdown',
       ]}
-      {...portalProps}
-      {...props}>
+      {...portalProps}>
       <PopoverTarget>
         <Tooltip label="Manual layouting tools">
           <PanelActionIcon>
@@ -145,4 +144,5 @@ export const ManualLayoutToolsButton = (props: PopoverProps) => {
       </PopoverDropdown>
     </Popover>
   )
-}
+})
+ManualLayoutToolsButton.displayName = 'ManualLayoutToolsButton'

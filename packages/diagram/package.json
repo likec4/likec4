@@ -91,7 +91,6 @@
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "immer": "catalog:utils",
-    "vecti": "^3.1.1",
     "bezier-js": "^6.1.4",
     "d3-shape": "^3.2.0",
     "fast-equals": "catalog:utils",

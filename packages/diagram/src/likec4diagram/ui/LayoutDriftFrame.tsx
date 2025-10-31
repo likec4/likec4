@@ -19,7 +19,7 @@ import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import type { OnLayoutTypeChange } from '../../LikeC4Diagram.props'
 
 export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>(({ onLayoutTypeChange }) => {
-  const { drifts, layout, isActive } = useDiagramCompareState()
+  const { layout, isActive } = useDiagramCompareState()
   const {
     enableReadOnly,
   } = useEnabledFeatures()

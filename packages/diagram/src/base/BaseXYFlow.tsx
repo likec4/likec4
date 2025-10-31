@@ -133,7 +133,7 @@ export function BaseXYFlow<
       nodeClickDistance={3}
       paneClickDistance={3}
       elevateNodesOnSelect={false} // or edges are not visible after select\
-      // selectNodesOnDrag={false}
+      selectNodesOnDrag={false}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onMoveEnd={useCallbackRef((event, { x, y, zoom }) => {
@@ -149,9 +149,9 @@ export function BaseXYFlow<
         }
         onMoveEnd?.(event, { x: roundedX, y: roundedY, zoom })
       })}
-      onNodeMouseEnter={useCallbackRef((_event, node) => {
+      onNodeMouseEnter={useCallbackRef((event, node) => {
         if (onNodeMouseEnter) {
-          onNodeMouseEnter(_event, node)
+          onNodeMouseEnter(event, node)
           return
         }
         onNodesChange([{
@@ -160,9 +160,9 @@ export function BaseXYFlow<
           item: Base.setHovered(node, true),
         }])
       })}
-      onNodeMouseLeave={useCallbackRef((_event, node) => {
+      onNodeMouseLeave={useCallbackRef((event, node) => {
         if (onNodeMouseLeave) {
-          onNodeMouseLeave(_event, node)
+          onNodeMouseLeave(event, node)
           return
         }
         onNodesChange([{
@@ -171,9 +171,9 @@ export function BaseXYFlow<
           item: Base.setHovered(node, false),
         }])
       })}
-      onEdgeMouseEnter={useCallbackRef((_event, edge) => {
+      onEdgeMouseEnter={useCallbackRef((event, edge) => {
         if (onEdgeMouseEnter) {
-          onEdgeMouseEnter(_event, edge)
+          onEdgeMouseEnter(event, edge)
           return
         }
         onEdgesChange([{
@@ -182,9 +182,9 @@ export function BaseXYFlow<
           item: Base.setHovered(edge, true),
         }])
       })}
-      onEdgeMouseLeave={useCallbackRef((_event, edge) => {
+      onEdgeMouseLeave={useCallbackRef((event, edge) => {
         if (onEdgeMouseLeave) {
-          onEdgeMouseLeave(_event, edge)
+          onEdgeMouseLeave(event, edge)
           return
         }
         onEdgesChange([{

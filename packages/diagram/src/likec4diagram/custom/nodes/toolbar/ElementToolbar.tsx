@@ -4,10 +4,11 @@ import { IconCheck, IconSelector } from '@tabler/icons-react'
 import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import { stopPropagation } from '../../../../utils/xyflow'
 import type { Types } from '../../../types'
-import type { OnStyleChange } from './_shared'
-import { BrowseRelationshipsButton, GoToSourceButton, useHandlers } from './_shared'
+import { BrowseRelationshipsButton, GoToSourceButton } from './_shared'
 import { ColorButton } from './ColorButton'
 import { Toolbar } from './Toolbar'
+import type { OnStyleChange } from './types'
+import { useHandlers } from './useHandlers'
 
 export function ElementToolbar(props: Types.NodeProps<'element'>) {
   const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()

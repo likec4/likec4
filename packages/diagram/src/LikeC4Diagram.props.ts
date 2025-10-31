@@ -235,7 +235,7 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
 
   /**
    * Enable "Compare with auto layout" action when view was manually modified and out of sync with latest model
-   * @default false
+   * @default true if `onLayoutTypeChange` is set, false otherwise
    */
   enableCompareWithLatest?: boolean | undefined
 
@@ -329,6 +329,8 @@ export type OnEdgeClick<A extends Any = Unknown> = (
  */
 export type OnCanvasClick = (event: ReactMouseEvent) => void
 
+export type OnCanvasContextMenu = (event: ReactMouseEvent | MouseEvent) => void
+
 export type ChangeEvent = {
   change: ViewChange
 }
@@ -343,7 +345,7 @@ export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
   onNavigateTo?: OnNavigateTo<A> | null | undefined
   onNodeClick?: OnNodeClick<A> | null | undefined
   onNodeContextMenu?: OnNodeClick<A> | null | undefined
-  onCanvasContextMenu?: OnCanvasClick | null | undefined
+  onCanvasContextMenu?: OnCanvasContextMenu | null | undefined
   onEdgeClick?: OnEdgeClick<A> | null | undefined
   onEdgeContextMenu?: OnEdgeClick<A> | null | undefined
   onCanvasClick?: OnCanvasClick | null | undefined

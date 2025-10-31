@@ -33,7 +33,6 @@ export const DefaultFeatures: EnabledFeatures = {
   enableCompareWithLatest: false,
   enableControls: false,
   enableDynamicViewWalkthrough: false,
-  enableEdgeEditing: false,
   enableElementDetails: false,
   enableFocusMode: false,
   enableNavigateTo: false,
@@ -86,13 +85,14 @@ export function DiagramFeatures({
   )
 }
 
+const overridesForOverlays: Partial<EnabledFeatures> = {
+  enableControls: false,
+  enableReadOnly: true,
+  enableCompareWithLatest: false,
+}
 DiagramFeatures.Overlays = ({ children }: PropsWithChildren) => {
   return (
-    <DiagramFeatures
-      overrides={{
-        enableControls: false,
-        enableReadOnly: true,
-      }}>
+    <DiagramFeatures overrides={overridesForOverlays}>
       {children}
     </DiagramFeatures>
   )
@@ -102,6 +102,28 @@ export function useEnabledFeatures(): EnabledFeatures {
   return useContext(DiagramFeaturesContext)
 }
 
+export type IfEnabledProps = PropsWithChildren<{
+  feature: FeatureName
+  /**
+   * Additional AND condition
+   * @default true
+   * @example
+   * <IfEnabled feature="ReadOnly" and={isSomething}>
+   *   ...
+   * </IfEnabled>
+   */
+  and?: boolean
+}>
+
+/**
+ * Renders children only if the specified feature is enabled
+ * @param feature Feature name
+ * @param and Additional AND condition
+ * @example
+ * <IfEnabled feature="ReadOnly" and={isSomething}>
+ *   ...
+ * </IfEnabled>
+ */
 export function IfEnabled({
   feature,
   children,

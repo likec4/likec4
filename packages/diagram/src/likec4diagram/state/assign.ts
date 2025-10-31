@@ -1,12 +1,12 @@
 import { type NodeId, type XYPoint, invariant, nonNullable } from '@likec4/core'
 import type { InternalNode } from '@xyflow/react'
-import { getNodeDimensions } from '@xyflow/system'
+import { type NodeLookup, getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
 import { mergeDeep, omit } from 'remeda'
 import { assertEvent } from 'xstate'
 import { Base } from '../../base/types'
-import { type Vector, vector, VectorImpl } from '../../utils/vector'
-import { getNodeCenter } from '../custom/edges/utils'
+import { type VectorValue, vector } from '../../utils/vector'
+import { getNodeCenter } from '../../utils/xyflow'
 import type { Types } from '../types'
 import { SeqParallelAreaColor } from '../xyflow-sequence/const'
 import type { ActionArg, Context as DiagramContext } from './diagram-machine'
@@ -40,8 +40,7 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
     if (existing) {
       const { width: existingWidth, height: existingHeight } = getNodeDimensions(existing)
       if (
-        isSameView
-        && eq(existing.type, update.type)
+        eq(existing.type, update.type)
         && eq(existingWidth, update.initialWidth)
         && eq(existingHeight, update.initialHeight)
         && eq(existing.hidden ?? false, update.hidden ?? false)
@@ -57,7 +56,6 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
         // Force dimensions from update
         width: update.initialWidth,
         height: update.initialHeight,
-        // data: update.data,
       } as Types.Node
     }
     return update
@@ -65,7 +63,7 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
   // Merge with existing edges, but only if the view is the same
   // and the edges have no layout drift
   let xyedges = event.xyedges
-  if (isSameView && !nextView.hasLayoutDrift) {
+  if (isSameView && (!nextView.drifts || nextView.drifts.length === 0)) {
     const currentEdges = context.xyedges
     xyedges = event.xyedges.map((update): Types.Edge => {
       const existing = currentEdges.find(n => n.id === update.id)
@@ -81,7 +79,7 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
           return existing
         }
         return {
-          ...omit(existing, ['sourceHandle', 'targetHandle']),
+          ...omit(existing, ['hidden', 'sourceHandle', 'targetHandle']),
           ...update,
           data: {
             ...existing.data,
@@ -92,24 +90,6 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
       return update
     })
   }
-
-  // if (!isSameView) {
-  //   for (const node of xynodes) {
-  //     node.data = {
-  //       ...node.data,
-  //       dimmed: false,
-  //       hovered: false,
-  //     }
-  //   }
-  //   for (const edge of xyedges) {
-  //     edge.data = {
-  //       ...edge.data,
-  //       dimmed: false,
-  //       hovered: false,
-  //       active: false,
-  //     }
-  //   }
-  // }
 
   return {
     xynodes,
@@ -315,52 +295,51 @@ export function updateEdgeData({ context, event }: ActionArg): Partial<DiagramCo
   return { xyedges }
 }
 
-function getBorderPointOnVector(node: InternalNode, nodeCenter: Vector, v: Vector) {
+function getBorderPointOnVector(node: InternalNode, nodeCenter: VectorValue, v: VectorValue) {
   const dimensions = getNodeDimensions(node)
   const xScale = dimensions.width / 2 / v.x
   const yScale = dimensions.height / 2 / v.y
 
   const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
 
-  return vector(v).mul(scale).add(nodeCenter)
+  return vector(v).multiply(scale).add(nodeCenter)
 }
 
-export function getControlPointForEdge(context: DiagramContext, edge: Types.Edge): [] | [XYPoint] | [XYPoint, XYPoint] {
-  const { nodeLookup } = context.xystore.getState()
-
+export function resetEdgeControlPoints(
+  nodeLookup: NodeLookup,
+  edge: Types.Edge,
+): [] | [XYPoint] | [XYPoint, XYPoint] {
   const source = nodeLookup.get(edge.source)
   const target = nodeLookup.get(edge.target)
   if (!source || !target) {
     return []
   }
 
-  const sourceCenterXY = getNodeCenter(source)
-  const targetCenterXY = getNodeCenter(target)
-
-  const sourceCenter = new VectorImpl(sourceCenterXY.x, sourceCenterXY.y)
-  const targetCenter = new VectorImpl(targetCenterXY.x, targetCenterXY.y)
+  const sourceCenter = vector(getNodeCenter(source))
+  const targetCenter = vector(getNodeCenter(target))
 
   // Edge is a loop
   if (source === target) {
     const loopSize = 80
-    const centerOfTopBoundary = new VectorImpl(0, source.height || 0)
-      .mul(-0.5)
+    const centerOfTopBoundary = vector(0, source.height || 0)
+      .multiply(-0.5)
       .add(sourceCenter)
 
     return [
-      centerOfTopBoundary.add(new VectorImpl(-loopSize / 2.5, -loopSize)),
-      centerOfTopBoundary.add(new VectorImpl(loopSize / 2.5, -loopSize)),
+      centerOfTopBoundary.add(vector(-loopSize / 2.5, -loopSize)),
+      centerOfTopBoundary.add(vector(loopSize / 2.5, -loopSize)),
     ]
   }
 
-  const sourceToTargetVector = targetCenter.sub(sourceCenter)
+  const sourceToTargetVector = targetCenter.subtract(sourceCenter)
   const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
-  const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.mul(-1))
+  const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.multiply(-1))
 
-  return [sourceBorderPoint.add(targetBorderPoint.sub(sourceBorderPoint).mul(0.4))]
+  return [sourceBorderPoint.add(targetBorderPoint.subtract(sourceBorderPoint).multiply(0.4))]
 }
 
-export function resetEdgeControlPoints({ context }: ActionArg): Partial<DiagramContext> {
+export function resetEdgesControlPoints({ context }: ActionArg): Partial<DiagramContext> {
+  const { nodeLookup } = context.xystore.getState()
   return {
     xyedges: context.xyedges.map(edge => {
       if (!edge.data.controlPoints) {
@@ -370,7 +349,7 @@ export function resetEdgeControlPoints({ context }: ActionArg): Partial<DiagramC
         ...edge,
         data: {
           ...edge.data,
-          controlPoints: getControlPointForEdge(context, edge),
+          controlPoints: resetEdgeControlPoints(nodeLookup, edge),
         },
       } as Types.Edge)
     }),

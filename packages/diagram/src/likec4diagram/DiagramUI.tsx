@@ -18,6 +18,7 @@ export const LikeC4DiagramUI = memo(() => {
     enableSearch,
     enableRelationshipDetails,
     enableReadOnly,
+    enableCompareWithLatest,
   } = useEnabledFeatures()
   const { onLayoutTypeChange } = useDiagramEventHandlers()
   const rerender = useRerender()
@@ -31,7 +32,7 @@ export const LikeC4DiagramUI = memo(() => {
       {enableNotations && <NotationPanel />}
       {enableSearch && searchActorRef && <Search searchActorRef={searchActorRef} />}
       {enableRelationshipDetails && enableReadOnly && <RelationshipPopover />}
-      {onLayoutTypeChange && <LayoutDriftFrame onLayoutTypeChange={onLayoutTypeChange} />}
+      {enableCompareWithLatest && onLayoutTypeChange && <LayoutDriftFrame onLayoutTypeChange={onLayoutTypeChange} />}
     </ErrorBoundary>
   )
 })

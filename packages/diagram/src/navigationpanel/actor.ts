@@ -3,6 +3,7 @@ import { isEmpty } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRefFrom,
+  type ActorRefFromLogic,
   type SnapshotFrom,
   assertEvent,
   assign,
@@ -316,9 +317,9 @@ const _actorLogic = setup({
     },
   },
 })
-
-export interface NavigationPanelActorLogic extends ActorLogicFrom<typeof _actorLogic> {}
-export const navigationPanelActorLogic: NavigationPanelActorLogic = _actorLogic
+type InferredMachine = typeof _actorLogic
+export interface NavigationPanelActorLogic extends InferredMachine {}
+export const navigationPanelActorLogic: NavigationPanelActorLogic = _actorLogic as any
 
 export type NavigationPanelActorSnapshot = SnapshotFrom<NavigationPanelActorLogic>
-export interface NavigationPanelActorRef extends ActorRefFrom<NavigationPanelActorLogic> {}
+export interface NavigationPanelActorRef extends ActorRefFromLogic<NavigationPanelActorLogic> {}

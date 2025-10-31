@@ -1,47 +1,9 @@
-import {
-  type DeploymentFqn,
-  type Fqn,
-  type ThemeColor,
-  type ViewChange,
-  invariant,
-} from '@likec4/core'
+import type { DeploymentFqn, Fqn } from '@likec4/core/types'
 import { ActionIcon, Tooltip as MantineTooltip } from '@mantine/core'
-import { useCallbackRef } from '@mantine/hooks'
 import { IconFileSymlink, IconTransform } from '@tabler/icons-react'
-import { useState } from 'react'
 import type { MergeExclusive } from 'type-fest'
 import { useDiagramEventHandlers } from '../../../../context'
 import { useDiagram } from '../../../../hooks/useDiagram'
-import type { Types } from '../../../types'
-
-export type OnStyleChange = (style: ViewChange.ChangeElementStyle['style']) => void
-
-export const SemanticColors = [
-  'primary',
-  'secondary',
-  'muted',
-] as const
-
-// const {
-//   primary,
-//   secondary,
-//   muted,
-//   ...otherColors
-// } = defaultTheme.colors
-
-// export const themedColors = [
-//   { key: 'primary', value: primary.elements.fill },
-//   { key: 'secondary', value: secondary.elements.fill },
-//   { key: 'muted', value: muted.elements.fill },
-// ] satisfies Array<{ key: ThemeColor; value: string }>
-
-// export const colors = keys(otherColors).map(key => ({
-//   key,
-//   value: defaultTheme.colors[key].elements.fill,
-// }))
-
-export type ThemeColorKey = typeof SemanticColors[number]
-export type ColorKey = Exclude<ThemeColor, ThemeColorKey>
 
 export const Tooltip = MantineTooltip.withProps({
   color: 'dark',
@@ -53,52 +15,6 @@ export const Tooltip = MantineTooltip.withProps({
   offset: 4,
   withinPortal: false,
 })
-
-export function useHandlers(
-  target: Fqn | DeploymentFqn,
-  props: Types.NodeProps,
-) {
-  const { onChange: triggerOnChange } = useDiagramEventHandlers()
-  const diagram = useDiagram()
-
-  const [originalColor, setOriginalColor] = useState<ThemeColor | null>(null)
-  const onColorPreview = useCallbackRef((color: ThemeColor | null) => {
-    if (color === null) {
-      invariant(originalColor, 'originalColor is null')
-      setOriginalColor(null)
-      diagram.updateNodeData(props.data.id, {
-        color: originalColor,
-      })
-      return
-    }
-    setOriginalColor(value => value ?? props.data.color as ThemeColor)
-    diagram.updateNodeData(props.data.id, {
-      color,
-    })
-  })
-
-  const onChange: OnStyleChange = useCallbackRef((change) => {
-    triggerOnChange?.({
-      change: {
-        op: 'change-element-style',
-        style: change,
-        targets: [target],
-      },
-    })
-    const { shape, color, ...style } = change
-    diagram.updateNodeData(props.data.id, {
-      ...(shape && { shape }),
-      ...(color && { color }),
-      style,
-    })
-  })
-
-  return {
-    elementColor: originalColor ?? props.data.color as ThemeColor,
-    onColorPreview,
-    onChange,
-  }
-}
 
 export function BrowseRelationshipsButton({ fqn }: { fqn: Fqn }) {
   const diagram = useDiagram()

@@ -20,7 +20,6 @@ import {
 import { useDebouncedCallback } from '@react-hookz/web'
 import { IconLayoutDashboard } from '@tabler/icons-react'
 import { forwardRef, useState } from 'react'
-import { useDiagramEventHandlers } from '../../context'
 import type { DiagramContext } from '../../hooks/useDiagram'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
 import { PanelActionIcon } from '../_common'
@@ -34,7 +33,6 @@ const selector = (state: DiagramContext) => ({
 })
 
 export const ChangeAutoLayoutButton = () => {
-  const { onChange } = useDiagramEventHandlers()
   const diagram = useDiagram()
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null)
   const [controlsRefs, setControlsRefs] = useState<Record<AutoLayoutDirection, HTMLButtonElement | null>>({} as any)
@@ -53,13 +51,11 @@ export const ChangeAutoLayoutButton = () => {
 
   const setAutoLayout = (direction: AutoLayoutDirection) => (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
-    onChange?.({
-      change: {
-        op: 'change-autolayout',
-        layout: {
-          ...autoLayout,
-          direction,
-        },
+    diagram.triggerChange({
+      op: 'change-autolayout',
+      layout: {
+        ...autoLayout,
+        direction,
       },
     })
   }
@@ -67,14 +63,12 @@ export const ChangeAutoLayoutButton = () => {
   const setSpacing = (nodeSep: number | null, rankSep: number | null) => {
     // Force fitDiagram
     diagram.fitDiagram()
-    onChange?.({
-      change: {
-        op: 'change-autolayout',
-        layout: {
-          ...autoLayout,
-          nodeSep,
-          rankSep,
-        },
+    diagram.triggerChange({
+      op: 'change-autolayout',
+      layout: {
+        ...autoLayout,
+        nodeSep,
+        rankSep,
       },
     })
   }
