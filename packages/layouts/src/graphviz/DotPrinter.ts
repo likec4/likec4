@@ -287,13 +287,14 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.TBbalance]: 'min',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
+      [_.ordering]: 'in',
       [_.nodesep]: pxToInch(autoLayout.nodeSep ?? 110),
       [_.ranksep]: pxToInch(autoLayout.rankSep ?? 120),
       [_.pad]: pxToInch(15),
       [_.fontname]: FontName,
     })
     G.attributes.graph.apply({
-      [_.fontsize]: pxToPoints(15),
+      [_.fontsize]: pxToPoints(this.styles.fontSize()),
       [_.labeljust]: autoLayout.direction === 'RL' ? 'r' : 'l',
       [_.labelloc]: autoLayout.direction === 'BT' ? 'b' : 't',
       [_.margin]: GraphClusterSpace,

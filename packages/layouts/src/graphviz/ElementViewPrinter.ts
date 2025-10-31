@@ -70,25 +70,6 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       })
     }
 
-    // let sources: SubgraphModel | undefined
-    // let sinks: SubgraphModel | undefined
-    // this.graphology.forEachNode((nodeId, { origin }) => {
-    //   if (isCompound(origin) || isNonNullish(origin.parent)) {
-    //     return
-    //   }
-    //   const nd = nonNullable(this.getGraphNode(origin.id))
-    //   if (this.graphology.inDegree(nodeId) === 0) {
-    //     sources ??= G.createSubgraph({ [_.rank]: 'min' })
-    //     sources.node(nd.id)
-    //   }
-    //   if (this.graphology.outDegree(nodeId) === 0 && this.graphology.inDegree(nodeId) > 0) {
-    //     sinks ??= G.createSubgraph({ [_.rank]: 'max' })
-    //     sinks.node(nd.id)
-    //   }
-    // })
-
-    // applyNewRank = applyNewRank || !!sources || !!sinks
-
     if (applyNewRank) {
       G.set(_.newrank, true)
       G.set(_.clusterrank, 'global')
@@ -167,7 +148,7 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(tail),
         [_.dir]: 'both',
-        [_.minlen]: 0,
+        // [_.minlen]: 0,
       })
       return e
     }

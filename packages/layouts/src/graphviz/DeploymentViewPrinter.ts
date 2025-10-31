@@ -118,9 +118,6 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, Compu
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
         [_.dir]: 'none',
-        // [_.weight]: 0,
-        // [_.minlen]: 0
-        // [_.constraint]: false
       })
       return e
     }
@@ -130,9 +127,6 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, Compu
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(edge.tail ?? head),
         [_.dir]: 'both',
-        // [_.weight]: 0,
-        // [_.constraint]: false,
-        // [_.minlen]: 0
       })
       if (!hasCompoundEndpoint && sourceNode.modelRef !== targetNode.modelRef) {
         e.attributes.set(_.constraint, false)
