@@ -1,4 +1,4 @@
-import { type DeploymentFqn, type Fqn, type ThemeColor, invariant } from '@likec4/core'
+import type { DeploymentFqn, Fqn, ThemeColor } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useState } from 'react'
 import { useDiagram } from '../../../../hooks'

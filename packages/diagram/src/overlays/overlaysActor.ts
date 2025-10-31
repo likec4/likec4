@@ -3,8 +3,6 @@ import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
 import { isString, last, reverse } from 'remeda'
 import {
-  type ActorLogicFrom,
-  type ActorRefFrom,
   type ActorRefFromLogic,
   type SnapshotFrom,
   assertEvent,

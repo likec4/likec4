@@ -11,7 +11,6 @@ import {
 import { type InternalNodeUpdate, getViewportForBounds } from '@xyflow/system'
 import { hasAtLeast, isNullish, omit, prop } from 'remeda'
 import {
-  type ActorLogicFrom,
   type ActorRefFromLogic,
   type BaseActorRef,
   type SnapshotFrom,

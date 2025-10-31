@@ -31,9 +31,6 @@ import { produce } from 'immer'
 import type { MouseEvent } from 'react'
 import { clamp, first, hasAtLeast, prop } from 'remeda'
 import type { PartialDeep } from 'type-fest'
-import type {
-  ActorLogicFrom,
-} from 'xstate'
 import {
   and,
   assertEvent,

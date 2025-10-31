@@ -19,7 +19,6 @@ import type { InternalNodeUpdate } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import { isString, prop } from 'remeda'
 import {
-  type ActorLogicFrom,
   type ActorRefFromLogic,
   type SnapshotFrom,
   assertEvent,

@@ -1,8 +1,6 @@
 import type { LayoutedView, ViewId } from '@likec4/core/types'
 import { isEmpty } from 'remeda'
 import {
-  type ActorLogicFrom,
-  type ActorRefFrom,
   type ActorRefFromLogic,
   type SnapshotFrom,
   assertEvent,
@@ -17,7 +15,6 @@ export interface NavigationPanelActorInput {
   view: LayoutedView
   viewModel: CurrentViewModel | null
 }
-
 export type NavigationPanelActorEvent =
   // Logic events
   | { type: 'update.inputs'; inputs: NavigationPanelActorInput }
