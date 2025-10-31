@@ -49,7 +49,6 @@ export function App() {
 const Initialized = memo(() => {
   const [{
     nodesDraggable,
-    edgesEditable,
   }] = useVscodeAppState()
 
   let {

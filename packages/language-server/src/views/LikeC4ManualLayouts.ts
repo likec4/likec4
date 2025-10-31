@@ -1,10 +1,9 @@
 import type { ComputedView, LayoutedView, ViewId } from '@likec4/core'
 import { getOrCreate } from '@likec4/core/utils'
-import { loggable } from '@likec4/log'
 import JSON5 from 'json5'
 import { type URI, UriUtils } from 'langium'
 import { indexBy, omit, prop } from 'remeda'
-import { type Location, Position, Range, TextEdit } from 'vscode-languageserver-types'
+import { type Location, Position, Range } from 'vscode-languageserver-types'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { Project } from '../workspace/ProjectsManager'
@@ -94,60 +93,17 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       space: 2,
       quote: '\'',
     })
-    const manualLayouts = await this.read(project)
-    const existing = !!manualLayouts?.[layouted.id]
-    let applied = false
-
-    // from vscode-languageserver-types
-    const MAX_VALUE = 2147483647
-
-    // Create a range that covers the whole file, the maximum size supported by LSP
-    const range = Range.create(
-      Position.create(0, 0),
-      Position.create(MAX_VALUE, 1),
-    )
-    const uri = file.toString()
-    const lspConnection = this.services.shared.lsp.Connection
-    // Apply edits if possible
-    // Otherwise, write the file
-    if (lspConnection && existing) {
-      const applyResult = await lspConnection.workspace.applyEdit({
-        label: `LikeC4 - write manual layout ${layouted.id}`,
-        edit: {
-          changes: {
-            [uri]: [
-              TextEdit.replace(
-                range,
-                content,
-              ),
-            ],
-          },
-        },
-      })
-      applied = applyResult.applied
-      if (!applyResult.applied) {
-        logger.warn`Failed to apply manual layout edit for ${layouted.id} in project ${project.id}: ${
-          loggable(applyResult)
-        }`
-      } else {
-        logger.debug`Manual layout of ${layouted.id} in project ${project.id} saved to ${file.fsPath}`
-      }
-    }
-
-    // If not applied, force write the file
-    if (!applied) {
-      logger.debug`force write manual layout of ${layouted.id} in project ${project.id} to ${file.fsPath}`
-      const fs = this.services.shared.workspace.FileSystemProvider
-      try {
-        await fs.writeFile(file, content)
-      } catch (err) {
-        logger.warn(`Failed to write manual layout ${layouted.id} to ${file.fsPath}`, { err })
-      }
+    logger.debug`write snapshot of ${layouted.id} in project ${project.id} to ${file.fsPath}`
+    const fs = this.services.shared.workspace.FileSystemProvider
+    try {
+      await fs.writeFile(file, content)
+    } catch (err) {
+      logger.warn(`Failed to write snapshot ${layouted.id} to ${file.fsPath}`, { err })
     }
 
     this.clearCache(project)
     return {
-      uri,
+      uri: file.toString(),
       range: Range.create(
         Position.create(0, 0),
         Position.create(content.split('\n').length - 1, 1),
@@ -157,51 +113,19 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
 
   async remove(project: Project, view: ViewId): Promise<Pick<Location, 'uri'> | null> {
     const outDir = getManualLayoutsOutDir(project)
-
-    const manualLayouts = await this.read(project)
-    if (!manualLayouts?.[view]) {
-      logger.debug(`Project ${project.id} does not have manual layout for ${view}`)
-      return null
-    }
-
     const file = UriUtils.joinPath(outDir, fileName(view))
-    let applied = false
-    const lspConnection = this.services.shared.lsp.Connection
-    // Apply workspace edits if possible
-    // Otherwise, delete the file
-    if (lspConnection) {
-      const applyResult = await lspConnection.workspace.applyEdit({
-        label: `LikeC4 - remove manual layout ${view}`,
-        edit: {
-          documentChanges: [
-            {
-              kind: 'delete',
-              uri: file.toString(),
-            },
-          ],
-        },
-      })
-      applied = applyResult.applied
-      if (!applyResult.applied) {
-        logger.warn(loggable(applyResult))
-      } else {
-        logger.debug`manual layout of ${view} in project ${project.id} removed. File: ${file.toString()}`
+
+    logger.debug`delete snapshot of ${view} in project ${project.id}. File: ${file.fsPath}`
+    try {
+      const fs = this.services.shared.workspace.FileSystemProvider
+      if (!(await fs.deleteFile(file))) {
+        logger.warn`Snapshot ${view} did not exist at ${file.fsPath}`
+        return null
       }
+    } catch (err) {
+      logger.warn(`Failed to delete snapshot ${view} from ${file.fsPath}`, { err })
     }
 
-    // If not applied, force delete the file
-    if (!applied) {
-      logger.debug`force delete manual layout of ${view} in project ${project.id}. File: ${file.toString()}`
-      try {
-        const fs = this.services.shared.workspace.FileSystemProvider
-        applied = await fs.deleteFile(file)
-      } catch (err) {
-        logger.warn(`Failed to delete manual layout ${view} from ${file.toString()}`, { err })
-      }
-    }
-    if (!applied) {
-      return null
-    }
     this.clearCache(project)
     return {
       uri: file.toString(),

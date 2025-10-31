@@ -43,6 +43,7 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
   /**
    * Deletes the file from the file system.
    * Used by manual layouts.
+   * @return true if the file was deleted, false if the file did not exist.
    */
   deleteFile(uri: URI): Promise<boolean>
 }
