@@ -59,7 +59,6 @@ export function ViewReact() {
       enableRelationshipBrowser
       enableElementTags
       enableCompareWithLatest
-      experimentalEdgeEditing={false}
       enableNotations={hasNotations}
       nodesDraggable={false}
       nodesSelectable

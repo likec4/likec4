@@ -67,7 +67,7 @@ function RouteComponent() {
         enableElementDetails
         enableRelationshipDetails
         enableRelationshipBrowser
-        experimentalEdgeEditing={false}
+        enableCompareWithLatest={false}
         enableElementTags
         enableSearch
         enableNotations={hasNotations}

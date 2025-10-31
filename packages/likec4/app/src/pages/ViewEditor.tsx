@@ -36,7 +36,6 @@ export function ViewEditor() {
       pannable
       controls
       nodesDraggable
-      experimentalEdgeEditing
       fitViewPadding={{
         top: '70px',
         bottom: '32px',

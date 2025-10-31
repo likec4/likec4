@@ -101,7 +101,6 @@ function WorkspaceDiagramPage() {
               left: '60px',
               right: '32px',
             }}
-            experimentalEdgeEditing
             nodesSelectable
             nodesDraggable
             showNavigationButtons
@@ -113,6 +112,7 @@ function WorkspaceDiagramPage() {
             enableElementTags
             enableFocusMode
             enableSearch
+            enableCompareWithLatest={false}
             reactFlowProps={{
               // Otherwise reactflow intercepts "Space" key
               panActivationKeyCode: null,
