@@ -25,6 +25,7 @@ import { useTelemetry } from './common/useTelemetry'
 import { isDev } from './const'
 import { logger, logWarn } from './logger'
 import { useRpc } from './Rpc'
+import { latestUpdatedSnapshotUri } from './state'
 import { performanceMark } from './utils'
 
 export function activateExtension(extensionKind: 'node' | 'web') {
@@ -144,7 +145,21 @@ function activateLc() {
   })
 
   const viewSnapshotWatcher = useFsWatcher(toRef(`**/*.likec4.snap`))
+  viewSnapshotWatcher.onDidChange((uri) => {
+    if (latestUpdatedSnapshotUri.value === uri.toString()) {
+      logger.debug(`Ignoring view snapshot change triggered by self: ${uri.fsPath}`)
+      latestUpdatedSnapshotUri.value = null
+      return
+    }
+    logger.debug(`View snapshot changed: ${uri.fsPath}`)
+    void rpc.reloadProjects()
+  })
   viewSnapshotWatcher.onDidCreate((uri) => {
+    if (latestUpdatedSnapshotUri.value === uri.toString()) {
+      logger.debug`Ignoring view snapshot creation triggered by self: ${uri.fsPath}`
+      latestUpdatedSnapshotUri.value = null
+      return
+    }
     logger.debug`View snapshot created: ${uri.fsPath}`
     void rpc.reloadProjects()
   })

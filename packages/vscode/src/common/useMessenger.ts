@@ -23,7 +23,7 @@ import { BROADCAST } from 'vscode-messenger-common'
 import { logger as rootLogger } from '../logger'
 import { commands } from '../meta'
 import type { Rpc } from '../Rpc'
-import { computedModels } from '../state'
+import { computedModels, latestUpdatedSnapshotUri } from '../state'
 import { performanceMark } from '../utils'
 import type { DiagramPanel } from './useDiagramPanel'
 
@@ -135,9 +135,12 @@ export function activateMessenger(
   useDisposable(messenger.onNotification(WebviewMsgs.OnChange, async ({ viewId, change }) => {
     try {
       const projectId = toValue(preview.projectId) ?? 'default' as ProjectId
+      logger.debug`request ${change.op} of ${viewId} in project ${projectId}`
       let loc = await rpc.changeView({ viewId, projectId, change })
-      logger.debug`done ${change.op} of ${viewId} in project ${projectId}`
-      if (change.op === 'reset-manual-layout') {
+      if (change.op === 'reset-manual-layout' || change.op === 'save-view-snapshot') {
+        if (loc) {
+          latestUpdatedSnapshotUri.value = loc.uri
+        }
         broadcastModelUpdate()
         return
       }
@@ -146,16 +149,7 @@ export function activateMessenger(
         return
       }
       const location = rpc.client.protocol2CodeConverter.asLocation(loc)
-      // Do not show snapshot file (it is too big)
-      if (change.op === 'save-view-snapshot') {
-        // await vscode.workspace.save(location.uri)
-        broadcastModelUpdate()
-        return
-      }
       let viewColumn = activeTextEditor.value?.viewColumn ?? vscode.ViewColumn.One
-      // if (PreviewPanel.current?.panel.viewColumn === viewColumn) {
-      //   viewColumn = vscode.ViewColumn.Beside
-      // }
       const selection = location.range
       const preserveFocus = viewColumn === vscode.ViewColumn.Beside
       const editor = await vscode.window.showTextDocument(location.uri, {
