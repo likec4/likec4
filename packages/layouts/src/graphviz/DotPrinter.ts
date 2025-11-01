@@ -287,7 +287,6 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.TBbalance]: 'min',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
-      [_.ordering]: 'in',
       [_.nodesep]: pxToInch(autoLayout.nodeSep ?? 110),
       [_.ranksep]: pxToInch(autoLayout.rankSep ?? 120),
       [_.pad]: pxToInch(15),

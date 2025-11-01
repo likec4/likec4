@@ -10,6 +10,7 @@ import { toArrowType } from './utils'
 export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, ComputedDynamicView<A>> {
   protected override postBuild(G: RootGraphModel): void {
     G.delete(_.TBbalance)
+    G.set(_.ordering, 'in')
   }
 
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
