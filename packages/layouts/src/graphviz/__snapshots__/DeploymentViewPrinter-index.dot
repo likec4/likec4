@@ -6,7 +6,6 @@ digraph {
   rankdir = "TB";
   splines = "spline";
   outputorder = "nodesfirst";
-  ordering = "in";
   nodesep = 1.806;
   ranksep = 1.806;
   pad = 0.209;
