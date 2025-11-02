@@ -35,7 +35,7 @@ export type {
   WhereOperator,
 } from '../LikeC4Diagram.props'
 
-export { Base } from '../base/types'
+export { Base } from '../base/Base'
 
 export type { Types } from '../likec4diagram/types'
 

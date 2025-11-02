@@ -1,27 +1,13 @@
 import { css } from '@likec4/styles/css'
 import { Box, HStack } from '@likec4/styles/jsx'
 import {
-  Button,
-  Popover,
-  PopoverDropdown,
-  PopoverTarget,
   UnstyledButton,
 } from '@mantine/core'
 import { memo } from 'react'
-import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
-import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 
 export const LayoutDriftFrame = memo(() => {
-  const [{ layout, isActive }, {
-    switchLayout,
-    resetManualLayout,
-  }] = useDiagramCompareLayout()
-  const {
-    enableReadOnly,
-  } = useEnabledFeatures()
-
-  const portalProps = useMantinePortalProps()
+  const [{ layout, isActive }, { switchLayout }] = useDiagramCompareLayout()
 
   if (!isActive) return null
 
@@ -43,65 +29,41 @@ export const LayoutDriftFrame = memo(() => {
         borderColor: bgColor,
       }}
     >
-      <Popover
-        position="right-start"
-        disabled={layout === 'auto'}
-        floatingStrategy="absolute"
-        offset={{
-          mainAxis: 2,
-          crossAxis: 4,
+      <HStack
+        css={{
+          position: 'absolute',
+          alignItems: 'stretch',
+          top: '0',
+          gap: '0.5',
+          py: '0',
+          px: '4',
+          pointerEvents: 'all',
+          color: 'mantine.colors.gray[9]',
+          userSelect: 'none',
+          overflow: 'hidden',
         }}
-        {...portalProps}>
-        <PopoverTarget>
-          <HStack
-            css={{
-              position: 'absolute',
-              alignItems: 'stretch',
-              top: '0',
-              gap: '0.5',
-              py: '0',
-              px: '4',
-              pointerEvents: 'all',
-              color: 'mantine.colors.gray[9]',
-              userSelect: 'none',
-              overflow: 'hidden',
-            }}
-            style={{
-              left: '50%',
-              transform: 'translateX(-50%)',
-            }}
-          >
-            <Btn
-              {...layout === 'manual' ? { 'data-selected': true } : {}}
-              bg={'orange.6'}
-              onClick={() => {
-                switchLayout('manual')
-              }}>
-              saved version
-            </Btn>
-            <Btn
-              {...layout === 'auto' ? { 'data-selected': true } : {}}
-              bg={'green.6'}
-              onClick={() => {
-                switchLayout('auto')
-              }}>
-              latest
-            </Btn>
-          </HStack>
-        </PopoverTarget>
-        <PopoverDropdown p={3}>
-          <Button
-            size="compact-xs"
-            variant="default"
-            onClick={(e) => {
-              e.stopPropagation()
-              resetManualLayout()
-            }}
-          >
-            Reset layout
-          </Button>
-        </PopoverDropdown>
-      </Popover>
+        style={{
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }}
+      >
+        <Btn
+          {...layout === 'manual' ? { 'data-selected': true } : {}}
+          bg={'orange.6'}
+          onClick={() => {
+            switchLayout('manual')
+          }}>
+          saved version
+        </Btn>
+        <Btn
+          {...layout === 'auto' ? { 'data-selected': true } : {}}
+          bg={'green.6'}
+          onClick={() => {
+            switchLayout('auto')
+          }}>
+          latest
+        </Btn>
+      </HStack>
     </Box>
   )
 })

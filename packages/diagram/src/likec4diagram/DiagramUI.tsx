@@ -1,7 +1,6 @@
 import { useRerender } from '@react-hookz/web'
 import { memo } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
-import { useDiagramEventHandlers } from '../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { useOverlaysActorRef } from '../hooks/useOverlaysActor'
 import { useSearchActorRef } from '../hooks/useSearchActor'
@@ -20,7 +19,6 @@ export const LikeC4DiagramUI = memo(() => {
     enableReadOnly,
     enableCompareWithLatest,
   } = useEnabledFeatures()
-  const { onLayoutTypeChange } = useDiagramEventHandlers()
   const rerender = useRerender()
   const overlaysActorRef = useOverlaysActorRef()
   const searchActorRef = useSearchActorRef()
@@ -32,7 +30,7 @@ export const LikeC4DiagramUI = memo(() => {
       {enableNotations && <NotationPanel />}
       {enableSearch && searchActorRef && <Search searchActorRef={searchActorRef} />}
       {enableRelationshipDetails && enableReadOnly && <RelationshipPopover />}
-      {enableCompareWithLatest && onLayoutTypeChange && <LayoutDriftFrame onLayoutTypeChange={onLayoutTypeChange} />}
+      {enableCompareWithLatest && <LayoutDriftFrame />}
     </ErrorBoundary>
   )
 })

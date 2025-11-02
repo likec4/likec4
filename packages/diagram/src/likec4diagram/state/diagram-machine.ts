@@ -30,7 +30,7 @@ import {
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import type { MouseEvent } from 'react'
-import { clamp, first, hasAtLeast, omit, prop } from 'remeda'
+import { clamp, first, hasAtLeast, prop } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import {
   and,
@@ -69,12 +69,12 @@ import {
   updateNavigationHistory,
   updateNodeData,
 } from './assign'
+import { createViewChange } from './createViewChange'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { DiagramToggledFeaturesPersistence } from './persistence'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import {
   activeSequenceBounds,
-  createViewChange,
   findDiagramEdge,
   findDiagramNode,
   focusedBounds,
@@ -383,9 +383,10 @@ const machine = setup({
       let center: XYPoint
       if (params) {
         center = params
-      } else {
-        assertEvent(event, 'update.view')
+      } else if (event.type === 'update.view') {
         center = BBox.center(event.view.bounds)
+      } else {
+        center = BBox.center(context.view.bounds)
       }
       invariant(context.xyflow, 'xyflow is not initialized')
       const zoom = context.xyflow.getZoom()
@@ -414,7 +415,7 @@ const machine = setup({
           x: Math.round(fromPos.x - toPos.x),
           y: Math.round(fromPos.y - toPos.y),
         }
-      context.xystore!.getState().panBy(diff)
+      context.xystore.getState().panBy(diff)
     },
 
     'layout.align': ({ context }, params: { mode: AlignmentMode }) => {
@@ -830,9 +831,10 @@ const initializing = machine.createStateConfig({
 const disableCompareWithLatest = machine.createAction(
   assign(({ context }) => {
     return {
-      toggledFeatures: context.toggledFeatures.enableCompareWithLatest
-        ? omit(context.toggledFeatures, ['enableCompareWithLatest'])
-        : context.toggledFeatures,
+      toggledFeatures: {
+        ...context.toggledFeatures,
+        enableCompareWithLatest: false,
+      },
       viewportOnAutoLayout: null,
       viewportOnManualLayout: null,
     }
@@ -846,11 +848,13 @@ const navigating = machine.createStateConfig({
     'closeAllOverlays',
     'closeSearch',
     'stopSyncLayout',
+    cancel('fitDiagram'),
     'trigger:NavigateTo',
   ],
   on: {
     'update.view': {
       actions: enqueueActions(({ enqueue, context, event }) => {
+        enqueue(disableCompareWithLatest)
         const { fromNode, toNode } = findCorrespondingNode(context, event)
         if (fromNode && toNode) {
           enqueue({
@@ -867,7 +871,6 @@ const navigating = machine.createStateConfig({
           enqueue('xyflow:setViewportCenter')
         }
         enqueue.assign(updateNavigationHistory)
-        enqueue(disableCompareWithLatest)
         enqueue('update XYNodesEdges')
         enqueue('startSyncLayout')
         enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 25 })
@@ -922,36 +925,41 @@ const emitOnLayoutTypeChange = machine.createAction(
       console.warn('Layout type cannot be changed while CompareWithLatest feature is disabled')
       return
     }
-    let layoutType = context.view._layout ?? 'auto'
+    const currentLayoutType = context.view._layout
+    // toggle
+    let nextLayoutType: LayoutType = currentLayoutType === 'auto' ? 'manual' : 'auto'
+
     if (event.type === 'emit.onLayoutTypeChange') {
-      layoutType = event.layoutType
-    } else {
-      // toggle
-      layoutType = layoutType === 'auto' ? 'manual' : 'auto'
+      nextLayoutType = event.layoutType
     }
 
-    // Check if we are switching from manual to auto layout while a sync is pending
-    if (context.view._layout === 'manual' && layoutType === 'auto') {
-      const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-      const syncState = syncLayoutActor?.getSnapshot().value
-      const isPending = syncLayoutActor && (syncState === 'pending' || syncState === 'paused')
-      if (isPending) {
-        enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
-        enqueue.emit({
-          type: 'onChange',
-          change: createViewChange(context),
-        })
-      }
+    if (currentLayoutType === nextLayoutType) {
+      console.warn('Ignoring layout type change event, layout type is already', currentLayoutType)
+      return
     }
 
     if (context.toggledFeatures.enableCompareWithLatest === true) {
+      // Check if we are switching from manual to auto layout while a sync is pending
+      if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
+        const syncLayoutActor = typedSystem(system).syncLayoutActorRef
+        const syncState = syncLayoutActor?.getSnapshot().value
+        const isPending = syncLayoutActor && (syncState === 'pending' || syncState === 'paused')
+        if (isPending) {
+          enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
+          enqueue.emit({
+            type: 'onChange',
+            change: createViewChange(context),
+          })
+        }
+      }
+
       const currentViewport = context.viewport
-      if (context.view._layout === 'auto') {
+      if (currentLayoutType === 'auto') {
         enqueue.assign({
           viewportOnAutoLayout: currentViewport,
         })
       }
-      if (context.view._layout === 'manual') {
+      if (currentLayoutType === 'manual') {
         enqueue.assign({
           viewportOnManualLayout: currentViewport,
         })
@@ -960,7 +968,7 @@ const emitOnLayoutTypeChange = machine.createAction(
 
     enqueue.emit({
       type: 'onLayoutTypeChange',
-      layoutType,
+      layoutType: nextLayoutType,
     })
   }),
 )
@@ -1063,6 +1071,7 @@ const _diagramMachine = machine.createMachine({
     features: { ...DefaultFeatures },
     toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
       enableReadOnly: true,
+      enableCompareWithLatest: false,
     },
     initialized: {
       xydata: false,
@@ -1363,7 +1372,7 @@ const _diagramMachine = machine.createMachine({
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
             } else {
-              enqueue('xyflow:fitDiagram')
+              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 20 })
             }
             enqueue('undim everything')
             enqueue.assign({

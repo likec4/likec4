@@ -15,17 +15,17 @@ import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
 import { DeploymentElementActions, ElementActions } from './ElementActions'
+import { ElementNodeDrifts } from './ElementNodeDrifts'
 import { CompoundDeploymentToolbar, CompoundElementToolbar } from './toolbar/CompoundToolbar'
 import { DeploymentElementToolbar, ElementToolbar } from './toolbar/ElementToolbar'
 
 export function ElementDetailsButtonWithHandler(
   props: Pick<Types.NodeProps<'element' | 'deployment'>, 'id' | 'data'>,
 ) {
-  const { enableElementDetails } = useEnabledFeatures()
   const diagram = useDiagram()
   const fqn = props.data.modelFqn
 
-  if (!enableElementDetails || !fqn) return null
+  if (!fqn) return null
 
   return (
     <ElementDetailsButton
@@ -40,11 +40,10 @@ export function ElementDetailsButtonWithHandler(
 export function CompoundDetailsButtonWithHandler(
   props: Types.NodeProps<'compound-deployment' | 'compound-element'>,
 ) {
-  const { enableElementDetails } = useEnabledFeatures()
   const diagram = useDiagram()
   const fqn = props.data.modelFqn
 
-  if (!enableElementDetails || !fqn) return null
+  if (!fqn) return null
 
   return (
     <CompoundDetailsButton
@@ -60,14 +59,15 @@ export function CompoundDetailsButtonWithHandler(
  * Renders an element node.
  */
 export function ElementNode(props: Types.NodeProps<'element'>) {
-  const { enableElementTags, enableReadOnly } = useEnabledFeatures()
+  const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
+      {enableCompareWithLatest && <ElementNodeDrifts {...props} />}
       <ElementShape {...props} />
       <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
       <ElementActions {...props} />
-      <ElementDetailsButtonWithHandler {...props} />
+      {enableElementDetails && <ElementDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <ElementToolbar {...props} />}
       <DefaultHandles />
     </ElementNodeContainer>
@@ -75,14 +75,15 @@ export function ElementNode(props: Types.NodeProps<'element'>) {
 }
 
 export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
-  const { enableElementTags, enableReadOnly } = useEnabledFeatures()
+  const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
+      {enableCompareWithLatest && <ElementNodeDrifts {...props} />}
       <ElementShape {...props} />
       <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
       <DeploymentElementActions {...props} />
-      <ElementDetailsButtonWithHandler {...props} />
+      {enableElementDetails && <ElementDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <DeploymentElementToolbar {...props} />}
       <DefaultHandles />
     </ElementNodeContainer>

@@ -97,7 +97,7 @@ const selectFromActor = (
   toggledFeatures: Partial<EnabledFeatures>
   viewId: ViewId
 } => {
-  const toggledFeatures = context.toggledFeatures
+  let toggledFeatures = context.toggledFeatures
 
   // Compare with latest is disabled during active walkthrough
   const enableCompareWithLatest = context.features.enableCompareWithLatest &&
@@ -113,12 +113,20 @@ const selectFromActor = (
     // Compare with latest enforces readonly
     || (enableCompareWithLatest && context.view._layout === 'auto' && context.view.drifts != null)
 
-  return {
-    toggledFeatures: {
+  // Update toggled features if changed
+  if (
+    toggledFeatures.enableReadOnly !== enableReadOnly ||
+    toggledFeatures.enableCompareWithLatest !== enableCompareWithLatest
+  ) {
+    toggledFeatures = {
       ...toggledFeatures,
       enableCompareWithLatest,
       enableReadOnly,
-    },
+    }
+  }
+
+  return {
+    toggledFeatures,
     viewId: context.view.id,
   }
 }

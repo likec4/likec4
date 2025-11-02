@@ -9,8 +9,8 @@ import {
   sendTo,
   setup,
 } from 'xstate'
+import { createViewChange } from './createViewChange'
 import type { Context as DiagramContext, Events as DiagramEvents } from './diagram-machine'
-import { createViewChange } from './utils'
 
 export type Input = {
   /**

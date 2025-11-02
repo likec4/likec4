@@ -177,9 +177,9 @@ export function applyManualLayout<
       if (!sizeNotChanged) {
         nodeDrifts.add('size-changed')
       }
-      if (node.x !== next.x || node.y !== next.y) {
-        nodeDrifts.add('position-changed')
-      }
+      // if (node.x !== next.x || node.y !== next.y) {
+      //   nodeDrifts.add('position-changed')
+      // }
       // The following properties are safe to update
       // (ignoring size / text size / padding)
       const safeStyle = pick(next.style, ['border', 'opacity', 'multiple'])
