@@ -140,6 +140,14 @@ export const tokens = defineTokens({
     // For fill: none
     none: { value: 'none' },
   },
+  fontWeights: {
+    normal: {
+      value: '400',
+    },
+    medium: {
+      value: '500',
+    },
+  },
   fonts: {
     mono: {
       value: `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace`,

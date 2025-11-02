@@ -34,6 +34,7 @@ export function useXYStoreApi(): XYStoreApi {
 export type XYStoreApi = {
   getState: () => XYStoreState
   setState: (state: Partial<XYStoreState> | ((state: XYStoreState) => Partial<XYStoreState>)) => void
+  subscribe: (listener: (state: XYStoreState, prevState: XYStoreState) => void) => () => void
 }
 
 export type XYInternalNode = InternalNode<Types.AnyNode>

@@ -1,4 +1,4 @@
-import { getViewBounds, LikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram, pickViewBounds } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useDebouncedCallback } from '@react-hookz/web'
@@ -92,7 +92,7 @@ export function ExportPage() {
     return <div>Loading...</div>
   }
 
-  const bounds = getViewBounds(diagram, dynamic)
+  const bounds = pickViewBounds(diagram, dynamic)
 
   // @see https://github.com/likec4/likec4/issues/1857
   const extraPadding = 16

@@ -21,7 +21,7 @@ import type {
 } from './LikeC4Diagram.props'
 import { Overlay } from './overlays/overlay/Overlay'
 import { ShadowRoot } from './shadowroot/ShadowRoot'
-import { getViewBounds } from './utils/view-bounds'
+import { pickViewBounds } from './utils/view-bounds'
 
 export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   /**
@@ -412,7 +412,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
 
   const browserProps = isBoolean(browser) ? {} : browser
 
-  const bounds = getViewBounds(view, props.dynamicViewVariant)
+  const bounds = pickViewBounds(view, props.dynamicViewVariant)
 
   return (
     <ShadowRoot

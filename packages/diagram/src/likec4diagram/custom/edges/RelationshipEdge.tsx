@@ -1,15 +1,10 @@
-import {
-  type EdgeId,
-  nonNullable,
-} from '@likec4/core'
+import type { EdgeId } from '@likec4/core/types'
 import { cx as clsx } from '@likec4/styles/css'
 import { useCallbackRef } from '@mantine/hooks'
 import { useRafEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
-import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
-import { first, isTruthy, last } from 'remeda'
 import {
   EdgeActionButton,
   EdgeContainer,
@@ -22,22 +17,14 @@ import { ZIndexes } from '../../../base/const'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
-import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks/useXYFlow'
-import { roundDpr } from '../../../utils/roundDpr'
-import { Vector, vector } from '../../../utils/vector'
+import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
 import {
-  bezierControlPoints,
-  bezierPath,
-  getNodeIntersectionFromCenterToPoint,
   isSamePoint,
 } from '../../../utils/xyflow'
 import type { Types } from '../../types'
 import * as edgesCss from './edges.css'
-
-const curve = d3line<XYPosition>()
-  .curve(curveCatmullRomOpen.alpha(0.7))
-  .x(d => roundDpr(d.x))
-  .y(d => roundDpr(d.y))
+import { useControlPoints } from './useControlPoints'
+import { useRelationshipEdgePath } from './useRelationshipEdgePath'
 
 const getEdgeCenter = (path: SVGPathElement) => {
   const dompoint = path.getPointAtLength(path.getTotalLength() * 0.5)
@@ -58,15 +45,8 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   const enabledEditing = !enableReadOnly
   const {
     id,
-    source,
-    sourceX,
-    sourceY,
-    target,
-    targetX,
-    targetY,
     selected = false,
     data: {
-      points,
       hovered = false,
       active = false,
       labelBBox,
@@ -77,48 +57,17 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const navigateTo = enableNavigateTo ? data.navigateTo : undefined
 
-  const sourceNode = nonNullable(useXYInternalNode(source)!, `source node ${source} not found`)
-  const targetNode = nonNullable(useXYInternalNode(target)!, `target node ${target} not found`)
+  const {
+    controlPoints,
+    setControlPoints,
+    insertControlPoint,
+  } = useControlPoints(props)
 
-  const isModified = isTruthy(data.controlPoints) || isControlPointDragging
-
-  let [controlPoints, setControlPoints] = useState<XYPosition[]>(() =>
-    data.controlPoints ?? bezierControlPoints(props.data.points)
-  )
-  useUpdateEffect(() => {
-    setControlPoints(data.controlPoints ?? bezierControlPoints(props.data.points))
-  }, [
-    data.controlPoints?.map(p => `${p.x},${p.y}`).join('|') ?? '',
-    props.data.points.map(p => `${p[0]},${p[1]}`).join('|'),
-  ])
-
-  let edgePath: string = ''
-
-  if (isModified && controlPoints) {
-    const sourceCenterPos = { x: sourceX, y: sourceY }
-    const targetCenterPos = { x: targetX, y: targetY }
-
-    const nodeMargin = 6
-    const points = data.dir === 'back'
-      ? [
-        targetCenterPos,
-        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos, nodeMargin),
-        ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos, nodeMargin),
-        sourceCenterPos,
-      ]
-      : [
-        sourceCenterPos,
-        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos, nodeMargin),
-        ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos, nodeMargin),
-        targetCenterPos,
-      ]
-
-    edgePath = nonNullable(curve(points))
-  } else {
-    edgePath = bezierPath(points)
-  }
+  let edgePath = useRelationshipEdgePath({
+    props,
+    controlPoints,
+    isControlPointDragging,
+  })
 
   let labelX = labelBBox?.x ?? 0,
     labelY = labelBBox?.y ?? 0
@@ -150,6 +99,25 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const wasDiagramSyncCancelledRef = useRef(false)
 
+  const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
+    const point = svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
+    if (labelBBox && point) {
+      diagram.updateEdgeData(id as EdgeId, {
+        controlPoints,
+        labelBBox: {
+          ...labelBBox,
+          ...point,
+        },
+        labelXY: point,
+      })
+    } else {
+      diagram.updateEdgeData(id as EdgeId, { controlPoints })
+    }
+    wasDiagramSyncCancelledRef.current = false
+    diagram.scheduleSaveManualLayout()
+    setIsControlPointDragging(false)
+  })
+
   const onControlPointerStartMove = useCallbackRef(() => {
     wasDiagramSyncCancelledRef.current = diagram.cancelSaveManualLayout()
     setIsControlPointDragging(true)
@@ -165,24 +133,17 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const onControlPointerFinishMove = useCallbackRef((points: XYPosition[]) => {
     setControlPoints(points)
-    const point = svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
-    diagram.updateEdgeData(id as EdgeId, {
-      controlPoints: points,
-      ...(labelBBox && point && {
-        labelBBox: {
-          ...labelBBox,
-          ...point,
-        },
-        labelXY: point,
-      }),
+    requestAnimationFrame(() => {
+      updateEdgeData(points)
     })
-    diagram.scheduleSaveManualLayout()
-    setIsControlPointDragging(false)
   })
   const onControlPointerDelete = useCallbackRef((points: XYPosition[]) => {
+    wasDiagramSyncCancelledRef.current = diagram.cancelSaveManualLayout()
+    setIsControlPointDragging(true)
     setControlPoints(points)
-    diagram.updateEdgeData(id as EdgeId, { controlPoints: points })
-    diagram.scheduleSaveManualLayout()
+    requestAnimationFrame(() => {
+      updateEdgeData(points)
+    })
   })
 
   /**
@@ -195,45 +156,20 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     if (e.button !== 2) {
       return
     }
-    const points: Vector[] = [
-      new Vector(sourceX, sourceY),
-      ...controlPoints.map(vector) || [],
-      new Vector(targetX, targetY),
-    ]
-
-    let pointer = { x: e.clientX, y: e.clientY }
-    const newPoint = vector(xyflow.screenToFlowPosition(pointer, { snapToGrid: false }))
-
-    let insertionIndex = 0
-    let minDistance = Infinity
-    for (let i = 0; i < points.length - 1; i++) {
-      const a = points[i]!,
-        b = points[i + 1]!,
-        fromCurrentToNext = b.subtract(a),
-        fromCurrentToNew = newPoint.subtract(a),
-        fromNextToNew = newPoint.subtract(b)
-
-      // Is pointer above the current segment?
-      if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
-        // Calculate distance by approximating edge segment with a staight line
-        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).length() / fromCurrentToNext.length())
-
-        if (distanceToEdge < minDistance) {
-          minDistance = distanceToEdge
-          insertionIndex = i
-        }
-      }
-    }
-
-    const newControlPoints = controlPoints.slice() || []
-    newControlPoints.splice(insertionIndex, 0, newPoint)
-
-    diagram.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
-
-    diagram.scheduleSaveManualLayout()
-
     e.stopPropagation()
     e.preventDefault()
+
+    const newControlPoints = insertControlPoint(
+      xyflow.screenToFlowPosition(
+        {
+          x: e.clientX,
+          y: e.clientY,
+        },
+        { snapToGrid: false },
+      ),
+    )
+    diagram.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
+    diagram.scheduleSaveManualLayout()
   })
 
   let zIndex = ZIndexes.Edge
@@ -272,7 +208,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
             <EdgeLabel
               pointerEvents={enabledEditing ? 'none' : 'all'}
               edgeProps={props}>
-              {navigateTo && (
+              {!enabledEditing && navigateTo && (
                 <EdgeActionButton
                   onClick={e => {
                     e.stopPropagation()
@@ -330,7 +266,7 @@ function ControlPoints({
 
     let animationFrameId: number | null = null
 
-    let cp = controlPoints.slice()
+    let cp = controlPoints
 
     const onPointerMove = (e: PointerEvent) => {
       const clientPoint = {
@@ -357,17 +293,12 @@ function ControlPoints({
       e.stopPropagation()
     }
 
-    const onClick = (e: MouseEvent) => {
-      e.stopPropagation()
-      e.preventDefault()
-    }
-
     const onPointerUp = (e: PointerEvent) => {
       e.stopPropagation()
       domNode.removeEventListener('pointermove', onPointerMove, {
         capture: true,
       })
-      domNode.removeEventListener('click', onClick, {
+      domNode.removeEventListener('click', stopAndPrevent, {
         capture: true,
       })
       if (hasMoved) {
@@ -385,32 +316,25 @@ function ControlPoints({
       capture: true,
     })
     // Handle click to prevent it from being handled by the edge #1945
-    domNode.addEventListener('click', onClick, {
+    domNode.addEventListener('click', stopAndPrevent, {
       capture: true,
       once: true,
     })
   }
 
-  const onRmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
+  const onRmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
     if (controlPoints.length <= 1) {
       return
     }
     e.stopPropagation()
+    e.preventDefault()
 
-    const onPointerUp = (e: PointerEvent) => {
-      e.stopPropagation()
-      // Defer the update to avoid conflict with the pointerup event
-      setTimeout(() => {
-        const newControlPoints = controlPoints.slice()
-        newControlPoints.splice(index, 1)
-        onDelete(newControlPoints)
-      }, 10)
-    }
-
-    domNode.addEventListener('pointerup', onPointerUp, {
-      once: true,
-      capture: true,
-    })
+    const newControlPoints = controlPoints.slice()
+    newControlPoints.splice(index, 1)
+    // Defer the update to avoid conflict with the pointerup event
+    setTimeout(() => {
+      onDelete(newControlPoints)
+    }, 10)
   }
 
   const onControlPointerDown = useCallbackRef((e: ReactPointerEvent<SVGCircleElement>) => {
@@ -418,7 +342,7 @@ function ControlPoints({
     if (!domNode || e.pointerType !== 'mouse') {
       return
     }
-    const index = Number(e.currentTarget.getAttribute('data-control-point-index'))
+    const index = parseFloat(e.currentTarget.getAttribute('data-control-point-index') || '')
     if (isNaN(index)) {
       throw new Error('data-control-point-index is not a number')
     }
@@ -431,7 +355,7 @@ function ControlPoints({
         break
       }
       case 2:
-        onRmbControlPointerDown(index, e, domNode)
+        onRmbControlPointerDown(index, e)
         break
     }
   })
@@ -452,11 +376,11 @@ function ControlPoints({
           {controlPoints.map((p, i) => (
             <circle
               data-control-point-index={i}
-              onPointerDown={onControlPointerDown}
+              onPointerDownCapture={onControlPointerDown}
               className={clsx('nodrag nopan', edgesCss.controlPoint)}
               key={'controlPoints' + edgeId + '#' + i}
-              cx={Math.round(p.x)}
-              cy={Math.round(p.y)}
+              cx={p.x}
+              cy={p.y}
               r={3}
             />
           ))}
@@ -466,7 +390,7 @@ function ControlPoints({
   )
 }
 
-const stopAndPrevent = (e: React.MouseEvent) => {
+const stopAndPrevent = (e: React.MouseEvent | MouseEvent) => {
   e.stopPropagation()
   e.preventDefault()
 }

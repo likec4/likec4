@@ -1,4 +1,4 @@
-import { type AutoLayoutDirection, isNonEmptyArray } from '@likec4/core'
+import type { AutoLayoutDirection } from '@likec4/core'
 import {
   Box,
   Flex,
@@ -28,7 +28,7 @@ import * as css from './styles'
 
 const selector = (state: DiagramContext) => ({
   viewId: state.view.id,
-  isManualLayout: state.view._layout === 'manual' && isNonEmptyArray(state.view.drifts),
+  isManualLayout: state.view._layout === 'manual',
   autoLayout: state.view.autoLayout,
 })
 
@@ -51,6 +51,7 @@ export const ChangeAutoLayoutButton = () => {
 
   const setAutoLayout = (direction: AutoLayoutDirection) => (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
+    diagram.fitDiagram()
     diagram.triggerChange({
       op: 'change-autolayout',
       layout: {

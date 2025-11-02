@@ -8,7 +8,6 @@ import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { type DependencyList, useCallback, useEffect, useMemo, useRef } from 'react'
-import { hasAtLeast } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
@@ -20,7 +19,7 @@ import type {
   DiagramContext,
   DiagramEmittedEvents,
 } from '../likec4diagram/state/types'
-import { findDiagramEdge, findDiagramNode } from '../likec4diagram/state/utils'
+import { findDiagramEdge, findDiagramNode, typedSystem } from '../likec4diagram/state/utils'
 import type { Types } from '../likec4diagram/types'
 import { useDiagramActorRef } from './safeContext'
 
@@ -184,7 +183,7 @@ export function useDiagram<A extends Any = Unknown>(): DiagramApi<A> {
      * @returns true if there was pending request to save layout
      */
     cancelSaveManualLayout: () => {
-      const syncState = actor.getSnapshot().children.syncLayout?.getSnapshot().value
+      const syncState = typedSystem(actor.system).syncLayoutActorRef?.getSnapshot().value
       const isPending = syncState === 'pending' || syncState === 'paused'
       if (isPending) {
         actor.send({ type: 'saveManualLayout.pause' })
@@ -263,8 +262,8 @@ export function useDiagram<A extends Any = Unknown>(): DiagramApi<A> {
       actor.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
     },
 
-    triggerChange: (viewChange: ViewChange) => {
-      actor.send({ type: 'emit.onChange', viewChange })
+    triggerChange: (change: ViewChange) => {
+      actor.send({ type: 'emit.onChange', change })
     },
 
     switchDynamicViewVariant: (variant: DynamicViewDisplayVariant) => {
@@ -294,7 +293,7 @@ export function useDiagramContext<T = unknown>(
   return useXstateSelector(actorRef, select, compare)
 }
 
-type PickEmittedEvent<T extends DiagramEmittedEvents['type']> = DiagramEmittedEvents & { type: T }
+type PickEmittedEvent<T> = T extends DiagramEmittedEvents['type'] ? DiagramEmittedEvents & { type: T } : never
 
 /**
  * Subscribe to diagram emitted events
@@ -314,35 +313,11 @@ export function useOnDiagramEvent<T extends DiagramEmittedEvents['type']>(
   callbackRef.current = callback
 
   useEffect(() => {
-    const subscription = actorRef.on(event, (event) => {
-      callbackRef.current(event as DiagramEmittedEvents & { type: T })
+    const subscription = actorRef.on(event, (payload) => {
+      callbackRef.current(payload as PickEmittedEvent<T>)
     })
     return () => {
       subscription.unsubscribe()
     }
-  }, [actorRef])
-}
-
-const selectCompareState = ({ context }: DiagramActorSnapshot) => {
-  const drifts = context.view.drifts
-  if (!context.features.enableCompareWithLatest || !drifts || !hasAtLeast(drifts, 1)) {
-    return ({
-      isEnabled: false as const,
-      isActive: false as const,
-      drifts: [] as never[],
-      layout: context.view._layout,
-    })
-  }
-
-  return ({
-    isEnabled: true as const,
-    isActive: !!context.toggledFeatures.enableCompareWithLatest,
-    drifts,
-    layout: context.view._layout,
-  })
-}
-
-export function useDiagramCompareState(): ReturnType<typeof selectCompareState> {
-  const actorRef = useDiagramActorRef()
-  return useXstateSelector(actorRef, selectCompareState, shallowEqual)
+  }, [actorRef, event])
 }

@@ -8,15 +8,16 @@ import { useSelector } from '@xstate/react'
 import { deepEqual } from 'fast-equals'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
+import { memo } from 'react'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { BreadcrumbsSeparator } from './_common'
 import type { NavigationPanelActorSnapshot } from './actor'
 import {
   BurgerButton,
   DetailsControls,
+  ManualLayoutWarning,
   NavigationButtons,
   OpenSource,
-  OutdatedManualLayoutWarning,
   SearchControl,
   ToggleReadonly,
 } from './controls'
@@ -38,7 +39,7 @@ const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
   }
 }
 
-export const NavigationPanelControls = () => {
+export const NavigationPanelControls = memo(() => {
   const actor = useNavigationActor()
   const {
     enableSearch,
@@ -135,7 +136,8 @@ export const NavigationPanelControls = () => {
       </m.div>
       {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
       {enableSearch && <SearchControl key="search-control" />}
-      <OutdatedManualLayoutWarning key="outdated-manual-layout-warning" />
+      <ManualLayoutWarning key="outdated-manual-layout-warning" />
     </AnimatePresence>
   )
-}
+})
+NavigationPanelControls.displayName = 'NavigationPanelControls'

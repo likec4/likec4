@@ -7,7 +7,7 @@ import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { ShadowRoot } from './shadowroot/ShadowRoot'
-import { getViewBounds } from './utils'
+import { pickViewBounds } from './utils'
 
 export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
   & {
@@ -86,7 +86,7 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
       </ErrorMessage>
     )
   }
-  const bounds = getViewBounds(view, props.dynamicViewVariant)
+  const bounds = pickViewBounds(view, props.dynamicViewVariant)
 
   const hasNotations = !!enableNotations && (view.notation?.nodes?.length ?? 0) > 0
 

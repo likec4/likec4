@@ -14,6 +14,7 @@ import type {
   DynamicViewDisplayVariant,
   EdgeId,
   Fqn,
+  LayoutType,
   NodeId,
   NodeNotation as ElementNotation,
   StepEdgeId,
@@ -29,7 +30,7 @@ import {
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import type { MouseEvent } from 'react'
-import { clamp, first, hasAtLeast, prop } from 'remeda'
+import { clamp, first, hasAtLeast, omit, prop } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import {
   and,
@@ -45,8 +46,7 @@ import {
   spawnChild,
   stopChild,
 } from 'xstate'
-import { MinZoom } from '../../base/const'
-import { Base } from '../../base/types'
+import { Base, MinZoom } from '../../base'
 import { type EnabledFeatures, type FeatureName, DefaultFeatures } from '../../context/DiagramFeatures'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPadding } from '../../LikeC4Diagram.props'
@@ -72,7 +72,14 @@ import {
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { DiagramToggledFeaturesPersistence } from './persistence'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import { activeSequenceBounds, findDiagramEdge, findDiagramNode, focusedBounds, typedSystem } from './utils'
+import {
+  activeSequenceBounds,
+  createViewChange,
+  findDiagramEdge,
+  findDiagramNode,
+  focusedBounds,
+  typedSystem,
+} from './utils'
 
 export interface NavigationHistory {
   history: ReadonlyArray<{
@@ -127,6 +134,8 @@ export interface Context extends Input {
     nodeRectScreen?: Rect | null
   }
   viewportBeforeFocus: null | Viewport
+  viewportOnManualLayout: null | Viewport
+  viewportOnAutoLayout: null | Viewport
   xyflow: XYFlowInstance | null
 
   // If Dynamic View
@@ -173,6 +182,7 @@ export type Events =
   | { type: 'layout.resetEdgeControlPoints' }
   | { type: 'layout.resetManualLayout' }
   | { type: 'saveManualLayout.schedule' }
+  // | { type: 'saveManualLayout.force' }
   | { type: 'saveManualLayout.pause' }
   | { type: 'saveManualLayout.resume' }
   | { type: 'saveManualLayout.cancel' }
@@ -186,7 +196,8 @@ export type Events =
   | { type: 'tag.highlight'; tag: string }
   | { type: 'tag.unhighlight' }
   | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
-  | { type: 'emit.onChange'; viewChange: ViewChange }
+  | { type: 'emit.onChange'; change: ViewChange }
+  | { type: 'emit.onLayoutTypeChange'; layoutType: LayoutType }
 
 export type EmittedEvents =
   | { type: 'initialized'; instance: XYFlowInstance }
@@ -201,7 +212,8 @@ export type EmittedEvents =
   | { type: 'walkthroughStarted'; edge: Types.Edge }
   | { type: 'walkthroughStep'; edge: Types.Edge }
   | { type: 'walkthroughStopped' }
-  | { type: 'onChange'; viewChange: ViewChange }
+  | { type: 'onChange'; change: ViewChange }
+  | { type: 'onLayoutTypeChange'; layoutType: LayoutType }
 
 export type ActionArg = { context: Context; event: Events }
 
@@ -322,11 +334,12 @@ const machine = setup({
       }
     }),
 
-    'xyflow:fitDiagram': ({ context }, params?: { duration?: number; bounds?: BBox }) => {
+    'xyflow:fitDiagram': ({ context, event }, params?: { duration?: number; bounds?: BBox }) => {
+      params ??= event.type === 'fitDiagram' ? event : {}
       const {
         bounds = context.view.bounds,
         duration = 450,
-      } = params ?? {}
+      } = params
       const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
 
       const maxZoom = Math.max(1, transform[2])
@@ -495,7 +508,6 @@ const machine = setup({
     'stopSyncLayout': enqueueActions(({ enqueue, system }) => {
       const syncLayoutActor = typedSystem(system).syncLayoutActorRef
       if (!syncLayoutActor) return
-      enqueue.sendTo(syncLayoutActor, { type: 'stop' })
       enqueue.stopChild(syncLayoutActor)
     }),
 
@@ -511,6 +523,7 @@ const machine = setup({
           parent: self,
           viewId: context.view.id,
         },
+        syncSnapshot: true,
       })
     }),
 
@@ -778,18 +791,6 @@ const machine = setup({
       type: 'openSource',
       params: _params,
     })),
-    'emit: onChange': enqueueActions(({ enqueue, event }) => {
-      assertEvent(event, 'emit.onChange')
-      if (event.viewChange.op === 'save-view-snapshot') {
-        enqueue.assign({
-          view: event.viewChange.layout,
-        })
-      }
-      enqueue.emit({
-        type: 'onChange',
-        viewChange: event.viewChange,
-      })
-    }),
     'assign: dynamicViewVariant': assign(({ event }) => {
       assertEvent(event, 'switch.dynamicViewVariant')
       return {
@@ -826,6 +827,18 @@ const initializing = machine.createStateConfig({
   },
 })
 
+const disableCompareWithLatest = machine.createAction(
+  assign(({ context }) => {
+    return {
+      toggledFeatures: context.toggledFeatures.enableCompareWithLatest
+        ? omit(context.toggledFeatures, ['enableCompareWithLatest'])
+        : context.toggledFeatures,
+      viewportOnAutoLayout: null,
+      viewportOnManualLayout: null,
+    }
+  }),
+)
+
 // Navigating to another view (after `navigateTo` event)
 const navigating = machine.createStateConfig({
   id: 'navigating',
@@ -854,6 +867,7 @@ const navigating = machine.createStateConfig({
           enqueue('xyflow:setViewportCenter')
         }
         enqueue.assign(updateNavigationHistory)
+        enqueue(disableCompareWithLatest)
         enqueue('update XYNodesEdges')
         enqueue('startSyncLayout')
         enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 25 })
@@ -889,6 +903,157 @@ const onEdgeDoubleClick = machine.createAction(
   }),
 )
 
+const emitOnChange = machine.createAction(
+  enqueueActions(({ event, enqueue }) => {
+    assertEvent(event, 'emit.onChange')
+    enqueue.assign({
+      viewportChangedManually: true,
+    })
+    enqueue.emit({
+      type: 'onChange',
+      change: event.change,
+    })
+  }),
+)
+
+const emitOnLayoutTypeChange = machine.createAction(
+  enqueueActions(({ event, system, context, enqueue }) => {
+    if (!context.features.enableCompareWithLatest) {
+      console.warn('Layout type cannot be changed while CompareWithLatest feature is disabled')
+      return
+    }
+    let layoutType = context.view._layout ?? 'auto'
+    if (event.type === 'emit.onLayoutTypeChange') {
+      layoutType = event.layoutType
+    } else {
+      // toggle
+      layoutType = layoutType === 'auto' ? 'manual' : 'auto'
+    }
+
+    // Check if we are switching from manual to auto layout while a sync is pending
+    if (context.view._layout === 'manual' && layoutType === 'auto') {
+      const syncLayoutActor = typedSystem(system).syncLayoutActorRef
+      const syncState = syncLayoutActor?.getSnapshot().value
+      const isPending = syncLayoutActor && (syncState === 'pending' || syncState === 'paused')
+      if (isPending) {
+        enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
+        enqueue.emit({
+          type: 'onChange',
+          change: createViewChange(context),
+        })
+      }
+    }
+
+    if (context.toggledFeatures.enableCompareWithLatest === true) {
+      const currentViewport = context.viewport
+      if (context.view._layout === 'auto') {
+        enqueue.assign({
+          viewportOnAutoLayout: currentViewport,
+        })
+      }
+      if (context.view._layout === 'manual') {
+        enqueue.assign({
+          viewportOnManualLayout: currentViewport,
+        })
+      }
+    }
+
+    enqueue.emit({
+      type: 'onLayoutTypeChange',
+      layoutType,
+    })
+  }),
+)
+
+const updateView = machine.createAction(
+  enqueueActions(({ enqueue, event, check, context, system }) => {
+    assertEvent(event, 'update.view')
+    const isAnotherView = check('is another view')
+    enqueue.cancel('fitDiagram')
+    if (isAnotherView) {
+      enqueue('stopSyncLayout')
+      enqueue('closeAllOverlays')
+      enqueue('closeSearch')
+      enqueue.assign({
+        focusedNode: null,
+      })
+      enqueue(disableCompareWithLatest)
+      const { fromNode, toNode } = findCorrespondingNode(context, event)
+      if (fromNode && toNode) {
+        enqueue({
+          type: 'xyflow:alignNodeFromToAfterNavigate',
+          params: {
+            fromNode: fromNode.id as NodeId,
+            toPosition: {
+              x: toNode.data.x,
+              y: toNode.data.y,
+            },
+          },
+        })
+        enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
+      } else {
+        enqueue('xyflow:setViewportCenter')
+        enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
+      }
+      enqueue('update XYNodesEdges')
+      enqueue('startSyncLayout')
+      return
+    }
+
+    enqueue('update XYNodesEdges')
+    enqueue.sendTo(typedSystem(system).syncLayoutActorRef!, { type: 'synced', viewId: event.view.id })
+
+    const nextView = event.view
+
+    if (context.toggledFeatures.enableCompareWithLatest === true && context.view._layout !== nextView._layout) {
+      if (nextView._layout === 'auto' && context.viewportOnAutoLayout) {
+        enqueue({
+          type: 'xyflow:setViewport',
+          params: {
+            viewport: context.viewportOnAutoLayout,
+            duration: 0,
+          },
+        })
+        return
+      }
+      if (nextView._layout === 'manual' && context.viewportOnManualLayout) {
+        enqueue({
+          type: 'xyflow:setViewport',
+          params: {
+            viewport: context.viewportOnManualLayout,
+            duration: 0,
+          },
+        })
+        return
+      }
+    }
+
+    let recenter = !context.viewportChangedManually
+
+    // Check if dynamic view mode changed
+    recenter = recenter || (
+      nextView._type === 'dynamic' &&
+      context.view._type === 'dynamic' &&
+      nextView.variant !== context.view.variant
+    )
+
+    // Check if comparing layouts is enabled and layout changed
+    recenter = recenter || (
+      context.toggledFeatures.enableCompareWithLatest === true &&
+      !!nextView._layout &&
+      context.view._layout !== nextView._layout
+    )
+
+    if (recenter) {
+      enqueue({
+        type: 'xyflow:setViewportCenter',
+        params: BBox.center(nextView.bounds),
+      })
+      enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
+    }
+  }),
+)
+
 const _diagramMachine = machine.createMachine({
   initial: 'initializing',
   context: ({ input }): Context => ({
@@ -909,6 +1074,8 @@ const _diagramMachine = machine.createMachine({
     focusedNode: null,
     activeElementDetails: null,
     viewportBeforeFocus: null,
+    viewportOnManualLayout: null,
+    viewportOnAutoLayout: null,
     navigationHistory: {
       currentIndex: 0,
       history: [],
@@ -994,9 +1161,10 @@ const _diagramMachine = machine.createMachine({
           guard: 'not readonly',
           actions: [
             raise({ type: 'saveManualLayout.cancel' }),
+            disableCompareWithLatest,
             emit({
               type: 'onChange',
-              viewChange: {
+              change: {
                 op: 'reset-manual-layout',
               },
             }),
@@ -1085,7 +1253,6 @@ const _diagramMachine = machine.createMachine({
           actions: 'undim everything',
         },
         'saveManualLayout.*': {
-          guard: 'not readonly',
           actions: 'delegate to syncLayoutActor',
         },
         'open.search': {
@@ -1281,7 +1448,7 @@ const _diagramMachine = machine.createMachine({
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
             } else {
-              enqueue('xyflow:fitDiagram')
+              enqueue.raise({ type: 'fitDiagram' }, { delay: 10 })
             }
             // Disable parallel areas highlight
             if (context.dynamicViewVariant === 'sequence' && context.activeWalkthrough?.parallelPrefix) {
@@ -1436,67 +1603,7 @@ const _diagramMachine = machine.createMachine({
     'update.view': {
       actions: [
         assign(updateNavigationHistory),
-        enqueueActions(({ enqueue, event, check, context, system }) => {
-          const isAnotherView = check('is another view')
-          if (isAnotherView) {
-            enqueue('stopSyncLayout')
-            enqueue('closeAllOverlays')
-            enqueue('closeSearch')
-            enqueue.assign({
-              focusedNode: null,
-            })
-            const { fromNode, toNode } = findCorrespondingNode(context, event)
-            if (fromNode && toNode) {
-              enqueue({
-                type: 'xyflow:alignNodeFromToAfterNavigate',
-                params: {
-                  fromNode: fromNode.id as NodeId,
-                  toPosition: {
-                    x: toNode.data.x,
-                    y: toNode.data.y,
-                  },
-                },
-              })
-              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
-            } else {
-              enqueue('xyflow:setViewportCenter')
-              enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
-            }
-            enqueue('update XYNodesEdges')
-            enqueue('startSyncLayout')
-            return
-          }
-
-          enqueue('update XYNodesEdges')
-          enqueue.sendTo(typedSystem(system).syncLayoutActorRef!, { type: 'synced' })
-
-          const nextView = event.view
-
-          let recenter = !context.viewportChangedManually
-
-          // Check if dynamic view mode changed
-          recenter = recenter || (
-            nextView._type === 'dynamic' &&
-            context.view._type === 'dynamic' &&
-            nextView.variant !== context.view.variant
-          )
-
-          // Check if comparing layouts is enabled and layout changed
-          recenter = recenter || (
-            !!context.toggledFeatures.enableCompareWithLatest &&
-            !!nextView.drifts &&
-            hasAtLeast(nextView.drifts, 1) &&
-            context.view._layout !== nextView._layout
-          )
-
-          if (recenter) {
-            enqueue({
-              type: 'xyflow:setViewportCenter',
-              params: BBox.center(nextView.bounds),
-            })
-            enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
-          }
-        }),
+        updateView,
       ],
     },
     'update.inputs': {
@@ -1513,8 +1620,10 @@ const _diagramMachine = machine.createMachine({
       actions: 'assign: dynamicViewVariant',
     },
     'emit.onChange': {
-      guard: 'not readonly',
-      actions: 'emit: onChange',
+      actions: emitOnChange,
+    },
+    'emit.onLayoutTypeChange': {
+      actions: emitOnLayoutTypeChange,
     },
   },
   exit: [

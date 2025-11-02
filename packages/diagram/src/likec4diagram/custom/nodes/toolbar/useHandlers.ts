@@ -28,16 +28,16 @@ export function useHandlers(
   })
 
   const onChange: OnStyleChange = useCallbackRef((change) => {
-    diagram.triggerChange({
-      op: 'change-element-style',
-      style: change,
-      targets: [target],
-    })
     const { shape, color, ...style } = change
     diagram.updateNodeData(props.data.id, {
       ...(shape && { shape }),
       ...(color && { color }),
       style,
+    })
+    diagram.triggerChange({
+      op: 'change-element-style',
+      style: change,
+      targets: [target],
     })
   })
 

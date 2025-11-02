@@ -15,17 +15,11 @@ import {
 } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { Fragment, memo } from 'react'
-import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
-import {
-  useDiagramActorRef,
-  useDiagramCompareState,
-  useMantinePortalProps,
-} from '../../hooks'
+import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
+import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 
-export const OutdatedManualLayoutWarning = memo(() => {
-  const ctx = useDiagramCompareState()
-  const diagramActorRef = useDiagramActorRef()
-  const { onLayoutTypeChange } = useDiagramEventHandlers()
+export const ManualLayoutWarning = memo(() => {
+  const [ctx, { toggleCompare, switchLayout }] = useDiagramCompareLayout()
   const portalProps = useMantinePortalProps()
 
   if (!ctx.isEnabled) return null
@@ -49,7 +43,7 @@ export const OutdatedManualLayoutWarning = memo(() => {
     // }
     <HoverCard
       position="bottom-start"
-      openDelay={250}
+      openDelay={600}
       closeDelay={200}
       floatingStrategy="absolute"
       disabled={isActive}
@@ -64,10 +58,10 @@ export const OutdatedManualLayoutWarning = memo(() => {
           layout="position"
           onClick={e => {
             e.stopPropagation()
-            diagramActorRef.send({ type: 'toggle.feature', feature: 'CompareWithLatest' })
+            toggleCompare()
             // reset layout to manual if compare is active
-            if (isActive) {
-              onLayoutTypeChange?.('manual')
+            if (isActive && ctx.layout !== 'manual') {
+              switchLayout('manual')
             }
           }}
           whileTap={{
@@ -130,7 +124,7 @@ export const OutdatedManualLayoutWarning = memo(() => {
             variant="default"
             onClick={(e) => {
               e.stopPropagation()
-              diagramActorRef.send({ type: 'toggle.feature', feature: 'CompareWithLatest' })
+              toggleCompare()
             }}
           >
             Compare with current state
@@ -140,4 +134,4 @@ export const OutdatedManualLayoutWarning = memo(() => {
     </HoverCard>
   )
 })
-OutdatedManualLayoutWarning.displayName = 'OutdatedManualLayoutWarning'
+ManualLayoutWarning.displayName = 'ManualLayoutWarning'

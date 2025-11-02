@@ -7,24 +7,19 @@ import {
   PopoverTarget,
   UnstyledButton,
 } from '@mantine/core'
-import { IconAlertTriangle } from '@tabler/icons-react'
 import { memo } from 'react'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { useOptionalLikeC4Editor } from '../../editor'
-import {
-  useDiagramActorRef,
-  useDiagramCompareState,
-} from '../../hooks/useDiagram'
+import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
-import type { OnLayoutTypeChange } from '../../LikeC4Diagram.props'
 
-export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>(({ onLayoutTypeChange }) => {
-  const { layout, isActive } = useDiagramCompareState()
+export const LayoutDriftFrame = memo(() => {
+  const [{ layout, isActive }, {
+    switchLayout,
+    resetManualLayout,
+  }] = useDiagramCompareLayout()
   const {
     enableReadOnly,
   } = useEnabledFeatures()
-  const enableEditor = !!useOptionalLikeC4Editor() && !enableReadOnly
-  const diagramActorRef = useDiagramActorRef()
 
   const portalProps = useMantinePortalProps()
 
@@ -50,8 +45,7 @@ export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>
     >
       <Popover
         position="right-start"
-        opened={enableEditor}
-        disabled={!enableEditor}
+        disabled={layout === 'auto'}
         floatingStrategy="absolute"
         offset={{
           mainAxis: 2,
@@ -81,18 +75,17 @@ export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>
               {...layout === 'manual' ? { 'data-selected': true } : {}}
               bg={'orange.6'}
               onClick={() => {
-                onLayoutTypeChange('manual')
+                switchLayout('manual')
               }}>
-              <IconAlertTriangle size={12} />
-              manual
+              saved version
             </Btn>
             <Btn
               {...layout === 'auto' ? { 'data-selected': true } : {}}
               bg={'green.6'}
               onClick={() => {
-                onLayoutTypeChange('auto')
+                switchLayout('auto')
               }}>
-              auto
+              latest
             </Btn>
           </HStack>
         </PopoverTarget>
@@ -102,7 +95,7 @@ export const LayoutDriftFrame = memo<{ onLayoutTypeChange: OnLayoutTypeChange }>
             variant="default"
             onClick={(e) => {
               e.stopPropagation()
-              diagramActorRef.send({ type: 'layout.resetManualLayout' })
+              resetManualLayout()
             }}
           >
             Reset layout
@@ -118,7 +111,7 @@ const Btn = UnstyledButton.withProps({
     display: 'inline-flex',
     alignItems: 'center',
     gap: '1',
-    fontSize: 'xxs',
+    fontSize: 'xs',
     transformOrigin: 'center top',
     transition: 'fast',
     transform: {
@@ -127,13 +120,13 @@ const Btn = UnstyledButton.withProps({
       _selected: 'translateY(0)!',
     },
     fontWeight: {
-      base: 'normal',
+      base: 'medium',
       // _selected: '500',
     },
     py: '1',
     lineHeight: '1',
     borderBottomLeftRadius: 'sm',
     borderBottomRightRadius: 'sm',
-    px: '2',
+    px: '4',
   }),
 })

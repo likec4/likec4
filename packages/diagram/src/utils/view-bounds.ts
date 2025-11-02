@@ -1,6 +1,10 @@
 import { type DiagramEdge, type DynamicViewDisplayVariant, type LayoutedView, BBox } from '@likec4/core/types'
 
-export function getViewBounds(view: LayoutedView, dynamicVariant?: DynamicViewDisplayVariant) {
+/**
+ * Picks appropriate bounds from the view,
+ * depending on its type and dynamic variant
+ */
+export function pickViewBounds(view: LayoutedView, dynamicVariant?: DynamicViewDisplayVariant) {
   if (view._type === 'dynamic') {
     try {
       dynamicVariant ??= view.variant

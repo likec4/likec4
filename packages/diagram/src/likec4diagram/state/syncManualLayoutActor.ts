@@ -1,6 +1,4 @@
-import type { DiagramEdge, ViewChange, ViewId } from '@likec4/core/types'
-import { type Rect, boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
-import { hasAtLeast, indexBy, map, omit } from 'remeda'
+import type { ViewId } from '@likec4/core/types'
 import {
   type ActorLogicFrom,
   type ActorRef,
@@ -8,11 +6,11 @@ import {
   type MachineSnapshot,
   type SnapshotFrom,
   assign,
-  enqueueActions,
+  sendTo,
   setup,
 } from 'xstate'
-import { bezierControlPoints, isSamePoint } from '../../utils'
 import type { Context as DiagramContext, Events as DiagramEvents } from './diagram-machine'
+import { createViewChange } from './utils'
 
 export type Input = {
   /**
@@ -33,7 +31,7 @@ export type Context = Readonly<
 
 export type Events =
   | { type: 'sync' }
-  | { type: 'synced' }
+  | { type: 'synced'; viewId: ViewId }
   | { type: 'pause' }
   | { type: 'resume' }
   | { type: 'cancel' }
@@ -47,7 +45,7 @@ const syncManualLayout = setup({
     tags: '' as 'pending' | 'ready',
   },
   delays: {
-    'timeout': 1_000,
+    'timeout': 1_500,
   },
   guards: {
     'same view': ({ context }) => context.parent.getSnapshot().context.view.id === context.viewId,
@@ -97,26 +95,29 @@ const pending = syncManualLayout.createStateConfig({
     },
   },
   after: {
-    'timeout': [{
-      guard: 'same view',
+    'timeout': {
       target: 'syncing',
-    }, {
-      target: 'stopped',
-    }],
+    },
   },
 })
 
 const syncing = syncManualLayout.createStateConfig({
-  always: {
-    actions: enqueueActions(({ context, enqueue }) => {
-      const parentContext = context.parent.getSnapshot().context
-      enqueue.sendTo(context.parent, {
-        type: 'emit.onChange',
-        viewChange: createViewChange(parentContext),
-      })
-    }),
+  always: [{
+    guard: 'same view',
+    actions: sendTo(
+      ({ context }) => context.parent,
+      ({ context }) => {
+        const parentContext = context.parent.getSnapshot().context
+        return {
+          type: 'emit.onChange',
+          change: createViewChange(parentContext),
+        }
+      },
+    ),
     target: 'synced',
-  },
+  }, {
+    target: 'stopped',
+  }],
 })
 
 const synced = syncManualLayout.createStateConfig({
@@ -149,6 +150,9 @@ const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
   on: {
     synced: {
       target: '.synced',
+      actions: assign({
+        viewId: ({ event }) => event.viewId,
+      }),
     },
     stop: {
       target: '.stopped',
@@ -166,105 +170,3 @@ export type SyncLayoutActorRef = ActorRefFromLogic<SyncLayoutActorLogic>
 export type SyncLayoutActorSnapshot = SnapshotFrom<SyncLayoutActorLogic>
 
 export const syncManualLayoutActorLogic: SyncLayoutActorLogic = _syncManualLayoutActorLogic as any
-
-function createViewChange(parentContext: DiagramContext): ViewChange.SaveViewSnapshot {
-  const { view, xynodes, xyedges, xystore } = parentContext
-
-  const { nodeLookup } = xystore.getState()
-  const movedNodes = new Set<string>()
-
-  const xynodesLookup = indexBy(xynodes, n => n.data.id)
-
-  let bounds: Rect | undefined
-
-  const nodes = map(view.nodes, (node) => {
-    const xynode = xynodesLookup[node.id]
-    if (!xynode) {
-      bounds = bounds ? getBoundsOfRects(bounds, node) : node
-      return node
-    }
-    const internal = nodeLookup.get(xynode.id)!
-    const dimensions = getNodeDimensions(internal)
-    if (
-      !isSamePoint(internal.internals.positionAbsolute, node) || node.width !== dimensions.width ||
-      node.height !== dimensions.height
-    ) {
-      movedNodes.add(xynode.id)
-    }
-    const rect = {
-      ...node,
-      x: Math.floor(internal.internals.positionAbsolute.x),
-      y: Math.floor(internal.internals.positionAbsolute.y),
-      width: Math.ceil(dimensions.width),
-      height: Math.ceil(dimensions.height),
-    }
-    bounds = bounds ? getBoundsOfRects(bounds, rect) : rect
-    return rect
-  })
-
-  const edges = map(view.edges, (edge) => {
-    const xyedge = xyedges.find(e => e.data.id === edge.id)
-    if (!xyedge) {
-      return edge
-    }
-    const data = xyedge.data
-    let controlPoints = data.controlPoints ?? []
-    const sourceOrTargetMoved = movedNodes.has(xyedge.source) || movedNodes.has(xyedge.target)
-    // If edge control points are not set, but the source or target node was moved
-    if (controlPoints.length === 0 && sourceOrTargetMoved) {
-      controlPoints = bezierControlPoints(data.points)
-    }
-    if (data.points.length === 0 && controlPoints.length === 0) {
-      return edge
-    }
-    const _updated: DiagramEdge = {
-      ...omit(edge, ['controlPoints']),
-      points: data.points,
-    }
-    if (data.labelXY && data.labelBBox) {
-      _updated.labelBBox = {
-        ...data.labelBBox,
-        ...data.labelXY,
-      }
-    }
-    if (data.labelBBox) {
-      _updated.labelBBox ??= data.labelBBox
-    }
-    if (hasAtLeast(controlPoints, 1)) {
-      _updated.controlPoints = controlPoints
-    }
-    // if (!sourceOrTargetMoved && data.edge.dotpos) {
-    //   _updated.dotpos = data.edge.dotpos
-    // }
-    const allX = [
-      ...data.points.map(p => p[0]),
-      ...controlPoints.map(p => p.x),
-      ...(_updated.labelBBox ? [_updated.labelBBox.x, _updated.labelBBox.x + _updated.labelBBox.width] : []),
-    ]
-    const allY = [
-      ...data.points.map(p => p[1]),
-      ...controlPoints.map(p => p.y),
-      ...(_updated.labelBBox ? [_updated.labelBBox.y, _updated.labelBBox.y + _updated.labelBBox.height] : []),
-    ]
-    const rect = boxToRect({
-      x: Math.floor(Math.min(...allX)),
-      y: Math.floor(Math.min(...allY)),
-      x2: Math.ceil(Math.max(...allX)),
-      y2: Math.ceil(Math.max(...allY)),
-    })
-    bounds = bounds ? getBoundsOfRects(bounds, rect) : rect
-    return _updated
-  })
-
-  bounds ??= view.bounds
-
-  return {
-    op: 'save-view-snapshot',
-    layout: {
-      ...view,
-      bounds,
-      nodes,
-      edges,
-    },
-  }
-}

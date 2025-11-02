@@ -89,6 +89,8 @@ export function diagramToXY(opts: {
 
     const id = ns + node.id as NodeId
 
+    const drifts = node.drifts ?? null
+
     const base = {
       id,
       deletable: false,
@@ -170,8 +172,9 @@ export function diagramToXY(opts: {
             data: {
               ...compoundData,
               ...navigateTo,
-              deploymentFqn: deploymentFqn,
+              deploymentFqn,
               modelFqn,
+              drifts,
             },
           } satisfies Types.CompoundDeploymentNode,
         )
@@ -187,6 +190,7 @@ export function diagramToXY(opts: {
               ...compoundData,
               ...navigateTo,
               modelFqn,
+              drifts,
             },
           } satisfies Types.CompoundElementNode,
         )
@@ -200,8 +204,9 @@ export function diagramToXY(opts: {
             data: {
               ...leafNodeData,
               ...navigateTo,
-              deploymentFqn: deploymentFqn,
-              modelFqn: modelFqn,
+              deploymentFqn,
+              modelFqn,
+              drifts,
             },
           } satisfies Types.DeploymentElementNode,
         )
@@ -216,7 +221,8 @@ export function diagramToXY(opts: {
             data: {
               ...leafNodeData,
               ...navigateTo,
-              modelFqn: modelFqn,
+              modelFqn,
+              drifts,
             },
           } satisfies Types.ElementNode,
         )
@@ -257,6 +263,7 @@ export function diagramToXY(opts: {
         head: edge.head ?? 'normal',
         tail: edge.tail ?? 'none',
         astPath: edge.astPath,
+        drifts: edge.drifts ?? null,
       },
       interactionWidth: 20,
     })

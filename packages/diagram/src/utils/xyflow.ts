@@ -3,21 +3,86 @@ import { invariant } from '@likec4/core/utils'
 import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
 import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
-import { flatMap, hasAtLeast, isArray } from 'remeda'
+import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
 import { vector } from './vector'
 
 export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 }
 
-export const nodeToRect = (nd: InternalNode): Rect => ({
+/**
+ * Minimal type to access only needed properties of InternalNode
+ */
+export type MinimalInternalNode = {
+  internals: {
+    positionAbsolute: XYPosition
+  }
+  measured?: {
+    width?: number
+    height?: number
+  }
+  width?: number
+  height?: number
+  initialWidth?: number
+  initialHeight?: number
+}
+/**
+ * Extracts only the minimal properties from an InternalNode
+ * needed for geometric calculations.
+ *
+ * @param nd - The InternalNode to extract from.
+ * @returns An object containing only the necessary properties.
+ */
+export function extractMinimalInternalNode<N extends InternalNode>(nd: N): MinimalInternalNode {
+  const minimal: MinimalInternalNode = {
+    internals: {
+      positionAbsolute: nd.internals.positionAbsolute,
+    },
+  }
+  if (nd.measured) {
+    minimal.measured = nd.measured
+  }
+  if (isNumber(nd.width)) {
+    minimal.width = nd.width
+  }
+  if (isNumber(nd.height)) {
+    minimal.height = nd.height
+  }
+  if (isNumber(nd.initialWidth)) {
+    minimal.initialWidth = nd.initialWidth
+  }
+  if (isNumber(nd.initialHeight)) {
+    minimal.initialHeight = nd.initialHeight
+  }
+  return minimal
+}
+
+export function isEqualMinimalInternalNodes(a: MinimalInternalNode, b: MinimalInternalNode) {
+  const posA = a.internals.positionAbsolute
+  const posB = b.internals.positionAbsolute
+  if (posA.x !== posB.x || posA.y !== posB.y) {
+    return false
+  }
+  const widthA = a.measured?.width ?? a.width ?? a.initialWidth ?? 0
+  const widthB = b.measured?.width ?? b.width ?? b.initialWidth ?? 0
+  if (widthA !== widthB) {
+    return false
+  }
+
+  const heightA = a.measured?.height ?? a.height ?? a.initialHeight ?? 0
+  const heightB = b.measured?.height ?? b.height ?? b.initialHeight ?? 0
+
+  return heightA === heightB
+}
+
+export const nodeToRect = (nd: MinimalInternalNode): Rect => ({
   x: nd.internals.positionAbsolute.x,
   y: nd.internals.positionAbsolute.y,
-  width: nd.measured.width ?? nd.width ?? nd.initialWidth ?? 0,
-  height: nd.measured.height ?? nd.height ?? nd.initialHeight ?? 0,
+  width: nd.measured?.width ?? nd.width ?? nd.initialWidth ?? 0,
+  height: nd.measured?.height ?? nd.height ?? nd.initialHeight ?? 0,
 })
 
-export function getNodeCenter(node: InternalNode): XYPosition {
+export function getNodeCenter(node: MinimalInternalNode): XYPosition {
   const { width, height } = getNodeDimensions(node)
   const { x, y } = node.internals.positionAbsolute
 
@@ -37,7 +102,7 @@ export function getNodeCenter(node: InternalNode): XYPosition {
  * @returns coordinates of the intersection point
  */
 export function getNodeIntersectionFromCenterToPoint(
-  intersectionNode: InternalNode,
+  intersectionNode: MinimalInternalNode,
   target: XYPosition,
   nodeMargin: number = 0,
 ) {
@@ -61,8 +126,8 @@ export function getNodeIntersectionFromCenterToPoint(
  * @returns coordinates of the intersection point
  */
 export function getNodeIntersection(
-  intersectionNode: InternalNode,
-  targetNode: InternalNode,
+  intersectionNode: MinimalInternalNode,
+  targetNode: MinimalInternalNode,
 ): XYPosition {
   return getNodeIntersectionFromCenterToPoint(intersectionNode, getNodeCenter(targetNode))
 }
@@ -130,14 +195,6 @@ export function distanceBetweenPoints(a: XYPosition, b: XYPosition) {
 
 export function stopPropagation(e: React.MouseEvent) {
   return e.stopPropagation()
-}
-
-export function centerXYInternalNode<N extends InternalNode>(nd: N) {
-  const { width, height } = getNodeDimensions(nd)
-  return {
-    x: nd.internals.positionAbsolute.x + width / 2,
-    y: nd.internals.positionAbsolute.y + height / 2,
-  }
 }
 
 export function bezierPath(bezierSpline: NonEmptyArray<Point>) {

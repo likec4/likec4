@@ -64,7 +64,7 @@ function hasSearchQuerySelector(s: NavigationPanelActorSnapshot) {
   return s.context.searchQuery.trim().length >= 2
 }
 
-export function NavigationPanelDropdown() {
+export const NavigationPanelDropdown = memo(() => {
   const actor = useNavigationActor()
   const hasSearchQuery = useNavigationActorSnapshot(hasSearchQuerySelector)
 
@@ -73,6 +73,9 @@ export function NavigationPanelDropdown() {
   })
 
   useOnDiagramEvent('nodeClick', () => {
+    actor.closeDropdown()
+  })
+  useOnDiagramEvent('edgeClick', () => {
     actor.closeDropdown()
   })
 
@@ -99,7 +102,6 @@ export function NavigationPanelDropdown() {
         <SearchInput
           defaultValue={actor.actorRef.getSnapshot().context.searchQuery}
           onChange={setSearchQuery}
-          onKeyDown={scopedKeydownHandler}
         />
         {
           /* <Button
@@ -138,7 +140,8 @@ export function NavigationPanelDropdown() {
       </ScrollAreaAutosize>
     </PopoverDropdown>
   )
-}
+})
+NavigationPanelDropdown.displayName = 'NavigationPanelDropdown'
 
 function selectSearchQuery(s: NavigationPanelActorSnapshot) {
   return normalizeViewPath(s.context.searchQuery)
@@ -448,7 +451,7 @@ const FolderColumns = memo(() => {
         <FolderColumn
           key={column.folderPath}
           data={column}
-          isLast={i == columns.length - 1}
+          isLast={i > 0 && i == columns.length - 1}
         />,
       ])}
     </HStack>
@@ -529,11 +532,10 @@ function FolderColumnItem({ columnItem, ...props }: { columnItem: ColumnItem } &
   }
 }
 
-function SearchInput({ onKeyDown, ...props }: {
+function SearchInput(props: {
   value?: string
   defaultValue?: string
   onChange?: (value: string) => void
-  onKeyDown?: KeyboardEventHandler<HTMLElement>
 }) {
   const [_value, handleChange] = useUncontrolled({
     ...props,
@@ -546,7 +548,7 @@ function SearchInput({ onKeyDown, ...props }: {
       variant="unstyled"
       height={rem(26)}
       value={_value}
-      onKeyDown={onKeyDown}
+      onKeyDown={scopedKeydownHandler as KeyboardEventHandler<HTMLInputElement>}
       onChange={e => handleChange(e.currentTarget.value)}
       data-likec4-focusable
       classNames={{

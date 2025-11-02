@@ -1,4 +1,4 @@
-import { getViewBounds, StaticLikeC4Diagram } from '@likec4/diagram'
+import { pickViewBounds, StaticLikeC4Diagram } from '@likec4/diagram'
 import { useSearch } from '@tanstack/react-router'
 import { useCurrentView, useTransparentBackground } from '../hooks'
 
@@ -17,7 +17,7 @@ export function EmbedPage() {
     return <div>Loading...</div>
   }
 
-  const bounds = getViewBounds(diagram, dynamic)
+  const bounds = pickViewBounds(diagram, dynamic)
 
   return (
     <div

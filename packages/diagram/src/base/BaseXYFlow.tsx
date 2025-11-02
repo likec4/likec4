@@ -15,9 +15,9 @@ import type { ViewPadding } from '../LikeC4Diagram.props'
 import { roundDpr } from '../utils/roundDpr'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
+import { Base } from './Base'
 import { MaxZoom, MinZoom } from './const'
 import type { BaseEdge, BaseNode } from './types'
-import { Base } from './types'
 
 export type BaseXYFlowProps<NodeType extends BaseNode, EdgeType extends BaseEdge> = Simplify<
   & {

@@ -25,7 +25,7 @@ import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import { DiagramActorProvider } from './likec4diagram/state/DiagramActorProvider'
 import type { Types } from './likec4diagram/types'
 import { LikeC4Styles } from './LikeC4Styles'
-import { getViewBounds } from './utils/view-bounds'
+import { pickViewBounds } from './utils/view-bounds'
 
 export type LikeC4DiagramProps<A extends Any = Any> = PropsWithChildren<
   & LikeC4DiagramProperties<A>
@@ -94,7 +94,7 @@ export function LikeC4Diagram<A extends Any = Any>({
     initialMaxZoom: number
   }>(null)
 
-  const bounds = getViewBounds(view, dynamicViewVariant)
+  const bounds = pickViewBounds(view, dynamicViewVariant)
   const fitViewPadding = useNormalizedViewPadding(_fitViewPadding)
 
   if (initialRef.current == null) {

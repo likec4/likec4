@@ -5,22 +5,24 @@ import type { BaseEdge } from './types'
 function _update<E extends BaseEdge>(current: E[], update: E[]): E[] {
   return update.map((next) => {
     const existing = current.find(n => n.id === next.id)
-    if (existing && eq(existing.type, next.type)) {
+    if (existing && existing.type === next.type && existing.source === next.source && existing.target === next.target) {
+      const isSameData = eq(existing.data, next.data)
       if (
-        eq(existing.hidden ?? false, next.hidden ?? false)
-        && eq(existing.source, next.source)
+        isSameData
+        && eq(existing.hidden ?? false, next.hidden ?? false)
+        && eq(existing.selected ?? false, next.selected ?? false)
+        && eq(existing.animated ?? false, next.animated ?? false)
         && eq(existing.sourceHandle ?? null, next.sourceHandle ?? null)
-        && eq(existing.target, next.target)
         && eq(existing.targetHandle ?? null, next.targetHandle ?? null)
         && eq(existing.zIndex ?? 0, next.zIndex ?? 0)
-        && eq(existing.data, next.data)
+        && eq(existing.label ?? null, next.label ?? null)
       ) {
         return existing
       }
       return {
         ...omit(existing, ['hidden', 'zIndex']),
         ...next,
-        data: next.data,
+        data: isSameData ? existing.data : next.data,
       }
     }
     return next

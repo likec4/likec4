@@ -3,14 +3,19 @@ export type { VectorValue } from './vector'
 export {
   bezierControlPoints,
   bezierPath,
-  centerXYInternalNode,
   distance,
   distanceBetweenPoints,
+  extractMinimalInternalNode,
+  getNodeCenter,
+  getNodeIntersection,
+  getNodeIntersectionFromCenterToPoint,
+  isEqualMinimalInternalNodes,
   isInside,
   isSamePoint,
+  type MinimalInternalNode,
   nodeToRect,
   stopPropagation,
 } from './xyflow'
 
 export { roundDpr } from './roundDpr'
-export { getViewBounds } from './view-bounds'
+export { pickViewBounds } from './view-bounds'

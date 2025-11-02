@@ -98,17 +98,20 @@ const selectFromActor = (
   viewId: ViewId
 } => {
   const toggledFeatures = context.toggledFeatures
+
+  // Compare with latest is disabled during active walkthrough
+  const enableCompareWithLatest = context.features.enableCompareWithLatest &&
+    (toggledFeatures.enableCompareWithLatest ?? false) &&
+    isNullish(context.activeWalkthrough)
+
   const enableReadOnly = context.features.enableReadOnly
     || toggledFeatures.enableReadOnly
     // Active walkthrough forces readonly
     || !!context.activeWalkthrough
     // if dynamic view display mode is sequence, enable readonly
     || (context.dynamicViewVariant === 'sequence' && context.view._type === 'dynamic')
-
-  // Compare with latest is disabled during active walkthrough
-  const enableCompareWithLatest =
-    (context.toggledFeatures.enableCompareWithLatest ?? context.features.enableCompareWithLatest) &&
-    isNullish(context.activeWalkthrough)
+    // Compare with latest enforces readonly
+    || (enableCompareWithLatest && context.view._layout === 'auto' && context.view.drifts != null)
 
   return {
     toggledFeatures: {
@@ -174,12 +177,16 @@ const DiagramActorEventListener = memo(() => {
     onNavigateTo,
     onOpenSource,
     onChange,
+    onLayoutTypeChange,
     handlersRef,
   } = useDiagramEventHandlers()
 
   useOnDiagramEvent('openSource', ({ params }) => onOpenSource?.(params))
   useOnDiagramEvent('navigateTo', ({ viewId }) => onNavigateTo?.(viewId))
-  useOnDiagramEvent('onChange', ({ viewChange }) => onChange?.({ change: viewChange }))
+  useOnDiagramEvent('onChange', ({ change }) => onChange?.({ change }))
+  useOnDiagramEvent('onLayoutTypeChange', ({ layoutType }) => {
+    onLayoutTypeChange?.(layoutType)
+  })
 
   const wasEmitted = useRef(false)
 

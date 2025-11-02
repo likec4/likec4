@@ -1,7 +1,7 @@
 export { BurgerButton } from './BurgerButton'
 export { DetailsControls } from './DetailsControls'
+export { ManualLayoutWarning } from './ManualLayoutWarning'
 export { NavigationButtons } from './NavigationButtons'
 export { OpenSource } from './OpenSource'
-export { OutdatedManualLayoutWarning } from './OutdatedManualLayoutWarning'
 export { SearchControl } from './SearchControl'
 export { ToggleReadonly } from './ToggleReadonly'

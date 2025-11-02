@@ -2,10 +2,13 @@ import type {
   BBox,
   DeploymentFqn,
   DiagramEdge,
+  DiagramEdgeDriftReason,
   DiagramNode,
+  DiagramNodeDriftReason,
   ExclusiveUnion,
   Fqn,
   IconUrl,
+  NonEmptyReadonlyArray,
   RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
@@ -64,6 +67,7 @@ export namespace Types {
        * If set - this node has navigation to another view and diagram has handler for this
        */
       navigateTo: ViewId | null
+      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -77,6 +81,7 @@ export namespace Types {
       deploymentFqn: DeploymentFqn
       // If set - this node refers to a model element
       modelFqn: Fqn | null
+      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -140,6 +145,7 @@ export namespace Types {
        * If set - this node has navigation to another view and diagram has handler for this
        */
       navigateTo: ViewId | null
+      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -155,6 +161,7 @@ export namespace Types {
        * If set - this node has navigation to another view and diagram has handler for this
        */
       navigateTo: ViewId | null
+      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -232,6 +239,7 @@ export namespace Types {
       notes: RichTextOrEmpty
       labelXY: XYPosition | null
       controlPoints: XYPosition[] | undefined | null
+      drifts: NonEmptyReadonlyArray<DiagramEdgeDriftReason> | null
     }
   >
 

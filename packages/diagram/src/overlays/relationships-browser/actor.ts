@@ -27,7 +27,7 @@ import { MinZoom, ZIndexes } from '../../base/const'
 import { updateEdges } from '../../base/updateEdges'
 import { updateNodes } from '../../base/updateNodes'
 import { typedSystem } from '../../likec4diagram/state/utils'
-import { centerXYInternalNode } from '../../utils'
+import { getNodeCenter } from '../../utils/xyflow'
 import type { OpenSourceActorRef } from '../types'
 import type { RelationshipsBrowserTypes } from './_types'
 import { ViewPadding } from './const'
@@ -111,7 +111,7 @@ export const layouter = fromPromise<{
 
   // Center of current subject
   const currentSubjectInternalNode = xyflow.getInternalNode(currentSubjectNode.id)!
-  const currentSubjectCenter = centerXYInternalNode(currentSubjectInternalNode)
+  const currentSubjectCenter = getNodeCenter(currentSubjectInternalNode)
 
   // Move to center of existing node
   // const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
@@ -176,7 +176,9 @@ export const layouter = fromPromise<{
   if (signal.aborted) {
     return updateXYData()
   }
-  await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 300, interpolate: 'smooth' })
+  const duration = 300
+  xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration, interpolate: 'smooth' })
+  await delay(duration)
   await xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
   return updateXYData()
 })
@@ -235,17 +237,6 @@ export type Events =
   | { type: 'change.scope'; scope: 'global' | 'view' }
   | { type: 'update.view'; layouted: LayoutRelationshipsViewResult }
   | { type: 'close' }
-
-// export type EmittedEvents = { type: 'openSource'; params: OpenSourceParams }
-// | { type: 'paneClick' }
-// | { type: 'nodeClick'; node: DiagramNode; xynode: Types.Node }
-// | { type: 'edgeClick'; edge: DiagramEdge; xyedge: Types.Edge }
-// | { type: 'edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
-// | { type: 'edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
-// | { type: 'edgeEditingStarted'; edge: Types.Edge }
-// | { type: 'walkthroughStarted'; edge: Types.Edge }
-// | { type: 'walkthroughStep'; edge: Types.Edge }
-// | { type: 'walkthroughStopped' }
 
 const _relationshipsBrowserLogic = setup({
   types: {
