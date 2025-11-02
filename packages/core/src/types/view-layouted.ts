@@ -10,19 +10,8 @@ import type {
   ViewWithNotation,
 } from './view-common'
 import type { ComputedEdge, ComputedNode } from './view-computed'
+import type { DiagramEdgeDriftReason, DiagramNodeDriftReason, LayoutedViewDriftReason } from './view-manual-layout'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
-
-export type DiagramNodeDriftReason =
-  | 'not-exists' // exists in snapshot but not in view, and visa versa
-  | 'label-changed' // title/description/technology changed
-  | 'relationships-changed' // has different inEdges/outEdges
-  | 'parent-changed'
-  | 'children-changed'
-  | 'become-compound'
-  | 'become-leaf'
-  | 'shape-changed'
-  | 'size-changed'
-  | 'position-changed'
 
 export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
   /**
@@ -57,7 +46,7 @@ export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> 
    * Control points to adjust the edge
    * (Absolute coordinates)
    */
-  controlPoints?: NonEmptyArray<XYPoint>
+  controlPoints?: NonEmptyArray<XYPoint> | null
   /**
    * Bounding box of label
    * (Absolute coordinates)
@@ -70,11 +59,11 @@ export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> 
    * @deprecated
    */
   dotpos?: string
-  // label: scalar.HtmlOrString | null
-  // description?: scalar.HtmlOrString | null
-  // technology?: scalar.HtmlOrString | null
-  // notation?: scalar.HtmlOrString | null
-  // notes?: scalar.HtmlOrString | null
+
+  /**
+   * List of reasons causing edge drift
+   */
+  drifts?: NonEmptyReadonlyArray<DiagramEdgeDriftReason> | null
 }
 
 /**
@@ -83,14 +72,6 @@ export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> 
  * - `manual`: read from the manually layouted snapshot
  */
 export type LayoutType = 'auto' | 'manual'
-
-export type LayoutedViewDriftReason =
-  | 'not-exists'
-  | 'type-changed'
-  | 'includes-more-nodes'
-  | 'includes-more-edges'
-  | 'nodes-mismatch'
-  | 'edges-mismatch'
 
 interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
   readonly [_stage]: 'layouted'
@@ -112,10 +93,9 @@ interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewPropertie
 
   /**
    * List of reasons causing layout drift
-   * If undefined, there is no layout drift or view is auto-layouted
-   * May be empty array if {@link _layout} is 'manual', but view did not change
+   * If undefined or null, there is no layout drift or view is auto-layouted
    */
-  readonly drifts?: ReadonlyArray<LayoutedViewDriftReason>
+  readonly drifts?: NonEmptyReadonlyArray<LayoutedViewDriftReason> | null
 }
 
 export interface LayoutedElementView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {

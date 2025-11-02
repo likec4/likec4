@@ -9,6 +9,32 @@ import type {
 } from './view-common'
 import type { DiagramEdge, DiagramNode, LayoutedDynamicView } from './view-layouted'
 
+export type LayoutedViewDriftReason =
+  | 'not-exists'
+  | 'type-changed'
+  | 'nodes-mismatch'
+  | 'edges-mismatch'
+
+export type DiagramNodeDriftReason =
+  | 'not-exists' // exists in snapshot but not in view, and visa versa
+  | 'label-changed' // title/description/technology changed
+  | 'relationships-changed' // has different inEdges/outEdges
+  | 'modelRef-changed'
+  | 'parent-changed'
+  | 'children-changed'
+  | 'become-compound'
+  | 'become-leaf'
+  | 'shape-changed'
+  | 'size-changed'
+  | 'position-changed'
+
+export type DiagramEdgeDriftReason =
+  | 'not-exists' // exists in snapshot but not in view, and visa versa
+  | 'label-changed' // title/description/technology changed
+  | 'direction-changed' // has different source/target
+  | 'source-changed'
+  | 'target-changed'
+
 type ViewManualLayoutSnapshotPerType =
   | {
     readonly [_type]: 'element'
@@ -42,9 +68,3 @@ export type ViewManualLayoutSnapshot<
   }
   & ViewWithNotation
 >
-
-// export type DiagramNodeDriftReason =
-//   | 'not-exists'
-//   | 'properties-changed'
-//   | 'relationships-changed'
-//   | 'shape-changed'

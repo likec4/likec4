@@ -1,14 +1,25 @@
 import { produce } from 'immer'
-import { hasSubObject, isShallowEqual, pick } from 'remeda'
+import { hasAtLeast, hasSubObject, isDeepEqual, isNullish, pick } from 'remeda'
+import type { Writable } from 'type-fest'
 import { buildElementNotations } from '../../compute-view/utils/buildElementNotations'
 import {
+  type DiagramEdge,
+  type DiagramEdgeDriftReason,
+  type DiagramNode,
+  type DiagramNodeDriftReason,
   type LayoutedView,
   type LayoutedViewDriftReason,
   type ViewManualLayoutSnapshot,
   _layout,
-  BBox,
 } from '../../types'
-import { difference, invariant, symmetricDifference } from '../../utils'
+import { invariant, symmetricDifference } from '../../utils'
+
+const eq = (a: unknown, b: unknown) => {
+  if (isNullish(a) && isNullish(b)) {
+    return true
+  }
+  return isDeepEqual(a, b)
+}
 
 /**
  * Maximum allowed drift per coordinate (top, left, bottom, right)
@@ -30,12 +41,13 @@ export function applyManualLayout<
 ): V {
   invariant(autoLayouted.id === snapshot.id, 'applyManualLayout: view ids do not match')
   invariant(autoLayouted._stage === 'layouted', 'applyManualLayout: expected layouted view')
+  invariant(snapshot._stage === 'layouted', 'applyManualLayout: expected layouted snapshot')
   invariant(autoLayouted._layout !== 'manual', 'applyManualLayout: expected auto-layouted view')
 
-  const drifts = new Set<LayoutedViewDriftReason>()
+  const viewDrifts = new Set<LayoutedViewDriftReason>()
 
   if (autoLayouted._type !== snapshot._type) {
-    drifts.add('type-changed')
+    viewDrifts.add('type-changed')
   }
 
   const nextNodes = new Map(autoLayouted.nodes.map(n => [n.id, n]))
@@ -47,67 +59,127 @@ export function applyManualLayout<
   const snapshotNodeIds = new Set(snapshot.nodes.map(n => n.id))
   const snapshotEdgeIds = new Set(snapshot.edges.map(e => e.id))
 
-  if (difference(nextNodeIds, snapshotNodeIds).size > 0) {
-    drifts.add('includes-more-nodes')
-  }
-  if (difference(nextEdgeIds, snapshotEdgeIds).size > 0) {
-    drifts.add('includes-more-edges')
-  }
   if (symmetricDifference(nextNodeIds, snapshotNodeIds).size > 0) {
-    drifts.add('nodes-mismatch')
+    viewDrifts.add('nodes-mismatch')
   }
   if (symmetricDifference(nextEdgeIds, snapshotEdgeIds).size > 0) {
-    drifts.add('edges-mismatch')
+    viewDrifts.add('edges-mismatch')
   }
 
-  const nodes = snapshot.nodes.map(node => {
+  const nodes = snapshot.nodes.map((node): DiagramNode => {
     const next = nextNodes.get(node.id)
     return produce(node, draft => {
-      // const nodedrifts = []
       if (!next) {
         draft.drifts = ['not-exists']
         return
       }
+      const nodeDrifts = new Set<DiagramNodeDriftReason>()
+
+      // Always update
       draft.color = next.color
       draft.kind = next.kind
-      // Update title if next node has a shorter title
-      if (next.title.length <= draft.title.length) {
-        draft.title = next.title
+      draft.navigateTo = next.navigateTo ?? null
+      draft.links = next.links ? [...next.links] : null
+      draft.tags = [...next.tags]
+
+      if (!eq(node.modelRef, next.modelRef) || !eq(node.deploymentRef, next.deploymentRef)) {
+        nodeDrifts.add('modelRef-changed')
       }
 
-      if (next.navigateTo) {
-        draft.navigateTo = next.navigateTo
+      if (next.children.length > 0 && node.children.length === 0) {
+        nodeDrifts.add('become-compound')
+      }
+      if (next.children.length === 0 && node.children.length > 0) {
+        nodeDrifts.add('become-leaf')
       }
 
-      if (next.parent !== draft.parent) {
-        drifts.add('nodes-mismatch')
+      if (!eq(node.parent, next.parent)) {
+        nodeDrifts.add('parent-changed')
       }
 
-      // TODO check modelRef/deploymentRef
-      // The following properties are updated if only the node from the snapshot
-      // is same size or larger than the node from auto-layouted view
-      if (!BBox.includes(BBox.expand(node, MAX_ALLOWED_DRIFT), next)) {
-        return
-      }
-      draft.shape = next.shape
+      // Size is considered changed if only it became larger than allowed drift
+      const sizeNotChanged = node.width + MAX_ALLOWED_DRIFT >= next.width
+        && node.height + MAX_ALLOWED_DRIFT >= next.height
 
-      if (next.icon !== draft.icon) {
-        draft.icon = next.icon ?? 'none'
+      if (node.shape !== next.shape) {
+        if (sizeNotChanged) {
+          draft.shape = next.shape
+        } else {
+          nodeDrifts.add('shape-changed')
+        }
       }
 
-      // We fit next node into the current node
-      // Safe to update title, description, notation, technology
-      draft.title = next.title
-      if (!isShallowEqual(draft.description, next.description)) {
-        draft.description = next.description ?? null
+      if (!eq(next.icon, node.icon)) {
+        // Only update icon if only it was set before
+        if (node.icon && node.icon !== 'none') {
+          if (next.icon && next.icon !== 'none') {
+            draft.icon = next.icon
+          }
+          // Or icon was removed
+          else if (!next.icon || next.icon === 'none') {
+            draft.icon = 'none'
+          } else {
+            nodeDrifts.add('label-changed')
+          }
+          // Or icon was set, but does not affect size
+        } else if (sizeNotChanged && next.icon && next.icon !== 'none') {
+          draft.icon = next.icon
+        } else {
+          nodeDrifts.add('label-changed')
+        }
       }
-      if (draft.notation !== next.notation) {
+
+      if (next.title !== node.title) {
+        if (sizeNotChanged) {
+          draft.title = next.title
+        } else {
+          draft.title = next.title.slice(0, node.title.length)
+          if (next.title.length > node.title.length) {
+            nodeDrifts.add('label-changed')
+          }
+        }
+      }
+
+      if (!eq(draft.description, next.description)) {
+        if (sizeNotChanged) {
+          draft.description = next.description ?? null
+        } else {
+          nodeDrifts.add('label-changed')
+        }
+      }
+      if (!eq(draft.technology, next.technology)) {
+        if (sizeNotChanged) {
+          draft.technology = next.technology ?? null
+        } else {
+          nodeDrifts.add('label-changed')
+        }
+      }
+      if (!eq(node.notation, next.notation)) {
         draft.notation = next.notation ?? null
       }
-      if (draft.technology !== next.technology) {
-        draft.technology = next.technology ?? null
+
+      if (symmetricDifference(new Set(node.inEdges), new Set(next.inEdges)).size > 0) {
+        nodeDrifts.add('relationships-changed')
+      } else if (symmetricDifference(new Set(node.outEdges), new Set(next.outEdges)).size > 0) {
+        nodeDrifts.add('relationships-changed')
       }
 
+      if (symmetricDifference(new Set(node.children), new Set(next.children)).size > 0) {
+        nodeDrifts.add('children-changed')
+      }
+
+      // Propagate to view drifts
+      if (nodeDrifts.size > 0) {
+        viewDrifts.add('nodes-mismatch')
+      }
+
+      // The following properties are considered safe to update only if no other drifts detected
+      if (!sizeNotChanged) {
+        nodeDrifts.add('size-changed')
+      }
+      if (node.x !== next.x || node.y !== next.y) {
+        nodeDrifts.add('position-changed')
+      }
       // The following properties are safe to update
       // (ignoring size / text size / padding)
       const safeStyle = pick(next.style, ['border', 'opacity', 'multiple'])
@@ -118,43 +190,99 @@ export function applyManualLayout<
         }
       }
 
-      if (!isShallowEqual(draft.tags, next.tags)) {
-        draft.tags = [...next.tags]
+      const _drifts = [...nodeDrifts]
+      if (hasAtLeast(_drifts, 1)) {
+        draft.drifts = _drifts
       }
     })
   })
 
-  const edges = snapshot.edges.map(edge => {
+  const edges = snapshot.edges.map((edge): DiagramEdge => {
     const next = nextEdges.get(edge.id)
-    if (!next || next.source !== edge.source || next.target !== edge.target) {
-      drifts.add('edges-mismatch')
-      return edge
-    }
-
     return produce(edge, draft => {
+      if (!next) {
+        draft.drifts = ['not-exists']
+        return
+      }
+      const edgeDrifts = new Set<DiagramEdgeDriftReason>()
+
+      if (edge.source === next.target && edge.target === next.source) {
+        edgeDrifts.add('direction-changed')
+      } else {
+        if (edge.source !== next.source) {
+          edgeDrifts.add('source-changed')
+        }
+        if (edge.target !== next.target) {
+          edgeDrifts.add('target-changed')
+        }
+      }
+
+      // Only check size if previous checks passed
+      if (edgeDrifts.size === 0 && !eq(edge.dir ?? 'forward', next.dir ?? 'forward')) {
+        edgeDrifts.add('direction-changed')
+      }
+
       draft.color = next.color
       draft.line = next.line
+      draft.navigateTo = next.navigateTo ?? null
+      draft.tags = next.tags ? [...next.tags] : null
+
+      if (next.labelBBox) {
+        if (!edge.labelBBox || edge.label !== next.label) {
+          edgeDrifts.add('label-changed')
+        }
+        draft.labelBBox = {
+          x: edge.labelBBox?.x ?? next.labelBBox.x,
+          y: edge.labelBBox?.y ?? next.labelBBox.y,
+          width: next.labelBBox.width,
+          height: next.labelBBox.height,
+        }
+        draft.label = next.label
+        draft.description = next.description ?? null
+        draft.technology = next.technology ?? null
+      } else if (edge.labelBBox) {
+        // If previous edge had labelBBox but new one does not, consider it changed
+        edgeDrifts.add('label-changed')
+      }
+
+      const _drifts = [...edgeDrifts]
+      if (hasAtLeast(_drifts, 1)) {
+        viewDrifts.add('edges-mismatch')
+        draft.drifts = _drifts
+      }
     })
   })
 
-  let nodeNotations = isShallowEqual(snapshot.nodes, nodes) ? snapshot.notation?.nodes : buildElementNotations(nodes)
+  let nodeNotations = buildElementNotations(nodes)
 
-  return Object.assign(
+  const result: Writable<LayoutedView> = Object.assign(
     {},
     autoLayouted,
     snapshot,
     {
-      title: autoLayouted.title,
-      description: autoLayouted.description,
+      title: autoLayouted.title ?? snapshot.title,
+      description: autoLayouted.description ?? snapshot.description,
       tags: autoLayouted.tags ?? null,
       links: autoLayouted.links ?? null,
       [_layout]: 'manual' as const,
       ...(nodeNotations && nodeNotations.length > 0 ? { notation: { nodes: nodeNotations } } : {}),
       nodes,
       edges,
-      drifts: [...drifts],
     } satisfies Partial<LayoutedView>,
   )
+
+  const drifts = [...viewDrifts]
+  if (hasAtLeast(drifts, 1)) {
+    result.drifts = drifts
+  } else {
+    // Clear drifts if any comes from `autoLayouted` or `snapshot`
+    // Should not happen, but just in case
+    if ('drifts' in result) {
+      delete result.drifts
+    }
+  }
+
+  return result as V
 }
 
 /**
@@ -165,7 +293,7 @@ export function applyLayoutDriftReasons<V extends LayoutedView>(
   snapshot: ViewManualLayoutSnapshot,
 ): V {
   const { drifts } = applyManualLayout(autoLayouted, snapshot)
-  if (drifts && drifts.length > 0) {
+  if (drifts) {
     // Mutable for performance
     Object.assign(
       autoLayouted,
@@ -174,10 +302,12 @@ export function applyLayoutDriftReasons<V extends LayoutedView>(
         drifts,
       } satisfies Partial<LayoutedView>,
     )
-    // return {
-    //   ...autoLayouted,
-    //   drifts,
-    // }
+  } else {
+    const mutable = autoLayouted as Writable<LayoutedView>
+    // Ensure no drifts present
+    if ('drifts' in autoLayouted) {
+      delete mutable.drifts
+    }
   }
   return autoLayouted
 }

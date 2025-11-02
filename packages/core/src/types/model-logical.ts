@@ -14,13 +14,6 @@ import type { AnyAux } from './_aux'
 import type { FqnRef } from './fqnRef'
 import type * as scalar from './scalar'
 
-// export const DefaultThemeColor: ThemeColor = 'primary'
-// export const DefaultElementShape: ElementShape = 'rectangle'
-// export const DefaultSize = 'md'
-// export const DefaultShapeSize: ShapeSize = DefaultSize
-// export const DefaultPaddingSize: SpacingSize = DefaultSize
-// export const DefaultTextSize: TextSize = DefaultSize
-
 export interface ElementStyle {
   readonly icon?: scalar.Icon
   readonly shape?: ElementShape
