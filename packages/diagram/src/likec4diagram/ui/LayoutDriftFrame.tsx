@@ -1,5 +1,6 @@
 import { css } from '@likec4/styles/css'
-import { Box, HStack } from '@likec4/styles/jsx'
+import { Box } from '@likec4/styles/jsx'
+import { hstack } from '@likec4/styles/patterns'
 import {
   UnstyledButton,
 } from '@mantine/core'
@@ -7,88 +8,58 @@ import { memo } from 'react'
 import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
 
 export const LayoutDriftFrame = memo(() => {
-  const [{ layout, isActive }, { switchLayout }] = useDiagramCompareLayout()
-
-  if (!isActive) return null
+  const [{ layout, isActive }, { toggleCompare }] = useDiagramCompareLayout()
 
   const bgColor = layout === 'manual' ? 'var(--mantine-color-orange-6)' : 'var(--mantine-color-green-6)'
 
   return (
     <Box
-      css={{
+      className={hstack({
         position: 'absolute',
         top: '0',
         left: '0',
         width: 'full',
         height: 'full',
         border: `default`,
-        borderWidth: 3,
+        borderWidth: 4,
         pointerEvents: 'none',
-      }}
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+      })}
       style={{
+        zIndex: '9999',
+        display: !isActive ? 'none' : undefined,
         borderColor: bgColor,
       }}
     >
-      <HStack
-        css={{
-          position: 'absolute',
-          alignItems: 'stretch',
-          top: '0',
-          gap: '0.5',
-          py: '0',
-          px: '4',
-          pointerEvents: 'all',
-          color: 'mantine.colors.gray[9]',
-          userSelect: 'none',
-          overflow: 'hidden',
-        }}
+      <Btn
         style={{
-          left: '50%',
-          transform: 'translateX(-50%)',
+          backgroundColor: bgColor,
         }}
-      >
-        <Btn
-          {...layout === 'manual' ? { 'data-selected': true } : {}}
-          bg={'orange.6'}
-          onClick={() => {
-            switchLayout('manual')
-          }}>
-          saved version
-        </Btn>
-        <Btn
-          {...layout === 'auto' ? { 'data-selected': true } : {}}
-          bg={'green.6'}
-          onClick={() => {
-            switchLayout('auto')
-          }}>
-          latest
-        </Btn>
-      </HStack>
+        onClick={(e) => {
+          e.stopPropagation()
+          toggleCompare()
+        }}>
+        Close compare
+      </Btn>
     </Box>
   )
 })
 
 const Btn = UnstyledButton.withProps({
   className: css({
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '1',
     fontSize: 'xs',
-    transformOrigin: 'center top',
-    transition: 'fast',
-    transform: {
-      base: 'translateY(-3px)',
-      _hover: 'translateY(-1px)',
-      _selected: 'translateY(0)!',
-    },
-    fontWeight: {
-      base: 'medium',
-      // _selected: '500',
-    },
-    py: '1',
+    fontWeight: 'medium',
+    py: '1.5',
     lineHeight: '1',
     borderBottomLeftRadius: 'sm',
     borderBottomRightRadius: 'sm',
+    transform: 'translateY(-4px)',
     px: '4',
+    color: 'mantine.colors.gray[9]',
+    pointerEvents: 'all',
+    _active: {
+      transform: 'translateY(-3px)',
+    },
   }),
 })

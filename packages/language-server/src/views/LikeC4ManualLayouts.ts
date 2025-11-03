@@ -1,8 +1,8 @@
-import type { ComputedView, LayoutedView, ViewId } from '@likec4/core'
+import type { LayoutedView, ViewId } from '@likec4/core'
 import { getOrCreate } from '@likec4/core/utils'
 import JSON5 from 'json5'
 import { type URI, UriUtils } from 'langium'
-import { indexBy, omit, prop } from 'remeda'
+import { indexBy, prop } from 'remeda'
 import { type Location, Position, Range } from 'vscode-languageserver-types'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -88,8 +88,11 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(layouted.id))
     // Ensure the manualLayout field is omitted (may exist in migration)
-    const withoutManualLayout = omit(layouted as unknown as ComputedView, ['manualLayout'])
-    const content = JSON5.stringify(withoutManualLayout, {
+    if ('manualLayout' in layouted) {
+      const { manualLayout: _, ...rest } = layouted
+      layouted = rest
+    }
+    const content = JSON5.stringify(layouted, {
       space: 2,
       quote: '\'',
     })

@@ -28,6 +28,7 @@ export const Tooltip = MantineTooltip.withProps({
 
 export const BreadcrumbsSeparator = () => (
   <ThemeIcon
+    component={m.div}
     variant="transparent"
     size={16}
     className={css({

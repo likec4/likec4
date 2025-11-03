@@ -15,7 +15,11 @@ import { TriggerWalkthroughButton } from './DynamicViewControls'
 
 const PrevNextButton = Button.withProps({
   // Button is polymorphic, but we dont want it to inherit the motion props
-  component: m.button as any as 'button',
+  component: m.button,
+  layout: 'position',
+  whileTap: {
+    scale: 0.95,
+  },
   variant: 'light',
   size: 'xs',
   fw: '500',
@@ -67,7 +71,7 @@ export function ActiveWalkthroughControls() {
   })
 
   return (
-    <AnimatePresence propagate>
+    <AnimatePresence propagate mode="popLayout">
       <TriggerWalkthroughButton
         key="stop-walkthrough"
         variant="light"
@@ -95,6 +99,7 @@ export function ActiveWalkthroughControls() {
       <Badge
         key="step-badge"
         component={m.div}
+        layout="position"
         size="md"
         radius="sm"
         // fw={500}
@@ -113,9 +118,7 @@ export function ActiveWalkthroughControls() {
           alignItems: 'baseline',
         })}
       >
-        <m.span>
-          {currentStep} / {totalSteps}
-        </m.span>
+        {currentStep} / {totalSteps}
       </Badge>
 
       <PrevNextButton

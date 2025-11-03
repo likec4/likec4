@@ -1,4 +1,4 @@
-import type { NodeId } from '@likec4/core'
+import type { Fqn, NodeId } from '@likec4/core'
 import {
   CompoundDetailsButton,
   CompoundNodeContainer,
@@ -10,6 +10,7 @@ import {
   ElementShape,
   ElementTags,
 } from '../../../base-primitives'
+import type { BaseNodeData } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
@@ -20,7 +21,13 @@ import { CompoundDeploymentToolbar, CompoundElementToolbar } from './toolbar/Com
 import { DeploymentElementToolbar, ElementToolbar } from './toolbar/ElementToolbar'
 
 export function ElementDetailsButtonWithHandler(
-  props: Pick<Types.NodeProps<'element' | 'deployment'>, 'id' | 'data'>,
+  props: {
+    id: string
+    selected?: boolean
+    data: BaseNodeData & {
+      modelFqn?: Fqn | null | undefined
+    }
+  },
 ) {
   const diagram = useDiagram()
   const fqn = props.data.modelFqn

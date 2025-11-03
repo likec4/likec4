@@ -15,7 +15,7 @@ import type { NavigationPanelActorSnapshot } from './actor'
 import {
   BurgerButton,
   DetailsControls,
-  ManualLayoutWarning,
+  LayoutWarning,
   NavigationButtons,
   OpenSource,
   SearchControl,
@@ -42,7 +42,6 @@ const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
 export const NavigationPanelControls = memo(() => {
   const actor = useNavigationActor()
   const {
-    enableSearch,
     enableNavigationButtons,
     enableDynamicViewWalkthrough,
   } = useEnabledFeatures()
@@ -68,6 +67,9 @@ export const NavigationPanelControls = memo(() => {
           },
         }),
       )}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       title={title}
       onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.folder', folderPath })}
       onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave.folder', folderPath })}
@@ -85,6 +87,9 @@ export const NavigationPanelControls = memo(() => {
     <UnstyledButton
       key={'view-title'}
       component={m.button}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className={cx(
         'mantine-active',
         breadcrumbTitle({ truncate: true }),
@@ -105,7 +110,7 @@ export const NavigationPanelControls = memo(() => {
   )
 
   return (
-    <AnimatePresence propagate>
+    <AnimatePresence propagate mode="popLayout">
       <BurgerButton key="burger-button" />
       {enableNavigationButtons && <NavigationButtons key="nav-buttons" />}
       <m.div
@@ -135,8 +140,8 @@ export const NavigationPanelControls = memo(() => {
         <ToggleReadonly />
       </m.div>
       {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
-      {enableSearch && <SearchControl key="search-control" />}
-      <ManualLayoutWarning key="outdated-manual-layout-warning" />
+      <SearchControl key="search-control" />
+      <LayoutWarning key="outdated-manual-layout-warning" />
     </AnimatePresence>
   )
 })

@@ -1,5 +1,5 @@
 import { useRerender } from '@react-hookz/web'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { useOverlaysActorRef } from '../hooks/useOverlaysActor'
@@ -23,8 +23,13 @@ export const LikeC4DiagramUI = memo(() => {
   const overlaysActorRef = useOverlaysActorRef()
   const searchActorRef = useSearchActorRef()
 
+  const handleReset = useCallback(() => {
+    console.warn('DiagramUI: resetting error boundary and rerendering...')
+    rerender()
+  }, [])
+
   return (
-    <ErrorBoundary onReset={rerender}>
+    <ErrorBoundary onReset={handleReset}>
       {enableControls && <NavigationPanel />}
       {overlaysActorRef && <Overlays overlaysActorRef={overlaysActorRef} />}
       {enableNotations && <NotationPanel />}

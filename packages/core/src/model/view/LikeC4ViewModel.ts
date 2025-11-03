@@ -27,7 +27,7 @@ import type {
   WithTags,
 } from '../types'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
-import { applyLayoutDriftReasons, applyManualLayout } from '../utils/apply-manual-layout'
+import { applyLayoutDriftReasons, applyManualLayout } from './apply-manual-layout'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
@@ -134,13 +134,13 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     if (!this.isLayouted() || 'drifts' in this.#view) {
       return this.#view
     }
-    return memoizeProp(this, 'withDriftReasons', () => {
-      const snapshot = this.#manualLayoutSnapshot
-      if (snapshot) {
+    const snapshot = this.#manualLayoutSnapshot
+    if (snapshot) {
+      return memoizeProp(this, 'withDriftReasons', () => {
         return applyLayoutDriftReasons(this.#view, snapshot)
-      }
-      return this.#view
-    })
+      })
+    }
+    return this.#view
   }
 
   /**
@@ -275,6 +275,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 
   /**
    * Returns the layout drift reasons, if any
+   * (Only for layouted views with manual layout)
    */
   get driftReasons(): readonly LayoutedViewDriftReason[] {
     if (!this.isLayouted()) {

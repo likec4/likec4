@@ -5,6 +5,8 @@ import { vstack } from '@likec4/styles/patterns'
 import {
   ScrollAreaAutosize,
 } from '@mantine/core'
+import { AnimatePresence, m } from 'motion/react'
+import { memo } from 'react'
 import { isNonNull, isTruthy } from 'remeda'
 import { Markdown } from '../../base-primitives'
 import type { DiagramContext } from '../../hooks/useDiagram'
@@ -32,57 +34,67 @@ function selectWalkthroughNotes(s: DiagramContext) {
   }
 }
 
-export const WalkthroughPanel = () => {
-  const { notes } = useDiagramContext(selectWalkthroughNotes)
-
-  if (!notes || notes.isEmpty) {
-    return null
-  }
+export const WalkthroughPanel = memo(() => {
+  const { isActive, notes } = useDiagramContext(selectWalkthroughNotes)
 
   return (
-    <styled.div position={'relative'}>
-      <ScrollAreaAutosize
-        className={cx(
-          'nowheel nopan nodrag',
-          vstack({
-            position: 'absolute',
-            layerStyle: 'likec4.dropdown',
-            gap: 'sm',
-            padding: 'md',
-            paddingTop: 'xxs',
-            pointerEvents: 'all',
-            maxWidth: 'calc(100cqw - 32px)',
-            minWidth: 'calc(100cqw - 50px)',
-            maxHeight: 'calc(100cqh - 100px)',
-            width: 'max-content',
-            cursor: 'default',
-            overflow: 'auto',
-            overscrollBehavior: 'contain',
-            '@/sm': {
-              minWidth: 400,
-              maxWidth: 550,
-            },
-            '@/lg': {
-              maxWidth: 700,
-            },
-          }),
-        )}
-        // miw={180}
-        // maw={450}
-        // mah={350}
-        type="scroll"
-        // mt={2}
-      >
-        <SectionHeader>Notes</SectionHeader>
-        <Markdown
-          value={notes}
-          fontSize="sm"
-          emptyText="No description"
+    <AnimatePresence>
+      {isActive && notes && !notes.isEmpty && (
+        <m.div
+          layout="position"
           className={css({
-            userSelect: 'all',
+            position: 'relative',
           })}
-        />
-      </ScrollAreaAutosize>
-    </styled.div>
+          initial={{
+            opacity: 0,
+            translateX: -20,
+          }}
+          animate={{
+            opacity: 1,
+            translateX: 0,
+          }}
+          exit={{
+            opacity: 0,
+            translateX: -20,
+          }}
+        >
+          <ScrollAreaAutosize
+            className={vstack({
+              position: 'absolute',
+              layerStyle: 'likec4.dropdown',
+              gap: 'sm',
+              padding: 'md',
+              paddingTop: 'xxs',
+              pointerEvents: 'all',
+              maxWidth: 'calc(100cqw - 32px)',
+              minWidth: 'calc(100cqw - 50px)',
+              maxHeight: 'calc(100cqh - 100px)',
+              width: 'max-content',
+              cursor: 'default',
+              overflow: 'auto',
+              overscrollBehavior: 'contain',
+              '@/sm': {
+                minWidth: 400,
+                maxWidth: 550,
+              },
+              '@/lg': {
+                maxWidth: 700,
+              },
+            })}
+            type="scroll"
+          >
+            <SectionHeader>Notes</SectionHeader>
+            <Markdown
+              value={notes}
+              fontSize="sm"
+              emptyText="No description"
+              className={css({
+                userSelect: 'all',
+              })}
+            />
+          </ScrollAreaAutosize>
+        </m.div>
+      )}
+    </AnimatePresence>
   )
-}
+})

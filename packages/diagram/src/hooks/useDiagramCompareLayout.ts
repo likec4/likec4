@@ -39,24 +39,31 @@ export function useDiagramCompareLayout(): [
   const actorRef = useDiagramActorRef()
   const state = useXstateSelector(actorRef, selectCompareLayoutState, shallowEqual)
 
-  const toggleCompare = useCallbackRef((force?: 'on' | 'off') => {
-    if (!state.isEnabled) {
-      console.warn('Compare with latest feature is not enabled')
-      return
-    }
-    actorRef.send({
-      type: 'toggle.feature',
-      feature: 'CompareWithLatest',
-      ...(force ? { forceValue: force === 'on' } : {}),
-    })
-  })
-
   const switchLayout = useCallbackRef((layoutType: t.LayoutType) => {
     if (!state.isEnabled) {
       console.warn('Compare with latest feature is not enabled')
       return
     }
     actorRef.send({ type: 'emit.onLayoutTypeChange', layoutType })
+  })
+
+  const toggleCompare = useCallbackRef((force?: 'on' | 'off') => {
+    if (!state.isEnabled) {
+      console.warn('Compare with latest feature is not enabled')
+      return
+    }
+    const nextIsActive = force ? (force === 'on') : !state.isActive
+
+    // Ensure that when disabling compare while in manual layout, we switch back to manual layout to reset the layout state
+    if (state.isActive && !nextIsActive && state.layout === 'auto') {
+      switchLayout('manual')
+    }
+
+    actorRef.send({
+      type: 'toggle.feature',
+      feature: 'CompareWithLatest',
+      forceValue: nextIsActive,
+    })
   })
 
   const resetManualLayout = useCallbackRef(() => {

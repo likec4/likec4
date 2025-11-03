@@ -95,6 +95,29 @@ export const textStyles = defineTextStyles({
     },
   },
   likec4: {
+    panel: {
+      DEFAULT: {
+        description: 'Text style for panel content',
+        value: {
+          fontSize: '0.875rem',
+          lineHeight: '1.25rem',
+          fontWeight: 500,
+          color: 'likec4.panel.text',
+        },
+      },
+      action: {
+        description: 'Text style for panel action items',
+        value: {
+          fontSize: '0.875rem',
+          lineHeight: '1.25rem',
+          fontWeight: 500,
+          color: {
+            base: 'likec4.panel.text.action',
+            _hover: 'likec4.panel.text.action.hover',
+          },
+        },
+      },
+    },
     node: {
       primary: {
         description: 'Primary text, usually a title or name',

@@ -6,8 +6,8 @@ export const breadcrumbTitle = cva({
     fontWeight: '500',
     transition: 'fast',
     color: {
-      base: 'mantine.colors.text/90',
-      _hover: '[var(--mantine-color-bright)]',
+      base: 'likec4.panel.text.action',
+      _hover: 'likec4.panel.text.action.hover',
     },
   },
   variants: {
@@ -19,8 +19,8 @@ export const breadcrumbTitle = cva({
     dimmed: {
       'true': {
         color: {
-          base: 'mantine.colors.dimmed',
-          _hover: 'mantine.colors.text',
+          base: 'likec4.panel.text.dimmed',
+          _hover: 'likec4.panel.text.action',
         },
       },
     },

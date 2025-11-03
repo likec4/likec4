@@ -3,7 +3,7 @@ import { type LikeC4Model, applyLayoutDriftReasons, applyManualLayout } from '@l
 import { type LayoutResult, type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache, interruptAndCheck } from 'langium'
-import { values } from 'remeda'
+import { unique, values } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelBuilder } from '../model/model-builder'
@@ -169,7 +169,13 @@ export class DefaultLikeC4Views implements LikeC4Views {
         return {
           diagram: {
             ...snapshot,
-            drifts: ['not-exists'],
+            _layout: 'manual',
+            drifts: snapshot.drifts
+              ? unique([
+                ...snapshot.drifts,
+                'not-exists' as const,
+              ])
+              : ['not-exists'],
           },
           dot: '# manual layout',
         }

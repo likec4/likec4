@@ -70,6 +70,7 @@ const hasModelFqn = <D extends Types.SequenceActorNodeData>(data: D): data is Se
 export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
   const data = props.data
   const {
+    id,
     positionAbsoluteY,
     data: {
       viewHeight,
@@ -107,7 +108,7 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
         {hasModelFqn(data) && (
           <>
             <ElementActions {...props} data={data} />
-            <ElementDetailsButtonWithHandler {...props} data={data} />
+            <ElementDetailsButtonWithHandler id={id} data={data} />
           </>
         )}
       </ElementNodeContainer>

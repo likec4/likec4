@@ -6,6 +6,7 @@ import { useEnabledFeatures } from '../../context'
 import { CenterCamera } from './CenterCamera'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
 import { ManualLayoutToolsButton } from './ManualLayoutToolsButton'
+import { ToggleReadonly } from './ToggleReadonly'
 
 export function EditorPanel() {
   const { enableReadOnly } = useEnabledFeatures()
@@ -39,6 +40,7 @@ export function EditorPanel() {
             <ChangeAutoLayoutButton />
             <ManualLayoutToolsButton />
             <CenterCamera />
+            <ToggleReadonly />
           </TooltipGroup>
         </m.div>
       )}

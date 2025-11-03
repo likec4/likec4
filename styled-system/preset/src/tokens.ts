@@ -203,4 +203,23 @@ export const tokens = defineTokens({
       value: '0 1px 3px rgb(0 0 0/5%), 0 36px 28px -7px rgb(0 0 0/5%), 0 17px 17px -7px rgb(0 0 0/4%)',
     },
   },
+  zIndex: {
+    '-1': {
+      value: '-1',
+    },
+    '0': {
+      value: '0',
+    },
+    '1': {
+      value: '1',
+    },
+    likec4: {
+      panel: {
+        value: '100',
+      },
+      dropdown: {
+        value: '200',
+      },
+    },
+  },
 })

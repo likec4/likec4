@@ -57,10 +57,13 @@ export type {
 export * from './guards'
 
 export {
-  applyLayoutDriftReasons,
-  applyManualLayout,
   extractViewTitleFromPath,
   getViewFolderPath,
   normalizeViewPath,
   VIEW_FOLDERS_SEPARATOR,
 } from './utils'
+
+export {
+  applyLayoutDriftReasons,
+  applyManualLayout,
+} from './view/apply-manual-layout'

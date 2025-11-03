@@ -15,6 +15,7 @@ import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { useDiagramContext } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
 import { type NavigationPanelActorRef, navigationPanelActorLogic } from './actor'
+import { ComparePanel } from './comparepanel'
 import { EditorPanel } from './editorpanel'
 import { NavigationPanelActorContextProvider } from './hooks'
 import { NavigationPanelControls } from './NavigationPanelControls'
@@ -76,8 +77,9 @@ export const NavigationPanel = memo(() => {
       }}>
       <NavigationPanelActorContextProvider value={actorRef}>
         <NavigationPanelImpl actor={actorRef} />
-        <EditorPanel />
+        <ComparePanel />
         <WalkthroughPanel />
+        <EditorPanel />
       </NavigationPanelActorContextProvider>
     </VStack>
   )

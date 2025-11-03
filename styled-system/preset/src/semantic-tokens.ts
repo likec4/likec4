@@ -52,6 +52,26 @@ export const semanticTokens = defineSemanticTokens({
             _light: `{colors.mantine.colors.defaultBorder/30}`,
           },
         },
+        text: {
+          DEFAULT: {
+            description: 'LikeC4 panel text color',
+            value: 'color-mix(in srgb, var(--mantine-color-text) 85%, transparent)',
+          },
+          action: {
+            DEFAULT: {
+              description: 'LikeC4 panel action text color (Links)',
+              value: 'var(--mantine-color-text)',
+            },
+            hover: {
+              description: 'LikeC4 panel action text color on hover',
+              value: 'var(--mantine-color-bright)',
+            },
+          },
+          dimmed: {
+            description: 'LikeC4 panel dimmed text color',
+            value: 'var(--mantine-color-dimmed)',
+          },
+        },
         'action-icon': {
           text: {
             DEFAULT: {

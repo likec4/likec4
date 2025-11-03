@@ -16,20 +16,17 @@ export type LayoutedViewDriftReason =
   | 'edges-mismatch'
 
 export type DiagramNodeDriftReason =
-  | 'not-exists' // exists in snapshot but not in view, and visa versa
-  | 'label-changed' // title/description/technology changed
-  | 'relationships-changed' // has different inEdges/outEdges
+  | 'missing' // exists in snapshot but not in view, and visa versa
+  | 'label-changed' // title/description/technology/icon changed
   | 'modelRef-changed'
   | 'parent-changed'
   | 'children-changed'
-  | 'become-compound'
-  | 'become-leaf'
+  | 'became-compound'
+  | 'became-leaf'
   | 'shape-changed'
-  | 'size-changed'
-  | 'position-changed'
 
 export type DiagramEdgeDriftReason =
-  | 'not-exists' // exists in snapshot but not in view, and visa versa
+  | 'missing' // exists in snapshot but not in view, and visa versa
   | 'label-changed' // title/description/technology changed
   | 'direction-changed' // has different source/target
   | 'source-changed'

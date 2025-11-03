@@ -1,7 +1,8 @@
 import type * as t from '@likec4/core/types'
 import type { LayoutType } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import { ActionIcon, Box } from '@mantine/core'
+import { Box } from '@likec4/styles/jsx'
+import { ActionIcon } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import type { CSSProperties } from 'react'
@@ -370,7 +371,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   const [browserViewId, _onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
   const onNavigateTo = useCallbackRef((viewId: t.aux.ViewId<t.aux.UnknownLayouted> | null) => {
     // reset layout type if we navigate to a different view
-    if (viewId !== browserViewId) {
+    if (viewId && viewId !== browserViewId) {
       setLayoutType('manual')
     }
     _onNavigateTo(viewId)
@@ -433,7 +434,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
           pannable={pannable}
           zoomable={zoomable}
           background={background}
-          fitView={true}
+          fitView
           fitViewPadding={FitViewPaddings.default}
           enableNotations={hasNotations}
           enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
@@ -491,7 +492,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
               renderNodes={renderNodes}
               onLayoutTypeChange={setLayoutType}
             />
-            <Box pos="absolute" top={'1rem'} right={'1rem'}>
+            <Box pos="absolute" top={'4'} right={'4'} zIndex={'999'}>
               <ActionIcon
                 variant="default"
                 color="gray"

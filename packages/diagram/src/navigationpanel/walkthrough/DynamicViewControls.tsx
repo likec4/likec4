@@ -5,7 +5,7 @@ import { type ButtonProps, Button, SegmentedControl } from '@mantine/core'
 import {
   IconPlayerPlayFilled,
 } from '@tabler/icons-react'
-import type { HTMLMotionProps } from 'motion/react'
+import { type HTMLMotionProps, AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
@@ -24,6 +24,10 @@ export const TriggerWalkthroughButton = forwardRef<HTMLButtonElement, ButtonProp
     {...props}
     ref={ref}
     component={m.button}
+    whileTap={{
+      scale: 0.95,
+    }}
+    layout="position"
     layoutId={'trigger-dynamic-walkthrough'}
     className={css({
       flexShrink: 0,
@@ -32,18 +36,34 @@ export const TriggerWalkthroughButton = forwardRef<HTMLButtonElement, ButtonProp
 ))
 
 function StartWalkthroughButton() {
+  const { enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   const diagram = useDiagram()
   const actor = useNavigationActor()
+
+  let tooltipLabel = 'Start Dynamic View Walkthrough'
+  switch (true) {
+    case !enableReadOnly:
+      tooltipLabel = 'Walkthrough not available in Edit mode'
+      break
+    case enableCompareWithLatest:
+      tooltipLabel = 'Walkthrough not available when Compare is active'
+      break
+  }
+
   return (
-    <Tooltip label="Start Dynamic View Walkthrough">
+    <Tooltip label={tooltipLabel}>
       <TriggerWalkthroughButton
         onClick={e => {
           e.stopPropagation()
           actor.closeDropdown()
           diagram.startWalkthrough()
         }}
+        initial={{ opacity: 0, scale: 0.6, translateX: -10 }}
+        animate={{ opacity: 1, scale: 1, translateX: 0 }}
+        exit={{ opacity: 0, translateX: -20 }}
         size="compact-xs"
         h={26}
+        disabled={!enableReadOnly || enableCompareWithLatest}
         classNames={{
           label: css({
             display: {
@@ -103,11 +123,10 @@ function DynamicViewModeSwitcher({
 }
 
 export function DynamicViewControls() {
-  const { enableReadOnly } = useEnabledFeatures()
   const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
   const diagram = useDiagram()
   return (
-    <>
+    <AnimatePresence propagate mode="popLayout">
       <DynamicViewModeSwitcher
         key="dynamic-view-mode-switcher"
         value={dynamicViewVariant}
@@ -115,7 +134,7 @@ export function DynamicViewControls() {
           diagram.switchDynamicViewVariant(mode)
         }}
       />
-      {enableReadOnly && <StartWalkthroughButton key="trigger-dynamic-walkthrough" />}
-    </>
+      <StartWalkthroughButton key="trigger-dynamic-walkthrough" />
+    </AnimatePresence>
   )
 }
