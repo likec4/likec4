@@ -6,7 +6,7 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 
 **Tech Stack**: TypeScript monorepo using pnpm workspaces, Turbo for build orchestration, React for UI, Langium for language parsing, Vite for bundling.
 **Size**: ~20 packages across 1,686 dependencies. Main packages: `likec4` (CLI/Vite plugin), `@likec4/core` (model builder), `@likec4/language-server` (Langium-based parser), `@likec4/diagram` (React/ReactFlow renderer), `@likec4/vscode` (VSCode extension).
-**Node Requirements**: Node.js 20.19.0+ or 22.18.0+, pnpm 10.19.0
+**Node Requirements**: Node.js ^20.19.0 or >=22.18.0, pnpm 10.19.0 (.tool-versions specifies 22.19.0)
 
 ## Build & Validation Commands
 
