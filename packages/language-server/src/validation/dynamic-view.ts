@@ -75,7 +75,12 @@ export const dynamicViewDisplayVariant = (
   })
 }
 
-// Helper function to normalize branch kind
+/**
+ * Normalize a branch kind identifier to either `parallel` or `alternate`.
+ *
+ * @param kind - Branch kind string; `'alternate'` or `'alt'` map to `alternate`, any other value maps to `parallel`
+ * @returns `'alternate'` if `kind` is `'alternate'` or `'alt'`, `'parallel'` otherwise
+ */
 function normalizeBranchKind(kind: string): 'parallel' | 'alternate' {
   return kind === 'alternate' || kind === 'alt' ? 'alternate' : 'parallel'
 }

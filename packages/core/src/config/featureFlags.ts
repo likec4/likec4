@@ -27,22 +27,47 @@ export const featureFlags: FeatureFlagState = new Proxy(mutableState, {
   },
 }) as FeatureFlagState
 
+/**
+ * Determine if a named feature flag is enabled.
+ *
+ * @param flag - The feature flag to query
+ * @returns `true` if the specified feature flag is enabled, `false` otherwise.
+ */
 export function isFeatureEnabled(flag: FeatureFlagName): boolean {
   return featureFlags[flag]
 }
 
+/**
+ * Checks if dynamic branch collections are enabled.
+ *
+ * @returns `true` if dynamic branch collections are enabled, `false` otherwise.
+ */
 export function isDynamicBranchCollectionsEnabled(): boolean {
   return featureFlags.dynamicBranchCollections
 }
 
+/**
+ * Set the runtime value of a feature flag.
+ *
+ * Mutates the module's runtime feature flag state for the specified flag.
+ *
+ * @param flag - The feature flag name to update
+ * @param enabled - `true` to enable the flag, `false` to disable it
+ */
 export function setFeatureFlag(flag: FeatureFlagName, enabled: boolean): void {
   mutableState[flag] = enabled
 }
 
+/**
+ * Enable the dynamicBranchCollections feature flag for the current process.
+ */
 export function enableDynamicBranchCollections(): void {
   setFeatureFlag('dynamicBranchCollections', true)
 }
 
+/**
+ * Disables the dynamicBranchCollections feature flag for subsequent checks.
+ */
 export function disableDynamicBranchCollections(): void {
   setFeatureFlag('dynamicBranchCollections', false)
 }

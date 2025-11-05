@@ -26,6 +26,15 @@ type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ViewRuleGlobalStyle
 
 const logger = mainLogger.getChild('ViewsParser')
 
+/**
+ * Produces a mixin class that extends the given base with methods to parse document view blocks into C4 view models.
+ *
+ * The returned class adds parsing for element, dynamic, and deployment views; rule and style parsing; dynamic branch and step handling; and utilities for resolving IDs, AST paths, tags, links, and manual layouts. Parsing errors for individual nodes are logged and do not stop processing of other nodes.
+ *
+ * @template TBase - Base class type to extend; must provide predicate- and deployment-related capabilities required by the parser.
+ * @param B - A constructor/class to extend with view-parsing behaviour.
+ * @returns A class that extends `B` and implements view parsing methods (e.g., parseViews, parseElementView, parseDynamicElementView, parseDynamicBranchCollection, parseDynamicStepLike, and related helpers).
+ */
 export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
   return class ViewsParser extends B {
     parseViews() {
@@ -647,6 +656,15 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
   }
 }
 
+/**
+ * Build an AST path string for a dynamic-view node by walking up to its DynamicViewBody container.
+ *
+ * The returned path concatenates each container property and optional container index segments in traversal order,
+ * e.g. `/containerProp@0/pathProp` or `/containerProp/@1/childProp` depending on node positions.
+ *
+ * @param _node - An AST node that is part of a dynamic view (AbstractDynamicStep, DynamicViewBranchCollection, or DynamicViewBranchPath)
+ * @returns The constructed path string representing the node's location inside the DynamicViewBody
+ */
 function pathInsideDynamicView(
   _node: ast.AbstractDynamicStep | ast.DynamicViewBranchCollection | ast.DynamicViewBranchPath,
 ): string {
@@ -671,6 +689,12 @@ function pathInsideDynamicView(
   return path.join('')
 }
 
+/**
+ * Find the first non-empty title from a list of branch entries or dynamic view steps, searching nested branch collections recursively.
+ *
+ * @param entries - Array of branch entries or dynamic view steps to search for a title
+ * @returns The first found title string, or `null` if no title is present
+ */
 function deriveBranchTitleFromEntries(entries: readonly (c4.DynamicBranchEntry | c4.DynamicViewStep)[]): string | null {
   for (const entry of entries) {
     const title = deriveBranchEntryTitle(entry)
@@ -689,6 +713,12 @@ function deriveBranchTitleFromEntries(entries: readonly (c4.DynamicBranchEntry |
   return null
 }
 
+/**
+ * Derives a human-readable title from a branch entry or step series.
+ *
+ * @param entry - A branch entry (single step or series) to extract a title from
+ * @returns The first available title string found on the entry or its series, or `null` if none exists
+ */
 function deriveBranchEntryTitle(entry: c4.DynamicBranchEntry | c4.DynamicViewStep): string | null {
   if (c4.isDynamicStep(entry)) {
     return entry.title ?? null
