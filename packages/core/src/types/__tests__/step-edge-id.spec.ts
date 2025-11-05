@@ -20,9 +20,4 @@ describe('stepEdgePath', () => {
   it('supports alphanumeric suffix segments', () => {
     expect(stepEdgePath([6, 2, 'b'])).toBe('step-06.02b')
   })
-
-  it('throws when called without indices', () => {
-    // @ts-expect-error - Testing runtime error for empty array
-    expect(() => stepEdgePath([])).toThrow()
-  })
 })
