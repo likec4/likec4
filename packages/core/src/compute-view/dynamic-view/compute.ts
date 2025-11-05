@@ -208,7 +208,7 @@ class DynamicViewCompute<A extends AnyAux> {
     invariant(targetColumn >= 0, `Target ${stepTarget} not found`)
 
     if (this.compounds.includes(source) || this.compounds.includes(target)) {
-      console.error(`Step ${source.id} -> ${target.id} because it involves a compound`)
+      console.error(`Step ${source.id} -> ${target.id} skipped because it involves a compound`)
     }
 
     const {
