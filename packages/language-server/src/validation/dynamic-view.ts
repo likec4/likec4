@@ -121,9 +121,7 @@ export const dynamicViewBranchCollection = (
       for (const path of node.paths) {
         // Check if path contains only a single nested parallel
         if (path.steps.length === 1 && ast.isDynamicViewBranchCollection(path.steps[0])) {
-          const nestedKind = path.steps[0].kind === 'alternate' || path.steps[0].kind === 'alt'
-            ? 'alternate'
-            : 'parallel'
+          const nestedKind = normalizeBranchKind(path.steps[0].kind)
 
           if (nestedKind === 'parallel') {
             accept(
@@ -141,9 +139,7 @@ export const dynamicViewBranchCollection = (
       // Also check anonymous steps that might contain nested parallels
       for (const step of node.steps) {
         if (ast.isDynamicViewBranchCollection(step)) {
-          const nestedKind = step.kind === 'alternate' || step.kind === 'alt'
-            ? 'alternate'
-            : 'parallel'
+          const nestedKind = normalizeBranchKind(step.kind)
 
           if (nestedKind === 'parallel') {
             accept(
@@ -163,9 +159,7 @@ export const dynamicViewBranchCollection = (
     if (kind === 'alternate') {
       for (const path of node.paths) {
         if (path.steps.length === 1 && ast.isDynamicViewBranchCollection(path.steps[0])) {
-          const nestedKind = path.steps[0].kind === 'alternate' || path.steps[0].kind === 'alt'
-            ? 'alternate'
-            : 'parallel'
+          const nestedKind = normalizeBranchKind(path.steps[0].kind)
 
           if (nestedKind === 'alternate') {
             accept(

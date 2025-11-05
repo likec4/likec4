@@ -239,7 +239,9 @@ describe.concurrent('DynamicView Checks', () => {
         }
       `)
       expect(errors).toHaveLength(0)
-      expect(warnings).toContain('Parallel block with only one path has no branching value. Consider removing the parallel wrapper.')
+      expect(warnings).toContain(
+        'Parallel block with only one path has no branching value. Consider removing the parallel wrapper.',
+      )
     })
 
     it('should warn for alternate block with single path', async ({ expect }) => {
@@ -263,7 +265,9 @@ describe.concurrent('DynamicView Checks', () => {
         }
       `)
       expect(errors).toHaveLength(0)
-      expect(warnings).toContain('Alternate block with only one path has no branching value. Consider removing the alternate wrapper.')
+      expect(warnings).toContain(
+        'Alternate block with only one path has no branching value. Consider removing the alternate wrapper.',
+      )
     })
 
     it('should not warn for parallel block with multiple paths', async ({ expect }) => {
@@ -314,7 +318,9 @@ describe.concurrent('DynamicView Checks', () => {
           }
         }
       `)
-      expect(errors).toContain('Nested parallel inside parallel with no other steps is not allowed. Parallel blocks are associative - flatten inner parallel paths into the parent parallel.')
+      expect(errors).toContain(
+        'Nested parallel inside parallel with no other steps is not allowed. Parallel blocks are associative - flatten inner parallel paths into the parent parallel.',
+      )
     })
 
     it('should warn on anonymous nested parallel in parallel', async ({ expect }) => {
@@ -340,12 +346,14 @@ describe.concurrent('DynamicView Checks', () => {
         }
       `)
       expect(errors).toHaveLength(0)
-      expect(warnings).toContain('Anonymous nested parallel will create a separate path. Consider using named paths for clarity.')
+      expect(warnings).toContain(
+        'Anonymous nested parallel will create a separate path. Consider using named paths for clarity.',
+      )
     })
 
     it('should hint on nested alternate in alternate', async ({ expect }) => {
       const { validate } = createTestServices()
-      const { errors, warnings, hints } = await validate(`
+      const { errors, hints } = await validate(`
         specification {
           element component
         }
@@ -368,7 +376,9 @@ describe.concurrent('DynamicView Checks', () => {
         }
       `)
       expect(errors).toHaveLength(0)
-      expect(hints).toContain('Nested alternate inside alternate with no other steps can be flattened. Alternate blocks are associative - consider using sibling paths instead.')
+      expect(hints).toContain(
+        'Nested alternate inside alternate with no other steps can be flattened. Alternate blocks are associative - consider using sibling paths instead.',
+      )
     })
 
     it('should allow nested alternate in parallel', async ({ expect }) => {
@@ -569,7 +579,9 @@ describe.concurrent('DynamicView Checks', () => {
         }
       `)
       expect(errors).toHaveLength(0)
-      expect(warnings).toContain('Parallel block with only one path has no branching value. Consider removing the parallel wrapper.')
+      expect(warnings).toContain(
+        'Parallel block with only one path has no branching value. Consider removing the parallel wrapper.',
+      )
     })
 
     it('should validate alternate short form "alt"', async ({ expect }) => {
@@ -591,7 +603,9 @@ describe.concurrent('DynamicView Checks', () => {
         }
       `)
       expect(errors).toHaveLength(0)
-      expect(warnings).toContain('Alternate block with only one path has no branching value. Consider removing the alternate wrapper.')
+      expect(warnings).toContain(
+        'Alternate block with only one path has no branching value. Consider removing the alternate wrapper.',
+      )
     })
   })
 })
