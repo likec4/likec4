@@ -438,6 +438,7 @@ function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolea
   useMountEffect(() => {
     if (isLast && ref.current) {
       ref.current.scrollIntoView({
+        block: 'nearest',
         inline: 'nearest',
         behavior: 'smooth',
       })

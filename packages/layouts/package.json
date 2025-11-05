@@ -2,7 +2,7 @@
   "name": "@likec4/layouts",
   "description": "Layout algorithms for LikeC4 views",
   "license": "MIT",
-  "version": "1.42.1",
+  "version": "1.43.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -84,7 +84,7 @@
     "type-fest": "catalog:utils",
     "which": "^5.0.0",
     "word-wrap": "^1.2.5",
-    "vecti": "^3.1.1"
+    "vecti": "^3.1.2"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

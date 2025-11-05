@@ -1,3 +1,36 @@
+# [1.43.0](https://github.com/likec4/likec4/compare/v1.42.1...v1.43.0) (2025-10-25)
+
+### 🚀 Features
+
+- **Multi-metadata support**  
+  You can also use arrays for metadata values 
+  ```zig
+  model {
+    app = application 'App' {
+      metadata {
+        tags ['frontend', 'react', 'typescript']
+        environments ['dev', 'staging', 'prod']
+        version '2.1.0'
+      }
+    }
+  }
+  ```
+  
+  [📖 Documentation](https://likec4.dev/dsl/model/#array-values)
+
+  Thanks to @kieronlanning for such a great contribution  
+  PR: [#2306](https://github.com/likec4/likec4/issues/2306) and [#2313](https://github.com/likec4/likec4/issues/2313)
+
+- **Revamp landing page**  
+  ![SCR-20251025-czqz](https://github.com/user-attachments/assets/59822d1e-5892-4306-9ce7-a9e0ba57880a)
+  
+
+### 🐞 Bug Fixes
+
+* **config:** make json schema stricter ([#2318](https://github.com/likec4/likec4/issues/2318))
+
+
+
 ## [1.42.1](https://github.com/likec4/likec4/compare/v1.42.0...v1.42.1) (2025-10-07)
 
 ### 🐞 Bug Fixes
