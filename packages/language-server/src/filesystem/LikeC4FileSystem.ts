@@ -73,25 +73,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
   }
 
   async scanProjectFiles(folderUri: URI): Promise<FileSystemNode[]> {
-    const entries = [] as FileSystemNode[]
-    try {
-      const crawled = await new fdir()
-        .withSymlinks({ resolvePaths: false })
-        .withFullPaths()
-        .filter(isLikeC4Config)
-        .crawl(folderUri.fsPath)
-        .withPromise()
-      for (const path of crawled) {
-        entries.push({
-          isFile: true,
-          isDirectory: false,
-          uri: URI.file(path),
-        })
-      }
-    } catch (error) {
-      logger.warn(`Failed to scan project files ${folderUri.fsPath}`, { error })
-    }
-    return entries
+    return await this.scanDirectory(folderUri, isLikeC4Config)
   }
 
   async scanDirectory(directory: URI, filter: (filepath: string) => boolean): Promise<FileSystemNode[]> {
