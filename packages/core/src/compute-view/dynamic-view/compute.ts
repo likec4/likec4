@@ -482,7 +482,7 @@ class DynamicViewCompute<A extends AnyAux> {
     // 3. Environment variable (backward compatibility)
     const programmaticEnabled = isDynamicBranchCollectionsEnabled()
     const configEnabled = this.model.$data.project.experimental?.dynamicBranchCollections
-    const envEnabled = typeof process !== 'undefined' && process?.env
+    const envEnabled = typeof process !== 'undefined' && process.env
       ? isTruthy(process.env['LIKEC4_UNIFIED_BRANCHES'] ?? process.env['LIKEC4_EXPERIMENTAL_UNIFIED_BRANCHES'])
       : false
     const branchFeatureEnabled = programmaticEnabled || (configEnabled ?? envEnabled)
