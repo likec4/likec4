@@ -17,6 +17,19 @@ import * as z from 'zod/v4'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
 import { LikeC4StylesConfigSchema } from './schema.theme'
 
+export const LikeC4ExperimentalConfigSchema = z.object({
+  dynamicBranchCollections: z.boolean()
+    .optional()
+    .meta({
+      description:
+        'Enable experimental branch collections in dynamic views. Allows branching (parallel/alternate paths) in sequence diagrams.',
+    }),
+})
+  .optional()
+  .meta({
+    description: 'Experimental features that may change or be removed in future versions',
+  })
+
 export const LikeC4ProjectJsonConfigSchema = z.object({
   name: z.string()
     .nonempty('Project name cannot be empty')
@@ -41,6 +54,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .optional(),
   styles: LikeC4StylesConfigSchema
     .optional(),
+  experimental: LikeC4ExperimentalConfigSchema,
   exclude: z.array(z.string())
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),

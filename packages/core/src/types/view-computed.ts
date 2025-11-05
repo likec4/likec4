@@ -67,6 +67,23 @@ export interface ComputedNode<A extends AnyAux = AnyAux>
   notation?: string | null
 }
 
+export interface ComputedBranchTrailEntry<A extends AnyAux = AnyAux> {
+  branchId: string
+  pathId: string
+  kind: 'parallel' | 'alternate'
+  /**
+   * Ordinal of the path within the branch (1-based)
+   */
+  pathIndex: number
+  /**
+   * Index of the step within the path (1-based)
+   */
+  indexWithinPath: number
+  pathName?: string
+  pathTitle?: string | null
+  isDefaultPath?: boolean
+}
+
 export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptionalTags<A> {
   id: scalar.EdgeId
   parent: scalar.NodeId | null
@@ -101,6 +118,34 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
    * @default 'forward'
    */
   dir?: 'forward' | 'back' | 'both'
+  /**
+   * Optional branch ancestry describing the branch collections this edge belongs to.
+   * Present only when unified branching feature flag is enabled.
+   */
+  branchTrail?: readonly ComputedBranchTrailEntry<A>[]
+}
+
+export interface ComputedBranchCollectionPath<A extends AnyAux = AnyAux> {
+  pathId: string
+  pathIndex: number
+  pathName?: string
+  pathTitle?: string | null
+  description?: scalar.MarkdownOrString
+  tags?: aux.Tags<A>
+  /**
+   * Ordered list of edge ids emitted for this path.
+   */
+  edgeIds: readonly scalar.EdgeId[]
+  isDefaultPath?: boolean
+}
+
+export interface ComputedBranchCollection<A extends AnyAux = AnyAux> {
+  branchId: string
+  astPath: string
+  kind: 'parallel' | 'alternate'
+  label?: string
+  defaultPathId?: string
+  paths: readonly ComputedBranchCollectionPath<A>[]
 }
 
 interface BaseComputedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
@@ -133,4 +178,5 @@ export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComp
    * - `sequence`: display as a sequence diagram
    */
   readonly variant: DynamicViewDisplayVariant
+  readonly branchCollections?: readonly ComputedBranchCollection<A>[]
 }

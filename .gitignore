@@ -11,6 +11,13 @@
 
 panda.buildinfo.json
 
+# Local documentation and work files
+upstream/
+BRANCH_VALIDATION_IMPLEMENTATION.md
+PR2332_REVIEW_SUMMARY.md
+REPLY_TO_DAVYDKOV.md
+*.local.md
+
 apps/*/dist
 apps/*/lib
 apps/*/styled-system
