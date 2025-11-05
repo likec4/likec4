@@ -1,4 +1,4 @@
-import { isAncestor, isDynamicBranchCollection } from '@likec4/core'
+import { isAncestor } from '@likec4/core'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { isEmpty } from 'remeda'
 import { ast } from '../ast'
