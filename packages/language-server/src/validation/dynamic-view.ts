@@ -75,11 +75,16 @@ export const dynamicViewDisplayVariant = (
   })
 }
 
+// Helper function to normalize branch kind
+function normalizeBranchKind(kind: string): 'parallel' | 'alternate' {
+  return kind === 'alternate' || kind === 'alt' ? 'alternate' : 'parallel'
+}
+
 export const dynamicViewBranchCollection = (
   services: LikeC4Services,
 ): ValidationCheck<ast.DynamicViewBranchCollection> => {
   return tryOrLog((node, accept) => {
-    const kind = node.kind === 'alternate' || node.kind === 'alt' ? 'alternate' : 'parallel'
+    const kind = normalizeBranchKind(node.kind)
     const hasNamedPaths = node.paths.length > 0
     const hasSteps = node.steps.length > 0
 
