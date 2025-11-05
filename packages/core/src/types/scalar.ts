@@ -150,7 +150,7 @@ export type StepEdgeIndex = string | number
 
 function formatIndex(segment: StepEdgeIndex, { isFirst }: { isFirst: boolean }): string {
   const raw = typeof segment === 'number' ? segment.toString() : segment
-  if (!isFirst && !/^\d+$/u.test(raw)) {
+  if (!/^\d+$/u.test(raw)) {
     return raw
   }
   return raw.padStart(2, '0')
