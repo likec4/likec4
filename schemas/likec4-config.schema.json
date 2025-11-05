@@ -37,6 +37,16 @@
         }
       ]
     },
+    "experimental": {
+      "description": "Experimental features that may change or be removed in future versions",
+      "type": "object",
+      "properties": {
+        "dynamicBranchCollections": {
+          "description": "Enable experimental branch collections in dynamic views. Allows branching (parallel/alternate paths) in sequence diagrams.",
+          "type": "boolean"
+        }
+      }
+    },
     "exclude": {
       "description": "List of file patterns to exclude from the project, default is [\"**/node_modules/**\"]",
       "type": "array",

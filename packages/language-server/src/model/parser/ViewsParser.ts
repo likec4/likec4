@@ -26,6 +26,15 @@ type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ViewRuleGlobalStyle
 
 const logger = mainLogger.getChild('ViewsParser')
 
+/**
+ * Produces a mixin class that extends the given base with methods to parse document view blocks into C4 view models.
+ *
+ * The returned class adds parsing for element, dynamic, and deployment views; rule and style parsing; dynamic branch and step handling; and utilities for resolving IDs, AST paths, tags, links, and manual layouts. Parsing errors for individual nodes are logged and do not stop processing of other nodes.
+ *
+ * @template TBase - Base class type to extend; must provide predicate- and deployment-related capabilities required by the parser.
+ * @param B - A constructor/class to extend with view-parsing behaviour.
+ * @returns A class that extends `B` and implements view parsing methods (e.g., parseViews, parseElementView, parseDynamicElementView, parseDynamicBranchCollection, parseDynamicStepLike, and related helpers).
+ */
 export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
   return class ViewsParser extends B {
     parseViews() {
@@ -312,10 +321,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         steps: body.steps.reduce((acc, n) => {
           try {
             if (isValid(n)) {
-              if (ast.isDynamicViewParallelSteps(n)) {
-                acc.push(this.parseDynamicParallelSteps(n))
-              } else {
-                acc.push(this.parseDynamicStep(n))
+              const parsed = this.parseDynamicStepLike(n)
+              if (parsed) {
+                acc.push(parsed)
               }
             }
           } catch (e) {
@@ -362,13 +370,117 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       return { include }
     }
 
-    parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicStepsParallel {
-      const parallelId = pathInsideDynamicView(node)
-      const __parallel = node.steps.map(step => this.parseDynamicStep(step))
-      invariant(isNonEmptyArray(__parallel), 'Dynamic parallel steps must have at least one step')
+    parseDynamicStepLike(node: ast.DynamicViewStepLike): c4.DynamicViewStep | null {
+      if (ast.isDynamicViewBranchCollection(node)) {
+        return this.parseDynamicBranchCollection(node)
+      }
+      return this.parseDynamicStep(node)
+    }
+
+    // Helper to map AST kind to normalized branch kind
+    getBranchKind(astKind: string): 'parallel' | 'alternate' {
+      return astKind === 'alternate' || astKind === 'alt' ? 'alternate' : 'parallel'
+    }
+
+    // Helper to parse and filter valid steps
+    parseValidSteps(steps: readonly ast.DynamicViewStepLike[]): c4.DynamicBranchEntry[] {
+      return steps
+        .filter(step => this.isValid(step))
+        .map(step => this.parseDynamicStepLike(step))
+        .filter((step): step is c4.DynamicBranchEntry => step !== null)
+    }
+
+    parseDynamicBranchCollection(node: ast.DynamicViewBranchCollection): c4.DynamicBranchCollection | null {
+      const kind = this.getBranchKind(node.kind)
+      const branchId = pathInsideDynamicView(node)
+      const astPath = branchId
+      const paths: c4.DynamicBranchPath[] = []
+      const legacyParallel = [] as Array<c4.DynamicStep | c4.DynamicStepsSeries>
+
+      for (const pathNode of node.paths) {
+        const parsed = this.parseDynamicBranchPath(pathNode)
+        if (parsed) {
+          paths.push(parsed)
+        }
+      }
+
+      if (isNonEmptyArray(node.steps)) {
+        for (const stepNode of node.steps) {
+          if (!this.isValid(stepNode)) {
+            continue
+          }
+          const entry = this.parseDynamicStepLike(stepNode)
+          if (!entry) {
+            continue
+          }
+          const astStepPath = pathInsideDynamicView(stepNode)
+          const pathTitle = deriveBranchTitleFromEntries([entry])
+          const branchPath: c4.DynamicBranchPath = {
+            pathId: `${branchId}/paths@${paths.length}`,
+            astPath: astStepPath,
+            steps: [entry],
+            isAnonymous: true,
+            ...(pathTitle && { pathTitle }),
+          }
+          paths.push(branchPath)
+          if (c4.isDynamicStep(entry) || c4.isDynamicStepsSeries(entry)) {
+            legacyParallel.push(entry)
+          }
+        }
+      }
+
+      if (!isNonEmptyArray(paths)) {
+        logger.warn('Dynamic branch collection has no paths, skipping')
+        return null
+      }
+
+      if (kind === 'parallel') {
+        // Build parallel branch with legacy compatibility
+        const base: c4.DynamicParallelBranch = {
+          branchId,
+          astPath,
+          kind,
+          paths,
+          parallelId: branchId,
+        }
+        // Populate __parallel for legacy compatibility if applicable
+        if (isNonEmptyArray(legacyParallel)) {
+          if (node.paths.length === 0) {
+            // Legacy anonymous parallel syntax
+            return { ...base, __parallel: legacyParallel, isLegacyParallel: true }
+          }
+          // Mixed: named paths with legacy array
+          return { ...base, __parallel: legacyParallel }
+        }
+        return base
+      }
+
+      const alternate: c4.DynamicAlternateBranch = {
+        branchId,
+        astPath,
+        kind,
+        paths,
+      }
+      return alternate
+    }
+
+    parseDynamicBranchPath(node: ast.DynamicViewBranchPath): c4.DynamicBranchPath | null {
+      const astPath = pathInsideDynamicView(node)
+      const steps = this.parseValidSteps(node.steps)
+      if (!isNonEmptyArray(steps)) {
+        logger.warn('Dynamic branch path has no steps, skipping')
+        return null
+      }
+
+      const explicitTitle = removeIndent(node.title)
+      const derivedTitle = explicitTitle ?? deriveBranchTitleFromEntries(steps)
+
       return {
-        parallelId,
-        __parallel,
+        pathId: astPath,
+        astPath,
+        ...(node.name && { pathName: node.name }),
+        ...(derivedTitle && { pathTitle: derivedTitle }),
+        steps: steps as c4.NonEmptyReadonlyArray<c4.DynamicBranchEntry>,
       }
     }
 
@@ -544,8 +656,23 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
   }
 }
 
-function pathInsideDynamicView(_node: ast.AbstractDynamicStep | ast.DynamicViewParallelSteps): string {
-  let node: ast.AbstractDynamicStep | ast.DynamicViewParallelSteps | ast.DynamicViewBody = _node
+/**
+ * Build an AST path string for a dynamic-view node by walking up to its DynamicViewBody container.
+ *
+ * The returned path concatenates each container property and optional container index segments in traversal order,
+ * e.g. `/containerProp@0/pathProp` or `/containerProp/@1/childProp` depending on node positions.
+ *
+ * @param _node - An AST node that is part of a dynamic view (AbstractDynamicStep, DynamicViewBranchCollection, or DynamicViewBranchPath)
+ * @returns The constructed path string representing the node's location inside the DynamicViewBody
+ */
+function pathInsideDynamicView(
+  _node: ast.AbstractDynamicStep | ast.DynamicViewBranchCollection | ast.DynamicViewBranchPath,
+): string {
+  let node:
+    | ast.AbstractDynamicStep
+    | ast.DynamicViewBranchCollection
+    | ast.DynamicViewBranchPath
+    | ast.DynamicViewBody = _node
   let path = []
   while (!ast.isDynamicViewBody(node)) {
     if (isNumber(node.$containerIndex)) {
@@ -560,4 +687,48 @@ function pathInsideDynamicView(_node: ast.AbstractDynamicStep | ast.DynamicViewP
   }
 
   return path.join('')
+}
+
+/**
+ * Find the first non-empty title from a list of branch entries or dynamic view steps, searching nested branch collections recursively.
+ *
+ * @param entries - Array of branch entries or dynamic view steps to search for a title
+ * @returns The first found title string, or `null` if no title is present
+ */
+function deriveBranchTitleFromEntries(entries: readonly (c4.DynamicBranchEntry | c4.DynamicViewStep)[]): string | null {
+  for (const entry of entries) {
+    const title = deriveBranchEntryTitle(entry)
+    if (title) {
+      return title
+    }
+    if (c4.isDynamicBranchCollection(entry)) {
+      for (const path of entry.paths) {
+        const nestedTitle = deriveBranchTitleFromEntries(path.steps)
+        if (nestedTitle) {
+          return nestedTitle
+        }
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * Derives a human-readable title from a branch entry or step series.
+ *
+ * @param entry - A branch entry (single step or series) to extract a title from
+ * @returns The first available title string found on the entry or its series, or `null` if none exists
+ */
+function deriveBranchEntryTitle(entry: c4.DynamicBranchEntry | c4.DynamicViewStep): string | null {
+  if (c4.isDynamicStep(entry)) {
+    return entry.title ?? null
+  }
+  if (c4.isDynamicStepsSeries(entry)) {
+    for (const step of entry.__series) {
+      if (step.title) {
+        return step.title
+      }
+    }
+  }
+  return null
 }

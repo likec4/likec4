@@ -45,13 +45,52 @@ export interface DynamicStepsSeries<A extends AnyAux = AnyAux> {
   readonly __series: NonEmptyReadonlyArray<DynamicStep<A>>
 }
 
-export interface DynamicStepsParallel<A extends AnyAux = AnyAux> {
-  readonly parallelId: string
-  readonly __parallel: NonEmptyReadonlyArray<DynamicStep<A> | DynamicStepsSeries<A>>
+export type DynamicBranchEntry<A extends AnyAux = AnyAux> =
+  | DynamicStep<A>
+  | DynamicStepsSeries<A>
+  | DynamicBranchCollection<A>
+
+export interface DynamicBranchPath<A extends AnyAux = AnyAux> {
+  readonly pathId: string
+  readonly astPath: string
+  readonly pathName?: string
+  readonly pathTitle?: string | null
+  readonly description?: MarkdownOrString
+  readonly tags?: aux.Tags<A>
+  readonly steps: NonEmptyReadonlyArray<DynamicBranchEntry<A>>
+  readonly isAnonymous?: boolean
 }
 
+interface DynamicBranchCollectionBase<A extends AnyAux = AnyAux> {
+  readonly branchId: string
+  readonly astPath: string
+  readonly kind: 'parallel' | 'alternate'
+  readonly label?: string
+  readonly defaultPathId?: string
+  readonly paths: NonEmptyReadonlyArray<DynamicBranchPath<A>>
+}
+
+export interface DynamicParallelBranch<A extends AnyAux = AnyAux> extends DynamicBranchCollectionBase<A> {
+  readonly kind: 'parallel'
+  readonly parallelId: string
+  readonly __parallel?: NonEmptyReadonlyArray<DynamicStep<A> | DynamicStepsSeries<A>>
+  readonly isLegacyParallel?: boolean
+}
+
+export interface DynamicAlternateBranch<A extends AnyAux = AnyAux> extends DynamicBranchCollectionBase<A> {
+  readonly kind: 'alternate'
+}
+
+export type DynamicBranchCollection<A extends AnyAux = AnyAux> = DynamicParallelBranch<A> | DynamicAlternateBranch<A>
+export type DynamicStepsParallel<A extends AnyAux = AnyAux> = DynamicParallelBranch<A>
+
 // Get the prefix of the parallel steps
-// i.e. step-01.1 -> step-01.
+/**
+ * Extracts the prefix of a parallel step edge ID up to and including the first dot.
+ *
+ * @param id - The step edge identifier to examine (for example, `step-01.1`)
+ * @returns The prefix including the first dot (for example, `step-01.`), or `null` if `id` is not a step edge ID containing a dot
+ */
 export function getParallelStepsPrefix(id: string): string | null {
   if (isStepEdgeId(id) && id.includes('.')) {
     return id.slice(0, id.indexOf('.') + 1)
@@ -62,25 +101,94 @@ export function getParallelStepsPrefix(id: string): string | null {
 export type DynamicViewStep<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   Step: DynamicStep<A>
   Series: DynamicStepsSeries<A>
-  Parallel: DynamicStepsParallel<A>
+  Branch: DynamicBranchCollection<A>
 }>
 
+/**
+ * Determine whether a dynamic view entry represents a single step (not a series or a branch).
+ *
+ * @param step - The dynamic view item to test
+ * @returns `true` if `step` is a `DynamicStep`, `false` otherwise.
+ */
 export function isDynamicStep<A extends AnyAux>(
   step: DynamicViewStep<A> | undefined,
 ): step is DynamicStep<A> {
-  return !!step && !('__series' in step || '__parallel' in step)
+  return (
+    !!step &&
+    !('__series' in step) &&
+    !('paths' in step)
+  )
 }
 
+/**
+ * Determines whether a dynamic view step represents a parallel branch that exposes a `__parallel` array.
+ *
+ * @returns `true` if `step` is a parallel branch with a `__parallel` array, `false` otherwise.
+ */
 export function isDynamicStepsParallel<A extends AnyAux>(
   step: DynamicViewStep<A> | undefined,
 ): step is DynamicStepsParallel<A> {
-  return !!step && '__parallel' in step && isArray(step.__parallel)
+  return (
+    !!step
+    && isDynamicBranchCollection(step)
+    && step.kind === 'parallel'
+    && isArray((step as DynamicStepsParallel<A>).__parallel)
+  )
 }
 
+/**
+ * Determines whether the provided dynamic view step represents a series of steps.
+ *
+ * @param step - The dynamic view step (or undefined) to check
+ * @returns `true` if the step is a `DynamicStepsSeries`, `false` otherwise
+ */
 export function isDynamicStepsSeries<A extends AnyAux>(
   step: DynamicViewStep<A> | undefined,
 ): step is DynamicStepsSeries<A> {
   return !!step && '__series' in step && isArray(step.__series)
+}
+
+/**
+ * Determines whether a dynamic view step represents a branch collection.
+ *
+ * @param step - The dynamic view step to test
+ * @returns `true` if `step` is a `DynamicBranchCollection`, `false` otherwise.
+ */
+export function isDynamicBranchCollection<A extends AnyAux>(
+  step: DynamicViewStep<A> | undefined,
+): step is DynamicBranchCollection<A> {
+  return !!step && 'paths' in step && isArray((step as DynamicBranchCollection<A>).paths)
+}
+
+/**
+ * Determine whether a value represents a branch path in a dynamic view.
+ *
+ * @param item - The branch entry or path to test
+ * @returns `true` if `item` has `pathId` and `steps` and is a `DynamicBranchPath`, `false` otherwise.
+ */
+export function isDynamicBranchPath<A extends AnyAux>(
+  item: DynamicBranchPath<A> | DynamicBranchEntry<A>,
+): item is DynamicBranchPath<A> {
+  return !!item && 'steps' in item && 'pathId' in item
+}
+
+/**
+ * Return a branch in legacy parallel format when the branch contains a populated `__parallel` array.
+ *
+ * Used for backward compatibility; does not transform or synthesize parallel data.
+ *
+ * @returns The branch as `DynamicStepsParallel<A>` if `__parallel` exists and has at least one entry, `null` otherwise.
+ */
+export function toLegacyParallel<A extends AnyAux>(
+  step: DynamicViewStep<A>,
+): DynamicStepsParallel<A> | null {
+  if (isDynamicStepsParallel(step)) {
+    const parallel = step as DynamicStepsParallel<A>
+    if (isArray(parallel.__parallel) && parallel.__parallel.length > 0) {
+      return parallel
+    }
+  }
+  return null
 }
 
 export interface DynamicViewIncludeRule<A extends AnyAux = AnyAux> {

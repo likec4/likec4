@@ -1,4 +1,4 @@
-import { invariant, isDynamicStepsSeries } from '@likec4/core'
+import { invariant, isDynamicBranchCollection, isDynamicStepsSeries } from '@likec4/core'
 import { describe, it } from 'vitest'
 import type { ParsedAstView } from '../../ast'
 import { createTestServices } from '../../test'
@@ -61,6 +61,62 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     `)
   })
 
+  it('parses named parallel paths', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { document } = await validate(source`
+        dynamic view branchPaths {
+          parallel {
+            path success "Happy path" {
+              A -> B
+            }
+            path failure {
+              B -> C
+            }
+          }
+        }
+    `)
+    const { c4Views } = services.likec4.ModelParser.parse(document)
+    expect(c4Views).toHaveLength(1)
+    const view = c4Views[0]
+    invariant(view?._type === 'dynamic')
+    const [branch] = view.steps
+    invariant(branch && isDynamicBranchCollection(branch))
+    expect(branch.paths).toHaveLength(2)
+    const [success, failure] = branch.paths
+    invariant(success && failure)
+    expect(success.pathName).toBe('success')
+    expect(success.pathTitle).toBe('Happy path')
+    expect(success.steps).toHaveLength(1)
+    expect(failure.pathName).toBe('failure')
+    expect(failure.steps).toHaveLength(1)
+  })
+
+  it('parses alternate branch collections', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { document } = await validate(source`
+        dynamic view alternateBranches {
+          alternate {
+            path optionA {
+              A -> B
+            }
+            {
+              B -> C
+            }
+          }
+        }
+    `)
+    const { c4Views } = services.likec4.ModelParser.parse(document)
+    expect(c4Views).toHaveLength(1)
+    const view = c4Views[0]
+    invariant(view?._type === 'dynamic')
+    const [branch] = view.steps
+    invariant(branch && isDynamicBranchCollection(branch))
+    expect(branch.kind).toBe('alternate')
+    expect(branch.paths).toHaveLength(2)
+    expect(branch.paths[0]!.pathName).toBe('optionA')
+    expect(branch.paths[1]!.isAnonymous).toBe(true)
+  })
+
   it('parses chained steps', async ({ expect }) => {
     const { validate, services } = createTestServices()
     const { document } = await validate(source`
@@ -77,72 +133,26 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     expect(c4Views).toHaveLength(1)
     const view = c4Views[0]
     invariant(view?._type === 'dynamic')
-    expect(view.steps).toMatchInlineSnapshot(
-      `
-      [
-        {
-          "__series": [
-            {
-              "astPath": "/steps@0/source/source",
-              "source": "A",
-              "target": "B",
-            },
-            {
-              "astPath": "/steps@0/source",
-              "source": "B",
-              "target": "C",
-            },
-            {
-              "astPath": "/steps@0",
-              "source": "C",
-              "target": "D",
-            },
-          ],
-          "seriesId": "/steps@0",
-        },
-        {
-          "__parallel": [
-            {
-              "__series": [
-                {
-                  "astPath": "/steps@1/steps@0/source",
-                  "source": "A",
-                  "target": "C",
-                },
-                {
-                  "astPath": "/steps@1/steps@0",
-                  "source": "C",
-                  "target": "B",
-                },
-              ],
-              "seriesId": "/steps@1/steps@0",
-            },
-            {
-              "astPath": "/steps@1/steps@1",
-              "source": "B",
-              "target": "D",
-            },
-            {
-              "__series": [
-                {
-                  "astPath": "/steps@1/steps@2/source",
-                  "source": "A",
-                  "target": "D",
-                },
-                {
-                  "astPath": "/steps@1/steps@2",
-                  "source": "D",
-                  "target": "C",
-                },
-              ],
-              "seriesId": "/steps@1/steps@2",
-            },
-          ],
-          "parallelId": "/steps@1",
-        },
-      ]
-    `,
-    )
+    const [series, branch] = view.steps
+    invariant(series && isDynamicStepsSeries(series))
+    expect(series.__series.map(({ source, target }) => [source, target])).toEqual([
+      ['A', 'B'],
+      ['B', 'C'],
+      ['C', 'D'],
+    ])
+
+    invariant(branch && isDynamicBranchCollection(branch))
+    expect(branch.kind).toBe('parallel')
+    expect(branch.branchId).toBe('/steps@1')
+    expect(branch.paths).toHaveLength(3)
+    expect(branch.paths.map(p => p.pathId)).toEqual([
+      '/steps@1/paths@0',
+      '/steps@1/paths@1',
+      '/steps@1/paths@2',
+    ])
+    if (branch.kind === 'parallel') {
+      expect(branch.__parallel?.length).toBe(3)
+    }
   })
 
   it('derives backward step from chain', async ({ expect }) => {

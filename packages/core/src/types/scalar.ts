@@ -1,8 +1,15 @@
 import { isString, isTruthy } from 'remeda'
 import type { Tagged } from 'type-fest'
 import { invariant } from '../utils'
+import type { NonEmptyArray } from './_common'
 
 export type ProjectId<T = string> = Tagged<T, 'ProjectID'>
+/**
+ * Create a ProjectId value from a plain string.
+ *
+ * @param name - The project identifier string
+ * @returns The input string expressed as a `ProjectId`
+ */
 export function ProjectId(name: string): ProjectId {
   return name as unknown as ProjectId
 }
@@ -138,15 +145,76 @@ export function NodeId(id: string): NodeId {
   return id as any
 }
 export type EdgeId = Tagged<string, 'EdgeId'>
+/**
+ * Casts a plain string to the `EdgeId` branded type.
+ *
+ * @param id - The string to tag as an `EdgeId`
+ * @returns The input string typed as an `EdgeId`
+ */
 export function EdgeId(id: string): EdgeId {
   return id as any
 }
 
-export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
+export type StepEdgeIdLiteral = `step-${string}`
 export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
+
+export type StepEdgeIndex = string | number
+
+/**
+ * Internal helper: format a single index segment for inclusion in a step edge identifier.
+ *
+ * @param segment - The index segment, either a number or string
+ * @returns The segment as a string; numeric segments are left-padded with zeros to at least two characters, non-numeric segments are returned unchanged
+ */
+function formatIndex(segment: StepEdgeIndex): string {
+  const raw = typeof segment === 'number' ? segment.toString() : segment
+  if (!/^\d+$/u.test(raw)) {
+    return raw
+  }
+  return raw.padStart(2, '0')
+}
+
+/**
+ * Construct a hierarchical step edge identifier from a non-empty list of indices.
+ *
+ * Numeric index segments are formatted (including zero-padding where applicable) and joined into a path prefixed with `step-`; non-numeric string segments are appended verbatim.
+ *
+ * @param indices - Non-empty array of numeric or string segments that form the step path; the first element becomes the primary step after the `step-` prefix.
+ * @returns A `StepEdgeId` representing the assembled step path (e.g. `step-01`, `step-01.02`, or `step-01.alpha`)
+ */
+export function stepEdgePath(indices: Readonly<NonEmptyArray<StepEdgeIndex>>): StepEdgeId {
+  const [head, ...rest] = indices
+  const prefix = `step-${formatIndex(head)}`
+  if (rest.length === 0) {
+    return prefix as StepEdgeId
+  }
+  let id = prefix
+  for (const segment of rest) {
+    if (typeof segment === 'number') {
+      id += `.${formatIndex(segment)}`
+      continue
+    }
+    // segment is a string at this point
+    if (/^\d+$/u.test(segment)) {
+      id += `.${formatIndex(segment)}`
+    } else {
+      id += segment
+    }
+  }
+  return id as StepEdgeId
+}
+
+/**
+ * Build a hierarchical step edge identifier for a step, optionally including a parallel step segment.
+ *
+ * @param step - Primary step index
+ * @param parallelStep - Optional secondary (parallel) step index
+ * @returns A `StepEdgeId` in the form `step-<segment>` or `step-<segment>.<segment>` where numeric segments are formatted/padded as required
+ */
 export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
-  const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
-  return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
+  return parallelStep !== undefined
+    ? stepEdgePath([step, parallelStep])
+    : stepEdgePath([step])
 }
 export const StepEdgeKind = '@step'
 

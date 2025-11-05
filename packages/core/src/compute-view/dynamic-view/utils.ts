@@ -13,13 +13,22 @@ import {
   type RelationshipLineType,
   type ViewRuleGlobalStyle,
   exact,
-  isDynamicStepsParallel,
+  isDynamicBranchCollection,
+  isDynamicStep,
   isDynamicStepsSeries,
   isViewRulePredicate,
+  toLegacyParallel,
 } from '../../types'
 import { compareRelations, isNonEmptyArray } from '../../utils'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 
+/**
+ * Collects element models explicitly referenced by `include` expressions in the provided resolved rules.
+ *
+ * @param model - The model to search for elements
+ * @param resolvedRules - Resolved dynamic view rules whose `include` expressions will be evaluated
+ * @returns A `Set` of `ElementModel<A>` that match any `include` expression from `resolvedRules`
+ */
 export function elementsFromIncludeProperties<A extends Any>(
   model: LikeC4Model<A>,
   resolvedRules: Array<Exclude<DynamicViewRule<A>, ViewRuleGlobalStyle>>,
@@ -40,12 +49,13 @@ export function elementsFromIncludeProperties<A extends Any>(
   return explicits
 }
 
-export const flattenSteps = <A extends Any>(s: DynamicViewStep<A>): DynamicStep<A> | DynamicStep<A>[] => {
-  if (isDynamicStepsParallel(s)) {
+export const flattenSteps = <A extends Any>(s: DynamicViewStep<A>): DynamicStep<A>[] => {
+  const legacyParallel = toLegacyParallel(s)
+  if (legacyParallel) {
     // Parallel steps are flattened by taking the first step of each parallel step and the rest of the steps
     const heads = [] as DynamicStep<A>[]
     const tails = [] as DynamicStep<A>[]
-    for (const step of s.__parallel) {
+    for (const step of legacyParallel.__parallel ?? []) {
       if (isDynamicStepsSeries(step)) {
         const [head, ...tail] = step.__series
         heads.push(head)
@@ -56,12 +66,25 @@ export const flattenSteps = <A extends Any>(s: DynamicViewStep<A>): DynamicStep<
     }
     return [...heads, ...tails]
   }
+  if (isDynamicBranchCollection(s)) {
+    return flatMap(s.paths, path => flatMap(path.steps, entry => flattenSteps(entry as DynamicViewStep<A>)))
+  }
   if (isDynamicStepsSeries(s)) {
     return [...s.__series]
   }
-  return s
+  return isDynamicStep(s) ? [s] : []
 }
 
+/**
+ * Compute the ordered set of element models referenced by a sequence of dynamic view steps.
+ *
+ * Iterates the flattened steps left-to-right, resolves each step's source and target from the model,
+ * and accumulates elements in an order that preserves actor ordering implied by the steps and backward links.
+ *
+ * @param model - Model used to resolve element identifiers from each step
+ * @param steps - Dynamic view steps to inspect (may contain series, branches, or legacy parallel structures)
+ * @returns A Set of ElementModel objects containing all elements referenced by the steps in processing order
+ */
 export function elementsFromSteps<A extends Any>(
   model: LikeC4Model<A>,
   steps: DynamicViewStep<A>[],

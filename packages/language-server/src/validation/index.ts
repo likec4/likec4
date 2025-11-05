@@ -12,7 +12,12 @@ import {
   deploymentRelationChecks,
   extendDeploymentChecks,
 } from './deployment-checks'
-import { dynamicViewDisplayVariant, dynamicViewStepChain, dynamicViewStepSingle } from './dynamic-view'
+import {
+  dynamicViewBranchCollection,
+  dynamicViewDisplayVariant,
+  dynamicViewStepChain,
+  dynamicViewStepSingle,
+} from './dynamic-view'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImportsFromPoject } from './imports'
@@ -66,7 +71,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isRelationExprWith,
   ast.isFqnExpr,
   ast.isRelationExpr,
-  ast.isDynamicViewParallelSteps,
+  ast.isDynamicViewBranchCollection,
   ast.isDynamicStepChain,
   ast.isDynamicStepSingle,
   ast.isDeploymentViewRule,
@@ -140,6 +145,14 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
 export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
 export type IsValidFn = ChecksFromDiagnostics['isValid']
 
+/**
+ * Register validation check factories with the Langium ValidationRegistry and set up flushing of diagnostics for deleted documents.
+ *
+ * Registers a mapping from LikeC4 AST types to their corresponding validation check factories and, if an LSP connection is available,
+ * schedules a DocumentBuilder update handler that clears diagnostics for documents removed from the workspace.
+ *
+ * @param services - The LikeC4 language services container used to obtain the ValidationRegistry, workspace DocumentBuilder, and optional LSP connection
+ */
 export function registerValidationChecks(services: LikeC4Services) {
   logger.debug('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
@@ -162,6 +175,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalStyleId: checkGlobalStyleId(services),
     DynamicStepSingle: dynamicViewStepSingle(services),
     DynamicStepChain: dynamicViewStepChain(services),
+    DynamicViewBranchCollection: dynamicViewBranchCollection(services),
     LikeC4View: viewChecks(services),
     Element: checkElement(services),
     ElementRef: checkElementRef(services),

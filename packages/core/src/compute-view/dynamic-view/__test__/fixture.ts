@@ -3,6 +3,7 @@ import type {
   DynamicStep,
   DynamicViewIncludeRule,
   DynamicViewRule,
+  DynamicViewStep,
   ElementViewPredicate,
   Fqn,
   ParsedDynamicView as DynamicView,
@@ -51,9 +52,12 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
 }
 
 export function compute(
-  stepsAndRules: (DynamicStep<$Aux> | ElementViewPredicate<$Aux> | DynamicViewIncludeRule<$Aux>)[],
+  stepsAndRules: (DynamicViewStep<$Aux> | ElementViewPredicate<$Aux> | DynamicViewIncludeRule<$Aux>)[],
 ) {
-  const [steps, rules] = partition(stepsAndRules, (s): s is DynamicStep => 'source' in s)
+  const [steps, rules] = partition(
+    stepsAndRules,
+    (s): s is DynamicViewStep<$Aux> => 'source' in s || 'paths' in s || '__series' in s || '__parallel' in s,
+  )
   let view = computeDynamicView(
     fakeModel,
     {
