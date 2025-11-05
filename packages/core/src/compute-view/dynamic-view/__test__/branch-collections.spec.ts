@@ -1,9 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { disableDynamicBranchCollections, enableDynamicBranchCollections } from '../../../config/featureFlags'
-import type { DynamicBranchCollection, DynamicBranchPath, DynamicStep } from '../../../types'
+import type {
+  DynamicBranchCollection,
+  DynamicBranchPath,
+  DynamicStep,
+  DynamicViewStep,
+  Fqn,
+} from '../../../types'
 import { $step, compute } from './fixture'
 
-describe('dynamic-view with branch collections', () => {
+describe('dynamic-view branch collections', () => {
   beforeEach(() => {
     enableDynamicBranchCollections()
   })
@@ -12,523 +18,503 @@ describe('dynamic-view with branch collections', () => {
     disableDynamicBranchCollections()
   })
 
-  describe('parallel branch collections', () => {
-    it('should compute parallel branches with multiple paths', () => {
-      const parallelBranch: DynamicBranchCollection = {
-        branchId: '/branch1',
-        astPath: '/branch1',
+  describe('parallel branches', () => {
+    it('should compute parallel branch with multiple paths', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
         kind: 'parallel',
-        parallelId: '/branch1',
+        parallelId: '/parallel@0',
         paths: [
           {
-            pathId: '/branch1/path1',
-            astPath: '/branch1/path1',
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
             pathName: 'success',
             pathTitle: 'Success Path',
             steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: false,
           },
           {
-            pathId: '/branch1/path2',
-            astPath: '/branch1/path2',
+            pathId: '/parallel@0/path@1',
+            astPath: '/steps@0/paths@1',
             pathName: 'failure',
             pathTitle: 'Failure Path',
-            steps: [$step('customer -> cloud.frontend.dashboard', { color: 'red' })],
+            steps: [$step('customer -> cloud.frontend.dashboard'), $step('cloud.frontend.dashboard -> cloud.backend.graphql')],
+            isAnonymous: false,
           },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const { edges, branchCollections } = compute([parallelBranch])
+      const view = compute([parallel] as DynamicViewStep[])
 
-      expect(edges).toHaveLength(2)
-      expect(edges[0]?.id).toBe('step-01.01.01')
-      expect(edges[1]?.id).toBe('step-01.02.01')
+      expect(view.branchCollections).toBeDefined()
+      expect(view.branchCollections).toHaveLength(1)
 
-      expect(branchCollections).toBeDefined()
-      expect(branchCollections).toHaveLength(1)
-      expect(branchCollections?.[0]?.kind).toBe('parallel')
-      expect(branchCollections?.[0]?.paths).toHaveLength(2)
+      const collection = view.branchCollections![0]
+      expect(collection.kind).toBe('parallel')
+      expect(collection.paths).toHaveLength(2)
+      expect(collection.paths[0].pathName).toBe('success')
+      expect(collection.paths[1].pathName).toBe('failure')
+    })
+
+    it('should generate correct edge IDs for parallel paths', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
+        kind: 'parallel',
+        parallelId: '/parallel@0',
+        paths: [
+          {
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
+            steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: true,
+          },
+          {
+            pathId: '/parallel@0/path@1',
+            astPath: '/steps@0/paths@1',
+            steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: true,
+          },
+        ] as any,
+      }
+
+      const view = compute([parallel] as DynamicViewStep[])
+
+      expect(view.edgeIds).toHaveLength(2)
+      expect(view.edgeIds[0]).toMatch(/^step-01\.01\.01$/)
+      expect(view.edgeIds[1]).toMatch(/^step-01\.02\.01$/)
     })
 
     it('should track branch trail in edges', () => {
-      const parallelBranch: DynamicBranchCollection = {
-        branchId: '/branch1',
-        astPath: '/branch1',
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
         kind: 'parallel',
-        parallelId: '/branch1',
+        parallelId: '/parallel@0',
         paths: [
           {
-            pathId: '/branch1/path1',
-            astPath: '/branch1/path1',
-            pathName: 'path1',
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
+            pathName: 'pathA',
             steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: false,
           },
-          {
-            pathId: '/branch1/path2',
-            astPath: '/branch1/path2',
-            pathName: 'path2',
-            steps: [$step('cloud.frontend.dashboard -> cloud.backend.graphql')],
-          },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const { edges } = compute([parallelBranch])
+      const view = compute([parallel] as DynamicViewStep[])
 
-      expect(edges[0]?.branchTrail).toBeDefined()
-      expect(edges[0]?.branchTrail).toHaveLength(1)
-      expect(edges[0]?.branchTrail?.[0]).toMatchObject({
-        branchId: '/branch1',
-        pathId: '/branch1/path1',
+      expect(view.edges[0].branchTrail).toBeDefined()
+      expect(view.edges[0].branchTrail).toHaveLength(1)
+      expect(view.edges[0].branchTrail![0]).toMatchObject({
+        branchId: '/parallel@0',
+        pathId: '/parallel@0/path@0',
         kind: 'parallel',
         pathIndex: 1,
         indexWithinPath: 1,
-        pathName: 'path1',
-      })
-
-      expect(edges[1]?.branchTrail).toBeDefined()
-      expect(edges[1]?.branchTrail?.[0]).toMatchObject({
-        branchId: '/branch1',
-        pathId: '/branch1/path2',
-        kind: 'parallel',
-        pathIndex: 2,
-        indexWithinPath: 1,
-        pathName: 'path2',
+        pathName: 'pathA',
       })
     })
 
-    it('should assign correct edge IDs to branch paths', () => {
-      const parallelBranch: DynamicBranchCollection = {
-        branchId: '/branch1',
-        astPath: '/branch1',
+    it('should handle multiple steps within a single path', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
         kind: 'parallel',
-        parallelId: '/branch1',
+        parallelId: '/parallel@0',
         paths: [
           {
-            pathId: '/branch1/path1',
-            astPath: '/branch1/path1',
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
             steps: [
               $step('customer -> cloud.frontend.dashboard'),
               $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
             ],
+            isAnonymous: true,
           },
-          {
-            pathId: '/branch1/path2',
-            astPath: '/branch1/path2',
-            steps: [$step('customer -> amazon')],
-          },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const { edges, branchCollections } = compute([parallelBranch])
+      const view = compute([parallel] as DynamicViewStep[])
 
-      expect(edges).toHaveLength(3)
-      expect(edges[0]?.id).toBe('step-01.01.01')
-      expect(edges[1]?.id).toBe('step-01.01.02')
-      expect(edges[2]?.id).toBe('step-01.02.01')
-
-      const collection = branchCollections?.[0]
-      expect(collection?.paths[0]?.edgeIds).toEqual(['step-01.01.01', 'step-01.01.02'])
-      expect(collection?.paths[1]?.edgeIds).toEqual(['step-01.02.01'])
-    })
-
-    it('should handle multiple sequential branches', () => {
-      const branch1: DynamicBranchCollection = {
-        branchId: '/branch1',
-        astPath: '/branch1',
-        kind: 'parallel',
-        parallelId: '/branch1',
-        paths: [
-          {
-            pathId: '/branch1/p1',
-            astPath: '/branch1/p1',
-            steps: [$step('customer -> cloud.frontend.dashboard')],
-          },
-          {
-            pathId: '/branch1/p2',
-            astPath: '/branch1/p2',
-            steps: [$step('cloud.frontend.dashboard -> cloud.backend.graphql')],
-          },
-        ] as DynamicBranchPath[],
-      }
-
-      const branch2: DynamicBranchCollection = {
-        branchId: '/branch2',
-        astPath: '/branch2',
-        kind: 'parallel',
-        parallelId: '/branch2',
-        paths: [
-          {
-            pathId: '/branch2/p1',
-            astPath: '/branch2/p1',
-            steps: [$step('cloud.backend.graphql -> amazon')],
-          },
-          {
-            pathId: '/branch2/p2',
-            astPath: '/branch2/p2',
-            steps: [$step('cloud.backend -> amazon')],
-          },
-        ] as DynamicBranchPath[],
-      }
-
-      const { edges, branchCollections } = compute([branch1, branch2])
-
-      expect(edges).toHaveLength(4)
-      expect(edges[0]?.id).toBe('step-01.01.01')
-      expect(edges[1]?.id).toBe('step-01.02.01')
-      expect(edges[2]?.id).toBe('step-02.01.01')
-      expect(edges[3]?.id).toBe('step-02.02.01')
-
-      expect(branchCollections).toHaveLength(2)
+      expect(view.edges).toHaveLength(2)
+      expect(view.edges[0].branchTrail![0].indexWithinPath).toBe(1)
+      expect(view.edges[1].branchTrail![0].indexWithinPath).toBe(2)
     })
   })
 
-  describe('alternate branch collections', () => {
-    it('should compute alternate branches with multiple paths', () => {
-      const alternateBranch: DynamicBranchCollection = {
-        branchId: '/branch1',
-        astPath: '/branch1',
+  describe('alternate branches', () => {
+    it('should compute alternate branch with multiple paths', () => {
+      const alternate: DynamicBranchCollection = {
+        branchId: '/alternate@0',
+        astPath: '/steps@0',
         kind: 'alternate',
         paths: [
           {
-            pathId: '/branch1/success',
-            astPath: '/branch1/success',
-            pathName: 'success',
-            pathTitle: 'Success',
+            pathId: '/alternate@0/path@0',
+            astPath: '/steps@0/paths@0',
+            pathName: 'optionA',
             steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: false,
           },
           {
-            pathId: '/branch1/failure',
-            astPath: '/branch1/failure',
-            pathName: 'failure',
-            pathTitle: 'Failure',
-            steps: [$step('customer -> amazon', { color: 'red' })],
+            pathId: '/alternate@0/path@1',
+            astPath: '/steps@0/paths@1',
+            pathName: 'optionB',
+            steps: [$step('cloud.frontend.dashboard -> cloud.backend.graphql')],
+            isAnonymous: false,
           },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const { edges, branchCollections } = compute([alternateBranch])
+      const view = compute([alternate] as DynamicViewStep[])
 
-      expect(edges).toHaveLength(2)
-      expect(branchCollections).toBeDefined()
-      expect(branchCollections?.[0]?.kind).toBe('alternate')
-      expect(branchCollections?.[0]?.paths).toHaveLength(2)
+      expect(view.branchCollections).toBeDefined()
+      expect(view.branchCollections![0].kind).toBe('alternate')
+      expect(view.branchCollections![0].paths).toHaveLength(2)
     })
 
-    it('should support default path in alternates', () => {
-      const alternateBranch: DynamicBranchCollection = {
-        branchId: '/branch1',
-        astPath: '/branch1',
+    it('should generate branch trail for alternate paths', () => {
+      const alternate: DynamicBranchCollection = {
+        branchId: '/alternate@0',
+        astPath: '/steps@0',
         kind: 'alternate',
-        defaultPathId: '/branch1/default',
         paths: [
           {
-            pathId: '/branch1/default',
-            astPath: '/branch1/default',
+            pathId: '/alternate@0/path@0',
+            astPath: '/steps@0/paths@0',
             pathName: 'default',
             steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: false,
           },
-          {
-            pathId: '/branch1/alt',
-            astPath: '/branch1/alt',
-            pathName: 'alt',
-            steps: [$step('customer -> amazon')],
-          },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const { branchCollections } = compute([alternateBranch])
+      const view = compute([alternate] as DynamicViewStep[])
 
-      const collection = branchCollections?.[0]
-      expect(collection?.defaultPathId).toBe('/branch1/default')
-      expect(collection?.paths[0]?.isDefaultPath).toBe(true)
-      expect(collection?.paths[1]?.isDefaultPath).toBe(false)
+      expect(view.edges[0].branchTrail).toBeDefined()
+      expect(view.edges[0].branchTrail![0].kind).toBe('alternate')
     })
   })
 
-  describe('nested branch collections', () => {
-    it('should handle nested parallel in alternate', () => {
+  describe('nested branches', () => {
+    it('should handle nested parallel within alternate', () => {
       const nestedParallel: DynamicBranchCollection = {
-        branchId: '/nested',
-        astPath: '/nested',
+        branchId: '/nested-parallel',
+        astPath: '/steps@0/paths@0/steps@0',
         kind: 'parallel',
-        parallelId: '/nested',
+        parallelId: '/nested-parallel',
         paths: [
           {
-            pathId: '/nested/p1',
-            astPath: '/nested/p1',
-            steps: [$step('cloud.frontend.dashboard -> cloud.backend.graphql')],
+            pathId: '/nested-parallel/path@0',
+            astPath: '/steps@0/paths@0/steps@0/paths@0',
+            steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: true,
           },
-          {
-            pathId: '/nested/p2',
-            astPath: '/nested/p2',
-            steps: [$step('cloud.backend.graphql -> amazon')],
-          },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const alternateBranch: DynamicBranchCollection = {
-        branchId: '/outer',
-        astPath: '/outer',
+      const alternate: DynamicBranchCollection = {
+        branchId: '/alternate@0',
+        astPath: '/steps@0',
         kind: 'alternate',
         paths: [
           {
-            pathId: '/outer/simple',
-            astPath: '/outer/simple',
-            steps: [$step('customer -> cloud.frontend.dashboard')],
-          },
-          {
-            pathId: '/outer/complex',
-            astPath: '/outer/complex',
+            pathId: '/alternate@0/path@0',
+            astPath: '/steps@0/paths@0',
+            pathName: 'complex',
             steps: [nestedParallel as any],
+            isAnonymous: false,
           },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const { edges, branchCollections } = compute([alternateBranch])
+      const view = compute([alternate] as DynamicViewStep[])
 
-      expect(edges).toHaveLength(3)
-      expect(branchCollections).toHaveLength(2) // Both outer and nested collections
-
-      // First edge is from simple path
-      expect(edges[0]?.branchTrail).toHaveLength(1)
-      expect(edges[0]?.branchTrail?.[0]?.pathId).toBe('/outer/simple')
-
-      // Second and third edges are from nested parallel within alternate
-      expect(edges[1]?.branchTrail).toHaveLength(2)
-      expect(edges[1]?.branchTrail?.[0]?.pathId).toBe('/outer/complex')
-      expect(edges[1]?.branchTrail?.[1]?.pathId).toBe('/nested/p1')
-
-      expect(edges[2]?.branchTrail).toHaveLength(2)
-      expect(edges[2]?.branchTrail?.[1]?.pathId).toBe('/nested/p2')
+      expect(view.branchCollections).toHaveLength(2)
+      expect(view.edges[0].branchTrail).toHaveLength(2)
+      expect(view.edges[0].branchTrail![0].kind).toBe('alternate')
+      expect(view.edges[0].branchTrail![1].kind).toBe('parallel')
     })
 
-    it('should track nested branch trail correctly', () => {
+    it('should track depth in branch trail', () => {
       const innerBranch: DynamicBranchCollection = {
         branchId: '/inner',
-        astPath: '/inner',
+        astPath: '/steps@0/paths@0/steps@0',
         kind: 'parallel',
         parallelId: '/inner',
         paths: [
           {
-            pathId: '/inner/p1',
-            astPath: '/inner/p1',
-            steps: [$step('cloud.backend.graphql -> amazon')],
+            pathId: '/inner/path@0',
+            astPath: '/steps@0/paths@0/steps@0/paths@0',
+            steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: true,
           },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
       const outerBranch: DynamicBranchCollection = {
         branchId: '/outer',
-        astPath: '/outer',
-        kind: 'parallel',
-        parallelId: '/outer',
+        astPath: '/steps@0',
+        kind: 'alternate',
         paths: [
           {
-            pathId: '/outer/p1',
-            astPath: '/outer/p1',
+            pathId: '/outer/path@0',
+            astPath: '/steps@0/paths@0',
             steps: [innerBranch as any],
+            isAnonymous: false,
           },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const { edges } = compute([outerBranch])
+      const view = compute([outerBranch] as DynamicViewStep[])
 
-      expect(edges).toHaveLength(1)
-      expect(edges[0]?.branchTrail).toHaveLength(2)
-      expect(edges[0]?.branchTrail?.[0]).toMatchObject({
-        branchId: '/outer',
-        pathId: '/outer/p1',
-        pathIndex: 1,
-        indexWithinPath: 1,
-      })
-      expect(edges[0]?.branchTrail?.[1]).toMatchObject({
-        branchId: '/inner',
-        pathId: '/inner/p1',
-        pathIndex: 1,
-        indexWithinPath: 1,
-      })
+      const trail = view.edges[0].branchTrail!
+      expect(trail).toHaveLength(2)
+      expect(trail[0].branchId).toBe('/outer')
+      expect(trail[1].branchId).toBe('/inner')
+    })
+  })
+
+  describe('default path handling', () => {
+    it('should mark default path in branch collection', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
+        kind: 'parallel',
+        parallelId: '/parallel@0',
+        defaultPathId: '/parallel@0/path@0',
+        paths: [
+          {
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
+            pathName: 'default',
+            steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: false,
+          },
+          {
+            pathId: '/parallel@0/path@1',
+            astPath: '/steps@0/paths@1',
+            pathName: 'alternate',
+            steps: [$step('cloud.frontend.dashboard -> cloud.backend.graphql')],
+            isAnonymous: false,
+          },
+        ] as any,
+      }
+
+      const view = compute([parallel] as DynamicViewStep[])
+
+      expect(view.branchCollections![0].defaultPathId).toBe('/parallel@0/path@0')
+      expect(view.branchCollections![0].paths[0].isDefaultPath).toBe(true)
+      expect(view.branchCollections![0].paths[1].isDefaultPath).toBe(false)
     })
   })
 
   describe('mixed steps and branches', () => {
-    it('should handle regular steps before branches', () => {
-      const step = $step('customer -> cloud.frontend.dashboard')
-      const branch: DynamicBranchCollection = {
-        branchId: '/branch',
-        astPath: '/branch',
+    it('should handle steps before and after branches', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@1',
         kind: 'parallel',
-        parallelId: '/branch',
+        parallelId: '/parallel@0',
         paths: [
           {
-            pathId: '/branch/p1',
-            astPath: '/branch/p1',
-            steps: [$step('cloud.frontend.dashboard -> cloud.backend.graphql')],
-          },
-          {
-            pathId: '/branch/p2',
-            astPath: '/branch/p2',
-            steps: [$step('cloud.frontend.dashboard -> amazon')],
-          },
-        ] as DynamicBranchPath[],
-      }
-
-      const { edges } = compute([step, branch])
-
-      expect(edges).toHaveLength(3)
-      expect(edges[0]?.id).toBe('step-01')
-      expect(edges[0]?.branchTrail).toBeUndefined()
-      expect(edges[1]?.id).toBe('step-02.01.01')
-      expect(edges[1]?.branchTrail).toBeDefined()
-      expect(edges[2]?.id).toBe('step-02.02.01')
-    })
-
-    it('should handle regular steps after branches', () => {
-      const branch: DynamicBranchCollection = {
-        branchId: '/branch',
-        astPath: '/branch',
-        kind: 'parallel',
-        parallelId: '/branch',
-        paths: [
-          {
-            pathId: '/branch/p1',
-            astPath: '/branch/p1',
-            steps: [$step('customer -> cloud.frontend.dashboard')],
-          },
-        ] as DynamicBranchPath[],
-      }
-      const step = $step('cloud.frontend.dashboard -> cloud.backend.graphql')
-
-      const { edges } = compute([branch, step])
-
-      expect(edges).toHaveLength(2)
-      expect(edges[0]?.id).toBe('step-01.01.01')
-      expect(edges[0]?.branchTrail).toBeDefined()
-      expect(edges[1]?.id).toBe('step-02')
-      expect(edges[1]?.branchTrail).toBeUndefined()
-    })
-  })
-
-  describe('legacy compatibility', () => {
-    it('should handle legacy parallel format', () => {
-      const legacyParallel: DynamicBranchCollection = {
-        branchId: '/legacy',
-        astPath: '/legacy',
-        kind: 'parallel',
-        parallelId: '/legacy',
-        paths: [
-          {
-            pathId: '/legacy/p1',
-            astPath: '/legacy/p1',
-            steps: [$step('customer -> cloud.frontend.dashboard')],
-            isAnonymous: true,
-          },
-          {
-            pathId: '/legacy/p2',
-            astPath: '/legacy/p2',
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@1/paths@0',
             steps: [$step('cloud.frontend.dashboard -> cloud.backend.graphql')],
             isAnonymous: true,
           },
-        ] as DynamicBranchPath[],
-        __parallel: [
-          $step('customer -> cloud.frontend.dashboard'),
-          $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
         ] as any,
       }
 
-      const { edges } = compute([legacyParallel])
+      const steps = [
+        $step('customer -> cloud.frontend.dashboard'),
+        parallel as any,
+        $step('cloud.backend.graphql -> cloud.backend.storage'),
+      ]
 
-      expect(edges).toHaveLength(2)
-      expect(edges[0]?.id).toBe('step-01.01.01')
-      expect(edges[1]?.id).toBe('step-01.02.01')
+      const view = compute(steps as DynamicViewStep[])
+
+      expect(view.edges).toHaveLength(3)
+      expect(view.edgeIds[0]).toBe('step-01')
+      expect(view.edgeIds[1]).toMatch(/^step-02\.01\.01$/)
+      expect(view.edgeIds[2]).toBe('step-03')
+      expect(view.edges[1].branchTrail).toBeDefined()
+      expect(view.edges[0].branchTrail).toBeUndefined()
+      expect(view.edges[2].branchTrail).toBeUndefined()
     })
   })
 
-  describe('feature flag disabled', () => {
-    it('should fall back to legacy processing when feature flag is disabled', () => {
-      disableDynamicBranchCollections()
-
-      const branch: DynamicBranchCollection = {
-        branchId: '/branch',
-        astPath: '/branch',
+  describe('edge ID formatting', () => {
+    it('should use dot notation for branch path indices', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
         kind: 'parallel',
-        parallelId: '/branch',
+        parallelId: '/parallel@0',
         paths: [
           {
-            pathId: '/branch/p1',
-            astPath: '/branch/p1',
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
             steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: true,
           },
-        ] as DynamicBranchPath[],
-        __parallel: [$step('customer -> cloud.frontend.dashboard')] as any,
+          {
+            pathId: '/parallel@0/path@1',
+            astPath: '/steps@0/paths@1',
+            steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: true,
+          },
+        ] as any,
       }
 
-      const { edges, branchCollections } = compute([branch])
+      const view = compute([parallel] as DynamicViewStep[])
 
-      expect(edges).toHaveLength(1)
-      expect(branchCollections).toBeUndefined()
+      expect(view.edgeIds[0]).toBe('step-01.01.01')
+      expect(view.edgeIds[1]).toBe('step-01.02.01')
+    })
+
+    it('should pad step indices correctly', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
+        kind: 'parallel',
+        parallelId: '/parallel@0',
+        paths: [
+          {
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
+            steps: Array.from({ length: 12 }, (_, i) =>
+              $step('customer -> cloud.frontend.dashboard')
+            ),
+            isAnonymous: true,
+          },
+        ] as any,
+      }
+
+      const view = compute([parallel] as DynamicViewStep[])
+
+      expect(view.edgeIds[0]).toBe('step-01.01.01')
+      expect(view.edgeIds[9]).toBe('step-01.01.10')
+      expect(view.edgeIds[11]).toBe('step-01.01.12')
     })
   })
 
   describe('path metadata', () => {
-    it('should preserve path names and titles', () => {
-      const branch: DynamicBranchCollection = {
-        branchId: '/branch',
-        astPath: '/branch',
+    it('should preserve path titles and descriptions', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
         kind: 'parallel',
-        parallelId: '/branch',
+        parallelId: '/parallel@0',
         paths: [
           {
-            pathId: '/branch/p1',
-            astPath: '/branch/p1',
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
             pathName: 'success',
             pathTitle: 'Happy Path',
+            description: 'This is the success path',
             steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: false,
           },
-          {
-            pathId: '/branch/p2',
-            astPath: '/branch/p2',
-            pathName: 'failure',
-            pathTitle: 'Error Path',
-            steps: [$step('customer -> amazon')],
-          },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const { branchCollections } = compute([branch])
+      const view = compute([parallel] as DynamicViewStep[])
 
-      expect(branchCollections?.[0]?.paths[0]).toMatchObject({
-        pathName: 'success',
-        pathTitle: 'Happy Path',
-      })
-      expect(branchCollections?.[0]?.paths[1]).toMatchObject({
-        pathName: 'failure',
-        pathTitle: 'Error Path',
-      })
+      const path = view.branchCollections![0].paths[0]
+      expect(path.pathTitle).toBe('Happy Path')
+      expect(path.description).toBe('This is the success path')
     })
 
-    it('should preserve path descriptions and tags', () => {
-      const branch: DynamicBranchCollection = {
-        branchId: '/branch',
-        astPath: '/branch',
-        kind: 'alternate',
+    it('should preserve path tags', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
+        kind: 'parallel',
+        parallelId: '/parallel@0',
         paths: [
           {
-            pathId: '/branch/p1',
-            astPath: '/branch/p1',
-            pathName: 'opt1',
-            description: 'First option',
-            tags: ['critical'],
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
+            pathName: 'tagged',
+            tags: ['critical', 'production'] as any,
             steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: false,
           },
-        ] as DynamicBranchPath[],
+        ] as any,
       }
 
-      const { branchCollections } = compute([branch])
+      const view = compute([parallel] as DynamicViewStep[])
 
-      expect(branchCollections?.[0]?.paths[0]).toMatchObject({
-        pathName: 'opt1',
-        description: 'First option',
-        tags: ['critical'],
-      })
+      const path = view.branchCollections![0].paths[0]
+      expect(path.tags).toEqual(['critical', 'production'])
     })
+  })
+
+  describe('branch collection metadata', () => {
+    it('should preserve branch label', () => {
+      const parallel: DynamicBranchCollection = {
+        branchId: '/parallel@0',
+        astPath: '/steps@0',
+        kind: 'parallel',
+        parallelId: '/parallel@0',
+        label: 'Choose path',
+        paths: [
+          {
+            pathId: '/parallel@0/path@0',
+            astPath: '/steps@0/paths@0',
+            steps: [$step('customer -> cloud.frontend.dashboard')],
+            isAnonymous: true,
+          },
+        ] as any,
+      }
+
+      const view = compute([parallel] as DynamicViewStep[])
+
+      expect(view.branchCollections![0].label).toBe('Choose path')
+    })
+  })
+})
+
+describe('dynamic-view legacy parallel support', () => {
+  afterEach(() => {
+    disableDynamicBranchCollections()
+  })
+
+  it('should process legacy parallel when feature flag disabled', () => {
+    disableDynamicBranchCollections()
+
+    const legacyParallel: DynamicBranchCollection = {
+      branchId: '/parallel@0',
+      astPath: '/steps@0',
+      kind: 'parallel',
+      parallelId: '/parallel@0',
+      paths: [
+        {
+          pathId: '/parallel@0/path@0',
+          astPath: '/steps@0/paths@0',
+          steps: [$step('customer -> cloud.frontend.dashboard')],
+          isAnonymous: true,
+        },
+      ] as any,
+      __parallel: [$step('customer -> cloud.frontend.dashboard')] as any,
+    }
+
+    const view = compute([legacyParallel] as DynamicViewStep[])
+
+    expect(view.edgeIds).toHaveLength(1)
+    expect(view.edgeIds[0]).toMatch(/^step-01\.01$/)
+    expect(view.branchCollections).toBeUndefined()
+  })
+
+  it('should not include branchCollections when feature disabled', () => {
+    disableDynamicBranchCollections()
+
+    const step = $step('customer -> cloud.frontend.dashboard')
+    const view = compute([step])
+
+    expect(view.branchCollections).toBeUndefined()
   })
 })
