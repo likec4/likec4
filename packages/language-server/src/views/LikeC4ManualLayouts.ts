@@ -3,7 +3,11 @@ import { getOrCreate } from '@likec4/core/utils'
 import JSON5 from 'json5'
 import { type URI, UriUtils } from 'langium'
 import { indexBy, prop } from 'remeda'
-import { type Location, Position, Range } from 'vscode-languageserver-types'
+import {
+  type Location,
+  Position,
+  Range,
+} from 'vscode-languageserver-types'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { Project } from '../workspace/ProjectsManager'
@@ -30,7 +34,7 @@ function getManualLayoutsOutDir(project: Project): URI {
 export interface LikeC4ManualLayouts {
   read(project: Project): Promise<Record<ViewId, LayoutedView> | null>
   write(project: Project, layouted: LayoutedView): Promise<Location>
-  remove(project: Project, view: ViewId): Promise<Pick<Location, 'uri'> | null>
+  remove(project: Project, view: ViewId): Promise<Location | null>
   clearCaches(): void
 }
 
@@ -54,12 +58,12 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       const outDir = getManualLayoutsOutDir(project)
       const manualLayouts = [] as LayoutedView[]
       try {
-        const files = await fs.readDirectory(outDir, { onlyLikeC4Files: false })
+        const files = await fs.scanDirectory(outDir, isManualLayoutFile)
         if (files.length === 0) {
           return null
         }
         for (const file of files) {
-          if (file.isFile && isManualLayoutFile(file.uri.path)) {
+          if (file.isFile) {
             try {
               const content = await fs.readFile(file.uri)
               manualLayouts.push({
@@ -96,6 +100,13 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       space: 2,
       quote: '\'',
     })
+    const location = {
+      uri: file.toString(),
+      range: Range.create(
+        Position.create(0, 0),
+        Position.create(content.split('\n').length - 1, 1),
+      ),
+    }
     logger.debug`write snapshot of ${layouted.id} in project ${project.id} to ${file.fsPath}`
     const fs = this.services.shared.workspace.FileSystemProvider
     try {
@@ -104,21 +115,28 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       logger.warn(`Failed to write snapshot ${layouted.id} to ${file.fsPath}`, { err })
     }
 
-    this.clearCache(project)
-    return {
-      uri: file.toString(),
-      range: Range.create(
-        Position.create(0, 0),
-        Position.create(content.split('\n').length - 1, 1),
-      ),
+    const projectCaches = await this.read(project)
+    if (projectCaches) {
+      logger.debug`update snapshot cache of ${layouted.id} in project ${project.id}`
+      projectCaches[layouted.id] = layouted
+    } else {
+      this.manualLayouts.delete(project.folderUri)
     }
+    this.services.likec4.ModelBuilder.clearCache()
+    return location
   }
 
-  async remove(project: Project, view: ViewId): Promise<Pick<Location, 'uri'> | null> {
+  async remove(project: Project, view: ViewId): Promise<Location | null> {
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(view))
 
     logger.debug`delete snapshot of ${view} in project ${project.id}. File: ${file.fsPath}`
+
+    const location = {
+      uri: file.toString(),
+      range: Range.create(0, 0, 0, 0),
+    }
+
     try {
       const fs = this.services.shared.workspace.FileSystemProvider
       if (!(await fs.deleteFile(file))) {
@@ -129,15 +147,16 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       logger.warn(`Failed to delete snapshot ${view} from ${file.fsPath}`, { err })
     }
 
-    this.clearCache(project)
-    return {
-      uri: file.toString(),
+    const projectCaches = await this.read(project)
+    if (projectCaches) {
+      logger.debug`clean cache of ${view} in project ${project.id}`
+      delete projectCaches[view]
+    } else {
+      this.manualLayouts.delete(project.folderUri)
     }
-  }
 
-  private clearCache(project: Project): void {
-    this.manualLayouts.delete(project.folderUri)
     this.services.likec4.ModelBuilder.clearCache()
+    return location
   }
 
   clearCaches(): void {

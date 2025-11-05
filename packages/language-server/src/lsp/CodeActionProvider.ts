@@ -16,10 +16,10 @@ export class LikeC4CodeActionProvider implements CodeActionProvider {
    * @throws `OperationCancelled` if cancellation is detected during execution
    * @throws `ResponseError` if an error is detected that should be sent as response to the client
    */
-  async getCodeActions(
+  getCodeActions(
     document: LangiumDocument,
     params: CodeActionParams,
-  ): Promise<CommandOrCodeAction[] | undefined> {
+  ): CommandOrCodeAction[] | undefined {
     const diagnostics = params.context.diagnostics
     const actions = [] as CommandOrCodeAction[]
 

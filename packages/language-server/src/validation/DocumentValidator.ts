@@ -15,7 +15,7 @@ export class LikeC4DocumentValidator extends DefaultDocumentValidator {
     options?: ValidationOptions,
     cancelToken?: Cancellation.CancellationToken,
   ): Promise<Diagnostic[]> {
-    if (this.services.shared.workspace.ProjectsManager.checkIfExcluded(document)) {
+    if (this.services.shared.workspace.ProjectsManager.isExcluded(document)) {
       return []
     }
     return await super.validateDocument(document, options, cancelToken)

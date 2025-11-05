@@ -216,7 +216,7 @@ export class ProjectsManager {
   /**
    * Checks if the specified document should be excluded from processing.
    */
-  checkIfExcluded(document: LangiumDocument | URI | string): boolean {
+  isExcluded(document: LangiumDocument | URI | string): boolean {
     if (typeof document === 'string' || URI.isUri(document)) {
       let docUriAsString = normalizeUri(document)
       const project = this.findProjectForDocument(docUriAsString)
@@ -224,7 +224,7 @@ export class ProjectsManager {
     }
     let isExcluded = this.#excludedDocuments.get(document)
     if (isExcluded === undefined) {
-      isExcluded = this.checkIfExcluded(document.uri)
+      isExcluded = this.isExcluded(document.uri)
       this.#excludedDocuments.set(document, isExcluded)
     }
     return isExcluded
@@ -362,13 +362,29 @@ export class ProjectsManager {
     return this.findProjectForDocument(documentUri).id
   }
 
+  #activeReload: Promise<void> | null = null
   async reloadProjects(): Promise<void> {
+    try {
+      if (!this.#activeReload) {
+        logger.debug`schedule reload projects`
+        this.#activeReload = this._reloadProjects()
+      } else {
+        logger.debug`reload projects is already in progress, waiting`
+      }
+      await this.#activeReload
+    } finally {
+      this.#activeReload = null
+    }
+  }
+
+  protected async _reloadProjects(): Promise<void> {
+    // debounce reload projects
+    await delay(200)
     const folders = this.services.workspace.WorkspaceManager.workspaceFolders
     if (!folders) {
       logger.warn('No workspace folders found')
       return
     }
-    logger.debug`schedule reload projects`
     await this.services.workspace.WorkspaceLock.write(async (cancelToken) => {
       const configFiles = [] as FileSystemNode[]
       for (const folder of folders) {
@@ -387,8 +403,6 @@ export class ProjectsManager {
         logger.warning('No config files found, but some projects were registered before')
       }
 
-      // debounce reload projects
-      await delay(150)
       await interruptAndCheck(cancelToken)
 
       logger.debug`start reload projects`
@@ -425,10 +439,7 @@ export class ProjectsManager {
   }
 
   protected async rebuidDocuments(cancelToken?: Cancellation.CancellationToken): Promise<void> {
-    const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
-    this.services.workspace.Cache.clear()
-    logger.info('invalidate and rebuild all {docs} documents', { docs: docs.length })
-    await this.services.workspace.DocumentBuilder.update(docs, [], cancelToken)
+    await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
   }
 
   protected findProjectForDocument(documentUri: string) {

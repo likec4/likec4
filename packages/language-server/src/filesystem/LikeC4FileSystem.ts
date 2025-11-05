@@ -42,22 +42,15 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
 
   override async readDirectory(
     folderPath: URI,
-    opts?: { onlyLikeC4Files?: boolean; recursive?: boolean },
+    opts?: { recursive?: boolean },
   ): Promise<FileSystemNode[]> {
-    const { onlyLikeC4Files, recursive } = {
-      onlyLikeC4Files: true,
-      recursive: true,
-      ...opts,
-    }
+    const recursive = opts?.recursive ?? true
     const entries = [] as FileSystemNode[]
     try {
       let crawler = new fdir()
         .withSymlinks({ resolvePaths: false })
         .withFullPaths()
-
-      if (onlyLikeC4Files) {
-        crawler = crawler.filter(isLikeC4File)
-      }
+        .filter(isLikeC4File)
 
       if (!recursive) {
         crawler = crawler.withMaxDepth(1)
@@ -97,6 +90,28 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       }
     } catch (error) {
       logger.warn(`Failed to scan project files ${folderUri.fsPath}`, { error })
+    }
+    return entries
+  }
+
+  async scanDirectory(directory: URI, filter: (filepath: string) => boolean): Promise<FileSystemNode[]> {
+    const entries = [] as FileSystemNode[]
+    try {
+      const crawled = await new fdir()
+        .withSymlinks({ resolvePaths: false })
+        .withFullPaths()
+        .filter(filter)
+        .crawl(directory.fsPath)
+        .withPromise()
+      for (const path of crawled) {
+        entries.push({
+          isFile: true,
+          isDirectory: false,
+          uri: URI.file(path),
+        })
+      }
+    } catch (error) {
+      logger.warn(`Failed to scan directory ${directory.fsPath}`, { error })
     }
     return entries
   }

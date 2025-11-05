@@ -331,12 +331,12 @@ describe.concurrent('ProjectsManager', () => {
     const { projectsManager } = await createMultiProjectTestServices({})
 
     expect(projectsManager.belongsTo('file:///test/workspace/doc.likec4')).toEqual('default')
-    expect(projectsManager.checkIfExcluded(URI.parse('file:///test/workspace/doc.likec4'))).toEqual(false)
-    expect(projectsManager.checkIfExcluded(
+    expect(projectsManager.isExcluded(URI.parse('file:///test/workspace/doc.likec4'))).toEqual(false)
+    expect(projectsManager.isExcluded(
       URI.parse('file:///test/workspace/node_modules/doc.likec4'),
     )).toEqual(true)
 
-    expect(projectsManager.checkIfExcluded(
+    expect(projectsManager.isExcluded(
       URI.parse('file:///test/workspace/node_modules/deep/doc.likec4'),
     )).toEqual(true)
   })
@@ -511,8 +511,8 @@ describe.concurrent('ProjectsManager', () => {
         },
         folderUri: 'c:\\my\\files',
       })
-      expect(pm.checkIfExcluded('c:\\my\\files\\doc.likec4')).toEqual(false)
-      expect(pm.checkIfExcluded('c:\\my\\files\\node_modules\\doc.likec4')).toEqual(true)
+      expect(pm.isExcluded('c:\\my\\files\\doc.likec4')).toEqual(false)
+      expect(pm.isExcluded('c:\\my\\files\\node_modules\\doc.likec4')).toEqual(true)
     })
 
     it('should correctly return project for documents', async ({ expect }) => {

@@ -81,11 +81,6 @@ export interface LikeC4LanguageServices {
    */
   locate(params: Locate.Params): Locate.Res
 
-  /**
-   * Checks if the specified document should be excluded from processing.
-   */
-  isExcluded(doc: LangiumDocument): boolean
-
   dispose(): Promise<void>
 }
 
@@ -298,18 +293,6 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
         )
       default:
         nonexhaustive(params)
-    }
-  }
-
-  /**
-   * Checks if the specified document should be excluded from processing.
-   */
-  isExcluded(doc: LangiumDocument): boolean {
-    try {
-      return !isLikeC4LangiumDocument(doc) || this.services.shared.workspace.ProjectsManager.checkIfExcluded(doc)
-    } catch (e) {
-      logWarnError(e)
-      return false
     }
   }
 

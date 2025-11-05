@@ -43,7 +43,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
         return false
       }
       doc.likec4ProjectId = projects.belongsTo(doc.uri)
-      return !projects.checkIfExcluded(doc)
+      return !projects.isExcluded(doc)
     })
   }
 

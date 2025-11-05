@@ -93,7 +93,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       this.DocumentBuilder.onBuildPhase(
         DocumentState.Validated,
         (docs, _cancelToken) => {
-          const validated = docs.flatMap(d => isLikeC4Builtin(d.uri) || this.projects.checkIfExcluded(d) ? [] : d.uri)
+          const validated = docs.flatMap(d => isLikeC4Builtin(d.uri) || this.projects.isExcluded(d) ? [] : d.uri)
           if (validated.length > 0) {
             this.notifyListeners(validated)
           }

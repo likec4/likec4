@@ -1,12 +1,19 @@
 import { invariant } from '@likec4/core'
-import type { BuildOptions, FileSelector, FileSystemNode, LangiumDocument, LangiumDocumentFactory } from 'langium'
+import type {
+  BuildOptions,
+  Cancellation,
+  FileSelector,
+  FileSystemNode,
+  LangiumDocument,
+  LangiumDocumentFactory,
+} from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
 import { hasAtLeast } from 'remeda'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileSystemProvider } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
-import { logWarnError } from '../logger'
+import { logger, logWarnError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
@@ -77,7 +84,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       return false
     }
     if (entry.isFile) {
-      return !this.services.workspace.ProjectsManager.checkIfExcluded(entry.uri)
+      return !this.services.workspace.ProjectsManager.isExcluded(entry.uri)
     }
     return super.includeEntry(_workspaceFolder, entry, selector)
   }
@@ -87,6 +94,13 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       return this.folders[0]
     }
     return null
+  }
+
+  public async rebuildAll(cancelToken?: Cancellation.CancellationToken): Promise<void> {
+    const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
+    logger.info('invalidate and rebuild all {docs} documents', { docs: docs.length })
+    this.services.workspace.Cache.clear()
+    await this.documentBuilder.update(docs, [], cancelToken)
   }
 
   public get workspaceUri() {

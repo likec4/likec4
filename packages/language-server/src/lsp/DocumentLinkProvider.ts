@@ -17,7 +17,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     _params: DocumentLinkParams,
     _cancelToken?: CancellationToken,
   ): Promise<DocumentLink[]> {
-    if (!isLikeC4LangiumDocument(doc) || this.services.likec4.LanguageServices.isExcluded(doc)) {
+    if (!isLikeC4LangiumDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
       return []
     }
     return AstUtils.streamAllContents(doc.parseResult.value)

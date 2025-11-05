@@ -1,4 +1,5 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
+import type { FilterPredicate } from 'fdir'
 import type {
   FileSystemNode,
   FileSystemProvider as LangiumFileSystemProvider,
@@ -24,15 +25,15 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
 
   /**
    * Reads the directory information for the given URI.
-   *
-   * @param options.onlyLikeC4 If true, only returns files with '.c4', '.likec4' extensions,
-   *        false is used to only for manual layouts at the moment
-   * @default true
-   *
    * @param options.recursive If true, recursively reads the directory,
    * @default true
    */
-  readDirectory(uri: URI, options?: { onlyLikeC4Files?: boolean; recursive?: boolean }): Promise<FileSystemNode[]>
+  readDirectory(uri: URI, options?: { recursive?: boolean }): Promise<FileSystemNode[]>
+
+  /**
+   * Finds all files in the given directory, matching the given filter.
+   */
+  scanDirectory(directory: URI, filter: (filepath: string) => boolean): Promise<FileSystemNode[]>
 
   /**
    * Writes the content to the file system.
@@ -54,6 +55,9 @@ export interface FileSystemModuleContext extends FileSystemWatcherModuleContext 
 
 export class NoopFileSystemProvider implements FileSystemProvider {
   scanProjectFiles(): Promise<FileSystemNode[]> {
+    return Promise.resolve([])
+  }
+  scanDirectory(): Promise<FileSystemNode[]> {
     return Promise.resolve([])
   }
 

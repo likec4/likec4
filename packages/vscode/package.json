@@ -88,8 +88,8 @@
           ".likec4.config.json",
           "likec4.config.json"
         ],
-        "extensions": [
-          ".likec4.snap"
+        "filenamePatterns": [
+          "**/*.likec4.snap"
         ]
       },
       {

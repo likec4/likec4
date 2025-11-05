@@ -31,7 +31,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     _params: DocumentSymbolParams,
     cancelToken?: CancellationToken,
   ): Promise<DocumentSymbol[]> {
-    if (!isLikeC4LangiumDocument(doc) || this.services.likec4.LanguageServices.isExcluded(doc)) {
+    if (!isLikeC4LangiumDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
       return []
     }
     if (doc.state <= DocumentState.Linked) {
