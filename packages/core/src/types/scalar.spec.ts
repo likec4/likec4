@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { type MarkdownOrString, flattenMarkdownOrString } from './scalar'
+import { type MarkdownOrString, type StepEdgeId, flattenMarkdownOrString, stepEdgeId, stepEdgePath } from './scalar'
 
 describe('flattenMarkdownOrString', () => {
   describe('with string input', () => {

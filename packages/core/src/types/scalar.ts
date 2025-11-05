@@ -161,18 +161,14 @@ export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
 export type StepEdgeIndex = string | number
 
 /**
- * Normalize a step edge path index segment for inclusion in an edge identifier.
+ * Internal helper: format a single index segment for inclusion in a step edge identifier.
  *
  * @param segment - The index segment, either a number or string
- * @param isFirst - Whether this segment is the first in the path (not used by the formatter)
  * @returns The segment as a string; numeric segments are left-padded with zeros to at least two characters, non-numeric segments are returned unchanged
  */
-function formatIndex(segment: StepEdgeIndex, { isFirst }: { isFirst: boolean }): string {
+function formatIndex(segment: StepEdgeIndex): string {
   const raw = typeof segment === 'number' ? segment.toString() : segment
   if (!/^\d+$/u.test(raw)) {
-    return raw
-  }
-  if (isFirst) {
     return raw
   }
   return raw.padStart(2, '0')
@@ -188,22 +184,22 @@ function formatIndex(segment: StepEdgeIndex, { isFirst }: { isFirst: boolean }):
  */
 export function stepEdgePath(indices: Readonly<NonEmptyArray<StepEdgeIndex>>): StepEdgeId {
   const [head, ...rest] = indices
-  const prefix = `step-${formatIndex(head, { isFirst: true })}`
+  const prefix = `step-${formatIndex(head)}`
   if (rest.length === 0) {
     return prefix as StepEdgeId
   }
   let id = prefix
   for (const segment of rest) {
     if (typeof segment === 'number') {
-      id += `.${formatIndex(segment, { isFirst: false })}`
+      id += `.${formatIndex(segment)}`
       continue
     }
-    // segment is a string, check if it's numeric
+    // segment is a string at this point
     if (/^\d+$/u.test(segment)) {
-      id += `.${formatIndex(segment, { isFirst: false })}`
-      continue
+      id += `.${formatIndex(segment)}`
+    } else {
+      id += segment
     }
-    id += segment
   }
   return id as StepEdgeId
 }

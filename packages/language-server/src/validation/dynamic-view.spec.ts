@@ -503,8 +503,8 @@ describe.concurrent('DynamicView Checks', () => {
         views {
           dynamic view test {
             parallel {
-              { A -> B }
-              { B -> C }
+              A -> B
+              B -> C
             }
           }
         }
@@ -527,7 +527,7 @@ describe.concurrent('DynamicView Checks', () => {
           dynamic view test {
             parallel {
               path success { A -> B }
-              { B -> C }
+              B -> C
             }
           }
         }

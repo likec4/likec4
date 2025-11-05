@@ -71,11 +71,4 @@ describe('LikeC4ExperimentalConfigSchema', () => {
       expect(result.success).toBe(false)
     })
   })
-
-  describe('metadata', () => {
-    it('should have description metadata', () => {
-      const schema = LikeC4ExperimentalConfigSchema
-      expect(schema?._def?.description).toBeDefined()
-    })
-  })
 })

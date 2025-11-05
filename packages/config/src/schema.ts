@@ -25,6 +25,7 @@ export const LikeC4ExperimentalConfigSchema = z.object({
         'Enable experimental branch collections in dynamic views. Allows branching (parallel/alternate paths) in sequence diagrams.',
     }),
 })
+  .strict()
   .optional()
   .meta({
     description: 'Experimental features that may change or be removed in future versions',
