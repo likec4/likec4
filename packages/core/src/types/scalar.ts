@@ -172,6 +172,9 @@ function formatIndex(segment: StepEdgeIndex, { isFirst }: { isFirst: boolean }):
   if (!/^\d+$/u.test(raw)) {
     return raw
   }
+  if (isFirst) {
+    return raw
+  }
   return raw.padStart(2, '0')
 }
 
