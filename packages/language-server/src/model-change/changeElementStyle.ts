@@ -160,7 +160,7 @@ export function changeElementStyle(services: LikeC4Services, {
         // insert new style property right after the opening brace
         const insertPos = findNodeForKeyword(ruleCstNode, '{')?.range.end
         invariant(insertPos, 'Opening brace not found')
-        const indentStr = ' '.repeat(2 + ruleCstNode.range.start.character)
+        const indentStr = ' '.repeat(ruleCstNode.range.start.character) + '\t'
         const insertKeyValue = indentStr + key + ' ' + value
         edits.push(
           TextEdit.insert(

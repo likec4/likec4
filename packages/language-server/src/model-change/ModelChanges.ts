@@ -24,8 +24,8 @@ export class LikeC4ModelChanges {
     try {
       await this.services.shared.workspace.WorkspaceLock.write(async () => {
         let { viewId, projectId: _projectId, change } = changeView
-        logger.debug`Applying model change ${change.op} to view ${viewId} in project ${_projectId}`
         const project = this.services.shared.workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
+        logger.debug`Applying model change ${change.op} to view ${viewId} in project ${project.id}`
 
         const lookup = this.locator.locateViewAst(viewId, project.id)
         if (!lookup) {
@@ -36,9 +36,9 @@ export class LikeC4ModelChanges {
           version: lookup.doc.textDocument.version,
         }
 
+        // TODO refactor to use separate methods for save/reset operations
         if (change.op === 'save-view-snapshot') {
           invariant(viewId === change.layout.id, 'View ID does not match')
-          result = await this.services.likec4.ManualLayouts.write(project, change.layout)
           // If there is an existing manual layout v1
           if (lookup.view.manualLayout) {
             // We clean it up
@@ -46,12 +46,15 @@ export class LikeC4ModelChanges {
               logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
             })
           }
+          result = await this.services.likec4.ManualLayouts.write(project, change.layout)
           return
         }
+
         if (change.op === 'reset-manual-layout') {
-          await this.services.likec4.ManualLayouts.remove(project, viewId)
+          result = await this.services.likec4.ManualLayouts.remove(project, viewId)
           return
         }
+
         const { edits, modifiedRange } = this.convertToTextEdit({
           lookup,
           change,

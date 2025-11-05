@@ -138,9 +138,7 @@ export function activateMessenger(
       logger.debug`request ${change.op} of ${viewId} in project ${projectId}`
       let loc = await rpc.changeView({ viewId, projectId, change })
       if (change.op === 'reset-manual-layout' || change.op === 'save-view-snapshot') {
-        if (loc) {
-          latestUpdatedSnapshotUri.value = loc.uri
-        }
+        latestUpdatedSnapshotUri.value = loc?.uri ?? null
         broadcastModelUpdate()
         return
       }

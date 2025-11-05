@@ -63,7 +63,7 @@ export class LikeC4ModelLocator {
 
     if (isString(astNodeOrFqn)) {
       const fqn = astNodeOrFqn
-      const entry = this.fqnIndex.byFqn(projectId, astNodeOrFqn).head()
+      const entry = this.fqnIndex.byFqn(projectId, fqn).head()
       if (!entry) {
         return null
       }
@@ -189,7 +189,10 @@ export class LikeC4ModelLocator {
     }
     return {
       uri: res.doc.uri.toString(),
-      range: targetNode.range,
+      range: {
+        start: targetNode.range.start,
+        end: targetNode.range.start,
+      },
     }
   }
 

@@ -148,7 +148,6 @@ function activateLc() {
   viewSnapshotWatcher.onDidChange((uri) => {
     if (latestUpdatedSnapshotUri.value === uri.toString()) {
       logger.debug(`Ignoring view snapshot change triggered by self: ${uri.fsPath}`)
-      latestUpdatedSnapshotUri.value = null
       return
     }
     logger.debug(`View snapshot changed: ${uri.fsPath}`)
@@ -164,6 +163,11 @@ function activateLc() {
     void rpc.reloadProjects()
   })
   viewSnapshotWatcher.onDidDelete((uri) => {
+    if (latestUpdatedSnapshotUri.value === uri.toString()) {
+      logger.debug`Ignoring view snapshot deletion triggered by self: ${uri.fsPath}`
+      latestUpdatedSnapshotUri.value = null
+      return
+    }
     logger.debug`View snapshot deleted: ${uri.fsPath}`
     void rpc.reloadProjects()
   })
