@@ -69,265 +69,349 @@ describe('Dynamic branch helpers', () => {
   })
 })
 
-describe('Dynamic branch collection type guards', () => {
-  const makeStep = (source: string, target: string, astPath: string): DynamicStep =>
-    ({
-      source,
-      target,
-      astPath,
-    }) as DynamicStep
-
-  const makePath = (steps: DynamicBranchEntry[], pathId: string): DynamicBranchPath => ({
-    pathId,
-    astPath: pathId,
-    steps: steps as NonEmptyReadonlyArray<DynamicBranchEntry>,
-    isAnonymous: false,
-  })
-
-  const makeParallelBranch = (paths: DynamicBranchPath[]): DynamicParallelBranch => ({
-    branchId: '/branch',
-    astPath: '/branch',
-    kind: 'parallel',
-    parallelId: '/branch',
-    paths: paths as NonEmptyReadonlyArray<DynamicBranchPath>,
-  })
-
-  const makeAlternateBranch = (paths: DynamicBranchPath[]): DynamicAlternateBranch => ({
-    branchId: '/branch',
-    astPath: '/branch',
-    kind: 'alternate',
-    paths: paths as NonEmptyReadonlyArray<DynamicBranchPath>,
-  })
-
-  describe('isDynamicBranchCollection', () => {
-    it('should identify parallel branch collections', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
-      const branch = makeParallelBranch([path])
-
-      expect(isDynamicBranchCollection(branch)).toBe(true)
-    })
-
-    it('should identify alternate branch collections', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
-      const branch = makeAlternateBranch([path])
-
-      expect(isDynamicBranchCollection(branch)).toBe(true)
-    })
-
-    it('should return false for regular steps', () => {
-      const step = makeStep('A', 'B', '/step')
-      expect(isDynamicBranchCollection(step as unknown as DynamicBranchCollection)).toBe(false)
-    })
-
-    it('should return false for series', () => {
-      const step1 = makeStep('A', 'B', '/step1')
-      const step2 = makeStep('B', 'C', '/step2')
-      const series = {
-        seriesId: '/series',
-        __series: [step1, step2] as NonEmptyReadonlyArray<DynamicStep>,
+describe('Dynamic branch collection structure', () => {
+  describe('DynamicBranchPath', () => {
+    it('should have required fields', () => {
+      const step = makeStep('A', 'B', '/branch/steps@0')
+      const path: DynamicBranchPath = {
+        pathId: '/branch/path@0',
+        astPath: '/branch/steps@0',
+        steps: [step],
+        isAnonymous: true,
       }
-      expect(isDynamicBranchCollection(series as unknown as DynamicBranchCollection)).toBe(false)
-    })
-
-    it('should return false for undefined', () => {
-      expect(isDynamicBranchCollection(undefined)).toBe(false)
-    })
-  })
-
-  describe('isDynamicBranchPath', () => {
-    it('should identify branch paths', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
 
       expect(isDynamicBranchPath(path)).toBe(true)
+      expect(path.pathId).toBe('/branch/path@0')
+      expect(path.astPath).toBe('/branch/steps@0')
+      expect(path.steps).toHaveLength(1)
+      expect(path.isAnonymous).toBe(true)
     })
 
-    it('should return false for regular steps', () => {
-      const step = makeStep('A', 'B', '/step')
-      expect(isDynamicBranchPath(step as unknown as DynamicBranchPath)).toBe(false)
+    it('should support optional fields', () => {
+      const step = makeStep('A', 'B', '/branch/steps@0')
+      const path: DynamicBranchPath = {
+        pathId: '/branch/path@0',
+        astPath: '/branch/steps@0',
+        pathName: 'success',
+        pathTitle: 'Success Path',
+        description: 'Handles success case',
+        tags: ['success'],
+        steps: [step],
+      }
+
+      expect(isDynamicBranchPath(path)).toBe(true)
+      expect(path.pathName).toBe('success')
+      expect(path.pathTitle).toBe('Success Path')
+      expect(path.description).toBe('Handles success case')
+      expect(path.tags).toEqual(['success'])
     })
 
-    it('should return false for branch collections', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
-      const branch = makeParallelBranch([path])
+    it('should support multiple steps', () => {
+      const step1 = makeStep('A', 'B', '/branch/steps@0')
+      const step2 = makeStep('B', 'C', '/branch/steps@1')
+      const path: DynamicBranchPath = {
+        pathId: '/branch/path@0',
+        astPath: '/branch/steps@0',
+        steps: [step1, step2],
+      }
 
-      expect(isDynamicBranchPath(branch as unknown as DynamicBranchPath)).toBe(false)
+      expect(isDynamicBranchPath(path)).toBe(true)
+      expect(path.steps).toHaveLength(2)
     })
   })
 
-  describe('toLegacyParallel', () => {
-    it('should extract legacy parallel format when __parallel is present', () => {
-      const step1 = makeStep('A', 'B', '/step1')
-      const step2 = makeStep('C', 'D', '/step2')
-      const path = makePath([step1], '/path')
-      const branch: DynamicParallelBranch = {
-        ...makeParallelBranch([path]),
-        __parallel: [step1, step2] as NonEmptyReadonlyArray<DynamicStep>,
+  describe('DynamicParallelBranch', () => {
+    it('should create parallel branch with paths', () => {
+      const step1 = makeStep('A', 'B', '/branch/path@0/steps@0')
+      const step2 = makeStep('A', 'C', '/branch/path@1/steps@0')
+      
+      const branch: DynamicBranchCollection = {
+        branchId: '/branch',
+        astPath: '/branch',
+        kind: 'parallel',
+        parallelId: '/branch',
+        paths: [
+          {
+            pathId: '/branch/path@0',
+            astPath: '/branch/path@0/steps@0',
+            steps: [step1],
+          },
+          {
+            pathId: '/branch/path@1',
+            astPath: '/branch/path@1/steps@0',
+            steps: [step2],
+          },
+        ] as NonEmptyReadonlyArray<DynamicBranchPath>,
       }
 
-      const result = toLegacyParallel(branch)
-      expect(result).not.toBeNull()
-      expect(result?.__parallel).toHaveLength(2)
-      expect(result?.__parallel?.[0]).toEqual(step1)
-      expect(result?.__parallel?.[1]).toEqual(step2)
+      expect(isDynamicBranchCollection(branch)).toBe(true)
+      expect(branch.kind).toBe('parallel')
+      expect(branch.paths).toHaveLength(2)
     })
 
-    it('should return null for parallel branch without __parallel', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
-      const branch = makeParallelBranch([path])
-
-      const result = toLegacyParallel(branch)
-      expect(result).toBeNull()
-    })
-
-    it('should return null for alternate branches', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
-      const branch = makeAlternateBranch([path])
-
-      const result = toLegacyParallel(branch)
-      expect(result).toBeNull()
-    })
-
-    it('should return null for regular steps', () => {
-      const step = makeStep('A', 'B', '/step')
-      const result = toLegacyParallel(step as unknown as DynamicViewStep)
-      expect(result).toBeNull()
-    })
-
-    it('should return null for series', () => {
-      const step1 = makeStep('A', 'B', '/step1')
-      const step2 = makeStep('B', 'C', '/step2')
-      const series = {
-        seriesId: '/series',
-        __series: [step1, step2] as NonEmptyReadonlyArray<DynamicStep>,
-      }
-      const result = toLegacyParallel(series as unknown as DynamicViewStep)
-      expect(result).toBeNull()
-    })
-
-    it('should return null for parallel with empty __parallel array', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
-      const branch: DynamicParallelBranch = {
-        ...makeParallelBranch([path]),
-        __parallel: [] as unknown as NonEmptyReadonlyArray<DynamicStep>,
+    it('should support default path', () => {
+      const step = makeStep('A', 'B', '/branch/path@0/steps@0')
+      const branch: DynamicBranchCollection = {
+        branchId: '/branch',
+        astPath: '/branch',
+        kind: 'parallel',
+        parallelId: '/branch',
+        defaultPathId: '/branch/path@0',
+        paths: [
+          {
+            pathId: '/branch/path@0',
+            astPath: '/branch/path@0/steps@0',
+            steps: [step],
+          },
+        ] as NonEmptyReadonlyArray<DynamicBranchPath>,
       }
 
-      const result = toLegacyParallel(branch)
-      expect(result).toBeNull()
+      expect(isDynamicBranchCollection(branch)).toBe(true)
+      expect(branch.defaultPathId).toBe('/branch/path@0')
+    })
+
+    it('should support label', () => {
+      const step = makeStep('A', 'B', '/branch/path@0/steps@0')
+      const branch: DynamicBranchCollection = {
+        branchId: '/branch',
+        astPath: '/branch',
+        kind: 'parallel',
+        parallelId: '/branch',
+        label: 'Process in parallel',
+        paths: [
+          {
+            pathId: '/branch/path@0',
+            astPath: '/branch/path@0/steps@0',
+            steps: [step],
+          },
+        ] as NonEmptyReadonlyArray<DynamicBranchPath>,
+      }
+
+      expect(isDynamicBranchCollection(branch)).toBe(true)
+      expect(branch.label).toBe('Process in parallel')
     })
   })
 
-  describe('isDynamicStep with new branch types', () => {
-    it('should return false for branch collections', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
-      const branch = makeParallelBranch([path])
-
-      expect(isDynamicStep(branch)).toBe(false)
-    })
-
-    it('should still identify regular steps', () => {
-      const step = makeStep('A', 'B', '/step')
-      expect(isDynamicStep(step)).toBe(true)
-    })
-  })
-
-  describe('isDynamicStepsParallel with new definition', () => {
-    it('should identify legacy parallel with __parallel array', () => {
-      const step1 = makeStep('A', 'B', '/step1')
-      const step2 = makeStep('C', 'D', '/step2')
-      const path = makePath([step1], '/path')
-      const branch: DynamicParallelBranch = {
-        ...makeParallelBranch([path]),
-        __parallel: [step1, step2] as NonEmptyReadonlyArray<DynamicStep>,
+  describe('DynamicAlternateBranch', () => {
+    it('should create alternate branch with paths', () => {
+      const step1 = makeStep('A', 'B', '/branch/path@0/steps@0')
+      const step2 = makeStep('A', 'C', '/branch/path@1/steps@0')
+      
+      const branch: DynamicBranchCollection = {
+        branchId: '/branch',
+        astPath: '/branch',
+        kind: 'alternate',
+        paths: [
+          {
+            pathId: '/branch/path@0',
+            astPath: '/branch/path@0/steps@0',
+            pathName: 'success',
+            steps: [step1],
+          },
+          {
+            pathId: '/branch/path@1',
+            astPath: '/branch/path@1/steps@0',
+            pathName: 'error',
+            steps: [step2],
+          },
+        ] as NonEmptyReadonlyArray<DynamicBranchPath>,
       }
 
-      expect(isDynamicStepsParallel(branch)).toBe(true)
+      expect(isDynamicBranchCollection(branch)).toBe(true)
+      expect(branch.kind).toBe('alternate')
+      expect(branch.paths).toHaveLength(2)
+      expect(branch.paths[0]?.pathName).toBe('success')
+      expect(branch.paths[1]?.pathName).toBe('error')
     })
 
-    it('should return false for parallel branch without __parallel', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
-      const branch = makeParallelBranch([path])
+    it('should not have parallelId or __parallel', () => {
+      const step = makeStep('A', 'B', '/branch/path@0/steps@0')
+      const branch: DynamicBranchCollection = {
+        branchId: '/branch',
+        astPath: '/branch',
+        kind: 'alternate',
+        paths: [
+          {
+            pathId: '/branch/path@0',
+            astPath: '/branch/path@0/steps@0',
+            steps: [step],
+          },
+        ] as NonEmptyReadonlyArray<DynamicBranchPath>,
+      }
 
-      expect(isDynamicStepsParallel(branch)).toBe(false)
-    })
-
-    it('should return false for alternate branches', () => {
-      const step = makeStep('A', 'B', '/step')
-      const path = makePath([step], '/path')
-      const branch = makeAlternateBranch([path])
-
-      expect(isDynamicStepsParallel(branch)).toBe(false)
-    })
-
-    it('should return false for regular steps', () => {
-      const step = makeStep('A', 'B', '/step')
-      expect(isDynamicStepsParallel(step as unknown as DynamicStepsParallel)).toBe(false)
+      expect(isDynamicBranchCollection(branch)).toBe(true)
+      expect('parallelId' in branch).toBe(false)
+      expect('__parallel' in branch).toBe(false)
     })
   })
 })
 
-describe('Branch collection structures', () => {
-  const makeStep = (source: string, target: string, astPath: string): DynamicStep =>
-    ({
-      source,
-      target,
-      astPath,
-    }) as DynamicStep
+describe('Type guard functions', () => {
+  it('should distinguish between step types', () => {
+    const step = makeStep('A', 'B', '/step')
+    const branch = makeBranch(step)
 
-  const makePath = (steps: DynamicBranchEntry[], pathId: string): DynamicBranchPath =>
-    ({
-      pathId,
-      astPath: pathId,
-      steps: steps as NonEmptyReadonlyArray<DynamicBranchEntry>,
-      isAnonymous: false,
-    })
+    expect(isDynamicStep(step)).toBe(true)
+    expect(isDynamicStep(branch)).toBe(false)
+    expect(isDynamicBranchCollection(step)).toBe(false)
+    expect(isDynamicBranchCollection(branch)).toBe(true)
+  })
 
-  const makeParallelBranch = (paths: DynamicBranchPath[]): DynamicParallelBranch =>
-    ({
+  it('should handle undefined gracefully', () => {
+    expect(isDynamicStep(undefined)).toBe(false)
+    expect(isDynamicBranchCollection(undefined)).toBe(false)
+    expect(isDynamicBranchPath(undefined)).toBe(false)
+    expect(isDynamicStepsParallel(undefined)).toBe(false)
+  })
+
+  it('should handle null gracefully', () => {
+    expect(isDynamicStep(null as any)).toBe(false)
+    expect(isDynamicBranchCollection(null as any)).toBe(false)
+    expect(isDynamicBranchPath(null as any)).toBe(false)
+  })
+
+  it('should handle invalid objects', () => {
+    const invalid = { foo: 'bar' }
+    expect(isDynamicStep(invalid as any)).toBe(false)
+    expect(isDynamicBranchCollection(invalid as any)).toBe(false)
+    expect(isDynamicBranchPath(invalid as any)).toBe(false)
+  })
+})
+
+describe('toLegacyParallel advanced cases', () => {
+  it('should return null for alternate branches', () => {
+    const step = makeStep('A', 'B', '/branch/path@0/steps@0')
+    const branch: DynamicBranchCollection = {
+      branchId: '/branch',
+      astPath: '/branch',
+      kind: 'alternate',
+      paths: [
+        {
+          pathId: '/branch/path@0',
+          astPath: '/branch/path@0/steps@0',
+          steps: [step],
+        },
+      ] as NonEmptyReadonlyArray<DynamicBranchPath>,
+    }
+
+    expect(toLegacyParallel(branch)).toBeNull()
+  })
+
+  it('should return null for parallel without __parallel array', () => {
+    const step = makeStep('A', 'B', '/branch/path@0/steps@0')
+    const branch: DynamicBranchCollection = {
       branchId: '/branch',
       astPath: '/branch',
       kind: 'parallel',
       parallelId: '/branch',
-      paths: paths as NonEmptyReadonlyArray<DynamicBranchPath>,
-    })
+      paths: [
+        {
+          pathId: '/branch/path@0',
+          astPath: '/branch/path@0/steps@0',
+          steps: [step],
+        },
+      ] as NonEmptyReadonlyArray<DynamicBranchPath>,
+    }
 
-  const makeAlternateBranch = (paths: DynamicBranchPath[]): DynamicAlternateBranch =>
-    ({
-      branchId: '/branch',
-      astPath: '/branch',
-      kind: 'alternate',
-      paths: paths as NonEmptyReadonlyArray<DynamicBranchPath>,
-    })
-
-  it('should support nested branch collections', () => {
-    const step = makeStep('A', 'B', '/step')
-    const innerPath = makePath([step], '/inner/path')
-    const innerBranch = makeParallelBranch([innerPath])
-    const outerPath = makePath([innerBranch as unknown as DynamicBranchEntry], '/outer/path')
-    const outerBranch = makeParallelBranch([outerPath])
-
-    expect(isDynamicBranchCollection(outerBranch)).toBe(true)
-    expect(outerBranch.paths[0]?.steps[0]).toBe(innerBranch)
+    expect(toLegacyParallel(branch)).toBeNull()
   })
 
-  it('should support mixed step types in paths', () => {
-    const step = makeStep('A', 'B', '/step')
-    const series = {
-      seriesId: '/series',
-      __series: [makeStep('B', 'C', '/s1'), makeStep('C', 'D', '/s2')] as NonEmptyReadonlyArray<DynamicStep>,
+  it('should return legacy format for parallel with empty __parallel', () => {
+    const step = makeStep('A', 'B', '/branch/path@0/steps@0')
+    const branch: DynamicStepsParallel = {
+      branchId: '/branch',
+      astPath: '/branch',
+      kind: 'parallel',
+      parallelId: '/branch',
+      paths: [
+        {
+          pathId: '/branch/path@0',
+          astPath: '/branch/path@0/steps@0',
+          steps: [step],
+        },
+      ] as NonEmptyReadonlyArray<DynamicBranchPath>,
+      __parallel: [],
     }
-    const path = makePath([step, series as unknown as DynamicBranchEntry], '/path')
 
-    expect(path.steps).toHaveLength(2)
-    expect(isDynamicStep(path.steps[0] as unknown as DynamicStep)).toBe(true)
-    expect(isDynamicStepsSeries(path.steps[1] as unknown as DynamicStepsSeries)).toBe(true)
+    expect(toLegacyParallel(branch)).toBeNull()
+  })
+
+  it('should handle complex nested structures', () => {
+    const step1 = makeStep('A', 'B', '/step1')
+    const step2 = makeStep('B', 'C', '/step2')
+    const step3 = makeStep('C', 'D', '/step3')
+
+    const branch = makeBranch(step1, step2, step3)
+
+    const legacy = toLegacyParallel(branch)
+    expect(legacy).not.toBeNull()
+    expect(legacy?.__parallel).toHaveLength(3)
+    expect(legacy?.__parallel?.[0]).toEqual(step1)
+    expect(legacy?.__parallel?.[1]).toEqual(step2)
+    expect(legacy?.__parallel?.[2]).toEqual(step3)
+  })
+})
+
+describe('Nested branch structures', () => {
+  it('should support nested parallel branches', () => {
+    const innerStep = makeStep('B', 'C', '/outer/inner/step')
+    const innerBranch = makeBranch(innerStep)
+    
+    const outerBranch: DynamicBranchCollection = {
+      branchId: '/outer',
+      astPath: '/outer',
+      kind: 'parallel',
+      parallelId: '/outer',
+      paths: [
+        {
+          pathId: '/outer/path@0',
+          astPath: '/outer/path@0',
+          steps: [innerBranch as any],
+        },
+      ] as NonEmptyReadonlyArray<DynamicBranchPath>,
+    }
+
+    expect(isDynamicBranchCollection(outerBranch)).toBe(true)
+    expect(isDynamicBranchCollection(outerBranch.paths[0]?.steps[0] as any)).toBe(true)
+  })
+
+  it('should support alternate inside parallel', () => {
+    const step1 = makeStep('A', 'B', '/step1')
+    const step2 = makeStep('A', 'C', '/step2')
+    
+    const alternate: DynamicBranchCollection = {
+      branchId: '/alternate',
+      astPath: '/alternate',
+      kind: 'alternate',
+      paths: [
+        {
+          pathId: '/alternate/path@0',
+          astPath: '/alternate/path@0',
+          steps: [step1],
+        },
+        {
+          pathId: '/alternate/path@1',
+          astPath: '/alternate/path@1',
+          steps: [step2],
+        },
+      ] as NonEmptyReadonlyArray<DynamicBranchPath>,
+    }
+
+    const parallel: DynamicBranchCollection = {
+      branchId: '/parallel',
+      astPath: '/parallel',
+      kind: 'parallel',
+      parallelId: '/parallel',
+      paths: [
+        {
+          pathId: '/parallel/path@0',
+          astPath: '/parallel/path@0',
+          steps: [alternate as any],
+        },
+      ] as NonEmptyReadonlyArray<DynamicBranchPath>,
+    }
+
+    expect(isDynamicBranchCollection(parallel)).toBe(true)
+    expect(parallel.paths[0]?.steps[0]).toEqual(alternate)
   })
 })
