@@ -6,8 +6,8 @@ export const breadcrumbTitle = cva({
     fontWeight: '500',
     transition: 'fast',
     color: {
-      base: 'likec4.panel.text.action',
-      _hover: 'likec4.panel.text.action.hover',
+      base: 'likec4.panel.action',
+      _hover: 'likec4.panel.action.hover',
     },
   },
   variants: {
@@ -20,7 +20,7 @@ export const breadcrumbTitle = cva({
       'true': {
         color: {
           base: 'likec4.panel.text.dimmed',
-          _hover: 'likec4.panel.text.action',
+          _hover: 'likec4.panel.action',
         },
       },
     },

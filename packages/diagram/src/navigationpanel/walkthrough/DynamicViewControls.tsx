@@ -68,7 +68,7 @@ function StartWalkthroughButton() {
           label: css({
             display: {
               base: 'none',
-              '@/md': '[inherit]',
+              '@/md': 'inherit',
             },
           }),
           section: css({

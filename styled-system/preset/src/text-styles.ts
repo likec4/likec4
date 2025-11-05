@@ -112,8 +112,8 @@ export const textStyles = defineTextStyles({
           lineHeight: '1.25rem',
           fontWeight: 500,
           color: {
-            base: 'likec4.panel.text.action',
-            _hover: 'likec4.panel.text.action.hover',
+            base: 'likec4.panel.action',
+            _hover: 'likec4.panel.action.hover',
           },
         },
       },

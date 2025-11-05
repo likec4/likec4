@@ -1,5 +1,5 @@
 import { defineTokens } from '@pandacss/dev'
-import { tokens as generated } from './generated'
+import { mantine, tokens as generated } from './generated'
 
 export const tokens = defineTokens({
   ...generated,
@@ -20,7 +20,7 @@ export const tokens = defineTokens({
   borders: {
     none: { value: 'none' },
     transparent: { value: '0px solid transparent' },
-    default: { value: '1px solid {colors.mantine.colors.defaultBorder}' },
+    default: { value: `1px solid ${mantine.colors.defaultBorder}` },
   },
   spacing: {
     ...generated.spacing,

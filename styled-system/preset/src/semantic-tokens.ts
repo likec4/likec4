@@ -1,4 +1,6 @@
 import { defineSemanticTokens } from '@pandacss/dev'
+import { mantine } from './generated'
+import { mixTransparent } from './helpers'
 
 export const semanticTokens = defineSemanticTokens({
   colors: {
@@ -6,13 +8,13 @@ export const semanticTokens = defineSemanticTokens({
       background: {
         DEFAULT: {
           description: 'Background color',
-          value: 'var(--mantine-color-body)',
+          value: mantine.colors.body,
         },
         pattern: {
           description: 'Background pattern color',
           value: {
-            _dark: '{colors.mantine.colors.dark[4]/70}',
-            _light: '{colors.mantine.colors.gray[4]}',
+            _dark: mixTransparent(mantine.colors.dark[4], 70),
+            _light: mantine.colors.gray[4],
           },
         },
       },
@@ -40,8 +42,8 @@ export const semanticTokens = defineSemanticTokens({
           DEFAULT: {
             description: 'LikeC4 panel background color',
             value: {
-              base: `{colors.mantine.colors.body}`,
-              _dark: `{colors.mantine.colors.dark[6]}`,
+              base: mantine.colors.body,
+              _dark: mantine.colors.dark[6],
             },
           },
         },
@@ -49,87 +51,73 @@ export const semanticTokens = defineSemanticTokens({
           description: 'LikeC4 panel border color',
           value: {
             base: 'transparent',
-            _light: `{colors.mantine.colors.defaultBorder/30}`,
+            _light: mixTransparent(mantine.colors.defaultBorder, 30),
           },
         },
         text: {
           DEFAULT: {
             description: 'LikeC4 panel text color',
-            value: 'color-mix(in srgb, var(--mantine-color-text) 85%, transparent)',
-          },
-          action: {
-            DEFAULT: {
-              description: 'LikeC4 panel action text color (Links)',
-              value: 'var(--mantine-color-text)',
-            },
-            hover: {
-              description: 'LikeC4 panel action text color on hover',
-              value: 'var(--mantine-color-bright)',
-            },
+            value: mixTransparent(mantine.colors.text, 85),
           },
           dimmed: {
             description: 'LikeC4 panel dimmed text color',
-            value: 'var(--mantine-color-dimmed)',
+            value: mantine.colors.dimmed,
           },
         },
-        'action-icon': {
-          text: {
-            DEFAULT: {
-              description: 'LikeC4 action icon text color',
-              value: 'color-mix(in srgb, var(--mantine-color-text) 80%, transparent)',
-            },
-            hover: {
-              description: 'LikeC4 action icon text color on hover',
-              value: 'var(--mantine-color-bright)',
-            },
-            disabled: {
-              description: 'LikeC4 action icon text color when disabled',
-              value: 'var(--mantine-color-dimmed)',
-            },
+        action: {
+          DEFAULT: {
+            description: 'LikeC4 panel action text color (Links/Icons)',
+            value: mixTransparent(mantine.colors.text, 90),
+          },
+          disabled: {
+            description: 'LikeC4 action icon text color when disabled',
+            value: mantine.colors.dimmed,
+          },
+          hover: {
+            description: 'LikeC4 panel action text color on hover',
+            value: 'var(--mantine-color-bright)',
           },
           bg: {
             DEFAULT: {
               description: 'LikeC4 action icon background color',
               value: {
-                base: '{colors.mantine.colors.gray[1]}',
-                _dark: '{colors.mantine.colors.dark[7]/70}',
+                base: mantine.colors.gray[1],
+                _dark: mixTransparent(mantine.colors.dark[7], 70),
               },
             },
             hover: {
               description: 'LikeC4 action icon background color on hover',
               value: {
-                base: '{colors.mantine.colors.gray[2]}',
-                _dark: '{colors.mantine.colors.dark[8]}',
+                base: mantine.colors.gray[2],
+                _dark: mantine.colors.dark[8],
               },
             },
           },
           warning: {
-            text: {
-              DEFAULT: {
-                description: 'LikeC4 action icon text color',
-                value: '{colors.mantine.colors.orange[6]}',
-              },
-              hover: {
-                description: 'LikeC4 action icon text color on hover',
-                value: {
-                  base: '{colors.mantine.colors.orange[7]}',
-                  _dark: '{colors.mantine.colors.orange[5]}',
-                },
+            DEFAULT: {
+              description: 'LikeC4 action icon text color',
+              value: mantine.colors.orange[6],
+            },
+            hover: {
+              description: 'LikeC4 action icon text color on hover',
+              value: {
+                base: mantine.colors.orange[7],
+                _dark: mantine.colors.orange[5],
               },
             },
             bg: {
               DEFAULT: {
                 description: 'LikeC4 action icon background color',
                 value: {
-                  base: '{colors.mantine.colors.orange[1]/90}',
-                  _dark: '{colors.mantine.colors.orange[9]/10}',
+                  base: mixTransparent(mantine.colors.orange[1], 90),
+                  _dark: mixTransparent(mantine.colors.orange[9], 10),
                 },
               },
               hover: {
                 description: 'LikeC4 action icon background color on hover',
                 value: {
-                  base: '{colors.mantine.colors.orange[3]/70}',
-                  _dark: '{colors.mantine.colors.orange[9]/20}',
+                  base: mixTransparent(mantine.colors.orange[3], 70),
+                  _dark: mixTransparent(mantine.colors.orange[9], 20),
                 },
               },
             },
@@ -142,7 +130,7 @@ export const semanticTokens = defineSemanticTokens({
             description: 'LikeC4 dropdown background color',
             value: {
               base: `#FFF`,
-              _dark: `{colors.mantine.colors.dark[6]}`,
+              _dark: mantine.colors.dark[6],
             },
           },
         },
@@ -164,12 +152,12 @@ export const semanticTokens = defineSemanticTokens({
         body: {
           DEFAULT: {
             description: 'LikeC4 overlay body color',
-            value: `var(--mantine-color-body)`,
+            value: mantine.colors.body,
           },
         },
         border: {
           description: 'LikeC4 overlay border color',
-          value: '{colors.mantine.colors.defaultBorder/50}',
+          value: mixTransparent(mantine.colors.defaultBorder, 50),
         },
       },
     },

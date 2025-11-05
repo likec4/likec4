@@ -39,17 +39,8 @@ export const SearchControl = memo(() => {
               gap: 'xxs',
               paddingInline: 'sm',
               paddingBlock: 'xxs',
-              rounded: 'sm',
               userSelect: 'none',
-              cursor: 'pointer',
-              color: {
-                base: 'likec4.panel.action-icon.text',
-                _hover: 'likec4.panel.action-icon.text.hover',
-              },
-              backgroundColor: {
-                base: 'likec4.panel.action-icon.bg',
-                _hover: 'likec4.panel.action-icon.bg.hover',
-              },
+              layerStyle: 'likec4.panel.action',
               display: {
                 base: 'none',
                 '@/md': 'flex',

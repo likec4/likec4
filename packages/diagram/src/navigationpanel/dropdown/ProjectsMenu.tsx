@@ -19,7 +19,7 @@ export const ProjectsMenu = memo(_ => {
         css={{
           fontWeight: '400',
           fontSize: 'xxs',
-          color: 'mantine.colors.dimmed',
+          color: 'likec4.panel.text.dimmed',
           userSelect: 'none',
         }}>
         Project

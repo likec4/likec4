@@ -194,6 +194,8 @@ export const generatedGlobalCss = ${
 
 // Default is likec4.primary
 export const paletteGlobalVars = ${JSON5.stringify(globalVars, null, 2)}
+
+export const mantine = ${JSON5.stringify(mantineVars, null, 2)} as const
 `
 
 writeFileSync('./src/generated.ts', ts)

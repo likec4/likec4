@@ -81,11 +81,11 @@ const ViewDetailsCardTrigger = ({ linksCount, onOpen }: { linksCount: number; on
           userSelect: 'none',
           cursor: 'pointer',
           color: {
-            base: 'likec4.panel.action-icon.text',
-            _hover: 'likec4.panel.action-icon.text.hover',
+            base: 'likec4.panel.action',
+            _hover: 'likec4.panel.action.hover',
           },
           backgroundColor: {
-            _hover: 'likec4.panel.action-icon.bg.hover',
+            _hover: 'likec4.panel.action.bg.hover',
           },
           display: {
             base: 'none',

@@ -15,21 +15,43 @@ export const layerStyles = defineLayerStyles({
       },
     },
     panel: {
-      description: 'LikeC4 panel layer',
-      value: {
-        paddingBlock: '1',
-        paddingInline: 'xs',
-        borderRadius: '0',
-        backgroundColor: 'likec4.panel.bg',
-        border: '1px solid {colors.likec4.panel.border}',
-        '@/sm': {
-          boxShadow: 'lg',
-          borderRadius: 'md',
-          padding: '2xs',
-        },
-        _whenPanning: {
-          boxShadow: 'none',
+      DEFAULT: {
+        description: 'LikeC4 panel layer',
+        value: {
+          paddingBlock: '1',
+          paddingInline: 'xs',
           borderRadius: '0',
+          backgroundColor: 'likec4.panel.bg',
+          border: '1px solid {colors.likec4.panel.border}',
+          '@/sm': {
+            boxShadow: 'lg',
+            borderRadius: 'md',
+            padding: '2xs',
+          },
+          _whenPanning: {
+            boxShadow: 'none',
+            borderRadius: '0',
+          },
+        },
+      },
+      action: {
+        description: 'LikeC4 panel action layer',
+        value: {
+          color: {
+            base: 'likec4.panel.action',
+            _notDisabled: {
+              _hover: 'likec4.panel.action.hover',
+            },
+          },
+          cursor: 'pointer',
+          border: 'transparent',
+          borderRadius: 'sm',
+          backgroundColor: {
+            base: 'likec4.panel.action.bg',
+            _notDisabled: {
+              _hover: 'likec4.panel.action.bg.hover',
+            },
+          },
         },
       },
     },

@@ -44,43 +44,6 @@ export function ComparePanelControls() {
         }}>
         <IconX />
       </PanelActionIcon>
-      {
-        /* <UnstyledButton
-        component={m.button}
-        layout="position"
-        onClick={e => {
-          e.stopPropagation()
-          toggleCompare()
-          // toggleCompare()
-          // // reset layout to manual if compare is active
-          // if (isActive && ctx.layout !== 'manual') {
-          //   switchLayout('manual')
-          // }
-        }}
-        whileTap={{
-          scale: 0.95,
-          translateY: 1,
-        }}
-        className={cx(
-          'group',
-          navigationPanelActionIcon({
-            variant: 'filled',
-            // type: 'warning',
-          }),
-          css({
-            py: '1',
-            px: '2',
-            rounded: 'sm',
-            userSelect: 'none',
-            cursor: 'pointer',
-            fontSize: 'xs',
-            fontWeight: 'medium',
-            // fontWeight: 600,
-          }),
-        )}>
-        Cancel
-      </UnstyledButton> */
-      }
     </>
   )
 }
@@ -107,8 +70,8 @@ const CompareActionsMenu = () => {
               lineHeight: '1',
               rounded: 'sm',
               textStyle: 'xs',
-              // fontWeight: 'medium',
-              color: { base: 'likec4.panel.text.action', _hover: 'likec4.panel.text.action.hover' },
+              fontWeight: 'medium',
+              color: { base: 'likec4.panel.action', _hover: 'likec4.panel.action.hover' },
               userSelect: 'none',
             }),
           )}
