@@ -139,12 +139,12 @@ export function IfNotEnabled({ feature, children }: PropsWithChildren<{ feature:
 }
 
 export function IfReadOnly({ children }: PropsWithChildren) {
-  const isReadOnly = useEnabledFeatures()[`enableReadOnly`] === true
+  const isReadOnly = useEnabledFeatures().enableReadOnly === true
   return isReadOnly ? <>{children}</> : null
 }
 
 export function IfNotReadOnly({ children }: PropsWithChildren) {
-  const isReadOnly = useEnabledFeatures()[`enableReadOnly`] === true
+  const isReadOnly = useEnabledFeatures().enableReadOnly === true
   if (isReadOnly) {
     return null
   }

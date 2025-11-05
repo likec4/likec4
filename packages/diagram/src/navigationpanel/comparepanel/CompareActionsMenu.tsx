@@ -1,13 +1,9 @@
-import { css, cx } from '@likec4/styles/css'
-import { Box, HStack } from '@likec4/styles/jsx'
+import { cx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
 import { navigationPanelActionIcon } from '@likec4/styles/recipes'
-import { Badge, Button, Divider as MantineDivider, Menu, UnstyledButton } from '@mantine/core'
-import { IconChevronDown, IconX } from '@tabler/icons-react'
-import * as m from 'motion/react-m'
-import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
-import { PanelActionIcon } from '../_common'
-import { LayoutTypeSwitcher } from './LayoutTypeSwitcher'
+import { Badge, Menu, UnstyledButton } from '@mantine/core'
+import { IconChevronDown } from '@tabler/icons-react'
 
 export function CompareActionsMenu({
   onResetManualLayout,

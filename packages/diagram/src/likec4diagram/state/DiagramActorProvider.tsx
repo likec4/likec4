@@ -77,13 +77,13 @@ export function DiagramActorProvider({
   return (
     <DiagramActorContextProvider value={actorRef}>
       <ErrorBoundary>
+        <DiagramXYFlowSyncProvider
+          view={view}
+          where={where}
+          actorRef={actorRef}
+        />
         <CurrentViewModelProvider actorRef={actorRef}>
           {children}
-          <DiagramXYFlowSyncProvider
-            view={view}
-            where={where}
-            actorRef={actorRef}
-          />
         </CurrentViewModelProvider>
       </ErrorBoundary>
       <DiagramActorEventListener />
@@ -99,10 +99,13 @@ const selectFromActor = (
 } => {
   let toggledFeatures = context.toggledFeatures
 
-  // Compare with latest is disabled during active walkthrough
-  const enableCompareWithLatest = context.features.enableCompareWithLatest &&
-    (toggledFeatures.enableCompareWithLatest ?? false) &&
-    isNullish(context.activeWalkthrough)
+  const hasDrifts = context.view.drifts != null
+
+  const enableCompareWithLatest = context.features.enableCompareWithLatest
+    && (toggledFeatures.enableCompareWithLatest ?? false)
+    // Compare with latest is disabled during active walkthrough
+    && isNullish(context.activeWalkthrough)
+    && hasDrifts
 
   const enableReadOnly = context.features.enableReadOnly
     || toggledFeatures.enableReadOnly
@@ -111,7 +114,7 @@ const selectFromActor = (
     // if dynamic view display mode is sequence, enable readonly
     || (context.dynamicViewVariant === 'sequence' && context.view._type === 'dynamic')
     // Compare with latest enforces readonly
-    || (enableCompareWithLatest && context.view._layout === 'auto' && context.view.drifts != null)
+    || (enableCompareWithLatest && context.view._layout === 'auto')
 
   // Update toggled features if changed
   if (
@@ -154,9 +157,7 @@ function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ ac
 }
 
 const selectFromActor2 = (state: DiagramActorSnapshot) => {
-  return {
-    dynamicViewVariant: state.context.dynamicViewVariant,
-  }
+  return state.context.dynamicViewVariant
 }
 function DiagramXYFlowSyncProvider(
   { view, where, actorRef }: {
@@ -165,8 +166,7 @@ function DiagramXYFlowSyncProvider(
     actorRef: DiagramActorRef
   },
 ) {
-  // const { enableReadOnly } = useEnabledFeatures()
-  const { dynamicViewVariant } = useSelector(actorRef, selectFromActor2, shallowEqual)
+  const dynamicViewVariant = useSelector(actorRef, selectFromActor2)
 
   useEffect(() => {
     actorRef.send({
