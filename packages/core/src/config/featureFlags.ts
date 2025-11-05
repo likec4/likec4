@@ -15,7 +15,7 @@ const dynamicBranchCollectionsEnv = typeof process !== 'undefined' && process?.e
 
 const initialState: FeatureFlagState = {
   dynamicBranchCollections: isTruthy(dynamicBranchCollectionsEnv)
-    ? /^[ty1]/i.test(dynamicBranchCollectionsEnv ?? '')
+    ? /^[ty1]/i.test(dynamicBranchCollectionsEnv)
     : false,
 }
 
