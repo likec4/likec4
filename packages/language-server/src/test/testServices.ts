@@ -94,11 +94,13 @@ export function createTestServices(options?: {
     const diagnostics = document.diagnostics ?? []
     const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
     const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
+    const hints = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Hint ? d.message : [])
     return {
       document,
       diagnostics,
       warnings,
       errors,
+      hints,
     }
   }
 
@@ -124,10 +126,12 @@ export function createTestServices(options?: {
     const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
     const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
     const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
+    const hints = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Hint ? d.message : [])
     return {
       diagnostics,
       errors,
       warnings,
+      hints,
     }
   }
 

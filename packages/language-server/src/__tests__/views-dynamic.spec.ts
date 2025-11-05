@@ -209,50 +209,80 @@ describe.concurrent('dynamic views', () => {
     `)
   })
 
-  it('valid dynamic view with parallel steps', async ctx => {
-    const { valid } = await mkTestServices(ctx)
-    await valid(`
-      dynamic view parallelSteps {
-        parallel {
-          user -> system.frontend 'User uses System'
-          system.frontend -> system.backend 'frontend uses backend'
-        }
-        parallel {
-          system.frontend <- system.backend
-        }
-      }
-    `)
-  })
+  it('valid dynamic view with parallel steps (with warnings)', async ctx => {
+    const { expect } = ctx
+    const { validate } = createTestServices()
+    await validate(model, 'model.c4')
 
-  it('valid dynamic view with empty parallel steps', async ctx => {
-    const { valid } = await mkTestServices(ctx)
-    await valid(`
-      dynamic view parallelSteps {
-        parallel {
-        }
-        parallel {
-          system.frontend <- system.backend 'frontend uses backend' {
-            description 'some description'
+    const { errors, warnings } = await validate(`
+      views {
+        dynamic view parallelSteps {
+          parallel {
+            user -> system.frontend 'User uses System'
+            system.frontend -> system.backend 'frontend uses backend'
           }
-        }
-      }
-    `)
-  })
-
-  it('valid dynamic view with nested parallel steps', async ctx => {
-    const { valid } = await mkTestServices(ctx)
-    await valid(`
-      dynamic view parallelSteps {
-        parallel {
-          user -> system.frontend 'User uses System'
-          system.frontend -> system.backend 'frontend uses backend'
-
           parallel {
             system.frontend <- system.backend
           }
         }
       }
     `)
+    expect(errors).toHaveLength(0)
+    expect(warnings).toContain(
+      'Parallel block with only one path has no branching value. Consider removing the parallel wrapper.',
+    )
+  })
+
+  it('dynamic view with empty parallel steps (errors)', async ctx => {
+    const { expect } = ctx
+    const { validate } = createTestServices()
+    await validate(model, 'model.c4')
+
+    const { errors, warnings } = await validate(`
+      views {
+        dynamic view parallelSteps {
+          parallel {
+          }
+          parallel {
+            system.frontend <- system.backend 'frontend uses backend' {
+              description 'some description'
+            }
+          }
+        }
+      }
+    `)
+    expect(errors).toContain('Parallel block has no paths or steps')
+    expect(warnings).toContain(
+      'Parallel block with only one path has no branching value. Consider removing the parallel wrapper.',
+    )
+  })
+
+  it('nested parallel steps with warnings', async ctx => {
+    const { expect } = ctx
+    const { validate } = createTestServices()
+    await validate(model, 'model.c4')
+
+    const { errors, warnings } = await validate(`
+      views {
+        dynamic view parallelSteps {
+          parallel {
+            user -> system.frontend 'User uses System'
+            system.frontend -> system.backend 'frontend uses backend'
+
+            parallel {
+              system.frontend <- system.backend
+            }
+          }
+        }
+      }
+    `)
+    expect(errors).toHaveLength(0)
+    expect(warnings).toContain(
+      'Anonymous nested parallel will create a separate path. Consider using named paths for clarity.',
+    )
+    expect(warnings).toContain(
+      'Parallel block with only one path has no branching value. Consider removing the parallel wrapper.',
+    )
   })
 
   it('invalid views', async ctx => {

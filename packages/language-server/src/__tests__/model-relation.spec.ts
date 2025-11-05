@@ -338,7 +338,7 @@ describe.concurrent('model relation', () => {
       client -> server {
         metadata {
           httpVerb 'GET'
-          path '/users/:id'
+          endpoint '/users/:id'
         }
       }
     }`,

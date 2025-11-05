@@ -178,4 +178,273 @@ describe.concurrent('DynamicView Checks', () => {
       expect(errors).toHaveLength(0)
     })
   })
+
+  describe('branch collection validation', () => {
+    it('should report empty branch collection', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+      }
+      views {
+        dynamic view index {
+          parallel {
+          }
+        }
+      }
+    `)
+      expect(errors).to.include.members(['Parallel block has no paths or steps'])
+    })
+
+    it('should warn on degenerate single-path parallel', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { warnings } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+      }
+      views {
+        dynamic view index {
+          parallel {
+            path only {
+              A -> B
+            }
+          }
+        }
+      }
+    `)
+      expect(warnings).to.include.members([
+        'Parallel block with only one path has no branching value. Consider removing the parallel wrapper.',
+      ])
+    })
+
+    it('should warn on degenerate single-step alternate', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { warnings } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+      }
+      views {
+        dynamic view index {
+          alternate {
+            A -> B
+          }
+        }
+      }
+    `)
+      expect(warnings).to.include.members([
+        'Alternate block with only one path has no branching value. Consider removing the alternate wrapper.',
+      ])
+    })
+
+    it('should report nested homogeneous parallel (P-in-P)', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+        component C
+      }
+      views {
+        dynamic view index {
+          parallel {
+            path outer {
+              parallel {
+                path inner1 { A -> B }
+                path inner2 { B -> C }
+              }
+            }
+          }
+        }
+      }
+    `)
+      expect(errors).to.include.members([
+        'Nested parallel inside parallel with no other steps is not allowed. Parallel blocks are associative - flatten inner parallel paths into the parent parallel.',
+      ])
+    })
+
+    it('should allow sequential parallel (has other steps)', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+        component C
+      }
+      views {
+        dynamic view index {
+          parallel {
+            path outer {
+              A -> B
+              parallel {
+                path inner1 { B -> C }
+                path inner2 { B -> A }
+              }
+            }
+          }
+        }
+      }
+    `)
+      expect(errors).toHaveLength(0)
+    })
+
+    it('should allow heterogeneous nesting (alternate in parallel)', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+        component C
+      }
+      views {
+        dynamic view index {
+          parallel {
+            path option1 {
+              alternate {
+                path success { A -> B }
+                path failure { A -> C }
+              }
+            }
+            path option2 { B -> C }
+          }
+        }
+      }
+    `)
+      expect(errors).toHaveLength(0)
+    })
+
+    it('should hint on nested homogeneous alternate (A-in-A)', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { hints } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+        component C
+      }
+      views {
+        dynamic view index {
+          alternate {
+            path outer {
+              alternate {
+                path inner1 { A -> B }
+                path inner2 { B -> C }
+              }
+            }
+          }
+        }
+      }
+    `)
+      expect(hints).to.include.members([
+        'Nested alternate inside alternate with no other steps can be flattened. Alternate blocks are associative - consider using sibling paths instead.',
+      ])
+    })
+
+    it('should allow sequential alternate', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+        component C
+        component D
+      }
+      views {
+        dynamic view index {
+          alternate {
+            path success {
+              B -> C
+              alternate {
+                path s1 { C -> D }
+                path s2 { C -> A }
+              }
+            }
+            path failure {
+              B -> A
+            }
+          }
+        }
+      }
+    `)
+      expect(errors).toHaveLength(0)
+    })
+
+    it('should report duplicate path names', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+        component C
+      }
+      views {
+        dynamic view index {
+          parallel {
+            path duplicate {
+              A -> B
+            }
+            path duplicate {
+              B -> C
+            }
+          }
+        }
+      }
+    `)
+      expect(errors.filter(e => e.includes('Duplicate path name "duplicate"'))).toHaveLength(2)
+    })
+
+    it('should allow mixed named paths and anonymous steps', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+        component C
+      }
+      views {
+        dynamic view index {
+          parallel {
+            A -> B
+            path named {
+              B -> C
+            }
+            C -> A
+          }
+        }
+      }
+    `)
+      expect(errors).toHaveLength(0)
+    })
+  })
 })

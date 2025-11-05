@@ -248,7 +248,7 @@ class DynamicViewCompute<A extends AnyAux> {
     if (!branchStack || branchStack.length === 0) {
       return stepEdgePath([rootIndex])
     }
-    const segments = [rootIndex]
+    const segments: number[] = [rootIndex]
     for (const entry of branchStack) {
       segments.push(entry.pathIndex)
     }

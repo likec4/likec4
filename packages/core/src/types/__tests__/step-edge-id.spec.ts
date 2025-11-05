@@ -22,6 +22,7 @@ describe('stepEdgePath', () => {
   })
 
   it('throws when called without indices', () => {
+    // @ts-expect-error - Testing runtime error for empty array
     expect(() => stepEdgePath([])).toThrow()
   })
 })
