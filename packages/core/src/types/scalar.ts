@@ -165,7 +165,7 @@ export function stepEdgePath(indices: Readonly<NonEmptyArray<StepEdgeIndex>>): S
   let id = prefix
   for (const segment of rest) {
     if (typeof segment === 'number') {
-      id += `.${formatIndex(segment.toString(), { isFirst: false })}`
+      id += `.${formatIndex(segment, { isFirst: false })}`
       continue
     }
     // segment is a string, check if it's numeric
