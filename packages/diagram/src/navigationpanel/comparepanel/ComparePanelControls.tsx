@@ -7,6 +7,7 @@ import { IconChevronDown, IconX } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
 import { PanelActionIcon } from '../_common'
+import { CompareActionsMenu } from './CompareActionsMenu'
 import { LayoutTypeSwitcher } from './LayoutTypeSwitcher'
 
 const Divider = MantineDivider.withProps({
@@ -16,7 +17,7 @@ const Divider = MantineDivider.withProps({
 })
 
 export function ComparePanelControls() {
-  const [ctx, { toggleCompare, switchLayout }] = useDiagramCompareLayout()
+  const [ctx, { toggleCompare, switchLayout, resetManualLayout }] = useDiagramCompareLayout()
   return (
     <>
       <Box
@@ -30,11 +31,15 @@ export function ComparePanelControls() {
       <LayoutTypeSwitcher
         value={ctx.layout}
         onChange={switchLayout} />
-      <HStack gap={'0'}>
-        <Divider />
-        <CompareActionsMenu />
-        <Divider />
-      </HStack>
+      {ctx.isEditable && (
+        <HStack gap={'1'}>
+          <Divider />
+          <CompareActionsMenu
+            onResetManualLayout={resetManualLayout}
+          />
+          <Divider />
+        </HStack>
+      )}
 
       <PanelActionIcon
         size={'sm'}
@@ -45,46 +50,5 @@ export function ComparePanelControls() {
         <IconX />
       </PanelActionIcon>
     </>
-  )
-}
-
-const CompareActionsMenu = () => {
-  return (
-    <Menu
-      withinPortal={false} // if we render menu in portal, NavigationPanelDropdown receives onMouseLeave event
-      shadow="md"
-      position="bottom-start"
-      offset={{ mainAxis: 2 }}>
-      <Menu.Target>
-        <UnstyledButton
-          className={cx(
-            'mantine-active',
-            navigationPanelActionIcon({
-              variant: 'default',
-            }),
-            hstack({
-              gap: '2',
-              py: '1.5',
-              px: '2',
-              pl: '3',
-              lineHeight: '1',
-              rounded: 'sm',
-              textStyle: 'xs',
-              fontWeight: 'medium',
-              color: { base: 'likec4.panel.action', _hover: 'likec4.panel.action.hover' },
-              userSelect: 'none',
-            }),
-          )}
-        >
-          <Box>Actions</Box>
-          <IconChevronDown size={12} stroke={2} opacity={0.7} />
-        </UnstyledButton>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        <Menu.Item>Apply updates from latest</Menu.Item>
-        <Menu.Item>Reset layout to latest</Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
   )
 }

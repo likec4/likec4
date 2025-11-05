@@ -841,45 +841,6 @@ const disableCompareWithLatest = machine.createAction(
   }),
 )
 
-// Navigating to another view (after `navigateTo` event)
-const navigating = machine.createStateConfig({
-  id: 'navigating',
-  entry: [
-    'closeAllOverlays',
-    'closeSearch',
-    'stopSyncLayout',
-    cancel('fitDiagram'),
-    'trigger:NavigateTo',
-  ],
-  on: {
-    'update.view': {
-      actions: enqueueActions(({ enqueue, context, event }) => {
-        enqueue(disableCompareWithLatest)
-        const { fromNode, toNode } = findCorrespondingNode(context, event)
-        if (fromNode && toNode) {
-          enqueue({
-            type: 'xyflow:alignNodeFromToAfterNavigate',
-            params: {
-              fromNode: fromNode.id as NodeId,
-              toPosition: {
-                x: toNode.data.x,
-                y: toNode.data.y,
-              },
-            },
-          })
-        } else {
-          enqueue('xyflow:setViewportCenter')
-        }
-        enqueue.assign(updateNavigationHistory)
-        enqueue('update XYNodesEdges')
-        enqueue('startSyncLayout')
-        enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 25 })
-      }),
-      target: '#idle',
-    },
-  },
-})
-
 const onEdgeDoubleClick = machine.createAction(
   assign(({ context, event }) => {
     assertEvent(event, 'xyflow.edgeDoubleClick')
@@ -1061,6 +1022,45 @@ const updateView = machine.createAction(
     }
   }),
 )
+
+// Navigating to another view (after `navigateTo` event)
+const navigating = machine.createStateConfig({
+  id: 'navigating',
+  entry: [
+    'closeAllOverlays',
+    'closeSearch',
+    'stopSyncLayout',
+    cancel('fitDiagram'),
+    'trigger:NavigateTo',
+  ],
+  on: {
+    'update.view': {
+      actions: enqueueActions(({ enqueue, context, event }) => {
+        enqueue(disableCompareWithLatest)
+        const { fromNode, toNode } = findCorrespondingNode(context, event)
+        if (fromNode && toNode) {
+          enqueue({
+            type: 'xyflow:alignNodeFromToAfterNavigate',
+            params: {
+              fromNode: fromNode.id as NodeId,
+              toPosition: {
+                x: toNode.data.x,
+                y: toNode.data.y,
+              },
+            },
+          })
+        } else {
+          enqueue('xyflow:setViewportCenter')
+        }
+        enqueue.assign(updateNavigationHistory)
+        enqueue('update XYNodesEdges')
+        enqueue('startSyncLayout')
+        enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 25 })
+      }),
+      target: '#idle',
+    },
+  },
+})
 
 const _diagramMachine = machine.createMachine({
   initial: 'initializing',
@@ -1457,7 +1457,7 @@ const _diagramMachine = machine.createMachine({
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
             } else {
-              enqueue.raise({ type: 'fitDiagram' }, { delay: 10 })
+              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 10 })
             }
             // Disable parallel areas highlight
             if (context.dynamicViewVariant === 'sequence' && context.activeWalkthrough?.parallelPrefix) {

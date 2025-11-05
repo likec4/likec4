@@ -12,6 +12,7 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
   if (!context.features.enableCompareWithLatest || !drifts) {
     return ({
       isEnabled: false as const,
+      isEditable: false as const,
       isActive: false as const,
       drifts: [] as never[],
       layout: context.view._layout ?? 'auto',
@@ -20,6 +21,7 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
 
   return ({
     isEnabled: true as const,
+    isEditable: !context.features.enableReadOnly,
     isActive: context.toggledFeatures.enableCompareWithLatest === true,
     drifts,
     layout: context.view._layout ?? 'auto',
@@ -27,8 +29,17 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
 }
 type DiagramCompareLayoutState = ReturnType<typeof selectCompareLayoutState>
 type DiagramCompareLayoutOps = {
+  /**
+   * Toggles the compare mode on or off.
+   */
   toggleCompare: (force?: 'on' | 'off') => void
+  /**
+   * Switches the layout type between 'auto' and 'manual'.
+   */
   switchLayout: (layoutType: t.LayoutType) => void
+  /**
+   * Resets the manual layout to its default state.
+   */
   resetManualLayout: () => void
 }
 

@@ -69,9 +69,9 @@ const mapcolors = (colorkey: keyof MantineColors, prefix = colorkey) => {
     },
     ...mapToObj(range(0, 10), idx => [
       `${prefix}[${idx}]`,
-      // @ts-ignore
       {
         description: `Mantine color ${colorkey}.${idx}`,
+        // @ts-ignore
         value: color[idx],
       },
     ]),
