@@ -1,0 +1,33 @@
+# CodeRabbit Configuration
+# https://docs.coderabbit.ai/guides/configure-coderabbit
+
+# Enable reviews for all branches, not just default branch
+reviews:
+  # Enable auto reviews on all base branches
+  base_branches:
+    - main
+    - feat/alternate-parallel-full
+  
+  # Enable review status messages
+  review_status: true
+  
+  # Enable auto review on PR creation
+  auto_review:
+    enabled: true
+    
+  # Request changes workflow for PRs
+  request_changes_workflow: true
+  
+  # Review settings
+  profile: chill
+  
+# Language settings
+language: en-US
+
+# Ignore patterns
+ignore:
+  - "**/*.md"
+  - "**/*.lock"
+  - "**/package-lock.json"
+  - "**/pnpm-lock.yaml"
+  - "**/yarn.lock"
