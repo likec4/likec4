@@ -40,9 +40,10 @@ export async function viteDev({
     title,
   })
   const logger = config.customLogger
+  const preferredPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 5173
   const port = await getPort({
     port: [
-      5173,
+      preferredPort,
       ...portNumbers(61000, 61010),
       ...portNumbers(62002, 62010),
     ],
