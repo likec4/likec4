@@ -121,6 +121,8 @@ export function BaseXYFlow<
         panActivationKeyCode: null,
         selectionKeyCode: null,
       })}
+      snapGrid={[20, 20]}
+      snapToGrid={true}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
