@@ -1,6 +1,6 @@
 import type * as yargs from 'yargs'
 import { ensureReact } from '../ensure-react'
-import { base, listen, path, title, useDotBin, useHashHistory, webcomponentPrefix } from '../options'
+import { base, listen, path, port, title, useDotBin, useHashHistory, webcomponentPrefix } from '../options'
 import { handler } from './serve'
 
 const serveCmd = (yargs: yargs.Argv) => {
@@ -19,6 +19,7 @@ const serveCmd = (yargs: yargs.Argv) => {
           // .option('use-overview', useOverview)
           .option('use-dot', useDotBin)
           .option('listen', listen)
+          .option('port', port)
           .options({
             'react-hmr': {
               type: 'boolean',
@@ -42,6 +43,7 @@ const serveCmd = (yargs: yargs.Argv) => {
           title: args['title'],
           useHashHistory: args['use-hash-history'],
           listen: args['listen'],
+          port: args['port'],
           enableHMR: args['react-hmr'],
           enableWebcomponent: args['build-webcomponent'],
         })

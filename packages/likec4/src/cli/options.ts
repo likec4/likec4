@@ -88,6 +88,12 @@ export const listen = {
   nargs: 1,
 } as const satisfies Options
 
+export const port = {
+  type: 'number',
+  desc: 'port number for the dev server (default is 5173, or PORT environment variable)',
+  nargs: 1,
+} as const satisfies Options
+
 export const project = {
   alias: 'p',
   type: 'string',
