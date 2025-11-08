@@ -15,7 +15,7 @@ catalog:
   oxlint-tsgolint: ^0.2.1
   playwright: 1.56.1
   tsx: 4.20.6
-  turbo: 2.5.8
+  turbo: 2.6.0
   typescript: 5.9.3
   unbuild: 3.5.0
   vite-plugin-dts: 4.5.4
