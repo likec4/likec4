@@ -3,6 +3,7 @@ export {
   DefaultMap,
   DefaultWeakMap,
   LinkedList,
+  LRUMap,
   MultiMap,
   Queue,
   Stack,

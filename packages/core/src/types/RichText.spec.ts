@@ -27,8 +27,14 @@ describe('RichText', () => {
     })
 
     it('should return the same instance for same source input', () => {
-      const source = { txt: 'test' }
-      expect(RichText.from(source)).toBe(RichText.from(source))
+      const txt = { txt: 'text test' }
+      expect(RichText.from(txt)).toBe(RichText.from(txt))
+      expect(RichText.from(txt)).toBe(RichText.from(txt.txt))
+
+      const md = { md: 'md test' }
+      expect(RichText.from(md)).toBe(RichText.from(md))
+      // If source is a string, it should be a Text, not Markdown
+      expect(RichText.from(md)).not.toBe(RichText.from(md.md))
     })
 
     it('should create from plain string', () => {

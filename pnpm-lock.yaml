@@ -387,7 +387,7 @@ overrides:
 
 patchedDependencies:
   mnemonist@0.40.3:
-    hash: 5c12abb43fcff6fd81e53021b89075d53249640d165a2556cc1e58d71201a13a
+    hash: 70301b9c235e13bc146bb9528b7979c278952196d5dac8048ab3850adac8f4cf
     path: patches/mnemonist@0.40.3.patch
   xstate@5.24.0:
     hash: 3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c
@@ -957,7 +957,7 @@ importers:
         version: 4.0.0
       mnemonist:
         specifier: 0.40.3
-        version: 0.40.3(patch_hash=5c12abb43fcff6fd81e53021b89075d53249640d165a2556cc1e58d71201a13a)
+        version: 0.40.3(patch_hash=70301b9c235e13bc146bb9528b7979c278952196d5dac8048ab3850adac8f4cf)
       natural-compare-lite:
         specifier: catalog:utils
         version: 1.4.0
@@ -14533,7 +14533,7 @@ snapshots:
     dependencies:
       graphology-types: 0.24.8
       graphology-utils: 2.5.2(graphology-types@0.24.8)
-      mnemonist: 0.40.3(patch_hash=5c12abb43fcff6fd81e53021b89075d53249640d165a2556cc1e58d71201a13a)
+      mnemonist: 0.40.3(patch_hash=70301b9c235e13bc146bb9528b7979c278952196d5dac8048ab3850adac8f4cf)
 
   graphology-types@0.24.8: {}
 
@@ -15955,7 +15955,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
-  mnemonist@0.40.3(patch_hash=5c12abb43fcff6fd81e53021b89075d53249640d165a2556cc1e58d71201a13a):
+  mnemonist@0.40.3(patch_hash=70301b9c235e13bc146bb9528b7979c278952196d5dac8048ab3850adac8f4cf):
     dependencies:
       obliterator: 2.0.5
 

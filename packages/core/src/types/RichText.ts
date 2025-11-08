@@ -1,10 +1,15 @@
 import { markdownToHtml, markdownToText, memoizeProp, nonexhaustive } from '../utils'
+import { LRUMap } from '../utils/mnemonist'
 import type { MarkdownOrString } from './scalar'
 
 const symb_text = Symbol.for('text')
 const symb_html = Symbol.for('html')
 
 const emptyTxt = ''
+
+// Keep 500 last converted markdown/html texts in memory
+const mdcache = new LRUMap<string, RichTextOrEmpty>(500)
+const txtcache = new LRUMap<string, RichTextOrEmpty>(500)
 
 export interface RichTextEmpty {
   readonly isEmpty: true
@@ -36,7 +41,31 @@ export type RichTextOrEmpty = RichTextNonEmpty | RichTextEmpty
  * It is used to represent the content of a node or a link.
  */
 export class RichText {
-  private static _cache = new WeakMap<MarkdownOrString, RichTextOrEmpty>()
+  private static getOrCreateFromText(txt: string): RichTextOrEmpty {
+    if (txt.trim() === emptyTxt) {
+      return RichText.EMPTY
+    }
+    let cached = txtcache.get(txt)
+    if (cached) {
+      return cached
+    }
+    cached = new RichText({ txt }) as RichTextOrEmpty
+    txtcache.set(txt, cached)
+    return cached
+  }
+
+  private static getOrCreateFromMarkdown(md: string): RichTextOrEmpty {
+    if (md.trim() === emptyTxt) {
+      return RichText.EMPTY
+    }
+    let cached = mdcache.get(md)
+    if (cached) {
+      return cached
+    }
+    cached = new RichText({ md }) as RichTextOrEmpty
+    mdcache.set(md, cached)
+    return cached
+  }
 
   /**
    * Creates and memoizes a RichText instance.
@@ -62,28 +91,15 @@ export class RichText {
       return source as RichTextOrEmpty
     }
     if (typeof source === 'string') {
-      if (source.trim() === emptyTxt) {
-        return RichText.EMPTY
-      }
-      return new RichText({ txt: source }) as RichTextOrEmpty
+      return this.getOrCreateFromText(source)
     }
     if ('isEmpty' in source && source.isEmpty) {
       return RichText.EMPTY
     }
-    if ('md' in source && source.md.trim() === emptyTxt) {
-      return RichText.EMPTY
+    if ('md' in source) {
+      return this.getOrCreateFromMarkdown(source.md)
     }
-    if ('txt' in source && source.txt.trim() === emptyTxt) {
-      return RichText.EMPTY
-    }
-    const _source = source as MarkdownOrString
-    const cached = RichText._cache.get(_source)
-    if (cached) {
-      return cached
-    }
-    const rt = new RichText(_source) as RichTextOrEmpty
-    RichText._cache.set(_source, rt)
-    return rt
+    return this.getOrCreateFromText(source.txt)
   }
 
   /**

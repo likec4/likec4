@@ -15,10 +15,10 @@ index d8476ff177b9d4bc00cb4c71680b49d55eb660c8..bc7d7fcf4c28f62dc2900575da1d7030
        "require": "./*.js"
 diff --git a/patch.d.ts b/patch.d.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..528fa590f84dba5f0c11ed6ec8a812366808eab5
+index 0000000000000000000000000000000000000000..7cd77243366021196db38eda2a54de5993173734
 --- /dev/null
 +++ b/patch.d.ts
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,15 @@
 +export { default as DefaultMap } from './default-map';
 +export { default as DefaultWeakMap } from './default-weak-map';
 +export { default as LinkedList } from './linked-list';
@@ -26,6 +26,8 @@ index 0000000000000000000000000000000000000000..528fa590f84dba5f0c11ed6ec8a81236
 +export { default as MultiMap } from './multi-map';
 +export { default as Stack } from './stack';
 +export { default as BiMap } from './bi-map';
++export { default as LRUMap } from './lru-map';
++export { default as LRUMapWithDelete } from './lru-map-with-delete';
 +
 +export {
 +  intersection,
@@ -34,16 +36,18 @@ index 0000000000000000000000000000000000000000..528fa590f84dba5f0c11ed6ec8a81236
 +} from './set';
 diff --git a/patch.mjs b/patch.mjs
 new file mode 100644
-index 0000000000000000000000000000000000000000..400df2939cbb345087492997d335c26a20714f55
+index 0000000000000000000000000000000000000000..e2f29692d111e5ecc20491ff38e5011d54fb39b3
 --- /dev/null
 +++ b/patch.mjs
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,14 @@
 +export { default as BiMap } from './bi-map.js';
 +export { default as DefaultMap } from './default-map.js';
 +export { default as DefaultWeakMap } from './default-weak-map.js';
 +export { default as LinkedList } from './linked-list.js';
 +export { default as MultiMap } from './multi-map.js';
 +export { default as Queue } from './queue.js';
++export { default as LRUMap } from './lru-map.js';
++export { default as LRUMapWithDelete } from './lru-map-with-delete.js';
 +export {
 +  intersection,
 +  symmetricDifference,
