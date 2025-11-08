@@ -1,4 +1,5 @@
 import { type NonEmptyArray, DefaultMap, nonNullable } from '@likec4/core'
+import { isome } from '@likec4/core/utils'
 import type {
   EdgeReplaceChange,
   InternalNode as RFInternalNode,
@@ -69,6 +70,10 @@ abstract class Rect {
       x: this.positionAbsolute.x - this.initialX,
       y: this.positionAbsolute.y - this.initialY,
     }
+  }
+
+  get isMoved(): boolean {
+    return this.diff.x !== 0 || this.diff.y !== 0
   }
 
   // Position relative to parent
@@ -477,12 +482,9 @@ export function useLayoutConstraints(): LayoutConstraints {
   const diagram = useDiagram()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>(undefined)
   return useMemo((): LayoutConstraints => {
-    let wasPending = false
-    const initial = { x: 0, y: 0 }
-    let moved = false
     return ({
       onNodeDragStart: (_event, xynode) => {
-        wasPending = diagram.cancelSaveManualLayout()
+        diagram.startEditing()
         const { nodeLookup } = xystore.getState()
         const draggingNodes = pipe(
           Array.from(nodeLookup.values()),
@@ -491,20 +493,13 @@ export function useLayoutConstraints(): LayoutConstraints {
         if (hasAtLeast(draggingNodes, 1)) {
           solverRef.current = createLayoutConstraints(xystore, map(draggingNodes, x => x.id))
         }
-        initial.x = _event.clientX
-        initial.y = _event.clientY
-        moved = false
       },
       onNodeDrag: (_event) => {
-        moved = moved || Math.abs(_event.clientX - initial.x) > 4 || Math.abs(_event.clientY - initial.y) > 4
-        if (moved) {
-          solverRef.current?.onMove()
-        }
+        solverRef.current?.onMove()
       },
       onNodeDragStop: (_event) => {
-        if (wasPending || moved) {
-          diagram.scheduleSaveManualLayout()
-        }
+        const moved = solverRef.current ? isome(solverRef.current.rects.values(), r => r.isMoved) : false
+        diagram.stopEditing(moved)
         solverRef.current = undefined
       },
     })

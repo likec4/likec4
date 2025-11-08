@@ -1,0 +1,110 @@
+diff --git a/dist/declarations/src/actions/enqueueActions.d.ts b/dist/declarations/src/actions/enqueueActions.d.ts
+index f71c746dcd32891f5410e478417cae305ac74daf..a20aa7930aa8d58ec35a105b33e983bd6ab74461 100644
+--- a/dist/declarations/src/actions/enqueueActions.d.ts
++++ b/dist/declarations/src/actions/enqueueActions.d.ts
+@@ -26,11 +26,11 @@ export interface EnqueueActionsAction<TContext extends MachineContext, TExpressi
+     _out_TGuard?: TGuard;
+     _out_TDelay?: TDelay;
+ }
+-interface CollectActionsArg<TContext extends MachineContext, TExpressionEvent extends EventObject, TEvent extends EventObject, TActor extends ProvidedActor, TAction extends ParameterizedObject, TGuard extends ParameterizedObject, TDelay extends string, TEmitted extends EventObject> extends UnifiedArg<TContext, TExpressionEvent, TEvent> {
++export interface CollectActionsArg<TContext extends MachineContext, TExpressionEvent extends EventObject, TEvent extends EventObject, TActor extends ProvidedActor, TAction extends ParameterizedObject, TGuard extends ParameterizedObject, TDelay extends string, TEmitted extends EventObject> extends UnifiedArg<TContext, TExpressionEvent, TEvent> {
+     check: (guard: Guard<TContext, TExpressionEvent, undefined, TGuard>) => boolean;
+     enqueue: ActionEnqueuer<TContext, TExpressionEvent, TEvent, TActor, TAction, TGuard, TDelay, TEmitted>;
+ }
+-type CollectActions<TContext extends MachineContext, TExpressionEvent extends EventObject, TParams extends ParameterizedObject['params'] | undefined, TEvent extends EventObject, TActor extends ProvidedActor, TAction extends ParameterizedObject, TGuard extends ParameterizedObject, TDelay extends string, TEmitted extends EventObject> = ({ context, event, check, enqueue, self }: CollectActionsArg<TContext, TExpressionEvent, TEvent, TActor, TAction, TGuard, TDelay, TEmitted>, params: TParams) => void;
++export type CollectActions<TContext extends MachineContext, TExpressionEvent extends EventObject, TParams extends ParameterizedObject['params'] | undefined, TEvent extends EventObject, TActor extends ProvidedActor, TAction extends ParameterizedObject, TGuard extends ParameterizedObject, TDelay extends string, TEmitted extends EventObject> = ({ context, event, check, enqueue, self }: CollectActionsArg<TContext, TExpressionEvent, TEvent, TActor, TAction, TGuard, TDelay, TEmitted>, params: TParams) => void;
+ /**
+  * Creates an action object that will execute actions that are queued by the
+  * `enqueue(action)` function.
+diff --git a/dist/declarations/src/actions/spawnChild.d.ts b/dist/declarations/src/actions/spawnChild.d.ts
+index a232199191d84d09c1aa21b91d64d122ac507862..f7395ccc0b340ea55d1378fd3bc6e9eadfabb441 100644
+--- a/dist/declarations/src/actions/spawnChild.d.ts
++++ b/dist/declarations/src/actions/spawnChild.d.ts
+@@ -4,7 +4,7 @@ export interface SpawnAction<TContext extends MachineContext, TExpressionEvent e
+     (args: ActionArgs<TContext, TExpressionEvent, TEvent>, params: TParams): void;
+     _out_TActor?: TActor;
+ }
+-interface SpawnActionOptions<TContext extends MachineContext, TExpressionEvent extends EventObject, TEvent extends EventObject, TActor extends ProvidedActor> {
++export interface SpawnActionOptions<TContext extends MachineContext, TExpressionEvent extends EventObject, TEvent extends EventObject, TActor extends ProvidedActor> {
+     id?: ResolvableActorId<TContext, TExpressionEvent, TEvent, TActor['id']>;
+     systemId?: string;
+     input?: Mapper<TContext, TEvent, InputFrom<TActor['logic']>, TEvent> | InputFrom<TActor['logic']>;
+diff --git a/dist/declarations/src/actions.d.ts b/dist/declarations/src/actions.d.ts
+index e14c4c2fc0cbd97efa30a2958c44dcb300265ccd..3dd10c6bc03eaf310cd38b011ed49e9b5ec3403b 100644
+--- a/dist/declarations/src/actions.d.ts
++++ b/dist/declarations/src/actions.d.ts
+@@ -1,9 +1,9 @@
+ export { assign, type AssignAction, type AssignArgs } from "./actions/assign.js";
+ export { cancel, type CancelAction } from "./actions/cancel.js";
+ export { emit, type EmitAction } from "./actions/emit.js";
+-export { enqueueActions, type EnqueueActionsAction } from "./actions/enqueueActions.js";
++export { enqueueActions, type EnqueueActionsAction, type CollectActionsArg, type CollectActions } from "./actions/enqueueActions.js";
+ export { log, type LogAction } from "./actions/log.js";
+ export { raise, type RaiseAction } from "./actions/raise.js";
+ export { forwardTo, sendParent, sendTo, type SendToAction } from "./actions/send.js";
+-export { spawnChild, type SpawnAction } from "./actions/spawnChild.js";
++export { spawnChild, type SpawnAction, type SpawnActionOptions } from "./actions/spawnChild.js";
+ export { stop, stopChild, type StopAction } from "./actions/stopChild.js";
+diff --git a/dist/declarations/src/guards.d.ts b/dist/declarations/src/guards.d.ts
+index 70320cccf31a1b3ecaa2167449a618303eeaeca7..6e2e9413705a29b042cb1ff717d20163dfa71294 100644
+--- a/dist/declarations/src/guards.d.ts
++++ b/dist/declarations/src/guards.d.ts
+@@ -1,8 +1,8 @@
+ import type { EventObject, StateValue, MachineContext, ParameterizedObject, AnyMachineSnapshot, NoRequiredParams, WithDynamicParams, Identity, Elements, DoNotInfer } from "./types.js";
+-type SingleGuardArg<TContext extends MachineContext, TExpressionEvent extends EventObject, TParams extends ParameterizedObject['params'] | undefined, TGuardArg> = [TGuardArg] extends [{
++export type SingleGuardArg<TContext extends MachineContext, TExpressionEvent extends EventObject, TParams extends ParameterizedObject['params'] | undefined, TGuardArg> = [TGuardArg] extends [{
+     type: string;
+ }] ? Identity<TGuardArg> : [TGuardArg] extends [string] ? TGuardArg : GuardPredicate<TContext, TExpressionEvent, TParams, ParameterizedObject>;
+-type NormalizeGuardArg<TGuardArg> = TGuardArg extends {
++export type NormalizeGuardArg<TGuardArg> = TGuardArg extends {
+     type: string;
+ } ? Identity<TGuardArg> & {
+     params: unknown;
+@@ -10,7 +10,7 @@ type NormalizeGuardArg<TGuardArg> = TGuardArg extends {
+     type: TGuardArg;
+     params: undefined;
+ } : '_out_TGuard' extends keyof TGuardArg ? TGuardArg['_out_TGuard'] & ParameterizedObject : never;
+-type NormalizeGuardArgArray<TArg extends unknown[]> = Elements<{
++export type NormalizeGuardArgArray<TArg extends unknown[]> = Elements<{
+     [K in keyof TArg]: NormalizeGuardArg<TArg[K]>;
+ }>;
+ export type GuardPredicate<TContext extends MachineContext, TExpressionEvent extends EventObject, TParams extends ParameterizedObject['params'] | undefined, TGuard extends ParameterizedObject> = {
+@@ -23,8 +23,8 @@ export interface GuardArgs<TContext extends MachineContext, TExpressionEvent ext
+ }
+ export type Guard<TContext extends MachineContext, TExpressionEvent extends EventObject, TParams extends ParameterizedObject['params'] | undefined, TGuard extends ParameterizedObject> = NoRequiredParams<TGuard> | WithDynamicParams<TContext, TExpressionEvent, TGuard> | GuardPredicate<TContext, TExpressionEvent, TParams, TGuard>;
+ export type UnknownGuard = UnknownReferencedGuard | UnknownInlineGuard;
+-type UnknownReferencedGuard = Guard<MachineContext, EventObject, ParameterizedObject['params'], ParameterizedObject>;
+-type UnknownInlineGuard = Guard<MachineContext, EventObject, undefined, ParameterizedObject>;
++export type UnknownReferencedGuard = Guard<MachineContext, EventObject, ParameterizedObject['params'], ParameterizedObject>;
++export type UnknownInlineGuard = Guard<MachineContext, EventObject, undefined, ParameterizedObject>;
+ export declare function stateIn<TContext extends MachineContext, TExpressionEvent extends EventObject, TParams extends ParameterizedObject['params'] | undefined>(stateValue: StateValue): GuardPredicate<TContext, TExpressionEvent, TParams, any>;
+ /**
+  * Higher-order guard that evaluates to `true` if the `guard` passed to it
+diff --git a/dist/declarations/src/index.d.ts b/dist/declarations/src/index.d.ts
+index 3e765a369cc45ce4a89da631e97a8ae58ebec2a0..5939026a6c09e633ae72d0d36369fbf946d78476 100644
+--- a/dist/declarations/src/index.d.ts
++++ b/dist/declarations/src/index.d.ts
+@@ -5,8 +5,9 @@ export { Actor, createActor, interpret, type Interpreter, type RequiredActorOpti
+ export { createMachine } from "./createMachine.js";
+ export { getInitialSnapshot, getNextSnapshot } from "./getNextSnapshot.js";
+ export { and, not, or, stateIn } from "./guards.js";
++export type  { Guard, GuardArgs, GuardPredicate, NormalizeGuardArg } from "./guards.js";
+ export type { InspectedActionEvent, InspectedActorEvent, InspectedEventEvent, InspectedMicrostepEvent, InspectedSnapshotEvent, InspectionEvent } from "./inspection.js";
+-export { setup } from "./setup.js";
++export { setup, type SetupReturn } from "./setup.js";
+ export { SimulatedClock } from "./SimulatedClock.js";
+ export { type Spawner } from "./spawn.js";
+ export { isMachineSnapshot, type MachineSnapshot } from "./State.js";
+diff --git a/dist/declarations/src/setup.d.ts b/dist/declarations/src/setup.d.ts
+index f915e9b7c41039884c965016bd90f06664c730c5..d476725e1b7d8bdd4087ab9047b8b3bd83207d10 100644
+--- a/dist/declarations/src/setup.d.ts
++++ b/dist/declarations/src/setup.d.ts
+@@ -24,7 +24,7 @@ type ToProvidedActor<TChildrenMap extends Record<string, string>, TActors extend
+     };
+ }>;
+ type RequiredSetupKeys<TChildrenMap> = IsNever<keyof TChildrenMap> extends true ? never : 'actors';
+-type SetupReturn<TContext extends MachineContext, TEvent extends AnyEventObject, TActors extends Record<string, UnknownActorLogic>, TChildrenMap extends Record<string, string>, TActions extends Record<string, ParameterizedObject['params'] | undefined>, TGuards extends Record<string, ParameterizedObject['params'] | undefined>, TDelay extends string, TTag extends string, TInput, TOutput extends NonReducibleUnknown, TEmitted extends EventObject, TMeta extends MetaObject> = {
++export type SetupReturn<TContext extends MachineContext, TEvent extends AnyEventObject, TActors extends Record<string, UnknownActorLogic>, TChildrenMap extends Record<string, string>, TActions extends Record<string, ParameterizedObject['params'] | undefined>, TGuards extends Record<string, ParameterizedObject['params'] | undefined>, TDelay extends string, TTag extends string, TInput, TOutput extends NonReducibleUnknown, TEmitted extends EventObject, TMeta extends MetaObject> = {
+     extend: <TExtendActions extends Record<string, ParameterizedObject['params'] | undefined> = {}, TExtendGuards extends Record<string, ParameterizedObject['params'] | undefined> = {}, TExtendDelays extends string = never>({ actions, guards, delays }: {
+         actions?: {
+             [K in keyof TExtendActions]: ActionFunction<TContext, TEvent, TEvent, TExtendActions[K], ToProvidedActor<TChildrenMap, TActors>, ToParameterizedObject<TActions & TExtendActions>, ToParameterizedObject<TGuards & TExtendGuards>, TDelay | TExtendDelays, TEmitted>;

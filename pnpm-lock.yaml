@@ -349,11 +349,11 @@ catalogs:
       version: 9.2.0
   xstate:
     '@xstate/react':
-      specifier: ^6.0.0
+      specifier: 6.0.0
       version: 6.0.0
     xstate:
-      specifier: ^5.23.0
-      version: 5.23.0
+      specifier: 5.24.0
+      version: 5.24.0
   xyflow:
     '@xyflow/react':
       specifier: 12.9.0
@@ -389,6 +389,9 @@ patchedDependencies:
   mnemonist@0.40.3:
     hash: 5c12abb43fcff6fd81e53021b89075d53249640d165a2556cc1e58d71201a13a
     path: patches/mnemonist@0.40.3.patch
+  xstate@5.24.0:
+    hash: 3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c
+    path: patches/xstate@5.24.0.patch
 
 importers:
 
@@ -618,7 +621,7 @@ importers:
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@statelyai/inspect':
         specifier: ^0.4.0
-        version: 0.4.0(ws@8.18.1)(xstate@5.23.0)
+        version: 0.4.0(ws@8.18.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.35.0(react@19.1.1)
@@ -648,7 +651,7 @@ importers:
         version: 5.0.4(vite@7.1.11(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.0.0(@types/react@19.1.16)(react@19.1.1)(xstate@5.23.0)
+        version: 6.0.0(@types/react@19.1.16)(react@19.1.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.9.0(@types/react@19.1.16)(immer@10.1.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -774,7 +777,7 @@ importers:
         version: 4.35.0
       xstate:
         specifier: catalog:xstate
-        version: 5.23.0
+        version: 5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c)
       zod:
         specifier: catalog:utils
         version: 3.25.76
@@ -1038,7 +1041,7 @@ importers:
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.0.0(@types/react@19.1.16)(react@19.1.1)(xstate@5.23.0)
+        version: 6.0.0(@types/react@19.1.16)(react@19.1.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.9.0(@types/react@19.1.16)(immer@10.1.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -1080,7 +1083,7 @@ importers:
         version: 4.41.0
       xstate:
         specifier: catalog:xstate
-        version: 5.23.0
+        version: 5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c)
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1093,7 +1096,7 @@ importers:
         version: 1.4.3(typescript@5.9.3)
       '@statelyai/inspect':
         specifier: ^0.4.0
-        version: 0.4.0(ws@8.18.1)(xstate@5.23.0)
+        version: 0.4.0(ws@8.18.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.35.0(react@19.1.1)
@@ -9508,8 +9511,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  xstate@5.23.0:
-    resolution: {integrity: sha512-jo126xWXkU6ySQ91n51+H2xcgnMuZcCQpQoD3FQ79d32a6RQvryRh8rrDHnH4WDdN/yg5xNjlIRol9ispMvzeg==}
+  xstate@5.24.0:
+    resolution: {integrity: sha512-h/213ThFfZbOefUWrLc9ZvYggEVBr0jrD2dNxErxNMLQfZRN19v+80TaXFho17hs8Q2E1mULtm/6nv12um0C4A==}
 
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
@@ -12204,7 +12207,7 @@ snapshots:
 
   '@speed-highlight/core@1.2.7': {}
 
-  '@statelyai/inspect@0.4.0(ws@8.18.1)(xstate@5.23.0)':
+  '@statelyai/inspect@0.4.0(ws@8.18.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))':
     dependencies:
       fast-safe-stringify: 2.1.1
       isomorphic-ws: 5.0.0(ws@8.18.1)
@@ -12212,7 +12215,7 @@ snapshots:
       safe-stable-stringify: 2.5.0
       superjson: 1.13.3
       uuid: 9.0.1
-      xstate: 5.23.0
+      xstate: 5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c)
     transitivePeerDependencies:
       - ws
 
@@ -12793,13 +12796,13 @@ snapshots:
 
   '@webgpu/types@0.1.21': {}
 
-  '@xstate/react@6.0.0(@types/react@19.1.16)(react@19.1.1)(xstate@5.23.0)':
+  '@xstate/react@6.0.0(@types/react@19.1.16)(react@19.1.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))':
     dependencies:
       react: 19.1.1
       use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.16)(react@19.1.1)
       use-sync-external-store: 1.5.0(react@19.1.1)
     optionalDependencies:
-      xstate: 5.23.0
+      xstate: 5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -18633,7 +18636,7 @@ snapshots:
 
   ws@8.18.1: {}
 
-  xstate@5.23.0: {}
+  xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c): {}
 
   xtend@4.0.2: {}
 

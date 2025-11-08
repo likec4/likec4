@@ -27,7 +27,8 @@ export const SearchControl = memo(() => {
           layout="position"
           onClick={e => {
             e.stopPropagation()
-            diagram.openSearch()
+            diagram.actor.send({ type: 'saveManualLayout.undo' })
+            // diazgram.openSearch()
           }}
           whileTap={{
             scale: 0.95,

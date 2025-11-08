@@ -39,6 +39,7 @@ import {
   cancel,
   emit,
   enqueueActions,
+  forwardTo,
   or,
   raise,
   sendTo,
@@ -182,10 +183,12 @@ export type Events =
   | { type: 'layout.resetEdgeControlPoints' }
   | { type: 'layout.resetManualLayout' }
   | { type: 'saveManualLayout.schedule' }
-  // | { type: 'saveManualLayout.force' }
   | { type: 'saveManualLayout.pause' }
   | { type: 'saveManualLayout.resume' }
+  | { type: 'saveManualLayout.undo' }
   | { type: 'saveManualLayout.cancel' }
+  | { type: 'editing.start' }
+  | { type: 'editing.stop'; wasChanged?: boolean }
   | { type: 'focus.node'; nodeId: NodeId }
   | { type: 'switch.dynamicViewVariant'; variant: DynamicViewDisplayVariant }
   | { type: 'walkthrough.start'; stepId?: StepEdgeId }
@@ -528,35 +531,59 @@ const machine = setup({
       })
     }),
 
-    'delegate to syncLayoutActor': enqueueActions(({ system, enqueue, event }) => {
-      const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-      if (!syncLayoutActor) {
-        console.warn('syncLayoutActor is not running')
-        return
-      }
-      switch (event.type) {
-        case 'saveManualLayout.schedule': {
-          enqueue.sendTo(syncLayoutActor, { type: 'sync' })
-          break
-        }
-        case 'saveManualLayout.pause': {
-          enqueue.sendTo(syncLayoutActor, { type: 'pause' })
-          break
-        }
-        case 'saveManualLayout.resume': {
-          enqueue.sendTo(syncLayoutActor, { type: 'resume' })
-          break
-        }
-        case 'saveManualLayout.cancel': {
-          enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
-          break
-        }
-        default: {
-          console.warn(`Unexpected event type: ${event.type} in action 'delegate to syncLayoutActor'`)
-          break
-        }
-      }
-    }),
+    // 'delegate to syncLayoutActor': enqueueActions(({ system, enqueue, event }) => {
+    //   const syncLayoutActor = typedSystem(system).syncLayoutActorRef
+    //   if (!syncLayoutActor) {
+    //     console.warn('syncLayoutActor is not running')
+    //     return
+    //   }
+    //   assertEvent(event, [
+    //     'editing.start',
+    //     'editing.stop',
+    //     'saveManualLayout.cancel',
+    //     'saveManualLayout.schedule',
+    //     'saveManualLayout.pause',
+    //     'saveManualLayout.resume',
+    //     'saveManualLayout.undo',
+    //   ])
+    //   switch (event.type) {
+    //     case 'saveManualLayout.schedule': {
+    //       enqueue.sendTo(syncLayoutActor, { type: 'sync' })
+    //       break
+    //     }
+    //     case 'saveManualLayout.pause': {
+    //       enqueue.sendTo(syncLayoutActor, { type: 'pause' })
+    //       break
+    //     }
+    //     case 'saveManualLayout.resume': {
+    //       enqueue.sendTo(syncLayoutActor, { type: 'resume' })
+    //       break
+    //     }
+    //     case 'saveManualLayout.cancel': {
+    //       enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
+    //       break
+    //     }
+    //     case 'saveManualLayout.undo': {
+    //       enqueue.sendTo(syncLayoutActor, { type: 'undo' })
+    //       break
+    //     }
+    //     case 'editing.start': {
+    //       enqueue.sendTo(syncLayoutActor, { type: 'snapshot' })
+    //       enqueue
+    //         .break
+    //     }
+    //     case 'editing.stop': {
+    //       if (event.wasChanged) {
+    //         enqueue.sendTo(syncLayoutActor, { type: 'sync' })
+    //       } else {
+    //         enqueue.sendTo(syncLayoutActor, { type: 'resume' })
+    //       }
+    //       break
+    //     }
+    //     default:
+    //       nonexhaustive(event)
+    //   }
+    // }),
 
     'onNodeMouseEnter': assign(({ context }, params: { node: Types.Node }) => {
       return {
@@ -828,114 +855,106 @@ const initializing = machine.createStateConfig({
   },
 })
 
-const disableCompareWithLatest = machine.createAction(
-  assign(({ context }) => {
-    return {
-      toggledFeatures: {
-        ...context.toggledFeatures,
-        enableCompareWithLatest: false,
-      },
-      viewportOnAutoLayout: null,
-      viewportOnManualLayout: null,
-    }
-  }),
-)
+const disableCompareWithLatest = machine.assign(({ context }) => {
+  return {
+    toggledFeatures: {
+      ...context.toggledFeatures,
+      enableCompareWithLatest: false,
+    },
+    viewportOnAutoLayout: null,
+    viewportOnManualLayout: null,
+  }
+})
 
-const onEdgeDoubleClick = machine.createAction(
-  assign(({ context, event }) => {
-    assertEvent(event, 'xyflow.edgeDoubleClick')
-    if (!event.edge.data.controlPoints) {
-      return {}
-    }
-    const { nodeLookup } = context.xystore.getState()
-    return {
-      xyedges: context.xyedges.map(e => {
-        if (e.id === event.edge.id) {
-          return produce(e, draft => {
-            const cp = resetEdgeControlPoints(nodeLookup, e)
-            draft.data.controlPoints = cp
-            if (hasAtLeast(cp, 1) && draft.data.labelBBox) {
-              draft.data.labelBBox.x = cp[0].x
-              draft.data.labelBBox.y = cp[0].y
-              draft.data.labelXY = cp[0]
-            }
-          })
-        }
-        return e
-      }),
-    }
-  }),
-)
-
-const emitOnChange = machine.createAction(
-  enqueueActions(({ event, enqueue }) => {
-    assertEvent(event, 'emit.onChange')
-    enqueue.assign({
-      viewportChangedManually: true,
-    })
-    enqueue.emit({
-      type: 'onChange',
-      change: event.change,
-    })
-  }),
-)
-
-const emitOnLayoutTypeChange = machine.createAction(
-  enqueueActions(({ event, system, context, enqueue }) => {
-    if (!context.features.enableCompareWithLatest) {
-      console.warn('Layout type cannot be changed while CompareWithLatest feature is disabled')
-      return
-    }
-    const currentLayoutType = context.view._layout
-    // toggle
-    let nextLayoutType: LayoutType = currentLayoutType === 'auto' ? 'manual' : 'auto'
-
-    if (event.type === 'emit.onLayoutTypeChange') {
-      nextLayoutType = event.layoutType
-    }
-
-    if (currentLayoutType === nextLayoutType) {
-      console.warn('Ignoring layout type change event, layout type is already', currentLayoutType)
-      return
-    }
-
-    if (context.toggledFeatures.enableCompareWithLatest === true) {
-      // Check if we are switching from manual to auto layout while a sync is pending
-      if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
-        const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-        const syncState = syncLayoutActor?.getSnapshot().value
-        const isPending = syncLayoutActor && (syncState === 'pending' || syncState === 'paused')
-        if (isPending) {
-          enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
-          enqueue.emit({
-            type: 'onChange',
-            change: createViewChange(context),
-          })
-        }
-      }
-
-      const currentViewport = context.viewport
-      if (currentLayoutType === 'auto') {
-        enqueue.assign({
-          viewportOnAutoLayout: currentViewport,
+const onEdgeDoubleClick = machine.assign(({ context, event }) => {
+  assertEvent(event, 'xyflow.edgeDoubleClick')
+  if (!event.edge.data.controlPoints) {
+    return {}
+  }
+  const { nodeLookup } = context.xystore.getState()
+  return {
+    xyedges: context.xyedges.map(e => {
+      if (e.id === event.edge.id) {
+        return produce(e, draft => {
+          const cp = resetEdgeControlPoints(nodeLookup, e)
+          draft.data.controlPoints = cp
+          if (hasAtLeast(cp, 1) && draft.data.labelBBox) {
+            draft.data.labelBBox.x = cp[0].x
+            draft.data.labelBBox.y = cp[0].y
+            draft.data.labelXY = cp[0]
+          }
         })
       }
-      if (currentLayoutType === 'manual') {
-        enqueue.assign({
-          viewportOnManualLayout: currentViewport,
+      return e
+    }),
+  }
+})
+
+const emitOnChange = machine.enqueueActions(({ event, enqueue }) => {
+  assertEvent(event, 'emit.onChange')
+  enqueue.assign({
+    viewportChangedManually: true,
+  })
+  enqueue.emit({
+    type: 'onChange',
+    change: event.change,
+  })
+})
+
+const emitOnLayoutTypeChange = machine.enqueueActions(({ event, system, context, enqueue }) => {
+  if (!context.features.enableCompareWithLatest) {
+    console.warn('Layout type cannot be changed while CompareWithLatest feature is disabled')
+    return
+  }
+  const currentLayoutType = context.view._layout
+  // toggle
+  let nextLayoutType: LayoutType = currentLayoutType === 'auto' ? 'manual' : 'auto'
+
+  if (event.type === 'emit.onLayoutTypeChange') {
+    nextLayoutType = event.layoutType
+  }
+
+  if (currentLayoutType === nextLayoutType) {
+    console.warn('Ignoring layout type change event, layout type is already', currentLayoutType)
+    return
+  }
+
+  if (context.toggledFeatures.enableCompareWithLatest === true) {
+    // Check if we are switching from manual to auto layout while a sync is pending
+    if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
+      const syncLayoutActor = typedSystem(system).syncLayoutActorRef
+      const syncState = syncLayoutActor?.getSnapshot().value
+      const isPending = syncLayoutActor && (syncState === 'pending' || syncState === 'paused')
+      if (isPending) {
+        enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
+        enqueue.emit({
+          type: 'onChange',
+          change: createViewChange(context),
         })
       }
     }
 
-    enqueue.emit({
-      type: 'onLayoutTypeChange',
-      layoutType: nextLayoutType,
-    })
-  }),
-)
+    const currentViewport = context.viewport
+    if (currentLayoutType === 'auto') {
+      enqueue.assign({
+        viewportOnAutoLayout: currentViewport,
+      })
+    }
+    if (currentLayoutType === 'manual') {
+      enqueue.assign({
+        viewportOnManualLayout: currentViewport,
+      })
+    }
+  }
 
-const updateView = machine.createAction(
-  enqueueActions(({ enqueue, event, check, context, system }) => {
+  enqueue.emit({
+    type: 'onLayoutTypeChange',
+    layoutType: nextLayoutType,
+  })
+})
+
+const updateView = machine.enqueueActions(
+  ({ enqueue, event, check, context, system }) => {
     assertEvent(event, 'update.view')
     const isAnotherView = check('is another view')
     enqueue.cancel('fitDiagram')
@@ -970,7 +989,7 @@ const updateView = machine.createAction(
     }
 
     enqueue('update XYNodesEdges')
-    enqueue.sendTo(typedSystem(system).syncLayoutActorRef!, { type: 'synced', viewId: event.view.id })
+    enqueue.sendTo(typedSystem(system).syncLayoutActorRef!, { type: 'synced' }, { delay: 50 })
 
     const nextView = event.view
 
@@ -1020,7 +1039,7 @@ const updateView = machine.createAction(
       })
       enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
     }
-  }),
+  },
 )
 
 // Navigating to another view (after `navigateTo` event)
@@ -1261,8 +1280,13 @@ const _diagramMachine = machine.createMachine({
         'tag.unhighlight': {
           actions: 'undim everything',
         },
-        'saveManualLayout.*': {
-          actions: 'delegate to syncLayoutActor',
+        // 'saveManualLayout.*': {
+        //   guard: 'not readonly',
+        //   actions: 'delegate to syncLayoutActor',
+        // },
+        'editing.*': {
+          guard: 'not readonly',
+          actions: forwardTo(({ system }) => typedSystem(system).syncLayoutActorRef!),
         },
         'open.search': {
           guard: 'enabled: Search',

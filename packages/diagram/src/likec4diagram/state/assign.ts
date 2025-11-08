@@ -260,6 +260,7 @@ export function navigateForward({ context }: ActionArg): Partial<DiagramContext>
 }
 
 export function updateNodeData({ context, event }: ActionArg): Partial<DiagramContext> {
+  console.log('updateNodeData called', event)
   assertEvent(event, 'update.nodeData')
   const xynodes = context.xynodes.map((node): Types.Node => {
     if (node.id !== event.nodeId) {

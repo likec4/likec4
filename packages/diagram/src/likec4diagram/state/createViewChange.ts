@@ -10,7 +10,9 @@ import { calcViewBounds } from '../../utils/view-bounds'
 import { bezierControlPoints, isSamePoint } from '../../utils/xyflow'
 import type { DiagramContext } from './types'
 
-export function createViewChange(parentContext: DiagramContext): ViewChange.SaveViewSnapshot {
+export function createViewChange(
+  parentContext: Pick<DiagramContext, 'view' | 'xynodes' | 'xyedges' | 'xystore'>,
+): ViewChange.SaveViewSnapshot {
   const {
     view: {
       drifts: _1, // Ignore drifts from view

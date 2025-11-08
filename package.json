@@ -78,7 +78,8 @@
       "mnemonist": "0.40.3"
     },
     "patchedDependencies": {
-      "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch"
+      "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch",
+      "xstate@5.24.0": "patches/xstate@5.24.0.patch"
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",

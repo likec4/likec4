@@ -97,8 +97,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     labelY = labelPos.y
   }
 
-  const wasDiagramSyncCancelledRef = useRef(false)
-
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
     const point = svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
     if (labelBBox && point) {
@@ -113,21 +111,17 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     } else {
       diagram.updateEdgeData(id as EdgeId, { controlPoints })
     }
-    wasDiagramSyncCancelledRef.current = false
-    diagram.scheduleSaveManualLayout()
+    diagram.stopEditing(true)
     setIsControlPointDragging(false)
   })
 
   const onControlPointerStartMove = useCallbackRef(() => {
-    wasDiagramSyncCancelledRef.current = diagram.cancelSaveManualLayout()
-    setIsControlPointDragging(true)
+    diagram.startEditing()
     diagram.send({ type: 'xyflow.edgeEditingStarted', edge: props.data })
+    setIsControlPointDragging(true)
   })
   const onControlPointerCancelMove = useCallbackRef(() => {
-    if (wasDiagramSyncCancelledRef.current) {
-      diagram.scheduleSaveManualLayout()
-    }
-    wasDiagramSyncCancelledRef.current = false
+    diagram.stopEditing()
     setIsControlPointDragging(false)
   })
 
@@ -138,7 +132,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     })
   })
   const onControlPointerDelete = useCallbackRef((points: XYPosition[]) => {
-    wasDiagramSyncCancelledRef.current = diagram.cancelSaveManualLayout()
+    diagram.startEditing()
     setIsControlPointDragging(true)
     setControlPoints(points)
     requestAnimationFrame(() => {
@@ -159,6 +153,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     e.stopPropagation()
     e.preventDefault()
 
+    diagram.startEditing()
     const newControlPoints = insertControlPoint(
       xyflow.screenToFlowPosition(
         {
@@ -169,7 +164,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
       ),
     )
     diagram.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
-    diagram.scheduleSaveManualLayout()
+    diagram.stopEditing(true)
   })
 
   let zIndex = ZIndexes.Edge

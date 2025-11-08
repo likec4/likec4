@@ -1,3 +1,4 @@
+import { invariant } from '@likec4/core'
 import type * as t from '@likec4/core/types'
 import type {
   DynamicViewDisplayVariant,
@@ -72,13 +73,20 @@ export interface DiagramApi<A extends Any = Unknown> {
   updateNodeData(nodeId: NodeId, data: PartialDeep<Types.NodeData>): void
   updateEdgeData(edgeId: EdgeId, data: PartialDeep<Types.EdgeData>): void
   /**
-   * Schedule save manual layout
-   */
-  scheduleSaveManualLayout(): void
-  /**
    * @returns true if there was pending request to save layout
    */
-  cancelSaveManualLayout(): boolean
+  startEditing(): boolean
+  /**
+   * Stop editing
+   * @param wasChanged - whether there were changes made during editing
+   * @default false
+   */
+  stopEditing(wasChanged?: boolean): void
+  /**
+   * Undo last editing operation
+   * @returns true if there was something to undo
+   */
+  undoEditing(): boolean
   /**
    * Align nodes
    */
@@ -176,21 +184,24 @@ export function useDiagram<A extends Any = Unknown>(): DiagramApi<A> {
         data,
       })
     },
-    scheduleSaveManualLayout: () => {
-      actor.send({ type: 'saveManualLayout.schedule' })
-    },
-    /**
-     * @returns true if there was pending request to save layout
-     */
-    cancelSaveManualLayout: () => {
-      const syncState = typedSystem(actor.system).syncLayoutActorRef?.getSnapshot().value
-      const isPending = syncState === 'pending' || syncState === 'paused'
-      if (isPending) {
-        actor.send({ type: 'saveManualLayout.pause' })
-      } else {
-        actor.send({ type: 'saveManualLayout.cancel' })
-      }
+    startEditing: () => {
+      const syncActor = typedSystem(actor.system).syncLayoutActorRef
+      invariant(syncActor, 'No sync layout actor found in diagram actor system')
+      const isPending = syncActor.getSnapshot().hasTag('pending')
+      syncActor.send({ type: 'editing.start' })
       return isPending
+    },
+    stopEditing: (wasChanged = false) => {
+      const syncActor = typedSystem(actor.system).syncLayoutActorRef
+      invariant(syncActor, 'No sync layout actor found in diagram actor system')
+      syncActor.send({ type: 'editing.stop', wasChanged })
+    },
+    undoEditing: () => {
+      const syncActor = typedSystem(actor.system).syncLayoutActorRef
+      invariant(syncActor, 'No sync layout actor found in diagram actor system')
+      const hasUndo = syncActor.getSnapshot().context.history.length > 0
+      syncActor.send({ type: 'undo' })
+      return hasUndo
     },
 
     align: (mode: AlignmentMode) => {
