@@ -45,14 +45,11 @@ export function ElementDetailsButton({
   icon,
   onClick,
 }: ElementDetailsButtonProps) {
-  const id = useId()
   return (
     <Box className={cx(container, 'details-button')}>
       <ActionIcon
-        key={id}
         className={cx('nodrag nopan', actionBtn({ variant: 'transparent' }))}
         component={m.button}
-        // layout
         initial={false}
         style={{
           originX: 0.45,

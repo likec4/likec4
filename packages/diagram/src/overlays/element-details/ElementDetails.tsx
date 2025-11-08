@@ -1,7 +1,5 @@
 import { useSelector } from '@xstate/react'
-import { snapPosition } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
-import { useCallbackRef } from '../../hooks/useCallbackRef'
 import type { ElementDetailsActorRef, ElementDetailsSnapshot } from './actor'
 import { ElementDetailsActorContext } from './actorContext'
 import { ElementDetailsCard } from './ElementDetailsCard'

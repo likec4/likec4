@@ -1,10 +1,12 @@
 import { getSmoothStepPath } from '@xyflow/system'
 import { EdgeActionButton, EdgeContainer, EdgeLabel, EdgeLabelContainer, EdgePath } from '../../../base-primitives'
+import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 
 const LABEL_OFFSET = 16
 export function SequenceStepEdge(props: Types.EdgeProps<'seq-step'>) {
+  const { enableNavigateTo } = useEnabledFeatures()
   const diagram = useDiagram()
   const { navigateTo } = props.data
   const isSelfLoop = props.source === props.target
@@ -50,7 +52,7 @@ export function SequenceStepEdge(props: Types.EdgeProps<'seq-step'>) {
         }}
       >
         <EdgeLabel edgeProps={props}>
-          {navigateTo && (
+          {enableNavigateTo && navigateTo && (
             <EdgeActionButton
               onClick={e => {
                 e.stopPropagation()

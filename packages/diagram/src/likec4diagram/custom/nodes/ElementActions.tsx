@@ -107,7 +107,7 @@ export const ElementActions = memo<ElementActionsProps>(({
       })
     }
     return buttons
-  }, [enableNavigateTo, enableRelationshipBrowser, modelFqn, navigateTo, id])
+  }, [enableNavigateTo, enableRelationshipBrowser, modelFqn, navigateTo, id, diagram])
 
   if (extraButtons && hasAtLeast(extraButtons, 1)) {
     buttons = [...buttons, ...extraButtons]
