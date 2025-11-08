@@ -167,10 +167,12 @@ export class LikeC4Styles {
     if (this.isThemeColor(color)) {
       return this.theme.colors[color]
     }
-    if (!chroma.valid(color)) {
-      throw new Error(`Invalid color value: "${color}"`)
-    }
-    return memoizeProp(this, `compute-${color}`, () => computeColorValues(color as ColorLiteral))
+    return memoizeProp(this, `compute-${color}`, () => {
+      if (!chroma.valid(color)) {
+        throw new Error(`Invalid color value: "${color}"`)
+      }
+      return computeColorValues(color as ColorLiteral)
+    })
   }
 
   equals(other: LikeC4Styles): boolean {
