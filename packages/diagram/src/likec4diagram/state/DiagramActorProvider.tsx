@@ -16,7 +16,7 @@ import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPadding } from '../../LikeC4Diagram.props'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
-import { diagramMachine } from './diagram-machine'
+import { diagramMachine } from './machine'
 import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
 export function DiagramActorProvider({

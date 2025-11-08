@@ -6,11 +6,8 @@ import {
   type ActorRefFromLogic,
   type SnapshotFrom,
   assertEvent,
-  enqueueActions,
   fromCallback,
   setup,
-  spawnChild,
-  stopChild,
 } from 'xstate'
 import { elementDetailsLogic } from './element-details/actor'
 import { relationshipDetailsLogic } from './relationship-details/actor'
@@ -57,7 +54,7 @@ const hotkeyLogic = fromCallback(({ sendBack }: {
   }
 })
 
-const _overlaysActorLogic = setup({
+const machine = setup({
   types: {
     context: {} as OverlaysContext,
     events: {} as OverlayActorEvent,
@@ -75,120 +72,6 @@ const _overlaysActorLogic = setup({
     relationshipsBrowser: relationshipsBrowserLogic as Overlays.RelationshipsBrowser.Logic,
     hotkey: hotkeyLogic,
   },
-  actions: {
-    'closeLastOverlay': enqueueActions(({ context, enqueue }) => {
-      if (context.overlays.length === 0) {
-        return
-      }
-      const lastOverlay = last(context.overlays)?.id
-      if (!lastOverlay) {
-        return
-      }
-      enqueue.sendTo(lastOverlay, { type: 'close' })
-      enqueue.stopChild(lastOverlay)
-      enqueue.assign({
-        overlays: context.overlays.filter(o => o.id !== lastOverlay),
-      })
-    }),
-    'closeSpecificOverlay': enqueueActions(({ context, enqueue }, params: { actorId: string }) => {
-      const toClose = context.overlays.find(o => o.id === params.actorId)?.id
-      if (toClose) {
-        enqueue.sendTo(toClose, { type: 'close' })
-        enqueue.stopChild(toClose)
-        enqueue.assign({
-          overlays: context.overlays.filter(o => o.id !== toClose),
-        })
-      }
-    }),
-    'closeAllOverlays': enqueueActions(({ context, enqueue }) => {
-      for (const { id } of reverse(context.overlays)) {
-        enqueue.sendTo(id, { type: 'close' })
-        enqueue.stopChild(id)
-      }
-
-      enqueue.assign({ overlays: [] })
-    }),
-    'openElementDetails': enqueueActions(({ context, enqueue, event }) => {
-      assertEvent(event, 'open.elementDetails')
-      if (context.overlays.some(o => o.type === 'elementDetails' && o.subject === event.subject)) {
-        return
-      }
-      const id = `elementDetails-${context.seq}` as const
-      enqueue.spawnChild('elementDetails', {
-        id,
-        input: event,
-      })
-      enqueue.assign({
-        seq: context.seq + 1,
-        overlays: [
-          ...context.overlays,
-          {
-            type: 'elementDetails' as const,
-            id,
-            subject: event.subject,
-          },
-        ],
-      })
-    }),
-    'openRelationshipDetails': enqueueActions(({ context, enqueue, event }) => {
-      assertEvent(event, 'open.relationshipDetails')
-      const currentOverlay = last(context.overlays)
-      if (currentOverlay?.type === 'relationshipDetails') {
-        enqueue.sendTo(currentOverlay.id, {
-          ...event,
-          type: 'navigate.to',
-        })
-        return
-      }
-      const id = `relationshipDetails-${context.seq}` as const
-      enqueue.spawnChild('relationshipDetails', {
-        id,
-        input: event,
-      })
-      enqueue.assign({
-        seq: context.seq + 1,
-        overlays: [
-          ...context.overlays,
-          {
-            type: 'relationshipDetails' as const,
-            id,
-          },
-        ],
-      })
-    }),
-    'openRelationshipsBrowser': enqueueActions(({ context, enqueue, event }) => {
-      assertEvent(event, 'open.relationshipsBrowser')
-      const currentOverlay = last(context.overlays)
-      if (currentOverlay?.type === 'relationshipsBrowser') {
-        enqueue.sendTo(currentOverlay.id, {
-          type: 'navigate.to',
-          subject: event.subject,
-          viewId: event.viewId,
-        })
-        return
-      }
-      const id = `relationshipsBrowser-${context.seq}` as const
-      enqueue.spawnChild('relationshipsBrowser', {
-        id,
-        input: event,
-      })
-      enqueue.assign({
-        seq: context.seq + 1,
-        overlays: [
-          ...context.overlays,
-          {
-            type: 'relationshipsBrowser' as const,
-            id,
-            subject: event.subject,
-          },
-        ],
-      })
-    }),
-    'listenToEsc': spawnChild('hotkey', {
-      id: 'hotkey',
-    }),
-    'stopListeningToEsc': stopChild('hotkey'),
-  },
   guards: {
     'has overlays?': ({ context }) => context.overlays.length > 0,
     'close specific overlay?': ({ context, event }) => {
@@ -204,7 +87,140 @@ const _overlaysActorLogic = setup({
       return lastOverlay?.type === 'relationshipsBrowser'
     },
   },
-}).createMachine({
+})
+
+const closeLastOverlay = () =>
+  machine.enqueueActions(({ context, enqueue }) => {
+    if (context.overlays.length === 0) {
+      return
+    }
+    const lastOverlay = last(context.overlays)?.id
+    if (!lastOverlay) {
+      return
+    }
+    enqueue.sendTo(lastOverlay, { type: 'close' })
+    enqueue.stopChild(lastOverlay)
+    enqueue.assign({
+      overlays: context.overlays.filter(o => o.id !== lastOverlay),
+    })
+  })
+
+const closeSpecificOverlay = () =>
+  machine.enqueueActions(({ context, enqueue, event }) => {
+    assertEvent(event, 'close')
+    const actorId = event.actorId
+    if (!isString(actorId)) {
+      return
+    }
+    const toClose = context.overlays.find(o => o.id === actorId)?.id
+    if (toClose) {
+      enqueue.sendTo(toClose, { type: 'close' })
+      enqueue.stopChild(toClose)
+      enqueue.assign({
+        overlays: context.overlays.filter(o => o.id !== toClose),
+      })
+    }
+  })
+
+const closeAllOverlays = () =>
+  machine.enqueueActions(({ context, enqueue }) => {
+    for (const { id } of reverse(context.overlays)) {
+      enqueue.sendTo(id, { type: 'close' })
+      enqueue.stopChild(id)
+    }
+    enqueue.assign({ overlays: [] })
+  })
+
+const openElementDetails = () =>
+  machine.enqueueActions(({ context, enqueue, event }) => {
+    assertEvent(event, 'open.elementDetails')
+    if (context.overlays.some(o => o.type === 'elementDetails' && o.subject === event.subject)) {
+      return
+    }
+    const id = `elementDetails-${context.seq}` as const
+    enqueue.spawnChild('elementDetails', {
+      id,
+      input: event,
+    })
+    enqueue.assign({
+      seq: context.seq + 1,
+      overlays: [
+        ...context.overlays,
+        {
+          type: 'elementDetails' as const,
+          id,
+          subject: event.subject,
+        },
+      ],
+    })
+  })
+
+const openRelationshipDetails = () =>
+  machine.enqueueActions(({ context, enqueue, event }) => {
+    assertEvent(event, 'open.relationshipDetails')
+    const currentOverlay = last(context.overlays)
+    if (currentOverlay?.type === 'relationshipDetails') {
+      enqueue.sendTo(currentOverlay.id, {
+        ...event,
+        type: 'navigate.to',
+      })
+      return
+    }
+    const id = `relationshipDetails-${context.seq}` as const
+    enqueue.spawnChild('relationshipDetails', {
+      id,
+      input: event,
+    })
+    enqueue.assign({
+      seq: context.seq + 1,
+      overlays: [
+        ...context.overlays,
+        {
+          type: 'relationshipDetails' as const,
+          id,
+        },
+      ],
+    })
+  })
+
+const openRelationshipsBrowser = () =>
+  machine.enqueueActions(({ context, enqueue, event }) => {
+    assertEvent(event, 'open.relationshipsBrowser')
+    const currentOverlay = last(context.overlays)
+    if (currentOverlay?.type === 'relationshipsBrowser') {
+      enqueue.sendTo(currentOverlay.id, {
+        type: 'navigate.to',
+        subject: event.subject,
+        viewId: event.viewId,
+      })
+      return
+    }
+    const id = `relationshipsBrowser-${context.seq}` as const
+    enqueue.spawnChild('relationshipsBrowser', {
+      id,
+      input: event,
+    })
+    enqueue.assign({
+      seq: context.seq + 1,
+      overlays: [
+        ...context.overlays,
+        {
+          type: 'relationshipsBrowser' as const,
+          id,
+          subject: event.subject,
+        },
+      ],
+    })
+  })
+
+const listenToEsc = () =>
+  machine.spawnChild('hotkey', {
+    id: 'hotkey',
+  })
+
+const stopListeningToEsc = () => machine.stopChild('hotkey')
+
+const _overlaysActorLogic = machine.createMachine({
   id: 'overlays',
   context: () => ({
     seq: 1,
@@ -213,17 +229,17 @@ const _overlaysActorLogic = setup({
   initial: 'idle',
   on: {
     'open.elementDetails': {
-      actions: 'openElementDetails',
+      actions: openElementDetails(),
       target: '.active',
       reenter: false,
     },
     'open.relationshipDetails': {
-      actions: 'openRelationshipDetails',
+      actions: openRelationshipDetails(),
       target: '.active',
       reenter: false,
     },
     'open.relationshipsBrowser': {
-      actions: 'openRelationshipsBrowser',
+      actions: openRelationshipsBrowser(),
       target: '.active',
       reenter: false,
     },
@@ -231,27 +247,24 @@ const _overlaysActorLogic = setup({
   states: {
     idle: {},
     active: {
-      entry: 'listenToEsc',
-      exit: 'stopListeningToEsc',
+      entry: listenToEsc(),
+      exit: stopListeningToEsc(),
       on: {
         'close': [
           {
             guard: 'close specific overlay?',
-            actions: {
-              type: 'closeSpecificOverlay',
-              params: ({ event }) => ({ actorId: event.actorId! }),
-            },
+            actions: closeSpecificOverlay(),
             target: 'closing',
           },
           {
-            actions: 'closeLastOverlay',
+            actions: closeLastOverlay(),
             target: 'closing',
           },
         ],
         'close.all': {
           actions: [
-            'closeAllOverlays',
-            'stopListeningToEsc',
+            closeAllOverlays(),
+            stopListeningToEsc(),
           ],
           target: 'idle',
         },
@@ -264,15 +277,15 @@ const _overlaysActorLogic = setup({
           target: 'active',
         },
         {
-          actions: 'stopListeningToEsc',
+          actions: stopListeningToEsc(),
           target: 'idle',
         },
       ],
     },
   },
   exit: [
-    'stopListeningToEsc',
-    'closeAllOverlays',
+    stopListeningToEsc(),
+    closeAllOverlays(),
   ],
 })
 

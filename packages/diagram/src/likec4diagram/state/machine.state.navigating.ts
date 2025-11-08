@@ -1,0 +1,57 @@
+import type { NodeId } from '@likec4/core'
+import { enqueueActions } from 'xstate/actions'
+import { updateNavigationHistory } from './assign'
+import {
+  cancelFitDiagram,
+  closeAllOverlays,
+  closeSearch,
+  disableCompareWithLatest,
+  findCorrespondingNode,
+  raiseFitDiagram,
+  startSyncLayout,
+  stopSyncLayout,
+  trigger,
+  updateXYNodesEdges,
+  xyflow,
+} from './machine.actions'
+import { machine } from './machine.setup'
+
+// Navigating to another view (after `navigateTo` event)
+export const navigating = machine.createStateConfig({
+  id: 'navigating',
+  entry: [
+    closeAllOverlays(),
+    closeSearch(),
+    stopSyncLayout(),
+    cancelFitDiagram(),
+    trigger.navigateTo(),
+  ],
+  on: {
+    'update.view': {
+      actions: enqueueActions(({ enqueue, context, event }) => {
+        enqueue(disableCompareWithLatest())
+        const { fromNode, toNode } = findCorrespondingNode(context, event)
+        if (fromNode && toNode) {
+          enqueue(
+            xyflow.alignNodeFromToAfterNavigate({
+              fromNode: fromNode.id as NodeId,
+              toPosition: {
+                x: toNode.data.x,
+                y: toNode.data.y,
+              },
+            }),
+          )
+        } else {
+          enqueue(
+            xyflow.setViewportCenter(),
+          )
+        }
+        enqueue.assign(updateNavigationHistory)
+        enqueue(updateXYNodesEdges())
+        enqueue(startSyncLayout())
+        enqueue(raiseFitDiagram({ delay: 25 }))
+      }),
+      target: '#idle',
+    },
+  },
+})

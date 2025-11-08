@@ -1,30 +1,21 @@
 import type { LayoutedView, ViewChange, ViewId } from '@likec4/core/types'
 import { deepEqual } from 'fast-equals'
-import { invariant } from 'motion'
-import { m } from 'motion/react'
-import { p } from 'motion/react-m'
-import { hasAtLeast, last } from 'remeda'
+import { last } from 'remeda'
 import {
-  type ActorLogic,
   type ActorLogicFrom,
   type ActorRef,
   type ActorRefFromLogic,
   type MachineSnapshot,
-  type Snapshot,
   type SnapshotFrom,
-  type StateMachine,
-  and,
   assertEvent,
   assign,
-  cancel,
   enqueueActions,
-  raise,
   sendTo,
   setup,
 } from 'xstate'
 import type { Types } from '../types'
 import { createViewChange } from './createViewChange'
-import type { Context as DiagramContext, Events as DiagramEvents } from './diagram-machine'
+import type { Context as DiagramContext, Events as DiagramEvents } from './machine.setup'
 
 export type Input = {
   /**

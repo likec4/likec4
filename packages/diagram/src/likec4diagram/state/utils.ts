@@ -11,7 +11,7 @@ import type { XYStoreState } from '../../hooks/useXYFlow'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
-import type { Context } from './diagram-machine'
+import type { Context } from './machine.setup'
 import type { SyncLayoutActorRef } from './syncManualLayoutActor'
 import type { DiagramActorRef, System } from './types'
 

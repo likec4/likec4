@@ -9,7 +9,7 @@ import { type VectorValue, vector } from '../../utils/vector'
 import { getNodeCenter } from '../../utils/xyflow'
 import type { Types } from '../types'
 import { SeqParallelAreaColor } from '../xyflow-sequence/const'
-import type { ActionArg, Context as DiagramContext } from './diagram-machine'
+import type { ActionArg, Context as DiagramContext } from './machine.setup'
 
 export function lastClickedNode(
   params: { context: DiagramContext; event: { node: Types.Node } },

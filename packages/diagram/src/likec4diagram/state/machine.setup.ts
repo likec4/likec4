@@ -3,11 +3,7 @@
 /// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
   BBox,
-  getParallelStepsPrefix,
-  invariant,
-  isStepEdgeId,
   nonexhaustive,
-  nonNullable,
 } from '@likec4/core'
 import type {
   DiagramEdge,
@@ -22,67 +18,23 @@ import type {
   StepEdgeId,
   ViewChange,
   ViewId,
-  XYPoint,
 } from '@likec4/core/types'
-import {
-  applyEdgeChanges,
-  applyNodeChanges,
-  getViewportForBounds,
-} from '@xyflow/react'
-import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
-import { produce } from 'immer'
+import type { EdgeChange, NodeChange, Rect, Viewport } from '@xyflow/system'
 import type { MouseEvent } from 'react'
-import { clamp, first, hasAtLeast, prop } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import {
-  and,
   assertEvent,
-  assign,
-  cancel,
-  emit,
-  enqueueActions,
-  forwardTo,
-  or,
-  raise,
-  sendTo,
   setup,
-  spawnChild,
-  stopChild,
 } from 'xstate'
-import { Base, MinZoom } from '../../base'
-import { type EnabledFeatures, type FeatureName, DefaultFeatures } from '../../context/DiagramFeatures'
+import type { EnabledFeatures, FeatureName } from '../../context/DiagramFeatures'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPadding } from '../../LikeC4Diagram.props'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import { searchActorLogic } from '../../search/searchActor'
 import type { Types } from '../types'
-import { createLayoutConstraints } from '../useLayoutConstraints'
-import { SeqParallelAreaColor } from '../xyflow-sequence/const'
-import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
-import {
-  focusNodesEdges,
-  lastClickedNode,
-  mergeXYNodesEdges,
-  navigateBack,
-  navigateForward,
-  resetEdgeControlPoints,
-  resetEdgesControlPoints,
-  updateActiveWalkthrough,
-  updateEdgeData,
-  updateNavigationHistory,
-  updateNodeData,
-} from './assign'
-import { createViewChange } from './createViewChange'
+import type { AlignmentMode } from './aligners'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
-import { DiagramToggledFeaturesPersistence } from './persistence'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import {
-  activeSequenceBounds,
-  findDiagramEdge,
-  findDiagramNode,
-  focusedBounds,
-  typedSystem,
-} from './utils'
 
 export interface NavigationHistory {
   history: ReadonlyArray<{

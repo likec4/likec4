@@ -9,7 +9,7 @@ import {
   applyNodeChanges,
 } from '@xyflow/react'
 import { type InternalNodeUpdate, getViewportForBounds } from '@xyflow/system'
-import { hasAtLeast, isNullish, omit, prop } from 'remeda'
+import { hasAtLeast, isNullish, omit } from 'remeda'
 import {
   type ActorRefFromLogic,
   type BaseActorRef,
@@ -238,7 +238,7 @@ export type Events =
   | { type: 'update.view'; layouted: LayoutRelationshipsViewResult }
   | { type: 'close' }
 
-const _relationshipsBrowserLogic = setup({
+const machine = setup({
   types: {
     context: {} as Context,
     tags: '' as 'active',
@@ -263,95 +263,113 @@ const _relationshipsBrowserLogic = setup({
       return false
     },
   },
-  actions: {
-    'xyflow.init': assign(({ event }) => {
-      assertEvent(event, 'xyflow.init')
-      return {
-        xyflow: event.instance,
-        xystore: event.store,
-      }
-    }),
-    'update.view': assign(({ event }) => {
-      assertEvent(event, 'update.view')
-      return {
-        layouted: event.layouted,
-        ...viewToNodesEdge(event.layouted),
-      }
-    }),
-    'xyflow:updateNodeInternals': ({ context }) => {
-      invariant(context.xystore, 'xystore is not initialized')
-      const { domNode, updateNodeInternals } = context.xystore.getState()
-      const nodeIds = new Set(context.xyedges.flatMap((e) => [e.source, e.target]))
+})
 
-      if (nodeIds.size === 0 || !domNode) {
-        return
-      }
+// Extracted actions
+const xyflowInit = () =>
+  machine.assign(({ event }) => {
+    assertEvent(event, 'xyflow.init')
+    return {
+      xyflow: event.instance,
+      xystore: event.store,
+    }
+  })
 
-      const updates = new Map<string, InternalNodeUpdate>()
+const updateView = () =>
+  machine.assign(({ event }) => {
+    assertEvent(event, 'update.view')
+    return {
+      layouted: event.layouted,
+      ...viewToNodesEdge(event.layouted),
+    }
+  })
 
-      const domNodes = domNode.querySelectorAll('.react-flow__node') as NodeListOf<HTMLDivElement>
-      for (const nodeElement of domNodes) {
-        const nodeId = nodeElement.getAttribute('data-id')
-        if (nodeId && nodeIds.has(nodeId)) {
-          updates.set(nodeId, { id: nodeId, nodeElement, force: true })
-        }
-      }
+const xyflowUpdateNodeInternals = () =>
+  machine.createAction(({ context }) => {
+    invariant(context.xystore, 'xystore is not initialized')
+    const { domNode, updateNodeInternals } = context.xystore.getState()
+    const nodeIds = new Set(context.xyedges.flatMap((e) => [e.source, e.target]))
 
-      updateNodeInternals(updates, { triggerFitView: false })
-    },
-    'xyflow:fitDiagram': ({ context }, params?: { duration?: number; bounds?: BBox }) => {
-      let { duration, bounds } = params ?? {}
-      duration ??= 450
-      const { xyflow, xystore } = context
-      invariant(xyflow, 'xyflow is not initialized')
-      invariant(xystore, 'xystore is not initialized')
-      bounds ??= context.layouted?.bounds
-      const maxZoom = Math.max(xyflow.getZoom(), 1)
-      if (bounds) {
-        const { width, height } = xystore.getState()
-        const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, ViewPadding)
-        xyflow.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined).catch(
-          console.error,
-        )
-      } else {
-        xyflow.fitView({
-          minZoom: MinZoom,
-          maxZoom,
-          padding: ViewPadding,
-          ...(duration > 0 && { duration, interpolate: 'smooth' }),
-        }).catch(console.error)
+    if (nodeIds.size === 0 || !domNode) {
+      return
+    }
+
+    const updates = new Map<string, InternalNodeUpdate>()
+
+    const domNodes = domNode.querySelectorAll('.react-flow__node') as NodeListOf<HTMLDivElement>
+    for (const nodeElement of domNodes) {
+      const nodeId = nodeElement.getAttribute('data-id')
+      if (nodeId && nodeIds.has(nodeId)) {
+        updates.set(nodeId, { id: nodeId, nodeElement, force: true })
       }
-    },
-    'xyflow.applyNodeChanges': assign(({ context, event }) => {
-      assertEvent(event, 'xyflow.applyNodeChanges')
-      return {
-        xynodes: applyNodeChanges(event.changes, context.xynodes),
-      }
-    }),
-    'xyflow.applyEdgeChanges': assign(({ context, event }) => {
-      assertEvent(event, 'xyflow.applyEdgeChanges')
-      return {
-        xyedges: applyEdgeChanges(event.changes, context.xyedges),
-      }
-    }),
-    'open relationship source': enqueueActions(({ context, event }) => {
-      if (event.type !== 'xyflow.edgeClick' || !context.openSourceActor) {
-        return
-      }
-      const relations = event.edge.data.relations
-      if (hasAtLeast(relations, 1)) {
-        context.openSourceActor.send({ type: 'open.source', relation: relations[0] })
-      }
-    }),
-    'dispose': assign({
-      xyflow: null,
-      layouted: null,
-      xystore: null,
-      xyedges: [],
-      xynodes: [],
-    }),
-  },
-}).createMachine({
+    }
+
+    updateNodeInternals(updates, { triggerFitView: false })
+  })
+
+const xyflowFitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
+  machine.createAction(({ context, event }) => {
+    params ??= event.type === 'fitDiagram' ? event : {}
+    let { duration, bounds } = params ?? {}
+    duration ??= 450
+    const { xyflow, xystore } = context
+    invariant(xyflow, 'xyflow is not initialized')
+    invariant(xystore, 'xystore is not initialized')
+    bounds ??= context.layouted?.bounds
+    const maxZoom = Math.max(xyflow.getZoom(), 1)
+    if (bounds) {
+      const { width, height } = xystore.getState()
+      const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, ViewPadding)
+      xyflow.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined).catch(
+        console.error,
+      )
+    } else {
+      xyflow.fitView({
+        minZoom: MinZoom,
+        maxZoom,
+        padding: ViewPadding,
+        ...(duration > 0 && { duration, interpolate: 'smooth' }),
+      }).catch(console.error)
+    }
+  })
+
+const xyflowApplyNodeChanges = () =>
+  machine.assign(({ context, event }) => {
+    assertEvent(event, 'xyflow.applyNodeChanges')
+    return {
+      xynodes: applyNodeChanges(event.changes, context.xynodes),
+    }
+  })
+
+const xyflowApplyEdgeChanges = () =>
+  machine.assign(({ context, event }) => {
+    assertEvent(event, 'xyflow.applyEdgeChanges')
+    return {
+      xyedges: applyEdgeChanges(event.changes, context.xyedges),
+    }
+  })
+
+const openRelationshipSource = () =>
+  machine.enqueueActions(({ context, event }) => {
+    if (event.type !== 'xyflow.edgeClick' || !context.openSourceActor) {
+      return
+    }
+    const relations = event.edge.data.relations
+    if (hasAtLeast(relations, 1)) {
+      context.openSourceActor.send({ type: 'open.source', relation: relations[0] })
+    }
+  })
+
+const dispose = () =>
+  machine.assign({
+    xyflow: null,
+    layouted: null,
+    xystore: null,
+    xyedges: [],
+    xynodes: [],
+  })
+
+const _relationshipsBrowserLogic = machine.createMachine({
   id: 'relationships-browser',
   context: ({ input }) => ({
     subject: input.subject,
@@ -371,21 +389,21 @@ const _relationshipsBrowserLogic = setup({
   initial: 'initializing',
   on: {
     'xyflow.applyNodeChanges': {
-      actions: 'xyflow.applyNodeChanges',
+      actions: xyflowApplyNodeChanges(),
     },
     'xyflow.applyEdgeChanges': {
-      actions: 'xyflow.applyEdgeChanges',
+      actions: xyflowApplyEdgeChanges(),
     },
   },
   states: {
     initializing: {
       on: {
         'xyflow.init': {
-          actions: 'xyflow.init',
+          actions: xyflowInit(),
           target: 'isReady',
         },
         'update.view': {
-          actions: 'update.view',
+          actions: updateView(),
           target: 'isReady',
         },
         'stop': 'closed',
@@ -396,7 +414,7 @@ const _relationshipsBrowserLogic = setup({
       always: [{
         guard: 'isReady',
         actions: [
-          { type: 'xyflow:fitDiagram', params: { duration: 0 } },
+          xyflowFitDiagram({ duration: 0 }),
           raise({ type: 'xyflow.updateNodeInternals' }, { delay: 150 }),
         ],
         target: 'active',
@@ -436,12 +454,12 @@ const _relationshipsBrowserLogic = setup({
                   openSourceActor: context.openSourceActor,
                 })
               } else {
-                enqueue('open relationship source')
+                enqueue(openRelationshipSource())
               }
             }),
           },
           {
-            actions: 'open relationship source',
+            actions: openRelationshipSource(),
           },
         ],
         'navigate.to': {
@@ -454,10 +472,10 @@ const _relationshipsBrowserLogic = setup({
           ],
         },
         'xyflow.paneDblClick': {
-          actions: 'xyflow:fitDiagram',
+          actions: xyflowFitDiagram(),
         },
         'update.view': {
-          actions: 'update.view',
+          actions: updateView(),
           target: '.layouting',
         },
         'change.scope': {
@@ -466,13 +484,10 @@ const _relationshipsBrowserLogic = setup({
           }),
         },
         'xyflow.updateNodeInternals': {
-          actions: 'xyflow:updateNodeInternals',
+          actions: xyflowUpdateNodeInternals(),
         },
         'fitDiagram': {
-          actions: {
-            type: 'xyflow:fitDiagram',
-            params: prop('event'),
-          },
+          actions: xyflowFitDiagram(),
         },
         'xyflow.resized': {
           actions: [
@@ -481,7 +496,7 @@ const _relationshipsBrowserLogic = setup({
           ],
         },
         'xyflow.init': {
-          actions: 'xyflow.init',
+          actions: xyflowInit(),
         },
         'xyflow.unmount': {
           target: 'initializing',
@@ -611,10 +626,10 @@ const _relationshipsBrowserLogic = setup({
     closed: {
       id: 'closed',
       type: 'final',
-      entry: 'dispose',
+      entry: dispose(),
     },
   },
-  exit: 'dispose',
+  exit: dispose(),
 })
 
 type InferredMachine = typeof _relationshipsBrowserLogic
