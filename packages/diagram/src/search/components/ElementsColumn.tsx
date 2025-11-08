@@ -19,12 +19,12 @@ import {
   UnstyledButton,
   useTree,
 } from '@mantine/core'
-import { useCallbackRef } from '@mantine/hooks'
 import { IconChevronRight } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { type KeyboardEventHandler, memo, useEffect, useMemo } from 'react'
 import { first, isEmpty, only, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
+import { useCallbackRef } from '../../hooks/useCallbackRef'
 import { useDiagram } from '../../hooks/useDiagram'
 import { sortByLabel } from '../../hooks/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'

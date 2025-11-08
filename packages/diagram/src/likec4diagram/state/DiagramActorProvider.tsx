@@ -1,8 +1,9 @@
 import type { DiagramView, DynamicViewDisplayVariant, ViewId, WhereOperator } from '@likec4/core/types'
+import { useRafEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, memo, useEffect, useRef } from 'react'
+import { type PropsWithChildren, memo, useEffect, useRef, useState } from 'react'
 import { isNullish } from 'remeda'
 import type { Subscription } from 'xstate'
 import { ErrorBoundary } from '../../components/ErrorFallback'
@@ -16,7 +17,9 @@ import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPadding } from '../../LikeC4Diagram.props'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
+import { makeDiagramApi } from './diagram-api'
 import { diagramMachine } from './machine'
+import { DiagramToggledFeaturesPersistence } from './persistence'
 import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
 export function DiagramActorProvider({
@@ -53,11 +56,21 @@ export function DiagramActorProvider({
       },
     },
   )
+  const [api, setApi] = useState(() => makeDiagramApi(actorRef))
+  useEffect(() => {
+    setApi(api => {
+      if (api.actor === actorRef) return api
+      return makeDiagramApi(actorRef)
+    })
+  }, [actorRef])
+  if (api.actor !== actorRef) {
+    console.warn('DiagramApi instance changed, this should not happen during the lifetime of the actor')
+  }
 
   const features = useEnabledFeatures()
   useEffect(
     () => actorRef.send({ type: 'update.features', features }),
-    [features],
+    [features, actorRef],
   )
 
   useEffect(
@@ -66,16 +79,16 @@ export function DiagramActorProvider({
         type: 'update.inputs',
         inputs: { zoomable, pannable, fitViewPadding },
       }),
-    [zoomable, pannable, fitViewPadding],
+    [zoomable, pannable, fitViewPadding, actorRef],
   )
 
   useUpdateEffect(() => {
     if (!_defaultVariant) return
     actorRef.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
-  }, [_defaultVariant])
+  }, [_defaultVariant, actorRef])
 
   return (
-    <DiagramActorContextProvider value={actorRef}>
+    <DiagramActorContextProvider value={api}>
       <ErrorBoundary>
         <DiagramXYFlowSyncProvider
           view={view}
@@ -145,6 +158,9 @@ function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ ac
     selectFromActor,
     compareSelected,
   )
+  useUpdateEffect(() => {
+    DiagramToggledFeaturesPersistence.write(toggledFeatures)
+  }, [toggledFeatures])
   const likec4model = useLikeC4Model()
   const viewmodel = likec4model.findView(viewId)
   return (
@@ -168,12 +184,12 @@ function DiagramXYFlowSyncProvider(
 ) {
   const dynamicViewVariant = useSelector(actorRef, selectFromActor2)
 
-  useEffect(() => {
+  useRafEffect(() => {
     actorRef.send({
       type: 'update.view',
       ...convertToXYFlow({ view, where, dynamicViewVariant }),
     })
-  }, [view, where, dynamicViewVariant])
+  }, [view, where, dynamicViewVariant, actorRef])
 
   return null
 }
@@ -219,7 +235,7 @@ const DiagramActorEventListener = memo(() => {
     return () => {
       subscription?.unsubscribe()
     }
-  }, [diagram.actor, diagram])
+  }, [diagram])
 
   return null
 })

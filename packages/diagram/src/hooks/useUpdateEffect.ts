@@ -17,12 +17,10 @@ export const depsShallowEqual: DependenciesComparator = (d1, d2) => {
     return false
   }
   for (const [i, element] of d1.entries()) {
-    if (element === d2[i]) {
+    if (element === d2[i] || shallowEqual(element, d2[i])) {
       continue
     }
-    if (!shallowEqual(element, d2[i])) {
-      return false
-    }
+    return false
   }
   return true
 }

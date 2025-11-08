@@ -26,6 +26,7 @@ type EdgeContainerProps = PropsWithChildren<
 export function EdgeContainer({
   className,
   component = 'g',
+  selected = false,
   data: {
     color = 'gray',
     hovered: isHovered = false,
@@ -47,6 +48,9 @@ export function EdgeContainer({
     'data-edge-active': isActive,
     'data-edge-animated': isActive,
     'data-likec4-hovered': isHovered,
+    ...(selected && {
+      'data-likec4-selected': selected,
+    }),
     ...(isDimmed !== false && {
       'data-likec4-dimmed': isDimmed,
     }),

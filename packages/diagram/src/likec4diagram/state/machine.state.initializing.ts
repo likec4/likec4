@@ -1,5 +1,5 @@
 import { assign } from 'xstate/actions'
-import { emitInitialized, startSyncLayout, xyflow } from './machine.actions'
+import { emitInitialized, ensureSyncLayout, xyflow } from './machine.actions'
 import { machine } from './machine.setup'
 
 export const initializing = machine.createStateConfig({
@@ -44,7 +44,7 @@ export const isReady = machine.createStateConfig({
           }],
         },
       })),
-      startSyncLayout(),
+      ensureSyncLayout(),
       emitInitialized(),
     ],
     target: 'ready',

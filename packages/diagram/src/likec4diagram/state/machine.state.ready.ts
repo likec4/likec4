@@ -18,6 +18,7 @@ import {
   emitWalkthroughStarted,
   emitWalkthroughStep,
   emitWalkthroughStopped,
+  ensureSyncLayout,
   focusOnNodesAndEdges,
   layoutAlign,
   notationsHighlight,
@@ -31,7 +32,6 @@ import {
   raiseFitDiagram,
   resetLastClickedNode,
   scheduleSyncLayout,
-  startSyncLayout,
   stopSyncLayout,
   tagHighlight,
   toggleFeature,
@@ -99,7 +99,11 @@ export const idle = machine.createStateConfig({
       actions: [
         resetLastClickedNode(),
         xyflow.fitDiagram(),
-        ({ context }) => emitOpenSource({ view: context.view.id }),
+        enqueueActions(({ context, enqueue }) => {
+          enqueue(
+            emitOpenSource({ view: context.view.id }),
+          )
+        }),
       ],
     },
     'focus.node': {
@@ -368,7 +372,7 @@ export const ready = machine.createStateConfig({
       actions: [
         stopSyncLayout(),
         disableCompareWithLatest(),
-        startSyncLayout(),
+        ensureSyncLayout(),
         emit({
           type: 'onChange',
           change: {
@@ -416,7 +420,10 @@ export const ready = machine.createStateConfig({
       target: '.walkthrough',
     },
     'toggle.feature': {
-      actions: toggleFeature(),
+      actions: [
+        toggleFeature(),
+        ensureSyncLayout(),
+      ],
     },
     'xyflow.nodeMouseEnter': {
       actions: onNodeMouseEnter(),

@@ -1,6 +1,5 @@
 import type { EdgeId } from '@likec4/core/types'
 import { cx as clsx } from '@likec4/styles/css'
-import { useCallbackRef } from '@mantine/hooks'
 import { useRafEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
@@ -15,6 +14,7 @@ import {
 } from '../../../base-primitives'
 import { ZIndexes } from '../../../base/const'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
+import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
@@ -167,12 +167,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     diagram.stopEditing(true)
   })
 
-  let zIndex = ZIndexes.Edge
-  if (hovered || active || isControlPointDragging) {
-    // Move above the elements
-    zIndex = ZIndexes.Element + 50
-  }
-
   // Force hovered state when dragging control point
   if (isControlPointDragging && !props.data.hovered) {
     props = {
@@ -215,7 +209,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
         )}
       </EdgeContainer>
       {/* Render control points above edge label  */}
-      {enabledEditing && controlPoints.length > 0 && (selected || hovered || isControlPointDragging) && (
+      {enabledEditing && controlPoints.length > 0 && (selected || active || hovered || isControlPointDragging) && (
         <ControlPoints
           edgeProps={props}
           controlPoints={controlPoints}
@@ -224,7 +218,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           onCancelMove={onControlPointerCancelMove}
           onFinishMove={onControlPointerFinishMove}
           onDelete={onControlPointerDelete}
-          zIndex={zIndex}
+          zIndex={ZIndexes.Element + 500}
         />
       )}
     </>

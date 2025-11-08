@@ -160,6 +160,27 @@ export const semanticTokens = defineSemanticTokens({
           value: mixTransparent(mantine.colors.defaultBorder, 50),
         },
       },
+      compare: {
+        manual: {
+          DEFAULT: {
+            description: 'LikeC4 Compare color for manual changes',
+            value: {
+              _light: mantine.colors.orange[8],
+              _dark: mantine.colors.orange[6],
+            },
+          },
+          outline: {
+            value: {
+              _light: mantine.colors.orange[8],
+              _dark: mantine.colors.orange[6],
+            },
+          },
+        },
+        latest: {
+          description: 'LikeC4 Compare color for latest changes',
+          value: mantine.colors.green[6],
+        },
+      },
     },
   },
 })

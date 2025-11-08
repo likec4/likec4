@@ -1,9 +1,9 @@
 import type { LikeC4Project, ProjectId } from '@likec4/core/types'
-import { useCallbackRef } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, useContext } from 'react'
 import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
+import { useCallbackRef } from './hooks/useCallbackRef'
 
 export interface LikeC4ProjectsProviderProps {
   /**

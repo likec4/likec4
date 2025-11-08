@@ -1,7 +1,7 @@
-import { useCallbackRef } from '@mantine/hooks'
 import type { XYPosition } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
+import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { type Vector, vector } from '../../../utils/vector'
 import {

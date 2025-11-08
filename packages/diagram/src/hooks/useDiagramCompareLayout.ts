@@ -1,11 +1,11 @@
 import type * as t from '@likec4/core/types'
-import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import type {
   DiagramActorSnapshot,
 } from '../likec4diagram/state/types'
 import { useDiagramActorRef } from './safeContext'
+import { useCallbackRef } from './useCallbackRef'
 
 const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
   const drifts = context.view.drifts ?? null

@@ -1,7 +1,5 @@
 import { css } from '@likec4/styles/css'
 
-const isSelected = '.react-flow__edge.selected'
-
 export const controlPointsContainer = css({
   overflow: 'visible',
   position: 'absolute',
@@ -22,15 +20,15 @@ export const controlPoint = css({
   _hover: {
     fillOpacity: 1,
     stroke: 'mantine.colors.primary.filledHover',
-    strokeWidth: 16,
+    strokeWidth: 18,
     transition: 'stroke 100ms ease-out, stroke-width 100ms ease-out',
   },
-  [`:where(${isSelected}, [data-likec4-hovered='true']) &`]: {
+  [`:where([data-likec4-selected='true'], [data-likec4-hovered='true']) &`]: {
     visibility: 'visible',
     transition: 'fill-opacity 150ms ease-out, stroke 150ms ease-out, stroke-width 150ms ease-out',
     transitionDelay: '50ms',
     fillOpacity: 1,
-    strokeWidth: 10,
+    strokeWidth: 12,
   },
 })
 

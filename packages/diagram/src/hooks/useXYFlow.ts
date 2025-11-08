@@ -1,4 +1,3 @@
-import { useCallbackRef } from '@mantine/hooks'
 import {
   type InternalNode,
   type ReactFlowInstance,
@@ -10,6 +9,7 @@ import {
 } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import type { Types } from '../likec4diagram/types'
+import { useCallbackRef } from './useCallbackRef'
 
 export type XYFlowInstance = ReactFlowInstance<Types.AnyNode, Types.AnyEdge>
 export function useXYFlow(): XYFlowInstance {

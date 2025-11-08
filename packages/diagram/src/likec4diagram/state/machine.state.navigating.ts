@@ -6,9 +6,9 @@ import {
   closeAllOverlays,
   closeSearch,
   disableCompareWithLatest,
+  ensureSyncLayout,
   findCorrespondingNode,
   raiseFitDiagram,
-  startSyncLayout,
   stopSyncLayout,
   trigger,
   updateXYNodesEdges,
@@ -48,7 +48,7 @@ export const navigating = machine.createStateConfig({
         }
         enqueue.assign(updateNavigationHistory)
         enqueue(updateXYNodesEdges())
-        enqueue(startSyncLayout())
+        enqueue(ensureSyncLayout())
         enqueue(raiseFitDiagram({ delay: 25 }))
       }),
       target: '#idle',

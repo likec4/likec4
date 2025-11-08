@@ -1,3 +1,4 @@
+export { useCallbackRef } from './useCallbackRef'
 export { useId } from './useId'
 export { useMantinePortalProps } from './useMantinePortalProps'
 export { useSetState } from './useSetState'

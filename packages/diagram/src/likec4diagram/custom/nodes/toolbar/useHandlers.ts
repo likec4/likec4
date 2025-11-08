@@ -1,7 +1,7 @@
 import type { DeploymentFqn, Fqn, ThemeColor } from '@likec4/core'
-import { useCallbackRef } from '@mantine/hooks'
 import { useState } from 'react'
-import { useDiagram } from '../../../../hooks'
+import { useCallbackRef } from '../../../../hooks/useCallbackRef'
+import { useDiagram } from '../../../../hooks/useDiagram'
 import type { Types } from '../../../types'
 import type { OnStyleChange } from './types'
 

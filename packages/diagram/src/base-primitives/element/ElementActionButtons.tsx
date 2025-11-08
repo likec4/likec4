@@ -6,7 +6,6 @@ import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import { IconBolt } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import type { BaseNodeData } from '../../base/types'
 import { stopPropagation } from '../../utils/xyflow'
 
 const container = hstack({
@@ -27,7 +26,9 @@ const actionButtons = hstack({
 
 type ElementActionButtonsProps = {
   selected?: boolean
-  data: BaseNodeData
+  data: {
+    hovered?: boolean
+  }
   buttons: ElementActionButtons.Item[]
 }
 

@@ -37,6 +37,7 @@ const toCssVarValue = (value: number | string | undefined) => {
 export function EdgeLabelContainer({
   edgeProps: {
     id,
+    selected = false,
     data: {
       hovered: isHovered = false,
       active: isActive = false,
@@ -83,6 +84,9 @@ export function EdgeLabelContainer({
         data-likec4-color={color}
         data-edge-active={isActive}
         data-edge-animated={isActive}
+        {...selected !== false && {
+          'data-likec4-selected': selected,
+        }}
         {...isDimmed !== false && {
           'data-likec4-dimmed': isDimmed,
         }}

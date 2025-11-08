@@ -1,6 +1,5 @@
 import { cx } from '@likec4/styles/css'
 import { useMantineColorScheme } from '@mantine/core'
-import { useCallbackRef } from '@mantine/hooks'
 import {
   type ReactFlowProps,
   type ReactFlowState,
@@ -9,6 +8,7 @@ import {
 } from '@xyflow/react'
 import { useRef } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
+import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
 import type { ViewPadding } from '../LikeC4Diagram.props'

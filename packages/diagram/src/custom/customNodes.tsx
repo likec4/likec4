@@ -1,8 +1,8 @@
-import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
+import type { NodeModel } from '@likec4/core/model'
 import type { aux, NodeId, ViewId } from '@likec4/core/types'
 import type { FC, FunctionComponent } from 'react'
 import type { BaseNodePropsWithData } from '../base/types'
-import { useLikeC4ViewModel } from '../hooks/useLikeC4Model'
+import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import type { Types } from '../likec4diagram/types'
 
 type Any = aux.Any
@@ -27,7 +27,8 @@ function customDiagramNode<
 ): FunctionComponent<NP> {
   return ((props: NP) => {
     const viewId = props.data.viewId
-    const viewModel = useLikeC4ViewModel(viewId)
+    const likec4 = useLikeC4Model()
+    const viewModel = likec4.findView(viewId)
     if (!viewModel) {
       console.error(`View "${viewId}" not found, requested by customNode "${props.data.id}"`, { props })
       return null

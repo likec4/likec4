@@ -1,10 +1,7 @@
 import { css } from '@likec4/styles/css'
 import { Box, VStack } from '@likec4/styles/jsx'
 import { Grid, GridCol, Group, ScrollArea, Title } from '@mantine/core'
-import {
-  useCallbackRef,
-  useHotkeys,
-} from '@mantine/hooks'
+import { useHotkeys } from '@mantine/hooks'
 import { useTimeoutEffect } from '@react-hookz/web'
 import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
@@ -13,6 +10,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { isTruthy } from 'remeda'
 import { ErrorFallback } from '../components/ErrorFallback'
 import { DiagramFeatures } from '../context/DiagramFeatures'
+import { useCallbackRef } from '../hooks/useCallbackRef'
 import { Overlay } from '../overlays/overlay/Overlay'
 import { ElementsColumn } from './components/ElementsColumn'
 import { PickView } from './components/PickView'

@@ -26,7 +26,7 @@ export const layerStyles = defineLayerStyles({
           '@/sm': {
             boxShadow: 'lg',
             borderRadius: 'md',
-            padding: '2xs',
+            padding: 'xxs',
           },
           _whenPanning: {
             boxShadow: 'none',

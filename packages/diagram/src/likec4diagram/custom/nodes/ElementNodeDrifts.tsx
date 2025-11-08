@@ -21,10 +21,7 @@ export function ElementNodeDrifts(
         inset: '0',
         pointerEvents: 'none',
         '& + .likec4-element-shape': {
-          outlineColor: {
-            base: 'mantine.colors.orange[6]',
-            _light: 'mantine.colors.orange[8]',
-          },
+          outlineColor: 'likec4.compare.manual.outline',
           outlineWidth: {
             base: '2px',
             _light: '4px',

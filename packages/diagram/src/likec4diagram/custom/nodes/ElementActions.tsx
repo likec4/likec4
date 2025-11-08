@@ -1,5 +1,6 @@
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
-import { useMemo } from 'react'
+import { deepEqual as eq, shallowEqual } from 'fast-equals'
+import { memo, useMemo } from 'react'
 import { hasAtLeast } from 'remeda'
 import type { SimplifyDeep } from 'type-fest'
 import { ElementActionButtons } from '../../../base-primitives'
@@ -38,6 +39,18 @@ export type ElementActionsProps =
   }>
   & WithExtraButtons
 
+const compareElementActionsProps = (a: ElementActionsProps, b: ElementActionsProps) => {
+  return eq(a.data.id, b.data.id)
+    && eq(a.selected ?? false, b.selected ?? false)
+    && eq(a.data.modelFqn ?? null, b.data.modelFqn ?? null)
+    && eq(a.data.navigateTo ?? null, b.data.navigateTo ?? null)
+    && eq(a.data.hovered ?? false, b.data.hovered ?? false)
+    && (
+      (!a.extraButtons && !b.extraButtons)
+      || shallowEqual(a.extraButtons, b.extraButtons)
+    )
+}
+
 /**
  * Center-Bottom action bar, includes zoom-in and browse relationships actions, if the features are enabled.
  * Intended to be used with model elements.
@@ -63,13 +76,13 @@ export type ElementActionsProps =
  * />
  * ```
  */
-export const ElementActions = ({
+export const ElementActions = memo<ElementActionsProps>(({
   extraButtons,
   ...props
-}: ElementActionsProps) => {
+}) => {
   const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeatures()
   const diagram = useDiagram()
-  const { navigateTo, modelFqn } = props.data
+  const { id, navigateTo, modelFqn } = props.data
   let buttons = useMemo(() => {
     const buttons = [] as ElementActionButtons.Item[]
 
@@ -79,7 +92,7 @@ export const ElementActions = ({
         icon: <IconZoomScan />,
         onClick: (e) => {
           e.stopPropagation()
-          diagram.navigateTo(navigateTo, props.data.id)
+          diagram.navigateTo(navigateTo, id)
         },
       })
     }
@@ -94,7 +107,7 @@ export const ElementActions = ({
       })
     }
     return buttons
-  }, [enableNavigateTo, enableRelationshipBrowser, diagram, modelFqn, navigateTo, props.data.id])
+  }, [enableNavigateTo, enableRelationshipBrowser, modelFqn, navigateTo, id])
 
   if (extraButtons && hasAtLeast(extraButtons, 1)) {
     buttons = [...buttons, ...extraButtons]
@@ -102,7 +115,7 @@ export const ElementActions = ({
 
   // Spread all ReactFlow node props and override buttons with our computed buttons
   return <ElementActionButtons {...props} buttons={buttons} />
-}
+}, compareElementActionsProps)
 
 export type DeploymentElementActionsProps =
   & SimplifyDeep<{
@@ -168,7 +181,7 @@ export const DeploymentElementActions = ({
       })
     }
     return buttons
-  }, [enableNavigateTo, enableRelationshipBrowser, diagram, modelFqn, navigateTo, id])
+  }, [enableNavigateTo, enableRelationshipBrowser, modelFqn, navigateTo, id])
 
   if (extraButtons && hasAtLeast(extraButtons, 1)) {
     buttons = [...buttons, ...extraButtons]

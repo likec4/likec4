@@ -1,8 +1,8 @@
 import { type EdgeId, type Fqn, nonNullable } from '@likec4/core'
-import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, useContext, useMemo } from 'react'
+import { useCallbackRef } from '../../hooks/useCallbackRef'
 import type { OverlaysActorRef } from '../overlaysActor'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 

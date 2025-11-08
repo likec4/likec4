@@ -1,9 +1,9 @@
 import { type MantineThemeOverride, MantineProvider } from '@mantine/core'
-import { useCallbackRef } from '@mantine/hooks'
 import { type HTMLAttributes, useCallback, useRef } from 'react'
 import root from 'react-shadow'
 import { isDefined } from 'remeda'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
+import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useId } from '../hooks/useId'
 import { DefaultTheme, useBundledStyleSheet, useColorScheme } from './styles.css'
 

@@ -604,25 +604,6 @@ export const stopSyncLayout = () =>
     enqueue.stopChild(syncLayoutActor)
   })
 
-export const startSyncLayout = () =>
-  machine.enqueueActions(({ context, enqueue, system, self }) => {
-    // Check if the context is read-only
-    if (isReadOnly(context)) return
-    const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-    if (syncLayoutActor) {
-      enqueue.stopChild(syncLayoutActor)
-    }
-    enqueue.spawnChild('syncManualLayoutActorLogic', {
-      id: 'syncLayout',
-      systemId: 'syncLayout',
-      input: {
-        parent: self,
-        viewId: context.view.id,
-      },
-      syncSnapshot: true,
-    })
-  })
-
 export const ensureSyncLayout = () =>
   machine.enqueueActions(({ context, enqueue, system, self }) => {
     const syncLayoutActor = typedSystem(system).syncLayoutActorRef
@@ -633,6 +614,7 @@ export const ensureSyncLayout = () =>
       }
       return
     }
+    if (syncLayoutActor) return
     enqueue.spawnChild('syncManualLayoutActorLogic', {
       id: 'syncLayout',
       systemId: 'syncLayout',
@@ -645,7 +627,7 @@ export const ensureSyncLayout = () =>
   })
 
 export const scheduleSyncLayout = () =>
-  machine.enqueueActions(({ context, enqueue, system, self }) => {
+  machine.enqueueActions(({ enqueue, system }) => {
     const syncLayoutActor = typedSystem(system).syncLayoutActorRef
     if (!syncLayoutActor) {
       console.warn('Sync layout actor is not running')
@@ -832,7 +814,7 @@ export const updateView = () =>
         enqueue.assign({
           focusedNode: null,
         })
-        enqueue(disableCompareWithLatest)
+        enqueue(disableCompareWithLatest())
         const { fromNode, toNode } = findCorrespondingNode(context, event)
         if (fromNode && toNode) {
           enqueue(xyflow.alignNodeFromToAfterNavigate({
@@ -851,12 +833,15 @@ export const updateView = () =>
           enqueue(raiseFitDiagram({ duration: 200, delay: 25 }))
         }
         enqueue(updateXYNodesEdges())
-        enqueue(startSyncLayout())
+        enqueue(ensureSyncLayout())
         return
       }
 
       enqueue(updateXYNodesEdges())
-      enqueue.sendTo(typedSystem(system).syncLayoutActorRef!, { type: 'synced' }, { delay: 50 })
+      const syncLayoutActor = typedSystem(system).syncLayoutActorRef
+      if (syncLayoutActor) {
+        enqueue.sendTo(syncLayoutActor, { type: 'synced' }, { delay: 50 })
+      }
 
       const nextView = event.view
 
