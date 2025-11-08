@@ -4,6 +4,7 @@ import { Handle, Position } from '@xyflow/react'
 import { isTruthy } from 'remeda'
 import type { SetNonNullable } from 'type-fest'
 import { ElementData, ElementNodeContainer, ElementShape } from '../../../base-primitives'
+import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import type { Types } from '../../types'
 import { ElementActions } from './ElementActions'
 import { ElementDetailsButtonWithHandler } from './nodes'
@@ -68,6 +69,7 @@ const hasModelFqn = <D extends Types.SequenceActorNodeData>(data: D): data is Se
   isTruthy(data.modelFqn)
 
 export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
+  const { enableElementDetails } = useEnabledFeatures()
   const data = props.data
   const {
     id,
@@ -108,7 +110,7 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
         {hasModelFqn(data) && (
           <>
             <ElementActions {...props} data={data} />
-            <ElementDetailsButtonWithHandler id={id} data={data} />
+            {enableElementDetails && <ElementDetailsButtonWithHandler id={id} data={data} />}
           </>
         )}
       </ElementNodeContainer>
