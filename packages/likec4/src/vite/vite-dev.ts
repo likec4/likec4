@@ -6,6 +6,7 @@ import isInsideContainer from 'is-inside-container'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { env } from 'std-env'
 import k from 'tinyrainbow'
 import type { SetOptional } from 'type-fest'
 import type { ViteDevServer } from 'vite'
@@ -17,6 +18,7 @@ type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
   openBrowser?: boolean
   hmr?: boolean
   listen?: string | undefined
+  port?: number | undefined
 }
 
 export async function viteDev({
@@ -28,6 +30,7 @@ export async function viteDev({
   likec4AssetsDir,
   openBrowser,
   listen,
+  port,
   ...cfg
 }: Config): Promise<ViteDevServer> {
   likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
@@ -40,9 +43,10 @@ export async function viteDev({
     title,
   })
   const logger = config.customLogger
-  const port = await getPort({
+  const preferredPort = port ?? (env.PORT ? parseInt(env.PORT, 10) : 5173)
+  const actualPort = await getPort({
     port: [
-      5173,
+      preferredPort,
       ...portNumbers(61000, 61010),
       ...portNumbers(62002, 62010),
     ],
@@ -80,7 +84,7 @@ export async function viteDev({
       // This is not recommended as it can be a security risk - https://vite.dev/config/server-options#server-allowedhosts
       // Enabled after request in discord support just to check if it solves the problem
       allowedHosts: true,
-      port,
+      port: actualPort,
       hmr: hmr && {
         overlay: true,
         // needed for hmr to work over network aka WSL2
