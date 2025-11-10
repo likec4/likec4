@@ -14,7 +14,6 @@ import {
   assignLastClickedNode,
   cancelFitDiagram,
   emitEdgeClick,
-  emitEdgeEditingStarted,
   emitNodeClick,
   emitOnChange,
   emitOnLayoutTypeChange,
@@ -108,9 +107,6 @@ const _diagramMachine = machine.createMachine({
         viewportChangedManually: (({ event }) => event.manually),
         viewport: (({ event }) => event.viewport),
       }),
-    },
-    'xyflow.edgeEditingStarted': {
-      actions: emitEdgeEditingStarted(),
     },
     'fitDiagram': {
       guard: 'enabled: FitView',

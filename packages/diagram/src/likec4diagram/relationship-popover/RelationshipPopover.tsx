@@ -81,10 +81,6 @@ export const RelationshipPopover = memo(() => {
     actorRef.send({ type: 'xyedge.mouseLeave' })
   })
 
-  useOnDiagramEvent('edgeEditingStarted', () => {
-    actorRef.send({ type: 'close' })
-  })
-
   useOnDiagramEvent('walkthroughStarted', () => {
     actorRef.send({ type: 'close' })
   })

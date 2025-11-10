@@ -454,16 +454,6 @@ export const emitEdgeClick = () =>
     }
   })
 
-export const emitEdgeEditingStarted = () =>
-  machine.emit(({ context, event }) => {
-    assertEvent(event, 'xyflow.edgeEditingStarted')
-    const edge = nonNullable(context.xyedges.find(x => x.id === event.edge.id), `Edge ${event.edge.id} not found`)
-    return ({
-      type: 'edgeEditingStarted',
-      edge,
-    })
-  })
-
 export const emitWalkthroughStarted = () =>
   machine.emit(({ context }) => {
     const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)

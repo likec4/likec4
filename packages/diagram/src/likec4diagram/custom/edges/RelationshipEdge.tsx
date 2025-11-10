@@ -117,7 +117,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const onControlPointerStartMove = useCallbackRef(() => {
     diagram.startEditing('edge')
-    diagram.send({ type: 'xyflow.edgeEditingStarted', edge: props.data })
     setIsControlPointDragging(true)
   })
   const onControlPointerCancelMove = useCallbackRef(() => {
