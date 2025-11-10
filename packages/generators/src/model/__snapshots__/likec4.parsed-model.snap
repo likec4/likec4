@@ -115,8 +115,12 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
     },
     relationships: {},
     tags: {
-      internal: {},
-      external: {},
+      external: {
+        color: 'tomato',
+      },
+      internal: {
+        color: 'grass',
+      },
     },
     metadataKeys: [
       'key1',
