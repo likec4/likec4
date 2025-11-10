@@ -127,23 +127,6 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   /**
-   * The original view (auto-layouted).
-   * @see {@link $layouted} should be used for rendering in the UI
-   */
-  get $view(): V {
-    if (!this.isLayouted() || 'drifts' in this.#view) {
-      return this.#view
-    }
-    const snapshot = this.#manualLayoutSnapshot
-    if (snapshot) {
-      return memoizeProp(this, 'withDriftReasons', () => {
-        return applyLayoutDriftReasons(this.#view, snapshot)
-      })
-    }
-    return this.#view
-  }
-
-  /**
    * Returns the styles configuration for the project.
    */
   get $styles(): LikeC4Styles {
@@ -243,6 +226,23 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   /**
+   * The original view (auto-layouted).
+   * @see {@link $layouted} should be used for rendering in the UI
+   */
+  get $view(): V {
+    if (!this.isLayouted() || 'drifts' in this.#view) {
+      return this.#view
+    }
+    const snapshot = this.#manualLayoutSnapshot
+    if (snapshot) {
+      return memoizeProp(this, 'withDriftReasons', () => {
+        return applyLayoutDriftReasons(this.#view, snapshot)
+      })
+    }
+    return this.#view
+  }
+
+  /**
    * Returns the view with manual layout applied if it exists, otherwise returns the original view
    * This should be used for rendering in the UI
    */
@@ -264,13 +264,13 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     if (!this.isLayouted()) {
       return null
     }
-    return memoizeProp(this, 'snapshotWithManualLayout', () => {
-      const snapshot = this.#manualLayoutSnapshot
-      if (snapshot) {
+    const snapshot = this.#manualLayoutSnapshot
+    if (snapshot) {
+      return memoizeProp(this, 'snapshotWithManualLayout', () => {
         return applyManualLayout(this.#view, snapshot)
-      }
-      return null
-    })
+      })
+    }
+    return null
   }
 
   /**
