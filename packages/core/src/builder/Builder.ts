@@ -290,6 +290,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     const {
       links: _links = [],
       title = null,
+      summary = null,
       description = null,
       tags = [],
       ...props
@@ -300,6 +301,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       exact({
         id: id as any,
         title,
+        summary: summary ? { txt: summary } : null,
         description: description ? { txt: description } : null,
         tags,
         links,

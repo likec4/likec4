@@ -103,6 +103,7 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
 
 export type NewViewProps<Tag> = {
   title?: string
+  summary?: string
   description?: string
   tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
   links?: Array<string | { title?: string; url: string }>

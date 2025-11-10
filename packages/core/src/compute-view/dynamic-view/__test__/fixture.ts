@@ -15,6 +15,7 @@ const emptyView = {
   _type: 'dynamic' as const,
   id: 'index' as ViewId,
   title: null,
+  summary: null,
   description: null,
   tags: null,
   links: null,
