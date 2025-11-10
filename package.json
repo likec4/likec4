@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.43.0",
+  "version": "1.44.0",
   "private": true,
   "license": "MIT",
   "packageManager": "pnpm@10.20.0",
@@ -83,10 +83,12 @@
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
-      "dprint",
-      "esbuild",
       "sharp",
-      "workerd"
+      "workerd",
+      "oxlint",
+      "wrangler",
+      "dprint",
+      "esbuild"
     ]
   },
   "nano-staged": {

@@ -166,6 +166,7 @@ catalogs:
     zod: ^4.1.12
 
 onlyBuiltDependencies:
+  - "@tailwindcss/oxide"
   - dprint
   - esbuild
   - sharp

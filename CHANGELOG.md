@@ -1,9 +1,74 @@
+# [1.44.0](https://github.com/likec4/likec4/compare/v1.43.0...v1.44.0) (2025-11-10)
+
+> [!NOTE]
+> **💖 Thanks to Our Sponsors**  
+> Huge thanks to everyone supporting LikeC4 — your sponsorships make continued development possible.
+>
+> If you find LikeC4 valuable, consider becoming a sponsor. Every contribution helps keep the project alive and evolving.
+
+### 🚀 Features
+
+- **cli:** add --port CLI argument and use PORT environment variable, thanks @aorwall
+  [#2360](https://github.com/likec4/likec4/pull/2360) ([201da2f](https://github.com/likec4/likec4/commit/201da2f769f904bfac5882e8a7a9637ef7184989))
+
+- **Manual Layouts:**.\
+  This release brings major improvements to manual layout management — focused on stability, transparency, and easier collaboration.  
+  Discussion: [#2288](https://github.com/likec4/likec4/discussions/2288)
+
+  1. **Manual layout used by default**.\
+     Previously, manual layouts were applied as a base layer, and additional changes were added on top — often causing unwanted shifts.  
+     Now, if a manual layout exists for a view, it’s used directly, without auto-adjustments.  
+     Warnings appear if the layout drifts from the model.  
+     Most non-layout properties (titles, icons, colors, etc.) are still auto-applied — but only when they don’t affect layout.  
+
+     <img src="https://github.com/user-attachments/assets/e73e8d37-bc1a-425d-986b-5d0cebe4ca6b" />
+
+  3. **Snapshots persistence**.\
+     Manual layouts are now saved as individual `.snap` files (`<view-id>.likec4.snap`) inside the `.likec4/` folder.\
+     This makes tracking changes and version control far simpler.  
+     You can customize the output folder via project config:
+     
+     ```json
+      {
+        "name": "project-name",
+        "manualLayouts": {
+          "outDir": ".likec4"
+        }
+      }
+     ```
+     
+
+  5. **Compare with latest**.\
+     You can now compare your manual layout with the latest auto-generated version to detect drift after model changes.\
+     Currently, only a “Reset to latest” action is available — more options will follow.
+
+     https://github.com/user-attachments/assets/46360794-d856-4216-8cef-857d976a4e5f
+
+
+  7. **Connections editing improvements**.\
+     Connections are no longer static — control points now move responsively when you adjust nodes.
+
+  8. **Undo**.\
+     Manual layout editing now supports standard undo shortcuts (Ctrl/Cmd + Z).
+
+  9. **Migrate manual layouts**.\
+     VSCode extension helps migrate existing manual layouts to the new snapshot-based system
+     
+     <img src="https://github.com/user-attachments/assets/c5edede7-0622-4554-a130-c53b8cb01060" />
+
+
+### 🐞 Bug Fixes
+
+- **react**: don't scroll entire page when showing menu if diagram is embedded, thanks @AlbertBrand, [#2357](https://github.com/likec4/likec4/pull/2357) ([90f1ed6](https://github.com/likec4/likec4/commit/90f1ed65ef35df4b6ae73e486f17511b249386bd))
+- **react**: remove experimentalEdgeEditing prop from various components ([1cd32b8](https://github.com/likec4/likec4/commit/1cd32b898e2a2b931443996e79fc23313039d0fb))
+- undefined tag color when adding tag in model builder ([f48b8a8](https://github.com/likec4/likec4/commit/f48b8a84db2b8f80d11bdc2ba6f079eac019d78c)), closes [#2355](https://github.com/likec4/likec4/issues/2355)
+
 # [1.43.0](https://github.com/likec4/likec4/compare/v1.42.1...v1.43.0) (2025-10-25)
 
 ### 🚀 Features
 
-- **Multi-metadata support**  
-  You can also use arrays for metadata values 
+- **Multi-metadata support**\
+  You can also use arrays for metadata values
   ```zig
   model {
     app = application 'App' {
@@ -15,139 +80,129 @@
     }
   }
   ```
-  
+
   [📖 Documentation](https://likec4.dev/dsl/model/#array-values)
 
-  Thanks to @kieronlanning for such a great contribution  
+  Thanks to @kieronlanning for such a great contribution\
   PR: [#2306](https://github.com/likec4/likec4/issues/2306) and [#2313](https://github.com/likec4/likec4/issues/2313)
 
-- **Revamp landing page**  
+- **Revamp landing page**\
   ![SCR-20251025-czqz](https://github.com/user-attachments/assets/59822d1e-5892-4306-9ce7-a9e0ba57880a)
-  
 
 ### 🐞 Bug Fixes
 
-* **config:** make json schema stricter ([#2318](https://github.com/likec4/likec4/issues/2318))
-
-
+- **config:** make json schema stricter ([#2318](https://github.com/likec4/likec4/issues/2318))
 
 ## [1.42.1](https://github.com/likec4/likec4/compare/v1.42.0...v1.42.1) (2025-10-07)
 
 ### 🐞 Bug Fixes
 
-* regression with relationships layout, closes [#2282](https://github.com/likec4/likec4/issues/2282)
-
+- regression with relationships layout, closes [#2282](https://github.com/likec4/likec4/issues/2282)
 
 # [1.42.0](https://github.com/likec4/likec4/compare/v1.41.0...v1.42.0) (2025-09-30)
 
 ### 🚀 Features
 
-- **Theme & Styling Customization**  
-  One of the most requested features is finally here — the ability to override the default theme and customize styling.  
+- **Theme & Styling Customization**\
+  One of the most requested features is finally here — the ability to override the default theme and customize styling.\
   Check out [Styles Customization Docs](https:///likec4.dev/dsl/config/#styles-customization).
-  
-- **Dynamic Views Enhancements**  
+
+- **Dynamic Views Enhancements**
   - DSL supports continuous steps `A -> B -> C -> ....` [docs](https://likec4.dev/dsl/views/dynamic/#continuous-steps)
   - Explicit order of actors [docs](https://likec4.dev/dsl/views/dynamic/#order-of-actors)
   - Webcomponents: `dynamic-variant` attribute
     ```html
     <likec4-view view-id="index" dynamic-variant="sequence"/>
     ```
-  - Export Sequence Views to PNG  
+  - Export Sequence Views to PNG
     ```sh
     # Exports views matching use-case* using sequence layout
-    likec4 export png -f "use-case*" --sequence src/likec4    
+    likec4 export png -f "use-case*" --sequence src/likec4
     ```
-    
-- **VSCode Improvements**  
+
+- **VSCode Improvements**
   - VSCode preview now navigates to the source of a step
   - Local files can now be displayed in the VSCode preview (first Copilot contribution, [#2218](https://github.com/likec4/likec4/issues/2218))
 
-- **Other Improvements**  
+- **Other Improvements**
   - Sourceless relationships are now supported on extended elements, closes [#2114](https://github.com/likec4/likec4/issues/2114)
   - @gjveld added neovim instructions [#2266](https://github.com/likec4/likec4/issues/2266)
 
 ### 🐞 Bug Fixes
 
-* add relative paths to types and module fields in icons package.json ([aa83914](https://github.com/likec4/likec4/commit/aa83914f95140564afca4cce389358878599ded1))
-* enable error throwing in zx shell commands for CLI build tests ([4f5438d](https://github.com/likec4/likec4/commit/4f5438d3c590c6be4c09fee794e7e8387103b28f))
-* invalid style replacements in shadowroot ([16fa684](https://github.com/likec4/likec4/commit/16fa684bba2093baf16bf84fd28391b168e35883))
-* normalize package.json types/module paths by removing leading ./ prefix ([ef03ec3](https://github.com/likec4/likec4/commit/ef03ec3fdd4651aa46d7f26c27e3b1918a9164f2))
-* npm engine warnings by updating Node.js version ranges from tilde to caret/gte ([#2270](https://github.com/likec4/likec4/issues/2270)) ([e87d3f5](https://github.com/likec4/likec4/commit/e87d3f54ea58a2acd39c0b8bfa32911c8a510bfc))
-* png export fails on single file static page ([242cf4e](https://github.com/likec4/likec4/commit/242cf4e1f9ad1dc23ba9b9459ff281386e7e6978)), closes [#2237](https://github.com/likec4/likec4/issues/2237)
-* **react:** embedded sequence starts walkthrough on edge click ([6685a23](https://github.com/likec4/likec4/commit/6685a23a2a0e897ccf50e0883641433ff3024860))
-* **react:** search on description/summary not working ([#2242](https://github.com/likec4/likec4/issues/2242)) ([80252e0](https://github.com/likec4/likec4/commit/80252e023f22b8bfc7ff9294fad72551c5df9652)), closes [#2239](https://github.com/likec4/likec4/issues/2239)
-* sequence view goes to negative coordinates ([beda70d](https://github.com/likec4/likec4/commit/beda70de566b425bdd96388df94ef23e4793fcee))
-
+- add relative paths to types and module fields in icons package.json ([aa83914](https://github.com/likec4/likec4/commit/aa83914f95140564afca4cce389358878599ded1))
+- enable error throwing in zx shell commands for CLI build tests ([4f5438d](https://github.com/likec4/likec4/commit/4f5438d3c590c6be4c09fee794e7e8387103b28f))
+- invalid style replacements in shadowroot ([16fa684](https://github.com/likec4/likec4/commit/16fa684bba2093baf16bf84fd28391b168e35883))
+- normalize package.json types/module paths by removing leading ./ prefix ([ef03ec3](https://github.com/likec4/likec4/commit/ef03ec3fdd4651aa46d7f26c27e3b1918a9164f2))
+- npm engine warnings by updating Node.js version ranges from tilde to caret/gte ([#2270](https://github.com/likec4/likec4/issues/2270)) ([e87d3f5](https://github.com/likec4/likec4/commit/e87d3f54ea58a2acd39c0b8bfa32911c8a510bfc))
+- png export fails on single file static page ([242cf4e](https://github.com/likec4/likec4/commit/242cf4e1f9ad1dc23ba9b9459ff281386e7e6978)), closes [#2237](https://github.com/likec4/likec4/issues/2237)
+- **react:** embedded sequence starts walkthrough on edge click ([6685a23](https://github.com/likec4/likec4/commit/6685a23a2a0e897ccf50e0883641433ff3024860))
+- **react:** search on description/summary not working ([#2242](https://github.com/likec4/likec4/issues/2242)) ([80252e0](https://github.com/likec4/likec4/commit/80252e023f22b8bfc7ff9294fad72551c5df9652)), closes [#2239](https://github.com/likec4/likec4/issues/2239)
+- sequence view goes to negative coordinates ([beda70d](https://github.com/likec4/likec4/commit/beda70de566b425bdd96388df94ef23e4793fcee))
 
 # [1.41.0](https://github.com/likec4/likec4/compare/v1.40.0...v1.41.0) (2025-09-16)
 
 ### 🚀 Features
 
-- **Summary**  
-  Elements may have a short `summary`, and `description` becomes a "long description"  
-  If `summary` is provided, it will be shown on the diagram, and `description` in the details dialog.  
+- **Summary**\
+  Elements may have a short `summary`, and `description` becomes a "long description"\
+  If `summary` is provided, it will be shown on the diagram, and `description` in the details dialog.\
   Closes [#2218](https://github.com/likec4/likec4/issues/2218)
-
 
 # [1.40.0](https://github.com/likec4/likec4/compare/v1.39.5...v1.40.0) (2025-09-14)
 
 ### 🚀 Features
 
 - **Sequence view**
-  
+
   <img alt="dynamic-variant-sequence" src="https://github.com/user-attachments/assets/0e811ecc-f6a1-4377-a4de-c347531bb7e5" />
-  
+
   Now dynamic views support two variants: `diagram` and `sequence`.
-  
+
   The sequence variant comes with a few limitations:
   - only connections with _leaf_ elements are supported
   - export to image is not yet available (_coming soon_)
-   
+
 ### Bug Fixes
 
-* consolidate size handling with new `ensureSizes` utility ([#2222](https://github.com/likec4/likec4/issues/2222)) ([230bac5](https://github.com/likec4/likec4/commit/230bac5e2634ab709ff88c5f16c495da562799ea)), closes [#2220](https://github.com/likec4/likec4/issues/2220)
-* **formatter:** fixed formatting of quotes in markdown fields, thanks @pavelpykhtin, closes [#2147](https://github.com/likec4/likec4/issues/2147) ([#2223](https://github.com/likec4/likec4/issues/2223)) ([15af4e9](https://github.com/likec4/likec4/commit/15af4e932ca2c79ee894109ff3dab56527a64c8f))
-
+- consolidate size handling with new `ensureSizes` utility ([#2222](https://github.com/likec4/likec4/issues/2222)) ([230bac5](https://github.com/likec4/likec4/commit/230bac5e2634ab709ff88c5f16c495da562799ea)), closes [#2220](https://github.com/likec4/likec4/issues/2220)
+- **formatter:** fixed formatting of quotes in markdown fields, thanks @pavelpykhtin, closes [#2147](https://github.com/likec4/likec4/issues/2147) ([#2223](https://github.com/likec4/likec4/issues/2223)) ([15af4e9](https://github.com/likec4/likec4/commit/15af4e932ca2c79ee894109ff3dab56527a64c8f))
 
 ## [1.39.5](https://github.com/likec4/likec4/compare/v1.39.4...v1.39.5) (2025-09-11)
 
 ### 🐞 Bug Fixes
 
-* **vscode:** VS Code extension crashed, downgrade fdir to 6.4.0 ([efea140](https://github.com/likec4/likec4/commit/efea1407cc9e326c2dbe75f0d990fc9cb34f9779)), closes [#2215](https://github.com/likec4/likec4/issues/2215)
-
+- **vscode:** VS Code extension crashed, downgrade fdir to 6.4.0 ([efea140](https://github.com/likec4/likec4/commit/efea1407cc9e326c2dbe75f0d990fc9cb34f9779)), closes [#2215](https://github.com/likec4/likec4/issues/2215)
 
 ## [1.39.4](https://github.com/likec4/likec4/compare/v1.39.3...v1.39.4) (2025-09-10)
 
 ### 🐞 Bug Fixes
-* **react:** clicking on the same item in the browser list twice or more does not hide the list ([9b2198e](https://github.com/likec4/likec4/commit/9b2198e98f18a6b613d74c02660c823013f09db0)), closes [#2199](https://github.com/likec4/likec4/issues/2199)
-* **cli:** `build` command produces broken static site, closes [#2213](https://github.com/likec4/likec4/issues/2213)
 
+- **react:** clicking on the same item in the browser list twice or more does not hide the list ([9b2198e](https://github.com/likec4/likec4/commit/9b2198e98f18a6b613d74c02660c823013f09db0)), closes [#2199](https://github.com/likec4/likec4/issues/2199)
+- **cli:** `build` command produces broken static site, closes [#2213](https://github.com/likec4/likec4/issues/2213)
 
 ## [1.39.3](https://github.com/likec4/likec4/compare/v1.39.2...v1.39.3) (2025-09-09)
 
 ### 🐞 Bug Fixes
 
-* **config:** improve programmatic configs ([b8122c3](https://github.com/likec4/likec4/commit/b8122c340ba139c48a885edb4d663cc56172fd07))
-  - Avoid redundant bundling 
+- **config:** improve programmatic configs ([b8122c3](https://github.com/likec4/likec4/commit/b8122c340ba139c48a885edb4d663cc56172fd07))
+  - Avoid redundant bundling
   - Fix issue with loading TS/JS configs when using globally installed `likec4`
-
 
 ## [1.39.2](https://github.com/likec4/likec4/compare/v1.39.1...v1.39.2) (2025-09-08)
 
 ### 🐞 Bug Fixes
 
-* **vscode:** improve indentation rules and extension activation ([9bf99d0](https://github.com/likec4/likec4/commit/9bf99d03e9c9fe7756e75c146ef892957555c78d))
-* **cli:** optimize bundle chunking and update treeshake preset for better code splitting ([f1a881d](https://github.com/likec4/likec4/commit/f1a881d5027e15d76a3d066934d315044dba87e5))
-* **vscode:** show view ID as fallback title in diagram preview panel ([3f10fe4](https://github.com/likec4/likec4/commit/3f10fe4864410ea7f6116468a8232d6e7c2a4c23))
+- **vscode:** improve indentation rules and extension activation ([9bf99d0](https://github.com/likec4/likec4/commit/9bf99d03e9c9fe7756e75c146ef892957555c78d))
+- **cli:** optimize bundle chunking and update treeshake preset for better code splitting ([f1a881d](https://github.com/likec4/likec4/commit/f1a881d5027e15d76a3d066934d315044dba87e5))
+- **vscode:** show view ID as fallback title in diagram preview panel ([3f10fe4](https://github.com/likec4/likec4/commit/3f10fe4864410ea7f6116468a8232d6e7c2a4c23))
 
 ## [1.39.1](https://github.com/likec4/likec4/compare/v1.39.0...v1.39.1) (2025-09-06)
 
 ### 🐞 Bug Fixes
 
-* **app:** index page takes a long time to load the preview of the views ([5f98bc4](https://github.com/likec4/likec4/commit/5f98bc4e674bd508cee921b6e2a8df70a0d4bc4b)), closes [#2194](https://github.com/likec4/likec4/issues/2194)
-* **docker:** Pre-built image is broken in 1.39.0 ([6370240](https://github.com/likec4/likec4/commit/63702406f6ff29713a17bd05e7e8b8dd84cd4161)), closes [#2196](https://github.com/likec4/likec4/issues/2196)
-
+- **app:** index page takes a long time to load the preview of the views ([5f98bc4](https://github.com/likec4/likec4/commit/5f98bc4e674bd508cee921b6e2a8df70a0d4bc4b)), closes [#2194](https://github.com/likec4/likec4/issues/2194)
+- **docker:** Pre-built image is broken in 1.39.0 ([6370240](https://github.com/likec4/likec4/commit/63702406f6ff29713a17bd05e7e8b8dd84cd4161)), closes [#2196](https://github.com/likec4/likec4/issues/2196)
 
 # [1.39.0](https://github.com/likec4/likec4/compare/v1.38.1...v1.39.0) (2025-09-05)
 
