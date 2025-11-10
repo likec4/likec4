@@ -229,3 +229,19 @@ jobs:
           path: e2e/src/*.ts
           compression-level: 9
           retention-days: 5
+
+  # This job depends on all the previous jobs to ensure the quality gate
+  check-quality-gate:
+    name: 🚦 quality gate
+    runs-on: ubuntu-24.04-arm
+    needs:
+      - check-types
+      - check-build
+      - check-on-windows
+      - check-tests
+      - check-docs-astro
+      - check-e2e-tests
+      - check-e2e-types
+    steps:
+      - run: |
+          echo "### Quality Gate Passed :rocket:" >> $GITHUB_STEP_SUMMARY
