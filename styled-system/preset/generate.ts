@@ -1,4 +1,4 @@
-import { defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/styles'
+import { DefaultTagColors, defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/styles'
 import { DEFAULT_THEME } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
 import type { Config } from '@pandacss/dev'
@@ -196,6 +196,8 @@ export const generatedGlobalCss = ${
 export const paletteGlobalVars = ${JSON5.stringify(globalVars, null, 2)}
 
 export const mantine = ${JSON5.stringify(mantineVars, null, 2)} as const
+
+export const DefaultTagColors = ${JSON5.stringify(DefaultTagColors, null, 2)} as const
 `
 
 writeFileSync('./src/generated.ts', ts)
