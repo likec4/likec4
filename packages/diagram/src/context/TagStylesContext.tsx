@@ -1,4 +1,5 @@
 import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
+import { DefaultTagColors } from '@likec4/core/styles'
 import { useMantineStyleNonce } from '@mantine/core'
 import { type PropsWithChildren, createContext, memo, useContext } from 'react'
 import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
@@ -6,25 +7,7 @@ import { useLikeC4Specification } from '../hooks/useLikeC4Model'
 
 const TagStylesContext = createContext<Record<string, TagSpecification>>({})
 
-// TODO: keep this in sync with styled-system/preset/src/const.ts
-const radixColors = [
-  'yellow',
-  'orange',
-  'amber',
-  'tomato',
-  'red',
-  'ruby',
-  'crimson',
-  'pink',
-  'pink',
-  'purple',
-  'violet',
-  'indigo',
-  'blue',
-  'teal',
-  'grass',
-  'lime',
-]
+const radixColors = DefaultTagColors
 
 const generateColorVars = (spec: TagSpecification) => {
   const color = spec.color

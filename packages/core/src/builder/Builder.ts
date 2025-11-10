@@ -15,6 +15,7 @@ import {
 import type { Writable } from 'type-fest'
 import { computeLikeC4Model } from '../compute-view/compute-view'
 import { LikeC4Model } from '../model/LikeC4Model'
+import { assignTagColors } from '../styles/assignTagColors'
 import type {
   Any,
   aux,
@@ -264,7 +265,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       elements: structuredClone(spec.elements),
       deployments: structuredClone(spec.deployments),
       relationships: structuredClone(spec.relationships),
-      tags: structuredClone(spec.tags),
+      tags: assignTagColors(structuredClone(spec.tags)),
       ...(spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
       customColors: {},
     } as Specification<Types.ToAux<T>>)

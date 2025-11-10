@@ -1,6 +1,6 @@
 import type { ColorLiteral, Tag, TagSpecification } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
-import { assignTagColors, radixColors } from './assignTagColors'
+import { assignTagColors, DefaultTagColors } from './assignTagColors'
 
 // Helper to create test tags with proper typing
 const createTestTags = <const T extends Record<string, { color?: string }>>(
@@ -48,20 +48,20 @@ describe('assignTagColors', () => {
     const result = assignTagColors(tags)
     expect(result).toEqual({
       tag1: {
-        color: radixColors[0],
+        color: DefaultTagColors[0],
       },
       tag2: {
-        color: radixColors[1],
+        color: DefaultTagColors[1],
       },
       tag3: {
-        color: radixColors[2],
+        color: DefaultTagColors[2],
       },
     })
   })
 
   it('should cycle through radixColors when there are more tags than colors', () => {
     // Create more tags than we have colors
-    const tagCount = radixColors.length * 2 + 1 // More than one full cycle
+    const tagCount = DefaultTagColors.length * 2 + 1 // More than one full cycle
 
     // Create test tags with unique names
     const testTags: Record<string, { color?: ColorLiteral }> = {}
@@ -74,7 +74,7 @@ describe('assignTagColors', () => {
 
     // Verify colors are assigned in sequence and cycle back to start
     for (let i = 0; i < tagCount; i++) {
-      const expectedColor = radixColors[i % radixColors.length]
+      const expectedColor = DefaultTagColors[i % DefaultTagColors.length]
       const tagColor = getTagColor(result, `tag${i}`)
       expect(tagColor).toBeDefined()
       expect(tagColor).toBe(expectedColor)
@@ -94,7 +94,7 @@ describe('assignTagColors', () => {
         color: '#ff0000',
       },
       tag2: {
-        color: radixColors[0],
+        color: DefaultTagColors[0],
       },
       tag3: {
         color: '#00ff00',
@@ -116,13 +116,13 @@ describe('assignTagColors', () => {
         color: '#ff0000',
       },
       tag2: {
-        color: radixColors[0],
+        color: DefaultTagColors[0],
       },
       tag3: {
         color: '#00ff00',
       },
       tag4: {
-        color: radixColors[1],
+        color: DefaultTagColors[1],
       },
     })
   })
@@ -138,16 +138,16 @@ describe('assignTagColors', () => {
     const result = assignTagColors(tags)
     expect(result).toEqual({
       apple: {
-        color: radixColors[0],
+        color: DefaultTagColors[0],
       },
       banana: {
-        color: radixColors[1],
+        color: DefaultTagColors[1],
       },
       cherry: {
         color: '#ff0000',
       },
       zebra: {
-        color: radixColors[2],
+        color: DefaultTagColors[2],
       },
     })
   })

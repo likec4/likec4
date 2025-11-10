@@ -1,3 +1,5 @@
+import { DefaultTagColors } from './generated'
+
 export const root = '.likec4-root'
 export const rootNotReduced = `${root}:not([data-likec4-reduced-graphics])`
 
@@ -45,24 +47,6 @@ const AllRadixColors = [
 ] as const
 export type RadixColor = (typeof AllRadixColors)[number]
 
-// TODO: keep this in sync with packages/diagram/src/context/TagStylesContext.tsx
-export const radixColors = [
-  'yellow',
-  'orange',
-  'amber',
-  'tomato',
-  'red',
-  'ruby',
-  'crimson',
-  'pink',
-  'pink',
-  'purple',
-  'violet',
-  'indigo',
-  'blue',
-  'teal',
-  'grass',
-  'lime',
-] satisfies RadixColor[]
+export const radixColors = [...DefaultTagColors] satisfies RadixColor[]
 
 export const iconSize = '--likec4-icon-size'

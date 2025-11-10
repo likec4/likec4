@@ -1,12 +1,13 @@
-import type * as c4 from '@likec4/core/types'
-import { compareNatural, nonNullable } from '@likec4/core/utils'
 import { concat, entries, isTruthy, map, pipe, prop, pullObject, sort } from 'remeda'
-import type { ParsedAstSpecification } from '../../ast'
+import type { ColorLiteral, TagSpecification } from '../types'
+import type { Tag } from '../types/scalar'
+import { compareNatural } from '../utils/compare-natural'
+import { nonNullable } from '../utils/invariant'
 
 /**
- * Colors are taken from the styles presets of the LikeC4
+ * Colors are taken from the styles presets of the LikeC4 (Radix Colors)
  */
-export const radixColors = [
+export const DefaultTagColors = [
   'tomato',
   'grass',
   'blue',
@@ -24,31 +25,33 @@ export const radixColors = [
   'violet',
 ]
 
-export function assignTagColors(tags: ParsedAstSpecification['tags']): Record<c4.Tag, c4.TagSpecification> {
-  const tagsWithColors = [] as { tag: c4.Tag; spec: c4.TagSpecification }[]
-  const tagsWithoutColors = [] as c4.Tag[]
+export function assignTagColors(tags: {
+  [kind: string]: Partial<TagSpecification>
+}): Record<Tag, TagSpecification> {
+  const tagsWithColors = [] as { tag: Tag; spec: TagSpecification }[]
+  const tagsWithoutColors = [] as Tag[]
   for (const [tag, spec] of entries(tags)) {
     if (isTruthy(spec.color)) {
       tagsWithColors.push({
-        tag: tag as c4.Tag,
+        tag: tag as Tag,
         spec: {
           color: spec.color,
         },
       })
     } else {
-      tagsWithoutColors.push(tag as c4.Tag)
+      tagsWithoutColors.push(tag as Tag)
     }
   }
   return pipe(
     tagsWithoutColors,
     sort(compareNatural),
     map((tag, idx) => {
-      const color = nonNullable(radixColors[idx % radixColors.length] as c4.ColorLiteral)
+      const color = nonNullable(DefaultTagColors[idx % DefaultTagColors.length] as ColorLiteral)
       return {
         tag,
         spec: {
           color,
-        } as c4.TagSpecification,
+        } as TagSpecification,
       }
     }),
     concat(tagsWithColors),

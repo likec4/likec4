@@ -1,4 +1,5 @@
 import type * as c4 from '@likec4/core'
+import { assignTagColors } from '@likec4/core/styles'
 import { exact, FqnRef } from '@likec4/core/types'
 import { isNonEmptyArray, MultiMap, nameFromFqn } from '@likec4/core/utils'
 import {
@@ -15,7 +16,6 @@ import type {
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
 import { logger, logWarnError } from '../../logger'
-import { assignTagColors } from './assignTagColors'
 
 /**
  * The `MergedSpecification` class is responsible for merging multiple parsed
