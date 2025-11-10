@@ -10,25 +10,44 @@
   based on your feedback and aimed at improving usability and functionality.\
   Initial discussion [#2288](https://github.com/likec4/likec4/discussions/2288)
 
-  1. Manual layout picked by default.\
+  1. **Manual layout picked by default**.\
      Previously, manual layouts were used as a base, and any changes were applied on top of it. This often led to undesired shifts. Now, if a manual layout exists for a view, it will be used without any additional adjustments, but warnings will be shown if the layout drifts.
 
      Most properties (like titles, icons, colors, etc) are auto-applied, if this does not impact the layout. Warnings will be shown otherwise.
 
-  2. Snapshots persistence.\
-     Manual layouts are now persisted in files, named `<view-id>.likec4.snap` in `.likec4/` folder. This allows better tracking of changes, easier sharing, and version control.
+     <img src="https://github.com/user-attachments/assets/e73e8d37-bc1a-425d-986b-5d0cebe4ca6b" />
 
-  3. Compare with latest.\
+  3. **Snapshots persistence**.\
+     Manual layouts are now persisted in files, named `<view-id>.likec4.snap` in `.likec4/` folder. This allows better tracking of changes, easier sharing, and version control.  
+     You can change folder in project config.
+     
+     ```json
+      {
+        "name": "project-name",
+        "manualLayouts": {
+          "outDir": ".likec4"
+        }
+      }
+     ```
+     
+     
+     
+
+  5. **Compare with latest**.\
      You can now compare your layout with the latest auto-generated. This helps identify any drift or changes that may have occurred due to model updates.
      At the moment, only "Reset to latest" action is available, but more actions will be added in the future.
 
-  4. Connections editing improvements.\
+
+     https://github.com/user-attachments/assets/46360794-d856-4216-8cef-857d976a4e5f
+
+
+  6. **Connections editing improvements**.\
      Connections are not "static" anymore. Control points follow your manual adjustments responsively.
 
-  5. Undo.\
+  7. **Undo**.\
      You can now undo changes using standard shortcuts (Ctrl/Cmd + Z).
 
-  6. Migrate manual layouts.\
+  8. **Migrate manual layouts**.\
      A new command is available to help migrate existing manual layouts to the new snapshot-based system.
 
 ### 🐞 Bug Fixes
