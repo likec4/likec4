@@ -173,12 +173,12 @@ export function LikeC4Diagram<A extends Any = Any>({
                       zoomable={zoomable}
                       pannable={pannable}
                       fitViewPadding={fitViewPadding}
+                      nodesDraggable={nodesDraggable}
+                      nodesSelectable={nodesSelectable}
                       where={where ?? null}
                       dynamicViewVariant={dynamicViewVariant}
                     >
                       <LikeC4DiagramXYFlow
-                        nodesDraggable={nodesDraggable}
-                        nodesSelectable={nodesSelectable}
                         background={background}
                         reactFlowProps={reactFlowProps}
                         renderNodes={renderNodes}

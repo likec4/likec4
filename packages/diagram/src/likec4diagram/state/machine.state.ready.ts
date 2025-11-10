@@ -5,7 +5,7 @@ import { assign, emit, enqueueActions, raise, sendTo, spawnChild } from 'xstate/
 import { and, or } from 'xstate/guards'
 import { Base } from '../../base'
 import { SeqParallelAreaColor } from '../xyflow-sequence/const'
-import { navigateBack, navigateForward, resetEdgesControlPoints } from './assign'
+import { navigateBack, navigateForward } from './assign'
 import {
   assignFocusedNode,
   assignLastClickedNode,
@@ -30,8 +30,10 @@ import {
   openElementDetails,
   openSourceOfFocusedOrLastClickedNode,
   raiseFitDiagram,
+  resetEdgesControlPoints,
   resetLastClickedNode,
-  scheduleSyncLayout,
+  startEditing,
+  stopEditing,
   stopSyncLayout,
   tagHighlight,
   toggleFeature,
@@ -356,15 +358,17 @@ export const ready = machine.createStateConfig({
     'layout.align': {
       guard: 'not readonly',
       actions: [
+        startEditing('node'),
         layoutAlign(),
-        scheduleSyncLayout(),
+        stopEditing(true),
       ],
     },
     'layout.resetEdgeControlPoints': {
       guard: 'not readonly',
       actions: [
-        assign(resetEdgesControlPoints),
-        scheduleSyncLayout(),
+        startEditing('node'),
+        resetEdgesControlPoints(),
+        stopEditing(true),
       ],
     },
     'layout.resetManualLayout': {

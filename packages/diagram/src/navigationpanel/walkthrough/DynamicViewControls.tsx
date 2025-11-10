@@ -86,15 +86,12 @@ function StartWalkthroughButton() {
   )
 }
 
-function DynamicViewModeSwitcher({
-  value,
-  onChange,
-}: {
+const DynamicViewModeSwitcher = forwardRef<HTMLDivElement, {
   value: DynamicViewDisplayVariant
   onChange: (variant: DynamicViewDisplayVariant) => void
-}) {
+}>(({ value, onChange }, ref) => {
   return (
-    <m.div layout="position">
+    <m.div ref={ref} layout="position">
       <SegmentedControl
         size="xs"
         value={value}
@@ -120,15 +117,14 @@ function DynamicViewModeSwitcher({
         ]} />
     </m.div>
   )
-}
+})
 
 export function DynamicViewControls() {
   const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
   const diagram = useDiagram()
   return (
-    <AnimatePresence propagate mode="popLayout">
+    <AnimatePresence>
       <DynamicViewModeSwitcher
-        key="dynamic-view-mode-switcher"
         value={dynamicViewVariant}
         onChange={mode => {
           diagram.switchDynamicViewVariant(mode)

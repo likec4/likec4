@@ -116,7 +116,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   })
 
   const onControlPointerStartMove = useCallbackRef(() => {
-    diagram.startEditing()
+    diagram.startEditing('edge')
     diagram.send({ type: 'xyflow.edgeEditingStarted', edge: props.data })
     setIsControlPointDragging(true)
   })
@@ -132,7 +132,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     })
   })
   const onControlPointerDelete = useCallbackRef((points: XYPosition[]) => {
-    diagram.startEditing()
+    diagram.startEditing('edge')
     setIsControlPointDragging(true)
     setControlPoints(points)
     requestAnimationFrame(() => {
@@ -153,7 +153,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     e.stopPropagation()
     e.preventDefault()
 
-    diagram.startEditing()
+    diagram.startEditing('edge')
     const newControlPoints = insertControlPoint(
       xyflow.screenToFlowPosition(
         {

@@ -26,6 +26,8 @@ export function DiagramActorProvider({
   view,
   zoomable,
   pannable,
+  nodesDraggable,
+  nodesSelectable,
   fitViewPadding,
   where,
   children,
@@ -34,6 +36,8 @@ export function DiagramActorProvider({
   view: DiagramView
   zoomable: boolean
   pannable: boolean
+  nodesDraggable: boolean
+  nodesSelectable: boolean
   fitViewPadding: ViewPadding
   where: WhereOperator | null
   dynamicViewVariant: DynamicViewDisplayVariant | undefined
@@ -52,6 +56,8 @@ export function DiagramActorProvider({
         zoomable,
         pannable,
         fitViewPadding,
+        nodesDraggable,
+        nodesSelectable,
         dynamicViewVariant: _defaultVariant,
       },
     },
@@ -77,15 +83,17 @@ export function DiagramActorProvider({
     () =>
       actorRef.send({
         type: 'update.inputs',
-        inputs: { zoomable, pannable, fitViewPadding },
+        inputs: { zoomable, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
       }),
-    [zoomable, pannable, fitViewPadding, actorRef],
+    [zoomable, pannable, fitViewPadding, actorRef, nodesDraggable, nodesSelectable],
   )
 
   useUpdateEffect(() => {
     if (!_defaultVariant) return
     actorRef.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
   }, [_defaultVariant, actorRef])
+
+  console.debug('Render DiagramActorProvider for view', view.id)
 
   return (
     <DiagramActorContextProvider value={api}>

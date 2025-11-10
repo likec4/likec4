@@ -50,6 +50,8 @@ export interface Input {
   xystore: XYStoreApi
   zoomable: boolean
   pannable: boolean
+  nodesDraggable: boolean
+  nodesSelectable: boolean
   fitViewPadding: ViewPadding
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
 }

@@ -63,9 +63,9 @@ export interface DiagramApi<A extends Any = Unknown> {
   updateNodeData(nodeId: NodeId, data: PartialDeep<Types.NodeData>): void
   updateEdgeData(edgeId: EdgeId, data: PartialDeep<Types.EdgeData>): void
   /**
-   * @returns true if there was pending request to save layout
+   * Start editing, either node or edge
    */
-  startEditing(): boolean
+  startEditing(subject: 'node' | 'edge'): void
   /**
    * Stop editing
    * @param wasChanged - whether there were changes made during editing
@@ -169,12 +169,10 @@ export function makeDiagramApi<A extends Any = Unknown>(actor: DiagramActorRef):
         data,
       })
     },
-    startEditing: () => {
+    startEditing: (subject: 'node' | 'edge') => {
       const syncActor = typedSystem(actor.system).syncLayoutActorRef
       invariant(syncActor, 'No sync layout actor found in diagram actor system')
-      const isPending = syncActor.getSnapshot().hasTag('pending')
-      syncActor.send({ type: 'editing.start' })
-      return isPending
+      syncActor.send({ type: 'editing.start', subject })
     },
     stopEditing: (wasChanged = false) => {
       const syncActor = typedSystem(actor.system).syncLayoutActorRef
@@ -185,7 +183,9 @@ export function makeDiagramApi<A extends Any = Unknown>(actor: DiagramActorRef):
       const syncActor = typedSystem(actor.system).syncLayoutActorRef
       invariant(syncActor, 'No sync layout actor found in diagram actor system')
       const hasUndo = syncActor.getSnapshot().context.history.length > 0
-      syncActor.send({ type: 'undo' })
+      if (hasUndo) {
+        syncActor.send({ type: 'undo' })
+      }
       return hasUndo
     },
 

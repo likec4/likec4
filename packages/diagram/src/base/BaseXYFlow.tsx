@@ -6,7 +6,7 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
-import { useRef } from 'react'
+import { useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
@@ -21,10 +21,10 @@ import type { BaseEdge, BaseNode } from './types'
 
 export type BaseXYFlowProps<NodeType extends BaseNode, EdgeType extends BaseEdge> = Simplify<
   & {
-    pannable?: boolean
-    zoomable?: boolean
-    nodesSelectable?: boolean
-    nodesDraggable?: boolean
+    pannable: boolean
+    zoomable: boolean
+    nodesSelectable: boolean
+    nodesDraggable: boolean
     background?: 'transparent' | 'solid' | XYBackground
     fitViewPadding?: ViewPadding | undefined
     onViewportResize?: undefined | (() => void)
@@ -36,6 +36,8 @@ export type BaseXYFlowProps<NodeType extends BaseNode, EdgeType extends BaseEdge
       | 'defaultNodes'
       | 'defaultEdges'
       | 'fitViewOptions'
+      | 'nodesSelectable'
+      | 'nodesDraggable'
     >,
     // Required props
     | 'nodes'
@@ -74,15 +76,12 @@ export function BaseXYFlow<
     ...props
   }: BaseXYFlowProps<NodeType, EdgeType>,
 ) {
-  const fitViewOptions = useRef<ReactFlowProps['fitViewOptions']>(null)
-  if (!fitViewOptions.current || fitViewOptions.current.padding !== fitViewPadding) {
-    fitViewOptions.current = {
-      minZoom: MinZoom,
-      maxZoom: 1,
-      padding: fitViewPadding,
-      includeHiddenNodes: false,
-    }
-  }
+  const fitViewOptions = useMemo(() => ({
+    minZoom: MinZoom,
+    maxZoom: 1,
+    padding: fitViewPadding,
+    includeHiddenNodes: false,
+  }), [fitViewPadding])
 
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
@@ -113,7 +112,7 @@ export function BaseXYFlow<
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
-      fitViewOptions={fitViewOptions.current}
+      fitViewOptions={fitViewOptions}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"

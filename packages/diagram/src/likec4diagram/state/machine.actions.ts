@@ -520,6 +520,31 @@ export const layoutAlign = (params?: { mode: AlignmentMode }) =>
     constraints.updateXYFlow()
   })
 
+export const resetEdgesControlPoints = () =>
+  machine.assign(({ context }) => {
+    const { nodeLookup } = context.xystore.getState()
+    return {
+      xyedges: context.xyedges.map(edge => {
+        if (!edge.data.controlPoints) {
+          return edge
+        }
+        const controlPoints = resetEdgeControlPoints(nodeLookup, edge)
+        const pt = controlPoints[0]
+        return produce(edge, draft => {
+          draft.data.controlPoints = controlPoints
+          if (draft.data.labelBBox) {
+            draft.data.labelBBox.x = pt.x
+            draft.data.labelBBox.y = pt.y
+          }
+          if (draft.data.labelXY) {
+            draft.data.labelXY.x = pt.x
+            draft.data.labelXY.y = pt.y
+          }
+        })
+      }),
+    }
+  })
+
 export const notationsHighlight = (params?: { notation: ElementNotation; kind?: string }) =>
   machine.assign(({ context, event }) => {
     if (!params) {
@@ -626,17 +651,23 @@ export const ensureSyncLayout = () =>
     })
   })
 
-export const scheduleSyncLayout = () =>
-  machine.enqueueActions(({ enqueue, system }) => {
-    const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-    if (!syncLayoutActor) {
-      console.warn('Sync layout actor is not running')
-      return
-    }
-    enqueue.sendTo(syncLayoutActor, {
-      type: 'sync',
-    })
-  })
+export const startEditing = (subject: 'node' | 'edge' = 'node') =>
+  machine.sendTo(
+    ({ system }) => typedSystem(system).syncLayoutActorRef!,
+    {
+      type: 'editing.start',
+      subject,
+    },
+  )
+
+export const stopEditing = (wasChanged = true) =>
+  machine.sendTo(
+    ({ system }) => typedSystem(system).syncLayoutActorRef!,
+    {
+      type: 'editing.stop',
+      wasChanged,
+    },
+  )
 
 export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | undefined }) =>
   machine.enqueueActions(({ context, event, self, enqueue, system }) => {
@@ -790,23 +821,26 @@ export const onEdgeMouseLeave = () =>
 export const cancelFitDiagram = () => machine.cancel('fitDiagram')
 
 export const raiseFitDiagram = (params?: { delay?: number; duration?: number }) =>
-  machine.raise(
-    {
-      type: 'fitDiagram',
-      ...(isNumber(params?.duration) ? { duration: params.duration } : {}),
-    },
-    {
-      id: 'fitDiagram',
-      ...(isNumber(params?.delay) ? { delay: params.delay } : {}),
-    },
-  )
+  machine.enqueueActions(({ enqueue }) => {
+    enqueue.cancel('fitDiagram')
+    enqueue.raise(
+      {
+        type: 'fitDiagram',
+        ...(isNumber(params?.duration) ? { duration: params.duration } : {}),
+      },
+      {
+        id: 'fitDiagram',
+        ...(isNumber(params?.delay) ? { delay: params.delay } : {}),
+      },
+    )
+  })
 
 export const updateView = () =>
   machine.enqueueActions(
     ({ enqueue, event, check, context, system }) => {
       assertEvent(event, 'update.view')
       const isAnotherView = check('is another view')
-      enqueue.cancel('fitDiagram')
+      enqueue(cancelFitDiagram())
       if (isAnotherView) {
         enqueue(stopSyncLayout())
         enqueue(closeAllOverlays())
@@ -840,7 +874,7 @@ export const updateView = () =>
       enqueue(updateXYNodesEdges())
       const syncLayoutActor = typedSystem(system).syncLayoutActorRef
       if (syncLayoutActor) {
-        enqueue.sendTo(syncLayoutActor, { type: 'synced' }, { delay: 50 })
+        enqueue.sendTo(syncLayoutActor, { type: 'synced' })
       }
 
       const nextView = event.view

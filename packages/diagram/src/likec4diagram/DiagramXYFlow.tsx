@@ -9,14 +9,14 @@ import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { memoNode } from '../base-primitives/memoNode'
 import { BaseXYFlow } from '../base/BaseXYFlow'
-import { useDiagramEventHandlers, useEnabledFeatures } from '../context'
+import { useDiagramEventHandlers } from '../context'
 import { useIsReducedGraphics, usePanningAtom } from '../context/RootContainerContext'
-import { useCallbackRef, useUpdateEffect } from '../hooks'
-import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
+import { useCallbackRef, useDiagramActorSnapshot, useUpdateEffect } from '../hooks'
+import { useDiagram } from '../hooks/useDiagram'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
 import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
-import type { DiagramContext } from './state/types'
+import type { DiagramActorSnapshot } from './state/types'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
 
@@ -49,13 +49,21 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   }
 }
 
-const selectXYProps = (ctx: DiagramContext) => {
+const selectXYProps = ({ context: ctx, children }: DiagramActorSnapshot) => {
+  const toggledFeatures = ctx.toggledFeatures
+  const enableReadOnly = ctx.features.enableReadOnly || (toggledFeatures.enableReadOnly === true)
+
+  const isNotEditingEdge = enableReadOnly || children.syncLayout?.getSnapshot().context.editing !== 'edge'
+
   return ({
+    enableReadOnly,
     initialized: ctx.initialized.xydata && ctx.initialized.xyflow,
     nodes: ctx.xynodes,
     edges: ctx.xyedges,
     pannable: ctx.pannable,
     zoomable: ctx.zoomable,
+    nodesDraggable: !enableReadOnly && ctx.nodesDraggable,
+    nodesSelectable: ctx.nodesSelectable && isNotEditingEdge,
     fitViewPadding: ctx.fitViewPadding,
     enableFitView: ctx.toggledFeatures.enableFitView ?? ctx.features.enableFitView,
     ...(!ctx.features.enableFitView && {
@@ -68,9 +76,12 @@ const selectXYProps = (ctx: DiagramContext) => {
   })
 }
 const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof selectXYProps>): boolean =>
+  a.enableReadOnly === b.enableReadOnly &&
   a.initialized === b.initialized &&
   a.pannable === b.pannable &&
   a.zoomable === b.zoomable &&
+  a.nodesDraggable === b.nodesDraggable &&
+  a.nodesSelectable === b.nodesSelectable &&
   a.enableFitView === b.enableFitView &&
   shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
   shallowEqual(a.nodes, b.nodes) &&
@@ -82,8 +93,6 @@ export type LikeC4DiagramXYFlowProps = PropsWithChildren<
     Pick<
       LikeC4DiagramProperties<any>,
       | 'background'
-      | 'nodesDraggable'
-      | 'nodesSelectable'
       | 'reactFlowProps'
       | 'renderNodes'
     >
@@ -91,23 +100,21 @@ export type LikeC4DiagramXYFlowProps = PropsWithChildren<
 >
 export function LikeC4DiagramXYFlow({
   background = 'dots',
-  nodesDraggable = false,
-  nodesSelectable = false,
   reactFlowProps = {},
   children,
   renderNodes,
 }: LikeC4DiagramXYFlowProps) {
   const diagram = useDiagram()
-  const { enableReadOnly } = useEnabledFeatures()
   let {
+    enableReadOnly,
     initialized,
     nodes,
     edges,
     enableFitView,
+    nodesDraggable,
+    nodesSelectable,
     ...props
-  } = useDiagramContext(selectXYProps, equalsXYProps)
-
-  nodesDraggable = nodesDraggable && !enableReadOnly
+  } = useDiagramActorSnapshot(selectXYProps, equalsXYProps)
 
   const {
     onNodeContextMenu,

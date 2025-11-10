@@ -38,6 +38,9 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
   const xynodes = event.xynodes.map((update) => {
     const existing = currentNodes.find(n => n.id === update.id)
     if (existing) {
+      if (existing === update || existing.data === update.data) {
+        return existing
+      }
       const { width: existingWidth, height: existingHeight } = getNodeDimensions(existing)
       if (
         eq(existing.type, update.type)
@@ -67,6 +70,9 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
     const currentEdges = context.xyedges
     xyedges = event.xyedges.map((update): Types.Edge => {
       const existing = currentEdges.find(n => n.id === update.id)
+      if (existing === update) {
+        return existing
+      }
       if (existing && existing.type === update.type) {
         if (
           eq(existing.hidden ?? false, update.hidden ?? false)
@@ -309,12 +315,9 @@ function getBorderPointOnVector(node: InternalNode, nodeCenter: VectorValue, v: 
 export function resetEdgeControlPoints(
   nodeLookup: NodeLookup,
   edge: Types.Edge,
-): [] | [XYPoint] | [XYPoint, XYPoint] {
-  const source = nodeLookup.get(edge.source)
-  const target = nodeLookup.get(edge.target)
-  if (!source || !target) {
-    return []
-  }
+): [XYPoint] | [XYPoint, XYPoint] {
+  const source = nonNullable(nodeLookup.get(edge.source), `Source node ${edge.source} not found`)
+  const target = nonNullable(nodeLookup.get(edge.target), `Target node ${edge.target} not found`)
 
   const sourceCenter = vector(getNodeCenter(source))
   const targetCenter = vector(getNodeCenter(target))
@@ -337,24 +340,6 @@ export function resetEdgeControlPoints(
   const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.multiply(-1))
 
   return [sourceBorderPoint.add(targetBorderPoint.subtract(sourceBorderPoint).multiply(0.4))]
-}
-
-export function resetEdgesControlPoints({ context }: ActionArg): Partial<DiagramContext> {
-  const { nodeLookup } = context.xystore.getState()
-  return {
-    xyedges: context.xyedges.map(edge => {
-      if (!edge.data.controlPoints) {
-        return edge
-      }
-      return ({
-        ...edge,
-        data: {
-          ...edge.data,
-          controlPoints: resetEdgeControlPoints(nodeLookup, edge),
-        },
-      } as Types.Edge)
-    }),
-  }
 }
 
 export function updateActiveWalkthrough({ context }: ActionArg): Partial<DiagramContext> {

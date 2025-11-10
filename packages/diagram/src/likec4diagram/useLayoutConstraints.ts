@@ -275,8 +275,9 @@ export function createLayoutConstraints(
     pipe(
       edges,
       filter(e => !edgeModifiers.has(e) && nested.has(e.source) && nested.has(e.target)),
-      map((edge) => [edge, makeEdgeModifier(edge, r)] as const),
-      forEach(([edge, modifier]) => edgeModifiers.set(edge, modifier)),
+      forEach(e => {
+        edgeModifiers.set(e, makeEdgeModifier(e, r))
+      }),
     )
   }
 
@@ -286,29 +287,27 @@ export function createLayoutConstraints(
 
   // moving nodes may have nested nodes as well
   const movingNodes = new Set(editingNodeIds.flatMap(id => [id, ...nestedOf.get(id)]))
-
-  // We update edges, where both source and target are moving nodes
-  for (const edge of edges) {
-    if (edgeModifiers.has(edge) || !(movingNodes.has(edge.source) && movingNodes.has(edge.target))) {
-      continue
-    }
-    // Find the anchor rectangle for the edge
-    let r = rects.get(edge.source)
-      ?? rects.get(edge.target)
-      ?? ancestorsOf.get(edge.source).map(id => rects.get(id)).find(s => !!s)
-      ?? ancestorsOf.get(edge.target).map(id => rects.get(id)).find(s => !!s)
-    if (r) {
-      edgeModifiers.set(edge, makeEdgeModifier(edge, r))
-    }
-  }
-
-  // When source OR target is moved, move control points and label position relatively
   for (const edge of edges) {
     if (edgeModifiers.has(edge)) {
       continue
     }
     const isSourceMoving = movingNodes.has(edge.source)
     const isTargetMoving = movingNodes.has(edge.target)
+
+    // We update edges, where both source and target are moving nodes
+    if (isSourceMoving && isTargetMoving) {
+      // Find the anchor rectangle for the edge
+      let r = rects.get(edge.source)
+        ?? rects.get(edge.target)
+        ?? ancestorsOf.get(edge.source).map(id => rects.get(id)).find(s => !!s)
+        ?? ancestorsOf.get(edge.target).map(id => rects.get(id)).find(s => !!s)
+      if (r) {
+        edgeModifiers.set(edge, makeEdgeModifier(edge, r))
+      }
+      continue
+    }
+
+    // When source OR target is moved, move control points and label position relatively
     if (isSourceMoving !== isTargetMoving) {
       const movingRect = isSourceMoving ? findMovingAncestor(edge.source) : findMovingAncestor(edge.target)
       if (!movingRect) {
@@ -351,7 +350,8 @@ export function createLayoutConstraints(
           const staticToP = p.subtract(staticV)
           const projLength = staticToP.dot(staticToAnchor)
           // relative coefficient of the point between static and anchor
-          const coeff = projLength / (staticToAnchorLength ** 2)
+          // clamp to 1 to avoid invalid positions when control point goes beyond anchor
+          const coeff = Math.min(projLength / (staticToAnchorLength ** 2), 1)
           const newP = p.add(d.multiply(coeff))
           return {
             x: Math.round(newP.x),
@@ -484,7 +484,7 @@ export function useLayoutConstraints(): LayoutConstraints {
   return useMemo((): LayoutConstraints => {
     return ({
       onNodeDragStart: (_event, xynode) => {
-        diagram.startEditing()
+        diagram.startEditing('node')
         const { nodeLookup } = xystore.getState()
         const draggingNodes = pipe(
           Array.from(nodeLookup.values()),

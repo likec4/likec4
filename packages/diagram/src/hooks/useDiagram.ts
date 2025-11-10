@@ -8,7 +8,6 @@ import type {
   DiagramEmittedEvents,
 } from '../likec4diagram/state/types'
 import { useDiagram, useDiagramActorRef } from './safeContext'
-import { useCallbackRef } from './useCallbackRef'
 
 export { useDiagram, useDiagramActorRef }
 
@@ -19,7 +18,7 @@ export function useDiagramActorSnapshot<T = unknown>(
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
 ): T {
   const actorRef = useDiagramActorRef()
-  return useXstateSelector(actorRef, useCallbackRef(selector), compare)
+  return useXstateSelector(actorRef, selector, compare)
 }
 
 /**
