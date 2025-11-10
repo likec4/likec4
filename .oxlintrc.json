@@ -3,6 +3,10 @@
   "env": {
     "es2024": true
   },
+  "ignorePatterns": [
+    "packages/create-likec4/",
+    "examples/"
+  ],
   "settings": {},
   "rules": {
     "oxc/no-accumulating-spread": "error",

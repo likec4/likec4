@@ -7,7 +7,6 @@
     "checkJs": false,
     "skipLibCheck": true,
     "noEmit": true,
-    "baseUrl": ".",
     "paths": {
       "@components/*": [
         "./src/components/*"
