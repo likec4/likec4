@@ -1,25 +1,32 @@
 # [1.44.0](https://github.com/likec4/likec4/compare/v1.43.0...v1.44.0) (2025-11-10)
 
+> [!NOTE]
+> **💖 Thanks to Our Sponsors**  
+> Huge thanks to everyone supporting LikeC4 — your sponsorships make continued development possible.
+>
+> If you find LikeC4 valuable, consider becoming a sponsor. Every contribution helps keep the project alive and evolving.
+
 ### 🚀 Features
 
 - **cli:** add --port CLI argument and use PORT environment variable, thanks @aorwall
   [#2360](https://github.com/likec4/likec4/pull/2360) ([201da2f](https://github.com/likec4/likec4/commit/201da2f769f904bfac5882e8a7a9637ef7184989))
 
 - **Manual Layouts:**.\
-  This version introduces several enhancements to manual layout management,\
-  based on your feedback and aimed at improving usability and functionality.\
-  Initial discussion [#2288](https://github.com/likec4/likec4/discussions/2288)
+  This release brings major improvements to manual layout management — focused on stability, transparency, and easier collaboration.  
+  Discussion: [#2288](https://github.com/likec4/likec4/discussions/2288)
 
-  1. **Manual layout picked by default**.\
-     Previously, manual layouts were used as a base, and any changes were applied on top of it. This often led to undesired shifts. Now, if a manual layout exists for a view, it will be used without any additional adjustments, but warnings will be shown if the layout drifts.
-
-     Most properties (like titles, icons, colors, etc) are auto-applied, if this does not impact the layout. Warnings will be shown otherwise.
+  1. **Manual layout used by default**.\
+     Previously, manual layouts were applied as a base layer, and additional changes were added on top — often causing unwanted shifts.  
+     Now, if a manual layout exists for a view, it’s used directly, without auto-adjustments.  
+     Warnings appear if the layout drifts from the model.  
+     Most non-layout properties (titles, icons, colors, etc.) are still auto-applied — but only when they don’t affect layout.  
 
      <img src="https://github.com/user-attachments/assets/e73e8d37-bc1a-425d-986b-5d0cebe4ca6b" />
 
   3. **Snapshots persistence**.\
-     Manual layouts are now persisted in files, named `<view-id>.likec4.snap` in `.likec4/` folder. This allows better tracking of changes, easier sharing, and version control.  
-     You can change folder in project config.
+     Manual layouts are now saved as individual `.snap` files (`<view-id>.likec4.snap`) inside the `.likec4/` folder.\
+     This makes tracking changes and version control far simpler.  
+     You can customize the output folder via project config:
      
      ```json
       {
@@ -30,25 +37,25 @@
       }
      ```
      
-     
-     
 
   5. **Compare with latest**.\
-     You can now compare your layout with the latest auto-generated. This helps identify any drift or changes that may have occurred due to model updates.
-     At the moment, only "Reset to latest" action is available, but more actions will be added in the future.
-
+     You can now compare your manual layout with the latest auto-generated version to detect drift after model changes.\
+     Currently, only a “Reset to latest” action is available — more options will follow.
 
      https://github.com/user-attachments/assets/46360794-d856-4216-8cef-857d976a4e5f
 
 
-  6. **Connections editing improvements**.\
-     Connections are not "static" anymore. Control points follow your manual adjustments responsively.
+  7. **Connections editing improvements**.\
+     Connections are no longer static — control points now move responsively when you adjust nodes.
 
-  7. **Undo**.\
-     You can now undo changes using standard shortcuts (Ctrl/Cmd + Z).
+  8. **Undo**.\
+     Manual layout editing now supports standard undo shortcuts (Ctrl/Cmd + Z).
 
-  8. **Migrate manual layouts**.\
-     A new command is available to help migrate existing manual layouts to the new snapshot-based system.
+  9. **Migrate manual layouts**.\
+     VSCode extension helps migrate existing manual layouts to the new snapshot-based system
+     
+     <img src="https://github.com/user-attachments/assets/c5edede7-0622-4554-a130-c53b8cb01060" />
+
 
 ### 🐞 Bug Fixes
 
