@@ -14,15 +14,18 @@ export function SearchByTags() {
   let setSearch = useUpdateSearch()
   let search = useNormalizedSearch()
   let countBefore = tags.length
+  let isFiltered = false
   if (search.startsWith('#')) {
     const searchTag = search.slice(1)
     tags = tags.filter(({ tag }) => tag.toLocaleLowerCase().includes(searchTag))
+    isFiltered = tags.length !== countBefore
   }
   if (tags.length === 0) {
     return null
   }
 
-  const isFiltered = tags.length !== countBefore
+  // Show top 15 tags only
+  tags = tags.slice(0, 15)
 
   return (
     <HStack
@@ -52,29 +55,6 @@ export function SearchByTags() {
         }}
       >
         {tags.map(({ tag }) => (
-          // <Pill
-          //   key={tag}
-          //   data-likec4-tag={tag}
-          //   className={cx(
-          //     likec4tag(),
-          //     css({
-          //       minWidth: 'unset',
-          //       cursor: 'pointer',
-          //     }),
-          //   )}
-          //   onClick={(e) => {
-          //     e.stopPropagation()
-          //     setSearch(`#${tag}`)
-          //   }}
-          //   onRemove={() => {
-          //     setSearch('#')
-          //     moveFocusToSearchInput()
-          //   }}
-          //   withRemoveButton={tag === `${search.slice(1)}`}
-          // >
-          //   <span style={{ opacity: 0.7, fontSize: '1.05em' }}>#</span>
-          //   {tag}
-          // </Pill>
           <ElementTag
             key={tag}
             tag={tag}
