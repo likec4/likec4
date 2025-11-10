@@ -1,3 +1,47 @@
+# [1.44.0](https://github.com/likec4/likec4/compare/v1.43.0...v1.44.0) (2025-11-10)
+
+
+### Bug Fixes
+
+* adjust nodesDraggable logic to ensure it respects enableReadOnly state ([7867e69](https://github.com/likec4/likec4/commit/7867e69e6e48d03c16fa829c29b320b87f0bee25))
+* **deps:** update dependency import-meta-resolve to ^4.2.0 ([#2326](https://github.com/likec4/likec4/issues/2326)) ([9a140d3](https://github.com/likec4/likec4/commit/9a140d31d288f92e416f535279eae526af93a299))
+* **deps:** update dependency react-resizable-panels to ^3.0.6 ([#2327](https://github.com/likec4/likec4/issues/2327)) ([33b8d3c](https://github.com/likec4/likec4/commit/33b8d3cbdbf0c70c3a728cc054aee90b082333f6))
+* **deps:** update dependency vecti to ^3.1.2 ([#2328](https://github.com/likec4/likec4/issues/2328)) ([d7c8a91](https://github.com/likec4/likec4/commit/d7c8a91038c24e27d3039fde91dea7277412ace0))
+* don't scroll entire page when showing menu if diagram is embedded ([90f1ed6](https://github.com/likec4/likec4/commit/90f1ed65ef35df4b6ae73e486f17511b249386bd))
+* ensure workspace saves location URI in onChange and save-view-snapshot operations ([313aa24](https://github.com/likec4/likec4/commit/313aa245c88a04aeeb0809f7b6ebc5b360f9005c))
+* handle missing nodes in applyManualLayout by adding drift reason ([bc63a32](https://github.com/likec4/likec4/commit/bc63a325740128b6f5cf911601d55c9ae38ec13e))
+* handle potential undefined viewModel in folderColumn function ([a0db786](https://github.com/likec4/likec4/commit/a0db78698cbcc6b761cce43a2df45763b23d113d))
+* Improve logging and handle latestUpdatedSnapshotUri assignment more succinctly ([b1912b7](https://github.com/likec4/likec4/commit/b1912b707a5c65b6f7464d28d9ca359f8aad413a))
+* remove experimentalEdgeEditing prop from various components ([1cd32b8](https://github.com/likec4/likec4/commit/1cd32b898e2a2b931443996e79fc23313039d0fb))
+* undefined tag color when adding tag in model builder ([f48b8a8](https://github.com/likec4/likec4/commit/f48b8a84db2b8f80d11bdc2ba6f079eac019d78c)), closes [#2355](https://github.com/likec4/likec4/issues/2355)
+* update actions in diagram machine for better node and pane click handling ([61ae036](https://github.com/likec4/likec4/commit/61ae036f47b9080545e7dd01903113842cf125a4))
+* update deleteFile method documentation to clarify return value ([77ca1bc](https://github.com/likec4/likec4/commit/77ca1bcd92a4a5e5293ecdeff9fb9a86274e54e2))
+* update graphviz snapshots to improve layout and styling consistency ([7d67bea](https://github.com/likec4/likec4/commit/7d67beacd1355e7a563d20c86d89758175b3614c))
+* update wrangler-action version to v3 for consistency ([d1b349a](https://github.com/likec4/likec4/commit/d1b349ab361503160e8cb70ae9e3b01ba630353f))
+
+
+### Features
+
+* add "Compare with auto layout" feature for manually modified views ([a8fe90d](https://github.com/likec4/likec4/commit/a8fe90d039a21827c53f93c2cab8d5f4ea96c14b))
+* add latestUpdatedSnapshotUri to manage snapshot changes and prevent reload loops ([ec0e527](https://github.com/likec4/likec4/commit/ec0e527e08327ab5649b1f8755eb1401f9ded319))
+* add manual layout support for diagram views with snapshot persistence ([75cff6d](https://github.com/likec4/likec4/commit/75cff6dc0a5b2b9d0d58fc94f1840e371d9efc7d))
+* add migrate manual layouts command and related functionality ([e5f6105](https://github.com/likec4/likec4/commit/e5f61055389d56798b6ebd4b69821ae801b878dc))
+* add openSourceActor to relationshipsBrowser context for improved functionality ([9ab2f2f](https://github.com/likec4/likec4/commit/9ab2f2fe01c7b9fd7fbf4a07914440cdd360d473))
+* add support for manual layouts persistence and drift detection ([d6eb897](https://github.com/likec4/likec4/commit/d6eb897dabfbaef586087f7d25eabd09cdc4e43d))
+* **cli:** add --port CLI argument and use std-env for PORT ([b7c64a8](https://github.com/likec4/likec4/commit/b7c64a87de6f093678a6a63956f0554ba7b26768))
+* **cli:** add PORT environment variable support for dev server ([201da2f](https://github.com/likec4/likec4/commit/201da2f769f904bfac5882e8a7a9637ef7184989))
+* **deps:** add immer and vecti dependencies to package.json and pnpm-lock.yaml ([bdcc0ba](https://github.com/likec4/likec4/commit/bdcc0baa69142d5961cf674e4332532b8e8c5be0))
+* **editor:** add LikeC4Editor context and hooks for managing editor state ([3a7572f](https://github.com/likec4/likec4/commit/3a7572f810f6005ee76a4ed7d93e04be3aa0f32a))
+* Enhance diagram compare layout with editable state and add CompareActionsMenu ([9b630a1](https://github.com/likec4/likec4/commit/9b630a185a2362ee192c94b228b99f51b992e96d))
+* Enhance diagram interaction by adding nodesDraggable and nodesSelectable props, and refactor editing logic for edges and nodes ([1555d15](https://github.com/likec4/likec4/commit/1555d15360dbe56f41efd8dc732d40210e09328b))
+* Enhance layout constraints and improve node dragging functionality ([dc10bfd](https://github.com/likec4/likec4/commit/dc10bfd25629434ea126982ffa0caec155556acd))
+* Enhance syncManualLayoutActor with pause/resume functionality and refactor state management ([05499dd](https://github.com/likec4/likec4/commit/05499ddee2dee66057d3d023fda04108d10d1dc9))
+* implement code action for manual layouts migration ([7da9d48](https://github.com/likec4/likec4/commit/7da9d4893dc66d667c36f049a7f1da2fa8e9209d))
+* Introduce ComparePanel and related controls in NavigationPanel ([bc3fa79](https://github.com/likec4/likec4/commit/bc3fa790fa968a3f8f9dd1645ef019caa26d43dd))
+* open relationship source from dialogs like relationship details ([2bb0757](https://github.com/likec4/likec4/commit/2bb0757635d916b6f220944a7498d932406363a9))
+
+
+
 # [1.43.0](https://github.com/likec4/likec4/compare/v1.42.1...v1.43.0) (2025-10-25)
 
 ### 🚀 Features
