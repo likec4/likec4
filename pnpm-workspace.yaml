@@ -111,7 +111,7 @@ catalogs:
     defu: ^6.1.4
     esm-env: ^1.2.2
     fast-equals: ^5.3.2
-    fdir: 6.4.0
+    fdir: 6.5.0
     immer: ^10.2.0
     indent-string: ^5.0.0
     json5: ^2.2.3
