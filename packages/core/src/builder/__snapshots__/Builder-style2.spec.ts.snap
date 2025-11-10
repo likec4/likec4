@@ -107,8 +107,12 @@ exports[`Builder (style 2) > should build  1`] = `
       "tag1": {
         "color": "#FFF",
       },
-      "tag2": {},
-      "tag3": {},
+      "tag2": {
+        "color": "tomato",
+      },
+      "tag3": {
+        "color": "grass",
+      },
     },
   },
   "views": {
