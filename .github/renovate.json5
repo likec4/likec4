@@ -30,6 +30,12 @@
       pinDigests: false,
     },
     {
+      groupName: 'oxlint',
+      matchPackageNames: [
+        '/oxlint/',
+      ],
+    },
+    {
       automerge: true,
       automergeType: "branch",
       matchPackageNames: [
@@ -76,6 +82,12 @@
       ],
     },
     {
+      groupName: '@pandacss',
+      matchPackageNames: [
+        '@pandacss/**',
+      ],
+    },
+    {
       groupName: '@expressive-code',
       matchPackageNames: [
         '@expressive-code/**',
@@ -85,12 +97,6 @@
       groupName: 'reactive-vscode',
       matchPackageNames: [
         '/reactive-vscode/',
-      ],
-    },
-    {
-      groupName: 'oxlint',
-      matchPackageNames: [
-        '/oxlint/',
       ],
     },
     {
