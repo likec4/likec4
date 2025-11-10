@@ -21,7 +21,7 @@ catalog:
   vite-plugin-dts: 4.5.4
   vite-tsconfig-paths: ^5.1.4
   wireit: 0.14.12
-  zx: 8.8.4
+  zx: 8.8.5
 
 catalogMode: prefer
 
@@ -42,15 +42,15 @@ catalogs:
     starlight-package-managers: ^0.11.1
     starlight-toc-overview-customizer: ^0.1.0
   cloudflare:
-    "@cloudflare/vite-plugin": 1.11.7
-    wrangler: ~4.35.0
+    "@cloudflare/vite-plugin": 1.13.14
+    wrangler: ~4.44.0
   css:
     "@pandacss/dev": ^1.4.3
     "@pandacss/preset-panda": ^1.4.3
     "@pandacss/types": ^1.4.3
-    "@tailwindcss/vite": ^4.1.14
+    "@tailwindcss/vite": ^4.1.15
     postcss: 8.5.6
-    tailwindcss: ^4.1.14
+    tailwindcss: ^4.1.15
   esbuild:
     esbuild: 0.25.11
     esbuild-node-externals: 1.18.0
@@ -60,7 +60,7 @@ catalogs:
     "@hono/oauth-providers": ^0.8.5
     "@hono/valibot-validator": ^0.5.3
     "@hono/zod-validator": ^0.7.4
-    hono: ^4.10.1
+    hono: ^4.10.2
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
@@ -73,19 +73,19 @@ catalogs:
     "@mantine/notifications": 8.3.5
     "@mantine/vanilla-extract": 8.3.5
   mcp:
-    "@modelcontextprotocol/sdk": ^1.19.1
+    "@modelcontextprotocol/sdk": ^1.20.1
   react:
     "@floating-ui/dom": ^1.7.4
     "@nanostores/react": 1.0.0
     "@react-hookz/web": ^25.1.1
     "@tabler/icons-react": 3.35.0
-    "@types/react": 19.1.16
-    "@types/react-dom": 19.1.9
+    "@types/react": 19.2.2
+    "@types/react-dom": 19.2.2
     clsx: ^2.1.1
     motion: ^12.23.24
     nanostores: 1.0.1
-    react: 19.1.1
-    react-dom: 19.1.1
+    react: 19.2.0
+    react-dom: 19.2.0
     react-error-boundary: ^6.0.0
     react-shadow: ^20.6.0
   tanstack:
@@ -94,7 +94,7 @@ catalogs:
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
   utils:
-    "@hpcc-js/wasm-graphviz": 1.12.0
+    "@hpcc-js/wasm-graphviz": 1.15.0
     "@logtape/logtape": ^0.12.3
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.1

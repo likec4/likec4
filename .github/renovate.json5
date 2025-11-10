@@ -37,7 +37,6 @@
         'type-fest',
         'remeda',
         'turbo',
-        'wrangler',
         'wireit',
         'pnpm',
         'semver',
@@ -49,6 +48,13 @@
         '@fontsource-variable/**',
         '@fontsource/**',
       ]
+    },
+    {
+      groupName: '@cloudflare',
+      matchPackageNames: [
+        'wrangler',
+        '@cloudflare/vite-plugin'
+      ],
     },
     {
       groupName: '@langium',

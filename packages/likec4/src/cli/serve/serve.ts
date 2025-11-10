@@ -43,6 +43,12 @@ type HandlerParams = {
   listen?: string | undefined
 
   /**
+   * port number for the dev server
+   * @default 5173
+   */
+  port?: number | undefined
+
+  /**
    * Enable webcomponent build
    * @default true
    */
@@ -66,6 +72,7 @@ export async function handler({
   enableHMR = true,
   base,
   listen,
+  port,
 }: HandlerParams) {
   // Explicitly set NODE_ENV to development
   if (enableHMR) {
@@ -91,6 +98,7 @@ export async function handler({
     useOverviewGraph: useOverview,
     likec4AssetsDir,
     listen,
+    port,
   })
 
   server.config.logger.clearScreen('info')
