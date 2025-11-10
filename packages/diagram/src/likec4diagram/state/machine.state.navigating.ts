@@ -16,7 +16,11 @@ import {
 } from './machine.actions'
 import { machine } from './machine.setup'
 
-// Navigating to another view (after `navigateTo` event)
+/**
+ * State for handling navigation to a different view.
+ * Closes overlays and search, stops sync layout and fit diagram actions,
+ * then processes the view update and transitions back to idle state.
+ */
 export const navigating = machine.createStateConfig({
   id: 'navigating',
   entry: [

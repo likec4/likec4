@@ -19,7 +19,7 @@ import {
   getViewportForBounds,
 } from '@xyflow/react'
 import { type Rect, type Viewport, nodeToRect } from '@xyflow/system'
-import { hasAtLeast, isNumber } from 'remeda'
+import { hasAtLeast, isNumber, isTruthy } from 'remeda'
 import {
   assertEvent,
 } from 'xstate'
@@ -657,6 +657,9 @@ export const stopEditing = (wasChanged = true) =>
     },
   )
 
+const hasModelFqn = <D extends Types.Node>(node: D): node is D & { data: { modelFqn: Fqn } } =>
+  'modelFqn' in node.data && isTruthy(node.data.modelFqn)
+
 export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | undefined }) =>
   machine.enqueueActions(({ context, event, enqueue, system }) => {
     let initiatedFrom = null as null | {
@@ -664,31 +667,41 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
       clientRect: Rect
     }
     let fromNodeId: NodeId | undefined, subject: Fqn
-    // Use from params if available
-    if (params) {
-      subject = params.fqn
-      fromNodeId = params.fromNode ?? context.view.nodes.find(n => n.modelRef === params.fqn)?.id
-    }
-    // Use from event if available
-    else if (event.type === 'xyflow.nodeClick') {
-      if (!('modelFqn' in event.node.data) || !event.node.data.modelFqn) {
-        console.warn('No modelFqn in clicked node data')
-        return
+    switch (true) {
+      // Use from params if available
+      case !!params: {
+        subject = params.fqn
+        fromNodeId = params.fromNode ?? context.view.nodes.find(n => n.modelRef === params.fqn)?.id
+        break
       }
-      subject = event.node.data.modelFqn
-      fromNodeId = event.node.data.id
-    }
-    else if (event.type === 'open.elementDetails') {
-      subject = event.fqn
-      fromNodeId = event.fromNode
-    }
-    // Use from lastClickedNode if available
-    else {
-      invariant(context.lastClickedNode, 'No last clicked node')
-      fromNodeId = nonNullable(context.lastClickedNode).id
-      const node = nonNullable(context.xynodes.find(n => n.id === fromNodeId))
-      invariant('modelFqn' in node.data && !!node.data.modelFqn, 'No modelFqn in last clicked node')
-      subject = node.data.modelFqn
+      case event.type === 'xyflow.nodeClick': {
+        if (!hasModelFqn(event.node)) {
+          console.warn('No modelFqn in clicked node data')
+          return
+        }
+        subject = event.node.data.modelFqn
+        fromNodeId = event.node.data.id
+        break
+      }
+      case event.type === 'open.elementDetails': {
+        subject = event.fqn
+        fromNodeId = event.fromNode
+        break
+      }
+      default: {
+        if (!context.lastClickedNode) {
+          console.warn('No last clicked node')
+          return
+        }
+        fromNodeId = context.lastClickedNode.id
+        const node = context.xynodes.find(n => n.id === fromNodeId)
+        if (!node || !hasModelFqn(node)) {
+          console.warn('No modelFqn in last clicked node')
+          return
+        }
+        subject = node.data.modelFqn
+        break
+      }
     }
 
     const internalNode = fromNodeId ? context.xystore.getState().nodeLookup.get(fromNodeId) : null
@@ -711,7 +724,7 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
       typedSystem(system).overlaysActorRef!,
       {
         type: 'open.elementDetails' as const,
-        subject,
+        subject: subject,
         currentView: context.view,
         ...(initiatedFrom && { initiatedFrom }),
       },

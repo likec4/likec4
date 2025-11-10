@@ -2,6 +2,13 @@ import { assign } from 'xstate/actions'
 import { emitInitialized, ensureSyncLayout, xyflow } from './machine.actions'
 import { machine } from './machine.setup'
 
+/**
+ * To be in `initializing` state, the diagram must wait for two events:
+ * - `xyflow.init` - indicates that the `xyflow` instance is ready
+ * - `update.view` - provides the initial diagram data (nodes and edges)
+ *
+ * Once both events have been received, the diagram transitions to `isReady` state.
+ */
 export const initializing = machine.createStateConfig({
   on: {
     'xyflow.init': {
@@ -29,6 +36,11 @@ export const initializing = machine.createStateConfig({
   },
 })
 
+/**
+ * State that checks whether the diagram is ready to be used.
+ * Transitions to `ready` state if both `xyflow` and `xydata` are initialized,
+ * otherwise goes back to `initializing` state.`
+ */
 export const isReady = machine.createStateConfig({
   always: [{
     guard: 'isReady',
