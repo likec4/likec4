@@ -1,17 +1,16 @@
 import type { LayoutedView, ViewChange, ViewId } from '@likec4/core/types'
 import { deepEqual } from 'fast-equals'
-import { produce } from 'immer'
-import { last } from 'remeda'
+import { last, map } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRef,
   type ActorRefFromLogic,
+  type ActorSystem,
   type MachineSnapshot,
   type SnapshotFrom,
   assertEvent,
   assign,
   setup,
-  stopChild,
 } from 'xstate'
 import type { Types } from '../types'
 import { createViewChange } from './createViewChange'
@@ -19,16 +18,19 @@ import { undoHotKeyActorLogic } from './hotkeyActor'
 import type { Context as DiagramContext, Events as DiagramEvents } from './machine.setup'
 
 export type Input = {
-  /**
-   * Actually this is DiagramActorRef
-   * But we can't use it here due to circular type inference
-   */
-  parent: ActorRef<
-    MachineSnapshot<DiagramContext, DiagramEvents, any, any, any, any, any, any>,
-    DiagramEvents,
-    any
-  >
   viewId: ViewId
+}
+
+/**
+ * Actually this is DiagramActorRef
+ * But we can't use it here due to circular type inference
+ */
+const diagramActorRef = function(system: ActorSystem<any>): ActorRef<
+  MachineSnapshot<DiagramContext, DiagramEvents, any, any, any, any, any, any>,
+  DiagramEvents,
+  any
+> {
+  return system.get('diagram')!
 }
 
 type HistorySnapshot = {
@@ -112,16 +114,15 @@ const popHistory = syncManualLayout.assign(({ context }) => {
   }
 })
 
-const startEditing = syncManualLayout.assign(({ context, event }) => {
+const startEditing = syncManualLayout.assign(({ system, event }) => {
   assertEvent(event, 'editing.start')
-  const parentContext = context.parent.getSnapshot().context
-  const xystore = parentContext.xystore.getState()
+  const parentContext = diagramActorRef(system).getSnapshot().context
 
   return {
     editing: event.subject,
     beforeEditing: {
-      xynodes: xystore.nodes,
-      xyedges: xystore.edges,
+      xynodes: map(parentContext.xynodes, n => ({ ...n })),
+      xyedges: map(parentContext.xyedges, e => ({ ...e })),
       change: createViewChange(parentContext),
       view: parentContext.view,
       synched: false,
@@ -147,8 +148,9 @@ const stopEditing = syncManualLayout.enqueueActions(({ event, enqueue }) => {
   assertEvent(event, 'editing.stop')
 
   if (event.wasChanged) {
+    enqueue.cancel('sync')
     enqueue(pushHistory)
-    enqueue.raise({ type: 'sync' }, { id: 'sync', delay: 10 })
+    enqueue.raise({ type: 'sync' }, { id: 'sync', delay: 50 })
   }
   enqueue.assign({
     beforeEditing: null,
@@ -157,9 +159,9 @@ const stopEditing = syncManualLayout.enqueueActions(({ event, enqueue }) => {
 })
 
 const emitOnChange = syncManualLayout.sendTo(
-  ({ context }) => context.parent,
-  ({ context }) => {
-    const parentContext = context.parent.getSnapshot().context
+  ({ system }) => diagramActorRef(system),
+  ({ system }) => {
+    const parentContext = diagramActorRef(system).getSnapshot().context
     return {
       type: 'emit.onChange',
       change: createViewChange(parentContext),
@@ -170,24 +172,28 @@ const emitOnChange = syncManualLayout.sendTo(
 const markHistoryAsSynched = syncManualLayout.assign(({ context, event }) => {
   assertEvent(event, 'synced')
   return {
-    history: context.history.map(produce(draft => {
-      draft.synched = true
+    history: context.history.map(i => ({
+      ...i,
+      synched: true,
     })),
     beforeEditing: context.beforeEditing
-      ? produce(context.beforeEditing, draft => {
-        draft.synched = true
-      })
+      ? {
+        ...context.beforeEditing,
+        synched: true,
+      }
       : null,
   }
 })
 
-const undo = syncManualLayout.enqueueActions(({ context, enqueue }) => {
+const undo = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
   const lastHistoryItem = last(context.history)
   if (!lastHistoryItem) {
     return
   }
   enqueue(popHistory)
-  enqueue.sendTo(context.parent, {
+  enqueue(ensureHotKey)
+  const diagramActor = diagramActorRef(system)
+  enqueue.sendTo(diagramActor, {
     type: 'update.view',
     view: lastHistoryItem.view,
     xyedges: lastHistoryItem.xyedges,
@@ -196,7 +202,7 @@ const undo = syncManualLayout.enqueueActions(({ context, enqueue }) => {
   // If the last history item was already synched,
   // we need to emit onChange event
   if (lastHistoryItem.synched) {
-    enqueue.sendTo(context.parent, {
+    enqueue.sendTo(diagramActor, {
       type: 'emit.onChange',
       change: lastHistoryItem.change,
     })
@@ -232,7 +238,10 @@ const idle = syncManualLayout.createStateConfig({
 const editing = syncManualLayout.createStateConfig({
   on: {
     'editing.stop': {
-      actions: stopEditing,
+      actions: [
+        stopEditing,
+        ensureHotKey,
+      ],
       target: 'idle',
     },
     undo: {},
@@ -241,8 +250,6 @@ const editing = syncManualLayout.createStateConfig({
 
 const pending = syncManualLayout.createStateConfig({
   tags: 'pending',
-  entry: ensureHotKey,
-  exit: ensureHotKey,
   on: {
     sync: {
       target: 'pending',
@@ -270,7 +277,10 @@ const paused = syncManualLayout.createStateConfig({
   tags: 'pending',
   on: {
     'editing.stop': {
-      actions: stopEditing,
+      actions: [
+        stopEditing,
+        ensureHotKey,
+      ],
       target: 'pending',
     },
     undo: {},
@@ -292,12 +302,11 @@ const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
     paused,
     stopped: {
       entry: [
-        stopChild('undoHotKey'),
         assign({
-          parent: null as any,
           beforeEditing: null,
           history: [],
         }),
+        ensureHotKey,
       ],
       type: 'final',
     },

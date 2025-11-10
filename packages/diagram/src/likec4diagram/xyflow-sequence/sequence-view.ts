@@ -184,7 +184,6 @@ export function sequenceViewToXY(
         tail: edge.tail ?? 'none',
         astPath: edge.astPath,
       },
-      selectable: true,
       focusable: false,
       zIndex: 20,
       interactionWidth: 40,
@@ -352,8 +351,6 @@ function toSeqActorNode({ actor, ports: _ports, bounds, layout, view }: {
       //   })
       // }),
     },
-    deletable: false,
-    selectable: true,
     zIndex: SeqZIndex.actor,
     position: { x, y },
     width,

@@ -32,7 +32,7 @@ import { Base } from '../../base'
 import { MinZoom } from '../../base/const'
 import { updateEdges } from '../../base/updateEdges'
 import { updateNodes } from '../../base/updateNodes'
-import type { OpenSourceActorRef } from '../types'
+import { typedSystem } from '../../likec4diagram/state/utils'
 import type { RelationshipDetailsTypes } from './_types'
 import type { LayoutResult } from './layout'
 import { layoutResultToXYFlow } from './layout-to-xyflow'
@@ -43,21 +43,17 @@ type XYStoreApi = {
   getState: () => XYStoreState
 }
 
-export type Input =
-  & ExclusiveUnion<{
-    Edge: {
-      edgeId: EdgeId
-      viewId: ViewId
-    }
-    Between: {
-      source: Fqn
-      target: Fqn
-      viewId: ViewId
-    }
-  }>
-  & {
-    openSourceActor: OpenSourceActorRef | null
+export type Input = ExclusiveUnion<{
+  Edge: {
+    edgeId: EdgeId
+    viewId: ViewId
   }
+  Between: {
+    source: Fqn
+    target: Fqn
+    viewId: ViewId
+  }
+}>
 
 type Subject = {
   edgeId: EdgeId
@@ -85,7 +81,6 @@ export type Context = Readonly<{
   xynodes: RelationshipDetailsTypes.Node[]
   xyedges: RelationshipDetailsTypes.Edge[]
   bounds: BBox
-  openSourceActor: OpenSourceActorRef | null
 }>
 
 function inputToSubject(input: { edgeId: EdgeId } | { source: Fqn; target: Fqn }): Context['subject'] {
@@ -210,13 +205,14 @@ const _relationshipDetailsLogic = setup({
         bounds: shallowEqual(context.bounds, bounds) ? context.bounds : bounds,
       }
     }),
-    'open relationship source': enqueueActions(({ context, event }) => {
-      if (event.type !== 'xyflow.edgeClick' || !context.openSourceActor) {
+    'open relationship source': enqueueActions(({ system, event }) => {
+      if (event.type !== 'xyflow.edgeClick') {
         return
       }
+      const diagramActor = typedSystem(system).diagramActorRef
       const relationId = event.edge.data.relationId
       if (relationId) {
-        context.openSourceActor.send({ type: 'open.source', relation: relationId })
+        diagramActor.send({ type: 'open.source', relation: relationId })
       }
     }),
   },
@@ -243,7 +239,6 @@ const _relationshipDetailsLogic = setup({
     xystore: null,
     xynodes: [],
     xyedges: [],
-    openSourceActor: input.openSourceActor,
   }),
   states: {
     'initializing': {

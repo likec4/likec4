@@ -38,7 +38,7 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
   const xynodes = event.xynodes.map((update) => {
     const existing = currentNodes.find(n => n.id === update.id)
     if (existing) {
-      if (existing === update || existing.data === update.data) {
+      if (existing === update) {
         return existing
       }
       const { width: existingWidth, height: existingHeight } = getNodeDimensions(existing)

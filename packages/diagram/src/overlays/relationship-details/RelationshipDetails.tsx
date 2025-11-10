@@ -185,6 +185,7 @@ const RelationshipDetailsInner = memo(() => {
         browser.send({ type: 'xyflow.selectionChange', ...params })
       })}
       nodesDraggable={false}
+      nodesSelectable
       fitView={false}
       pannable
       zoomable

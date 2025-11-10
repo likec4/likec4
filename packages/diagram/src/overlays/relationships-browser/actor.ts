@@ -28,7 +28,6 @@ import { updateEdges } from '../../base/updateEdges'
 import { updateNodes } from '../../base/updateNodes'
 import { typedSystem } from '../../likec4diagram/state/utils'
 import { getNodeCenter } from '../../utils/xyflow'
-import type { OpenSourceActorRef } from '../types'
 import type { RelationshipsBrowserTypes } from './_types'
 import { ViewPadding } from './const'
 import type { LayoutRelationshipsViewResult } from './layout'
@@ -190,7 +189,6 @@ export type Input = {
   closeable?: boolean
   enableSelectSubject?: boolean
   enableChangeScope?: boolean
-  openSourceActor: OpenSourceActorRef | null
   // parentRef?: AnyActorRef| null
 }
 
@@ -201,7 +199,6 @@ export interface Context {
   closeable: boolean
   enableSelectSubject: boolean
   enableChangeScope: boolean
-  openSourceActor: OpenSourceActorRef | null
   // parentRef: AnyActorRef | null
   xyflow: XYFLowInstance | null
   xystore: XYStoreApi | null
@@ -350,13 +347,14 @@ const xyflowApplyEdgeChanges = () =>
   })
 
 const openRelationshipSource = () =>
-  machine.enqueueActions(({ context, event }) => {
-    if (event.type !== 'xyflow.edgeClick' || !context.openSourceActor) {
+  machine.enqueueActions(({ system, event }) => {
+    if (event.type !== 'xyflow.edgeClick') {
       return
     }
+    const diagramActor = typedSystem(system).diagramActorRef
     const relations = event.edge.data.relations
     if (hasAtLeast(relations, 1)) {
-      context.openSourceActor.send({ type: 'open.source', relation: relations[0] })
+      diagramActor.send({ type: 'open.source', relation: relations[0] })
     }
   })
 
@@ -378,7 +376,6 @@ const _relationshipsBrowserLogic = machine.createMachine({
     closeable: input.closeable ?? true,
     enableSelectSubject: input.enableSelectSubject ?? true,
     enableChangeScope: input.enableChangeScope ?? true,
-    openSourceActor: input.openSourceActor,
     xyflow: null,
     xystore: null,
     layouted: null,
@@ -451,7 +448,6 @@ const _relationshipsBrowserLogic = machine.createMachine({
                   viewId: context.viewId!,
                   source: event.edge.data.sourceFqn,
                   target: event.edge.data.targetFqn,
-                  openSourceActor: context.openSourceActor,
                 })
               } else {
                 enqueue(openRelationshipSource())

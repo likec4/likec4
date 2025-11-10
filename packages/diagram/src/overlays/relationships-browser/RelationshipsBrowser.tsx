@@ -135,6 +135,7 @@ const RelationshipsBrowserXYFlow = memo(() => {
         browser.send({ type: 'xyflow.selectionChange', ...params })
       })}
       nodesDraggable={false}
+      nodesSelectable
       pannable
       zoomable
     >

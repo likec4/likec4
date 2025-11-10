@@ -120,7 +120,6 @@ const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRe
             position: 'relative',
             gap: 'xs',
             cursor: 'pointer',
-            paddingRight: 'md',
             pointerEvents: 'all',
             width: '100%',
           })}

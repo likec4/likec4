@@ -1,5 +1,4 @@
-import type { ActorRefFrom, BaseActorRef } from 'xstate'
-import type { OpenSourceParams } from '../LikeC4Diagram.props'
+import type { ActorRefFrom } from 'xstate'
 import type {
   ElementDetailsLogic,
   Events as ElementDetailsEvents,
@@ -15,9 +14,6 @@ import type {
   Input as RelationshipsBrowserInput,
   RelationshipsBrowserLogic,
 } from './relationships-browser/actor'
-
-export type OpenSourceActorRef = BaseActorRef<{ type: 'open.source' } & OpenSourceParams>
-
 export namespace Overlays {
   export namespace ElementDetails {
     export type Events = ElementDetailsEvents

@@ -23,8 +23,8 @@ export function typedSystem(system: ActorSystem<any>) {
     get overlaysActorRef(): OverlaysActorRef | null {
       return (system as System).get('overlays') ?? null
     },
-    get diagramActorRef(): DiagramActorRef | null {
-      return (system as System).get('diagram') ?? null
+    get diagramActorRef(): DiagramActorRef {
+      return nonNullable((system as System).get('diagram'), 'Diagram actor not found')
     },
     get searchActorRef(): SearchActorRef | null {
       return (system as System).get('search') ?? null

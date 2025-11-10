@@ -74,8 +74,8 @@ export const actionBtn = defineRecipe({
     variant: 'filled',
   },
   staticCss: [{
-    size: ['md'],
-    radius: ['md'],
+    size: ['*'],
+    radius: ['*'],
     variant: ['*'],
     conditions: ['*'],
   }],

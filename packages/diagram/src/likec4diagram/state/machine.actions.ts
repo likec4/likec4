@@ -19,7 +19,6 @@ import {
   getViewportForBounds,
 } from '@xyflow/react'
 import { type Rect, type Viewport, nodeToRect } from '@xyflow/system'
-import { produce } from 'immer'
 import { hasAtLeast, isNumber } from 'remeda'
 import {
   assertEvent,
@@ -191,15 +190,17 @@ export const onEdgeDoubleClick = () =>
     return {
       xyedges: context.xyedges.map(e => {
         if (e.id === event.edge.id) {
-          return produce(e, draft => {
-            const cp = resetEdgeControlPoints(nodeLookup, e)
-            draft.data.controlPoints = cp
-            if (hasAtLeast(cp, 1) && draft.data.labelBBox) {
-              draft.data.labelBBox.x = cp[0].x
-              draft.data.labelBBox.y = cp[0].y
-              draft.data.labelXY = cp[0]
-            }
-          })
+          const controlPoints = resetEdgeControlPoints(nodeLookup, e)
+          const pt = controlPoints[0]
+          return {
+            ...e,
+            data: {
+              ...e.data,
+              controlPoints,
+              labelBBox: e.data.labelBBox ? { ...e.data.labelBBox, ...pt } : null,
+              labelXY: e.data.labelXY ? pt : null,
+            },
+          } as Types.Edge
         }
         return e
       }),
@@ -530,17 +531,15 @@ export const resetEdgesControlPoints = () =>
         }
         const controlPoints = resetEdgeControlPoints(nodeLookup, edge)
         const pt = controlPoints[0]
-        return produce(edge, draft => {
-          draft.data.controlPoints = controlPoints
-          if (draft.data.labelBBox) {
-            draft.data.labelBBox.x = pt.x
-            draft.data.labelBBox.y = pt.y
-          }
-          if (draft.data.labelXY) {
-            draft.data.labelXY.x = pt.x
-            draft.data.labelXY.y = pt.y
-          }
-        })
+        return {
+          ...edge,
+          data: {
+            ...edge.data,
+            controlPoints,
+            labelBBox: edge.data.labelBBox ? { ...edge.data.labelBBox, x: pt.x, y: pt.y } : null,
+            labelXY: edge.data.labelXY ? pt : null,
+          },
+        } as Types.Edge
       }),
     }
   })
@@ -630,7 +629,7 @@ export const stopSyncLayout = () =>
   })
 
 export const ensureSyncLayout = () =>
-  machine.enqueueActions(({ context, enqueue, system, self }) => {
+  machine.enqueueActions(({ context, enqueue, system }) => {
     const syncLayoutActor = typedSystem(system).syncLayoutActorRef
     // Check if the context is read-only
     if (isReadOnly(context)) {
@@ -644,7 +643,6 @@ export const ensureSyncLayout = () =>
       id: 'syncLayout',
       systemId: 'syncLayout',
       input: {
-        parent: self,
         viewId: context.view.id,
       },
       syncSnapshot: true,
@@ -670,7 +668,7 @@ export const stopEditing = (wasChanged = true) =>
   )
 
 export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | undefined }) =>
-  machine.enqueueActions(({ context, event, self, enqueue, system }) => {
+  machine.enqueueActions(({ context, event, enqueue, system }) => {
     let initiatedFrom = null as null | {
       node: NodeId
       clientRect: Rect
@@ -726,7 +724,6 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
         subject,
         currentView: context.view,
         ...(initiatedFrom && { initiatedFrom }),
-        openSourceActor: self,
       },
     )
   })

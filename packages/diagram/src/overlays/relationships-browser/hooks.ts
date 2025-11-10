@@ -2,7 +2,6 @@ import { type Fqn, nonNullable } from '@likec4/core'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, useContext, useMemo } from 'react'
-import { useCallbackRef } from '../../hooks/useCallbackRef'
 import type { OverlaysActorRef } from '../overlaysActor'
 import type { RelationshipsBrowserActorRef, RelationshipsBrowserSnapshot } from './actor'
 import type { LayoutRelationshipsViewResult } from './layout'
@@ -18,7 +17,7 @@ export function useRelationshipsBrowserState<T>(
   compare: (a: T, b: T) => boolean = shallowEqual,
 ) {
   const actor = useRelationshipsBrowserActor()
-  return useSelector(actor, useCallbackRef(selector), compare)
+  return useSelector(actor, selector, compare)
 }
 
 export function useRelationshipsBrowser() {
