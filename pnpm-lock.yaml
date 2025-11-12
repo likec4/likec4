@@ -168,6 +168,9 @@ catalogs:
     '@floating-ui/dom':
       specifier: ^1.7.4
       version: 1.7.4
+    '@nanostores/media-query':
+      specifier: 0.1.1
+      version: 0.1.1
     '@nanostores/react':
       specifier: 1.0.0
       version: 1.0.0
@@ -1033,6 +1036,9 @@ importers:
       '@mantine/hooks':
         specifier: catalog:mantine
         version: 8.3.7(react@19.2.0)
+      '@nanostores/media-query':
+        specifier: catalog:react
+        version: 0.1.1(nanostores@1.0.1)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.2.0)
@@ -3454,6 +3460,12 @@ packages:
   '@msgpack/msgpack@3.1.2':
     resolution: {integrity: sha512-JEW4DEtBzfe8HvUYecLU9e6+XJnKDlUAIve8FvPzF3Kzs6Xo/KuZkZJsDH0wJXl/qEZbeeE7edxDNY3kMs39hQ==}
     engines: {node: '>= 18'}
+
+  '@nanostores/media-query@0.1.1':
+    resolution: {integrity: sha512-fzbKmh7nFSWNV/l+8WRImhWkt22sdMnw8q8EK5kQU9I0l1fEiJGJdqTx7sDs0HkYfShYb9xA6PNok5Ap86fyhA==}
+    engines: {node: ^20.0.0 || ^22.0.0 || >= 24.0.0}
+    peerDependencies:
+      nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^1.0.0
 
   '@nanostores/react@1.0.0':
     resolution: {integrity: sha512-eDduyNy+lbQJMg6XxZ/YssQqF6b4OXMFEZMYKPJCCmBevp1lg0g+4ZRi94qGHirMtsNfAWKNwsjOhC+q1gvC+A==}
@@ -11463,6 +11475,10 @@ snapshots:
       - supports-color
 
   '@msgpack/msgpack@3.1.2': {}
+
+  '@nanostores/media-query@0.1.1(nanostores@1.0.1)':
+    dependencies:
+      nanostores: 1.0.1
 
   '@nanostores/react@1.0.0(nanostores@1.0.1)(react@19.2.0)':
     dependencies:

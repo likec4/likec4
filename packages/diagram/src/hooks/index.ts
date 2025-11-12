@@ -1,6 +1,7 @@
 export { useCallbackRef } from './useCallbackRef'
 export { useId } from './useId'
 export { useMantinePortalProps } from './useMantinePortalProps'
+export { useMediaPrint } from './useMediaPrint'
 export { useSetState } from './useSetState'
 export { useUpdateEffect } from './useUpdateEffect'
 export { useCurrentZoom, useIsZoomTooSmall, useXYFlow, useXYInternalNode, useXYStore, useXYStoreApi } from './useXYFlow'

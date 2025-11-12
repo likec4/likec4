@@ -4,6 +4,7 @@ import { useRafEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import { type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import {
   EdgeActionButton,
   EdgeContainer,
@@ -378,7 +379,7 @@ function ControlPoints({
   )
 }
 
-const stopAndPrevent = (e: React.MouseEvent | MouseEvent) => {
+const stopAndPrevent = (e: ReactMouseEvent | MouseEvent) => {
   e.stopPropagation()
   e.preventDefault()
 }

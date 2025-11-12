@@ -1,6 +1,6 @@
 import type * as t from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import type { Except } from 'type-fest'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
@@ -41,7 +41,7 @@ export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
     /** Function to generate nonce attribute added to all generated `<style />` tags */
     styleNonce?: string | (() => string) | undefined
 
-    children?: React.ReactNode | undefined
+    children?: ReactNode | undefined
   }
   & Except<LikeC4DiagramProperties<A>, 'view', { requireExactProps: true }>
   & LikeC4DiagramEventHandlers<A>

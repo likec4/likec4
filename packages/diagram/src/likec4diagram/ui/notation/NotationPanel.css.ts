@@ -8,6 +8,9 @@ export const container = css({
   margin: '0',
   width: 'min-content',
   height: 'min-content',
+  _print: {
+    display: 'none',
+  },
 })
 
 export const icon = css({
@@ -57,7 +60,7 @@ export const elementNotation = css({
   // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   // vars: {
-  //   // [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
+  //   // [stokeFillMix]: `color-mix(in oklab, ${vars.element.stroke} 90%, ${vars.element.fill})`
   // },
   _hover: {
     transition: 'all 120ms ease-out',

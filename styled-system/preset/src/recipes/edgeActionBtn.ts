@@ -13,7 +13,7 @@ export const edgeActionBtn = defineRecipe({
     translate: 'auto',
     // '--ai-bg': 'var(--xy-edge-label-background-color)',
     '--ai-bg': 'transparent',
-    '--ai-hover': `color-mix(in srgb , var(--xy-edge-label-background-color), {colors.likec4.mixColor} 10%)`,
+    '--ai-hover': `color-mix(in oklab , var(--xy-edge-label-background-color), {colors.likec4.mixColor} 10%)`,
     '--ai-size': `var(--ai-size-sm)`,
     '--ai-radius': `{radii.sm}`,
     _hover: {
@@ -32,6 +32,9 @@ export const edgeActionBtn = defineRecipe({
       width: '80%',
       height: '80%',
       strokeWidth: '2',
+    },
+    _print: {
+      display: 'none',
     },
   },
   variants: {},

@@ -45,8 +45,22 @@ export const globalCss: ExtendableGlobalCss = {
       width: '100%',
       height: '100%',
       border: '0px solid transparent',
+      background: 'transparent',
       containerName: 'likec4-root',
       containerType: 'size',
+      _print: {
+        '& .react-flow__background': {
+          display: 'none',
+        },
+        '& .react-flow': {
+          background: 'transparent !important',
+          '--xy-background-color': 'transparent !important',
+        },
+        '& *': {
+          colorAdjust: 'exact!',
+          printColorAdjust: 'exact!',
+        },
+      },
 
       '& .mantine-ActionIcon-icon .tabler-icon': {
         width: '75%',
@@ -54,7 +68,7 @@ export const globalCss: ExtendableGlobalCss = {
       },
 
       '& .react-flow': {
-        contain: 'paint',
+        contain: 'paint layout',
         '--xy-background-color': 'var(--colors-likec4-background)',
         '--xy-background-pattern-color': 'var(--colors-likec4-background-pattern, var(--colors-likec4-background))',
         '&:is(.not-initialized)': {
@@ -90,13 +104,13 @@ export const globalCss: ExtendableGlobalCss = {
 
         _dark: {
           '--xy-edge-label-background-color':
-            'color-mix(in srgb, var(--likec4-palette-relation-label-bg) 50%, transparent)',
+            'color-mix(in oklab, var(--likec4-palette-relation-label-bg) 50%, transparent)',
         },
         _light: {
           '--xy-edge-label-color':
-            'color-mix(in srgb, var(--likec4-palette-relation-label), rgba(255 255 255 / 0.85) 40%)',
+            'color-mix(in oklab, var(--likec4-palette-relation-label), rgba(255 255 255 / 0.85) 40%)',
           '--xy-edge-label-background-color':
-            'color-mix(in srgb, var(--likec4-palette-relation-label-bg) 60%, transparent)',
+            'color-mix(in oklab, var(--likec4-palette-relation-label-bg) 60%, transparent)',
         },
 
         '&:is([data-likec4-hovered="true"], [data-edge-active="true"])': {
@@ -130,18 +144,21 @@ export const globalCss: ExtendableGlobalCss = {
           mixBlendMode: {
             _dark: 'plus-lighter',
             _light: 'screen',
+            _print: 'normal!',
           },
         },
         '&:has(.react-flow__node-seq-parallel) :where(.react-flow__edges > svg)': {
           mixBlendMode: {
             // _dark: 'plus-lighter',
             _light: 'color-burn',
+            _print: 'normal!',
           },
         },
         '& .react-flow__node-seq-parallel': {
           mixBlendMode: {
             _dark: 'luminosity',
             _light: 'color-burn',
+            _print: 'normal!',
           },
         },
       },

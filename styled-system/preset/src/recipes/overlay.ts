@@ -101,7 +101,7 @@ export const overlay = defineRecipe({
         dialog: {
           _backdrop: {
             backdropFilter: `blur(var(${backdropBlur}))`,
-            background: `color-mix(in srgb, {colors.likec4.overlay.backdrop} var(${backdropOpacity}), transparent)`,
+            background: `color-mix(in oklab, {colors.likec4.overlay.backdrop} var(${backdropOpacity}), transparent)`,
           },
         },
       },

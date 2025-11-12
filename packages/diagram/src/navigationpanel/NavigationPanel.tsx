@@ -74,6 +74,9 @@ export const NavigationPanel = memo(() => {
             'calc(100cqw - 2 * {spacing.md})',
           ],
         },
+        _print: {
+          display: 'none',
+        },
       }}>
       <NavigationPanelActorContextProvider value={actorRef}>
         <NavigationPanelImpl actor={actorRef} />

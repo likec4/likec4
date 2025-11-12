@@ -4,6 +4,7 @@ import { ActionIcon } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconZoomScan } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { Simplify } from 'type-fest'
 import type { BaseNodeProps } from '../../base/types'
 import { stopPropagation } from '../../utils/xyflow'
@@ -11,8 +12,8 @@ import { compoundActionBtn } from './actionbtns.css'
 
 type CompoundActionButtonProps = Simplify<
   BaseNodeProps & {
-    icon?: React.ReactNode
-    onClick: (e: React.MouseEvent) => void
+    icon?: ReactNode
+    onClick: (e: ReactMouseEvent) => void
   }
 >
 

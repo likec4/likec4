@@ -4,7 +4,7 @@ import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { ActionIcon } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { useState } from 'react'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
@@ -210,7 +210,7 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   /**
    * Children to render inside the diagram (not inside the browser overlay)
    */
-  children?: React.ReactNode | undefined
+  children?: ReactNode | undefined
 }
 
 export interface LikeC4BrowserProps {
@@ -320,7 +320,7 @@ export interface LikeC4BrowserProps {
   /**
    * Children to render inside the browser overlay
    */
-  children?: React.ReactNode | undefined
+  children?: ReactNode | undefined
 }
 
 const cssInteractive = css({

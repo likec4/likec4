@@ -18,6 +18,7 @@ import {
   IconRouteOff,
 } from '@tabler/icons-react'
 import { memo } from 'react'
+import type { MouseEventHandler, ReactNode } from 'react'
 import { useDiagram } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { PanelActionIcon } from '../_common'
@@ -29,8 +30,8 @@ const Action = ({
   onClick,
 }: {
   label: string
-  icon: React.ReactNode
-  onClick: React.MouseEventHandler
+  icon: ReactNode
+  onClick: MouseEventHandler
 }) => (
   <Tooltip label={label} withinPortal={false} position="top">
     <PanelActionIcon

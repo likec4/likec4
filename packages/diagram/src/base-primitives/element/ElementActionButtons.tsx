@@ -6,6 +6,7 @@ import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import { IconBolt } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import { stopPropagation } from '../../utils/xyflow'
 
 const container = hstack({
@@ -119,7 +120,7 @@ export function ElementActionButtons({
 export namespace ElementActionButtons {
   export type Item = {
     key?: string
-    icon?: React.ReactNode
-    onClick: (e: React.MouseEvent) => void
+    icon?: ReactNode
+    onClick: (e: ReactMouseEvent) => void
   }
 }

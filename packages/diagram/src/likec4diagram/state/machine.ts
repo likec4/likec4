@@ -1,31 +1,19 @@
-import {
-  applyEdgeChanges,
-  applyNodeChanges,
-} from '@xyflow/react'
 import { assign, stopChild } from 'xstate/actions'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
 import {
   updateEdgeData,
-  updateNavigationHistory,
   updateNodeData,
 } from './assign'
 import {
   assignDynamicViewVariant,
-  assignLastClickedNode,
   cancelFitDiagram,
-  emitEdgeClick,
-  emitNodeClick,
   emitOnChange,
   emitOnLayoutTypeChange,
-  emitPaneClick,
   ensureOverlaysActorState,
   ensureSearchActorState,
-  resetLastClickedNode,
   stopSyncLayout,
   updateFeatures,
   updateInputs,
-  updateView,
-  xyflow,
 } from './machine.actions'
 import { type Context, machine } from './machine.setup'
 import { initializing, isReady } from './machine.state.initializing'
@@ -53,7 +41,7 @@ const _diagramMachine = machine.createMachine({
     lastClickedNode: null,
     focusedNode: null,
     activeElementDetails: null,
-    viewportBeforeFocus: null,
+    viewportBefore: null,
     viewportOnManualLayout: null,
     viewportOnAutoLayout: null,
     navigationHistory: {
@@ -72,57 +60,37 @@ const _diagramMachine = machine.createMachine({
     isReady,
     ready,
     navigating,
+    final: {
+      type: 'final',
+      entry: [
+        stopSyncLayout(),
+        cancelFitDiagram(),
+        stopChild('hotkey'),
+        stopChild('overlays'),
+        stopChild('search'),
+        stopChild('mediaPrint'),
+        assign({
+          xyflow: null,
+          xystore: null as any,
+          xyedges: [],
+          xynodes: [],
+          initialized: {
+            xydata: false,
+            xyflow: false,
+          },
+        }),
+      ],
+    },
   },
   on: {
-    'xyflow.paneClick': {
-      actions: [
-        resetLastClickedNode(),
-        emitPaneClick(),
-      ],
-    },
-    'xyflow.nodeClick': {
-      actions: [
-        assignLastClickedNode(),
-        emitNodeClick(),
-      ],
-    },
-    'xyflow.edgeClick': {
-      actions: [
-        resetLastClickedNode(),
-        emitEdgeClick(),
-      ],
-    },
-    'xyflow.applyNodeChanges': {
-      actions: assign({
-        xynodes: ({ context, event }) => applyNodeChanges(event.changes, context.xynodes),
-      }),
-    },
-    'xyflow.applyEdgeChanges': {
-      actions: assign({
-        xyedges: ({ context, event }) => applyEdgeChanges(event.changes, context.xyedges),
-      }),
-    },
-    'xyflow.viewportMoved': {
-      actions: assign({
-        viewportChangedManually: (({ event }) => event.manually),
-        viewport: (({ event }) => event.viewport),
-      }),
-    },
-    'fitDiagram': {
-      guard: 'enabled: FitView',
-      actions: xyflow.fitDiagram(),
-    },
     'update.nodeData': {
       actions: assign(updateNodeData),
     },
     'update.edgeData': {
       actions: assign(updateEdgeData),
     },
-    'update.view': {
-      actions: [
-        assign(updateNavigationHistory),
-        updateView(),
-      ],
+    'switch.dynamicViewVariant': {
+      actions: assignDynamicViewVariant(),
     },
     'update.inputs': {
       actions: updateInputs(),
@@ -134,33 +102,16 @@ const _diagramMachine = machine.createMachine({
         ensureSearchActorState(),
       ],
     },
-    'switch.dynamicViewVariant': {
-      actions: assignDynamicViewVariant(),
-    },
     'emit.onChange': {
       actions: emitOnChange(),
     },
     'emit.onLayoutTypeChange': {
       actions: emitOnLayoutTypeChange(),
     },
+    'destroy': {
+      target: '.final',
+    },
   },
-  exit: [
-    stopSyncLayout(),
-    cancelFitDiagram(),
-    stopChild('hotkey'),
-    stopChild('overlays'),
-    stopChild('search'),
-    assign({
-      xyflow: null,
-      xystore: null as any,
-      xyedges: [],
-      xynodes: [],
-      initialized: {
-        xydata: false,
-        xyflow: false,
-      },
-    }),
-  ],
 })
 
 export type {

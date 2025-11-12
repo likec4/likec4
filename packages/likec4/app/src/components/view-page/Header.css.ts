@@ -11,4 +11,7 @@ export const cssHeader = css({
     borderRadius: '0px',
     backgroundColor: `mantine.colors.body`,
   },
+  _print: {
+    display: 'none',
+  },
 })

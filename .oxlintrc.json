@@ -45,7 +45,8 @@
     "typescript/no-duplicate-type-constituents": "off",
     "typescript/no-misused-spread": "off",
     "typescript/unbound-method": "off",
-    "typescript/no-non-null-asserted-optional-chain": "error"
+    "typescript/no-non-null-asserted-optional-chain": "error",
+    "typescript/no-redundant-type-constituents": "off"
   },
   "overrides": [
     {

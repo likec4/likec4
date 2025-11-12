@@ -147,7 +147,11 @@ export function LikeC4DiagramXYFlow({
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
       isPanning.clear()
-      diagram.send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })
+      diagram.send({
+        type: 'xyflow.viewportMoved',
+        viewport,
+        manually: !!event,
+      })
     }),
     onViewportResize = useCallbackRef(() => {
       diagram.send({ type: 'xyflow.resized' })

@@ -77,6 +77,7 @@ catalogs:
   react:
     "@floating-ui/dom": ^1.7.4
     "@nanostores/react": 1.0.0
+    "@nanostores/media-query": 0.1.1
     "@react-hookz/web": ^25.2.0
     "@tabler/icons-react": 3.35.0
     "@types/react": 19.2.2

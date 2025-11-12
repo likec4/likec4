@@ -272,6 +272,12 @@ export const emitOnLayoutTypeChange = () =>
     })
   })
 
+export const assignViewportBefore = (viewport?: Viewport | null) =>
+  machine.assign(({ context }) => ({
+    // We can assign null to indicate that there is no need to restore viewports
+    viewportBefore: viewport != undefined ? viewport : context.viewport,
+  }))
+
 // Simple assign actions that don't depend on others
 export const assignLastClickedNode = () =>
   machine.assign(({ context, event }) => {
@@ -764,6 +770,7 @@ export const ensureOverlaysActorState = () =>
 
 export const ensureSearchActorState = () =>
   machine.enqueueActions(({ enqueue, context: { features: { enableSearch } }, system }) => {
+    enqueue(cancelFitDiagram())
     const hasRunning = typedSystem(system).searchActorRef
     if (enableSearch && !hasRunning) {
       enqueue.spawnChild('searchActorLogic', { id: 'search', systemId: 'search' })

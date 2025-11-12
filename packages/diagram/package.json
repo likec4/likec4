@@ -86,6 +86,7 @@
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
+    "@nanostores/media-query": "catalog:react",
     "@react-hookz/web": "catalog:react",
     "@xstate/react": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",

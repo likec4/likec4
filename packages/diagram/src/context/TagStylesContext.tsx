@@ -15,7 +15,7 @@ const generateColorVars = (spec: TagSpecification) => {
   if (isTagColorSpecified(spec)) {
     return `
       --colors-likec4-tag-bg: ${color};
-      --colors-likec4-tag-bg-hover: color-mix(in srgb, ${color}, var(--colors-likec4-mix-color) 20%);
+      --colors-likec4-tag-bg-hover: color-mix(in oklab, ${color}, var(--colors-likec4-mix-color) 20%);
     `
   }
   if (!radixColors.includes(color)) {

@@ -34,6 +34,7 @@ import { searchActorLogic } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
+import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 
 export interface NavigationHistory {
@@ -70,6 +71,14 @@ export interface Context extends Input {
   }
   viewport: Viewport
   viewportChangedManually: boolean
+  /**
+   * Viewport before entering focus mode or printing
+   */
+  viewportBefore: null | Viewport
+
+  viewportOnManualLayout: null | Viewport
+  viewportOnAutoLayout: null | Viewport
+
   lastOnNavigate: null | {
     fromView: ViewId
     toView: ViewId
@@ -90,9 +99,6 @@ export interface Context extends Input {
     // in screen coordinates
     nodeRectScreen?: Rect | null
   }
-  viewportBeforeFocus: null | Viewport
-  viewportOnManualLayout: null | Viewport
-  viewportOnAutoLayout: null | Viewport
   xyflow: XYFlowInstance | null
 
   // If Dynamic View
@@ -105,6 +111,7 @@ export interface Context extends Input {
 
 export type Events =
   | HotKeyEvent
+  | MediaPrintEvent
   | { type: 'xyflow.init'; instance: XYFlowInstance }
   | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<Types.Node>[] }
   | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<Types.Edge>[] }
@@ -149,6 +156,7 @@ export type Events =
   | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
   | { type: 'emit.onChange'; change: ViewChange }
   | { type: 'emit.onLayoutTypeChange'; layoutType: LayoutType }
+  | { type: 'destroy' }
 
 export type EmittedEvents =
   | { type: 'initialized'; instance: XYFlowInstance }
@@ -180,6 +188,7 @@ export const machine = setup({
       hotkey: 'hotkeyActorLogic'
       overlays: 'overlaysActorLogic'
       search: 'searchActorLogic'
+      mediaPrint: 'mediaPrintActorLogic'
     },
     events: {} as Events,
     emitted: {} as EmittedEvents,
@@ -189,6 +198,7 @@ export const machine = setup({
     hotkeyActorLogic,
     overlaysActorLogic,
     searchActorLogic,
+    mediaPrintActorLogic,
   },
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,

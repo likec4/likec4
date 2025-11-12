@@ -18,6 +18,7 @@ import {
 } from '@mantine/core'
 import { useUpdateEffect } from '@react-hookz/web'
 import { useState } from 'react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import { keys } from 'remeda'
 import { useLikeC4Styles } from '../../../../hooks/useLikeC4Styles'
 import { type ColorKey, type OnStyleChange, type ThemeColorKey, SemanticColors } from './types'
@@ -90,7 +91,7 @@ export function ColorSwatches({
   onColorPreview: (color: ThemeColor | null) => void
   onChange: (color: ThemeColor) => void
 }) {
-  const changeColor = (color: ColorKey | ThemeColorKey) => (e: React.MouseEvent) => {
+  const changeColor = (color: ColorKey | ThemeColorKey) => (e: ReactMouseEvent) => {
     e.stopPropagation()
     onColorPreview(null)
     if (elementColor === color) {

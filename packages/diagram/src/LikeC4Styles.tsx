@@ -11,7 +11,6 @@ import { useLikeC4Styles } from './hooks/useLikeC4Styles'
 const scheme = (scheme: 'dark' | 'light') => `[data-mantine-color-scheme="${scheme}"]`
 
 const whenDark = scheme('dark')
-const whenLight = scheme('light')
 
 const MAX_DEPTH = 5
 const generateCompoundColors = (rootSelector: string, name: string, colors: ThemeColorValues, depth: number) => {
@@ -56,8 +55,6 @@ ${selector} {
   --likec4-palette-relation-stroke: ${relationships.line};
   --likec4-palette-relation-label: ${relationships.label};
   --likec4-palette-relation-label-bg: ${relationships.labelBg};
-}
-${whenLight} ${selector} {
   --likec4-palette-relation-stroke-selected: ${toRgba(mix(relationships.line, 'black', 85))};
 }
 ${whenDark} ${selector} {

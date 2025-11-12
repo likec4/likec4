@@ -1,11 +1,12 @@
 import { type NodeId, type StepEdgeId, getParallelStepsPrefix, isStepEdgeId } from '@likec4/core'
+import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import { clamp, first } from 'remeda'
 import { assertEvent } from 'xstate'
-import { assign, emit, enqueueActions, raise, sendTo, spawnChild } from 'xstate/actions'
+import { assign, emit, enqueueActions, raise, sendTo, spawnChild, stopChild } from 'xstate/actions'
 import { and, or } from 'xstate/guards'
 import { Base } from '../../base'
 import { SeqParallelAreaColor } from '../xyflow-sequence/const'
-import { navigateBack, navigateForward } from './assign'
+import { navigateBack, navigateForward, updateNavigationHistory } from './assign'
 import {
   assignFocusedNode,
   assignLastClickedNode,
@@ -39,6 +40,7 @@ import {
   toggleFeature,
   undimEverything,
   updateActiveWalkthroughState,
+  updateView,
   xyflow,
 } from './machine.actions'
 import { machine } from './machine.setup'
@@ -135,7 +137,7 @@ export const focused = machine.createStateConfig({
   entry: [
     focusOnNodesAndEdges(),
     assign(s => ({
-      viewportBeforeFocus: { ...s.context.viewport },
+      viewportBefore: { ...s.context.viewport },
     })),
     openSourceOfFocusedOrLastClickedNode(),
     spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
@@ -143,14 +145,14 @@ export const focused = machine.createStateConfig({
   ],
   exit: enqueueActions(({ enqueue, context }) => {
     enqueue.stopChild('hotkey')
-    if (context.viewportBeforeFocus) {
-      enqueue(xyflow.setViewport({ viewport: context.viewportBeforeFocus }))
+    if (context.viewportBefore) {
+      enqueue(xyflow.setViewport({ viewport: context.viewportBefore }))
     } else {
       enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 20 })
     }
     enqueue(undimEverything())
     enqueue.assign({
-      viewportBeforeFocus: null,
+      viewportBefore: null,
       focusedNode: null,
     })
   }),
@@ -213,7 +215,7 @@ export const walkthrough = machine.createStateConfig({
   entry: [
     spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
     assign({
-      viewportBeforeFocus: ({ context }) => context.viewport,
+      viewportBefore: ({ context }) => context.viewport,
       activeWalkthrough: ({ context, event }) => {
         assertEvent(event, 'walkthrough.start')
         const stepId = event.stepId ?? first(context.xyedges)!.id as StepEdgeId
@@ -229,8 +231,8 @@ export const walkthrough = machine.createStateConfig({
   ],
   exit: enqueueActions(({ enqueue, context }) => {
     enqueue.stopChild('hotkey')
-    if (context.viewportBeforeFocus) {
-      enqueue(xyflow.setViewport({ viewport: context.viewportBeforeFocus }))
+    if (context.viewportBefore) {
+      enqueue(xyflow.setViewport({ viewport: context.viewportBefore }))
     } else {
       enqueue(raiseFitDiagram({ delay: 10 }))
     }
@@ -250,7 +252,7 @@ export const walkthrough = machine.createStateConfig({
     enqueue(undimEverything())
     enqueue.assign({
       activeWalkthrough: null,
-      viewportBeforeFocus: null,
+      viewportBefore: null,
     })
 
     enqueue(emitWalkthroughStopped())
@@ -330,9 +332,57 @@ export const walkthrough = machine.createStateConfig({
   },
 })
 
+export const printing = machine.createStateConfig({
+  entry: enqueueActions(({ enqueue, context }) => {
+    enqueue.assign({
+      viewportBefore: { ...context.viewport },
+    })
+    const bounds = context.view.bounds
+    const OFFSET = 16
+    enqueue(
+      xyflow.setViewport({
+        viewport: {
+          x: bounds.x + OFFSET,
+          y: bounds.y + OFFSET,
+          zoom: 1,
+        },
+        duration: 0,
+      }),
+    )
+  }),
+  exit: enqueueActions(({ enqueue, context }) => {
+    if (context.viewportBefore) {
+      enqueue(
+        xyflow.setViewport({ viewport: context.viewportBefore }),
+      )
+    }
+    enqueue.assign({
+      viewportBefore: null,
+    })
+  }),
+  on: {
+    'media.print.off': {
+      target: 'idle',
+    },
+  },
+})
+
 // Navigating to another view (after `navigateTo` event)
 export const ready = machine.createStateConfig({
   initial: 'idle',
+  entry: [
+    spawnChild('mediaPrintActorLogic', { id: 'mediaPrint' }),
+  ],
+  exit: [
+    stopChild('mediaPrint'),
+    cancelFitDiagram(),
+  ],
+  states: {
+    idle,
+    focused,
+    walkthrough,
+    printing,
+  },
   on: {
     'navigate.to': {
       guard: 'is another view',
@@ -464,13 +514,52 @@ export const ready = machine.createStateConfig({
         search: event.search,
       })),
     },
-  },
-  exit: [
-    cancelFitDiagram(),
-  ],
-  states: {
-    idle,
-    focused,
-    walkthrough,
+    'xyflow.paneClick': {
+      actions: [
+        resetLastClickedNode(),
+        emitPaneClick(),
+      ],
+    },
+    'xyflow.nodeClick': {
+      actions: [
+        assignLastClickedNode(),
+        emitNodeClick(),
+      ],
+    },
+    'xyflow.edgeClick': {
+      actions: [
+        resetLastClickedNode(),
+        emitEdgeClick(),
+      ],
+    },
+    'xyflow.applyNodeChanges': {
+      actions: assign({
+        xynodes: ({ context, event }) => applyNodeChanges(event.changes, context.xynodes),
+      }),
+    },
+    'xyflow.applyEdgeChanges': {
+      actions: assign({
+        xyedges: ({ context, event }) => applyEdgeChanges(event.changes, context.xyedges),
+      }),
+    },
+    'xyflow.viewportMoved': {
+      actions: assign({
+        viewportChangedManually: (({ event }) => event.manually),
+        viewport: (({ event }) => event.viewport),
+      }),
+    },
+    'fitDiagram': {
+      guard: 'enabled: FitView',
+      actions: xyflow.fitDiagram(),
+    },
+    'update.view': {
+      actions: [
+        assign(updateNavigationHistory),
+        updateView(),
+      ],
+    },
+    'media.print.on': {
+      target: '.printing',
+    },
   },
 })
