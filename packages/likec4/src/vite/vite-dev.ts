@@ -43,14 +43,21 @@ export async function viteDev({
     title,
   })
   const logger = config.customLogger
-  const preferredPort = port ?? (env['PORT'] ? parseInt(env['PORT'], 10) : 5173)
-  const actualPort = await getPort({
-    port: [
-      preferredPort,
-      ...portNumbers(61000, 61010),
-      ...portNumbers(62002, 62010),
-    ],
-  })
+
+  // if port not given as argument, try to get from env
+  port ??= env['PORT'] ? parseInt(env['PORT'], 10) : undefined
+
+  // if port is not specified, use default
+  if (!port) {
+    port = await getPort({
+      port: [
+        5173,
+        5174,
+        ...portNumbers(61000, 61010),
+        ...portNumbers(62002, 62010),
+      ],
+    })
+  }
   const hmrPort = await getPort({
     port: portNumbers(24678, 24690),
   })
@@ -84,7 +91,7 @@ export async function viteDev({
       // This is not recommended as it can be a security risk - https://vite.dev/config/server-options#server-allowedhosts
       // Enabled after request in discord support just to check if it solves the problem
       allowedHosts: true,
-      port: actualPort,
+      port,
       hmr: hmr && {
         overlay: true,
         // needed for hmr to work over network aka WSL2
@@ -102,23 +109,22 @@ export async function viteDev({
 
   if (buildWebcomponent) {
     logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
-    ;(async () => {
-      try {
-        const webcomponentConfig = await viteWebcomponentConfig({
-          webcomponentPrefix,
-          languageServices: languageServices,
-          outDir: publicDir,
-          base: config.base,
-        })
-        await build({
+    viteWebcomponentConfig({
+      webcomponentPrefix,
+      languageServices: languageServices,
+      outDir: publicDir,
+      base: config.base,
+    })
+      .then(webcomponentConfig =>
+        build({
           ...webcomponentConfig,
           logLevel: 'warn',
         })
-      } catch (err) {
+      )
+      .catch(err => {
         logger.warn(loggable(err))
         logger.warn('webcomponent build failed, ignoring error and continue')
-      }
-    })()
+      })
   } else {
     logger.info(`Skip webcomponent build`)
   }
