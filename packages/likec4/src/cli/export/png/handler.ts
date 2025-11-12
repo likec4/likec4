@@ -21,6 +21,7 @@ type HandlerParams = {
    * output directory
    */
   output: string | undefined
+  project: string | undefined
   /**
    * If 'relative' png are exported keeping the same directory structure as source files.
    */
@@ -113,6 +114,7 @@ export async function exportViewsToPNG(
 export async function pngHandler({
   path,
   useDotBin,
+  project,
   theme = 'light',
   output,
   outputType,
@@ -136,7 +138,13 @@ export async function pngHandler({
   output ??= languageServices.workspace
   let server: ViteDevServer | undefined
 
-  const projects = languageServices.languageServices.projects()
+  let projects = [...languageServices.languageServices.projects()]
+  if (project) {
+    if (!projects.some(p => p.id === project)) {
+      logger.error(`project not found: ${project}`)
+      throw new Error(`project not found: ${project}`)
+    }
+  }
 
   if (!serverUrl) {
     logger.info(k.cyan(`start preview server`))
@@ -154,13 +162,17 @@ export async function pngHandler({
     }
   }
 
-  for (const project of projects) {
+  for (const prj of projects) {
+    // skip other projects if project arg specified
+    if (project && prj.id !== project) {
+      continue
+    }
     if (projects.length > 1) {
       logger.info(k.dim('---------'))
-      logger.info(`${k.dim('project:')} ${project.id}`)
-      logger.info(`${k.dim('folder:')} ${project.folder.fsPath}`)
+      logger.info(`${k.dim('project:')} ${prj.id}`)
+      logger.info(`${k.dim('folder:')} ${prj.folder.fsPath}`)
     }
-    let views = await languageServices.diagrams(project.id)
+    let views = await languageServices.diagrams(prj.id)
 
     if (filter && hasAtLeast(filter, 1) && hasAtLeast(views, 1)) {
       const matcher = picomatch(filter)
@@ -180,8 +192,8 @@ export async function pngHandler({
       continue
     }
 
-    let _serverUrl = projects.length > 1 ? withTrailingSlash(joinURL(serverUrl, 'project', project.id)) : serverUrl
-    let _output = projects.length > 1 ? joinURL(output, project.id) : output
+    let _serverUrl = projects.length > 1 ? withTrailingSlash(joinURL(serverUrl, 'project', prj.id)) : serverUrl
+    let _output = projects.length > 1 ? joinURL(output, prj.id) : output
 
     const succeed = await exportViewsToPNG({
       logger,

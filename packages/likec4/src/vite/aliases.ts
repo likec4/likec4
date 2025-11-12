@@ -8,5 +8,6 @@ export function viteAliases() {
     'likec4/icons': resolve(pkg, '../icons'),
     'likec4/model': resolve(pkg, 'src/model'),
     '@likec4/diagram': resolve(pkg, '../diagram/src'),
+    'react-dom/server': resolve(pkg, 'app/react/react-dom-server-mock.ts'),
   }
 }

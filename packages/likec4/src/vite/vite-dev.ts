@@ -105,8 +105,6 @@ export async function viteDev({
     },
   })
 
-  await server.listen()
-
   if (buildWebcomponent) {
     logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
     viteWebcomponentConfig({
@@ -128,6 +126,8 @@ export async function viteDev({
   } else {
     logger.info(`Skip webcomponent build`)
   }
+
+  await server.listen()
 
   return server
 }
