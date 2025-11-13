@@ -1,7 +1,6 @@
-import type { LayoutedView, ViewId } from '@likec4/core'
-import { getOrCreate } from '@likec4/core/utils'
+import type { LayoutedView, ProjectId, ViewId } from '@likec4/core'
 import JSON5 from 'json5'
-import { type URI, UriUtils } from 'langium'
+import { type URI, DocumentState, UriUtils, WorkspaceCache } from 'langium'
 import { indexBy, prop } from 'remeda'
 import {
   type Location,
@@ -12,7 +11,7 @@ import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { Project } from '../workspace/ProjectsManager'
 
-const logger = rootLogger.getChild('manual-layouts')
+const layoutsLogger = rootLogger.getChild('manual-layouts')
 
 /**
  * @todo sync with vscode extension watchers
@@ -47,13 +46,15 @@ export const WithLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
 }
 
 export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
-  private manualLayouts = new WeakMap<URI, Promise<Record<ViewId, LayoutedView> | null>>()
+  protected cache: WorkspaceCache<ProjectId, Promise<Record<ViewId, LayoutedView> | null>>
 
   constructor(private services: LikeC4Services) {
+    this.cache = new WorkspaceCache(services.shared, DocumentState.Validated)
   }
 
   async read(project: Project): Promise<Record<ViewId, LayoutedView> | null> {
-    return await getOrCreate(this.manualLayouts, project.folderUri, async _ => {
+    return await this.cache.get(project.id, async () => {
+      const logger = layoutsLogger.getChild(project.id)
       const fs = this.services.shared.workspace.FileSystemProvider
       const outDir = getManualLayoutsOutDir(project)
       const manualLayouts = [] as LayoutedView[]
@@ -89,6 +90,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   }
 
   async write(project: Project, layouted: LayoutedView): Promise<Location> {
+    const logger = layoutsLogger.getChild(project.id)
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(layouted.id))
     // Ensure the manualLayout field is omitted (may exist in migration)
@@ -110,23 +112,29 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     logger.debug`write snapshot of ${layouted.id} in project ${project.id} to ${file.fsPath}`
     const fs = this.services.shared.workspace.FileSystemProvider
     try {
-      await fs.writeFile(file, content)
+      await fs.writeFile(file, content + '\n')
     } catch (err) {
       logger.warn(`Failed to write snapshot ${layouted.id} to ${file.fsPath}`, { err })
     }
 
-    const projectCaches = await this.read(project)
-    if (projectCaches) {
-      logger.debug`update snapshot cache of ${layouted.id} in project ${project.id}`
-      projectCaches[layouted.id] = layouted
-    } else {
-      this.manualLayouts.delete(project.folderUri)
+    const projectCachesPromise = this.cache.get(project.id)
+    if (projectCachesPromise) {
+      const projectCaches = await projectCachesPromise
+      if (projectCaches) {
+        logger.debug`update snapshot cache of ${layouted.id} in project ${project.id}`
+        projectCaches[layouted.id] = layouted
+      } else {
+        logger.debug`clean cache of project ${project.id}`
+        // Cache was null, remove it entirely
+        this.cache.delete(project.id)
+      }
     }
     this.services.likec4.ModelBuilder.clearCache()
     return location
   }
 
   async remove(project: Project, view: ViewId): Promise<Location | null> {
+    const logger = layoutsLogger.getChild(project.id)
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(view))
 
@@ -147,12 +155,17 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       logger.warn(`Failed to delete snapshot ${view} from ${file.fsPath}`, { err })
     }
 
-    const projectCaches = await this.read(project)
-    if (projectCaches) {
-      logger.debug`clean cache of ${view} in project ${project.id}`
-      delete projectCaches[view]
-    } else {
-      this.manualLayouts.delete(project.folderUri)
+    const projectCachesPromise = this.cache.get(project.id)
+    if (projectCachesPromise) {
+      const projectCaches = await projectCachesPromise
+      if (projectCaches) {
+        logger.debug`clean cached view ${view} in project ${project.id}`
+        delete projectCaches[view]
+      } else {
+        logger.debug`reset empty cache of project ${project.id}`
+        // Cache was null, remove it entirely
+        this.cache.delete(project.id)
+      }
     }
 
     this.services.likec4.ModelBuilder.clearCache()
@@ -160,6 +173,6 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   }
 
   clearCaches(): void {
-    this.manualLayouts = new WeakMap()
+    this.cache.clear()
   }
 }

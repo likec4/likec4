@@ -73,16 +73,18 @@ describe.concurrent('ProjectsManager', () => {
       expect(project?.folder).toBe('file:///test/workspace/src/test-project/')
     })
 
-    it('should not load config file from node_modules', async ({ expect }) => {
+    it('should fail to load config file from node_modules', async ({ expect }) => {
       const { projectsManager, services } = await createMultiProjectTestServices({})
       const fs = services.shared.workspace.FileSystemProvider
       vi.spyOn(fs, 'loadProjectConfig').mockRejectedValueOnce(new Error('should not be called'))
 
-      const project = await projectsManager.registerConfigFile(
-        URI.parse('file:///test/workspace/node_modules/test-project/.likec4rc'),
+      await expect(
+        projectsManager.registerConfigFile(
+          URI.parse('file:///test/workspace/node_modules/test-project/.likec4rc'),
+        ),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Path to /test/workspace/node_modules/test-project/.likec4rc is excluded by: **/node_modules/**]`,
       )
-
-      expect(project).toBeUndefined()
     })
   })
 
@@ -116,7 +118,7 @@ describe.concurrent('ProjectsManager', () => {
       vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
-      await projectsManager.registerProject(configFileUri)
+      await projectsManager.registerConfigFile(configFileUri)
 
       expect(projectsManager.all).toContain('test-project')
       const project = projectsManager.getProject('test-project' as ProjectId)
@@ -210,9 +212,10 @@ describe.concurrent('ProjectsManager', () => {
       vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
-      await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
+      await expect(projectsManager.registerConfigFile(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
         `
-        [Error: Config validation failed:
+        [Error: Failed to register project config /test/workspace/src/test-project/.likec4rc:
+        Config validation failed:
         ✖ Project name cannot be empty
           → at name]
       `,
@@ -229,9 +232,10 @@ describe.concurrent('ProjectsManager', () => {
       vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
-      await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
+      await expect(projectsManager.registerConfigFile(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
         `
-        [Error: Config validation failed:
+        [Error: Failed to register project config /test/workspace/src/test-project/.likec4rc:
+        Config validation failed:
         ✖ Project name cannot be "default"
           → at name]
       `,
@@ -256,9 +260,10 @@ describe.concurrent('ProjectsManager', () => {
       vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
-      await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
+      await expect(projectsManager.registerConfigFile(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
         `
-        [Error: Config validation failed:
+        [Error: Failed to register project config /test/workspace/src/test-project/.likec4rc:
+        Config validation failed:
         ✖ Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -
           → at name]
       `,

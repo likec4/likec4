@@ -5,6 +5,7 @@ import {
   AstUtils,
   DefaultAstNodeDescriptionProvider,
 } from 'langium'
+import { isLikeC4Builtin } from '../likec4lib'
 import type { LikeC4Services } from '../module'
 
 export class AstNodeDescriptionProvider extends DefaultAstNodeDescriptionProvider {
@@ -13,10 +14,12 @@ export class AstNodeDescriptionProvider extends DefaultAstNodeDescriptionProvide
   }
 
   override createDescription(node: AstNode, name: string | undefined, document?: LangiumDocument): AstNodeDescription {
-    const doc = document ?? AstUtils.getDocument(node)
+    document ??= AstUtils.getDocument(node)
     const description = super.createDescription(node, name, document)
-    doc.likec4ProjectId ??= this.services.shared.workspace.ProjectsManager.belongsTo(doc.uri)
-    description.likec4ProjectId = doc.likec4ProjectId
+    if (!isLikeC4Builtin(document.uri)) {
+      document.likec4ProjectId ??= this.services.shared.workspace.ProjectsManager.belongsTo(document)
+      description.likec4ProjectId = document.likec4ProjectId
+    }
     return description
   }
 }

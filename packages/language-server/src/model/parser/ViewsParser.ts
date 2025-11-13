@@ -85,7 +85,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         const viewOfEl = elementRef(astNode.viewOf)
         const _viewOf = viewOfEl && this.resolveFqn(viewOfEl)
         if (!_viewOf) {
-          logger.warn('viewOf is not resolved: ' + astNode.$cstNode?.text)
+          const viewId = astNode.name ?? 'unnamed'
+          const msg = astNode.viewOf.$cstNode?.text ?? '<unknown>'
+          logger.warn(`viewOf {viewId} not resolved {msg}`, { msg, viewId })
         } else {
           viewOf = _viewOf
         }

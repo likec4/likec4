@@ -151,7 +151,7 @@ function activateLc() {
       return
     }
     logger.debug(`View snapshot changed: ${uri.fsPath}`)
-    void rpc.reloadProjects()
+    void rpc.notifyDidChangeSnapshot(uri)
   })
   viewSnapshotWatcher.onDidCreate((uri) => {
     if (latestUpdatedSnapshotUri.value === uri.toString()) {
@@ -160,7 +160,7 @@ function activateLc() {
       return
     }
     logger.debug`View snapshot created: ${uri.fsPath}`
-    void rpc.reloadProjects()
+    void rpc.notifyDidChangeSnapshot(uri)
   })
   viewSnapshotWatcher.onDidDelete((uri) => {
     if (latestUpdatedSnapshotUri.value === uri.toString()) {
@@ -169,7 +169,7 @@ function activateLc() {
       return
     }
     logger.debug`View snapshot deleted: ${uri.fsPath}`
-    void rpc.reloadProjects()
+    void rpc.notifyDidChangeSnapshot(uri)
   })
 }
 

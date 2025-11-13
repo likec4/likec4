@@ -18,6 +18,7 @@ import {
   BuildDocuments,
   ChangeView,
   DidChangeModelNotification,
+  DidChangeSnapshotNotification,
   DidRequestOpenViewNotification,
   FetchComputedModel,
   FetchLayoutedModel,
@@ -87,6 +88,13 @@ export class Rpc extends ADisposable {
         }
         return { model: null }
       }),
+      connection.onNotification(DidChangeSnapshotNotification.type, async ({ snapshotUri }) => {
+        logger.debug`received notification ${'onDidChangeSnapshot'} for snapshot ${snapshotUri}`
+        const uri = URI.parse(snapshotUri)
+        await projects.rebuidProject(
+          projects.belongsTo(uri.path),
+        )
+      }),
       connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {
         logger.debug`received request ${'fetchLayoutedModel'} for project ${projectId}`
         const model = await likec4Services.LanguageServices.layoutedModel(projectId as ProjectId)
@@ -107,7 +115,7 @@ export class Rpc extends ADisposable {
         const result = await likec4Services.Views.layoutView(viewId, projectId as ProjectId, cancelToken)
         return { result }
       }),
-      connection.onRequest(ValidateLayout.Req, async ({ projectId }, cancelToken) => {
+      connection.onRequest(ValidateLayout.req, async ({ projectId }, cancelToken) => {
         logger.debug`received request ${'validateLayout'} for project ${projectId}`
         const layouts = await likec4Services.Views.layoutAllViews(projectId as ProjectId, cancelToken)
 
@@ -176,7 +184,7 @@ export class Rpc extends ADisposable {
           ),
         }
       }),
-      connection.onRequest(BuildDocuments.Req, async ({ docs }, cancelToken) => {
+      connection.onRequest(BuildDocuments.req, async ({ docs }, cancelToken) => {
         const changed = docs.map(d => URI.parse(d))
         const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
         const deleted = LangiumDocuments.allExcludingBuiltin
@@ -211,7 +219,7 @@ export class Rpc extends ADisposable {
         await interruptAndCheck(cancelToken)
         await DocumentBuilder.update(changed, deleted, cancelToken)
       }),
-      connection.onRequest(Locate.Req, params => {
+      connection.onRequest(Locate.req, params => {
         logger.debug`received request ${'locate'}, ${params}`
         switch (true) {
           case 'element' in params:
@@ -232,7 +240,7 @@ export class Rpc extends ADisposable {
             nonexhaustive(params)
         }
       }),
-      connection.onRequest(ChangeView.Req, async (request, _cancelToken) => {
+      connection.onRequest(ChangeView.req, async (request, _cancelToken) => {
         logger.debug`received request ${'changeView'} of ${request.viewId} from project ${request.projectId}`
         return await likec4Services.ModelChanges.applyChange(request)
       }),

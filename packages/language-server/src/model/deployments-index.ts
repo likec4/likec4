@@ -17,7 +17,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
   protected Names: LikeC4NameProvider
 
   constructor(protected override services: LikeC4Services) {
-    super(services, 'deployments-index')
+    super(services)
     this.Names = services.references.NameProvider
   }
 
@@ -26,7 +26,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
     if (rootNodes.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
-    const projectId = document.likec4ProjectId ??= this.projects.belongsTo(document)
+    const projectId = this.projects.belongsTo(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
