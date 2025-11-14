@@ -1,14 +1,17 @@
 import { isLikeC4Config, serializableLikeC4ProjectConfig, validateProjectConfig } from '@likec4/config'
 import { delay } from '@likec4/core/utils'
+import { loggable } from '@likec4/log'
 import { joinRelativeURL } from 'ufo'
 import * as vscode from 'vscode'
 import { globPattern, isVirtual, isWebUi } from '../const'
-import { logger, logWarn } from '../logger'
+import { loggerOutput } from '../logger'
 import type { Rpc } from '../Rpc'
+import { useExtensionLogger } from './useExtensionLogger'
 
 // LSP web extensions does not have access to the file system
 // so we do this trick (find all files and open them)
 export async function initWorkspace(rpc: Rpc) {
+  const { logger, loggerOutput } = useExtensionLogger()
   try {
     const docs = await findSources(rpc)
     if (docs.length <= 0) {
@@ -24,11 +27,12 @@ export async function initWorkspace(rpc: Rpc) {
     logger.info(`[InitWorkspace] Send request buildDocuments`)
     await rpc.buildDocuments(docs)
   } catch (e) {
-    logWarn(e)
+    loggerOutput.error(loggable(e))
   }
 }
 
 export async function rebuildWorkspace(rpc: Rpc) {
+  const { logger, loggerOutput } = useExtensionLogger()
   try {
     logger.info(`Rebuilding...`)
     const docs = await findSources(rpc)
@@ -43,11 +47,12 @@ export async function rebuildWorkspace(rpc: Rpc) {
     logger.info`Send request buildDocuments`
     await rpc.buildDocuments(docs)
   } catch (e) {
-    logWarn(e)
+    loggerOutput.error(loggable(e))
   }
 }
 
 async function findSources(rpc: Rpc) {
+  const { logger, loggerOutput } = useExtensionLogger()
   // const isweb = isWebUi() || isVirtual()
   // const uris = await (isweb ? recursiveSearchSources : findFiles)()
   const client = rpc.client
@@ -66,7 +71,7 @@ async function findSources(rpc: Rpc) {
       const folderUri = joinRelativeURL(cfgUri, '..')
       await rpc.registerProject({ folderUri, config })
     } catch (e) {
-      logWarn(e)
+      loggerOutput.error(loggable(e))
     }
   }
 
@@ -78,7 +83,7 @@ async function findSources(rpc: Rpc) {
       await vscode.workspace.openTextDocument(uri)
       docs.push(c2pConverter.asUri(uri))
     } catch (e) {
-      logWarn(e)
+      loggerOutput.error(loggable(e))
     }
   }
   return docs
@@ -95,7 +100,8 @@ export function isLikeC4Source(path: string) {
 }
 
 async function recursiveSearchSources() {
-  logger.info(`recursiveSearchSources`)
+  const { logger, loggerOutput } = useExtensionLogger()
+  loggerOutput.info(`recursiveSearchSources`)
   const projects = [] as vscode.Uri[]
   const sources = [] as vscode.Uri[]
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
@@ -116,7 +122,7 @@ async function recursiveSearchSources() {
         }
       }
     } catch (e) {
-      logWarn(e)
+      loggerOutput.error(loggable(e))
     }
   }
   return { projects, sources }

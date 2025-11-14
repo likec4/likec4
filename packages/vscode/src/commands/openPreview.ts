@@ -2,7 +2,7 @@ import type { ProjectId, ViewId } from '@likec4/core'
 import { useCommand } from 'reactive-vscode'
 import { countBy, keys } from 'remeda'
 import * as vscode from 'vscode'
-import { logger, logWarn } from '../logger'
+import { useExtensionLogger } from '../common/useExtensionLogger'
 import { commands } from '../meta'
 import type { PreviewPanel, RpcClient } from './types'
 
@@ -13,6 +13,7 @@ export interface OpenPreviewCommandDeps {
 }
 
 export function registerOpenPreviewCommand({ sendTelemetry, rpc, preview }: OpenPreviewCommandDeps) {
+  const { logWarn, logger } = useExtensionLogger()
   useCommand(commands.openPreview, async (viewId?: ViewId, projectId = 'default' as ProjectId) => {
     sendTelemetry(commands.openPreview)
     if (!viewId) {

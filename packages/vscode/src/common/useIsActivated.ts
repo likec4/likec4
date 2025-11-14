@@ -1,6 +1,5 @@
-import { createSingletonComposable, effectScope, onDeactivate, useVscodeContext, watch } from 'reactive-vscode'
+import { createSingletonComposable, onDeactivate, useVscodeContext, watch } from 'reactive-vscode'
 import { isFunction } from 'remeda'
-import { logger } from '../logger'
 
 /**
  * Reactively reads/writes if language client is activated
@@ -31,31 +30,11 @@ export function whenExtensionActive(arg: (() => void) | { onStart: () => void; o
     callback = arg.onStart
     onDeactivate = arg.onStop
   }
-
-  watch(activated, (isActive, prevActive, onCleanup) => {
-    if (prevActive && !isActive) {
+  watch(activated, (isActive) => {
+    if (isActive) {
+      callback()
+    } else {
       onDeactivate?.()
     }
-    if (!isActive) {
-      return
-    }
-    const scope = effectScope()
-    scope.run(() => {
-      try {
-        callback()
-      } catch (error) {
-        logger.error('Failed to run callback in whenExtensionActive', { error })
-      }
-    })
-
-    onCleanup(() => {
-      try {
-        scope.stop()
-      } catch (error) {
-        logger.error('Failed to stop effect scope in whenExtensionActive', { error })
-      }
-    })
-  }, {
-    immediate: true,
   })
 }

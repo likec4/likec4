@@ -18,9 +18,10 @@ import {
 import { createSingletonComposable, useDisposable } from 'reactive-vscode'
 import type vscode from 'vscode'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
-import { logger } from './logger'
+import { useExtensionLogger } from './common/useExtensionLogger'
 
 export const useRpc = createSingletonComposable(() => {
+  const { logger } = useExtensionLogger()
   logger.debug('Initializing RPC client')
 
   const client = useLanguageClient()

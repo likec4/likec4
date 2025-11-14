@@ -36,7 +36,7 @@ const useLanguageClient = createSingletonComposable(() => {
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
-    outputChannel: loggerOutput,
+    outputChannel: loggerOutput.outputChannel,
     diagnosticCollectionName: 'likec4',
     markdown: {
       isTrusted: true,

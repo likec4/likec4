@@ -2,7 +2,7 @@ import { type ViewId, ProjectId } from '@likec4/core'
 import { useCommand } from 'reactive-vscode'
 import { filter, isTruthy, keys, map, pipe, values } from 'remeda'
 import * as vscode from 'vscode'
-import { logger, logWarn } from '../logger'
+import { useExtensionLogger } from '../common/useExtensionLogger'
 import { commands } from '../meta'
 import type { RpcClient } from './types'
 export interface OpenPreviewCommandDeps {
@@ -11,6 +11,7 @@ export interface OpenPreviewCommandDeps {
 }
 
 export function registerMigrateManualLayoutsCommand({ sendTelemetry, rpc }: OpenPreviewCommandDeps) {
+  const { logWarn, logger } = useExtensionLogger()
   useCommand(commands.migrateManualLayouts, async () => {
     try {
       logger.info(`Migrating manual layouts started`)

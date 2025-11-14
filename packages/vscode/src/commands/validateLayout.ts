@@ -3,7 +3,6 @@ import { entries, groupBy, map, pipe, prop } from 'remeda'
 import * as vscode from 'vscode'
 import type { DiagnosticSeverity as lcDiagnosticSeverity } from 'vscode-languageclient'
 import { useExtensionLogger } from '../common/useExtensionLogger'
-import { logger } from '../logger'
 import { commands } from '../meta'
 import type { RpcClient } from './types'
 
@@ -19,7 +18,7 @@ export function registerValidateLayoutCommand({
   const layoutDiagnosticsCollection = useDisposable(vscode.languages.createDiagnosticCollection(
     'likec4:layout',
   ))
-  const { loggerOutput } = useExtensionLogger()
+  const { loggerOutput, logger } = useExtensionLogger()
 
   useCommand(commands.validateLayout, async () => {
     sendTelemetry(commands.validateLayout)

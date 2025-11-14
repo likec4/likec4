@@ -163,7 +163,10 @@ export namespace FetchProjects {
     projects: {
       [projectId: ProjectId]: {
         folder: URI
-        config: LikeC4ProjectJsonConfig
+        config: {
+          name: string
+          title?: string | undefined
+        }
         docs: NonEmptyArray<DocumentUri>
       }
     }

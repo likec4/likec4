@@ -19,8 +19,8 @@ import { type Webview, type WebviewPanel, Uri, ViewColumn, window } from 'vscode
 import type { WebviewIdMessageParticipant } from 'vscode-messenger-common'
 import * as z from 'zod/v4'
 import { isProd } from '../const'
-import { logError, logger as rootLogger } from '../logger'
 import { computedModels } from '../state'
+import { useExtensionLogger } from './useExtensionLogger'
 import { useMessenger } from './useMessenger'
 
 const serializeStateSchema = z.looseObject({
@@ -30,9 +30,8 @@ const serializeStateSchema = z.looseObject({
 
 export const ViewType = 'likec4-preview' as const
 
-const logger = rootLogger.getChild('diagram-panel')
-
 export const useDiagramPanel = createSingletonComposable(() => {
+  const logger = useExtensionLogger().logger.getChild('diagram-panel')
   const panel = shallowRef<WebviewPanel | null>(null)
   let panelScope: EffectScope | null = null
 
@@ -166,7 +165,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
       }
       panelScope?.stop()
     } catch (e) {
-      logError(e)
+      logger.warn('Error closing panel', { error: e })
     } finally {
       panelScope = null
       panelState.viewId.value = null
@@ -183,6 +182,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
         _panel.dispose()
         return
       }
+      logger.debug`deserialize view ${parsedState.data.viewId} (project: ${parsedState.data.projectId})`
       close()
       panel.value = _panel
       panelState.viewId.value = parsedState.data.viewId
@@ -190,7 +190,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
       ensurePanelScope()
       _panel.reveal(undefined, true)
     } catch (e) {
-      logError(e)
+      logger.error('Error deserializing panel state', { error: e })
     }
   }
 
@@ -238,6 +238,7 @@ function writeHTMLToDiagramPreview(
   viewId: ViewId,
   projectId: ProjectId,
 ) {
+  const logger = useExtensionLogger().logger.getChild('diagram-panel')
   logger.debug`writeHTMLToDiagramPreview ${viewId} (project: ${projectId})`
   const internalState = {
     edgesEditable: true,

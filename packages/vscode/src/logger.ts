@@ -2,45 +2,24 @@ import { nonexhaustive } from '@likec4/core'
 import {
   type Sink,
   type TextFormatter,
+  configureLogger as _configureLogger,
   errorFromLogRecord,
+  getConsoleSink,
   getMessageOnlyFormatter,
   getTextFormatter,
   loggable,
   rootLogger,
 } from '@likec4/log'
 import type { TelemetryReporter } from '@vscode/extension-telemetry'
-import type { LogOutputChannel } from 'vscode'
+import { defineLogger, toRaw } from 'reactive-vscode'
 import vscode from 'vscode'
 
+export const loggerOutput = defineLogger('LikeC4 Extension', {
+  outputChannel: vscode.window.createOutputChannel('LikeC4 Extension', {
+    log: true,
+  }),
+})
 export const logger = rootLogger.getChild('vscode')
-
-export function logWarn(e: unknown): void {
-  if (e instanceof Error) {
-    logger.warn(loggable(e))
-    return
-  }
-  const error = new Error(`Unknown error: ${e}`)
-  try {
-    Error.captureStackTrace(error, logWarn)
-  } catch {
-    // ignore
-  }
-  logger.warn(loggable(error))
-}
-
-export function logError(e: unknown): void {
-  if (e instanceof Error) {
-    logger.error(loggable(e))
-    return
-  }
-  const error = new Error(`Unknown error: ${e}`)
-  try {
-    Error.captureStackTrace(error, logError)
-  } catch {
-    // ignore
-  }
-  logger.error(loggable(error))
-}
 
 type OutputChannelSinkProps = {
   /**
@@ -48,7 +27,7 @@ type OutputChannelSinkProps = {
    */
   formatter?: TextFormatter
 }
-export function getOutputChannelSink(channel: LogOutputChannel, props?: OutputChannelSinkProps): Sink {
+function getOutputChannelSink(props?: OutputChannelSinkProps): Sink {
   const format = props?.formatter ?? getTextFormatter({
     format({ category, message }) {
       return `${category} ${message}`
@@ -59,28 +38,32 @@ export function getOutputChannelSink(channel: LogOutputChannel, props?: OutputCh
       switch (logObj.level) {
         case 'trace':
         case 'debug':
-          channel.debug(format(logObj).trimEnd())
+          // toRaw(loggerOutput.outputChannel).
+          // if (loggerOutput.outputChannel.value) {
+          // }
+          loggerOutput.outputChannel ??
+            loggerOutput.append(format(logObj).trimEnd())
           break
         case 'info':
-          channel.info(format(logObj).trimEnd())
+          loggerOutput.info(format(logObj).trimEnd())
           break
         case 'warning':
-          channel.warn(format(logObj).trimEnd())
+          loggerOutput.warn(format(logObj).trimEnd())
           break
         case 'error':
         case 'fatal':
-          channel.error(format(logObj).trimEnd())
+          loggerOutput.error(format(logObj).trimEnd())
           break
         default:
           nonexhaustive(logObj.level)
       }
     } catch (e) {
-      channel.error(loggable(e))
+      loggerOutput.error(loggable(e))
     }
   }
 }
 
-export function getTelemetrySink(telemetry: TelemetryReporter): Sink {
+function getTelemetrySink(telemetry: TelemetryReporter): Sink {
   const messageOnly = getMessageOnlyFormatter()
   return (logObj) => {
     try {
@@ -113,4 +96,23 @@ export function getTelemetrySink(telemetry: TelemetryReporter): Sink {
       console.error('Error while logging to LSP connection:', e)
     }
   }
+}
+
+export function configureLogger(telemetry?: TelemetryReporter) {
+  _configureLogger({
+    reset: true,
+    sinks: {
+      console: getConsoleSink(),
+      vscode: getOutputChannelSink(),
+      ...(telemetry ? { telemetry: getTelemetrySink(telemetry) } : {}),
+    },
+    loggers: [
+      // sends logs to all sinks
+      {
+        category: 'likec4',
+        sinks: ['console', 'vscode'].concat(telemetry ? ['telemetry'] : []),
+        lowestLevel: 'debug',
+      },
+    ],
+  })
 }

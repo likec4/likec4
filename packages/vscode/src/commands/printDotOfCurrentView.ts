@@ -1,6 +1,5 @@
 import { toValue, useCommand } from 'reactive-vscode'
 import { useExtensionLogger } from '../common/useExtensionLogger'
-import { logger } from '../logger'
 import { commands } from '../meta'
 import type { PreviewPanel, RpcClient } from './types'
 
@@ -11,6 +10,7 @@ export interface PrintDotOfCurrentViewDeps {
 }
 
 export function registerPrintDotOfCurrentViewCommand({ sendTelemetry, rpc, preview }: PrintDotOfCurrentViewDeps) {
+  const { loggerOutput, logger } = useExtensionLogger()
   useCommand(commands.printDotOfCurrentview, async () => {
     sendTelemetry(commands.printDotOfCurrentview)
     const viewId = toValue(preview.viewId)
@@ -24,7 +24,6 @@ export function registerPrintDotOfCurrentViewCommand({ sendTelemetry, rpc, previ
       logger.warn(`Failed to layout view ${viewId}`)
       return
     }
-    const { loggerOutput } = useExtensionLogger()
     loggerOutput.info(`DOT of view "${viewId}"`)
     loggerOutput.info('\n' + result.dot)
     loggerOutput.show(false)

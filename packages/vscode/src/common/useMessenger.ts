@@ -20,14 +20,12 @@ import {
 import * as vscode from 'vscode'
 import { Messenger } from 'vscode-messenger'
 import { BROADCAST } from 'vscode-messenger-common'
-import { logger as rootLogger } from '../logger'
 import { commands } from '../meta'
 import type { Rpc } from '../Rpc'
 import { computedModels, latestUpdatedSnapshotUri } from '../state'
 import { performanceMark } from '../utils'
 import type { DiagramPanel } from './useDiagramPanel'
-
-const logger = rootLogger.getChild('messenger')
+import { useExtensionLogger } from './useExtensionLogger'
 
 export const useMessenger = createSingletonComposable(() => {
   const messenger = new Messenger()
@@ -36,6 +34,8 @@ export const useMessenger = createSingletonComposable(() => {
 export function activateMessenger(
   { rpc, preview, messenger }: { rpc: Rpc; preview: DiagramPanel; messenger: Messenger },
 ) {
+  const { logger } = useExtensionLogger('messenger')
+
   logger.debug('useMessenger activation')
 
   const broadcastModelUpdate = () => {

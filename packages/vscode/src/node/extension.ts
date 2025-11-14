@@ -3,13 +3,13 @@ import {
   defineExtension,
 } from 'reactive-vscode'
 import { activateExtension } from '../activate'
-import { useExtensionLogger } from '../common/useExtensionLogger'
+import { configureLogger, loggerOutput } from '../logger'
 
 export const { activate, deactivate } = defineExtension(() => {
-  const { logger } = useExtensionLogger()
+  configureLogger()
   try {
     activateExtension('node')
   } catch (e) {
-    logger.error(loggable(e))
+    loggerOutput.error(loggable(e))
   }
 })

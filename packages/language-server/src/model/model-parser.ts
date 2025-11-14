@@ -45,7 +45,7 @@ export class LikeC4ModelParser {
       DocumentState.Linked,
       async doc => {
         if (this.cachedParsers.has(doc)) {
-          logger.debug('Linked: clear cached parser {projectId} document {doc}', {
+          logger.trace('Linked: clear cached parser {projectId} document {doc}', {
             projectId: doc.likec4ProjectId,
             doc: UriUtils.basename(doc.uri),
           })
@@ -77,7 +77,7 @@ export class LikeC4ModelParser {
       DocumentState.Validated,
       async doc => {
         if (doc.diagnostics?.some(d => d.severity === DiagnosticSeverity.Error) && this.cachedParsers.has(doc)) {
-          logger.debug('Validated: clear cached parser {projectId} document {doc} because of errors', {
+          logger.trace('Validated: clear cached parser {projectId} document {doc} because of errors', {
             projectId: doc.likec4ProjectId,
             doc: UriUtils.basename(doc.uri),
           })
@@ -106,7 +106,7 @@ export class LikeC4ModelParser {
     invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
     const docbasename = UriUtils.basename(doc.uri)
     if (doc.likec4ProjectId) {
-      logger.debug(`create parser {projectId} document {doc}`, {
+      logger.trace(`create parser {projectId} document {doc}`, {
         projectId: doc.likec4ProjectId,
         doc: docbasename,
       })

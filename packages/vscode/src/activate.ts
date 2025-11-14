@@ -18,12 +18,11 @@ import { State } from 'vscode-languageclient'
 import { registerCommands } from './commands'
 import { useBuiltinFileSystem } from './common/useBuiltinFileSystem'
 import { useDiagramPanel, ViewType } from './common/useDiagramPanel'
-import { useExtensionLogger } from './common/useExtensionLogger'
 import { useIsActivated, whenExtensionActive } from './common/useIsActivated'
 import { activateMessenger, useMessenger } from './common/useMessenger'
 import { useTelemetry } from './common/useTelemetry'
 import { isDev } from './const'
-import { logger, logWarn } from './logger'
+import { logger } from './logger'
 import { useRpc } from './Rpc'
 import { latestUpdatedSnapshotUri } from './state'
 import { performanceMark } from './utils'
@@ -31,11 +30,10 @@ import { performanceMark } from './utils'
 export function activateExtension(extensionKind: 'node' | 'web') {
   const m = performanceMark()
   useBuiltinFileSystem()
-  useExtensionLogger()
+  const telemetry = useTelemetry()
   logger.info(`activateExtension: ${extensionKind}`)
 
   whenExtensionActive(() => {
-    const telemetry = useTelemetry()
     logger.info(`activateExtension done in ${m.pretty}`)
     telemetry.sendTelemetryEvent('activation', { extensionKind })
   })
@@ -80,29 +78,7 @@ function activateLc() {
       logger.error('Failed to start language server', { error })
     })
 
-  const telemetry = useTelemetry()
-
   const documentSelector = useDocumentSelector()
-
-  useDisposable(client.onTelemetry((event) => {
-    try {
-      const { eventName, ...properties } = event
-      logger.debug(`onTelemetry: {eventName}`, { event })
-      if (eventName === 'error') {
-        if ('stack' in properties) {
-          properties.stack = new vscode.TelemetryTrustedValue(properties.stack)
-        }
-        if ('message' in properties) {
-          properties.message = new vscode.TelemetryTrustedValue(properties.message)
-        }
-        telemetry.sendTelemetryErrorEvent('error', properties)
-        return
-      }
-      telemetry.sendTelemetryEvent(eventName, properties)
-    } catch (e) {
-      logWarn(e)
-    }
-  }))
 
   if (isDev) {
     useDisposable(client.onDidChangeState((event) => {
@@ -176,23 +152,21 @@ function activateLc() {
 function createWebviewPanelSerializer(onActivate: () => void) {
   const deserializeState = shallowRef<any>(null)
   const deserializePanel = shallowRef<vscode.WebviewPanel | null>(null)
+  const preview = useDiagramPanel()
 
   whenExtensionActive(() => {
-    const preview = useDiagramPanel()
-    const { stop } = watch([deserializePanel, deserializeState], ([panel, state]) => {
+    logger.info('registerWebviewPanelSerializer for diagram preview panel')
+    const { stop } = watch(deserializePanel, (panel) => {
       if (!panel) return
-      preview.deserialize(panel, state)
+      preview.deserialize(panel, deserializeState.value)
       void nextTick(() => {
+        deserializeState.value = null
+        deserializePanel.value = null
         stop()
       })
     }, {
       immediate: true,
     })
-  })
-
-  tryOnScopeDispose(() => {
-    deserializeState.value = null
-    deserializePanel.value = null
   })
 
   return useDisposable(vscode.window.registerWebviewPanelSerializer(
