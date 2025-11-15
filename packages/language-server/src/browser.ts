@@ -1,4 +1,4 @@
-import { configureLogger, getAnsiColorFormatter, getConsoleSink } from '@likec4/log'
+import { configureLogger, getConsoleSink, getTextFormatter } from '@likec4/log'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser'
 import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
@@ -24,7 +24,7 @@ export function startLanguageServer(port: MessagePort | DedicatedWorkerGlobalSco
   configureLogger({
     sinks: {
       console: getConsoleSink({
-        formatter: getAnsiColorFormatter({
+        formatter: getTextFormatter({
           format: ({ level, category, message }) => {
             return `${level} ${category} ${message}`
           },

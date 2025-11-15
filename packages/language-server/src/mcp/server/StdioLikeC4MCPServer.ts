@@ -46,12 +46,15 @@ export class StdioLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
     if (!this.transport) {
       return
     }
-    logger.info('Stopping MCP stdio server')
-    await this.transport.close()
-    if (this._mcp) {
-      await this._mcp.close()
+    try {
+      logger.info('Stopping MCP stdio server')
+      await this.transport.close()
+      if (this._mcp) {
+        await this._mcp.close()
+      }
+    } finally {
+      this._mcp = undefined
+      this.transport = undefined
     }
-    this._mcp = undefined
-    this.transport = undefined
   }
 }

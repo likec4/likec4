@@ -45,11 +45,11 @@ export const searchElement = likec4Tool({
 Search LikeC4 elements and deployment nodes across all projects.
 
 Query syntax (case-insensitive):
-- kind:<value>: filters by kind
-- shape:<value>: filters by shape
-- meta:<key>: filters by having metadata with the given key
-- #<value>: matches assigned tags
-- Free text: matches id (FQN) or title
+- kind:<value>  filters by kind
+- shape:<value> filters by shape
+- meta:<key>    filters by having metadata with the given key
+- #<value>      matches assigned tags
+- <value>       matches id (FQN) or title
 
 Request:
 - search: string — at least 2 characters

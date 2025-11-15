@@ -1,4 +1,5 @@
 import { loggable } from '@likec4/log'
+import { error } from 'console'
 import { isError } from 'remeda'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer, LikeC4MCPServerModuleContext } from '../interfaces'
@@ -18,7 +19,6 @@ const streamableLikeC4MCPServer = (services: LikeC4Services, defaultPort = 33335
       logger.warn('Unexpected configuration update: {update}', { update })
       return
     }
-    logger.debug('Configuration update: {update}', { update })
 
     const {
       enabled = false,
@@ -38,15 +38,15 @@ const streamableLikeC4MCPServer = (services: LikeC4Services, defaultPort = 33335
         })
       })
       .catch(err => {
-        const message = isError<Error>(err) ? err.message : undefined
+        const message = loggable(err)
         connection?.telemetry?.logEvent({
           eventName: 'mcp-server-start-failed',
           mcpPort: port,
-          ...message && { message },
+          message,
         })
-        logger.error('Failed to start LikeC4 MCP Server', { err })
+        logger.warn(`Failed to start LikeC4 MCP Server: \n${message}`)
         if (connection) {
-          connection.window.showErrorMessage(`LikeC4: Failed to start MCP Server\n\n${loggable(err)}`)
+          connection.window.showErrorMessage(`LikeC4: Failed to start MCP Server\n\n${message}`)
         }
       })
   })
