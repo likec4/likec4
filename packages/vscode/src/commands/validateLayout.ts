@@ -2,8 +2,8 @@ import { useCommand, useDisposable } from 'reactive-vscode'
 import { entries, groupBy, map, pipe, prop } from 'remeda'
 import * as vscode from 'vscode'
 import type { DiagnosticSeverity as lcDiagnosticSeverity } from 'vscode-languageclient'
-import { useExtensionLogger } from '../common/useExtensionLogger'
 import { commands } from '../meta'
+import { useExtensionLogger } from '../useExtensionLogger'
 import type { RpcClient } from './types'
 
 export interface ValidateLayoutCommandDeps {
@@ -18,7 +18,7 @@ export function registerValidateLayoutCommand({
   const layoutDiagnosticsCollection = useDisposable(vscode.languages.createDiagnosticCollection(
     'likec4:layout',
   ))
-  const { loggerOutput, logger } = useExtensionLogger()
+  const { output, logger } = useExtensionLogger()
 
   useCommand(commands.validateLayout, async () => {
     sendTelemetry(commands.validateLayout)
@@ -26,7 +26,7 @@ export function registerValidateLayoutCommand({
 
     if (!result) {
       logger.error('Failed to validate layout - no result returned')
-      loggerOutput.show()
+      output.show()
       return
     }
 

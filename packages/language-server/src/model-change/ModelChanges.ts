@@ -1,5 +1,6 @@
 import { type ProjectId, type ViewChange, invariant, nonexhaustive } from '@likec4/core'
-import { Location, Range, TextEdit } from 'vscode-languageserver-types'
+import { loggable, wrapError } from '@likec4/log'
+import { Range, TextEdit } from 'vscode-languageserver-types'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4ModelLocator, ViewLocateResult } from '../model'
 import type { LikeC4Services } from '../module'
@@ -17,10 +18,10 @@ export class LikeC4ModelChanges {
     this.locator = services.likec4.ModelLocator
   }
 
-  public async applyChange(changeView: ChangeView.Params): Promise<Location | null> {
+  public async applyChange(changeView: ChangeView.Params): Promise<ChangeView.Res> {
     const lspConnection = this.services.shared.lsp.Connection
     invariant(lspConnection, 'LSP Connection not available')
-    let result: Location | null = null
+    let result: ChangeView.Res | null = null
     try {
       await this.services.shared.workspace.WorkspaceLock.write(async () => {
         let { viewId, projectId: _projectId, change } = changeView
@@ -29,7 +30,7 @@ export class LikeC4ModelChanges {
 
         const lookup = this.locator.locateViewAst(viewId, project.id)
         if (!lookup) {
-          throw new Error(`LikeC4ModelChanges: view not found: ${viewId}`)
+          throw new Error(`View ${viewId} not found in project ${project.id}`)
         }
         const textDocument = {
           uri: lookup.doc.textDocument.uri,
@@ -46,12 +47,27 @@ export class LikeC4ModelChanges {
               logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
             })
           }
-          result = await this.services.likec4.ManualLayouts.write(project, change.layout)
+          const location = await this.services.likec4.ManualLayouts.write(project, change.layout)
+          result = {
+            success: true,
+            location,
+          }
           return
         }
 
         if (change.op === 'reset-manual-layout') {
-          result = await this.services.likec4.ManualLayouts.remove(project, viewId)
+          // If there is an existing manual layout v1
+          if (lookup.view.manualLayout) {
+            // We clean it up
+            await removeManualLayoutV1(this.services, { lookup }).catch(err => {
+              logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
+            })
+          }
+          const location = await this.services.likec4.ManualLayouts.remove(project, viewId)
+          result = {
+            success: true,
+            location,
+          }
           return
         }
 
@@ -74,15 +90,32 @@ export class LikeC4ModelChanges {
           lspConnection.window.showErrorMessage(`Failed to apply changes ${applyResult.failureReason}`)
           return
         }
+
         result = {
-          uri: textDocument.uri,
-          range: modifiedRange,
+          success: true,
+          location: {
+            uri: textDocument.uri,
+            range: modifiedRange,
+          },
         }
       })
-    } catch (error) {
-      logger.error(`Failed to apply change ${changeView.change.op} ${changeView.viewId}`, { error })
+    } catch (err) {
+      const error = loggable(
+        wrapError(
+          err,
+          `Failed to apply change ${changeView.change.op} ${changeView.viewId}:\n`,
+        ),
+      )
+      logger.error(error)
+      result = {
+        success: false,
+        error,
+      }
     }
-    return result
+    return result ?? {
+      success: false,
+      error: 'Unknown error applying model change',
+    }
   }
 
   protected convertToTextEdit({ lookup, change }: {

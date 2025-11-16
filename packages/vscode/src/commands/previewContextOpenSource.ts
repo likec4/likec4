@@ -12,9 +12,9 @@ export function registerPreviewContextOpenSourceCommand({ sendTelemetry, preview
     sendTelemetry(commands.previewContextOpenSource)
     const { element, deployment } = await preview.getLastClickedElement()
     if (deployment) {
-      executeCommand(commands.locate, { deployment })
+      await executeCommand(commands.locate, { deployment })
     } else if (element) {
-      executeCommand(commands.locate, { element })
+      await executeCommand(commands.locate, { element })
     }
   })
 }

@@ -33,25 +33,40 @@ export const FetchLayoutedView: RequestType<{
   method: 'fetch-layouted-view',
 }
 
-export const OnOpenView: NotificationType<{ viewId: ViewId; projectId: ProjectId }> = {
+export type OnOpenViewPayload = {
+  viewId: ViewId
+  projectId: ProjectId
+}
+export const OnOpenView: NotificationType<OnOpenViewPayload> = {
   method: 'on-open-view',
 }
+// export type OnOpenViewHandler = (notification: OnOpenViewPayload) => voi
 
-export const GetLastClickedNode: RequestType<never, { element: Fqn | null; deployment: DeploymentFqn | null }> = {
+export type GetLastClickedNodeResult = {
+  element: Fqn | null
+  deployment: DeploymentFqn | null
+}
+export const GetLastClickedNode: RequestType<never, GetLastClickedNodeResult> = {
   method: 'get-last-clicked-node',
 }
+export type GetLastClickedNodeHandler = () => GetLastClickedNodeResult
 
-export const ReadLocalIcon: RequestType</* uri */ string, {
+export type ReadLocalIconResult = {
   base64data: string | null
-}> = {
+}
+export const ReadLocalIcon: RequestType</* uri */ string, ReadLocalIconResult> = {
   method: 'read-local-icon',
 }
+
+export const ViewChangeReq = { method: 'webview:change' } as RequestType<
+  { viewId: ViewId; change: ViewChange },
+  { success: true } | { success: false; error: string }
+>
 
 export const WebviewMsgs = {
   CloseMe: { method: 'webview:closeMe' } as NotificationType<never>,
   Locate: { method: 'webview:locate' } as NotificationType<LocateParams>,
   NavigateTo: { method: 'webview:navigate' } as NotificationType<{ viewId: ViewId }>,
-  OnChange: { method: 'webview:change' } as NotificationType<{ viewId: ViewId; change: ViewChange }>,
 }
 
 export type LocateParams = ExclusiveUnion<{
@@ -72,3 +87,11 @@ export type LocateParams = ExclusiveUnion<{
     deployment: DeploymentFqn
   }
 }>
+
+export type Handler<T> =
+  // dprint-ignore
+  T extends RequestType<infer P, infer Res>
+    ? (params: P) => Promise<Res>
+    : T extends NotificationType<infer P>
+      ? (payload: P) => void
+      : never

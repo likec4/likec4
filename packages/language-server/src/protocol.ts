@@ -265,7 +265,14 @@ export namespace ChangeView {
     change: ViewChange
     projectId?: string | undefined
   }
-  export type Res = Location | null
+  export type Res = {
+    success: true
+    location: Location | null
+  } | {
+    success: false
+    location?: Location | null
+    error: string
+  }
 
   export const req = new RequestType<Params, Res, void>('likec4/change-view')
   export type Req = typeof req

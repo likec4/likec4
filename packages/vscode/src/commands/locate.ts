@@ -2,6 +2,7 @@ import type { Locate } from '@likec4/language-server/protocol'
 import { useCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
 import { commands } from '../meta'
+import { useExtensionLogger } from '../useExtensionLogger'
 import type { RpcClient } from './types'
 
 export interface LocateCommandDeps {
@@ -10,7 +11,9 @@ export interface LocateCommandDeps {
 }
 
 export function registerLocateCommand({ sendTelemetry, rpc }: LocateCommandDeps) {
+  const logger = useExtensionLogger().logger
   useCommand(commands.locate, async (params: Locate.Params) => {
+    logger.debug(`command {command} invoked with params: {params}`, { command: commands.locate, params })
     sendTelemetry(commands.locate)
     const loc = await rpc.locate(params)
     if (!loc) return

@@ -2,8 +2,8 @@ import { deepEqual } from 'fast-equals'
 import { computed, createSingletonComposable, useWorkspaceFolders } from 'reactive-vscode'
 import vscode from 'vscode'
 import type { TextDocumentFilter } from 'vscode-languageclient'
-import { useExtensionLogger } from '../common/useExtensionLogger'
 import { globPattern, languageId } from '../const'
+import { useExtensionLogger } from '../useExtensionLogger'
 
 const useDocumentSelector = createSingletonComposable(() => {
   const { logger } = useExtensionLogger()

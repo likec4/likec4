@@ -2,8 +2,8 @@ import { type ViewId, ProjectId } from '@likec4/core'
 import { useCommand } from 'reactive-vscode'
 import { filter, isTruthy, keys, map, pipe, values } from 'remeda'
 import * as vscode from 'vscode'
-import { useExtensionLogger } from '../common/useExtensionLogger'
 import { commands } from '../meta'
+import { useExtensionLogger } from '../useExtensionLogger'
 import type { RpcClient } from './types'
 export interface OpenPreviewCommandDeps {
   sendTelemetry(commandId: string): void
@@ -24,7 +24,7 @@ export function registerMigrateManualLayoutsCommand({ sendTelemetry, rpc }: Open
 
       for (const project of projectIds) {
         const { model } = await rpc.fetchComputedModel(project).catch(err => {
-          logger.warn(`Failed to fetch computed model for project ${project}`, { err })
+          logger.warn(`Failed to fetch computed model for project {project}`, { project, err })
           return { model: null }
         })
         if (!model) {

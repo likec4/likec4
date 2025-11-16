@@ -1,7 +1,7 @@
-import useLanguageClient from '#useLanguageClient'
 import {
   BuildDocuments,
   ChangeView,
+  DidChangeModelNotification,
   DidChangeSnapshotNotification,
   DidRequestOpenViewNotification,
   FetchComputedModel,
@@ -18,13 +18,10 @@ import {
 import { createSingletonComposable, useDisposable } from 'reactive-vscode'
 import type vscode from 'vscode'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
-import { useExtensionLogger } from './common/useExtensionLogger'
+import { useLanguageClient } from './useLanguageClient'
 
 export const useRpc = createSingletonComposable(() => {
-  const { logger } = useExtensionLogger()
-  logger.debug('Initializing RPC client')
-
-  const client = useLanguageClient()
+  const { client } = useLanguageClient()
   let previousOperation = Promise.resolve({} as any)
 
   async function queue<T>(op: () => Promise<T>): Promise<T> {
@@ -48,7 +45,7 @@ export const useRpc = createSingletonComposable(() => {
   }
 
   function onDidChangeModel(cb: () => void) {
-    useDisposable(client.onNotification(DidChangeSnapshotNotification.type, cb))
+    useDisposable(client.onNotification(DidChangeModelNotification.type, cb))
   }
 
   function onRequestOpenView(cb: (params: DidRequestOpenViewNotification.Params) => void) {

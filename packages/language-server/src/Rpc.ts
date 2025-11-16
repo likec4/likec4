@@ -2,7 +2,6 @@ import { filter, flatMap, funnel, indexBy, keys, map, mapValues, pipe, sort } fr
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
-import { type LikeC4ProjectJsonConfig, serializableLikeC4ProjectConfig } from '@likec4/config'
 import {
   type ComputedLikeC4ModelData,
   type DiagramView,
@@ -44,35 +43,35 @@ export class Rpc extends ADisposable {
   init() {
     const connection = this.services.shared.lsp.Connection
     if (!connection) {
-      logger.info(`[ServerRpc] no connection, not initializing`)
+      logger.info(`no connection, skip init ServerRpc`)
       return
     }
-    logger.info(`[ServerRpc] init`)
+    logger.info(`init ServerRpc`)
     const likec4Services = this.services.likec4
     const projects = this.services.shared.workspace.ProjectsManager
     const LangiumDocuments = this.services.shared.workspace.LangiumDocuments
     const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
 
     const notifyModelParsed = funnel(
-      () => {
-        logger.debug`sendNotification ${'onDidChangeModel'}`
+      (batch: number) => {
+        logger.debug`send onDidChangeModel ${batch > 1 ? '(' + batch + ' batched)' : ''}`
         connection.sendNotification(DidChangeModelNotification.type, '').catch(error => {
           logger.warn(`[ServerRpc] error sending onDidChangeModel:`, { error })
           return
         })
       },
       {
+        reducer: (accumulator, req: number) => (accumulator ?? 0) + req,
         triggerAt: 'end',
-        minQuietPeriodMs: 150,
-        maxBurstDurationMs: 500,
-        minGapMs: 300,
+        minQuietPeriodMs: 200,
+        maxBurstDurationMs: 400,
       },
     )
 
     let isFirstBuild = true
 
     this.onDispose(
-      likec4Services.ModelBuilder.onModelParsed(() => notifyModelParsed.call()),
+      likec4Services.ModelBuilder.onModelParsed(() => notifyModelParsed.call(1)),
       connection.onRequest(FetchComputedModel.req, async ({ projectId, cleanCaches }, cancelToken) => {
         logger.debug`received request ${'fetchComputedModel'} for project ${projectId}`
         if (cleanCaches) {
