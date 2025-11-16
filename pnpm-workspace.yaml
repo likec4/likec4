@@ -160,8 +160,8 @@ catalogs:
     "@xstate/react": 6.0.0
     xstate: 5.24.0
   xyflow:
-    "@xyflow/react": 12.9.0
-    "@xyflow/system": 0.0.71
+    "@xyflow/react": 12.9.3
+    "@xyflow/system": 0.0.73
   zod4:
     zod: ^4.1.12
 
