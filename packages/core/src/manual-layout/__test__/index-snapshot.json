@@ -1,0 +1,267 @@
+{
+  "_type": "element",
+  "tags": null,
+  "links": null,
+  "_stage": "layouted",
+  "sourcePath": "simple.c4",
+  "description": {
+    "md": "System _Landscape_"
+  },
+  "title": "Landscape",
+  "id": "index",
+  "autoLayout": {
+    "direction": "TB"
+  },
+  "hash": "26ddf2a39f69ca8762f15f17bbf0d973032db3b5",
+  "bounds": {
+    "x": -2,
+    "y": -10,
+    "width": 910,
+    "height": 591
+  },
+  "nodes": [
+    {
+      "id": "customer",
+      "parent": null,
+      "level": 0,
+      "children": [],
+      "inEdges": [],
+      "outEdges": [
+        "at6tqm"
+      ],
+      "title": "Customer",
+      "modelRef": "customer",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "Uses services online"
+      },
+      "tags": [
+        "tag-1",
+        "tag-2"
+      ],
+      "kind": "el",
+      "x": 48,
+      "y": 0,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 89,
+        "y": 63,
+        "width": 142,
+        "height": 48
+      }
+    },
+    {
+      "id": "saas",
+      "parent": null,
+      "level": 0,
+      "children": [
+        "saas.frontend",
+        "saas.api"
+      ],
+      "inEdges": [
+        "at6tqm"
+      ],
+      "outEdges": [],
+      "title": "SaaS Application",
+      "modelRef": "saas",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "Provides online services to customers"
+      },
+      "tags": [
+        "tag-1"
+      ],
+      "kind": "el",
+      "depth": 1,
+      "x": 8,
+      "y": 290,
+      "width": 890,
+      "height": 281,
+      "labelBBox": {
+        "x": 6,
+        "y": 0,
+        "width": 112,
+        "height": 15
+      }
+    },
+    {
+      "id": "saas.frontend",
+      "parent": "saas",
+      "level": 1,
+      "children": [],
+      "inEdges": [
+        "at6tqm"
+      ],
+      "outEdges": [
+        "1ha2y8s"
+      ],
+      "title": "Frontend",
+      "modelRef": "saas.frontend",
+      "shape": "rectangle",
+      "color": "primary",
+      "icon": "tech:react",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "React web application"
+      },
+      "tags": [
+        "tag-2"
+      ],
+      "kind": "el",
+      "x": 48,
+      "y": 351,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 71,
+        "y": 63,
+        "width": 208,
+        "height": 48
+      }
+    },
+    {
+      "id": "saas.api",
+      "parent": "saas",
+      "level": 1,
+      "children": [],
+      "inEdges": [
+        "1ha2y8s"
+      ],
+      "outEdges": [],
+      "title": "API",
+      "modelRef": "saas.api",
+      "shape": "rectangle",
+      "color": "primary",
+      "icon": "tech:nodejs",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "REST API"
+      },
+      "tags": [
+        "tag-3"
+      ],
+      "kind": "el",
+      "x": 538,
+      "y": 351,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 110,
+        "y": 63,
+        "width": 130,
+        "height": 48
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "at6tqm",
+      "source": "customer",
+      "target": "saas.frontend",
+      "label": "uses",
+      "dotpos": "e,208,332.26 208,179.87 208,223.7 208,276.72 208,321.86",
+      "points": [
+        [
+          208,
+          180
+        ],
+        [
+          208,
+          224
+        ],
+        [
+          208,
+          277
+        ],
+        [
+          208,
+          322
+        ]
+      ],
+      "labelBBox": {
+        "x": 209,
+        "y": 248,
+        "width": 34,
+        "height": 18
+      },
+      "parent": null,
+      "relations": [
+        "1ljmsmq"
+      ],
+      "color": "gray",
+      "line": "dashed",
+      "head": "normal",
+      "controlPoints": [
+        {
+          "x": 208,
+          "y": 260
+        }
+      ]
+    },
+    {
+      "id": "1ha2y8s",
+      "source": "saas.frontend",
+      "target": "saas.api",
+      "label": "requests",
+      "description": {
+        "md": "requests **data**"
+      },
+      "dotpos": "e,538.03,422 367.77,422 418.95,422 475.81,422 527.72,422",
+      "points": [
+        [
+          368,
+          441
+        ],
+        [
+          419,
+          441
+        ],
+        [
+          476,
+          441
+        ],
+        [
+          528,
+          441
+        ]
+      ],
+      "labelBBox": {
+        "x": 424,
+        "y": 394,
+        "width": 58,
+        "height": 39
+      },
+      "parent": "saas",
+      "relations": [
+        "18xhvkc"
+      ],
+      "color": "gray",
+      "line": "dashed",
+      "head": "normal",
+      "technology": "REST",
+      "controlPoints": [
+        {
+          "x": 448,
+          "y": 441
+        }
+      ]
+    }
+  ]
+}

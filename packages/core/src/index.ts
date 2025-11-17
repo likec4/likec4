@@ -32,3 +32,8 @@ export {
   sortNaturalByFqn,
   sortParentsFirst,
 } from './utils'
+
+export {
+  applyManualLayout,
+  calcDriftsFromSnapshot,
+} from './manual-layout'

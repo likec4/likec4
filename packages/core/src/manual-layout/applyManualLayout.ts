@@ -1,7 +1,7 @@
 import { type WritableDraft, produce } from 'immer'
-import { hasAtLeast, isDeepEqual, isNullish, isNumber, isTruthy } from 'remeda'
+import { hasAtLeast, isDeepEqual, isNullish, isNumber, isTruthy, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
-import { buildElementNotations } from '../../compute-view/utils/buildElementNotations'
+import { buildElementNotations } from '../compute-view/utils/buildElementNotations'
 import {
   type DiagramEdge,
   type DiagramEdgeDriftReason,
@@ -10,11 +10,12 @@ import {
   type LayoutedDynamicView,
   type LayoutedView,
   type LayoutedViewDriftReason,
+  type MarkdownOrString,
   type ViewManualLayoutSnapshot,
   _layout,
   isDynamicView,
-} from '../../types'
-import { invariant, symmetricDifference } from '../../utils'
+} from '../types'
+import { ifilter, ihead, invariant, symmetricDifference } from '../utils'
 
 const changed = (a: unknown, b: unknown) => {
   if (a === b || (isNullish(a) && isNullish(b))) {
@@ -110,6 +111,25 @@ function autoApplyIcon(
   return true
 }
 
+function patchMarkdownOrString(
+  draft: WritableDraft<MarkdownOrString> | undefined | null,
+  next: MarkdownOrString,
+): MarkdownOrString {
+  if (!draft) {
+    return next
+  }
+  if ('md' in next) {
+    draft.md = next.md
+    delete draft.txt
+    return draft
+  }
+  if ('txt' in next) {
+    draft.txt = next.txt
+    delete draft.md
+  }
+  return draft
+}
+
 /**
  * Auto-applies title, description, technology to leaf node
  * @returns true if all labels were auto-applied, false otherwise
@@ -132,7 +152,10 @@ function autoApplyLabelsToLeaf(
     if (isNullish(next.description)) {
       delete draft.description
     } else if (sizeNotChanged) {
-      draft.description = next.description
+      draft.description = patchMarkdownOrString(
+        draft.description,
+        next.description,
+      )
     } else {
       applied = false
     }
@@ -163,7 +186,10 @@ function autoApplyLabelsToCompound(
   if (isNullish(next.description)) {
     delete draft.description
   } else {
-    draft.description = next.description
+    draft.description = patchMarkdownOrString(
+      draft.description,
+      next.description,
+    )
   }
 
   if (isNullish(next.technology)) {
@@ -203,25 +229,16 @@ export function applyManualLayout<
   const nextNodes = new Map(autoLayouted.nodes.map(n => [n.id, n]))
   const nextEdges = new Map(autoLayouted.edges.map(e => [e.id, e]))
 
-  const nextNodeIds = new Set(nextNodes.keys())
-  const nextEdgeIds = new Set(nextEdges.keys())
-
-  const snapshotNodeIds = new Set(snapshot.nodes.map(n => n.id))
-  const snapshotEdgeIds = new Set(snapshot.edges.map(e => e.id))
-
-  if (symmetricDifference(nextNodeIds, snapshotNodeIds).size > 0) {
-    viewDrifts.add('nodes-mismatch')
-  }
-  if (symmetricDifference(nextEdgeIds, snapshotEdgeIds).size > 0) {
-    viewDrifts.add('edges-mismatch')
-  }
-
   const nodes = snapshot.nodes.map((node): DiagramNode => {
     const next = nextNodes.get(node.id)
+    if (next) {
+      nextNodes.delete(next.id)
+    }
     return produce(node, draft => {
       if (!next) {
         // TODO: node is missing in the next layout, update node with data from the model?
         draft.drifts = ['missing']
+        viewDrifts.add('nodes-removed')
         return
       }
 
@@ -286,34 +303,39 @@ export function applyManualLayout<
       const _drifts = [...nodeDrifts]
       if (hasAtLeast(_drifts, 1)) {
         // Propagate to view drifts
-        viewDrifts.add('nodes-mismatch')
+        viewDrifts.add('nodes-drift')
         draft.drifts = _drifts
+      } else {
+        // Clear drifts if any comes from `snapshot`
+        delete draft.drifts
       }
     })
   })
 
+  if (nextNodes.size > 0) {
+    // Some next nodes were not processed, meaning they were added
+    viewDrifts.add('nodes-added')
+  }
+
   const edges = snapshot.edges.map((edge): DiagramEdge => {
-    const next = nextEdges.get(edge.id)
+    let next = nextEdges.get(edge.id) ?? pipe(
+      nextEdges.values(),
+      ifilter(e => e.source === edge.source && e.target === edge.target),
+      ihead(),
+    )
+    if (next) {
+      nextEdges.delete(next.id)
+    }
+
     return produce(edge, draft => {
       if (!next) {
         draft.drifts = ['missing']
+        viewDrifts.add('edges-removed')
         return
       }
       const edgeDrifts = new Set<DiagramEdgeDriftReason>()
-
-      if (draft.source === next.target && draft.target === next.source) {
-        edgeDrifts.add('direction-changed')
-      } else {
-        if (draft.source !== next.source) {
-          edgeDrifts.add('source-changed')
-        }
-        if (draft.target !== next.target) {
-          edgeDrifts.add('target-changed')
-        }
-      }
-
       // Only check size if previous checks passed
-      if (edgeDrifts.size === 0 && changed(draft.dir ?? 'forward', next.dir ?? 'forward')) {
+      if (changed(draft.dir ?? 'forward', next.dir ?? 'forward')) {
         edgeDrifts.add('direction-changed')
       }
 
@@ -333,19 +355,27 @@ export function applyManualLayout<
       }
 
       if (next.labelBBox) {
-        if (!draft.labelBBox || (!isTruthy(draft.label) && isTruthy(next.label))) {
+        if (!draft.labelBBox) {
           edgeDrifts.add('label-changed')
-        }
-        draft.labelBBox = {
-          // Preserve x,y if possible
-          x: draft.labelBBox?.x ?? next.labelBBox.x,
-          y: draft.labelBBox?.y ?? next.labelBBox.y,
-          // Take width/height from next
-          width: next.labelBBox.width,
-          height: next.labelBBox.height,
+          draft.labelBBox = next.labelBBox
+        } else {
+          if (next.labelBBox.width > draft.labelBBox.width || next.labelBBox.height > draft.labelBBox.height) {
+            edgeDrifts.add('label-changed')
+          }
+          // Take width/height from next,
+          draft.labelBBox.width = Math.round(next.labelBBox.width)
+          draft.labelBBox.height = Math.round(next.labelBBox.height)
         }
         draft.label = next.label
-        draft.description = next.description ?? null
+        if (next.description) {
+          draft.description = patchMarkdownOrString(
+            draft.description,
+            next.description,
+          )
+        } else {
+          draft.description = null
+        }
+
         draft.technology = next.technology ?? null
       } else if (edge.labelBBox) {
         // If previous edge had labelBBox but new one does not, consider it changed
@@ -354,17 +384,25 @@ export function applyManualLayout<
 
       const _drifts = [...edgeDrifts]
       if (hasAtLeast(_drifts, 1)) {
-        viewDrifts.add('edges-mismatch')
+        viewDrifts.add('edges-drift')
         draft.drifts = _drifts
+      } else {
+        // Clear drifts if any comes from `snapshot`
+        delete draft.drifts
       }
     })
   })
 
+  if (nextEdges.size > 0) {
+    // Some next edges were not processed, meaning they were added
+    viewDrifts.add('edges-added')
+  }
+
   const nodeNotations = buildElementNotations(nodes)
 
-  const result = { ...snapshot } as Writable<LayoutedView>
-  Object.assign(
-    result,
+  // Shallow copy of snapshot
+  const result = Object.assign(
+    { ...snapshot } as Writable<LayoutedView>,
     {
       // Auto-layouted properties
       title: autoLayouted.title ?? snapshot.title,
@@ -379,12 +417,7 @@ export function applyManualLayout<
   )
 
   if (isDynamicView(autoLayouted) && result._type === 'dynamic') {
-    Object.assign(
-      result,
-      {
-        variant: autoLayouted.variant,
-      } satisfies Partial<LayoutedDynamicView>,
-    )
+    ;(result as Writable<LayoutedDynamicView>).variant = autoLayouted.variant
   }
 
   const drifts = [...viewDrifts]
@@ -399,31 +432,4 @@ export function applyManualLayout<
   }
 
   return result as V
-}
-
-/**
- * Applies drift reasons to autoLayouted view if there are any.
- */
-export function applyLayoutDriftReasons<V extends LayoutedView>(
-  autoLayouted: V,
-  snapshot: ViewManualLayoutSnapshot,
-): V {
-  const { drifts } = applyManualLayout(autoLayouted, snapshot)
-  if (drifts) {
-    // Mutable for performance
-    Object.assign(
-      autoLayouted,
-      {
-        [_layout]: 'auto' as const,
-        drifts,
-      } satisfies Partial<LayoutedView>,
-    )
-  } else {
-    const mutable = autoLayouted as Writable<LayoutedView>
-    // Ensure no drifts present
-    if ('drifts' in autoLayouted) {
-      delete mutable.drifts
-    }
-  }
-  return autoLayouted
 }
