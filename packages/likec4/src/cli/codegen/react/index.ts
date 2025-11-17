@@ -49,10 +49,17 @@ export async function reactHandler({ path, useDotBin, useCorePackage, outfile, p
   }
 
   diagrams.forEach(view => {
+    if (view.drifts && view.drifts.length > 0) {
+      logger.info(
+        k.yellow('layout drift detected, view:') + ' ' + k.red(view.id),
+      )
+      return
+    }
     if (view.hasLayoutDrift) {
       logger.warn(
         k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id),
       )
+      return
     }
   })
 

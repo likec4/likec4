@@ -258,6 +258,14 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     return this.#manualLayoutSnapshot !== undefined
   }
 
+  get hasLayoutDrifts(): boolean {
+    if (!this.isLayouted()) {
+      return false
+    }
+    const manualLayout = this.$manual
+    return !!manualLayout?.drifts && manualLayout.drifts.length > 0
+  }
+
   /**
    * If view has manual layout, returns it with manual layout applied
    */
@@ -272,17 +280,6 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
       })
     }
     return null
-  }
-
-  /**
-   * Returns the layout drift reasons, if any
-   * (Only for layouted views with manual layout)
-   */
-  get layoutDrifts(): readonly LayoutedViewDriftReason[] {
-    if (!this.isLayouted()) {
-      return []
-    }
-    return this.$view.drifts ?? []
   }
 
   public roots(): NodesIterator<A, V> {

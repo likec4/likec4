@@ -11,7 +11,6 @@ import {
   createWebviewPanelSerializer,
   useDiagramPanel,
 } from './panel'
-import {} from './panel/activateMessenger'
 import { registerBuiltinFileSystem } from './registerBuiltinFileSystem'
 import { latestUpdatedSnapshotUri } from './sharedstate'
 import { useExtensionLogger } from './useExtensionLogger'

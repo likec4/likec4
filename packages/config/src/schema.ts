@@ -20,9 +20,14 @@ import { LikeC4StylesConfigSchema } from './schema.theme'
 export const ManualLayoutsConfigSchema = z
   .object({
     outDir: z.string()
+      .default('.likec4')
       .meta({
-        description:
-          'Path to the directory where manual layouts will be stored, relative to the folder containing the project config',
+        description: [
+          'Path to the directory where manual layouts will be stored,',
+          'relative to the folder containing the project config. ',
+          '',
+          'Defaults to \'.likec4\'.',
+        ].join('\n'),
       }),
   })
   .meta({

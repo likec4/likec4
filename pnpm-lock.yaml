@@ -1306,6 +1306,9 @@ importers:
       hono:
         specifier: catalog:hono
         version: 4.10.3
+      immer:
+        specifier: catalog:utils
+        version: 10.2.0
       indent-string:
         specifier: ^5.0.0
         version: 5.0.0

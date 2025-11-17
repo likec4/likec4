@@ -54,6 +54,7 @@ export interface LikeC4LanguageServices {
 
   /**
    * Returns diagrams (i.e. views with layout computed) for the specified project
+   * if diagram has manual layout, it will be used
    * If no project is specified, returns diagrams for default project
    */
   diagrams(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<DiagramView[]>
@@ -68,12 +69,6 @@ export interface LikeC4LanguageServices {
     range: Range
     sourceFsPath: string
   }>
-
-  /**
-   * Notifies the language server about changes in the workspace
-   * @deprecated use watcher instead
-   */
-  notifyUpdate(update: { changed?: string; removed?: string }): Promise<boolean>
 
   /**
    * Returns the location of the specified element, relation, view or deployment element
@@ -209,7 +204,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     const projectId = this.projectsManager.ensureProjectId(project)
     const model = await this.builder.computeModel(projectId, cancelToken)
     if (!model) {
-      throw new Error('Failed to parse model')
+      throw new Error('Failed to compute model, empty project?')
     }
     const layouted = await this.views.layoutAllViews(projectId, cancelToken)
     return LikeC4Model.create({
@@ -240,41 +235,6 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
           sourceFsPath: doc.uri.fsPath,
         }))
     })
-  }
-
-  /**
-   * TODO Replace with watcher
-   */
-  async notifyUpdate({ changed, removed }: { changed?: string; removed?: string }): Promise<boolean> {
-    if (!changed && !removed) {
-      return false
-    }
-    const _changed = changed ? URI.file(changed) : undefined
-    const _removed = removed ? URI.file(removed) : undefined
-
-    const pm = this.services.shared.workspace.ProjectsManager
-    if ((_changed && pm.isConfigFile(_changed)) || (_removed && pm.isConfigFile(_removed))) {
-      await pm.reloadProjects()
-      return true
-    }
-
-    const mutex = this.services.shared.workspace.WorkspaceLock
-    try {
-      let completed = false
-      await mutex.write(async token => {
-        await this.services.shared.workspace.DocumentBuilder.update(
-          _changed ? [_changed] : [],
-          _removed ? [_removed] : [],
-          token,
-        )
-        // we come here if only the update was successful, did not throw and not cancelled
-        completed = !token.isCancellationRequested
-      })
-      return completed
-    } catch (e) {
-      logger.error(loggable(e))
-      return false
-    }
   }
 
   locate(params: Locate.Params): Locate.Res {

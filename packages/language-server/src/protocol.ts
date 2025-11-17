@@ -103,6 +103,7 @@ export namespace LayoutView {
   export type Params = {
     viewId: ViewId
     projectId?: string | undefined
+    layoutType?: 'auto' | 'manual' | undefined
   }
   export type Res = {
     result:

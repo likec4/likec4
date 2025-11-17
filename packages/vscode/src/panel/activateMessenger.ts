@@ -1,4 +1,3 @@
-import { applyLayoutDriftReasons, applyManualLayout } from '@likec4/core/model'
 import type { ProjectId } from '@likec4/core/types'
 import { loggable, wrapError } from '@likec4/log'
 import {
@@ -59,7 +58,7 @@ export function activateMessenger() {
     const { viewId, layoutType = 'manual' } = params
     try {
       const projectId = toValue(preview.projectId) ?? 'default'
-      const result = await rpc.layoutView({ viewId, projectId })
+      const result = await rpc.layoutView({ viewId, projectId, layoutType })
       if (!result) {
         logger.warn(
           `No view {viewId} can be found or layouted in {projectId} ${t0.pretty}`,
@@ -71,15 +70,6 @@ export function activateMessenger() {
         }
       }
       let view = result.diagram
-      const modelData = computedModels.value[projectId]
-      const snapshot = modelData?.manualLayouts?.[viewId]
-      if (snapshot) {
-        if (layoutType === 'auto') {
-          view = applyLayoutDriftReasons(view, snapshot)
-        } else if (view._layout !== 'manual') {
-          view = applyManualLayout(view, snapshot)
-        }
-      }
       logger.debug(
         `{req} of {viewId} in {projectId} (requested: {layoutType}, actual: {viewlayout}) in ${t0.pretty}`,
         { req: 'layoutView', viewId, projectId, layoutType, viewlayout: view._layout },

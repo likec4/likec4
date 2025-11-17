@@ -17,6 +17,7 @@ import type {
   ProjectId,
   Relationship,
   Specification,
+  ViewManualLayoutSnapshot,
   WhereOperator,
 } from '../types'
 import { _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
@@ -512,6 +513,17 @@ export class LikeC4Model<A extends Any = Any> {
    */
   public findView(viewId: aux.LooseViewId<A>): $ViewModel<A> | null {
     return this._views.get(viewId as aux.ViewId<A>) as $ViewModel<A> ?? null
+  }
+
+  /**
+   * Returns manual layout snapshot for given view ID, if any.
+   */
+  public findManualLayout(viewId: aux.LooseViewId<A>): ViewManualLayoutSnapshot | null {
+    if ('manualLayouts' in this.$data) {
+      const view = this.$data.manualLayouts?.[viewId as scalar.ViewId]
+      return view ?? null
+    }
+    return null
   }
 
   /**

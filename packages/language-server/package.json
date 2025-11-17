@@ -126,6 +126,7 @@
     "fdir": "catalog:utils",
     "fetch-to-node": "^2.1.0",
     "hono": "catalog:hono",
+    "immer": "catalog:utils",
     "indent-string": "^5.0.0",
     "json5": "catalog:utils",
     "langium": "catalog:langium",

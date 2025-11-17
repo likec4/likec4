@@ -109,9 +109,21 @@ export class Rpc extends ADisposable {
           } satisfies LayoutedLikeC4ModelData,
         }
       }),
-      connection.onRequest(LayoutView.req, async ({ viewId, projectId }, cancelToken) => {
-        logger.debug`received request ${'layoutView'} for ${viewId} from project ${projectId}`
-        const result = await likec4Services.Views.layoutView(viewId, projectId as ProjectId, cancelToken)
+      connection.onRequest(LayoutView.req, async ({
+        viewId,
+        projectId,
+        layoutType,
+      }, cancelToken) => {
+        logger
+          .debug`received request ${'layoutView'} for ${viewId} from project ${projectId} (layout type: ${
+          layoutType ?? 'not set'
+        })`
+        const result = await likec4Services.Views.layoutView({
+          viewId,
+          projectId: projectId as ProjectId,
+          layoutType,
+          cancelToken,
+        })
         return { result }
       }),
       connection.onRequest(ValidateLayout.req, async ({ projectId }, cancelToken) => {
