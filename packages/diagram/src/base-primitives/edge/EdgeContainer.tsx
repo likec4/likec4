@@ -26,6 +26,7 @@ type EdgeContainerProps = PropsWithChildren<
 export function EdgeContainer({
   className,
   component = 'g',
+  selectable = false,
   selected = false,
   data: {
     color = 'gray',
@@ -42,6 +43,8 @@ export function EdgeContainer({
       className,
       styles.edgeContainer,
       'likec4-edge-container',
+      selected && 'selected',
+      selectable && 'selectable',
     ),
     'data-likec4-color': color,
     'data-edge-dir': data.dir ?? 'forward',

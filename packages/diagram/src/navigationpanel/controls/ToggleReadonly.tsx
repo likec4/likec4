@@ -24,6 +24,7 @@ export const ToggleReadonly = () => {
         <UnstyledButton
           component={m.button}
           layout="position"
+          layoutDependency={isReadOnly}
           onClick={e => {
             e.stopPropagation()
             diagram.toggleFeature('ReadOnly')
@@ -52,18 +53,20 @@ export const ToggleReadonly = () => {
               },
             }),
           )}>
-          {isReadOnly ? <IconLock size={14} stroke={2} /> : <IconLockOpen2 size={14} stroke={2} />}
-          {isReadOnly && (
-            <m.div
-              className={css({
-                fontSize: '11px',
-                fontWeight: 600,
-                lineHeight: 1,
-                opacity: 0.8,
-              })}>
-              Edit
-            </m.div>
-          )}
+          <IconLockOpen2 size={14} stroke={2} style={{ display: isReadOnly ? 'none' : undefined }} />
+          <IconLock size={14} stroke={2} style={{ display: !isReadOnly ? 'none' : undefined }} />
+          <m.div
+            className={css({
+              fontSize: '11px',
+              fontWeight: 600,
+              lineHeight: 1,
+              opacity: 0.8,
+            })}
+            style={{
+              display: isReadOnly ? 'block' : 'none',
+            }}>
+            Edit
+          </m.div>
         </UnstyledButton>
       )}
     </AnimatePresence>

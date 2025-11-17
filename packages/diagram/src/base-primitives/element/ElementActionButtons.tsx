@@ -80,7 +80,7 @@ export function ElementActionButtons({
         minHeight: 30,
       }}>
       <m.div
-        layoutRoot
+        layout
         key={`${id}-action-buttons`}
         initial={false}
         style={{
@@ -91,6 +91,7 @@ export function ElementActionButtons({
           scale: isHovered ? 1.1 : (selected ? 0.9 : 0.8),
           y: (isHovered || selected) ? 6 : 0,
         }}
+        layoutDependency={`${isHovered}-${selected}`}
         data-likec4-hovered={isHovered}
         className={cx('nodrag nopan', actionButtons)}
       >

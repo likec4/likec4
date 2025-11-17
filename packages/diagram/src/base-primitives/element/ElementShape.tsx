@@ -164,11 +164,11 @@ function ShapeSvgOutline({ shape, w, h }: ShapeSvgProps) {
     default: {
       svg = (
         <rect
-          x={-1}
-          y={-1}
-          width={w + 2}
-          height={h + 2}
-          rx={6} />
+          x={-3}
+          y={-3}
+          width={w + 6}
+          height={h + 6}
+          rx={8} />
       )
       break
     }

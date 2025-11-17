@@ -12,7 +12,6 @@ export const hotkeyActorLogic: HotkeyActorLogic = fromCallback(({ sendBack }: {
   const escHandler = getHotkeyHandler([
     ['Escape', (event: KeyboardEvent) => {
       event.stopPropagation()
-      console.log('Escape karsarsey pressed')
       sendBack({ type: 'key.esc' })
     }, {
       preventDefault: true,

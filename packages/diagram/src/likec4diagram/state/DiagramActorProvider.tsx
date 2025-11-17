@@ -93,8 +93,6 @@ export function DiagramActorProvider({
     actorRef.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
   }, [_defaultVariant, actorRef])
 
-  console.debug('Render DiagramActorProvider for view', view.id)
-
   return (
     <DiagramActorContextProvider value={api}>
       <ErrorBoundary>

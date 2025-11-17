@@ -118,6 +118,7 @@ const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRe
       <PopoverTarget>
         <m.div
           layout
+          layoutDependency={isActiveWalkthrough}
           className={hstack({
             layerStyle: 'likec4.panel',
             position: 'relative',
@@ -128,7 +129,7 @@ const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRe
           })}
           onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave' })}
         >
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence>
             {isActiveWalkthrough ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}
           </AnimatePresence>
         </m.div>
