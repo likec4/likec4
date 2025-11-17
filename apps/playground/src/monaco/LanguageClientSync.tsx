@@ -174,7 +174,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
         const throttled = funnel(requestComputedModel, {
           triggerAt: 'end',
-          maxBurstDurationMs: 200,
+          maxBurstDurationMs: 300,
         })
 
         disposables.push(
