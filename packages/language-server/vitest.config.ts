@@ -20,5 +20,11 @@ export default defineProject({
       includeStack: true,
       truncateThreshold: 100,
     },
+    exclude: [
+      '**/node_modules/**',
+      'dist/**',
+      'build/**',
+      'lib/**',
+    ],
   },
 })

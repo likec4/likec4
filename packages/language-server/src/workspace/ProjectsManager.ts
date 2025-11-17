@@ -357,10 +357,8 @@ export class ProjectsManager {
       project.config = config
     }
 
-    if (this.#defaultProjectId === project.id) {
-      // Reset cached default project
-      this.#defaultProject = undefined
-    }
+    // Reset cached default project
+    this.#defaultProject = undefined
 
     if (isNullish(config.exclude)) {
       project.exclude = DefaultProject.exclude
@@ -489,6 +487,9 @@ export class ProjectsManager {
         await this.rebuidProject(projectId, ct)
       })
     }
+    // reset default project cache
+    this.#defaultProject = undefined
+
     const project = this.#projects.find(p => p.id === projectId) ?? this.default
     const folder = project.folder
     const docs = this.services.workspace.LangiumDocuments

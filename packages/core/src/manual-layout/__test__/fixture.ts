@@ -234,6 +234,7 @@ export function generateView<A extends Patches>(patcher?: A) {
           style: {},
           level: 0,
           tags: [],
+          labelBBox: { x: 0, y: 0, width: 0, height: 0 },
         }
         layouted.nodes.push(patch(baseNode, patcher))
       }
