@@ -1,15 +1,14 @@
 import { css } from '@likec4/styles/css'
 
 export const cssHeader = css({
+  top: '4',
+  right: '4',
   position: 'absolute',
-  backgroundColor: `mantine.colors.body/80`,
-  _dark: {
-    backgroundColor: `mantine.colors.dark[6]/60`,
-  },
+  layerStyle: 'likec4.panel',
+  rounded: 'md',
   [`#likec4-root:has([data-likec4-diagram-panning="true"]) &`]: {
     boxShadow: 'none',
-    borderRadius: '0px',
-    backgroundColor: `mantine.colors.body`,
+    rounded: '0',
   },
   _print: {
     display: 'none',

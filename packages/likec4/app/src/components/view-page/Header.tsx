@@ -1,4 +1,5 @@
 import { useLikeC4Projects } from '@likec4/diagram'
+import { Box } from '@likec4/styles/jsx'
 import {
   Button,
   Divider,
@@ -8,7 +9,6 @@ import {
   MenuItem,
   MenuLabel,
   MenuTarget,
-  Paper,
   Space,
   useMantineTheme,
 } from '@mantine/core'
@@ -43,13 +43,8 @@ export const Header = memo(() => {
   const [opened, { open, close }] = useDisclosure(false)
 
   return (
-    <Paper
-      className={styles.cssHeader}
-      top={'0.5rem'}
-      right={'0.5rem'}
-      p={4}
-      radius={'sm'}
-      shadow="lg">
+    <Box
+      className={styles.cssHeader}>
       <Group gap={isTablet ? 6 : 4} wrap="nowrap">
         {isReactDiagramRoute
           ? (
@@ -82,7 +77,7 @@ export const Header = memo(() => {
         <Space />
       </Group>
       {opened && <ShareModal onClose={close} />}
-    </Paper>
+    </Box>
   )
 })
 
