@@ -124,6 +124,7 @@ export function diagramToXY(opts: {
       tags: node.tags ?? null,
       x: node.x,
       y: node.y,
+      drifts: node.drifts ?? null,
     } satisfies Types.CompoundNodeData
 
     const leafNodeData = {
@@ -143,6 +144,7 @@ export function diagramToXY(opts: {
       x: node.x,
       y: node.y,
       isMultiple: node.style?.multiple ?? false,
+      drifts: node.drifts ?? null,
     } satisfies Types.LeafNodeData
 
     if (node.kind === GroupElementKind) {
@@ -178,7 +180,6 @@ export function diagramToXY(opts: {
               ...navigateTo,
               deploymentFqn,
               modelFqn,
-              drifts,
             },
           } satisfies Types.CompoundDeploymentNode,
         )
@@ -194,7 +195,6 @@ export function diagramToXY(opts: {
               ...compoundData,
               ...navigateTo,
               modelFqn,
-              drifts,
             },
           } satisfies Types.CompoundElementNode,
         )
@@ -210,7 +210,6 @@ export function diagramToXY(opts: {
               ...navigateTo,
               deploymentFqn,
               modelFqn,
-              drifts,
             },
           } satisfies Types.DeploymentElementNode,
         )
@@ -226,7 +225,6 @@ export function diagramToXY(opts: {
               ...leafNodeData,
               ...navigateTo,
               modelFqn,
-              drifts,
             },
           } satisfies Types.ElementNode,
         )

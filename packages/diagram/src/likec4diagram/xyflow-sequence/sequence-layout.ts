@@ -80,6 +80,7 @@ function toCompoundArea(
       viewId: view.id,
       depth,
       isViewGroup: true,
+      drifts: node.drifts ?? null,
     },
     // zIndex: SeqZIndex.compound,
     position: {

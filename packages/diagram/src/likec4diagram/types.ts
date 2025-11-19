@@ -133,6 +133,7 @@ export namespace Types {
       viewId: ViewId
       depth: number
       icon?: IconUrl
+      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -145,7 +146,6 @@ export namespace Types {
        * If set - this node has navigation to another view and diagram has handler for this
        */
       navigateTo: ViewId | null
-      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -161,7 +161,6 @@ export namespace Types {
        * If set - this node has navigation to another view and diagram has handler for this
        */
       navigateTo: ViewId | null
-      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
