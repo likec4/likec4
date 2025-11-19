@@ -14,7 +14,7 @@ import { DiagramActorContextProvider } from '../../hooks/safeContext'
 import { useDiagram, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
-import type { ViewPadding } from '../../LikeC4Diagram.props'
+import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
 import { makeDiagramApi } from './diagram-api'
@@ -38,7 +38,7 @@ export function DiagramActorProvider({
   pannable: boolean
   nodesDraggable: boolean
   nodesSelectable: boolean
-  fitViewPadding: ViewPadding
+  fitViewPadding: ViewPaddings
   where: WhereOperator | null
   dynamicViewVariant: DynamicViewDisplayVariant | undefined
 }>) {

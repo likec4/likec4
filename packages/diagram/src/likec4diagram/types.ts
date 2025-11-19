@@ -8,8 +8,8 @@ import type {
   ExclusiveUnion,
   Fqn,
   IconUrl,
+  MarkdownOrString,
   NonEmptyReadonlyArray,
-  RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
@@ -33,6 +33,8 @@ export namespace Types {
         DiagramNode,
         | 'id'
         | 'title'
+        | 'technology'
+        | 'description'
         | 'color'
         | 'shape'
         | 'width'
@@ -45,8 +47,7 @@ export namespace Types {
       >
     >
     & {
-      technology: string | null
-      description: RichTextOrEmpty
+      // technology: string | null
       /**
        * View this node belongs to
        */
@@ -206,16 +207,6 @@ export namespace Types {
   export type Node<Type extends NodeType = NodeType> = Extract<AnyNode, { type: Type }>
   export type NodeProps<Type extends NodeType = NodeType> = BaseNodeProps<Node<Type>>
 
-  // export type NodeProps = {
-  //   element: NodeProps<ElementNode>
-  //   deployment: XYNodeProps<DeploymentElementNode>
-  //   'compound-element': XYNodeProps<CompoundElementNode>
-  //   'compound-deployment': XYNodeProps<CompoundDeploymentNode>
-  //   'view-group': XYNodeProps<ViewGroupNode>
-  //   'seq-actor': XYNodeProps<SequenceActorNode>
-  //   'seq-parallel': XYNodeProps<SequenceParallelArea>
-  // }
-
   export type RelationshipEdgeData = Simplify<
     & BaseEdgeData
     & NonOptional<
@@ -236,7 +227,7 @@ export namespace Types {
       >
     >
     & {
-      notes: RichTextOrEmpty
+      notes: MarkdownOrString | null
       labelXY: XYPosition | null
       controlPoints: XYPosition[] | undefined | null
       drifts: NonEmptyReadonlyArray<DiagramEdgeDriftReason> | null
@@ -262,7 +253,7 @@ export namespace Types {
       >
     >
     & {
-      notes: RichTextOrEmpty
+      notes: MarkdownOrString | null
       labelXY: XYPosition | null
       labelBBox: BBox
       controlPoints: XYPosition[] | undefined | null

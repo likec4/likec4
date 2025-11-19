@@ -8,7 +8,6 @@ import type {
   RelationId,
   RelationshipArrowType,
   RelationshipLineType,
-  RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
 import type { FunctionComponent } from 'react'
@@ -42,6 +41,7 @@ export namespace RelationshipsBrowserTypes {
         | 'id'
         | 'title'
         | 'technology'
+        | 'description'
         | 'color'
         | 'shape'
         | 'style'
@@ -57,7 +57,6 @@ export namespace RelationshipsBrowserTypes {
       icon: string | null
       ports: Ports
       existsInCurrentView: boolean
-      description: RichTextOrEmpty
     }
   >
 

@@ -477,7 +477,7 @@ const Relationship = forwardRef<
           <Text size="xs" className={css({ userSelect: 'all' })}>{r.technology}</Text>
         </HStack>
       )}
-      {r.description.nonEmpty && (
+      {r.summary.nonEmpty && (
         <>
           <Label>description</Label>
           <Box
@@ -491,7 +491,7 @@ const Relationship = forwardRef<
               },
             }}
           >
-            <Markdown value={r.description} fontSize={'sm'} />
+            <Markdown value={r.summary} fontSize={'sm'} />
           </Box>
         </>
       )}

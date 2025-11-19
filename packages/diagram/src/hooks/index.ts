@@ -12,6 +12,7 @@ export { useCurrentViewModel } from './useCurrentViewModel'
 export { useLikeC4Model, useLikeC4Specification, useLikeC4ViewModel } from './useLikeC4Model'
 export {
   useHasProjects,
+  useLikeC4Project,
   useLikeC4ProjectId,
   useLikeC4Projects,
   useLikeC4ProjectsContext,

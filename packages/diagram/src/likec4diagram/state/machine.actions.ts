@@ -2,28 +2,22 @@
 // oxlint-disable no-floating-promises
 /// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
-  BBox,
   invariant,
-  nonexhaustive,
   nonNullable,
 } from '@likec4/core'
 import type {
-  DiagramView,
   Fqn,
   LayoutType,
   NodeId,
   NodeNotation as ElementNotation,
-  XYPoint,
+  ViewId,
 } from '@likec4/core/types'
-import {
-  getViewportForBounds,
-} from '@xyflow/react'
-import { type Rect, type Viewport, nodeToRect } from '@xyflow/system'
-import { hasAtLeast, isNumber, isTruthy } from 'remeda'
+import { type Rect, nodeToRect } from '@xyflow/system'
+import { hasAtLeast, isTruthy } from 'remeda'
 import {
   assertEvent,
 } from 'xstate'
-import { Base, MinZoom } from '../../base'
+import { Base } from '../../base'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
 import { createLayoutConstraints } from '../useLayoutConstraints'
@@ -32,141 +26,16 @@ import {
   focusNodesEdges,
   mergeXYNodesEdges,
   resetEdgeControlPoints,
-  updateActiveWalkthrough,
 } from './assign'
 import { createViewChange } from './createViewChange'
-import { type Context, machine } from './machine.setup'
+import { machine } from './machine.setup'
 import {
-  activeSequenceBounds,
   findDiagramEdge,
   findDiagramNode,
-  focusedBounds,
   typedSystem,
 } from './utils'
 
-export function nodeRef(node: Types.Node) {
-  switch (node.type) {
-    case 'element':
-    case 'compound-element':
-    case 'seq-actor':
-      return node.data.modelFqn
-    case 'deployment':
-    case 'compound-deployment':
-      return node.data.modelFqn ?? node.data.deploymentFqn
-    case 'seq-parallel':
-    case 'view-group':
-      return null
-    default:
-      nonexhaustive(node)
-  }
-}
-
-export function findCorrespondingNode(context: Context, event: { view: DiagramView; xynodes: Types.Node[] }) {
-  const fromNodeId = context.lastOnNavigate?.fromNode
-  const fromNode = fromNodeId && context.xynodes.find(n => n.id === fromNodeId)
-  const fromRef = fromNode && nodeRef(fromNode)
-  const toNode = fromRef && event.xynodes.find(n => nodeRef(n) === fromRef)
-  return { fromNode, toNode }
-}
-
-export const trigger = {
-  navigateTo: () =>
-    machine.emit(({ context }) => ({
-      type: 'navigateTo',
-      viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
-    })),
-}
-
-export const xyflow = {
-  fitDiagram: (params?: { duration?: number; bounds?: BBox }) =>
-    machine.createAction(({ context, event }) => {
-      params ??= event.type === 'fitDiagram' ? event : {}
-      const {
-        bounds = context.view.bounds,
-        duration = 450,
-      } = params
-      const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
-
-      const maxZoom = Math.max(1, transform[2])
-      const viewport = getViewportForBounds(
-        bounds,
-        width,
-        height,
-        MinZoom,
-        maxZoom,
-        context.fitViewPadding,
-      )
-      viewport.x = Math.round(viewport.x)
-      viewport.y = Math.round(viewport.y)
-      panZoom?.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined).catch(
-        console.error,
-      )
-    }),
-
-  fitFocusedBounds: () =>
-    machine.createAction(({ context }) => {
-      const isActiveSequenceWalkthrough = !!context.activeWalkthrough && context.dynamicViewVariant === 'sequence'
-      const { bounds, duration = 450 } = isActiveSequenceWalkthrough
-        ? activeSequenceBounds({ context })
-        : focusedBounds({ context })
-      const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
-
-      const maxZoom = Math.max(1, transform[2])
-      const viewport = getViewportForBounds(
-        bounds,
-        width,
-        height,
-        MinZoom,
-        maxZoom,
-        context.fitViewPadding,
-      )
-      viewport.x = Math.round(viewport.x)
-      viewport.y = Math.round(viewport.y)
-      panZoom?.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined)
-    }),
-
-  alignNodeFromToAfterNavigate: (params: { fromNode: NodeId; toPosition: XYPoint }) =>
-    machine.createAction(({ context }) => {
-      const xyflow = nonNullable(context.xyflow, 'xyflow is not initialized')
-      const elFrom = xyflow.getInternalNode(params.fromNode)
-      if (!elFrom) return
-      const fromPos = xyflow.flowToScreenPosition({
-          x: elFrom.internals.positionAbsolute.x,
-          y: elFrom.internals.positionAbsolute.y,
-        }),
-        toPos = xyflow.flowToScreenPosition(params.toPosition),
-        diff = {
-          x: Math.round(fromPos.x - toPos.x),
-          y: Math.round(fromPos.y - toPos.y),
-        }
-      context.xystore.getState().panBy(diff)
-    }),
-
-  setViewportCenter: (params?: { x: number; y: number }) =>
-    machine.createAction(({ context, event }) => {
-      let center: XYPoint
-      if (params) {
-        center = params
-      } else if (event.type === 'update.view') {
-        center = BBox.center(event.view.bounds)
-      } else {
-        center = BBox.center(context.view.bounds)
-      }
-      invariant(context.xyflow, 'xyflow is not initialized')
-      const zoom = context.xyflow.getZoom()
-      context.xyflow.setCenter(Math.round(center.x), Math.round(center.y), { zoom })
-    }),
-
-  setViewport: (params: { viewport: Viewport; duration?: number }) =>
-    machine.createAction(({ context }) => {
-      const {
-        viewport,
-        duration = 350,
-      } = params
-      const panZoom = context.xystore?.getState().panZoom
-      panZoom?.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined)
-    }),
-}
+export * from './machine.actions.layout'
 
 export const disableCompareWithLatest = () =>
   machine.assign(({ context }) => {
@@ -204,6 +73,201 @@ export const onEdgeDoubleClick = () =>
         }
         return e
       }),
+    }
+  })
+
+// Simple assign actions that don't depend on others
+export const assignLastClickedNode = () =>
+  machine.assign(({ context, event }) => {
+    assertEvent(event, 'xyflow.nodeClick')
+    const { lastClickedNode } = context
+    if (!lastClickedNode || lastClickedNode.id !== event.node.id) {
+      return {
+        lastClickedNode: {
+          id: event.node.id as NodeId,
+          clicks: 1,
+          timestamp: Date.now(),
+        },
+      }
+    }
+    return {
+      lastClickedNode: {
+        id: lastClickedNode.id,
+        clicks: lastClickedNode.clicks + 1,
+        timestamp: Date.now(),
+      },
+    }
+  })
+
+export const assignFocusedNode = () =>
+  machine.assign(({ event }) => {
+    let focusedNode
+    switch (event.type) {
+      case 'xyflow.nodeClick':
+        focusedNode = event.node.data.id
+        break
+      case 'focus.node':
+        focusedNode = event.nodeId
+        break
+      default:
+        throw new Error(`Unexpected event type: ${event.type} in action 'assign: focusedNode'`)
+    }
+    return {
+      focusedNode,
+    }
+  })
+
+export const resetLastClickedNode = () =>
+  machine.assign(() => ({
+    lastClickedNode: null,
+  }))
+
+export const updateFeatures = () =>
+  machine.assign(({ event }) => {
+    assertEvent(event, 'update.features')
+    return {
+      features: { ...event.features },
+    }
+  })
+
+export const updateInputs = () =>
+  machine.assign(({ event }) => {
+    assertEvent(event, 'update.inputs')
+    return { ...event.inputs }
+  })
+
+export const updateXYNodesEdges = () =>
+  machine.assign(({ context, event }) => {
+    assertEvent(event, 'update.view')
+    const update = mergeXYNodesEdges(context, event)
+
+    let { lastClickedNode, focusedNode } = context
+    if (lastClickedNode || focusedNode) {
+      const nodeIds = new Set(update.xynodes.map(n => n.id))
+      if (lastClickedNode && !nodeIds.has(lastClickedNode.id)) {
+        lastClickedNode = null
+      }
+      if (focusedNode && !nodeIds.has(focusedNode)) {
+        focusedNode = null
+      }
+      return {
+        ...update,
+        lastClickedNode,
+        focusedNode,
+      }
+    }
+
+    return update
+  })
+
+export const focusOnNodesAndEdges = () => machine.assign(focusNodesEdges)
+
+export const undimEverything = () =>
+  machine.assign(({ context }) => ({
+    xynodes: context.xynodes.map(Base.setDimmed(false)),
+    xyedges: context.xyedges.map(Base.setData({
+      dimmed: false,
+      active: false,
+    })),
+  }))
+
+export const assignDynamicViewVariant = () =>
+  machine.assign(({ event }) => {
+    assertEvent(event, 'switch.dynamicViewVariant')
+    return {
+      dynamicViewVariant: event.variant,
+    }
+  })
+
+// Mouse event handlers with parameters
+export const onNodeMouseEnter = (params?: { node: Types.Node }) =>
+  machine.assign(({ context, event }) => {
+    let node = params?.node
+    if (!node) {
+      assertEvent(event, 'xyflow.nodeMouseEnter')
+      node = event.node
+    }
+    return {
+      xynodes: context.xynodes.map(n => {
+        if (n.id === node.id) {
+          return Base.setHovered(n, true)
+        }
+        return n
+      }),
+    }
+  })
+
+export const onNodeMouseLeave = (params?: { node: Types.Node }) =>
+  machine.assign(({ context, event }) => {
+    let node = params?.node
+    if (!node) {
+      assertEvent(event, 'xyflow.nodeMouseLeave')
+      node = event.node
+    }
+    return {
+      xynodes: context.xynodes.map(n => {
+        if (n.id === node.id) {
+          return Base.setHovered(n, false)
+        }
+        return n
+      }),
+    }
+  })
+
+export const emitPaneClick = () =>
+  machine.emit(() => ({
+    type: 'paneClick',
+  }))
+
+export const emitOpenSource = (params?: OpenSourceParams) =>
+  machine.emit(({ event }) => {
+    if (params) {
+      return ({
+        type: 'openSource',
+        params,
+      })
+    }
+    assertEvent(event, 'open.source')
+    return {
+      type: 'openSource',
+      params: event,
+    }
+  })
+
+export const emitInitialized = () =>
+  machine.emit(({ context }) => {
+    invariant(context.xyflow, 'XYFlow instance not found')
+    return {
+      type: 'initialized',
+      instance: context.xyflow,
+    }
+  })
+
+export const emitNodeClick = () =>
+  machine.emit(({ context, event }) => {
+    assertEvent(event, 'xyflow.nodeClick')
+    const node = nonNullable(findDiagramNode(context, event.node.id), `Node ${event.node.id} not found in diagram`)
+    return {
+      type: 'nodeClick',
+      node,
+      xynode: event.node,
+    }
+  })
+
+export const emitNavigateTo = (params?: { viewId: ViewId }) =>
+  machine.emit(({ context }) => ({
+    type: 'navigateTo',
+    viewId: params?.viewId ?? nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
+  }))
+
+export const emitEdgeClick = () =>
+  machine.emit(({ context, event }) => {
+    assertEvent(event, 'xyflow.edgeClick')
+    const edge = nonNullable(findDiagramEdge(context, event.edge.id), `Edge ${event.edge.id} not found in diagram`)
+    return {
+      type: 'edgeClick',
+      edge,
+      xyedge: event.edge,
     }
   })
 
@@ -270,214 +334,6 @@ export const emitOnLayoutTypeChange = () =>
       type: 'onLayoutTypeChange',
       layoutType: nextLayoutType,
     })
-  })
-
-export const assignViewportBefore = (viewport?: Viewport | null) =>
-  machine.assign(({ context }) => ({
-    // We can assign null to indicate that there is no need to restore viewports
-    viewportBefore: viewport != undefined ? viewport : context.viewport,
-  }))
-
-// Simple assign actions that don't depend on others
-export const assignLastClickedNode = () =>
-  machine.assign(({ context, event }) => {
-    assertEvent(event, 'xyflow.nodeClick')
-    const { lastClickedNode } = context
-    if (!lastClickedNode || lastClickedNode.id !== event.node.id) {
-      return {
-        lastClickedNode: {
-          id: event.node.id as NodeId,
-          clicks: 1,
-          timestamp: Date.now(),
-        },
-      }
-    }
-    return {
-      lastClickedNode: {
-        id: lastClickedNode.id,
-        clicks: lastClickedNode.clicks + 1,
-        timestamp: Date.now(),
-      },
-    }
-  })
-
-export const assignFocusedNode = () =>
-  machine.assign(({ event }) => {
-    let focusedNode
-    switch (event.type) {
-      case 'xyflow.nodeClick':
-        focusedNode = event.node.data.id
-        break
-      case 'focus.node':
-        focusedNode = event.nodeId
-        break
-      default:
-        throw new Error(`Unexpected event type: ${event.type} in action 'assign: focusedNode'`)
-    }
-    return {
-      focusedNode,
-    }
-  })
-
-export const resetLastClickedNode = () =>
-  machine.assign(() => ({
-    lastClickedNode: null,
-  }))
-
-export const updateFeatures = () =>
-  machine.assign(({ event }) => {
-    assertEvent(event, 'update.features')
-    return {
-      features: { ...event.features },
-    }
-  })
-
-export const updateInputs = () =>
-  machine.assign(({ event }) => {
-    assertEvent(event, 'update.inputs')
-    return { ...event.inputs }
-  })
-
-export const updateXYNodesEdges = () =>
-  machine.assign(({ context, event }) => {
-    assertEvent(event, 'update.view')
-    return {
-      ...mergeXYNodesEdges({ context, event }),
-      lastClickedNode: null,
-    }
-  })
-
-export const focusOnNodesAndEdges = () => machine.assign(focusNodesEdges)
-
-export const undimEverything = () =>
-  machine.assign(({ context }) => ({
-    xynodes: context.xynodes.map(Base.setDimmed(false)),
-    xyedges: context.xyedges.map(Base.setData({
-      dimmed: false,
-      active: false,
-    })),
-  }))
-
-export const updateActiveWalkthroughState = () => machine.assign(updateActiveWalkthrough)
-
-export const assignDynamicViewVariant = () =>
-  machine.assign(({ event }) => {
-    assertEvent(event, 'switch.dynamicViewVariant')
-    return {
-      dynamicViewVariant: event.variant,
-    }
-  })
-
-// Mouse event handlers with parameters
-export const onNodeMouseEnter = (params?: { node: Types.Node }) =>
-  machine.assign(({ context, event }) => {
-    let node = params?.node
-    if (!node) {
-      assertEvent(event, 'xyflow.nodeMouseEnter')
-      node = event.node
-    }
-    return {
-      xynodes: context.xynodes.map(n => {
-        if (n.id === node.id) {
-          return Base.setHovered(n, true)
-        }
-        return n
-      }),
-    }
-  })
-
-export const onNodeMouseLeave = (params?: { node: Types.Node }) =>
-  machine.assign(({ context, event }) => {
-    let node = params?.node
-    if (!node) {
-      assertEvent(event, 'xyflow.nodeMouseLeave')
-      node = event.node
-    }
-    return {
-      xynodes: context.xynodes.map(n => {
-        if (n.id === node.id) {
-          return Base.setHovered(n, false)
-        }
-        return n
-      }),
-    }
-  })
-
-// Emit actions that don't depend on other actions
-export const emitWalkthroughStopped = () =>
-  machine.emit(() => ({
-    type: 'walkthroughStopped',
-  }))
-
-export const emitPaneClick = () =>
-  machine.emit(() => ({
-    type: 'paneClick',
-  }))
-
-export const emitOpenSource = (params?: OpenSourceParams) =>
-  machine.emit(({ event }) => {
-    if (params) {
-      return ({
-        type: 'openSource',
-        params,
-      })
-    }
-    assertEvent(event, 'open.source')
-    return {
-      type: 'openSource',
-      params: event,
-    }
-  })
-
-export const emitInitialized = () =>
-  machine.emit(({ context }) => {
-    invariant(context.xyflow, 'XYFlow instance not found')
-    return {
-      type: 'initialized',
-      instance: context.xyflow,
-    }
-  })
-
-export const emitNodeClick = () =>
-  machine.emit(({ context, event }) => {
-    assertEvent(event, 'xyflow.nodeClick')
-    const node = nonNullable(findDiagramNode(context, event.node.id), `Node ${event.node.id} not found in diagram`)
-    return {
-      type: 'nodeClick',
-      node,
-      xynode: event.node,
-    }
-  })
-
-export const emitEdgeClick = () =>
-  machine.emit(({ context, event }) => {
-    assertEvent(event, 'xyflow.edgeClick')
-    const edge = nonNullable(findDiagramEdge(context, event.edge.id), `Edge ${event.edge.id} not found in diagram`)
-    return {
-      type: 'edgeClick',
-      edge,
-      xyedge: event.edge,
-    }
-  })
-
-export const emitWalkthroughStarted = () =>
-  machine.emit(({ context }) => {
-    const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
-    invariant(edge, 'Invalid walkthrough state')
-    return {
-      type: 'walkthroughStarted',
-      edge,
-    }
-  })
-
-export const emitWalkthroughStep = () =>
-  machine.emit(({ context }) => {
-    const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
-    invariant(edge, 'Invalid walkthrough state')
-    return {
-      type: 'walkthroughStep',
-      edge,
-    }
   })
 
 export const layoutAlign = (params?: { mode: AlignmentMode }) =>
@@ -582,7 +438,7 @@ export const tagHighlight = () =>
     }
   })
 
-export const toggleFeature = () =>
+export const assignToggledFeatures = () =>
   machine.assign(({ context, event }) => {
     assertEvent(event, 'toggle.feature')
     const currentValue = context.toggledFeatures[`enable${event.feature}`] ??
@@ -614,9 +470,6 @@ export const closeAllOverlays = () =>
     },
   )
 
-const isReadOnly = (context: Context) =>
-  context.features.enableReadOnly || context.toggledFeatures.enableReadOnly === true
-
 export const stopSyncLayout = () =>
   machine.enqueueActions(({ enqueue, system }) => {
     const syncLayoutActor = typedSystem(system).syncLayoutActorRef
@@ -624,25 +477,28 @@ export const stopSyncLayout = () =>
     enqueue.stopChild(syncLayoutActor)
   })
 
-export const ensureSyncLayout = () =>
+/**
+ * Ensure that the sync layout actor is running or stopped based on the read-only state
+ */
+export const ensureSyncLayoutActor = () =>
   machine.enqueueActions(({ context, enqueue, system }) => {
+    const isReadOnly = context.features.enableReadOnly || context.toggledFeatures.enableReadOnly === true
     const syncLayoutActor = typedSystem(system).syncLayoutActorRef
     // Check if the context is read-only
-    if (isReadOnly(context)) {
-      if (syncLayoutActor) {
-        enqueue.stopChild(syncLayoutActor)
-      }
+    if (isReadOnly && syncLayoutActor) {
+      enqueue.stopChild(syncLayoutActor)
       return
     }
-    if (syncLayoutActor) return
-    enqueue.spawnChild('syncManualLayoutActorLogic', {
-      id: 'syncLayout',
-      systemId: 'syncLayout',
-      input: {
-        viewId: context.view.id,
-      },
-      syncSnapshot: true,
-    })
+    if (!isReadOnly && !syncLayoutActor) {
+      enqueue.spawnChild('syncManualLayoutActorLogic', {
+        id: 'syncLayout',
+        systemId: 'syncLayout',
+        input: {
+          viewId: context.view.id,
+        },
+        syncSnapshot: true,
+      })
+    }
   })
 
 export const startEditing = (subject: 'node' | 'edge' = 'node') =>
@@ -654,12 +510,28 @@ export const startEditing = (subject: 'node' | 'edge' = 'node') =>
     },
   )
 
+export const sendSynced = () =>
+  machine.sendTo(
+    ({ system }) => typedSystem(system).syncLayoutActorRef!,
+    {
+      type: 'synced',
+    },
+  )
+
 export const stopEditing = (wasChanged = true) =>
   machine.sendTo(
     ({ system }) => typedSystem(system).syncLayoutActorRef!,
     {
       type: 'editing.stop',
       wasChanged,
+    },
+  )
+
+export const cancelEditing = () =>
+  machine.sendTo(
+    ({ system }) => typedSystem(system).syncLayoutActorRef!,
+    {
+      type: 'cancel',
     },
   )
 
@@ -751,10 +623,12 @@ export const openSourceOfFocusedOrLastClickedNode = () =>
     }
   })
 
-export const ensureOverlaysActorState = () =>
-  machine.enqueueActions(({ enqueue, context: { features }, system }) => {
-    const enableOverlays = features.enableElementDetails || features.enableRelationshipDetails ||
-      features.enableRelationshipBrowser
+/**
+ * Ensure that the overlays actor is running or stopped based on the current feature flags
+ */
+export const ensureOverlaysActor = () =>
+  machine.enqueueActions(({ enqueue, check, system }) => {
+    const enableOverlays = check('enabled: Overlays')
     const hasRunning = typedSystem(system).overlaysActorRef
     if (enableOverlays && !hasRunning) {
       enqueue.spawnChild('overlaysActorLogic', { id: 'overlays', systemId: 'overlays' })
@@ -768,9 +642,11 @@ export const ensureOverlaysActorState = () =>
     }
   })
 
-export const ensureSearchActorState = () =>
+/**
+ * Ensure that the search actor is running or stopped based on the current feature flags
+ */
+export const ensureSearchActor = () =>
   machine.enqueueActions(({ enqueue, context: { features: { enableSearch } }, system }) => {
-    enqueue(cancelFitDiagram())
     const hasRunning = typedSystem(system).searchActorRef
     if (enableSearch && !hasRunning) {
       enqueue.spawnChild('searchActorLogic', { id: 'search', systemId: 'search' })
@@ -825,110 +701,7 @@ export const onEdgeMouseLeave = () =>
     })
   })
 
-export const cancelFitDiagram = () => machine.cancel('fitDiagram')
+export const reraise = () => machine.raise(({ event }) => event, { delay: 10 })
 
-export const raiseFitDiagram = (params?: { delay?: number; duration?: number }) =>
-  machine.enqueueActions(({ enqueue }) => {
-    enqueue.cancel('fitDiagram')
-    enqueue.raise(
-      {
-        type: 'fitDiagram',
-        ...(isNumber(params?.duration) ? { duration: params.duration } : {}),
-      },
-      {
-        id: 'fitDiagram',
-        ...(isNumber(params?.delay) ? { delay: params.delay } : {}),
-      },
-    )
-  })
-
-export const updateView = () =>
-  machine.enqueueActions(
-    ({ enqueue, event, check, context, system }) => {
-      assertEvent(event, 'update.view')
-      const isAnotherView = check('is another view')
-      enqueue(cancelFitDiagram())
-      if (isAnotherView) {
-        enqueue(stopSyncLayout())
-        enqueue(closeAllOverlays())
-        enqueue(closeSearch())
-        enqueue.assign({
-          focusedNode: null,
-        })
-        enqueue(disableCompareWithLatest())
-        const { fromNode, toNode } = findCorrespondingNode(context, event)
-        if (fromNode && toNode) {
-          enqueue(xyflow.alignNodeFromToAfterNavigate({
-            fromNode: fromNode.id as NodeId,
-            toPosition: {
-              x: toNode.data.x,
-              y: toNode.data.y,
-            },
-          }))
-
-          enqueue(raiseFitDiagram({ delay: 80 }))
-        } else {
-          enqueue(
-            xyflow.setViewportCenter(),
-          )
-          enqueue(raiseFitDiagram({ duration: 200, delay: 25 }))
-        }
-        enqueue(updateXYNodesEdges())
-        enqueue(ensureSyncLayout())
-        return
-      }
-
-      enqueue(updateXYNodesEdges())
-      const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-      if (syncLayoutActor) {
-        enqueue.sendTo(syncLayoutActor, { type: 'synced' })
-      }
-
-      const nextView = event.view
-
-      if (context.toggledFeatures.enableCompareWithLatest === true && context.view._layout !== nextView._layout) {
-        if (nextView._layout === 'auto' && context.viewportOnAutoLayout) {
-          enqueue(
-            xyflow.setViewport({
-              viewport: context.viewportOnAutoLayout,
-              duration: 0,
-            }),
-          )
-          return
-        }
-        // If switching to manual layout, restore previous manual layout viewport
-        if (nextView._layout === 'manual' && context.viewportOnManualLayout) {
-          enqueue(
-            xyflow.setViewport({
-              viewport: context.viewportOnManualLayout,
-              duration: 0,
-            }),
-          )
-          return
-        }
-      }
-
-      let recenter = !context.viewportChangedManually
-
-      // Check if dynamic view mode changed
-      recenter = recenter || (
-        nextView._type === 'dynamic' &&
-        context.view._type === 'dynamic' &&
-        nextView.variant !== context.view.variant
-      )
-
-      // Check if comparing layouts is enabled and layout changed
-      recenter = recenter || (
-        context.toggledFeatures.enableCompareWithLatest === true &&
-        !!nextView._layout &&
-        context.view._layout !== nextView._layout
-      )
-
-      if (recenter) {
-        enqueue(
-          xyflow.setViewportCenter(BBox.center(nextView.bounds)),
-        )
-        enqueue(raiseFitDiagram({ delay: 50 }))
-      }
-    },
-  )
+export const startHotKeyActor = () => machine.spawnChild('hotkeyActorLogic', { id: 'hotkey' })
+export const stopHotKeyActor = () => machine.stopChild('hotkey')

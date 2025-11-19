@@ -1,21 +1,46 @@
 import type { LayoutedView, ViewChange, ViewId } from '@likec4/core/types'
+import { getHotkeyHandler } from '@mantine/hooks'
 import { deepEqual } from 'fast-equals'
 import { last, map } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRef,
-  type ActorRefFromLogic,
   type ActorSystem,
+  type AnyEventObject,
+  type CallbackActorLogic,
   type MachineSnapshot,
+  type NonReducibleUnknown,
   type SnapshotFrom,
   assertEvent,
   assign,
+  fromCallback,
   setup,
 } from 'xstate'
 import type { Types } from '../types'
 import { createViewChange } from './createViewChange'
-import { undoHotKeyActorLogic } from './hotkeyActor'
 import type { Context as DiagramContext, Events as DiagramEvents } from './machine.setup'
+
+type UndoEvent = { type: 'undo' }
+
+interface UndoHotKeyActorLogic extends CallbackActorLogic<AnyEventObject, NonReducibleUnknown, UndoEvent> {}
+
+const undoHotKeyActorLogic: UndoHotKeyActorLogic = fromCallback(({ sendBack }: {
+  sendBack: (event: UndoEvent) => void
+}) => {
+  const ctrlZHandler = getHotkeyHandler([
+    ['mod + z', (event: KeyboardEvent) => {
+      event.stopPropagation()
+      sendBack({ type: 'undo' })
+    }, {
+      preventDefault: true,
+    }],
+  ])
+
+  document.body.addEventListener('keydown', ctrlZHandler, { capture: true })
+  return () => {
+    document.body.removeEventListener('keydown', ctrlZHandler, { capture: true })
+  }
+})
 
 export type Input = {
   viewId: ViewId
@@ -88,8 +113,9 @@ const pushHistory = syncManualLayout.assign(({ context }) => {
   // Avoid duplicate history entries
   const prevHistoryItem = last(context.history)
   if (
-    deepEqual(prevHistoryItem?.xyedges, snapshot.xyedges) &&
-    deepEqual(prevHistoryItem?.xynodes, snapshot.xynodes)
+    prevHistoryItem &&
+    deepEqual(prevHistoryItem.xyedges, snapshot.xyedges) &&
+    deepEqual(prevHistoryItem.xynodes, snapshot.xynodes)
   ) {
     return {
       beforeEditing: null,
@@ -329,9 +355,11 @@ const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
  * Here is a trick to reduce inference types
  */
 type InferredMachine = ActorLogicFrom<typeof _syncManualLayoutActorLogic>
-export interface SyncLayoutActorLogic extends InferredMachine {}
+export interface SyncLayoutActorLogic extends InferredMachine {
+}
 
-export type SyncLayoutActorRef = ActorRefFromLogic<SyncLayoutActorLogic>
 export type SyncLayoutActorSnapshot = SnapshotFrom<SyncLayoutActorLogic>
+export interface SyncLayoutActorRef extends ActorRef<SyncLayoutActorSnapshot, Events> {
+}
 
 export const syncManualLayoutActorLogic: SyncLayoutActorLogic = _syncManualLayoutActorLogic as any

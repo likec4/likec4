@@ -1,3 +1,4 @@
+import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import { assign, stopChild } from 'xstate/actions'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
 import {
@@ -9,8 +10,6 @@ import {
   cancelFitDiagram,
   emitOnChange,
   emitOnLayoutTypeChange,
-  ensureOverlaysActorState,
-  ensureSearchActorState,
   stopSyncLayout,
   updateFeatures,
   updateInputs,
@@ -96,17 +95,29 @@ const _diagramMachine = machine.createMachine({
       actions: updateInputs(),
     },
     'update.features': {
-      actions: [
-        updateFeatures(),
-        ensureOverlaysActorState(),
-        ensureSearchActorState(),
-      ],
+      actions: updateFeatures(),
     },
     'emit.onChange': {
       actions: emitOnChange(),
     },
     'emit.onLayoutTypeChange': {
       actions: emitOnLayoutTypeChange(),
+    },
+    'xyflow.applyNodeChanges': {
+      actions: assign({
+        xynodes: ({ context, event }) => applyNodeChanges(event.changes, context.xynodes),
+      }),
+    },
+    'xyflow.applyEdgeChanges': {
+      actions: assign({
+        xyedges: ({ context, event }) => applyEdgeChanges(event.changes, context.xyedges),
+      }),
+    },
+    'xyflow.viewportMoved': {
+      actions: assign({
+        viewportChangedManually: (({ event }) => event.manually),
+        viewport: (({ event }) => event.viewport),
+      }),
     },
     'destroy': {
       target: '.final',

@@ -4,7 +4,8 @@ import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow
 import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
+import { flatMap, hasAtLeast, isArray, isNumber, isString } from 'remeda'
+import type { ViewPaddings } from '../LikeC4Diagram.props'
 import { vector } from './vector'
 
 export function distance(a: XYPosition, b: XYPosition) {

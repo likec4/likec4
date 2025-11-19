@@ -1,26 +1,23 @@
-import { type NodeId, type StepEdgeId, getParallelStepsPrefix, isStepEdgeId } from '@likec4/core'
-import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
-import { clamp, first } from 'remeda'
+import { BBox, invariant, nonexhaustive } from '@likec4/core'
+import { produce } from 'immer'
 import { assertEvent } from 'xstate'
-import { assign, emit, enqueueActions, raise, sendTo, spawnChild, stopChild } from 'xstate/actions'
-import { and, or } from 'xstate/guards'
-import { Base } from '../../base'
-import { SeqParallelAreaColor } from '../xyflow-sequence/const'
-import { navigateBack, navigateForward, updateNavigationHistory } from './assign'
+import { emit, sendTo, spawnChild, stopChild } from 'xstate/actions'
 import {
-  assignFocusedNode,
   assignLastClickedNode,
+  assignToggledFeatures,
   cancelFitDiagram,
+  closeAllOverlays,
+  closeSearch,
   disableCompareWithLatest,
   emitEdgeClick,
+  emitNavigateTo,
   emitNodeClick,
   emitOpenSource,
   emitPaneClick,
-  emitWalkthroughStarted,
-  emitWalkthroughStep,
-  emitWalkthroughStopped,
-  ensureSyncLayout,
-  focusOnNodesAndEdges,
+  ensureOverlaysActor,
+  ensureSearchActor,
+  ensureSyncLayoutActor,
+  fitDiagram,
   layoutAlign,
   notationsHighlight,
   onEdgeDoubleClick,
@@ -29,353 +26,179 @@ import {
   onNodeMouseEnter,
   onNodeMouseLeave,
   openElementDetails,
-  openSourceOfFocusedOrLastClickedNode,
   raiseFitDiagram,
   resetEdgesControlPoints,
   resetLastClickedNode,
+  sendSynced,
+  setViewport,
+  setViewportCenter,
   startEditing,
   stopEditing,
   stopSyncLayout,
   tagHighlight,
-  toggleFeature,
   undimEverything,
-  updateActiveWalkthroughState,
-  updateView,
-  xyflow,
+  updateFeatures,
+  updateXYNodesEdges,
 } from './machine.actions'
-import { machine } from './machine.setup'
-import { typedSystem } from './utils'
+import { machine, targetState } from './machine.setup'
+import { focused } from './machine.state.ready.focused'
+import { idle } from './machine.state.ready.idle'
+import { printing } from './machine.state.ready.printing'
+import { walkthrough } from './machine.state.ready.walkthrough'
+import { calcViewportForBounds, typedSystem } from './utils'
 
-const navigating = '#navigating'
+const handleNavigate = () =>
+  machine.enqueueActions(({ enqueue, context, event }) => {
+    assertEvent(event, ['navigate.to', 'navigate.back', 'navigate.forward'])
+    const {
+      viewport,
+      navigationHistory: {
+        currentIndex,
+        history,
+      },
+    } = context
+    switch (event.type) {
+      case 'navigate.to': {
+        enqueue.assign({
+          navigationHistory: {
+            currentIndex,
+            history: produce(history, draft => {
+              draft[currentIndex]!.viewport = { ...viewport }
+            }),
+          },
+          lastOnNavigate: {
+            fromView: context.view.id,
+            toView: event.viewId,
+            fromNode: event.fromNode ?? null,
+          },
+        })
+        enqueue(emitNavigateTo())
+        break
+      }
+      case 'navigate.back': {
+        invariant(currentIndex > 0, 'Cannot navigate back')
+        const stepBack = history[currentIndex - 1]!
+        enqueue.assign({
+          navigationHistory: {
+            currentIndex: currentIndex - 1,
+            history: produce(history, draft => {
+              draft[currentIndex]!.viewport = { ...viewport }
+            }),
+          },
+          lastOnNavigate: null,
+        })
+        enqueue(emitNavigateTo({ viewId: stepBack.viewId }))
+        break
+      }
+      case 'navigate.forward': {
+        invariant(currentIndex < history.length - 1, 'Cannot navigate forward')
+        const stepForward = history[currentIndex + 1]!
+        enqueue.assign({
+          navigationHistory: {
+            currentIndex: currentIndex + 1,
+            history: produce(history, draft => {
+              draft[currentIndex]!.viewport = { ...viewport }
+            }),
+          },
+          lastOnNavigate: null,
+        })
+        enqueue(emitNavigateTo({ viewId: stepForward.viewId }))
+        break
+      }
+      default:
+        nonexhaustive(event)
+    }
+  })
 
-export const idle = machine.createStateConfig({
-  id: 'idle',
-  on: {
-    'xyflow.nodeClick': [
-      {
-        guard: and([
-          'enabled: FocusMode',
-          'click: node has connections',
-          or([
-            'click: same node',
-            'click: selected node',
-          ]),
-        ]),
-        actions: [
-          assignLastClickedNode(),
-          assignFocusedNode(),
-          emitNodeClick(),
-        ],
-        target: 'focused',
-      },
-      {
-        guard: and([
-          'enabled: Readonly',
-          'enabled: ElementDetails',
-          'click: node has modelFqn',
-          or([
-            'click: same node',
-            'click: selected node',
-          ]),
-        ]),
-        actions: [
-          assignLastClickedNode(),
-          openSourceOfFocusedOrLastClickedNode(),
-          openElementDetails(),
-          emitNodeClick(),
-        ],
-      },
-      {
-        actions: [
-          assignLastClickedNode(),
-          openSourceOfFocusedOrLastClickedNode(),
-          emitNodeClick(),
-        ],
-      },
-    ],
-    'xyflow.paneClick': {
-      actions: [
-        resetLastClickedNode(),
-        emitPaneClick(),
-      ],
-    },
-    'xyflow.paneDblClick': {
-      actions: [
-        resetLastClickedNode(),
-        xyflow.fitDiagram(),
-        enqueueActions(({ context, enqueue }) => {
+const updateView = () =>
+  machine.enqueueActions(
+    ({ enqueue, event, context }) => {
+      if (event.type !== 'update.view') {
+        console.warn(`Ignoring unexpected event type: ${event.type} in action 'update.view'`)
+        return
+      }
+      const nextView = event.view
+      const isAnotherView = nextView.id !== context.view.id
+
+      if (isAnotherView) {
+        console.warn('updateView called for another view - ignoring', { event })
+        return
+      }
+
+      enqueue(updateXYNodesEdges())
+      enqueue(sendSynced())
+
+      let recenter = !context.viewportChangedManually
+
+      if (context.toggledFeatures.enableCompareWithLatest === true && context.view._layout !== nextView._layout) {
+        if (nextView._layout === 'auto' && context.viewportOnAutoLayout) {
           enqueue(
-            emitOpenSource({ view: context.view.id }),
+            setViewport({
+              viewport: context.viewportOnAutoLayout,
+              duration: 0,
+            }),
           )
-        }),
-      ],
-    },
-    'focus.node': {
-      guard: 'enabled: FocusMode',
-      actions: assignFocusedNode(),
-      target: 'focused',
-    },
-    'xyflow.edgeClick': {
-      guard: and([
-        'enabled: Readonly',
-        'is dynamic view',
-        'enabled: DynamicViewWalkthrough',
-        'click: selected edge',
-      ]),
-      actions: [
-        raise(({ event }) => ({
-          type: 'walkthrough.start',
-          stepId: event.edge.id as StepEdgeId,
-        })),
-        emitEdgeClick(),
-      ],
-    },
-  },
-})
-
-export const focused = machine.createStateConfig({
-  entry: [
-    focusOnNodesAndEdges(),
-    assign(s => ({
-      viewportBefore: { ...s.context.viewport },
-    })),
-    openSourceOfFocusedOrLastClickedNode(),
-    spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
-    xyflow.fitFocusedBounds(),
-  ],
-  exit: enqueueActions(({ enqueue, context }) => {
-    enqueue.stopChild('hotkey')
-    if (context.viewportBefore) {
-      enqueue(xyflow.setViewport({ viewport: context.viewportBefore }))
-    } else {
-      enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 20 })
-    }
-    enqueue(undimEverything())
-    enqueue.assign({
-      viewportBefore: null,
-      focusedNode: null,
-    })
-  }),
-  on: {
-    'xyflow.nodeClick': [
-      {
-        guard: and([
-          'click: focused node',
-          'click: node has modelFqn',
-        ]),
-        actions: [
-          openElementDetails(),
-          emitNodeClick(),
-        ],
-      },
-      {
-        guard: 'click: focused node',
-        actions: emitNodeClick(),
-        target: '#idle',
-      },
-      {
-        actions: [
-          assignLastClickedNode(),
-          raise(({ event }) => ({
-            type: 'focus.node',
-            nodeId: event.node.id as NodeId,
-          })),
-          emitNodeClick(),
-        ],
-      },
-    ],
-    'focus.node': {
-      actions: [
-        assignFocusedNode(),
-        focusOnNodesAndEdges(),
-        openSourceOfFocusedOrLastClickedNode(),
-        xyflow.fitFocusedBounds(),
-      ],
-    },
-    'key.esc': {
-      target: 'idle',
-    },
-    'xyflow.paneClick': {
-      actions: [
-        resetLastClickedNode(),
-        emitPaneClick(),
-      ],
-      target: 'idle',
-    },
-    'notations.unhighlight': {
-      actions: focusOnNodesAndEdges(),
-    },
-    'tag.unhighlight': {
-      actions: focusOnNodesAndEdges(),
-    },
-  },
-})
-
-export const walkthrough = machine.createStateConfig({
-  entry: [
-    spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
-    assign({
-      viewportBefore: ({ context }) => context.viewport,
-      activeWalkthrough: ({ context, event }) => {
-        assertEvent(event, 'walkthrough.start')
-        const stepId = event.stepId ?? first(context.xyedges)!.id as StepEdgeId
-        return {
-          stepId,
-          parallelPrefix: getParallelStepsPrefix(stepId),
+          return
         }
-      },
-    }),
-    updateActiveWalkthroughState(),
-    xyflow.fitFocusedBounds(),
-    emitWalkthroughStarted(),
-  ],
-  exit: enqueueActions(({ enqueue, context }) => {
-    enqueue.stopChild('hotkey')
-    if (context.viewportBefore) {
-      enqueue(xyflow.setViewport({ viewport: context.viewportBefore }))
-    } else {
-      enqueue(raiseFitDiagram({ delay: 10 }))
-    }
-    // Disable parallel areas highlight
-    if (context.dynamicViewVariant === 'sequence' && context.activeWalkthrough?.parallelPrefix) {
-      enqueue.assign({
-        xynodes: context.xynodes.map(n => {
-          if (n.type === 'seq-parallel') {
-            return Base.setData(n, {
-              color: SeqParallelAreaColor.default,
-            })
-          }
-          return n
-        }),
-      })
-    }
-    enqueue(undimEverything())
-    enqueue.assign({
-      activeWalkthrough: null,
-      viewportBefore: null,
-    })
+        // If switching to manual layout, restore previous manual layout viewport
+        if (nextView._layout === 'manual' && context.viewportOnManualLayout) {
+          enqueue(
+            setViewport({
+              viewport: context.viewportOnManualLayout,
+              duration: 0,
+            }),
+          )
+          return
+        }
+      }
 
-    enqueue(emitWalkthroughStopped())
-  }),
-  on: {
-    'key.esc': {
-      target: 'idle',
-    },
-    'key.arrow.left': {
-      actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
-    },
-    'key.arrow.right': {
-      actions: raise({ type: 'walkthrough.step', direction: 'next' }),
-    },
-    'walkthrough.step': {
-      actions: [
-        assign(({ context, event }) => {
-          const { stepId } = context.activeWalkthrough!
-          const stepIndex = context.xyedges.findIndex(e => e.id === stepId)
-          const nextStepIndex = clamp(event.direction === 'next' ? stepIndex + 1 : stepIndex - 1, {
-            min: 0,
-            max: context.xyedges.length - 1,
-          })
-          if (nextStepIndex === stepIndex) {
-            return {}
-          }
-          const nextStepId = context.xyedges[nextStepIndex]!.id as StepEdgeId
-          return {
-            activeWalkthrough: {
-              stepId: nextStepId,
-              parallelPrefix: getParallelStepsPrefix(nextStepId),
-            },
-          }
-        }),
-        updateActiveWalkthroughState(),
-        xyflow.fitFocusedBounds(),
-        emitWalkthroughStep(),
-      ],
-    },
-    'xyflow.edgeClick': {
-      actions: [
-        assign(({ event, context }) => {
-          if (!isStepEdgeId(event.edge.id) || event.edge.id === context.activeWalkthrough?.stepId) {
-            return {}
-          }
-          return {
-            activeWalkthrough: {
-              stepId: event.edge.id,
-              parallelPrefix: getParallelStepsPrefix(event.edge.id),
-            },
-          }
-        }),
-        updateActiveWalkthroughState(),
-        xyflow.fitFocusedBounds(),
-        emitEdgeClick(),
-        emitWalkthroughStep(),
-      ],
-    },
-    'notations.unhighlight': {
-      actions: updateActiveWalkthroughState(),
-    },
-    'tag.unhighlight': {
-      actions: updateActiveWalkthroughState(),
-    },
-    'walkthrough.end': {
-      target: 'idle',
-    },
-    'xyflow.paneDblClick': {
-      target: 'idle',
-    },
-    // We received another view, close overlay and process event again
-    'update.view': {
-      guard: 'is another view',
-      actions: raise(({ event }) => event, { delay: 50 }),
-      target: 'idle',
-    },
-  },
-})
-
-export const printing = machine.createStateConfig({
-  entry: enqueueActions(({ enqueue, context }) => {
-    enqueue.assign({
-      viewportBefore: { ...context.viewport },
-    })
-    const bounds = context.view.bounds
-    const OFFSET = 16
-    enqueue(
-      xyflow.setViewport({
-        viewport: {
-          x: bounds.x + OFFSET,
-          y: bounds.y + OFFSET,
-          zoom: 1,
-        },
-        duration: 0,
-      }),
-    )
-  }),
-  exit: enqueueActions(({ enqueue, context }) => {
-    if (context.viewportBefore) {
-      enqueue(
-        xyflow.setViewport({ viewport: context.viewportBefore }),
+      // Check if dynamic view mode changed
+      recenter = recenter || (
+        nextView._type === 'dynamic' &&
+        context.view._type === 'dynamic' &&
+        nextView.variant !== context.view.variant
       )
-    }
-    enqueue.assign({
-      viewportBefore: null,
-    })
-  }),
-  on: {
-    'media.print.off': {
-      target: 'idle',
-    },
-  },
-})
 
-// Navigating to another view (after `navigateTo` event)
+      // Check if comparing layouts is enabled and layout changed
+      recenter = recenter || (
+        context.toggledFeatures.enableCompareWithLatest === true &&
+        !!nextView._layout &&
+        context.view._layout !== nextView._layout
+      )
+
+      if (recenter) {
+        enqueue(cancelFitDiagram())
+        const nextViewport = calcViewportForBounds(
+          context,
+          event.view.bounds,
+        )
+        let zoom = Math.min(nextViewport.zoom, context.viewport.zoom)
+        const center = BBox.center(event.view.bounds)
+        context.xyflow!.setCenter(
+          Math.round(center.x),
+          Math.round(center.y),
+          { zoom },
+        )
+        enqueue(raiseFitDiagram())
+      }
+    },
+  )
+
+// Main ready state with all its substates and transitions
 export const ready = machine.createStateConfig({
   initial: 'idle',
   entry: [
     spawnChild('mediaPrintActorLogic', { id: 'mediaPrint' }),
+    ensureSyncLayoutActor(),
+    ensureOverlaysActor(),
+    ensureSearchActor(),
   ],
   exit: [
-    stopChild('mediaPrint'),
     cancelFitDiagram(),
+    stopChild('mediaPrint'),
+    closeAllOverlays(),
+    closeSearch(),
+    stopSyncLayout(),
   ],
   states: {
     idle,
@@ -384,26 +207,8 @@ export const ready = machine.createStateConfig({
     printing,
   },
   on: {
-    'navigate.to': {
-      guard: 'is another view',
-      actions: assign({
-        lastOnNavigate: ({ context, event }) => ({
-          fromView: context.view.id,
-          toView: event.viewId,
-          fromNode: event.fromNode ?? null,
-        }),
-      }),
-      target: navigating,
-    },
-    'navigate.back': {
-      guard: ({ context }) => context.navigationHistory.currentIndex > 0,
-      actions: assign(navigateBack),
-      target: navigating,
-    },
-    'navigate.forward': {
-      guard: ({ context }) => context.navigationHistory.currentIndex < context.navigationHistory.history.length - 1,
-      actions: assign(navigateForward),
-      target: navigating,
+    'navigate.*': {
+      actions: handleNavigate(),
     },
     'layout.align': {
       guard: 'not readonly',
@@ -426,7 +231,7 @@ export const ready = machine.createStateConfig({
       actions: [
         stopSyncLayout(),
         disableCompareWithLatest(),
-        ensureSyncLayout(),
+        ensureSyncLayoutActor(),
         emit({
           type: 'onChange',
           change: {
@@ -467,16 +272,25 @@ export const ready = machine.createStateConfig({
       })),
     },
     'open.source': {
+      guard: 'enabled: OpenSource',
       actions: emitOpenSource(),
     },
     'walkthrough.start': {
       guard: 'is dynamic view',
-      target: '.walkthrough',
+      target: targetState.walkthrough,
     },
     'toggle.feature': {
       actions: [
-        toggleFeature(),
-        ensureSyncLayout(),
+        assignToggledFeatures(),
+        ensureSyncLayoutActor(),
+      ],
+    },
+    'update.features': {
+      actions: [
+        updateFeatures(),
+        ensureOverlaysActor(),
+        ensureSearchActor(),
+        ensureSyncLayoutActor(),
       ],
     },
     'xyflow.nodeMouseEnter': {
@@ -532,34 +346,26 @@ export const ready = machine.createStateConfig({
         emitEdgeClick(),
       ],
     },
-    'xyflow.applyNodeChanges': {
-      actions: assign({
-        xynodes: ({ context, event }) => applyNodeChanges(event.changes, context.xynodes),
-      }),
-    },
-    'xyflow.applyEdgeChanges': {
-      actions: assign({
-        xyedges: ({ context, event }) => applyEdgeChanges(event.changes, context.xyedges),
-      }),
-    },
-    'xyflow.viewportMoved': {
-      actions: assign({
-        viewportChangedManually: (({ event }) => event.manually),
-        viewport: (({ event }) => event.viewport),
-      }),
-    },
-    'fitDiagram': {
+    'xyflow.fitDiagram': {
       guard: 'enabled: FitView',
-      actions: xyflow.fitDiagram(),
+      actions: fitDiagram(),
     },
-    'update.view': {
-      actions: [
-        assign(updateNavigationHistory),
-        updateView(),
-      ],
+    'xyflow.setViewport': {
+      actions: setViewport(),
     },
+    'update.view': [
+      // Redirect to navigating state if received another view
+      {
+        guard: 'is another view',
+        target: targetState.navigating,
+      },
+      // Otherwise, just update the view in place
+      {
+        actions: updateView(),
+      },
+    ],
     'media.print.on': {
-      target: '.printing',
+      target: targetState.printing,
     },
   },
 })

@@ -9,7 +9,6 @@ import type {
   DynamicViewDisplayVariant,
   IteratorLike,
   LayoutedView,
-  LayoutedViewDriftReason,
   Link,
   scalar,
   ViewManualLayoutSnapshot,

@@ -65,7 +65,7 @@ const selectXYProps = ({ context: ctx, children }: DiagramActorSnapshot) => {
     nodesDraggable: !enableReadOnly && ctx.nodesDraggable,
     nodesSelectable: ctx.nodesSelectable && isNotEditingEdge,
     fitViewPadding: ctx.fitViewPadding,
-    enableFitView: ctx.toggledFeatures.enableFitView ?? ctx.features.enableFitView,
+    enableFitView: ctx.features.enableFitView,
     ...(!ctx.features.enableFitView && {
       viewport: {
         x: -Math.min(ctx.view.bounds.x, 0),

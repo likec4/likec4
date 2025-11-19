@@ -1,6 +1,7 @@
 import type { Any } from '@likec4/core/types'
-import { type DependenciesComparator, useCustomCompareMemo } from '@react-hookz/web'
+import { useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
+import { deepEqual } from 'fast-equals'
 import { type PropsWithChildren, useRef } from 'react'
 import { isPlainObject, mapValues } from 'remeda'
 import { FitViewPaddings, MaxZoom, MinZoom } from './base'
@@ -19,6 +20,7 @@ import type {
   LikeC4DiagramProperties,
   PaddingWithUnit,
   ViewPadding,
+  ViewPaddings,
 } from './LikeC4Diagram.props'
 import { LikeC4DiagramUI } from './likec4diagram/DiagramUI'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
@@ -208,24 +210,19 @@ const toLiteralPaddingWithUnit = (value: PaddingWithUnit): PaddingWithUnit & str
 /**
  * Converts number values to px and keep referential integrity
  */
-function useNormalizedViewPadding(raw: ViewPadding): ViewPadding {
+function useNormalizedViewPadding(raw: ViewPadding): ViewPaddings {
   return useCustomCompareMemo(
     () => {
       if (isPlainObject(raw)) {
         return mapValues(raw, toLiteralPaddingWithUnit)
       }
-      return toLiteralPaddingWithUnit(raw)
+      const v = toLiteralPaddingWithUnit(raw)
+      return {
+        x: v,
+        y: v,
+      }
     },
     [raw],
-    compareViewPaddingObject,
+    deepEqual,
   )
-}
-const compareViewPaddingObject: DependenciesComparator<[ViewPadding]> = ([a], [b]) => {
-  return a === b ||
-    (isPlainObject(a)
-      && isPlainObject(b)
-      && a.bottom == b.bottom
-      && a.left == b.left
-      && a.right == b.right
-      && a.top == b.top)
 }

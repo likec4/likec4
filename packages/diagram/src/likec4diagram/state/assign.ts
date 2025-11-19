@@ -1,14 +1,13 @@
-import { type NodeId, type XYPoint, invariant, nonNullable } from '@likec4/core'
+import { type LayoutedView, type NodeId, type XYPoint, nonNullable } from '@likec4/core'
 import type { InternalNode } from '@xyflow/react'
 import { type NodeLookup, getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
 import { mergeDeep, omit } from 'remeda'
 import { assertEvent } from 'xstate'
-import { Base } from '../../base'
+import { Base, updateNodes } from '../../base'
 import { type VectorValue, vector } from '../../utils/vector'
 import { getNodeCenter } from '../../utils/xyflow'
 import type { Types } from '../types'
-import { SeqParallelAreaColor } from '../xyflow-sequence/const'
 import type { ActionArg, Context as DiagramContext } from './machine.setup'
 
 export function lastClickedNode(
@@ -29,40 +28,14 @@ export function lastClickedNode(
   }
 }
 
-export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<DiagramContext> {
-  assertEvent(event, 'update.view')
+export function mergeXYNodesEdges(
+  context: Pick<DiagramContext, 'xynodes' | 'xyedges' | 'view'>,
+  event: { view: LayoutedView; xynodes: Types.Node[]; xyedges: Types.Edge[] },
+): { xynodes: Types.Node[]; xyedges: Types.Edge[]; view: LayoutedView } {
   const nextView = event.view
   const isSameView = context.view.id === nextView.id
 
-  const currentNodes = context.xynodes
-  const xynodes = event.xynodes.map((update) => {
-    const existing = currentNodes.find(n => n.id === update.id)
-    if (existing) {
-      if (existing === update) {
-        return existing
-      }
-      const { width: existingWidth, height: existingHeight } = getNodeDimensions(existing)
-      if (
-        eq(existing.type, update.type)
-        && eq(existingWidth, update.initialWidth)
-        && eq(existingHeight, update.initialHeight)
-        && eq(existing.hidden ?? false, update.hidden ?? false)
-        && eq(existing.position, update.position)
-        && eq(existing.data, update.data)
-        && eq(existing.parentId ?? null, update.parentId ?? null)
-      ) {
-        return existing
-      }
-      return {
-        ...omit(existing, ['measured', 'parentId', 'hidden']),
-        ...update,
-        // Force dimensions from update
-        width: update.initialWidth,
-        height: update.initialHeight,
-      } as Types.Node
-    }
-    return update
-  })
+  const xynodes = updateNodes(context.xynodes, event.xynodes)
   // Merge with existing edges, but only if the view is the same
   // and the edges have no layout drift
   let xyedges = event.xyedges
@@ -128,140 +101,6 @@ export function focusNodesEdges(params: ActionArg): Partial<DiagramContext> {
   return {
     xynodes: _xynodes.map(n => Base.setDimmed(n, !focused.has(n.id))),
     xyedges,
-  }
-}
-
-// export function unfocusNodesEdges({ context }: ActionArg): Partial<DiagramContext> {
-//   const { xynodes, xyedges } = context
-//   return {
-//     xynodes: xynodes.map(Base.setDimmed(false)),
-//     xyedges: xyedges.map(Base.setData({
-//       dimmed: false,
-//       active: false,
-//     })),
-//   }
-// }
-
-export function updateNavigationHistory({ context, event }: ActionArg): Partial<DiagramContext> {
-  assertEvent(event, 'update.view')
-  let {
-    navigationHistory: {
-      currentIndex,
-      history,
-    },
-    lastOnNavigate,
-    viewport,
-  } = context
-  const stepCurrent = history[currentIndex]
-  if (!stepCurrent) {
-    return {
-      navigationHistory: {
-        currentIndex: 0,
-        history: [
-          {
-            viewId: event.view.id,
-            fromNode: null,
-            viewport: { ...viewport },
-          },
-        ],
-      },
-    }
-  }
-  if (stepCurrent.viewId !== event.view.id) {
-    // Navigation by browser back/forward ?
-    if (!lastOnNavigate) {
-      const stepBack = currentIndex > 0 ? nonNullable(history[currentIndex - 1]) : null
-      if (stepBack && stepBack.viewId === event.view.id) {
-        return {
-          navigationHistory: {
-            currentIndex: currentIndex - 1,
-            history,
-          },
-          lastOnNavigate: {
-            fromView: stepCurrent.viewId,
-            toView: stepBack.viewId,
-            fromNode: stepCurrent.fromNode,
-          },
-        }
-      }
-      const stepForward = currentIndex < history.length - 1 ? nonNullable(history[currentIndex + 1]) : null
-      if (stepForward && stepForward.viewId === event.view.id) {
-        return {
-          navigationHistory: {
-            currentIndex: currentIndex + 1,
-            history,
-          },
-          lastOnNavigate: {
-            fromView: stepCurrent.viewId,
-            toView: stepForward.viewId,
-            fromNode: stepForward.fromNode,
-          },
-        }
-      }
-    }
-
-    history = [
-      ...history.slice(0, currentIndex + 1),
-      {
-        viewId: event.view.id,
-        fromNode: lastOnNavigate?.fromNode ?? null,
-        viewport: { ...viewport },
-      },
-    ]
-    currentIndex = history.length - 1
-    return {
-      navigationHistory: {
-        currentIndex,
-        history,
-      },
-    }
-  }
-  return {}
-}
-
-export function navigateBack({ context }: ActionArg): Partial<DiagramContext> {
-  const {
-    navigationHistory: {
-      currentIndex,
-      history,
-    },
-  } = context
-  invariant(currentIndex > 0, 'Cannot navigate back')
-  const stepCurrent = history[currentIndex]!
-  const stepBack = history[currentIndex - 1]!
-  return {
-    navigationHistory: {
-      currentIndex: currentIndex - 1,
-      history,
-    },
-    lastOnNavigate: {
-      fromView: stepCurrent.viewId,
-      toView: stepBack.viewId,
-      fromNode: stepCurrent.fromNode,
-    },
-  }
-}
-
-export function navigateForward({ context }: ActionArg): Partial<DiagramContext> {
-  const {
-    navigationHistory: {
-      currentIndex,
-      history,
-    },
-  } = context
-  invariant(currentIndex < history.length - 1, 'Cannot navigate forward')
-  const stepCurrent = history[currentIndex]!
-  const stepForward = history[currentIndex + 1]!
-  return {
-    navigationHistory: {
-      currentIndex: currentIndex + 1,
-      history,
-    },
-    lastOnNavigate: {
-      fromView: stepCurrent.viewId,
-      toView: stepForward.viewId,
-      fromNode: stepForward.fromNode,
-    },
   }
 }
 
@@ -340,30 +179,4 @@ export function resetEdgeControlPoints(
   const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.multiply(-1))
 
   return [sourceBorderPoint.add(targetBorderPoint.subtract(sourceBorderPoint).multiply(0.4))]
-}
-
-export function updateActiveWalkthrough({ context }: ActionArg): Partial<DiagramContext> {
-  const { stepId, parallelPrefix } = nonNullable(context.activeWalkthrough, 'activeWalkthrough is null')
-  const step = nonNullable(context.xyedges.find(x => x.id === stepId))
-  return {
-    xyedges: context.xyedges.map(edge => {
-      const active = stepId === edge.id || (!!parallelPrefix && edge.id.startsWith(parallelPrefix))
-      return Base.setData(edge, {
-        active,
-        dimmed: stepId !== edge.id,
-      })
-    }),
-    xynodes: context.xynodes.map(node => {
-      const dimmed = step.source !== node.id && step.target !== node.id
-      if (node.type === 'seq-parallel') {
-        return Base.setData(node, {
-          color: parallelPrefix === node.data.parallelPrefix
-            ? SeqParallelAreaColor.active
-            : SeqParallelAreaColor.default,
-          dimmed,
-        })
-      }
-      return Base.setDimmed(node, dimmed)
-    }),
-  }
 }

@@ -39,26 +39,3 @@ export const hotkeyActorLogic: HotkeyActorLogic = fromCallback(({ sendBack }: {
     document.body.removeEventListener('keydown', arrowshandler, { capture: true })
   }
 })
-
-type UndoEvent = { type: 'undo' }
-
-export interface UndoHotKeyActorLogic extends CallbackActorLogic<AnyEventObject, NonReducibleUnknown, UndoEvent> {}
-
-export const undoHotKeyActorLogic: UndoHotKeyActorLogic = fromCallback(({ sendBack }: {
-  sendBack: (event: UndoEvent) => void
-}) => {
-  const ctrlZHandler = getHotkeyHandler([
-    ['mod + z', (event: KeyboardEvent) => {
-      console.log('Undo hotkey pressed')
-      event.stopPropagation()
-      sendBack({ type: 'undo' })
-    }, {
-      preventDefault: true,
-    }],
-  ])
-
-  document.body.addEventListener('keydown', ctrlZHandler, { capture: true })
-  return () => {
-    document.body.removeEventListener('keydown', ctrlZHandler, { capture: true })
-  }
-})

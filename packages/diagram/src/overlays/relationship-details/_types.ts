@@ -4,10 +4,10 @@ import type {
   ExclusiveUnion,
   Fqn,
   IconUrl,
+  MarkdownOrString,
   RelationId,
   RelationshipArrowType,
   RelationshipLineType,
-  RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
 import type { FunctionComponent } from 'react'
@@ -40,6 +40,7 @@ export namespace RelationshipDetailsTypes {
         | 'id'
         | 'title'
         | 'technology'
+        | 'description'
         | 'color'
         | 'shape'
         | 'width'
@@ -54,7 +55,6 @@ export namespace RelationshipDetailsTypes {
       fqn: Fqn
       icon: IconUrl
       ports: Ports
-      description: RichTextOrEmpty
     }
   >
 
@@ -110,7 +110,7 @@ export namespace RelationshipDetailsTypes {
       line: RelationshipLineType
       head?: RelationshipArrowType
       tail?: RelationshipArrowType
-      description: RichTextOrEmpty
+      description: MarkdownOrString | null
     }
   >
 

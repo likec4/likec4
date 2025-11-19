@@ -1,5 +1,6 @@
 import { assign } from 'xstate/actions'
-import { emitInitialized, ensureSyncLayout, xyflow } from './machine.actions'
+import { emitInitialized } from './machine.actions'
+import { fitDiagram } from './machine.actions.layout'
 import { machine } from './machine.setup'
 
 /**
@@ -45,18 +46,16 @@ export const isReady = machine.createStateConfig({
   always: [{
     guard: 'isReady',
     actions: [
-      xyflow.fitDiagram({ duration: 0 }),
+      fitDiagram({ duration: 0 }),
       assign(({ context }) => ({
         navigationHistory: {
           currentIndex: 0,
           history: [{
             viewId: context.view.id,
-            fromNode: null,
             viewport: { ...context.xyflow!.getViewport() },
           }],
         },
       })),
-      ensureSyncLayout(),
       emitInitialized(),
     ],
     target: 'ready',

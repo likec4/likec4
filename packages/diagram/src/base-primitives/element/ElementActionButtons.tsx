@@ -80,8 +80,7 @@ export function ElementActionButtons({
         minHeight: 30,
       }}>
       <m.div
-        layout
-        key={`${id}-action-buttons`}
+        layoutRoot
         initial={false}
         style={{
           originY: 0,

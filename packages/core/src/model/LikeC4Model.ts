@@ -519,6 +519,7 @@ export class LikeC4Model<A extends Any = Any> {
    * Returns manual layout snapshot for given view ID, if any.
    */
   public findManualLayout(viewId: aux.LooseViewId<A>): ViewManualLayoutSnapshot | null {
+    // manualLayouts available in computed/layouted models
     if ('manualLayouts' in this.$data) {
       const view = this.$data.manualLayouts?.[viewId as scalar.ViewId]
       return view ?? null

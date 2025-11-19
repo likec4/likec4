@@ -24,6 +24,14 @@ const FeatureNames = [
 ] as const
 export type FeatureName = typeof FeatureNames[number]
 
+// Features that can be toggled on/off at runtime in diagram context
+export type TogglableFeature =
+  & (
+    | 'ReadOnly'
+    | 'CompareWithLatest'
+  )
+  & FeatureName
+
 export type EnabledFeatures = {
   [P in `enable${FeatureName}`]: boolean
 }
