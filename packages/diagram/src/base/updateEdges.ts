@@ -1,32 +1,72 @@
 import { deepEqual as eq } from 'fast-equals'
-import { isDefined, omit } from 'remeda'
+import { hasSubObject, isDefined, isShallowEqual, omit, pickBy } from 'remeda'
 import type { BaseEdge } from './types'
 
-function _update<E extends BaseEdge>(current: E[], update: E[]): E[] {
-  return update.map((next) => {
-    const existing = current.find(n => n.id === next.id)
-    if (existing && existing.type === next.type && existing.source === next.source && existing.target === next.target) {
-      const isSameData = eq(existing.data, next.data)
-      if (
-        isSameData
-        && eq(existing.hidden ?? false, next.hidden ?? false)
-        && eq(existing.selected ?? false, next.selected ?? false)
-        && eq(existing.animated ?? false, next.animated ?? false)
-        && eq(existing.sourceHandle ?? null, next.sourceHandle ?? null)
-        && eq(existing.targetHandle ?? null, next.targetHandle ?? null)
-        && eq(existing.zIndex ?? 0, next.zIndex ?? 0)
-        && eq(existing.label ?? null, next.label ?? null)
-      ) {
-        return existing
+const EMPTY_OBJ = {}
+
+function _update<E extends BaseEdge>(current: E[], updated: E[]): E[] {
+  updated = updated.map((update): E => {
+    const existing = current.find(n =>
+      n.id === update.id &&
+      n.type === update.type &&
+      n.source === update.source &&
+      n.target === update.target
+    )
+
+    if (!existing) {
+      return update
+    }
+
+    const isSameData = hasSubObject(existing.data, update.data)
+    let data = isSameData ? existing.data : update.data
+    if (!isSameData) {
+      // Preserve hovered and dimmed states if not specified in update
+      if (isDefined(existing.data.hovered) && !isDefined(update.data.hovered)) {
+        data = {
+          ...data,
+          hovered: existing.data.hovered,
+        }
       }
-      return {
-        ...omit(existing, ['hidden', 'zIndex']),
-        ...next,
-        data: isSameData ? existing.data : next.data,
+      if (isDefined(existing.data.dimmed) && !isDefined(update.data.dimmed)) {
+        data = {
+          ...data,
+          dimmed: existing.data.dimmed,
+        }
+      }
+      if (isDefined(existing.data.active) && !isDefined(update.data.active)) {
+        data = {
+          ...data,
+          active: existing.data.active,
+        }
       }
     }
-    return next
+
+    if (
+      isSameData
+      && eq(existing.hidden, update.hidden ?? existing.hidden)
+      && eq(existing.selected, update.selected ?? existing.selected)
+      && eq(existing.selectable, update.selectable ?? existing.selectable)
+      && eq(existing.focusable, update.focusable ?? existing.focusable)
+      && eq(existing.animated, update.animated ?? existing.animated)
+      && eq(existing.className, update.className)
+      && eq(existing.zIndex, update.zIndex ?? existing.zIndex)
+      && eq(existing.label, update.label)
+      && eq(existing.sourceHandle ?? null, update.sourceHandle ?? null)
+      && eq(existing.targetHandle ?? null, update.targetHandle ?? null)
+      && eq(existing.style ?? EMPTY_OBJ, update.style ?? EMPTY_OBJ)
+    ) {
+      return existing
+    }
+    return {
+      // Retain existing properties that are defined, except parentId
+      ...pickBy(existing, isDefined) as unknown as E,
+      // Apply updates, omitting undefined values
+      ...pickBy(update, isDefined) as unknown as E,
+      data,
+    } as E
   })
+
+  return isShallowEqual(current, updated) ? current : updated
 }
 
 export function updateEdges<E extends BaseEdge>(current: E[], update: E[]): E[]

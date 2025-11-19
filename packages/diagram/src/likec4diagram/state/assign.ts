@@ -33,10 +33,24 @@ export function mergeXYNodesEdges(
   event: { view: LayoutedView; xynodes: Types.Node[]; xyedges: Types.Edge[] },
 ): { xynodes: Types.Node[]; xyedges: Types.Edge[]; view: LayoutedView } {
   const nextView = event.view
-  const isSameView = context.view.id === nextView.id
+  const currentView = context.view
+  const isSameView = currentView.id === nextView.id
+
+  const isDynamicViewUpdate = nextView._type === 'dynamic'
+    && nextView.variant === 'sequence'
+
+  // If dynamic view update with sequence layout, just replace nodes and edges
+  // because xyflow edges require full recalculation due to possible hadle changes
+  if (isDynamicViewUpdate) {
+    return {
+      xynodes: event.xynodes,
+      xyedges: event.xyedges,
+      view: nextView,
+    }
+  }
 
   const xynodes = updateNodes(context.xynodes, event.xynodes)
-  // Merge with existing edges, but only if the view is the same
+
   // and the edges have no layout drift
   let xyedges = event.xyedges
   if (isSameView && (!nextView.drifts || nextView.drifts.length === 0)) {

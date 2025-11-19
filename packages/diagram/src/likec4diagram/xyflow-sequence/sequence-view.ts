@@ -260,6 +260,7 @@ function toSeqParallelArea(
       description: null,
       viewId: view.id,
       parallelPrefix,
+      drifts: null,
     },
     zIndex: SeqZIndex.parallel,
     position: {
@@ -336,18 +337,9 @@ function toSeqActorNode({ actor, ports: _ports, bounds, layout, view }: {
       viewHeight: bounds.height,
       viewId: view.id,
       ports,
-      // ports: ports.map((p): Types.SequenceActorNodePort => {
-      //   const bbox = layout.getPortCenter(p.step, p.type)
-      //   return ({
-      //     id: p.step.id + '_' + p.type,
-      //     cx: bbox.cx - x,
-      //     cy: bbox.cy - y,
-      //     height: bbox.height,
-      //     type: p.type,
-      //     position: p.position,
-      //   })
-      // }),
+      drifts: actor.drifts ?? null,
     },
+    handles,
     zIndex: SeqZIndex.actor,
     position: { x, y },
     style: {

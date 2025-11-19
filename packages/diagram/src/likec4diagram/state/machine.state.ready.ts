@@ -31,7 +31,6 @@ import {
   resetLastClickedNode,
   sendSynced,
   setViewport,
-  setViewportCenter,
   startEditing,
   stopEditing,
   stopSyncLayout,

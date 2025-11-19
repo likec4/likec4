@@ -54,6 +54,7 @@ export namespace Types {
       viewId: ViewId
       isMultiple?: boolean | undefined
       icon: string | null
+      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -68,7 +69,6 @@ export namespace Types {
        * If set - this node has navigation to another view and diagram has handler for this
        */
       navigateTo: ViewId | null
-      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -82,7 +82,6 @@ export namespace Types {
       deploymentFqn: DeploymentFqn
       // If set - this node refers to a model element
       modelFqn: Fqn | null
-      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 

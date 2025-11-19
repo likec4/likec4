@@ -10,6 +10,7 @@ import { type Viewport, getEdgePosition, getNodeDimensions, getNodesBounds, getV
 import type { ActorSystem } from 'xstate'
 import { MinZoom } from '../../base/const'
 import type { XYStoreState } from '../../hooks/useXYFlow'
+import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
@@ -208,4 +209,15 @@ export function calcViewportForBounds(
     maxZoom,
     context.fitViewPadding,
   )
+}
+
+export function parseAsNumber(value: string | number | undefined): number {
+  if (typeof value === 'number') {
+    return isNaN(value) ? 0 : value
+  }
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value)
+    return isNaN(parsed) ? 0 : parsed
+  }
+  return 0
 }

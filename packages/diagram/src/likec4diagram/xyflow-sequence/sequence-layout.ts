@@ -123,6 +123,7 @@ function toSeqParallelArea(
       description: null,
       viewId: view.id,
       parallelPrefix,
+      drifts: null,
     },
     zIndex: SeqZIndex.parallel,
     position: {
@@ -173,6 +174,7 @@ function toSeqActorNode(
       viewHeight: bounds.height,
       viewId: view.id,
       ports: ports as Writable<typeof ports>,
+      drifts: actor.drifts ?? null,
     },
     deletable: false,
     selectable: true,

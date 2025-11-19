@@ -101,7 +101,7 @@ export const elementShapeRecipe = defineRecipe({
           height: `[calc(100% + 2 * var(--likec4-outline-size) + 2px)]`,
           borderStyle: 'solid',
           borderWidth: 'var(--likec4-outline-size)',
-          borderRadius: '[10px]',
+          borderRadius: '11px',
           borderColor: 'var(--likec4-palette-outline)',
           animationStyle: 'indicator',
         },

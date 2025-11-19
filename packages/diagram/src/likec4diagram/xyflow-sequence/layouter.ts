@@ -545,23 +545,4 @@ export class SequenceViewLayouter {
       },
     }
   }
-
-  // private recalcActorsRect() {
-  //   this.#actorsRect = this.#columnRects.reduce((acc, rect, index, all) => {
-  //     if (index === 0) {
-  //       acc.minX = rect.min.x.value()
-  //     }
-  //     if (index === all.length - 1) {
-  //       acc.maxX = rect.max.x.value()
-  //     }
-  //     acc.minY = Math.min(acc.minY, rect.min.y.value())
-  //     acc.maxY = Math.max(acc.maxY, rect.max.y.value())
-  //     return acc
-  //   }, {
-  //     minX: Infinity,
-  //     minY: Infinity,
-  //     maxX: -Infinity,
-  //     maxY: -Infinity,
-  //   })
-  // }
 }

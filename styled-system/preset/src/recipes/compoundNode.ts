@@ -61,15 +61,15 @@ export const compoundNode = defineRecipe({
         base: 'oklab(from var(--likec4-palette-stroke) calc(l - 0.05) a b)',
         _dark: 'oklab(from var(--likec4-palette-stroke) calc(l + 0.2) a b)',
       },
-      [borderWidth.var]: '4px',
-      [borderRadius.var]: '8px',
+      [borderWidth.var]: '3px',
+      [borderRadius.var]: '6px',
       [compoundTransparency.var]: '100%',
       [borderTransparency.var]: '100%',
-      [indicatorSpacing.var]: `calc(${borderWidth.ref} + 3px)`,
+      [indicatorSpacing.var]: `calc(${borderWidth.ref} + 1px)`,
       [compoundColor.var]: 'var(--likec4-palette-loContrast)',
       color: compoundColor.ref,
 
-      _after: {
+      _before: {
         position: 'absolute',
         content: '" "',
         top: `[calc(-1 * ${indicatorSpacing.ref})]`,
@@ -77,7 +77,7 @@ export const compoundNode = defineRecipe({
         width: `[calc(100% + 2 * ${indicatorSpacing.ref})]`,
         height: `[calc(100% + 2 * ${indicatorSpacing.ref})]`,
         borderStyle: 'solid',
-        borderWidth: borderWidth.ref,
+        borderWidth: `calc(${borderWidth.ref} + 1px)`,
         borderRadius: `calc(${borderRadius.ref} + 4px)`,
         borderColor: 'var(--likec4-palette-outline)',
         pointerEvents: 'none',

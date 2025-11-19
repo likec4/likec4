@@ -66,10 +66,10 @@ function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
       ...pickBy(update, isDefined) as unknown as N,
       // Force dimensions from update if existing has measured
       ...('measured' in existing && {
-        measured: {
-          width: update.initialWidth,
-          height: update.initialHeight,
-        },
+        // measured: {
+        //   width: update.initialWidth,
+        //   height: update.initialHeight,
+        // },
         width: update.initialWidth,
         height: update.initialHeight,
       }),
