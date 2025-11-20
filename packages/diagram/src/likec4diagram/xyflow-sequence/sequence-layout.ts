@@ -215,6 +215,7 @@ function toSeqStepEdge(
       head: edge.head ?? 'normal',
       tail: edge.tail ?? 'none',
       astPath: edge.astPath,
+      drifts: edge.drifts ?? null,
     },
     selectable: true,
     focusable: false,

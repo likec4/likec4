@@ -11,6 +11,8 @@ export {
 } from './nodes'
 export { SequenceActorNode, SequenceParallelArea } from './SequenceActorNode'
 
+export { NodeDrifts, type NodeDriftsProps } from './NodeDrifts'
+
 export * from './CompoundActions'
 export * from './ElementActions'
 export * from './toolbar/CompoundToolbar'

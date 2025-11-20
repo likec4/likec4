@@ -222,13 +222,13 @@ export namespace Types {
         | 'tail'
         | 'navigateTo'
         | 'astPath'
+        | 'drifts'
       >
     >
     & {
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
       controlPoints: XYPosition[] | undefined | null
-      drifts: NonEmptyReadonlyArray<DiagramEdgeDriftReason> | null
     }
   >
 
@@ -248,6 +248,7 @@ export namespace Types {
         | 'tail'
         | 'navigateTo'
         | 'astPath'
+        | 'drifts'
       >
     >
     & {

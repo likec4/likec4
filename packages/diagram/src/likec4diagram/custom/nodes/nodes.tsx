@@ -1,4 +1,5 @@
 import type { Fqn, NodeId } from '@likec4/core'
+import { css } from '@likec4/styles/css'
 import {
   CompoundDetailsButton,
   CompoundNodeContainer,
@@ -16,7 +17,7 @@ import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
 import { DeploymentElementActions, ElementActions } from './ElementActions'
-import { ElementNodeDrifts } from './ElementNodeDrifts'
+import { NodeDrifts } from './NodeDrifts'
 import { CompoundDeploymentToolbar, CompoundElementToolbar } from './toolbar/CompoundToolbar'
 import { DeploymentElementToolbar, ElementToolbar } from './toolbar/ElementToolbar'
 
@@ -69,7 +70,7 @@ export function ElementNode(props: Types.NodeProps<'element'>) {
   const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
-      {enableCompareWithLatest && <ElementNodeDrifts {...props} />}
+      {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
       <ElementShape {...props} />
       <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
@@ -85,7 +86,7 @@ export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
   const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
-      {enableCompareWithLatest && <ElementNodeDrifts {...props} />}
+      {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
       <ElementShape {...props} />
       <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
@@ -97,10 +98,29 @@ export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
   )
 }
 
+const compoundHasDrifts = css({
+  outlineColor: 'likec4.compare.manual.outline',
+  outlineWidth: {
+    base: '2px',
+    _light: '4px',
+  },
+  outlineStyle: 'solid',
+  outlineOffset: '1',
+})
+
+const hasDrifts = (props: Types.NodeProps) => {
+  return props.data.drifts && props.data.drifts.length > 0
+}
+
 export function CompoundElementNode(props: Types.NodeProps<'compound-element'>) {
-  const { enableElementDetails, enableReadOnly } = useEnabledFeatures()
+  const { enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
+  const showDrifts = enableCompareWithLatest && hasDrifts(props)
   return (
-    <CompoundNodeContainer nodeProps={props}>
+    <CompoundNodeContainer
+      className={showDrifts ? compoundHasDrifts : undefined}
+      nodeProps={props}
+    >
+      {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
       <CompoundTitle {...props} />
       <CompoundActions {...props} />
       {enableElementDetails && <CompoundDetailsButtonWithHandler {...props} />}
@@ -111,9 +131,14 @@ export function CompoundElementNode(props: Types.NodeProps<'compound-element'>) 
 }
 
 export function CompoundDeploymentNode(props: Types.NodeProps<'compound-deployment'>) {
-  const { enableElementDetails, enableReadOnly } = useEnabledFeatures()
+  const { enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
+  const showDrifts = enableCompareWithLatest && hasDrifts(props)
   return (
-    <CompoundNodeContainer nodeProps={props}>
+    <CompoundNodeContainer
+      className={showDrifts ? compoundHasDrifts : undefined}
+      nodeProps={props}
+    >
+      {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
       <CompoundTitle {...props} />
       <CompoundActions {...props} />
       {enableElementDetails && <CompoundDetailsButtonWithHandler {...props} />}
@@ -124,8 +149,14 @@ export function CompoundDeploymentNode(props: Types.NodeProps<'compound-deployme
 }
 
 export function ViewGroupNode(props: Types.NodeProps<'view-group'>) {
+  const { enableCompareWithLatest } = useEnabledFeatures()
+  const showDrifts = enableCompareWithLatest && hasDrifts(props)
   return (
-    <CompoundNodeContainer nodeProps={props}>
+    <CompoundNodeContainer
+      className={showDrifts ? compoundHasDrifts : undefined}
+      nodeProps={props}
+    >
+      {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
       <CompoundTitle {...props} />
       <DefaultHandles />
     </CompoundNodeContainer>

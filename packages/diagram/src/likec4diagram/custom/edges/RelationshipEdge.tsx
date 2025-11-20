@@ -23,6 +23,7 @@ import {
   isSamePoint,
 } from '../../../utils/xyflow'
 import type { Types } from '../../types'
+import { EdgeDrifts } from './EdgeDrifts'
 import * as edgesCss from './edges.css'
 import { useControlPoints } from './useControlPoints'
 import { useRelationshipEdgePath } from './useRelationshipEdgePath'
@@ -42,6 +43,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   const {
     enableNavigateTo,
     enableReadOnly,
+    enableCompareWithLatest,
   } = useEnabledFeatures()
   const enabledEditing = !enableReadOnly
   const {
@@ -92,11 +94,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     if (!path || !isControlPointDragging) return
     setLabelPos(getEdgeCenter(path))
   }, [edgePath, isControlPointDragging])
-
-  if (isControlPointDragging) {
-    labelX = labelPos.x
-    labelY = labelPos.y
-  }
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
     const point = svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
@@ -189,10 +186,11 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           {...enabledEditing && {
             onEdgePointerDown,
           }} />
+        {enableCompareWithLatest && <EdgeDrifts edgeProps={props} svgPath={edgePath} />}
         {labelBBox && (
           <EdgeLabelContainer
             edgeProps={props}
-            labelPosition={{ x: labelX, y: labelY }}
+            labelPosition={isControlPointDragging ? labelPos : { x: labelX, y: labelY }}
           >
             <EdgeLabel
               pointerEvents={enabledEditing ? 'none' : 'all'}
