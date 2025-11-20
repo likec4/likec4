@@ -41,7 +41,7 @@ export function calcDriftsFromSnapshot<V extends LayoutedView>(
       return produce(node, draft => {
         if (!snapshotNode) {
           viewDrifts.add('nodes-added')
-          draft.drifts = ['missing']
+          draft.drifts = ['added']
           return
         }
         if (snapshotNode.drifts) {
@@ -71,7 +71,7 @@ export function calcDriftsFromSnapshot<V extends LayoutedView>(
       return produce(edge, draft => {
         if (!snapshotEdge) {
           viewDrifts.add('edges-added')
-          draft.drifts = ['missing']
+          draft.drifts = ['added']
           return
         }
         if (snapshotEdge.drifts) {

@@ -48,6 +48,7 @@
   "projectId": "from-builder",
   "relations": {
     "rel1": {
+      "dir": "both",
       "id": "rel1",
       "source": {
         "model": "customer",

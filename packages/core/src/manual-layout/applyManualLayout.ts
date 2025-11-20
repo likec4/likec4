@@ -1,5 +1,5 @@
 import { type WritableDraft, produce } from 'immer'
-import { hasAtLeast, isDeepEqual, isNullish, isNumber, isTruthy, pipe } from 'remeda'
+import { hasAtLeast, isDeepEqual, isDefined, isNullish, isNumber, isTruthy, pick, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import { buildElementNotations } from '../compute-view/utils/buildElementNotations'
 import {
@@ -15,7 +15,7 @@ import {
   _layout,
   isDynamicView,
 } from '../types'
-import { ifilter, ihead, invariant, symmetricDifference } from '../utils'
+import { ifilter, ihead, invariant, nonexhaustive, symmetricDifference } from '../utils'
 
 const changed = (a: unknown, b: unknown) => {
   if (a === b || (isNullish(a) && isNullish(b))) {
@@ -229,7 +229,51 @@ export function applyManualLayout<
   const nextNodes = new Map(autoLayouted.nodes.map(n => [n.id, n]))
   const nextEdges = new Map(autoLayouted.edges.map(e => [e.id, e]))
 
-  const nodes = snapshot.nodes.map((node): DiagramNode => {
+  const nodes = applyNodesManualLayout(snapshot.nodes, nextNodes, viewDrifts)
+  const edges = applyEdgesManualLayout(snapshot.edges, nextEdges, viewDrifts)
+
+  const nodeNotations = buildElementNotations(nodes)
+
+  // Shallow copy of snapshot
+  const result = Object.assign(
+    { ...snapshot } as Writable<LayoutedView>,
+    {
+      // Auto-layouted properties
+      title: autoLayouted.title ?? snapshot.title,
+      description: autoLayouted.description ?? snapshot.description,
+      tags: autoLayouted.tags ? [...autoLayouted.tags] : null,
+      links: autoLayouted.links ? [...autoLayouted.links] : null,
+      [_layout]: 'manual' as const,
+      ...(nodeNotations && nodeNotations.length > 0 ? { notation: { nodes: nodeNotations } } : {}),
+      nodes,
+      edges,
+    } satisfies Partial<LayoutedView>,
+  )
+
+  if (isDynamicView(autoLayouted) && result._type === 'dynamic') {
+    ;(result as Writable<LayoutedDynamicView>).variant = autoLayouted.variant
+  }
+
+  const drifts = [...viewDrifts]
+  if (hasAtLeast(drifts, 1)) {
+    result.drifts = drifts
+  } else {
+    // Clear drifts if any comes from `autoLayouted` or `snapshot`
+    // Should not happen, but just in case
+    if ('drifts' in result) {
+      delete result.drifts
+    }
+  }
+
+  return result as V
+}
+
+function applyNodesManualLayout(
+  snapshotNodes: DiagramNode[],
+  nextNodes: Map<DiagramNode['id'], DiagramNode>,
+  viewDrifts: Set<LayoutedViewDriftReason>,
+): DiagramNode[] {
+  const nodes = snapshotNodes.map((node): DiagramNode => {
     const next = nextNodes.get(node.id)
     if (next) {
       nextNodes.delete(next.id)
@@ -237,7 +281,7 @@ export function applyManualLayout<
     return produce(node, draft => {
       if (!next) {
         // TODO: node is missing in the next layout, update node with data from the model?
-        draft.drifts = ['missing']
+        draft.drifts = ['removed']
         viewDrifts.add('nodes-removed')
         return
       }
@@ -317,7 +361,15 @@ export function applyManualLayout<
     viewDrifts.add('nodes-added')
   }
 
-  const edges = snapshot.edges.map((edge): DiagramEdge => {
+  return nodes
+}
+
+function applyEdgesManualLayout(
+  snapshotEdges: DiagramEdge[],
+  nextEdges: Map<DiagramEdge['id'], DiagramEdge>,
+  viewDrifts: Set<LayoutedViewDriftReason>,
+): DiagramEdge[] {
+  const edges = snapshotEdges.map((edge): DiagramEdge => {
     let next = nextEdges.get(edge.id) ?? pipe(
       nextEdges.values(),
       ifilter(e => e.source === edge.source && e.target === edge.target),
@@ -329,14 +381,53 @@ export function applyManualLayout<
 
     return produce(edge, draft => {
       if (!next) {
-        draft.drifts = ['missing']
+        draft.drifts = ['removed']
         viewDrifts.add('edges-removed')
         return
       }
       const edgeDrifts = new Set<DiagramEdgeDriftReason>()
-      // Only check size if previous checks passed
-      if (changed(draft.dir ?? 'forward', next.dir ?? 'forward')) {
-        edgeDrifts.add('direction-changed')
+
+      const isSameId = edge.id === next.id
+
+      switch (true) {
+        // IDs match, but source/target may have changed
+        case isSameId
+          && edge.source == next.source
+          && edge.target == next.target: {
+          // IDs and source/target match, check for direction change
+          if (changed(draft.dir ?? 'forward', next.dir ?? 'forward')) {
+            edgeDrifts.add('direction-changed')
+          }
+          break
+        }
+        case isSameId
+          && edge.source == next.target
+          && edge.target == next.source: {
+          // Check it is not a self-loop
+          if (edge.source !== edge.target) {
+            edgeDrifts.add('direction-changed')
+          }
+          break
+        }
+        case isSameId: {
+          if (edge.source != next.source) {
+            edgeDrifts.add('source-changed')
+          }
+          if (edge.target != next.target) {
+            edgeDrifts.add('target-changed')
+          }
+          // ignore direction change in this case
+          break
+        }
+        default: {
+          invariant(edge.id != next.id, 'Unexpected case in edge drift detection, ids should not match')
+          invariant(edge.source == next.source, 'Unexpected case in edge drift detection, sources should match')
+          invariant(edge.target == next.target, 'Unexpected case in edge drift detection, targets should match')
+          if (changed(draft.dir ?? 'forward', next.dir ?? 'forward')) {
+            edgeDrifts.add('direction-changed')
+          }
+          break
+        }
       }
 
       draft.color = next.color
@@ -344,42 +435,83 @@ export function applyManualLayout<
       draft.navigateTo = next.navigateTo ?? null
       draft.tags = next.tags ? [...next.tags] : null
 
-      if (isNullish(next.notes)) {
-        delete draft.notes
-      } else {
-        draft.notes = next.notes
+      if (changed(edge.notes, next.notes)) {
+        // If notes was added/removed - consider it drifted
+        if (isNullish(edge.notes) !== isNullish(next.notes)) {
+          edgeDrifts.add('notes-changed')
+        }
+        // Keep old notes if removed
+        draft.notes = next.notes ?? edge.notes!
       }
 
       if (next.astPath) {
         draft.astPath = next.astPath
+      } else {
+        delete draft.astPath
       }
 
-      if (next.labelBBox) {
-        if (!draft.labelBBox) {
-          edgeDrifts.add('label-changed')
-          draft.labelBBox = next.labelBBox
-        } else {
-          if (next.labelBBox.width > draft.labelBBox.width || next.labelBBox.height > draft.labelBBox.height) {
-            edgeDrifts.add('label-changed')
+      const labelsBefore = pick(edge, ['label', 'description', 'technology', 'labelBBox'])
+      const labelsAfter = pick(next, ['label', 'description', 'technology', 'labelBBox'])
+      if (changed(labelsBefore, labelsAfter)) {
+        switch (true) {
+          case next.labelBBox && !edge.labelBBox: {
+            // Label added, consider it drifted
+            edgeDrifts.add('label-added')
+            break
           }
-          // Take width/height from next,
-          draft.labelBBox.width = Math.round(next.labelBBox.width)
-          draft.labelBBox.height = Math.round(next.labelBBox.height)
-        }
-        draft.label = next.label
-        if (next.description) {
-          draft.description = patchMarkdownOrString(
-            draft.description,
-            next.description,
-          )
-        } else {
-          draft.description = null
-        }
+          case edge.labelBBox && !next.labelBBox: {
+            // Add detect drift
+            edgeDrifts.add('label-removed')
+            break
+          }
+          case !!edge.labelBBox && !!next.labelBBox: {
+            // Both have labelBBox, check for changes below
+            const sizeChanged = next.labelBBox.width * next.labelBBox.height >
+              (edge.labelBBox.width + MAX_ALLOWED_DRIFT) * (edge.labelBBox.height + MAX_ALLOWED_DRIFT)
 
-        draft.technology = next.technology ?? null
-      } else if (edge.labelBBox) {
-        // If previous edge had labelBBox but new one does not, consider it changed
-        edgeDrifts.add('label-changed')
+            if (sizeChanged) {
+              // Take width/height from next
+              draft.labelBBox!.width = Math.round(next.labelBBox.width)
+              draft.labelBBox!.height = Math.round(next.labelBBox.height)
+            }
+            if (changed(edge.label, next.label)) {
+              // If label was added/removed - consider it drifted
+              if (isNullish(next.label) !== isNullish(edge.label)) {
+                edgeDrifts.add('label-changed')
+              }
+              // Keep old label if it was removed
+              draft.label = next.label ?? edge.label
+            }
+
+            if (changed(edge.description, next.description)) {
+              // If description was added/removed
+              if (isNullish(next.description) !== isNullish(edge.description)) {
+                edgeDrifts.add('label-changed')
+              }
+              if (next.description) {
+                draft.description = patchMarkdownOrString(
+                  edge.description,
+                  next.description,
+                )
+              }
+            }
+            if (changed(edge.technology, next.technology)) {
+              // If technology was added/removed
+              if (isNullish(next.technology) !== isNullish(edge.technology)) {
+                edgeDrifts.add('label-changed')
+              }
+              // Take old technology if removed
+              draft.technology = next.technology ?? edge.technology ?? null
+            }
+
+            break
+          }
+          default:
+            invariant(!edge.labelBBox, 'Unexpected case in edge labelBBox drift detection')
+            invariant(!next.labelBBox, 'Unexpected case in next labelBBox drift detection')
+            // Both don't have labelBBox, nothing to do
+            break
+        }
       }
 
       const _drifts = [...edgeDrifts]
@@ -398,38 +530,5 @@ export function applyManualLayout<
     viewDrifts.add('edges-added')
   }
 
-  const nodeNotations = buildElementNotations(nodes)
-
-  // Shallow copy of snapshot
-  const result = Object.assign(
-    { ...snapshot } as Writable<LayoutedView>,
-    {
-      // Auto-layouted properties
-      title: autoLayouted.title ?? snapshot.title,
-      description: autoLayouted.description ?? snapshot.description,
-      tags: autoLayouted.tags ? [...autoLayouted.tags] : null,
-      links: autoLayouted.links ? [...autoLayouted.links] : null,
-      [_layout]: 'manual' as const,
-      ...(nodeNotations && nodeNotations.length > 0 ? { notation: { nodes: nodeNotations } } : {}),
-      nodes,
-      edges,
-    } satisfies Partial<LayoutedView>,
-  )
-
-  if (isDynamicView(autoLayouted) && result._type === 'dynamic') {
-    ;(result as Writable<LayoutedDynamicView>).variant = autoLayouted.variant
-  }
-
-  const drifts = [...viewDrifts]
-  if (hasAtLeast(drifts, 1)) {
-    result.drifts = drifts
-  } else {
-    // Clear drifts if any comes from `autoLayouted` or `snapshot`
-    // Should not happen, but just in case
-    if ('drifts' in result) {
-      delete result.drifts
-    }
-  }
-
-  return result as V
+  return edges
 }

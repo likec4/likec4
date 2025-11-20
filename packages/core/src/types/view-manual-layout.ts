@@ -20,7 +20,8 @@ export type LayoutedViewDriftReason =
   | 'edges-drift' // exists in both versions, but with layout differences
 
 export type DiagramNodeDriftReason =
-  | 'missing' // exists in snapshot but not in latest, and visa versa
+  | 'removed' // exists in snapshot but not in latest
+  | 'added' // exists in latest but not in snapshot
   | 'label-changed' // title/description/technology/icon changed
   | 'modelRef-changed'
   | 'parent-changed'
@@ -30,9 +31,15 @@ export type DiagramNodeDriftReason =
   | 'shape-changed'
 
 export type DiagramEdgeDriftReason =
-  | 'missing' // exists in snapshot but not in latest, and visa versa
-  | 'label-changed' // title/description/technology changed
+  | 'removed' // exists in snapshot but not in latest
+  | 'added' // exists in latest but not in snapshot
+  | 'label-added'
+  | 'label-removed'
+  | 'label-changed'
+  | 'notes-changed'
   | 'direction-changed'
+  | 'source-changed'
+  | 'target-changed'
 
 type ViewManualLayoutSnapshotPerType =
   | {

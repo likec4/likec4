@@ -172,7 +172,7 @@
   ],
   "edges": [
     {
-      "id": "at6tqm",
+      "id": "edge1",
       "source": "customer",
       "target": "saas.frontend",
       "label": "uses",
@@ -208,15 +208,12 @@
       "color": "gray",
       "line": "dashed",
       "head": "normal",
-      "controlPoints": [
-        {
-          "x": 208,
-          "y": 260
-        }
-      ]
+      "notes": {
+        "txt": "Initial note"
+      }
     },
     {
-      "id": "1ha2y8s",
+      "id": "edge2",
       "source": "saas.frontend",
       "target": "saas.api",
       "label": "requests",
@@ -256,6 +253,7 @@
       "line": "dashed",
       "head": "normal",
       "technology": "REST",
+      "dir": "both",
       "controlPoints": [
         {
           "x": 448,

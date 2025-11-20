@@ -192,6 +192,7 @@ describe('Builder (style 2)', () => {
           rel('customer', 'cloud.ui', {
             title: 'uses',
             tags: ['tag1'],
+            dir: 'both',
           }),
           rel('cloud.ui', 'cloud.api', {
             title: 'calls',
@@ -220,7 +221,9 @@ describe('Builder (style 2)', () => {
         _(
           component('c1', {
             summary: 'summary',
-            description: 'description',
+            description: {
+              md: 'description',
+            },
           }),
         )
       )
@@ -228,11 +231,15 @@ describe('Builder (style 2)', () => {
         _(
           node('n1', {
             summary: 'n1-summary',
-            description: 'n1-description',
+            description: {
+              md: 'n1-description',
+            },
           }),
           instanceOf('n1.c1', 'c1', {
             summary: 'n1.c1-summary',
-            description: 'n1.c1-description',
+            description: {
+              md: 'n1.c1-description',
+            },
           }),
         )
       )
@@ -242,7 +249,7 @@ describe('Builder (style 2)', () => {
       {
         c1: {
           description: {
-            txt: 'description',
+            md: 'description',
           },
           summary: {
             txt: 'summary',
@@ -255,7 +262,7 @@ describe('Builder (style 2)', () => {
       {
         n1: {
           description: {
-            txt: 'n1-description',
+            md: 'n1-description',
           },
           summary: {
             txt: 'n1-summary',
@@ -263,7 +270,7 @@ describe('Builder (style 2)', () => {
         },
         'n1.c1': {
           description: {
-            txt: 'n1.c1-description',
+            md: 'n1.c1-description',
           },
           summary: {
             txt: 'n1.c1-summary',

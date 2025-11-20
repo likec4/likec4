@@ -1,5 +1,15 @@
-// Snapshot is built from the model
-/*
+import { type WritableDraft, produce } from 'immer'
+import { filter, indexBy, isTruthy, map, pipe } from 'remeda'
+import type { IsEqual, IsLiteral, IsStringLiteral, LiteralUnion, SetRequired } from 'type-fest'
+import type { Types } from '../../builder/_types'
+import { Builder } from '../../builder/Builder'
+import type { DiagramEdge, DiagramNode, EdgeId, LayoutedElementView, NodeId } from '../../types'
+import type { ViewManualLayoutSnapshot } from '../../types/view-manual-layout'
+import indexSnapshot from './index-snapshot.json' assert { type: 'json' }
+
+/**
+  Snapshot {@link indexSnapshot} is built from the model below.
+=======
 
 specification {
   element el
@@ -57,15 +67,10 @@ views {
 }
 */
 
-import { type WritableDraft, produce } from 'immer'
-import { filter, isTruthy, map, pipe } from 'remeda'
-import type { LiteralUnion } from 'type-fest'
-import type { Types } from '../../builder/_types'
-import { Builder } from '../../builder/Builder'
-import type { DiagramNode, LayoutedElementView, NodeId } from '../../types'
-import type { ViewManualLayoutSnapshot } from '../../types/view-manual-layout'
-import indexSnapshot from './index-snapshot.json' assert { type: 'json' }
-
+/**
+ * Builder that produces the model used to create {@link indexSnapshot}
+ * Here for type safety and easy maintenance of the snapshot.
+ */
 function simplebuilder() {
   return Builder
     .specification({
@@ -107,9 +112,11 @@ function simplebuilder() {
           title: 'requests',
           technology: 'REST',
           description: 'requests data',
+          dir: 'both',
         }),
         rel('customer', 'saas.frontend', {
           title: 'uses',
+          notes: 'Initial note',
         }),
       )
     )
@@ -129,22 +136,56 @@ function simplebuilder() {
 type A = Types.ToAux<ReturnType<typeof simplebuilder>['Types']>
 type ExistingNodes = A['ElementId']
 type WithoutNodesEdges<V = LayoutedElementView> = Omit<V, 'nodes' | 'edges'>
+export type NodeIds = LiteralUnion<ExistingNodes, string>
+type NodeUpdater =
+  | ((draft: WritableDraft<Omit<DiagramNode, 'id'>>) => void)
+  | Partial<Omit<DiagramNode, 'id'>>
+  | undefined
+  | null
 
-type NodeUpdater = ((draft: WritableDraft<Omit<DiagramNode, 'id'>>) => void) | Partial<Omit<DiagramNode, 'id'>>
+type NodeIdFrom<N> = N extends infer L extends string ? L | ExistingNodes : ExistingNodes
 
-export type Patches = {
+type ExistingEdges =
+  | 'edge1'
+  | 'edge2'
+
+type UpdatableEdge<Node> = Omit<DiagramEdge, 'id' | 'source' | 'target'> & {
+  id: LiteralUnion<ExistingEdges, string>
+  source: Node
+  target: Node
+}
+
+type EdgeUpdater<Node> =
+  | ((draft: WritableDraft<UpdatableEdge<Node>>) => void)
+  | Partial<UpdatableEdge<Node>>
+  | undefined
+  | null
+
+export type Patches<N, E> = {
   view?: Partial<WithoutNodesEdges> | ((draft: WritableDraft<WithoutNodesEdges>) => void)
   nodes?:
     & {
-      [Id in ExistingNodes]?: NodeUpdater | undefined | null
+      [Id in ExistingNodes]?: NodeUpdater
     }
     & {
-      // dprint-ignore
-      [Id: string]: NodeUpdater | undefined | null
+      [Id in N & string]?: NodeUpdater | undefined | null
     }
-}
 
-export type NodeIds = LiteralUnion<ExistingNodes, string>
+  edges?:
+    & {
+      [Id in ExistingEdges]?: EdgeUpdater<NodeIdFrom<N>>
+    }
+    & {
+      [Id in E & string]?: EdgeUpdater<NodeIdFrom<N>>
+    }
+  // & {
+  //   [Id in E & EdgeIds<ExistingNodes | NoInfer<N> & string>]?: EdgeUpdater<ExistingNodes | NoInfer<N>>
+  //   // dprint-ignore
+  //   // Id extends EdgeIds<NodeIdFrom<N>>
+  //   //  ? EdgeUpdater<ExistingNodes | NoInfer<N> & string>
+  //   //  : never
+  // }
+}
 
 function patch<A>(obj: A, patcher?: ((draft: WritableDraft<NoInfer<A>>) => void) | Partial<NoInfer<A>>): A {
   if (!patcher) {
@@ -162,15 +203,15 @@ function patch<A>(obj: A, patcher?: ((draft: WritableDraft<NoInfer<A>>) => void)
 
 /**
  * Helper to get a fixture with manual layout snapshot, and auto layouted view.
- * It takes snapshot from `index-snapshot.json` as base, applies provided patches
+ * It takes {@link indexSnapshot} as base, applies provided patches
  * to return as auto-layouted.
  *
- * Patcher can modify view properties, and nodes (by id).
+ * Patcher can modify view properties, nodes and edges by their ids.
  *
- * Nodes can be modified, removed (by setting to null/undefined), or added (by using new id).
+ * Nodes/Edges can be modified, removed (by setting to null/undefined), or added (by using new key).
  *
  * @example
- * const { snapshot, layouted } = generateView({
+ * const { snapshot, layouted } = prepareFixtures({
  *   nodes: {
  *     // Merge changes to the node
  *     'customer': {
@@ -185,10 +226,37 @@ function patch<A>(obj: A, patcher?: ((draft: WritableDraft<NoInfer<A>>) => void)
  *    // Add new node to layouted View
  *    'another': d => {
  *      d.title = 'Another Node'
- *    },
+ *   },
+ *   edges: {
+ *     // Merge changes to existing edge
+ *     'edge1: customer to frontend': d => {
+ *        d.source = 'another'
+ *     },
+ *     // Delete existing edge
+ *    'edge2: frontend to api': null,
+ *     // Add new edge (TS will check source/target ids)
+ *     'customer -> another': {
+ *       label: 'New Edge',
+ *       source: 'customer',
+ *       target: 'another',
+ *     }
+ *   }
+ * }
+
  * })
  */
-export function generateView<A extends Patches>(patcher?: A) {
+export function prepareFixtures<const N, E>(patcher?: Patches<N, E>): {
+  snapshot: ViewManualLayoutSnapshot
+  snapshotNodes: Record<ExistingNodes, DiagramNode>
+  snapshotEdges: Record<ExistingEdges, DiagramEdge>
+  layouted: LayoutedElementView
+  layoutedNodes: {
+    [Id in ExistingNodes | N & string]: DiagramNode
+  }
+  layoutedEdges: {
+    [Id in ExistingEdges | E & string]: DiagramEdge
+  }
+} {
   const snapshot = structuredClone(indexSnapshot) as unknown as ViewManualLayoutSnapshot<'element'>
 
   let layouted = {
@@ -204,11 +272,11 @@ export function generateView<A extends Patches>(patcher?: A) {
     }
     layouted.nodes = pipe(
       layouted.nodes,
-      filter(n => !(n.id in patchNodes) || isTruthy(patchNodes[n.id])),
+      filter(n => !(n.id in patchNodes) || isTruthy(patchNodes[n.id as ExistingNodes])),
       map(n => {
-        const nodePatcher = patchNodes[n.id]
+        const nodePatcher = patchNodes[n.id as ExistingNodes]
         if (nodePatcher) {
-          delete patchNodes[n.id]
+          delete patchNodes[n.id as ExistingNodes]
           return patch(n, nodePatcher)
         }
         return n
@@ -241,8 +309,53 @@ export function generateView<A extends Patches>(patcher?: A) {
     }
   }
 
-  return {
-    snapshot: snapshot as ViewManualLayoutSnapshot,
-    layouted: layouted as LayoutedElementView,
+  if (patcher?.edges) {
+    const patchEdges = {
+      ...patcher.edges,
+    }
+    layouted.edges = pipe(
+      layouted.edges,
+      filter(n => !(n.id in patchEdges) || isTruthy(patchEdges[n.id as ExistingEdges])),
+      map(n => {
+        const edgePatcher = patchEdges[n.id as ExistingEdges]
+        if (edgePatcher) {
+          delete patchEdges[n.id as ExistingEdges]
+          return patch(n, edgePatcher as any)
+        }
+        return n
+      }),
+    )
+    // Add any remaining edges in patchEdges that were not in the original snapshot
+    for (const [id, patcher] of Object.entries(patchEdges)) {
+      if (isTruthy(patcher)) {
+        const baseEdge: DiagramEdge = {
+          id: id as EdgeId,
+          parent: null,
+          source: 'customer' as NodeId,
+          target: 'saas' as NodeId,
+          label: `New Edge: ${id}`,
+          labelBBox: { x: 10, y: 20, width: 100, height: 200 },
+          technology: null,
+          description: null,
+          color: 'primary',
+          line: 'solid',
+          points: [
+            [0, 0],
+            [100, 100],
+          ],
+          relations: [],
+        }
+        layouted.edges.push(patch(baseEdge, patcher as any))
+      }
+    }
   }
+
+  return {
+    snapshot,
+    snapshotNodes: indexBy(snapshot.nodes, n => n.id),
+    snapshotEdges: indexBy(snapshot.edges, e => e.id),
+    layouted,
+    layoutedNodes: indexBy(layouted.nodes, n => n.id) as any,
+    layoutedEdges: indexBy(layouted.edges, e => e.id) as any,
+  } as any
 }

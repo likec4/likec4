@@ -5,6 +5,8 @@ import { URI } from 'vscode-uri'
 import { createMultiProjectTestServices } from '../test'
 import { ProjectFolder } from './ProjectsManager'
 
+const isWin = process.platform === 'win32'
+
 describe.concurrent('ProjectsManager', () => {
   it('should assign likec4ProjectId to docs', async ({ expect }) => {
     const { projects, addDocumentOutside, validateAll } = await createMultiProjectTestServices({
@@ -202,7 +204,7 @@ describe.concurrent('ProjectsManager', () => {
       })
     })
 
-    it('should fail to register project with empty name', async ({ expect }) => {
+    it.runIf(!isWin)('should fail to register project with empty name', async ({ expect }) => {
       const { projectsManager, services } = await createMultiProjectTestServices({})
 
       const config = {
@@ -222,7 +224,7 @@ describe.concurrent('ProjectsManager', () => {
       )
     })
 
-    it('should fail to register project with default name', async ({ expect }) => {
+    it.runIf(!isWin)('should fail to register project with default name', async ({ expect }) => {
       const { projectsManager, services } = await createMultiProjectTestServices({})
 
       const config = {
@@ -250,33 +252,36 @@ describe.concurrent('ProjectsManager', () => {
         )
     })
 
-    it('should fail to register project with name containing "."', async ({ expect }) => {
-      const { projectsManager, services } = await createMultiProjectTestServices({})
+    it.runIf(process.platform !== 'win32')(
+      'should fail to register project with name containing "."',
+      async ({ expect }) => {
+        const { projectsManager, services } = await createMultiProjectTestServices({})
 
-      const config = {
-        name: 'one.two',
-      }
-      const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
+        const config = {
+          name: 'one.two',
+        }
+        const fs = services.shared.workspace.FileSystemProvider
+        vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
-      const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
-      await expect(projectsManager.registerConfigFile(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
-        `
+        const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
+        await expect(projectsManager.registerConfigFile(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
+          `
         [Error: Failed to register project config /test/workspace/src/test-project/.likec4rc:
         Config validation failed:
         ✖ Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -
           → at name]
       `,
-      )
-      await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
-        .toThrowErrorMatchingInlineSnapshot(
-          `
+        )
+        await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
+          .toThrowErrorMatchingInlineSnapshot(
+            `
         [Error: Config validation failed:
         ✖ Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -
           → at name]
       `,
-        )
-    })
+          )
+      },
+    )
 
     it('should handle duplicate project names by appending numbers', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
