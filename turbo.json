@@ -33,6 +33,14 @@
         "^generate",
         "generate"
       ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.spec.ts",
+        "!**/*.test-d.ts",
+        "!**/__tests__/**",
+        "!**/__snapshots__/**",
+        "!**/__fixtures__/**"
+      ],
       "outputs": [
         "dist/**"
       ],

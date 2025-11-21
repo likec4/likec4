@@ -29,6 +29,14 @@
         "@likec4/log#build",
         "@likec4/config#build"
       ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.spec.ts",
+        "!**/*.test-d.ts",
+        "!**/__tests__/**",
+        "!**/__snapshots__/**",
+        "!**/__fixtures__/**"
+      ],
       "outputs": [
         "dist/**"
       ],
