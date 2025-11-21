@@ -1,27 +1,20 @@
+import { Scheme } from '@likec4/language-server/likec4lib'
 import * as BuildIn from '@likec4/language-server/likec4lib'
+import { createSingletonComposable, useDisposable } from 'reactive-vscode'
 import vscode from 'vscode'
 
-export class BuiltInFileSystemProvider implements vscode.FileSystemProvider {
-  static register(context: vscode.ExtensionContext) {
-    context.subscriptions.push(
-      vscode.workspace.registerFileSystemProvider(BuildIn.Scheme, new BuiltInFileSystemProvider(), {
-        isReadonly: true,
-        isCaseSensitive: false
-      })
-    )
-  }
-
-  stat(uri: vscode.Uri): vscode.FileStat {
+class BuiltInFileSystemProvider implements vscode.FileSystemProvider {
+  stat(_uri: vscode.Uri): vscode.FileStat {
     const date = Date.now()
     return {
       ctime: date,
       mtime: date,
       size: Buffer.from(BuildIn.Content).length,
-      type: vscode.FileType.File
+      type: vscode.FileType.File,
     }
   }
 
-  readFile(uri: vscode.Uri): Uint8Array {
+  readFile(_uri: vscode.Uri): Uint8Array {
     // We could return different libraries based on the URI
     // We have only one, so we always return the same
     return new Uint8Array(Buffer.from(BuildIn.Content))
@@ -34,7 +27,7 @@ export class BuiltInFileSystemProvider implements vscode.FileSystemProvider {
 
   watch() {
     return {
-      dispose: () => {}
+      dispose: () => {},
     }
   }
 
@@ -58,3 +51,10 @@ export class BuiltInFileSystemProvider implements vscode.FileSystemProvider {
     throw vscode.FileSystemError.NoPermissions()
   }
 }
+
+export const registerBuiltinFileSystem = createSingletonComposable(() => {
+  useDisposable(vscode.workspace.registerFileSystemProvider(Scheme, new BuiltInFileSystemProvider(), {
+    isReadonly: true,
+    isCaseSensitive: false,
+  }))
+})

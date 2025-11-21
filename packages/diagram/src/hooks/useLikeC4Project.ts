@@ -53,12 +53,29 @@ export function useHasProjects(): boolean {
 }
 
 /**
- * @returns The current project id.
+ * @returns Current project id, as provided by LikeC4Model
  */
 export function useLikeC4ProjectId(): ProjectId {
   const ctx = useContext(LikeC4ModelContext)
   if (!ctx) {
-    throw new Error('No LikeC4ModelContext found')
+    throw new Error('No LikeC4ModelProvider found')
   }
   return ctx.projectId as ProjectId
+}
+
+/**
+ * Returns current LikeC4 project.
+ * Requires both LikeC4ModelProvider and LikeC4ProjectsProvider in the tree.*
+ */
+export function useLikeC4Project(): LikeC4Project {
+  const projectId = useLikeC4ProjectId()
+  const projectsCtx = useContext(LikeC4ProjectsContext)
+  if (!projectsCtx) {
+    throw new Error('No LikeC4ProjectsProvider found')
+  }
+  const project = projectsCtx.projects.find(p => p.id === projectId)
+  if (!project) {
+    throw new Error(`Project with id '${projectId}' not found in LikeC4ProjectsProvider`)
+  }
+  return project
 }

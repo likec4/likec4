@@ -40,9 +40,9 @@ export const card = css({
   border: 'none',
   backgroundImage: `
     linear-gradient(180deg,
-      color-mix(in srgb, var(--likec4-palette-fill) 60%, transparent),
-      color-mix(in srgb, var(--likec4-palette-fill) 20%, transparent) 8px,
-      color-mix(in srgb, var(--likec4-palette-fill) 14%, transparent) 20px,
+      color-mix(in oklab, var(--likec4-palette-fill) 60%, transparent),
+      color-mix(in oklab, var(--likec4-palette-fill) 20%, transparent) 8px,
+      color-mix(in oklab, var(--likec4-palette-fill) 14%, transparent) 20px,
       transparent 80px
     ),
     linear-gradient(180deg, var(--likec4-palette-fill), var(--likec4-palette-fill) 4px, transparent 4px)

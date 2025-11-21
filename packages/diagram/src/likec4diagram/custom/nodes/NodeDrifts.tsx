@@ -3,15 +3,21 @@ import { Notification, Text } from '@mantine/core'
 import { NodeToolbar, Position } from '@xyflow/react'
 import type { Types } from '../../types'
 
-type ElementNodeDrifts = Types.NodeProps<'element' | 'deployment'>
+export type NodeDriftsProps = {
+  nodeProps: Types.NodeProps
+  position?: 'top' | 'bottom'
+}
 
-export function ElementNodeDrifts(
-  { data }: ElementNodeDrifts,
-) {
+export function NodeDrifts({
+  nodeProps: { data },
+  position = 'bottom',
+}: NodeDriftsProps) {
   const drifts = data.drifts
   if (!drifts || drifts.length === 0) {
     return null
   }
+
+  const toolbarPosition = position === 'top' ? Position.Top : Position.Bottom
 
   return (
     <Box
@@ -31,7 +37,7 @@ export function ElementNodeDrifts(
         },
       }}
     >
-      <NodeToolbar isVisible={data.hovered === true} align="start" position={Position.Bottom}>
+      <NodeToolbar isVisible={data.hovered === true} align="start" position={toolbarPosition}>
         <Notification
           color="orange"
           withBorder={false}

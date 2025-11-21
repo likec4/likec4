@@ -21,25 +21,26 @@ import type {
 } from '@likec4/core/types'
 import type { EdgeChange, NodeChange, Rect, Viewport } from '@xyflow/system'
 import type { MouseEvent } from 'react'
+import { isTruthy } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import {
   assertEvent,
   setup,
 } from 'xstate'
-import type { EnabledFeatures, FeatureName } from '../../context/DiagramFeatures'
+import type { EnabledFeatures, TogglableFeature } from '../../context/DiagramFeatures'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
-import type { OpenSourceParams, ViewPadding } from '../../LikeC4Diagram.props'
+import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import { searchActorLogic } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
+import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 
 export interface NavigationHistory {
   history: ReadonlyArray<{
     viewId: ViewId
-    fromNode: NodeId | null
     viewport: Viewport
   }>
   currentIndex: number
@@ -52,11 +53,13 @@ export interface Input {
   pannable: boolean
   nodesDraggable: boolean
   nodesSelectable: boolean
-  fitViewPadding: ViewPadding
+  fitViewPadding: ViewPaddings
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
 }
 
-export type ToggledFeatures = Partial<EnabledFeatures>
+export type ToggledFeatures = {
+  [P in `enable${TogglableFeature}`]?: boolean
+}
 
 export interface Context extends Input {
   xynodes: Types.Node[]
@@ -70,6 +73,17 @@ export interface Context extends Input {
   }
   viewport: Viewport
   viewportChangedManually: boolean
+  /**
+   * Viewport before entering focus mode, walkthrough or printing
+   */
+  viewportBefore: null | {
+    wasChangedManually: boolean
+    value: Viewport
+  }
+
+  viewportOnManualLayout: null | Viewport
+  viewportOnAutoLayout: null | Viewport
+
   lastOnNavigate: null | {
     fromView: ViewId
     toView: ViewId
@@ -90,9 +104,6 @@ export interface Context extends Input {
     // in screen coordinates
     nodeRectScreen?: Rect | null
   }
-  viewportBeforeFocus: null | Viewport
-  viewportOnManualLayout: null | Viewport
-  viewportOnAutoLayout: null | Viewport
   xyflow: XYFlowInstance | null
 
   // If Dynamic View
@@ -105,6 +116,7 @@ export interface Context extends Input {
 
 export type Events =
   | HotKeyEvent
+  | MediaPrintEvent
   | { type: 'xyflow.init'; instance: XYFlowInstance }
   | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<Types.Node>[] }
   | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<Types.Edge>[] }
@@ -119,12 +131,13 @@ export type Events =
   | { type: 'xyflow.nodeMouseLeave'; node: Types.Node }
   | { type: 'xyflow.edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
   | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
+  | { type: 'xyflow.fitDiagram'; duration?: number; bounds?: BBox }
+  | { type: 'xyflow.setViewport'; duration?: number; viewport: Viewport }
   | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
   | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant'>> }
   | { type: 'update.features'; features: EnabledFeatures }
-  | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | ({ type: 'open.source' } & OpenSourceParams)
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; params: { edgeId: EdgeId } | { source: Fqn; target: Fqn } }
@@ -146,9 +159,10 @@ export type Events =
   | { type: 'notations.unhighlight' }
   | { type: 'tag.highlight'; tag: string }
   | { type: 'tag.unhighlight' }
-  | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
+  | { type: 'toggle.feature'; feature: TogglableFeature; forceValue?: boolean }
   | { type: 'emit.onChange'; change: ViewChange }
   | { type: 'emit.onLayoutTypeChange'; layoutType: LayoutType }
+  | { type: 'destroy' }
 
 export type EmittedEvents =
   | { type: 'initialized'; instance: XYFlowInstance }
@@ -167,9 +181,43 @@ export type EmittedEvents =
 
 export type ActionArg = { context: Context; event: Events }
 
-const isReadOnly = (context: Context) =>
-  (context.features.enableReadOnly || context.toggledFeatures.enableReadOnly === true) &&
-  (context.view._type !== 'dynamic' || context.dynamicViewVariant !== 'sequence')
+const deriveToggledFeatures = (context: Context): Required<ToggledFeatures> => {
+  let toggledFeatures = context.toggledFeatures
+
+  const hasActiveWalkthrough = isTruthy(context.activeWalkthrough)
+
+  const enableCompareWithLatest = context.features.enableCompareWithLatest
+    && (toggledFeatures.enableCompareWithLatest ?? false)
+    && isTruthy(context.view._layout)
+    // Compare with latest is disabled during active walkthrough
+    && !hasActiveWalkthrough
+
+  /**
+   * Readonly mode is enabled when:
+   * - Global `features.enableReadOnly` is true (even if toggled off at runtime)
+   * OR
+   * - Runtime feature `ReadOnly` is toggled on (default is off)
+   * OR
+   * - This is a dynamic view in 'sequence' variant
+   * OR
+   * - There is an active walkthrough
+   */
+  const enableReadOnly = context.features.enableReadOnly
+    || (toggledFeatures.enableReadOnly ?? false)
+    // Active walkthrough forces readonly
+    || hasActiveWalkthrough
+    // if dynamic view display mode is sequence, enable readonly
+    || (context.dynamicViewVariant === 'sequence' && context.view._type === 'dynamic')
+    // Compare with latest enforces readonly
+    || (enableCompareWithLatest && context.view._layout === 'auto')
+
+  return {
+    enableCompareWithLatest,
+    enableReadOnly,
+  }
+}
+
+const isReadOnly = (context: Context) => deriveToggledFeatures(context).enableReadOnly
 
 export const machine = setup({
   types: {
@@ -180,6 +228,7 @@ export const machine = setup({
       hotkey: 'hotkeyActorLogic'
       overlays: 'overlaysActorLogic'
       search: 'searchActorLogic'
+      mediaPrint: 'mediaPrintActorLogic'
     },
     events: {} as Events,
     emitted: {} as EmittedEvents,
@@ -189,19 +238,22 @@ export const machine = setup({
     hotkeyActorLogic,
     overlaysActorLogic,
     searchActorLogic,
+    mediaPrintActorLogic,
   },
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
     'enabled: FitView': ({ context }) => context.features.enableFitView,
-    'enabled: FocusMode': ({ context }) =>
-      ((context.toggledFeatures.enableFocusMode ?? context.features.enableFocusMode) === true) &&
-      isReadOnly(context),
+    'enabled: FocusMode': ({ context }) => context.features.enableFocusMode && isReadOnly(context),
     'enabled: Readonly': ({ context }) => isReadOnly(context),
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'enabled: Search': ({ context }) => context.features.enableSearch,
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
-    'enabled: DynamicViewWalkthrough': ({ context }) =>
-      isReadOnly(context) && context.features.enableDynamicViewWalkthrough,
+    'enabled: OpenSource': ({ context }) => context.features.enableVscode,
+    'enabled: DynamicViewWalkthrough': ({ context }) => context.features.enableDynamicViewWalkthrough,
+    'enabled: Overlays': ({ context }) =>
+      context.features.enableElementDetails ||
+      context.features.enableRelationshipBrowser ||
+      context.features.enableRelationshipDetails,
     'not readonly': ({ context }) => !isReadOnly(context),
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is another view': ({ context, event }) => {
@@ -240,3 +292,11 @@ export const machine = setup({
     },
   },
 })
+
+export const targetState = {
+  idle: '#idle',
+  focused: '#focused',
+  walkthrough: '#walkthrough',
+  printing: '#printing',
+  navigating: '#navigating',
+}

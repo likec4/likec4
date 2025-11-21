@@ -19,3 +19,8 @@ export function performanceMark() {
     },
   }
 }
+
+export function isLikeC4Source(path: string) {
+  const p = path.toLowerCase()
+  return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
+}

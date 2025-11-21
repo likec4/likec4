@@ -62,8 +62,3 @@ export {
   normalizeViewPath,
   VIEW_FOLDERS_SEPARATOR,
 } from './utils'
-
-export {
-  applyLayoutDriftReasons,
-  applyManualLayout,
-} from './view/apply-manual-layout'

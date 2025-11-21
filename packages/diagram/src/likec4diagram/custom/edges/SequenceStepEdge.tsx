@@ -3,10 +3,11 @@ import { EdgeActionButton, EdgeContainer, EdgeLabel, EdgeLabelContainer, EdgePat
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
+import { EdgeDrifts } from './EdgeDrifts'
 
 const LABEL_OFFSET = 16
 export function SequenceStepEdge(props: Types.EdgeProps<'seq-step'>) {
-  const { enableNavigateTo } = useEnabledFeatures()
+  const { enableNavigateTo, enableCompareWithLatest } = useEnabledFeatures()
   const diagram = useDiagram()
   const { navigateTo } = props.data
   const isSelfLoop = props.source === props.target
@@ -43,6 +44,7 @@ export function SequenceStepEdge(props: Types.EdgeProps<'seq-step'>) {
         edgeProps={props}
         svgPath={path}
       />
+      {enableCompareWithLatest && <EdgeDrifts edgeProps={props} svgPath={path} />}
       <EdgeLabelContainer
         edgeProps={props}
         labelPosition={{

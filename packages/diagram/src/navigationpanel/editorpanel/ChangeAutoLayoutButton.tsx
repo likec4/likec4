@@ -19,6 +19,7 @@ import {
 } from '@mantine/hooks'
 import { useDebouncedCallback } from '@react-hookz/web'
 import { IconLayoutDashboard } from '@tabler/icons-react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import { forwardRef, useState } from 'react'
 import type { DiagramContext } from '../../hooks/useDiagram'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
@@ -49,7 +50,7 @@ export const ChangeAutoLayoutButton = () => {
     setControlsRefs(controlsRefs)
   }
 
-  const setAutoLayout = (direction: AutoLayoutDirection) => (event: React.MouseEvent<HTMLButtonElement>) => {
+  const setAutoLayout = (direction: AutoLayoutDirection) => (event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
     diagram.fitDiagram()
     diagram.triggerChange({

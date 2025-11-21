@@ -100,6 +100,10 @@ export function diagramToXY(opts: {
         width: node.width,
         height: node.height,
       },
+      measured: {
+        width: node.width,
+        height: node.height,
+      },
       initialWidth: node.width,
       initialHeight: node.height,
       hidden: node.kind !== GroupElementKind && !visiblePredicate(node),
@@ -120,6 +124,7 @@ export function diagramToXY(opts: {
       tags: node.tags ?? null,
       x: node.x,
       y: node.y,
+      drifts: node.drifts ?? null,
     } satisfies Types.CompoundNodeData
 
     const leafNodeData = {
@@ -127,7 +132,7 @@ export function diagramToXY(opts: {
       id: node.id,
       title: node.title,
       technology: node.technology ?? null,
-      description: RichText.from(node.description),
+      description: node.description ?? null,
       height: node.height,
       width: node.width,
       level: node.level,
@@ -139,6 +144,7 @@ export function diagramToXY(opts: {
       x: node.x,
       y: node.y,
       isMultiple: node.style?.multiple ?? false,
+      drifts: node.drifts ?? null,
     } satisfies Types.LeafNodeData
 
     if (node.kind === GroupElementKind) {
@@ -174,7 +180,6 @@ export function diagramToXY(opts: {
               ...navigateTo,
               deploymentFqn,
               modelFqn,
-              drifts,
             },
           } satisfies Types.CompoundDeploymentNode,
         )
@@ -190,7 +195,6 @@ export function diagramToXY(opts: {
               ...compoundData,
               ...navigateTo,
               modelFqn,
-              drifts,
             },
           } satisfies Types.CompoundElementNode,
         )
@@ -206,7 +210,6 @@ export function diagramToXY(opts: {
               ...navigateTo,
               deploymentFqn,
               modelFqn,
-              drifts,
             },
           } satisfies Types.DeploymentElementNode,
         )
@@ -222,7 +225,6 @@ export function diagramToXY(opts: {
               ...leafNodeData,
               ...navigateTo,
               modelFqn,
-              drifts,
             },
           } satisfies Types.ElementNode,
         )
@@ -251,7 +253,7 @@ export function diagramToXY(opts: {
         id: edge.id,
         label: edge.label,
         technology: edge.technology,
-        notes: RichText.from(edge.notes),
+        notes: edge.notes ?? null,
         navigateTo: edge.navigateTo,
         controlPoints: edge.controlPoints ?? null,
         labelBBox: edge.labelBBox ?? null,

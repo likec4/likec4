@@ -70,6 +70,10 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           const tag = tagSpec.tag.name as c4.Tag
           const astPath = this.getAstNodePath(tagSpec.tag)
           const color = tagSpec.color && this.parseColorLiteral(tagSpec.color)
+          if (tag in c4Specification.tags) {
+            logger.warn(`Tag {tag} is already defined, skipping duplicate`, { tag })
+            continue
+          }
           if (isTruthy(tag)) {
             c4Specification.tags[tag] = {
               astPath,

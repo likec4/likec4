@@ -7,8 +7,8 @@ export interface RestartCommandDeps {
 }
 
 export function registerRestartCommand({ sendTelemetry, restartServer }: RestartCommandDeps) {
-  useCommand(commands.restart, () => {
+  useCommand(commands.restart, async () => {
     sendTelemetry(commands.restart)
-    void restartServer()
+    await restartServer()
   })
 }

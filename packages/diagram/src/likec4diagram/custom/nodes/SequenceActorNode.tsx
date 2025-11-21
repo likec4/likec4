@@ -7,6 +7,7 @@ import { ElementData, ElementNodeContainer, ElementShape } from '../../../base-p
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import type { Types } from '../../types'
 import { ElementActions } from './ElementActions'
+import { NodeDrifts } from './NodeDrifts'
 import { ElementDetailsButtonWithHandler } from './nodes'
 
 const positionMap = {
@@ -69,7 +70,7 @@ const hasModelFqn = <D extends Types.SequenceActorNodeData>(data: D): data is Se
   isTruthy(data.modelFqn)
 
 export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
-  const { enableElementDetails } = useEnabledFeatures()
+  const { enableElementDetails, enableCompareWithLatest } = useEnabledFeatures()
   const data = props.data
   const {
     id,
@@ -105,6 +106,7 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
         }}
       />
       <ElementNodeContainer nodeProps={props}>
+        {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
         <ElementShape {...props} />
         <ElementData {...props} />
         {hasModelFqn(data) && (
@@ -131,7 +133,7 @@ export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
         borderWidth: 1,
         '--_color': {
           base: 'var(--likec4-palette-stroke)',
-          _dark: '[color-mix(in srgb, var(--likec4-palette-hiContrast) 40%, var(--likec4-palette-fill))]',
+          _dark: '[color-mix(in oklab, var(--likec4-palette-hiContrast) 40%, var(--likec4-palette-fill))]',
         },
         borderColor: '[var(--_color)/30]',
         backgroundColor: 'var(--likec4-palette-fill)/15',

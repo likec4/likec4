@@ -71,6 +71,15 @@ export type OverrideReactFlowProps = Pick<
 export type PaddingUnit = 'px' | '%'
 export type PaddingWithUnit = `${number}${PaddingUnit}` | number
 
+export type ViewPaddings = {
+  top?: PaddingWithUnit
+  right?: PaddingWithUnit
+  bottom?: PaddingWithUnit
+  left?: PaddingWithUnit
+  x?: PaddingWithUnit
+  y?: PaddingWithUnit
+}
+
 /**
  * Padding around the diagram
  *
@@ -87,14 +96,7 @@ export type PaddingWithUnit = `${number}${PaddingUnit}` | number
  *   y: '16px',
  * }
  */
-export type ViewPadding = PaddingWithUnit | {
-  top?: PaddingWithUnit
-  right?: PaddingWithUnit
-  bottom?: PaddingWithUnit
-  left?: PaddingWithUnit
-  x?: PaddingWithUnit
-  y?: PaddingWithUnit
-}
+export type ViewPadding = PaddingWithUnit | ViewPaddings
 
 export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   view: LayoutedView<A>

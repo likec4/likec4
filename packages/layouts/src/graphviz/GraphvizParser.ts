@@ -6,6 +6,7 @@ import {
   type ComputedView,
   type DiagramEdge,
   type EdgeId,
+  type LayoutedDynamicView,
   type LayoutedView,
   type Point,
   _layout,
@@ -14,6 +15,7 @@ import {
 import { invariant } from '@likec4/core/utils'
 import { logger } from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
+import type { Writable } from 'type-fest'
 import { EDGE_LABEL_MAX_CHARS, EDGE_LABEL_MAX_LINES, wrap } from './dot-labels'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
 import { inchToPx, pointToPx } from './utils'
@@ -166,10 +168,10 @@ function parseGraphvizEdge(
   }
 }
 
-export function parseGraphvizJson<A extends Any, V extends ComputedView<A>>(
+export function parseGraphvizJson(
   graphvizJson: GraphvizJson,
-  computedView: V,
-): Extract<LayoutedView<A>, { _type: V['_type'] }> {
+  computedView: ComputedView,
+): LayoutedView {
   const page = parseBB(graphvizJson.bb)
   const {
     nodes: computedNodes,
@@ -179,7 +181,7 @@ export function parseGraphvizJson<A extends Any, V extends ComputedView<A>>(
     ...view
   } = computedView
 
-  let diagram: Extract<LayoutedView<A>, { [_type]: V['_type'] }>
+  let diagram: LayoutedView
   if (view._type === 'dynamic') {
     diagram = {
       ...view,
@@ -194,7 +196,7 @@ export function parseGraphvizJson<A extends Any, V extends ComputedView<A>>(
       bounds: page,
       nodes: [],
       edges: [],
-    }
+    } satisfies LayoutedDynamicView
   } else {
     diagram = {
       ...view,
@@ -206,7 +208,7 @@ export function parseGraphvizJson<A extends Any, V extends ComputedView<A>>(
   }
   // If the view has manual layout, we must indicate that current one is auto-layouted
   if (hasManualLayout) {
-    Object.assign(diagram, { [_layout]: 'auto' } satisfies Partial<LayoutedView<A>>)
+    ;(diagram as Writable<LayoutedView>)[_layout] = 'auto'
   }
 
   const graphvizObjects = graphvizJson.objects ?? []

@@ -1,24 +1,128 @@
-import type { HttpBindings } from '@hono/node-server'
+import type { HttpBindings, ServerType } from '@hono/node-server'
 import { serve } from '@hono/node-server'
-import { promiseNextTick } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { toFetchResponse, toReqRes } from 'fetch-to-node'
 import { Hono } from 'hono'
 import type { AsyncDisposable } from 'langium'
-import type { Server } from 'node:http'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer } from '../interfaces'
+import type { LikeC4MCPServerFactory } from '../MCPServerFactory'
 import { logger } from '../utils'
 
 type Bindings = HttpBindings & {
   /* ... */
 }
 
+function createHonoApp(factory: LikeC4MCPServerFactory) {
+  return new Hono<{ Bindings: Bindings }>()
+    .post('/mcp', async (c) => {
+      const { req, res } = toReqRes(c.req.raw)
+
+      const mcp = factory.create()
+
+      try {
+        const transport: StreamableHTTPServerTransport = new StreamableHTTPServerTransport({
+          sessionIdGenerator: undefined,
+        })
+
+        // Added for extra debuggability
+        transport.onerror = (err) => {
+          logger.error(loggable(err))
+        }
+
+        await mcp.connect(transport)
+
+        await transport.handleRequest(req, res, await c.req.json())
+
+        res.on('close', async () => {
+          await transport.close()
+          await mcp.close()
+        })
+
+        return toFetchResponse(res)
+      } catch (e) {
+        logger.error(loggable(e))
+        return c.json(
+          {
+            jsonrpc: '2.0',
+            error: {
+              code: -32603,
+              message: 'Internal server error',
+            },
+            id: null,
+          },
+          { status: 500 },
+        )
+      }
+    })
+    .all('/mcp', async (c) => {
+      return c.json(
+        {
+          jsonrpc: '2.0',
+          error: {
+            code: -32000,
+            message: 'Method not allowed.',
+          },
+          id: null,
+        },
+        { status: 405 },
+      )
+    })
+    .notFound((c) => {
+      logger.debug(`${c.req.method} ${c.req.url} not found`)
+      return c.json(
+        {
+          jsonrpc: '2.0',
+          error: {
+            code: -32000,
+            message: 'Method not found.',
+          },
+          id: null,
+        },
+        { status: 404 },
+      )
+    })
+    .onError((e, c) => {
+      logger.error(loggable(e))
+      return c.json(
+        {
+          jsonrpc: '2.0',
+          error: {
+            code: -32603,
+            message: 'Internal server error',
+          },
+          id: null,
+        },
+        { status: 500 },
+      )
+    })
+}
+
+function startServer(params: {
+  factory: LikeC4MCPServerFactory
+  port: number
+}): Promise<ServerType> {
+  return new Promise((resolve, reject) => {
+    const { factory, port } = params
+    const app = createHonoApp(factory)
+    const server = serve({
+      fetch: app.fetch,
+      hostname: '0.0.0.0',
+      port,
+    })
+      .prependOnceListener('error', reject)
+      .prependOnceListener('listening', () => {
+        server.removeListener('error', reject)
+        resolve(server.unref())
+      })
+  })
+}
+
 export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
   // Store transports by session ID to send notifications
-  private server: Server | undefined = undefined
+  private server: ServerType | undefined = undefined
 
   constructor(
     private services: LikeC4Services,
@@ -43,134 +147,25 @@ export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposab
   }
 
   async start(port = this._port): Promise<void> {
-    try {
-      if (this.server) {
-        if (this.port === port) {
-          return
-        }
-        await this.stop()
+    if (this.server) {
+      if (this.port === port) {
+        return
       }
-      logger.info('Starting MCP server on port {port}', { port })
-      this._port = port
-
-      await promiseNextTick()
-
-      const app = new Hono<{ Bindings: Bindings }>()
-        .post('/mcp', async (c) => {
-          const { req, res } = toReqRes(c.req.raw)
-
-          const server = this.services.mcp.ServerFactory.create()
-
-          try {
-            const transport: StreamableHTTPServerTransport = new StreamableHTTPServerTransport({
-              sessionIdGenerator: undefined,
-            })
-
-            // Added for extra debuggability
-            transport.onerror = (err) => {
-              logger.error(loggable(err))
-            }
-
-            await server.connect(transport)
-
-            await transport.handleRequest(req, res, await c.req.json())
-
-            res.on('close', async () => {
-              logger.debug('Request closed')
-              await transport.close()
-              await server.close()
-            })
-
-            return toFetchResponse(res)
-          } catch (e) {
-            logger.error(loggable(e))
-            return c.json(
-              {
-                jsonrpc: '2.0',
-                error: {
-                  code: -32603,
-                  message: 'Internal server error',
-                },
-                id: null,
-              },
-              { status: 500 },
-            )
-          }
-        })
-        .get('/mcp', async (c) => {
-          logger.debug('Received GET MCP request')
-          return c.json(
-            {
-              jsonrpc: '2.0',
-              error: {
-                code: -32000,
-                message: 'Method not allowed.',
-              },
-              id: null,
-            },
-            { status: 405 },
-          )
-        })
-        .delete('/mcp', async (c) => {
-          logger.debug('Received DELETE MCP request')
-          return c.json(
-            {
-              jsonrpc: '2.0',
-              error: {
-                code: -32000,
-                message: 'Method not allowed.',
-              },
-              id: null,
-            },
-            { status: 405 },
-          )
-        })
-        .notFound((c) => {
-          logger.debug(`${c.req.method} ${c.req.url} not found`)
-          return c.json(
-            {
-              jsonrpc: '2.0',
-              error: {
-                code: -32000,
-                message: 'Method not found.',
-              },
-              id: null,
-            },
-            { status: 404 },
-          )
-        })
-        .onError((e, c) => {
-          logger.error(loggable(e))
-          return c.json(
-            {
-              jsonrpc: '2.0',
-              error: {
-                code: -32603,
-                message: 'Internal server error',
-              },
-              id: null,
-            },
-            { status: 500 },
-          )
-        })
-
-      this.server = serve(
-        {
-          fetch: app.fetch,
-          hostname: '0.0.0.0',
-          port: this._port,
-        },
-        (info) => logger.info('MCP server ready at http://0.0.0.0:{port}/mcp', { port: info.port }),
-      ) as Server
-    } catch (err) {
-      logger.warn('Failed to start MCP server', { err })
-      return Promise.reject(err)
+      await this.stop()
     }
+    logger.info('Starting MCP server on port {port}', { port })
+    this._port = port
+    this.server = await startServer({
+      factory: this.services.mcp.ServerFactory,
+      port,
+    })
+    logger.info('MCP server ready at http://0.0.0.0:{port}/mcp', { port })
   }
 
   stop(): Promise<void> {
     const server = this.server
     if (!server) {
+      logger.info('MCP server is not running, nothing to stop')
       return Promise.resolve()
     }
     logger.info('Stopping MCP server')
@@ -179,8 +174,9 @@ export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposab
       server.close((err) => {
         if (err) {
           logger.error('Failed to stop MCP server', { err })
+        } else {
+          logger.info('MCP server stopped')
         }
-        logger.info('MCP server stopped')
         resolve()
       })
     })

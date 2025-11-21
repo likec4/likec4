@@ -81,10 +81,14 @@ export const outputSingleFile = {
 export const listen = {
   alias: 'l',
   type: 'string',
-  desc: isInsideContainer()
-    ? 'listen 0.0.0.0 by default in container'
-    : 'ip address of the network interface to listen on',
-  default: isInsideContainer() ? '0.0.0.0' : 'localhost',
+  ...(isInsideContainer()
+    ? {
+      desc: 'listen 0.0.0.0 by default in container',
+      default: '0.0.0.0',
+    }
+    : {
+      desc: 'ip address of the network interface to listen on',
+    }),
   nargs: 1,
 } as const satisfies Options
 

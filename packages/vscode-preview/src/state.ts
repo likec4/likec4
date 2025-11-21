@@ -5,19 +5,31 @@ import type {
   scalar,
 } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
-import { useQuery } from '@tanstack/react-query'
+import { useQueries, useQuery } from '@tanstack/react-query'
 import { atom, batched } from 'nanostores'
 import { useEffect, useMemo, useRef } from 'react'
 import { isDeepEqual } from 'remeda'
-import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '../protocol'
 import { queries, queryClient } from './queries'
-import { type VscodeState, getVscodeState, messenger, saveVscodeState } from './vscode'
+import { type VscodeState, ExtensionApi, getVscodeState, saveVscodeState } from './vscode'
 
 const vscodeState = getVscodeState()
 
 const $layoutType = atom('manual' as LayoutType)
 export function setLayoutType(layoutType: LayoutType) {
   $layoutType.set(layoutType)
+}
+
+/**
+ * Current view id
+ */
+export const $viewId = atom(vscodeState.viewId)
+export function useViewId() {
+  return useStore($viewId)
+}
+
+export const $projectId = atom(vscodeState.projectId)
+export function useProjectId() {
+  return useStore($projectId)
 }
 
 if (vscodeState.model) {
@@ -28,15 +40,16 @@ if (vscodeState.model) {
       updatedAt: vscodeState.updatedAt,
     },
   )
-}
-if (vscodeState.view) {
-  queryClient.setQueryData(
-    queries.fetchDiagramView(vscodeState.projectId, vscodeState.viewId, vscodeState.view._layout ?? 'manual').queryKey,
-    vscodeState.view,
-    {
-      updatedAt: vscodeState.updatedAt,
-    },
-  )
+  if (vscodeState.view) {
+    queryClient.setQueryData(
+      queries.fetchDiagramView(vscodeState.model.projectId, vscodeState.viewId, vscodeState.view._layout ?? 'manual')
+        .queryKey,
+      vscodeState.view,
+      {
+        updatedAt: vscodeState.updatedAt,
+      },
+    )
+  }
 }
 
 type VscodeAppState = Omit<VscodeState, 'viewId' | 'projectId' | 'layouted'>
@@ -64,19 +77,6 @@ export const useVscodeAppState = () => {
   ] as const
 }
 
-/**
- * Current view id
- */
-export const $viewId = atom(vscodeState.viewId)
-export function useViewId() {
-  return useStore($viewId)
-}
-
-export const $projectId = atom(vscodeState.projectId)
-export function useProjectId() {
-  return useStore($projectId)
-}
-
 export const changeViewId = (viewId: scalar.ViewId, projectId?: scalar.ProjectId) => {
   projectId = projectId ?? $projectId.get()
   saveVscodeState({ viewId, projectId })
@@ -89,17 +89,17 @@ export const changeViewId = (viewId: scalar.ViewId, projectId?: scalar.ProjectId
   }
 }
 
-messenger.onNotification(OnOpenView, ({ viewId, projectId }) => {
-  changeViewId(viewId, projectId)
-})
-
 const $lastClickedNode = atom<DiagramNode | null>(null)
 
 export const setLastClickedNode = (node?: DiagramNode) => {
   $lastClickedNode.set(node ?? null)
 }
 
-messenger.onRequest(GetLastClickedNode, () => {
+ExtensionApi.onOpenViewNotification(({ viewId, projectId }) => {
+  changeViewId(viewId, projectId)
+})
+
+ExtensionApi.onGetLastClickedNodeRequest(() => {
   const node = $lastClickedNode.get()
   return {
     element: node?.modelRef ?? null,
@@ -107,9 +107,25 @@ messenger.onRequest(GetLastClickedNode, () => {
   }
 })
 
-messenger.onNotification(BroadcastModelUpdate, () => {
-  void queryClient.invalidateQueries({
-    queryKey: [$projectId.get()],
+ExtensionApi.onModelUpdateNotification(() => {
+  // Then fetch fresh data
+  queryClient.refetchQueries({
+    queryKey: queries.fetchComputedModel($projectId.get()).queryKey,
+    stale: true,
+    type: 'active',
+  })
+  // Invalidate inactive diagram views,
+  // so they will be refetched when accessed next time
+  queryClient.invalidateQueries({
+    type: 'inactive',
+    refetchType: 'none',
+    queryKey: [$projectId.get(), 'diagram'],
+  })
+  // Refetch active diagram views
+  queryClient.refetchQueries({
+    type: 'active',
+    stale: true,
+    queryKey: [$projectId.get(), 'diagram'],
   })
 })
 
@@ -120,9 +136,9 @@ const projectAndView = batched(
 
 export function useComputedModel() {
   const { projectId } = useStore(projectAndView)
-  const { data: model, error } = useQuery({
-    ...queries.fetchComputedModel(projectId),
-  })
+  const { data: model, error } = useQuery(
+    queries.fetchComputedModel(projectId),
+  )
 
   useEffect(() => {
     if (!model) {
@@ -150,12 +166,27 @@ export function useComputedModel() {
 
 export function useDiagramView() {
   const { projectId, viewId, layoutType } = useStore(projectAndView)
-  const {
-    data: view,
-    error,
-  } = useQuery({
-    ...queries.fetchDiagramView(projectId, viewId, layoutType),
-  })
+  // ars
+  const { data: view, error } = useQuery(
+    queries.fetchDiagramView(projectId, viewId, layoutType),
+    // ],
+    // combine([modelResult, viewResult]) {
+    //   const model = modelResult.data
+    //   if (!model) {
+    //     return {
+    //       view: null,
+    //     }
+    //   }
+    //   if (viewResult.error) {
+    //     return {
+    //       error: viewResult.error,
+    //     }
+    //   }
+    //   return {
+    //     view: viewResult.data ?? null,
+    //   }
+    // },
+  )
 
   const viewRef = useRef(view)
   // Always keep last known view in ref
@@ -167,7 +198,7 @@ export function useDiagramView() {
     if (!view) {
       return
     }
-    saveVscodeState({ viewId, view })
+    saveVscodeState({ viewId: view.id, view })
   }, [view])
 
   return {

@@ -97,6 +97,11 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   public async rebuildAll(cancelToken?: Cancellation.CancellationToken): Promise<void> {
+    if (!cancelToken) {
+      return await this.services.workspace.WorkspaceLock.write(async (ct) => {
+        await this.rebuildAll(ct)
+      })
+    }
     const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
     logger.info('invalidate and rebuild all {docs} documents', { docs: docs.length })
     this.services.workspace.Cache.clear()

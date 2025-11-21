@@ -1,6 +1,6 @@
 import { useCommand } from 'reactive-vscode'
-import { logWarn } from '../logger'
 import { commands } from '../meta'
+import { useExtensionLogger } from '../useExtensionLogger'
 import type { RpcClient } from './types'
 
 export interface ReloadProjectsCommandDeps {
@@ -9,6 +9,7 @@ export interface ReloadProjectsCommandDeps {
 }
 
 export function registerReloadProjectsCommand({ sendTelemetry, rpc }: ReloadProjectsCommandDeps) {
+  const { logWarn } = useExtensionLogger()
   useCommand(commands.reloadProjects, async () => {
     sendTelemetry(commands.reloadProjects)
     try {

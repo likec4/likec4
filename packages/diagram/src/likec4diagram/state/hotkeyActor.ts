@@ -12,7 +12,6 @@ export const hotkeyActorLogic: HotkeyActorLogic = fromCallback(({ sendBack }: {
   const escHandler = getHotkeyHandler([
     ['Escape', (event: KeyboardEvent) => {
       event.stopPropagation()
-      console.log('Escape karsarsey pressed')
       sendBack({ type: 'key.esc' })
     }, {
       preventDefault: true,
@@ -38,28 +37,5 @@ export const hotkeyActorLogic: HotkeyActorLogic = fromCallback(({ sendBack }: {
   return () => {
     document.body.removeEventListener('keydown', escHandler)
     document.body.removeEventListener('keydown', arrowshandler, { capture: true })
-  }
-})
-
-type UndoEvent = { type: 'undo' }
-
-export interface UndoHotKeyActorLogic extends CallbackActorLogic<AnyEventObject, NonReducibleUnknown, UndoEvent> {}
-
-export const undoHotKeyActorLogic: UndoHotKeyActorLogic = fromCallback(({ sendBack }: {
-  sendBack: (event: UndoEvent) => void
-}) => {
-  const ctrlZHandler = getHotkeyHandler([
-    ['mod + z', (event: KeyboardEvent) => {
-      console.log('Undo hotkey pressed')
-      event.stopPropagation()
-      sendBack({ type: 'undo' })
-    }, {
-      preventDefault: true,
-    }],
-  ])
-
-  document.body.addEventListener('keydown', ctrlZHandler, { capture: true })
-  return () => {
-    document.body.removeEventListener('keydown', ctrlZHandler, { capture: true })
   }
 })

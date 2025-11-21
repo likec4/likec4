@@ -38,5 +38,8 @@ export interface LikeC4Project {
    */
   styles?: LikeC4ProjectStylesConfig | undefined
 
+  /**
+   * Configuration for manual layouts snapshots
+   */
   manualLayouts?: LikeC4ProjectManualLayoutsConfig | undefined
 }

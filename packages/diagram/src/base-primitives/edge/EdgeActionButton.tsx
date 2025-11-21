@@ -2,11 +2,12 @@ import { cx } from '@likec4/styles/css'
 import { edgeActionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import { stopPropagation } from '../../utils/xyflow'
 
 type EdgeActionBtnProps = {
-  icon?: React.ReactNode
-  onClick: (e: React.MouseEvent) => void
+  icon?: ReactNode
+  onClick: (e: ReactMouseEvent) => void
 }
 
 export function EdgeActionButton({ icon, onClick }: EdgeActionBtnProps) {

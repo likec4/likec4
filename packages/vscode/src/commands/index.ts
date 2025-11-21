@@ -1,6 +1,7 @@
-import { useDiagramPanel } from '../common/useDiagramPanel'
-import { useTelemetry } from '../common/useTelemetry'
-import { useRpc } from '../Rpc'
+import useTelemetry from '#useTelemetry'
+import { useDiagramPanel } from '../panel'
+import { useLanguageClient } from '../useLanguageClient'
+import { useRpc } from '../useRpc'
 import { registerLocateCommand } from './locate'
 import { registerMigrateManualLayoutsCommand } from './migrateManualLayouts'
 import { registerOpenPreviewCommand } from './openPreview'
@@ -10,19 +11,16 @@ import { registerReloadProjectsCommand } from './reloadProjects'
 import { registerRestartCommand } from './restart'
 import { registerValidateLayoutCommand } from './validateLayout'
 
-interface SideEffects {
-  restartServer(): Promise<void>
-}
-
-export function registerCommands({
-  restartServer,
-}: SideEffects) {
+export function registerCommands() {
+  const {
+    restartLanguageServer: restartServer,
+  } = useLanguageClient()
   const rpc = useRpc()
   const preview = useDiagramPanel()
   const telemetry = useTelemetry()
 
   function sendTelemetry(command: string) {
-    telemetry.sendTelemetryEvent('command', { command })
+    telemetry.sendTelemetry('command', { command })
   }
 
   const deps = { sendTelemetry, rpc, preview }

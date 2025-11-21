@@ -62,9 +62,6 @@ export function viewToNodesEdge(
 
     const base = {
       id,
-      draggable: false,
-      selectable: true,
-      focusable: true,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
       style: {

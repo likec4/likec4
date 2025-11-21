@@ -61,8 +61,6 @@ export function layoutResultToXYFlow(
     const base = {
       id,
       draggable: false,
-      selectable: true,
-      focusable: true,
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
@@ -113,7 +111,7 @@ export function layoutResultToXYFlow(
               fqn,
               title: node.title,
               technology: node.technology,
-              description: RichText.from(node.description),
+              description: node.description ?? null,
               height: node.height,
               width: node.width,
               color: node.color,
@@ -160,7 +158,7 @@ export function layoutResultToXYFlow(
         color,
         navigateTo,
         line,
-        description: RichText.from(description),
+        description: description ?? null,
         ...(technology && { technology }),
       },
     })

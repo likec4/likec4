@@ -11,17 +11,17 @@ import type {
   ElementKind,
   Fqn,
   IconUrl,
+  MarkdownOrString,
   NodeId,
   NonEmptyArray,
   Point,
-  RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
 import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
-import { exact, RichText } from '@likec4/core/types'
+import { exact, preferSummary, RichText } from '@likec4/core/types'
 import {
   DefaultMap,
   ifind,
@@ -204,7 +204,7 @@ export namespace LayoutRelationshipsViewResult {
   export const Empty = '@empty' as ElementKind
 
   export type Node = Omit<DiagramNode, 'deploymentRef' | 'description' | 'inEdges' | 'outEdges'> & {
-    description: RichTextOrEmpty
+    description: MarkdownOrString | null
     column: RelationshipsBrowserTypes.Column
     ports: RelationshipsBrowserTypes.Ports
     existsInCurrentView: boolean
@@ -467,7 +467,7 @@ export function layoutRelationshipsView(
         x: position.x,
         y: position.y,
         title: 'empty node',
-        description: RichText.EMPTY,
+        description: null,
         technology: null,
         tags: [],
         links: [],
@@ -517,7 +517,7 @@ export function layoutRelationshipsView(
       x: position.x,
       y: position.y,
       title: element.title,
-      description: element.summary,
+      description: preferSummary(element.$element) ?? null,
       technology: element.technology,
       tags: [...element.tags],
       links: null,

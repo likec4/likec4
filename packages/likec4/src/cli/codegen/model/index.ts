@@ -43,9 +43,9 @@ export async function modelHandler({ path, useDotBin, useCorePackage, outfile, p
   const model = await languageServices.layoutedModel(projectId)
 
   for (const view of model.views()) {
-    if (view.$view.hasLayoutDrift) {
+    if (view.hasLayoutDrifts) {
       logger.warn(
-        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id),
+        k.yellow('layout drift detected, view:') + ' ' + k.red(view.id),
       )
     }
   }

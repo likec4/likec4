@@ -74,6 +74,9 @@ export const NavigationPanel = memo(() => {
             'calc(100cqw - 2 * {spacing.md})',
           ],
         },
+        _print: {
+          display: 'none',
+        },
       }}>
       <NavigationPanelActorContextProvider value={actorRef}>
         <NavigationPanelImpl actor={actorRef} />
@@ -115,6 +118,7 @@ const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRe
       <PopoverTarget>
         <m.div
           layout
+          layoutDependency={isActiveWalkthrough}
           className={hstack({
             layerStyle: 'likec4.panel',
             position: 'relative',
@@ -125,7 +129,7 @@ const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRe
           })}
           onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave' })}
         >
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence>
             {isActiveWalkthrough ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}
           </AnimatePresence>
         </m.div>

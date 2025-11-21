@@ -236,6 +236,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     needs:
       - check-types
+      - check-lint
       - check-build
       - check-on-windows
       - check-tests

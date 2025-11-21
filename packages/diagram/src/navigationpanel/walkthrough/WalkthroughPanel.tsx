@@ -30,16 +30,18 @@ function selectWalkthroughNotes(s: DiagramContext) {
     isParallel: isActive && isTruthy(s.activeWalkthrough?.parallelPrefix),
     hasNext: isActive && activeStepIndex < s.xyedges.length - 1,
     hasPrevious: isActive && activeStepIndex > 0,
-    notes: isActive ? s.xyedges[activeStepIndex]?.data?.notes ?? RichText.EMPTY : null,
+    notes: isActive ? s.xyedges[activeStepIndex]?.data?.notes ?? null : null,
   }
 }
 
 export const WalkthroughPanel = memo(() => {
-  const { isActive, notes } = useDiagramContext(selectWalkthroughNotes)
+  const { isActive, notes: _notes } = useDiagramContext(selectWalkthroughNotes)
+
+  const notes = _notes ? RichText.from(_notes) : RichText.EMPTY
 
   return (
     <AnimatePresence>
-      {isActive && notes && !notes.isEmpty && (
+      {isActive && !notes.isEmpty && (
         <m.div
           layout="position"
           className={css({

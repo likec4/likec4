@@ -6,7 +6,7 @@ import type {
 } from '@likec4/core/types'
 import { invariant } from '@likec4/core/utils'
 import type { PartialDeep } from 'type-fest'
-import type { FeatureName } from '../../context/DiagramFeatures'
+import type { FeatureName, TogglableFeature } from '../../context/DiagramFeatures'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
@@ -140,7 +140,7 @@ export function makeDiagramApi<A extends Any = Unknown>(actor: DiagramActorRef):
       actor.send({ type: `navigate.${direction}` })
     },
     fitDiagram: (duration = 350) => {
-      actor.send({ type: 'fitDiagram', duration })
+      actor.send({ type: 'xyflow.fitDiagram', duration })
     },
     openRelationshipsBrowser: (fqn) => {
       actor.send({ type: 'open.relationshipsBrowser', fqn })
@@ -163,11 +163,7 @@ export function makeDiagramApi<A extends Any = Unknown>(actor: DiagramActorRef):
       actor.send({ type: 'update.nodeData', nodeId, data })
     },
     updateEdgeData: (edgeId: EdgeId, data: PartialDeep<Types.EdgeData>) => {
-      actor.send({
-        type: 'update.edgeData',
-        edgeId,
-        data,
-      })
+      actor.send({ type: 'update.edgeData', edgeId, data })
     },
     startEditing: (subject: 'node' | 'edge') => {
       const syncActor = typedSystem(actor.system).syncLayoutActorRef
@@ -243,7 +239,7 @@ export function makeDiagramApi<A extends Any = Unknown>(actor: DiagramActorRef):
       actor.send({ type: 'walkthrough.end' })
     },
 
-    toggleFeature: (feature: FeatureName, forceValue?: boolean) => {
+    toggleFeature: (feature: TogglableFeature, forceValue?: boolean) => {
       actor.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
     },
 

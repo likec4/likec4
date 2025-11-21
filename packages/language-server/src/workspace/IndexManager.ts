@@ -11,7 +11,7 @@ export class IndexManager extends DefaultIndexManager {
   override async updateContent(document: LangiumDocument, cancelToken?: CancellationToken): Promise<void> {
     const projects = this.services.workspace.ProjectsManager
     // Ensure the document is assigned to a project
-    document.likec4ProjectId = projects.belongsTo(document.uri)
+    document.likec4ProjectId = projects.belongsTo(document)
     await super.updateContent(document, cancelToken)
   }
 

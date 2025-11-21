@@ -20,9 +20,14 @@ import { LikeC4StylesConfigSchema } from './schema.theme'
 export const ManualLayoutsConfigSchema = z
   .object({
     outDir: z.string()
+      .default('.likec4')
       .meta({
-        description:
-          'Path to the directory where manual layouts will be stored, relative to the folder containing the project config',
+        description: [
+          'Path to the directory where manual layouts will be stored,',
+          'relative to the folder containing the project config. ',
+          '',
+          'Defaults to \'.likec4\'.',
+        ].join('\n'),
       }),
   })
   .meta({
@@ -243,15 +248,4 @@ export function validateProjectConfig<C extends string | Record<string, unknown>
     validateImageAliases(parsed.data.imageAliases)
   }
   return parsed.data as unknown as LikeC4ProjectConfig
-}
-
-/**
- * Converts a LikeC4ProjectConfig object into a LikeC4ProjectJsonConfig object.
- * Omit generators property (as it is not serializable)
- */
-export function serializableLikeC4ProjectConfig({
-  generators: _, // omit
-  ...config
-}: LikeC4ProjectConfig): LikeC4ProjectJsonConfig {
-  return LikeC4ProjectJsonConfigSchema.parse(config) as unknown as LikeC4ProjectJsonConfig
 }

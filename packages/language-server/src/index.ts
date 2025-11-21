@@ -1,5 +1,6 @@
-import { configureLogger, getConsoleSink, getTextFormatter } from '@likec4/log'
+import { configureLogger, getConsoleSink, getConsoleStderrSink, getTextFormatter } from '@likec4/log'
 import { defu } from 'defu'
+import { DEV } from 'esm-env'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
 import { NoopFileSystem } from './filesystem'
@@ -34,7 +35,7 @@ type StartLanguageServerOptions = {
    * Whether to enable the MCP server.
    * @default 'sse'
    */
-  enableMCP?: false | 'sse' | 'stdio'
+  enableMCP?: false | 'stdio' | 'sse' | { port: number }
 
   /**
    * Whether to enable manual layouts, stored in json5 files.
@@ -56,7 +57,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
 
   configureLogger({
     sinks: {
-      console: getConsoleSink({
+      console: opts.enableMCP === 'stdio' ? getConsoleStderrSink() : getConsoleSink({
         formatter: getTextFormatter(),
       }),
       telemetry: getTelemetrySink(connection),
@@ -65,6 +66,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
       {
         category: ['likec4'],
         sinks: ['console', 'telemetry'],
+        lowestLevel: DEV ? 'trace' : 'debug',
       },
     ],
   })
@@ -74,7 +76,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
     {
       connection,
       ...LikeC4FileSystem(opts.enableWatcher),
-      ...opts.enableMCP && WithMCPServer(opts.enableMCP),
+      ...!!opts.enableMCP && WithMCPServer(opts.enableMCP),
       ...opts.enableManualLayouts && WithLikeC4ManualLayouts,
     },
     {

@@ -1,4 +1,5 @@
 import { isTruthy } from 'remeda'
+import { applyManualLayout, calcDriftsFromSnapshot } from '../../manual-layout'
 import type { LikeC4Styles } from '../../styles'
 import type {
   Any,
@@ -8,7 +9,6 @@ import type {
   DynamicViewDisplayVariant,
   IteratorLike,
   LayoutedView,
-  LayoutedViewDriftReason,
   Link,
   scalar,
   ViewManualLayoutSnapshot,
@@ -27,7 +27,6 @@ import type {
   WithTags,
 } from '../types'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
-import { applyLayoutDriftReasons, applyManualLayout } from './apply-manual-layout'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
@@ -226,7 +225,8 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   /**
-   * The original view (auto-layouted).
+   * The original view from the model.
+   * In case of layouted model, this is the latest auto-layouted view without manual changes applied
    * @see {@link $layouted} should be used for rendering in the UI
    */
   get $view(): V {
@@ -236,7 +236,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     const snapshot = this.#manualLayoutSnapshot
     if (snapshot) {
       return memoizeProp(this, 'withDriftReasons', () => {
-        return applyLayoutDriftReasons(this.#view, snapshot)
+        return calcDriftsFromSnapshot(this.#view, snapshot)
       })
     }
     return this.#view
@@ -250,17 +250,25 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     if (!this.isLayouted()) {
       throw new Error('View is not layouted')
     }
-    return this.manualLayouted ?? this.#view
+    return this.$manual ?? this.#view
   }
 
   get hasManualLayout(): boolean {
     return this.#manualLayoutSnapshot !== undefined
   }
 
+  get hasLayoutDrifts(): boolean {
+    if (!this.isLayouted()) {
+      return false
+    }
+    const manualLayout = this.$manual
+    return !!manualLayout?.drifts && manualLayout.drifts.length > 0
+  }
+
   /**
    * If view has manual layout, returns it with manual layout applied
    */
-  get manualLayouted(): V | null {
+  get $manual(): V | null {
     if (!this.isLayouted()) {
       return null
     }
@@ -271,17 +279,6 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
       })
     }
     return null
-  }
-
-  /**
-   * Returns the layout drift reasons, if any
-   * (Only for layouted views with manual layout)
-   */
-  get driftReasons(): readonly LayoutedViewDriftReason[] {
-    if (!this.isLayouted()) {
-      return []
-    }
-    return this.$view.drifts ?? []
   }
 
   public roots(): NodesIterator<A, V> {

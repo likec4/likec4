@@ -6,6 +6,7 @@ import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import { IconBolt } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import { stopPropagation } from '../../utils/xyflow'
 
 const container = hstack({
@@ -80,7 +81,6 @@ export function ElementActionButtons({
       }}>
       <m.div
         layoutRoot
-        key={`${id}-action-buttons`}
         initial={false}
         style={{
           originY: 0,
@@ -90,6 +90,7 @@ export function ElementActionButtons({
           scale: isHovered ? 1.1 : (selected ? 0.9 : 0.8),
           y: (isHovered || selected) ? 6 : 0,
         }}
+        layoutDependency={`${isHovered}-${selected}`}
         data-likec4-hovered={isHovered}
         className={cx('nodrag nopan', actionButtons)}
       >
@@ -119,7 +120,7 @@ export function ElementActionButtons({
 export namespace ElementActionButtons {
   export type Item = {
     key?: string
-    icon?: React.ReactNode
-    onClick: (e: React.MouseEvent) => void
+    icon?: ReactNode
+    onClick: (e: ReactMouseEvent) => void
   }
 }

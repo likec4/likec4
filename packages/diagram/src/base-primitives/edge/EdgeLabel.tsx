@@ -5,7 +5,7 @@ import { Box } from '@likec4/styles/jsx'
 import { edgeLabel } from '@likec4/styles/recipes'
 import type { HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
-import { forwardRef } from 'react'
+import { type ReactNode, forwardRef } from 'react'
 import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
@@ -21,7 +21,7 @@ type Data = UndefinedOnPartialDeep<
 type EdgeLabelProps =
   & HTMLMotionProps<'div'>
   & {
-    children?: React.ReactNode
+    children?: ReactNode
     edgeProps: BaseEdgePropsWithData<Data>
     pointerEvents?: 'all' | 'none'
   }

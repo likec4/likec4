@@ -9,13 +9,14 @@ import type {
   EdgeId,
   Fqn,
   IconUrl,
+  MarkdownOrString,
   NodeId,
   NonEmptyArray,
   Point,
   RelationId,
   RichTextOrEmpty,
 } from '@likec4/core/types'
-import { exact } from '@likec4/core/types'
+import { exact, preferSummary } from '@likec4/core/types'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
@@ -222,7 +223,7 @@ export type LayoutResult = {
 
 export namespace LayoutResult {
   export type Node = Except<DiagramNode, 'modelRef' | 'description' | 'deploymentRef' | 'inEdges' | 'outEdges'> & {
-    description: RichTextOrEmpty
+    description: MarkdownOrString | null
     modelRef: Fqn
     column: RelationshipDetailsTypes.Column
     ports: RelationshipDetailsTypes.Ports
@@ -232,7 +233,7 @@ export namespace LayoutResult {
     relationId: RelationId
     sourceHandle: string
     targetHandle: string
-    description: RichTextOrEmpty
+    description: MarkdownOrString | null
     // existsInCurrentView: boolean
     // column: RelationshipsBrowserTypes.Column
   }
@@ -404,7 +405,7 @@ export function layoutRelationshipDetails(
       x: position.x,
       y: position.y,
       title: element.title,
-      description: element.summary,
+      description: preferSummary(element.$element) ?? null,
       technology: element.technology,
       tags: [...element.tags],
       links: null,
@@ -454,7 +455,7 @@ export function layoutRelationshipDetails(
       const { name, source, target, relationship, sourceHandle, targetHandle } = find(edges, e => e.name === ename)!
       const label = relationship.title ?? 'untitled'
       const navigateTo = relationship.navigateTo?.id ?? null
-      const description = relationship.description ?? null
+      const description = preferSummary(relationship.$relationship) ?? null
       const technology = relationship.technology ?? null
       acc.push({
         id: name as EdgeId,
@@ -464,8 +465,8 @@ export function layoutRelationshipDetails(
         targetHandle,
         label,
         color: relationship.color,
+        description,
         ...(navigateTo && { navigateTo }),
-        ...(description && { description }),
         ...(technology && { technology }),
         points: edge.points.map(p => [p.x, p.y] as Point) as unknown as NonEmptyArray<Point>,
         line: relationship.line,

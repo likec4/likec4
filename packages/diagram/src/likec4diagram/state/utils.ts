@@ -1,13 +1,16 @@
 import {
   type DiagramEdge,
   type DiagramNode,
+  type DiagramView,
   type XYPoint,
   BBox,
 } from '@likec4/core/types'
-import { nonNullable } from '@likec4/core/utils'
-import { getEdgePosition, getNodeDimensions, getNodesBounds } from '@xyflow/system'
+import { nonexhaustive, nonNullable } from '@likec4/core/utils'
+import { type Viewport, getEdgePosition, getNodeDimensions, getNodesBounds, getViewportForBounds } from '@xyflow/system'
 import type { ActorSystem } from 'xstate'
+import { MinZoom } from '../../base/const'
 import type { XYStoreState } from '../../hooks/useXYFlow'
+import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
@@ -91,7 +94,7 @@ export function focusedBounds(params: { context: Context }): { bounds: BBox; dur
 }
 
 const MARGIN = 32
-export function activeSequenceBounds(params: { context: Context }): { bounds: BBox; duration?: number } {
+export function activeSequenceBounds(params: { context: Context }): { bounds: BBox; duration: number } {
   const activeWalkthrough = nonNullable(params.context.activeWalkthrough)
 
   const stepEdge = nonNullable(params.context.xyedges.find(e => e.id === activeWalkthrough.stepId))
@@ -158,4 +161,63 @@ function getEdgeBounds(edge: Types.Edge, store: XYStoreState): BBox | null {
     [edgePosition.sourceX, edgePosition.sourceY],
     [edgePosition.targetX, edgePosition.targetY],
   ])
+}
+
+export function nodeRef(node: Types.Node) {
+  switch (node.type) {
+    case 'element':
+    case 'compound-element':
+    case 'seq-actor':
+      return node.data.modelFqn
+    case 'deployment':
+    case 'compound-deployment':
+      return node.data.modelFqn ?? node.data.deploymentFqn
+    case 'seq-parallel':
+    case 'view-group':
+      return null
+    default:
+      nonexhaustive(node)
+  }
+}
+
+export function findCorrespondingNode(
+  context: Pick<Context, 'lastOnNavigate' | 'xynodes'>,
+  event: { view: DiagramView; xynodes: Types.Node[] },
+) {
+  const fromNodeId = context.lastOnNavigate?.fromNode
+  const fromNode = fromNodeId && context.xynodes.find(n => n.id === fromNodeId)
+  const fromRef = fromNode && nodeRef(fromNode)
+  const toNode = fromRef && event.xynodes.find(n => nodeRef(n) === fromRef)
+  return { fromNode, toNode }
+}
+
+export function calcViewportForBounds(
+  context: Pick<Context, 'xystore' | 'xyflow' | 'fitViewPadding'>,
+  bounds: BBox,
+): Viewport {
+  let currentZoom = context.xyflow!.getZoom()
+  let {
+    width,
+    height,
+  } = context.xystore.getState()
+  const maxZoom = Math.max(currentZoom, 1)
+  return getViewportForBounds(
+    bounds,
+    width,
+    height,
+    MinZoom,
+    maxZoom,
+    context.fitViewPadding,
+  )
+}
+
+export function parseAsNumber(value: string | number | undefined): number {
+  if (typeof value === 'number') {
+    return isNaN(value) ? 0 : value
+  }
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value)
+    return isNaN(parsed) ? 0 : parsed
+  }
+  return 0
 }

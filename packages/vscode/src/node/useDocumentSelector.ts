@@ -3,9 +3,10 @@ import { computed, createSingletonComposable, useWorkspaceFolders } from 'reacti
 import vscode from 'vscode'
 import type { TextDocumentFilter } from 'vscode-languageclient'
 import { globPattern, languageId } from '../const'
-import { logger } from '../logger'
+import { useExtensionLogger } from '../useExtensionLogger'
 
 const useDocumentSelector = createSingletonComposable(() => {
+  const { logger } = useExtensionLogger()
   const wFolders = useWorkspaceFolders()
 
   return computed((old?: TextDocumentFilter[]): TextDocumentFilter[] => {

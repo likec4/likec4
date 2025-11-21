@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { ensureReact } from '../ensure-react'
-import { path, useDotBin } from '../options'
+import { path, project, useDotBin } from '../options'
 import { handler as jsonHandler } from './json/handler'
 import { pngHandler } from './png/handler'
 
@@ -32,6 +32,7 @@ const exportCmd = (yargs: yargs.Argv) => {
                     nargs: 1,
                     coerce: resolve,
                   },
+                  project,
                   'theme': {
                     choices: ['light', 'dark'] as const,
                     desc: 'color-scheme to use, defaults to light',
@@ -119,6 +120,7 @@ const exportCmd = (yargs: yargs.Argv) => {
                 path: args.path,
                 useDotBin: args['use-dot'],
                 output: args.output,
+                project: args.project,
                 timeoutMs: args.timeout * 1000,
                 maxAttempts: args.maxAttempts,
                 ignore: args.ignore === true,

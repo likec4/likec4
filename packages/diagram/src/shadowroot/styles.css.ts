@@ -51,6 +51,8 @@ export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string
   const [styleSheets, setStyleSheets] = useState([] as CSSStyleSheet[])
 
   useIsomorphicLayoutEffect(() => {
+    // Inject font CSS into document head once
+    // DO NOT inject into shadow root to avoid FOUC
     if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
       const style = document.createElement('style')
       style.setAttribute('type', 'text/css')

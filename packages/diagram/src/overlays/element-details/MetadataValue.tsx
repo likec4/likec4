@@ -1,9 +1,9 @@
 import { css } from '@likec4/styles/css'
 import { Box, Flex, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core'
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
-import { useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
-export function MetadataProvider({ children }: { children: React.ReactNode }) {
+export function MetadataProvider({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 

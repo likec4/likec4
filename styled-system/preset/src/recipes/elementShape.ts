@@ -20,9 +20,10 @@ export const elementShapeRecipe = defineRecipe({
       pointerEvents: 'none',
       overflow: 'visible',
       ['--likec4-palette-outline']: {
-        _light: 'color-mix(in srgb, var(--likec4-palette-stroke) 60%, var(--likec4-palette-hiContrast))',
-        _dark: 'color-mix(in srgb, var(--likec4-palette-stroke) 30%, var(--likec4-palette-loContrast))',
+        base: 'oklab(from var(--likec4-palette-stroke) calc(l - 0.05) a b)',
+        _dark: 'oklab(from var(--likec4-palette-stroke) calc(l + 0.2) a b)',
       },
+      ['--likec4-outline-size']: `4px`,
     },
     outline: {
       visibility: {
@@ -51,11 +52,11 @@ export const elementShapeRecipe = defineRecipe({
           boxShadow: {
             base: [
               '0 2px 1px 0 rgb(0 0 0 / 21%)',
-              '0 1px 1px 0 color-mix(in srgb, var(--likec4-palette-stroke) 40%, transparent)',
+              '0 1px 1px 0 color-mix(in oklab, var(--likec4-palette-stroke) 40%, transparent)',
               '0 5px 3px 0 rgb(0 0 0 / 10%)',
             ].join(','),
             _whenHovered: {
-              _light: `rgba(38, 57, 77, 95%) 0px 20px 30px -10px`,
+              base: `rgba(38, 57, 77, 95%) 0px 20px 30px -10px`,
               _dark: `rgba(10, 11, 16, 90%) 0px 20px 30px -10px`,
             },
             _whenSelected: 'none',
@@ -67,7 +68,6 @@ export const elementShapeRecipe = defineRecipe({
             _reduceGraphicsOnPan: 'none',
           },
           transitionDelay: '0ms',
-          ['--likec4-outline-size']: `4px`,
         },
         multipleHtml: {
           position: 'absolute',
@@ -95,13 +95,13 @@ export const elementShapeRecipe = defineRecipe({
         outline: {
           position: 'absolute',
           content: '" "',
-          top: `[calc(-1 * var(--likec4-outline-size))]`,
-          left: `[calc(-1 * var(--likec4-outline-size))]`,
-          width: `[calc(100% + 2 * var(--likec4-outline-size))]`,
-          height: `[calc(100% + 2 * var(--likec4-outline-size))]`,
+          top: `[calc(-1 * var(--likec4-outline-size) - 1px)]`,
+          left: `[calc(-1 * var(--likec4-outline-size) - 1px)]`,
+          width: `[calc(100% + 2 * var(--likec4-outline-size) + 2px)]`,
+          height: `[calc(100% + 2 * var(--likec4-outline-size) + 2px)]`,
           borderStyle: 'solid',
           borderWidth: 'var(--likec4-outline-size)',
-          borderRadius: '[10px]',
+          borderRadius: '11px',
           borderColor: 'var(--likec4-palette-outline)',
           animationStyle: 'indicator',
         },
@@ -115,7 +115,7 @@ export const elementShapeRecipe = defineRecipe({
           filter: {
             base: [
               'drop-shadow(0 2px 1px rgba(0, 0, 0, 0.21))',
-              'drop-shadow(0 1px 1px color-mix(in srgb, var(--likec4-palette-stroke) 40%, transparent))',
+              'drop-shadow(0 1px 1px color-mix(in oklab, var(--likec4-palette-stroke) 40%, transparent))',
               'drop-shadow(0 5px 3px rgba(0, 0, 0, 0.1))',
             ].join('\n'),
             _whenHovered: [
@@ -136,7 +136,7 @@ export const elementShapeRecipe = defineRecipe({
             fill: 'var(--likec4-palette-stroke)',
           },
           '& [data-likec4-fill="mix-stroke"]': {
-            fill: '[color-mix(in srgb, var(--likec4-palette-stroke) 90%, var(--likec4-palette-fill))]',
+            fill: '[color-mix(in oklab, var(--likec4-palette-stroke) 90%, var(--likec4-palette-fill))]',
           },
         },
         multipleSvg: {
@@ -166,7 +166,7 @@ export const elementShapeRecipe = defineRecipe({
         outline: {
           stroke: 'var(--likec4-palette-outline)',
           fill: '[none]',
-          strokeWidth: 8,
+          strokeWidth: 3,
           strokeOpacity: 0.8,
           animationStyle: 'indicator',
         },

@@ -30,7 +30,6 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 
   constructor(
     protected services: LikeC4Services,
-    private cachePrefix = 'fqn-index',
   ) {
     super()
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
@@ -43,7 +42,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
         DocumentState.IndexedContent,
         (doc) => {
           if (isLikeC4LangiumDocument(doc)) {
-            this.documentCache.set(doc, this.createDocumentIndex(doc))
+            this.documentCache.delete(doc)
           }
         },
       ),
@@ -83,26 +82,26 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     // Document index is not yet created
     const doc = AstUtils.getDocument(el)
     invariant(isLikeC4LangiumDocument(doc))
-    logWarnError(`Document ${doc.uri.path} is not indexed, but getFqn was called`)
-    // This will create the document index
+    // Ensure the document is indexed
     this.get(doc)
+    // This will create the document index
     return nonNullable(ElementOps.readId(el), 'Element fqn must be set, invalid state')
   }
 
   public byFqn(projectId: ProjectId, fqn: Fqn): Stream<AstNodeDescriptionWithFqn> {
-    return stream(this.workspaceCache.get(`${this.cachePrefix}:${projectId}:fqn:${fqn}`, () => {
+    return stream(this.workspaceCache.get(`${projectId}:fqn:${fqn}`, () => {
       return this
         .documents(projectId)
-        .toArray()
         .flatMap(doc => {
           return this.get(doc).byFqn(fqn)
         })
+        .toArray()
     }))
   }
 
   public rootElements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
     return stream(
-      this.workspaceCache.get(`${this.cachePrefix}:${projectId}:rootElements`, () => {
+      this.workspaceCache.get(`${projectId}:rootElements`, () => {
         const allchildren = this.documents(projectId)
           .reduce((map, doc) => {
             this.get(doc).rootElements().forEach(desc => {
@@ -117,7 +116,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 
   public directChildrenOf(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
-      this.workspaceCache.get(`${this.cachePrefix}:${projectId}:directChildrenOf:${parent}`, () => {
+      this.workspaceCache.get(`${projectId}:directChildrenOf:${parent}`, () => {
         const allchildren = this.documents(projectId)
           .reduce((map, doc) => {
             this.get(doc).children(parent).forEach(desc => {
@@ -135,7 +134,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
    */
   public uniqueDescedants(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
-      this.workspaceCache.get(`${this.cachePrefix}:${projectId}:uniqueDescedants:${parent}`, () => {
+      this.workspaceCache.get(`${projectId}:uniqueDescedants:${parent}`, () => {
         const { children, descendants } = this.documents(projectId)
           .reduce((map, doc) => {
             const docIndex = this.get(doc)
@@ -169,19 +168,21 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     if (rootElements.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
-    const projectId = document.likec4ProjectId ??= this.projects.belongsTo(document)
+    const projectId = document.likec4ProjectId ?? this.projects.belongsTo(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const byfqn = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const Descriptions = this.services.workspace.AstNodeDescriptionProvider
 
-    const createAndSaveDescription = (node: ast.Element, name: string, fqn: Fqn) => {
-      const desc = {
-        ...Descriptions.createDescription(node, name, document),
-        id: fqn,
-        likec4ProjectId: projectId,
-      }
+    const createAndSaveDescription = (node: ast.Element, name: string, fqn: Fqn): AstNodeDescriptionWithFqn => {
+      const desc = Object.assign(
+        Descriptions.createDescription(node, name, document),
+        {
+          id: fqn,
+          likec4ProjectId: projectId,
+        },
+      )
       ElementOps.writeId(node, fqn)
       byfqn.set(fqn, desc)
       return desc

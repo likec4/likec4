@@ -13,9 +13,9 @@ export const actionBtn = defineRecipe({
     '--actionbtn-color-hovered': 'var(--likec4-palette-loContrast)',
     '--actionbtn-color-hovered-btn': 'var(--likec4-palette-hiContrast)',
 
-    '--actionbtn-bg-idle': `color-mix(in srgb , var(--likec4-palette-fill),  transparent 99%)`,
-    '--actionbtn-bg-hovered': `color-mix(in srgb , var(--likec4-palette-fill) 65%, var(--likec4-palette-stroke))`,
-    '--actionbtn-bg-hovered-btn': `color-mix(in srgb , var(--likec4-palette-fill) 50%, var(--likec4-palette-stroke))`,
+    '--actionbtn-bg-idle': `color-mix(in oklab , var(--likec4-palette-fill),  transparent 99%)`,
+    '--actionbtn-bg-hovered': `color-mix(in oklab , var(--likec4-palette-fill) 65%, var(--likec4-palette-stroke))`,
+    '--actionbtn-bg-hovered-btn': `color-mix(in oklab , var(--likec4-palette-fill) 50%, var(--likec4-palette-stroke))`,
 
     '--ai-bg': `var(--actionbtn-bg-idle)`,
 
@@ -39,6 +39,9 @@ export const actionBtn = defineRecipe({
     },
     '& *': {
       pointerEvents: 'none',
+    },
+    _print: {
+      display: 'none',
     },
   },
 

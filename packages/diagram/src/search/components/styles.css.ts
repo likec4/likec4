@@ -53,7 +53,7 @@ export const pickviewGroup = css({
 // })
 // globalStyle(`${whereDark} ${pickview} ${button}:hover`, {
 //   ...buttonFocused,
-//   backgroundColor: `color-mix(in srgb, ${buttonFocused.backgroundColor}, transparent 40%)`,
+//   backgroundColor: `color-mix(in oklab, ${buttonFocused.backgroundColor}, transparent 40%)`,
 // })
 // globalStyle(`${whereDark} ${pickview} ${button}:focus`, buttonFocused)
 

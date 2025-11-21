@@ -1,5 +1,5 @@
-import type { ComputedNodeStyle, NodeId } from '@likec4/core'
-import { type Color, type RichTextOrEmpty, ensureSizes } from '@likec4/core/types'
+import type { ComputedNodeStyle, MarkdownOrString, NodeId } from '@likec4/core'
+import { type Color, ensureSizes, RichText } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { elementNodeData } from '@likec4/styles/recipes'
 import { Text } from '@mantine/core'
@@ -21,7 +21,7 @@ type RequiredData = {
   technology?: string | null | undefined
   color: Color
   style: ComputedNodeStyle
-  description?: RichTextOrEmpty
+  description?: MarkdownOrString | null | undefined
   icon?: string | null
 }
 
@@ -130,9 +130,10 @@ const Description = forwardRef<
   { data: { description, style }, className, ...props },
   ref,
 ) => {
-  if (!description?.nonEmpty) {
+  if (!description) {
     return null
   }
+  const desc = RichText.from(description)
   const { size } = ensureSizes(style)
   const isSm = size === 'sm' || size === 'xs'
   return (
@@ -143,11 +144,11 @@ const Description = forwardRef<
         'likec4-element-description',
       )}
       data-likec4-node-description=""
-      value={description}
+      value={desc}
       uselikec4palette
       hideIfEmpty
       // Workaround for lineClamp not working with nested TABLE elements (if markdown has tables)
-      maxHeight={description.isMarkdown ? '8rem   ' : undefined}
+      maxHeight={desc.isMarkdown ? '8rem   ' : undefined}
       // textScale={0.95}
       lineClamp={isSm ? 3 : 5}
       ref={ref}

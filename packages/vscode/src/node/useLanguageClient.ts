@@ -14,8 +14,8 @@ import {
   LanguageClient as NodeLanguageClient,
   TransportKind,
 } from 'vscode-languageclient/node'
-import { isLikeC4Source } from '../common/initWorkspace'
 import { globPattern, isVirtual } from '../const'
+import { isLikeC4Source } from '../utils'
 
 const useLanguageClient = createSingletonComposable(() => {
   const serverModule = extensionContext.value!.asAbsolutePath(
@@ -59,6 +59,8 @@ const useLanguageClient = createSingletonComposable(() => {
 
   const documentSelector = useDocumentSelector()
 
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
+
   const clientOptions: LanguageClientOptions = {
     documentSelector: toValue(documentSelector) as any,
     outputChannel: useOutputChannel('LikeC4 Language Server', 'log'),
@@ -67,6 +69,7 @@ const useLanguageClient = createSingletonComposable(() => {
       isTrusted: true,
       supportHtml: true,
     },
+    ...(workspaceFolder ? { workspaceFolder } : {}),
     diagnosticPullOptions: {
       onTabs: true,
       match(_, resource) {

@@ -36,7 +36,10 @@ export const likec4tag = defineRecipe({
           filter: 'invert(1) grayscale(1) brightness(1.3) contrast(1000)',
           background: 'inherit',
           backgroundClip: 'text',
-          mixBlendMode: 'plus-lighter',
+          mixBlendMode: {
+            base: 'plus-lighter',
+            _print: 'normal!',
+          },
         },
       },
     },

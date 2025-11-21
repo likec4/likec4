@@ -5,12 +5,12 @@ import {
   validateProjectConfig,
 } from '@likec4/config'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
-import type { scalar } from '@likec4/core/types'
+import type { ProjectId, scalar } from '@likec4/core/types'
 import { BiMap, delay, invariant, memoizeProp, nonNullable } from '@likec4/core/utils'
+import { wrapError } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
 import {
   type Cancellation,
-  type FileSystemNode,
   type LangiumDocument,
   interruptAndCheck,
   URI,
@@ -25,6 +25,7 @@ import {
   withoutProtocol,
   withTrailingSlash,
 } from 'ufo'
+import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 
@@ -86,6 +87,10 @@ export class ProjectsManager {
    * (it is used in CLI and Vite plugin)
    */
   #defaultProjectId: scalar.ProjectId | undefined = undefined
+  /**
+   * Cached default project.
+   */
+  #defaultProject: ProjectData | undefined = undefined
 
   /**
    * The mapping between project config files and project IDs.
@@ -126,6 +131,7 @@ export class ProjectsManager {
     if (id === this.#defaultProjectId) {
       return
     }
+    this.#defaultProject = undefined
     if (!id || id === ProjectsManager.DefaultProjectId) {
       logger.debug`reset default project ID`
       this.#defaultProjectId = undefined
@@ -134,6 +140,25 @@ export class ProjectsManager {
     invariant(this.#projects.find(p => p.id === id), `Project "${id}" not found`)
     logger.debug`set default project ID to ${id}`
     this.#defaultProjectId = id as scalar.ProjectId
+  }
+
+  get default(): ProjectData {
+    if (!this.#defaultProject) {
+      const id = this.defaultProjectId ?? ProjectsManager.DefaultProjectId
+      let project = this.#projects.find(p => p.id === id)
+      if (!project) {
+        const folderUri = this.getWorkspaceFolder()
+        project = {
+          id,
+          config: DefaultProject.config,
+          folder: ProjectFolder(folderUri),
+          folderUri,
+          exclude: DefaultProject.exclude,
+        }
+      }
+      this.#defaultProject = project
+    }
+    return this.#defaultProject
   }
 
   get all(): NonEmptyReadonlyArray<scalar.ProjectId> {
@@ -163,7 +188,7 @@ export class ProjectsManager {
         folderUri = this.services.workspace.WorkspaceManager.workspaceUri
       } catch (error) {
         logger.warn('Failed to get workspace URI, using default folder', { error })
-        folderUri = URI.file('')
+        folderUri = URI.file('/')
         // ignore - workspace not initialized
       }
       return {
@@ -248,23 +273,28 @@ export class ProjectsManager {
   }
 
   /**
-   * Checks if the provided file system entry is a valid project config file.
-   *
-   * @param entry The file system entry to check
+   * Registers likec4 project by config file.
    */
-  async registerConfigFile(configFile: URI): Promise<ProjectData | undefined> {
-    if (this.isConfigFile(configFile)) {
-      try {
-        return await this.registerProject(configFile)
-      } catch (error) {
-        this.services.lsp.Connection?.window.showErrorMessage(
-          `LikeC4: Failed to register project at ${configFile.fsPath}`,
-        )
-        logger.warn('Failed to register project at {uri}', { uri: configFile.fsPath, error })
-        return undefined
-      }
+  async registerConfigFile(configFile: URI): Promise<ProjectData> {
+    if (DefaultProject.exclude(configFile.path)) {
+      throw new Error(
+        `Path to ${configFile.fsPath} is excluded by: ${DefaultProject.config.exclude.join(', ')}`,
+      )
     }
-    return undefined
+    if (!this.isConfigFile(configFile)) {
+      throw new Error(`${configFile.fsPath} is not a valid LikeC4 config filename.`)
+    }
+    try {
+      const config = await this.services.workspace.FileSystemProvider.loadProjectConfig(configFile)
+      const path = joinRelativeURL(configFile.path, '..')
+      const folderUri = configFile.with({ path })
+      return await this.registerProject({ config, folderUri })
+    } catch (error) {
+      this.services.lsp.Connection?.window.showErrorMessage(
+        `LikeC4: Failed to register project at ${configFile.fsPath}`,
+      )
+      throw wrapError(error, `Failed to register project config ${configFile.fsPath}:\n`)
+    }
   }
 
   /**
@@ -272,26 +302,11 @@ export class ProjectsManager {
    * If there is some project registered at same folder, it will be reloaded.
    */
   async registerProject(
-    opts: URI | { config: LikeC4ProjectConfigInput; folderUri: URI | string },
+    opts: {
+      config: LikeC4ProjectConfig | LikeC4ProjectConfigInput
+      folderUri: URI | string
+    },
   ): Promise<ProjectData> {
-    if (URI.isUri(opts)) {
-      const configFile = opts
-      const config = await this.services.workspace.FileSystemProvider.loadProjectConfig(configFile)
-      const path = joinRelativeURL(configFile.path, '..')
-      const folderUri = configFile.with({ path })
-      return this._registerProject({ config, folderUri })
-    }
-    return this._registerProject(opts)
-  }
-
-  /**
-   * Registers (or reloads) likec4 project by config file or config object.
-   * If there is some project registered at same folder, it will be reloaded.
-   */
-  private _registerProject(opts: {
-    config: LikeC4ProjectConfig | LikeC4ProjectConfigInput
-    folderUri: URI | string
-  }): ProjectData {
     const config = validateProjectConfig(opts.config)
     const folder = ProjectFolder(opts.folderUri)
     let project = this.#projects.find(p => p.folder === folder)
@@ -342,6 +357,9 @@ export class ProjectsManager {
       project.config = config
     }
 
+    // Reset cached default project
+    this.#defaultProject = undefined
+
     if (isNullish(config.exclude)) {
       project.exclude = DefaultProject.exclude
     } else if (hasAtLeast(config.exclude, 1)) {
@@ -350,16 +368,31 @@ export class ProjectsManager {
 
     this.#projectIdToFolder.set(project.id, folder)
 
-    if (mustReset) {
-      this.resetProjectIds()
+    // Reset assigned project IDs if no projects reload is active
+    if (mustReset && !this.#activeReload) {
+      await this.rebuidProject(project.id).catch(error => {
+        logger.warn('Failed to rebuild project {projectId} after config change', {
+          projectId: project!.id,
+          error,
+        })
+      })
     }
 
     return project
   }
 
+  /**
+   * Determines which project the given document belongs to.
+   * If the document does not belong to any project, returns the default project ID.
+   */
   belongsTo(document: LangiumDocument | URI | string): scalar.ProjectId {
-    const documentUri = normalizeUri(document)
-    return this.findProjectForDocument(documentUri).id
+    if (URI.isUri(document) || typeof document === 'string') {
+      const documentUri = normalizeUri(document)
+      return this.findProjectForDocument(documentUri).id
+    }
+    return this.documentBelongsTo.get(document, () => {
+      return this.findProjectForDocument(normalizeUri(document.uri))
+    }).id
   }
 
   #activeReload: Promise<void> | null = null
@@ -386,13 +419,16 @@ export class ProjectsManager {
       return
     }
     await this.services.workspace.WorkspaceLock.write(async (cancelToken) => {
-      const configFiles = [] as FileSystemNode[]
+      logger.debug`start reload projects`
+      const configFiles = [] as URI[]
       for (const folder of folders) {
         try {
+          logger.debug`scan projects in folder ${folder.uri}`
           const files = await this.services.workspace.FileSystemProvider.scanProjectFiles(URI.parse(folder.uri))
           for (const file of files) {
             if (file.isFile && this.isConfigFile(file.uri)) {
-              configFiles.push(file)
+              logger.debug`found config ${file.uri.fsPath}`
+              configFiles.push(file.uri)
             }
           }
         } catch (error) {
@@ -405,18 +441,17 @@ export class ProjectsManager {
 
       await interruptAndCheck(cancelToken)
 
-      logger.debug`start reload projects`
       this.#projects = []
       this.#projectIdToFolder.clear()
-      for (const entry of configFiles) {
+      for (const uri of configFiles) {
         try {
-          await this.registerConfigFile(entry.uri)
+          await this.registerConfigFile(uri)
         } catch (error) {
-          logger.error('Failed to load config file {uri}', { uri: entry.uri.toString(), error })
+          logger.error('Failed to load config file {uri}', { uri: uri.fsPath, error })
         }
       }
-      this.resetProjectIds()
-      await this.rebuidDocuments(cancelToken)
+      this.reset()
+      await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
     })
   }
 
@@ -429,30 +464,95 @@ export class ProjectsManager {
     return id
   }
 
-  protected resetProjectIds(): void {
+  protected reset(): void {
+    this.#defaultProject = undefined
     if (this.#defaultProjectId && !this.#projectIdToFolder.has(this.#defaultProjectId)) {
       this.#defaultProjectId = undefined
     }
+    this.services.workspace.LangiumDocuments.all.forEach(doc => {
+      if (isLikeC4Builtin(doc.uri)) {
+        return
+      }
+      // Remove assigned project ID to force re-calculation
+      delete doc.likec4ProjectId
+    })
+    this.documentBelongsTo.clear()
     this.mappingsToProject.clear()
     this.#excludedDocuments = new WeakMap()
-    this.services.workspace.LangiumDocuments.resetProjectIds()
   }
 
-  protected async rebuidDocuments(cancelToken?: Cancellation.CancellationToken): Promise<void> {
-    await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
+  public async rebuidProject(projectId: ProjectId, cancelToken?: Cancellation.CancellationToken): Promise<void> {
+    if (!cancelToken) {
+      return await this.services.workspace.WorkspaceLock.write(async (ct) => {
+        await this.rebuidProject(projectId, ct)
+      })
+    }
+    // reset default project cache
+    this.#defaultProject = undefined
+
+    const project = this.#projects.find(p => p.id === projectId) ?? this.default
+    const folder = project.folder
+    const docs = this.services.workspace.LangiumDocuments
+      .all
+      .filter(doc => {
+        if (project.exclude?.(doc.uri.path)) {
+          return false
+        }
+        if (doc.uri.toString().startsWith(folder)) {
+          return true
+        }
+        const docdir = withTrailingSlash(joinRelativeURL(doc.uri.toString(), '..'))
+        return docdir.startsWith(folder) || folder.startsWith(docdir)
+      })
+      .map(d => d.uri)
+      .toArray()
+    if (docs.length > 0) {
+      this.reset()
+      const projectId = project.id
+      logger.info('rebuild documents of project {projectId}: {docs}', {
+        projectId,
+        docs: docs.length,
+      })
+      await this.services.workspace.DocumentBuilder
+        .update(docs, [], cancelToken)
+        .catch(error => {
+          logger.warn('Failed to rebuild project {projectId}', {
+            projectId,
+            error,
+          })
+        })
+    }
   }
 
-  protected findProjectForDocument(documentUri: string) {
+  protected findProjectForDocument(documentUri: string): ProjectData {
     return this.mappingsToProject.get(documentUri, () => {
       const project = this.#projects.find(({ folder }) => documentUri.startsWith(folder))
       // If the document is not part of any project, assign it to the global project ID
-      return project ?? DefaultProject
+      return project ?? this.default
     })
   }
 
   // The mapping between document URIs and their corresponding project ID
   // Lazy-created due to initialization order of the LanguageServer
-  protected get mappingsToProject(): WorkspaceCache<string, Pick<ProjectData, 'id' | 'config' | 'exclude'>> {
+  protected get mappingsToProject(): WorkspaceCache<string, ProjectData> {
     return memoizeProp(this, '_mappingsToProject', () => new WorkspaceCache(this.services))
+  }
+
+  /**
+   * The mapping between documents and projects they belong to.
+   * Lazy-created due to initialization order of the LanguageServer
+   */
+  protected get documentBelongsTo(): WorkspaceCache<LangiumDocument, ProjectData> {
+    return memoizeProp(this, '_documentBelongsTo', () => new WorkspaceCache(this.services))
+  }
+
+  private getWorkspaceFolder(): URI {
+    try {
+      return this.services.workspace.WorkspaceManager.workspaceUri
+    } catch (error) {
+      logger.warn('Failed to get workspace URI, using default folder', { error })
+      return URI.file('/')
+      // ignore - workspace not initialized
+    }
   }
 }

@@ -17,14 +17,19 @@ import { indent, parseStack } from './utils'
 
 function gerErrorFromLogRecord(record: LogRecord): Error | null {
   const errors = Object
-    .values(record.properties)
-    .filter((v) => v instanceof Error)
-    .map(err => {
-      const mergedErr = mergeErrorCause(err)
-      if (mergedErr.stack) {
-        mergedErr.stack = parseStack(mergedErr.stack).join('\n')
+    .entries(record.properties)
+    .flatMap(([k, err]) => {
+      if (err instanceof Error) {
+        const mergedErr = mergeErrorCause(err)
+        if (mergedErr.stack) {
+          mergedErr.stack = parseStack(mergedErr.stack).join('\n')
+        }
+        return [mergedErr]
       }
-      return mergedErr
+      if (k === 'error' || k === 'err') {
+        return [new Error(`${err}`)]
+      }
+      return []
     })
   if (errors.length === 0) {
     return null
@@ -40,7 +45,7 @@ export function errorFromLogRecord(record: LogRecord): Error | null {
   return error
 }
 
-export function appendErrorToMessage(values: FormattedValues, color?: boolean): FormattedValues {
+export function appendErrorToMessage(values: FormattedValues, color = false): FormattedValues {
   const error = gerErrorFromLogRecord(values.record)
   if (error) {
     let errorMessge = error.message

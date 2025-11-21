@@ -1,5 +1,4 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
-import type { FilterPredicate } from 'fdir'
 import type {
   FileSystemNode,
   FileSystemProvider as LangiumFileSystemProvider,

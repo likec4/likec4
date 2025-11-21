@@ -5,7 +5,6 @@ import {
   type NodeId,
   getParallelStepsPrefix,
   isStepEdgeId,
-  RichText,
 } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
 import type { NodeHandle } from '@xyflow/system'
@@ -166,7 +165,7 @@ export function sequenceViewToXY(
         id,
         label: step.label?.text ?? null,
         technology: edge.technology,
-        notes: RichText.from(edge.notes),
+        notes: edge.notes ?? null,
         navigateTo: edge.navigateTo,
         controlPoints: edge.controlPoints ?? null,
         labelBBox: {
@@ -218,6 +217,7 @@ function toCompoundArea(
       viewId: view.id,
       depth,
       isViewGroup: true,
+      drifts: node.drifts ?? null,
     },
     // zIndex: SeqZIndex.compound,
     position: {
@@ -229,10 +229,10 @@ function toCompoundArea(
     focusable: false,
     style: {
       pointerEvents: 'none',
+      width,
+      height,
     },
-    width,
     initialWidth: width,
-    height,
     initialHeight: height,
   }
 }
@@ -258,25 +258,24 @@ function toSeqParallelArea(
       icon: null,
       width,
       height,
-      description: RichText.EMPTY,
+      description: null,
       viewId: view.id,
       parallelPrefix,
+      drifts: null,
     },
     zIndex: SeqZIndex.parallel,
     position: {
       x,
       y,
     },
-    draggable: false,
-    deletable: false,
     selectable: false,
     focusable: false,
     style: {
       pointerEvents: 'none',
+      width,
+      height,
     },
-    width,
     initialWidth: width,
-    height,
     initialHeight: height,
   }
 }
@@ -335,28 +334,20 @@ function toSeqActorNode({ actor, ports: _ports, bounds, layout, view }: {
       tags: actor.tags,
       modelFqn: actor.modelRef ?? null,
       technology: actor.technology ?? null,
-      description: RichText.from(actor.description),
+      description: actor.description ?? null,
       viewHeight: bounds.height,
       viewId: view.id,
       ports,
-      // ports: ports.map((p): Types.SequenceActorNodePort => {
-      //   const bbox = layout.getPortCenter(p.step, p.type)
-      //   return ({
-      //     id: p.step.id + '_' + p.type,
-      //     cx: bbox.cx - x,
-      //     cy: bbox.cy - y,
-      //     height: bbox.height,
-      //     type: p.type,
-      //     position: p.position,
-      //   })
-      // }),
+      drifts: actor.drifts ?? null,
     },
+    handles,
     zIndex: SeqZIndex.actor,
     position: { x, y },
-    width,
+    style: {
+      width,
+      height,
+    },
     initialWidth: width,
-    height,
     initialHeight: height,
-    handles,
   }
 }

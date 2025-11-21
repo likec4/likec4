@@ -4,8 +4,9 @@ import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { ActionIcon } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import type { CSSProperties } from 'react'
-import { useState } from 'react'
+import { AnimatePresence } from 'motion/react'
+import type { CSSProperties, ReactNode } from 'react'
+import { useRef, useState } from 'react'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
@@ -210,7 +211,7 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   /**
    * Children to render inside the diagram (not inside the browser overlay)
    */
-  children?: React.ReactNode | undefined
+  children?: ReactNode | undefined
 }
 
 export interface LikeC4BrowserProps {
@@ -320,7 +321,7 @@ export interface LikeC4BrowserProps {
   /**
    * Children to render inside the browser overlay
    */
-  children?: React.ReactNode | undefined
+  children?: ReactNode | undefined
 }
 
 const cssInteractive = css({
@@ -366,6 +367,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   children,
   ...props
 }: LikeC4ViewProps<A>) {
+  const rootRef = useRef<HTMLDivElement>(null)
   const likec4model = useOptionalLikeC4Model()
   const [layoutType, setLayoutType] = useState<LayoutType>('manual')
   const [browserViewId, _onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
@@ -415,8 +417,11 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
 
   const bounds = pickViewBounds(view, props.dynamicViewVariant)
 
+  const root = rootRef.current ? { root: rootRef.current } : undefined
+
   return (
     <ShadowRoot
+      ref={rootRef}
       injectFontCss={injectFontCss}
       theme={mantineTheme}
       colorScheme={colorScheme}
@@ -464,47 +469,49 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
           children={children}
           {...props}
         />
-        {browserView && (
-          <Overlay openDelay={0} onClose={() => onNavigateTo(null)}>
-            <LikeC4Diagram
-              view={browserView}
-              pannable
-              zoomable
-              background="dots"
-              onNavigateTo={onNavigateTo}
-              showNavigationButtons
-              enableDynamicViewWalkthrough
-              enableFocusMode
-              enableRelationshipBrowser
-              enableElementDetails
-              enableRelationshipDetails
-              enableSearch
-              enableElementTags
-              enableCompareWithLatest
-              controls
-              readonly
-              nodesDraggable={false}
-              fitView
-              {...props}
-              fitViewPadding={FitViewPaddings.withControls}
-              {...browserProps}
-              enableNotations={browserViewHasNotations && (browserProps.enableNotations ?? true)}
-              renderNodes={renderNodes}
-              onLayoutTypeChange={setLayoutType}
-            />
-            <Box pos="absolute" top={'4'} right={'4'} zIndex={'999'}>
-              <ActionIcon
-                variant="default"
-                color="gray"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onNavigateTo(null)
-                }}>
-                <IconX />
-              </ActionIcon>
-            </Box>
-          </Overlay>
-        )}
+        <AnimatePresence {...root}>
+          {browserView && (
+            <Overlay openDelay={0} onClose={() => onNavigateTo(null)}>
+              <LikeC4Diagram
+                view={browserView}
+                pannable
+                zoomable
+                background="dots"
+                onNavigateTo={onNavigateTo}
+                showNavigationButtons
+                enableDynamicViewWalkthrough
+                enableFocusMode
+                enableRelationshipBrowser
+                enableElementDetails
+                enableRelationshipDetails
+                enableSearch
+                enableElementTags
+                enableCompareWithLatest
+                controls
+                readonly
+                nodesDraggable={false}
+                fitView
+                {...props}
+                fitViewPadding={FitViewPaddings.withControls}
+                {...browserProps}
+                enableNotations={browserViewHasNotations && (browserProps.enableNotations ?? true)}
+                renderNodes={renderNodes}
+                onLayoutTypeChange={setLayoutType}
+              />
+              <Box pos="absolute" top={'4'} right={'4'} zIndex={'999'}>
+                <ActionIcon
+                  variant="default"
+                  color="gray"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onNavigateTo(null)
+                  }}>
+                  <IconX />
+                </ActionIcon>
+              </Box>
+            </Overlay>
+          )}
+        </AnimatePresence>
       </FramerMotionConfig>
     </ShadowRoot>
   )

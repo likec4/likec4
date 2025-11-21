@@ -4,11 +4,11 @@ import type { AnimationStyles, CssKeyframes } from '@pandacss/types'
 export const keyframes: CssKeyframes = defineKeyframes({
   'indicatorOpacity': {
     '0%': {
-      opacity: 0.9,
+      opacity: 0.8,
       strokeOpacity: 0.8,
     },
     '100%': {
-      opacity: 0.6,
+      opacity: 0.4,
       strokeOpacity: 0.4,
     },
   },

@@ -34,7 +34,10 @@ export {
   logger as rootLogger,
 }
 
-export { loggable } from './utils'
+export {
+  loggable,
+  wrapError,
+} from './utils'
 
 /**
  * Get a child logger with the given subcategory.

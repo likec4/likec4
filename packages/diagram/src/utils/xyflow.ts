@@ -3,7 +3,9 @@ import { invariant } from '@likec4/core/utils'
 import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
 import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
-import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
+import type { MouseEvent as ReactMouseEvent } from 'react'
+import { flatMap, hasAtLeast, isArray, isNumber, isString } from 'remeda'
+import type { ViewPaddings } from '../LikeC4Diagram.props'
 import { vector } from './vector'
 
 export function distance(a: XYPosition, b: XYPosition) {
@@ -193,7 +195,7 @@ export function distanceBetweenPoints(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 }
 
-export function stopPropagation(e: React.MouseEvent) {
+export function stopPropagation(e: ReactMouseEvent) {
   return e.stopPropagation()
 }
 

@@ -1,5 +1,6 @@
 import { type MantineThemeOverride, MantineProvider } from '@mantine/core'
-import { type HTMLAttributes, useCallback, useRef } from 'react'
+import { useMergedRef } from '@mantine/hooks'
+import { type HTMLAttributes, forwardRef, useCallback, useRef } from 'react'
 import root from 'react-shadow'
 import { isDefined } from 'remeda'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
@@ -67,15 +68,18 @@ function useShadowRootStyle(
 `.trim()
 }
 
-export function ShadowRoot({
-  children,
-  theme = DefaultTheme,
-  injectFontCss = true,
-  styleNonce,
-  colorScheme: explicitColorScheme,
-  keepAspectRatio = false,
-  ...props
-}: ShadowRootProps) {
+export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
+  {
+    children,
+    theme = DefaultTheme,
+    injectFontCss = true,
+    styleNonce,
+    colorScheme: explicitColorScheme,
+    keepAspectRatio = false,
+    ...props
+  },
+  ref,
+) => {
   const colorScheme = useColorScheme(explicitColorScheme)
   const id = useId()
   const cssstyle = useShadowRootStyle(id, keepAspectRatio)
@@ -104,7 +108,7 @@ export function ShadowRoot({
       />
       <Root ssr={false} {...props} styleSheets={styleSheets} data-likec4-instance={id}>
         <div
-          ref={rootRef}
+          ref={useMergedRef(rootRef, ref)}
           data-mantine-color-scheme={colorScheme}
           className={'likec4-shadow-root'}
         >
@@ -123,4 +127,5 @@ export function ShadowRoot({
       </Root>
     </>
   )
-}
+})
+ShadowRoot.displayName = 'ShadowRoot'

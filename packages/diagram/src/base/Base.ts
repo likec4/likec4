@@ -52,7 +52,7 @@ function _setData<E extends WithData<any>>(value: E, state: Partial<E['data']>):
   }
 }
 function setData<E extends WithData<any>>(value: E, state: Partial<E['data']>): E
-function setData<E extends WithData<any>>(state: Partial<E['data']>): (value: E) => E
+function setData<E extends WithData<any>>(state: Partial<NoInfer<E['data']>>): (value: E) => E
 function setData<E extends WithData<any>>(arg1: E | Partial<E['data']>, arg2?: any) {
   if (arg2 !== undefined) {
     return _setData(arg1 as E, arg2)

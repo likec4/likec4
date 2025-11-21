@@ -12,11 +12,16 @@ import type { DiagramEdge, DiagramNode, LayoutedDynamicView } from './view-layou
 export type LayoutedViewDriftReason =
   | 'not-exists'
   | 'type-changed'
-  | 'nodes-mismatch'
-  | 'edges-mismatch'
+  | 'nodes-added'
+  | 'nodes-removed'
+  | 'nodes-drift' // exists in both versions, but with layout differences
+  | 'edges-added'
+  | 'edges-removed'
+  | 'edges-drift' // exists in both versions, but with layout differences
 
 export type DiagramNodeDriftReason =
-  | 'missing' // exists in snapshot but not in view, and visa versa
+  | 'removed' // exists in snapshot but not in latest
+  | 'added' // exists in latest but not in snapshot
   | 'label-changed' // title/description/technology/icon changed
   | 'modelRef-changed'
   | 'parent-changed'
@@ -26,9 +31,13 @@ export type DiagramNodeDriftReason =
   | 'shape-changed'
 
 export type DiagramEdgeDriftReason =
-  | 'missing' // exists in snapshot but not in view, and visa versa
-  | 'label-changed' // title/description/technology changed
-  | 'direction-changed' // has different source/target
+  | 'removed' // exists in snapshot but not in latest
+  | 'added' // exists in latest but not in snapshot
+  | 'label-added'
+  | 'label-removed'
+  | 'label-changed'
+  | 'notes-changed'
+  | 'direction-changed'
   | 'source-changed'
   | 'target-changed'
 

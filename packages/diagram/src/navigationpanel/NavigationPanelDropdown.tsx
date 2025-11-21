@@ -38,6 +38,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
 import { useOnDiagramEvent } from '../custom'
@@ -462,7 +463,7 @@ function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolea
   const ref = useRef<HTMLDivElement>(null)
   const actor = useNavigationActorRef()
 
-  const onItemClicked = (item: ColumnItem) => (e: React.MouseEvent) => {
+  const onItemClicked = (item: ColumnItem) => (e: ReactMouseEvent) => {
     e.stopPropagation()
     if (item.type === 'folder') {
       actor.send({ type: 'select.folder', folderPath: item.folderPath })

@@ -1,7 +1,7 @@
 import { ref, useActiveTextEditor, useEditorDecorations, watch } from 'reactive-vscode'
 import { first } from 'remeda'
 import * as vscode from 'vscode'
-import type { Rpc } from '../Rpc'
+import type { Rpc } from './useRpc'
 
 export function useTagDecoration() {
   // const t

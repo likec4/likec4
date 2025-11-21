@@ -18,6 +18,20 @@ export namespace DidChangeModelNotification {
   export const type = new NotificationType<string>('likec4/onDidChangeModel')
   export type Type = typeof type
 }
+
+/**
+ * When the snapshot of a manual layout changes
+ * Send by the editor to the language server
+ */
+export namespace DidChangeSnapshotNotification {
+  export type Params = {
+    snapshotUri: DocumentUri
+  }
+  export const Method = 'likec4/onDidChangeSnapshot' as const
+  export const type = new NotificationType<Params>(Method)
+  export type Type = typeof type
+}
+
 /**
  * When server requests to open a likec4 preview panel
  * (available only in the editor).
@@ -89,6 +103,7 @@ export namespace LayoutView {
   export type Params = {
     viewId: ViewId
     projectId?: string | undefined
+    layoutType?: 'auto' | 'manual' | undefined
   }
   export type Res = {
     result:
@@ -123,8 +138,8 @@ export namespace ValidateLayout {
       }[]
       | null
   }
-  export const Req = new RequestType<Params, Res, void>('likec4/validate-layout')
-  export type Req = typeof Req
+  export const req = new RequestType<Params, Res, void>('likec4/validate-layout')
+  export type Req = typeof req
 }
 
 /**
@@ -149,7 +164,10 @@ export namespace FetchProjects {
     projects: {
       [projectId: ProjectId]: {
         folder: URI
-        config: LikeC4ProjectJsonConfig
+        config: {
+          name: string
+          title?: string | undefined
+        }
         docs: NonEmptyArray<DocumentUri>
       }
     }
@@ -184,8 +202,8 @@ export namespace BuildDocuments {
     docs: DocumentUri[]
   }
 
-  export const Req = new RequestType<Params, void, void>('likec4/build')
-  export type Req = typeof Req
+  export const req = new RequestType<Params, void, void>('likec4/build')
+  export type Req = typeof req
 }
 
 /**
@@ -233,8 +251,8 @@ export namespace Locate {
       projectId?: string | undefined
     }
   export type Res = Location | null
-  export const Req = new RequestType<Params, Res, void>('likec4/locate')
-  export type Req = typeof Req
+  export const req = new RequestType<Params, Res, void>('likec4/locate')
+  export type Req = typeof req
 }
 // #endregion
 
@@ -248,10 +266,17 @@ export namespace ChangeView {
     change: ViewChange
     projectId?: string | undefined
   }
-  export type Res = Location | null
+  export type Res = {
+    success: true
+    location: Location | null
+  } | {
+    success: false
+    location?: Location | null
+    error: string
+  }
 
-  export const Req = new RequestType<Params, Res, void>('likec4/change-view')
-  export type Req = typeof Req
+  export const req = new RequestType<Params, Res, void>('likec4/change-view')
+  export type Req = typeof req
 }
 
 /**

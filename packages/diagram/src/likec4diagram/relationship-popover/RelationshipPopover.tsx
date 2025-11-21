@@ -177,7 +177,9 @@ export const RelationshipPopover = memo(() => {
 })
 
 const getEdgeLabelElement = (edgeId: string, container: HTMLElement | null | undefined) => {
-  return container?.querySelector<HTMLDivElement>(`.likec4-edge-label[data-edge-id="${edgeId}"]`) ?? null
+  return container?.querySelector<HTMLDivElement>(`.likec4-edge-label[data-edge-id="${edgeId}"]`) ??
+    container?.querySelector<SVGCircleElement>(`.react-flow__edge[data-id="${edgeId}"] .edge-center-point`) ??
+    null
 }
 
 type RelationshipPopoverInternalProps = {
@@ -207,7 +209,7 @@ const RelationshipPopoverInternal = ({
 
   const containerRef = useRootContainerRef()
 
-  const [referenceEl, setReferenceEl] = useState<HTMLDivElement | null>(null)
+  const [referenceEl, setReferenceEl] = useState<HTMLDivElement | SVGCircleElement | null>(null)
 
   useLayoutEffect(() => {
     setReferenceEl(getEdgeLabelElement(diagramEdge.id, containerRef.current))
@@ -477,7 +479,7 @@ const Relationship = forwardRef<
           <Text size="xs" className={css({ userSelect: 'all' })}>{r.technology}</Text>
         </HStack>
       )}
-      {r.description.nonEmpty && (
+      {r.summary.nonEmpty && (
         <>
           <Label>description</Label>
           <Box
@@ -491,7 +493,7 @@ const Relationship = forwardRef<
               },
             }}
           >
-            <Markdown value={r.description} fontSize={'sm'} />
+            <Markdown value={r.summary} fontSize={'sm'} />
           </Box>
         </>
       )}

@@ -24,6 +24,7 @@ import type {
   DeploymentNode,
   ElementStyle,
   LikeC4Project,
+  MarkdownOrString,
   ParsedElementView,
   ParsedLikeC4ModelData,
   Specification,
@@ -245,6 +246,16 @@ function validateSpec({ tags, elements, deployments, relationships, ...specifica
   }
 }
 
+function toMarkdownOrString(input: string | MarkdownOrString | null | undefined): MarkdownOrString | null {
+  if (isNullish(input)) {
+    return null
+  }
+  if (typeof input === 'string') {
+    return { txt: input }
+  }
+  return input
+}
+
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _spec: Spec,
   _elements = new Map<string, Element<Any>>(),
@@ -301,7 +312,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       exact({
         id: id as any,
         title,
-        description: description ? { txt: description } : null,
+        description: toMarkdownOrString(description),
         tags,
         links,
         _stage: 'parsed',
@@ -470,6 +481,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               title = '',
               links: _links = [],
               description = null,
+              notes = null,
               ...props
             } = defu(
               typeof _props === 'string' ? { title: _props } : { ..._props },
@@ -484,7 +496,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 model: target,
               },
               title,
-              ...(description && { description: { txt: description } }),
+              ...(description && { description: toMarkdownOrString(description) }),
+              ...(notes && { notes: toMarkdownOrString(notes) } as {}),
               links,
               ...props,
             }))
@@ -497,6 +510,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               title = '',
               links,
               description = null,
+              notes = null,
               ...props
             } = defu(
               typeof _props === 'string' ? { title: _props } : { ..._props },
@@ -507,7 +521,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 model: target,
               },
               title,
-              ...(description && { description: { txt: description } }),
+              ...(description && { description: toMarkdownOrString(description) }),
+              ...(notes && { notes: toMarkdownOrString(notes) } as {}),
               links: mapLinks(links),
               ...props,
             }))
@@ -542,8 +557,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 id: _id,
                 kind: kind as any,
                 title: title ?? nameFromFqn(_id),
-                ...(description && { description: { txt: description } }),
-                ...(summary && { summary: { txt: summary } }),
+                ...(description && { description: toMarkdownOrString(description) }),
+                ...(summary && { summary: toMarkdownOrString(summary) }),
                 style: exact({
                   icon: icon as IconUrl | undefined,
                   color: color ?? specStyle?.color,
@@ -736,8 +751,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 id: _id,
                 element: target as Fqn,
                 ...title && { title },
-                ...(summary && { summary: { txt: summary } }),
-                ...(description && { description: { txt: description } }),
+                ...(summary && { summary: toMarkdownOrString(summary) }),
+                ...(description && { description: toMarkdownOrString(description) }),
                 style: exact({
                   icon: icon as IconUrl | undefined,
                   color,
@@ -757,6 +772,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               title = null,
               links,
               description = null,
+              notes = null,
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -768,7 +784,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 deployment: target as any,
               },
               title,
-              ...description && { description: { txt: description } },
+              ...description && { description: toMarkdownOrString(description) },
+              ...(notes && { notes: toMarkdownOrString(notes) } as {}),
               links: mapLinks(links),
               ...props,
             }))
@@ -804,8 +821,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                   id: _id,
                   kind: kind as any,
                   title: title ?? nameFromFqn(_id),
-                  ...(description && { description: { txt: description } }),
-                  ...(summary && { summary: { txt: summary } }),
+                  ...(description && { description: toMarkdownOrString(description) }),
+                  ...(summary && { summary: toMarkdownOrString(summary) }),
                   style: exact({
                     icon: icon as IconUrl | undefined,
                     color: color ?? specStyle?.color,

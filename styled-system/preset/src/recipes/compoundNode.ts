@@ -58,18 +58,18 @@ export const compoundNode = defineRecipe({
       borderRadius: borderRadius.ref,
       boxSizing: 'border-box',
       ['--likec4-palette-outline']: {
-        _light: 'color-mix(in srgb, var(--likec4-palette-stroke) 80%, var(--likec4-palette-hiContrast))',
-        _dark: 'color-mix(in srgb, var(--likec4-palette-stroke) 60%, var(--likec4-palette-hiContrast))',
+        base: 'oklab(from var(--likec4-palette-stroke) calc(l - 0.05) a b)',
+        _dark: 'oklab(from var(--likec4-palette-stroke) calc(l + 0.2) a b)',
       },
       [borderWidth.var]: '3px',
       [borderRadius.var]: '6px',
       [compoundTransparency.var]: '100%',
       [borderTransparency.var]: '100%',
-      [indicatorSpacing.var]: `calc(${borderWidth.ref} + 2px)`,
+      [indicatorSpacing.var]: `calc(${borderWidth.ref} + 1px)`,
       [compoundColor.var]: 'var(--likec4-palette-loContrast)',
       color: compoundColor.ref,
 
-      _after: {
+      _before: {
         position: 'absolute',
         content: '" "',
         top: `[calc(-1 * ${indicatorSpacing.ref})]`,
@@ -86,7 +86,7 @@ export const compoundNode = defineRecipe({
           _whenFocused: 'block',
           _whenSelected: 'block',
         },
-        animationStyle: 'indicatorOpacity',
+        animationStyle: 'indicator',
         animationPlayState: {
           base: 'paused',
           _whenFocused: 'running',
@@ -133,6 +133,7 @@ export const compoundNode = defineRecipe({
       mixBlendMode: {
         base: 'hard-light',
         _reduceGraphicsOnPan: 'normal',
+        _print: 'normal!',
       },
       [`& svg, & img`]: {
         width: '100%',
@@ -155,7 +156,7 @@ export const compoundNode = defineRecipe({
     actionBtn: {
       '--actionbtn-color': compoundColor.ref,
       '--actionbtn-color-hovered': compoundColor.ref,
-      '--actionbtn-color-hovered-btn': `color-mix(in srgb, ${compoundColor.ref} 80%, #fff)`,
+      '--actionbtn-color-hovered-btn': `color-mix(in oklab, ${compoundColor.ref} 80%, #fff)`,
       opacity: {
         base: 0.6,
         _whenHovered: 0.75,
@@ -165,6 +166,9 @@ export const compoundNode = defineRecipe({
       _noReduceGraphics: {
         transition: 'fast',
       },
+      _print: {
+        display: 'none',
+      },
     },
     navigationBtn: {
       position: 'absolute',
@@ -173,12 +177,18 @@ export const compoundNode = defineRecipe({
       _smallZoom: {
         display: 'none',
       },
+      _print: {
+        display: 'none',
+      },
     },
     detailsBtn: {
       position: 'absolute',
       top: '0.5',
       right: '0.5',
       _smallZoom: {
+        display: 'none',
+      },
+      _print: {
         display: 'none',
       },
     },
@@ -198,8 +208,8 @@ export const compoundNode = defineRecipe({
       }),
       true: parts({
         root: {
-          backgroundColor: `[color-mix(in srgb, var(--likec4-palette-fill) ${compoundTransparency.ref}, transparent)]`,
-          borderColor: `[color-mix(in srgb, var(--likec4-palette-stroke) ${borderTransparency.ref}, transparent)]`,
+          backgroundColor: `color-mix(in oklab, var(--likec4-palette-fill) ${compoundTransparency.ref}, transparent)`,
+          borderColor: `color-mix(in oklab, var(--likec4-palette-stroke) ${borderTransparency.ref}, transparent)`,
         },
       }),
     },
@@ -209,7 +219,7 @@ export const compoundNode = defineRecipe({
         root: {
           [compoundColor.var]: {
             base: 'var(--likec4-palette-stroke)',
-            _dark: '[color-mix(in srgb, var(--likec4-palette-loContrast) 60%, var(--likec4-palette-fill))]',
+            _dark: '[color-mix(in oklab, var(--likec4-palette-loContrast) 60%, var(--likec4-palette-fill))]',
           },
         },
         actionBtn: {

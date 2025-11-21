@@ -77,7 +77,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
 
   return (
     <>
-      {selectable && !isDragging && (
+      {selectable && (
         <path
           className={cx(
             'react-flow__edge-interaction',
@@ -91,27 +91,42 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
             strokeWidth: interactionWidth ?? 10,
             stroke: 'currentcolor',
             strokeOpacity: 0,
+            ...isDragging ? { display: 'none' } : {},
           }}
         />
       )}
+      <circle
+        className={cx(
+          'edge-center-point',
+          css({
+            visibility: 'hidden',
+            offsetDistance: '50%',
+          }),
+        )}
+        style={{
+          offsetPath: `path("${svgPath}")`,
+        }}
+        cx={0}
+        cy={0}
+        r={2} />
+
       <g className={markerContext} onPointerDown={onEdgePointerDown}>
         <defs>
           {MarkerStart && <MarkerStart id={'start' + id} />}
           {MarkerEnd && <MarkerEnd id={'end' + id} />}
         </defs>
-        {!isDragging && (
-          <path
-            key={'edge-path-bg'}
-            className={cx(
-              'react-flow__edge-path',
-              'hide-on-reduced-graphics',
-              edgePathBg,
-            )}
-            d={svgPath}
-            style={style}
-            strokeLinecap={'round'}
-          />
-        )}
+        <path
+          key={'edge-path-bg'}
+          className={cx(
+            'react-flow__edge-path',
+            'hide-on-reduced-graphics',
+            edgePathBg,
+            isDragging && css({ display: 'none' }),
+          )}
+          d={svgPath}
+          style={style}
+          strokeLinecap={'round'}
+        />
         <path
           key={'edge-path'}
           ref={svgPathRef}

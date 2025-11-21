@@ -14,7 +14,7 @@ export type {
   LikeC4StylesConfigInput,
 } from './schema.theme'
 
-export { serializableLikeC4ProjectConfig, validateProjectConfig } from './schema'
+export { validateProjectConfig } from './schema'
 
 export {
   ConfigFilenames,

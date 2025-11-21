@@ -24,6 +24,18 @@ export namespace BBox {
     }
   }
 
+  /**
+   * Returns the four corner points of the box in clockwise order starting from top-left
+   */
+  export function toPoints({ x, y, width, height }: BBox): [XYPoint, XYPoint, XYPoint, XYPoint] {
+    return [
+      { x, y }, // Top left
+      { x: x + width, y }, // Top right
+      { x: x + width, y: y + height }, // Bottom right
+      { x, y: y + height }, // Bottom left
+    ]
+  }
+
   export function fromPoints(points: Point[]): BBox {
     const { x1, y1, x2, y2 } = RectBox.fromPoints(points)
     return {

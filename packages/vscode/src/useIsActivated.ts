@@ -1,6 +1,14 @@
-import { createSingletonComposable, effectScope, onDeactivate, useVscodeContext, watch } from 'reactive-vscode'
+import {
+  type EffectScope,
+  createSingletonComposable,
+  effectScope,
+  onDeactivate,
+  tryOnScopeDispose,
+  useVscodeContext,
+  watch,
+} from 'reactive-vscode'
 import { isFunction } from 'remeda'
-import { logger } from '../logger'
+import { useExtensionLogger } from './useExtensionLogger'
 
 /**
  * Reactively reads/writes if language client is activated
@@ -24,38 +32,52 @@ export function whenExtensionActive(callbacks: { onStart: () => void; onStop?: (
 export function whenExtensionActive(arg: (() => void) | { onStart: () => void; onStop?: () => void }): void {
   const activated = useIsActivated()
   let callback: () => void
-  let onDeactivate: (() => void) | undefined
+  let _onDeactivate: (() => void) | undefined
   if (isFunction(arg)) {
     callback = arg
   } else {
     callback = arg.onStart
-    onDeactivate = arg.onStop
+    _onDeactivate = arg.onStop
   }
 
-  watch(activated, (isActive, prevActive, onCleanup) => {
-    if (prevActive && !isActive) {
-      onDeactivate?.()
-    }
-    if (!isActive) {
+  let scope: EffectScope | undefined
+
+  const dispose = () => {
+    const s = scope
+    if (!s) {
       return
     }
-    const scope = effectScope()
-    scope.run(() => {
-      try {
-        callback()
-      } catch (error) {
-        logger.error('Failed to run callback in whenExtensionActive', { error })
-      }
-    })
+    scope = undefined
+    if (_onDeactivate) {
+      s.run(() => {
+        try {
+          _onDeactivate()
+        } catch (e) {
+          // ignore errors in onStop
+        }
+      })
+    }
+    s.stop()
+  }
 
-    onCleanup(() => {
+  watch(activated, (isActive) => {
+    if (!isActive) {
+      dispose()
+      return
+    }
+    if (!scope) {
+      const { logger } = useExtensionLogger()
+      scope = effectScope(true)
       try {
-        scope.stop()
-      } catch (error) {
-        logger.error('Failed to stop effect scope in whenExtensionActive', { error })
+        scope.run(callback)
+      } catch (e) {
+        logger.error('Error in whenExtensionActive callback', { error: e })
+        dispose()
       }
-    })
+    }
   }, {
     immediate: true,
   })
+
+  tryOnScopeDispose(dispose)
 }

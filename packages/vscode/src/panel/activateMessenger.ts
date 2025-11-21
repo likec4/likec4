@@ -1,69 +1,45 @@
-import { applyLayoutDriftReasons, applyManualLayout } from '@likec4/core/model'
 import type { ProjectId } from '@likec4/core/types'
-import { loggable } from '@likec4/log'
+import { loggable, wrapError } from '@likec4/log'
 import {
-  BroadcastModelUpdate,
-  FetchComputedModel,
-  FetchLayoutedView,
-  ReadLocalIcon,
-  WebviewMsgs,
-} from '@likec4/vscode-preview/protocol'
-import {
-  createSingletonComposable,
   executeCommand,
   nextTick,
   toValue,
   triggerRef,
   useActiveTextEditor,
-  useDisposable,
 } from 'reactive-vscode'
-import * as vscode from 'vscode'
-import { Messenger } from 'vscode-messenger'
-import { BROADCAST } from 'vscode-messenger-common'
-import { logger as rootLogger } from '../logger'
+import vscode from 'vscode'
 import { commands } from '../meta'
-import type { Rpc } from '../Rpc'
-import { computedModels, latestUpdatedSnapshotUri } from '../state'
+import { computedModels, latestUpdatedSnapshotUri } from '../sharedstate'
+import { useExtensionLogger } from '../useExtensionLogger'
+import { useMessenger } from '../useMessenger'
+import { useRpc } from '../useRpc'
 import { performanceMark } from '../utils'
-import type { DiagramPanel } from './useDiagramPanel'
+import { useDiagramPanel } from './useDiagramPanel'
 
-const logger = rootLogger.getChild('messenger')
+export function activateMessenger() {
+  const rpc = useRpc()
+  const messenger = useMessenger()
+  const preview = useDiagramPanel()
 
-export const useMessenger = createSingletonComposable(() => {
-  const messenger = new Messenger()
-  return messenger
-})
-export function activateMessenger(
-  { rpc, preview, messenger }: { rpc: Rpc; preview: DiagramPanel; messenger: Messenger },
-) {
-  logger.debug('useMessenger activation')
+  const { logger, output } = useExtensionLogger('messenger')
 
-  const broadcastModelUpdate = () => {
-    logger.debug`broadcast ${'onDidChangeModel'}`
-    messenger.sendNotification(BroadcastModelUpdate, BROADCAST)
-  }
+  logger.debug('activating messenger <-> preview panel')
 
-  rpc.onDidChangeModel(() => {
-    broadcastModelUpdate()
-  })
-
-  rpc.onRequestOpenView((params) => {
-    logger.debug`request open view ${params.viewId} of project ${params.projectId}`
-    preview.open(params.viewId, params.projectId)
-  })
-
-  const activeTextEditor = useActiveTextEditor()
-
-  useDisposable(messenger.onRequest(FetchComputedModel, async () => {
+  messenger.handleFetchComputedModel(async () => {
     const t0 = performanceMark()
     const projectId = toValue(preview.projectId) ?? 'default'
     try {
       const result = await rpc.fetchComputedModel(projectId)
-      logger.debug(`request {req} of {projectId} in ${t0.pretty}`, { req: 'fetchComputedModel', projectId })
       if (result.model) {
+        logger.debug(`request {req} of {projectId} in ${t0.pretty}`, { req: 'fetchComputedModel', projectId })
         computedModels.value[projectId] = result.model
         void nextTick(() => {
           triggerRef(computedModels)
+        })
+      } else {
+        logger.warn(`No data returned in request {req} for {projectId} in ${t0.pretty}`, {
+          req: 'fetchComputedModel',
+          projectId,
         })
       }
       return result
@@ -75,30 +51,25 @@ export function activateMessenger(
       })
       throw err // propagate to client
     }
-  }))
+  })
 
-  useDisposable(messenger.onRequest(FetchLayoutedView, async (params) => {
+  messenger.handleFetchLayoutedView(async (params) => {
     const t0 = performanceMark()
     const { viewId, layoutType = 'manual' } = params
     try {
       const projectId = toValue(preview.projectId) ?? 'default'
-      const result = await rpc.layoutView({ viewId, projectId })
+      const result = await rpc.layoutView({ viewId, projectId, layoutType })
       if (!result) {
+        logger.warn(
+          `No view {viewId} can be found or layouted in {projectId} ${t0.pretty}`,
+          { viewId, projectId },
+        )
         return {
           view: null,
           error: `View "${viewId}" not found`,
         }
       }
       let view = result.diagram
-      const modelData = computedModels.value[projectId]
-      const snapshot = modelData?.manualLayouts?.[viewId]
-      if (snapshot) {
-        if (layoutType === 'auto') {
-          view = applyLayoutDriftReasons(view, snapshot)
-        } else if (view._layout !== 'manual') {
-          view = applyManualLayout(view, snapshot)
-        }
-      }
       logger.debug(
         `{req} of {viewId} in {projectId} (requested: {layoutType}, actual: {viewlayout}) in ${t0.pretty}`,
         { req: 'layoutView', viewId, projectId, layoutType, viewlayout: view._layout },
@@ -116,35 +87,46 @@ export function activateMessenger(
         error,
       }
     }
-  }))
+  })
 
-  useDisposable(messenger.onNotification(WebviewMsgs.CloseMe, () => {
-    preview.close()
-  }))
+  // Moved to useDiagramPanel
+  // messenger.onWebviewCloseMe(() => {
+  //   preview.close()
+  // })
 
-  useDisposable(messenger.onNotification(WebviewMsgs.Locate, async (params) => {
-    const projectId = toValue(preview.projectId) ?? 'default' as ProjectId
+  messenger.onWebviewLocate(async (params) => {
+    const projectId = toValue(preview.projectId) ?? 'default'
     await executeCommand(commands.locate, { ...params, projectId })
-  }))
+  })
 
-  useDisposable(messenger.onNotification(WebviewMsgs.NavigateTo, ({ viewId }) => {
-    const projectId = toValue(preview.projectId) ?? 'default' as ProjectId
-    preview.open(viewId, projectId)
-  }))
+  // Moved to useDiagramPanel
+  // messenger.onWebviewNavigateTo(({ viewId }) => {
+  //   const projectId = toValue(preview.projectId) ?? 'default' as ProjectId
+  //   preview.open(viewId, projectId)
+  // })
 
-  useDisposable(messenger.onNotification(WebviewMsgs.OnChange, async ({ viewId, change }) => {
+  const activeTextEditor = useActiveTextEditor()
+  messenger.handleViewChange(async ({ viewId, change }, sender) => {
     try {
       const projectId = toValue(preview.projectId) ?? 'default' as ProjectId
       logger.debug`request ${change.op} of ${viewId} in project ${projectId}`
-      let loc = await rpc.changeView({ viewId, projectId, change })
+      const result = await rpc.changeView({ viewId, projectId, change })
+
+      if (!result.success) {
+        output.error(`changeView failed\n${result.error}`)
+        output.show()
+        return result
+      }
+      const loc = result.location ?? null
+
       if (change.op === 'reset-manual-layout' || change.op === 'save-view-snapshot') {
         latestUpdatedSnapshotUri.value = loc?.uri ?? null
-        broadcastModelUpdate()
-        return
+        messenger.sendModelUpdate(sender)
+        return { success: true }
       }
       if (!loc) {
         logger.warn(`rpc.changeView returned null`)
-        return
+        return result
       }
       const location = rpc.client.protocol2CodeConverter.asLocation(loc)
       let viewColumn = activeTextEditor.value?.viewColumn ?? vscode.ViewColumn.One
@@ -157,13 +139,21 @@ export function activateMessenger(
       })
       await vscode.workspace.save(location.uri)
       editor.revealRange(selection)
-    } catch (error) {
-      logger.error(`[Messenger] onChange error`, { error })
-      throw error // propagate to client
+      return {
+        success: true,
+      }
+    } catch (e) {
+      const error = loggable(wrapError(e, 'changeView failed:\n'))
+      output.error(error)
+      output.show()
+      return {
+        success: false,
+        error,
+      }
     }
-  }))
+  })
 
-  useDisposable(messenger.onRequest(ReadLocalIcon, async (uri) => {
+  messenger.handleReadLocalIcon(async (uri) => {
     const t0 = performanceMark()
     try {
       // Convert file:// URI to vscode.Uri
@@ -206,5 +196,5 @@ export function activateMessenger(
       // Return null for any errors (file not found, permission denied, etc.)
       return { base64data: null }
     }
-  }))
+  })
 }

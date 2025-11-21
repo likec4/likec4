@@ -1,4 +1,5 @@
 import { defineRecipe } from '@pandacss/dev'
+import { mantine } from '../generated'
 
 export const markdownBlock = defineRecipe({
   className: 'likec4-markdown-block',
@@ -14,12 +15,12 @@ export const markdownBlock = defineRecipe({
     '--typography-spacing': 'calc(0.75 * var(--text-fz-md))',
     '--text-fw-headings': '600',
     '--code-background': {
-      _light: 'var(--mantine-color-gray-2)',
-      _dark: 'var(--mantine-color-dark-8)',
+      base: mantine.colors.gray[2],
+      _dark: mantine.colors.dark[8],
     },
     '--code-color': {
-      _light: 'var(--mantine-color-black)',
-      _dark: 'var(--mantine-color-white)',
+      base: mantine.colors.black,
+      _dark: mantine.colors.white,
     },
 
     fontSize: 'var(--text-fz-md)',
@@ -89,12 +90,10 @@ export const markdownBlock = defineRecipe({
 
     '& :where(mark)': {
       fontSize: 'var(--text-fz-md)',
-      _light: {
-        backgroundColor: 'mantine.colors.yellow[2]',
-        color: 'inherit',
-      },
+      backgroundColor: mantine.colors.yellow[2],
+      color: 'inherit',
       _dark: {
-        backgroundColor: 'mantine.colors.yellow[5]',
+        backgroundColor: mantine.colors.yellow[5],
         color: 'var(--mantine-color-black)',
       },
     },
@@ -115,8 +114,8 @@ export const markdownBlock = defineRecipe({
       border: 'none',
       borderBottom: '1px solid',
       borderColor: {
-        _light: 'mantine.colors.gray[3]',
-        _dark: 'mantine.colors.dark[3]',
+        base: mantine.colors.gray[3],
+        _dark: mantine.colors.dark[3],
       },
     },
     '& :where(pre)': {
@@ -214,8 +213,8 @@ export const markdownBlock = defineRecipe({
       borderRadius: 'var(--mantine-radius-sm)',
       padding: 'xs',
       backgroundColor: {
-        _light: 'var(--mantine-color-gray-1)',
-        _dark: 'var(--mantine-color-dark-5)',
+        base: mantine.colors.gray[1],
+        _dark: mantine.colors.dark[5],
       },
       '&:not(:first-child)': {
         marginTop: 'var(--typography-spacing)',
@@ -229,15 +228,18 @@ export const markdownBlock = defineRecipe({
      */
     uselikec4palette: {
       true: {
-        '--code-background': 'color-mix(in srgb , var(--likec4-palette-stroke) 70%, transparent)',
+        '--code-background': 'color-mix(in oklab , var(--likec4-palette-stroke) 70%, transparent)',
         '--code-color': 'var(--likec4-palette-loContrast)',
         '--typography-spacing': 'calc(0.5 * var(--text-fz-md))',
         '& :where(a)': {
           color: 'var(--likec4-palette-fill)/45',
-          mixBlendMode: 'difference',
+          mixBlendMode: {
+            base: 'difference',
+            _print: 'normal!',
+          },
         },
         '& :where(strong)': {
-          color: `color-mix(in srgb , var(--likec4-palette-hiContrast) 50%,  var(--likec4-palette-loContrast))`,
+          color: `color-mix(in oklab , var(--likec4-palette-hiContrast) 50%,  var(--likec4-palette-loContrast))`,
         },
         '& :where(blockquote)': {
           padding: 'xxs',

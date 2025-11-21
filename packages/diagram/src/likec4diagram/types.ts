@@ -8,8 +8,8 @@ import type {
   ExclusiveUnion,
   Fqn,
   IconUrl,
+  MarkdownOrString,
   NonEmptyReadonlyArray,
-  RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
@@ -33,6 +33,8 @@ export namespace Types {
         DiagramNode,
         | 'id'
         | 'title'
+        | 'technology'
+        | 'description'
         | 'color'
         | 'shape'
         | 'width'
@@ -45,14 +47,14 @@ export namespace Types {
       >
     >
     & {
-      technology: string | null
-      description: RichTextOrEmpty
+      // technology: string | null
       /**
        * View this node belongs to
        */
       viewId: ViewId
       isMultiple?: boolean | undefined
       icon: string | null
+      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -67,7 +69,6 @@ export namespace Types {
        * If set - this node has navigation to another view and diagram has handler for this
        */
       navigateTo: ViewId | null
-      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -81,7 +82,6 @@ export namespace Types {
       deploymentFqn: DeploymentFqn
       // If set - this node refers to a model element
       modelFqn: Fqn | null
-      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -133,6 +133,7 @@ export namespace Types {
       viewId: ViewId
       depth: number
       icon?: IconUrl
+      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -145,7 +146,6 @@ export namespace Types {
        * If set - this node has navigation to another view and diagram has handler for this
        */
       navigateTo: ViewId | null
-      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -161,7 +161,6 @@ export namespace Types {
        * If set - this node has navigation to another view and diagram has handler for this
        */
       navigateTo: ViewId | null
-      drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason> | null
     }
   >
 
@@ -206,16 +205,6 @@ export namespace Types {
   export type Node<Type extends NodeType = NodeType> = Extract<AnyNode, { type: Type }>
   export type NodeProps<Type extends NodeType = NodeType> = BaseNodeProps<Node<Type>>
 
-  // export type NodeProps = {
-  //   element: NodeProps<ElementNode>
-  //   deployment: XYNodeProps<DeploymentElementNode>
-  //   'compound-element': XYNodeProps<CompoundElementNode>
-  //   'compound-deployment': XYNodeProps<CompoundDeploymentNode>
-  //   'view-group': XYNodeProps<ViewGroupNode>
-  //   'seq-actor': XYNodeProps<SequenceActorNode>
-  //   'seq-parallel': XYNodeProps<SequenceParallelArea>
-  // }
-
   export type RelationshipEdgeData = Simplify<
     & BaseEdgeData
     & NonOptional<
@@ -233,13 +222,13 @@ export namespace Types {
         | 'tail'
         | 'navigateTo'
         | 'astPath'
+        | 'drifts'
       >
     >
     & {
-      notes: RichTextOrEmpty
+      notes: MarkdownOrString | null
       labelXY: XYPosition | null
       controlPoints: XYPosition[] | undefined | null
-      drifts: NonEmptyReadonlyArray<DiagramEdgeDriftReason> | null
     }
   >
 
@@ -259,10 +248,11 @@ export namespace Types {
         | 'tail'
         | 'navigateTo'
         | 'astPath'
+        | 'drifts'
       >
     >
     & {
-      notes: RichTextOrEmpty
+      notes: MarkdownOrString | null
       labelXY: XYPosition | null
       labelBBox: BBox
       controlPoints: XYPosition[] | undefined | null

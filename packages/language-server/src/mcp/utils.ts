@@ -85,7 +85,7 @@ function mkcallTool<
       return {
         content: [{
           type: 'text',
-          text: err instanceof Error ? err.message : loggable(err),
+          text: loggable(err),
         }],
         isError: true,
       }

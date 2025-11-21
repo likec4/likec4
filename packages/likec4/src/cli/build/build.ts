@@ -78,6 +78,7 @@ export async function buildHandler({
       await pngHandler({
         path,
         useDotBin,
+        project: undefined,
         output: likec4AssetsDir,
         outputType: 'flat',
         ignore: true,

@@ -117,7 +117,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const showLocation = useCallbackRef(async (target: Locate.Params) => {
     try {
-      const location = await languageClient().sendRequest(Locate.Req, target)
+      const location = await languageClient().sendRequest(Locate.req, target)
       if (location) {
         revealLocation(location)
       }
@@ -128,9 +128,13 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const applyViewChanges = useCallbackRef(async (viewId: ViewId, change: ViewChange) => {
     try {
-      const location = await languageClient().sendRequest(ChangeView.Req, { viewId, change })
-      if (location) {
-        revealLocation(location)
+      if (change.op === 'save-view-snapshot' || change.op === 'reset-manual-layout') {
+        console.warn(`Operation ${change.op} is ignored in Playground`)
+        return
+      }
+      const res = await languageClient().sendRequest(ChangeView.req, { viewId, change })
+      if (res.location) {
+        revealLocation(res.location)
       }
     } catch (error) {
       playground.send({ type: 'likec4.lsp.onLayoutError', viewId, error: `${loggable(error)}` })
@@ -169,8 +173,8 @@ export function LanguageClientSync({ config, wrapper }: {
         }
 
         const throttled = funnel(requestComputedModel, {
-          triggerAt: 'both',
-          minGapMs: 500,
+          triggerAt: 'end',
+          maxBurstDurationMs: 300,
         })
 
         disposables.push(
@@ -201,7 +205,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
         try {
           // Initial request for model
-          await languageClient().sendRequest(BuildDocuments.Req, { docs })
+          await languageClient().sendRequest(BuildDocuments.req, { docs })
           await requestComputedModel()
 
           playground.send({

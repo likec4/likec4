@@ -5,7 +5,7 @@ import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { indexBy, map, prop } from 'remeda'
+import { map, prop } from 'remeda'
 import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createLanguageServices } from './language/module'
@@ -215,16 +215,7 @@ ${k.red('Please specify a project folder')}
    */
   async layoutedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Layouted> {
     const projectId = this.langium.shared.workspace.ProjectsManager.ensureProjectId(project)
-    const parsed = await this.langium.likec4.ModelBuilder.parseModel(projectId)
-    if (!parsed) {
-      throw new Error('Failed to parse model')
-    }
-    const diagrams = await this.viewsService.diagrams(projectId)
-    return LikeC4Model.create({
-      ...parsed.$data,
-      _stage: 'layouted' as const,
-      views: indexBy(diagrams, prop('id')),
-    })
+    return await this.langium.likec4.LanguageServices.layoutedModel(projectId)
   }
 
   getErrors() {

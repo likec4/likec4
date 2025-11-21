@@ -37,6 +37,7 @@ export {
 
 export {
   useHasProjects,
+  useLikeC4Project,
   useLikeC4ProjectId,
   useLikeC4Projects,
   useLikeC4ProjectsContext,

@@ -206,7 +206,6 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   ): LikeC4Model<UnknownComputed> {
     const logger = builderLogger.getChild(projectId)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model<UnknownComputed>>
-    const viewsCache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
     const hasManualLayouts = !!manualLayouts && !isEmpty(manualLayouts)
     const key = computedModelCacheKey(projectId) + (hasManualLayouts ? '+manualLayouts' : '')
     if (cache.has(key)) {
@@ -239,7 +238,6 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         const previous = this.previousViews[key]
         const view = previous && eq(v, previous) ? previous : v
         this.previousViews[key] = view
-        viewsCache.set(key, view)
         return [v.id, view] as const
       })
       const data: c4.ComputedLikeC4ModelData = {

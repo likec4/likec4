@@ -2,17 +2,17 @@ import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
-import { useId } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { BaseNodeData } from '../../base/types'
 import { stopPropagation } from '../../utils/xyflow'
 
 type ElementDetailsButtonProps = {
   selected?: boolean
   data: BaseNodeData
-  icon?: React.ReactNode
-  onClick: (e: React.MouseEvent) => void
+  icon?: ReactNode
+  onClick: (e: ReactMouseEvent) => void
 }
 
 const container = css({
@@ -33,6 +33,9 @@ const container = css({
     right: '3', // 12px
   },
   _smallZoom: {
+    display: 'none',
+  },
+  _print: {
     display: 'none',
   },
 })

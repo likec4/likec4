@@ -1,6 +1,7 @@
 export { useCallbackRef } from './useCallbackRef'
 export { useId } from './useId'
 export { useMantinePortalProps } from './useMantinePortalProps'
+export { useMediaPrint } from './useMediaPrint'
 export { useSetState } from './useSetState'
 export { useUpdateEffect } from './useUpdateEffect'
 export { useCurrentZoom, useIsZoomTooSmall, useXYFlow, useXYInternalNode, useXYStore, useXYStoreApi } from './useXYFlow'
@@ -11,6 +12,7 @@ export { useCurrentViewModel } from './useCurrentViewModel'
 export { useLikeC4Model, useLikeC4Specification, useLikeC4ViewModel } from './useLikeC4Model'
 export {
   useHasProjects,
+  useLikeC4Project,
   useLikeC4ProjectId,
   useLikeC4Projects,
   useLikeC4ProjectsContext,

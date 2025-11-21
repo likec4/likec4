@@ -8,7 +8,9 @@ import type {
   Expression,
   KeysOf,
   LikeC4ProjectStylesConfig,
+  MarkdownOrString,
   NonEmptyArray,
+  Relationship,
   RelationshipArrowType,
   RelationshipLineType,
   RelationshipSpecification as RelationshipKindSpecification,
@@ -61,8 +63,8 @@ export type Metadata<MetadataKey extends string> = IsNever<MetadataKey> extends 
 
 export type NewElementProps<Tag, Metadata> = {
   title?: string
-  summary?: string
-  description?: string
+  summary?: MarkdownOrString | string
+  description?: MarkdownOrString | string
   technology?: string
   tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
   metadata?: Metadata
@@ -82,8 +84,8 @@ export type NewElementProps<Tag, Metadata> = {
 
 export type NewDeploymentNodeProps<Tag, Metadata> = {
   title?: string
-  summary?: string
-  description?: string
+  summary?: MarkdownOrString | string
+  description?: MarkdownOrString | string
   technology?: string
   tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
   metadata?: Metadata
@@ -103,7 +105,7 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
 
 export type NewViewProps<Tag> = {
   title?: string
-  description?: string
+  description?: MarkdownOrString | string
   tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
   links?: Array<string | { title?: string; url: string }>
 }
@@ -111,8 +113,9 @@ export type NewViewProps<Tag> = {
 export type NewRelationProps<Kind, Tag, Metadata> = {
   kind?: Kind
   title?: string
-  description?: string
+  description?: MarkdownOrString | string
   technology?: string
+  notes?: MarkdownOrString | string
   tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
   metadata?: Metadata
   head?: RelationshipArrowType
