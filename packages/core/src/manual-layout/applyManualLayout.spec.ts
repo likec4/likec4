@@ -1,11 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { type WritableDraft } from 'immer'
 import { indexBy } from 'remeda'
-import { type DiagramEdge, type LayoutedElementView, _type } from '../types'
+import { type LayoutedElementView, _type } from '../types'
 import { type Patches, prepareFixtures } from './__test__/fixture'
 import { applyManualLayout } from './applyManualLayout'
-import { calcDriftsFromSnapshot } from './calcDriftsFromSnapshot'
 
 function testApplyManualLayout<const Nodes, Edges>(patches?: Patches<Nodes, Edges>) {
   const {

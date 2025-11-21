@@ -182,6 +182,7 @@ export function sequenceViewToXY(
         head: edge.head ?? 'normal',
         tail: edge.tail ?? 'none',
         astPath: edge.astPath,
+        drifts: edge.drifts ?? null,
       },
       focusable: false,
       zIndex: 20,
