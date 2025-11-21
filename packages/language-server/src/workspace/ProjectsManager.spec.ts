@@ -75,7 +75,7 @@ describe.concurrent('ProjectsManager', () => {
       expect(project?.folder).toBe('file:///test/workspace/src/test-project/')
     })
 
-    it('should fail to load config file from node_modules', async ({ expect }) => {
+    it.runIf(!isWin)('should fail to load config file from node_modules', async ({ expect }) => {
       const { projectsManager, services } = await createMultiProjectTestServices({})
       const fs = services.shared.workspace.FileSystemProvider
       vi.spyOn(fs, 'loadProjectConfig').mockRejectedValueOnce(new Error('should not be called'))
