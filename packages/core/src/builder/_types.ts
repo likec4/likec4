@@ -121,7 +121,6 @@ export type NewRelationProps<Kind, Tag, Metadata> = {
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
   line?: RelationshipLineType
-  dir?: 'forward' | 'back' | 'both'
   color?: Color
   links?: NonEmptyArray<string | { title?: string; url: string }>
 }

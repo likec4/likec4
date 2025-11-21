@@ -192,7 +192,6 @@ describe('Builder (style 2)', () => {
           rel('customer', 'cloud.ui', {
             title: 'uses',
             tags: ['tag1'],
-            dir: 'both',
           }),
           rel('cloud.ui', 'cloud.api', {
             title: 'calls',

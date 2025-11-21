@@ -112,7 +112,6 @@ function simplebuilder() {
           title: 'requests',
           technology: 'REST',
           description: 'requests data',
-          dir: 'both',
         }),
         rel('customer', 'saas.frontend', {
           title: 'uses',
