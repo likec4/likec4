@@ -1,6 +1,6 @@
-import type { LayoutedView, ProjectId, ViewId } from '@likec4/core'
+import type { DiagramNode, Icon, LayoutedView, ProjectId, ViewId } from '@likec4/core'
 import JSON5 from 'json5'
-import { type URI, DocumentState, UriUtils, WorkspaceCache } from 'langium'
+import { DocumentState, URI, UriUtils, WorkspaceCache } from 'langium'
 import { indexBy, prop } from 'remeda'
 import {
   type Location,
@@ -45,6 +45,8 @@ export const WithLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
   manualLayouts: (services: LikeC4Services) => new DefaultLikeC4ManualLayouts(services),
 }
 
+const RELATIVE_PATH_PREFIX = 'file://./'
+
 export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   protected cache: WorkspaceCache<ProjectId, Promise<Record<ViewId, LayoutedView> | null>>
 
@@ -67,8 +69,10 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
           if (file.isFile) {
             try {
               const content = await fs.readFile(file.uri)
+              const parsed = JSON5.parse<LayoutedView>(content)
+              const resolved = this.resolveIconPathsAfterRead(parsed, project.folderUri)
               manualLayouts.push({
-                ...JSON5.parse<LayoutedView>(content),
+                ...resolved,
                 _layout: 'manual',
               })
             } catch (err) {
@@ -98,6 +102,8 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       const { manualLayout: _, ...rest } = layouted
       layouted = rest
     }
+    // Normalize icon paths before writing
+    layouted = this.normalizeIconPathsForWrite(layouted, project.folderUri)
     const content = JSON5.stringify(layouted, {
       space: 2,
       quote: '\'',
@@ -174,5 +180,68 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
 
   clearCaches(): void {
     this.cache.clear()
+  }
+
+  /**
+   * When we save snapshot - it may contain fullpath to icons on the machine it was created,
+   * that is wrong when opened on another.
+   *
+   * Prepares a snapshot for writing by converting absolute icon paths to relative paths.
+   * Absolute paths starting with 'file://' are converted to relative paths prefixed with 'file://./'
+   */
+  protected normalizeIconPathsForWrite(layouted: LayoutedView, projectUri: URI): LayoutedView {
+    const nodes = layouted.nodes.map((node): DiagramNode => {
+      if (!node.icon || typeof node.icon !== 'string') {
+        return node
+      }
+      // Check if icon is an absolute file path
+      if (node.icon.startsWith('file://')) {
+        const iconUri = URI.parse(node.icon)
+        // Get relative path from project folder to icon
+        const relativePath = UriUtils.relative(projectUri, iconUri)
+
+        // If icon is outside of project folder - leave it as is,
+        // to avoid security issues on reading snapshots on another machine
+        if (relativePath.startsWith('..')) {
+          return node
+        }
+
+        return {
+          ...node,
+          icon: `${RELATIVE_PATH_PREFIX}${relativePath}` as Icon,
+        }
+      }
+      return node
+    })
+    return {
+      ...layouted,
+      nodes: nodes,
+    }
+  }
+
+  /**
+   * Postprocesses a snapshot after reading by converting relative icon paths back to absolute paths.
+   * Relative paths prefixed with 'file://./' are converted to absolute paths based on project folder.
+   */
+  protected resolveIconPathsAfterRead(layouted: LayoutedView, projectUri: URI): LayoutedView {
+    const nodes = layouted.nodes.map((node): DiagramNode => {
+      if (!node.icon || typeof node.icon !== 'string') {
+        return node
+      }
+      // Check if icon is a relative file path
+      if (node.icon.startsWith(RELATIVE_PATH_PREFIX)) {
+        const relativePath = node.icon.substring(RELATIVE_PATH_PREFIX.length)
+        const absoluteUri = UriUtils.joinPath(projectUri, relativePath)
+        return {
+          ...node,
+          icon: absoluteUri.toString() as any,
+        }
+      }
+      return node
+    })
+    return {
+      ...layouted,
+      nodes: nodes as any,
+    }
   }
 }
