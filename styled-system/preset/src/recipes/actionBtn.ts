@@ -4,8 +4,6 @@ export const actionBtn = defineRecipe({
   className: 'action-btn',
   description: 'Action Button within Diagram Node (Bottom-Center)',
   base: {
-    pointerEvents: 'all',
-    cursor: 'pointer',
     color: 'var(--actionbtn-color)',
     opacity: 0.75,
 
@@ -20,6 +18,11 @@ export const actionBtn = defineRecipe({
     '--ai-bg': `var(--actionbtn-bg-idle)`,
 
     background: `var(--ai-bg)`,
+
+    _whenSelectable: {
+      pointerEvents: 'all',
+      cursor: 'pointer',
+    },
 
     _whenHovered: {
       opacity: 1,
