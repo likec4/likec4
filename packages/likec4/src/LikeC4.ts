@@ -189,6 +189,7 @@ ${k.red('Please specify a project folder')}
 
   /**
    * Diagram is a computed view, layouted using Graphviz
+   * If diagram has manual layout, it will be used.
    * Used in React components
    */
   async diagrams(projectId?: ProjectId | undefined): Promise<DiagramView[]> {
