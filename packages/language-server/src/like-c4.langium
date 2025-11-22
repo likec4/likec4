@@ -343,8 +343,18 @@ ViewRule:
   ViewRuleGlobalPredicateRef |
   ViewRuleGroup |
   ViewRuleStyleOrGlobalRef |
-  ViewRuleAutoLayout
+  ViewRuleAutoLayout |
+  ViewRuleRank
 ;
+
+ViewRuleRank:
+  '{' 'rank' Eq value=RankValue ';'?
+    targets+=FqnRef (','? targets+=FqnRef)*
+  ';'? '}'
+;
+
+RankValue returns string:
+  'same' | 'min' | 'max' | 'source' | 'sink';
 
 ViewRuleGroup:
   'group' title=String? '{'
