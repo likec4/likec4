@@ -12,6 +12,7 @@ import type {
   ViewRuleAutoLayout,
   ViewRuleGlobalPredicateRef,
   ViewRuleGlobalStyle,
+  ViewRuleRank,
 } from './view-common'
 
 /**
@@ -47,6 +48,8 @@ export function isViewRuleGroup<A extends AnyAux>(rule: ElementViewRule<A>): rul
 
 export interface ElementViewRuleStyle<A extends AnyAux = AnyAux> extends AnyViewRuleStyle<ModelFqnExpr<A>> {}
 
+export interface ElementViewRuleRank<A extends AnyAux = AnyAux> extends ViewRuleRank<ModelFqnExpr<A>> {}
+
 export type ElementViewRule<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   IncludePredicate: ElementViewIncludePredicate<A>
   ExcludePredicate: ElementViewExcludePredicate<A>
@@ -55,6 +58,7 @@ export type ElementViewRule<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   GlobalStyle: ViewRuleGlobalStyle
   GlobalPredicateRef: ViewRuleGlobalPredicateRef
   AutoLayout: ViewRuleAutoLayout
+  Rank: ElementViewRuleRank<A>
 }>
 
 export interface ParsedElementView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {

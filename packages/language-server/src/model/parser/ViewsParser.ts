@@ -165,7 +165,21 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       if (ast.isViewRuleGroup(astRule)) {
         return this.parseViewRuleGroup(astRule)
       }
+      if (ast.isViewRuleRank(astRule)) {
+        return this.parseViewRuleRank(astRule)
+      }
       nonexhaustive(astRule)
+    }
+
+    parseViewRuleRank(astRule: ast.ViewRuleRank): c4.ElementViewRuleRank {
+      const targets = astRule.targets.map(t => {
+        const ref = this.parseFqnRef(t)
+        return c4.FqnRef.isModelRef(ref) ? { ref } : null
+      }).filter(isNonNullish)
+      return {
+        rank: astRule.value,
+        targets,
+      }
     }
 
     parseViewRulePredicate(astNode: ast.ViewRulePredicate): c4.ElementViewPredicate {
