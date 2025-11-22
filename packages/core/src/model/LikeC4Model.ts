@@ -917,19 +917,6 @@ export namespace LikeC4Model {
       : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
         ? LikeC4Model<Aux<'computed', E, D, V, PID, Spec>>
         : LikeC4Model<UnknownComputed>
-  //   // dprint-ignore
-  //   A extends infer X extends Any
-  //     ? IsEqual<X['Stage'], 'computed'> extends true
-  //       ? LikeC4Model<X>
-  //       : LikeC4Model<Aux<'computed', X['ElementId'], X['DeploymentId'], X['ViewId'], X['ProjectId'], SpecAux<X['ElementKind'], X['DeploymentKind'], X['RelationKind'], X['Tag'], X['MetadataKey']>>>
-  //     : LikeC4Model<UnknownComputed>
-  // // A extends infer X extends Any
-  // //   ? X['Stage'] extends 'computed'
-  // //     ? LikeC4Model<X>
-  // //     : 'computed' extends X['Stage']
-  // //       ? LikeC4Model<Aux<'computed', X['ElementId'], X['DeploymentId'], X['ViewId'], X['ProjectId'], SpecAux<X['ElementKind'], X['DeploymentKind'], X['RelationKind'], X['Tag'], X['MetadataKey']>>>
-  // //       : never
-  // //   : LikeC4Model<UnknownComputed>
 
   export type Layouted<A = unknown> =
     // dprint-ignore
@@ -938,11 +925,6 @@ export namespace LikeC4Model {
       : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
         ? LikeC4Model<Aux<'layouted', E, D, V, PID, Spec>>
         : LikeC4Model<UnknownLayouted>
-  // A extends Aux<infer S, infer E, infer D, infer V, infer PID, infer Spec>
-  //   ? 'layouted' extends S
-  //     ? LikeC4Model<Aux<'layouted', E, D, V, PID, Spec>>
-  //     : never
-  //   : LikeC4Model<UnknownLayouted>
 
   export type Node<A = Any> = A extends Any ? NodeModel<A> : never
   export type Element<A = Any> = A extends Any ? ElementModel<A> : never
