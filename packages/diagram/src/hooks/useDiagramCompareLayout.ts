@@ -1,6 +1,7 @@
 import type * as t from '@likec4/core/types'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
+import { deriveToggledFeatures } from '../likec4diagram/state/machine.setup'
 import type {
   DiagramActorSnapshot,
 } from '../likec4diagram/state/types'
@@ -19,10 +20,15 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
     })
   }
 
+  const {
+    enableCompareWithLatest,
+    enableReadOnly,
+  } = deriveToggledFeatures(context)
+
   return ({
     isEnabled: true as const,
-    isEditable: !context.features.enableReadOnly,
-    isActive: context.toggledFeatures.enableCompareWithLatest === true,
+    isEditable: !enableReadOnly,
+    isActive: enableCompareWithLatest === true,
     drifts,
     layout: context.view._layout ?? 'auto',
   })

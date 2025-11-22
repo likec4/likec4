@@ -6,6 +6,10 @@ import type { BaseNode } from './types'
 const EMPTY_OBJ = {}
 
 function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
+  if (current === updated) {
+    return current
+  }
+
   updated = updated.map((update) => {
     const existing = current.find(n => n.id === update.id && n.type === update.type)
 
@@ -39,8 +43,8 @@ function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
     if (
       isSameData
       && isSameHandles
-      && eq(existingWidth, update.initialWidth)
-      && eq(existingHeight, update.initialHeight)
+      && eq(existingWidth, update.width ?? update.initialWidth)
+      && eq(existingHeight, update.height ?? update.initialHeight)
       && eq(existing.parentId ?? null, update.parentId ?? null)
       && eq(existing.hidden, update.hidden ?? existing.hidden)
       && eq(existing.selected, update.selected ?? existing.selected)
@@ -62,17 +66,18 @@ function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
     return {
       // Retain existing properties that are defined, except parentId
       ...pickBy(existing, (v, k) => isDefined(v) && k !== 'parentId'),
-      // Apply updates, omitting undefined values
-      ...pickBy(update, isDefined) as unknown as N,
-      // Force dimensions from update if existing has measured
+      // Retain measured dimensions from existing if present
       ...('measured' in existing && {
         measured: {
-          width: update.initialWidth,
-          height: update.initialHeight,
+          width: update.width ?? update.initialWidth,
+          height: update.height ?? update.initialHeight,
         },
-        width: update.initialWidth,
-        height: update.initialHeight,
       }),
+      // Apply updates, omitting undefined values
+      ...pickBy(update, isDefined) as unknown as N,
+      // Force dimensions
+      width: update.width ?? update.initialWidth,
+      height: update.height ?? update.initialHeight,
       ...(handles && { handles }),
       data,
     } as N

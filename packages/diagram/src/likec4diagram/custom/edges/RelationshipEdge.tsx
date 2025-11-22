@@ -186,7 +186,12 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           {...enabledEditing && {
             onEdgePointerDown,
           }} />
-        {enableCompareWithLatest && <EdgeDrifts edgeProps={props} svgPath={edgePath} />}
+        {enableCompareWithLatest && (
+          <EdgeDrifts
+            edgeProps={props}
+            svgPath={edgePath}
+          />
+        )}
         {labelBBox && (
           <EdgeLabelContainer
             edgeProps={props}

@@ -16,6 +16,7 @@ import { useDiagram } from '../hooks/useDiagram'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
 import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
+import { deriveToggledFeatures } from './state/machine.setup'
 import type { DiagramActorSnapshot } from './state/types'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -51,7 +52,7 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
 
 const selectXYProps = ({ context: ctx, children }: DiagramActorSnapshot) => {
   const toggledFeatures = ctx.toggledFeatures
-  const enableReadOnly = ctx.features.enableReadOnly || (toggledFeatures.enableReadOnly === true)
+  const { enableReadOnly } = deriveToggledFeatures(ctx)
 
   const isNotEditingEdge = enableReadOnly || children.syncLayout?.getSnapshot().context.editing !== 'edge'
 

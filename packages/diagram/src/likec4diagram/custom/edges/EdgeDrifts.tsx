@@ -27,7 +27,6 @@ export function EdgeDrifts({
           stroke: 'likec4.compare.manual.outline',
           fill: 'none',
           mixBlendMode: 'plus-lighter',
-          transition: 'fast',
           strokeWidth: {
             base: '8px',
             _whenHovered: '12px',

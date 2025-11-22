@@ -77,7 +77,6 @@ export const navigating = machine.createStateConfig({
       enqueueActions(({ enqueue, context, event }) => {
         assertEvent(event, 'update.view')
         const {
-          fitViewPadding,
           xyflow,
           xystore,
           navigationHistory: {
@@ -92,8 +91,11 @@ export const navigating = machine.createStateConfig({
         if (fromHistory && fromHistory.viewId === event.view.id) {
           enqueue.assign({
             ...mergeXYNodesEdges(context, event),
+            viewportChangedManually: false,
           })
-          xyflow.setViewport(fromHistory.viewport)
+          xyflow.setViewport(fromHistory.viewport, {
+            duration: 250,
+          })
           return
         }
 
@@ -140,6 +142,7 @@ export const navigating = machine.createStateConfig({
 
         enqueue.assign({
           ...mergeXYNodesEdges(context, event),
+          viewportChangedManually: false,
           lastOnNavigate: null,
           navigationHistory: {
             currentIndex: updatedHistory.length - 1,

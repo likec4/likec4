@@ -13,7 +13,7 @@ import type {
   ViewId,
 } from '@likec4/core/types'
 import { type Rect, nodeToRect } from '@xyflow/system'
-import { hasAtLeast, isTruthy } from 'remeda'
+import { hasAtLeast, isTruthy, omit } from 'remeda'
 import {
   assertEvent,
 } from 'xstate'
@@ -67,7 +67,7 @@ export const onEdgeDoubleClick = () =>
               ...e.data,
               controlPoints,
               labelBBox: e.data.labelBBox ? { ...e.data.labelBBox, ...pt } : null,
-              labelXY: e.data.labelXY ? pt : null,
+              labelXY: null,
             },
           } as Types.Edge
         }
@@ -481,8 +481,8 @@ export const stopSyncLayout = () =>
  * Ensure that the sync layout actor is running or stopped based on the read-only state
  */
 export const ensureSyncLayoutActor = () =>
-  machine.enqueueActions(({ context, enqueue, system }) => {
-    const isReadOnly = context.features.enableReadOnly || context.toggledFeatures.enableReadOnly === true
+  machine.enqueueActions(({ context, enqueue, system, check }) => {
+    const isReadOnly = check('enabled: Readonly')
     const syncLayoutActor = typedSystem(system).syncLayoutActorRef
     // Check if the context is read-only
     if (isReadOnly && syncLayoutActor) {

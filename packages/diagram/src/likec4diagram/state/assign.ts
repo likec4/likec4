@@ -4,7 +4,7 @@ import { type NodeLookup, getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
 import { mergeDeep, omit } from 'remeda'
 import { assertEvent } from 'xstate'
-import { Base, updateNodes } from '../../base'
+import { Base, updateEdges, updateNodes } from '../../base'
 import { type VectorValue, vector } from '../../utils/vector'
 import { getNodeCenter } from '../../utils/xyflow'
 import type { Types } from '../types'
@@ -50,39 +50,7 @@ export function mergeXYNodesEdges(
   }
 
   const xynodes = updateNodes(context.xynodes, event.xynodes)
-
-  // and the edges have no layout drift
-  let xyedges = event.xyedges
-  if (isSameView && (!nextView.drifts || nextView.drifts.length === 0)) {
-    const currentEdges = context.xyedges
-    xyedges = event.xyedges.map((update): Types.Edge => {
-      const existing = currentEdges.find(n => n.id === update.id)
-      if (existing === update) {
-        return existing
-      }
-      if (existing && existing.type === update.type) {
-        if (
-          eq(existing.hidden ?? false, update.hidden ?? false)
-          && eq(existing.data, update.data)
-          && eq(existing.source, update.source)
-          && eq(existing.target, update.target)
-          && eq(existing.sourceHandle, update.sourceHandle)
-          && eq(existing.targetHandle, update.targetHandle)
-        ) {
-          return existing
-        }
-        return {
-          ...omit(existing, ['hidden', 'sourceHandle', 'targetHandle']),
-          ...update,
-          data: {
-            ...existing.data,
-            ...update.data,
-          },
-        } as Types.Edge
-      }
-      return update
-    })
-  }
+  const xyedges = isSameView ? updateEdges(context.xyedges, event.xyedges) : event.xyedges
 
   return {
     xynodes,

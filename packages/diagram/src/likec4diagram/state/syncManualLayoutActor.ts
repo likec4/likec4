@@ -1,7 +1,6 @@
 import type { LayoutedView, ViewChange, ViewId } from '@likec4/core/types'
 import { getHotkeyHandler } from '@mantine/hooks'
-import { deepEqual } from 'fast-equals'
-import { last, map } from 'remeda'
+import { last, omit } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRef,
@@ -15,6 +14,7 @@ import {
   assign,
   fromCallback,
   setup,
+  stopChild,
 } from 'xstate'
 import type { Types } from '../types'
 import { createViewChange } from './createViewChange'
@@ -108,22 +108,14 @@ const pushHistory = syncManualLayout.assign(({ context }) => {
   const snapshot = context.beforeEditing
   if (!snapshot) {
     // If we have beforeEditing snapshot, do not push history
-    return {}
-  }
-  // Avoid duplicate history entries
-  const prevHistoryItem = last(context.history)
-  if (
-    prevHistoryItem &&
-    deepEqual(prevHistoryItem.xyedges, snapshot.xyedges) &&
-    deepEqual(prevHistoryItem.xynodes, snapshot.xynodes)
-  ) {
     return {
-      beforeEditing: null,
+      editing: null,
     }
   }
 
   return {
     beforeEditing: null,
+    editing: null,
     history: [
       ...context.history,
       snapshot,
@@ -132,32 +124,46 @@ const pushHistory = syncManualLayout.assign(({ context }) => {
 })
 
 const popHistory = syncManualLayout.assign(({ context }) => {
-  if (context.history.length === 0) {
-    return {}
+  if (context.history.length === 0 || context.history.length === 1) {
+    return {
+      history: [],
+    }
   }
   return {
-    history: context.history.slice(0, -1),
+    history: context.history.slice(0, context.history.length - 1),
   }
 })
 
-const startEditing = syncManualLayout.assign(({ system, event }) => {
+const startEditing = syncManualLayout.enqueueActions(({ check, enqueue, system, event, self, context }) => {
   assertEvent(event, 'editing.start')
   const parentContext = diagramActorRef(system).getSnapshot().context
 
-  return {
+  enqueue.assign({
     editing: event.subject,
     beforeEditing: {
-      xynodes: map(parentContext.xynodes, n => ({ ...n })),
-      xyedges: map(parentContext.xyedges, e => ({ ...e })),
+      xynodes: parentContext.xynodes.map(({ measured, style, ...n }) =>
+        ({
+          ...omit(n, ['selected', 'dragging', 'resizing']),
+          data: omit(n.data, ['dimmed', 'hovered']),
+          initialWidth: measured?.width ?? n.width ?? n.initialWidth,
+          initialHeight: measured?.height ?? n.height ?? n.initialHeight,
+        }) as Types.Node
+      ),
+      xyedges: parentContext.xyedges.map(e =>
+        ({
+          ...omit(e, ['selected']),
+          data: omit(e.data, ['active', 'dimmed', 'hovered']),
+        }) as Types.Edge
+      ),
       change: createViewChange(parentContext),
       view: parentContext.view,
       synched: false,
     },
-  }
+  })
 })
 
-const ensureHotKey = syncManualLayout.enqueueActions(({ check, enqueue, self }) => {
-  const hasUndo = check('can undo')
+const ensureHotKey = syncManualLayout.enqueueActions(({ check, context, enqueue, self }) => {
+  const hasUndo = context.history.length > 0
   const undoHotKey = self.getSnapshot().children['undoHotKey']
   if (undoHotKey && !hasUndo) {
     enqueue.stopChild(undoHotKey)
@@ -170,30 +176,37 @@ const ensureHotKey = syncManualLayout.enqueueActions(({ check, enqueue, self }) 
   }
 })
 
+const raiseEditingStop = syncManualLayout.raise({ type: 'editing.stop' })
+
 const stopEditing = syncManualLayout.enqueueActions(({ event, enqueue }) => {
   assertEvent(event, 'editing.stop')
 
   if (event.wasChanged) {
-    enqueue.cancel('sync')
     enqueue(pushHistory)
-    enqueue.raise({ type: 'sync' }, { id: 'sync', delay: 50 })
+    enqueue(ensureHotKey)
+    enqueue.raise({ type: 'sync' }, { delay: 100, id: 'sync' })
+    return
   }
+
   enqueue.assign({
     beforeEditing: null,
     editing: null,
   })
 })
 
-const emitOnChange = syncManualLayout.sendTo(
-  ({ system }) => diagramActorRef(system),
-  ({ system }) => {
-    const parentContext = diagramActorRef(system).getSnapshot().context
-    return {
-      type: 'emit.onChange',
-      change: createViewChange(parentContext),
-    }
-  },
-)
+const emitOnChange = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
+  const diagramActor = diagramActorRef(system)
+  const parentContext = diagramActor.getSnapshot().context
+  const change = createViewChange(parentContext)
+  enqueue.sendTo(diagramActor, {
+    type: 'update.view-bounds',
+    bounds: change.layout.bounds,
+  })
+  enqueue.sendTo(diagramActor, {
+    type: 'emit.onChange',
+    change,
+  })
+})
 
 const markHistoryAsSynched = syncManualLayout.assign(({ context, event }) => {
   assertEvent(event, 'synced')
@@ -202,12 +215,6 @@ const markHistoryAsSynched = syncManualLayout.assign(({ context, event }) => {
       ...i,
       synched: true,
     })),
-    beforeEditing: context.beforeEditing
-      ? {
-        ...context.beforeEditing,
-        synched: true,
-      }
-      : null,
   }
 })
 
@@ -224,25 +231,26 @@ const undo = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
     view: lastHistoryItem.view,
     xyedges: lastHistoryItem.xyedges,
     xynodes: lastHistoryItem.xynodes,
+    source: 'internal',
   })
   // If the last history item was already synched,
   // we need to emit onChange event
   if (lastHistoryItem.synched) {
-    enqueue.sendTo(diagramActor, {
-      type: 'emit.onChange',
-      change: lastHistoryItem.change,
-    })
+    enqueue.sendTo(
+      diagramActor,
+      {
+        type: 'emit.onChange',
+        change: lastHistoryItem.change,
+      },
+    )
+  } else {
+    // Otherwise, we need to start sync after undo
+    enqueue.raise({ type: 'sync' }, { delay: 100 })
   }
 })
 
 const idle = syncManualLayout.createStateConfig({
   tags: 'ready',
-  entry: [
-    assign({
-      beforeEditing: null,
-      editing: null,
-    }),
-  ],
   on: {
     sync: {
       target: 'pending',
@@ -250,10 +258,6 @@ const idle = syncManualLayout.createStateConfig({
     'editing.start': {
       actions: startEditing,
       target: 'editing',
-    },
-    undo: {
-      guard: 'can undo',
-      actions: undo,
     },
   },
 })
@@ -266,11 +270,20 @@ const editing = syncManualLayout.createStateConfig({
     'editing.stop': {
       actions: [
         stopEditing,
-        ensureHotKey,
       ],
       target: 'idle',
     },
-    undo: {},
+    undo: {
+      actions: [
+        raiseEditingStop,
+      ],
+    },
+    synced: {
+      actions: [
+        markHistoryAsSynched,
+        raiseEditingStop,
+      ],
+    },
   },
 })
 
@@ -285,11 +298,6 @@ const pending = syncManualLayout.createStateConfig({
       target: 'paused',
       actions: startEditing,
     },
-    undo: {
-      guard: 'can undo',
-      actions: undo,
-      target: 'idle',
-    },
   },
   after: {
     'timeout': {
@@ -299,17 +307,23 @@ const pending = syncManualLayout.createStateConfig({
   },
 })
 
+/**
+ * pending -> paused when editing starts
+ */
 const paused = syncManualLayout.createStateConfig({
   tags: 'pending',
   on: {
     'editing.stop': {
       actions: [
         stopEditing,
-        ensureHotKey,
       ],
       target: 'pending',
     },
-    undo: {},
+    undo: {
+      actions: [
+        raiseEditingStop,
+      ],
+    },
   },
 })
 
@@ -332,7 +346,7 @@ const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
           beforeEditing: null,
           history: [],
         }),
-        ensureHotKey,
+        stopChild('undoHotKey'),
       ],
       type: 'final',
     },
@@ -343,6 +357,11 @@ const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
     },
     synced: {
       actions: markHistoryAsSynched,
+      target: '.idle',
+    },
+    undo: {
+      guard: 'can undo',
+      actions: undo,
       target: '.idle',
     },
     stop: {
