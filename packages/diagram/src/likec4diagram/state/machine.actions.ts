@@ -397,11 +397,11 @@ export const resetEdgesControlPoints = () =>
     }
   })
 
-export const notationsHighlight = (params?: { notation: ElementNotation; kind?: string }) =>
+export const notationsHighlight = () =>
   machine.assign(({ context, event }) => {
     assertEvent(event, 'notations.highlight')
 
-    const { notation, kind } = { ...params, ...event }
+    const { notation, kind } = event
     const targetKinds = kind ? [kind] : notation.kinds
 
     const shouldHighlight = (node: DiagramNode) =>
