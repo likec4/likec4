@@ -108,7 +108,7 @@ describe.concurrent('LikeC4ManualLayouts', () => {
 
   describe('read', () => {
     it('should read manual layouts from snapshot files', async ({ expect }) => {
-      const { services, fs, project, manualLayouts } = await createTestServices()
+      const { fs, project, manualLayouts } = await createTestServices()
 
       const mockView1 = createMockView({
         id: 'view1',
@@ -120,22 +120,7 @@ describe.concurrent('LikeC4ManualLayouts', () => {
         title: 'View 2',
       })
 
-      vi.mocked(fs.scanDirectory).mockResolvedValue([
-        {
-          uri: UriUtils.joinPath(project.folderUri, '.likec4/view1.likec4.snap'),
-          isFile: true,
-          isDirectory: false,
-        },
-        {
-          uri: UriUtils.joinPath(project.folderUri, '.likec4/view2.likec4.snap'),
-          isFile: true,
-          isDirectory: false,
-        },
-      ])
-
-      vi.mocked(fs.readFile)
-        .mockResolvedValueOnce(JSON.stringify(mockView1))
-        .mockResolvedValueOnce(JSON.stringify(mockView2))
+      mockFsReads(fs, mockView1, mockView2)
 
       const result = await manualLayouts.read(project)
 
@@ -152,16 +137,24 @@ describe.concurrent('LikeC4ManualLayouts', () => {
           _layout: 'manual',
         },
       })
+
+      // Verify that the views were read only once due to caching
+      await expect(manualLayouts.read(project)).resolves.toBe(result)
+      expect(fs.scanDirectory).toHaveBeenCalledTimes(1)
     })
 
     it('should return null when no snapshot files exist', async ({ expect }) => {
-      const { services, fs, project, manualLayouts } = await createTestServices()
+      const { fs, project, manualLayouts } = await createTestServices()
 
       vi.mocked(fs.scanDirectory).mockResolvedValue([])
 
       const result = await manualLayouts.read(project)
 
       expect(result).toBeNull()
+
+      // second read to verify caching
+      await expect(manualLayouts.read(project)).resolves.toBeNull()
+      expect(fs.scanDirectory).toHaveBeenCalledTimes(1)
     })
 
     it('should handle errors when reading snapshot files', async ({ expect }) => {
@@ -307,14 +300,7 @@ describe.concurrent('LikeC4ManualLayouts', () => {
         hash: 'hash0',
       })
 
-      vi.mocked(fs.scanDirectory).mockResolvedValue([
-        {
-          uri: URI.file('/test/workspace/src/test-project/.likec4/existing-view.likec4.snap'),
-          isFile: true,
-          isDirectory: false,
-        },
-      ])
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(existingView))
+      mockFsReads(fs, existingView)
 
       await manualLayouts.read(project)
 
@@ -369,16 +355,7 @@ describe.concurrent('LikeC4ManualLayouts', () => {
         id: 'view1' as ViewId,
         title: 'View 1',
       })
-
-      vi.mocked(fs.scanDirectory).mockResolvedValue([
-        {
-          uri: URI.file('/test/workspace/src/test-project/.likec4/view1.likec4.snap'),
-          isFile: true,
-          isDirectory: false,
-        },
-      ])
-
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockView))
+      mockFsReads(fs, mockView)
 
       // Prime the cache
       await manualLayouts.read(project)
@@ -427,18 +404,12 @@ describe.concurrent('LikeC4ManualLayouts', () => {
       const mockView = createMockView({
         nodes: [{
           icon: 'file://./assets/icon.svg',
+        }, {
+          icon: 'file://./dir1/dir2/icon2.svg',
         }],
       })
 
-      vi.mocked(fs.scanDirectory).mockResolvedValue([
-        {
-          uri: URI.file('/test/workspace/src/test-project/.likec4/view1.likec4.snap'),
-          isFile: true,
-          isDirectory: false,
-        },
-      ])
-
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockView))
+      mockFsReads(fs, mockView)
 
       const result = await manualLayouts.read(project)
 
@@ -446,36 +417,17 @@ describe.concurrent('LikeC4ManualLayouts', () => {
       const view = result![mockView.id]
       expect(view).toBeDefined()
       expect(view!.nodes[0]?.icon).toBe('file:///test/workspace/src/test-project/assets/icon.svg')
+      expect(view!.nodes[1]?.icon).toBe('file:///test/workspace/src/test-project/dir1/dir2/icon2.svg')
     })
 
     it('should preserve non-file icon paths when writing', async ({ expect }) => {
       const { fs, manualLayouts, project } = await createTestServices()
 
       const layoutedView = createMockView({
-        nodes: [
-          {
-            id: 'node1' as any,
-            parent: null,
-            title: 'Node 1',
-            color: 'primary',
-            shape: 'rectangle' as const,
-            icon: 'aws:s3',
-            technology: null,
-            description: null,
-            level: 0,
-            x: 100,
-            y: 200,
-            width: 150,
-            height: 100,
-            labelBBox: { x: 100, y: 200, width: 150, height: 20 },
-            kind: 'element' as const,
-            children: [],
-            inEdges: [],
-            outEdges: [],
-            style: {},
-          } as any,
-        ],
-        bounds: { x: 0, y: 0, width: 400, height: 400 },
+        nodes: [{
+          id: 'node1',
+          icon: 'aws:s3',
+        }],
       })
 
       vi.mocked(fs.writeFile).mockResolvedValue()
@@ -491,30 +443,10 @@ describe.concurrent('LikeC4ManualLayouts', () => {
     it('should not convert paths outside project folder', async ({ expect }) => {
       const { fs, manualLayouts, project } = await createTestServices()
       const layoutedView = createMockView({
-        nodes: [
-          {
-            id: 'node1' as any,
-            parent: null,
-            title: 'Node 1',
-            color: 'primary',
-            shape: 'rectangle' as const,
-            icon: 'file:///external/path/icon.svg',
-            technology: null,
-            description: null,
-            level: 0,
-            x: 100,
-            y: 200,
-            width: 150,
-            height: 100,
-            labelBBox: { x: 100, y: 200, width: 150, height: 20 },
-            kind: 'element' as const,
-            children: [],
-            inEdges: [],
-            outEdges: [],
-            style: {},
-          } as any,
-        ],
-        bounds: { x: 0, y: 0, width: 400, height: 400 },
+        nodes: [{
+          id: 'node1',
+          icon: 'file:///external/path/icon.svg',
+        }],
       })
 
       vi.mocked(fs.writeFile).mockResolvedValue()
@@ -526,106 +458,23 @@ describe.concurrent('LikeC4ManualLayouts', () => {
       expect(writtenContent).toContain('file:///external/path/icon.svg')
     })
 
-    it('should handle nodes without icons', async ({ expect }) => {
-      const { fs, manualLayouts, project } = await createTestServices()
-
-      const layoutedView = createMockView({
-        nodes: [
-          {
-            id: 'node1' as any,
-            parent: null,
-            title: 'Node 1',
-            color: 'primary',
-            shape: 'rectangle' as const,
-            icon: null,
-            technology: null,
-            description: null,
-            level: 0,
-            x: 100,
-            y: 200,
-            width: 150,
-            height: 100,
-            labelBBox: { x: 100, y: 200, width: 150, height: 20 },
-            kind: 'element' as const,
-            children: [],
-            inEdges: [],
-            outEdges: [],
-            style: {},
-          } as any,
-        ],
-        bounds: { x: 0, y: 0, width: 400, height: 400 },
-      })
-
-      vi.mocked(fs.writeFile).mockResolvedValue()
-
-      await manualLayouts.write(project, layoutedView)
-
-      expect(fs.writeFile).toHaveBeenCalledTimes(1)
-      const writtenContent = vi.mocked(fs.writeFile).mock.calls[0]?.[1]
-      expect(writtenContent).toBeDefined()
-    })
-
     it('should handle multiple nodes with mixed icon types', async ({ expect }) => {
       const { fs, manualLayouts, project } = await createTestServices()
 
       const layoutedView = createMockView({
         nodes: [
           {
-            id: 'node1' as any,
-            parent: null,
-            title: 'Node 1',
-            color: 'primary',
-            shape: 'rectangle' as const,
+            id: 'node1',
             icon: 'file:///test/workspace/src/test-project/assets/icon1.svg',
-            x: 100,
-            y: 200,
-            width: 150,
-            height: 100,
-            labelBBox: { x: 100, y: 200, width: 150, height: 20 },
-            kind: 'element' as const,
-            children: [],
-            inEdges: [],
-            outEdges: [],
-            style: {},
-          } as any,
+          },
           {
-            id: 'node2' as any,
-            parent: null,
-            title: 'Node 2',
-            color: 'secondary',
-            shape: 'rectangle' as const,
+            id: 'node2',
             icon: 'aws:lambda',
-            x: 300,
-            y: 200,
-            width: 150,
-            height: 100,
-            labelBBox: { x: 300, y: 200, width: 150, height: 20 },
-            kind: 'element' as const,
-            children: [],
-            inEdges: [],
-            outEdges: [],
-            style: {},
-          } as any,
+          },
           {
-            id: 'node3' as any,
-            parent: null,
-            title: 'Node 3',
-            color: 'muted',
-            shape: 'rectangle' as const,
-            icon: null,
-            x: 500,
-            y: 200,
-            width: 150,
-            height: 100,
-            labelBBox: { x: 500, y: 200, width: 150, height: 20 },
-            kind: 'element' as const,
-            children: [],
-            inEdges: [],
-            outEdges: [],
-            style: {},
-          } as any,
+            id: 'node3',
+          },
         ],
-        bounds: { x: 0, y: 0, width: 700, height: 400 },
       })
 
       vi.mocked(fs.writeFile).mockResolvedValue()
