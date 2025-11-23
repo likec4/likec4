@@ -3,6 +3,7 @@
 /// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
   invariant,
+  nonexhaustive,
   nonNullable,
 } from '@likec4/core'
 import type {
@@ -13,6 +14,7 @@ import type {
   ViewId,
 } from '@likec4/core/types'
 import { type Rect, nodeToRect } from '@xyflow/system'
+import { produce } from 'immer'
 import { hasAtLeast, isTruthy, omit } from 'remeda'
 import {
   assertEvent,
@@ -705,3 +707,95 @@ export const reraise = () => machine.raise(({ event }) => event, { delay: 10 })
 
 export const startHotKeyActor = () => machine.spawnChild('hotkeyActorLogic', { id: 'hotkey' })
 export const stopHotKeyActor = () => machine.stopChild('hotkey')
+
+export const handleNavigate = () =>
+  machine.enqueueActions(({ enqueue, context, event }) => {
+    assertEvent(event, ['navigate.to', 'navigate.back', 'navigate.forward'])
+    console.log(`Handle ${event.type}`)
+    const {
+      view,
+      focusedNode,
+      activeWalkthrough,
+      dynamicViewVariant,
+      viewport,
+      viewportChangedManually,
+      viewportBefore,
+      navigationHistory: {
+        currentIndex,
+        history: _history,
+      },
+    } = context
+
+    let history = [..._history]
+    if (currentIndex < _history.length) {
+      const updatedEntry = produce(_history[currentIndex]!, draft => {
+        draft.viewport = { ...viewport }
+        draft.viewportChangedManually = viewportChangedManually
+        draft.focusedNode = focusedNode
+        if (view._type === 'dynamic') {
+          draft.activeWalkthrough = activeWalkthrough?.stepId ?? null
+          draft.dynamicViewVariant = dynamicViewVariant
+        } else {
+          draft.activeWalkthrough = null
+          draft.dynamicViewVariant = null
+        }
+        if (viewportBefore) {
+          draft.viewportBefore = viewportBefore
+        } else {
+          delete draft.viewportBefore
+        }
+      })
+      history = [..._history]
+      history[currentIndex] = updatedEntry
+      console.log('Update current history entry', {
+        before: _history[currentIndex],
+        after: updatedEntry,
+      })
+    }
+
+    switch (event.type) {
+      case 'navigate.to': {
+        enqueue.assign({
+          navigationHistory: {
+            currentIndex,
+            history,
+          },
+          lastOnNavigate: {
+            fromView: context.view.id,
+            toView: event.viewId,
+            fromNode: event.fromNode ?? null,
+          },
+        })
+        enqueue(emitNavigateTo())
+        break
+      }
+      case 'navigate.back': {
+        invariant(currentIndex > 0, 'Cannot navigate back')
+        const stepBack = history[currentIndex - 1]!
+        enqueue.assign({
+          navigationHistory: {
+            currentIndex: currentIndex - 1,
+            history,
+          },
+          lastOnNavigate: null,
+        })
+        enqueue(emitNavigateTo({ viewId: stepBack.viewId }))
+        break
+      }
+      case 'navigate.forward': {
+        invariant(currentIndex < history.length - 1, 'Cannot navigate forward')
+        const stepForward = history[currentIndex + 1]!
+        enqueue.assign({
+          navigationHistory: {
+            currentIndex: currentIndex + 1,
+            history,
+          },
+          lastOnNavigate: null,
+        })
+        enqueue(emitNavigateTo({ viewId: stepForward.viewId }))
+        break
+      }
+      default:
+        nonexhaustive(event)
+    }
+  })

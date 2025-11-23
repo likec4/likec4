@@ -1,11 +1,13 @@
 import { type NodeId, BBox } from '@likec4/core/types'
 import { invariant, nonNullable } from '@likec4/core/utils'
+import type { Viewport } from '@xyflow/system'
 import { assertEvent, enqueueActions } from 'xstate'
 import { mergeXYNodesEdges } from './assign'
 import {
   cancelFitDiagram,
   disableCompareWithLatest,
   raiseFitDiagram,
+  raiseSetViewport,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
 import { calcViewportForBounds, findCorrespondingNode, nodeRef } from './utils'
@@ -87,19 +89,66 @@ export const navigating = machine.createStateConfig({
 
         invariant(xyflow, 'xyflow is not initialized')
 
+        // Make 70% zoom step towards the target viewport if zooming out,
+        // and 30% if zooming in, to make the transition smoother
+        const calcZoomTowardsNextViewport = (nextViewport: Viewport) => {
+          const zoom = xyflow.getZoom()
+          const coef = nextViewport.zoom < zoom ? 0.7 : 0.3
+          return zoom + (nextViewport.zoom - zoom) * coef
+        }
+
         const fromHistory = history[currentIndex]
         if (fromHistory && fromHistory.viewId === event.view.id) {
+          console.log('Navigating: fromHistory', fromHistory)
           enqueue.assign({
             ...mergeXYNodesEdges(context, event),
-            viewportChangedManually: false,
+            dynamicViewVariant: fromHistory.dynamicViewVariant ?? context.dynamicViewVariant,
+            viewportChangedManually: fromHistory.viewportChangedManually,
           })
-          xyflow.setViewport(fromHistory.viewport, {
-            duration: 250,
-          })
+          const wasFocused = fromHistory.focusedNode
+          const wasActiveWalkthrough = fromHistory.activeWalkthrough
+          const viewportBefore = fromHistory.viewportBefore
+
+          if (viewportBefore && (wasFocused || wasActiveWalkthrough)) {
+            // Restore viewport before focusing or starting walkthrough
+            enqueue.assign({
+              viewport: viewportBefore.value,
+              viewportChangedManually: viewportBefore.wasChangedManually,
+              viewportBefore: null,
+            })
+          }
+
+          const center = BBox.center(event.view.bounds)
+          const zoom = calcZoomTowardsNextViewport(fromHistory.viewport)
+          xyflow.setCenter(
+            center.x,
+            center.y,
+            { zoom, duration: 0 },
+          )
+
+          if (wasFocused) {
+            enqueue.raise({
+              type: 'focus.node',
+              nodeId: wasFocused,
+            }, { delay: 50 })
+            return
+          }
+          if (wasActiveWalkthrough) {
+            enqueue.raise({
+              type: 'walkthrough.start',
+              stepId: wasActiveWalkthrough,
+            }, { delay: 50 })
+            return
+          }
+
+          // Fit viewport from history
+          enqueue(raiseSetViewport({
+            delay: 80,
+            viewport: fromHistory.viewport,
+          }))
           return
         }
 
-        const viewport = xyflow.getViewport()
         const nextViewport = calcViewportForBounds(
           context,
           event.view.bounds,
@@ -122,10 +171,7 @@ export const navigating = machine.createStateConfig({
             y: Math.round(fromPoint.y - toPoint.y),
           })
         } else {
-          // Make 70% zoom step towards the target viewport if zooming out,
-          // and 30% if zooming in, to make the transition smoother
-          const coef = nextViewport.zoom < viewport.zoom ? 0.7 : 0.3
-          const zoom = viewport.zoom + (nextViewport.zoom - viewport.zoom) * coef
+          const zoom = calcZoomTowardsNextViewport(nextViewport)
           const center = BBox.center(event.view.bounds)
           xyflow.setCenter(
             center.x,
@@ -138,6 +184,7 @@ export const navigating = machine.createStateConfig({
         updatedHistory.push({
           viewId: event.view.id,
           viewport: { ...nextViewport },
+          viewportChangedManually: false,
         })
 
         enqueue.assign({
