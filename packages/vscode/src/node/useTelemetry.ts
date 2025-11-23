@@ -22,30 +22,47 @@ const TelemetryConnectionString =
   'InstrumentationKey=36d9aa84-b503-45ea-ae34-b236e4f83bea;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/;ApplicationId=376f93d7-2977-4989-a2e7-d21b20b4984b' as const
 
 const useTelemetry = createSingletonComposable(() => {
+  const { logger, output, configureLogger } = useConfigureLogger()
   const reporter = useDisposable(new TelemetryReporter(TelemetryConnectionString))
 
   function sendTelemetry(eventName: string, properties?: TelemetryEventProperties) {
     if (isDev) {
-      const { output } = useConfigureLogger()
-      output.debug(`telemetry event skipped in dev mode: ${eventName}`, properties)
+      output.debug(`telemetry event skipped in dev mode`, eventName)
       return
     }
     reporter.sendTelemetryEvent(eventName, properties)
   }
 
-  function sendTelemetryError(properties: TelemetryEventProperties) {
+  function sendTelemetryError(error: Error | Record<string, any>) {
     if (isDev) {
-      const { output } = useConfigureLogger()
-      output.debug(`telemetry error event skipped in dev mode`, properties)
+      output.debug(`telemetry error skipped in dev mode`)
       return
     }
-    reporter.sendTelemetryErrorEvent('error', properties)
+    if (error instanceof Error) {
+      reporter.sendTelemetryErrorEvent('error', {
+        message: new vscode.TelemetryTrustedValue(error.message),
+        stack: new vscode.TelemetryTrustedValue(error.stack || ''),
+      })
+      return
+    }
+
+    let message, stack
+    if ('message' in error) {
+      message = new vscode.TelemetryTrustedValue(error['message'])
+    }
+    if ('stack' in error) {
+      stack = new vscode.TelemetryTrustedValue(error['stack'])
+    }
+    message ??= 'Unknown error'
+    reporter.sendTelemetryErrorEvent('error', {
+      ...error,
+      message,
+      stack,
+    })
   }
 
   whenExtensionActive(() => {
-    const { output } = useConfigureLogger()
     const client = useLanguageClient()
-    activateTelemetrySink(reporter)
     useDisposable(client.onTelemetry((event) => {
       try {
         const { eventName = 'unnamed', ...properties } = event
@@ -53,27 +70,22 @@ const useTelemetry = createSingletonComposable(() => {
         if (eventName === 'error') {
           // directly to output to avoid double emitting telemetry via logger with telemetry sink enabled
           output.error(`ServerError: ${properties.message}`, { ...properties })
-
-          if ('stack' in properties) {
-            properties.stack = new vscode.TelemetryTrustedValue(properties.stack)
-          }
-          if ('message' in properties) {
-            properties.message = new vscode.TelemetryTrustedValue(properties.message)
-          }
-
           sendTelemetryError(properties)
           return
         }
         output.debug(`lsp telemetry`, { eventName, ...properties })
         sendTelemetry(eventName, properties)
       } catch (e) {
-        output.error(loggable(e))
+        console.error(loggable(e))
       }
     }))
 
     const enabled = useIsTelemetryEnabled()
     watch(enabled, (isEnabled, _, onCleanup) => {
       if (isEnabled) {
+        logger.info('activate telemetry sink')
+        configureLogger(reporter)
+
         activateTelemetry(reporter, onCleanup)
       }
     }, { immediate: true })
@@ -87,17 +99,6 @@ const useTelemetry = createSingletonComposable(() => {
 })
 
 export default useTelemetry
-
-function activateTelemetrySink(telemetry: TelemetryReporter) {
-  const { configureLogger, output } = useConfigureLogger()
-  output.debug('activate telemetry sink')
-  configureLogger(telemetry)
-
-  tryOnScopeDispose(() => {
-    output.debug('deactivate telemetry sink')
-    configureLogger()
-  })
-}
 
 function activateTelemetry(telemetry: TelemetryReporter, onCleanup: OnCleanup) {
   const { logger: root, output } = useConfigureLogger()

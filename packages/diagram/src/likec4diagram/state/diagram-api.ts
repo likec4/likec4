@@ -11,10 +11,9 @@ import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import type {
-  DiagramActorEvent,
   DiagramActorRef,
-  DiagramActorSnapshot,
   DiagramContext,
+  DiagramEvents,
 } from './types'
 import { findDiagramEdge, findDiagramNode, typedSystem } from './utils'
 
@@ -34,7 +33,7 @@ export interface DiagramApi<A extends Any = Unknown> {
   /**
    * Send event to diagram actor
    */
-  send(event: DiagramActorEvent): void
+  send(event: DiagramEvents): void
   /**
    * Navigate to view
    */
@@ -89,11 +88,6 @@ export interface DiagramApi<A extends Any = Unknown> {
    * Focus node
    */
   focusNode(nodeId: NodeId): void
-
-  /**
-   * @warning Do not use in render phase
-   */
-  getSnapshot(): DiagramActorSnapshot
   /**
    * @warning Do not use in render phase
    */
@@ -128,7 +122,7 @@ export interface DiagramApi<A extends Any = Unknown> {
 export function makeDiagramApi<A extends Any = Unknown>(actor: DiagramActorRef): DiagramApi<A> {
   return {
     actor,
-    send: (event: DiagramActorEvent) => actor.send(event),
+    send: (event: DiagramEvents) => actor.send(event),
     navigateTo: (viewId: ViewId<A>, fromNode?: NodeId) => {
       actor.send({
         type: 'navigate.to',
@@ -203,10 +197,6 @@ export function makeDiagramApi<A extends Any = Unknown>(actor: DiagramActorRef):
     get currentView(): t.DiagramView<A> {
       return actor.getSnapshot().context.view
     },
-    /**
-     * @warning Do not use in render phase
-     */
-    getSnapshot: (): DiagramActorSnapshot => actor.getSnapshot(),
     /**
      * @warning Do not use in render phase
      */

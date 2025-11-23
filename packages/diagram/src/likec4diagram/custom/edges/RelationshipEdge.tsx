@@ -1,10 +1,9 @@
 import type { EdgeId } from '@likec4/core/types'
 import { cx as clsx } from '@likec4/styles/css'
-import { useRafEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
-import { type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
+import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
 import {
   EdgeActionButton,
   EdgeContainer,
@@ -38,6 +37,10 @@ const getEdgeCenter = (path: SVGPathElement) => {
 
 export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props) => {
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
+
+  const isControlPointDraggingRef = useRef(isControlPointDragging)
+  isControlPointDraggingRef.current = isControlPointDragging
+
   const xyflow = useXYFlow()
   const diagram = useDiagram()
   const {
@@ -81,18 +84,23 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   })
 
   useUpdateEffect(() => {
-    setLabelPos({
+    if (isControlPointDraggingRef.current) {
+      return
+    }
+    const next = {
       x: labelX,
       y: labelY,
-    })
+    }
+    setLabelPos(current => isSamePoint(current, next) ? current : next)
   }, [labelX, labelY])
 
   const svgPathRef = useRef<SVGPathElement>(null)
 
-  useRafEffect(() => {
+  useEffect(() => {
     const path = svgPathRef.current
     if (!path || !isControlPointDragging) return
-    setLabelPos(getEdgeCenter(path))
+    const next = getEdgeCenter(path)
+    setLabelPos(current => isSamePoint(current, next) ? current : next)
   }, [edgePath, isControlPointDragging])
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
@@ -104,7 +112,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           ...labelBBox,
           ...point,
         },
-        labelXY: point,
       })
     } else {
       diagram.updateEdgeData(id as EdgeId, { controlPoints })

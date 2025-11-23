@@ -24,12 +24,7 @@ export function calcEdgeBounds({ points, controlPoints, labelBBox }: DiagramEdge
   let maxX = -Infinity
   let maxY = -Infinity
 
-  for (const [x, y] of points) {
-    minX = Math.min(minX, x)
-    minY = Math.min(minY, y)
-    maxX = Math.max(maxX, x)
-    maxY = Math.max(maxY, y)
-  }
+  // Prefer control points in bounds calculation if they exist
   if (controlPoints) {
     for (const p of controlPoints) {
       minX = Math.min(minX, p.x)
@@ -37,7 +32,15 @@ export function calcEdgeBounds({ points, controlPoints, labelBBox }: DiagramEdge
       maxX = Math.max(maxX, p.x)
       maxY = Math.max(maxY, p.y)
     }
+  } else {
+    for (const [x, y] of points) {
+      minX = Math.min(minX, x)
+      minY = Math.min(minY, y)
+      maxX = Math.max(maxX, x)
+      maxY = Math.max(maxY, y)
+    }
   }
+
   if (labelBBox) {
     minX = Math.min(minX, labelBBox.x)
     minY = Math.min(minY, labelBBox.y)

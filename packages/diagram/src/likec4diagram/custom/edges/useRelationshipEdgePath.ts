@@ -1,4 +1,5 @@
 import {
+  type BBox,
   nonNullable,
 } from '@likec4/core'
 import type { XYPosition } from '@xyflow/react'
@@ -7,11 +8,10 @@ import { useCallback } from 'react'
 import { first, isTruthy, last } from 'remeda'
 import { useXYStore } from '../../../hooks/useXYFlow'
 import {
-  type MinimalInternalNode,
   bezierPath,
-  extractMinimalInternalNode,
   getNodeIntersectionFromCenterToPoint,
-  isEqualMinimalInternalNodes,
+  isEqualRects,
+  nodeToRect,
 } from '../../../utils/xyflow'
 import type { Types } from '../../types'
 
@@ -20,9 +20,9 @@ const curve = d3line<XYPosition>()
   .x(d => Math.round(d.x))
   .y(d => Math.round(d.y))
 
-const isSameNodes = <T extends { sourceNode: MinimalInternalNode; targetNode: MinimalInternalNode }>(a: T, b: T) =>
-  isEqualMinimalInternalNodes(a.sourceNode, b.sourceNode) &&
-  isEqualMinimalInternalNodes(a.targetNode, b.targetNode)
+const isSameRects = <T extends { sourceNode: BBox; targetNode: BBox }>(a: T, b: T) =>
+  isEqualRects(a.sourceNode, b.sourceNode) &&
+  isEqualRects(a.targetNode, b.targetNode)
 
 export function useRelationshipEdgePath({
   props: {
@@ -50,11 +50,11 @@ export function useRelationshipEdgePath({
       const sourceNode = nonNullable(nodeLookup.get(source), `source node ${source} not found`)
       const targetNode = nonNullable(nodeLookup.get(target), `target node ${target} not found`)
       return {
-        sourceNode: extractMinimalInternalNode(sourceNode),
-        targetNode: extractMinimalInternalNode(targetNode),
+        sourceNode: nodeToRect(sourceNode),
+        targetNode: nodeToRect(targetNode),
       }
     }, [source, target]),
-    isSameNodes,
+    isSameRects,
   )
 
   const isModified = isTruthy(data.controlPoints) || isControlPointDragging

@@ -1605,6 +1605,9 @@ importers:
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.33
+      '@xstate/react':
+        specifier: catalog:xstate
+        version: 6.0.0(@types/react@19.2.2)(react@19.2.0)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)
@@ -1755,6 +1758,9 @@ importers:
       wireit:
         specifier: 'catalog:'
         version: 0.14.12
+      xstate:
+        specifier: catalog:xstate
+        version: 5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c)
       zod:
         specifier: catalog:utils
         version: 3.25.76

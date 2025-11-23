@@ -55,7 +55,7 @@ function getOutputChannelSink(props?: OutputChannelSinkProps): Sink {
           nonexhaustive(logObj.level)
       }
     } catch (e) {
-      output.error(loggable(e))
+      console.error(loggable(e))
     }
   }
 }
@@ -63,13 +63,13 @@ function getOutputChannelSink(props?: OutputChannelSinkProps): Sink {
 function getTelemetrySink(telemetry: TelemetryReporter): Sink {
   const messageOnly = getMessageOnlyFormatter()
   return (logObj) => {
+    if (telemetry.telemetryLevel === 'off') {
+      return
+    }
     try {
       switch (logObj.level) {
         case 'error':
         case 'fatal': {
-          if (telemetry.telemetryLevel === 'off') {
-            return
-          }
           const err = errorFromLogRecord(logObj)
           if (err) {
             const error: Record<string, any> = {
@@ -90,7 +90,7 @@ function getTelemetrySink(telemetry: TelemetryReporter): Sink {
         }
       }
     } catch (e) {
-      getOutput().error('Error while logging to LSP connection:', e)
+      console.error('Error while logging to LSP connection:', e)
     }
   }
 }

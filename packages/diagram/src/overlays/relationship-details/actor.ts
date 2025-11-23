@@ -19,8 +19,9 @@ import type { InternalNodeUpdate } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import { isString, prop } from 'remeda'
 import {
-  type ActorRefFromLogic,
+  type ActorRef,
   type SnapshotFrom,
+  type StateMachine,
   assertEvent,
   assign,
   cancel,
@@ -125,10 +126,13 @@ const ViewPadding = {
   y: '22px',
 } as const
 
+export type Tags = never
+
 const _relationshipDetailsLogic = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
+    tags: {} as Tags,
     events: {} as Events,
   },
   actions: {
@@ -411,11 +415,37 @@ const _relationshipDetailsLogic = setup({
   },
 })
 
-type InferredMachine = typeof _relationshipDetailsLogic
+export interface RelationshipDetailsLogic extends
+  StateMachine<
+    Context,
+    Events,
+    {},
+    any,
+    any,
+    any,
+    any,
+    any,
+    Tags,
+    Input,
+    any,
+    any,
+    any,
+    any
+  >
+{
+}
 
-export interface RelationshipDetailsLogic extends InferredMachine {
-}
 export const relationshipDetailsLogic: RelationshipDetailsLogic = _relationshipDetailsLogic as any
-export interface RelationshipDetailsActorRef extends ActorRefFromLogic<RelationshipDetailsLogic> {
-}
 export type RelationshipDetailsSnapshot = SnapshotFrom<RelationshipDetailsLogic>
+
+export interface RelationshipDetailsActorRef extends
+  ActorRef<
+    RelationshipDetailsSnapshot,
+    Events
+  >
+{
+}
+
+export type {
+  Input as RelationshipDetailsInput,
+}

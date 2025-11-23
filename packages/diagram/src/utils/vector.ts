@@ -123,6 +123,14 @@ export class Vector implements VectorValue {
     }
     return new Vector(this.x / len, this.y / len)
   }
+
+  /**
+   * Rounds the components of the vector to the nearest integers.
+   * @returns A new vector with rounded components.
+   */
+  round(): Vector {
+    return new Vector(Math.round(this.x), Math.round(this.y))
+  }
 }
 
 export function vector(source: VectorValue | Vector): Vector

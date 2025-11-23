@@ -51,21 +51,22 @@ export namespace BBox {
     if (boxes.length === 1) {
       return boxes[0]
     }
-    let minX = Infinity
-    let minY = Infinity
-    let maxX = -Infinity
-    let maxY = -Infinity
-    for (const box of boxes) {
+    let minX = boxes[0].x
+    let minY = boxes[0].y
+    let maxX = boxes[0].x + boxes[0].width
+    let maxY = boxes[0].y + boxes[0].height
+    for (let i = 1; i < boxes.length; i++) {
+      const box = boxes[i]!
       minX = Math.min(minX, box.x)
       minY = Math.min(minY, box.y)
       maxX = Math.max(maxX, box.x + box.width)
       maxY = Math.max(maxY, box.y + box.height)
     }
     return {
-      x: minX,
-      y: minY,
-      width: maxX - minX,
-      height: maxY - minY,
+      x: Math.floor(minX),
+      y: Math.floor(minY),
+      width: Math.round(maxX - minX),
+      height: Math.round(maxY - minY),
     }
   }
 

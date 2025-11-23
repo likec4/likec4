@@ -11,9 +11,10 @@ import {
 import { type InternalNodeUpdate, getViewportForBounds } from '@xyflow/system'
 import { hasAtLeast, isNullish, omit } from 'remeda'
 import {
-  type ActorRefFromLogic,
+  type ActorRef,
   type BaseActorRef,
   type SnapshotFrom,
+  type StateMachine,
   assertEvent,
   assign,
   cancel,
@@ -235,10 +236,12 @@ export type Events =
   | { type: 'update.view'; layouted: LayoutRelationshipsViewResult }
   | { type: 'close' }
 
+type Tags = 'active'
+
 const machine = setup({
   types: {
     context: {} as Context,
-    tags: '' as 'active',
+    tags: '' as Tags,
     children: {} as {
       layouter: 'layouter'
     },
@@ -628,9 +631,32 @@ const _relationshipsBrowserLogic = machine.createMachine({
   exit: dispose(),
 })
 
-type InferredMachine = typeof _relationshipsBrowserLogic
-export interface RelationshipsBrowserLogic extends InferredMachine {}
+export interface RelationshipsBrowserLogic extends
+  StateMachine<
+    Context,
+    Events,
+    {},
+    any,
+    any,
+    any,
+    any,
+    any,
+    Tags,
+    Input,
+    any,
+    any,
+    any,
+    any
+  >
+{
+}
+
 export const relationshipsBrowserLogic: RelationshipsBrowserLogic = _relationshipsBrowserLogic as any
 
-export interface RelationshipsBrowserActorRef extends ActorRefFromLogic<RelationshipsBrowserLogic> {}
 export type RelationshipsBrowserSnapshot = SnapshotFrom<RelationshipsBrowserLogic>
+export interface RelationshipsBrowserActorRef extends ActorRef<RelationshipsBrowserSnapshot, Events> {
+}
+
+export type {
+  Input as RelationshipsBrowserInput,
+}

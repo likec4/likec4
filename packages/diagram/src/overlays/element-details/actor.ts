@@ -1,15 +1,16 @@
 import type { DiagramView, Fqn, NodeId } from '@likec4/core/types'
 import type { Rect } from '@xyflow/system'
 import {
-  type ActorRefFromLogic,
+  type ActorRef,
   type SnapshotFrom,
+  type StateMachine,
   assign,
   sendTo,
   setup,
   spawnChild,
   stopChild,
 } from 'xstate'
-import { relationshipsBrowserLogic } from '../relationships-browser/actor'
+import { type RelationshipsBrowserActorRef, relationshipsBrowserLogic } from '../relationships-browser/actor'
 
 export type Input = {
   subject: Fqn
@@ -86,18 +87,35 @@ const _elementDetailsLogic = setup({
       type: 'final',
     },
   },
-  // exit: assign({
-  //   initialized: false,
-  //   xyflow: null,
-  //   layouted: null,
-  //   xystore: null,
-  //   xyedges: [],
-  //   xynodes: [],
-  // }),
 })
-type InferredMachine = typeof _elementDetailsLogic
-export interface ElementDetailsLogic extends InferredMachine {}
-export const elementDetailsLogic: ElementDetailsLogic = _elementDetailsLogic as any
-export interface ElementDetailsActorRef extends ActorRefFromLogic<ElementDetailsLogic> {
+
+export interface ElementDetailsLogic extends
+  StateMachine<
+    Context,
+    Events,
+    {
+      [key: `${string}-relationships`]: RelationshipsBrowserActorRef | undefined
+    },
+    any,
+    any,
+    any,
+    any,
+    any,
+    never,
+    Input,
+    any,
+    any,
+    any,
+    any
+  >
+{
 }
+export const elementDetailsLogic: ElementDetailsLogic = _elementDetailsLogic as any
+
 export type ElementDetailsSnapshot = SnapshotFrom<ElementDetailsLogic>
+export interface ElementDetailsActorRef extends ActorRef<ElementDetailsSnapshot, Events> {
+}
+
+export type {
+  Input as ElementDetailsInput,
+}

@@ -4,9 +4,9 @@ import { type BoxProps, Box } from '@likec4/styles/jsx'
 import { markdownBlock } from '@likec4/styles/recipes'
 import type { JsxStyleProps } from '@likec4/styles/types'
 import { Text } from '@mantine/core'
-import { forwardRef } from 'react'
+import { type ComponentPropsWithoutRef, forwardRef } from 'react'
 
-export type MarkdownProps = Omit<BoxProps, 'dangerouslySetInnerHTML' | 'children'> & {
+export type MarkdownProps = Omit<ComponentPropsWithoutRef<'div'>, 'dangerouslySetInnerHTML' | 'children'> & {
   value: RichTextType
 
   /**

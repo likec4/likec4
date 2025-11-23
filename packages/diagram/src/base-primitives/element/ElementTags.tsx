@@ -6,7 +6,7 @@ import { likec4tag } from '@likec4/styles/recipes'
 import { useDebouncedState, useHover } from '@mantine/hooks'
 import { NodeToolbar, Position } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
-import { forwardRef, memo, useCallback, useEffect } from 'react'
+import { type ComponentPropsWithoutRef, forwardRef, memo, useCallback, useEffect } from 'react'
 import type { BaseNodePropsWithData } from '../../base/types'
 import { useTagSpecification } from '../../context/TagStylesContext'
 import { useDiagram } from '../../hooks/useDiagram'
@@ -16,7 +16,7 @@ import { stopPropagation } from '../../utils/xyflow'
 export type ElementTagProps = {
   tag: string
   cursor?: 'pointer' | 'default'
-} & Omit<BoxProps, 'children'>
+} & Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'color'>
 
 export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
   ({ tag, cursor, className, style, ...props }, ref) => {

@@ -8,12 +8,13 @@ import { useEffect, useState } from 'react'
 import type { DiagramView } from '@likec4/core/types'
 import { RichText } from '@likec4/core/types'
 import { Markdown } from '@likec4/diagram/custom'
+import { css } from '@likec4/styles/css'
 import { Box, Card, Container, Group, SimpleGrid, Text } from '@mantine/core'
 import { useDocumentTitle, useInViewport } from '@mantine/hooks'
 import { randomInteger } from 'remeda'
 import { pageTitle } from '../../const'
 import { useLikeC4Views } from '../../hooks'
-import * as css from './index.css'
+import * as styles from './index.css'
 
 export const Route = createFileRoute('/_single/single-index')({
   component: RouteComponent,
@@ -56,7 +57,7 @@ function ViewCard({ view }: { view: DiagramView }) {
       className="group"
       withBorder>
       <Card.Section>
-        <Box className={css.previewBg} style={{ height: 200 }}>
+        <Box className={styles.previewBg} style={{ height: 200 }}>
           {visible && (
             <StaticLikeC4Diagram
               background={'transparent'}
@@ -77,17 +78,17 @@ function ViewCard({ view }: { view: DiagramView }) {
         value={RichText.from(view.description)}
         textScale={0.75}
         emptyText="No description"
-        lineClamp={3}
-        mt="[2px]"
-        css={{
+        className={css({
+          lineClamp: 3,
+          mt: '1',
           transition: 'fast',
           opacity: {
             base: 0.8,
             _groupHover: 1,
           },
-        }}
+        })}
       />
-      <Link to={'/view/$viewId/'} params={{ viewId: view.id }} search className={css.cardLink}></Link>
+      <Link to={'/view/$viewId/'} params={{ viewId: view.id }} search className={styles.cardLink}></Link>
     </Card>
   )
 }
