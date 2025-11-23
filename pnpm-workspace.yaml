@@ -11,8 +11,8 @@ catalog:
   graphology: ^0.25.4
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  oxlint: 1.28.0
-  oxlint-tsgolint: 0.5.1
+  oxlint: 1.29.0
+  oxlint-tsgolint: 0.8.1
   playwright: 1.56.1
   tsx: 4.20.6
   turbo: 2.6.1
