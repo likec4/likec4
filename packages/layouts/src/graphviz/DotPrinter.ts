@@ -604,10 +604,6 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       edgeModel.attributes.delete(_.weight)
       edgeModel.attributes.delete(_.minlen)
       edgeModel.attributes.delete(_.constraint)
-      const dotpos = layout.edges.find(e => e.id === id)?.dotpos
-      if (dotpos && !isShifted) {
-        edgeModel.attributes.set(_.pos, dotpos)
-      }
     }
     // TODO: apply manual layout fails when there are edges with compounds
     // Array.from(this.edgesWithCompounds.values()).forEach(edgeId => {
