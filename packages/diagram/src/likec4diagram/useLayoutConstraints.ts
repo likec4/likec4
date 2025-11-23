@@ -60,15 +60,15 @@ abstract class Rect {
 
   get dimensions() {
     return {
-      width: this.maxX - this.minX,
-      height: this.maxY - this.minY,
+      width: Math.round(this.maxX - this.minX),
+      height: Math.round(this.maxY - this.minY),
     }
   }
 
   get diff(): XYPosition {
     return {
-      x: this.positionAbsolute.x - this.initialX,
-      y: this.positionAbsolute.y - this.initialY,
+      x: Math.round(this.positionAbsolute.x - this.initialX),
+      y: Math.round(this.positionAbsolute.y - this.initialY),
     }
   }
 
@@ -226,9 +226,8 @@ function makeRelativeEdgeModifier(
       })
 
       const newP = p
-        .add(
-          d.multiply(coeff),
-        )
+        .add(d.multiply(coeff))
+        .round()
 
       return {
         x: newP.x,
