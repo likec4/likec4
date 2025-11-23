@@ -158,9 +158,12 @@ export function ExportPage() {
             console.error('viewportRef.current is null')
             return
           }
+          const x = Math.round(-bounds.x + padding)
+          const y = Math.round(-bounds.y + padding)
+
           const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
           viewports.forEach((el) => {
-            el.style.transform = 'translate(' + padding + 'px, ' + padding + 'px)'
+            el.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
           })
           download && downloadDiagram()
         }}

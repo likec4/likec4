@@ -17,10 +17,6 @@ import { machine, targetState } from './machine.setup'
 
 export const idle = machine.createStateConfig({
   id: targetState.idle.slice(1),
-  entry: [
-    log('Entered idle state'),
-    log('---'),
-  ],
   on: {
     'xyflow.nodeClick': [
       {

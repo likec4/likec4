@@ -153,6 +153,7 @@ jobs:
         working-directory: e2e
         run: |
           pnpm install
+          pnpm add ../packages/core/package.tgz ../packages/likec4/package.tgz
           pnpm install:chromium
           pnpm bootstrap
 
@@ -216,6 +217,7 @@ jobs:
         working-directory: e2e
         run: |
           pnpm install
+          pnpm add ../packages/core/package.tgz ../packages/likec4/package.tgz
           pnpm bootstrap
 
       - name: ʦ typecheck test

@@ -89,18 +89,12 @@ export function diagramToXY(opts: {
 
     const id = ns + node.id as NodeId
 
-    const drifts = node.drifts ?? null
-
     const base = {
       id,
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
       style: {
-        width: node.width,
-        height: node.height,
-      },
-      measured: {
         width: node.width,
         height: node.height,
       },
@@ -257,7 +251,7 @@ export function diagramToXY(opts: {
         navigateTo: edge.navigateTo,
         controlPoints: edge.controlPoints ?? null,
         labelBBox: edge.labelBBox ?? null,
-        labelXY: edge.labelBBox ? { x: edge.labelBBox.x, y: edge.labelBBox.y } : null,
+        labelXY: null,
         points: edge.points,
         color: edge.color ?? 'gray',
         line: edge.line ?? 'dashed',

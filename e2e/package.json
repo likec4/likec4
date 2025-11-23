@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@10.20.0",
+  "packageManager": "pnpm@10.23.0",
   "scripts": {
     "install:chromium": "playwright install chromium",
     "generate:png": "likec4 export png -o ./generated/images --flat",
@@ -15,23 +15,24 @@
     "test:update-screenshots": "playwright test --update-snapshots"
   },
   "dependencies": {
-    "@likec4/core": "file:../packages/core/package.tgz",
+    "@likec4/core": "latest",
     "@playwright/test": "1.56.1",
     "@types/node": "^20.19.11",
-    "@types/react": "^19.1.16",
-    "@types/react-dom": "^19.1.9",
-    "likec4": "file:../packages/likec4/package.tgz",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "likec4": "latest",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "std-env": "^3.9.0",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.8",
     "wrangler": "~4.35.0",
     "zx": "^8.8.4"
   },
   "pnpm": {
     "overrides": {
-      "@likec4/core": "file:../packages/core/package.tgz"
+      "@likec4/core": "file:../packages/core/package.tgz",
+      "likec4": "file:../packages/likec4/package.tgz"
     }
   }
 }

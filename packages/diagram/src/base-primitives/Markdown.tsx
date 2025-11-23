@@ -4,9 +4,9 @@ import { type BoxProps, Box } from '@likec4/styles/jsx'
 import { markdownBlock } from '@likec4/styles/recipes'
 import type { JsxStyleProps } from '@likec4/styles/types'
 import { Text } from '@mantine/core'
-import { forwardRef } from 'react'
+import { type ComponentPropsWithoutRef, forwardRef } from 'react'
 
-export type MarkdownProps = Omit<BoxProps, 'dangerouslySetInnerHTML' | 'children'> & {
+export type MarkdownProps = Omit<ComponentPropsWithoutRef<'div'>, 'dangerouslySetInnerHTML' | 'children' | 'color'> & {
   value: RichTextType
 
   /**
@@ -73,8 +73,9 @@ export const Markdown = forwardRef<HTMLDivElement, MarkdownProps>(({
         ...(fontSize && {
           '--text-fz': `var(--font-sizes-${fontSize}, var(--font-sizes-md))`,
         }),
-        // @ts-expect-error
-        ['--mantine-scale']: textScale,
+        ...(textScale !== 1 && {
+          ['--mantine-scale']: textScale,
+        }),
       }}
       {...content}
     />

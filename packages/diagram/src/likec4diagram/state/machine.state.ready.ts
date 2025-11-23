@@ -1,6 +1,4 @@
-import { BBox, invariant, nonexhaustive } from '@likec4/core'
-import { produce } from 'immer'
-import { assertEvent } from 'xstate'
+import { BBox } from '@likec4/core'
 import { emit, sendTo, spawnChild, stopChild } from 'xstate/actions'
 import { and } from 'xstate/guards'
 import {
@@ -11,7 +9,6 @@ import {
   closeSearch,
   disableCompareWithLatest,
   emitEdgeClick,
-  emitNavigateTo,
   emitNodeClick,
   emitOpenSource,
   emitPaneClick,
@@ -19,6 +16,7 @@ import {
   ensureSearchActor,
   ensureSyncLayoutActor,
   fitDiagram,
+  handleNavigate,
   layoutAlign,
   notationsHighlight,
   onEdgeDoubleClick,
@@ -46,69 +44,6 @@ import { idle } from './machine.state.ready.idle'
 import { printing } from './machine.state.ready.printing'
 import { walkthrough } from './machine.state.ready.walkthrough'
 import { calcViewportForBounds, typedSystem } from './utils'
-
-const handleNavigate = () =>
-  machine.enqueueActions(({ enqueue, context, event }) => {
-    assertEvent(event, ['navigate.to', 'navigate.back', 'navigate.forward'])
-    const {
-      viewport,
-      navigationHistory: {
-        currentIndex,
-        history,
-      },
-    } = context
-    switch (event.type) {
-      case 'navigate.to': {
-        enqueue.assign({
-          navigationHistory: {
-            currentIndex,
-            history: produce(history, draft => {
-              draft[currentIndex]!.viewport = { ...viewport }
-            }),
-          },
-          lastOnNavigate: {
-            fromView: context.view.id,
-            toView: event.viewId,
-            fromNode: event.fromNode ?? null,
-          },
-        })
-        enqueue(emitNavigateTo())
-        break
-      }
-      case 'navigate.back': {
-        invariant(currentIndex > 0, 'Cannot navigate back')
-        const stepBack = history[currentIndex - 1]!
-        enqueue.assign({
-          navigationHistory: {
-            currentIndex: currentIndex - 1,
-            history: produce(history, draft => {
-              draft[currentIndex]!.viewport = { ...viewport }
-            }),
-          },
-          lastOnNavigate: null,
-        })
-        enqueue(emitNavigateTo({ viewId: stepBack.viewId }))
-        break
-      }
-      case 'navigate.forward': {
-        invariant(currentIndex < history.length - 1, 'Cannot navigate forward')
-        const stepForward = history[currentIndex + 1]!
-        enqueue.assign({
-          navigationHistory: {
-            currentIndex: currentIndex + 1,
-            history: produce(history, draft => {
-              draft[currentIndex]!.viewport = { ...viewport }
-            }),
-          },
-          lastOnNavigate: null,
-        })
-        enqueue(emitNavigateTo({ viewId: stepForward.viewId }))
-        break
-      }
-      default:
-        nonexhaustive(event)
-    }
-  })
 
 const updateView = () =>
   machine.enqueueActions(

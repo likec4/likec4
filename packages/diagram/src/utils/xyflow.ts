@@ -4,8 +4,7 @@ import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow
 import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { flatMap, hasAtLeast, isArray, isNumber, isString } from 'remeda'
-import type { ViewPaddings } from '../LikeC4Diagram.props'
+import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
 import { vector } from './vector'
 
 export function distance(a: XYPosition, b: XYPosition) {
@@ -38,7 +37,10 @@ export type MinimalInternalNode = {
 export function extractMinimalInternalNode<N extends InternalNode>(nd: N): MinimalInternalNode {
   const minimal: MinimalInternalNode = {
     internals: {
-      positionAbsolute: nd.internals.positionAbsolute,
+      positionAbsolute: {
+        x: Math.round(nd.internals.positionAbsolute.x),
+        y: Math.round(nd.internals.positionAbsolute.y),
+      },
     },
   }
   if (nd.measured) {
@@ -77,9 +79,13 @@ export function isEqualMinimalInternalNodes(a: MinimalInternalNode, b: MinimalIn
   return heightA === heightB
 }
 
+export function isEqualRects(a: Rect, b: Rect) {
+  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+}
+
 export const nodeToRect = (nd: MinimalInternalNode): Rect => ({
-  x: nd.internals.positionAbsolute.x,
-  y: nd.internals.positionAbsolute.y,
+  x: Math.round(nd.internals.positionAbsolute.x),
+  y: Math.round(nd.internals.positionAbsolute.y),
   width: nd.measured?.width ?? nd.width ?? nd.initialWidth ?? 0,
   height: nd.measured?.height ?? nd.height ?? nd.initialHeight ?? 0,
 })
@@ -89,8 +95,8 @@ export function getNodeCenter(node: MinimalInternalNode): XYPosition {
   const { x, y } = node.internals.positionAbsolute
 
   return {
-    x: x + width / 2,
-    y: y + height / 2,
+    x: Math.round(x + width / 2),
+    y: Math.round(y + height / 2),
   }
 }
 
@@ -104,19 +110,19 @@ export function getNodeCenter(node: MinimalInternalNode): XYPosition {
  * @returns coordinates of the intersection point
  */
 export function getNodeIntersectionFromCenterToPoint(
-  intersectionNode: MinimalInternalNode,
+  intersectionNode: BBox,
   target: XYPosition,
   nodeMargin: number = 0,
 ) {
-  const nodeCenter = getNodeCenter(intersectionNode)
-  const { width, height } = getNodeDimensions(intersectionNode)
+  const { width, height } = intersectionNode
+  const nodeCenter = BBox.center(intersectionNode)
   const v = vector(target.x, target.y).subtract(nodeCenter)
-  const xScale = (nodeMargin + (width || 0) / 2) / v.x
-  const yScale = (nodeMargin + (height || 0) / 2) / v.y
+  const xScale = (nodeMargin + width / 2) / v.x
+  const yScale = (nodeMargin + height / 2) / v.y
 
   const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
 
-  return vector(v).multiply(scale).add(nodeCenter)
+  return vector(v).multiply(scale).add(nodeCenter).round()
 }
 
 /**
@@ -131,7 +137,7 @@ export function getNodeIntersection(
   intersectionNode: MinimalInternalNode,
   targetNode: MinimalInternalNode,
 ): XYPosition {
-  return getNodeIntersectionFromCenterToPoint(intersectionNode, getNodeCenter(targetNode))
+  return getNodeIntersectionFromCenterToPoint(nodeToRect(intersectionNode), getNodeCenter(targetNode))
 }
 
 /**

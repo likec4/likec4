@@ -1,8 +1,8 @@
 import type { Fqn } from '@likec4/core/types'
 import {
-  type ActorLogicFrom,
-  type ActorRefFrom,
+  type ActorRef,
   type SnapshotFrom,
+  type StateMachine,
   assertEvent,
   assign,
   setup,
@@ -92,8 +92,26 @@ const _searchActorLogic = setup({
   },
 })
 
-export interface SearchActorLogic extends ActorLogicFrom<typeof _searchActorLogic> {}
-export const searchActorLogic: SearchActorLogic = _searchActorLogic
+export interface SearchActorLogic extends
+  StateMachine<
+    SearchContext,
+    SearchActorEvent,
+    {},
+    any,
+    any,
+    any,
+    any,
+    any,
+    never,
+    never,
+    any,
+    any,
+    any,
+    any
+  >
+{
+}
+export const searchActorLogic: SearchActorLogic = _searchActorLogic as any
 
 export type SearchActorSnapshot = SnapshotFrom<SearchActorLogic>
-export interface SearchActorRef extends ActorRefFrom<SearchActorLogic> {}
+export interface SearchActorRef extends ActorRef<SearchActorSnapshot, SearchActorEvent> {}

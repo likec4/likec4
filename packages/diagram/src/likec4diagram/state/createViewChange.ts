@@ -19,23 +19,18 @@ export function createViewChange(
       _layout: _2, // Ignore layout type from view
       ...view
     },
-    xynodes,
-    xyedges,
     xystore,
   } = parentContext
 
-  const { nodeLookup } = xystore.getState()
+  const { nodeLookup, edgeLookup } = xystore.getState()
   const movedNodes = new Set<string>()
 
-  const xynodesLookup = indexBy(xynodes, n => n.data.id)
-  const xyedgesLookup = indexBy(xyedges, e => e.data.id)
-
   const nodes = map(view.nodes, (node): DiagramNode => {
-    const xynode = xynodesLookup[node.id]
-    if (!xynode) {
+    const internal = nodeLookup.get(node.id)
+    if (!internal) {
+      console.error(`Internal node not found for ${node.id}`)
       return node
     }
-    const internal = nodeLookup.get(xynode.id)!
     const dimensions = getNodeDimensions(internal)
 
     const isChanged = !isSamePoint(internal.internals.positionAbsolute, node)
@@ -43,7 +38,7 @@ export function createViewChange(
       || node.height !== dimensions.height
 
     if (isChanged) {
-      movedNodes.add(xynode.id)
+      movedNodes.add(node.id)
     }
 
     return {
@@ -61,8 +56,9 @@ export function createViewChange(
   })
 
   const edges = map(view.edges, (edge): DiagramEdge => {
-    const xyedge = xyedgesLookup[edge.id]
+    const xyedge = edgeLookup.get(edge.id)
     if (!xyedge) {
+      console.error(`Internal edge not found for ${edge.id}`)
       return edge
     }
     const data = xyedge.data
@@ -73,17 +69,11 @@ export function createViewChange(
       controlPoints = bezierControlPoints(data.points)
     }
     const _updated: DiagramEdge = {
-      ...omit(edge, ['controlPoints']),
+      ...omit(edge, ['controlPoints', 'labelBBox']),
       points: data.points,
     }
-    if (data.labelXY && data.labelBBox) {
-      _updated.labelBBox = {
-        ...data.labelBBox,
-        ...data.labelXY,
-      }
-    }
     if (data.labelBBox) {
-      _updated.labelBBox ??= data.labelBBox
+      _updated.labelBBox = data.labelBBox
     }
     if (hasAtLeast(controlPoints, 1)) {
       _updated.controlPoints = controlPoints
