@@ -30,7 +30,7 @@ catalogs:
     "@astrojs/check": ^0.9.5
     "@astrojs/react": 4.4.0
     "@astrojs/starlight": 0.36.1
-    "@astrojs/starlight-tailwind": ^4.0.1
+    "@astrojs/starlight-tailwind": ^4.0.2
     "@expressive-code/plugin-collapsible-sections": ^0.41.3
     "@expressive-code/plugin-line-numbers": ^0.41.3
     astro: 5.15.6
