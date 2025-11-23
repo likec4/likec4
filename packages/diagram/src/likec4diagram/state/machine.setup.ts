@@ -135,7 +135,14 @@ export type Events =
   | { type: 'xyflow.setViewport'; duration?: number; viewport: Viewport }
   | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
-  | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
+  | {
+    type: 'update.view'
+    view: DiagramView
+    xynodes: Types.Node[]
+    xyedges: Types.Edge[]
+    source?: 'internal' | 'external'
+  }
+  | { type: 'update.view-bounds'; bounds: BBox }
   | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant'>> }
   | { type: 'update.features'; features: EnabledFeatures }
   | ({ type: 'open.source' } & OpenSourceParams)
@@ -181,7 +188,7 @@ export type EmittedEvents =
 
 export type ActionArg = { context: Context; event: Events }
 
-const deriveToggledFeatures = (context: Context): Required<ToggledFeatures> => {
+export const deriveToggledFeatures = (context: Context): Required<ToggledFeatures> => {
   let toggledFeatures = context.toggledFeatures
 
   const hasActiveWalkthrough = isTruthy(context.activeWalkthrough)

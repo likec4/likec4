@@ -5,6 +5,9 @@ import type { BaseEdge } from './types'
 const EMPTY_OBJ = {}
 
 function _update<E extends BaseEdge>(current: E[], updated: E[]): E[] {
+  if (current === updated) {
+    return current
+  }
   updated = updated.map((update): E => {
     const existing = current.find(n =>
       n.id === update.id &&
@@ -17,29 +20,29 @@ function _update<E extends BaseEdge>(current: E[], updated: E[]): E[] {
       return update
     }
 
-    const isSameData = hasSubObject(existing.data, update.data)
-    let data = isSameData ? existing.data : update.data
-    if (!isSameData) {
-      // Preserve hovered and dimmed states if not specified in update
-      if (isDefined(existing.data.hovered) && !isDefined(update.data.hovered)) {
-        data = {
-          ...data,
-          hovered: existing.data.hovered,
-        }
-      }
-      if (isDefined(existing.data.dimmed) && !isDefined(update.data.dimmed)) {
-        data = {
-          ...data,
-          dimmed: existing.data.dimmed,
-        }
-      }
-      if (isDefined(existing.data.active) && !isDefined(update.data.active)) {
-        data = {
-          ...data,
-          active: existing.data.active,
-        }
-      }
-    }
+    const isSameData = eq(existing.data, update.data)
+    const data = isSameData ? existing.data : update.data
+    // if (!isSameData) {
+    //   // Preserve hovered and dimmed states if not specified in update
+    //   if (isDefined(existing.data.hovered) && !isDefined(update.data.hovered)) {
+    //     data = {
+    //       ...data,
+    //       hovered: existing.data.hovered,
+    //     }
+    //   }
+    //   if (isDefined(existing.data.dimmed) && !isDefined(update.data.dimmed)) {
+    //     data = {
+    //       ...data,
+    //       dimmed: existing.data.dimmed,
+    //     }
+    //   }
+    //   if (isDefined(existing.data.active) && !isDefined(update.data.active)) {
+    //     data = {
+    //       ...data,
+    //       active: existing.data.active,
+    //     }
+    //   }
+    // }
 
     if (
       isSameData
@@ -51,8 +54,8 @@ function _update<E extends BaseEdge>(current: E[], updated: E[]): E[] {
       && eq(existing.className, update.className)
       && eq(existing.zIndex, update.zIndex ?? existing.zIndex)
       && eq(existing.label, update.label)
-      && eq(existing.sourceHandle ?? null, update.sourceHandle ?? null)
-      && eq(existing.targetHandle ?? null, update.targetHandle ?? null)
+      && eq(existing.sourceHandle, update.sourceHandle)
+      && eq(existing.targetHandle, update.targetHandle)
       && eq(existing.style ?? EMPTY_OBJ, update.style ?? EMPTY_OBJ)
     ) {
       return existing

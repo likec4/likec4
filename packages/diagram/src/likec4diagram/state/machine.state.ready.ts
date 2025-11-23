@@ -2,6 +2,7 @@ import { BBox, invariant, nonexhaustive } from '@likec4/core'
 import { produce } from 'immer'
 import { assertEvent } from 'xstate'
 import { emit, sendTo, spawnChild, stopChild } from 'xstate/actions'
+import { and } from 'xstate/guards'
 import {
   assignLastClickedNode,
   assignToggledFeatures,
@@ -111,7 +112,7 @@ const handleNavigate = () =>
 
 const updateView = () =>
   machine.enqueueActions(
-    ({ enqueue, event, context }) => {
+    ({ enqueue, event, context, self }) => {
       if (event.type !== 'update.view') {
         console.warn(`Ignoring unexpected event type: ${event.type} in action 'update.view'`)
         return
@@ -125,6 +126,11 @@ const updateView = () =>
       }
 
       enqueue(updateXYNodesEdges())
+
+      if (event.source === 'internal') {
+        return
+      }
+
       enqueue(sendSynced())
 
       let recenter = !context.viewportChangedManually
@@ -220,7 +226,7 @@ export const ready = machine.createStateConfig({
     'layout.resetEdgeControlPoints': {
       guard: 'not readonly',
       actions: [
-        startEditing('node'),
+        startEditing('edge'),
         resetEdgesControlPoints(),
         stopEditing(true),
       ],
@@ -230,13 +236,13 @@ export const ready = machine.createStateConfig({
       actions: [
         stopSyncLayout(),
         disableCompareWithLatest(),
-        ensureSyncLayoutActor(),
         emit({
           type: 'onChange',
           change: {
             op: 'reset-manual-layout',
           },
         }),
+        ensureSyncLayoutActor(),
       ],
     },
     'xyflow.resized': {
@@ -305,8 +311,15 @@ export const ready = machine.createStateConfig({
       actions: onEdgeMouseLeave(),
     },
     'xyflow.edgeDoubleClick': {
-      guard: 'not readonly',
-      actions: onEdgeDoubleClick(),
+      guard: and([
+        'not readonly',
+        ({ event }) => !!event.edge.data.controlPoints && event.edge.data.controlPoints.length > 0,
+      ]),
+      actions: [
+        startEditing('edge'),
+        onEdgeDoubleClick(),
+        stopEditing(true),
+      ],
     },
     'notations.highlight': {
       actions: notationsHighlight(),

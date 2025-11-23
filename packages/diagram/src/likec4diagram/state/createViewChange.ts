@@ -41,24 +41,17 @@ export function createViewChange(
     const isChanged = !isSamePoint(internal.internals.positionAbsolute, node)
       || node.width !== dimensions.width
       || node.height !== dimensions.height
-      || node.shape !== xynode.data.shape
-      || node.color !== xynode.data.color
-      || node.style.border !== xynode.data.style.border
-      || node.style.opacity !== xynode.data.style.opacity
 
-    if (!isChanged) {
-      return node
+    if (isChanged) {
+      movedNodes.add(xynode.id)
     }
-
-    movedNodes.add(xynode.id)
 
     return {
       ...node,
-      shape: xynode.data.shape,
-      color: xynode.data.color,
+      shape: internal.data.shape,
+      color: internal.data.color,
       style: {
-        ...node.style,
-        ...xynode.data.style,
+        ...internal.data.style,
       },
       x: Math.floor(internal.internals.positionAbsolute.x),
       y: Math.floor(internal.internals.positionAbsolute.y),

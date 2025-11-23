@@ -94,6 +94,16 @@ const _diagramMachine = machine.createMachine({
     'update.inputs': {
       actions: updateInputs(),
     },
+    'update.view-bounds': {
+      actions: assign(({ context, event }) => {
+        return {
+          view: {
+            ...context.view,
+            bounds: event.bounds,
+          },
+        }
+      }),
+    },
     'update.features': {
       actions: updateFeatures(),
     },
@@ -114,10 +124,10 @@ const _diagramMachine = machine.createMachine({
       }),
     },
     'xyflow.viewportMoved': {
-      actions: assign({
-        viewportChangedManually: (({ event }) => event.manually),
-        viewport: (({ event }) => event.viewport),
-      }),
+      actions: assign(({ event, context }) => ({
+        viewportChangedManually: context.viewportChangedManually || event.manually,
+        viewport: event.viewport,
+      })),
     },
     'destroy': {
       target: '.final',

@@ -314,10 +314,10 @@ describe('updateNodes', () => {
       expect(result).not.toBe(current)
       expect(result[0]).not.toBe(current[0])
       expect(result[0]).not.toBe(update[0])
-      expect(result[0]).toEqual(update[0])
       expect(result[0]).not.toHaveProperty('measured')
-      expect(result[0]).not.toHaveProperty('width')
-      expect(result[0]).not.toHaveProperty('height')
+      // Width and height are now forced in the implementation
+      expect(result[0]?.width).toBe(200)
+      expect(result[0]?.height).toBe(100)
     })
 
     it('forces dimensions from update in measured property', () => {
@@ -330,8 +330,12 @@ describe('updateNodes', () => {
       ]
       const update = [
         createNode('node1', {
-          initialWidth: 200,
-          initialHeight: 100,
+          // should pick up these dimensions
+          width: 200,
+          height: 100,
+          // Should be ignored
+          initialWidth: 100,
+          initialHeight: 50,
           position: { x: 0, y: 0 },
         }),
       ]
@@ -463,8 +467,11 @@ describe('updateNodes', () => {
       expect(result).not.toBe(current)
       expect(result[0]).not.toBe(current[0])
       expect(result[0]).not.toBe(update[0])
-      expect(result[0]).toEqual(update[0])
       expect(result[0]?.handles).toBe(current[0]?.handles)
+      expect(result[0]?.selected).toBe(true)
+      // Width and height are now forced in the implementation
+      expect(result[0]?.width).toBe(100)
+      expect(result[0]?.height).toBe(50)
     })
   })
 

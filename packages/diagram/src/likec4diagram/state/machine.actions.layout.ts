@@ -58,7 +58,7 @@ export const setViewportCenter = (params?: { x: number; y: number }) =>
   })
 
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
-  machine.createAction(({ context, event }) => {
+  machine.enqueueActions(({ context, event, enqueue }) => {
     let bounds = context.view.bounds, duration: number | undefined
     if (params) {
       bounds = params.bounds ?? context.view.bounds
@@ -66,6 +66,9 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
     } else if (event.type === 'xyflow.fitDiagram') {
       bounds = event.bounds ?? context.view.bounds
       duration = event.duration
+      enqueue.assign({
+        viewportChangedManually: false,
+      })
     }
     // Default values
     duration ??= 450
