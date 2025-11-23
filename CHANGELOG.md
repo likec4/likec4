@@ -1,3 +1,22 @@
+# [1.45.0](https://github.com/likec4/likec4/compare/v1.44.0...v1.45.0) (2025-11-23)
+
+
+### Bug Fixes
+
+* **manual-layouts:** handle local icon paths correctly ([8d4f50e](https://github.com/likec4/likec4/commit/8d4f50e0312b924ad4cff6e2383b74aa3f1198de))
+* set project parameter to undefined in pngHandler call ([4a71277](https://github.com/likec4/likec4/commit/4a71277226574b30f99474291a4582034f5d7d63))
+* update package dependencies to latest versions and adjust installation paths in workflows ([3276f79](https://github.com/likec4/likec4/commit/3276f7910f173530c26bbcf9f710b0b4a5afb757))
+
+
+### Features
+
+* add project option to export command and handlers ([0c4b440](https://github.com/likec4/likec4/commit/0c4b44028c858e0cb23b0d343970ec831c1979aa))
+* enable media print functionality ([96981c7](https://github.com/likec4/likec4/commit/96981c75abd778d879bbfff9d22b962b3b9261ab))
+* Enhance SpecificationParser to skip duplicate tags and log warnings ([f941200](https://github.com/likec4/likec4/commit/f9412006ddd404280da9048ed348affb111fb752))
+* persist the view state on navigation ([4d122df](https://github.com/likec4/likec4/commit/4d122df3c2d7b62900caf55fc3d741201eef5e6b)), closes [#1325](https://github.com/likec4/likec4/issues/1325)
+
+
+
 # [1.44.0](https://github.com/likec4/likec4/compare/v1.43.0...v1.44.0) (2025-11-10)
 
 > [!NOTE]
