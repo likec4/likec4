@@ -1,4 +1,4 @@
-import { hasAtLeast, omit, unique } from 'remeda'
+import { anyPass, hasAtLeast, omit, unique } from 'remeda'
 import type {
   DeployedInstanceModel,
   DeploymentConnectionModel,
@@ -303,7 +303,11 @@ export function applyDeploymentViewRuleStyles<A extends AnyAux>(
       continue
     }
     const predicates = rule.targets.map(deploymentExpressionToPredicate)
-    applyViewRuleStyle(rule, predicates, nodes)
+    applyViewRuleStyle(
+      rule,
+      anyPass(predicates),
+      nodes,
+    )
   }
   return nodes
 }

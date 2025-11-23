@@ -4,16 +4,15 @@ import {
   type AnyViewRuleStyle,
   type ComputedNode,
   type ElementViewRule,
+  type Predicate,
   isGroupElementKind,
   isViewRuleStyle,
 } from '../../types'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
-type Predicate<T> = (x: T) => boolean
-
 export function applyViewRuleStyle<A extends AnyAux>(
   rule: Pick<AnyViewRuleStyle<A>, 'style' | 'notation'>,
-  predicates: Predicate<ComputedNode<A>>[],
+  predicate: Predicate<ComputedNode<A>>,
   nodes: ComputedNode<A>[],
 ): void {
   const { shape, color, icon, ...rest } = rule.style
@@ -21,7 +20,7 @@ export function applyViewRuleStyle<A extends AnyAux>(
   pipe(
     nodes,
     filter(isNot(isGroupElementKind)),
-    filter(anyPass(predicates)),
+    filter(predicate),
     forEach(n => {
       n.shape = shape ?? n.shape
       n.color = color ?? n.color
@@ -50,7 +49,11 @@ export function applyViewRuleStyles<A extends AnyAux, N extends ComputedNode<A>[
       continue
     }
     const predicates = rule.targets.map(elementExprToPredicate)
-    applyViewRuleStyle(rule, predicates, nodes)
+    applyViewRuleStyle(
+      rule,
+      anyPass(predicates),
+      nodes,
+    )
   }
   return nodes
 }
