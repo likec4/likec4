@@ -28,7 +28,7 @@ catalogMode: prefer
 catalogs:
   astro:
     "@astrojs/check": ^0.9.5
-    "@astrojs/react": 4.4.0
+    "@astrojs/react": 4.4.2
     "@astrojs/starlight": 0.36.1
     "@astrojs/starlight-tailwind": ^4.0.1
     "@expressive-code/plugin-collapsible-sections": ^0.41.3
