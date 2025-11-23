@@ -18,7 +18,6 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
   "edges": [
     {
       "color": "gray",
-      "dotpos": "s,200,241.04 e,200,385.37 200,252.01 200,291.15 200,335.96 200,375.04",
       "head": "normal",
       "id": "cloud.backend:amazon.s3",
       "label": "persists artifacts",
@@ -224,7 +223,6 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
   "edges": [
     {
       "color": "gray",
-      "dotpos": "e,228,332.26 228,179.87 228,223.7 228,276.72 228,321.86",
       "head": "normal",
       "id": "customer:cloud.frontend.dashboard",
       "label": "opens in browser",
@@ -262,7 +260,6 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     },
     {
       "color": "gray",
-      "dotpos": "e,658,332.26 658,179.87 658,223.7 658,276.72 658,321.86",
       "head": "normal",
       "id": "support:cloud.frontend.adminPanel",
       "label": "manages",
@@ -300,7 +297,6 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     },
     {
       "color": "gray",
-      "dotpos": "e,353.14,680.87 552.95,511.86 494.25,561.51 421.08,623.4 361.13,674.11",
       "head": "normal",
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
       "label": "fetches data in zero trust network with 
@@ -339,7 +335,6 @@ sso authentification",
     },
     {
       "color": "gray",
-      "dotpos": "e,242.87,680.87 233.12,511.86 235.92,560.29 239.38,620.37 242.27,670.36",
       "head": "normal",
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": "fetches data",
@@ -377,7 +372,6 @@ sso authentification",
     },
     {
       "color": "gray",
-      "dotpos": "s,678,861.62 e,678,1031.7 678,872.52 678,919.28 678,974.69 678,1021.3",
       "head": "normal",
       "id": "cloud.backend.storage:amazon",
       "label": "persists artifacts",
@@ -416,7 +410,6 @@ sso authentification",
     },
     {
       "color": "gray",
-      "dotpos": "e,517.15,770.8 407.99,770.8 440.97,770.8 473.94,770.8 506.92,770.8",
       "head": "normal",
       "id": "cloud.backend.graphql:cloud.backend.storage",
       "label": null,
@@ -806,7 +799,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
   "edges": [
     {
       "color": "gray",
-      "dotpos": "e,317.2,332.26 217.92,179.87 246.84,224.26 281.89,278.06 311.54,323.57",
       "head": "normal",
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
@@ -844,7 +836,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     },
     {
       "color": "gray",
-      "dotpos": "e,432.84,332.26 532.12,179.87 503.2,224.26 468.15,278.06 438.5,323.57",
       "head": "normal",
       "id": "support:cloud.frontend",
       "label": "manages",
@@ -882,7 +873,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     },
     {
       "color": "gray",
-      "dotpos": "e,672.27,422 534.86,422 575.91,422 620.22,422 661.77,422",
       "head": "normal",
       "id": "cloud.frontend:cloud.backend",
       "label": "[...]",
@@ -921,7 +911,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     },
     {
       "color": "gray",
-      "dotpos": "s,832.02,511.93 e,832.02,654.97 832.02,522.82 832.02,561.63 832.02,605.99 832.02,644.73",
       "head": "normal",
       "id": "cloud.backend:amazon",
       "label": "persists artifacts",
@@ -1197,7 +1186,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
   "edges": [
     {
       "color": "gray",
-      "dotpos": "s,375.02,502.73 e,375.02,645.77 375.02,513.62 375.02,552.43 375.02,596.79 375.02,635.53",
       "head": "normal",
       "id": "cloud:amazon",
       "label": "persists artifacts",
@@ -1236,7 +1224,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
     },
     {
       "color": "gray",
-      "dotpos": "e,315.49,322.97 219.62,179.93 247.59,221.66 280.98,271.49 309.64,314.24",
       "head": "normal",
       "id": "customer:cloud",
       "label": "opens in browser",
@@ -1274,7 +1261,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
     },
     {
       "color": "gray",
-      "dotpos": "e,434.55,322.97 530.42,179.93 502.45,221.66 469.06,271.49 440.4,314.24",
       "head": "normal",
       "id": "support:cloud",
       "label": "manages",
