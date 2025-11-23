@@ -6,7 +6,7 @@ import type { JsxStyleProps } from '@likec4/styles/types'
 import { Text } from '@mantine/core'
 import { type ComponentPropsWithoutRef, forwardRef } from 'react'
 
-export type MarkdownProps = Omit<ComponentPropsWithoutRef<'div'>, 'dangerouslySetInnerHTML' | 'children'> & {
+export type MarkdownProps = Omit<ComponentPropsWithoutRef<'div'>, 'dangerouslySetInnerHTML' | 'children' | 'color'> & {
   value: RichTextType
 
   /**
@@ -73,8 +73,9 @@ export const Markdown = forwardRef<HTMLDivElement, MarkdownProps>(({
         ...(fontSize && {
           '--text-fz': `var(--font-sizes-${fontSize}, var(--font-sizes-md))`,
         }),
-        // @ts-expect-error
-        ['--mantine-scale']: textScale,
+        ...(textScale !== 1 && {
+          ['--mantine-scale']: textScale,
+        }),
       }}
       {...content}
     />

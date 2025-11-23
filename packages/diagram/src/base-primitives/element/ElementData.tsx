@@ -143,7 +143,6 @@ const Description = forwardRef<
         className,
         'likec4-element-description',
         css({
-          marginTop: '2',
           lineClamp: isSm ? 3 : 5,
         }),
       )}
