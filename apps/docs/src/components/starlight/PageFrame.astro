@@ -1,16 +1,20 @@
 ---
 import Default from '@astrojs/starlight/components/PageFrame.astro'
 import IndexPage from '@components/index-page/IndexPage.astro'
+import SponsorPage from '@components/sponsor-page/SponsorPage.astro'
 
 const isIndexPage = Astro.locals.starlightRoute.id === ''
+const isSponsorPage = Astro.locals.starlightRoute.id === 'sponsor'
 ---
 
-{
-  isIndexPage ? <IndexPage /> : (
+{isIndexPage
+  ? <IndexPage />
+  : isSponsorPage
+  ? <SponsorPage />
+  : (
     <Default>
       <slot name="header" slot="header" />
       <slot name="sidebar" slot="sidebar" />
       <slot />
     </Default>
-  )
-}
+  )}
