@@ -67,7 +67,6 @@
       modelRef: 'customer',
       shape: 'person',
       color: 'primary',
-      icon: 'file:///Users/davydkov/Projects/like-c4/likec4/e2e/src/likec4/../root-level-images/test-tube.svg',
       style: {
         opacity: 15,
         size: 'md',
@@ -150,7 +149,6 @@
       modelRef: 'cloud.ui',
       shape: 'rectangle',
       color: 'custom',
-      icon: 'file:///Users/davydkov/Projects/like-c4/likec4/e2e/src/likec4/../root-level-images/nested-1/nested-2/test-tube-chemistry.svg',
       style: {
         opacity: 20,
         size: 'md',
@@ -344,7 +342,6 @@
       source: 'customer',
       target: 'cloud.ui',
       label: '[...]',
-      dotpos: 'e,249,332.26 249,179.87 249,223.7 249,276.72 249,321.86',
       points: [
         [
           249,
@@ -394,7 +391,6 @@
       source: 'cloud.ui',
       target: 'amazon',
       label: 'reads users from the database',
-      dotpos: 'e,1084,1014.8 408.76,446.66 586.5,476.06 858.54,531.21 933,602.8 1043.1,708.69 1074.6,891.37 1083.2,1004.4',
       points: [
         [
           409,
@@ -455,7 +451,6 @@
       source: 'cloud.ui',
       target: 'cloud.next.graphql',
       label: '[...]',
-      dotpos: 'e,249,664.26 249,511.87 249,555.7 249,608.72 249,653.86',
       points: [
         [
           205,
@@ -507,7 +502,6 @@
       source: 'cloud.next.graphql',
       target: 'cloud.next.backend',
       label: '[...]',
-      dotpos: 'e,546.12,754 409.8,754 450.56,754 494.49,754 535.7,754',
       points: [
         [
           366,
@@ -556,7 +550,6 @@
       source: 'cloud.next.backend',
       target: 'amazon',
       label: 'reads/writes',
-      dotpos: 'e,987.56,1015 801.27,843.76 838.68,878.49 882.03,918.6 921.53,954.8 940.34,972.04 960.42,990.32 979.86,1008',
       points: [
         [
           801,
