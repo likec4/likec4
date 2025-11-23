@@ -57,11 +57,11 @@ catalogs:
       version: 4.44.0
   css:
     '@pandacss/dev':
-      specifier: ^1.4.3
-      version: 1.4.3
+      specifier: ^1.5.1
+      version: 1.5.1
     '@pandacss/types':
-      specifier: ^1.4.3
-      version: 1.4.3
+      specifier: ^1.5.1
+      version: 1.5.1
     '@tailwindcss/vite':
       specifier: ^4.1.15
       version: 4.1.16
@@ -143,23 +143,23 @@ catalogs:
       version: 3.5.2
   mantine:
     '@mantine/colors-generator':
-      specifier: 8.3.7
-      version: 8.3.7
+      specifier: 8.3.9
+      version: 8.3.9
     '@mantine/core':
-      specifier: 8.3.7
-      version: 8.3.7
+      specifier: 8.3.9
+      version: 8.3.9
     '@mantine/hooks':
-      specifier: 8.3.7
-      version: 8.3.7
+      specifier: 8.3.9
+      version: 8.3.9
     '@mantine/modals':
-      specifier: 8.3.7
-      version: 8.3.7
+      specifier: 8.3.9
+      version: 8.3.9
     '@mantine/notifications':
-      specifier: 8.3.7
-      version: 8.3.7
+      specifier: 8.3.9
+      version: 8.3.9
     '@mantine/vanilla-extract':
-      specifier: 8.3.7
-      version: 8.3.7
+      specifier: 8.3.9
+      version: 8.3.9
   mcp:
     '@modelcontextprotocol/sdk':
       specifier: ^1.20.1
@@ -359,11 +359,11 @@ catalogs:
       version: 5.24.0
   xyflow:
     '@xyflow/react':
-      specifier: 12.9.0
-      version: 12.9.0
+      specifier: 12.9.3
+      version: 12.9.3
     '@xyflow/system':
-      specifier: 0.0.71
-      version: 0.0.71
+      specifier: 0.0.73
+      version: 0.0.73
   zod4:
     zod:
       specifier: ^4.1.12
@@ -603,22 +603,22 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.3.7(react@19.2.0)
+        version: 8.3.9(react@19.2.0)
       '@mantine/modals':
         specifier: catalog:mantine
-        version: 8.3.7(@mantine/core@8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mantine/hooks@8.3.7(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 8.3.9(@mantine/core@8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mantine/hooks@8.3.9(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mantine/notifications':
         specifier: catalog:mantine
-        version: 8.3.7(@mantine/core@8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mantine/hooks@8.3.7(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 8.3.9(@mantine/core@8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mantine/hooks@8.3.9(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.2.0)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.3(typescript@5.9.3)
+        version: 1.5.1(typescript@5.9.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -657,10 +657,10 @@ importers:
         version: 6.0.0(@types/react@19.2.2)(react@19.2.0)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.9.0(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 12.9.3(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.71
+        version: 0.0.73
       date-fns:
         specifier: catalog:utils
         version: 4.1.0
@@ -906,7 +906,7 @@ importers:
         version: link:../tsconfig
       '@mantine/colors-generator':
         specifier: catalog:mantine
-        version: 8.3.7(chroma-js@3.1.2)
+        version: 8.3.9(chroma-js@3.1.2)
       '@types/chroma-js':
         specifier: catalog:utils
         version: 3.1.1
@@ -1032,10 +1032,10 @@ importers:
         version: 0.4.4
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.3.7(react@19.2.0)
+        version: 8.3.9(react@19.2.0)
       '@nanostores/media-query':
         specifier: catalog:react
         version: 0.1.1(nanostores@1.0.1)
@@ -1050,10 +1050,10 @@ importers:
         version: 6.0.0(@types/react@19.2.2)(react@19.2.0)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.9.0(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 12.9.3(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.71
+        version: 0.0.73
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
@@ -1099,7 +1099,7 @@ importers:
         version: link:../tsconfig
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.3(typescript@5.9.3)
+        version: 1.5.1(typescript@5.9.3)
       '@statelyai/inspect':
         specifier: ^0.4.0
         version: 0.4.0(ws@8.18.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
@@ -1486,10 +1486,10 @@ importers:
         version: 5.1.0(vite@7.2.2(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.9.0(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 12.9.3(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.71
+        version: 0.0.73
       boxen:
         specifier: ^8.0.1
         version: 8.0.1
@@ -1562,16 +1562,16 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.3.7(react@19.2.0)
+        version: 8.3.9(react@19.2.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.2.0)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.3(typescript@5.9.3)
+        version: 1.5.1(typescript@5.9.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -2026,16 +2026,16 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.3.7(react@19.2.0)
+        version: 8.3.9(react@19.2.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.2.0)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.3(typescript@5.9.3)
+        version: 1.5.1(typescript@5.9.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -2068,10 +2068,10 @@ importers:
         version: 5.1.0(vite@7.2.2(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.9.0(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 12.9.3(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.71
+        version: 0.0.73
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -2119,7 +2119,7 @@ importers:
     dependencies:
       '@pandacss/types':
         specifier: catalog:css
-        version: 1.4.3
+        version: 1.5.1
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
@@ -2132,13 +2132,13 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
-        version: 8.3.7(@mantine/core@8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
+        version: 8.3.9(@mantine/core@8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.3(typescript@5.9.3)
+        version: 1.5.1(typescript@5.9.3)
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -2156,7 +2156,7 @@ importers:
         version: 2.1.0
       pandacss-preset-radix-colors:
         specifier: ^0.2.0
-        version: 0.2.0(@pandacss/dev@1.4.3(typescript@5.9.3))(@radix-ui/colors@3.0.0)
+        version: 0.2.0(@pandacss/dev@1.5.1(typescript@5.9.3))(@radix-ui/colors@3.0.0)
       remeda:
         specifier: catalog:utils
         version: 2.32.0
@@ -2187,16 +2187,16 @@ importers:
         version: 0.0.8
       '@pandabox/unplugin':
         specifier: ^0.2.2
-        version: 0.2.2(@pandacss/config@1.4.3)(@pandacss/core@1.4.3)(@pandacss/node@1.4.3(typescript@5.9.3))(esbuild@0.25.11)(typescript@5.9.3)(vite@7.2.2(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
+        version: 0.2.2(@pandacss/config@1.5.1)(@pandacss/core@1.5.1)(@pandacss/node@1.5.1(typescript@5.9.3))(esbuild@0.25.11)(typescript@5.9.3)(vite@7.2.2(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       '@pandabox/utils':
         specifier: ^0.0.5
         version: 0.0.5
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.3(typescript@5.9.3)
+        version: 1.5.1(typescript@5.9.3)
       '@pandacss/types':
         specifier: catalog:css
-        version: 1.4.3
+        version: 1.5.1
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.23
@@ -2423,11 +2423,11 @@ packages:
   '@chevrotain/utils@11.0.3':
     resolution: {integrity: sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==}
 
-  '@clack/core@0.4.1':
-    resolution: {integrity: sha512-Pxhij4UXg8KSr7rPek6Zowm+5M22rbd2g1nfojHJkxp5YkFqiZ2+YLEM/XGVIzvGOcM0nqjIFxrpDwWRZYWYjA==}
+  '@clack/core@0.5.0':
+    resolution: {integrity: sha512-p3y0FIOwaYRUPRcMO7+dlmLh8PSRcrjuTndsiA0WAFbWES0mLZlrjVoBRZ9DzkPFJZG6KGkJmoEAY0ZcVWTkow==}
 
-  '@clack/prompts@0.9.1':
-    resolution: {integrity: sha512-JIpyaboYZeWYlyP0H+OoPPxd6nqueG/CmN6ixBiNFsIDHREevjIf0n0Ohh5gr5C8pEDknzgvz+pIJ8dMhzWIeg==}
+  '@clack/prompts@0.11.0':
+    resolution: {integrity: sha512-pMN5FcrEw9hUkZA4f+zLlzivQSeQf5dRGJjSUbvVYDLvpKCdQx5OaknvKzgbtXOizhP+SJJJjqEbOe55uKKfAw==}
 
   '@cloudflare/kv-asset-handler@0.4.0':
     resolution: {integrity: sha512-+tv3z+SPp+gqTIcImN9o0hqE9xyfQjI1XD9pL6NuKjua9B1y7mNYv0S9cP+QEbA4ppVgGZEmKOvHX5G5Ei1CVA==}
@@ -3374,48 +3374,48 @@ packages:
   '@lume/kiwi@0.4.4':
     resolution: {integrity: sha512-ie0YTKgiZqD4TXlJ4eUbfi4UEoKs6YlLRYNTfPm5eUXwfudTBmPRs7Qcxz2SWKDpVTwThv3sWG6zwtyAA0nPpw==}
 
-  '@mantine/colors-generator@8.3.7':
-    resolution: {integrity: sha512-3mwkeafB+fFT1IjI0/111ZILLv8YtYUryhJH2jxfpjuEyrP2xH5AdPo8QOgftDxC1QZd9NKQJt4I0MciNWKE6A==}
+  '@mantine/colors-generator@8.3.9':
+    resolution: {integrity: sha512-WWBbJj4t0KHyTyeBt/3E3TUwuZETIB7MYG0zNU+pXFMTmRKACoYxBqEPZNMATKp5z7JzCg4a4NLecGEJk56mlg==}
     peerDependencies:
       chroma-js: '>=2.4.2'
 
-  '@mantine/core@8.3.7':
-    resolution: {integrity: sha512-7gUTiUrD0pukpkSNvScGi/e+pBuBWYJP5yFHT4TFf1fmaQAA7PbNoAzUeEkPbVromDtK0VdEcpRlYpDnJhpz2g==}
+  '@mantine/core@8.3.9':
+    resolution: {integrity: sha512-ivj0Crn5N521cI2eWZBsBGckg0ZYRqfOJz5vbbvYmfj65bp0EdsyqZuOxXzIcn2aUScQhskfvzyhV5XIUv81PQ==}
     peerDependencies:
-      '@mantine/hooks': 8.3.7
+      '@mantine/hooks': 8.3.9
       react: 19.2.0
       react-dom: 19.2.0
 
-  '@mantine/hooks@8.3.7':
-    resolution: {integrity: sha512-2xnKS8C6fTzMoq1dtOJGrh2bIBuWnVrijL/DsDk60UaUgbABh8zScwU5ndX+p02ds2bebo34LovscP9fH38uPg==}
+  '@mantine/hooks@8.3.9':
+    resolution: {integrity: sha512-Dfz7W0+K1cq4Gb1WFQCZn8tsMXkLH6MV409wZR/ToqsxdNDUMJ/xxbfnwEXWEZjXNJd1wDETHgc+cZG2lTe3Xw==}
     peerDependencies:
       react: 19.2.0
 
-  '@mantine/modals@8.3.7':
-    resolution: {integrity: sha512-MuH8+O05QKbE8QXyYn8AAJNKfliyCn2DZzUFVqkX6JblNgMy8ncbaVHMc5oE+fawQGzhAyCjUMDfjE2dUKRH+A==}
+  '@mantine/modals@8.3.9':
+    resolution: {integrity: sha512-0WOikHgECJeWA/1TNf+sxOnpNwQjmpyph3XEhzFkgneimW6Ry7R6qd/i345CDLSu6kP6FGGRI73SUROiTcu2Ng==}
     peerDependencies:
-      '@mantine/core': 8.3.7
-      '@mantine/hooks': 8.3.7
-      react: 19.2.0
-      react-dom: 19.2.0
-
-  '@mantine/notifications@8.3.7':
-    resolution: {integrity: sha512-NvG9nVfsdoAGbyFxmb/2cCED91N6QVCUsasdcFhpBb5KNMjQbNjwXLVKgvdAA3Fhnjzcc6SF2CdxgTN625kFRA==}
-    peerDependencies:
-      '@mantine/core': 8.3.7
-      '@mantine/hooks': 8.3.7
+      '@mantine/core': 8.3.9
+      '@mantine/hooks': 8.3.9
       react: 19.2.0
       react-dom: 19.2.0
 
-  '@mantine/store@8.3.7':
-    resolution: {integrity: sha512-YOK+LW7ZVHv1c/bOnStraJbyh7+uRSeo1DG2eH9M+EllXJfNG8bVhOfrnnraYZ1rbbvD/66/hSZkAZJbZeTOAw==}
+  '@mantine/notifications@8.3.9':
+    resolution: {integrity: sha512-emUdoCyaccf/NuNmJ4fQgloJ7hEod0Pde7XIoD9xUUztVchL143oWRU2gYm6cwqzSyjpjTaqPXfz5UvEBRYjZw==}
+    peerDependencies:
+      '@mantine/core': 8.3.9
+      '@mantine/hooks': 8.3.9
+      react: 19.2.0
+      react-dom: 19.2.0
+
+  '@mantine/store@8.3.9':
+    resolution: {integrity: sha512-Z4tYW597mD3NxHLlJ3OJ1aKucmwrD9nhqobz+142JNw01aHqzKjxVXlu3L5GGa7F3u3OjXJk/qb1QmUs4sU+Jw==}
     peerDependencies:
       react: 19.2.0
 
-  '@mantine/vanilla-extract@8.3.7':
-    resolution: {integrity: sha512-mh6ULrZXZMjfQEePM2r09/g3B80mKML4+8WL+0vTiK8KZamGLLYWBjtIecL4paL5a10SS+kWFP8JkuEzFoffmw==}
+  '@mantine/vanilla-extract@8.3.9':
+    resolution: {integrity: sha512-lvHOo0ZqS4ToESjjYniEXOIygpiQaZWVHAFN5KxexourF/cra6EHn/fodlnAqXvD0qlBLtmaHyGEln0ZCpbLIw==}
     peerDependencies:
-      '@mantine/core': 8.3.7
+      '@mantine/core': 8.3.9
 
   '@mdx-js/mdx@3.1.0':
     resolution: {integrity: sha512-/QxEhPAvGwbQmy1Px8F899L5Uc2KZ6JtXwlCgJmjSTBedwOZkByYcBG4GceIGPXRDsmfxhHazuS+hlOShRLeDw==}
@@ -3688,63 +3688,63 @@ packages:
   '@pandabox/utils@0.0.5':
     resolution: {integrity: sha512-+Qp6dLiWD3rGfq6PVTmWtXqD5OJ82XrekvJzsHWssjBoqLSlJKnALVy+bDRxojMRxTGna5JI85iLjb2EzRJbdw==}
 
-  '@pandacss/config@1.4.3':
-    resolution: {integrity: sha512-+fhmF1tU6/jIX7gH5fNP9fX1BnlQzsKVhUj8P8lQl/c6Vo6kA/7GA7Zp6DvOCZrgUzgPNHIfUcjQ+DkOOnz+8g==}
+  '@pandacss/config@1.5.1':
+    resolution: {integrity: sha512-aO+YVRlccLXuFC30DEO9ZDkvXwjbCXk1blIpii8PuclTAR0+YPq8xXVRTVK3fR3MiA0zROca8nAf5Kb+wHVKPw==}
 
-  '@pandacss/core@1.4.3':
-    resolution: {integrity: sha512-CXAU7folPpWyyKkCS+Lxvuyfsn3Ur29lO/XS9TZ1OSTs7XTH8CR5WTomVfHONHvbE8cNO2yE1PSs0X3AskhGzA==}
+  '@pandacss/core@1.5.1':
+    resolution: {integrity: sha512-okuvSm5o0gmQmkpLONH4ReqgBVOMMsfb9MyK8vpcZUpzvMBiraVcgsbLxKQyHlmVDZNbKLLokIycb8KEpqtIDQ==}
 
-  '@pandacss/dev@1.4.3':
-    resolution: {integrity: sha512-DdEC72W1n4SfHYdhkvtGTqtzviymxnpcoTR+aDTOa436hMaLTogZYtheft9j9EfCVI7QUJClsMiee41+JwloRg==}
+  '@pandacss/dev@1.5.1':
+    resolution: {integrity: sha512-U1NWO3ZgOLlABtDk6MMQwTNYOCiUtUg+HEoHPdEExLzNn+20mrLf1IZWJyn4zXKSpANGSi79EV7X4yxPa+W+MA==}
     hasBin: true
 
   '@pandacss/extractor@0.36.1':
     resolution: {integrity: sha512-Fm+yrTIUE+T0fHfekfYTUtIsbCsP5i4/jnvnlQavD/JX2+6x9yB83otP0TaVM1lpTCURtrSVZgEvXdc8OmZ2dA==}
 
-  '@pandacss/extractor@1.4.3':
-    resolution: {integrity: sha512-uPY3VRN/qeGEcASav0ZeznBvjQpG1UrzO4P5II3ZqkPqvXgsM03CiokYnpgmgnp1Of6SQ+ET+hsNGF04kQt41g==}
+  '@pandacss/extractor@1.5.1':
+    resolution: {integrity: sha512-/DG4MnVo5LA0SpJq4rI0RgOp8kPjZMP5a1+q4MwLDHPtfWTwPaiKv7LULBW1L11V+fMOYn+d44dBKgU4dj6oSg==}
 
-  '@pandacss/generator@1.4.3':
-    resolution: {integrity: sha512-9cNTjBSjP12zjyTvc9R6TxdH4mAwBf0KGhhGJgjTvGV4ancJO+rAXvYiTzeKAoGBFDDJ3GlU6tcfT+4AQ5QF0Q==}
+  '@pandacss/generator@1.5.1':
+    resolution: {integrity: sha512-kijxpjpvRQBz16BiBcghknthsdmVxSJD5C71jlcM4aVeqoZSCWDNcmlL/2SSCMy7oC6HANu2oRXS/L1YgYzHGA==}
 
-  '@pandacss/is-valid-prop@1.4.3':
-    resolution: {integrity: sha512-9xHAFaRGoXikp0SKUyTHdO97mjIRuGFLDqQ+zphaVeNjTIsyac+fZjOS/2jJNuTS1eybU0/ny1FZ3BpS6SkEqw==}
+  '@pandacss/is-valid-prop@1.5.1':
+    resolution: {integrity: sha512-AlOt+MqqwDlIdVEdW6wEtvDmX8MmPv004oD+7tdGN54HKpD9jqrwPwwS9p7YQ7nai631JlyladshFHqe1xl7+w==}
 
-  '@pandacss/logger@1.4.3':
-    resolution: {integrity: sha512-EDU9t4XBh0bzr4NcQn58vb7PeDe9TkEHTr2jDgqx9c/WXdOfLrggQg37DmoCWsEicyOUdTvnG5DOnGvxNKlMMQ==}
+  '@pandacss/logger@1.5.1':
+    resolution: {integrity: sha512-jC835vvSGIOxCZcqXH1alXdzO/ThUCE3HXGjt17mGli/QiVT3b/v83n/Cfz0wiHP3zSUlwVYaPAlXryepsQNWA==}
 
-  '@pandacss/node@1.4.3':
-    resolution: {integrity: sha512-ftsopW7HlSUH9+KGfMxotmTWkkD6FcfNztw60v+G07CwSLZVBiq0ZgJMcFEJeSKTFErQRB+bly4dv4YfIZIyJQ==}
+  '@pandacss/node@1.5.1':
+    resolution: {integrity: sha512-qgiydokbjWcSqzsuCP1LR91IOLs7JgsMJkgAbEim/PdVH3NbKNjCUx9mK8bt1JO3/GKNC+GfePpacxGLmt/p6w==}
 
-  '@pandacss/parser@1.4.3':
-    resolution: {integrity: sha512-SjaWSpOlnTHYSCKglKNbbAhSaOpWRK999UYcgXYva1pXnqPuW5mB6456nYY6v7rKwKQxe9/s520ESgdKyRy6Vw==}
+  '@pandacss/parser@1.5.1':
+    resolution: {integrity: sha512-CuG5qdsQkw2xjxzN9pkfl9JaPgK28FJnRj9jmLb98Vo3J+NkUD2NyzL4k69lKZv9nbcmwn7+HbvMP/DKfx8OvQ==}
 
-  '@pandacss/postcss@1.4.3':
-    resolution: {integrity: sha512-+s5A/hcIi4anfitng0LjhZdzU+FLxPQho0v+Hff+mHkDGYuWkfuvrA3pE5s0xbidTbzDDMcGJhMqmxD5DJXqiw==}
+  '@pandacss/postcss@1.5.1':
+    resolution: {integrity: sha512-fZZOf0n6WKm3JQnGXC4Y8RGzw9jDdYpFGaSpVLpE4VotbfBq/jZtACw/pLa4ryferJhRp+WraBvYtKg6w2bQ9w==}
 
-  '@pandacss/preset-base@1.4.3':
-    resolution: {integrity: sha512-TThz2FpJFODLUOnb2jh9BthbPrVUdst5ZyOn5qyJcYABWzi7PMmplBx+fKZurNfVty750n9c/6ehUucwk+EhEQ==}
+  '@pandacss/preset-base@1.5.1':
+    resolution: {integrity: sha512-I8USdmUqPPkluznTFilbzLgXzU/+NEzeCvkwuwfi0QZlmGXOXnatM/7IUK7yatNikPx3neqmNh4o4WwWE04dGQ==}
 
-  '@pandacss/preset-panda@1.4.3':
-    resolution: {integrity: sha512-dVjvUmxB+3KQrcIha960OuBjFoI7bNLUiIiHPdvYsQoSoQ4yNZGL1mip8nxPOFrznKP67jEVcp2U5itU7A+xJA==}
+  '@pandacss/preset-panda@1.5.1':
+    resolution: {integrity: sha512-ZA/MhFK3O/fYIS4p2HDpyPMgCISAi+g5LoPzX/jQbQ5WGfkBS8sTmxIM/XapGNVHAzXFzYOTwqQ87KP3Siiozw==}
 
-  '@pandacss/reporter@1.4.3':
-    resolution: {integrity: sha512-J59ZPsy7WhhnNQKIK3N8Hr2+Xvl+qdXkeSx9U+wyZumB2bXIvzTkRdDeWuuGFte9+JxSe1m5/Fsvxqo3Ih+JKA==}
+  '@pandacss/reporter@1.5.1':
+    resolution: {integrity: sha512-fCgX/VN9ZDZpvfYJU+bdQpwoR48cMmhtTvPYJIek6KoANKXXJFbpgC5t2N6EtTkktg+3+unks3XpU3FvQdGHTQ==}
 
   '@pandacss/shared@0.36.1':
     resolution: {integrity: sha512-yiGHfGNpOkphCsx8sYGsL8RhyPKeqcGgrrrQCNzwgkJRGXDqTVw9qNbD4tkILI8Qe+S+5aCiLkWCfoUtqJ+Btg==}
 
-  '@pandacss/shared@1.4.3':
-    resolution: {integrity: sha512-GRY1NhjYCjIyKbA4wMvyoooGntKPI9XhDdb91/LPbfjuj0i1uM+XCUmf/0O1iqH1ontXZWY4/oFU3Wn2wZQJqQ==}
+  '@pandacss/shared@1.5.1':
+    resolution: {integrity: sha512-pTHbfT6N7vt6/BncGoMduCo4jnYOvyHC8XdSgV3mzStdGJqw+0R30jeULixYrv7HFGDXCNxzohQ2k8YGOk6UoQ==}
 
-  '@pandacss/token-dictionary@1.4.3':
-    resolution: {integrity: sha512-/8QtKnmlLi5Lz95/m2i1b/u2vr2nqerVCJpS/CVYuYEhLfiZZEfWNFtZV8HEYzzLsbGo5QAMNrT/riBTaUKFeQ==}
+  '@pandacss/token-dictionary@1.5.1':
+    resolution: {integrity: sha512-w/dSvEaskD7zYHYWbPdYG+zrFLVsYYYJl9hT2cE2spccgJCid40Ov/4/zuP67rC9rPfs7qETMy6ydTPGbCfZ5A==}
 
   '@pandacss/types@0.36.1':
     resolution: {integrity: sha512-F0mGFtXT2j1hNFi5Z1AXPxEYcHoaedyJyScEbsGga4aa2KlJCEPEX9UDdgltMlrhSilM7nq7RbrDMToZ/cwvOg==}
 
-  '@pandacss/types@1.4.3':
-    resolution: {integrity: sha512-8bz5jqQLhHTYlzVUBxpWMf+lzexQqlZJY8Cot2B7wJjg9T+VK3guTxNJV1ioiGexwcDQrn/MJiNszd6C28djqw==}
+  '@pandacss/types@1.5.1':
+    resolution: {integrity: sha512-fUDPtP3+yW8q5gPC2UfDcrdd/QW3H24kNt5vD30f5dt0CGDGkSoRUP4iJVNViEfQS2MzfDCnYI+PFOCw3eeQFw==}
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -4236,8 +4236,8 @@ packages:
   '@ts-morph/common@0.22.0':
     resolution: {integrity: sha512-HqNBuV/oIlMKdkLshXd1zKBqNQCsuPEsgQOkfFQ/eUKjRlwndXW1AjN9LVkBEIukm00gGXSRmfkl0Wv5VXLnlw==}
 
-  '@ts-morph/common@0.27.0':
-    resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
+  '@ts-morph/common@0.28.1':
+    resolution: {integrity: sha512-W74iWf7ILp1ZKNYXY5qbddNaml7e9Sedv5lvU1V8lftlitkc9Pq1A+jlH23ltDgWYeZFFEqGCD1Ies9hqu3O+g==}
 
   '@typefox/monaco-editor-react@6.7.0':
     resolution: {integrity: sha512-g6LAv0xfVQIwAjxgJ8LRWc7Ptm9QjSApA/62Pwm7u5Was1EgUs7cD73PD7TUeWqagxlDnNXq0ZjI4SvzG46vUQ==}
@@ -4546,14 +4546,14 @@ packages:
       xstate:
         optional: true
 
-  '@xyflow/react@12.9.0':
-    resolution: {integrity: sha512-bt37E8Wf2HQ7hHQaMSnOw4UEWQqWlNwzfgF9tjix5Fu9Pn/ph3wbexSS/wbWnTkv0vhgMVyphQLfFWIuCe59hQ==}
+  '@xyflow/react@12.9.3':
+    resolution: {integrity: sha512-PSWoJ8vHiEqSIkLIkge+0eiHWiw4C6dyFDA03VKWJkqbU4A13VlDIVwKqf/Znuysn2GQw/zA61zpHE4rGgax7Q==}
     peerDependencies:
       react: 19.2.0
       react-dom: 19.2.0
 
-  '@xyflow/system@0.0.71':
-    resolution: {integrity: sha512-O2xIK84Uv1hH8qzeY94SKsj0R1n2jXHLsX6RZnM4x1Uc4oWiVbXDFucnkbFwhnQm3IIdAxkbgd2rEDp5oTRhhQ==}
+  '@xyflow/system@0.0.73':
+    resolution: {integrity: sha512-C2ymH2V4mYDkdVSiRx0D7R0s3dvfXiupVBcko6tXP5K4tVdSBMo22/e3V9yRNdn+2HQFv44RFKzwOyCcUUDAVQ==}
 
   JSONStream@1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -7362,9 +7362,6 @@ packages:
   package-json-from-dist@1.0.1:
     resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
 
-  package-manager-detector@0.1.0:
-    resolution: {integrity: sha512-qRwvZgEE7geMY6xPChI3T0qrM0PL4s/AKiLnNVjhg3GdN2/fUUSrpGA5Z8mejMXauT1BS6RJIgWvSGAdqg8NnQ==}
-
   package-manager-detector@1.3.0:
     resolution: {integrity: sha512-ZsEbbZORsyHuO00lY1kV3/t72yp6Ysay6Pd17ZAlNGuGwmWDLCJxFpRs0IzfXfj1o4icJOkUEioexFHzyPurSQ==}
 
@@ -8675,11 +8672,11 @@ packages:
   ts-morph@21.0.1:
     resolution: {integrity: sha512-dbDtVdEAncKctzrVZ+Nr7kHpHkv+0JDJb2MjjpBaj8bFeCkePU9rHfMklmhuLFnpeq/EJZk2IhStY6NzqgjOkg==}
 
-  ts-morph@26.0.0:
-    resolution: {integrity: sha512-ztMO++owQnz8c/gIENcM9XfCEzgoGphTv+nKpYNM1bgsdOVC/jRZuEBf6N+mLLDNg68Kl+GgUZfOySaRiG1/Ug==}
+  ts-morph@27.0.2:
+    resolution: {integrity: sha512-fhUhgeljcrdZ+9DZND1De1029PrE+cMkIP7ooqkLRTrRLTqcki2AstsyJm0vRNbTbVCNJ0idGlbBrfqc7/nA8w==}
 
-  ts-pattern@5.8.0:
-    resolution: {integrity: sha512-kIjN2qmWiHnhgr5DAkAafF9fwb0T5OhMVSWrm8XEdTFnX6+wfXwYOFjeF86UZ54vduqiR7BfqScFmXSzSaH8oA==}
+  ts-pattern@5.9.0:
+    resolution: {integrity: sha512-6s5V71mX8qBUmlgbrfL33xDUwO0fq48rxAu2LBE11WBeGdpCPOsXksQbZJHvHwhrd3QjUusd3mAOM5Gg0mFBLg==}
 
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
@@ -8755,11 +8752,6 @@ packages:
 
   typescript@5.8.2:
     resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
-  typescript@5.8.3:
-    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -9403,8 +9395,8 @@ packages:
   wordwrap@1.0.0:
     resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
 
-  wordwrapjs@5.1.0:
-    resolution: {integrity: sha512-JNjcULU2e4KJwUNv6CHgI46UvDGitb6dGryHajXTDiLgg1/RiGoPSDw4kZfYnwGtEXf2ZMeIewDQgFGzkCB2Sg==}
+  wordwrapjs@5.1.1:
+    resolution: {integrity: sha512-0yweIbkINJodk27gX9LBGMzyQdBDan3s/dEAiwBOj+Mf0PPyWL6/rikalkv8EeD0E8jm4o5RXEOrFTP3NXbhJg==}
     engines: {node: '>=12.17'}
 
   workerd@1.20251011.0:
@@ -9938,14 +9930,14 @@ snapshots:
 
   '@chevrotain/utils@11.0.3': {}
 
-  '@clack/core@0.4.1':
+  '@clack/core@0.5.0':
     dependencies:
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
-  '@clack/prompts@0.9.1':
+  '@clack/prompts@0.11.0':
     dependencies:
-      '@clack/core': 0.4.1
+      '@clack/core': 0.5.0
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
@@ -11300,14 +11292,14 @@ snapshots:
 
   '@lume/kiwi@0.4.4': {}
 
-  '@mantine/colors-generator@8.3.7(chroma-js@3.1.2)':
+  '@mantine/colors-generator@8.3.9(chroma-js@3.1.2)':
     dependencies:
       chroma-js: 3.1.2
 
-  '@mantine/core@8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@mantine/core@8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@floating-ui/react': 0.27.16(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@mantine/hooks': 8.3.7(react@19.2.0)
+      '@mantine/hooks': 8.3.9(react@19.2.0)
       clsx: 2.1.1
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
@@ -11318,33 +11310,33 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@mantine/hooks@8.3.7(react@19.2.0)':
+  '@mantine/hooks@8.3.9(react@19.2.0)':
     dependencies:
       react: 19.2.0
 
-  '@mantine/modals@8.3.7(@mantine/core@8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mantine/hooks@8.3.7(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@mantine/modals@8.3.9(@mantine/core@8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mantine/hooks@8.3.9(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
-      '@mantine/core': 8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@mantine/hooks': 8.3.7(react@19.2.0)
+      '@mantine/core': 8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@mantine/hooks': 8.3.9(react@19.2.0)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
-  '@mantine/notifications@8.3.7(@mantine/core@8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mantine/hooks@8.3.7(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@mantine/notifications@8.3.9(@mantine/core@8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mantine/hooks@8.3.9(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
-      '@mantine/core': 8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@mantine/hooks': 8.3.7(react@19.2.0)
-      '@mantine/store': 8.3.7(react@19.2.0)
+      '@mantine/core': 8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@mantine/hooks': 8.3.9(react@19.2.0)
+      '@mantine/store': 8.3.9(react@19.2.0)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
       react-transition-group: 4.4.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
 
-  '@mantine/store@8.3.7(react@19.2.0)':
+  '@mantine/store@8.3.9(react@19.2.0)':
     dependencies:
       react: 19.2.0
 
-  '@mantine/vanilla-extract@8.3.7(@mantine/core@8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))':
+  '@mantine/vanilla-extract@8.3.9(@mantine/core@8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))':
     dependencies:
-      '@mantine/core': 8.3.7(@mantine/hooks@8.3.7(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@mantine/core': 8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
 
   '@mdx-js/mdx@3.1.0(acorn@8.15.0)':
     dependencies:
@@ -11675,13 +11667,13 @@ snapshots:
     dependencies:
       postcss: 8.5.6
 
-  '@pandabox/unplugin@0.2.2(@pandacss/config@1.4.3)(@pandacss/core@1.4.3)(@pandacss/node@1.4.3(typescript@5.9.3))(esbuild@0.25.11)(typescript@5.9.3)(vite@7.2.2(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))':
+  '@pandabox/unplugin@0.2.2(@pandacss/config@1.5.1)(@pandacss/core@1.5.1)(@pandacss/node@1.5.1(typescript@5.9.3))(esbuild@0.25.11)(typescript@5.9.3)(vite@7.2.2(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))':
     dependencies:
       '@pandabox/postcss-plugins': 0.0.2(postcss@8.5.6)
-      '@pandacss/config': 1.4.3
-      '@pandacss/core': 1.4.3
+      '@pandacss/config': 1.5.1
+      '@pandacss/core': 1.5.1
       '@pandacss/extractor': 0.36.1(typescript@5.9.3)
-      '@pandacss/node': 1.4.3(typescript@5.9.3)
+      '@pandacss/node': 1.5.1(typescript@5.9.3)
       '@pandacss/shared': 0.36.1
       '@rollup/pluginutils': 5.3.0(rollup@4.53.2)
       es-toolkit: 1.32.0
@@ -11701,27 +11693,27 @@ snapshots:
       '@pandacss/shared': 0.36.1
       '@pandacss/types': 0.36.1
 
-  '@pandacss/config@1.4.3':
+  '@pandacss/config@1.5.1':
     dependencies:
-      '@pandacss/logger': 1.4.3
-      '@pandacss/preset-base': 1.4.3
-      '@pandacss/preset-panda': 1.4.3
-      '@pandacss/shared': 1.4.3
-      '@pandacss/types': 1.4.3
+      '@pandacss/logger': 1.5.1
+      '@pandacss/preset-base': 1.5.1
+      '@pandacss/preset-panda': 1.5.1
+      '@pandacss/shared': 1.5.1
+      '@pandacss/types': 1.5.1
       bundle-n-require: 1.1.2
       escalade: 3.1.2
       merge-anything: 5.1.7
       microdiff: 1.5.0
-      typescript: 5.8.3
+      typescript: 5.9.3
 
-  '@pandacss/core@1.4.3':
+  '@pandacss/core@1.5.1':
     dependencies:
       '@csstools/postcss-cascade-layers': 5.0.2(postcss@8.5.6)
-      '@pandacss/is-valid-prop': 1.4.3
-      '@pandacss/logger': 1.4.3
-      '@pandacss/shared': 1.4.3
-      '@pandacss/token-dictionary': 1.4.3
-      '@pandacss/types': 1.4.3
+      '@pandacss/is-valid-prop': 1.5.1
+      '@pandacss/logger': 1.5.1
+      '@pandacss/shared': 1.5.1
+      '@pandacss/token-dictionary': 1.5.1
+      '@pandacss/types': 1.5.1
       browserslist: 4.24.4
       hookable: 5.5.3
       lightningcss: 1.25.1
@@ -11735,20 +11727,20 @@ snapshots:
       postcss-nested: 7.0.2(postcss@8.5.6)
       postcss-normalize-whitespace: 7.0.1(postcss@8.5.6)
       postcss-selector-parser: 7.1.0
-      ts-pattern: 5.8.0
+      ts-pattern: 5.9.0
 
-  '@pandacss/dev@1.4.3(typescript@5.9.3)':
+  '@pandacss/dev@1.5.1(typescript@5.9.3)':
     dependencies:
-      '@clack/prompts': 0.9.1
-      '@pandacss/config': 1.4.3
-      '@pandacss/logger': 1.4.3
-      '@pandacss/node': 1.4.3(typescript@5.9.3)
-      '@pandacss/postcss': 1.4.3(typescript@5.9.3)
-      '@pandacss/preset-base': 1.4.3
-      '@pandacss/preset-panda': 1.4.3
-      '@pandacss/shared': 1.4.3
-      '@pandacss/token-dictionary': 1.4.3
-      '@pandacss/types': 1.4.3
+      '@clack/prompts': 0.11.0
+      '@pandacss/config': 1.5.1
+      '@pandacss/logger': 1.5.1
+      '@pandacss/node': 1.5.1(typescript@5.9.3)
+      '@pandacss/postcss': 1.5.1(typescript@5.9.3)
+      '@pandacss/preset-base': 1.5.1
+      '@pandacss/preset-panda': 1.5.1
+      '@pandacss/shared': 1.5.1
+      '@pandacss/token-dictionary': 1.5.1
+      '@pandacss/types': 1.5.1
       cac: 6.7.14
     transitivePeerDependencies:
       - jsdom
@@ -11763,47 +11755,47 @@ snapshots:
       - jsdom
       - typescript
 
-  '@pandacss/extractor@1.4.3(typescript@5.9.3)':
+  '@pandacss/extractor@1.5.1(typescript@5.9.3)':
     dependencies:
-      '@pandacss/shared': 1.4.3
+      '@pandacss/shared': 1.5.1
       ts-evaluator: 1.2.0(typescript@5.9.3)
-      ts-morph: 26.0.0
+      ts-morph: 27.0.2
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/generator@1.4.3':
+  '@pandacss/generator@1.5.1':
     dependencies:
-      '@pandacss/core': 1.4.3
-      '@pandacss/is-valid-prop': 1.4.3
-      '@pandacss/logger': 1.4.3
-      '@pandacss/shared': 1.4.3
-      '@pandacss/token-dictionary': 1.4.3
-      '@pandacss/types': 1.4.3
+      '@pandacss/core': 1.5.1
+      '@pandacss/is-valid-prop': 1.5.1
+      '@pandacss/logger': 1.5.1
+      '@pandacss/shared': 1.5.1
+      '@pandacss/token-dictionary': 1.5.1
+      '@pandacss/types': 1.5.1
       javascript-stringify: 2.1.0
       outdent: 0.8.0
       pluralize: 8.0.0
       postcss: 8.5.6
-      ts-pattern: 5.8.0
+      ts-pattern: 5.9.0
 
-  '@pandacss/is-valid-prop@1.4.3': {}
+  '@pandacss/is-valid-prop@1.5.1': {}
 
-  '@pandacss/logger@1.4.3':
+  '@pandacss/logger@1.5.1':
     dependencies:
-      '@pandacss/types': 1.4.3
+      '@pandacss/types': 1.5.1
       kleur: 4.1.5
 
-  '@pandacss/node@1.4.3(typescript@5.9.3)':
+  '@pandacss/node@1.5.1(typescript@5.9.3)':
     dependencies:
-      '@pandacss/config': 1.4.3
-      '@pandacss/core': 1.4.3
-      '@pandacss/generator': 1.4.3
-      '@pandacss/logger': 1.4.3
-      '@pandacss/parser': 1.4.3(typescript@5.9.3)
-      '@pandacss/reporter': 1.4.3
-      '@pandacss/shared': 1.4.3
-      '@pandacss/token-dictionary': 1.4.3
-      '@pandacss/types': 1.4.3
+      '@pandacss/config': 1.5.1
+      '@pandacss/core': 1.5.1
+      '@pandacss/generator': 1.5.1
+      '@pandacss/logger': 1.5.1
+      '@pandacss/parser': 1.5.1(typescript@5.9.3)
+      '@pandacss/reporter': 1.5.1
+      '@pandacss/shared': 1.5.1
+      '@pandacss/token-dictionary': 1.5.1
+      '@pandacss/types': 1.5.1
       browserslist: 4.24.4
       chokidar: 4.0.3
       fast-glob: 3.3.3
@@ -11813,76 +11805,77 @@ snapshots:
       lodash.merge: 4.6.2
       look-it-up: 2.1.0
       outdent: 0.8.0
-      package-manager-detector: 0.1.0
+      package-manager-detector: 1.5.0
       perfect-debounce: 1.0.0
       picomatch: 4.0.3
       pkg-types: 2.3.0
       pluralize: 8.0.0
       postcss: 8.5.6
       prettier: 3.2.5
-      ts-morph: 26.0.0
-      ts-pattern: 5.8.0
+      ts-morph: 27.0.2
+      ts-pattern: 5.9.0
       tsconfck: 3.1.6(typescript@5.9.3)
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/parser@1.4.3(typescript@5.9.3)':
+  '@pandacss/parser@1.5.1(typescript@5.9.3)':
     dependencies:
-      '@pandacss/config': 1.4.3
-      '@pandacss/core': 1.4.3
-      '@pandacss/extractor': 1.4.3(typescript@5.9.3)
-      '@pandacss/logger': 1.4.3
-      '@pandacss/shared': 1.4.3
-      '@pandacss/types': 1.4.3
+      '@pandacss/config': 1.5.1
+      '@pandacss/core': 1.5.1
+      '@pandacss/extractor': 1.5.1(typescript@5.9.3)
+      '@pandacss/logger': 1.5.1
+      '@pandacss/shared': 1.5.1
+      '@pandacss/types': 1.5.1
       '@vue/compiler-sfc': 3.5.22
       magic-string: 0.30.19
-      ts-morph: 26.0.0
-      ts-pattern: 5.8.0
+      ts-morph: 27.0.2
+      ts-pattern: 5.9.0
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/postcss@1.4.3(typescript@5.9.3)':
+  '@pandacss/postcss@1.5.1(typescript@5.9.3)':
     dependencies:
-      '@pandacss/node': 1.4.3(typescript@5.9.3)
+      '@pandacss/node': 1.5.1(typescript@5.9.3)
       postcss: 8.5.6
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/preset-base@1.4.3':
+  '@pandacss/preset-base@1.5.1':
     dependencies:
-      '@pandacss/types': 1.4.3
+      '@pandacss/types': 1.5.1
 
-  '@pandacss/preset-panda@1.4.3':
+  '@pandacss/preset-panda@1.5.1':
     dependencies:
-      '@pandacss/types': 1.4.3
+      '@pandacss/types': 1.5.1
 
-  '@pandacss/reporter@1.4.3':
+  '@pandacss/reporter@1.5.1':
     dependencies:
-      '@pandacss/core': 1.4.3
-      '@pandacss/generator': 1.4.3
-      '@pandacss/logger': 1.4.3
-      '@pandacss/shared': 1.4.3
-      '@pandacss/types': 1.4.3
+      '@pandacss/core': 1.5.1
+      '@pandacss/generator': 1.5.1
+      '@pandacss/logger': 1.5.1
+      '@pandacss/shared': 1.5.1
+      '@pandacss/types': 1.5.1
       table: 6.9.0
-      wordwrapjs: 5.1.0
+      wordwrapjs: 5.1.1
 
   '@pandacss/shared@0.36.1': {}
 
-  '@pandacss/shared@1.4.3': {}
+  '@pandacss/shared@1.5.1': {}
 
-  '@pandacss/token-dictionary@1.4.3':
+  '@pandacss/token-dictionary@1.5.1':
     dependencies:
-      '@pandacss/logger': 1.4.3
-      '@pandacss/shared': 1.4.3
-      '@pandacss/types': 1.4.3
-      ts-pattern: 5.8.0
+      '@pandacss/logger': 1.5.1
+      '@pandacss/shared': 1.5.1
+      '@pandacss/types': 1.5.1
+      picomatch: 4.0.3
+      ts-pattern: 5.9.0
 
   '@pandacss/types@0.36.1': {}
 
-  '@pandacss/types@1.4.3': {}
+  '@pandacss/types@1.5.1': {}
 
   '@polka/url@1.0.0-next.29': {}
 
@@ -12343,11 +12336,11 @@ snapshots:
       mkdirp: 3.0.1
       path-browserify: 1.0.1
 
-  '@ts-morph/common@0.27.0':
+  '@ts-morph/common@0.28.1':
     dependencies:
-      fast-glob: 3.3.3
       minimatch: 10.0.2
       path-browserify: 1.0.1
+      tinyglobby: 0.2.15
 
   '@typefox/monaco-editor-react@6.7.0':
     dependencies:
@@ -12566,6 +12559,14 @@ snapshots:
       chai: 6.2.0
       tinyrainbow: 3.0.3
 
+  '@vitest/mocker@4.0.8(vite@7.2.2(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))':
+    dependencies:
+      '@vitest/spy': 4.0.8
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 7.2.2(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
+
   '@vitest/mocker@4.0.8(vite@7.2.2(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))':
     dependencies:
       '@vitest/spy': 4.0.8
@@ -12741,9 +12742,9 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xyflow/react@12.9.0(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@xyflow/react@12.9.3(@types/react@19.2.2)(immer@10.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
-      '@xyflow/system': 0.0.71
+      '@xyflow/system': 0.0.73
       classcat: 5.0.5
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
@@ -12752,7 +12753,7 @@ snapshots:
       - '@types/react'
       - immer
 
-  '@xyflow/system@0.0.71':
+  '@xyflow/system@0.0.73':
     dependencies:
       '@types/d3-drag': 3.0.7
       '@types/d3-interpolate': 3.0.4
@@ -16188,8 +16189,6 @@ snapshots:
 
   package-json-from-dist@1.0.1: {}
 
-  package-manager-detector@0.1.0: {}
-
   package-manager-detector@1.3.0: {}
 
   package-manager-detector@1.5.0: {}
@@ -16210,9 +16209,9 @@ snapshots:
 
   pako@1.0.11: {}
 
-  pandacss-preset-radix-colors@0.2.0(@pandacss/dev@1.4.3(typescript@5.9.3))(@radix-ui/colors@3.0.0):
+  pandacss-preset-radix-colors@0.2.0(@pandacss/dev@1.5.1(typescript@5.9.3))(@radix-ui/colors@3.0.0):
     dependencies:
-      '@pandacss/dev': 1.4.3(typescript@5.9.3)
+      '@pandacss/dev': 1.5.1(typescript@5.9.3)
       '@radix-ui/colors': 3.0.0
 
   param-case@3.0.4:
@@ -17652,12 +17651,12 @@ snapshots:
       '@ts-morph/common': 0.22.0
       code-block-writer: 12.0.0
 
-  ts-morph@26.0.0:
+  ts-morph@27.0.2:
     dependencies:
-      '@ts-morph/common': 0.27.0
+      '@ts-morph/common': 0.28.1
       code-block-writer: 13.0.3
 
-  ts-pattern@5.8.0: {}
+  ts-pattern@5.9.0: {}
 
   tsconfck@3.1.6(typescript@5.9.3):
     optionalDependencies:
@@ -17718,8 +17717,6 @@ snapshots:
       semver: 7.7.3
 
   typescript@5.8.2: {}
-
-  typescript@5.8.3: {}
 
   typescript@5.9.3: {}
 
@@ -18129,7 +18126,7 @@ snapshots:
   vitest@4.0.8(@types/debug@4.1.12)(@types/node@20.19.23)(@vitest/ui@4.0.8)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0):
     dependencies:
       '@vitest/expect': 4.0.8
-      '@vitest/mocker': 4.0.8(vite@7.2.2(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
+      '@vitest/mocker': 4.0.8(vite@7.2.2(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       '@vitest/pretty-format': 4.0.8
       '@vitest/runner': 4.0.8
       '@vitest/snapshot': 4.0.8
@@ -18394,7 +18391,7 @@ snapshots:
 
   wordwrap@1.0.0: {}
 
-  wordwrapjs@5.1.0: {}
+  wordwrapjs@5.1.1: {}
 
   workerd@1.20251011.0:
     optionalDependencies:
