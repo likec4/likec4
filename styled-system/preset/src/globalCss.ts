@@ -87,6 +87,17 @@ export const globalCss: ExtendableGlobalCss = {
         '& .react-flow__node.draggable:has(.likec4-compound-node)': {
           cursor: 'default',
         },
+
+        '& .likec4-node-handle-center': {
+          top: '50%!',
+          left: '50%!',
+          right: 'unset!',
+          bottom: 'unset!',
+          visibility: 'hidden!',
+          width: '5px!',
+          height: '5px!',
+          transform: 'translate(-50%, -50%)!',
+        },
       },
       '& :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed])': {
         opacity: 0.25,

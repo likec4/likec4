@@ -99,7 +99,6 @@ export const navigating = machine.createStateConfig({
 
         const fromHistory = history[currentIndex]
         if (fromHistory && fromHistory.viewId === event.view.id) {
-          console.log('Navigating: fromHistory', fromHistory)
           enqueue.assign({
             ...mergeXYNodesEdges(context, event),
             dynamicViewVariant: fromHistory.dynamicViewVariant ?? context.dynamicViewVariant,

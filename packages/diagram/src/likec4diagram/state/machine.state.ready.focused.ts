@@ -17,6 +17,7 @@ import {
   startHotKeyActor,
   stopHotKeyActor,
   undimEverything,
+  updateView,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
 
@@ -94,6 +95,13 @@ export const focused = machine.createStateConfig({
     },
     'tag.unhighlight': {
       actions: focusOnNodesAndEdges(),
+    },
+    'update.view': {
+      guard: 'is same view',
+      actions: [
+        updateView(),
+        focusOnNodesAndEdges(),
+      ],
     },
   },
 })

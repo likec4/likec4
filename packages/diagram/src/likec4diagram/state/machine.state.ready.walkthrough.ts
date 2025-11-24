@@ -19,6 +19,7 @@ import {
   startHotKeyActor,
   stopHotKeyActor,
   undimEverything,
+  updateView,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
 
@@ -191,6 +192,13 @@ export const walkthrough = machine.createStateConfig({
     },
     'tag.unhighlight': {
       actions: updateActiveWalkthroughState(),
+    },
+    'update.view': {
+      guard: 'is same view',
+      actions: [
+        updateView(),
+        updateActiveWalkthroughState(),
+      ],
     },
     'walkthrough.end': {
       target: targetState.idle,

@@ -2,6 +2,7 @@
 // oxlint-disable no-floating-promises
 /// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
+  BBox,
   invariant,
   nonexhaustive,
   nonNullable,
@@ -15,7 +16,7 @@ import type {
 } from '@likec4/core/types'
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
-import { hasAtLeast, isTruthy, omit } from 'remeda'
+import { hasAtLeast, isTruthy } from 'remeda'
 import {
   assertEvent,
 } from 'xstate'
@@ -30,8 +31,10 @@ import {
   resetEdgeControlPoints,
 } from './assign'
 import { createViewChange } from './createViewChange'
+import { cancelFitDiagram, raiseFitDiagram, setViewport } from './machine.actions.layout'
 import { machine } from './machine.setup'
 import {
+  calcViewportForBounds,
   findDiagramEdge,
   findDiagramNode,
   typedSystem,
@@ -143,8 +146,8 @@ export const updateXYNodesEdges = () =>
     assertEvent(event, 'update.view')
     const update = mergeXYNodesEdges(context, event)
 
-    let { lastClickedNode, focusedNode } = context
-    if (lastClickedNode || focusedNode) {
+    let { lastClickedNode, focusedNode, activeWalkthrough } = context
+    if (lastClickedNode || focusedNode || activeWalkthrough) {
       const nodeIds = new Set(update.xynodes.map(n => n.id))
       if (lastClickedNode && !nodeIds.has(lastClickedNode.id)) {
         lastClickedNode = null
@@ -152,17 +155,32 @@ export const updateXYNodesEdges = () =>
       if (focusedNode && !nodeIds.has(focusedNode)) {
         focusedNode = null
       }
+
+      const stepId = activeWalkthrough?.stepId
+      if (stepId && !update.xyedges.some(e => e.id === stepId)) {
+        activeWalkthrough = null
+      }
       return {
         ...update,
         lastClickedNode,
         focusedNode,
+        activeWalkthrough,
       }
     }
 
     return update
   })
 
-export const focusOnNodesAndEdges = () => machine.assign(focusNodesEdges)
+export const focusOnNodesAndEdges = () =>
+  machine.enqueueActions(({ context, enqueue }) => {
+    const next = focusNodesEdges(context)
+    if (next) {
+      enqueue.assign(next)
+    } else {
+      // No focused node, cancel focus
+      enqueue.raise({ type: 'key.esc' })
+    }
+  })
 
 export const undimEverything = () =>
   machine.assign(({ context }) => ({
@@ -711,7 +729,6 @@ export const stopHotKeyActor = () => machine.stopChild('hotkey')
 export const handleNavigate = () =>
   machine.enqueueActions(({ enqueue, context, event }) => {
     assertEvent(event, ['navigate.to', 'navigate.back', 'navigate.forward'])
-    console.log(`Handle ${event.type}`)
     const {
       view,
       focusedNode,
@@ -747,10 +764,6 @@ export const handleNavigate = () =>
       })
       history = [..._history]
       history[currentIndex] = updatedEntry
-      console.log('Update current history entry', {
-        before: _history[currentIndex],
-        after: updatedEntry,
-      })
     }
 
     switch (event.type) {
@@ -799,3 +812,82 @@ export const handleNavigate = () =>
         nonexhaustive(event)
     }
   })
+
+export const updateView = () =>
+  machine.enqueueActions(
+    ({ enqueue, event, context }) => {
+      if (event.type !== 'update.view') {
+        console.warn(`Ignoring unexpected event type: ${event.type} in action 'update.view'`)
+        return
+      }
+      const nextView = event.view
+      const isAnotherView = nextView.id !== context.view.id
+
+      if (isAnotherView) {
+        console.warn('updateView called for another view - ignoring', { event })
+        return
+      }
+
+      enqueue(updateXYNodesEdges())
+
+      if (event.source === 'internal') {
+        return
+      }
+
+      enqueue(sendSynced())
+
+      let recenter = !context.viewportChangedManually && !context.focusedNode && !context.activeWalkthrough
+
+      if (context.toggledFeatures.enableCompareWithLatest === true && context.view._layout !== nextView._layout) {
+        if (nextView._layout === 'auto' && context.viewportOnAutoLayout) {
+          enqueue(
+            setViewport({
+              viewport: context.viewportOnAutoLayout,
+              duration: 0,
+            }),
+          )
+          return
+        }
+        // If switching to manual layout, restore previous manual layout viewport
+        if (nextView._layout === 'manual' && context.viewportOnManualLayout) {
+          enqueue(
+            setViewport({
+              viewport: context.viewportOnManualLayout,
+              duration: 0,
+            }),
+          )
+          return
+        }
+      }
+
+      // Check if dynamic view mode changed
+      recenter = recenter || (
+        nextView._type === 'dynamic' &&
+        context.view._type === 'dynamic' &&
+        nextView.variant !== context.view.variant
+      )
+
+      // Check if comparing layouts is enabled and layout changed
+      recenter = recenter || (
+        context.toggledFeatures.enableCompareWithLatest === true &&
+        !!nextView._layout &&
+        context.view._layout !== nextView._layout
+      )
+
+      if (recenter) {
+        enqueue(cancelFitDiagram())
+        const nextViewport = calcViewportForBounds(
+          context,
+          event.view.bounds,
+        )
+        let zoom = Math.min(nextViewport.zoom, context.viewport.zoom)
+        const center = BBox.center(event.view.bounds)
+        context.xyflow!.setCenter(
+          Math.round(center.x),
+          Math.round(center.y),
+          { zoom },
+        )
+        enqueue(raiseFitDiagram())
+      }
+    },
+  )

@@ -6,38 +6,40 @@ export const controlPointsContainer = css({
   pointerEvents: 'none',
   top: '0',
   left: '0',
-  mixBlendMode: 'normal',
+  mixBlendMode: 'overlay',
 })
 
 export const controlPoint = css({
-  fill: `var(--likec4-palette-relation-stroke)`,
-  stroke: `var(--likec4-palette-relation-stroke)`,
-  fillOpacity: 0.75,
-  strokeWidth: 1,
+  fill: `[var(--xy-edge-stroke)]`,
+  stroke: `transparent`,
+  fillOpacity: 0.5,
+  strokeWidth: 10,
+  r: 4,
   cursor: 'grab',
-  pointerEvents: 'auto',
+  pointerEvents: 'all',
   visibility: 'hidden',
-  _hover: {
-    fillOpacity: 1,
-    stroke: 'mantine.colors.primary.filledHover',
-    strokeWidth: 18,
-    transition: 'stroke 100ms ease-out, stroke-width 100ms ease-out',
-  },
+  transitionDuration: '120ms',
+  transitionProperty: 'visibility, fill, fill-opacity, r',
+  transitionTimingFunction: 'inOut',
+  transitionDelay: '20ms',
   [`:where([data-likec4-selected='true'], [data-likec4-hovered='true']) &`]: {
     visibility: 'visible',
-    transition: 'fill-opacity 150ms ease-out, stroke 150ms ease-out, stroke-width 150ms ease-out',
-    transitionDelay: '50ms',
     fillOpacity: 1,
-    strokeWidth: 12,
+    transitionTimingFunction: 'out',
+    transitionDelay: '0ms',
   },
-})
-
-export const controlDragging = css({
-  cursor: 'grabbing',
-  '& *': {
-    cursor: 'grabbing !important',
+  [`:where([data-likec4-selected='true']) &`]: {
+    r: 6,
   },
-  '& .react-flow__edge-interaction': {
-    cursor: 'grabbing !important',
+  [`:is([data-likec4-hovered='true']) &`]: {
+    r: 8,
+  },
+  _hover: {
+    fill: 'mantine.colors.primary.filledHover',
+    r: 10,
+    transitionDuration: '100ms',
+  },
+  _groupActive: {
+    cursor: 'grabbing',
   },
 })

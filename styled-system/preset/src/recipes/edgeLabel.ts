@@ -1,9 +1,17 @@
-import { defineSlotRecipe } from '@pandacss/dev'
+import { defineParts, defineRecipe } from '@pandacss/dev'
 
-export const edgeLabel = defineSlotRecipe({
+const parts = defineParts({
+  root: { selector: '&' },
+  stepNumber: { selector: '& .likec4-edge-label__step-number' },
+  contents: { selector: '& .likec4-edge-label__contents' },
+  label: { selector: '& .likec4-edge-label__text' },
+  technology: { selector: '& .likec4-edge-label__technology' },
+})
+
+export const edgeLabel = defineRecipe({
   className: 'likec4-edge-label',
-  slots: ['root', 'stepNumber', 'labelContents', 'labelText', 'labelTechnology'],
-  base: {
+  jsx: [],
+  base: parts({
     root: {
       fontFamily: 'likec4.relation',
       paddingBlock: '1',
@@ -43,59 +51,59 @@ export const edgeLabel = defineSlotRecipe({
         },
       },
     },
-    labelContents: {
+    contents: {
       display: 'contents',
       _empty: {
         display: 'none !important',
       },
     },
-    labelText: {
+    label: {
       whiteSpaceCollapse: 'preserve-breaks',
       fontSize: '14px',
       margin: '0',
     },
-    labelTechnology: {
+    technology: {
       textAlign: 'center',
       whiteSpaceCollapse: 'preserve-breaks',
       fontSize: '11px',
       lineHeight: '[1]',
       opacity: 0.75,
     },
-  },
+  }),
   variants: {
     pointerEvents: {
-      none: {
+      none: parts({
         root: {
           pointerEvents: 'none',
         },
-      },
-      all: {
+      }),
+      all: parts({
         root: {
           pointerEvents: 'all',
         },
-      },
+      }),
     },
     cursor: {
-      pointer: {
+      pointer: parts({
         root: {
           cursor: 'pointer',
         },
-      },
-      default: {
+      }),
+      default: parts({
         root: {
           cursor: 'default',
         },
-      },
+      }),
     },
     isStepEdge: {
       false: {},
-      true: {
+      true: parts({
         root: {
           flexDirection: 'row',
           gap: '1',
           padding: '0',
         },
-        labelContents: {
+        contents: {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -104,11 +112,11 @@ export const edgeLabel = defineSlotRecipe({
           paddingBottom: '1',
           gap: '0.5',
         },
-        labelText: {
+        label: {
           py: '0.5',
           paddingRight: '0.5',
         },
-      },
+      }),
     },
   },
   defaultVariants: {

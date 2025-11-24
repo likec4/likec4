@@ -1,25 +1,26 @@
 import { Handle, Position } from '@xyflow/react'
-import type { CSSProperties } from 'react'
+import { Fragment, memo } from 'react'
 
-const style: CSSProperties = {
-  top: '50%',
-  left: '50%',
-  right: 'unset',
-  bottom: 'unset',
-  visibility: 'hidden',
-  width: 5,
-  height: 5,
-  transform: 'translate(-50%, -50%)',
-}
+const positions = [Position.Top, Position.Right, Position.Bottom, Position.Left]
 
 /**
  * XYFlow requires handles to be defined on nodes.
  */
-export const DefaultHandles = () => (
+export const DefaultHandles = memo(() => (
   <>
-    <Handle type="target" position={Position.Top} style={style} />
-    <Handle type="target" position={Position.Left} style={style} />
-    <Handle type="source" position={Position.Right} style={style} />
-    <Handle type="source" position={Position.Bottom} style={style} />
+    {positions.map((position) => (
+      <Fragment key={position}>
+        <Handle
+          type={'source'}
+          position={position}
+          className="likec4-node-handle-center"
+        />
+        <Handle
+          type={'target'}
+          position={position}
+          className="likec4-node-handle-center"
+        />
+      </Fragment>
+    ))}
   </>
-)
+))

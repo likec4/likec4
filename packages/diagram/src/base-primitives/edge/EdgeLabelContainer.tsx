@@ -45,6 +45,7 @@ export function EdgeLabelContainer({
       labelBBox,
       color = 'gray',
     },
+    animated,
   },
   labelPosition: labelXY,
   className,
@@ -68,7 +69,7 @@ export function EdgeLabelContainer({
   if (labelX === undefined || labelY === undefined) {
     return null
   }
-  const translate = labelXY?.translate
+  const translate = labelXY?.translate ?? ''
 
   return (
     <EdgeLabelRenderer>
@@ -83,7 +84,7 @@ export function EdgeLabelContainer({
         data-likec4-hovered={isHovered}
         data-likec4-color={color}
         data-edge-active={isActive}
-        data-edge-animated={isActive}
+        data-edge-animated={animated || isActive}
         {...selected !== false && {
           'data-likec4-selected': selected,
         }}
@@ -96,7 +97,7 @@ export function EdgeLabelContainer({
           }),
           zIndex,
           ...style,
-          transform: `translate(${toCssVarValue(labelX)}, ${toCssVarValue(labelY)}) ${translate || ''}`,
+          transform: `translate(${toCssVarValue(labelX)}, ${toCssVarValue(labelY)}) ${translate}`,
         }}
       >
         {children}

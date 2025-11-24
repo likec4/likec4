@@ -1,6 +1,8 @@
 export { actionBtn } from './actionBtn'
 export { compoundNode } from './compoundNode'
 export { edgeActionBtn } from './edgeActionBtn'
+export { edgeContainer } from './edgeContainer'
+export { edgeLabel } from './edgeLabel'
 export { elementNodeData } from './elementNodeData'
 export { elementShapeRecipe } from './elementShape'
 export { likec4tag } from './likec4tag'
