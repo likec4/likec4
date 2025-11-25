@@ -53,6 +53,7 @@ export const isReady = machine.createStateConfig({
           history: [{
             viewId: context.view.id,
             viewport: { ...context.xyflow!.getViewport() },
+            viewportChangedManually: false,
           }],
         },
       })),

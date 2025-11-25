@@ -1,8 +1,9 @@
 import type { LayoutedView, ViewId } from '@likec4/core/types'
 import { isEmpty } from 'remeda'
 import {
-  type ActorRefFromLogic,
+  type ActorRef,
   type SnapshotFrom,
+  type StateMachine,
   assertEvent,
   assign,
   emit,
@@ -81,11 +82,13 @@ export interface NavigationPanelActorContext {
   searchQuery: string
 }
 
+type Tags = 'active'
+
 const _actorLogic = setup({
   types: {
     context: {} as NavigationPanelActorContext,
     events: {} as NavigationPanelActorEvent,
-    tags: 'active',
+    tags: '' as Tags,
     input: {} as NavigationPanelActorInput,
     emitted: {} as NavigationPanelActorEmitted,
   },
@@ -314,9 +317,34 @@ const _actorLogic = setup({
     },
   },
 })
-type InferredMachine = typeof _actorLogic
-export interface NavigationPanelActorLogic extends InferredMachine {}
+
+export interface NavigationPanelActorLogic extends
+  StateMachine<
+    NavigationPanelActorContext,
+    NavigationPanelActorEvent,
+    {},
+    any,
+    any,
+    any,
+    any,
+    any,
+    Tags,
+    NavigationPanelActorInput,
+    any,
+    NavigationPanelActorEmitted,
+    any,
+    any
+  >
+{
+}
+
 export const navigationPanelActorLogic: NavigationPanelActorLogic = _actorLogic as any
 
 export type NavigationPanelActorSnapshot = SnapshotFrom<NavigationPanelActorLogic>
-export interface NavigationPanelActorRef extends ActorRefFromLogic<NavigationPanelActorLogic> {}
+export interface NavigationPanelActorRef extends
+  ActorRef<
+    NavigationPanelActorSnapshot,
+    NavigationPanelActorEvent,
+    NavigationPanelActorEmitted
+  >
+{}

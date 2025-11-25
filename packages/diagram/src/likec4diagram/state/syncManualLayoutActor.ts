@@ -1,6 +1,7 @@
 import type { LayoutedView, ViewChange, ViewId } from '@likec4/core/types'
 import { getHotkeyHandler } from '@mantine/hooks'
 import { last, omit } from 'remeda'
+import type { Simplify } from 'type-fest'
 import {
   type ActorLogicFrom,
   type ActorRef,
@@ -10,6 +11,8 @@ import {
   type MachineSnapshot,
   type NonReducibleUnknown,
   type SnapshotFrom,
+  type StateMachine,
+  type StateValueFrom,
   assertEvent,
   assign,
   fromCallback,
@@ -18,6 +21,7 @@ import {
 } from 'xstate'
 import type { Types } from '../types'
 import { createViewChange } from './createViewChange'
+import type { DiagramMachineRef } from './machine'
 import type { Context as DiagramContext, Events as DiagramEvents } from './machine.setup'
 
 type UndoEvent = { type: 'undo' }
@@ -50,11 +54,7 @@ export type Input = {
  * Actually this is DiagramActorRef
  * But we can't use it here due to circular type inference
  */
-const diagramActorRef = function(system: ActorSystem<any>): ActorRef<
-  MachineSnapshot<DiagramContext, DiagramEvents, any, any, any, any, any, any>,
-  DiagramEvents,
-  any
-> {
+const diagramActorRef = function(system: ActorSystem<any>): DiagramMachineRef {
   return system.get('diagram')!
 }
 
@@ -83,12 +83,14 @@ export type Events =
   | { type: 'undo' }
   | { type: 'stop' }
 
+type Tags = 'pending' | 'ready'
+
 const syncManualLayout = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
     events: {} as Events,
-    tags: '' as 'pending' | 'ready',
+    tags: '' as Tags,
     children: {} as {
       undoHotKey: 'undoHotKeyActorLogic'
     },
@@ -104,38 +106,12 @@ const syncManualLayout = setup({
   },
 })
 
-const pushHistory = syncManualLayout.assign(({ context }) => {
-  const snapshot = context.beforeEditing
-  if (!snapshot) {
-    // If we have beforeEditing snapshot, do not push history
-    return {
-      editing: null,
-    }
-  }
-
-  return {
-    beforeEditing: null,
-    editing: null,
-    history: [
-      ...context.history,
-      snapshot,
-    ],
-  }
-})
-
-const popHistory = syncManualLayout.assign(({ context }) => {
-  if (context.history.length === 0 || context.history.length === 1) {
-    return {
-      history: [],
-    }
-  }
-  return {
-    history: context.history.slice(0, context.history.length - 1),
-  }
-})
+const raiseSync = syncManualLayout.raise({ type: 'sync' }, { delay: 300, id: 'sync' })
+const cancelSync = syncManualLayout.cancel('sync')
 
 const startEditing = syncManualLayout.enqueueActions(({ check, enqueue, system, event, self, context }) => {
   assertEvent(event, 'editing.start')
+
   const parentContext = diagramActorRef(system).getSnapshot().context
 
   enqueue.assign({
@@ -176,35 +152,38 @@ const ensureHotKey = syncManualLayout.enqueueActions(({ check, context, enqueue,
   }
 })
 
-const raiseEditingStop = syncManualLayout.raise({ type: 'editing.stop' })
+const pushHistory = syncManualLayout.assign(({ context }) => {
+  const snapshot = context.beforeEditing
+  if (!snapshot) {
+    // If we have beforeEditing snapshot, do not push history
+    return {
+      editing: null,
+    }
+  }
+
+  return {
+    beforeEditing: null,
+    editing: null,
+    history: [
+      ...context.history,
+      snapshot,
+    ],
+  }
+})
 
 const stopEditing = syncManualLayout.enqueueActions(({ event, enqueue }) => {
-  assertEvent(event, 'editing.stop')
+  assertEvent(event, ['editing.stop', 'cancel', 'undo'])
 
-  if (event.wasChanged) {
+  if (event.type === 'editing.stop' && event.wasChanged) {
     enqueue(pushHistory)
     enqueue(ensureHotKey)
-    enqueue.raise({ type: 'sync' }, { delay: 100, id: 'sync' })
+    enqueue(raiseSync)
     return
   }
 
   enqueue.assign({
     beforeEditing: null,
     editing: null,
-  })
-})
-
-const emitOnChange = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
-  const diagramActor = diagramActorRef(system)
-  const parentContext = diagramActor.getSnapshot().context
-  const change = createViewChange(parentContext)
-  enqueue.sendTo(diagramActor, {
-    type: 'update.view-bounds',
-    bounds: change.layout.bounds,
-  })
-  enqueue.sendTo(diagramActor, {
-    type: 'emit.onChange',
-    change,
   })
 })
 
@@ -218,7 +197,19 @@ const markHistoryAsSynched = syncManualLayout.assign(({ context, event }) => {
   }
 })
 
+const popHistory = syncManualLayout.assign(({ context }) => {
+  if (context.history.length === 0 || context.history.length === 1) {
+    return {
+      history: [],
+    }
+  }
+  return {
+    history: context.history.slice(0, context.history.length - 1),
+  }
+})
+
 const undo = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
+  enqueue(cancelSync)
   const lastHistoryItem = last(context.history)
   if (!lastHistoryItem) {
     return
@@ -245,8 +236,23 @@ const undo = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
     )
   } else {
     // Otherwise, we need to start sync after undo
-    enqueue.raise({ type: 'sync' }, { delay: 100 })
+    enqueue(raiseSync)
   }
+})
+
+const emitOnChange = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
+  enqueue(cancelSync)
+  const diagramActor = diagramActorRef(system)
+  const parentContext = diagramActor.getSnapshot().context
+  const change = createViewChange(parentContext)
+  enqueue.sendTo(diagramActor, {
+    type: 'update.view-bounds',
+    bounds: change.layout.bounds,
+  })
+  enqueue.sendTo(diagramActor, {
+    type: 'emit.onChange',
+    change,
+  })
 })
 
 const idle = syncManualLayout.createStateConfig({
@@ -266,22 +272,25 @@ const idle = syncManualLayout.createStateConfig({
  * idle -> editing
  */
 const editing = syncManualLayout.createStateConfig({
+  entry: [
+    cancelSync,
+  ],
   on: {
+    cancel: {
+      actions: stopEditing,
+      target: 'idle',
+    },
     'editing.stop': {
-      actions: [
-        stopEditing,
-      ],
+      actions: stopEditing,
       target: 'idle',
     },
     undo: {
-      actions: [
-        raiseEditingStop,
-      ],
+      actions: stopEditing,
+      target: 'idle',
     },
     synced: {
       actions: [
         markHistoryAsSynched,
-        raiseEditingStop,
       ],
     },
   },
@@ -290,6 +299,10 @@ const editing = syncManualLayout.createStateConfig({
 const pending = syncManualLayout.createStateConfig({
   tags: 'pending',
   on: {
+    cancel: {
+      actions: cancelSync,
+      target: 'idle',
+    },
     sync: {
       target: 'pending',
       reenter: true,
@@ -312,17 +325,29 @@ const pending = syncManualLayout.createStateConfig({
  */
 const paused = syncManualLayout.createStateConfig({
   tags: 'pending',
+  entry: [
+    cancelSync,
+  ],
   on: {
+    cancel: {
+      actions: stopEditing,
+      target: 'idle',
+    },
     'editing.stop': {
-      actions: [
-        stopEditing,
-      ],
+      actions: stopEditing,
       target: 'pending',
     },
     undo: {
+      actions: stopEditing,
+      target: 'idle',
+    },
+    // When external sync is done while editing, we just mark history as synced
+    // but go to editing state (that does not return to pending)
+    synced: {
       actions: [
-        raiseEditingStop,
+        markHistoryAsSynched,
       ],
+      target: 'editing',
     },
   },
 })
@@ -353,10 +378,16 @@ const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
   },
   on: {
     cancel: {
+      actions: [
+        cancelSync,
+      ],
       target: '.idle',
     },
     synced: {
-      actions: markHistoryAsSynched,
+      actions: [
+        markHistoryAsSynched,
+        cancelSync,
+      ],
       target: '.idle',
     },
     undo: {
@@ -373,11 +404,37 @@ const _syncManualLayoutActorLogic = syncManualLayout.createMachine({
 /**
  * Here is a trick to reduce inference types
  */
-type InferredMachine = ActorLogicFrom<typeof _syncManualLayoutActorLogic>
-export interface SyncLayoutActorLogic extends InferredMachine {
+export interface SyncLayoutActorLogic extends
+  StateMachine<
+    Context,
+    Events,
+    {},
+    any,
+    any,
+    any,
+    any,
+    any,
+    Tags,
+    Input,
+    any,
+    any,
+    any,
+    any
+  >
+{
 }
 
-export type SyncLayoutActorSnapshot = SnapshotFrom<SyncLayoutActorLogic>
+export type SyncLayoutActorSnapshot = MachineSnapshot<
+  Context,
+  Events,
+  {},
+  never,
+  Tags,
+  never,
+  {},
+  {}
+>
+
 export interface SyncLayoutActorRef extends ActorRef<SyncLayoutActorSnapshot, Events> {
 }
 

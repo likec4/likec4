@@ -69,8 +69,8 @@ const selectXYProps = ({ context: ctx, children }: DiagramActorSnapshot) => {
     enableFitView: ctx.features.enableFitView,
     ...(!ctx.features.enableFitView && {
       viewport: {
-        x: -Math.min(ctx.view.bounds.x, 0),
-        y: -Math.min(ctx.view.bounds.y, 0),
+        x: -ctx.view.bounds.x,
+        y: -ctx.view.bounds.y,
         zoom: 1,
       },
     }),

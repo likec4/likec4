@@ -12,7 +12,7 @@ export default defineConfig({
   // Timeout for each test
   timeout: 15 * 1000,
 
-  maxFailures: 3,
+  maxFailures: 5,
 
   // Retry on CI only.
   retries: isCI ? 1 : 0,

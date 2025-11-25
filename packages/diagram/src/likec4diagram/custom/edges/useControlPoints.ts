@@ -41,7 +41,7 @@ export function useControlPoints({
       data.dir === 'back' ? sourceV : targetV,
     ]
 
-    const newPointV = vector(Math.round(x), Math.round(y))
+    const newPointV = vector(x, y).round()
 
     let insertionIndex = 0
     let minDistance = Infinity

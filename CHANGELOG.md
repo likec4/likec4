@@ -1,3 +1,17 @@
+# [1.45.0](https://github.com/likec4/likec4/compare/v1.44.0...v1.45.0) (2025-11-23)
+
+### 🚀 Features
+
+* **cli:** add `--project` option to export command
+* **react:** enable media print functionality
+* **react:** persist the view state on navigation, closes [#1325](https://github.com/likec4/likec4/issues/1325)
+
+### 🐞 Bug Fixes
+
+* **manual-layouts:** view size for manual layouts, fixes [#2382](https://github.com/likec4/likec4/issues/2382)
+* **manual-layouts:** manual layouts migration did not work for default project
+* **manual-layouts:** handle local icon paths
+
 # [1.44.0](https://github.com/likec4/likec4/compare/v1.43.0...v1.44.0) (2025-11-10)
 
 > [!NOTE]

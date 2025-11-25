@@ -1,5 +1,5 @@
 import type { NodeId } from '@likec4/core'
-import { log, raise } from 'xstate/actions'
+import { raise } from 'xstate/actions'
 import { and } from 'xstate/guards'
 import {
   assignFocusedNode,
@@ -23,15 +23,14 @@ import { machine, targetState } from './machine.setup'
 export const focused = machine.createStateConfig({
   id: targetState.focused.slice(1),
   entry: [
+    cancelFitDiagram(),
     focusOnNodesAndEdges(),
     assignViewportBefore(),
     openSourceOfFocusedOrLastClickedNode(),
     startHotKeyActor(),
-    cancelFitDiagram(),
     fitFocusedBounds(),
   ],
   exit: [
-    log('Leaving focused state'),
     stopHotKeyActor(),
     undimEverything(),
     returnViewportBefore(),

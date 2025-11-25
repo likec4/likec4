@@ -1,6 +1,9 @@
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
+import type { ActorRef, MachineSnapshot, StateMachine, StateValueFrom, TagsFrom } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
+import type { OverlaysActorRef } from '../../overlays/overlaysActor'
+import type { SearchActorRef } from '../../search/searchActor'
 import {
   updateEdgeData,
   updateNodeData,
@@ -14,15 +17,22 @@ import {
   updateFeatures,
   updateInputs,
 } from './machine.actions'
-import { type Context, machine } from './machine.setup'
+import { machine } from './machine.setup'
+import type {
+  Context as DiagramContext,
+  EmittedEvents as DiagramEmittedEvents,
+  Events as DiagramEvents,
+  Input,
+} from './machine.setup'
 import { initializing, isReady } from './machine.state.initializing'
 import { navigating } from './machine.state.navigating'
 import { ready } from './machine.state.ready'
 import { DiagramToggledFeaturesPersistence } from './persistence'
+import type { SyncLayoutActorRef } from './syncManualLayoutActor'
 
 const _diagramMachine = machine.createMachine({
   initial: 'initializing',
-  context: ({ input }): Context => ({
+  context: ({ input }): DiagramContext => ({
     ...input,
     xyedges: [],
     xynodes: [],
@@ -135,14 +145,56 @@ const _diagramMachine = machine.createMachine({
   },
 })
 
-export type {
-  Context as DiagramContext,
-  EmittedEvents as DiagramEmittedEvents,
-} from './machine.setup'
-
 /**
  * Here is a trick to reduce inference types
  */
-type InferredDiagramMachine = typeof _diagramMachine
-export interface DiagramMachineLogic extends InferredDiagramMachine {}
+// type InferredDiagramMachine = typeof _diagramMachine
+// export interface DiagramMachineLogic extends InferredDiagramMachine {}
+export interface DiagramMachineLogic extends
+  StateMachine<
+    DiagramContext,
+    DiagramEvents,
+    {
+      overlays: OverlaysActorRef | undefined
+      search: SearchActorRef | undefined
+      syncLayout: SyncLayoutActorRef | undefined
+    },
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    Input,
+    any,
+    any,
+    any,
+    any
+  >
+{
+}
+
 export const diagramMachine: DiagramMachineLogic = _diagramMachine as any
+
+export type DiagramMachineSnapshot = MachineSnapshot<
+  DiagramContext,
+  DiagramEvents,
+  {
+    overlays: OverlaysActorRef | undefined
+    search: SearchActorRef | undefined
+    syncLayout: SyncLayoutActorRef | undefined
+  },
+  any,
+  any,
+  any,
+  {},
+  {}
+>
+
+export type DiagramMachineRef = ActorRef<DiagramMachineSnapshot, DiagramEvents, DiagramEmittedEvents>
+
+export type {
+  DiagramContext,
+  DiagramEmittedEvents,
+  DiagramEvents,
+}

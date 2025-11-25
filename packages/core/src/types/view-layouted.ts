@@ -52,13 +52,6 @@ export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> 
    * (Absolute coordinates)
    */
   labelBBox?: BBox | null
-  /**
-   * Graphviz edge POS
-   *
-   * TODO: temporary solution, should be moved out
-   * @deprecated
-   */
-  dotpos?: string
 
   /**
    * List of reasons causing edge drift

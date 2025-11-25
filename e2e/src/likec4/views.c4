@@ -50,5 +50,8 @@ views {
       color custom
       opacity 20%
     }
+    style cloud {
+      opacity 44%
+    }
   }
 }

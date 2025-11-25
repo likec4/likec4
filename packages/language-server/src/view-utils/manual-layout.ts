@@ -22,10 +22,9 @@ function pack({
       b: [x, y, width, height] as const,
       c: isCompound,
     })),
-    edges: mapValues(edges, ({ points, controlPoints, labelBBox, dotpos, ...e }) => ({
+    edges: mapValues(edges, ({ points, controlPoints, labelBBox, ...e }) => ({
       ...!!controlPoints && { cp: controlPoints },
       ...!!labelBBox && { l: labelBBox },
-      ...!!dotpos && { dp: dotpos },
       ...e,
       p: points,
     })),
@@ -50,10 +49,9 @@ function unpack({
       isCompound: c,
       ...n,
     })),
-    edges: mapValues(edges, ({ p, cp, l, dp, ...e }) => ({
+    edges: mapValues(edges, ({ p, cp, l, ...e }) => ({
       ...!!cp && { controlPoints: cp },
       ...!!l && { labelBBox: l },
-      ...!!dp && { dotpos: dp },
       ...e,
       points: p,
     })),

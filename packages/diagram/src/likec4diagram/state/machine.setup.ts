@@ -38,11 +38,28 @@ import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 
+/**
+ * Navigation history entry represents a current view state,
+ * including viewport, focused node, dynamic view variant, etc.
+ */
+export interface NavigationHistoryEntry {
+  viewId: ViewId
+  viewport: Viewport
+  viewportChangedManually: boolean
+  viewportBefore?: null | {
+    wasChangedManually: boolean
+    value: Viewport
+  }
+  // Focused node in the view, if any
+  focusedNode?: NodeId | null
+  // If Dynamic View
+  dynamicViewVariant?: DynamicViewDisplayVariant | null
+  // If there was an active walkthrough
+  activeWalkthrough?: null | StepEdgeId
+}
+
 export interface NavigationHistory {
-  history: ReadonlyArray<{
-    viewId: ViewId
-    viewport: Viewport
-  }>
+  history: ReadonlyArray<NavigationHistoryEntry>
   currentIndex: number
 }
 

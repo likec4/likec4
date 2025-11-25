@@ -3,12 +3,14 @@ import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
 import { isString, last, reverse } from 'remeda'
 import {
-  type ActorRefFromLogic,
+  type ActorRef,
   type SnapshotFrom,
+  type StateMachine,
   assertEvent,
   fromCallback,
   setup,
 } from 'xstate'
+import { not } from 'xstate/guards'
 import { elementDetailsLogic } from './element-details/actor'
 import { relationshipDetailsLogic } from './relationship-details/actor'
 import { relationshipsBrowserLogic } from './relationships-browser/actor'
@@ -67,9 +69,9 @@ const machine = setup({
     },
   },
   actors: {
-    relationshipDetails: relationshipDetailsLogic as Overlays.RelationshipDetails.Logic,
-    elementDetails: elementDetailsLogic as Overlays.ElementDetails.Logic,
-    relationshipsBrowser: relationshipsBrowserLogic as Overlays.RelationshipsBrowser.Logic,
+    relationshipDetails: relationshipDetailsLogic,
+    elementDetails: elementDetailsLogic,
+    relationshipsBrowser: relationshipsBrowserLogic,
     hotkey: hotkeyLogic,
   },
   guards: {
@@ -147,8 +149,8 @@ const openElementDetails = () =>
       overlays: [
         ...context.overlays,
         {
-          type: 'elementDetails' as const,
           id,
+          type: 'elementDetails',
           subject: event.subject,
         },
       ],
@@ -176,8 +178,8 @@ const openRelationshipDetails = () =>
       overlays: [
         ...context.overlays,
         {
-          type: 'relationshipDetails' as const,
           id,
+          type: 'relationshipDetails',
         },
       ],
     })
@@ -205,12 +207,33 @@ const openRelationshipsBrowser = () =>
       overlays: [
         ...context.overlays,
         {
-          type: 'relationshipsBrowser' as const,
           id,
+          type: 'relationshipsBrowser',
           subject: event.subject,
         },
       ],
     })
+  })
+
+const openOverlay = () =>
+  machine.enqueueActions(({ enqueue, event }) => {
+    console.log('openOverlay event', event)
+    assertEvent(event, [
+      'open.elementDetails',
+      'open.relationshipDetails',
+      'open.relationshipsBrowser',
+    ])
+    switch (event.type) {
+      case 'open.elementDetails':
+        enqueue(openElementDetails())
+        break
+      case 'open.relationshipDetails':
+        enqueue(openRelationshipDetails())
+        break
+      case 'open.relationshipsBrowser':
+        enqueue(openRelationshipsBrowser())
+        break
+    }
   })
 
 const listenToEsc = () =>
@@ -220,6 +243,15 @@ const listenToEsc = () =>
 
 const stopListeningToEsc = () => machine.stopChild('hotkey')
 
+const checkState = () =>
+  machine.enqueueActions(({ enqueue, context }) => {
+    if (context.overlays.length === 0) {
+      console.log('No overlays left, raising close event')
+      // No more overlays, go to idle by raising close again
+      enqueue.raise({ type: 'close' })
+    }
+  })
+
 const _overlaysActorLogic = machine.createMachine({
   id: 'overlays',
   context: () => ({
@@ -227,71 +259,89 @@ const _overlaysActorLogic = machine.createMachine({
     overlays: [],
   }),
   initial: 'idle',
-  on: {
-    'open.elementDetails': {
-      actions: openElementDetails(),
-      target: '.active',
-      reenter: false,
-    },
-    'open.relationshipDetails': {
-      actions: openRelationshipDetails(),
-      target: '.active',
-      reenter: false,
-    },
-    'open.relationshipsBrowser': {
-      actions: openRelationshipsBrowser(),
-      target: '.active',
-      reenter: false,
-    },
-  },
   states: {
-    idle: {},
-    active: {
-      entry: listenToEsc(),
-      exit: stopListeningToEsc(),
+    idle: {
       on: {
+        'open.*': {
+          actions: openOverlay(),
+          target: 'active',
+        },
+      },
+    },
+    active: {
+      entry: [
+        listenToEsc(),
+      ],
+      exit: [
+        stopListeningToEsc(),
+      ],
+      on: {
+        'open.*': {
+          actions: openOverlay(),
+        },
         'close': [
           {
-            guard: 'close specific overlay?',
-            actions: closeSpecificOverlay(),
-            target: 'closing',
+            guard: not('has overlays?'),
+            target: 'idle',
           },
           {
-            actions: closeLastOverlay(),
-            target: 'closing',
+            guard: 'close specific overlay?',
+            actions: [
+              closeSpecificOverlay(),
+              checkState(),
+            ],
+          },
+          {
+            actions: [
+              closeLastOverlay(),
+              checkState(),
+            ],
           },
         ],
         'close.all': {
           actions: [
             closeAllOverlays(),
-            stopListeningToEsc(),
           ],
           target: 'idle',
         },
       },
     },
-    closing: {
-      always: [
-        {
-          guard: 'has overlays?',
-          target: 'active',
-        },
-        {
-          actions: stopListeningToEsc(),
-          target: 'idle',
-        },
+    final: {
+      entry: [
+        closeAllOverlays(),
+        stopListeningToEsc(),
       ],
+      type: 'final',
     },
   },
-  exit: [
-    stopListeningToEsc(),
-    closeAllOverlays(),
-  ],
 })
 
-type InferredMachine = typeof _overlaysActorLogic
-export interface OverlaysActorLogic extends InferredMachine {}
+// type InferredMachine = typeof _overlaysActorLogic
+// export interface OverlaysActorLogic extends InferredMachine {}
+export interface OverlaysActorLogic extends
+  StateMachine<
+    OverlaysContext,
+    OverlayActorEvent,
+    {
+      [key: `elementDetails-${number}`]: Overlays.ElementDetails.ActorRef | undefined
+      [key: `relationshipDetails-${number}`]: Overlays.RelationshipDetails.ActorRef | undefined
+      [key: `relationshipsBrowser-${number}`]: Overlays.RelationshipsBrowser.ActorRef | undefined
+    },
+    any,
+    any,
+    any,
+    any,
+    any,
+    never,
+    never,
+    any,
+    OverlayActorEmitedEvent,
+    any,
+    any
+  >
+{
+}
 export const overlaysActorLogic: OverlaysActorLogic = _overlaysActorLogic as any
 
 export type OverlaysActorSnapshot = SnapshotFrom<OverlaysActorLogic>
-export interface OverlaysActorRef extends ActorRefFromLogic<OverlaysActorLogic> {}
+export interface OverlaysActorRef extends ActorRef<OverlaysActorSnapshot, OverlayActorEvent, OverlayActorEmitedEvent> {}

@@ -34,7 +34,7 @@ export const setViewport = (params?: { viewport: Viewport; duration?: number }) 
       viewport = event.viewport
       duration = event.duration
     }
-    duration = duration ?? 350
+    duration = duration ?? 400
     const { panZoom } = nonNullable(context.xystore).getState()
     const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
     panZoom?.setViewport(viewport, animationProps).catch((err) => {
@@ -113,7 +113,7 @@ export const fitFocusedBounds = () =>
     panZoom?.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined)
   })
 
-const DEFAULT_DELAY = 20
+const DEFAULT_DELAY = 30
 export const raiseSetViewport = (params: { delay?: number; duration?: number; viewport: Viewport }) => {
   const { delay = DEFAULT_DELAY, ...rest } = params ?? {}
   return machine.raise(

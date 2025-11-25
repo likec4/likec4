@@ -1,7 +1,9 @@
 export type {
-  DiagramActorEvent,
   DiagramActorRef,
+  DiagramActorSnapshot,
   DiagramContext,
+  DiagramEmittedEvents,
+  DiagramEvents,
 } from '../likec4diagram/state/types'
 
 export {

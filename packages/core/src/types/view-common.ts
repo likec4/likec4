@@ -97,8 +97,6 @@ export type ViewManualLayout = {
     height: number
   }>
   readonly edges: Record<string, {
-    // Graphviz edge POS
-    dotpos?: string
     // Bezier points
     points: NonEmptyArray<Point>
     // Control points to adjust the edge

@@ -84,6 +84,8 @@ await build({
       rollupTypes: true,
       bundledPackages: [
         '@likec4/diagram',
+        '@xstate/react',
+        'xstate',
         '@react-hookz/web',
       ],
       afterRollup(result) {
