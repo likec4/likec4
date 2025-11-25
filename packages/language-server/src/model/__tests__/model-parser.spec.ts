@@ -1000,6 +1000,59 @@ describe.concurrent('LikeC4ModelParser', () => {
       }])
     })
 
+    it('parses element view rank rules', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element block
+        }
+        model {
+          block root {
+            block child {
+              block grand
+            }
+          }
+        }
+        views {
+          view index {
+            include *
+            {rank=same; root child}
+            {rank=max; root.child.grand}
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Views).toHaveLength(1)
+      const ranks = doc.c4Views[0]!.rules.filter(rule => 'rank' in rule)
+      expect(ranks).toEqual([
+        {
+          rank: 'same',
+          targets: [
+            {
+              ref: {
+                model: 'root',
+              },
+            },
+            {
+              ref: {
+                model: 'root.child',
+              },
+            },
+          ],
+        },
+        {
+          rank: 'max',
+          targets: [
+            {
+              ref: {
+                model: 'root.child.grand',
+              },
+            },
+          ],
+        },
+      ])
+    })
+
     it('scope: prioritizes deployment nodes', async ({ expect }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`

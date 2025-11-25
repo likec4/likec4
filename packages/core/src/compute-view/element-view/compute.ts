@@ -5,6 +5,8 @@ import type { RelationshipModel } from '../../model/RelationModel'
 import {
   type AnyAux,
   type ComputedElementView,
+  type ComputedNode,
+  type ComputedRankConstraint,
   type ElementViewRule,
   type ModelGlobals,
   type NodeId,
@@ -12,6 +14,7 @@ import {
   isViewRuleAutoLayout,
   isViewRuleGroup,
   isViewRulePredicate,
+  isViewRuleRank,
   ModelExpression,
   ModelFqnExpr,
   ModelRelationExpr,
@@ -23,6 +26,7 @@ import { applyCustomElementProperties } from '../utils/applyCustomElementPropert
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildElementNotations } from '../utils/buildElementNotations'
+import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
@@ -40,6 +44,24 @@ import { InOutRelationPredicate } from './predicates/relation-in-out'
 import { OutgoingExprPredicate } from './predicates/relation-out'
 import { WildcardPredicate } from './predicates/wildcard'
 import { buildNodes, NoFilter, NoWhere, toComputedEdges } from './utils'
+
+const rankDebugLogger: null | ((payload: { rank: string; nodes: NodeId[] }) => void) = (() => {
+  try {
+    if (typeof globalThis === 'undefined') {
+      return null
+    }
+    const flag = (globalThis as { __LIKEC4_DEBUG_RANK__?: unknown }).__LIKEC4_DEBUG_RANK__
+    if (!flag) {
+      return null
+    }
+    if (typeof console === 'undefined' || typeof console.debug !== 'function') {
+      return null
+    }
+    return (payload: { rank: string; nodes: NodeId[] }) => console.debug('[likec4][rank]', payload)
+  } catch {
+    return null
+  }
+})()
 
 function processElementPredicate(
   // ...args:
@@ -223,6 +245,7 @@ export function computeElementView<A extends AnyAux>(
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
 
   const nodeNotations = buildElementNotations(nodes)
+  const ranks = collectRankConstraints(rules, nodes)
 
   return calcViewLayoutHash({
     ...view,
@@ -244,7 +267,37 @@ export function computeElementView<A extends AnyAux>(
         nodes: nodeNotations,
       },
     }),
+    ...(ranks.length > 0 && { ranks }),
   })
+}
+
+function collectRankConstraints<A extends AnyAux>(
+  rules: ElementViewRule<A>[],
+  nodes: ReadonlyArray<ComputedNode<A>>,
+): ComputedRankConstraint[] {
+  const constraints: ComputedRankConstraint[] = []
+  for (const rule of rules) {
+    if (!isViewRuleRank(rule) || rule.targets.length === 0) {
+      continue
+    }
+    const predicates = rule.targets.map(elementExprToPredicate)
+    const seen = new Set<NodeId>()
+    for (const node of nodes) {
+      if (predicates.some(predicate => predicate(node))) {
+        seen.add(node.id)
+      }
+    }
+    if (seen.size === 0) {
+      continue
+    }
+    const nodesInRank = [...seen]
+    constraints.push({
+      type: rule.rank,
+      nodes: nodesInRank,
+    })
+    rankDebugLogger?.({ rank: rule.rank, nodes: nodesInRank })
+  }
+  return constraints
 }
 
 /**
