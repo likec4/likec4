@@ -2,7 +2,7 @@ import { only, values } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { type AnyTypes, type Types, Builder } from '../../builder'
 import { LikeC4Model } from '../../model'
-import { type ParsedView, isElementView } from '../../types'
+import { type ElementViewRuleRank, type Fqn, type ParsedView, isElementView } from '../../types'
 import { invariant } from '../../utils'
 import { withReadableEdges } from '../utils/with-readable-edges'
 import { computeElementView } from './compute'
@@ -192,5 +192,53 @@ describe('compute', () => {
     )
 
     expect(context.edges[0]!.parent).toBe('cloud')
+  })
+
+  it('collects rank constraints from rules', () => {
+    const parsed = builder
+      .model(({ actor }, _) =>
+        _(
+          actor('alice'),
+          actor('bob'),
+        )
+      )
+      .views(({ view, $include, $rules }, _) =>
+        _(
+          view(
+            'index',
+            'index',
+            $rules(
+              $include('*'),
+            ),
+          ),
+        )
+      )
+      .build()
+
+    const likec4model = LikeC4Model.create(parsed)
+    const view = only(values(parsed.views as Record<string, ParsedView<any>>))
+    invariant(view && isElementView(view), 'Must have one element view')
+
+    const rankRule: ElementViewRuleRank = {
+      rank: 'same',
+      targets: [
+        { ref: { model: 'alice' as Fqn } },
+        { ref: { model: 'bob' as Fqn } },
+      ],
+    }
+
+    const context = withReadableEdges(
+      computeElementView(likec4model, {
+        ...view,
+        rules: [...view.rules, rankRule],
+      }),
+    )
+
+    expect(context.ranks).toEqual([
+      {
+        type: 'same',
+        nodes: ['alice', 'bob'],
+      },
+    ])
   })
 })

@@ -25,6 +25,7 @@ export type WithViewsParser = ReturnType<typeof ViewsParser>
 type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ViewRuleGlobalStyle
 
 const logger = mainLogger.getChild('ViewsParser')
+const rankLogger = logger.getChild('rank')
 
 export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
   return class ViewsParser extends B {
@@ -173,17 +174,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       nonexhaustive(astRule)
     }
 
-    parseViewRuleRank(astRule: ast.ViewRuleRank): c4.ElementViewRuleRank {
-      const targets = astRule.targets.map(t => {
-        const ref = this.parseFqnRef(t)
-        return c4.FqnRef.isModelRef(ref) ? { ref } : null
-      }).filter(isNonNullish)
-      return {
-        rank: astRule.value,
-        targets,
-      }
-    }
-
     parseViewRulePredicate(astNode: ast.ViewRulePredicate): c4.ElementViewPredicate {
       const exprs = [] as c4.ModelExpression[]
       let predicate = astNode.exprs
@@ -247,6 +237,31 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         title: toSingleLine(astNode.title) ?? null,
         groupRules,
         ...this.parseStyleProps(astNode.props),
+      }
+    }
+
+    parseViewRuleRank(astRule: ast.ViewRuleRank): c4.ElementViewRuleRank {
+      const targets = [] as c4.ModelFqnExpr.Any[]
+      for (const target of astRule.targets) {
+        try {
+          const ref = this.parseFqnRef(target)
+          if (!c4.FqnRef.isModelRef(ref)) {
+            rankLogger.debug`Skip non-model rank target: ${target.$cstNode?.text}`
+            continue
+          }
+          targets.push({ ref })
+        } catch (e) {
+          rankLogger.debug('Failed to parse rank target: {target}', {
+            target: target.$cstNode?.text,
+            error: loggable(e),
+          })
+        }
+      }
+      const rank = astRule.value ?? 'same'
+      rankLogger.debug`Parsed rank constraint ${rank} with ${targets.length} target(s)`
+      return {
+        rank,
+        targets,
       }
     }
 
