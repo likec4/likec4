@@ -418,7 +418,9 @@ export const notationsHighlight = () =>
       return Base.setDimmed(n, highlighted ? false : 'immediate')
     })
 
-    const xyedges = context.xyedges.map((edge) => Base.setDimmed(edge, 'immediate'))
+    const xyedges = context.xyedges.map((edge) => {
+      return Base.setDimmed(edge, true)
+    })
 
     return { xynodes, xyedges }
   })
