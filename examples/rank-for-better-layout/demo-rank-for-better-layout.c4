@@ -20,7 +20,7 @@ model {
 views {
 
   view rank_effect {
-    title 'Effect or Rank'
+    title 'Effect of Rank'
 
     include A, B, C, D, E, F, G
 
