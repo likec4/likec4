@@ -1,6 +1,6 @@
 import { type DiagramEdge, type DiagramNode, type DiagramView, type ViewManualLayout, BBox, NodeId } from '@likec4/core'
 import { deepEqual } from 'fast-equals'
-import { Vector } from 'vecti'
+import { Vector } from '@likec4/core/geometry'
 
 type NodeManualLayout = ViewManualLayout['nodes'][string]
 

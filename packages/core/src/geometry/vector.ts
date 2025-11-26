@@ -47,6 +47,16 @@ export class Vector implements VectorValue {
   }
 
   /**
+   * Divides a vector by a scalar.
+   * @param a The vector.
+   * @param b The scalar.
+   * @returns The scaled vector.
+   */
+  static divide(a: VectorValue, b: number): VectorValue {
+    return { x: a.x / b, y: a.y / b }
+  }
+
+  /**
    * Calculates the dot product of the vectors.
    * @param a The first vector.
    * @param b The second vector.
@@ -81,6 +91,15 @@ export class Vector implements VectorValue {
    */
   multiply(b: number): Vector {
     return new Vector(this.x * b, this.y * b)
+  }
+
+  /**
+   * Divides this vector by a scalar.
+   * @param b The scalar to divide by.
+   * @returns A new vector that is the quotient of this vector and the given scalar.
+   */
+  divide(b: number): Vector {
+    return new Vector(this.x / b, this.y / b)
   }
 
   /**

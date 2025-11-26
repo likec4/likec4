@@ -3,7 +3,7 @@ import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
-import { type Vector, vector } from '../../../utils/vector'
+import { type Vector, vector } from '@likec4/core/geometry'
 import {
   bezierControlPoints,
 } from '../../../utils/xyflow'
