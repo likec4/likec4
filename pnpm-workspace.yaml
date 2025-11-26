@@ -58,7 +58,7 @@ catalogs:
   hono:
     "@hono/node-server": ^1.19.6
     "@hono/oauth-providers": ^0.8.5
-    "@hono/valibot-validator": ^0.5.3
+    "@hono/valibot-validator": ^0.6.0
     "@hono/zod-validator": ^0.7.5
     hono: ^4.10.6
     hono-sessions: ^0.8.0
