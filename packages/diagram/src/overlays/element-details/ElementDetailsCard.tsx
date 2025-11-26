@@ -4,13 +4,12 @@ import type {
   Any,
   ComputedView,
   DiagramView,
-  Element,
   Fqn,
   NodeId,
   scalar,
   ViewId,
 } from '@likec4/core/types'
-import { css, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import { HStack } from '@likec4/styles/jsx'
 import {
   type TextProps,
@@ -44,6 +43,7 @@ import { clamp, entries, isNullish, map, only, partition, pipe } from 'remeda'
 import { Markdown } from '../../base-primitives'
 import { ElementTag } from '../../base-primitives/element/ElementTags'
 import { Link } from '../../components/Link'
+import { MetadataSection } from '../../components/metadata/MetadataSection'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useUpdateEffect } from '../../hooks'
 import { useCurrentViewModel } from '../../hooks/useCurrentViewModel'
@@ -51,7 +51,6 @@ import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
 import { stopPropagation } from '../../utils'
 import * as styles from './ElementDetailsCard.css'
-import { MetadataProvider, MetadataValue } from './MetadataValue'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
 import { TabPanelStructure } from './TabPanelStructure'
@@ -120,6 +119,9 @@ export function ElementDetailsCard({
   const nodeModel = fromNode ? viewModel.findNode(fromNode) : viewModel.findNodeWithElement(fqn)
 
   const elementModel = viewModel.$model.element(fqn)
+  const metadataEntries = elementModel.$element.metadata
+    ? entries(elementModel.$element.metadata).sort(([a], [b]) => a.localeCompare(b))
+    : null
 
   const [viewsOf, otherViews] = pipe(
     [...elementModel.views()],
@@ -402,119 +404,122 @@ export function ElementDetailsCard({
               </ActionIconGroup>
             </HStack>
           </div>
-          <MetadataProvider>
-            <Tabs
-              value={activeTab}
-              onChange={v => setActiveTab(v as any)}
-              variant="none"
-              classNames={{
-                root: styles.tabsRoot,
-                list: styles.tabsList,
-                tab: styles.tabsTab,
-                panel: styles.tabsPanel,
-              }}>
-              <TabsList>
-                {TABS.map(tab => (
-                  <TabsTab key={tab} value={tab}>
-                    {tab}
-                  </TabsTab>
-                ))}
-              </TabsList>
+          <Tabs
+            value={activeTab}
+            onChange={v => setActiveTab(v as any)}
+            variant="none"
+            classNames={{
+              root: styles.tabsRoot,
+              list: styles.tabsList,
+              tab: styles.tabsTab,
+              panel: styles.tabsPanel,
+            }}>
+            <TabsList>
+              {TABS.map(tab => (
+                <TabsTab key={tab} value={tab}>
+                  {tab}
+                </TabsTab>
+              ))}
+            </TabsList>
 
-              <TabsPanel value="Properties">
-                <ScrollArea scrollbars="y" type="scroll" offsetScrollbars>
-                  <Box className={styles.propertiesGrid} pt={'xs'}>
-                    {elementModel.hasSummary && (
-                      <>
-                        <PropertyLabel>summary</PropertyLabel>
-                        <Markdown value={elementModel.summary} />
-                      </>
-                    )}
+            <TabsPanel value="Properties">
+              <ScrollArea scrollbars="y" type="scroll" offsetScrollbars>
+                <Box className={styles.propertiesGrid} pt={'xs'}>
+                  {elementModel.hasSummary && (
                     <>
-                      <PropertyLabel>description</PropertyLabel>
-                      <Markdown
-                        value={elementModel.description}
-                        emptyText="no description"
-                      />
+                      <PropertyLabel>summary</PropertyLabel>
+                      <Markdown value={elementModel.summary} />
                     </>
-                    {elementModel.technology && (
-                      <ElementProperty title="technology">
-                        {elementModel.technology}
-                      </ElementProperty>
-                    )}
-                    {elementModel.links.length > 0 && (
-                      <>
-                        <PropertyLabel>links</PropertyLabel>
-                        <HStack gap={'xs'} flexWrap="wrap">
-                          {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
-                        </HStack>
-                      </>
-                    )}
-                    {elementModel.$element.metadata && <ElementMetata value={elementModel.$element.metadata} />}
-                  </Box>
-                </ScrollArea>
-              </TabsPanel>
-
-              <TabsPanel value="Relationships">
-                <DiagramFeatures
-                  overrides={{
-                    enableRelationshipBrowser: false,
-                    enableNavigateTo: false,
-                  }}>
-                  {opened && activeTab === 'Relationships' && (
-                    <TabPanelRelationships
-                      element={elementModel}
-                      node={nodeModel ?? null} />
                   )}
-                </DiagramFeatures>
-              </TabsPanel>
+                  <>
+                    <PropertyLabel>description</PropertyLabel>
+                    <Markdown
+                      value={elementModel.description}
+                      emptyText="no description"
+                    />
+                  </>
+                  {elementModel.technology && (
+                    <ElementProperty title="technology">
+                      {elementModel.technology}
+                    </ElementProperty>
+                  )}
+                  {elementModel.links.length > 0 && (
+                    <>
+                      <PropertyLabel>links</PropertyLabel>
+                      <HStack gap={'xs'} flexWrap="wrap">
+                        {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
+                      </HStack>
+                    </>
+                  )}
+                  {metadataEntries && (
+                    <MetadataSection
+                      entries={metadataEntries}
+                      label={<PropertyLabel>metadata</PropertyLabel>}
+                    />
+                  )}
+                </Box>
+              </ScrollArea>
+            </TabsPanel>
 
-              <TabsPanel value="Views">
-                <ScrollArea scrollbars="y" type="auto">
-                  <Stack gap={'lg'}>
-                    {viewsOf.length > 0 && (
-                      <Box>
-                        <Divider label="views of the element (scoped)" />
-                        <Stack gap={'sm'}>
-                          {viewsOf.map((view) => (
-                            <ViewButton
-                              key={view.id}
-                              view={view}
-                              onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
-                          ))}
-                        </Stack>
-                      </Box>
-                    )}
-                    {otherViews.length > 0 && (
-                      <Box>
-                        <Divider label="views including this element" />
-                        <Stack gap={'sm'}>
-                          {otherViews.map((view) => (
-                            <ViewButton
-                              key={view.id}
-                              view={view}
-                              onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
-                          ))}
-                        </Stack>
-                      </Box>
-                    )}
-                  </Stack>
-                </ScrollArea>
-              </TabsPanel>
+            <TabsPanel value="Relationships">
+              <DiagramFeatures
+                overrides={{
+                  enableRelationshipBrowser: false,
+                  enableNavigateTo: false,
+                }}>
+                {opened && activeTab === 'Relationships' && (
+                  <TabPanelRelationships
+                    element={elementModel}
+                    node={nodeModel ?? null} />
+                )}
+              </DiagramFeatures>
+            </TabsPanel>
 
-              <TabsPanel value="Structure">
-                <ScrollArea scrollbars="y" type="auto">
-                  <TabPanelStructure element={elementModel} />
-                </ScrollArea>
-              </TabsPanel>
+            <TabsPanel value="Views">
+              <ScrollArea scrollbars="y" type="auto">
+                <Stack gap={'lg'}>
+                  {viewsOf.length > 0 && (
+                    <Box>
+                      <Divider label="views of the element (scoped)" />
+                      <Stack gap={'sm'}>
+                        {viewsOf.map((view) => (
+                          <ViewButton
+                            key={view.id}
+                            view={view}
+                            onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
+                        ))}
+                      </Stack>
+                    </Box>
+                  )}
+                  {otherViews.length > 0 && (
+                    <Box>
+                      <Divider label="views including this element" />
+                      <Stack gap={'sm'}>
+                        {otherViews.map((view) => (
+                          <ViewButton
+                            key={view.id}
+                            view={view}
+                            onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
+                        ))}
+                      </Stack>
+                    </Box>
+                  )}
+                </Stack>
+              </ScrollArea>
+            </TabsPanel>
 
-              <TabsPanel value="Deployments">
-                <ScrollArea scrollbars="y" type="auto">
-                  <TabPanelDeployments elementFqn={elementModel.id} />
-                </ScrollArea>
-              </TabsPanel>
-            </Tabs>
-          </MetadataProvider>
+            <TabsPanel value="Structure">
+              <ScrollArea scrollbars="y" type="auto">
+                <TabPanelStructure element={elementModel} />
+              </ScrollArea>
+            </TabsPanel>
+
+            <TabsPanel value="Deployments">
+              <ScrollArea scrollbars="y" type="auto">
+                <TabPanelDeployments elementFqn={elementModel.id} />
+              </ScrollArea>
+            </TabsPanel>
+          </Tabs>
           <m.div
             className={styles.resizeHandle}
             drag
@@ -592,30 +597,3 @@ function ElementProperty({
   )
 }
 
-function ElementMetata({
-  value: metadata,
-}: {
-  value: NonNullable<Element['metadata']>
-}) {
-  const metadataEntries = entries(metadata).sort(([a], [b]) => a.localeCompare(b))
-
-  return (
-    <MetadataProvider>
-      <>
-        <PropertyLabel style={{ justifySelf: 'end', textAlign: 'right' }}>metadata</PropertyLabel>
-        <Box
-          className={css({
-            display: 'grid',
-            gridTemplateColumns: 'min-content 1fr',
-            gridAutoRows: 'min-content',
-            gap: `[12px 16px]`,
-            alignItems: 'baseline',
-            justifyItems: 'stretch',
-          })}
-        >
-          {metadataEntries.map(([key, value]) => <MetadataValue key={key} label={key} value={value} />)}
-        </Box>
-      </>
-    </MetadataProvider>
-  )
-}
