@@ -55,7 +55,7 @@ export function useControlPoints({
       // Is pointer above the current segment?
       if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
         // Calculate distance by approximating edge segment with a staight line
-        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).length() / fromCurrentToNext.length())
+        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew)) / fromCurrentToNext.length()
 
         if (distanceToEdge < minDistance) {
           minDistance = distanceToEdge
