@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { autoPlacement, autoUpdate, computePosition, hide, offset, size } from '@floating-ui/dom'
 import { nameFromFqn } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
@@ -14,7 +21,7 @@ import {
   Tooltip as MantineTooltip,
   TooltipGroup,
 } from '@mantine/core'
-import { IconArrowRight, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
+import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
 import { useActorRef, useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import {
@@ -29,7 +36,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { clamp, filter, isEmpty, isTruthy, map, partition, pipe } from 'remeda'
+import { clamp, entries, filter, isEmpty, isTruthy, map, partition, pipe } from 'remeda'
 import { Markdown } from '../../base-primitives'
 import { Link } from '../../components/Link'
 import { PortalToContainer } from '../../components/PortalToContainer'
@@ -398,6 +405,59 @@ const Relationship = forwardRef<
   const navigateTo = onNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
   const links = r.links
 
+  // Build metadata tooltip content
+  const metadataEntries = r.hasMetadata()
+    ? entries(r.getMetadata()).sort(([a], [b]) => a.localeCompare(b))
+    : null
+
+  const metadataTooltipLabel = metadataEntries && (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      <div
+        style={{
+          fontWeight: 600,
+          fontSize: '10px',
+          color: '#868e96',
+          marginBottom: '2px',
+          letterSpacing: '0.5px',
+          textTransform: 'uppercase',
+        }}>
+        Metadata
+      </div>
+      <div
+        style={{
+          borderTop: '1px solid rgba(0, 0, 0, 0.1)',
+          paddingTop: '6px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '6px',
+        }}>
+        {metadataEntries.map(([key, value]) => {
+          const displayValue = Array.isArray(value) ? value.join(', ') : value
+          return (
+            <div key={key} style={{ display: 'flex', gap: '12px', fontSize: '12px', lineHeight: '1.4' }}>
+              <span
+                style={{
+                  fontWeight: 600,
+                  minWidth: '110px',
+                  color: '#495057',
+                }}>
+                {key}:
+              </span>
+              <span
+                style={{
+                  color: '#212529',
+                  wordBreak: 'break-word',
+                  flex: 1,
+                }}>
+                {displayValue}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+
   return (
     <VStack
       ref={ref}
@@ -466,7 +526,36 @@ const Relationship = forwardRef<
           )}
         </TooltipGroup>
       </HStack>
-      <Box className={styles.title}>{r.title || 'untitled'}</Box>
+      <HStack gap={'xs'} alignItems="center">
+        <Box className={styles.title}>{r.title || 'untitled'}</Box>
+        {metadataTooltipLabel && (
+          <Tooltip
+            label={metadataTooltipLabel}
+            w={350}
+            position="right"
+            offset={10}
+            openDelay={300}
+            withArrow
+            bg="white"
+            c="dark"
+            withinPortal
+            styles={{
+              tooltip: {
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                border: '1px solid #dee2e6',
+              },
+            }}
+          >
+            <Box display="inline-flex">
+              <IconInfoCircle
+                size={14}
+                opacity={0.5}
+                style={{ flexShrink: 0, cursor: 'help' }}
+              />
+            </Box>
+          </Tooltip>
+        )}
+      </HStack>
       {r.kind && (
         <HStack gap="2">
           <Label>kind</Label>

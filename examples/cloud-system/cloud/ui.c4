@@ -10,10 +10,25 @@ model {
       }
     }
 
-    dashboard -> cloud.graphql.myAccount "fetches via GraphQL"
-    dashboard -> cloud.graphql.updateAccount "mutates via GraphQL"
+    dashboard -> cloud.graphql.myAccount "fetches via GraphQL" {
+      metadata {
+        bandwith 'medium'
+        security 'approved'
+      }
+    }
+    dashboard -> cloud.graphql.updateAccount "mutates via GraphQL"{
+       metadata {
+        bandwith 'low'
+        security 'tbd'
+      }
+    }
 
     dashboard -> cloud.legacy.services "fetches via REST"
+    {
+      metadata {
+        bandwith 'high'
+      }
+    }
 
     mobile = mobileApp {
       title 'Customer Mobile App'
