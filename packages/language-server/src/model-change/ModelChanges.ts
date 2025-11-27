@@ -20,7 +20,6 @@ export class LikeC4ModelChanges {
 
   public async applyChange(changeView: ChangeView.Params): Promise<ChangeView.Res> {
     const lspConnection = this.services.shared.lsp.Connection
-    invariant(lspConnection, 'LSP Connection not available')
     let result: ChangeView.Res | null = null
     try {
       await this.services.shared.workspace.WorkspaceLock.write(async () => {
@@ -71,6 +70,8 @@ export class LikeC4ModelChanges {
           return
         }
 
+        invariant(lspConnection, 'This change only supported in IDE (running as Extension)')
+
         const { edits, modifiedRange } = this.convertToTextEdit({
           lookup,
           change,
@@ -103,7 +104,7 @@ export class LikeC4ModelChanges {
       const error = loggable(
         wrapError(
           err,
-          `Failed to apply change ${changeView.change.op} ${changeView.viewId}:\n`,
+          `Failed to apply change ${changeView.change.op} ${changeView.viewId}`,
         ),
       )
       logger.error(error)
@@ -111,6 +112,8 @@ export class LikeC4ModelChanges {
         success: false,
         error,
       }
+    } finally {
+      this.services.likec4.ModelBuilder.clearCache()
     }
     return result ?? {
       success: false,
