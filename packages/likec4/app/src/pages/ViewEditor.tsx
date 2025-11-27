@@ -2,11 +2,12 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useNavigate } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
-import { isDevelopment } from '../const'
-import { useCurrentView } from '../hooks'
+import { isDevelopment, onViewChangeViaPlugin } from '../const'
+import { useCurrentProject, useCurrentView } from '../hooks'
 
 export function ViewEditor() {
   const navigate = useNavigate()
+  const projectId = useCurrentProject().id
   const [view, setLayoutType] = useCurrentView()
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
@@ -27,6 +28,8 @@ export function ViewEditor() {
 
   const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
+
+  const onChange = onViewChangeViaPlugin ?? undefined
 
   return (
     <LikeC4Diagram
@@ -54,7 +57,14 @@ export function ViewEditor() {
       enableCompareWithLatest
       onNavigateTo={onNavigateTo}
       onLayoutTypeChange={setLayoutType}
-      onChange={(e) => console.log(e)}
+      onChange={onChange && (({ change }) => {
+        const event = {
+          projectId,
+          viewId: view.id,
+          change,
+        }
+        onChange(event)
+      })}
       onBurgerMenuClick={() => {
         void navigate({
           to: '/',

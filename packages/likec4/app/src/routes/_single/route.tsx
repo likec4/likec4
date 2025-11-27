@@ -1,5 +1,4 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { loadModel } from 'likec4:model'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Fallback } from '../../components/Fallback'
 import { LikeC4IconRendererContext } from '../../context/LikeC4IconRendererContext'
@@ -9,6 +8,7 @@ import * as css from './view.css'
 export const Route = createFileRoute('/_single')({
   staleTime: Infinity,
   loader: async ({ context }) => {
+    const { loadModel } = await import('likec4:model')
     const projectId = context.projectId
     const { $likec4data, $likec4model } = await loadModel(projectId)
     return {

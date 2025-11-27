@@ -192,7 +192,6 @@ export function LikeC4VitePlugin({
       const reloadModule = async (id: string) => {
         const md = server.moduleGraph.getModuleById(id)
         if (md && md.importers.size > 0) {
-          logger.info(`${k.green('reload')} ${k.dim(md.id ?? md.url)}`)
           try {
             await server.reloadModule(md)
           } catch (err) {
@@ -298,9 +297,6 @@ function enableEditingViaWS(
         k.green('view:onChange'),
         '✅',
       ].join(' '))
-      for (const projectModule of projectVirtuals) {
-        await reloadModule(projectModule.virtualId(data.projectId))
-      }
     } catch (e) {
       const error = e as Error
       logger.error(`Failed to apply view change`, {
