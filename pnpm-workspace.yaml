@@ -95,7 +95,7 @@ catalogs:
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
   utils:
-    "@hpcc-js/wasm-graphviz": 1.15.0
+    "@hpcc-js/wasm-graphviz": 1.16.0
     "@logtape/logtape": ^0.12.3
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
