@@ -37,6 +37,7 @@ import {
   calcViewportForBounds,
   findDiagramEdge,
   findDiagramNode,
+  parseViewPaddings,
   typedSystem,
 } from './utils'
 
@@ -326,14 +327,9 @@ export const emitOnLayoutTypeChange = () =>
       // Check if we are switching from manual to auto layout while a sync is pending
       if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
         const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-        const syncState = syncLayoutActor?.getSnapshot().value
-        const isPending = syncLayoutActor && (syncState === 'pending' || syncState === 'paused')
+        const isPending = syncLayoutActor && syncLayoutActor.getSnapshot().hasTag('pending')
         if (isPending) {
           enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
-          enqueue.emit({
-            type: 'onChange',
-            change: createViewChange(context),
-          })
         }
       }
 
@@ -629,6 +625,54 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
     )
   })
 
+export const openOverlay = () =>
+  machine.enqueueActions(({ context, event, enqueue, system, check }) => {
+    assertEvent(event, ['open.relationshipsBrowser', 'open.relationshipDetails', 'open.elementDetails'])
+
+    if (!check('enabled: Overlays')) {
+      console.warn('Overlays feature is disabled')
+      return
+    }
+
+    switch (event.type) {
+      case 'open.elementDetails': {
+        check('enabled: ElementDetails')
+          ? enqueue(openElementDetails())
+          : console.warn('ElementDetails feature is disabled')
+        break
+      }
+
+      case 'open.relationshipsBrowser': {
+        enqueue.sendTo(
+          typedSystem(system).overlaysActorRef!,
+          {
+            type: 'open.relationshipsBrowser',
+            subject: event.fqn,
+            viewId: context.view.id,
+            scope: 'view' as const,
+            closeable: true,
+            enableChangeScope: true,
+            enableSelectSubject: true,
+          },
+        )
+        break
+      }
+      case 'open.relationshipDetails': {
+        enqueue.sendTo(
+          typedSystem(system).overlaysActorRef!,
+          {
+            type: 'open.relationshipDetails',
+            viewId: context.view.id,
+            ...event.params,
+          },
+        )
+        break
+      }
+      default:
+        nonexhaustive(event)
+    }
+  })
+
 export const openSourceOfFocusedOrLastClickedNode = () =>
   machine.enqueueActions(({ context, enqueue }) => {
     const nodeId = context.focusedNode ?? context.lastClickedNode?.id
@@ -875,19 +919,11 @@ export const updateView = () =>
       )
 
       if (recenter) {
+        // Recenter the diagram to fit all elements
         enqueue(cancelFitDiagram())
-        const nextViewport = calcViewportForBounds(
-          context,
-          event.view.bounds,
-        )
-        let zoom = Math.min(nextViewport.zoom, context.viewport.zoom)
-        const center = BBox.center(event.view.bounds)
-        context.xyflow!.setCenter(
-          Math.round(center.x),
-          Math.round(center.y),
-          { zoom },
-        )
-        enqueue(raiseFitDiagram())
+        enqueue(raiseFitDiagram({
+          bounds: event.view.bounds,
+        }))
       }
     },
   )

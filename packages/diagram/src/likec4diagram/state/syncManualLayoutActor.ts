@@ -1,18 +1,14 @@
 import type { LayoutedView, ViewChange, ViewId } from '@likec4/core/types'
 import { getHotkeyHandler } from '@mantine/hooks'
 import { last, omit } from 'remeda'
-import type { Simplify } from 'type-fest'
 import {
-  type ActorLogicFrom,
   type ActorRef,
   type ActorSystem,
   type AnyEventObject,
   type CallbackActorLogic,
   type MachineSnapshot,
   type NonReducibleUnknown,
-  type SnapshotFrom,
   type StateMachine,
-  type StateValueFrom,
   assertEvent,
   assign,
   fromCallback,
@@ -22,7 +18,6 @@ import {
 import type { Types } from '../types'
 import { createViewChange } from './createViewChange'
 import type { DiagramMachineRef } from './machine'
-import type { Context as DiagramContext, Events as DiagramEvents } from './machine.setup'
 
 type UndoEvent = { type: 'undo' }
 
@@ -109,7 +104,7 @@ const syncManualLayout = setup({
 const raiseSync = syncManualLayout.raise({ type: 'sync' }, { delay: 300, id: 'sync' })
 const cancelSync = syncManualLayout.cancel('sync')
 
-const startEditing = syncManualLayout.enqueueActions(({ check, enqueue, system, event, self, context }) => {
+const startEditing = syncManualLayout.enqueueActions(({ enqueue, system, event }) => {
   assertEvent(event, 'editing.start')
 
   const parentContext = diagramActorRef(system).getSnapshot().context
@@ -117,7 +112,7 @@ const startEditing = syncManualLayout.enqueueActions(({ check, enqueue, system, 
   enqueue.assign({
     editing: event.subject,
     beforeEditing: {
-      xynodes: parentContext.xynodes.map(({ measured, style, ...n }) =>
+      xynodes: parentContext.xynodes.map(({ measured, ...n }) =>
         ({
           ...omit(n, ['selected', 'dragging', 'resizing']),
           data: omit(n.data, ['dimmed', 'hovered']),
@@ -138,7 +133,7 @@ const startEditing = syncManualLayout.enqueueActions(({ check, enqueue, system, 
   })
 })
 
-const ensureHotKey = syncManualLayout.enqueueActions(({ check, context, enqueue, self }) => {
+const ensureHotKey = syncManualLayout.enqueueActions(({ context, enqueue, self }) => {
   const hasUndo = context.history.length > 0
   const undoHotKey = self.getSnapshot().children['undoHotKey']
   if (undoHotKey && !hasUndo) {
@@ -240,7 +235,7 @@ const undo = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
   }
 })
 
-const emitOnChange = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
+const emitOnChange = syncManualLayout.enqueueActions(({ enqueue, system }) => {
   enqueue(cancelSync)
   const diagramActor = diagramActorRef(system)
   const parentContext = diagramActor.getSnapshot().context

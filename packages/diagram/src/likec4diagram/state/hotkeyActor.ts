@@ -2,7 +2,7 @@ import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
 import { type AnyEventObject, type CallbackActorLogic, type NonReducibleUnknown, fromCallback } from 'xstate'
 
-export type HotKeyEvent = { type: 'key.esc' | `key.arrow.${'left' | 'right'}` }
+export type HotKeyEvent = { type: 'key.esc' | `key.arrow.${'left' | 'right' | 'up' | 'down'}` }
 
 export interface HotkeyActorLogic extends CallbackActorLogic<AnyEventObject, NonReducibleUnknown, HotKeyEvent> {}
 
@@ -25,9 +25,21 @@ export const hotkeyActorLogic: HotkeyActorLogic = fromCallback(({ sendBack }: {
     }, {
       preventDefault: true,
     }],
+    ['ArrowUp', (event: KeyboardEvent) => {
+      event.stopPropagation()
+      sendBack({ type: 'key.arrow.up' })
+    }, {
+      preventDefault: true,
+    }],
     ['ArrowRight', (event: KeyboardEvent) => {
       event.stopPropagation()
       sendBack({ type: 'key.arrow.right' })
+    }, {
+      preventDefault: true,
+    }],
+    ['ArrowDown', (event: KeyboardEvent) => {
+      event.stopPropagation()
+      sendBack({ type: 'key.arrow.down' })
     }, {
       preventDefault: true,
     }],
