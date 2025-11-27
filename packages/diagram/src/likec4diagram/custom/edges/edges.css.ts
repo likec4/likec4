@@ -6,7 +6,10 @@ export const controlPointsContainer = css({
   pointerEvents: 'none',
   top: '0',
   left: '0',
-  mixBlendMode: 'overlay',
+  mixBlendMode: {
+    _dark: 'screen',
+    _light: 'multiply',
+  },
 })
 
 export const controlPoint = css({

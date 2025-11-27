@@ -53,6 +53,10 @@ export function IconRenderer(props) {
   }
   return jsx(IconComponent, props)
 }
+  
+if (import.meta.hot) {
+  import.meta.hot.accept()
+}
 `
 }
 
@@ -101,6 +105,9 @@ export function ProjectIcons({ projectId, ...props }) {
   const IconComponent = getProjectIcons(projectId)
   return jsx(IconComponent, props)
 }
+if (import.meta.hot) {
+  import.meta.hot.accept()
+}  
 `
   },
 } satisfies VirtualModule

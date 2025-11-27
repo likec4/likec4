@@ -178,7 +178,7 @@ export const RelationshipPopover = memo(() => {
 
 const getEdgeLabelElement = (edgeId: string, container: HTMLElement | null | undefined) => {
   return container?.querySelector<HTMLDivElement>(`.likec4-edge-label[data-edge-id="${edgeId}"]`) ??
-    container?.querySelector<SVGCircleElement>(`.react-flow__edge[data-id="${edgeId}"] .edge-center-point`) ??
+    container?.querySelector<SVGCircleElement>(`.likec4-edge-middle-point[data-edge-id="${edgeId}"]`) ??
     null
 }
 
@@ -230,24 +230,26 @@ const RelationshipPopoverInternal = ({
           offset(4),
           autoPlacement({
             crossAxis: true,
-            padding: POPOVER_PADDING,
+            // padding: POPOVER_PADDING,
             allowedPlacements: [
               'bottom-start',
+              'bottom-end',
+              'left-start',
               'top-start',
+              'top-end',
               'right-start',
               'right-end',
               'left-end',
             ],
           }),
           size({
-            padding: POPOVER_PADDING,
             apply({ availableHeight, availableWidth, elements }) {
               if (wasCanceled) {
                 return
               }
               Object.assign(elements.floating.style, {
-                maxWidth: `${clamp(roundDpr(availableWidth), { min: 200, max: 400 })}px`,
-                maxHeight: `${clamp(roundDpr(availableHeight), { min: 0, max: 500 })}px`,
+                maxWidth: `${clamp(roundDpr(availableWidth), { min: 220, max: 400 })}px`,
+                maxHeight: `${clamp(roundDpr(availableHeight), { min: 100, max: 500 })}px`,
               })
             },
           }),
@@ -309,7 +311,8 @@ const RelationshipPopoverInternal = ({
       styles={{
         viewport: {
           overscrollBehavior: 'contain',
-          minWidth: 180,
+          minWidth: 200,
+          minHeight: 40,
         },
       }}
       className={cx(
@@ -493,7 +496,7 @@ const Relationship = forwardRef<
               },
             }}
           >
-            <Markdown value={r.summary} fontSize={'sm'} />
+            <Markdown value={r.summary} fontSize={'sm'} textScale={0.875} />
           </Box>
         </>
       )}

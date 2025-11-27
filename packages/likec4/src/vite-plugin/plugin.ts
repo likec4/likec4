@@ -1,9 +1,9 @@
-import { invariant, isNonEmptyArray } from '@likec4/core'
+import { type ProjectId, type ViewChange, type ViewId, invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { relative } from 'node:path'
-import { isDeepEqual, map, pick } from 'remeda'
+import { isDeepEqual, map } from 'remeda'
 import k from 'tinyrainbow'
-import type { PluginOption } from 'vite'
+import type { MinimalPluginContextWithoutEnvironment, PluginOption, ViteDevServer } from 'vite'
 import { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
 import { d2Module, projectD2Module } from './virtuals/d2'
@@ -181,7 +181,12 @@ export function LikeC4VitePlugin({
     },
 
     configureServer(server) {
-      const readProjects = () => map(likec4.projects(), pick(['id', 'title']))
+      const readProjects = () =>
+        map(likec4.projects(), p => ({
+          id: p.id,
+          title: p.title,
+          folder: p.folder.fsPath,
+        }))
       let _projects = readProjects()
 
       const reloadModule = async (id: string) => {
@@ -228,6 +233,13 @@ export function LikeC4VitePlugin({
           }
         }
       })
+
+      enableEditingViaWS.call(this, {
+        logger,
+        likec4,
+        server,
+        reloadModule,
+      })
     },
 
     async buildEnd() {
@@ -236,4 +248,73 @@ export function LikeC4VitePlugin({
       }
     },
   } satisfies PluginOption
+}
+
+type EnableEditingViaWSParams = {
+  logger: ViteLogger
+  likec4: LikeC4LanguageServices
+  server: ViteDevServer
+  reloadModule: (id: string) => Promise<void>
+}
+function enableEditingViaWS(
+  this: MinimalPluginContextWithoutEnvironment,
+  {
+    logger,
+    likec4,
+    server,
+    reloadModule,
+  }: EnableEditingViaWSParams,
+) {
+  server.ws.on('likec4:view:onChange', async function onChange(data: {
+    projectId: ProjectId
+    viewId: ViewId
+    change: ViewChange
+  }) {
+    try {
+      logger.info([
+        k.green('view:onChange'),
+        k.dim('project') + ':',
+        data.projectId,
+        k.dim('view') + ':',
+        data.viewId,
+        k.dim('change') + ':',
+        data.change.op,
+      ].join(' '))
+      const result = await likec4.editor.applyChange(data)
+      if (!result.success) {
+        logger.error(`Failed to apply view change:\n${result.error}`)
+        server.ws.send({
+          type: 'error',
+          err: {
+            message: result.error,
+            stack: '',
+            name: 'LikeC4ViewChangeError',
+            plugin: 'vite-plugin-likec4',
+          },
+        })
+        return
+      }
+      logger.info([
+        k.green('view:onChange'),
+        '✅',
+      ].join(' '))
+      for (const projectModule of projectVirtuals) {
+        await reloadModule(projectModule.virtualId(data.projectId))
+      }
+    } catch (e) {
+      const error = e as Error
+      logger.error(`Failed to apply view change`, {
+        error,
+      })
+      server.ws.send({
+        type: 'error',
+        err: {
+          message: error.message,
+          stack: error.stack ?? '',
+          name: error.name,
+          plugin: 'vite-plugin-likec4',
+        },
+      })
+    }
+  })
 }

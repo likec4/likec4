@@ -76,6 +76,11 @@ export function useDiagramCompareLayout(): [
       switchLayout('manual')
     }
 
+    // When enabling compare while in manual layout, switch to auto layout
+    if (!state.isActive && nextIsActive && state.layout === 'manual') {
+      switchLayout('auto')
+    }
+
     actorRef.send({
       type: 'toggle.feature',
       feature: 'CompareWithLatest',

@@ -54,6 +54,8 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
     <m.div
       ref={ref}
       className={cx(
+        // This class is queried by RelationshipPopover to position near the edge label
+        'likec4-edge-label',
         edgeLabel({
           pointerEvents,
           isStepEdge: stepNum !== null,

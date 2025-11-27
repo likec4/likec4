@@ -20,7 +20,6 @@ export const edgeLabel = defineRecipe({
       flexDirection: 'column',
       alignItems: 'center',
       width: 'max-content',
-      lineHeight: '[1.2]',
       maxWidth: '100%',
       gap: '0.5',
       color: 'var(--xy-edge-label-color)',
@@ -60,13 +59,14 @@ export const edgeLabel = defineRecipe({
     label: {
       whiteSpaceCollapse: 'preserve-breaks',
       fontSize: '14px',
+      lineHeight: '1.2',
       margin: '0',
     },
     technology: {
       textAlign: 'center',
       whiteSpaceCollapse: 'preserve-breaks',
       fontSize: '11px',
-      lineHeight: '[1]',
+      lineHeight: '1',
       opacity: 0.75,
     },
   }),
