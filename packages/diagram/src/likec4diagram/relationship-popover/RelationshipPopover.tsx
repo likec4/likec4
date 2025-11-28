@@ -39,6 +39,7 @@ import {
 import { clamp, entries, filter, isEmpty, isTruthy, map, partition, pipe } from 'remeda'
 import { Markdown } from '../../base-primitives'
 import { Link } from '../../components/Link'
+import { MetadataSection } from '../../components/metadata/MetadataSection'
 import { PortalToContainer } from '../../components/PortalToContainer'
 import { useRootContainerRef } from '../../context'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
@@ -405,57 +406,11 @@ const Relationship = forwardRef<
   const navigateTo = onNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
   const links = r.links
 
-  // Build metadata tooltip content
   const metadataEntries = r.hasMetadata()
     ? entries(r.getMetadata()).sort(([a], [b]) => a.localeCompare(b))
     : null
-
   const metadataTooltipLabel = metadataEntries && (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-      <div
-        style={{
-          fontWeight: 600,
-          fontSize: '10px',
-          color: '#868e96',
-          marginBottom: '2px',
-          letterSpacing: '0.5px',
-          textTransform: 'uppercase',
-        }}>
-        Metadata
-      </div>
-      <div
-        style={{
-          borderTop: '1px solid rgba(0, 0, 0, 0.1)',
-          paddingTop: '6px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px',
-        }}>
-        {metadataEntries.map(([key, value]) => {
-          const displayValue = Array.isArray(value) ? value.join(', ') : value
-          return (
-            <div key={key} style={{ display: 'flex', gap: '12px', fontSize: '12px', lineHeight: '1.4' }}>
-              <span
-                style={{
-                  fontWeight: 600,
-                  minWidth: '110px',
-                  color: '#495057',
-                }}>
-                {key}:
-              </span>
-              <span
-                style={{
-                  color: '#212529',
-                  wordBreak: 'break-word',
-                  flex: 1,
-                }}>
-                {displayValue}
-              </span>
-            </div>
-          )
-        })}
-      </div>
-    </div>
+    <MetadataSection entries={metadataEntries} variant="tooltip" />
   )
 
   return (
