@@ -280,17 +280,15 @@ function collectRankConstraints<A extends AnyAux>(
     if (!isViewRuleRank(rule) || rule.targets.length === 0) {
       continue
     }
-    const predicates = rule.targets.map(elementExprToPredicate)
-    const seen = new Set<NodeId>()
-    for (const node of nodes) {
-      if (predicates.some(predicate => predicate(node))) {
-        seen.add(node.id)
-      }
-    }
-    if (seen.size === 0) {
+    const isTargeted = anyPass(rule.targets.map(elementExprToPredicate))
+    const nodesInRank = pipe(
+      nodes,
+      filter(isTargeted),
+      map(n => n.id)
+    )
+    if (!hasAtLeast(nodesInRank,2)) {
       continue
     }
-    const nodesInRank = [...seen]
     constraints.push({
       type: rule.rank,
       nodes: nodesInRank,
