@@ -103,7 +103,7 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
 }
 
 export interface ComputedRankConstraint {
-  type: 'same' | 'min' | 'max' | 'source' | 'sink'
+  type: RankValue
   nodes: scalar.NodeId[]
 }
 
