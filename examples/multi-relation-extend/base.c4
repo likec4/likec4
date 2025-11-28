@@ -1,0 +1,91 @@
+specification {
+  element component
+  element service
+  element database
+  // Declare tags used across examples so tag references can resolve
+  tag ops
+  tag perf
+  tag security
+  tag compliance
+  tag gateway
+  tag db
+  tag readonly
+  tag internal
+  tag empty_title
+  tag analytics
+  tag baseTag
+  tag audit
+  relationship async {
+    technology "gRPC Streaming"
+  }
+  relationship sync {
+    technology "HTTP/REST"
+  }
+}
+
+model {
+  component api {
+    title "API Gateway"
+  }
+
+  component frontend {
+    title "Frontend Application"
+  }
+
+  service authService {
+    title "Authentication Service"
+  }
+
+  database userDB {
+    title "User Database"
+  }
+
+  // Define base relations
+  // Test 1: No kind, title "Makes requests" - tests default/untyped relation extension
+  frontend -> api "Makes requests"
+
+  // Test 2: kind=sync, SAME title "Makes requests" - tests that kind differentiates relations with same title
+  frontend -[sync]-> api "Makes requests" {
+    metadata {
+      format 'JSON'
+    }
+  }
+
+  // Test 3: kind=async, different title - tests async relation with unique title
+  frontend -[async]-> api "Sends analytics data" {
+    metadata {
+      protocol 'gRPC'
+      batch_size '100'
+    }
+  }
+
+  api -> authService "Validates tokens" {
+    metadata {
+      protocol 'REST'
+    }
+  }
+
+  authService -> userDB "Queries users" {
+    metadata {
+      connection_type 'connection_pool'
+    }
+  }
+
+  // Test 5: Relation with base tags in header; extends add overlapping tags
+  // Expect: tags merged and deduplicated -> baseTag, security, ops, compliance
+  api -> userDB "Stores data" #baseTag #security
+
+  // Test 4: Empty string title vs no title
+  // Test 4a: No title at all
+  userDB -> authService
+
+  // Test 4b: Empty string title - should match Test 4a (both normalized to empty string)
+  userDB -> authService ""
+}
+
+views {
+  view index {
+    title "System Overview"
+    include *
+  }
+}

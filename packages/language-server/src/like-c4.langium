@@ -105,6 +105,7 @@ Model:
   name='model' '{'
     elements+=(
       ExtendElement |
+      ExtendRelation |
       Relation<true> |
       Element
     )*
@@ -162,6 +163,28 @@ ExtendElementBody:  '{'
 ;
 
 ExtendElementProperty:
+  LinkProperty |
+  MetadataProperty;
+
+ExtendRelation:
+  'extend' source=FqnRef
+  (
+    dotKind=RelationKindDotRef |
+    '-[' kind=[RelationshipKind] ']->' |
+    '->'
+  )
+  target=FqnRef
+  title=String?
+  body=ExtendRelationBody
+;
+
+ExtendRelationBody: '{'
+  tags=Tags?
+  props+=ExtendRelationProperty*
+'}'
+;
+
+ExtendRelationProperty:
   LinkProperty |
   MetadataProperty;
 

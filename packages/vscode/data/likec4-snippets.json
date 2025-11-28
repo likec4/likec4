@@ -7,50 +7,94 @@
   "model": {
     "prefix": ["m", "model"],
     "body": [
-			"model {",
-			"\t$0",
-			"}"
-		],
+      "model {",
+      "\t$0",
+      "}"
+    ],
     "description": "inserts model block"
   },
   "views": {
     "prefix": ["views"],
     "body": [
-			"views {",
-			"\t$0",
-			"}"
-		],
+      "views {",
+      "\t$0",
+      "}"
+    ],
     "description": "inserts views block"
   },
   "view": {
     "prefix": ["v", "view"],
     "body": [
-			"view ${2:view_${TM_FILENAME_BASE}_${CURRENT_SECOND}} of ${1:element} {",
-			"\ttitle '${3:Untitled}'",
-			"\t",
-			"\tinclude $0*",
-			"}"
-		],
+      "view ${2:view_${TM_FILENAME_BASE}_${CURRENT_SECOND}} of ${1:element} {",
+      "\ttitle '${3:Untitled}'",
+      "\t",
+      "\tinclude $0*",
+      "}"
+    ],
     "description": "inserts view block"
   },
   "dynamic view": {
     "prefix": ["dv", "dynamic"],
     "body": [
-			"dynamic view ${1:view_${TM_FILENAME_BASE}_${CURRENT_SECOND}} {",
-			"\ttitle '${2:Untitled}'",
-			"\t",
-			"\t$0",
-			"}"
-		],
+      "dynamic view ${1:view_${TM_FILENAME_BASE}_${CURRENT_SECOND}} {",
+      "\ttitle '${2:Untitled}'",
+      "\t",
+      "\t$0",
+      "}"
+    ],
     "description": "inserts dynamic view block"
   },
   "extend": {
     "prefix": ["ex", "extend"],
     "body": [
-			"extend ${1:element} {",
-			"\t$0",
-			"}"
-		],
+      "extend ${1:element} {",
+      "\t$0",
+      "}"
+    ],
     "description": "inserts extends block"
+  },
+  "extend relation": {
+    "prefix": ["exr", "extend-relation"],
+    "body": [
+      "extend ${1:source} -> ${2:target} \"${3:title}\" {",
+      "\tmetadata {",
+      "\t\t${4:key} '${5:value}'",
+      "\t}",
+      "}"
+    ],
+    "description": "inserts extend relation block"
+  },
+  "extend relation - no title": {
+    "prefix": ["exr-no-title", "extend-relation-no-title"],
+    "body": [
+      "extend ${1:source} -> ${2:target} {",
+      "\tmetadata {",
+      "\t\t${3:key} '${4:value}'",
+      "\t}",
+      "}"
+    ],
+    "description": "inserts extend relation block without a title"
+  },
+  "extend relation - with kind": {
+    "prefix": ["exr-kind", "extend-relation-kind"],
+    "body": [
+      "extend ${1:source} -[${2:kind}]-> ${3:target} \"${4:title}\" {",
+      "\tmetadata {",
+      "\t\t${5:key} '${6:value}'",
+      "\t}",
+      "}"
+    ],
+    "description": "inserts extend relation block with a relationship kind"
+  },
+  "extend relation - with kind, no title": {
+    "prefix": ["exr-kind-no-title", "extend-relation-kind-no-title"],
+    "body": [
+      "extend ${1:source} -[${2:kind}]-> ${3:target} {",
+      "\tmetadata {",
+      "\t\t${4:key} '${5:value}'",
+      "\t}",
+      "}"
+    ],
+    "description": "inserts extend relation block with a relationship kind and no title"
   }
 }

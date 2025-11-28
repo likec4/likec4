@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { ProjectId } from '@likec4/core'
 import { DefaultWeakMap, invariant, MultiMap } from '@likec4/core/utils'
 import { type LangiumDocument, type Stream, DocumentState, UriUtils } from 'langium'
@@ -131,6 +138,7 @@ export class LikeC4ModelParser {
       c4Elements: [],
       c4ExtendElements: [],
       c4ExtendDeployments: [],
+      c4ExtendRelations: [],
       c4Relations: [],
       c4Deployments: [],
       c4DeploymentRelations: [],

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as c4 from '@likec4/core'
 import {
   type MultiMap,
@@ -18,8 +25,10 @@ import {
   filter,
   flatMap,
   forEach,
+  hasAtLeast,
   indexBy,
   isDefined,
+  isEmpty,
   isNullish,
   isTruthy,
   keys,
@@ -29,12 +38,14 @@ import {
   pipe,
   prop,
   reduce,
+  unique,
 } from 'remeda'
 import type {
   ParsedAstView,
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
 import { logger } from '../../logger'
+import { stringHash } from '../../utils/stringHash'
 import type { Project } from '../../workspace/ProjectsManager'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
@@ -65,6 +76,10 @@ export function buildModelData(
   const metadataKeys = new Set<string>()
   const elementExtends = new MergedExtends()
   const deploymentExtends = new MergedExtends()
+
+  // Collect all relation extends - we'll match them by comparing source/target/kind/title
+  const relationExtends = docs.flatMap(doc => doc.c4ExtendRelations)
+  const matchedExtendIds = new Set<string>()
 
   const scanMetadataKeys = (obj?: { metadata?: Record<string, unknown> }) => {
     if (obj?.metadata) {
@@ -115,6 +130,73 @@ export function buildModelData(
         return false
       }
       return true
+    }),
+    map(rel => {
+      // Apply relation extends by matching source, target, kind, and title
+      // Generate a stable match key for this relation
+      const matchKey = stringHash(
+        'extend-relation',
+        FqnRef.flatten(rel.source),
+        FqnRef.flatten(rel.target),
+        rel.kind ?? 'default',
+        rel.title ?? '',
+      )
+
+      // Find all extends that match this relation
+      const relExtends = relationExtends.filter(ext => ext.id === matchKey)
+      if (relExtends.length === 0) {
+        return rel
+      }
+
+      // Mark these extends as matched
+      relExtends.forEach(ext => matchedExtendIds.add(ext.astPath))
+
+      // Merge all extends for this relation
+      const tags = rel.tags ? [...rel.tags] : []
+      const links = rel.links ? [...rel.links] : []
+      let metadata = rel.metadata ? { ...rel.metadata } : {}
+
+      for (const ext of relExtends) {
+        if (ext.tags) {
+          tags.push(...ext.tags)
+        }
+        if (ext.links) {
+          // Ensure links are unique based on both URL and title
+          for (const incomingLink of ext.links) {
+            const isDuplicate = links.some(existingLink =>
+              existingLink.url === incomingLink.url && (existingLink.title || '') === (incomingLink.title || '')
+            )
+            if (!isDuplicate) {
+              links.push(incomingLink)
+            }
+          }
+        }
+        if (ext.metadata) {
+          for (const [key, value] of Object.entries(ext.metadata)) {
+            const existingValue = metadata[key]
+            if (existingValue === undefined) {
+              metadata[key] = value
+            } else {
+              const existingArray = Array.isArray(existingValue) ? existingValue : [existingValue]
+              const incomingArray = Array.isArray(value) ? value : [value]
+              const merged = unique([...existingArray, ...incomingArray])
+              metadata[key] = merged.length === 1 ? merged[0]! : merged
+            }
+          }
+        }
+      }
+
+      // Apply unique after accumulating all values
+      const uniqueTags = unique(tags)
+      // Links are already de-duplicated by URL and title in the loop above
+      const uniqueLinks = links
+
+      return {
+        ...rel,
+        ...(hasAtLeast(uniqueTags, 1) && { tags: uniqueTags }),
+        ...(hasAtLeast(uniqueLinks, 1) && { links: uniqueLinks }),
+        ...(!isEmpty(metadata) && { metadata }),
+      }
     }),
     forEach(scanMetadataKeys),
     indexBy(prop('id')),
@@ -235,6 +317,13 @@ export function buildModelData(
   )
   if (parsedViews.some(isExtendsElementView)) {
     views = resolveRulesExtendedViews(views)
+  }
+
+  // Warn about unmatched relation extends
+  for (const ext of relationExtends) {
+    if (!matchedExtendIds.has(ext.astPath)) {
+      logger.warn(`Relation extend at ${ext.astPath} does not match any relation in the model`)
+    }
   }
 
   return {

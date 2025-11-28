@@ -1,0 +1,6 @@
+{
+  name: 'multi-relation-extend',
+  title: 'Multi Relation Extend',
+  description: 'Example demonstrating extend relation syntax'
+}
+

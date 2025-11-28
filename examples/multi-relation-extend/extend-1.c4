@@ -1,0 +1,74 @@
+// Operations team extends relations with monitoring and performance metadata
+model {
+  // Extend Test 1: No kind, "Makes requests" - should only extend the untyped relation
+  extend frontend -> api "Makes requests" {
+    #ops #perf                         // Tags: added by operations
+    metadata {
+      latency_p95 '150ms'              // New key
+      rate_limit '1000req/s'           // New key
+    }
+    link https://api.example.com/docs "API Documentation"
+    link https://api.example.com/docs "Developer Guide"
+  }
+
+  // Extend Test 2: kind=sync, "Makes requests" - should only extend the sync relation (NOT Test 1)
+  extend frontend -[sync]-> api "Makes requests" {
+    #ops                               // Tags: added by operations for sync path
+    metadata {
+      latency_p95 '80ms'               // Faster sync performance
+      cache_enabled 'true'             // New key
+    }
+  }
+
+  // Extend Test 3: kind=async, different title
+  extend frontend -[async]-> api "Sends analytics data" {
+    metadata {
+      latency_p95 '500ms'              // Different performance profile
+      compression 'gzip'               // New key
+    }
+  }
+
+  extend api -> authService "Validates tokens" {
+    #ops #gateway
+    metadata {
+      protocol ['REST', 'gRPC']        // Merges with 'REST' -> ['REST', 'gRPC']
+      timeout '5s'                     // New key
+      retry_policy 'exponential'       // New key
+    }
+  }
+
+  extend authService -> userDB "Queries users" {
+    #db #readonly
+    metadata {
+      connection_type 'connection_pool'  // Duplicate, will be de-duplicated to single string
+      max_connections '50'               // New key
+      query_timeout '3s'                 // New key
+    }
+  }
+
+  // Extend Test 4a: Extend relation with no title - matches 'userDB -> authService' with no title
+  extend userDB -> authService {
+    #db #internal
+    metadata {
+      response_time '20ms'               // New key
+      read_only 'true'                   // New key
+    }
+  }
+
+  // Extend Test 4b: Extend relation with empty title - should match 'userDB -> authService ""'
+  // This tests if empty string "" is treated the same as no title (they are)
+  extend userDB -> authService "" {
+    #empty_title #internal
+    metadata {
+      empty_title_test 'yes'             // New key
+      special_case 'empty_string'        // New key
+    }
+  }
+
+  // Extend Test 5 (part 1): Relation had base tags, we add overlapping tags (security) and new tag (ops)
+  // Expect final tags: baseTag, security, ops, compliance (after extend-2)
+  extend api -> userDB "Stores data" {
+    #ops #security
+  }
+}
+

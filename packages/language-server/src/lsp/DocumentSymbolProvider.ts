@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { nonexhaustive } from '@likec4/core'
 import { type AstNode, type LangiumDocument, AstUtils, DocumentState, GrammarUtils } from 'langium'
 import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
@@ -129,7 +136,11 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: astModel.name,
         range: cstModel.range,
         selectionRange: nameNode.range,
-        children: astModel.elements.flatMap(e => this.getElementsSymbol(e)),
+        children: astModel.elements.flatMap(e => {
+          // Skip ExtendRelation nodes as they don't need symbols
+          if (ast.isExtendRelation(e)) return []
+          return this.getElementsSymbol(e)
+        }),
       },
     ]
   }
