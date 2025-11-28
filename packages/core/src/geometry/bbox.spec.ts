@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BBox, RectBox } from './geometry'
+import { BBox, RectBox } from './bbox'
 
 /**
  * Thanks to Windsurf for this test suite.

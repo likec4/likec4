@@ -2,7 +2,7 @@ import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from './_common'
 import type { _layout, _stage, _type } from './const'
-import type { BBox, Point, XYPoint } from './geometry'
+import type { BBox, Point, XYPoint } from '../geometry'
 import type {
   BaseViewProperties,
   ViewAutoLayout,

@@ -6,6 +6,7 @@ export default defineBuildConfig({
     'src/builder/index.ts',
     'src/compute-view/relationships-view/index.ts',
     'src/compute-view/index.ts',
+    'src/geometry/index.ts',
     'src/model/connection/deployment/index.ts',
     'src/model/connection/model/index.ts',
     'src/model/connection/index.ts',
