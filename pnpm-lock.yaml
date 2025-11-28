@@ -73,8 +73,8 @@ catalogs:
       version: 4.1.17
   default:
     '@dagrejs/dagre':
-      specifier: 1.1.5
-      version: 1.1.5
+      specifier: 1.1.8
+      version: 1.1.8
     '@types/node':
       specifier: ~20.19.22
       version: 20.19.23
@@ -897,7 +897,7 @@ importers:
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
-        version: 1.1.5
+        version: 1.1.8
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -1017,7 +1017,7 @@ importers:
     dependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
-        version: 1.1.5
+        version: 1.1.8
       '@floating-ui/dom':
         specifier: catalog:react
         version: 1.7.4
@@ -1523,7 +1523,7 @@ importers:
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
-        version: 1.1.5
+        version: 1.1.8
       '@fontsource/ibm-plex-sans':
         specifier: ^5.2.8
         version: 5.2.8
@@ -2897,8 +2897,8 @@ packages:
     resolution: {integrity: sha512-WyOx8cJQ+FQus4Mm4uPIZA64gbk3Wxh0so5Lcii0aJifqwoVOlfFtorjLE0Hen4OYyHZMXDWqMmaQemBhgxFRQ==}
     engines: {node: '>=14'}
 
-  '@dagrejs/dagre@1.1.5':
-    resolution: {integrity: sha512-Ghgrh08s12DCL5SeiR6AoyE80mQELTWhJBRmXfFoqDiFkR458vPEdgTbbjA0T+9ETNxUblnD0QW55tfdvi5pjQ==}
+  '@dagrejs/dagre@1.1.8':
+    resolution: {integrity: sha512-5SEDlndt4W/LaVzPYJW+bSmSEZc9EzTf8rJ20WCKvjS5EAZAN0b+x0Yww7VMT4R3Wootkg+X9bUfUxazYw6Blw==}
 
   '@dagrejs/graphlib@2.2.4':
     resolution: {integrity: sha512-mepCf/e9+SKYy1d02/UkvSy6+6MoyXhVxP8lLDfA7BPE1X1d4dR0sZznmbM8/XVJ1GPM+Svnx7Xj6ZweByWUkw==}
@@ -10934,7 +10934,7 @@ snapshots:
 
   '@ctrl/tinycolor@4.1.0': {}
 
-  '@dagrejs/dagre@1.1.5':
+  '@dagrejs/dagre@1.1.8':
     dependencies:
       '@dagrejs/graphlib': 2.2.4
 
