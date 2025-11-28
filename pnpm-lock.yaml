@@ -1438,9 +1438,6 @@ importers:
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
-      vecti:
-        specifier: ^3.1.2
-        version: 3.1.2
       which:
         specifier: ^5.0.0
         version: 5.0.0
@@ -9029,9 +9026,6 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
-
-  vecti@3.1.2:
-    resolution: {integrity: sha512-PObuX+xZawNx4uFHVuDc2mkIRbN0PGjjI94c9K2HgQSlU4tFwiOYxSOeaoRa1vEe8s7AHqBroXBFFcQ/a0gMFw==}
 
   vfile-location@5.0.3:
     resolution: {integrity: sha512-5yXvWDEgqeiYiBe1lbxYF7UMAIm/IcopxMHrMQDq3nvKcjPKIhZklUKL+AE7J7uApI4kwe2snsK+eI6UTj9EHg==}
@@ -17979,8 +17973,6 @@ snapshots:
       spdx-expression-parse: 3.0.1
 
   vary@1.1.2: {}
-
-  vecti@3.1.2: {}
 
   vfile-location@5.0.3:
     dependencies:
