@@ -1,10 +1,12 @@
-import { filter, findLast, forEach, map, pipe } from 'remeda'
+import { anyPass, filter, findLast, forEach, hasAtLeast, map, pipe } from 'remeda'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import type { RelationshipModel } from '../../model/RelationModel'
 import {
   type AnyAux,
   type ComputedElementView,
+  type ComputedNode,
+  type ComputedRankConstraint,
   type ElementViewRule,
   type ModelGlobals,
   type NodeId,
@@ -12,6 +14,7 @@ import {
   isViewRuleAutoLayout,
   isViewRuleGroup,
   isViewRulePredicate,
+  isViewRuleRank,
   ModelExpression,
   ModelFqnExpr,
   ModelRelationExpr,
@@ -23,6 +26,7 @@ import { applyCustomElementProperties } from '../utils/applyCustomElementPropert
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildElementNotations } from '../utils/buildElementNotations'
+import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
@@ -223,6 +227,7 @@ export function computeElementView<A extends AnyAux>(
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
 
   const nodeNotations = buildElementNotations(nodes)
+  const ranks = collectRankConstraints(rules, nodes)
 
   return calcViewLayoutHash({
     ...view,
@@ -244,7 +249,34 @@ export function computeElementView<A extends AnyAux>(
         nodes: nodeNotations,
       },
     }),
+    ...(ranks.length > 0 && { ranks }),
   })
+}
+
+function collectRankConstraints<A extends AnyAux>(
+  rules: ElementViewRule<A>[],
+  nodes: ReadonlyArray<ComputedNode<A>>,
+): ComputedRankConstraint[] {
+  const constraints: ComputedRankConstraint[] = []
+  for (const rule of rules) {
+    if (!isViewRuleRank(rule) || rule.targets.length === 0) {
+      continue
+    }
+    const isTargeted = anyPass(rule.targets.map(elementExprToPredicate))
+    const nodesInRank = pipe(
+      nodes,
+      filter(isTargeted),
+      map(n => n.id),
+    )
+    if (!hasAtLeast(nodesInRank, 1)) { // rank value sink, source, min, max can admit one node
+      continue
+    }
+    constraints.push({
+      type: rule.rank,
+      nodes: nodesInRank,
+    })
+  }
+  return constraints
 }
 
 /**

@@ -9,6 +9,7 @@ import {
   issue577_valid,
   parsedModel as likec4model,
 } from '../__fixtures__'
+import { computedRankSnippetView } from '../__fixtures__/rank-snippet'
 import { GraphvizLayouter } from '../GraphvizLayoter'
 import { GraphvizWasmAdapter } from './GraphvizWasmAdapter'
 
@@ -62,4 +63,21 @@ describe('GraphvizWasmAdapter:', () => {
     // was valid
     expect(await dotLayout(issue577_valid)).toBeDefined()
   })
+
+  for (const direction of ['TB', 'BT', 'LR', 'RL'] as const) {
+    it(`keeps rank snippet nodes visible for ${direction} auto layout`, async ({ expect }) => {
+      const view = {
+        ...computedRankSnippetView,
+        autoLayout: {
+          ...computedRankSnippetView.autoLayout,
+          direction,
+        },
+      }
+
+      const diagram = await dotLayout(view)
+      const nodeIds = diagram.nodes.map(node => node.id).sort()
+
+      expect(nodeIds).toEqual(['A', 'B', 'C', 'D', 'E', 'F'])
+    })
+  }
 })

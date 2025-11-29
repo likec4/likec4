@@ -358,6 +358,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'group',
         'style',
         'autoLayout',
+        'rank',
       ],
       disposeAfterCheck: true,
     })
@@ -398,6 +399,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'group',
         'style',
         'autoLayout',
+        'rank',
       ],
       disposeAfterCheck: true,
     })
@@ -555,6 +557,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'group',
         'style',
         'autoLayout',
+        'rank',
       ],
       disposeAfterCheck: true,
     })
@@ -623,6 +626,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'group',
         'style',
         'autoLayout',
+        'rank',
       ],
       disposeAfterCheck: true,
     })

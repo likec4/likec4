@@ -54,6 +54,13 @@ export function isViewRuleGlobalPredicateRef(rule: object): rule is ViewRuleGlob
   return 'predicateId' in rule
 }
 
+export type RankValue = 'max' | 'min' | 'same' | 'sink' | 'source'
+
+export interface ViewRuleRank<Expr> {
+  targets: Expr[]
+  rank: RankValue
+}
+
 export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'
 export function isAutoLayoutDirection(autoLayout: unknown): autoLayout is AutoLayoutDirection {
   return autoLayout === 'TB' || autoLayout === 'BT' || autoLayout === 'LR' || autoLayout === 'RL'

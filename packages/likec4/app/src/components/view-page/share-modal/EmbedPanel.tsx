@@ -27,11 +27,11 @@ export const EmbedPanel = ({ diagram }: { diagram: DiagramView }) => {
   const padding = 20
 
   let location = router.buildLocation({
-    to: '/embed/$viewId',
+    to: '/embed/$viewId/', // '/' at the end added by Gemini 3, must have to pass typecheck
     params: { viewId: diagram.id },
     search: {
       padding,
-      theme: theme !== 'auto' ? theme : undefined,
+      ...(theme !== 'auto' ? { theme } : {}), // changed from "theme: theme !== 'auto' ? theme : undefined" by Gemini 3
     },
   }).href
 
