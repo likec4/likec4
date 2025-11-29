@@ -1010,14 +1010,15 @@ describe.concurrent('LikeC4ModelParser', () => {
           block root {
             block child {
               block grand
+              block grand2
             }
           }
         }
         views {
           view index {
             include *
-            {rank=same; root child}
-            {rank=max; root.child.grand}
+            rank same { root.child.grand, root.child.grand2 }
+            rank max { root.child.grand }
           }
         }
       `)
@@ -1030,12 +1031,12 @@ describe.concurrent('LikeC4ModelParser', () => {
           targets: [
             {
               ref: {
-                model: 'root',
+                model: 'root.child.grand',
               },
             },
             {
               ref: {
-                model: 'root.child',
+                model: 'root.child.grand2',
               },
             },
           ],

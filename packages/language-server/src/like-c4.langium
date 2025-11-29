@@ -348,9 +348,9 @@ ViewRule:
 ;
 
 ViewRuleRank:
-  '{' 'rank' Eq value=RankValue ';'?
-    targets+=FqnRef (','? targets+=FqnRef)*
-  ';'? '}'
+  'rank' value=RankValue? '{'
+    targets=FqnExpressions
+  '}'
 ;
 
 RankValue returns string:

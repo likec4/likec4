@@ -15,6 +15,7 @@ import type {
 } from './scalar'
 import type {
   BaseViewProperties,
+  RankValue,
   ViewAutoLayout,
   ViewManualLayout,
   ViewWithHash,

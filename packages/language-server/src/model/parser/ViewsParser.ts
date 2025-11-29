@@ -241,22 +241,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseViewRuleRank(astRule: ast.ViewRuleRank): c4.ElementViewRuleRank {
-      const targets = [] as c4.ModelFqnExpr.Any[]
-      for (const target of astRule.targets) {
-        try {
-          const ref = this.parseFqnRef(target)
-          if (!c4.FqnRef.isModelRef(ref)) {
-            rankLogger.debug`Skip non-model rank target: ${target.$cstNode?.text}`
-            continue
-          }
-          targets.push({ ref })
-        } catch (e) {
-          rankLogger.debug('Failed to parse rank target: {target}', {
-            target: target.$cstNode?.text,
-            error: loggable(e),
-          })
-        }
-      }
+      const targets = this.parseFqnExpressions(astRule.targets).filter((e): e is c4.ModelFqnExpr.Any =>
+        c4.ModelExpression.isFqnExpr(e as any)
+      )
       const rank = astRule.value ?? 'same'
       rankLogger.debug`Parsed rank constraint ${rank} with ${targets.length} target(s)`
       return {

@@ -1,4 +1,4 @@
-import { filter, findLast, forEach, map, pipe } from 'remeda'
+import { anyPass, filter, findLast, forEach, hasAtLeast, map, pipe } from 'remeda'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import type { RelationshipModel } from '../../model/RelationModel'
@@ -44,24 +44,6 @@ import { InOutRelationPredicate } from './predicates/relation-in-out'
 import { OutgoingExprPredicate } from './predicates/relation-out'
 import { WildcardPredicate } from './predicates/wildcard'
 import { buildNodes, NoFilter, NoWhere, toComputedEdges } from './utils'
-
-const rankDebugLogger: null | ((payload: { rank: string; nodes: NodeId[] }) => void) = (() => {
-  try {
-    if (typeof globalThis === 'undefined') {
-      return null
-    }
-    const flag = (globalThis as { __LIKEC4_DEBUG_RANK__?: unknown }).__LIKEC4_DEBUG_RANK__
-    if (!flag) {
-      return null
-    }
-    if (typeof console === 'undefined' || typeof console.debug !== 'function') {
-      return null
-    }
-    return (payload: { rank: string; nodes: NodeId[] }) => console.debug('[likec4][rank]', payload)
-  } catch {
-    return null
-  }
-})()
 
 function processElementPredicate(
   // ...args:
@@ -284,16 +266,15 @@ function collectRankConstraints<A extends AnyAux>(
     const nodesInRank = pipe(
       nodes,
       filter(isTargeted),
-      map(n => n.id)
+      map(n => n.id),
     )
-    if (!hasAtLeast(nodesInRank,2)) {
+    if (!hasAtLeast(nodesInRank, 1)) { // rank value sink, source, min, max can admit one node
       continue
     }
     constraints.push({
       type: rule.rank,
       nodes: nodesInRank,
     })
-    rankDebugLogger?.({ rank: rule.rank, nodes: nodesInRank })
   }
   return constraints
 }

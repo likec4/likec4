@@ -23,11 +23,11 @@ describe.concurrent('views-rank', () => {
     views {
       view {
         include *
-        { rank = same; user, system }
-        { rank = min; user }
-        { rank = max; system.backend }
-        { rank = source; user }
-        { rank = sink; system.frontend }
+        rank same { user, system }
+        rank min { user }
+        rank max { system.backend }
+        rank source { user }
+        rank sink { system.frontend }
       }
     }`
 
@@ -35,8 +35,8 @@ describe.concurrent('views-rank', () => {
     views {
       view {
         include *
-        { rank = same; user system }
-        { rank = same; system.backend system.frontend }
+        rank same { user, system }
+        rank same { system.backend, system.frontend }
       }
     }`
 
@@ -44,7 +44,15 @@ describe.concurrent('views-rank', () => {
     views {
       view {
         include *
-        { rank = same; system.backend, system.frontend }
+        rank same { system.backend, system.frontend }
+      }
+    }`
+
+  test('valid rank with default same value').valid`${model}
+    views {
+      view {
+        include *
+        rank { user, system }
       }
     }`
 
@@ -52,7 +60,7 @@ describe.concurrent('views-rank', () => {
     views {
       view {
         include *
-        { rank = invalid; user }
+        rank invalid { user }
       }
     }`
 
@@ -60,7 +68,7 @@ describe.concurrent('views-rank', () => {
     views {
       view {
         include *
-        { rank = same }
+        rank same { }
       }
     }`
 
@@ -68,7 +76,18 @@ describe.concurrent('views-rank', () => {
     views {
       view {
         include *
-        { rank = same; system.backend, other.service }
+        rank same { system.backend, other.service }
+      }
+    }`
+
+  test('valid rank min/max/source/sink with different containers').valid`${model}
+    views {
+      view {
+        include *
+        rank min { system.backend, other.service }
+        rank max { system.frontend, other.service }
+        rank source { user, system.backend }
+        rank sink { user, other.service }
       }
     }`
 
@@ -76,7 +95,7 @@ describe.concurrent('views-rank', () => {
     views {
       view {
         include *
-        { rank = same; * }
+        rank same { * }
       }
     }`
 
@@ -84,7 +103,7 @@ describe.concurrent('views-rank', () => {
     views {
       view {
         include *
-        { rank = same; element.tag=#tag }
+        rank same { element.tag=#mytag }
       }
     }`
 })
