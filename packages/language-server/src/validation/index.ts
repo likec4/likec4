@@ -35,7 +35,6 @@ import {
   checkTag,
 } from './specification'
 import { viewChecks } from './view'
-import { viewRuleRankChecks } from './view-checks'
 import {
   checkFqnExprWith,
   checkFqnRefExpr,
@@ -179,7 +178,6 @@ export function registerValidationChecks(services: LikeC4Services) {
     // Imported: checkImported(services),
     ColorLiteral: colorLiteralRuleChecks(services),
     DynamicViewDisplayVariantProperty: dynamicViewDisplayVariant(services),
-    ViewRuleRank: viewRuleRankChecks(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

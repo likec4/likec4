@@ -838,39 +838,3 @@ views {
 
 }
 ```
-## Rank constraints
-
-You can keep specific elements on the same horizontal/vertical level (or push them to the beginning/end of the layout)
-by adding an explicit `rank` block to the view.
-These rank constraints are forwarded to the Graphviz layout engine to achieve the desired layout effects.
-
-```likec4
-view checkoutFlow {
-  include *
-
-  // keep the API nodes aligned
-  rank same {
-    cloud.backend.api,
-    cloud.backend.billingApi,
-  }
-
-  // make customers appear at the beginning of the diagram, exclusive of the elements
-  rank source {
-    customer
-  }
-
-  // render reporting systems at the end, exclusive of the elements
-  rank sink {
-    analytics,
-    dataWarehouse
-  }
-}
-```
-
-- Allowed rank values: `same`, `min`, `max`, `source`, `sink`. If omitted, `same` is assumed.
-- Targets are regular `FqnRef`s, so you can reference nested elements just like in other rules. Non-existent or duplicate targets are ignored.
-- The constraint only affects elements that actually remain in the computed view. If a predicate later removes an element, it also disappears from the rank block.
-- Rank rules participate in manual tiling of compound nodes as well, so authored constraints combine with the automatic layout instead of fighting it.
-
-Use rank constraints sparingly—they are most helpful for anchoring critical columns/rows
-(e.g., ingress vs. egress nodes, semantic grouping in lieu of container) to achieve better layout.

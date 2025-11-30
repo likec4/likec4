@@ -32,26 +32,4 @@ describe('ElementViewPrinter', () => {
     const diagram = print(computedCloudView)
     await expect(diagram).toMatchFileSnapshot('__snapshots__/ElementViewPrinter-cloud.dot')
   })
-
-  it('renders explicit rank constraints', ({ expect }) => {
-    const rankedView = {
-      ...computedIndexView,
-      ranks: [
-        {
-          type: 'source',
-          nodes: ['customer', 'support'],
-        },
-        {
-          type: 'max',
-          nodes: ['cloud'],
-        },
-      ],
-    } as ComputedElementView
-
-    const diagram = print(rankedView)
-
-    expect(diagram).toContain('likec4_rankBlocks = 2')
-    expect(diagram).toMatch(/rank = "source";[\s\S]*"customer";[\s\S]*"support";/)
-    expect(diagram).toMatch(/rank = "max";[\s\S]*"cloud";/)
-  })
 })

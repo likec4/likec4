@@ -15,7 +15,6 @@ import type {
 } from './scalar'
 import type {
   BaseViewProperties,
-  RankValue,
   ViewAutoLayout,
   ViewManualLayout,
   ViewWithHash,
@@ -103,11 +102,6 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
   dir?: 'forward' | 'back' | 'both'
 }
 
-export interface ComputedRankConstraint {
-  type: RankValue
-  nodes: scalar.NodeId[]
-}
-
 interface BaseComputedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
   readonly [_stage]: 'computed'
   readonly autoLayout: ViewAutoLayout
@@ -129,7 +123,6 @@ export interface ComputedElementView<A extends AnyAux = AnyAux> extends BaseComp
   readonly [_type]: 'element'
   readonly viewOf?: aux.StrictFqn<A>
   readonly extends?: aux.StrictViewId<A>
-  readonly ranks?: ComputedRankConstraint[]
 }
 
 export interface ComputedDeploymentView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {

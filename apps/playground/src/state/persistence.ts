@@ -1,5 +1,5 @@
 import { Examples } from '$/examples'
-import { invariant } from '@likec4/core' // changed from @tanstack/react-router by Gemini 5
+import { invariant } from '@tanstack/react-router'
 import { first, keys } from 'remeda'
 import type { LocalWorkspace } from './types'
 
