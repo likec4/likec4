@@ -31,13 +31,13 @@ export function WebcomponentsPanel({ diagram }: { diagram: DiagramView }) {
   const webcomponentPreview = router.buildLocation(
     import.meta.env.DEV
       ? {
-        to: '/webcomponent/$/', // '/' at the end added by Gemini 3, must have to pass typecheck
+        to: '/webcomponent/$',
         params: { _splat: '/' },
         hash: diagram.id,
         search: true,
       }
       : {
-        to: '/webcomponent/$/', // '/' at the end added by Gemini 3, must have to pass typecheck
+        to: '/webcomponent/$',
         params: { _splat: diagram.id },
         search: true,
       },

@@ -25,7 +25,6 @@ export type WithViewsParser = ReturnType<typeof ViewsParser>
 type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ViewRuleGlobalStyle
 
 const logger = mainLogger.getChild('ViewsParser')
-const rankLogger = logger.getChild('rank')
 
 export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
   return class ViewsParser extends B {
@@ -168,9 +167,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       if (ast.isViewRuleGroup(astRule)) {
         return this.parseViewRuleGroup(astRule)
       }
-      if (ast.isViewRuleRank(astRule)) {
-        return this.parseViewRuleRank(astRule)
-      }
       nonexhaustive(astRule)
     }
 
@@ -237,18 +233,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         title: toSingleLine(astNode.title) ?? null,
         groupRules,
         ...this.parseStyleProps(astNode.props),
-      }
-    }
-
-    parseViewRuleRank(astRule: ast.ViewRuleRank): c4.ElementViewRuleRank {
-      const targets = this.parseFqnExpressions(astRule.targets).filter((e): e is c4.ModelFqnExpr.Any =>
-        c4.ModelExpression.isFqnExpr(e as any)
-      )
-      const rank = astRule.value ?? 'same'
-      rankLogger.debug`Parsed rank constraint ${rank} with ${targets.length} target(s)`
-      return {
-        rank,
-        targets,
       }
     }
 
