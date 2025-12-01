@@ -22,7 +22,7 @@ export const Route = createFileRoute('/w/$workspaceId')({
     if (Examples[id]) {
       return WorkspaceSessionPersistence.read(id) ?? {
         workspaceId: id,
-        activeFilename: Examples[id].currentFilename,
+        activeFilename: Examples[id].currentFilename!, // ! added by Gemini 5
         title: Examples[id].title,
         files: {
           ...Examples[id].files,
@@ -31,7 +31,7 @@ export const Route = createFileRoute('/w/$workspaceId')({
     }
     return WorkspacePersistence.read(id) ?? {
       workspaceId: id,
-      activeFilename: Examples.blank.currentFilename,
+      activeFilename: Examples.blank.currentFilename!, // ! added by Gemini 5
       ...Examples.blank,
     }
   },
