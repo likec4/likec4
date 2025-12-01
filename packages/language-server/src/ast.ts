@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as c4 from '@likec4/core'
 import { invariant, MultiMap, nonexhaustive } from '@likec4/core/utils'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
@@ -98,6 +105,14 @@ export interface ParsedAstElement {
 
 export interface ParsedAstExtend {
   id: c4.Fqn
+  astPath: string
+  tags?: c4.NonEmptyArray<c4.Tag> | null
+  links?: c4.NonEmptyArray<c4.Link> | null
+  metadata?: { [key: string]: string | string[] }
+}
+
+export interface ParsedAstExtendRelation {
+  id: c4.RelationId
   astPath: string
   tags?: c4.NonEmptyArray<c4.Tag> | null
   links?: c4.NonEmptyArray<c4.Link> | null
@@ -218,6 +233,7 @@ export interface LikeC4DocumentProps {
   c4Elements?: ParsedAstElement[]
   c4ExtendElements?: ParsedAstExtend[]
   c4ExtendDeployments?: ParsedAstExtend[]
+  c4ExtendRelations?: ParsedAstExtendRelation[]
   c4Relations?: ParsedAstRelation[]
   c4Globals?: ParsedAstGlobals
   c4Views?: ParsedAstView[]
@@ -253,6 +269,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Elements
     && !!doc.c4ExtendElements
     && !!doc.c4ExtendDeployments
+    && !!doc.c4ExtendRelations
     && !!doc.c4Relations
     && !!doc.c4Views
     && !!doc.c4Deployments

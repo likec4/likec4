@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { onNextTick } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { type AstNode, DocumentState } from 'langium'
@@ -22,7 +29,7 @@ import {
   notesPropertyRuleChecks,
   opacityPropertyRuleChecks,
 } from './property-checks'
-import { checkRelationBody, relationChecks } from './relation'
+import { checkRelationBody, extendRelationChecks, relationChecks } from './relation'
 import {
   checkDeploymentNodeKind,
   checkElementKind,
@@ -96,6 +103,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isElementRef,
   ast.isExtendElement,
   ast.isExtendDeployment,
+  ast.isExtendRelation,
   ast.isSpecificationElementKind,
   ast.isSpecificationRelationshipKind,
   ast.isSpecificationDeploymentNodeKind,
@@ -150,6 +158,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     DeploymentNode: deploymentNodeChecks(services),
     DeploymentRelation: deploymentRelationChecks(services),
     ExtendDeployment: extendDeploymentChecks(services),
+    ExtendRelation: extendRelationChecks(services),
     FqnRefExpr: checkFqnRefExpr(services),
     RelationExpr: checkRelationExpr(services),
     NotesProperty: notesPropertyRuleChecks(services),

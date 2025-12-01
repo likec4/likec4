@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { invariant, nonNullable } from '@likec4/core'
 import { type ProjectId, Fqn } from '@likec4/core/types'
 import { ancestorsFqn, compareNatural, DefaultWeakMap, MultiMap, sortNaturalByFqn } from '@likec4/core/utils'
@@ -208,7 +215,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       let _nested = [] as AstNodeDescriptionWithFqn[]
       if (isDefined(el.body) && !isEmpty(el.body.elements)) {
         for (const child of el.body.elements) {
-          if (!ast.isRelation(child)) {
+          if (!ast.isRelation(child) && !ast.isExtendRelation(child)) {
             try {
               _nested.push(...traverseNode(child, thisFqn))
             } catch (e) {
@@ -238,7 +245,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 
     for (const node of rootElements) {
       try {
-        if (ast.isRelation(node)) {
+        if (ast.isRelation(node) || ast.isExtendRelation(node)) {
           continue
         }
         traverseNode(node, null)

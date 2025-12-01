@@ -1,6 +1,6 @@
 ---
 title: Extending model
-description: How to extend the model with additional elements and properties from other files
+description: How to extend the model with additional elements, relations and properties from other files
 sidebar: 
   label: Extending model
   order: 6
@@ -249,5 +249,106 @@ model {
   tags: ['backend', 'rest', 'microservice'],
   owner: 'team-a',
   regions: ['us', 'eu']
+}
+```
+
+## Extend relation
+
+Similar to extending elements, you can extend relations to add metadata, tags, and links from separate files.
+
+<Aside type='caution'>
+**Deployment model limitation**: Extending relations is currently only supported for the logical model. Deployment model relations cannot be extended at this time.
+</Aside>
+
+Relations are uniquely identified by:
+- Source element
+- Target element
+- Relationship kind (if specified)
+- Title (if specified)
+
+```likec4
+// base.c4
+specification {
+  element component
+  relationship sync
+}
+
+model {
+  component frontend
+  component api
+  
+  // Untyped relation with title
+  frontend -> api "Makes requests"
+  
+  // Typed relation with same title (different relation!)
+  frontend -[sync]-> api "Makes requests"
+}
+
+// extend-ops.c4
+model {
+  // Extend the untyped relation
+  extend frontend -> api "Makes requests" {
+    metadata {
+      latency_p95 '150ms'
+      rate_limit '1000req/s'
+    }
+  }
+  
+  // Extend the sync relation (different from above!)
+  extend frontend -[sync]-> api "Makes requests" {
+    metadata {
+      latency_p95 '80ms'
+      cache_enabled 'true'
+    }
+  }
+}
+```
+
+<Aside type='note'>
+**Title normalization**: Relations without a title and relations with an empty string title (`""`) are treated identically. Both are normalized to an empty string internally. This means `extend a -> b` will match both `a -> b` and `a -> b ""`.
+</Aside>
+
+### Metadata merging
+
+Relation extends follow the same metadata merging rules as element extends:
+- New keys are added
+- Duplicate keys with different values become arrays
+- Duplicate keys with the same value are de-duplicated
+
+```likec4
+// base.c4
+model {
+  api -> database "Queries data" {
+    metadata {
+      protocol 'TCP'
+    }
+  }
+}
+
+// extend-1.c4
+model {
+  extend api -> database "Queries data" {
+    metadata {
+      protocol 'SSL'        // Creates array
+      timeout '5s'          // New key
+    }
+  }
+}
+
+// extend-2.c4
+model {
+  extend api -> database "Queries data" {
+    metadata {
+      protocol 'TLS'        // Adds to array
+      retry_policy 'exponential'  // New key
+    }
+  }
+}
+
+// Result:
+{
+  protocol: ['TCP', 'SSL', 'TLS'],
+  timeout: '5s',
+  retry_policy: 'exponential'
 }
 ```
