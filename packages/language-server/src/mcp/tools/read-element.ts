@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { invariant } from '@likec4/core'
 import * as z from 'zod/v3'
 import { likec4Tool } from '../utils'
@@ -22,6 +29,7 @@ Response (JSON object):
 - tags: string[] — assigned tags
 - project: string — project id this element belongs to
 - metadata: Record<string, string> — element metadata
+- links: Array<{ title: string|null, url: string, relative: string|null }> — external links associated with this element
 - shape: string — rendered shape
 - color: string — rendered color
 - children: string[] — ids (FQNs) of direct child elements
@@ -53,6 +61,13 @@ Example response:
   "tags": ["public"],
   "project": "default",
   "metadata": { "owner": "web" },
+  "links": [
+    {
+      "title": "Documentation",
+      "url": "https://docs.example.com/frontend",
+      "relative": null
+    }
+  ],
   "shape": "rounded-rectangle",
   "color": "#2F80ED",
   "children": ["shop.frontend.auth"],
@@ -104,6 +119,11 @@ Example response:
     tags: z.array(z.string()),
     project: z.string(),
     metadata: z.record(z.union([z.string(), z.array(z.string())])),
+    links: z.array(z.object({
+      title: z.string().nullable().describe('Optional link title'),
+      url: z.string().describe('Link URL'),
+      relative: z.string().nullable().describe('Relative path (if URL is relative to workspace root)'),
+    })).describe('External links associated with this element'),
     shape: z.string(),
     color: z.string(),
     children: z.array(z.string()).describe('Children of this element (Array of FQNs)'),
@@ -162,6 +182,11 @@ Example response:
     tags: [...element.tags],
     project: projectId,
     metadata: element.getMetadata(),
+    links: (element.links ?? []).map(link => ({
+      title: link.title ?? null,
+      url: link.url,
+      relative: link.relative ?? null,
+    })),
     shape: element.shape,
     color: element.color,
     children: [...element.children()].map(c => c.id),

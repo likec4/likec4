@@ -1,0 +1,56 @@
+// Security team extends relations with security metadata
+model {
+  // Extend Test 1: No kind, "Makes requests" - should only extend the untyped relation
+  extend frontend -> api "Makes requests" {
+    #security #compliance #ops         // Overlaps with ops/perf, adds security/compliance
+    metadata {
+      encryption 'TLS 1.3'             // New key
+      authentication 'OAuth2'          // New key
+    }
+    link https://api.example.com/docs "API Documentation"  // Duplicate title - should be deduplicated
+    link https://api.example.com/docs "Deployment Guide"   // Different title - should be kept
+    link https://security.example.com "Security Guidelines"
+  }
+
+  // Extend Test 2: kind=sync, "Makes requests" - should only extend the sync relation (NOT Test 1)
+  extend frontend -[sync]-> api "Makes requests" {
+    #security
+    metadata {
+      encryption 'TLS 1.2'             // Different encryption for sync
+      cors_enabled 'true'              // New key
+    }
+  }
+
+  // Extend Test 3: kind=async, different title
+  extend frontend -[async]-> api "Sends analytics data" {
+    #security #analytics
+    metadata {
+      encryption 'mTLS'                // Different security for analytics
+      data_classification 'internal'   // New key
+    }
+  }
+
+  extend api -> authService "Validates tokens" {
+    #security #gateway
+    metadata {
+      protocol 'MTLS'                  // Further extends protocol -> ['REST', 'gRPC', 'MTLS']
+      auth_method 'JWT'                // New key
+      rate_limit '500req/s'            // New key
+    }
+  }
+
+  extend authService -> userDB "Queries users" {
+    #db #audit
+    metadata {
+      encryption_at_rest 'AES-256'     // New key
+      access_control 'RBAC'            // New key
+      audit_logging 'enabled'          // New key
+    }
+  }
+
+  // Extend Test 5 (part 2): Add overlapping and new tags on the same relation
+  extend api -> userDB "Stores data" {
+    #baseTag #compliance
+  }
+}
+

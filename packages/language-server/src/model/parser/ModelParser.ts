@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
 import { exact, FqnRef } from '@likec4/core/types'
@@ -7,6 +14,7 @@ import {
   type LikeC4LangiumDocument,
   type ParsedAstElement,
   type ParsedAstExtend,
+  type ParsedAstExtendRelation,
   type ParsedAstRelation,
   ast,
   toRelationshipStyle,
@@ -28,7 +36,12 @@ function* streamModel(doc: LikeC4LangiumDocument) {
       relations.push(el)
       continue
     }
-    if (el.body && el.body.elements && el.body.elements.length > 0) {
+    // Skip ExtendRelation as it doesn't have child elements
+    if (ast.isExtendRelation(el)) {
+      yield el
+      continue
+    }
+    if (el.body && 'elements' in el.body && el.body.elements && el.body.elements.length > 0) {
       for (const child of el.body.elements) {
         traverseStack.push(child)
       }
@@ -59,6 +72,13 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
             const parsed = this.parseExtendElement(el)
             if (parsed) {
               doc.c4ExtendElements.push(parsed)
+            }
+            continue
+          }
+          if (ast.isExtendRelation(el)) {
+            const parsed = this.parseExtendRelation(el)
+            if (parsed) {
+              doc.c4ExtendRelations.push(parsed)
             }
             continue
           }
@@ -125,6 +145,45 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       if (!tags && isEmpty(metadata ?? {}) && isEmpty(links)) {
         return null
       }
+
+      return exact({
+        id,
+        astPath,
+        metadata,
+        tags,
+        links: isNonEmptyArray(links) ? links : null,
+      })
+    }
+
+    parseExtendRelation(astNode: ast.ExtendRelation): ParsedAstExtendRelation | null {
+      const source = this.parseFqnRef(astNode.source)
+      const target = this.parseFqnRef(astNode.target)
+      invariant(FqnRef.isModelRef(source) || FqnRef.isImportRef(source), 'Source must be a model reference')
+      invariant(FqnRef.isModelRef(target) || FqnRef.isImportRef(target), 'Target must be a model reference')
+
+      const tags = this.parseTags(astNode.body)
+      const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+      const astPath = this.getAstNodePath(astNode)
+      const links = this.parseLinks(astNode.body) ?? []
+
+      if (!tags && isEmpty(metadata ?? {}) && isEmpty(links)) {
+        return null
+      }
+
+      // Generate a stable relation ID based on source, target, kind, and title
+      // This allows extends to match specific relations between elements
+      const kind = (astNode.kind ?? astNode.dotKind?.kind)?.ref?.name as (c4.RelationshipKind | undefined)
+
+      // Normalize title the same way as parseRelation does
+      const { title = '' } = this.parseBaseProps({}, { title: astNode.title })
+
+      const id = stringHash(
+        'extend-relation',
+        FqnRef.flatten(source),
+        FqnRef.flatten(target),
+        kind ?? 'default',
+        title,
+      ) as c4.RelationId
 
       return exact({
         id,
