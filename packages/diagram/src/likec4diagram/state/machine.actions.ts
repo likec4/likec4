@@ -8,6 +8,7 @@ import {
   nonNullable,
 } from '@likec4/core'
 import type {
+  DiagramNode,
   Fqn,
   LayoutType,
   NodeId,
@@ -412,33 +413,30 @@ export const resetEdgesControlPoints = () =>
     }
   })
 
-export const notationsHighlight = (params?: { notation: ElementNotation; kind?: string }) =>
+export const notationsHighlight = () =>
   machine.assign(({ context, event }) => {
-    if (!params) {
-      assertEvent(event, 'notations.highlight')
-      params = {
-        ...event,
-      }
-    }
-    const notation = params.notation
-    const kinds = params.kind ? [params.kind] : notation.kinds
+    assertEvent(event, 'notations.highlight')
+
+    const { notation, kind } = event
+    const targetKinds = kind ? [kind] : notation.kinds
+
+    const shouldHighlight = (node: DiagramNode) =>
+      node.notation === notation.title &&
+      node.shape === notation.shape &&
+      node.color === notation.color &&
+      targetKinds.includes(node.kind)
+
     const xynodes = context.xynodes.map((n) => {
       const node = findDiagramNode(context, n.id)
-      if (
-        node &&
-        node.notation === notation.title &&
-        node.shape === notation.shape &&
-        node.color === notation.color &&
-        kinds.includes(node.kind)
-      ) {
-        return Base.setDimmed(n, false)
-      }
-      return Base.setDimmed(n, 'immediate')
+      const highlighted = node && shouldHighlight(node)
+      return Base.setDimmed(n, highlighted ? false : 'immediate')
     })
-    return {
-      xynodes,
-      xyedges: context.xyedges.map(Base.setDimmed('immediate')),
-    }
+
+    const xyedges = context.xyedges.map((edge) => {
+      return Base.setDimmed(edge, true)
+    })
+
+    return { xynodes, xyedges }
   })
 
 export const tagHighlight = () =>
