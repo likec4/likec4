@@ -2,10 +2,13 @@
 
 import type { SVGProps } from 'react'
 const SvgKibana = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <path fill="#f04e98" d="M112 0H12v48c17.3 0 33.54 4.453 47.73 12.188Zm0 0" />
-    <path fill="#343741" d="M12 48v67.152l47.73-54.96A99.4 99.4 0 0 0 12 48" />
-    <path fill="#00bfb3" d="m70.04 66.621-48.974 56.406L16.738 128h93.258c-5.121-25.21-19.758-46.945-39.957-61.379" />
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 328" {...props}>
+    <path fill="#F04E98" d="M256 0H0v294.79z" />
+    <path fill="#343741" d="M0 122.88v171.91L122.194 154.08C85.862 134.277 44.288 122.88 0 122.88" />
+    <path
+      fill="#00BFB3"
+      d="M148.59 170.54 23.2 314.945l-11.069 12.738h238.736C237.77 263.13 200.302 207.496 148.59 170.54"
+    />
   </svg>
 )
 export default SvgKibana

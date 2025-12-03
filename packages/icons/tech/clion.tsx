@@ -2,75 +2,43 @@
 
 import type { SVGProps } from 'react'
 const SvgCLion = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 256" {...props}>
     <defs>
-      <linearGradient
-        id="CLion_svg__a"
-        x1={39.01}
-        x2={66.51}
-        y1={23.27}
-        y2={23.27}
-        gradientTransform="rotate(.104)scale(1.21905)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0} stopColor="#ff318c" />
-        <stop offset={0.15} stopColor="#fb348c" />
-        <stop offset={0.28} stopColor="#f03c8c" />
-        <stop offset={0.42} stopColor="#de4a8c" />
-        <stop offset={0.54} stopColor="#c45d8b" />
-        <stop offset={0.67} stopColor="#a2778b" />
-        <stop offset={0.79} stopColor="#79958a" />
-        <stop offset={0.91} stopColor="#49b98a" />
-        <stop offset={1} stopColor="#21d789" />
+      <linearGradient id="CLion_svg__a" x1="0%" x2="115.015%" y1="50%" y2="50%">
+        <stop offset="0%" stopColor="#FF318C" />
+        <stop offset="15%" stopColor="#FB348C" />
+        <stop offset="28%" stopColor="#F03C8C" />
+        <stop offset="42%" stopColor="#DE4A8C" />
+        <stop offset="54%" stopColor="#C45D8B" />
+        <stop offset="67%" stopColor="#A2778B" />
+        <stop offset="79%" stopColor="#79958A" />
+        <stop offset="91%" stopColor="#49B98A" />
+        <stop offset="100%" stopColor="#21D789" />
       </linearGradient>
-      <linearGradient
-        id="CLion_svg__b"
-        x1={27.99}
-        x2={13.87}
-        y1={16.68}
-        y2={111.42}
-        gradientTransform="rotate(.104)scale(1.21905)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0.09} stopColor="#21d789" />
-        <stop offset={0.9} stopColor="#009ae5" />
+      <linearGradient id="CLion_svg__b" x1="53.816%" x2="43.444%" y1="17.257%" y2="151.488%">
+        <stop offset="9%" stopColor="#21D789" />
+        <stop offset="90%" stopColor="#009AE5" />
       </linearGradient>
-      <linearGradient
-        id="CLion_svg__c"
-        x1={92.05}
-        x2={-4.53}
-        y1={13.4}
-        y2={115.4}
-        gradientTransform="rotate(.104)scale(1.21905)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0.09} stopColor="#21d789" />
-        <stop offset={0.9} stopColor="#009ae5" />
+      <linearGradient id="CLion_svg__c" x1="93.049%" x2="-9.597%" y1="9.981%" y2="113.191%">
+        <stop offset="9%" stopColor="#21D789" />
+        <stop offset="90%" stopColor="#009AE5" />
       </linearGradient>
-      <linearGradient
-        id="CLion_svg__d"
-        x1={62.84}
-        x2={95.87}
-        y1={77.02}
-        y2={81.72}
-        gradientTransform="rotate(.104)scale(1.21905)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0.09} stopColor="#21d789" />
-        <stop offset={0.9} stopColor="#009ae5" />
+      <linearGradient id="CLion_svg__d" x1="32.388%" x2="91.688%" y1="46.039%" y2="52.244%">
+        <stop offset="9%" stopColor="#21D789" />
+        <stop offset="90%" stopColor="#009AE5" />
       </linearGradient>
     </defs>
-    <path fill="url(#CLion_svg__a)" d="M47.555 51.25 50.09 5.484l26.613 14.75Zm0 0" />
-    <path fill="url(#CLion_svg__b)" d="M47.555 51.25 50.09 5.484 16.297 26.781 5.484 91.527Zm0 0" />
+    <path fill="url(#CLion_svg__a)" d="M92.027 100.107 97.573 0l58.214 32.267z" />
+    <path fill="url(#CLion_svg__b)" d="M92.027 100.107 97.573 0l-73.92 46.587L0 188.213z" />
     <path
       fill="url(#CLion_svg__c)"
-      d="m120.188 40.559-15.06-30.61-28.425 10.285L47.555 51.25 5.485 91.527l37.949 27.621 47.703-43.02Zm0 0"
+      d="M250.907 76.72 217.973 9.76l-62.186 22.507-63.76 67.84L0 188.213l83.013 60.427 104.347-94.107z"
     />
-    <path fill="url(#CLion_svg__d)" d="M100.57 72.582v27.988H54.613l20.2 15.63 29.257 6.316 18.446-41.754Zm0 0" />
-    <path d="M27.43 27.43h73.14v73.14H27.43Zm0 0" />
+    <path fill="url(#CLion_svg__d)" d="M208 146.773V208H107.467l44.186 34.187 64 13.813L256 164.667z" />
+    <path d="M48 48h160v160H48z" />
     <path
-      fill="#fff"
-      d="M36.547 86.746h27.43v4.574h-27.43ZM64.063 36.5h6.093v22.418h12.008V64H64.062ZM34.597 50.434v-.075a14.06 14.06 0 0 1 4.156-10.234 14.06 14.06 0 0 1 10.266-4.078 14.28 14.28 0 0 1 10.898 4.266l-3.84 4.476a10.22 10.22 0 0 0-7.086-3.121c-4.656 0-8.008 3.863-8.008 8.605v.086c0 4.743 3.278 8.692 8.008 8.692 3.172 0 5.098-1.219 7.317-3.242l3.8 3.925a14.14 14.14 0 0 1-11.347 4.875 13.94 13.94 0 0 1-10.082-4.09 13.94 13.94 0 0 1-4.082-10.085"
+      fill="#FFF"
+      d="M67.947 177.76h60v10h-60zm60.186-109.92h13.334v49.04h26.266V128h-39.6zM63.676 98.815l.004-.655a30.773 30.773 0 0 1 31.547-31.307 31.23 31.23 0 0 1 23.84 9.334l-8.4 9.786a22.35 22.35 0 0 0-15.494-6.826c-10.073 0-17.356 8.266-17.517 18.481l-.003.532c0 10.373 7.174 19.013 17.52 19.013 6.934 0 11.147-2.666 16-7.093l8.32 8.587a30.93 30.93 0 0 1-24.826 10.666 30.533 30.533 0 0 1-30.99-30.518"
     />
   </svg>
 )

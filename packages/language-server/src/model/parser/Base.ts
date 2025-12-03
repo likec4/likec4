@@ -359,9 +359,13 @@ export class BaseParser {
     if (isArray(elementProps)) {
       const style = this.parseStyleProps(elementProps.find(ast.isElementStyleProperty)?.props)
       // Property on element has higher priority than from style
-      const iconProp = this.parseIconProperty(elementProps.find(ast.isIconProperty))
-      if (iconProp) {
-        style.icon = iconProp
+      try {
+        const iconProp = this.parseIconProperty(elementProps.find(ast.isIconProperty))
+        if (iconProp) {
+          style.icon = iconProp
+        }
+      } catch (err) {
+        logger.warn('Failed to parse icon property on element', { err })
       }
       return style
     }

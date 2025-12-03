@@ -63,8 +63,7 @@
   },
   "scripts": {
     "update-icons": "pnpm node scripts/update-icons.mjs && pnpm run generate",
-    "clean": "likec4ops clean aws azure gcp tech .tmp",
-    "postclean": "pnpm run update-icons",
+    "clean": "likec4ops clean .tmp",
     "generate": "pnpm node scripts/generate.mjs",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",

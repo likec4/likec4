@@ -2,40 +2,31 @@
 
 import type { SVGProps } from 'react'
 const SvgKtor = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 512 243" {...props}>
     <defs>
-      <linearGradient
-        id="Ktor_svg__a"
-        x1={24.941}
-        x2={52.306}
-        y1={24.941}
-        y2={52.306}
-        gradientTransform="rotate(.104)scale(1.21905)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0.296} stopColor="#00afff" />
-        <stop offset={0.694} stopColor="#5282ff" />
-        <stop offset={1} stopColor="#945dff" />
+      <linearGradient id="Ktor_svg__a" x1="23.965%" x2="74.641%" y1="23.965%" y2="74.641%">
+        <stop offset="29.6%" stopColor="#00AFFF" />
+        <stop offset="69.4%" stopColor="#5282FF" />
+        <stop offset="100%" stopColor="#945DFF" />
       </linearGradient>
-      <linearGradient
-        id="Ktor_svg__b"
-        x1={53.151}
-        x2={79.023}
-        y1={53.151}
-        y2={79.023}
-        gradientTransform="rotate(.104)scale(1.21905)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0.108} stopColor="#c757bc" />
-        <stop offset={0.173} stopColor="#cd5ca9" />
-        <stop offset={0.492} stopColor="#e8744f" />
-        <stop offset={0.716} stopColor="#f88316" />
-        <stop offset={0.823} stopColor="#ff8900" />
+      <linearGradient id="Ktor_svg__b" x1="26.206%" x2="74.117%" y1="26.206%" y2="74.117%">
+        <stop offset="10.8%" stopColor="#C757BC" />
+        <stop offset="17.3%" stopColor="#CD5CA9" />
+        <stop offset="49.2%" stopColor="#E8744F" />
+        <stop offset="71.6%" stopColor="#F88316" />
+        <stop offset="82.3%" stopColor="#FF8900" />
       </linearGradient>
     </defs>
-    <path fill="url(#Ktor_svg__a)" d="M80.457 47.543 47.543 14.629 14.629 47.543l32.914 32.914Zm0 0" />
-    <path fill="url(#Ktor_svg__b)" d="m47.543 80.457 32.914 32.914 32.914-32.914-32.914-32.914Zm0 0" />
-    <path d="M80.457 47.543H47.543v32.914h32.914Zm0 0" />
+    <path fill="url(#Ktor_svg__a)" d="m161.667 80.833-40.25-40.249L80.834 0l-42.68 42.68L0 80.833l80.833 80.834z" />
+    <path
+      fill="url(#Ktor_svg__b)"
+      d="m80.833 161.667 40.25 40.249 40.584 40.584 42.68-42.68 38.153-38.153-80.833-80.834z"
+    />
+    <path d="M161.667 80.833H80.833v80.834h80.834z" />
+    <path
+      fill="#27282C"
+      d="M312.036 160.523V138.23l7.392-8.69 21.661 30.983h18.715l-29.103-40.998 27.188-31.947h-17.37l-27.553 32.756h-.93V87.578h-15.612v72.945zm59.243-68.949v13.794h-8.893v11.176h8.893v28.967c0 10.813 5.482 15.214 19.336 15.214 2.53.004 5.057-.216 7.549-.657V149.2a36 36 0 0 1-4.446.252c-5.119 0-7.393-2.324-7.393-7.326v-25.582h11.839v-11.171h-11.839V91.574zm64.315 70.11c17.522 0 28.072-10.812 28.072-29.017 0-18.043-10.701-29.012-28.072-29.012s-28.073 11.015-28.073 29.012c0 18.15 10.545 29.018 28.073 29.018m0-11.625c-8.064 0-12.617-6.367-12.617-17.392 0-10.913 4.598-17.335 12.617-17.335 7.958 0 12.611 6.417 12.611 17.335 0 11.02-4.598 17.392-12.611 17.392m40.37 10.459h15.047v-31.135c0-7.831 5.634-12.637 13.855-12.637 2.43 0 5.947.405 7.134.809v-12.94c-1.288-.404-3.825-.657-5.891-.657-7.236 0-13.132 4.194-14.633 9.752h-.93v-8.842H475.97v55.655z"
+    />
   </svg>
 )
 export default SvgKtor

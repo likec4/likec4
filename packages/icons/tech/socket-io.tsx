@@ -2,44 +2,19 @@
 
 import type { SVGProps } from 'react'
 const SvgSocketio = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <g fill="#010101" fillRule="evenodd">
-      <path
-        fillRule="nonzero"
-        d="M63.951.001C28.696.001.001 28.696.001 63.951s28.695 63.95 63.95 63.95 63.95-28.695 63.95-63.95S99.206.001 63.95.001zm0 10.679c29.484 0 53.272 23.787 53.272 53.271s-23.788 53.272-53.272 53.272-53.272-23.787-53.272-53.272S34.467 10.68 63.951 10.68"
-        color="#000"
-        fontFamily="sans-serif"
-        fontWeight={400}
-        overflow="visible"
-        style={{
-          lineHeight: 'normal',
-          fontVariantLigatures: 'normal',
-          fontVariantPosition: 'normal',
-          fontVariantCaps: 'normal',
-          fontVariantNumeric: 'normal',
-          fontVariantAlternates: 'normal',
-          fontVariantEastAsian: 'normal',
-          fontFeatureSettings: 'normal',
-          fontVariationSettings: 'normal',
-          textIndent: 0,
-          textAlign: 'start',
-          textDecorationLine: 'none',
-          textDecorationStyle: 'solid',
-          textDecorationColor: '#000',
-          textTransform: 'none',
-          textOrientation: 'mixed',
-          whiteSpace: 'normal',
-          shapePadding: 0,
-          shapeMargin: 0,
-          inlineSize: 0,
-          isolation: 'auto',
-          mixBlendMode: 'normal',
-          solidColor: '#000',
-          solidOpacity: 1,
-        }}
-      />
-      <path d="M48.39 60.716c14.004-11.44 27.702-23.278 42.011-34.384-7.505 11.533-15.224 22.913-22.729 34.445-6.437.03-12.875.03-19.282-.061m11.838 6.376c6.468 0 12.905 0 19.342.092-14.095 11.38-27.732 23.309-42.071 34.384 7.505-11.533 15.224-22.943 22.729-34.476" />
-    </g>
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 256" {...props}>
+    <path
+      fill="#010101"
+      d="M96.447 7.382c32.267-8.275 67.929-3.453 96.386 14.11 35.84 21.433 59.238 61.976 59.833 103.71 1.31 42.15-20.659 83.944-55.963 106.865-39.293 26.433-93.648 27.446-133.775 2.322-40.9-24.41-64.774-73.645-58.641-120.916 4.94-49.95 43.52-94.005 92.16-106.09"
+    />
+    <path
+      fill="#FFF"
+      d="M91.505 27.803c60.964-24.41 135.74 20.658 142.05 86.028 9.824 58.82-38.995 118.593-98.59 120.32-56.677 5.656-111.449-42.39-113.056-99.304-4.227-46.08 26.136-91.803 69.596-107.044"
+    />
+    <path
+      fill="#010101"
+      d="M97.637 121.69c27.327-22.326 54.058-45.426 81.98-67.097-14.646 22.505-29.708 44.711-44.354 67.215-12.562.06-25.123.06-37.626-.119M120.737 134.132c12.621 0 25.183 0 37.745.179-27.505 22.206-54.117 45.484-82.099 67.096 14.646-22.505 29.708-44.77 44.354-67.275"
+    />
   </svg>
 )
 export default SvgSocketio

@@ -2,41 +2,8 @@
 
 import type { SVGProps } from 'react'
 const SvgMarkdown = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <path
-      d="M11.95 24.348c-5.836 0-10.618 4.867-10.618 10.681v57.942c0 5.814 4.782 10.681 10.617 10.681h104.102c5.835 0 10.617-4.867 10.617-10.681V35.03c0-5.814-4.783-10.681-10.617-10.681H14.898l-.002-.002zm-.007 9.543h104.108c.625 0 1.076.423 1.076 1.14v57.94c0 .717-.453 1.14-1.076 1.14H11.949c-.623 0-1.076-.423-1.076-1.14V35.029c0-.715.451-1.135 1.07-1.138"
-      color="#000"
-      fontFamily="sans-serif"
-      fontWeight={400}
-      overflow="visible"
-      style={{
-        lineHeight: 'normal',
-        fontVariantLigatures: 'normal',
-        fontVariantPosition: 'normal',
-        fontVariantCaps: 'normal',
-        fontVariantNumeric: 'normal',
-        fontVariantAlternates: 'normal',
-        fontVariantEastAsian: 'normal',
-        fontFeatureSettings: 'normal',
-        fontVariationSettings: 'normal',
-        textIndent: 0,
-        textAlign: 'start',
-        textDecorationLine: 'none',
-        textDecorationStyle: 'solid',
-        textDecorationColor: '#000',
-        textTransform: 'none',
-        textOrientation: 'mixed',
-        whiteSpace: 'normal',
-        shapePadding: 0,
-        shapeMargin: 0,
-        inlineSize: 0,
-        isolation: 'auto',
-        mixBlendMode: 'normal',
-        solidColor: '#000',
-        solidOpacity: 1,
-      }}
-    />
-    <path d="M20.721 84.1V43.9H32.42l11.697 14.78L55.81 43.9h11.696v40.2H55.81V61.044l-11.694 14.78-11.698-14.78V84.1H20.722zm73.104 0L76.28 64.591h11.697V43.9h11.698v20.69h11.698zm0 0" />
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 158" {...props}>
+    <path d="M238.371 157.892H18.395C8.431 157.892 0 149.462 0 139.497V18.395C0 8.431 8.431 0 18.395 0h219.21C247.569 0 256 8.431 256 18.395v121.102c0 9.964-7.665 18.395-17.629 18.395M18.395 12.263c-3.066 0-6.132 3.066-6.132 6.132v121.102c0 3.832 3.066 6.132 6.132 6.132h219.21c3.832 0 6.132-3.066 6.132-6.132V18.395c0-3.832-3.066-6.132-6.132-6.132zM36.79 121.102V36.79h24.527l24.527 30.66 24.527-30.66h24.527v84.312h-24.527V72.814l-24.527 30.66-24.527-30.66v48.288zm154.06 0-36.79-40.623h24.527V36.79h24.527v42.923h24.527z" />
   </svg>
 )
 export default SvgMarkdown
