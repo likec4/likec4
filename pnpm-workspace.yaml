@@ -73,7 +73,7 @@ catalogs:
     "@mantine/notifications": 8.3.9
     "@mantine/vanilla-extract": 8.3.9
   mcp:
-    "@modelcontextprotocol/sdk": ^1.20.1
+    "@modelcontextprotocol/sdk": ^1.22.0
   react:
     "@floating-ui/dom": ^1.7.4
     "@nanostores/media-query": 0.1.2

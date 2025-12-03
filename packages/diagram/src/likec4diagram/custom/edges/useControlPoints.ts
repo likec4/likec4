@@ -3,7 +3,7 @@ import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
-import { type Vector, vector } from '../../../utils/vector'
+import { type Vector, vector } from '@likec4/core/geometry'
 import {
   bezierControlPoints,
 } from '../../../utils/xyflow'
@@ -55,7 +55,7 @@ export function useControlPoints({
       // Is pointer above the current segment?
       if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
         // Calculate distance by approximating edge segment with a staight line
-        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).length() / fromCurrentToNext.length())
+        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew)) / fromCurrentToNext.length()
 
         if (distanceToEdge < minDistance) {
           minDistance = distanceToEdge

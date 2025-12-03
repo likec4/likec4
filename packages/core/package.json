@@ -51,6 +51,14 @@
         "default": "./dist/builder/index.mjs"
       }
     },
+    "./geometry": {
+      "sources": "./src/geometry/index.ts",
+      "default": {
+        "types": "./dist/geometry/index.d.mts",
+        "import": "./dist/geometry/index.mjs",
+        "default": "./dist/geometry/index.mjs"
+      }
+    },
     "./compute-view/relationships": {
       "sources": "./src/compute-view/relationships-view/index.ts",
       "default": {

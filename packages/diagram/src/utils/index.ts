@@ -1,5 +1,5 @@
-export { Vector, vector } from './vector'
-export type { VectorValue } from './vector'
+export { Vector, vector } from '@likec4/core/geometry'
+export type { VectorValue } from '@likec4/core/geometry'
 export {
   bezierControlPoints,
   bezierPath,
