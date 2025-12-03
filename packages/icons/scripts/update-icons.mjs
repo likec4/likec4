@@ -39,6 +39,8 @@ const techRenames = {
   'Apache-Groovy': 'groovy',
   'Apache-Cassandra': 'cassandra',
   'Apache-Airflow': 'airflow',
+  'Arch-Linux': 'archlinux',
+  'Argo-CD': 'argocd',
   'Alpine.js': 'alpinejs',
   'Adobe-Commerce-(Magneto)': 'magento',
   'AWS': 'amazon-web-services',
@@ -61,12 +63,15 @@ const techRenames = {
   'NixOS': 'nix',
   'Next.js': 'nextjs',
   'Nest.js': 'nestjs',
+  'Grunt.js': 'gruntjs',
+  'Gulp.js': 'gulpjs',
   'MongoDB': 'mongodb',
   'InfluxDB': 'influxdb',
   'LinkedIn': 'linkedin',
   'JetBrains': 'jetbrains',
   'JavaScript': 'javascript',
   'Jaeger-Tracing': 'jaeger',
+  'Jira': 'jira',
   'PuTTY': 'putty',
   'GitHub-Codespaces': 'github-codespaces',
   'GitHub-Actions': 'github-actions',
@@ -88,8 +93,11 @@ const techRenames = {
   'NW.js-(node-webkit)': 'nodewebkit',
   'GraphQL': 'graphql',
   'RocksDB': 'rocksdb',
+  'RaspberryPi': 'raspberry-pi',
+  'Rollup.js': 'rollupjs',
   'PostgresSQL': 'postgresql',
   'RabbitMQ': 'rabbitmq',
+  'Solid.js': 'solidjs',
   'Stack-Overflow': 'stackoverflow',
   'Simple-DirectMedia-Layer-(SDL)': 'sdl',
   'SonarQube': 'sonarqube',
@@ -110,9 +118,13 @@ const techRenames = {
   'LLVM': 'llvm',
   'Karate-Labs': 'karate',
   'LabVIEW': 'labview',
+  'Tailwind-CSS': 'tailwindcss',
+  'Three.js': 'threejs',
+  'Unreal-Engine': 'unrealengine',
   'SQLite': 'sqlite',
   'Vue.js': 'vue',
   'vSphere': 'vsphere',
+  'Visual-Studio': 'visual-studio',
   'WebAssembly': 'webassembly',
   'WebStorm': 'webstorm',
   'WordPress': 'wordpress',
@@ -195,10 +207,17 @@ await $`unzip .tmp/logos.zip  -d .tmp/svg-logos`
 await rm('.tmp/svg-logos/logos-main/logos/semantic-web.svg', { force: true, recursive: true })
 const logoRenames = {
   'html-5': 'html5',
+  'c-plusplus': 'cplusplus',
+  'c-sharp': 'csharp',
   'css-3': 'css3',
+  'css-3_official': 'css3-official',
 }
 for (const [oldName, newName] of Object.entries(logoRenames)) {
-  await $`mv .tmp/svg-logos/logos-main/logos/${oldName}.svg .tmp/svg-logos/logos-main/logos/${newName}.svg`
+  try {
+    await $`mv .tmp/svg-logos/logos-main/logos/${oldName}.svg .tmp/svg-logos/logos-main/logos/${newName}.svg`
+  } catch (e) {
+    console.warn(`Failed to rename logo ${oldName} to ${newName}: ${e}`)
+  }
 }
 // Remove AWS logos from svg-logos as we have a dedicated aws-icons set
 const awslogos = new fdir().glob('aws-*.svg').withFullPaths().crawl('.tmp/svg-logos/logos-main/logos').sync()
