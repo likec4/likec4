@@ -1,8 +1,6 @@
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
-/// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
-  BBox,
   invariant,
   nonexhaustive,
   nonNullable,
@@ -12,7 +10,6 @@ import type {
   Fqn,
   LayoutType,
   NodeId,
-  NodeNotation as ElementNotation,
   ViewId,
 } from '@likec4/core/types'
 import { type Rect, nodeToRect } from '@xyflow/system'
@@ -31,14 +28,11 @@ import {
   mergeXYNodesEdges,
   resetEdgeControlPoints,
 } from './assign'
-import { createViewChange } from './createViewChange'
 import { cancelFitDiagram, raiseFitDiagram, setViewport } from './machine.actions.layout'
 import { machine } from './machine.setup'
 import {
-  calcViewportForBounds,
   findDiagramEdge,
   findDiagramNode,
-  parseViewPaddings,
   typedSystem,
 } from './utils'
 

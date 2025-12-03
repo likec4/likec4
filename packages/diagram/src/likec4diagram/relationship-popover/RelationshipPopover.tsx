@@ -16,6 +16,7 @@ import {
   ActionIcon,
   Button,
   Divider,
+  Notification,
   ScrollAreaAutosize,
   Text,
   Tooltip as MantineTooltip,
@@ -211,7 +212,7 @@ const RelationshipPopoverInternal = ({
   onMouseLeave,
 }: RelationshipPopoverInternalProps) => {
   const ref = useRef<HTMLDivElement>(null)
-  const { enableNavigateTo, enableVscode } = useEnabledFeatures()
+  const { enableNavigateTo, enableVscode, enableCompareWithLatest } = useEnabledFeatures()
   const { onOpenSource } = useDiagramEventHandlers()
 
   const containerRef = useRootContainerRef()
@@ -345,6 +346,7 @@ const RelationshipPopoverInternal = ({
           paddingTop: '2',
         }}
       >
+        {enableCompareWithLatest && <EdgeDrifts diagramEdge={diagramEdge} />}
         <Button
           variant="default"
           color="gray"
@@ -381,6 +383,26 @@ const RelationshipPopoverInternal = ({
         )}
       </VStack>
     </ScrollAreaAutosize>
+  )
+}
+
+const EdgeDrifts = ({ diagramEdge }: { diagramEdge: DiagramEdge }) => {
+  const drifts = diagramEdge.drifts
+  if (!drifts || drifts.length === 0) {
+    return null
+  }
+  return (
+    <Notification
+      color="orange"
+      withBorder={false}
+      withCloseButton={false}
+      title="Changes:">
+      {drifts.map((drift) => (
+        <Text mt={2} size="sm" lh="xs" key={drift}>
+          - {drift}
+        </Text>
+      ))}
+    </Notification>
   )
 }
 
