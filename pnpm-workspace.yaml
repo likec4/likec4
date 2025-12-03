@@ -8,7 +8,7 @@ packages:
 catalog:
   "@dagrejs/dagre": 1.1.8
   "@types/node": ~20.19.22
-  graphology: ^0.25.4
+  graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
   oxlint: 1.29.0
