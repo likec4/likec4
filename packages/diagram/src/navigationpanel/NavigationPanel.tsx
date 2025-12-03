@@ -98,7 +98,7 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
       }}
       opened={opened}
       position="bottom-start"
-      trapFocus
+      trapFocus={opened}
       {...portalProps}
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       onDismiss={() => actor.send({ type: 'dropdown.dismiss' })}

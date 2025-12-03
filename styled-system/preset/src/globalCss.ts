@@ -149,23 +149,24 @@ export const globalCss: ExtendableGlobalCss = {
           transitionTimingFunction: 'cubic-bezier(0.50, 0, 0.2, 1)',
           transitionDuration: '400ms',
         },
-        '& :where(.react-flow__edgelabel-renderer, .react-flow__edges) > *': {
+        '& :where(.react-flow__edgelabel-renderer) > *': {
           mixBlendMode: {
             _dark: 'screen',
             _light: 'hard-light',
             _print: 'normal!',
           },
         },
-        '& :where(.react-flow__edgelabel-renderer, .react-flow__edges) > svg': {
+        '& :where(.react-flow__edges) > svg': {
           mixBlendMode: {
+            _dark: 'plus-lighter',
             _light: 'multiply',
+            _print: 'normal!',
           },
         },
         '&:has(.react-flow__node-seq-parallel) :where(.react-flow__edges > svg)': {
           mixBlendMode: {
             // _dark: 'plus-lighter',
             _light: 'color-burn',
-            _print: 'normal!',
           },
         },
         '& .react-flow__node-seq-parallel': {

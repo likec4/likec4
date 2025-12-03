@@ -172,7 +172,7 @@ export const semanticTokens = defineSemanticTokens({
           outline: {
             value: {
               _light: mantine.colors.orange[8],
-              _dark: mantine.colors.orange[6],
+              _dark: mixTransparent(mantine.colors.orange[6], 80),
             },
           },
         },
