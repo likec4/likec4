@@ -337,6 +337,219 @@ describe.concurrent('ProjectsManager', () => {
     )
   })
 
+  describe('include paths', () => {
+    it('should resolve include paths relative to project folder', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      const config = {
+        name: 'test-project',
+        include: ['../shared', '../common/specs'],
+      }
+      const folderUri = URI.parse('file:///test/workspace/src/test-project')
+
+      await projectsManager.registerProject({
+        config,
+        folderUri,
+      })
+
+      const project = projectsManager.getProject('test-project' as ProjectId)
+      expect(project.includePaths).toBeDefined()
+      expect(project.includePaths).toHaveLength(2)
+      expect(project.includePaths![0]!.toString()).toBe('file:///test/workspace/src/shared')
+      expect(project.includePaths![1]!.toString()).toBe('file:///test/workspace/src/common/specs')
+    })
+
+    it('should match documents from include paths to the correct project', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      // Register two projects so that unmatched docs go to 'default' instead of the only project
+      await projectsManager.registerProject({
+        config: {
+          name: 'proj-include-test',
+          include: ['../shared-include-test'],
+        },
+        folderUri: URI.parse('file:///test/include-test/src/proj-include-test'),
+      })
+
+      await projectsManager.registerProject({
+        config: { name: 'other-project' },
+        folderUri: URI.parse('file:///test/include-test/src/other-project'),
+      })
+
+      // Document in project folder
+      expect(projectsManager.belongsTo('file:///test/include-test/src/proj-include-test/model.c4')).toBe(
+        'proj-include-test',
+      )
+
+      // Document in include path
+      expect(projectsManager.belongsTo('file:///test/include-test/src/shared-include-test/common.c4')).toBe(
+        'proj-include-test',
+      )
+
+      // Document in nested include path folder
+      expect(projectsManager.belongsTo('file:///test/include-test/src/shared-include-test/nested/deep.c4')).toBe(
+        'proj-include-test',
+      )
+
+      // Document outside both project and include paths goes to default
+      expect(projectsManager.belongsTo('file:///test/include-test/src/unrelated/file.c4')).toBe('default')
+    })
+
+    it('should return undefined includePaths when not configured', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: { name: 'no-includes' },
+        folderUri: URI.parse('file:///test/workspace/src/no-includes'),
+      })
+
+      const project = projectsManager.getProject('no-includes' as ProjectId)
+      expect(project.includePaths).toBeUndefined()
+    })
+
+    it('should return empty includePaths when configured with empty array', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'empty-includes',
+          include: [],
+        },
+        folderUri: URI.parse('file:///test/workspace/src/empty-includes'),
+      })
+
+      const project = projectsManager.getProject('empty-includes' as ProjectId)
+      expect(project.includePaths).toBeUndefined()
+    })
+
+    it('getAllIncludePaths should return all configured include paths', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'project1',
+          include: ['../shared1'],
+        },
+        folderUri: URI.parse('file:///test/workspace/src/project1'),
+      })
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'project2',
+          include: ['../shared2', '../common'],
+        },
+        folderUri: URI.parse('file:///test/workspace/src/project2'),
+      })
+
+      await projectsManager.registerProject({
+        config: { name: 'project3' }, // No includes
+        folderUri: URI.parse('file:///test/workspace/src/project3'),
+      })
+
+      const allIncludes = projectsManager.getAllIncludePaths()
+      expect(allIncludes).toHaveLength(3)
+
+      expect(allIncludes).toContainEqual({
+        projectId: 'project1',
+        includePath: expect.objectContaining({
+          path: '/test/workspace/src/shared1',
+        }),
+      })
+      expect(allIncludes).toContainEqual({
+        projectId: 'project2',
+        includePath: expect.objectContaining({
+          path: '/test/workspace/src/shared2',
+        }),
+      })
+      expect(allIncludes).toContainEqual({
+        projectId: 'project2',
+        includePath: expect.objectContaining({
+          path: '/test/workspace/src/common',
+        }),
+      })
+    })
+
+    it('should prioritize project folder over include paths when matching documents', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      // project2 includes project1's folder as an include path
+      await projectsManager.registerProject({
+        config: { name: 'project1' },
+        folderUri: URI.parse('file:///test/workspace/src/project1'),
+      })
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'project2',
+          include: ['../project1'], // Overlaps with project1's folder
+        },
+        folderUri: URI.parse('file:///test/workspace/src/project2'),
+      })
+
+      // Documents in project1 folder should belong to project1, not project2
+      // (project folder takes precedence)
+      expect(projectsManager.belongsTo('file:///test/workspace/src/project1/model.c4')).toBe('project1')
+    })
+
+    it('should update include paths when project is reloaded with different config', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      const folderUri = URI.parse('file:///test/workspace/src/project1')
+
+      // Initial registration with include paths
+      await projectsManager.registerProject({
+        config: {
+          name: 'project1',
+          include: ['../shared1', '../shared2'],
+        },
+        folderUri,
+      })
+
+      let project = projectsManager.getProject('project1' as ProjectId)
+      expect(project.includePaths).toHaveLength(2)
+
+      // Reload with different include paths
+      await projectsManager.registerProject({
+        config: {
+          name: 'project1',
+          include: ['../new-shared'],
+        },
+        folderUri,
+      })
+
+      project = projectsManager.getProject('project1' as ProjectId)
+      expect(project.includePaths).toHaveLength(1)
+      expect(project.includePaths![0]!.toString()).toBe('file:///test/workspace/src/new-shared')
+    })
+
+    it('should remove include paths when project is reloaded without includes', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      const folderUri = URI.parse('file:///test/workspace/src/project1')
+
+      // Initial registration with include paths
+      await projectsManager.registerProject({
+        config: {
+          name: 'project1',
+          include: ['../shared'],
+        },
+        folderUri,
+      })
+
+      let project = projectsManager.getProject('project1' as ProjectId)
+      expect(project.includePaths).toHaveLength(1)
+
+      // Reload without include paths
+      await projectsManager.registerProject({
+        config: { name: 'project1' },
+        folderUri,
+      })
+
+      project = projectsManager.getProject('project1' as ProjectId)
+      expect(project.includePaths).toBeUndefined()
+    })
+  })
+
   it('should exclude node_modules', async ({ expect }) => {
     const { projectsManager } = await createMultiProjectTestServices({})
 

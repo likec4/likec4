@@ -76,7 +76,7 @@ const techRenames = {
   'IntelliJ-IDEA': 'IntellijIdea',
   'Protractor-Test': 'Protractor',
   'JUnit': 'Junit-',
-  'JQuery': 'Jquery-',
+  'jQuery': 'Jquery-',
   'TensorFlow': 'Tensorflow-',
   'TypeScript': 'Typescript-',
   'TeX': 'Tex-',
