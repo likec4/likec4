@@ -2,29 +2,59 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
   "name": "LikeC4 Dev",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  // Use specific Node version matching .tool-versions (22.21.1)
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22",
   "features": {
+    // dprint is already available globally (see Dockerfile)
     // "ghcr.io/devcontainers-contrib/features/dprint-asdf:2": {},
+    // turbo is already installed globally (see Dockerfile)
     // "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
+    // tsx is already available via pnpm (see Dockerfile)
     // "ghcr.io/devcontainers-contrib/features/tsx:1": {}
   },
   "containerEnv": {
     "TURBO_CACHE_DIR": "/workspace/.turbo",
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    // Prevent husky from installing git hooks during container setup
+    "HUSKY": "0"
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [
-    5173, // likec4 cli - dev
-    24678,
-    24679, // likec4 cli - HMR
-    51204, // vitest
-    61000,
-    61001, // examples-dev
-    62001,
-    62002 // likec4 cli - preview
-  ],
+  "forwardPorts": [5173, 24678, 24679, 51204, 61000, 61001, 62001, 62002],
+  "portsAttributes": {
+    "5173": {
+      "label": "likec4 cli - dev",
+      "onAutoForward": "notify"
+    },
+    "24678": {
+      "label": "likec4 cli - websocket"
+    },
+    "24679": {
+      "label": "likec4 cli - HMR",
+      "onAutoForward": "silent"
+    },
+    "51204": {
+      "label": "vitest",
+      "onAutoForward": "notify"
+    },
+    "61000": {
+      "label": "examples-dev"
+    },
+    "61001": {
+      "label": "examples-dev - HMR",
+      "onAutoForward": "silent"
+    },
+    "62001": {
+      "label": "likec4 cli - preview"
+    },
+    "62002": {
+      "label": "likec4 cli - preview - HMR",
+      "onAutoForward": "silent"
+    }
+  },
+  // Use 'onCreateCommand' to run commands when creating the container for the first time.
+  "onCreateCommand": "sudo chown -R node:node .pnpm-store node_modules .turbo",
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "sudo chown node .pnpm-store node_modules .turbo && pnpm install",
+  "postCreateCommand": "pnpm install --prefer-offline",
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
