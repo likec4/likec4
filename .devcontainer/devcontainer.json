@@ -3,13 +3,13 @@
 {
   "name": "LikeC4 Dev",
   // Use specific Node version matching .tool-versions (22.21.1)
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22.21",
   "features": {
     // dprint is already available globally (see Dockerfile)
     // "ghcr.io/devcontainers-contrib/features/dprint-asdf:2": {},
     // turbo is already installed globally (see Dockerfile)
     // "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
-    // tsx is already available via pnpm (see Dockerfile)
+    // tsx is already installed globally (see Dockerfile)
     // "ghcr.io/devcontainers-contrib/features/tsx:1": {}
   },
   "containerEnv": {
