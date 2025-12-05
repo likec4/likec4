@@ -201,7 +201,7 @@
     "html-to-image": "1.11.11",
     "is-inside-container": "^1.0.0",
     "json5": "catalog:utils",
-    "ky": "^1.8.2",
+    "ky": "^1.14.0",
     "langium": "catalog:langium",
     "merge-error-cause": "^5.0.2",
     "mkdirp": "^3.0.1",
