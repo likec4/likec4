@@ -1,6 +1,7 @@
-import { type NodeId, BBox } from '@likec4/core/types'
+import { type Fqn, type NodeId, BBox } from '@likec4/core/types'
 import { invariant, nonNullable } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
+import { isTruthy } from 'remeda'
 import { assertEvent, enqueueActions } from 'xstate'
 import { mergeXYNodesEdges } from './assign'
 import {
@@ -11,6 +12,14 @@ import {
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
 import { calcViewportForBounds, findCorrespondingNode, nodeRef } from './utils'
+
+export const findNodeByElementFqn = (
+  xynodes: Array<{ id: string; data: { modelFqn?: Fqn | null } }>,
+  elementFqn: Fqn,
+): NodeId | null => {
+  const node = xynodes.find(n => 'modelFqn' in n.data && n.data.modelFqn === elementFqn)
+  return node ? (node.id as NodeId) : null
+}
 
 const handleBrowserForwardBackward = () =>
   machine.assign(({ context, event }) => {
@@ -186,6 +195,12 @@ export const navigating = machine.createStateConfig({
           viewportChangedManually: false,
         })
 
+        // Check if we need to focus on a specific element after navigation (from search)
+        const focusOnElement = context.lastOnNavigate?.focusOnElement
+        const nodeToFocus = isTruthy(focusOnElement)
+          ? findNodeByElementFqn(event.xynodes, focusOnElement)
+          : null
+
         enqueue.assign({
           ...mergeXYNodesEdges(context, event),
           viewportChangedManually: false,
@@ -196,9 +211,18 @@ export const navigating = machine.createStateConfig({
           },
         })
 
-        enqueue(raiseFitDiagram({
-          delay: 100,
-        }))
+        if (nodeToFocus) {
+          // Focus on the searched element with auto-unfocus enabled
+          enqueue.raise({
+            type: 'focus.node',
+            nodeId: nodeToFocus,
+            autoUnfocus: true,
+          }, { delay: 150 })
+        } else {
+          enqueue(raiseFitDiagram({
+            delay: 100,
+          }))
+        }
       }),
     ],
   },
