@@ -988,6 +988,9 @@ importers:
       remark-gfm:
         specifier: 4.0.1
         version: 4.0.1
+      remark-github-markdown-alerts:
+        specifier: ^1.2.2
+        version: 1.2.2
       remark-parse:
         specifier: 11.0.0
         version: 11.0.0
@@ -8046,6 +8049,9 @@ packages:
   remark-gfm@4.0.1:
     resolution: {integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==}
 
+  remark-github-markdown-alerts@1.2.2:
+    resolution: {integrity: sha512-MN7n4idIttGa99pXo2F+9hLX+AeKFXbcDCLbL/oGomSbGEThg3goYlYgyJ+NAXGi2WrwRMtxQ1h594dq+8j4UQ==}
+
   remark-mdx@3.1.0:
     resolution: {integrity: sha512-Ngl/H3YXyBV9RcRNdlYsZujAmhsxwzxpDzpDEhFBVAGthS4GDgnctpDjgFl/ULx5UEDzqtW1cyBSNKqYYrqLBA==}
 
@@ -8811,6 +8817,9 @@ packages:
 
   unifont@0.6.0:
     resolution: {integrity: sha512-5Fx50fFQMQL5aeHyWnZX9122sSLckcDvcfFiBf3QYeHa7a1MKJooUy52b67moi2MJYkrfo/TWY+CoLdr/w0tTA==}
+
+  unist-builder@4.0.0:
+    resolution: {integrity: sha512-wmRFnH+BLpZnTKpc5L7O67Kac89s9HMrtELpnNaE6TAobq5DTZZs5YaTQfAZBA9bFPECx2uVAPO31c+GVug8mg==}
 
   unist-util-find-after@5.0.0:
     resolution: {integrity: sha512-amQa0Ep2m6hE2g72AugUItjbuM8X8cGQnFoHk0pGfrFeT9GZhzN5SW8nRsiGKK7Aif4CrACPENkA6P/Lw6fHGQ==}
@@ -16888,6 +16897,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  remark-github-markdown-alerts@1.2.2:
+    dependencies:
+      hast-util-from-html: 2.0.3
+      hast-util-to-html: 9.0.5
+      hastscript: 9.0.1
+      mdast-util-to-string: 4.0.0
+      unist-builder: 4.0.0
+      unist-util-visit: 5.0.0
+
   remark-mdx@3.1.0:
     dependencies:
       mdast-util-mdx: 3.0.0
@@ -17791,6 +17809,10 @@ snapshots:
       css-tree: 3.1.0
       ofetch: 1.5.1
       ohash: 2.0.11
+
+  unist-builder@4.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
 
   unist-util-find-after@5.0.0:
     dependencies:

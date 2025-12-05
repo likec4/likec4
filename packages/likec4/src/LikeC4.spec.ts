@@ -195,12 +195,6 @@ describe.concurrent('LikeC4', () => {
           ],
           "folder": "cloud-system",
         },
-        "default": {
-          "documents": [
-            "rank-for-better-layout/demo-rank-for-better-layout.c4",
-          ],
-          "folder": "examples",
-        },
         "diagrams-dev": {
           "documents": [
             "_spec.c4",
@@ -259,6 +253,12 @@ describe.concurrent('LikeC4', () => {
             "architecture.c4",
           ],
           "folder": "projectB",
+        },
+        "rank-for-better-layout": {
+          "documents": [
+            "demo-rank-for-better-layout.c4",
+          ],
+          "folder": "rank-for-better-layout",
         },
       }
     `)

@@ -23,6 +23,33 @@ export const markdownBlock = defineRecipe({
       _dark: mantine.colors.white,
     },
 
+    _dark: {
+      '--color-border-default': '#30363d',
+      '--color-accent-fg': '#58a6ff',
+      '--color-accent-emphasis': '#1f6feb',
+      '--color-danger-fg': '#f85149',
+      '--color-danger-emphasis': '#da3633',
+      '--color-attention-fg': '#d29922',
+      '--color-attention-emphasis': '#9e6a03',
+      '--color-done-fg': '#a371f7',
+      '--color-done-emphasis': '#8957e5',
+      '--color-success-fg': '#3fb950',
+      '--color-success-emphasis': '#238636',
+    },
+    _light: {
+      '--color-border-default': '#d0d7de',
+      '--color-accent-fg': '#0969da',
+      '--color-accent-emphasis': '#0969da',
+      '--color-danger-fg': '#d1242f',
+      '--color-danger-emphasis': '#cf222e',
+      '--color-attention-fg': '#9a6700',
+      '--color-attention-emphasis': '#9a6700',
+      '--color-done-fg': '#8250df',
+      '--color-done-emphasis': '#8250df',
+      '--color-success-fg': '#1a7f37',
+      '--color-success-emphasis': '#1f883d',
+    },
+
     fontSize: 'var(--text-fz-md)',
     lineHeight: 'var(--mantine-line-height)',
 
@@ -218,6 +245,77 @@ export const markdownBlock = defineRecipe({
       },
       '&:not(:first-child)': {
         marginTop: 'var(--typography-spacing)',
+      },
+    },
+    '& .markdown-alert': {
+      borderLeft: '.25em solid var(--borderColor-default, var(--color-border-default))',
+      color: 'inherit',
+      marginBottom: 'var(--typography-spacing)',
+
+      paddingLeft: '1em',
+      paddingRight: '.5em',
+
+      '&:last-child': {
+        marginBottom: '0!important',
+      },
+      '& .markdown-alert-title': {
+        alignItems: 'center',
+        display: 'flex',
+        fontSize: 'var(--text-fz-md)',
+        fontWeight: '500',
+        lineHeight: '1.25',
+      },
+      '& .markdown-alert-title svg': {
+        marginRight: [
+          '8px!important',
+          'var(--base-size-8,8px) !important',
+        ],
+        fill: 'currentColor',
+      },
+      '&.markdown-alert-note': {
+        borderLeftColor: 'var(--borderColor-accent-emphasis,var(--color-accent-emphasis))',
+      },
+      '&.markdown-alert-note .markdown-alert-title': {
+        color: [
+          'var(--color-accent-fg)',
+          'var(--fgColor-accent,var(--color-accent-fg))',
+        ],
+      },
+      '&.markdown-alert-tip': {
+        borderLeftColor: 'var(--borderColor-success-emphasis,var(--color-success-emphasis))',
+      },
+      '&.markdown-alert-tip .markdown-alert-title': {
+        color: [
+          'var(--color-success-fg)',
+          'var(--fgColor-success,var(--color-success-fg))',
+        ],
+      },
+      '&.markdown-alert-important': {
+        borderLeftColor: 'var(--borderColor-done-emphasis,var(--color-done-emphasis))',
+      },
+      '&.markdown-alert-important .markdown-alert-title': {
+        color: [
+          'var(--color-done-fg)',
+          'var(--fgColor-done,var(--color-done-fg))',
+        ],
+      },
+      '&.markdown-alert-warning': {
+        borderLeftColor: 'var(--borderColor-attention-emphasis,var(--color-attention-emphasis))',
+      },
+      '&.markdown-alert-warning .markdown-alert-title': {
+        color: [
+          'var(--color-attention-fg)',
+          'var(--fgColor-attention,var(--color-attention-fg))',
+        ],
+      },
+      '&.markdown-alert-caution': {
+        borderLeftColor: 'var(--borderColor-danger-emphasis,var(--color-danger-emphasis))',
+      },
+      '&.markdown-alert-caution .markdown-alert-title': {
+        color: [
+          'var(--color-danger-fg)',
+          'var(--fgColor-danger,var(--color-danger-fg))',
+        ],
       },
     },
   },

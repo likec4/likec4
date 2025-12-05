@@ -171,4 +171,70 @@ code block
       `"<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr><tr><td>Cell 3</td><td>Cell 4</td></tr></tbody></table>"`,
     )
   })
+
+  describe('GFM Alerts', () => {
+    it('should convert NOTE alert to HTML', () => {
+      const markdown = `
+> [!NOTE]
+> This is a note.
+`
+      expect(markdownToHtml(markdown)).toMatchInlineSnapshot(
+        `"<div class="markdown-alert markdown-alert-note"><div class="markdown-alert-title"><span class="markdown-alert-icon"></span>Note</div><div class="markdown-alert-content"><p>This is a note.</p></div></div>"`,
+      )
+    })
+
+    it('should convert TIP alert to HTML', () => {
+      const markdown = `
+> [!TIP]
+> This is a tip.
+`
+      expect(markdownToHtml(markdown)).toMatchInlineSnapshot(
+        `"<div class="markdown-alert markdown-alert-tip"><div class="markdown-alert-title"><span class="markdown-alert-icon"></span>Tip</div><div class="markdown-alert-content"><p>This is a tip.</p></div></div>"`,
+      )
+    })
+
+    it('should convert IMPORTANT alert to HTML', () => {
+      const markdown = `
+> [!IMPORTANT]
+> This is important.
+`
+      expect(markdownToHtml(markdown)).toMatchInlineSnapshot(
+        `"<div class="markdown-alert markdown-alert-important"><div class="markdown-alert-title"><span class="markdown-alert-icon"></span>Important</div><div class="markdown-alert-content"><p>This is important.</p></div></div>"`,
+      )
+    })
+
+    it('should convert WARNING alert to HTML', () => {
+      const markdown = `
+> [!WARNING]
+> This is a warning.
+`
+      expect(markdownToHtml(markdown)).toMatchInlineSnapshot(
+        `"<div class="markdown-alert markdown-alert-warning"><div class="markdown-alert-title"><span class="markdown-alert-icon"></span>Warning</div><div class="markdown-alert-content"><p>This is a warning.</p></div></div>"`,
+      )
+    })
+
+    it('should convert CAUTION alert to HTML', () => {
+      const markdown = `
+> [!CAUTION]
+> This is a caution.
+`
+      expect(markdownToHtml(markdown)).toMatchInlineSnapshot(
+        `"<div class="markdown-alert markdown-alert-caution"><div class="markdown-alert-title"><span class="markdown-alert-icon"></span>Caution</div><div class="markdown-alert-content"><p>This is a caution.</p></div></div>"`,
+      )
+    })
+
+    it('should handle multiline alert', () => {
+      const markdown = `
+> [!WARNING]
+> This is a warning.
+> With a second line.
+`
+      const result = markdownToHtml(markdown)
+      expect(result).toMatchInlineSnapshot(`
+        "<div class="markdown-alert markdown-alert-warning"><div class="markdown-alert-title"><span class="markdown-alert-icon"></span>Warning</div><div class="markdown-alert-content"><p>[!WARNING]
+        This is a warning.
+        With a second line.</p></div></div>"
+      `)
+    })
+  })
 })
