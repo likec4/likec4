@@ -89,17 +89,16 @@ export const navigating = machine.createStateConfig({
 
         invariant(xyflow, 'xyflow is not initialized')
 
-        // Make 70% zoom step towards the target viewport if zooming out,
-        // and 30% if zooming in, to make the transition smoother
+        // Make 80% zoom step towards the target viewport if zooming out,
+        // and 40% if zooming in, to make the transition smoother
         const calcZoomTowardsNextViewport = (nextViewport: Viewport) => {
           const zoom = xyflow.getZoom()
-          const coef = nextViewport.zoom < zoom ? 0.7 : 0.3
+          const coef = nextViewport.zoom < zoom ? 0.8 : 0.4
           return zoom + (nextViewport.zoom - zoom) * coef
         }
 
         const fromHistory = history[currentIndex]
         if (fromHistory && fromHistory.viewId === event.view.id) {
-          console.log('Navigating: fromHistory', fromHistory)
           enqueue.assign({
             ...mergeXYNodesEdges(context, event),
             dynamicViewVariant: fromHistory.dynamicViewVariant ?? context.dynamicViewVariant,

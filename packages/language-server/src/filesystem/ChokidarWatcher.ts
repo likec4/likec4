@@ -67,8 +67,8 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
           await this.services.workspace.DocumentBuilder.update([URI.file(path)], [])
         } else if (isManualLayoutFile(path)) {
           logger.debug`manual layout file changed: ${path}`
-          // TODO: optimize to only reload manual layouts instead of all projects
-          await this.services.workspace.ProjectsManager.reloadProjects()
+          const projectId = this.services.workspace.ProjectsManager.belongsTo(URI.file(path))
+          await this.services.workspace.ProjectsManager.rebuidProject(projectId)
         } else {
           logger.warn`Unknown file change: ${path}`
         }

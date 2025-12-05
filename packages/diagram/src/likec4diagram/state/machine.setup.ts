@@ -280,6 +280,16 @@ export const machine = setup({
       context.features.enableRelationshipDetails,
     'not readonly': ({ context }) => !isReadOnly(context),
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
+    'is same view': ({ context, event }) => {
+      assertEvent(event, ['update.view', 'navigate.to'])
+      if (event.type === 'update.view') {
+        return context.view.id === event.view.id
+      }
+      if (event.type === 'navigate.to') {
+        return context.view.id === event.viewId
+      }
+      nonexhaustive(event.type)
+    },
     'is another view': ({ context, event }) => {
       assertEvent(event, ['update.view', 'navigate.to'])
       if (event.type === 'update.view') {

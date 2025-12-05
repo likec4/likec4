@@ -1,6 +1,7 @@
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { type DependencyList, useCallback, useEffect, useRef } from 'react'
+import type { Subscription } from 'xstate'
 import type { DiagramApi } from '../likec4diagram/state/diagram-api'
 import type {
   DiagramActorSnapshot,
@@ -8,6 +9,7 @@ import type {
   DiagramEmittedEvents,
 } from '../likec4diagram/state/types'
 import { useDiagram, useDiagramActorRef } from './safeContext'
+import { useCallbackRef } from './useCallbackRef'
 
 export { useDiagram, useDiagramActorRef }
 
@@ -30,11 +32,12 @@ export function useDiagramContext<T = unknown>(
   deps?: DependencyList,
 ): T {
   const actorRef = useDiagramActorRef()
-  const select = useCallback((s: DiagramActorSnapshot) => selector(s.context), deps ?? [])
+  const selectorRef = useCallbackRef(selector)
+  const select = useCallback((s: DiagramActorSnapshot) => selectorRef(s.context), deps ?? [])
   return useXstateSelector(actorRef, select, compare)
 }
 
-type PickEmittedEvent<T> = T extends DiagramEmittedEvents['type'] ? DiagramEmittedEvents & { type: T } : never
+type PickEmittedEvent<T> = T extends DiagramEmittedEvents['type'] ? DiagramEmittedEvents & { type: T } : unknown
 
 /**
  * Subscribe to diagram emitted events
@@ -45,20 +48,30 @@ type PickEmittedEvent<T> = T extends DiagramEmittedEvents['type'] ? DiagramEmitt
  * })
  * ```
  */
-export function useOnDiagramEvent<T extends DiagramEmittedEvents['type']>(
+export function useOnDiagramEvent<T extends DiagramEmittedEvents['type'] | '*'>(
   event: T,
   callback: (event: PickEmittedEvent<T>) => void,
+  options?: { once?: boolean },
 ): void {
   const actorRef = useDiagramActorRef()
-  const callbackRef = useRef(callback)
-  callbackRef.current = callback
+  const callbackRef = useCallbackRef(callback)
+  const wasCalled = useRef(false)
+  const once = options?.once ?? false
 
   useEffect(() => {
-    const subscription = actorRef.on(event, (payload) => {
-      callbackRef.current(payload as PickEmittedEvent<T>)
+    if (once && wasCalled.current) {
+      return
+    }
+    let subscription: Subscription | null = actorRef.on<T>(event, (payload) => {
+      callbackRef(payload as PickEmittedEvent<T>)
+      wasCalled.current = true
+      if (once) {
+        subscription?.unsubscribe()
+        subscription = null
+      }
     })
     return () => {
-      subscription.unsubscribe()
+      subscription?.unsubscribe()
     }
-  }, [actorRef, event])
+  }, [actorRef, event, once])
 }

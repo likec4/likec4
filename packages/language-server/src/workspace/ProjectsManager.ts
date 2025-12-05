@@ -540,10 +540,15 @@ export class ProjectsManager {
         await this.rebuidProject(projectId, ct)
       })
     }
+    logger.info`rebuild project ${projectId}`
     // reset default project cache
     this.#defaultProject = undefined
 
     const project = this.#projects.find(p => p.id === projectId) ?? this.default
+    if (project.id !== projectId) {
+      logger.warn`Project ${projectId} not found, rebuilding default project ${project.id}`
+    }
+    const log = logger.getChild(project.id)
     const folder = project.folder
     const includePathStrings = project.includePathsAsStrings ?? []
     const docs = this.services.workspace.LangiumDocuments
@@ -567,16 +572,13 @@ export class ProjectsManager {
       .toArray()
     if (docs.length > 0) {
       this.reset()
-      const projectId = project.id
-      logger.info('rebuild documents of project {projectId}: {docs}', {
-        projectId,
+      log.info('rebuild documents: {docs}', {
         docs: docs.length,
       })
       await this.services.workspace.DocumentBuilder
         .update(docs, [], cancelToken)
         .catch(error => {
-          logger.warn('Failed to rebuild project {projectId}', {
-            projectId,
+          log.warn('Failed to rebuild project', {
             error,
           })
         })

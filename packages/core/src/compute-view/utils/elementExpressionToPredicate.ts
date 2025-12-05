@@ -1,11 +1,10 @@
 import {
+  type Predicate,
   FqnRef,
   ModelFqnExpr,
   whereOperatorAsPredicate,
 } from '../../types'
 import { nonexhaustive, parentFqn } from '../../utils'
-
-type Predicate<T> = (x: T) => boolean
 
 export function elementExprToPredicate<T extends { id: string; tags: readonly string[]; kind: string }>(
   target: ModelFqnExpr.Any,

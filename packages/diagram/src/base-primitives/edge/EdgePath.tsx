@@ -1,9 +1,9 @@
 import type { DiagramEdge } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
+import { edgePath } from '@likec4/styles/recipes'
 import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
-import { cssEdgePath, edgePathBg, markerContext } from './edge.css'
 import { arrowTypeToMarker, EdgeMarkers } from './EdgeMarkers'
 
 type Data = UndefinedOnPartialDeep<
@@ -63,17 +63,8 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
   } else if (isDashed) {
     strokeDasharray = '8,10'
   }
-  // if (isLooseReduce) {
-  //   strokeDasharray = undefined
-  // }
 
-  // const isAnimated = (animated || data.hovered || data.active) && !data.dimmed
-  // if (isLooseReduce && isAnimated) {
-  //   style = {
-  //     ...style,
-  //     animationName: 'none',
-  //   }
-  // }
+  const classes = edgePath()
 
   return (
     <>
@@ -97,30 +88,26 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
       )}
       <circle
         className={cx(
-          'edge-center-point',
-          css({
-            visibility: 'hidden',
-            offsetDistance: '50%',
-          }),
+          // This class is queried by RelationshipPopover to position in the middle of the edge
+          'likec4-edge-middle-point',
+          classes.middlePoint,
         )}
+        data-edge-id={id}
         style={{
           offsetPath: `path("${svgPath}")`,
         }}
-        cx={0}
-        cy={0}
-        r={2} />
+      />
 
-      <g className={markerContext} onPointerDown={onEdgePointerDown}>
+      <g className={classes.markersCtx} onPointerDown={onEdgePointerDown}>
         <defs>
           {MarkerStart && <MarkerStart id={'start' + id} />}
           {MarkerEnd && <MarkerEnd id={'end' + id} />}
         </defs>
         <path
-          key={'edge-path-bg'}
           className={cx(
             'react-flow__edge-path',
             'hide-on-reduced-graphics',
-            edgePathBg,
+            classes.pathBg,
             isDragging && css({ display: 'none' }),
           )}
           d={svgPath}
@@ -128,12 +115,11 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
           strokeLinecap={'round'}
         />
         <path
-          key={'edge-path'}
           ref={svgPathRef}
           className={cx(
             'react-flow__edge-path',
+            classes.path,
             selectable && 'react-flow__edge-interaction',
-            cssEdgePath,
           )}
           d={svgPath}
           style={style}

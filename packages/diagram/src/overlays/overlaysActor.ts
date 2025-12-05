@@ -143,6 +143,7 @@ const openElementDetails = () =>
     enqueue.spawnChild('elementDetails', {
       id,
       input: event,
+      syncSnapshot: true,
     })
     enqueue.assign({
       seq: context.seq + 1,
@@ -172,6 +173,7 @@ const openRelationshipDetails = () =>
     enqueue.spawnChild('relationshipDetails', {
       id,
       input: event,
+      syncSnapshot: true,
     })
     enqueue.assign({
       seq: context.seq + 1,
@@ -201,6 +203,7 @@ const openRelationshipsBrowser = () =>
     enqueue.spawnChild('relationshipsBrowser', {
       id,
       input: event,
+      syncSnapshot: true,
     })
     enqueue.assign({
       seq: context.seq + 1,

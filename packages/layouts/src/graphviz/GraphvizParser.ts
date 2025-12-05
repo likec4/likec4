@@ -1,6 +1,5 @@
 import {
   type _type,
-  type Any,
   type BBox as LabelBBox,
   type ComputedEdge,
   type ComputedView,

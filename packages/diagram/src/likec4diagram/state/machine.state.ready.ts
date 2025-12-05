@@ -1,4 +1,3 @@
-import { BBox } from '@likec4/core'
 import { emit, sendTo, spawnChild, stopChild } from 'xstate/actions'
 import { and } from 'xstate/guards'
 import {
@@ -24,11 +23,10 @@ import {
   onEdgeMouseLeave,
   onNodeMouseEnter,
   onNodeMouseLeave,
-  openElementDetails,
+  openOverlay,
   raiseFitDiagram,
   resetEdgesControlPoints,
   resetLastClickedNode,
-  sendSynced,
   setViewport,
   startEditing,
   stopEditing,
@@ -36,93 +34,14 @@ import {
   tagHighlight,
   undimEverything,
   updateFeatures,
-  updateXYNodesEdges,
+  updateView,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
 import { focused } from './machine.state.ready.focused'
 import { idle } from './machine.state.ready.idle'
 import { printing } from './machine.state.ready.printing'
 import { walkthrough } from './machine.state.ready.walkthrough'
-import { calcViewportForBounds, typedSystem } from './utils'
-
-const updateView = () =>
-  machine.enqueueActions(
-    ({ enqueue, event, context, self }) => {
-      if (event.type !== 'update.view') {
-        console.warn(`Ignoring unexpected event type: ${event.type} in action 'update.view'`)
-        return
-      }
-      const nextView = event.view
-      const isAnotherView = nextView.id !== context.view.id
-
-      if (isAnotherView) {
-        console.warn('updateView called for another view - ignoring', { event })
-        return
-      }
-
-      enqueue(updateXYNodesEdges())
-
-      if (event.source === 'internal') {
-        return
-      }
-
-      enqueue(sendSynced())
-
-      let recenter = !context.viewportChangedManually
-
-      if (context.toggledFeatures.enableCompareWithLatest === true && context.view._layout !== nextView._layout) {
-        if (nextView._layout === 'auto' && context.viewportOnAutoLayout) {
-          enqueue(
-            setViewport({
-              viewport: context.viewportOnAutoLayout,
-              duration: 0,
-            }),
-          )
-          return
-        }
-        // If switching to manual layout, restore previous manual layout viewport
-        if (nextView._layout === 'manual' && context.viewportOnManualLayout) {
-          enqueue(
-            setViewport({
-              viewport: context.viewportOnManualLayout,
-              duration: 0,
-            }),
-          )
-          return
-        }
-      }
-
-      // Check if dynamic view mode changed
-      recenter = recenter || (
-        nextView._type === 'dynamic' &&
-        context.view._type === 'dynamic' &&
-        nextView.variant !== context.view.variant
-      )
-
-      // Check if comparing layouts is enabled and layout changed
-      recenter = recenter || (
-        context.toggledFeatures.enableCompareWithLatest === true &&
-        !!nextView._layout &&
-        context.view._layout !== nextView._layout
-      )
-
-      if (recenter) {
-        enqueue(cancelFitDiagram())
-        const nextViewport = calcViewportForBounds(
-          context,
-          event.view.bounds,
-        )
-        let zoom = Math.min(nextViewport.zoom, context.viewport.zoom)
-        const center = BBox.center(event.view.bounds)
-        context.xyflow!.setCenter(
-          Math.round(center.x),
-          Math.round(center.y),
-          { zoom },
-        )
-        enqueue(raiseFitDiagram())
-      }
-    },
-  )
+import { typedSystem } from './utils'
 
 // Main ready state with all its substates and transitions
 export const ready = machine.createStateConfig({
@@ -188,28 +107,13 @@ export const ready = machine.createStateConfig({
       ],
     },
     'open.elementDetails': {
-      guard: 'enabled: ElementDetails',
-      actions: openElementDetails(),
+      actions: openOverlay(),
     },
     'open.relationshipsBrowser': {
-      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event, self }) => ({
-        type: 'open.relationshipsBrowser',
-        subject: event.fqn,
-        viewId: context.view.id,
-        scope: 'view' as const,
-        closeable: true,
-        enableChangeScope: true,
-        enableSelectSubject: true,
-        openSourceActor: self,
-      })),
+      actions: openOverlay(),
     },
     'open.relationshipDetails': {
-      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event, self }) => ({
-        type: 'open.relationshipDetails',
-        viewId: context.view.id,
-        openSourceActor: self,
-        ...event.params,
-      })),
+      actions: openOverlay(),
     },
     'open.source': {
       guard: 'enabled: OpenSource',

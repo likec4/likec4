@@ -16,6 +16,7 @@ import {
   ActionIcon,
   Button,
   Divider,
+  Notification,
   ScrollAreaAutosize,
   Text,
   Tooltip as MantineTooltip,
@@ -185,7 +186,7 @@ export const RelationshipPopover = memo(() => {
 
 const getEdgeLabelElement = (edgeId: string, container: HTMLElement | null | undefined) => {
   return container?.querySelector<HTMLDivElement>(`.likec4-edge-label[data-edge-id="${edgeId}"]`) ??
-    container?.querySelector<SVGCircleElement>(`.react-flow__edge[data-id="${edgeId}"] .edge-center-point`) ??
+    container?.querySelector<SVGCircleElement>(`.likec4-edge-middle-point[data-edge-id="${edgeId}"]`) ??
     null
 }
 
@@ -211,7 +212,7 @@ const RelationshipPopoverInternal = ({
   onMouseLeave,
 }: RelationshipPopoverInternalProps) => {
   const ref = useRef<HTMLDivElement>(null)
-  const { enableNavigateTo, enableVscode } = useEnabledFeatures()
+  const { enableNavigateTo, enableVscode, enableCompareWithLatest } = useEnabledFeatures()
   const { onOpenSource } = useDiagramEventHandlers()
 
   const containerRef = useRootContainerRef()
@@ -237,24 +238,26 @@ const RelationshipPopoverInternal = ({
           offset(4),
           autoPlacement({
             crossAxis: true,
-            padding: POPOVER_PADDING,
+            // padding: POPOVER_PADDING,
             allowedPlacements: [
               'bottom-start',
+              'bottom-end',
+              'left-start',
               'top-start',
+              'top-end',
               'right-start',
               'right-end',
               'left-end',
             ],
           }),
           size({
-            padding: POPOVER_PADDING,
             apply({ availableHeight, availableWidth, elements }) {
               if (wasCanceled) {
                 return
               }
               Object.assign(elements.floating.style, {
-                maxWidth: `${clamp(roundDpr(availableWidth), { min: 200, max: 400 })}px`,
-                maxHeight: `${clamp(roundDpr(availableHeight), { min: 0, max: 500 })}px`,
+                maxWidth: `${clamp(roundDpr(availableWidth), { min: 220, max: 400 })}px`,
+                maxHeight: `${clamp(roundDpr(availableHeight), { min: 100, max: 500 })}px`,
               })
             },
           }),
@@ -316,7 +319,8 @@ const RelationshipPopoverInternal = ({
       styles={{
         viewport: {
           overscrollBehavior: 'contain',
-          minWidth: 180,
+          minWidth: 200,
+          minHeight: 40,
         },
       }}
       className={cx(
@@ -342,6 +346,7 @@ const RelationshipPopoverInternal = ({
           paddingTop: '2',
         }}
       >
+        {enableCompareWithLatest && <EdgeDrifts diagramEdge={diagramEdge} />}
         <Button
           variant="default"
           color="gray"
@@ -378,6 +383,26 @@ const RelationshipPopoverInternal = ({
         )}
       </VStack>
     </ScrollAreaAutosize>
+  )
+}
+
+const EdgeDrifts = ({ diagramEdge }: { diagramEdge: DiagramEdge }) => {
+  const drifts = diagramEdge.drifts
+  if (!drifts || drifts.length === 0) {
+    return null
+  }
+  return (
+    <Notification
+      color="orange"
+      withBorder={false}
+      withCloseButton={false}
+      title="Changes:">
+      {drifts.map((drift) => (
+        <Text mt={2} size="sm" lh="xs" key={drift}>
+          - {drift}
+        </Text>
+      ))}
+    </Notification>
   )
 }
 
@@ -582,7 +607,7 @@ const Relationship = forwardRef<
               },
             }}
           >
-            <Markdown value={r.summary} fontSize={'sm'} />
+            <Markdown value={r.summary} fontSize={'sm'} textScale={0.875} />
           </Box>
         </>
       )}

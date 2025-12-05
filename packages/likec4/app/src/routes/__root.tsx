@@ -43,7 +43,7 @@ export type SearchParams = {
   padding?: number
 }
 
-type Context = {
+export type Context = {
   /**
    * Default project
    */
@@ -51,7 +51,6 @@ type Context = {
 }
 
 export const Route = createRootRouteWithContext<Context>()({
-  component: RootComponent,
   validateSearch: (search: Record<string, unknown>): SearchParams => {
     // validate and parse the search params into a typed state
     return {
@@ -75,6 +74,13 @@ export const Route = createRootRouteWithContext<Context>()({
       }),
     ],
   },
+  beforeLoad: async () => {
+    const { projects } = await import('likec4:projects')
+    return {
+      projectId: projects.length > 0 ? projects[0].id : 'default' as ProjectId,
+    }
+  },
+  component: RootComponent,
 })
 
 function RootComponent() {

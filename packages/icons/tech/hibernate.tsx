@@ -2,12 +2,15 @@
 
 import type { SVGProps } from 'react'
 const SvgHibernate = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 267" {...props}>
     <path
-      fill="#59666c"
-      d="m29.246 3.766 23.168 40.129-23.18 40.19-23.156-40.19Zm69.508 120.468L75.586 84.105l23.18-40.19 23.156 40.19Zm0 0"
+      fill="#59666C"
+      d="m153.671 178.933-.932 2.757 49.137 83.342 2.781 1.968L256 178.22l-51.342-89.137zM50.273.304 0 89.084l52.234 89.849 49.738-89.85-.134-3.63L52.565 2.11z"
     />
-    <path fill="#bcae79" d="M75.594 3.766H29.258L52.43 43.898h46.35ZM52.406 124.23H98.75L75.594 84.102H29.219Zm0 0" />
+    <path
+      fill="#BCAE79"
+      d="m50.273.304 51.7 88.78h102.684L152.601.304zM52.234 178.933 102.864 267h101.793l-50.986-88.067z"
+    />
   </svg>
 )
 export default SvgHibernate

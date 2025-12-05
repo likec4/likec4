@@ -1,5 +1,5 @@
 import type { EdgeId } from '@likec4/core/types'
-import { cx as clsx } from '@likec4/styles/css'
+import { css, cx as clsx } from '@likec4/styles/css'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
@@ -53,15 +53,13 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     id,
     selected = false,
     data: {
-      hovered = false,
-      active = false,
       labelBBox,
       labelXY,
       ...data
     },
   } = props
 
-  const navigateTo = enableNavigateTo ? data.navigateTo : undefined
+  const navigateTo = enableNavigateTo && !isControlPointDragging ? data.navigateTo : undefined
 
   const {
     controlPoints,
@@ -151,7 +149,8 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     if (e.pointerType !== 'mouse') {
       return
     }
-    if (e.button !== 2) {
+    // Only respond to right-click or when edge is selected
+    if (e.button !== 2 && !selected) {
       return
     }
     e.stopPropagation()
@@ -184,7 +183,13 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   return (
     <>
-      <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
+      <EdgeContainer
+        {...props}
+        className={css({
+          '& .react-flow__edge-interaction': {
+            cursor: enabledEditing && selected ? 'copy' : undefined,
+          },
+        })}>
         <EdgePath
           edgeProps={props}
           svgPath={edgePath}
@@ -207,7 +212,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
             <EdgeLabel
               pointerEvents={enabledEditing ? 'none' : 'all'}
               edgeProps={props}>
-              {!enabledEditing && navigateTo && (
+              {navigateTo && (
                 <EdgeActionButton
                   onClick={e => {
                     e.stopPropagation()
@@ -219,8 +224,9 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
         )}
       </EdgeContainer>
       {/* Render control points above edge label  */}
-      {enabledEditing && controlPoints.length > 0 && (selected || active || hovered || isControlPointDragging) && (
+      {enabledEditing && controlPoints.length > 0 && (
         <ControlPoints
+          isControlPointDragging={isControlPointDragging}
           edgeProps={props}
           controlPoints={controlPoints}
           onMove={setControlPoints}
@@ -237,6 +243,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 RelationshipEdge.displayName = 'RelationshipEdge'
 
 function ControlPoints({
+  isControlPointDragging,
   edgeProps,
   controlPoints,
   onMove,
@@ -246,6 +253,7 @@ function ControlPoints({
   onDelete,
   zIndex,
 }: {
+  isControlPointDragging: boolean
   edgeProps: Types.EdgeProps<'relationship'>
   controlPoints: XYPosition[]
   onMove: (points: XYPosition[]) => void
@@ -337,7 +345,7 @@ function ControlPoints({
   }
 
   const onControlPointerDown = useCallbackRef((e: ReactPointerEvent<SVGCircleElement>) => {
-    const { domNode, addSelectedEdges } = xyflowStore.getState()
+    const { domNode, addSelectedEdges, edges, unselectNodesAndEdges } = xyflowStore.getState()
     if (!domNode || e.pointerType !== 'mouse') {
       return
     }
@@ -349,6 +357,9 @@ function ControlPoints({
     switch (e.button) {
       case 0: {
         e.stopPropagation()
+        unselectNodesAndEdges({
+          edges: edges.filter(ed => ed.selected && ed.id !== edgeId),
+        })
         addSelectedEdges([edgeId])
         onLmbControlPointerDown(index, e, domNode)
         break
@@ -357,6 +368,18 @@ function ControlPoints({
         onRmbControlPointerDown(index, e)
         break
     }
+  })
+
+  const onControlPointerDblClick = useCallbackRef((e: ReactPointerEvent<SVGCircleElement>) => {
+    const { domNode } = xyflowStore.getState()
+    if (!domNode || e.pointerType !== 'mouse') {
+      return
+    }
+    const index = parseFloat(e.currentTarget.getAttribute('data-control-point-index') || '')
+    if (isNaN(index)) {
+      throw new Error('data-control-point-index is not a number')
+    }
+    onRmbControlPointerDown(index, e)
   })
 
   return (
@@ -371,16 +394,18 @@ function ControlPoints({
         }}
       >
         <g
+          data-active={isControlPointDragging ? true : undefined}
+          className="group"
           onContextMenu={stopAndPrevent}>
           {controlPoints.map((p, i) => (
             <circle
               data-control-point-index={i}
               onPointerDownCapture={onControlPointerDown}
+              onDoubleClick={onControlPointerDblClick}
               className={clsx('nodrag nopan', edgesCss.controlPoint)}
               key={'controlPoints' + edgeId + '#' + i}
               cx={p.x}
               cy={p.y}
-              r={3}
             />
           ))}
         </g>

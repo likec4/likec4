@@ -54,7 +54,11 @@ export class Rpc extends ADisposable {
 
     const notifyModelParsed = funnel(
       (batch: number) => {
-        logger.debug`send onDidChangeModel ${batch > 1 ? '(' + batch + ' batched)' : ''}`
+        if (batch > 1) {
+          logger.debug`send ${'onDidChangeModel'} (${batch} batched)`
+        } else {
+          logger.debug`send ${'onDidChangeModel'}`
+        }
         connection.sendNotification(DidChangeModelNotification.type, '').catch(error => {
           logger.warn(`[ServerRpc] error sending onDidChangeModel:`, { error })
           return
@@ -259,7 +263,15 @@ export class Rpc extends ADisposable {
       }),
       connection.onRequest(ChangeView.req, async (request, _cancelToken) => {
         logger.debug`received request ${'changeView'} of ${request.viewId} from project ${request.projectId}`
-        return await likec4Services.ModelChanges.applyChange(request)
+        const loc = await likec4Services.ModelChanges.applyChange(request)
+        const op = request.change.op
+        if (
+          request.projectId &&
+          (op === 'save-view-snapshot' || op === 'reset-manual-layout')
+        ) {
+          await projects.rebuidProject(request.projectId as ProjectId)
+        }
+        return loc
       }),
       connection.onRequest(FetchTelemetryMetrics.req, async (cancelToken) => {
         const projectsIds = [...projects.all]

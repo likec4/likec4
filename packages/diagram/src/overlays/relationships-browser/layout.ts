@@ -21,7 +21,7 @@ import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
-import { exact, preferSummary, RichText } from '@likec4/core/types'
+import { exact, preferSummary } from '@likec4/core/types'
 import {
   DefaultMap,
   ifind,

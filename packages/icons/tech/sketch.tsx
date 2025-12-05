@@ -2,14 +2,13 @@
 
 import type { SVGProps } from 'react'
 const SvgSketch = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <path fill="#fdb300" d="M29.62 12.85 64 9.24l34.38 3.61L125 48.29l-61 70.47L3 48.29z" />
-    <path fill="#ea6c00" d="M27.71 48.29 64 118.76 3 48.29zm72.58 0L64 118.76l61-70.47z" />
-    <path fill="#fdad00" d="M27.71 48.29h72.58L64 118.76z" />
-    <path fill="#fdd231" d="m64 9.24-34.38 3.61-1.91 35.44zm0 0 34.38 3.61 1.91 35.44z" />
-    <path fill="#fdad00" d="M125 48.29 98.38 12.85l1.91 35.44z" />
-    <path fill="#feeeb7" d="M64 9.24 27.71 48.29h72.58z" />
-    <path fill="#fdad00" d="m3 48.29 26.62-35.44-1.91 35.44z" />
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 232" {...props}>
+    <path fill="#FDB300" d="M128 0 55.855 7.628 0 82.608l128 149.054L256 82.607 200.146 7.628z" />
+    <path fill="#EB6C00" d="m0 82.608 128 149.054L51.846 82.608zM204.153 82.608 128 231.662 256 82.608z" />
+    <path fill="#FDAD00" d="M51.846 82.608 128 231.662l76.154-149.054z" />
+    <path fill="#FDD231" d="m55.855 7.628-4.01 74.98L128 0zM204.153 82.608l-4.008-74.98L128 0z" />
+    <path fill="#FDAD00" d="M204.154 82.608H256l-55.854-74.98zM0 82.608h51.846l4.009-74.98z" />
+    <path fill="#FEEEB7" d="M128 0 51.846 82.607h152.308z" />
   </svg>
 )
 export default SvgSketch

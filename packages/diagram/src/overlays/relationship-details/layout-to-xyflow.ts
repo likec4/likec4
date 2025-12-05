@@ -2,7 +2,6 @@ import {
   type Fqn,
   nonNullable,
   Queue,
-  RichText,
 } from '@likec4/core'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'

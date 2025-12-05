@@ -4,7 +4,6 @@ import { cx } from '@likec4/styles/css'
 import type { PropsWithChildren } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
-import * as styles from './edge.css'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -35,13 +34,13 @@ export function EdgeContainer({
     dimmed: isDimmed = false,
     ...data
   },
+  animated,
   children,
   style,
 }: EdgeContainerProps) {
   const props = {
     className: cx(
       className,
-      styles.edgeContainer,
       'likec4-edge-container',
       selected && 'selected',
       selectable && 'selectable',
@@ -49,7 +48,7 @@ export function EdgeContainer({
     'data-likec4-color': color,
     'data-edge-dir': data.dir ?? 'forward',
     'data-edge-active': isActive,
-    'data-edge-animated': isActive,
+    'data-edge-animated': animated || isActive,
     'data-likec4-hovered': isHovered,
     ...(selected && {
       'data-likec4-selected': selected,

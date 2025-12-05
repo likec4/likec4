@@ -5,7 +5,7 @@ import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
-import { vector } from './vector'
+import { vector } from '@likec4/core/geometry'
 
 export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
@@ -186,19 +186,15 @@ export function bezierControlPoints(points: NonEmptyArray<Point>) {
   return handles
 }
 
-// If points are within 3px, consider them the same
-const isClose = (a: number, b: number) => {
-  return Math.abs(a - b) < 3.1
-}
-
+// If points are within 2px, consider them the same
 export function isSamePoint(a: XYPosition | Point, b: XYPosition | Point) {
-  const [ax, ay] = isArray(a) ? a : [a.x, a.y]
-  const [bx, by] = isArray(b) ? b : [b.x, b.y]
-  return isClose(ax, bx) && isClose(ay, by)
+  const pointA = isArray(a) ? { x: a[0], y: a[1] } : a
+  const pointB = isArray(b) ? { x: b[0], y: b[1] } : b
+  return distanceBetweenPoints(pointA, pointB) < 2.1
 }
 
 export function distanceBetweenPoints(a: XYPosition, b: XYPosition) {
-  return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
+  return Math.hypot(b.x - a.x, b.y - a.y)
 }
 
 export function stopPropagation(e: ReactMouseEvent) {

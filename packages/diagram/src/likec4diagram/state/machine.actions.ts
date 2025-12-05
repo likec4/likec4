@@ -1,6 +1,5 @@
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
-/// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
   invariant,
   nonexhaustive,
@@ -11,12 +10,11 @@ import type {
   Fqn,
   LayoutType,
   NodeId,
-  NodeNotation as ElementNotation,
   ViewId,
 } from '@likec4/core/types'
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
-import { hasAtLeast, isTruthy, omit } from 'remeda'
+import { hasAtLeast, isTruthy } from 'remeda'
 import {
   assertEvent,
 } from 'xstate'
@@ -30,7 +28,7 @@ import {
   mergeXYNodesEdges,
   resetEdgeControlPoints,
 } from './assign'
-import { createViewChange } from './createViewChange'
+import { cancelFitDiagram, raiseFitDiagram, setViewport } from './machine.actions.layout'
 import { machine } from './machine.setup'
 import {
   findDiagramEdge,
@@ -144,8 +142,8 @@ export const updateXYNodesEdges = () =>
     assertEvent(event, 'update.view')
     const update = mergeXYNodesEdges(context, event)
 
-    let { lastClickedNode, focusedNode } = context
-    if (lastClickedNode || focusedNode) {
+    let { lastClickedNode, focusedNode, activeWalkthrough } = context
+    if (lastClickedNode || focusedNode || activeWalkthrough) {
       const nodeIds = new Set(update.xynodes.map(n => n.id))
       if (lastClickedNode && !nodeIds.has(lastClickedNode.id)) {
         lastClickedNode = null
@@ -153,17 +151,32 @@ export const updateXYNodesEdges = () =>
       if (focusedNode && !nodeIds.has(focusedNode)) {
         focusedNode = null
       }
+
+      const stepId = activeWalkthrough?.stepId
+      if (stepId && !update.xyedges.some(e => e.id === stepId)) {
+        activeWalkthrough = null
+      }
       return {
         ...update,
         lastClickedNode,
         focusedNode,
+        activeWalkthrough,
       }
     }
 
     return update
   })
 
-export const focusOnNodesAndEdges = () => machine.assign(focusNodesEdges)
+export const focusOnNodesAndEdges = () =>
+  machine.enqueueActions(({ context, enqueue }) => {
+    const next = focusNodesEdges(context)
+    if (next) {
+      enqueue.assign(next)
+    } else {
+      // No focused node, cancel focus
+      enqueue.raise({ type: 'key.esc' })
+    }
+  })
 
 export const undimEverything = () =>
   machine.assign(({ context }) => ({
@@ -309,14 +322,9 @@ export const emitOnLayoutTypeChange = () =>
       // Check if we are switching from manual to auto layout while a sync is pending
       if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
         const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-        const syncState = syncLayoutActor?.getSnapshot().value
-        const isPending = syncLayoutActor && (syncState === 'pending' || syncState === 'paused')
+        const isPending = syncLayoutActor && syncLayoutActor.getSnapshot().hasTag('pending')
         if (isPending) {
           enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
-          enqueue.emit({
-            type: 'onChange',
-            change: createViewChange(context),
-          })
         }
       }
 
@@ -609,6 +617,54 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
     )
   })
 
+export const openOverlay = () =>
+  machine.enqueueActions(({ context, event, enqueue, system, check }) => {
+    assertEvent(event, ['open.relationshipsBrowser', 'open.relationshipDetails', 'open.elementDetails'])
+
+    if (!check('enabled: Overlays')) {
+      console.warn('Overlays feature is disabled')
+      return
+    }
+
+    switch (event.type) {
+      case 'open.elementDetails': {
+        check('enabled: ElementDetails')
+          ? enqueue(openElementDetails())
+          : console.warn('ElementDetails feature is disabled')
+        break
+      }
+
+      case 'open.relationshipsBrowser': {
+        enqueue.sendTo(
+          typedSystem(system).overlaysActorRef!,
+          {
+            type: 'open.relationshipsBrowser',
+            subject: event.fqn,
+            viewId: context.view.id,
+            scope: 'view' as const,
+            closeable: true,
+            enableChangeScope: true,
+            enableSelectSubject: true,
+          },
+        )
+        break
+      }
+      case 'open.relationshipDetails': {
+        enqueue.sendTo(
+          typedSystem(system).overlaysActorRef!,
+          {
+            type: 'open.relationshipDetails',
+            viewId: context.view.id,
+            ...event.params,
+          },
+        )
+        break
+      }
+      default:
+        nonexhaustive(event)
+    }
+  })
+
 export const openSourceOfFocusedOrLastClickedNode = () =>
   machine.enqueueActions(({ context, enqueue }) => {
     const nodeId = context.focusedNode ?? context.lastClickedNode?.id
@@ -709,7 +765,6 @@ export const stopHotKeyActor = () => machine.stopChild('hotkey')
 export const handleNavigate = () =>
   machine.enqueueActions(({ enqueue, context, event }) => {
     assertEvent(event, ['navigate.to', 'navigate.back', 'navigate.forward'])
-    console.log(`Handle ${event.type}`)
     const {
       view,
       focusedNode,
@@ -745,10 +800,6 @@ export const handleNavigate = () =>
       })
       history = [..._history]
       history[currentIndex] = updatedEntry
-      console.log('Update current history entry', {
-        before: _history[currentIndex],
-        after: updatedEntry,
-      })
     }
 
     switch (event.type) {
@@ -797,3 +848,74 @@ export const handleNavigate = () =>
         nonexhaustive(event)
     }
   })
+
+export const updateView = () =>
+  machine.enqueueActions(
+    ({ enqueue, event, context }) => {
+      if (event.type !== 'update.view') {
+        console.warn(`Ignoring unexpected event type: ${event.type} in action 'update.view'`)
+        return
+      }
+      const nextView = event.view
+      const isAnotherView = nextView.id !== context.view.id
+
+      if (isAnotherView) {
+        console.warn('updateView called for another view - ignoring', { event })
+        return
+      }
+
+      enqueue(updateXYNodesEdges())
+
+      if (event.source === 'internal') {
+        return
+      }
+
+      enqueue(sendSynced())
+
+      let recenter = !context.viewportChangedManually && !context.focusedNode && !context.activeWalkthrough
+
+      if (context.toggledFeatures.enableCompareWithLatest === true && context.view._layout !== nextView._layout) {
+        if (nextView._layout === 'auto' && context.viewportOnAutoLayout) {
+          enqueue(
+            setViewport({
+              viewport: context.viewportOnAutoLayout,
+              duration: 0,
+            }),
+          )
+          return
+        }
+        // If switching to manual layout, restore previous manual layout viewport
+        if (nextView._layout === 'manual' && context.viewportOnManualLayout) {
+          enqueue(
+            setViewport({
+              viewport: context.viewportOnManualLayout,
+              duration: 0,
+            }),
+          )
+          return
+        }
+      }
+
+      // Check if dynamic view mode changed
+      recenter = recenter || (
+        nextView._type === 'dynamic' &&
+        context.view._type === 'dynamic' &&
+        nextView.variant !== context.view.variant
+      )
+
+      // Check if comparing layouts is enabled and layout changed
+      recenter = recenter || (
+        context.toggledFeatures.enableCompareWithLatest === true &&
+        !!nextView._layout &&
+        context.view._layout !== nextView._layout
+      )
+
+      if (recenter) {
+        // Recenter the diagram to fit all elements
+        enqueue(cancelFitDiagram())
+        enqueue(raiseFitDiagram({
+          bounds: event.view.bounds,
+        }))
+      }
+    },
+  )

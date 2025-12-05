@@ -2,13 +2,11 @@ import { nonexhaustive } from '@likec4/core'
 import { useSelector } from '@xstate/react'
 import { animate } from 'motion'
 import { AnimatePresence, LayoutGroup, useReducedMotionConfig } from 'motion/react'
-import { useEffect, useMemo } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
 import { isNonNullish } from 'remeda'
 import type { AnyActorRef } from 'xstate'
-import { ErrorFallback } from '../components/ErrorFallback'
+import { ErrorBoundary } from '../components/ErrorFallback'
 import { DiagramFeatures } from '../context'
-import { useXYStore } from '../hooks'
+import { useDiagram, useUpdateEffect } from '../hooks'
 import { ElementDetails } from './element-details/ElementDetails'
 import { Overlay } from './overlay/Overlay'
 import type { OverlaysActorRef, OverlaysActorSnapshot } from './overlaysActor'
@@ -51,25 +49,43 @@ const compareSelectOverlays = <T extends ReturnType<typeof selectOverlays>>(a: T
 }
 
 export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActorRef }) {
-  const xyflowDomNode = useXYStore(s => s.domNode)
-  const xyflowRendererDom = useMemo(() => xyflowDomNode?.querySelector('.react-flow__renderer') ?? null, [
-    xyflowDomNode,
-  ])
+  const diagram = useDiagram()
+
   const overlays = useSelector(overlaysActorRef, selectOverlays, compareSelectOverlays)
   const isMotionReduced = useReducedMotionConfig() ?? false
 
   const isActiveOverlay = overlays.some((overlay) => overlay.type === 'elementDetails')
 
-  useEffect(() => {
+  useUpdateEffect(() => {
+    const xyflowDomNode = diagram.getContext().xystore.getState().domNode
+    const xyflowRendererDom = xyflowDomNode?.querySelector<HTMLDivElement>('.react-flow__renderer')
     if (!xyflowRendererDom || isMotionReduced) return
-    animate(xyflowRendererDom, {
+    const current = animate(xyflowRendererDom, {
       opacity: isActiveOverlay ? 0.7 : 1,
       filter: isActiveOverlay ? 'grayscale(1)' : 'grayscale(0)',
       transform: isActiveOverlay ? `perspective(400px) translateZ(-12px) translateY(3px)` : `translateY(0)`,
     }, {
       duration: isActiveOverlay ? 0.35 : 0.17,
     })
-  }, [isActiveOverlay, xyflowRendererDom])
+
+    let cleanupTm: ReturnType<typeof setTimeout> | null = null
+    if (!isActiveOverlay) {
+      // Remove styles after animation when closing overlay
+      // This improves performance by reducing number of layers being rendered
+      cleanupTm = setTimeout(() => {
+        xyflowRendererDom.style.transform = ''
+        xyflowRendererDom.style.filter = ''
+        cleanupTm = null
+      }, 450)
+    }
+
+    return () => {
+      if (cleanupTm) {
+        clearTimeout(cleanupTm)
+      }
+      current.stop()
+    }
+  }, [isActiveOverlay])
 
   const close = (actorRef: AnyActorRef) => {
     overlaysActorRef.send({ type: 'close', actorId: actorRef.id })
@@ -109,9 +125,9 @@ export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActor
 
   return (
     <DiagramFeatures.Overlays>
-      <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
+      <ErrorBoundary onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
         <LayoutGroup>
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {overlaysReact}
           </AnimatePresence>
         </LayoutGroup>

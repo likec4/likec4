@@ -1,0 +1,12 @@
+// @ts-nocheck
+
+import type { SVGProps } from 'react'
+const SvgAerospikeIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 230" {...props}>
+    <path
+      fill="#C4373A"
+      d="M256 0v27.43l-60.039 26.468v123.077L256 203.728v26.18L27.017 126.865 0 115.372l27.017-12.389zm-83.138 63.932-115.943 51.36 115.943 51.647z"
+    />
+  </svg>
+)
+export default SvgAerospikeIcon

@@ -15,7 +15,7 @@ const ImageAliasValue = z
   )
 
 export const ImageAliasesSchema = z.record(
-  z.string(), // PLAIN key schema - valibot JSON schema export-safe.
+  z.string(), // PLAIN key schema - zod JSON schema export-safe.
   ImageAliasValue,
 ).meta({
   description:
@@ -34,7 +34,7 @@ export function validateImageAliases(imageAliases?: LikeC4ImageAliasConfig) {
       if (!IMAGE_ALIAS_KEY_REGEX.test(key)) {
         invalidKeys.push(key)
       }
-      // Value regex is technically already enforced by Valibot,
+      // Value regex is technically already enforced by zod,
       // so this check is purely defensive.
       if (!IMAGE_ALIAS_VALUE_REGEX.test(value)) {
         invalidValues.push(`${key} -> ${value}`)

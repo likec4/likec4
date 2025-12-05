@@ -64,6 +64,23 @@ views {
 
   view index {
     title 'Landscape'
+    description '''
+> [!NOTE]
+> Information that users should know.
+
+> [!TIP]
+> Helpful advice for better results.
+
+> [!IMPORTANT]
+> Key information for success.
+
+> [!WARNING]
+> Urgent information to avoid problems.
+
+> [!CAUTION]
+> Risks or negative outcomes.
+    '''
+
     group 'SAAS' {
       color primary
       opacity 20%
@@ -107,9 +124,13 @@ views {
     link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
 
     customer -> ui.dashboard 'opens' {
-      notes '
-        Customer opens dashboard in Browser
-      '
+      notes '''
+      > [!NOTE]
+      > Information that users should know.
+
+      Customer opens dashboard in Browser
+
+      '''
     }
     ui.dashboard -> cloud.graphql {
       title '
@@ -148,10 +169,11 @@ views {
     customer -> next.backend
 
     next.backend -> next.events {
-      notes '
+      notes '''
       - Backend triggers EventManager
       - These calls enriched with data before publishing
-      '
+
+      '''
     }
     next.events -> amazon.sqs
     next.backend -> amazon.aurora

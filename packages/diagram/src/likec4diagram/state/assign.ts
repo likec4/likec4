@@ -1,11 +1,11 @@
 import { type LayoutedView, type NodeId, type XYPoint, nonNullable } from '@likec4/core'
+import { type VectorValue, vector } from '@likec4/core/geometry'
 import type { InternalNode } from '@xyflow/react'
 import { type NodeLookup, getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
-import { mergeDeep, omit } from 'remeda'
+import { mergeDeep } from 'remeda'
 import { assertEvent } from 'xstate'
 import { Base, updateEdges, updateNodes } from '../../base'
-import { type VectorValue, vector } from '../../utils/vector'
 import { getNodeCenter } from '../../utils/xyflow'
 import type { Types } from '../types'
 import type { ActionArg, Context as DiagramContext } from './machine.setup'
@@ -59,10 +59,10 @@ export function mergeXYNodesEdges(
   }
 }
 
-export function focusNodesEdges(params: ActionArg): Partial<DiagramContext> {
-  const { xynodes: _xynodes, xyedges: _xyedges, focusedNode } = params.context
+export function focusNodesEdges(context: DiagramContext) {
+  const { xynodes: _xynodes, xyedges: _xyedges, focusedNode } = context
   if (!focusedNode) {
-    return {}
+    return null
   }
   const focused = new Set([focusedNode as string])
   const xyedges = _xyedges.map((edge) => {
@@ -87,7 +87,6 @@ export function focusNodesEdges(params: ActionArg): Partial<DiagramContext> {
 }
 
 export function updateNodeData({ context, event }: ActionArg): Partial<DiagramContext> {
-  console.log('updateNodeData called', event)
   assertEvent(event, 'update.nodeData')
   const xynodes = context.xynodes.map((node): Types.Node => {
     if (node.id !== event.nodeId) {
@@ -160,5 +159,10 @@ export function resetEdgeControlPoints(
   const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
   const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.multiply(-1))
 
-  return [sourceBorderPoint.add(targetBorderPoint.subtract(sourceBorderPoint).multiply(0.4))]
+  const sourceToTarget = targetBorderPoint.subtract(sourceBorderPoint)
+
+  return [
+    sourceBorderPoint.add(sourceToTarget.multiply(0.4)),
+    sourceBorderPoint.add(sourceToTarget.multiply(0.6)),
+  ]
 }

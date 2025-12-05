@@ -1,6 +1,4 @@
 import { loggable } from '@likec4/log'
-import { error } from 'console'
-import { isError } from 'remeda'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer, LikeC4MCPServerModuleContext } from '../interfaces'
 import { logger } from '../utils'

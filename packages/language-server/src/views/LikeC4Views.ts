@@ -5,14 +5,13 @@ import type {
   LayoutType,
   ProjectId,
   ViewId,
-  ViewManualLayoutSnapshot,
 } from '@likec4/core'
-import { _layout, applyManualLayout, calcDriftsFromSnapshot, invariant } from '@likec4/core'
+import { _layout, applyManualLayout, calcDriftsFromSnapshot } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
-import { type LayoutResult, type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
+import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache, interruptAndCheck } from 'langium'
-import { isTruthy, unique, values } from 'remeda'
+import { isTruthy, values } from 'remeda'
 import type { Writable } from 'type-fest'
 import type { CancellationToken } from 'vscode-languageserver'
 import { logger as rootLogger, logWarnError } from '../logger'

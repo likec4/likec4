@@ -2,44 +2,28 @@
 
 import type { SVGProps } from 'react'
 const SvgBamboo = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 296" {...props}>
     <defs>
-      <linearGradient
-        id="Bamboo_svg__a"
-        x1={11.217}
-        x2={11.217}
-        y1={7.486}
-        y2={21.607}
-        gradientTransform="scale(4)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0} stopColor="#0052cc" />
-        <stop offset={1} stopColor="#2684ff" />
+      <linearGradient id="Bamboo_svg__a" x1="50.016%" x2="50.016%" y1="-98.299%" y2="38.217%">
+        <stop offset="0%" stopColor="#0052CC" />
+        <stop offset="100%" stopColor="#2684FF" />
       </linearGradient>
-      <linearGradient
-        id="Bamboo_svg__b"
-        x1={11.168}
-        x2={11.168}
-        y1={7.486}
-        y2={21.607}
-        gradientTransform="scale(4)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0} stopColor="#0052cc" />
-        <stop offset={1} stopColor="#2684ff" />
+      <linearGradient id="Bamboo_svg__b" x1="50.016%" x2="50.016%" y1=".763%" y2="138.581%">
+        <stop offset="0%" stopColor="#0052CC" />
+        <stop offset="100%" stopColor="#2684FF" />
       </linearGradient>
     </defs>
     <path
-      fill="#2684ff"
-      d="M104.133 70.633h-20c-1.235 0-2.465.96-2.602 2.191-1.097 7.946-7.945 14.11-16.164 14.11l5.344 24.656c19.45-2.602 34.652-18.492 36.023-38.219.137-1.504-1.097-2.738-2.601-2.738m-34.387-.683 28.766-24.657c1.234-1.098 1.234-2.879 0-3.973L69.746 16.664c-1.644-1.508-4.246-.273-4.246 1.918v49.313c-.137 2.328 2.465 3.562 4.246 2.054zm0 0"
+      fill="#2684FF"
+      d="M247.206 167.896h-61.4a8.03 8.03 0 0 0-8.032 6.827c-3.487 24.952-24.84 43.511-50.035 43.49l16.625 75.936c60.232-7.87 106.592-57.067 110.873-117.66a8.03 8.03 0 0 0-8.031-8.593M140.95 165.968l88.346-75.936a8.03 8.03 0 0 0 0-12.047L140.95 1.928a8.031 8.031 0 0 0-13.212 6.103v151.833a8.031 8.031 0 0 0 13.212 6.104"
     />
     <path
       fill="url(#Bamboo_svg__a)"
-      d="M24.273 75.977C26.88 96.247 44.273 112 65.367 112V86.934c-9.039 0-16.437-7.262-16.437-16.301zm0 0"
+      d="M1.205 184.48c8.45 63.437 62.537 110.83 126.534 110.874v-77.142c-27.809 0-50.37-22.508-50.437-50.316z"
     />
     <path
       fill="url(#Bamboo_svg__b)"
-      d="M24 70.223v.41h25.066c0-9.04 7.399-16.301 16.438-16.301L60.16 29.676C39.89 32.28 24.137 49.402 24 70.223m0 0"
+      d="M0 166.691v1.205h77.302c.066-27.809 22.628-50.317 50.437-50.317l-16.585-75.936C48.145 49.853.767 103.153 0 166.69"
     />
   </svg>
 )

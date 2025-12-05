@@ -19,6 +19,7 @@ import {
   startHotKeyActor,
   stopHotKeyActor,
   undimEverything,
+  updateView,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
 
@@ -139,7 +140,13 @@ export const walkthrough = machine.createStateConfig({
     'key.arrow.left': {
       actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
     },
+    'key.arrow.up': {
+      actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
+    },
     'key.arrow.right': {
+      actions: raise({ type: 'walkthrough.step', direction: 'next' }),
+    },
+    'key.arrow.down': {
       actions: raise({ type: 'walkthrough.step', direction: 'next' }),
     },
     'walkthrough.step': {
@@ -191,6 +198,13 @@ export const walkthrough = machine.createStateConfig({
     },
     'tag.unhighlight': {
       actions: updateActiveWalkthroughState(),
+    },
+    'update.view': {
+      guard: 'is same view',
+      actions: [
+        updateView(),
+        updateActiveWalkthroughState(),
+      ],
     },
     'walkthrough.end': {
       target: targetState.idle,

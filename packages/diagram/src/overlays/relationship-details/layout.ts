@@ -14,7 +14,6 @@ import type {
   NonEmptyArray,
   Point,
   RelationId,
-  RichTextOrEmpty,
 } from '@likec4/core/types'
 import { exact, preferSummary } from '@likec4/core/types'
 

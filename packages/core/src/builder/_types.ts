@@ -10,7 +10,6 @@ import type {
   LikeC4ProjectStylesConfig,
   MarkdownOrString,
   NonEmptyArray,
-  Relationship,
   RelationshipArrowType,
   RelationshipLineType,
   RelationshipSpecification as RelationshipKindSpecification,

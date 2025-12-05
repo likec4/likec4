@@ -21,104 +21,122 @@ console.info('Cleaning up...')
 await rm('.tmp/src', { force: true, recursive: true })
 await mkdir('.tmp/src', { recursive: true })
 
+// -----------------------------------------------------------
+// ------------------------ tech ----------------------------
+
 if (!existsSync('.tmp/tech.zip')) {
   console.info('Fetching tech-icons...')
   await $`curl -o .tmp/tech.zip https://icon.icepanel.io/Technology/svg.zip`
 }
 await $`unzip .tmp/tech.zip -d .tmp/src/tech`
 const techRenames = {
-  'Apache-Tomcat': 'Tomcat',
-  'Apache-Subversion': 'Subversion',
-  'Apache-Spark': 'Spark',
-  'Apache-Maven': 'Maven',
-  'Apache-Kafka': 'Kafka',
-  'Apache-Hadoop': 'Hadoop',
-  'Apache-Groovy': 'Groovy',
-  'Apache-Cassandra': 'Cassandra',
-  'Apache-Airflow': 'Airflow',
-  'Adobe-Commerce-(Magneto)': 'Magento',
-  'AWS': 'AmazonWebServices',
+  'Apache-Tomcat': 'tomcat',
+  'Apache-Subversion': 'subversion',
+  'Apache-Spark': 'spark',
+  'Apache-Maven': 'maven',
+  'Apache-Kafka': 'kafka',
+  'Apache-Hadoop': 'hadoop',
+  'Apache-Groovy': 'groovy',
+  'Apache-Cassandra': 'cassandra',
+  'Apache-Airflow': 'airflow',
+  'Arch-Linux': 'archlinux',
+  'Argo-CD': 'argocd',
+  'Alpine.js': 'alpinejs',
+  'Adobe-Commerce-(Magneto)': 'magento',
+  'AWS': 'amazon-web-services',
   'Internet-Explorer-10-(ie10)': 'ie10',
-  'Elastic-Search': 'Elasticsearch',
-  'Elastic-Beats': 'Elasticbeats',
-  'BrowserStack': 'Browserstack-',
-  'BitBucket': 'Bitbucket-',
-  'GitLab': 'Gitlab-',
-  'GitHub': 'Github-',
-  'GitBook': 'Gitbook-',
-  'Red-Hat': 'Redhat',
-  'Raspberry-Pi': 'Raspberrypi',
-  'PyTorch': 'Pytorch-',
-  'PyScript': 'Pyscript-',
-  'PyCharm': 'Pycharm-',
-  'PureScript': 'Purescript-',
-  'PostCSS': 'Postcss-',
-  'NuGet': 'Nuget-',
-  'NixOS': 'Nix',
-  'Next.js': 'Nextjs',
-  'Nest.js': 'Nestjs',
-  'MongoDB': 'Mongodb-',
-  'InfluxDB': 'Influxdb-',
-  'LinkedIn': 'Linkedin-',
-  'JetBrains': 'Jetbrains-',
-  'JavaScript': 'Javascript-',
-  'Jaeger-Tracing': 'Jaeger-',
-  'PuTTY': 'Putty-',
-  'GitHub-Codespaces': 'GithubCodespaces',
-  'GitHub-Actions': 'GithubActions',
-  'HashiCorp-Vault': 'HashicorpVault',
+  'Elastic-Search': 'elasticsearch',
+  'Elastic-Beats': 'elasticbeats',
+  'BrowserStack': 'browserstack',
+  'BitBucket': 'bitbucket',
+  'GitLab': 'gitlab',
+  'GitHub': 'github',
+  'GitBook': 'gitbook',
+  'Red-Hat': 'redhat',
+  'Raspberry-Pi': 'raspberrypi',
+  'PyTorch': 'pytorch',
+  'PyScript': 'pyscript',
+  'PyCharm': 'pycharm',
+  'PureScript': 'purescript',
+  'PostCSS': 'postcss',
+  'NuGet': 'nuget',
+  'NixOS': 'nix',
+  'Next.js': 'nextjs',
+  'Nest.js': 'nestjs',
+  'Grunt.js': 'gruntjs',
+  'Gulp.js': 'gulpjs',
+  'MongoDB': 'mongodb',
+  'InfluxDB': 'influxdb',
+  'LinkedIn': 'linkedin',
+  'JetBrains': 'jetbrains',
+  'JavaScript': 'javascript',
+  'Jaeger-Tracing': 'jaeger',
+  'Jira': 'jira',
+  'PuTTY': 'putty',
+  'GitHub-Codespaces': 'github-codespaces',
+  'GitHub-Actions': 'github-actions',
+  'HashiCorp-Vault': 'hashicorp-vault',
   'HashiCorp-Vagrant': 'vagrant',
   'HashiCorp-Terraform': 'terraform',
-  'Node.js': 'Nodejs',
-  'Vite.js': 'Vitejs',
-  'Visual-Studio-Code-(VS-Code)': 'Vscode',
-  'Visual-Studio': 'Visualstudio',
-  'IntelliJ-IDEA': 'IntellijIdea',
-  'Protractor-Test': 'Protractor',
-  'JUnit': 'Junit-',
-  'jQuery': 'Jquery-',
-  'TensorFlow': 'Tensorflow-',
-  'TypeScript': 'Typescript-',
-  'TeX': 'Tex-',
-  'Unified-Modelling-Language-(UML)': 'Uml',
-  'NW.js-(node-webkit)': 'Nodewebkit',
-  'GraphQL': 'Graphql-',
-  'RocksDB': 'Rocksdb-',
-  'PostgresSQL': 'Postgresql',
-  'RabbitMQ': 'Rabbitmq-',
-  'Stack-Overflow': 'Stackoverflow',
-  'Simple-DirectMedia-Layer-(SDL)': 'Sdl',
-  'SonarQube': 'Sonarqube-',
-  'Qt-Framework': 'Qt',
+  'Node.js': 'nodejs',
+  'Vite.js': 'vitejs',
+  'IntelliJ-IDEA': 'intellij-idea',
+  'Protractor-Test': 'protractor',
+  'JUnit': 'junit',
+  'JQuery': 'jquery',
+  'TensorFlow': 'tensorflow',
+  'TypeScript': 'typescript',
+  'TeX': 'tex',
+  'Unified-Modelling-Language-(UML)': 'uml',
+  'NW.js-(node-webkit)': 'nodewebkit',
+  'GraphQL': 'graphql',
+  'RocksDB': 'rocksdb',
+  'RaspberryPi': 'raspberry-pi',
+  'Rollup.js': 'rollupjs',
+  'PostgresSQL': 'postgresql',
+  'RabbitMQ': 'rabbitmq',
+  'Solid.js': 'solidjs',
+  'Stack-Overflow': 'stackoverflow',
+  'Simple-DirectMedia-Layer-(SDL)': 'sdl',
+  'SonarQube': 'sonarqube',
+  'Qt-Framework': 'qt',
   'FSharp-(F#)': 'fsharp',
-  'D3.js': 'D3js',
-  'C#-(CSharp)': 'Csharp',
-  'C++-(CPlusPlus)': 'Cplusplus',
-  'Cosmos-BD': 'Cosmosdb',
-  'CouchDB': 'Couchdb-',
-  'Core-js': 'Corejs',
-  'LaTeX': 'Latex-',
-  'MySQL': 'Mysql-',
-  'ESLint': 'Eslint-',
-  'DBeaver': 'Dbeaver-',
-  'uWSGI': 'uwsgi-',
+  'D3.js': 'd3js',
+  'C#-(CSharp)': 'csharp',
+  'C++-(CPlusPlus)': 'cplusplus',
+  'Cosmos-BD': 'cosmosdb',
+  'CouchDB': 'couchdb',
+  'Core-js': 'vorejs',
+  'LaTeX': 'latex',
+  'MySQL': 'mysql',
+  'ESLint': 'eslint',
+  'DBeaver': 'dbeaver',
+  'uWSGI': 'uwsgi',
   'p5-JS': 'p5js',
-  'LLVM': 'Llvm-',
-  'Karate-Labs': 'Karate',
-  'LabVIEW': 'Labview-',
-  'SQLite': 'Sqlite-',
-  'Vue.js': 'Vue',
-  'vSphere': 'vsphere-',
-  'WebAssembly': 'Webassembly-',
-  'WebStorm': 'Webstorm-',
-  'WordPress': 'Wordpress-',
-  'Windows-8': 'Windows8',
-  'Windows-11': 'Windows11',
+  'LLVM': 'llvm',
+  'Karate-Labs': 'karate',
+  'LabVIEW': 'labview',
+  'Tailwind-CSS': 'tailwindcss',
+  'Three.js': 'threejs',
+  'Unreal-Engine': 'unrealengine',
+  'SQLite': 'sqlite',
+  'Vue.js': 'vue',
+  'vSphere': 'vsphere',
+  'Visual-Studio-Code-(VS-Code)': 'vscode',
+  'Visual-Studio': 'visual-studio',
+  'WebAssembly': 'webassembly',
+  'WebStorm': 'webstorm',
+  'WordPress': 'wordpress',
+  'Windows-8': 'windows8',
+  'Windows-11': 'windows11',
 }
 for (const [oldName, newName] of Object.entries(techRenames)) {
   await $`mv .tmp/src/tech/${oldName}.svg .tmp/src/tech/${newName}.svg`
 }
 console.info('tech-icons - OK')
+
+// -----------------------------------------------------------
+// ------------------------ gcp ----------------------------
 
 if (!existsSync('.tmp/gcp.zip')) {
   console.info('Fetching gcp-icons...')
@@ -128,6 +146,9 @@ await rm('.tmp/gcp', { force: true, recursive: true })
 await $`unzip .tmp/gcp.zip  -d .tmp/gcp`
 await $`mv .tmp/gcp/svg .tmp/src/gcp`
 console.info('gcp-icons - OK')
+
+// -----------------------------------------------------------
+// ------------------------ aws ----------------------------
 
 if (!existsSync('.tmp/aws.zip')) {
   console.info('Fetching aws-icons...')
@@ -143,6 +164,9 @@ for (const svg of awsSvgs) {
   await $`mv ${svg} .tmp/src/aws/${name}`
 }
 console.info('aws-icons - OK')
+
+// -----------------------------------------------------------
+// ------------------------ azure ----------------------------
 
 if (!existsSync('.tmp/azure.zip')) {
   console.info('Fetching azure-icons...')
@@ -169,6 +193,44 @@ for (const [oldName, newName] of Object.entries(azureRenames)) {
 }
 console.info('azure-icons - OK')
 
+// -----------------------------------------------------------
+// ------------------------ svg-logos ------------------------
+
+await rm('.tmp/svg-logos', { force: true, recursive: true })
+if (!existsSync('.tmp/logos.zip')) {
+  console.info('Fetching svg-logos...')
+  await $`curl -o .tmp/logos.zip https://codeload.github.com/gilbarbara/logos/zip/refs/heads/main`
+}
+await $`unzip .tmp/logos.zip  -d .tmp/svg-logos`
+// Remove semantic-web.svg due to its failure to convert properly
+await rm('.tmp/svg-logos/logos-main/logos/semantic-web.svg', { force: true, recursive: true })
+const logoRenames = {
+  'html-5': 'html5',
+  'c-plusplus': 'cplusplus',
+  'c-sharp': 'csharp',
+  'css-3': 'css3',
+  'css-3_official': 'css3-official',
+}
+for (const [oldName, newName] of Object.entries(logoRenames)) {
+  try {
+    await $`mv .tmp/svg-logos/logos-main/logos/${oldName}.svg .tmp/svg-logos/logos-main/logos/${newName}.svg`
+  } catch (e) {
+    console.warn(`Failed to rename logo ${oldName} to ${newName}: ${e}`)
+  }
+}
+// Remove AWS logos from svg-logos as we have a dedicated aws-icons set
+const awslogos = new fdir().glob('aws-*.svg').withFullPaths().crawl('.tmp/svg-logos/logos-main/logos').sync()
+for (const svg of awslogos) {
+  await rm(svg, { force: true, recursive: true })
+}
+
+// Copy all logos to src/tech, as they are all technology logos
+await $`cp .tmp/svg-logos/logos-main/logos/* .tmp/src/tech`
+
+console.info('svg-logos - OK')
+
+// ------------------------ Generate React components ------------------------
+
 await $`rm -r -f ${['aws', 'azure', 'gcp', 'tech']}`
 
 console.info('generating svg...')
@@ -185,17 +247,8 @@ const opts = [
 await $`pnpx @svgr/cli ${opts} --out-dir . -- .tmp/src`
 console.info('generated svg - DONE')
 
-await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp`
-
-// await $`mv aws/index.jsx aws/index.js`
-// await $`mv gcp/index.jsx gcp/index.js`
-// await $`mv tech/index.jsx tech/index.js`
-
-// const files = [
-//   ...
-//   // ...globSync('gcp/*.jsx'),
-//   // ...globSync('tech/*.jsx')
-// ]
+await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp .tmp/svg-logos`
+console.info('Cleaning up temp files - DONE')
 
 for (const fname of new fdir().glob('**/*.tsx').withFullPaths().crawl().sync()) {
   const input = readFileSync(fname, 'utf-8')

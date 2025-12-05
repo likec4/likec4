@@ -296,7 +296,7 @@ describe('ProjectConfig schema', () => {
   })
 
   describe('ImageAliasesSchema', () => {
-    describe('validation with valibot', () => {
+    describe('validation with zod', () => {
       it('should accept valid image aliases object', ({ expect }) => {
         const validAliases = {
           '@icons': './images/icons',

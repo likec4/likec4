@@ -37,7 +37,12 @@ export const setViewport = (params?: { viewport: Viewport; duration?: number }) 
     duration = duration ?? 400
     const { panZoom } = nonNullable(context.xystore).getState()
     const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
-    panZoom?.setViewport(viewport, animationProps).catch((err) => {
+
+    panZoom?.setViewport({
+      x: Math.round(viewport.x),
+      y: Math.round(viewport.y),
+      zoom: viewport.zoom,
+    }, animationProps).catch((err) => {
       console.error('Error during fitDiagram panZoom setViewport', { err })
     })
   })
@@ -54,7 +59,11 @@ export const setViewportCenter = (params?: { x: number; y: number }) =>
     }
     invariant(context.xyflow, 'xyflow is not initialized')
     const zoom = context.xyflow.getZoom()
-    context.xyflow.setCenter(Math.round(center.x), Math.round(center.y), { zoom })
+    context.xyflow.setCenter(
+      Math.round(center.x),
+      Math.round(center.y),
+      { zoom },
+    )
   })
 
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
@@ -86,7 +95,10 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
     )
     viewport.x = Math.round(viewport.x)
     viewport.y = Math.round(viewport.y)
-    panZoom?.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined).catch((err) => {
+
+    const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
+
+    panZoom?.setViewport(viewport, animationProps).catch((err) => {
       console.error('Error during fitDiagram panZoom setViewport', { err })
     })
   })
@@ -110,7 +122,11 @@ export const fitFocusedBounds = () =>
     )
     viewport.x = Math.round(viewport.x)
     viewport.y = Math.round(viewport.y)
-    panZoom?.setViewport(viewport, duration > 0 ? { duration, interpolate: 'smooth' } : undefined)
+
+    const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
+    panZoom?.setViewport(viewport, animationProps).catch((err) => {
+      console.error('Error during fitFocusedBounds panZoom setViewport', { err })
+    })
   })
 
 const DEFAULT_DELAY = 30

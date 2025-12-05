@@ -102,12 +102,14 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       const { manualLayout: _, ...rest } = layouted
       layouted = rest
     }
-    // Normalize icon paths before writing
-    layouted = this.normalizeIconPathsForWrite(layouted, project.folderUri)
-    const content = JSON5.stringify(layouted, {
-      space: 2,
-      quote: '\'',
-    })
+    const content = JSON5.stringify(
+      // Normalize icon paths before writing
+      this.normalizeIconPathsForWrite(layouted, project.folderUri),
+      {
+        space: 2,
+        quote: '\'',
+      },
+    )
     const location = {
       uri: file.toString(),
       range: Range.create(

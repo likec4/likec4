@@ -1,12 +1,10 @@
 import { invariant } from '@likec4/core'
 import type { ProjectId, ViewId } from '@likec4/core/types'
-import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '@likec4/vscode-preview/protocol'
 import {
   type EffectScope,
   computed,
   createSingletonComposable,
   effectScope,
-  extensionContext,
   nextTick,
   onDeactivate,
   readonly,
@@ -16,7 +14,7 @@ import {
   useViewTitle,
   watch,
 } from 'reactive-vscode'
-import { type Webview, type WebviewPanel, Uri, ViewColumn, window } from 'vscode'
+import { type WebviewPanel, ViewColumn, window } from 'vscode'
 import type { WebviewIdMessageParticipant } from 'vscode-messenger-common'
 import * as z from 'zod/v4'
 import { computedModels } from '../sharedstate'
@@ -143,11 +141,12 @@ export const useDiagramPanel = createSingletonComposable(() => {
       state.viewId.value = params.viewId
     })
 
-    m.onWebviewCloseMe((_, sender) => {
-      // invariant(participant === api.participant, 'Received closeMe from unknown participant')
+    m.onWebviewCloseMe(() => {
       nextTick(() => {
         logger.debug`webview requested closeMe`
         dispose()
+      }).catch((error) => {
+        logger.warn('Error closing panel', { error })
       })
     })
 

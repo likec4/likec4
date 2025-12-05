@@ -256,7 +256,7 @@ export function createLayoutConstraints(
   xyflowApi: XYStoreApi,
   editingNodeIds: NonEmptyArray<string>,
 ) {
-  const { parentLookup, nodeLookup, edges, edgeLookup } = xyflowApi.getState()
+  const { parentLookup, nodeLookup, edges } = xyflowApi.getState()
   const rects = new Map<string, Leaf | CompoundRect>()
 
   /** Maps node id to all its ancestors */
