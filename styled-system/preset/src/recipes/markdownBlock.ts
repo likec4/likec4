@@ -121,13 +121,13 @@ export const markdownBlock = defineRecipe({
       color: 'inherit',
       _dark: {
         backgroundColor: mantine.colors.yellow[5],
-        color: 'var(--mantine-color-black)',
+        color: mantine.colors.black,
       },
     },
 
     '& :where(a)': {
       fontSize: 'var(--text-fz-md)',
-      color: 'var(--mantine-color-anchor)',
+      color: mantine.colors.anchor,
       textDecoration: 'none',
       fontWeight: '500',
       _hover: {
@@ -250,7 +250,7 @@ export const markdownBlock = defineRecipe({
     '& .markdown-alert': {
       borderLeft: '.25em solid var(--borderColor-default, var(--color-border-default))',
       color: 'inherit',
-      marginBottom: 'var(--typography-spacing)',
+      marginBottom: 'calc(var(--typography-spacing) * 1.5)',
 
       paddingLeft: '1em',
       paddingRight: '.5em',
@@ -263,13 +263,13 @@ export const markdownBlock = defineRecipe({
         display: 'flex',
         fontSize: 'var(--text-fz-md)',
         fontWeight: '500',
-        lineHeight: '1.25',
+        lineHeight: '1.5',
+        marginBottom: '0.1em',
+        gap: '2',
       },
+
       '& .markdown-alert-title svg': {
-        marginRight: [
-          '8px!important',
-          'var(--base-size-8,8px) !important',
-        ],
+        height: 'var(--text-fz-md)',
         fill: 'currentColor',
       },
       '&.markdown-alert-note': {

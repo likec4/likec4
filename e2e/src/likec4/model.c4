@@ -9,7 +9,7 @@ model {
 
   cloud = system 'Cloud System' {
     description '''
-  > [!TIP]
+  > [!NOTE]
   > Helpful advice for better results.
 
   Our SaaS platform that allows

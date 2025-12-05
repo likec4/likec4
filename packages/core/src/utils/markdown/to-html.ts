@@ -1,29 +1,18 @@
 import defu from 'defu'
-import rehypeRaw from 'rehype-raw'
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
 import remarkGfm from 'remark-gfm'
-import { remarkGitHubAlerts } from 'remark-github-markdown-alerts'
+import { remarkAlert } from 'remark-github-blockquote-alert'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 
-// let _remark
-function remark() {
+function parser() {
   return unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkGitHubAlerts, {
-      mode: 'html',
-    })
-    .use(remarkRehype, {
-      // Tight paragraphs prevent extra newlines
-      allowDangerousHtml: true,
-      clobberPrefix: '',
-      tableCellPadding: false,
-      tight: true,
-    })
-    .use(rehypeRaw)
+    .use(remarkAlert)
+    .use(remarkRehype, { allowDangerousHtml: true })
     .use(
       rehypeSanitize,
       defu(
@@ -32,19 +21,30 @@ function remark() {
             '*': [
               'className',
             ],
+            'svg': [
+              'width',
+              'height',
+              'viewBox',
+              'fill',
+              'ariaHidden',
+            ],
+            'path': ['d', 'fill', 'stroke', 'strokeWidth', 'strokeLinecap', 'strokeLinejoin'],
           },
+          tagNames: [
+            'svg',
+            'g',
+            'path',
+            'div',
+          ],
         },
         defaultSchema,
       ),
     )
     .use(rehypeStringify, {
       allowDangerousHtml: true,
-      // Prevent extra closing newlines
-      closeSelfClosing: true,
-      tightSelfClosing: true,
     })
 }
 
 export function markdownToHtml(markdown: string): string {
-  return ('' + remark().processSync(markdown)).trim()
+  return ('' + parser().processSync(markdown)).trim()
 }
