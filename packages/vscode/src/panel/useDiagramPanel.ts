@@ -141,11 +141,12 @@ export const useDiagramPanel = createSingletonComposable(() => {
       state.viewId.value = params.viewId
     })
 
-    m.onWebviewCloseMe((_, sender) => {
-      // invariant(participant === api.participant, 'Received closeMe from unknown participant')
+    m.onWebviewCloseMe(() => {
       nextTick(() => {
         logger.debug`webview requested closeMe`
         dispose()
+      }).catch((error) => {
+        logger.warn('Error closing panel', { error })
       })
     })
 

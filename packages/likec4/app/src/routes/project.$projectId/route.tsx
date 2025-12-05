@@ -18,9 +18,8 @@ export const Route = createFileRoute('/project/$projectId')({
   loader: async ({ context }) => {
     const projectId = context.projectId
     try {
-      const { $likec4data, $likec4model } = await loadModel(projectId)
+      const { $likec4model } = await loadModel(projectId)
       return {
-        $likec4data,
         $likec4model,
         projectId,
       }
@@ -43,13 +42,13 @@ export const Route = createFileRoute('/project/$projectId')({
 })
 
 function RouteComponent() {
-  const { $likec4data, $likec4model, projectId } = Route.useLoaderData()
+  const { $likec4model, projectId } = Route.useLoaderData()
 
   return (
     <div className={css.cssViewOutlet}>
       <ErrorBoundary FallbackComponent={Fallback}>
         <LikeC4IconRendererContext projectId={projectId}>
-          <LikeC4ModelContext likec4data={$likec4data} likec4model={$likec4model}>
+          <LikeC4ModelContext likec4model={$likec4model}>
             <Outlet />
           </LikeC4ModelContext>
         </LikeC4IconRendererContext>
