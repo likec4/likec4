@@ -51,7 +51,7 @@ export const semanticTokens = defineSemanticTokens({
           description: 'LikeC4 panel border color',
           value: {
             base: 'transparent',
-            _light: mixTransparent(mantine.colors.defaultBorder, 30),
+            _light: mantine.colors.gray[2],
           },
         },
         text: {
@@ -172,7 +172,7 @@ export const semanticTokens = defineSemanticTokens({
           outline: {
             value: {
               _light: mantine.colors.orange[8],
-              _dark: mantine.colors.orange[6],
+              _dark: mixTransparent(mantine.colors.orange[6], 80),
             },
           },
         },

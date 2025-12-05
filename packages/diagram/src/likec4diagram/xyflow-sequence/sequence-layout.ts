@@ -1,11 +1,10 @@
 import { nonNullable } from '@likec4/core'
-import {
-  type BBox,
-  type DiagramEdge,
-  type DiagramNode,
-  type LayoutedDynamicView,
-  type NodeId,
-  RichText,
+import type {
+  BBox,
+  DiagramEdge,
+  DiagramNode,
+  LayoutedDynamicView,
+  NodeId,
 } from '@likec4/core/types'
 import type { Writable } from 'type-fest'
 import type { Types } from '../types'

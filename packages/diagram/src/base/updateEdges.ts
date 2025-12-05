@@ -1,5 +1,5 @@
 import { deepEqual as eq } from 'fast-equals'
-import { hasSubObject, isDefined, isShallowEqual, omit, pickBy } from 'remeda'
+import { isDefined, isShallowEqual, pickBy } from 'remeda'
 import type { BaseEdge } from './types'
 
 const EMPTY_OBJ = {}

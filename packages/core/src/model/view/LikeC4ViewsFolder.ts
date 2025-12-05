@@ -1,4 +1,4 @@
-import { isEmpty, last } from 'remeda'
+import { isEmptyish, last } from 'remeda'
 import type { aux, NonEmptyArray } from '../../types'
 import { invariant, memoizeProp } from '../../utils'
 import type { LikeC4Model } from '../LikeC4Model'
@@ -104,7 +104,7 @@ export class LikeC4ViewsFolder<A extends aux.Any = aux.Any> {
    */
   get parent(): LikeC4ViewsFolder<A> | null {
     invariant(!this.isRoot, 'Root view folder has no parent')
-    if (isEmpty(this.parentPath)) {
+    if (isEmptyish(this.parentPath)) {
       return null
     }
     return this.$model.viewFolder(this.parentPath)

@@ -159,6 +159,10 @@ export const elementNodeData = defineRecipe({
       '& a': {
         pointerEvents: 'all',
       },
+
+      '& .markdown-alert': {
+        mixBlendMode: 'screen',
+      },
     },
     technology: {
       flex: '0 0 auto',

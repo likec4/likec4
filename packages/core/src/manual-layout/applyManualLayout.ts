@@ -1,5 +1,5 @@
 import { type WritableDraft, produce } from 'immer'
-import { hasAtLeast, isDeepEqual, isDefined, isNullish, isNumber, isTruthy, pick, pipe } from 'remeda'
+import { hasAtLeast, isDeepEqual, isNullish, isNumber, isTruthy, pick, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import { buildElementNotations } from '../compute-view/utils/buildElementNotations'
 import {
@@ -15,7 +15,7 @@ import {
   _layout,
   isDynamicView,
 } from '../types'
-import { ifilter, ihead, invariant, nonexhaustive, symmetricDifference } from '../utils'
+import { ifilter, ihead, invariant, symmetricDifference } from '../utils'
 
 const changed = (a: unknown, b: unknown) => {
   if (a === b || (isNullish(a) && isNullish(b))) {

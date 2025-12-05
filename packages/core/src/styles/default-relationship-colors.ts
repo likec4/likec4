@@ -1,9 +1,9 @@
 import type { RelationshipColorValues, ThemeColor } from './types'
 
 const gray = {
-  line: '#6E6E6E',
-  labelBg: '#18191b',
-  label: '#C6C6C6',
+  line: '#8D8D8D',
+  labelBg: '#18191B',
+  label: '#C9C9C9',
 } satisfies RelationshipColorValues
 const slate = {
   line: '#64748b', // 500

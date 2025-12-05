@@ -55,11 +55,9 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
 function MultiValueDisplay({
   values,
   isExpanded,
-  onToggle,
 }: {
   values: string[]
   isExpanded: boolean
-  onToggle: () => void
 }) {
   if (isExpanded) {
     return (
@@ -255,7 +253,6 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
             <MultiValueDisplay
               values={elements}
               isExpanded={isExpanded}
-              onToggle={handleToggle}
             />
           )
           : (

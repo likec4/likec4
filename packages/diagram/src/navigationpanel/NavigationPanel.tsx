@@ -4,12 +4,11 @@ import {
   Popover,
   PopoverTarget,
 } from '@mantine/core'
-import { useUpdateEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
-import { useDiagramActorRef } from '../hooks/safeContext'
+import { useDiagram } from '../hooks/safeContext'
 import { useCurrentView } from '../hooks/useCurrentView'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { useDiagramContext } from '../hooks/useDiagram'
@@ -24,7 +23,7 @@ import { ActiveWalkthroughControls } from './walkthrough'
 import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 
 export const NavigationPanel = memo(() => {
-  const diagramActor = useDiagramActorRef()
+  const diagram = useDiagram()
   const view = useCurrentView()
   const viewModel = useOptionalCurrentViewModel()
 
@@ -39,14 +38,12 @@ export const NavigationPanel = memo(() => {
   )
   useEffect(() => {
     const subscription = actorRef.on('navigateTo', (event) => {
-      if (diagramActor.getSnapshot().context.view.id !== event.viewId) {
-        diagramActor.send({ type: 'navigate.to', viewId: event.viewId })
-      }
+      diagram.navigateTo(event.viewId)
     })
     return () => subscription.unsubscribe()
-  }, [actorRef, diagramActor])
+  }, [actorRef, diagram])
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     actorRef.send({ type: 'update.inputs', inputs: { viewModel, view } })
   }, [viewModel, view])
 
@@ -100,7 +97,7 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
       }}
       opened={opened}
       position="bottom-start"
-      trapFocus
+      trapFocus={opened}
       {...portalProps}
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       onDismiss={() => actor.send({ type: 'dropdown.dismiss' })}

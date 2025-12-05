@@ -4,14 +4,13 @@ import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo, useEffect, useRef, useState } from 'react'
-import { isNullish } from 'remeda'
-import type { Subscription } from 'xstate'
+import { isNullish, omitBy } from 'remeda'
 import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { type EnabledFeatures, DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { CurrentViewModelContext } from '../../context/LikeC4ModelContext'
-import { DiagramActorContextProvider } from '../../hooks/safeContext'
-import { useDiagram, useOnDiagramEvent } from '../../hooks/useDiagram'
+import { DiagramActorContextProvider, DiagramApiContextProvider } from '../../hooks/safeContext'
+import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
@@ -44,7 +43,7 @@ export function DiagramActorProvider({
 }>) {
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
-  const actorRef = useActorRef(
+  const actor = useActorRef(
     diagramMachine,
     {
       id: `diagram`,
@@ -62,50 +61,65 @@ export function DiagramActorProvider({
       },
     },
   )
+  const actorRef = useRef(actor)
+  if (actorRef.current !== actor) {
+    console.warn('DiagramMachine actor instance changed', {
+      context: {
+        previous: actorRef.current.getSnapshot().context,
+        current: actor.getSnapshot().context,
+      },
+    })
+    actorRef.current = actor
+  }
+
   const [api, setApi] = useState(() => makeDiagramApi(actorRef))
   useEffect(() => {
     setApi(api => {
-      if (api.actor === actorRef) return api
+      if (api.ref === actorRef) {
+        return api
+      }
+      console.warn(
+        'DiagramMachine actorRef changed, creating new DiagramApi instance, this should not happen during the lifetime of the actor',
+      )
       return makeDiagramApi(actorRef)
     })
   }, [actorRef])
-  if (api.actor !== actorRef) {
-    console.warn('DiagramApi instance changed, this should not happen during the lifetime of the actor')
-  }
 
   const features = useEnabledFeatures()
   useEffect(
-    () => actorRef.send({ type: 'update.features', features }),
-    [features, actorRef],
+    () => actor.send({ type: 'update.features', features }),
+    [features, actor],
   )
 
   useEffect(
     () =>
-      actorRef.send({
+      actor.send({
         type: 'update.inputs',
         inputs: { zoomable, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
       }),
-    [zoomable, pannable, fitViewPadding, actorRef, nodesDraggable, nodesSelectable],
+    [zoomable, pannable, fitViewPadding, actor, nodesDraggable, nodesSelectable],
   )
 
   useUpdateEffect(() => {
     if (!_defaultVariant) return
-    actorRef.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
-  }, [_defaultVariant, actorRef])
+    actor.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
+  }, [_defaultVariant, actor])
 
   return (
-    <DiagramActorContextProvider value={api}>
-      <ErrorBoundary>
-        <DiagramXYFlowSyncProvider
-          view={view}
-          where={where}
-          actorRef={actorRef}
-        />
-        <CurrentViewModelProvider actorRef={actorRef}>
-          {children}
-        </CurrentViewModelProvider>
-      </ErrorBoundary>
-      <DiagramActorEventListener />
+    <DiagramActorContextProvider value={actor}>
+      <DiagramApiContextProvider value={api}>
+        <ErrorBoundary>
+          <DiagramXYFlowSyncProvider
+            view={view}
+            where={where}
+            actorRef={actor}
+          />
+          <CurrentViewModelProvider actorRef={actor}>
+            {children}
+          </CurrentViewModelProvider>
+        </ErrorBoundary>
+        <DiagramActorEventListener />
+      </DiagramApiContextProvider>
     </DiagramActorContextProvider>
   )
 }
@@ -118,7 +132,7 @@ const selectFromActor = (
 } => {
   let toggledFeatures = context.toggledFeatures
 
-  const hasDrifts = context.view.drifts != null
+  const hasDrifts = context.view.drifts != null && context.view.drifts.length > 0
 
   const enableCompareWithLatest = context.features.enableCompareWithLatest
     && (toggledFeatures.enableCompareWithLatest ?? false)
@@ -164,9 +178,6 @@ function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ ac
     selectFromActor,
     compareSelected,
   )
-  useUpdateEffect(() => {
-    DiagramToggledFeaturesPersistence.write(toggledFeatures)
-  }, [toggledFeatures])
   const likec4model = useLikeC4Model()
   const viewmodel = likec4model.findView(viewId)
   return (
@@ -217,31 +228,26 @@ const DiagramActorEventListener = memo(() => {
   useOnDiagramEvent('onLayoutTypeChange', ({ layoutType }) => {
     onLayoutTypeChange?.(layoutType)
   })
+  useOnDiagramEvent(
+    'initialized',
+    ({ instance: xyflow }) => {
+      try {
+        handlersRef.current.onInitialized?.({ diagram, xyflow })
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    { once: true },
+  )
 
-  const wasEmitted = useRef(false)
+  const toggledFeatures = useDiagramContext(
+    (ctx) => ctx.toggledFeatures,
+    shallowEqual,
+  )
 
-  useEffect(() => {
-    if (wasEmitted.current) return
-
-    let subscription: Subscription | null = diagram.actor.on(
-      'initialized',
-      ({ instance: xyflow }) => {
-        try {
-          handlersRef.current.onInitialized?.({ diagram, xyflow })
-        } catch (error) {
-          console.error(error)
-        } finally {
-          wasEmitted.current = true
-          subscription?.unsubscribe()
-          subscription = null
-        }
-      },
-    )
-
-    return () => {
-      subscription?.unsubscribe()
-    }
-  }, [diagram])
+  useUpdateEffect(() => {
+    DiagramToggledFeaturesPersistence.write(omitBy(toggledFeatures, isNullish))
+  }, [toggledFeatures])
 
   return null
 })

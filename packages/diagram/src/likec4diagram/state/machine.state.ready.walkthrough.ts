@@ -140,7 +140,13 @@ export const walkthrough = machine.createStateConfig({
     'key.arrow.left': {
       actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
     },
+    'key.arrow.up': {
+      actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
+    },
     'key.arrow.right': {
+      actions: raise({ type: 'walkthrough.step', direction: 'next' }),
+    },
+    'key.arrow.down': {
       actions: raise({ type: 'walkthrough.step', direction: 'next' }),
     },
     'walkthrough.step': {

@@ -4,10 +4,12 @@ import type {
   NodeNotation as ElementNotation,
   ViewChange,
 } from '@likec4/core/types'
-import { invariant } from '@likec4/core/utils'
+import { invariant, nonNullable } from '@likec4/core/utils'
+import type { RefObject } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName, TogglableFeature } from '../../context/DiagramFeatures'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
+import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import type {
@@ -25,11 +27,20 @@ type NodeId = t.aux.NodeId
 type EdgeId = t.aux.EdgeId
 
 export interface DiagramApi<A extends Any = Unknown> {
+  /**
+   * React ref to the diagram actor
+   */
+  readonly ref: RefObject<DiagramActorRef>
+  /**
+   * @warning Do not use in render phase
+   */
   readonly actor: DiagramActorRef
   /**
    * @warning Do not use in render phase
    */
   readonly currentView: t.DiagramView<A>
+
+  overlays(): OverlaysActorRef
   /**
    * Send event to diagram actor
    */
@@ -119,58 +130,64 @@ export interface DiagramApi<A extends Any = Unknown> {
   switchDynamicViewVariant(variant: DynamicViewDisplayVariant): void
 }
 
-export function makeDiagramApi<A extends Any = Unknown>(actor: DiagramActorRef): DiagramApi<A> {
+export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<DiagramActorRef>): DiagramApi<A> {
   return {
-    actor,
-    send: (event: DiagramEvents) => actor.send(event),
+    ref: actorRef,
+    get actor(): DiagramActorRef {
+      return actorRef.current
+    },
+    overlays(): OverlaysActorRef {
+      return nonNullable(actorRef.current.getSnapshot().children.overlays, 'Overlays actor not found')
+    },
+    send: (event: DiagramEvents) => actorRef.current.send(event),
     navigateTo: (viewId: ViewId<A>, fromNode?: NodeId) => {
-      actor.send({
+      actorRef.current.send({
         type: 'navigate.to',
         viewId: viewId as any,
         ...(fromNode && { fromNode }),
       })
     },
     navigate: (direction: 'back' | 'forward') => {
-      actor.send({ type: `navigate.${direction}` })
+      actorRef.current.send({ type: `navigate.${direction}` })
     },
     fitDiagram: (duration = 350) => {
-      actor.send({ type: 'xyflow.fitDiagram', duration })
+      actorRef.current.send({ type: 'xyflow.fitDiagram', duration })
     },
     openRelationshipsBrowser: (fqn) => {
-      actor.send({ type: 'open.relationshipsBrowser', fqn })
+      actorRef.current.send({ type: 'open.relationshipsBrowser', fqn })
     },
     openSource: (params: OpenSourceParams<Unknown>) => {
-      actor.send({ type: 'open.source', ...params })
+      actorRef.current.send({ type: 'open.source', ...params })
     },
     openElementDetails: (fqn, fromNode?: NodeId) => {
-      actor.send({ type: 'open.elementDetails', fqn, fromNode })
+      actorRef.current.send({ type: 'open.elementDetails', fqn, fromNode })
     },
     openRelationshipDetails: (...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]) => {
       if (params.length === 1) {
-        actor.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
+        actorRef.current.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
       } else {
-        actor.send({ type: 'open.relationshipDetails', params: { source: params[0], target: params[1] } })
+        actorRef.current.send({ type: 'open.relationshipDetails', params: { source: params[0], target: params[1] } })
       }
     },
 
     updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
-      actor.send({ type: 'update.nodeData', nodeId, data })
+      actorRef.current.send({ type: 'update.nodeData', nodeId, data })
     },
     updateEdgeData: (edgeId: EdgeId, data: PartialDeep<Types.EdgeData>) => {
-      actor.send({ type: 'update.edgeData', edgeId, data })
+      actorRef.current.send({ type: 'update.edgeData', edgeId, data })
     },
     startEditing: (subject: 'node' | 'edge') => {
-      const syncActor = typedSystem(actor.system).syncLayoutActorRef
+      const syncActor = typedSystem(actorRef.current.system).syncLayoutActorRef
       invariant(syncActor, 'No sync layout actor found in diagram actor system')
       syncActor.send({ type: 'editing.start', subject })
     },
     stopEditing: (wasChanged = false) => {
-      const syncActor = typedSystem(actor.system).syncLayoutActorRef
+      const syncActor = typedSystem(actorRef.current.system).syncLayoutActorRef
       invariant(syncActor, 'No sync layout actor found in diagram actor system')
       syncActor.send({ type: 'editing.stop', wasChanged })
     },
     undoEditing: () => {
-      const syncActor = typedSystem(actor.system).syncLayoutActorRef
+      const syncActor = typedSystem(actorRef.current.system).syncLayoutActorRef
       invariant(syncActor, 'No sync layout actor found in diagram actor system')
       const hasUndo = syncActor.getSnapshot().context.history.length > 0
       if (hasUndo) {
@@ -180,76 +197,76 @@ export function makeDiagramApi<A extends Any = Unknown>(actor: DiagramActorRef):
     },
 
     align: (mode: AlignmentMode) => {
-      actor.send({ type: 'layout.align', mode })
+      actorRef.current.send({ type: 'layout.align', mode })
     },
 
     resetEdgeControlPoints: () => {
-      actor.send({ type: 'layout.resetEdgeControlPoints' })
+      actorRef.current.send({ type: 'layout.resetEdgeControlPoints' })
     },
 
     focusNode: (nodeId: NodeId) => {
-      actor.send({ type: 'focus.node', nodeId })
+      actorRef.current.send({ type: 'focus.node', nodeId })
     },
 
     /**
      * @warning Do not use in render phase
      */
     get currentView(): t.DiagramView<A> {
-      return actor.getSnapshot().context.view
+      return actorRef.current.getSnapshot().context.view
     },
     /**
      * @warning Do not use in render phase
      */
-    getContext: (): DiagramContext => actor.getSnapshot().context,
+    getContext: (): DiagramContext => actorRef.current.getSnapshot().context,
     /**
      * @warning Do not use in render phase
      */
     findDiagramNode: (xynodeId: string): t.DiagramNode<A> | null => {
-      return findDiagramNode(actor.getSnapshot().context, xynodeId)
+      return findDiagramNode(actorRef.current.getSnapshot().context, xynodeId)
     },
     findEdge: (xyedgeId: string): Types.Edge | null => {
-      return actor.getSnapshot().context.xyedges.find(e => e.data.id === xyedgeId) ?? null
+      return actorRef.current.getSnapshot().context.xyedges.find(e => e.data.id === xyedgeId) ?? null
     },
     /**
      * @warning Do not use in render phase
      */
     findDiagramEdge: (xyedgeId: string): t.DiagramEdge<A> | null => {
-      return findDiagramEdge(actor.getSnapshot().context, xyedgeId)
+      return findDiagramEdge(actorRef.current.getSnapshot().context, xyedgeId)
     },
 
     startWalkthrough: () => {
-      actor.send({ type: 'walkthrough.start' })
+      actorRef.current.send({ type: 'walkthrough.start' })
     },
 
     walkthroughStep: (direction: 'next' | 'previous' = 'next') => {
-      actor.send({ type: 'walkthrough.step', direction })
+      actorRef.current.send({ type: 'walkthrough.step', direction })
     },
 
     stopWalkthrough: () => {
-      actor.send({ type: 'walkthrough.end' })
+      actorRef.current.send({ type: 'walkthrough.end' })
     },
 
     toggleFeature: (feature: TogglableFeature, forceValue?: boolean) => {
-      actor.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
+      actorRef.current.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
     },
 
     highlightNotation: (notation: ElementNotation, kind?: string) => {
-      actor.send({ type: 'notations.highlight', notation, ...(kind && { kind }) })
+      actorRef.current.send({ type: 'notations.highlight', notation, ...(kind && { kind }) })
     },
     unhighlightNotation: () => {
-      actor.send({ type: 'notations.unhighlight' })
+      actorRef.current.send({ type: 'notations.unhighlight' })
     },
 
     openSearch: (searchValue?: string) => {
-      actor.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
+      actorRef.current.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
     },
 
     triggerChange: (change: ViewChange) => {
-      actor.send({ type: 'emit.onChange', change })
+      actorRef.current.send({ type: 'emit.onChange', change })
     },
 
     switchDynamicViewVariant: (variant: DynamicViewDisplayVariant) => {
-      actor.send({ type: 'switch.dynamicViewVariant', variant })
+      actorRef.current.send({ type: 'switch.dynamicViewVariant', variant })
     },
   }
 }

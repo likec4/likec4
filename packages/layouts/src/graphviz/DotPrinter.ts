@@ -576,7 +576,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   public applyManualLayout({ height, ...layout }: ApplyManualLayoutData): this {
     const offsetX = layout.x < 0 ? -layout.x : 0
     const offsetY = layout.y < 0 ? -layout.y : 0
-    const isShifted = offsetX > 0 || offsetY > 0
+    const _isShifted = offsetX > 0 || offsetY > 0
     for (const { id, ...manual } of layout.nodes) {
       // we pin only nodes, not clusters
       const model = this.getGraphNode(id as NodeId)
@@ -600,7 +600,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
         model.attributes.set(_.pos, `${x},${y}`)
       }
     }
-    for (const [id, edgeModel] of this.edges.entries()) {
+    for (const [, edgeModel] of this.edges.entries()) {
       edgeModel.attributes.delete(_.weight)
       edgeModel.attributes.delete(_.minlen)
       edgeModel.attributes.delete(_.constraint)

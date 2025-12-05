@@ -2,280 +2,156 @@
 
 import type { SVGProps } from 'react'
 const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <linearGradient
-      id="Ruby_svg__a"
-      x1={157.08}
-      x2={131.682}
-      y1={2382.05}
-      y2={2426.892}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#FB7655" />
-      <stop offset={0} stopColor="#FB7655" />
-      <stop offset={0.41} stopColor="#E42B1E" />
-      <stop offset={0.99} stopColor="#900" />
-      <stop offset={1} stopColor="#900" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__a)" d="M97.078 83.214 28.34 124.031l89.003-6.04 6.855-89.745z" />
-    <linearGradient
-      id="Ruby_svg__b"
-      x1={169.731}
-      x2={136.998}
-      y1={2419.72}
-      y2={2441.685}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#871101" />
-      <stop offset={0} stopColor="#871101" />
-      <stop offset={0.99} stopColor="#911209" />
-      <stop offset={1} stopColor="#911209" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__b)" d="m117.488 117.93-7.649-52.799-20.837 27.514z" />
-    <linearGradient
-      id="Ruby_svg__c"
-      x1={143.542}
-      x2={110.81}
-      y1={2380.69}
-      y2={2402.655}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#871101" />
-      <stop offset={0} stopColor="#871101" />
-      <stop offset={0.99} stopColor="#911209" />
-      <stop offset={1} stopColor="#911209" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__c)" d="m117.592 117.93-56.044-4.399-32.91 10.385z" />
-    <linearGradient
-      id="Ruby_svg__d"
-      x1={74.817}
-      x2={79.891}
-      y1={2435.622}
-      y2={2402.644}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0.23} stopColor="#E57252" />
-      <stop offset={0.46} stopColor="#DE3B20" />
-      <stop offset={0.99} stopColor="#A60003" />
-      <stop offset={1} stopColor="#A60003" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__d)" d="m28.717 123.928 14.001-45.867-30.81 6.588z" />
-    <linearGradient
-      id="Ruby_svg__e"
-      x1={109.719}
-      x2={111.589}
-      y1={2466.413}
-      y2={2432.757}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0.23} stopColor="#E4714E" />
-      <stop offset={0.56} stopColor="#BE1A0D" />
-      <stop offset={0.99} stopColor="#A80D00" />
-      <stop offset={1} stopColor="#A80D00" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__e)" d="m88.996 92.797-12.882-50.46-36.866 34.558z" />
-    <linearGradient
-      id="Ruby_svg__f"
-      x1={140.691}
-      x2={146.289}
-      y1={2497.523}
-      y2={2473.401}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0.18} stopColor="#E46342" />
-      <stop offset={0.4} stopColor="#C82410" />
-      <stop offset={0.99} stopColor="#A80D00" />
-      <stop offset={1} stopColor="#A80D00" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__f)" d="M121.275 43.047 86.426 14.585l-9.704 31.373z" />
-    <linearGradient
-      id="Ruby_svg__g"
-      x1={123.6}
-      x2={147.719}
-      y1={2506.018}
-      y2={2518.077}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0.54} stopColor="#C81F11" />
-      <stop offset={0.99} stopColor="#BF0905" />
-      <stop offset={1} stopColor="#BF0905" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__g)" d="M104.978 4.437 84.481 15.764 71.551 4.285z" />
-    <linearGradient
-      id="Ruby_svg__h"
-      x1={53.674}
-      x2={55.66}
-      y1={2444.028}
-      y2={2424.153}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0} stopColor="#fff" />
-      <stop offset={0.31} stopColor="#DE4024" />
-      <stop offset={0.99} stopColor="#BF190B" />
-      <stop offset={1} stopColor="#BF190B" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__h)" d="m3.802 100.034 8.586-15.659L5.442 65.72z" />
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 255" {...props}>
+    <defs>
+      <linearGradient id="Ruby_svg__a" x1="84.75%" x2="58.254%" y1="111.399%" y2="64.584%">
+        <stop offset="0%" stopColor="#FB7655" />
+        <stop offset="0%" stopColor="#FB7655" />
+        <stop offset="41%" stopColor="#E42B1E" />
+        <stop offset="99%" stopColor="#900" />
+        <stop offset="100%" stopColor="#900" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__b" x1="116.651%" x2="1.746%" y1="60.89%" y2="19.288%">
+        <stop offset="0%" stopColor="#871101" />
+        <stop offset="0%" stopColor="#871101" />
+        <stop offset="99%" stopColor="#911209" />
+        <stop offset="100%" stopColor="#911209" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__c" x1="75.774%" x2="38.978%" y1="219.327%" y2="7.829%">
+        <stop offset="0%" stopColor="#871101" />
+        <stop offset="0%" stopColor="#871101" />
+        <stop offset="99%" stopColor="#911209" />
+        <stop offset="100%" stopColor="#911209" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__d" x1="50.012%" x2="66.483%" y1="7.234%" y2="79.135%">
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="23%" stopColor="#E57252" />
+        <stop offset="46%" stopColor="#DE3B20" />
+        <stop offset="99%" stopColor="#A60003" />
+        <stop offset="100%" stopColor="#A60003" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__e" x1="46.174%" x2="49.932%" y1="16.348%" y2="83.047%">
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="23%" stopColor="#E4714E" />
+        <stop offset="56%" stopColor="#BE1A0D" />
+        <stop offset="99%" stopColor="#A80D00" />
+        <stop offset="100%" stopColor="#A80D00" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__f" x1="36.965%" x2="49.528%" y1="15.594%" y2="92.478%">
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="18%" stopColor="#E46342" />
+        <stop offset="40%" stopColor="#C82410" />
+        <stop offset="99%" stopColor="#A80D00" />
+        <stop offset="100%" stopColor="#A80D00" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__g" x1="13.609%" x2="85.764%" y1="58.346%" y2="-46.717%">
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="54%" stopColor="#C81F11" />
+        <stop offset="99%" stopColor="#BF0905" />
+        <stop offset="100%" stopColor="#BF0905" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__h" x1="27.624%" x2="50.745%" y1="21.135%" y2="79.056%">
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="0%" stopColor="#FFF" />
+        <stop offset="31%" stopColor="#DE4024" />
+        <stop offset="99%" stopColor="#BF190B" />
+        <stop offset="100%" stopColor="#BF190B" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__i" x1="-20.667%" x2="104.242%" y1="122.282%" y2="-6.342%">
+        <stop offset="0%" stopColor="#BD0012" />
+        <stop offset="0%" stopColor="#BD0012" />
+        <stop offset="7%" stopColor="#FFF" />
+        <stop offset="17%" stopColor="#FFF" />
+        <stop offset="27%" stopColor="#C82F1C" />
+        <stop offset="33%" stopColor="#820C01" />
+        <stop offset="46%" stopColor="#A31601" />
+        <stop offset="72%" stopColor="#B31301" />
+        <stop offset="99%" stopColor="#E82609" />
+        <stop offset="100%" stopColor="#E82609" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__j" x1="58.792%" x2="11.964%" y1="65.205%" y2="50.128%">
+        <stop offset="0%" stopColor="#8C0C01" />
+        <stop offset="0%" stopColor="#8C0C01" />
+        <stop offset="54%" stopColor="#990C00" />
+        <stop offset="99%" stopColor="#A80D0E" />
+        <stop offset="100%" stopColor="#A80D0E" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__k" x1="79.319%" x2="23.088%" y1="62.754%" y2="17.888%">
+        <stop offset="0%" stopColor="#7E110B" />
+        <stop offset="0%" stopColor="#7E110B" />
+        <stop offset="99%" stopColor="#9E0C00" />
+        <stop offset="100%" stopColor="#9E0C00" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__l" x1="92.88%" x2="59.841%" y1="74.122%" y2="39.704%">
+        <stop offset="0%" stopColor="#79130D" />
+        <stop offset="0%" stopColor="#79130D" />
+        <stop offset="99%" stopColor="#9E120B" />
+        <stop offset="100%" stopColor="#9E120B" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__o" x1="56.57%" x2="3.105%" y1="101.717%" y2="11.993%">
+        <stop offset="0%" stopColor="#8B2114" />
+        <stop offset="0%" stopColor="#8B2114" />
+        <stop offset="43%" stopColor="#9E100A" />
+        <stop offset="99%" stopColor="#B3100C" />
+        <stop offset="100%" stopColor="#B3100C" />
+      </linearGradient>
+      <linearGradient id="Ruby_svg__p" x1="30.87%" x2="92.471%" y1="35.599%" y2="100.694%">
+        <stop offset="0%" stopColor="#B31000" />
+        <stop offset="0%" stopColor="#B31000" />
+        <stop offset="44%" stopColor="#910F08" />
+        <stop offset="99%" stopColor="#791C12" />
+        <stop offset="100%" stopColor="#791C12" />
+      </linearGradient>
+      <radialGradient id="Ruby_svg__m" cx="32.001%" cy="40.21%" r="69.573%" fx="32.001%" fy="40.21%">
+        <stop offset="0%" stopColor="#A80D00" />
+        <stop offset="0%" stopColor="#A80D00" />
+        <stop offset="99%" stopColor="#7E0E08" />
+        <stop offset="100%" stopColor="#7E0E08" />
+      </radialGradient>
+      <radialGradient id="Ruby_svg__n" cx="13.549%" cy="40.86%" r="88.386%" fx="13.549%" fy="40.86%">
+        <stop offset="0%" stopColor="#A30C00" />
+        <stop offset="0%" stopColor="#A30C00" />
+        <stop offset="99%" stopColor="#800E08" />
+        <stop offset="100%" stopColor="#800E08" />
+      </radialGradient>
+    </defs>
+    <path fill="url(#Ruby_svg__a)" d="m197.467 167.764-145.52 86.41 188.422-12.787L254.88 51.393z" />
+    <path fill="url(#Ruby_svg__b)" d="M240.677 241.257 224.482 129.48l-44.113 58.25z" />
+    <path fill="url(#Ruby_svg__c)" d="m240.896 241.257-118.646-9.313-69.674 21.986z" />
+    <path fill="url(#Ruby_svg__d)" d="m52.744 253.955 29.64-97.1L17.16 170.8z" />
+    <path fill="url(#Ruby_svg__e)" d="M180.358 188.05 153.085 81.226l-78.047 73.16z" />
+    <path fill="url(#Ruby_svg__f)" d="m248.693 82.73-73.777-60.256-20.544 66.418z" />
+    <path fill="url(#Ruby_svg__g)" d="M214.191.99 170.8 24.97 143.424.669z" />
+    <path fill="url(#Ruby_svg__h)" d="m0 203.372 18.177-33.151-14.704-39.494z" />
     <path
-      fill="#fff"
-      d="m4.981 65.131 6.987 19.821 30.365-6.812L77 45.922l9.783-31.075L71.38 3.969l-26.19 9.802c-8.252 7.675-24.263 22.86-24.84 23.146-.573.291-10.575 19.195-15.369 28.214"
+      fill="#FFF"
+      d="m2.496 129.48 14.794 41.963 64.283-14.422 73.39-68.207 20.712-65.787L143.063 0 87.618 20.75c-17.469 16.248-51.366 48.396-52.588 49-1.21.618-22.384 40.639-32.534 59.73"
     />
-    <linearGradient
-      id="Ruby_svg__i"
-      x1={40.026}
-      x2={133.345}
-      y1={2418.781}
-      y2={2514.739}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#BD0012" />
-      <stop offset={0} stopColor="#BD0012" />
-      <stop offset={0.07} stopColor="#fff" />
-      <stop offset={0.17} stopColor="#fff" />
-      <stop offset={0.27} stopColor="#C82F1C" />
-      <stop offset={0.33} stopColor="#820C01" />
-      <stop offset={0.46} stopColor="#A31601" />
-      <stop offset={0.72} stopColor="#B31301" />
-      <stop offset={0.99} stopColor="#E82609" />
-      <stop offset={1} stopColor="#E82609" />
-    </linearGradient>
     <path
       fill="url(#Ruby_svg__i)"
-      d="M29.519 29.521c17.882-17.73 40.937-28.207 49.785-19.28 8.843 8.926-.534 30.62-18.418 48.345S20.233 87.365 11.393 78.438c-8.849-8.92.242-31.191 18.126-48.917"
+      d="M54.442 54.094c37.86-37.538 86.667-59.716 105.397-40.818 18.72 18.898-1.132 64.823-38.992 102.349-37.86 37.525-86.062 60.925-104.78 42.027-18.73-18.885.515-66.032 38.375-103.558"
     />
-    <linearGradient
-      id="Ruby_svg__j"
-      x1={111.507}
-      x2={83.398}
-      y1={2409.102}
-      y2={2416.039}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#8C0C01" />
-      <stop offset={0} stopColor="#8C0C01" />
-      <stop offset={0.54} stopColor="#990C00" />
-      <stop offset={0.99} stopColor="#A80D0E" />
-      <stop offset={1} stopColor="#A80D0E" />
-    </linearGradient>
     <path
       fill="url(#Ruby_svg__j)"
-      d="m28.717 123.909 13.89-46.012 46.135 14.82c-16.68 15.642-35.233 28.865-60.025 31.192"
+      d="m52.744 253.916 29.408-97.409 97.665 31.376c-35.312 33.113-74.587 61.106-127.073 66.033"
     />
-    <linearGradient
-      id="Ruby_svg__k"
-      x1={159.785}
-      x2={134.814}
-      y1={2442.837}
-      y2={2465.217}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#7E110B" />
-      <stop offset={0} stopColor="#7E110B" />
-      <stop offset={0.99} stopColor="#9E0C00" />
-      <stop offset={1} stopColor="#9E0C00" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__k)" d="m77.062 45.831 11.844 46.911c13.934-14.65 26.439-30.401 32.563-49.883z" />
-    <linearGradient
-      id="Ruby_svg__l"
-      x1={168.959}
-      x2={156.521}
-      y1={2483.901}
-      y2={2497.199}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#79130D" />
-      <stop offset={0} stopColor="#79130D" />
-      <stop offset={0.99} stopColor="#9E120B" />
-      <stop offset={1} stopColor="#9E120B" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__l)" d="M121.348 43.097c4.74-14.305 5.833-34.825-16.517-38.635l-18.339 10.13z" />
-    <path fill="#9E1209" d="M3.802 99.828c.656 23.608 17.689 23.959 24.945 24.167l-16.759-39.14z" />
-    <radialGradient
-      id="Ruby_svg__m"
-      cx={138.703}
-      cy={2464.789}
-      r={30.601}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#A80D00" />
-      <stop offset={0} stopColor="#A80D00" />
-      <stop offset={0.99} stopColor="#7E0E08" />
-      <stop offset={1} stopColor="#7E0E08" />
-    </radialGradient>
+    <path fill="url(#Ruby_svg__k)" d="m155.092 88.622 25.073 99.313c29.498-31.016 55.972-64.36 68.938-105.603z" />
+    <path fill="url(#Ruby_svg__l)" d="M248.847 82.833c10.035-30.282 12.35-73.725-34.966-81.791l-38.825 21.445z" />
+    <path fill="#9E1209" d="M0 202.935c1.39 49.979 37.448 50.724 52.808 51.162l-35.48-82.86z" />
     <path
       fill="url(#Ruby_svg__m)"
-      d="M77.128 45.904c10.708 6.581 32.286 19.798 32.723 20.041.68.383 9.304-14.542 11.261-22.976z"
+      d="M155.232 88.777c22.667 13.932 68.35 41.912 69.276 42.426 1.44.81 19.695-30.784 23.838-48.64z"
     />
-    <radialGradient
-      id="Ruby_svg__n"
-      cx={96.325}
-      cy={2424.465}
-      r={40.679}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#A30C00" />
-      <stop offset={0} stopColor="#A30C00" />
-      <stop offset={0.99} stopColor="#800E08" />
-      <stop offset={1} stopColor="#800E08" />
-    </radialGradient>
-    <path fill="url(#Ruby_svg__n)" d="m42.589 77.897 18.57 35.828c10.98-5.955 19.579-13.211 27.454-20.983z" />
-    <linearGradient
-      id="Ruby_svg__o"
-      x1={67.509}
-      x2={57.373}
-      y1={2393.115}
-      y2={2427.506}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#8B2114" />
-      <stop offset={0} stopColor="#8B2114" />
-      <stop offset={0.43} stopColor="#9E100A" />
-      <stop offset={0.99} stopColor="#B3100C" />
-      <stop offset={1} stopColor="#B3100C" />
-    </linearGradient>
+    <path fill="url(#Ruby_svg__n)" d="m82.113 156.507 39.313 75.848c23.246-12.607 41.45-27.967 58.121-44.42z" />
     <path
       fill="url(#Ruby_svg__o)"
-      d="m11.914 84.904-2.631 31.331c4.964 6.781 11.794 7.371 18.96 6.842-5.184-12.9-15.538-38.696-16.329-38.173"
+      d="m17.174 171.34-5.57 66.328c10.51 14.357 24.97 15.605 40.136 14.486-10.973-27.311-32.894-81.92-34.566-80.814"
     />
-    <linearGradient
-      id="Ruby_svg__p"
-      x1={145.272}
-      x2={167.996}
-      y1={2507.076}
-      y2={2497.045}
-      gradientTransform="matrix(1 0 0 -1 -47.5 2517)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#B31000" />
-      <stop offset={0} stopColor="#B31000" />
-      <stop offset={0.44} stopColor="#910F08" />
-      <stop offset={0.99} stopColor="#791C12" />
-      <stop offset={1} stopColor="#791C12" />
-    </linearGradient>
-    <path fill="url(#Ruby_svg__p)" d="m86.384 14.67 36.891 5.177c-1.969-8.343-8.015-13.727-18.32-15.41z" />
+    <path fill="url(#Ruby_svg__p)" d="m174.826 22.654 78.1 10.96c-4.169-17.662-16.969-29.06-38.787-32.623z" />
   </svg>
 )
 export default SvgRuby

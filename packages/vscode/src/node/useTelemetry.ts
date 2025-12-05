@@ -5,7 +5,6 @@ import { deepEqual } from 'fast-equals'
 import {
   type OnCleanup,
   createSingletonComposable,
-  tryOnScopeDispose,
   useDisposable,
   useIsTelemetryEnabled,
   watch,

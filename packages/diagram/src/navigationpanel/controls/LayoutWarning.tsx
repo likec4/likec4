@@ -43,6 +43,7 @@ export const LayoutWarning = memo(() => {
               component={m.button}
               layout="position"
               onClick={e => {
+                e.stopPropagation()
                 toggleCompare()
               }}
               whileTap={{

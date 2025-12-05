@@ -5,7 +5,7 @@ import type {
   ViewChange,
 } from '@likec4/core/types'
 import { getNodeDimensions } from '@xyflow/system'
-import { hasAtLeast, indexBy, map, omit } from 'remeda'
+import { hasAtLeast, map, omit } from 'remeda'
 import { calcViewBounds } from '../../utils/view-bounds'
 import { bezierControlPoints, isSamePoint } from '../../utils/xyflow'
 import type { DiagramContext } from './types'
@@ -19,6 +19,7 @@ export function createViewChange(
       _layout: _2, // Ignore layout type from view
       ...view
     },
+    xynodes,
     xystore,
   } = parentContext
 
@@ -31,11 +32,13 @@ export function createViewChange(
       console.error(`Internal node not found for ${node.id}`)
       return node
     }
-    const dimensions = getNodeDimensions(internal)
+    const xynodedata = xynodes.find(n => n.id === node.id)?.data ?? internal.data
+    const position = internal.internals.positionAbsolute
+    const { width, height } = getNodeDimensions(internal)
 
-    const isChanged = !isSamePoint(internal.internals.positionAbsolute, node)
-      || node.width !== dimensions.width
-      || node.height !== dimensions.height
+    const isChanged = !isSamePoint(position, node)
+      || node.width !== width
+      || node.height !== height
 
     if (isChanged) {
       movedNodes.add(node.id)
@@ -43,15 +46,15 @@ export function createViewChange(
 
     return {
       ...node,
-      shape: internal.data.shape,
-      color: internal.data.color,
+      shape: xynodedata.shape,
+      color: xynodedata.color,
       style: {
-        ...internal.data.style,
+        ...xynodedata.style,
       },
-      x: Math.floor(internal.internals.positionAbsolute.x),
-      y: Math.floor(internal.internals.positionAbsolute.y),
-      width: Math.ceil(dimensions.width),
-      height: Math.ceil(dimensions.height),
+      x: Math.floor(position.x),
+      y: Math.floor(position.y),
+      width: Math.ceil(width),
+      height: Math.ceil(height),
     } satisfies DiagramNode
   })
 

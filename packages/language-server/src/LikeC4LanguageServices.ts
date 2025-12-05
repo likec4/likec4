@@ -16,6 +16,7 @@ import type { Range } from 'vscode-languageserver-types'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { logger as mainLogger } from './logger'
 import type { LikeC4ModelBuilder } from './model'
+import type { LikeC4ModelChanges } from './model-change/ModelChanges'
 import type { LikeC4Services } from './module'
 import type { Locate } from './protocol'
 import type { LikeC4Views } from './views/LikeC4Views'
@@ -28,6 +29,7 @@ export interface LikeC4LanguageServices {
   readonly builder: LikeC4ModelBuilder
   readonly workspaceUri: URI
   readonly projectsManager: ProjectsManager
+  readonly editor: LikeC4ModelChanges
 
   /**
    * Returns all projects with relevant documents
@@ -83,12 +85,13 @@ export interface LikeC4LanguageServices {
  */
 export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   public readonly builder: LikeC4ModelBuilder
-
+  public readonly editor: LikeC4ModelChanges
   public readonly projectsManager: ProjectsManager
 
   constructor(private services: LikeC4Services) {
     this.builder = services.likec4.ModelBuilder
     this.projectsManager = services.shared.workspace.ProjectsManager
+    this.editor = services.likec4.ModelChanges
   }
 
   get views(): LikeC4Views {

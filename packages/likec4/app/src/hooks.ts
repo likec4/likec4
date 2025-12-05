@@ -63,7 +63,10 @@ export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType)
     return $likec4model.subscribe((next) => {
       setView(current => {
         const vm = next.findView(viewId)
-        const nextView = (layoutType === 'manual' ? vm?.$layouted : vm?.$view) ?? null
+        if (!vm) {
+          return null
+        }
+        const nextView = layoutType === 'auto' ? vm.$view : vm.$layouted
         if (deepEqual(current, nextView)) {
           return current
         }

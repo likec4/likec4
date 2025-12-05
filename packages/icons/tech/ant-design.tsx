@@ -2,84 +2,43 @@
 
 import type { SVGProps } from 'react'
 const SvgAntDesign = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" {...props}>
     <defs>
-      <linearGradient
-        id="Ant-Design_svg__a"
-        x1={0.621}
-        x2={1.082}
-        y1={0}
-        y2={0.379}
-        gradientTransform="matrix(94.54297 0 0 127.17188 .418 .406)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0} stopColor="#4285eb" stopOpacity={1} />
-        <stop offset={1} stopColor="#2ec7ff" stopOpacity={1} />
+      <linearGradient id="Ant-Design_svg__a" x1="62.102%" x2="108.197%" y1="0%" y2="37.864%">
+        <stop offset="0%" stopColor="#4285EB" />
+        <stop offset="100%" stopColor="#2EC7FF" />
       </linearGradient>
-      <linearGradient
-        id="Ant-Design_svg__b"
-        x1={0.696}
-        x2={0.54}
-        y1={0}
-        y2={1.085}
-        gradientTransform="matrix(94.54297 0 0 127.17188 .418 .406)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0} stopColor="#29cdff" stopOpacity={1} />
-        <stop offset={0.379} stopColor="#148eff" stopOpacity={1} />
-        <stop offset={1} stopColor="#0a60ff" stopOpacity={1} />
+      <linearGradient id="Ant-Design_svg__b" x1="69.644%" x2="54.043%" y1="0%" y2="108.457%">
+        <stop offset="0%" stopColor="#29CDFF" />
+        <stop offset="37.86%" stopColor="#148EFF" />
+        <stop offset="100%" stopColor="#0A60FF" />
       </linearGradient>
-      <linearGradient
-        id="Ant-Design_svg__c"
-        x1={0.697}
-        x2={0.167}
-        y1={-0.13}
-        y2={1.174}
-        gradientTransform="matrix(31.49219 0 0 49.5586 96.176 39.402)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0} stopColor="#fa816e" stopOpacity={1} />
-        <stop offset={0.415} stopColor="#f74a5c" stopOpacity={1} />
-        <stop offset={1} stopColor="#f51d2c" stopOpacity={1} />
+      <linearGradient id="Ant-Design_svg__c" x1="69.691%" x2="16.723%" y1="-12.974%" y2="117.391%">
+        <stop offset="0%" stopColor="#FA816E" />
+        <stop offset="41.473%" stopColor="#F74A5C" />
+        <stop offset="100%" stopColor="#F51D2C" />
       </linearGradient>
-      <linearGradient
-        id="Ant-Design_svg__d"
-        x1={0.681}
-        x2={0.304}
-        y1={-0.357}
-        y2={1.149}
-        gradientTransform="matrix(30.21094 0 0 30.1836 49.227 49.188)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0} stopColor="#fa8e7d" stopOpacity={1} />
-        <stop offset={0.513} stopColor="#f74a5c" stopOpacity={1} />
-        <stop offset={1} stopColor="#f51d2c" stopOpacity={1} />
+      <linearGradient id="Ant-Design_svg__d" x1="68.128%" x2="30.44%" y1="-35.691%" y2="114.943%">
+        <stop offset="0%" stopColor="#FA8E7D" />
+        <stop offset="51.264%" stopColor="#F74A5C" />
+        <stop offset="100%" stopColor="#F51D2C" />
       </linearGradient>
     </defs>
-    <path
-      d="M58.617 2.672 2.676 58.566a7.67 7.67 0 0 0 0 10.868l55.941 55.894a7.684 7.684 0 0 0 10.871 0l23.457-23.437a6.89 6.89 0 0 0 0-9.746 6.9 6.9 0 0 0-9.754 0l-17.78 17.765c-.75.75-1.888.75-2.634 0L18.102 65.277c-.747-.75-.747-1.886 0-2.632l44.675-44.637c.746-.746 1.883-.746 2.633 0l17.781 17.765a6.9 6.9 0 0 0 9.754 0 6.89 6.89 0 0 0 0-9.746L69.492 2.594c-3.02-2.938-7.879-2.914-10.875.078m0 0"
-      stroke="none"
-      fillRule="nonzero"
-      fill="url(#Ant-Design_svg__a)"
-    />
-    <path
-      d="M58.617 2.672 2.676 58.566a7.67 7.67 0 0 0 0 10.868l55.941 55.894a7.684 7.684 0 0 0 10.871 0l23.457-23.437a6.89 6.89 0 0 0 0-9.746 6.9 6.9 0 0 0-9.754 0l-17.78 17.765c-.75.75-1.888.75-2.634 0L18.102 65.277c-.747-.75-.747-1.886 0-2.632l44.675-44.637c1.864-1.606 4.903-4.86 9.371-5.621q4.977-.849 10.883 3.734-3.948-3.948-13.539-13.527c-3.02-2.938-7.879-2.914-10.875.078m0 0"
-      stroke="none"
-      fillRule="nonzero"
-      fill="url(#Ant-Design_svg__b)"
-    />
-    <path
-      d="M98.36 86.945a6.9 6.9 0 0 0 9.753 0l17.301-17.285a7.667 7.667 0 0 0 0-10.863l-17.453-17.379a6.91 6.91 0 0 0-9.762.012 6.884 6.884 0 0 0 0 9.746l11.79 11.777a1.826 1.826 0 0 1 0 2.629l-11.63 11.621a6.88 6.88 0 0 0 0 9.742Zm0 0"
-      stroke="none"
-      fillRule="nonzero"
-      fill="url(#Ant-Design_svg__c)"
-    />
-    <path
-      d="M79.438 64.281c0-8.336-6.762-15.094-15.106-15.094-8.34 0-15.105 6.758-15.105 15.094 0 8.332 6.765 15.09 15.105 15.09 8.344 0 15.106-6.758 15.106-15.09m0 0"
-      stroke="none"
-      fillRule="evenodd"
-      fill="url(#Ant-Design_svg__d)"
-    />
+    <g fill="none" fillRule="nonzero">
+      <path
+        fill="url(#Ant-Design_svg__a)"
+        d="M116.85 4.545 4.53 116.775a15.396 15.396 0 0 0 0 21.812L116.85 250.816c6.039 6.033 15.792 6.033 21.83 0l47.095-47.056c5.408-5.404 5.408-14.165 0-19.568s-14.176-5.404-19.584 0l-35.702 35.672c-1.503 1.502-3.784 1.502-5.287 0l-89.696-89.622c-1.503-1.502-1.503-3.781 0-5.283l89.696-89.623c1.503-1.501 3.784-1.501 5.287 0l35.702 35.673c5.408 5.404 14.176 5.404 19.584 0s5.408-14.164 0-19.568l-47.09-47.05c-6.063-5.904-15.82-5.856-21.835.154"
+      />
+      <path
+        fill="url(#Ant-Design_svg__b)"
+        d="M116.85 4.545 4.53 116.775a15.396 15.396 0 0 0 0 21.812L116.85 250.816c6.039 6.033 15.792 6.033 21.83 0l47.095-47.056c5.408-5.404 5.408-14.165 0-19.568s-14.176-5.404-19.584 0l-35.702 35.672c-1.503 1.502-3.784 1.502-5.287 0l-89.696-89.622c-1.503-1.502-1.503-3.781 0-5.283l89.696-89.623c3.742-3.226 9.849-9.76 18.815-11.29q9.996-1.703 21.857 7.5L138.686 4.39c-6.064-5.903-15.82-5.855-21.836.155"
+      />
+      <path
+        fill="url(#Ant-Design_svg__c)"
+        d="M196.647 173.754c5.408 5.404 14.176 5.404 19.584 0l34.739-34.71a15.396 15.396 0 0 0 0-21.812l-35.041-34.89c-5.421-5.397-14.192-5.389-19.603.018-5.408 5.404-5.408 14.164 0 19.568l23.667 23.648c1.503 1.502 1.503 3.781 0 5.283l-23.346 23.327c-5.408 5.404-5.408 14.165 0 19.568"
+      />
+      <ellipse cx={128.327} cy={128.242} fill="url(#Ant-Design_svg__d)" rx={30.327} ry={30.302} />
+    </g>
   </svg>
 )
 export default SvgAntDesign

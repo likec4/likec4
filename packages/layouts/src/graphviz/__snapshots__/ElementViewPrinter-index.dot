@@ -22,8 +22,8 @@ digraph {
     fontname = "Arial";
     fontsize = 14;
     penwidth = 2;
-    color = "#6E6E6E";
-    fontcolor = "#C6C6C6";
+    color = "#8D8D8D";
+    fontcolor = "#C9C9C9";
   ];
   node [
     fontname = "Arial";
@@ -69,7 +69,7 @@ digraph {
   "cloud" -> "amazon" [
     likec4_id = "cloud:amazon";
     style = "dashed";
-    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";
     dir = "both";
@@ -77,13 +77,13 @@ digraph {
   "customer" -> "cloud" [
     likec4_id = "customer:cloud";
     style = "dashed";
-    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
   ];
   "support" -> "cloud" [
     likec4_id = "support:cloud";
     style = "dashed";
-    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
   ];
 }

@@ -2,29 +2,24 @@
 
 import type { SVGProps } from 'react'
 const SvgBitbucket = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 231" {...props}>
     <defs>
-      <linearGradient
-        id="Bitbucket-_svg__a"
-        x1={28.593}
-        x2={16.672}
-        y1={14.226}
-        y2={23.532}
-        gradientTransform="scale(4)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0.176} stopColor="#0052cc" />
-        <stop offset={1} stopColor="#2684ff" />
+      <linearGradient id="bitbucket_svg__a" x1="108.633%" x2="46.927%" y1="13.818%" y2="78.776%">
+        <stop offset="18%" stopColor="#0052CC" />
+        <stop offset="100%" stopColor="#2684FF" />
       </linearGradient>
     </defs>
-    <path
-      fill="#2684ff"
-      d="M19.082 20c-1.918 0-3.355 1.758-3.039 3.516l12.95 79.289c.32 2.078 2.077 3.515 4.155 3.515h62.66c1.442 0 2.72-1.12 3.04-2.558l13.109-80.086c.316-1.918-1.121-3.516-3.039-3.516zM74.07 77.227H54.09l-5.278-28.293h30.215zm0 0"
-    />
-    <path
-      fill="url(#Bitbucket-_svg__a)"
-      d="M107.64 48.934H78.868L74.07 77.227H54.09l-23.5 27.972s1.12.961 2.719.961h62.66c1.441 0 2.719-1.12 3.039-2.558zm0 0"
-    />
+    <g fill="none">
+      <path d="M101.272 152.561h53.449l12.901-75.32H87.06z" />
+      <path
+        fill="#2684FF"
+        d="M8.308 0A8.202 8.202 0 0 0 .106 9.516l34.819 211.373a11.155 11.155 0 0 0 10.909 9.31h167.04a8.2 8.2 0 0 0 8.201-6.89l34.82-213.752a8.202 8.202 0 0 0-8.203-9.514zm146.616 152.768h-53.315l-14.436-75.42h80.67z"
+      />
+      <path
+        fill="url(#bitbucket_svg__a)"
+        d="M244.61 77.242h-76.916l-12.909 75.36h-53.272l-62.902 74.663a11.1 11.1 0 0 0 7.171 2.704H212.73a8.196 8.196 0 0 0 8.196-6.884z"
+      />
+    </g>
   </svg>
 )
 export default SvgBitbucket

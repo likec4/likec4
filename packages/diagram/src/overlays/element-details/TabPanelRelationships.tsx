@@ -3,8 +3,9 @@ import type { LikeC4Model } from '@likec4/core/model'
 import { ActionIcon, Box, Group, Paper, Stack, Text, ThemeIcon, Tooltip as MantineTooltip } from '@mantine/core'
 import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
+import { useCallback } from 'react'
 import { unique } from 'remeda'
-import { useOverlaysActorRef } from '../../hooks/useOverlaysActor'
+import { useDiagram } from '../../hooks'
 import { RelationshipsBrowser } from '../relationships-browser/RelationshipsBrowser'
 import { useElementDetailsActorRef } from './actorContext'
 import * as css from './TabPanelRelationships.css'
@@ -29,9 +30,12 @@ export function TabPanelRelationships({
   node,
   element,
 }: RelationshipsTabPanelProps) {
-  const overlaysActor = useOverlaysActorRef()
+  const diagram = useDiagram()
   const delailsActor = useElementDetailsActorRef()
-  const relationshipsBrowserActor = useSelector(delailsActor, s => s.children[`${delailsActor.id}-relationships`])
+  const relationshipsBrowserActor = useSelector(
+    delailsActor,
+    useCallback(s => s.children[`${delailsActor.id}-relationships`], [delailsActor.id]),
+  )
 
   const incoming = [...element.incoming()].map(r => r.id)
   const outgoing = [...element.outgoing()].map(r => r.id)
@@ -101,9 +105,9 @@ export function TabPanelRelationships({
                     scope,
                     viewId,
                   } = relationshipsBrowserActor.getSnapshot().context
-                  overlaysActor.send({
+                  diagram.overlays().send({
                     type: 'open.relationshipsBrowser',
-                    subject: subject,
+                    subject,
                     scope,
                     viewId,
                   })

@@ -2,11 +2,11 @@
 
 import type { SVGProps } from 'react'
 const SvgPacker = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <path fill="#1daeff" fillRule="evenodd" d="M66.477 39.691v88.547L24.918 104.23V15.676zm0 0" />
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 413" {...props}>
+    <path fill="#1DAEFF" d="m.357 50.596 135.137 77.266v284.835L.357 335.447" />
     <path
-      fill="#1d94dd"
-      d="M87.055 26.023 41.879 0v18.078l30.715 17.738v54.22l14.46 8.284c8.95 5.168 16.266 2.07 16.266-6.875V51.688c0-8.95-7.316-20.497-16.265-25.665m0 0"
+      fill="#1D94DD"
+      d="M202.395 83.892 55.505.188v58.127l99.887 57.065v174.429l47.01 26.71c29.092 16.6 52.908 6.655 52.908-22.11V166.417c0-28.78-23.816-65.916-52.907-82.525"
     />
   </svg>
 )

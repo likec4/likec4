@@ -2,31 +2,30 @@
 
 import type { SVGProps } from 'react'
 const SvgRider = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <linearGradient id="Rider_svg__a" x1={94.33} x2={20.33} y1={59.37} y2={16.91} gradientUnits="userSpaceOnUse">
-      <stop offset={0} stopColor="#dd1265" />
-      <stop offset={0.48} stopColor="#dd1265" />
-      <stop offset={0.94} stopColor="#fdb60d" />
-    </linearGradient>
-    <linearGradient id="Rider_svg__b" x1={50.33} x2={79.66} y1={12.76} y2={93.76} gradientUnits="userSpaceOnUse">
-      <stop offset={0.14} stopColor="#087cfa" />
-      <stop offset={0.48} stopColor="#dd1265" />
-      <stop offset={0.96} stopColor="#087cfa" />
-    </linearGradient>
-    <linearGradient id="Rider_svg__c" x1={28.36} x2={50.02} y1={15.26} y2={92.26} gradientUnits="userSpaceOnUse">
-      <stop offset={0.28} stopColor="#dd1265" />
-      <stop offset={0.97} stopColor="#fdb60d" />
-    </linearGradient>
-    <path fill="url(#Rider_svg__a)" d="M122.514 50.871 40.472 5.339l54.93 81.615 11.288-7.4z" />
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 256" {...props}>
+    <defs>
+      <linearGradient id="Rider_svg__a" x1="90.832%" x2="-19.123%" y1="81.803%" y2="19.04%">
+        <stop offset="0%" stopColor="#DD1265" />
+        <stop offset="48%" stopColor="#DD1265" />
+        <stop offset="94%" stopColor="#FDB60D" />
+      </linearGradient>
+      <linearGradient id="Rider_svg__b" x1="35.983%" x2="53.7%" y1="7.271%" y2="92.994%">
+        <stop offset="14%" stopColor="#087CFA" />
+        <stop offset="48%" stopColor="#DD1265" />
+        <stop offset="96%" stopColor="#087CFA" />
+      </linearGradient>
+      <linearGradient id="Rider_svg__c" x1="39.545%" x2="56.938%" y1="11.352%" y2="91.694%">
+        <stop offset="28%" stopColor="#DD1265" />
+        <stop offset="97%" stopColor="#FDB60D" />
+      </linearGradient>
+    </defs>
+    <path fill="url(#Rider_svg__a)" d="M256 99.6 76.533 0l120.16 178.533 24.694-16.186z" />
+    <path fill="url(#Rider_svg__b)" d="m184.4 58.987-22.48-54.96-49.733 48.96 20.346 177.653L180.72 256 256 212.027z" />
+    <path fill="url(#Rider_svg__c)" d="M76.533 0 0 51.547 28.453 227.36l73.387 28.213 94.853-77.04z" />
+    <path d="M48 48.32h160v160H48z" />
     <path
-      fill="url(#Rider_svg__b)"
-      d="M89.783 32.305 79.506 7.18 56.771 29.562l9.301 81.213L88.1 122.368l34.414-20.102z"
-    />
-    <path fill="url(#Rider_svg__c)" d="M40.472 5.339 5.486 28.904l13.007 80.372 33.548 12.898 43.362-35.218z" />
-    <path d="M27.429 27.429h73.143v73.143H27.429z" />
-    <path
-      fill="#fff"
-      d="M36.547 86.747h27.429v4.571H36.547zm.024-50.273h12.556a10.97 10.97 0 0 1 8.009 2.792 8.63 8.63 0 0 1 2.365 6.29v.073a8.53 8.53 0 0 1-5.9 8.533l6.729 9.826h-7.083l-5.888-8.802h-4.692v8.802h-6.095zm12.19 13.41c2.95 0 4.645-1.573 4.645-3.889v-.073c0-2.597-1.804-3.938-4.754-3.938h-5.985v7.899zm15.762-13.41h10.728c8.643 0 14.629 5.937 14.629 13.678v.085c0 7.741-5.973 13.751-14.629 13.751H64.523zm6.095 5.461v16.579h4.681a7.84 7.84 0 0 0 8.29-8.216v-.073a7.91 7.91 0 0 0-8.29-8.302z"
+      fill="#FFF"
+      d="M67.947 178.08h60v10h-60zM68 68.107h27.467a24 24 0 0 1 17.52 6.106 18.88 18.88 0 0 1 5.188 12.957l-.015.963a18.67 18.67 0 0 1-12.907 18.667l14.72 21.493H104.48L91.6 109.04H81.333v19.253H68zM94.667 97.44c6.238 0 9.91-3.214 10.147-8.005l.013-.662c0-5.68-3.947-8.613-10.4-8.613H81.333v17.28zm34.48-29.333h23.466c18.616 0 31.596 12.59 31.991 29.141l.01.965c0 16.934-13.067 30.08-32 30.08h-23.467zm13.333 11.946v36.267h10.24a17.147 17.147 0 0 0 18.155-17.206l-.022-.927a17.307 17.307 0 0 0-18.133-18.16z"
     />
   </svg>
 )

@@ -23,17 +23,13 @@ export function NodeDrifts({
     <Box
       className="likec4-node-drifts"
       css={{
-        position: 'absolute',
-        inset: '0',
-        pointerEvents: 'none',
+        display: 'contents',
+
         '& + .likec4-element-shape': {
           outlineColor: 'likec4.compare.manual.outline',
-          outlineWidth: {
-            base: '2px',
-            _light: '4px',
-          },
-          outlineStyle: 'solid',
-          outlineOffset: '1',
+          outlineWidth: '4px',
+          outlineStyle: 'dashed',
+          outlineOffset: '1.5',
         },
       }}
     >

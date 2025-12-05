@@ -68,7 +68,6 @@ export const globalCss: ExtendableGlobalCss = {
       },
 
       '& .react-flow': {
-        contain: 'paint layout',
         '--xy-background-color': 'var(--colors-likec4-background)',
         '--xy-background-pattern-color': 'var(--colors-likec4-background-pattern, var(--colors-likec4-background))',
         '&:is(.not-initialized)': {
@@ -118,10 +117,9 @@ export const globalCss: ExtendableGlobalCss = {
             'color-mix(in oklab, var(--likec4-palette-relation-label-bg) 50%, transparent)',
         },
         _light: {
-          '--xy-edge-label-color':
-            'color-mix(in oklab, var(--likec4-palette-relation-label), rgba(255 255 255 / 0.85) 40%)',
+          '--xy-edge-label-color': 'color-mix(in oklab, var(--likec4-palette-relation-label), #FFF 50%)',
           '--xy-edge-label-background-color':
-            'color-mix(in oklab, var(--likec4-palette-relation-label-bg) 60%, transparent)',
+            'color-mix(in oklab, var(--likec4-palette-relation-label-bg) 65%, transparent)',
         },
 
         '&:is([data-likec4-hovered="true"], [data-edge-active="true"])': {
@@ -151,10 +149,17 @@ export const globalCss: ExtendableGlobalCss = {
           transitionTimingFunction: 'cubic-bezier(0.50, 0, 0.2, 1)',
           transitionDuration: '400ms',
         },
-        '& :where(.react-flow__edges, .react-flow__edgelabel-renderer) > :where(svg, .likec4-edge-label-container)': {
+        '& :where(.react-flow__edgelabel-renderer) > *': {
+          mixBlendMode: {
+            _dark: 'screen',
+            _light: 'hard-light',
+            _print: 'normal!',
+          },
+        },
+        '& :where(.react-flow__edges) > svg': {
           mixBlendMode: {
             _dark: 'plus-lighter',
-            _light: 'screen',
+            _light: 'multiply',
             _print: 'normal!',
           },
         },
@@ -162,7 +167,6 @@ export const globalCss: ExtendableGlobalCss = {
           mixBlendMode: {
             // _dark: 'plus-lighter',
             _light: 'color-burn',
-            _print: 'normal!',
           },
         },
         '& .react-flow__node-seq-parallel': {

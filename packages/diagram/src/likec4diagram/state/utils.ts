@@ -192,15 +192,15 @@ export function findCorrespondingNode(
 }
 
 export function calcViewportForBounds(
-  context: Pick<Context, 'xystore' | 'xyflow' | 'fitViewPadding'>,
+  context: Pick<Context, 'xystore' | 'fitViewPadding'>,
   bounds: BBox,
 ): Viewport {
-  let currentZoom = context.xyflow!.getZoom()
   let {
     width,
     height,
+    transform,
   } = context.xystore.getState()
-  const maxZoom = Math.max(currentZoom, 1)
+  const maxZoom = Math.max(transform[2], 1)
   return getViewportForBounds(
     bounds,
     width,
@@ -220,4 +220,17 @@ export function parseAsNumber(value: string | number | undefined): number {
     return isNaN(parsed) ? 0 : parsed
   }
   return 0
+}
+
+export function parseViewPaddings(paddings: ViewPaddings): {
+  top: number
+  right: number
+  bottom: number
+  left: number
+} {
+  const top = parseAsNumber(paddings.top ?? paddings.y)
+  const bottom = parseAsNumber(paddings.bottom ?? paddings.y)
+  const left = parseAsNumber(paddings.left ?? paddings.x)
+  const right = parseAsNumber(paddings.right ?? paddings.x)
+  return { top, right, bottom, left }
 }

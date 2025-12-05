@@ -11,7 +11,6 @@ import {
   invariant,
   nonNullable,
   Queue,
-  RichText,
   whereOperatorAsPredicate,
 } from '@likec4/core'
 import { hasAtLeast, pick } from 'remeda'

@@ -27,10 +27,6 @@ export const layerStyles = defineLayerStyles({
             borderRadius: 'md',
             paddingInline: '2',
           },
-          _whenPanning: {
-            boxShadow: 'none',
-            borderRadius: '0',
-          },
         },
       },
       action: {
@@ -62,11 +58,6 @@ export const layerStyles = defineLayerStyles({
         border: '1px solid {colors.likec4.dropdown.border}',
         boxShadow: 'lg',
         borderRadius: 'md',
-        _whenPanning: {
-          boxShadow: 'none',
-          borderRadius: '0px',
-          borderColor: 'transparent',
-        },
       },
     },
   },

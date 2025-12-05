@@ -51,6 +51,14 @@
         "default": "./dist/builder/index.mjs"
       }
     },
+    "./geometry": {
+      "sources": "./src/geometry/index.ts",
+      "default": {
+        "types": "./dist/geometry/index.d.mts",
+        "import": "./dist/geometry/index.mjs",
+        "default": "./dist/geometry/index.mjs"
+      }
+    },
     "./compute-view/relationships": {
       "sources": "./src/compute-view/relationships-view/index.ts",
       "default": {
@@ -146,10 +154,10 @@
     "obliterator": "^2.0.5",
     "oxlint": "catalog:",
     "rehype-format": "5.0.1",
-    "rehype-raw": "7.0.0",
     "rehype-sanitize": "^6.0.0",
     "rehype-stringify": "10.0.1",
     "remark-gfm": "4.0.1",
+    "remark-github-blockquote-alert": "^2.0.0",
     "remark-parse": "11.0.0",
     "remark-rehype": "11.1.2",
     "remeda": "catalog:utils",

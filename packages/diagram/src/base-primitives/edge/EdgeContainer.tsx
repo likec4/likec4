@@ -1,7 +1,6 @@
 import { invariant } from '@likec4/core'
 import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
-import { edgeContainer } from '@likec4/styles/recipes'
 import type { PropsWithChildren } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
@@ -42,7 +41,7 @@ export function EdgeContainer({
   const props = {
     className: cx(
       className,
-      edgeContainer(),
+      'likec4-edge-container',
       selected && 'selected',
       selectable && 'selectable',
     ),

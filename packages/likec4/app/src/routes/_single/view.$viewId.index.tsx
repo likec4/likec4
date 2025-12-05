@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { isHotEnabled } from '../../const'
+import { ViewEditor } from '../../pages/ViewEditor'
 import { ViewReact } from '../../pages/ViewReact'
 
 export const Route = createFileRoute('/_single/view/$viewId/')({
-  component: ViewReact,
+  component: isHotEnabled ? ViewEditor : ViewReact,
 })

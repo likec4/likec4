@@ -2,116 +2,27 @@
 
 import type { SVGProps } from 'react'
 const SvgChrome = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <circle cx={64.149} cy={64.236} r={60.999} fill="#fff" />
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 256" {...props}>
     <path
-      fillOpacity={0.1}
-      d="M102.966 75.327c0-21.439-17.379-38.819-38.817-38.819s-38.818 17.38-38.818 38.819h11.09c0-15.314 12.415-27.727 27.727-27.727s27.727 12.413 27.727 27.727"
+      fill="#FFF"
+      d="M128.003 199.216c39.335 0 71.221-31.888 71.221-71.223S167.338 56.77 128.003 56.77 56.78 88.658 56.78 127.993s31.887 71.223 71.222 71.223"
     />
-    <circle cx={66.922} cy={71.999} r={21.072} fillOpacity={0.1} />
-    <linearGradient
-      id="Chrome_svg__a"
-      x1={395.191}
-      x2={395.191}
-      y1={484.168}
-      y2={484.723}
-      gradientTransform="matrix(82 0 0 82 -32341.5 -39660.313)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#81B4E0" />
-      <stop offset={1} stopColor="#0C5A94" />
-    </linearGradient>
-    <circle cx={64.149} cy={64.235} r={22.736} fill="url(#Chrome_svg__a)" />
-    <linearGradient
-      id="Chrome_svg__b"
-      x1={-608.91}
-      x2={-608.91}
-      y1={-597.648}
-      y2={-547.185}
-      gradientTransform="translate(675 599.775)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#F06B59" />
-      <stop offset={1} stopColor="#DF2227" />
-    </linearGradient>
     <path
-      fill="url(#Chrome_svg__b)"
-      d="M119.602 36.508C104.336 5.792 67.06-6.732 36.343 8.534A62.1 62.1 0 0 0 12.578 29.3l24.955 43.253c-4.597-14.606 3.521-30.174 18.127-34.77a27.7 27.7 0 0 1 7.935-1.274"
+      fill="#229342"
+      d="M35.89 92.997Q27.92 79.192 17.154 64.02a127.98 127.98 0 0 0 110.857 191.981q17.671-24.785 23.996-35.74 12.148-21.042 31.423-60.251v-.015a63.993 63.993 0 0 1-110.857.017Q46.395 111.19 35.89 92.998"
     />
-    <linearGradient
-      id="Chrome_svg__c"
-      x1={-657.835}
-      x2={-632.327}
-      y1={-491.393}
-      y2={-533.537}
-      gradientTransform="translate(675 599.775)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#388B41" />
-      <stop offset={1} stopColor="#4CB749" />
-    </linearGradient>
     <path
-      fill="url(#Chrome_svg__c)"
-      d="M12.578 29.3c-19.1 28.492-11.486 67.071 17.005 86.171a62.13 62.13 0 0 0 29.575 10.319l26.063-44.363c-9.745 11.811-27.22 13.486-39.032 3.74a27.7 27.7 0 0 1-8.657-12.613"
+      fill="#FBC116"
+      d="M128.008 255.996A127.97 127.97 0 0 0 256 127.997 128 128 0 0 0 238.837 64q-36.372-3.585-53.686-3.585-19.632 0-57.152 3.585l-.014.01a63.99 63.99 0 0 1 55.444 31.987 63.99 63.99 0 0 1-.001 64.01z"
     />
-    <linearGradient
-      id="Chrome_svg__d"
-      x1={-572.385}
-      x2={-599.557}
-      y1={-486.91}
-      y2={-552.345}
-      gradientTransform="translate(675 599.775)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopColor="#E4B022" />
-      <stop offset={0.3} stopColor="#FCD209" />
-    </linearGradient>
     <path
-      fill="url(#Chrome_svg__d)"
-      d="M59.158 125.791c34.204 2.585 64.027-23.047 66.613-57.25a62.1 62.1 0 0 0-6.17-32.031H63.595c15.312.07 27.67 12.541 27.598 27.854a27.73 27.73 0 0 1-5.972 17.064"
+      fill="#1A73E8"
+      d="M128.003 178.677c27.984 0 50.669-22.685 50.669-50.67s-22.685-50.67-50.67-50.67c-27.983 0-50.669 22.686-50.669 50.67s22.686 50.67 50.67 50.67"
     />
-    <linearGradient
-      id="Chrome_svg__e"
-      x1={-649.391}
-      x2={-649.391}
-      y1={-528.885}
-      y2={-573.247}
-      gradientTransform="translate(675 599.775)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopOpacity={0.15} />
-      <stop offset={0.3} stopOpacity={0.06} />
-      <stop offset={1} stopOpacity={0.03} />
-    </linearGradient>
-    <path fill="url(#Chrome_svg__e)" d="m12.578 29.3 24.955 43.253a27.73 27.73 0 0 1 1.107-18.854L13.686 27.636" />
-    <linearGradient
-      id="Chrome_svg__f"
-      x1={-588.158}
-      x2={-618.657}
-      y1={-514.559}
-      y2={-483.505}
-      gradientTransform="translate(675 599.775)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopOpacity={0.15} />
-      <stop offset={0.3} stopOpacity={0.06} />
-      <stop offset={1} stopOpacity={0.03} />
-    </linearGradient>
-    <path fill="url(#Chrome_svg__f)" d="m59.158 125.791 26.063-44.363a27.73 27.73 0 0 1-16.082 9.426l-11.091 34.937" />
-    <linearGradient
-      id="Chrome_svg__g"
-      x1={-588.6}
-      x2={-584.163}
-      y1={-505.621}
-      y2={-549.431}
-      gradientTransform="translate(675 599.775)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop offset={0} stopOpacity={0.15} />
-      <stop offset={0.3} stopOpacity={0.06} />
-      <stop offset={1} stopOpacity={0.03} />
-    </linearGradient>
-    <path fill="url(#Chrome_svg__g)" d="M119.602 36.508H63.595a27.73 27.73 0 0 1 21.626 10.537l35.491-8.873" />
+    <path
+      fill="#E33B2E"
+      d="M128.003 64.004H238.84a127.973 127.973 0 0 0-221.685.015l55.419 95.99.015.008a63.993 63.993 0 0 1 55.415-96.014z"
+    />
   </svg>
 )
 export default SvgChrome

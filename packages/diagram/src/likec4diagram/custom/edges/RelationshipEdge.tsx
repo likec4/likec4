@@ -1,5 +1,5 @@
 import type { EdgeId } from '@likec4/core/types'
-import { cx as clsx } from '@likec4/styles/css'
+import { css, cx as clsx } from '@likec4/styles/css'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
@@ -53,8 +53,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     id,
     selected = false,
     data: {
-      hovered = false,
-      active = false,
       labelBBox,
       labelXY,
       ...data
@@ -151,7 +149,8 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     if (e.pointerType !== 'mouse') {
       return
     }
-    if (e.button !== 2) {
+    // Only respond to right-click or when edge is selected
+    if (e.button !== 2 && !selected) {
       return
     }
     e.stopPropagation()
@@ -184,7 +183,13 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   return (
     <>
-      <EdgeContainer {...props}>
+      <EdgeContainer
+        {...props}
+        className={css({
+          '& .react-flow__edge-interaction': {
+            cursor: enabledEditing && selected ? 'copy' : undefined,
+          },
+        })}>
         <EdgePath
           edgeProps={props}
           svgPath={edgePath}

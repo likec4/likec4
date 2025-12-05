@@ -23,7 +23,7 @@ import {
   onEdgeMouseLeave,
   onNodeMouseEnter,
   onNodeMouseLeave,
-  openElementDetails,
+  openOverlay,
   raiseFitDiagram,
   resetEdgesControlPoints,
   resetLastClickedNode,
@@ -107,28 +107,13 @@ export const ready = machine.createStateConfig({
       ],
     },
     'open.elementDetails': {
-      guard: 'enabled: ElementDetails',
-      actions: openElementDetails(),
+      actions: openOverlay(),
     },
     'open.relationshipsBrowser': {
-      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event, self }) => ({
-        type: 'open.relationshipsBrowser',
-        subject: event.fqn,
-        viewId: context.view.id,
-        scope: 'view' as const,
-        closeable: true,
-        enableChangeScope: true,
-        enableSelectSubject: true,
-        openSourceActor: self,
-      })),
+      actions: openOverlay(),
     },
     'open.relationshipDetails': {
-      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event, self }) => ({
-        type: 'open.relationshipDetails',
-        viewId: context.view.id,
-        openSourceActor: self,
-        ...event.params,
-      })),
+      actions: openOverlay(),
     },
     'open.source': {
       guard: 'enabled: OpenSource',

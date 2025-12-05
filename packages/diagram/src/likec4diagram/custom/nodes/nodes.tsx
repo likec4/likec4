@@ -100,12 +100,9 @@ export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
 
 const compoundHasDrifts = css({
   outlineColor: 'likec4.compare.manual.outline',
-  outlineWidth: {
-    base: '2px',
-    _light: '4px',
-  },
-  outlineStyle: 'solid',
-  outlineOffset: '1',
+  outlineWidth: '4px',
+  outlineStyle: 'dashed',
+  outlineOffset: '1.5',
 })
 
 const hasDrifts = (props: Types.NodeProps) => {

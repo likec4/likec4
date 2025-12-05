@@ -78,7 +78,22 @@ views {
 
   view index {
     title 'Landscape'
-    description 'The overview of the system'
+    description '''
+> [!NOTE]
+> Information that users should know.
+
+> [!TIP]
+> Helpful advice for better results.
+
+> [!IMPORTANT]
+> Key information for success.
+
+> [!WARNING]
+> Urgent information to avoid problems.
+
+> [!CAUTION]
+> Risks or negative outcomes.
+    '''
 
 
     group 'SAAS' {

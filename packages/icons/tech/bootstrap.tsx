@@ -2,59 +2,10 @@
 
 import type { SVGProps } from 'react'
 const SvgBootstrap = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <defs>
-      <linearGradient
-        id="Bootstrap_svg__a"
-        x1={76.079}
-        x2={523.48}
-        y1={10.798}
-        y2={365.95}
-        gradientTransform="translate(1.11 14.613)scale(.24566)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0} stopColor="#9013fe" />
-        <stop offset={1} stopColor="#6610f2" />
-      </linearGradient>
-      <linearGradient
-        id="Bootstrap_svg__b"
-        x1={193.51}
-        x2={293.51}
-        y1={109.74}
-        y2={278.87}
-        gradientTransform="translate(0 52)"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset={0} stopColor="#fff" />
-        <stop offset={1} stopColor="#f1e5fc" />
-      </linearGradient>
-      <filter
-        id="Bootstrap_svg__c"
-        width={197}
-        height={249}
-        x={161.9}
-        y={135.46}
-        colorInterpolationFilters="sRGB"
-        filterUnits="userSpaceOnUse"
-      >
-        <feFlood floodOpacity={0} result="BackgroundImageFix" />
-        <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
-        <feOffset dy={4} />
-        <feGaussianBlur stdDeviation={8} />
-        <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" />
-        <feBlend in2="BackgroundImageFix" result="effect1_dropShadow" />
-        <feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
-      </filter>
-    </defs>
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 204" {...props}>
     <path
-      fill="url(#Bootstrap_svg__a)"
-      d="M14.985 27.712c-.237-6.815 5.072-13.099 12.249-13.099h73.54c7.177 0 12.486 6.284 12.249 13.099-.228 6.546.068 15.026 2.202 21.94 2.141 6.936 5.751 11.319 11.664 11.883v6.387c-5.913.564-9.523 4.947-11.664 11.883-2.134 6.914-2.43 15.394-2.202 21.94.237 6.815-5.072 13.098-12.249 13.098h-73.54c-7.177 0-12.486-6.284-12.249-13.098.228-6.546-.068-15.026-2.203-21.94-2.14-6.935-5.76-11.319-11.673-11.883v-6.387c5.913-.563 9.533-4.947 11.673-11.883 2.135-6.914 2.43-15.394 2.203-21.94"
-    />
-    <path
-      fill="url(#Bootstrap_svg__b)"
-      d="M267.1 364.46c47.297 0 75.798-23.158 75.798-61.355 0-28.873-20.336-49.776-50.532-53.085v-1.203c22.185-3.609 39.594-24.211 39.594-47.219 0-32.783-25.882-54.138-65.322-54.138h-88.74v217zm-54.692-189.48h45.911c24.958 0 39.131 11.128 39.131 31.279 0 21.505-16.484 33.535-46.372 33.535h-38.67zm0 161.96v-71.431h45.602c32.661 0 49.608 12.03 49.608 35.49 0 23.459-16.484 35.941-47.605 35.941z"
-      filter="url(#Bootstrap_svg__c)"
-      transform="translate(1.494 2.203)scale(.24566)"
+      fill="#7E13F8"
+      d="M53.172 0C38.565 0 27.756 12.785 28.24 26.65c.465 13.32-.139 30.573-4.482 44.642C19.402 85.402 12.034 94.34 0 95.488v12.956c12.034 1.148 19.402 10.086 23.758 24.197 4.343 14.069 4.947 31.32 4.482 44.641-.484 13.863 10.325 26.65 24.934 26.65h149.673c14.608 0 25.414-12.785 24.93-26.65-.464-13.32.139-30.572 4.482-44.641 4.359-14.11 11.707-23.05 23.741-24.197V95.488c-12.034-1.148-19.382-10.086-23.74-24.196-4.344-14.067-4.947-31.321-4.483-44.642C228.261 12.787 217.455 0 202.847 0H53.17zM173.56 125.533c0 19.092-14.24 30.67-37.872 30.67h-40.23a4.34 4.34 0 0 1-4.338-4.339V52.068a4.34 4.34 0 0 1 4.339-4.34h39.999c19.705 0 32.637 10.675 32.637 27.063 0 11.503-8.7 21.801-19.783 23.604v.601c15.089 1.655 25.248 12.104 25.248 26.537m-42.26-64.05h-22.937v32.4h19.32c14.934 0 23.17-6.014 23.17-16.764 0-10.073-7.082-15.636-19.552-15.636m-22.937 45.256v35.705h23.782c15.548 0 23.786-6.239 23.786-17.965 0-11.728-8.467-17.742-24.786-17.742h-22.782z"
     />
   </svg>
 )

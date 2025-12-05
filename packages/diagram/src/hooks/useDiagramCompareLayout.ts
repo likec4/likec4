@@ -71,7 +71,8 @@ export function useDiagramCompareLayout(): [
     }
     const nextIsActive = force ? (force === 'on') : !state.isActive
 
-    // Ensure that when disabling compare while in manual layout, we switch back to manual layout to reset the layout state
+    // Ensure that when disabling compare while in auto layout,
+    // we switch back to manual layout
     if (state.isActive && !nextIsActive && state.layout === 'auto') {
       switchLayout('manual')
     }
