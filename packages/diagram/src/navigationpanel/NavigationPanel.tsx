@@ -4,12 +4,11 @@ import {
   Popover,
   PopoverTarget,
 } from '@mantine/core'
-import { useUpdateEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
-import { useDiagram, useDiagramActorRef } from '../hooks/safeContext'
+import { useDiagram } from '../hooks/safeContext'
 import { useCurrentView } from '../hooks/useCurrentView'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { useDiagramContext } from '../hooks/useDiagram'

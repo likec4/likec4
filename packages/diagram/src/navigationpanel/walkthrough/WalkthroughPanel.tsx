@@ -1,5 +1,5 @@
 import { RichText } from '@likec4/core'
-import { css, cx } from '@likec4/styles/css'
+import { css } from '@likec4/styles/css'
 import { styled } from '@likec4/styles/jsx'
 import { vstack } from '@likec4/styles/patterns'
 import {

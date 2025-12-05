@@ -5,7 +5,7 @@ import type {
   ViewChange,
 } from '@likec4/core/types'
 import { invariant, nonNullable } from '@likec4/core/utils'
-import type { Ref, RefObject } from 'react'
+import type { RefObject } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName, TogglableFeature } from '../../context/DiagramFeatures'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'

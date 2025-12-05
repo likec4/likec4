@@ -253,7 +253,6 @@ type EnableEditingViaWSParams = {
   logger: ViteLogger
   likec4: LikeC4LanguageServices
   server: ViteDevServer
-  reloadModule: (id: string) => Promise<void>
 }
 function enableEditingViaWS(
   this: MinimalPluginContextWithoutEnvironment,
@@ -261,7 +260,6 @@ function enableEditingViaWS(
     logger,
     likec4,
     server,
-    reloadModule,
   }: EnableEditingViaWSParams,
 ) {
   server.ws.on('likec4:view:onChange', async function onChange(data: {

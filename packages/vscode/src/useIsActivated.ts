@@ -52,7 +52,7 @@ export function whenExtensionActive(arg: (() => void) | { onStart: () => void; o
       s.run(() => {
         try {
           _onDeactivate()
-        } catch (e) {
+        } catch {
           // ignore errors in onStop
         }
       })

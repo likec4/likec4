@@ -1,5 +1,5 @@
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
-import type { ActorRef, MachineSnapshot, StateMachine, StateValueFrom, TagsFrom } from 'xstate'
+import type { ActorRef, MachineSnapshot, StateMachine } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
@@ -17,13 +17,13 @@ import {
   updateFeatures,
   updateInputs,
 } from './machine.actions'
-import { machine } from './machine.setup'
 import type {
   Context as DiagramContext,
   EmittedEvents as DiagramEmittedEvents,
   Events as DiagramEvents,
   Input,
 } from './machine.setup'
+import { machine } from './machine.setup'
 import { initializing, isReady } from './machine.state.initializing'
 import { navigating } from './machine.state.navigating'
 import { ready } from './machine.state.ready'

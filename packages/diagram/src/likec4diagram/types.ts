@@ -2,7 +2,6 @@ import type {
   BBox,
   DeploymentFqn,
   DiagramEdge,
-  DiagramEdgeDriftReason,
   DiagramNode,
   DiagramNodeDriftReason,
   ExclusiveUnion,
