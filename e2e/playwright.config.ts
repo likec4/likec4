@@ -50,7 +50,7 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome HiDPI'] },
     },
   ],
-  // Run your local dev server before starting the tests.
+
   webServer: {
     command: 'pnpm likec4 start --verbose --no-react-hmr --no-build-webcomponent',
     port: 5173,
@@ -58,7 +58,15 @@ export default defineConfig({
     env: {
       NODE_ENV: 'production',
     },
-    // url: 'http://127.0.0.1:5173',
-    // reuseExistingServer: !process.env.CI
   },
+  // To run locally
+  // webServer: {
+  //   command: 'pnpm dev:e2e',
+  //   cwd: '../packages/likec4/',
+  //   port: 5173,
+  //   stdout: 'pipe',
+  //   env: {
+  //     NODE_ENV: 'development',
+  //   },
+  // },
 })
