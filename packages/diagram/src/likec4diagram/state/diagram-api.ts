@@ -47,8 +47,11 @@ export interface DiagramApi<A extends Any = Unknown> {
   send(event: DiagramEvents): void
   /**
    * Navigate to view
+   * @param viewId - Target view ID
+   * @param fromNode - Node from which navigation was triggered
+   * @param focusOnElement - Element FQN to focus after navigation (from search)
    */
-  navigateTo(viewId: ViewId<A>, fromNode?: NodeId): void
+  navigateTo(viewId: ViewId<A>, fromNode?: NodeId, focusOnElement?: Fqn<A>): void
   /**
    * Navigate back or forward in history
    */
@@ -100,6 +103,11 @@ export interface DiagramApi<A extends Any = Unknown> {
    */
   focusNode(nodeId: NodeId): void
   /**
+   * Focus on element by FQN (finds the node and focuses with auto-unfocus)
+   * Used by search when navigating to an element on the current view
+   */
+  focusOnElement(elementFqn: Fqn<A>): void
+  /**
    * @warning Do not use in render phase
    */
   getContext(): DiagramContext
@@ -140,11 +148,12 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
       return nonNullable(actorRef.current.getSnapshot().children.overlays, 'Overlays actor not found')
     },
     send: (event: DiagramEvents) => actorRef.current.send(event),
-    navigateTo: (viewId: ViewId<A>, fromNode?: NodeId) => {
+    navigateTo: (viewId: ViewId<A>, fromNode?: NodeId, focusOnElement?: Fqn<A>) => {
       actorRef.current.send({
         type: 'navigate.to',
         viewId: viewId as any,
         ...(fromNode && { fromNode }),
+        ...(focusOnElement && { focusOnElement: focusOnElement as any }),
       })
     },
     navigate: (direction: 'back' | 'forward') => {
@@ -206,6 +215,14 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
 
     focusNode: (nodeId: NodeId) => {
       actorRef.current.send({ type: 'focus.node', nodeId })
+    },
+
+    focusOnElement: (elementFqn: Fqn<A>) => {
+      const context = actorRef.current.getSnapshot().context
+      const node = context.xynodes.find(n => 'modelFqn' in n.data && n.data.modelFqn === elementFqn)
+      if (node) {
+        actorRef.current.send({ type: 'focus.node', nodeId: node.id as NodeId, autoUnfocus: true })
+      }
     },
 
     /**
