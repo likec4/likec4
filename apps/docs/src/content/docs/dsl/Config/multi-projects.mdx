@@ -63,7 +63,77 @@ At the moment, the following limitations apply:
 
 ## Share specification
 
-At the moment, the only way to share specification (or any other parts of the model) is to use symlinks:
+You can share specification files (or any other LikeC4 sources) across multiple projects using the `include` configuration option.
+
+### Using include paths
+
+Add an `include` array to your project configuration to include files from directories outside the project folder:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "cloud",
+  "include": ["../shared"]
+}
+```
+
+<FileTree>
+- shared
+  - specs.c4
+  - common-styles.c4
+- cloud
+  - likec4.config.json
+  - services.c4
+  - ...
+- externals
+  - likec4.config.json
+  - amazon.c4
+  - ...
+</FileTree>
+
+Both `cloud` and `externals` projects can include the shared specification:
+
+```json title="cloud/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "cloud",
+  "include": ["../shared"]
+}
+```
+
+```json title="externals/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "externals",
+  "include": ["../shared"]
+}
+```
+
+You can include multiple directories:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "my-project",
+  "include": [
+    "../shared",
+    "../common/specs"
+  ]
+}
+```
+
+<Aside type='tip' title="Path resolution">
+Include paths are relative to the project folder (the folder containing the config file).  
+LikeC4 recursively scans the included directories for `.c4` files.
+</Aside>
+
+<Aside type='caution' title="Path requirements">
+Include paths must be relative paths. Absolute paths, drive letters (like `C:\`), and URLs are not allowed.
+</Aside>
+
+### Using symlinks (alternative)
+
+Alternatively, you can use symlinks to share files:
 
 <FileTree>
 - shared
@@ -77,3 +147,7 @@ At the moment, the only way to share specification (or any other parts of the mo
   - likec4.config.json
   - ...
 </FileTree>
+
+<Aside type='note'>
+The `include` configuration is generally preferred over symlinks as it's more portable and easier to manage.
+</Aside>
