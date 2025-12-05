@@ -54,6 +54,7 @@ export function flattenMarkdownOrString(value: MarkdownOrString | string | undef
 
 export type BuiltInIcon = 'none' | `${'aws' | 'azure' | 'gcp' | 'tech'}:${string}`
 export type Icon = Tagged<string, 'Icon'> | BuiltInIcon
+export const NoneIcon: Icon = 'none'
 export type IconUrl = Icon
 
 /**

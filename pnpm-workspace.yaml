@@ -147,7 +147,6 @@ catalogs:
     "@vitest/ui": 4.0.15
     vitest: 4.0.15
   vscode:
-    "@types/vscode": ^1.84.0
     vscode-jsonrpc: 8.2.1
     vscode-languageclient: 9.0.1
     vscode-languageserver: 9.0.1
@@ -160,8 +159,8 @@ catalogs:
     "@xstate/react": 6.0.0
     xstate: 5.24.0
   xyflow:
-    "@xyflow/react": 12.9.3
-    "@xyflow/system": 0.0.73
+    "@xyflow/react": 12.10.0
+    "@xyflow/system": 0.0.74
   zod4:
     zod: ^4.1.13
 

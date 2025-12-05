@@ -359,11 +359,11 @@ catalogs:
       version: 5.24.0
   xyflow:
     '@xyflow/react':
-      specifier: 12.9.3
-      version: 12.9.3
+      specifier: 12.10.0
+      version: 12.10.0
     '@xyflow/system':
-      specifier: 0.0.73
-      version: 0.0.73
+      specifier: 0.0.74
+      version: 0.0.74
   zod4:
     zod:
       specifier: ^4.1.13
@@ -657,10 +657,10 @@ importers:
         version: 6.0.0(@types/react@19.2.7)(react@19.2.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.9.3(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        version: 12.10.0(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.73
+        version: 0.0.74
       date-fns:
         specifier: catalog:utils
         version: 4.1.0
@@ -1050,10 +1050,10 @@ importers:
         version: 6.0.0(@types/react@19.2.7)(react@19.2.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.9.3(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        version: 12.10.0(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.73
+        version: 0.0.74
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
@@ -1483,10 +1483,10 @@ importers:
         version: 5.1.1(vite@7.2.6(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.0))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.9.3(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        version: 12.10.0(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.73
+        version: 0.0.74
       boxen:
         specifier: ^8.0.1
         version: 8.0.1
@@ -2065,10 +2065,10 @@ importers:
         version: 5.1.1(vite@7.2.6(@types/node@20.19.23)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.0))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.9.3(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        version: 12.10.0(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.73
+        version: 0.0.74
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -4554,14 +4554,14 @@ packages:
       xstate:
         optional: true
 
-  '@xyflow/react@12.9.3':
-    resolution: {integrity: sha512-PSWoJ8vHiEqSIkLIkge+0eiHWiw4C6dyFDA03VKWJkqbU4A13VlDIVwKqf/Znuysn2GQw/zA61zpHE4rGgax7Q==}
+  '@xyflow/react@12.10.0':
+    resolution: {integrity: sha512-eOtz3whDMWrB4KWVatIBrKuxECHqip6PfA8fTpaS2RUGVpiEAe+nqDKsLqkViVWxDGreq0lWX71Xth/SPAzXiw==}
     peerDependencies:
       react: 19.2.1
       react-dom: 19.2.1
 
-  '@xyflow/system@0.0.73':
-    resolution: {integrity: sha512-C2ymH2V4mYDkdVSiRx0D7R0s3dvfXiupVBcko6tXP5K4tVdSBMo22/e3V9yRNdn+2HQFv44RFKzwOyCcUUDAVQ==}
+  '@xyflow/system@0.0.74':
+    resolution: {integrity: sha512-7v7B/PkiVrkdZzSbL+inGAo6tkR/WQHHG0/jhSvLQToCsfa8YubOGmBYd1s08tpKpihdHDZFwzQZeR69QSBb4Q==}
 
   JSONStream@1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -12714,9 +12714,9 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xyflow/react@12.9.3(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
+  '@xyflow/react@12.10.0(@types/react@19.2.7)(immer@10.2.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
-      '@xyflow/system': 0.0.73
+      '@xyflow/system': 0.0.74
       classcat: 5.0.5
       react: 19.2.1
       react-dom: 19.2.1(react@19.2.1)
@@ -12725,7 +12725,7 @@ snapshots:
       - '@types/react'
       - immer
 
-  '@xyflow/system@0.0.73':
+  '@xyflow/system@0.0.74':
     dependencies:
       '@types/d3-drag': 3.0.7
       '@types/d3-interpolate': 3.0.4
