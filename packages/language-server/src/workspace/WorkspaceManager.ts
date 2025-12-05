@@ -77,7 +77,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         logger.debug`scanning include path ${includePath.fsPath} for project ${projectId}`
         const files = await this.fileSystemProvider.readDirectory(includePath, { recursive: true })
         for (const file of files) {
-          if (file.isFile) {
+          if (file.isFile && !this.services.workspace.ProjectsManager.isExcluded(file.uri)) {
             const doc = await this.documentFactory.fromUri(file.uri)
             collector(doc)
           }
