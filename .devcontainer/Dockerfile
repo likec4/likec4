@@ -1,5 +1,5 @@
-# [Choice] Node.js version (use -bookworm, or -bullseye variants on local arm64/Apple Silicon): 20, 18, 20-bookworm, 18-bookworm, 20-bullseye, 18-bullseye, 20-buster, 18-buster
-ARG VARIANT=20-bookworm
+# [Choice] Node.js version (use -bookworm variants on local arm64/Apple Silicon): 22, 22-bookworm, 22-bullseye
+ARG VARIANT=22-bookworm
 FROM mcr.microsoft.com/devcontainers/javascript-node:1-${VARIANT}
 
 # Install tslint, typescript. eslint is installed by javascript image
@@ -19,4 +19,5 @@ FROM mcr.microsoft.com/devcontainers/javascript-node:1-${VARIANT}
 # RUN su node -c "npm install -g <your-package-list -here>"
 
 # [Optional] Uncomment if you want to install more global node packages
-RUN su node -c "npm install -g turbo tsx"
+# Install turbo and tsx globally for development convenience
+RUN su node -c "npm install -g turbo tsx pnpm@10.23.0"
