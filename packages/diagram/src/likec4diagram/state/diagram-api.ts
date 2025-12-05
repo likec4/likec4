@@ -103,8 +103,8 @@ export interface DiagramApi<A extends Any = Unknown> {
    */
   focusNode(nodeId: NodeId): void
   /**
-   * Focus on element by FQN (finds the node and focuses with auto-unfocus)
-   * Used by search when navigating to an element on the current view
+   * Focus on element by FQN (finds the node and focuses on it).
+   * Used by search to highlight an element on the current view.
    */
   focusOnElement(elementFqn: Fqn<A>): void
   /**
