@@ -7,7 +7,7 @@ const RELATIVE_PATH_REGEX = /^(?!\/|[A-Za-z]:[\\\/])(?!.*:\/\/).*$/
 // Schema for an include path value: must be a non-empty string representing a relative path
 const IncludePathValue = z
   .string()
-  .nonempty('Include path cannot be empty')
+  .min(1, 'Include path cannot be empty')
   .regex(
     RELATIVE_PATH_REGEX,
     'Include path must be a relative path (no leading slash, drive letter, or protocol)',
