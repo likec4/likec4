@@ -42,8 +42,8 @@ catalogs:
     starlight-package-managers: ^0.11.1
     starlight-toc-overview-customizer: ^0.1.1
   cloudflare:
-    "@cloudflare/vite-plugin": 1.15.2
-    wrangler: ~4.50.0
+    "@cloudflare/vite-plugin": 1.16.1
+    wrangler: ~4.52.1
   css:
     "@pandacss/dev": ^1.6.1
     "@pandacss/preset-panda": ^1.6.1
