@@ -1,4 +1,4 @@
-import { type Fqn, type NodeId, BBox } from '@likec4/core/types'
+import { type NodeId, BBox } from '@likec4/core/types'
 import { invariant, nonNullable } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
 import { isTruthy } from 'remeda'
@@ -11,17 +11,7 @@ import {
   raiseSetViewport,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
-import { calcViewportForBounds, findCorrespondingNode, nodeRef } from './utils'
-
-type NodeWithData = { id: string; data: Record<string, unknown> }
-
-export const findNodeByElementFqn = <T extends NodeWithData>(
-  xynodes: T[],
-  elementFqn: Fqn,
-): NodeId | null => {
-  const node = xynodes.find(n => 'modelFqn' in n.data && n.data['modelFqn'] === elementFqn)
-  return node ? (node.id as NodeId) : null
-}
+import { calcViewportForBounds, findCorrespondingNode, findNodeByElementFqn, nodeRef } from './utils'
 
 const handleBrowserForwardBackward = () =>
   machine.assign(({ context, event }) => {

@@ -1,6 +1,6 @@
 import type { Fqn } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
-import { findNodeByElementFqn } from './machine.state.navigating'
+import { findNodeByElementFqn } from './utils'
 
 describe('findNodeByElementFqn', () => {
   it('returns null when xynodes array is empty', () => {
