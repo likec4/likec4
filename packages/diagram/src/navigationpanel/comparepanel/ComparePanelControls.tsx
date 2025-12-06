@@ -13,7 +13,7 @@ const Divider = MantineDivider.withProps({
 })
 
 export function ComparePanelControls() {
-  const [ctx, { toggleCompare, switchLayout, resetManualLayout }] = useDiagramCompareLayout()
+  const [ctx, { toggleCompare, switchLayout, resetManualLayout, applyLatestToManual }] = useDiagramCompareLayout()
   return (
     <>
       <Box
@@ -32,6 +32,7 @@ export function ComparePanelControls() {
           <Divider />
           <CompareActionsMenu
             onResetManualLayout={resetManualLayout}
+            onApplyLatestToManual={applyLatestToManual}
           />
           <Divider />
         </HStack>

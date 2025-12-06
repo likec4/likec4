@@ -38,7 +38,10 @@ export class LikeC4ModelChanges {
 
         // TODO refactor to use separate methods for save/reset operations
         if (change.op === 'save-view-snapshot') {
-          invariant(viewId === change.layout.id, 'View ID does not match')
+          invariant(
+            viewId === change.layout.id,
+            'View ID does not match, expected ' + viewId + ', got ' + change.layout.id,
+          )
           // If there is an existing manual layout v1
           if (lookup.view.manualLayout) {
             // We clean it up

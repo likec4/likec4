@@ -1,7 +1,8 @@
 export {
   EnsureEditorContext,
-  LikeC4EditorContext,
-  useLikeC4Editor,
-  useOptionalLikeC4Editor,
-} from './LikeC4EditorContext'
-export type { LikeC4EditorContextType } from './LikeC4EditorContext'
+  LikeC4EditorProvider,
+  useOptionalLikeC4EditorPort,
+} from './LikeC4EditorProvider'
+export type { LikeC4EditorPort } from './LikeC4EditorProvider'
+
+export type * from './editorActor'

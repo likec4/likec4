@@ -1,11 +1,8 @@
 import type * as t from '@likec4/core/types'
-import { indexBy, prop } from 'remeda'
+import { indexBy } from 'remeda'
 import { describe, it } from 'vitest'
 import { type Patches, prepareFixtures } from './__tests__/fixture'
 import { applyChangesToManualLayout, nodesDiff } from './applyChangesToManualLayout'
-
-const nodeIds = (view: t.LayoutedView) => view.nodes.map(prop('id'))
-const nodesById = (view: t.LayoutedView) => new Map(view.nodes.map(n => [n.id, n]))
 
 export function testData<const Nodes, Edges>(patches?: Patches<Nodes, Edges>) {
   const {
@@ -18,8 +15,8 @@ export function testData<const Nodes, Edges>(patches?: Patches<Nodes, Edges>) {
   } = prepareFixtures(patches)
 
   const result = applyChangesToManualLayout(snapshot, layouted)
-  const resultNodes = indexBy(result.nodes, n => n.id) as typeof snapshotNodes
-  const resultEdges = indexBy(result.edges, e => e.id) as typeof snapshotEdges
+  const resultNodes = indexBy(result.nodes, n => n.id) as typeof layoutedNodes
+  const resultEdges = indexBy(result.edges, e => e.id) as typeof layoutedEdges
 
   return {
     result,
@@ -33,64 +30,6 @@ export function testData<const Nodes, Edges>(patches?: Patches<Nodes, Edges>) {
     latestEdges: layoutedEdges,
   }
 }
-
-describe('applyChangesToManualLayout', () => {
-  it('should remove leaf nodes', ({ expect }) => {
-    const { result, resultNodes, manual, latest } = testData({
-      nodes: {
-        'saas.backend.auth': null,
-        'external.database': null,
-        'customer': null,
-      },
-    })
-
-    expect(result.nodes.length).toBe(manual.nodes.length - 3)
-    expect(resultNodes).not.haveOwnProperty('saas.backend.auth')
-    expect(resultNodes).not.haveOwnProperty('external.database')
-    expect(resultNodes).not.haveOwnProperty('customer')
-
-    expect(resultNodes['saas.backend'].children).toEqual([
-      'saas.backend.api',
-      'saas.backend.worker',
-    ])
-
-    expect(resultNodes['external'].children).toEqual([
-      'external.email',
-    ])
-  })
-
-  it('should remove nodes and reattach their children', ({ expect }) => {
-    const { result, resultNodes, manual } = testData({
-      nodes: {
-        'saas.backend.worker': null,
-        'saas.backend': null,
-      },
-    })
-
-    expect(result.nodes.length).toBe(manual.nodes.length - 2)
-    expect(resultNodes).not.haveOwnProperty('saas.backend')
-    expect(resultNodes).not.haveOwnProperty('saas.backend.worker')
-    // children from removed node should be to upper level
-    expect(resultNodes['saas'].children).toEqual([
-      'saas.frontend',
-      'saas.backend.api',
-      'saas.backend.auth',
-    ])
-  })
-
-  it('if root node is removed, its children should become orphans', ({ expect }) => {
-    const { result, resultNodes, manual } = testData({
-      nodes: {
-        'external': null,
-      },
-    })
-
-    expect(result.nodes.length).toBe(manual.nodes.length - 1)
-    expect(resultNodes).not.haveOwnProperty('external')
-    expect(resultNodes['external.email'].parent).toBeNull()
-    expect(resultNodes['external.database'].parent).toBeNull()
-  })
-})
 
 describe('nodesDiff', () => {
   it('should detect removed nodes', ({ expect }) => {
@@ -329,5 +268,464 @@ describe('nodesDiff', () => {
         expect(updatedSaas.title).toBe('Updated SaaS')
       }
     })
+  })
+})
+
+describe('applyChangesToManualLayout', () => {
+  it('should remove leaf nodes', ({ expect }) => {
+    const { result, resultNodes, manual } = testData({
+      nodes: {
+        'saas.backend.auth': null,
+        'external.database': null,
+        'customer': null,
+      },
+    })
+
+    expect(result.nodes.length).toBe(manual.nodes.length - 3)
+    expect(resultNodes).not.haveOwnProperty('saas.backend.auth')
+    expect(resultNodes).not.haveOwnProperty('external.database')
+    expect(resultNodes).not.haveOwnProperty('customer')
+
+    expect(resultNodes['saas.backend'].children).toEqual([
+      'saas.backend.api',
+      'saas.backend.worker',
+    ])
+
+    expect(resultNodes['external'].children).toEqual([
+      'external.email',
+    ])
+  })
+
+  it('should remove nodes and reattach their children', ({ expect }) => {
+    const { result, resultNodes, manual } = testData({
+      nodes: {
+        'saas.backend.worker': null,
+        'saas.backend': null,
+      },
+    })
+
+    expect(result.nodes.length).toBe(manual.nodes.length - 2)
+    expect(resultNodes).not.haveOwnProperty('saas.backend')
+    expect(resultNodes).not.haveOwnProperty('saas.backend.worker')
+    // children from removed node should be to upper level
+    expect(resultNodes['saas'].children).toEqual([
+      'saas.frontend',
+      'saas.backend.api',
+      'saas.backend.auth',
+    ])
+  })
+
+  it('if root node is removed, its children should become orphans', ({ expect }) => {
+    const { result, resultNodes, manual } = testData({
+      nodes: {
+        'external': null,
+      },
+    })
+
+    expect(result.nodes.length).toBe(manual.nodes.length - 1)
+    expect(resultNodes).not.haveOwnProperty('external')
+    expect(resultNodes['external.email'].parent).toBeNull()
+    expect(resultNodes['external.database'].parent).toBeNull()
+  })
+
+  it('should preserve node hierarchy and recalculate parent sizes', ({ expect }) => {
+    const { resultNodes, manualNodes } = testData({
+      nodes: {
+        'saas.backend.api': {
+          title: 'Updated API',
+          color: 'secondary' as any,
+        },
+      },
+    })
+
+    // Should preserve hierarchy
+    expect(resultNodes['saas.backend'].children).toContain('saas.backend.api')
+    expect(resultNodes['saas.backend.api'].parent).toBe('saas.backend')
+    expect(resultNodes['saas'].children).toContain('saas.backend')
+    expect(resultNodes['saas.backend'].parent).toBe('saas')
+    // Title should be updated
+    expect(resultNodes['saas.backend.api'].title).toBe('Updated API')
+
+    // Position should be preserved for leaf nodes
+    expect(resultNodes['saas.backend.api'].x).toBe(manualNodes['saas.backend.api'].x)
+    expect(resultNodes['saas.backend.api'].y).toBe(manualNodes['saas.backend.api'].y)
+
+    // Compound nodes should be expanded to wrap children
+    const saasBackend = resultNodes['saas.backend']
+    const saas = resultNodes['saas']
+    expect(saasBackend?.width).toBeGreaterThan(0)
+    expect(saasBackend?.height).toBeGreaterThan(0)
+    expect(saas?.width).toBeGreaterThan(0)
+    expect(saas?.height).toBeGreaterThan(0)
+  })
+
+  it('should handle added nodes and rebuild hierarchy', ({ expect }) => {
+    const { result, resultNodes, manualNodes } = testData({
+      nodes: {
+        'saas.newservice': {
+          title: 'New Service',
+          x: 100,
+          y: 200,
+          width: 300,
+          height: 150,
+        },
+      },
+    })
+
+    const newService = resultNodes['saas.newservice']
+    const saas = resultNodes['saas']
+
+    expect(newService).toBeDefined()
+    expect(newService?.title).toBe('New Service')
+    expect(newService?.parent).toBe('saas')
+    expect(saas?.children).toEqual([
+      ...manualNodes.saas.children,
+      'saas.newservice',
+    ])
+    // Parent should be expanded to include new child
+    if (saas && newService) {
+      expect(saas.x).toBeLessThanOrEqual(newService.x)
+      expect(saas.y).toBeLessThanOrEqual(newService.y)
+      expect(saas.x + saas.width).toBeGreaterThanOrEqual(newService.x + newService.width)
+      expect(saas.y + saas.height).toBeGreaterThanOrEqual(newService.y + newService.height)
+    }
+  })
+
+  it('should properly set level and depth for all nodes', ({ expect }) => {
+    const { result, resultNodes } = testData({
+      nodes: {
+        'saas.backend': null,
+        'saas.frontend.spa.dashboard': {
+          title: 'Dashboard',
+          x: 100,
+          y: 100,
+          width: 200,
+          height: 100,
+        },
+      },
+    })
+
+    // Root nodes should have level 0
+    expect(resultNodes['customer']?.level).toBe(0)
+    expect(resultNodes['saas']?.level).toBe(0)
+    expect(resultNodes['external']?.level).toBe(0)
+
+    // First level children (including backend children moved up from removed saas.backend)
+    expect(resultNodes['saas.frontend']?.level).toBe(1)
+    expect(resultNodes['saas.backend.api']?.level).toBe(1)
+    expect(resultNodes['saas.backend.auth']?.level).toBe(1)
+    expect(resultNodes['saas.backend.worker']?.level).toBe(1)
+
+    // Second level children
+    expect(resultNodes['saas.frontend.spa']?.level).toBe(2)
+    expect(resultNodes['saas.frontend.pwa']?.level).toBe(2)
+
+    // Third level children
+    expect(resultNodes['saas.frontend.spa.dashboard']?.level).toBe(3)
+
+    // Verify saas.backend children are now direct children of saas
+    expect(resultNodes['saas'].children).toContain('saas.backend.api')
+    expect(resultNodes['saas'].children).toContain('saas.backend.auth')
+    expect(resultNodes['saas'].children).toContain('saas.backend.worker')
+    expect(resultNodes['saas.backend.api']?.parent).toBe('saas')
+    expect(resultNodes['saas.backend.auth']?.parent).toBe('saas')
+    expect(resultNodes['saas.backend.worker']?.parent).toBe('saas')
+
+    // Depth should be set for compound nodes
+    // saas contains frontend (which contains spa (which contains dashboard))
+    expect(resultNodes['saas']?.depth).toBe(3)
+    // saas.frontend contains spa (which contains dashboard)
+    expect(resultNodes['saas.frontend']?.depth).toBe(2)
+    // saas.frontend.spa contains dashboard
+    expect(resultNodes['saas.frontend.spa']?.depth).toBe(1)
+
+    // Leaf nodes should have depth 0
+    expect(resultNodes['customer']?.depth).toBe(0)
+    expect(resultNodes['saas.frontend.pwa']?.depth).toBe(0)
+    expect(resultNodes['saas.frontend.spa.dashboard']?.depth).toBe(0)
+    expect(resultNodes['saas.backend.api']?.depth).toBe(0)
+    expect(resultNodes['saas.backend.auth']?.depth).toBe(0)
+    expect(resultNodes['saas.backend.worker']?.depth).toBe(0)
+  })
+
+  it('should update view properties from latest', ({ expect }) => {
+    const { result, manual } = testData({
+      view: {
+        title: 'Updated Title',
+        description: 'Updated Description' as any,
+      },
+    })
+
+    expect(result.title).toBe('Updated Title')
+    expect(result.description).toBe('Updated Description')
+    expect(result.id).toBe(manual.id)
+    expect(result._type).toBe(manual._type)
+  })
+
+  it('should recalculate bounds based on root nodes', ({ expect }) => {
+    const { result } = testData({})
+
+    const rootNodes = result.nodes.filter(n => !n.parent)
+    expect(rootNodes.length).toBeGreaterThan(0)
+
+    // Bounds should encompass all root nodes
+    for (const node of rootNodes) {
+      expect(result.bounds.x).toBeLessThanOrEqual(node.x)
+      expect(result.bounds.y).toBeLessThanOrEqual(node.y)
+      expect(result.bounds.x + result.bounds.width).toBeGreaterThanOrEqual(node.x + node.width)
+      expect(result.bounds.y + result.bounds.height).toBeGreaterThanOrEqual(node.y + node.height)
+    }
+  })
+
+  it('should handle nodes with updated properties', ({ expect }) => {
+    const { resultNodes, manualNodes } = testData({
+      nodes: {
+        'customer': {
+          title: 'Premium Customer',
+          color: 'blue' as any,
+          shape: 'cylinder' as any,
+        },
+        'saas.backend.api': {
+          title: 'API Gateway',
+          icon: 'tech:aws' as any,
+          tags: ['api', 'gateway'],
+        },
+      },
+    })
+
+    // Customer updates
+    const customer = resultNodes['customer']
+    expect(customer?.title).toBe('Premium Customer')
+    expect(customer?.color).toBe('blue')
+    expect(customer?.shape).toBe('cylinder')
+    // Position preserved
+    expect(customer?.x).toBe(manualNodes['customer'].x)
+    expect(customer?.y).toBe(manualNodes['customer'].y)
+
+    // API updates
+    const api = resultNodes['saas.backend.api']
+    expect(api?.title).toBe('API Gateway')
+    expect(api?.icon).toBe('tech:aws')
+    expect(api?.tags).toEqual(['api', 'gateway'])
+    // Position preserved
+    expect(api?.x).toBe(manualNodes['saas.backend.api'].x)
+    expect(api?.y).toBe(manualNodes['saas.backend.api'].y)
+  })
+
+  it('should handle deep nesting correctly', ({ expect }) => {
+    const { resultNodes } = testData({
+      nodes: {
+        'saas.backend.api.v1': {
+          title: 'API v1',
+          x: 100,
+          y: 100,
+          width: 200,
+          height: 100,
+        },
+      },
+    })
+
+    const v1 = resultNodes['saas.backend.api.v1']
+    const api = resultNodes['saas.backend.api']
+    const backend = resultNodes['saas.backend']
+    const saas = resultNodes['saas']
+
+    // Check hierarchy
+    expect(v1).toBeDefined()
+    expect(v1.parent).toBe('saas.backend.api')
+    expect(api.children).toEqual(['saas.backend.api.v1'])
+
+    // Check levels
+    expect(v1.level).toBe(3)
+    expect(api.level).toBe(2)
+    expect(backend.level).toBe(1)
+
+    // Check depth updates
+    expect(api.depth).toBe(1)
+    expect(backend.depth).toBeGreaterThan(1)
+    expect(saas.depth).toBeGreaterThan(2)
+  })
+
+  it('should clear drift information', ({ expect }) => {
+    const { result, resultNodes } = testData({
+      nodes: {
+        'customer': d => {
+          d.drifts = ['added']
+        },
+        'saas.backend.api': d => {
+          d.drifts = ['removed', 'added']
+        },
+      },
+    })
+
+    expect(resultNodes['customer']?.drifts).toBeNull()
+    expect(resultNodes['saas.backend.api']?.drifts).toBeNull()
+    // drifts should be undefined after clearing (property deleted)
+    expect(result.drifts).toBeUndefined()
+  })
+
+  it('should handle compound nodes with padding', ({ expect }) => {
+    const { resultNodes } = testData({})
+
+    // Check that compound nodes wrap their children with padding
+    const saasBackend = resultNodes['saas.backend']
+    const children = [
+      resultNodes['saas.backend.api'],
+      resultNodes['saas.backend.auth'],
+      resultNodes['saas.backend.worker'],
+    ].filter(n => !!n) as t.DiagramNode[]
+
+    if (children.length > 0 && saasBackend) {
+      // Find the bounding box of children
+      const minX = Math.min(...children.map(n => n.x))
+      const minY = Math.min(...children.map(n => n.y))
+      const maxX = Math.max(...children.map(n => n.x + n.width))
+      const maxY = Math.max(...children.map(n => n.y + n.height))
+
+      // Parent should have padding around children (42, 60, 42, 42)
+      expect(saasBackend.x).toBeLessThan(minX)
+      expect(saasBackend.y).toBeLessThan(minY)
+      expect(saasBackend.x + saasBackend.width).toBeGreaterThan(maxX)
+      expect(saasBackend.y + saasBackend.height).toBeGreaterThan(maxY)
+
+      // Check approximate padding (allowing for rounding)
+      expect(minX - saasBackend.x).toBeCloseTo(42, 1)
+      expect(minY - saasBackend.y).toBeCloseTo(60, 1)
+    }
+  })
+
+  it('should maintain consistency between parent children arrays and child parent references', ({ expect }) => {
+    const { result, resultNodes } = testData({})
+
+    // For each node with children, verify bidirectional relationship
+    for (const node of result.nodes) {
+      if (node.children.length > 0) {
+        for (const childId of node.children) {
+          const child = resultNodes[childId]
+          expect(child).toBeDefined()
+          expect(child?.parent).toBe(node.id)
+        }
+      }
+
+      if (node.parent) {
+        const parent = resultNodes[node.parent]
+        expect(parent).toBeDefined()
+        expect(parent?.children).toContain(node.id)
+      }
+    }
+  })
+
+  it('should include edges between added nodes', ({ expect }) => {
+    const { result, resultEdges, latestEdges } = testData({
+      nodes: {
+        'new.node1': {
+          title: 'New Node 1',
+          x: 100,
+          y: 100,
+          width: 200,
+          height: 100,
+        },
+        'new.node2': {
+          title: 'New Node 2',
+          x: 400,
+          y: 100,
+          width: 200,
+          height: 100,
+        },
+      },
+      edges: {
+        'new.node1:new.node2': {
+          source: 'new.node1' as any,
+          target: 'new.node2' as any,
+        },
+      },
+    })
+
+    // Should include edge between two added nodes
+    expect(result.edges).toContain(latestEdges['new.node1:new.node2'])
+  })
+
+  it('should not include edges between added and existing nodes', ({ expect }) => {
+    const { result, latestEdges } = testData({
+      nodes: {
+        'new.node': {
+          title: 'New Node',
+          x: 100,
+          y: 100,
+          width: 200,
+          height: 100,
+        },
+      },
+      edges: {
+        'new.node:customer': {
+          source: 'new.node' as any,
+          target: 'customer' as any,
+        },
+        'customer:new.node': {
+          source: 'customer' as any,
+          target: 'new.node' as any,
+        },
+      },
+    })
+
+    // Should not include edges connecting to existing nodes
+    expect(result.edges).not.toContain(latestEdges['new.node:customer'])
+    expect(result.edges).not.toContain(latestEdges['customer:new.node'])
+  })
+
+  it('should remove leaf nodes', ({ expect }) => {
+    const { result, resultNodes, manual } = testData({
+      nodes: {
+        'saas.backend.auth': null,
+        'external.database': null,
+        'customer': null,
+      },
+    })
+
+    expect(result.nodes.length).toBe(manual.nodes.length - 3)
+    expect(resultNodes).not.haveOwnProperty('saas.backend.auth')
+    expect(resultNodes).not.haveOwnProperty('external.database')
+    expect(resultNodes).not.haveOwnProperty('customer')
+
+    expect(resultNodes['saas.backend'].children).toEqual([
+      'saas.backend.api',
+      'saas.backend.worker',
+    ])
+
+    expect(resultNodes['external'].children).toEqual([
+      'external.email',
+    ])
+  })
+
+  it('should remove nodes and reattach their children', ({ expect }) => {
+    const { result, resultNodes, manual } = testData({
+      nodes: {
+        'saas.backend.worker': null,
+        'saas.backend': null,
+      },
+    })
+
+    expect(result.nodes.length).toBe(manual.nodes.length - 2)
+    expect(resultNodes).not.haveOwnProperty('saas.backend')
+    expect(resultNodes).not.haveOwnProperty('saas.backend.worker')
+    // children from removed node should be to upper level
+    expect(resultNodes['saas'].children).toEqual([
+      'saas.frontend',
+      'saas.backend.api',
+      'saas.backend.auth',
+    ])
+  })
+
+  it('if root node is removed, its children should become orphans', ({ expect }) => {
+    const { result, resultNodes, manual } = testData({
+      nodes: {
+        'external': null,
+      },
+    })
+
+    expect(result.nodes.length).toBe(manual.nodes.length - 1)
+    expect(resultNodes).not.haveOwnProperty('external')
+    expect(resultNodes['external.email'].parent).toBeNull()
+    expect(resultNodes['external.database'].parent).toBeNull()
   })
 })

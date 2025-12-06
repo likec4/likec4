@@ -14,6 +14,7 @@ import {
   IconRendererProvider,
 } from './context'
 import { TagStylesProvider } from './context/TagStylesContext'
+import { useOptionalLikeC4EditorPort } from './editor'
 import { useId } from './hooks/useId'
 import type {
   LikeC4DiagramEventHandlers,
@@ -45,7 +46,6 @@ export function LikeC4Diagram<A extends Any = Any>({
   onCanvasContextMenu,
   onCanvasDblClick,
   onEdgeClick,
-  onChange,
   onEdgeContextMenu,
   onNavigateTo,
   onNodeClick,
@@ -56,8 +56,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   onInitialized,
   view,
   className,
-  readonly = true,
-  controls = !readonly,
+  controls = true,
   fitView = true,
   fitViewPadding: _fitViewPadding = controls ? FitViewPaddings.withControls : FitViewPaddings.default,
   pannable = true,
@@ -69,8 +68,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   enableRelationshipDetails = false,
   enableRelationshipBrowser = false,
   enableCompareWithLatest = !!onLayoutTypeChange,
-  nodesDraggable = !readonly,
-  nodesSelectable = !readonly || enableFocusMode || !!onNavigateTo || !!onNodeClick,
+  nodesSelectable,
   enableNotations = false,
   showNavigationButtons = !!onNavigateTo,
   enableDynamicViewWalkthrough = false,
@@ -95,6 +93,11 @@ export function LikeC4Diagram<A extends Any = Any>({
     initialMinZoom: number
     initialMaxZoom: number
   }>(null)
+
+  const editable = !!useOptionalLikeC4EditorPort()
+  const readonly = !editable
+
+  nodesSelectable ??= editable || enableFocusMode || !!onNavigateTo || !!onNodeClick
 
   const bounds = pickViewBounds(view, dynamicViewVariant)
   const fitViewPadding = useNormalizedViewPadding(_fitViewPadding)
@@ -153,7 +156,6 @@ export function LikeC4Diagram<A extends Any = Any>({
                 onCanvasContextMenu,
                 onCanvasDblClick,
                 onEdgeClick,
-                onChange,
                 onEdgeContextMenu,
                 onNavigateTo,
                 onNodeClick,
@@ -175,7 +177,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                       zoomable={zoomable}
                       pannable={pannable}
                       fitViewPadding={fitViewPadding}
-                      nodesDraggable={nodesDraggable}
+                      nodesDraggable={editable}
                       nodesSelectable={nodesSelectable}
                       where={where ?? null}
                       dynamicViewVariant={dynamicViewVariant}

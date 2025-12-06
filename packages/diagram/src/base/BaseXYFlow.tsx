@@ -112,6 +112,7 @@ export function BaseXYFlow<
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
+      zIndexMode="auto"
       fitViewOptions={fitViewOptions}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"

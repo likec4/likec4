@@ -217,7 +217,7 @@ const undo = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
     view: lastHistoryItem.view,
     xyedges: lastHistoryItem.xyedges,
     xynodes: lastHistoryItem.xynodes,
-    source: 'internal',
+    source: 'editor',
   })
   // If the last history item was already synched,
   // we need to emit onChange event
@@ -225,7 +225,7 @@ const undo = syncManualLayout.enqueueActions(({ context, enqueue, system }) => {
     enqueue.sendTo(
       diagramActor,
       {
-        type: 'emit.onChange',
+        type: 'trigger.change',
         change: lastHistoryItem.change,
       },
     )
@@ -245,7 +245,7 @@ const emitOnChange = syncManualLayout.enqueueActions(({ enqueue, system }) => {
     bounds: change.layout.bounds,
   })
   enqueue.sendTo(diagramActor, {
-    type: 'emit.onChange',
+    type: 'trigger.change',
     change,
   })
 })

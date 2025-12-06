@@ -12,20 +12,6 @@ export const likec4Container = css({
   },
 })
 
-// export const likec4error = style({
-//   position: 'absolute',
-//   left: '2rem',
-//   bottom: '2rem',
-//   display: 'flex',
-//   alignItems: 'center',
-//   justifyContent: 'center',
-//   flexDirection: 'column',
-//   padding: '0 2rem',
-//   backgroundColor: 'var(--vscode-inputValidation-errorBackground)',
-//   border: '1px solid var(--vscode-inputValidation-errorBorder)',
-//   color: 'var(--vscode-errorForeground)'
-// })
-
 export const likec4ParsingScreen = css({
   padding: 'md',
   '& section': {

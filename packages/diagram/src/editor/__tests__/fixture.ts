@@ -351,13 +351,17 @@ export function prepareFixtures<const N, E>(patcher?: Patches<N, E>): {
     [Id in ExistingEdges | E & string]: DiagramEdge
   }
 } {
-  const snapshot = structuredClone(indexSnapshot) as unknown as LayoutedElementView
+  const snapshot = {
+    ...structuredClone(indexSnapshot),
+    _layout: 'manual' as const,
+  } as unknown as LayoutedElementView
 
   let layouted = {
     ...patch(
       structuredClone(snapshot),
       patcher?.view,
     ),
+    _layout: 'auto' as const,
   }
 
   if (patcher?.nodes) {

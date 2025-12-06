@@ -2,12 +2,14 @@ import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
 import { navigationPanelActionIcon } from '@likec4/styles/recipes'
-import { Badge, Menu, UnstyledButton } from '@mantine/core'
+import { Menu, UnstyledButton } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 
 export function CompareActionsMenu({
+  onApplyLatestToManual,
   onResetManualLayout,
 }: {
+  onApplyLatestToManual?: () => void
   onResetManualLayout: () => void
 }) {
   return (
@@ -47,7 +49,10 @@ export function CompareActionsMenu({
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item disabled rightSection={<Badge size="xs" radius="sm">Soon</Badge>}>
+        <Menu.Item
+          disabled={!onApplyLatestToManual}
+          onClick={onApplyLatestToManual}
+        >
           Apply changes
         </Menu.Item>
         <Menu.Item fz={'sm'} onClick={onResetManualLayout}>Reset manual layout</Menu.Item>

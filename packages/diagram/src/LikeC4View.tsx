@@ -435,7 +435,6 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
       <FramerMotionConfig>
         <LikeC4Diagram
           view={view}
-          readonly
           pannable={pannable}
           zoomable={zoomable}
           background={background}
@@ -451,7 +450,6 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
           enableRelationshipBrowser={enableRelationshipBrowser}
           enableElementTags={false}
           controls={controls}
-          nodesDraggable={false}
           reduceGraphics={reduceGraphics}
           className={cx(
             'likec4-static-view',
@@ -488,8 +486,6 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
                 enableElementTags
                 enableCompareWithLatest
                 controls
-                readonly
-                nodesDraggable={false}
                 fitView
                 {...props}
                 fitViewPadding={FitViewPaddings.withControls}

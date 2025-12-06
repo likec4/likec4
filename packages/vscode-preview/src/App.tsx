@@ -1,7 +1,7 @@
 import type { scalar } from '@likec4/core'
-import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider } from '@likec4/diagram'
 import { Button } from '@mantine/core'
-import { memo } from 'react'
+import { type PropsWithChildren, memo } from 'react'
 import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen } from './App.css'
 import { IconRenderer } from './IconRenderer'
@@ -11,6 +11,7 @@ import {
   setLayoutType,
   useComputedModel,
   useDiagramView,
+  useLikeC4EditorPort,
   useVscodeAppState,
 } from './state'
 import { ExtensionApi as extensionApi } from './vscode'
@@ -40,9 +41,20 @@ export function App() {
     <LikeC4ModelProvider likec4model={likec4Model}>
       {error && <ErrorMessage error={error} />}
       <QueryErrorBoundary>
-        <Initialized />
+        <LikeC4VscodeEditor>
+          <Initialized />
+        </LikeC4VscodeEditor>
       </QueryErrorBoundary>
     </LikeC4ModelProvider>
+  )
+}
+
+function LikeC4VscodeEditor({ children }: PropsWithChildren) {
+  const editor = useLikeC4EditorPort()
+  return (
+    <LikeC4EditorProvider editor={editor}>
+      {children}
+    </LikeC4EditorProvider>
   )
 }
 
@@ -83,9 +95,7 @@ const Initialized = memo(() => {
             left: '60px',
             right: '30px',
           }}
-          readonly={false}
           controls
-          nodesDraggable={nodesDraggable}
           enableFocusMode
           enableDynamicViewWalkthrough
           enableElementDetails
@@ -128,7 +138,6 @@ const Initialized = memo(() => {
             event.preventDefault()
           }}
           onChange={({ change }) => {
-            extensionApi.change(view.id, change)
           }}
           onOpenSource={(params) => {
             setLastClickedNode()

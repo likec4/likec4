@@ -2,7 +2,7 @@ import { invariant, nonNullable } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
 import type * as t from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
-import { difference, differenceWith, map, omit, pick, pipe, sort } from 'remeda'
+import { difference, differenceWith, map, pipe, sort } from 'remeda'
 
 /**
  * Applies changes to a manual layout.
@@ -11,16 +11,19 @@ import { difference, differenceWith, map, omit, pick, pipe, sort } from 'remeda'
  * @param latest - The latest layout.
  */
 export function applyChangesToManualLayout(
-  manualView: t.LayoutedElementView,
-  latestView: t.LayoutedElementView,
-): t.LayoutedElementView {
+  manualView: t.LayoutedView,
+  latestView: t.LayoutedView,
+): t.LayoutedView {
   invariant(manualView.id === latestView.id, 'View IDs do not match')
   invariant(manualView._type === latestView._type, 'View types do not match')
+  invariant(manualView._layout === 'manual' && latestView._layout === 'auto', 'Views must be manual and auto')
 
   const {
     added,
     updated,
   } = nodesDiff(manualView, latestView)
+
+  const edgesBetweenAddedNodes = selectEdgesBetweenNodes(added, latestView)
 
   const nodesMap = new Map<t.NodeId, t.DiagramNode>()
 
@@ -60,6 +63,7 @@ export function applyChangesToManualLayout(
       inEdges: [],
       outEdges: [],
       depth: 0,
+      drifts: null,
     })
   }
 
@@ -68,32 +72,31 @@ export function applyChangesToManualLayout(
 
   const nodes = [...nodesMap.values()]
 
+  // const unmovedNodes = selectUnmovedNodes(nodes, manualView)
+
+  // const unmovedEdges = selectEdgesBetweenUnmovedNodes(unmovedNodes, latestView)
+
   // Recalculate view bounds (around all root nodes)
   const bounds = BBox.merge(...nodes.filter(n => !n.parent))
 
-  return {
-    ...omit(manualView, [
-      'drifts',
-      'title',
-      'description',
-      'links',
-      'tags',
-      'hasLayoutDrift',
-      'viewOf',
-      'extends',
-    ]),
-    ...pick(latestView, [
-      'title',
-      'description',
-      'links',
-      'tags',
-      'viewOf',
-      'extends',
-    ]),
+  const result = {
+    ...manualView,
+    ...latestView,
+    _layout: 'manual' as const,
+    title: latestView.title ?? null,
+    description: latestView.description ?? null,
+    tags: latestView.tags ?? [],
+    links: latestView.links ?? [],
+    nodes,
     bounds,
-    edges: [],
-    nodes: [...nodesMap.values()],
+    edges: [
+      ...edgesBetweenAddedNodes,
+    ],
   }
+  // Clear drifts
+  delete (result as any).drifts
+
+  return result as t.LayoutedView
 }
 
 function updateDepthOfAncestors(node: t.DiagramNode, nodes: ReadonlyMap<t.NodeId, t.DiagramNode>) {
@@ -203,16 +206,19 @@ function applyNodeChanges(
   const next = structuredClone(updated)
   next.x = current.x
   next.y = current.y
-  next.width = current.width
-  next.height = current.height
 
   // Delete drift reasons
   next.drifts = null
 
   // If updated node has no children, it means its size is not determined by children
+  // So we can take updated size
   if (updated.children.length === 0) {
     next.width = updated.width
     next.height = updated.height
+  } else {
+    // Preserve from current
+    next.width = current.width
+    next.height = current.height
   }
 
   // Reset data, will be recalculated later
@@ -222,6 +228,42 @@ function applyNodeChanges(
   next.outEdges = []
   next.level = 0
   next.depth = 0
+  next.drifts = null
 
   return next
+}
+
+/**
+ * Selects nodes that have not been moved after applying latest changes.
+ * (i.e., nodes that have not changed position or size)
+ */
+function selectUnmovedNodes(
+  nodes: t.DiagramNode[],
+  manualView: t.LayoutedView,
+) {
+  const manualNodes = new Map(manualView.nodes.map(n => [n.id, n]))
+  return nodes.filter((n) => {
+    const manualNode = manualNodes.get(n.id)
+    if (!manualNode) {
+      return false
+    }
+    return manualNode.x === n.x
+      && manualNode.y === n.y
+      && manualNode.width === n.width
+      && manualNode.height === n.height
+  })
+}
+
+function selectEdgesBetweenNodes(
+  nodes: t.DiagramNode[],
+  latest: t.LayoutedView,
+): t.DiagramEdge[] {
+  if (nodes.length === 0) {
+    return []
+  }
+  const unmovedNodeIds = new Set(nodes.map(n => n.id))
+  return latest.edges.filter(e =>
+    unmovedNodeIds.has(e.source)
+    && unmovedNodeIds.has(e.target)
+  )
 }
