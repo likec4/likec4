@@ -27,13 +27,13 @@ catalogMode: prefer
 
 catalogs:
   astro:
-    "@astrojs/check": ^0.9.5
+    "@astrojs/check": ^0.9.6
     "@astrojs/react": 4.4.2
     "@astrojs/starlight": 0.36.2
     "@astrojs/starlight-tailwind": ^4.0.2
     "@expressive-code/plugin-collapsible-sections": ^0.41.3
     "@expressive-code/plugin-line-numbers": ^0.41.3
-    astro: 5.16.0
+    astro: 5.16.4
     astro-og-canvas: ^0.7.2
     shiki: ^3.15.0
     starlight-heading-badges: ^0.6.1
