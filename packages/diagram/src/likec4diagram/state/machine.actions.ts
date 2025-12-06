@@ -770,7 +770,7 @@ export const stopHotKeyActor = () => machine.stopChild('hotkey')
  * Set to 0 to disable auto-unfocus (focus remains until user clicks elsewhere).
  * Used for focusing nodes from search results.
  */
-const AUTO_UNFOCUS_DELAY = 0
+const AUTO_UNFOCUS_DELAY = 3000
 
 export const startAutoUnfocusTimer = () =>
   machine.enqueueActions(({ context, enqueue }) => {

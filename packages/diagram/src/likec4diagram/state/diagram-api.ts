@@ -17,7 +17,7 @@ import type {
   DiagramContext,
   DiagramEvents,
 } from './types'
-import { findDiagramEdge, findDiagramNode, typedSystem } from './utils'
+import { findDiagramEdge, findDiagramNode, findNodeByModelFqn, typedSystem } from './utils'
 
 type Any = t.aux.Any
 type Unknown = t.aux.UnknownLayouted
@@ -219,7 +219,7 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
 
     focusOnElement: (elementFqn: Fqn<A>) => {
       const context = actorRef.current.getSnapshot().context
-      const node = context.xynodes.find(n => 'modelFqn' in n.data && n.data.modelFqn === elementFqn)
+      const node = findNodeByModelFqn(context.xynodes, elementFqn)
       if (node) {
         actorRef.current.send({ type: 'focus.node', nodeId: node.id as NodeId, autoUnfocus: true })
       }
