@@ -1,10 +1,10 @@
 import type { Fqn } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
-import { findNodeByElementFqn } from './utils'
+import { findNodeByModelFqn } from './utils'
 
-describe('findNodeByElementFqn', () => {
+describe('findNodeByModelFqn', () => {
   it('returns null when xynodes array is empty', () => {
-    const result = findNodeByElementFqn([], 'cloud.api' as Fqn)
+    const result = findNodeByModelFqn([], 'cloud.api' as Fqn)
     expect(result).toBeNull()
   })
 
@@ -13,18 +13,18 @@ describe('findNodeByElementFqn', () => {
       { id: 'node1', data: { modelFqn: 'cloud.frontend' as Fqn } },
       { id: 'node2', data: { modelFqn: 'cloud.backend' as Fqn } },
     ]
-    const result = findNodeByElementFqn(xynodes, 'cloud.api' as Fqn)
+    const result = findNodeByModelFqn(xynodes, 'cloud.api' as Fqn)
     expect(result).toBeNull()
   })
 
-  it('returns node id when modelFqn matches', () => {
+  it('returns node when modelFqn matches', () => {
     const xynodes = [
       { id: 'node1', data: { modelFqn: 'cloud.frontend' as Fqn } },
       { id: 'node2', data: { modelFqn: 'cloud.api' as Fqn } },
       { id: 'node3', data: { modelFqn: 'cloud.backend' as Fqn } },
     ]
-    const result = findNodeByElementFqn(xynodes, 'cloud.api' as Fqn)
-    expect(result).toBe('node2')
+    const result = findNodeByModelFqn(xynodes, 'cloud.api' as Fqn)
+    expect(result).toEqual({ id: 'node2', data: { modelFqn: 'cloud.api' as Fqn } })
   })
 
   it('returns first matching node when multiple nodes have same modelFqn', () => {
@@ -32,15 +32,15 @@ describe('findNodeByElementFqn', () => {
       { id: 'node1', data: { modelFqn: 'cloud.api' as Fqn } },
       { id: 'node2', data: { modelFqn: 'cloud.api' as Fqn } },
     ]
-    const result = findNodeByElementFqn(xynodes, 'cloud.api' as Fqn)
-    expect(result).toBe('node1')
+    const result = findNodeByModelFqn(xynodes, 'cloud.api' as Fqn)
+    expect(result).toEqual({ id: 'node1', data: { modelFqn: 'cloud.api' as Fqn } })
   })
 
   it('returns null when node has null modelFqn', () => {
     const xynodes = [
       { id: 'node1', data: { modelFqn: null } },
     ]
-    const result = findNodeByElementFqn(xynodes, 'cloud.api' as Fqn)
+    const result = findNodeByModelFqn(xynodes, 'cloud.api' as Fqn)
     expect(result).toBeNull()
   })
 
@@ -48,7 +48,7 @@ describe('findNodeByElementFqn', () => {
     const xynodes = [
       { id: 'node1', data: {} },
     ]
-    const result = findNodeByElementFqn(xynodes, 'cloud.api' as Fqn)
+    const result = findNodeByModelFqn(xynodes, 'cloud.api' as Fqn)
     expect(result).toBeNull()
   })
 
@@ -59,7 +59,7 @@ describe('findNodeByElementFqn', () => {
       { id: 'node3', data: { modelFqn: 'cloud.frontend' as Fqn } }, // different FQN
       { id: 'node4', data: { modelFqn: 'cloud.api' as Fqn } }, // matching FQN
     ]
-    const result = findNodeByElementFqn(xynodes, 'cloud.api' as Fqn)
-    expect(result).toBe('node4')
+    const result = findNodeByModelFqn(xynodes, 'cloud.api' as Fqn)
+    expect(result).toEqual({ id: 'node4', data: { modelFqn: 'cloud.api' as Fqn } })
   })
 })

@@ -20,12 +20,12 @@ import type { Context } from './machine.setup'
 import type { SyncLayoutActorRef } from './syncManualLayoutActor'
 import type { DiagramActorRef, NodeWithData, System } from './types'
 
-export const findNodeByElementFqn = <T extends NodeWithData>(
+export const findNodeByModelFqn = <T extends NodeWithData>(
   xynodes: T[],
   elementFqn: Fqn,
-): NodeId | null => {
+): (T & { data: { modelFqn: Fqn } }) | null => {
   const node = xynodes.find(n => 'modelFqn' in n.data && n.data['modelFqn'] === elementFqn)
-  return node ? (node.id as NodeId) : null
+  return node ? (node as T & { data: { modelFqn: Fqn } }) : null
 }
 
 export function typedSystem(system: ActorSystem<any>) {

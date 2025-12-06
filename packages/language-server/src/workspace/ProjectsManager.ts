@@ -59,14 +59,13 @@ interface ProjectData {
   folderUri: URI
   exclude?: (path: string) => boolean
   /**
-   * Resolved include paths as URIs.
+   * Resolved include paths with both URI and folder string representations.
    * These are additional directories that are part of this project.
    */
-  includePaths?: URI[]
-  /**
-   * Include paths as folder strings (with trailing slash) for faster matching.
-   */
-  includePathsAsStrings?: ProjectFolder[]
+  includePaths?: Array<{
+    uri: URI
+    folder: ProjectFolder
+  }>
 }
 
 export interface Project {
@@ -215,7 +214,7 @@ export class ProjectsManager {
       id,
       folderUri: project.folderUri,
       config: project.config,
-      ...(project.includePaths && { includePaths: project.includePaths }),
+      ...(project.includePaths && { includePaths: project.includePaths.map(p => p.uri) }),
     }
   }
 
@@ -381,33 +380,46 @@ export class ProjectsManager {
     if (config.include && hasAtLeast(config.include, 1)) {
       project.includePaths = config.include.map(includePath => {
         const resolvedPath = joinRelativeURL(project!.folderUri.path, includePath)
-        return project!.folderUri.with({ path: resolvedPath })
+        const uri = project!.folderUri.with({ path: resolvedPath })
+        return {
+          uri,
+          folder: ProjectFolder(uri),
+        }
       })
-      project.includePathsAsStrings = project.includePaths.map(uri => ProjectFolder(uri))
-      logger.debug`project ${project.id} include paths: ${project.includePaths.map(u => u.fsPath).join(', ')}`
+      logger.debug`project ${project.id} include paths: ${project.includePaths.map(p => p.uri.fsPath).join(', ')}`
 
       // Check for overlapping include paths with other projects
-      for (const includePath of project.includePathsAsStrings) {
+      for (const includePath of project.includePaths) {
         // Check if this include path overlaps with another project's folder
         for (const otherProject of this.#projects) {
           if (otherProject.id === project.id) continue
 
-          if (includePath.startsWith(otherProject.folder) || otherProject.folder.startsWith(includePath)) {
+          if (
+            includePath.folder.startsWith(otherProject.folder) || otherProject.folder.startsWith(includePath.folder)
+          ) {
             logger.warn(
               'Project "{projectId}" include path "{includePath}" overlaps with project "{otherProjectId}" folder. ' +
                 'Files in overlapping areas will only belong to one project.',
-              { projectId: project.id, includePath, otherProjectId: otherProject.id },
+              { projectId: project.id, includePath: includePath.folder, otherProjectId: otherProject.id },
             )
           }
 
           // Check if this include path overlaps with another project's include paths
-          if (otherProject.includePathsAsStrings) {
-            for (const otherIncludePath of otherProject.includePathsAsStrings) {
-              if (includePath.startsWith(otherIncludePath) || otherIncludePath.startsWith(includePath)) {
+          if (otherProject.includePaths) {
+            for (const otherIncludePath of otherProject.includePaths) {
+              if (
+                includePath.folder.startsWith(otherIncludePath.folder)
+                || otherIncludePath.folder.startsWith(includePath.folder)
+              ) {
                 logger.warn(
                   'Project "{projectId}" include path "{includePath}" overlaps with project "{otherProjectId}" ' +
                     'include path "{otherIncludePath}". Files in overlapping areas will only belong to one project.',
-                  { projectId: project.id, includePath, otherProjectId: otherProject.id, otherIncludePath },
+                  {
+                    projectId: project.id,
+                    includePath: includePath.folder,
+                    otherProjectId: otherProject.id,
+                    otherIncludePath: otherIncludePath.folder,
+                  },
                 )
               }
             }
@@ -416,7 +428,6 @@ export class ProjectsManager {
       }
     } else {
       delete project.includePaths
-      delete project.includePathsAsStrings
     }
 
     this.#projectIdToFolder.set(project.id, folder)
@@ -550,7 +561,7 @@ export class ProjectsManager {
     }
     const log = logger.getChild(project.id)
     const folder = project.folder
-    const includePathStrings = project.includePathsAsStrings ?? []
+    const includePathStrings = project.includePaths?.map(p => p.folder) ?? []
     const docs = this.services.workspace.LangiumDocuments
       .all
       .filter(doc => {
@@ -592,9 +603,9 @@ export class ProjectsManager {
         return project
       }
 
-      const projectWithInclude = this.#projects.find(({ includePathsAsStrings }) => {
-        if (!includePathsAsStrings) return false
-        return includePathsAsStrings.some(includePath => documentUri.startsWith(includePath))
+      const projectWithInclude = this.#projects.find(({ includePaths }) => {
+        if (!includePaths) return false
+        return includePaths.some(includePath => documentUri.startsWith(includePath.folder))
       })
       if (projectWithInclude) {
         return projectWithInclude
@@ -628,7 +639,7 @@ export class ProjectsManager {
     for (const project of this.#projects) {
       if (project.includePaths) {
         for (const includePath of project.includePaths) {
-          result.push({ projectId: project.id, includePath })
+          result.push({ projectId: project.id, includePath: includePath.uri })
         }
       }
     }

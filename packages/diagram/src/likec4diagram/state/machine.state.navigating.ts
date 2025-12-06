@@ -11,7 +11,7 @@ import {
   raiseSetViewport,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
-import { calcViewportForBounds, findCorrespondingNode, findNodeByElementFqn, nodeRef } from './utils'
+import { calcViewportForBounds, findCorrespondingNode, findNodeByModelFqn, nodeRef } from './utils'
 
 const handleBrowserForwardBackward = () =>
   machine.assign(({ context, event }) => {
@@ -190,7 +190,7 @@ export const navigating = machine.createStateConfig({
         // Check if we need to focus on a specific element after navigation (from search)
         const focusOnElement = context.lastOnNavigate?.focusOnElement
         const nodeToFocus = isTruthy(focusOnElement)
-          ? findNodeByElementFqn(event.xynodes, focusOnElement)
+          ? findNodeByModelFqn(event.xynodes, focusOnElement)
           : null
 
         enqueue.assign({
@@ -207,7 +207,7 @@ export const navigating = machine.createStateConfig({
           // Focus on the searched element with auto-unfocus enabled
           enqueue.raise({
             type: 'focus.node',
-            nodeId: nodeToFocus,
+            nodeId: nodeToFocus.id as NodeId,
             autoUnfocus: true,
           }, { delay: 150 })
         } else {
