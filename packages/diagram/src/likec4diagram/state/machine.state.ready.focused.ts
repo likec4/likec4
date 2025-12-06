@@ -5,6 +5,7 @@ import {
   assignFocusedNode,
   assignLastClickedNode,
   assignViewportBefore,
+  cancelAutoUnfocusTimer,
   cancelFitDiagram,
   emitNodeClick,
   emitPaneClick,
@@ -14,6 +15,7 @@ import {
   openSourceOfFocusedOrLastClickedNode,
   resetLastClickedNode,
   returnViewportBefore,
+  startAutoUnfocusTimer,
   startHotKeyActor,
   stopHotKeyActor,
   undimEverything,
@@ -30,16 +32,22 @@ export const focused = machine.createStateConfig({
     openSourceOfFocusedOrLastClickedNode(),
     startHotKeyActor(),
     fitFocusedBounds(),
+    startAutoUnfocusTimer(),
   ],
   exit: [
     stopHotKeyActor(),
     undimEverything(),
     returnViewportBefore(),
+    cancelAutoUnfocusTimer(),
     machine.assign({
       focusedNode: null,
+      autoUnfocusTimer: false,
     }),
   ],
   on: {
+    'focus.autoUnfocus': {
+      target: targetState.idle,
+    },
     'xyflow.nodeClick': [
       {
         guard: and([

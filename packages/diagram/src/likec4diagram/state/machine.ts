@@ -49,6 +49,7 @@ const _diagramMachine = machine.createMachine({
     lastOnNavigate: null,
     lastClickedNode: null,
     focusedNode: null,
+    autoUnfocusTimer: false,
     activeElementDetails: null,
     viewportBefore: null,
     viewportOnManualLayout: null,

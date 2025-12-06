@@ -2,6 +2,8 @@ import {
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
+  type Fqn,
+  type NodeId,
   type XYPoint,
   BBox,
 } from '@likec4/core/types'
@@ -16,7 +18,15 @@ import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { Context } from './machine.setup'
 import type { SyncLayoutActorRef } from './syncManualLayoutActor'
-import type { DiagramActorRef, System } from './types'
+import type { DiagramActorRef, NodeWithData, System } from './types'
+
+export const findNodeByElementFqn = <T extends NodeWithData>(
+  xynodes: T[],
+  elementFqn: Fqn,
+): NodeId | null => {
+  const node = xynodes.find(n => 'modelFqn' in n.data && n.data['modelFqn'] === elementFqn)
+  return node ? (node.id as NodeId) : null
+}
 
 export function typedSystem(system: ActorSystem<any>) {
   return {

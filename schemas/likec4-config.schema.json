@@ -30,6 +30,15 @@
         "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
       }
     },
+    "include": {
+      "description": "Additional relative directory paths to include LikeC4 source files from, searched recursively.\nPaths are relative to the project folder (the folder containing this config file).\nExample: [\"../shared\", \"../common/specs\"]",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
+      }
+    },
     "styles": {
       "$ref": "#/$defs/StylesConfiguration"
     },

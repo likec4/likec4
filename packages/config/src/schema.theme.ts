@@ -56,14 +56,14 @@ const themeColor = z
 const color = z
   .union([
     themeColor,
-    z.string().nonempty('Color name cannot be empty'),
+    z.string().min(1, 'Color name cannot be empty'),
   ])
   .transform(value => value as ThemeColor)
   .meta({ id: 'ColorName' })
 
 const colorValue = z
   .string()
-  .nonempty('Color value cannot be empty')
+  .min(1, 'Color value cannot be empty')
   .transform(value => value as ColorLiteral)
   .meta({
     id: 'ColorLiteral',

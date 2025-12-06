@@ -293,9 +293,15 @@ function useHandleElementSelection() {
     const singleView = only(views)
     if (singleView) {
       searchActorRef.send({ type: 'close' })
-      if (singleView.id !== diagram.currentView.id) {
+      if (singleView.id === diagram.currentView.id) {
+        // Same view - focus on the element directly
         setTimeout(() => {
-          diagram.navigateTo(singleView.id)
+          diagram.focusOnElement(element.id)
+        }, 100)
+      } else {
+        // Different view - navigate and focus
+        setTimeout(() => {
+          diagram.navigateTo(singleView.id, undefined, element.id)
         }, 100)
       }
       return

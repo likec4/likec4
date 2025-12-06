@@ -8,6 +8,8 @@ import type {
 } from './machine'
 import type { SyncLayoutActorRef } from './syncManualLayoutActor'
 
+export type NodeWithData = { id: string; data: Record<string, unknown> }
+
 export type System = ActorSystem<{
   actors: {
     diagram: DiagramMachineRef

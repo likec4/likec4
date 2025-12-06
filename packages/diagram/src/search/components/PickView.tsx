@@ -102,6 +102,7 @@ export function PickView({ elementFqn }: { elementFqn: Fqn }) {
                     view={view}
                     search={''}
                     loop
+                    focusOnElement={elementFqn}
                     mod={{
                       autofocus: i === 0,
                     }}
@@ -119,6 +120,7 @@ export function PickView({ elementFqn }: { elementFqn: Fqn }) {
                     view={view}
                     search={''}
                     loop
+                    focusOnElement={elementFqn}
                     mod={{
                       autofocus: i === 0 && scoped.length === 0,
                     }}

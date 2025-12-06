@@ -1,4 +1,5 @@
 import type { LikeC4Model } from '@likec4/core/model'
+import type { Fqn } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import {
@@ -98,11 +99,12 @@ export const ViewsColumn = memo(() => {
 const btn = buttonsva()
 
 export function ViewButton(
-  { className, view, loop = false, search, ...props }:
+  { className, view, loop = false, search, focusOnElement, ...props }:
     & {
       view: LikeC4Model.View
       search: string
       loop?: boolean
+      focusOnElement?: Fqn
     }
     & UnstyledButtonProps
     & ElementProps<'button'>,
@@ -114,9 +116,17 @@ export function ViewButton(
 
   const navigate = () => {
     searchActorRef.send({ type: 'close' })
-    setTimeout(() => {
-      diagram.navigateTo(view.id)
-    }, 100)
+    if (isCurrentView && focusOnElement) {
+      // Same view - focus on the element directly
+      setTimeout(() => {
+        diagram.focusOnElement(focusOnElement)
+      }, 100)
+    } else {
+      // Different view - navigate and optionally focus
+      setTimeout(() => {
+        diagram.navigateTo(view.id, undefined, focusOnElement)
+      }, 100)
+    }
   }
 
   return (
@@ -124,7 +134,7 @@ export function ViewButton(
       {...props}
       className={cx(btn.root, 'group', styles.focusable, styles.viewButton, className)}
       data-likec4-view={view.id}
-      {...isCurrentView && { 'data-disabled': true }}
+      {...(isCurrentView && !focusOnElement) && { 'data-disabled': true }}
       onClick={(e) => {
         e.stopPropagation()
         navigate()
