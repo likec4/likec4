@@ -7,7 +7,7 @@ packages:
 
 catalog:
   "@dagrejs/dagre": 1.1.8
-  "@types/node": ~20.19.22
+  "@types/node": ~22.13.17
   graphology: ^0.25.4
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
@@ -147,6 +147,7 @@ catalogs:
     "@vitest/ui": 4.0.15
     vitest: 4.0.15
   vscode:
+    "@types/vscode": ^1.106.1
     vscode-jsonrpc: 8.2.1
     vscode-languageclient: 9.0.1
     vscode-languageserver: 9.0.1
