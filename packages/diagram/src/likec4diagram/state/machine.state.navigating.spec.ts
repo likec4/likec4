@@ -67,7 +67,6 @@ describe('findNodeByElementFqn', () => {
 describe('navigate.to with focusOnElement', () => {
   describe('event types', () => {
     it('navigate.to event can include optional focusOnElement parameter', () => {
-      // Type test - this compiles successfully if the types are correct
       const navigateEvent = {
         type: 'navigate.to' as const,
         viewId: 'view1' as const,
@@ -79,7 +78,7 @@ describe('navigate.to with focusOnElement', () => {
     })
 
     it('navigate.to event works without focusOnElement parameter', () => {
-      const navigateEvent = {
+      const navigateEvent: { type: 'navigate.to'; viewId: string; focusOnElement?: Fqn } = {
         type: 'navigate.to' as const,
         viewId: 'view1' as const,
       }

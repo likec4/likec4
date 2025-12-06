@@ -13,11 +13,13 @@ import {
 import { machine, targetState } from './machine.setup'
 import { calcViewportForBounds, findCorrespondingNode, nodeRef } from './utils'
 
-export const findNodeByElementFqn = (
-  xynodes: Array<{ id: string; data: { modelFqn?: Fqn | null } }>,
+type NodeWithData = { id: string; data: Record<string, unknown> }
+
+export const findNodeByElementFqn = <T extends NodeWithData>(
+  xynodes: T[],
   elementFqn: Fqn,
 ): NodeId | null => {
-  const node = xynodes.find(n => 'modelFqn' in n.data && n.data.modelFqn === elementFqn)
+  const node = xynodes.find(n => 'modelFqn' in n.data && n.data['modelFqn'] === elementFqn)
   return node ? (node.id as NodeId) : null
 }
 
