@@ -23,7 +23,6 @@
     "@astrojs/starlight-tailwind": "catalog:astro",
     "@expressive-code/plugin-collapsible-sections": "catalog:astro",
     "@expressive-code/plugin-line-numbers": "catalog:astro",
-    "starlight-toc-overview-customizer": "catalog:astro",
     "@likec4/config": "workspace:*",
     "@tailwindcss/vite": "catalog:css",
     "@types/picomatch": "catalog:utils",
