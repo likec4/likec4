@@ -17,7 +17,7 @@ catalog:
   tsx: 4.21.0
   turbo: 2.6.3
   typescript: 5.9.3
-  unbuild: 3.5.0
+  unbuild: 3.6.1
   vite-plugin-dts: 4.5.4
   vite-tsconfig-paths: ^5.1.4
   wireit: 0.14.12
