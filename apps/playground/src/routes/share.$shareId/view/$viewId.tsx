@@ -51,7 +51,6 @@ function RouteComponent() {
     <>
       <LikeC4Diagram
         view={view}
-        readonly
         zoomable
         pannable
         controls
@@ -71,8 +70,6 @@ function RouteComponent() {
         enableElementTags
         enableSearch
         enableNotations={hasNotations}
-        nodesDraggable={false}
-        nodesSelectable
         renderIcon={IconRenderer}
         onNavigateTo={onNavigateTo}
       >

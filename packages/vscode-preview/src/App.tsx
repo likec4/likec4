@@ -137,8 +137,6 @@ const Initialized = memo(() => {
             event.stopPropagation()
             event.preventDefault()
           }}
-          onChange={({ change }) => {
-          }}
           onOpenSource={(params) => {
             setLastClickedNode()
             extensionApi.locate(params)

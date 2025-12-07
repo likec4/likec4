@@ -191,14 +191,16 @@ export function useDiagramView() {
   }
 }
 
-export function useLikeC4EditorPort(): LikeC4EditorPort {
-  return useMemo(() => ({
-    fetchView: async (viewId, layout) => {
-      const view = await queryClient.fetchQuery(queries.fetchDiagramView($projectId.get(), viewId, layout))
-      return nonNullable(view, `View ${viewId} not found`)
-    },
-    handleChange: async (viewId, change) => {
-      await ExtensionApi.change(viewId, change)
-    },
-  }), [])
+const editorPort: LikeC4EditorPort = {
+  fetchView: async (viewId, layout) => {
+    const view = await queryClient.fetchQuery(queries.fetchDiagramView($projectId.get(), viewId, layout))
+    return nonNullable(view, `View ${viewId} not found`)
+  },
+  handleChange: async (viewId, change) => {
+    await ExtensionApi.change(viewId, change)
+  },
+}
+
+export function useLikeC4EditorPort() {
+  return editorPort
 }
