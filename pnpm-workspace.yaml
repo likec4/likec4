@@ -104,7 +104,7 @@ catalogs:
     bundle-require: ^5.1.0
     caniuse-lite: ^1.0.30001759
     chokidar: ^4.0.3
-    chroma-js: ^3.1.2
+    chroma-js: ^3.2.0
     citty: ^0.1.6
     consola: ^3.4.2
     date-fns: ^4.1.0
