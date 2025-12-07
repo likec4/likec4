@@ -12,7 +12,6 @@ import {
   useComputedModel,
   useDiagramView,
   useLikeC4EditorPort,
-  useVscodeAppState,
 } from './state'
 import { ExtensionApi as extensionApi } from './vscode'
 
@@ -59,10 +58,6 @@ function LikeC4VscodeEditor({ children }: PropsWithChildren) {
 }
 
 const Initialized = memo(() => {
-  const [{
-    nodesDraggable,
-  }] = useVscodeAppState()
-
   let {
     view,
     error,

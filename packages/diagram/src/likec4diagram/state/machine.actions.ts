@@ -571,7 +571,7 @@ const hasModelFqn = <D extends Types.Node>(node: D): node is D & { data: { model
   'modelFqn' in node.data && isTruthy(node.data.modelFqn)
 
 export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | undefined }) =>
-  machine.enqueueActions(({ context, event, enqueue, system }) => {
+  machine.enqueueActions(({ context, event, enqueue }) => {
     let initiatedFrom = null as null | {
       node: NodeId
       clientRect: Rect

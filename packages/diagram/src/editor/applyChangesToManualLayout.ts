@@ -1,9 +1,8 @@
-import { invariant, isStepEdgeId, nonNullable } from '@likec4/core'
+import { invariant, nonNullable } from '@likec4/core'
 import { type VectorValue, BBox, vector } from '@likec4/core/geometry'
 import * as t from '@likec4/core/types'
 import { castDraft, produce, setAutoFreeze } from 'immer'
 import { isNullish } from 'remeda'
-import { bezierControlPoints } from '../utils/xyflow'
 
 /**
  * Applies changes to a manual layout.

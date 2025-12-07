@@ -38,7 +38,6 @@ import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
-import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 
 /**
  * Navigation history entry represents a current view state,
