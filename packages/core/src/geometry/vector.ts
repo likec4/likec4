@@ -151,6 +151,14 @@ export class Vector implements VectorValue {
   round(): Vector {
     return new Vector(Math.round(this.x), Math.round(this.y))
   }
+
+  /**
+   * Converts the vector to a plain object.
+   * @returns An object with x and y properties.
+   */
+  toObject(): VectorValue {
+    return { x: this.x, y: this.y }
+  }
 }
 
 export function vector(source: VectorValue | Vector): Vector

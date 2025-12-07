@@ -1,5 +1,5 @@
 import { invariant, isStepEdgeId, nonNullable } from '@likec4/core'
-import { BBox } from '@likec4/core/geometry'
+import { type VectorValue, BBox, vector } from '@likec4/core/geometry'
 import * as t from '@likec4/core/types'
 import { castDraft, produce, setAutoFreeze } from 'immer'
 import { isNullish } from 'remeda'
@@ -91,7 +91,7 @@ function _applyChangesToManualLayout(
       && (candidate.dir === dir || (!candidate.dir && !latest.dir))
 
     let manual = manualView.edges.find(e => e.id === latest.id && hasSameEndpoints(e))
-    if (!manual && !isStepEdgeId(latest.id)) {
+    if (!manual) {
       manual = manualView.edges.find(e => hasSameEndpoints(e))
     }
 
@@ -106,11 +106,11 @@ function _applyChangesToManualLayout(
       return removeDrift(latest)
     }
 
+    const sourceNode = nodesMap.get(latest.source)!
+    const targetNode = nodesMap.get(latest.target)!
+
     // Add control points - that trigger proper edge rendering
-    return removeDrift({
-      ...latest,
-      controlPoints: bezierControlPoints(latest.points),
-    })
+    return makeAsStraightLine(latest, sourceNode, targetNode)
   })
 
   // Recalculate view bounds (around all root nodes)
@@ -218,4 +218,62 @@ function removeDrift<T extends {}>(object: T): T {
     return result
   }
   return object
+}
+
+function makeAsStraightLine(
+  edge: t.DiagramEdge,
+  sourceNode: t.DiagramNode,
+  targetNode: t.DiagramNode,
+): t.DiagramEdge {
+  const controlPoints = edgeControlPoints(sourceNode, targetNode)
+  const labelPos = controlPoints[0]
+  return produce(edge, draft => {
+    draft.controlPoints = controlPoints
+    if (edge.labelBBox) {
+      draft.labelBBox!.x = labelPos.x
+      draft.labelBBox!.y = labelPos.y
+    }
+    delete draft.drifts
+  })
+}
+
+function getBorderPointOnVector(node: BBox, nodeCenter: VectorValue, v: VectorValue) {
+  const xScale = node.width / 2 / v.x
+  const yScale = node.height / 2 / v.y
+
+  const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
+
+  return vector(v).multiply(scale).add(nodeCenter)
+}
+
+function edgeControlPoints(
+  source: t.DiagramNode,
+  target: t.DiagramNode,
+): [t.XYPoint, t.XYPoint] {
+  const sourceCenter = vector(BBox.center(source))
+  const targetCenter = vector(BBox.center(target))
+
+  // Edge is a loop
+  if (source === target) {
+    const loopSize = 80
+    const centerOfTopBoundary = vector(0, source.height || 0)
+      .multiply(-0.5)
+      .add(sourceCenter)
+
+    return [
+      centerOfTopBoundary.add(vector(-loopSize / 2.5, -loopSize)).round().toObject(),
+      centerOfTopBoundary.add(vector(loopSize / 2.5, -loopSize)).round().toObject(),
+    ]
+  }
+
+  const sourceToTargetVector = targetCenter.subtract(sourceCenter)
+  const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
+  const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.multiply(-1))
+
+  const sourceToTarget = targetBorderPoint.subtract(sourceBorderPoint)
+
+  return [
+    sourceBorderPoint.add(sourceToTarget.multiply(0.4)).round().toObject(),
+    sourceBorderPoint.add(sourceToTarget.multiply(0.6)).round().toObject(),
+  ]
 }

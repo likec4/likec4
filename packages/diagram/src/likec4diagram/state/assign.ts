@@ -150,8 +150,8 @@ export function resetEdgeControlPoints(
       .add(sourceCenter)
 
     return [
-      centerOfTopBoundary.add(vector(-loopSize / 2.5, -loopSize)),
-      centerOfTopBoundary.add(vector(loopSize / 2.5, -loopSize)),
+      centerOfTopBoundary.add(vector(-loopSize / 2.5, -loopSize)).round().toObject(),
+      centerOfTopBoundary.add(vector(loopSize / 2.5, -loopSize)).round().toObject(),
     ]
   }
 
@@ -162,7 +162,7 @@ export function resetEdgeControlPoints(
   const sourceToTarget = targetBorderPoint.subtract(sourceBorderPoint)
 
   return [
-    sourceBorderPoint.add(sourceToTarget.multiply(0.4)),
-    sourceBorderPoint.add(sourceToTarget.multiply(0.6)),
+    sourceBorderPoint.add(sourceToTarget.multiply(0.4)).round().toObject(),
+    sourceBorderPoint.add(sourceToTarget.multiply(0.6)).round().toObject(),
   ]
 }

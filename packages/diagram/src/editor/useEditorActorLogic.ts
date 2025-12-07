@@ -11,12 +11,16 @@ export function useEditorActorLogic(viewId: t.ViewId) {
   const applyLatest: EditorCalls.ApplyLatestToManual = useCallbackRef(
     async ({ input: { viewId, current } }) => {
       if (!port) {
+        console.error('No editor port available for applying latest to manual layout')
         return Promise.reject(new Error('No editor port'))
       }
       const [manual, latest] = await Promise.all([
         current ?? Promise.resolve().then(() => port.fetchView(viewId, 'manual')),
         Promise.resolve().then(() => port.fetchView(viewId, 'auto')),
-      ])
+      ]).catch(err => {
+        console.error('Failed to fetch views for applying latest to manual layout', err)
+        return Promise.reject(err)
+      })
       const updated = applyChangesToManualLayout(manual, latest)
       return {
         updated,
@@ -27,10 +31,17 @@ export function useEditorActorLogic(viewId: t.ViewId) {
   const executeChange = useCallbackRef(
     async ({ input }: { input: EditorCalls.ExecuteChange.Input }): Promise<EditorCalls.ExecuteChange.Output> => {
       if (!port) {
+        console.error('No editor port available for executing change')
         return Promise.reject(new Error('No editor port'))
       }
       for (const change of input.changes) {
-        await Promise.resolve().then(() => port.handleChange(viewId, change))
+        await Promise.resolve().then(() => port.handleChange(viewId, change)).catch(err => {
+          console.error('Failed to execute change', {
+            change,
+            err,
+          })
+          return Promise.reject(err)
+        })
       }
       return {}
     },

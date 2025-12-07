@@ -440,6 +440,8 @@ export function prepareFixtures<const N, E>(patcher?: Patches<N, E>): {
           points: [
             [0, 0],
             [100, 100],
+            [200, 200],
+            [300, 300],
           ],
           relations: [],
         }
