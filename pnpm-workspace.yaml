@@ -125,7 +125,7 @@ catalogs:
     p-limit: 6.2.0
     p-queue: 8.1.1
     p-timeout: 6.1.4
-    package-manager-detector: 1.5.0
+    package-manager-detector: 1.6.0
     package-up: ^5.0.0
     picomatch: ^4.0.3
     remeda: ^2.32.0
