@@ -40,7 +40,7 @@ catalogs:
     starlight-image-zoom: ^0.13.2
     starlight-links-validator: ^0.19.1
     starlight-package-managers: ^0.11.1
-    starlight-toc-overview-customizer: ^0.1.1
+    starlight-toc-overview-customizer: ^0.1.2
   cloudflare:
     "@cloudflare/vite-plugin": 1.15.2
     wrangler: ~4.50.0

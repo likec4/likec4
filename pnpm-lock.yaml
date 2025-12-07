@@ -46,8 +46,8 @@ catalogs:
       specifier: ^0.11.1
       version: 0.11.1
     starlight-toc-overview-customizer:
-      specifier: ^0.1.1
-      version: 0.1.1
+      specifier: ^0.1.2
+      version: 0.1.2
   cloudflare:
     '@cloudflare/vite-plugin':
       specifier: 1.15.2
@@ -522,7 +522,7 @@ importers:
         version: 0.11.1(@astrojs/starlight@0.37.0(astro@5.16.4(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))
       starlight-toc-overview-customizer:
         specifier: catalog:astro
-        version: 0.1.1(@astrojs/starlight@0.37.0(astro@5.16.4(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))
+        version: 0.1.2(@astrojs/starlight@0.37.0(astro@5.16.4(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))
       tailwindcss:
         specifier: catalog:css
         version: 4.1.17
@@ -8330,8 +8330,8 @@ packages:
     peerDependencies:
       '@astrojs/starlight': '>=0.22.0'
 
-  starlight-toc-overview-customizer@0.1.1:
-    resolution: {integrity: sha512-2iF+taEKa2ohUtLqUEY2OszT8KYkHmIEvYvLuJFMBtd+8JazT60G5x1CWVDuSkl4e0UnyTg5ZxILGCc6AFtV3g==}
+  starlight-toc-overview-customizer@0.1.2:
+    resolution: {integrity: sha512-h48a3/U8Nww9SdiWZYbcA6akgvJBrIecY/3WITmSHXdy62jM5d/3Y7wh6j7P3Kc6o/5jJneGGh40ZodTrKlwww==}
     engines: {node: ^18.17.1 || ^20.3.0 || >=21.0.0}
     peerDependencies:
       '@astrojs/starlight': '>=0.32'
@@ -17243,7 +17243,7 @@ snapshots:
     dependencies:
       '@astrojs/starlight': 0.37.0(astro@5.16.4(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
 
-  starlight-toc-overview-customizer@0.1.1(@astrojs/starlight@0.37.0(astro@5.16.4(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))):
+  starlight-toc-overview-customizer@0.1.2(@astrojs/starlight@0.37.0(astro@5.16.4(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))):
     dependencies:
       '@astrojs/starlight': 0.37.0(astro@5.16.4(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
 
