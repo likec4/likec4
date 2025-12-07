@@ -6,7 +6,6 @@ import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 import starlightHeadingBadges from 'starlight-heading-badges'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
-import starlightTocOverviewCustomizer from 'starlight-toc-overview-customizer'
 
 const version = process.env.npm_package_version || 'latest'
 
@@ -28,10 +27,8 @@ export default defineConfig({
             '/playground/',
           ],
         }),
-        starlightTocOverviewCustomizer({
-          overviewTitle: 'Back to top',
-        }),
       ],
+      routeMiddleware: './src/routeData.ts',
       title: 'LikeC4',
       description: 'Architecture-as-a-code, toolchain for your architecture diagrams',
       social: [
