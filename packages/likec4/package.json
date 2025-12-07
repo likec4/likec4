@@ -214,7 +214,7 @@
     "package-manager-detector": "catalog:utils",
     "package-up": "catalog:utils",
     "postcss": "catalog:css",
-    "pretty-ms": "^9.2.0",
+    "pretty-ms": "^9.3.0",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
