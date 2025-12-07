@@ -36,7 +36,7 @@ export function ViewEditor() {
   return (
     <LikeC4EditorProvider
       editor={{
-        fetchView: async (id, layout) => {
+        fetchView: (id, layout) => {
           const model = $likec4model.get().view(id)
           return layout === 'auto' ? model.$view : model.$layouted
         },

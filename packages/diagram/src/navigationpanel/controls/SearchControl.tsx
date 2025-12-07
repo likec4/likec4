@@ -40,7 +40,7 @@ export const SearchControl = memo(() => {
               paddingInline: 'sm',
               paddingBlock: 'xxs',
               userSelect: 'none',
-              layerStyle: 'likec4.panel.action',
+              layerStyle: 'likec4.panel.action.filled',
               display: {
                 base: 'none',
                 '@/md': 'flex',

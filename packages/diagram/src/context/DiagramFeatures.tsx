@@ -4,6 +4,7 @@ import { type PropsWithChildren, createContext, useContext, useEffect, useState 
 
 const FeatureNames = [
   'Controls',
+  'Editor',
   'ReadOnly',
   'FocusMode',
   'NavigateTo',
@@ -37,6 +38,7 @@ export type EnabledFeatures = {
 }
 
 export const DefaultFeatures: EnabledFeatures = {
+  enableEditor: false,
   enableReadOnly: true,
   enableCompareWithLatest: false,
   enableControls: false,

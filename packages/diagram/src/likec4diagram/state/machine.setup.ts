@@ -274,6 +274,7 @@ export const machine = setup({
   },
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
+    'enabled: Editor': ({ context }) => context.features.enableEditor,
     'enabled: FitView': ({ context }) => context.features.enableFitView,
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode && isReadOnly(context),
     'enabled: Readonly': ({ context }) => isReadOnly(context),

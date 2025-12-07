@@ -514,14 +514,14 @@ export const stopEditorActor = () =>
  */
 export const ensureEditorActor = () =>
   machine.enqueueActions(({ enqueue, context, system, check }) => {
-    const isReadOnly = check('enabled: Readonly')
+    const hasEditor = check('enabled: Editor')
     const editor = typedSystem(system).editorActorRef
     // Check if the context is read-only
-    if (isReadOnly && editor) {
+    if (!hasEditor && editor) {
       enqueue.stopChild(editor)
       return
     }
-    if (!isReadOnly && !editor) {
+    if (hasEditor && !editor) {
       enqueue.spawnChild('editorActor', {
         id: 'editor',
         systemId: 'editor',
@@ -631,7 +631,7 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
     }
 
     enqueue.sendTo(
-      typedSystem(system).overlaysActorRef!,
+      typedSystem.overlaysActor,
       {
         type: 'open.elementDetails' as const,
         subject: subject,
@@ -642,7 +642,7 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
   })
 
 export const openOverlay = () =>
-  machine.enqueueActions(({ context, event, enqueue, system, check }) => {
+  machine.enqueueActions(({ context, event, enqueue, check }) => {
     assertEvent(event, ['open.relationshipsBrowser', 'open.relationshipDetails', 'open.elementDetails'])
 
     if (!check('enabled: Overlays')) {
@@ -781,7 +781,7 @@ export const onEdgeMouseLeave = () =>
     })
   })
 
-export const reraise = () => machine.raise(({ event }) => event, { delay: 30 })
+export const reraise = () => machine.raise(({ event }) => event, { delay: 50 })
 
 export const startHotKeyActor = () => machine.spawnChild('hotkeyActorLogic', { id: 'hotkey' })
 export const stopHotKeyActor = () => machine.stopChild('hotkey')

@@ -27,12 +27,13 @@ export function ComparePanelControls() {
       <LayoutTypeSwitcher
         value={ctx.layout}
         onChange={switchLayout} />
-      {ctx.isEditable && (
+      {ctx.hasEditor && (
         <HStack gap={'1'}>
           <Divider />
           <CompareActionsMenu
+            disabled={ctx.layout === 'auto'}
             onResetManualLayout={resetManualLayout}
-            onApplyLatestToManual={applyLatestToManual}
+            onApplyLatestToManual={ctx.canApplyLatest ? applyLatestToManual : undefined}
           />
           <Divider />
         </HStack>

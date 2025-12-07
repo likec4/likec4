@@ -11,12 +11,14 @@ import { useCallbackRef } from './useCallbackRef'
 
 const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
   const drifts = context.view.drifts ?? null
-  if (!context.features.enableCompareWithLatest || !drifts) {
+  if (!context.features.enableCompareWithLatest || !drifts || drifts.length === 0) {
     return ({
+      hasEditor: false as const,
       isEnabled: false as const,
       isEditable: false as const,
       isActive: false as const,
       drifts: [] as never[],
+      canApplyLatest: false,
       layout: context.view._layout ?? 'auto',
     })
   }
@@ -27,10 +29,12 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
   } = deriveToggledFeatures(context)
 
   return ({
+    hasEditor: context.features.enableEditor,
     isEnabled: true as const,
     isEditable: !enableReadOnly,
     isActive: enableCompareWithLatest === true,
     drifts,
+    canApplyLatest: !drifts.includes('type-changed'),
     layout: context.view._layout ?? 'auto',
   })
 }

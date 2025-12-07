@@ -4,6 +4,16 @@ import { mixTransparent } from './helpers'
 
 export const semanticTokens = defineSemanticTokens({
   colors: {
+    text: {
+      DEFAULT: {
+        description: 'Default text color',
+        value: mantine.colors.text,
+      },
+      dimmed: {
+        description: 'Dimmed text color',
+        value: mantine.colors.dimmed,
+      },
+    },
     likec4: {
       background: {
         DEFAULT: {

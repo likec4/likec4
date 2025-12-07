@@ -94,10 +94,10 @@ export function LikeC4Diagram<A extends Any = Any>({
     initialMaxZoom: number
   }>(null)
 
-  const editable = !!useOptionalLikeC4EditorPort()
-  const readonly = !editable
+  const hasEditor = !!useOptionalLikeC4EditorPort()
+  const readonly = !hasEditor
 
-  nodesSelectable ??= editable || enableFocusMode || !!onNavigateTo || !!onNodeClick
+  nodesSelectable ??= hasEditor || enableFocusMode || !!onNavigateTo || !!onNodeClick
 
   const bounds = pickViewBounds(view, dynamicViewVariant)
   const fitViewPadding = useNormalizedViewPadding(_fitViewPadding)
@@ -134,6 +134,7 @@ export function LikeC4Diagram<A extends Any = Any>({
           <DiagramFeatures
             features={{
               enableFitView: fitView,
+              enableEditor: hasEditor,
               enableReadOnly: readonly,
               enableFocusMode,
               enableNavigateTo: !!onNavigateTo,
@@ -177,7 +178,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                       zoomable={zoomable}
                       pannable={pannable}
                       fitViewPadding={fitViewPadding}
-                      nodesDraggable={editable}
+                      nodesDraggable={hasEditor}
                       nodesSelectable={nodesSelectable}
                       where={where ?? null}
                       dynamicViewVariant={dynamicViewVariant}

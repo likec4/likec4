@@ -2,23 +2,18 @@ import type * as t from '@likec4/core/types'
 import { find } from 'remeda'
 import {
   type ActorRef,
-  type ActorRefFromLogic,
   type ActorSystem,
   type NonReducibleUnknown,
   type SnapshotFrom,
-  type StateMachine,
-  assertEvent,
   assign,
   enqueueActions,
   fromPromise,
   log,
-  raise,
+  sendTo,
   setup,
 } from 'xstate'
-import type { HotkeyActorLogic } from '../likec4diagram/state/hotkeyActor'
 import type { DiagramMachineRef } from '../likec4diagram/state/machine'
 import type { Types } from '../likec4diagram/types'
-import { applyChangesToManualLayout } from './applyChangesToManualLayout'
 import {
   addSnapshotToPendingChanges,
   cancelSync,
@@ -26,9 +21,11 @@ import {
   isLayoutChange,
   markHistoryAsSynched,
   pushHistory,
-  pushManualLayoutToHistory,
+  reschedule,
+  saveStateBeforeEdit,
   startEditing,
   stopEditing,
+  stopHotkey,
   undo,
   withoutSnapshotChanges,
 } from './editorActor.actions'
@@ -65,13 +62,20 @@ const executeChange = fromPromise<EditorCalls.ExecuteChange.Output, EditorCalls.
 )
 
 export type EditorActorEvent =
+  // Schedule a sync
   | { type: 'sync' }
+  // Trigger a view change (apply change to server)
   | { type: 'change'; change: t.ViewChange }
   | { type: 'edit.start'; subject: 'node' | 'edge' }
   | { type: 'edit.finish'; wasChanged?: boolean }
+  // triggers applying latest to manual layout
   | { type: 'applyLatestToManual' }
+  // view update has been received, consider synced
   | { type: 'synced' }
+  // Cancel current editing or pending operations
   | { type: 'cancel' }
+  // Reset history, pending changes, and editing state
+  | { type: 'reset' }
   | HotKeyEvent
 
 type HistorySnapshot = {
@@ -125,7 +129,7 @@ export const machine = setup({
     tags: {} as 'pending',
   },
   delays: {
-    '250ms': 250,
+    '350ms': 350,
     'waitBeforeSync': 2_000,
   },
   actors: {
@@ -148,29 +152,11 @@ const to = {
   executeChanges: { target: '#executeChanges' },
 } as const
 
-const cancel = {
-  actions: [
-    machine.enqueueActions(({ enqueue, event }) => {
-      enqueue(cancelSync())
-      assertEvent(event, ['cancel'])
-      enqueue(stopEditing())
-      enqueue.assign({
-        editing: null,
-        beforeEditing: null,
-        pendingChanges: [],
-      })
-      enqueue(ensureHotKey())
-    }),
-  ],
-  ...to.idle,
-}
-
 /**
  * Idle state, no pending operations
  */
 const idle = machine.createStateConfig({
   id: 'idle',
-  exit: ensureHotKey(),
   on: {
     'sync': {
       ...to.pending,
@@ -191,9 +177,7 @@ const editing = machine.createStateConfig({
     startEditing(),
     cancelSync(),
   ],
-  exit: ensureHotKey(),
   on: {
-    cancel,
     change: {
       actions: stopEditing(),
       ...to.executeChanges,
@@ -206,8 +190,35 @@ const editing = machine.createStateConfig({
       actions: stopEditing(),
       ...to.idle,
     },
-    'synced': {
-      actions: markHistoryAsSynched(),
+  },
+})
+
+/**
+ * Syncing state, some edits are not yet synced
+ */
+const pending = machine.createStateConfig({
+  id: 'pending',
+  tags: ['pending'],
+  entry: ensureHotKey(),
+  on: {
+    'sync': {
+      reenter: true,
+      ...to.pending,
+    },
+    'edit.start': {
+      // this allows to return back from editing in afterEdit state
+      actions: [
+        addSnapshotToPendingChanges(),
+      ],
+      ...to.editing,
+    },
+  },
+  after: {
+    'waitBeforeSync': {
+      actions: [
+        addSnapshotToPendingChanges(),
+      ],
+      ...to.executeChanges,
     },
   },
 })
@@ -219,7 +230,7 @@ const afterEdit = machine.createStateConfig({
   id: 'afterEdit',
   always: [
     { guard: 'has pending', ...to.pending },
-    to.idle,
+    { ...to.idle },
   ],
 })
 
@@ -230,13 +241,22 @@ const applyLatestToManual = machine.createStateConfig({
   id: 'applyLatestToManual',
   entry: [
     cancelSync(),
-    pushManualLayoutToHistory(),
+    saveStateBeforeEdit(),
   ],
-  initial: 'exec',
+  initial: 'call',
+  on: {
+    // catch all events
+    '*': {
+      actions: [
+        log(({ event }) => `applyLatestToManual received unexpected event: ${event.type}`),
+        reschedule(350),
+      ],
+    },
+  },
   states: {
     // Fetch latest and manual layouts
     // Apply changes, send update to diagram
-    exec: {
+    call: {
       invoke: {
         src: 'applyLatest',
         input: ({ context }) => {
@@ -247,25 +267,20 @@ const applyLatestToManual = machine.createStateConfig({
           })
         },
         onDone: {
-          actions: [
-            log('applyLatest done'),
-            enqueueActions(({ enqueue, event }) => {
-              enqueue.sendTo(
-                diagramActorRef,
-                {
-                  type: 'update.view',
-                  view: event.output.updated,
-                },
-              )
+          actions: sendTo(
+            diagramActorRef,
+            ({ event }) => ({
+              type: 'update.view',
+              view: event.output.updated,
             }),
-          ],
+            { delay: 10 },
+          ),
           target: 'wait',
         },
         onError: {
           actions: [
             assign({
               beforeEditing: null,
-              editing: null,
               pendingChanges: [],
             }),
             ({ event }) => {
@@ -276,25 +291,14 @@ const applyLatestToManual = machine.createStateConfig({
         },
       },
     },
-    // Now we wait 250ms, take new snapshot and send save-view-snapshot
+    // Now we wait 350ms, take new snapshot and send save-view-snapshot
     wait: {
-      entry: log('applyLatestToManual.wait entry'),
-      on: {
-        // catch all events
-        '*': {
-          actions: [
-            log(({ event }) => event.type),
-          ],
-        },
-      },
+      entry: pushHistory(),
       after: {
-        '250ms': {
+        '350ms': {
           actions: [
-            pushHistory(),
-            assign({
-              pendingChanges: [],
-            }),
             addSnapshotToPendingChanges(),
+            ensureHotKey(),
           ],
           ...to.executeChanges,
         },
@@ -309,7 +313,6 @@ const applyLatestToManual = machine.createStateConfig({
 const executeChanges = machine.createStateConfig({
   id: 'executeChanges',
   entry: [
-    log('executeChanges entry'),
     assign(({ event, context }) => {
       if (event.type === 'change') {
         if (isLayoutChange(event.change)) {
@@ -341,11 +344,7 @@ const executeChanges = machine.createStateConfig({
     }),
     onDone: {
       actions: enqueueActions(({ context, enqueue }) => {
-        console.log('executeChanges done')
         const snapshot = find(context.pendingChanges, c => c.op === 'save-view-snapshot')
-        enqueue.assign({
-          pendingChanges: [],
-        })
         if (snapshot) {
           enqueue.sendTo(
             diagramActorRef,
@@ -355,6 +354,9 @@ const executeChanges = machine.createStateConfig({
             },
           )
         }
+        enqueue.assign({
+          pendingChanges: [],
+        })
       }),
       ...to.idle,
     },
@@ -362,43 +364,12 @@ const executeChanges = machine.createStateConfig({
       actions: ({ event }) => {
         console.error(event.error)
       },
-      ...to.idle,
+      ...to.afterEdit,
     },
   },
   on: {
     '*': {
-      // reschedule
-      actions: raise(({ event }) => event, { delay: 100 }),
-    },
-  },
-})
-
-/**
- * Syncing state, some edits are not yet synced
- */
-const pending = machine.createStateConfig({
-  id: 'pending',
-  tags: ['pending'],
-  exit: ensureHotKey(),
-  on: {
-    'sync': {
-      reenter: true,
-      ...to.pending,
-    },
-    'edit.start': {
-      // this allows to return back from editing in afterEdit state
-      actions: [
-        addSnapshotToPendingChanges(),
-      ],
-      ...to.editing,
-    },
-  },
-  after: {
-    'waitBeforeSync': {
-      actions: [
-        addSnapshotToPendingChanges(),
-      ],
-      ...to.executeChanges,
+      actions: reschedule(),
     },
   },
 })
@@ -413,15 +384,21 @@ const _editorActorLogic = machine.createMachine({
     history: [],
   }),
   initial: 'idle',
-  entry: ({ self }) => {
-    // self.
-    const s = self.subscribe({
-      complete: () => {
-        console.log('editor actor completed')
-        s.unsubscribe()
-      },
-    })
-  },
+  // TODO: listen to diagram actor, if switches to "sequence" dynamic view, cancel editing
+  // entry: ({ self, system }) => {
+  //   // let previous = ''
+  //   // const a = (self._parent as DiagramMachineRef).subscribe({
+  //   //   next({ context }) {
+  //   //     const current = context.view._type === 'dynamic' ? context.dynamicViewVariant
+  //   //   },
+  //   // })
+  //   const s = self.subscribe({
+  //     complete: () => {
+  //       console.log('editor actor completed')
+  //       s.unsubscribe()
+  //     },
+  //   })
+  // },
   states: {
     idle,
     editing,
@@ -431,13 +408,19 @@ const _editorActorLogic = machine.createMachine({
     executeChanges,
   },
   on: {
-    cancel,
-    synced: {
+    cancel: {
       actions: [
-        markHistoryAsSynched(),
         cancelSync(),
+        assign({
+          editing: null,
+          beforeEditing: null,
+          pendingChanges: [],
+        }),
       ],
       ...to.idle,
+    },
+    synced: {
+      actions: markHistoryAsSynched(),
     },
     undo: {
       guard: 'can undo',
@@ -450,34 +433,24 @@ const _editorActorLogic = machine.createMachine({
     'applyLatestToManual': {
       ...to.applyLatestToManual,
     },
+    reset: {
+      actions: [
+        cancelSync(),
+        assign({
+          history: [],
+          editing: null,
+          beforeEditing: null,
+          pendingChanges: [],
+        }),
+        stopHotkey(),
+      ],
+      ...to.idle,
+    },
   },
 })
 
 type InferredMachine = typeof _editorActorLogic
 export interface EditorActorLogic extends InferredMachine {}
-// export interface EditorActorLogic extends
-//   StateMachine<
-//     EditorActorContext,
-//     EditorActorEvent,
-//     {
-//       applyLatest: ActorRefFromLogic<typeof applyLatest>
-//       executeChange: ActorRefFromLogic<typeof executeChange>
-//       hotkey: ActorRefFromLogic<HotkeyActorLogic>
-//     },
-//     any,
-//     any,
-//     any,
-//     any,
-//     any,
-//     'pending',
-//     EditorActorInput,
-//     any,
-//     EditorActorEmitedEvent,
-//     any,
-//     any
-//   >
-// {
-// }
 export const editorActorLogic: EditorActorLogic = _editorActorLogic as any
 
 export type EditorActorSnapshot = SnapshotFrom<EditorActorLogic>

@@ -39,7 +39,6 @@ export function ViewReact() {
   return (
     <LikeC4Diagram
       view={view}
-      readonly
       zoomable
       pannable
       controls
@@ -60,7 +59,6 @@ export function ViewReact() {
       enableElementTags
       enableCompareWithLatest
       enableNotations={hasNotations}
-      nodesDraggable={false}
       nodesSelectable
       onNavigateTo={onNavigateTo}
       onLayoutTypeChange={setLayoutType}

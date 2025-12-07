@@ -24,8 +24,10 @@ const getDiagramContext = function(system: ActorSystem<any>): DiagramContext {
   return system.get('diagram')!.getSnapshot().context
 }
 
-export const raiseSync = () => machine.raise({ type: 'sync' }, { delay: 100, id: 'sync' })
+export const raiseSync = () => machine.raise({ type: 'sync' }, { delay: 200, id: 'sync' })
 export const cancelSync = () => machine.cancel('sync')
+
+export const reschedule = (delay = 50) => machine.raise(({ event }) => event, { delay })
 
 type LayoutChanges = ViewChange.ResetManualLayout | ViewChange.SaveViewSnapshot
 export const isLayoutChange = (
@@ -34,7 +36,7 @@ export const isLayoutChange = (
 
 export const withoutSnapshotChanges = filter<ViewChange[], Exclude<ViewChange, LayoutChanges>>(isNot(isLayoutChange))
 
-export const saveStateToBeforeEditing = () =>
+export const saveStateBeforeEdit = () =>
   machine.assign(({ system }) => {
     const parentContext = getDiagramContext(system)
     return {
@@ -63,7 +65,7 @@ export const saveStateToBeforeEditing = () =>
 
 export const startEditing = () =>
   machine.enqueueActions(({ enqueue, event }) => {
-    enqueue(saveStateToBeforeEditing())
+    enqueue(saveStateBeforeEdit())
     if (event.type === 'edit.start') {
       enqueue.assign({
         editing: event.subject,
@@ -125,6 +127,12 @@ export const stopEditing = () =>
 export const markHistoryAsSynched = () =>
   machine.assign(({ context }) => {
     return {
+      beforeEditing: context.beforeEditing && context.beforeEditing.synched === false
+        ? {
+          ...context.beforeEditing,
+          synched: true,
+        }
+        : context.beforeEditing,
       history: context.history.map(i => ({
         ...i,
         synched: true,
@@ -134,7 +142,7 @@ export const markHistoryAsSynched = () =>
 
 export const popHistory = () =>
   machine.assign(({ context }) => {
-    if (context.history.length === 0 || context.history.length === 1) {
+    if (context.history.length <= 1) {
       return {
         history: [],
       }
@@ -157,6 +165,7 @@ export const undo = () =>
     enqueue(popHistory())
     enqueue(ensureHotKey())
     const diagramActor = diagramActorRef(system)
+
     enqueue.sendTo(diagramActor, {
       type: 'update.view',
       view: lastHistoryItem.view,
@@ -165,12 +174,13 @@ export const undo = () =>
       source: 'editor',
     })
 
+    enqueue.assign({
+      pendingChanges: [],
+    })
+
     // If the last history item was already synched,
     // we need to emit change event
     if (lastHistoryItem.synched) {
-      enqueue.assign({
-        pendingChanges: [],
-      })
       enqueue.raise({ type: 'change', change: lastHistoryItem.change }, { delay: 50 })
     } else {
       // Otherwise, we need to start sync after undo
@@ -182,7 +192,6 @@ export const addSnapshotToPendingChanges = () =>
   machine.assign(({ context, system }) => {
     const parentContext = getDiagramContext(system)
     const change = createViewChange(parentContext)
-    console.log('addSnapshotToPendingChanges')
 
     return {
       pendingChanges: [
@@ -190,17 +199,5 @@ export const addSnapshotToPendingChanges = () =>
         ...withoutSnapshotChanges(context.pendingChanges),
         change,
       ],
-    }
-  })
-
-export const pushManualLayoutToHistory = () =>
-  machine.enqueueActions(({ system, enqueue }) => {
-    const { view } = getDiagramContext(system)
-    if (view._layout === 'manual') {
-      enqueue(saveStateToBeforeEditing())
-    } else {
-      enqueue.assign({
-        beforeEditing: null,
-      })
     }
   })

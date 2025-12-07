@@ -1,4 +1,4 @@
-import { type MantineTheme, createTheme, Portal } from '@mantine/core'
+import { type MantineTheme, createTheme, Portal, Tooltip } from '@mantine/core'
 
 export const theme = createTheme({
   autoContrast: true,
@@ -21,6 +21,11 @@ export const theme = createTheme({
     Portal: Portal.extend({
       defaultProps: {
         reuseTargetNode: true,
+      },
+    }),
+    Tooltip: Tooltip.extend({
+      defaultProps: {
+        color: 'dark',
       },
     }),
   },
