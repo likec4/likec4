@@ -308,7 +308,7 @@
     "langium": "catalog:langium",
     "p-timeout": "^6.1.4",
     "p-queue": "catalog:utils",
-    "pretty-ms": "^9.2.0",
+    "pretty-ms": "^9.3.0",
     "reactive-vscode": "^0.3.2",
     "remeda": "catalog:utils",
     "std-env": "catalog:utils",

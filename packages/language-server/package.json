@@ -138,7 +138,7 @@
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",
     "picomatch": "catalog:utils",
-    "pretty-ms": "^9.2.0",
+    "pretty-ms": "^9.3.0",
     "remeda": "catalog:utils",
     "strip-indent": "catalog:utils",
     "tsx": "catalog:",
