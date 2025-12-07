@@ -1,7 +1,6 @@
 import type { LikeC4Project, ProjectId } from '@likec4/core/types'
-import { useCustomCompareMemo } from '@react-hookz/web'
-import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useContext } from 'react'
+import { deepEqual } from 'fast-equals'
+import { type PropsWithChildren, useContext, useEffect, useState } from 'react'
 import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
 import { useCallbackRef } from './hooks/useCallbackRef'
 
@@ -32,7 +31,15 @@ export function LikeC4ProjectsProvider({
   }
 
   const onProjectChange = useCallbackRef(_onProjectChange)
-  const value = useCustomCompareMemo(() => ({ projects, onProjectChange }), [projects, onProjectChange], shallowEqual)
+
+  const [value, setValue] = useState(() => ({ projects, onProjectChange }))
+
+  useEffect(() => {
+    setValue(current => {
+      return deepEqual(current.projects, projects) ? current : { projects, onProjectChange }
+    })
+  }, [projects])
+
   return (
     <LikeC4ProjectsContext.Provider value={value}>
       {children}

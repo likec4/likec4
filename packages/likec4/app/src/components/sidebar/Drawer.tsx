@@ -1,11 +1,12 @@
 import { Button, Drawer, Group, rem, ScrollArea, SegmentedControl } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import { IconArrowLeft, IconStarFilled } from '@tabler/icons-react'
-import { Link } from '@tanstack/react-router'
+import { Link, useMatches } from '@tanstack/react-router'
+import { memo } from 'react'
 import { DiagramsTree } from './DiagramsTree'
 import { SidebarDrawerOps, useDrawerOpened } from './state'
 
-export function SidebarDrawer() {
+export const SidebarDrawer = memo(() => {
   const opened = useDrawerOpened()
 
   const [grouping, setGrouping] = useLocalStorage({
@@ -13,9 +14,13 @@ export function SidebarDrawer() {
     defaultValue: 'by-files' as 'by-files' | 'by-folders' | 'none',
   })
 
+  const isSingleProject = useMatches({
+    select: (matches) => matches.some((match) => match.routeId === '/_single'),
+  })
+
   return (
     <Drawer.Root
-      keepMounted
+      keepMounted={isSingleProject}
       opened={opened}
       scrollAreaComponent={ScrollArea.Autosize}
       onClose={SidebarDrawerOps.close}>
@@ -78,16 +83,5 @@ export function SidebarDrawer() {
         </Drawer.Body>
       </Drawer.Content>
     </Drawer.Root>
-    // <MantineDrawer
-    //   size={'sm'}
-    //   opened={opened}
-    //   keepMounted
-    //   onClose={() => drawerOpenedAtom.set(false)}
-    //   title={
-
-    //   }
-    //   scrollAreaComponent={ScrollArea.Autosize}>
-    //   <DiagramsTree />
-    // </MantineDrawer>
   )
-}
+})

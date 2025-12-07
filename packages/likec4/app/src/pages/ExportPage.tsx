@@ -138,7 +138,6 @@ export function ExportPage() {
         //   initialWidth: width,
         //   initialHeight: height,
         // })}
-        readonly
         className={'likec4-static-view'}
         pannable={false}
         zoomable={false}
@@ -151,7 +150,6 @@ export function ExportPage() {
         enableFocusMode={false}
         enableSearch={false}
         nodesSelectable={false}
-        nodesDraggable={false}
         enableElementTags={false}
         onInitialized={() => {
           if (!viewportRef.current) {

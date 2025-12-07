@@ -114,14 +114,9 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
    */
   zoomable?: boolean | undefined
   /**
-   * Disable any editing (dragging still can be enabled with `nodesDraggable`)
-   * @default true
-   */
-  readonly?: boolean | undefined
-  /**
    * Show/hide panel with top left controls
    *
-   * @default true if not readonly
+   * @default true
    */
   controls?: boolean | undefined
   /**
@@ -158,14 +153,11 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   fitViewPadding?: ViewPadding | undefined
 
   /**
-   * @default false if readonly
+   * If not readonly, or `enableFocusMode`, `onNavigateTo` or  `onNodeClick` are set - nodes will be selectable
+   *
+   * @default false
    */
   nodesSelectable?: boolean | undefined
-
-  /**
-   * @default false if readonly
-   */
-  nodesDraggable?: boolean | undefined
 
   /**
    * Initial width of the diagram
@@ -343,7 +335,6 @@ export type OnInitialized = (params: { diagram: DiagramApi; xyflow: XYFlowInstan
 export type OnLayoutTypeChange = (layoutType: LayoutType) => void
 
 export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
-  onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo<A> | null | undefined
   onNodeClick?: OnNodeClick<A> | null | undefined
   onNodeContextMenu?: OnNodeClick<A> | null | undefined

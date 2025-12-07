@@ -1,4 +1,4 @@
-import { type MantineTheme, createTheme } from '@mantine/core'
+import { type MantineTheme, createTheme, Tooltip } from '@mantine/core'
 
 export const theme = createTheme({
   autoContrast: true,
@@ -15,5 +15,12 @@ export const theme = createTheme({
         // fontSize: '1.85rem',
       },
     },
+  },
+  components: {
+    Tooltip: Tooltip.extend({
+      defaultProps: {
+        color: 'dark',
+      },
+    }),
   },
 }) as MantineTheme

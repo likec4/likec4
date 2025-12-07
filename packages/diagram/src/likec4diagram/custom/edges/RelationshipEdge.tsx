@@ -12,7 +12,6 @@ import {
   EdgePath,
   memoEdge,
 } from '../../../base-primitives'
-import { ZIndexes } from '../../../base/const'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useDiagram } from '../../../hooks/useDiagram'
@@ -234,7 +233,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           onCancelMove={onControlPointerCancelMove}
           onFinishMove={onControlPointerFinishMove}
           onDelete={onControlPointerDelete}
-          zIndex={ZIndexes.Element + 500}
+          zIndex={9999}
         />
       )}
     </>

@@ -1,19 +1,19 @@
 import type {
   ActorSystem,
 } from 'xstate'
+import type { EditorActorRef } from '../../editor/editorActor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type {
   DiagramMachineRef,
 } from './machine'
-import type { SyncLayoutActorRef } from './syncManualLayoutActor'
 
 export type System = ActorSystem<{
   actors: {
     diagram: DiagramMachineRef
     overlays: OverlaysActorRef
     search: SearchActorRef
-    syncLayout: SyncLayoutActorRef
+    editor: EditorActorRef
   }
 }>
 

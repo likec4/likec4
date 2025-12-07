@@ -1,8 +1,9 @@
-import { emit, sendTo, spawnChild, stopChild } from 'xstate/actions'
+import { sendTo, spawnChild, stopChild } from 'xstate/actions'
 import { and } from 'xstate/guards'
 import {
   assignLastClickedNode,
   assignToggledFeatures,
+  cancelEditing,
   cancelFitDiagram,
   closeAllOverlays,
   closeSearch,
@@ -11,9 +12,9 @@ import {
   emitNodeClick,
   emitOpenSource,
   emitPaneClick,
+  ensureEditorActor,
   ensureOverlaysActor,
   ensureSearchActor,
-  ensureSyncLayoutActor,
   fitDiagram,
   handleNavigate,
   layoutAlign,
@@ -30,8 +31,9 @@ import {
   setViewport,
   startEditing,
   stopEditing,
-  stopSyncLayout,
+  stopEditorActor,
   tagHighlight,
+  triggerChange,
   undimEverything,
   updateFeatures,
   updateView,
@@ -48,7 +50,7 @@ export const ready = machine.createStateConfig({
   initial: 'idle',
   entry: [
     spawnChild('mediaPrintActorLogic', { id: 'mediaPrint' }),
-    ensureSyncLayoutActor(),
+    ensureEditorActor(),
     ensureOverlaysActor(),
     ensureSearchActor(),
   ],
@@ -57,7 +59,7 @@ export const ready = machine.createStateConfig({
     stopChild('mediaPrint'),
     closeAllOverlays(),
     closeSearch(),
-    stopSyncLayout(),
+    stopEditorActor(),
   ],
   states: {
     idle,
@@ -88,15 +90,11 @@ export const ready = machine.createStateConfig({
     'layout.resetManualLayout': {
       guard: 'not readonly',
       actions: [
-        stopSyncLayout(),
+        cancelEditing(),
         disableCompareWithLatest(),
-        emit({
-          type: 'onChange',
-          change: {
-            op: 'reset-manual-layout',
-          },
+        triggerChange({
+          op: 'reset-manual-layout',
         }),
-        ensureSyncLayoutActor(),
       ],
     },
     'xyflow.resized': {
@@ -126,7 +124,7 @@ export const ready = machine.createStateConfig({
     'toggle.feature': {
       actions: [
         assignToggledFeatures(),
-        ensureSyncLayoutActor(),
+        ensureEditorActor(),
       ],
     },
     'update.features': {
@@ -134,7 +132,7 @@ export const ready = machine.createStateConfig({
         updateFeatures(),
         ensureOverlaysActor(),
         ensureSearchActor(),
-        ensureSyncLayoutActor(),
+        ensureEditorActor(),
       ],
     },
     'xyflow.nodeMouseEnter': {

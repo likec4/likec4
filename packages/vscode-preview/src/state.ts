@@ -1,11 +1,13 @@
+import { nonNullable } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import type {
   DiagramNode,
   LayoutType,
   scalar,
 } from '@likec4/core/types'
+import type { LikeC4EditorPort } from '@likec4/diagram'
 import { useStore } from '@nanostores/react'
-import { useQueries, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { atom, batched } from 'nanostores'
 import { useEffect, useMemo, useRef } from 'react'
 import { isDeepEqual } from 'remeda'
@@ -107,22 +109,22 @@ ExtensionApi.onGetLastClickedNodeRequest(() => {
   }
 })
 
-ExtensionApi.onModelUpdateNotification(() => {
+ExtensionApi.onModelUpdateNotification(async () => {
   // Then fetch fresh data
-  queryClient.refetchQueries({
+  await queryClient.refetchQueries({
     queryKey: queries.fetchComputedModel($projectId.get()).queryKey,
     stale: true,
     type: 'active',
   })
   // Invalidate inactive diagram views,
   // so they will be refetched when accessed next time
-  queryClient.invalidateQueries({
+  await queryClient.invalidateQueries({
     type: 'inactive',
     refetchType: 'none',
     queryKey: [$projectId.get(), 'diagram'],
   })
   // Refetch active diagram views
-  queryClient.refetchQueries({
+  await queryClient.refetchQueries({
     type: 'active',
     stale: true,
     queryKey: [$projectId.get(), 'diagram'],
@@ -166,26 +168,8 @@ export function useComputedModel() {
 
 export function useDiagramView() {
   const { projectId, viewId, layoutType } = useStore(projectAndView)
-  // ars
   const { data: view, error } = useQuery(
     queries.fetchDiagramView(projectId, viewId, layoutType),
-    // ],
-    // combine([modelResult, viewResult]) {
-    //   const model = modelResult.data
-    //   if (!model) {
-    //     return {
-    //       view: null,
-    //     }
-    //   }
-    //   if (viewResult.error) {
-    //     return {
-    //       error: viewResult.error,
-    //     }
-    //   }
-    //   return {
-    //     view: viewResult.data ?? null,
-    //   }
-    // },
   )
 
   const viewRef = useRef(view)
@@ -205,4 +189,18 @@ export function useDiagramView() {
     view: viewRef.current,
     error,
   }
+}
+
+const editorPort: LikeC4EditorPort = {
+  fetchView: async (viewId, layout) => {
+    const view = await queryClient.fetchQuery(queries.fetchDiagramView($projectId.get(), viewId, layout))
+    return nonNullable(view, `View ${viewId} not found`)
+  },
+  handleChange: async (viewId, change) => {
+    await ExtensionApi.change(viewId, change)
+  },
+}
+
+export function useLikeC4EditorPort() {
+  return editorPort
 }

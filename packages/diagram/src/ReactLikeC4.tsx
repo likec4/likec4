@@ -1,7 +1,6 @@
 import type * as t from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import type { CSSProperties, ReactNode } from 'react'
-import type { Except } from 'type-fest'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
@@ -43,7 +42,7 @@ export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
 
     children?: ReactNode | undefined
   }
-  & Except<LikeC4DiagramProperties<A>, 'view', { requireExactProps: true }>
+  & Omit<LikeC4DiagramProperties<A>, 'view'>
   & LikeC4DiagramEventHandlers<A>
 
 /**

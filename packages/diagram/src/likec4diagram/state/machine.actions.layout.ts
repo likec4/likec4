@@ -7,6 +7,7 @@ import {
   nonNullable,
 } from '@likec4/core'
 import type {
+  DiagramView,
   XYPoint,
 } from '@likec4/core/types'
 import type { Viewport } from '@xyflow/react'
@@ -159,6 +160,12 @@ export const raiseFitDiagram = (params?: { delay?: number; duration?: number; bo
     },
   )
 }
+
+export const raiseUpdateView = (view?: DiagramView) =>
+  machine.raise(({ context }) => ({
+    type: 'update.view',
+    view: view ?? context.view,
+  }), { delay: DEFAULT_DELAY })
 
 export const assignViewportBefore = (viewport?: Viewport | null) =>
   machine.assign(({ context }) => {

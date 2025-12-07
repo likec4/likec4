@@ -9,20 +9,17 @@ import { nonexhaustive, nonNullable } from '@likec4/core/utils'
 import { type Viewport, getEdgePosition, getNodeDimensions, getNodesBounds, getViewportForBounds } from '@xyflow/system'
 import type { ActorSystem } from 'xstate'
 import { MinZoom } from '../../base/const'
+import type { EditorActorRef } from '../../editor/editorActor'
 import type { XYStoreState } from '../../hooks/useXYFlow'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { Context } from './machine.setup'
-import type { SyncLayoutActorRef } from './syncManualLayoutActor'
 import type { DiagramActorRef, System } from './types'
 
 export function typedSystem(system: ActorSystem<any>) {
   return {
-    get syncLayoutActorRef(): SyncLayoutActorRef | null {
-      return (system as System).get('syncLayout') ?? null
-    },
     get overlaysActorRef(): OverlaysActorRef | null {
       return (system as System).get('overlays') ?? null
     },
@@ -32,7 +29,22 @@ export function typedSystem(system: ActorSystem<any>) {
     get searchActorRef(): SearchActorRef | null {
       return (system as System).get('search') ?? null
     },
+    get editorActorRef(): EditorActorRef | null {
+      return (system as System).get('editor') ?? null
+    },
   }
+}
+typedSystem.editorActor = ({ system }: { system: ActorSystem<any> }): EditorActorRef => {
+  return (system as System).get('editor')!
+}
+typedSystem.overlaysActor = ({ system }: { system: ActorSystem<any> }): OverlaysActorRef => {
+  return (system as System).get('overlays')!
+}
+typedSystem.diagramActor = ({ system }: { system: ActorSystem<any> }): DiagramActorRef => {
+  return (system as System).get('diagram')!
+}
+typedSystem.searchActor = ({ system }: { system: ActorSystem<any> }): SearchActorRef => {
+  return (system as System).get('search')!
 }
 
 export function findDiagramNode(ctx: Context, xynodeId: string): DiagramNode | null {

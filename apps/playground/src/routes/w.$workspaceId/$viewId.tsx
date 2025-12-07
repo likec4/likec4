@@ -1,15 +1,11 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-// import { useWorkspaceState, WorkspaceContextProvider } from '../state'
-// import { EditorPanel } from './-workspace/EditorPanel'
-// import { Header } from './-workspace/Header'
-// import { PlaygroundActorProvider } from '$state/context'
-import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
+import { usePlayground, usePlaygroundActorRef, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import { IconRenderer } from '$components/IconRenderer'
 import type { scalar, ViewId } from '@likec4/core/types'
-import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider } from '@likec4/diagram'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
-import { useEffect, useRef } from 'react'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { type PropsWithChildren, useEffect, useRef } from 'react'
 import { only } from 'remeda'
 import * as css from '../styles.css'
 
@@ -89,84 +85,81 @@ function WorkspaceDiagramPage() {
         pos={'relative'}
         w={'100%'}
         h={'100%'}>
-        <LikeC4ModelProvider likec4model={likec4model}>
-          <LikeC4Diagram
-            view={_diagram}
-            readonly={false}
-            controls
-            fitView
-            fitViewPadding={{
-              top: '70px',
-              bottom: '32px',
-              left: '60px',
-              right: '32px',
-            }}
-            nodesSelectable
-            nodesDraggable
-            showNavigationButtons
-            enableElementDetails
-            enableDynamicViewWalkthrough
-            enableRelationshipBrowser
-            enableRelationshipDetails
-            enableNotations
-            enableElementTags
-            enableFocusMode
-            enableSearch
-            enableCompareWithLatest={false}
-            reactFlowProps={{
-              // Otherwise reactflow intercepts "Space" key
-              panActivationKeyCode: null,
-            }}
-            renderIcon={IconRenderer}
-            onNavigateTo={(nextView, event) => {
-              event?.stopPropagation()
-              playground.openSources({
-                view: nextView as scalar.ViewId,
-              })
-              void router.navigate({
-                viewTransition: false,
-                from: '/w/$workspaceId/$viewId',
-                to: './',
-                params: {
-                  viewId: nextView,
-                },
-              })
-            }}
-            onEdgeClick={(edge, event) => {
-              event?.stopPropagation()
-              if (_diagram._type === 'dynamic' && edge.astPath) {
+        <LikeC4PlaygroundEditor>
+          <LikeC4ModelProvider likec4model={likec4model}>
+            <LikeC4Diagram
+              view={_diagram}
+              controls
+              fitView
+              fitViewPadding={{
+                top: '70px',
+                bottom: '32px',
+                left: '60px',
+                right: '32px',
+              }}
+              nodesSelectable
+              showNavigationButtons
+              enableElementDetails
+              enableDynamicViewWalkthrough
+              enableRelationshipBrowser
+              enableRelationshipDetails
+              enableNotations
+              enableElementTags
+              enableFocusMode
+              enableSearch
+              enableCompareWithLatest={false}
+              reactFlowProps={{
+                // Otherwise reactflow intercepts "Space" key
+                panActivationKeyCode: null,
+              }}
+              renderIcon={IconRenderer}
+              onNavigateTo={(nextView, event) => {
+                event?.stopPropagation()
                 playground.openSources({
-                  view: _diagram.id,
-                  astPath: edge.astPath,
+                  view: nextView as scalar.ViewId,
                 })
-                return
-              }
-              const relationId = only(edge.relations)
-              if (relationId) {
-                playground.openSources({
-                  relation: relationId,
+                void router.navigate({
+                  viewTransition: false,
+                  from: '/w/$workspaceId/$viewId',
+                  to: './',
+                  params: {
+                    viewId: nextView,
+                  },
                 })
-              }
-            }}
-            onChange={ev => {
-              playground.applyViewChanges(ev.change)
-            }}
-            onOpenSource={params => {
-              playground.openSources(params)
-            }}
-          />
-          {error && (
-            <Box className={css.stateAlert}>
-              <Notification
-                icon={<IconX style={{ width: 20, height: 20 }} />}
-                color="red"
-                title="Error"
-                withCloseButton={false}>
-                {error}
-              </Notification>
-            </Box>
-          )}
-        </LikeC4ModelProvider>
+              }}
+              onEdgeClick={(edge, event) => {
+                event?.stopPropagation()
+                if (_diagram._type === 'dynamic' && edge.astPath) {
+                  playground.openSources({
+                    view: _diagram.id,
+                    astPath: edge.astPath,
+                  })
+                  return
+                }
+                const relationId = only(edge.relations)
+                if (relationId) {
+                  playground.openSources({
+                    relation: relationId,
+                  })
+                }
+              }}
+              onOpenSource={params => {
+                playground.openSources(params)
+              }}
+            />
+            {error && (
+              <Box className={css.stateAlert}>
+                <Notification
+                  icon={<IconX style={{ width: 20, height: 20 }} />}
+                  color="red"
+                  title="Error"
+                  withCloseButton={false}>
+                  {error}
+                </Notification>
+              </Box>
+            )}
+          </LikeC4ModelProvider>
+        </LikeC4PlaygroundEditor>
       </Box>
     )
   }
@@ -183,5 +176,26 @@ function WorkspaceDiagramPage() {
         </Notification>
       </Box>
     </Box>
+  )
+}
+
+function LikeC4PlaygroundEditor({ children }: PropsWithChildren) {
+  const actor = usePlaygroundActorRef()
+
+  return (
+    <LikeC4EditorProvider
+      editor={{
+        fetchView: () => {
+          throw new Error('Function not implemented.')
+        },
+        handleChange: (_, change) => {
+          actor.send({
+            type: 'workspace.applyViewChanges',
+            change,
+          })
+        },
+      }}>
+      {children}
+    </LikeC4EditorProvider>
   )
 }

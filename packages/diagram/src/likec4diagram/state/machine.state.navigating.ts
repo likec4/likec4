@@ -2,6 +2,7 @@ import { type NodeId, BBox } from '@likec4/core/types'
 import { invariant, nonNullable } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
 import { assertEvent, enqueueActions } from 'xstate'
+import { convertToXYFlow } from '../convert-to-xyflow'
 import { mergeXYNodesEdges } from './assign'
 import {
   cancelFitDiagram,
@@ -87,6 +88,15 @@ export const navigating = machine.createStateConfig({
           },
         } = context
 
+        const eventWithXYData = 'xynodes' in event ? event : {
+          ...event,
+          ...convertToXYFlow({
+            dynamicViewVariant: context.dynamicViewVariant,
+            view: event.view,
+            where: context.where,
+          }),
+        }
+
         invariant(xyflow, 'xyflow is not initialized')
 
         // Make 80% zoom step towards the target viewport if zooming out,
@@ -100,7 +110,7 @@ export const navigating = machine.createStateConfig({
         const fromHistory = history[currentIndex]
         if (fromHistory && fromHistory.viewId === event.view.id) {
           enqueue.assign({
-            ...mergeXYNodesEdges(context, event),
+            ...mergeXYNodesEdges(context, eventWithXYData),
             dynamicViewVariant: fromHistory.dynamicViewVariant ?? context.dynamicViewVariant,
             viewportChangedManually: fromHistory.viewportChangedManually,
           })
@@ -153,7 +163,7 @@ export const navigating = machine.createStateConfig({
           event.view.bounds,
         )
 
-        const { fromNode, toNode } = findCorrespondingNode(context, event)
+        const { fromNode, toNode } = findCorrespondingNode(context, eventWithXYData)
         if (fromNode && toNode) {
           const elFrom = xyflow.getInternalNode(fromNode.id)!
           const fromPoint = xyflow.flowToScreenPosition({
@@ -187,7 +197,7 @@ export const navigating = machine.createStateConfig({
         })
 
         enqueue.assign({
-          ...mergeXYNodesEdges(context, event),
+          ...mergeXYNodesEdges(context, eventWithXYData),
           viewportChangedManually: false,
           lastOnNavigate: null,
           navigationHistory: {

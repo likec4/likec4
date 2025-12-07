@@ -42,7 +42,6 @@ export function StaticLikeC4Diagram<A extends Any = UnknownLayouted>({
   return (
     <LikeC4Diagram
       view={view}
-      readonly
       className={cx(className, 'likec4-static-view')}
       fitView={fitView}
       fitViewPadding={fitViewPadding}
@@ -60,7 +59,6 @@ export function StaticLikeC4Diagram<A extends Any = UnknownLayouted>({
       enableFocusMode={false}
       enableSearch={false}
       nodesSelectable={false}
-      nodesDraggable={false}
       enableElementTags={false}
       {...rest}
     />

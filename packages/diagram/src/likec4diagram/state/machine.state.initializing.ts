@@ -1,5 +1,5 @@
 import { assign } from 'xstate/actions'
-import { emitInitialized } from './machine.actions'
+import { assignXYDataFromView, emitInitialized } from './machine.actions'
 import { fitDiagram } from './machine.actions.layout'
 import { machine } from './machine.setup'
 
@@ -23,15 +23,15 @@ export const initializing = machine.createStateConfig({
       target: 'isReady',
     },
     'update.view': {
-      actions: assign(({ context, event }) => ({
-        initialized: {
-          ...context.initialized,
-          xydata: true,
-        },
-        view: event.view,
-        xynodes: event.xynodes,
-        xyedges: event.xyedges,
-      })),
+      actions: [
+        assignXYDataFromView(),
+        assign(({ context }) => ({
+          initialized: {
+            ...context.initialized,
+            xydata: true,
+          },
+        })),
+      ],
       target: 'isReady',
     },
   },
