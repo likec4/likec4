@@ -91,8 +91,8 @@ catalogs:
       specifier: 0.8.3
       version: 0.8.3
     playwright:
-      specifier: 1.56.1
-      version: 1.56.1
+      specifier: 1.57.0
+      version: 1.57.0
     tsx:
       specifier: 4.21.0
       version: 4.21.0
@@ -1495,7 +1495,7 @@ importers:
         version: 6.4.0(picomatch@4.0.3)
       playwright:
         specifier: 'catalog:'
-        version: 1.56.1
+        version: 1.57.0
       rollup:
         specifier: catalog:vite
         version: 4.53.3
@@ -1930,7 +1930,7 @@ importers:
         version: 6.1.4
       playwright:
         specifier: 'catalog:'
-        version: 1.56.1
+        version: 1.57.0
       pretty-ms:
         specifier: ^9.3.0
         version: 9.3.0
@@ -7449,13 +7449,13 @@ packages:
   pkg-types@2.3.0:
     resolution: {integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==}
 
-  playwright-core@1.56.1:
-    resolution: {integrity: sha512-hutraynyn31F+Bifme+Ps9Vq59hKuUCz7H1kDOcBs+2oGguKkWTU50bBWrtz34OUWmIwpBTWDxaRPXrIXkgvmQ==}
+  playwright-core@1.57.0:
+    resolution: {integrity: sha512-agTcKlMw/mjBWOnD6kFZttAAGHgi/Nw0CZ2o6JqWSbMlI219lAFLZZCyqByTsvVAJq5XA5H8cA6PrvBRpBWEuQ==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.56.1:
-    resolution: {integrity: sha512-aFi5B0WovBHTEvpM3DzXTUaeN6eN0qWnTkKx4NQaH4Wvcmc153PdaY2UBdSYKaGYw+UyWXSVyxDUg5DoPEttjw==}
+  playwright@1.57.0:
+    resolution: {integrity: sha512-ilYQj1s8sr2ppEJ2YVadYBN0Mb3mdo9J0wQ+UuDhzYqURwSoW4n1Xs5vs7ORwgDGmyEh33tRMeS8KhdkMoLXQw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -16182,11 +16182,11 @@ snapshots:
       exsolve: 1.0.7
       pathe: 2.0.3
 
-  playwright-core@1.56.1: {}
+  playwright-core@1.57.0: {}
 
-  playwright@1.56.1:
+  playwright@1.57.0:
     dependencies:
-      playwright-core: 1.56.1
+      playwright-core: 1.57.0
     optionalDependencies:
       fsevents: 2.3.2
 
