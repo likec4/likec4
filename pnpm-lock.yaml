@@ -231,8 +231,8 @@ catalogs:
       specifier: ^4.0.3
       version: 4.0.3
     chroma-js:
-      specifier: ^3.1.2
-      version: 3.1.2
+      specifier: ^3.2.0
+      version: 3.2.0
     citty:
       specifier: ^0.1.6
       version: 0.1.6
@@ -900,7 +900,7 @@ importers:
         version: link:../tsconfig
       '@mantine/colors-generator':
         specifier: catalog:mantine
-        version: 8.3.9(chroma-js@3.1.2)
+        version: 8.3.9(chroma-js@3.2.0)
       '@types/chroma-js':
         specifier: catalog:utils
         version: 3.1.2
@@ -927,7 +927,7 @@ importers:
         version: 3.0.3
       chroma-js:
         specifier: catalog:utils
-        version: 3.1.2
+        version: 3.2.0
       defu:
         specifier: catalog:utils
         version: 6.1.4
@@ -4963,8 +4963,8 @@ packages:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
 
-  chroma-js@3.1.2:
-    resolution: {integrity: sha512-IJnETTalXbsLx1eKEgx19d5L6SRM7cH4vINw/99p/M11HCuXGRWL+6YmCm7FWFGIo6dtWuQoQi1dc5yQ7ESIHg==}
+  chroma-js@3.2.0:
+    resolution: {integrity: sha512-os/OippSlX1RlWWr+QDPcGUZs0uoqr32urfxESG9U93lhUfbnlyckte84Q8P1UQY/qth983AS1JONKmLS4T0nw==}
 
   ci-info@4.3.1:
     resolution: {integrity: sha512-Wdy2Igu8OcBpI2pZePZ5oWjPC38tmDVx5WKUXKwlLYkA0ozo85sLsLvkBbBn/sZaSCMFOGZJ14fvW9t5/d7kdA==}
@@ -11196,9 +11196,9 @@ snapshots:
 
   '@lume/kiwi@0.4.4': {}
 
-  '@mantine/colors-generator@8.3.9(chroma-js@3.1.2)':
+  '@mantine/colors-generator@8.3.9(chroma-js@3.2.0)':
     dependencies:
-      chroma-js: 3.1.2
+      chroma-js: 3.2.0
 
   '@mantine/core@8.3.9(@mantine/hooks@8.3.9(react@19.2.1))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
@@ -13230,7 +13230,7 @@ snapshots:
     dependencies:
       readdirp: 4.1.2
 
-  chroma-js@3.1.2: {}
+  chroma-js@3.2.0: {}
 
   ci-info@4.3.1: {}
 
