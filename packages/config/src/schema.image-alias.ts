@@ -8,7 +8,7 @@ const IMAGE_ALIAS_VALUE_REGEX = /^(?!\/|[A-Za-z]:[\\\/])(?!.*:\/\/).*$/
 // Schema for an image alias value: must be a non-empty string representing a relative path (no leading slash, drive letter, or protocol).
 const ImageAliasValue = z
   .string()
-  .nonempty('Image alias value cannot be empty')
+  .min(1, 'Image alias value cannot be empty')
   .regex(
     IMAGE_ALIAS_VALUE_REGEX,
     'Image alias value must be a relative path (no leading slash or protocol)',

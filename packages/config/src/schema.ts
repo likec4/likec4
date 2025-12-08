@@ -15,6 +15,7 @@ import type { SimplifyDeep } from 'type-fest'
 import type { URI } from 'vscode-uri'
 import * as z from 'zod'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
+import { IncludeSchema, validateIncludePaths } from './schema.include'
 import { LikeC4StylesConfigSchema } from './schema.theme'
 
 export const ManualLayoutsConfigSchema = z
@@ -59,6 +60,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .meta({ description: 'A person who has been involved in creating or maintaining this project' }),
   imageAliases: ImageAliasesSchema
     .optional(),
+  include: IncludeSchema,
   styles: LikeC4StylesConfigSchema
     .optional(),
   exclude: z.array(z.string())
@@ -246,6 +248,9 @@ export function validateProjectConfig<C extends string | Record<string, unknown>
   // TODO: rewrite with zod refine
   if (parsed.data.imageAliases) {
     validateImageAliases(parsed.data.imageAliases)
+  }
+  if (parsed.data.include) {
+    validateIncludePaths(parsed.data.include)
   }
   return parsed.data as unknown as LikeC4ProjectConfig
 }

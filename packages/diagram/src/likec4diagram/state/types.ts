@@ -8,6 +8,8 @@ import type {
   DiagramMachineRef,
 } from './machine'
 
+export type NodeWithData = { id: string; data: Record<string, unknown> }
+
 export type System = ActorSystem<{
   actors: {
     diagram: DiagramMachineRef

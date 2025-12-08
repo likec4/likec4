@@ -1,6 +1,7 @@
 import { type NodeId, BBox } from '@likec4/core/types'
 import { invariant, nonNullable } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
+import { isTruthy } from 'remeda'
 import { assertEvent, enqueueActions } from 'xstate'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import { mergeXYNodesEdges } from './assign'
@@ -11,7 +12,7 @@ import {
   raiseSetViewport,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
-import { calcViewportForBounds, findCorrespondingNode, nodeRef } from './utils'
+import { calcViewportForBounds, findCorrespondingNode, findNodeByModelFqn, nodeRef } from './utils'
 
 const handleBrowserForwardBackward = () =>
   machine.assign(({ context, event }) => {
@@ -196,6 +197,12 @@ export const navigating = machine.createStateConfig({
           viewportChangedManually: false,
         })
 
+        // Check if we need to focus on a specific element after navigation (from search)
+        const focusOnElement = context.lastOnNavigate?.focusOnElement
+        const nodeToFocus = isTruthy(focusOnElement)
+          ? findNodeByModelFqn(event.xynodes, focusOnElement)
+          : null
+
         enqueue.assign({
           ...mergeXYNodesEdges(context, eventWithXYData),
           viewportChangedManually: false,
@@ -206,9 +213,18 @@ export const navigating = machine.createStateConfig({
           },
         })
 
-        enqueue(raiseFitDiagram({
-          delay: 100,
-        }))
+        if (nodeToFocus) {
+          // Focus on the searched element with auto-unfocus enabled
+          enqueue.raise({
+            type: 'focus.node',
+            nodeId: nodeToFocus.id as NodeId,
+            autoUnfocus: true,
+          }, { delay: 150 })
+        } else {
+          enqueue(raiseFitDiagram({
+            delay: 100,
+          }))
+        }
       }),
     ],
   },

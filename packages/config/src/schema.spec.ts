@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest'
 import { validateProjectConfig as validateConfig } from './schema'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
+import { IncludeSchema, validateIncludePaths } from './schema.include'
 
 describe('ProjectConfig schema', () => {
   describe('validateProjectConfig', () => {
@@ -177,6 +178,93 @@ describe('ProjectConfig schema', () => {
           }
           expect(() => validateConfig(config), `Path "${path}" should be accepted`).not.toThrow()
         }
+      })
+    })
+
+    describe('include field', () => {
+      it('should accept valid include paths', ({ expect }) => {
+        const validConfigs = [
+          {
+            name: 'test',
+            include: ['../shared'],
+          },
+          {
+            name: 'test',
+            include: ['../shared', '../common/specs'],
+          },
+          {
+            name: 'test',
+            include: ['./local-shared', '../parent/shared'],
+          },
+          {
+            name: 'test',
+            include: ['relative/path/to/shared'],
+          },
+        ]
+
+        for (const config of validConfigs) {
+          expect(() => validateConfig(config)).not.toThrow()
+          const result = validateConfig(config)
+          expect(result.include).toEqual(config.include)
+        }
+      })
+
+      it('should accept empty include array', ({ expect }) => {
+        const config = { name: 'test', include: [] }
+        const result = validateConfig(config)
+        expect(result.include).toEqual([])
+      })
+
+      it('should accept undefined include', ({ expect }) => {
+        const config = { name: 'test' }
+        const result = validateConfig(config)
+        expect(result.include).toBeUndefined()
+      })
+
+      it('should reject absolute paths in include', ({ expect }) => {
+        const absolutePaths = ['/absolute/path', 'C:\\absolute\\path', 'D:/another/path']
+
+        for (const path of absolutePaths) {
+          const config = {
+            name: 'test',
+            include: [path],
+          }
+          expect(() => validateConfig(config), `Path "${path}" should be rejected`).toThrow(
+            'Include path must be a relative path (no leading slash, drive letter, or protocol)',
+          )
+        }
+      })
+
+      it('should reject URLs in include', ({ expect }) => {
+        const urls = ['http://example.com/shared', 'https://cdn.example.com/specs', 'file://local/path']
+
+        for (const url of urls) {
+          const config = {
+            name: 'test',
+            include: [url],
+          }
+          expect(() => validateConfig(config), `URL "${url}" should be rejected`).toThrow(
+            'Include path must be a relative path (no leading slash, drive letter, or protocol)',
+          )
+        }
+      })
+
+      it('should reject empty strings in include array', ({ expect }) => {
+        const config = {
+          name: 'test',
+          include: [''],
+        }
+        expect(() => validateConfig(config)).toThrow('Include path cannot be empty')
+      })
+
+      it('should reject mixed valid and invalid paths', ({ expect }) => {
+        const config = {
+          name: 'test',
+          include: ['../shared', '/absolute/path'],
+        }
+        expect(() => validateConfig(config)).toThrow(
+          'Include path must be a relative path (no leading slash, drive letter, or protocol)',
+        )
       })
     })
 
@@ -444,6 +532,120 @@ describe('ProjectConfig schema', () => {
       }
 
       expect(() => validateImageAliases(validAliases)).not.toThrow()
+    })
+  })
+
+  describe('IncludeSchema', () => {
+    it('should accept valid include paths array', ({ expect }) => {
+      const validPaths = ['../shared', '../common/specs', './local', 'relative/path']
+
+      expect(() => IncludeSchema.parse(validPaths)).not.toThrow()
+      const result = IncludeSchema.parse(validPaths)
+      expect(result).toEqual(validPaths)
+    })
+
+    it('should accept empty array', ({ expect }) => {
+      expect(() => IncludeSchema.parse([])).not.toThrow()
+      const result = IncludeSchema.parse([])
+      expect(result).toEqual([])
+    })
+
+    it('should accept undefined', ({ expect }) => {
+      expect(() => IncludeSchema.parse(undefined)).not.toThrow()
+      const result = IncludeSchema.parse(undefined)
+      expect(result).toBeUndefined()
+    })
+
+    it('should reject empty strings', ({ expect }) => {
+      expect(() => IncludeSchema.parse([''])).toThrow('Include path cannot be empty')
+    })
+
+    it('should reject absolute paths', ({ expect }) => {
+      const absolutePaths = ['/absolute/path', 'C:\\absolute\\path', 'D:/another/path']
+
+      for (const path of absolutePaths) {
+        expect(() => IncludeSchema.parse([path]), `Should reject ${path}`).toThrow(
+          'Include path must be a relative path (no leading slash, drive letter, or protocol)',
+        )
+      }
+    })
+
+    it('should reject URLs', ({ expect }) => {
+      const urls = ['http://example.com/shared', 'https://cdn.example.com/specs', 'file://local/path']
+
+      for (const url of urls) {
+        expect(() => IncludeSchema.parse([url]), `Should reject ${url}`).toThrow(
+          'Include path must be a relative path (no leading slash, drive letter, or protocol)',
+        )
+      }
+    })
+
+    it('should accept various relative paths', ({ expect }) => {
+      const relativePaths = [
+        '.',
+        '..',
+        './relative',
+        '../parent',
+        'simple',
+        'nested/path',
+        'very/deep/nested/folder/structure',
+        '../parent/relative',
+        'path/with-dashes_and.dots',
+      ]
+
+      expect(() => IncludeSchema.parse(relativePaths)).not.toThrow()
+      const result = IncludeSchema.parse(relativePaths)
+      expect(result).toEqual(relativePaths)
+    })
+  })
+
+  describe('validateIncludePaths', () => {
+    it('should pass with valid include paths', ({ expect }) => {
+      const validPaths = ['../shared', '../common/specs', './local', 'relative/path']
+      expect(() => validateIncludePaths(validPaths)).not.toThrow()
+    })
+
+    it('should pass when include is undefined', ({ expect }) => {
+      expect(() => validateIncludePaths(undefined)).not.toThrow()
+      expect(() => validateIncludePaths()).not.toThrow()
+    })
+
+    it('should pass when include is empty array', ({ expect }) => {
+      expect(() => validateIncludePaths([])).not.toThrow()
+    })
+
+    it('should reject absolute paths', ({ expect }) => {
+      const absolutePaths = ['/absolute/path']
+      expect(() => validateIncludePaths(absolutePaths)).toThrow(
+        'Invalid include path(s): "/absolute/path" (must be relative paths without leading slash, drive letter, or protocol)',
+      )
+    })
+
+    it('should reject URLs', ({ expect }) => {
+      const urlPaths = ['http://example.com/shared']
+      expect(() => validateIncludePaths(urlPaths)).toThrow(
+        'Invalid include path(s): "http://example.com/shared" (must be relative paths without leading slash, drive letter, or protocol)',
+      )
+    })
+
+    it('should report multiple invalid paths', ({ expect }) => {
+      const mixedPaths = ['/absolute/path', 'https://example.com/shared']
+      expect(() => validateIncludePaths(mixedPaths)).toThrow(
+        'Invalid include path(s): "/absolute/path", "https://example.com/shared" (must be relative paths without leading slash, drive letter, or protocol)',
+      )
+    })
+
+    it('should accept various valid relative paths', ({ expect }) => {
+      const validPaths = [
+        '.',
+        '..',
+        './relative',
+        '../parent',
+        'simple',
+        'nested/path',
+        'very/deep/nested/folder/structure',
+      ]
+      expect(() => validateIncludePaths(validPaths)).not.toThrow()
     })
   })
 })

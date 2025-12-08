@@ -80,11 +80,20 @@ export const idle = machine.createStateConfig({
         }),
       ],
     },
-    'focus.node': {
-      guard: 'enabled: FocusMode',
-      actions: assignFocusedNode(),
-      target: targetState.focused,
-    },
+    'focus.node': [
+      // Focus was initialed by the user searching (autoUnfocus=true) - always allowed
+      {
+        guard: 'focus.node: autoUnfocus',
+        actions: assignFocusedNode(),
+        target: targetState.focused,
+      },
+      // Regular focus - requires FocusMode to be enabled
+      {
+        guard: 'enabled: FocusMode',
+        actions: assignFocusedNode(),
+        target: targetState.focused,
+      },
+    ],
     'xyflow.edgeClick': {
       guard: and([
         'enabled: Readonly',

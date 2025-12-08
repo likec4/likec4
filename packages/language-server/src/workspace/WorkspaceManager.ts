@@ -69,6 +69,24 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     collector: (document: LangiumDocument) => void,
   ): Promise<void> {
     collector(this.documentFactory.fromString(BuiltIn.Content, URI.parse(BuiltIn.Uri)))
+
+    // Load documents from project include paths
+    const includePaths = this.services.workspace.ProjectsManager.getAllIncludePaths()
+    for (const { projectId, includePath } of includePaths) {
+      try {
+        logger.debug`scanning include path ${includePath.fsPath} for project ${projectId}`
+        const files = await this.fileSystemProvider.readDirectory(includePath, { recursive: true })
+        for (const file of files) {
+          if (file.isFile && !this.services.workspace.ProjectsManager.isExcluded(file.uri)) {
+            const doc = await this.documentFactory.fromUri(file.uri)
+            collector(doc)
+          }
+        }
+      } catch (error) {
+        logWarnError(error)
+      }
+    }
+
     await super.loadAdditionalDocuments(folders, collector)
   }
 

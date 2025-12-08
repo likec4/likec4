@@ -106,18 +106,21 @@ export const assignLastClickedNode = () =>
 export const assignFocusedNode = () =>
   machine.assign(({ event }) => {
     let focusedNode
+    let autoUnfocusTimer = false
     switch (event.type) {
       case 'xyflow.nodeClick':
         focusedNode = event.node.data.id
         break
       case 'focus.node':
         focusedNode = event.nodeId
+        autoUnfocusTimer = event.autoUnfocus === true
         break
       default:
         throw new Error(`Unexpected event type: ${event.type} in action 'assign: focusedNode'`)
     }
     return {
       focusedNode,
+      autoUnfocusTimer,
     }
   })
 
@@ -786,6 +789,22 @@ export const reraise = () => machine.raise(({ event }) => event, { delay: 50 })
 export const startHotKeyActor = () => machine.spawnChild('hotkeyActorLogic', { id: 'hotkey' })
 export const stopHotKeyActor = () => machine.stopChild('hotkey')
 
+/**
+ * Auto-unfocus timer duration in milliseconds.
+ * Set to 0 to disable auto-unfocus (focus remains until user clicks elsewhere).
+ * Used for focusing nodes from search results.
+ */
+const AUTO_UNFOCUS_DELAY = 3000
+
+export const startAutoUnfocusTimer = () =>
+  machine.enqueueActions(({ context, enqueue }) => {
+    if (context.autoUnfocusTimer && AUTO_UNFOCUS_DELAY > 0) {
+      enqueue.raise({ type: 'focus.autoUnfocus' }, { delay: AUTO_UNFOCUS_DELAY, id: 'autoUnfocusTimer' })
+    }
+  })
+
+export const cancelAutoUnfocusTimer = () => machine.cancel('autoUnfocusTimer')
+
 export const handleNavigate = () =>
   machine.enqueueActions(({ enqueue, context, event }) => {
     assertEvent(event, ['navigate.to', 'navigate.back', 'navigate.forward'])
@@ -837,6 +856,7 @@ export const handleNavigate = () =>
             fromView: context.view.id,
             toView: event.viewId,
             fromNode: event.fromNode ?? null,
+            focusOnElement: event.focusOnElement ?? null,
           },
         })
         enqueue(emitNavigateTo())

@@ -107,6 +107,7 @@ export interface Context extends Input {
     fromView: ViewId
     toView: ViewId
     fromNode: NodeId | null
+    focusOnElement?: Fqn | null
   }
   navigationHistory: NavigationHistory
   lastClickedNode: null | {
@@ -115,6 +116,7 @@ export interface Context extends Input {
     timestamp: number
   }
   focusedNode: NodeId | null
+  autoUnfocusTimer: boolean
   activeElementDetails: null | {
     fqn: Fqn
     fromNode: NodeId | null
@@ -176,13 +178,14 @@ export type Events =
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
   | { type: 'open.search'; search?: string }
   // | { type: 'close.overlay' }
-  | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
+  | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined; focusOnElement?: Fqn | undefined }
   | { type: 'navigate.back' }
   | { type: 'navigate.forward' }
   | { type: 'layout.align'; mode: AlignmentMode }
   | { type: 'layout.resetEdgeControlPoints' }
   | { type: 'layout.resetManualLayout' }
-  | { type: 'focus.node'; nodeId: NodeId }
+  | { type: 'focus.node'; nodeId: NodeId; autoUnfocus?: boolean }
+  | { type: 'focus.autoUnfocus' }
   | { type: 'switch.dynamicViewVariant'; variant: DynamicViewDisplayVariant }
   | { type: 'walkthrough.start'; stepId?: StepEdgeId }
   | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
@@ -282,6 +285,10 @@ export const machine = setup({
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
     'enabled: OpenSource': ({ context }) => context.features.enableVscode,
     'enabled: DynamicViewWalkthrough': ({ context }) => context.features.enableDynamicViewWalkthrough,
+    'focus.node: autoUnfocus': ({ event }) => {
+      assertEvent(event, 'focus.node')
+      return event.autoUnfocus === true
+    },
     'enabled: Overlays': ({ context }) =>
       context.features.enableElementDetails ||
       context.features.enableRelationshipBrowser ||
