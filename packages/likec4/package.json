@@ -230,7 +230,7 @@
     "ufo": "catalog:utils",
     "unbuild": "catalog:",
     "vite-plugin-dts": "catalog:vite",
-    "vite-plugin-inspect": "^11.1.0",
+    "vite-plugin-inspect": "^11.3.3",
     "vite-plugin-singlefile": "^2.3.0",
     "vitest": "catalog:vitest",
     "vscode-jsonrpc": "catalog:vscode",

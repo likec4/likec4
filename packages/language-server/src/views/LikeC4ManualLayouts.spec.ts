@@ -23,10 +23,12 @@ describe.concurrent('LikeC4ManualLayouts', () => {
     vi.spyOn(fs, 'writeFile')
     vi.spyOn(fs, 'deleteFile')
 
-    const project = await services.shared.workspace.ProjectsManager.registerProject({
+    const projectData = await services.shared.workspace.ProjectsManager.registerProject({
       config: { name: 'test-project' },
       folderUri: URI.file('/test/workspace/src/test-project'),
     })
+
+    const project = services.shared.workspace.ProjectsManager.getProject(projectData.id)
 
     const manualLayouts = services.likec4.ManualLayouts
     return { services, fs, project, manualLayouts }
@@ -179,7 +181,7 @@ describe.concurrent('LikeC4ManualLayouts', () => {
       const { services, fs, manualLayouts } = await createTestServices()
       const projectsManager = services.shared.workspace.ProjectsManager
 
-      const project = await projectsManager.registerProject({
+      const projectData = await projectsManager.registerProject({
         config: {
           name: 'test-project-2',
           manualLayouts: {
@@ -188,6 +190,8 @@ describe.concurrent('LikeC4ManualLayouts', () => {
         },
         folderUri: URI.file('/test/workspace/src/test-project-2'),
       })
+
+      const project = projectsManager.getProject(projectData.id)
 
       vi.mocked(fs.scanDirectory).mockResolvedValue([])
 
@@ -266,7 +270,7 @@ describe.concurrent('LikeC4ManualLayouts', () => {
       const { services, fs, manualLayouts } = await createTestServices()
       const projectsManager = services.shared.workspace.ProjectsManager
 
-      const project = await projectsManager.registerProject({
+      const projectData = await projectsManager.registerProject({
         config: {
           name: 'test-project-2',
           manualLayouts: {
@@ -275,6 +279,8 @@ describe.concurrent('LikeC4ManualLayouts', () => {
         },
         folderUri: URI.file('/test/workspace/src/test-project-2'),
       })
+
+      const project = projectsManager.getProject(projectData.id)
 
       const layoutedView = createMockView()
 

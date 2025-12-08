@@ -25,9 +25,10 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
   /**
    * Reads the directory information for the given URI.
    * @param options.recursive If true, recursively reads the directory,
+   * @param options.maxDepth Maximum depth to traverse when recursive is true (default: Infinity)
    * @default true
    */
-  readDirectory(uri: URI, options?: { recursive?: boolean }): Promise<FileSystemNode[]>
+  readDirectory(uri: URI, options?: { recursive?: boolean; maxDepth?: number }): Promise<FileSystemNode[]>
 
   /**
    * Finds all files in the given directory, matching the given filter.

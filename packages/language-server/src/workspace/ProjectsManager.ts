@@ -1,7 +1,9 @@
 import {
+  type IncludeConfig,
   type LikeC4ProjectConfig,
   type LikeC4ProjectConfigInput,
   isLikeC4Config,
+  normalizeIncludeConfig,
   validateProjectConfig,
 } from '@likec4/config'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
@@ -58,12 +60,28 @@ interface ProjectData {
   folder: ProjectFolder // URI.toString()
   folderUri: URI
   exclude?: (path: string) => boolean
+  /**
+   * Resolved include paths with both URI and folder string representations.
+   * These are additional directories that are part of this project.
+   */
+  includePaths?: Array<{
+    uri: URI
+    folder: ProjectFolder
+  }>
+  /**
+   * Normalized include configuration (paths, maxDepth, fileThreshold).
+   */
+  includeConfig: IncludeConfig
 }
 
 export interface Project {
   id: scalar.ProjectId
   folderUri: URI
   config: LikeC4ProjectConfig
+  /**
+   * Resolved include paths as URIs (if configured).
+   */
+  includePaths?: URI[]
 }
 
 const DefaultProject = {
@@ -73,6 +91,7 @@ const DefaultProject = {
     exclude: ['**/node_modules/**'],
   },
   exclude: picomatch('**/node_modules/**', { dot: true }),
+  includeConfig: { paths: [], maxDepth: 3, fileThreshold: 30 } as IncludeConfig,
 }
 
 export class ProjectsManager {
@@ -154,6 +173,7 @@ export class ProjectsManager {
           folder: ProjectFolder(folderUri),
           folderUri,
           exclude: DefaultProject.exclude,
+          includeConfig: DefaultProject.includeConfig,
         }
       }
       this.#defaultProject = project
@@ -197,14 +217,12 @@ export class ProjectsManager {
         folderUri,
       }
     }
-    const {
-      config,
-      folderUri,
-    } = nonNullable(this.#projects.find(p => p.id === id), `Project "${id}" not found`)
+    const project = nonNullable(this.#projects.find(p => p.id === id), `Project "${id}" not found`)
     return {
       id,
-      folderUri,
-      config,
+      folderUri: project.folderUri,
+      config: project.config,
+      ...(project.includePaths && { includePaths: project.includePaths.map(p => p.uri) }),
     }
   }
 
@@ -324,11 +342,13 @@ export class ProjectsManager {
         logger.warn`Project "${config.name}" already exists, generating unique ID`
       }
       id = this.uniqueProjectId(config.name)
+      const includeConfig = normalizeIncludeConfig(config.include)
       project = {
         id,
         config,
         folder,
         folderUri: URI.parse(folder),
+        includeConfig,
       }
       // if there is any project within subfolder or parent folder
       // we need to reset assigned to documents project IDs
@@ -355,6 +375,8 @@ export class ProjectsManager {
         logger.info`update project ${project.id} on config change`
       }
       project.config = config
+      const includeConfig = normalizeIncludeConfig(config.include)
+      project.includeConfig = includeConfig
     }
 
     // Reset cached default project
@@ -366,13 +388,67 @@ export class ProjectsManager {
       project.exclude = picomatch(config.exclude, { dot: true })
     }
 
+    // Resolve include paths relative to project folder
+    if (project.includeConfig.paths && hasAtLeast(project.includeConfig.paths, 1)) {
+      project.includePaths = project.includeConfig.paths.map(includePath => {
+        const resolvedPath = joinRelativeURL(project.folderUri.path, includePath)
+        const uri = project.folderUri.with({ path: resolvedPath })
+        return {
+          uri,
+          folder: ProjectFolder(uri),
+        }
+      })
+      logger.debug`project ${project.id} include paths: ${project.includePaths.map(p => p.uri.fsPath).join(', ')}`
+
+      // Check for overlapping include paths with other projects
+      for (const includePath of project.includePaths) {
+        // Check if this include path overlaps with another project's folder
+        for (const otherProject of this.#projects) {
+          if (otherProject.id === project.id) continue
+
+          if (
+            includePath.folder.startsWith(otherProject.folder) || otherProject.folder.startsWith(includePath.folder)
+          ) {
+            logger.warn(
+              'Project "{projectId}" include path "{includePath}" overlaps with project "{otherProjectId}" folder. ' +
+                'Files in overlapping areas will only belong to one project.',
+              { projectId: project.id, includePath: includePath.folder, otherProjectId: otherProject.id },
+            )
+          }
+
+          // Check if this include path overlaps with another project's include paths
+          if (otherProject.includePaths) {
+            for (const otherIncludePath of otherProject.includePaths) {
+              if (
+                includePath.folder.startsWith(otherIncludePath.folder)
+                || otherIncludePath.folder.startsWith(includePath.folder)
+              ) {
+                logger.warn(
+                  'Project "{projectId}" include path "{includePath}" overlaps with project "{otherProjectId}" ' +
+                    'include path "{otherIncludePath}". Files in overlapping areas will only belong to one project.',
+                  {
+                    projectId: project.id,
+                    includePath: includePath.folder,
+                    otherProjectId: otherProject.id,
+                    otherIncludePath: otherIncludePath.folder,
+                  },
+                )
+              }
+            }
+          }
+        }
+      }
+    } else {
+      delete project.includePaths
+    }
+
     this.#projectIdToFolder.set(project.id, folder)
 
     // Reset assigned project IDs if no projects reload is active
     if (mustReset && !this.#activeReload) {
       await this.rebuidProject(project.id).catch(error => {
         logger.warn('Failed to rebuild project {projectId} after config change', {
-          projectId: project!.id,
+          projectId: project.id,
           error,
         })
       })
@@ -497,16 +573,22 @@ export class ProjectsManager {
     }
     const log = logger.getChild(project.id)
     const folder = project.folder
+    const includePathStrings = project.includePaths?.map(p => p.folder) ?? []
     const docs = this.services.workspace.LangiumDocuments
       .all
       .filter(doc => {
         if (project.exclude?.(doc.uri.path)) {
           return false
         }
-        if (doc.uri.toString().startsWith(folder)) {
+        const docUriStr = doc.uri.toString()
+        if (docUriStr.startsWith(folder)) {
           return true
         }
-        const docdir = withTrailingSlash(joinRelativeURL(doc.uri.toString(), '..'))
+
+        if (includePathStrings.some(includePath => docUriStr.startsWith(includePath))) {
+          return true
+        }
+        const docdir = withTrailingSlash(joinRelativeURL(docUriStr, '..'))
         return docdir.startsWith(folder) || folder.startsWith(docdir)
       })
       .map(d => d.uri)
@@ -529,8 +611,20 @@ export class ProjectsManager {
   protected findProjectForDocument(documentUri: string): ProjectData {
     return this.mappingsToProject.get(documentUri, () => {
       const project = this.#projects.find(({ folder }) => documentUri.startsWith(folder))
+      if (project) {
+        return project
+      }
+
+      const projectWithInclude = this.#projects.find(({ includePaths }) => {
+        if (!includePaths) return false
+        return includePaths.some(includePath => documentUri.startsWith(includePath.folder))
+      })
+      if (projectWithInclude) {
+        return projectWithInclude
+      }
+
       // If the document is not part of any project, assign it to the global project ID
-      return project ?? this.default
+      return this.default
     })
   }
 
@@ -546,6 +640,34 @@ export class ProjectsManager {
    */
   protected get documentBelongsTo(): WorkspaceCache<LangiumDocument, ProjectData> {
     return memoizeProp(this, '_documentBelongsTo', () => new WorkspaceCache(this.services))
+  }
+
+  /**
+   * Returns all include paths from all projects.
+   * Used by WorkspaceManager to scan additional directories for C4 files.
+   */
+  getAllIncludePaths(): Array<{
+    projectId: scalar.ProjectId
+    includePath: URI
+    includeConfig: IncludeConfig
+  }> {
+    const result: Array<{
+      projectId: scalar.ProjectId
+      includePath: URI
+      includeConfig: IncludeConfig
+    }> = []
+    for (const project of this.#projects) {
+      if (project.includePaths) {
+        for (const includePath of project.includePaths) {
+          result.push({
+            projectId: project.id,
+            includePath: includePath.uri,
+            includeConfig: project.includeConfig,
+          })
+        }
+      }
+    }
+    return result
   }
 
   private getWorkspaceFolder(): URI {

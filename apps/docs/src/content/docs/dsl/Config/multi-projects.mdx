@@ -63,7 +63,93 @@ At the moment, the following limitations apply:
 
 ## Share specification
 
-At the moment, the only way to share specification (or any other parts of the model) is to use symlinks:
+You can share specification files (or any other LikeC4 sources) across multiple projects using the `include` configuration option.
+
+### Using include paths
+
+Add an `include` array to your project configuration to include files from directories outside the project folder:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "cloud",
+  "include": ["../shared"]
+}
+```
+
+<FileTree>
+- shared
+  - specs.c4
+  - common-styles.c4
+- cloud
+  - likec4.config.json
+  - services.c4
+  - ...
+- externals
+  - likec4.config.json
+  - amazon.c4
+  - ...
+</FileTree>
+
+Both `cloud` and `externals` projects can include the shared specification:
+
+```json title="cloud/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "cloud",
+  "include": {
+    "paths": ["../shared"]
+  }
+}
+```
+
+```json title="externals/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "externals",
+  "include": {
+    "paths": ["../shared"]
+  }
+}
+```
+
+### Include configuration
+
+The `include` configuration accepts an object with the following properties:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "my-project",
+  "include": {
+    "paths": ["../shared", "../common/specs"],
+    "maxDepth": 5,
+    "fileThreshold": 50
+  }
+}
+```
+
+- **`paths`** - Array of relative directory paths (required)
+- **`maxDepth`** - Maximum directory depth to scan (default: 3, range: 1-20)
+- **`fileThreshold`** - Warn if more than this many files are loaded (default: 30)
+
+<Aside type='tip' title="Performance optimization">
+Use `maxDepth` to limit deep directory traversal, and `fileThreshold` to detect when you're accidentally including large directories.  
+If you see warnings about slow loading, consider reducing `maxDepth` or being more specific with your include paths.
+</Aside>
+
+<Aside type='tip' title="Path resolution">
+Include paths are relative to the project folder (the folder containing the config file).  
+LikeC4 recursively scans the included directories for `.c4` files.
+</Aside>
+
+<Aside type='caution' title="Path requirements">
+Include paths must be relative paths. Absolute paths, drive letters (like `C:\`), and URLs are not allowed.
+</Aside>
+
+### Using symlinks (alternative)
+
+Alternatively, you can use symlinks to share files:
 
 <FileTree>
 - shared
@@ -77,3 +163,7 @@ At the moment, the only way to share specification (or any other parts of the mo
   - likec4.config.json
   - ...
 </FileTree>
+
+<Aside type='note'>
+The `include` configuration is generally preferred over symlinks as it's more portable and easier to manage.
+</Aside>

@@ -30,6 +30,10 @@
         "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
       }
     },
+    "include": {
+      "description": "Configuration for including additional LikeC4 source files from other directories.\nExample: { \"paths\": [\"../shared\", \"../common/specs\"], \"maxDepth\": 5, \"fileThreshold\": 50 }",
+      "$ref": "#/$defs/include-config"
+    },
     "styles": {
       "$ref": "#/$defs/StylesConfiguration"
     },
@@ -48,6 +52,40 @@
     "name"
   ],
   "$defs": {
+    "include-config": {
+      "id": "include-config",
+      "description": "Configuration for including additional LikeC4 source files",
+      "type": "object",
+      "properties": {
+        "paths": {
+          "description": "Additional relative directory paths to include LikeC4 source files from, searched recursively.\nPaths are relative to the project folder (the folder containing this config file).\nExample: [\"../shared\", \"../common/specs\"]",
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
+          }
+        },
+        "maxDepth": {
+          "description": "Maximum directory depth to scan when searching for .c4 files in include paths.\nPrevents excessive scanning of deeply nested directories.\nDefault: 3",
+          "default": 3,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "fileThreshold": {
+          "description": "Maximum number of files to load from include paths before warning.\nHelps identify performance issues from accidentally including large directories.\nDefault: 30",
+          "default": 30,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "paths"
+      ]
+    },
     "StylesConfiguration": {
       "id": "StylesConfiguration",
       "description": "Project styles customization",
