@@ -288,8 +288,8 @@ catalogs:
       specifier: 6.1.4
       version: 6.1.4
     package-manager-detector:
-      specifier: 1.5.0
-      version: 1.5.0
+      specifier: 1.6.0
+      version: 1.6.0
     package-up:
       specifier: ^5.0.0
       version: 5.0.0
@@ -1664,7 +1664,7 @@ importers:
         version: 6.2.0
       package-manager-detector:
         specifier: catalog:utils
-        version: 1.5.0
+        version: 1.6.0
       package-up:
         specifier: catalog:utils
         version: 5.0.0
@@ -7268,9 +7268,6 @@ packages:
 
   package-json-from-dist@1.0.1:
     resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
-
-  package-manager-detector@1.5.0:
-    resolution: {integrity: sha512-uBj69dVlYe/+wxj8JOpr97XfsxH/eumMt6HqjNTmJDf/6NO9s+0uxeOneIz3AsPt2m6y9PqzDzd3ATcU17MNfw==}
 
   package-manager-detector@1.6.0:
     resolution: {integrity: sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA==}
@@ -16008,8 +16005,6 @@ snapshots:
   p-try@2.2.0: {}
 
   package-json-from-dist@1.0.1: {}
-
-  package-manager-detector@1.5.0: {}
 
   package-manager-detector@1.6.0: {}
 
