@@ -28,6 +28,12 @@ export {
 } from './LikeC4ModelProvider'
 
 export {
+  type LikeC4EditorPort,
+  LikeC4EditorProvider,
+  type LikeC4EditorProviderProps,
+} from './editor/LikeC4EditorProvider'
+
+export {
   LikeC4ProjectsProvider,
   type LikeC4ProjectsProviderProps,
 } from './LikeC4ProjectsProvider'

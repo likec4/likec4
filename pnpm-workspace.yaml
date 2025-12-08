@@ -7,8 +7,8 @@ packages:
 
 catalog:
   "@dagrejs/dagre": 1.1.8
-  "@types/node": ~20.19.22
-  graphology: ^0.25.4
+  "@types/node": ~22.13.17
+  graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
   oxlint: 1.31.0
@@ -27,23 +27,22 @@ catalogMode: prefer
 
 catalogs:
   astro:
-    "@astrojs/check": ^0.9.5
+    "@astrojs/check": ^0.9.6
     "@astrojs/react": 4.4.2
-    "@astrojs/starlight": 0.36.2
+    "@astrojs/starlight": 0.37.0
     "@astrojs/starlight-tailwind": ^4.0.2
     "@expressive-code/plugin-collapsible-sections": ^0.41.3
     "@expressive-code/plugin-line-numbers": ^0.41.3
-    astro: 5.16.0
+    astro: 5.16.4
     astro-og-canvas: ^0.7.2
     shiki: ^3.15.0
     starlight-heading-badges: ^0.6.1
     starlight-image-zoom: ^0.13.2
-    starlight-links-validator: ^0.19.1
+    starlight-links-validator: ^0.19.2
     starlight-package-managers: ^0.11.1
-    starlight-toc-overview-customizer: ^0.1.1
   cloudflare:
-    "@cloudflare/vite-plugin": 1.15.2
-    wrangler: ~4.50.0
+    "@cloudflare/vite-plugin": 1.16.1
+    wrangler: ~4.52.1
   css:
     "@pandacss/dev": ^1.6.1
     "@pandacss/preset-panda": ^1.6.1
@@ -147,7 +146,7 @@ catalogs:
     "@vitest/ui": 4.0.15
     vitest: 4.0.15
   vscode:
-    "@types/vscode": ^1.84.0
+    "@types/vscode": ^1.106.1
     vscode-jsonrpc: 8.2.1
     vscode-languageclient: 9.0.1
     vscode-languageserver: 9.0.1
@@ -160,8 +159,8 @@ catalogs:
     "@xstate/react": 6.0.0
     xstate: 5.24.0
   xyflow:
-    "@xyflow/react": 12.9.3
-    "@xyflow/system": 0.0.73
+    "@xyflow/react": 12.10.0
+    "@xyflow/system": 0.0.74
   zod4:
     zod: ^4.1.13
 

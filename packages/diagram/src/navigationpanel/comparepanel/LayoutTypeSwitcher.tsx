@@ -12,8 +12,8 @@ export function LayoutTypeSwitcher({
   onChange: (layout: LayoutType) => void
 }) {
   const data = useMemo((): SegmentedControlItem[] => [
-    { value: 'manual', label: 'Saved' },
-    { value: 'auto', label: 'Latest' },
+    { value: 'manual', label: 'Saved manual' },
+    { value: 'auto', label: 'Latest auto' },
   ], [])
   return (
     <m.div layout="position">

@@ -1,12 +1,12 @@
 import type {
   ActorSystem,
 } from 'xstate'
+import type { EditorActorRef } from '../../editor/editorActor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type {
   DiagramMachineRef,
 } from './machine'
-import type { SyncLayoutActorRef } from './syncManualLayoutActor'
 
 export type NodeWithData = { id: string; data: Record<string, unknown> }
 
@@ -15,7 +15,7 @@ export type System = ActorSystem<{
     diagram: DiagramMachineRef
     overlays: OverlaysActorRef
     search: SearchActorRef
-    syncLayout: SyncLayoutActorRef
+    editor: EditorActorRef
   }
 }>
 

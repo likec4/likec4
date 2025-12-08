@@ -86,6 +86,7 @@ export function createViewChange(
 
   const snapshot: LayoutedView = {
     ...view,
+    _layout: 'manual',
     bounds: calcViewBounds({ nodes, edges }),
     nodes,
     edges,

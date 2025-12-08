@@ -51,10 +51,9 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
 }
 
 const selectXYProps = ({ context: ctx, children }: DiagramActorSnapshot) => {
-  const toggledFeatures = ctx.toggledFeatures
   const { enableReadOnly } = deriveToggledFeatures(ctx)
 
-  const isNotEditingEdge = enableReadOnly || children.syncLayout?.getSnapshot().context.editing !== 'edge'
+  const isNotEditingEdge = enableReadOnly || children.editor?.getSnapshot().context.editing !== 'edge'
 
   return ({
     enableReadOnly,

@@ -43,6 +43,7 @@ export {
   ifind,
   ifirst,
   iflat,
+  iflatMap,
   ihead,
   imap,
   ireduce,

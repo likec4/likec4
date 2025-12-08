@@ -1,5 +1,5 @@
 import type { StepEdgeId } from '@likec4/core'
-import { enqueueActions, log, raise } from 'xstate/actions'
+import { enqueueActions, raise } from 'xstate/actions'
 import { and, or } from 'xstate/guards'
 import {
   assignFocusedNode,

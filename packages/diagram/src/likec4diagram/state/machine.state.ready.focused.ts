@@ -1,5 +1,5 @@
 import type { NodeId } from '@likec4/core'
-import { raise } from 'xstate/actions'
+import { assign, raise } from 'xstate/actions'
 import { and } from 'xstate/guards'
 import {
   assignFocusedNode,
@@ -39,7 +39,7 @@ export const focused = machine.createStateConfig({
     undimEverything(),
     returnViewportBefore(),
     cancelAutoUnfocusTimer(),
-    machine.assign({
+    assign({
       focusedNode: null,
       autoUnfocusTimer: false,
     }),

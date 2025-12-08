@@ -225,14 +225,10 @@ function makeRelativeEdgeModifier(
         max: 1,
       })
 
-      const newP = p
+      return p
         .add(d.multiply(coeff))
         .round()
-
-      return {
-        x: newP.x,
-        y: newP.y,
-      }
+        .toObject()
     }
 
     return {

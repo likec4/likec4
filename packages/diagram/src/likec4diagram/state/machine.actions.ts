@@ -7,9 +7,11 @@ import {
 } from '@likec4/core'
 import type {
   DiagramNode,
+  DiagramView,
   Fqn,
   LayoutType,
   NodeId,
+  ViewChange,
   ViewId,
 } from '@likec4/core/types'
 import { type Rect, nodeToRect } from '@xyflow/system'
@@ -20,6 +22,7 @@ import {
 } from 'xstate'
 import { Base } from '../../base'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
+import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
 import { createLayoutConstraints } from '../useLayoutConstraints'
 import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
@@ -140,10 +143,25 @@ export const updateInputs = () =>
     return { ...event.inputs }
   })
 
-export const updateXYNodesEdges = () =>
+export const assignXYDataFromView = (view?: DiagramView) =>
   machine.assign(({ context, event }) => {
-    assertEvent(event, 'update.view')
-    const update = mergeXYNodesEdges(context, event)
+    let xydata
+    if (view) {
+      xydata = convertToXYFlow({
+        dynamicViewVariant: context.dynamicViewVariant,
+        view,
+        where: context.where,
+      })
+    } else {
+      assertEvent(event, 'update.view')
+      xydata = 'xynodes' in event ? event : convertToXYFlow({
+        dynamicViewVariant: context.dynamicViewVariant,
+        view: event.view,
+        where: context.where,
+      })
+    }
+
+    const update = mergeXYNodesEdges(context, xydata)
 
     let { lastClickedNode, focusedNode, activeWalkthrough } = context
     if (lastClickedNode || focusedNode || activeWalkthrough) {
@@ -290,16 +308,24 @@ export const emitEdgeClick = () =>
     }
   })
 
-export const emitOnChange = () =>
+export const triggerChange = (viewChange?: ViewChange) =>
   machine.enqueueActions(({ event, enqueue }) => {
-    assertEvent(event, 'emit.onChange')
+    let change = viewChange
+    if (!change) {
+      assertEvent(event, 'trigger.change')
+      change = event.change
+    }
+
     enqueue.assign({
       viewportChangedManually: true,
     })
-    enqueue.emit({
-      type: 'onChange',
-      change: event.change,
-    })
+    enqueue.sendTo(
+      typedSystem.editorActor,
+      {
+        type: 'change',
+        change,
+      },
+    )
   })
 
 export const emitOnLayoutTypeChange = () =>
@@ -324,11 +350,9 @@ export const emitOnLayoutTypeChange = () =>
     if (context.toggledFeatures.enableCompareWithLatest === true) {
       // Check if we are switching from manual to auto layout while a sync is pending
       if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
-        const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-        const isPending = syncLayoutActor && syncLayoutActor.getSnapshot().hasTag('pending')
-        if (isPending) {
-          enqueue.sendTo(syncLayoutActor, { type: 'cancel' })
-        }
+        typedSystem(system).editorActorRef?.send({
+          type: 'cancel',
+        })
       }
 
       const currentViewport = context.viewport
@@ -467,7 +491,7 @@ export const assignToggledFeatures = () =>
 // SendTo actions that don't depend on others
 export const closeSearch = () =>
   machine.sendTo(
-    ({ system }) => typedSystem(system).searchActorRef!,
+    typedSystem.searchActor,
     {
       type: 'close',
     },
@@ -475,35 +499,35 @@ export const closeSearch = () =>
 
 export const closeAllOverlays = () =>
   machine.sendTo(
-    ({ system }) => typedSystem(system).overlaysActorRef!,
+    typedSystem.overlaysActor,
     {
       type: 'close.all',
     },
   )
 
-export const stopSyncLayout = () =>
+export const stopEditorActor = () =>
   machine.enqueueActions(({ enqueue, system }) => {
-    const syncLayoutActor = typedSystem(system).syncLayoutActorRef
-    if (!syncLayoutActor) return
-    enqueue.stopChild(syncLayoutActor)
+    const actor = typedSystem(system).editorActorRef
+    if (!actor) return
+    enqueue.stopChild(actor)
   })
 
 /**
  * Ensure that the sync layout actor is running or stopped based on the read-only state
  */
-export const ensureSyncLayoutActor = () =>
-  machine.enqueueActions(({ context, enqueue, system, check }) => {
-    const isReadOnly = check('enabled: Readonly')
-    const syncLayoutActor = typedSystem(system).syncLayoutActorRef
+export const ensureEditorActor = () =>
+  machine.enqueueActions(({ enqueue, context, system, check }) => {
+    const hasEditor = check('enabled: Editor')
+    const editor = typedSystem(system).editorActorRef
     // Check if the context is read-only
-    if (isReadOnly && syncLayoutActor) {
-      enqueue.stopChild(syncLayoutActor)
+    if (!hasEditor && editor) {
+      enqueue.stopChild(editor)
       return
     }
-    if (!isReadOnly && !syncLayoutActor) {
-      enqueue.spawnChild('syncManualLayoutActorLogic', {
-        id: 'syncLayout',
-        systemId: 'syncLayout',
+    if (hasEditor && !editor) {
+      enqueue.spawnChild('editorActor', {
+        id: 'editor',
+        systemId: 'editor',
         input: {
           viewId: context.view.id,
         },
@@ -514,16 +538,16 @@ export const ensureSyncLayoutActor = () =>
 
 export const startEditing = (subject: 'node' | 'edge' = 'node') =>
   machine.sendTo(
-    ({ system }) => typedSystem(system).syncLayoutActorRef!,
+    typedSystem.editorActor,
     {
-      type: 'editing.start',
+      type: 'edit.start',
       subject,
     },
   )
 
 export const sendSynced = () =>
   machine.sendTo(
-    ({ system }) => typedSystem(system).syncLayoutActorRef!,
+    typedSystem.editorActor,
     {
       type: 'synced',
     },
@@ -531,16 +555,16 @@ export const sendSynced = () =>
 
 export const stopEditing = (wasChanged = true) =>
   machine.sendTo(
-    ({ system }) => typedSystem(system).syncLayoutActorRef!,
+    typedSystem.editorActor,
     {
-      type: 'editing.stop',
+      type: 'edit.finish',
       wasChanged,
     },
   )
 
 export const cancelEditing = () =>
   machine.sendTo(
-    ({ system }) => typedSystem(system).syncLayoutActorRef!,
+    typedSystem.editorActor,
     {
       type: 'cancel',
     },
@@ -550,7 +574,7 @@ const hasModelFqn = <D extends Types.Node>(node: D): node is D & { data: { model
   'modelFqn' in node.data && isTruthy(node.data.modelFqn)
 
 export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | undefined }) =>
-  machine.enqueueActions(({ context, event, enqueue, system }) => {
+  machine.enqueueActions(({ context, event, enqueue }) => {
     let initiatedFrom = null as null | {
       node: NodeId
       clientRect: Rect
@@ -610,7 +634,7 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
     }
 
     enqueue.sendTo(
-      typedSystem(system).overlaysActorRef!,
+      typedSystem.overlaysActor,
       {
         type: 'open.elementDetails' as const,
         subject: subject,
@@ -621,7 +645,7 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
   })
 
 export const openOverlay = () =>
-  machine.enqueueActions(({ context, event, enqueue, system, check }) => {
+  machine.enqueueActions(({ context, event, enqueue, check }) => {
     assertEvent(event, ['open.relationshipsBrowser', 'open.relationshipDetails', 'open.elementDetails'])
 
     if (!check('enabled: Overlays')) {
@@ -639,7 +663,7 @@ export const openOverlay = () =>
 
       case 'open.relationshipsBrowser': {
         enqueue.sendTo(
-          typedSystem(system).overlaysActorRef!,
+          typedSystem.overlaysActor,
           {
             type: 'open.relationshipsBrowser',
             subject: event.fqn,
@@ -654,7 +678,7 @@ export const openOverlay = () =>
       }
       case 'open.relationshipDetails': {
         enqueue.sendTo(
-          typedSystem(system).overlaysActorRef!,
+          typedSystem.overlaysActor,
           {
             type: 'open.relationshipDetails',
             viewId: context.view.id,
@@ -760,7 +784,7 @@ export const onEdgeMouseLeave = () =>
     })
   })
 
-export const reraise = () => machine.raise(({ event }) => event, { delay: 10 })
+export const reraise = () => machine.raise(({ event }) => event, { delay: 50 })
 
 export const startHotKeyActor = () => machine.spawnChild('hotkeyActorLogic', { id: 'hotkey' })
 export const stopHotKeyActor = () => machine.stopChild('hotkey')
@@ -884,9 +908,9 @@ export const updateView = () =>
         return
       }
 
-      enqueue(updateXYNodesEdges())
+      enqueue(assignXYDataFromView())
 
-      if (event.source === 'internal') {
+      if (event.source === 'editor') {
         return
       }
 

@@ -1,5 +1,5 @@
 import { css } from '@likec4/styles/css'
-import { type MantineThemeOverride, createTheme, Portal } from '@mantine/core'
+import { type MantineThemeOverride, createTheme, Portal, Tooltip } from '@mantine/core'
 import {
   useColorScheme as usePreferredColorScheme,
   useDebouncedCallback,
@@ -34,6 +34,11 @@ export const DefaultTheme = createTheme({
     Portal: Portal.extend({
       defaultProps: {
         reuseTargetNode: true,
+      },
+    }),
+    Tooltip: Tooltip.extend({
+      defaultProps: {
+        color: 'dark',
       },
     }),
   },

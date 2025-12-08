@@ -58,6 +58,29 @@ import { defineTextStyles } from '@pandacss/dev'
 // })
 
 export const textStyles = defineTextStyles({
+  dimmed: {
+    xxs: {
+      value: {
+        fontSize: '0.625rem',
+        lineHeight: '1rem',
+        color: 'text.dimmed',
+      },
+    },
+    xs: {
+      value: {
+        fontSize: '0.75rem',
+        lineHeight: '1rem',
+        color: 'text.dimmed',
+      },
+    },
+    sm: {
+      value: {
+        fontSize: '0.875rem',
+        lineHeight: '1.25rem',
+        color: 'text.dimmed',
+      },
+    },
+  },
   xxs: {
     value: {
       fontSize: '0.625rem',

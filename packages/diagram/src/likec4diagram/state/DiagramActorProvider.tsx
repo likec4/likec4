@@ -9,12 +9,12 @@ import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { type EnabledFeatures, DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { CurrentViewModelContext } from '../../context/LikeC4ModelContext'
+import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
 import { DiagramActorContextProvider, DiagramApiContextProvider } from '../../hooks/safeContext'
 import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
-import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
 import { makeDiagramApi } from './diagram-api'
 import { diagramMachine } from './machine'
@@ -43,8 +43,14 @@ export function DiagramActorProvider({
 }>) {
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
+  const editorActor = useEditorActorLogic(view.id)
+
   const actor = useActorRef(
-    diagramMachine,
+    diagramMachine.provide({
+      actors: {
+        editorActor,
+      },
+    }),
     {
       id: `diagram`,
       systemId: 'diagram',
@@ -57,6 +63,7 @@ export function DiagramActorProvider({
         fitViewPadding,
         nodesDraggable,
         nodesSelectable,
+        where,
         dynamicViewVariant: _defaultVariant,
       },
     },
@@ -95,9 +102,9 @@ export function DiagramActorProvider({
     () =>
       actor.send({
         type: 'update.inputs',
-        inputs: { zoomable, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
+        inputs: { zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
       }),
-    [zoomable, pannable, fitViewPadding, actor, nodesDraggable, nodesSelectable],
+    [zoomable, where, pannable, fitViewPadding, actor, nodesDraggable, nodesSelectable],
   )
 
   useUpdateEffect(() => {
@@ -105,15 +112,22 @@ export function DiagramActorProvider({
     actor.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
   }, [_defaultVariant, actor])
 
+  useRafEffect(
+    () => actor.send({ type: 'update.view', view, source: 'external' }),
+    [actor, view],
+  )
+
   return (
     <DiagramActorContextProvider value={actor}>
       <DiagramApiContextProvider value={api}>
         <ErrorBoundary>
-          <DiagramXYFlowSyncProvider
+          {
+            /* <DiagramXYFlowSyncProvider
             view={view}
             where={where}
             actorRef={actor}
-          />
+          /> */
+          }
           <CurrentViewModelProvider actorRef={actor}>
             {children}
           </CurrentViewModelProvider>
@@ -189,27 +203,27 @@ function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ ac
   )
 }
 
-const selectFromActor2 = (state: DiagramActorSnapshot) => {
-  return state.context.dynamicViewVariant
-}
-function DiagramXYFlowSyncProvider(
-  { view, where, actorRef }: {
-    view: DiagramView
-    where: WhereOperator | null
-    actorRef: DiagramActorRef
-  },
-) {
-  const dynamicViewVariant = useSelector(actorRef, selectFromActor2)
+// const selectFromActor2 = (state: DiagramActorSnapshot) => {
+//   return state.context.dynamicViewVariant
+// }
+// function DiagramXYFlowSyncProvider(
+//   { view, where, actorRef }: {
+//     view: DiagramView
+//     where: WhereOperator | null
+//     actorRef: DiagramActorRef
+//   },
+// ) {
+//   const dynamicViewVariant = useSelector(actorRef, selectFromActor2)
 
-  useRafEffect(() => {
-    actorRef.send({
-      type: 'update.view',
-      ...convertToXYFlow({ view, where, dynamicViewVariant }),
-    })
-  }, [view, where, dynamicViewVariant, actorRef])
+//   useRafEffect(() => {
+//     actorRef.send({
+//       type: 'update.view',
+//       ...convertToXYFlow({ view, where, dynamicViewVariant }),
+//     })
+//   }, [view, where, dynamicViewVariant, actorRef])
 
-  return null
-}
+//   return null
+// }
 
 const DiagramActorEventListener = memo(() => {
   const diagram = useDiagram()
@@ -217,14 +231,14 @@ const DiagramActorEventListener = memo(() => {
   const {
     onNavigateTo,
     onOpenSource,
-    onChange,
+    // onChange,
     onLayoutTypeChange,
     handlersRef,
   } = useDiagramEventHandlers()
 
   useOnDiagramEvent('openSource', ({ params }) => onOpenSource?.(params))
   useOnDiagramEvent('navigateTo', ({ viewId }) => onNavigateTo?.(viewId))
-  useOnDiagramEvent('onChange', ({ change }) => onChange?.({ change }))
+  // useOnDiagramEvent('onChange', ({ change }) => onChange?.({ change }))
   useOnDiagramEvent('onLayoutTypeChange', ({ layoutType }) => {
     onLayoutTypeChange?.(layoutType)
   })

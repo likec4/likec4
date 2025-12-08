@@ -14,6 +14,7 @@
   },
   "include": [
     "src",
+    "src/**/*.json"
   ],
   "exclude": [
     "src/bundle/react-dom-server-mock.ts"

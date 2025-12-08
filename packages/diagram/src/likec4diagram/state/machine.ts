@@ -2,6 +2,7 @@ import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import type { ActorRef, MachineSnapshot, StateMachine } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
+import type { EditorActorRef } from '../../editor/editorActor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import {
@@ -11,9 +12,10 @@ import {
 import {
   assignDynamicViewVariant,
   cancelFitDiagram,
-  emitOnChange,
   emitOnLayoutTypeChange,
-  stopSyncLayout,
+  raiseUpdateView,
+  stopEditorActor,
+  triggerChange,
   updateFeatures,
   updateInputs,
 } from './machine.actions'
@@ -28,7 +30,6 @@ import { initializing, isReady } from './machine.state.initializing'
 import { navigating } from './machine.state.navigating'
 import { ready } from './machine.state.ready'
 import { DiagramToggledFeaturesPersistence } from './persistence'
-import type { SyncLayoutActorRef } from './syncManualLayoutActor'
 
 const _diagramMachine = machine.createMachine({
   initial: 'initializing',
@@ -73,7 +74,7 @@ const _diagramMachine = machine.createMachine({
     final: {
       type: 'final',
       entry: [
-        stopSyncLayout(),
+        stopEditorActor(),
         cancelFitDiagram(),
         stopChild('hotkey'),
         stopChild('overlays'),
@@ -100,7 +101,11 @@ const _diagramMachine = machine.createMachine({
       actions: assign(updateEdgeData),
     },
     'switch.dynamicViewVariant': {
-      actions: assignDynamicViewVariant(),
+      guard: ({ context, event }) => context.dynamicViewVariant !== event.variant,
+      actions: [
+        assignDynamicViewVariant(),
+        raiseUpdateView(),
+      ],
     },
     'update.inputs': {
       actions: updateInputs(),
@@ -118,8 +123,8 @@ const _diagramMachine = machine.createMachine({
     'update.features': {
       actions: updateFeatures(),
     },
-    'emit.onChange': {
-      actions: emitOnChange(),
+    'trigger.change': {
+      actions: triggerChange(),
     },
     'emit.onLayoutTypeChange': {
       actions: emitOnLayoutTypeChange(),
@@ -158,7 +163,7 @@ export interface DiagramMachineLogic extends
     {
       overlays: OverlaysActorRef | undefined
       search: SearchActorRef | undefined
-      syncLayout: SyncLayoutActorRef | undefined
+      editor: EditorActorRef | undefined
     },
     any,
     any,
@@ -183,7 +188,7 @@ export type DiagramMachineSnapshot = MachineSnapshot<
   {
     overlays: OverlaysActorRef | undefined
     search: SearchActorRef | undefined
-    syncLayout: SyncLayoutActorRef | undefined
+    editor: EditorActorRef | undefined
   },
   any,
   any,
@@ -192,7 +197,7 @@ export type DiagramMachineSnapshot = MachineSnapshot<
   {}
 >
 
-export type DiagramMachineRef = ActorRef<DiagramMachineSnapshot, DiagramEvents, DiagramEmittedEvents>
+export interface DiagramMachineRef extends ActorRef<DiagramMachineSnapshot, DiagramEvents, DiagramEmittedEvents> {}
 
 export type {
   DiagramContext,

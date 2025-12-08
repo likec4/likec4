@@ -1,0 +1,708 @@
+{
+  "_type": "element",
+  "tags": null,
+  "links": null,
+  "_stage": "layouted",
+  "sourcePath": "model.c4",
+  "description": {
+    "md": "System _Landscape_"
+  },
+  "title": "Landscape",
+  "id": "index",
+  "autoLayout": {
+    "direction": "TB"
+  },
+  "hash": "a67967cf5bcec824d98631ff3c9ad5f1ac218148",
+  "bounds": {
+    "x": -2,
+    "y": -196,
+    "width": 1294,
+    "height": 1667
+  },
+  "nodes": [
+    {
+      "id": "customer",
+      "parent": null,
+      "level": 0,
+      "children": [],
+      "inEdges": [],
+      "outEdges": [
+        "edge7"
+      ],
+      "title": "Customer",
+      "modelRef": "customer",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "Uses services online"
+      },
+      "tags": [
+        "tag-1",
+        "tag-2"
+      ],
+      "kind": "el",
+      "x": 77,
+      "y": -186,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 90,
+        "y": 64,
+        "width": 141,
+        "height": 47
+      }
+    },
+    {
+      "id": "saas",
+      "parent": null,
+      "level": 0,
+      "children": [
+        "saas.frontend",
+        "saas.backend"
+      ],
+      "inEdges": [
+        "edge7"
+      ],
+      "outEdges": [
+        "edge5",
+        "edge6"
+      ],
+      "title": "SaaS Application",
+      "modelRef": "saas",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "Provides online services to customers"
+      },
+      "tags": [
+        "tag-1"
+      ],
+      "kind": "el",
+      "depth": 2,
+      "x": 8,
+      "y": 188,
+      "width": 910,
+      "height": 983,
+      "labelBBox": {
+        "x": 6,
+        "y": 0,
+        "width": 114,
+        "height": 15
+      }
+    },
+    {
+      "id": "saas.frontend",
+      "parent": "saas",
+      "level": 1,
+      "children": [
+        "saas.frontend.spa",
+        "saas.frontend.pwa"
+      ],
+      "inEdges": [
+        "edge7"
+      ],
+      "outEdges": [
+        "edge1",
+        "edge2"
+      ],
+      "title": "Frontend",
+      "modelRef": "saas.frontend",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "tags": [
+        "tag-2"
+      ],
+      "kind": "el",
+      "depth": 1,
+      "x": 48,
+      "y": 250,
+      "width": 830,
+      "height": 281,
+      "labelBBox": {
+        "x": 6,
+        "y": 0,
+        "width": 66,
+        "height": 15
+      }
+    },
+    {
+      "id": "saas.frontend.spa",
+      "parent": "saas.frontend",
+      "level": 2,
+      "children": [],
+      "inEdges": [],
+      "outEdges": [
+        "edge1"
+      ],
+      "title": "SPA",
+      "modelRef": "saas.frontend.spa",
+      "shape": "rectangle",
+      "color": "primary",
+      "icon": "tech:react",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "Single Page Application"
+      },
+      "tags": [
+        "tag-2"
+      ],
+      "kind": "app",
+      "x": 88,
+      "y": 311,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 67,
+        "y": 64,
+        "width": 216,
+        "height": 47
+      }
+    },
+    {
+      "id": "saas.frontend.pwa",
+      "parent": "saas.frontend",
+      "level": 2,
+      "children": [],
+      "inEdges": [],
+      "outEdges": [
+        "edge2"
+      ],
+      "title": "PWA",
+      "modelRef": "saas.frontend.pwa",
+      "shape": "rectangle",
+      "color": "primary",
+      "icon": "tech:react",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "Progressive Web Application"
+      },
+      "tags": [
+        "tag-2"
+      ],
+      "kind": "app",
+      "x": 518,
+      "y": 311,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 50,
+        "y": 64,
+        "width": 251,
+        "height": 47
+      }
+    },
+    {
+      "id": "saas.backend",
+      "parent": "saas",
+      "level": 1,
+      "children": [
+        "saas.backend.api",
+        "saas.backend.auth",
+        "saas.backend.worker"
+      ],
+      "inEdges": [
+        "edge1",
+        "edge2"
+      ],
+      "outEdges": [
+        "edge5",
+        "edge6"
+      ],
+      "title": "Backend",
+      "modelRef": "saas.backend",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "tags": [],
+      "kind": "el",
+      "depth": 1,
+      "x": 48,
+      "y": 550,
+      "width": 830,
+      "height": 581,
+      "labelBBox": {
+        "x": 6,
+        "y": 0,
+        "width": 61,
+        "height": 15
+      }
+    },
+    {
+      "id": "saas.backend.api",
+      "parent": "saas.backend",
+      "level": 2,
+      "children": [],
+      "inEdges": [
+        "edge1",
+        "edge2"
+      ],
+      "outEdges": [
+        "edge3",
+        "edge4",
+        "edge5"
+      ],
+      "title": "API",
+      "modelRef": "saas.backend.api",
+      "shape": "rectangle",
+      "color": "primary",
+      "icon": "tech:nodejs",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "REST API"
+      },
+      "tags": [
+        "tag-3"
+      ],
+      "kind": "el",
+      "x": 518,
+      "y": 611,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 111,
+        "y": 64,
+        "width": 128,
+        "height": 47
+      }
+    },
+    {
+      "id": "saas.backend.auth",
+      "parent": "saas.backend",
+      "level": 2,
+      "children": [],
+      "inEdges": [
+        "edge3"
+      ],
+      "outEdges": [],
+      "title": "Auth",
+      "modelRef": "saas.backend.auth",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "Authentication"
+      },
+      "tags": [],
+      "kind": "el",
+      "x": 88,
+      "y": 911,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 111,
+        "y": 64,
+        "width": 99,
+        "height": 47
+      }
+    },
+    {
+      "id": "saas.backend.worker",
+      "parent": "saas.backend",
+      "level": 2,
+      "children": [],
+      "inEdges": [
+        "edge4"
+      ],
+      "outEdges": [
+        "edge6"
+      ],
+      "title": "Worker",
+      "modelRef": "saas.backend.worker",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "Background processing"
+      },
+      "tags": [],
+      "kind": "el",
+      "x": 518,
+      "y": 911,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 80,
+        "y": 64,
+        "width": 160,
+        "height": 47
+      }
+    },
+    {
+      "id": "external",
+      "parent": null,
+      "level": 0,
+      "children": [
+        "external.database",
+        "external.email"
+      ],
+      "inEdges": [
+        "edge5",
+        "edge6"
+      ],
+      "outEdges": [],
+      "title": "External",
+      "modelRef": "external",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "External system"
+      },
+      "tags": [],
+      "kind": "el",
+      "depth": 1,
+      "x": 452,
+      "y": 1179,
+      "width": 830,
+      "height": 282,
+      "labelBBox": {
+        "x": 6,
+        "y": 0,
+        "width": 65,
+        "height": 15
+      }
+    },
+    {
+      "id": "external.database",
+      "parent": "external",
+      "level": 1,
+      "children": [],
+      "inEdges": [
+        "edge5"
+      ],
+      "outEdges": [],
+      "title": "Database",
+      "modelRef": "external.database",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "External database"
+      },
+      "tags": [],
+      "kind": "el",
+      "x": 922,
+      "y": 1241,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 98,
+        "y": 64,
+        "width": 125,
+        "height": 46
+      }
+    },
+    {
+      "id": "external.email",
+      "parent": "external",
+      "level": 1,
+      "children": [],
+      "inEdges": [
+        "edge6"
+      ],
+      "outEdges": [],
+      "title": "Email",
+      "modelRef": "external.email",
+      "shape": "rectangle",
+      "color": "primary",
+      "style": {
+        "opacity": 15,
+        "size": "md"
+      },
+      "description": {
+        "txt": "Email service"
+      },
+      "tags": [],
+      "kind": "el",
+      "x": 492,
+      "y": 1241,
+      "width": 320,
+      "height": 180,
+      "labelBBox": {
+        "x": 114,
+        "y": 64,
+        "width": 93,
+        "height": 46
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge1",
+      "source": "saas.frontend.spa",
+      "target": "saas.backend.api",
+      "label": null,
+      "points": [
+        [
+          376,
+          491
+        ],
+        [
+          428,
+          527
+        ],
+        [
+          488,
+          569
+        ],
+        [
+          541,
+          605
+        ]
+      ],
+      "parent": "saas",
+      "relations": [
+        "13i1g08"
+      ],
+      "color": "gray",
+      "line": "dashed",
+      "head": "normal"
+    },
+    {
+      "id": "edge2",
+      "source": "saas.frontend.pwa",
+      "target": "saas.backend.api",
+      "label": null,
+      "points": [
+        [
+          678,
+          491
+        ],
+        [
+          678,
+          525
+        ],
+        [
+          678,
+          565
+        ],
+        [
+          678,
+          601
+        ]
+      ],
+      "parent": "saas",
+      "relations": [
+        "ge7i31"
+      ],
+      "color": "gray",
+      "line": "dashed",
+      "head": "normal"
+    },
+    {
+      "id": "edge3",
+      "source": "saas.backend.api",
+      "target": "saas.backend.auth",
+      "label": null,
+      "points": [
+        [
+          550,
+          791
+        ],
+        [
+          498,
+          827
+        ],
+        [
+          438,
+          869
+        ],
+        [
+          385,
+          905
+        ]
+      ],
+      "parent": "saas.backend",
+      "relations": [
+        "1meqhc7"
+      ],
+      "color": "gray",
+      "line": "dashed",
+      "head": "normal"
+    },
+    {
+      "id": "edge4",
+      "source": "saas.backend.api",
+      "target": "saas.backend.worker",
+      "label": null,
+      "points": [
+        [
+          678,
+          791
+        ],
+        [
+          678,
+          825
+        ],
+        [
+          678,
+          865
+        ],
+        [
+          678,
+          901
+        ]
+      ],
+      "parent": "saas.backend",
+      "relations": [
+        "157fue6"
+      ],
+      "color": "gray",
+      "line": "dashed",
+      "head": "normal"
+    },
+    {
+      "id": "edge5",
+      "source": "saas.backend.api",
+      "target": "external.database",
+      "label": null,
+      "points": [
+        [
+          785,
+          791
+        ],
+        [
+          822,
+          826
+        ],
+        [
+          863,
+          868
+        ],
+        [
+          893,
+          911
+        ],
+        [
+          964,
+          1011
+        ],
+        [
+          1018,
+          1142
+        ],
+        [
+          1049,
+          1231
+        ]
+      ],
+      "parent": null,
+      "relations": [
+        "szkzi3"
+      ],
+      "color": "gray",
+      "line": "dashed",
+      "head": "normal"
+    },
+    {
+      "id": "edge6",
+      "source": "saas.backend.worker",
+      "target": "external.email",
+      "label": null,
+      "points": [
+        [
+          671,
+          1091
+        ],
+        [
+          668,
+          1134
+        ],
+        [
+          663,
+          1186
+        ],
+        [
+          660,
+          1230
+        ]
+      ],
+      "parent": null,
+      "relations": [
+        "19u61y7"
+      ],
+      "color": "gray",
+      "line": "dashed",
+      "head": "normal"
+    },
+    {
+      "id": "edge7",
+      "source": "customer",
+      "target": "saas.frontend",
+      "label": "uses",
+      "points": [
+        [
+          248,
+          180
+        ],
+        [
+          248,
+          199
+        ],
+        [
+          248,
+          219
+        ],
+        [
+          248,
+          239
+        ]
+      ],
+      "parent": null,
+      "relations": [
+        "1p3kn4j"
+      ],
+      "color": "gray",
+      "line": "dashed",
+      "head": "normal",
+      "labelBBox": {
+        "x": 206,
+        "y": 42,
+        "width": 33,
+        "height": 18
+      },
+      "controlPoints": [
+        {
+          "x": 240,
+          "y": 72
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { nonNullable } from '@likec4/core'
 import type * as t from '@likec4/core/types'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
@@ -10,12 +11,14 @@ import { useCallbackRef } from './useCallbackRef'
 
 const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
   const drifts = context.view.drifts ?? null
-  if (!context.features.enableCompareWithLatest || !drifts) {
+  if (!context.features.enableCompareWithLatest || !drifts || drifts.length === 0) {
     return ({
+      hasEditor: false as const,
       isEnabled: false as const,
       isEditable: false as const,
       isActive: false as const,
       drifts: [] as never[],
+      canApplyLatest: false,
       layout: context.view._layout ?? 'auto',
     })
   }
@@ -26,10 +29,12 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
   } = deriveToggledFeatures(context)
 
   return ({
+    hasEditor: context.features.enableEditor,
     isEnabled: true as const,
     isEditable: !enableReadOnly,
     isActive: enableCompareWithLatest === true,
     drifts,
+    canApplyLatest: !drifts.includes('type-changed'),
     layout: context.view._layout ?? 'auto',
   })
 }
@@ -43,6 +48,12 @@ type DiagramCompareLayoutOps = {
    * Switches the layout type between 'auto' and 'manual'.
    */
   switchLayout: (layoutType: t.LayoutType) => void
+
+  /**
+   * Merges the latest layout into the manual layout.
+   */
+  applyLatestToManual: () => void
+
   /**
    * Resets the manual layout to its default state.
    */
@@ -92,5 +103,22 @@ export function useDiagramCompareLayout(): [
     actorRef.send({ type: 'layout.resetManualLayout' })
   })
 
-  return [state, { toggleCompare, switchLayout, resetManualLayout }]
+  const applyLatestToManual = useCallbackRef(() => {
+    if (!state.isEnabled) {
+      console.warn('Compare with latest feature is not enabled')
+      return
+    }
+    const editor = nonNullable(actorRef.system?.get('editor'), 'editor actor not found')
+    editor.send({ type: 'applyLatestToManual' })
+
+    if (state.isActive) {
+      actorRef.send({
+        type: 'toggle.feature',
+        feature: 'CompareWithLatest',
+        forceValue: false,
+      })
+    }
+  })
+
+  return [state, { toggleCompare, switchLayout, resetManualLayout, applyLatestToManual }]
 }

@@ -186,21 +186,21 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
       actorRef.current.send({ type: 'update.edgeData', edgeId, data })
     },
     startEditing: (subject: 'node' | 'edge') => {
-      const syncActor = typedSystem(actorRef.current.system).syncLayoutActorRef
-      invariant(syncActor, 'No sync layout actor found in diagram actor system')
-      syncActor.send({ type: 'editing.start', subject })
+      const editorActor = typedSystem(actorRef.current.system).editorActorRef
+      invariant(editorActor, 'No editor actor found in diagram actor system')
+      editorActor.send({ type: 'edit.start', subject })
     },
     stopEditing: (wasChanged = false) => {
-      const syncActor = typedSystem(actorRef.current.system).syncLayoutActorRef
-      invariant(syncActor, 'No sync layout actor found in diagram actor system')
-      syncActor.send({ type: 'editing.stop', wasChanged })
+      const editorActor = typedSystem(actorRef.current.system).editorActorRef
+      invariant(editorActor, 'No editor actor found in diagram actor system')
+      editorActor.send({ type: 'edit.finish', wasChanged })
     },
     undoEditing: () => {
-      const syncActor = typedSystem(actorRef.current.system).syncLayoutActorRef
-      invariant(syncActor, 'No sync layout actor found in diagram actor system')
-      const hasUndo = syncActor.getSnapshot().context.history.length > 0
+      const editorActor = typedSystem(actorRef.current.system).editorActorRef
+      invariant(editorActor, 'No editor actor found in diagram actor system')
+      const hasUndo = editorActor.getSnapshot().context.history.length > 0
       if (hasUndo) {
-        syncActor.send({ type: 'undo' })
+        editorActor.send({ type: 'undo' })
       }
       return hasUndo
     },
@@ -279,7 +279,7 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
     },
 
     triggerChange: (change: ViewChange) => {
-      actorRef.current.send({ type: 'emit.onChange', change })
+      actorRef.current.send({ type: 'trigger.change', change })
     },
 
     switchDynamicViewVariant: (variant: DynamicViewDisplayVariant) => {

@@ -30,21 +30,56 @@ export const layerStyles = defineLayerStyles({
         },
       },
       action: {
-        description: 'LikeC4 panel action layer',
-        value: {
-          color: {
-            base: 'likec4.panel.action',
-            _notDisabled: {
-              _hover: 'likec4.panel.action.hover',
+        DEFAULT: {
+          description: 'LikeC4 panel action layer',
+          value: {
+            color: {
+              base: 'likec4.panel.action',
+              _disabled: 'likec4.panel.action.disabled',
+              _notDisabled: {
+                _hover: 'likec4.panel.action.hover',
+              },
+            },
+            cursor: {
+              base: 'pointer',
+              _disabled: 'not-allowed',
+            },
+            paddingInline: 'xxs',
+            paddingBlock: 'xxs',
+            border: 'transparent',
+            borderRadius: 'sm',
+            backgroundColor: {
+              _notDisabled: {
+                _hover: 'likec4.panel.action.bg.hover',
+              },
             },
           },
-          cursor: 'pointer',
-          border: 'transparent',
-          borderRadius: 'sm',
-          backgroundColor: {
-            base: 'likec4.panel.action.bg',
-            _notDisabled: {
-              _hover: 'likec4.panel.action.bg.hover',
+        },
+
+        filled: {
+          description: 'LikeC4 action panel filled layer',
+          value: {
+            color: {
+              base: 'likec4.panel.action',
+              _disabled: 'likec4.panel.action.disabled',
+              _notDisabled: {
+                _hover: 'likec4.panel.action.hover',
+              },
+            },
+            cursor: {
+              base: 'pointer',
+              _disabled: 'not-allowed',
+            },
+            paddingInline: 'xxs',
+            paddingBlock: 'xxs',
+            border: 'transparent',
+            borderRadius: 'sm',
+            backgroundColor: {
+              base: 'likec4.panel.action.bg',
+              _disabled: 'likec4.panel.action.bg',
+              _notDisabled: {
+                _hover: 'likec4.panel.action.bg.hover',
+              },
             },
           },
         },

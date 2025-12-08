@@ -18,6 +18,7 @@ import type {
   StepEdgeId,
   ViewChange,
   ViewId,
+  WhereOperator,
 } from '@likec4/core/types'
 import type { EdgeChange, NodeChange, Rect, Viewport } from '@xyflow/system'
 import type { MouseEvent } from 'react'
@@ -28,6 +29,7 @@ import {
   setup,
 } from 'xstate'
 import type { EnabledFeatures, TogglableFeature } from '../../context/DiagramFeatures'
+import { editorActorLogic } from '../../editor/editorActor'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
@@ -36,7 +38,6 @@ import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
-import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 
 /**
  * Navigation history entry represents a current view state,
@@ -71,6 +72,7 @@ export interface Input {
   nodesDraggable: boolean
   nodesSelectable: boolean
   fitViewPadding: ViewPaddings
+  where: WhereOperator | null
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
 }
 
@@ -157,9 +159,15 @@ export type Events =
   | {
     type: 'update.view'
     view: DiagramView
+    source?: 'editor' | 'external'
+  }
+  | {
+    // Same as 'update.view', but with XYFlow nodes and edges
+    type: 'update.view'
+    view: DiagramView
+    source?: 'editor' | 'external'
     xynodes: Types.Node[]
     xyedges: Types.Edge[]
-    source?: 'internal' | 'external'
   }
   | { type: 'update.view-bounds'; bounds: BBox }
   | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant'>> }
@@ -187,7 +195,7 @@ export type Events =
   | { type: 'tag.highlight'; tag: string }
   | { type: 'tag.unhighlight' }
   | { type: 'toggle.feature'; feature: TogglableFeature; forceValue?: boolean }
-  | { type: 'emit.onChange'; change: ViewChange }
+  | { type: 'trigger.change'; change: ViewChange }
   | { type: 'emit.onLayoutTypeChange'; layoutType: LayoutType }
   | { type: 'destroy' }
 
@@ -203,7 +211,6 @@ export type EmittedEvents =
   | { type: 'walkthroughStarted'; edge: Types.Edge }
   | { type: 'walkthroughStep'; edge: Types.Edge }
   | { type: 'walkthroughStopped' }
-  | { type: 'onChange'; change: ViewChange }
   | { type: 'onLayoutTypeChange'; layoutType: LayoutType }
 
 export type ActionArg = { context: Context; event: Events }
@@ -251,24 +258,25 @@ export const machine = setup({
     context: {} as Context,
     input: {} as Input,
     children: {} as {
-      syncLayout: 'syncManualLayoutActorLogic'
       hotkey: 'hotkeyActorLogic'
       overlays: 'overlaysActorLogic'
       search: 'searchActorLogic'
       mediaPrint: 'mediaPrintActorLogic'
+      editor: 'editorActor'
     },
     events: {} as Events,
     emitted: {} as EmittedEvents,
   },
   actors: {
-    syncManualLayoutActorLogic,
     hotkeyActorLogic,
     overlaysActorLogic,
     searchActorLogic,
     mediaPrintActorLogic,
+    editorActor: editorActorLogic,
   },
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
+    'enabled: Editor': ({ context }) => context.features.enableEditor,
     'enabled: FitView': ({ context }) => context.features.enableFitView,
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode && isReadOnly(context),
     'enabled: Readonly': ({ context }) => isReadOnly(context),

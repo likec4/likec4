@@ -1,11 +1,11 @@
 import { type NonEmptyArray, type Point, BBox } from '@likec4/core'
+import { vector } from '@likec4/core/geometry'
 import { invariant } from '@likec4/core/utils'
 import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
 import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
-import { vector } from '@likec4/core/geometry'
 
 export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
@@ -156,7 +156,7 @@ export const isInside = (test: Rect, target: Rect) => {
   )
 }
 
-export function bezierControlPoints(points: NonEmptyArray<Point>) {
+export function bezierControlPoints(points: NonEmptyArray<Point>): NonEmptyArray<XYPosition> {
   let [start, ...bezierPoints] = points
   invariant(start, 'start should be defined')
   const handles = [
@@ -182,6 +182,7 @@ export function bezierControlPoints(points: NonEmptyArray<Point>) {
     start = end
   }
   invariant(bezierPoints.length === 0, 'all points should be consumed')
+  invariant(hasAtLeast(handles, 1), 'at least one control point should be generated')
 
   return handles
 }
