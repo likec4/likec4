@@ -97,7 +97,9 @@ Both `cloud` and `externals` projects can include the shared specification:
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "cloud",
-  "include": ["../shared"]
+  "include": {
+    "paths": ["../shared"]
+  }
 }
 ```
 
@@ -105,22 +107,36 @@ Both `cloud` and `externals` projects can include the shared specification:
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "externals",
-  "include": ["../shared"]
+  "include": {
+    "paths": ["../shared"]
+  }
 }
 ```
 
-You can include multiple directories:
+### Include configuration
+
+The `include` configuration accepts an object with the following properties:
 
 ```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "my-project",
-  "include": [
-    "../shared",
-    "../common/specs"
-  ]
+  "include": {
+    "paths": ["../shared", "../common/specs"],
+    "maxDepth": 5,
+    "fileThreshold": 50
+  }
 }
 ```
+
+- **`paths`** - Array of relative directory paths (required)
+- **`maxDepth`** - Maximum directory depth to scan (default: 3, range: 1-20)
+- **`fileThreshold`** - Warn if more than this many files are loaded (default: 30)
+
+<Aside type='tip' title="Performance optimization">
+Use `maxDepth` to limit deep directory traversal, and `fileThreshold` to detect when you're accidentally including large directories.  
+If you see warnings about slow loading, consider reducing `maxDepth` or being more specific with your include paths.
+</Aside>
 
 <Aside type='tip' title="Path resolution">
 Include paths are relative to the project folder (the folder containing the config file).  

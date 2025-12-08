@@ -200,7 +200,7 @@ export const navigating = machine.createStateConfig({
         // Check if we need to focus on a specific element after navigation (from search)
         const focusOnElement = context.lastOnNavigate?.focusOnElement
         const nodeToFocus = isTruthy(focusOnElement)
-          ? findNodeByModelFqn(event.xynodes, focusOnElement)
+          ? findNodeByModelFqn(eventWithXYData.xynodes, focusOnElement)
           : null
 
         enqueue.assign({

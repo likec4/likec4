@@ -42,9 +42,10 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
 
   override async readDirectory(
     folderPath: URI,
-    opts?: { recursive?: boolean },
+    opts?: { recursive?: boolean; maxDepth?: number },
   ): Promise<FileSystemNode[]> {
     const recursive = opts?.recursive ?? true
+    const maxDepth = opts?.maxDepth ?? Infinity
     const entries = [] as FileSystemNode[]
     try {
       let crawler = new fdir()
@@ -54,6 +55,8 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
 
       if (!recursive) {
         crawler = crawler.withMaxDepth(1)
+      } else if (maxDepth !== Infinity) {
+        crawler = crawler.withMaxDepth(maxDepth)
       }
 
       const crawled = await crawler

@@ -1,7 +1,9 @@
 import {
+  type IncludeConfig,
   type LikeC4ProjectConfig,
   type LikeC4ProjectConfigInput,
   isLikeC4Config,
+  normalizeIncludeConfig,
   validateProjectConfig,
 } from '@likec4/config'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
@@ -66,6 +68,10 @@ interface ProjectData {
     uri: URI
     folder: ProjectFolder
   }>
+  /**
+   * Normalized include configuration (paths, maxDepth, fileThreshold).
+   */
+  includeConfig: IncludeConfig
 }
 
 export interface Project {
@@ -85,6 +91,7 @@ const DefaultProject = {
     exclude: ['**/node_modules/**'],
   },
   exclude: picomatch('**/node_modules/**', { dot: true }),
+  includeConfig: { paths: [], maxDepth: 3, fileThreshold: 30 } as IncludeConfig,
 }
 
 export class ProjectsManager {
@@ -166,6 +173,7 @@ export class ProjectsManager {
           folder: ProjectFolder(folderUri),
           folderUri,
           exclude: DefaultProject.exclude,
+          includeConfig: DefaultProject.includeConfig,
         }
       }
       this.#defaultProject = project
@@ -334,11 +342,13 @@ export class ProjectsManager {
         logger.warn`Project "${config.name}" already exists, generating unique ID`
       }
       id = this.uniqueProjectId(config.name)
+      const includeConfig = normalizeIncludeConfig(config.include)
       project = {
         id,
         config,
         folder,
         folderUri: URI.parse(folder),
+        includeConfig,
       }
       // if there is any project within subfolder or parent folder
       // we need to reset assigned to documents project IDs
@@ -365,6 +375,8 @@ export class ProjectsManager {
         logger.info`update project ${project.id} on config change`
       }
       project.config = config
+      const includeConfig = normalizeIncludeConfig(config.include)
+      project.includeConfig = includeConfig
     }
 
     // Reset cached default project
@@ -377,10 +389,10 @@ export class ProjectsManager {
     }
 
     // Resolve include paths relative to project folder
-    if (config.include && hasAtLeast(config.include, 1)) {
-      project.includePaths = config.include.map(includePath => {
-        const resolvedPath = joinRelativeURL(project!.folderUri.path, includePath)
-        const uri = project!.folderUri.with({ path: resolvedPath })
+    if (project.includeConfig.paths && hasAtLeast(project.includeConfig.paths, 1)) {
+      project.includePaths = project.includeConfig.paths.map(includePath => {
+        const resolvedPath = joinRelativeURL(project.folderUri.path, includePath)
+        const uri = project.folderUri.with({ path: resolvedPath })
         return {
           uri,
           folder: ProjectFolder(uri),
@@ -436,7 +448,7 @@ export class ProjectsManager {
     if (mustReset && !this.#activeReload) {
       await this.rebuidProject(project.id).catch(error => {
         logger.warn('Failed to rebuild project {projectId} after config change', {
-          projectId: project!.id,
+          projectId: project.id,
           error,
         })
       })
@@ -634,12 +646,24 @@ export class ProjectsManager {
    * Returns all include paths from all projects.
    * Used by WorkspaceManager to scan additional directories for C4 files.
    */
-  getAllIncludePaths(): Array<{ projectId: scalar.ProjectId; includePath: URI }> {
-    const result: Array<{ projectId: scalar.ProjectId; includePath: URI }> = []
+  getAllIncludePaths(): Array<{
+    projectId: scalar.ProjectId
+    includePath: URI
+    includeConfig: IncludeConfig
+  }> {
+    const result: Array<{
+      projectId: scalar.ProjectId
+      includePath: URI
+      includeConfig: IncludeConfig
+    }> = []
     for (const project of this.#projects) {
       if (project.includePaths) {
         for (const includePath of project.includePaths) {
-          result.push({ projectId: project.id, includePath: includePath.uri })
+          result.push({
+            projectId: project.id,
+            includePath: includePath.uri,
+            includeConfig: project.includeConfig,
+          })
         }
       }
     }
