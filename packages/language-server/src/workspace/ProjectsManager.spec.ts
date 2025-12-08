@@ -343,7 +343,7 @@ describe.concurrent('ProjectsManager', () => {
 
       const config = {
         name: 'test-project',
-        include: ['../shared', '../common/specs'],
+        include: { paths: ['../shared', '../common/specs'] },
       }
       const folderUri = URI.parse('file:///test/workspace/src/test-project')
 
@@ -366,7 +366,7 @@ describe.concurrent('ProjectsManager', () => {
       await projectsManager.registerProject({
         config: {
           name: 'proj-include-test',
-          include: ['../shared-include-test'],
+          include: { paths: ['../shared-include-test'] },
         },
         folderUri: URI.parse('file:///test/include-test/src/proj-include-test'),
       })
@@ -407,19 +407,18 @@ describe.concurrent('ProjectsManager', () => {
       expect(project.includePaths).toBeUndefined()
     })
 
-    it('should return empty includePaths when configured with empty array', async ({ expect }) => {
+    it('should reject empty includePaths array', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
 
-      await projectsManager.registerProject({
-        config: {
-          name: 'empty-includes',
-          include: [],
-        },
-        folderUri: URI.parse('file:///test/workspace/src/empty-includes'),
-      })
-
-      const project = projectsManager.getProject('empty-includes' as ProjectId)
-      expect(project.includePaths).toBeUndefined()
+      await expect(
+        projectsManager.registerProject({
+          config: {
+            name: 'empty-includes',
+            include: { paths: [] },
+          },
+          folderUri: URI.parse('file:///test/workspace/src/empty-includes'),
+        }),
+      ).rejects.toThrow('Include paths cannot be empty')
     })
 
     it('getAllIncludePaths should return all configured include paths', async ({ expect }) => {
@@ -428,7 +427,7 @@ describe.concurrent('ProjectsManager', () => {
       await projectsManager.registerProject({
         config: {
           name: 'project1',
-          include: ['../shared1'],
+          include: { paths: ['../shared1'] },
         },
         folderUri: URI.parse('file:///test/workspace/src/project1'),
       })
@@ -436,7 +435,7 @@ describe.concurrent('ProjectsManager', () => {
       await projectsManager.registerProject({
         config: {
           name: 'project2',
-          include: ['../shared2', '../common'],
+          include: { paths: ['../shared2', '../common'] },
         },
         folderUri: URI.parse('file:///test/workspace/src/project2'),
       })
@@ -454,17 +453,26 @@ describe.concurrent('ProjectsManager', () => {
         includePath: expect.objectContaining({
           path: '/test/workspace/src/shared1',
         }),
+        includeConfig: expect.objectContaining({
+          paths: ['../shared1'],
+        }),
       })
       expect(allIncludes).toContainEqual({
         projectId: 'project2',
         includePath: expect.objectContaining({
           path: '/test/workspace/src/shared2',
         }),
+        includeConfig: expect.objectContaining({
+          paths: ['../shared2', '../common'],
+        }),
       })
       expect(allIncludes).toContainEqual({
         projectId: 'project2',
         includePath: expect.objectContaining({
           path: '/test/workspace/src/common',
+        }),
+        includeConfig: expect.objectContaining({
+          paths: ['../shared2', '../common'],
         }),
       })
     })
@@ -481,7 +489,7 @@ describe.concurrent('ProjectsManager', () => {
       await projectsManager.registerProject({
         config: {
           name: 'project2',
-          include: ['../project1'], // Overlaps with project1's folder
+          include: { paths: ['../project1'] }, // Overlaps with project1's folder
         },
         folderUri: URI.parse('file:///test/workspace/src/project2'),
       })
@@ -500,7 +508,7 @@ describe.concurrent('ProjectsManager', () => {
       await projectsManager.registerProject({
         config: {
           name: 'project1',
-          include: ['../shared1', '../shared2'],
+          include: { paths: ['../shared1', '../shared2'] },
         },
         folderUri,
       })
@@ -511,13 +519,13 @@ describe.concurrent('ProjectsManager', () => {
       // Reload with different include paths
       await projectsManager.registerProject({
         config: {
-          name: 'project1',
-          include: ['../new-shared'],
+          name: 'project3',
+          include: { paths: ['../new-shared'] },
         },
         folderUri,
       })
 
-      project = projectsManager.getProject('project1' as ProjectId)
+      project = projectsManager.getProject('project3' as ProjectId)
       expect(project.includePaths).toHaveLength(1)
       expect(project.includePaths![0]!.toString()).toBe('file:///test/workspace/src/new-shared')
     })
@@ -531,7 +539,7 @@ describe.concurrent('ProjectsManager', () => {
       await projectsManager.registerProject({
         config: {
           name: 'project1',
-          include: ['../shared'],
+          include: { paths: ['../shared'] },
         },
         folderUri,
       })

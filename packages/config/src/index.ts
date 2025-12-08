@@ -10,11 +10,17 @@ export type {
 } from './schema'
 
 export type {
+  IncludeConfig,
+} from './schema.include'
+
+export type {
   LikeC4StylesConfig,
   LikeC4StylesConfigInput,
 } from './schema.theme'
 
 export { validateProjectConfig } from './schema'
+
+export { normalizeIncludeConfig, validateIncludePaths } from './schema.include'
 
 export {
   ConfigFilenames,

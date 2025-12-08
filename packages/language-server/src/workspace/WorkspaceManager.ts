@@ -72,18 +72,45 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
 
     // Load documents from project include paths
     const includePaths = this.services.workspace.ProjectsManager.getAllIncludePaths()
-    for (const { projectId, includePath } of includePaths) {
+    let totalFilesLoaded = 0
+
+    for (const { projectId, includePath, includeConfig } of includePaths) {
       try {
         logger.debug`scanning include path ${includePath.fsPath} for project ${projectId}`
-        const files = await this.fileSystemProvider.readDirectory(includePath, { recursive: true })
+        const files = await this.fileSystemProvider.readDirectory(includePath, {
+          recursive: true,
+          maxDepth: includeConfig.maxDepth,
+        })
+
+        let filesLoadedFromPath = 0
         for (const file of files) {
           if (file.isFile && !this.services.workspace.ProjectsManager.isExcluded(file.uri)) {
             const doc = await this.documentFactory.fromUri(file.uri)
             collector(doc)
+            filesLoadedFromPath++
+            totalFilesLoaded++
           }
         }
+
+        logger.debug`loaded ${filesLoadedFromPath} files from include path ${includePath.fsPath}`
       } catch (error) {
         logWarnError(error)
+      }
+    }
+
+    // Warn if total files loaded exceeds threshold across all include paths
+    if (includePaths.length > 0 && totalFilesLoaded > 0) {
+      // Get the minimum threshold from all projects
+      const minThreshold = Math.min(...includePaths.map(p => p.includeConfig.fileThreshold))
+
+      if (totalFilesLoaded > minThreshold) {
+        logger.warn(
+          `Loaded ${totalFilesLoaded} files from include paths (threshold: ${minThreshold}). ` +
+            'Large include directories may slow workspace initialization. ' +
+            'Consider adjusting "include.fileThreshold" or "include.maxDepth" in your project configuration.',
+        )
+      } else {
+        logger.info`loaded ${totalFilesLoaded} total files from ${includePaths.length} include paths`
       }
     }
 
