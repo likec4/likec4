@@ -231,7 +231,7 @@
     "unbuild": "catalog:",
     "vite-plugin-dts": "catalog:vite",
     "vite-plugin-inspect": "^11.3.3",
-    "vite-plugin-singlefile": "^2.2.0",
+    "vite-plugin-singlefile": "^2.3.0",
     "vitest": "catalog:vitest",
     "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageserver": "catalog:vscode",
