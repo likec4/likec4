@@ -1,3 +1,32 @@
+# [1.46.0](https://github.com/likec4/likec4/compare/v1.45.0...v1.46.0) (2025-12-08)
+
+
+### Bug Fixes
+
+* Highlighting nodes with notation ([578e16c](https://github.com/likec4/likec4/commit/578e16c70f6e5c6421fde405478d8c29514474c2))
+* resolve TypeScript errors after rebase ([1ec7b96](https://github.com/likec4/likec4/commit/1ec7b968326fdfa9572443a977e971499b82958b))
+* used incorrect types for the event + nodes ([7a387a4](https://github.com/likec4/likec4/commit/7a387a4e7cdf1305bb9c2072b9b61e78cc6aa875))
+
+
+### Features
+
+* add relationship metadata tooltip display ([b1abcea](https://github.com/likec4/likec4/commit/b1abcea2ce30a6866cb089f91ae44c9c92027d65))
+* added search navigate to selected item [#1711](https://github.com/likec4/likec4/issues/1711) ([#2428](https://github.com/likec4/likec4/issues/2428)) ([b7a69c4](https://github.com/likec4/likec4/commit/b7a69c46e2bf67b9ee1f5b691004cd629a85245a))
+* adding 'shared' file support ([b0c7335](https://github.com/likec4/likec4/commit/b0c733566f1d6726691ccbcb627bdc635e7b2255))
+* adding max-depth and file thresholds ([d675925](https://github.com/likec4/likec4/commit/d6759257e4f36b2a65992013a4ab36d73be5da3b))
+* **diagram:** add nodesDiff function and applyChangesToManualLayout logic ([e38b7d1](https://github.com/likec4/likec4/commit/e38b7d17340660065547ad85bc5cd7a6292c0f0e))
+* display drifts on edges ([75710d1](https://github.com/likec4/likec4/commit/75710d11d72be96bee8a1080f4bd49d961f7d6e0))
+* **dsl:** add extend relation syntax ([1fe9e60](https://github.com/likec4/likec4/commit/1fe9e60d87342003e8bff2af4c6ef81b412afef0))
+* **editor:** enhance sync and editing functionality ([9027ef2](https://github.com/likec4/likec4/commit/9027ef20e5248156525867d25ac981678ab59dd0))
+* **editor:** integrate editor functionality into diagram state management ([57201c1](https://github.com/likec4/likec4/commit/57201c1763f887274d35e03b2d0376b29de9a3a1))
+* enhance diagram functionality with new overlays and improved hotkey handling ([fde134c](https://github.com/likec4/likec4/commit/fde134c013171a170431d6b6b3061c87ae8c1d57))
+* enhance edge styling and improve diagram interactions with new recipes and context updates ([3b1b365](https://github.com/likec4/likec4/commit/3b1b365ca4213e819767256c1135a9323fbd721a))
+* **icons:** add >1800 icons from svglogos.dev ([160385d](https://github.com/likec4/likec4/commit/160385d22c21fa6e189e38a617e720c0f0c6e8dd))
+* **language-server/mcp:** include links in read-element and read-deployment tool responses; add unit + integration tests ([9ce3cee](https://github.com/likec4/likec4/commit/9ce3cee7a625613c728717c4188fd00fb47cc88f))
+* markdown alerts ([9a3a26f](https://github.com/likec4/likec4/commit/9a3a26f9ed76c370ffbd0405b1a8b6e13b1adf0f)), closes [#2404](https://github.com/likec4/likec4/issues/2404)
+
+
+
 # [1.45.0](https://github.com/likec4/likec4/compare/v1.44.0...v1.45.0) (2025-11-23)
 
 ### 🚀 Features
