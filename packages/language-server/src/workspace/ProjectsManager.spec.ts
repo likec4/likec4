@@ -499,6 +499,49 @@ describe.concurrent('ProjectsManager', () => {
       expect(projectsManager.belongsTo('file:///test/workspace/src/project1/model.c4')).toBe('project1')
     })
 
+    it('should handle multiple projects sharing the same include path', async ({ expect }) => {
+      const { projectsManager, services, addDocument } = await createMultiProjectTestServices({})
+
+      // Both projects include the same shared directory
+      await projectsManager.registerProject({
+        config: {
+          name: 'a-project1',
+          include: { paths: ['../shared'] },
+        },
+        folderUri: URI.parse('file:///test/workspace/src/a-project1'),
+      })
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'a-project2',
+          include: { paths: ['../shared'] },
+        },
+        folderUri: URI.parse('file:///test/workspace/src/a-project2'),
+      })
+
+      const sharedDoc = await addDocument('shared/common.c4', 'specification { element component }')
+      const project1Doc = await addDocument('a-project1/model.c4', 'model { component c1 }')
+      const project2Doc = await addDocument('a-project2/model.c4', 'model { component c2 }')
+
+      expect(projectsManager.belongsTo(project1Doc)).toBe('a-project1')
+      expect(projectsManager.belongsTo(project2Doc)).toBe('a-project2')
+
+      const sharedDocProject = projectsManager.belongsTo(sharedDoc)
+      expect(['a-project1', 'a-project2', 'default']).toContain(sharedDocProject)
+
+      // Both projects should be able to access documents from the shared folder
+      // when collecting their project documents
+      const documents = services.shared.workspace.LangiumDocuments
+      const project1Docs = documents.projectDocuments('a-project1' as ProjectId).toArray()
+      const project2Docs = documents.projectDocuments('a-project2' as ProjectId).toArray()
+
+      expect(project1Docs).toHaveLength(2) // project1Doc + sharedDoc
+      expect(project2Docs).toHaveLength(2) // project2Doc + sharedDoc
+
+      expect(project1Docs.map(d => d.uri.path)).toContain('/test/workspace/src/shared/common.c4')
+      expect(project2Docs.map(d => d.uri.path)).toContain('/test/workspace/src/shared/common.c4')
+    })
+
     it('should update include paths when project is reloaded with different config', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
 
