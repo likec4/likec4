@@ -62,8 +62,8 @@ catalogs:
     hono: ^4.10.7
     hono-sessions: ^0.8.0
   langium:
-    langium: 3.5.0
-    langium-cli: 3.5.2
+    langium: 4.1.2
+    langium-cli: 4.1.0
   mantine:
     "@mantine/colors-generator": 8.3.9
     "@mantine/core": 8.3.9
