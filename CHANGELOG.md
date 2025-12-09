@@ -1,3 +1,66 @@
+# [1.46.0](https://github.com/likec4/likec4/compare/v1.45.0...v1.46.0) (2025-12-08)
+
+This release carries a lot of heart from the community. You can see it in behind every PR. Thanks to everyone who contributed time, energy and patience. LikeC4 grows because people choose to build together, and this release is a great example of what that looks like.
+
+### 🐞 Bug Fixes
+
+- Fix notation highlighting on nodes. Thanks @YousefSedik, fixes [#2374](https://github.com/likec4/likec4/issues/2374) ([578e16c](https://github.com/likec4/likec4/commit/578e16c70f6e5c6421fde405478d8c29514474c2))
+
+### 🚀 Features
+
+- Added more than 1800 icons from [svglogos.dev](https://github.com/gilbarbara/logos). Start typing `tech:` and you will find an icon for almost any technology.
+
+- Added relationship metadata tooltips. Thanks @ckeller42, [#2400](https://github.com/likec4/likec4/issues/2400) ([b1abcea](https://github.com/likec4/likec4/commit/b1abcea2ce30a6866cb089f91ae44c9c92027d65))
+  
+  <img width="600" src="https://github.com/user-attachments/assets/0de906d6-e836-497f-a82e-529ee5b16e7e" />
+
+- Search now lets you jump straight to the selected item. Thanks @ckeller42, [#1711](https://github.com/likec4/likec4/issues/1711) ([#2428](https://github.com/likec4/likec4/issues/2428)) ([b7a69c4](https://github.com/likec4/likec4/commit/b7a69c46e2bf67b9ee1f5b691004cd629a85245a))
+
+- Added Markdown alerts. closes [#2404](https://github.com/likec4/likec4/issues/2404)
+  
+  <img width="600" height="607" alt="image" src="https://github.com/user-attachments/assets/d76b0293-ebf8-45eb-9e57-d3745cd81d83" />
+
+- Added rank constraints to improve layouts. Thanks @yubrshen, [#2416](https://github.com/likec4/likec4/pull/2416), closes [#2370](https://github.com/likec4/likec4/issues/2370)
+  ```
+  view rank_effect {
+    title 'Effect of Rank'
+
+    include A, B, C, D, E, F, G
+
+    rank same { A, B } // of the same rank
+    rank source { C, D } // to be at the beginning excluding others
+    rank max { F } // to be at the end
+  }
+  ```
+  See [docs](https://likec4.dev/dsl/views/predicates/#rank-constraints) for more details.
+
+- Added `extend` relation syntax ([1fe9e60](https://github.com/likec4/likec4/commit/1fe9e60d87342003e8bff2af4c6ef81b412afef0))
+  ```
+  model {
+    extend frontend -> api "Makes requests" {
+      metadata {
+        latency_p95 '150ms'
+        rate_limit '1000req/s'
+      }
+    }
+  }
+  ```
+  See [docs](https://likec4.dev/dsl/extend/#extend-relation) for more details.
+
+- Added include option to project config for shared files. Thanks @kieronlanning, [#2425](https://github.com/likec4/likec4/issues/2425) ([b0c7335](https://github.com/likec4/likec4/commit/b0c733566f1d6726691ccbcb627bdc635e7b2255)).\
+  See [docs](https://likec4.dev/dsl/config/#include-additional-directories) for more details.
+
+- Added links to `read-element` and `read-deployment` responses in the MCP tools. Thanks @ckeller42, [#2412](https://github.com/likec4/likec4/issues/2412) ([9ce3cee](https://github.com/likec4/likec4/commit/9ce3cee7a625613c728717c4188fd00fb47cc88f))
+
+- Sync manual layout with latest changes and highlight drifted edges in compare view.
+  
+  <img width="600" src="https://github.com/user-attachments/assets/cb8a2abb-1bf2-4228-8acd-acb2338b885b" />
+
+
+- Added edit mode in the dev server.
+  Now you can adjust your view layouts in the browser, without opening in IDE (plus remember, you can always Ctrl/Cmd + Z to undo).
+
+
 # [1.45.0](https://github.com/likec4/likec4/compare/v1.44.0...v1.45.0) (2025-11-23)
 
 ### 🚀 Features
