@@ -1,5 +1,7 @@
 # [1.46.0](https://github.com/likec4/likec4/compare/v1.45.0...v1.46.0) (2025-12-08)
 
+This release carries a lot of heart from the community. You can see it in behind every PR. Thanks to everyone who contributed time, energy and patience. LikeC4 grows because people choose to build together, and this release is a great example of what that looks like.
+
 ### 🐞 Bug Fixes
 
 - Fix notation highlighting on nodes. Thanks @YousefSedik, fixes [#2374](https://github.com/likec4/likec4/issues/2374) ([578e16c](https://github.com/likec4/likec4/commit/578e16c70f6e5c6421fde405478d8c29514474c2))
