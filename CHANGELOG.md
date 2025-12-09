@@ -8,11 +8,11 @@ This release carries a lot of heart from the community. You can see it in behind
 
 ### 🚀 Features
 
-- Added more than 1800 icons from svglogos.dev. Start typing `tech:` and you will find an icon for almost any technology.
+- Added more than 1800 icons from [svglogos.dev](https://github.com/gilbarbara/logos). Start typing `tech:` and you will find an icon for almost any technology.
 
 - Added relationship metadata tooltips. Thanks @ckeller42, [#2400](https://github.com/likec4/likec4/issues/2400) ([b1abcea](https://github.com/likec4/likec4/commit/b1abcea2ce30a6866cb089f91ae44c9c92027d65))
-
-  <img src="https://private-user-images.githubusercontent.com/811625/518701918-2fc1dae8-27ce-4a4d-9d5a-21791f82faca.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjUyMzUyNTAsIm5iZiI6MTc2NTIzNDk1MCwicGF0aCI6Ii84MTE2MjUvNTE4NzAxOTE4LTJmYzFkYWU4LTI3Y2UtNGE0ZC05ZDVhLTIxNzkxZjgyZmFjYS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUxMjA4JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MTIwOFQyMzAyMzBaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1jOTc2MmMzNzU2ODY4MmFkNWQ2MGNjZWI3ZjFkMDIzZWYzMWVlNGJlZGI1ODcwMWJlNzdmMjE3NTljYjJiOTZhJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.-VOAmd2QmkkNinNm1zmiPf0ug5uFnsYpRbyEGweH_3k" width="600" />
+  
+  <img width="600" src="https://github.com/user-attachments/assets/0de906d6-e836-497f-a82e-529ee5b16e7e" />
 
 - Search now lets you jump straight to the selected item. Thanks @ckeller42, [#1711](https://github.com/likec4/likec4/issues/1711) ([#2428](https://github.com/likec4/likec4/issues/2428)) ([b7a69c4](https://github.com/likec4/likec4/commit/b7a69c46e2bf67b9ee1f5b691004cd629a85245a))
 
