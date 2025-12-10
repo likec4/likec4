@@ -210,8 +210,8 @@ catalogs:
       specifier: 1.16.0
       version: 1.16.0
     '@logtape/logtape':
-      specifier: ^0.12.3
-      version: 0.12.3
+      specifier: ^1.2.2
+      version: 1.2.2
     '@lume/kiwi':
       specifier: ^0.4.4
       version: 0.4.4
@@ -1760,7 +1760,7 @@ importers:
     dependencies:
       '@logtape/logtape':
         specifier: catalog:utils
-        version: 0.12.3
+        version: 1.2.2
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -3359,8 +3359,8 @@ packages:
   '@likec4/core@1.31.0':
     resolution: {integrity: sha512-LUoiHyqEaXifq9Me47Ew9InemS5qaUwl1piNkUwtLOGTvNR0Cyrs6dybkyTijm6Smi7qcMAVj0tuPk8nEf5m+w==}
 
-  '@logtape/logtape@0.12.3':
-    resolution: {integrity: sha512-LNIYAQ3CbIBPDVlKz25g8ix47iYnJhkI93cPs8WWANLB1cBxdhNb2ibWg1gKZtenR72grDXFLM49Ci+7sYjUmQ==}
+  '@logtape/logtape@1.2.2':
+    resolution: {integrity: sha512-yx4uj7NUXo5pOk2lljtAf7UN9oDBw9xfxSDC4jxdbfnGDGmq4iJhenWBbU9XV8ilm8AUUMYXq2nk+qvz8E21DA==}
 
   '@lume/kiwi@0.4.4':
     resolution: {integrity: sha512-ie0YTKgiZqD4TXlJ4eUbfi4UEoKs6YlLRYNTfPm5eUXwfudTBmPRs7Qcxz2SWKDpVTwThv3sWG6zwtyAA0nPpw==}
@@ -11197,7 +11197,7 @@ snapshots:
     dependencies:
       type-fest: 4.41.0
 
-  '@logtape/logtape@0.12.3': {}
+  '@logtape/logtape@1.2.2': {}
 
   '@lume/kiwi@0.4.4': {}
 
