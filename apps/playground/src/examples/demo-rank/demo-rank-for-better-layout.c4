@@ -1,0 +1,32 @@
+specification {
+  element block
+}
+
+model {
+  A = block
+  B = block
+  A -> B
+
+  C = block
+  D = block
+  E = block
+  F = block
+  G = block
+  C -> E
+  F -> E
+  B -> G
+}
+
+views {
+
+  view index {
+    title 'Effect of Rank'
+
+    include A, B, C, D, E, F, G
+
+    rank same { A, B } // of the same rank
+    rank source { C, D } // to be at the beginning excluding others
+    rank max { F } // to be at the end
+    rank min { G }
+  }
+}

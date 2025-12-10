@@ -75,6 +75,16 @@ export function PlaygroundsMenu() {
             )}>
             Deployments
           </MenuItem>
+          <MenuItem
+            renderRoot={(props) => (
+              <Link
+                to={'/w/$workspaceId/$viewId/'}
+                params={{ workspaceId: 'demo-rank', viewId: 'index' }}
+                {...props} />
+            )}>
+            Ranks
+          </MenuItem>
+
           {workspaces.length > 0 && (
             <>
               <MenuDivider />

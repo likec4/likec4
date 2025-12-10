@@ -120,6 +120,9 @@ export const createWrapperConfig = (params: {
             language: 'likec4',
             scopeName: 'source.likec4',
             path: `/likec4-language-grammar.json`,
+            embeddedLanguages: {
+              'meta.embedded.block.markdown': 'markdown',
+            },
           }],
         },
       },

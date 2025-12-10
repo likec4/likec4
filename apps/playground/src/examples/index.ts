@@ -1,5 +1,6 @@
 import { BigBankExample } from './bigbank'
 import { BlankExample } from './blank'
+import { DemoRankExample } from './demo-rank'
 import { DeploymentExample } from './deployment'
 import { DynamicViewExample } from './dynamic'
 import { TutorialExample } from './tutorial'
@@ -32,5 +33,10 @@ export const Examples = {
     isCustom: false,
     title: 'Deployment playground',
     ...DeploymentExample,
+  },
+  'demo-rank': {
+    isCustom: false,
+    title: 'Ranks',
+    ...DemoRankExample,
   },
 } satisfies Record<string, { isCustom: boolean; title: string; currentFilename: string; files: Record<string, string> }>
