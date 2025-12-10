@@ -67,13 +67,15 @@ You can share specification files (or any other LikeC4 sources) across multiple 
 
 ### Using include paths
 
-Add an `include` array to your project configuration to include files from directories outside the project folder:
+Add an `include` configuration to your project to include files from directories outside the project folder:
 
 ```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "cloud",
-  "include": ["../shared"]
+  "include": {
+    "paths": ["../shared"]
+  }
 }
 ```
 

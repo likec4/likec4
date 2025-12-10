@@ -17,9 +17,21 @@ export class IndexManager extends DefaultIndexManager {
 
   projectElements(projectId: ProjectId, nodeType?: string, uris?: Set<string>): Stream<AstNodeDescription> {
     const projects = this.services.workspace.ProjectsManager
+    const project = projects.getProject(projectId)
+
+    const includePathStrings = project.includePaths?.map(uri => {
+      const path = uri.toString()
+      return path.endsWith('/') ? path : path + '/'
+    }) ?? []
+
     let documentUris = stream(this.symbolIndex.keys())
     return documentUris
-      .filter(uri => projects.belongsTo(uri) === projectId && (!uris || uris.has(uri)))
+      .filter(uri => {
+        const belongsToProject = projects.belongsTo(uri) === projectId
+        const inIncludePath = includePathStrings.length > 0 &&
+          includePathStrings.some(includePath => uri.startsWith(includePath))
+        return (belongsToProject || inIncludePath) && (!uris || uris.has(uri))
+      })
       .flatMap(uri => this.getFileDescriptions(uri, nodeType))
   }
 }

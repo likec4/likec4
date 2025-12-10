@@ -58,17 +58,19 @@ See [Programmatic config](/dsl/config/programmatic) for more information.
 
 ## Include additional directories
 
-You can include LikeC4 source files from directories outside the project folder by adding an `include` array to the config file.
+You can include LikeC4 source files from directories outside the project folder by adding an `include` configuration to the config file.
 This is useful for sharing specifications, common styles, or other model files across multiple projects.
 
 ```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
-  "include": [
-    "../shared",
-    "../common/specs"
-  ]
+  "include": {
+    "paths": [
+      "../shared",
+      "../common/specs"
+    ]
+  }
 }
 ```
 
@@ -87,6 +89,24 @@ This is useful for sharing specifications, common styles, or other model files a
 
 Paths are relative to the project folder (the folder containing the config file).  
 LikeC4 recursively scans the included directories for `.c4` files.
+
+You can also configure the scanning behavior:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "include": {
+    "paths": ["../shared"],
+    "maxDepth": 5,
+    "fileThreshold": 50
+  }
+}
+```
+
+- **`paths`** - Array of relative directory paths (required)
+- **`maxDepth`** - Maximum directory depth to scan (default: 3, range: 1-20)
+- **`fileThreshold`** - Warn if more than this many files are loaded (default: 30)
 
 :::note
 Include paths must be relative paths. Absolute paths (like `/usr/share`), drive letters (like `C:\`), and URLs are not allowed.

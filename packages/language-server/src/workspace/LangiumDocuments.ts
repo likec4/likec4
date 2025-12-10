@@ -74,7 +74,30 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   }
 
   projectDocuments(projectId: ProjectId): Stream<LikeC4LangiumDocument> {
-    return this.allExcludingBuiltin.filter(doc => doc.likec4ProjectId === projectId)
+    const projects = this.services.workspace.ProjectsManager
+    const project = projects.getProject(projectId)
+
+    const projectFolder = project.folderUri.toString() + (project.folderUri.path.endsWith('/') ? '' : '/')
+    const includePathStrings = project.includePaths?.map(uri => {
+      const path = uri.toString()
+      return path.endsWith('/') ? path : path + '/'
+    }) ?? []
+
+    return this.allExcludingBuiltin.filter(doc => {
+      const docUri = doc.uri.toString()
+
+      // Always include documents from the project's own folder
+      if (docUri.startsWith(projectFolder)) {
+        return true
+      }
+
+      // Check for addtional documents when the config has the `include:paths` property set.
+      if (includePathStrings.length > 0) {
+        return includePathStrings.some(includePath => docUri.startsWith(includePath))
+      }
+
+      return false
+    })
   }
 
   groupedByProject(): Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>> {
