@@ -345,8 +345,8 @@ catalogs:
       specifier: ^1.106.1
       version: 1.106.1
     vscode-textmate:
-      specifier: 9.2.0
-      version: 9.2.0
+      specifier: 9.3.0
+      version: 9.3.0
   xstate:
     '@xstate/react':
       specifier: 6.0.0
@@ -762,7 +762,7 @@ importers:
         version: 2.0.1
       vscode-textmate:
         specifier: catalog:vscode
-        version: 9.2.0
+        version: 9.3.0
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
@@ -9229,6 +9229,9 @@ packages:
 
   vscode-textmate@9.2.0:
     resolution: {integrity: sha512-rkvG4SraZQaPSN/5XjwKswdU0OP9MF28QjrYzUBbhb8QyG3ljB1Ky996m++jiI7KdiAP2CkBiQZd9pqEDTClqA==}
+
+  vscode-textmate@9.3.0:
+    resolution: {integrity: sha512-zHiZZOdb9xqj5/X1C4a29sbgT2HngdWxPLSl3PyHRQF+5visI4uNM020OHiLJjsMxUssyk/pGVAg/9LCIobrVg==}
 
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
@@ -18080,6 +18083,8 @@ snapshots:
   vscode-oniguruma@2.0.1: {}
 
   vscode-textmate@9.2.0: {}
+
+  vscode-textmate@9.3.0: {}
 
   vscode-uri@3.1.0: {}
 
