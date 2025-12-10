@@ -1,37 +1,18 @@
 {
   "name": "likec4",
   "scopeName": "source.likec4",
-  "fileTypes": [".c4", ".likec4", ".like-c4"],
   "patterns": [
-    {
-      "include": "#comments"
-    },
-    {
-      "include": "#triple-quoted-string"
-    },
-    {
-      "include": "#string"
-    },
-    {
-      "include": "#relationship"
-    },
-    {
-      "match": "\\b(link|icon):?\\s+([^\\s]+)",
-      "captures": {
-        "1": {
-          "name": "variable.other.property.likec4"
-        },
-        "2": {
-          "name": "string.quoted.single.likec4"
-        }
-      }
-    },
+    { "include": "#comments" },
+    { "include": "#markdown-string" },
+    { "include": "#link-or-icon" },
+    { "include": "#string" },
+    { "include": "#relationship" },
     {
       "name": "keyword.control.likec4",
       "match": "\\b(specification|model|views)\\b"
     },
     {
-      "match": "\\b(tag|kind)\\s+is\\b",
+      "match": "\\b(tag|kind)\\s+is(\\s+not)?\\b",
       "name": "keyword.control.likec4"
     },
     {
@@ -41,16 +22,19 @@
     {
       "match": "\\b(element|tag|relationship)\\s+([^\\s]+)\\b",
       "captures": {
-        "1": {
-          "name": "keyword.control.likec4"
-        },
-        "2": {
-          "name": "entity.name.type.enum.likec4"
-        }
+        "1": { "name": "keyword.control.likec4" },
+        "2": { "name": "entity.name.type.enum.likec4" }
       }
     },
     {
-      "match": "#[a-fA-F0-9]+",
+      "match": "\\b(rank)\\s+(same|source|sink|min|max)\\b",
+      "captures": {
+        "1": { "name": "keyword.control.likec4" },
+        "2": { "name": "entity.name.type.enum.likec4" }
+      }
+    },
+    {
+      "match": "#[a-fA-F0-9]{3,8}",
       "name": "constant.other.color.likec4"
     },
     {
@@ -60,35 +44,21 @@
     {
       "match": "(-\\[)([^\\]]*)(\\]->)",
       "captures": {
-        "1": {
-          "name": "keyword.operator.likec4"
-        },
-        "2": {
-          "name": "entity.name.function.likec4"
-        },
-        "3": {
-          "name": "keyword.operator.likec4"
-        }
+        "1": { "name": "keyword.operator.likec4" },
+        "2": { "name": "entity.name.function.likec4" },
+        "3": { "name": "keyword.operator.likec4" }
       }
     },
     {
       "match": "\\b(shape|head|tail|line|border|variant):?\\s+([-\\w]+)\\b",
       "captures": {
-        "1": {
-          "name": "variable.other.property.likec4"
-        },
-        "2": {
-          "name": "entity.name.type.enum.likec4"
-        }
+        "1": { "name": "variable.other.property.likec4" },
+        "2": { "name": "entity.name.type.enum.likec4" }
       }
     },
     {
-      "match": "\\b(aws|azure|gcp|tech):([-\\w]+)\\b",
-      "name": "entity.name.type.enum.likec4"
-    },
-    {
       "name": "entity.name.variable.likec4",
-      "match": "\\b\\.(\\*|_)"
+      "match": "\\b\\.(\\*|_){1,2}(?!\\S)"
     },
     {
       "name": "entity.name.type.enum.likec4",
@@ -112,7 +82,7 @@
     },
     {
       "name": "keyword.symbol.likec4",
-      "match": "(\\{|\\}|\\(|\\)|\\:|\\,|\\;|\\!|\\=+)"
+      "match": "\\{|\\}|\\(|\\)|\\:|\\,|\\;|\\!|\\=+"
     },
     {
       "name": "entity.name.function.likec4",
@@ -124,6 +94,21 @@
     }
   ],
   "repository": {
+    "link-or-icon": {
+      "match": "\\b(link|icon):?\\s+([^\\s]+)",
+      "captures": {
+        "1": { "name": "variable.other.property.likec4" },
+        "2": {
+          "name": "string.quoted.single.likec4",
+          "patterns": [
+            {
+              "match": "none|(aws|azure|gcp|tech):([-\\w]+)",
+              "name": "entity.name.type.enum.likec4"
+            }
+          ]
+        }
+      }
+    },
     "relationship": {
       "patterns": [
         {
@@ -142,95 +127,43 @@
         {
           "name": "comment.block.likec4",
           "begin": "/\\*",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.comment.likec4"
-            }
-          },
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.likec4" } },
           "end": "\\*/",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.comment.likec4"
-            }
-          }
+          "endCaptures": { "0": { "name": "punctuation.definition.comment.likec4" } }
         },
         {
           "begin": "//",
-          "beginCaptures": {
-            "1": {
-              "name": "punctuation.whitespace.comment.leading.likec4"
-            }
-          },
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.likec4" } },
           "end": "(?=$)",
           "name": "comment.line.likec4"
         }
       ]
     },
-    "triple-quoted-string": {
+    "markdown-string": {
+      "begin": "(?=(^|\\G)(\\s*)\\S*(:|\\b)\\s*('{3}|\"{3})\\s*$)",
+      "end": "(^|\\G)(\\s*)(\\4)(.*$)",
+      "endCaptures": { "3": { "name": "punctuation.definition.string.end.likec4" } },
+      "applyEndPatternLast": 1,
       "patterns": [
         {
-          "begin": "(\"{3})\\s*$",
+          "begin": "(^|\\G)(\\s*)(\\S*)(:|\\b)\\s*('{3}|\"{3})\\s*$",
           "beginCaptures": {
-            "0": {
-              "name": "string.quoted.triple.likec4"
-            }
+            "3": { "name": "variable.other.property.likec4" },
+            "5": { "name": "punctuation.definition.string.begin.likec4" }
           },
-          "end": "(?:[^\"]*)(\"{3})\\s*$",
-          "endCaptures": {
-            "0": {
-              "name": "string.quoted.triple.likec4"
-            }
-          },
-          "contentName": "meta.embedded.text.html.markdown",
-          "patterns": [{
-            "include": "text.html.markdown"
-          }]
-        },
-        {
-          "begin": "('{3})\\s*$",
-          "beginCaptures": {
-            "0": {
-              "name": "string.quoted.triple.likec4"
-            }
-          },
-          "end": "(?:[^']*)('{3})\\s*$",
-          "endCaptures": {
-            "0": {
-              "name": "string.quoted.triple.likec4"
-            }
-          },
-          "contentName": "meta.embedded.text.html.markdown",
-          "patterns": [
-            {
-              "include": "text.html.markdown"
-            }
-          ]
+          "while": "(^|\\G)(\\2([ ]{,3}|\\t)(?!\\s*\\5)|\\s*$)",
+          "contentName": "meta.embedded.block.markdown",
+          "patterns": [ { "include": "text.html.markdown" } ]
         }
       ]
     },
     "string": {
-      "patterns": [
-        {
-          "name": "string.quoted.double.likec4",
-          "begin": "\"",
-          "end": "\"",
-          "patterns": [
-            {
-              "include": "#string-character-escape"
-            }
-          ]
-        },
-        {
-          "name": "string.quoted.single.likec4",
-          "begin": "'",
-          "end": "'",
-          "patterns": [
-            {
-              "include": "#string-character-escape"
-            }
-          ]
-        }
-      ]
+      "name": "string.quoted.likec4",
+      "begin": "(\"|')(?!\\1)",
+      "end": "(\\1)(?!\\1)",
+      "beginCaptures": { "1": { "name": "punctuation.definition.string.likec4" } },
+      "endCaptures": { "1": { "name": "punctuation.definition.string.likec4" } },
+      "patterns": [ { "include": "#string-character-escape" } ]
     },
     "string-character-escape": {
       "name": "constant.character.escape.likec4",

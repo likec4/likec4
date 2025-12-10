@@ -167,13 +167,19 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       }
     })
     when(isAnyOf(ast.isFqnRef, ast.isStrictFqnRef), mark => {
-      mark.property('value').readonly.definition.variable()
+      const text = mark.node.$cstNode?.text ?? ''
+      if (text !== '' && text !== 'this' && text !== 'it') {
+        mark.property('value').readonly.definition.variable()
+      }
       if (!mark.node.parent) {
         stopHighlight()
       }
     })
     when(ast.isStrictFqnElementRef, mark => {
-      mark.property('el').readonly.definition.variable()
+      const text = mark.node.el.$refText ?? ''
+      if (text !== '') {
+        mark.property('el').readonly.definition.variable()
+      }
       if (!mark.node.parent) {
         stopHighlight()
       }
@@ -244,41 +250,42 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     node: AstNode,
     acceptor: SemanticTokenAcceptor,
   ): void | undefined | 'prune' {
-    try {
-      if (isAnyOf(ast.isElement, ast.isDeploymentNode, ast.isDeployedInstance)(node)) {
-        return this.highlightNameAndKind(node)
-      }
-      if (ast.isLikeC4View(node)) {
-        return this.highlightView(node)
-      }
+    if (isAnyOf(ast.isElement, ast.isDeploymentNode, ast.isDeployedInstance)(node)) {
+      return this.highlightNameAndKind(node)
+    }
+    if (ast.isLikeC4View(node)) {
+      return this.highlightView(node)
+    }
 
-      if (
-        ast.isAnyProperty(node) &&
-        !isAnyOf(
-          ast.isMetadataProperty,
-          ast.isElementStyleProperty,
-          ast.isRelationStyleProperty,
-        )(node)
-      ) {
-        invariant(node.key)
-        acceptor({
-          node,
-          property: 'key',
-          type: SemanticTokenTypes.property,
-        })
-      }
+    if (
+      ast.isAnyProperty(node) &&
+      !isAnyOf(
+        ast.isMetadataProperty,
+        ast.isElementStyleProperty,
+        ast.isRelationStyleProperty,
+      )(node) &&
+      isTruthy(node.key)
+    ) {
+      acceptor({
+        node,
+        property: 'key',
+        type: SemanticTokenTypes.property,
+      })
+    }
 
-      for (const { predicate, highlightFn } of this.rules) {
-        if (predicate(node)) {
-          highlightFn(this.mark(node))
-          break
+    let m: Highlighter<AstNode>
+    for (const { predicate, highlightFn } of this.rules) {
+      if (predicate(node)) {
+        try {
+          m ??= this.mark(node)
+          highlightFn(m)
+        } catch (error) {
+          if (error === PRUNE) {
+            return 'prune'
+          }
+          logger.warn(`Error highlighting node of type ${(node as any)._type}`, { error })
         }
       }
-    } catch (error) {
-      if (error === PRUNE) {
-        return 'prune'
-      }
-      logger.warn(`Error highlighting node of type ${(node as any)._type}`, { error })
     }
   }
 

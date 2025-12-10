@@ -116,7 +116,7 @@
         "scopeName": "source.likec4",
         "path": "likec4.tmLanguage.json",
         "embeddedLanguages": {
-          "meta.embedded.text.html.markdown": "markdown"
+          "meta.embedded.block.markdown": "markdown"
         }
       }
     ],
