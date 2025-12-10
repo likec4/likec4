@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -68,7 +68,7 @@ jobs:
     timeout-minutes: 20
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -86,7 +86,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -108,7 +108,7 @@ jobs:
       - check-types
       - check-tests
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -130,7 +130,7 @@ jobs:
       - check-types
       - check-tests
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: 🛠️ Setup pnpm
         uses: pnpm/action-setup@v4
@@ -194,7 +194,7 @@ jobs:
       - check-types
       - check-tests
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: 🛠️ Setup pnpm
         uses: pnpm/action-setup@v4

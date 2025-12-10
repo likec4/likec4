@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     if: ${{ github.repository_owner == 'likec4'}}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
