@@ -159,9 +159,9 @@
     },
     "string": {
       "name": "string.quoted.likec4",
-      "begin": "(\"|')(?!\\1)",
-      "end": "(\\1)(?!\\1)",
-      "beginCaptures": { "1": { "name": "punctuation.definition.string.likec4" } },
+      "begin": "(\"|')",
+      "end": "(\\1)",
+      "beginCaptures": { "1": { "name": "punctuation.definition.string.begin.likec4" } },
       "endCaptures": { "1": { "name": "punctuation.definition.string.likec4" } },
       "patterns": [ { "include": "#string-character-escape" } ]
     },
