@@ -297,12 +297,12 @@ function useHandleElementSelection() {
         // Same view - focus on the element directly
         setTimeout(() => {
           diagram.focusOnElement(element.id)
-        }, 100)
+        }, 250) // need to wait for the search panel to close
       } else {
         // Different view - navigate and focus
         setTimeout(() => {
           diagram.navigateTo(singleView.id, undefined, element.id)
-        }, 100)
+        }, 250) // need to wait for the search panel to close
       }
       return
     }
