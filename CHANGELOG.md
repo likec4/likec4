@@ -1,3 +1,20 @@
+## [1.46.1](https://github.com/likec4/likec4/compare/v1.46.0...v1.46.1) (2025-12-10)
+
+
+### Bug Fixes
+
+* improve semantic token highlighting and update markdown string handling ([2c7433d](https://github.com/likec4/likec4/commit/2c7433dfd909949d4b2968df909815422c464f3c))
+* increase timeout duration for element focus and navigation ([c83c9b1](https://github.com/likec4/likec4/commit/c83c9b15989077f902ae35b75abd66e8bd35f547))
+* markdown highlighting ([4025086](https://github.com/likec4/likec4/commit/40250868afb483fe7744cdf0040821f5b9820170))
+* update vscode-textmate to version 9.3.0 ([f8dd154](https://github.com/likec4/likec4/commit/f8dd15402579182e1c3466ec7dc31ba7a7e51017))
+
+
+### Features
+
+* add demo rank example and integrate into playground ([0033d00](https://github.com/likec4/likec4/commit/0033d003792c10b94948f80caa9b984ae28c5fe4))
+
+
+
 # [1.46.0](https://github.com/likec4/likec4/compare/v1.45.0...v1.46.0) (2025-12-08)
 
 This release carries a lot of heart from the community. You can see it in behind every PR. Thanks to everyone who contributed time, energy and patience. LikeC4 grows because people choose to build together, and this release is a great example of what that looks like.
