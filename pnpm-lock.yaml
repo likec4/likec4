@@ -1893,8 +1893,8 @@ importers:
         specifier: workspace:*
         version: link:../vscode-preview
       '@reactive-vscode/vueuse':
-        specifier: ^0.3.2
-        version: 0.3.2
+        specifier: ^0.4.1
+        version: 0.4.1
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.2
@@ -1935,8 +1935,8 @@ importers:
         specifier: ^9.3.0
         version: 9.3.0
       reactive-vscode:
-        specifier: ^0.3.2
-        version: 0.3.2(@types/vscode@1.106.1)
+        specifier: ^0.4.1
+        version: 0.4.1(@types/vscode@1.106.1)
       remeda:
         specifier: catalog:utils
         version: 2.32.0
@@ -3768,11 +3768,11 @@ packages:
       js-cookie:
         optional: true
 
-  '@reactive-vscode/reactivity@0.3.2':
-    resolution: {integrity: sha512-TudPDxWleWJaJKAzRmDl3WOeIDijJNaokM9/SBxNEpe0z848z+lskeHQklczEPSv/ac9QnvsdKtBn9p/r64PNw==}
+  '@reactive-vscode/reactivity@0.4.1':
+    resolution: {integrity: sha512-ThNXTkTNK9LHvdlBcyzqSywlfF61FIQDlVDqv12+rkRQCCUjWsD+oilbIYYi5uAJkQ2h/yLyowx3f0YVEY1bxQ==}
 
-  '@reactive-vscode/vueuse@0.3.2':
-    resolution: {integrity: sha512-Re9ly0PcDMwscZorajIFpJ0h5VJI5OZAYYDcK9ptPyKqQrqWI3e/FKz7ZiI9K17q3C4lPAUx6zL2q1fh/CLQYw==}
+  '@reactive-vscode/vueuse@0.4.1':
+    resolution: {integrity: sha512-BMhInzSoq0NfK3T23gQZEFS8ohrtWbh4ekHK8amFPlQhIWEQvYjg+tsIuWKbHWcOUXG+AHZePtizSJW4i3kwTg==}
 
   '@remix-run/node-fetch-server@0.8.1':
     resolution: {integrity: sha512-J1dev372wtJqmqn9U/qbpbZxbJSQrogNN2+Qv1lKlpATpe/WQ9aCZfl/xSb9d2Rgh1IyLSvNxZAXPZxruO6Xig==}
@@ -7855,8 +7855,8 @@ packages:
     resolution: {integrity: sha512-DGrYcCWK7tvYMnWh79yrPHt+vdx9tY+1gPZa7nJQtO/p8bLTDaHp4dzwEhQB7pZ4Xe3ok4XKuEPrVuc+wlpkmw==}
     engines: {node: '>=0.10.0'}
 
-  reactive-vscode@0.3.2:
-    resolution: {integrity: sha512-1IUoLFOOie3wM0X9MNRcMvublKTsBshm7gEuZTH5W6AVMPDP91o6F9NxIBM5bqzxOMeplrgaig1X3BWfVrw+xQ==}
+  reactive-vscode@0.4.1:
+    resolution: {integrity: sha512-meh1p9cF3A0kRKQARo84PASHwa27cFMD3bLWfV7DypERf51678f420my8btKAyMHl3P6pI7LcivrrwbfrIgmNg==}
     peerDependencies:
       '@types/vscode': ^1.101.0
 
@@ -11806,11 +11806,11 @@ snapshots:
       react: 19.2.1
       react-dom: 19.2.1(react@19.2.1)
 
-  '@reactive-vscode/reactivity@0.3.2': {}
+  '@reactive-vscode/reactivity@0.4.1': {}
 
-  '@reactive-vscode/vueuse@0.3.2':
+  '@reactive-vscode/vueuse@0.4.1':
     dependencies:
-      '@reactive-vscode/reactivity': 0.3.2
+      '@reactive-vscode/reactivity': 0.4.1
 
   '@remix-run/node-fetch-server@0.8.1': {}
 
@@ -16549,9 +16549,9 @@ snapshots:
 
   react@19.2.1: {}
 
-  reactive-vscode@0.3.2(@types/vscode@1.106.1):
+  reactive-vscode@0.4.1(@types/vscode@1.106.1):
     dependencies:
-      '@reactive-vscode/reactivity': 0.3.2
+      '@reactive-vscode/reactivity': 0.4.1
       '@types/vscode': 1.106.1
 
   read-package-json-fast@4.0.0:
