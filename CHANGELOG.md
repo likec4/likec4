@@ -1,3 +1,14 @@
+## [1.46.1](https://github.com/likec4/likec4/compare/v1.46.0...v1.46.1) (2025-12-10)
+
+### Bug Fixes
+
+* issue with include syntax / different syntax between in VSCode extension and LikeC4 cli. Thanks @kieronlanning, closes [#2456](https://github.com/likec4/likec4/issues/2456)
+* markdown syuntax highlighting
+  <img src="https://github.com/user-attachments/assets/cc698fe4-588e-45c0-a9f8-f5adf9f43cfc" />
+* increase timeout duration to ensure search panel animation is complete ([c83c9b1](https://github.com/likec4/likec4/commit/c83c9b15989077f902ae35b75abd66e8bd35f547))
+* add demo rank example into playground
+
+
 # [1.46.0](https://github.com/likec4/likec4/compare/v1.45.0...v1.46.0) (2025-12-08)
 
 This release carries a lot of heart from the community. You can see it in behind every PR. Thanks to everyone who contributed time, energy and patience. LikeC4 grows because people choose to build together, and this release is a great example of what that looks like.
