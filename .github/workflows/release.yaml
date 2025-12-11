@@ -2,12 +2,13 @@ name: release
 
 on:
   workflow_call:
-  # workflow_dispatch:
+  workflow_dispatch:
   # push:
   #   branches:
   #     - "fix-release"
 
 permissions:
+  id-token: write  # Required for NPM Trusted publishing
   actions: write
   checks: write
   contents: write
@@ -24,7 +25,8 @@ jobs:
     name: publish
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
-    if: ${{ github.repository_owner == 'likec4' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.repository_owner == 'likec4' }}
+    environment: release
     steps:
       - name: Decode the GitHub App Private Key
         id: decode
@@ -65,6 +67,6 @@ jobs:
         run: pnpm shipjs trigger
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          # NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
           # TODO: enable provenance
           # NPM_CONFIG_PROVENANCE: "true"
