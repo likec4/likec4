@@ -138,7 +138,7 @@ catalogs:
   vite:
     "@vitejs/plugin-react": ^5.1.1
     rollup: ^4.53.3
-    vite: ^7.2.6
+    vite: ^7.2.7
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.24.0
     vite-tsconfig-paths: ^5.1.4
