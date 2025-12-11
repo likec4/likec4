@@ -121,10 +121,10 @@ describe('toNodeSource - description/summary handling', () => {
       // field (but no summary) that contains onlyOneInstance with a summary
       // will use the node's description instead of the instance's summary.
       //
-      // The problematic behavior is in toNodeSource():
-      // 1. Line 167: summary ??= description (node.description becomes summary)
-      // 2. Line 177: summary ??= instanceSummary(onlyOneInstance) (no effect, summary already set)
-      // 3. Line 191: description: summary (outputs node.description)
+      // The problematic behavior is in toNodeSource() for deployment nodes:
+      // 1. summary ??= description (node.description becomes summary)
+      // 2. summary ??= instanceSummary(onlyOneInstance) (no effect, summary already set)
+      // 3. description: summary (outputs node.description)
       //
       // Expected behavior: When a node has no explicit summary, the instance's
       // summary should be used if available.
