@@ -1,6 +1,6 @@
 import { isTagColorSpecified } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
-import { type BoxProps, Box, HStack } from '@likec4/styles/jsx'
+import { Box, HStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
 import { likec4tag } from '@likec4/styles/recipes'
 import { useDebouncedState, useHover } from '@mantine/hooks'

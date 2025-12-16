@@ -28,8 +28,7 @@ export class IndexManager extends DefaultIndexManager {
     return documentUris
       .filter(uri => {
         const belongsToProject = projects.belongsTo(uri) === projectId
-        const inIncludePath = includePathStrings.length > 0 &&
-          includePathStrings.some(includePath => uri.startsWith(includePath))
+        const inIncludePath = includePathStrings.some(includePath => uri.startsWith(includePath))
         return (belongsToProject || inIncludePath) && (!uris || uris.has(uri))
       })
       .flatMap(uri => this.getFileDescriptions(uri, nodeType))

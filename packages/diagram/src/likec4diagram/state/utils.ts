@@ -3,7 +3,6 @@ import {
   type DiagramNode,
   type DiagramView,
   type Fqn,
-  type NodeId,
   type XYPoint,
   BBox,
 } from '@likec4/core/types'
