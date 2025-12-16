@@ -17,7 +17,7 @@
     "HUSKY": "0"
   },
   "runArgs": [
-    // This enabes the host to communicate with the container over localhost.
+    // This enables the host to communicate with the container over localhost.
     "--network=host"
   ],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
