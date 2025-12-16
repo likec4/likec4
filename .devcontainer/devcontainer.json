@@ -1,16 +1,14 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
   "name": "LikeC4 Dev",
-  // Use specific Node version matching .tool-versions (22.21.1)
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22.21",
+  // Base image - asdf features will install tools from .tool-versions
+  "image": "mcr.microsoft.com/devcontainers/base:debian",
   "features": {
-    // dprint is already available globally (see Dockerfile)
-    // "ghcr.io/devcontainers-contrib/features/dprint-asdf:2": {},
-    // turbo is already installed globally (see Dockerfile)
-    // "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
-    // tsx is already installed globally (see Dockerfile)
-    // "ghcr.io/devcontainers-contrib/features/tsx:1": {}
+    // Install asdf version manager first. The postCreateCommand will install Node.js, pnpm, and dprint.
+    "ghcr.io/devcontainer-community/devcontainer-features/asdf-vm.com:1": {},
+    "ghcr.io/devcontainers-extra/features/tsx:1": {},
+    "ghcr.io/devcontainers-extra/features/turborepo-npm:1": {}
+
   },
   "containerEnv": {
     "TURBO_CACHE_DIR": "/workspace/.turbo",
@@ -18,6 +16,10 @@
     // Prevent husky from installing git hooks during container setup
     "HUSKY": "0"
   },
+  "runArgs": [
+    // This enabes the host to communicate with the container over localhost.
+    "--network=host"
+  ],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [5173, 24678, 24679, 51204, 61000, 61001, 62001, 62002],
   "portsAttributes": {
@@ -52,9 +54,10 @@
     }
   },
   // Use 'onCreateCommand' to run commands when creating the container for the first time.
-  "onCreateCommand": "sudo chown -R node:node .pnpm-store node_modules .turbo",
+  "onCreateCommand": "sudo chown -R root:root .pnpm-store node_modules .turbo",
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "pnpm install --prefer-offline",
+  // Using asdf to install nodejs, pnpm, and dprint as per .tool-versions, then install dependencies.
+  "postCreateCommand": "bash -c 'asdf plugin add nodejs || true && asdf plugin add pnpm || true && asdf plugin add dprint || true && asdf install && pnpm install --prefer-offline'",
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
@@ -83,5 +86,6 @@
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "workspaceFolder": "/workspace",
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  "remoteUser": "node"
+  // Doesn't work on Windows due to file permission issues with bind mounts unless it's a root user.
+  "remoteUser": "root"
 }
