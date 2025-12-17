@@ -43,7 +43,7 @@ const {
 
     acc.imports.push(`import ${Component} from './${group}/${icon}'`)
     acc.icons.push(`  '${group}:${icon}': ${Component},`)
-    acc.types.push(`  readonly '${group}:${icon}': SvgIcon;`)
+    acc.types.push(`  | '${group}:${icon}'`)
     return acc
   },
   {
@@ -58,11 +58,15 @@ await writeFile(
   'all.d.ts',
   `
 import type { SVGProps, JSX } from 'react';
+
 type SvgIcon = (props: SVGProps<SVGSVGElement>) => JSX.Element;
+
+export type IconName =
+${types.join('\n')};
+
 export declare const Icons: {
-${types.join('\n')}
+  readonly [key in IconName]: SvgIcon
 };
-export type IconName = keyof typeof Icons;
 
 export type IconRendererProps = {
   node: {
