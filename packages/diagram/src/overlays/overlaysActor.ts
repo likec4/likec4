@@ -220,7 +220,6 @@ const openRelationshipsBrowser = () =>
 
 const openOverlay = () =>
   machine.enqueueActions(({ enqueue, event }) => {
-    console.log('openOverlay event', event)
     assertEvent(event, [
       'open.elementDetails',
       'open.relationshipDetails',
@@ -249,7 +248,6 @@ const stopListeningToEsc = () => machine.stopChild('hotkey')
 const checkState = () =>
   machine.enqueueActions(({ enqueue, context }) => {
     if (context.overlays.length === 0) {
-      console.log('No overlays left, raising close event')
       // No more overlays, go to idle by raising close again
       enqueue.raise({ type: 'close' })
     }
