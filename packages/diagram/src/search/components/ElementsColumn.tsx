@@ -31,7 +31,7 @@ import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch, useSearchActor } from '../hooks'
 import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
-import { centerY, moveFocusToSearchInput, queryAllFocusable, stopAndPrevent } from './utils'
+import { centerY, moveFocusToSearchInput, queryAllFocusable, stopAndPrevent, whenSearchAnimationEnds } from './utils'
 import { NothingFound } from './ViewsColum'
 
 interface LikeC4ModelTreeNodeData {
@@ -290,22 +290,25 @@ function useHandleElementSelection() {
     if (views.length === 0) {
       return
     }
-    const singleView = only(views)
-    if (singleView) {
-      searchActorRef.send({ type: 'close' })
-      if (singleView.id === diagram.currentView.id) {
-        // Same view - focus on the element directly
-        setTimeout(() => {
-          diagram.focusOnElement(element.id)
-        }, 250) // need to wait for the search panel to close
-      } else {
-        // Different view - navigate and focus
-        setTimeout(() => {
-          diagram.navigateTo(singleView.id, undefined, element.id)
-        }, 250) // need to wait for the search panel to close
-      }
+    const elementFqn = element.id
+    const onlyOneViewId = only(views)?.id
+    if (!onlyOneViewId) {
+      searchActorRef.send({ type: 'pickview.open', elementFqn })
       return
     }
-    searchActorRef.send({ type: 'pickview.open', elementFqn: element.id })
+    const isSameView = onlyOneViewId === diagram.currentView.id
+    searchActorRef.send({ type: 'close' })
+
+    whenSearchAnimationEnds(() => {
+      // Same view - focus on the element directly
+      if (isSameView) {
+        diagram.focusOnElement(elementFqn)
+        return
+      }
+
+      // Different view - navigate and focus
+      diagram.navigateTo(onlyOneViewId, undefined, elementFqn)
+    })
+    return
   })
 }

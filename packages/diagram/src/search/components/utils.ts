@@ -62,3 +62,14 @@ export function queryAllFocusable(
   const elements = root.querySelectorAll<HTMLButtonElement>(`[data-likec4-search-${where}] ${selector}`)
   return [...elements]
 }
+
+/**
+ * Workaround: defers execution of the callback, to finish search panel close animation.
+ * Otherwise, there could be weird artifacts when navigating to large diagrams.
+ * @todo Find a better way to handle this, possibly with animationend event.
+ */
+export function whenSearchAnimationEnds(
+  callback: () => void,
+): void {
+  setTimeout(callback, 300)
+}

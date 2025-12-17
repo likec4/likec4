@@ -23,7 +23,7 @@ import { useDiagram } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch, useSearchActor } from '../hooks'
 import { buttonsva } from './_shared.css'
-import { centerY, moveFocusToSearchInput, queryAllFocusable } from './utils'
+import { centerY, moveFocusToSearchInput, queryAllFocusable, whenSearchAnimationEnds } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -111,22 +111,21 @@ export function ViewButton(
 ) {
   const searchActorRef = useSearchActor()
   const diagram = useDiagram()
+  const nextViewId = view.id
   const currentViewId = useCurrentViewId()
-  const isCurrentView = view.id === currentViewId
+  const isCurrentView = nextViewId === currentViewId
 
   const navigate = () => {
     searchActorRef.send({ type: 'close' })
-    if (isCurrentView && focusOnElement) {
+    whenSearchAnimationEnds(() => {
       // Same view - focus on the element directly
-      setTimeout(() => {
+      if (isCurrentView && focusOnElement) {
         diagram.focusOnElement(focusOnElement)
-      }, 100)
-    } else {
+        return
+      }
       // Different view - navigate and optionally focus
-      setTimeout(() => {
-        diagram.navigateTo(view.id, undefined, focusOnElement)
-      }, 100)
-    }
+      diagram.navigateTo(nextViewId, undefined, focusOnElement)
+    })
   }
 
   return (
