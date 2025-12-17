@@ -50,7 +50,10 @@ export default defineConfig(({ command }) => ({
         include: [
           '@likec4/icons/all',
           '@hpcc-js/wasm-graphviz',
+          'langium/lsp',
+          'langium',
           'vscode-languageserver/browser',
+          'vscode-languageserver-protocol',
           'vscode-languageclient/browser',
           'vscode-languageclient',
           'vscode-languageserver-types',
@@ -59,6 +62,7 @@ export default defineConfig(({ command }) => ({
           'vscode-oniguruma',
           'vscode-jsonrpc',
           'vscode-uri',
+          'ufo',
         ],
         holdUntilCrawlEnd: false,
         esbuildOptions: {
@@ -96,6 +100,12 @@ export default defineConfig(({ command }) => ({
     playground: {
       resolve: {
         conditions: ['workerd', 'worker', 'sources'],
+      },
+      optimizeDeps: {
+        /**
+         * @see https://github.com/likec4/likec4/pull/2416#issuecomment-3594491275
+         */
+        exclude: ['remeda'],
       },
     },
   },
