@@ -138,7 +138,7 @@ export const createWrapperConfig = (params: {
             workspaceFolder: {
               index: 0,
               name: 'playground',
-              uri: monaco.Uri.parse('file:///playground/'),
+              uri: monaco.Uri.parse('file:///'),
             },
             documentSelector: [{ language: 'likec4' }],
             markdown: {

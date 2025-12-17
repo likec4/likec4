@@ -152,17 +152,7 @@ export function LanguageClientSync({ config, wrapper }: {
     const disposables = [] as IDisposable[]
     lastAsync.current = lastAsync.current
       .then(async () => {
-        logger.debug`initialize memory files`
-
         const ctx = playground.getContext()
-        const { docs, activeModel } = createMemoryFileSystem(
-          config.fsProvider,
-          ctx.files,
-          ctx.activeFilename,
-        )
-        if (activeModel) {
-          wrapper.getEditor()?.setModel(activeModel)
-        }
 
         const clientWrapper = wrapper.getLanguageClientWrapper('likec4')
         invariant(clientWrapper, 'MonacoEditorLanguageClientWrapper is missing LikeC4 LanguageClientWrapper')
@@ -170,6 +160,16 @@ export function LanguageClientSync({ config, wrapper }: {
         if (clientWrapper.isStarted()) {
           logger.debug`restart language client`
           await clientWrapper.restartLanguageClient(loadLikeC4Worker())
+        }
+
+        logger.debug`initialize memory files`
+        const { docs, activeModel } = createMemoryFileSystem(
+          config.fsProvider,
+          ctx.files,
+          ctx.activeFilename,
+        )
+        if (activeModel) {
+          wrapper.getEditor()?.setModel(activeModel)
         }
 
         const throttled = funnel(requestComputedModel, {
