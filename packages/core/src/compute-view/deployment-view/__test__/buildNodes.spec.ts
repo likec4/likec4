@@ -1,3 +1,4 @@
+import { indexBy } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../../builder'
 import { TestHelper } from './TestHelper'
@@ -305,6 +306,64 @@ describe('deployment node with onlyOneInstance', () => {
           txt: 'node description',
         },
       })
+    })
+  })
+
+  it('verifies #2387', () => {
+    const t = TestHelper.from(
+      Builder.specification({
+        elements: ['external_system'],
+        deployments: ['kubernetesNamespace'],
+      })
+        .model(({ external_system }, _) =>
+          _(
+            external_system('ca', 'Certificate Authority'),
+            external_system('identity', 'Identity Provider'),
+          )
+        )
+        .deployment(({ deployment, kubernetesNamespace, ...d }, _) =>
+          _(
+            kubernetesNamespace('cert_manager', { title: 'cert-manager' }).with(
+              d.instanceOf('ca'),
+            ),
+            // with title same as name, it should inherit from the instance
+            kubernetesNamespace('keycloak1', { title: 'keycloak1' }).with(
+              d.instanceOf('identity'),
+            ),
+            // with title same as name, but expanded (do not inherit)
+            kubernetesNamespace('keycloak2', { title: 'keycloak2' }).with(
+              d.instanceOf('identity'),
+            ),
+            // with title, it should use the title
+            kubernetesNamespace('keycloak3', { title: 'Keycloak' }).with(
+              d.instanceOf('identity'),
+            ),
+          )
+        ),
+    )
+
+    const nodes = indexBy(
+      t.computeView(
+        t.$include('*'),
+        t.$include('cert_manager.*'),
+        t.$include('keycloak2.*'),
+      ).nodes,
+      n => n.id as string,
+    )
+
+    expect(nodes).toMatchObject({
+      'cert_manager': {
+        title: 'cert-manager',
+      },
+      'keycloak1': {
+        title: 'Identity Provider',
+      },
+      'keycloak2': {
+        title: 'keycloak2',
+      },
+      'keycloak3': {
+        title: 'Keycloak',
+      },
     })
   })
 })
