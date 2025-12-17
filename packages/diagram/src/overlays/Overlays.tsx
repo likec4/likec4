@@ -2,11 +2,12 @@ import { nonexhaustive } from '@likec4/core'
 import { useSelector } from '@xstate/react'
 import { animate } from 'motion'
 import { AnimatePresence, LayoutGroup, useReducedMotionConfig } from 'motion/react'
+import { useEffect } from 'react'
 import { isNonNullish } from 'remeda'
 import type { AnyActorRef } from 'xstate'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { DiagramFeatures } from '../context'
-import { useDiagram, useUpdateEffect } from '../hooks'
+import { useDiagram } from '../hooks'
 import { ElementDetails } from './element-details/ElementDetails'
 import { Overlay } from './overlay/Overlay'
 import type { OverlaysActorRef, OverlaysActorSnapshot } from './overlaysActor'
@@ -56,7 +57,7 @@ export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActor
 
   const isActiveOverlay = overlays.some((overlay) => overlay.type === 'elementDetails')
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     const xyflowDomNode = diagram.getContext().xystore.getState().domNode
     const xyflowRendererDom = xyflowDomNode?.querySelector<HTMLDivElement>('.react-flow__renderer')
     if (!xyflowRendererDom || isMotionReduced) return

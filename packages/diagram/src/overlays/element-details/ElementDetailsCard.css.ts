@@ -31,22 +31,19 @@ export const card = css({
   gap: 'lg',
   justifyContent: 'stretch',
   color: 'mantine.colors.text',
-  backgroundColor: {
-    base: 'mantine.colors.body',
-    _dark: 'mantine.colors.dark[6]',
-  },
   boxShadow: 'md',
   overflow: 'hidden',
   border: 'none',
-  backgroundImage: `
+  background: `[
     linear-gradient(180deg,
-      color-mix(in oklab, var(--likec4-palette-fill) 60%, transparent),
-      color-mix(in oklab, var(--likec4-palette-fill) 20%, transparent) 8px,
-      color-mix(in oklab, var(--likec4-palette-fill) 14%, transparent) 20px,
-      transparent 80px
+    color-mix(in oklab, var(--likec4-palette-fill) 60%, transparent),
+    color-mix(in oklab, var(--likec4-palette-fill) 20%, transparent) 8px,
+    color-mix(in oklab, var(--likec4-palette-fill) 14%, transparent) 20px,
+    transparent 80px
     ),
-    linear-gradient(180deg, var(--likec4-palette-fill), var(--likec4-palette-fill) 4px, transparent 4px)
-  `,
+    linear-gradient(180deg, var(--likec4-palette-fill), var(--likec4-palette-fill) 4px, transparent 4px),
+    {colors.likec4.overlay.body}
+  ]`,
   '& .react-flow__attribution': {
     display: 'none',
   },
