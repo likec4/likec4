@@ -55,22 +55,21 @@ catalogs:
     esbuild-node-externals: 1.20.1
     esbuild-plugins-node-modules-polyfill: 1.7.1
   hono:
-    "@hono/node-server": ^1.19.6
+    "@hono/node-server": ^1.19.7
     "@hono/oauth-providers": ^0.8.5
-    "@hono/valibot-validator": ^0.6.0
     "@hono/zod-validator": ^0.7.5
-    hono: ^4.10.7
+    hono: ^4.11.1
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 8.3.9
-    "@mantine/core": 8.3.9
-    "@mantine/hooks": 8.3.9
-    "@mantine/modals": 8.3.9
-    "@mantine/notifications": 8.3.9
-    "@mantine/vanilla-extract": 8.3.9
+    "@mantine/colors-generator": 8.3.10
+    "@mantine/core": 8.3.10
+    "@mantine/hooks": 8.3.10
+    "@mantine/modals": 8.3.10
+    "@mantine/notifications": 8.3.10
+    "@mantine/vanilla-extract": 8.3.10
   mcp:
     "@modelcontextprotocol/sdk": ^1.22.0
   react:
@@ -78,11 +77,11 @@ catalogs:
     "@nanostores/media-query": 0.1.2
     "@nanostores/react": 1.0.0
     "@react-hookz/web": ^25.2.0
-    "@tabler/icons-react": 3.35.0
+    "@tabler/icons-react": 3.36.0
     "@types/react": 19.2.7
     "@types/react-dom": 19.2.3
     clsx: ^2.1.1
-    motion: ^12.23.25
+    motion: ^12.23.26
     nanostores: 1.1.0
     react: 19.2.3
     react-dom: 19.2.3
@@ -101,7 +100,7 @@ catalogs:
     "@types/natural-compare-lite": ^1.4.2
     "@types/picomatch": ^4.0.2
     bundle-require: ^5.1.0
-    caniuse-lite: ^1.0.30001759
+    caniuse-lite: ^1.0.30001760
     chokidar: ^4.0.3
     chroma-js: ^3.2.0
     citty: ^0.1.6
@@ -112,7 +111,7 @@ catalogs:
     fast-equals: ^5.3.3
     # Don't upgrade fdir beyond 6.4.0 due to compatibility issues
     fdir: 6.4.0
-    immer: ^10.2.0
+    immer: ^11.0.1
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
