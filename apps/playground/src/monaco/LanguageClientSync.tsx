@@ -228,7 +228,7 @@ export function LanguageClientSync({ config, wrapper }: {
   useEffect(() => {
     const subscribe = monaco.editor.registerCommand('likec4.open-preview', (_, viewId) => {
       if (isString(viewId)) {
-        router.navigate({
+        void router.navigate({
           from: '/w/$workspaceId/$viewId',
           to: './',
           params: {
@@ -255,7 +255,9 @@ export function LanguageClientSync({ config, wrapper }: {
     () => {
       if (playgroundState !== 'ready' || activeViewId == null) return
       if (activeViewState === 'stale' || activeViewState === 'pending') {
-        requestLayoutView(activeViewId)
+        requestLayoutView(activeViewId).catch(error => {
+          logger.error(loggable(error))
+        })
       }
     },
     [activeViewState, activeViewId, playgroundState],
@@ -263,14 +265,14 @@ export function LanguageClientSync({ config, wrapper }: {
 
   useEffect(() => {
     const listeners = [
-      playground.actor.on('workspace.openSources', ({ target }) => {
-        showLocation(target)
+      playground.actor.on('workspace.openSources', async ({ target }) => {
+        await showLocation(target)
       }),
-      playground.actor.on('workspace.applyViewChanges', ({ viewId, change }) => {
-        applyViewChanges(viewId, change)
+      playground.actor.on('workspace.applyViewChanges', async ({ viewId, change }) => {
+        await applyViewChanges(viewId, change)
       }),
-      playground.actor.on('workspace.request-layouted-data', () => {
-        requestLayoutedData()
+      playground.actor.on('workspace.request-layouted-data', async () => {
+        await requestLayoutedData()
       }),
     ]
     return () => listeners.forEach(l => l.unsubscribe())

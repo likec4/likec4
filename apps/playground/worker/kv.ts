@@ -1,26 +1,10 @@
-import type * as c4 from '@likec4/core/types'
 import type {
-  DeploymentElement,
-  DeploymentRelationship,
-  DiagramEdge,
-  DiagramNode,
-  Element,
-  ElementSpecification,
   LayoutedLikeC4ModelData,
-  LayoutedView,
-  NodeNotation,
-  Relationship,
-  RelationshipSpecification,
-  scalar,
-  Tag,
-  TagSpecification,
 } from '@likec4/core/types'
-import { compareNatural, nonexhaustive, nonNullable } from '@likec4/core/utils'
+import { nonexhaustive } from '@likec4/core/utils'
 import { addDays, addMonths, getUnixTime, startOfMinute } from 'date-fns'
 import { HTTPException } from 'hono/http-exception'
-import type { LayoutedLikeC4ModelData as LayoutedLikeC4ModelDataLegacy } from 'likec4-core-legacy/types'
 import { nanoid } from 'nanoid'
-import { first, map, mapValues, pipe, prop, pullObject, sort, values } from 'remeda'
 import * as z from 'zod/v4'
 import { readUserSession } from './auth'
 import {
@@ -88,155 +72,17 @@ type StoredSharedPlayground = {
   forkable: true
   localWorkspace: LocalWorkspace
   title: string
-  model: LayoutedLikeC4ModelData<any> | LayoutedLikeC4ModelDataLegacy
+  model: LayoutedLikeC4ModelData<any>
   author: GithubLogin | null
   createdAt: ISODatetime
   expiresAt: ISODatetime
 } | {
   forkable: false
   title: string
-  model: LayoutedLikeC4ModelData<any> | LayoutedLikeC4ModelDataLegacy
+  model: LayoutedLikeC4ModelData<any>
   author: GithubLogin | null
   createdAt: ISODatetime
   expiresAt: ISODatetime
-}
-
-function isDataLegacy(
-  model: LayoutedLikeC4ModelData<any> | LayoutedLikeC4ModelDataLegacy,
-): model is LayoutedLikeC4ModelDataLegacy {
-  return '__' in model && model.__ === 'layouted'
-}
-
-/**
- * Colors are taken from the styles presets of the LikeC4
- */
-export const radixColors = [
-  'tomato',
-  'grass',
-  'blue',
-  'ruby',
-  'orange',
-  'indigo',
-  'pink',
-  'teal',
-  'purple',
-  'amber',
-  'crimson',
-  'red',
-  'lime',
-  'yellow',
-  'violet',
-]
-
-function assignTagColors(tags: string[]): Record<Tag, TagSpecification> {
-  return pipe(
-    tags,
-    sort(compareNatural),
-    map((tag, idx) => {
-      const color = nonNullable(radixColors[idx % radixColors.length] as c4.ColorLiteral)
-      return {
-        tag,
-        spec: {
-          color,
-        } as c4.TagSpecification,
-      }
-    }),
-    pullObject(prop('tag'), prop('spec')),
-  )
-}
-
-function convertDescription(description: string | null | undefined) {
-  if (description === null) {
-    return { description: null }
-  }
-  if (typeof description === 'string') {
-    return { description: { txt: description } }
-  }
-  return {}
-}
-
-function convertLegacyModel(
-  { specification, relations, views, elements, deployments, globals, imports }: LayoutedLikeC4ModelDataLegacy,
-): LayoutedLikeC4ModelData<any> {
-  return {
-    _stage: 'layouted',
-    projectId: 'default',
-    project: { id: 'default' as scalar.ProjectId },
-    specification: {
-      relationships: specification.relationships as Record<string, Partial<RelationshipSpecification>>,
-      elements: specification.elements as Record<string, Partial<ElementSpecification>>,
-      deployments: specification.deployments as Record<string, Partial<ElementSpecification>>,
-      tags: assignTagColors(specification.tags),
-      // @ts-ignore
-      customColors: first(values(views))?.customColorDefinitions ?? {},
-    },
-    elements: mapValues(elements, ({ description, ...rest }): Element => ({
-      ...rest as unknown as Element,
-      ...convertDescription(description),
-    })),
-    deployments: {
-      elements: mapValues(deployments.elements, ({ description, ...rest }): DeploymentElement => ({
-        ...rest as unknown as DeploymentElement,
-        ...convertDescription(description),
-      })),
-      relations: mapValues(deployments.relations, ({ description, ...rest }): DeploymentRelationship => ({
-        ...rest as unknown as DeploymentRelationship,
-        ...convertDescription(description),
-      })),
-    },
-    relations: mapValues(
-      relations,
-      ({ id, source, target, color, description, navigateTo, ...rest }): Relationship => ({
-        ...rest,
-        ...convertDescription(description),
-        id: id as unknown as scalar.RelationId,
-        ...(color && { color: color as any }),
-        ...(navigateTo && { navigateTo: navigateTo as any }),
-        source: {
-          model: source,
-        },
-        target: {
-          model: target,
-        },
-      }),
-    ),
-    views: mapValues(views, ({ __, id, description, nodes, edges, notation, tags, ...rest }): LayoutedView<any> => ({
-      ...rest,
-      description: description ? { txt: description } : null,
-      ...(notation
-        ? {
-          notation: {
-            nodes: notation.elements as NodeNotation[],
-          },
-        }
-        : {}),
-      edges: edges.map((
-        { tags, description, ...rest },
-      ): DiagramEdge<any> => ({
-        ...rest as unknown as DiagramEdge<any>,
-        ...convertDescription(description),
-        tags: tags ? [...tags] : [],
-      })),
-      nodes: nodes.map(({ id, modelRef, deploymentRef, description, tags, ...rest }): DiagramNode<any> => ({
-        ...rest as unknown as DiagramNode<any>,
-        id: id as unknown as scalar.NodeId,
-        description: description ? { txt: description } : null,
-        x: rest.position[0],
-        y: rest.position[1],
-        tags: tags ? [...tags] : [],
-        ...(modelRef && { modelRef: (modelRef === 1 ? id : modelRef) as unknown as scalar.Fqn }),
-        ...(deploymentRef &&
-          { deploymentRef: (deploymentRef === 1 ? id : deploymentRef) as unknown as scalar.DeploymentFqn }),
-      })),
-      tags: tags ? [...tags] : [],
-      id: id as unknown as scalar.ViewId<string>,
-      variant: 'diagram',
-      _type: (__ ?? 'element' as const) as any,
-      _stage: 'layouted',
-    })),
-    imports: imports as any,
-    globals: globals as any,
-  }
 }
 
 export const sharesKV = (c: HonoContext) => {
@@ -288,29 +134,20 @@ export const sharesKV = (c: HonoContext) => {
       return throwShareNotFound(c, shareId)
     }
     const { model } = value
-    if (isDataLegacy(model)) {
-      return {
-        value: {
-          ...value,
-          model: convertLegacyModel(model),
-        },
-        metadata,
-      }
-    } else {
-      return {
-        value: {
-          ...value,
-          model: {
-            ...model,
-            projectId: model.projectId ?? 'default',
-            project: {
-              ...model.project,
-              id: model.project?.id ?? model.projectId ?? 'default',
-            },
+
+    return {
+      value: {
+        ...value,
+        model: {
+          ...model,
+          projectId: model.projectId ?? 'default',
+          project: {
+            ...model.project,
+            id: model.project?.id ?? model.projectId ?? 'default',
           },
         },
-        metadata,
-      }
+      },
+      metadata,
     }
   }
 
