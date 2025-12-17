@@ -1,4 +1,5 @@
-import { anyPass, hasAtLeast, omit, unique } from 'remeda'
+import { anyPass, hasAtLeast, isEmpty, omit } from 'remeda'
+import type { Writable } from 'type-fest'
 import type {
   DeployedInstanceModel,
   DeploymentConnectionModel,
@@ -22,7 +23,7 @@ import {
   isViewRuleStyle,
   preferSummary,
 } from '../../types'
-import { invariant, nameFromFqn, nonexhaustive, parentFqn } from '../../utils'
+import { invariant, nonexhaustive, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
@@ -141,80 +142,49 @@ function instanceSummary(model: DeployedInstanceModel<any>) {
   return preferSummary(model.$instance) ?? preferSummary(model.element.$element)
 }
 
-export function toNodeSource<A extends AnyAux>(
-  el: DeploymentNodeModel<A> | DeployedInstanceModel<A>,
+function deploymentNodeToNodeSource<A extends AnyAux>(
+  el: DeploymentNodeModel<A>,
 ): ComputedNodeSource<A> {
-  if (el.isDeploymentNode()) {
-    const onlyOneInstance = el.onlyOneInstance()
-    let {
-      title,
-      id,
-      description,
-      summary,
-      metadata: _metadata, // omit
-      style: {
-        icon,
-        shape,
-        color,
-      },
-      element: _element, // omit
-      tags: _tags, // omit
-      ...$node
-    } = el.$node
-    let tags = [...el.tags]
-    // let description
-    // If there is only one instance
-    summary ??= description
-    if (onlyOneInstance) {
-      tags = unique([...tags, ...onlyOneInstance.tags])
-      // If title was not overriden, take title from the instance
-      if (title === nameFromFqn(el.id)) {
-        title = onlyOneInstance.title
-      }
-      icon ??= onlyOneInstance.style.icon
-      color ??= onlyOneInstance.style.color
-      shape ??= onlyOneInstance.style.shape
-      summary ??= instanceSummary(onlyOneInstance)
-    }
+  const id = el.id
+  const onlyOneInstance = el.onlyOneInstance()
 
-    return exact({
-      id: id as scalar.NodeId,
-      deploymentRef: id,
-      title,
-      ...$node,
-      color: color ?? el.color,
-      shape: shape ?? el.shape,
-      ...(onlyOneInstance && {
-        modelRef: onlyOneInstance.element.id,
-      }),
-      icon,
-      description: summary,
-      tags,
-      style: omit(el.style, ['icon', 'shape', 'color']),
-    })
-  }
-  invariant(el.isInstance(), 'Expected Instance')
+  return exact({
+    id: id as scalar.NodeId,
+    deploymentRef: id,
+    title: el.title,
+    kind: el.kind,
+    technology: el.technology ?? undefined,
+    links: hasAtLeast(el.links, 1) ? [...el.links] : undefined,
+    notation: el.$node.notation ?? undefined,
+    color: el.color,
+    shape: el.shape,
+    modelRef: onlyOneInstance?.element.id,
+    icon: el.style.icon,
+    description: preferSummary(el.$node) ?? undefined,
+    tags: [...el.tags],
+    style: omit(el.style, ['icon', 'shape', 'color']),
+  })
+}
+
+function instanceToNodeSource<A extends AnyAux>(
+  el: DeployedInstanceModel<A>,
+): ComputedNodeSource<A> {
   const instance = el.$instance
   const element = el.element
   const { icon, color, shape, ...style } = el.style
 
+  // Merge links from element and instance
   const links = [
     ...element.links,
     ...(instance.links ?? []),
   ]
 
-  const notation = instance.notation ?? element.$element.notation
-
-  const description = instanceSummary(el)
-
-  const technology = el.technology ?? undefined
-
   return exact({
     id: el.id as scalar.NodeId,
     kind: 'instance' as unknown as aux.DeploymentKind<A>,
     title: el.title,
-    description,
-    technology,
+    description: instanceSummary(el) ?? undefined,
+    technology: el.technology ?? undefined,
     tags: [...el.tags],
     links: hasAtLeast(links, 1) ? links : undefined,
     icon,
@@ -223,8 +193,17 @@ export function toNodeSource<A extends AnyAux>(
     style,
     deploymentRef: instance.id,
     modelRef: element.id,
-    notation,
+    notation: instance.notation,
   })
+}
+
+function toNodeSource<A extends AnyAux>(
+  el: DeploymentNodeModel<A> | DeployedInstanceModel<A>,
+): ComputedNodeSource<A> {
+  if (el.isInstance()) {
+    return instanceToNodeSource(el)
+  }
+  return deploymentNodeToNodeSource(el)
 }
 
 export function toComputedEdges<A extends AnyAux>(
@@ -291,7 +270,61 @@ export function buildNodes<A extends AnyAux = Unknown>(
   model: LikeC4Model<A>,
   memory: Memory,
 ): ReadonlyMap<aux.NodeId, ComputedNode<A>> {
-  return buildComputedNodes(model.$styles, [...memory.final].map(toNodeSource))
+  const nodesMap = buildComputedNodes(model.$styles, [...memory.final].map(toNodeSource)) as Map<
+    aux.NodeId,
+    Writable<ComputedNode<A>>
+  >
+  // For each node, check if
+  // - it is a leaf node (no children)
+  // - it has a deploymentRef and modelRef
+  // - it is a deployment node
+  // - it has only one instance
+  // If all conditions are met, inherit properties from the instance if they are not set in the deployment node
+  for (const node of nodesMap.values()) {
+    if (!node.deploymentRef || !node.modelRef || node.children.length > 0) {
+      continue
+    }
+    // Find deployment element and check if it has only one instance
+    const deploymentNode = model.deployment.element(node.deploymentRef)
+    const onlyOneInstance = deploymentNode.isDeploymentNode() && deploymentNode.onlyOneInstance()
+    if (!onlyOneInstance) {
+      continue
+    }
+
+    // Inherit properties from the logical model if it is a deployment node with only one instance
+    // If title was not overriden (i.e. it matches the name), take title from the instance
+    if (node.title === deploymentNode.name) {
+      node.title = onlyOneInstance.title
+    }
+    // If description/tech not set, take from instance
+    node.description ??= instanceSummary(onlyOneInstance) ?? null
+    node.technology ??= onlyOneInstance.technology
+    // If tags/links are missing, take from instance
+    if (isEmpty(node.tags)) {
+      node.tags = [...onlyOneInstance.tags]
+    }
+    if ((!node.links || isEmpty(node.links)) && hasAtLeast(onlyOneInstance.links, 1)) {
+      node.links = [...onlyOneInstance.links]
+    }
+
+    // Apply styles from instance if not set or set to defaults
+    const defaults = model.$styles.defaults
+    if (node.shape === defaults.shape && node.shape !== onlyOneInstance.shape) {
+      node.shape = onlyOneInstance.shape
+      // reset notation when shape is changed
+      node.notation = null
+    }
+    if (node.color === defaults.color && node.color !== onlyOneInstance.color) {
+      node.color = onlyOneInstance.color
+      // reset notation when color is changed
+      node.notation = null
+    }
+    if (!node.icon && onlyOneInstance.icon) {
+      node.icon = onlyOneInstance.icon
+    }
+  }
+
+  return nodesMap
 }
 
 export function applyDeploymentViewRuleStyles<A extends AnyAux>(

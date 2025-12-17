@@ -1,4 +1,4 @@
-import { isDeepEqual, isTruthy, only, pickBy, pipe, reduce, unique } from 'remeda'
+import { isDeepEqual, isNullish, isTruthy, only, pick, pickBy, pipe, reduce, unique } from 'remeda'
 import {
   type AnyAux,
   type aux,
@@ -16,24 +16,17 @@ import { isNonEmptyArray } from '../../utils'
 function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | DeploymentRelationship<A>): {
   title?: string
   description?: scalar.MarkdownOrString | null
-  technology: string | null
-  kind: aux.RelationKind<A> | null
-  color: Color | null
-  line: RelationshipLineType | null
-  head: RelationshipArrowType | null
-  tail: RelationshipArrowType | null
-  navigateTo: aux.StrictViewId<A> | null
+  technology?: string | null | undefined
+  kind?: aux.RelationKind<A> | undefined
+  color?: Color | undefined
+  line?: RelationshipLineType | undefined
+  head?: RelationshipArrowType | undefined
+  tail?: RelationshipArrowType | undefined
+  navigateTo?: aux.StrictViewId<A> | undefined
 } {
   const {
     title,
     description = null,
-    technology = null,
-    kind = null,
-    color = null,
-    line = null,
-    head = null,
-    tail = null,
-    navigateTo = null,
   } = relation
   return {
     // Pick description only if title is present
@@ -41,13 +34,7 @@ function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | Dep
       title,
       description,
     }),
-    technology,
-    kind: kind as aux.RelationKind<A> | null,
-    color,
-    line,
-    head,
-    tail,
-    navigateTo: navigateTo as aux.StrictViewId<A> | null,
+    ...pick(relation, ['color', 'technology', 'head', 'line', 'tail', 'kind', 'navigateTo']),
   }
 }
 
@@ -124,15 +111,13 @@ export function mergePropsFromRelationships<A extends AnyAux>(
     ),
   )
 
-  let technology = only(allprops.technology)
-  let title = only(allprops.title) ?? (allprops.title.length > 1 ? '[...]' : null)
+  let title = only(allprops.title) ?? (allprops.title.length > 1 ? '[...]' : undefined)
 
   const tags = unique(allprops.tags)
   let merged: MergedRelationshipProps<A> = exact({
-    // If there is no title, but there is technology, use technology as title
-    title: title ?? (technology ? `[${technology}]` : null),
+    title,
     description: only(allprops.description),
-    technology,
+    technology: only(allprops.technology),
     kind: only(allprops.kind),
     head: only(allprops.head),
     tail: only(allprops.tail),
@@ -143,10 +128,17 @@ export function mergePropsFromRelationships<A extends AnyAux>(
   })
 
   if (prefer) {
-    return {
+    const preferred = pickRelationshipProps(prefer)
+    merged = pickBy({
       ...merged,
-      ...pickBy(pickRelationshipProps(prefer), isTruthy),
-    }
+      ...preferred,
+    }, isTruthy)
+  }
+
+  // If after merging title is still null, but technology is present, set title to technology
+  if (isNullish(merged.title) && isTruthy(merged.technology)) {
+    merged.title = `[${merged.technology}]`
+    delete merged.technology
   }
   return merged
 }

@@ -9,6 +9,7 @@ import {
   type DeploymentRelationship,
   type ElementShape as C4ElementShape,
   type ElementStyle,
+  type IconUrl,
   type IteratorLike,
   type Link,
   type RelationshipArrowType,
@@ -75,6 +76,10 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
 
   get color(): Color {
     return this.style.color
+  }
+
+  get icon(): IconUrl | null {
+    return this.style.icon ?? null
   }
 
   /**

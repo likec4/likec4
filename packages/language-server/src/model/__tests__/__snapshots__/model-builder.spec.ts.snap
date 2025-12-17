@@ -769,10 +769,9 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           ],
           "source": "user1",
           "target": "user2",
-          "technology": "Async",
         },
       ],
-      "hash": "2ab8b2821d405e630a8776243e2984d80c44c1d2",
+      "hash": "32611e7d6cb078790e6e3bbea0e15a35bc365518",
       "id": "index",
       "nodes": [
         {
