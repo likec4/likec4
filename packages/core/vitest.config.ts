@@ -1,6 +1,6 @@
 import { defineProject } from 'vitest/config'
 
-const isNotWin = process.platform === 'win32'
+const isNotWin = process.platform !== 'win32'
 
 export default defineProject({
   test: {
