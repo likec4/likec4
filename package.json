@@ -1,6 +1,5 @@
 {
   "name": "root",
-  "version": "1.46.1",
   "private": true,
   "license": "MIT",
   "packageManager": "pnpm@10.26.0",
@@ -29,6 +28,7 @@
     "ci:build": "turbo run build --filter=\"!@likec4/docs-astro\"",
     "ci:test": "vitest run --no-isolate",
     "ci:lint": "oxlint --type-aware --format=github --quiet",
+    "ci:publish": "pnpm publish -r --no-git-checks",
     "vscode:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
     "release": "shipjs prepare",
     "clean": "pnpm -r run clean && rimraf -v -g \"**/.turbo\" \"**/node_modules/.cache\" \"**/node_modules/.vite\"",

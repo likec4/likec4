@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     needs: checks
     timeout-minutes: 5
-    if: ${{ github.repository_owner == 'likec4' }}
+    if: "github.repository_owner == 'likec4' && !contains(github.event.head_commit.message, 'release: v')"
     steps:
       - name: Decode the GitHub App Private Key
         id: decode
@@ -71,30 +71,21 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          title: "Prepare next release"
+          title: "release: v..."
           commit: "chore: prepare next release"
+          setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
-  # release:
-  #   name: 📦 release
-  #   uses: ./.github/workflows/release.yaml
-  #   if: ${{ github.repository_owner == 'likec4' }}
-  #   needs: checks
-  #   secrets: inherit
-  #   concurrency:
-  #     group: ${{ github.workflow }}-${{ github.ref }}-release
-  #     cancel-in-progress: false
-
-  # vscode:
-  #   name: 📦 vscode
-  #   uses: ./.github/workflows/vscode.yaml
-  #   if: ${{ github.repository_owner == 'likec4' }}
-  #   needs: checks
-  #   secrets: inherit
-  #   concurrency:
-  #     group: ${{ github.workflow }}-${{ github.ref }}-vscode
-  #     cancel-in-progress: false
+  release:
+    name: 📦 release
+    uses: ./.github/workflows/release.yaml
+    if: "github.repository_owner == 'likec4' && contains(github.event.head_commit.message, 'release: v')"
+    needs: checks
+    secrets: inherit
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-release
+      cancel-in-progress: false
 
   deploy-playground:
     if: ${{ github.repository_owner == 'likec4' }}
@@ -103,7 +94,7 @@ jobs:
     uses: ./.github/workflows/playground.yaml
     secrets: inherit
     with:
-      environment: "${{ contains(github.event.head_commit.message, 'chore: release') && 'production' || 'preview' }}"
+      environment: "${{ contains(github.event.head_commit.message, 'release: v') && 'production' || 'preview' }}"
 
   deploy-docs:
     if: ${{ github.repository_owner == 'likec4' }}
@@ -112,4 +103,4 @@ jobs:
     uses: ./.github/workflows/docs.yaml
     secrets: inherit
     with:
-      environment: "${{ contains(github.event.head_commit.message, 'chore: release') && 'production' || 'preview' }}"
+      environment: "${{ contains(github.event.head_commit.message, 'release: v') && 'production' || 'preview' }}"

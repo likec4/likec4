@@ -1,13 +1,19 @@
+## [1.46.2](https://github.com/likec4/likec4/compare/v1.46.1...v1.46.2) (2025-12-19)
+
+### Bug Fixes
+
+- [#2476](https://github.com/likec4/likec4/pull/2476) [`9c5779d`](https://github.com/likec4/likec4/commit/9c5779d872d8de353adf706d1a0edbbcd8bb9671) - Deployment nodes name is wrong derived from instanceOf, fixes [#2387](https://github.com/likec4/likec4/issues/2387)
+- Fixed transparent background of the properties window ([#2473](https://github.com/likec4/likec4/issues/2473))
+
 ## [1.46.1](https://github.com/likec4/likec4/compare/v1.46.0...v1.46.1) (2025-12-10)
 
 ### Bug Fixes
 
-* issue with include syntax / different syntax between in VSCode extension and LikeC4 cli. Thanks @kieronlanning, closes [#2456](https://github.com/likec4/likec4/issues/2456)
-* markdown syuntax highlighting
+- issue with include syntax / different syntax between in VSCode extension and LikeC4 cli. Thanks @kieronlanning, closes [#2456](https://github.com/likec4/likec4/issues/2456)
+- markdown syuntax highlighting
   <img src="https://github.com/user-attachments/assets/cc698fe4-588e-45c0-a9f8-f5adf9f43cfc" />
-* increase timeout duration to ensure search panel animation is complete ([c83c9b1](https://github.com/likec4/likec4/commit/c83c9b15989077f902ae35b75abd66e8bd35f547))
-* add demo rank example into playground
-
+- increase timeout duration to ensure search panel animation is complete ([c83c9b1](https://github.com/likec4/likec4/commit/c83c9b15989077f902ae35b75abd66e8bd35f547))
+- add demo rank example into playground
 
 # [1.46.0](https://github.com/likec4/likec4/compare/v1.45.0...v1.46.0) (2025-12-08)
 
@@ -22,13 +28,13 @@ This release carries a lot of heart from the community. You can see it in behind
 - Added more than 1800 icons from [svglogos.dev](https://github.com/gilbarbara/logos). Start typing `tech:` and you will find an icon for almost any technology.
 
 - Added relationship metadata tooltips. Thanks @ckeller42, [#2400](https://github.com/likec4/likec4/issues/2400) ([b1abcea](https://github.com/likec4/likec4/commit/b1abcea2ce30a6866cb089f91ae44c9c92027d65))
-  
+
   <img width="600" src="https://github.com/user-attachments/assets/0de906d6-e836-497f-a82e-529ee5b16e7e" />
 
 - Search now lets you jump straight to the selected item. Thanks @ckeller42, [#1711](https://github.com/likec4/likec4/issues/1711) ([#2428](https://github.com/likec4/likec4/issues/2428)) ([b7a69c4](https://github.com/likec4/likec4/commit/b7a69c46e2bf67b9ee1f5b691004cd629a85245a))
 
 - Added Markdown alerts. closes [#2404](https://github.com/likec4/likec4/issues/2404)
-  
+
   <img width="600" height="607" alt="image" src="https://github.com/user-attachments/assets/d76b0293-ebf8-45eb-9e57-d3745cd81d83" />
 
 - Added rank constraints to improve layouts. Thanks @yubrshen, [#2416](https://github.com/likec4/likec4/pull/2416), closes [#2370](https://github.com/likec4/likec4/issues/2370)
@@ -64,32 +70,30 @@ This release carries a lot of heart from the community. You can see it in behind
 - Added links to `read-element` and `read-deployment` responses in the MCP tools. Thanks @ckeller42, [#2412](https://github.com/likec4/likec4/issues/2412) ([9ce3cee](https://github.com/likec4/likec4/commit/9ce3cee7a625613c728717c4188fd00fb47cc88f))
 
 - Sync manual layout with latest changes and highlight drifted edges in compare view.
-  
-  <img width="600" src="https://github.com/user-attachments/assets/cb8a2abb-1bf2-4228-8acd-acb2338b885b" />
 
+  <img width="600" src="https://github.com/user-attachments/assets/cb8a2abb-1bf2-4228-8acd-acb2338b885b" />
 
 - Added edit mode in the dev server.
   Now you can adjust your view layouts in the browser, without opening in IDE (plus remember, you can always Ctrl/Cmd + Z to undo).
-
 
 # [1.45.0](https://github.com/likec4/likec4/compare/v1.44.0...v1.45.0) (2025-11-23)
 
 ### 🚀 Features
 
-* **cli:** add `--project` option to export command
-* **react:** enable media print functionality
-* **react:** persist the view state on navigation, closes [#1325](https://github.com/likec4/likec4/issues/1325)
+- **cli:** add `--project` option to export command
+- **react:** enable media print functionality
+- **react:** persist the view state on navigation, closes [#1325](https://github.com/likec4/likec4/issues/1325)
 
 ### 🐞 Bug Fixes
 
-* **manual-layouts:** view size for manual layouts, fixes [#2382](https://github.com/likec4/likec4/issues/2382)
-* **manual-layouts:** manual layouts migration did not work for default project
-* **manual-layouts:** handle local icon paths
+- **manual-layouts:** view size for manual layouts, fixes [#2382](https://github.com/likec4/likec4/issues/2382)
+- **manual-layouts:** manual layouts migration did not work for default project
+- **manual-layouts:** handle local icon paths
 
 # [1.44.0](https://github.com/likec4/likec4/compare/v1.43.0...v1.44.0) (2025-11-10)
 
 > [!NOTE]
-> **💖 Thanks to Our Sponsors**  
+> **💖 Thanks to Our Sponsors**\
 > Huge thanks to everyone supporting LikeC4 — your sponsorships make continued development possible.
 >
 > If you find LikeC4 valuable, consider becoming a sponsor. Every contribution helps keep the project alive and evolving.
@@ -100,50 +104,47 @@ This release carries a lot of heart from the community. You can see it in behind
   [#2360](https://github.com/likec4/likec4/pull/2360) ([201da2f](https://github.com/likec4/likec4/commit/201da2f769f904bfac5882e8a7a9637ef7184989))
 
 - **Manual Layouts:**.\
-  This release brings major improvements to manual layout management — focused on stability, transparency, and easier collaboration.  
+  This release brings major improvements to manual layout management — focused on stability, transparency, and easier collaboration.\
   Discussion: [#2288](https://github.com/likec4/likec4/discussions/2288)
 
   1. **Manual layout used by default**.\
-     Previously, manual layouts were applied as a base layer, and additional changes were added on top — often causing unwanted shifts.  
-     Now, if a manual layout exists for a view, it’s used directly, without auto-adjustments.  
-     Warnings appear if the layout drifts from the model.  
-     Most non-layout properties (titles, icons, colors, etc.) are still auto-applied — but only when they don’t affect layout.  
+     Previously, manual layouts were applied as a base layer, and additional changes were added on top — often causing unwanted shifts.\
+     Now, if a manual layout exists for a view, it’s used directly, without auto-adjustments.\
+     Warnings appear if the layout drifts from the model.\
+     Most non-layout properties (titles, icons, colors, etc.) are still auto-applied — but only when they don’t affect layout.
 
      <img src="https://github.com/user-attachments/assets/e73e8d37-bc1a-425d-986b-5d0cebe4ca6b" />
 
-  3. **Snapshots persistence**.\
+  2. **Snapshots persistence**.\
      Manual layouts are now saved as individual `.snap` files (`<view-id>.likec4.snap`) inside the `.likec4/` folder.\
-     This makes tracking changes and version control far simpler.  
+     This makes tracking changes and version control far simpler.\
      You can customize the output folder via project config:
-     
-     ```json
-      {
-        "name": "project-name",
-        "manualLayouts": {
-          "outDir": ".likec4"
-        }
-      }
-     ```
-     
 
-  5. **Compare with latest**.\
+     ```json
+     {
+       "name": "project-name",
+       "manualLayouts": {
+         "outDir": ".likec4"
+       }
+     }
+     ```
+
+  3. **Compare with latest**.\
      You can now compare your manual layout with the latest auto-generated version to detect drift after model changes.\
      Currently, only a “Reset to latest” action is available — more options will follow.
 
      https://github.com/user-attachments/assets/46360794-d856-4216-8cef-857d976a4e5f
 
-
-  7. **Connections editing improvements**.\
+  4. **Connections editing improvements**.\
      Connections are no longer static — control points now move responsively when you adjust nodes.
 
-  8. **Undo**.\
+  5. **Undo**.\
      Manual layout editing now supports standard undo shortcuts (Ctrl/Cmd + Z).
 
-  9. **Migrate manual layouts**.\
+  6. **Migrate manual layouts**.\
      VSCode extension helps migrate existing manual layouts to the new snapshot-based system
-     
-     <img src="https://github.com/user-attachments/assets/c5edede7-0622-4554-a130-c53b8cb01060" />
 
+     <img src="https://github.com/user-attachments/assets/c5edede7-0622-4554-a130-c53b8cb01060" />
 
 ### 🐞 Bug Fixes
 
