@@ -1,4 +1,4 @@
-// oxlint-disable typescript/no-base-to-string, typescript/no-misused-spread
+// oxlint-disable typescript/no-misused-spread
 import defu from 'defu'
 import {
   entries,

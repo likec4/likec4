@@ -39,7 +39,7 @@
     "promise/no-new-statics": "error",
     "react/exhaustive-deps": "warn",
     "no-unused-expressions": "off",
-    "typescript/no-base-to-string": "off",
+    "typescript/no-base-to-string": "error",
     "typescript/no-import-type-side-effects": "error",
     "typescript/require-array-sort-compare": "off",
     "typescript/restrict-template-expressions": "off",

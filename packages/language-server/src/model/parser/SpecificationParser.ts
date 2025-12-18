@@ -94,7 +94,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             continue
           }
           c4Specification.colors[colorName] = {
-            color: nonNullable(this.parseColorLiteral(color), `Color "${colorName}" is not valid: ${color}`),
+            color: nonNullable(this.parseColorLiteral(color), `Color "${colorName}" is not valid`),
           }
         } catch (e) {
           logger.warn(loggable(e))

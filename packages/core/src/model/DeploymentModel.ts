@@ -215,7 +215,8 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
    * Returns a specific relationship by its ID.
    */
   public relationship(id: RelationOrId): DeploymentRelationModel<A> {
-    return nonNullable(this.#relations.get(getId(id)), `DeploymentRelationModel ${id} not found`)
+    const relationId = getId(id)
+    return nonNullable(this.#relations.get(relationId), `DeploymentRelationModel ${relationId} not found`)
   }
   public findRelationship(id: string): DeploymentRelationModel<A> | null {
     return this.#relations.get(id as aux.RelationId) ?? null
