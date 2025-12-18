@@ -24,7 +24,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 
 1. Fork the [repository](https://github.com/likec4/likec4), then clone or download your fork.
 
-2. Project requires [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/)\
+2. Project requires [Node.js](https://nodejs.org/) >=22.21.1 and [pnpm](https://pnpm.io/)\
    See required versions in [.tool-versions](./.tool-versions)
 
    - (Optional) If you use [asdf](https://asdf-vm.com/):
