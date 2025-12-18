@@ -8,7 +8,7 @@ on:
   #     - "fix-release"
 
 permissions:
-  id-token: write # Required for NPM Trusted publishing
+  id-token: write  # Required for NPM Trusted publishing
   actions: write
   checks: write
   contents: write
@@ -28,14 +28,34 @@ jobs:
     if: ${{ github.repository_owner == 'likec4' }}
     environment: release
     steps:
-      - uses: actions/checkout@v6
+      - name: Decode the GitHub App Private Key
+        id: decode
+        run: |
+          private_key=$(echo "${{ secrets.BOT_APP_PRIVATE_KEY }}" | base64 -d | awk 'BEGIN {ORS="\\n"} {print}' | head -c -2) &> /dev/null
+          echo "::add-mask::$private_key"
+          echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
 
-      - name: bot token
-        id: bot-token
-        uses: ./.github/actions/bot-token
+      - uses: actions/create-github-app-token@v2
+        id: app-token
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
-          private-key-base64: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          private-key: ${{ steps.decode.outputs.private-key }}
+
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap

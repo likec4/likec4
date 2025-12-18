@@ -12,7 +12,6 @@
 name: codeql
 
 on:
-  pull_request:
   schedule:
     # Run every day at 8am
     - cron: "0 8 * * *"
