@@ -11,7 +11,6 @@
       "@likec4/language-server",
       "@likec4/layouts",
       "likec4",
-      "@likec4/log",
       "@likec4/mcp",
       "likec4-vscode"
     ],
@@ -23,5 +22,9 @@
   "linked": [],
   "access": "public",
   "baseBranch": "main",
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  },
   "updateInternalDependencies": "patch"
 }
