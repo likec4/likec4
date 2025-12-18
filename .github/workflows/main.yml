@@ -73,7 +73,6 @@ jobs:
         with:
           title: "Prepare next release"
           commit: "chore: prepare next release"
-          commitMode: "github-api"
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
