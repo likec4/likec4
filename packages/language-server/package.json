@@ -21,7 +21,7 @@
     "directory": "packages/language-server"
   },
   "engines": {
-    "node": "^20.19.0 || >=22.18.0"
+    "node": ">=22.21.1"
   },
   "engineStrict": true,
   "type": "module",
