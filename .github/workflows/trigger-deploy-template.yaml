@@ -11,23 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository_owner == 'likec4' }}
     steps:
-      - name: Decode the GitHub App Private Key
-        id: decode
-        run: |
-          private_key=$(echo "${{ secrets.BOT_APP_PRIVATE_KEY }}" | base64 -d | awk 'BEGIN {ORS="\\n"} {print}' | head -c -2) &> /dev/null
-          echo "::add-mask::$private_key"
-          echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
-
-      - uses: actions/create-github-app-token@v2
-        id: app-token
+      - name: bot token
+        id: bot-token
+        uses: ./.github/actions/bot-token
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
-          private-key: ${{ steps.decode.outputs.private-key }}
+          private-key-base64: ${{ secrets.BOT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
+          fetch-user-id: "false"
+          configure-git: "false"
 
       - name: trigger deploy
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.bot-token.outputs.token }}
           repository: likec4/template
           event-type: redeploy

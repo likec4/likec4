@@ -745,7 +745,6 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
             const _id = b.__deploymentFqn(id)
-            invariant(_elements.has(target), `Target element with id "${target}" not found`)
             b.__addDeployment(
               exact({
                 id: _id,
@@ -865,7 +864,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       deployment: DeloymentModelHelpers<T>
     }),
     with: (...ops: ((b: Builder<T>) => Builder<T>)[]) => {
-      return ops.reduce((b, op) => op(b), self as Builder<T>).clone()
+      const b = self.clone()
+      return ops.reduce((b, op) => op(b), b)
     },
     model: <Out extends AnyTypes>(cb: ModelBuilderFunction<T, Out>) => {
       const b = self.clone()

@@ -1,0 +1,96 @@
+name: bot-token
+description: Create a GitHub App token (and optionally configure git author)
+
+inputs:
+  app-id:
+    required: true
+    description: GitHub App ID
+  private-key-base64:
+    required: true
+    description: Base64 encoded GitHub App private key
+  owner:
+    required: false
+    description: Owner for the GitHub App token
+  fetch-user-id:
+    required: false
+    default: "true"
+    description: Whether to fetch the bot user id via GitHub API
+  configure-git:
+    required: false
+    default: "true"
+    description: Whether to configure git user.name and user.email
+
+outputs:
+  token:
+    description: GitHub App installation token
+    value: ${{ steps.token.outputs.token }}
+  app-slug:
+    description: GitHub App slug
+    value: ${{ steps.token.outputs.app-slug }}
+  user-id:
+    description: GitHub user id for the GitHub App bot user
+    value: ${{ steps.get-user-id.outputs.user-id }}
+  bot-name:
+    description: Git author name configured for the bot
+    value: ${{ steps.bot.outputs.name }}
+  bot-email:
+    description: Git author email configured for the bot
+    value: ${{ steps.bot.outputs.email }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Decode the GitHub App Private Key
+      id: decode
+      shell: bash
+      run: |
+        private_key=$(echo "${{ inputs.private-key-base64 }}" | base64 -d | awk 'BEGIN {ORS="\\n"} {print}' | head -c -2) &> /dev/null
+        echo "::add-mask::$private_key"
+        echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
+
+    - uses: actions/create-github-app-token@v2
+      id: app-token-default
+      if: ${{ inputs.owner == '' }}
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ steps.decode.outputs.private-key }}
+
+    - uses: actions/create-github-app-token@v2
+      id: app-token-owner
+      if: ${{ inputs.owner != '' }}
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ steps.decode.outputs.private-key }}
+        owner: ${{ inputs.owner }}
+
+    - name: Collect token outputs
+      id: token
+      shell: bash
+      run: |
+        echo "token=${{ steps.app-token-owner.outputs.token || steps.app-token-default.outputs.token }}" >> "$GITHUB_OUTPUT"
+        echo "app-slug=${{ steps.app-token-owner.outputs.app-slug || steps.app-token-default.outputs.app-slug }}" >> "$GITHUB_OUTPUT"
+
+    - name: Get GitHub App User ID
+      id: get-user-id
+      if: ${{ inputs.fetch-user-id == 'true' }}
+      shell: bash
+      run: echo "user-id=$(gh api \"/users/${{ steps.token.outputs.app-slug }}[bot]\" --jq .id)" >> "$GITHUB_OUTPUT"
+      env:
+        GH_TOKEN: ${{ steps.token.outputs.token }}
+
+    - name: Resolve bot identity
+      id: bot
+      if: ${{ inputs.fetch-user-id == 'true' }}
+      shell: bash
+      run: |
+        bot_name='${{ steps.token.outputs.app-slug }}[bot]'
+        bot_email='${{ steps.get-user-id.outputs.user-id }}+${{ steps.token.outputs.app-slug }}[bot]@users.noreply.github.com'
+        echo "name=$bot_name" >> "$GITHUB_OUTPUT"
+        echo "email=$bot_email" >> "$GITHUB_OUTPUT"
+
+    - name: Configure git identity
+      if: ${{ inputs.configure-git == 'true' && inputs.fetch-user-id == 'true' }}
+      shell: bash
+      run: |
+        git config --global user.name '${{ steps.bot.outputs.name }}'
+        git config --global user.email '${{ steps.bot.outputs.email }}'

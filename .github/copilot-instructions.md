@@ -6,20 +6,9 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 
 **Tech Stack**: TypeScript monorepo using pnpm workspaces, Turbo for build orchestration, React for UI, Langium for language parsing, Vite for bundling.
 **Size**: ~20 packages across 1,686 dependencies. Main packages: `likec4` (CLI/Vite plugin), `@likec4/core` (model builder), `@likec4/language-server` (Langium-based parser), `@likec4/diagram` (React/ReactFlow renderer), `@likec4/vscode` (VSCode extension).
-**Node Requirements**: Node.js ^20.19.0 or >=22.18.0, pnpm 10.19.0 (.tool-versions specifies 22.19.0)
+**Node Requirements**: Node.js 22.21.1, pnpm 10.26.0 (see .tool-versions for correct versions)
 
 ## Build & Validation Commands
-
-### Environment Setup (CRITICAL - DO THIS FIRST)
-```bash
-# Install correct pnpm version BEFORE running any other commands
-npm install -g pnpm@10.19.0
-
-# Install dependencies with specific environment variables to avoid husky issues
-HUSKY=0 NODE_ENV=development pnpm install --prefer-offline
-```
-
-**IMPORTANT**: Always set `HUSKY=0` and `NODE_ENV=development` when installing dependencies to prevent husky pre-commit hook setup issues.
 
 ### Build Workflow (ALWAYS follow this order)
 
@@ -31,25 +20,24 @@ HUSKY=0 NODE_ENV=development pnpm install --prefer-offline
 
 2. **Build packages**:
    ```bash
-   pnpm ci:build  # Production build, excludes docs (~3-4 minutes)
-   pnpm build     # Same as ci:build (common alias)
+   pnpm build  # Build all, except docs
    ```
 
 3. **Type checking**:
    ```bash
-   pnpm ci:typecheck  # Type check all except docs (~1.5 minutes)
+   pnpm typecheck  # Type check all, except docs
    ```
 
 4. **Run tests**:
    ```bash
-   NODE_ENV=test pnpm ci:test  # Run all unit tests (~1 minute)
+   pnpm test  # Run all unit tests (~1 minute)
    ```
 
 5. **Linting**:
    ```bash
-   pnpm ci:lint     # Uses oxlint with type-aware rules
-   pnpm lint:fix    # Auto-fix lint issues
-   pnpm fmt         # Format code with dprint
+   pnpm lint     # Uses oxlint with type-aware rules
+   pnpm lint:fix # Auto-fix lint issues
+   pnpm fmt      # Format code with dprint
    ```
 
 ### Clean & Rebuild (When Things Go Wrong)
@@ -80,13 +68,13 @@ pnpm build
 
 ```bash
 # From root - builds tarballs, installs in isolated workspace, runs Playwright tests (~10 minutes)
-pnpm pretest:e2e  # Packs likec4 and core packages
 pnpm test:e2e     # Runs e2e tests in isolated environment
 ```
 
 ## Project Structure & Key Locations
 
 ### Repository Layout
+
 ```
 /
 ├── packages/
@@ -109,6 +97,7 @@ pnpm test:e2e     # Runs e2e tests in isolated environment
 ```
 
 ### Configuration Files (Root)
+
 - `turbo.json` - Turbo build orchestration, defines task dependencies
 - `pnpm-workspace.yaml` - Workspace packages and dependency catalog
 - `tsconfig.json` - TypeScript project references (for IDE/task runner)
@@ -118,6 +107,7 @@ pnpm test:e2e     # Runs e2e tests in isolated environment
 - `.tool-versions` - Required versions for Node, pnpm, dprint
 
 ### Build Outputs (Gitignored)
+
 - `packages/*/lib/` - TypeScript build outputs
 - `packages/*/dist/` - Bundled outputs
 - `packages/language-server/src/generated/` - Langium-generated parser
@@ -126,6 +116,7 @@ pnpm test:e2e     # Runs e2e tests in isolated environment
 - `**/.tsbuildinfo` - TypeScript incremental build cache
 
 ### Test File Locations
+
 - Unit tests: `packages/*/src/**/*.spec.ts`, `packages/*/src/**/__test__/*.spec.ts`
 - E2E tests: `e2e/tests/*.spec.ts`, `e2e/src/*.spec.ts`
 
@@ -134,9 +125,10 @@ pnpm test:e2e     # Runs e2e tests in isolated environment
 ### Main Workflows (`.github/workflows/`)
 
 **checks.yaml** (runs on PRs):
+
 1. `check-types`: TypeScript type checking (`pnpm ci:typecheck`)
 2. `check-lint`: Linting (`pnpm ci:lint`)
-3. `check-build`: Build all packages, pack tarballs, run `pnpm lint:package`
+3. `check-build`: Build all packages, pack tarballs
 4. `check-tests`: Run unit tests (`pnpm ci:test`)
 5. `check-on-windows`: Windows compatibility build and test
 6. `check-e2e-tests`: E2E tests using built tarballs
@@ -144,6 +136,7 @@ pnpm test:e2e     # Runs e2e tests in isolated environment
 8. `check-docs-astro`: Build documentation site
 
 **Bootstrap Action** (`.github/actions/bootstrap/action.yml`):
+
 ```yaml
 - Setup pnpm with NODE_ENV=development
 - Setup Node from .tool-versions
@@ -168,18 +161,24 @@ pnpm test:e2e      # Runs E2E tests
 ## Common Gotchas & Workarounds
 
 ### TypeScript Project References
+
 The repo uses TypeScript project references for faster incremental builds. If you see errors like "Output file 'X' has not been built from source file 'Y'":
+
 1. Run `pnpm generate` to regenerate all source files
 2. If that doesn't work, run `pnpm clean:lib` then `pnpm generate && pnpm typecheck`
 
 ### Turbo Cache Issues
+
 Turbo caches build outputs. If you suspect stale cache:
+
 ```bash
 pnpm clean  # Cleans turbo caches and build outputs
 ```
 
 ### Generated Files
+
 Several packages have auto-generated files that MUST be generated before building:
+
 - `packages/language-server/src/generated/` - Langium parser (from grammar)
 - `packages/vscode/src/meta.ts` - VSCode extension metadata
 - `packages/likec4/app/src/routeTree.gen.ts` - TanStack Router routes
@@ -188,47 +187,41 @@ Several packages have auto-generated files that MUST be generated before buildin
 Always run `pnpm generate` after checkout or when these files are missing.
 
 ### Formatting
+
 Use `pnpm fmt` to format code with dprint. The project does NOT use Prettier or eslint for formatting.
 
 ### Icons Package
-The `packages/icons/` package generates icon bundles. During `pnpm clean`, icon files are deleted and regenerated from source. This is expected behavior.
+
+The `packages/icons/` package contains icon bundles. Maintained by scripts in `packages/icons/scripts/`:
+You don't need to do anything with this package.
 
 ### Husky Hooks
+
 Pre-commit hooks run `nano-staged` to format staged files. If you need to bypass:
+
 ```bash
 git commit --no-verify
 ```
 
 ## Development Workflows
 
-### Working on VSCode Extension
+### Common Tasks
+
+All packages have the same tasks. For example:
+
 ```bash
-cd packages/vscode
-pnpm dev  # Watches for changes in dependencies
-# Then launch "Run Extension" in VSCode (F5)
+cd packages/language-server
+pnpm generate  # Generate source files
+pnpm typecheck # Type check package
+pnpm build     # Build package
+pnpm test      # Run tests
 ```
 
-### Working on Playground
-```bash
-cd apps/playground
-pnpm dev  # Starts dev server with hot reload
-```
-
-### Working on Core/Language Server
-```bash
-# Make changes, then run tests
-pnpm test              # Run all tests
-pnpm test:watch        # Watch mode
-pnpm vitest:ui         # Visual test UI (from root)
-```
+Turbo handles task orchestration.
+Commands like `pnpm generate` or `pnpm build` run tasks across packages in dependency order.
+Before running `typecheck` or `test`, always run `generate` first.
 
 ### Adding New Dependencies
-When adding dependencies to any package, check if a catalog version exists in `pnpm-workspace.yaml`. Use catalog versions when available for consistency.
 
-## Final Notes
-
-- **Trust these instructions**: Only search for additional information if these instructions are incomplete or found to be incorrect.
-- **Always run `pnpm generate` first** when starting work or after cleaning.
-- **Use `NODE_ENV=development`** for install and dev, `NODE_ENV=production` or `NODE_ENV=test` for CI commands.
-- **Turbo handles task orchestration**: Commands like `pnpm build` run tasks across packages in dependency order.
-- **Check `.gitignore`** before committing to avoid committing build artifacts, especially `lib/`, `dist/`, `.turbo/`, and generated files.
+When adding dependencies to any package, check if a catalog version exists in `pnpm-workspace.yaml`.
+Use catalog versions when available for consistency.

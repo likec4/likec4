@@ -3,11 +3,12 @@ packages:
   - devops/
   - styled-system/*
   - packages/*
-  - "!packages/create-likec4"
+  - '!packages/create-likec4'
 
 catalog:
-  "@dagrejs/dagre": 1.1.8
-  "@types/node": ~22.19.1
+  '@changesets/cli': ^2.29.8
+  '@dagrejs/dagre': 1.1.8
+  '@types/node': ~22.19.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
@@ -27,12 +28,12 @@ catalogMode: prefer
 
 catalogs:
   astro:
-    "@astrojs/check": ^0.9.6
-    "@astrojs/react": 4.4.2
-    "@astrojs/starlight": 0.37.0
-    "@astrojs/starlight-tailwind": ^4.0.2
-    "@expressive-code/plugin-collapsible-sections": ^0.41.3
-    "@expressive-code/plugin-line-numbers": ^0.41.3
+    '@astrojs/check': ^0.9.6
+    '@astrojs/react': 4.4.2
+    '@astrojs/starlight': 0.37.0
+    '@astrojs/starlight-tailwind': ^4.0.2
+    '@expressive-code/plugin-collapsible-sections': ^0.41.3
+    '@expressive-code/plugin-line-numbers': ^0.41.3
     astro: 5.16.4
     astro-og-canvas: ^0.7.2
     shiki: ^3.19.0
@@ -41,13 +42,13 @@ catalogs:
     starlight-links-validator: ^0.19.2
     starlight-package-managers: ^0.11.1
   cloudflare:
-    "@cloudflare/vite-plugin": ~1.18.0
+    '@cloudflare/vite-plugin': ~1.18.0
     wrangler: ~4.55.0
   css:
-    "@pandacss/dev": ^1.7.1
-    "@pandacss/preset-panda": ^1.7.1
-    "@pandacss/types": ^1.7.1
-    "@tailwindcss/vite": ^4.1.17
+    '@pandacss/dev': ^1.7.1
+    '@pandacss/preset-panda': ^1.7.1
+    '@pandacss/types': ^1.7.1
+    '@tailwindcss/vite': ^4.1.17
     postcss: 8.5.6
     tailwindcss: ^4.1.17
   esbuild:
@@ -55,31 +56,31 @@ catalogs:
     esbuild-node-externals: 1.20.1
     esbuild-plugins-node-modules-polyfill: 1.7.1
   hono:
-    "@hono/node-server": ^1.19.7
-    "@hono/oauth-providers": ^0.8.5
-    "@hono/zod-validator": ^0.7.5
+    '@hono/node-server': ^1.19.7
+    '@hono/oauth-providers': ^0.8.5
+    '@hono/zod-validator': ^0.7.5
     hono: ^4.11.1
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 8.3.10
-    "@mantine/core": 8.3.10
-    "@mantine/hooks": 8.3.10
-    "@mantine/modals": 8.3.10
-    "@mantine/notifications": 8.3.10
-    "@mantine/vanilla-extract": 8.3.10
+    '@mantine/colors-generator': 8.3.10
+    '@mantine/core': 8.3.10
+    '@mantine/hooks': 8.3.10
+    '@mantine/modals': 8.3.10
+    '@mantine/notifications': 8.3.10
+    '@mantine/vanilla-extract': 8.3.10
   mcp:
-    "@modelcontextprotocol/sdk": ^1.22.0
+    '@modelcontextprotocol/sdk': ^1.22.0
   react:
-    "@floating-ui/dom": ^1.7.4
-    "@nanostores/media-query": 0.1.2
-    "@nanostores/react": 1.0.0
-    "@react-hookz/web": ^25.2.0
-    "@tabler/icons-react": 3.36.0
-    "@types/react": 19.2.7
-    "@types/react-dom": 19.2.3
+    '@floating-ui/dom': ^1.7.4
+    '@nanostores/media-query': 0.1.2
+    '@nanostores/react': 1.0.0
+    '@react-hookz/web': ^25.2.0
+    '@tabler/icons-react': 3.36.0
+    '@types/react': 19.2.7
+    '@types/react-dom': 19.2.3
     clsx: ^2.1.1
     motion: ^12.23.26
     nanostores: 1.1.0
@@ -88,17 +89,17 @@ catalogs:
     react-error-boundary: ^6.0.0
     react-shadow: ^20.6.0
   tanstack:
-    "@tanstack/react-query": ^5.85.0
-    "@tanstack/react-router": ^1.114.13
-    "@tanstack/router-cli": ^1.114.13
-    "@tanstack/router-vite-plugin": ^1.114.13
+    '@tanstack/react-query': ^5.85.0
+    '@tanstack/react-router': ^1.114.13
+    '@tanstack/router-cli': ^1.114.13
+    '@tanstack/router-vite-plugin': ^1.114.13
   utils:
-    "@hpcc-js/wasm-graphviz": 1.16.0
-    "@logtape/logtape": ^0.12.3
-    "@lume/kiwi": ^0.4.4
-    "@types/chroma-js": ^3.1.2
-    "@types/natural-compare-lite": ^1.4.2
-    "@types/picomatch": ^4.0.2
+    '@hpcc-js/wasm-graphviz': 1.16.0
+    '@logtape/logtape': ^0.12.3
+    '@lume/kiwi': ^0.4.4
+    '@types/chroma-js': ^3.1.2
+    '@types/natural-compare-lite': ^1.4.2
+    '@types/picomatch': ^4.0.2
     bundle-require: ^5.1.0
     caniuse-lite: ^1.0.30001760
     chokidar: ^4.0.3
@@ -109,7 +110,6 @@ catalogs:
     defu: ^6.1.4
     esm-env: ^1.2.2
     fast-equals: ^5.3.3
-    # Don't upgrade fdir beyond 6.4.0 due to compatibility issues
     fdir: 6.4.0
     immer: ^11.0.1
     indent-string: ^5.0.0
@@ -135,17 +135,17 @@ catalogs:
     ufo: 1.6.1
     zod: ^3.25.76
   vite:
-    "@vitejs/plugin-react": ^5.1.2
+    '@vitejs/plugin-react': ^5.1.2
     rollup: ^4.53.5
     vite: ^7.3.0
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.24.0
     vite-tsconfig-paths: ^5.1.4
   vitest:
-    "@vitest/ui": 4.0.16
+    '@vitest/ui': 4.0.16
     vitest: 4.0.16
   vscode:
-    "@types/vscode": ^1.106.1
+    '@types/vscode': ^1.106.1
     vscode-jsonrpc: 8.2.1
     vscode-languageclient: 9.0.1
     vscode-languageserver: 9.0.1
@@ -155,16 +155,16 @@ catalogs:
     vscode-textmate: 9.3.0
     vscode-uri: 3.1.0
   xstate:
-    "@xstate/react": 6.0.0
+    '@xstate/react': 6.0.0
     xstate: 5.24.0
   xyflow:
-    "@xyflow/react": 12.10.0
-    "@xyflow/system": 0.0.74
+    '@xyflow/react': 12.10.0
+    '@xyflow/system': 0.0.74
   zod4:
     zod: ^4.1.13
 
 onlyBuiltDependencies:
-  - "@tailwindcss/oxide"
+  - '@tailwindcss/oxide'
   - dprint
   - esbuild
   - sharp

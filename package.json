@@ -7,10 +7,11 @@
   "type": "module",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "styled-system/*"
   ],
   "engines": {
-    "node": "^20.19.0 || >=22.18.0"
+    "node": ">=22.21.1"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",
@@ -40,6 +41,7 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
+    "@changesets/cli": "catalog:",
     "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.2",

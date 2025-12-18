@@ -32,22 +32,22 @@ jobs:
   release:
     name: 📦 release
     uses: ./.github/workflows/release.yaml
-    if: "github.repository_owner == 'likec4' && contains(github.event.head_commit.message, 'chore: release')"
+    if: ${{ github.repository_owner == 'likec4' }}
     needs: checks
     secrets: inherit
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-release
       cancel-in-progress: false
 
-  vscode:
-    name: 📦 vscode
-    uses: ./.github/workflows/vscode.yaml
-    if: "github.repository_owner == 'likec4' && contains(github.event.head_commit.message, 'chore: release')"
-    needs: checks
-    secrets: inherit
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}-vscode
-      cancel-in-progress: false
+  # vscode:
+  #   name: 📦 vscode
+  #   uses: ./.github/workflows/vscode.yaml
+  #   if: ${{ github.repository_owner == 'likec4' }}
+  #   needs: checks
+  #   secrets: inherit
+  #   concurrency:
+  #     group: ${{ github.workflow }}-${{ github.ref }}-vscode
+  #     cancel-in-progress: false
 
   deploy-playground:
     if: ${{ github.repository_owner == 'likec4' }}

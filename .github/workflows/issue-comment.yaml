@@ -28,18 +28,37 @@ jobs:
     outputs:
       ref: ${{ steps.refs.outputs.head_ref }}
     steps:
-      - name: Check if user has write access
-        uses: "lannonbr/repo-permission-check-action@2.0.2"
+      - name: Check commenter has write access
+        id: perm
+        uses: actions/github-script@v8
         with:
-          permission: "write"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const username = context.payload.comment.user.login
+            const { owner, repo } = context.repo
+
+            const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner,
+              repo,
+              username,
+            })
+
+            const allowedPermissions = new Set(['admin', 'maintain', 'write'])
+            core.setOutput('permission', data.permission)
+            core.setOutput('allowed', allowedPermissions.has(data.permission) ? 'true' : 'false')
+
+      - name: Stop if no access
+        if: ${{ steps.perm.outputs.allowed != 'true' }}
+        run: exit 1
 
       - name: resolve pr refs
         id: refs
-        uses: eficode/resolve-pr-refs@main
+        uses: actions/github-script@v8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.payload.issue.number
+            core.setOutput('head_ref', `refs/pull/${prNumber}/head`)
 
   preview-playground:
     needs: check-write-access
