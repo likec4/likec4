@@ -1,0 +1,29 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
+  "changelog": ["@changesets/changelog-github", { "repo": "likec4/likec4" }],
+  "commit": false,
+  "fixed": [
+    [
+      "@likec4/config",
+      "@likec4/core",
+      "@likec4/diagram",
+      "@likec4/generators",
+      "@likec4/language-server",
+      "@likec4/layouts",
+      "likec4",
+      "@likec4/log",
+      "@likec4/mcp",
+      "likec4-vscode",
+      "@likec4/vscode-preview",
+      "@likec4/style-preset",
+      "@likec4/styles"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "create-likec4"
+  ]
+}

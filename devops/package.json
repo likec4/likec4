@@ -2,6 +2,7 @@
   "name": "@likec4/devops",
   "version": "1.42.0",
   "type": "module",
+  "private": true,
   "sideEffects": false,
   "scripts": {
     "typecheck": "tsc -b"

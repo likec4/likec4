@@ -7,7 +7,8 @@
   "type": "module",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "styled-system/*"
   ],
   "engines": {
     "node": ">=22.21.1"
@@ -40,6 +41,7 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
+    "@changesets/cli": "catalog:",
     "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.2",
