@@ -2,6 +2,7 @@
   "name": "create-likec4",
   "version": "1.46.1",
   "license": "MIT",
+  "private": true,
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "repository": {

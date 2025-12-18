@@ -18,18 +18,19 @@ jobs:
     name: create pull request
     timeout-minutes: 15
     runs-on: ubuntu-24.04-arm
+    if: ${{ github.repository_owner == 'likec4' }}
     steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
       - name: bot token
         id: bot-token
         uses: ./.github/actions/bot-token
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key-base64: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-
-      - uses: actions/checkout@v6
-        with:
-          token: ${{ steps.bot-token.outputs.token }}
-          ssh-strict: "no"
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -66,4 +67,4 @@ jobs:
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}" || true
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.bot-token.outputs.token }}

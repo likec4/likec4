@@ -28,18 +28,14 @@ jobs:
     if: ${{ github.repository_owner == 'likec4' }}
     environment: release
     steps:
+      - uses: actions/checkout@v6
+
       - name: bot token
         id: bot-token
         uses: ./.github/actions/bot-token
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key-base64: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-
-      - uses: actions/checkout@v6
-        with:
-          token: ${{ steps.bot-token.outputs.token }}
-          fetch-depth: 0
-          ref: ${{ github.ref }}
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap

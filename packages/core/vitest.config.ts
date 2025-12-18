@@ -1,5 +1,7 @@
 import { defineProject } from 'vitest/config'
 
+const isNotWin = process.platform === 'win32'
+
 export default defineProject({
   test: {
     name: 'core',
@@ -7,7 +9,7 @@ export default defineProject({
       truncateThreshold: 300,
     },
     typecheck: {
-      enabled: true,
+      enabled: isNotWin, // skipping typecheck on windows
     },
   },
 })

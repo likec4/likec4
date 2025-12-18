@@ -22,8 +22,5 @@
   "linked": [],
   "access": "public",
   "baseBranch": "main",
-  "updateInternalDependencies": "patch",
-  "ignore": [
-    "create-likec4"
-  ]
+  "updateInternalDependencies": "patch"
 }
