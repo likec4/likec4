@@ -26,6 +26,7 @@ jobs:
     if: ${{ github.repository_owner == 'likec4' && github.event.issue.pull_request }}
     runs-on: ubuntu-24.04-arm
     outputs:
+      allowed: ${{ steps.perm.outputs.allowed }}
       ref: ${{ steps.refs.outputs.head_ref }}
     steps:
       - name: Check commenter has write access
@@ -47,13 +48,10 @@ jobs:
             core.setOutput('permission', data.permission)
             core.setOutput('allowed', allowedPermissions.has(data.permission) ? 'true' : 'false')
 
-      - name: Stop if no access
-        if: ${{ steps.perm.outputs.allowed != 'true' }}
-        run: exit 1
-
       - name: resolve pr refs
         id: refs
         uses: actions/github-script@v8
+        if: ${{ steps.perm.outputs.allowed == 'true' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -63,7 +61,7 @@ jobs:
   preview-playground:
     needs: check-write-access
     name: deploy playground preview
-    if: ${{ contains(github.event.comment.body, '/preview playground') || contains(github.event.comment.body, '/playground') }}
+    if: ${{ needs.check-write-access.outputs.allowed == 'true' && (contains(github.event.comment.body, '/preview playground') || contains(github.event.comment.body, '/playground')) }}
     runs-on: ubuntu-24.04-arm
     env:
       PR_REF: ${{ needs.check-write-access.outputs.ref }}
@@ -127,7 +125,7 @@ jobs:
   preview-docs:
     needs: check-write-access
     name: deploy docs preview
-    if: ${{ contains(github.event.comment.body, '/preview docs') || contains(github.event.comment.body, '/docs') }}
+    if: ${{ needs.check-write-access.outputs.allowed == 'true' && (contains(github.event.comment.body, '/preview docs') || contains(github.event.comment.body, '/docs')) }}
     runs-on: ubuntu-24.04-arm
     env:
       PR_REF: ${{ needs.check-write-access.outputs.ref }}
@@ -192,6 +190,6 @@ jobs:
   pkg-pr:
     needs: check-write-access
     name: create pkg
-    if: ${{ github.event.comment.body == '/pkg' }}
+    if: ${{ needs.check-write-access.outputs.allowed == 'true' && github.event.comment.body == '/pkg' }}
     uses: ./.github/workflows/pkg-pr-new.yaml
     secrets: inherit
