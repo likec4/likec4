@@ -41,6 +41,7 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "catalog:",
     "@changesets/cli": "catalog:",
     "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
@@ -53,7 +54,6 @@
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "rimraf": "^6.0.1",
-    "shipjs": "^0.27.0",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
