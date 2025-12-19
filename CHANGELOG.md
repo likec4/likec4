@@ -1,3 +1,12 @@
+## [1.46.3](https://github.com/likec4/likec4/compare/v1.46.2...v1.46.3) (2025-12-19)
+
+### Bug Fixes
+
+- Remove workspace locks in ProjectsManager, as they lead to race conditions during extension activation. Fixes [#2466](https://github.com/likec4/likec4/issues/2466)
+- Fallback to the first project in vite plugin, if `projectId` is not found, instead of erroring out. Closes [#2472](https://github.com/like-c4/likec4/issues/2472)
+- Corrected resolution of project's included documents
+- Corrected background color of element-details panel in dark mode
+
 ## [1.46.2](https://github.com/likec4/likec4/compare/v1.46.1...v1.46.2) (2025-12-19)
 
 ### Bug Fixes
