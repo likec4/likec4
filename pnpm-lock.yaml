@@ -13,8 +13,8 @@ catalogs:
       specifier: 4.4.2
       version: 4.4.2
     '@astrojs/starlight':
-      specifier: 0.37.0
-      version: 0.37.0
+      specifier: 0.37.1
+      version: 0.37.1
     '@astrojs/starlight-tailwind':
       specifier: ^4.0.2
       version: 4.0.2
@@ -465,10 +465,10 @@ importers:
         version: 4.4.2(@types/node@22.19.2)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
       '@astrojs/starlight':
         specifier: catalog:astro
-        version: 0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
+        version: 0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
       '@astrojs/starlight-tailwind':
         specifier: catalog:astro
-        version: 4.0.2(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))(tailwindcss@4.1.17)
+        version: 4.0.2(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))(tailwindcss@4.1.17)
       '@expressive-code/plugin-collapsible-sections':
         specifier: catalog:astro
         version: 0.41.3
@@ -516,16 +516,16 @@ importers:
         version: 3.19.0
       starlight-heading-badges:
         specifier: catalog:astro
-        version: 0.6.1(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))
+        version: 0.6.1(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))
       starlight-image-zoom:
         specifier: catalog:astro
-        version: 0.13.2(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))
+        version: 0.13.2(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))
       starlight-links-validator:
         specifier: catalog:astro
-        version: 0.19.2(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
+        version: 0.19.2(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
       starlight-package-managers:
         specifier: catalog:astro
-        version: 0.11.1(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))
+        version: 0.11.1(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))
       tailwindcss:
         specifier: catalog:css
         version: 4.1.17
@@ -2286,8 +2286,8 @@ packages:
       '@astrojs/starlight': '>=0.34.0'
       tailwindcss: ^4.0.0
 
-  '@astrojs/starlight@0.37.0':
-    resolution: {integrity: sha512-1AlaEjYYRO+5o6P5maPUBQZr6Q3wtuhMQTmsDQExI07wJVwe7EC2wGhXnFo+jpCjwHv/Bdg33PQheY4UhMj01g==}
+  '@astrojs/starlight@0.37.1':
+    resolution: {integrity: sha512-STNsR5PaDoiW4IgcX17Fp42FfyqwuweWPts/EWEMcFPAeg9Nvpu3UvVCorasYrgfJgaJTeydsOV++0ACA1KYDA==}
     peerDependencies:
       astro: ^5.5.0
 
@@ -9071,12 +9071,12 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.25.76
 
-  '@astrojs/starlight-tailwind@4.0.2(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))(tailwindcss@4.1.17)':
+  '@astrojs/starlight-tailwind@4.0.2(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))(tailwindcss@4.1.17)':
     dependencies:
-      '@astrojs/starlight': 0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
+      '@astrojs/starlight': 0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
       tailwindcss: 4.1.17
 
-  '@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))':
+  '@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))':
     dependencies:
       '@astrojs/markdown-remark': 6.3.10
       '@astrojs/mdx': 4.2.5(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
@@ -16126,19 +16126,19 @@ snapshots:
 
   stackback@0.0.2: {}
 
-  starlight-heading-badges@0.6.1(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))):
+  starlight-heading-badges@0.6.1(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))):
     dependencies:
       '@astrojs/markdown-remark': 6.3.10
-      '@astrojs/starlight': 0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
+      '@astrojs/starlight': 0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
       github-slugger: 2.0.0
       mdast-util-directive: 3.1.0
       unist-util-visit: 5.0.0
     transitivePeerDependencies:
       - supports-color
 
-  starlight-image-zoom@0.13.2(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))):
+  starlight-image-zoom@0.13.2(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))):
     dependencies:
-      '@astrojs/starlight': 0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
+      '@astrojs/starlight': 0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
       mdast-util-mdx-jsx: 3.2.0
       rehype-raw: 7.0.0
       unist-util-visit: 5.0.0
@@ -16146,9 +16146,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-links-validator@0.19.2(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)):
+  starlight-links-validator@0.19.2(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)):
     dependencies:
-      '@astrojs/starlight': 0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
+      '@astrojs/starlight': 0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
       '@types/picomatch': 3.0.2
       astro: 5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)
       github-slugger: 2.0.0
@@ -16164,9 +16164,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-package-managers@0.11.1(@astrojs/starlight@0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))):
+  starlight-package-managers@0.11.1(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))):
     dependencies:
-      '@astrojs/starlight': 0.37.0(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
+      '@astrojs/starlight': 0.37.1(astro@5.16.5(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
 
   statuses@2.0.1: {}
 
