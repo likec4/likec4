@@ -1,4 +1,4 @@
-import { filter, flatMap, funnel, indexBy, keys, map, mapValues, pipe, sort } from 'remeda'
+import { filter, funnel, indexBy, keys, map, mapValues, pipe, sort } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
@@ -174,36 +174,33 @@ export class Rpc extends ADisposable {
       }),
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
         logger.debug`received request ${'FetchViewsFromAllProjects'}`
-        const promises = projects.all.map(async projectId => {
-          const computedViews = await likec4Services.Views.computedViews(projectId, cancelToken)
-          return pipe(
-            computedViews,
-            map(v => ({
-              id: v.id,
-              title: v.title ?? v.id,
-              projectId,
-            })),
-            sort((a, b) => {
-              if (a.id === 'index') {
-                return -1
-              }
-              if (b.id === 'index') {
-                return 1
-              }
-              return a.title.localeCompare(b.title)
-            }),
-          )
-        })
-        const results = await Promise.allSettled(promises)
-        await interruptAndCheck(cancelToken)
-
-        return {
-          views: pipe(
-            results,
-            filter(r => r.status === 'fulfilled'),
-            flatMap(r => r.value),
-          ),
+        const views: FetchViewsFromAllProjects.Res['views'] = []
+        for (const projectId of projects.all) {
+          await interruptAndCheck(cancelToken)
+          try {
+            const computedViews = await likec4Services.Views.computedViews(projectId, cancelToken)
+            views.push(...pipe(
+              computedViews,
+              map(v => ({
+                id: v.id,
+                title: v.title ?? v.id,
+                projectId,
+              })),
+              sort((a, b) => {
+                if (a.id === 'index') {
+                  return -1
+                }
+                if (b.id === 'index') {
+                  return 1
+                }
+                return a.title.localeCompare(b.title)
+              }),
+            ))
+          } catch (error) {
+            logger.warn(`Failed to fetch views for project ${projectId}:`, { error })
+          }
         }
+        return { views }
       }),
       connection.onRequest(BuildDocuments.req, async ({ docs }, cancelToken) => {
         const changed = docs.map(d => URI.parse(d))

@@ -19,8 +19,6 @@ const exclude = (doc: LangiumDocument) => {
 }
 
 export class LangiumDocuments extends DefaultLangiumDocuments {
-  protected compare = compareNaturalHierarchically('/', true)
-
   constructor(protected services: LikeC4SharedServices) {
     super(services)
   }
@@ -41,7 +39,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   override getDocument(uri: URI): LikeC4LangiumDocument | undefined {
     const doc = super.getDocument(uri)
     if (doc && !exclude(doc)) {
-      doc.likec4ProjectId ??= this.services.workspace.ProjectsManager.belongsTo(doc)
+      doc.likec4ProjectId = this.services.workspace.ProjectsManager.belongsTo(doc)
     }
     if (doc && !isLikeC4LangiumDocument(doc)) {
       throw new Error(`Document ${doc.uri.path} is not a LikeC4 document`)
@@ -54,7 +52,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
       .filter((doc): doc is LikeC4LangiumDocument => {
         if (doc.textDocument.languageId === LikeC4LanguageMetaData.languageId) {
           if (!isLikeC4Builtin(doc.uri)) {
-            doc.likec4ProjectId ??= this.services.workspace.ProjectsManager.belongsTo(doc)
+            doc.likec4ProjectId = this.services.workspace.ProjectsManager.belongsTo(doc)
           }
           return true
         }
@@ -63,44 +61,38 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   }
 
   /**
-   * Returns all user documents, excluding built-in documents.
+   * Returns all documents, excluding built-in documents and documents excluded by ProjectsManager.
    */
   get allExcludingBuiltin(): Stream<LikeC4LangiumDocument> {
     const projects = this.services.workspace.ProjectsManager
-    return super.all.filter((doc): doc is LikeC4LangiumDocument => {
-      // Exclude built-in and non-LikeC4 documents, and also documents excluded by ProjectsManager
-      return !exclude(doc) && !projects.isExcluded(doc)
+    return this.all.filter((doc): doc is LikeC4LangiumDocument => {
+      return !(isLikeC4Builtin(doc.uri) || projects.isExcluded(doc))
     })
   }
 
+  /**
+   * Returns all documents for a project, including both project documents and documents included by the project.
+   */
   projectDocuments(projectId: ProjectId): Stream<LikeC4LangiumDocument> {
     const projects = this.services.workspace.ProjectsManager
-    const project = projects.getProject(projectId)
-
-    const projectFolder = project.folderUri.toString() + (project.folderUri.path.endsWith('/') ? '' : '/')
-    const includePathStrings = project.includePaths?.map(uri => {
-      const path = uri.toString()
-      return path.endsWith('/') ? path : path + '/'
-    }) ?? []
-
     return this.allExcludingBuiltin.filter(doc => {
-      const docUri = doc.uri.toString()
-
-      // Always include documents from the project's own folder
-      if (docUri.startsWith(projectFolder)) {
-        return true
-      }
-
-      // Check for addtional documents when the config has the `include:paths` property set.
-      if (includePathStrings.length > 0) {
-        return includePathStrings.some(includePath => docUri.startsWith(includePath))
-      }
-
-      return false
+      return doc.likec4ProjectId === projectId || projects.isIncluded(projectId, doc.uri)
     })
   }
 
   groupedByProject(): Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>> {
     return groupBy(this.allExcludingBuiltin.toArray(), prop('likec4ProjectId'))
+  }
+
+  /**
+   * Reset the project IDs of all documents.
+   */
+  resetProjectIds() {
+    super.all.forEach(doc => {
+      if (exclude(doc)) {
+        return
+      }
+      delete doc.likec4ProjectId
+    })
   }
 }
