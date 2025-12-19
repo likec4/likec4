@@ -110,7 +110,7 @@ catalogs:
     date-fns: ^4.1.0
     defu: ^6.1.4
     esm-env: ^1.2.2
-    fast-equals: ^5.3.3
+    fast-equals: ^5.4.0
     fdir: 6.4.0
     immer: ^11.0.1
     indent-string: ^5.0.0
