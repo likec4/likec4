@@ -116,7 +116,7 @@ catalogs:
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
-    nano-spawn: ^1.0.3
+    nano-spawn: ^2.0.0
     nanoid: 5.1.6
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0
