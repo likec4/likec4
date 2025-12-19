@@ -12,9 +12,7 @@
       "@likec4/layouts",
       "likec4",
       "@likec4/mcp",
-      "likec4-vscode"
-    ],
-    [
+      "likec4-vscode",
       "@likec4/style-preset",
       "@likec4/styles"
     ]

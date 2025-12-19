@@ -18,91 +18,94 @@ export class LikeC4ModelChanges {
     this.locator = services.likec4.ModelLocator
   }
 
-  public async applyChange(changeView: ChangeView.Params): Promise<ChangeView.Res> {
+  public async applyChange(
+    changeView: ChangeView.Params,
+  ): Promise<ChangeView.Res> {
     const lspConnection = this.services.shared.lsp.Connection
-    let result: ChangeView.Res | null = null
     try {
-      await this.services.shared.workspace.WorkspaceLock.write(async () => {
-        let { viewId, projectId: _projectId, change } = changeView
-        const project = this.services.shared.workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
-        logger.debug`Applying model change ${change.op} to view ${viewId} in project ${project.id}`
+      let { viewId, projectId: _projectId, change } = changeView
+      const project = this.services.shared.workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
+      logger.debug`Applying model change ${change.op} to view ${viewId} in project ${project.id}`
 
-        const lookup = this.locator.locateViewAst(viewId, project.id)
-        if (!lookup) {
-          throw new Error(`View ${viewId} not found in project ${project.id}`)
-        }
-        const textDocument = {
-          uri: lookup.doc.textDocument.uri,
-          version: lookup.doc.textDocument.version,
-        }
+      const lookup = this.locator.locateViewAst(viewId, project.id)
+      if (!lookup) {
+        throw new Error(`View ${viewId} not found in project ${project.id}`)
+      }
+      const textDocument = {
+        uri: lookup.doc.textDocument.uri,
+        version: lookup.doc.textDocument.version,
+      }
 
-        // TODO refactor to use separate methods for save/reset operations
-        if (change.op === 'save-view-snapshot') {
-          invariant(
-            viewId === change.layout.id,
-            'View ID does not match, expected ' + viewId + ', got ' + change.layout.id,
-          )
-          // If there is an existing manual layout v1
-          if (lookup.view.manualLayout) {
-            // We clean it up
-            await removeManualLayoutV1(this.services, { lookup }).catch(err => {
-              logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
-            })
-          }
-          const location = await this.services.likec4.ManualLayouts.write(project, change.layout)
-          result = {
-            success: true,
-            location,
-          }
-          return
+      // TODO refactor to use separate methods for save/reset operations
+      if (change.op === 'save-view-snapshot') {
+        invariant(
+          viewId === change.layout.id,
+          'View ID does not match, expected ' + viewId + ', got ' + change.layout.id,
+        )
+        // If there is an existing manual layout v1
+        if (lookup.view.manualLayout) {
+          // We clean it up
+          await removeManualLayoutV1(this.services, { lookup }).catch(err => {
+            logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
+          })
         }
-
-        if (change.op === 'reset-manual-layout') {
-          // If there is an existing manual layout v1
-          if (lookup.view.manualLayout) {
-            // We clean it up
-            await removeManualLayoutV1(this.services, { lookup }).catch(err => {
-              logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
-            })
-          }
-          const location = await this.services.likec4.ManualLayouts.remove(project, viewId)
-          result = {
-            success: true,
-            location,
-          }
-          return
-        }
-
-        invariant(lspConnection, 'This change only supported in IDE (running as Extension)')
-
-        const { edits, modifiedRange } = this.convertToTextEdit({
-          lookup,
-          change,
-        })
-        if (!edits.length) {
-          return
-        }
-        const applyResult = await lspConnection.workspace.applyEdit({
-          label: `LikeC4 - change view ${changeView.viewId}`,
-          edit: {
-            changes: {
-              [textDocument.uri]: edits,
-            },
-          },
-        })
-        if (!applyResult.applied) {
-          lspConnection.window.showErrorMessage(`Failed to apply changes ${applyResult.failureReason}`)
-          return
-        }
-
-        result = {
+        const location = await this.services.likec4.ManualLayouts.write(project, change.layout)
+        return {
           success: true,
-          location: {
-            uri: textDocument.uri,
-            range: modifiedRange,
-          },
+          location,
         }
+      }
+
+      if (change.op === 'reset-manual-layout') {
+        // If there is an existing manual layout v1
+        if (lookup.view.manualLayout) {
+          // We clean it up
+          await removeManualLayoutV1(this.services, { lookup }).catch(err => {
+            logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
+          })
+        }
+        const location = await this.services.likec4.ManualLayouts.remove(project, viewId)
+        return {
+          success: true,
+          location,
+        }
+      }
+
+      invariant(lspConnection, 'This change only supported in IDE (running as Extension)')
+
+      const { edits, modifiedRange } = this.convertToTextEdit({
+        lookup,
+        change,
       })
+      if (!edits.length) {
+        return {
+          success: false,
+          error: 'No changes to apply',
+        }
+      }
+      const applyResult = await lspConnection.workspace.applyEdit({
+        label: `LikeC4 - change view ${changeView.viewId}`,
+        edit: {
+          changes: {
+            [textDocument.uri]: edits,
+          },
+        },
+      })
+      if (!applyResult.applied) {
+        lspConnection.window.showErrorMessage(`Failed to apply changes ${applyResult.failureReason}`)
+        return {
+          success: false,
+          error: `Failed to apply changes ${applyResult.failureReason}`,
+        }
+      }
+
+      return {
+        success: true,
+        location: {
+          uri: textDocument.uri,
+          range: modifiedRange,
+        },
+      }
     } catch (err) {
       const error = loggable(
         wrapError(
@@ -111,16 +114,12 @@ export class LikeC4ModelChanges {
         ),
       )
       logger.error(error)
-      result = {
+      return {
         success: false,
         error,
       }
     } finally {
       this.services.likec4.ModelBuilder.clearCache()
-    }
-    return result ?? {
-      success: false,
-      error: 'Unknown error applying model change',
     }
   }
 
