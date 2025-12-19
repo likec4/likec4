@@ -8,7 +8,7 @@ import {
 } from '@likec4/config'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
 import type { ProjectId, scalar } from '@likec4/core/types'
-import { BiMap, delay, invariant, memoizeProp, nonNullable } from '@likec4/core/utils'
+import { BiMap, invariant, memoizeProp, nonNullable } from '@likec4/core/utils'
 import { wrapError } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
 import {
@@ -293,7 +293,7 @@ export class ProjectsManager {
   /**
    * Registers likec4 project by config file.
    */
-  async registerConfigFile(configFile: URI): Promise<ProjectData> {
+  async registerConfigFile(configFile: URI, cancelToken?: Cancellation.CancellationToken): Promise<ProjectData> {
     if (DefaultProject.exclude(configFile.path)) {
       throw new Error(
         `Path to ${configFile.fsPath} is excluded by: ${DefaultProject.config.exclude.join(', ')}`,
@@ -306,7 +306,7 @@ export class ProjectsManager {
       const config = await this.services.workspace.FileSystemProvider.loadProjectConfig(configFile)
       const path = joinRelativeURL(configFile.path, '..')
       const folderUri = configFile.with({ path })
-      return await this.registerProject({ config, folderUri })
+      return await this.registerProject({ config, folderUri }, cancelToken)
     } catch (error) {
       this.services.lsp.Connection?.window.showErrorMessage(
         `LikeC4: Failed to register project at ${configFile.fsPath}`,
@@ -324,6 +324,7 @@ export class ProjectsManager {
       config: LikeC4ProjectConfig | LikeC4ProjectConfigInput
       folderUri: URI | string
     },
+    cancelToken?: Cancellation.CancellationToken,
   ): Promise<ProjectData> {
     const config = validateProjectConfig(opts.config)
     const folder = ProjectFolder(opts.folderUri)
@@ -446,7 +447,7 @@ export class ProjectsManager {
 
     // Reset assigned project IDs if no projects reload is active
     if (mustReset && !this.#activeReload) {
-      await this.rebuidProject(project.id).catch(error => {
+      await this.rebuidProject(project.id, cancelToken).catch(error => {
         logger.warn('Failed to rebuild project {projectId} after config change', {
           projectId: project.id,
           error,
@@ -472,11 +473,11 @@ export class ProjectsManager {
   }
 
   #activeReload: Promise<void> | null = null
-  async reloadProjects(): Promise<void> {
+  async reloadProjects(cancelToken?: Cancellation.CancellationToken): Promise<void> {
     try {
       if (!this.#activeReload) {
         logger.debug`schedule reload projects`
-        this.#activeReload = this._reloadProjects()
+        this.#activeReload = this._reloadProjects(cancelToken)
       } else {
         logger.debug`reload projects is already in progress, waiting`
       }
@@ -486,49 +487,46 @@ export class ProjectsManager {
     }
   }
 
-  protected async _reloadProjects(): Promise<void> {
-    // debounce reload projects
-    await delay(200)
+  protected async _reloadProjects(cancelToken?: Cancellation.CancellationToken): Promise<void> {
     const folders = this.services.workspace.WorkspaceManager.workspaceFolders
     if (!folders) {
       logger.warn('No workspace folders found')
       return
     }
-    await this.services.workspace.WorkspaceLock.write(async (cancelToken) => {
-      logger.debug`start reload projects`
-      const configFiles = [] as URI[]
-      for (const folder of folders) {
-        try {
-          logger.debug`scan projects in folder ${folder.uri}`
-          const files = await this.services.workspace.FileSystemProvider.scanProjectFiles(URI.parse(folder.uri))
-          for (const file of files) {
-            if (file.isFile && this.isConfigFile(file.uri)) {
-              logger.debug`found config ${file.uri.fsPath}`
-              configFiles.push(file.uri)
-            }
+    logger.debug`start reload projects`
+    const configFiles = [] as URI[]
+    for (const folder of folders) {
+      try {
+        logger.debug`scan projects in folder ${folder.uri}`
+        const files = await this.services.workspace.FileSystemProvider.scanProjectFiles(URI.parse(folder.uri))
+        for (const file of files) {
+          if (file.isFile && this.isConfigFile(file.uri)) {
+            logger.debug`found config ${file.uri.fsPath}`
+            configFiles.push(file.uri)
           }
-        } catch (error) {
-          logger.error('Failed to scanProjectFiles, {folder}', { folder: folder.uri, error })
         }
+      } catch (error) {
+        logger.error('Failed to scanProjectFiles, {folder}', { folder: folder.uri, error })
       }
-      if (configFiles.length === 0 && this.#projects.length !== 0) {
-        logger.warning('No config files found, but some projects were registered before')
-      }
+    }
+    if (configFiles.length === 0 && this.#projects.length !== 0) {
+      logger.warning('No config files found, but some projects were registered before')
+    }
 
-      await interruptAndCheck(cancelToken)
-
-      this.#projects = []
-      this.#projectIdToFolder.clear()
-      for (const uri of configFiles) {
-        try {
-          await this.registerConfigFile(uri)
-        } catch (error) {
-          logger.error('Failed to load config file {uri}', { uri: uri.fsPath, error })
-        }
+    this.#projects = []
+    this.#projectIdToFolder.clear()
+    for (const uri of configFiles) {
+      if (cancelToken) {
+        await interruptAndCheck(cancelToken)
       }
-      this.reset()
-      await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
-    })
+      try {
+        await this.registerConfigFile(uri, cancelToken)
+      } catch (error) {
+        logger.error('Failed to load config file {uri}', { uri: uri.fsPath, error })
+      }
+    }
+    this.reset()
+    await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
   }
 
   protected uniqueProjectId(name: string): scalar.ProjectId {
@@ -541,6 +539,7 @@ export class ProjectsManager {
   }
 
   protected reset(): void {
+    logger.debug('reset')
     this.#defaultProject = undefined
     if (this.#defaultProjectId && !this.#projectIdToFolder.has(this.#defaultProjectId)) {
       this.#defaultProjectId = undefined
@@ -558,11 +557,6 @@ export class ProjectsManager {
   }
 
   public async rebuidProject(projectId: ProjectId, cancelToken?: Cancellation.CancellationToken): Promise<void> {
-    if (!cancelToken) {
-      return await this.services.workspace.WorkspaceLock.write(async (ct) => {
-        await this.rebuidProject(projectId, ct)
-      })
-    }
     logger.info`rebuild project ${projectId}`
     // reset default project cache
     this.#defaultProject = undefined

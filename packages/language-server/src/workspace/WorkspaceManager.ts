@@ -9,7 +9,7 @@ import type {
 } from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
 import { hasAtLeast } from 'remeda'
-import type { WorkspaceFolder } from 'vscode-languageserver'
+import { type WorkspaceFolder, CancellationToken } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileSystemProvider } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
@@ -51,7 +51,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const projects = this.services.workspace.ProjectsManager
     for (const entry of configFiles) {
       try {
-        await projects.registerConfigFile(entry.uri)
+        await projects.registerConfigFile(entry.uri, CancellationToken.None)
       } catch (error) {
         logWarnError(error)
       }
@@ -142,11 +142,6 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   public async rebuildAll(cancelToken?: Cancellation.CancellationToken): Promise<void> {
-    if (!cancelToken) {
-      return await this.services.workspace.WorkspaceLock.write(async (ct) => {
-        await this.rebuildAll(ct)
-      })
-    }
     const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
     logger.info('invalidate and rebuild all {docs} documents', { docs: docs.length })
     this.services.workspace.Cache.clear()

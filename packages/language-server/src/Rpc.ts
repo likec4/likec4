@@ -161,15 +161,15 @@ export class Rpc extends ADisposable {
           }),
         } satisfies FetchProjects.Res
       }),
-      connection.onRequest(ReloadProjects.req, async () => {
+      connection.onRequest(ReloadProjects.req, async (cancelToken) => {
         logger.debug`received request ${'ReloadProjects'}`
         likec4Services.ManualLayouts.clearCaches()
-        await projects.reloadProjects()
+        await projects.reloadProjects(cancelToken)
         return
       }),
-      connection.onRequest(RegisterProject.req, async (params) => {
+      connection.onRequest(RegisterProject.req, async (params, cancelToken) => {
         logger.debug`received request ${'RegisterProject'}`
-        const project = await projects.registerProject(params)
+        const project = await projects.registerProject(params, cancelToken)
         return { id: project.id }
       }),
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
@@ -261,7 +261,7 @@ export class Rpc extends ADisposable {
             nonexhaustive(params)
         }
       }),
-      connection.onRequest(ChangeView.req, async (request, _cancelToken) => {
+      connection.onRequest(ChangeView.req, async (request, cancelToken) => {
         logger.debug`received request ${'changeView'} of ${request.viewId} from project ${request.projectId}`
         const loc = await likec4Services.ModelChanges.applyChange(request)
         const op = request.change.op
@@ -269,49 +269,45 @@ export class Rpc extends ADisposable {
           request.projectId &&
           (op === 'save-view-snapshot' || op === 'reset-manual-layout')
         ) {
-          await projects.rebuidProject(request.projectId as ProjectId)
+          await projects.rebuidProject(request.projectId as ProjectId, cancelToken)
         }
         return loc
       }),
       connection.onRequest(FetchTelemetryMetrics.req, async (cancelToken) => {
-        const projectsIds = [...projects.all]
-        const promises = projectsIds.map(async projectId => {
-          const model = await likec4Services.ModelBuilder.computeModel(projectId, cancelToken)
-          if (model === LikeC4Model.EMPTY) {
-            return Promise.reject(new Error(`Model is empty`))
+        let metrics: FetchTelemetryMetrics.Res['metrics'] = null
+        for (const projectId of projects.all) {
+          try {
+            const model = await likec4Services.ModelBuilder.computeModel(projectId, cancelToken)
+            if (model === LikeC4Model.EMPTY) {
+              continue
+            }
+            metrics ??= {
+              elementKinds: 0,
+              deploymentKinds: 0,
+              relationshipKinds: 0,
+              tags: 0,
+              customColors: 0,
+              elements: 0,
+              deploymentNodes: 0,
+              relationships: 0,
+              views: 0,
+              projects: 0,
+            }
+            metrics.elementKinds += keys(model.specification.elements).length
+            metrics.deploymentKinds += keys(model.specification.deployments).length
+            metrics.relationshipKinds += keys(model.specification.relationships).length
+            metrics.tags += keys(model.specification.tags).length
+            metrics.customColors += keys(model.specification.customColors ?? {}).length
+            metrics.elements += keys(model.$data.elements).length
+            metrics.deploymentNodes += [...model.deployment.nodes()].length
+            metrics.relationships += keys(model.$data.relations).length
+            metrics.views += keys(model.$data.views).length
+            metrics.projects += 1
+          } catch (err) {
+            logger.warn(`Error fetching telemetry metrics for project ${projectId}`, { err })
           }
-          return {
-            elementKinds: keys(model.specification.elements).length,
-            deploymentKinds: keys(model.specification.deployments).length,
-            relationshipKinds: keys(model.specification.relationships).length,
-            tags: keys(model.specification.tags).length,
-            customColors: keys(model.specification.customColors ?? {}).length,
-            elements: keys(model.$data.elements).length,
-            deploymentNodes: [...model.deployment.nodes()].length,
-            relationships: keys(model.$data.relations).length,
-            views: keys(model.$data.views).length,
-            projects: 1,
-          }
-        })
-        const results = await Promise.allSettled(promises)
+        }
         await interruptAndCheck(cancelToken)
-
-        const values = results.filter(r => r.status === 'fulfilled').map(r => r.value)
-
-        const metrics = values.length > 0
-          ? values.reduce((acc, r) => ({
-            elementKinds: acc.elementKinds + r.elementKinds,
-            deploymentKinds: acc.deploymentKinds + r.deploymentKinds,
-            relationshipKinds: acc.relationshipKinds + r.relationshipKinds,
-            tags: acc.tags + r.tags,
-            customColors: acc.customColors + r.customColors,
-            elements: acc.elements + r.elements,
-            deploymentNodes: acc.deploymentNodes + r.deploymentNodes,
-            relationships: acc.relationships + r.relationships,
-            views: acc.views + r.views,
-            projects: acc.projects + 1,
-          }))
-          : null
         return {
           metrics,
         }
