@@ -337,6 +337,79 @@ describe.concurrent('ProjectsManager', () => {
     )
   })
 
+  describe('exclude paths', () => {
+    it('should exclude paths', async ({ expect }) => {
+      const { projectsManager, services, addDocument } = await createMultiProjectTestServices({})
+
+      // Project A excludes the 'excluded' folder
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['excluded'],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      // Add a document in projectA's folder
+      const specDoc = await addDocument('projectA/specification.c4', 'specification { element component }')
+      const modelDoc = await addDocument('projectA/models/model.c4', 'model { component c1 }')
+      const excludedDoc = await addDocument('projectA/excluded/wrong.c4', 'model { component c2 }')
+
+      // The excluded document should belong to projectB, not projectA
+      expect(projectsManager.belongsTo(specDoc)).toBe('projectA')
+      expect(projectsManager.belongsTo(modelDoc)).toBe('projectA')
+
+      // The excluded document should belong to projectA, but be excluded
+      expect(projectsManager.belongsTo(excludedDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(excludedDoc)).toBe(true)
+
+      // Check project documents
+      const documents = services.shared.workspace.LangiumDocuments
+      const projectADocs = documents.projectDocuments(projectA.id).toArray().map(d => d.uri.path)
+
+      // ProjectA should not have the excluded document
+      expect(projectADocs).toEqual([
+        '/test/workspace/src/projectA/models/model.c4',
+        '/test/workspace/src/projectA/specification.c4',
+      ])
+    })
+
+    it('should exclude filename', async ({ expect }) => {
+      const { projectsManager, services, addDocument } = await createMultiProjectTestServices({})
+
+      // Project A excludes the 'excluded' folder
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['**/wrong.c4'],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      // Add a document in projectA's folder
+      const specDoc = await addDocument('projectA/specification.c4', 'specification { element component }')
+      const excludedDoc1 = await addDocument('projectA/wrong.c4', 'model { component c2 }')
+      const excludedDoc2 = await addDocument('projectA/nested/wrong.c4', 'model { component c2 }')
+
+      // The excluded document should belong to projectB, not projectA
+      expect(projectsManager.belongsTo(specDoc)).toBe('projectA')
+      // The excluded document should belong to projectA, but be excluded
+      expect(projectsManager.belongsTo(excludedDoc1)).toBe('projectA')
+      expect(projectsManager.belongsTo(excludedDoc2)).toBe('projectA')
+      expect(projectsManager.isExcluded(excludedDoc1)).toBe(true)
+      expect(projectsManager.isExcluded(excludedDoc2)).toBe(true)
+
+      // Check project documents
+      const documents = services.shared.workspace.LangiumDocuments
+      const projectADocs = documents.projectDocuments(projectA.id).toArray().map(d => d.uri.path)
+
+      // ProjectA should not have the excluded document
+      expect(projectADocs).toEqual([
+        '/test/workspace/src/projectA/specification.c4',
+      ])
+    })
+  })
+
   describe('include paths', () => {
     it('should resolve include paths relative to project folder', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
@@ -600,6 +673,56 @@ describe.concurrent('ProjectsManager', () => {
 
       project = projectsManager.getProject('project1' as ProjectId)
       expect(project.includePaths).toBeUndefined()
+    })
+
+    it('should handle document excluded by one project but included by another', async ({ expect }) => {
+      const { projectsManager, services, addDocument } = await createMultiProjectTestServices({})
+
+      // Project A excludes the 'excluded' folder
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['excluded/'],
+        },
+        folderUri: URI.parse('file:///test/workspace/src/projectA'),
+      })
+
+      // Project B includes the excluded folder from projectA
+      const projectB = await projectsManager.registerProject({
+        config: {
+          name: 'projectB',
+          include: { paths: ['../projectA/excluded'] },
+        },
+        folderUri: URI.parse('file:///test/workspace/src/projectB'),
+      })
+
+      // Add a document in projectA's excluded folder
+      const excludedDoc = await addDocument('projectA/excluded/model.c4', 'model { component c1 }')
+      const projectADoc = await addDocument('projectA/specification.c4', 'specification { element component }')
+      const projectBDoc = await addDocument('projectB/specification.c4', 'specification { element component }')
+
+      // The excluded document should belong to projectB, not projectA
+      expect(projectsManager.belongsTo(projectADoc)).toBe('projectA')
+      expect(projectsManager.belongsTo(projectBDoc)).toBe('projectB')
+      // The excluded document should belong to projectA, but be excluded
+      expect(projectsManager.belongsTo(excludedDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(excludedDoc)).toBe(true)
+
+      // Check project documents
+      const documents = services.shared.workspace.LangiumDocuments
+      const projectADocs = documents.projectDocuments(projectA.id).toArray().map(d => d.uri.path)
+      const projectBDocs = documents.projectDocuments(projectB.id).toArray().map(d => d.uri.path)
+
+      // ProjectA should not have the excluded document
+      expect(projectADocs).toEqual([
+        '/test/workspace/src/projectA/specification.c4',
+      ])
+
+      // ProjectB should have both its own document and the excluded document from projectA
+      expect(projectBDocs).toEqual([
+        '/test/workspace/src/projectA/excluded/model.c4',
+        '/test/workspace/src/projectB/specification.c4',
+      ])
     })
   })
 

@@ -115,17 +115,17 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     const logger = builderLogger.getChild(projectId)
     const key = parsedWithoutImportsCacheKey(projectId)
     if (cache.has(key)) {
-      logger.debug`unsafeSyncParseModelData from cache`
+      logger.debug`unsafeSyncParseModelData: from cache`
     }
     return cache.get(key, () => {
       try {
         const project = this.projects.getProject(projectId)
         const docs = this.documents(projectId)
         if (docs.length === 0) {
-          logger.debug`no documents to build model`
+          logger.debug`nunsafeSyncParseModelData: skipped due to no documents`
           return null
         }
-        logger.debug`unsafeSyncParseModelData`
+        logger.debug`unsafeSyncParseModelData: completed`
         return buildModelData(project, docs)
       } catch (err) {
         builderLogger.warn(`unsafeSyncParseModelData failed for project ${projectId}`, { err })
@@ -209,7 +209,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     const hasManualLayouts = !!manualLayouts && !isEmpty(manualLayouts)
     const key = computedModelCacheKey(projectId) + (hasManualLayouts ? '+manualLayouts' : '')
     if (cache.has(key)) {
-      logger.debug`unsafeSyncBuildModel from cache`
+      logger.debug`unsafeSyncBuildModel: from cache`
     }
     return cache.get(key, () => {
       const parsedModel = this.unsafeSyncJoinedModel(projectId)
@@ -248,6 +248,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       if (hasManualLayouts) {
         data.manualLayouts = manualLayouts
       }
+      logger.debug`unsafeSyncBuildModel: completed`
       return LikeC4Model.create(data)
     })
   }
@@ -266,20 +267,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       const project = this.projects.getProject(projectId)
       const manualLayouts = await this.manualLayouts.read(project)
       const result = this.unsafeSyncComputeModel(projectId, manualLayouts)
-      logger.debug(`buildLikeC4Model in ${t0.pretty}`)
+      logger.debug(`computeModel in ${t0.pretty}`)
       return result
     })
   }
-
-  // public async rebuildProject(projectId?: c4.ProjectId | undefined): Promise<void> {
-  //   await this.mutex.write(async (token) => {
-  //     projectId = this.projects.ensureProjectId(projectId)
-  //     this.clearCache()
-  //     builderLogger.debug(`rebuildProject ${projectId}`)
-  //     const docs = this.documents(projectId).map(doc => doc.uri)
-  //     await this.DocumentBuilder.update(docs, [], token)
-  //   })
-  // }
 
   public onModelParsed(callback: ModelParsedListener): Disposable {
     this.listeners.push(callback)
