@@ -191,7 +191,7 @@
     "@xstate/react": "catalog:xstate",
     "autoprefixer": "^10.4.23",
     "clsx": "catalog:react",
-    "conf": "^13.1.0",
+    "conf": "^15.0.2",
     "defu": "^6.1.4",
     "dts-bundle-generator": "^9.5.1",
     "esbuild-node-externals": "catalog:esbuild",
