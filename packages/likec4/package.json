@@ -189,7 +189,7 @@
     "@types/semver": "^7.7.1",
     "@types/yargs": "^17.0.33",
     "@xstate/react": "catalog:xstate",
-    "autoprefixer": "^10.4.22",
+    "autoprefixer": "^10.4.23",
     "clsx": "catalog:react",
     "conf": "^13.1.0",
     "defu": "^6.1.4",
