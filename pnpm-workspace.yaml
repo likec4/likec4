@@ -9,7 +9,7 @@ catalog:
   '@changesets/changelog-github': ^0.5.2
   '@changesets/cli': ^2.29.8
   '@dagrejs/dagre': 1.1.8
-  '@types/node': ~22.19.1
+  '@types/node': ~22.19.3
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
@@ -31,13 +31,13 @@ catalogs:
   astro:
     '@astrojs/check': ^0.9.6
     '@astrojs/react': 4.4.2
-    '@astrojs/starlight': 0.37.0
+    '@astrojs/starlight': 0.37.1
     '@astrojs/starlight-tailwind': ^4.0.2
     '@expressive-code/plugin-collapsible-sections': ^0.41.3
     '@expressive-code/plugin-line-numbers': ^0.41.3
     astro: 5.16.5
     astro-og-canvas: ^0.7.2
-    shiki: ^3.19.0
+    shiki: ^3.20.0
     starlight-heading-badges: ^0.6.1
     starlight-image-zoom: ^0.13.2
     starlight-links-validator: ^0.19.2
@@ -110,7 +110,7 @@ catalogs:
     date-fns: ^4.1.0
     defu: ^6.1.4
     esm-env: ^1.2.2
-    fast-equals: ^5.3.3
+    fast-equals: ^5.4.0
     fdir: 6.4.0
     immer: ^11.0.1
     indent-string: ^5.0.0

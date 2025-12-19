@@ -101,9 +101,16 @@ ${cases.join(',\n')}
 }      
 
 export async function ${fnName}(projectId) {
-  const fn = ${fnName}Fn[projectId]
+  let fn = ${fnName}Fn[projectId]
   if (!fn) {
-    throw new Error('Unknown projectId: ' + projectId)
+    const projects = Object.keys(${fnName}Fn)
+    console.error('Unknown projectId: ' + projectId + ' (available: ' + projectIds + ')')
+    if (projects.length === 0) {
+      throw new Error('No projects found, invalid state')
+    }
+    projectId = projects[0]
+    console.warn('Falling back to project: ' + projectId)
+    fn = ${fnName}Fn[projectId]
   }
   return await fn()
 }
