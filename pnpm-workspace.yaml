@@ -103,7 +103,7 @@ catalogs:
     '@types/picomatch': ^4.0.2
     bundle-require: ^5.1.0
     caniuse-lite: ^1.0.30001760
-    chokidar: ^4.0.3
+    chokidar: ^5.0.0
     chroma-js: ^3.2.0
     citty: ^0.1.6
     consola: ^3.4.2
@@ -116,7 +116,7 @@ catalogs:
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
-    nano-spawn: ^1.0.3
+    nano-spawn: ^2.0.0
     nanoid: 5.1.6
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0

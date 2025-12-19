@@ -234,8 +234,8 @@ catalogs:
       specifier: ^5.1.0
       version: 5.1.0
     chokidar:
-      specifier: ^4.0.3
-      version: 4.0.3
+      specifier: ^5.0.0
+      version: 5.0.0
     chroma-js:
       specifier: ^3.2.0
       version: 3.2.0
@@ -270,8 +270,8 @@ catalogs:
       specifier: 2.1.0
       version: 2.1.0
     nano-spawn:
-      specifier: ^1.0.3
-      version: 1.0.3
+      specifier: ^2.0.0
+      version: 2.0.0
     nanoid:
       specifier: 5.1.6
       version: 5.1.6
@@ -869,7 +869,7 @@ importers:
         version: 22.19.3
       nano-spawn:
         specifier: catalog:utils
-        version: 1.0.3
+        version: 2.0.0
       remeda:
         specifier: catalog:utils
         version: 2.32.0
@@ -1287,7 +1287,7 @@ importers:
         version: 3.0.4
       chokidar:
         specifier: catalog:utils
-        version: 4.0.3
+        version: 5.0.0
       defu:
         specifier: catalog:utils
         version: 6.1.4
@@ -1323,7 +1323,7 @@ importers:
         version: 3.5.2
       nano-spawn:
         specifier: catalog:utils
-        version: 1.0.3
+        version: 2.0.0
       natural-compare-lite:
         specifier: catalog:utils
         version: 1.4.0
@@ -1419,7 +1419,7 @@ importers:
         version: 2.1.0
       nano-spawn:
         specifier: catalog:utils
-        version: 1.0.3
+        version: 2.0.0
       p-limit:
         specifier: catalog:utils
         version: 6.2.0
@@ -1612,8 +1612,8 @@ importers:
         specifier: catalog:react
         version: 2.1.1
       conf:
-        specifier: ^13.1.0
-        version: 13.1.0
+        specifier: ^15.0.2
+        version: 15.0.2
       defu:
         specifier: ^6.1.4
         version: 6.1.4
@@ -1658,7 +1658,7 @@ importers:
         version: 12.23.26(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       nano-spawn:
         specifier: catalog:utils
-        version: 1.0.3
+        version: 2.0.0
       nanostores:
         specifier: catalog:react
         version: 1.1.0
@@ -2208,7 +2208,7 @@ importers:
         version: 19.2.3(@types/react@19.2.7)
       nano-spawn:
         specifier: catalog:utils
-        version: 1.0.3
+        version: 2.0.0
       postcss:
         specifier: catalog:css
         version: 8.5.6
@@ -4926,6 +4926,10 @@ packages:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
 
+  chokidar@5.0.0:
+    resolution: {integrity: sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==}
+    engines: {node: '>= 20.19.0'}
+
   chroma-js@3.2.0:
     resolution: {integrity: sha512-os/OippSlX1RlWWr+QDPcGUZs0uoqr32urfxESG9U93lhUfbnlyckte84Q8P1UQY/qth983AS1JONKmLS4T0nw==}
 
@@ -5012,9 +5016,9 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  conf@13.1.0:
-    resolution: {integrity: sha512-Bi6v586cy1CoTFViVO4lGTtx780lfF96fUmS1lSX6wpZf6330NvHUu6fReVuDP1de8Mg0nkZb01c8tAQdz1o3w==}
-    engines: {node: '>=18'}
+  conf@15.0.2:
+    resolution: {integrity: sha512-JBSrutapCafTrddF9dH3lc7+T2tBycGF4uPkI4Js+g4vLLEhG6RZcFi3aJd5zntdf5tQxAejJt8dihkoQ/eSJw==}
+    engines: {node: '>=20'}
 
   confbox@0.1.8:
     resolution: {integrity: sha512-RMtmw0iFkeR4YV+fUOSucriAQNb9g8zFR52MWCtl+cCZOFRNL6zeB395vPzFhEjjn4fMxXudmELnl/KF/WrK6w==}
@@ -5335,9 +5339,9 @@ packages:
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
 
-  dot-prop@9.0.0:
-    resolution: {integrity: sha512-1gxPBJpI/pcjQhKgIU91II6Wkay+dLcN3M6rf2uwP8hRur3HtQXjVrdAK3sjC0piaEuxzMwjXChcETiJl47lAQ==}
-    engines: {node: '>=18'}
+  dot-prop@10.1.0:
+    resolution: {integrity: sha512-MVUtAugQMOff5RnBy2d9N31iG0lNwg1qAoAOn7pOK5wf94WIaE3My2p3uwTQuvS2AcqchkcR3bHByjaM0mmi7Q==}
+    engines: {node: '>=20'}
 
   dotenv@8.6.0:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
@@ -6712,8 +6716,8 @@ packages:
   muggle-string@0.4.1:
     resolution: {integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==}
 
-  nano-spawn@1.0.3:
-    resolution: {integrity: sha512-jtpsQDetTnvS2Ts1fiRdci5rx0VYws5jGyC+4IYOTnIQ/wwdf6JdomlHBwqC3bJYOvaKu0C2GSZ1A60anrYpaA==}
+  nano-spawn@2.0.0:
+    resolution: {integrity: sha512-tacvGzUY5o2D8CBh2rrwxyNojUsZNU2zjNTzKQrkgGJQTbGAfArVWXSKMBokBeeg6C7OLRGUEyoFlYbfeWQIqw==}
     engines: {node: '>=20.17'}
 
   nano-staged@0.9.0:
@@ -7489,6 +7493,10 @@ packages:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
 
+  readdirp@5.0.0:
+    resolution: {integrity: sha512-9u/XQ1pvrQtYyMpZe7DXKv2p5CNvyVwzUB6uhLAnQwHMSgKMBR62lc7AHljaeteeHXn11XTAaLLUVZYVZyuRBQ==}
+    engines: {node: '>= 20.19.0'}
+
   recma-build-jsx@1.0.0:
     resolution: {integrity: sha512-8GtdyqaBcDfva+GUKDr3nev3VpKAhup1+RvkMvUxURHpW7QyIvk9F5wz7Vzo06CEMSilw6uArgRqhpiUcWp8ew==}
 
@@ -8147,8 +8155,8 @@ packages:
   ufo@1.6.1:
     resolution: {integrity: sha512-9a4/uxlTWJ4+a5i0ooc1rU7C7YOw3wT+UGqdeNNHWnOF9qcMBgLRS+4IYUqbczewFx4mLEig6gawh7X6mFlEkA==}
 
-  uint8array-extras@1.4.0:
-    resolution: {integrity: sha512-ZPtzy0hu4cZjv3z5NW9gfKnNLjoz4y6uv4HlelAjDK7sY/xOkKZv9xK/WQpcsBB3jEybChz9DPC2U/+cusjJVQ==}
+  uint8array-extras@1.5.0:
+    resolution: {integrity: sha512-rvKSBiC5zqCCiDZ9kAOszZcDvdAHwwIKJG33Ykj43OKcWsnmcBRL09YTU4nOeHZ8Y2a7l1MgTd08SBe9A8Qj6A==}
     engines: {node: '>=18'}
 
   ultrahtml@1.6.0:
@@ -12678,6 +12686,10 @@ snapshots:
     dependencies:
       readdirp: 4.1.2
 
+  chokidar@5.0.0:
+    dependencies:
+      readdirp: 5.0.0
+
   chroma-js@3.2.0: {}
 
   ci-info@3.9.0: {}
@@ -12740,17 +12752,17 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  conf@13.1.0:
+  conf@15.0.2:
     dependencies:
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
       atomically: 2.0.3
       debounce-fn: 6.0.0
-      dot-prop: 9.0.0
+      dot-prop: 10.1.0
       env-paths: 3.0.0
       json-schema-typed: 8.0.1
       semver: 7.7.3
-      uint8array-extras: 1.4.0
+      uint8array-extras: 1.5.0
 
   confbox@0.1.8: {}
 
@@ -13084,7 +13096,7 @@ snapshots:
       domelementtype: 2.3.0
       domhandler: 5.0.3
 
-  dot-prop@9.0.0:
+  dot-prop@10.1.0:
     dependencies:
       type-fest: 4.41.0
 
@@ -14883,7 +14895,7 @@ snapshots:
 
   muggle-string@0.4.1: {}
 
-  nano-spawn@1.0.3: {}
+  nano-spawn@2.0.0: {}
 
   nano-staged@0.9.0:
     dependencies:
@@ -15637,6 +15649,8 @@ snapshots:
       picomatch: 2.3.1
 
   readdirp@4.1.2: {}
+
+  readdirp@5.0.0: {}
 
   recma-build-jsx@1.0.0:
     dependencies:
@@ -16435,7 +16449,7 @@ snapshots:
 
   ufo@1.6.1: {}
 
-  uint8array-extras@1.4.0: {}
+  uint8array-extras@1.5.0: {}
 
   ultrahtml@1.6.0: {}
 
