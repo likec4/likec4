@@ -5,7 +5,7 @@ model {
       #db
       description 'Aurora RDS'
       style {
-        icon tech:mysql
+        icon tech:mysql-icon
         shape storage
         color secondary
       }

@@ -9,14 +9,13 @@ model {
 
   cloud = system 'Cloud System' {
     description '''
-  > [!NOTE]
-  > Helpful advice for better results.
+      > [!NOTE]
+      > Helpful advice for better results.
 
-  Our SaaS platform that allows
-  customers to interact with
-  the latest technologies
-
-  '''
+      Our SaaS platform that allows
+      customers to interact with
+      the latest technologies
+    '''
 
     ui = container 'Frontends' {
       description '
@@ -75,21 +74,21 @@ views {
   view index {
     title "Landscape"
     description '''
-> [!NOTE]
-> Information that users should know.
+      > [!NOTE]
+      > Information that users should know.
 
-> [!TIP]
-> Helpful advice for better results.
+      > [!TIP]
+      > Helpful advice for better results.
 
-> [!IMPORTANT]
-> Key information for success.
+      > [!IMPORTANT]
+      > Key information for success.
 
-> [!WARNING]
-> Urgent information to avoid problems.
+      > [!WARNING]
+      > Urgent information to avoid problems.
 
-> [!CAUTION]
-> Risks or negative outcomes.
-  '''
+      > [!CAUTION]
+      > Risks or negative outcomes.
+    '''
 
     group {
       color green

@@ -51,6 +51,7 @@ model {
       #db, #deprecated #api
       title: 'Lambdas'
       description: 'Serverless compute'
+      icon tech:aws-lambda
 
       fn_enrich = lambda 'Enrichment' {
         description: '
@@ -95,7 +96,11 @@ views {
       amazon
 
     style amazon {
+      border dotted
       color muted
+      opacity 29%
+    }
+    style amazon.sqs {
       opacity 100%
     }
   }
