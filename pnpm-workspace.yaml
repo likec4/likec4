@@ -121,7 +121,7 @@ catalogs:
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0
     p-debounce: 4.0.0
-    p-limit: 6.2.0
+    p-limit: 7.2.0
     p-queue: 8.1.1
     p-timeout: 6.1.4
     package-manager-detector: 1.6.0
