@@ -16,6 +16,7 @@
   "scripts": {
     "prepare": "node .husky/install.mjs",
     "fmt": "dprint fmt",
+    "changeset:empty": "changeset --empty",
     "lint": "oxlint --type-aware",
     "lint:fix": "oxlint --type-aware --fix-suggestions",
     "build": "turbo run build --filter=\"!@likec4/docs-astro\"",

@@ -162,7 +162,10 @@ export const semanticTokens = defineSemanticTokens({
         body: {
           DEFAULT: {
             description: 'LikeC4 overlay body color',
-            value: mantine.colors.body,
+            value: {
+              base: mantine.colors.body,
+              _dark: mantine.colors.dark[6],
+            },
           },
         },
         border: {
