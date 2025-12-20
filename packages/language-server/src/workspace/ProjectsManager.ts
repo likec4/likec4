@@ -139,11 +139,19 @@ export class ProjectsManager {
   /**
    * This is a cached lookup for performance.
    */
-  #lookupById = new DefaultMap((id: scalar.ProjectId) => {
-    return nonNullable(
-      this.#projects.find(p => p.id === id),
-      `Project "${id}" not found`,
-    )
+  #lookupById = new DefaultMap((id: scalar.ProjectId): ProjectData => {
+    if (id === ProjectsManager.DefaultProjectId) {
+      const folderUri = this.getWorkspaceFolder()
+      return {
+        id,
+        config: DefaultProject.config,
+        folder: ProjectFolder(folderUri),
+        folderUri,
+        exclude: DefaultProject.exclude,
+        includeConfig: DefaultProject.includeConfig,
+      }
+    }
+    return nonNullable(this.#projects.find(p => p.id === id), `Project ${id} not found`)
   })
 
   #excludedDocuments: WeakMap<LangiumDocument, boolean> = new WeakMap()
@@ -240,7 +248,7 @@ export class ProjectsManager {
         folderUri,
       }
     }
-    const project = this.#lookupById.get(id)
+    const project = nonNullable(this.#lookupById.get(id), `Project ${id} not found`)
     return {
       id,
       folderUri: project.folderUri,
@@ -313,7 +321,7 @@ export class ProjectsManager {
     if (belongsTo === projectId) {
       return !this.isExcluded(document)
     }
-    let includePaths = this.#lookupById.get(projectId).includePaths
+    let includePaths = this.#lookupById.get(projectId)?.includePaths
     if (!includePaths) {
       return false
     }
@@ -444,7 +452,6 @@ export class ProjectsManager {
         contains: true,
         posixSlashes: true,
         posix: true,
-        windows: false,
         dot: true,
       })
     }
