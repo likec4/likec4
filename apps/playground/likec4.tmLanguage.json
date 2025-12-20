@@ -102,7 +102,7 @@
           "name": "string.quoted.single.likec4",
           "patterns": [
             {
-              "match": "none|(aws|azure|gcp|tech):([-\\w]+)",
+              "match": "none|(aws|azure|bootstrap|gcp|tech):([-\\w]+)",
               "name": "entity.name.type.enum.likec4"
             }
           ]
@@ -154,7 +154,7 @@
           },
           "while": "(^|\\G)(\\2([ ]{,3}|\\t)(?!\\s*\\5)|\\s*$)",
           "contentName": "meta.embedded.block.markdown",
-          "patterns": [ { "include": "text.html.markdown" } ]
+          "patterns": [{ "include": "text.html.markdown" }]
         }
       ]
     },
@@ -164,7 +164,7 @@
       "end": "(\\1)",
       "beginCaptures": { "1": { "name": "punctuation.definition.string.begin.likec4" } },
       "endCaptures": { "1": { "name": "punctuation.definition.string.likec4" } },
-      "patterns": [ { "include": "#string-character-escape" } ]
+      "patterns": [{ "include": "#string-character-escape" }]
     },
     "string-character-escape": {
       "name": "constant.character.escape.likec4",

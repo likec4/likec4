@@ -5,6 +5,7 @@ React SVG icons from these packs:
 - [aws-icons.com](https://aws-icons.com/)
 - [gcpicons.com](https://gcpicons.com/)
 - [microsoft.com](https://learn.microsoft.com/en-us/azure/architecture/icons/)
+- [Bootstrap Icons](https://icons.getbootstrap.com/)
 
 ```ts
 import { ArgoCd, Astro } from '@likec4/icons'
@@ -20,6 +21,9 @@ import Lambda from '@likec4/icons/aws/lambda'
 
 import { DataStudio } from '@likec4/icons/gcp'
 import DataStudio from '@likec4/icons/gcp/data-studio'
+
+import { House, GearFill } from '@likec4/icons/bootstrap'
+import House from '@likec4/icons/bootstrap/house'
 ```
 
 MIT License

@@ -972,7 +972,7 @@ hidden terminal NL: /[\r\n]+/;
 
 terminal BOOLEAN returns boolean: /\b(true|false)\b/;
 // LibIcons
-terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
+terminal LIB_ICON: /(aws|azure|bootstrap|gcp|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/{2}\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;

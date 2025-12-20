@@ -121,6 +121,24 @@ jobs:
         run: |
           pnpm turbo run build --filter='@likec4/docs-astro'
 
+  check-playground:
+    name: 🎮 playground
+    timeout-minutes: 5
+    runs-on: ubuntu-24.04-arm
+    needs:
+      - check-build
+      - check-types
+      - check-tests
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: ⚙️ build
+        run: |
+          pnpm turbo run build --filter='@likec4/playground'
+
   check-e2e-tests:
     name: 🔬 e2e tests
     timeout-minutes: 10
@@ -243,6 +261,7 @@ jobs:
       - check-on-windows
       - check-tests
       - check-docs-astro
+      - check-playground
       - check-e2e-tests
       - check-e2e-types
     steps:
