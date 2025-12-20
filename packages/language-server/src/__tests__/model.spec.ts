@@ -65,7 +65,7 @@ describe.concurrent('model', () => {
       el2 = model
     }`
 
-  test('allow elements with names "aws"/"azure"/"tech"').valid`
+  test('allow elements with names "aws"/"azure"/"tech"/"bootstrap"/"gcp"').valid`
     specification {
       element element
     }
@@ -73,16 +73,8 @@ describe.concurrent('model', () => {
       aws = element
       azure = element
       tech = element
-    }`
-
-  test('allow element with names "aws"/"azure"/"tech" (2) ').valid`
-    specification {
-      element element
-    }
-    model {
-      element aws
-      element azure
-      element tech
+      bootstrap = element
+      gcp = element
     }`
 
   test('disallow element with name "this"').invalid`
@@ -316,6 +308,14 @@ describe.concurrent('model', () => {
           icon aws:rds
         }
       }
+      component system3 {
+        icon bootstrap:circle
+      }
+      component system4 {
+        style {
+          icon bootstrap:circle
+        }
+      }        
     }`
   test('element with icon none').valid`
     specification {

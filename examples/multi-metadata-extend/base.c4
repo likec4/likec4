@@ -6,6 +6,11 @@ specification {
 
 model {
   component api {
+    icon bootstrap:file-earmark-play
+    title "API Gateway"
+    style {
+      size xlarge
+    }
     metadata {
       version '2.0.0'
       tags 'backend'
@@ -27,5 +32,12 @@ model {
       version '15.3'
       replicas 'primary'
     }
+  }
+}
+
+views {
+  view index {
+    description "System overview"
+    include *
   }
 }

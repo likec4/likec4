@@ -13,6 +13,7 @@ const copyDirs = [
   '../icons/azure',
   '../icons/gcp',
   '../icons/tech',
+  '../icons/bootstrap',
 ]
 await $`cp -r ${copyDirs} icons`
 
