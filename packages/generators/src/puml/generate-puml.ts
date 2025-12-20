@@ -19,7 +19,7 @@ const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCa
 
 const fqnName = (nodeId: string): string => {
   // Split on both '.' and '-' to handle dashed identifiers (e.g., payment-gateway -> PaymentGateway)
-  return nodeId.split(/[.\-]/).map(capitalizeFirstLetter).join('')
+  return nodeId.split(/[.-]/).map(capitalizeFirstLetter).join('')
 }
 
 const nodeName = (node: ComputedNode): string => {
