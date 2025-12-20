@@ -1,5 +1,15 @@
 # @likec4/playground
 
+## 1.46.5
+
+### Patch Changes
+
+- Updated dependencies [[`817d159`](https://github.com/likec4/likec4/commit/817d159df509b50963ef135c218936c35c460ab1), [`be5326a`](https://github.com/likec4/likec4/commit/be5326a029c4f295cdd2bcf34dfa4a928dd9b948)]:
+  - @likec4/language-server@1.46.5
+  - @likec4/core@1.46.5
+  - @likec4/diagram@1.46.5
+  - @likec4/styles@1.46.5
+
 ## 1.46.4
 
 ### Patch Changes

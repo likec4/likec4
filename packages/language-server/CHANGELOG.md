@@ -1,5 +1,13 @@
 # @likec4/language-server
 
+## 1.46.5
+
+### Patch Changes
+
+- [`817d159`](https://github.com/likec4/likec4/commit/817d159df509b50963ef135c218936c35c460ab1) Thanks [@davydkov](https://github.com/davydkov)! - Completions for project name in `import` statements
+
+- [`be5326a`](https://github.com/likec4/likec4/commit/be5326a029c4f295cdd2bcf34dfa4a928dd9b948) Thanks [@davydkov](https://github.com/davydkov)! - Updated MCP SDK
+
 ## 1.46.4
 
 ### Patch Changes
