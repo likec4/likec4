@@ -29,3 +29,9 @@ model {
     }
   }
 }
+
+views {
+  view index {
+    include *
+  }
+}
