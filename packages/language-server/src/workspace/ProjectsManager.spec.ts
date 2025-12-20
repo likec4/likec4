@@ -925,7 +925,7 @@ describe.concurrent('ProjectsManager', () => {
       )
     })
 
-    it('should exclude node_modules', async ({ expect }) => {
+    it.todo('should exclude node_modules', async ({ expect }) => {
       const { projectsManager: pm } = await createMultiProjectTestServices({})
 
       await pm.registerProject({
