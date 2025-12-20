@@ -2,10 +2,11 @@ import type { HttpBindings, ServerType } from '@hono/node-server'
 import { serve } from '@hono/node-server'
 import { loggable } from '@likec4/log'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
-import { toFetchResponse, toReqRes } from 'fetch-to-node'
+import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import type { AsyncDisposable } from 'langium'
+import { nanoid } from 'nanoid'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer } from '../interfaces'
 import type { LikeC4MCPServerFactory } from '../MCPServerFactory'
@@ -15,98 +16,71 @@ type Bindings = HttpBindings & {
   /* ... */
 }
 
-function createHonoApp(factory: LikeC4MCPServerFactory) {
-  return new Hono<{ Bindings: Bindings }>()
-    .post('/mcp', async (c) => {
-      const { req, res } = toReqRes(c.req.raw)
+async function createHonoApp(factory: LikeC4MCPServerFactory) {
+  const mcp = factory.create()
+  const transport = new WebStandardStreamableHTTPServerTransport({
+    sessionIdGenerator: () => nanoid(),
+  })
+  const app = new Hono<{ Bindings: Bindings }>()
 
-      const mcp = factory.create()
+  // Enable CORS for all origins
+  app.use(
+    '*',
+    cors({
+      origin: '*',
+      allowHeaders: ['Content-Type', 'mcp-session-id', 'Last-Event-ID', 'mcp-protocol-version'],
+      exposeHeaders: ['mcp-session-id', 'mcp-protocol-version'],
+    }),
+  )
 
-      try {
-        const transport: StreamableHTTPServerTransport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: undefined,
-        })
+  // Health check endpoint
+  app.get('/health', c => c.json({ status: 'ok' }))
 
-        // Added for extra debuggability
-        transport.onerror = (err) => {
-          logger.error(loggable(err))
-        }
+  // MCP endpoint
+  app.all('/mcp', c => transport.handleRequest(c.req.raw))
 
-        await mcp.connect(transport)
-
-        await transport.handleRequest(req, res, await c.req.json())
-
-        res.on('close', async () => {
-          await transport.close()
-          await mcp.close()
-        })
-
-        return toFetchResponse(res)
-      } catch (e) {
-        logger.error(loggable(e))
-        return c.json(
-          {
-            jsonrpc: '2.0',
-            error: {
-              code: -32603,
-              message: 'Internal server error',
-            },
-            id: null,
-          },
-          { status: 500 },
-        )
-      }
-    })
-    .all('/mcp', async (c) => {
-      return c.json(
-        {
-          jsonrpc: '2.0',
-          error: {
-            code: -32000,
-            message: 'Method not allowed.',
-          },
-          id: null,
+  app.notFound((c) => {
+    logger.debug(`${c.req.method} ${c.req.url} not found`)
+    return c.json(
+      {
+        jsonrpc: '2.0',
+        error: {
+          code: -32000,
+          message: 'Method not found.',
         },
-        { status: 405 },
-      )
-    })
-    .notFound((c) => {
-      logger.debug(`${c.req.method} ${c.req.url} not found`)
-      return c.json(
-        {
-          jsonrpc: '2.0',
-          error: {
-            code: -32000,
-            message: 'Method not found.',
-          },
-          id: null,
+        id: null,
+      },
+      { status: 404 },
+    )
+  })
+
+  app.onError((e, c) => {
+    logger.error(loggable(e))
+    return c.json(
+      {
+        jsonrpc: '2.0',
+        error: {
+          code: -32603,
+          message: 'Internal server error',
         },
-        { status: 404 },
-      )
-    })
-    .onError((e, c) => {
-      logger.error(loggable(e))
-      return c.json(
-        {
-          jsonrpc: '2.0',
-          error: {
-            code: -32603,
-            message: 'Internal server error',
-          },
-          id: null,
-        },
-        { status: 500 },
-      )
-    })
+        id: null,
+      },
+      { status: 500 },
+    )
+  })
+
+  await mcp.connect(transport)
+
+  return app
 }
 
-function startServer(params: {
+async function startServer(params: {
   factory: LikeC4MCPServerFactory
   port: number
 }): Promise<ServerType> {
+  const { factory, port } = params
+  const app = await createHonoApp(factory)
   return new Promise((resolve, reject) => {
-    const { factory, port } = params
-    const app = createHonoApp(factory)
     const server = serve({
       fetch: app.fetch,
       hostname: '0.0.0.0',

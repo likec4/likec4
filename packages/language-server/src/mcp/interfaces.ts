@@ -1,4 +1,4 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { LikeC4Services } from '../module'
 import { NoopLikeC4MCPServer } from './NoopLikeC4MCPServer'
 
