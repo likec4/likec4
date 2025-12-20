@@ -1,11 +1,7 @@
-// import { generateDtsBundle } from 'dts-bundle-generator'
-// import { build, formatMessagesSync } from 'esbuild'
-// import pandaCss from '@likec4/styles/postcss'
 import process from 'node:process'
 import { resolve } from 'path'
 import { build } from 'vite'
 import dts from 'vite-plugin-dts'
-// import { build } from 'vite'
 
 const cwd = process.cwd()
 
@@ -13,8 +9,6 @@ const root = resolve(cwd, '.')
 const outDir = resolve(cwd, 'react')
 console.info(`Bundling React...`)
 console.info(`root: ${root}`)
-
-// const tsconfig = await readFile('app/tsconfig.json', 'utf-8')
 
 // Static website
 await build({

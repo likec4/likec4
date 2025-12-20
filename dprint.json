@@ -40,7 +40,9 @@
   ],
   "markdown": {},
   "toml": {},
-  "yaml": {},
+  "yaml": {
+    "quotes": "preferSingle"
+  },
   "malva": {},
   "markup": {},
   "plugins": [
