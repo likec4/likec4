@@ -450,8 +450,6 @@ export class ProjectsManager {
       })
       project.exclude = picomatch(patterns, {
         contains: true,
-        posixSlashes: true,
-        posix: true,
         dot: true,
       })
     }

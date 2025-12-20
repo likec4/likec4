@@ -408,6 +408,45 @@ describe.concurrent('ProjectsManager', () => {
         '/test/workspace/src/projectA/specification.c4',
       ])
     })
+
+    it('should exclude node_modules by default', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      const testdata = {
+        'file:///test/workspace/doc.likec4': false,
+        '/test/workspace/doc.likec4': false,
+        'file:///test/workspace/node_modules/doc.likec4': true,
+        '/test/workspace/node_modules/doc.likec4': true,
+        'file:///node_modules/deep/doc.likec4': true,
+      }
+
+      Object.entries(testdata).forEach(([path, expected]) => {
+        expect(projectsManager.isExcluded(path), `path: ${path} expected: ${expected}`).toEqual(expected)
+      })
+    })
+
+    it('should exclude node_modules if configured', async ({ expect }) => {
+      const { projectsManager: pm } = await createMultiProjectTestServices({})
+
+      await pm.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['node_modules'],
+        },
+        folderUri: URI.file('/test/workspace/projectA'),
+      })
+
+      const testdata = {
+        'file:///test/workspace/projectA/doc.likec4': false,
+        '/test/workspace/projectA/doc.likec4': false,
+        'file:///test/workspace/projectA/node_modules/doc.likec4': true,
+        '/test/workspace/projectA/nested/node_modules/doc.likec4': true,
+      }
+
+      Object.entries(testdata).forEach(([path, expected]) => {
+        expect(pm.isExcluded(path), `path: ${path}`).toBe(expected)
+      })
+    })
   })
 
   describe('include paths', () => {
@@ -726,20 +765,6 @@ describe.concurrent('ProjectsManager', () => {
     })
   })
 
-  it('should exclude node_modules', async ({ expect }) => {
-    const { projectsManager } = await createMultiProjectTestServices({})
-
-    expect(projectsManager.belongsTo('file:///test/workspace/doc.likec4')).toEqual('default')
-    expect(projectsManager.isExcluded(URI.parse('file:///test/workspace/doc.likec4'))).toEqual(false)
-    expect(projectsManager.isExcluded(
-      URI.parse('file:///test/workspace/node_modules/doc.likec4'),
-    )).toEqual(true)
-
-    expect(projectsManager.isExcluded(
-      URI.parse('file:///test/workspace/node_modules/deep/doc.likec4'),
-    )).toEqual(true)
-  })
-
   it('should correctly return project for documents', async ({ expect }) => {
     const { projectsManager: pm } = await createMultiProjectTestServices({})
 
@@ -906,12 +931,13 @@ describe.concurrent('ProjectsManager', () => {
       await pm.registerProject({
         config: {
           name: 'test1',
-          exclude: ['**/node_modules/**'],
+          exclude: ['node_modules'],
         },
         folderUri: 'c:\\my\\files',
       })
       expect(pm.isExcluded('c:\\my\\files\\doc.likec4')).toEqual(false)
       expect(pm.isExcluded('c:\\my\\files\\node_modules\\doc.likec4')).toEqual(true)
+      expect(pm.isExcluded('c:\\my\\files\\nested\\node_modules\\doc.likec4')).toEqual(true)
     })
 
     it('should correctly return project for documents', async ({ expect }) => {
