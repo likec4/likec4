@@ -1,8 +1,16 @@
-## [1.46.3](https://github.com/likec4/likec4/compare/v1.46.2...v1.46.3) (2025-12-19)
+## [1.46.4](https://github.com/likec4/likec4/compare/v1.46.2...v1.46.3) (2025-12-19)
 
 ### Features
 
-- **icons**: Added Bootstrap Icons as bundled icon provider. Use `bootstrap:icon-name` syntax to access over 2,000 icons from [Bootstrap Icons](https://icons.getbootstrap.com/). Example: `icon bootstrap:house`, `icon bootstrap:gear-fill`.
+- **icons**: Added Bootstrap Icons as bundled icon provider. Use `bootstrap:icon-name` syntax to access over 2,000 icons from [Bootstrap Icons](https://icons.getbootstrap.com/). Example: `icon bootstrap:house`, `icon bootstrap:gear-fill`, closes [#2503](https://github.com/likec4/likec4/issues/2503)
+
+### Bug Fixes
+
+- [#2506](https://github.com/likec4/likec4/pull/2506) [`39dcb77`](https://github.com/likec4/likec4/commit/39dcb77328310970f5d254e5a55f84a7a534524f) - Fixed "exclude" option in project configuration (it was working only with "\*\*/" prefix)
+- [#2509](https://github.com/likec4/likec4/pull/2509) [`9b93f25`](https://github.com/likec4/likec4/commit/9b93f25a568f4adba9bce414c0a776ed447c6676) - Fix generated PlantUML diagrams for unsupported names, fixes [#2307](https://github.com/likec4/likec4/issues/2307)
+
+
+## [1.46.3](https://github.com/likec4/likec4/compare/v1.46.2...v1.46.3) (2025-12-19)
 
 ### Bug Fixes
 

@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- [#2506](https://github.com/likec4/likec4/pull/2506) [`39dcb77`](https://github.com/likec4/likec4/commit/39dcb77328310970f5d254e5a55f84a7a534524f) Thanks [@davydkov](https://github.com/davydkov)! - Fixed "exclude" option in project configuration (it was working only with "\*\*/" prefix)
+- [#2506](https://github.com/likec4/likec4/pull/2506) [`39dcb77`](https://github.com/likec4/likec4/commit/39dcb77328310970f5d254e5a55f84a7a534524f) - Fixed "exclude" option in project configuration (it was working only with "\*\*/" prefix)
 
 ## 1.46.3
 

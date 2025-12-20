@@ -6,7 +6,7 @@
 
 - Updated dependencies [[`39dcb77`](https://github.com/likec4/likec4/commit/39dcb77328310970f5d254e5a55f84a7a534524f), [`6e65818`](https://github.com/likec4/likec4/commit/6e658182dfb50a3366873f90831b1406178891b0)]:
   - @likec4/language-server@1.46.4
-  - @likec4/icons@1.47.0
+  - @likec4/icons@1.46.4
   - @likec4/core@1.46.4
   - @likec4/diagram@1.46.4
   - @likec4/styles@1.46.4
