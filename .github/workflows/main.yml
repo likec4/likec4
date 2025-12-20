@@ -71,7 +71,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          title: "release: v..."
+          title: "prepare release"
           commit: "chore: prepare next release"
           setupGitUser: false
         env:

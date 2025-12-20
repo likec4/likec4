@@ -2,7 +2,7 @@ import type { NonEmptyArray, ProjectId } from '@likec4/core'
 import { compareNaturalHierarchically } from '@likec4/core/utils'
 import type { LangiumDocument, Stream, URI } from 'langium'
 import { DefaultLangiumDocuments, stream } from 'langium'
-import { groupBy, prop } from 'remeda'
+import { hasAtLeast } from 'remeda'
 import { type LikeC4LangiumDocument, isLikeC4LangiumDocument } from '../ast'
 import { LikeC4LanguageMetaData } from '../generated/module'
 import { isLikeC4Builtin } from '../likec4lib'
@@ -75,13 +75,27 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
    */
   projectDocuments(projectId: ProjectId): Stream<LikeC4LangiumDocument> {
     const projects = this.services.workspace.ProjectsManager
-    return this.allExcludingBuiltin.filter(doc => {
-      return doc.likec4ProjectId === projectId || projects.isIncluded(projectId, doc.uri)
+    return this.all.filter(doc => {
+      if (isLikeC4Builtin(doc.uri)) {
+        return false
+      }
+      return projects.isIncluded(projectId, doc.uri)
     })
   }
 
   groupedByProject(): Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>> {
-    return groupBy(this.allExcludingBuiltin.toArray(), prop('likec4ProjectId'))
+    return this.services.workspace.ProjectsManager
+      .all
+      .reduce(
+        (acc, projectId) => {
+          const docs = this.projectDocuments(projectId).toArray()
+          if (hasAtLeast(docs, 1)) {
+            acc[projectId] = docs
+          }
+          return acc
+        },
+        {} as Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>>,
+      )
   }
 
   /**
