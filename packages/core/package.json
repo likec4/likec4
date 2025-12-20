@@ -148,6 +148,7 @@
     "immer": "catalog:utils",
     "mdast-util-from-markdown": "^2.0.2",
     "mdast-util-to-string": "^4.0.0",
+    "mdast-util-to-hast": "^13.2.1",
     "mnemonist": "0.40.3",
     "natural-compare-lite": "catalog:utils",
     "object-hash": "catalog:utils",
