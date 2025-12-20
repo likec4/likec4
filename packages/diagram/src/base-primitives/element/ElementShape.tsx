@@ -70,7 +70,8 @@ function ShapeSvg({ shape, w, h }: ShapeSvgProps) {
             height={h}
             rx={6}
             data-likec4-fill="mix-stroke"
-            strokeWidth={0}
+            data-likec4-stroke="true"
+            strokeWidth={2}
           />
           <g data-likec4-fill="fill" strokeWidth={0}>
             <circle cx={17} cy={h / 2} r={12} />
@@ -87,7 +88,8 @@ function ShapeSvg({ shape, w, h }: ShapeSvgProps) {
             height={h}
             rx={6}
             data-likec4-fill="mix-stroke"
-            strokeWidth={0}
+            data-likec4-stroke="true"
+            strokeWidth={2}
           />
           <g data-likec4-fill="fill" strokeWidth={0}>
             <circle cx={16} cy={17} r={7} />
@@ -106,7 +108,8 @@ function ShapeSvg({ shape, w, h }: ShapeSvgProps) {
             width={w}
             height={h}
             rx={6}
-            strokeWidth={0} />
+            data-likec4-stroke="true"
+            strokeWidth={2} />
           <svg
             x={w - PersonIcon.width - 6}
             y={h - PersonIcon.height}
@@ -126,8 +129,8 @@ function ShapeSvg({ shape, w, h }: ShapeSvgProps) {
       const { path, rx, ry } = queueSVGPath(w, h)
       return (
         <>
-          <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} data-likec4-fill="mix-stroke" strokeWidth={2} />
+          <path d={path} data-likec4-stroke="true" strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} data-likec4-fill="mix-stroke" data-likec4-stroke="true" strokeWidth={2} />
         </>
       )
     }
@@ -136,8 +139,8 @@ function ShapeSvg({ shape, w, h }: ShapeSvgProps) {
       const { path, rx, ry } = cylinderSVGPath(w, h)
       return (
         <>
-          <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} data-likec4-fill="mix-stroke" strokeWidth={2} />
+          <path d={path} data-likec4-stroke="true" strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} data-likec4-fill="mix-stroke" data-likec4-stroke="true" strokeWidth={2} />
         </>
       )
     }

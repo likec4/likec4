@@ -49,6 +49,9 @@ export const elementShapeRecipe = defineRecipe({
         root: {
           backgroundColor: 'var(--likec4-palette-fill)',
           borderRadius: '[6px]',
+          borderStyle: 'solid',
+          borderWidth: '2px',
+          borderColor: 'var(--likec4-palette-stroke)',
           boxShadow: {
             base: [
               '0 2px 1px 0 rgb(0 0 0 / 21%)',
@@ -64,7 +67,7 @@ export const elementShapeRecipe = defineRecipe({
             _whenPanning: 'none',
           },
           transition: {
-            base: 'background-color 120ms linear, box-shadow 130ms {easings.inOut}',
+            base: 'background-color 120ms linear, border-color 120ms linear, box-shadow 130ms {easings.inOut}',
             _reduceGraphicsOnPan: 'none',
           },
           transitionDelay: '0ms',
@@ -110,7 +113,7 @@ export const elementShapeRecipe = defineRecipe({
         root: {
           fill: 'var(--likec4-palette-fill)',
           stroke: 'var(--likec4-palette-stroke)',
-          transition: `fill 120ms linear, filter 130ms {easings.inOut}`,
+          transition: `fill 120ms linear, stroke 120ms linear, filter 130ms {easings.inOut}`,
           transitionDelay: '0ms',
           filter: {
             base: [
@@ -137,6 +140,9 @@ export const elementShapeRecipe = defineRecipe({
           },
           '& [data-likec4-fill="mix-stroke"]': {
             fill: '[color-mix(in oklab, var(--likec4-palette-stroke) 90%, var(--likec4-palette-fill))]',
+          },
+          '& [data-likec4-stroke="true"]': {
+            stroke: 'var(--likec4-palette-stroke)',
           },
         },
         multipleSvg: {
