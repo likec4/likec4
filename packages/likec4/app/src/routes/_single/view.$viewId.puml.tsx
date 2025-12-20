@@ -1,7 +1,7 @@
 import { Box, Burger, Button, Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { Group, Panel, Separator } from 'react-resizable-panels'
 import { CopyToClipboard } from '../../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
 import { krokiPumlSvgUrl } from '../../const'
@@ -45,9 +45,10 @@ const fetchFromKroki = async (puml: string) => {
 function ViewAsPuml() {
   const { source } = Route.useLoaderData()
   const [krokiSvg, { execute }] = useAsync(fetchFromKroki, null)
+
   return (
     <>
-      <PanelGroup className={styles.viewWithTopPadding} direction="horizontal" autoSaveId="viewAsPuml">
+      <Group className={styles.viewWithTopPadding}>
         <Panel>
           <ScrollArea
             className={styles.cssScrollArea}
@@ -63,7 +64,7 @@ function ViewAsPuml() {
             <CopyToClipboard text={source} />
           </ScrollArea>
         </Panel>
-        <PanelResizeHandle
+        <Separator
           style={{
             width: 10,
           }} />
@@ -90,7 +91,7 @@ function ViewAsPuml() {
             )}
           </ScrollArea>
         </Panel>
-      </PanelGroup>
+      </Group>
       <Box
         pos={'fixed'}
         top={14}

@@ -1,7 +1,7 @@
 import { Box, Burger, Button, Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { Group, Panel, Separator } from 'react-resizable-panels'
 import { CopyToClipboard } from '../../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
 import { krokiD2SvgUrl } from '../../const'
@@ -50,7 +50,9 @@ function ViewAsD2() {
   const [krokiSvg, { execute }] = useAsync(fetchFromKroki, null)
   return (
     <>
-      <PanelGroup className={styles.viewWithTopPadding} direction="horizontal" autoSaveId="viewAsD2">
+      <Group
+        className={styles.viewWithTopPadding}
+        orientation="horizontal">
         <Panel>
           <ScrollArea
             className={styles.cssScrollArea}
@@ -66,7 +68,7 @@ function ViewAsD2() {
             <CopyToClipboard text={source} />
           </ScrollArea>
         </Panel>
-        <PanelResizeHandle
+        <Separator
           style={{
             width: 10,
           }} />
@@ -93,7 +95,7 @@ function ViewAsD2() {
             )}
           </ScrollArea>
         </Panel>
-      </PanelGroup>
+      </Group>
       <Box
         pos={'fixed'}
         top={14}

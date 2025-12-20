@@ -18,5 +18,6 @@ export const cssCodeBlock = css({
 })
 
 export const viewWithTopPadding = css({
+  height: '100%',
   paddingTop: '[var(--header-height)]',
 })

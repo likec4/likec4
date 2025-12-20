@@ -1,6 +1,6 @@
 import { Box, Burger, Code, ScrollArea } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { Group, Panel, Separator } from 'react-resizable-panels'
 import { CopyToClipboard } from '../../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
 import * as styles from './view.css'
@@ -32,7 +32,7 @@ function ViewAsDot() {
   const { dot, dotSvg } = Route.useLoaderData()
   return (
     <>
-      <PanelGroup className={viewWithTopPadding} direction="horizontal" autoSaveId="viewAsDot">
+      <Group className={viewWithTopPadding}>
         <Panel>
           <ScrollArea
             className={cssScrollArea}
@@ -48,7 +48,7 @@ function ViewAsDot() {
             <CopyToClipboard text={dot} />
           </ScrollArea>
         </Panel>
-        <PanelResizeHandle
+        <Separator
           style={{
             width: 10,
           }} />
@@ -57,7 +57,7 @@ function ViewAsDot() {
             <div className={styles.svgContainer} dangerouslySetInnerHTML={{ __html: dotSvg }}></div>
           </ScrollArea>
         </Panel>
-      </PanelGroup>
+      </Group>
       <Box
         pos={'fixed'}
         top={14}

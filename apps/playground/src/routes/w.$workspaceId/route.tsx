@@ -4,10 +4,11 @@ import { Header } from '$components/appshell/Header'
 import { WorkspaceFileTabs } from '$components/workspace/WorkspaceFileTabs'
 import { PlaygroundActorContextProvider } from '$state/context'
 import { WorkspacePersistence, WorkspaceSessionPersistence } from '$state/persistence'
+import { css } from '@likec4/styles/css'
 import { AppShell, AppShellHeader, AppShellMain, Box, Stack } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { Group, Panel, Separator, useDefaultLayout } from 'react-resizable-panels'
 import * as styles from '../styles.css'
 
 export const Route = createFileRoute('/w/$workspaceId')({
@@ -42,6 +43,11 @@ function WorkspaceContextPage() {
   const workspace = Route.useLoaderData()
   const isMobile = useMediaQuery('(max-width: 768px)')
 
+  const { defaultLayout, onLayoutChange } = useDefaultLayout({
+    groupId: 'likec4-playground',
+    storage: sessionStorage,
+  })
+
   return (
     <PlaygroundActorContextProvider workspace={workspace}>
       <AppShell header={{ height: 50 }}>
@@ -49,14 +55,17 @@ function WorkspaceContextPage() {
           <Header />
         </AppShellHeader>
         <AppShellMain h={'100dvh'}>
-          <PanelGroup
-            direction={isMobile ? 'vertical' : 'horizontal'}
-            autoSaveId={`playground`}>
+          <Group
+            className={css({ h: '100%' })}
+            orientation={isMobile ? 'vertical' : 'horizontal'}
+            defaultLayout={defaultLayout}
+            onLayoutChange={onLayoutChange}>
             <Panel
+              id="editor"
               className={styles.panel}
               collapsible={true}
-              minSize={5}
-              defaultSize={40}>
+              minSize={'10'}
+              defaultSize={'40'}>
               <Stack h="100%" gap={0}>
                 <WorkspaceFileTabs />
                 <Box flex={1}>
@@ -64,16 +73,16 @@ function WorkspaceContextPage() {
                 </Box>
               </Stack>
             </Panel>
-            <PanelResizeHandle
+            <Separator
               className={styles.resize}
               style={{
-                // color: mantine.colors.dimmed,
-                padding: isMobile ? '1px 0' : '0 1px',
+                width: isMobile ? undefined : 5,
+                height: isMobile ? 5 : undefined,
               }} />
-            <Panel className={styles.panel}>
+            <Panel id="preview" minSize={200} className={styles.panel}>
               <Outlet />
             </Panel>
-          </PanelGroup>
+          </Group>
         </AppShellMain>
       </AppShell>
     </PlaygroundActorContextProvider>

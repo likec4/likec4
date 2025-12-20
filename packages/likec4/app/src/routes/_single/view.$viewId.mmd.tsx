@@ -2,7 +2,7 @@ import { Box, Burger, Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { Group, Panel, Separator } from 'react-resizable-panels'
 import { CopyToClipboard } from '../../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
 import { svgContainer } from './view.css'
@@ -50,7 +50,7 @@ function ViewAsMmd() {
 
   return (
     <>
-      <PanelGroup className={viewWithTopPadding} direction="horizontal" autoSaveId="viewAsMmd">
+      <Group className={viewWithTopPadding}>
         <Panel>
           <ScrollArea
             className={cssScrollArea}
@@ -66,7 +66,7 @@ function ViewAsMmd() {
             <CopyToClipboard text={source} />
           </ScrollArea>
         </Panel>
-        <PanelResizeHandle
+        <Separator
           style={{
             width: 10,
           }}
@@ -76,7 +76,7 @@ function ViewAsMmd() {
             {mmdSvg.result && <div className={svgContainer} dangerouslySetInnerHTML={{ __html: mmdSvg.result }}></div>}
           </ScrollArea>
         </Panel>
-      </PanelGroup>
+      </Group>
       <Box
         pos={'fixed'}
         top={14}

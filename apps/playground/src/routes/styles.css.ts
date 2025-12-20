@@ -14,37 +14,13 @@ export const resize = css({
   transition: 'all 175ms ease-in-out',
   backgroundColor: 'mantine.colors.defaultBorder',
   backgroundClip: 'content-box',
-  flex: '0 0 6px',
-  // position: 'relative',
-  // vars: {
-  //   [bg]: mantine.colors.defaultBorder
-  // },
-
-  // borderRadius: 4,
-  // backgroundColor: mantine.colors.defaultBorder,
-  // transition: 'background-color 120ms ease-out',
-  // ':before': {
-  //   position: 'absolute',
-  //   content: ' ',
-  //   top: 0,
-  //   left: '50%',
-  //   width: 2,
-  //   height: '100%',
-  //   transform: 'translateX(-50%)',
-  //   backgroundColor: bg,
-  //   transition: 'background-color 150ms ease-in-out',
-  // },
-
+  outline: 'none',
+  ['&:is([data-separator="active"],[data-separator="hover"])']: {
+    backgroundColor: 'mantine.colors.primary.filledHover',
+  },
   _hover: {
     scaleX: 2.2,
     backgroundColor: 'mantine.colors.primary.filledHover',
-    // color: token('colors.gray.6'),
-    // color: mantine.colors.dimmed,
-    // content: `' ${token.var('colors.gray.light')}'`,
-    // content: `${token('colors.green.6')}`,
-    // vars: {
-    //   [bg]: mantine.colors.primaryColors.filledHover
-    // },
   },
 })
 
