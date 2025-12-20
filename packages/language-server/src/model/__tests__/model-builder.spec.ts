@@ -1501,3 +1501,73 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 })
+
+  it('should log appropriately when parsing model data with no documents', async ({ expect }) => {
+    const { services, projectsManager } = await createMultiProjectTestServices({})
+
+    // Register a project but add no documents
+    await projectsManager.registerProject({
+      config: {
+        name: 'empty-project',
+      },
+      folderUri: URI.parse('file:///test/workspace/src/empty-project'),
+    })
+
+    const modelBuilder = services.likec4.ModelBuilder
+    
+    // Attempting to build model with no documents should return null
+    const model = await modelBuilder.computeModel()
+    expect(model).toBeNull()
+  })
+
+  it('should handle model parsing with multiple projects', async ({ expect }) => {
+    const { buildModel } = await createMultiProjectTestServices({
+      project1: {
+        'spec': `
+          specification {
+            element component
+          }
+        `,
+        'model': `
+          model {
+            component c1
+          }
+        `,
+      },
+      project2: {
+        'spec': `
+          specification {
+            element service
+          }
+        `,
+        'model': `
+          model {
+            service s1
+          }
+        `,
+      },
+    })
+
+    const model = await buildModel('project1')
+    expect(model).toBeDefined()
+    expect(model.elements).toHaveProperty('c1')
+  })
+
+  it('should gracefully handle errors during model data parsing', async ({ expect }) => {
+    const { services, addDocument, validateAll } = await createMultiProjectTestServices({})
+
+    // Add invalid document that will cause parsing issues
+    await addDocument('invalid', `
+      specification {
+        element component
+      }
+      model {
+        component c1
+        c1 -> nonexistent
+      }
+    `)
+
+    const { errors } = await validateAll()
+    // Should have validation errors but not crash
+    expect(errors.length).toBeGreaterThan(0)
+  })

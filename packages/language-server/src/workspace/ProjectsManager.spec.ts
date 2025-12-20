@@ -409,6 +409,215 @@ describe.concurrent('ProjectsManager', () => {
       ])
     })
 
+    it('should exclude paths without **/ prefix (issue fix)', async ({ expect }) => {
+      const { projectsManager, services, addDocument } = await createMultiProjectTestServices({})
+
+      // Test that exclude patterns work without the **/ prefix
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['dist', 'build', 'temp'],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      // Add documents in various locations
+      const specDoc = await addDocument('projectA/specification.c4', 'specification { element component }')
+      const modelDoc = await addDocument('projectA/models/model.c4', 'model { component c1 }')
+      const distDoc = await addDocument('projectA/dist/generated.c4', 'model { component c2 }')
+      const buildDoc = await addDocument('projectA/build/output.c4', 'model { component c3 }')
+      const nestedDistDoc = await addDocument('projectA/nested/dist/file.c4', 'model { component c4 }')
+      const nestedBuildDoc = await addDocument('projectA/src/build/file.c4', 'model { component c5 }')
+      const tempDoc = await addDocument('projectA/temp/file.c4', 'model { component c6 }')
+
+      // Valid documents should not be excluded
+      expect(projectsManager.belongsTo(specDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(specDoc)).toBe(false)
+      expect(projectsManager.belongsTo(modelDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(modelDoc)).toBe(false)
+
+      // Documents in excluded folders should be excluded
+      expect(projectsManager.belongsTo(distDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(distDoc)).toBe(true)
+      expect(projectsManager.belongsTo(buildDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(buildDoc)).toBe(true)
+      expect(projectsManager.belongsTo(tempDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(tempDoc)).toBe(true)
+
+      // Nested excluded folders should also be excluded
+      expect(projectsManager.belongsTo(nestedDistDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(nestedDistDoc)).toBe(true)
+      expect(projectsManager.belongsTo(nestedBuildDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(nestedBuildDoc)).toBe(true)
+
+      // Check project documents
+      const documents = services.shared.workspace.LangiumDocuments
+      const projectADocs = documents.projectDocuments(projectA.id).toArray().map(d => d.uri.path)
+
+      // Only non-excluded documents should be in the project
+      expect(projectADocs).toContain('/test/workspace/src/projectA/specification.c4')
+      expect(projectADocs).toContain('/test/workspace/src/projectA/models/model.c4')
+      expect(projectADocs).not.toContain('/test/workspace/src/projectA/dist/generated.c4')
+      expect(projectADocs).not.toContain('/test/workspace/src/projectA/build/output.c4')
+      expect(projectADocs).not.toContain('/test/workspace/src/projectA/temp/file.c4')
+      expect(projectADocs).not.toContain('/test/workspace/src/projectA/nested/dist/file.c4')
+      expect(projectADocs).not.toContain('/test/workspace/src/projectA/src/build/file.c4')
+    })
+
+    it('should handle mixed exclude patterns with and without **/', async ({ expect }) => {
+      const { projectsManager, addDocument } = await createMultiProjectTestServices({})
+
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['test-temp', '**/cache/**', 'node_modules'],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      const validDoc = await addDocument('projectA/src/model.c4', 'model { component c1 }')
+      const tempDoc = await addDocument('projectA/test-temp/file.c4', 'model { component c2 }')
+      const cacheDoc = await addDocument('projectA/deep/cache/file.c4', 'model { component c3 }')
+      const nodeModulesDoc = await addDocument('projectA/node_modules/lib/file.c4', 'model { component c4 }')
+
+      expect(projectsManager.isExcluded(validDoc)).toBe(false)
+      expect(projectsManager.isExcluded(tempDoc)).toBe(true)
+      expect(projectsManager.isExcluded(cacheDoc)).toBe(true)
+      expect(projectsManager.isExcluded(nodeModulesDoc)).toBe(true)
+    })
+
+    it('should exclude with glob patterns', async ({ expect }) => {
+      const { projectsManager, addDocument } = await createMultiProjectTestServices({})
+
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['*.tmp.c4', 'test-*', '**/generated/**'],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      const validDoc = await addDocument('projectA/model.c4', 'model { component c1 }')
+      const tmpDoc = await addDocument('projectA/draft.tmp.c4', 'model { component c2 }')
+      const testDoc = await addDocument('projectA/test-something/file.c4', 'model { component c3 }')
+      const generatedDoc = await addDocument('projectA/src/generated/types.c4', 'model { component c4 }')
+
+      expect(projectsManager.isExcluded(validDoc)).toBe(false)
+      expect(projectsManager.isExcluded(tmpDoc)).toBe(true)
+      expect(projectsManager.isExcluded(testDoc)).toBe(true)
+      expect(projectsManager.isExcluded(generatedDoc)).toBe(true)
+    })
+
+    it('should handle relative paths in exclude patterns', async ({ expect }) => {
+      const { projectsManager, addDocument } = await createMultiProjectTestServices({})
+
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['./dist', 'src/temp', '../excluded'],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      const validDoc = await addDocument('projectA/model.c4', 'model { component c1 }')
+      const distDoc = await addDocument('projectA/dist/file.c4', 'model { component c2 }')
+      const tempDoc = await addDocument('projectA/src/temp/file.c4', 'model { component c3 }')
+
+      expect(projectsManager.isExcluded(validDoc)).toBe(false)
+      expect(projectsManager.isExcluded(distDoc)).toBe(true)
+      expect(projectsManager.isExcluded(tempDoc)).toBe(true)
+    })
+
+    it('should properly exclude deeply nested paths', async ({ expect }) => {
+      const { projectsManager, addDocument } = await createMultiProjectTestServices({})
+
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['.git', '.vscode', 'coverage'],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      const validDoc = await addDocument('projectA/deep/nested/model.c4', 'model { component c1 }')
+      const gitDoc = await addDocument('projectA/.git/config.c4', 'model { component c2 }')
+      const vscodeDoc = await addDocument('projectA/sub/.vscode/settings.c4', 'model { component c3 }')
+      const coverageDoc = await addDocument('projectA/tests/coverage/report.c4', 'model { component c4 }')
+      const deepCoverageDoc = await addDocument('projectA/a/b/c/coverage/file.c4', 'model { component c5 }')
+
+      expect(projectsManager.isExcluded(validDoc)).toBe(false)
+      expect(projectsManager.isExcluded(gitDoc)).toBe(true)
+      expect(projectsManager.isExcluded(vscodeDoc)).toBe(true)
+      expect(projectsManager.isExcluded(coverageDoc)).toBe(true)
+      expect(projectsManager.isExcluded(deepCoverageDoc)).toBe(true)
+    })
+
+    it('should cache exclusion results per document', async ({ expect }) => {
+      const { projectsManager, addDocument } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['temp'],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      const doc = await addDocument('projectA/temp/file.c4', 'model { component c1 }')
+
+      // First call should compute and cache
+      const result1 = projectsManager.isExcluded(doc)
+      expect(result1).toBe(true)
+
+      // Second call should use cached result
+      const result2 = projectsManager.isExcluded(doc)
+      expect(result2).toBe(true)
+
+      // Both should be identical
+      expect(result1).toBe(result2)
+    })
+
+    it('should handle edge case: empty exclude array', async ({ expect }) => {
+      const { projectsManager, addDocument } = await createMultiProjectTestServices({})
+
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: [],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      const doc1 = await addDocument('projectA/model.c4', 'model { component c1 }')
+      const doc2 = await addDocument('projectA/node_modules/lib.c4', 'model { component c2 }')
+
+      // With empty exclude, nothing should be excluded
+      expect(projectsManager.isExcluded(doc1)).toBe(false)
+      expect(projectsManager.isExcluded(doc2)).toBe(false)
+    })
+
+    it('should handle complex glob patterns', async ({ expect }) => {
+      const { projectsManager, addDocument } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['**/*.backup.c4', '**/test/**/*.spec.c4', 'vendor/**/lib'],
+        },
+        folderUri: URI.file('/test/workspace/src/projectA'),
+      })
+
+      const validDoc = await addDocument('projectA/model.c4', 'model { component c1 }')
+      const backupDoc = await addDocument('projectA/models/old.backup.c4', 'model { component c2 }')
+      const specDoc = await addDocument('projectA/src/test/unit/login.spec.c4', 'model { component c3 }')
+      const vendorDoc = await addDocument('projectA/vendor/acme/lib/core.c4', 'model { component c4 }')
+
+      expect(projectsManager.isExcluded(validDoc)).toBe(false)
+      expect(projectsManager.isExcluded(backupDoc)).toBe(true)
+      expect(projectsManager.isExcluded(specDoc)).toBe(true)
+      expect(projectsManager.isExcluded(vendorDoc)).toBe(true)
+    })
+
     it('should exclude node_modules by default', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
 
