@@ -34,7 +34,6 @@ export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((p
       ...props,
       data: {
         ...props.data,
-        line: 'solid',
         color: 'amber',
       } satisfies RelationshipsBrowserTypes.EdgeData,
     }

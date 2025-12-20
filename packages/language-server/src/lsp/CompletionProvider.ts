@@ -1,13 +1,14 @@
 import { ThemeColors } from '@likec4/core/styles'
-import { type GrammarAST, type MaybePromise, AstUtils } from 'langium'
+import { type MaybePromise, AstUtils, GrammarAST } from 'langium'
 import {
   type CompletionAcceptor,
   type CompletionContext,
   type CompletionProviderOptions,
+  type NextFeature,
   DefaultCompletionProvider,
 } from 'langium/lsp'
-import { anyPass } from 'remeda'
-import { CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-types'
+import { anyPass, isEmpty } from 'remeda'
+import { CompletionItemKind, InsertTextFormat, TextEdit } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 
@@ -22,6 +23,15 @@ const STYLE_FIELDS = [
   'textSize',
 ].join(',')
 
+function isCompletionForPojectName(
+  context: CompletionContext,
+  next: NextFeature,
+): next is NextFeature<GrammarAST.RuleCall> {
+  return GrammarAST.isRuleCall(next.feature)
+    && next.property === 'project'
+    && ast.isImportsFromPoject(context.node)
+}
+
 export class LikeC4CompletionProvider extends DefaultCompletionProvider {
   constructor(protected services: LikeC4Services) {
     super(services)
@@ -30,6 +40,23 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
   override readonly completionOptions = {
     triggerCharacters: ['.', '#'],
   } satisfies CompletionProviderOptions
+
+  protected override completionFor(
+    context: CompletionContext,
+    next: NextFeature,
+    acceptor: CompletionAcceptor,
+  ): MaybePromise<void> {
+    switch (true) {
+      case GrammarAST.isKeyword(next.feature):
+        return this.completionForKeyword(context, next.feature, acceptor)
+
+      case GrammarAST.isCrossReference(next.feature) && !!context.node:
+        return this.completionForCrossReference(context, next as NextFeature<GrammarAST.CrossReference>, acceptor)
+
+      case isCompletionForPojectName(context, next):
+        return this.completionForImportedProject(context, acceptor)
+    }
+  }
 
   protected override completionForKeyword(
     context: CompletionContext,
@@ -209,6 +236,34 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           detail: 'Keyword',
           sortText: '1',
         })
+    }
+  }
+
+  protected completionForImportedProject(
+    context: CompletionContext,
+    acceptor: CompletionAcceptor,
+  ) {
+    const projectsManager = this.services.shared.workspace.ProjectsManager
+    const txtDoc = context.document.textDocument
+    const range = {
+      start: txtDoc.positionAt(context.tokenOffset),
+      end: txtDoc.positionAt(context.tokenEndOffset),
+    }
+    const txt = txtDoc.getText(range)
+    // What is the current character used for quoting
+    const currentQuote = isEmpty(txt) ? `'` : txt.substring(0, 1)
+
+    for (const projectId of projectsManager.all) {
+      const insertText = currentQuote + projectId + currentQuote
+      acceptor(context, {
+        label: projectId,
+        kind: CompletionItemKind.Folder,
+        insertText,
+        filterText: insertText,
+        textEdit: TextEdit.replace(range, insertText),
+        detail: 'Project',
+        sortText: '0_' + projectId,
+      })
     }
   }
 }

@@ -118,9 +118,19 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       mark.property('value').readonly.definition.interface()
       stopHighlight()
     })
-    when(isAnyOf(ast.isFqnRefExpr, ast.isWildcardExpression), mark => {
+    when(ast.isWildcardExpression, mark => {
       mark.cst().readonly.definition.variable()
       stopHighlight()
+    })
+    when(ast.isFqnRefExpr, mark => {
+      if (!mark.node.selector) {
+        return
+      }
+      if (mark.node.ref.parent) {
+        mark.property('selector').property()
+      } else {
+        mark.property('selector').readonly.definition.variable()
+      }
     })
     when(ast.isTagRef, mark => {
       mark.cst().type()
@@ -167,21 +177,19 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       }
     })
     when(isAnyOf(ast.isFqnRef, ast.isStrictFqnRef), mark => {
-      const text = mark.node.$cstNode?.text ?? ''
-      if (text !== '' && text !== 'this' && text !== 'it') {
-        mark.property('value').readonly.definition.variable()
-      }
       if (!mark.node.parent) {
+        mark.property('value').readonly.definition.variable()
         stopHighlight()
+      } else {
+        mark.property('value').property()
       }
     })
     when(ast.isStrictFqnElementRef, mark => {
-      const text = mark.node.el.$refText ?? ''
-      if (text !== '') {
-        mark.property('el').readonly.definition.variable()
-      }
       if (!mark.node.parent) {
+        mark.property('el').readonly.definition.variable()
         stopHighlight()
+      } else {
+        mark.property('el').property()
       }
     })
     when(ast.isSpecificationColor, mark => {

@@ -32,17 +32,17 @@ model {
     bold
     italic'
     metadata {
-        prop1 'prop1 value'
-        prop2 'prop2 value'
+      prop1 'prop1 value'
+      prop2 'prop2 value'
     }
   }
 
-    system_1 = softwareSystem "system 1" {
-      #testtag, #testtag2
+  system_1 = softwareSystem "system 1" {
+    #testtag, #testtag2
 
-      link https://asdf.com/2 'link 2 title'
-      technology 'testtechnology'
-      description 'this is a description
+    link https://asdf.com/2 'link 2 title'
+    technology 'testtechnology'
+    description 'this is a description
 
       new line
 
@@ -51,72 +51,72 @@ model {
 
       bold
       italic'
+    metadata {
+      prop1 'prop1 value'
+      prop2 'prop2 value'
+    }
+
+    container_1 = container 'container 1' {
+      #testtag, #testtag2
+
+      link https://asdf.com/2 'link 2 title'
+      technology 'testtechnology'
+      description 'this is a description
+
+        new line
+
+        bullet item 1
+        bullet item 2
+
+        bold
+        italic'
       metadata {
-          prop1 'prop1 value'
-          prop2 'prop2 value'
+        prop1 'prop1 value'
+        prop2 'prop2 value'
       }
 
-      container_1 = container 'container 1' {
-        #testtag, #testtag2
-
-        link https://asdf.com/2 'link 2 title'
+      this -> system_1.container_2 'relationship' {
         technology 'testtechnology'
-        description 'this is a description
-
-        new line
-
-        bullet item 1
-        bullet item 2
-
-        bold
-        italic'
-        metadata {
-            prop1 'prop1 value'
-            prop2 'prop2 value'
-        }
-
-        this -> system_1.container_2 'relationship' {
-          technology 'testtechnology'
-          description 'this is a description'
-        }
-        this -> system_2.container_2 'relationship' {
-          technology 'testtechnology'
-          description 'this is a description'
-        }
+        description 'this is a description'
       }
-
-      container_2 = container 'container 2' {
-        #testtag, #testtag2
-
-        link https://asdf.com/2 'link 2 title'
+      this -> system_2.container_2 'relationship' {
         technology 'testtechnology'
-        description 'this is a description
-
-        new line
-
-        bullet item 1
-        bullet item 2
-
-        bold
-        italic'
-        metadata {
-            prop1 'prop1 value'
-            prop2 'prop2 value'
-        }
-
-        this -> system_2.container_2 'relationship' {
-          technology 'testtechnology'
-          description 'this is a description'
-        }
+        description 'this is a description'
       }
     }
 
-    system_2 = softwareSystem "system 2" {
+    container_2 = container 'container 2' {
       #testtag, #testtag2
 
       link https://asdf.com/2 'link 2 title'
       technology 'testtechnology'
       description 'this is a description
+
+        new line
+
+        bullet item 1
+        bullet item 2
+
+        bold
+        italic'
+      metadata {
+        prop1 'prop1 value'
+        prop2 'prop2 value'
+      }
+
+      this -> system_2.container_2 'relationship' {
+        technology 'testtechnology'
+        description 'this is a description'
+      }
+    }
+  }
+
+  system_2 = softwareSystem "system 2" {
+    #testtag, #testtag2
+
+    link https://asdf.com/2 'link 2 title'
+    technology 'testtechnology'
+    description 'this is a description
 
       new line
 
@@ -125,17 +125,17 @@ model {
 
       bold
       italic'
-      metadata {
-          prop1 'prop1 value'
-          prop2 'prop2 value'
-      }
+    metadata {
+      prop1 'prop1 value'
+      prop2 'prop2 value'
+    }
 
-      container_1 = container 'container 1' {
-        #testtag, #testtag2
+    container_1 = container 'container 1' {
+      #testtag, #testtag2
 
-        link https://asdf.com/2 'link 2 title'
-        technology 'testtechnology'
-        description 'this is a description
+      link https://asdf.com/2 'link 2 title'
+      technology 'testtechnology'
+      description 'this is a description
 
         new line
 
@@ -145,23 +145,23 @@ model {
         bold
         italic'
 
-        metadata {
-            prop1 'prop1 value'
-            prop2 'prop2 value'
-        }
-
-        this -> system_2.container_2 'relationship' {
-          technology 'testtechnology'
-          description 'this is a description'
-        }
+      metadata {
+        prop1 'prop1 value'
+        prop2 'prop2 value'
       }
 
-      container_2 = container 'container 2' {
-        #testtag, #testtag2
-
-        link https://asdf.com/2 'link 2 title'
+      this -> system_2.container_2 'relationship' {
         technology 'testtechnology'
-        description 'this is a description
+        description 'this is a description'
+      }
+    }
+
+    container_2 = container 'container 2' {
+      #testtag, #testtag2
+
+      link https://asdf.com/2 'link 2 title'
+      technology 'testtechnology'
+      description 'this is a description
 
         new line
 
@@ -171,8 +171,8 @@ model {
       bold
       italic'
       metadata {
-          prop1 'prop1 value'
-          prop2 'prop2 value'
+        prop1 'prop1 value'
+        prop2 'prop2 value'
       }
 
       this -> container_1 'relationship' {
