@@ -1,5 +1,12 @@
 # @likec4/config
 
+## 1.46.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/core@1.46.4
+
 ## 1.46.3
 
 ### Patch Changes

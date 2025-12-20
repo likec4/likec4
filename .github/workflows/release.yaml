@@ -29,18 +29,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
+      - name: 🛠️ Setup pnpm
+        uses: pnpm/action-setup@v4
+        env:
+          NODE_ENV: development
+
+      - name: 🛠️ Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24" # Required for OIDC publishing
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 🛠️ Cache for turbo
+        uses: rharkor/caching-for-turbo@v2.2.1
+        with:
+          cache-prefix: "turbo_cache_${{ runner.arch }}"
+
+      - run: pnpm install --prefer-offline
+        env:
+          HUSKY: "0"
+          NODE_ENV: development
 
       - name: ⚙️ build
         run: pnpm ci:build
 
-      - name: Re-install npm
-        # OIDC requires npm >=11.5.1. We need to bump.
-        run: npm install -g npm@11
-
       - name: 📦 publish
-        run: pnpm ci:publish
+        run: pnpm publish -r --no-git-checks --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-tag:
     runs-on: ubuntu-24.04-arm
@@ -75,20 +92,6 @@ jobs:
         id: read-version
         run: |
           echo "VERSION=$(jq -r .version package.json)" >> "$GITHUB_ENV"
-
-      # - name: Create tag
-      #   uses: actions/github-script@v8
-      #   with:
-      #     github-token: ${{ steps.app-token.outputs.token }}
-      #     script: |
-      #       const version = process.env.VERSION
-      #       const tagname = `v${version}`
-      #       github.rest.git.createRef({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         ref: `refs/tags/${tagname}`,
-      #         sha: context.sha
-      #       })
 
       - name: Create release
         uses: actions/github-script@v8
