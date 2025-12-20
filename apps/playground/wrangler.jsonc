@@ -1,0 +1,58 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "playground",
+  "main": "./worker/index.ts",
+  "compatibility_date": "2025-12-19",
+  "compatibility_flags": [
+    "nodejs_compat_v2"
+  ],
+  "workers_dev": true,
+  "upload_source_maps": true,
+  "minify": true,
+  "keep_names": true,
+  "keep_vars": true,
+  "legacy_env": false,
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "binding": "ASSETS"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "23249b2617cc4a22a589bf934b0afa96"
+    }
+  ],
+  "placement": {
+    "mode": "smart"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
+  "env": {
+    "development": {
+      "vars": {
+        "OAUTH_GITHUB_ID": "",
+        "OAUTH_GITHUB_SECRET": "",
+        "SESSION_ENCRYPTION_KEY": "VFRAdSem81cuALVeOMC4PJyLXf30tckV"
+      }
+    },
+    "production": {
+      "route": {
+        "pattern": "playground.likec4.dev",
+        "custom_domain": true
+      },
+      "kv_namespaces": [
+        {
+          "binding": "KV",
+          "id": "ebf54cfa797b4d76bd08e83bb7214898",
+          "preview_id": "23249b2617cc4a22a589bf934b0afa96"
+        }
+      ]
+    }
+  }
+}

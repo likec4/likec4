@@ -65,6 +65,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     env:
       PR_REF: ${{ needs.check-write-access.outputs.ref }}
+      CLOUDFLARE_ENV: production
     steps:
       - name: start deployment
         uses: bobheadxi/deployments@v1
@@ -92,7 +93,7 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: versions upload -c dist/playground/wrangler.json
           workingDirectory: apps/playground
           packageManager: pnpm
@@ -157,7 +158,7 @@ jobs:
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name likec4-docs-astro --commit-dirty --branch preview
           workingDirectory: apps/docs
           packageManager: pnpm

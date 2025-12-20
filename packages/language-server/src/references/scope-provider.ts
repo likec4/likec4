@@ -76,8 +76,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   // we need lazy resolving here
-  protected *genUniqueDescedants(of: () => ast.Element | ast.DeploymentNode | undefined) {
-    const element = of()
+  protected *genUniqueDescedants(element: ast.Element | ast.DeploymentNode | undefined) {
     if (!element) {
       return
     }
@@ -107,7 +106,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       }
     }
     // we make extended element resolvable inside ExtendElementBody
-    yield* this.genUniqueDescedants(() => elementRef(element))
+    yield* this.genUniqueDescedants(elementRef(element))
   }
 
   protected *genScopeElementView({ viewOf, extends: ext }: ast.ElementView): Generator<AstNodeDescription> {
@@ -117,7 +116,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       if (viewOf.modelElement.value.$nodeDescription) {
         yield viewOf.modelElement.value.$nodeDescription
       }
-      yield* this.genUniqueDescedants(() => elementRef(viewOf))
+      yield* this.genUniqueDescedants(elementRef(viewOf))
       return
     }
 
@@ -145,10 +144,10 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     if (deploymentNode.value.$nodeDescription) {
       yield deploymentNode.value.$nodeDescription
     }
-    yield* this.genUniqueDescedants(() => {
-      const target = deploymentNode.value.ref
-      return target && ast.isDeploymentNode(target) ? target : undefined
-    })
+    const target = deploymentNode.value.ref
+    if (target && ast.isDeploymentNode(target)) {
+      yield* this.genUniqueDescedants(target)
+    }
   }
 
   protected streamForFqnRef(
@@ -165,25 +164,23 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return EMPTY_STREAM
     }
     if (ast.isImported(parentRef)) {
-      return stream(this.genUniqueDescedants(() => {
-        return parentRef.imported.ref
-      }))
+      return stream(this.genUniqueDescedants(parentRef.imported.ref))
     }
     if (ast.isDeploymentNode(parentRef)) {
-      return stream(this.genUniqueDescedants(() => parentRef))
+      return stream(this.genUniqueDescedants(parentRef))
     }
     if (ast.isDeployedInstance(parentRef)) {
-      // if (ast.isElement(target)) {
-      return stream(this.genUniqueDescedants(() => {
-        const target = parentRef.target.modelElement.value.ref
-        if (ast.isImported(target)) {
-          return target.imported.ref
-        }
-        return ast.isElement(target) ? target : undefined
-      }))
+      const target = parentRef.target.modelElement.value.ref
+      // dprint-ignore
+      const resolvedTarget = ast.isImported(target)
+        ? target.imported.ref
+        : ast.isElement(target)
+          ? target
+          : undefined
+      return stream(this.genUniqueDescedants(resolvedTarget))
     }
     if (ast.isElement(parentRef)) {
-      return stream(this.genUniqueDescedants(() => parentRef))
+      return stream(this.genUniqueDescedants(parentRef))
     }
     return nonexhaustive(parentRef)
   }

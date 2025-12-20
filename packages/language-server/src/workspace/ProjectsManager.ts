@@ -8,7 +8,7 @@ import {
 } from '@likec4/config'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
 import type { ProjectId, scalar } from '@likec4/core/types'
-import { BiMap, invariant, memoizeProp, nonNullable } from '@likec4/core/utils'
+import { BiMap, DefaultMap, invariant, memoizeProp, nonNullable } from '@likec4/core/utils'
 import { wrapError } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
 import {
@@ -19,10 +19,13 @@ import {
   WorkspaceCache,
 } from 'langium'
 import picomatch from 'picomatch'
-import { filter, hasAtLeast, isNullish, map, pipe, prop, sortBy } from 'remeda'
+import { hasAtLeast, isNullish, map, pipe, prop, sortBy } from 'remeda'
 import type { Tagged } from 'type-fest'
 import {
+  cleanDoubleSlashes,
+  isRelative,
   joinRelativeURL,
+  joinURL,
   parseFilename,
   withoutProtocol,
   withTrailingSlash,
@@ -68,7 +71,8 @@ interface ProjectData {
   config: LikeC4ProjectConfig
   folder: ProjectFolder // URI.toString()
   folderUri: URI
-  exclude?: (path: string) => boolean
+  // exclude?: (path: string) => boolean
+  exclude?: picomatch.Matcher
   /**
    * Resolved include paths with both URI and folder string representations.
    * These are additional directories that are part of this project.
@@ -131,6 +135,24 @@ export class ProjectsManager {
    * This ensures that the most specific project is used for a document.
    */
   #projects = [] as Array<ProjectData>
+
+  /**
+   * This is a cached lookup for performance.
+   */
+  #lookupById = new DefaultMap((id: scalar.ProjectId): ProjectData => {
+    if (id === ProjectsManager.DefaultProjectId) {
+      const folderUri = this.getWorkspaceFolder()
+      return {
+        id,
+        config: DefaultProject.config,
+        folder: ProjectFolder(folderUri),
+        folderUri,
+        exclude: DefaultProject.exclude,
+        includeConfig: DefaultProject.includeConfig,
+      }
+    }
+    return nonNullable(this.#projects.find(p => p.id === id), `Project ${id} not found`)
+  })
 
   #excludedDocuments: WeakMap<LangiumDocument, boolean> = new WeakMap()
 
@@ -226,7 +248,7 @@ export class ProjectsManager {
         folderUri,
       }
     }
-    const project = nonNullable(this.#projects.find(p => p.id === id), `Project "${id}" not found`)
+    const project = nonNullable(this.#lookupById.get(id), `Project ${id} not found`)
     return {
       id,
       folderUri: project.folderUri,
@@ -272,7 +294,11 @@ export class ProjectsManager {
     if (typeof document === 'string' || URI.isUri(document)) {
       let docUriAsString = normalizeUri(document)
       const project = this.findProjectForDocument(docUriAsString)
-      return !!project.exclude && project.exclude(withoutProtocol(docUriAsString))
+      if (!project.exclude) {
+        return false
+      }
+      const input = withoutProtocol(docUriAsString)
+      return project.exclude(input)
     }
     let isExcluded = this.#excludedDocuments.get(document)
     if (isExcluded === undefined) {
@@ -283,29 +309,23 @@ export class ProjectsManager {
   }
 
   /**
-   * Checks if the specified document is included by the project.
+   * Checks if the specified document is included by the project:
+   * - if the document belongs to the project and is not excluded
+   * - if the document is included by the project
    */
   isIncluded(projectId: ProjectId, document: LangiumDocument | URI | string): boolean {
-    if (typeof document === 'string' || URI.isUri(document)) {
-      let project = this.#projects.find(p => p.id === projectId)
-      if (!project || !project.includePaths) {
-        return false
-      }
-      return project.includePaths.some(isParentFolderFor(document))
+    if (typeof document !== 'string' && !URI.isUri(document)) {
+      return this.isIncluded(projectId, document.uri)
     }
-    return this.isIncluded(projectId, document.uri)
-  }
-
-  includedInProjects(document: LangiumDocument | URI | string): ProjectId[] {
-    if (typeof document === 'string' || URI.isUri(document)) {
-      let docUriAsString = normalizeUri(document)
-      return pipe(
-        this.#projects,
-        filter(p => !!p.includePaths && p.includePaths.some(isParentFolderFor(docUriAsString))),
-        map(p => p.id),
-      )
+    const belongsTo = this.belongsTo(document)
+    if (belongsTo === projectId) {
+      return !this.isExcluded(document)
     }
-    return this.includedInProjects(document.uri)
+    let includePaths = this.#lookupById.get(projectId)?.includePaths
+    if (!includePaths) {
+      return false
+    }
+    return includePaths.some(isParentFolderFor(document))
   }
 
   /**
@@ -422,7 +442,16 @@ export class ProjectsManager {
     if (isNullish(config.exclude)) {
       project.exclude = DefaultProject.exclude
     } else if (hasAtLeast(config.exclude, 1)) {
-      project.exclude = picomatch(config.exclude, { dot: true })
+      const patterns = map(config.exclude, p => {
+        if (!isRelative(p) && !p.startsWith('**')) {
+          p = joinURL('**', p)
+        }
+        return cleanDoubleSlashes(joinRelativeURL(project.folderUri.path, p))
+      })
+      project.exclude = picomatch(patterns, {
+        contains: true,
+        dot: true,
+      })
     }
 
     // Resolve include paths relative to project folder
@@ -485,6 +514,7 @@ export class ProjectsManager {
     }
 
     this.#projectIdToFolder.set(project.id, folder)
+    this.#lookupById.clear()
 
     // Reset assigned project IDs if no projects reload is active
     if (mustReset && !this.#activeReload) {
@@ -556,6 +586,7 @@ export class ProjectsManager {
 
     this.#projects = []
     this.#projectIdToFolder.clear()
+    this.#lookupById.clear()
     for (const uri of configFiles) {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
@@ -588,6 +619,7 @@ export class ProjectsManager {
     this.services.workspace.LangiumDocuments.resetProjectIds()
     this.documentBelongsTo.clear()
     this.mappingsToProject.clear()
+    this.#lookupById.clear()
     this.#excludedDocuments = new WeakMap()
   }
 

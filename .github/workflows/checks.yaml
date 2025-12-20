@@ -74,7 +74,7 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: ⚙️ build
-        run: pnpm turbo run build --filter="!@likec4/docs-astro" --filter="!@likec4/playground"
+        run: pnpm turbo run build --filter="likec4"
 
       - name: 🔬 test
         env:
@@ -167,7 +167,7 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy playwright-report --project-name likec4-e2e --commit-dirty --branch preview
           workingDirectory: e2e
           packageManager: pnpm
