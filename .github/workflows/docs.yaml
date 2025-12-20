@@ -37,7 +37,7 @@ env:
   FORCE_COLOR: true
 
 concurrency:
-  group: docs-${{ github.event_name }}-${{ github.ref_name }}
+  group: docs-${{ github.event_name }}-${{ github.ref_name }}-${{ inputs.environment }}
   cancel-in-progress: true
 
 jobs:

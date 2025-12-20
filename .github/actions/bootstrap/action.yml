@@ -16,9 +16,9 @@ runs:
         cache: "pnpm"
 
     - name: 🛠️ Cache for turbo
-      uses: rharkor/caching-for-turbo@v1.8
+      uses: rharkor/caching-for-turbo@v2.2.1
       with:
-        cache-prefix: turbo_cache_
+        cache-prefix: "turbo_cache_${{ runner.arch }}"
 
     - run: pnpm install --prefer-offline
       shell: sh

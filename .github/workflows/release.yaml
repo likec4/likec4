@@ -35,11 +35,74 @@ jobs:
       - name: ⚙️ build
         run: pnpm ci:build
 
+      - name: Re-install npm
+        # OIDC requires npm >=11.5.1. We need to bump.
+        run: npm install -g npm@11
+
       - name: 📦 publish
         run: pnpm ci:publish
 
-  vscode:
-    name: 📦 vscode
-    uses: ./.github/workflows/vscode.yaml
-    if: ${{ github.repository_owner == 'likec4' }}
-    secrets: inherit
+  create-tag:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    needs: publish
+    steps:
+      - name: Decode the GitHub App Private Key
+        id: decode
+        run: |
+          private_key=$(echo "${{ secrets.BOT_APP_PRIVATE_KEY }}" | base64 -d | awk 'BEGIN {ORS="\\n"} {print}' | head -c -2) &> /dev/null
+          echo "::add-mask::$private_key"
+          echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ steps.decode.outputs.private-key }}
+
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+
+      - name: Read version
+        id: read-version
+        run: |
+          echo "VERSION=$(jq -r .version package.json)" >> "$GITHUB_ENV"
+
+      # - name: Create tag
+      #   uses: actions/github-script@v8
+      #   with:
+      #     github-token: ${{ steps.app-token.outputs.token }}
+      #     script: |
+      #       const version = process.env.VERSION
+      #       const tagname = `v${version}`
+      #       github.rest.git.createRef({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         ref: `refs/tags/${tagname}`,
+      #         sha: context.sha
+      #       })
+
+      - name: Create release
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const version = process.env.VERSION
+            const tagname = `v${version}`
+            github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tagname,
+              target_commitish: context.sha,
+              name: tagname,
+              draft: true,
+              generate_release_notes: true,
+            })
