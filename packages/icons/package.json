@@ -52,6 +52,13 @@
       "types": "./icon.d.ts",
       "default": "./azure/*.js"
     },
+    "./bootstrap": {
+      "default": "./bootstrap/index.js"
+    },
+    "./bootstrap/*": {
+      "types": "./icon.d.ts",
+      "default": "./bootstrap/*.js"
+    },
     "./*": {
       "types": "./icon.d.ts",
       "default": "./tech/*.js"

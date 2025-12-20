@@ -248,9 +248,10 @@ model {
 
 ### Bundled icons
 
-LikeC4 includes icons (3137 in total) from these packs:
+LikeC4 includes icons (over 5,000 in total) from these packs:
 - `aws:` from <a href="https://aws-icons.com" target='_blank'>aws-icons.com</a>
 - `azure:` from <a href="https://learn.microsoft.com/en-us/azure/architecture/icons/" target='_blank'>microsoft.com</a>
+- `bootstrap:` from <a href="https://icons.getbootstrap.com/" target='_blank'>Bootstrap Icons</a> (2,000+ icons)
 - `gcp:` from <a href="https://gcpicons.com" target='_blank'>gcpicons.com</a>
 - `tech:` from <a href="https://techicons.dev" target='_blank'>techicons.dev</a> and <a href="https://svglogos.dev/" target='_blank'>svglogos.dev</a>
 
@@ -266,7 +267,10 @@ model {
   }
   pg = storage 'PostgreSQL' {
     icon tech:postgresql
-  }  
+  }
+  ui = component 'User Interface' {
+    icon bootstrap:house
+  }
 }
 ```
 

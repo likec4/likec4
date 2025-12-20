@@ -1,5 +1,9 @@
 ## [1.46.3](https://github.com/likec4/likec4/compare/v1.46.2...v1.46.3) (2025-12-19)
 
+### Features
+
+- **icons**: Added Bootstrap Icons as bundled icon provider. Use `bootstrap:icon-name` syntax to access over 2,000 icons from [Bootstrap Icons](https://icons.getbootstrap.com/). Example: `icon bootstrap:house`, `icon bootstrap:gear-fill`.
+
 ### Bug Fixes
 
 - Remove workspace locks in ProjectsManager, as they lead to race conditions during extension activation. Fixes [#2466](https://github.com/likec4/likec4/issues/2466)

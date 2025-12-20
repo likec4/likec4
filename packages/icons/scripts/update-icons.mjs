@@ -194,6 +194,24 @@ for (const [oldName, newName] of Object.entries(azureRenames)) {
 console.info('azure-icons - OK')
 
 // -----------------------------------------------------------
+// ------------------------ bootstrap ------------------------
+
+if (!existsSync('.tmp/bootstrap.zip')) {
+  console.info('Fetching bootstrap-icons...')
+  await $`curl -L -o .tmp/bootstrap.zip https://github.com/twbs/icons/releases/download/v1.11.3/bootstrap-icons-1.11.3.zip`
+}
+await rm('.tmp/bootstrap', { force: true, recursive: true })
+await $`unzip .tmp/bootstrap.zip -d .tmp/bootstrap`
+await mkdir('.tmp/src/bootstrap', { recursive: true })
+
+const bootstrapSvgs = new fdir().glob('**/*.svg').withFullPaths().crawl('.tmp/bootstrap').sync()
+for (const svg of bootstrapSvgs) {
+  const name = path.basename(svg)
+  await $`mv ${svg} .tmp/src/bootstrap/${name}`
+}
+console.info('bootstrap-icons - OK')
+
+// -----------------------------------------------------------
 // ------------------------ svg-logos ------------------------
 
 await rm('.tmp/svg-logos', { force: true, recursive: true })
@@ -231,7 +249,7 @@ console.info('svg-logos - OK')
 
 // ------------------------ Generate React components ------------------------
 
-await $`rm -r -f ${['aws', 'azure', 'gcp', 'tech']}`
+await $`rm -r -f ${['aws', 'azure', 'gcp', 'tech', 'bootstrap']}`
 
 console.info('generating svg...')
 const opts = [
@@ -247,7 +265,7 @@ const opts = [
 await $`pnpx @svgr/cli ${opts} --out-dir . -- .tmp/src`
 console.info('generated svg - DONE')
 
-await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp .tmp/svg-logos`
+await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp .tmp/svg-logos .tmp/bootstrap`
 console.info('Cleaning up temp files - DONE')
 
 for (const fname of new fdir().glob('**/*.tsx').withFullPaths().crawl().sync()) {
