@@ -170,14 +170,14 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return stream(this.genUniqueDescedants(parentRef))
     }
     if (ast.isDeployedInstance(parentRef)) {
-      // if (ast.isElement(target)) {
-      return stream(this.genUniqueDescedants((() => {
-        const target = parentRef.target.modelElement.value.ref
-        if (ast.isImported(target)) {
-          return target.imported.ref
-        }
-        return ast.isElement(target) ? target : undefined
-      })()))
+      const target = parentRef.target.modelElement.value.ref
+      // dprint-ignore
+      const resolvedTarget = ast.isImported(target)
+        ? target.imported.ref
+        : ast.isElement(target)
+          ? target
+          : undefined
+      return stream(this.genUniqueDescedants(resolvedTarget))
     }
     if (ast.isElement(parentRef)) {
       return stream(this.genUniqueDescedants(parentRef))

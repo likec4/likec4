@@ -122,7 +122,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         const project = this.projects.getProject(projectId)
         const docs = this.documents(projectId)
         if (docs.length === 0) {
-          logger.debug`nunsafeSyncParseModelData: skipped due to no documents`
+          logger.debug`unsafeSyncParseModelData: skipped due to no documents`
           return null
         }
         logger.debug`unsafeSyncParseModelData: completed`
