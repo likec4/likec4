@@ -114,11 +114,11 @@ export declare const Icons: {
   }
 };
 
-export type IconRendererProps = SVGProps<SVGSVGElement> & {
+export type IconRendererProps = {
   node: {
     id: string
     title: string
-    icon?: IconName | 'none' | null | undefined
+    icon?: string | null | undefined
   }
 }
 export function IconRenderer(props: IconRendererProps): JSX.Element;
