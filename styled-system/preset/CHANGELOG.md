@@ -1,5 +1,7 @@
 # @likec4/style-preset
 
+## 1.46.4
+
 ## 1.46.3
 
 ### Patch Changes
