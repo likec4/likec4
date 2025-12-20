@@ -26,3 +26,63 @@ test('generate puml - fakeDiagram2', () => {
 test('generate puml - fakeComputedView 3 Levels', () => {
   expect(generatePuml(mockViewModel(fakeComputedView3Levels))).toMatchSnapshot()
 })
+
+test('generate puml - with dashed identifiers', () => {
+  const viewWithDashes: ProcessedView = {
+    edges: [
+      {
+        id: 'payment-gateway:email-provider',
+        label: 'sends notifications',
+        source: 'payment-gateway',
+        target: 'email-provider',
+      },
+      {
+        id: 'customer:payment-gateway',
+        label: 'makes payment',
+        source: 'customer',
+        target: 'payment-gateway',
+      },
+    ],
+    nodes: [
+      {
+        children: [],
+        color: 'primary',
+        id: 'payment-gateway',
+        parent: null,
+        shape: 'rectangle',
+        title: 'Payment Gateway',
+      },
+      {
+        children: [],
+        color: 'secondary',
+        id: 'email-provider',
+        parent: null,
+        shape: 'rectangle',
+        title: 'Email Provider',
+      },
+      {
+        children: [],
+        color: 'primary',
+        id: 'customer',
+        parent: null,
+        shape: 'person',
+        title: 'Customer',
+      },
+    ],
+    autoLayout: { direction: 'TB' },
+    id: 'dashedView',
+    title: 'Test Dashed Identifiers',
+  } as any
+
+  const result = generatePuml(mockViewModel(viewWithDashes))
+  
+  // Verify no dashes in identifiers
+  expect(result).not.toContain('payment-gateway')
+  expect(result).not.toContain('email-provider')
+  
+  // Verify PascalCase transformation
+  expect(result).toContain('PaymentGateway')
+  expect(result).toContain('EmailProvider')
+  
+  expect(result).toMatchSnapshot()
+})

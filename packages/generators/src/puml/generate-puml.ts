@@ -17,7 +17,10 @@ import { isNullish as isNil } from 'remeda'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
-const fqnName = (nodeId: string): string => nodeId.split('.').map(capitalizeFirstLetter).join('')
+const fqnName = (nodeId: string): string => {
+  // Split on both '.' and '-' to handle dashed identifiers (e.g., payment-gateway -> PaymentGateway)
+  return nodeId.split(/[.-]/).map(capitalizeFirstLetter).join('')
+}
 
 const nodeName = (node: ComputedNode): string => {
   return fqnName(node.parent ? node.id.slice(node.parent.length + 1) : node.id)

@@ -182,3 +182,44 @@ Client .[#777777,thickness=2].> SystemFrontend : "<color:#777777>opens<color:#77
 @enduml
 "
 `;
+
+exports[`generate puml - with dashed identifiers 1`] = `
+"@startuml
+title "Test Dashed Identifiers"
+top to bottom direction
+
+hide stereotype
+skinparam ranksep 60
+skinparam nodesep 30
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+  shadowing false
+}
+
+skinparam rectangle<<PaymentGateway>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+skinparam rectangle<<EmailProvider>>{
+  BackgroundColor #0284c7
+  FontColor #f0f9ff
+  BorderColor #0369a1
+}
+skinparam person<<Customer>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+rectangle "==Payment Gateway" <<PaymentGateway>> as PaymentGateway
+rectangle "==Email Provider" <<EmailProvider>> as EmailProvider
+person "==Customer" <<Customer>> as Customer
+
+PaymentGateway .[#777777,thickness=2].> EmailProvider : "<color:#777777>sends notifications<color:#777777>"
+Customer .[#777777,thickness=2].> PaymentGateway : "<color:#777777>makes payment<color:#777777>"
+@enduml
+"
+`;
