@@ -20,10 +20,10 @@ export class IndexManager extends DefaultIndexManager {
     let documentUris = stream(this.symbolIndex.keys())
     return documentUris
       .filter(uri => {
-        return (!uris || uris.has(uri)) && (
-          projects.belongsTo(uri) === projectId ||
-          projects.isIncluded(projectId, uri)
-        )
+        if (uris && !uris.has(uri)) {
+          return false
+        }
+        return projects.isIncluded(projectId, uri)
       })
       .flatMap(uri => this.getFileDescriptions(uri, nodeType))
   }

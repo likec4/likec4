@@ -15,22 +15,20 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
     graphviz?: GraphvizPort
 
     /**
-    Concurrency limit.
-
-    Minimum: `1`.
-
-    @default 2
-    */
+     * Concurrency limit.
+     * Minimum: `1`.
+     * @default 2
+     */
     concurrency?: number
     /**
-    Per-operation timeout in milliseconds. Operations fulfill once `timeout` elapses if they haven't already.
-    @default 20_000
-    */
+     * Per-operation timeout in milliseconds. Operations fulfill once `timeout` elapses if they haven't already.
+     * @default 20_000
+     */
     timeout?: number
     /**
-    Whether or not a timeout is considered an exception.
-    @default true
-    */
+     * Whether or not a timeout is considered an exception.
+     * @default true
+     */
     throwOnTimeout?: boolean
   }) {
     super(options?.graphviz)
