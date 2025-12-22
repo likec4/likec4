@@ -1,3 +1,4 @@
+import { boutique } from 'boutique'
 specification {
   element boundary {
     style {
@@ -73,6 +74,7 @@ model {
     technology 'Websocket'
 
   }
+  user -> boutique.frontend
 
   worker -> supabase
   worker -> r2
@@ -90,7 +92,7 @@ views {
   }
 
   view index {
-    include *, cloudflare.*
+    include *, cloudflare.*, boutique.*
     autoLayout LeftRight
   }
 
@@ -132,8 +134,9 @@ views {
     }
 
 
-    user -> worker 'Saves'
-    worker -> builder 'Requests latest state'
+    user
+      -> worker 'Saves'
+      -> builder 'Requests latest state'
     worker -> supabase 'Updates records'
     worker -> builder 'Stops'
 

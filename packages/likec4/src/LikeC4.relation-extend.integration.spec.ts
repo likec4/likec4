@@ -11,7 +11,7 @@ describe('Integration: relation extend in examples/multi-relation-extend', () =>
     const workspace = resolve(__dirname, '../../../examples/multi-relation-extend')
     const likec4 = await LikeC4.fromWorkspace(workspace, { throwIfInvalid: true, printErrors: false })
 
-    const model = likec4.computedModel()
+    const model = likec4.syncComputedModel()
 
     // Untyped: frontend -> api "Makes requests"
     const untyped = findRelations(
@@ -46,7 +46,7 @@ describe('Integration: relation extend in examples/multi-relation-extend', () =>
     const workspace = resolve(__dirname, '../../../examples/multi-relation-extend')
     const likec4 = await LikeC4.fromWorkspace(workspace, { throwIfInvalid: true, printErrors: false })
 
-    const model = likec4.computedModel()
+    const model = likec4.syncComputedModel()
 
     // Async: frontend -[async]-> api "Sends analytics data"
     const async = findRelations(
@@ -70,7 +70,7 @@ describe('Integration: relation extend in examples/multi-relation-extend', () =>
     const workspace = resolve(__dirname, '../../../examples/multi-relation-extend')
     const likec4 = await LikeC4.fromWorkspace(workspace, { throwIfInvalid: true, printErrors: false })
 
-    const model = likec4.computedModel()
+    const model = likec4.syncComputedModel()
 
     // Both "userDB -> authService" and 'userDB -> authService ""' should be treated as same relation
     const relations = findRelations(
@@ -97,7 +97,7 @@ describe('Integration: relation extend in examples/multi-relation-extend', () =>
     const workspace = resolve(__dirname, '../../../examples/multi-relation-extend')
     const likec4 = await LikeC4.fromWorkspace(workspace, { throwIfInvalid: true, printErrors: false })
 
-    const model = likec4.computedModel()
+    const model = likec4.syncComputedModel()
 
     // api -> authService "Validates tokens" has protocol merged from multiple extends
     const relations = findRelations(
@@ -117,7 +117,7 @@ describe('Integration: relation extend in examples/multi-relation-extend', () =>
     const workspace = resolve(__dirname, '../../../examples/multi-relation-extend')
     const likec4 = await LikeC4.fromWorkspace(workspace, { throwIfInvalid: true, printErrors: false })
 
-    const model = likec4.computedModel()
+    const model = likec4.syncComputedModel()
 
     // authService -> userDB "Queries users" has connection_type in base and extend (same value)
     const relations = findRelations(
@@ -138,7 +138,7 @@ describe('Integration: relation extend in examples/multi-relation-extend', () =>
     const workspace = resolve(__dirname, '../../../examples/multi-relation-extend')
     const likec4 = await LikeC4.fromWorkspace(workspace, { throwIfInvalid: true, printErrors: false })
 
-    const model = likec4.computedModel()
+    const model = likec4.syncComputedModel()
 
     // api -> userDB "Stores data" has tags from base and extends
     const relations = findRelations(
@@ -159,7 +159,7 @@ describe('Integration: relation extend in examples/multi-relation-extend', () =>
     const workspace = resolve(__dirname, '../../../examples/multi-relation-extend')
     const likec4 = await LikeC4.fromWorkspace(workspace, { throwIfInvalid: true, printErrors: false })
 
-    const model = likec4.computedModel()
+    const model = likec4.syncComputedModel()
 
     // frontend -> api "Makes requests" (untyped) has duplicate links
     const relations = findRelations(

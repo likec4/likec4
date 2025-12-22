@@ -97,6 +97,10 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
     return this.$model.$styles
   }
 
+  get projectId(): aux.ProjectId<A> {
+    return this.$model.projectId
+  }
+
   public element(el: DeploymentOrFqn<A>): DeploymentElementModel<A> {
     if (el instanceof DeploymentNodeModel || el instanceof DeployedInstanceModel) {
       return el

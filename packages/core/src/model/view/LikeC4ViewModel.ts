@@ -281,6 +281,10 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     return null
   }
 
+  get projectId(): aux.ProjectId<A> {
+    return this.$model.projectId
+  }
+
   public roots(): NodesIterator<A, V> {
     return this.#rootnodes.values()
   }

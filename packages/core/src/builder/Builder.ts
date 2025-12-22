@@ -2,6 +2,7 @@
 import defu from 'defu'
 import {
   entries,
+  filter,
   fromEntries,
   fromKeys,
   hasAtLeast,
@@ -11,6 +12,7 @@ import {
   map,
   mapToObj,
   mapValues,
+  pipe,
 } from 'remeda'
 import type { Writable } from 'type-fest'
 import { computeLikeC4Model } from '../compute-view/compute-view'
@@ -49,8 +51,10 @@ import {
   FqnRef,
   isDeployedInstance,
   isElementView,
+  isGlobalFqn,
+  splitGlobalFqn,
 } from '../types'
-import { invariant } from '../utils'
+import { DefaultMap, invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderProjectSpecification, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
@@ -182,6 +186,10 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Views are not computed or layouted
    * {@link toLikeC4Model} should be used to get model with computed views
    */
+  build<const ProjectId extends string>(
+    project: ProjectId,
+  ): ParsedLikeC4ModelData<aux.setProject<Types.ToAux<T>, ProjectId>>
+
   build<const Project extends BuilderProjectSpecification>(
     project: Project,
   ): ParsedLikeC4ModelData<aux.setProject<Types.ToAux<T>, Project['id']>>
@@ -191,6 +199,9 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   /**
    * Returns Computed LikeC4Model
    */
+  toLikeC4Model<const ProjectId extends string>(
+    project: ProjectId,
+  ): LikeC4Model.Computed<aux.setProject<Types.ToAux<T>, ProjectId>>
   toLikeC4Model<const Project extends BuilderProjectSpecification>(
     project: Project,
   ): LikeC4Model.Computed<aux.setProject<Types.ToAux<T>, Project['id']>>
@@ -268,6 +279,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   } as ModelGlobals,
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
+  _imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map()),
 ): Builder<T> {
   const spec = validateSpec(_spec)
 
@@ -322,11 +334,38 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     ]
   }
 
+  const checkElementExists = (id: string) => {
+    const [project, fqn] = splitGlobalFqn(id as Fqn)
+    const lookup = project ? _imports.get(project) : _elements
+    const el = lookup.get(fqn)
+    invariant(el, `Element with id "${id}" not found`)
+    return el
+  }
+
+  const parseRelEndpoint = (endpoint: string | FqnRef): FqnRef => {
+    if (typeof endpoint === 'string') {
+      const [project, model] = splitGlobalFqn(endpoint as Fqn)
+      if (project) {
+        return { project, model }
+      }
+      return { model }
+    }
+    if ('project' in endpoint || 'deployment' in endpoint) {
+      return endpoint as FqnRef
+    }
+    return parseRelEndpoint(endpoint.model)
+  }
+
   const self: Builder<T> & Internals<T> = {
     get Types(): T {
       throw new Error('Types are not available in runtime')
     },
     clone: () => {
+      const imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
+      for (const [key, value] of _imports) {
+        imports.set(key, structuredClone(value))
+      }
+
       return builder(
         structuredClone(spec),
         structuredClone(_elements),
@@ -335,35 +374,47 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(_globals),
         structuredClone(_deployments),
         structuredClone(_deploymentRelations),
+        imports,
       )
     },
 
     __addElement: (element) => {
-      const parent = parentFqn(element.id)
+      const [project, fqn] = splitGlobalFqn(element.id)
+      const parent = parentFqn(fqn)
+      const lookup = project ? _imports.get(project) : _elements
       if (parent) {
         invariant(
-          _elements.get(parent),
+          lookup.get(parent),
           `Parent element with id "${parent}" not found for element with id "${element.id}"`,
         )
       }
-      if (_elements.has(element.id)) {
+      if (lookup.has(fqn)) {
         throw new Error(`Element with id "${element.id}" already exists`)
       }
-      _elements.set(element.id, element)
+      lookup.set(fqn, project ? { ...element, id: fqn } : element)
       return self
     },
     __addRelation(relation) {
-      const sourceEl = _elements.get(FqnRef.flatten(relation.source))
-      invariant(sourceEl, `Element with id "${relation.source.model}" not found`)
-      const targetEl = _elements.get(FqnRef.flatten(relation.target))
-      invariant(targetEl, `Element with id "${relation.target.model}" not found`)
-      invariant(
-        !isSameHierarchy(sourceEl, targetEl),
-        'Cannot create relationship between elements in the same hierarchy',
-      )
+      const source = parseRelEndpoint(relation.source)
+      const sourceFqn = FqnRef.flatten(source)
+      const target = parseRelEndpoint(relation.target)
+      const targetFqn = FqnRef.flatten(target)
+      const sourceEl = checkElementExists(sourceFqn)
+      const targetEl = checkElementExists(targetFqn)
+      if (isGlobalFqn(sourceFqn) && isGlobalFqn(targetFqn)) {
+        throw new Error('Cannot create relationship between global elements')
+      }
+      if (!isGlobalFqn(sourceFqn) && !isGlobalFqn(targetFqn)) {
+        invariant(
+          !isSameHierarchy(sourceEl, targetEl),
+          'Cannot create relationship between elements in the same hierarchy',
+        )
+      }
       _relations.push({
         id: `rel${_relations.length + 1}` as RelationId,
         ...relation,
+        source: source as FqnRef.ModelRef,
+        target: target as FqnRef.ModelRef,
       })
       return self
     },
@@ -434,12 +485,12 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       })
       return self
     },
-    build: (project?: LikeC4Project) => ({
+    build: (project?: string | LikeC4Project) => ({
       [_stage]: 'parsed',
-      projectId: project?.id ?? 'from-builder',
+      projectId: typeof project === 'string' ? project : project?.id ?? 'from-builder',
       project: {
-        id: 'from-builder',
-        ...project,
+        id: typeof project === 'string' ? project : 'from-builder',
+        ...(typeof project === 'object' && project !== null ? project : {}),
       },
       specification: toLikeC4Specification(),
       elements: fromEntries(
@@ -462,7 +513,14 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           Array.from(_views.entries()),
         ),
       ),
-      imports: {},
+      imports: pipe(
+        Array.from(_imports.entries()),
+        map((
+          [projectId, elementsMap],
+        ) => [projectId, structuredClone([...elementsMap.values()])] as const),
+        filter(([_, elements]) => elements.length > 0),
+        fromEntries(),
+      ),
     } as any),
     toLikeC4Model: (project?: LikeC4Project) => {
       const parsed = self.build(project as any)

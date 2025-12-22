@@ -36,8 +36,8 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
   readonly hierarchyLevel: number
 
   readonly imported: null | {
-    from: ProjectId
-    fqn: aux.Fqn<A>
+    readonly from: ProjectId
+    readonly fqn: aux.Fqn<AnyAux>
   }
 
   constructor(
@@ -153,6 +153,10 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
         textSize: this.$model.$styles.defaults.text,
         ...this.$element.style,
       }))
+  }
+
+  get projectId(): aux.ProjectId<A> {
+    return (this.imported?.from as aux.ProjectId<A> | undefined) ?? this.$model.projectId
   }
 
   public isAncestorOf(another: ElementModel<A>): boolean {
