@@ -3,6 +3,7 @@ import { loggable } from '@likec4/log'
 import type { FSWatcher } from 'chokidar'
 import chokidar from 'chokidar'
 import { URI } from 'langium'
+import type { Stats } from 'node:fs'
 import PQueue from 'p-queue'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
@@ -57,7 +58,10 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       ignoreInitial: true,
     })
 
-    const onAddOrChange = (path: string) => {
+    const onAddOrChange = (path: string, stats?: Stats) => {
+      if (stats?.isDirectory()) {
+        return
+      }
       this.enqueueFileOp('addOrChange: ' + path, async () => {
         if (isLikeC4Config(path)) {
           logger.debug`project file changed: ${path}`
@@ -75,7 +79,10 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       })
     }
 
-    const onRemove = (path: string) => {
+    const onRemove = (path: string, stats?: Stats) => {
+      if (stats?.isDirectory()) {
+        return
+      }
       this.enqueueFileOp('remove: ' + path, async () => {
         const pm = this.services.workspace.ProjectsManager
         if (isLikeC4Config(path)) {

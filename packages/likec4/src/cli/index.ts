@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { configureLogger, getConsoleSink } from '@likec4/log'
+import { configureLogger, getAnsiColorFormatter, getConsoleFormatter, getConsoleSink } from '@likec4/log'
 import { DEV } from 'esm-env'
 import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
@@ -19,18 +19,22 @@ import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
 
-configureLogger({
-  sinks: {
-    console: getConsoleSink(),
-  },
-  loggers: [
-    {
-      category: 'likec4',
-      sinks: ['console'],
-      lowestLevel: isDevelopment ? 'debug' : 'info',
+function configurelogger(isDebug = isDevelopment) {
+  configureLogger({
+    sinks: {
+      console: getConsoleSink({
+        formatter: k.isColorSupported ? getAnsiColorFormatter() : getConsoleFormatter(),
+      }),
     },
-  ],
-})
+    loggers: [
+      {
+        category: 'likec4',
+        sinks: ['console'],
+        lowestLevel: isDebug ? 'debug' : 'info',
+      },
+    ],
+  })
+}
 
 async function main() {
   if (!DEV && !isInsideContainer()) {
@@ -66,7 +70,6 @@ async function main() {
     .help('help')
     .option('verbose', {
       type: 'boolean',
-      default: false,
       describe: 'verbose logging',
       global: true,
     })
@@ -81,20 +84,7 @@ async function main() {
     })
     .wrap(clamp(stdout.columns - 10, { min: 80, max: 150 }))
     .middleware((args) => {
-      if (args.verbose) {
-        configureLogger({
-          sinks: {
-            console: getConsoleSink(),
-          },
-          loggers: [
-            {
-              category: 'likec4',
-              sinks: ['console'],
-              lowestLevel: 'debug',
-            },
-          ],
-        })
-      }
+      configurelogger(args.verbose || isDevelopment)
     })
     .parseAsync()
 }

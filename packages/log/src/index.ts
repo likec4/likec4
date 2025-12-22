@@ -3,7 +3,7 @@ import {
   configureSync as configureLogtape,
   getLogger,
 } from '@logtape/logtape'
-import { getConsoleSink } from './formatters'
+import { getConsoleSink } from './sink'
 
 export type {
   Filter,
@@ -19,11 +19,15 @@ export {
   // formatProperties,
   // formatRecord,
   getAnsiColorFormatter,
-  getConsoleSink,
-  getConsoleStderrSink,
+  getConsoleFormatter,
   getMessageOnlyFormatter,
   getTextFormatter,
 } from './formatters'
+
+export {
+  getConsoleSink,
+  getConsoleStderrSink,
+} from './sink'
 
 export { withFilter } from '@logtape/logtape'
 

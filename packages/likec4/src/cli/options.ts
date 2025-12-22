@@ -65,13 +65,6 @@ export const base = {
   nargs: 1,
 } as const satisfies Options
 
-export const useOverview = {
-  boolean: true,
-  type: 'boolean',
-  desc: 'overview all diagrams as graph [experimental]',
-  default: false,
-} as const satisfies Options
-
 export const outputSingleFile = {
   boolean: true,
   type: 'boolean',
@@ -101,6 +94,6 @@ export const port = {
 export const project = {
   alias: 'p',
   type: 'string',
-  desc: 'LikeC4 project, name eg. "my-project" or path to the project folder',
+  desc: 'select LikeC4 project by name (e.g. "my-project") or by path',
   nargs: 1,
 } as const satisfies Options

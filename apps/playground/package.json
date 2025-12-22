@@ -27,7 +27,7 @@
     "generate-wrangler": {
       "command": "wrangler types",
       "files": [
-        "wrangler.toml",
+        "wrangler.jsonc",
         "package.json"
       ],
       "output": [
