@@ -1,4 +1,5 @@
 import type { AnyAux } from '@likec4/core'
+import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
 import { promiseNextTick } from '@likec4/core/utils'
 import { rootLogger } from '@likec4/log'
 import PQueue from 'p-queue'
@@ -69,6 +70,18 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
     })
     if (!result) {
       throw new Error(`QueueGraphvizLayoter: layout failed`)
+    }
+    return result
+  }
+
+  override async layoutProjectsView(view: ComputedProjectsView): Promise<LayoutedProjectsView> {
+    logger.debug`adding layoutProjectsView task to queue`
+    const result = await this.runInQueue(async () => {
+      logger.debug`layouting projects view`
+      return await super.layoutProjectsView(view)
+    })
+    if (!result) {
+      throw new Error(`QueueGraphvizLayoter: layoutProjectsView failed`)
     }
     return result
   }

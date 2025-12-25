@@ -1,12 +1,14 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import {
-  type DiagramView,
+  type ComputedView,
+  type LayoutedView,
   type NonEmptyArray,
   type ProjectId,
   type UnknownComputed,
   type UnknownLayouted,
   nonexhaustive,
 } from '@likec4/core'
+import { type LayoutedProjectsView, computeProjectsView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { URI } from 'langium'
@@ -43,8 +45,7 @@ export interface LikeC4LanguageServices {
   }>
 
   /**
-   * Returns project by ID
-   * If no project ID is specified, returns default project
+   * Returns project by ID, returns default project if no ID is specified
    */
   project(projectId?: ProjectId): {
     id: ProjectId
@@ -53,17 +54,35 @@ export interface LikeC4LanguageServices {
     documents: ReadonlyArray<URI>
     config: Readonly<LikeC4ProjectConfig>
   }
+  /**
+   * Computes, layouts and returns projects overview - a single diagram
+   * that shows all projects and their relationships
+   */
+  projectsOverview(cancelToken?: CancellationToken): Promise<LayoutedProjectsView>
 
   /**
-   * Returns diagrams (i.e. views with layout computed) for the specified project
-   * if diagram has manual layout, it will be used
-   * If no project is specified, returns diagrams for default project
+   * Returns {@link LikeC4Model} of the specified project, with computed views {@link ComputedView}
+   * Not ready for rendering, but enough to traverse model. Much faster than {@link layoutedModel}
+   *
+   * If no {@link project} is specified, returns for default project
    */
-  diagrams(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<DiagramView[]>
-
   computedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model<UnknownComputed>>
 
+  /**
+   * Returns {@link LikeC4Model} of the specified project, with layouted views {@link LayoutedView}
+   * Ready for rendering. Applies manual layouts if available.
+   *
+   * If no {@link project} is specified, returns for default project
+   */
   layoutedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model<UnknownLayouted>>
+
+  /**
+   * Returns diagrams (i.e. layouted views {@link LayoutedView}) for the specified project
+   * Applies manual layouts if available.
+   *
+   * If no {@link project} is specified, returns diagrams for default project
+   */
+  diagrams(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LayoutedView[]>
 
   getErrors(): Array<{
     message: string
@@ -174,20 +193,14 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     }
   }
 
-  /**
-   * Diagram is a computed view, layouted using Graphviz
-   * If diagram has manual layout, it will be used.
-   */
-  async diagrams(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<DiagramView[]> {
+  async diagrams(
+    project?: ProjectId | undefined,
+    cancelToken?: CancellationToken,
+  ): Promise<LayoutedView<UnknownLayouted>[]> {
     const projectId = this.projectsManager.ensureProjectId(project)
     return await this.views.diagrams(projectId, cancelToken)
   }
 
-  /**
-   * Builds LikeC4Model from all documents
-   * Only computes view predicates {@link ComputedView} - i.e. no layout
-   * Not ready for rendering, but enough to traverse
-   */
   async computedModel(
     project?: ProjectId | undefined,
     cancelToken?: CancellationToken,
@@ -196,10 +209,6 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     return await this.builder.computeModel(projectId, cancelToken)
   }
 
-  /**
-   * Same as {@link computedModel()}, but also applies layout
-   * Ready for rendering
-   */
   async layoutedModel(
     project?: ProjectId | undefined,
     cancelToken?: CancellationToken,
@@ -219,6 +228,27 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
         indexBy(prop('id')),
       ),
     })
+  }
+
+  async projectsOverview(cancelToken?: CancellationToken): Promise<LayoutedProjectsView> {
+    const allProjects = this.services.shared.workspace.ProjectsManager.all
+    const models = [] as LikeC4Model[]
+    for (const project of allProjects) {
+      const model = await this.builder.computeModel(project, cancelToken)
+      if (cancelToken?.isCancellationRequested) {
+        throw new Error('Operation cancelled')
+      }
+      if (model === LikeC4Model.EMPTY) {
+        logger.debug(`Project ${project} is empty, skipping`)
+        continue
+      }
+      models.push(model)
+    }
+    if (!hasAtLeast(models, 1)) {
+      throw new Error('No models found')
+    }
+    const projectsView = computeProjectsView(models)
+    return await this.views.layouter.layoutProjectsView(projectsView)
   }
 
   getErrors(): Array<{
@@ -267,9 +297,10 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       }
       this.services.Rpc.dispose()
       this.services.likec4.ModelBuilder.dispose()
-      logger.debug('LikeC4LanguageServices disposed')
     } catch (e) {
       logger.error(loggable(e))
+    } finally {
+      logger.debug('LikeC4LanguageServices disposed')
     }
   }
 }

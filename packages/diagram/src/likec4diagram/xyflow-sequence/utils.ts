@@ -45,7 +45,7 @@ export function findParallelRects(steps: Array<Step>): Array<ParallelRect> {
  * @returns an array of compounds where each compound is a node in the sequence view
  * that is an ancestor of one of the actors
  */
-export function buildCompounds(actors: Array<DiagramNode>, nodes: Array<DiagramNode>): Array<Compound> {
+export function buildCompounds(actors: ReadonlyArray<DiagramNode>, nodes: ReadonlyArray<DiagramNode>): Array<Compound> {
   if (actors.length === 0 || actors.length === nodes.length) {
     return []
   }

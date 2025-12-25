@@ -9,7 +9,7 @@ import type { ComputedNode, NodeNotation } from '../../types'
  * 4. For each group get unique kinds
  * 5. Unwind the groups
  */
-export function buildElementNotations(nodes: ComputedNode<any>[]): NodeNotation[] {
+export function buildElementNotations(nodes: ReadonlyArray<ComputedNode<any>>): NodeNotation[] {
   return pipe(
     nodes,
     filter((n): n is ComputedNode<any> & { notation: string } => !!n.notation),

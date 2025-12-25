@@ -1,6 +1,5 @@
 import type { LikeC4Styles } from '@likec4/core/styles'
 import type {
-  AnyAux,
   AnyFqn,
   ComputedEdge,
   ComputedNode,
@@ -101,7 +100,7 @@ type GraphologyEdgeAttributes = {
 // space around clusters, but SVG output requires hack
 export const GraphClusterSpace = 50.1
 
-export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
+export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | 'edges' | 'autoLayout'>> {
   private ids = new Set<string>()
   private subgraphs = new Map<NodeId, SubgraphModel>()
   private nodes = new Map<NodeId, NodeModel>()
@@ -153,8 +152,6 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       let distance = -1
       if (sourceFqn !== null && targetFqn !== null) {
         distance = hierarchyDistance(sourceFqn, targetFqn)
-      } else {
-        logger.warn(`Edge ${edge.id} of view ${view.id} is invalid, sourceFqn: ${sourceFqn}, targetFqn: ${targetFqn}`)
       }
 
       this.graphology.addEdgeWithKey(edge.id, edge.source, edge.target, {
@@ -481,27 +478,29 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   protected edgeEndpoint(
     endpointId: NodeId,
     pickFromCluster: (data: ComputedNode[]) => ComputedNode | undefined,
-  ) {
+  ): [ComputedNode, NodeModel, string | undefined] {
     let element = this.computedNode(endpointId)
     let endpoint = this.getGraphNode(endpointId)
     // see https://graphviz.org/docs/attrs/lhead/
     let logicalEndpoint: string | undefined
 
-    if (!endpoint) {
-      invariant(isCompound(element), 'endpoint node should be compound')
-      // Edge with cluster as endpoint
-      logicalEndpoint = this.getSubgraph(endpointId)?.id
-      invariant(logicalEndpoint, `subgraph ${endpointId} not found`)
-      element = nonNullable(
-        pickFromCluster(this.leafElements(endpointId)),
-        `leaf element in ${endpointId} not found`,
-      )
-      endpoint = nonNullable(
-        this.getGraphNode(element.id),
-        `source graphviz node ${element.id} not found`,
-      )
+    if (endpoint) {
+      return [element, endpoint, undefined]
     }
-    return [element, endpoint, logicalEndpoint] as const
+
+    invariant(isCompound(element), 'endpoint node should be compound')
+    // Edge with cluster as endpoint
+    logicalEndpoint = this.getSubgraph(endpointId)?.id
+    invariant(logicalEndpoint, `subgraph ${endpointId} not found`)
+    element = nonNullable(
+      pickFromCluster(this.leafElements(endpointId)),
+      `leaf element in ${endpointId} not found`,
+    )
+    endpoint = nonNullable(
+      this.getGraphNode(element.id),
+      `source graphviz node ${element.id} not found`,
+    )
+    return [element, endpoint, logicalEndpoint]
   }
 
   protected findInternalEdges(parentId: Fqn | null): ComputedEdge[] {

@@ -1,10 +1,9 @@
 import { indexBy, map, mapValues, pipe, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { NTuple } from '../../../types'
-import type { ComputedNode } from '../../../types'
+import type { ComputedNode, NTuple } from '../../../types'
 import { $exclude, $group, $include, computeView } from './fixture'
 
-function expectParents(nodes: ComputedNode[]) {
+function expectParents(nodes: ReadonlyArray<ComputedNode>) {
   return expect(
     pipe(
       nodes,

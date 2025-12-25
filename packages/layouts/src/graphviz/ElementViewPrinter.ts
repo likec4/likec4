@@ -10,7 +10,7 @@ import { isCompound, toArrowType } from './utils'
 
 const rankLogger = createLogger('dot.rank')
 
-export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, ComputedElementView<A>> {
+export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedElementView<A>> {
   protected override postBuild(G: RootGraphModel): void {
     this.assignGroups()
 

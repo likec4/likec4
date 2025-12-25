@@ -59,7 +59,7 @@ async function dotCodegenAction(
   logger.info(`${k.dim('outdir')} ${outdir}`)
 
   const createdDirs = new Set<string>()
-  const model = languageServices.computedModel()
+  const model = await languageServices.computedModel()
   const views = values(model.$data.views)
   let succeeded = 0
   for (const view of views) {

@@ -1,0 +1,52 @@
+digraph {
+  likec4_viewId = "projects-view";
+  bgcolor = "transparent";
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  splines = "spline";
+  outputorder = "nodesfirst";
+  nodesep = 1.528;
+  ranksep = 1.667;
+  pad = 0.209;
+  fontname = "Arial";
+  graph [
+    fontsize = 20;
+    labeljust = "l";
+    labelloc = "t";
+    margin = 50.1;
+  ];
+  edge [
+    arrowsize = 0.75;
+    fontname = "Arial";
+    fontsize = 14;
+    penwidth = 2;
+    color = "#8D8D8D";
+    fontcolor = "#C9C9C9";
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    style = "filled";
+    penwidth = 0;
+  ];
+  "projecta" [
+    likec4_id = "projectA";
+    likec4_level = 0;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectA</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "projectb" [
+    likec4_id = "projectB";
+    likec4_level = 0;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectB</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+}

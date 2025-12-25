@@ -235,8 +235,8 @@ export function applyManualLayout<
   const nodeNotations = buildElementNotations(nodes)
 
   // Shallow copy of snapshot
-  const result = Object.assign(
-    { ...snapshot } as Writable<LayoutedView>,
+  const result: V = Object.assign(
+    { ...snapshot } as unknown as V,
     {
       // Auto-layouted properties
       title: autoLayouted.title ?? snapshot.title,
@@ -254,25 +254,26 @@ export function applyManualLayout<
     ;(result as Writable<LayoutedDynamicView>).variant = autoLayouted.variant
   }
 
+  const writableV = result as Writable<V>
   const drifts = [...viewDrifts]
   if (hasAtLeast(drifts, 1)) {
-    result.drifts = drifts
+    writableV.drifts = drifts
   } else {
     // Clear drifts if any comes from `autoLayouted` or `snapshot`
     // Should not happen, but just in case
-    if ('drifts' in result) {
-      delete result.drifts
+    if ('drifts' in writableV) {
+      delete writableV.drifts
     }
   }
 
-  return result as V
+  return result
 }
 
 function applyNodesManualLayout(
-  snapshotNodes: DiagramNode[],
+  snapshotNodes: ReadonlyArray<DiagramNode>,
   nextNodes: Map<DiagramNode['id'], DiagramNode>,
   viewDrifts: Set<LayoutedViewDriftReason>,
-): DiagramNode[] {
+): ReadonlyArray<DiagramNode> {
   const nodes = snapshotNodes.map((node): DiagramNode => {
     const next = nextNodes.get(node.id)
     if (next) {
@@ -365,10 +366,10 @@ function applyNodesManualLayout(
 }
 
 function applyEdgesManualLayout(
-  snapshotEdges: DiagramEdge[],
+  snapshotEdges: ReadonlyArray<DiagramEdge>,
   nextEdges: Map<DiagramEdge['id'], DiagramEdge>,
   viewDrifts: Set<LayoutedViewDriftReason>,
-): DiagramEdge[] {
+): ReadonlyArray<DiagramEdge> {
   const edges = snapshotEdges.map((edge): DiagramEdge => {
     let next = nextEdges.get(edge.id) ?? pipe(
       nextEdges.values(),
