@@ -17,7 +17,7 @@ const defaultHandlers: Required<LikeC4DiagramEventHandlers> = {
   onEdgeContextMenu: null,
   onCanvasClick: null,
   onCanvasDblClick: null,
-  onBurgerMenuClick: null,
+  onLogoClick: null,
   onOpenSource: null,
   onInitialized: null,
   onLayoutTypeChange: null,

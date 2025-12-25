@@ -72,7 +72,7 @@ export function ViewEditor() {
         enableCompareWithLatest
         onNavigateTo={onNavigateTo}
         onLayoutTypeChange={setLayoutType}
-        onBurgerMenuClick={() => {
+        onLogoClick={() => {
           void navigate({
             to: '/',
           })

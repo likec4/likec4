@@ -344,8 +344,8 @@ export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
   onCanvasClick?: OnCanvasClick | null | undefined
   onCanvasDblClick?: OnCanvasClick | null | undefined
 
-  // if set, will render a burger menu icon in the top left corner
-  onBurgerMenuClick?: null | undefined | (() => void)
+  // if set, will render a logo icon in the top left corner
+  onLogoClick?: null | undefined | (() => void)
 
   onOpenSource?: OnOpenSource<A> | null | undefined
 
