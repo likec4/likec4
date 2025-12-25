@@ -3,6 +3,14 @@ declare module 'likec4:projects' {
   export type { LikeC4Project }
   export const isSingleProject: boolean
   export const projects: readonly [LikeC4Project, ...LikeC4Project[]]
+  export function useLikeC4Projects(): readonly [LikeC4Project, ...LikeC4Project[]]
+}
+
+declare module 'likec4:projects-overview' {
+  import type { LayoutedProjectEdge, LayoutedProjectNode, LayoutedProjectsView } from 'likec4/model'
+  export type { LayoutedProjectEdge, LayoutedProjectNode, LayoutedProjectsView }
+
+  export function useLikeC4ProjectsOverview(): LayoutedProjectsView
 }
 
 declare module 'likec4:icons' {

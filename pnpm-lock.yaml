@@ -360,6 +360,9 @@ catalogs:
     '@xstate/react':
       specifier: 6.0.0
       version: 6.0.0
+    '@xstate/store':
+      specifier: 3.14.0
+      version: 3.14.0
     xstate:
       specifier: 5.24.0
       version: 5.24.0
@@ -1611,6 +1614,9 @@ importers:
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
+      '@xstate/store':
+        specifier: catalog:xstate
+        version: 3.14.0(react@19.2.3)
       autoprefixer:
         specifier: ^10.4.23
         version: 10.4.23(postcss@8.5.6)
@@ -4541,6 +4547,17 @@ packages:
       xstate: ^5.20.0
     peerDependenciesMeta:
       xstate:
+        optional: true
+
+  '@xstate/store@3.14.0':
+    resolution: {integrity: sha512-5IMQND3p7BfeckzYzBiDWGUa178jlodA4kB0jYp3xQOV6H1RtYGJx6v6LxAvDrOWTCzhXteEEw5hOBuNYkmUpw==}
+    peerDependencies:
+      react: 19.2.3
+      solid-js: ^1.7.6
+    peerDependenciesMeta:
+      react:
+        optional: true
+      solid-js:
         optional: true
 
   '@xyflow/react@12.10.0':
@@ -12149,6 +12166,10 @@ snapshots:
       xstate: 5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c)
     transitivePeerDependencies:
       - '@types/react'
+
+  '@xstate/store@3.14.0(react@19.2.3)':
+    optionalDependencies:
+      react: 19.2.3
 
   '@xyflow/react@12.10.0(@types/react@19.2.7)(immer@11.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:

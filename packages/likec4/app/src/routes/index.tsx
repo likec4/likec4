@@ -1,5 +1,5 @@
-import { useLikeC4Projects } from '@likec4/diagram'
 import { createFileRoute, Navigate } from '@tanstack/react-router'
+import { useLikeC4Projects } from 'likec4:projects'
 
 export const Route = createFileRoute('/')({
   component: () => {

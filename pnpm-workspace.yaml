@@ -156,6 +156,7 @@ catalogs:
     vscode-uri: 3.1.0
   xstate:
     '@xstate/react': 6.0.0
+    '@xstate/store': 3.14.0
     xstate: 5.24.0
   xyflow:
     '@xyflow/react': 12.10.0

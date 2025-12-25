@@ -1,6 +1,7 @@
 import type { ProjectId } from '@likec4/core/types'
 import { useMantineColorScheme } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
+import { projects } from 'likec4:projects'
 import { useEffect } from 'react'
 import { isTruthy } from 'remeda'
 import { LikeC4ProjectsContext } from '../context/LikeC4ProjectsContext'
@@ -74,8 +75,7 @@ export const Route = createRootRouteWithContext<Context>()({
       }),
     ],
   },
-  beforeLoad: async () => {
-    const { projects } = await import('likec4:projects')
+  beforeLoad: () => {
     return {
       projectId: projects.length > 0 ? projects[0].id : 'default' as ProjectId,
     }

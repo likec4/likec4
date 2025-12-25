@@ -1,8 +1,9 @@
 import type { LayoutedView, LayoutType } from '@likec4/core/types'
-import { useLikeC4Projects, useUpdateEffect } from '@likec4/diagram'
+import { useUpdateEffect } from '@likec4/diagram'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useParams } from '@tanstack/react-router'
 import { deepEqual, shallowEqual } from 'fast-equals'
+import { useLikeC4Projects } from 'likec4:projects'
 import { useEffect, useState } from 'react'
 import { useLikeC4ModelAtom } from './context/safeCtx'
 
@@ -49,6 +50,9 @@ export function useCurrentViewId(): string {
   })
 }
 
+/**
+ * Returns the current view and a function to set the layout type.
+ */
 export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType) => void] {
   const viewId = useCurrentViewId()
   const $likec4model = useLikeC4ModelAtom()
@@ -84,5 +88,5 @@ export function useCurrentProject() {
     select: (params) => params.projectId,
     strict: false,
   })
-  return (projects.find(p => p.id === projectId) ?? projects[0]!)
+  return (projects.find(p => p.id === projectId) ?? projects[0])
 }
