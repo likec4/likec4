@@ -63,6 +63,10 @@ const FontName = 'Arial'
 
 const logger = createLogger('dot')
 
+type ViewToPrint = Pick<ComputedView, 'id' | 'nodes' | 'edges' | 'autoLayout'>
+type NodeOf<V extends ViewToPrint> = V['nodes'][number]
+type EdgeOf<V extends ViewToPrint> = V['edges'][number]
+
 export type ApplyManualLayoutData = {
   x: number
   y: number
@@ -83,16 +87,16 @@ export type ApplyManualLayoutData = {
   }>
 }
 
-type GraphologyNodeAttributes = {
+type GraphologyNodeAttributes<V extends ViewToPrint> = {
   modelRef: Fqn | null
   deploymentRef: DeploymentFqn | null
-  origin: ComputedNode
+  origin: NodeOf<V>
   level: number
   depth: number
   maxConnectedHierarchyDistance: number
 }
-type GraphologyEdgeAttributes = {
-  origin: ComputedEdge
+type GraphologyEdgeAttributes<V extends ViewToPrint> = {
+  origin: EdgeOf<V>
   weight: number
   hierarchyDistance: number
 }
@@ -108,7 +112,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
   protected compoundIds: Set<NodeId>
   protected edgesWithCompounds: Set<EdgeId>
 
-  protected graphology: Graph<GraphologyNodeAttributes, GraphologyEdgeAttributes> = new Graph({
+  protected graphology: Graph<GraphologyNodeAttributes<V>, GraphologyEdgeAttributes<V>> = new Graph({
     allowSelfLoops: true,
     multi: true,
     type: 'directed',
@@ -336,7 +340,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     return null
   }
 
-  protected generateGraphvizId(node: ComputedNode) {
+  protected generateGraphvizId(node: NodeOf<V>) {
     const _compound = isCompound(node)
     let elementName = nameFromFqn(node.id).toLowerCase()
     let name = this.checkNodeId(elementName, _compound)
@@ -352,7 +356,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     return name
   }
 
-  protected elementToSubgraph(compound: ComputedNode, subgraph: SubgraphModel) {
+  protected elementToSubgraph(compound: NodeOf<V>, subgraph: SubgraphModel) {
     invariant(isCompound(compound), 'node should be compound')
     invariant(isNumber(compound.depth), 'node.depth should be defined')
     const colorValues = this.styles.colors(compound.color).elements
@@ -372,7 +376,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     return subgraph
   }
 
-  protected elementToNode(element: ComputedNode, node: NodeModel) {
+  protected elementToNode(element: NodeOf<V>, node: NodeModel) {
     invariant(!isCompound(element), 'node should not be compound')
     const hasIcon = isTruthy(element.icon)
     const colorValues = this.styles.colors(element.color).elements
@@ -434,9 +438,9 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
   /**
    * ElementView and DynamicView have different implementation
    */
-  protected abstract addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null
+  protected abstract addEdge(edge: EdgeOf<V>, G: RootGraphModel): EdgeModel | null
 
-  protected leafElements(parentId: NodeId | null): ComputedNode[] {
+  protected leafElements(parentId: NodeId | null): NodeOf<V>[] {
     if (parentId === null) {
       return this.view.nodes.filter(n => !isCompound(n))
     }
@@ -446,7 +450,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     })
   }
 
-  protected descendants(parentId: NodeId | null): ComputedNode[] {
+  protected descendants(parentId: NodeId | null): NodeOf<V>[] {
     if (parentId === null) {
       return this.view.nodes.slice()
     }
@@ -477,8 +481,8 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
    */
   protected edgeEndpoint(
     endpointId: NodeId,
-    pickFromCluster: (data: ComputedNode[]) => ComputedNode | undefined,
-  ): [ComputedNode, NodeModel, string | undefined] {
+    pickFromCluster: (data: NodeOf<V>[]) => NodeOf<V> | undefined,
+  ): [NodeOf<V>, NodeModel, string | undefined] {
     let element = this.computedNode(endpointId)
     let endpoint = this.getGraphNode(endpointId)
     // see https://graphviz.org/docs/attrs/lhead/
@@ -503,11 +507,11 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     return [element, endpoint, logicalEndpoint]
   }
 
-  protected findInternalEdges(parentId: Fqn | null): ComputedEdge[] {
+  protected findInternalEdges(parentId: NodeId | null): EdgeOf<V>[] {
     if (parentId === null) {
       return this.view.edges.slice()
     }
-    const parent = this.computedNode(parentId as NodeId)
+    const parent = this.computedNode(parentId)
     return pipe(
       this.descendants(parentId as NodeId),
       flatMap(child => {
@@ -520,7 +524,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     )
   }
 
-  protected withoutCompoundEdges(element: ComputedNode) {
+  protected withoutCompoundEdges(element: NodeOf<V>) {
     if (this.edgesWithCompounds.size === 0) {
       return element
     }

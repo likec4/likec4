@@ -1,25 +1,27 @@
-import { entries, flatMap, isEmpty, keys, map, only, prop, unique } from 'remeda'
+import { entries, flatMap, hasAtLeast, isEmpty, keys, map, only, prop, unique } from 'remeda'
 import type { ElementModel } from '../../model'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import { RelationshipModel } from '../../model/RelationModel'
 import {
   type Any,
-  type ComputedEdge,
-  type ComputedNode,
   type EdgeId,
-  type NodeId,
   type NonEmptyArray,
   type ViewId,
   _stage,
   GlobalFqn,
+  NodeId,
   preferSummary,
+  ProjectId,
 } from '../../types'
 import { invariant, nonNullable, stringHash } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
+import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { topologicalSort } from '../utils/topological-sort'
-import type { ComputedProjectsView } from './_types'
+import type { ComputedProjectEdge, ComputedProjectNode, ComputedProjectsView } from './_types'
 
 const keysCount = (object: Record<string, unknown>): number => keys(object).length
+
+const nodeId = (projectId: ProjectId): NodeId => stringHash(projectId) as unknown as NodeId
 
 /**
  * Computes an overview of projects and their relationships
@@ -29,20 +31,16 @@ export function computeProjectsView(
 ): ComputedProjectsView {
   const nodesMap = buildNodesForEachModel(likec4models)
 
-  const getNode = (id: NodeId): ComputedNode => {
-    return nonNullable(nodesMap.get(id), `Node ${id} not found`)
-  }
-
   const key = (from: string, to: string): string => `${from}->${to}`
   const relationships = new DefaultMap<string, {
-    source: NodeId
-    target: NodeId
+    from: ProjectId
+    to: ProjectId
     relationships: Set<RelationshipModel>
   }>((key: string) => {
-    const [source, target] = key.split('->')
+    const [from, to] = key.split('->')
     return {
-      source: source as NodeId,
-      target: target as NodeId,
+      from: from as ProjectId,
+      to: to as ProjectId,
       relationships: new Set(),
     }
   })
@@ -94,13 +92,15 @@ export function computeProjectsView(
   // Convert set of relationships to edge
   const edges = Array.from(relationships.entries())
     .filter(([_, { relationships }]) => relationships.size > 0)
-    .map(([key, { source, target, relationships: relationshipsSet }]): ComputedEdge => {
+    .map(([key, { from, to, relationships: relationshipsSet }]): ComputedProjectEdge => {
       const relationships = [...relationshipsSet]
+      invariant(hasAtLeast(relationships, 1), 'Relationships set must have at least one relationship')
 
-      const edge: ComputedEdge = {
+      const edge: ComputedProjectEdge = {
         id: stringHash(key) as unknown as EdgeId,
-        source,
-        target,
+        source: nodeId(from),
+        target: nodeId(to),
+        projectId: from,
         relations: map(relationships, prop('id')),
         label: null,
         color: 'gray',
@@ -108,8 +108,6 @@ export function computeProjectsView(
         line: 'solid',
         tags: unique(flatMap(relationships, prop('tags'))),
       }
-      getNode(source).outEdges.push(edge.id)
-      getNode(target).inEdges.push(edge.id)
 
       const onlyOne = only(relationships)
       if (onlyOne) {
@@ -129,6 +127,8 @@ export function computeProjectsView(
       return edge
     })
 
+  linkNodesWithEdges(nodesMap, edges)
+
   const sorted = topologicalSort({
     nodes: nodesMap,
     edges,
@@ -147,13 +147,15 @@ export function computeProjectsView(
     ...sorted,
   }
 }
-function buildNodesForEachModel(likec4models: NonEmptyArray<LikeC4Model<Any>>): Map<NodeId, ComputedNode> {
-  const nodesMap = new Map<NodeId, ComputedNode>()
+function buildNodesForEachModel(likec4models: NonEmptyArray<LikeC4Model<Any>>): Map<NodeId, ComputedProjectNode> {
+  const nodesMap = new Map<NodeId, ComputedProjectNode>()
   for (const model of likec4models) {
-    const node: ComputedNode = {
-      id: model.projectId as NodeId,
+    const projectId = ProjectId(model.projectId)
+    const node: ComputedProjectNode = {
+      id: nodeId(projectId),
       kind: '@project',
       parent: null,
+      projectId,
       title: model.project.title ?? model.project.id,
       description: {
         txt: [

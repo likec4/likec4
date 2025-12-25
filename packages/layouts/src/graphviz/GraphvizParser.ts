@@ -1,5 +1,4 @@
 import {
-  type _type,
   type BBox as LabelBBox,
   type ComputedEdge,
   type ComputedView,
@@ -168,10 +167,10 @@ function parseGraphvizEdge(
   }
 }
 
-export function parseGraphvizJson<V extends ComputedView>(
+export function parseGraphvizJson(
   graphvizJson: GraphvizJson,
-  computedView: V,
-): Extract<LayoutedView, { [_type]: V[_type] }> {
+  computedView: ComputedView,
+): LayoutedView {
   const bounds = parseBB(graphvizJson.bb)
   const {
     nodes: computedNodes,
@@ -184,7 +183,7 @@ export function parseGraphvizJson<V extends ComputedView>(
   const nodes = [] as Array<DiagramNode>
   const edges = [] as Array<DiagramEdge>
 
-  let diagram: Extract<LayoutedView, { [_type]: V[_type] }>
+  let diagram: LayoutedView
   if (view._type === 'dynamic') {
     diagram = {
       ...view,
@@ -256,5 +255,8 @@ export function parseGraphvizJsonOfProjectsView(
   graphvizJson: GraphvizJson,
   computed: ComputedProjectsView,
 ): LayoutedProjectsView {
-  return parseGraphvizJson(graphvizJson, computed as ComputedView)
+  // just cast, because we know that projects view is the same as layouted view
+  // the only difference is that nodes/edges have projectId field
+  // we have tests to ensure that
+  return parseGraphvizJson(graphvizJson, computed as unknown as ComputedView) as unknown as LayoutedProjectsView
 }

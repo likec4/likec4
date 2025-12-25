@@ -33,80 +33,96 @@ digraph {
     style = "filled";
     penwidth = 0;
   ];
-  "projecta" [
-    likec4_id = "projectA";
+  "1pf41yp" [
+    likec4_id = "1pf41yp";
+    likec4_project = "projectA";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectA</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
-  "projectb" [
-    likec4_id = "projectB";
+  "1pf41yq" [
+    likec4_id = "1pf41yq";
+    likec4_project = "projectB";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectB</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
-  "projectc" [
-    likec4_id = "projectC";
+  "1pf41yr" [
+    likec4_id = "1pf41yr";
+    likec4_project = "projectC";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectC</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 1<BR/>Views: 0</FONT></TD></TR></TABLE>>;
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
-  "projectd" [
-    likec4_id = "projectD";
+  "1pf41ys" [
+    likec4_id = "1pf41ys";
+    likec4_project = "projectD";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectD</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
-  "projecte" [
-    likec4_id = "projectE";
+  "1pf41yt" [
+    likec4_id = "1pf41yt";
+    likec4_project = "projectE";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectE</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
-  "projectf" [
-    likec4_id = "projectF";
+  "1pf41yu" [
+    likec4_id = "1pf41yu";
+    likec4_project = "projectF";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectF</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
-  "projectg" [
-    likec4_id = "projectG";
+  "1pf41yv" [
+    likec4_id = "1pf41yv";
+    likec4_project = "projectG";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectG</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
-  subgraph {
-    rank = "same";
-    "projecta";
-    "projectb";
-    "projecte";
+  subgraph "cluster_without_relationships" {
+    "1pf41yv";
+    subgraph {
+      rank = "same";
+      "1pf41yp";
+      "1pf41yq";
+    }
+    subgraph {
+      rank = "same";
+      "1pf41yt";
+      "1pf41yu";
+    }
+    "1pf41yp" -> "1pf41yt" [
+      style = "invis";
+    ];
+    "1pf41yq" -> "1pf41yu" [
+      style = "invis";
+    ];
+    "1pf41yt" -> "1pf41yv" [
+      style = "invis";
+    ];
   }
-  subgraph {
-    rank = "same";
-    "projectf";
-    "projectg";
-  }
-  "projectc" -> "projectd" [
+  "1pf41yr" -> "1pf41ys" [
     likec4_id = "1wwagvl";
+    likec4_project = "projectC";
     style = "dashed";
     weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">C -&gt; D</FONT></TD></TR></TABLE>>;
-  ];
-  "projecta" -> "projectf" [
-    style = "invis";
   ];
 }

@@ -1,8 +1,8 @@
-import type { ComputedEdge, HexColor } from '@likec4/core'
-import type { ComputedProjectsView } from '@likec4/core/compute-view'
+import type { HexColor } from '@likec4/core'
+import type { ComputedProjectEdge, ComputedProjectNode, ComputedProjectsView } from '@likec4/core/compute-view'
 import { LikeC4Styles } from '@likec4/core/styles'
 import { nonNullable } from '@likec4/core/utils'
-import { chunk } from 'remeda'
+import { chunk, map } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
@@ -32,37 +32,49 @@ export class ProjectsViewPrinter extends DotPrinter<ComputedProjectsView> {
 
     let chunkSize = 2
     switch (true) {
-      case withoutRelationships.length > 11:
+      case withoutRelationships.length > 15:
         chunkSize = 4
         break
-      case withoutRelationships.length > 4:
+      case withoutRelationships.length > 5:
         chunkSize = 3
+        break
+      case withoutRelationships.length > 3:
+        chunkSize = 2
         break
       default:
         return
     }
 
-    let prevChunkHead: NodeModel | null = null
-    for (const _chunk of chunk(withoutRelationships, chunkSize)) {
-      const ranked = _chunk.length > 1
-        ? G.createSubgraph({ [_.rank]: 'same' })
-        : null
-      _chunk.forEach((nd, i) => {
-        ranked?.node(nd.id)
-        // Make invisible edges between chunks (link heads)
-        if (i === 0) {
-          if (prevChunkHead) {
-            G.edge([prevChunkHead, nd], {
-              [_.style]: 'invis',
-            })
-          }
-          prevChunkHead = nd
+    const container = G.createSubgraph('cluster_without_relationships')
+
+    let prevRow: [NodeModel, ...NodeModel[]] | null = null
+    for (const row of chunk(withoutRelationships, chunkSize)) {
+      const ranked = row.length > 1
+        ? container.createSubgraph({ [_.rank]: 'same' })
+        : container
+      prevRow = map(row, (nd, i) => {
+        ranked.node(nd.id)
+        // Make invisible edges between same column nodes (link heads)
+        const prevRowSameColumn = prevRow?.at(i)
+        if (prevRowSameColumn) {
+          container.edge([prevRowSameColumn, nd], {
+            [_.style]: 'invis',
+          })
         }
+        return nd
       })
     }
   }
 
-  protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
+  protected override elementToNode(element: ComputedProjectNode, node: NodeModel) {
+    node.attributes.apply({
+      [_.likec4_id]: element.id,
+      [_.likec4_project]: element.projectId,
+    })
+    return super.elementToNode(element, node)
+  }
+
+  protected override addEdge(edge: ComputedProjectEdge, G: RootGraphModel): EdgeModel | null {
     const source = nonNullable(this.getGraphNode(edge.source), `Node not found for ${edge.source}`)
     const target = nonNullable(this.getGraphNode(edge.target), `Node not found for ${edge.target}`)
 
@@ -70,6 +82,7 @@ export class ProjectsViewPrinter extends DotPrinter<ComputedProjectsView> {
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
+      [_.likec4_project]: edge.projectId,
       [_.style]: edge.line ?? DefaultEdgeStyle,
     })
 

@@ -33,16 +33,18 @@ digraph {
     style = "filled";
     penwidth = 0;
   ];
-  "projecta" [
-    likec4_id = "projectA";
+  "1pf41yp" [
+    likec4_id = "1pf41yp";
+    likec4_project = "projectA";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectA</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
-  "projectb" [
-    likec4_id = "projectB";
+  "1pf41yq" [
+    likec4_id = "1pf41yq";
+    likec4_project = "projectB";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">projectB</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
     margin = "0.223,0.223";

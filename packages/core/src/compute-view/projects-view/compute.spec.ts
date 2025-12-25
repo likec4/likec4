@@ -1,7 +1,9 @@
 import { hasAtLeast } from 'remeda'
 import { describe, it } from 'vitest'
 import { Builder } from '../../builder'
+import type { NTuple } from '../../types'
 import { invariant } from '../../utils'
+import type { ComputedProjectNode } from './_types'
 import { computeProjectsView } from './compute'
 
 const builder = Builder
@@ -33,12 +35,13 @@ describe('projects-view', () => {
       Relationships: 0
       Views: 0",
           },
-          "id": "projectA",
+          "id": "1pf41yp",
           "inEdges": [],
           "kind": "@project",
           "level": 0,
           "outEdges": [],
           "parent": null,
+          "projectId": "projectA",
           "shape": "rectangle",
           "style": {},
           "tags": [],
@@ -52,12 +55,13 @@ describe('projects-view', () => {
       Relationships: 0
       Views: 0",
           },
-          "id": "projectB",
+          "id": "1pf41yq",
           "inEdges": [],
           "kind": "@project",
           "level": 0,
           "outEdges": [],
           "parent": null,
+          "projectId": "projectB",
           "shape": "rectangle",
           "style": {},
           "tags": [],
@@ -93,24 +97,25 @@ describe('projects-view', () => {
     })
 
     const result = computeProjectsView([projectA, projectB])
+    expect(result.nodes).toHaveLength(2)
+    const [nodeA, nodeB] = result.nodes as unknown as NTuple<ComputedProjectNode, 2>
 
     expect(result.edges).toMatchObject([
-      { source: 'projectA', target: 'projectB' },
+      { source: nodeA.id, target: nodeB.id, projectId: 'projectA' },
     ])
     const { id } = result.edges[0]!
 
-    expect(result.nodes).toHaveLength(2)
     expect(result.nodes).toMatchObject([
-      { id: 'projectA', title: 'projectA', outEdges: [id], inEdges: [] },
-      { id: 'projectB', title: 'ProjectB Title', outEdges: [], inEdges: [id] },
+      { title: 'projectA', projectId: 'projectA', outEdges: [id], inEdges: [] },
+      { title: 'ProjectB Title', projectId: 'projectB', outEdges: [], inEdges: [id] },
     ])
 
-    expect(result.nodes[0]?.description?.txt, 'generated description of projectA').toMatchInlineSnapshot(`
+    expect(nodeA.description?.txt, 'generated description of projectA').toMatchInlineSnapshot(`
       "Elements: 4
       Relationships: 2
       Views: 1"
     `)
-    expect(result.nodes[1]?.description?.txt, 'generated description of projectB').toMatchInlineSnapshot(`
+    expect(nodeB.description?.txt, 'generated description of projectB').toMatchInlineSnapshot(`
       "Elements: 2
       Relationships: 0
       Views: 0"
@@ -143,24 +148,25 @@ describe('projects-view', () => {
 
     const result = computeProjectsView([projectA, projectB])
     expect(result.nodes).toHaveLength(2)
+    const [nodeA, nodeB] = result.nodes as unknown as NTuple<ComputedProjectNode, 2>
 
     expect(result.edges).toMatchObject([
-      { source: 'projectA', target: 'projectB' },
-      { source: 'projectB', target: 'projectA' },
+      { source: nodeA.id, target: nodeB.id, projectId: 'projectA' },
+      { source: nodeB.id, target: nodeA.id, projectId: 'projectB' },
     ])
     invariant(hasAtLeast(result.edges, 2))
     const [{ id: edgeId1 }, { id: edgeId2 }] = result.edges
 
     expect(result.nodes).toMatchObject([
-      { id: 'projectA', inEdges: [edgeId2], outEdges: [edgeId1] },
-      { id: 'projectB', inEdges: [edgeId1], outEdges: [edgeId2] },
+      { projectId: 'projectA', inEdges: [edgeId2], outEdges: [edgeId1] },
+      { projectId: 'projectB', inEdges: [edgeId1], outEdges: [edgeId2] },
     ])
 
     // Changing initial order affects the order of nodes
     const anotherOrder = computeProjectsView([projectB, projectA])
     expect(anotherOrder.nodes).toMatchObject([
-      { id: 'projectB' },
-      { id: 'projectA' },
+      { projectId: 'projectB' },
+      { projectId: 'projectA' },
     ])
   })
 })

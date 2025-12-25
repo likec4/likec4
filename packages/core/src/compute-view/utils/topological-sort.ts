@@ -41,7 +41,7 @@ function ensureParentsFirst<T extends { id: string; parent: string | null }>(
 /**
  * Side effect, mutates node.children field to preserve same order as in the input
  */
-function updateChildren<A extends AnyAux = AnyAux>(nodes: ComputedNode<A>[]): ComputedNode<A>[] {
+function updateChildren<A extends AnyAux, N extends ComputedNode<A>>(nodes: N[]): N[] {
   nodes.forEach(parent => {
     if (parent.children.length > 0) {
       parent.children = nodes.reduce((acc, n) => {
@@ -55,15 +55,23 @@ function updateChildren<A extends AnyAux = AnyAux>(nodes: ComputedNode<A>[]): Co
   return nodes
 }
 
-type TopologicalSortParam<A extends AnyAux> = {
-  nodes: ReadonlyMap<string, ComputedNode<A>>
-  edges: Iterable<ComputedEdge<A>>
+type TopologicalSortParam<
+  A extends AnyAux,
+  N extends ComputedNode<A> = ComputedNode<A>,
+  E extends ComputedEdge<A> = ComputedEdge<A>,
+> = {
+  nodes: ReadonlyMap<string, N>
+  edges: Iterable<E>
 }
-export function topologicalSort<A extends AnyAux>(
-  param: TopologicalSortParam<A>,
+export function topologicalSort<
+  A extends AnyAux,
+  N extends ComputedNode<A> = ComputedNode<A>,
+  E extends ComputedEdge<A> = ComputedEdge<A>,
+>(
+  param: TopologicalSortParam<A, N, E>,
 ): {
-  nodes: ComputedNode<A>[]
-  edges: ComputedEdge<A>[]
+  nodes: N[]
+  edges: E[]
 } {
   let nodes = ensureParentsFirst([...param.nodes.values()])
   let edges = [...param.edges]
@@ -103,9 +111,9 @@ export function topologicalSort<A extends AnyAux>(
     ({ source, target }) => source.children.length === 0 && target.children.length === 0,
   )
 
-  const sortedEdges = [] as ComputedEdge<A>[]
+  const sortedEdges = [] as E[]
 
-  const addEdgeToGraph = (edge: ComputedEdge<A>) => {
+  const addEdgeToGraph = (edge: E) => {
     g.mergeNode(edge.source)
     g.mergeNode(edge.target)
     sortedEdges.push(edge)
@@ -152,7 +160,7 @@ export function topologicalSort<A extends AnyAux>(
   invariant(sortedEdges.length === edges.length, 'Not all edges were added to the graph')
 
   const sortedIds = topsort(g)
-  let sorted = [] as ComputedNode<A>[]
+  let sorted = [] as N[]
   let unsorted = nodes.slice()
   for (const sortedId of sortedIds) {
     const indx = unsorted.findIndex(n => n.id === sortedId)

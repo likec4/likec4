@@ -24,16 +24,26 @@ declare module 'ts-graphviz' {
   }
 
   export namespace NodeAttributeKey {
-    export interface $values extends $keywords<'likec4_type' | 'likec4_path' | 'likec4_id' | 'likec4_level'> {}
+    export interface $values
+      extends $keywords<'likec4_type' | 'likec4_path' | 'likec4_id' | 'likec4_project' | 'likec4_level'>
+    {}
   }
 
   export namespace EdgeAttributeKey {
-    export interface $values extends $keywords<'likec4_id'> {}
+    export interface $values extends $keywords<'likec4_id' | 'likec4_project'> {}
   }
 
   export namespace Attribute {
-    export interface $keys
-      extends $keywords<'likec4_viewId' | 'likec4_type' | 'likec4_path' | 'likec4_id' | 'likec4_level' | 'likec4_depth'>
+    export interface $keys extends
+      $keywords<
+        | 'likec4_viewId'
+        | 'likec4_type'
+        | 'likec4_path'
+        | 'likec4_id'
+        | 'likec4_project'
+        | 'likec4_level'
+        | 'likec4_depth'
+      >
     {}
 
     export interface $types {
@@ -41,6 +51,7 @@ declare module 'ts-graphviz' {
       likec4_type: 'folder' | 'file' | 'view'
       likec4_path: string
       likec4_id: string
+      likec4_project: string
       likec4_level: number
       likec4_depth: number
     }

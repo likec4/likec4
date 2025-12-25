@@ -1,4 +1,5 @@
 import { type LikeC4ProjectConfig, isLikeC4Config, loadConfig } from '@likec4/config/node'
+import { compareNaturalHierarchically } from '@likec4/core/utils'
 import { fdir } from 'fdir'
 import { type FileSystemNode, URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
@@ -27,6 +28,12 @@ export const isLikeC4File = (path: string, isDirectory: boolean = false) =>
 const isLikeC4ConfigFile = (path: string, isDirectory: boolean) => !isDirectory && isLikeC4Config(path)
 
 const excludeNodeModules = (dirName: string) => dirName === 'node_modules' || dirName === '.git' || dirName === '.svn'
+
+/**
+ * Compare function for document paths to ensure consistent order
+ */
+const compare = compareNaturalHierarchically('/')
+const ensureOrder = (a: FileSystemNode, b: FileSystemNode) => compare(a.uri.path, b.uri.path)
 
 /**
  * A file system provider that follows symbolic links.
@@ -78,7 +85,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     } catch (error) {
       logger.warn(`Failed to read directory ${folderPath.fsPath}`, { error })
     }
-    return entries
+    return entries.sort(ensureOrder)
   }
 
   async scanProjectFiles(folderUri: URI): Promise<FileSystemNode[]> {
@@ -108,7 +115,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     } catch (error) {
       logger.warn(`Failed to scan directory ${directory.fsPath}`, { error })
     }
-    return entries
+    return entries.sort(ensureOrder)
   }
 
   async loadProjectConfig(filepath: URI): Promise<LikeC4ProjectConfig> {
