@@ -202,4 +202,116 @@ describe('Wildcard predicate', () => {
       )
     })
   })
+
+  describe('with imports from other projects', () => {
+    const withImpors = builder
+      .model(({ el }, _) =>
+        _(
+          el('@projectA.aa1'),
+          el('@projectA.aa1.aa2'),
+        )
+      )
+
+    describe('without relationships', () => {
+      it('include * should ignore imports', () => {
+        const t = TestHelper.from(withImpors)
+        const state = t.processPredicates(
+          $rules(
+            $include('*'),
+          ),
+        )
+
+        t.expect(state).toHaveElements(
+          'customer',
+          'cloud',
+          'aws',
+        )
+
+        // If we include the imported element explicitly, it should be added
+        state.next(
+          $include('@projectA.aa1'),
+        )
+        t.expect(state).toHaveElements(
+          'customer',
+          'cloud',
+          'aws',
+          '@projectA.aa1',
+        )
+      })
+
+      it('include * should ignore imports when scoped', () => {
+        const t = TestHelper.from(withImpors)
+        const state = t.processPredicatesWithScope(
+          'cloud',
+          $rules(
+            $include('*'),
+          ),
+        )
+
+        t.expect(state).toHaveElements(
+          'cloud',
+          'customer',
+          'cloud.frontend',
+          'cloud.auth',
+          'cloud.backend',
+          'aws',
+        )
+      })
+    })
+
+    describe('with relationships', () => {
+      it('include * should add imported', () => {
+        const t = TestHelper.from(withImpors.model(({ rel }, _) =>
+          _(
+            rel('cloud.frontend', '@projectA.aa1.aa2'),
+          )
+        ))
+        const state = t.processPredicates(
+          $include('*'),
+        )
+
+        t.expect(state).toHaveElements(
+          'customer',
+          'cloud',
+          'aws',
+          '@projectA.aa1',
+        )
+        t.expect(state).toHaveConnections(
+          'customer -> cloud',
+          'cloud -> aws',
+          'cloud -> @projectA.aa1',
+        )
+      })
+
+      it('include * should add imports when scoped', () => {
+        const t = TestHelper.from(withImpors.model(({ rel, el }, _) =>
+          _(
+            rel('cloud.frontend', '@projectA.aa1.aa2'),
+          )
+        ))
+        const state = t.processPredicatesWithScope(
+          'cloud',
+          $include('*'),
+        )
+
+        t.expect(state).toHaveElements(
+          'cloud',
+          'customer',
+          'cloud.frontend',
+          'cloud.auth',
+          'cloud.backend',
+          '@projectA.aa1',
+          'aws',
+        )
+        t.expect(state).toHaveConnections(
+          'customer -> cloud.frontend',
+          'cloud.frontend -> cloud.auth',
+          'cloud.frontend -> cloud.backend',
+          'cloud.backend -> cloud.auth',
+          'cloud.frontend -> @projectA.aa1',
+          'cloud.backend -> aws',
+        )
+      })
+    })
+  })
 })
