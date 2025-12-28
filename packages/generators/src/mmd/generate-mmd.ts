@@ -14,6 +14,16 @@ const nodeName = (node: Node): string => {
   return fqnName(node.parent ? node.id.slice(node.parent.length + 1) : node.id)
 }
 
+// Escape a string for JSON (handles quotes, backslashes, etc.)
+const escapeJsonString = (str: string): string => {
+  return str
+    .replace(/\\/g, '\\\\')   // Escape backslashes first
+    .replace(/"/g, '\\"')     // Escape double quotes
+    .replace(/\n/g, '\\n')    // Escape newlines
+    .replace(/\r/g, '\\r')    // Escape carriage returns
+    .replace(/\t/g, '\\t')    // Escape tabs
+}
+
 const mmdshape = ({ shape }: Node): [start: string, end: string] => {
   switch (shape) {
     case 'queue':
@@ -24,10 +34,14 @@ const mmdshape = ({ shape }: Node): [start: string, end: string] => {
     }
     case 'storage':
       return ['([', '])']
+    case 'bucket':
     case 'mobile':
     case 'browser':
     case 'rectangle': {
       return ['[', ']']
+    }
+    case 'document': {
+      return ['@{ shape: doc, label: "', '" }']
     }
   }
 }
@@ -42,7 +56,9 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     const fqnName = (parentName ? parentName + '.' : '') + name
     names.set(node.id, fqnName)
 
-    const label = node.title.replaceAll('\n', '\\n')
+    const label = node.shape === 'document' 
+      ? escapeJsonString(node.title)
+      : node.title.replaceAll('\n', '\\n')
     const shape = mmdshape(node)
 
     const baseNode = new CompositeGeneratorNode()

@@ -461,3 +461,67 @@ export const fakeComputedView3Levels: ComputedView = {
   title: 'Context: Cloud',
   viewOf: 'cloud',
 } as any
+
+export const fakeShapesView: DiagramView = {
+  edges: [],
+  height: 300,
+  id: 'shapesView',
+  nodes: [
+    {
+      children: [],
+      color: 'primary',
+      id: 'doc1',
+      parent: null,
+      position: [0, 0],
+      relative: [0, 0],
+      shape: 'document',
+      size: {
+        height: 140,
+        width: 251,
+      },
+      title: 'Document Node',
+    },
+    {
+      children: [],
+      color: 'primary',
+      id: 'bucket1',
+      parent: null,
+      position: [300, 0],
+      relative: [300, 0],
+      shape: 'bucket',
+      size: {
+        height: 140,
+        width: 251,
+      },
+      title: 'Bucket Node',
+    },
+    {
+      children: [],
+      color: 'primary',
+      id: 'doc_with_quotes',
+      parent: null,
+      position: [0, 150],
+      relative: [0, 150],
+      shape: 'document',
+      size: {
+        height: 140,
+        width: 251,
+      },
+      title: 'Document with "quotes" and\\backslash',
+    },
+  ],
+  autoLayout: { direction: 'LR' },
+  rules: [
+    {
+      exprs: [
+        {
+          wildcard: true,
+        },
+      ],
+      isInclude: true,
+    },
+  ],
+  title: 'Shapes Test',
+  viewOf: null,
+  width: 600,
+} as any

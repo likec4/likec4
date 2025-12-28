@@ -46,6 +46,10 @@ const d2shape = ({ shape }: Node) => {
     case 'browser': {
       return 'rectangle' as const
     }
+    case 'bucket':
+    case 'document': {
+      return 'rectangle' as const
+    }
   }
 }
 

@@ -21,6 +21,8 @@ export const ElementShapes = [
   'cylinder',
   'storage',
   'queue',
+  'bucket',
+  'document',
 ] as const
 
 export type ElementShape = TupleToUnion<typeof ElementShapes>
