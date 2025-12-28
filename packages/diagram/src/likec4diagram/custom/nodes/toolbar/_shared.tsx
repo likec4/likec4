@@ -1,9 +1,11 @@
-import type { DeploymentFqn, Fqn } from '@likec4/core/types'
-import { ActionIcon, Tooltip as MantineTooltip } from '@mantine/core'
+import type { BorderStyle, DeploymentFqn, Fqn } from '@likec4/core/types'
+import { ActionIcon, SegmentedControl, Tooltip as MantineTooltip } from '@mantine/core'
 import { IconFileSymlink, IconTransform } from '@tabler/icons-react'
+import { useEffect, useState } from 'react'
 import type { MergeExclusive } from 'type-fest'
 import { useDiagramEventHandlers } from '../../../../context'
 import { useDiagram } from '../../../../hooks/useDiagram'
+import type { OnStyleChange } from './types'
 
 export const Tooltip = MantineTooltip.withProps({
   color: 'dark',
@@ -21,7 +23,7 @@ export function BrowseRelationshipsButton({ fqn }: { fqn: Fqn }) {
   return (
     <Tooltip label={'Browse relationships'}>
       <ActionIcon
-        size={'sm'}
+        size={'md'}
         variant="subtle"
         color="gray"
         onClick={e => {
@@ -31,8 +33,8 @@ export function BrowseRelationshipsButton({ fqn }: { fqn: Fqn }) {
         <IconTransform
           stroke={2}
           style={{
-            width: '72%',
-            height: '72%',
+            width: '65%',
+            height: '65%',
           }} />
       </ActionIcon>
     </Tooltip>
@@ -47,7 +49,7 @@ export function GoToSourceButton(props: MergeExclusive<{ elementId: Fqn }, { dep
   return (
     <Tooltip label={'Open source'}>
       <ActionIcon
-        size={'sm'}
+        size={'md'}
         variant="subtle"
         color="gray"
         onClick={e => {
@@ -62,8 +64,48 @@ export function GoToSourceButton(props: MergeExclusive<{ elementId: Fqn }, { dep
             })
           }
         }}>
-        <IconFileSymlink stroke={1.8} style={{ width: '70%' }} />
+        <IconFileSymlink stroke={1.8} style={{ width: '65%' }} />
       </ActionIcon>
     </Tooltip>
+  )
+}
+
+export function BorderStyleOption({
+  elementBorderStyle = 'none',
+  onChange,
+}: {
+  elementBorderStyle: BorderStyle | undefined
+  onChange: OnStyleChange
+}) {
+  const [value, setValue] = useState(elementBorderStyle)
+  useEffect(() => {
+    setValue(elementBorderStyle)
+  }, [elementBorderStyle])
+
+  return (
+    <SegmentedControl
+      size="xs"
+      fz={9}
+      fullWidth
+      withItemsBorders={false}
+      value={value}
+      onChange={v => {
+        const border = v as BorderStyle
+        setValue(border)
+        onChange({ border })
+      }}
+      styles={{
+        label: {
+          paddingTop: 2,
+          paddingBottom: 2,
+        },
+      }}
+      data={[
+        { label: 'Solid', value: 'solid' },
+        { label: 'Dashed', value: 'dashed' },
+        { label: 'Dotted', value: 'dotted' },
+        { label: 'None', value: 'none' },
+      ]}
+    />
   )
 }

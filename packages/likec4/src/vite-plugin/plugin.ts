@@ -285,11 +285,16 @@ function enableEditingViaWS(
       const result = await likec4.editor.applyChange(data)
       if (!result.success) {
         logger.error(`Failed to apply view change:\n${result.error}`)
+        const lines = result.error.split('\n')
+        let stackBeginAt = lines.findIndex(l => l.trim().startsWith('at'))
+        if (stackBeginAt === -1) {
+          stackBeginAt = lines.length
+        }
         server.ws.send({
           type: 'error',
           err: {
-            message: result.error,
-            stack: '',
+            message: lines.slice(0, stackBeginAt).join('\n'),
+            stack: lines.slice(stackBeginAt).join('\n'),
             name: 'LikeC4ViewChangeError',
             plugin: 'vite-plugin-likec4',
           },

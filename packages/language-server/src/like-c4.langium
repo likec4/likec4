@@ -909,7 +909,16 @@ DynamicViewDisplayVariantValue returns string:
 ThemeColor returns string:
   'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string:
-  'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
+  'rectangle' |
+  'person' |
+  'browser' |
+  'mobile' |
+  'cylinder' |
+  'storage' |
+  'queue' |
+  'bucket' |
+  'document';
+
 Participant returns string:
   'source' | 'target';
 

@@ -17,8 +17,8 @@ import {
   TooltipGroup,
 } from '@mantine/core'
 import { useUpdateEffect } from '@react-hookz/web'
-import { useState } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
+import { useState } from 'react'
 import { keys } from 'remeda'
 import { useLikeC4Styles } from '../../../../hooks/useLikeC4Styles'
 import { type ColorKey, type OnStyleChange, type ThemeColorKey, SemanticColors } from './types'
@@ -43,16 +43,16 @@ export function ColorButton({
   return (
     <Popover
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
-      position="right-end"
+      position="top-start"
       offset={2}
       withinPortal={false}
       {...props}
     >
       <PopoverTarget>
-        <Button variant="subtle" color="gray" size="compact-xs" px={3}>
+        <Button variant="subtle" color="gray" size="xs" px={6}>
           <ColorSwatch
             color={theme.colors[elementColor].elements.fill}
-            size={14}
+            size={16}
             withShadow
             style={{ color: '#fff', cursor: 'pointer' }} />
         </Button>

@@ -1,10 +1,11 @@
 import { cx as clsx } from '@likec4/styles/css'
-import { Box, Group, Paper, Stack, Text } from '@mantine/core'
+import { Box, HStack, VStack } from '@likec4/styles/jsx'
+import { Paper, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { type NodeToolbarProps, NodeToolbar } from '@xyflow/react'
 import type { ReactNode } from 'react'
 import type { BaseNodeProps } from '../../../../base/types'
-import { useDiagramContext } from '../../../../hooks/useDiagram'
+import { type DiagramContext, useDiagramContext } from '../../../../hooks/useDiagram'
 import { stopPropagation } from '../../../../utils/xyflow'
 import * as styles from './styles.css'
 
@@ -12,9 +13,11 @@ export type ToolbarProps = Omit<NodeToolbarProps, 'title'> & {
   nodeProps: BaseNodeProps
   title: ReactNode
 }
-
+const selectedNodesCount = (context: DiagramContext): number => {
+  return context.xynodes.filter(x => x.selected).length
+}
 const useSelectedNodesCount = () => {
-  return useDiagramContext(s => s.xynodes.filter(x => x.selected).length)
+  return useDiagramContext(selectedNodesCount)
 }
 
 export function Toolbar({ title, children, nodeProps, ...props }: ToolbarProps) {
@@ -67,14 +70,14 @@ export function Toolbar({ title, children, nodeProps, ...props }: ToolbarProps) 
         onClick={stopPropagation}
         onDoubleClick={stopPropagation}
         withBorder>
-        <Stack gap={'6px'}>
-          <Box px={'4px'}>
+        <VStack gap={'2'}>
+          <Box px={'1'}>
             <Text className={styles.toolbarTitle}>{title}</Text>
           </Box>
-          <Group gap={4}>
+          <HStack gap={'1'}>
             {children}
-          </Group>
-        </Stack>
+          </HStack>
+        </VStack>
       </Paper>
     </NodeToolbar>
   )
