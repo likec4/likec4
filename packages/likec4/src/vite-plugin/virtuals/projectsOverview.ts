@@ -26,10 +26,19 @@ if (import.meta.hot) {
 }
 `
 
+const noProjects = () => `
+export function useLikeC4ProjectsOverview() {
+  throw new Error('No projects overview available for this workspace: single project mode is enabled')
+}
+`
+
 export const projectsOverviewModule = {
   id: 'likec4:projects-overview',
   virtualId: 'likec4:plugin/projects-overview.js',
-  async load({ logger, likec4 }) {
+  async load({ logger, projects, likec4 }) {
+    if (projects.length < 2) {
+      return noProjects()
+    }
     logger.info(k.dim('generating likec4:projects-overview'))
     const view = await likec4.projectsOverview()
     return code(view)
