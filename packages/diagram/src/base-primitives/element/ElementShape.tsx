@@ -213,7 +213,7 @@ export function ElementShape(
   let h = !!height && height > 10 ? height : data.height
   const isMultiple = data.style?.multiple ?? false
 
-  if (data.shape === 'rectangle') {
+  if (data.shape === 'rectangle' || data.shape === 'bucket' || data.shape === 'document') {
     return <ShapeHtml multiple={isMultiple} withOutLine={showSeletionOutline} />
   }
 

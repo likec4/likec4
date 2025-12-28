@@ -1,7 +1,7 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, ProcessedView } from '@likec4/core/types'
 import { expect, test, vi } from 'vitest'
-import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
+import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2, fakeShapesView } from '../__mocks__/data'
 import { generateMermaid } from './generate-mmd'
 
 const mockViewModel = vi.fn(function($view: ProcessedView) {
@@ -20,4 +20,8 @@ test('generate mermaid - fakeDiagram2', () => {
 
 test('generate mermaid - fakeComputedView 3 Levels', () => {
   expect(generateMermaid(mockViewModel(fakeComputedView3Levels))).toMatchSnapshot()
+})
+
+test('generate mermaid - document and bucket shapes', () => {
+  expect(generateMermaid(mockViewModel(fakeShapesView))).toMatchSnapshot()
 })

@@ -1,5 +1,16 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`generate mermaid - document and bucket shapes 1`] = `
+"---
+title: "Shapes Test"
+---
+graph LR
+  Doc1@{ shape: doc, label: "Document Node" }
+  Bucket1[Bucket Node]
+  Doc_with_quotes@{ shape: doc, label: "Document with \\"quotes\\" and\\\\backslash" }
+"
+`;
+
 exports[`generate mermaid - fakeComputedView 3 Levels 1`] = `
 "---
 title: "Context: Cloud"
