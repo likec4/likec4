@@ -13,8 +13,7 @@ import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import { pxToInch, pxToPoints, toArrowType } from './utils'
 
-// TODO: For now we use ElementViewPrinter for DeploymentView
-export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, ComputedDeploymentView<A>> {
+export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<ComputedDeploymentView<A>> {
   protected override createGraph(): RootGraphModel {
     const G = super.createGraph()
     const autoLayout = this.view.autoLayout

@@ -1,6 +1,6 @@
-export { BurgerButton } from './BurgerButton'
 export { DetailsControls } from './DetailsControls'
 export { LayoutWarning } from './LayoutWarning'
+export { LogoButton } from './LogoButton'
 export { NavigationButtons } from './NavigationButtons'
 export { OpenSource } from './OpenSource'
 export { SearchControl } from './SearchControl'

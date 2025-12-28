@@ -1,36 +1,33 @@
-import { useLikeC4Projects } from '@likec4/diagram'
-import { Button, Container, Stack, Text } from '@mantine/core'
+import { Box } from '@likec4/styles/jsx'
 import { useDocumentTitle } from '@mantine/hooks'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { lazy } from 'react'
 import { pageTitle } from '../const'
 
+const ProjectsOverviewPage = lazy(async () => {
+  const { ProjectsOverviewPage } = await import('../pages/ProjectsOverview')
+  return {
+    default: ProjectsOverviewPage,
+  }
+})
+
 export const Route = createFileRoute('/projects')({
+  beforeLoad: async ({ context }) => {
+    if (context.projects.length < 2) {
+      throw redirect({
+        to: '/single-index/',
+      })
+    }
+  },
   component: RouteComponent,
+  wrapInSuspense: true,
 })
 
 function RouteComponent() {
-  const projects = useLikeC4Projects()
   useDocumentTitle(`Projects - ${pageTitle}`)
   return (
-    <Container size={'xs'} py={'lg'}>
-      <Stack>
-        <Text fz={'lg'}>Select a project</Text>
-        {projects.map(v => (
-          <Button
-            key={v.id}
-            variant="default"
-            size="lg"
-            fw={400}
-            renderRoot={props => <Link {...props} to={`/project/$projectId/`} params={{ projectId: v.id }} />}
-            styles={{
-              inner: {
-                justifyContent: 'flex-start',
-              },
-            }}>
-            {v.title ?? v.id}
-          </Button>
-        ))}
-      </Stack>
-    </Container>
+    <Box w={'100%'} h={'100%'} overflow={'hidden'}>
+      <ProjectsOverviewPage />
+    </Box>
   )
 }

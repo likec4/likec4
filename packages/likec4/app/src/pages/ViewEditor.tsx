@@ -1,16 +1,18 @@
 import { LikeC4Diagram, LikeC4EditorProvider } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { isDevelopment, onViewChangeViaPlugin } from '../const'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
+import { ListenForDynamicVariantChange } from './ViewReact'
 
 export function ViewEditor() {
   const navigate = useNavigate()
-  const projectId = useCurrentProject().id
+  const project = useCurrentProject()
   const [view, setLayoutType] = useCurrentView()
   const $likec4model = useLikeC4ModelAtom()
+  const { dynamic } = useSearch({ strict: false })
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
     void navigate({
@@ -42,7 +44,7 @@ export function ViewEditor() {
         },
         handleChange: (viewId, change) => {
           const event = {
-            projectId,
+            projectId: project.id,
             viewId,
             change,
           }
@@ -70,14 +72,17 @@ export function ViewEditor() {
         enableRelationshipBrowser
         enableElementTags
         enableCompareWithLatest
+        dynamicViewVariant={dynamic}
         onNavigateTo={onNavigateTo}
         onLayoutTypeChange={setLayoutType}
-        onBurgerMenuClick={() => {
+        onLogoClick={() => {
           void navigate({
             to: '/',
           })
         }}
-      />
+      >
+        <ListenForDynamicVariantChange />
+      </LikeC4Diagram>
     </LikeC4EditorProvider>
   )
 }

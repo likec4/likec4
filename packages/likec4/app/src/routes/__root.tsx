@@ -1,8 +1,9 @@
-import type { ProjectId } from '@likec4/core/types'
+import type { NonEmptyArray, NonEmptyReadonlyArray, ProjectId } from '@likec4/core/types'
 import { useMantineColorScheme } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
+import { projects } from 'likec4:projects'
 import { useEffect } from 'react'
-import { isTruthy } from 'remeda'
+import { isTruthy, map } from 'remeda'
 import { LikeC4ProjectsContext } from '../context/LikeC4ProjectsContext'
 
 const asTheme = (v: unknown): 'light' | 'dark' | 'auto' => {
@@ -45,9 +46,14 @@ export type SearchParams = {
 
 export type Context = {
   /**
-   * Default project
+   * Default (current) project
    */
   projectId: ProjectId
+
+  /**
+   * All projects
+   */
+  projects: NonEmptyReadonlyArray<ProjectId>
 }
 
 export const Route = createRootRouteWithContext<Context>()({
@@ -74,10 +80,13 @@ export const Route = createRootRouteWithContext<Context>()({
       }),
     ],
   },
-  beforeLoad: async () => {
-    const { projects } = await import('likec4:projects')
+  beforeLoad: () => {
+    const _projects = projects.length > 0
+      ? map(projects, p => p.id)
+      : ['default' as ProjectId] satisfies NonEmptyArray<ProjectId>
     return {
-      projectId: projects.length > 0 ? projects[0].id : 'default' as ProjectId,
+      projects: _projects,
+      projectId: _projects[0],
     }
   },
   component: RootComponent,

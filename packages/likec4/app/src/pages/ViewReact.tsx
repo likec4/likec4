@@ -62,18 +62,18 @@ export function ViewReact() {
       nodesSelectable
       onNavigateTo={onNavigateTo}
       onLayoutTypeChange={setLayoutType}
-      onBurgerMenuClick={() => {
+      onLogoClick={() => {
         void navigate({
           to: '/',
         })
       }}
     >
-      <DiagramListener />
+      <ListenForDynamicVariantChange />
     </LikeC4Diagram>
   )
 }
 
-function DiagramListener() {
+export function ListenForDynamicVariantChange() {
   const router = useRouter()
   const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
 

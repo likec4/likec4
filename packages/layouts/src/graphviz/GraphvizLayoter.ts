@@ -4,11 +4,12 @@ import {
   type ComputedView,
   type DiagramView,
   type LayoutedDynamicView,
-  type LikeC4Styles,
   isDeploymentView,
   isDynamicView,
   isElementView,
+  LikeC4Styles,
 } from '@likec4/core'
+import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
 import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
@@ -17,7 +18,8 @@ import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { GraphClusterSpace } from './DotPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
-import { parseGraphvizJson } from './GraphvizParser'
+import { parseGraphvizJson, parseGraphvizJsonOfProjectsView } from './GraphvizParser'
+import { ProjectsViewPrinter } from './ProjectsViewPrinter'
 import type { DotSource } from './types'
 import type { GraphvizJson } from './types-dot'
 import { GraphvizWasmAdapter } from './wasm/GraphvizWasmAdapter'
@@ -157,16 +159,16 @@ export class GraphvizLayouter implements Disposable {
     }
   }
 
-  // async layoutOverviewGraph(views: ComputedView[]): Promise<OverviewGraph> {
-  //   if (views.length === 0) {
-  //     return Promise.resolve({
-  //       nodes: [],
-  //       edges: [],
-  //       bounds: { x: 0, y: 0, width: 10, height: 10 },
-  //     })
-  //   }
-  //   const dot = OverviewDiagramsPrinter.toDot(views)
-  //   const json = await this.dotToJson(dot)
-  //   return parseOverviewGraphvizJson(json)
-  // }
+  async layoutProjectsView(view: ComputedProjectsView): Promise<LayoutedProjectsView> {
+    logger.debug`layouting projects view...`
+    const printer = new ProjectsViewPrinter(view)
+    let dot = printer.print()
+    try {
+      dot = await this.graphviz.unflatten(dot)
+    } catch (error) {
+      logger.warn(`Error during unflatten of projects view`, { error })
+    }
+    const json = await this.dotToJson(dot)
+    return parseGraphvizJsonOfProjectsView(json, view)
+  }
 }

@@ -18,7 +18,9 @@ export function useLikeC4Projects(): ReadonlyArray<LikeC4Project> {
   return ctx.projects
 }
 
-const emptyOnProjectChange: (id: ProjectId) => void = () => {}
+const emptyOnProjectChange = (id: ProjectId) => {
+  console.warn(`Triggered callback to change project to ${id}, but no <LikeC4ProjectsProvider/> found`)
+}
 /**
  * @returns The callback to change current project.
  */

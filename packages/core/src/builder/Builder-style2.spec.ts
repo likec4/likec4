@@ -67,7 +67,7 @@ describe('Builder (style 2)', () => {
   })
 
   it('should build ', () => {
-    const b = spec.clone()
+    const b = spec
       .model(({ system, actor, component }, _) =>
         _(
           actor('customer'),
@@ -148,7 +148,7 @@ describe('Builder (style 2)', () => {
   })
 
   it('should fail on invalid instance ', () => {
-    const b = spec.clone()
+    const b = spec
       .model(_ =>
         _.model(
           _.component('cloud'),
@@ -181,7 +181,7 @@ describe('Builder (style 2)', () => {
   })
 
   it('should build and compute LikeC4Model', async ({ expect }) => {
-    const m = spec.clone()
+    const m = spec
       .model(({ system, actor, component, rel }, _) =>
         _(
           actor('customer'),
@@ -215,7 +215,7 @@ describe('Builder (style 2)', () => {
   })
 
   it('should set summary and description', async ({ expect }) => {
-    const m = spec.clone()
+    const m = spec
       .model(({ component }, _) =>
         _(
           component('c1', {
@@ -277,5 +277,50 @@ describe('Builder (style 2)', () => {
         },
       } satisfies PartialDeep<ParsedLikeC4ModelData['deployments']['elements']>,
     )
+  })
+
+  it('should support mutliprojects', async ({ expect }) => {
+    const m = spec
+      .model(({ component, rel }, _) =>
+        _(
+          component('c1'),
+          component('c1.sub'),
+          component('@projectB.c1'),
+          component('@projectB.c1.sub'),
+          rel('c1.sub', '@projectB.c1.sub'),
+        )
+      )
+      .views(({ view, $rules, $include }, _) =>
+        _(
+          view(
+            'index',
+            $rules(
+              $include('*'),
+              $include('@projectB.c1.*'),
+            ),
+          ),
+        )
+      )
+      .toLikeC4Model()
+
+    expect(m.$data.imports).toMatchObject({
+      'projectB': [
+        {
+          id: 'c1',
+          kind: 'component',
+        },
+        {
+          id: 'c1.sub',
+          kind: 'component',
+        },
+      ],
+    })
+
+    const view = m.view('index')
+    expect(view.$view.nodes).toMatchObject([
+      { id: 'c1' },
+      { id: '@projectB.c1' },
+      { id: '@projectB.c1.sub' },
+    ])
   })
 })

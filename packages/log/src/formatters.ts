@@ -1,14 +1,12 @@
 import {
   type AnsiColorFormatterOptions,
-  type ConsoleSinkOptions,
+  type ConsoleFormatter,
   type FormattedValues,
   type LogLevel,
   type LogRecord,
-  type Sink,
   type TextFormatter,
   type TextFormatterOptions,
   getAnsiColorFormatter as getLogtapeAnsiColorFormatter,
-  getConsoleSink as getLogtapeConsoleSink,
   getTextFormatter as getLogtapeTextFormatter,
 } from '@logtape/logtape'
 import mergeErrorCause from 'merge-error-cause'
@@ -128,26 +126,36 @@ export function getAnsiColorFormatter(options?: AnsiColorFormatterOptions): Text
   })
 }
 
-export function getConsoleSink(options?: ConsoleSinkOptions): Sink {
-  return getLogtapeConsoleSink({
-    formatter: getAnsiColorFormatter(),
-    ...options,
-  })
-}
-
 /**
- * Creates a console sink that writes to stderr.
- * (MCP protocol requires stderr to be used for logging)
+ * The formatter returns an array where:
+ * - First element is the formatted message string
+ * - Second element is the record properties object
  */
-export function getConsoleStderrSink(options?: ConsoleSinkOptions): Sink {
-  const formatter = options?.formatter ?? getTextFormatter()
-  return (record: LogRecord) => {
-    const args = formatter(record)
-    if (typeof args === 'string') {
-      const msg = args.replace(/\r?\n$/, '')
-      console.error(msg)
-    } else {
-      console.error(...args)
+export function getConsoleFormatter(options?: {
+  messageFormatter?: TextFormatter
+}): ConsoleFormatter {
+  const formatter = options?.messageFormatter
+  if (formatter) {
+    return (record: LogRecord) => {
+      const { properties } = record
+      if (properties && Object.keys(properties).length > 0) {
+        return [
+          formatter(record),
+          properties,
+        ]
+      }
+      return [formatter(record)]
     }
+  }
+
+  return (record: LogRecord) => {
+    const { message, properties } = record
+    if (properties && Object.keys(properties).length > 0) {
+      return [
+        ...message,
+        properties,
+      ]
+    }
+    return message
   }
 }

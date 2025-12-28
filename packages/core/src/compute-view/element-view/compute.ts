@@ -46,9 +46,6 @@ import { WildcardPredicate } from './predicates/wildcard'
 import { buildNodes, NoFilter, NoWhere, toComputedEdges } from './utils'
 
 function processElementPredicate(
-  // ...args:
-  //   | [expr: ModelAnyFqnExpr, op: 'include', IncludePredicateCtx<ModelAnyFqnExpr>]
-  //   | [expr: ModelAnyFqnExpr, op: 'exclude', ExcludePredicateCtx<ModelAnyFqnExpr>]
   expr: ModelFqnExpr.Any,
   op: 'include' | 'exclude',
   ctx: Omit<PredicateCtx<ModelFqnExpr.Any>, 'expr'>,
@@ -131,7 +128,11 @@ function processRelationtPredicate(
   }
 }
 
-export function processPredicates<A extends AnyAux>(
+/**
+ * Iterates over the rules and applies them to the memory.
+ * If the rule is a group, it recursively processes the group rules.
+ */
+function process_predicates<A extends AnyAux>(
   model: LikeC4Model<A>,
   memory: Memory,
   rules: ElementViewRule<A>[],
@@ -145,7 +146,7 @@ export function processPredicates<A extends AnyAux>(
   for (const rule of rules) {
     if (isViewRuleGroup(rule)) {
       const groupMemory = ActiveGroupMemory.enter(memory, rule)
-      memory = processPredicates(model, groupMemory, rule.groupRules)
+      memory = process_predicates(model, groupMemory, rule.groupRules)
       invariant(memory instanceof ActiveGroupMemory, 'processPredicates must return ActiveGroupMemory')
       memory = memory.leave()
       continue
@@ -177,6 +178,15 @@ export function processPredicates<A extends AnyAux>(
       }
     }
   }
+  return memory
+}
+
+export function processPredicates<A extends AnyAux>(
+  model: LikeC4Model<A>,
+  memory: Memory,
+  rules: ElementViewRule<A>[],
+): Memory {
+  memory = process_predicates(model, memory, rules)
   return StageFinal.for(memory).commit()
 }
 

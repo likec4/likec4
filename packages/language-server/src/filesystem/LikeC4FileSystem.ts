@@ -1,4 +1,5 @@
 import { type LikeC4ProjectConfig, isLikeC4Config, loadConfig } from '@likec4/config/node'
+import { compareNaturalHierarchically } from '@likec4/core/utils'
 import { fdir } from 'fdir'
 import { type FileSystemNode, URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
@@ -21,7 +22,18 @@ export const LikeC4FileSystem = (
   ...ehableWatcher ? chokidarFileSystemWatcher : noopFileSystemWatcher,
 })
 
-export const isLikeC4File = (path: string) => LikeC4LanguageMetaData.fileExtensions.some((ext) => path.endsWith(ext))
+export const isLikeC4File = (path: string, isDirectory: boolean = false) =>
+  !isDirectory && LikeC4LanguageMetaData.fileExtensions.some((ext) => path.endsWith(ext))
+
+const isLikeC4ConfigFile = (path: string, isDirectory: boolean) => !isDirectory && isLikeC4Config(path)
+
+const excludeNodeModules = (dirName: string) => dirName === 'node_modules' || dirName === '.git' || dirName === '.svn'
+
+/**
+ * Compare function for document paths to ensure consistent order
+ */
+const compare = compareNaturalHierarchically('/')
+const ensureOrder = (a: FileSystemNode, b: FileSystemNode) => compare(a.uri.path, b.uri.path)
 
 /**
  * A file system provider that follows symbolic links.
@@ -50,8 +62,9 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     try {
       let crawler = new fdir()
         .withSymlinks({ resolvePaths: false })
-        .withFullPaths()
+        .exclude(excludeNodeModules)
         .filter(isLikeC4File)
+        .withFullPaths()
 
       if (!recursive) {
         crawler = crawler.withMaxDepth(1)
@@ -72,20 +85,24 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     } catch (error) {
       logger.warn(`Failed to read directory ${folderPath.fsPath}`, { error })
     }
-    return entries
+    return entries.sort(ensureOrder)
   }
 
   async scanProjectFiles(folderUri: URI): Promise<FileSystemNode[]> {
-    return await this.scanDirectory(folderUri, isLikeC4Config)
+    return await this.scanDirectory(folderUri, isLikeC4ConfigFile)
   }
 
-  async scanDirectory(directory: URI, filter: (filepath: string) => boolean): Promise<FileSystemNode[]> {
+  async scanDirectory(
+    directory: URI,
+    filter: (filepath: string, isDirectory: boolean) => boolean,
+  ): Promise<FileSystemNode[]> {
     const entries = [] as FileSystemNode[]
     try {
       const crawled = await new fdir()
         .withSymlinks({ resolvePaths: false })
         .withFullPaths()
         .filter(filter)
+        .exclude(excludeNodeModules)
         .crawl(directory.fsPath)
         .withPromise()
       for (const path of crawled) {
@@ -98,7 +115,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     } catch (error) {
       logger.warn(`Failed to scan directory ${directory.fsPath}`, { error })
     }
-    return entries
+    return entries.sort(ensureOrder)
   }
 
   async loadProjectConfig(filepath: URI): Promise<LikeC4ProjectConfig> {

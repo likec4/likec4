@@ -54,7 +54,7 @@ export interface ComputedNode<A extends AnyAux = AnyAux>
   outEdges: scalar.EdgeId[]
   shape: ElementShape
   color: Color
-  icon?: Icon
+  icon?: Icon | null
   style: ComputedNodeStyle
   navigateTo?: aux.StrictViewId<A> | null
   level: number
@@ -111,8 +111,8 @@ export interface ComputedRankConstraint {
 interface BaseComputedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
   readonly [_stage]: 'computed'
   readonly autoLayout: ViewAutoLayout
-  readonly nodes: ComputedNode<A>[]
-  readonly edges: ComputedEdge<A>[]
+  readonly nodes: ReadonlyArray<ComputedNode<A>>
+  readonly edges: ReadonlyArray<ComputedEdge<A>>
   /**
    * If the view has manual layout (v2)
    */

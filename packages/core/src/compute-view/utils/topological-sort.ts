@@ -41,7 +41,7 @@ function ensureParentsFirst<T extends { id: string; parent: string | null }>(
 /**
  * Side effect, mutates node.children field to preserve same order as in the input
  */
-function updateChildren<A extends AnyAux = AnyAux>(nodes: ComputedNode<A>[]): ComputedNode<A>[] {
+function updateChildren<A extends AnyAux, N extends ComputedNode<A>>(nodes: N[]): N[] {
   nodes.forEach(parent => {
     if (parent.children.length > 0) {
       parent.children = nodes.reduce((acc, n) => {
@@ -55,15 +55,23 @@ function updateChildren<A extends AnyAux = AnyAux>(nodes: ComputedNode<A>[]): Co
   return nodes
 }
 
-type TopologicalSortParam<A extends AnyAux> = {
-  nodes: ReadonlyMap<string, ComputedNode<A>>
-  edges: Iterable<ComputedEdge<A>>
+type TopologicalSortParam<
+  A extends AnyAux,
+  N extends ComputedNode<A> = ComputedNode<A>,
+  E extends ComputedEdge<A> = ComputedEdge<A>,
+> = {
+  nodes: ReadonlyMap<string, N>
+  edges: Iterable<E>
 }
-export function topologicalSort<A extends AnyAux>(
-  param: TopologicalSortParam<A>,
+export function topologicalSort<
+  A extends AnyAux,
+  N extends ComputedNode<A> = ComputedNode<A>,
+  E extends ComputedEdge<A> = ComputedEdge<A>,
+>(
+  param: TopologicalSortParam<A, N, E>,
 ): {
-  nodes: ComputedNode<A>[]
-  edges: ComputedEdge<A>[]
+  nodes: N[]
+  edges: E[]
 } {
   let nodes = ensureParentsFirst([...param.nodes.values()])
   let edges = [...param.edges]
@@ -103,39 +111,9 @@ export function topologicalSort<A extends AnyAux>(
     ({ source, target }) => source.children.length === 0 && target.children.length === 0,
   )
 
-  // edgesBetweenLeafs.sort((a, b) => {
-  //   if (a.source === b.source) {
-  //     return 0
-  //   }
-  //   if (a.source.level === 0 && b.source.level === 0) {
-  //     return 0
-  //   }
-  //   if (isSameHierarchy(a.source, b.target) || isSameHierarchy(a.target, b.source)) {
-  //     return edges.indexOf(a.edge) - edges.indexOf(b.edge)
-  //   }
-  //   const aLevel = a.parent ? a.parent.level + 1 - a.source.level : a.source.level
-  //   const bLevel = b.parent ? b.parent.level + 1 - b.source.level : b.source.level
-  //   return aLevel - bLevel
-  //   // if (a.source.level === 0 && b.source.level === 0) {
+  const sortedEdges = [] as E[]
 
-  //   //   // if (a.source.depth)
-  //   //   return nodes.indexOf(a.target) - nodes.indexOf(b.target)
-  //   // }
-  //   // if (a.source.level === 0 && b.source.level > 0) {
-  //   //   return -1
-  //   // }
-  //   // if (a.parent && b.parent && a.parent !== b.parent) {
-  //   //   if (a.parent.level !== b.parent.level) {
-  //   //     return b.parent.level - a.parent.level
-  //   //   } else {
-  //   //     return nodes.indexOf(a.parent) - nodes.indexOf(b.parent)
-  //   //   }
-  //   // }
-  //   // return Math.min(nodes.indexOf(a.source), nodes.indexOf(a.target)) - Math.min(nodes.indexOf(b.source), nodes.indexOf(b.target))
-  // })
-  const sortedEdges = [] as ComputedEdge<A>[]
-
-  const addEdgeToGraph = (edge: ComputedEdge<A>) => {
+  const addEdgeToGraph = (edge: E) => {
     g.mergeNode(edge.source)
     g.mergeNode(edge.target)
     sortedEdges.push(edge)
@@ -174,8 +152,6 @@ export function topologicalSort<A extends AnyAux>(
         }
       }
     }
-
-    // addEdgeToGraph(edge)
   }
   for (const { edge } of edgesWithCompounds) {
     addEdgeToGraph(edge)
@@ -183,38 +159,8 @@ export function topologicalSort<A extends AnyAux>(
 
   invariant(sortedEdges.length === edges.length, 'Not all edges were added to the graph')
 
-  // for (const compound of nodes) {
-  //   if (compound.children.length === 0 || compound.inEdges.length === 0) {
-  //     continue
-  //   }
-  //   // g.mergeNode(compound.id)
-  //   for (const inEdge of compound.inEdges) {
-  //     const { edge, source } = getEdge(inEdge)
-  //     // ignore if this edge is coming from compound node
-  //     if (source.children.length > 0) {
-  //       continue
-  //     }
-  //     // if this edge is coming to the compound node directly
-  //     if (edge.target === compound.id) {
-  //       // for (const child of compound.children) {
-  //       //   // g.mergeNode(child)
-  //       //   if (!willCreateCycle(g, edge.source, child)) {
-  //       //     g.mergeDirectedEdge(edge.source, child)
-  //       //   }
-  //       // }
-  //     } else {
-  //       if (!willCreateCycle(g, edge.source, compound.id)) {
-  //         g.mergeDirectedEdge(edge.source, compound.id)
-  //       }
-  //       if (!willCreateCycle(g, compound.id, edge.target)) {
-  //         g.mergeDirectedEdge(compound.id, edge.target)
-  //       }
-  //     }
-  //   }
-  // }
-
   const sortedIds = topsort(g)
-  let sorted = [] as ComputedNode<A>[]
+  let sorted = [] as N[]
   let unsorted = nodes.slice()
   for (const sortedId of sortedIds) {
     const indx = unsorted.findIndex(n => n.id === sortedId)

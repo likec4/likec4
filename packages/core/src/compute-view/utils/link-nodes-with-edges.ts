@@ -8,9 +8,13 @@ import { ancestorsOfNode } from './ancestorsOfNode'
  * Update `inEdges` and `outEdges` props of nodes based on the edges
  * Mutates nodes and updates their in/out edges
  */
-export function linkNodesWithEdges<A extends AnyAux>(
-  nodesMap: ReadonlyMap<any, ComputedNode<A>>,
-  edges: ComputedEdge<A>[],
+export function linkNodesWithEdges<
+  A extends AnyAux,
+  N extends ComputedNode<A> = ComputedNode<A>,
+  E extends ComputedEdge<A> = ComputedEdge<A>,
+>(
+  nodesMap: ReadonlyMap<any, N>,
+  edges: E[],
 ) {
   for (const edge of edges) {
     const source = nodesMap.get(edge.source)

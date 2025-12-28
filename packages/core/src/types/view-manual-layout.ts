@@ -1,7 +1,7 @@
 import type { Simplify } from 'type-fest'
+import type { BBox } from '../geometry'
 import type { scalar } from '.'
 import type { _stage, _type } from './const'
-import type { BBox } from '../geometry'
 import type {
   ViewAutoLayout,
   ViewType,
@@ -67,8 +67,8 @@ export type ViewManualLayoutSnapshot<
     readonly [_stage]: 'layouted'
     // Object hash of previous layout
     readonly hash: string
-    readonly nodes: DiagramNode[]
-    readonly edges: DiagramEdge[]
+    readonly nodes: ReadonlyArray<DiagramNode>
+    readonly edges: ReadonlyArray<DiagramEdge>
     readonly bounds: BBox
     readonly autoLayout: ViewAutoLayout
   }

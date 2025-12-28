@@ -1,4 +1,7 @@
 import type { ComputedView } from '@likec4/core'
+import { Builder } from '@likec4/core/builder'
+import { computeProjectsView } from '@likec4/core/compute-view'
+import { map, pick } from 'remeda'
 import { describe, it } from 'vitest'
 import {
   computedAmazonView,
@@ -22,18 +25,6 @@ async function dotLayout(view: ComputedView) {
 }
 
 describe('GraphvizWasmAdapter:', () => {
-  // it('computedIndexView', async ({ expect }) => {
-  //   const graphviz = new GraphvizLayouter(new GraphvizWasmAdapter())
-
-  //   const {diagram, dot} = await graphviz.layout(computedCloud3levels)
-  //   // expect(diagram).toMatchSnapshot()
-  //   expect(dot).toMatchSnapshot()
-
-  //   const nextdot = await graphviz.dot(computedCloud3levels, diagram)
-
-  //   expect(nextdot).toMatchSnapshot()
-  // })
-
   it('computedIndexView', async ({ expect }) => {
     const diagram = await dotLayout(computedIndexView)
     expect(diagram).toMatchSnapshot()
@@ -80,4 +71,74 @@ describe('GraphvizWasmAdapter:', () => {
       expect(nodeIds).toEqual(['A', 'B', 'C', 'D', 'E', 'F'])
     })
   }
+
+  it('layout projects view', async ({ expect }) => {
+    const builder = Builder
+      .specification({
+        elements: {
+          el: {},
+        },
+      })
+      .model(({ el }, _) =>
+        _(
+          el('c1'),
+          el('c1.sub'),
+        )
+      )
+    const computedView = computeProjectsView([
+      builder.toLikeC4Model('projectA'),
+      builder.toLikeC4Model('projectB'),
+      builder
+        .model(({ el, rel }, _) =>
+          _(
+            el('@projectD.c1'),
+            rel('c1.sub', '@projectD.c1', {
+              title: 'C -> D',
+            }),
+          )
+        )
+        .views(({ view, $include }, _) =>
+          _(
+            view('index', $include('*')),
+          )
+        )
+        .toLikeC4Model('projectC'),
+      builder.toLikeC4Model('projectD'),
+      builder.toLikeC4Model('projectE'),
+      builder.toLikeC4Model('projectF'),
+      builder.toLikeC4Model('projectG'),
+    ])
+    const fromComputedView = map(computedView.nodes, pick(['id', 'projectId']))
+
+    const layouter = new GraphvizLayouter(new GraphvizWasmAdapter())
+
+    const diagram = await layouter.layoutProjectsView(computedView)
+    await expect(diagram).toMatchFileSnapshot('__snapshots__/layout-projects-view.ts.snap')
+
+    const projectC = diagram.nodes[2]!
+    expect(projectC.projectId).toEqual('projectC')
+    expect(projectC.description).toMatchInlineSnapshot(`
+      {
+        "txt": "Elements: 2
+      Relationships: 1
+      Views: 1",
+      }
+    `)
+
+    expect(diagram.edges).toHaveLength(1)
+    expect(diagram.edges[0]).toMatchObject({
+      source: projectC.id,
+      projectId: 'projectC',
+      label: 'C -> D',
+      labelBBox: expect.objectContaining({
+        x: expect.any(Number),
+        y: expect.any(Number),
+        width: expect.any(Number),
+        height: expect.any(Number),
+      }),
+    })
+
+    // Ensure the nodes are in the same order and have the same projectId
+    expect(map(diagram.nodes, pick(['id', 'projectId']))).toEqual(fromComputedView)
+  })
 })

@@ -7,13 +7,6 @@ import type { Elem } from '../_types'
 import { findRedundantConnections } from '../clean-connections'
 import type { Ctx, Memory } from './memory'
 
-/**
- * This patch:
- * 1. Keeps connections between leafs or having direct deployment relations
- * 2. Removes cross-boundary model relations, that already exist inside boundaries
- *    (e.g. prefer relations inside same deployment node over relations between nodes)
- * 3. Removes implicit connections between elements, if their descendants have same connection
- */
 export class StageFinal {
   static for(memory: Memory) {
     return new StageFinal(memory)

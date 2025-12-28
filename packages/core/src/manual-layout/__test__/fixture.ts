@@ -269,7 +269,7 @@ export function prepareFixtures<const N, E>(patcher?: Patches<N, E>): {
     const patchNodes = {
       ...patcher.nodes,
     }
-    layouted.nodes = pipe(
+    const writableNodes = layouted.nodes = pipe(
       layouted.nodes,
       filter(n => !(n.id in patchNodes) || isTruthy(patchNodes[n.id as ExistingNodes])),
       map(n => {
@@ -303,7 +303,7 @@ export function prepareFixtures<const N, E>(patcher?: Patches<N, E>): {
           tags: [],
           labelBBox: { x: 0, y: 0, width: 0, height: 0 },
         }
-        layouted.nodes.push(patch(baseNode, patcher))
+        writableNodes.push(patch(baseNode, patcher))
       }
     }
   }
@@ -312,7 +312,7 @@ export function prepareFixtures<const N, E>(patcher?: Patches<N, E>): {
     const patchEdges = {
       ...patcher.edges,
     }
-    layouted.edges = pipe(
+    const writableEdges = layouted.edges = pipe(
       layouted.edges,
       filter(n => !(n.id in patchEdges) || isTruthy(patchEdges[n.id as ExistingEdges])),
       map(n => {
@@ -344,7 +344,7 @@ export function prepareFixtures<const N, E>(patcher?: Patches<N, E>): {
           ],
           relations: [],
         }
-        layouted.edges.push(patch(baseEdge, patcher as any))
+        writableEdges.push(patch(baseEdge, patcher as any))
       }
     }
   }

@@ -55,7 +55,9 @@ export {
 export { useCurrentViewModel } from './hooks/useCurrentViewModel'
 
 export {
+  useChangeLikeC4Project,
   useHasProjects,
+  useLikeC4Project,
   useLikeC4ProjectId,
   useLikeC4Projects,
   useLikeC4ProjectsContext,
@@ -78,3 +80,8 @@ export { ReactLikeC4, type ReactLikeC4Props } from './ReactLikeC4'
 export { useCurrentViewId } from './hooks/useCurrentView'
 
 export { pickViewBounds } from './utils/view-bounds'
+
+export {
+  LikeC4ProjectsOverview,
+  type LikeC4ProjectsOverviewProps,
+} from './LikeC4ProjectsOverview'

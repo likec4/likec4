@@ -12,10 +12,13 @@ import { routeTree } from './routeTree.gen'
 
 type RouteTree = typeof routeTree
 
+const projectId = 'default' as ProjectId
+
 const router = createTanstackRouter<RouteTree, 'always', true>({
   routeTree,
   context: {
-    projectId: 'default' as ProjectId,
+    projectId,
+    projects: [projectId],
   },
   basepath,
   trailingSlash: 'always',

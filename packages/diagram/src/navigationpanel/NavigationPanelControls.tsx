@@ -13,9 +13,9 @@ import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { BreadcrumbsSeparator } from './_common'
 import type { NavigationPanelActorSnapshot } from './actor'
 import {
-  BurgerButton,
   DetailsControls,
   LayoutWarning,
+  LogoButton,
   NavigationButtons,
   OpenSource,
   SearchControl,
@@ -111,7 +111,7 @@ export const NavigationPanelControls = memo(() => {
 
   return (
     <AnimatePresence propagate mode="popLayout">
-      <BurgerButton key="burger-button" />
+      <LogoButton key="logo-button" />
       {enableNavigationButtons && <NavigationButtons key="nav-buttons" />}
       <m.div
         key="breadcrumbs"

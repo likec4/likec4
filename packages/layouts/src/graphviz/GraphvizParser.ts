@@ -1,9 +1,9 @@
 import {
-  type _type,
   type BBox as LabelBBox,
   type ComputedEdge,
   type ComputedView,
   type DiagramEdge,
+  type DiagramNode,
   type EdgeId,
   type LayoutedDynamicView,
   type LayoutedView,
@@ -11,6 +11,7 @@ import {
   _layout,
   _stage,
 } from '@likec4/core'
+import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
 import { invariant } from '@likec4/core/utils'
 import { logger } from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
@@ -170,7 +171,7 @@ export function parseGraphvizJson(
   graphvizJson: GraphvizJson,
   computedView: ComputedView,
 ): LayoutedView {
-  const page = parseBB(graphvizJson.bb)
+  const bounds = parseBB(graphvizJson.bb)
   const {
     nodes: computedNodes,
     edges: computedEdges,
@@ -178,6 +179,9 @@ export function parseGraphvizJson(
     manualLayout: _manualLayout, // to omit
     ...view
   } = computedView
+
+  const nodes = [] as Array<DiagramNode>
+  const edges = [] as Array<DiagramEdge>
 
   let diagram: LayoutedView
   if (view._type === 'dynamic') {
@@ -188,25 +192,26 @@ export function parseGraphvizJson(
         compounds: [],
         parallelAreas: [],
         steps: [],
-        bounds: page,
+        bounds,
       },
       [_stage]: 'layouted',
-      bounds: page,
-      nodes: [],
-      edges: [],
+      bounds,
+      nodes,
+      edges,
     } satisfies LayoutedDynamicView
   } else {
     diagram = {
       ...view,
-      [_stage]: 'layouted',
-      bounds: page,
-      nodes: [],
-      edges: [],
+      [_stage]: 'layouted' as const,
+      bounds,
+      nodes,
+      edges,
     }
   }
   // If the view has manual layout, we must indicate that current one is auto-layouted
   if (hasManualLayout) {
-    ;(diagram as Writable<LayoutedView>)[_layout] = 'auto'
+    const writableDiagram = diagram as Writable<typeof diagram>
+    writableDiagram[_layout] = 'auto'
   }
 
   const graphvizObjects = graphvizJson.objects ?? []
@@ -218,7 +223,7 @@ export function parseGraphvizJson(
 
       const position = [x, y] as Point
 
-      diagram.nodes.push({
+      nodes.push({
         ...computed,
         x,
         y,
@@ -238,7 +243,7 @@ export function parseGraphvizJson(
       logger.warn`View ${view.id} edge ${computedEdge.id} not found in graphviz output, skipping`
       continue
     }
-    diagram.edges.push(
+    edges.push(
       parseGraphvizEdge(graphvizEdge, computedEdge, view.id),
     )
   }
@@ -246,76 +251,12 @@ export function parseGraphvizJson(
   return diagram
 }
 
-// const idFromGvId = (id: GvId) => String(id + 1).padStart(2, '0')
-
-// export function parseOverviewGraphvizJson(graphvizJson: GraphvizJson): OverviewGraph {
-//   const page = parseBB(graphvizJson.bb)
-//   const overviewGraph: OverviewGraph = {
-//     nodes: [],
-//     edges: [],
-//     bounds: page,
-//   }
-
-//   const childToParent = new Map<GvId, OverviewGraph.Node>()
-
-//   const graphvizObjects = graphvizJson.objects ?? []
-//   for (const obj of graphvizObjects) {
-//     if (!obj.likec4_type) {
-//       continue
-//     }
-//     const id = idFromGvId(obj._gvid)
-//     const path = obj.likec4_path ?? ''
-//     const parent = childToParent.get(obj._gvid)
-//     const { x, y, width, height } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
-//     const position = { x, y }
-//     if (obj.likec4_type === 'view') {
-//       invariant(obj.likec4_id, `View ${obj} has no likec4_id`)
-//       overviewGraph.nodes.push({
-//         id,
-//         type: 'view',
-//         parentId: parent?.id ?? null,
-//         height,
-//         width,
-//         position,
-//         label: obj.label ?? '',
-//         viewId: obj.likec4_id as any as ViewId,
-//       })
-//     } else {
-//       const node: OverviewGraph.Node = {
-//         id,
-//         type: obj.likec4_type,
-//         parentId: parent?.id ?? null,
-//         height,
-//         width,
-//         position,
-//         path,
-//         label: obj.label ?? '',
-//       }
-//       const children = [
-//         ...('subgraphs' in obj ? obj.subgraphs : []),
-//         ...('nodes' in obj ? obj.nodes : []),
-//       ]
-//       for (const childId of children) {
-//         childToParent.set(childId, node)
-//       }
-//       overviewGraph.nodes.push(node)
-//     }
-//   }
-
-//   for (const edge of graphvizJson.edges ?? []) {
-//     try {
-//       const source = idFromGvId(edge.tail)
-//       const target = idFromGvId(edge.head)
-//       overviewGraph.edges.push({
-//         id: `link${idFromGvId(edge._gvid)}`,
-//         source,
-//         target,
-//         points: parseEdgePoints(edge),
-//       })
-//     } catch (error) {
-//       logger.warn(`Failed on parsing edge:\n{edge}`, { error, edge })
-//     }
-//   }
-
-//   return overviewGraph
-// }
+export function parseGraphvizJsonOfProjectsView(
+  graphvizJson: GraphvizJson,
+  computed: ComputedProjectsView,
+): LayoutedProjectsView {
+  // just cast, because we know that projects view is the same as layouted view
+  // the only difference is that nodes/edges have projectId field
+  // we have tests to ensure that
+  return parseGraphvizJson(graphvizJson, computed as unknown as ComputedView) as unknown as LayoutedProjectsView
+}

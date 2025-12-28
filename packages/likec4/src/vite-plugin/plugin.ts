@@ -12,6 +12,7 @@ import { iconsModule, projectIconsModule } from './virtuals/icons'
 import { mmdModule, projectMmdSourcesModule } from './virtuals/mmd'
 import { modelModule, projectModelModule } from './virtuals/model'
 import { projectsModule } from './virtuals/projects'
+import { projectsOverviewModule } from './virtuals/projectsOverview'
 import { projectPumlModule, pumlModule } from './virtuals/puml'
 import { projectReactModule, singleProjectReactModule } from './virtuals/react'
 import { singleProjectModule } from './virtuals/single-project'
@@ -83,6 +84,7 @@ const projectVirtuals = [
 const virtuals = [
   projectsModule,
   modelModule,
+  projectsOverviewModule,
   singleProjectModule,
   singleProjectReactModule,
   d2Module,
@@ -224,8 +226,11 @@ export function LikeC4VitePlugin({
           _projects = _updated
           await reloadModule(projectsModule.virtualId)
           await reloadModule(modelModule.virtualId)
+          return
         }
+        await reloadModule(projectsOverviewModule.virtualId)
 
+        // Reload project modules
         for (const project of _projects) {
           for (const projectModule of hmrProjectVirtuals) {
             await reloadModule(projectModule.virtualId(project.id))

@@ -21,7 +21,7 @@ const likec4 = await LikeC4.fromWorkspace('src', {
 assert.deepEqual(likec4.projects().sort(), ['e2e', 'issue-2282'])
 
 // Check e2e workspace
-const computedModel = likec4.computedModel('e2e')
+const computedModel = likec4.syncComputedModel('e2e')
 const computedViews = [...computedModel.views()].map(v => v.id)
 
 const layoutedModel_e2e = await likec4.layoutedModel('e2e')

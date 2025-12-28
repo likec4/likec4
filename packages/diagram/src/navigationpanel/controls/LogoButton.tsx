@@ -6,9 +6,9 @@ import { Logo, LogoIcon } from '../../components/Logo'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useNavigationActor } from '../hooks'
 
-export const BurgerButton = () => {
+export const LogoButton = () => {
   const actor = useNavigationActor()
-  const { onBurgerMenuClick } = useDiagramEventHandlers()
+  const { onLogoClick } = useDiagramEventHandlers()
   return (
     <m.div layout="position">
       <UnstyledButton
@@ -20,9 +20,9 @@ export const BurgerButton = () => {
         }}
         onClick={e => {
           e.stopPropagation()
-          if (onBurgerMenuClick && actor.isOpened()) {
+          if (onLogoClick && actor.isOpened()) {
             setTimeout(() => {
-              onBurgerMenuClick()
+              onLogoClick()
             }, 100)
           }
           actor.send({ type: 'breadcrumbs.click.root' })

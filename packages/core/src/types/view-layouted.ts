@@ -1,8 +1,8 @@
+import type { BBox, Point, XYPoint } from '../geometry'
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from './_common'
 import type { _layout, _stage, _type } from './const'
-import type { BBox, Point, XYPoint } from '../geometry'
 import type {
   BaseViewProperties,
   ViewAutoLayout,
@@ -73,8 +73,8 @@ interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewPropertie
    */
   readonly [_layout]?: LayoutType
   readonly autoLayout: ViewAutoLayout
-  readonly nodes: DiagramNode<A>[]
-  readonly edges: DiagramEdge<A>[]
+  readonly nodes: ReadonlyArray<DiagramNode<A>>
+  readonly edges: ReadonlyArray<DiagramEdge<A>>
   readonly bounds: BBox
 
   /**

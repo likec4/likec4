@@ -54,11 +54,11 @@ catalogs:
       version: 4.55.0
   css:
     '@pandacss/dev':
-      specifier: ^1.7.1
-      version: 1.7.1
+      specifier: ^1.7.2
+      version: 1.7.2
     '@pandacss/types':
-      specifier: ^1.7.1
-      version: 1.7.1
+      specifier: ^1.7.2
+      version: 1.7.2
     '@tailwindcss/vite':
       specifier: ^4.1.17
       version: 4.1.17
@@ -91,8 +91,8 @@ catalogs:
       specifier: ^0.24.8
       version: 0.24.8
     oxlint:
-      specifier: 1.34.0
-      version: 1.34.0
+      specifier: 1.35.0
+      version: 1.35.0
     oxlint-tsgolint:
       specifier: 0.10.0
       version: 0.10.0
@@ -255,14 +255,14 @@ catalogs:
       specifier: ^1.2.2
       version: 1.2.2
     fast-equals:
-      specifier: ^5.4.0
-      version: 5.4.0
+      specifier: ^6.0.0
+      version: 6.0.0
     fdir:
       specifier: 6.4.0
       version: 6.4.0
     immer:
-      specifier: ^11.0.1
-      version: 11.0.1
+      specifier: ^11.1.0
+      version: 11.1.0
     indent-string:
       specifier: ^5.0.0
       version: 5.0.0
@@ -360,6 +360,9 @@ catalogs:
     '@xstate/react':
       specifier: 6.0.0
       version: 6.0.0
+    '@xstate/store':
+      specifier: 3.14.0
+      version: 3.14.0
     xstate:
       specifier: 5.24.0
       version: 5.24.0
@@ -438,7 +441,7 @@ importers:
         version: 8.0.4
       oxlint:
         specifier: 'catalog:'
-        version: 1.34.0(oxlint-tsgolint@0.10.0)
+        version: 1.35.0(oxlint-tsgolint@0.10.0)
       oxlint-tsgolint:
         specifier: 'catalog:'
         version: 0.10.0
@@ -624,7 +627,7 @@ importers:
         version: 1.0.0(nanostores@1.1.0)(react@19.2.3)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.7.1(typescript@5.9.3)
+        version: 1.7.2(typescript@5.9.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -663,7 +666,7 @@ importers:
         version: 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.10.0(@types/react@19.2.7)(immer@11.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 12.10.0(@types/react@19.2.7)(immer@11.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.74
@@ -672,7 +675,7 @@ importers:
         version: 4.1.0
       fast-equals:
         specifier: catalog:utils
-        version: 5.4.0
+        version: 6.0.0
       hono:
         specifier: catalog:hono
         version: 4.11.1
@@ -954,7 +957,7 @@ importers:
         version: 0.24.8
       immer:
         specifier: catalog:utils
-        version: 11.0.1
+        version: 11.1.0
       mdast-util-from-markdown:
         specifier: ^2.0.2
         version: 2.0.2
@@ -978,7 +981,7 @@ importers:
         version: 2.0.5
       oxlint:
         specifier: 'catalog:'
-        version: 1.34.0(oxlint-tsgolint@0.10.0)
+        version: 1.35.0(oxlint-tsgolint@0.10.0)
       rehype-format:
         specifier: 5.0.1
         version: 5.0.1
@@ -1056,7 +1059,7 @@ importers:
         version: 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.10.0(@types/react@19.2.7)(immer@11.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 12.10.0(@types/react@19.2.7)(immer@11.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.74
@@ -1068,10 +1071,10 @@ importers:
         version: 3.2.0
       fast-equals:
         specifier: catalog:utils
-        version: 5.4.0
+        version: 6.0.0
       immer:
         specifier: catalog:utils
-        version: 11.0.1
+        version: 11.1.0
       khroma:
         specifier: catalog:utils
         version: 2.1.0
@@ -1105,7 +1108,7 @@ importers:
         version: link:../tsconfig
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.7.1(typescript@5.9.3)
+        version: 1.7.2(typescript@5.9.3)
       '@statelyai/inspect':
         specifier: ^0.4.0
         version: 0.4.0(ws@8.18.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
@@ -1132,7 +1135,7 @@ importers:
         version: 5.1.2(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
       oxlint:
         specifier: 'catalog:'
-        version: 1.34.0(oxlint-tsgolint@0.10.0)
+        version: 1.35.0(oxlint-tsgolint@0.10.0)
       postcss:
         specifier: catalog:css
         version: 8.5.6
@@ -1302,7 +1305,7 @@ importers:
         version: 1.2.2
       fast-equals:
         specifier: catalog:utils
-        version: 5.4.0
+        version: 6.0.0
       fdir:
         specifier: catalog:utils
         version: 6.4.0(picomatch@4.0.3)
@@ -1311,7 +1314,7 @@ importers:
         version: 4.11.1
       immer:
         specifier: catalog:utils
-        version: 11.0.1
+        version: 11.1.0
       indent-string:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1335,7 +1338,7 @@ importers:
         version: 1.4.0
       oxlint:
         specifier: 'catalog:'
-        version: 1.34.0(oxlint-tsgolint@0.10.0)
+        version: 1.35.0(oxlint-tsgolint@0.10.0)
       p-debounce:
         specifier: catalog:utils
         version: 5.1.0
@@ -1416,7 +1419,7 @@ importers:
         version: 0.4.4
       fast-equals:
         specifier: catalog:utils
-        version: 5.4.0
+        version: 6.0.0
       indent-string:
         specifier: catalog:utils
         version: 5.0.0
@@ -1489,7 +1492,7 @@ importers:
         version: 5.1.2(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.10.0(@types/react@19.2.7)(immer@11.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 12.10.0(@types/react@19.2.7)(immer@11.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.74
@@ -1574,7 +1577,7 @@ importers:
         version: 1.0.0(nanostores@1.1.0)(react@19.2.3)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.7.1(typescript@5.9.3)
+        version: 1.7.2(typescript@5.9.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1611,6 +1614,9 @@ importers:
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
+      '@xstate/store':
+        specifier: catalog:xstate
+        version: 3.14.0(react@19.2.3)
       autoprefixer:
         specifier: ^10.4.23
         version: 10.4.23(postcss@8.5.6)
@@ -1631,7 +1637,7 @@ importers:
         version: 1.2.2
       fast-equals:
         specifier: catalog:utils
-        version: 5.4.0
+        version: 6.0.0
       get-port:
         specifier: ^7.1.0
         version: 7.1.0
@@ -1927,7 +1933,7 @@ importers:
         version: 9.6.0
       fast-equals:
         specifier: catalog:utils
-        version: 5.4.0
+        version: 6.0.0
       langium:
         specifier: catalog:langium
         version: 3.5.0
@@ -2035,7 +2041,7 @@ importers:
         version: 1.0.0(nanostores@1.1.0)(react@19.2.3)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.7.1(typescript@5.9.3)
+        version: 1.7.2(typescript@5.9.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -2068,7 +2074,7 @@ importers:
         version: 5.1.2(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.10.0(@types/react@19.2.7)(immer@11.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 12.10.0(@types/react@19.2.7)(immer@11.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.74
@@ -2119,7 +2125,7 @@ importers:
     dependencies:
       '@pandacss/types':
         specifier: catalog:css
-        version: 1.7.1
+        version: 1.7.2
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
@@ -2138,7 +2144,7 @@ importers:
         version: 8.3.10(@mantine/core@8.3.10(@mantine/hooks@8.3.10(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.7.1(typescript@5.9.3)
+        version: 1.7.2(typescript@5.9.3)
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -2156,7 +2162,7 @@ importers:
         version: 2.1.0
       pandacss-preset-radix-colors:
         specifier: ^0.2.0
-        version: 0.2.0(@pandacss/dev@1.7.1(typescript@5.9.3))(@radix-ui/colors@3.0.0)
+        version: 0.2.0(@pandacss/dev@1.7.2(typescript@5.9.3))(@radix-ui/colors@3.0.0)
       remeda:
         specifier: catalog:utils
         version: 2.32.0
@@ -2187,16 +2193,16 @@ importers:
         version: 0.0.8
       '@pandabox/unplugin':
         specifier: ^0.2.2
-        version: 0.2.2(@pandacss/config@1.7.1)(@pandacss/core@1.7.1)(@pandacss/node@1.7.1(typescript@5.9.3))(esbuild@0.27.2)(typescript@5.9.3)(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
+        version: 0.2.2(@pandacss/config@1.7.2)(@pandacss/core@1.7.2)(@pandacss/node@1.7.2(typescript@5.9.3))(esbuild@0.27.2)(typescript@5.9.3)(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
       '@pandabox/utils':
         specifier: ^0.0.5
         version: 0.0.5
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.7.1(typescript@5.9.3)
+        version: 1.7.2(typescript@5.9.3)
       '@pandacss/types':
         specifier: catalog:css
-        version: 1.7.1
+        version: 1.7.2
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.3
@@ -3612,43 +3618,43 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@oxlint/darwin-arm64@1.34.0':
-    resolution: {integrity: sha512-euz3Dtp5/UE9axFkQnllOWp3gOwoqaxfZPUUwiW8HBelqhI9PRMVIfQ/akmwl+G5XixQZIgXkXQ5SJxnb1+Qww==}
+  '@oxlint/darwin-arm64@1.35.0':
+    resolution: {integrity: sha512-ieiYVHkNZPo77Hgrxav595wGS4rRNKuDNrljf+4xhwpJsddrxMpM64IQUf2IvR3MhK4FxdGzhhB6OVmGVHY5/w==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxlint/darwin-x64@1.34.0':
-    resolution: {integrity: sha512-XpmNviE5KOnHkhmQPwJJIBs+mJkr0qItTZBN4dz+O3p9gWN+gCqi3CBP71RiVahZw4qAEQSgY4wro+z0kx+erg==}
+  '@oxlint/darwin-x64@1.35.0':
+    resolution: {integrity: sha512-1jNHu3j66X5jKySvgtE+jGtjx4ye+xioAucVTi2IuROZO6keK2YG74pnD+9FT+DpWZAtWRZGoW0r0x6aN9sEEg==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint/linux-arm64-gnu@1.34.0':
-    resolution: {integrity: sha512-aCPdoEUGsJGF9y88vDYoaugG4IEGwSBa+usyuAvEVl3vTfuTmE0RDQEC1Z+WnJ3J/cIEpbgKOzS12VwbzFicjg==}
+  '@oxlint/linux-arm64-gnu@1.35.0':
+    resolution: {integrity: sha512-T1lc0UaYbTxZyqVpLfC7eipbauNG8pBpkaZEW4JGz8Y68rxTH7d9s+CF0zxUxNr5RCtcmT669RLVjQT7VrKVLg==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-arm64-musl@1.34.0':
-    resolution: {integrity: sha512-cMo72LQBFmdnVLRKLAHD94ZUBq5Z+aA9Y+RKzkjhCmJuef5ZAfKC24TJD/6c5LxGYzkwwmyySoQAHq5B69i3PQ==}
+  '@oxlint/linux-arm64-musl@1.35.0':
+    resolution: {integrity: sha512-7Wv5Pke9kwWKFycUziSHsmi3EM0389TLzraB0KE/MArrKxx30ycwfJ5PYoMj9ERoW+Ybs0txdaOF/xJy/XyYkg==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-x64-gnu@1.34.0':
-    resolution: {integrity: sha512-+9xFhhkqgNIysEh+uHvcba8v4UtL1YzxuyDS2wTLdWrkGvIllCx5WjJItt3K/AhwatciksgNEXSo2Hh4fcQRog==}
+  '@oxlint/linux-x64-gnu@1.35.0':
+    resolution: {integrity: sha512-HDMPOzyVVy+rQl3H7UOq8oGHt7m1yaiWCanlhAu4jciK8dvXeO9OG/OQd74lD/h05IcJh93pCLEJ3wWOG8hTiQ==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/linux-x64-musl@1.34.0':
-    resolution: {integrity: sha512-qa7TL2DfEDdMeSP5UiU5JMs6D2PW7ZJAQ0WZYTgqDV8BlZ6nMkIYVBVIk3QPxIfkyxvfJVbG1RB3PkSWDcfwpA==}
+  '@oxlint/linux-x64-musl@1.35.0':
+    resolution: {integrity: sha512-kAPBBsUOM3HQQ6n3nnZauvFR9EoXqCSoj4O3OSXXarzsRTiItNrHabVUwxeswZEc+xMzQNR0FHEWg/d4QAAWLw==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/win32-arm64@1.34.0':
-    resolution: {integrity: sha512-mSJumUveg1S3DiOgvsrVNAGuvenBbbC/zsfT1qhltT+GLhJ7RPBK2I/jz0fTdE+I7M9/as8yc0XJ/eY23y2amA==}
+  '@oxlint/win32-arm64@1.35.0':
+    resolution: {integrity: sha512-qrpBkkOASS0WT8ra9xmBRXOEliN6D/MV9JhI/68lFHrtLhfFuRwg4AjzjxrCWrQCnQ0WkvAVpJzu73F4ICLYZw==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxlint/win32-x64@1.34.0':
-    resolution: {integrity: sha512-izsDDt5WY4FSISCkPRLUYQD1aRaaEJkPLtEZe3DlioSUdUVAdvVbE+BGllFqR16DWfTTwO/6K4jDeooxQzTMjw==}
+  '@oxlint/win32-x64@1.35.0':
+    resolution: {integrity: sha512-yPFcj6umrhusnG/kMS5wh96vblsqZ0kArQJS+7kEOSJDrH+DsFWaDCsSRF8U6gmSmZJ26KVMU3C3TMpqDN4M1g==}
     cpu: [x64]
     os: [win32]
 
@@ -3717,63 +3723,63 @@ packages:
   '@pandabox/utils@0.0.5':
     resolution: {integrity: sha512-+Qp6dLiWD3rGfq6PVTmWtXqD5OJ82XrekvJzsHWssjBoqLSlJKnALVy+bDRxojMRxTGna5JI85iLjb2EzRJbdw==}
 
-  '@pandacss/config@1.7.1':
-    resolution: {integrity: sha512-JiWs9qYMHT297brM2galiO97f/p/pHQOoLdmSaAQXL3S27/YjwzklcNRdhJX0PS/XYt5QpJwUOjMAGAoEg7HEw==}
+  '@pandacss/config@1.7.2':
+    resolution: {integrity: sha512-TwYQuHOD+RLsKLhs+nTd+D9bMrctiCQ1+5epPkSUIJeZlUW2Zh+TQfZrCQwqApL7CE70Pyt78X3TU2nL7mv3Gw==}
 
-  '@pandacss/core@1.7.1':
-    resolution: {integrity: sha512-MaZQHwuKEla177DweOtKObg/amFvX9gLBX92TOQTFXImkaH/0ED9+oheRKEhfyNRx4CVUnm9Fpin6xpnRiyF7g==}
+  '@pandacss/core@1.7.2':
+    resolution: {integrity: sha512-+HbmiminQdcbKTTuxKR5fG9h341VThvbSmCoocFV0giCz7W1abcJDgWGNCxOqQKkEUZ5/VKu6kxmtr1jVKfsUg==}
 
-  '@pandacss/dev@1.7.1':
-    resolution: {integrity: sha512-nhghw7VDEpc5HySuD9M+z+CPW3gqPuVhPEPG6fPk7FdEH4abKWnptdOjcKIy3AZcNKwWlwDDMOGEl1SHvoxjCw==}
+  '@pandacss/dev@1.7.2':
+    resolution: {integrity: sha512-CwbFskMqKjWsH2RPYeiQOGSkIMf1NYESUwz5HW1RKPsQqDVhwv6qASPCQwvb3t5Qz7O3M3rzwcqyk68cjmHv8Q==}
     hasBin: true
 
   '@pandacss/extractor@0.36.1':
     resolution: {integrity: sha512-Fm+yrTIUE+T0fHfekfYTUtIsbCsP5i4/jnvnlQavD/JX2+6x9yB83otP0TaVM1lpTCURtrSVZgEvXdc8OmZ2dA==}
 
-  '@pandacss/extractor@1.7.1':
-    resolution: {integrity: sha512-R0cIvij6Zs623ANpZQivcFtXIR8qK5Mr0lf7djN/f6cJXVaTJ6KR1Rsq+Md2Hdj2cxXR4GyLxt/MeqBB18BX7w==}
+  '@pandacss/extractor@1.7.2':
+    resolution: {integrity: sha512-BEdmIb1v3K4yZhbjy6d3uSCwn+/gj5J2TubjebZB1QgfoTHEeZJBy904T9kQS9uygfjK2DroxpMFW9QIuXAcPA==}
 
-  '@pandacss/generator@1.7.1':
-    resolution: {integrity: sha512-Or6ZFlCn6Bi3j+pqDyJATouR+cGDke7cdOXLMpB9y0DHDaBnpZUFod8lKRYhlCAjLDgqxvXFBSka/RCGZB4jFg==}
+  '@pandacss/generator@1.7.2':
+    resolution: {integrity: sha512-nzmfBD2bEIvMyyeNxxTpRR0gc49+h6Qx3vIq8J5mMZZmMdZqPi2HICP4Bj5F+YGhpkz2OXM4p+UFu0WpHGscBg==}
 
-  '@pandacss/is-valid-prop@1.7.1':
-    resolution: {integrity: sha512-U95nBIhlj6X26W4U0wEbYcgL0A33zqt7bnfjYQ2+RUGfOK17yKx92OHE/ersiRhMWyuSU0Qhj+5CHlCY2126lQ==}
+  '@pandacss/is-valid-prop@1.7.2':
+    resolution: {integrity: sha512-8yCQeQsf9GD0KfXhLT1aPHv0YdfGK8GA8E2lGcNRC+X383xAQyBXKkMiNlmjd+AmCNT8dfrI9k3jD0Pgq/ycJg==}
 
-  '@pandacss/logger@1.7.1':
-    resolution: {integrity: sha512-0lkVoOPcEG7FjGyhaGROkufOqcqz4G9oSj4BSqIFwlBhCge5kmXLexmM3jM9nLX53r7me8uJivi5s1HYLyXUhg==}
+  '@pandacss/logger@1.7.2':
+    resolution: {integrity: sha512-h6zKdMH7kHdXLn/XIA0KgeA5mprVUFRDGvRR4Ek/QHUm+RK3xSKtoisBuAfZxSXYUmltl8ALU3JQ7hwSCeXWow==}
 
-  '@pandacss/node@1.7.1':
-    resolution: {integrity: sha512-2vlxx4S1G5Do5WNaGSG4if/fL+PW6lb5JpfrzusMW227MIqA5uojJ32F+e7Ir7tUpp5WrXcf01yZlzwiAL9ZSQ==}
+  '@pandacss/node@1.7.2':
+    resolution: {integrity: sha512-6cy75rq6mRyQQyZPmHNP7crF2aeA1Ce2BZeTgOlSyN8Dz2WcL/uC+p4GDAijpRs8DHrOMNrg7pIijJz5KqZKnA==}
 
-  '@pandacss/parser@1.7.1':
-    resolution: {integrity: sha512-dVI2sQcqJooErPHt/xPkpsXXAkii6sFgNH2pZSJ+4B73w4ciCIxNrW21o8G/E0RTTxFYeXaX7+LBPeMeGObX8w==}
+  '@pandacss/parser@1.7.2':
+    resolution: {integrity: sha512-5vPWZ6JN3z9slPezDgTE4r4k8RVkpiN2sbMaf5W05RTInQenA/2heDGRuuBmdIA6Xkq/qg640I1Z8gWaYQyhRg==}
 
-  '@pandacss/postcss@1.7.1':
-    resolution: {integrity: sha512-Amj1xir/BBKbYJBma1KkjCsjy3D1AaFd02j9esx4rTV6QKkvrJZ+lprIrImCu1guMXpsSMcrcQ/JZy0ZtlIN4g==}
+  '@pandacss/postcss@1.7.2':
+    resolution: {integrity: sha512-Uyy+IJpp8GkaptROArI+cEwNJQTihCkn2BQ9D7kM4hbaoVSb0sXHMnF7tocN0b9O+3FuJKhNfzsb2hgsIOog2Q==}
 
-  '@pandacss/preset-base@1.7.1':
-    resolution: {integrity: sha512-xCdpBQ4AzMo3uR52maU0So1UCc3aoWCCnjZ2Qj4ivSnjWbKJgEvkXwM5SmluW0UIlrlx2/ppe2IDsmWtszEl/A==}
+  '@pandacss/preset-base@1.7.2':
+    resolution: {integrity: sha512-0ABOjdv3pb7ynu2z8PyIJpXKbiPLw7gA7mrYONBALDoJzeE6gUWCpjIEICYHy9LnwV3O7Bp2wvsvvhqN4JMx/w==}
 
-  '@pandacss/preset-panda@1.7.1':
-    resolution: {integrity: sha512-w9M/hDOMkVvZjxf5cy3+Hzi+1rnm4azpr0mbEowKLhlXFI+ubFt3iJPCEx/nx1Z0gs8kOu0EhydU6hnARlUkJQ==}
+  '@pandacss/preset-panda@1.7.2':
+    resolution: {integrity: sha512-yacj+iyA6gFK556A5o1Ht867hqcEBEUwG+SqMCtsKcuJ0okpSSu7yRd7e170jJuqX/mgmiusI2zDXZX9JkPQQA==}
 
-  '@pandacss/reporter@1.7.1':
-    resolution: {integrity: sha512-zrEMRE7VXWcW53lukIBom3+lxMYVRd4nk6hZgawFR41BsCUcG8Qjru8L4L65gr1XRgh2abh19SJd49rpVZhZHg==}
+  '@pandacss/reporter@1.7.2':
+    resolution: {integrity: sha512-0xm/o03zzjZDyO9IFOq26NQfVx0/kPlgavZPSzDrJ/Lmmgna+sieiKIw1BKWMCybL/xBMZWy4+/eDAs18Ng8Tw==}
 
   '@pandacss/shared@0.36.1':
     resolution: {integrity: sha512-yiGHfGNpOkphCsx8sYGsL8RhyPKeqcGgrrrQCNzwgkJRGXDqTVw9qNbD4tkILI8Qe+S+5aCiLkWCfoUtqJ+Btg==}
 
-  '@pandacss/shared@1.7.1':
-    resolution: {integrity: sha512-kwGOqVFHIx7ajrLk1HLUUJsNvrkvHb/KJdW466pLB8UzZhg8BjxaL9mSulMDqy6fyYQxfDwaUmz9xzbAg2nOkQ==}
+  '@pandacss/shared@1.7.2':
+    resolution: {integrity: sha512-rxGMTSrIzAOcfzhErzE2nRmOhbpSVGrEFFPI94ZSJFNbQKTZtjGjyWQYJeDps5ZR4dBrK7wzv/6wOoAlFVSv8Q==}
 
-  '@pandacss/token-dictionary@1.7.1':
-    resolution: {integrity: sha512-74z3Sc1FHZtF2VPlWGSPHqmH9eT+B1t2Jxzr99bmzD6M51LL+v+cDpZnxb75AQ7TD28RGQu3pbgzyZa+DEFXaA==}
+  '@pandacss/token-dictionary@1.7.2':
+    resolution: {integrity: sha512-A2bWWmQvBb/UrGUC8AXLGulP2dkz8aOpKgOjDRGELp4BTbAq3B7TDV05XC+jHEU9bx1I0+DWWQMYw2PCoK8LOw==}
 
   '@pandacss/types@0.36.1':
     resolution: {integrity: sha512-F0mGFtXT2j1hNFi5Z1AXPxEYcHoaedyJyScEbsGga4aa2KlJCEPEX9UDdgltMlrhSilM7nq7RbrDMToZ/cwvOg==}
 
-  '@pandacss/types@1.7.1':
-    resolution: {integrity: sha512-cT0cyiU7t41CGa3629Ih+A41r7FFIWPnDGgxALKICfW/Xkn8oX/GMFU+cS0vsRcZqSKbEKlaJu/oC320qzYY9w==}
+  '@pandacss/types@1.7.2':
+    resolution: {integrity: sha512-j/AcvOLM69EirF/uR51gZw/qTUDMEpKAEeT7HKDDXgjpKNpjHBlQengoBakZ5iHYppYbT6pqbzbGvs3acqcFlA==}
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -4541,6 +4547,17 @@ packages:
       xstate: ^5.20.0
     peerDependenciesMeta:
       xstate:
+        optional: true
+
+  '@xstate/store@3.14.0':
+    resolution: {integrity: sha512-5IMQND3p7BfeckzYzBiDWGUa178jlodA4kB0jYp3xQOV6H1RtYGJx6v6LxAvDrOWTCzhXteEEw5hOBuNYkmUpw==}
+    peerDependencies:
+      react: 19.2.3
+      solid-js: ^1.7.6
+    peerDependenciesMeta:
+      react:
+        optional: true
+      solid-js:
         optional: true
 
   '@xyflow/react@12.10.0':
@@ -5565,8 +5582,8 @@ packages:
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
-  fast-equals@5.4.0:
-    resolution: {integrity: sha512-jt2DW/aNFNwke7AUd+Z+e6pz39KO5rzdbbFCg2sGafS4mk13MI7Z8O5z9cADNn5lhGODIgLwug6TZO2ctf7kcw==}
+  fast-equals@6.0.0:
+    resolution: {integrity: sha512-PFhhIGgdM79r5Uztdj9Zb6Tt1zKafqVfdMGwVca1z5z6fbX7DmsySSuJd8HiP6I1j505DCS83cLxo5rmSNeVEA==}
     engines: {node: '>=6.0.0'}
 
   fast-glob@3.3.3:
@@ -5962,8 +5979,8 @@ packages:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
 
-  immer@11.0.1:
-    resolution: {integrity: sha512-naDCyggtcBWANtIrjQEajhhBEuL9b0Zg4zmlWK2CzS6xCWSE39/vvf4LqnMjUAWHBhot4m9MHCM/Z+mfWhUkiA==}
+  immer@11.1.0:
+    resolution: {integrity: sha512-dlzb07f5LDY+tzs+iLCSXV2yuhaYfezqyZQc+n6baLECWkOMEWxkECAOnXL0ba7lsA25fM9b2jtzpu/uxo1a7g==}
 
   import-lazy@4.0.0:
     resolution: {integrity: sha512-rKtvo6a868b5Hu3heneU+L4yEQ4jYKLtjpnPeUdK7h0yzXGmyBTypknlkCvHFBqfX9YlorEiMM6Dnq/5atfHkw==}
@@ -6872,12 +6889,12 @@ packages:
     resolution: {integrity: sha512-LDDSIu5J/4D4gFUuQQIEQpAC6maNEbMg4nC8JL/+Pe0cUDR86dtVZ09E2x5MwCh8f9yfktoaxt5x6UIVyzrajg==}
     hasBin: true
 
-  oxlint@1.34.0:
-    resolution: {integrity: sha512-Ni0N8wAiKlgaYkI/Yz4VrutfVIZgd2shDtS+loQxyBTwO8YUAnk3+g7OQ1cyI/aatHiFwvFNfV/uvZyHUtyPpA==}
+  oxlint@1.35.0:
+    resolution: {integrity: sha512-QDX1aUgaiqznkGfTM2qHwva2wtKqhVoqPSVXrnPz+yLUhlNadikD3QRuRtppHl7WGuy3wG6nKAuR8lash3aWSg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
-      oxlint-tsgolint: '>=0.9.2'
+      oxlint-tsgolint: '>=0.10.0'
     peerDependenciesMeta:
       oxlint-tsgolint:
         optional: true
@@ -6897,6 +6914,10 @@ packages:
   p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
+
+  p-limit@5.0.0:
+    resolution: {integrity: sha512-/Eaoq+QyLSiXQ4lyYV23f14mZRQcXnxfHrN0vCai+ak9G0pp9iEQukIIZq5NccEvwRB8PUnZT0KsOoDCINS1qQ==}
+    engines: {node: '>=18'}
 
   p-limit@6.2.0:
     resolution: {integrity: sha512-kuUqqHNUqoIWp/c467RI4X6mmyuojY5jGutNU0wVTmEOOfcuwLqyMVoAi9MKi2Ak+5i9+nhmrK4ufZE8069kHA==}
@@ -11073,28 +11094,28 @@ snapshots:
   '@oxlint-tsgolint/win32-x64@0.10.0':
     optional: true
 
-  '@oxlint/darwin-arm64@1.34.0':
+  '@oxlint/darwin-arm64@1.35.0':
     optional: true
 
-  '@oxlint/darwin-x64@1.34.0':
+  '@oxlint/darwin-x64@1.35.0':
     optional: true
 
-  '@oxlint/linux-arm64-gnu@1.34.0':
+  '@oxlint/linux-arm64-gnu@1.35.0':
     optional: true
 
-  '@oxlint/linux-arm64-musl@1.34.0':
+  '@oxlint/linux-arm64-musl@1.35.0':
     optional: true
 
-  '@oxlint/linux-x64-gnu@1.34.0':
+  '@oxlint/linux-x64-gnu@1.35.0':
     optional: true
 
-  '@oxlint/linux-x64-musl@1.34.0':
+  '@oxlint/linux-x64-musl@1.35.0':
     optional: true
 
-  '@oxlint/win32-arm64@1.34.0':
+  '@oxlint/win32-arm64@1.35.0':
     optional: true
 
-  '@oxlint/win32-x64@1.34.0':
+  '@oxlint/win32-x64@1.35.0':
     optional: true
 
   '@pagefind/darwin-arm64@1.3.0':
@@ -11123,13 +11144,13 @@ snapshots:
     dependencies:
       postcss: 8.5.6
 
-  '@pandabox/unplugin@0.2.2(@pandacss/config@1.7.1)(@pandacss/core@1.7.1)(@pandacss/node@1.7.1(typescript@5.9.3))(esbuild@0.27.2)(typescript@5.9.3)(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))':
+  '@pandabox/unplugin@0.2.2(@pandacss/config@1.7.2)(@pandacss/core@1.7.2)(@pandacss/node@1.7.2(typescript@5.9.3))(esbuild@0.27.2)(typescript@5.9.3)(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))':
     dependencies:
       '@pandabox/postcss-plugins': 0.0.2(postcss@8.5.6)
-      '@pandacss/config': 1.7.1
-      '@pandacss/core': 1.7.1
+      '@pandacss/config': 1.7.2
+      '@pandacss/core': 1.7.2
       '@pandacss/extractor': 0.36.1(typescript@5.9.3)
-      '@pandacss/node': 1.7.1(typescript@5.9.3)
+      '@pandacss/node': 1.7.2(typescript@5.9.3)
       '@pandacss/shared': 0.36.1
       '@rollup/pluginutils': 5.3.0(rollup@4.53.5)
       es-toolkit: 1.32.0
@@ -11149,26 +11170,26 @@ snapshots:
       '@pandacss/shared': 0.36.1
       '@pandacss/types': 0.36.1
 
-  '@pandacss/config@1.7.1':
+  '@pandacss/config@1.7.2':
     dependencies:
-      '@pandacss/logger': 1.7.1
-      '@pandacss/preset-base': 1.7.1
-      '@pandacss/preset-panda': 1.7.1
-      '@pandacss/shared': 1.7.1
-      '@pandacss/types': 1.7.1
+      '@pandacss/logger': 1.7.2
+      '@pandacss/preset-base': 1.7.2
+      '@pandacss/preset-panda': 1.7.2
+      '@pandacss/shared': 1.7.2
+      '@pandacss/types': 1.7.2
       bundle-n-require: 1.1.2
       escalade: 3.2.0
       microdiff: 1.5.0
       typescript: 5.9.3
 
-  '@pandacss/core@1.7.1':
+  '@pandacss/core@1.7.2':
     dependencies:
       '@csstools/postcss-cascade-layers': 5.0.2(postcss@8.5.6)
-      '@pandacss/is-valid-prop': 1.7.1
-      '@pandacss/logger': 1.7.1
-      '@pandacss/shared': 1.7.1
-      '@pandacss/token-dictionary': 1.7.1
-      '@pandacss/types': 1.7.1
+      '@pandacss/is-valid-prop': 1.7.2
+      '@pandacss/logger': 1.7.2
+      '@pandacss/shared': 1.7.2
+      '@pandacss/token-dictionary': 1.7.2
+      '@pandacss/types': 1.7.2
       browserslist: 4.28.0
       hookable: 5.5.3
       lightningcss: 1.30.2
@@ -11184,18 +11205,18 @@ snapshots:
       postcss-selector-parser: 7.1.1
       ts-pattern: 5.9.0
 
-  '@pandacss/dev@1.7.1(typescript@5.9.3)':
+  '@pandacss/dev@1.7.2(typescript@5.9.3)':
     dependencies:
       '@clack/prompts': 0.11.0
-      '@pandacss/config': 1.7.1
-      '@pandacss/logger': 1.7.1
-      '@pandacss/node': 1.7.1(typescript@5.9.3)
-      '@pandacss/postcss': 1.7.1(typescript@5.9.3)
-      '@pandacss/preset-base': 1.7.1
-      '@pandacss/preset-panda': 1.7.1
-      '@pandacss/shared': 1.7.1
-      '@pandacss/token-dictionary': 1.7.1
-      '@pandacss/types': 1.7.1
+      '@pandacss/config': 1.7.2
+      '@pandacss/logger': 1.7.2
+      '@pandacss/node': 1.7.2(typescript@5.9.3)
+      '@pandacss/postcss': 1.7.2(typescript@5.9.3)
+      '@pandacss/preset-base': 1.7.2
+      '@pandacss/preset-panda': 1.7.2
+      '@pandacss/shared': 1.7.2
+      '@pandacss/token-dictionary': 1.7.2
+      '@pandacss/types': 1.7.2
       cac: 6.7.14
     transitivePeerDependencies:
       - jsdom
@@ -11210,47 +11231,47 @@ snapshots:
       - jsdom
       - typescript
 
-  '@pandacss/extractor@1.7.1(typescript@5.9.3)':
+  '@pandacss/extractor@1.7.2(typescript@5.9.3)':
     dependencies:
-      '@pandacss/shared': 1.7.1
+      '@pandacss/shared': 1.7.2
       ts-evaluator: 1.2.0(typescript@5.9.3)
       ts-morph: 27.0.2
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/generator@1.7.1':
+  '@pandacss/generator@1.7.2':
     dependencies:
-      '@pandacss/core': 1.7.1
-      '@pandacss/is-valid-prop': 1.7.1
-      '@pandacss/logger': 1.7.1
-      '@pandacss/shared': 1.7.1
-      '@pandacss/token-dictionary': 1.7.1
-      '@pandacss/types': 1.7.1
+      '@pandacss/core': 1.7.2
+      '@pandacss/is-valid-prop': 1.7.2
+      '@pandacss/logger': 1.7.2
+      '@pandacss/shared': 1.7.2
+      '@pandacss/token-dictionary': 1.7.2
+      '@pandacss/types': 1.7.2
       javascript-stringify: 2.1.0
       outdent: 0.8.0
       pluralize: 8.0.0
       postcss: 8.5.6
       ts-pattern: 5.9.0
 
-  '@pandacss/is-valid-prop@1.7.1': {}
+  '@pandacss/is-valid-prop@1.7.2': {}
 
-  '@pandacss/logger@1.7.1':
+  '@pandacss/logger@1.7.2':
     dependencies:
-      '@pandacss/types': 1.7.1
+      '@pandacss/types': 1.7.2
       kleur: 4.1.5
 
-  '@pandacss/node@1.7.1(typescript@5.9.3)':
+  '@pandacss/node@1.7.2(typescript@5.9.3)':
     dependencies:
-      '@pandacss/config': 1.7.1
-      '@pandacss/core': 1.7.1
-      '@pandacss/generator': 1.7.1
-      '@pandacss/logger': 1.7.1
-      '@pandacss/parser': 1.7.1(typescript@5.9.3)
-      '@pandacss/reporter': 1.7.1
-      '@pandacss/shared': 1.7.1
-      '@pandacss/token-dictionary': 1.7.1
-      '@pandacss/types': 1.7.1
+      '@pandacss/config': 1.7.2
+      '@pandacss/core': 1.7.2
+      '@pandacss/generator': 1.7.2
+      '@pandacss/logger': 1.7.2
+      '@pandacss/parser': 1.7.2(typescript@5.9.3)
+      '@pandacss/reporter': 1.7.2
+      '@pandacss/shared': 1.7.2
+      '@pandacss/token-dictionary': 1.7.2
+      '@pandacss/types': 1.7.2
       browserslist: 4.28.0
       chokidar: 4.0.3
       fast-glob: 3.3.3
@@ -11260,6 +11281,7 @@ snapshots:
       lodash.merge: 4.6.2
       look-it-up: 2.1.0
       outdent: 0.8.0
+      p-limit: 5.0.0
       package-manager-detector: 1.6.0
       perfect-debounce: 1.0.0
       picomatch: 4.0.3
@@ -11274,14 +11296,14 @@ snapshots:
       - jsdom
       - typescript
 
-  '@pandacss/parser@1.7.1(typescript@5.9.3)':
+  '@pandacss/parser@1.7.2(typescript@5.9.3)':
     dependencies:
-      '@pandacss/config': 1.7.1
-      '@pandacss/core': 1.7.1
-      '@pandacss/extractor': 1.7.1(typescript@5.9.3)
-      '@pandacss/logger': 1.7.1
-      '@pandacss/shared': 1.7.1
-      '@pandacss/types': 1.7.1
+      '@pandacss/config': 1.7.2
+      '@pandacss/core': 1.7.2
+      '@pandacss/extractor': 1.7.2(typescript@5.9.3)
+      '@pandacss/logger': 1.7.2
+      '@pandacss/shared': 1.7.2
+      '@pandacss/types': 1.7.2
       '@vue/compiler-sfc': 3.5.25
       magic-string: 0.30.21
       ts-morph: 27.0.2
@@ -11290,47 +11312,47 @@ snapshots:
       - jsdom
       - typescript
 
-  '@pandacss/postcss@1.7.1(typescript@5.9.3)':
+  '@pandacss/postcss@1.7.2(typescript@5.9.3)':
     dependencies:
-      '@pandacss/node': 1.7.1(typescript@5.9.3)
+      '@pandacss/node': 1.7.2(typescript@5.9.3)
       postcss: 8.5.6
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/preset-base@1.7.1':
+  '@pandacss/preset-base@1.7.2':
     dependencies:
-      '@pandacss/types': 1.7.1
+      '@pandacss/types': 1.7.2
 
-  '@pandacss/preset-panda@1.7.1':
+  '@pandacss/preset-panda@1.7.2':
     dependencies:
-      '@pandacss/types': 1.7.1
+      '@pandacss/types': 1.7.2
 
-  '@pandacss/reporter@1.7.1':
+  '@pandacss/reporter@1.7.2':
     dependencies:
-      '@pandacss/core': 1.7.1
-      '@pandacss/generator': 1.7.1
-      '@pandacss/logger': 1.7.1
-      '@pandacss/shared': 1.7.1
-      '@pandacss/types': 1.7.1
+      '@pandacss/core': 1.7.2
+      '@pandacss/generator': 1.7.2
+      '@pandacss/logger': 1.7.2
+      '@pandacss/shared': 1.7.2
+      '@pandacss/types': 1.7.2
       table: 6.9.0
       wordwrapjs: 5.1.1
 
   '@pandacss/shared@0.36.1': {}
 
-  '@pandacss/shared@1.7.1': {}
+  '@pandacss/shared@1.7.2': {}
 
-  '@pandacss/token-dictionary@1.7.1':
+  '@pandacss/token-dictionary@1.7.2':
     dependencies:
-      '@pandacss/logger': 1.7.1
-      '@pandacss/shared': 1.7.1
-      '@pandacss/types': 1.7.1
+      '@pandacss/logger': 1.7.2
+      '@pandacss/shared': 1.7.2
+      '@pandacss/types': 1.7.2
       picomatch: 4.0.3
       ts-pattern: 5.9.0
 
   '@pandacss/types@0.36.1': {}
 
-  '@pandacss/types@1.7.1': {}
+  '@pandacss/types@1.7.2': {}
 
   '@polka/url@1.0.0-next.29': {}
 
@@ -12152,13 +12174,17 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xyflow/react@12.10.0(@types/react@19.2.7)(immer@11.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@xstate/store@3.14.0(react@19.2.3)':
+    optionalDependencies:
+      react: 19.2.3
+
+  '@xyflow/react@12.10.0(@types/react@19.2.7)(immer@11.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@xyflow/system': 0.0.74
       classcat: 5.0.5
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
-      zustand: 4.5.7(@types/react@19.2.7)(immer@11.0.1)(react@19.2.3)
+      zustand: 4.5.7(@types/react@19.2.7)(immer@11.1.0)(react@19.2.3)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -13380,7 +13406,7 @@ snapshots:
 
   fast-deep-equal@3.1.3: {}
 
-  fast-equals@5.4.0: {}
+  fast-equals@6.0.0: {}
 
   fast-glob@3.3.3:
     dependencies:
@@ -13914,7 +13940,7 @@ snapshots:
 
   ignore@5.3.2: {}
 
-  immer@11.0.1: {}
+  immer@11.1.0: {}
 
   import-lazy@4.0.0: {}
 
@@ -15067,16 +15093,16 @@ snapshots:
       '@oxlint-tsgolint/win32-arm64': 0.10.0
       '@oxlint-tsgolint/win32-x64': 0.10.0
 
-  oxlint@1.34.0(oxlint-tsgolint@0.10.0):
+  oxlint@1.35.0(oxlint-tsgolint@0.10.0):
     optionalDependencies:
-      '@oxlint/darwin-arm64': 1.34.0
-      '@oxlint/darwin-x64': 1.34.0
-      '@oxlint/linux-arm64-gnu': 1.34.0
-      '@oxlint/linux-arm64-musl': 1.34.0
-      '@oxlint/linux-x64-gnu': 1.34.0
-      '@oxlint/linux-x64-musl': 1.34.0
-      '@oxlint/win32-arm64': 1.34.0
-      '@oxlint/win32-x64': 1.34.0
+      '@oxlint/darwin-arm64': 1.35.0
+      '@oxlint/darwin-x64': 1.35.0
+      '@oxlint/linux-arm64-gnu': 1.35.0
+      '@oxlint/linux-arm64-musl': 1.35.0
+      '@oxlint/linux-x64-gnu': 1.35.0
+      '@oxlint/linux-x64-musl': 1.35.0
+      '@oxlint/win32-arm64': 1.35.0
+      '@oxlint/win32-x64': 1.35.0
       oxlint-tsgolint: 0.10.0
 
   p-debounce@5.1.0: {}
@@ -15092,6 +15118,10 @@ snapshots:
   p-limit@3.1.0:
     dependencies:
       yocto-queue: 0.1.0
+
+  p-limit@5.0.0:
+    dependencies:
+      yocto-queue: 1.1.1
 
   p-limit@6.2.0:
     dependencies:
@@ -15144,9 +15174,9 @@ snapshots:
 
   pako@1.0.11: {}
 
-  pandacss-preset-radix-colors@0.2.0(@pandacss/dev@1.7.1(typescript@5.9.3))(@radix-ui/colors@3.0.0):
+  pandacss-preset-radix-colors@0.2.0(@pandacss/dev@1.7.2(typescript@5.9.3))(@radix-ui/colors@3.0.0):
     dependencies:
-      '@pandacss/dev': 1.7.1(typescript@5.9.3)
+      '@pandacss/dev': 1.7.2(typescript@5.9.3)
       '@radix-ui/colors': 3.0.0
 
   parse-asn1@5.1.7:
@@ -17168,12 +17198,12 @@ snapshots:
 
   zod@4.2.1: {}
 
-  zustand@4.5.7(@types/react@19.2.7)(immer@11.0.1)(react@19.2.3):
+  zustand@4.5.7(@types/react@19.2.7)(immer@11.1.0)(react@19.2.3):
     dependencies:
       use-sync-external-store: 1.5.0(react@19.2.3)
     optionalDependencies:
       '@types/react': 19.2.7
-      immer: 11.0.1
+      immer: 11.1.0
       react: 19.2.3
 
   zwitch@2.0.4: {}

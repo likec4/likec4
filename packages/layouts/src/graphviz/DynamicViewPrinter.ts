@@ -7,7 +7,7 @@ import { stepEdgeLabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import { toArrowType } from './utils'
 
-export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, ComputedDynamicView<A>> {
+export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<ComputedDynamicView<A>> {
   protected override postBuild(G: RootGraphModel): void {
     G.delete(_.TBbalance)
     G.set(_.ordering, 'in')

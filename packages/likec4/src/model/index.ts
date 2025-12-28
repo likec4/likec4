@@ -57,6 +57,15 @@ export type {
   DeploymentRelationEndpoint,
 } from '@likec4/core/model'
 
+export type {
+  ComputedProjectEdge,
+  ComputedProjectNode,
+  ComputedProjectsView,
+  LayoutedProjectEdge,
+  LayoutedProjectNode,
+  LayoutedProjectsView,
+} from '@likec4/core/compute-view'
+
 export type * from '@likec4/core/types'
 
 export {

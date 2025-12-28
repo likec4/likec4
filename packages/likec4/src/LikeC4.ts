@@ -200,10 +200,22 @@ ${k.red('Please specify a project folder')}
    * Builds LikeC4Model from all documents
    * Only computes view predicates {@link ComputedView} - i.e. no layout
    * Not ready for rendering, but enough to traverse
+   *
+   * Sync version does not read manual layouts
+   * Use {@link computedModel} for a version that includes manual layouts
    */
-  computedModel(project?: ProjectId | undefined): LikeC4Model.Computed {
+  syncComputedModel(project?: ProjectId | undefined): LikeC4Model.Computed {
     const projectId = this.langium.shared.workspace.ProjectsManager.ensureProjectId(project)
     return this.langium.likec4.ModelBuilder.unsafeSyncComputeModel(projectId)
+  }
+
+  /**
+   * Builds LikeC4Model from all documents
+   * Only computes view predicates {@link ComputedView} - i.e. no layout
+   * Not ready for rendering, but enough to traverse
+   */
+  async computedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Computed> {
+    return await this.langium.likec4.ModelBuilder.computeModel(project)
   }
 
   projects(): NonEmptyArray<ProjectId> {
@@ -215,8 +227,7 @@ ${k.red('Please specify a project folder')}
    * Ready for rendering
    */
   async layoutedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Layouted> {
-    const projectId = this.langium.shared.workspace.ProjectsManager.ensureProjectId(project)
-    return await this.langium.likec4.LanguageServices.layoutedModel(projectId)
+    return await this.langium.likec4.LanguageServices.layoutedModel(project)
   }
 
   getErrors() {

@@ -51,7 +51,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   onNodeClick,
   onNodeContextMenu,
   onOpenSource,
-  onBurgerMenuClick,
+  onLogoClick,
   onLayoutTypeChange,
   onInitialized,
   view,
@@ -162,7 +162,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                 onNodeClick,
                 onNodeContextMenu,
                 onOpenSource,
-                onBurgerMenuClick,
+                onLogoClick,
                 onInitialized,
                 onLayoutTypeChange,
               }}>

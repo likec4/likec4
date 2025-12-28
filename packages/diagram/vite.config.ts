@@ -40,6 +40,7 @@ const defaultConfig = defineConfig({
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       'react-dom/server': resolve('src/bundle/react-dom-server-mock.ts'),
+      '@likec4/styles': resolve('styled-system'),
     },
   },
   css: {

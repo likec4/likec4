@@ -1,4 +1,4 @@
-import { filter } from 'remeda'
+import { filter, partition } from 'remeda'
 import type { ModelFqnExpr } from '../../../types'
 import { ifilter, toArray } from '../../../utils/iterable'
 import { toSet } from '../../../utils/iterable/to'
@@ -13,7 +13,10 @@ export const WildcardPredicate: PredicateExecutor<ModelFqnExpr.Wildcard> = {
       if (rootElements.length === 0) {
         return
       }
-      stage.addExplicit(rootElements)
+      const [projectElements, importedElements] = partition(rootElements, e => !e.imported)
+      stage.addExplicit(projectElements)
+      stage.addImplicit(importedElements)
+
       stage.addConnections(findConnectionsWithin(rootElements))
 
       stage.connectWithExisting(rootElements)

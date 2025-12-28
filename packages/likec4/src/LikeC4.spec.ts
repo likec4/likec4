@@ -41,7 +41,7 @@ describe.concurrent('LikeC4', () => {
     `)
     expect(likec4.hasErrors()).toBe(false)
 
-    const model = likec4.computedModel()
+    const model = likec4.syncComputedModel()
     expect([...model.element('customer').outgoing()]).toHaveLength(2)
     expect([...model.element('system').children()]).toHaveLength(2)
     expect([...model.view('index').elements()]).toHaveLength(2)
