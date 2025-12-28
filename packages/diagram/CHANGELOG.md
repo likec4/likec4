@@ -1,5 +1,17 @@
 # @likec4/diagram
 
+## 2.0.0
+
+### Minor Changes
+
+- [#2520](https://github.com/likec4/likec4/pull/2520) [`0112f3d`](https://github.com/likec4/likec4/commit/0112f3deb18d065ce1d97872095b8496cf2dfc97) Thanks [@davydkov](https://github.com/davydkov)! - - Change in LikeC4View React: callback `onBurgerMenuClick` renamed to `onLogoClick`
+
+### Patch Changes
+
+- Updated dependencies [[`dbaae67`](https://github.com/likec4/likec4/commit/dbaae67a2f00b6cacf1a0391cd8132b1d5f0e2ee), [`5e38c9b`](https://github.com/likec4/likec4/commit/5e38c9b2fced5fc43aee0326204a443d889a9d37)]:
+  - @likec4/core@2.0.0
+  - @likec4/styles@2.0.0
+
 ## 1.46.4
 
 ### Patch Changes
