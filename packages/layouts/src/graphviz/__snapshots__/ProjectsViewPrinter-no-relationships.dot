@@ -6,8 +6,8 @@ digraph {
   rankdir = "TB";
   splines = "spline";
   outputorder = "nodesfirst";
-  nodesep = 1.528;
-  ranksep = 1.667;
+  nodesep = 1.389;
+  ranksep = 1.389;
   pad = 0.209;
   fontname = "Arial";
   graph [
