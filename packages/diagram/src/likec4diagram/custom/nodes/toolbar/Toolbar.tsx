@@ -13,11 +13,12 @@ export type ToolbarProps = Omit<NodeToolbarProps, 'title'> & {
   nodeProps: BaseNodeProps
   title: ReactNode
 }
-const selectedNodesCount = (context: DiagramContext): number => {
+
+const selectSelectedNodesCount = (context: DiagramContext): number => {
   return context.xynodes.filter(x => x.selected).length
 }
 const useSelectedNodesCount = () => {
-  return useDiagramContext(selectedNodesCount)
+  return useDiagramContext(selectSelectedNodesCount)
 }
 
 export function Toolbar({ title, children, nodeProps, ...props }: ToolbarProps) {

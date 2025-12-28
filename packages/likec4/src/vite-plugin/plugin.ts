@@ -286,7 +286,8 @@ function enableEditingViaWS(
       if (!result.success) {
         logger.error(`Failed to apply view change:\n${result.error}`)
         const lines = result.error.split('\n')
-        let stackBeginAt = lines.findIndex(l => l.trim().startsWith('at'))
+        const test = /^\s+at\s+/
+        let stackBeginAt = lines.findIndex(l => test.test(l))
         if (stackBeginAt === -1) {
           stackBeginAt = lines.length
         }
