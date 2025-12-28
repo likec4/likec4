@@ -1,5 +1,6 @@
 import { unique, values } from 'remeda'
-import { type LikeC4View, isElementView, isExtendsElementView } from '../../types/view'
+import { isElementView, isExtendsElementView } from '../../types/view'
+import type { LikeC4View } from '../../types/view'
 
 import Graph from 'graphology'
 import { topologicalSort } from 'graphology-dag/topological-sort'
@@ -42,7 +43,7 @@ export function resolveRulesExtendedViews<A extends AnyAux, V extends Record<any
     g.addDirectedEdge(view.id, view.extends)
   }
 
-  const sorted = topologicalSort(g).reverse()
+  const sorted = topologicalSort(g).toReversed()
   return sorted.reduce((acc, id) => {
     const view = g.getNodeAttribute(id, 'view')
     if (!isExtendsElementView(view)) {

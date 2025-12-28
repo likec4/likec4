@@ -14,7 +14,7 @@
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
-    "lint": "run -T eslint src/ --fix",
+    "lint": "pnpm -T oxlint --type-aware",
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",

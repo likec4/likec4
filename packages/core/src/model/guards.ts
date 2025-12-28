@@ -1,13 +1,14 @@
 import type { Any, AnyAux } from '../types'
 import {
-  type DeploymentElementModel,
   DeployedInstanceModel,
   DeploymentNodeModel,
   DeploymentRelationModel,
   NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
+import type { DeploymentElementModel } from './DeploymentElementModel'
 import { ElementModel } from './ElementModel'
-import { type AnyRelationshipModel, RelationshipModel } from './RelationModel'
+import { RelationshipModel } from './RelationModel'
+import type { AnyRelationshipModel } from './RelationModel'
 import { EdgeModel } from './view/EdgeModel'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import { NodeModel } from './view/NodeModel'

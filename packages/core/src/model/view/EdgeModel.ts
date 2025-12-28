@@ -1,16 +1,14 @@
-import {
-  type Any,
-  type aux,
-  type Color,
-  type IteratorLike,
-  type RelationshipArrowType,
-  type RelationshipLineType,
-  type RichTextOrEmpty,
-  type scalar,
-  type StepEdgeId,
-  extractStep,
-  isStepEdgeId,
-  RichText,
+import { extractStep, isStepEdgeId, RichText } from '../../types'
+import type {
+  Any,
+  aux,
+  Color,
+  IteratorLike,
+  RelationshipArrowType,
+  RelationshipLineType,
+  RichTextOrEmpty,
+  scalar,
+  StepEdgeId,
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'

@@ -68,7 +68,7 @@ export type NTuple<
   Result extends Array<unknown> = [],
 > = Result['length'] extends N ? Result : NTuple<T, N, [...Result, T]>
 
-export type IteratorLike<T> = IteratorObject<T, BuiltinIteratorReturn, unknown>
+export type IteratorLike<T> = IteratorObject<T, BuiltinIteratorReturn>
 
 export type Predicate<T> = (x: T) => boolean
 

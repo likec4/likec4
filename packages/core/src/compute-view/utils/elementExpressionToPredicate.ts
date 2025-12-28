@@ -1,9 +1,5 @@
-import {
-  type Predicate,
-  FqnRef,
-  ModelFqnExpr,
-  whereOperatorAsPredicate,
-} from '../../types'
+import { FqnRef, ModelFqnExpr, whereOperatorAsPredicate } from '../../types'
+import type { Predicate } from '../../types'
 import { nonexhaustive, parentFqn } from '../../utils'
 
 export function elementExprToPredicate<T extends { id: string; tags: readonly string[]; kind: string }>(

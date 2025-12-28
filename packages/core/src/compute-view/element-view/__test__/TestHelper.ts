@@ -134,7 +134,7 @@ export class TestHelper<T extends AnyTypes> {
     },
   })
 
-  expectElements = (elements: ReadonlySet<ElementModel<Any>>) => ({
+  expectElements = (elements: ReadonlySet<ElementModel>) => ({
     toEqual: <const Id extends ViewPredicate.DeploymentConnectionExpression<T>>(...ids: Id[]) => {
       this._expect(toArray(imap(elements, prop('id')))).toEqual(ids)
     },
@@ -165,14 +165,14 @@ export class TestHelper<T extends AnyTypes> {
   })
 
   expect(value: typeof this.CompView): ReturnType<typeof this['expectView']>
-  expect(value: Set<ElementModel<Any>>): ReturnType<typeof this['expectElements']>
+  expect(value: Set<ElementModel>): ReturnType<typeof this['expectElements']>
   expect(value: ReadonlyArray<typeof this.Connection>): ReturnType<typeof this['expectConnections']>
   expect(value: Memory | ProcessPredicates<T>): ReturnType<typeof this['expectMemory']>
   expect(
     value:
       | Memory
       | ProcessPredicates<T>
-      | Set<ElementModel<Any>>
+      | Set<ElementModel>
       | typeof this.CompView
       | ReadonlyArray<typeof this.Connection>,
   ) {

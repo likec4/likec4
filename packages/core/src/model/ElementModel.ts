@@ -1,19 +1,15 @@
 import { isEmpty, isShallowEqual, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import type { Any, AnyAux, Color, IteratorLike } from '../types'
-import {
-  type Element as C4Element,
-  type ElementShape as C4ElementShape,
-  type ElementStyle,
-  type IconUrl,
-  type Link,
-  type ProjectId,
-  type RichTextOrEmpty,
-  exact,
-  preferDescription,
-  preferSummary,
-  RichText,
-  splitGlobalFqn,
+import { exact, preferDescription, preferSummary, RichText, splitGlobalFqn } from '../types'
+import type {
+  Element as C4Element,
+  ElementShape as C4ElementShape,
+  ElementStyle,
+  IconUrl,
+  Link,
+  ProjectId,
+  RichTextOrEmpty,
 } from '../types'
 import * as aux from '../types/_aux'
 import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, nameFromFqn, sortNaturalByFqn } from '../utils'
@@ -222,7 +218,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
    *  (from root to closest)
    */
   public *descendingSiblings(): ElementsIterator<A> {
-    for (const ancestor of [...this.ancestors()].reverse()) {
+    for (const ancestor of [...this.ancestors()].toReversed()) {
       yield* ancestor.siblings()
     }
     yield* this.siblings()

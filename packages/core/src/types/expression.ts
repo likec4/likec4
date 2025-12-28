@@ -25,7 +25,7 @@ export namespace FqnExpr {
     wildcard: true
   }
   export function isWildcard<A extends AnyAux>(expr: Expression<A>): expr is FqnExpr.Wildcard {
-    return 'wildcard' in expr && expr.wildcard === true
+    return 'wildcard' in expr && expr.wildcard
   }
 
   export interface ModelRef<M extends AnyAux = AnyAux> {

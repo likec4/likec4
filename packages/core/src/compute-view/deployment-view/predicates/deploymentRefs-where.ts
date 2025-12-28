@@ -1,4 +1,5 @@
-import { type FqnExpr, whereOperatorAsPredicate } from '../../../types'
+import { whereOperatorAsPredicate } from '../../../types'
+import type { FqnExpr } from '../../../types'
 import type { PredicateExecutor } from '../_types'
 import type { StageExclude, StageInclude } from '../memory'
 import { predicateToPatch } from './utils'

@@ -1,6 +1,7 @@
 import { isTruthy, map, mapToObj, pipe } from 'remeda'
 import type { SetOptional } from 'type-fest'
-import { type ComputedView, flattenMarkdownOrString } from '../../types'
+import { flattenMarkdownOrString } from '../../types'
+import type { ComputedView } from '../../types'
 import { objectHash } from '../../utils'
 
 export function calcViewLayoutHash<V extends ComputedView>(view: SetOptional<V, 'hash'>): V {

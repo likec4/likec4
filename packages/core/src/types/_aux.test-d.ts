@@ -34,25 +34,25 @@ function expectAuxTypes<A>() {
 type AllResolvedAsStringWithStage<S extends ModelStage> = {
   stage: S
   projectId: string
-  fqn: scalar.Fqn<string>
+  fqn: scalar.Fqn
   elementId: string
   viewId: string
   deploymentId: string
-  deploymentFqn: scalar.DeploymentFqn<string>
+  deploymentFqn: scalar.DeploymentFqn
   elementKind: string
   deploymentKind: string
   relationKind: string
   tag: string
   metadataKey: string
   strict: {
-    projectId: scalar.ProjectId<string>
-    fqn: scalar.Fqn<string>
-    deploymentFqn: scalar.DeploymentFqn<string>
-    viewId: scalar.ViewId<string>
-    elementKind: scalar.ElementKind<string>
-    deploymentKind: scalar.DeploymentKind<string>
-    relationKind: scalar.RelationshipKind<string>
-    tag: scalar.Tag<string>
+    projectId: scalar.ProjectId
+    fqn: scalar.Fqn
+    deploymentFqn: scalar.DeploymentFqn
+    viewId: scalar.ViewId
+    elementKind: scalar.ElementKind
+    deploymentKind: scalar.DeploymentKind
+    relationKind: scalar.RelationshipKind
+    tag: scalar.Tag
   }
 }
 
@@ -244,13 +244,13 @@ describe('Aux', () => {
     expectTypeOf<aux.Metadata<any>>().toEqualTypeOf<Record<string, string | string[]>>()
 
     // Check StrictTypes from aux.*
-    expectTypeOf<aux.StrictFqn<any>>().toEqualTypeOf<scalar.Fqn<string>>()
-    expectTypeOf<aux.StrictDeploymentFqn<any>>().toEqualTypeOf<scalar.DeploymentFqn<string>>()
-    expectTypeOf<aux.StrictViewId<any>>().toEqualTypeOf<scalar.ViewId<string>>()
-    expectTypeOf<aux.StrictProjectId<any>>().toEqualTypeOf<scalar.ProjectId<string>>()
-    expectTypeOf<aux.StrictElementKind<any>>().toEqualTypeOf<scalar.ElementKind<string>>()
-    expectTypeOf<aux.StrictDeploymentKind<any>>().toEqualTypeOf<scalar.DeploymentKind<string>>()
-    expectTypeOf<aux.StrictRelationKind<any>>().toEqualTypeOf<scalar.RelationshipKind<string>>()
-    expectTypeOf<aux.StrictTag<any>>().toEqualTypeOf<scalar.Tag<string>>()
+    expectTypeOf<aux.StrictFqn<any>>().toEqualTypeOf<scalar.Fqn>()
+    expectTypeOf<aux.StrictDeploymentFqn<any>>().toEqualTypeOf<scalar.DeploymentFqn>()
+    expectTypeOf<aux.StrictViewId<any>>().toEqualTypeOf<scalar.ViewId>()
+    expectTypeOf<aux.StrictProjectId<any>>().toEqualTypeOf<scalar.ProjectId>()
+    expectTypeOf<aux.StrictElementKind<any>>().toEqualTypeOf<scalar.ElementKind>()
+    expectTypeOf<aux.StrictDeploymentKind<any>>().toEqualTypeOf<scalar.DeploymentKind>()
+    expectTypeOf<aux.StrictRelationKind<any>>().toEqualTypeOf<scalar.RelationshipKind>()
+    expectTypeOf<aux.StrictTag<any>>().toEqualTypeOf<scalar.Tag>()
   })
 })

@@ -1,19 +1,16 @@
 import { isNullish } from 'remeda'
-import {
-  type AnyAux,
-  type DynamicViewIncludeRule,
-  type DynamicViewRule,
-  type ElementViewPredicate,
-  type ElementViewRule,
-  type ModelGlobals,
-  type ParsedDynamicView,
-  type ParsedElementView,
-  type ViewRuleGlobalPredicateRef,
-  type ViewRuleGlobalStyle,
-  isDynamicView,
-  isElementView,
-  isViewRuleGlobalPredicateRef,
-  isViewRuleGlobalStyle,
+import { isDynamicView, isElementView, isViewRuleGlobalPredicateRef, isViewRuleGlobalStyle } from '../../types'
+import type {
+  AnyAux,
+  DynamicViewIncludeRule,
+  DynamicViewRule,
+  ElementViewPredicate,
+  ElementViewRule,
+  ModelGlobals,
+  ParsedDynamicView,
+  ParsedElementView,
+  ViewRuleGlobalPredicateRef,
+  ViewRuleGlobalStyle,
 } from '../../types'
 import { nonexhaustive } from '../../utils'
 

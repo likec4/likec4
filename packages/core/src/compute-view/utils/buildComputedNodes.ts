@@ -1,17 +1,8 @@
 import { omit } from 'remeda'
 import type { Except } from 'type-fest'
 import type { ElementModel } from '../../model'
-import {
-  type AnyAux,
-  type aux,
-  type ComputedNode,
-  type LikeC4StylesConfig,
-  type scalar,
-  type Unknown,
-  exact,
-  GroupElementKind,
-  preferSummary,
-} from '../../types'
+import { exact, GroupElementKind, preferSummary } from '../../types'
+import type { AnyAux, aux, ComputedNode, LikeC4StylesConfig, scalar, Unknown } from '../../types'
 import { nonNullable } from '../../utils'
 import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
 import { NodesGroup } from '../element-view/memory'

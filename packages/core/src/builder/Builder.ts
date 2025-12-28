@@ -32,27 +32,20 @@ import type {
   Specification,
   TagSpecification,
 } from '../types'
-import {
-  type DeploymentElement,
-  type DeploymentRelation,
-  type Element,
-  type Fqn,
-  type IconUrl,
-  type LikeC4View,
-  type Link,
-  type ModelGlobals,
-  type ModelRelation,
-  type NonEmptyArray,
-  type ParsedDeploymentView as DeploymentView,
-  type RelationId,
-  _stage,
-  _type,
-  exact,
-  FqnRef,
-  isDeployedInstance,
-  isElementView,
-  isGlobalFqn,
-  splitGlobalFqn,
+import { _stage, _type, exact, FqnRef, isDeployedInstance, isElementView, isGlobalFqn, splitGlobalFqn } from '../types'
+import type {
+  DeploymentElement,
+  DeploymentRelation,
+  Element,
+  Fqn,
+  IconUrl,
+  LikeC4View,
+  Link,
+  ModelGlobals,
+  ModelRelation,
+  NonEmptyArray,
+  ParsedDeploymentView as DeploymentView,
+  RelationId,
 } from '../types'
 import { DefaultMap, invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
@@ -69,7 +62,8 @@ import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelper
 import { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 import type { ElementViewRulesBuilder } from './Builder.view-element'
-import { type ViewsBuilder, type ViewsBuilderFunction, type ViewsHelpers, mkViewBuilder } from './Builder.views'
+import { mkViewBuilder } from './Builder.views'
+import type { ViewsBuilder, ViewsBuilderFunction, ViewsHelpers } from './Builder.views'
 import type { BuilderMethods } from './Builder.with'
 
 export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
@@ -269,7 +263,7 @@ function toMarkdownOrString(input: string | MarkdownOrString | null | undefined)
 
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _spec: Spec,
-  _elements = new Map<string, Element<Any>>(),
+  _elements = new Map<string, Element>(),
   _relations = [] as ModelRelation[],
   _views = new Map<string, LikeC4View>(),
   _globals = {
@@ -279,7 +273,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   } as ModelGlobals,
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
-  _imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map()),
+  _imports = new DefaultMap<string, Map<string, Element>>(() => new Map()),
 ): Builder<T> {
   const spec = validateSpec(_spec)
 
@@ -351,7 +345,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       return { model }
     }
     if ('project' in endpoint || 'deployment' in endpoint) {
-      return endpoint as FqnRef
+      return endpoint
     }
     return parseRelEndpoint(endpoint.model)
   }
@@ -361,7 +355,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       throw new Error('Types are not available in runtime')
     },
     clone: () => {
-      const imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
+      const imports = new DefaultMap<string, Map<string, Element>>(() => new Map())
       for (const [key, value] of _imports) {
         imports.set(key, structuredClone(value))
       }

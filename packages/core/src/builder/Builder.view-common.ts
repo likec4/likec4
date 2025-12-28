@@ -1,15 +1,15 @@
 import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
-import {
-  type Any,
-  type AnyAux,
-  type AnyViewRuleStyle as ViewRuleStyle,
-  type AutoLayoutDirection,
-  type Expression,
-  type ModelRelationExpr,
-  type NonEmptyArray,
-  type WhereOperator,
-  ModelFqnExpr,
+import { ModelFqnExpr } from '../types'
+import type {
+  Any,
+  AnyAux,
+  AnyViewRuleStyle as ViewRuleStyle,
+  AutoLayoutDirection,
+  Expression,
+  ModelRelationExpr,
+  NonEmptyArray,
+  WhereOperator,
 } from '../types'
 import type { Participant, ParticipantOperator } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
@@ -97,7 +97,7 @@ export namespace ViewPredicate {
   }
 }
 
-function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator<Any> {
+function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator {
   if (isString(where)) {
     const op = where as LiteralUnion<ViewPredicate.WhereEq<AnyTypes>, string>
     switch (true) {
@@ -176,7 +176,7 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
       if (condition) {
         expr = {
           where: {
-            expr: expr as any,
+            expr: expr,
             condition,
           },
         }
@@ -189,20 +189,20 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
           expr = {
             custom: {
               ...custom,
-              expr: expr as any,
+              expr: expr,
             },
           }
         } else {
           expr = {
             customRelation: {
               ...custom,
-              expr: expr as any,
+              expr: expr,
             },
           }
         }
       }
     }
-    b.include(expr as any)
+    b.include(expr)
     return b
   }
 }

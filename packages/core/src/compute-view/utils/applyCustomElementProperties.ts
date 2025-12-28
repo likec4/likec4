@@ -1,16 +1,6 @@
 import { isEmpty, isNullish, omitBy } from 'remeda'
-import {
-  type AnyAux,
-  type ComputedNode,
-  type ComputedNodeStyle,
-  type ElementViewRule,
-  type ModelExpression,
-  exact,
-  isGroupElementKind,
-  isViewRuleGroup,
-  isViewRulePredicate,
-  ModelFqnExpr,
-} from '../../types'
+import { exact, isGroupElementKind, isViewRuleGroup, isViewRulePredicate, ModelFqnExpr } from '../../types'
+import type { AnyAux, ComputedNode, ComputedNodeStyle, ElementViewRule, ModelExpression } from '../../types'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 export function flattenGroupRules<A extends AnyAux, T extends ModelExpression<A>>(

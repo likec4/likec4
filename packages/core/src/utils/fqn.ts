@@ -112,7 +112,7 @@ export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, anothe
     return Math.abs(firstDepth - secondDepth)
   }
 
-  const ancestor = commonAncestor(first as Fqn, second as Fqn)
+  const ancestor = commonAncestor(first, second)
   const ancestorDepth = ancestor ? hierarchyLevel(ancestor) : 0
 
   return firstDepth + secondDepth - (2 * ancestorDepth + 1)
@@ -270,7 +270,7 @@ export function sortParentsFirst<T extends { id: string }, A extends IterableCon
  */
 export function sortNaturalByFqn(
   sort?: 'asc' | 'desc',
-): <I extends WithId<string>, A extends IterableContainer<I>>(array: A) => ReorderedArray<A>
+): <I extends WithId, A extends IterableContainer<I>>(array: A) => ReorderedArray<A>
 export function sortNaturalByFqn<A extends IterableContainer<WithId>>(
   array: A,
   sort?: 'asc' | 'desc',

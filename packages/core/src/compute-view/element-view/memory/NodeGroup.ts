@@ -1,5 +1,6 @@
 import type { ElementModel } from '../../../model'
-import { type AnyAux, type ElementViewRuleGroup, type NodeId, GroupElementKind } from '../../../types'
+import { GroupElementKind } from '../../../types'
+import type { AnyAux, ElementViewRuleGroup, NodeId } from '../../../types'
 
 export class NodesGroup<A extends AnyAux = AnyAux> {
   static readonly kind = GroupElementKind
@@ -16,7 +17,7 @@ export class NodesGroup<A extends AnyAux = AnyAux> {
     return this.elements.size === 0
   }
 
-  update(elements: ReadonlySet<ElementModel<AnyAux>>): NodesGroup<A> {
+  update(elements: ReadonlySet<ElementModel>): NodesGroup<A> {
     return new NodesGroup(
       this.id,
       this.viewRule,

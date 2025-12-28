@@ -1,12 +1,7 @@
 import { filter, hasAtLeast, only } from 'remeda'
 import type { ConnectionModel, LikeC4Model } from '../../model'
-import {
-  type AnyAux,
-  type ComputedEdge,
-  type ComputedNode,
-  type scalar,
-  exact,
-} from '../../types'
+import { exact } from '../../types'
+import type { AnyAux, ComputedEdge, ComputedNode, scalar } from '../../types'
 import { invariant } from '../../utils'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'

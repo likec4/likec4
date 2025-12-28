@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": [
+    "../../.oxlintrc.json"
+  ],
+  "rules": {
+    "typescript/no-unsafe-type-assertion": "off"
+  }
+}

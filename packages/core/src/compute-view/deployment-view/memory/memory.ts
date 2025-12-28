@@ -1,21 +1,23 @@
 import { isDeepEqual } from 'remeda'
 import type { DeploymentElementModel } from '../../../model'
-import { type DeploymentConnectionModel, differenceConnections } from '../../../model'
+import { differenceConnections } from '../../../model'
+import type { DeploymentConnectionModel } from '../../../model'
 import type { AnyAux, Expression } from '../../../types'
 import { difference as differenceSet } from '../../../utils'
 import { customInspectSymbol } from '../../../utils/const'
 import { toArray } from '../../../utils/iterable'
-import { type ComputeCtx, type StageExpression, AbstractMemory } from '../../memory'
+import { AbstractMemory } from '../../memory'
+import type { ComputeCtx, StageExpression } from '../../memory'
 import { StageExclude } from '../stages/stage-exclude'
 import { StageInclude } from '../stages/stage-include'
 
 export type Ctx = ComputeCtx<
-  DeploymentElementModel<AnyAux>,
-  DeploymentConnectionModel<AnyAux>,
+  DeploymentElementModel,
+  DeploymentConnectionModel,
   Memory,
   StageInclude,
   StageExclude,
-  Expression<AnyAux>
+  Expression
 >
 
 export class Memory extends AbstractMemory<Ctx> {

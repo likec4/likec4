@@ -5,12 +5,11 @@ import type {
   LikeC4DeploymentModel,
   RelationshipModel,
 } from '../../../model'
-import {
-  type ConnectionModel,
-  findConnectionsBetween as findModelConnectionsBetween,
-} from '../../../model/connection/model'
+import { findConnectionsBetween as findModelConnectionsBetween } from '../../../model/connection/model'
+import type { ConnectionModel } from '../../../model/connection/model'
 import type { AnyAux } from '../../../types'
-import { type RelationExpr, FqnExpr } from '../../../types'
+import { FqnExpr } from '../../../types'
+import type { RelationExpr } from '../../../types'
 import { invariant } from '../../../utils'
 import type { PredicateExecutor } from '../_types'
 import {
@@ -154,7 +153,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
     const isTarget = deploymentExpressionToPredicate(expr.target)
     const isSource = deploymentExpressionToPredicate(expr.source)
 
-    let modelRelationsToExclude: ReadonlySet<RelationshipModel<AnyAux>>
+    let modelRelationsToExclude: ReadonlySet<RelationshipModel>
     switch (true) {
       // * -> *
       case FqnExpr.isWildcard(expr.source) && FqnExpr.isWildcard(expr.target):

@@ -169,7 +169,7 @@ export class RichText {
     if ('txt' in source) {
       return source.txt
     }
-    return memoizeProp(this, symb_text, () => markdownToText(source.md!))
+    return memoizeProp(this, symb_text, () => markdownToText(source.md))
   }
 
   /**
@@ -204,7 +204,7 @@ export class RichText {
     if ('txt' in source) {
       return source.txt
     }
-    return memoizeProp(this, symb_html, () => markdownToHtml(source.md!))
+    return memoizeProp(this, symb_html, () => markdownToHtml(source.md))
   }
 
   equals(other: unknown): boolean {

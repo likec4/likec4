@@ -1,7 +1,8 @@
 import { concat, constant, filter, flatMap, hasAtLeast, map, partition, pipe, piped, prop, when } from 'remeda'
 import type { ElementModel, RelationshipModel } from '../../../model'
 import { ConnectionModel } from '../../../model'
-import { type AnyAux, type ModelRelationExpr, FqnRef, ModelFqnExpr } from '../../../types'
+import { FqnRef, ModelFqnExpr } from '../../../types'
+import type { AnyAux, ModelRelationExpr } from '../../../types'
 import { invariant, isSameHierarchy } from '../../../utils'
 import { ifilter, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
 import { intersection, union } from '../../../utils/set'
@@ -16,10 +17,9 @@ import {
 } from './_utils'
 
 const isWildcard = ModelFqnExpr.isWildcard
-const isAncestorOrDescendantOf = (a: ElementModel<AnyAux>, b: ElementModel<AnyAux>) =>
-  a.isAncestorOf(b) || a.isDescendantOf(b)
+const isAncestorOrDescendantOf = (a: ElementModel, b: ElementModel) => a.isAncestorOf(b) || a.isDescendantOf(b)
 
-export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Direct<AnyAux>> = {
+export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Direct> = {
   include: ({ expr: { source, target, isBidirectional = false }, memory, model, stage, where, filterWhere }) => {
     const sourceIsWildcard = isWildcard(source)
     const targetIsWildcard = isWildcard(target)
@@ -65,7 +65,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
           flatMap(source =>
             pipe(
               source,
-              when(constant(isBidirectional === true), {
+              when(constant(isBidirectional), {
                 onTrue: s => union(s.allIncoming, s.allOutgoing),
                 onFalse: s => s.allOutgoing,
               }),
@@ -126,7 +126,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
           flatMap(target =>
             pipe(
               target,
-              when(constant(isBidirectional === true), {
+              when(constant(isBidirectional), {
                 onTrue: s => union(s.allIncoming, s.allOutgoing),
                 onFalse: s => s.allIncoming,
               }),
@@ -201,7 +201,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
     const sourceIsWildcard = isWildcard(source)
     const targetIsWildcard = isWildcard(target)
 
-    let relations: Set<RelationshipModel<AnyAux>>
+    let relations: Set<RelationshipModel>
 
     switch (true) {
       // * -> *
@@ -266,7 +266,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
         const sources = resolveElements(model, source)
         const targets = resolveElements(model, target)
 
-        let accum = new Set<RelationshipModel<AnyAux>>()
+        let accum = new Set<RelationshipModel>()
         for (const source of sources) {
           for (const target of targets) {
             if (isSameHierarchy(source, target)) {

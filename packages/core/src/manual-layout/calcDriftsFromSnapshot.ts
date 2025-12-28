@@ -1,12 +1,12 @@
 import { castDraft, produce } from 'immer'
 import { hasAtLeast, pipe } from 'remeda'
-import {
-  type DiagramEdge,
-  type DiagramNode,
-  type LayoutedView,
-  type LayoutedViewDriftReason,
-  type ViewManualLayoutSnapshot,
-  _layout,
+import { _layout } from '../types'
+import type {
+  DiagramEdge,
+  DiagramNode,
+  LayoutedView,
+  LayoutedViewDriftReason,
+  ViewManualLayoutSnapshot,
 } from '../types'
 import { ifilter, ihead } from '../utils'
 import { applyManualLayout } from './applyManualLayout'

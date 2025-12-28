@@ -3,14 +3,6 @@ import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import type { RelationshipModel } from '../../model/RelationModel'
 import {
-  type AnyAux,
-  type ComputedElementView,
-  type ComputedNode,
-  type ComputedRankConstraint,
-  type ElementViewRule,
-  type ModelGlobals,
-  type NodeId,
-  type ParsedElementView,
   isViewRuleAutoLayout,
   isViewRuleGroup,
   isViewRulePredicate,
@@ -19,6 +11,16 @@ import {
   ModelFqnExpr,
   ModelRelationExpr,
   whereOperatorAsPredicate,
+} from '../../types'
+import type {
+  AnyAux,
+  ComputedElementView,
+  ComputedNode,
+  ComputedRankConstraint,
+  ElementViewRule,
+  ModelGlobals,
+  NodeId,
+  ParsedElementView,
 } from '../../types'
 import { invariant, nonexhaustive, nonNullable, sortParentsFirst } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
@@ -32,7 +34,8 @@ import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import type { Connection, Elem, PredicateCtx } from './_types'
-import { type NodesGroup, type Stage, Memory } from './memory'
+import { Memory } from './memory'
+import type { NodesGroup, Stage } from './memory'
 import { ActiveGroupMemory } from './memory/memory'
 import { StageFinal } from './memory/stage-final'
 import { ExpandedElementPredicate } from './predicates/element-expand'

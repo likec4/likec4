@@ -57,8 +57,8 @@ export type AnyView<A extends Any = Any> =
   | LayoutedDeploymentView<A>
   | LayoutedDynamicView<A>
 
-export type ViewOnStage<V extends AnyView<Any>, T extends ModelStage> = Extract<V, { [_stage]: T }>
-export type ViewWithType<V extends AnyView<Any>, T extends ViewType> = Extract<V, { [_type]: T }>
+export type ViewOnStage<V extends AnyView, T extends ModelStage> = Extract<V, { [_stage]: T }>
+export type ViewWithType<V extends AnyView, T extends ViewType> = Extract<V, { [_type]: T }>
 
 export type ViewRule<A extends Any = Any> = ParsedView<A>['rules'][number]
 export type ViewRulePredicate<A extends Any = Any> = Extract<

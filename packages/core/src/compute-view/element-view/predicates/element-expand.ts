@@ -1,4 +1,5 @@
-import { type AnyAux, type ModelFqnExpr, FqnRef } from '../../../types'
+import { FqnRef } from '../../../types'
+import type { AnyAux, ModelFqnExpr } from '../../../types'
 import type { Elem, PredicateExecutor } from '../_types'
 import { findConnectionsWithin, resolveElements } from './_utils'
 

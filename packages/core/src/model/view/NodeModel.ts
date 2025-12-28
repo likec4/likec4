@@ -1,18 +1,16 @@
 import { isTruthy } from 'remeda'
-import {
-  type Any,
-  type Color,
-  type ComputedNodeStyle,
-  type ElementShape as C4ElementShape,
-  type IconUrl,
-  type IteratorLike,
-  type LayoutedView,
-  type Link,
-  type RichTextOrEmpty,
-  type scalar,
-  GroupElementKind,
-  isGroupElementKind,
-  RichText,
+import { GroupElementKind, isGroupElementKind, RichText } from '../../types'
+import type {
+  Any,
+  Color,
+  ComputedNodeStyle,
+  ElementShape as C4ElementShape,
+  IconUrl,
+  IteratorLike,
+  LayoutedView,
+  Link,
+  RichTextOrEmpty,
+  scalar,
 } from '../../types'
 import type * as aux from '../../types/_aux'
 import { memoizeProp } from '../../utils'

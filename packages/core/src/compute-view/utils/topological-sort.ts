@@ -35,7 +35,7 @@ function ensureParentsFirst<T extends { id: string; parent: string | null }>(
     }
     result.push(item)
   }
-  return result as Array<T>
+  return result
 }
 
 /**

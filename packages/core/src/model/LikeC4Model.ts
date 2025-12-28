@@ -41,8 +41,10 @@ import type {
   DeploymentRelationModel,
 } from './DeploymentElementModel'
 import { LikeC4DeploymentModel } from './DeploymentModel'
-import { type ElementsIterator, ElementModel } from './ElementModel'
-import { type RelationshipsIterator, RelationshipModel } from './RelationModel'
+import { ElementModel } from './ElementModel'
+import type { ElementsIterator } from './ElementModel'
+import { RelationshipModel } from './RelationModel'
+import type { RelationshipsIterator } from './RelationModel'
 import type {
   $ModelData,
   $View,

@@ -1,7 +1,8 @@
 import { fromKeys } from 'remeda'
 import { ElementColors } from './default-element-colors'
 import { RelationshipColors } from './default-relationship-colors'
-import { type LikeC4Theme, ThemeColors } from './types'
+import { ThemeColors } from './types'
+import type { LikeC4Theme } from './types'
 
 export const defaultTheme = {
   colors: fromKeys(ThemeColors, (key) => ({

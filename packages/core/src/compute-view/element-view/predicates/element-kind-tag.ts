@@ -3,7 +3,7 @@ import type { PredicateExecutor } from '../_types'
 import { findConnectionsWithin, resolveElements } from './_utils'
 
 export const ElementKindOrTagPredicate: PredicateExecutor<
-  ModelFqnExpr.ElementKindExpr<AnyAux> | ModelFqnExpr.ElementTagExpr<AnyAux>
+  ModelFqnExpr.ElementKindExpr | ModelFqnExpr.ElementTagExpr<AnyAux>
 > = {
   include: ({ expr, model, stage, filterWhere }) => {
     const elements = filterWhere(resolveElements(model, expr))

@@ -2,20 +2,17 @@ import { first, flatMap, hasAtLeast, isTruthy, map, only, pipe, reduce, unique }
 import type { ElementModel } from '../../model'
 import { findConnection } from '../../model/connection/model'
 import type { LikeC4Model } from '../../model/LikeC4Model'
-import {
-  type Any,
-  type aux,
-  type Color,
-  type DynamicStep,
-  type DynamicViewRule,
-  type DynamicViewStep,
-  type NonEmptyArray,
-  type RelationshipLineType,
-  type ViewRuleGlobalStyle,
-  exact,
-  isDynamicStepsParallel,
-  isDynamicStepsSeries,
-  isViewRulePredicate,
+import { exact, isDynamicStepsParallel, isDynamicStepsSeries, isViewRulePredicate } from '../../types'
+import type {
+  Any,
+  aux,
+  Color,
+  DynamicStep,
+  DynamicViewRule,
+  DynamicViewStep,
+  NonEmptyArray,
+  RelationshipLineType,
+  ViewRuleGlobalStyle,
 } from '../../types'
 import { compareRelations, isNonEmptyArray } from '../../utils'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'

@@ -1,7 +1,8 @@
 import { anyPass } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../../model'
 import { modelConnection } from '../../../model'
-import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
+import { FqnRef, ModelFqnExpr } from '../../../types'
+import type { AnyAux } from '../../../types'
 import { ifilter, isDescendantOf, nonexhaustive, toArray } from '../../../utils'
 import type { Elem, Memory, PredicateCtx } from '../_types'
 

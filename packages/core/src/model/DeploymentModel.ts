@@ -1,27 +1,23 @@
 import { values } from 'remeda'
 import type { LikeC4Styles } from '../styles/LikeC4Styles'
-import {
-  type Any,
-  type DeploymentElement,
-  type DeploymentRelationship,
-  type IteratorLike,
-  FqnRef,
-  isDeploymentNode,
-} from '../types'
+import { FqnRef, isDeploymentNode } from '../types'
+import type { Any, DeploymentElement, DeploymentRelationship, IteratorLike } from '../types'
 import * as aux from '../types/_aux'
 import { invariant, nonNullable } from '../utils'
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { DefaultMap } from '../utils/mnemonist'
 import {
-  type DeployedInstancesIterator,
-  type DeploymentElementModel,
-  type DeploymentElementsIterator,
-  type DeploymentNodesIterator,
   DeployedInstanceModel,
   DeploymentNodeModel,
   DeploymentRelationModel,
   NestedElementOfDeployedInstanceModel,
+} from './DeploymentElementModel'
+import type {
+  DeployedInstancesIterator,
+  DeploymentElementModel,
+  DeploymentElementsIterator,
+  DeploymentNodesIterator,
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type {

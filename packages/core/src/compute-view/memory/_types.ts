@@ -30,8 +30,7 @@ export type GenericCtx = ComputeCtx<
   Connection<any, any>,
   ComputeMemory<GenericCtx>,
   StageInclude<GenericCtx>,
-  StageExclude<GenericCtx>,
-  unknown
+  StageExclude<GenericCtx>
 >
 
 export interface State<T extends AnyCtx> {

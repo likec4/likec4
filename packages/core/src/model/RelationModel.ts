@@ -1,14 +1,7 @@
 import { isEmpty, isShallowEqual, isTruthy } from 'remeda'
 import type { AnyAux, Color, IteratorLike, Link, RelationshipArrowType, scalar } from '../types'
-import {
-  type Relationship,
-  type RelationshipLineType,
-  type RichTextOrEmpty,
-  FqnRef,
-  preferDescription,
-  preferSummary,
-  RichText,
-} from '../types'
+import { FqnRef, preferDescription, preferSummary, RichText } from '../types'
+import type { Relationship, RelationshipLineType, RichTextOrEmpty } from '../types'
 import type * as aux from '../types/_aux'
 import { commonAncestor } from '../utils/fqn'
 import type { DeploymentRelationModel } from './DeploymentElementModel'

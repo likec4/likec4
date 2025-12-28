@@ -1,14 +1,9 @@
 import { findLast, map } from 'remeda'
-import { type DeploymentConnectionModel, type LikeC4DeploymentModel, LikeC4Model } from '../../model'
+import { LikeC4Model } from '../../model'
+import type { DeploymentConnectionModel, LikeC4DeploymentModel } from '../../model'
 import type { AnyAux, DeploymentViewRule } from '../../types'
-import {
-  type ComputedDeploymentView,
-  type ParsedDeploymentView as DeploymentView,
-  _stage,
-  _type,
-  isViewRuleAutoLayout,
-  isViewRulePredicate,
-} from '../../types'
+import { _stage, _type, isViewRuleAutoLayout, isViewRulePredicate } from '../../types'
+import type { ComputedDeploymentView, ParsedDeploymentView as DeploymentView } from '../../types'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { topologicalSort } from '../utils/topological-sort'

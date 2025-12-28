@@ -1,17 +1,7 @@
 import { mapValues } from 'remeda'
 import { LikeC4Model } from '../model'
-import {
-  type AnyAux,
-  type aux,
-  type ComputedLikeC4ModelData,
-  type ComputedView,
-  type ParsedLikeC4ModelData,
-  type ParsedView,
-  _stage,
-  isDeploymentView,
-  isDynamicView,
-  isElementView,
-} from '../types'
+import { _stage, isDeploymentView, isDynamicView, isElementView } from '../types'
+import type { AnyAux, aux, ComputedLikeC4ModelData, ComputedView, ParsedLikeC4ModelData, ParsedView } from '../types'
 import type { Any, AnyParsed, ViewId } from '../types/_aux'
 import { nonexhaustive } from '../utils'
 import { computeDeploymentView } from './deployment-view/compute'

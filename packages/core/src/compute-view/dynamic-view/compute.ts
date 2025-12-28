@@ -2,13 +2,6 @@ import { findLast, isTruthy, map, pipe } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../model'
 import type { AnyAux, aux, DynamicStep, DynamicStepsSeries, scalar } from '../../types'
 import {
-  type Color,
-  type ComputedDynamicView,
-  type ComputedEdge,
-  type ParsedDynamicView as DynamicView,
-  type RelationshipArrowType,
-  type RelationshipLineType,
-  type StepEdgeId,
   _stage,
   _type,
   exact,
@@ -16,6 +9,15 @@ import {
   isDynamicStepsSeries,
   isViewRuleAutoLayout,
   stepEdgeId,
+} from '../../types'
+import type {
+  Color,
+  ComputedDynamicView,
+  ComputedEdge,
+  ParsedDynamicView as DynamicView,
+  RelationshipArrowType,
+  RelationshipLineType,
+  StepEdgeId,
 } from '../../types'
 import { intersection, invariant, nonNullable, toArray, union } from '../../utils'
 import { ancestorsFqn, commonAncestor, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'

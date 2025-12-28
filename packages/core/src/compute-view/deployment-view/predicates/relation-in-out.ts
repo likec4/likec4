@@ -1,6 +1,7 @@
 import { filter, pipe } from 'remeda'
 import type { RelationshipModel } from '../../../model'
-import { type RelationExpr, FqnExpr } from '../../../types'
+import { FqnExpr } from '../../../types'
+import type { RelationExpr } from '../../../types'
 import { invariant } from '../../../utils'
 import { union } from '../../../utils/set'
 import type { PredicateExecutor } from '../_types'

@@ -6,10 +6,10 @@ import { mergePropsFromRelationships } from './merge-props-from-relationships'
 type TestAux = aux.Any
 
 function relationship({ description, ...props }: Partial<
-  OverrideProperties<Relationship<TestAux>, {
+  OverrideProperties<Relationship, {
     description: string | MarkdownOrString
   }>
-> = {}): Relationship<TestAux> {
+> = {}): Relationship {
   if (typeof description === 'string') {
     description = { txt: description }
   }
@@ -19,7 +19,7 @@ function relationship({ description, ...props }: Partial<
     target: 'target' as any,
     ...(description && { description }),
     ...props,
-  } as Relationship<TestAux>
+  } as Relationship
 }
 
 function deploymentRelationship(

@@ -18,21 +18,21 @@ export type ConnectionWhereFilter = (connections: readonly Connection[]) => Conn
 
 export type Connections = ReadonlyArray<Connection>
 
-export interface PredicateCtx<Expr = Expression<AnyAux>> {
+export interface PredicateCtx<Expr = Expression> {
   expr: Expr
   stage: Stage
-  model: LikeC4DeploymentModel<AnyAux>
+  model: LikeC4DeploymentModel
   memory: Memory
   where: OperatorPredicate<AnyAux> | null
 }
-export interface IncludePredicateCtx<Expr = Expression<AnyAux>> extends PredicateCtx<Expr> {
+export interface IncludePredicateCtx<Expr = Expression> extends PredicateCtx<Expr> {
   stage: StageInclude
 }
-export interface ExcludePredicateCtx<Expr = Expression<AnyAux>> extends PredicateCtx<Expr> {
+export interface ExcludePredicateCtx<Expr = Expression> extends PredicateCtx<Expr> {
   stage: StageExclude
 }
 
-export interface PredicateExecutor<Expr extends Expression<AnyAux> = Expression<AnyAux>> {
+export interface PredicateExecutor<Expr extends Expression = Expression> {
   include(ctx: IncludePredicateCtx<Expr>): StageInclude | undefined
   exclude(ctx: ExcludePredicateCtx<Expr>): StageExclude | undefined
 }

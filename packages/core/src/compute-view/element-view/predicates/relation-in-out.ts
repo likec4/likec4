@@ -1,12 +1,13 @@
 import { unique } from 'remeda'
 import type { ConnectionModel } from '../../../model'
 import type { RelationshipModel } from '../../../model'
-import { type AnyAux, type ModelRelationExpr, ModelFqnExpr } from '../../../types'
+import { ModelFqnExpr } from '../../../types'
+import type { AnyAux, ModelRelationExpr } from '../../../types'
 import { toArray, toSet } from '../../../utils/iterable/to'
 import type { PredicateExecutor } from '../_types'
 import { findConnectionsBetween, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
-export const InOutRelationPredicate: PredicateExecutor<ModelRelationExpr.InOut<AnyAux>> = {
+export const InOutRelationPredicate: PredicateExecutor<ModelRelationExpr.InOut> = {
   include: ({ expr: { inout }, scope, model, memory, stage, filterWhere }) => {
     const connections = [] as ConnectionModel<AnyAux>[]
     if (ModelFqnExpr.isWildcard(inout)) {

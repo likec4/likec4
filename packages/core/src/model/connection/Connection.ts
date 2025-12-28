@@ -3,7 +3,7 @@ import { isAncestor } from '../../utils'
 import type { DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
 
-export interface Connection<Elem = ElementModel<AnyAux> | DeploymentElementModel<AnyAux>, Id = string> {
+export interface Connection<Elem = ElementModel | DeploymentElementModel, Id = string> {
   readonly id: Id
   readonly source: Elem
   readonly target: Elem

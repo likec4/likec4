@@ -14,7 +14,8 @@ import type {
   ViewManualLayoutSnapshot,
   ViewWithType,
 } from '../../types'
-import { type RichTextOrEmpty, _stage, _type, RichText } from '../../types'
+import { _stage, _type, RichText } from '../../types'
+import type { RichTextOrEmpty } from '../../types'
 import type * as aux from '../../types/_aux'
 import type { AnyComputed, AnyLayouted } from '../../types/_aux'
 import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
@@ -27,9 +28,11 @@ import type {
   WithTags,
 } from '../types'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
-import { type EdgesIterator, EdgeModel } from './EdgeModel'
+import { EdgeModel } from './EdgeModel'
+import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
-import { type NodesIterator, NodeModel } from './NodeModel'
+import { NodeModel } from './NodeModel'
+import type { NodesIterator } from './NodeModel'
 
 export type ViewsIterator<A extends Any, V extends $View<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>
 

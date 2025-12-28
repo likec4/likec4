@@ -4,9 +4,27 @@
     "es2024": true
   },
   "ignorePatterns": [
+    "apps/docs/",
     "packages/create-likec4/",
+    "packages/icons/",
     "examples/"
   ],
+  "plugins": [
+    "eslint",
+    "promise",
+    "react",
+    "react-perf",
+    "import",
+    "node",
+    "oxc",
+    "unicorn",
+    "typescript",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
   "settings": {},
   "rules": {
     "oxc/no-accumulating-spread": "error",
@@ -55,10 +73,12 @@
         "**/*.spec.ts",
         "**/*.test-d.ts",
         "**/*.spec.tsx",
-        "**/__test__/**"
+        "**/__*/**"
       ],
       "rules": {
         "typescript/no-non-null-asserted-optional-chain": "off",
+        "typescript/no-unsafe-type-assertion": "off",
+        "import/consistent-type-specifier-style": "off",
         "no-unused-vars": "off"
       }
     }

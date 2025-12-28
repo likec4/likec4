@@ -6,7 +6,6 @@ import type {
   RelationshipModel,
 } from '../../../model'
 import {
-  type DeploymentConnectionModel,
   ElementModel,
   isDeployedInstanceModel as isDeployedInstance,
   isDeploymentElementModel,
@@ -14,8 +13,10 @@ import {
   isElementModel,
   isNestedElementOfDeployedInstanceModel,
 } from '../../../model'
+import type { DeploymentConnectionModel } from '../../../model'
 import type { AnyAux } from '../../../types'
-import { type Filterable, type OperatorPredicate, FqnExpr, RelationExpr } from '../../../types'
+import { FqnExpr, RelationExpr } from '../../../types'
+import type { Filterable, OperatorPredicate } from '../../../types'
 import { nonexhaustive } from '../../../utils'
 import { hasIntersection, intersection } from '../../../utils/set'
 import type { ExcludePredicateCtx, PredicateCtx } from '../_types'

@@ -2,17 +2,8 @@ import { entries, flatMap, hasAtLeast, isEmpty, keys, map, only, prop, unique } 
 import type { ElementModel } from '../../model'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import { RelationshipModel } from '../../model/RelationModel'
-import {
-  type Any,
-  type EdgeId,
-  type NonEmptyArray,
-  type ViewId,
-  _stage,
-  GlobalFqn,
-  NodeId,
-  preferSummary,
-  ProjectId,
-} from '../../types'
+import { _stage, GlobalFqn, NodeId, preferSummary, ProjectId } from '../../types'
+import type { Any, EdgeId, NonEmptyArray, ViewId } from '../../types'
 import { invariant, nonNullable, stringHash } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
@@ -147,7 +138,7 @@ export function computeProjectsView(
     ...sorted,
   }
 }
-function buildNodesForEachModel(likec4models: NonEmptyArray<LikeC4Model<Any>>): Map<NodeId, ComputedProjectNode> {
+function buildNodesForEachModel(likec4models: NonEmptyArray<LikeC4Model>): Map<NodeId, ComputedProjectNode> {
   const nodesMap = new Map<NodeId, ComputedProjectNode>()
   for (const model of likec4models) {
     const projectId = ProjectId(model.projectId)

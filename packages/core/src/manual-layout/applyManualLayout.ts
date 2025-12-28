@@ -1,19 +1,19 @@
-import { type WritableDraft, produce } from 'immer'
+import { produce } from 'immer'
+import type { WritableDraft } from 'immer'
 import { hasAtLeast, isDeepEqual, isNullish, isNumber, isTruthy, pick, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import { buildElementNotations } from '../compute-view/utils/buildElementNotations'
-import {
-  type DiagramEdge,
-  type DiagramEdgeDriftReason,
-  type DiagramNode,
-  type DiagramNodeDriftReason,
-  type LayoutedDynamicView,
-  type LayoutedView,
-  type LayoutedViewDriftReason,
-  type MarkdownOrString,
-  type ViewManualLayoutSnapshot,
-  _layout,
-  isDynamicView,
+import { _layout, isDynamicView } from '../types'
+import type {
+  DiagramEdge,
+  DiagramEdgeDriftReason,
+  DiagramNode,
+  DiagramNodeDriftReason,
+  LayoutedDynamicView,
+  LayoutedView,
+  LayoutedViewDriftReason,
+  MarkdownOrString,
+  ViewManualLayoutSnapshot,
 } from '../types'
 import { ifilter, ihead, invariant, symmetricDifference } from '../utils'
 

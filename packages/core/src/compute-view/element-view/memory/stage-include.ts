@@ -3,7 +3,8 @@ import { modelConnection } from '../../../model'
 import { ModelExpression } from '../../../types'
 import { difference, isAncestor, isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
-import { type CtxConnection, type StageExpression, AbstractStageInclude } from '../../memory'
+import { AbstractStageInclude } from '../../memory'
+import type { CtxConnection, StageExpression } from '../../memory'
 import type { ActiveGroupCtx, ActiveGroupMemory, Ctx } from './memory'
 
 const { findConnection, findConnectionsBetween } = modelConnection
@@ -73,8 +74,8 @@ export class StageInclude<C extends Ctx = Ctx> extends AbstractStageInclude<C> {
       forEach(({ source, target, boundary }) => {
         pipe(
           zip(
-            [...toArray(source.ancestors()).reverse(), source],
-            [...toArray(target.ancestors()).reverse(), target],
+            [...toArray(source.ancestors()).toReversed(), source],
+            [...toArray(target.ancestors()).toReversed(), target],
           ),
           // Filter out common ancestors
           dropWhile(([sourceAncestor, targetAncestor]) => sourceAncestor === targetAncestor),
@@ -107,7 +108,7 @@ export class StageInclude<C extends Ctx = Ctx> extends AbstractStageInclude<C> {
   }
 }
 
-export class ActiveGroupStageInclude extends StageInclude<ActiveGroupCtx> {
+export class ActiveGroupStageInclude extends StageInclude {
   constructor(
     public override readonly memory: ActiveGroupMemory,
     public override readonly expression: StageExpression<ActiveGroupCtx>,

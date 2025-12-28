@@ -745,7 +745,7 @@ export function computeView(
       fakeModel as unknown as LikeC4Model<$Aux>,
       {
         ...emptyView,
-        rules: [args[0]].flat() as ElementViewRule<$Aux>[],
+        rules: [args[0]].flat(),
       },
     )
   } else {
@@ -754,7 +754,7 @@ export function computeView(
       {
         ...emptyView,
         viewOf: args[0] as aux.Fqn<$Aux>,
-        rules: [args[1]].flat() as ElementViewRule<$Aux>[],
+        rules: [args[1]].flat(),
       },
     )
   }

@@ -1,13 +1,6 @@
 import { anyPass, filter, forEach, isDefined, isEmpty, isNot, pipe } from 'remeda'
-import {
-  type AnyAux,
-  type AnyViewRuleStyle,
-  type ComputedNode,
-  type ElementViewRule,
-  type Predicate,
-  isGroupElementKind,
-  isViewRuleStyle,
-} from '../../types'
+import { isGroupElementKind, isViewRuleStyle } from '../../types'
+import type { AnyAux, AnyViewRuleStyle, ComputedNode, ElementViewRule, Predicate } from '../../types'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 export function applyViewRuleStyle<A extends AnyAux>(

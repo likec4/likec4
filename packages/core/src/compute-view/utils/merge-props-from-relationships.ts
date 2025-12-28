@@ -1,15 +1,15 @@
 import { isDeepEqual, isNullish, isTruthy, only, pick, pickBy, pipe, reduce, unique } from 'remeda'
-import {
-  type AnyAux,
-  type aux,
-  type Color,
-  type DeploymentRelationship,
-  type NonEmptyArray,
-  type Relationship,
-  type RelationshipArrowType,
-  type RelationshipLineType,
-  type scalar,
-  exact,
+import { exact } from '../../types'
+import type {
+  AnyAux,
+  aux,
+  Color,
+  DeploymentRelationship,
+  NonEmptyArray,
+  Relationship,
+  RelationshipArrowType,
+  RelationshipLineType,
+  scalar,
 } from '../../types'
 import { isNonEmptyArray } from '../../utils'
 
