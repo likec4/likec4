@@ -1,5 +1,5 @@
 import { useLikeC4Projects } from '@likec4/diagram'
-import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
+import { Button, Menu, MenuDivider, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
 import { useCurrentProject } from '../../hooks'
@@ -25,6 +25,17 @@ export function SelectProject() {
       </MenuTarget>
 
       <MenuDropdown>
+        <MenuItem
+          renderRoot={(props) => (
+            <Link
+              {...props}
+              to={'/projects'}
+            />
+          )}
+        >
+          Projects overview
+        </MenuItem>
+        <MenuDivider />
         {projects.map(({ id, title }) => (
           <MenuItem
             key={id}

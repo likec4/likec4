@@ -5,7 +5,14 @@ export const Route = createFileRoute('/')({
   component: () => {
     const projects = useLikeC4Projects()
     if (projects.length > 1) {
-      return <Navigate to="/projects/" replace />
+      return (
+        <Navigate
+          to="/projects/"
+          mask={{
+            to: '/',
+            unmaskOnReload: true,
+          }} />
+      )
     }
     return (
       <Navigate

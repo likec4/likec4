@@ -5,8 +5,10 @@ import { useActorRef } from '@xstate/react'
 import { ReactFlowProvider } from '@xyflow/react'
 import { LayoutGroup } from 'motion/react'
 import { useEffect, useRef } from 'react'
+import type { ViewPadding } from '../LikeC4Diagram.props'
 import { projectOverviewLogic } from './actor'
 import { ProjectsOverviewActorContext } from './context'
+import { ProjectsOverviewPanel } from './panel/ProjectsOverviewPanel'
 import { type ProjectsOverviewXYProps, ProjectsOverviewXY } from './ProjectsOverviewXY'
 
 export type ProjectsOverviewProps = {
@@ -15,20 +17,28 @@ export type ProjectsOverviewProps = {
   /**
    * Callback when project is selected (e.g. clicked)
    */
-  onSelectProject?: undefined | ((projectId: ProjectId) => void)
+  onNavigateToProject?: undefined | ((projectId: ProjectId) => void)
+
+  fitViewPadding?: ViewPadding | undefined
 } & ProjectsOverviewXYProps
 
 type ReactFlowProviderProps = Omit<Parameters<typeof ReactFlowProvider>[0], 'children'>
 
 export function ProjectsOverview({
   view,
-  onSelectProject,
+  onNavigateToProject,
+  fitViewPadding = {
+    top: '50px',
+    bottom: '32px',
+    left: '32px',
+    right: '32px',
+  },
   ...props
 }: ProjectsOverviewProps) {
   const actorRef = useActorRef(
     projectOverviewLogic,
     {
-      input: { view },
+      input: { view, fitViewPadding },
     },
   )
 
@@ -36,12 +46,12 @@ export function ProjectsOverview({
     actorRef.send({ type: 'update.view', view })
   }, [actorRef, view])
 
-  const onSelectProjectRef = useSyncedRef(onSelectProject)
+  const onNavigateToProjectRef = useSyncedRef(onNavigateToProject)
 
   useEffect(() => {
     const subs = [
-      actorRef.on('select.project', ({ projectId }) => {
-        onSelectProjectRef.current?.(projectId)
+      actorRef.on('navigate.to', ({ projectId }) => {
+        onNavigateToProjectRef.current?.(projectId)
       }),
     ]
     return () => {
@@ -64,6 +74,7 @@ export function ProjectsOverview({
         <LayoutGroup id={actorRef.sessionId} inherit={false}>
           <ProjectsOverviewXY {...props} />
         </LayoutGroup>
+        <ProjectsOverviewPanel />
       </ReactFlowProvider>
     </ProjectsOverviewActorContext.Provider>
   )

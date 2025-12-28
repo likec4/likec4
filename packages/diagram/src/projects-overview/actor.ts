@@ -1,4 +1,4 @@
-import { type ProjectId, BBox, invariant, nonexhaustive, nonNullable } from '@likec4/core'
+import { type NodeId, type ProjectId, BBox, invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import type { LayoutedProjectsView } from '@likec4/core/compute-view'
 import {
   applyEdgeChanges,
@@ -6,7 +6,13 @@ import {
   getViewportForBounds,
 } from '@xyflow/react'
 import type { EdgeChange, NodeChange } from '@xyflow/system'
-import { animate, mapValue, motionValue, styleEffect } from 'motion'
+import {
+  animate,
+  mapValue,
+  motionValue,
+  stagger,
+  styleEffect,
+} from 'motion'
 import type { MouseEvent } from 'react'
 import { clamp } from 'remeda'
 import type { Simplify } from 'type-fest'
@@ -20,12 +26,14 @@ import {
 import { assign, emit } from 'xstate/actions'
 import { MinZoom } from '../base'
 import { Base } from '../base/Base'
+import type { ViewPadding } from '../custom'
 import type { ProjectsOverviewTypes, ProjectsOverviewXYFLowInstance, ProjectsOverviewXYStoreApi } from './_types'
 import { layoutedProjectsViewToXYFlow } from './layouted-to-xyflow'
 import { ProjectsOverviewViewportPersistence } from './persistence'
 
 export type Input = {
   view: LayoutedProjectsView
+  fitViewPadding: ViewPadding
 }
 
 export interface Context {
@@ -36,12 +44,13 @@ export interface Context {
   xystore: ProjectsOverviewXYStoreApi | null
   xyflow: ProjectsOverviewXYFLowInstance | null
   view: LayoutedProjectsView
+  fitViewPadding: ViewPadding
   xynodes: ProjectsOverviewTypes.Node[]
   xyedges: ProjectsOverviewTypes.Edge[]
   navigateTo?: ProjectsOverviewTypes.Node
 }
 
-export type EmittedEvents = { type: 'select.project'; projectId: ProjectId; node: ProjectsOverviewTypes.Node }
+export type EmittedEvents = { type: 'navigate.to'; projectId: ProjectId }
 
 /**
  * Converts a union of events to a union of events with a prefix.
@@ -51,6 +60,7 @@ type EmitEach<T extends { type: string }> = {
 }[T['type']]
 
 export type Events =
+  | { type: 'navigate.to'; projectId: ProjectId; fromNode: NodeId }
   | { type: 'xyflow.init'; xyflow: ProjectsOverviewXYFLowInstance; xystore: ProjectsOverviewXYStoreApi }
   | { type: 'xyflow.click.node'; node: ProjectsOverviewTypes.Node }
   | { type: 'xyflow.click.edge'; edge: ProjectsOverviewTypes.Edge }
@@ -81,6 +91,10 @@ const machine = setup({
     isReady: ({ context }) =>
       context.initialized.xydata
       && context.initialized.xyflow && !!context.xystore && !!context.xyflow,
+    'click: selected node': ({ event }) => {
+      assertEvent(event, ['xyflow.click.node'])
+      return event.node.selected === true
+    },
   },
 })
 
@@ -215,7 +229,7 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
       height,
       MinZoom,
       maxZoom,
-      '32px',
+      context.fitViewPadding,
     )
     viewport.x = Math.round(viewport.x)
     viewport.y = Math.round(viewport.y)
@@ -253,16 +267,38 @@ const dispose = () =>
     xynodes: [],
   })
 
+const assignNavigateTo = () =>
+  machine.assign(({ event, context }) => {
+    let navigateTo
+    switch (event.type) {
+      case 'xyflow.click.node': {
+        navigateTo = event.node
+        break
+      }
+      case 'navigate.to': {
+        navigateTo = nonNullable(context.xynodes.find(n => n.id === event.fromNode), `Node ${event.fromNode} not found`)
+        break
+      }
+      default: {
+        console.warn(`Unexpected event ${event.type} in assignNavigateTo`)
+        return {}
+      }
+    }
+    return {
+      navigateTo,
+    }
+  })
+
 const _projectOverviewLogic = machine.createMachine({
   id: 'projects-overview',
   context: ({ input }) => ({
+    ...input,
     initialized: {
       xydata: false,
       xyflow: false,
     },
     xyflow: null,
     xystore: null,
-    view: input.view,
     xynodes: [],
     xyedges: [],
   }),
@@ -316,6 +352,10 @@ const _projectOverviewLogic = machine.createMachine({
         restoreViewport(),
       ],
       on: {
+        'navigate.to': {
+          actions: assignNavigateTo(),
+          target: 'navigate',
+        },
         'xyflow.applyNodeChanges': {
           actions: xyflowApplyNodeChanges(),
         },
@@ -325,12 +365,13 @@ const _projectOverviewLogic = machine.createMachine({
         'xyflow.mouse.*': {
           actions: onMouseEnterOrLeave(),
         },
-        'xyflow.click.node': {
-          actions: assign({
-            navigateTo: ({ event }) => event.node,
-          }),
-          target: 'navigate',
-        },
+        'xyflow.click.node': [
+          {
+            guard: 'click: selected node',
+            actions: assignNavigateTo(),
+            target: 'navigate',
+          },
+        ],
         'xyflow.click.*': {
           actions: handleClick(),
         },
@@ -344,80 +385,96 @@ const _projectOverviewLogic = machine.createMachine({
     },
     navigate: {
       tags: 'active',
-
       entry: [
         cancelFitDiagram(),
         saveViewport(),
         assign({
-          xynodes: ({ context }) =>
-            context.xynodes.map(n => {
-              if (n.id === context.navigateTo?.id) {
-                return n
-              }
-              return {
-                ...n,
-                style: {
-                  ...n.style,
-                  opacity: .2,
-                },
-              }
-            }),
           xyedges: [],
         }),
         ({ context: { navigateTo, xyflow, xystore }, self }) => {
           invariant(xyflow && navigateTo, 'Invalid state, xyflow is undefined')
-          const { width, height, domNode } = nonNullable(xystore).getState()
+          const { width, domNode } = nonNullable(xystore).getState()
           const nextZoom = clamp(
             Math.min(
-              (width - 200) / (navigateTo.data.width),
-              (height - 200) / (navigateTo.data.height),
+              (width * 2 / 3) / (navigateTo.data.width),
+              // (height - 200) / (navigateTo.data.height),
             ),
-            { min: MinZoom, max: 3 },
+            { min: MinZoom, max: 2.5 },
           )
           const next = {
-            x: Math.round(-nextZoom * (navigateTo.position.x)) + 100,
-            y: Math.round(-nextZoom * (navigateTo.position.y)) + 100,
+            x: Math.round(
+              -nextZoom * (navigateTo.position.x) + (width - nextZoom * navigateTo.data.width) / 2,
+            ),
+            y: Math.round(-nextZoom * (navigateTo.position.y)) + 50,
           }
           const current = xyflow.getViewport()
 
-          // const a = mix()
-          const v = motionValue(0)
+          const otherNodes = domNode!.querySelectorAll(
+            `.react-flow__node-project:not([data-id="${navigateTo.id}"]) > *`,
+          )
+
+          const otherNodesAnimation = animate(otherNodes, {
+            opacity: 0,
+            scale: .9,
+          }, {
+            visualDuration: .25,
+            delay: stagger(.08, { from: 'center' }),
+          })
+
+          // Target node
+          const v = motionValue(1)
 
           const transform = mapValue(
             v,
-            [0, 1],
+            [1, 0],
             [
               `translate(${current.x}px, ${current.y}px) scale(${current.zoom})`,
               `translate(${next.x}px, ${next.y}px) scale(${nextZoom})`,
             ],
           )
-          const opacity = mapValue(
-            v,
-            [0, 0.7, 1],
-            [1, 0.6, 0],
+
+          const cancelViewportAnimation = styleEffect(
+            domNode!.querySelector('.xyflow__viewport')!,
+            { transform },
+          )
+          const cancelOpacityAnimation = styleEffect(
+            domNode!.querySelector(`.react-flow__node-project:is([data-id="${navigateTo.id}"]) > *`)!,
+            { opacity: v },
           )
 
-          styleEffect(domNode!.querySelector('.xyflow__viewport')!, {
-            transform,
-            opacity,
-          })
+          const targetAnimation = animate(
+            v,
+            0,
+            {
+              delay: otherNodes.length > 3 ? .25 : 0,
+              type: 'spring',
+              stiffness: 350,
+              damping: 40,
+              mass: 1.5,
+              visualDuration: .55,
+            },
+          )
 
-          animate(v, 1, {
-            ease: 'easeOut',
-          }).finished.then(() => {
+          Promise.race([
+            targetAnimation.finished,
+            sleep(750),
+          ]).then(() => {
+            cancelViewportAnimation()
+            cancelOpacityAnimation()
+            targetAnimation.stop()
+            otherNodesAnimation.stop()
             self.send({
-              type: 'emit.select.project',
-              node: navigateTo,
+              type: 'emit.navigate.to',
               projectId: navigateTo.data.projectId,
             })
           })
         },
       ],
       on: {
-        'emit.select.project': {
+        'emit.navigate.to': {
           actions: emit(({ event }) => ({
             ...event,
-            type: 'select.project',
+            type: 'navigate.to',
           })),
         },
       },
@@ -458,4 +515,7 @@ export interface ProjectsOverviewActorRef extends ActorRef<ProjectsOverviewSnaps
 
 export type {
   Input as ProjectsOverviewInput,
+}
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }

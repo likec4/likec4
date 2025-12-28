@@ -251,6 +251,7 @@ export function LikeC4DiagramXYFlow({
       nodesDraggable={nodesDraggable}
       nodesSelectable={nodesSelectable}
       elevateEdgesOnSelect={!enableReadOnly}
+      zIndexMode="manual"
       {...(nodesDraggable && layoutConstraints)}
       {...props}
       {...reactFlowProps}>

@@ -1,10 +1,10 @@
 import { type Color, type ElementShape, type ElementStyle, ensureSizes } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
+import { elementNode } from '@likec4/styles/recipes'
 import type { MotionNodeLayoutOptions } from 'motion/react'
 import * as m from 'motion/react-m'
 import { type CSSProperties, type PropsWithChildren, forwardRef } from 'react'
 import type { BaseNodePropsWithData } from '../../base/types'
-import * as styles from './ElementNodeContainer.css'
 
 type RequiredData = {
   color: Color
@@ -60,9 +60,8 @@ export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContai
     <m.div
       ref={ref}
       className={cx(
-        styles.container,
+        elementNode(),
         'group',
-        'likec4-element-node',
         className,
       )}
       initial={false}

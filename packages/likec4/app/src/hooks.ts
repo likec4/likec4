@@ -1,7 +1,7 @@
 import type { LayoutedView, LayoutType } from '@likec4/core/types'
 import { useUpdateEffect } from '@likec4/diagram'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
-import { useParams } from '@tanstack/react-router'
+import { useMatches, useParams } from '@tanstack/react-router'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { useLikeC4Projects } from 'likec4:projects'
 import { useEffect, useState } from 'react'
@@ -84,9 +84,11 @@ export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType)
 
 export function useCurrentProject() {
   const projects = useLikeC4Projects()
-  const projectId = useParams({
-    select: (params) => params.projectId,
-    strict: false,
+  const projectId = useMatches({
+    select: (m) =>
+      m.find(m => m.routeId === '/project/$projectId')?.params?.projectId
+        ?? m.at(-1)?.context.projectId
+        ?? 'default',
   })
   return (projects.find(p => p.id === projectId) ?? projects[0])
 }

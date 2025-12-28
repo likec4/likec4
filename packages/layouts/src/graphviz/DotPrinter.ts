@@ -1,7 +1,6 @@
 import type { LikeC4Styles } from '@likec4/core/styles'
 import type {
   AnyFqn,
-  ComputedEdge,
   ComputedNode,
   ComputedView,
   DeploymentFqn,

@@ -12,21 +12,21 @@ import { type ProjectsOverviewProps, ProjectsOverview } from './projects-overvie
 export type LikeC4ProjectsOverviewProps = Simplify<
   Omit<ProjectsOverviewProps, 'id'> & {
     className?: string
-    onSelectProject?: ProjectsOverviewProps['onSelectProject']
+    onSelectProject?: ProjectsOverviewProps['onNavigateToProject']
   }
 >
 
 export function LikeC4ProjectsOverview({
   view,
   className,
-  onSelectProject,
+  onNavigateToProject,
   ...props
 }: LikeC4ProjectsOverviewProps) {
   const onChangeLikeC4Project = useChangeLikeC4Project()
   const id = useId()
 
   // If no onSelectProject is provided, try from the context
-  onSelectProject ??= onChangeLikeC4Project
+  onNavigateToProject ??= onChangeLikeC4Project
 
   return (
     <EnsureMantine>
@@ -35,7 +35,7 @@ export function LikeC4ProjectsOverview({
         <RootContainer id={id} className={className}>
           <ProjectsOverview
             view={view}
-            onSelectProject={onSelectProject}
+            onNavigateToProject={onNavigateToProject}
             {...props} />
         </RootContainer>
       </FramerMotionConfig>

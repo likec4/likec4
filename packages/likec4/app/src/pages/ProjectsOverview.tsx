@@ -7,7 +7,7 @@ export function ProjectsOverviewPage() {
   return (
     <LikeC4ProjectsOverview
       view={projectsOverview}
-      onSelectProject={changeProject}
+      onNavigateToProject={changeProject}
     />
   )
 }
