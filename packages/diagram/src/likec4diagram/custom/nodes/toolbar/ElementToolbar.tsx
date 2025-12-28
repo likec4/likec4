@@ -4,7 +4,7 @@ import { IconCheck, IconSelector } from '@tabler/icons-react'
 import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import { stopPropagation } from '../../../../utils/xyflow'
 import type { Types } from '../../../types'
-import { BrowseRelationshipsButton, GoToSourceButton } from './_shared'
+import { BorderStyleOption, BrowseRelationshipsButton, GoToSourceButton } from './_shared'
 import { ColorButton } from './ColorButton'
 import { Toolbar } from './Toolbar'
 import type { OnStyleChange } from './types'
@@ -16,6 +16,7 @@ export function ElementToolbar(props: Types.NodeProps<'element'>) {
     data: {
       shape,
       modelFqn,
+      style,
     },
   } = props
 
@@ -26,15 +27,18 @@ export function ElementToolbar(props: Types.NodeProps<'element'>) {
       nodeProps={props}
       title={modelFqn}
       align="start">
-      <ElementShapeButton
-        elementShape={shape}
-        onChange={onChange}
-      />
       <ColorButton
         elementColor={elementColor}
         onColorPreview={onColorPreview}
         onChange={onChange}
-        position="right-end"
+      />
+      <ElementShapeButton
+        elementShape={shape}
+        onChange={onChange}
+      />
+      <BorderStyleOption
+        elementBorderStyle={style?.border ?? 'none'}
+        onChange={onChange}
       />
       {enableVscode && <GoToSourceButton elementId={modelFqn} />}
       {enableRelationshipBrowser && <BrowseRelationshipsButton fqn={modelFqn} />}
@@ -49,6 +53,7 @@ export function DeploymentElementToolbar(props: Types.NodeProps<'deployment'>) {
       shape,
       deploymentFqn,
       modelFqn,
+      style,
     },
   } = props
 
@@ -59,15 +64,18 @@ export function DeploymentElementToolbar(props: Types.NodeProps<'deployment'>) {
       nodeProps={props}
       title={deploymentFqn}
       align="start">
-      <ElementShapeButton
-        elementShape={shape}
-        onChange={onChange}
-      />
       <ColorButton
         elementColor={elementColor}
         onColorPreview={onColorPreview}
         onChange={onChange}
-        position="right-end"
+      />
+      <ElementShapeButton
+        elementShape={shape}
+        onChange={onChange}
+      />
+      <BorderStyleOption
+        elementBorderStyle={style?.border ?? 'none'}
+        onChange={onChange}
       />
       {enableVscode && <GoToSourceButton deploymentId={deploymentFqn} />}
       {enableRelationshipBrowser && modelFqn && <BrowseRelationshipsButton fqn={modelFqn} />}
@@ -104,7 +112,8 @@ function ElementShapeButton({
         <Button
           variant="light"
           color="gray"
-          size="compact-xs"
+          size="xs"
+          px={8}
           rightSection={<IconSelector size={12} />}
         >
           {elementShape}

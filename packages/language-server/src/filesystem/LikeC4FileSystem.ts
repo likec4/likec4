@@ -27,7 +27,7 @@ export const isLikeC4File = (path: string, isDirectory: boolean = false) =>
 
 const isLikeC4ConfigFile = (path: string, isDirectory: boolean) => !isDirectory && isLikeC4Config(path)
 
-const excludeNodeModules = (dirName: string) => dirName === 'node_modules' || dirName === '.git' || dirName === '.svn'
+const excludeNodeModules = (dirName: string) => ['node_modules', '.git', '.svn', '.yarn', '.pnpm'].includes(dirName)
 
 /**
  * Compare function for document paths to ensure consistent order

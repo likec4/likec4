@@ -412,7 +412,9 @@
         "mobile",
         "cylinder",
         "storage",
-        "queue"
+        "queue",
+        "bucket",
+        "document"
       ]
     },
     "GroupDefaultStyleValues": {

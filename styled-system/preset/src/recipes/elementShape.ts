@@ -48,6 +48,7 @@ export const elementShapeRecipe = defineRecipe({
       html: parts({
         root: {
           backgroundColor: 'var(--likec4-palette-fill)',
+          border: 'none',
           borderRadius: '[6px]',
           boxShadow: {
             base: [
@@ -136,7 +137,7 @@ export const elementShapeRecipe = defineRecipe({
             fill: 'var(--likec4-palette-stroke)',
           },
           '& [data-likec4-fill="mix-stroke"]': {
-            fill: '[color-mix(in oklab, var(--likec4-palette-stroke) 90%, var(--likec4-palette-fill))]',
+            fill: '[color-mix(in oklab, var(--likec4-palette-stroke) 80%, var(--likec4-palette-fill))]',
           },
         },
         multipleSvg: {
@@ -165,16 +166,40 @@ export const elementShapeRecipe = defineRecipe({
         },
         outline: {
           stroke: 'var(--likec4-palette-outline)',
-          fill: '[none]',
-          strokeWidth: 3,
+          fill: 'none',
+          strokeWidth: 4,
           strokeOpacity: 0.8,
           animationStyle: 'indicator',
         },
       }),
     },
+    withBorder: {
+      true: {},
+      false: {},
+    },
   },
+  defaultVariants: {
+    withBorder: false,
+  },
+  compoundVariants: [{
+    shapetype: 'html',
+    withBorder: true,
+    css: parts({
+      root: {
+        borderStyle: 'solid',
+        borderWidth: '3px',
+        borderColor: 'var(--likec4-palette-stroke)',
+        '--likec4-outline-size': '6px',
+      },
+      outline: {
+        borderRadius: '10px',
+      },
+    }),
+  }],
   staticCss: [{
     shapetype: ['*'],
+    withBorder: ['*'],
+    responsive: true,
     conditions: ['*'],
   }],
 })

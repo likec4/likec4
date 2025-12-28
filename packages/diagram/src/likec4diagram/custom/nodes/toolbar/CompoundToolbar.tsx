@@ -1,12 +1,8 @@
-import type { BorderStyle } from '@likec4/core'
-import { Box, SegmentedControl } from '@mantine/core'
-import { useEffect, useState } from 'react'
 import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import type { Types } from '../../../types'
-import { BrowseRelationshipsButton, GoToSourceButton } from './_shared'
+import { BorderStyleOption, BrowseRelationshipsButton, GoToSourceButton } from './_shared'
 import { ColorButton } from './ColorButton'
 import { Toolbar } from './Toolbar'
-import type { OnStyleChange } from './types'
 import { useHandlers } from './useHandlers'
 
 export function CompoundElementToolbar(props: Types.NodeProps<'compound-element'>) {
@@ -75,46 +71,5 @@ export function CompoundDeploymentToolbar(props: Types.NodeProps<'compound-deplo
       {enableVscode && <GoToSourceButton deploymentId={deploymentFqn} />}
       {enableRelationshipBrowser && modelFqn && <BrowseRelationshipsButton fqn={modelFqn} />}
     </Toolbar>
-  )
-}
-
-function BorderStyleOption({
-  elementBorderStyle = 'dashed',
-  onChange,
-}: {
-  elementBorderStyle: BorderStyle | undefined
-  onChange: OnStyleChange
-}) {
-  const [value, setValue] = useState(elementBorderStyle)
-  useEffect(() => {
-    setValue(elementBorderStyle)
-  }, [elementBorderStyle])
-
-  return (
-    <Box>
-      <SegmentedControl
-        size="xs"
-        fullWidth
-        withItemsBorders={false}
-        value={value}
-        onChange={v => {
-          const border = v as BorderStyle
-          setValue(border)
-          onChange({ border })
-        }}
-        styles={{
-          label: {
-            paddingTop: '0.5',
-            paddingBottom: '0.5',
-          },
-        }}
-        data={[
-          { label: 'Solid', value: 'solid' },
-          { label: 'Dashed', value: 'dashed' },
-          { label: 'Dotted', value: 'dotted' },
-          { label: 'None', value: 'none' },
-        ]}
-      />
-    </Box>
   )
 }

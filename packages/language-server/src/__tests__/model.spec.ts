@@ -1,7 +1,8 @@
+import { ElementShapes } from '@likec4/core/styles'
 import { describe } from 'vitest'
 import { test } from './asserts'
 
-describe.concurrent('model', () => {
+describe('model', () => {
   // https://github.com/likec4/likec4/issues/2049
   test('name does not coflict with hex').valid`
     specification {
@@ -55,6 +56,17 @@ describe.concurrent('model', () => {
       element el1
       element el2
     }`
+
+  for (const shape of ElementShapes) {
+    test(`allow element with name of shape "${shape}"`).valid`
+      specification {
+        element ${shape}
+      }
+      model {
+        ${shape} el1
+        el2 = ${shape}
+      }`
+  }
 
   test('allow element with kind "model"').valid`
     specification {

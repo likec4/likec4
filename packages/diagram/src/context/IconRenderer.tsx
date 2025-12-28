@@ -5,6 +5,7 @@ import {
   IconBrowser,
   IconCylinder,
   IconDeviceMobile,
+  IconFileText,
   IconRectangularPrism,
   IconReorder,
   IconUser,
@@ -88,6 +89,8 @@ const ShapeIcons = {
   queue: IconReorder,
   rectangle: IconRectangularPrism,
   storage: IconCylinder,
+  bucket: IconCylinder,
+  document: IconFileText,
 } as const satisfies {
   [key in ElementShape]: ForwardRefExoticComponent<
     IconProps & RefAttributes<SVGSVGElement>
