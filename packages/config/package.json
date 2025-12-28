@@ -75,7 +75,7 @@
   "peerDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
-    "esbuild": "^0.27.1",
+    "esbuild": "^0.27.2",
     "vscode-uri": "catalog:vscode"
   },
   "peerDependenciesMeta": {
