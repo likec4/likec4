@@ -52,7 +52,7 @@ export const compoundNode = defineRecipe({
       padding: '0',
       margin: '0',
       pointerEvents: 'none',
-      backgroundClip: 'content-box',
+      backgroundClip: 'padding-box',
       borderStyle: 'solid',
       borderWidth: borderWidth.ref,
       borderRadius: borderRadius.ref,

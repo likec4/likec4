@@ -25,6 +25,8 @@ const mmdshape = ({ shape }: Node): [start: string, end: string] => {
     case 'storage':
       return ['([', '])']
     case 'mobile':
+    case 'document':
+    case 'bucket':
     case 'browser':
     case 'rectangle': {
       return ['[', ']']

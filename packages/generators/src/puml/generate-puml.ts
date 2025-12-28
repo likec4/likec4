@@ -60,6 +60,7 @@ const pumlShape = ({ shape }: ComputedNode) => {
   switch (shape) {
     case 'queue':
     case 'rectangle':
+    case 'document':
     case 'person': {
       return shape
     }
@@ -68,6 +69,7 @@ const pumlShape = ({ shape }: ComputedNode) => {
       return 'database' as const
     }
     case 'mobile':
+    case 'bucket':
     case 'browser': {
       return 'rectangle' as const
     }
