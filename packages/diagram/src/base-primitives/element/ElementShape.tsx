@@ -56,7 +56,7 @@ const PersonIcon = {
 } as const
 
 type ShapeSvgProps = {
-  shape: Exclude<ElementShape, 'rectangle'>
+  shape: Exclude<ElementShape, 'rectangle' | 'bucket' | 'document'>
   w: number
   h: number
 }
