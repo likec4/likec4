@@ -21,6 +21,9 @@
     },
     {
       "path": "../diagram/tsconfig.json"
+    },
+    {
+      "path": "../../styled-system/styles/tsconfig.json"
     }
   ]
 }
