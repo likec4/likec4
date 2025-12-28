@@ -389,7 +389,7 @@ overrides:
   vscode-oniguruma: 2.0.1
   vscode-uri: 3.1.0
   type-fest: ^4.41.0
-  turbo: 2.7.0
+  turbo: 2.7.2
   sharp: 0.34.5
   caniuse-lite: ^1.0.30001761
   mnemonist: 0.40.3
@@ -449,8 +449,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 2.7.2
+        version: 2.7.2
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -728,8 +728,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 2.7.2
+        version: 2.7.2
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -880,8 +880,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 2.7.2
+        version: 2.7.2
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1004,8 +1004,8 @@ importers:
         specifier: catalog:utils
         version: 2.32.0
       turbo:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 2.7.2
+        version: 2.7.2
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1361,8 +1361,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 2.7.2
+        version: 2.7.2
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -1464,8 +1464,8 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4
       turbo:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 2.7.2
+        version: 2.7.2
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1717,8 +1717,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 2.7.2
+        version: 2.7.2
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1845,8 +1845,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 2.7.2
+        version: 2.7.2
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1959,8 +1959,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 2.7.2
+        version: 2.7.2
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -8097,38 +8097,38 @@ packages:
   tty-browserify@0.0.1:
     resolution: {integrity: sha512-C3TaO7K81YvjCgQH9Q1S3R3P3BtN3RIM8n+OvX4il1K1zgE8ZhI0op7kClgkxtutIE8hQrcrHBXvIheqKUUCxw==}
 
-  turbo-darwin-64@2.7.0:
-    resolution: {integrity: sha512-gwqL7cJOSYrV/jNmhXM8a2uzSFn7GcUASOuen6OgmUsafUj9SSWcgXZ/q0w9hRoL917hpidkdI//UpbxbZbwwg==}
+  turbo-darwin-64@2.7.2:
+    resolution: {integrity: sha512-dxY3X6ezcT5vm3coK6VGixbrhplbQMwgNsCsvZamS/+/6JiebqW9DKt4NwpgYXhDY2HdH00I7FWs3wkVuan4rA==}
     cpu: [x64]
     os: [darwin]
 
-  turbo-darwin-arm64@2.7.0:
-    resolution: {integrity: sha512-f3F5DYOnfE6lR6v/rSld7QGZgartKsnlIYY7jcF/AA7Wz27za9XjxMHzb+3i4pvRhAkryFgf2TNq7eCFrzyTpg==}
+  turbo-darwin-arm64@2.7.2:
+    resolution: {integrity: sha512-1bXmuwPLqNFt3mzrtYcVx1sdJ8UYb124Bf48nIgcpMCGZy3kDhgxNv1503kmuK/37OGOZbsWSQFU4I08feIuSg==}
     cpu: [arm64]
     os: [darwin]
 
-  turbo-linux-64@2.7.0:
-    resolution: {integrity: sha512-KsC+UuKlhjCL+lom10/IYoxUsdhJOsuEki72YSr7WGYUSRihcdJQnaUyIDTlm0nPOb+gVihVNBuVP4KsNg1UnA==}
+  turbo-linux-64@2.7.2:
+    resolution: {integrity: sha512-kP+TiiMaiPugbRlv57VGLfcjFNsFbo8H64wMBCPV2270Or2TpDCBULMzZrvEsvWFjT3pBFvToYbdp8/Kw0jAQg==}
     cpu: [x64]
     os: [linux]
 
-  turbo-linux-arm64@2.7.0:
-    resolution: {integrity: sha512-1tjIYULeJtpmE/ovoI9qPBFJCtUEM7mYfeIMOIs4bXR6t/8u+rHPwr3j+vRHcXanIc42V1n3Pz52VqmJtIAviw==}
+  turbo-linux-arm64@2.7.2:
+    resolution: {integrity: sha512-VDJwQ0+8zjAfbyY6boNaWfP6RIez4ypKHxwkuB6SrWbOSk+vxTyW5/hEjytTwK8w/TsbKVcMDyvpora8tEsRFw==}
     cpu: [arm64]
     os: [linux]
 
-  turbo-windows-64@2.7.0:
-    resolution: {integrity: sha512-KThkAeax46XiH+qICCQm7R8V2pPdeTTP7ArCSRrSLqnlO75ftNm8Ljx4VAllwIZkILrq/GDM8PlyhZdPeUdDxQ==}
+  turbo-windows-64@2.7.2:
+    resolution: {integrity: sha512-rPjqQXVnI6A6oxgzNEE8DNb6Vdj2Wwyhfv3oDc+YM3U9P7CAcBIlKv/868mKl4vsBtz4ouWpTQNXG8vljgJO+w==}
     cpu: [x64]
     os: [win32]
 
-  turbo-windows-arm64@2.7.0:
-    resolution: {integrity: sha512-kzI6rsQ3Ejs+CkM9HEEP3Z4h5YMCRxwIlQXFQmgXSG3BIgorCkRF2Xr7iQ2i9AGwY/6jbiAYeJbvi3yCp+noFw==}
+  turbo-windows-arm64@2.7.2:
+    resolution: {integrity: sha512-tcnHvBhO515OheIFWdxA+qUvZzNqqcHbLVFc1+n+TJ1rrp8prYicQtbtmsiKgMvr/54jb9jOabU62URAobnB7g==}
     cpu: [arm64]
     os: [win32]
 
-  turbo@2.7.0:
-    resolution: {integrity: sha512-1dUGwi6cSSVZts1BwJa/Gh7w5dPNNGsNWZEAuRKxXWME44hTKWpQZrgiPnqMc5jJJOovzPK5N6tL+PHYRYL5Wg==}
+  turbo@2.7.2:
+    resolution: {integrity: sha512-5JIA5aYBAJSAhrhbyag1ZuMSgUZnHtI+Sq3H8D3an4fL8PeF+L1yYvbEJg47akP1PFfATMf5ehkqFnxfkmuwZQ==}
     hasBin: true
 
   type-fest@4.41.0:
@@ -16409,32 +16409,32 @@ snapshots:
 
   tty-browserify@0.0.1: {}
 
-  turbo-darwin-64@2.7.0:
+  turbo-darwin-64@2.7.2:
     optional: true
 
-  turbo-darwin-arm64@2.7.0:
+  turbo-darwin-arm64@2.7.2:
     optional: true
 
-  turbo-linux-64@2.7.0:
+  turbo-linux-64@2.7.2:
     optional: true
 
-  turbo-linux-arm64@2.7.0:
+  turbo-linux-arm64@2.7.2:
     optional: true
 
-  turbo-windows-64@2.7.0:
+  turbo-windows-64@2.7.2:
     optional: true
 
-  turbo-windows-arm64@2.7.0:
+  turbo-windows-arm64@2.7.2:
     optional: true
 
-  turbo@2.7.0:
+  turbo@2.7.2:
     optionalDependencies:
-      turbo-darwin-64: 2.7.0
-      turbo-darwin-arm64: 2.7.0
-      turbo-linux-64: 2.7.0
-      turbo-linux-arm64: 2.7.0
-      turbo-windows-64: 2.7.0
-      turbo-windows-arm64: 2.7.0
+      turbo-darwin-64: 2.7.2
+      turbo-darwin-arm64: 2.7.2
+      turbo-linux-64: 2.7.2
+      turbo-linux-arm64: 2.7.2
+      turbo-windows-64: 2.7.2
+      turbo-windows-arm64: 2.7.2
 
   type-fest@4.41.0: {}
 
