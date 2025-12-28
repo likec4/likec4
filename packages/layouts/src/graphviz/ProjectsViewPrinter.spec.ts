@@ -93,39 +93,4 @@ describe('ProjectsViewPrinter', () => {
     const result = print([projectA, projectB])
     await expect(result).toMatchFileSnapshot('__snapshots__/ProjectsViewPrinter-two-directions.dot')
   })
-
-  it('prints with tile layout', async ({ expect }) => {
-    const result = print([
-      builder.toLikeC4Model('projectA'),
-      builder.toLikeC4Model('projectB'),
-      builder.toLikeC4Model('projectC'),
-      builder.toLikeC4Model('projectD'),
-      builder.toLikeC4Model('projectE'),
-      builder.toLikeC4Model('projectF'),
-      builder.toLikeC4Model('projectG'),
-    ])
-    await expect(result).toMatchFileSnapshot('__snapshots__/ProjectsViewPrinter-tile-layout.dot')
-  })
-
-  it('prints with tile layout and relationships', async ({ expect }) => {
-    const result = print([
-      builder.toLikeC4Model('projectA'),
-      builder.toLikeC4Model('projectB'),
-      builder
-        .model(({ el, rel }, _) =>
-          _(
-            el('@projectD.c1'),
-            rel('c1.sub', '@projectD.c1', {
-              title: 'C -> D',
-            }),
-          )
-        )
-        .toLikeC4Model('projectC'),
-      builder.toLikeC4Model('projectD'),
-      builder.toLikeC4Model('projectE'),
-      builder.toLikeC4Model('projectF'),
-      builder.toLikeC4Model('projectG'),
-    ])
-    await expect(result).toMatchFileSnapshot('__snapshots__/ProjectsViewPrinter-tile-layout-with-relationships.dot')
-  })
 })
