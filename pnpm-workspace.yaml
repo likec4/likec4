@@ -87,7 +87,7 @@ catalogs:
     react-dom: 19.2.3
     react-error-boundary: ^6.0.0
     react-shadow: ^20.6.0
-    react-resizable-panels: ^4.0.11
+    react-resizable-panels: ^4.1.1
   tanstack:
     '@tanstack/react-query': ^5.85.0
     '@tanstack/react-router': ^1.114.13
