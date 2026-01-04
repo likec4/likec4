@@ -13,7 +13,7 @@ import {
   ViewOps,
 } from '../../ast'
 import { logger as mainLogger } from '../../logger'
-import { stringHash } from '../../utils'
+import { safeCall, stringHash } from '../../utils'
 import { elementRef } from '../../utils/elementRef'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
 import { removeIndent, toSingleLine } from './Base'
@@ -84,7 +84,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       let viewOf = null as c4.Fqn | null
       if ('viewOf' in astNode) {
         const viewOfEl = elementRef(astNode.viewOf)
-        const _viewOf = viewOfEl && this.resolveFqn(viewOfEl)
+        const _viewOf = viewOfEl && safeCall(() => this.resolveFqn(viewOfEl))
         if (!_viewOf) {
           const viewId = astNode.name ?? 'unnamed'
           const msg = astNode.viewOf.$cstNode?.text ?? '<unknown>'

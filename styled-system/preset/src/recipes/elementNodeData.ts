@@ -56,6 +56,10 @@ export const elementNodeData = defineRecipe({
         paddingTop: '32px',
         paddingBottom: '28px',
       },
+      _shapeBucket: {
+        paddingLeft: 'calc(var(--likec4-spacing) + 20px)',
+        paddingRight: 'calc(var(--likec4-spacing) + 20px)',
+      },
 
       _shapeSizeXs: {
         [iconSize]: '24px',

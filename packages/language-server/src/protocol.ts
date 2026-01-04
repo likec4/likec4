@@ -184,6 +184,11 @@ export namespace RegisterProject {
   export type Params = {
     folderUri: URI
     config: LikeC4ProjectJsonConfig
+    configUri?: never
+  } | {
+    configUri: URI
+    folderUri?: never
+    config?: never
   }
 
   export type Res = {

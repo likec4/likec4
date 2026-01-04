@@ -41,7 +41,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!isLikeC4LangiumDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
       return []
     }
-    if (doc.state <= DocumentState.Linked) {
+    if (doc.state < DocumentState.Linked) {
       logger.debug(`Waiting for document ${doc.uri.path} to be Linked`)
       await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Linked, doc.uri, cancelToken)
       logger.debug(`document is Linked`)

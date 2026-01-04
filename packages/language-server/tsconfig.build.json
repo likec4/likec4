@@ -8,6 +8,7 @@
     "composite": false,
     "incremental": false,
     "noEmit": false,
+    "noCheck": true,
     "emitDeclarationOnly": false,
     "outDir": "./dist",
     "rootDir": "src",
@@ -21,6 +22,6 @@
   ],
   "exclude": [
     "**/*.spec.ts",
-    "**/__*"
+    "**/__*/**"
   ]
 }

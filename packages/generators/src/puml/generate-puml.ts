@@ -1,3 +1,4 @@
+import { nonexhaustive } from '@likec4/core'
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type {
   aux,
@@ -13,7 +14,7 @@ import type {
 } from '@likec4/core/types'
 import { RichText } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
-import { isNullish as isNil } from 'remeda'
+import { isEmptyish, isNullish as isNil } from 'remeda'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
@@ -67,14 +68,21 @@ const pumlShape = ({ shape }: ComputedNode) => {
     case 'cylinder': {
       return 'database' as const
     }
+    case 'document':
     case 'mobile':
+    case 'bucket':
     case 'browser': {
       return 'rectangle' as const
     }
+    default:
+      nonexhaustive(shape)
   }
 }
 
-const escapeLabel = (label: string | null | undefined) => isNil(label) ? null : JSON.stringify(label).slice(1, -1)
+const escapeLabel = (label: string | null | undefined) =>
+  isEmptyish(label) ? null : JSON.stringify(label)
+    .slice(1, -1)
+    .replace(/\\"/g, '"') // Unescape double quotes - PUML does not support escaped double quotes
 
 export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const view = viewmodel.$view
@@ -90,7 +98,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
 
   const printHeader = () => {
     return new CompositeGeneratorNode()
-      .append('title "', view.title || view.id, '"', NL)
+      .append('title "', viewmodel.titleOrId, '"', NL)
       .append(pumlDirection(view), ' direction', NL)
   }
 
@@ -147,8 +155,8 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
       .append(shape, ' ')
       .append('"')
       .append('==', label)
-      .appendIf(!!tech, '\\n', '<size:10>[', tech!, ']</size>')
-      .appendIf(description.nonEmpty, '\\n\\n', escapeLabel(description.text)!)
+      .appendIf(!!tech, `\\n<size:10>[`, tech!, ']</size>')
+      .appendIf(description.nonEmpty, `\\n\\n`, escapeLabel(description.text)!)
       .append('"', ' <<', fqn, '>> ', 'as ', fqn, NL)
   }
 
@@ -189,20 +197,37 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   }
 
   const printEdge = (edge: ComputedEdge): CompositeGeneratorNode => {
-    const tech = escapeLabel(edge.technology) || ''
-    const label = escapeLabel(edge.label) || ''
+    const tech = edge.technology || ''
+    const label = edge.label || tech
     const color = pumlColor(edge.color, relationshipsColorProvider('line'), '#777777')
 
-    const colorTag = (color: string) => `<color:${color}>`
+    const withColor = (text: string) => `<color:${color}>${text.replaceAll('"', `'`)}`
 
-    return new CompositeGeneratorNode()
-      .append(names.get(edge.source), ' .[', color, ',thickness=2].> ', names.get(edge.target))
-      .appendIf(!!(label || tech), ' : "', colorTag(color))
-      .appendIf(!!label, label, colorTag(color))
-      .appendIf(!!(label && tech), '\\n')
-      .appendIf(!!tech, colorTag(color), '<size:8>[', tech, ']</size>')
-      .appendIf(!!(label || tech), '"')
-      .append(NL)
+    const out = new CompositeGeneratorNode()
+      .append(
+        names.get(edge.source),
+        ' .[',
+        color,
+        ',thickness=2].> ',
+        names.get(edge.target),
+      )
+
+    if (label || tech) {
+      out.append(
+        ' : ',
+        // Prepend color to each line
+        label
+          .split('\n')
+          .map(l => isEmptyish(l) ? l : withColor(l))
+          .join('\\n'),
+      )
+      // Append technology if it exists and is different from the label
+      if (tech && tech !== label) {
+        out.append('\\n<size:8>[', withColor(tech), ']</size>')
+      }
+    }
+
+    return out.append(NL)
   }
 
   return toString(

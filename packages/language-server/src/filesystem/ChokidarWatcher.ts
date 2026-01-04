@@ -1,5 +1,4 @@
 import { isLikeC4Config } from '@likec4/config/node'
-import { loggable } from '@likec4/log'
 import type { FSWatcher } from 'chokidar'
 import chokidar from 'chokidar'
 import { URI } from 'langium'
@@ -32,11 +31,11 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
 
   watch(folder: string): void {
     if (this.watcher) {
+      logger.debug`add watching folder: ${folder}`
       this.watcher.add(folder)
-    } else {
-      this.watcher = this.createWatcher(folder)
+      return
     }
-    logger.debug`watching folder: ${folder}`
+    this.watcher = this.createWatcher(folder)
   }
 
   async dispose(): Promise<void> {
@@ -49,6 +48,8 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   }
 
   private createWatcher(folder: string): FSWatcher {
+    logger.debug`create watcher for folder: ${folder}`
+
     let watcher = chokidar.watch(folder, {
       ignored: [
         path => path.includes('node_modules') || path.includes('.git'),
@@ -63,19 +64,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         return
       }
       this.enqueueFileOp('addOrChange: ' + path, async () => {
-        if (isLikeC4Config(path)) {
-          logger.debug`project file changed: ${path}`
-          await this.services.workspace.ProjectsManager.reloadProjects()
-        } else if (isLikeC4File(path)) {
-          logger.debug`file changed: ${path}`
-          await this.services.workspace.DocumentBuilder.update([URI.file(path)], [])
-        } else if (isManualLayoutFile(path)) {
-          logger.debug`manual layout file changed: ${path}`
-          const projectId = this.services.workspace.ProjectsManager.belongsTo(URI.file(path))
-          await this.services.workspace.ProjectsManager.rebuidProject(projectId)
-        } else {
-          logger.warn`Unknown file change: ${path}`
-        }
+        await this.onAddOrChange(path)
       })
     }
 
@@ -84,26 +73,18 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         return
       }
       this.enqueueFileOp('remove: ' + path, async () => {
-        const pm = this.services.workspace.ProjectsManager
-        if (isLikeC4Config(path)) {
-          logger.debug`project file removed: ${path}`
-          await pm.reloadProjects()
-        } else if (isLikeC4File(path)) {
-          logger.debug`file removed: ${path}`
-          await this.services.workspace.DocumentBuilder.update([], [URI.file(path)])
-        } else if (isManualLayoutFile(path)) {
-          logger.debug`manual layout file removed: ${path}`
-          const project = pm.belongsTo(path)
-          await pm.rebuidProject(project)
-        } else {
-          logger.warn`Unknown file removal: ${path}`
-        }
+        await this.onRemove(path)
       })
     }
 
     watcher.on('add', onAddOrChange)
       .on('change', onAddOrChange)
       .on('unlink', onRemove)
+      .on('unlinkDir', (path) => {
+        this.enqueueFileOp('removeDir: ' + path, async () => {
+          await this.onRemoveDir(path)
+        })
+      })
 
     return watcher
   }
@@ -116,7 +97,50 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         logger.warn(`Failed on ${fileop}`, { error })
       }
     }).catch(error => {
-      logger.error(loggable(error))
+      logger.error(`Error on ${fileop}`, { error })
     })
+  }
+
+  private async onAddOrChange(path: string) {
+    const pm = this.services.workspace.ProjectsManager
+    if (isLikeC4Config(path)) {
+      logger.debug`project file changed: ${path}`
+      await pm.registerConfigFile(URI.file(path))
+    } else if (isLikeC4File(path)) {
+      logger.debug`file changed: ${path}`
+      await this.services.workspace.DocumentBuilder.update([URI.file(path)], [])
+    } else if (isManualLayoutFile(path)) {
+      logger.debug`manual layout file changed: ${path}`
+      const projectId = pm.belongsTo(URI.file(path))
+      await pm.rebuidProject(projectId)
+    } else {
+      logger.warn`Unknown file change: ${path}`
+    }
+  }
+
+  private async onRemove(path: string) {
+    const pm = this.services.workspace.ProjectsManager
+    if (isLikeC4Config(path)) {
+      logger.debug`project file removed: ${path}`
+      await pm.reloadProjects()
+    } else if (isLikeC4File(path)) {
+      logger.debug`file removed: ${path}`
+      await this.services.workspace.DocumentBuilder.update([], [URI.file(path)])
+    } else if (isManualLayoutFile(path)) {
+      logger.debug`manual layout file removed: ${path}`
+      const project = pm.belongsTo(path)
+      await pm.rebuidProject(project)
+    } else {
+      logger.warn`Unknown file removal: ${path}`
+    }
+  }
+
+  private async onRemoveDir(path: string) {
+    logger.debug`directory removed: ${path}`
+    const pm = this.services.workspace.ProjectsManager
+    const projects = pm.findAllProjectsByFolder(path)
+    if (projects.length > 0) {
+      await pm.reloadProjects()
+    }
   }
 }

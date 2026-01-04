@@ -1,2 +1,4 @@
 # Test Snapshots
 *.snap            text eol=lf
+*.mmd             text eol=lf
+*.puml            text eol=lf

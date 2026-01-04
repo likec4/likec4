@@ -1,14 +1,27 @@
 import { isAnyOf, nonNullable } from '@likec4/core/utils'
-import type { AstNode, CstNode, Properties } from 'langium'
+import { type AstNode, type CstNode, type LangiumDocument, type Properties, DocumentState } from 'langium'
 import {
   type SemanticTokenAcceptor,
   AbstractSemanticTokenProvider,
 } from 'langium/lsp'
 import { isTruthy } from 'remeda'
-import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-types'
+import {
+  type SemanticTokensDeltaParams,
+  type SemanticTokensParams,
+  type SemanticTokensRangeParams,
+  CancellationToken,
+} from 'vscode-languageserver-protocol'
+import {
+  type SemanticTokens,
+  type SemanticTokensDelta,
+  SemanticTokenModifiers,
+  SemanticTokenTypes,
+} from 'vscode-languageserver-types'
 import { ast } from '../ast'
-import { logger } from '../logger'
+import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
+
+const logger = rootLogger.getChild('SemanticTokenProvider')
 
 type Predicate<T extends AstNode> = (x: unknown) => x is T
 type Highlighter<T extends AstNode> = {
@@ -85,7 +98,7 @@ type Rule<T extends AstNode> = {
 export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
   private rules = [] as Rule<AstNode>[]
 
-  constructor(services: LikeC4Services) {
+  constructor(protected services: LikeC4Services) {
     super(services)
     this.initRules()
   }
@@ -252,6 +265,50 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         }
       },
     )
+  }
+
+  override async semanticHighlight(
+    document: LangiumDocument,
+    params: SemanticTokensParams,
+    cancelToken = CancellationToken.None,
+  ): Promise<SemanticTokens> {
+    if (document.state < DocumentState.Linked) {
+      await this.ensureState(document, cancelToken)
+    }
+    return await super.semanticHighlight(document, params, cancelToken)
+  }
+
+  override async semanticHighlightRange(
+    document: LangiumDocument,
+    params: SemanticTokensRangeParams,
+    cancelToken = CancellationToken.None,
+  ): Promise<SemanticTokens> {
+    if (document.state < DocumentState.Linked) {
+      await this.ensureState(document, cancelToken)
+    }
+    return await super.semanticHighlightRange(document, params, cancelToken)
+  }
+
+  override async semanticHighlightDelta(
+    document: LangiumDocument,
+    params: SemanticTokensDeltaParams,
+    cancelToken = CancellationToken.None,
+  ): Promise<SemanticTokens | SemanticTokensDelta> {
+    if (document.state < DocumentState.Linked) {
+      await this.ensureState(document, cancelToken)
+    }
+    return await super.semanticHighlightDelta(document, params, cancelToken)
+  }
+
+  protected async ensureState(
+    document: LangiumDocument,
+    cancelToken: CancellationToken,
+  ): Promise<void> {
+    if (document.state < DocumentState.Linked) {
+      logger.debug`waiting for document ${document.uri.path} to be ${'Linked'}`
+      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Linked, document.uri, cancelToken)
+      logger.debug`document ${document.uri.path} is ${'Linked'}`
+    }
   }
 
   protected override highlightElement(

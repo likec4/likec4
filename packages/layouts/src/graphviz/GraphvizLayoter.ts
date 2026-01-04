@@ -160,7 +160,7 @@ export class GraphvizLayouter implements Disposable {
   }
 
   async layoutProjectsView(view: ComputedProjectsView): Promise<LayoutedProjectsView> {
-    logger.debug`layouting projects view...`
+    logger.debug`layouting projects overview...`
     const printer = new ProjectsViewPrinter(view)
     let dot = printer.print()
     try {
@@ -169,6 +169,7 @@ export class GraphvizLayouter implements Disposable {
       logger.warn(`Error during unflatten of projects view`, { error })
     }
     const json = await this.dotToJson(dot)
+    logger.debug`layouting projects overview done`
     return parseGraphvizJsonOfProjectsView(json, view)
   }
 }

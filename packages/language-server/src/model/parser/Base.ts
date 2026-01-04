@@ -277,7 +277,12 @@ export class BaseParser {
     const { libicon, value } = prop
     switch (true) {
       case !!libicon: {
-        return nonNullable(libicon.ref, `Library icon ${libicon.$refText} has empty ref`).name as c4.IconUrl
+        const name = libicon.ref?.name
+        if (!name) {
+          logger.warn(`Library icon ${libicon.$refText} is not a valid library icon`)
+          return undefined
+        }
+        return name as c4.IconUrl
       }
       case value && value === 'none': {
         return value as c4.IconUrl
@@ -381,61 +386,65 @@ export class BaseParser {
       if (!this.isValid(prop)) {
         continue
       }
-      switch (true) {
-        case ast.isBorderProperty(prop): {
-          if (isTruthy(prop.value)) {
-            result.border = prop.value
+      try {
+        switch (true) {
+          case ast.isBorderProperty(prop): {
+            if (isTruthy(prop.value)) {
+              result.border = prop.value
+            }
+            break
           }
-          break
-        }
-        case ast.isColorProperty(prop): {
-          const color = toColor(prop)
-          if (isTruthy(color)) {
-            result.color = color
+          case ast.isColorProperty(prop): {
+            const color = toColor(prop)
+            if (isTruthy(color)) {
+              result.color = color
+            }
+            break
           }
-          break
-        }
-        case ast.isShapeProperty(prop): {
-          if (isTruthy(prop.value)) {
-            result.shape = prop.value
+          case ast.isShapeProperty(prop): {
+            if (isTruthy(prop.value)) {
+              result.shape = prop.value
+            }
+            break
           }
-          break
-        }
-        case ast.isIconProperty(prop): {
-          const icon = this.parseIconProperty(prop)
-          if (isTruthy(icon)) {
-            result.icon = icon
+          case ast.isIconProperty(prop): {
+            const icon = this.parseIconProperty(prop)
+            if (isTruthy(icon)) {
+              result.icon = icon
+            }
+            break
           }
-          break
-        }
-        case ast.isOpacityProperty(prop): {
-          result.opacity = parseAstOpacityProperty(prop)
-          break
-        }
-        case ast.isMultipleProperty(prop): {
-          result.multiple = isBoolean(prop.value) ? prop.value : false
-          break
-        }
-        case ast.isShapeSizeProperty(prop): {
-          if (isTruthy(prop.value)) {
-            result.size = parseAstSizeValue(prop)
+          case ast.isOpacityProperty(prop): {
+            result.opacity = parseAstOpacityProperty(prop)
+            break
           }
-          break
-        }
-        case ast.isPaddingSizeProperty(prop): {
-          if (isTruthy(prop.value)) {
-            result.padding = parseAstSizeValue(prop)
+          case ast.isMultipleProperty(prop): {
+            result.multiple = isBoolean(prop.value) ? prop.value : false
+            break
           }
-          break
-        }
-        case ast.isTextSizeProperty(prop): {
-          if (isTruthy(prop.value)) {
-            result.textSize = parseAstSizeValue(prop)
+          case ast.isShapeSizeProperty(prop): {
+            if (isTruthy(prop.value)) {
+              result.size = parseAstSizeValue(prop)
+            }
+            break
           }
-          break
+          case ast.isPaddingSizeProperty(prop): {
+            if (isTruthy(prop.value)) {
+              result.padding = parseAstSizeValue(prop)
+            }
+            break
+          }
+          case ast.isTextSizeProperty(prop): {
+            if (isTruthy(prop.value)) {
+              result.textSize = parseAstSizeValue(prop)
+            }
+            break
+          }
+          default:
+            nonexhaustive(prop)
         }
-        default:
-          nonexhaustive(prop)
+      } catch (err) {
+        logger.warn('Failed to parse style property', { err })
       }
     }
     return exact(result)

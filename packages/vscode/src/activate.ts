@@ -69,11 +69,11 @@ function monitorFileSystemEvents() {
   const configWatcher = useFsWatcher(toRef(`**/{${ConfigFilenames.join(',')}}`))
   configWatcher.onDidChange((uri) => {
     logger.debug(`Config file changed: ${uri}`)
-    void rpc.reloadProjects()
+    void rpc.registerProject({ configUri: uri.toString() })
   })
   configWatcher.onDidCreate((uri) => {
     logger.debug(`Config file created: ${uri}`)
-    void rpc.reloadProjects()
+    void rpc.registerProject({ configUri: uri.toString() })
   })
   configWatcher.onDidDelete((uri) => {
     logger.debug(`Config file deleted: ${uri}`)

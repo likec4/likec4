@@ -11,8 +11,6 @@ import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices 
 import { ConfigurableLayouter } from './views/ConfigurableLayouter'
 import { WithLikeC4ManualLayouts } from './views/LikeC4ManualLayouts'
 
-export { getLspConnectionSink, logger as lspLogger } from './logger'
-
 export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 
 export type { LikeC4LanguageServices } from './LikeC4LanguageServices'

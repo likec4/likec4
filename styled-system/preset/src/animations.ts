@@ -5,11 +5,9 @@ export const keyframes: CssKeyframes = defineKeyframes({
   'indicatorOpacity': {
     '0%': {
       opacity: 0.8,
-      strokeOpacity: 0.8,
     },
     '100%': {
-      opacity: 0.4,
-      strokeOpacity: 0.4,
+      opacity: 0.3,
     },
   },
   'xyedgeAnimated': {
@@ -25,10 +23,11 @@ export const keyframes: CssKeyframes = defineKeyframes({
 export const animationStyles: AnimationStyles = defineAnimationStyles({
   'indicator': {
     value: {
-      animationDuration: '1s',
+      animationDuration: '.8s',
       animationIterationCount: 'infinite',
       animationDirection: 'alternate',
       animationName: 'indicatorOpacity',
+      animationTimingFunction: '{easings.in}',
     },
   },
   'xyedgeAnimated': {

@@ -9,6 +9,9 @@ const bundled: BuildEntry = {
   declaration: false,
 }
 
+// @ts-expect-error
+const isProd = process.env.NODE_ENV === 'production'
+
 export default defineBuildConfig({
   entries: [bundled],
   clean: true,
@@ -17,13 +20,14 @@ export default defineBuildConfig({
     'raw-body': resolve('./src/empty.ts'),
     'content-type': resolve('./src/empty.ts'),
   },
+  failOnWarn: isProd,
   rollup: {
     esbuild: {
-      minify: true,
+      minify: isProd,
       minifyIdentifiers: false,
       lineLimit: 500,
     },
-    inlineDependencies: true,
+    inlineDependencies: isProd,
     resolve: {
       exportConditions: ['node', 'sources'],
     },

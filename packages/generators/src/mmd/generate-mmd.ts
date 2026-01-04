@@ -1,3 +1,4 @@
+import { nonexhaustive } from '@likec4/core'
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, NodeId, ProcessedView as AnyView } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
@@ -14,21 +15,38 @@ const nodeName = (node: Node): string => {
   return fqnName(node.parent ? node.id.slice(node.parent.length + 1) : node.id)
 }
 
-const mmdshape = ({ shape }: Node): [start: string, end: string] => {
+const toSingleQuotes = (str: string): string => str.replace(/\\?"/g, `'`)
+
+const mmdshape = ({ shape, title }: Node): string => {
+  const label = `label: ${JSON.stringify(title)}`
   switch (shape) {
-    case 'queue':
-    case 'cylinder':
-      return ['[(', ')]']
+    case 'queue': {
+      return `@{ shape: horizontal-cylinder, ${label} }`
+    }
     case 'person': {
-      return ['[fa:fa-user ', ']']
+      return `@{ icon: "fa:user", shape: rounded, ${label} }`
     }
-    case 'storage':
-      return ['([', '])']
+    case 'storage': {
+      return `@{ shape: disk, ${label} }`
+    }
+    case 'cylinder': {
+      return `@{ shape: cylinder, ${label} }`
+    }
     case 'mobile':
-    case 'browser':
-    case 'rectangle': {
-      return ['[', ']']
+    case 'browser': {
+      return `@{ shape: rounded, ${label} }`
     }
+    case 'bucket': {
+      return `@{ shape: trap-t, ${label} }`
+    }
+    case 'rectangle': {
+      return `@{ shape: rectangle, ${label} }`
+    }
+    case 'document': {
+      return `@{ shape: doc, ${label} }`
+    }
+    default:
+      nonexhaustive(shape)
   }
 }
 
@@ -42,13 +60,11 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     const fqnName = (parentName ? parentName + '.' : '') + name
     names.set(node.id, fqnName)
 
-    const label = node.title.replaceAll('\n', '\\n')
-    const shape = mmdshape(node)
-
     const baseNode = new CompositeGeneratorNode()
     if (node.children.length > 0) {
+      const label = toSingleQuotes(node.title)
       baseNode
-        .append('subgraph ', fqnName, '[', JSON.stringify(node.title), ']', NL)
+        .append('subgraph ', fqnName, '["`', label, '`"]', NL)
         .indent({
           indentedChildren: [
             joinToNode(
@@ -63,7 +79,7 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
         })
         .append('end', NL)
     } else {
-      baseNode.append(fqnName, shape[0], label, shape[1])
+      baseNode.append(fqnName, mmdshape(node))
     }
     return baseNode
   }
@@ -72,7 +88,7 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     return new CompositeGeneratorNode().append(
       names.get(edge.source),
       ' -.',
-      edge.label ? ' "' + edge.label.replaceAll('\n', '\\n') + '" .-' : '-',
+      edge.label ? ' "`' + toSingleQuotes(edge.label) + '`" .-' : '-',
       '> ',
       names.get(edge.target),
     )
@@ -80,11 +96,10 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
 
   return toString(
     new CompositeGeneratorNode()
-      .appendIf(
-        view.title !== null && view.title.length > 0,
+      .append(
         '---',
         NL,
-        `title: ${JSON.stringify(view.title)}`,
+        `title: ${JSON.stringify(toSingleQuotes(viewmodel.titleOrId))}`,
         NL,
         '---',
         NL,

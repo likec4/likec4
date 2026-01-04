@@ -168,7 +168,14 @@ export class Rpc extends ADisposable {
       }),
       connection.onRequest(RegisterProject.req, async (params, cancelToken) => {
         logger.debug`received request ${'RegisterProject'}`
-        const project = await projects.registerProject(params, cancelToken)
+
+        let project
+        if ('configUri' in params) {
+          project = await projects.registerConfigFile(URI.parse(params.configUri), cancelToken)
+        } else {
+          project = await projects.registerProject(params, cancelToken)
+        }
+
         return { id: project.id }
       }),
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {

@@ -3,7 +3,6 @@ import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser'
 import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
 
-export { logger as lspLogger } from './logger'
 export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 
 export type { LikeC4LanguageServices } from './LikeC4LanguageServices'

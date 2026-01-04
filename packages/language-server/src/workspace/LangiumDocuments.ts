@@ -38,17 +38,24 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
 
   override getDocument(uri: URI): LikeC4LangiumDocument | undefined {
     const doc = super.getDocument(uri)
-    if (doc && !exclude(doc)) {
-      doc.likec4ProjectId = this.services.workspace.ProjectsManager.belongsTo(doc)
-    }
     if (doc && !isLikeC4LangiumDocument(doc)) {
       throw new Error(`Document ${doc.uri.path} is not a LikeC4 document`)
+    }
+    if (doc && !exclude(doc)) {
+      doc.likec4ProjectId = this.services.workspace.ProjectsManager.belongsTo(doc)
     }
     return doc
   }
 
-  override get all(): Stream<LikeC4LangiumDocument> {
+  /**
+   * Returns all known documents, without any filtering.
+   */
+  get allKnownDocuments(): Stream<LangiumDocument> {
     return stream(this.documentMap.values())
+  }
+
+  override get all(): Stream<LikeC4LangiumDocument> {
+    return this.allKnownDocuments
       .filter((doc): doc is LikeC4LangiumDocument => {
         if (doc.textDocument.languageId === LikeC4LanguageMetaData.languageId) {
           if (!isLikeC4Builtin(doc.uri)) {
@@ -102,7 +109,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
    * Reset the project IDs of all documents.
    */
   resetProjectIds() {
-    super.all.forEach(doc => {
+    this.allKnownDocuments.forEach(doc => {
       if (exclude(doc)) {
         return
       }

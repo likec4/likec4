@@ -1,3 +1,4 @@
+import { ElementShapes } from '@likec4/core/styles'
 import type { ComputedView, DiagramView } from '@likec4/core/types'
 
 export const fakeDiagram: DiagramView = {
@@ -460,4 +461,66 @@ export const fakeComputedView3Levels: ComputedView = {
   ],
   title: 'Context: Cloud',
   viewOf: 'cloud',
+} as any
+
+const children = ElementShapes.map((shape, i) => ({
+  id: `root.el${i + 1}`,
+  parent: `root`,
+  title: `Element with \n"${shape}" shape`,
+  children: [],
+  color: 'primary',
+  shape,
+}))
+
+export const fakeComputedViewWithAllShapes: ComputedView = {
+  id: 'shapesView',
+  title: 'All Shapes, plus testing "quotes"',
+  nodes: [
+    {
+      id: `root`,
+      parent: null,
+      title: `"Root" element`,
+      children: children.map(c => c.id),
+      color: 'primary',
+      shape: 'rectangle',
+    },
+    ...children,
+  ],
+  edges: [
+    {
+      id: 'root.el1:root.el2',
+      source: 'root.el1',
+      target: 'root.el2',
+      label: 'With "Label"',
+    },
+    {
+      id: 'root.el3:root.el4',
+      source: 'root.el3',
+      target: 'root.el4',
+      label: `
+With
+
+"MultiLine"
+
+Label`.trimStart(),
+    },
+    {
+      id: 'root.el5:root.el6',
+      source: 'root.el5',
+      target: 'root.el6',
+    },
+  ],
+  autoLayout: { direction: 'LR' },
+  rules: [
+    {
+      exprs: [
+        {
+          wildcard: true,
+        },
+      ],
+      isInclude: true,
+    },
+  ],
+  viewOf: null,
+  width: 600,
 } as any

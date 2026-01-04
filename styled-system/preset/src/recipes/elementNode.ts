@@ -39,6 +39,10 @@ export const elementNode = defineRecipe({
     [`:where(.react-flow__node.selectable:not(.dragging)) &`]: {
       cursor: 'pointer',
     },
+
+    [`&:is([data-likec4-shape="document"])`]: {
+      paddingBottom: '16px',
+    },
   },
   staticCss: [{
     conditions: ['*'],
