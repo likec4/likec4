@@ -1,9 +1,16 @@
 # likec4-vscode
 
+## 1.46.5
+
+### Patch Changes
+
+- [`817d159`](https://github.com/likec4/likec4/commit/817d159df509b50963ef135c218936c35c460ab1) Thanks [@davydkov](https://github.com/davydkov)! - Completions for project name in `import` statements
+
 ## 1.46.4
 
 ### Patch Changes
-- [#2509](https://github.com/likec4/likec4/pull/2509) [`9b93f25`](https://github.com/likec4/likec4/commit/9b93f25a568f4adba9bce414c0a776ed447c6676)  - Fix generated PlantUML diagrams for unsupported names, [#2307](https://github.com/likec4/likec4/issues/2307)
+
+- [#2509](https://github.com/likec4/likec4/pull/2509) [`9b93f25`](https://github.com/likec4/likec4/commit/9b93f25a568f4adba9bce414c0a776ed447c6676) - Fix generated PlantUML diagrams for unsupported names, [#2307](https://github.com/likec4/likec4/issues/2307)
 - [#2506](https://github.com/likec4/likec4/pull/2506) [`39dcb77`](https://github.com/likec4/likec4/commit/39dcb77328310970f5d254e5a55f84a7a534524f) - Fixed "exclude" option in project configuration (it was working only with "\*\*/" prefix)
 - [#2507](https://github.com/likec4/likec4/pull/2507) [`6e65818`](https://github.com/likec4/likec4/commit/6e658182dfb50a3366873f90831b1406178891b0) Bundle Bootstrap icons (2000+ icons, https://icons.getbootstrap.com/), closes [#2503](https://github.com/likec4/likec4/issues/2503)
 
