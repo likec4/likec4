@@ -1,8 +1,8 @@
 ---
-'@likec4/core': minor
-'@likec4/language-server': minor
-'@likec4/diagram': minor
-'@likec4/styles': minor
+'@likec4/core': patch
+'@likec4/language-server': patch
+'@likec4/diagram': patch
+'@likec4/styles': patch
 ---
 
 - Add two new shapes: `document` and `bucket`

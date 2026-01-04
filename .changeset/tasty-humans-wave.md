@@ -1,6 +1,5 @@
 ---
-'@likec4/language-server': minor
-'likec4': minor
+'likec4': patch
 ---
 
 Export to json format supports multiple projects, plus:
