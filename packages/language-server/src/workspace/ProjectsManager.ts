@@ -12,7 +12,6 @@ import {
   BiMap,
   compareNaturalHierarchically,
   DefaultMap,
-  delay,
   invariant,
   memoizeProp,
   nonNullable,
