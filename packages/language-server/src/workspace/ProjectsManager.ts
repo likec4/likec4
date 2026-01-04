@@ -527,6 +527,8 @@ export class ProjectsManager {
           projectId: project.id,
           error,
         })
+        // ignore error, we logged it
+        return Promise.resolve()
       })
     }
 

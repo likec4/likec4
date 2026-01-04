@@ -3,12 +3,17 @@ import { ast } from '../ast'
 /**
  * Returns referenced AST Element
  */
-export function elementRef(node: ast.ElementRef | ast.StrictFqnElementRef) {
-  let el = ast.isStrictFqnElementRef(node) ? node.el.ref : node.modelElement.value.ref
-  if (el?.$type === 'Imported') {
-    el = el.imported.ref
+export function elementRef(node: ast.ElementRef | ast.StrictFqnElementRef): ast.Element | undefined {
+  try {
+    let el = ast.isStrictFqnElementRef(node) ? node.el.ref : node.modelElement.value.ref
+    if (el?.$type === 'Imported') {
+      el = el.imported.ref
+    }
+    return el?.$type === 'Element' ? el : undefined
+  } catch {
+    // ignore reference errors
+    return undefined
   }
-  return el?.$type === 'Element' ? el : undefined
 }
 
 /**

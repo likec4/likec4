@@ -18,7 +18,7 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
     if (!isLikeC4LangiumDocument(doc)) {
       return
     }
-    if (doc.state <= DocumentState.Linked) {
+    if (doc.state < DocumentState.Linked) {
       logger.debug(`Waiting for document ${doc.uri.path} to be Linked`)
       await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Linked, doc.uri, cancelToken)
       logger.debug(`Document is linked`)
