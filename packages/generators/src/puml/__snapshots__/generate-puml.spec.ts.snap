@@ -299,7 +299,7 @@ skinparam person<<Customer>>{
   BorderColor #2563eb
 }
 rectangle "==Payment Gateway" <<PaymentGateway>> as PaymentGateway
-rectangle "==Email Provider" <<EmailProvider>> as EmailProvider
+rectangle "==Email Provider\\n<size:10>[Rest API]</size>" <<EmailProvider>> as EmailProvider
 person "==Customer" <<Customer>> as Customer
 
 PaymentGateway .[#777777,thickness=2].> EmailProvider : <color:#777777>sends notifications

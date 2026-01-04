@@ -60,6 +60,7 @@ test('generate puml - with dashed identifiers', () => {
         parent: null,
         shape: 'rectangle',
         title: 'Email Provider',
+        technology: 'Rest API',
       },
       {
         children: [],

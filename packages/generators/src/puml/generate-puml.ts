@@ -155,8 +155,8 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
       .append(shape, ' ')
       .append('"')
       .append('==', label)
-      .appendIf(!!tech, '\\n', '<size:10>[', tech!, ']</size>')
-      .appendIf(description.nonEmpty, '\\n\\n', escapeLabel(description.text)!)
+      .appendIf(!!tech, `\\n<size:10>[`, tech!, ']</size>')
+      .appendIf(description.nonEmpty, `\\n\\n`, escapeLabel(description.text)!)
       .append('"', ' <<', fqn, '>> ', 'as ', fqn, NL)
   }
 
@@ -223,7 +223,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
       )
       // Append technology if it exists and is different from the label
       if (tech && tech !== label) {
-        out.append('\\n<size:8>[', withColor(color), ']</size>')
+        out.append('\\n<size:8>[', withColor(tech), ']</size>')
       }
     }
 
