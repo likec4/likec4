@@ -117,7 +117,7 @@ views {
     }
     style cloud.next._ {
       color primary
-      // border nones
+      border none
       opacity 10%
     }
     style amazon._ {
