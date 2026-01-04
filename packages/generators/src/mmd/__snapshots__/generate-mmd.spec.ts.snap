@@ -1,0 +1,84 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generate mermaid - AllShapes 1`] = `
+"---
+title: "All Shapes, plus testing 'quotes'"
+---
+graph LR
+  subgraph Root["\`'Root' element\`"]
+    Root.El1@{ shape: rectangle, label: "Element with \\n\\"rectangle\\" shape" }
+    Root.El2@{ icon: "fa:user", shape: rounded, label: "Element with \\n\\"person\\" shape" }
+    Root.El3@{ shape: rounded, label: "Element with \\n\\"browser\\" shape" }
+    Root.El4@{ shape: rounded, label: "Element with \\n\\"mobile\\" shape" }
+    Root.El5@{ shape: cylinder, label: "Element with \\n\\"cylinder\\" shape" }
+    Root.El6@{ shape: disk, label: "Element with \\n\\"storage\\" shape" }
+    Root.El7@{ shape: horizontal-cylinder, label: "Element with \\n\\"queue\\" shape" }
+    Root.El8@{ shape: trap-t, label: "Element with \\n\\"bucket\\" shape" }
+    Root.El9@{ shape: doc, label: "Element with \\n\\"document\\" shape" }
+  end
+  Root.El1 -. "\`With 'Label'\`" .-> Root.El2
+  Root.El3 -. "\`With
+
+'MultiLine'
+
+Label\`" .-> Root.El4
+  Root.El5 -.-> Root.El6
+"
+`;
+
+exports[`generate mermaid - fakeComputedView 3 Levels 1`] = `
+"---
+title: "Context: Cloud"
+---
+graph TB
+  Amazon@{ shape: rectangle, label: "amazon" }
+  subgraph Cloud["\`cloud\`"]
+    subgraph Cloud.Backend["\`backend\`"]
+      Cloud.Backend.Graphql@{ shape: rectangle, label: "graphql" }
+      Cloud.Backend.Storage@{ shape: rectangle, label: "storage" }
+    end
+    Cloud.FrontendAdminPanel@{ shape: rectangle, label: "adminPanel" }
+    Cloud.FrontendDashboard@{ shape: rectangle, label: "dashboard" }
+  end
+  Customer@{ shape: rectangle, label: "customer" }
+  Support@{ shape: rectangle, label: "support" }
+  Cloud.FrontendDashboard -.-> Cloud.Backend.Graphql
+  Cloud.FrontendAdminPanel -.-> Cloud.Backend.Graphql
+  Cloud.Backend.Storage -.-> Amazon
+  Cloud.Backend.Graphql -.-> Cloud.Backend.Storage
+  Support -.-> Cloud.FrontendAdminPanel
+  Customer -.-> Cloud.FrontendDashboard
+"
+`;
+
+exports[`generate mermaid - fakeDiagram 1`] = `
+"---
+title: "fakeView"
+---
+graph TB
+  Amazon@{ shape: rectangle, label: "amazon" }
+  subgraph Cloud["\`cloud\`"]
+    Cloud.Backend@{ shape: rectangle, label: "backend" }
+    Cloud.Frontend@{ shape: rectangle, label: "frontend" }
+  end
+  Customer@{ shape: rectangle, label: "customer" }
+  Support@{ shape: rectangle, label: "support" }
+  Cloud.Frontend -. "\`requests\`" .-> Cloud.Backend
+  Cloud.Backend -.-> Amazon
+  Support -.-> Cloud.Frontend
+  Customer -. "\`opens\`" .-> Cloud.Frontend
+"
+`;
+
+exports[`generate mermaid - fakeDiagram2 1`] = `
+"---
+title: "frontend"
+---
+graph TB
+  Client@{ shape: rectangle, label: "client" }
+  SystemBackend@{ shape: rectangle, label: "backend" }
+  SystemFrontend@{ shape: rectangle, label: "frontend" }
+  SystemFrontend -. "\`requests\`" .-> SystemBackend
+  Client -. "\`opens\`" .-> SystemFrontend
+"
+`;
