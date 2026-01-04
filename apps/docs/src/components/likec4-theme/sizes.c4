@@ -6,12 +6,16 @@ model {
     }
   }
   sm = rectangle 'small' {
-    description 'Small description'
+    description '
+      Small description
+      Technology is hidden
+    '
     style {
       size sm
     }
   }
   md = rectangle 'medium' {
+    technology '[ size: medium ]'
     description 'Medium description'
     style {
 
@@ -19,12 +23,14 @@ model {
     }
   }
   lg = rectangle 'large' {
+    technology '[ size: large ]'
     description 'Large description'
     style {
       size lg
     }
   }
   xl = rectangle 'xlarge' {
+    technology '[ size: xlarge ]'
     description 'XLarge  description'
     style {
       size xl
@@ -38,16 +44,16 @@ views {
     include xs, sm, md
 
     style * {
-      icon tech:github
+      icon tech:github-icon
       color muted
     }
 
     autoLayout LeftRight
   }
   view sizes2_example {
-    include lg,xl
+    include lg, xl
     style * {
-      icon tech:github
+      icon tech:github-icon
       color muted
     }
     autoLayout LeftRight

@@ -4,7 +4,7 @@
   "version": "1.46.1",
   "private": true,
   "scripts": {
-    "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",
+    "update-theme-c4": "tsx scripts/generate-theme-c4.mts",
     "generate": "astro sync",
     "dev": "astro dev",
     "start": "astro dev",

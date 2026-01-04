@@ -14,15 +14,21 @@ specification {
     }
   }
 
+  element browser {
+    style {
+      shape browser
+    }
+  }
+
   element storage {
     style {
       shape storage
     }
   }
 
-  element queue {
+  element bucket {
     style {
-      shape queue
+      shape bucket
     }
   }
 
@@ -38,9 +44,15 @@ specification {
     }
   }
 
-  element browser {
+  element queue {
     style {
-      shape browser
+      shape queue
+    }
+  }
+
+  element document {
+    style {
+      shape document
     }
   }
 
@@ -53,167 +65,139 @@ model {
       color muted
     }
 
-    themecolor primary {
-      title "Primary"
-      description '
-        Example of primary Theme Color
-        with multiline description
-        and more text
-      '
+    themecolor amber {
+      title "Amber"
+      description '''
+        Example of **amber** Theme Color  \
+        with markdown description
+      '''
       style {
-        color primary
+        color amber
       }
 
       rectangle = rectangle {
         title: 'Rectangle'
-        technology: '[primary]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and primary color
-        '
+        technology: '[ amber ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
         style {
-          color primary
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[primary]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and primary color
-        '
-        style {
-          color primary
-        }
-      }
-
-      queue = queue {
-        title: 'Queue'
-        technology: '[primary]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and primary color
-        '
-        style {
-          color primary
-        }
-      }
-
-      person = person {
-        title: 'Person'
-        technology: '[primary]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and primary color
-        '
-        style {
-          color primary
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[primary]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and primary color
-        '
-        style {
-          color primary
+          color amber
         }
       }
 
       browser = browser {
         title: 'Browser'
-        technology: '[primary]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and primary color
-        '
+        technology: '[ amber ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
         style {
-          color primary
+          color amber
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ amber ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
+        style {
+          color amber
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ amber ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
+        style {
+          color amber
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ amber ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
+        style {
+          color amber
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ amber ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
+        style {
+          color amber
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ amber ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
+        style {
+          color amber
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ amber ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
+        style {
+          color amber
         }
       }
 
     }
     themecolor blue {
       title "Blue"
-      description '
-        Example of blue Theme Color
-        with multiline description
-        and more text
-      '
+      description '''
+        Example of **blue** Theme Color  \
+        with markdown description
+      '''
       style {
         color blue
       }
 
       rectangle = rectangle {
         title: 'Rectangle'
-        technology: '[blue]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and blue color
-        '
-        style {
-          color blue
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[blue]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and blue color
-        '
-        style {
-          color blue
-        }
-      }
-
-      queue = queue {
-        title: 'Queue'
-        technology: '[blue]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and blue color
-        '
-        style {
-          color blue
-        }
-      }
-
-      person = person {
-        title: 'Person'
-        technology: '[blue]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and blue color
-        '
-        style {
-          color blue
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[blue]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and blue color
-        '
+        technology: '[ blue ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
         style {
           color blue
         }
@@ -221,89 +205,919 @@ model {
 
       browser = browser {
         title: 'Browser'
-        technology: '[blue]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and blue color
-        '
+        technology: '[ blue ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
+        style {
+          color blue
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ blue ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
+        style {
+          color blue
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ blue ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
+        style {
+          color blue
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ blue ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
+        style {
+          color blue
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ blue ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
+        style {
+          color blue
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ blue ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
+        style {
+          color blue
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ blue ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
         style {
           color blue
         }
       }
 
     }
+    themecolor gray {
+      title "Gray"
+      description '''
+        Example of **gray** Theme Color  \
+        with markdown description
+      '''
+      style {
+        color gray
+      }
+
+      rectangle = rectangle {
+        title: 'Rectangle'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
+      browser = browser {
+        title: 'Browser'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
+    }
+    themecolor slate {
+      title "Slate"
+      description '''
+        Example of **slate** Theme Color  \
+        with markdown description
+      '''
+      style {
+        color slate
+      }
+
+      rectangle = rectangle {
+        title: 'Rectangle'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
+      browser = browser {
+        title: 'Browser'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
+    }
+    themecolor green {
+      title "Green"
+      description '''
+        Example of **green** Theme Color  \
+        with markdown description
+      '''
+      style {
+        color green
+      }
+
+      rectangle = rectangle {
+        title: 'Rectangle'
+        technology: '[ green ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
+      browser = browser {
+        title: 'Browser'
+        technology: '[ green ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ green ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ green ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ green ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ green ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ green ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ green ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
+    }
+    themecolor indigo {
+      title "Indigo"
+      description '''
+        Example of **indigo** Theme Color  \
+        with markdown description
+      '''
+      style {
+        color indigo
+      }
+
+      rectangle = rectangle {
+        title: 'Rectangle'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
+      browser = browser {
+        title: 'Browser'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
+    }
+    themecolor muted {
+      title "Muted"
+      description '''
+        Example of **muted** Theme Color  \
+        with markdown description
+      '''
+      style {
+        color muted
+      }
+
+      rectangle = rectangle {
+        title: 'Rectangle'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
+      browser = browser {
+        title: 'Browser'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
+    }
+    themecolor primary {
+      title "Primary"
+      description '''
+        Example of **primary** Theme Color  \
+        with markdown description
+      '''
+      style {
+        color primary
+      }
+
+      rectangle = rectangle {
+        title: 'Rectangle'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
+      browser = browser {
+        title: 'Browser'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
+    }
+    themecolor red {
+      title "Red"
+      description '''
+        Example of **red** Theme Color  \
+        with markdown description
+      '''
+      style {
+        color red
+      }
+
+      rectangle = rectangle {
+        title: 'Rectangle'
+        technology: '[ red ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
+      browser = browser {
+        title: 'Browser'
+        technology: '[ red ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ red ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ red ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ red ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ red ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ red ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ red ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
+    }
     themecolor secondary {
       title "Secondary"
-      description '
-        Example of secondary Theme Color
-        with multiline description
-        and more text
-      '
+      description '''
+        Example of **secondary** Theme Color  \
+        with markdown description
+      '''
       style {
         color secondary
       }
 
       rectangle = rectangle {
         title: 'Rectangle'
-        technology: '[secondary]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and secondary color
-        '
-        style {
-          color secondary
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[secondary]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and secondary color
-        '
-        style {
-          color secondary
-        }
-      }
-
-      queue = queue {
-        title: 'Queue'
-        technology: '[secondary]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and secondary color
-        '
-        style {
-          color secondary
-        }
-      }
-
-      person = person {
-        title: 'Person'
-        technology: '[secondary]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and secondary color
-        '
-        style {
-          color secondary
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[secondary]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and secondary color
-        '
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
         style {
           color secondary
         }
@@ -311,12 +1125,90 @@ model {
 
       browser = browser {
         title: 'Browser'
-        technology: '[secondary]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and secondary color
-        '
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
+        style {
+          color secondary
+        }
+      }
+
+      storage = storage {
+        title: 'Storage'
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
+        style {
+          color secondary
+        }
+      }
+
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
+        style {
+          color secondary
+        }
+      }
+
+      person = person {
+        title: 'Person'
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
+        style {
+          color secondary
+        }
+      }
+
+      mobile = mobile {
+        title: 'Mobile'
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
+        style {
+          color secondary
+        }
+      }
+
+      queue = queue {
+        title: 'Queue'
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
+        style {
+          color secondary
+        }
+      }
+
+      document = document {
+        title: 'Document'
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
         style {
           color secondary
         }
@@ -325,75 +1217,22 @@ model {
     }
     themecolor sky {
       title "Sky"
-      description '
-        Example of sky Theme Color
-        with multiline description
-        and more text
-      '
+      description '''
+        Example of **sky** Theme Color  \
+        with markdown description
+      '''
       style {
         color sky
       }
 
       rectangle = rectangle {
         title: 'Rectangle'
-        technology: '[sky]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and sky color
-        '
-        style {
-          color sky
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[sky]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and sky color
-        '
-        style {
-          color sky
-        }
-      }
-
-      queue = queue {
-        title: 'Queue'
-        technology: '[sky]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and sky color
-        '
-        style {
-          color sky
-        }
-      }
-
-      person = person {
-        title: 'Person'
-        technology: '[sky]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and sky color
-        '
-        style {
-          color sky
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[sky]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and sky color
-        '
+        technology: '[ sky ]'
+        description: '''
+          Example of **Rectangle** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
         style {
           color sky
         }
@@ -401,644 +1240,92 @@ model {
 
       browser = browser {
         title: 'Browser'
-        technology: '[sky]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and sky color
-        '
+        technology: '[ sky ]'
+        description: '''
+          Example of **Browser** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
         style {
           color sky
         }
       }
 
-    }
-    themecolor muted {
-      title "Muted"
-      description '
-        Example of muted Theme Color
-        with multiline description
-        and more text
-      '
-      style {
-        color muted
-      }
-
-      rectangle = rectangle {
-        title: 'Rectangle'
-        technology: '[muted]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and muted color
-        '
-        style {
-          color muted
-        }
-      }
-
       storage = storage {
         title: 'Storage'
-        technology: '[muted]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and muted color
-        '
+        technology: '[ sky ]'
+        description: '''
+          Example of **Storage** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
         style {
-          color muted
+          color sky
         }
       }
 
-      queue = queue {
-        title: 'Queue'
-        technology: '[muted]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and muted color
-        '
+      bucket = bucket {
+        title: 'Bucket'
+        technology: '[ sky ]'
+        description: '''
+          Example of **Bucket** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
         style {
-          color muted
+          color sky
         }
       }
 
       person = person {
         title: 'Person'
-        technology: '[muted]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and muted color
-        '
+        technology: '[ sky ]'
+        description: '''
+          Example of **Person** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
         style {
-          color muted
+          color sky
         }
       }
 
       mobile = mobile {
         title: 'Mobile'
-        technology: '[muted]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and muted color
-        '
+        technology: '[ sky ]'
+        description: '''
+          Example of **Mobile** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
         style {
-          color muted
-        }
-      }
-
-      browser = browser {
-        title: 'Browser'
-        technology: '[muted]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and muted color
-        '
-        style {
-          color muted
-        }
-      }
-
-    }
-    themecolor slate {
-      title "Slate"
-      description '
-        Example of slate Theme Color
-        with multiline description
-        and more text
-      '
-      style {
-        color slate
-      }
-
-      rectangle = rectangle {
-        title: 'Rectangle'
-        technology: '[slate]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and slate color
-        '
-        style {
-          color slate
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[slate]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and slate color
-        '
-        style {
-          color slate
+          color sky
         }
       }
 
       queue = queue {
         title: 'Queue'
-        technology: '[slate]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and slate color
-        '
+        technology: '[ sky ]'
+        description: '''
+          Example of **Queue** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
         style {
-          color slate
+          color sky
         }
       }
 
-      person = person {
-        title: 'Person'
-        technology: '[slate]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and slate color
-        '
+      document = document {
+        title: 'Document'
+        technology: '[ sky ]'
+        description: '''
+          Example of **Document** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
         style {
-          color slate
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[slate]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and slate color
-        '
-        style {
-          color slate
-        }
-      }
-
-      browser = browser {
-        title: 'Browser'
-        technology: '[slate]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and slate color
-        '
-        style {
-          color slate
-        }
-      }
-
-    }
-    themecolor gray {
-      title "Gray"
-      description '
-        Example of gray Theme Color
-        with multiline description
-        and more text
-      '
-      style {
-        color gray
-      }
-
-      rectangle = rectangle {
-        title: 'Rectangle'
-        technology: '[gray]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and gray color
-        '
-        style {
-          color gray
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[gray]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and gray color
-        '
-        style {
-          color gray
-        }
-      }
-
-      queue = queue {
-        title: 'Queue'
-        technology: '[gray]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and gray color
-        '
-        style {
-          color gray
-        }
-      }
-
-      person = person {
-        title: 'Person'
-        technology: '[gray]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and gray color
-        '
-        style {
-          color gray
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[gray]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and gray color
-        '
-        style {
-          color gray
-        }
-      }
-
-      browser = browser {
-        title: 'Browser'
-        technology: '[gray]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and gray color
-        '
-        style {
-          color gray
-        }
-      }
-
-    }
-    themecolor red {
-      title "Red"
-      description '
-        Example of red Theme Color
-        with multiline description
-        and more text
-      '
-      style {
-        color red
-      }
-
-      rectangle = rectangle {
-        title: 'Rectangle'
-        technology: '[red]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and red color
-        '
-        style {
-          color red
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[red]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and red color
-        '
-        style {
-          color red
-        }
-      }
-
-      queue = queue {
-        title: 'Queue'
-        technology: '[red]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and red color
-        '
-        style {
-          color red
-        }
-      }
-
-      person = person {
-        title: 'Person'
-        technology: '[red]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and red color
-        '
-        style {
-          color red
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[red]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and red color
-        '
-        style {
-          color red
-        }
-      }
-
-      browser = browser {
-        title: 'Browser'
-        technology: '[red]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and red color
-        '
-        style {
-          color red
-        }
-      }
-
-    }
-    themecolor green {
-      title "Green"
-      description '
-        Example of green Theme Color
-        with multiline description
-        and more text
-      '
-      style {
-        color green
-      }
-
-      rectangle = rectangle {
-        title: 'Rectangle'
-        technology: '[green]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and green color
-        '
-        style {
-          color green
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[green]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and green color
-        '
-        style {
-          color green
-        }
-      }
-
-      queue = queue {
-        title: 'Queue'
-        technology: '[green]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and green color
-        '
-        style {
-          color green
-        }
-      }
-
-      person = person {
-        title: 'Person'
-        technology: '[green]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and green color
-        '
-        style {
-          color green
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[green]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and green color
-        '
-        style {
-          color green
-        }
-      }
-
-      browser = browser {
-        title: 'Browser'
-        technology: '[green]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and green color
-        '
-        style {
-          color green
-        }
-      }
-
-    }
-    themecolor amber {
-      title "Amber"
-      description '
-        Example of amber Theme Color
-        with multiline description
-        and more text
-      '
-      style {
-        color amber
-      }
-
-      rectangle = rectangle {
-        title: 'Rectangle'
-        technology: '[amber]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and amber color
-        '
-        style {
-          color amber
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[amber]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and amber color
-        '
-        style {
-          color amber
-        }
-      }
-
-      queue = queue {
-        title: 'Queue'
-        technology: '[amber]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and amber color
-        '
-        style {
-          color amber
-        }
-      }
-
-      person = person {
-        title: 'Person'
-        technology: '[amber]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and amber color
-        '
-        style {
-          color amber
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[amber]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and amber color
-        '
-        style {
-          color amber
-        }
-      }
-
-      browser = browser {
-        title: 'Browser'
-        technology: '[amber]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and amber color
-        '
-        style {
-          color amber
-        }
-      }
-
-    }
-    themecolor indigo {
-      title "Indigo"
-      description '
-        Example of indigo Theme Color
-        with multiline description
-        and more text
-      '
-      style {
-        color indigo
-      }
-
-      rectangle = rectangle {
-        title: 'Rectangle'
-        technology: '[indigo]'
-        description: '
-          Example of Rectangle shape
-          with multiline description
-          and indigo color
-        '
-        style {
-          color indigo
-        }
-      }
-
-      storage = storage {
-        title: 'Storage'
-        technology: '[indigo]'
-        description: '
-          Example of Storage shape
-          with multiline description
-          and indigo color
-        '
-        style {
-          color indigo
-        }
-      }
-
-      queue = queue {
-        title: 'Queue'
-        technology: '[indigo]'
-        description: '
-          Example of Queue shape
-          with multiline description
-          and indigo color
-        '
-        style {
-          color indigo
-        }
-      }
-
-      person = person {
-        title: 'Person'
-        technology: '[indigo]'
-        description: '
-          Example of Person shape
-          with multiline description
-          and indigo color
-        '
-        style {
-          color indigo
-        }
-      }
-
-      mobile = mobile {
-        title: 'Mobile'
-        technology: '[indigo]'
-        description: '
-          Example of Mobile shape
-          with multiline description
-          and indigo color
-        '
-        style {
-          color indigo
-        }
-      }
-
-      browser = browser {
-        title: 'Browser'
-        technology: '[indigo]'
-        description: '
-          Example of Browser shape
-          with multiline description
-          and indigo color
-        '
-        style {
-          color indigo
+          color sky
         }
       }
 
@@ -1061,370 +1348,70 @@ views {
         title "Shape: Rectangle"
       },
 
-      primary.rectangle with {
-        title 'Primary'
-        technology '[rectangle]'
-        navigateTo themecolor_primary
+      amber.rectangle with {
+        title 'Amber'
+        technology '[ rectangle ]'
+        navigateTo themecolor_amber
       },
 
       blue.rectangle with {
         title 'Blue'
-        technology '[rectangle]'
+        technology '[ rectangle ]'
         navigateTo themecolor_blue
+      },
+
+      gray.rectangle with {
+        title 'Gray'
+        technology '[ rectangle ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.rectangle with {
+        title 'Slate'
+        technology '[ rectangle ]'
+        navigateTo themecolor_slate
+      },
+
+      green.rectangle with {
+        title 'Green'
+        technology '[ rectangle ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.rectangle with {
+        title 'Indigo'
+        technology '[ rectangle ]'
+        navigateTo themecolor_indigo
+      },
+
+      muted.rectangle with {
+        title 'Muted'
+        technology '[ rectangle ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.rectangle with {
+        title 'Primary'
+        technology '[ rectangle ]'
+        navigateTo themecolor_primary
+      },
+
+      red.rectangle with {
+        title 'Red'
+        technology '[ rectangle ]'
+        navigateTo themecolor_red
       },
 
       secondary.rectangle with {
         title 'Secondary'
-        technology '[rectangle]'
+        technology '[ rectangle ]'
         navigateTo themecolor_secondary
       },
 
       sky.rectangle with {
         title 'Sky'
-        technology '[rectangle]'
+        technology '[ rectangle ]'
         navigateTo themecolor_sky
-      },
-
-      muted.rectangle with {
-        title 'Muted'
-        technology '[rectangle]'
-        navigateTo themecolor_muted
-      },
-
-      slate.rectangle with {
-        title 'Slate'
-        technology '[rectangle]'
-        navigateTo themecolor_slate
-      },
-
-      gray.rectangle with {
-        title 'Gray'
-        technology '[rectangle]'
-        navigateTo themecolor_gray
-      },
-
-      red.rectangle with {
-        title 'Red'
-        technology '[rectangle]'
-        navigateTo themecolor_red
-      },
-
-      green.rectangle with {
-        title 'Green'
-        technology '[rectangle]'
-        navigateTo themecolor_green
-      },
-
-      amber.rectangle with {
-        title 'Amber'
-        technology '[rectangle]'
-        navigateTo themecolor_amber
-      },
-
-      indigo.rectangle with {
-        title 'Indigo'
-        technology '[rectangle]'
-        navigateTo themecolor_indigo
-      },
-
-  }
-
-  view storage {
-    title "Shape: Storage"
-    include
-      colors with {
-        title "Shape: Storage"
-      },
-
-      primary.storage with {
-        title 'Primary'
-        technology '[storage]'
-        navigateTo themecolor_primary
-      },
-
-      blue.storage with {
-        title 'Blue'
-        technology '[storage]'
-        navigateTo themecolor_blue
-      },
-
-      secondary.storage with {
-        title 'Secondary'
-        technology '[storage]'
-        navigateTo themecolor_secondary
-      },
-
-      sky.storage with {
-        title 'Sky'
-        technology '[storage]'
-        navigateTo themecolor_sky
-      },
-
-      muted.storage with {
-        title 'Muted'
-        technology '[storage]'
-        navigateTo themecolor_muted
-      },
-
-      slate.storage with {
-        title 'Slate'
-        technology '[storage]'
-        navigateTo themecolor_slate
-      },
-
-      gray.storage with {
-        title 'Gray'
-        technology '[storage]'
-        navigateTo themecolor_gray
-      },
-
-      red.storage with {
-        title 'Red'
-        technology '[storage]'
-        navigateTo themecolor_red
-      },
-
-      green.storage with {
-        title 'Green'
-        technology '[storage]'
-        navigateTo themecolor_green
-      },
-
-      amber.storage with {
-        title 'Amber'
-        technology '[storage]'
-        navigateTo themecolor_amber
-      },
-
-      indigo.storage with {
-        title 'Indigo'
-        technology '[storage]'
-        navigateTo themecolor_indigo
-      },
-
-  }
-
-  view queue {
-    title "Shape: Queue"
-    include
-      colors with {
-        title "Shape: Queue"
-      },
-
-      primary.queue with {
-        title 'Primary'
-        technology '[queue]'
-        navigateTo themecolor_primary
-      },
-
-      blue.queue with {
-        title 'Blue'
-        technology '[queue]'
-        navigateTo themecolor_blue
-      },
-
-      secondary.queue with {
-        title 'Secondary'
-        technology '[queue]'
-        navigateTo themecolor_secondary
-      },
-
-      sky.queue with {
-        title 'Sky'
-        technology '[queue]'
-        navigateTo themecolor_sky
-      },
-
-      muted.queue with {
-        title 'Muted'
-        technology '[queue]'
-        navigateTo themecolor_muted
-      },
-
-      slate.queue with {
-        title 'Slate'
-        technology '[queue]'
-        navigateTo themecolor_slate
-      },
-
-      gray.queue with {
-        title 'Gray'
-        technology '[queue]'
-        navigateTo themecolor_gray
-      },
-
-      red.queue with {
-        title 'Red'
-        technology '[queue]'
-        navigateTo themecolor_red
-      },
-
-      green.queue with {
-        title 'Green'
-        technology '[queue]'
-        navigateTo themecolor_green
-      },
-
-      amber.queue with {
-        title 'Amber'
-        technology '[queue]'
-        navigateTo themecolor_amber
-      },
-
-      indigo.queue with {
-        title 'Indigo'
-        technology '[queue]'
-        navigateTo themecolor_indigo
-      },
-
-  }
-
-  view person {
-    title "Shape: Person"
-    include
-      colors with {
-        title "Shape: Person"
-      },
-
-      primary.person with {
-        title 'Primary'
-        technology '[person]'
-        navigateTo themecolor_primary
-      },
-
-      blue.person with {
-        title 'Blue'
-        technology '[person]'
-        navigateTo themecolor_blue
-      },
-
-      secondary.person with {
-        title 'Secondary'
-        technology '[person]'
-        navigateTo themecolor_secondary
-      },
-
-      sky.person with {
-        title 'Sky'
-        technology '[person]'
-        navigateTo themecolor_sky
-      },
-
-      muted.person with {
-        title 'Muted'
-        technology '[person]'
-        navigateTo themecolor_muted
-      },
-
-      slate.person with {
-        title 'Slate'
-        technology '[person]'
-        navigateTo themecolor_slate
-      },
-
-      gray.person with {
-        title 'Gray'
-        technology '[person]'
-        navigateTo themecolor_gray
-      },
-
-      red.person with {
-        title 'Red'
-        technology '[person]'
-        navigateTo themecolor_red
-      },
-
-      green.person with {
-        title 'Green'
-        technology '[person]'
-        navigateTo themecolor_green
-      },
-
-      amber.person with {
-        title 'Amber'
-        technology '[person]'
-        navigateTo themecolor_amber
-      },
-
-      indigo.person with {
-        title 'Indigo'
-        technology '[person]'
-        navigateTo themecolor_indigo
-      },
-
-  }
-
-  view mobile {
-    title "Shape: Mobile"
-    include
-      colors with {
-        title "Shape: Mobile"
-      },
-
-      primary.mobile with {
-        title 'Primary'
-        technology '[mobile]'
-        navigateTo themecolor_primary
-      },
-
-      blue.mobile with {
-        title 'Blue'
-        technology '[mobile]'
-        navigateTo themecolor_blue
-      },
-
-      secondary.mobile with {
-        title 'Secondary'
-        technology '[mobile]'
-        navigateTo themecolor_secondary
-      },
-
-      sky.mobile with {
-        title 'Sky'
-        technology '[mobile]'
-        navigateTo themecolor_sky
-      },
-
-      muted.mobile with {
-        title 'Muted'
-        technology '[mobile]'
-        navigateTo themecolor_muted
-      },
-
-      slate.mobile with {
-        title 'Slate'
-        technology '[mobile]'
-        navigateTo themecolor_slate
-      },
-
-      gray.mobile with {
-        title 'Gray'
-        technology '[mobile]'
-        navigateTo themecolor_gray
-      },
-
-      red.mobile with {
-        title 'Red'
-        technology '[mobile]'
-        navigateTo themecolor_red
-      },
-
-      green.mobile with {
-        title 'Green'
-        technology '[mobile]'
-        navigateTo themecolor_green
-      },
-
-      amber.mobile with {
-        title 'Amber'
-        technology '[mobile]'
-        navigateTo themecolor_amber
-      },
-
-      indigo.mobile with {
-        title 'Indigo'
-        technology '[mobile]'
-        navigateTo themecolor_indigo
       },
 
   }
@@ -1436,81 +1423,531 @@ views {
         title "Shape: Browser"
       },
 
-      primary.browser with {
-        title 'Primary'
-        technology '[browser]'
-        navigateTo themecolor_primary
+      amber.browser with {
+        title 'Amber'
+        technology '[ browser ]'
+        navigateTo themecolor_amber
       },
 
       blue.browser with {
         title 'Blue'
-        technology '[browser]'
+        technology '[ browser ]'
         navigateTo themecolor_blue
+      },
+
+      gray.browser with {
+        title 'Gray'
+        technology '[ browser ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.browser with {
+        title 'Slate'
+        technology '[ browser ]'
+        navigateTo themecolor_slate
+      },
+
+      green.browser with {
+        title 'Green'
+        technology '[ browser ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.browser with {
+        title 'Indigo'
+        technology '[ browser ]'
+        navigateTo themecolor_indigo
+      },
+
+      muted.browser with {
+        title 'Muted'
+        technology '[ browser ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.browser with {
+        title 'Primary'
+        technology '[ browser ]'
+        navigateTo themecolor_primary
+      },
+
+      red.browser with {
+        title 'Red'
+        technology '[ browser ]'
+        navigateTo themecolor_red
       },
 
       secondary.browser with {
         title 'Secondary'
-        technology '[browser]'
+        technology '[ browser ]'
         navigateTo themecolor_secondary
       },
 
       sky.browser with {
         title 'Sky'
-        technology '[browser]'
+        technology '[ browser ]'
         navigateTo themecolor_sky
       },
 
-      muted.browser with {
-        title 'Muted'
-        technology '[browser]'
-        navigateTo themecolor_muted
+  }
+
+  view storage {
+    title "Shape: Storage"
+    include
+      colors with {
+        title "Shape: Storage"
       },
 
-      slate.browser with {
-        title 'Slate'
-        technology '[browser]'
-        navigateTo themecolor_slate
-      },
-
-      gray.browser with {
-        title 'Gray'
-        technology '[browser]'
-        navigateTo themecolor_gray
-      },
-
-      red.browser with {
-        title 'Red'
-        technology '[browser]'
-        navigateTo themecolor_red
-      },
-
-      green.browser with {
-        title 'Green'
-        technology '[browser]'
-        navigateTo themecolor_green
-      },
-
-      amber.browser with {
+      amber.storage with {
         title 'Amber'
-        technology '[browser]'
+        technology '[ storage ]'
         navigateTo themecolor_amber
       },
 
-      indigo.browser with {
+      blue.storage with {
+        title 'Blue'
+        technology '[ storage ]'
+        navigateTo themecolor_blue
+      },
+
+      gray.storage with {
+        title 'Gray'
+        technology '[ storage ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.storage with {
+        title 'Slate'
+        technology '[ storage ]'
+        navigateTo themecolor_slate
+      },
+
+      green.storage with {
+        title 'Green'
+        technology '[ storage ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.storage with {
         title 'Indigo'
-        technology '[browser]'
+        technology '[ storage ]'
         navigateTo themecolor_indigo
+      },
+
+      muted.storage with {
+        title 'Muted'
+        technology '[ storage ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.storage with {
+        title 'Primary'
+        technology '[ storage ]'
+        navigateTo themecolor_primary
+      },
+
+      red.storage with {
+        title 'Red'
+        technology '[ storage ]'
+        navigateTo themecolor_red
+      },
+
+      secondary.storage with {
+        title 'Secondary'
+        technology '[ storage ]'
+        navigateTo themecolor_secondary
+      },
+
+      sky.storage with {
+        title 'Sky'
+        technology '[ storage ]'
+        navigateTo themecolor_sky
+      },
+
+  }
+
+  view bucket {
+    title "Shape: Bucket"
+    include
+      colors with {
+        title "Shape: Bucket"
+      },
+
+      amber.bucket with {
+        title 'Amber'
+        technology '[ bucket ]'
+        navigateTo themecolor_amber
+      },
+
+      blue.bucket with {
+        title 'Blue'
+        technology '[ bucket ]'
+        navigateTo themecolor_blue
+      },
+
+      gray.bucket with {
+        title 'Gray'
+        technology '[ bucket ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.bucket with {
+        title 'Slate'
+        technology '[ bucket ]'
+        navigateTo themecolor_slate
+      },
+
+      green.bucket with {
+        title 'Green'
+        technology '[ bucket ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.bucket with {
+        title 'Indigo'
+        technology '[ bucket ]'
+        navigateTo themecolor_indigo
+      },
+
+      muted.bucket with {
+        title 'Muted'
+        technology '[ bucket ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.bucket with {
+        title 'Primary'
+        technology '[ bucket ]'
+        navigateTo themecolor_primary
+      },
+
+      red.bucket with {
+        title 'Red'
+        technology '[ bucket ]'
+        navigateTo themecolor_red
+      },
+
+      secondary.bucket with {
+        title 'Secondary'
+        technology '[ bucket ]'
+        navigateTo themecolor_secondary
+      },
+
+      sky.bucket with {
+        title 'Sky'
+        technology '[ bucket ]'
+        navigateTo themecolor_sky
+      },
+
+  }
+
+  view person {
+    title "Shape: Person"
+    include
+      colors with {
+        title "Shape: Person"
+      },
+
+      amber.person with {
+        title 'Amber'
+        technology '[ person ]'
+        navigateTo themecolor_amber
+      },
+
+      blue.person with {
+        title 'Blue'
+        technology '[ person ]'
+        navigateTo themecolor_blue
+      },
+
+      gray.person with {
+        title 'Gray'
+        technology '[ person ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.person with {
+        title 'Slate'
+        technology '[ person ]'
+        navigateTo themecolor_slate
+      },
+
+      green.person with {
+        title 'Green'
+        technology '[ person ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.person with {
+        title 'Indigo'
+        technology '[ person ]'
+        navigateTo themecolor_indigo
+      },
+
+      muted.person with {
+        title 'Muted'
+        technology '[ person ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.person with {
+        title 'Primary'
+        technology '[ person ]'
+        navigateTo themecolor_primary
+      },
+
+      red.person with {
+        title 'Red'
+        technology '[ person ]'
+        navigateTo themecolor_red
+      },
+
+      secondary.person with {
+        title 'Secondary'
+        technology '[ person ]'
+        navigateTo themecolor_secondary
+      },
+
+      sky.person with {
+        title 'Sky'
+        technology '[ person ]'
+        navigateTo themecolor_sky
+      },
+
+  }
+
+  view mobile {
+    title "Shape: Mobile"
+    include
+      colors with {
+        title "Shape: Mobile"
+      },
+
+      amber.mobile with {
+        title 'Amber'
+        technology '[ mobile ]'
+        navigateTo themecolor_amber
+      },
+
+      blue.mobile with {
+        title 'Blue'
+        technology '[ mobile ]'
+        navigateTo themecolor_blue
+      },
+
+      gray.mobile with {
+        title 'Gray'
+        technology '[ mobile ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.mobile with {
+        title 'Slate'
+        technology '[ mobile ]'
+        navigateTo themecolor_slate
+      },
+
+      green.mobile with {
+        title 'Green'
+        technology '[ mobile ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.mobile with {
+        title 'Indigo'
+        technology '[ mobile ]'
+        navigateTo themecolor_indigo
+      },
+
+      muted.mobile with {
+        title 'Muted'
+        technology '[ mobile ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.mobile with {
+        title 'Primary'
+        technology '[ mobile ]'
+        navigateTo themecolor_primary
+      },
+
+      red.mobile with {
+        title 'Red'
+        technology '[ mobile ]'
+        navigateTo themecolor_red
+      },
+
+      secondary.mobile with {
+        title 'Secondary'
+        technology '[ mobile ]'
+        navigateTo themecolor_secondary
+      },
+
+      sky.mobile with {
+        title 'Sky'
+        technology '[ mobile ]'
+        navigateTo themecolor_sky
+      },
+
+  }
+
+  view queue {
+    title "Shape: Queue"
+    include
+      colors with {
+        title "Shape: Queue"
+      },
+
+      amber.queue with {
+        title 'Amber'
+        technology '[ queue ]'
+        navigateTo themecolor_amber
+      },
+
+      blue.queue with {
+        title 'Blue'
+        technology '[ queue ]'
+        navigateTo themecolor_blue
+      },
+
+      gray.queue with {
+        title 'Gray'
+        technology '[ queue ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.queue with {
+        title 'Slate'
+        technology '[ queue ]'
+        navigateTo themecolor_slate
+      },
+
+      green.queue with {
+        title 'Green'
+        technology '[ queue ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.queue with {
+        title 'Indigo'
+        technology '[ queue ]'
+        navigateTo themecolor_indigo
+      },
+
+      muted.queue with {
+        title 'Muted'
+        technology '[ queue ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.queue with {
+        title 'Primary'
+        technology '[ queue ]'
+        navigateTo themecolor_primary
+      },
+
+      red.queue with {
+        title 'Red'
+        technology '[ queue ]'
+        navigateTo themecolor_red
+      },
+
+      secondary.queue with {
+        title 'Secondary'
+        technology '[ queue ]'
+        navigateTo themecolor_secondary
+      },
+
+      sky.queue with {
+        title 'Sky'
+        technology '[ queue ]'
+        navigateTo themecolor_sky
+      },
+
+  }
+
+  view document {
+    title "Shape: Document"
+    include
+      colors with {
+        title "Shape: Document"
+      },
+
+      amber.document with {
+        title 'Amber'
+        technology '[ document ]'
+        navigateTo themecolor_amber
+      },
+
+      blue.document with {
+        title 'Blue'
+        technology '[ document ]'
+        navigateTo themecolor_blue
+      },
+
+      gray.document with {
+        title 'Gray'
+        technology '[ document ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.document with {
+        title 'Slate'
+        technology '[ document ]'
+        navigateTo themecolor_slate
+      },
+
+      green.document with {
+        title 'Green'
+        technology '[ document ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.document with {
+        title 'Indigo'
+        technology '[ document ]'
+        navigateTo themecolor_indigo
+      },
+
+      muted.document with {
+        title 'Muted'
+        technology '[ document ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.document with {
+        title 'Primary'
+        technology '[ document ]'
+        navigateTo themecolor_primary
+      },
+
+      red.document with {
+        title 'Red'
+        technology '[ document ]'
+        navigateTo themecolor_red
+      },
+
+      secondary.document with {
+        title 'Secondary'
+        technology '[ document ]'
+        navigateTo themecolor_secondary
+      },
+
+      sky.document with {
+        title 'Sky'
+        technology '[ document ]'
+        navigateTo themecolor_sky
       },
 
   }
 
 
 
-  view themecolor_primary of primary {
-    title "Theme Color: primary"
+  view themecolor_amber of amber {
+    title "Theme Color: amber"
     include
-      primary with {
-        title "Theme Color: primary"
+      amber with {
+        title "Theme Color: amber"
         navigateTo index
       },
 
@@ -1518,12 +1955,16 @@ views {
         navigateTo rectangle
       },
 
+      browser with {
+        navigateTo browser
+      },
+
       storage with {
         navigateTo storage
       },
 
-      queue with {
-        navigateTo queue
+      bucket with {
+        navigateTo bucket
       },
 
       person with {
@@ -1534,8 +1975,12 @@ views {
         navigateTo mobile
       },
 
-      browser with {
-        navigateTo browser
+      queue with {
+        navigateTo queue
+      },
+
+      document with {
+        navigateTo document
       },
 
   }
@@ -1552,12 +1997,16 @@ views {
         navigateTo rectangle
       },
 
+      browser with {
+        navigateTo browser
+      },
+
       storage with {
         navigateTo storage
       },
 
-      queue with {
-        navigateTo queue
+      bucket with {
+        navigateTo bucket
       },
 
       person with {
@@ -1568,144 +2017,12 @@ views {
         navigateTo mobile
       },
 
-      browser with {
-        navigateTo browser
-      },
-
-  }
-
-  view themecolor_secondary of secondary {
-    title "Theme Color: secondary"
-    include
-      secondary with {
-        title "Theme Color: secondary"
-        navigateTo index
-      },
-
-      rectangle with {
-        navigateTo rectangle
-      },
-
-      storage with {
-        navigateTo storage
-      },
-
       queue with {
         navigateTo queue
       },
 
-      person with {
-        navigateTo person
-      },
-
-      mobile with {
-        navigateTo mobile
-      },
-
-      browser with {
-        navigateTo browser
-      },
-
-  }
-
-  view themecolor_sky of sky {
-    title "Theme Color: sky"
-    include
-      sky with {
-        title "Theme Color: sky"
-        navigateTo index
-      },
-
-      rectangle with {
-        navigateTo rectangle
-      },
-
-      storage with {
-        navigateTo storage
-      },
-
-      queue with {
-        navigateTo queue
-      },
-
-      person with {
-        navigateTo person
-      },
-
-      mobile with {
-        navigateTo mobile
-      },
-
-      browser with {
-        navigateTo browser
-      },
-
-  }
-
-  view themecolor_muted of muted {
-    title "Theme Color: muted"
-    include
-      muted with {
-        title "Theme Color: muted"
-        navigateTo index
-      },
-
-      rectangle with {
-        navigateTo rectangle
-      },
-
-      storage with {
-        navigateTo storage
-      },
-
-      queue with {
-        navigateTo queue
-      },
-
-      person with {
-        navigateTo person
-      },
-
-      mobile with {
-        navigateTo mobile
-      },
-
-      browser with {
-        navigateTo browser
-      },
-
-  }
-
-  view themecolor_slate of slate {
-    title "Theme Color: slate"
-    include
-      slate with {
-        title "Theme Color: slate"
-        navigateTo index
-      },
-
-      rectangle with {
-        navigateTo rectangle
-      },
-
-      storage with {
-        navigateTo storage
-      },
-
-      queue with {
-        navigateTo queue
-      },
-
-      person with {
-        navigateTo person
-      },
-
-      mobile with {
-        navigateTo mobile
-      },
-
-      browser with {
-        navigateTo browser
+      document with {
+        navigateTo document
       },
 
   }
@@ -1722,12 +2039,16 @@ views {
         navigateTo rectangle
       },
 
+      browser with {
+        navigateTo browser
+      },
+
       storage with {
         navigateTo storage
       },
 
-      queue with {
-        navigateTo queue
+      bucket with {
+        navigateTo bucket
       },
 
       person with {
@@ -1738,17 +2059,21 @@ views {
         navigateTo mobile
       },
 
-      browser with {
-        navigateTo browser
+      queue with {
+        navigateTo queue
+      },
+
+      document with {
+        navigateTo document
       },
 
   }
 
-  view themecolor_red of red {
-    title "Theme Color: red"
+  view themecolor_slate of slate {
+    title "Theme Color: slate"
     include
-      red with {
-        title "Theme Color: red"
+      slate with {
+        title "Theme Color: slate"
         navigateTo index
       },
 
@@ -1756,12 +2081,16 @@ views {
         navigateTo rectangle
       },
 
+      browser with {
+        navigateTo browser
+      },
+
       storage with {
         navigateTo storage
       },
 
-      queue with {
-        navigateTo queue
+      bucket with {
+        navigateTo bucket
       },
 
       person with {
@@ -1772,8 +2101,12 @@ views {
         navigateTo mobile
       },
 
-      browser with {
-        navigateTo browser
+      queue with {
+        navigateTo queue
+      },
+
+      document with {
+        navigateTo document
       },
 
   }
@@ -1790,12 +2123,16 @@ views {
         navigateTo rectangle
       },
 
+      browser with {
+        navigateTo browser
+      },
+
       storage with {
         navigateTo storage
       },
 
-      queue with {
-        navigateTo queue
+      bucket with {
+        navigateTo bucket
       },
 
       person with {
@@ -1806,42 +2143,12 @@ views {
         navigateTo mobile
       },
 
-      browser with {
-        navigateTo browser
-      },
-
-  }
-
-  view themecolor_amber of amber {
-    title "Theme Color: amber"
-    include
-      amber with {
-        title "Theme Color: amber"
-        navigateTo index
-      },
-
-      rectangle with {
-        navigateTo rectangle
-      },
-
-      storage with {
-        navigateTo storage
-      },
-
       queue with {
         navigateTo queue
       },
 
-      person with {
-        navigateTo person
-      },
-
-      mobile with {
-        navigateTo mobile
-      },
-
-      browser with {
-        navigateTo browser
+      document with {
+        navigateTo document
       },
 
   }
@@ -1858,12 +2165,16 @@ views {
         navigateTo rectangle
       },
 
+      browser with {
+        navigateTo browser
+      },
+
       storage with {
         navigateTo storage
       },
 
-      queue with {
-        navigateTo queue
+      bucket with {
+        navigateTo bucket
       },
 
       person with {
@@ -1874,8 +2185,222 @@ views {
         navigateTo mobile
       },
 
+      queue with {
+        navigateTo queue
+      },
+
+      document with {
+        navigateTo document
+      },
+
+  }
+
+  view themecolor_muted of muted {
+    title "Theme Color: muted"
+    include
+      muted with {
+        title "Theme Color: muted"
+        navigateTo index
+      },
+
+      rectangle with {
+        navigateTo rectangle
+      },
+
       browser with {
         navigateTo browser
+      },
+
+      storage with {
+        navigateTo storage
+      },
+
+      bucket with {
+        navigateTo bucket
+      },
+
+      person with {
+        navigateTo person
+      },
+
+      mobile with {
+        navigateTo mobile
+      },
+
+      queue with {
+        navigateTo queue
+      },
+
+      document with {
+        navigateTo document
+      },
+
+  }
+
+  view themecolor_primary of primary {
+    title "Theme Color: primary"
+    include
+      primary with {
+        title "Theme Color: primary"
+        navigateTo index
+      },
+
+      rectangle with {
+        navigateTo rectangle
+      },
+
+      browser with {
+        navigateTo browser
+      },
+
+      storage with {
+        navigateTo storage
+      },
+
+      bucket with {
+        navigateTo bucket
+      },
+
+      person with {
+        navigateTo person
+      },
+
+      mobile with {
+        navigateTo mobile
+      },
+
+      queue with {
+        navigateTo queue
+      },
+
+      document with {
+        navigateTo document
+      },
+
+  }
+
+  view themecolor_red of red {
+    title "Theme Color: red"
+    include
+      red with {
+        title "Theme Color: red"
+        navigateTo index
+      },
+
+      rectangle with {
+        navigateTo rectangle
+      },
+
+      browser with {
+        navigateTo browser
+      },
+
+      storage with {
+        navigateTo storage
+      },
+
+      bucket with {
+        navigateTo bucket
+      },
+
+      person with {
+        navigateTo person
+      },
+
+      mobile with {
+        navigateTo mobile
+      },
+
+      queue with {
+        navigateTo queue
+      },
+
+      document with {
+        navigateTo document
+      },
+
+  }
+
+  view themecolor_secondary of secondary {
+    title "Theme Color: secondary"
+    include
+      secondary with {
+        title "Theme Color: secondary"
+        navigateTo index
+      },
+
+      rectangle with {
+        navigateTo rectangle
+      },
+
+      browser with {
+        navigateTo browser
+      },
+
+      storage with {
+        navigateTo storage
+      },
+
+      bucket with {
+        navigateTo bucket
+      },
+
+      person with {
+        navigateTo person
+      },
+
+      mobile with {
+        navigateTo mobile
+      },
+
+      queue with {
+        navigateTo queue
+      },
+
+      document with {
+        navigateTo document
+      },
+
+  }
+
+  view themecolor_sky of sky {
+    title "Theme Color: sky"
+    include
+      sky with {
+        title "Theme Color: sky"
+        navigateTo index
+      },
+
+      rectangle with {
+        navigateTo rectangle
+      },
+
+      browser with {
+        navigateTo browser
+      },
+
+      storage with {
+        navigateTo storage
+      },
+
+      bucket with {
+        navigateTo bucket
+      },
+
+      person with {
+        navigateTo person
+      },
+
+      mobile with {
+        navigateTo mobile
+      },
+
+      queue with {
+        navigateTo queue
+      },
+
+      document with {
+        navigateTo document
       },
 
   }

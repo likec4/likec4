@@ -6,8 +6,8 @@ sidebar:
   order: 7
 ---
 
-import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
 import { Aside, LinkCard } from '@astrojs/starlight/components';
+import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
 
 LikeC4 provides advanced customization capabilities. You can change colors, shapes, sizes, and icons of elements and relationships.
 
@@ -84,9 +84,9 @@ specification {
 }
 ```
 
-Available shapes: `rectangle` (default), `storage`, `cylinder`, `browser`, `mobile`, `person`, `queue`.  
+Available shapes: `rectangle` (default), `storage`, `cylinder`, `browser`, `mobile`, `person`, `queue`, `bucket` and `document`.  
 
-<LikeC4ThemeView viewId="themecolor_primary"/>
+<LikeC4ThemeView viewId="allshapes"/>
 
 ### Color
 
@@ -189,7 +189,7 @@ specification {
 
 ```
 
-<LikeC4ThemeView viewId="multiple_example" interactive={false} fitViewPadding={0.2}/>
+<LikeC4ThemeView viewId="multiple_example" interactive={false} fitViewPadding={'16px'}/>
 
 ### Icon
 

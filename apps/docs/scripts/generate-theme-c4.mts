@@ -8,15 +8,17 @@ import { LikeC4Styles } from '@likec4/core'
 import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 
-const colors = Object.keys(LikeC4Styles.DEFAULT.colors)
+const colors = Object.keys(LikeC4Styles.DEFAULT.theme.colors)
 
 const shapes = [
   'rectangle',
+  'browser',
   'storage',
-  'queue',
+  'bucket',
   'person',
   'mobile',
-  'browser',
+  'queue',
+  'document',
 ] as const
 
 const likec4 = `// DO NOT EDIT MANUALLY
@@ -51,11 +53,10 @@ ${
       key => `
     themecolor ${key} {
       title "${key.charAt(0).toUpperCase() + key.slice(1)}"
-      description '
-        Example of ${key} Theme Color
-        with multiline description
-        and more text
-      '
+      description '''
+        Example of **${key}** Theme Color  \\
+        with markdown description
+      '''
       style {
         color ${key}
       }
@@ -63,12 +64,12 @@ ${
         shapes.map(shape => `
       ${shape} = ${shape} {
         title: '${shape.charAt(0).toUpperCase() + shape.slice(1)}'
-        technology: '[${key}]'
-        description: '
-          Example of ${shape.charAt(0).toUpperCase() + shape.slice(1)} shape
-          with multiline description
-          and ${key} color
-        '
+        technology: '[ ${key} ]'
+        description: '''
+          Example of **${shape.charAt(0).toUpperCase() + shape.slice(1)}** shape  \\
+          with markdown description  \\
+          and **${key}** color
+        '''
         style {
           color ${key}
         }
@@ -100,7 +101,7 @@ ${
     colors.map(key => `
       ${key}.${shape} with {
         title '${key.charAt(0).toUpperCase() + key.slice(1)}'
-        technology '[${shape}]'
+        technology '[ ${shape} ]'
         navigateTo themecolor_${key}
       },
 `).join('')
@@ -137,7 +138,7 @@ ${
 const __filename = new URL(import.meta.url).pathname
 const __dirname = dirname(__filename)
 
-let out = resolve(__dirname, '../likec4/theme/colors.c4')
+let out = resolve(__dirname, '../src/components/likec4-theme/colors.c4')
 
 writeFileSync(out, likec4)
 

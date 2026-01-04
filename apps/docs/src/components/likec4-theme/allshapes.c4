@@ -1,0 +1,8 @@
+views {
+
+  view allshapes {
+    title "All Shapes"
+    include colors.primary.*
+  }
+
+}
