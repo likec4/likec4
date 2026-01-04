@@ -1,5 +1,19 @@
 # @likec4/language-server
 
+## 1.46.5
+
+### Patch Changes
+
+- [`817d159`](https://github.com/likec4/likec4/commit/817d159df509b50963ef135c218936c35c460ab1) Thanks [@davydkov](https://github.com/davydkov)! - Completions for project name in `import` statements
+
+- [`be5326a`](https://github.com/likec4/likec4/commit/be5326a029c4f295cdd2bcf34dfa4a928dd9b948) Thanks [@davydkov](https://github.com/davydkov)! - Updated MCP SDK
+
+- [#2521](https://github.com/likec4/likec4/pull/2521) [`de2b294`](https://github.com/likec4/likec4/commit/de2b2942322f1a1b0ce4822e40c997ba3fff9e15) Thanks [@davydkov](https://github.com/davydkov)! - - Add two new shapes: `document` and `bucket`
+
+  - Apply border style to element node (previously it was applied to compound nodes and groups), closes [#2502](https://github.com/likec4/likec4/issues/2502)
+
+- [#2521](https://github.com/likec4/likec4/pull/2521) [`8a15bb6`](https://github.com/likec4/likec4/commit/8a15bb6acde616eae65891d3dc73ff19eb0d5ffc) Thanks [@davydkov](https://github.com/davydkov)! - Improve reloading and updating projects
+
 ## 1.46.4
 
 ### Patch Changes
