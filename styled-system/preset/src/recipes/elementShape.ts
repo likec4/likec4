@@ -26,6 +26,7 @@ export const elementShapeRecipe = defineRecipe({
       ['--likec4-outline-size']: `4px`,
     },
     outline: {
+      opacity: 0.8,
       visibility: {
         base: 'hidden',
         _smallZoom: 'hidden',
@@ -168,7 +169,6 @@ export const elementShapeRecipe = defineRecipe({
           stroke: 'var(--likec4-palette-outline)',
           fill: 'none',
           strokeWidth: 4,
-          strokeOpacity: 0.8,
           animationStyle: 'indicator',
         },
       }),
