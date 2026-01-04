@@ -1,3 +1,26 @@
+## [1.47.0](https://github.com/likec4/likec4/compare/v1.46.4...v1.47.0) (2026-01-04)
+
+### Features
+
+- **diagram**: Added new shapes: `document` and `bucket`
+- **diagram**: Added `Projects Overview` diagram, that shows all projects and their relationships in a single view
+
+### Bug Fixes
+
+- [#2520](https://github.com/likec4/likec4/pull/2520) [`5e38c9b`](https://github.com/likec4/likec4/commit/5e38c9b2fced5fc43aee0326204a443d889a9d37) Fixed issue with computation of views with groups, that led to missing relations.
+
+  Exclude imported elements from views if have no relationships and not included explicitly
+
+  Export to json format supports multiple projects, plus:
+
+  - Added `--pretty` option for exporting indented JSON
+  - Added `--skip-layout` option to skip layouts and return only computed models
+- [#2521](https://github.com/likec4/likec4/pull/2521) [`de2b294`](https://github.com/likec4/likec4/commit/de2b2942322f1a1b0ce4822e40c997ba3fff9e15) Apply border style to element node (previously it was applied to compound nodes and groups), closes [#2502](https://github.com/likec4/likec4/issues/2502)
+
+  Generate Mermaid with expanded Node Shapes (v11.3.0+)
+
+  Improve labels in PlantUML
+
 ## [1.46.4](https://github.com/likec4/likec4/compare/v1.46.2...v1.46.3) (2025-12-19)
 
 ### Features
@@ -8,7 +31,6 @@
 
 - [#2506](https://github.com/likec4/likec4/pull/2506) [`39dcb77`](https://github.com/likec4/likec4/commit/39dcb77328310970f5d254e5a55f84a7a534524f) - Fixed "exclude" option in project configuration (it was working only with "\*\*/" prefix)
 - [#2509](https://github.com/likec4/likec4/pull/2509) [`9b93f25`](https://github.com/likec4/likec4/commit/9b93f25a568f4adba9bce414c0a776ed447c6676) - Fix generated PlantUML diagrams for unsupported names, fixes [#2307](https://github.com/likec4/likec4/issues/2307)
-
 
 ## [1.46.3](https://github.com/likec4/likec4/compare/v1.46.2...v1.46.3) (2025-12-19)
 
