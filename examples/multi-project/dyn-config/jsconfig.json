@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "composite": true,
+    "paths": {
+      "likec4/config": [
+        "../../../packages/config/src/node/index.ts"
+      ]
+    }
+  },
+  "references": [
+    {
+      "path": "../../../packages/config"
+    }
+  ]
+}

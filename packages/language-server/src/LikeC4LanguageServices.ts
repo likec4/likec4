@@ -1,6 +1,5 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import {
-  type ComputedView,
   type LayoutedView,
   type NonEmptyArray,
   type ProjectId,
@@ -54,8 +53,9 @@ export interface LikeC4LanguageServices {
     documents: ReadonlyArray<URI>
     config: Readonly<LikeC4ProjectConfig>
   }
+
   /**
-   * Computes, layouts and returns projects overview - a single diagram
+   * Computes and layouts projects overview - a special diagram
    * that shows all projects and their relationships
    */
   projectsOverview(cancelToken?: CancellationToken): Promise<LayoutedProjectsView>

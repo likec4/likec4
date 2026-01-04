@@ -110,12 +110,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    */
   private unsafeSyncParseModelData(projectId: c4.ProjectId): BuildModelData | null {
     const cache = this.cache as WorkspaceCache<string, BuildModelData | null>
-    const logger = builderLogger.getChild(projectId)
     const key = parsedWithoutImportsCacheKey(projectId)
-    if (cache.has(key)) {
-      logger.debug`unsafeSyncParseModelData: from cache`
-    }
     return cache.get(key, () => {
+      const logger = builderLogger.getChild(projectId)
       try {
         const project = this.projects.getProject(projectId)
         const docs = this.documents(projectId)
@@ -149,8 +146,11 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
 
     logger.debug`processing imports of ${projectId}`
     const imports = [...result.imports.associations()].reduce((acc, [projectId, fqns]) => {
+      if (fqns.size === 0) {
+        return acc
+      }
       const anotherProject = this.unsafeSyncParseModelData(projectId)
-      if (anotherProject && fqns.size > 0) {
+      if (anotherProject) {
         const imported = [...fqns].flatMap(fqn => anotherProject.data.elements[fqn] ?? [])
         if (hasAtLeast(imported, 1)) {
           acc[projectId] = structuredClone(imported)
@@ -205,16 +205,14 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     projectId: c4.ProjectId,
     manualLayouts?: ManualLayouts,
   ): LikeC4Model<UnknownComputed> {
-    const logger = builderLogger.getChild(projectId)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model<UnknownComputed>>
     const hasManualLayouts = !!manualLayouts && !isEmpty(manualLayouts)
     const key = computedModelCacheKey(projectId) + (hasManualLayouts ? '+manualLayouts' : '')
-    if (cache.has(key)) {
-      logger.debug`unsafeSyncBuildModel: from cache`
-    }
     return cache.get(key, () => {
+      const logger = builderLogger.getChild(projectId)
       const parsedModelData = this.unsafeSyncJoinedModelData(projectId)
       if (!parsedModelData) {
+        logger.debug`unsafeSyncComputeModel: returning EMPTY`
         return LikeC4Model.EMPTY.asComputed
       }
       const parsedModel = LikeC4Model.create(parsedModelData)
@@ -250,7 +248,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       if (hasManualLayouts) {
         data.manualLayouts = manualLayouts
       }
-      logger.debug`unsafeSyncBuildModel: completed`
+      logger.debug(`unsafeSyncComputeModel${hasManualLayouts ? ' with manual layouts' : ''}: completed`)
       return LikeC4Model.create(data)
     })
   }
@@ -271,7 +269,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       const result = this.unsafeSyncComputeModel(projectId, manualLayouts)
       if (result === LikeC4Model.EMPTY) {
         logger.debug(`computeModel returned EMPTY`)
-      } else {
+      } else if (t0.ms > 10) {
         logger.debug(`computeModel completed in ${t0.pretty}`)
       }
       return result
