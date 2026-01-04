@@ -31,7 +31,7 @@ model {
       #ui #warn
       description 'Nextjs application, hosted on Vercel'
       style {
-        icon tech:nextjs
+        icon tech:nextjs-icon
         shape browser
       }
     }
