@@ -96,11 +96,10 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
 
   return toString(
     new CompositeGeneratorNode()
-      .appendIf(
-        view.title !== null && view.title.length > 0,
+      .append(
         '---',
         NL,
-        `title: ${JSON.stringify(toSingleQuotes(view.title))}`,
+        `title: ${JSON.stringify(toSingleQuotes(viewmodel.titleOrId))}`,
         NL,
         '---',
         NL,

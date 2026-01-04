@@ -6,6 +6,7 @@ import { generateMermaid } from './generate-mmd'
 
 const mockViewModel = vi.fn(function($view: ProcessedView) {
   return {
+    titleOrId: $view.title || $view.id,
     $view,
   } as unknown as LikeC4ViewModel<aux.Unknown>
 })

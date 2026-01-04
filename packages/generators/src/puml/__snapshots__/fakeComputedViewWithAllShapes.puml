@@ -8,7 +8,6 @@ skinparam nodesep 30
 skinparam {
   arrowFontSize 10
   defaultTextAlignment center
-  actorStyle awesome
   wrapWidth 200
   maxMessageSize 100
   shadowing false

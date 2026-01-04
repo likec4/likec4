@@ -98,7 +98,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
 
   const printHeader = () => {
     return new CompositeGeneratorNode()
-      .append('title "', view.title || view.id, '"', NL)
+      .append('title "', viewmodel.titleOrId, '"', NL)
       .append(pumlDirection(view), ' direction', NL)
   }
 
@@ -145,7 +145,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const printNode = (node: ComputedNode): CompositeGeneratorNode => {
     const shape = pumlShape(node)
     const fqn = fqnName(node.id)
-    const label = escapeLabel(node.title || nodeName(node))
+    const label = escapeLabel(node.title) || nodeName(node)
     const tech = escapeLabel(node.technology)
     names.set(node.id, fqn)
 
@@ -161,7 +161,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   }
 
   const printBoundary = (node: ComputedNode): CompositeGeneratorNode => {
-    const label = escapeLabel(node.title || nodeName(node))
+    const label = escapeLabel(node.title) || nodeName(node)
     const fqn = fqnName(node.id)
     names.set(node.id, fqn)
 
