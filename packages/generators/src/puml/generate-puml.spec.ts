@@ -1,8 +1,8 @@
-import { LikeC4Styles } from '@likec4/core'
 import type { LikeC4ViewModel } from '@likec4/core/model'
+import { LikeC4Styles } from '@likec4/core/styles'
 import type { aux, ProcessedView } from '@likec4/core/types'
 import { expect, test, vi } from 'vitest'
-import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
+import { fakeComputedView3Levels, fakeComputedViewWithAllShapes, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import { generatePuml } from './generate-puml'
 
 const mockViewModel = vi.fn(function($view: ProcessedView) {
@@ -75,14 +75,20 @@ test('generate puml - with dashed identifiers', () => {
   } as any
 
   const result = generatePuml(mockViewModel(viewWithDashes))
-  
+
   // Verify no dashes in identifiers
   expect(result).not.toContain('payment-gateway')
   expect(result).not.toContain('email-provider')
-  
+
   // Verify PascalCase transformation
   expect(result).toContain('PaymentGateway')
   expect(result).toContain('EmailProvider')
-  
+
   expect(result).toMatchSnapshot()
+})
+
+test.concurrent('generate puml - fakeDiagram', async ({ expect }) => {
+  await expect(
+    generatePuml(mockViewModel(fakeComputedViewWithAllShapes)),
+  ).toMatchFileSnapshot('__snapshots__/fakeComputedViewWithAllShapes.puml')
 })

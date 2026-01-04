@@ -1,0 +1,81 @@
+@startuml
+title "All Shapes, plus testing "quotes""
+left to right direction
+
+hide stereotype
+skinparam ranksep 60
+skinparam nodesep 30
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  actorStyle awesome
+  wrapWidth 200
+  maxMessageSize 100
+  shadowing false
+}
+
+skinparam rectangle<<RootEl1>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+skinparam person<<RootEl2>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+skinparam rectangle<<RootEl3>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+skinparam rectangle<<RootEl4>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+skinparam database<<RootEl5>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+skinparam database<<RootEl6>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+skinparam queue<<RootEl7>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+skinparam rectangle<<RootEl8>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+skinparam rectangle<<RootEl9>>{
+  BackgroundColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
+}
+rectangle ""Root" element" <<Root>> as Root {
+  skinparam RectangleBorderColor<<Root>> #3b82f6
+  skinparam RectangleFontColor<<Root>> #3b82f6
+  skinparam RectangleBorderStyle<<Root>> dashed
+
+  rectangle "==Element with \n"rectangle" shape" <<RootEl1>> as RootEl1
+  person "==Element with \n"person" shape" <<RootEl2>> as RootEl2
+  rectangle "==Element with \n"browser" shape" <<RootEl3>> as RootEl3
+  rectangle "==Element with \n"mobile" shape" <<RootEl4>> as RootEl4
+  database "==Element with \n"cylinder" shape" <<RootEl5>> as RootEl5
+  database "==Element with \n"storage" shape" <<RootEl6>> as RootEl6
+  queue "==Element with \n"queue" shape" <<RootEl7>> as RootEl7
+  rectangle "==Element with \n"bucket" shape" <<RootEl8>> as RootEl8
+  rectangle "==Element with \n"document" shape" <<RootEl9>> as RootEl9
+}
+
+RootEl1 .[#777777,thickness=2].> RootEl2 : <color:#777777>With 'Label'
+RootEl3 .[#777777,thickness=2].> RootEl4 : <color:#777777>With\n\n<color:#777777>'MultiLine'\n\n<color:#777777>Label
+RootEl5 .[#777777,thickness=2].> RootEl6
+@enduml

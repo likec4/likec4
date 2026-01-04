@@ -1,0 +1,9 @@
+---
+title: "frontend"
+---
+graph TB
+  Client@{ shape: rectangle, label: "client" }
+  SystemBackend@{ shape: rectangle, label: "backend" }
+  SystemFrontend@{ shape: rectangle, label: "frontend" }
+  SystemFrontend -. "`requests`" .-> SystemBackend
+  Client -. "`opens`" .-> SystemFrontend

@@ -36,9 +36,11 @@ const d2shape = ({ shape }: Node) => {
     case 'queue':
     case 'cylinder':
     case 'rectangle':
-    case 'document':
-    case 'person': {
+    case 'document': {
       return shape
+    }
+    case 'person': {
+      return 'c4-person' as const
     }
     case 'storage': {
       return 'stored_data' as const

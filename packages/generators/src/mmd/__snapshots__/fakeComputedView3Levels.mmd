@@ -1,0 +1,21 @@
+---
+title: "Context: Cloud"
+---
+graph TB
+  Amazon@{ shape: rectangle, label: "amazon" }
+  subgraph Cloud["`cloud`"]
+    subgraph Cloud.Backend["`backend`"]
+      Cloud.Backend.Graphql@{ shape: rectangle, label: "graphql" }
+      Cloud.Backend.Storage@{ shape: rectangle, label: "storage" }
+    end
+    Cloud.FrontendAdminPanel@{ shape: rectangle, label: "adminPanel" }
+    Cloud.FrontendDashboard@{ shape: rectangle, label: "dashboard" }
+  end
+  Customer@{ shape: rectangle, label: "customer" }
+  Support@{ shape: rectangle, label: "support" }
+  Cloud.FrontendDashboard -.-> Cloud.Backend.Graphql
+  Cloud.FrontendAdminPanel -.-> Cloud.Backend.Graphql
+  Cloud.Backend.Storage -.-> Amazon
+  Cloud.Backend.Graphql -.-> Cloud.Backend.Storage
+  Support -.-> Cloud.FrontendAdminPanel
+  Customer -.-> Cloud.FrontendDashboard

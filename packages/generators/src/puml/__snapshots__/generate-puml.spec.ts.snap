@@ -134,10 +134,10 @@ rectangle "cloud" <<Cloud>> as Cloud {
 rectangle "==customer" <<Customer>> as Customer
 rectangle "==support" <<Support>> as Support
 
-CloudFrontend .[#777777,thickness=2].> CloudBackend : "<color:#777777>requests<color:#777777>"
+CloudFrontend .[#777777,thickness=2].> CloudBackend : <color:#777777>requests
 CloudBackend .[#777777,thickness=2].> Amazon
 Support .[#777777,thickness=2].> CloudFrontend
-Customer .[#777777,thickness=2].> CloudFrontend : "<color:#777777>opens<color:#777777>"
+Customer .[#777777,thickness=2].> CloudFrontend : <color:#777777>opens
 @enduml
 "
 `;
@@ -177,8 +177,8 @@ rectangle "==client" <<Client>> as Client
 rectangle "==backend" <<SystemBackend>> as SystemBackend
 rectangle "==frontend" <<SystemFrontend>> as SystemFrontend
 
-SystemFrontend .[#777777,thickness=2].> SystemBackend : "<color:#777777>requests<color:#777777>"
-Client .[#777777,thickness=2].> SystemFrontend : "<color:#777777>opens<color:#777777>"
+SystemFrontend .[#777777,thickness=2].> SystemBackend : <color:#777777>requests
+Client .[#777777,thickness=2].> SystemFrontend : <color:#777777>opens
 @enduml
 "
 `;
@@ -218,8 +218,8 @@ rectangle "==Payment Gateway" <<PaymentGateway>> as PaymentGateway
 rectangle "==Email Provider" <<EmailProvider>> as EmailProvider
 person "==Customer" <<Customer>> as Customer
 
-PaymentGateway .[#777777,thickness=2].> EmailProvider : "<color:#777777>sends notifications<color:#777777>"
-Customer .[#777777,thickness=2].> PaymentGateway : "<color:#777777>makes payment<color:#777777>"
+PaymentGateway .[#777777,thickness=2].> EmailProvider : <color:#777777>sends notifications
+Customer .[#777777,thickness=2].> PaymentGateway : <color:#777777>makes payment
 @enduml
 "
 `;

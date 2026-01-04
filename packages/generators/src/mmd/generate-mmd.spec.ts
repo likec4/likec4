@@ -1,7 +1,7 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, ProcessedView } from '@likec4/core/types'
-import { expect, test, vi } from 'vitest'
-import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
+import { test, vi } from 'vitest'
+import { fakeComputedView3Levels, fakeComputedViewWithAllShapes, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import { generateMermaid } from './generate-mmd'
 
 const mockViewModel = vi.fn(function($view: ProcessedView) {
@@ -10,14 +10,22 @@ const mockViewModel = vi.fn(function($view: ProcessedView) {
   } as unknown as LikeC4ViewModel<aux.Unknown>
 })
 
-test('generate mermaid - fakeDiagram', () => {
-  expect(generateMermaid(mockViewModel(fakeDiagram))).toMatchSnapshot()
+test.concurrent('generate mermaid - fakeDiagram', async ({ expect }) => {
+  await expect(generateMermaid(mockViewModel(fakeDiagram))).toMatchFileSnapshot('__snapshots__/fakeDiagram.mmd')
 })
 
-test('generate mermaid - fakeDiagram2', () => {
-  expect(generateMermaid(mockViewModel(fakeDiagram2))).toMatchSnapshot()
+test.concurrent('generate mermaid - fakeDiagram2', async ({ expect }) => {
+  await expect(generateMermaid(mockViewModel(fakeDiagram2))).toMatchFileSnapshot('__snapshots__/fakeDiagram2.mmd')
 })
 
-test('generate mermaid - fakeComputedView 3 Levels', () => {
-  expect(generateMermaid(mockViewModel(fakeComputedView3Levels))).toMatchSnapshot()
+test.concurrent('generate mermaid - fakeComputedView 3 Levels', async ({ expect }) => {
+  await expect(generateMermaid(mockViewModel(fakeComputedView3Levels))).toMatchFileSnapshot(
+    '__snapshots__/fakeComputedView3Levels.mmd',
+  )
+})
+
+test.concurrent('generate mermaid - AllShapes', async ({ expect }) => {
+  await expect(
+    generateMermaid(mockViewModel(fakeComputedViewWithAllShapes)),
+  ).toMatchFileSnapshot('__snapshots__/fakeComputedViewWithAllShapes.mmd')
 })

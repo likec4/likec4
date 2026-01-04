@@ -1,1 +1,1 @@
-export * from './generate-puml'
+export { generatePuml } from './generate-puml'
