@@ -7,6 +7,40 @@ model {
       color amber
     }
 
+    s3 = container 'S3' {
+      description: 'Object Storage'
+      icon aws:simple-storage-service
+      style {
+        color amber
+        shape bucket
+      }
+
+      bucket1 = component 'Bucket 1' {
+        icon aws:simple-storage-service
+        technology 's3 bucket'
+        description '''
+          Markdown Description  \
+          of Object _**Storage 1**_
+        '''
+        style {
+          color amber
+          shape bucket
+        }
+      }
+
+
+      bucket2 = component 'Bucket 2 with small size' {
+        description '''
+          Object **Storage 2**
+        '''
+        style {
+          color amber
+          shape bucket
+          size small
+        }
+      }
+    }
+
     rds = container 'RDS' {
       description: 'Relational Database Service'
       icon aws:rds
@@ -143,6 +177,16 @@ views {
     style amazon.rds.* {
       color green
     }
+  }
+
+  view amazon_s3 of amazon.s3 {
+    title 'Overview Amazon S3'
+
+    include
+      cloud.* -> amazon.s3.*,
+      *,
+      amazon
+
   }
 
 }

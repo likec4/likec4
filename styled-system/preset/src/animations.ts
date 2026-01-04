@@ -23,7 +23,7 @@ export const keyframes: CssKeyframes = defineKeyframes({
 export const animationStyles: AnimationStyles = defineAnimationStyles({
   'indicator': {
     value: {
-      animationDuration: '1s',
+      animationDuration: '.8s',
       animationIterationCount: 'infinite',
       animationDirection: 'alternate',
       animationName: 'indicatorOpacity',

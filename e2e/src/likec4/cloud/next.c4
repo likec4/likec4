@@ -63,6 +63,9 @@ model {
     backend -> aurora.tblUsers 'reads/writes' {
       navigateTo cloud-to-amazon
     }
+    backend -> amazon.s3.bucket1 'writes to' {
+      technology 'AWS SDK'
+    }
     backend -> cloud.legacy.backend.services 'calls legacy'
 
     events = component 'Events Manager' {
@@ -96,6 +99,11 @@ views {
 
     include
       amazon._,
+      events with {
+        shape document
+        technology 'JSON'
+        description 'Events'
+      },
       cloud.* -> amazon.* with {
         color indigo
         line solid
@@ -109,7 +117,7 @@ views {
     }
     style cloud.next._ {
       color primary
-      border none
+      // border nones
       opacity 10%
     }
     style amazon._ {
