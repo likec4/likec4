@@ -11,21 +11,21 @@ const mockViewModel = vi.fn(function($view: ProcessedView) {
   } as unknown as LikeC4ViewModel<aux.Unknown>
 })
 
-test.concurrent('generate mermaid - fakeDiagram', async ({ expect }) => {
+test('generate mermaid - fakeDiagram', async ({ expect }) => {
   await expect(generateMermaid(mockViewModel(fakeDiagram))).toMatchFileSnapshot('__snapshots__/fakeDiagram.mmd')
 })
 
-test.concurrent('generate mermaid - fakeDiagram2', async ({ expect }) => {
+test('generate mermaid - fakeDiagram2', async ({ expect }) => {
   await expect(generateMermaid(mockViewModel(fakeDiagram2))).toMatchFileSnapshot('__snapshots__/fakeDiagram2.mmd')
 })
 
-test.concurrent('generate mermaid - fakeComputedView 3 Levels', async ({ expect }) => {
+test('generate mermaid - fakeComputedView 3 Levels', async ({ expect }) => {
   await expect(generateMermaid(mockViewModel(fakeComputedView3Levels))).toMatchFileSnapshot(
     '__snapshots__/fakeComputedView3Levels.mmd',
   )
 })
 
-test.concurrent('generate mermaid - AllShapes', async ({ expect }) => {
+test('generate mermaid - AllShapes', async ({ expect }) => {
   await expect(
     generateMermaid(mockViewModel(fakeComputedViewWithAllShapes)),
   ).toMatchFileSnapshot('__snapshots__/fakeComputedViewWithAllShapes.mmd')

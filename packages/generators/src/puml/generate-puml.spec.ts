@@ -88,7 +88,7 @@ test('generate puml - with dashed identifiers', () => {
   expect(result).toMatchSnapshot()
 })
 
-test.concurrent('generate puml - fakeDiagram', async ({ expect }) => {
+test('generate puml - AllShapes', async ({ expect }) => {
   await expect(
     generatePuml(mockViewModel(fakeComputedViewWithAllShapes)),
   ).toMatchFileSnapshot('__snapshots__/fakeComputedViewWithAllShapes.puml')

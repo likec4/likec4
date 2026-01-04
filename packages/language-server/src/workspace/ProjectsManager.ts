@@ -559,7 +559,6 @@ export class ProjectsManager {
     }
     logger.debug`schedule reload projects`
     this.#activeReload = Promise.resolve()
-      .then(() => delay(25)) // debounce reload projects
       .then(() => this._reloadProjects(cancelToken))
       .catch(error => {
         if (!isOperationCancelled(error)) {
