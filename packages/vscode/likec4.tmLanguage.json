@@ -42,15 +42,7 @@
       "name": "entity.name.type.enum.likec4"
     },
     {
-      "match": "(-\\[)([^\\]]*)(\\]->)",
-      "captures": {
-        "1": { "name": "keyword.operator.likec4" },
-        "2": { "name": "entity.name.function.likec4" },
-        "3": { "name": "keyword.operator.likec4" }
-      }
-    },
-    {
-      "match": "\\b(shape|head|tail|line|border|variant):?\\s+([-\\w]+)\\b",
+      "match": "\\b(shape|head|tail|line|border|variant|size|padding|textSize):?\\s+([-\\w]+)\\b",
       "captures": {
         "1": { "name": "variable.other.property.likec4" },
         "2": { "name": "entity.name.type.enum.likec4" }
@@ -65,10 +57,6 @@
       "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft|xsmall|xs|small|sm|medium|md|large|lg|xl|xlarge|diagram|sequence)\\b"
     },
     {
-      "name": "entity.name.type.enum.likec4",
-      "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate|none)\\b"
-    },
-    {
       "name": "variable.other.property.likec4",
       "match": "\\b(title|color|description|technology|navigateTo|notation|multiple|size|padding|textSize|opacity|variant)\\b"
     },
@@ -76,13 +64,11 @@
       "name": "keyword.control.likec4",
       "match": "\\belement(\\.(kind|tag)?)?\\b"
     },
+    { "include": "#shapes" },
+    { "include": "#colors" },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(rectangle|person|browser|mobile|cylinder|storage|queue|bucket|document)\\b"
-    },
-    {
-      "name": "keyword.control.likec4",
-      "match": "\\b(and|as|autoLayout|border|color|crow|dashed|description|deployment|deploymentNode|diamond|dot|dotted|dynamic|from|global|group|element|exclude|extend|extends|head|icon|icons|import|include|instance(Of)?|it|kind|line|likec4lib|link|metadata|model|navigateTo|node|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|of|parallel|par|predicateGroup|predicate|relationship|shape|solid|specification|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with)\\b"
+      "match": "\\b(and|as|autoLayout|border|color|crow|dashed|description|deployment|deploymentNode|diamond|dot|dotted|dynamic|from|global|group|element|exclude|extend|extends|head|icon|icons|import|include|instance(Of)?|it|kind|line|likec4lib|link|metadata|model|navigateTo|node|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|of|parallel|par|predicateGroup|predicate|rank|relationship|shape|solid|specification|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with)\\b"
     },
     {
       "name": "keyword.symbol.likec4",
@@ -115,6 +101,14 @@
     },
     "relationship": {
       "patterns": [
+        {
+          "match": "(-\\[)([^\\]]*)(\\]->)",
+          "captures": {
+            "1": { "name": "keyword.operator.likec4" },
+            "2": { "name": "entity.name.function.likec4" },
+            "3": { "name": "keyword.operator.likec4" }
+          }
+        },
         {
           "name": "storage.type.function.likec4",
           "begin": "(-\\[)",
@@ -172,6 +166,14 @@
     "string-character-escape": {
       "name": "constant.character.escape.likec4",
       "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|u\\{[0-9A-Fa-f]+\\}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.|$)"
+    },
+    "shapes": {
+      "name": "keyword.control.likec4",
+      "match": "\\b(rectangle|person|browser|mobile|cylinder|storage|queue|bucket|document)\\b"
+    },
+    "colors": {
+      "name": "entity.name.type.enum.likec4",
+      "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate|none)\\b"
     }
   }
 }
