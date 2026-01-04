@@ -1,6 +1,6 @@
 # @likec4/mcp
 
-## 1.46.5
+## 1.47.0
 
 ### Patch Changes
 
