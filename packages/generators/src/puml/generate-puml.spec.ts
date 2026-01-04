@@ -91,5 +91,5 @@ test('generate puml - with dashed identifiers', () => {
 test('generate puml - AllShapes', async ({ expect }) => {
   await expect(
     generatePuml(mockViewModel(fakeComputedViewWithAllShapes)),
-  ).toMatchFileSnapshot('__snapshots__/fakeComputedViewWithAllShapes.puml')
+  ).toMatchFileSnapshot('__snapshots__/fakeComputedViewWithAllShapes.puml.snap')
 })

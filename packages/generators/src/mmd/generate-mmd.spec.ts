@@ -12,21 +12,21 @@ const mockViewModel = vi.fn(function($view: ProcessedView) {
 })
 
 test('generate mermaid - fakeDiagram', async ({ expect }) => {
-  await expect(generateMermaid(mockViewModel(fakeDiagram))).toMatchFileSnapshot('__snapshots__/fakeDiagram.mmd')
+  await expect(generateMermaid(mockViewModel(fakeDiagram))).toMatchFileSnapshot('__snapshots__/fakeDiagram.mmd.snap')
 })
 
 test('generate mermaid - fakeDiagram2', async ({ expect }) => {
-  await expect(generateMermaid(mockViewModel(fakeDiagram2))).toMatchFileSnapshot('__snapshots__/fakeDiagram2.mmd')
+  await expect(generateMermaid(mockViewModel(fakeDiagram2))).toMatchFileSnapshot('__snapshots__/fakeDiagram2.mmd.snap')
 })
 
 test('generate mermaid - fakeComputedView 3 Levels', async ({ expect }) => {
   await expect(generateMermaid(mockViewModel(fakeComputedView3Levels))).toMatchFileSnapshot(
-    '__snapshots__/fakeComputedView3Levels.mmd',
+    '__snapshots__/fakeComputedView3Levels.mmd.snap',
   )
 })
 
 test('generate mermaid - AllShapes', async ({ expect }) => {
   await expect(
     generateMermaid(mockViewModel(fakeComputedViewWithAllShapes)),
-  ).toMatchFileSnapshot('__snapshots__/fakeComputedViewWithAllShapes.mmd')
+  ).toMatchFileSnapshot('__snapshots__/fakeComputedViewWithAllShapes.mmd.snap')
 })
