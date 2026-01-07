@@ -1,25 +1,18 @@
 {
   "$schema": "https://context7.com/schema/context7.json",
+  "url": "https://context7.com/likec4/likec4",
+  "public_key": "pk_0p5N7WqGK4N0XQ7XWLTCL",
   "projectTitle": "LikeC4",
   "description": "Architecture-as-a-code, DSL and toolchain for architecture diagrams",
-  "folders": [],
-  "excludeFolders": [
-    "apps/playground",
-    "devops",
-    "e2e",
-    "examples",
-    "packages/create-likec4",
-    "packages/generators",
-    "packages/icons",
-    "packages/layouts",
-    "packages/log",
-    "packages/tsconfig",
-    "packages/vscode",
-    "packages/vscode-preview",
-    "styled-system"
+  "folders": [
+    "./apps/docs/src/content",
+    "./packages/config",
+    "./packages/core",
+    "./packages/diagram",
+    "./packages/likec4",
+    "./packages/mcp"
   ],
   "excludeFiles": [
-    "CONTRIBUTING.md",
     "CHANGELOG.md",
     "LICENSE"
   ]
