@@ -165,8 +165,8 @@ catalogs:
       version: 8.3.10
   mcp:
     '@modelcontextprotocol/sdk':
-      specifier: ^1.25.1
-      version: 1.25.1
+      specifier: ^1.25.2
+      version: 1.25.2
   react:
     '@floating-ui/dom':
       specifier: ^1.7.4
@@ -1272,7 +1272,7 @@ importers:
         version: link:../tsconfig
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.25.1(hono@4.11.1)(zod@3.25.76)
+        version: 1.25.2(hono@4.11.1)(zod@3.25.76)
       '@msgpack/msgpack':
         specifier: ^3.1.2
         version: 3.1.2
@@ -1837,7 +1837,7 @@ importers:
         version: link:../tsconfig
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.25.1(hono@4.11.1)(zod@3.25.76)
+        version: 1.25.2(hono@4.11.1)(zod@3.25.76)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.3
@@ -3540,8 +3540,8 @@ packages:
   '@microsoft/tsdoc@0.15.1':
     resolution: {integrity: sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==}
 
-  '@modelcontextprotocol/sdk@1.25.1':
-    resolution: {integrity: sha512-yO28oVFFC7EBoiKdAn+VqRm+plcfv4v0xp6osG/VsCB0NlPZWi87ajbCZZ8f/RvOFLEu7//rSRmuZZ7lMoe3gQ==}
+  '@modelcontextprotocol/sdk@1.25.2':
+    resolution: {integrity: sha512-LZFeo4F9M5qOhC/Uc1aQSrBHxMrvxett+9KLHt7OhcExtoiRN9DKgbZffMP/nxjutWDQpfMDfP3nkHI4X9ijww==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -11023,7 +11023,7 @@ snapshots:
 
   '@microsoft/tsdoc@0.15.1': {}
 
-  '@modelcontextprotocol/sdk@1.25.1(hono@4.11.1)(zod@3.25.76)':
+  '@modelcontextprotocol/sdk@1.25.2(hono@4.11.1)(zod@3.25.76)':
     dependencies:
       '@hono/node-server': 1.19.7(hono@4.11.1)
       ajv: 8.17.1
