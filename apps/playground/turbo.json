@@ -21,6 +21,7 @@
         "@likec4/language-server#build"
       ],
       "outputs": [
+        ".wrangler/deploy/**",
         "dist/**"
       ]
     }
