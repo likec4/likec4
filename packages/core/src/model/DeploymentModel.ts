@@ -5,6 +5,8 @@ import {
   type DeploymentElement,
   type DeploymentRelationship,
   type IteratorLike,
+  type LikeC4Project,
+  type Specification,
   FqnRef,
   isDeploymentNode,
 } from '../types'
@@ -93,12 +95,31 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
     }
   }
 
+  /**
+   * Returns the styles configuration for the project.
+   */
   get $styles(): LikeC4Styles {
     return this.$model.$styles
   }
 
+  /**
+   * Returns the Project ID associated with the model.
+   * If the project ID is not defined in the model, it returns "default".
+   */
   get projectId(): aux.ProjectId<A> {
     return this.$model.projectId
+  }
+
+  /**
+   * Returns the project associated with the model.
+   * If the project is not defined in the model, it returns a default project with the ID "default".
+   */
+  get project(): LikeC4Project {
+    return this.$model.project
+  }
+
+  get specification(): Specification<A> {
+    return this.$model.specification
   }
 
   public element(el: DeploymentOrFqn<A>): DeploymentElementModel<A> {

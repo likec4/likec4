@@ -1,4 +1,4 @@
-import { isEmpty, isShallowEqual, isTruthy, unique } from 'remeda'
+import { isEmpty, isEmptyish, isShallowEqual, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import {
   type Any,
@@ -585,7 +585,11 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
   }
 
   get technology(): string | null {
-    return this.$relationship.technology ?? null
+    if (isEmptyish(this.$relationship.technology)) {
+      const spec = this.kind && this.$model.specification.relationships[this.kind]
+      return spec?.technology ?? null
+    }
+    return this.$relationship.technology
   }
 
   /**

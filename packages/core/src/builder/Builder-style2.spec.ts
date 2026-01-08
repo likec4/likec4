@@ -18,6 +18,11 @@ describe('Builder (style 2)', () => {
           tags: ['tag3'],
         },
       },
+      relationships: {
+        like: {
+          technology: 'thumbs up',
+        },
+      },
       deployments: {
         env: {
           style: {
@@ -66,14 +71,18 @@ describe('Builder (style 2)', () => {
     }).toThrowError('Invalid specification for deployment kind "node": tag "tag2" not found')
   })
 
-  it('should build ', () => {
+  describe('general', () => {
     const b = spec
-      .model(({ system, actor, component }, _) =>
+      .model(({ system, actor, component, rel }, _) =>
         _(
           actor('customer'),
           system('cloud').with(
             component('ui'),
+            component('backend'),
           ),
+          rel('customer', 'cloud.ui', {
+            kind: 'like',
+          }),
         )
       )
       .deployment(({ env, node, instanceOf }, _) =>
@@ -101,7 +110,14 @@ describe('Builder (style 2)', () => {
         )
       )
 
-    expect(b.build()).toMatchSnapshot()
+    it('should build parsed model', () => {
+      expect(b.build(), 'parsed model').toMatchSnapshot()
+    })
+
+    it('should build likec4 model', async ({ expect }) => {
+      const m = b.toLikeC4Model()
+      await expect(m.$data, 'likec4 model').toMatchFileSnapshot('__snapshots__/Builder-style2.general.json5')
+    })
   })
 
   it('should build with string-based spec', async ({ expect }) => {

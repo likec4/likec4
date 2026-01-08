@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Builder (style 2) > should build  1`] = `
+exports[`Builder (style 2) > general > should build parsed model 1`] = `
 {
   "_stage": "parsed",
   "deployments": {
@@ -51,6 +51,12 @@ exports[`Builder (style 2) > should build  1`] = `
       },
       "title": "cloud",
     },
+    "cloud.backend": {
+      "id": "cloud.backend",
+      "kind": "component",
+      "style": {},
+      "title": "backend",
+    },
     "cloud.ui": {
       "id": "cloud.ui",
       "kind": "component",
@@ -77,7 +83,19 @@ exports[`Builder (style 2) > should build  1`] = `
     "id": "from-builder",
   },
   "projectId": "from-builder",
-  "relations": {},
+  "relations": {
+    "rel1": {
+      "id": "rel1",
+      "kind": "like",
+      "source": {
+        "model": "customer",
+      },
+      "target": {
+        "model": "cloud.ui",
+      },
+      "title": null,
+    },
+  },
   "specification": {
     "customColors": {},
     "deployments": {
@@ -102,7 +120,11 @@ exports[`Builder (style 2) > should build  1`] = `
         },
       },
     },
-    "relationships": {},
+    "relationships": {
+      "like": {
+        "technology": "thumbs up",
+      },
+    },
     "tags": {
       "tag1": {
         "color": "#FFF",

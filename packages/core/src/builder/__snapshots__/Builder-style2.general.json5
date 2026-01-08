@@ -1,7 +1,41 @@
 {
   "_stage": "computed",
   "deployments": {
-    "elements": {},
+    "elements": {
+      "dev": {
+        "id": "dev",
+        "kind": "env",
+        "style": {
+          "size": "lg",
+        },
+        "title": "dev",
+      },
+      "dev.local": {
+        "id": "dev.local",
+        "kind": "node",
+        "style": {},
+        "title": "local",
+      },
+      "prod": {
+        "id": "prod",
+        "kind": "env",
+        "style": {
+          "size": "lg",
+        },
+        "title": "prod",
+      },
+      "prod.eu": {
+        "id": "prod.eu",
+        "kind": "node",
+        "style": {},
+        "title": "eu",
+      },
+      "prod.eu.ui": {
+        "element": "cloud.ui",
+        "id": "prod.eu.ui",
+        "style": {},
+      },
+    },
     "relations": {},
   },
   "elements": {
@@ -14,11 +48,11 @@
       },
       "title": "cloud",
     },
-    "cloud.api": {
-      "id": "cloud.api",
+    "cloud.backend": {
+      "id": "cloud.backend",
       "kind": "component",
       "style": {},
-      "title": "api",
+      "title": "backend",
     },
     "cloud.ui": {
       "id": "cloud.ui",
@@ -49,29 +83,14 @@
   "relations": {
     "rel1": {
       "id": "rel1",
+      "kind": "like",
       "source": {
         "model": "customer",
       },
-      "tags": [
-        "tag1",
-      ],
       "target": {
         "model": "cloud.ui",
       },
-      "title": "uses",
-    },
-    "rel2": {
-      "id": "rel2",
-      "source": {
-        "model": "cloud.ui",
-      },
-      "tags": [
-        "tag2",
-      ],
-      "target": {
-        "model": "cloud.api",
-      },
-      "title": "calls",
+      "title": null,
     },
   },
   "specification": {
@@ -116,7 +135,7 @@
     },
   },
   "views": {
-    "cloudui": {
+    "cloud": {
       "_stage": "computed",
       "_type": "element",
       "autoLayout": {
@@ -128,37 +147,19 @@
           "color": "gray",
           "head": "normal",
           "id": "1r2spnx",
-          "label": "uses",
+          "kind": "like",
+          "label": null,
           "line": "dashed",
           "parent": null,
           "relations": [
             "rel1",
           ],
           "source": "customer",
-          "tags": [
-            "tag1",
-          ],
           "target": "cloud.ui",
         },
-        {
-          "color": "gray",
-          "head": "normal",
-          "id": "9r1z3i",
-          "label": "calls",
-          "line": "dashed",
-          "parent": null,
-          "relations": [
-            "rel2",
-          ],
-          "source": "cloud.ui",
-          "tags": [
-            "tag2",
-          ],
-          "target": "cloud.api",
-        },
       ],
-      "hash": "0adc9c1e5a52ad6ae4601c54ce6034a6a01b8f2f",
-      "id": "cloudui",
+      "hash": "5b92363e54ed9fa12d034c00e2b1fcb93b8b9a62",
+      "id": "cloud",
       "nodes": [
         {
           "children": [],
@@ -192,9 +193,55 @@
           "kind": "component",
           "level": 0,
           "modelRef": "cloud.ui",
-          "outEdges": [
-            "9r1z3i",
-          ],
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
+          "tags": [],
+          "title": "ui",
+        },
+      ],
+      "tags": [],
+      "title": null,
+      "viewOf": "cloud.ui",
+    },
+    "deployment": {
+      "_stage": "computed",
+      "_type": "deployment",
+      "autoLayout": {
+        "direction": "TB",
+      },
+      "description": null,
+      "edges": [],
+      "hash": "1fc01afa1e53308cc83d40edcf0d7971b24429b9",
+      "id": "deployment",
+      "nodes": [],
+      "tags": [],
+      "title": "Deployment",
+    },
+    "index": {
+      "_stage": "computed",
+      "_type": "element",
+      "autoLayout": {
+        "direction": "TB",
+      },
+      "description": null,
+      "edges": [],
+      "hash": "37b0095ffaedc263b9f515da919af6ef96e82c81",
+      "id": "index",
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "id": "cloud.ui",
+          "inEdges": [],
+          "kind": "component",
+          "level": 0,
+          "modelRef": "cloud.ui",
+          "outEdges": [],
           "parent": null,
           "shape": "rectangle",
           "style": {
@@ -207,13 +254,11 @@
         {
           "children": [],
           "color": "primary",
-          "id": "cloud.api",
-          "inEdges": [
-            "9r1z3i",
-          ],
+          "id": "cloud.backend",
+          "inEdges": [],
           "kind": "component",
           "level": 0,
-          "modelRef": "cloud.api",
+          "modelRef": "cloud.backend",
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
@@ -222,83 +267,7 @@
             "size": "md",
           },
           "tags": [],
-          "title": "api",
-        },
-      ],
-      "tags": [],
-      "title": null,
-      "viewOf": "cloud.ui",
-    },
-    "index": {
-      "_stage": "computed",
-      "_type": "element",
-      "autoLayout": {
-        "direction": "TB",
-      },
-      "description": null,
-      "edges": [
-        {
-          "color": "gray",
-          "head": "normal",
-          "id": "kzb1r3",
-          "label": "uses",
-          "line": "dashed",
-          "parent": null,
-          "relations": [
-            "rel1",
-          ],
-          "source": "customer",
-          "tags": [
-            "tag1",
-          ],
-          "target": "cloud",
-        },
-      ],
-      "hash": "ad15c70f4b4a4858789d1bd47e543c4d54d6377a",
-      "id": "index",
-      "nodes": [
-        {
-          "children": [],
-          "color": "primary",
-          "id": "customer",
-          "inEdges": [],
-          "kind": "actor",
-          "level": 0,
-          "modelRef": "customer",
-          "outEdges": [
-            "kzb1r3",
-          ],
-          "parent": null,
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md",
-          },
-          "tags": [
-            "tag3",
-          ],
-          "title": "customer",
-        },
-        {
-          "children": [],
-          "color": "primary",
-          "id": "cloud",
-          "inEdges": [
-            "kzb1r3",
-          ],
-          "kind": "system",
-          "level": 0,
-          "modelRef": "cloud",
-          "outEdges": [],
-          "parent": null,
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "lg",
-            "textSize": "sm",
-          },
-          "tags": [],
-          "title": "cloud",
+          "title": "backend",
         },
       ],
       "tags": [],

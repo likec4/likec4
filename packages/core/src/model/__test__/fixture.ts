@@ -49,6 +49,11 @@ const {
       },
     },
   },
+  relationships: {
+    req: {
+      technology: 'HTTP',
+    },
+  },
   tags: {
     internal: {},
     external: {},
@@ -102,10 +107,17 @@ const local = b
       $m.rel('customer', 'cloud.frontend.mobile', 'opens mobile app'),
       $m.rel('customer', 'cloud.frontend.dashboard', 'opens in browser'),
       $m.rel('cloud.frontend.dashboard', 'cloud.auth', 'authenticates'),
-      $m.rel('cloud.frontend.dashboard', 'cloud.backend.api', 'fetches data'),
+      $m.rel('cloud.frontend.dashboard', 'cloud.backend.api', {
+        title: 'fetches data',
+        kind: 'req',
+      }),
       $m.rel('cloud.frontend.dashboard', 'cloud.media', 'fetches media'),
       $m.rel('cloud.frontend.mobile', 'cloud.auth', 'authenticates'),
-      $m.rel('cloud.frontend.mobile', 'cloud.backend.api', 'fetches data'),
+      $m.rel('cloud.frontend.mobile', 'cloud.backend.api', {
+        title: 'fetches data',
+        technology: 'GRPC',
+        kind: 'req',
+      }),
       $m.rel('cloud.frontend.mobile', 'cloud.media', 'fetches media'),
       $m.rel('cloud.frontend', 'cloud.backend'),
     ),

@@ -1,4 +1,4 @@
-import { isEmpty, isShallowEqual, isTruthy } from 'remeda'
+import { isEmpty, isEmptyish, isShallowEqual, isTruthy } from 'remeda'
 import type { AnyAux, Color, IteratorLike, Link, RelationshipArrowType, scalar } from '../types'
 import {
   type Relationship,
@@ -72,15 +72,16 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
   }
 
   get title(): string | null {
-    if (!isTruthy(this.$relationship.title)) {
+    if (isEmptyish(this.$relationship.title)) {
       return null
     }
     return this.$relationship.title
   }
 
   get technology(): string | null {
-    if (!isTruthy(this.$relationship.technology)) {
-      return null
+    if (isEmptyish(this.$relationship.technology)) {
+      const spec = this.kind && this.model.specification.relationships[this.kind]
+      return spec?.technology ?? null
     }
     return this.$relationship.technology
   }

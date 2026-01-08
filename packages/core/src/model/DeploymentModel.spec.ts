@@ -1,3 +1,4 @@
+import { map, prop } from 'remeda'
 import { describe, it } from 'vitest'
 import { Builder } from '../builder'
 
@@ -8,6 +9,11 @@ describe('LikeC4DeploymentModel', () => {
         el: {},
         elWithTags: {
           tags: ['tag1'],
+        },
+      },
+      relationships: {
+        req: {
+          technology: 'HTTP',
         },
       },
       deployments: {
@@ -41,7 +47,7 @@ describe('LikeC4DeploymentModel', () => {
         rel('cloud', 'infra'),
       )
     )
-    .deployment(({ nd, vm, instanceOf }, d) =>
+    .deployment(({ nd, vm, instanceOf, rel }, d) =>
       d(
         nd('customer').with(
           instanceOf('customer'),
@@ -72,6 +78,9 @@ describe('LikeC4DeploymentModel', () => {
         nd('prod.infra').with(
           instanceOf('infra.db'),
         ),
+        rel('prod.z1.vm1', 'prod.z1.vm2', {
+          kind: 'req',
+        }),
       )
     )
     .views(({ viewOf, deploymentView, $include }, _) =>
@@ -184,4 +193,16 @@ describe('LikeC4DeploymentModel', () => {
   //     'prod.infra',
   //   ])
   // })
+
+  it('deployment relationship must derive technology from kind', ({ expect }) => {
+    const rels = [...d.relationships()]
+
+    expect(map(rels, prop('expression')), 'deployment model has only 1 relationship').toEqual([
+      'prod.z1.vm1 -> prod.z1.vm2',
+    ])
+    const r = rels[0]!
+
+    expect(r.kind).toBe('req')
+    expect(r.technology, 'must derive from kind').toBe('HTTP')
+  })
 })

@@ -327,4 +327,18 @@ describe('LikeC4Model', () => {
       'cloud -> email',
     ])
   })
+
+  it('relationships with req kind must have technology', ({ expect }) => {
+    const reqs = [...model.relationshipsWhere({
+      kind: 'req',
+    })]
+
+    expect(map(reqs, prop('expression')), 'model has only 2 relationships with kind "req"').toEqual([
+      'cloud.frontend.dashboard -> cloud.backend.api',
+      'cloud.frontend.mobile -> cloud.backend.api',
+    ])
+
+    expect(reqs[0]!.technology, 'must derive from kind').toBe('HTTP')
+    expect(reqs[1]!.technology, 'has explicit technology').toBe('GRPC')
+  })
 })
