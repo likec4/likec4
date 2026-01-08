@@ -1,45 +1,48 @@
 import { describe, expect, it } from 'vitest'
+import type { ViewId } from '../../types'
 import { Builder } from '../../builder/Builder'
 import { findRelations } from './utils'
 
+const viewId = 'view' as ViewId
+
 describe('findRelations', () => {
-  it('should return empty object when no relationships found', () => {
-    const spec = Builder
-      .specification({
-        elements: {
-          el: {},
+  const specs = Builder
+    .specification({
+      elements: {
+        el: {},
+      },
+      relationships: {
+        requests: {
+          technology: 'HTTP Request',
         },
-        relationships: {},
-        tags: {},
-      })
-      .model(({ el }, _) =>
-        _(
-          el('a'),
-          el('b'),
-        )
+      },
+      tags: {},
+    })
+
+  const baseModel = specs
+    .model(({ el }, _) =>
+      _(
+        el('a'),
+        el('b'),
+        el('shopify'),
+        el('webhook'),
       )
-    const model = spec.toLikeC4Model()
+    )
+
+  it('should return empty object when no relationships found', () => {
+    const model = baseModel.toLikeC4Model()
     const a = model.element('a')
     const b = model.element('b')
 
-    const result = findRelations(a, b, 'view' as any)
+    const result = findRelations(a, b, viewId)
 
     expect(result).toEqual({})
   })
 
   it('should return single relationship properties including technology and description', () => {
-    const spec = Builder
-      .specification({
-        elements: {
-          el: {},
-        },
-        relationships: {},
-        tags: {},
-      })
-      .model(({ el, rel }, _) =>
+    const model = baseModel
+      .model(({ rel }, _) =>
         _(
-          el('shopify'),
-          el('webhook'),
           rel('shopify', 'webhook', {
             title: 'requests',
             technology: 'HTTP Request Override',
@@ -49,11 +52,11 @@ describe('findRelations', () => {
           }),
         )
       )
-    const model = spec.toLikeC4Model()
+      .toLikeC4Model()
     const shopify = model.element('shopify')
     const webhook = model.element('webhook')
 
-    const result = findRelations(shopify, webhook, 'view' as any)
+    const result = findRelations(shopify, webhook, viewId)
 
     expect(result).toMatchObject({
       title: 'requests',
@@ -66,32 +69,19 @@ describe('findRelations', () => {
   })
 
   it('should return technology from single relationship even without explicit technology', () => {
-    const spec = Builder
-      .specification({
-        elements: {
-          el: {},
-        },
-        relationships: {
-          requests: {
-            technology: 'HTTP Request',
-          },
-        },
-        tags: {},
-      })
-      .model(({ el, rel }, _) =>
+    const model = baseModel
+      .model(({ rel }, _) =>
         _(
-          el('shopify'),
-          el('webhook'),
           rel('shopify', 'webhook', {
             kind: 'requests',
           }),
         )
       )
-    const model = spec.toLikeC4Model()
+      .toLikeC4Model()
     const shopify = model.element('shopify')
     const webhook = model.element('webhook')
 
-    const result = findRelations(shopify, webhook, 'view' as any)
+    const result = findRelations(shopify, webhook, viewId)
 
     expect(result).toMatchObject({
       technology: 'HTTP Request',
@@ -99,106 +89,156 @@ describe('findRelations', () => {
   })
 
   it('should return technology when all relationships have same technology', () => {
-    const spec = Builder
-      .specification({
-        elements: {
-          el: {},
-        },
-        relationships: {},
-        tags: {},
-      })
-      .model(({ el, rel }, _) =>
+    const model = baseModel
+      .model(({ rel }, _) =>
         _(
-          el('a'),
-          el('b'),
           rel('a', 'b', {
             technology: 'REST',
           }),
         )
       )
-    const model = spec.toLikeC4Model()
+      .toLikeC4Model()
     const a = model.element('a')
     const b = model.element('b')
 
-    const result = findRelations(a, b, 'view' as any)
+    const result = findRelations(a, b, viewId)
 
     expect(result).toMatchObject({
       technology: 'REST',
     })
   })
 
-  it('should not return technology when relationships have different technologies', () => {
-    // This test would require multiple relationships between same elements
-    // which is complex to set up with builder, so we skip it
-    expect(true).toBe(true)
+  it('should not return technology when multiple relationships have different technologies', () => {
+    const model = specs
+      .model(({ el, rel }, _) =>
+        _(
+          el('parent1').with(
+            el('child1'),
+            el('child2'),
+          ),
+          el('parent2').with(
+            el('child1'),
+            el('child2'),
+          ),
+          rel('parent1.child1', 'parent2.child1', {
+            technology: 'REST',
+          }),
+          rel('parent1.child2', 'parent2.child2', {
+            technology: 'GraphQL',
+          }),
+        )
+      )
+      .toLikeC4Model()
+    const parent1 = model.element('parent1')
+    const parent2 = model.element('parent2')
+
+    const result = findRelations(parent1, parent2, viewId)
+
+    expect(result).not.toHaveProperty('technology')
+    expect(result.relations).toHaveLength(2)
   })
 
   it('should return description when all relationships have same description', () => {
-    const spec = Builder
-      .specification({
-        elements: {
-          el: {},
-        },
-        relationships: {},
-        tags: {},
-      })
-      .model(({ el, rel }, _) =>
+    const model = baseModel
+      .model(({ rel }, _) =>
         _(
-          el('a'),
-          el('b'),
           rel('a', 'b', {
             description: { txt: 'Same description' },
           }),
         )
       )
-    const model = spec.toLikeC4Model()
+      .toLikeC4Model()
     const a = model.element('a')
     const b = model.element('b')
 
-    const result = findRelations(a, b, 'view' as any)
+    const result = findRelations(a, b, viewId)
 
     expect(result).toMatchObject({
       description: { txt: 'Same description' },
     })
   })
 
-  it('should not return description when relationships have different descriptions', () => {
-    // This test would require multiple relationships between same elements
-    // which is complex to set up with builder, so we skip it
-    expect(true).toBe(true)
+  it('should not return description when multiple relationships have different descriptions', () => {
+    const model = specs
+      .model(({ el, rel }, _) =>
+        _(
+          el('parent1').with(
+            el('child1'),
+            el('child2'),
+          ),
+          el('parent2').with(
+            el('child1'),
+            el('child2'),
+          ),
+          rel('parent1.child1', 'parent2.child1', {
+            description: { txt: 'Description 1' },
+          }),
+          rel('parent1.child2', 'parent2.child2', {
+            description: { txt: 'Description 2' },
+          }),
+        )
+      )
+      .toLikeC4Model()
+    const parent1 = model.element('parent1')
+    const parent2 = model.element('parent2')
+
+    const result = findRelations(parent1, parent2, viewId)
+
+    expect(result).not.toHaveProperty('description')
+    expect(result.relations).toHaveLength(2)
   })
 
   it('should handle mixed explicit and spec-based technology', () => {
-    const spec = Builder
-      .specification({
-        elements: {
-          el: {},
-        },
-        relationships: {
-          requests: {
-            technology: 'HTTP',
-          },
-        },
-        tags: {},
-      })
-      .model(({ el, rel }, _) =>
+    const model = baseModel
+      .model(({ rel }, _) =>
         _(
-          el('a'),
-          el('b'),
           rel('a', 'b', {
             kind: 'requests',
           }),
         )
       )
-    const model = spec.toLikeC4Model()
+      .toLikeC4Model()
     const a = model.element('a')
     const b = model.element('b')
 
-    const result = findRelations(a, b, 'view' as any)
+    const result = findRelations(a, b, viewId)
 
     expect(result).toMatchObject({
-      technology: 'HTTP',
+      technology: 'HTTP Request',
       kind: 'requests',
     })
+  })
+
+  it('should return technology when multiple relationships have same technology from spec', () => {
+    const model = specs
+      .model(({ el, rel }, _) =>
+        _(
+          el('parent1').with(
+            el('child1'),
+            el('child2'),
+          ),
+          el('parent2').with(
+            el('child1'),
+            el('child2'),
+          ),
+          rel('parent1.child1', 'parent2.child1', {
+            kind: 'requests',
+          }),
+          rel('parent1.child2', 'parent2.child2', {
+            kind: 'requests',
+          }),
+        )
+      )
+      .toLikeC4Model()
+    const parent1 = model.element('parent1')
+    const parent2 = model.element('parent2')
+
+    const result = findRelations(parent1, parent2, viewId)
+
+    expect(result).toMatchObject({
+      technology: 'HTTP Request',
+      kind: 'requests',
+    })
+    expect(result.relations).toHaveLength(2)
   })
 })
