@@ -3,9 +3,9 @@ name: main
 on:
   push:
     branches:
-      - "main"
+      - 'main'
     tags-ignore:
-      - "**"
+      - '**'
 
 permissions:
   id-token: write
@@ -19,7 +19,7 @@ env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   checks:
@@ -71,21 +71,21 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          title: "prepare release"
-          commit: "chore: prepare next release"
+          title: 'prepare release'
+          commit: 'chore: prepare next release'
           setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
-  release:
-    name: 📦 release
-    uses: ./.github/workflows/release.yaml
-    if: "github.repository_owner == 'likec4' && contains(github.event.head_commit.message, 'release: v')"
-    needs: checks
-    secrets: inherit
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}-release
-      cancel-in-progress: false
+  # release:
+  #   name: 📦 release
+  #   uses: ./.github/workflows/release.yaml
+  #   if: "github.repository_owner == 'likec4' && contains(github.event.head_commit.message, 'release: v')"
+  #   needs: checks
+  #   secrets: inherit
+  #   concurrency:
+  #     group: ${{ github.workflow }}-${{ github.ref }}-release
+  #     cancel-in-progress: false
 
   deploy-playground:
     if: ${{ github.repository_owner == 'likec4' }}

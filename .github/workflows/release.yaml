@@ -1,7 +1,6 @@
 name: release
 
 on:
-  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -15,7 +14,7 @@ env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   publish:
@@ -37,18 +36,18 @@ jobs:
       - name: 🛠️ Setup node
         uses: actions/setup-node@v6
         with:
-          node-version: "24" # Required for OIDC publishing
-          cache: "pnpm"
-          registry-url: "https://registry.npmjs.org"
+          node-version: '24' # Required for OIDC publishing
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: 🛠️ Cache for turbo
         uses: rharkor/caching-for-turbo@v2.2.1
         with:
-          cache-prefix: "turbo_cache_${{ runner.arch }}"
+          cache-prefix: 'turbo_cache_${{ runner.arch }}'
 
       - run: pnpm install --prefer-offline
         env:
-          HUSKY: "0"
+          HUSKY: '0'
           NODE_ENV: development
 
       - name: ⚙️ build

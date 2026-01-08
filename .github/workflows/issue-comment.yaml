@@ -18,7 +18,7 @@ permissions:
 env:
   NODE_ENV: production
   FORCE_COLOR: 1
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   check-write-access:
@@ -94,7 +94,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: versions upload -c dist/playground/wrangler.json
+          command: versions upload
           workingDirectory: apps/playground
           packageManager: pnpm
 

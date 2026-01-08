@@ -4,20 +4,20 @@ on:
   workflow_call:
     inputs:
       environment:
-        default: "preview"
+        default: 'preview'
         required: true
         type: string
     # Map the workflow outputs to job outputs
     outputs:
       playground_url:
-        description: "playground url"
+        description: 'playground url'
         value: ${{ jobs.deploy-playground.outputs.url }}
   workflow_dispatch:
     inputs:
       environment:
-        description: "Deploy to"
+        description: 'Deploy to'
         required: true
-        default: "preview"
+        default: 'preview'
         type: choice
         options:
           - preview
@@ -33,8 +33,8 @@ permissions:
 env:
   NODE_ENV: production
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
-  CLOUDFLARE_ENV: "production"
+  DO_NOT_TRACK: '1'
+  CLOUDFLARE_ENV: 'production'
 
 concurrency:
   group: playground-${{ github.event_name }}-${{ github.ref_name }}-${{ inputs.environment }}
@@ -47,10 +47,12 @@ jobs:
     timeout-minutes: 10
     if: ${{ github.repository_owner == 'likec4' }}
     environment:
-      name: "playground-${{ inputs.environment }}"
+      name: 'playground-${{ inputs.environment }}'
       url: "${{ inputs.environment == 'production' && 'https://playground.likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
     outputs:
       url: "${{ inputs.environment == 'production' && 'https://playground.likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
+    env:
+      CLOUDFLARE_ENV: 'production'
     steps:
       - uses: actions/checkout@v6
 
@@ -68,6 +70,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          command: "${{ inputs.environment == 'production' && 'deploy -c dist/playground/wrangler.json' || 'versions upload -c dist/playground/wrangler.json' }}"
+          command: "${{ inputs.environment == 'production' && 'deploy' || 'versions upload' }}"
           workingDirectory: apps/playground
           packageManager: pnpm

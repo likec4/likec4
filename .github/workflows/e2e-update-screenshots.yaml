@@ -2,12 +2,18 @@ name: e2e update screenshots
 
 on:
   workflow_dispatch:
+    inputs:
+      create-pull-request:
+        description: 'Create pull request?'
+        type: boolean
+        required: true
+        default: true
 
 env:
   NODE_ENV: production
-  CLOUDFLARE_ENV: "production"
+  CLOUDFLARE_ENV: 'production'
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 permissions:
   pull-requests: write
@@ -20,10 +26,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     if: ${{ github.repository_owner == 'likec4' }}
     steps:
-      - uses: actions/checkout@v6
-        with:
-          ssh-strict: "no"
-
       - name: Decode the GitHub App Private Key
         id: decode
         run: |
@@ -36,6 +38,11 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ steps.decode.outputs.private-key }}
+
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.tokenT }}
+          ssh-strict: 'no'
 
       - name: Get GitHub App User ID
         id: get-user-id
@@ -69,17 +76,25 @@ jobs:
 
       - name: create pull request
         id: cpr
+        if: ${{ inputs.create-pull-request }}
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.app-token.outputs.token }}
-          commit-message: "chore: update e2e screenshots"
-          title: "chore: update e2e screenshots"
+          commit-message: 'chore: update e2e screenshots'
+          title: 'chore: update e2e screenshots'
           branch: update-screenshots/${{ github.ref_name }}
-          add-paths: "e2e/tests/**"
+          add-paths: 'e2e/tests/**'
           delete-branch: true
 
-      - name: enable automerge
-        if: ${{ steps.cpr.outputs.pull-request-number }}
-        run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}" || true
-        env:
-          GH_TOKEN: ${{ steps.bot-token.outputs.token }}
+      # - name: enable automerge
+      #   if: ${{ inputs.create-pull-request && steps.cpr.outputs.pull-request-number }}
+      #   run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}" || true
+      #   env:
+      #     GH_TOKEN: ${{ steps.bot-token.outputs.token }}
+
+      - name: commit updates
+        if: ${{ !inputs.create-pull-request }}
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: 'chore: update e2e screenshots'
+          file_pattern: 'e2e/tests/'
