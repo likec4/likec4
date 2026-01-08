@@ -139,7 +139,7 @@ export function findRelations<A extends Any>(
       color: relation.$relationship.color,
       line: relation.$relationship.line,
       technology: relation.technology ?? undefined,
-      description: relation.$relationship.description,
+      description: relation.$relationship.description ?? undefined,
     })
   }
   const alltags = pipe(
