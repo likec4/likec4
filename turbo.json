@@ -1,7 +1,8 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalEnv": [
-    "NODE_ENV"
+    "NODE_ENV",
+    "CLOUDFLARE_ENV"
   ],
   "globalDependencies": [
     ".tool-versions",
@@ -37,7 +38,7 @@
         "$TURBO_DEFAULT$",
         "!**/*.spec.ts",
         "!**/*.test-d.ts",
-        "!**/__tests__/**",
+        "!**/__test*/**",
         "!**/__snapshots__/**",
         "!**/__fixtures__/**"
       ],
