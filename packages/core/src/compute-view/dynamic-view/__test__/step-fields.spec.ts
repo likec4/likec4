@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { LikeC4Model } from '../../../model'
 import { Builder } from '../../../builder/Builder'
+import type { LikeC4Model } from '../../../model'
 import type { DynamicStep, Fqn, ParsedDynamicView, ViewId } from '../../../types'
 import { computeDynamicView } from '../compute'
 
@@ -10,6 +10,7 @@ describe('Dynamic view step fields', () => {
     stepOverrides: Partial<DynamicStep> = {},
   ) => {
     const view = computeDynamicView(model, {
+      _stage: 'parsed',
       _type: 'dynamic',
       id: 'usecase1' as ViewId,
       title: null,
@@ -34,11 +35,7 @@ describe('Dynamic view step fields', () => {
     it('should inherit technology from model relationship', () => {
       const model = Builder
         .specification({
-          elements: {
-            el: {},
-          },
-          relationships: {},
-          tags: {},
+          elements: ['el'],
         })
         .model(({ el, rel }, _) =>
           _(
@@ -61,15 +58,12 @@ describe('Dynamic view step fields', () => {
     it('should inherit technology from specification when kind is specified', () => {
       const model = Builder
         .specification({
-          elements: {
-            el: {},
-          },
+          elements: ['el'],
           relationships: {
             requests: {
               technology: 'HTTP Request',
             },
           },
-          tags: {},
         })
         .model(({ el, rel }, _) =>
           _(
@@ -94,11 +88,8 @@ describe('Dynamic view step fields', () => {
     it('should use explicit step technology over model relationship', () => {
       const model = Builder
         .specification({
-          elements: {
-            el: {},
-          },
+          elements: ['el'],
           relationships: {},
-          tags: {},
         })
         .model(({ el, rel }, _) =>
           _(
@@ -123,15 +114,12 @@ describe('Dynamic view step fields', () => {
     it('should prefer model relationship technology over specification', () => {
       const model = Builder
         .specification({
-          elements: {
-            el: {},
-          },
+          elements: ['el'],
           relationships: {
             requests: {
               technology: 'HTTP Request',
             },
           },
-          tags: {},
         })
         .model(({ el, rel }, _) =>
           _(
@@ -155,15 +143,12 @@ describe('Dynamic view step fields', () => {
     it('should use specification technology when step has kind but no explicit technology', () => {
       const model = Builder
         .specification({
-          elements: {
-            el: {},
-          },
+          elements: ['el'],
           relationships: {
             requests: {
               technology: 'HTTP Request',
             },
           },
-          tags: {},
         })
         .model(({ el, rel }, _) =>
           _(
@@ -190,11 +175,8 @@ describe('Dynamic view step fields', () => {
     it('should inherit description from model relationship', () => {
       const model = Builder
         .specification({
-          elements: {
-            el: {},
-          },
+          elements: ['el'],
           relationships: {},
-          tags: {},
         })
         .model(({ el, rel }, _) =>
           _(
@@ -217,11 +199,8 @@ describe('Dynamic view step fields', () => {
     it('should use explicit step description over model relationship', () => {
       const model = Builder
         .specification({
-          elements: {
-            el: {},
-          },
+          elements: ['el'],
           relationships: {},
-          tags: {},
         })
         .model(({ el, rel }, _) =>
           _(
@@ -248,11 +227,8 @@ describe('Dynamic view step fields', () => {
     it('should inherit both technology and description from model', () => {
       const model = Builder
         .specification({
-          elements: {
-            el: {},
-          },
+          elements: ['el'],
           relationships: {},
-          tags: {},
         })
         .model(({ el, rel }, _) =>
           _(

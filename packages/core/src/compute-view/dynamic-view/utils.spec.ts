@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
+import { Builder } from '../../builder/Builder'
 import type { LikeC4Model } from '../../model'
 import type { ViewId } from '../../types'
-import { Builder } from '../../builder/Builder'
 import { findRelations } from './utils'
 
-const viewId = 'view' as ViewId
+const viewId = 'index' as ViewId<'index'>
 
 describe('findRelations', () => {
   const specs = Builder
@@ -33,6 +33,11 @@ describe('findRelations', () => {
         ),
         el('shopify'),
         el('webhook'),
+      )
+    )
+    .views(({ view, $include }, _) =>
+      _(
+        view('index', $include('*')),
       )
     )
 
