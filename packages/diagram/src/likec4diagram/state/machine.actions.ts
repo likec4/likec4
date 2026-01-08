@@ -916,8 +916,6 @@ export const updateView = () =>
 
       enqueue(sendSynced())
 
-      let recenter = !context.viewportChangedManually && !context.focusedNode && !context.activeWalkthrough
-
       if (context.toggledFeatures.enableCompareWithLatest === true && context.view._layout !== nextView._layout) {
         if (nextView._layout === 'auto' && context.viewportOnAutoLayout) {
           enqueue(
@@ -940,12 +938,7 @@ export const updateView = () =>
         }
       }
 
-      // Check if dynamic view mode changed
-      recenter = recenter || (
-        nextView._type === 'dynamic' &&
-        context.view._type === 'dynamic' &&
-        nextView.variant !== context.view.variant
-      )
+      let recenter = !context.viewportChangedManually && !context.focusedNode && !context.activeWalkthrough
 
       // Check if comparing layouts is enabled and layout changed
       recenter = recenter || (

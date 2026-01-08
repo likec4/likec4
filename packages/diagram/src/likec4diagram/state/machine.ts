@@ -104,6 +104,9 @@ const _diagramMachine = machine.createMachine({
       guard: ({ context, event }) => context.dynamicViewVariant !== event.variant,
       actions: [
         assignDynamicViewVariant(),
+        assign({
+          viewportChangedManually: false,
+        }),
         raiseUpdateView(),
       ],
     },
