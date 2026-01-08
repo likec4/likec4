@@ -18,7 +18,6 @@ import {
   Link,
   useMatches,
   useParams,
-  useParentMatches,
 } from '@tanstack/react-router'
 import { memo } from 'react'
 import { useCurrentViewId } from '../../hooks'
@@ -81,12 +80,16 @@ export const Header = memo(() => {
   )
 })
 
+const enableDownload = <P extends Record<string, unknown>>(params: P): P & { download: true } => ({
+  ...params,
+  download: true,
+})
+
 function ExportButton() {
   const params = useParams({ strict: false })
-  const m = useParentMatches()
-  const isInsideProject = m.some((match) => match.routeId === '/project/$projectId')
-  // const previewUrl = usePreviewUrl(params.viewId)
-  const previewUrl = undefined
+  const isInsideProject = useMatches({
+    select: matches => matches.some(({ routeId }) => routeId === '/project/$projectId'),
+  })
   const viewId = useCurrentViewId()
 
   return (
@@ -105,30 +108,18 @@ function ExportButton() {
 
       <MenuDropdown>
         <MenuLabel>Current view</MenuLabel>
-        {previewUrl
-          ? (
-            <MenuItem
-              component={'a'}
-              href={previewUrl}
-              download={`${viewId}.png`}
-              target="_blank">
-              Export as .png
-            </MenuItem>
-          )
-          : (
-            <MenuItem
-              renderRoot={(props) => (
-                <Link
-                  target="_blank"
-                  to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
-                  search={{ download: true }}
-                  params
-                  {...props} />
-              )}
-            >
-              Export as .png
-            </MenuItem>
+        <MenuItem
+          renderRoot={(props) => (
+            <Link
+              target="_blank"
+              to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
+              search={enableDownload}
+              params
+              {...props} />
           )}
+        >
+          Export as .png
+        </MenuItem>
         <MenuItem
           disabled={isInsideProject}
           renderRoot={(props) => (
