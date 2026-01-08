@@ -1,12 +1,38 @@
 import { describe, expect, it } from 'vitest'
+import type { LikeC4Model } from '../../../model'
 import { Builder } from '../../../builder/Builder'
-import type { ParsedDynamicView } from '../../../types'
+import type { DynamicStep, Fqn, ParsedDynamicView, ViewId } from '../../../types'
 import { computeDynamicView } from '../compute'
 
 describe('Dynamic view step fields', () => {
+  const computeEdgeFromStep = (
+    model: LikeC4Model<any>,
+    stepOverrides: Partial<DynamicStep> = {},
+  ) => {
+    const view = computeDynamicView(model, {
+      _type: 'dynamic',
+      id: 'usecase1' as ViewId,
+      title: null,
+      description: null,
+      tags: null,
+      links: null,
+      rules: [],
+      steps: [
+        {
+          source: 'shopify' as Fqn,
+          target: 'webhook' as Fqn,
+          astPath: '',
+          title: null,
+          ...stepOverrides,
+        },
+      ],
+    } as ParsedDynamicView)
+    return view.edges[0]
+  }
+
   describe('Technology inheritance', () => {
     it('should inherit technology from model relationship', () => {
-      const spec = Builder
+      const model = Builder
         .specification({
           elements: {
             el: {},
@@ -23,34 +49,17 @@ describe('Dynamic view step fields', () => {
             }),
           )
         )
+        .toLikeC4Model()
 
-      const model = spec.toLikeC4Model()
-      const view = computeDynamicView(model, {
-        _type: 'dynamic',
-        id: 'usecase1' as any,
-        title: null,
-        description: null,
-        tags: null,
-        links: null,
-        rules: [],
-        steps: [
-          {
-            source: 'shopify' as any,
-            target: 'webhook' as any,
-            astPath: '',
-            title: null,
-          },
-        ],
-      } as ParsedDynamicView)
+      const edge = computeEdgeFromStep(model)
 
-      expect(view.edges).toHaveLength(1)
-      expect(view.edges[0]).toMatchObject({
+      expect(edge).toMatchObject({
         technology: 'HTTP Request Override',
       })
     })
 
     it('should inherit technology from specification when kind is specified', () => {
-      const spec = Builder
+      const model = Builder
         .specification({
           elements: {
             el: {},
@@ -71,35 +80,19 @@ describe('Dynamic view step fields', () => {
             }),
           )
         )
+        .toLikeC4Model()
 
-      const model = spec.toLikeC4Model()
-      const view = computeDynamicView(model, {
-        _type: 'dynamic',
-        id: 'usecase1' as any,
-        title: null,
-        description: null,
-        tags: null,
-        links: null,
-        rules: [],
-        steps: [
-          {
-            source: 'shopify' as any,
-            target: 'webhook' as any,
-            kind: 'requests' as any,
-            astPath: '',
-            title: null,
-          },
-        ],
-      } as ParsedDynamicView)
+      const edge = computeEdgeFromStep(model, {
+        kind: 'requests' as any,
+      })
 
-      expect(view.edges).toHaveLength(1)
-      expect(view.edges[0]).toMatchObject({
+      expect(edge).toMatchObject({
         technology: 'HTTP Request',
       })
     })
 
     it('should use explicit step technology over model relationship', () => {
-      const spec = Builder
+      const model = Builder
         .specification({
           elements: {
             el: {},
@@ -116,35 +109,19 @@ describe('Dynamic view step fields', () => {
             }),
           )
         )
+        .toLikeC4Model()
 
-      const model = spec.toLikeC4Model()
-      const view = computeDynamicView(model, {
-        _type: 'dynamic',
-        id: 'usecase1' as any,
-        title: null,
-        description: null,
-        tags: null,
-        links: null,
-        rules: [],
-        steps: [
-          {
-            source: 'shopify' as any,
-            target: 'webhook' as any,
-            technology: 'Yes, this works',
-            astPath: '',
-            title: null,
-          },
-        ],
-      } as ParsedDynamicView)
+      const edge = computeEdgeFromStep(model, {
+        technology: 'Yes, this works',
+      })
 
-      expect(view.edges).toHaveLength(1)
-      expect(view.edges[0]).toMatchObject({
+      expect(edge).toMatchObject({
         technology: 'Yes, this works',
       })
     })
 
     it('should prefer model relationship technology over specification', () => {
-      const spec = Builder
+      const model = Builder
         .specification({
           elements: {
             el: {},
@@ -166,34 +143,17 @@ describe('Dynamic view step fields', () => {
             }),
           )
         )
+        .toLikeC4Model()
 
-      const model = spec.toLikeC4Model()
-      const view = computeDynamicView(model, {
-        _type: 'dynamic',
-        id: 'usecase1' as any,
-        title: null,
-        description: null,
-        tags: null,
-        links: null,
-        rules: [],
-        steps: [
-          {
-            source: 'shopify' as any,
-            target: 'webhook' as any,
-            astPath: '',
-            title: null,
-          },
-        ],
-      } as ParsedDynamicView)
+      const edge = computeEdgeFromStep(model)
 
-      expect(view.edges).toHaveLength(1)
-      expect(view.edges[0]).toMatchObject({
+      expect(edge).toMatchObject({
         technology: 'HTTP Request Override',
       })
     })
 
     it('should use specification technology when step has kind but no explicit technology', () => {
-      const spec = Builder
+      const model = Builder
         .specification({
           elements: {
             el: {},
@@ -214,29 +174,13 @@ describe('Dynamic view step fields', () => {
             }),
           )
         )
+        .toLikeC4Model()
 
-      const model = spec.toLikeC4Model()
-      const view = computeDynamicView(model, {
-        _type: 'dynamic',
-        id: 'usecase1' as any,
-        title: null,
-        description: null,
-        tags: null,
-        links: null,
-        rules: [],
-        steps: [
-          {
-            source: 'shopify' as any,
-            target: 'webhook' as any,
-            kind: 'requests' as any,
-            astPath: '',
-            title: null,
-          },
-        ],
-      } as ParsedDynamicView)
+      const edge = computeEdgeFromStep(model, {
+        kind: 'requests' as any,
+      })
 
-      expect(view.edges).toHaveLength(1)
-      expect(view.edges[0]).toMatchObject({
+      expect(edge).toMatchObject({
         technology: 'HTTP Request',
       })
     })
@@ -244,7 +188,7 @@ describe('Dynamic view step fields', () => {
 
   describe('Description inheritance', () => {
     it('should inherit description from model relationship', () => {
-      const spec = Builder
+      const model = Builder
         .specification({
           elements: {
             el: {},
@@ -261,34 +205,17 @@ describe('Dynamic view step fields', () => {
             }),
           )
         )
+        .toLikeC4Model()
 
-      const model = spec.toLikeC4Model()
-      const view = computeDynamicView(model, {
-        _type: 'dynamic',
-        id: 'usecase1' as any,
-        title: null,
-        description: null,
-        tags: null,
-        links: null,
-        rules: [],
-        steps: [
-          {
-            source: 'shopify' as any,
-            target: 'webhook' as any,
-            astPath: '',
-            title: null,
-          },
-        ],
-      } as ParsedDynamicView)
+      const edge = computeEdgeFromStep(model)
 
-      expect(view.edges).toHaveLength(1)
-      expect(view.edges[0]).toMatchObject({
+      expect(edge).toMatchObject({
         description: { txt: 'Makes HTTP request' },
       })
     })
 
     it('should use explicit step description over model relationship', () => {
-      const spec = Builder
+      const model = Builder
         .specification({
           elements: {
             el: {},
@@ -305,29 +232,13 @@ describe('Dynamic view step fields', () => {
             }),
           )
         )
+        .toLikeC4Model()
 
-      const model = spec.toLikeC4Model()
-      const view = computeDynamicView(model, {
-        _type: 'dynamic',
-        id: 'usecase1' as any,
-        title: null,
-        description: null,
-        tags: null,
-        links: null,
-        rules: [],
-        steps: [
-          {
-            source: 'shopify' as any,
-            target: 'webhook' as any,
-            description: { txt: 'Custom description' },
-            astPath: '',
-            title: null,
-          },
-        ],
-      } as ParsedDynamicView)
+      const edge = computeEdgeFromStep(model, {
+        description: { txt: 'Custom description' },
+      })
 
-      expect(view.edges).toHaveLength(1)
-      expect(view.edges[0]).toMatchObject({
+      expect(edge).toMatchObject({
         description: { txt: 'Custom description' },
       })
     })
@@ -335,7 +246,7 @@ describe('Dynamic view step fields', () => {
 
   describe('Combined fields', () => {
     it('should inherit both technology and description from model', () => {
-      const spec = Builder
+      const model = Builder
         .specification({
           elements: {
             el: {},
@@ -354,28 +265,11 @@ describe('Dynamic view step fields', () => {
             }),
           )
         )
+        .toLikeC4Model()
 
-      const model = spec.toLikeC4Model()
-      const view = computeDynamicView(model, {
-        _type: 'dynamic',
-        id: 'usecase1' as any,
-        title: null,
-        description: null,
-        tags: null,
-        links: null,
-        rules: [],
-        steps: [
-          {
-            source: 'shopify' as any,
-            target: 'webhook' as any,
-            astPath: '',
-            title: null,
-          },
-        ],
-      } as ParsedDynamicView)
+      const edge = computeEdgeFromStep(model)
 
-      expect(view.edges).toHaveLength(1)
-      expect(view.edges[0]).toMatchObject({
+      expect(edge).toMatchObject({
         technology: 'HTTP Request',
         description: { txt: 'Webhook notification' },
         label: 'notifies',
