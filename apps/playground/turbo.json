@@ -5,24 +5,17 @@
   ],
   "tasks": {
     "generate": {
-      "env": [
-        "NODE_ENV",
-        "CLOUDFLARE_ENV"
-      ],
       "dependsOn": [
-        "^generate"
+        "@likec4/styles#generate",
+        "@likec4/language-server#generate"
       ],
       "outputs": [
         "src/routeTree.gen.ts",
-        "styled-system",
+        "styled-system/**",
         "worker-configuration.d.ts"
       ]
     },
     "build": {
-      "env": [
-        "NODE_ENV",
-        "CLOUDFLARE_ENV"
-      ],
       "dependsOn": [
         "generate",
         "@likec4/language-server#build"

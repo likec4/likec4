@@ -1,4 +1,3 @@
-import { Examples } from '$/examples'
 import { MonacoEditor } from '$/monaco'
 import { Header } from '$components/appshell/Header'
 import { WorkspaceFileTabs } from '$components/workspace/WorkspaceFileTabs'
@@ -13,26 +12,28 @@ import * as styles from '../styles.css'
 
 export const Route = createFileRoute('/w/$workspaceId')({
   component: WorkspaceContextPage,
-  loader: ({ params }): {
+  loader: async ({ params }): Promise<{
     workspaceId: string
     activeFilename: string
     title: string
     files: Record<string, string>
-  } => {
+  }> => {
+    const { Examples } = await import('$/examples')
     const id = params.workspaceId as keyof typeof Examples
-    if (Examples[id]) {
+    const example = Examples[id]
+    if (example) {
       return WorkspaceSessionPersistence.read(id) ?? {
         workspaceId: id,
-        activeFilename: Examples[id].currentFilename!, // ! added by Gemini 5
-        title: Examples[id].title,
+        activeFilename: example.currentFilename,
+        title: example.title,
         files: {
-          ...Examples[id].files,
+          ...example.files,
         },
       }
     }
     return WorkspacePersistence.read(id) ?? {
       workspaceId: id,
-      activeFilename: Examples.blank.currentFilename!, // ! added by Gemini 5
+      activeFilename: Examples.blank.currentFilename,
       ...Examples.blank,
     }
   },

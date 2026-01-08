@@ -4,16 +4,18 @@
   "main": "./worker/index.ts",
   "compatibility_date": "2025-12-19",
   "compatibility_flags": [
-    "nodejs_compat_v2"
+    "nodejs_compat"
   ],
   "workers_dev": true,
   "upload_source_maps": true,
-  "minify": true,
-  "keep_names": true,
   "keep_vars": true,
-  "legacy_env": false,
   "assets": {
     "not_found_handling": "single-page-application",
+    "run_worker_first": [
+      "/api/*",
+      "/auth/*",
+      "/share/*",
+    ],
     "binding": "ASSETS"
   },
   "kv_namespaces": [
@@ -33,15 +35,14 @@
       "invocation_logs": true
     }
   },
+  "vars": {
+    "OAUTH_GITHUB_ID": "",
+    "OAUTH_GITHUB_SECRET": "",
+    "SESSION_ENCRYPTION_KEY": "VFRAdSem81cuALVeOMC4PJyLXf30tckV"
+  },
   "env": {
-    "development": {
-      "vars": {
-        "OAUTH_GITHUB_ID": "",
-        "OAUTH_GITHUB_SECRET": "",
-        "SESSION_ENCRYPTION_KEY": "VFRAdSem81cuALVeOMC4PJyLXf30tckV"
-      }
-    },
     "production": {
+      "preview_urls": true,
       "route": {
         "pattern": "playground.likec4.dev",
         "custom_domain": true

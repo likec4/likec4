@@ -1,4 +1,3 @@
-/// <reference path="../worker-configuration.d.ts" />
 import type { LayoutedLikeC4ModelData } from '@likec4/core/types'
 import { formatISO } from 'date-fns'
 import type { Context } from 'hono'

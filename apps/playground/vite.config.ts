@@ -14,6 +14,7 @@ import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 const alias = {
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
   'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
+  '@likec4/styles/': resolve('./styled-system/'),
   // '@likec4/core/compute-view/relationships': path.resolve(
   //   __dirname,
   //   '../../packages/core/src/compute-view/relationships-view/index.ts',
@@ -101,6 +102,9 @@ export default defineConfig(({ command }) => ({
       resolve: {
         conditions: ['workerd', 'worker', 'sources'],
       },
+      build: {
+        sourcemap: true,
+      },
       optimizeDeps: {
         /**
          * @see https://github.com/likec4/likec4/pull/2416#issuecomment-3594491275
@@ -110,7 +114,12 @@ export default defineConfig(({ command }) => ({
     },
   },
   plugins: [
-    tsconfigpaths(),
+    tsconfigpaths({
+      projects: [
+        './tsconfig.frontend.json',
+        './tsconfig.worker.json',
+      ],
+    }),
     TanStackRouterVite(tanStackRouterViteCfg),
     react(),
     cloudflare({

@@ -14,8 +14,8 @@
     ]
   },
   "include": [
-    "worker-configuration.d.ts",
-    "worker"
+    "./worker-configuration.d.ts",
+    "worker/"
   ],
   "references": [
     {

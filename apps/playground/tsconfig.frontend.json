@@ -29,20 +29,23 @@
     }
   },
   "include": [
-    "src"
+    "src/"
   ],
   "references": [
     {
       "path": "./tsconfig.worker.json"
     },
     {
-      "path": "../../packages/core/tsconfig.json"
+      "path": "../../packages/core/"
     },
     {
-      "path": "../../packages/diagram/tsconfig.src.json"
+      "path": "../../packages/diagram/"
     },
     {
-      "path": "../../packages/language-server/tsconfig.json"
+      "path": "../../packages/layouts/"
+    },
+    {
+      "path": "../../packages/language-server/"
     }
   ]
 }

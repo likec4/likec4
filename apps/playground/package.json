@@ -9,42 +9,27 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "pnpm rimraf dist lib node_modules/.vite",
-    "wrangler:deploy": "wrangler deploy -c dist/playground/wrangler.json",
-    "wrangler:preview": "wrangler versions upload -c dist/playground/wrangler.json",
+    "wrangler:deploy": "CLOUDFLARE_ENV=production wrangler deploy",
+    "wrangler:preview": "CLOUDFLARE_ENV=production wrangler versions upload",
     "deploy:prod": "wireit",
     "deploy:preview": "wireit"
   },
   "wireit": {
     "generate-tsr": {
-      "command": "tsr generate",
-      "files": [
-        "src/routes/**/*.tsx"
-      ],
-      "output": [
-        "src/routeTree.gen.ts"
-      ]
+      "command": "tsr generate"
     },
     "generate-wrangler": {
-      "command": "wrangler types",
-      "files": [
-        "wrangler.jsonc",
-        "package.json"
-      ],
-      "output": [
-        "worker-configuration.d.ts"
-      ]
+      "command": "wrangler types"
+    },
+    "generate-pandacss": {
+      "command": "panda codegen"
     },
     "generate": {
       "dependencies": [
         "generate-tsr",
+        "generate-pandacss",
         "generate-wrangler"
       ]
-    },
-    "dev": {
-      "dependencies": [
-        "generate"
-      ],
-      "command": "vite dev"
     },
     "build-with-turbo": {
       "command": "turbo run build"
@@ -59,7 +44,7 @@
       "dependencies": [
         "build-with-turbo"
       ],
-      "command": "wrangler deploy -c dist/playground/wrangler.json",
+      "command": "wrangler deploy",
       "env": {
         "NODE_ENV": "production",
         "CLOUDFLARE_ENV": "production"
@@ -69,7 +54,7 @@
       "dependencies": [
         "build-with-turbo"
       ],
-      "command": "wrangler versions upload -c dist/playground/wrangler.json",
+      "command": "wrangler versions upload",
       "env": {
         "NODE_ENV": "production",
         "CLOUDFLARE_ENV": "production"
