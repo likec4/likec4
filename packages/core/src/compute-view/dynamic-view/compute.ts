@@ -141,9 +141,15 @@ class DynamicViewCompute<A extends AnyAux> {
         ? stepNavigateTo
         : derivedNavigateTo
 
+      // If step has kind but no technology, use technology from specification
+      const kindTechnology = step.kind && !step.technology
+        ? this.model.specification.relationships[step.kind]?.technology
+        : undefined
+
       this.steps.push(exact({
         ...derived,
         ...rest,
+        ...(kindTechnology && { technology: kindTechnology }),
         id,
         source,
         target,
