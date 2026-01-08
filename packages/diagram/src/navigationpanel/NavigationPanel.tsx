@@ -13,7 +13,7 @@ import { useCurrentView } from '../hooks/useCurrentView'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { useDiagramContext } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
-import { type NavigationPanelActorRef, navigationPanelActorLogic } from './actor'
+import { type NavigationPanelActorRef, type NavigationPanelActorSnapshot, navigationPanelActorLogic } from './actor'
 import { ComparePanel } from './comparepanel'
 import { EditorPanel } from './editorpanel'
 import { NavigationPanelActorContextProvider } from './hooks'
@@ -86,8 +86,9 @@ export const NavigationPanel = memo(() => {
 })
 NavigationPanel.displayName = 'NavigationPanel'
 
+const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag('active')
 const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
-  const opened = useSelector(actor, s => s.hasTag('active'))
+  const opened = useSelector(actor, stateHasActiveTag)
   const portalProps = useMantinePortalProps()
 
   return (

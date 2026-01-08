@@ -1,10 +1,10 @@
-import { css, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import { createStyleContext, isCssProperty } from '@likec4/styles/jsx'
 import { navigationPanel } from '@likec4/styles/recipes'
 import { type ForwardRefComponent, type HTMLMotionProps, isValidMotionProp } from 'motion/react'
 import * as m from 'motion/react-m'
 import { type HTMLAttributes, forwardRef } from 'react'
-import { Logo as LogoCmp } from './Logo'
+import { Logo as LogoWithText, LogoIcon } from './Logo'
 
 const { withProvider, withContext } = createStyleContext(navigationPanel)
 
@@ -21,23 +21,9 @@ const LogoButton = forwardRef<HTMLButtonElement, HTMLAttributes<HTMLButtonElemen
         className,
       )}
     >
-      <div></div>
-      <LogoCmp
-        className={css({
-          display: {
-            base: 'none',
-            '@/md': 'block',
-          },
-        })}
-      />
-      <LogoCmp
-        className={css({
-          display: {
-            base: 'block',
-            '@/md': 'none',
-          },
-        })}
-      />
+      {/* These attributes are used by preset to conditionally render the icon */}
+      <LogoIcon data-logo-icon />
+      <LogoWithText data-logo-full />
     </button>
   )
 })

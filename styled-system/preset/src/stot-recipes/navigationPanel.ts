@@ -21,10 +21,17 @@ export const navigationPanel = defineSlotRecipe({
         'calc(100vw)',
         'calc(100cqw)',
       ],
-      '@/sm': {
+      '@likec4-root/sm': {
         margin: 'xs',
         gap: 'xs',
         width: 'max-content',
+        maxWidth: [
+          'calc(100vw - 2 * {spacing.xs})',
+          'calc(100cqw - 2 * {spacing.xs})',
+        ],
+      },
+      '@likec4-root/md': {
+        margin: 'sm',
         maxWidth: [
           'calc(100vw - 2 * {spacing.md})',
           'calc(100cqw - 2 * {spacing.md})',
@@ -43,6 +50,7 @@ export const navigationPanel = defineSlotRecipe({
       gap: 'xs',
       pointerEvents: 'all',
       width: '100%',
+      minHeight: '40px',
       cursor: 'default',
     },
     logo: {
@@ -53,6 +61,19 @@ export const navigationPanel = defineSlotRecipe({
       background: 'none',
       border: 'none',
       cursor: 'pointer',
+
+      ['& > [data-logo-icon]']: {
+        display: {
+          base: 'block',
+          '@likec4-root/sm': 'none',
+        },
+      },
+      ['& > [data-logo-full]']: {
+        display: {
+          base: 'none',
+          '@likec4-root/sm': 'block',
+        },
+      },
     },
     label: {
       fontSize: 'sm',
@@ -65,20 +86,17 @@ export const navigationPanel = defineSlotRecipe({
   variants: {
     size: {
       md: {
-        body: {
-          minHeight: '40px',
-        },
         logo: {
           width: {
-            base: '[20px]',
-            '@/md': '[64px]',
+            base: '20px',
+            '@likec4-root/md': '64px',
           },
         },
       },
 
       lg: {
         body: {
-          '@/sm': {
+          '@likec4-root/sm': {
             gap: 'sm',
             minHeight: '48px',
             paddingInline: 'md',
@@ -88,12 +106,13 @@ export const navigationPanel = defineSlotRecipe({
           },
         },
         logo: {
-          '@/sm': {
-            width: '[74px]',
+          width: {
+            base: '20px',
+            '@likec4-root/sm': '74px',
           },
         },
         label: {
-          '@/sm': {
+          '@likec4-root/sm': {
             fontSize: 'md',
           },
         },
