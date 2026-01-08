@@ -1,4 +1,4 @@
-import { first, flatMap, hasAtLeast, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
+import { first, flatMap, hasAtLeast, isDeepEqual, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
 import type { ElementModel } from '../../model'
 import { findConnection } from '../../model/connection/model'
 import type { LikeC4Model } from '../../model/LikeC4Model'
@@ -9,6 +9,7 @@ import {
   type DynamicStep,
   type DynamicViewRule,
   type DynamicViewStep,
+  type MarkdownOrString,
   type NonEmptyArray,
   type RelationshipLineType,
   type ViewRuleGlobalStyle,
@@ -118,6 +119,8 @@ export function findRelations<A extends Any>(
   navigateTo?: aux.StrictViewId<A>
   color?: Color
   line?: RelationshipLineType
+  technology?: string
+  description?: MarkdownOrString
 } {
   const relationships = findConnection(source, target, 'directed')
     .flatMap(r => [...r.relations])
@@ -129,11 +132,14 @@ export function findRelations<A extends Any>(
     const relation = relationships[0]
     return exact({
       title: relation.title ?? undefined,
+      kind: relation.kind ?? undefined,
       tags: relation.tags,
       relations: [relation.id],
       navigateTo: relation.$relationship.navigateTo,
       color: relation.$relationship.color,
       line: relation.$relationship.line,
+      technology: relation.technology ?? undefined,
+      description: relation.$relationship.description ?? undefined,
     })
   }
   const alltags = pipe(
@@ -163,17 +169,23 @@ export function findRelations<A extends Any>(
 
   const commonProperties = pipe(
     relationships,
-    reduce((acc, { title, $relationship: r }) => {
+    reduce((acc, { title, technology, $relationship: r }) => {
       isTruthy(title) && acc.title.add(title)
       isTruthy(r.color) && acc.color.add(r.color)
       isTruthy(r.line) && acc.line.add(r.line)
       isTruthy(r.kind) && acc.kind.add(r.kind)
+      isTruthy(technology) && acc.technology.add(technology)
+      if (isTruthy(r.description) && !acc.description.some(isDeepEqual(r.description))) {
+        acc.description.push(r.description)
+      }
       return acc
     }, {
       kind: new Set<aux.RelationKind<A>>(),
       color: new Set<Color>(),
       line: new Set<RelationshipLineType>(),
       title: new Set<string>(),
+      technology: new Set<string>(),
+      description: [] as MarkdownOrString[],
     }),
   )
 
@@ -185,5 +197,7 @@ export function findRelations<A extends Any>(
     title: only([...commonProperties.title]),
     color: only([...commonProperties.color]),
     line: only([...commonProperties.line]),
+    technology: only([...commonProperties.technology]),
+    description: only(commonProperties.description),
   })
 }
