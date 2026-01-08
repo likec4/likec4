@@ -12,11 +12,20 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core'
-import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
+import { NotificationType, NotificationType0, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { DiagnosticSeverity, DocumentUri, Location, Position, Range, URI } from 'vscode-languageserver-types'
 
 export namespace DidChangeModelNotification {
   export const type = new NotificationType<string>('likec4/onDidChangeModel')
+  export type Type = typeof type
+}
+
+/**
+ * Triggered by the language server when projects changed
+ * (number of projects changed, names changed, etc)
+ */
+export namespace DidChangeProjectsNotification {
+  export const type = new NotificationType0('likec4/onDidChangeProjects')
   export type Type = typeof type
 }
 

@@ -21,6 +21,7 @@ import { deepEqual } from 'fast-equals'
 import {
   type Cancellation,
   type LangiumDocument,
+  Disposable,
   isOperationCancelled,
   OperationCancelled,
   URI,
@@ -129,6 +130,8 @@ export class ProjectsManager {
    * that are not part of a specific project.
    */
   static readonly DefaultProjectId = DefaultProject.id
+
+  #updateListeners = [] as Array<() => void>
 
   /**
    * Configured default project ID.
@@ -516,21 +519,28 @@ export class ProjectsManager {
     this.#projectIdToFolder.set(project.id, folder)
     this.#lookupById.clear()
 
-    // Reset assigned project IDs if no projects reload is active
-    if (mustReset && !this.#activeReload) {
-      await this.rebuidProject(project.id, cancelToken).catch(error => {
-        if (isOperationCancelled(error)) {
-          return Promise.reject(error)
-        }
-        logger.warn('Failed to rebuild project {projectId} after config change', {
-          projectId: project.id,
-          error,
-        })
-        // ignore error, we logged it
-        return Promise.resolve()
-      })
+    if (this.#activeReload) {
+      return project
     }
 
+    if (!mustReset) {
+      // this might be new project, notify listeners
+      this.notifyListeners()
+      return project
+    }
+
+    // Rebuild project will notify listeners
+    await this.rebuidProject(project.id, cancelToken).catch(error => {
+      if (isOperationCancelled(error)) {
+        return Promise.reject(error)
+      }
+      logger.warn('Failed to rebuild project {projectId} after config change', {
+        projectId: project.id,
+        error,
+      })
+      // ignore error, we logged it
+      return Promise.resolve()
+    })
     return project
   }
 
@@ -567,6 +577,7 @@ export class ProjectsManager {
       })
       .finally(() => {
         this.#activeReload = null
+        this.notifyListeners()
       })
 
     return await this.#activeReload
@@ -644,60 +655,65 @@ export class ProjectsManager {
   }
 
   public async rebuidProject(projectId: ProjectId, cancelToken?: Cancellation.CancellationToken): Promise<void> {
-    // reset default project cache
-    this.#defaultProject = undefined
-    const project = this.#projects.find(p => p.id === projectId) ?? this.default
-    if (project.id !== projectId) {
-      logger.warn`Project ${projectId} not found, rebuilding default project ${project.id}`
-    }
-    const log = logger.getChild(project.id)
-    const folder = project.folder
-    const includePaths = project.includePaths
+    try {
+      // reset default project cache
+      this.#defaultProject = undefined
+      const project = this.#projects.find(p => p.id === projectId) ?? this.default
+      if (project.id !== projectId) {
+        logger.warn`Project ${projectId} not found, rebuilding default project ${project.id}`
+      }
+      const log = logger.getChild(project.id)
+      const folder = project.folder
+      const includePaths = project.includePaths
 
-    const allDocs = this.services.workspace.LangiumDocuments
-      .allKnownDocuments
-      .filter(doc => !isLikeC4Builtin(doc.uri))
-      .toArray()
+      const allDocs = this.services.workspace.LangiumDocuments
+        .allKnownDocuments
+        .filter(doc => !isLikeC4Builtin(doc.uri))
+        .toArray()
 
-    // If no documents are found, return early
-    if (allDocs.length === 0) {
-      return
-    }
+      // If no documents are found, return early
+      if (allDocs.length === 0) {
+        return
+      }
 
-    const docs = pipe(
-      allDocs,
-      filter(doc => {
-        if (project.exclude?.(doc.uri.path)) {
-          return false
-        }
-        const docUriStr = normalizeUri(doc.uri)
-        if (docUriStr.startsWith(folder)) {
-          return true
-        }
-        if (includePaths && includePaths.some(isParentFolderFor(docUriStr))) {
-          return true
-        }
-        const docdir = withTrailingSlash(joinRelativeURL(docUriStr, '..'))
-        return docdir.startsWith(folder) || folder.startsWith(docdir)
-      }),
-      map(d => d.uri),
-    )
-    if (docs.length === 0) {
-      log.debug('no documents in project, skipping rebuild')
-      return
-    }
+      const docs = pipe(
+        allDocs,
+        filter(doc => {
+          if (project.exclude?.(doc.uri.path)) {
+            return false
+          }
+          const docUriStr = normalizeUri(doc.uri)
+          if (docUriStr.startsWith(folder)) {
+            return true
+          }
+          if (includePaths && includePaths.some(isParentFolderFor(docUriStr))) {
+            return true
+          }
+          const docdir = withTrailingSlash(joinRelativeURL(docUriStr, '..'))
+          return docdir.startsWith(folder) || folder.startsWith(docdir)
+        }),
+        map(d => d.uri),
+      )
+      if (docs.length === 0) {
+        log.debug('no documents in project, skipping rebuild')
+        return
+      }
 
-    log.info('rebuild project documents: {docs}', {
-      docs: docs.length,
-    })
-    this.reset()
-    await this.services.workspace.DocumentBuilder
-      .update(docs, [], cancelToken)
-      .catch(error => {
-        log.warn('Failed to rebuild project', {
-          error,
-        })
+      log.info('rebuild project documents: {docs}', {
+        docs: docs.length,
       })
+      this.reset()
+      await this.services.workspace.DocumentBuilder
+        .update(docs, [], cancelToken)
+        .catch(error => {
+          log.warn('Failed to rebuild project', {
+            error,
+          })
+        })
+      return
+    } finally {
+      this.notifyListeners()
+    }
   }
 
   protected findProjectForDocument(documentUri: string): ProjectData {
@@ -733,7 +749,7 @@ export class ProjectsManager {
    * Returns all include paths from all projects.
    * Used by WorkspaceManager to scan additional directories for C4 files.
    */
-  getAllIncludePaths(): Array<{
+  public getAllIncludePaths(): Array<{
     projectId: scalar.ProjectId
     includePath: URI
     includeConfig: IncludeConfig
@@ -757,6 +773,20 @@ export class ProjectsManager {
     return result
   }
 
+  /**
+   * Register a listener to be called when the projects configuration has changed.
+   * @returns A disposable that can be used to unregister the callback.
+   */
+  public onProjectsUpdate(callback: () => void): Disposable {
+    this.#updateListeners.push(callback)
+    return Disposable.create(() => {
+      const index = this.#updateListeners.indexOf(callback)
+      if (index >= 0) {
+        this.#updateListeners.splice(index, 1)
+      }
+    })
+  }
+
   private getWorkspaceFolder(): URI {
     try {
       return this.services.workspace.WorkspaceManager.workspaceUri
@@ -764,6 +794,16 @@ export class ProjectsManager {
       logger.warn('Failed to get workspace URI, using default folder', { error })
       return URI.file('/')
       // ignore - workspace not initialized
+    }
+  }
+
+  private notifyListeners() {
+    for (const listener of this.#updateListeners) {
+      try {
+        listener()
+      } catch (e) {
+        logger.warn(loggable(e))
+      }
     }
   }
 }

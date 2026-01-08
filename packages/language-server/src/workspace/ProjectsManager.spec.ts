@@ -756,7 +756,6 @@ describe.concurrent('ProjectsManager', () => {
       expect(projectADocs).toEqual([
         '/test/workspace/src/projectA/specification.c4',
       ])
-
       // ProjectB should have both its own document and the excluded document from projectA
       expect(projectBDocs).toEqual([
         '/test/workspace/src/projectA/excluded/model.c4',
@@ -788,6 +787,79 @@ describe.concurrent('ProjectsManager', () => {
     expect(pm.belongsTo('file:///test/project1/sub1-doc.likec4')).toEqual('project1')
     expect(pm.belongsTo('file:///test/qwe/doc.likec4')).toEqual('qwe')
     expect(pm.belongsTo('file:///test/qwe-qwe/doc.likec4')).toEqual('qwe-qwe')
+  })
+
+  describe('onProjectsUpdate', () => {
+    it('should register and dispose update listeners', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      const listener1 = vi.fn()
+      const listener2 = vi.fn()
+
+      const disposable1 = projectsManager.onProjectsUpdate(listener1)
+      const disposable2 = projectsManager.onProjectsUpdate(listener2)
+
+      const project1 = await projectsManager.registerProject({
+        config: {
+          name: 'project1',
+          include: { paths: ['../projectA/excluded'] },
+        },
+        folderUri: URI.parse('file:///test/workspace/src/project1'),
+      })
+
+      expect(listener1).toHaveBeenCalledTimes(1)
+      expect(listener2).toHaveBeenCalledTimes(1)
+
+      disposable1.dispose()
+      await projectsManager.rebuidProject(project1.id)
+
+      expect(listener1).toHaveBeenCalledTimes(1)
+      expect(listener2).toHaveBeenCalledTimes(2)
+
+      disposable2.dispose()
+      await projectsManager.rebuidProject(project1.id)
+
+      expect(listener1).toHaveBeenCalledTimes(1)
+      expect(listener2).toHaveBeenCalledTimes(2)
+    })
+
+    it('should continue notifying other listeners when one throws', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      const errorListener = vi.fn(() => {
+        throw new Error('boom')
+      })
+      const normalListener = vi.fn()
+
+      projectsManager.onProjectsUpdate(errorListener)
+      projectsManager.onProjectsUpdate(normalListener)
+      ;(projectsManager as any).notifyListeners()
+
+      expect(errorListener).toHaveBeenCalledTimes(1)
+      expect(normalListener).toHaveBeenCalledTimes(1)
+    })
+
+    it('should notify listeners on reloadProjects and rebuidProject', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      const listener = vi.fn()
+      projectsManager.onProjectsUpdate(listener)
+
+      const project1 = await projectsManager.registerProject({
+        config: { name: 'project1' },
+        folderUri: URI.parse('file:///test/workspace/src/project1'),
+      })
+      const project2 = await projectsManager.registerProject({
+        config: { name: 'project2' },
+        folderUri: URI.parse('file:///test/workspace/src/project2'),
+      })
+
+      expect(listener).toHaveBeenCalledTimes(2)
+
+      // reloadProjects should notify listeners once
+      await projectsManager.reloadProjects().catch(() => {})
+      expect(listener).toHaveBeenCalledTimes(3)
+    })
   })
 
   describe('#defaultProjectId', () => {
