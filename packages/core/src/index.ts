@@ -37,3 +37,8 @@ export {
   applyManualLayout,
   calcDriftsFromSnapshot,
 } from './manual-layout'
+
+export type {
+  ComputedProjectsView,
+  LayoutedProjectsView,
+} from './compute-view/projects-view/_types'

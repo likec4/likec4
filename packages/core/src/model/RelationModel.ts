@@ -1,4 +1,4 @@
-import { isEmpty, isEmptyish, isShallowEqual, isTruthy } from 'remeda'
+import { isEmpty, isEmptyish, isShallowEqual } from 'remeda'
 import type { AnyAux, Color, IteratorLike, Link, RelationshipArrowType, scalar } from '../types'
 import {
   type Relationship,
