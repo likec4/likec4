@@ -21,6 +21,7 @@ import {
   FetchComputedModel,
   FetchLayoutedModel,
   FetchProjects,
+  FetchProjectsOverview,
   FetchTelemetryMetrics,
   FetchViewsFromAllProjects,
   GetDocumentTags,
@@ -319,6 +320,13 @@ export class Rpc extends ADisposable {
         const tags = await likec4Services.ModelLocator.locateDocumentTags(URI.parse(documentUri), cancelToken)
         return {
           tags,
+        }
+      }),
+      connection.onRequest(FetchProjectsOverview.req, async (cancelToken) => {
+        logger.debug`received request ${'FetchProjectsOverview'}`
+        const projectsView = await likec4Services.LanguageServices.projectsOverview(cancelToken)
+        return {
+          projectsView,
         }
       }),
       Disposable.create(() => {

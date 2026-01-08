@@ -5,6 +5,7 @@ import type {
   DiagramView,
   Fqn,
   LayoutedLikeC4ModelData,
+  LayoutedProjectsView,
   NonEmptyArray,
   ProjectId,
   RelationId,
@@ -325,5 +326,16 @@ export namespace GetDocumentTags {
     }>
   }
   export const req = new RequestType<Params, Res, void>('likec4/document-tags')
+  export type Req = typeof req
+}
+
+/**
+ * Request to fetch projects overview diagram
+ */
+export namespace FetchProjectsOverview {
+  export type Res = {
+    projectsView: LayoutedProjectsView | null
+  }
+  export const req = new RequestType0<Res, void>('likec4/fetch-projects-overview')
   export type Req = typeof req
 }
