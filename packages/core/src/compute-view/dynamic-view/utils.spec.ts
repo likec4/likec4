@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import type { LikeC4Model } from '../../model'
 import type { ViewId } from '../../types'
 import { Builder } from '../../builder/Builder'
 import { findRelations } from './utils'
@@ -22,19 +23,29 @@ describe('findRelations', () => {
   const baseModel = specs
     .model(({ el }, _) =>
       _(
-        el('a'),
-        el('b'),
+        el('a').with(
+          el('child1'),
+          el('child2'),
+        ),
+        el('b').with(
+          el('child1'),
+          el('child2'),
+        ),
         el('shopify'),
         el('webhook'),
       )
     )
 
-  it('should return empty object when no relationships found', () => {
-    const model = baseModel.toLikeC4Model()
+  const testFindRelationsOnModel = (model: LikeC4Model<any>) => {
     const a = model.element('a')
     const b = model.element('b')
+    return findRelations(a, b, viewId)
+  }
 
-    const result = findRelations(a, b, viewId)
+  it('should return empty object when no relationships found', () => {
+    const model = baseModel.toLikeC4Model()
+
+    const result = testFindRelationsOnModel(model)
 
     expect(result).toEqual({})
   })
@@ -92,47 +103,39 @@ describe('findRelations', () => {
     const model = baseModel
       .model(({ rel }, _) =>
         _(
-          rel('a', 'b', {
+          rel('a.child1', 'b.child1', {
+            technology: 'REST',
+          }),
+          rel('a.child2', 'b.child2', {
             technology: 'REST',
           }),
         )
       )
       .toLikeC4Model()
-    const a = model.element('a')
-    const b = model.element('b')
 
-    const result = findRelations(a, b, viewId)
+    const result = testFindRelationsOnModel(model)
 
     expect(result).toMatchObject({
       technology: 'REST',
     })
+    expect(result.relations).toHaveLength(2)
   })
 
   it('should not return technology when multiple relationships have different technologies', () => {
-    const model = specs
-      .model(({ el, rel }, _) =>
+    const model = baseModel
+      .model(({ rel }, _) =>
         _(
-          el('parent1').with(
-            el('child1'),
-            el('child2'),
-          ),
-          el('parent2').with(
-            el('child1'),
-            el('child2'),
-          ),
-          rel('parent1.child1', 'parent2.child1', {
+          rel('a.child1', 'b.child1', {
             technology: 'REST',
           }),
-          rel('parent1.child2', 'parent2.child2', {
+          rel('a.child2', 'b.child2', {
             technology: 'GraphQL',
           }),
         )
       )
       .toLikeC4Model()
-    const parent1 = model.element('parent1')
-    const parent2 = model.element('parent2')
 
-    const result = findRelations(parent1, parent2, viewId)
+    const result = testFindRelationsOnModel(model)
 
     expect(result).not.toHaveProperty('technology')
     expect(result.relations).toHaveLength(2)
@@ -142,47 +145,39 @@ describe('findRelations', () => {
     const model = baseModel
       .model(({ rel }, _) =>
         _(
-          rel('a', 'b', {
+          rel('a.child1', 'b.child1', {
+            description: { txt: 'Same description' },
+          }),
+          rel('a.child2', 'b.child2', {
             description: { txt: 'Same description' },
           }),
         )
       )
       .toLikeC4Model()
-    const a = model.element('a')
-    const b = model.element('b')
 
-    const result = findRelations(a, b, viewId)
+    const result = testFindRelationsOnModel(model)
 
     expect(result).toMatchObject({
       description: { txt: 'Same description' },
     })
+    expect(result.relations).toHaveLength(2)
   })
 
   it('should not return description when multiple relationships have different descriptions', () => {
-    const model = specs
-      .model(({ el, rel }, _) =>
+    const model = baseModel
+      .model(({ rel }, _) =>
         _(
-          el('parent1').with(
-            el('child1'),
-            el('child2'),
-          ),
-          el('parent2').with(
-            el('child1'),
-            el('child2'),
-          ),
-          rel('parent1.child1', 'parent2.child1', {
+          rel('a.child1', 'b.child1', {
             description: { txt: 'Description 1' },
           }),
-          rel('parent1.child2', 'parent2.child2', {
+          rel('a.child2', 'b.child2', {
             description: { txt: 'Description 2' },
           }),
         )
       )
       .toLikeC4Model()
-    const parent1 = model.element('parent1')
-    const parent2 = model.element('parent2')
 
-    const result = findRelations(parent1, parent2, viewId)
+    const result = testFindRelationsOnModel(model)
 
     expect(result).not.toHaveProperty('description')
     expect(result.relations).toHaveLength(2)
@@ -198,10 +193,8 @@ describe('findRelations', () => {
         )
       )
       .toLikeC4Model()
-    const a = model.element('a')
-    const b = model.element('b')
 
-    const result = findRelations(a, b, viewId)
+    const result = testFindRelationsOnModel(model)
 
     expect(result).toMatchObject({
       technology: 'HTTP Request',
@@ -210,30 +203,20 @@ describe('findRelations', () => {
   })
 
   it('should return technology when multiple relationships have same technology from spec', () => {
-    const model = specs
-      .model(({ el, rel }, _) =>
+    const model = baseModel
+      .model(({ rel }, _) =>
         _(
-          el('parent1').with(
-            el('child1'),
-            el('child2'),
-          ),
-          el('parent2').with(
-            el('child1'),
-            el('child2'),
-          ),
-          rel('parent1.child1', 'parent2.child1', {
+          rel('a.child1', 'b.child1', {
             kind: 'requests',
           }),
-          rel('parent1.child2', 'parent2.child2', {
+          rel('a.child2', 'b.child2', {
             kind: 'requests',
           }),
         )
       )
       .toLikeC4Model()
-    const parent1 = model.element('parent1')
-    const parent2 = model.element('parent2')
 
-    const result = findRelations(parent1, parent2, viewId)
+    const result = testFindRelationsOnModel(model)
 
     expect(result).toMatchObject({
       technology: 'HTTP Request',
