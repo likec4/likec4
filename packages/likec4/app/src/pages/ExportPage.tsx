@@ -1,7 +1,7 @@
+import type { LayoutedView } from '@likec4/core'
 import { LikeC4Diagram, pickViewBounds } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
-import { useDebouncedCallback } from '@react-hookz/web'
 import { useSearch } from '@tanstack/react-router'
 import { toBlob } from 'html-to-image'
 import { useRef } from 'react'
@@ -52,6 +52,18 @@ async function downloadAsPng({
 }
 
 export function ExportPage() {
+  const [diagram] = useCurrentView()
+
+  useTransparentBackground()
+
+  if (!diagram) {
+    return <div>Loading...</div>
+  }
+
+  return <GuardedExportPage diagram={diagram} />
+}
+
+function GuardedExportPage({ diagram }: { diagram: LayoutedView }) {
   const {
     padding = 20,
     download = false,
@@ -59,45 +71,34 @@ export function ExportPage() {
   } = useSearch({
     strict: false,
   })
-  const [diagram] = useCurrentView()
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
 
   // to track if download has already occurred
   const downloadedRef = useRef(false)
 
-  useTransparentBackground()
-
-  const downloadDiagram = useDebouncedCallback(
-    () => {
-      const viewport = viewportRef.current
-      if (!download || !viewport || !diagram || downloadedRef.current) {
-        return
-      }
-      const loadingOverlay = loadingOverlayRef.current
-      if (loadingOverlay) {
-        loadingOverlay.style.display = 'none'
-      }
-      downloadedRef.current = true
-      void downloadAsPng({
-        pngFilename: diagram.id,
-        viewport,
-      })
-    },
-    [diagram],
-    500,
-  )
-
-  if (!diagram) {
-    return <div>Loading...</div>
-  }
-
   const bounds = pickViewBounds(diagram, dynamic)
+
+  const downloadDiagram = () => {
+    const viewport = viewportRef.current
+    if (!download || !viewport || !diagram || downloadedRef.current) {
+      return
+    }
+    const loadingOverlay = loadingOverlayRef.current
+    if (loadingOverlay) {
+      loadingOverlay.style.display = 'none'
+    }
+    downloadedRef.current = true
+    void downloadAsPng({
+      pngFilename: diagram.id,
+      viewport,
+    })
+  }
 
   // @see https://github.com/likec4/likec4/issues/1857
   const extraPadding = 16
-  const width = bounds.width + padding * 2 + extraPadding,
-    height = bounds.height + padding * 2 + extraPadding
+  const width = bounds.width + padding * 2 + extraPadding
+  const height = bounds.height + padding * 2 + extraPadding
 
   return (
     <Box
@@ -134,10 +135,6 @@ export function ExportPage() {
         background={'transparent'}
         reduceGraphics={false}
         dynamicViewVariant={dynamic}
-        // {...(dynamic !== 'sequence' && {
-        //   initialWidth: width,
-        //   initialHeight: height,
-        // })}
         className={'likec4-static-view'}
         pannable={false}
         zoomable={false}
@@ -163,7 +160,10 @@ export function ExportPage() {
           viewports.forEach((el) => {
             el.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
           })
-          download && downloadDiagram()
+
+          if (download) {
+            window.setTimeout(downloadDiagram, 500)
+          }
         }}
       />
     </Box>

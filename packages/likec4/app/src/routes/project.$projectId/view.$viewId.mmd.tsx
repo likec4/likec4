@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { ViewAsMmd } from '../../pages/ViewAsMmd'
 
-export const Route = createFileRoute('/_single/view/$viewId/mmd')({
+export const Route = createFileRoute('/project/$projectId/view/$viewId/mmd')({
   component: Page,
   staleTime: Infinity,
   loader: async ({ params, context }) => {

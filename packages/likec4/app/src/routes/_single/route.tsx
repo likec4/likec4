@@ -1,9 +1,9 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Fallback } from '../../components/Fallback'
+import { ViewOutlet } from '../../components/ViewOutlet'
 import { LikeC4IconRendererContext } from '../../context/LikeC4IconRendererContext'
 import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
-import * as css from './view.css'
 
 export const Route = createFileRoute('/_single')({
   staleTime: Infinity,
@@ -22,7 +22,7 @@ export const Route = createFileRoute('/_single')({
 function RouteComponent() {
   const { $likec4model, projectId } = Route.useLoaderData()
   return (
-    <div className={css.cssViewOutlet}>
+    <ViewOutlet>
       <ErrorBoundary FallbackComponent={Fallback}>
         <LikeC4IconRendererContext projectId={projectId}>
           <LikeC4ModelContext likec4model={$likec4model}>
@@ -30,6 +30,6 @@ function RouteComponent() {
           </LikeC4ModelContext>
         </LikeC4IconRendererContext>
       </ErrorBoundary>
-    </div>
+    </ViewOutlet>
   )
 }

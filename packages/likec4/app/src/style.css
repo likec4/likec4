@@ -31,6 +31,8 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
+  container-name: likec4-app;
+  container-type: size;
 }
 
 :where(.mantine-ActionIcon-icon) .tabler-icon {

@@ -4,9 +4,9 @@ import { createFileRoute, Link, notFound, Outlet } from '@tanstack/react-router'
 import { loadModel } from 'likec4:model'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Fallback } from '../../components/Fallback'
+import { ViewOutlet } from '../../components/ViewOutlet'
 import { LikeC4IconRendererContext } from '../../context/LikeC4IconRendererContext'
 import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
-import * as css from '../_single/view.css'
 
 export const Route = createFileRoute('/project/$projectId')({
   staleTime: Infinity,
@@ -30,14 +30,14 @@ export const Route = createFileRoute('/project/$projectId')({
   },
   component: RouteComponent,
   notFoundComponent: () => (
-    <div className={css.cssViewOutlet}>
+    <ViewOutlet>
       <Container py={'xl'}>
         <Stack align="flex-start">
           <Title>Project not found</Title>
           <Button component={Link} to="/" search size="md">Open overview</Button>
         </Stack>
       </Container>
-    </div>
+    </ViewOutlet>
   ),
 })
 
@@ -45,7 +45,7 @@ function RouteComponent() {
   const { $likec4model, projectId } = Route.useLoaderData()
 
   return (
-    <div className={css.cssViewOutlet}>
+    <ViewOutlet>
       <ErrorBoundary FallbackComponent={Fallback}>
         <LikeC4IconRendererContext projectId={projectId}>
           <LikeC4ModelContext likec4model={$likec4model}>
@@ -53,6 +53,6 @@ function RouteComponent() {
           </LikeC4ModelContext>
         </LikeC4IconRendererContext>
       </ErrorBoundary>
-    </div>
+    </ViewOutlet>
   )
 }

@@ -1,15 +1,5 @@
 import { css } from '@likec4/styles/css'
 
-// Index page
-
-export const cssPreviewCardLink = css({
-  position: 'absolute',
-  inset: '0',
-  zIndex: 1,
-})
-
-//
-
 export const svgContainer = css({
   minWidth: 300,
   '& svg': {
@@ -18,26 +8,22 @@ export const svgContainer = css({
   },
 })
 
-export const headerHeight = {
-  var: '--header-height',
-  ref: 'var(--header-height)',
-} as const
-
-export const cssViewOutlet = css({
-  padding: '0',
-  margin: '0',
-  // paddingTop: headerHeight,
-  width: '100%',
+export const cssScrollArea = css({
   height: '100%',
-  // position: 'absolute',
-  // top: headerHeight,
-  // left: 0,
-  // width: '100vw',
-  // height: `calc(100vh - ${headerHeight})`
-  [headerHeight.var]: '60px',
-  // TODO: temporary hack to fix the navigation webview position
-  ['--likec4-options-panel-top']: '60px',
-  ['--likec4-options-panel-right']: '10px',
-  // ['--likec4-navigation-webview-top']: '0.8rem',
-  // ['--likec4-navigation-webview-left']: '3.2rem'
+  '& .mantine-ScrollArea-viewport': {
+    minHeight: '100%',
+  },
+  '& .mantine-ScrollArea-viewport > div': {
+    minHeight: '100%',
+    height: '100%',
+  },
+})
+
+export const cssCodeBlock = css({
+  minHeight: '100%',
+})
+
+export const viewWithTopPadding = css({
+  height: '100%',
+  paddingTop: '[var(--header-height)]',
 })

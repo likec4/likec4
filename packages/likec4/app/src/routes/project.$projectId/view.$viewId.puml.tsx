@@ -1,17 +1,17 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { ViewAsMmd } from '../../pages/ViewAsMmd'
+import { ViewAsPuml } from '../../pages/ViewAsPuml'
 
-export const Route = createFileRoute('/_single/view/$viewId/mmd')({
+export const Route = createFileRoute('/project/$projectId/view/$viewId/puml')({
   component: Page,
   staleTime: Infinity,
   loader: async ({ params, context }) => {
     const projectId = context.projectId
     const { viewId } = params
-    const { loadMmdSources } = await import('likec4:mmd')
+    const { loadPumlSources } = await import('likec4:puml')
     try {
-      const { mmdSource } = await loadMmdSources(projectId)
+      const { pumlSource } = await loadPumlSources(projectId)
       return {
-        source: mmdSource(viewId),
+        source: pumlSource(viewId),
       }
     } catch (error) {
       console.error(error)
@@ -21,7 +21,6 @@ export const Route = createFileRoute('/_single/view/$viewId/mmd')({
 })
 
 function Page() {
-  const { viewId } = Route.useParams()
   const { source } = Route.useLoaderData()
-  return <ViewAsMmd viewId={viewId} mmdSource={source} />
+  return <ViewAsPuml pumlSource={source} />
 }
