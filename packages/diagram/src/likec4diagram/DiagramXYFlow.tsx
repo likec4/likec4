@@ -143,22 +143,26 @@ export function LikeC4DiagramXYFlow({
     $isPanning = usePanningAtom(),
     isPanning = useTimeout(() => {
       $isPanning.set(true)
-    }, isReducedGraphics ? 120 : 400),
+    }, isReducedGraphics ? 200 : 800),
     notPanning = useDebouncedCallback(() => {
       isPanning.clear()
       $isPanning.set(false)
-    }, isReducedGraphics ? 350 : 200),
+    }, { delay: 200 }),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {
+        isPanning.clear()
         return
       }
       if (!$isPanning.get()) {
         isPanning.start()
+      } else {
+        notPanning()
       }
-      notPanning()
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
-      isPanning.clear()
+      if (event) {
+        notPanning()
+      }
       diagram.send({
         type: 'xyflow.viewportMoved',
         viewport,

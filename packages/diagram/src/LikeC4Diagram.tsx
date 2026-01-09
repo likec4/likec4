@@ -2,7 +2,7 @@ import type { Any } from '@likec4/core/types'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
-import { type PropsWithChildren, useRef } from 'react'
+import { type PropsWithChildren, Profiler, useRef } from 'react'
 import { isPlainObject, mapValues } from 'remeda'
 import { FitViewPaddings, MaxZoom, MinZoom } from './base'
 import { RootContainer } from './components/RootContainer'
@@ -119,87 +119,89 @@ export function LikeC4Diagram<A extends Any = Any>({
   }
 
   const isReducedGraphicsMode = reduceGraphics === 'auto'
-    // If view has more then 3000 * 2000 pixels - assume it is a big diagram
+    // If view has more then 4000 * 4000 pixels - assume it is a big diagram
     // Enable reduced graphics mode if diagram is "big" and pannable, and has compounds
-    ? pannable && ((bounds.width ?? 1) * (bounds.height ?? 1) > 6_000_000) &&
+    ? pannable && ((view.bounds.width * view.bounds.height) > 16_000_000) &&
       view.nodes.some(n => n.children?.length > 0)
     : reduceGraphics
 
   return (
-    <EnsureMantine>
-      <FramerMotionConfig
-        {...isReducedGraphicsMode && { reducedMotion: 'always' }}
-      >
-        <IconRendererProvider value={renderIcon ?? null}>
-          <DiagramFeatures
-            features={{
-              enableFitView: fitView,
-              enableEditor: hasEditor,
-              enableReadOnly: readonly,
-              enableFocusMode,
-              enableNavigateTo: !!onNavigateTo,
-              enableElementDetails,
-              enableRelationshipDetails,
-              enableRelationshipBrowser,
-              enableSearch,
-              enableNavigationButtons: showNavigationButtons && !!onNavigateTo,
-              enableDynamicViewWalkthrough: view._type === 'dynamic' && enableDynamicViewWalkthrough,
-              enableNotations,
-              enableVscode: !!onOpenSource,
-              enableControls: controls,
-              enableElementTags,
-              enableCompareWithLatest: enableCompareWithLatest && !!onLayoutTypeChange,
-            }}
-          >
-            <DiagramEventHandlers
-              handlers={{
-                onCanvasClick,
-                onCanvasContextMenu,
-                onCanvasDblClick,
-                onEdgeClick,
-                onEdgeContextMenu,
-                onNavigateTo,
-                onNodeClick,
-                onNodeContextMenu,
-                onOpenSource,
-                onLogoClick,
-                onInitialized,
-                onLayoutTypeChange,
-              }}>
-              <LikeC4Styles id={id} />
-              <TagStylesProvider rootSelector={`#${id}`}>
-                <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
-                  <XYFlowProvider
-                    fitView={fitView}
-                    {...initialRef.current}
-                  >
-                    <DiagramActorProvider
-                      view={view}
-                      zoomable={zoomable}
-                      pannable={pannable}
-                      fitViewPadding={fitViewPadding}
-                      nodesDraggable={hasEditor}
-                      nodesSelectable={nodesSelectable}
-                      where={where ?? null}
-                      dynamicViewVariant={dynamicViewVariant}
+    <Profiler id="LikeC4Diagram" onRender={() => {}}>
+      <EnsureMantine>
+        <FramerMotionConfig
+          {...isReducedGraphicsMode && { reducedMotion: 'always' }}
+        >
+          <IconRendererProvider value={renderIcon ?? null}>
+            <DiagramFeatures
+              features={{
+                enableFitView: fitView,
+                enableEditor: hasEditor,
+                enableReadOnly: readonly,
+                enableFocusMode,
+                enableNavigateTo: !!onNavigateTo,
+                enableElementDetails,
+                enableRelationshipDetails,
+                enableRelationshipBrowser,
+                enableSearch,
+                enableNavigationButtons: showNavigationButtons && !!onNavigateTo,
+                enableDynamicViewWalkthrough: view._type === 'dynamic' && enableDynamicViewWalkthrough,
+                enableNotations,
+                enableVscode: !!onOpenSource,
+                enableControls: controls,
+                enableElementTags,
+                enableCompareWithLatest: enableCompareWithLatest && !!onLayoutTypeChange,
+              }}
+            >
+              <DiagramEventHandlers
+                handlers={{
+                  onCanvasClick,
+                  onCanvasContextMenu,
+                  onCanvasDblClick,
+                  onEdgeClick,
+                  onEdgeContextMenu,
+                  onNavigateTo,
+                  onNodeClick,
+                  onNodeContextMenu,
+                  onOpenSource,
+                  onLogoClick,
+                  onInitialized,
+                  onLayoutTypeChange,
+                }}>
+                <LikeC4Styles id={id} />
+                <TagStylesProvider rootSelector={`#${id}`}>
+                  <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
+                    <XYFlowProvider
+                      fitView={fitView}
+                      {...initialRef.current}
                     >
-                      <LikeC4DiagramXYFlow
-                        background={background}
-                        reactFlowProps={reactFlowProps}
-                        renderNodes={renderNodes}
+                      <DiagramActorProvider
+                        view={view}
+                        zoomable={zoomable}
+                        pannable={pannable}
+                        fitViewPadding={fitViewPadding}
+                        nodesDraggable={hasEditor}
+                        nodesSelectable={nodesSelectable}
+                        where={where ?? null}
+                        dynamicViewVariant={dynamicViewVariant}
                       >
-                        {children}
-                      </LikeC4DiagramXYFlow>
-                      <LikeC4DiagramUI />
-                    </DiagramActorProvider>
-                  </XYFlowProvider>
-                </RootContainer>
-              </TagStylesProvider>
-            </DiagramEventHandlers>
-          </DiagramFeatures>
-        </IconRendererProvider>
-      </FramerMotionConfig>
-    </EnsureMantine>
+                        <LikeC4DiagramXYFlow
+                          background={background}
+                          reactFlowProps={reactFlowProps}
+                          renderNodes={renderNodes}
+                        >
+                          {children}
+                        </LikeC4DiagramXYFlow>
+                        <LikeC4DiagramUI />
+                      </DiagramActorProvider>
+                    </XYFlowProvider>
+                  </RootContainer>
+                </TagStylesProvider>
+              </DiagramEventHandlers>
+            </DiagramFeatures>
+          </IconRendererProvider>
+        </FramerMotionConfig>
+      </EnsureMantine>
+    </Profiler>
   )
 }
 

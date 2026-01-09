@@ -1,5 +1,5 @@
 import { deepEqual as eq } from 'fast-equals'
-import { isDefined, isShallowEqual, pickBy } from 'remeda'
+import { hasSubObject, isDefined, isShallowEqual, pickBy } from 'remeda'
 import type { BaseEdge } from './types'
 
 const EMPTY_OBJ = {}
@@ -19,30 +19,33 @@ function _update<E extends BaseEdge>(current: E[], updated: E[]): E[] {
     if (!existing) {
       return update
     }
+    if (existing === update) {
+      return existing
+    }
 
-    const isSameData = eq(existing.data, update.data)
-    const data = isSameData ? existing.data : update.data
-    // if (!isSameData) {
-    //   // Preserve hovered and dimmed states if not specified in update
-    //   if (isDefined(existing.data.hovered) && !isDefined(update.data.hovered)) {
-    //     data = {
-    //       ...data,
-    //       hovered: existing.data.hovered,
-    //     }
-    //   }
-    //   if (isDefined(existing.data.dimmed) && !isDefined(update.data.dimmed)) {
-    //     data = {
-    //       ...data,
-    //       dimmed: existing.data.dimmed,
-    //     }
-    //   }
-    //   if (isDefined(existing.data.active) && !isDefined(update.data.active)) {
-    //     data = {
-    //       ...data,
-    //       active: existing.data.active,
-    //     }
-    //   }
-    // }
+    const isSameData = hasSubObject(existing.data, update.data)
+    let data = isSameData ? existing.data : update.data
+    if (!isSameData) {
+      // Preserve hovered and dimmed states if not specified in update
+      if (isDefined(existing.data.hovered) && !isDefined(update.data.hovered)) {
+        data = {
+          ...data,
+          hovered: existing.data.hovered,
+        }
+      }
+      if (isDefined(existing.data.dimmed) && !isDefined(update.data.dimmed)) {
+        data = {
+          ...data,
+          dimmed: existing.data.dimmed,
+        }
+      }
+      if (isDefined(existing.data.active) && !isDefined(update.data.active)) {
+        data = {
+          ...data,
+          active: existing.data.active,
+        }
+      }
+    }
 
     if (
       isSameData

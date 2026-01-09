@@ -16,6 +16,9 @@ function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
     if (!existing) {
       return update
     }
+    if (existing === update) {
+      return existing
+    }
 
     const isSameData = hasSubObject(existing.data, update.data)
     let data = isSameData ? existing.data : update.data

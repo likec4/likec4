@@ -1,5 +1,4 @@
 import type { DiagramView, DynamicViewDisplayVariant, ViewId, WhereOperator } from '@likec4/core/types'
-import { useRafEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
@@ -112,7 +111,7 @@ export function DiagramActorProvider({
     actor.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
   }, [_defaultVariant, actor])
 
-  useRafEffect(
+  useEffect(
     () => actor.send({ type: 'update.view', view, source: 'external' }),
     [actor, view],
   )
@@ -121,13 +120,6 @@ export function DiagramActorProvider({
     <DiagramActorContextProvider value={actor}>
       <DiagramApiContextProvider value={api}>
         <ErrorBoundary>
-          {
-            /* <DiagramXYFlowSyncProvider
-            view={view}
-            where={where}
-            actorRef={actor}
-          /> */
-          }
           <CurrentViewModelProvider actorRef={actor}>
             {children}
           </CurrentViewModelProvider>
@@ -158,8 +150,6 @@ const selectFromActor = (
     || toggledFeatures.enableReadOnly
     // Active walkthrough forces readonly
     || !!context.activeWalkthrough
-    // if dynamic view display mode is sequence, enable readonly
-    || (context.dynamicViewVariant === 'sequence' && context.view._type === 'dynamic')
     // Compare with latest enforces readonly
     || (enableCompareWithLatest && context.view._layout === 'auto')
 
@@ -202,28 +192,6 @@ function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ ac
     </CurrentViewModelContext.Provider>
   )
 }
-
-// const selectFromActor2 = (state: DiagramActorSnapshot) => {
-//   return state.context.dynamicViewVariant
-// }
-// function DiagramXYFlowSyncProvider(
-//   { view, where, actorRef }: {
-//     view: DiagramView
-//     where: WhereOperator | null
-//     actorRef: DiagramActorRef
-//   },
-// ) {
-//   const dynamicViewVariant = useSelector(actorRef, selectFromActor2)
-
-//   useRafEffect(() => {
-//     actorRef.send({
-//       type: 'update.view',
-//       ...convertToXYFlow({ view, where, dynamicViewVariant }),
-//     })
-//   }, [view, where, dynamicViewVariant, actorRef])
-
-//   return null
-// }
 
 const DiagramActorEventListener = memo(() => {
   const diagram = useDiagram()

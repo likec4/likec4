@@ -1,6 +1,6 @@
 import { cx } from '@likec4/styles/css'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
-import { type WritableAtom, atom } from 'nanostores'
+import { atom } from 'nanostores'
 import { type PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react'
 import {
   PanningAtomSafeCtx,
@@ -21,26 +21,23 @@ export function RootContainer({
   const [mounted, setMounted] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  const $isPanningRef = useRef<WritableAtom<boolean>>(null)
-  if (!$isPanningRef.current) {
-    $isPanningRef.current = atom(false)
-  }
+  const $isPanning = useRef(atom(false)).current
 
   useIsomorphicLayoutEffect(() => {
     setMounted(true)
   }, [])
 
   useEffect(() => {
-    return $isPanningRef.current?.subscribe((isPanning) => {
+    return $isPanning.listen((isPanning) => {
       // Chnage DOM attribute to avoid re-rendering
       ref.current?.setAttribute('data-likec4-diagram-panning', isPanning ? 'true' : 'false')
     })
-  }, [])
+  }, [$isPanning])
 
   const ctx = useMemo(() => ({ id, ref }), [id, ref])
 
   return (
-    <PanningAtomSafeCtx value={$isPanningRef.current}>
+    <PanningAtomSafeCtx value={$isPanning}>
       <ReduceGraphicsModeCtx.Provider value={reduceGraphics}>
         <div
           id={id}
@@ -49,7 +46,7 @@ export function RootContainer({
           {...reduceGraphics && {
             ['data-likec4-reduced-graphics']: true,
           }}>
-          {mounted && !!ctx.ref.current && (
+          {mounted && (
             <RootContainerContext.Provider value={ctx}>
               {children}
             </RootContainerContext.Provider>
