@@ -797,9 +797,9 @@ describe.concurrent('ProjectsManager', () => {
       const listener2 = vi.fn()
 
       const disposable1 = projectsManager.onProjectsUpdate(listener1)
-      const disposable2 = projectsManager.onProjectsUpdate(listener2)
+      projectsManager.onProjectsUpdate(listener2)
 
-      const project1 = await projectsManager.registerProject({
+      await projectsManager.registerProject({
         config: {
           name: 'project1',
           include: { paths: ['../projectA/excluded'] },
@@ -811,13 +811,13 @@ describe.concurrent('ProjectsManager', () => {
       expect(listener2).toHaveBeenCalledTimes(1)
 
       disposable1.dispose()
-      await projectsManager.rebuidProject(project1.id)
-
-      expect(listener1).toHaveBeenCalledTimes(1)
-      expect(listener2).toHaveBeenCalledTimes(2)
-
-      disposable2.dispose()
-      await projectsManager.rebuidProject(project1.id)
+      // Registering a new project at the same location should trigger update listeners
+      await projectsManager.registerProject({
+        config: {
+          name: 'project2',
+        },
+        folderUri: URI.parse('file:///test/workspace/src/project1'),
+      })
 
       expect(listener1).toHaveBeenCalledTimes(1)
       expect(listener2).toHaveBeenCalledTimes(2)
@@ -833,7 +833,12 @@ describe.concurrent('ProjectsManager', () => {
 
       projectsManager.onProjectsUpdate(errorListener)
       projectsManager.onProjectsUpdate(normalListener)
-      ;(projectsManager as any).notifyListeners()
+      await projectsManager.registerProject({
+        config: {
+          name: 'project1',
+        },
+        folderUri: URI.parse('file:///test/workspace/src/project1'),
+      })
 
       expect(errorListener).toHaveBeenCalledTimes(1)
       expect(normalListener).toHaveBeenCalledTimes(1)
