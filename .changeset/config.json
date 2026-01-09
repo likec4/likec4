@@ -1,20 +1,11 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config/schema.json",
   "changelog": ["@changesets/changelog-github", { "repo": "likec4/likec4" }],
   "commit": false,
   "fixed": [
     [
-      "@likec4/config",
-      "@likec4/core",
-      "@likec4/diagram",
-      "@likec4/generators",
-      "@likec4/language-server",
-      "@likec4/layouts",
       "likec4",
-      "@likec4/mcp",
-      "likec4-vscode",
-      "@likec4/style-preset",
-      "@likec4/styles"
+      "@likec4/*"
     ]
   ],
   "linked": [],
@@ -24,5 +15,8 @@
     "version": true,
     "tag": false
   },
-  "updateInternalDependencies": "patch"
+  "updateInternalDependencies": "patch",
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "updateInternalDependencies": "always"
+  }
 }
