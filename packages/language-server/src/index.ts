@@ -5,11 +5,11 @@ import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
 import { NoopFileSystem } from './filesystem'
 import { LikeC4FileSystem } from './filesystem/LikeC4FileSystem'
+import { WithLikeC4ManualLayouts } from './filesystem/LikeC4ManualLayouts'
 import { getTelemetrySink, logger } from './logger'
 import { WithMCPServer } from './mcp/server/WithMCPServer'
 import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
 import { ConfigurableLayouter } from './views/ConfigurableLayouter'
-import { WithLikeC4ManualLayouts } from './views/LikeC4ManualLayouts'
 
 export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 

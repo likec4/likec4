@@ -8,7 +8,7 @@ import {
   Range,
 } from 'vscode-languageserver-types'
 import { logger as rootLogger } from '../logger'
-import type { LikeC4Services } from '../module'
+import type { LikeC4SharedServices } from '../module'
 import type { Project } from '../workspace/ProjectsManager'
 
 const layoutsLogger = rootLogger.getChild('manual-layouts')
@@ -38,11 +38,11 @@ export interface LikeC4ManualLayouts {
 }
 
 export interface LikeC4ManualLayoutsModuleContext {
-  manualLayouts: (services: LikeC4Services) => LikeC4ManualLayouts
+  manualLayouts: (services: LikeC4SharedServices) => LikeC4ManualLayouts
 }
 
 export const WithLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
-  manualLayouts: (services: LikeC4Services) => new DefaultLikeC4ManualLayouts(services),
+  manualLayouts: (services: LikeC4SharedServices) => new DefaultLikeC4ManualLayouts(services),
 }
 
 const RELATIVE_PATH_PREFIX = 'file://./'
@@ -50,14 +50,14 @@ const RELATIVE_PATH_PREFIX = 'file://./'
 export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   protected cache: WorkspaceCache<ProjectId, Promise<Record<ViewId, LayoutedView> | null>>
 
-  constructor(private services: LikeC4Services) {
-    this.cache = new WorkspaceCache(services.shared, DocumentState.Validated)
+  constructor(private services: LikeC4SharedServices) {
+    this.cache = new WorkspaceCache(services, DocumentState.Validated)
   }
 
   async read(project: Project): Promise<Record<ViewId, LayoutedView> | null> {
     return await this.cache.get(project.id, async () => {
       const logger = layoutsLogger.getChild(project.id)
-      const fs = this.services.shared.workspace.FileSystemProvider
+      const fs = this.services.workspace.FileSystemProvider
       const outDir = getManualLayoutsOutDir(project)
       const manualLayouts = [] as LayoutedView[]
       try {
@@ -118,7 +118,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       ),
     }
     logger.debug`write snapshot of ${layouted.id} in project ${project.id} to ${file.fsPath}`
-    const fs = this.services.shared.workspace.FileSystemProvider
+    const fs = this.services.workspace.FileSystemProvider
     try {
       await fs.writeFile(file, content + '\n')
     } catch (err) {
@@ -137,7 +137,6 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
         this.cache.delete(project.id)
       }
     }
-    this.services.likec4.ModelBuilder.clearCache()
     return location
   }
 
@@ -154,7 +153,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     }
 
     try {
-      const fs = this.services.shared.workspace.FileSystemProvider
+      const fs = this.services.workspace.FileSystemProvider
       if (!(await fs.deleteFile(file))) {
         logger.warn`Snapshot ${view} did not exist at ${file.fsPath}`
         return null
@@ -175,12 +174,11 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
         this.cache.delete(project.id)
       }
     }
-
-    this.services.likec4.ModelBuilder.clearCache()
     return location
   }
 
   clearCaches(): void {
+    layoutsLogger.debug`clear caches`
     this.cache.clear()
   }
 

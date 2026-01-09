@@ -1,13 +1,12 @@
-import type { DiagramNode, Fqn, Icon, LayoutedView, NodeId, ViewId } from '@likec4/core'
+import type { DiagramNode, Fqn, LayoutedView, NodeId, ViewId } from '@likec4/core'
 import { defu } from 'defu'
-import { UriUtils } from 'langium'
-import type { OverrideProperties, PartialDeep, Writable, WritableDeep } from 'type-fest'
+import type { OverrideProperties, Writable } from 'type-fest'
 import { describe, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
 import { createLanguageServices } from '../module'
 import { WithLikeC4ManualLayouts } from './LikeC4ManualLayouts'
 
-describe.concurrent('LikeC4ManualLayouts', () => {
+describe('LikeC4ManualLayouts', () => {
   // Helper to create services with mocked file system
   async function createTestServices() {
     const services = createLanguageServices(
@@ -30,7 +29,7 @@ describe.concurrent('LikeC4ManualLayouts', () => {
 
     const project = services.shared.workspace.ProjectsManager.getProject(projectData.id)
 
-    const manualLayouts = services.likec4.ManualLayouts
+    const manualLayouts = services.shared.workspace.ManualLayouts
     return { services, fs, project, manualLayouts }
   }
 

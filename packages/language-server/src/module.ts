@@ -16,11 +16,13 @@ import {
   createDefaultSharedModule,
 } from 'langium/lsp'
 import { LikeC4DocumentationProvider } from './documentation'
+import type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext } from './filesystem'
 import {
   type FileSystemModuleContext,
   type FileSystemProvider,
   type FileSystemWatcher,
   NoopFileSystem,
+  NoopLikeC4ManualLayouts,
 } from './filesystem'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
@@ -65,8 +67,7 @@ import {
   WorkspaceSymbolProvider,
 } from './shared'
 import { LikeC4DocumentValidator, registerValidationChecks } from './validation'
-import { type LikeC4ManualLayouts, type LikeC4Views, DefaultLikeC4Views, NoopLikeC4ManualLayouts } from './views'
-import type { LikeC4ManualLayoutsModuleContext } from './views/LikeC4ManualLayouts'
+import { type LikeC4Views, DefaultLikeC4Views } from './views'
 import {
   AstNodeDescriptionProvider,
   IndexManager,
@@ -98,6 +99,7 @@ interface LikeC4AddedSharedServices {
     WorkspaceManager: LikeC4WorkspaceManager
     FileSystemProvider: FileSystemProvider
     FileSystemWatcher: FileSystemWatcher
+    ManualLayouts: LikeC4ManualLayouts
   }
 }
 
@@ -119,6 +121,7 @@ const createLikeC4SharedModule = (context: LanguageServicesContext): Module<
     WorkspaceManager: services => new LikeC4WorkspaceManager(services),
     FileSystemProvider: services => context.fileSystemProvider(services),
     FileSystemWatcher: services => context.fileSystemWatcher(services),
+    ManualLayouts: services => context.manualLayouts(services),
   },
 })
 
@@ -140,7 +143,6 @@ export interface LikeC4AddedServices {
   likec4: {
     LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
-    ManualLayouts: LikeC4ManualLayouts
     Layouter: QueueGraphvizLayoter
     DeploymentsIndex: DeploymentsIndex
     FqnIndex: FqnIndex
@@ -179,9 +181,7 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
 }
 
 export const createLikeC4Module = (
-  context:
-    & LikeC4MCPServerModuleContext
-    & LikeC4ManualLayoutsModuleContext,
+  context: LikeC4MCPServerModuleContext,
 ): Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> => ({
   documentation: {
     DocumentationProvider: bind(LikeC4DocumentationProvider),
@@ -202,7 +202,6 @@ export const createLikeC4Module = (
       })
     },
     Views: bind(DefaultLikeC4Views),
-    ManualLayouts: (services: LikeC4Services) => context.manualLayouts(services),
     DeploymentsIndex: bind(DeploymentsIndex),
     ModelChanges: bind(LikeC4ModelChanges),
     FqnIndex: bind(FqnIndex),

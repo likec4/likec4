@@ -190,12 +190,15 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       }
     })
     when(isAnyOf(ast.isFqnRef, ast.isStrictFqnRef), mark => {
-      if (!mark.node.parent) {
-        mark.property('value').readonly.definition.variable()
-        stopHighlight()
-      } else {
+      if (mark.node.parent) {
         mark.property('value').property()
+        return
       }
+      const ref = mark.node.$cstNode?.text
+      if (ref !== 'this' && ref !== 'it') {
+        mark.property('value').readonly.definition.variable()
+      }
+      stopHighlight()
     })
     when(ast.isStrictFqnElementRef, mark => {
       if (!mark.node.parent) {

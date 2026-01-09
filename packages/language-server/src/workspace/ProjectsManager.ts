@@ -523,24 +523,22 @@ export class ProjectsManager {
       return project
     }
 
-    if (!mustReset) {
-      // this might be new project, notify listeners
-      this.notifyListeners()
-      return project
+    if (mustReset) {
+      // Rebuild project will notify listeners
+      await this.rebuidProject(project.id, cancelToken).catch(error => {
+        if (isOperationCancelled(error)) {
+          return Promise.reject(error)
+        }
+        logger.warn('Failed to rebuild project {projectId} after config change', {
+          projectId: project.id,
+          error,
+        })
+        // ignore error, we logged it
+        return Promise.resolve()
+      })
     }
 
-    // Rebuild project will notify listeners
-    await this.rebuidProject(project.id, cancelToken).catch(error => {
-      if (isOperationCancelled(error)) {
-        return Promise.reject(error)
-      }
-      logger.warn('Failed to rebuild project {projectId} after config change', {
-        projectId: project.id,
-        error,
-      })
-      // ignore error, we logged it
-      return Promise.resolve()
-    })
+    this.notifyListeners()
     return project
   }
 
@@ -655,65 +653,60 @@ export class ProjectsManager {
   }
 
   public async rebuidProject(projectId: ProjectId, cancelToken?: Cancellation.CancellationToken): Promise<void> {
-    try {
-      // reset default project cache
-      this.#defaultProject = undefined
-      const project = this.#projects.find(p => p.id === projectId) ?? this.default
-      if (project.id !== projectId) {
-        logger.warn`Project ${projectId} not found, rebuilding default project ${project.id}`
-      }
-      const log = logger.getChild(project.id)
-      const folder = project.folder
-      const includePaths = project.includePaths
-
-      const allDocs = this.services.workspace.LangiumDocuments
-        .allKnownDocuments
-        .filter(doc => !isLikeC4Builtin(doc.uri))
-        .toArray()
-
-      // If no documents are found, return early
-      if (allDocs.length === 0) {
-        return
-      }
-
-      const docs = pipe(
-        allDocs,
-        filter(doc => {
-          if (project.exclude?.(doc.uri.path)) {
-            return false
-          }
-          const docUriStr = normalizeUri(doc.uri)
-          if (docUriStr.startsWith(folder)) {
-            return true
-          }
-          if (includePaths && includePaths.some(isParentFolderFor(docUriStr))) {
-            return true
-          }
-          const docdir = withTrailingSlash(joinRelativeURL(docUriStr, '..'))
-          return docdir.startsWith(folder) || folder.startsWith(docdir)
-        }),
-        map(d => d.uri),
-      )
-      if (docs.length === 0) {
-        log.debug('no documents in project, skipping rebuild')
-        return
-      }
-
-      log.info('rebuild project documents: {docs}', {
-        docs: docs.length,
-      })
-      this.reset()
-      await this.services.workspace.DocumentBuilder
-        .update(docs, [], cancelToken)
-        .catch(error => {
-          log.warn('Failed to rebuild project', {
-            error,
-          })
-        })
-      return
-    } finally {
-      this.notifyListeners()
+    // reset default project cache
+    this.#defaultProject = undefined
+    const project = this.#projects.find(p => p.id === projectId) ?? this.default
+    if (project.id !== projectId) {
+      logger.warn`Project ${projectId} not found, rebuilding default project ${project.id}`
     }
+    const log = logger.getChild(project.id)
+    const folder = project.folder
+    const includePaths = project.includePaths
+
+    const allDocs = this.services.workspace.LangiumDocuments
+      .allKnownDocuments
+      .filter(doc => !isLikeC4Builtin(doc.uri))
+      .toArray()
+
+    // If no documents are found, return early
+    if (allDocs.length === 0) {
+      return
+    }
+
+    const docs = pipe(
+      allDocs,
+      filter(doc => {
+        if (project.exclude?.(doc.uri.path)) {
+          return false
+        }
+        const docUriStr = normalizeUri(doc.uri)
+        if (docUriStr.startsWith(folder)) {
+          return true
+        }
+        if (includePaths && includePaths.some(isParentFolderFor(docUriStr))) {
+          return true
+        }
+        const docdir = withTrailingSlash(joinRelativeURL(docUriStr, '..'))
+        return docdir.startsWith(folder) || folder.startsWith(docdir)
+      }),
+      map(d => d.uri),
+    )
+    if (docs.length === 0) {
+      log.debug('no documents in project, skipping rebuild')
+      return
+    }
+
+    log.info('rebuild project documents: {docs}', {
+      docs: docs.length,
+    })
+    this.reset()
+    await this.services.workspace.DocumentBuilder
+      .update(docs, [], cancelToken)
+      .catch(error => {
+        log.warn('Failed to rebuild project', {
+          error,
+        })
+      })
   }
 
   protected findProjectForDocument(documentUri: string): ProjectData {

@@ -22,9 +22,10 @@ export class LikeC4ModelChanges {
     changeView: ChangeView.Params,
   ): Promise<ChangeView.Res> {
     const lspConnection = this.services.shared.lsp.Connection
+    const workspace = this.services.shared.workspace
     try {
       let { viewId, projectId: _projectId, change } = changeView
-      const project = this.services.shared.workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
+      const project = workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
       logger.debug`Applying model change ${change.op} to view ${viewId} in project ${project.id}`
 
       const lookup = this.locator.locateViewAst(viewId, project.id)
@@ -49,7 +50,7 @@ export class LikeC4ModelChanges {
             logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
           })
         }
-        const location = await this.services.likec4.ManualLayouts.write(project, change.layout)
+        const location = await workspace.ManualLayouts.write(project, change.layout)
         return {
           success: true,
           location,
@@ -64,7 +65,7 @@ export class LikeC4ModelChanges {
             logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
           })
         }
-        const location = await this.services.likec4.ManualLayouts.remove(project, viewId)
+        const location = await workspace.ManualLayouts.remove(project, viewId)
         return {
           success: true,
           location,

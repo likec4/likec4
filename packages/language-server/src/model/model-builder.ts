@@ -27,12 +27,12 @@ import {
   values,
 } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
+import type { LikeC4ManualLayouts } from '../filesystem'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
 import { assignNavigateTo } from '../view-utils'
-import type { LikeC4ManualLayouts } from '../views'
 import type { ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
 import type { LikeC4ModelParser } from './model-parser'
@@ -78,7 +78,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     this.cache = services.shared.workspace.Cache
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
     this.mutex = services.shared.workspace.WorkspaceLock
-    this.manualLayouts = services.likec4.ManualLayouts
+    this.manualLayouts = services.shared.workspace.ManualLayouts
 
     this.onDispose(
       this.DocumentBuilder.onUpdate((_changed, deleted) => {

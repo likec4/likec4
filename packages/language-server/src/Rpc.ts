@@ -49,9 +49,9 @@ export class Rpc extends ADisposable {
     }
     logger.info(`init ServerRpc`)
     const likec4Services = this.services.likec4
-    const projectManager = this.services.shared.workspace.ProjectsManager
-    const LangiumDocuments = this.services.shared.workspace.LangiumDocuments
-    const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
+    const workspace = this.services.shared.workspace
+    const LangiumDocuments = workspace.LangiumDocuments
+    const DocumentBuilder = workspace.DocumentBuilder
 
     // ----------
     const notifyModelParsed = funnel(
@@ -100,7 +100,7 @@ export class Rpc extends ADisposable {
       // ----------
       likec4Services.ModelBuilder.onModelParsed(() => notifyModelParsed.call(1)),
       // ----------
-      projectManager.onProjectsUpdate(() => notifyProjectsUpdate.call(1)),
+      workspace.ProjectsManager.onProjectsUpdate(() => notifyProjectsUpdate.call(1)),
       // ----------
       connection.onRequest(FetchComputedModel.req, async ({ projectId, cleanCaches }, cancelToken) => {
         logger.debug`received request ${'fetchComputedModel'} for project ${projectId} (cleanCaches: ${cleanCaches})`
@@ -121,8 +121,9 @@ export class Rpc extends ADisposable {
       connection.onNotification(DidChangeSnapshotNotification.type, async ({ snapshotUri }) => {
         logger.debug`received notification ${'onDidChangeSnapshot'} for snapshot ${snapshotUri}`
         const uri = URI.parse(snapshotUri)
-        await projectManager.rebuidProject(
-          projectManager.belongsTo(uri.path),
+        workspace.ManualLayouts.clearCaches()
+        await workspace.ProjectsManager.rebuidProject(
+          workspace.ProjectsManager.belongsTo(uri.path),
         )
       }),
       // ----------
@@ -180,7 +181,7 @@ export class Rpc extends ADisposable {
                 name,
                 title,
               },
-            } = projectManager.getProject(projectId)
+            } = workspace.ProjectsManager.getProject(projectId)
             return {
               folder: folderUri.toString(),
               config: {
@@ -195,8 +196,8 @@ export class Rpc extends ADisposable {
       // ----------
       connection.onRequest(ReloadProjects.req, async (cancelToken) => {
         logger.debug`received request ${'ReloadProjects'}`
-        likec4Services.ManualLayouts.clearCaches()
-        await projectManager.reloadProjects(cancelToken)
+        workspace.ManualLayouts.clearCaches()
+        await workspace.ProjectsManager.reloadProjects(cancelToken)
         return
       }),
       // ----------
@@ -205,9 +206,9 @@ export class Rpc extends ADisposable {
 
         let project
         if ('configUri' in params) {
-          project = await projectManager.registerConfigFile(URI.parse(params.configUri), cancelToken)
+          project = await workspace.ProjectsManager.registerConfigFile(URI.parse(params.configUri), cancelToken)
         } else {
-          project = await projectManager.registerProject(params, cancelToken)
+          project = await workspace.ProjectsManager.registerProject(params, cancelToken)
         }
 
         return { id: project.id }
@@ -216,7 +217,7 @@ export class Rpc extends ADisposable {
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
         logger.debug`received request ${'FetchViewsFromAllProjects'}`
         const views: FetchViewsFromAllProjects.Res['views'] = []
-        for (const projectId of projectManager.all) {
+        for (const projectId of workspace.ProjectsManager.all) {
           await interruptAndCheck(cancelToken)
           try {
             const computedViews = await likec4Services.Views.computedViews(projectId, cancelToken)
@@ -310,14 +311,14 @@ export class Rpc extends ADisposable {
           request.projectId &&
           (op === 'save-view-snapshot' || op === 'reset-manual-layout')
         ) {
-          await projectManager.rebuidProject(request.projectId as ProjectId, cancelToken)
+          await workspace.ProjectsManager.rebuidProject(request.projectId as ProjectId, cancelToken)
         }
         return loc
       }),
       // ----------
       connection.onRequest(FetchTelemetryMetrics.req, async (cancelToken) => {
         let metrics: FetchTelemetryMetrics.Res['metrics'] = null
-        for (const projectId of projectManager.all) {
+        for (const projectId of workspace.ProjectsManager.all) {
           try {
             const model = await likec4Services.ModelBuilder.computeModel(projectId, cancelToken)
             if (model === LikeC4Model.EMPTY) {

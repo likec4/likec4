@@ -6,6 +6,9 @@ import type {
 } from 'langium'
 import { URI } from 'vscode-uri'
 import { type FileSystemWatcherModuleContext, noopFileSystemWatcher } from './FileSystemWatcher'
+import type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext } from './LikeC4ManualLayouts'
+
+export type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext }
 
 export type { FileSystemWatcher } from './FileSystemWatcher'
 
@@ -85,4 +88,18 @@ export class NoopFileSystemProvider implements FileSystemProvider {
 export const NoopFileSystem: FileSystemModuleContext = {
   fileSystemProvider: () => new NoopFileSystemProvider(),
   ...noopFileSystemWatcher,
+}
+
+export const NoopLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
+  manualLayouts: (): LikeC4ManualLayouts => {
+    return {
+      read: () => Promise.resolve(null),
+      write: () =>
+        Promise.reject(
+          new Error('NoopLikeC4ManualLayouts: write operation is not supported'),
+        ),
+      remove: () => Promise.resolve(null),
+      clearCaches: () => {},
+    }
+  },
 }
