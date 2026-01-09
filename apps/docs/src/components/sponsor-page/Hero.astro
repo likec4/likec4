@@ -1,0 +1,80 @@
+---
+const stats = [
+  { label: 'Simple language to describe your model, LLM-friendly', value: 'DSL' },
+  { label: 'Access your model from the code and extend capabilities', value: 'API' },
+  { label: 'Provide architectural context for your developers and agents', value: 'MCP' },
+  { label: 'Immediate feedback, preview and validation in your editor', value: 'IDE' },
+]
+---
+
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden px-6 py-20">
+  <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+  </div>
+
+  <div class="absolute inset-0 opacity-30 dark:opacity-30">
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400 dark:bg-blue-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-blob">
+    </div>
+    <div class="absolute top-1/3 left-1/2 w-96 h-96 bg-cyan-300 dark:bg-cyan-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-blob animation-delay-2000">
+    </div>
+    <div class="absolute bottom-1/4 left-1/3 w-96 h-96 bg-slate-300 dark:bg-slate-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-blob animation-delay-4000">
+    </div>
+  </div>
+
+  <div class="relative max-w-4xl text-left z-10">
+    <h1 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 md:mb-14 bg-clip-text text-transparent bg-linear-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white leading-tight">
+      Support the future of LikeC4
+    </h1>
+
+    <p class="text-md sm:text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-8 md:mb-16 leading-relaxed max-w-3xl">
+      LikeC4 is built and maintained independently.<br />
+      Sponsorship turns nights and weekends into reliable, structured work on features, fixes, and integrations.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 mb-16">
+      <a
+        href="/tutorial"
+        class="group px-4 py-2 md:px-8 md:py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-semibold text-md md:text-lg hover:bg-slate-800 dark:hover:bg-slate-100 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center gap-2 no-underline"
+      >
+        Become a sponsor
+        <svg
+          class="w-5 h-5 group-hover:translate-x-1 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12,5 19,12 12,19"></polyline>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(80px, -60px) scale(1.2);
+  }
+  66% {
+    transform: translate(-20px, 50px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+</style>

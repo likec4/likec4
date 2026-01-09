@@ -4,8 +4,9 @@ import ThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro'
 import Logo from '../Logo.astro'
 
 const navLinks = [
-  { href: '#features', label: 'Features' },
+  { href: '/#features', label: 'Features' },
   { href: '/tutorial', label: 'Docs' },
+  // { href: '/sponsor', label: 'Sponsor' },
   { href: 'https://playground.likec4.dev/w/tutorial/', label: 'Playground', target: '_blank' },
   { href: 'https://github.com/likec4/likec4/discussions', label: 'Community', target: '_blank' },
 ]
@@ -28,16 +29,14 @@ const navLinks = [
       </a> -->
 
       <div class="hidden md:flex items-center gap-8">
-        {
-          navLinks.map(({ label, ...props }) => (
-            <a
-              class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition-colors no-underline"
-              {...props}
-            >
-              {label}
-            </a>
-          ))
-        }
+        {navLinks.map(({ label, ...props }) => (
+          <a
+            class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition-colors no-underline"
+            {...props}
+          >
+            {label}
+          </a>
+        ))}
       </div>
 
       <div class="flex items-center gap-4">
@@ -80,22 +79,20 @@ const navLinks = [
       class="md:hidden mt-4 py-4 border-t border-slate-200 dark:border-slate-700 hidden"
     >
       <div class="flex flex-col gap-4">
-        {
-          navLinks.map((link) => (
-            <a
-              href={link.href}
-              class="
-                mobile-nav-link
-                text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white
-                no-underline hover:underline
-                font-medium
-                transition-colors
-              "
-            >
-              {link.label}
-            </a>
-          ))
-        }
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            class="
+              mobile-nav-link
+              text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white
+              no-underline hover:underline
+              font-medium
+              transition-colors
+            "
+          >
+            {link.label}
+          </a>
+        ))}
       </div>
     </div>
   </div>

@@ -52,39 +52,35 @@ const getSectionIcon = (iconName: string) => {
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
       <div>
         <div class="flex items-center gap-3 mb-6">
-          <Logo variant="dark" />
+          <Logo variant="dark" loading="lazy" />
         </div>
         <p class="text-slate-400 leading-relaxed mb-6">
           Built for clarity. Powered by code.
         </p>
       </div>
 
-      {
-        footerSections.map((section) => (
-          <div>
-            <h3 class="text-white font-semibold text-lg mb-2 flex items-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <Fragment set:html={getSectionIcon(section.icon)} />
-              </svg>
-              {section.title}
-            </h3>
-            <ul class="space-y-1 list-none ml-0 pl-7">
-              {
-                section.links.map((link) => (
-                  <li>
-                    <a
-                      href={link.href}
-                      class="text-sm text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors no-underline hover:underline"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
-        ))
-      }
+      {footerSections.map((section) => (
+        <div>
+          <h3 class="text-white font-semibold text-lg mb-2 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <Fragment set:html={getSectionIcon(section.icon)} />
+            </svg>
+            {section.title}
+          </h3>
+          <ul class="space-y-1 list-none ml-0 pl-7">
+            {section.links.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="text-sm text-slate-500 dark:text-slate-300 dark:hover:text-slate-500 hover:text-white no-underline hover:underline"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
 
     <div class="pt-8 border-t border-slate-800">
