@@ -1,3 +1,4 @@
+import type { LayoutedProjectsView } from '@likec4/core'
 import type {
   ComputedLikeC4ModelData,
   DiagramView,
@@ -13,8 +14,10 @@ import {
   type Handler,
   type LocateParams,
   BroadcastModelUpdate,
+  BroadcastProjectsUpdate,
   FetchComputedModel,
   FetchLayoutedView,
+  FetchProjectsOverview,
   GetLastClickedNode,
   OnOpenView,
   ReadLocalIcon,
@@ -30,6 +33,8 @@ export type VscodeState = {
   nodesDraggable: boolean
   edgesEditable: boolean
   updatedAt: number
+  screen: 'view' | 'projects'
+  projectsOverview: LayoutedProjectsView | null
 }
 const vscode = acquireVsCodeApi<VscodeState>()
 
@@ -37,8 +42,11 @@ const messenger = new Messenger(vscode)
 messenger.start()
 
 export const ExtensionApi = {
-  navigateTo: (viewId: ViewId) => {
-    messenger.sendNotification(WebviewMsgs.NavigateTo, HOST_EXTENSION, { viewId })
+  navigateTo: (viewId: ViewId, projectId?: ProjectId) => {
+    messenger.sendNotification(WebviewMsgs.NavigateTo, HOST_EXTENSION, { screen: 'view', viewId, projectId })
+  },
+  navigateToProjectsOverview: () => {
+    messenger.sendNotification(WebviewMsgs.NavigateTo, HOST_EXTENSION, { screen: 'projects' })
   },
   closeMe: () => {
     messenger.sendNotification(WebviewMsgs.CloseMe, HOST_EXTENSION)
@@ -46,6 +54,10 @@ export const ExtensionApi = {
   locate: (params: LocateParams) => {
     messenger.sendNotification(WebviewMsgs.Locate, HOST_EXTENSION, params)
   },
+  updateTitle: (title: string) => {
+    messenger.sendNotification(WebviewMsgs.UpdateMyTitle, HOST_EXTENSION, { title })
+  },
+
   change: async (viewId: ViewId, change: ViewChange) => {
     return await messenger.sendRequest(ViewChangeReq, HOST_EXTENSION, { viewId, change })
   },
@@ -61,6 +73,17 @@ export const ExtensionApi = {
     const cancellationToken = new CancellationTokenImpl()
     signal.onabort = () => cancellationToken.cancel()
     return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, { viewId, layoutType }, cancellationToken)
+  },
+
+  fetchProjectsOverview: async (signal: AbortSignal) => {
+    const cancellationToken = new CancellationTokenImpl()
+    signal.onabort = () => cancellationToken.cancel()
+    return await messenger.sendRequest(
+      FetchProjectsOverview,
+      HOST_EXTENSION,
+      undefined,
+      cancellationToken,
+    )
   },
 
   // Read local icon file and convert to base64 data URI
@@ -79,6 +102,10 @@ export const ExtensionApi = {
   onModelUpdateNotification: (handler: () => void) => {
     messenger.onNotification(BroadcastModelUpdate, handler)
   },
+
+  onProjectsUpdateNotification: (handler: () => void) => {
+    messenger.onNotification(BroadcastProjectsUpdate, handler)
+  },
 }
 
 export function getVscodeState(): VscodeState {
@@ -91,6 +118,8 @@ export function getVscodeState(): VscodeState {
     nodesDraggable: state?.nodesDraggable ?? __INTERNAL_STATE?.nodesDraggable ?? true,
     edgesEditable: state?.edgesEditable ?? __INTERNAL_STATE?.edgesEditable ?? true,
     updatedAt: state?.updatedAt ?? 0,
+    screen: state?.screen ?? __SCREEN,
+    projectsOverview: state?.projectsOverview ?? null,
   }
 }
 

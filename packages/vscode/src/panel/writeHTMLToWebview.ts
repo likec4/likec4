@@ -1,12 +1,19 @@
-import type { ProjectId, ViewId } from '@likec4/core'
+import type { ProjectId, ViewId } from '@likec4/core/types'
 import { computed, extensionContext, useIsDarkTheme, watch } from 'reactive-vscode'
 import { type Webview, type WebviewPanel, Uri } from 'vscode'
 import { isProd } from '../const'
 
 export function writeHTMLToWebview(
   panel: WebviewPanel,
-  viewId: ViewId,
-  projectId: ProjectId,
+  {
+    screen,
+    viewId = 'index' as ViewId,
+    projectId = 'default' as ProjectId,
+  }: {
+    screen: 'view' | 'projects'
+    viewId?: ViewId
+    projectId?: ProjectId
+  },
 ) {
   const internalState = {
     edgesEditable: true,
@@ -44,6 +51,7 @@ export function writeHTMLToWebview(
     <script nonce="${nonce}">
       var __VIEW_ID = ${JSON.stringify(viewId)};
       var __PROJECT_ID = ${JSON.stringify(projectId)};
+      var __SCREEN = ${JSON.stringify(screen)};
       var __INTERNAL_STATE = ${JSON.stringify({ internalState })};
     </script>
     <div id="root" nonce="${nonce}"></div>

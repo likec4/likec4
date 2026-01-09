@@ -3,6 +3,7 @@ import path from 'node:path'
 import {
   createSingletonComposable,
   extensionContext,
+  onDeactivate,
   toValue,
   useDisposable,
   useOutputChannel,
@@ -84,6 +85,13 @@ const useLanguageClient = createSingletonComposable(() => {
   }
 
   const client = new NodeLanguageClient('likec4', 'LikeC4 Language Server', serverOptions, clientOptions)
+
+  onDeactivate(async () => {
+    if (client.isRunning()) {
+      await client.stop(1000)
+    }
+  })
+
   return useDisposable(client)
 })
 

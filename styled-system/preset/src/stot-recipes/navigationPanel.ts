@@ -61,6 +61,10 @@ export const navigationPanel = defineSlotRecipe({
       background: 'none',
       border: 'none',
       cursor: 'pointer',
+      width: {
+        base: '20px',
+        '@likec4-root/md': '64px',
+      },
 
       ['& > [data-logo-icon]']: {
         display: {
@@ -85,15 +89,7 @@ export const navigationPanel = defineSlotRecipe({
   },
   variants: {
     size: {
-      md: {
-        logo: {
-          width: {
-            base: '20px',
-            '@likec4-root/md': '64px',
-          },
-        },
-      },
-
+      md: {},
       lg: {
         body: {
           '@likec4-root/sm': {
@@ -103,12 +99,6 @@ export const navigationPanel = defineSlotRecipe({
             _hover: {
               boxShadow: 'xl',
             },
-          },
-        },
-        logo: {
-          width: {
-            base: '20px',
-            '@likec4-root/sm': '74px',
           },
         },
         label: {

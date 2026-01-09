@@ -5,6 +5,7 @@ import { useRpc } from '../useRpc'
 import { registerLocateCommand } from './locate'
 import { registerMigrateManualLayoutsCommand } from './migrateManualLayouts'
 import { registerOpenPreviewCommand } from './openPreview'
+import { registerOpenProjectsOverviewCommand } from './openProjectsOverview'
 import { registerPreviewContextOpenSourceCommand } from './previewContextOpenSource'
 import { registerPrintDotOfCurrentViewCommand } from './printDotOfCurrentView'
 import { registerReloadProjectsCommand } from './reloadProjects'
@@ -31,6 +32,7 @@ export function registerCommands() {
   })
 
   registerOpenPreviewCommand(deps)
+  registerOpenProjectsOverviewCommand(deps)
   registerLocateCommand(deps)
   registerPreviewContextOpenSourceCommand(deps)
   registerPrintDotOfCurrentViewCommand(deps)

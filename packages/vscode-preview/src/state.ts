@@ -8,7 +8,7 @@ import type {
 import type { LikeC4EditorPort } from '@likec4/diagram'
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
-import { atom, batched } from 'nanostores'
+import { atom, batched, onSet } from 'nanostores'
 import { useEffect, useMemo, useRef } from 'react'
 import { isDeepEqual } from 'remeda'
 import { queries, queryClient } from './queries'
@@ -19,6 +19,19 @@ const vscodeState = getVscodeState()
 const $layoutType = atom('manual' as LayoutType)
 export function setLayoutType(layoutType: LayoutType) {
   $layoutType.set(layoutType)
+}
+
+const $screen = atom(vscodeState.screen)
+onSet($screen, (screen) => {
+  saveVscodeState({ screen: screen.newValue })
+})
+
+export function useScreen() {
+  return useStore($screen)
+}
+export function openProjectsScreen() {
+  ExtensionApi.navigateToProjectsOverview()
+  $screen.set('projects')
 }
 
 /**
@@ -97,8 +110,18 @@ export const setLastClickedNode = (node?: DiagramNode) => {
   $lastClickedNode.set(node ?? null)
 }
 
-ExtensionApi.onOpenViewNotification(({ viewId, projectId }) => {
-  changeViewId(viewId, projectId)
+ExtensionApi.onOpenViewNotification((next) => {
+  if (next.screen === 'projects') {
+    void queryClient.invalidateQueries({
+      queryKey: queries.projectsOverview.queryKey,
+    })
+    $screen.set('projects')
+    return
+  }
+  if ($screen.get() !== 'view') {
+    $screen.set('view')
+  }
+  changeViewId(next.viewId, next.projectId)
 })
 
 ExtensionApi.onGetLastClickedNodeRequest(() => {
@@ -110,6 +133,10 @@ ExtensionApi.onGetLastClickedNodeRequest(() => {
 })
 
 ExtensionApi.onModelUpdateNotification(async () => {
+  // Project overview is not affected by model updates
+  if ($screen.get() !== 'view') {
+    return
+  }
   // Then fetch fresh data
   await queryClient.refetchQueries({
     queryKey: queries.fetchComputedModel($projectId.get()).queryKey,
@@ -128,6 +155,12 @@ ExtensionApi.onModelUpdateNotification(async () => {
     type: 'active',
     stale: true,
     queryKey: [$projectId.get(), 'diagram'],
+  })
+})
+
+ExtensionApi.onProjectsUpdateNotification(() => {
+  void queryClient.invalidateQueries({
+    queryKey: queries.projectsOverview.queryKey,
   })
 })
 
@@ -184,6 +217,12 @@ export function useDiagramView() {
     }
     saveVscodeState({ viewId: view.id, view })
   }, [view])
+
+  const title = view?.title ?? viewRef.current?.title ?? viewId
+
+  useEffect(() => {
+    ExtensionApi.updateTitle(title)
+  }, [title])
 
   return {
     view: viewRef.current,

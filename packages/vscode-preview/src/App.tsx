@@ -1,145 +1,21 @@
-import type { scalar } from '@likec4/core'
-import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider } from '@likec4/diagram'
-import { Button } from '@mantine/core'
-import { type PropsWithChildren, memo } from 'react'
-import { only } from 'remeda'
-import { likec4Container, likec4ParsingScreen } from './App.css'
-import { IconRenderer } from './IconRenderer'
-import { ErrorMessage, QueryErrorBoundary } from './QueryErrorBoundary'
-import {
-  setLastClickedNode,
-  setLayoutType,
-  useComputedModel,
-  useDiagramView,
-  useLikeC4EditorPort,
-} from './state'
-import { ExtensionApi as extensionApi } from './vscode'
+import { LoadingOverlay } from '@mantine/core'
+import { Suspense } from 'react'
+import { ErrorMessage } from './QueryErrorBoundary'
+import { ProjectsScreen } from './screens/Projects'
+import { ViewScreen } from './screens/View'
+import { useScreen } from './state'
 
 export function App() {
-  const { error, likec4Model } = useComputedModel()
+  const screen = useScreen()
 
-  if (!likec4Model) {
-    if (error) {
-      return <ErrorMessage error={error} />
-    }
-    return (
-      <>
-        <section>
-          <p>Parsing your model...</p>
-          <p>
-            <Button color="gray" onClick={extensionApi.closeMe}>
-              Close
-            </Button>
-          </p>
-        </section>
-      </>
-    )
+  if (screen !== 'projects' && screen !== 'view') {
+    return <ErrorMessage error={'Unknown screen' + screen} />
   }
 
   return (
-    <LikeC4ModelProvider likec4model={likec4Model}>
-      {error && <ErrorMessage error={error} />}
-      <QueryErrorBoundary>
-        <LikeC4VscodeEditor>
-          <Initialized />
-        </LikeC4VscodeEditor>
-      </QueryErrorBoundary>
-    </LikeC4ModelProvider>
+    <Suspense fallback={<LoadingOverlay visible zIndex={1000} overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />}>
+      {screen == 'projects' && <ProjectsScreen />}
+      {screen == 'view' && <ViewScreen />}
+    </Suspense>
   )
 }
-
-function LikeC4VscodeEditor({ children }: PropsWithChildren) {
-  const editor = useLikeC4EditorPort()
-  return (
-    <LikeC4EditorProvider editor={editor}>
-      {children}
-    </LikeC4EditorProvider>
-  )
-}
-
-const Initialized = memo(() => {
-  let {
-    view,
-    error,
-  } = useDiagramView()
-
-  if (!view) {
-    return (
-      <div className={likec4ParsingScreen}>
-        {error && <ErrorMessage error={error} />}
-        <section>
-          <p>Parsing your model...</p>
-          <p>
-            <Button color="gray" onClick={extensionApi.closeMe}>
-              Close
-            </Button>
-          </p>
-        </section>
-      </div>
-    )
-  }
-
-  return (
-    <>
-      <div className={likec4Container} data-vscode-context='{"preventDefaultContextMenuItems": true}'>
-        <LikeC4Diagram
-          view={view}
-          fitViewPadding={{
-            top: '70px',
-            bottom: '30px',
-            left: '60px',
-            right: '30px',
-          }}
-          controls
-          enableFocusMode
-          enableDynamicViewWalkthrough
-          enableElementDetails
-          enableRelationshipBrowser
-          enableElementTags
-          enableSearch
-          enableRelationshipDetails
-          enableCompareWithLatest
-          showNavigationButtons
-          enableNotations
-          renderIcon={IconRenderer}
-          onNavigateTo={(_to, event) => {
-            const to = _to as scalar.ViewId
-            setLastClickedNode()
-            extensionApi.locate({ view: to })
-            extensionApi.navigateTo(to)
-            event?.stopPropagation()
-          }}
-          onNodeContextMenu={(element) => {
-            setLastClickedNode(element)
-          }}
-          onCanvasContextMenu={event => {
-            setLastClickedNode()
-            event.stopPropagation()
-            event.preventDefault()
-          }}
-          onEdgeClick={(edge) => {
-            if (view._type === 'dynamic' && edge.astPath) {
-              extensionApi.locate({ view: view.id, astPath: edge.astPath })
-              return
-            }
-            const relationId = only(edge.relations)
-            if (relationId) {
-              extensionApi.locate({ relation: relationId })
-            }
-          }}
-          onEdgeContextMenu={(edge, event) => {
-            setLastClickedNode()
-            event.stopPropagation()
-            event.preventDefault()
-          }}
-          onOpenSource={(params) => {
-            setLastClickedNode()
-            extensionApi.locate(params)
-          }}
-          onLayoutTypeChange={setLayoutType}
-        />
-      </div>
-      {error && <ErrorMessage error={error} />}
-    </>
-  )
-})

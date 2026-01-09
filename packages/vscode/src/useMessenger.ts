@@ -1,8 +1,10 @@
 import {
-  type OnOpenViewPayload,
+  type OpenViewPayload,
   BroadcastModelUpdate,
+  BroadcastProjectsUpdate,
   FetchComputedModel,
   FetchLayoutedView,
+  FetchProjectsOverview,
   GetLastClickedNode,
   OnOpenView,
   ReadLocalIcon,
@@ -49,7 +51,10 @@ export const useMessenger = createSingletonComposable(() => {
 
   const notificationHandler = <P>(notiType: NotificationType<P>) =>
   (
-    handler: (params: P, sender: MessageParticipant) => void | Promise<void>,
+    handler: (
+      params: P,
+      sender: MessageParticipant,
+    ) => void | Promise<void>,
   ) => {
     return useDisposable(
       messenger.onNotification(notiType, async (params: P, sender: MessageParticipant) => {
@@ -86,6 +91,7 @@ export const useMessenger = createSingletonComposable(() => {
   const sendNotification =
     <P>(notiType: NotificationType<P>): NotifyOp<P> => (receiver: MessageParticipant, params?: P) => {
       try {
+        logger.debug(`send {noti} {params}`, { noti: notiType.method, params })
         return messenger.sendNotification(notiType, receiver, params)
       } catch (err) {
         logger.warn(`sendNotification {noti} failed`, { noti: notiType.method, err })
@@ -96,25 +102,25 @@ export const useMessenger = createSingletonComposable(() => {
   const protocol = {
     handleFetchComputedModel: requestHandler(FetchComputedModel),
     handleFetchLayoutedView: requestHandler(FetchLayoutedView),
+    handleFetchProjectsOverview: requestHandler(FetchProjectsOverview),
     handleReadLocalIcon: requestHandler(ReadLocalIcon),
     handleViewChange: requestHandler(ViewChangeReq),
 
     onWebviewCloseMe: notificationHandler(WebviewMsgs.CloseMe),
     onWebviewLocate: notificationHandler(WebviewMsgs.Locate),
     onWebviewNavigateTo: notificationHandler(WebviewMsgs.NavigateTo),
+    onWebviewUpdateMyTitle: notificationHandler(WebviewMsgs.UpdateMyTitle),
 
     sendOpenView: sendNotification(OnOpenView),
     sendModelUpdate: sendNotification(BroadcastModelUpdate),
+    sendProjectsUpdate: sendNotification(BroadcastProjectsUpdate),
     requestGetLastClickedNode: sendRequest(GetLastClickedNode),
   }
 
   return {
     messenger,
 
-    broadcastModelUpdate: () => {
-      logger.debug`broadcast ${'onDidChangeModel'}`
-      messenger.sendNotification(BroadcastModelUpdate, BROADCAST)
-    },
+    broadcastModelUpdate: () => messenger.sendNotification(BroadcastModelUpdate, BROADCAST),
 
     ...protocol,
 
@@ -122,8 +128,9 @@ export const useMessenger = createSingletonComposable(() => {
       const participant = messenger.registerWebviewPanel(panel)
       return {
         participant,
-        sendOpenView: (payload: OnOpenViewPayload) => protocol.sendOpenView(participant, payload),
+        sendOpenView: (payload: OpenViewPayload) => protocol.sendOpenView(participant, payload),
         sendModelUpdate: () => protocol.sendModelUpdate(participant),
+        sendProjectsUpdate: () => protocol.sendProjectsUpdate(participant),
       }
     },
   }

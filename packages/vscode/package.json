@@ -217,6 +217,10 @@
         {
           "command": "likec4.migrate-manual-layouts",
           "when": "likec4.activated"
+        },
+        {
+          "command": "likec4.open-projects-overview",
+          "when": "likec4.activated"
         }
       ]
     },
@@ -259,6 +263,11 @@
       {
         "command": "likec4.migrate-manual-layouts",
         "title": "%ext.cmd.migrate-manual-layouts%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.open-projects-overview",
+        "title": "%ext.cmd.open-projects-overview%",
         "category": "%ext.title%"
       }
     ]

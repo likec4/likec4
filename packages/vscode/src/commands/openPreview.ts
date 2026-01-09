@@ -46,6 +46,9 @@ export function registerOpenPreviewCommand({ sendTelemetry, rpc, preview }: Open
         return
       }
     }
-    preview.open(viewId, projectId)
+    preview.open({
+      viewId,
+      projectId,
+    })
   })
 }

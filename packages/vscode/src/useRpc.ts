@@ -6,6 +6,7 @@ import {
   DidRequestOpenViewNotification,
   FetchComputedModel,
   FetchProjects,
+  FetchProjectsOverview,
   FetchTelemetryMetrics,
   FetchViewsFromAllProjects,
   GetDocumentTags,
@@ -92,6 +93,10 @@ export const useRpc = createSingletonComposable(() => {
     return projects
   }
 
+  async function fetchProjectsOverview() {
+    return await queue(() => client.sendRequest(FetchProjectsOverview.req))
+  }
+
   async function notifyDidChangeSnapshot(snapshot: vscode.Uri) {
     await client.sendNotification(DidChangeSnapshotNotification.type, {
       snapshotUri: client.code2ProtocolConverter.asUri(snapshot),
@@ -105,6 +110,7 @@ export const useRpc = createSingletonComposable(() => {
     fetchComputedModel,
     fetchMetrics,
     fetchProjects,
+    fetchProjectsOverview,
     layoutView,
     validateLayout,
     buildDocuments,

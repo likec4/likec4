@@ -91,15 +91,15 @@
   "onEnterRules": [
     // If enter is pressed inside a triple-quoted string
     {
-      "beforeText": "('|\"){3}.*$",
-      "afterText": "^\\s*('|\"){3}\\s*$",
+      "beforeText": "\\s*('{3}|\"{3})[^'\"]*$",
+      "afterText": "^\\s*('{3}|\"{3})\\s*$",
       "action": {
         "indent": "indentOutdent",
       }
     },
     // If enter is pressed inside a single-quoted string
     {
-      "beforeText": "('|\")[^'\"]*$",
+      "beforeText": "\\s*('|\")[^'\"]*$",
       "afterText": "^\\s*('|\")\\s*$",
       "action": {
         "indent": "indentOutdent",

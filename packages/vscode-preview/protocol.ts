@@ -4,11 +4,13 @@ import type {
   DiagramView,
   ExclusiveUnion,
   Fqn,
+  LayoutedProjectsView,
   ProjectId,
   RelationId,
   ViewChange,
   ViewId,
 } from '@likec4/core'
+
 import type { NotificationType, RequestType } from 'vscode-messenger-common'
 
 /**
@@ -16,6 +18,13 @@ import type { NotificationType, RequestType } from 'vscode-messenger-common'
  */
 export const BroadcastModelUpdate: NotificationType<never> = {
   method: 'model-update',
+}
+
+/**
+ * Notification sent from the extension to the webview when the projects are updated.
+ */
+export const BroadcastProjectsUpdate: NotificationType<never> = {
+  method: 'projects-updated',
 }
 
 export const FetchComputedModel: RequestType<never, { model: ComputedLikeC4ModelData | null }> = {
@@ -33,14 +42,22 @@ export const FetchLayoutedView: RequestType<{
   method: 'fetch-layouted-view',
 }
 
-export type OnOpenViewPayload = {
+export const FetchProjectsOverview: RequestType<never, { projectsView: LayoutedProjectsView | null }> = {
+  method: 'fetch-projects-overview',
+}
+
+export type OpenViewPayload = {
+  screen: 'view'
   viewId: ViewId
   projectId: ProjectId
+} | {
+  screen: 'projects'
+  viewId?: never
+  projectId?: never
 }
-export const OnOpenView: NotificationType<OnOpenViewPayload> = {
+export const OnOpenView: NotificationType<OpenViewPayload> = {
   method: 'on-open-view',
 }
-// export type OnOpenViewHandler = (notification: OnOpenViewPayload) => voi
 
 export type GetLastClickedNodeResult = {
   element: Fqn | null
@@ -66,7 +83,11 @@ export const ViewChangeReq = { method: 'webview:change' } as RequestType<
 export const WebviewMsgs = {
   CloseMe: { method: 'webview:closeMe' } as NotificationType<never>,
   Locate: { method: 'webview:locate' } as NotificationType<LocateParams>,
-  NavigateTo: { method: 'webview:navigate' } as NotificationType<{ viewId: ViewId }>,
+  NavigateTo: { method: 'webview:navigate' } as NotificationType<
+    | { screen: 'view'; viewId: ViewId; projectId: ProjectId | undefined }
+    | { screen: 'projects' }
+  >,
+  UpdateMyTitle: { method: 'webview:update-my-title' } as NotificationType<{ title: string }>,
 }
 
 export type LocateParams = ExclusiveUnion<{

@@ -2,12 +2,12 @@ import { invariant } from '@likec4/core'
 import type { LayoutType, ViewId } from '@likec4/core/types'
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 import { isDeepEqual } from 'remeda'
-import { ExtensionApi } from './vscode'
+import { ExtensionApi, getVscodeState } from './vscode'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: Infinity,
       staleTime: 400,
       retry: 2,
       retryDelay: 300,
@@ -18,6 +18,17 @@ export const queryClient = new QueryClient({
 })
 
 export const queries = {
+  projectsOverview: queryOptions({
+    queryKey: ['projects-overview'],
+    queryFn: async ({ signal }) => {
+      const { projectsView } = await ExtensionApi.fetchProjectsOverview(signal)
+      if (!projectsView) {
+        throw new Error('Fetch projects overview failed, no response received')
+      }
+      return projectsView
+    },
+    initialData: () => getVscodeState().projectsOverview ?? undefined,
+  }),
   fetchComputedModel: (projectId: string) =>
     queryOptions({
       queryKey: [projectId, 'model'],

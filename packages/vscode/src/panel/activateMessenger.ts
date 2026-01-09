@@ -2,14 +2,11 @@ import type { ProjectId } from '@likec4/core/types'
 import { loggable, wrapError } from '@likec4/log'
 import {
   executeCommand,
-  nextTick,
   toValue,
-  triggerRef,
   useActiveTextEditor,
 } from 'reactive-vscode'
 import vscode from 'vscode'
 import { commands } from '../meta'
-import { computedModels, latestUpdatedSnapshotUri } from '../sharedstate'
 import { useExtensionLogger } from '../useExtensionLogger'
 import { useMessenger } from '../useMessenger'
 import { useRpc } from '../useRpc'
@@ -32,10 +29,6 @@ export function activateMessenger() {
       const result = await rpc.fetchComputedModel(projectId)
       if (result.model) {
         logger.debug(`request {req} of {projectId} in ${t0.pretty}`, { req: 'fetchComputedModel', projectId })
-        computedModels.value[projectId] = result.model
-        void nextTick(() => {
-          triggerRef(computedModels)
-        })
       } else {
         logger.warn(`No data returned in request {req} for {projectId} in ${t0.pretty}`, {
           req: 'fetchComputedModel',
@@ -89,10 +82,17 @@ export function activateMessenger() {
     }
   })
 
-  // Moved to useDiagramPanel
-  // messenger.onWebviewCloseMe(() => {
-  //   preview.close()
-  // })
+  messenger.handleFetchProjectsOverview(async () => {
+    const t0 = performanceMark()
+    try {
+      const result = await rpc.fetchProjectsOverview()
+      logger.debug(`request {req} in ${t0.pretty}`, { req: 'fetchProjectsOverview' })
+      return result
+    } catch (err) {
+      logger.warn(`request {req} failed after ${t0.pretty}`, { req: 'fetchProjectsOverview', err })
+      throw err // propagate to client
+    }
+  })
 
   messenger.onWebviewLocate(async (params) => {
     const projectId = toValue(preview.projectId) ?? 'default'
@@ -120,7 +120,6 @@ export function activateMessenger() {
       const loc = result.location ?? null
 
       if (change.op === 'reset-manual-layout' || change.op === 'save-view-snapshot') {
-        latestUpdatedSnapshotUri.value = loc?.uri ?? null
         messenger.sendModelUpdate(sender)
         return { success: true }
       }
@@ -197,4 +196,6 @@ export function activateMessenger() {
       return { base64data: null }
     }
   })
+
+  return messenger
 }

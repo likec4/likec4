@@ -6,7 +6,6 @@ import {
   createSingletonComposable,
   effectScope,
   nextTick,
-  onDeactivate,
   readonly,
   ref,
   tryOnScopeDispose,
@@ -17,7 +16,6 @@ import {
 import { type WebviewPanel, ViewColumn, window } from 'vscode'
 import type { WebviewIdMessageParticipant } from 'vscode-messenger-common'
 import * as z from 'zod/v4'
-import { computedModels } from '../sharedstate'
 import { useExtensionLogger } from '../useExtensionLogger'
 import { useMessenger } from '../useMessenger'
 import { useRpc } from '../useRpc'
@@ -26,12 +24,14 @@ import { writeHTMLToWebview } from './writeHTMLToWebview'
 const serializeStateSchema = z.looseObject({
   viewId: z.string().transform((v) => v as ViewId),
   projectId: z.string().transform((v) => v as ProjectId),
+  screen: z.literal(['view', 'projects']).default('view'),
 })
 
 export const ViewType = 'likec4-preview' as const
 
 export const useDiagramPanel = createSingletonComposable(() => {
   const { logger } = useExtensionLogger('diagram')
+  logger.debug('useDiagramPanel activation')
 
   const state = {
     scope: null as EffectScope | null,
@@ -39,11 +39,14 @@ export const useDiagramPanel = createSingletonComposable(() => {
     participant: null as WebviewIdMessageParticipant | null,
     viewId: ref<ViewId | null>(null),
     projectId: ref<ProjectId | null>(null),
+    title: ref<string | null>(null),
+    screen: ref<'view' | 'projects'>('projects'),
     visible: ref(false),
   }
 
   const viewId = computed(() => state.viewId.value ?? 'index' as ViewId)
   const projectId = computed(() => state.projectId.value ?? 'default' as ProjectId)
+  const panelTitle = computed(() => state.title.value ?? 'Diagram Preview')
 
   const dispose = () => {
     try {
@@ -57,7 +60,11 @@ export const useDiagramPanel = createSingletonComposable(() => {
         state.viewId.value = null
         state.projectId.value = null
         state.visible.value = false
+        state.title.value = null
+        state.screen.value = 'projects'
         scope.stop()
+      } else {
+        logger.debug`panel scope is already closed`
       }
     } catch (e) {
       logger.warn('Error closing panel', { error: e })
@@ -69,14 +76,20 @@ export const useDiagramPanel = createSingletonComposable(() => {
    * @param existingPanel Optional existing panel to use instead of creating a new one.
    */
   function createInScope(existingPanel?: WebviewPanel) {
+    const screen = state.screen.value
     const initialViewId = viewId.value
     const initialProjectId = projectId.value
-    logger.debug`creating scope for view ${initialViewId} (project: ${initialProjectId})`
+    logger.debug`creating scope for webview screen: ${screen} viewId: ${initialViewId} project: ${initialProjectId}`
+
     const rpc = useRpc()
     const m = useMessenger()
     const panel = useDisposable(existingPanel ?? createWebviewPanel())
 
-    writeHTMLToWebview(panel, initialViewId, initialProjectId)
+    writeHTMLToWebview(panel, {
+      screen,
+      viewId: initialViewId,
+      projectId: initialProjectId,
+    })
 
     state.visible.value = panel.visible
 
@@ -97,49 +110,54 @@ export const useDiagramPanel = createSingletonComposable(() => {
       if (state.visible.value !== e.webviewPanel.visible) {
         logger.debug`panel visible changed: ${e.webviewPanel.visible}`
         state.visible.value = e.webviewPanel.visible
+        const viewId = state.viewId.value
+        const projectId = state.projectId.value
         // Became visible
-        if (state.visible.value) {
+        if (state.visible.value && viewId && projectId) {
           api.sendOpenView({
-            projectId: projectId.value,
-            viewId: viewId.value,
+            screen: 'view',
+            projectId,
+            viewId,
           })
         }
       }
     }))
 
-    watch([state.viewId, state.projectId], ([viewId, projectId]) => {
-      if (!viewId) {
-        logger.warn('Invalid state: viewId is empty in ensurePanel scope')
+    watch([state.screen, state.viewId, state.projectId], ([screen, viewId, projectId]) => {
+      if (screen !== 'view') {
+        api.sendOpenView({ screen })
         return
       }
-      if (!projectId) {
-        logger.warn('Invalid state: projectId is empty in ensurePanel scope')
+      if (viewId && projectId) {
+        api.sendOpenView({
+          screen,
+          projectId,
+          viewId,
+        })
         return
       }
-      logger.debug`send ${'OpenView'} ${viewId} from project ${projectId}`
-      api.sendOpenView({
-        projectId,
-        viewId,
-      })
+      logger.warn`Invalid state: screen: ${screen} viewId: ${viewId} project: ${projectId}`
     })
-
-    useViewTitle(
-      panel,
-      computed(() => {
-        const _viewId = viewId.value
-        const _project = projectId.value
-        const view = computedModels.value[_project]?.views[_viewId]
-        if (!view) {
-          return 'Diagram Preview'
-        }
-        return view.title ?? `Preview ${view.id}`
-      }),
-    )
 
     m.onWebviewNavigateTo((params) => {
-      logger.debug`webview requested navigateTo ${params.viewId}`
+      logger.debug`webview requested navigateTo ${params}`
+      state.screen.value = params.screen
+      // W
+      if (params.screen !== 'view') {
+        return
+      }
       state.viewId.value = params.viewId
+      if (params.projectId) {
+        state.projectId.value = params.projectId
+      }
     })
+
+    m.onWebviewUpdateMyTitle((params) => {
+      logger.debug`webview requested updateMyTitle ${params.title}`
+      state.title.value = params.title
+    })
+
+    useViewTitle(panel, panelTitle)
 
     m.onWebviewCloseMe(() => {
       nextTick(() => {
@@ -179,14 +197,23 @@ export const useDiagramPanel = createSingletonComposable(() => {
     }
   }
 
-  function open(viewId: ViewId, projectId: ProjectId) {
-    logger.debug`open view ${viewId} (project: ${projectId})`
-    state.viewId.value = viewId
-    state.projectId.value = projectId
+  function open(arg: 'projects' | { viewId: ViewId; projectId: ProjectId }) {
+    if (arg === 'projects') {
+      if (state.screen.value !== arg) {
+        logger.debug`change state.screen to projects`
+        state.screen.value = arg
+      } else {
+        logger.debug`state.screen is already projects`
+      }
+    } else {
+      state.viewId.value = arg.viewId
+      state.projectId.value = arg.projectId
+    }
+
     // reveal panel if already exists
     if (state.panel) {
       if (!state.visible.value) {
-        logger.debug`reveal panel for view ${viewId} (project: ${projectId})`
+        logger.debug`reveal panel`
         state.panel.reveal(undefined, true)
       }
       return
@@ -213,17 +240,15 @@ export const useDiagramPanel = createSingletonComposable(() => {
   }
 
   tryOnScopeDispose(() => {
-    dispose()
-  })
-  onDeactivate(() => {
+    logger.debug`tryOnScopeDispose`
     dispose()
   })
 
   return {
     open,
     close: dispose,
-    viewId,
-    projectId,
+    viewId: readonly(state.viewId),
+    projectId: readonly(state.projectId),
     visible: readonly(state.visible),
     deserialize,
     getLastClickedElement: async () => {
@@ -235,7 +260,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
         deployment: null,
       }
     },
-  }
+  } as const
 })
 export type DiagramPanel = ReturnType<typeof useDiagramPanel>
 

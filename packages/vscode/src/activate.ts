@@ -12,7 +12,6 @@ import {
   useDiagramPanel,
 } from './panel'
 import { registerBuiltinFileSystem } from './registerBuiltinFileSystem'
-import { latestUpdatedSnapshotUri } from './sharedstate'
 import { useExtensionLogger } from './useExtensionLogger'
 import { whenExtensionActive } from './useIsActivated'
 import { useLanguageClient } from './useLanguageClient'
@@ -41,7 +40,10 @@ export function activateExtension(extensionKind: 'node' | 'web') {
 
   rpc.onRequestOpenView(({ viewId, projectId }) => {
     logger.debug`rpc request open view ${viewId} of project ${projectId}`
-    preview.open(viewId, projectId)
+    preview.open({
+      viewId,
+      projectId,
+    })
   })
 
   whenExtensionActive(() => {
@@ -83,30 +85,15 @@ function monitorFileSystemEvents() {
   // Watch for view snapshot changes
   const viewSnapshotWatcher = useFsWatcher(toRef(`**/*.likec4.snap`))
   viewSnapshotWatcher.onDidChange((uri) => {
-    if (latestUpdatedSnapshotUri.value === uri.toString()) {
-      logger.debug(`Ignoring view snapshot change triggered by self: ${uri.fsPath}`)
-      return
-    }
-    latestUpdatedSnapshotUri.value = null
-    logger.debug(`View snapshot changed: ${uri.fsPath}`)
+    logger.debug`view snapshot changed: ${uri.fsPath}`
     void rpc.notifyDidChangeSnapshot(uri)
   })
   viewSnapshotWatcher.onDidCreate((uri) => {
-    if (latestUpdatedSnapshotUri.value === uri.toString()) {
-      logger.debug`Ignoring view snapshot creation triggered by self: ${uri.fsPath}`
-      return
-    }
-    latestUpdatedSnapshotUri.value = null
-    logger.debug`View snapshot created: ${uri.fsPath}`
+    logger.debug`view snapshot created: ${uri.fsPath}`
     void rpc.notifyDidChangeSnapshot(uri)
   })
   viewSnapshotWatcher.onDidDelete((uri) => {
-    if (latestUpdatedSnapshotUri.value === uri.toString()) {
-      logger.debug`Ignoring view snapshot deletion triggered by self: ${uri.fsPath}`
-      return
-    }
-    latestUpdatedSnapshotUri.value = null
-    logger.debug`View snapshot deleted: ${uri.fsPath}`
+    logger.debug`view snapshot deleted: ${uri.fsPath}`
     void rpc.notifyDidChangeSnapshot(uri)
   })
 }
