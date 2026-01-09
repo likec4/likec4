@@ -2,7 +2,7 @@ import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
 import { useDebouncedCallback, useTimeout } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
-import type { OnMove, OnMoveEnd } from '@xyflow/system'
+import type { OnMove, OnMoveEnd, Viewport } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import type { PropsWithChildren } from 'react'
 import { isEmpty } from 'remeda'
@@ -17,7 +17,8 @@ import { depsShallowEqual } from '../hooks/useUpdateEffect'
 import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
 import { deriveToggledFeatures } from './state/machine.setup'
-import type { DiagramActorSnapshot } from './state/types'
+import type { DiagramActorSnapshot, DiagramContext } from './state/types'
+import { viewBounds } from './state/utils'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
 
@@ -50,10 +51,25 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   }
 }
 
+const viewportToTopLeft = (ctx: DiagramContext): Viewport => {
+  const bounds = viewBounds(ctx)
+  return {
+    x: -bounds.x,
+    y: -bounds.y,
+    zoom: 1,
+  }
+}
+
 const selectXYProps = ({ context: ctx, children }: DiagramActorSnapshot) => {
   const { enableReadOnly } = deriveToggledFeatures(ctx)
 
   const isNotEditingEdge = enableReadOnly || children.editor?.getSnapshot().context.editing !== 'edge'
+
+  let nodesDraggable = !enableReadOnly && ctx.nodesDraggable
+  // if dynamic view display mode is sequence, disable nodes draggable
+  if ((ctx.dynamicViewVariant === 'sequence' && ctx.view._type === 'dynamic')) {
+    nodesDraggable = false
+  }
 
   return ({
     enableReadOnly,
@@ -62,16 +78,12 @@ const selectXYProps = ({ context: ctx, children }: DiagramActorSnapshot) => {
     edges: ctx.xyedges,
     pannable: ctx.pannable,
     zoomable: ctx.zoomable,
-    nodesDraggable: !enableReadOnly && ctx.nodesDraggable,
+    nodesDraggable,
     nodesSelectable: ctx.nodesSelectable && isNotEditingEdge,
     fitViewPadding: ctx.fitViewPadding,
     enableFitView: ctx.features.enableFitView,
     ...(!ctx.features.enableFitView && {
-      viewport: {
-        x: -ctx.view.bounds.x,
-        y: -ctx.view.bounds.y,
-        zoom: 1,
-      },
+      viewport: viewportToTopLeft(ctx),
     }),
   })
 }

@@ -15,6 +15,7 @@ import type { XYStoreState } from '../../hooks/useXYFlow'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
+import { pickViewBounds } from '../../utils/view-bounds'
 import type { Types } from '../types'
 import type { Context } from './machine.setup'
 import type { DiagramActorRef, NodeWithData, System } from './types'
@@ -64,6 +65,18 @@ export function findDiagramEdge(ctx: Context, xyedgeId: string): DiagramEdge | n
   return ctx.view.edges.find(e => e.id === xyedgeId) ?? null
 }
 
+/**
+ * Returns the bounds of the current view from the context.
+ * If {@link nextView} is provided, returns the bounds of the next view.
+ */
+export function viewBounds(
+  ctx: Pick<Context, 'view' | 'dynamicViewVariant'>,
+  nextView?: DiagramView,
+): BBox {
+  const view = nextView ?? ctx.view
+  return pickViewBounds(view, ctx.dynamicViewVariant)
+}
+
 export function focusedBounds(params: { context: Context }): { bounds: BBox; duration?: number } {
   const knownAbsolutes = new Map<string, XYPoint>()
 
@@ -99,7 +112,7 @@ export function focusedBounds(params: { context: Context }): { bounds: BBox; dur
 
   if (b.minX === Infinity) {
     return {
-      bounds: params.context.view.bounds,
+      bounds: viewBounds(params.context),
     }
   }
 

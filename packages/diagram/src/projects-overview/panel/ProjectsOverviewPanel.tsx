@@ -2,7 +2,7 @@ import { NavigationPanel } from '../../components/NavigationPanel'
 
 export const ProjectsOverviewPanel = () => {
   return (
-    <NavigationPanel.Root size="lg">
+    <NavigationPanel.Root>
       <NavigationPanel.Body>
         <NavigationPanel.Logo />
         <NavigationPanel.Label>

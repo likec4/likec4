@@ -240,8 +240,6 @@ export const deriveToggledFeatures = (context: Context): Required<ToggledFeature
     || (toggledFeatures.enableReadOnly ?? false)
     // Active walkthrough forces readonly
     || hasActiveWalkthrough
-    // if dynamic view display mode is sequence, enable readonly
-    || (context.dynamicViewVariant === 'sequence' && context.view._type === 'dynamic')
     // Compare with latest enforces readonly
     || (enableCompareWithLatest && context.view._layout === 'auto')
 

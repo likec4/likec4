@@ -92,8 +92,7 @@ const machine = setup({
       context.initialized.xydata
       && context.initialized.xyflow && !!context.xystore && !!context.xyflow,
     'click: selected node': ({ event }) => {
-      assertEvent(event, ['xyflow.click.node'])
-      return event.node.selected === true
+      return event.type === 'xyflow.click.node' && event.node.selected === true
     },
   },
 })
@@ -179,36 +178,13 @@ const saveViewport = () =>
 const handleClick = () =>
   machine.enqueueActions(({ event, enqueue }) => {
     if (event.type === 'xyflow.click.double') {
-      enqueue(cancelFitDiagram())
-      enqueue(raiseFitDiagram())
+      enqueue(fitDiagram())
       return
     }
-    if (event.type === 'xyflow.click.pane') {
-      enqueue(cancelFitDiagram())
-      return
-    }
-    console.warn('Unknown event', event)
   })
 
-const cancelFitDiagram = () => machine.cancel('fitDiagram')
-
-const raiseFitDiagram = (params?: { delay?: number; duration?: number; bounds?: BBox }) => {
-  const { delay = 30, ...rest } = params ?? {}
-  return machine.raise(
-    {
-      type: 'xyflow.fitDiagram',
-      ...rest,
-    },
-    {
-      id: 'fitDiagram',
-      delay,
-    },
-  )
-}
-
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
-  machine.enqueueActions(({ context, event, enqueue }) => {
-    enqueue(cancelFitDiagram())
+  machine.enqueueActions(({ context, event }) => {
     let bounds = context.view.bounds, duration: number | undefined
     if (params) {
       bounds = params.bounds ?? context.view.bounds
@@ -365,16 +341,16 @@ const _projectOverviewLogic = machine.createMachine({
         'xyflow.mouse.*': {
           actions: onMouseEnterOrLeave(),
         },
-        'xyflow.click.node': [
+        'xyflow.click.*': [
           {
             guard: 'click: selected node',
             actions: assignNavigateTo(),
             target: 'navigate',
           },
+          {
+            actions: handleClick(),
+          },
         ],
-        'xyflow.click.*': {
-          actions: handleClick(),
-        },
         'xyflow.fitDiagram': {
           actions: fitDiagram(),
         },
@@ -386,7 +362,6 @@ const _projectOverviewLogic = machine.createMachine({
     navigate: {
       tags: 'active',
       entry: [
-        cancelFitDiagram(),
         saveViewport(),
         assign({
           xyedges: [],
@@ -396,7 +371,7 @@ const _projectOverviewLogic = machine.createMachine({
           const { width, domNode } = nonNullable(xystore).getState()
           const nextZoom = clamp(
             Math.min(
-              (width * 2 / 3) / (navigateTo.data.width),
+              (width * 7 / 9) / (navigateTo.data.width),
               // (height - 200) / (navigateTo.data.height),
             ),
             { min: MinZoom, max: 2.5 },

@@ -22,6 +22,7 @@ import { machine } from './machine.setup'
 import {
   activeSequenceBounds,
   focusedBounds,
+  viewBounds,
 } from './utils'
 
 export const setViewport = (params?: { viewport: Viewport; duration?: number }) =>
@@ -54,9 +55,9 @@ export const setViewportCenter = (params?: { x: number; y: number }) =>
     if (params) {
       center = params
     } else if (event.type === 'update.view') {
-      center = BBox.center(event.view.bounds)
+      center = BBox.center(viewBounds(context, event.view))
     } else {
-      center = BBox.center(context.view.bounds)
+      center = BBox.center(viewBounds(context))
     }
     invariant(context.xyflow, 'xyflow is not initialized')
     const zoom = context.xyflow.getZoom()
@@ -69,18 +70,19 @@ export const setViewportCenter = (params?: { x: number; y: number }) =>
 
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
   machine.enqueueActions(({ context, event, enqueue }) => {
-    let bounds = context.view.bounds, duration: number | undefined
+    let bounds: BBox | undefined, duration: number | undefined
     if (params) {
-      bounds = params.bounds ?? context.view.bounds
+      bounds = params.bounds
       duration = params.duration
     } else if (event.type === 'xyflow.fitDiagram') {
-      bounds = event.bounds ?? context.view.bounds
+      bounds = event.bounds
       duration = event.duration
       enqueue.assign({
         viewportChangedManually: false,
       })
     }
     // Default values
+    bounds ??= viewBounds(context)
     duration ??= 450
 
     const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()

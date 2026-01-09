@@ -1,6 +1,7 @@
 import { enqueueActions, log } from 'xstate'
 import { assignViewportBefore, cancelFitDiagram, returnViewportBefore, setViewport } from './machine.actions'
 import { machine, targetState } from './machine.setup'
+import { viewBounds } from './utils'
 
 /**
  * State when the diagram is being prepared for printing.
@@ -13,7 +14,7 @@ export const printing = machine.createStateConfig({
     cancelFitDiagram(),
     assignViewportBefore(),
     enqueueActions(({ enqueue, context }) => {
-      const bounds = context.view.bounds
+      const bounds = viewBounds(context)
       const OFFSET = 16
       enqueue(
         setViewport({

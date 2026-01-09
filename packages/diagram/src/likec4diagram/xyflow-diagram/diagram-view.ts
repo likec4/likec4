@@ -6,7 +6,6 @@ import {
   type Fqn,
   type NodeId,
   type WhereOperator,
-  BBox,
   GroupElementKind,
   invariant,
   nonNullable,
@@ -18,10 +17,9 @@ import { ZIndexes } from '../../base/const'
 import type { Types } from '../types'
 
 export function diagramToXY(opts: {
-  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | 'bounds' | '_type'>
+  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type'>
   where: WhereOperator | null
 }): {
-  bounds: BBox
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
 } {
@@ -265,7 +263,6 @@ export function diagramToXY(opts: {
   }
 
   return {
-    bounds: view.bounds,
     xynodes,
     xyedges,
   }

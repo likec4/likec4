@@ -1,6 +1,7 @@
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 import {
+  BBox,
   invariant,
   nonexhaustive,
   nonNullable,
@@ -31,12 +32,13 @@ import {
   mergeXYNodesEdges,
   resetEdgeControlPoints,
 } from './assign'
-import { cancelFitDiagram, raiseFitDiagram, setViewport } from './machine.actions.layout'
+import { cancelFitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
 import { machine } from './machine.setup'
 import {
   findDiagramEdge,
   findDiagramNode,
   typedSystem,
+  viewBounds,
 } from './utils'
 
 export * from './machine.actions.layout'
@@ -947,12 +949,18 @@ export const updateView = () =>
         context.view._layout !== nextView._layout
       )
 
+      if (nextView._type === 'dynamic' && context.view._type === 'dynamic') {
+        // If the dynamic view variant changed, recenter
+        if (nextView.variant === context.view.variant && nextView.variant !== context.dynamicViewVariant) {
+          const nextCenter = BBox.center(viewBounds(context, nextView))
+          enqueue(setViewportCenter(nextCenter))
+        }
+      }
+
       if (recenter) {
         // Recenter the diagram to fit all elements
         enqueue(cancelFitDiagram())
-        enqueue(raiseFitDiagram({
-          bounds: event.view.bounds,
-        }))
+        enqueue(raiseFitDiagram())
       }
     },
   )

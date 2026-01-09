@@ -1,4 +1,5 @@
 import { type ElementShape, ElementShapes } from '@likec4/core/styles'
+import type { Fqn } from '@likec4/core/types'
 import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconCheck, IconSelector } from '@tabler/icons-react'
 import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
@@ -10,7 +11,7 @@ import { Toolbar } from './Toolbar'
 import type { OnStyleChange } from './types'
 import { useHandlers } from './useHandlers'
 
-export function ElementToolbar(props: Types.NodeProps<'element'>) {
+export function ElementToolbar(props: Types.NodeProps<'element' | 'seq-actor'> & { data: { modelFqn: Fqn } }) {
   const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()
   const {
     data: {

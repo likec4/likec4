@@ -1,14 +1,15 @@
+import type { Fqn } from '@likec4/core/types'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { Handle, Position } from '@xyflow/react'
 import { isTruthy } from 'remeda'
-import type { SetNonNullable } from 'type-fest'
 import { ElementData, ElementNodeContainer, ElementShape } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import type { Types } from '../../types'
 import { ElementActions } from './ElementActions'
 import { NodeDrifts } from './NodeDrifts'
 import { ElementDetailsButtonWithHandler } from './nodes'
+import { ElementToolbar } from './toolbar/ElementToolbar'
 
 const positionMap = {
   left: Position.Left,
@@ -65,12 +66,11 @@ const ActorStepPort = ({
     </>
   )
 }
-
-const hasModelFqn = <D extends Types.SequenceActorNodeData>(data: D): data is SetNonNullable<D, 'modelFqn'> =>
-  isTruthy(data.modelFqn)
+const hasModelFqn = <D extends Types.NodeProps>(node: D): node is D & { data: { modelFqn: Fqn } } =>
+  'modelFqn' in node.data && isTruthy(node.data.modelFqn)
 
 export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
-  const { enableElementDetails, enableCompareWithLatest } = useEnabledFeatures()
+  const { enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   const data = props.data
   const {
     id,
@@ -109,10 +109,11 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
         {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
         <ElementShape {...props} />
         <ElementData {...props} />
-        {hasModelFqn(data) && (
+        {hasModelFqn(props) && (
           <>
-            <ElementActions {...props} data={data} />
+            <ElementActions {...props} />
             {enableElementDetails && <ElementDetailsButtonWithHandler id={id} data={data} />}
+            {!enableReadOnly && <ElementToolbar {...props} />}
           </>
         )}
       </ElementNodeContainer>

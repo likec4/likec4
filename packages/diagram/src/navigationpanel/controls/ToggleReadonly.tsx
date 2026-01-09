@@ -14,7 +14,7 @@ const selector = (ctx: DiagramContext) => {
 
   // Disable readonly toggle, if any of these conditions is true:
   const comparingLatest = toggledFeatures.enableCompareWithLatest && !!ctx.view.drifts && ctx.view._layout === 'auto'
-  const sequenceLayoutActive = ctx.view._type === 'dynamic' && ctx.dynamicViewVariant === 'sequence'
+  // const sequenceLayoutActive = ctx.view._type === 'dynamic' && ctx.dynamicViewVariant === 'sequence'
 
   // If All condition is true, we show toggle
   const noActiveWalkthrough = !isTruthy(ctx.activeWalkthrough)
@@ -22,7 +22,7 @@ const selector = (ctx: DiagramContext) => {
 
   return ({
     visible: hasEditor && noActiveWalkthrough,
-    disabled: comparingLatest || sequenceLayoutActive,
+    disabled: comparingLatest,
     isReadOnly: ctx.toggledFeatures.enableReadOnly ?? false,
   })
 }

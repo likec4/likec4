@@ -12,7 +12,7 @@ import {
   raiseSetViewport,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
-import { calcViewportForBounds, findCorrespondingNode, findNodeByModelFqn, nodeRef } from './utils'
+import { calcViewportForBounds, findCorrespondingNode, findNodeByModelFqn, nodeRef, viewBounds } from './utils'
 
 const handleBrowserForwardBackward = () =>
   machine.assign(({ context, event }) => {
@@ -110,11 +110,12 @@ export const navigating = machine.createStateConfig({
 
         const fromHistory = history[currentIndex]
         if (fromHistory && fromHistory.viewId === event.view.id) {
-          enqueue.assign({
+          const nextCtx = {
             ...mergeXYNodesEdges(context, eventWithXYData),
             dynamicViewVariant: fromHistory.dynamicViewVariant ?? context.dynamicViewVariant,
             viewportChangedManually: fromHistory.viewportChangedManually,
-          })
+          }
+          enqueue.assign(nextCtx)
           const wasFocused = fromHistory.focusedNode
           const wasActiveWalkthrough = fromHistory.activeWalkthrough
           const viewportBefore = fromHistory.viewportBefore
@@ -127,8 +128,9 @@ export const navigating = machine.createStateConfig({
               viewportBefore: null,
             })
           }
+          const nextBounds = viewBounds(nextCtx)
 
-          const center = BBox.center(event.view.bounds)
+          const center = BBox.center(nextBounds)
           const zoom = calcZoomTowardsNextViewport(fromHistory.viewport)
           xyflow.setCenter(
             center.x,
@@ -159,9 +161,11 @@ export const navigating = machine.createStateConfig({
           return
         }
 
+        const nextBounds = viewBounds(context, eventWithXYData.view)
+
         const nextViewport = calcViewportForBounds(
           context,
-          event.view.bounds,
+          nextBounds,
         )
 
         const { fromNode, toNode } = findCorrespondingNode(context, eventWithXYData)
@@ -182,7 +186,7 @@ export const navigating = machine.createStateConfig({
           })
         } else {
           const zoom = calcZoomTowardsNextViewport(nextViewport)
-          const center = BBox.center(event.view.bounds)
+          const center = BBox.center(nextBounds)
           xyflow.setCenter(
             center.x,
             center.y,

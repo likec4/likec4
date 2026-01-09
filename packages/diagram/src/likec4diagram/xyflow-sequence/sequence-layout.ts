@@ -16,7 +16,6 @@ import {
 export function sequenceLayoutToXY(
   view: LayoutedDynamicView,
 ): {
-  bounds: BBox
   xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.ViewGroupNode>
   xyedges: Array<Types.SequenceStepEdge>
 } {
@@ -50,7 +49,6 @@ export function sequenceLayoutToXY(
   }
 
   return {
-    bounds,
     xynodes,
     xyedges,
   }

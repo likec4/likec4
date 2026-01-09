@@ -96,7 +96,6 @@ export namespace Types {
     & LeafNodeData
     & {
       navigateTo: ViewId | null
-      // If set - this node refers to a model element
       modelFqn: Fqn | null
       ports: Array<SequenceActorNodePort>
       viewHeight: number
