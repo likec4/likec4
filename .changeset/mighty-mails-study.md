@@ -1,6 +1,6 @@
 ---
 '@likec4/vscode-preview': patch
-'@likec4/vscode': patch
+'likec4-vscode': patch
 '@likec4/styles': patch
 ---
 

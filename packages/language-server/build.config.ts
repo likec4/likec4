@@ -9,11 +9,22 @@ const bundled: BuildEntry = {
   declaration: false,
 }
 
+const makedist: BuildEntry = {
+  builder: 'mkdist',
+  input: './src',
+  format: 'esm',
+  ext: 'js',
+  pattern: [
+    '**/*.ts',
+    '!**/*.spec.ts',
+  ],
+}
+
 // @ts-expect-error
 const isProd = process.env.NODE_ENV === 'production'
 
 export default defineBuildConfig({
-  entries: [bundled],
+  entries: isProd ? [bundled] : [makedist],
   clean: true,
   stub: false,
   alias: {
@@ -21,6 +32,7 @@ export default defineBuildConfig({
     'content-type': resolve('./src/empty.ts'),
   },
   failOnWarn: isProd,
+
   rollup: {
     esbuild: {
       minify: isProd,
@@ -29,7 +41,7 @@ export default defineBuildConfig({
     },
     inlineDependencies: isProd,
     resolve: {
-      exportConditions: ['node', 'sources'],
+      exportConditions: isProd ? ['node'] : ['node', 'sources'],
     },
   },
   hooks: {
