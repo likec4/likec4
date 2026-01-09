@@ -10,6 +10,9 @@ export default defineConfig(({ mode }) => {
   return {
     resolve: {
       conditions: ['sources'],
+      alias: {
+        '@likec4/styles': resolve('./styled-system'),
+      },
     },
     define: {
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),

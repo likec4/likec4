@@ -12,8 +12,6 @@ export const navigationPanel = defineSlotRecipe({
       alignItems: 'flex-start',
       pointerEvents: 'none',
       position: 'absolute',
-      top: '0',
-      left: '0',
       margin: '0',
       width: '100%',
       gap: 'xxs',
@@ -21,7 +19,7 @@ export const navigationPanel = defineSlotRecipe({
         'calc(100vw)',
         'calc(100cqw)',
       ],
-      '@likec4-root/sm': {
+      '@/sm': {
         margin: 'xs',
         gap: 'xs',
         width: 'max-content',
@@ -30,7 +28,7 @@ export const navigationPanel = defineSlotRecipe({
           'calc(100cqw - 2 * {spacing.xs})',
         ],
       },
-      '@likec4-root/md': {
+      '@/md': {
         margin: 'sm',
         maxWidth: [
           'calc(100vw - 2 * {spacing.md})',
@@ -63,19 +61,19 @@ export const navigationPanel = defineSlotRecipe({
       cursor: 'pointer',
       width: {
         base: '20px',
-        '@likec4-root/md': '64px',
+        '@/md': '64px',
       },
 
       ['& > [data-logo-icon]']: {
         display: {
           base: 'block',
-          '@likec4-root/sm': 'none',
+          '@/sm': 'none',
         },
       },
       ['& > [data-logo-full]']: {
         display: {
           base: 'none',
-          '@likec4-root/sm': 'block',
+          '@/sm': 'block',
         },
       },
     },
@@ -92,7 +90,7 @@ export const navigationPanel = defineSlotRecipe({
       md: {},
       lg: {
         body: {
-          '@likec4-root/sm': {
+          '@/sm': {
             gap: 'sm',
             minHeight: '48px',
             paddingInline: 'md',
@@ -102,19 +100,35 @@ export const navigationPanel = defineSlotRecipe({
           },
         },
         label: {
-          '@likec4-root/sm': {
+          '@/sm': {
             fontSize: 'md',
           },
+        },
+      },
+    },
+    panelPosition: {
+      left: {
+        root: {
+          top: '0',
+          left: '0',
+        },
+      },
+      right: {
+        root: {
+          top: '0',
+          right: '0',
         },
       },
     },
   },
   defaultVariants: {
     size: 'md',
+    panelPosition: 'left',
   },
   staticCss: [{
     conditions: ['*'],
     size: ['*'],
+    panelPosition: ['*'],
     responsive: true,
   }],
 })

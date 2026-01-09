@@ -27,6 +27,9 @@ export const layerStyles = defineLayerStyles({
             borderRadius: 'md',
             paddingInline: '2',
           },
+          _reduceGraphicsOnPan: {
+            boxShadow: 'none',
+          },
         },
       },
       action: {

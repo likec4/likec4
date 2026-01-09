@@ -86,9 +86,12 @@ catalogs:
     react: 19.2.3
     react-dom: 19.2.3
     react-error-boundary: ^6.0.0
-    react-shadow: ^20.6.0
     react-resizable-panels: ^4.0.11
+    react-shadow: ^20.6.0
   tanstack:
+    '@tanstack/pacer': ^0.17.1
+    '@tanstack/pacer-lite': ^0.2.1
+    '@tanstack/react-pacer': ^0.19.1
     '@tanstack/react-query': ^5.85.0
     '@tanstack/react-router': ^1.114.13
     '@tanstack/router-cli': ^1.114.13

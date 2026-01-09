@@ -29,7 +29,7 @@
       "path": "../core/tsconfig.json"
     },
     {
-      "path": "../diagram/tsconfig.json"
+      "path": "../diagram/tsconfig.src.json"
     },
     {
       "path": "../../styled-system/styles/tsconfig.json"
