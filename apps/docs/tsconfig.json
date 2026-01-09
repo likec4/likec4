@@ -36,10 +36,10 @@
   ],
   "references": [
     {
-      "path": "../../packages/likec4/tsconfig.json"
+      "path": "../../packages/likec4"
     },
     {
-      "path": "../../packages/core/tsconfig.json"
+      "path": "../../packages/core"
     },
   ]
 }

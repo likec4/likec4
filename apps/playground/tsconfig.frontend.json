@@ -39,7 +39,7 @@
       "path": "../../packages/core/"
     },
     {
-      "path": "../../packages/diagram/"
+      "path": "../../packages/diagram/tsconfig.src.json"
     },
     {
       "path": "../../packages/layouts/"
