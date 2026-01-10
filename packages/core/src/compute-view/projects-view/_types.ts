@@ -1,5 +1,6 @@
 import type {
   _stage,
+  _type,
   BaseViewProperties,
   BBox,
   ComputedEdge,
@@ -31,6 +32,7 @@ export interface LayoutedProjectEdge extends DiagramEdge {
  * Even though it has same structure as other likec4 views, it is not mixed with them, as it represents a different kind.
  */
 export interface ComputedProjectsView extends BaseViewProperties<any> {
+  readonly [_type]: 'projects'
   readonly [_stage]: 'computed'
   readonly nodes: ReadonlyArray<ComputedProjectNode>
   readonly edges: ReadonlyArray<ComputedProjectEdge>
@@ -38,6 +40,7 @@ export interface ComputedProjectsView extends BaseViewProperties<any> {
 }
 
 export interface LayoutedProjectsView extends BaseViewProperties<any> {
+  readonly [_type]: 'projects'
   readonly [_stage]: 'layouted'
   readonly nodes: ReadonlyArray<LayoutedProjectNode>
   readonly edges: ReadonlyArray<LayoutedProjectEdge>

@@ -5,3 +5,15 @@ export { viewsWithReadableEdges, withReadableEdges } from './utils/with-readable
 
 export type * from './projects-view/_types'
 export { computeProjectsView } from './projects-view/compute'
+
+export { computeRelationshipsView, treeFromElements } from './relationships-view'
+export type { RelationshipsViewData } from './relationships-view'
+
+export { AdhocView } from './adhoc-view/builder'
+export { computeAdhocView } from './adhoc-view/compute'
+export type {
+  AdhocViewExcludePredicate,
+  AdhocViewIncludePredicate,
+  AdhocViewPredicate,
+  ComputedAdhocView,
+} from './adhoc-view/compute'

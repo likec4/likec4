@@ -8,6 +8,7 @@ import {
   type NonEmptyArray,
   type ViewId,
   _stage,
+  _type,
   GlobalFqn,
   NodeId,
   preferSummary,
@@ -136,6 +137,7 @@ export function computeProjectsView(
 
   return {
     id: 'projects-view' as ViewId,
+    [_type]: 'projects',
     [_stage]: 'computed',
     title: 'Projects',
     description: {
