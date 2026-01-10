@@ -7,6 +7,7 @@ import type {
   ViewId,
 } from '@likec4/core'
 import { _layout, applyManualLayout, calcDriftsFromSnapshot } from '@likec4/core'
+import { type AdhocViewPredicate, computeAdhocView } from '@likec4/core/compute-view'
 import type { LikeC4Model } from '@likec4/core/model'
 import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
@@ -46,10 +47,14 @@ export interface LikeC4Views {
   readonly layouter: GraphvizLayouter
   /**
    * Returns computed views (i.e. views with predicates computed)
+   *
+   * @param projectId - project id, if not specified - uses the default project
    */
   computedViews(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<ComputedView[]>
   /**
    * Layouts all views (ignoring any manual snapshots)
+   *
+   * @param projectId - project id, if not specified - uses the default project
    */
   layoutAllViews(
     projectId?: ProjectId | undefined,
@@ -62,22 +67,35 @@ export interface LikeC4Views {
    * If not specified - returns latest layout as is
    *
    * If view not found in model, but there is a snapshot - it will be returned (with empty DOT)
+   *
+   * @param projectId - project id, if not specified - uses the default project
    */
   layoutView(params: LayoutViewParams): Promise<GraphvizOut | null>
   /**
    * Returns diagrams.
    * If diagram has manual layout, it will be used.
+   * @param projectId - project id, if not specified - uses the default project
    */
   diagrams(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<DiagramView>>
   /**
    * Returns all layouted views as Graphviz output (i.e. views with layout computed)
+   * @param projectId - project id, if not specified - uses the default project
    */
   viewsAsGraphvizOut(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<GraphvizSvgOut>>
   /**
    * Open view in the preview panel.
    * (works only if running as a vscode extension)
+   *
+   * @param projectId - project id, if not specified - uses the default project
    */
   openView(viewId: ViewId, projectId?: ProjectId | undefined): Promise<void>
+
+  /**
+   * Computes and layouts an adhoc view (not defined in the model)
+   *
+   * @param projectId - project id, if not specified - uses the default project
+   */
+  adhocView(predicates: AdhocViewPredicate[], projectId?: ProjectId | undefined): Promise<LayoutedView>
 }
 
 const viewsLogger = rootLogger.getChild('views')
@@ -283,6 +301,22 @@ export class DefaultLikeC4Views implements LikeC4Views {
     await this.services.Rpc.openView({ viewId, projectId })
   }
 
+  async adhocView(predicates: AdhocViewPredicate[], projectId?: ProjectId | undefined): Promise<LayoutedView> {
+    viewsLogger.debug`layouting adhoc view...`
+    const likeC4Model = await this.ModelBuilder.computeModel(projectId)
+    const view = computeAdhocView(likeC4Model, predicates)
+    const { diagram } = await this.layouter.layout({
+      view: {
+        ...view,
+        hash: '',
+        _type: 'element',
+      },
+      styles: likeC4Model.$styles,
+    })
+    viewsLogger.debug`layouting adhoc view... done`
+    return diagram
+  }
+
   private reportViewError(view: ComputedView, projectId: ProjectId, error: string): void {
     const key = `${projectId}-${view.id}`
     this.cache.delete(view)
@@ -329,16 +363,4 @@ export class DefaultLikeC4Views implements LikeC4Views {
     this.cache.set(view, result)
     return result
   }
-
-  // async overviewGraph(): Promise<OverviewGraph> {
-  //   const KEY = 'OverviewGraph'
-  //   const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, OverviewGraph>
-  //   if (cache.has(KEY)) {
-  //     return await Promise.resolve(cache.get(KEY)!)
-  //   }
-  //   const views = await this.computedViews()
-  //   const overviewGraph = await this.layouter.layoutOverviewGraph(views)
-  //   cache.set(KEY, overviewGraph)
-  //   return overviewGraph
-  // }
 }

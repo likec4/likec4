@@ -1,5 +1,5 @@
 import type { EdgeId, NonEmptyReadonlyArray } from '@likec4/core'
-import { treeFromElements } from '@likec4/core/compute-view/relationships'
+import { treeFromElements } from '@likec4/core/compute-view'
 import type {
   ElementModel,
   LikeC4ViewModel,

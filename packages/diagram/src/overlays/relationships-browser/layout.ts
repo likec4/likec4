@@ -2,7 +2,7 @@ import {
   type RelationshipsViewData,
   computeRelationshipsView,
   treeFromElements,
-} from '@likec4/core/compute-view/relationships'
+} from '@likec4/core/compute-view'
 import type {
   DiagramEdge,
   DiagramNode,
