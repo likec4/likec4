@@ -13,6 +13,7 @@ import {
 import { isNumber, isTruthy } from 'remeda'
 import type { MergeExclusive } from 'type-fest'
 import { IconRenderer } from '../../context/IconRenderer'
+import { useLikeC4Styles } from '../../hooks/useLikeC4Styles'
 import { Markdown } from '../Markdown'
 
 type RequiredData = {
@@ -179,14 +180,26 @@ const Description = forwardRef<
  * ```
  */
 export function ElementData({ iconSize, data }: ElementDataProps) {
+  const styles = useLikeC4Styles()
+  const { iconSize: resolvedIconSizeEnum } = ensureSizes(data.style)
+  const resolvedIconSize = isNumber(iconSize)
+    ? iconSize
+    : styles.iconSize(resolvedIconSizeEnum)
+  const resolvedIconColor = data.style.iconColor
+    ? styles.colors(data.style.iconColor).elements.fill
+    : undefined
+
   return (
     <Root
-      style={isNumber(iconSize)
-        ? {
+      data-likec4-icon-position={data.style.iconPosition}
+      style={{
+        // @ts-ignore
+        ['--likec4-icon-size']: `${resolvedIconSize}px`,
+        ...(resolvedIconColor && {
           // @ts-ignore
-          ['--likec4-icon-size']: `${iconSize}px`,
-        }
-        : undefined}
+          ['--likec4-icon-color']: resolvedIconColor,
+        }),
+      }}
     >
       <Icon data={data} />
       <Content>

@@ -5,6 +5,7 @@ import type {
   ColorLiteral,
   CustomColorDefinitions,
   ElementShape,
+  IconPosition,
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
@@ -34,6 +35,9 @@ export interface ElementSpecification {
   style: {
     shape?: ElementShape
     icon?: Icon
+    iconColor?: Color
+    iconSize?: ShapeSize
+    iconPosition?: IconPosition
     color?: Color
     border?: BorderStyle
     opacity?: number

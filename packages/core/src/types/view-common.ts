@@ -10,6 +10,7 @@ import type {
   BorderStyle,
   Color,
   ElementShape,
+  IconPosition,
   ShapeSize,
   SpacingSize,
   TextSize,
@@ -37,6 +38,9 @@ export interface AnyViewRuleStyle<Expr> {
     color?: Color
     shape?: ElementShape
     icon?: scalar.Icon
+    iconColor?: Color
+    iconSize?: ShapeSize
+    iconPosition?: IconPosition
   }
 }
 

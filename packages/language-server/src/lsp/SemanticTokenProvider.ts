@@ -253,6 +253,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         mark.property('themeColor').enum()
       }
     })
+    when(ast.isIconColorProperty, mark => {
+      if (isTruthy(mark.node.customColor)) {
+        mark.property('customColor').enum()
+      }
+      if (isTruthy(mark.node.themeColor)) {
+        mark.property('themeColor').enum()
+      }
+    })
     when(
       isAnyOf(
         ast.isShapeProperty,
@@ -260,6 +268,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         ast.isLineProperty,
         ast.isBorderProperty,
         ast.isSizeProperty,
+        ast.isIconPositionProperty,
         ast.isDynamicViewDisplayVariantProperty,
       ),
       mark => {

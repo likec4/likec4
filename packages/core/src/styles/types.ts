@@ -9,6 +9,9 @@ export type TextSize = Size
 export type ShapeSize = Size
 export type SpacingSize = Size
 
+export const IconPositions = ['left', 'right', 'top', 'bottom'] as const
+export type IconPosition = TupleToUnion<typeof IconPositions>
+
 export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
 
 export type BorderStyle = TupleToUnion<typeof BorderStyles>

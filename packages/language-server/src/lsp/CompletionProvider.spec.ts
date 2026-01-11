@@ -65,7 +65,20 @@ describe.concurrent('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 5,
-      expectedItems: ['color', 'shape', 'border', 'opacity', 'icon', 'multiple', 'size', 'padding', 'textSize'],
+      expectedItems: [
+        'color',
+        'shape',
+        'border',
+        'opacity',
+        'icon',
+        'iconColor',
+        'multiple',
+        'size',
+        'padding',
+        'textSize',
+        'iconSize',
+        'iconPosition',
+      ],
     })
     await completion({
       text,
@@ -586,10 +599,13 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'border',
         'opacity',
         'icon',
+        'iconColor',
         'multiple',
         'size',
         'padding',
         'textSize',
+        'iconSize',
+        'iconPosition',
       ],
       disposeAfterCheck: true,
     })

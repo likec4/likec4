@@ -1,5 +1,5 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
-import { iconSize } from '../const'
+import { iconColor, iconSize } from '../const'
 
 const parts = defineParts({
   root: { selector: '&' },
@@ -11,6 +11,7 @@ const parts = defineParts({
 })
 
 const varIconSize = `var(${iconSize}, 48px)`
+const varIconColor = `var(${iconColor}, var(--likec4-palette-hiContrast))`
 
 const textAlign = '__text-align'
 const varTextAlign = `var(${textAlign})`
@@ -91,6 +92,36 @@ export const elementNodeData = defineRecipe({
           alignItems: 'flex-start',
         },
       },
+
+      '&[data-likec4-icon-position="right"]:has([data-likec4-icon])': {
+        flexDirection: 'row-reverse',
+        [textAlign]: 'right',
+        '& .likec4-element-node-content': {
+          alignItems: 'flex-end',
+        },
+      },
+      '&[data-likec4-icon-position="top"]:has([data-likec4-icon])': {
+        flexDirection: 'column',
+        [textAlign]: 'center',
+        '& .likec4-element-node-content': {
+          minWidth: 'unset',
+          alignItems: 'center',
+        },
+        '& [data-likec4-icon]': {
+          alignSelf: 'center',
+        },
+      },
+      '&[data-likec4-icon-position="bottom"]:has([data-likec4-icon])': {
+        flexDirection: 'column-reverse',
+        [textAlign]: 'center',
+        '& .likec4-element-node-content': {
+          minWidth: 'unset',
+          alignItems: 'center',
+        },
+        '& [data-likec4-icon]': {
+          alignSelf: 'center',
+        },
+      },
     },
     icon: {
       flex: `0 0 ${varIconSize}`,
@@ -100,6 +131,7 @@ export const elementNodeData = defineRecipe({
       alignSelf: 'flex-start',
       alignItems: 'center',
       justifyContent: 'center',
+      color: varIconColor,
       mixBlendMode: {
         base: 'hard-light',
         _reduceGraphicsOnPan: 'normal',

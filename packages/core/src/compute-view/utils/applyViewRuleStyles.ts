@@ -15,7 +15,7 @@ export function applyViewRuleStyle<A extends AnyAux>(
   predicate: Predicate<ComputedNode<A>>,
   nodes: ComputedNode<A>[],
 ): void {
-  const { shape, color, icon, ...rest } = rule.style
+  const { shape, color, icon, iconColor, iconSize, iconPosition, ...rest } = rule.style
   const nonEmptyStyle = !isEmpty(rest)
   pipe(
     nodes,
@@ -26,6 +26,15 @@ export function applyViewRuleStyle<A extends AnyAux>(
       n.color = color ?? n.color
       if (isDefined(icon)) {
         n.icon = icon
+      }
+      if (isDefined(iconColor)) {
+        n.style.iconColor = iconColor
+      }
+      if (isDefined(iconSize)) {
+        n.style.iconSize = iconSize
+      }
+      if (isDefined(iconPosition)) {
+        n.style.iconPosition = iconPosition
       }
       if (isDefined(rule.notation)) {
         n.notation = rule.notation

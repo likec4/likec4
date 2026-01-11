@@ -82,6 +82,16 @@ function maxchars(size: ShapeSize) {
   }
 }
 
+/**
+ * Returns a formatted string for the given node, using the provided styles.
+ * The output string is a HTML table containing the node's title, technology, and description.
+ * If the node has an icon, the table will have a left padding of 60px (icon size) plus 10px (node margin).
+ * If the node's shape is 'queue' or 'mobile', an additional 20px of padding is added.
+ * The table will have a single row if the node has no icon and only one line of text.
+ * @param {ComputedNode} node - The node to format.
+ * @param {LikeC4Styles} styles - The styles to use for formatting.
+ * @returns {string} A formatted string for the given node.
+ */
 export function nodeLabel(
   node: ComputedNode,
   styles: LikeC4Styles,
@@ -90,6 +100,8 @@ export function nodeLabel(
   const colorValues = styles.colors(node.color).elements
   const isSmOrXs = ['sm', 'xs'].includes(size)
   const hasIcon = isTruthy(node.icon)
+  const iconPosition = node.style.iconPosition ?? 'left'
+  const hasIconOnSide = hasIcon && (iconPosition === 'left' || iconPosition === 'right')
   const lines = [
     wrapWithFont({
       text: node.title,
@@ -104,7 +116,7 @@ export function nodeLabel(
         wrapWithFont({
           text: node.technology,
           fontsize: Math.ceil(values.textSize * 0.65),
-          maxchars: hasIcon ? 35 : 45,
+          maxchars: hasIconOnSide ? 35 : 45,
           maxLines: 1,
           color: colorValues.loContrast,
         }),
@@ -116,7 +128,7 @@ export function nodeLabel(
         wrapWithFont({
           text: description,
           fontsize: Math.ceil(values.textSize * 0.75),
-          maxchars: hasIcon ? 35 : 45,
+          maxchars: hasIconOnSide ? 35 : 45,
           maxLines: isSmOrXs ? 3 : 5,
           color: colorValues.loContrast,
         }),
@@ -127,33 +139,40 @@ export function nodeLabel(
     return `<${lines[0]}>`
   }
 
-  const rowMapper = hasIcon
+  const rowMapper = hasIconOnSide
     ? (line: string, idx: number, all: string[]) => {
       let cell = `<TD ALIGN="TEXT" BALIGN="LEFT">${line}</TD>`
       // if first row, prepend columns with ROWSPAN
       if (idx === 0) {
         const rowspan = all.length > 1 ? ` ROWSPAN="${all.length}"` : ''
-        let leftwidth = 76 // icon is 60px, plus 10px here and plus 10px padding from node margin
-
-        if (['xs', 'sm'].includes(size)) {
-          leftwidth = 16
-        }
+        const iconWidth = Math.ceil(values.iconSize + 16)
+        let leftwidth = iconWidth
+        const sidePad = 16
 
         if (node.shape === 'queue' || node.shape === 'mobile') {
           // add 20px padding more
           leftwidth += 20
         }
-        // prepend empty cell (left padding)
-        cell = `<TD${rowspan} WIDTH="${leftwidth}"> </TD>${cell}`
-        // append empty cell (right padding)
-        cell = `${cell}<TD${rowspan} WIDTH="16"> </TD>`
+        if (iconPosition === 'right') {
+          cell = `<TD${rowspan} WIDTH="${sidePad}"> </TD>${cell}`
+          cell = `${cell}<TD${rowspan} WIDTH="${leftwidth}"> </TD>`
+        } else {
+          // prepend empty cell (left padding)
+          cell = `<TD${rowspan} WIDTH="${leftwidth}"> </TD>${cell}`
+          // append empty cell (right padding)
+          cell = `${cell}<TD${rowspan} WIDTH="${sidePad}"> </TD>`
+        }
       }
       return `<TR>${cell}</TR>`
     }
     : (line: string) => {
       return `<TR><TD>${line}</TD></TR>`
     }
-  const rows = lines.map(rowMapper).join('')
+  let rows = lines.map(rowMapper).join('')
+  if (hasIcon && (iconPosition === 'top' || iconPosition === 'bottom')) {
+    const iconRow = `<TR><TD HEIGHT="${Math.ceil(values.iconSize + 8)}"> </TD></TR>`
+    rows = iconPosition === 'top' ? `${iconRow}${rows}` : `${rows}${iconRow}`
+  }
   return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">${rows}</TABLE>>`
 }
 

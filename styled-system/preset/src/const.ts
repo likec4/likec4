@@ -50,3 +50,4 @@ export type RadixColor = (typeof AllRadixColors)[number]
 export const radixColors = [...DefaultTagColors] satisfies RadixColor[]
 
 export const iconSize = '--likec4-icon-size'
+export const iconColor = '--likec4-icon-color'

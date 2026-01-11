@@ -2,6 +2,7 @@ import type {
   BorderStyle,
   Color,
   ElementShape,
+  IconPosition,
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
@@ -80,6 +81,9 @@ export namespace ModelFqnExpr {
       shape?: ElementShape
       color?: Color
       icon?: scalar.Icon
+      iconColor?: Color
+      iconSize?: ShapeSize
+      iconPosition?: IconPosition
       border?: BorderStyle
       opacity?: number
       navigateTo?: aux.StrictViewId<A>

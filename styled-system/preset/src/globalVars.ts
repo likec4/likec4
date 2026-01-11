@@ -1,5 +1,5 @@
 import type { Config } from '@pandacss/dev'
-import { iconSize } from './const'
+import { iconColor, iconSize } from './const'
 import { paletteGlobalVars } from './generated'
 
 type ExtendableGlobalVars = NonNullable<Config['globalVars']>
@@ -12,5 +12,6 @@ export const globalVars: ExtendableGlobalVars = {
     '--likec4-spacing': '/*-*/ /*-*/',
     '--text-fz': '/*-*/ /*-*/',
     [iconSize]: '/*-*/ /*-*/',
+    [iconColor]: '/*-*/ /*-*/',
   },
 }

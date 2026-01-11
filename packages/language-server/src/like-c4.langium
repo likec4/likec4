@@ -816,6 +816,21 @@ MultipleProperty:
 IconProperty:
   key='icon' ':'? (libicon=[LibIcon:IconId] | value=('none'|Uri)) ';'?;
 
+IconColorProperty:
+  key='iconColor' ':'? (themeColor=ThemeColor | customColor=[CustomColor:CustomColorId]) ';'?;
+
+IconSizeProperty:
+  key='iconSize' ':'? value=SizeValue ';'?;
+
+IconPositionValue returns string:
+  'left' |
+  'right' |
+  'top' |
+  'bottom';
+
+IconPositionProperty:
+  key='iconPosition' ':'? value=IconPositionValue ';'?;
+
 ShapeProperty:
   key='shape' ':'? value=ElementShape ';'?;
 
@@ -846,7 +861,7 @@ PaddingSizeProperty:
 TextSizeProperty:
   key='textSize' ':'? value=SizeValue ';'?;
 
-type SizeProperty = ShapeSizeProperty | PaddingSizeProperty | TextSizeProperty;
+type SizeProperty = ShapeSizeProperty | PaddingSizeProperty | TextSizeProperty | IconSizeProperty;
 
 StyleProperty:
   ColorProperty |
@@ -854,10 +869,13 @@ StyleProperty:
   BorderProperty |
   OpacityProperty |
   IconProperty |
+  IconColorProperty |
   MultipleProperty |
   ShapeSizeProperty |
   PaddingSizeProperty |
-  TextSizeProperty
+  TextSizeProperty |
+  IconSizeProperty |
+  IconPositionProperty
 ;
 
 ElementStyleProperty:

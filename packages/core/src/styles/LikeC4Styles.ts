@@ -14,6 +14,7 @@ import type {
   LikeC4StylesConfig,
   LikeC4Theme,
   RelationshipColorValues,
+  ShapeSize,
   SpacingSize,
   TextSize,
   ThemeColor,
@@ -23,6 +24,14 @@ import type {
 export const defaultStyle: LikeC4StylesConfig = {
   theme: defaultTheme,
   defaults: styleDefaults,
+}
+
+const IconSizeByShapeSize: Record<ShapeSize, number> = {
+  xs: 24,
+  sm: 36,
+  md: 60,
+  lg: 82,
+  xl: 90,
 }
 
 /**
@@ -125,6 +134,17 @@ export class LikeC4Styles {
     return this.theme.spacing[paddingSize]
   }
 
+  /**
+   * Get icon size in pixels
+   *
+   * @param iconSize - The icon size to use
+   * @default iconSize From the defaults
+   */
+  iconSize(iconSize?: ShapeSize): number {
+    iconSize ??= this.defaults.size
+    return IconSizeByShapeSize[iconSize]
+  }
+
   isThemeColor(color: string): color is ThemeColor {
     return color in this.theme.colors
   }
@@ -140,11 +160,13 @@ export class LikeC4Styles {
    * sizes.size     // enum Size
    * sizes.padding  // enum SpacingSize
    * sizes.textSize // enum TextSize
+   * sizes.iconSize // enum ShapeSize
    *
    * // values
    * values.sizes    // { width: number, height: number }
    * values.padding  // number
    * values.textSize // number
+   * values.iconSize // number
    * ```
    */
   nodeSizes(nodestyles: ComputedNodeStyle) {
@@ -155,6 +177,7 @@ export class LikeC4Styles {
         sizes: this.theme.sizes[sizes.size],
         padding: this.padding(sizes.padding),
         textSize: this.fontSize(sizes.textSize),
+        iconSize: this.iconSize(sizes.iconSize),
       },
     }
   }
