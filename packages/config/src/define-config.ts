@@ -22,9 +22,10 @@ import {
  * export default defineConfig({
  *   name: 'my-project',
  *   title: 'My Project',
+ *
  *   exclude: ['picomatch pattern'],
  *   generators: {
- *     'my-generator': async ({ likec4model, ctx }) => {
+ *     '<generator-name>': async ({ likec4model, ctx }) => {
  *       await ctx.write('my-generator.txt', likec4model.project.id)
  *     }
  *   }

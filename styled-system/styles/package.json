@@ -90,6 +90,9 @@
     "@pandacss/types": {
       "optional": true
     },
+    "react": {
+      "optional": true
+    },
     "@types/react": {
       "optional": true
     }

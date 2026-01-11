@@ -327,6 +327,9 @@ catalogs:
     '@vitejs/plugin-react':
       specifier: ^5.1.2
       version: 5.1.2
+    birpc:
+      specifier: ^4.0.0
+      version: 4.0.0
     rollup:
       specifier: ^4.53.5
       version: 4.53.5
@@ -836,6 +839,12 @@ importers:
 
   packages/config:
     dependencies:
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       bundle-require:
         specifier: catalog:utils
         version: 5.1.0(esbuild@0.27.2)
@@ -858,15 +867,9 @@ importers:
         specifier: catalog:zod4
         version: 4.2.1
     devDependencies:
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1057,6 +1060,9 @@ importers:
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
+      '@xstate/store':
+        specifier: catalog:xstate
+        version: 3.14.0(react@19.2.3)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.10.0(@types/react@19.2.7)(immer@11.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1239,6 +1245,12 @@ importers:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.17.0
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       bundle-require:
         specifier: catalog:utils
         version: 5.1.0(esbuild@0.27.2)
@@ -1252,9 +1264,6 @@ importers:
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -1264,9 +1273,6 @@ importers:
       '@likec4/layouts':
         specifier: workspace:*
         version: link:../layouts
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1620,6 +1626,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.23
         version: 10.4.23(postcss@8.5.6)
+      birpc:
+        specifier: catalog:vite
+        version: 4.0.0
       clsx:
         specifier: catalog:react
         version: 2.1.1
@@ -4769,6 +4778,9 @@ packages:
 
   birpc@2.9.0:
     resolution: {integrity: sha512-KrayHS5pBi69Xi9JmvoqrIgYGDkD6mcSe/i6YKi3w5kekCLzrX4+nawcXqrj2tIp50Kw/mT/s3p+GVK0A0sKxw==}
+
+  birpc@4.0.0:
+    resolution: {integrity: sha512-LShSxJP0KTmd101b6DRyGBj57LZxSDYWKitQNW/mi8GRMvZb078Uf9+pveax1DrVL89vm7mWe+TovdI/UDOuPw==}
 
   blake3-wasm@2.1.5:
     resolution: {integrity: sha512-F1+K8EbfOZE49dtoPtmxUQrpXaBIl3ICvasLh+nJta0xkz+9kF/7uet9fLnwKqhDrmj6g+6K3Tw9yQPUg2ka5g==}
@@ -12479,6 +12491,8 @@ snapshots:
   binary-extensions@2.3.0: {}
 
   birpc@2.9.0: {}
+
+  birpc@4.0.0: {}
 
   blake3-wasm@2.1.5: {}
 

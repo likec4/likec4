@@ -1,5 +1,4 @@
 /// <reference types="vite/client" />
-/// <reference types="../../src/vite-plugin/modules.d.ts" />
 
 declare const __likec4styles: Map<string, string>
 declare const __USE_STYLE_BUNDLE__: boolean

@@ -27,7 +27,7 @@ export function DiagramActorProvider({
   nodesDraggable,
   nodesSelectable,
   fitViewPadding,
-  where,
+  where = null,
   children,
   dynamicViewVariant: _defaultVariant,
 }: PropsWithChildren<{
@@ -37,8 +37,8 @@ export function DiagramActorProvider({
   nodesDraggable: boolean
   nodesSelectable: boolean
   fitViewPadding: ViewPaddings
-  where: WhereOperator | null
-  dynamicViewVariant: DynamicViewDisplayVariant | undefined
+  where?: WhereOperator | null
+  dynamicViewVariant?: DynamicViewDisplayVariant | undefined
 }>) {
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 

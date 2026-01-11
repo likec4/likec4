@@ -1,6 +1,7 @@
 import { LikeC4Diagram, LikeC4EditorProvider } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useNavigate, useSearch } from '@tanstack/react-router'
+import { likec4rpc } from 'likec4:rpc'
 import { NotFound } from '../components/NotFound'
 import { isDevelopment, onViewChangeViaPlugin } from '../const'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
@@ -48,7 +49,7 @@ export function ViewEditor() {
             viewId,
             change,
           }
-          onChange?.(event)
+          return likec4rpc.updateView(event)
         },
       }}>
       <LikeC4Diagram

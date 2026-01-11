@@ -70,11 +70,11 @@
     "defu": "catalog:utils",
     "json5": "catalog:utils",
     "zod": "catalog:zod4",
-    "type-fest": "catalog:utils"
+    "type-fest": "catalog:utils",
+    "@likec4/core": "workspace:*",
+    "@likec4/log": "workspace:*"
   },
   "peerDependencies": {
-    "@likec4/core": "workspace:*",
-    "@likec4/log": "workspace:*",
     "esbuild": "^0.27.2",
     "vscode-uri": "catalog:vscode"
   },

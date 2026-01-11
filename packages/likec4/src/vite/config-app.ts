@@ -133,9 +133,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         quoteStyle: 'single',
       }),
       react(),
-      // Inspect(),
-    ].concat(
-      cfg.outputSingleFile ? [viteSingleFile()] : [],
-    ),
+      cfg.outputSingleFile ? viteSingleFile() : undefined,
+    ],
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }
 }

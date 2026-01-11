@@ -80,7 +80,7 @@ export const Route = createRootRouteWithContext<Context>()({
       }),
     ],
   },
-  beforeLoad: () => {
+  beforeLoad: (): Context => {
     const _projects = projects.length > 0
       ? map(projects, p => p.id)
       : ['default' as ProjectId] satisfies NonEmptyArray<ProjectId>

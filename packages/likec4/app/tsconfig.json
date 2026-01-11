@@ -16,16 +16,10 @@
     "outDir": "../lib/app",
     "rootDir": ".",
     "types": [
-      "vite/client"
-    ],
-    "paths": {
-      "likec4/react": [
-        "../react/index.ts"
-      ],
-      "likec4/model": [
-        "../model/index.ts"
-      ]
-    },
+      "vite/client",
+      "../src/vite-plugin/modules.d.ts",
+      "../src/vite-plugin/rpc/events.d.ts"
+    ]
   },
   "include": [
     "src",
@@ -34,6 +28,9 @@
   "references": [
     {
       "path": "../tsconfig.react.json"
+    },
+    {
+      "path": "../tsconfig.cli.json"
     },
     {
       "path": "../../diagram/tsconfig.src.json"

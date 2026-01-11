@@ -32,7 +32,6 @@ export default defineBuildConfig({
     'content-type': resolve('./src/empty.ts'),
   },
   failOnWarn: isProd,
-
   rollup: {
     esbuild: {
       minify: isProd,

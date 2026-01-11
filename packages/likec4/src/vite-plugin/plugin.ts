@@ -1,11 +1,14 @@
-import { type ProjectId, type ViewChange, type ViewId, invariant, isNonEmptyArray } from '@likec4/core'
+import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
-import { relative } from 'node:path'
 import { isDeepEqual, map } from 'remeda'
 import k from 'tinyrainbow'
-import type { MinimalPluginContextWithoutEnvironment, PluginOption, ViteDevServer } from 'vite'
+import type {
+  Plugin,
+  PluginOption,
+} from 'vite'
 import { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
+import { enablePluginRPC } from './rpc'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
 import { iconsModule, projectIconsModule } from './virtuals/icons'
@@ -15,58 +18,70 @@ import { projectsModule } from './virtuals/projects'
 import { projectsOverviewModule } from './virtuals/projectsOverview'
 import { projectPumlModule, pumlModule } from './virtuals/puml'
 import { projectReactModule, singleProjectReactModule } from './virtuals/react'
+import { rpcModule } from './virtuals/rpc'
 import { singleProjectModule } from './virtuals/single-project'
 
-export type LikeC4VitePluginOptions = {
+type SharedOptions = {
   /**
-   * Initializes a LikeC4 instance from the specified workspace path.
-   * By default it is vite project root.
+   * Define vite environments where this plugin should be active
+   * By default, the plugin is active in all environments
    */
-  workspace?: string
-  /**
-   * By default, if LikeC4 model is invalid, errors are printed to the console.
-   * Disable this behavior by setting this option to false.
-   *
-   * @default true
-   */
-  printErrors?: boolean
-  /**
-   * If true, initialization will return rejected promise with the LikeC4 instance.
-   * Use `likec4.getErrors()` to get the errors.
-   * @default false
-   */
-  throwIfInvalid?: boolean
-  /**
-   * Whether to use the `dot` binary for layouting or the WebAssembly version.
-   * @default 'wasm'
-   */
-  graphviz?: 'wasm' | 'binary'
-
-  /**
-   * If you have instance of {@link LikeC4}
-   * you can pass `languageServices` from it.
-   */
-  languageServices?: LikeC4LanguageServices
-
-  /**
-   * Whether to watch for changes in the workspace.
-   * @default true if vite mode is 'development', false otherwise
-   */
-  watch?: boolean
-
-  /**
-   * @deprecated
-   */
-  useOverviewGraph?: boolean
-} | {
-  languageServices: LikeC4LanguageServices
-  workspace?: never
-  printErrors?: never
-  throwIfInvalid?: never
-  graphviz?: never
-  watch?: never
-  useOverviewGraph?: boolean
+  environments?: string | string[]
 }
+
+export type LikeC4VitePluginOptions =
+  & SharedOptions
+  & ({
+    /**
+     * Initializes a LikeC4 instance from the specified workspace path.
+     * By default it is vite project root.
+     */
+    workspace?: string
+    /**
+     * By default, if LikeC4 model is invalid, errors are printed to the console.
+     * Disable this behavior by setting this option to false.
+     *
+     * @default true
+     */
+    printErrors?: boolean
+    /**
+     * If true, initialization will return rejected promise with the LikeC4 instance.
+     * Use `likec4.getErrors()` to get the errors.
+     * @default false
+     */
+    throwIfInvalid?: boolean
+    /**
+     * Whether to use the `dot` binary for layouting or the WebAssembly version.
+     * @default 'wasm'
+     */
+    graphviz?: 'wasm' | 'binary'
+
+    /**
+     * Whether to watch for changes in the workspace.
+     * @default true if vite mode is 'development', false otherwise
+     */
+    watch?: boolean
+
+    /**
+     * @deprecated
+     */
+    useOverviewGraph?: boolean
+
+    // This option is not allowed when using `workspace`
+    languageServices?: never
+  } | {
+    /**
+     * If you have instance of {@link LikeC4}
+     * you can pass `languageServices` from it.
+     */
+    languageServices: LikeC4LanguageServices
+    workspace?: never
+    printErrors?: never
+    throwIfInvalid?: never
+    graphviz?: never
+    watch?: never
+    useOverviewGraph?: boolean
+  })
 
 const hmrProjectVirtuals = [
   projectModelModule,
@@ -92,13 +107,14 @@ const virtuals = [
   mmdModule,
   pumlModule,
   iconsModule,
+  rpcModule,
 ]
 
 export function LikeC4VitePlugin({
   useOverviewGraph = false,
+  environments,
   ...opts
-}: LikeC4VitePluginOptions): any {
-  let viteRoot: string
+}: LikeC4VitePluginOptions): Plugin {
   let logger: ViteLogger
   let likec4: LikeC4LanguageServices
   let assetsDir: string
@@ -108,8 +124,11 @@ export function LikeC4VitePlugin({
   return {
     name: 'vite-plugin-likec4',
 
+    applyToEnvironment(env) {
+      return environments ? environments.includes(env.name) : true
+    },
+
     async configResolved(config) {
-      viteRoot = config.root
       logger = config.logger
       if (useOverviewGraph === true) {
         const resolvedAlias = config.resolve.alias.find(a => a.find === 'likec4/previews')?.replacement
@@ -183,6 +202,10 @@ export function LikeC4VitePlugin({
     },
 
     configureServer(server) {
+      // Enable RPC via HMR
+      const hotChannel = server.hot
+      enablePluginRPC.call(this, { logger, likec4, server })
+
       const readProjects = () =>
         map(likec4.projects(), p => ({
           id: p.id,
@@ -205,16 +228,17 @@ export function LikeC4VitePlugin({
       likec4.builder.onModelParsed(async () => {
         const [error] = likec4.getErrors()
         if (error) {
-          server.ws.send({
+          const [message, ...stack] = error.message.split('\n') as [string, ...string[]]
+          hotChannel.send({
             type: 'error',
             err: {
               name: 'LikeC4ValidationError',
-              message: 'Validation failed\n' + error.message.slice(0, 500),
-              stack: '',
+              message,
+              stack: stack.join('\n'),
               plugin: 'vite-plugin-likec4',
               loc: {
-                file: relative(viteRoot, error.sourceFsPath),
-                line: error.range.start.line + 1,
+                file: error.sourceFsPath,
+                line: error.line,
                 column: error.range.start.character + 1,
               },
             },
@@ -226,23 +250,16 @@ export function LikeC4VitePlugin({
           _projects = _updated
           await reloadModule(projectsModule.virtualId)
           await reloadModule(modelModule.virtualId)
+          await reloadModule(projectsOverviewModule.virtualId)
           return
         }
-        await reloadModule(projectsOverviewModule.virtualId)
 
-        // Reload project modules
+        // Reload modules per project
         for (const project of _projects) {
           for (const projectModule of hmrProjectVirtuals) {
             await reloadModule(projectModule.virtualId(project.id))
           }
         }
-      })
-
-      enableEditingViaWS.call(this, {
-        logger,
-        likec4,
-        server,
-        reloadModule,
       })
     },
 
@@ -252,74 +269,4 @@ export function LikeC4VitePlugin({
       }
     },
   } satisfies PluginOption
-}
-
-type EnableEditingViaWSParams = {
-  logger: ViteLogger
-  likec4: LikeC4LanguageServices
-  server: ViteDevServer
-}
-function enableEditingViaWS(
-  this: MinimalPluginContextWithoutEnvironment,
-  {
-    logger,
-    likec4,
-    server,
-  }: EnableEditingViaWSParams,
-) {
-  server.ws.on('likec4:view:onChange', async function onChange(data: {
-    projectId: ProjectId
-    viewId: ViewId
-    change: ViewChange
-  }) {
-    try {
-      logger.info([
-        k.green('view:onChange'),
-        k.dim('project') + ':',
-        data.projectId,
-        k.dim('view') + ':',
-        data.viewId,
-        k.dim('change') + ':',
-        data.change.op,
-      ].join(' '))
-      const result = await likec4.editor.applyChange(data)
-      if (!result.success) {
-        logger.error(`Failed to apply view change:\n${result.error}`)
-        const lines = result.error.split('\n')
-        const test = /^\s+at\s+/
-        let stackBeginAt = lines.findIndex(l => test.test(l))
-        if (stackBeginAt === -1) {
-          stackBeginAt = lines.length
-        }
-        server.ws.send({
-          type: 'error',
-          err: {
-            message: lines.slice(0, stackBeginAt).join('\n'),
-            stack: lines.slice(stackBeginAt).join('\n'),
-            name: 'LikeC4ViewChangeError',
-            plugin: 'vite-plugin-likec4',
-          },
-        })
-        return
-      }
-      logger.info([
-        k.green('view:onChange'),
-        '✅',
-      ].join(' '))
-    } catch (e) {
-      const error = e as Error
-      logger.error(`Failed to apply view change`, {
-        error,
-      })
-      server.ws.send({
-        type: 'error',
-        err: {
-          message: error.message,
-          stack: error.stack ?? '',
-          name: error.name,
-          plugin: 'vite-plugin-likec4',
-        },
-      })
-    }
-  })
 }

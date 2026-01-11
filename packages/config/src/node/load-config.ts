@@ -31,12 +31,12 @@ export async function loadConfig(filepath: URI): Promise<LikeC4ProjectConfig> {
       filepath: filepath.fsPath,
       cwd,
       esbuildOptions: {
-        resolveExtensions: ['.mjs', '.js', '.ts', '.mts'],
+        resolveExtensions: ['.ts', '.mts', '.cts', '.mjs', '.js', '.cjs'],
         plugins: [{
           name: 'likec4-config',
           setup(build) {
             /**
-             * Intercept @likec4/config imports
+             * Intercept @likec4/config and likec4/config imports
              */
             build.onResolve({ filter: /^@?likec4\/config$/ }, (args) => ({
               path: args.path,

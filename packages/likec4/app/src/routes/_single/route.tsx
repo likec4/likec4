@@ -16,6 +16,7 @@ export const Route = createFileRoute('/_single')({
       projectId,
     }
   },
+
   component: RouteComponent,
 })
 

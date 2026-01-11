@@ -9,7 +9,7 @@ import { Logo as LogoWithText, LogoIcon } from './Logo'
 const { withProvider, withContext } = createStyleContext(navigationPanel)
 
 const shouldForwardProp = (prop: string, variantKeys: string[]): boolean =>
-  isValidMotionProp(prop) || (!variantKeys.includes(prop) && !isCssProperty(prop))
+  !variantKeys.includes(prop) && (isValidMotionProp(prop) || !isCssProperty(prop))
 
 const LogoButton = forwardRef<HTMLButtonElement, HTMLAttributes<HTMLButtonElement>>(({ className, ...props }, ref) => {
   return (

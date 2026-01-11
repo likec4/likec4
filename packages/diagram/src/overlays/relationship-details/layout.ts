@@ -1,6 +1,6 @@
 import {
   treeFromElements,
-} from '@likec4/core/compute-view/relationships'
+} from '@likec4/core/compute-view'
 import type {
   AnyAux,
   DiagramEdge,

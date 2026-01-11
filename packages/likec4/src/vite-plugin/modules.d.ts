@@ -126,7 +126,7 @@ declare module 'likec4:model' {
 }
 
 declare module 'likec4:single-project' {
-  import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'
+  import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, ProjectId, UnknownLayouted } from 'likec4/model'
   import type { ElementIconRenderer } from 'likec4:icons'
   import type { Atom } from 'likec4:model'
 
@@ -138,7 +138,7 @@ declare module 'likec4:single-project' {
 
   export const IconRenderer: ElementIconRenderer
 
-  export const projectId: string
+  export const projectId: ProjectId
 }
 
 declare module 'likec4:react' {
@@ -190,7 +190,7 @@ declare module 'likec4:model/*' {
   import type { Atom } from 'likec4:model'
 
   // This will be used later for augmenting the types
-  interface Types extends UnknownLayouted {
+  declare interface Types extends UnknownLayouted {
   }
 
   export type LikeC4ViewId = aux.ViewId<Types>
@@ -232,4 +232,11 @@ declare module 'likec4:react/*' {
   export function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element
   export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<Types>): JSX.Element
   export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<Types>): JSX.Element
+}
+
+declare module 'likec4:rpc' {
+  import type { LikeC4VitePluginRpc } from 'likec4/vite-plugin/internal'
+
+  export type { LikeC4VitePluginRpc }
+  export declare const likec4rpc: LikeC4VitePluginRpc
 }

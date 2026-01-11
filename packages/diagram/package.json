@@ -40,6 +40,7 @@
         "default": "./dist/index.js"
       }
     },
+    "./adhoc-editor": "./src/adhoc-editor/index.ts",
     "./custom": {
       "sources": "./src/custom/index.ts",
       "default": {
@@ -89,6 +90,7 @@
     "@nanostores/react": "catalog:react",
     "@react-hookz/web": "catalog:react",
     "@xstate/react": "catalog:xstate",
+    "@xstate/store": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "bezier-js": "^6.1.4",

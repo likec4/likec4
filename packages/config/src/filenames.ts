@@ -6,8 +6,10 @@ const configJsonFilenames = [
 
 const configNonJsonFilenames = [
   'likec4.config.js',
+  'likec4.config.cjs',
   'likec4.config.mjs',
   'likec4.config.ts',
+  'likec4.config.cts',
   'likec4.config.mts',
 ] as const
 

@@ -5,7 +5,9 @@
   "fixed": [
     [
       "likec4",
-      "@likec4/*"
+      "likec4-vscode",
+      "@likec4/*",
+      "!@likec4/icons"
     ]
   ],
   "linked": [],

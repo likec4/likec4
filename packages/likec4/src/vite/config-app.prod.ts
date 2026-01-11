@@ -159,6 +159,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       }),
       // Enable single file output
       isSingleFile ? viteSingleFile() : undefined,
-    ].filter(Boolean),
+    ],
   } satisfies InlineConfig & Omit<LikeC4ViteConfig, 'customLogger'> & { isDev: boolean }
 }

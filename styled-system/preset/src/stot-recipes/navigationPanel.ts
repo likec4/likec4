@@ -84,6 +84,10 @@ export const navigationPanel = defineSlotRecipe({
       userSelect: 'none',
       color: 'likec4.panel.text',
     },
+    dropdown: {
+      layerStyle: 'likec4.dropdown',
+      pointerEvents: 'all',
+    },
   },
   variants: {
     size: {

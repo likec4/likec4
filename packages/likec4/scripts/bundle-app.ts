@@ -1,10 +1,11 @@
-import pandaCss from '@likec4/styles/postcss'
+import pandaCss from '@pandacss/dev/postcss'
 import react from '@vitejs/plugin-react'
 import { $ } from 'execa'
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
 import { build } from 'vite'
+import pkg from '../package.json' with { type: 'json' }
 
 import { amIExecuted } from './_utils'
 
@@ -22,6 +23,11 @@ export async function bundleApp() {
 
   const tsconfig = await readFile('app/tsconfig.json', 'utf-8')
 
+  const externaldependencies = [
+    ...Object.keys(pkg.dependencies),
+    ...Object.keys(pkg.peerDependencies),
+  ]
+
   // Static website
   await build({
     root,
@@ -32,7 +38,7 @@ export async function bundleApp() {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
         '@likec4/diagram': resolve('../diagram/src'),
-        '@likec4/styles': resolve('./styled-system'),
+        '@likec4/styles': resolve('../../styled-system/styles/dist'),
       },
     },
     mode: 'production',
@@ -84,6 +90,15 @@ export async function bundleApp() {
             if (id.includes('@tabler') || id.includes('diagram/src') || id.includes('styled-system')) {
               return 'likec4'
             }
+            if (id.includes('app/src/routes/_single')) {
+              return 'routes/single'
+            }
+            if (id.includes('app/src/routes/project.$')) {
+              return 'routes/projects'
+            }
+            if (id.includes('app/src/route')) {
+              return 'routes/index'
+            }
             if (id.includes('node_modules')) {
               return 'vendors'
             }
@@ -99,6 +114,7 @@ export async function bundleApp() {
           'likec4/model',
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from motion
+          ...externaldependencies,
           resolve(cwd, 'app/src/const.js'),
           /@likec4\/core.*/,
           /likec4:/,

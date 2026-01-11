@@ -101,16 +101,16 @@
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "bundle-require": "catalog:utils",
+    "@likec4/core": "workspace:*",
+    "@likec4/log": "workspace:*",
     "esbuild": "catalog:esbuild"
   },
   "devDependencies": {
     "@hono/node-server": "catalog:hono",
     "@likec4/config": "workspace:*",
-    "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/layouts": "workspace:*",
-    "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@msgpack/msgpack": "^3.1.2",

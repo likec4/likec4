@@ -139,6 +139,8 @@
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "boxen": "^8.0.1",
     "bundle-require": "catalog:utils",
     "esbuild": "catalog:esbuild",
@@ -148,8 +150,6 @@
     "std-env": "catalog:utils",
     "type-fest": "catalog:utils",
     "vite": "catalog:vite",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "yargs": "17.7.2"
   },
   "peerDependencies": {
@@ -188,6 +188,7 @@
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
     "autoprefixer": "^10.4.23",
+    "birpc": "catalog:vite",
     "clsx": "catalog:react",
     "conf": "^15.0.2",
     "defu": "^6.1.4",
@@ -207,9 +208,9 @@
     "nanostores": "catalog:react",
     "npm-run-all2": "^8.0.4",
     "p-limit": "catalog:utils",
-    "picomatch": "catalog:utils",
     "package-manager-detector": "catalog:utils",
     "package-up": "catalog:utils",
+    "picomatch": "catalog:utils",
     "postcss": "catalog:css",
     "pretty-ms": "^9.3.0",
     "react": "catalog:react",
@@ -236,7 +237,7 @@
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
     "wireit": "catalog:",
-    "zod": "catalog:utils",
-    "xstate": "catalog:xstate"
+    "xstate": "catalog:xstate",
+    "zod": "catalog:utils"
   }
 }

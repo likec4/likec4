@@ -9,7 +9,8 @@
     "tsBuildInfoFile": "lib/cli/.tsbuildinfo",
     "outDir": "lib/cli",
     "types": [
-      "node"
+      "node",
+      "./src/vite-plugin/rpc/events.d.ts"
     ],
     "paths": {
       "@/vite/*": [
@@ -22,6 +23,7 @@
     "package.json"
   ],
   "exclude": [
+    "src/vite-plugin/rpc/events.d.ts",
     "src/vite-plugin/modules.d.ts"
   ],
   "references": [

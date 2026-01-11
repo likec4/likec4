@@ -139,6 +139,7 @@ catalogs:
     zod: ^3.25.76
   vite:
     '@vitejs/plugin-react': ^5.1.2
+    birpc: ^4.0.0
     rollup: ^4.53.5
     vite: ^7.3.0
     vite-plugin-dts: ^4.5.4
