@@ -1,4 +1,4 @@
-import type { Except } from 'type-fest'
+import type { Simplify } from 'type-fest'
 import type {
   Color,
   ElementShape,
@@ -23,7 +23,13 @@ import type {
 } from './view-common'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
-export type ComputedNodeStyle = Except<ElementStyle, 'icon' | 'shape' | 'color', { requireExactProps: true }>
+export type ComputedNodeStyle = Simplify<
+  ElementStyle & {
+    icon?: never
+    shape?: never
+    color?: never
+  }
+>
 
 // dprint-ignore
 export interface ComputedNode<A extends AnyAux = AnyAux>

@@ -4,6 +4,7 @@ import type {
   Color,
   ElementShape,
   IconPosition,
+  IconSize,
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
@@ -18,7 +19,7 @@ import type * as scalar from './scalar'
 export interface ElementStyle {
   readonly icon?: scalar.Icon
   readonly iconColor?: Color
-  readonly iconSize?: ShapeSize
+  readonly iconSize?: IconSize
   readonly iconPosition?: IconPosition
   readonly shape?: ElementShape
   readonly color?: Color

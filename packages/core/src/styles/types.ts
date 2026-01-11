@@ -8,6 +8,7 @@ export type Size = TupleToUnion<typeof Sizes>
 export type TextSize = Size
 export type ShapeSize = Size
 export type SpacingSize = Size
+export type IconSize = Size
 
 export const IconPositions = ['left', 'right', 'top', 'bottom'] as const
 export type IconPosition = TupleToUnion<typeof IconPositions>
