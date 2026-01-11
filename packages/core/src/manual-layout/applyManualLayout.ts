@@ -111,6 +111,54 @@ function autoApplyIcon(
   return true
 }
 
+/**
+ * Auto-applies icon style changes according to the rules:
+ * - iconColor is always auto-applied
+ * - iconSize/iconPosition are auto-applied only if size not changed
+ * @returns true if icon style changes were auto-applied, false otherwise
+ */
+function autoApplyIconStyles(
+  draft: WritableDraft<DiagramNode>,
+  next: DiagramNode,
+  sizeNotChanged: boolean,
+): boolean {
+  let applied = true
+
+  if (changed(draft.style.iconColor, next.style.iconColor)) {
+    if (isNullish(next.style.iconColor)) {
+      delete draft.style.iconColor
+    } else {
+      draft.style.iconColor = next.style.iconColor
+    }
+  }
+
+  if (changed(draft.style.iconSize, next.style.iconSize)) {
+    if (sizeNotChanged) {
+      if (isNullish(next.style.iconSize)) {
+        delete draft.style.iconSize
+      } else {
+        draft.style.iconSize = next.style.iconSize
+      }
+    } else {
+      applied = false
+    }
+  }
+
+  if (changed(draft.style.iconPosition, next.style.iconPosition)) {
+    if (sizeNotChanged) {
+      if (isNullish(next.style.iconPosition)) {
+        delete draft.style.iconPosition
+      } else {
+        draft.style.iconPosition = next.style.iconPosition
+      }
+    } else {
+      applied = false
+    }
+  }
+
+  return applied
+}
+
 function patchMarkdownOrString(
   draft: WritableDraft<MarkdownOrString> | undefined | null,
   next: MarkdownOrString,
@@ -322,6 +370,10 @@ function applyNodesManualLayout(
         } else {
           nodeDrifts.add('shape-changed')
         }
+      }
+
+      if (!autoApplyIconStyles(draft, next, sizeNotChanged)) {
+        nodeDrifts.add('label-changed')
       }
 
       // Only auto-apply if size not changed, and compound state not changed

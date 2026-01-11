@@ -22,7 +22,7 @@ export type LayoutedViewDriftReason =
 export type DiagramNodeDriftReason =
   | 'removed' // exists in snapshot but not in latest
   | 'added' // exists in latest but not in snapshot
-  | 'label-changed' // title/description/technology/icon changed
+  | 'label-changed' // title/description/technology/icon/iconStyle changed
   | 'modelRef-changed'
   | 'parent-changed'
   | 'children-changed'

@@ -6,7 +6,21 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 
 - Monorepo managed by `pnpm` workspaces and `turbo`.
 - `apps/` contains user-facing apps (notably `apps/docs` and `apps/playground`).
-- `packages/` holds libraries (`packages/core`, `packages/likec4`, `packages/diagram`, etc.).
+- `packages/` holds:
+  - `./likec4/` - CLI, Vite plugin, static site generator (main entry point)
+  - `./core/` - Core and model types, model builder, compute-view, layout drifts detection logic
+  - `./language-server/` - Langium-based DSL parser and language services (LSP)
+  - `./diagram/` - React/ReactFlow diagram renderer
+  - `./layouts/` - Graphviz-based layout algorithms
+  - `./generators/` - Export to Mermaid, PlantUML, D2, etc.
+  - `./vscode/` - VSCode extension
+  - `./vscode-preview/` - Preview panel component for VSCode
+  - `./config/` - Configuration schema and validation
+  - `./icons/` - Icon bundle (never change, unless you are asked to, package is script-generated)
+  - `./log/` - Shared logging utilities
+  - `./mcp/` - MCP Server as separate package
+  - `./tsconfig/` - Shared TypeScript configuration
+  - `./create-likec4/` - Not used for now
 - `e2e/` is an isolated workspace for Playwright end-to-end tests.
 - `styled-system/preset` holds PandaCSS preset.
 - `styled-system/styles` holds `pandacss codegen` results, shared across packages.
@@ -16,15 +30,15 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 ## Build, Test, and Development Commands
 
 - `pnpm install` installs dependencies (requires Node `>=22.21.1`).
-- `pnpm generate` pre-generates sources; run after big merges or refactors.
+- `pnpm generate` pre-generates sources; always run after big merges or refactors.
 - `pnpm build` builds packages (excludes docs/playground).
-- `pnpm dev` inside `apps/playground` or `packages/likec4` starts hot-reload development.
+- `pnpm typecheck` validates typescript, always run after `pnpm generate`.
 - `pnpm test` runs Vitest suites; (you can run `pnpm test --no-typecheck`)
 - `pnpm lint` (oxlint) and `pnpm fmt` (dprint) enforce style and formatting.
 
 ## Generated Files
 
-Several packages have auto-generated files that MUST be generated before building:
+Several packages have auto-generated files that MUST be generated before:
 
 - `packages/language-server/src/generated/*` - Langium parser (from grammar)
 - `packages/language-server/src/generated-lib/*` - Registry of bundled icons
@@ -32,14 +46,23 @@ Several packages have auto-generated files that MUST be generated before buildin
 - `packages/likec4/app/src/routeTree.gen.ts` - TanStack Router routes
 - `styled-system/preset/src/generated.ts` - Panda CSS preset
 
-Always run `pnpm generate` after checkout or when these files are missing.
+Always run `pnpm generate` after:
+
+- checkout
+- when these files are missing.
+- when changing styles presets in `styled-system/preset`
+- when changing language grammar in `packages/language-server/src/like-c4.langium`
 
 ## Coding Style & Naming Conventions
 
-- TypeScript-first repo; use explicit types, never use `any`.
+- TypeScript-first repo; use explicit types.
+- Avoid using `any`.
 - Formatting is handled by `dprint` (120-column lines, single quotes, no semicolons).
 - Use `oxlint` for linting; keep imports sorted and type-only imports grouped first.
 - Test files are named `*.spec.ts`; may use `__tests__` folders.
+- Use JSDoc to document public classes and methods.
+- Favor switch(true) over if-else chains.
+- Use Context7 MCP tools.
 
 ## Testing Guidelines
 
