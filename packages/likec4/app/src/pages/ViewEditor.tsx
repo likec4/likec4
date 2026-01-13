@@ -5,7 +5,7 @@ import { NotFound } from '../components/NotFound'
 import { isDevelopment, onViewChangeViaPlugin } from '../const'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
-import { ListenForDynamicVariantChange } from './ViewReact'
+import { ListenForDynamicVariantChange, OpenRelationshipBrowserFromUrl } from './ViewReact'
 
 export function ViewEditor() {
   const navigate = useNavigate()
@@ -82,6 +82,7 @@ export function ViewEditor() {
         }}
       >
         <ListenForDynamicVariantChange />
+        <OpenRelationshipBrowserFromUrl />
       </LikeC4Diagram>
     </LikeC4EditorProvider>
   )
