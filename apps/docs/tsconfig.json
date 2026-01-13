@@ -36,10 +36,7 @@
   ],
   "references": [
     {
-      "path": "../../packages/likec4"
-    },
-    {
-      "path": "../../packages/core"
-    },
+      "path": "../../packages/likec4/"
+    }
   ]
 }

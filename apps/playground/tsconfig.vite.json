@@ -4,8 +4,6 @@
   "compilerOptions": {
     "tsBuildInfoFile": "lib/vite.tsbuildinfo",
     "outDir": "lib/vite",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "exactOptionalPropertyTypes": false,
     "rootDir": "."
   },

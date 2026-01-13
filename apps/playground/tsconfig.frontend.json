@@ -46,6 +46,9 @@
     },
     {
       "path": "../../packages/language-server/"
+    },
+    {
+      "path": "../../styled-system/styles/"
     }
   ]
 }

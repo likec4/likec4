@@ -17,13 +17,13 @@
       "path": "./tsconfig.protocol.json"
     },
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
       "path": "../diagram/tsconfig.src.json"
     },
     {
-      "path": "../../styled-system/styles/tsconfig.json"
+      "path": "../../styled-system/styles/"
     }
   ]
 }

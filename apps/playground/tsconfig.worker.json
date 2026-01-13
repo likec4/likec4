@@ -19,7 +19,7 @@
   ],
   "references": [
     {
-      "path": "../../packages/core/tsconfig.json"
+      "path": "../../packages/core/"
     }
   ]
 }
