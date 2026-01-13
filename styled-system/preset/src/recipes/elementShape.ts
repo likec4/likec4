@@ -1,4 +1,5 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
+import { __v, vars } from '../const'
 
 const parts = defineParts({
   root: { selector: '&' },
@@ -19,9 +20,9 @@ export const elementShapeRecipe = defineRecipe({
       height: '100%',
       pointerEvents: 'none',
       overflow: 'visible',
-      ['--likec4-palette-outline']: {
-        base: 'oklab(from var(--likec4-palette-stroke) calc(l - 0.05) a b)',
-        _dark: 'oklab(from var(--likec4-palette-stroke) calc(l + 0.2) a b)',
+      [vars.palette.outline]: {
+        base: `oklch(from ${__v('palette.stroke')} calc(l * 0.9) c h)`,
+        _dark: `oklch(from ${__v('palette.stroke')} calc(l * 1.2) calc(c * 1.05) h)`,
       },
       ['--likec4-outline-size']: `4px`,
     },

@@ -9,7 +9,7 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "generate": "pnpm tsx --conditions=sources ./generate.ts",
+    "generate": "pnpm tsx ./generate.ts",
     "typecheck": "tsc --build --verbose",
     "build": "unbuild",
     "pack": "pnpm pack",
@@ -25,6 +25,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
+    "main": "dist/index.cjs",
     "types": "dist/index.d.mts",
     "module": "dist/index.mjs"
   },
@@ -38,7 +39,17 @@
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
         "default": "./dist/index.mjs"
+      }
+    },
+    "./defaults": {
+      "sources": "./src/defaults/index.ts",
+      "default": {
+        "types": "./dist/defaults/index.d.mts",
+        "import": "./dist/defaults/index.mjs",
+        "require": "./dist/defaults/index.cjs",
+        "default": "./dist/defaults/index.mjs"
       }
     },
     "./src": "./src/index.ts"
@@ -47,12 +58,19 @@
     "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css"
   },
+  "peerDependenciesMeta": {
+    "@pandacss/dev": {
+      "optional": true
+    },
+    "@pandacss/types": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@radix-ui/colors": "^3.0.0",
     "pandacss-preset-radix-colors": "^0.2.0",
-    "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",

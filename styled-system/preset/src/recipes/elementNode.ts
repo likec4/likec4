@@ -22,7 +22,7 @@ export const elementNode = defineRecipe({
       _before: {
         content: '" "',
         position: 'absolute',
-        top: '[calc(100% - 4px)]',
+        top: 'calc(100% - 4px)',
         left: '0',
         width: 'full',
         height: '24px',

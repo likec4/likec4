@@ -18,14 +18,14 @@ export const DefaultTheme = createTheme({
   defaultRadius: 'sm',
   fontFamily: 'var(--likec4-app-font, var(--likec4-app-font-default))',
   headings: {
-    fontWeight: '500',
+    fontWeight: 'medium',
     sizes: {
       h1: {
         // fontSize: '2rem',
-        fontWeight: '600',
+        fontWeight: 'bold',
       },
       h2: {
-        fontWeight: '500',
+        fontWeight: 'medium',
         // fontSize: '1.85rem',
       },
     },

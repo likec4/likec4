@@ -907,6 +907,9 @@ importers:
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
+      '@likec4/style-preset':
+        specifier: workspace:*
+        version: link:../../styled-system/preset
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1075,9 +1078,6 @@ importers:
       immer:
         specifier: catalog:utils
         version: 11.1.0
-      khroma:
-        specifier: catalog:utils
-        version: 2.1.0
       motion:
         specifier: catalog:react
         version: 12.23.26(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -2127,9 +2127,6 @@ importers:
         specifier: catalog:css
         version: 1.7.2
     devDependencies:
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2221,6 +2218,9 @@ importers:
       postcss:
         specifier: catalog:css
         version: 8.5.6
+      remeda:
+        specifier: catalog:utils
+        version: 2.32.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

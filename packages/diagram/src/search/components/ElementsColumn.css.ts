@@ -54,7 +54,7 @@ export const elementId = css({
   fontSize: '10px',
   lineHeight: '1.3',
   display: 'block',
-  fontWeight: 500,
+  fontWeight: 'medium',
   whiteSpace: 'nowrap',
   padding: '[1px 5px]',
   borderRadius: '4px',
@@ -75,7 +75,7 @@ export const elementViewsCount = css({
   flex: 0,
   // color: `[var(${descriptionColor}, {colors.mantine.colors.dimmed})]`,
   fontSize: '10px',
-  fontWeight: 500,
+  fontWeight: 'medium',
   whiteSpace: 'nowrap',
   lineHeight: '1.1',
   [whenContainerIsNarrow]: {

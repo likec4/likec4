@@ -10,11 +10,11 @@ import { defaultTheme } from './theme'
 import type {
   ColorLiteral,
   ElementColorValues,
+  IconSize,
   LikeC4StyleDefaults,
   LikeC4StylesConfig,
   LikeC4Theme,
   RelationshipColorValues,
-  ShapeSize,
   SpacingSize,
   TextSize,
   ThemeColor,
@@ -24,14 +24,6 @@ import type {
 export const defaultStyle: LikeC4StylesConfig = {
   theme: defaultTheme,
   defaults: styleDefaults,
-}
-
-const IconSizeByShapeSize: Record<ShapeSize, number> = {
-  xs: 24,
-  sm: 36,
-  md: 60,
-  lg: 82,
-  xl: 90,
 }
 
 /**
@@ -140,9 +132,9 @@ export class LikeC4Styles {
    * @param iconSize - The icon size to use
    * @default iconSize From the defaults
    */
-  iconSize(iconSize?: ShapeSize): number {
+  iconSize(iconSize?: IconSize): number {
     iconSize ??= this.defaults.size
-    return IconSizeByShapeSize[iconSize]
+    return this.theme.iconSizes[iconSize]
   }
 
   isThemeColor(color: string): color is ThemeColor {

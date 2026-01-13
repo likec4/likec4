@@ -46,7 +46,7 @@ export const autolayoutIcon = css({
 export const autolayoutButton = css({
   flex: '1 1 40%',
   textAlign: 'center',
-  fontWeight: 500,
+  fontWeight: 'medium',
   padding: '[4px 6px]',
   fontSize: '11px',
   zIndex: 1,

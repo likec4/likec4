@@ -3,7 +3,6 @@ import type {
   ThemeColorValues,
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
-import { mix, scale, toHex, toRgba } from 'khroma'
 import { memo } from 'react'
 import { entries, join, map, pipe, range } from 'remeda'
 import { useLikeC4Styles } from './hooks/useLikeC4Styles'
@@ -14,37 +13,40 @@ const whenDark = scheme('dark')
 
 const MAX_DEPTH = 5
 const generateCompoundColors = (rootSelector: string, name: string, colors: ThemeColorValues, depth: number) => {
-  const compoundDarkColor = (color: string) =>
-    toHex(
-      scale(color, {
-        l: -22 - 5 * depth,
-        s: -10 - 6 * depth,
-      }),
-    )
-  const compoundLightColor = (color: string) =>
-    toHex(
-      scale(color, {
-        l: -20 - 3 * depth,
-        s: -3 - 6 * depth,
-      }),
-    )
-  const selector = `:where(${rootSelector} [data-likec4-color="${name}"][data-compound-depth="${depth}"])`
+  depth = Math.min(depth, MAX_DEPTH)
+  const selector = `${rootSelector} :is([data-likec4-color="${name}"][data-compound-depth="${depth}"])`
+
+  const light = {
+    c: 1 - depth * 0.06,
+    l: 1.1 + (depth - 1) * 0.04,
+  }
+
+  const dark = {
+    c: 1 - depth * 0.085,
+    l: 0.8 - (depth - 1) * 0.05,
+  }
 
   return `
 ${selector} {
-  --likec4-palette-fill: ${compoundLightColor(colors.elements.fill)};
-  --likec4-palette-stroke: ${compoundLightColor(colors.elements.stroke)};
+  --likec4-palette-fill: oklch(from ${colors.elements.fill} calc(l * ${light.l}) calc(c * ${light.c}) h);
+  --likec4-palette-stroke: oklch(from ${colors.elements.stroke} calc(l * ${light.l}) calc(c * ${light.c}) h);
 }
+ 
 ${whenDark} ${selector} {
-  --likec4-palette-fill: ${compoundDarkColor(colors.elements.fill)};
-  --likec4-palette-stroke: ${compoundDarkColor(colors.elements.stroke)};
+  --likec4-palette-fill: oklch(from ${colors.elements.fill} calc(l * ${dark.l}) calc(c * ${dark.c}) h);
+  --likec4-palette-stroke: oklch(from ${colors.elements.stroke} calc(l * ${dark.l}) calc(c * ${dark.c}) h);
 }
   `.trim()
 }
 
-function toStyle(rootSelector: string, name: string, colors: ThemeColorValues): string {
+function toStyle(
+  rootSelector: string,
+  name: string,
+  colors: ThemeColorValues,
+  maxDepth: number,
+): string {
   const { elements, relationships } = colors
-  const selector = `:where(${rootSelector} [data-likec4-color=${name}])`
+  const selector = `${rootSelector} :is([data-likec4-color=${name}])`
   return [
     `
 ${selector} {
@@ -55,33 +57,33 @@ ${selector} {
   --likec4-palette-relation-stroke: ${relationships.line};
   --likec4-palette-relation-label: ${relationships.label};
   --likec4-palette-relation-label-bg: ${relationships.labelBg};
-  --likec4-palette-relation-stroke-selected: ${toRgba(mix(relationships.line, 'black', 85))};
+  --likec4-palette-relation-stroke-selected: oklch(from ${relationships.line} calc(l * 0.85) c h);
 }
 ${whenDark} ${selector} {
-  --likec4-palette-relation-stroke-selected: ${toRgba(mix(relationships.line, 'white', 70))};
+  --likec4-palette-relation-stroke-selected: oklch(from ${relationships.line} calc(l * 1.2) calc(c * 1.05) h);
 }
 
   `.trim(),
-    ...range(1, MAX_DEPTH + 1).map((depth) => generateCompoundColors(rootSelector, name, colors, depth)),
+    ...range(1, maxDepth + 1).map((depth) => generateCompoundColors(rootSelector, name, colors, depth)),
   ].join('\n')
 }
 
-function generateBuiltInColorStyles(rootSelector: string, theme: LikeC4StylesConfig['theme']) {
+function generateBuiltInColorStyles(rootSelector: string, theme: LikeC4StylesConfig['theme'], maxDepth: number) {
   return pipe(
     theme.colors,
     entries(),
-    map(([color, values]) => toStyle(rootSelector, color, values)),
+    map(([color, values]) => toStyle(rootSelector, color, values, maxDepth)),
     join('\n'),
   )
 }
 
-export const LikeC4Styles = memo<{ id: string }>(({ id }) => {
+export const LikeC4Styles = memo<{ id: string; maxDepth?: number }>(({ id, maxDepth = MAX_DEPTH }) => {
   const rootSelector = `#${id}`
   const nonce = useMantineStyleNonce()?.()
   const { theme } = useLikeC4Styles()
 
   // const colorsStyles = useMemo(() => generateBuiltInColorStyles(rootSelector, theme), [rootSelector, theme])
-  const colorsStyles = generateBuiltInColorStyles(rootSelector, theme)
+  const colorsStyles = generateBuiltInColorStyles(rootSelector, theme, maxDepth)
 
   return (
     <style
@@ -97,7 +99,7 @@ export const LikeC4Styles = memo<{ id: string }>(({ id }) => {
   //     nonce={nonce}
   //     colorsStyles={colorsStyles} />
   // )
-})
+}, (prev, next) => prev.id === next.id && (prev.maxDepth ?? MAX_DEPTH) === (next.maxDepth ?? MAX_DEPTH))
 
 /**
  * @internal Memoized styles gives a performance boost during development

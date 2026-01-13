@@ -62,7 +62,7 @@ export function ensureSizes<S extends WithSizes>(
     ...rest
   }: S,
   defaultSize = defaultStyle.defaults.size,
-): Omit<S, 'size' | 'padding' | 'textSize' | 'iconSize'> & Required<WithSizes> {
+): Omit<S, keyof WithSizes> & Required<WithSizes> {
   size ??= defaultSize
   textSize ??= size
   padding ??= size

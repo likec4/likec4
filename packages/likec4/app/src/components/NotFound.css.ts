@@ -34,6 +34,6 @@ export const description = css({
 
 export const title = css({
   textAlign: 'center',
-  fontWeight: '900',
+  fontWeight: '[900]',
   fontSize: rem(38),
 })

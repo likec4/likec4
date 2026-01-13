@@ -7,3 +7,7 @@
 export function mixTransparent(color: string, percentage = 50): string {
   return `color-mix(in oklab, ${color} ${percentage}%, transparent ${100 - percentage}%)`
 }
+
+export function rem(pixels: number) {
+  return `${(pixels / 16).toPrecision(3)}rem`
+}

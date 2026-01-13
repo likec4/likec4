@@ -1,19 +1,19 @@
-import { type Preset, definePreset } from '@pandacss/dev'
-import radixColorsPreset from 'pandacss-preset-radix-colors'
-import { animationStyles, keyframes } from './animations'
-import { conditions } from './conditions'
-import { radixColors } from './const'
-import { breakpoints } from './generated'
-import { globalCss } from './globalCss'
-import { globalVars } from './globalVars'
-import { layerStyles } from './layer-styles'
-import { patterns } from './patterns'
-import * as recipes from './recipes'
-import { semanticTokens } from './semantic-tokens'
-import * as slotRecipes from './stot-recipes'
-import { textStyles } from './text-styles'
-import { tokens } from './tokens'
-import { utilities } from './utilities'
+import { definePreset } from '@pandacss/dev'
+
+import { animationStyles, keyframes } from './animations.ts'
+import { conditions } from './conditions.ts'
+import { breakpoints } from './generated.ts'
+import { globalCss } from './globalCss.ts'
+import { globalVars } from './globalVars.ts'
+import { layerStyles } from './layer-styles.ts'
+import { patterns } from './patterns.ts'
+import { radixColorsPreset } from './radixColors.ts'
+import * as recipes from './recipes/index.ts'
+import * as slotRecipes from './stot-recipes/index.ts'
+import { textStyles } from './text-styles.ts'
+import { semanticTokens } from './tokens-semantic.ts'
+import { tokens } from './tokens.ts'
+import { utilities } from './utilities.ts'
 
 export const theme = {
   breakpoints,
@@ -36,18 +36,8 @@ export const theme = {
 
 export default definePreset({
   name: 'likec4',
-  // Whether to use css reset
-  // presets: [
-  //   PandaPreset as any,
-  // ],
   presets: [
-    radixColorsPreset({
-      autoP3: false,
-      darkMode: {
-        condition: '[data-mantine-color-scheme="dark"] &',
-      },
-      colorScales: radixColors,
-    }) as unknown as Preset,
+    radixColorsPreset,
   ],
   globalVars,
   globalCss,

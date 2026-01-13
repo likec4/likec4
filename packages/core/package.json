@@ -130,6 +130,7 @@
     "@dagrejs/dagre": "catalog:",
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
     "@types/chroma-js": "catalog:utils",
     "@types/extend": "3.0.4",

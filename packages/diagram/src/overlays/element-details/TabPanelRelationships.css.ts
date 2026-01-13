@@ -3,7 +3,7 @@ import { css } from '@likec4/styles/css'
 export const fqn = css({
   display: 'inline-block',
   fontSize: 'sm',
-  fontWeight: 500,
+  fontWeight: 'medium',
   whiteSpace: 'nowrap',
   padding: '[3px 6px]',
   borderRadius: 3,
@@ -58,7 +58,7 @@ export const panelScope = css({
     top: '0',
     left: '2',
     fontSize: 'xxs',
-    fontWeight: 500,
+    fontWeight: 'medium',
     lineHeight: '1',
     color: 'mantine.colors.dimmed',
     opacity: 0.85,
@@ -74,7 +74,7 @@ export const panelScope = css({
 export const edgeNum = css({
   display: 'inline-block',
   fontSize: 'xl',
-  fontWeight: 600,
+  fontWeight: 'bold',
   padding: '[1px 5px]',
   minWidth: 24,
   textAlign: 'center',

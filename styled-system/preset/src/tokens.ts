@@ -1,8 +1,23 @@
 import { defineTokens } from '@pandacss/dev'
-import { mantine, tokens as generated } from './generated'
+import { mapValues } from 'remeda'
+import { defaultTheme } from './defaults/index.ts'
+import { mantine, tokens as generated } from './generated.ts'
+import { rem } from './helpers.ts'
+import { colors } from './tokens.colors.ts'
 
 export const tokens = defineTokens({
-  ...generated,
+  fontSizes: {
+    ...generated.fontSizes,
+    'xxs': {
+      value: rem(10),
+    },
+    likec4: {
+      ...mapValues(defaultTheme.textSizes, (value, key) => ({
+        description: `LikeC4 Diagram Text Size: ${key}`,
+        value: rem(value),
+      })),
+    },
+  },
   lineHeights: {
     ...generated.lineHeights,
     '1': {
@@ -23,7 +38,6 @@ export const tokens = defineTokens({
     default: { value: `1px solid ${mantine.colors.defaultBorder}` },
   },
   spacing: {
-    ...generated.spacing,
     '0': {
       description: 'Non-scalable spacing value - 0px',
       value: '0px',
@@ -112,6 +126,12 @@ export const tokens = defineTokens({
       description: 'Scalable spacing value - (2rem * var(--scale)) (32px)',
       value: 'calc(2rem * var(--mantine-scale))', // 32px
     },
+    likec4: {
+      ...mapValues(defaultTheme.spacing, (value, key) => ({
+        description: `LikeC4 Diagram Spacing: ${key}`,
+        value: `${value}px`,
+      })),
+    },
   },
   radii: {
     0: {
@@ -133,19 +153,19 @@ export const tokens = defineTokens({
       value: '2rem',
     },
   },
-  colors: {
-    ...generated.colors,
-    // For typesafety, otherwise wrap with []
-    transparent: { value: 'transparent' },
-    // For fill: none
-    none: { value: 'none' },
-  },
+  colors,
   fontWeights: {
     normal: {
       value: '400',
     },
     medium: {
       value: '500',
+    },
+    bold: {
+      value: '600',
+    },
+    bolder: {
+      value: '700',
     },
   },
   fonts: {
@@ -214,6 +234,19 @@ export const tokens = defineTokens({
       value: '1',
     },
     likec4: {
+      diagram: {
+        node: {
+          compound: {
+            value: '10',
+          },
+          edge: {
+            value: '20',
+          },
+          element: {
+            value: '40',
+          },
+        },
+      },
       panel: {
         value: '100',
       },

@@ -124,7 +124,7 @@ export const textStyles = defineTextStyles({
         value: {
           fontSize: '0.875rem',
           lineHeight: '1.25rem',
-          fontWeight: 500,
+          fontWeight: 'medium',
           color: 'likec4.panel.text',
         },
       },
@@ -133,7 +133,7 @@ export const textStyles = defineTextStyles({
         value: {
           fontSize: '0.875rem',
           lineHeight: '1.25rem',
-          fontWeight: 500,
+          fontWeight: 'medium',
           color: {
             base: 'likec4.panel.action',
             _hover: 'likec4.panel.action.hover',
@@ -146,7 +146,7 @@ export const textStyles = defineTextStyles({
         description: 'Primary text, usually a title or name',
         value: {
           fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
-          fontWeight: 500,
+          fontWeight: 'medium',
           fontSize: 'var(--likec4-text-size)',
           lineHeight: 1.15,
           textWrapStyle: 'balance',
@@ -157,7 +157,7 @@ export const textStyles = defineTextStyles({
         description: 'Secondary text, usually a description or technology',
         value: {
           fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
-          fontWeight: 400,
+          fontWeight: 'medium',
           fontSize: `[calc(var(--likec4-text-size) * 0.74)]`,
           lineHeight: 1.3,
           textWrapStyle: 'pretty',

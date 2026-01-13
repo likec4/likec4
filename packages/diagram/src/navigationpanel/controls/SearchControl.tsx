@@ -51,7 +51,7 @@ export const SearchControl = memo(() => {
           <Box
             css={{
               fontSize: '11px',
-              fontWeight: 600,
+              fontWeight: 'bold',
               lineHeight: 1,
               opacity: 0.8,
               whiteSpace: 'nowrap',

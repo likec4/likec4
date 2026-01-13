@@ -43,6 +43,7 @@ export function CompoundActionButton({
       className="likec4-compound-navigation compound-action"
       whileTap={{ scale: 1 }}
       onClick={stopPropagation}
+      tabIndex={-1}
     >
       <ActionIcon
         className={cx(
@@ -52,6 +53,7 @@ export function CompoundActionButton({
           }),
           actionBtn({ variant: 'transparent' }),
         )}
+        tabIndex={-1}
         // Otherwise node receives click event and is selected
         onClick={onClick}
         onDoubleClick={stopPropagation}

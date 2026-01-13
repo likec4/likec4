@@ -26,7 +26,7 @@ const nodeTypes: RelationshipsBrowserTypes.NodeRenderers = {
   empty: EmptyNode,
 }
 
-export const edgeTypes = {
+const edgeTypes = {
   relationship: RelationshipEdge,
 }
 export type RelationshipsBrowserProps = {

@@ -1,29 +1,11 @@
 import { cx } from '@likec4/styles/css'
-import { Box } from '@likec4/styles/jsx'
-import { hstack } from '@likec4/styles/patterns'
-import { actionBtn } from '@likec4/styles/recipes'
+import { actionBtn, actionButtons } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import { IconBolt } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import { stopPropagation } from '../../utils/xyflow'
-
-const container = hstack({
-  position: 'absolute',
-  zIndex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  _smallZoom: {
-    display: 'none',
-  },
-})
-
-const actionButtons = hstack({
-  gap: '1.5',
-  justifyContent: 'center',
-  alignItems: 'center',
-})
 
 type ElementActionButtonsProps = {
   selected?: boolean
@@ -70,15 +52,7 @@ export function ElementActionButtons({
     return null
   }
   return (
-    <Box
-      className={container}
-      style={{
-        top: `calc(100% - 30px)`,
-        transform: 'translateX(-50%)',
-        left: `50%`,
-        width: 'auto',
-        minHeight: 30,
-      }}>
+    <div className={actionButtons()}>
       <m.div
         layoutRoot
         initial={false}
@@ -92,7 +66,8 @@ export function ElementActionButtons({
         }}
         layoutDependency={`${isHovered}-${selected}`}
         data-likec4-hovered={isHovered}
-        className={cx('nodrag nopan', actionButtons)}
+        className={cx('nodrag nopan')}
+        onClick={stopPropagation}
       >
         {buttons.map((button, index) => (
           <ActionIcon
@@ -105,6 +80,7 @@ export function ElementActionButtons({
             whileHover={{
               scale: 1.3,
             }}
+            tabIndex={-1}
             onClick={button.onClick}
             // Otherwise node receives click event and is selected
             onDoubleClick={stopPropagation}
@@ -113,7 +89,7 @@ export function ElementActionButtons({
           </ActionIcon>
         ))}
       </m.div>
-    </Box>
+    </div>
   )
 }
 

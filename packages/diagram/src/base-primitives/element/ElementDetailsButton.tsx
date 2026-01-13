@@ -74,6 +74,7 @@ export function ElementDetailsButton({
         whileTap={{ scale: 1.15 }}
         onClick={onClick}
         onDoubleClick={stopPropagation}
+        tabIndex={-1}
       >
         {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
       </ActionIcon>

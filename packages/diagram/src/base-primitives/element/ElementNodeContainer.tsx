@@ -1,4 +1,4 @@
-import { type Color, type ElementShape, type ElementStyle, ensureSizes } from '@likec4/core/types'
+import { type Color, type ComputedNodeStyle, type ElementShape, ensureSizes } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { elementNode } from '@likec4/styles/recipes'
 import type { MotionNodeLayoutOptions } from 'motion/react'
@@ -9,7 +9,7 @@ import type { BaseNodePropsWithData } from '../../base/types'
 type RequiredData = {
   color: Color
   shape: ElementShape
-  style?: ElementStyle
+  style?: ComputedNodeStyle
 }
 
 type ElementNodeContainerProps = PropsWithChildren<
@@ -83,6 +83,7 @@ export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContai
       style={{
         ...style as any,
       }}
+      tabIndex={-1}
       {...rest}
     >
       {children}

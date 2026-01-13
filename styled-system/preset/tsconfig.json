@@ -4,6 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "src",
+    "allowImportingTsExtensions": true,
     "lib": [
       "ES2022",
       "DOM"

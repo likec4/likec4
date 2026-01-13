@@ -21,10 +21,13 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
-      "path": "../../styled-system/styles/tsconfig.json"
+      "path": "../../styled-system/preset/"
+    },
+    {
+      "path": "../../styled-system/styles/"
     }
   ]
 }

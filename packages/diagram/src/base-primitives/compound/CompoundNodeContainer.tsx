@@ -70,6 +70,7 @@ export function CompoundNodeContainer({
       {...isDimmed !== false && {
         'data-likec4-dimmed': isDimmed,
       }}
+      tabIndex={-1}
       style={{
         ...style,
         // @ts-expect-error

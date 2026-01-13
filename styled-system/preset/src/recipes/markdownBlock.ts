@@ -51,7 +51,7 @@ export const markdownBlock = defineRecipe({
     },
 
     fontSize: 'var(--text-fz-md)',
-    lineHeight: 'var(--mantine-line-height)',
+    lineHeight: mantine.lineHeight,
 
     '& :first-child': {
       marginTop: '0',
@@ -63,7 +63,7 @@ export const markdownBlock = defineRecipe({
     '& :where(h1, h2, h3, h4, h5, h6)': {
       lineHeight: '1.5',
       textWrap: 'var(--mantine-heading-text-wrap)',
-      fontFamily: 'var(--mantine-font-family-headings)',
+      fontFamily: mantine.fontFamilyHeadings,
       marginBottom: 'var(--typography-spacing)',
     },
     '& :is(h1, h2, h3, h4, h5, h6):not(:first-child)': {
@@ -148,7 +148,7 @@ export const markdownBlock = defineRecipe({
     '& :where(pre)': {
       px: '3',
       py: '2',
-      lineHeight: 'var(--mantine-line-height-xs)',
+      lineHeight: mantine.lineHeights.xs,
       margin: '0',
       marginTop: 'var(--typography-spacing)',
       marginBottom: 'var(--typography-spacing)',
@@ -192,7 +192,7 @@ export const markdownBlock = defineRecipe({
       marginBottom: 'var(--typography-spacing)',
 
       _light: {
-        ['--table-border-color']: 'var(--mantine-color-gray-3)',
+        ['--table-border-color']: mantine.colors.gray['3'],
       },
 
       _dark: {

@@ -353,7 +353,7 @@ const RelationshipPopoverInternal = ({
           size="compact-xs"
           style={{
             alignSelf: 'flex-start',
-            fontWeight: 500,
+            fontWeight: 'medium',
             ['--button-fz']: 'var(--font-sizes-xxs)',
           }}
           onClick={(e) => {
@@ -439,7 +439,7 @@ const Relationship = forwardRef<
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       <div
         style={{
-          fontWeight: 600,
+          fontWeight: 'bold',
           fontSize: '10px',
           color: '#868e96',
           marginBottom: '2px',
@@ -462,7 +462,7 @@ const Relationship = forwardRef<
             <div key={key} style={{ display: 'flex', gap: '12px', fontSize: '12px', lineHeight: '1.4' }}>
               <span
                 style={{
-                  fontWeight: 600,
+                  fontWeight: 'bold',
                   minWidth: '110px',
                   color: '#495057',
                 }}>
@@ -627,7 +627,7 @@ const Label = styled('div', {
   base: {
     display: 'block',
     fontSize: 'xxs',
-    fontWeight: 500,
+    fontWeight: 'medium',
     userSelect: 'none',
     lineHeight: 'sm',
     color: 'mantine.colors.dimmed',

@@ -3,7 +3,7 @@ import { css } from '@likec4/styles/css'
 export const endpoint = css({
   display: 'block',
   fontSize: 'xxs',
-  fontWeight: 500,
+  fontWeight: 'medium',
   whiteSpace: 'nowrap',
   paddingX: '1',
   paddingY: '0.5',

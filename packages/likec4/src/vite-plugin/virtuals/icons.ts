@@ -46,8 +46,8 @@ ${imports.join('\n')}
 const Icons = {
 ${cases.join(',\n')}
 }
-export function IconRenderer(props) {
-  const IconComponent = Icons[props.node.icon ?? '']
+export function IconRenderer({ node, ...props }) {
+  const IconComponent = Icons[node.icon ?? '']
   if (!IconComponent) {
     return null
   }

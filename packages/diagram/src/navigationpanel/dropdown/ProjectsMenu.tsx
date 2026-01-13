@@ -17,7 +17,7 @@ export const ProjectsMenu = memo(_ => {
     <HStack gap="0.5" alignItems="baseline">
       <Box
         css={{
-          fontWeight: '400',
+          fontWeight: 'normal',
           fontSize: 'xxs',
           color: 'likec4.panel.text.dimmed',
           userSelect: 'none',
@@ -38,7 +38,7 @@ export const ProjectsMenu = memo(_ => {
             color="gray"
             classNames={{
               root: css({
-                fontWeight: '400',
+                fontWeight: 'normal',
                 fontSize: 'xxs',
                 height: 'auto',
                 lineHeight: 1.1,

@@ -1,5 +1,6 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
-import { iconColor, iconSize } from '../const'
+import { __v, vars } from '../const'
+import { defaultSizes } from '../defaults/sizes'
 
 const parts = defineParts({
   root: { selector: '&' },
@@ -10,15 +11,12 @@ const parts = defineParts({
   technology: { selector: '& [data-likec4-node-technology]' },
 })
 
-const varIconSize = `var(${iconSize}, 48px)`
-const varIconColor = `var(${iconColor}, var(--likec4-palette-hiContrast))`
-
 const textAlign = '__text-align'
 const varTextAlign = `var(${textAlign})`
 
 export const elementNodeData = defineRecipe({
   className: 'likec4-element-node-data',
-  jsx: ['ElementNodeData', 'ElementNodeData.Root', 'ElementTitle'],
+  jsx: ['ElementNodeData', 'ElementNodeData.Root', 'ElementTitle', 'Root'],
   base: parts({
     root: {
       position: 'relative',
@@ -32,10 +30,10 @@ export const elementNodeData = defineRecipe({
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
-      paddingTop: 'var(--likec4-spacing)',
-      paddingBottom: 'var(--likec4-spacing)',
-      paddingLeft: 'calc(var(--likec4-spacing) + 8px)',
-      paddingRight: 'calc(var(--likec4-spacing) + 8px)',
+      paddingTop: __v('spacing'),
+      paddingBottom: __v('spacing'),
+      paddingLeft: `calc(${__v('spacing')} + 8px)`,
+      paddingRight: `calc(${__v('spacing')} + 8px)`,
       overflow: 'hidden',
       pointerEvents: 'none',
       gap: '3',
@@ -58,80 +56,40 @@ export const elementNodeData = defineRecipe({
         paddingBottom: '28px',
       },
       _shapeBucket: {
-        paddingLeft: 'calc(var(--likec4-spacing) + 20px)',
-        paddingRight: 'calc(var(--likec4-spacing) + 20px)',
+        paddingLeft: `calc($v("spacing") + 20px)`,
+        paddingRight: `calc($v("spacing") + 20px)`,
       },
 
       _shapeSizeXs: {
-        [iconSize]: '24px',
+        [vars.icon.size]: `${defaultSizes.iconSizes.xs}px`,
       },
       _shapeSizeSm: {
-        [iconSize]: '36px',
+        [vars.icon.size]: `${defaultSizes.iconSizes.sm}px`,
       },
       _shapeSizeMd: {
-        [iconSize]: '60px',
+        [vars.icon.size]: `${defaultSizes.iconSizes.md}px`,
       },
       _shapeSizeLg: {
-        [iconSize]: '82px',
+        [vars.icon.size]: `${defaultSizes.iconSizes.lg}px`,
         gap: '4',
       },
       _shapeSizeXl: {
-        [iconSize]: '90px',
+        [vars.icon.size]: `${defaultSizes.iconSizes.xl}px`,
         gap: '4',
       },
 
       [textAlign]: 'center',
-
-      // When node has icon
-      '&:has([data-likec4-icon])': {
-        [textAlign]: 'left',
-        gap: '4',
-
-        '& .likec4-element-node-content': {
-          minWidth: `calc(50% + var(${iconSize}))`,
-          alignItems: 'flex-start',
-        },
-      },
-
-      '&[data-likec4-icon-position="right"]:has([data-likec4-icon])': {
-        flexDirection: 'row-reverse',
-        [textAlign]: 'right',
-        '& .likec4-element-node-content': {
-          alignItems: 'flex-end',
-        },
-      },
-      '&[data-likec4-icon-position="top"]:has([data-likec4-icon])': {
-        flexDirection: 'column',
-        [textAlign]: 'center',
-        '& .likec4-element-node-content': {
-          minWidth: 'unset',
-          alignItems: 'center',
-        },
-        '& [data-likec4-icon]': {
-          alignSelf: 'center',
-        },
-      },
-      '&[data-likec4-icon-position="bottom"]:has([data-likec4-icon])': {
-        flexDirection: 'column-reverse',
-        [textAlign]: 'center',
-        '& .likec4-element-node-content': {
-          minWidth: 'unset',
-          alignItems: 'center',
-        },
-        '& [data-likec4-icon]': {
-          alignSelf: 'center',
-        },
-      },
     },
     icon: {
-      flex: `0 0 ${varIconSize}`,
-      height: varIconSize,
-      width: varIconSize,
+      flex: `0 0 ${__v('icon.size', '48px')}`,
+      height: __v('icon.size', '48px'),
+      width: __v('icon.size', '48px'),
       display: 'flex',
       alignSelf: 'flex-start',
       alignItems: 'center',
       justifyContent: 'center',
-      color: varIconColor,
+      pointerEvents: 'none',
+      color: __v('icon.color', 'palette.hiContrast'),
       mixBlendMode: {
         base: 'hard-light',
         _reduceGraphicsOnPan: 'normal',
@@ -140,7 +98,6 @@ export const elementNodeData = defineRecipe({
         width: '100%',
         height: 'auto',
         maxHeight: '100%',
-        pointerEvents: 'none',
         filter: {
           base: [
             'drop-shadow(0 0 3px rgb(0 0 0 / 12%))',
@@ -175,21 +132,25 @@ export const elementNodeData = defineRecipe({
       textStyle: 'likec4.node.primary',
       flex: '0 0 auto',
       textAlign: varTextAlign,
-      color: 'var(--likec4-palette-hiContrast)',
+      color: __v('palette.hiContrast'),
     },
     description: {
       flexGrow: '0',
       flexShrink: '1',
       textStyle: 'likec4.node.secondary',
-      color: 'var(--likec4-palette-loContrast)',
+      color: __v('palette.loContrast'),
       textAlign: varTextAlign,
       textOverflow: 'ellipsis',
       overflow: 'hidden',
       _shapeSizeXs: {
-        display: 'none',
+        display: 'none!',
+      },
+      lineClamp: {
+        base: '5',
+        _shapeSizeSm: '3',
       },
       _smallZoom: {
-        display: 'none',
+        display: 'none!',
       },
 
       '& a': {
@@ -203,8 +164,8 @@ export const elementNodeData = defineRecipe({
     technology: {
       flex: '0 0 auto',
       textStyle: 'likec4.node.secondary',
-      color: 'var(--likec4-palette-loContrast)',
-      fontSize: `calc(var(--likec4-text-size) * 0.635)`,
+      color: __v('palette.loContrast'),
+      fontSize: `calc(${__v('textsize')} * 0.635)`,
       lineHeight: 1.125,
       textAlign: varTextAlign,
       textWrap: 'balance',
@@ -213,17 +174,79 @@ export const elementNodeData = defineRecipe({
         opacity: 1,
       },
       _shapeSizeXs: {
-        display: 'none',
+        display: 'none!',
       },
       _shapeSizeSm: {
-        display: 'none',
+        display: 'none!',
       },
       _smallZoom: {
-        display: 'none',
+        display: 'none!',
       },
     },
   }),
+  variants: {
+    iconPosition: {
+      top: parts({
+        root: {
+          '&:has([data-likec4-icon])': {
+            flexDirection: 'column',
+            [textAlign]: 'center',
+            '& .likec4-element-node-content': {
+              minWidth: 'unset',
+              alignItems: 'center',
+            },
+          },
+        },
+        icon: {
+          alignSelf: 'center',
+        },
+      }),
+      right: parts({
+        root: {
+          '&:has([data-likec4-icon])': {
+            flexDirection: 'row-reverse',
+            [textAlign]: 'right',
+            '& .likec4-element-node-content': {
+              alignItems: 'flex-end',
+            },
+          },
+        },
+      }),
+      bottom: parts({
+        root: {
+          '&:has([data-likec4-icon])': {
+            flexDirection: 'column-reverse',
+            [textAlign]: 'center',
+            '& .likec4-element-node-content': {
+              minWidth: 'unset',
+              alignItems: 'center',
+            },
+          },
+        },
+        icon: {
+          alignSelf: 'center',
+        },
+      }),
+      left: parts({
+        root: {
+          '&:has([data-likec4-icon])': {
+            [textAlign]: 'left',
+            gap: '4',
+
+            '& .likec4-element-node-content': {
+              minWidth: `calc(50% + ${__v('icon.size')})`,
+              alignItems: 'flex-start',
+            },
+          },
+        },
+      }),
+    },
+  },
+  defaultVariants: {
+    iconPosition: 'left',
+  },
   staticCss: [{
+    iconPosition: ['*'],
     conditions: ['*'],
   }],
 })

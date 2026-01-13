@@ -15,4 +15,9 @@
     "src",
     "src/**/*.json"
   ],
+  "references": [
+    {
+      "path": "../../styled-system/preset/"
+    }
+  ]
 }

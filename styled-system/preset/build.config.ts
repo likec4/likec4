@@ -1,7 +1,6 @@
 import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
-  stub: false,
   clean: true,
   declaration: 'node16',
   rollup: {
@@ -9,9 +8,9 @@ export default defineBuildConfig({
       minify: false,
       lineLimit: 500,
     },
-    inlineDependencies: true,
-    resolve: {
-      exportConditions: ['sources'],
+    output: {
+      exports: 'named',
     },
+    inlineDependencies: true,
   },
 })

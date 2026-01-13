@@ -30,6 +30,8 @@ export function defineConfig(config: Omit<Config, 'importMap' | 'presets' | 'plu
           'animations',
           'easings',
           'spacing',
+          'fontWeights',
+          // 'fontSizes',
           // 'sizes',
           // 'lineHeights',
           // 'shadows',

@@ -1,4 +1,6 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
+import { __v, vars } from '../const'
+import { mixTransparent } from '../helpers'
 
 const borderWidth = {
   var: '--_border-width',
@@ -57,16 +59,17 @@ export const compoundNode = defineRecipe({
       borderWidth: borderWidth.ref,
       borderRadius: borderRadius.ref,
       boxSizing: 'border-box',
-      ['--likec4-palette-outline']: {
-        base: 'oklab(from var(--likec4-palette-stroke) calc(l - 0.05) a b)',
-        _dark: 'oklab(from var(--likec4-palette-stroke) calc(l + 0.2) a b)',
+      [vars.palette.outline]: {
+        base: `oklch(from ${__v('palette.stroke')} calc(l * 0.9) c h)`,
+        _dark: `oklch(from ${__v('palette.stroke')} calc(l * 1.2) calc(c * 1.05) h)`,
       },
       [borderWidth.var]: '3px',
       [borderRadius.var]: '6px',
       [compoundTransparency.var]: '100%',
       [borderTransparency.var]: '100%',
       [indicatorSpacing.var]: `calc(${borderWidth.ref} + 1px)`,
-      [compoundColor.var]: 'var(--likec4-palette-loContrast)',
+      [compoundColor.var]: __v('palette.loContrast'),
+      [vars.icon.color]: compoundColor.ref,
       color: compoundColor.ref,
 
       _before: {
@@ -79,7 +82,7 @@ export const compoundNode = defineRecipe({
         borderStyle: 'solid',
         borderWidth: `calc(${borderWidth.ref} + 1px)`,
         borderRadius: `calc(${borderRadius.ref} + 4px)`,
-        borderColor: 'var(--likec4-palette-outline)',
+        borderColor: __v('palette.outline'),
         pointerEvents: 'none',
         display: {
           base: 'none',
@@ -202,14 +205,18 @@ export const compoundNode = defineRecipe({
             _whenSelected: 'none',
             _whenPanning: 'none !important',
           },
-          backgroundColor: 'var(--likec4-palette-fill)',
-          borderColor: 'var(--likec4-palette-stroke)',
+          backgroundColor: __v('palette.fill'),
+          borderColor: __v('palette.stroke'),
         },
       }),
       true: parts({
         root: {
-          backgroundColor: `color-mix(in oklab, var(--likec4-palette-fill) ${compoundTransparency.ref}, transparent)`,
-          borderColor: `color-mix(in oklab, var(--likec4-palette-stroke) ${borderTransparency.ref}, transparent)`,
+          backgroundColor: `color-mix(in oklab, ${__v('palette.fill')} ${compoundTransparency.ref}, transparent)`,
+          borderColor: `color-mix(in oklab, ${__v('palette.stroke')} ${borderTransparency.ref}, transparent)`,
+          // [vars.palette.outline]: {
+          //   base: `oklch(from ${__v('palette.stroke')} calc(l * 0.85) c h / ${borderTransparency.ref})`,
+          //   _dark: `oklch(from ${__v('palette.stroke')} calc(l * 1.2) c h / ${borderTransparency.ref})`,
+          // },
         },
       }),
     },
@@ -218,20 +225,20 @@ export const compoundNode = defineRecipe({
       true: parts({
         root: {
           [compoundColor.var]: {
-            base: 'var(--likec4-palette-stroke)',
-            _dark: '[color-mix(in oklab, var(--likec4-palette-loContrast) 60%, var(--likec4-palette-fill))]',
+            base: __v('palette.stroke'),
+            _dark: `color-mix(in oklab, ${__v('palette.loContrast')} 60%, ${__v('palette.fill')})`,
           },
         },
         actionBtn: {
           _dark: {
-            '--actionbtn-color-hovered-btn': 'var(--likec4-palette-loContrast)',
+            '--actionbtn-color-hovered-btn': __v('palette.loContrast'),
           },
           _light: {
-            '--actionbtn-color': 'var(--likec4-palette-stroke)',
-            '--actionbtn-color-hovered': 'var(--likec4-palette-stroke)',
-            '--actionbtn-color-hovered-btn': 'var(--likec4-palette-hiContrast)',
-            '--actionbtn-bg-hovered': `var(--likec4-palette-fill)/50`,
-            '--actionbtn-bg-hovered-btn': `var(--likec4-palette-fill)`,
+            '--actionbtn-color': __v('palette.stroke'),
+            '--actionbtn-color-hovered': __v('palette.stroke'),
+            '--actionbtn-color-hovered-btn': __v('palette.hiContrast'),
+            '--actionbtn-bg-hovered': mixTransparent(__v('palette.fill'), 50),
+            '--actionbtn-bg-hovered-btn': `${__v('palette.fill')}`,
           },
         },
       }),
