@@ -1,4 +1,4 @@
-import type { NonEmptyArray, NonEmptyReadonlyArray, ProjectId } from '@likec4/core/types'
+import type { Fqn, NonEmptyArray, NonEmptyReadonlyArray, ProjectId } from '@likec4/core/types'
 import { useMantineColorScheme } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { projects } from 'likec4:projects'
@@ -38,10 +38,26 @@ const asDynamicVariant = (v: unknown): 'diagram' | 'sequence' => {
   return 'diagram'
 }
 
+/**
+ * Validates and normalizes a value as an FQN.
+ * @param v - Value to validate from URL parameters
+ * @returns Trimmed FQN string or undefined
+ */
+const asFqn = (v: unknown): Fqn | undefined => {
+  if (typeof v === 'string') {
+    const trimmed = v.trim()
+    if (trimmed.length > 0) {
+      return trimmed as Fqn
+    }
+  }
+  return undefined
+}
+
 export type SearchParams = {
-  theme?: 'light' | 'dark' | 'auto'
-  dynamic?: 'diagram' | 'sequence'
-  padding?: number
+  theme?: 'light' | 'dark' | 'auto' | undefined
+  dynamic?: 'diagram' | 'sequence' | undefined
+  padding?: number | undefined
+  relationships?: Fqn | undefined // Element FQN to open relationship browser
 }
 
 export type Context = {
@@ -69,6 +85,9 @@ export const Route = createRootRouteWithContext<Context>()({
       ...isTruthy(search.dynamic) && {
         dynamic: asDynamicVariant(search.dynamic),
       },
+      ...isTruthy(search.relationships) && {
+        relationships: asFqn(search.relationships),
+      },
     }
   },
   search: {
@@ -77,6 +96,7 @@ export const Route = createRootRouteWithContext<Context>()({
         padding: 20,
         theme: 'auto',
         dynamic: 'diagram',
+        relationships: undefined,
       }),
     ],
   },

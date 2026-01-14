@@ -1,11 +1,11 @@
 import { cx } from '@likec4/styles/css'
-import { ActionIcon, Group } from '@mantine/core'
-import { useStateHistory } from '@mantine/hooks'
-import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
+import { ActionIcon, Group, Tooltip as MantineTooltip } from '@mantine/core'
+import { useClipboard, useStateHistory } from '@mantine/hooks'
+import { IconAlertTriangle, IconCheck, IconChevronLeft, IconChevronRight, IconLink, IconX } from '@tabler/icons-react'
 import { Panel, ReactFlowProvider, useReactFlow, useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { AnimatePresence, LayoutGroup, m } from 'motion/react'
-import { memo, useEffect, useRef } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
@@ -200,15 +200,18 @@ const RelationshipsBrowserInner = memo(() => {
       />
       {closeable && (
         <Panel position="top-right">
-          <ActionIcon
-            variant="default"
-            color="gray"
-            onClick={(e) => {
-              e.stopPropagation()
-              browser.close()
-            }}>
-            <IconX />
-          </ActionIcon>
+          <Group gap={4} wrap={'nowrap'}>
+            <CopyLinkButton subjectId={subjectId} />
+            <ActionIcon
+              variant="default"
+              color="gray"
+              onClick={(e) => {
+                e.stopPropagation()
+                browser.close()
+              }}>
+              <IconX />
+            </ActionIcon>
+          </Group>
         </Panel>
       )}
     </>
@@ -277,5 +280,142 @@ const TopLeftPanel = ({
         <SelectElement />
       </Group>
     </Panel>
+  )
+}
+
+/**
+ * Props for CopyLinkButton.
+ * @property subjectId - Element FQN to include in the URL as `?relationships={subjectId}`
+ */
+type CopyLinkButtonProps = {
+  subjectId: string
+}
+
+const Tooltip = MantineTooltip.withProps({
+  color: 'dark',
+  fz: 'xs',
+  openDelay: 400,
+  closeDelay: 150,
+  label: '',
+  children: null,
+  offset: 4,
+  withinPortal: false,
+})
+
+/**
+ * Builds a shareable URL with the relationships parameter.
+ * Handles both browser history routing and hash-based routing.
+ * Preserves base paths when app is hosted under a sub-path.
+ */
+function buildRelationshipUrl(subjectId: string): string {
+  const currentUrl = new URL(window.location.href)
+
+  // Hash-based routing: /#/view/name or /base/path/index.html#/view/name
+  if (currentUrl.hash.startsWith('#/')) {
+    const hashUrl = new URL(currentUrl.hash.substring(1), currentUrl.origin)
+    hashUrl.searchParams.set('relationships', subjectId)
+
+    const cleanPath = hashUrl.pathname.replace(/\/$/, '')
+
+    return `${currentUrl.origin}${currentUrl.pathname}${currentUrl.search}#${cleanPath}${hashUrl.search}`
+  }
+
+  // Standard browser history routing
+  currentUrl.searchParams.set('relationships', subjectId)
+  return currentUrl.href
+}
+
+/**
+ * Button that copies a direct link to the current relationship view.
+ * Shows visual feedback for both success and failure states.
+ * Note: Clipboard API requires HTTPS or localhost. This is a browser security restriction, not a code issue.
+ */
+const CopyLinkButton = ({ subjectId }: CopyLinkButtonProps) => {
+  const clipboard = useClipboard({ timeout: 2000 })
+  const [copyError, setCopyError] = useState(false)
+  const errorTimeoutRef = useRef<number | null>(null)
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    // Clear previous error state
+    setCopyError(false)
+    if (errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current)
+      errorTimeoutRef.current = null
+    }
+
+    const url = buildRelationshipUrl(subjectId)
+
+    // Check if we're NOT in a secure context (HTTP on non-localhost)
+    // Clipboard API requires HTTPS or localhost
+    if (!window.isSecureContext) {
+      setCopyError(true)
+      errorTimeoutRef.current = window.setTimeout(() => {
+        setCopyError(false)
+      }, 2000)
+      return
+    }
+
+    // Call clipboard.copy() - Mantine's hook catches errors internally
+    // Errors are exposed via clipboard.error property, not thrown
+    clipboard.copy(url)
+  }
+
+  // Watch for clipboard errors - Mantine's useClipboard exposes errors via clipboard.error
+  useEffect(() => {
+    if (clipboard.error) {
+      setCopyError(true)
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current)
+      }
+      errorTimeoutRef.current = window.setTimeout(() => {
+        setCopyError(false)
+      }, 2000)
+    }
+  }, [clipboard.error])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  // Determine icon and tooltip based on state
+  const getButtonState = () => {
+    if (clipboard.copied) {
+      return {
+        icon: <IconCheck />,
+        tooltip: 'Link copied!',
+      }
+    }
+    if (copyError) {
+      return {
+        icon: <IconAlertTriangle />,
+        tooltip: 'Copy failed - Clipboard requires HTTPS or localhost',
+      }
+    }
+    return {
+      icon: <IconLink />,
+      tooltip: 'Copy link to this relationship view',
+    }
+  }
+
+  const buttonState = getButtonState()
+
+  return (
+    <Tooltip label={buttonState.tooltip} withArrow position="top" withinPortal={false}>
+      <ActionIcon
+        variant="default"
+        color="gray"
+        onClick={handleCopy}
+        aria-label="Copy link to this relationship view"
+      >
+        {buttonState.icon}
+      </ActionIcon>
+    </Tooltip>
   )
 }
