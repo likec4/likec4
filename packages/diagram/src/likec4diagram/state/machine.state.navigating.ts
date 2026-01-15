@@ -1,5 +1,5 @@
 import { type NodeId, BBox } from '@likec4/core/types'
-import { invariant, nonNullable } from '@likec4/core/utils'
+import { invariant } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
 import { isTruthy } from 'remeda'
 import { assertEvent, enqueueActions } from 'xstate'
@@ -8,12 +8,15 @@ import { mergeXYNodesEdges } from './assign'
 import {
   cancelFitDiagram,
   disableCompareWithLatest,
-  raiseFitDiagram,
   raiseSetViewport,
 } from './machine.actions'
 import { machine, targetState } from './machine.setup'
 import { calcViewportForBounds, findCorrespondingNode, findNodeByModelFqn, nodeRef, viewBounds } from './utils'
 
+/**
+ * If the user navigates back or forward using the browser's back/forward buttons,
+ * update the navigation history and return to the previous or next view.
+ */
 const handleBrowserForwardBackward = () =>
   machine.assign(({ context, event }) => {
     assertEvent(event, 'update.view')
@@ -28,7 +31,7 @@ const handleBrowserForwardBackward = () =>
     if (!stepCurrent || stepCurrent.viewId === event.view.id || !!lastOnNavigate) {
       return {}
     }
-    const stepBack = currentIndex > 0 ? nonNullable(history[currentIndex - 1]) : null
+    const stepBack = currentIndex > 0 ? history.at(currentIndex - 1) : null
     if (stepBack && stepBack.viewId === event.view.id) {
       return {
         navigationHistory: {
@@ -38,7 +41,7 @@ const handleBrowserForwardBackward = () =>
         lastOnNavigate: null,
       }
     }
-    const stepForward = currentIndex < history.length - 1 ? nonNullable(history[currentIndex + 1]) : null
+    const stepForward = currentIndex < history.length - 1 ? history.at(currentIndex + 1) : null
     if (stepForward && stepForward.viewId === event.view.id) {
       return {
         navigationHistory: {
@@ -92,6 +95,7 @@ export const navigating = machine.createStateConfig({
         const eventWithXYData = 'xynodes' in event ? event : {
           ...event,
           ...convertToXYFlow({
+            currentViewId: context.view.id,
             dynamicViewVariant: context.dynamicViewVariant,
             view: event.view,
             where: context.where,
@@ -104,59 +108,65 @@ export const navigating = machine.createStateConfig({
         // and 40% if zooming in, to make the transition smoother
         const calcZoomTowardsNextViewport = (nextViewport: Viewport) => {
           const zoom = xyflow.getZoom()
-          const coef = nextViewport.zoom < zoom ? 0.8 : 0.4
-          return zoom + (nextViewport.zoom - zoom) * coef
+          const diff = nextViewport.zoom - zoom
+          if (Math.abs(diff) < 0.01) {
+            return nextViewport.zoom
+          }
+          const coef = diff < 0 ? 0.8 : 0.4
+          return zoom + diff * coef
         }
 
         const fromHistory = history[currentIndex]
-        if (fromHistory && fromHistory.viewId === event.view.id) {
+        if (fromHistory && fromHistory.viewId === eventWithXYData.view.id) {
+          const {
+            focusedNode: wasFocused,
+            activeWalkthrough: wasActiveWalkthrough,
+            viewportBefore,
+          } = fromHistory
+
           const nextCtx = {
             ...mergeXYNodesEdges(context, eventWithXYData),
             dynamicViewVariant: fromHistory.dynamicViewVariant ?? context.dynamicViewVariant,
-            viewportChangedManually: fromHistory.viewportChangedManually,
-          }
+            viewportChangedManually: viewportBefore?.wasChangedManually ?? fromHistory.viewportChangedManually,
+            viewport: viewportBefore?.value ?? fromHistory.viewport,
+            viewportBefore: null,
+          } satisfies Partial<typeof context>
+
           enqueue.assign(nextCtx)
-          const wasFocused = fromHistory.focusedNode
-          const wasActiveWalkthrough = fromHistory.activeWalkthrough
-          const viewportBefore = fromHistory.viewportBefore
 
-          if (viewportBefore && (wasFocused || wasActiveWalkthrough)) {
-            // Restore viewport before focusing or starting walkthrough
-            enqueue.assign({
-              viewport: viewportBefore.value,
-              viewportChangedManually: viewportBefore.wasChangedManually,
-              viewportBefore: null,
-            })
-          }
           const nextBounds = viewBounds(nextCtx)
-
           const center = BBox.center(nextBounds)
-          const zoom = calcZoomTowardsNextViewport(fromHistory.viewport)
+          const zoom = calcZoomTowardsNextViewport(nextCtx.viewport)
+
           xyflow.setCenter(
             center.x,
             center.y,
             { zoom, duration: 0 },
-          )
+          ).catch((err) => {
+            console.error('Error during xyflow.setCenter from history', { err })
+          })
 
           if (wasFocused) {
             enqueue.raise({
               type: 'focus.node',
               nodeId: wasFocused,
-            }, { delay: 50 })
+            }, { delay: 100 })
             return
           }
+
           if (wasActiveWalkthrough) {
             enqueue.raise({
               type: 'walkthrough.start',
               stepId: wasActiveWalkthrough,
-            }, { delay: 50 })
+            }, { delay: 100 })
             return
           }
 
-          // Fit viewport from history
+          // Set viewport from history
           enqueue(raiseSetViewport({
-            delay: 80,
-            viewport: fromHistory.viewport,
+            delay: 100,
+            ...(nextCtx.viewportChangedManually ? { duration: 0 } : {}),
+            viewport: nextCtx.viewport,
           }))
           return
         }
@@ -183,6 +193,8 @@ export const navigating = machine.createStateConfig({
           xystore.getState().panBy({
             x: Math.round(fromPoint.x - toPoint.x),
             y: Math.round(fromPoint.y - toPoint.y),
+          }).catch((err) => {
+            console.error('Error during xyflow.panBy', { err })
           })
         } else {
           const zoom = calcZoomTowardsNextViewport(nextViewport)
@@ -191,7 +203,9 @@ export const navigating = machine.createStateConfig({
             center.x,
             center.y,
             { zoom, duration: 0 },
-          )
+          ).catch((err) => {
+            console.error('Error during xyflow.setCenter', { err })
+          })
         }
 
         const updatedHistory = currentIndex < history.length - 1 ? history.slice(0, currentIndex + 1) : [...history]
@@ -217,17 +231,18 @@ export const navigating = machine.createStateConfig({
           },
         })
 
+        enqueue(raiseSetViewport({
+          delay: 100,
+          viewport: nextViewport,
+        }))
+
         if (nodeToFocus) {
           // Focus on the searched element with auto-unfocus enabled
           enqueue.raise({
             type: 'focus.node',
             nodeId: nodeToFocus.id as NodeId,
             autoUnfocus: true,
-          }, { delay: 150 })
-        } else {
-          enqueue(raiseFitDiagram({
-            delay: 100,
-          }))
+          }, { delay: 250 })
         }
       }),
     ],

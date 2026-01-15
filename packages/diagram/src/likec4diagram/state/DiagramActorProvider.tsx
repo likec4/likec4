@@ -21,6 +21,7 @@ import { DiagramToggledFeaturesPersistence } from './persistence'
 import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
 export function DiagramActorProvider({
+  id,
   view,
   zoomable,
   pannable,
@@ -31,6 +32,7 @@ export function DiagramActorProvider({
   children,
   dynamicViewVariant: _defaultVariant,
 }: PropsWithChildren<{
+  id: string
   view: DiagramView
   zoomable: boolean
   pannable: boolean
@@ -51,7 +53,7 @@ export function DiagramActorProvider({
       },
     }),
     {
-      id: `diagram`,
+      id: `diagram-${id}`,
       systemId: 'diagram',
       // ...inspector,
       input: {
@@ -70,13 +72,22 @@ export function DiagramActorProvider({
   const actorRef = useRef(actor)
   if (actorRef.current !== actor) {
     console.warn('DiagramMachine actor instance changed', {
-      context: {
-        previous: actorRef.current.getSnapshot().context,
-        current: actor.getSnapshot().context,
-      },
+      previous: actorRef.current.getSnapshot().context,
+      current: actor.getSnapshot().context,
     })
     actorRef.current = actor
   }
+
+  useUpdateEffect(
+    () => {
+      return () => {
+        console.log('DiagramActorProvider unmounting')
+        actor.send({ type: 'destroy' })
+      }
+    },
+    [actor],
+    Object.is,
+  )
 
   const [api, setApi] = useState(() => makeDiagramApi(actorRef))
   useEffect(() => {

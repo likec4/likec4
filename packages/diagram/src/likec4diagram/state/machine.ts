@@ -73,24 +73,6 @@ const _diagramMachine = machine.createMachine({
     navigating,
     final: {
       type: 'final',
-      entry: [
-        stopEditorActor(),
-        cancelFitDiagram(),
-        stopChild('hotkey'),
-        stopChild('overlays'),
-        stopChild('search'),
-        stopChild('mediaPrint'),
-        assign({
-          xyflow: null,
-          xystore: null as any,
-          xyedges: [],
-          xynodes: [],
-          initialized: {
-            xydata: false,
-            xyflow: false,
-          },
-        }),
-      ],
     },
   },
   on: {
@@ -150,6 +132,24 @@ const _diagramMachine = machine.createMachine({
     },
     'destroy': {
       target: '.final',
+      actions: [
+        stopEditorActor(),
+        cancelFitDiagram(),
+        stopChild('hotkey'),
+        stopChild('overlays'),
+        stopChild('search'),
+        stopChild('mediaPrint'),
+        assign({
+          xyflow: null,
+          xystore: null as any,
+          xyedges: [],
+          xynodes: [],
+          initialized: {
+            xydata: false,
+            xyflow: false,
+          },
+        }),
+      ],
     },
   },
 })

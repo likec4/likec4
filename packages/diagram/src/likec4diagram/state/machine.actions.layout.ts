@@ -36,7 +36,7 @@ export const setViewport = (params?: { viewport: Viewport; duration?: number }) 
       viewport = event.viewport
       duration = event.duration
     }
-    duration = duration ?? 400
+    duration = duration ?? 450
     const { panZoom } = nonNullable(context.xystore).getState()
     const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
 
@@ -45,7 +45,7 @@ export const setViewport = (params?: { viewport: Viewport; duration?: number }) 
       y: Math.round(viewport.y),
       zoom: viewport.zoom,
     }, animationProps).catch((err) => {
-      console.error('Error during fitDiagram panZoom setViewport', { err })
+      console.error('Error during setViewport', { err })
     })
   })
 
@@ -65,7 +65,9 @@ export const setViewportCenter = (params?: { x: number; y: number }) =>
       Math.round(center.x),
       Math.round(center.y),
       { zoom },
-    )
+    ).catch((err) => {
+      console.error('Error during setViewportCenter', { err })
+    })
   })
 
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>

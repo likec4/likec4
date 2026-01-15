@@ -337,6 +337,14 @@ export const machine = setup({
       assertEvent(event, ['xyflow.edgeClick', 'xyflow.edgeDoubleClick'])
       return event.edge.selected === true || event.edge.data.active === true
     },
+    'click: active walkthrough step': ({ context, event }) => {
+      assertEvent(event, ['xyflow.edgeClick', 'xyflow.edgeDoubleClick'])
+      if (!context.activeWalkthrough) {
+        return false
+      }
+      const { stepId } = context.activeWalkthrough
+      return event.edge.id === stepId
+    },
   },
 })
 

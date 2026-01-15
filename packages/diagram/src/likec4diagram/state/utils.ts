@@ -1,4 +1,5 @@
 import {
+  type DeploymentFqn,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
@@ -197,7 +198,7 @@ function getEdgeBounds(edge: Types.Edge, store: XYStoreState): BBox | null {
   ])
 }
 
-export function nodeRef(node: Types.Node) {
+export function nodeRef(node: Types.Node): Fqn | DeploymentFqn | null {
   switch (node.type) {
     case 'element':
     case 'compound-element':
@@ -217,11 +218,20 @@ export function nodeRef(node: Types.Node) {
 export function findCorrespondingNode(
   context: Pick<Context, 'lastOnNavigate' | 'xynodes'>,
   event: { view: DiagramView; xynodes: Types.Node[] },
-) {
+): {
+  fromNode: null
+  toNode: null
+} | {
+  fromNode: Types.Node
+  toNode: Types.Node | null
+} {
   const fromNodeId = context.lastOnNavigate?.fromNode
   const fromNode = fromNodeId && context.xynodes.find(n => n.id === fromNodeId)
   const fromRef = fromNode && nodeRef(fromNode)
-  const toNode = fromRef && event.xynodes.find(n => nodeRef(n) === fromRef)
+  if (!fromNode || !fromRef) {
+    return { fromNode: null, toNode: null }
+  }
+  const toNode = event.xynodes.find(n => nodeRef(n) === fromRef) ?? null
   return { fromNode, toNode }
 }
 
