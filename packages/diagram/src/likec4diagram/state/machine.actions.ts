@@ -18,6 +18,7 @@ import type {
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy } from 'remeda'
+import type { Writable } from 'type-fest'
 import {
   assertEvent,
 } from 'xstate'
@@ -150,6 +151,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
     let xydata
     if (view) {
       xydata = convertToXYFlow({
+        currentViewId: context.view.id,
         dynamicViewVariant: context.dynamicViewVariant,
         view,
         where: context.where,
@@ -157,6 +159,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
     } else {
       assertEvent(event, 'update.view')
       xydata = 'xynodes' in event ? event : convertToXYFlow({
+        currentViewId: context.view.id,
         dynamicViewVariant: context.dynamicViewVariant,
         view: event.view,
         where: context.where,
@@ -824,9 +827,9 @@ export const handleNavigate = () =>
       },
     } = context
 
-    let history = [..._history]
+    let history = _history as Writable<typeof _history>
     if (currentIndex < _history.length) {
-      const updatedEntry = produce(_history[currentIndex]!, draft => {
+      const updatedEntry = produce(_history.at(currentIndex) ?? {} as typeof _history[number], draft => {
         draft.viewport = { ...viewport }
         draft.viewportChangedManually = viewportChangedManually
         draft.focusedNode = focusedNode
@@ -838,7 +841,7 @@ export const handleNavigate = () =>
           draft.dynamicViewVariant = null
         }
         if (viewportBefore) {
-          draft.viewportBefore = viewportBefore
+          draft.viewportBefore = structuredClone(viewportBefore)
         } else {
           delete draft.viewportBefore
         }

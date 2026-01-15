@@ -175,6 +175,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                       {...initialRef.current}
                     >
                       <DiagramActorProvider
+                        id={id}
                         view={view}
                         zoomable={zoomable}
                         pannable={pannable}

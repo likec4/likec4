@@ -80,7 +80,10 @@ export function isEqualMinimalInternalNodes(a: MinimalInternalNode, b: MinimalIn
 }
 
 export function isEqualRects(a: Rect, b: Rect) {
-  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+  return a.x === b.x
+    && a.y === b.y
+    && Math.round(a.width) === Math.round(b.width)
+    && Math.round(a.height) === Math.round(b.height)
 }
 
 export const nodeToRect = (nd: MinimalInternalNode): Rect => ({

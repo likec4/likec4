@@ -1,4 +1,4 @@
-import type { LayoutedView, LayoutType } from '@likec4/core/types'
+import type { LayoutedView, LayoutType, ViewId } from '@likec4/core/types'
 import { useUpdateEffect } from '@likec4/diagram'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useMatches, useParams } from '@tanstack/react-router'
@@ -43,11 +43,11 @@ export function useLikeC4Views(): ReadonlyArray<LayoutedView> {
   return views
 }
 
-export function useCurrentViewId(): string {
+export function useCurrentViewId(): ViewId {
   return useParams({
-    select: (params) => params.viewId ?? 'index',
+    select: params => params.viewId ?? 'index',
     strict: false,
-  })
+  }) as ViewId
 }
 
 /**
