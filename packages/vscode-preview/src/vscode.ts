@@ -12,7 +12,7 @@ import { Messenger } from 'vscode-messenger-webview'
 import {
   type GetLastClickedNodeHandler,
   type Handler,
-  type LocateParams,
+  type WebviewLocateReq,
   BroadcastModelUpdate,
   BroadcastProjectsUpdate,
   FetchComputedModel,
@@ -51,28 +51,36 @@ export const ExtensionApi = {
   closeMe: () => {
     messenger.sendNotification(WebviewMsgs.CloseMe, HOST_EXTENSION)
   },
-  locate: (params: LocateParams) => {
+  locate: (params: WebviewLocateReq) => {
     messenger.sendNotification(WebviewMsgs.Locate, HOST_EXTENSION, params)
   },
   updateTitle: (title: string) => {
     messenger.sendNotification(WebviewMsgs.UpdateMyTitle, HOST_EXTENSION, { title })
   },
 
-  change: async (viewId: ViewId, change: ViewChange) => {
-    return await messenger.sendRequest(ViewChangeReq, HOST_EXTENSION, { viewId, change })
+  change: async (params: {
+    projectId: ProjectId
+    viewId: ViewId
+    change: ViewChange
+  }) => {
+    return await messenger.sendRequest(ViewChangeReq, HOST_EXTENSION, params)
   },
 
-  fetchComputedModel: async (signal: AbortSignal) => {
+  fetchComputedModel: async (projectId: ProjectId, signal: AbortSignal) => {
     const cancellationToken = new CancellationTokenImpl()
     signal.onabort = () => cancellationToken.cancel()
-    return await messenger.sendRequest(FetchComputedModel, HOST_EXTENSION, undefined, cancellationToken)
+    return await messenger.sendRequest(FetchComputedModel, HOST_EXTENSION, { projectId }, cancellationToken)
   },
 
   // Layoted vuew
-  fetchDiagramView: async (viewId: ViewId, layoutType: LayoutType, signal: AbortSignal) => {
+  fetchDiagramView: async (params: {
+    projectId: ProjectId
+    viewId: ViewId
+    layoutType: LayoutType
+  }, signal: AbortSignal) => {
     const cancellationToken = new CancellationTokenImpl()
     signal.onabort = () => cancellationToken.cancel()
-    return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, { viewId, layoutType }, cancellationToken)
+    return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, params, cancellationToken)
   },
 
   fetchProjectsOverview: async (signal: AbortSignal) => {

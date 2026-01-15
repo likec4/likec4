@@ -91,7 +91,7 @@ export const useMessenger = createSingletonComposable(() => {
   const sendNotification =
     <P>(notiType: NotificationType<P>): NotifyOp<P> => (receiver: MessageParticipant, params?: P) => {
       try {
-        logger.debug(`send {noti} {params}`, { noti: notiType.method, params })
+        logger.debug(`send {noti} to {receiver}`, { noti: notiType.method })
         return messenger.sendNotification(notiType, receiver, params)
       } catch (err) {
         logger.warn(`sendNotification {noti} failed`, { noti: notiType.method, err })

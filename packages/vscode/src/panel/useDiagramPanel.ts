@@ -97,7 +97,6 @@ export const useDiagramPanel = createSingletonComposable(() => {
 
     // When model changes, notify the webview to update
     rpc.onDidChangeModel(() => {
-      logger.debug`send modelUpdate to panel`
       api.sendModelUpdate()
     })
 
@@ -110,16 +109,22 @@ export const useDiagramPanel = createSingletonComposable(() => {
       if (state.visible.value !== e.webviewPanel.visible) {
         logger.debug`panel visible changed: ${e.webviewPanel.visible}`
         state.visible.value = e.webviewPanel.visible
-        const viewId = state.viewId.value
-        const projectId = state.projectId.value
-        // Became visible
-        if (state.visible.value && viewId && projectId) {
-          api.sendOpenView({
-            screen: 'view',
-            projectId,
-            viewId,
-          })
+        // Became hidden
+        if (!state.visible.value) {
+          return
         }
+        // Became visible
+        if (state.screen.value !== 'view') {
+          api.sendOpenView({
+            screen: state.screen.value,
+          })
+          return
+        }
+        api.sendOpenView({
+          screen: 'view',
+          projectId: state.projectId.value ?? 'default' as ProjectId,
+          viewId: state.viewId.value ?? 'index' as ViewId,
+        })
       }
     }))
 
@@ -206,6 +211,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
         logger.debug`state.screen is already projects`
       }
     } else {
+      state.screen.value = 'view'
       state.viewId.value = arg.viewId
       state.projectId.value = arg.projectId
     }
@@ -229,7 +235,9 @@ export const useDiagramPanel = createSingletonComposable(() => {
         _panel.dispose()
         return
       }
-      logger.debug`deserialize view ${parsedState.data.viewId} (project: ${parsedState.data.projectId})`
+      logger
+        .debug`deserialize panel state screen: ${parsedState.data.screen} viewId: ${parsedState.data.viewId} project: ${parsedState.data.projectId}`
+      state.screen.value = parsedState.data.screen
       state.viewId.value = parsedState.data.viewId
       state.projectId.value = parsedState.data.projectId
       ensurePanelScope(_panel)

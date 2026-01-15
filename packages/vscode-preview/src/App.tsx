@@ -1,5 +1,3 @@
-import { LoadingOverlay } from '@mantine/core'
-import { Suspense } from 'react'
 import { ErrorMessage } from './QueryErrorBoundary'
 import { ProjectsScreen } from './screens/Projects'
 import { ViewScreen } from './screens/View'
@@ -13,9 +11,9 @@ export function App() {
   }
 
   return (
-    <Suspense fallback={<LoadingOverlay visible zIndex={1000} overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />}>
+    <>
       {screen == 'projects' && <ProjectsScreen />}
       {screen == 'view' && <ViewScreen />}
-    </Suspense>
+    </>
   )
 }

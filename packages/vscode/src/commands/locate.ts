@@ -13,10 +13,13 @@ export interface LocateCommandDeps {
 export function registerLocateCommand({ sendTelemetry, rpc }: LocateCommandDeps) {
   const logger = useExtensionLogger().logger
   useCommand(commands.locate, async (params: Locate.Params) => {
-    logger.debug(`command {command} invoked with params: {params}`, { command: commands.locate, params })
+    logger.debug(`command {command} with params: {params}`, { command: commands.locate, params })
     sendTelemetry(commands.locate)
     const loc = await rpc.locate(params)
-    if (!loc) return
+    if (!loc) {
+      logger.debug(`rpc.locate returned null`)
+      return
+    }
     const location = rpc.client.protocol2CodeConverter.asLocation(loc)
     let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
     const editor = await vscode.window.showTextDocument(location.uri, {
