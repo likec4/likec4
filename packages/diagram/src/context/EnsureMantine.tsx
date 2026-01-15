@@ -1,6 +1,6 @@
-import { MantineContext, MantineProvider } from '@mantine/core'
+import { MantineContext } from '@mantine/core'
 import { type PropsWithChildren, useContext, useEffect } from 'react'
-import { DefaultTheme } from '../shadowroot/styles.css'
+import { DefaultMantineProvider } from './DefaultMantineProvider'
 
 type EnsureMantineProps = PropsWithChildren<{}>
 
@@ -15,12 +15,11 @@ export function EnsureMantine({ children }: EnsureMantineProps) {
 
   if (!mantineCtx) {
     return (
-      <MantineProvider defaultColorScheme="auto" theme={DefaultTheme}>
+      <DefaultMantineProvider>
         {children}
-      </MantineProvider>
+      </DefaultMantineProvider>
     )
   }
 
   return <>{children}</>
 }
-EnsureMantine.displayName = 'EnsureMantine'
