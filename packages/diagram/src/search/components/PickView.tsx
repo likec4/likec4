@@ -5,12 +5,17 @@ import { useWindowEvent } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
-import { useSearchActor } from '../hooks'
+import type { SearchActorRef } from '../searchActor'
 import * as styles from './styles.css'
 import { ViewButton } from './ViewsColum'
 
-export function PickView({ elementFqn }: { elementFqn: Fqn }) {
-  const searchActorRef = useSearchActor()
+export function PickView({
+  searchActorRef,
+  elementFqn,
+}: {
+  searchActorRef: SearchActorRef
+  elementFqn: Fqn
+}) {
   const element = useLikeC4Model().element(elementFqn)
   const scoped = [] as LikeC4ViewModel[]
   const others = [] as LikeC4ViewModel[]
