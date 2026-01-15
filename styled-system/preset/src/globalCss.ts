@@ -146,7 +146,7 @@ export const globalCss: ExtendableGlobalCss = {
       },
 
       '&:is([data-likec4-reduced-graphics]) .hide-on-reduced-graphics': {
-        display: 'none',
+        display: 'none!',
       },
 
       '&:not([data-likec4-reduced-graphics])': {

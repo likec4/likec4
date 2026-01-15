@@ -1,6 +1,7 @@
 import { hasAtLeast, isString, prop } from 'remeda'
 
 export const vars = {
+  font: '--likec4-app-font',
   spacing: '--likec4-spacing',
   textsize: '--likec4-text-size',
   palette: {

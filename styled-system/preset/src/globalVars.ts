@@ -23,5 +23,6 @@ export const globalVars: ExtendableGlobalVars = {
     '--text-fz': '/*-*/ /*-*/',
     [vars.icon.color]: '/*-*/ /*-*/',
     [vars.icon.size]: '/*-*/ /*-*/',
+    [vars.font]: '/*-*/ /*-*/',
   },
 }
