@@ -7,7 +7,7 @@ specification {
 }
 model {
 
-  icons_example = iService "Example" {
+  bundled_icons_example = iService "Example" {
     fn = iService 'Lambda Function' {
       icon aws:lambda
     }
@@ -18,13 +18,39 @@ model {
       icon tech:postgresql
     }
   }
+
+  icons_position_example = iService "Example" {
+    left = iService 'Icon left' {
+      description 'This is default position'
+      style {
+        iconPosition left
+      }
+    }
+    right = iService 'Icon right' {
+      style {
+        iconPosition right
+      }
+    }
+    top = iService 'Icon top' {
+      style {
+        iconPosition top
+      }
+    }
+
+    bottom = iService 'Icon bottom' {
+      style {
+        iconPosition bottom
+      }
+    }
+  }
+
 }
 
-views {
+views "Icons" {
 
   view icons_example {
     title 'Bundled icons example'
-    include icons_example.*
+    include bundled_icons_example.*
     style * {
       color muted
     }
@@ -33,12 +59,23 @@ views {
 
   view icon_url_example {
     title 'URL icon example'
-    include pg with {
-      icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
-      color muted
-      size sm
-      textSize lg
+    include
+      pg with {
+        icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+        color muted
+        size sm
+        textSize lg
+      }
+  }
+
+  view icons_position_example {
+    title 'Position example'
+    include icons_position_example.*
+    style * {
+      icon tech:cloudflare-workers-icon
+      color green
     }
+    autoLayout LeftRight
   }
 
 }
