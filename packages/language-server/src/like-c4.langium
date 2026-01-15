@@ -925,7 +925,18 @@ DynamicViewDisplayVariantValue returns string:
   'diagram' | 'sequence';
 
 ThemeColor returns string:
-  'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
+  'primary' |
+  'secondary' |
+  'muted' |
+  'slate' |
+  'blue' |
+  'indigo' |
+  'sky' |
+  'red' |
+  'gray' |
+  'green' |
+  'amber';
+
 ElementShape returns string:
   'rectangle' |
   'person' |
@@ -960,10 +971,28 @@ MarkdownOrString:
   markdown=MarkdownString | text=String;
 
 CustomColorId returns string:
-  IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
+  IdTerminal |
+  ElementShape |
+  ArrowType |
+  LineOptions |
+  Participant |
+  'element' |
+  'model';
 
+// We need to add all the possible terminal values to Id,
+// so that the parser can accept them as "Id" (not a bug and not a feature of Langium)
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | DynamicViewDisplayVariantValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  IdTerminal |
+  ElementShape |
+  ThemeColor |
+  ArrowType |
+  LineOptions |
+  Participant |
+  SizeValue |
+  DynamicViewDisplayVariantValue |
+  IconPositionValue |
+  RankValue |
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (

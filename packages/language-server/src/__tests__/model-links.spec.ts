@@ -1,4 +1,4 @@
-import { describe, test as viTest, vi } from 'vitest'
+import { describe, test as viTest } from 'vitest'
 import { invalid, likec4, valid } from './asserts'
 
 const spec = `
@@ -10,24 +10,24 @@ specification {
 function test(name: string) {
   return {
     valid: (strings: TemplateStringsArray, ...expr: string[]) => {
-      viTest.concurrent(
+      viTest(
         `valid: ${name}`,
         valid`${spec}
       model {
         ${likec4(strings, ...expr)}
-      }`
+      }`,
       )
     },
     invalid: (strings: TemplateStringsArray, ...expr: string[]) => {
-      viTest.concurrent(
+      viTest(
         `invalid: ${name}`,
         invalid`
       ${spec}
       model {
         ${likec4(strings, ...expr)}
-      }`
+      }`,
       )
-    }
+    },
   }
 }
 

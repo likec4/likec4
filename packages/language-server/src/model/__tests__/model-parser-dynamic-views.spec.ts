@@ -21,7 +21,7 @@ function source(viewSource: TemplateStringsArray) {
 `
 }
 
-describe.concurrent('LikeC4ModelParser - dynamic views', () => {
+describe('LikeC4ModelParser - dynamic views', () => {
   it('parses custom properties', async ({ expect }) => {
     const { validate, services } = createTestServices()
     const { document } = await validate(source`

@@ -84,7 +84,7 @@ async function mkTestServices({ expect }: TestContext) {
   }
 }
 
-describe.concurrent('views2', () => {
+describe('views2', () => {
   it('valid views', async ctx => {
     const {
       view: { valid, invalid },

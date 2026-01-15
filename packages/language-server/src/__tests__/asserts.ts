@@ -41,10 +41,10 @@ const runInvalidTest = invalid
 export function test(name: string) {
   return {
     valid: (strings: TemplateStringsArray, ...expr: string[]) => {
-      viTest.concurrent(`valid: ${name}`, runValidTest(strings, ...expr))
+      viTest(`valid: ${name}`, runValidTest(strings, ...expr))
     },
     invalid: (strings: TemplateStringsArray, ...expr: string[]) => {
-      viTest.concurrent(`invalid: ${name}`, runInvalidTest(strings, ...expr))
-    }
+      viTest(`invalid: ${name}`, runInvalidTest(strings, ...expr))
+    },
   }
 }

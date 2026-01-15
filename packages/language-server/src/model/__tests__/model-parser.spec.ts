@@ -7,7 +7,7 @@ import { indexBy, values } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
-describe.concurrent('LikeC4ModelParser', () => {
+describe('LikeC4ModelParser', () => {
   it('parses strings with escaped quotes', async ({ expect }) => {
     const { validate, services } = createTestServices()
     const { document } = await validate(`

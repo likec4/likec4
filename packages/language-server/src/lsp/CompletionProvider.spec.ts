@@ -12,7 +12,7 @@ function expectCompletion() {
   return langiumExpectCompletion(services)
 }
 
-describe.concurrent('LikeC4CompletionProvider', () => {
+describe('LikeC4CompletionProvider', () => {
   it('should suggest keywords inside specification', async ({ expect }) => {
     const text = `
       <|>spe<|>cification {
@@ -156,10 +156,15 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           'description',
           'link',
           'style',
+          'metadata',
+          'icon',
+          'this',
+          'it',
           'sys',
         ])
       },
     })
+    // Entered "t"
     await completion({
       text,
       index: 3,
@@ -167,8 +172,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'title',
         'technology',
         'this',
-        // target is reserved keyword and suggested as id new element
+        // target and top are reserved keywords and suggested as id new element
         'target',
+        'top',
       ],
     })
     // sys = <|>s<|>ystem {

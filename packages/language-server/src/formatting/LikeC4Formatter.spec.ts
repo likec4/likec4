@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
-describe.concurrent('formating', () => {
+describe('formating', () => {
   describe('formats imports', () => {
     it(
       'formats import rules',

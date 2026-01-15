@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
-describe.concurrent('deployment checks', () => {
+describe('deployment checks', () => {
   const model = `
     specification {
       element component

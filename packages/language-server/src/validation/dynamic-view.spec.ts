@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
-describe.concurrent('DynamicView Checks', () => {
+describe('DynamicView Checks', () => {
   describe('stepChecks', () => {
     it('should not report invalid relations', async ({ expect }) => {
       const { validate } = createTestServices()
