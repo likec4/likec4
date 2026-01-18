@@ -19,11 +19,11 @@ catalogs:
       specifier: ^4.0.2
       version: 4.0.2
     '@expressive-code/plugin-collapsible-sections':
-      specifier: ^0.41.3
-      version: 0.41.3
+      specifier: ^0.41.6
+      version: 0.41.6
     '@expressive-code/plugin-line-numbers':
-      specifier: ^0.41.3
-      version: 0.41.3
+      specifier: ^0.41.6
+      version: 0.41.6
     astro:
       specifier: 5.16.5
       version: 5.16.5
@@ -477,10 +477,10 @@ importers:
         version: 4.0.2(@astrojs/starlight@0.37.1(astro@5.16.5(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)))(tailwindcss@4.1.17)
       '@expressive-code/plugin-collapsible-sections':
         specifier: catalog:astro
-        version: 0.41.3
+        version: 0.41.6
       '@expressive-code/plugin-line-numbers':
         specifier: catalog:astro
-        version: 0.41.3
+        version: 0.41.6
       '@likec4/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -3196,17 +3196,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@expressive-code/core@0.41.3':
-    resolution: {integrity: sha512-9qzohqU7O0+JwMEEgQhnBPOw5DtsQRBXhW++5fvEywsuX44vCGGof1SL5OvPElvNgaWZ4pFZAFSlkNOkGyLwSQ==}
+  '@expressive-code/core@0.41.6':
+    resolution: {integrity: sha512-FvJQP+hG0jWi/FLBSmvHInDqWR7jNANp9PUDjdMqSshHb0y7sxx3vHuoOr6SgXjWw+MGLqorZyPQ0aAlHEok6g==}
 
-  '@expressive-code/plugin-collapsible-sections@0.41.3':
-    resolution: {integrity: sha512-cuHIN7Ipl7gUcaWFfsgy6G3wn0Svk8dQ6WKXNQha63BURbm7CSBhD6y9qFGeIOrxaJtvH4Pj3Xb4C2Ni0OVwYA==}
+  '@expressive-code/plugin-collapsible-sections@0.41.6':
+    resolution: {integrity: sha512-LxSa49aziWKgpGoOoZlTbXW1V1/mEPyxKb+J9JFgUtTizXNKX363uiCHcKQYzSLmIN7HII5WxF+uArGHwb+X+w==}
 
   '@expressive-code/plugin-frames@0.41.2':
     resolution: {integrity: sha512-pfy0hkJI4nbaONjmksFDcuHmIuyPTFmi1JpABe4q2ajskiJtfBf+WDAL2pg595R9JNoPrrH5+aT9lbkx2noicw==}
 
-  '@expressive-code/plugin-line-numbers@0.41.3':
-    resolution: {integrity: sha512-eig82a4CRC3XgVPQ2S/TMDcLiHJokOCD/mAdNVImpD3segVewxfjGgtj5DXQRo0E0q6f0R0EH34YzTFl5CEPqg==}
+  '@expressive-code/plugin-line-numbers@0.41.6':
+    resolution: {integrity: sha512-YS8oLrGNBjY8qVVl6ZntwPXIh5HGrLEq23R6eyJ0tCJQmq03tCOOiWw9cc2R3J/XobXAI7coAtVbqAiGFB8pXQ==}
 
   '@expressive-code/plugin-shiki@0.41.2':
     resolution: {integrity: sha512-xD4zwqAkDccXqye+235BH5bN038jYiSMLfUrCOmMlzxPDGWdxJDk5z4uUB/aLfivEF2tXyO2zyaarL3Oqht0fQ==}
@@ -10597,7 +10597,7 @@ snapshots:
   '@esbuild/win32-x64@0.27.2':
     optional: true
 
-  '@expressive-code/core@0.41.3':
+  '@expressive-code/core@0.41.6':
     dependencies:
       '@ctrl/tinycolor': 4.1.0
       hast-util-select: 6.0.4
@@ -10609,26 +10609,26 @@ snapshots:
       unist-util-visit: 5.0.0
       unist-util-visit-parents: 6.0.2
 
-  '@expressive-code/plugin-collapsible-sections@0.41.3':
+  '@expressive-code/plugin-collapsible-sections@0.41.6':
     dependencies:
-      '@expressive-code/core': 0.41.3
+      '@expressive-code/core': 0.41.6
 
   '@expressive-code/plugin-frames@0.41.2':
     dependencies:
-      '@expressive-code/core': 0.41.3
+      '@expressive-code/core': 0.41.6
 
-  '@expressive-code/plugin-line-numbers@0.41.3':
+  '@expressive-code/plugin-line-numbers@0.41.6':
     dependencies:
-      '@expressive-code/core': 0.41.3
+      '@expressive-code/core': 0.41.6
 
   '@expressive-code/plugin-shiki@0.41.2':
     dependencies:
-      '@expressive-code/core': 0.41.3
+      '@expressive-code/core': 0.41.6
       shiki: 3.20.0
 
   '@expressive-code/plugin-text-markers@0.41.2':
     dependencies:
-      '@expressive-code/core': 0.41.3
+      '@expressive-code/core': 0.41.6
 
   '@floating-ui/core@1.7.3':
     dependencies:
@@ -13383,7 +13383,7 @@ snapshots:
 
   expressive-code@0.41.2:
     dependencies:
-      '@expressive-code/core': 0.41.3
+      '@expressive-code/core': 0.41.6
       '@expressive-code/plugin-frames': 0.41.2
       '@expressive-code/plugin-shiki': 0.41.2
       '@expressive-code/plugin-text-markers': 0.41.2
