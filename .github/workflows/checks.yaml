@@ -5,9 +5,9 @@ on:
 
 env:
   NODE_ENV: production
-  CLOUDFLARE_ENV: "production"
+  CLOUDFLARE_ENV: 'production'
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   check-types:
@@ -59,8 +59,7 @@ jobs:
           name: tarballs
           compression-level: 0
           path: |
-            packages/core/package.tgz
-            packages/likec4/package.tgz
+            packages/*/package.tgz
           if-no-files-found: error
 
   check-on-windows:
@@ -159,7 +158,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v5
@@ -171,7 +170,14 @@ jobs:
         working-directory: e2e
         run: |
           pnpm install
-          pnpm add ../packages/core/package.tgz ../packages/likec4/package.tgz
+          pnpm add \
+            ../packages/core/package.tgz \
+            ../packages/log/package.tgz \
+            ../packages/likec4/package.tgz \
+            ../packages/language-server/package.tgz \
+            ../packages/config/package.tgz \
+            ../packages/layouts/package.tgz \
+            ../packages/generators/package.tgz
           pnpm install:chromium
           pnpm bootstrap
 
@@ -223,7 +229,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v5
