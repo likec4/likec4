@@ -33,14 +33,25 @@
     ".": {
       "sources": "./src/index.ts",
       "node": {
+        "sources": "./src/index.ts",
+        "default": {
+          "types": "./dist/index.d.mts",
+          "import": "./dist/index.mjs",
+          "default": "./dist/index.mjs"
+        }
+      },
+      "browser": {
+        "sources": "./src/browser.ts",
+        "default": {
+          "types": "./dist/browser.d.mts",
+          "import": "./dist/browser.mjs",
+          "default": "./dist/browser.mjs"
+        }
+      },
+      "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
-      },
-      "default": {
-        "types": "./dist/browser.d.mts",
-        "import": "./dist/browser.mjs",
-        "default": "./dist/browser.mjs"
       }
     },
     "./likec4lib": {
@@ -79,7 +90,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "dist/browser.d.mts",
+    "types": "dist/index.d.mts",
     "browser": "dist/browser.mjs",
     "module": "dist/index.mjs"
   },
