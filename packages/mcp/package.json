@@ -52,10 +52,10 @@
     }
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils",
-    "bundle-require": "catalog:utils",
+    "@hpcc-js/wasm-graphviz": "catalog:externals",
+    "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild",
-    "std-env": "catalog:utils"
+    "std-env": "catalog:externals"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
@@ -74,6 +74,6 @@
     "vitest": "catalog:vitest",
     "vscode-uri": "catalog:vscode",
     "wireit": "catalog:",
-    "zod": "catalog:utils"
+    "zod": "catalog:externals"
   }
 }

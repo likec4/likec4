@@ -21,8 +21,8 @@ import {
   type FileSystemModuleContext,
   type FileSystemProvider,
   type FileSystemWatcher,
-  NoopFileSystem,
-  NoopLikeC4ManualLayouts,
+  NoFileSystem,
+  NoLikeC4ManualLayouts,
 } from './filesystem'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
@@ -42,10 +42,10 @@ import {
 } from './lsp'
 import {
   type LikeC4MCPServer,
+  type LikeC4MCPServerFactory,
   type LikeC4MCPServerModuleContext,
   NoMCPServer,
 } from './mcp/interfaces'
-import { LikeC4MCPServerFactory } from './mcp/MCPServerFactory'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
@@ -192,7 +192,7 @@ export const createLikeC4Module = (
   Rpc: bind(Rpc),
   mcp: {
     Server: (services: LikeC4Services) => context.mcpServer(services),
-    ServerFactory: bind(LikeC4MCPServerFactory),
+    ServerFactory: (services: LikeC4Services) => context.mcpServerFactory(services),
   },
   likec4: {
     LanguageServices: bind(DefaultLikeC4LanguageServices),
@@ -246,7 +246,8 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
     LikeC4GeneratedModule,
     createLikeC4Module({
       ...NoMCPServer,
-      ...NoopLikeC4ManualLayouts,
+      ...NoFileSystem,
+      ...NoLikeC4ManualLayouts,
       ...context,
     }),
     module,
@@ -272,8 +273,8 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
 export function createSharedServices(context: Partial<LanguageServicesContext> = {}): LikeC4SharedServices {
   const moduleContext = {
     ...NoMCPServer,
-    ...NoopFileSystem,
-    ...NoopLikeC4ManualLayouts,
+    ...NoFileSystem,
+    ...NoLikeC4ManualLayouts,
     ...context,
   }
   return inject(

@@ -1,20 +1,18 @@
 import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
-  entries: [{
-    input: './src/',
-    outDir: './dist/',
-    builder: 'mkdist',
-    addRelativeDeclarationExtensions: false,
-    ext: 'js',
-    declaration: true,
-    globOptions: {
-      ignore: [
-        '**/__*/**',
-        '**/*.spec.ts',
-      ],
-    },
-  }],
   clean: true,
   stub: false,
+  declaration: true,
+  rollup: {
+    esbuild: {
+      platform: 'neutral',
+      minifyIdentifiers: false,
+      lineLimit: 500,
+    },
+    inlineDependencies: true,
+    resolve: {
+      exportConditions: ['sources', 'node'],
+    },
+  },
 })

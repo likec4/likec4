@@ -1,8 +1,8 @@
 import {
   type LikeC4Services,
   createLanguageServices as createCustomLanguageServices,
-  LikeC4FileSystem,
-  NoopFileSystem,
+  NoFileSystem,
+  WithFileSystem,
   WithLikeC4ManualLayouts,
   WithMCPServer,
 } from '@likec4/language-server'
@@ -120,9 +120,13 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
 
   const { likec4 } = createCustomLanguageServices(
     {
-      ...options.useFileSystem ? LikeC4FileSystem(options.watch) : NoopFileSystem,
+      ...options.useFileSystem
+        ? {
+          ...WithFileSystem(options.watch),
+          ...WithLikeC4ManualLayouts,
+        }
+        : NoFileSystem,
       ...options.mcp ? WithMCPServer(options.mcp === 'stdio' ? 'stdio' : 'sse') : {},
-      ...WithLikeC4ManualLayouts,
     },
     CliModule,
     module,

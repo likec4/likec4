@@ -1,7 +1,7 @@
 import { configureLogger, getConsoleStderrSink } from '@likec4/log'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
-import { LikeC4FileSystem } from './filesystem/LikeC4FileSystem'
+import { WithFileSystem } from './filesystem/LikeC4FileSystem'
 import { WithLikeC4ManualLayouts } from './filesystem/LikeC4ManualLayouts'
 import { getLspConnectionSink, logger } from './logger'
 import { WithMCPServer } from './mcp/server/WithMCPServer'
@@ -42,7 +42,7 @@ export function startLanguageServer(): {
   const services = createLanguageServices(
     {
       connection,
-      ...LikeC4FileSystem(false),
+      ...WithFileSystem(false),
       ...WithMCPServer('sse'),
       ...WithLikeC4ManualLayouts,
     },

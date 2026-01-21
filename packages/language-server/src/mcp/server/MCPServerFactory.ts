@@ -1,19 +1,20 @@
 import { loggable } from '@likec4/log'
 import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import packageJson from '../../package.json' with { type: 'json' }
-import { logger } from '../logger'
-import type { LikeC4Services } from '../module'
-import { findRelationships } from './tools/find-relationships'
-import { listProjects } from './tools/list-projects'
-import { openView } from './tools/open-view'
-import { readDeployment } from './tools/read-deployment'
-import { readElement } from './tools/read-element'
-import { readProjectSummary } from './tools/read-project-summary'
-import { readView } from './tools/read-view'
-import { searchElement } from './tools/search-element'
+import packageJson from '../../../package.json' with { type: 'json' }
+import { logger } from '../../logger'
+import type { LikeC4Services } from '../../module'
+import type { LikeC4MCPServerFactory } from '../interfaces'
+import { findRelationships } from '../tools/find-relationships'
+import { listProjects } from '../tools/list-projects'
+import { openView } from '../tools/open-view'
+import { readDeployment } from '../tools/read-deployment'
+import { readElement } from '../tools/read-element'
+import { readProjectSummary } from '../tools/read-project-summary'
+import { readView } from '../tools/read-view'
+import { searchElement } from '../tools/search-element'
 
-export class LikeC4MCPServerFactory {
+export class MCPServerFactory implements LikeC4MCPServerFactory {
   constructor(private services: LikeC4Services) {
   }
 

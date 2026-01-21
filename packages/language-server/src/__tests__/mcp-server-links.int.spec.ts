@@ -7,7 +7,7 @@
 
 import type { ProjectId } from '@likec4/core'
 import { describe, expect, it } from 'vitest'
-import { LikeC4MCPServerFactory } from '../mcp/MCPServerFactory'
+import { MCPServerFactory } from '../mcp/server/MCPServerFactory'
 import { readDeployment } from '../mcp/tools/read-deployment'
 import { readElement } from '../mcp/tools/read-element'
 import { createTestServices } from '../test'
@@ -31,7 +31,7 @@ describe('MCP server integration - tools expose links', () => {
     await buildLikeC4Model()
 
     // Spin up MCP server (in-memory) to ensure registration works
-    const mcpFactory = new LikeC4MCPServerFactory({
+    const mcpFactory = new MCPServerFactory({
       likec4: { LanguageServices: services.likec4.LanguageServices } as any,
       shared: { lsp: {} } as any,
     } as any)
@@ -70,7 +70,7 @@ describe('MCP server integration - tools expose links', () => {
 
     await buildLikeC4Model()
 
-    const mcpFactory = new LikeC4MCPServerFactory({
+    const mcpFactory = new MCPServerFactory({
       likec4: { LanguageServices: services.likec4.LanguageServices } as any,
       shared: { lsp: {} } as any,
     } as any)

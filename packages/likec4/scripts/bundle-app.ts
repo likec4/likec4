@@ -4,7 +4,10 @@ import { $ } from 'execa'
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
+import { isCI, isProduction } from 'std-env'
 import { build } from 'vite'
+
+const prodOrCI = isProduction || isCI
 
 import { amIExecuted } from './_utils'
 
@@ -32,7 +35,9 @@ export async function bundleApp() {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
         '@likec4/diagram': resolve('../diagram/src'),
-        '@likec4/styles': resolve('./styled-system'),
+        ...prodOrCI && {
+          '@likec4/styles': resolve('./styled-system'),
+        },
       },
     },
     mode: 'production',

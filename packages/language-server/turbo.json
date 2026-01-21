@@ -5,6 +5,9 @@
   ],
   "tasks": {
     "generate": {
+      "dependsOn": [
+        "@likec4/icons#generate"
+      ],
       "inputs": [
         "scripts/**",
         "src/**/*.langium",

@@ -1,7 +1,8 @@
 import { loggable } from '@likec4/log'
 import type { LikeC4Services } from '../../module'
-import type { LikeC4MCPServer, LikeC4MCPServerModuleContext } from '../interfaces'
+import type { LikeC4MCPServer, LikeC4MCPServerFactory, LikeC4MCPServerModuleContext } from '../interfaces'
 import { logger } from '../utils'
+import { MCPServerFactory } from './MCPServerFactory'
 import { StdioLikeC4MCPServer } from './StdioLikeC4MCPServer'
 import { StreamableLikeC4MCPServer } from './StreamableLikeC4MCPServer'
 
@@ -63,5 +64,8 @@ export const WithMCPServer = (type: 'stdio' | 'sse' | { port: number } = 'sse'):
     }
     const port = typeof type === 'object' ? type.port : 33335
     return streamableLikeC4MCPServer(services, port)
+  },
+  mcpServerFactory: (services: LikeC4Services): LikeC4MCPServerFactory => {
+    return new MCPServerFactory(services)
   },
 })

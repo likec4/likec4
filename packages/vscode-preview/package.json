@@ -49,7 +49,7 @@
     "react-error-boundary": "catalog:react",
     "remeda": "catalog:utils",
     "tsx": "catalog:",
-    "type-fest": "catalog:utils",
+    "type-fest": "catalog:externals",
     "typescript": "catalog:",
     "vite": "catalog:vite",
     "vscode-messenger-common": "^0.5.1",

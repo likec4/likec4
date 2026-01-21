@@ -5,7 +5,7 @@ import type {
   LangiumSharedCoreServices,
 } from 'langium'
 import { URI } from 'vscode-uri'
-import { type FileSystemWatcherModuleContext, noopFileSystemWatcher } from './FileSystemWatcher'
+import { type FileSystemWatcherModuleContext, NoFileSystemWatcher } from './FileSystemWatcher'
 import type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext } from './LikeC4ManualLayouts'
 
 export type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext }
@@ -85,12 +85,13 @@ export class NoopFileSystemProvider implements FileSystemProvider {
   }
 }
 
-export const NoopFileSystem: FileSystemModuleContext = {
+export const NoFileSystem: FileSystemModuleContext = {
   fileSystemProvider: () => new NoopFileSystemProvider(),
-  ...noopFileSystemWatcher,
+  ...NoFileSystemWatcher,
 }
+export { NoFileSystemWatcher }
 
-export const NoopLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
+export const NoLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
   manualLayouts: (): LikeC4ManualLayouts => {
     return {
       read: () => Promise.resolve(null),

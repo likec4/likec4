@@ -14,7 +14,8 @@
     },
     "typecheck": {
       "dependsOn": [
-        "generate"
+        "generate",
+        "@likec4/style-preset#typecheck"
       ],
       "outputs": [
         "lib/**",

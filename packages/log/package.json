@@ -23,6 +23,7 @@
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
         "default": "./dist/index.mjs"
       }
     }
@@ -31,6 +32,7 @@
     "registry": "https://registry.npmjs.org",
     "access": "public",
     "types": "dist/index.d.mts",
+    "main": "dist/index.cjs",
     "module": "dist/index.mjs"
   },
   "scripts": {
@@ -42,7 +44,8 @@
     "clean": "likec4ops clean"
   },
   "dependencies": {
-    "@logtape/logtape": "catalog:utils"
+    "@logtape/logtape": "catalog:utils",
+    "std-env": "catalog:externals"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
@@ -50,7 +53,6 @@
     "@types/node": "catalog:",
     "merge-error-cause": "^5.0.2",
     "safe-stringify": "catalog:utils",
-    "std-env": "catalog:utils",
     "typescript": "catalog:",
     "unbuild": "catalog:",
     "wrap-error-message": "^3.0.1"

@@ -12,7 +12,10 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
+    },
+    {
+      "path": "../log/"
     }
   ]
 }

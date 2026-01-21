@@ -56,7 +56,7 @@ const base = {
   color: true,
   bundle: true,
   treeShaking: true,
-  external: ['vscode', 'esbuild', 'bundle-require'],
+  external: ['vscode', 'esbuild', 'bundle-require', 'chokidar', 'fdir'],
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
   },
@@ -80,7 +80,7 @@ configs.push({
   ],
   format: 'cjs',
   target: 'node22',
-  external: ['vscode', 'esbuild', 'bundle-require'],
+  external: ['vscode', 'esbuild', 'bundle-require', 'chokidar', 'fdir'],
   platform: 'node',
   conditions: ['sources', 'node', 'import'],
 }, {

@@ -5,10 +5,12 @@ import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices 
 
 export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 
+export { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/index'
 export type { LikeC4LanguageServices } from './LikeC4LanguageServices'
-export { createLanguageServices } from './module'
+export { NoMCPServer } from './mcp/interfaces'
 export type { LikeC4Services, LikeC4SharedServices } from './module'
 export type { LikeC4Views } from './views'
+export type { ProjectsManager } from './workspace'
 
 export function startLanguageServer(port: MessagePort | DedicatedWorkerGlobalScope): {
   shared: LikeC4SharedServices

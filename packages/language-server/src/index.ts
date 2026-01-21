@@ -3,10 +3,11 @@ import { defu } from 'defu'
 import { DEV } from 'esm-env'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
-import { NoopFileSystem } from './filesystem'
-import { LikeC4FileSystem } from './filesystem/LikeC4FileSystem'
+import { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/index'
+import { WithFileSystem } from './filesystem/LikeC4FileSystem'
 import { WithLikeC4ManualLayouts } from './filesystem/LikeC4ManualLayouts'
 import { getTelemetrySink, logger } from './logger'
+import { NoMCPServer } from './mcp/interfaces'
 import { WithMCPServer } from './mcp/server/WithMCPServer'
 import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
 import { ConfigurableLayouter } from './views/ConfigurableLayouter'
@@ -19,9 +20,9 @@ export { createLanguageServices } from './module'
 export type { LikeC4Services, LikeC4SharedServices } from './module'
 export type { LikeC4Views } from './views'
 export type { ProjectsManager } from './workspace'
-export { LikeC4FileSystem, NoopFileSystem, WithMCPServer }
+export { NoFileSystem, NoMCPServer, WithFileSystem, WithMCPServer }
 
-export { WithLikeC4ManualLayouts }
+export { NoLikeC4ManualLayouts, WithLikeC4ManualLayouts }
 
 type StartLanguageServerOptions = {
   /**
@@ -73,7 +74,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
   const services = createLanguageServices(
     {
       connection,
-      ...LikeC4FileSystem(opts.enableWatcher),
+      ...WithFileSystem(opts.enableWatcher),
       ...!!opts.enableMCP && WithMCPServer(opts.enableMCP),
       ...opts.enableManualLayouts && WithLikeC4ManualLayouts,
     },

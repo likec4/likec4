@@ -75,7 +75,7 @@
       "vscode-languageserver-types": "catalog:vscode",
       "vscode-oniguruma": "catalog:vscode",
       "vscode-uri": "catalog:vscode",
-      "type-fest": "catalog:utils",
+      "type-fest": "catalog:externals",
       "turbo": "catalog:",
       "sharp": "catalog:utils",
       "caniuse-lite": "catalog:utils",

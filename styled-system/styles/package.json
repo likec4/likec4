@@ -106,13 +106,13 @@
     "@pandabox/unplugin": "^0.2.2",
     "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css",
-    "@types/picomatch": "catalog:utils",
+    "@types/picomatch": "catalog:externals",
     "@likec4/tsconfig": "workspace:*",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "postcss": "catalog:css",
     "remeda": "catalog:utils",
-    "nano-spawn": "catalog:utils",
+    "nano-spawn": "catalog:externals",
     "unbuild": "catalog:",
     "typescript": "catalog:"
   }

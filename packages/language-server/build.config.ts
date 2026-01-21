@@ -1,55 +1,34 @@
-import spawn from 'nano-spawn'
 import { resolve } from 'node:path'
-import { type BuildEntry, defineBuildConfig } from 'unbuild'
-
-const bundled: BuildEntry = {
-  input: './src/bundled.ts',
-  name: 'bundled',
-  builder: 'rollup',
-  declaration: false,
-}
-
-const makedist: BuildEntry = {
-  builder: 'mkdist',
-  input: './src',
-  format: 'esm',
-  ext: 'js',
-  pattern: [
-    '**/*.ts',
-    '!**/*.spec.ts',
-  ],
-}
+import { defineBuildConfig } from 'unbuild'
 
 // @ts-expect-error
 const isProd = process.env.NODE_ENV === 'production'
 
-export default defineBuildConfig({
-  entries: isProd ? [bundled] : [makedist],
+export default defineBuildConfig([{
+  entries: [
+    './src/index.ts',
+    './src/likec4lib.ts',
+    './src/protocol.ts',
+    './src/browser-worker.ts',
+    './src/browser.ts',
+  ],
   clean: true,
   stub: false,
   alias: {
     'raw-body': resolve('./src/empty.ts'),
     'content-type': resolve('./src/empty.ts'),
   },
-  failOnWarn: isProd,
-
+  failOnWarn: true,
+  declaration: true,
   rollup: {
     esbuild: {
-      minify: isProd,
-      minifyIdentifiers: false,
+      platform: 'neutral',
+      minify: false,
       lineLimit: 500,
     },
     inlineDependencies: isProd,
     resolve: {
-      exportConditions: isProd ? ['node'] : ['node', 'sources'],
+      exportConditions: ['sources'],
     },
   },
-  hooks: {
-    'rollup:done': async () => {
-      console.log('Building types...')
-      await spawn('tsc', ['-p', 'tsconfig.build.json'], {
-        stdout: 'inherit',
-      })
-    },
-  },
-})
+}])

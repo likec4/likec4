@@ -35,7 +35,8 @@
     "generate": {
       "dependsOn": [
         "generate:app",
-        "generate:icons"
+        "generate:icons",
+        "@likec4/language-server#generate"
       ],
       "outputs": []
     },

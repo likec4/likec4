@@ -5,7 +5,7 @@ export interface FileSystemWatcherModuleContext {
   fileSystemWatcher: (services: LikeC4SharedServices) => FileSystemWatcher
 }
 
-export const noopFileSystemWatcher: FileSystemWatcherModuleContext = {
+export const NoFileSystemWatcher: FileSystemWatcherModuleContext = {
   fileSystemWatcher: () => new NoopFileSystemWatcher(),
 }
 

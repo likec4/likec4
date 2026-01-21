@@ -10,16 +10,16 @@ import { LikeC4LanguageMetaData } from '../generated/module'
 import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
 import { chokidarFileSystemWatcher } from './ChokidarWatcher'
-import { noopFileSystemWatcher } from './FileSystemWatcher'
+import { NoFileSystemWatcher } from './FileSystemWatcher'
 import type { FileSystemModuleContext, FileSystemProvider } from './index'
 
 const logger = rootLogger.getChild('filesystem')
 
-export const LikeC4FileSystem = (
+export const WithFileSystem = (
   ehableWatcher = true,
 ): FileSystemModuleContext => ({
   fileSystemProvider: () => new SymLinkTraversingFileSystemProvider(),
-  ...ehableWatcher ? chokidarFileSystemWatcher : noopFileSystemWatcher,
+  ...ehableWatcher ? chokidarFileSystemWatcher : NoFileSystemWatcher,
 })
 
 export const isLikeC4File = (path: string, isDirectory: boolean = false) =>

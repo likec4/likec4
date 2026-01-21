@@ -5,7 +5,7 @@ export default defineBuildConfig({
   stub: false,
   declaration: 'node16',
   rollup: {
-    emitCJS: false,
+    emitCJS: true,
     inlineDependencies: true,
   },
 })
