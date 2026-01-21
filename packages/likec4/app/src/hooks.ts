@@ -44,10 +44,11 @@ export function useLikeC4Views(): ReadonlyArray<LayoutedView> {
 }
 
 export function useCurrentViewId(): ViewId {
-  return useParams({
-    select: params => params.viewId ?? 'index',
+  const viewId = useParams({
+    select: params => params.viewId,
     strict: false,
-  }) as ViewId
+  })
+  return (viewId ?? 'index') as ViewId
 }
 
 /**
@@ -56,13 +57,13 @@ export function useCurrentViewId(): ViewId {
 export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType) => void] {
   const viewId = useCurrentViewId()
   const $likec4model = useLikeC4ModelAtom()
-  const [layoutType, setLayoutType] = useState('manual' as LayoutType)
+  const [layoutType, setLayoutType] = useState<LayoutType>('manual')
 
   useUpdateEffect(() => {
     setLayoutType('manual')
   }, [viewId])
 
-  const [view, setView] = useState($likec4model.value?.findView(viewId)?.$layouted ?? null)
+  const [view, setView] = useState(() => $likec4model.get().findView(viewId)?.$layouted ?? null)
   useEffect(() => {
     return $likec4model.subscribe((next) => {
       setView(current => {

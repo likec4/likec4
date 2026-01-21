@@ -1,32 +1,31 @@
-import type { ProjectId } from '@likec4/core/types'
 import {
   createBrowserHistory,
   createHashHistory,
   createRouter as createTanstackRouter,
   RouterProvider,
 } from '@tanstack/react-router'
+import { projects } from 'likec4:projects'
+import { map } from 'remeda'
 import { Fallback } from './components/Fallback'
 import { NotFound } from './components/NotFound'
 import { basepath, useHashHistory } from './const'
+import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
 import { routeTree } from './routeTree.gen'
 
 type RouteTree = typeof routeTree
 
-const projectId = 'default' as ProjectId
-
 const router = createTanstackRouter<RouteTree, 'always', true>({
   routeTree,
   context: {
-    projectId,
-    projects: [projectId],
+    projectId: projects[0].id,
+    projects: map(projects, p => p.id),
   },
+  InnerWrap: LikeC4ProjectsContext,
   basepath,
   trailingSlash: 'always',
-  defaultViewTransition: true,
+  defaultViewTransition: false,
   history: useHashHistory ? createHashHistory() : createBrowserHistory(),
   defaultStaleTime: Infinity,
-  scrollRestoration: false,
-  defaultStructuralSharing: true,
   defaultNotFoundComponent: () => {
     return <NotFound />
   },

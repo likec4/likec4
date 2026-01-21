@@ -4,7 +4,6 @@ import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack
 import { projects } from 'likec4:projects'
 import { useEffect } from 'react'
 import { isTruthy, map } from 'remeda'
-import { LikeC4ProjectsContext } from '../context/LikeC4ProjectsContext'
 
 const asTheme = (v: unknown): 'light' | 'dark' | 'auto' => {
   if (typeof v !== 'string') {
@@ -94,10 +93,10 @@ export const Route = createRootRouteWithContext<Context>()({
 
 function RootComponent() {
   return (
-    <LikeC4ProjectsContext>
+    <>
       <Outlet />
       <ThemeSync />
-    </LikeC4ProjectsContext>
+    </>
   )
 }
 
