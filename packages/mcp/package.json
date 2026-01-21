@@ -10,6 +10,13 @@
   "bin": {
     "likec4-mcp-server": "dist/index.mjs"
   },
+  "files": [
+    "dist",
+    "**/package.json",
+    "!**/__*/**",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
@@ -29,6 +36,8 @@
     "typecheck": "tsc -b --verbose",
     "build": "wireit",
     "inspector": "wireit",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-mcp-$npm_package_version.tgz package.tgz || true",
     "clean": "likec4ops clean"
   },
   "wireit": {

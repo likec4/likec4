@@ -1299,9 +1299,6 @@ importers:
       nanoid:
         specifier: catalog:utils
         version: 5.1.6
-      natural-compare-lite:
-        specifier: catalog:utils
-        version: 1.4.0
       p-debounce:
         specifier: catalog:utils
         version: 5.1.0
@@ -1311,9 +1308,6 @@ importers:
       p-timeout:
         specifier: catalog:utils
         version: 6.1.4
-      picomatch:
-        specifier: catalog:externals
-        version: 4.0.3
       pretty-ms:
         specifier: ^9.3.0
         version: 9.3.0
@@ -1372,6 +1366,9 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.35.0(oxlint-tsgolint@0.10.0)
+      picomatch:
+        specifier: catalog:externals
+        version: 4.0.3
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -1493,9 +1490,6 @@ importers:
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../language-server
-      '@likec4/layouts':
-        specifier: workspace:*
-        version: link:../layouts
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
@@ -1529,9 +1523,6 @@ importers:
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
-      picomatch:
-        specifier: catalog:externals
-        version: 4.0.3
       playwright:
         specifier: 'catalog:'
         version: 1.56.1
@@ -1569,6 +1560,9 @@ importers:
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
+      '@likec4/layouts':
+        specifier: workspace:*
+        version: link:../layouts
       '@likec4/style-preset':
         specifier: workspace:*
         version: link:../../styled-system/preset
@@ -1689,6 +1683,9 @@ importers:
       package-up:
         specifier: catalog:utils
         version: 5.0.0
+      picomatch:
+        specifier: catalog:externals
+        version: 4.0.3
       postcss:
         specifier: catalog:css
         version: 8.5.6
