@@ -11,7 +11,7 @@ import { CurrentViewModelContext } from '../../context/LikeC4ModelContext'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
 import { DiagramActorContextProvider, DiagramApiContextProvider } from '../../hooks/safeContext'
 import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
-import { useLikeC4Model } from '../../hooks/useLikeC4Model'
+import { useOptionalLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
@@ -151,11 +151,11 @@ const selectFromActor = (
 
   const hasDrifts = context.view.drifts != null && context.view.drifts.length > 0
 
-  const enableCompareWithLatest = context.features.enableCompareWithLatest
+  const enableCompareWithLatest = hasDrifts
+    && context.features.enableCompareWithLatest
     && (toggledFeatures.enableCompareWithLatest ?? false)
     // Compare with latest is disabled during active walkthrough
     && isNullish(context.activeWalkthrough)
-    && hasDrifts
 
   const enableReadOnly = context.features.enableReadOnly
     || toggledFeatures.enableReadOnly
@@ -193,8 +193,8 @@ function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ ac
     selectFromActor,
     compareSelected,
   )
-  const likec4model = useLikeC4Model()
-  const viewmodel = likec4model.findView(viewId)
+  const likec4model = useOptionalLikeC4Model()
+  const viewmodel = likec4model?.findView(viewId) ?? null
   return (
     <CurrentViewModelContext.Provider value={viewmodel}>
       <DiagramFeatures overrides={toggledFeatures}>

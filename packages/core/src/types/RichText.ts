@@ -42,7 +42,8 @@ export type RichTextOrEmpty = RichTextNonEmpty | RichTextEmpty
  */
 export class RichText {
   private static getOrCreateFromText(txt: string): RichTextOrEmpty {
-    if (txt.trim() === emptyTxt) {
+    txt = txt.trimEnd()
+    if (txt === emptyTxt) {
       return RichText.EMPTY
     }
     let cached = txtcache.get(txt)
@@ -55,7 +56,8 @@ export class RichText {
   }
 
   private static getOrCreateFromMarkdown(md: string): RichTextOrEmpty {
-    if (md.trim() === emptyTxt) {
+    md = md.trimEnd()
+    if (md === emptyTxt) {
       return RichText.EMPTY
     }
     let cached = mdcache.get(md)

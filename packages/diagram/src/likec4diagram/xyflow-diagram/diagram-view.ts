@@ -26,7 +26,7 @@ import type { Types } from '../types'
  * @returns An object containing an array of XY flow nodes and an array of XY flow edges.
  */
 export function diagramToXY(opts: {
-  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type'>
+  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type' | 'autoLayout'>
   currentViewId: ViewId | undefined
   where: WhereOperator | null
 }): {
@@ -39,6 +39,8 @@ export function diagramToXY(opts: {
   const xynodes = [] as Types.Node[],
     xyedges = [] as Types.Edge[],
     nodeLookup = new Map<Fqn, DiagramNode>()
+
+  const viewLayoutDir = view.autoLayout?.direction ?? 'TB'
 
   type TraverseItem = {
     node: DiagramNode
@@ -126,6 +128,7 @@ export function diagramToXY(opts: {
       x: node.x,
       y: node.y,
       drifts: node.drifts ?? null,
+      viewLayoutDir,
     } satisfies Types.CompoundNodeData
 
     const leafNodeData = {
@@ -146,6 +149,7 @@ export function diagramToXY(opts: {
       y: node.y,
       isMultiple: node.style?.multiple ?? false,
       drifts: node.drifts ?? null,
+      viewLayoutDir,
     } satisfies Types.LeafNodeData
 
     if (node.kind === GroupElementKind) {

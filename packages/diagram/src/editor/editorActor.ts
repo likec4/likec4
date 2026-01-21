@@ -249,7 +249,7 @@ const applyLatestToManual = machine.createStateConfig({
     '*': {
       actions: [
         log(({ event }) => `applyLatestToManual received unexpected event: ${event.type}`),
-        reschedule(350),
+        reschedule(500),
       ],
     },
   },
@@ -368,8 +368,12 @@ const executeChanges = machine.createStateConfig({
     },
   },
   on: {
+    // catch all events
     '*': {
-      actions: reschedule(),
+      actions: [
+        log(({ event }) => `executeChanges received unexpected event: ${event.type}`),
+        reschedule(),
+      ],
     },
   },
 })
@@ -384,21 +388,6 @@ const _editorActorLogic = machine.createMachine({
     history: [],
   }),
   initial: 'idle',
-  // TODO: listen to diagram actor, if switches to "sequence" dynamic view, cancel editing
-  // entry: ({ self, system }) => {
-  //   // let previous = ''
-  //   // const a = (self._parent as DiagramMachineRef).subscribe({
-  //   //   next({ context }) {
-  //   //     const current = context.view._type === 'dynamic' ? context.dynamicViewVariant
-  //   //   },
-  //   // })
-  //   const s = self.subscribe({
-  //     complete: () => {
-  //       console.log('editor actor completed')
-  //       s.unsubscribe()
-  //     },
-  //   })
-  // },
   states: {
     idle,
     editing,

@@ -64,21 +64,21 @@ export const onEdgeDoubleClick = () =>
     }
     const { nodeLookup } = context.xystore.getState()
     return {
-      xyedges: context.xyedges.map(e => {
-        if (e.id === event.edge.id) {
-          const controlPoints = resetEdgeControlPoints(nodeLookup, e)
-          const pt = controlPoints[0]
-          return {
-            ...e,
-            data: {
-              ...e.data,
-              controlPoints,
-              labelBBox: e.data.labelBBox ? { ...e.data.labelBBox, ...pt } : null,
-              labelXY: null,
-            },
-          } as Types.Edge
+      xyedges: context.xyedges.map((e) => {
+        if (e.id !== event.edge.id) {
+          return e
         }
-        return e
+        const controlPoints = resetEdgeControlPoints(nodeLookup, e)
+        const pt = controlPoints[0]
+        return {
+          ...e,
+          data: {
+            ...e.data,
+            controlPoints,
+            labelBBox: e.data.labelBBox ? { ...e.data.labelBBox, ...pt } : null,
+            labelXY: null,
+          },
+        } as Types.Edge
       }),
     }
   })
@@ -114,10 +114,11 @@ export const assignFocusedNode = () =>
       case 'xyflow.nodeClick':
         focusedNode = event.node.data.id
         break
-      case 'focus.node':
+      case 'focus.node': {
         focusedNode = event.nodeId
         autoUnfocusTimer = event.autoUnfocus === true
         break
+      }
       default:
         throw new Error(`Unexpected event type: ${event.type} in action 'assign: focusedNode'`)
     }

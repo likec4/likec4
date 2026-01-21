@@ -1,4 +1,5 @@
 import type {
+  AutoLayoutDirection,
   BBox,
   DeploymentFqn,
   DiagramEdge,
@@ -46,7 +47,10 @@ export namespace Types {
       >
     >
     & {
-      // technology: string | null
+      /**
+       * View layout direction, used by DefaultHandles to position node handles
+       */
+      viewLayoutDir?: AutoLayoutDirection | undefined
       /**
        * View this node belongs to
        */
@@ -125,6 +129,10 @@ export namespace Types {
       >
     >
     & {
+      /**
+       * View layout direction, used by DefaultHandles to position node handles
+       */
+      viewLayoutDir?: AutoLayoutDirection | undefined
       /**
        * View this node belongs to
        */

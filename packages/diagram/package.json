@@ -100,7 +100,7 @@
     "react-error-boundary": "catalog:react",
     "react-shadow": "catalog:react",
     "remeda": "catalog:utils",
-    "type-fest": "catalog:utils",
+    "type-fest": "catalog:externals",
     "xstate": "catalog:xstate"
   },
   "peerDependencies": {

@@ -8,59 +8,50 @@ import {
   IconSearch,
 } from '@tabler/icons-react'
 import { isMacOs } from '@xyflow/system'
-import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { memo } from 'react'
-import { useEnabledFeatures } from '../../context'
 import { useDiagram } from '../../hooks/useDiagram'
 
-export const SearchControl = memo(() => {
-  const { enableSearch, enableCompareWithLatest } = useEnabledFeatures()
+export function SearchControl() {
   const diagram = useDiagram()
   const isMac = isMacOs()
 
   return (
-    <AnimatePresence>
-      {enableSearch && !enableCompareWithLatest && (
-        <UnstyledButton
-          component={m.button}
-          layout="position"
-          onClick={e => {
-            e.stopPropagation()
-            diagram.openSearch()
-          }}
-          whileTap={{
-            scale: 0.95,
-            translateY: 1,
-          }}
-          className={cx(
-            'group',
-            hstack({
-              gap: 'xxs',
-              paddingInline: 'sm',
-              paddingBlock: 'xxs',
-              userSelect: 'none',
-              layerStyle: 'likec4.panel.action.filled',
-              display: {
-                base: 'none',
-                '@/md': 'flex',
-              },
-            }),
-          )}>
-          <IconSearch size={14} stroke={2.5} />
-          <Box
-            css={{
-              fontSize: '11px',
-              fontWeight: 'bold',
-              lineHeight: 1,
-              opacity: 0.8,
-              whiteSpace: 'nowrap',
-            }}>
-            {isMac ? '⌘ + K' : 'Ctrl + K'}
-          </Box>
-        </UnstyledButton>
-      )}
-    </AnimatePresence>
+    <UnstyledButton
+      component={m.button}
+      layout="position"
+      onClick={e => {
+        e.stopPropagation()
+        diagram.openSearch()
+      }}
+      whileTap={{
+        scale: 0.95,
+        translateY: 1,
+      }}
+      className={cx(
+        'group',
+        hstack({
+          gap: 'xxs',
+          paddingInline: 'sm',
+          paddingBlock: 'xxs',
+          userSelect: 'none',
+          layerStyle: 'likec4.panel.action.filled',
+          display: {
+            base: 'none',
+            '@/md': 'flex',
+          },
+        }),
+      )}>
+      <IconSearch size={14} stroke={2.5} />
+      <Box
+        css={{
+          fontSize: '11px',
+          fontWeight: 'bold',
+          lineHeight: 1,
+          opacity: 0.8,
+          whiteSpace: 'nowrap',
+        }}>
+        {isMac ? '⌘ + K' : 'Ctrl + K'}
+      </Box>
+    </UnstyledButton>
   )
-})
-SearchControl.displayName = 'SearchControl'
+}

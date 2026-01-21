@@ -135,7 +135,7 @@ function getBorderPointOnVector(node: InternalNode, nodeCenter: VectorValue, v: 
 export function resetEdgeControlPoints(
   nodeLookup: NodeLookup,
   edge: Types.Edge,
-): [XYPoint] | [XYPoint, XYPoint] {
+): [XYPoint, XYPoint] {
   const source = nonNullable(nodeLookup.get(edge.source), `Source node ${edge.source} not found`)
   const target = nonNullable(nodeLookup.get(edge.target), `Target node ${edge.target} not found`)
 

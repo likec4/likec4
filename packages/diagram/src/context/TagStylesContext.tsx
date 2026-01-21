@@ -50,19 +50,26 @@ function generateStylesheet(tags: Record<string, TagSpecification> | undefined, 
 
 export function TagStylesProvider({ children, rootSelector }: PropsWithChildren<{ rootSelector: string }>) {
   const tags = useLikeC4Specification().tags
+  const nonce = useMantineStyleNonce()?.()
   const stylesheet = generateStylesheet(tags, rootSelector)
 
   return (
     <TagStylesContext.Provider value={tags}>
-      {stylesheet !== '' && <TagStylesheet stylesheet={stylesheet} />}
+      {stylesheet !== '' && <TagStylesheet nonce={nonce} stylesheet={stylesheet} />}
       {children}
     </TagStylesContext.Provider>
   )
 }
 
-const TagStylesheet = memo<{ stylesheet: string }>(({ stylesheet }) => {
-  const nonce = useMantineStyleNonce()?.()
-  return <style data-likec4-tags type="text/css" dangerouslySetInnerHTML={{ __html: stylesheet }} nonce={nonce} />
+const TagStylesheet = memo<{ stylesheet: string; nonce: string | undefined }>(({ stylesheet, nonce }) => {
+  return (
+    <style
+      data-likec4-tags
+      type="text/css"
+      dangerouslySetInnerHTML={{ __html: stylesheet }}
+      nonce={nonce}
+    />
+  )
 })
 
 export function useTagSpecifications() {

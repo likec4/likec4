@@ -101,7 +101,7 @@ export interface SearchActorLogic extends
     any,
     any,
     any,
-    any,
+    'inactive' | 'opened' | 'pickView',
     never,
     never,
     any,

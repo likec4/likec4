@@ -1,8 +1,10 @@
 import { type NodeId, BBox } from '@likec4/core/types'
-import { invariant } from '@likec4/core/utils'
+import { invariant, nonNullable } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
 import { isTruthy } from 'remeda'
 import { assertEvent, enqueueActions } from 'xstate'
+import { roundDpr } from '../../utils'
+import { parsePaddings } from '../../utils/xyflow'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import { mergeXYNodesEdges } from './assign'
 import {
@@ -116,6 +118,24 @@ export const navigating = machine.createStateConfig({
           return zoom + diff * coef
         }
 
+        // Calculate the center of the next viewport (using the next bounds and paddings)
+        const calcCenterTowardsNextViewport = (nextViewport: Viewport, nextBounds: BBox) => {
+          const zoom = calcZoomTowardsNextViewport(nextViewport)
+          const { width, height } = nonNullable(context.xystore).getState()
+          const padding = parsePaddings(context.fitViewPadding, width, height)
+          const center = BBox.center({
+            x: nextBounds.x,
+            y: nextBounds.y,
+            width: nextBounds.width + padding.x / zoom,
+            height: nextBounds.height + padding.y / zoom,
+          })
+          return {
+            x: roundDpr(center.x),
+            y: roundDpr(center.y),
+            zoom,
+          }
+        }
+
         const fromHistory = history[currentIndex]
         if (fromHistory && fromHistory.viewId === eventWithXYData.view.id) {
           const {
@@ -134,17 +154,12 @@ export const navigating = machine.createStateConfig({
 
           enqueue.assign(nextCtx)
 
-          const nextBounds = viewBounds(nextCtx)
-          const center = BBox.center(nextBounds)
           const zoom = calcZoomTowardsNextViewport(nextCtx.viewport)
-
-          xyflow.setCenter(
-            center.x,
-            center.y,
-            { zoom, duration: 0 },
-          ).catch((err) => {
-            console.error('Error during xyflow.setCenter from history', { err })
-          })
+          xyflow.setViewport({
+            x: nextCtx.viewport.x,
+            y: nextCtx.viewport.y,
+            zoom,
+          }, { duration: 0 })
 
           if (wasFocused) {
             enqueue.raise({
@@ -197,11 +212,10 @@ export const navigating = machine.createStateConfig({
             console.error('Error during xyflow.panBy', { err })
           })
         } else {
-          const zoom = calcZoomTowardsNextViewport(nextViewport)
-          const center = BBox.center(nextBounds)
+          const { x, y, zoom } = calcCenterTowardsNextViewport(nextViewport, nextBounds)
           xyflow.setCenter(
-            center.x,
-            center.y,
+            x,
+            y,
             { zoom, duration: 0 },
           ).catch((err) => {
             console.error('Error during xyflow.setCenter', { err })

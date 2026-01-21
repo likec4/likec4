@@ -11,19 +11,20 @@ const scheme = (scheme: 'dark' | 'light') => `[data-mantine-color-scheme="${sche
 
 const whenDark = scheme('dark')
 
-const MAX_DEPTH = 5
+const round = (num: number) => Math.round(num * 1000) / 1000
+
+const MAX_DEPTH = 6
 const generateCompoundColors = (rootSelector: string, name: string, colors: ThemeColorValues, depth: number) => {
-  depth = Math.min(depth, MAX_DEPTH)
   const selector = `${rootSelector} :is([data-likec4-color="${name}"][data-compound-depth="${depth}"])`
 
   const light = {
-    c: 1 - depth * 0.06,
-    l: 1.1 + (depth - 1) * 0.04,
+    c: round(1 - depth * 0.06),
+    l: round(1.1 + (depth - 1) * 0.04),
   }
 
   const dark = {
-    c: 1 - depth * 0.085,
-    l: 0.8 - (depth - 1) * 0.05,
+    c: round(1 - depth * 0.085),
+    l: round(0.8 - (depth - 1) * 0.05),
   }
 
   return `
@@ -77,7 +78,7 @@ function generateBuiltInColorStyles(rootSelector: string, theme: LikeC4StylesCon
   )
 }
 
-export const LikeC4Styles = memo<{ id: string; maxDepth?: number }>(({ id, maxDepth = MAX_DEPTH }) => {
+export function LikeC4Styles({ id, maxDepth = MAX_DEPTH }: { id: string; maxDepth?: number }) {
   const rootSelector = `#${id}`
   const nonce = useMantineStyleNonce()?.()
   const { theme } = useLikeC4Styles()
@@ -86,34 +87,26 @@ export const LikeC4Styles = memo<{ id: string; maxDepth?: number }>(({ id, maxDe
   const colorsStyles = generateBuiltInColorStyles(rootSelector, theme, maxDepth)
 
   return (
-    <style
-      type="text/css"
-      data-likec4-colors={id}
-      dangerouslySetInnerHTML={{ __html: colorsStyles }}
-      nonce={nonce} />
+    <MemoizedStyles
+      id={id}
+      nonce={nonce}
+      colorsStyles={colorsStyles} />
   )
-
-  // return (
-  //   <MemoizedStyles
-  //     id={id}
-  //     nonce={nonce}
-  //     colorsStyles={colorsStyles} />
-  // )
-}, (prev, next) => prev.id === next.id && (prev.maxDepth ?? MAX_DEPTH) === (next.maxDepth ?? MAX_DEPTH))
+}
 
 /**
  * @internal Memoized styles gives a performance boost during development
  */
-// const MemoizedStyles = memo<{
-//   id: string
-//   nonce: string | undefined
-//   colorsStyles: string
-// }>((
-//   { id, nonce, colorsStyles },
-// ) => (
-//   <style
-//     type="text/css"
-//     data-likec4-colors={id}
-//     dangerouslySetInnerHTML={{ __html: colorsStyles }}
-//     nonce={nonce} />
-// ))
+const MemoizedStyles = memo<{
+  id: string
+  nonce: string | undefined
+  colorsStyles: string
+}>((
+  { id, nonce, colorsStyles },
+) => (
+  <style
+    type="text/css"
+    data-likec4-colors={id}
+    dangerouslySetInnerHTML={{ __html: colorsStyles }}
+    nonce={nonce} />
+))

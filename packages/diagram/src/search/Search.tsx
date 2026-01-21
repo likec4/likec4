@@ -6,10 +6,7 @@ import { useTimeoutEffect } from '@react-hookz/web'
 import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import { memo, useRef } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
 import { isTruthy } from 'remeda'
-import { ErrorFallback } from '../components/ErrorFallback'
-import { DiagramFeatures } from '../context/DiagramFeatures'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useSearchActorRef } from '../hooks/useSearchActor'
 import { Overlay } from '../overlays/overlay/Overlay'
@@ -77,16 +74,11 @@ const selectIsOpened = (s: SearchActorSnapshot) => !s.matches('inactive')
 
 export function Search() {
   const searchActorRef = useSearchActorRef()
+  if (!searchActorRef) {
+    return null
+  }
 
-  return (
-    <DiagramFeatures.Overlays>
-      <ErrorBoundary FallbackComponent={ErrorFallback} onReset={close}>
-        <AnimatePresence>
-          {searchActorRef && <SearchOverlayCtx searchActorRef={searchActorRef} />}
-        </AnimatePresence>
-      </ErrorBoundary>
-    </DiagramFeatures.Overlays>
-  )
+  return <SearchOverlayCtx searchActorRef={searchActorRef} />
 }
 
 const selectPickViewFor = (s: SearchActorSnapshot) => s.context.pickViewFor ?? null
@@ -120,7 +112,7 @@ const SearchOverlayCtx = memo<{ searchActorRef: SearchActorRef }>(({ searchActor
   ])
 
   return (
-    <AnimatePresence propagate>
+    <AnimatePresence>
       {isOpened && (
         <Overlay
           fullscreen

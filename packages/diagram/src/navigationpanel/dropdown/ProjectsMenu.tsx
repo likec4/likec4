@@ -3,16 +3,23 @@ import { Box, HStack } from '@likec4/styles/jsx'
 import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { memo } from 'react'
+import type { LikeC4ProjectsContext } from '../../context/LikeC4ProjectsContext'
 import { useLikeC4ProjectId, useLikeC4ProjectsContext } from '../../hooks/useLikeC4Project'
 
 export const ProjectsMenu = memo(_ => {
   const { projects, onProjectChange } = useLikeC4ProjectsContext()
-  const projectId = useLikeC4ProjectId()
-
   if (projects.length <= 1) {
     return null
   }
 
+  return <WithProjectsMenu projects={projects} onProjectChange={onProjectChange} />
+})
+
+function WithProjectsMenu({
+  projects,
+  onProjectChange,
+}: LikeC4ProjectsContext) {
+  const projectId = useLikeC4ProjectId()
   return (
     <HStack gap="0.5" alignItems="baseline">
       <Box
@@ -75,4 +82,4 @@ export const ProjectsMenu = memo(_ => {
       </Menu>
     </HStack>
   )
-})
+}

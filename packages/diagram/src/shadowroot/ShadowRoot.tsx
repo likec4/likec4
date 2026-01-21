@@ -1,6 +1,6 @@
 import type { MantineThemeOverride } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
-import { type HTMLAttributes, forwardRef, useRef, useState } from 'react'
+import { type HTMLAttributes, forwardRef, memo, useRef, useState } from 'react'
 import root from 'react-shadow'
 import { isDefined } from 'remeda'
 import { DefaultMantineProvider } from '../context/DefaultMantineProvider'
@@ -102,11 +102,7 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
 
   return (
     <>
-      <style
-        type="text/css"
-        nonce={nonce}
-        dangerouslySetInnerHTML={{ __html: cssstyle }}
-      />
+      <MemoizedStyles nonce={nonce} cssstyle={cssstyle} />
       <Root ssr={false} {...props} styleSheets={styleSheets} data-likec4-instance={id}>
         <div
           ref={useMergedRef(rootRef, ref)}
@@ -129,3 +125,18 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
     </>
   )
 })
+
+/**
+ * @internal Memoized styles gives a performance boost during development
+ */
+const MemoizedStyles = memo<{
+  nonce: string | undefined
+  cssstyle: string
+}>((
+  { nonce, cssstyle },
+) => (
+  <style
+    type="text/css"
+    nonce={nonce}
+    dangerouslySetInnerHTML={{ __html: cssstyle }} />
+))

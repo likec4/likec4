@@ -1,6 +1,6 @@
-import { Box, Text } from '@mantine/core'
+import { Box } from '@likec4/styles/jsx'
+import { Text } from '@mantine/core'
 import type { RelationshipsBrowserTypes } from '../_types'
-import { emptyNode } from './styles.css'
 
 export function EmptyNode({
   data: {
@@ -8,7 +8,17 @@ export function EmptyNode({
   },
 }: RelationshipsBrowserTypes.NodeProps<'empty'>) {
   return (
-    <Box className={emptyNode}>
+    <Box
+      css={{
+        width: '100%',
+        height: '100%',
+        border: `3px dashed`,
+        borderColor: `mantine.colors.defaultBorder`,
+        borderRadius: 'md',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
       <Text c={'dimmed'} fz={'lg'} fw={500}>No {column === 'incomers' ? 'incoming' : 'outgoing'}</Text>
     </Box>
   )
