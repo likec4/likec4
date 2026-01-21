@@ -61,7 +61,7 @@ export const compoundNode = defineRecipe({
       boxSizing: 'border-box',
       [vars.palette.outline]: {
         base: `oklch(from ${__v('palette.stroke')} calc(l * 0.9) c h)`,
-        _dark: `oklch(from ${__v('palette.stroke')} calc(l * 1.2) calc(c * 1.05) h)`,
+        _dark: `oklch(from ${__v('palette.stroke')} calc(l * 1.1) c h)`,
       },
       [borderWidth.var]: '3px',
       [borderRadius.var]: '6px',

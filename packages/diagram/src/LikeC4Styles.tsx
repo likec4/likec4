@@ -18,13 +18,13 @@ const generateCompoundColors = (rootSelector: string, name: string, colors: Them
   const selector = `${rootSelector} :is([data-likec4-color="${name}"][data-compound-depth="${depth}"])`
 
   const light = {
-    c: round(1 - depth * 0.06),
-    l: round(1.1 + (depth - 1) * 0.04),
+    c: round(1 - depth * 0.05),
+    l: round(1 + depth * 0.035),
   }
 
   const dark = {
-    c: round(1 - depth * 0.085),
-    l: round(0.8 - (depth - 1) * 0.05),
+    l: round(1 - depth * 0.04),
+    c: round(0.95 - depth * 0.03),
   }
 
   return `

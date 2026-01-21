@@ -40,7 +40,7 @@ export function CompoundNodeContainer({
   })
   const isTransparent = opacity < 98
 
-  const MIN_OPACITY = 70
+  const MIN_OPACITY = 60
   const borderOpacity = MIN_OPACITY + clamp((100 - MIN_OPACITY) * (opacity / 100), {
     min: 0,
     max: 100 - MIN_OPACITY,
@@ -54,7 +54,7 @@ export function CompoundNodeContainer({
 
   const depth = clamp(data.depth ?? 1, {
     min: 1,
-    max: 5,
+    max: 6,
   })
 
   return (
