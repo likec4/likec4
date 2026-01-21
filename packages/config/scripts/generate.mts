@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises'
-import * as z from 'zod'
+import z from 'zod/v4'
 import { LikeC4ProjectJsonConfigSchema } from '../src/schema'
 
 const schema = z.toJSONSchema(LikeC4ProjectJsonConfigSchema, { io: 'input' })

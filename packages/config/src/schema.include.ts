@@ -1,4 +1,4 @@
-import * as z from 'zod'
+import z from 'zod/v4'
 
 // Relative path (no leading slash, drive letter, or protocol)
 // eslint-disable-next-line no-useless-escape

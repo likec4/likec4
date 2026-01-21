@@ -29,7 +29,7 @@ export default defineBuildConfig({
     'object-hash': 'object-hash/dist/object_hash.js',
   },
   rollup: {
-    emitCJS: false,
+    emitCJS: true,
     inlineDependencies: true,
     output: {
       hoistTransitiveImports: false,

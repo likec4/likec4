@@ -17,7 +17,7 @@ import {
 /**
  * Converts a sequence layout to XY flow nodes and edges.
  * @param view The next dynamic view which contains the sequence layout.
- * @param currentViewId The ID of the current view.
+ * @param currentViewId The ID of the current view (optional, used to exclude navigation to the current view)
  */
 export function sequenceLayoutToXY(
   view: LayoutedDynamicView,
@@ -52,7 +52,7 @@ export function sequenceLayoutToXY(
     if (!edge) {
       throw new Error(`Edge ${step.id} not found`)
     }
-    xyedges.push(toSeqStepEdge(step, edge, currentViewId))
+    xyedges.push(toSeqStepEdge(step, edge, currentViewId ?? view.id))
   }
 
   return {

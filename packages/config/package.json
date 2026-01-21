@@ -66,26 +66,30 @@
     "module": "dist/index.mjs"
   },
   "dependencies": {
-    "bundle-require": "catalog:utils",
-    "defu": "catalog:utils",
-    "json5": "catalog:utils",
-    "zod": "catalog:zod4",
-    "type-fest": "catalog:utils"
-  },
-  "peerDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
-    "esbuild": "^0.27.2",
+    "defu": "catalog:utils",
+    "json5": "catalog:utils",
+    "zod": "catalog:externals",
+    "type-fest": "catalog:externals"
+  },
+  "peerDependencies": {
+    "bundle-require": "catalog:externals",
+    "esbuild": "catalog:esbuild",
     "vscode-uri": "catalog:vscode"
   },
   "peerDependenciesMeta": {
     "vscode-uri": {
       "optional": true
+    },
+    "esbuild": {
+      "optional": true
+    },
+    "bundle-require": {
+      "optional": true
     }
   },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
-    "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
@@ -94,7 +98,7 @@
     "turbo": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",
-    "nano-spawn": "catalog:utils",
+    "nano-spawn": "catalog:externals",
     "vitest": "catalog:vitest"
   }
 }

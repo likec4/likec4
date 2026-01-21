@@ -17,7 +17,7 @@
     "parse-gitignore": "^2.0.0",
     "citty": "catalog:utils",
     "remeda": "catalog:utils",
-    "std-env": "catalog:utils",
+    "std-env": "catalog:externals",
     "indent-string": "catalog:utils",
     "tsx": "catalog:",
     "zx": "catalog:"
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/parse-gitignore": "^1.0.2",
-    "type-fest": "catalog:utils",
+    "type-fest": "catalog:externals",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "catalog:",
     "typescript": "catalog:"

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "generate": {
+      "dependsOn": [
+        "@likec4/style-preset#typecheck"
+      ],
+      "outputs": []
+    }
+  }
+}

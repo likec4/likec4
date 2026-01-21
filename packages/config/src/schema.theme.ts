@@ -18,7 +18,7 @@ import {
   exact,
 } from '@likec4/core/types'
 import { fromKeys } from 'remeda'
-import * as z from 'zod'
+import z from 'zod/v4'
 
 const opacity = z
   .int()

@@ -21,6 +21,7 @@
     "*.css",
     "panda.buildinfo.json",
     "!**/*.spec.*",
+    "!**/__*/**",
     "!**/*.d.ts.map"
   ],
   "sideEffects": false,

@@ -1,8 +1,8 @@
 import {
-  type BorderStyles,
-  type ElementShapes,
-  type IconPositions,
-  type Sizes,
+  BorderStyles,
+  ElementShapes,
+  IconPositions,
+  Sizes,
   ThemeColors,
 } from '@likec4/style-preset/defaults'
 import type { Tagged, TupleToUnion } from 'type-fest'
