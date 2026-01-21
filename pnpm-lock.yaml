@@ -1329,12 +1329,6 @@ importers:
       ufo:
         specifier: catalog:utils
         version: 1.6.1
-      vscode-jsonrpc:
-        specifier: 8.2.1
-        version: 8.2.1
-      vscode-uri:
-        specifier: 3.1.0
-        version: 3.1.0
       which:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1393,6 +1387,9 @@ importers:
       vitest:
         specifier: catalog:vitest
         version: 4.0.16(@types/node@22.19.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
+      vscode-jsonrpc:
+        specifier: 8.2.1
+        version: 8.2.1
       vscode-languageserver:
         specifier: 9.0.1
         version: 9.0.1
@@ -1402,6 +1399,9 @@ importers:
       vscode-languageserver-types:
         specifier: 3.17.5
         version: 3.17.5
+      vscode-uri:
+        specifier: 3.1.0
+        version: 3.1.0
 
   packages/layouts:
     dependencies:
