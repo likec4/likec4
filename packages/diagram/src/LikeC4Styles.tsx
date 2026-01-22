@@ -18,24 +18,24 @@ const generateCompoundColors = (rootSelector: string, name: string, colors: Them
   const selector = `${rootSelector} :is([data-likec4-color="${name}"][data-compound-depth="${depth}"])`
 
   const light = {
-    c: round(1 - depth * 0.05),
-    l: round(1 + depth * 0.035),
+    l: round(0.01 + depth * 0.015),
+    c: round(depth * 0.002),
   }
 
   const dark = {
-    l: round(1 - depth * 0.04),
-    c: round(0.95 - depth * 0.03),
+    l: round(0.02 + depth * 0.018),
+    c: round(depth * 0.012),
   }
 
   return `
 ${selector} {
-  --likec4-palette-fill: oklch(from ${colors.elements.fill} calc(l * ${light.l}) calc(c * ${light.c}) h);
-  --likec4-palette-stroke: oklch(from ${colors.elements.stroke} calc(l * ${light.l}) calc(c * ${light.c}) h);
+  --likec4-palette-fill: oklch(from ${colors.elements.fill} calc(l - ${light.l}) calc(c - ${light.c}) h);
+  --likec4-palette-stroke: oklch(from ${colors.elements.stroke} calc(l - ${light.l - 0.01}) calc(c - ${light.c}) h);
 }
  
 ${whenDark} ${selector} {
-  --likec4-palette-fill: oklch(from ${colors.elements.fill} calc(l * ${dark.l}) calc(c * ${dark.c}) h);
-  --likec4-palette-stroke: oklch(from ${colors.elements.stroke} calc(l * ${dark.l}) calc(c * ${dark.c}) h);
+  --likec4-palette-fill: oklch(from ${colors.elements.fill} calc(l - ${dark.l}) calc(c - ${dark.c}) h);
+  --likec4-palette-stroke: oklch(from ${colors.elements.stroke} calc(l - ${dark.l - 0.01}) calc(c - ${dark.c}) h);
 }
   `.trim()
 }

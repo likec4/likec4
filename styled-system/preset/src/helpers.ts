@@ -1,11 +1,15 @@
 /**
- *  Mixes a color with transparent color by given percentage
+ * Changes the alpha channel of a color
  * @param color color value or CSS variable
- * @param percentage percentage of the color to mix with transparent
+ * @param percentage Alpha channel value
  * @returns
  */
-export function mixTransparent(color: string, percentage = 50): string {
-  return `color-mix(in oklab, ${color} ${percentage}%, transparent ${100 - percentage}%)`
+export function alpha(color: string, percentage: number | string = 50): string {
+  let alpha = percentage
+  if (typeof percentage === 'number') {
+    alpha = `${percentage}%`
+  }
+  return `oklch(from ${color} l c h / ${alpha})`
 }
 
 export function rem(pixels: number) {

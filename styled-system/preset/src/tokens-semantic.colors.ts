@@ -1,6 +1,6 @@
 import { defineSemanticTokens } from '@pandacss/dev'
 import { mantine } from './generated.ts'
-import { mixTransparent } from './helpers.ts'
+import { alpha } from './helpers.ts'
 
 export const colors = defineSemanticTokens.colors({
   text: {
@@ -22,7 +22,7 @@ export const colors = defineSemanticTokens.colors({
       pattern: {
         description: 'Background pattern color',
         value: {
-          _dark: mixTransparent(mantine.colors.dark[4], 70),
+          _dark: alpha(mantine.colors.dark[4], 70),
           _light: mantine.colors.gray[4],
         },
       },
@@ -66,7 +66,7 @@ export const colors = defineSemanticTokens.colors({
       text: {
         DEFAULT: {
           description: 'LikeC4 panel text color',
-          value: mixTransparent(mantine.colors.text, 85),
+          value: alpha(mantine.colors.text, 85),
         },
         dimmed: {
           description: 'LikeC4 panel dimmed text color',
@@ -76,7 +76,7 @@ export const colors = defineSemanticTokens.colors({
       action: {
         DEFAULT: {
           description: 'LikeC4 panel action text color (Links/Icons)',
-          value: mixTransparent(mantine.colors.text, 90),
+          value: alpha(mantine.colors.text, 90),
         },
         disabled: {
           description: 'LikeC4 action icon text color when disabled',
@@ -91,7 +91,7 @@ export const colors = defineSemanticTokens.colors({
             description: 'LikeC4 action icon background color',
             value: {
               base: mantine.colors.gray[1],
-              _dark: mixTransparent(mantine.colors.dark[7], 70),
+              _dark: alpha(mantine.colors.dark[7], 70),
             },
           },
           hover: {
@@ -118,15 +118,15 @@ export const colors = defineSemanticTokens.colors({
             DEFAULT: {
               description: 'LikeC4 action icon background color',
               value: {
-                base: mixTransparent(mantine.colors.orange[1], 90),
-                _dark: mixTransparent(mantine.colors.orange[9], 10),
+                base: alpha(mantine.colors.orange[1], 90),
+                _dark: alpha(mantine.colors.orange[9], 10),
               },
             },
             hover: {
               description: 'LikeC4 action icon background color on hover',
               value: {
-                base: mixTransparent(mantine.colors.orange[3], 70),
-                _dark: mixTransparent(mantine.colors.orange[9], 20),
+                base: alpha(mantine.colors.orange[3], 70),
+                _dark: alpha(mantine.colors.orange[9], 20),
               },
             },
           },
@@ -169,7 +169,7 @@ export const colors = defineSemanticTokens.colors({
       },
       border: {
         description: 'LikeC4 overlay border color',
-        value: mixTransparent(mantine.colors.defaultBorder, 50),
+        value: alpha(mantine.colors.defaultBorder, 50),
       },
     },
     compare: {
@@ -184,7 +184,7 @@ export const colors = defineSemanticTokens.colors({
         outline: {
           value: {
             _light: mantine.colors.orange[8],
-            _dark: mixTransparent(mantine.colors.orange[6], 80),
+            _dark: alpha(mantine.colors.orange[6], 80),
           },
         },
       },

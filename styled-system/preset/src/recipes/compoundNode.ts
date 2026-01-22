@@ -1,6 +1,6 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
 import { __v, vars } from '../const'
-import { mixTransparent } from '../helpers'
+import { alpha } from '../helpers'
 
 const borderWidth = {
   var: '--_border-width',
@@ -60,25 +60,25 @@ export const compoundNode = defineRecipe({
       borderRadius: borderRadius.ref,
       boxSizing: 'border-box',
       [vars.palette.outline]: {
-        base: `oklch(from ${__v('palette.stroke')} calc(l * 0.9) c h)`,
-        _dark: `oklch(from ${__v('palette.stroke')} calc(l * 1.1) c h)`,
+        base: `oklch(from ${__v('palette.stroke')} calc(l - 0.15) c h)`,
+        _dark: `oklch(from ${__v('palette.stroke')} calc(l + 0.2) c h)`,
       },
       [borderWidth.var]: '3px',
       [borderRadius.var]: '6px',
       [compoundTransparency.var]: '100%',
       [borderTransparency.var]: '100%',
       [indicatorSpacing.var]: `calc(${borderWidth.ref} + 1px)`,
-      [compoundColor.var]: __v('palette.loContrast'),
+      [compoundColor.var]: `oklch(from ${__v('palette.loContrast')} calc(l - 0.05) c h)`,
       [vars.icon.color]: compoundColor.ref,
       color: compoundColor.ref,
 
       _before: {
         position: 'absolute',
         content: '" "',
-        top: `[calc(-1 * ${indicatorSpacing.ref})]`,
-        left: `[calc(-1 * ${indicatorSpacing.ref})]`,
-        width: `[calc(100% + 2 * ${indicatorSpacing.ref})]`,
-        height: `[calc(100% + 2 * ${indicatorSpacing.ref})]`,
+        top: `calc(-1px - ${indicatorSpacing.ref} - ${borderWidth.ref})`,
+        left: `calc(-1px - ${indicatorSpacing.ref} - ${borderWidth.ref})`,
+        width: `calc(100% + 2px + 2 * ${indicatorSpacing.ref} + 2 * ${borderWidth.ref})`,
+        height: `calc(100% + 2px + 2 * ${indicatorSpacing.ref} + 2 * ${borderWidth.ref})`,
         borderStyle: 'solid',
         borderWidth: `calc(${borderWidth.ref} + 1px)`,
         borderRadius: `calc(${borderRadius.ref} + 4px)`,
@@ -111,6 +111,10 @@ export const compoundNode = defineRecipe({
       right: '30px',
       width: 'auto',
       minHeight: '30px',
+      // mixBlendMode: {
+      //   base: 'screen',
+      //   _dark: 'plus-lighter',
+      // },
       [`:where(.react-flow__node.draggable) &`]: {
         pointerEvents: 'all',
         cursor: 'grab',
@@ -124,7 +128,6 @@ export const compoundNode = defineRecipe({
       textTransform: 'uppercase',
       letterSpacing: '0.25px',
       lineHeight: '1',
-      color: compoundColor.ref,
     },
     icon: {
       flex: `0 0 ${iconSize}`,
@@ -159,7 +162,7 @@ export const compoundNode = defineRecipe({
     actionBtn: {
       '--actionbtn-color': compoundColor.ref,
       '--actionbtn-color-hovered': compoundColor.ref,
-      '--actionbtn-color-hovered-btn': `color-mix(in oklab, ${compoundColor.ref} 80%, #fff)`,
+      '--actionbtn-color-hovered-btn': `oklch(from ${compoundColor.ref} calc(l + 0.2) c h)`,
       opacity: {
         base: 0.6,
         _whenHovered: 0.75,
@@ -211,8 +214,12 @@ export const compoundNode = defineRecipe({
       }),
       true: parts({
         root: {
-          backgroundColor: `color-mix(in oklab, ${__v('palette.fill')} ${compoundTransparency.ref}, transparent)`,
-          borderColor: `color-mix(in oklab, ${__v('palette.stroke')} ${borderTransparency.ref}, transparent)`,
+          backgroundColor: alpha(__v('palette.fill'), compoundTransparency.ref),
+          borderColor: alpha(__v('palette.stroke'), borderTransparency.ref),
+          // [compoundColor.var]: {
+          //   base: __v('palette.loContrast'),
+          //   _dark: __v('palette.loContrast'),
+          // },
           // [vars.palette.outline]: {
           //   base: `oklch(from ${__v('palette.stroke')} calc(l * 0.85) c h / ${borderTransparency.ref})`,
           //   _dark: `oklch(from ${__v('palette.stroke')} calc(l * 1.2) c h / ${borderTransparency.ref})`,
@@ -223,12 +230,6 @@ export const compoundNode = defineRecipe({
     // When the compound node is too transparent, the text color should be inverted
     inverseColor: {
       true: parts({
-        root: {
-          [compoundColor.var]: {
-            base: __v('palette.stroke'),
-            _dark: `color-mix(in oklab, ${__v('palette.loContrast')} 60%, ${__v('palette.fill')})`,
-          },
-        },
         actionBtn: {
           _dark: {
             '--actionbtn-color-hovered-btn': __v('palette.loContrast'),
@@ -237,8 +238,8 @@ export const compoundNode = defineRecipe({
             '--actionbtn-color': __v('palette.stroke'),
             '--actionbtn-color-hovered': __v('palette.stroke'),
             '--actionbtn-color-hovered-btn': __v('palette.hiContrast'),
-            '--actionbtn-bg-hovered': mixTransparent(__v('palette.fill'), 50),
-            '--actionbtn-bg-hovered-btn': `${__v('palette.fill')}`,
+            '--actionbtn-bg-hovered': alpha(__v('palette.fill'), 50),
+            '--actionbtn-bg-hovered-btn': __v('palette.fill'),
           },
         },
       }),
@@ -271,6 +272,42 @@ export const compoundNode = defineRecipe({
       }),
     },
   },
+  compoundVariants: [
+    {
+      isTransparent: true,
+      inverseColor: false,
+      css: parts({
+        root: {
+          [compoundColor.var]: {
+            base: `oklch(from ${__v('palette.loContrast')} calc(l - 0.1) c h)`,
+            _dark: `oklch(from ${__v('palette.loContrast')} calc(l - 0.1) c h)`,
+          },
+        },
+        titleContainer: {
+          _light: {
+            mixBlendMode: 'plus-lighter',
+          },
+        },
+      }),
+    },
+    {
+      isTransparent: true,
+      inverseColor: true,
+      css: parts({
+        root: {
+          [compoundColor.var]: {
+            base: `oklch(from ${__v('palette.stroke')} calc(l + 0.1) c h)`,
+            _dark: `oklch(from ${__v('palette.loContrast')} calc(l - 0.1) c h)`,
+          },
+        },
+        titleContainer: {
+          _light: {
+            mixBlendMode: 'multiply',
+          },
+        },
+      }),
+    },
+  ],
   staticCss: [
     {
       isTransparent: ['*'],

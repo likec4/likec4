@@ -48,7 +48,7 @@ export function CompoundNodeContainer({
 
   const compoundClass = compoundNode({
     isTransparent,
-    inverseColor: opacity < 60,
+    inverseColor: opacity < 70,
     borderStyle: data.style.border ?? (isTransparent ? 'dashed' : 'none'),
   })
 
