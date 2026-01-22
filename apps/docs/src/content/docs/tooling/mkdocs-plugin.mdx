@@ -1,0 +1,48 @@
+---
+title: MkDocs plugin
+description: MkDocs plugin for embedding LikeC4 diagrams.
+---
+
+import { LinkCard, CardGrid, LinkButton } from '@astrojs/starlight/components';
+
+Colleagues (and our sponsors) from [doubleslash.de](https://doubleslash.de/) made the MkDocs plugin that allows to integrate LikeC4 diagrams 
+into MkDocs documentation. 
+
+<LinkButton
+  href="https://github.com/doubleSlashde/mkdocs-likec4"
+  variant="minimal"
+  icon="external"
+  iconPlacement="start"
+>
+  {'https://github.com/doubleSlashde/mkdocs-likec4'}
+</LinkButton>
+
+Check the project's [repository](https://github.com/doubleSlashde/mkdocs-likec4) and documentation website for examples and more details.
+
+<CardGrid>
+  <LinkCard title="Documentation" href="https://doubleslashde.github.io/mkdocs-likec4/" />
+</CardGrid>
+
+
+## Quick Start
+
+1. Ensure `likec4` and `graphviz` are available on the build system
+
+2. Install the `mkdocs-likec4` plugin via `pip`:
+  ```shell
+  pip install mkdocs-likec4
+  ```
+
+3. Add the plugin to your `mkdocs.yml`:
+  ```yaml
+  plugins:
+    - search
+    - mkdocs-likec4
+  ```
+
+4. Start embedding views in your markdown:
+  ````markdown
+  ```likec4-view
+  <your-view-id>
+  ```
+  ````

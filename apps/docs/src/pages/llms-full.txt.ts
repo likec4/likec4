@@ -19,7 +19,7 @@ const filterOutMdxImports = (text: string = '') => {
 export const GET: APIRoute = async () => {
   return new Response(
     docs
-      .filter(({ id }) => !skip.includes(id))
+      .filter(({ id }) => !skip(id))
       .map((doc) => {
         return `# ${doc.data.title}\n\n${filterOutMdxImports(doc.body)}\n\n`
       })

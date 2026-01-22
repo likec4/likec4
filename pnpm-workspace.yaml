@@ -29,17 +29,17 @@ catalogs:
   astro:
     '@astrojs/check': ^0.9.6
     '@astrojs/react': 4.4.2
-    '@astrojs/starlight': 0.37.1
+    '@astrojs/starlight': 0.37.3
     '@astrojs/starlight-tailwind': ^4.0.2
-    '@expressive-code/plugin-collapsible-sections': ^0.41.3
-    '@expressive-code/plugin-line-numbers': ^0.41.3
-    astro: 5.16.5
+    '@expressive-code/plugin-collapsible-sections': ^0.41.6
+    '@expressive-code/plugin-line-numbers': ^0.41.6
+    astro: 5.16.13
     astro-og-canvas: ^0.7.2
-    shiki: ^3.20.0
+    shiki: ^3.21.0
     starlight-heading-badges: ^0.6.1
     starlight-image-zoom: ^0.13.2
     starlight-links-validator: ^0.19.2
-    starlight-package-managers: ^0.11.1
+    starlight-package-managers: ^0.12.0
   cloudflare:
     '@cloudflare/vite-plugin': ~1.20.1
     wrangler: ~4.58.0
