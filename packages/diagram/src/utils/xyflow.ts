@@ -2,7 +2,7 @@ import { type NonEmptyArray, type Point, BBox } from '@likec4/core'
 import { vector } from '@likec4/core/geometry'
 import { invariant } from '@likec4/core/utils'
 import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
-import { type NodeHandle, type Padding, type PaddingWithUnit, getNodeDimensions } from '@xyflow/system'
+import { type NodeHandle, type Padding as XYFlowPadding, type PaddingWithUnit, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
@@ -80,10 +80,10 @@ export function isEqualMinimalInternalNodes(a: MinimalInternalNode, b: MinimalIn
 }
 
 export function isEqualRects(a: Rect, b: Rect) {
-  return a.x === b.x
-    && a.y === b.y
-    && Math.round(a.width) === Math.round(b.width)
-    && Math.round(a.height) === Math.round(b.height)
+  return Math.trunc(a.x) === Math.trunc(b.x)
+    && Math.trunc(a.y) === Math.trunc(b.y)
+    && Math.trunc(a.width) === Math.trunc(b.width)
+    && Math.trunc(a.height) === Math.trunc(b.height)
 }
 
 export const nodeToRect = (nd: MinimalInternalNode): Rect => ({
@@ -304,7 +304,7 @@ function parsePadding(padding: PaddingWithUnit, viewport: number): number {
  * @returns An object with the paddings in pixels
  */
 export function parsePaddings(
-  padding: Padding,
+  padding: XYFlowPadding,
   width: number,
   height: number,
 ): { top: number; bottom: number; left: number; right: number; x: number; y: number } {

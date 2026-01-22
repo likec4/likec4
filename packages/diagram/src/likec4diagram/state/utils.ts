@@ -13,7 +13,6 @@ import type { ActorSystem } from 'xstate'
 import { MinZoom } from '../../base/const'
 import type { EditorActorRef } from '../../editor/editorActor'
 import type { XYStoreState } from '../../hooks/useXYFlow'
-import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import { pickViewBounds } from '../../utils/view-bounds'
@@ -253,28 +252,4 @@ export function calcViewportForBounds(
     maxZoom,
     context.fitViewPadding,
   )
-}
-
-export function parseAsNumber(value: string | number | undefined): number {
-  if (typeof value === 'number') {
-    return isNaN(value) ? 0 : value
-  }
-  if (typeof value === 'string') {
-    const parsed = parseFloat(value)
-    return isNaN(parsed) ? 0 : parsed
-  }
-  return 0
-}
-
-export function parseViewPaddings(paddings: ViewPaddings): {
-  top: number
-  right: number
-  bottom: number
-  left: number
-} {
-  const top = parseAsNumber(paddings.top ?? paddings.y)
-  const bottom = parseAsNumber(paddings.bottom ?? paddings.y)
-  const left = parseAsNumber(paddings.left ?? paddings.x)
-  const right = parseAsNumber(paddings.right ?? paddings.x)
-  return { top, right, bottom, left }
 }

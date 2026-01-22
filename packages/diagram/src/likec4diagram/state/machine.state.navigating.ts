@@ -1,9 +1,9 @@
 import { type NodeId, BBox } from '@likec4/core/types'
-import { invariant, nonNullable } from '@likec4/core/utils'
+import { invariant } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
 import { isTruthy } from 'remeda'
 import { assertEvent, enqueueActions } from 'xstate'
-import { roundDpr } from '../../utils'
+import { roundDpr } from '../../utils/roundDpr'
 import { parsePaddings } from '../../utils/xyflow'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import { mergeXYNodesEdges } from './assign'
@@ -106,33 +106,36 @@ export const navigating = machine.createStateConfig({
 
         invariant(xyflow, 'xyflow is not initialized')
 
-        // Make 80% zoom step towards the target viewport if zooming out,
-        // and 40% if zooming in, to make the transition smoother
+        const currentViewport = xyflow.getViewport()
+
+        // Make 60% zoom step towards the target viewport if zooming out,
+        // and 30% if zooming in, to make the transition smoother
         const calcZoomTowardsNextViewport = (nextViewport: Viewport) => {
-          const zoom = xyflow.getZoom()
+          const zoom = currentViewport.zoom
           const diff = nextViewport.zoom - zoom
           if (Math.abs(diff) < 0.01) {
             return nextViewport.zoom
           }
-          const coef = diff < 0 ? 0.8 : 0.4
-          return zoom + diff * coef
+          const coef = diff < 0 ? 0.6 : 0.3
+          return Math.trunc(10000 * (zoom + diff * coef)) / 10000
         }
 
-        // Calculate the center of the next viewport (using the next bounds and paddings)
-        const calcCenterTowardsNextViewport = (nextViewport: Viewport, nextBounds: BBox) => {
+        // Move towards the next viewport and raise set viewport if needed
+        const moveTowardsNextViewport = (nextViewport: Viewport) => {
           const zoom = calcZoomTowardsNextViewport(nextViewport)
-          const { width, height } = nonNullable(context.xystore).getState()
-          const padding = parsePaddings(context.fitViewPadding, width, height)
-          const center = BBox.center({
-            x: nextBounds.x,
-            y: nextBounds.y,
-            width: nextBounds.width + padding.x / zoom,
-            height: nextBounds.height + padding.y / zoom,
-          })
-          return {
-            x: roundDpr(center.x),
-            y: roundDpr(center.y),
-            zoom,
+
+          if (zoom !== nextViewport.zoom) {
+            xyflow.setViewport({
+              x: roundDpr(nextViewport.x * (1 + currentViewport.zoom - zoom)),
+              y: roundDpr(nextViewport.y * (1 + currentViewport.zoom - zoom)),
+              zoom,
+            })
+            enqueue(raiseSetViewport({
+              delay: 100,
+              viewport: nextViewport,
+            }))
+          } else {
+            xyflow.setViewport(nextViewport, { duration: 0 })
           }
         }
 
@@ -154,18 +157,13 @@ export const navigating = machine.createStateConfig({
 
           enqueue.assign(nextCtx)
 
-          const zoom = calcZoomTowardsNextViewport(nextCtx.viewport)
-          xyflow.setViewport({
-            x: nextCtx.viewport.x,
-            y: nextCtx.viewport.y,
-            zoom,
-          }, { duration: 0 })
+          moveTowardsNextViewport(nextCtx.viewport)
 
           if (wasFocused) {
             enqueue.raise({
               type: 'focus.node',
               nodeId: wasFocused,
-            }, { delay: 100 })
+            }, { delay: 150 })
             return
           }
 
@@ -173,21 +171,13 @@ export const navigating = machine.createStateConfig({
             enqueue.raise({
               type: 'walkthrough.start',
               stepId: wasActiveWalkthrough,
-            }, { delay: 100 })
+            }, { delay: 150 })
             return
           }
-
-          // Set viewport from history
-          enqueue(raiseSetViewport({
-            delay: 100,
-            ...(nextCtx.viewportChangedManually ? { duration: 0 } : {}),
-            viewport: nextCtx.viewport,
-          }))
           return
         }
 
         const nextBounds = viewBounds(context, eventWithXYData.view)
-
         const nextViewport = calcViewportForBounds(
           context,
           nextBounds,
@@ -211,15 +201,39 @@ export const navigating = machine.createStateConfig({
           }).catch((err) => {
             console.error('Error during xyflow.panBy', { err })
           })
+
+          enqueue(raiseSetViewport({
+            delay: 100,
+            viewport: nextViewport,
+          }))
         } else {
-          const { x, y, zoom } = calcCenterTowardsNextViewport(nextViewport, nextBounds)
-          xyflow.setCenter(
-            x,
-            y,
-            { zoom, duration: 0 },
-          ).catch((err) => {
-            console.error('Error during xyflow.setCenter', { err })
-          })
+          const zoom = calcZoomTowardsNextViewport(nextViewport)
+
+          if (zoom !== nextViewport.zoom) {
+            const { width, height } = context.xystore.getState()
+            const nextCenter = BBox.center(nextBounds)
+            const paddings = parsePaddings(context.fitViewPadding, width, height)
+            // Center next bounds in the viewport
+            xyflow.setViewport({
+              x: roundDpr(
+                (width - paddings.x) / 2
+                  - nextCenter.x * zoom
+                  + paddings.left,
+              ),
+              y: roundDpr(
+                (height - paddings.y) / 2
+                  - nextCenter.y * zoom
+                  + paddings.top,
+              ),
+              zoom,
+            })
+            enqueue(raiseSetViewport({
+              delay: 100,
+              viewport: nextViewport,
+            }))
+          } else {
+            xyflow.setViewport(nextViewport, { duration: 0 })
+          }
         }
 
         const updatedHistory = currentIndex < history.length - 1 ? history.slice(0, currentIndex + 1) : [...history]
@@ -244,11 +258,6 @@ export const navigating = machine.createStateConfig({
             history: updatedHistory,
           },
         })
-
-        enqueue(raiseSetViewport({
-          delay: 100,
-          viewport: nextViewport,
-        }))
 
         if (nodeToFocus) {
           // Focus on the searched element with auto-unfocus enabled
