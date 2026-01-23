@@ -248,7 +248,7 @@ export const resizeHandle = css({
   borderColor: 'mantine.colors.dark[3]',
   borderTop: 'none',
   borderLeft: 'none',
-  borderRadius: '2px',
+  borderRadius: 'xs',
   bottom: '0.5',
   right: '0.5',
   transition: 'fast',

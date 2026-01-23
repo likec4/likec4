@@ -170,11 +170,11 @@ function WithElementTags({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              maxWidth: 50,
-              height: 5,
+              maxWidth: '50px',
+              height: '5px',
               _whenHovered: {
-                height: 12,
-                borderRadius: 4,
+                height: '12px',
+                borderRadius: 'sm',
                 transitionDelay: '.08s',
               },
               transition: 'fast',
@@ -206,7 +206,7 @@ function WithElementTags({
                 userSelect: 'none',
                 ...(zoomIsLargeEnough && {
                   fontSize: 'lg',
-                  borderRadius: '[4px]',
+                  borderRadius: 'sm',
                   px: '1.5', // 6px
                 }),
               })}

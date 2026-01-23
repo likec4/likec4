@@ -75,10 +75,10 @@ export const spacingSliderBody = css({
 
 export const spacingSliderThumb = css({
   position: 'absolute',
-  width: 8,
-  height: 8,
+  width: '8px',
+  height: '8px',
   border: `2px solid`,
   borderColor: 'mantine.colors.gray[5]',
-  borderRadius: 3,
+  borderRadius: 'sm',
   transform: 'translate(-50%, -50%)',
 })
