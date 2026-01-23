@@ -1236,9 +1236,6 @@ importers:
 
   packages/language-server:
     dependencies:
-      '@hono/node-server':
-        specifier: catalog:hono
-        version: 1.19.7(hono@4.11.1)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.17.0
@@ -1248,45 +1245,24 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
-      '@likec4/layouts':
-        specifier: workspace:*
-        version: link:../layouts
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
         version: 1.25.2(hono@4.11.1)(zod@3.25.76)
-      '@msgpack/msgpack':
-        specifier: ^3.1.2
-        version: 3.1.2
-      '@smithy/util-base64':
-        specifier: ^4.3.0
-        version: 4.3.0
       chokidar:
         specifier: catalog:externals
         version: 5.0.0
       defu:
         specifier: catalog:utils
         version: 6.1.4
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
-      fast-equals:
-        specifier: catalog:utils
-        version: 6.0.0
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.3)
-      hono:
-        specifier: catalog:hono
-        version: 4.11.1
       immer:
         specifier: catalog:utils
         version: 11.1.0
-      indent-string:
-        specifier: ^5.0.0
-        version: 5.0.0
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -1296,33 +1272,15 @@ importers:
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
-      nanoid:
-        specifier: catalog:utils
-        version: 5.1.6
-      p-debounce:
-        specifier: catalog:utils
-        version: 5.1.0
-      p-queue:
-        specifier: catalog:utils
-        version: 8.1.1
-      p-timeout:
-        specifier: catalog:utils
-        version: 6.1.4
-      pretty-ms:
-        specifier: ^9.3.0
-        version: 9.3.0
       remeda:
         specifier: catalog:utils
         version: 2.32.0
-      strip-indent:
-        specifier: catalog:utils
-        version: 4.1.1
+      std-env:
+        specifier: catalog:externals
+        version: 3.10.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
-      ufo:
-        specifier: catalog:utils
-        version: 1.6.1
       which:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1330,15 +1288,27 @@ importers:
         specifier: catalog:externals
         version: 3.25.76
     devDependencies:
+      '@hono/node-server':
+        specifier: catalog:hono
+        version: 1.19.7(hono@4.11.1)
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
+      '@likec4/layouts':
+        specifier: workspace:*
+        version: link:../layouts
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@msgpack/msgpack':
+        specifier: ^3.1.2
+        version: 3.1.2
+      '@smithy/util-base64':
+        specifier: ^4.3.0
+        version: 4.3.0
       '@types/natural-compare-lite':
         specifier: catalog:utils
         version: 1.4.2
@@ -1360,15 +1330,42 @@ importers:
       esbuild:
         specifier: 0.27.2
         version: 0.27.2
+      fast-equals:
+        specifier: catalog:utils
+        version: 6.0.0
+      hono:
+        specifier: catalog:hono
+        version: 4.11.1
+      indent-string:
+        specifier: ^5.0.0
+        version: 5.0.0
       langium-cli:
         specifier: catalog:langium
         version: 3.5.2
+      nanoid:
+        specifier: catalog:utils
+        version: 5.1.6
       oxlint:
         specifier: 'catalog:'
         version: 1.35.0(oxlint-tsgolint@0.10.0)
+      p-debounce:
+        specifier: catalog:utils
+        version: 5.1.0
+      p-queue:
+        specifier: catalog:utils
+        version: 8.1.1
+      p-timeout:
+        specifier: catalog:utils
+        version: 6.1.4
       picomatch:
         specifier: catalog:externals
         version: 4.0.3
+      pretty-ms:
+        specifier: ^9.3.0
+        version: 9.3.0
+      strip-indent:
+        specifier: catalog:utils
+        version: 4.1.1
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -1378,6 +1375,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      ufo:
+        specifier: catalog:utils
+        version: 1.6.1
       unbuild:
         specifier: 'catalog:'
         version: 3.5.0(typescript@5.9.3)
@@ -1414,33 +1414,18 @@ importers:
       fast-equals:
         specifier: catalog:utils
         version: 6.0.0
-      indent-string:
-        specifier: catalog:utils
-        version: 5.0.0
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
-      p-limit:
-        specifier: catalog:utils
-        version: 7.2.0
-      p-queue:
-        specifier: catalog:utils
-        version: 8.1.1
       remeda:
         specifier: catalog:utils
         version: 2.32.0
-      strip-indent:
-        specifier: catalog:utils
-        version: 4.1.1
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
       which:
         specifier: ^5.0.0
         version: 5.0.0
-      word-wrap:
-        specifier: ^1.2.5
-        version: 1.2.5
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1457,9 +1442,21 @@ importers:
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
+      indent-string:
+        specifier: catalog:utils
+        version: 5.0.0
       khroma:
         specifier: catalog:utils
         version: 2.1.0
+      p-limit:
+        specifier: catalog:utils
+        version: 7.2.0
+      p-queue:
+        specifier: catalog:utils
+        version: 8.1.1
+      strip-indent:
+        specifier: catalog:utils
+        version: 4.1.1
       ts-graphviz:
         specifier: ^1.8.2
         version: 1.8.2
@@ -1475,6 +1472,9 @@ importers:
       vitest:
         specifier: catalog:vitest
         version: 4.0.16(@types/node@22.19.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
+      word-wrap:
+        specifier: ^1.2.5
+        version: 1.2.5
 
   packages/likec4:
     dependencies:

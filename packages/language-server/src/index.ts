@@ -1,7 +1,7 @@
 import { configureLogger, getConsoleSink, getConsoleStderrSink, getTextFormatter } from '@likec4/log'
 import { defu } from 'defu'
-import { DEV } from 'esm-env'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
+import { isDevelopment } from 'std-env'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
 import { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/index'
 import { WithFileSystem } from './filesystem/LikeC4FileSystem'
@@ -65,7 +65,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
       {
         category: ['likec4'],
         sinks: ['console', 'telemetry'],
-        lowestLevel: DEV ? 'trace' : 'debug',
+        lowestLevel: isDevelopment ? 'trace' : 'debug',
       },
     ],
   })

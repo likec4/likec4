@@ -16,7 +16,8 @@
     "build": {
       "dependsOn": [
         "generate",
-        "@likec4/language-server#build",
+        "^generate",
+        "@likec4/core#build",
         "@likec4/vscode-preview#build"
       ],
       "outputs": [

@@ -1,5 +1,8 @@
 import { defineBuildConfig } from 'unbuild'
 
+// @ts-expect-error
+const isProd = process.env.NODE_ENV === 'production'
+
 export default defineBuildConfig({
   entries: [
     './src/index.ts',
@@ -8,14 +11,18 @@ export default defineBuildConfig({
   ],
   clean: true,
   stub: false,
-  declaration: true,
+  declaration: isProd,
+  failOnWarn: isProd,
   rollup: {
     esbuild: {
       platform: 'neutral',
       minifyIdentifiers: false,
       lineLimit: 500,
     },
-    inlineDependencies: true,
+    output: {
+      hoistTransitiveImports: false,
+    },
+    inlineDependencies: isProd,
     resolve: {
       exportConditions: ['sources', 'node'],
     },

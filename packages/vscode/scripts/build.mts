@@ -80,7 +80,7 @@ configs.push({
   ],
   format: 'cjs',
   target: 'node22',
-  external: ['vscode', 'esbuild', 'bundle-require', 'chokidar', 'fdir'],
+  external: ['vscode', 'esbuild', 'bundle-require', 'chokidar', 'fdir', 'std-env'],
   platform: 'node',
   conditions: ['sources', 'node', 'import'],
 }, {
@@ -90,34 +90,35 @@ configs.push({
   ],
   format: 'cjs',
   target: 'node22',
-  external: ['vscode', 'esbuild', 'bundle-require'],
+  external: ['vscode', 'esbuild', 'bundle-require', 'chokidar', 'fdir', 'std-env'],
   platform: 'node',
   conditions: ['sources', 'node', 'import'],
 })
 
 // ----------- Browser
-
-configs.push({
-  ...base,
-  sourcemap: isDev,
-  minifyIdentifiers: isProduction,
-  entryPoints: ['src/browser/extension.ts'],
-  format: 'cjs',
-  target: 'es2022',
-  platform: 'browser',
-  plugins: [nodeModulesPolyfillPlugin()],
-  conditions: ['sources', 'worker', 'browser', 'import'],
-}, {
-  ...base,
-  sourcemap: isDev,
-  minifyIdentifiers: isProduction,
-  entryPoints: ['src/browser/language-server-worker.ts'],
-  format: 'iife',
-  target: 'es2022',
-  platform: 'browser',
-  plugins: [nodeModulesPolyfillPlugin()],
-  conditions: ['sources', 'worker', 'browser', 'import'],
-})
+if (isProduction) {
+  configs.push({
+    ...base,
+    sourcemap: false,
+    minifyIdentifiers: isProduction,
+    entryPoints: ['src/browser/extension.ts'],
+    format: 'cjs',
+    target: 'es2022',
+    platform: 'browser',
+    plugins: [nodeModulesPolyfillPlugin()],
+    conditions: ['sources', 'worker', 'browser', 'import'],
+  }, {
+    ...base,
+    sourcemap: isDev,
+    minifyIdentifiers: isProduction,
+    entryPoints: ['src/browser/language-server-worker.ts'],
+    format: 'iife',
+    target: 'es2022',
+    platform: 'browser',
+    plugins: [nodeModulesPolyfillPlugin()],
+    conditions: ['sources', 'worker', 'browser', 'import'],
+  })
+}
 
 let hasErrors = false
 const bundles = await Promise.all(configs.map(cfg => build(cfg)))

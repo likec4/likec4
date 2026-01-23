@@ -89,7 +89,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     return entries.sort(ensureOrder)
   }
 
-  async scanProjectFiles(folderUri: URI): Promise<FileSystemNode[]> {
+  async scanProjectFiles(folderUri: URI): Promise<FileNode[]> {
     return await this.scanDirectory(folderUri, isLikeC4ConfigFile)
   }
 

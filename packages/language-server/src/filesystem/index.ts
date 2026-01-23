@@ -5,6 +5,7 @@ import type {
   LangiumSharedCoreServices,
 } from 'langium'
 import { URI } from 'vscode-uri'
+import { Content, isLikeC4Builtin } from '../likec4lib'
 import { type FileSystemWatcherModuleContext, NoFileSystemWatcher } from './FileSystemWatcher'
 import type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext } from './LikeC4ManualLayouts'
 
@@ -22,7 +23,7 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
    * Scans the project files for the given URI.
    * @returns The list of file system entries that are contained within the specified directory.
    */
-  scanProjectFiles(folderUri: URI): Promise<FileSystemNode[]>
+  scanProjectFiles(folderUri: URI): Promise<FileNode[]>
 
   /**
    * Loads the project config from the given file.
@@ -61,14 +62,17 @@ export interface FileSystemModuleContext extends FileSystemWatcherModuleContext 
 }
 
 export class NoopFileSystemProvider implements FileSystemProvider {
-  scanProjectFiles(): Promise<FileSystemNode[]> {
+  scanProjectFiles(): Promise<FileNode[]> {
     return Promise.resolve([])
   }
   scanDirectory(): Promise<FileNode[]> {
     return Promise.resolve([])
   }
 
-  readFile(): Promise<string> {
+  readFile(uri: URI): Promise<string> {
+    if (isLikeC4Builtin(uri)) {
+      return Promise.resolve(Content)
+    }
     throw new Error('No file system is available.')
   }
 
