@@ -17,6 +17,7 @@
       "dependsOn": [
         "generate",
         "^generate",
+        "@likec4/config#build",
         "@likec4/core#build",
         "@likec4/vscode-preview#build"
       ],
