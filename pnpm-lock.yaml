@@ -1487,9 +1487,6 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 5.1.2(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
@@ -1563,6 +1560,9 @@ importers:
       '@likec4/layouts':
         specifier: workspace:*
         version: link:../layouts
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       '@likec4/style-preset':
         specifier: workspace:*
         version: link:../../styled-system/preset
@@ -2039,6 +2039,9 @@ importers:
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
+      '@likec4/style-preset':
+        specifier: workspace:*
+        version: link:../../styled-system/preset
       '@likec4/styles':
         specifier: workspace:*
         version: link:../../styled-system/styles
