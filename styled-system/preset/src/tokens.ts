@@ -7,7 +7,6 @@ import { colors } from './tokens.colors.ts'
 
 export const tokens = defineTokens({
   fontSizes: {
-    ...generated.fontSizes,
     'xxs': {
       value: 'calc(10px * var(--mantine-scale))',
     },

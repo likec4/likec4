@@ -7,7 +7,7 @@ import { useLikeC4Specification } from '../hooks/useLikeC4Model'
 
 const TagStylesContext = createContext<Record<string, TagSpecification>>({})
 
-const radixColors = DefaultTagColors
+const radixColors = DefaultTagColors as unknown as string[]
 
 const generateColorVars = (spec: TagSpecification) => {
   const color = spec.color

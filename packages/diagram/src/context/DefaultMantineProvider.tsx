@@ -2,7 +2,6 @@ import {
   type MantineProviderProps,
   createTheme,
   MantineProvider,
-  mergeThemeOverrides,
   Portal,
   SegmentedControl,
   Tooltip,
@@ -46,6 +45,7 @@ const DefaultTheme = createTheme({
     SegmentedControl: SegmentedControl.extend({
       vars: (theme, props, ctx) => ({
         root: {
+          // @ts-expect-error
           '--sc-font-size': theme.fontSizes[props.fz ?? props.size],
         },
       }),
@@ -65,11 +65,10 @@ const DefaultTheme = createTheme({
 
 export function DefaultMantineProvider({
   children,
-  theme,
   ...props
 }: MantineProviderProps) {
   return (
-    <MantineProvider defaultColorScheme="auto" theme={mergeThemeOverrides(DefaultTheme, theme || {})} {...props}>
+    <MantineProvider defaultColorScheme="auto" theme={DefaultTheme} {...props}>
       {children}
     </MantineProvider>
   )

@@ -36,6 +36,7 @@ export const theme = createTheme({
     SegmentedControl: SegmentedControl.extend({
       vars: (theme, props, ctx) => ({
         root: {
+          // @ts-ignore
           '--sc-font-size': theme.fontSizes[props.fz ?? props.size],
         },
       }),

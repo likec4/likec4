@@ -1,5 +1,5 @@
 import type { Color } from '@likec4/core/types'
-import { Box, styled } from '@likec4/styles/jsx'
+import { styled } from '@likec4/styles/jsx'
 import { txt } from '@likec4/styles/patterns'
 import type { PropsWithChildren } from 'react'
 
@@ -28,7 +28,7 @@ export const Endpoint = ({ children, likec4color }: PropsWithChildren<{ likec4co
   )
 }
 
-export const RelationshipTitle = styled(Box, {
+export const RelationshipTitle = styled('div', {
   base: {
     whiteSpaceCollapse: 'preserve-breaks',
     fontSize: 'sm',
