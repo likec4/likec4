@@ -16,5 +16,6 @@ export function alpha(color: string, percentage: number | string = 50): string {
 }
 
 export function rem(pixels: number) {
-  return `${(pixels / 16).toPrecision(3)}rem`
+  // return `${(pixels / 16).toPrecision(3)}rem`
+  return `${pixels}px`
 }

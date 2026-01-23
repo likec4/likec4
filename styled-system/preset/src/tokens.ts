@@ -9,7 +9,22 @@ export const tokens = defineTokens({
   fontSizes: {
     ...generated.fontSizes,
     'xxs': {
-      value: rem(10),
+      value: 'calc(10px * var(--mantine-scale))',
+    },
+    xs: {
+      value: 'calc(12px * var(--mantine-scale))',
+    },
+    sm: {
+      value: 'calc(14px * var(--mantine-scale))',
+    },
+    md: {
+      value: 'calc(16px * var(--mantine-scale))',
+    },
+    lg: {
+      value: 'calc(18px * var(--mantine-scale))',
+    },
+    xl: {
+      value: 'calc(20px * var(--mantine-scale))',
     },
     likec4: {
       ...mapValues(defaultTheme.textSizes, (value, key) => ({
@@ -102,29 +117,37 @@ export const tokens = defineTokens({
       description: 'Non-scalable spacing value - (10 * 4px)',
       value: '40px',
     },
+    '12': {
+      description: 'Non-scalable spacing value - (12 * 4px)',
+      value: '48px',
+    },
+    '16': {
+      description: 'Non-scalable spacing value - (16 * 4px)',
+      value: '64px',
+    },
     xxs: {
-      description: 'Scalable spacing value - (0.5rem * var(--scale)) (8px)',
-      value: 'calc(0.5rem * var(--mantine-scale))', // 8px
+      description: 'Scalable spacing value - (8px * var(--scale)) (8px)',
+      value: 'calc(8px * var(--mantine-scale))', // 8px
     },
     xs: {
-      description: 'Scalable spacing value - (0.625rem * var(--scale)) (10px)',
-      value: 'calc(0.625rem * var(--mantine-scale))', // 10px
+      description: 'Scalable spacing value - (10px * var(--scale)) (10px)',
+      value: 'calc(10px * var(--mantine-scale))', // 10px
     },
     sm: {
-      description: 'Scalable spacing value - (0.75rem * var(--scale)) (12px)',
-      value: 'calc(0.75rem * var(--mantine-scale))', // 12px
+      description: 'Scalable spacing value - (12px * var(--scale)) (12px)',
+      value: 'calc(12px * var(--mantine-scale))', // 12px
     },
     md: {
-      description: 'Scalable spacing value - (1rem * var(--scale)) (16px)',
-      value: 'calc(1rem * var(--mantine-scale))', // 16px
+      description: 'Scalable spacing value - (16px * var(--scale)) (16px)',
+      value: 'calc(16px * var(--mantine-scale))', // 16px
     },
     lg: {
-      description: 'Scalable spacing value - (1.25rem * var(--scale)) (20px)',
-      value: 'calc(1.25rem * var(--mantine-scale))', // 20px
+      description: 'Scalable spacing value - (20px * var(--scale)) (20px)',
+      value: 'calc(20px * var(--mantine-scale))', // 20px
     },
     xl: {
-      description: 'Scalable spacing value - (2rem * var(--scale)) (32px)',
-      value: 'calc(2rem * var(--mantine-scale))', // 32px
+      description: 'Scalable spacing value - (32px * var(--scale)) (32px)',
+      value: 'calc(32px * var(--mantine-scale))', // 32px
     },
     likec4: {
       ...mapValues(defaultTheme.spacing, (value, key) => ({
@@ -134,23 +157,23 @@ export const tokens = defineTokens({
     },
   },
   radii: {
-    0: {
+    '0': {
       value: '0px',
     },
     xs: {
-      value: '0.125rem',
+      value: '2px',
     },
     sm: {
-      value: '0.25rem',
+      value: '4px',
     },
     md: {
-      value: '0.5rem',
+      value: '8px',
     },
     lg: {
-      value: '1rem',
+      value: '16px',
     },
     xl: {
-      value: '2rem',
+      value: '32px',
     },
   },
   colors,

@@ -127,7 +127,11 @@ export const navigationPanel = defineSlotRecipe({
   },
   staticCss: [{
     conditions: ['*'],
+    panelPosition: ['*'],
+    responsive: true,
+  }, {
     size: ['*'],
+    conditions: ['*'],
     panelPosition: ['*'],
     responsive: true,
   }],

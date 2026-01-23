@@ -1,6 +1,53 @@
-import type { Config } from '@pandacss/dev'
+import { type Config, definePattern } from '@pandacss/dev'
+import type { LiteralUnion } from '@pandacss/types'
+import { type ThemeColor, ThemeColors } from './defaults/types'
 
 type ExtendablePatternConfig = NonNullable<Config['patterns']>
+
+const txt = definePattern({
+  defaultValues: {
+    inline: false,
+    dimmed: false,
+    size: 'md',
+  },
+  properties: {
+    inline: {
+      type: 'boolean',
+    },
+    dimmed: {
+      type: 'boolean',
+    },
+    lh: {
+      type: 'token',
+      value: 'lineHeights',
+    },
+    size: {
+      type: 'enum',
+      value: ['xxs', 'xs', 'sm', 'md', 'lg', 'xl'],
+    },
+    likec4color: {
+      type: 'enum',
+      value: [...ThemeColors] as Array<LiteralUnion<ThemeColor>>,
+    },
+  },
+  transform: (props, helpers) => {
+    const { inline, size, dimmed, lh, likec4color, ...rest } = props
+    return {
+      padding: '0',
+      margin: '0',
+      userSelect: 'all',
+      cursor: 'default',
+      textStyle: dimmed ? `dimmed.${size}` : size,
+      ...(inline && { display: 'inline-block' }),
+      ...(lh && { lineHeight: lh }),
+      ...(likec4color && { 'data-likec4-color': likec4color }),
+      ...rest,
+    }
+  },
+  jsxElement: 'div',
+  jsxName: 'Txt',
+  jsx: ['Txt'],
+})
 
 export const patterns: ExtendablePatternConfig = {
   extend: {
@@ -18,5 +65,6 @@ export const patterns: ExtendablePatternConfig = {
     box: {
       jsx: ['Box', 'MarkdownBlock'],
     },
+    txt,
   },
 }

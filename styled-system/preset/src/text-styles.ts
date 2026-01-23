@@ -4,60 +4,60 @@ export const textStyles = defineTextStyles({
   dimmed: {
     xxs: {
       value: {
-        fontSize: '0.625rem',
-        lineHeight: '1rem',
+        fontSize: 'xxs',
+        lineHeight: '1',
         color: 'text.dimmed',
       },
     },
     xs: {
       value: {
-        fontSize: '0.75rem',
-        lineHeight: '1rem',
+        fontSize: 'xs',
+        lineHeight: '1',
         color: 'text.dimmed',
       },
     },
     sm: {
       value: {
-        fontSize: '0.875rem',
-        lineHeight: '1.25rem',
+        fontSize: 'xs',
+        lineHeight: '1.25em',
         color: 'text.dimmed',
       },
     },
   },
   xxs: {
     value: {
-      fontSize: '0.625rem',
-      lineHeight: '1rem',
+      fontSize: 'xxs',
+      lineHeight: '1',
     },
   },
   xs: {
     value: {
-      fontSize: '0.75rem',
-      lineHeight: '1rem',
+      fontSize: 'xs',
+      lineHeight: '1',
     },
   },
   sm: {
     value: {
-      fontSize: '0.875rem',
-      lineHeight: '1.25rem',
+      fontSize: 'sm',
+      lineHeight: '1.25em',
     },
   },
   md: {
     value: {
-      fontSize: '1rem',
-      lineHeight: '1.5rem',
+      fontSize: 'md',
+      lineHeight: 'md',
     },
   },
   lg: {
     value: {
-      fontSize: '1.125rem',
-      lineHeight: '1.75rem',
+      fontSize: 'lg',
+      lineHeight: 'lg',
     },
   },
   xl: {
     value: {
-      fontSize: '1.25rem',
-      lineHeight: '1.75rem',
+      fontSize: 'xl',
+      lineHeight: 'xl',
     },
   },
   likec4: {
@@ -65,8 +65,8 @@ export const textStyles = defineTextStyles({
       DEFAULT: {
         description: 'Text style for panel content',
         value: {
-          fontSize: '0.875rem',
-          lineHeight: '1.25rem',
+          fontSize: 'sm',
+          lineHeight: '1.25em',
           fontWeight: 'medium',
           color: 'likec4.panel.text',
         },
@@ -74,8 +74,8 @@ export const textStyles = defineTextStyles({
       action: {
         description: 'Text style for panel action items',
         value: {
-          fontSize: '0.875rem',
-          lineHeight: '1.25rem',
+          fontSize: 'sm',
+          lineHeight: '1.25em',
           fontWeight: 'medium',
           color: {
             base: 'likec4.panel.action',

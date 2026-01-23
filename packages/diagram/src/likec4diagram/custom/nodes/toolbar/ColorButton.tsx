@@ -1,11 +1,11 @@
 import type { LikeC4Theme, ThemeColor } from '@likec4/core'
+import { Flex } from '@likec4/styles/jsx'
 import {
   type PopoverProps,
   Button,
   CheckIcon,
   ColorSwatch,
   Divider,
-  Flex,
   Popover,
   PopoverDropdown,
   PopoverTarget,
@@ -105,7 +105,7 @@ export function ColorSwatches({
   return (
     <Stack gap={2} onMouseLeave={() => onColorPreview(null)}>
       <TooltipGroup openDelay={1000} closeDelay={300}>
-        <Flex maw={120} gap="6" justify="flex-start" align="flex-start" direction="row" wrap="wrap">
+        <Flex maxW={'120px'} gap="1.5" justify="flex-start" align="flex-start" direction="row" wrap="wrap">
           {SemanticColors.map(color => (
             <MantineTooltip
               key={color}
@@ -131,8 +131,8 @@ export function ColorSwatches({
 
         <Flex
           mt="sm"
-          maw={110}
-          gap="6"
+          maxW={'110px'}
+          gap="1.5"
           justify="flex-start"
           align="flex-start"
           direction="row"

@@ -47,7 +47,7 @@ ${selector} {
   --likec4-palette-relation-stroke-selected: oklch(from ${relationships.line} calc(l - 0.15) c h);
 }
 ${whenDark} ${selector} {
-  --likec4-palette-relation-stroke-selected: oklch(from ${relationships.line} calc(l + 0.15) calc(c + 0.05) h);
+  --likec4-palette-relation-stroke-selected: oklch(from ${relationships.line} calc(l + 0.15) c h);
 }
 
   `,

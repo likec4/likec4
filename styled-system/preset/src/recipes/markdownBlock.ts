@@ -9,7 +9,7 @@ export const markdownBlock = defineRecipe({
   ],
   description: 'Block with Markdown content',
   base: {
-    '--text-fz': '1rem',
+    '--text-fz': '1em',
     '--text-fz-sm': 'calc(var(--text-fz) * var(--mantine-scale, 1) / 1.125)',
     '--text-fz-md': 'calc(var(--text-fz) * var(--mantine-scale, 1))',
     '--typography-spacing': 'calc(0.75 * var(--text-fz-md))',

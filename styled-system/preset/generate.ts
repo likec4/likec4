@@ -72,9 +72,6 @@ const mapcolors = (colorkey: keyof MantineColors, prefix = colorkey) => {
 }
 
 const tokens = {
-  fontSizes: {
-    ...mapValues(DEFAULT_THEME.fontSizes, (value) => ({ value })),
-  },
   lineHeights: {
     ...mapValues(DEFAULT_THEME.lineHeights, (value) => ({ value })),
   },

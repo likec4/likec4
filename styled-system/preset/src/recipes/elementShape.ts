@@ -75,8 +75,8 @@ export const elementShapeRecipe = defineRecipe({
         multipleHtml: {
           position: 'absolute',
           content: '" "',
-          top: 16,
-          left: 16,
+          top: '16px',
+          left: '16px',
           width: 'calc(100% - 6px)',
           height: 'calc(100% - 6px)',
           backgroundColor: 'var(--likec4-palette-fill)',
@@ -90,7 +90,7 @@ export const elementShapeRecipe = defineRecipe({
             _whenFocused: 'hidden',
             _reduceGraphicsOnPan: 'hidden',
           },
-          transition: 'fast',
+          transition: 'normal',
           _whenHovered: {
             transform: 'translate(-14px, -14px)',
           },
@@ -199,8 +199,9 @@ export const elementShapeRecipe = defineRecipe({
   }],
   staticCss: [{
     shapetype: ['*'],
-    withBorder: ['*'],
-    responsive: true,
     conditions: ['*'],
+  }, {
+    shapetype: ['html'],
+    withBorder: ['true'],
   }],
 })

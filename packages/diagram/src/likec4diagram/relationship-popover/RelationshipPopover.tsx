@@ -10,7 +10,7 @@ import { nameFromFqn } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramEdge, DiagramNode, EdgeId, ViewId } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import { Box, HStack, styled, VStack } from '@likec4/styles/jsx'
+import { Box, HStack, styled, Txt, VStack } from '@likec4/styles/jsx'
 import { bleed } from '@likec4/styles/patterns'
 import {
   ActionIcon,
@@ -50,7 +50,7 @@ import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { roundDpr } from '../../utils'
 import { findDiagramEdge, findDiagramNode } from '../state/utils'
 import { RelationshipPopoverActorLogic } from './actor'
-import * as styles from './styles.css'
+import { Endpoint, RelationshipTitle } from './components'
 
 function selectDiagramContext(c: DiagramContext) {
   let selected: EdgeId | null = null
@@ -398,9 +398,9 @@ const EdgeDrifts = ({ diagramEdge }: { diagramEdge: DiagramEdge }) => {
       withCloseButton={false}
       title="Changes:">
       {drifts.map((drift) => (
-        <Text mt={2} size="sm" lh="xs" key={drift}>
+        <Txt mt={'1'} size="xs" key={drift}>
           - {drift}
-        </Text>
+        </Txt>
       ))}
     </Notification>
   )
@@ -504,15 +504,15 @@ const Relationship = forwardRef<
       <HStack gap={'0.5'}>
         <TooltipGroup openDelay={200}>
           <Tooltip label={sourceId.full} offset={2} position="top-start">
-            <Text component="div" data-likec4-color={sourceNode.color} className={styles.endpoint}>
+            <Endpoint likec4color={sourceNode.color}>
               {sourceId.short}
-            </Text>
+            </Endpoint>
           </Tooltip>
           <IconArrowRight stroke={2.5} size={'11px'} opacity={0.65} />
           <Tooltip label={targetId.full} offset={2} position="top-start">
-            <Text component="div" data-likec4-color={targetNode.color} className={styles.endpoint}>
+            <Endpoint likec4color={targetNode.color}>
               {targetId.short}
-            </Text>
+            </Endpoint>
           </Tooltip>
           {navigateTo && (
             <Tooltip label={'Open dynamic view'}>
@@ -552,7 +552,7 @@ const Relationship = forwardRef<
         </TooltipGroup>
       </HStack>
       <HStack gap={'xs'} alignItems="center">
-        <Box className={styles.title}>{r.title || 'untitled'}</Box>
+        <RelationshipTitle>{r.title || 'untitled'}</RelationshipTitle>
         {metadataTooltipLabel && (
           <Tooltip
             label={metadataTooltipLabel}

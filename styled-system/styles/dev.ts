@@ -17,8 +17,8 @@ export function defineConfig(config: Omit<Config, 'importMap' | 'presets' | 'plu
     // globalVars: {},
     // hash: true,
     strictTokens: true,
+    validation: 'error',
     jsxFramework: 'react',
-    logLevel: 'info',
     plugins: [
       // @ts-ignore
       // pluginRemoveUnusedCss(),
@@ -37,7 +37,7 @@ export function defineConfig(config: Omit<Config, 'importMap' | 'presets' | 'plu
           // 'shadows',
           // 'zIndex',
           // 'opacity',
-          // 'radii',
+          'radii',
           // 'borders',
           // 'durations',
           // 'letterSpacings',

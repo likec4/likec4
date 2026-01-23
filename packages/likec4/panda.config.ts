@@ -1,7 +1,7 @@
 import { defineConfig } from '@likec4/styles/dev'
 import { isCI, isProduction } from 'std-env'
 
-const notProdOrCI = !isProduction || !isCI
+const notProdOrCI = !isProduction && !isCI
 
 export default defineConfig({
   clean: isProduction || isCI,
