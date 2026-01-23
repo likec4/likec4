@@ -10,7 +10,7 @@ export default defineBuildConfig({
   outDir: 'dist',
   clean: false,
   stub: false,
-  declaration: 'node16',
+  declaration: true,
   failOnWarn: false,
   rollup: {
     inlineDependencies: true,

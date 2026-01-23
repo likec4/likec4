@@ -87,9 +87,6 @@
     "@types/react": "^18.x || ^19.x"
   },
   "peerDependenciesMeta": {
-    "@pandacss/types": {
-      "optional": true
-    },
     "react": {
       "optional": true
     },

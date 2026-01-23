@@ -40,7 +40,6 @@
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs",
         "default": "./dist/index.mjs"
       }
     },
@@ -49,7 +48,6 @@
       "default": {
         "types": "./dist/builder/index.d.mts",
         "import": "./dist/builder/index.mjs",
-        "require": "./dist/builder/index.cjs",
         "default": "./dist/builder/index.mjs"
       }
     },
@@ -58,7 +56,6 @@
       "default": {
         "types": "./dist/geometry/index.d.mts",
         "import": "./dist/geometry/index.mjs",
-        "require": "./dist/geometry/index.cjs",
         "default": "./dist/geometry/index.mjs"
       }
     },
@@ -67,7 +64,6 @@
       "default": {
         "types": "./dist/compute-view/relationships-view/index.d.mts",
         "import": "./dist/compute-view/relationships-view/index.mjs",
-        "require": "./dist/compute-view/relationships-view/index.cjs",
         "default": "./dist/compute-view/relationships-view/index.mjs"
       }
     },
@@ -76,7 +72,6 @@
       "default": {
         "types": "./dist/compute-view/index.d.mts",
         "import": "./dist/compute-view/index.mjs",
-        "require": "./dist/compute-view/index.cjs",
         "default": "./dist/compute-view/index.mjs"
       }
     },
@@ -85,7 +80,6 @@
       "default": {
         "types": "./dist/model/index.d.mts",
         "import": "./dist/model/index.mjs",
-        "require": "./dist/model/index.cjs",
         "default": "./dist/model/index.mjs"
       }
     },
@@ -94,7 +88,6 @@
       "default": {
         "types": "./dist/styles/index.d.mts",
         "import": "./dist/styles/index.mjs",
-        "require": "./dist/styles/index.cjs",
         "default": "./dist/styles/index.mjs"
       }
     },
@@ -103,7 +96,6 @@
       "default": {
         "types": "./dist/types/index.d.mts",
         "import": "./dist/types/index.mjs",
-        "require": "./dist/types/index.cjs",
         "default": "./dist/types/index.mjs"
       }
     },
@@ -112,7 +104,6 @@
       "default": {
         "types": "./dist/utils/graphology/index.d.mts",
         "import": "./dist/utils/graphology/index.mjs",
-        "require": "./dist/utils/graphology/index.cjs",
         "default": "./dist/utils/graphology/index.mjs"
       }
     },
@@ -121,7 +112,6 @@
       "default": {
         "types": "./dist/utils/index.d.mts",
         "import": "./dist/utils/index.mjs",
-        "require": "./dist/utils/index.cjs",
         "default": "./dist/utils/index.mjs"
       }
     },
@@ -131,7 +121,6 @@
     "registry": "https://registry.npmjs.org",
     "access": "public",
     "types": "dist/index.d.mts",
-    "main": "dist/index.cjs",
     "module": "dist/index.mjs"
   },
   "dependencies": {
@@ -143,6 +132,7 @@
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/style-preset": "workspace:*",
+    "@likec4/styles": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
     "@types/chroma-js": "catalog:utils",
     "@types/extend": "3.0.4",

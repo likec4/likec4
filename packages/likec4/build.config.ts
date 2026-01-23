@@ -15,9 +15,8 @@ const cli: BuildConfig = {
     'src/model/index.ts',
     'src/model/builder.ts',
     'src/vite-plugin/index.ts',
-    'src/vite-plugin/internal.ts',
   ],
-  clean: isProduction,
+  clean: true,
   outDir: 'dist',
   stub: false,
   failOnWarn: false,
@@ -27,13 +26,12 @@ const cli: BuildConfig = {
     '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
     '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
   },
-  declaration: isProduction ? 'node16' : false,
+  declaration: isProduction,
   rollup: {
     emitCJS: false,
     inlineDependencies: true,
     esbuild: {
       platform: 'node',
-      target: 'node20',
       legalComments: 'none',
       minify: isProduction,
       minifyIdentifiers: false,
@@ -71,7 +69,34 @@ const cli: BuildConfig = {
   },
 }
 
+const pluginInternal: BuildConfig = {
+  entries: [
+    'src/vite-plugin/internal.ts',
+  ],
+  clean: false,
+  outDir: 'dist',
+  stub: false,
+  failOnWarn: false,
+  declaration: isProduction,
+  rollup: {
+    emitCJS: false,
+    inlineDependencies: true,
+    esbuild: {
+      platform: 'browser',
+      minify: isProduction,
+    },
+    output: {
+      compact: isProduction,
+      hoistTransitiveImports: false,
+    },
+    resolve: {
+      browser: true,
+    },
+  },
+}
+
 export default defineBuildConfig([
   // reactbundle,
   cli,
+  pluginInternal,
 ])

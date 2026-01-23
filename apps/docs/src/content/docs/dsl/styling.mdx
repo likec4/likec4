@@ -231,72 +231,6 @@ pg = service 'PostgreSQL' {
 ```
 :::
 
-### Icon color
-
-Use `iconColor` to override the icon color independently from the element fill:
-
-```likec4 copy
-model {
-  api = service 'API' {
-    style {
-      icon tech:nodejs
-      iconColor indigo
-    }
-  }
-}
-```
-
-`iconColor` accepts theme colors or custom colors defined in [specification](/dsl/specification/#color).
-
-### Icon size
-
-Use `iconSize` to resize the icon without changing the element size:
-
-```likec4 copy
-model {
-  api = service 'API' {
-    style {
-      icon tech:nodejs
-      iconSize sm
-    }
-  }
-}
-```
-
-`iconSize` uses the same values as [size](/dsl/styling/#size) and defaults to the element `size`.
-
-### Icon position
-
-Use `iconPosition` to place the icon around the element text:
-
-```likec4 copy
-model {
-  api = service 'API' {
-    style {
-      icon tech:nodejs
-      iconPosition top
-    }
-  }
-}
-```
-
-Supported values: `left` (default), `right`, `top`, `bottom`.
-
-### Aliased icons
-
-With `@` prefix, you can use aliased folders (learn more in [configuration](/dsl/config/#image-aliases)):
-
-```likec4 copy
-model {
-  pg = service 'PostgreSQL' {
-    style {
-      // local images, based on aliased folders
-      icon @/postgresql.svg
-    }
-  }
-}
-```
-
 ### Bundled icons
 
 LikeC4 includes icons (over 5,000 in total) from these packs:
@@ -334,6 +268,78 @@ model {
 :::tip
 Use VSCode code completion to explore available icons.
 :::
+
+
+### Icon color
+
+Use `iconColor` to override the icon color independently from the element fill:
+
+```likec4 copy
+model {
+  api = service 'API' {
+    style {
+      icon bootstrap:gear
+      iconColor indigo
+    }
+  }
+}
+```
+
+`iconColor` accepts theme colors or custom colors defined in [specification](/dsl/specification/#color).  
+Applies to external svg-icons and bundled `bootstrap:*` icons.
+
+### Icon size
+
+Use `iconSize` to resize the icon without changing the element size:
+
+```likec4 copy
+model {
+  api = service 'API' {
+    style {
+      icon tech:nodejs
+      iconSize sm
+    }
+  }
+}
+```
+
+`iconSize` uses the same values as [size](/dsl/styling/#size) and defaults to the element `size`.
+
+### Icon position
+
+Use `iconPosition` to place the icon around the element text:
+
+```likec4 copy
+model {
+  api = service 'API' {
+    style {
+      icon tech:nodejs
+      iconPosition top
+    }
+  }
+}
+```
+
+Supported values: `left` (default), `right`, `top`, `bottom`.
+
+
+<LikeC4ThemeView viewId="icons_position_example" style={{ '--likec4-view-max-height': '250px', minHeight: '250px' }}/>
+
+### Aliased icons
+
+With `@` prefix, you can use aliased folders (learn more in [configuration](/dsl/config/#image-aliases)):
+
+```likec4 copy
+model {
+  pg = service 'PostgreSQL' {
+    style {
+      // local images, based on aliased folders
+      icon @/postgresql.svg
+    }
+  }
+}
+```
+
 
 ## Relationship
 

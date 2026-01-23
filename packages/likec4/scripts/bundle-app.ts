@@ -35,9 +35,6 @@ export async function bundleApp() {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
         '@likec4/diagram': resolve('../diagram/src'),
-        ...prodOrCI && {
-          '@likec4/styles': resolve('./styled-system'),
-        },
       },
     },
     mode: 'production',

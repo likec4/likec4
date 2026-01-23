@@ -102,7 +102,7 @@
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
-    "build-cli": "unbuild",
+    "build-cli": "unbuild --no-parallel",
     "build-app": "tsx scripts/bundle-app.ts",
     "build-react": "tsx scripts/bundle-react.ts",
     "build": "echo \"use pnpm turbo run build\" || true",
@@ -137,12 +137,8 @@
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:externals",
-    "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
-    "@likec4/log": "workspace:*",
-    "@likec4/language-server": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
-    "langium": "catalog:langium",
     "boxen": "^8.0.1",
     "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild",
@@ -163,6 +159,10 @@
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
+    "@likec4/log": "workspace:*",
+    "langium": "catalog:langium",
+    "@likec4/config": "workspace:*",
+    "@likec4/language-server": "workspace:*",
     "@dagrejs/dagre": "catalog:",
     "@fontsource/ibm-plex-sans": "^5.2.8",
     "@likec4/devops": "workspace:*",

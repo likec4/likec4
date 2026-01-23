@@ -6,12 +6,12 @@ export default defineBuildConfig({
     './src/defaults/index.ts',
   ],
   clean: true,
-  declaration: 'node16',
+  declaration: true,
   rollup: {
-    emitCJS: true,
+    emitCJS: false,
     esbuild: {
+      platform: 'neutral',
       minify: false,
-      lineLimit: 500,
     },
     output: {
       exports: 'named',

@@ -24,14 +24,18 @@ export default defineBuildConfig({
   ],
   clean: true,
   stub: false,
-  declaration: 'node16',
+  declaration: true,
   alias: {
     'object-hash': 'object-hash/dist/object_hash.js',
   },
   rollup: {
-    emitCJS: true,
+    emitCJS: false,
     inlineDependencies: true,
+    esbuild: {
+      platform: 'neutral',
+    },
     output: {
+      exports: 'named',
       hoistTransitiveImports: false,
     },
   },

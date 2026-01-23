@@ -910,6 +910,9 @@ importers:
       '@likec4/style-preset':
         specifier: workspace:*
         version: link:../../styled-system/preset
+      '@likec4/styles':
+        specifier: workspace:*
+        version: link:../../styled-system/styles
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1481,15 +1484,9 @@ importers:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.17.0
-      '@likec4/config':
-        specifier: workspace:*
-        version: link:../config
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
-      '@likec4/language-server':
-        specifier: workspace:*
-        version: link:../language-server
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
@@ -1517,9 +1514,6 @@ importers:
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.3)
-      langium:
-        specifier: catalog:langium
-        version: 3.5.0
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
@@ -1548,6 +1542,9 @@ importers:
       '@fontsource/ibm-plex-sans':
         specifier: ^5.2.8
         version: 5.2.8
+      '@likec4/config':
+        specifier: workspace:*
+        version: link:../config
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -1560,6 +1557,9 @@ importers:
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
+      '@likec4/language-server':
+        specifier: workspace:*
+        version: link:../language-server
       '@likec4/layouts':
         specifier: workspace:*
         version: link:../layouts
@@ -1659,6 +1659,9 @@ importers:
       ky:
         specifier: ^1.14.1
         version: 1.14.1
+      langium:
+        specifier: catalog:langium
+        version: 3.5.0
       merge-error-cause:
         specifier: ^5.0.2
         version: 5.0.2
@@ -1820,6 +1823,9 @@ importers:
         specifier: catalog:externals
         version: 3.10.0
     devDependencies:
+      '@likec4/config':
+        specifier: workspace:*
+        version: link:../config
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1829,6 +1835,9 @@ importers:
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../language-server
+      '@likec4/layouts':
+        specifier: workspace:*
+        version: link:../layouts
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
@@ -2128,10 +2137,6 @@ importers:
         version: 0.5.1
 
   styled-system/preset:
-    dependencies:
-      '@pandacss/types':
-        specifier: catalog:css
-        version: 1.7.2
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -2148,6 +2153,9 @@ importers:
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.7.2(typescript@5.9.3)
+      '@pandacss/types':
+        specifier: catalog:css
+        version: 1.7.2
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -2160,9 +2168,6 @@ importers:
       json5:
         specifier: catalog:utils
         version: 2.2.3
-      khroma:
-        specifier: catalog:utils
-        version: 2.1.0
       pandacss-preset-radix-colors:
         specifier: ^0.2.0
         version: 0.2.0(@pandacss/dev@1.7.2(typescript@5.9.3))(@radix-ui/colors@3.0.0)

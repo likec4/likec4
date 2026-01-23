@@ -22,6 +22,7 @@
     "@likec4/diagram": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/icons": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",

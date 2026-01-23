@@ -25,7 +25,6 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "main": "dist/index.cjs",
     "types": "dist/index.d.mts",
     "module": "dist/index.mjs"
   },
@@ -39,7 +38,6 @@
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs",
         "default": "./dist/index.mjs"
       }
     },
@@ -48,7 +46,6 @@
       "default": {
         "types": "./dist/defaults/index.d.mts",
         "import": "./dist/defaults/index.mjs",
-        "require": "./dist/defaults/index.cjs",
         "default": "./dist/defaults/index.mjs"
       }
     },
@@ -57,14 +54,6 @@
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css"
-  },
-  "peerDependenciesMeta": {
-    "@pandacss/dev": {
-      "optional": true
-    },
-    "@pandacss/types": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@types/react": "catalog:react",
@@ -76,7 +65,7 @@
     "@mantine/core": "catalog:mantine",
     "@mantine/vanilla-extract": "catalog:mantine",
     "@pandacss/dev": "catalog:css",
-    "khroma": "catalog:utils",
+    "@pandacss/types": "catalog:css",
     "json5": "catalog:utils",
     "remeda": "catalog:utils",
     "typescript": "catalog:",

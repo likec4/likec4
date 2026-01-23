@@ -215,7 +215,7 @@ export const elementNodeData = defineRecipe({
           [hasIcon]: {
             [textAlign]: 'left',
             '& .likec4-element-node-content': {
-              minWidth: `calc(50% + ${__v('icon.size')} - ${__v('spacing')})`,
+              minWidth: `calc(50% - calc(${__v('icon.size')} / 2))`,
               alignItems: 'flex-start',
             },
           },
@@ -228,7 +228,7 @@ export const elementNodeData = defineRecipe({
             [textAlign]: 'right',
             gap: '4',
             '& .likec4-element-node-content': {
-              minWidth: `calc(50% + ${__v('icon.size')} - ${__v('spacing')})`,
+              minWidth: `calc(50% - calc(${__v('icon.size')} / 2))`,
               alignItems: 'flex-end',
             },
           },
@@ -241,7 +241,7 @@ export const elementNodeData = defineRecipe({
             gap: '2',
             height: '100%',
             '& .likec4-element-node-content': {
-              minHeight: `calc(50% + calc(${__v('icon.size')} / 2))`,
+              minHeight: `calc(50% - ${__v('icon.size')})`,
               justifyContent: 'flex-start',
             },
           },
@@ -258,7 +258,7 @@ export const elementNodeData = defineRecipe({
             height: '100%',
             '& .likec4-element-node-content': {
               justifyContent: 'flex-end',
-              minHeight: `calc(50% + calc(${__v('icon.size')} / 2))`,
+              minHeight: `calc(50% - ${__v('icon.size')})`,
             },
           },
         },

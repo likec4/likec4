@@ -8,7 +8,6 @@ export default defineBuildConfig([
   {
     entries: [
       './src/protocol.ts',
-      './src/likec4lib.ts',
     ],
     clean: true,
     stub: false,
@@ -33,6 +32,7 @@ export default defineBuildConfig([
     entries: [
       './src/index.ts',
       './src/bundled.ts',
+      './src/likec4lib.ts',
     ],
     clean: false,
     stub: false,
@@ -42,9 +42,6 @@ export default defineBuildConfig([
     },
     failOnWarn: false,
     declaration: isProd,
-    externals: [
-      resolve('./src/likec4lib.ts'),
-    ],
     rollup: {
       esbuild: {
         platform: 'node',
@@ -61,9 +58,7 @@ export default defineBuildConfig([
     entries: [
       './src/browser-worker.ts',
       './src/browser.ts',
-    ],
-    externals: [
-      resolve('./src/likec4lib.ts'),
+      './src/likec4lib.ts',
     ],
     clean: false,
     stub: false,
