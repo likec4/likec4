@@ -118,6 +118,7 @@
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
+    "@likec4/layouts": "workspace:*",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "fdir": "catalog:externals",
     "which": "^5.0.0",
@@ -146,7 +147,6 @@
     }
   },
   "devDependencies": {
-    "@likec4/layouts": "workspace:*",
     "p-debounce": "catalog:utils",
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",

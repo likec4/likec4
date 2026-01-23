@@ -1245,6 +1245,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/layouts':
+        specifier: workspace:*
+        version: link:../layouts
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
@@ -1297,9 +1300,6 @@ importers:
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
-      '@likec4/layouts':
-        specifier: workspace:*
-        version: link:../layouts
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
