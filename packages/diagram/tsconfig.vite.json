@@ -6,8 +6,8 @@
     "exactOptionalPropertyTypes": false,
     "rootDir": ".",
     "types": [
-      "node",
-    ],
+      "node"
+    ]
   },
   "include": [
     "*.config.ts",

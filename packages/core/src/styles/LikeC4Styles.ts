@@ -2,9 +2,10 @@ import chroma from 'chroma-js'
 import defu from 'defu'
 import { hasAtLeast, isDeepEqual } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
-import { type ComputedNodeStyle, type LikeC4ProjectStylesConfig, ensureSizes } from '../types'
-import { memoizeProp } from '../utils'
+import { type ComputedNodeStyle, type LikeC4ProjectStylesConfig, type NTuple, ensureSizes } from '../types'
+import { DefaultMap, DefaultWeakMap, memoizeProp } from '../utils'
 import { computeColorValues } from './compute-color-values'
+import { computeCompoundColorValues } from './compute-compound-colors'
 import { styleDefaults } from './defaults'
 import { defaultTheme } from './theme'
 import type {
@@ -102,6 +103,21 @@ export class LikeC4Styles {
       return this.theme.colors[color]
     }
     throw new Error(`Unknown color: ${color}`)
+  }
+
+  private compoundColorsCache = new DefaultWeakMap((baseElementColors: ElementColorValues) =>
+    new DefaultMap((depth: number) => computeCompoundColorValues(baseElementColors, depth))
+  )
+  /**
+   * Get colors for compound nodes
+   *
+   * @param baseElementColors - The base element colors to compute from
+   */
+  colorsForCompounds<Depth extends number = 5>(
+    baseElementColors: ElementColorValues,
+    depth?: Depth,
+  ): NTuple<ElementColorValues, Depth> {
+    return this.compoundColorsCache.get(baseElementColors).get(depth ?? 5) as NTuple<ElementColorValues, Depth>
   }
 
   /**

@@ -11,10 +11,10 @@
     "types": [
       "react",
       "node"
-    ],
+    ]
   },
   "include": [
-    "*.ts",
+    "*.ts"
   ],
   "exclude": [
     "node_modules",

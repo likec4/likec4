@@ -102,7 +102,7 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
 
   return (
     <>
-      <MemoizedStyles nonce={nonce} cssstyle={cssstyle} />
+      <MemoizedStyle nonce={nonce} cssstyle={cssstyle} />
       <Root ssr={false} {...props} styleSheets={styleSheets} data-likec4-instance={id}>
         <div
           ref={useMergedRef(rootRef, ref)}
@@ -129,7 +129,7 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
 /**
  * @internal Memoized styles gives a performance boost during development
  */
-const MemoizedStyles = memo<{
+const MemoizedStyle = memo<{
   nonce: string | undefined
   cssstyle: string
 }>((
@@ -140,3 +140,4 @@ const MemoizedStyles = memo<{
     nonce={nonce}
     dangerouslySetInnerHTML={{ __html: cssstyle }} />
 ))
+MemoizedStyle.displayName = 'MemoizedStyle'

@@ -68,17 +68,16 @@ export const compoundNode = defineRecipe({
       [compoundTransparency.var]: '100%',
       [borderTransparency.var]: '100%',
       [indicatorSpacing.var]: `calc(${borderWidth.ref} + 1px)`,
-      [compoundColor.var]: `oklch(from ${__v('palette.loContrast')} calc(l - 0.05) c h)`,
       [vars.icon.color]: compoundColor.ref,
       color: compoundColor.ref,
 
       _before: {
         position: 'absolute',
         content: '" "',
-        top: `calc(-1px - ${indicatorSpacing.ref} - ${borderWidth.ref})`,
-        left: `calc(-1px - ${indicatorSpacing.ref} - ${borderWidth.ref})`,
-        width: `calc(100% + 2px + 2 * ${indicatorSpacing.ref} + 2 * ${borderWidth.ref})`,
-        height: `calc(100% + 2px + 2 * ${indicatorSpacing.ref} + 2 * ${borderWidth.ref})`,
+        top: `calc(1px - ${indicatorSpacing.ref} - ${borderWidth.ref})`,
+        left: `calc(1px - ${indicatorSpacing.ref} - ${borderWidth.ref})`,
+        width: `calc(100% + 2 * (${indicatorSpacing.ref} + ${borderWidth.ref} - 1px))`,
+        height: `calc(100% + 2 * (${indicatorSpacing.ref} + ${borderWidth.ref} - 1px))`,
         borderStyle: 'solid',
         borderWidth: `calc(${borderWidth.ref} + 1px)`,
         borderRadius: `calc(${borderRadius.ref} + 4px)`,
@@ -111,10 +110,7 @@ export const compoundNode = defineRecipe({
       right: '30px',
       width: 'auto',
       minHeight: '30px',
-      // mixBlendMode: {
-      //   base: 'screen',
-      //   _dark: 'plus-lighter',
-      // },
+
       [`:where(.react-flow__node.draggable) &`]: {
         pointerEvents: 'all',
         cursor: 'grab',
@@ -210,26 +206,32 @@ export const compoundNode = defineRecipe({
           },
           backgroundColor: __v('palette.fill'),
           borderColor: __v('palette.stroke'),
+          [compoundColor.var]: alpha(__v('palette.hiContrast'), 90),
         },
       }),
       true: parts({
         root: {
           backgroundColor: alpha(__v('palette.fill'), compoundTransparency.ref),
           borderColor: alpha(__v('palette.stroke'), borderTransparency.ref),
-          // [compoundColor.var]: {
-          //   base: __v('palette.loContrast'),
-          //   _dark: __v('palette.loContrast'),
-          // },
-          // [vars.palette.outline]: {
-          //   base: `oklch(from ${__v('palette.stroke')} calc(l * 0.85) c h / ${borderTransparency.ref})`,
-          //   _dark: `oklch(from ${__v('palette.stroke')} calc(l * 1.2) c h / ${borderTransparency.ref})`,
-          // },
+          [compoundColor.var]: __v('palette.loContrast'),
         },
       }),
     },
     // When the compound node is too transparent, the text color should be inverted
     inverseColor: {
       true: parts({
+        root: {
+          [compoundColor.var]: {
+            base: `color-mix(in oklch, ${__v('palette.hiContrast')}, ${__v('palette.stroke')} 90%)`,
+            _dark: `color-mix(in oklch, ${__v('palette.hiContrast')} 70%, ${__v('palette.fill')})`,
+          },
+        },
+        titleContainer: {
+          mixBlendMode: {
+            base: 'multiply',
+            _dark: 'lighten',
+          },
+        },
         actionBtn: {
           _dark: {
             '--actionbtn-color-hovered-btn': __v('palette.loContrast'),
@@ -272,46 +274,20 @@ export const compoundNode = defineRecipe({
       }),
     },
   },
-  compoundVariants: [
-    {
-      isTransparent: true,
-      inverseColor: false,
-      css: parts({
-        root: {
-          [compoundColor.var]: {
-            base: `oklch(from ${__v('palette.loContrast')} calc(l - 0.1) c h)`,
-            _dark: `oklch(from ${__v('palette.loContrast')} calc(l - 0.1) c h)`,
-          },
-        },
-        titleContainer: {
-          _light: {
-            mixBlendMode: 'plus-lighter',
-          },
-        },
-      }),
-    },
-    {
-      isTransparent: true,
-      inverseColor: true,
-      css: parts({
-        root: {
-          [compoundColor.var]: {
-            base: `oklch(from ${__v('palette.stroke')} calc(l + 0.1) c h)`,
-            _dark: `oklch(from ${__v('palette.loContrast')} calc(l - 0.1) c h)`,
-          },
-        },
-        titleContainer: {
-          _light: {
-            mixBlendMode: 'multiply',
-          },
-        },
-      }),
-    },
-  ],
+  defaultVariants: {
+    isTransparent: false,
+    inverseColor: false,
+    borderStyle: 'none',
+  },
   staticCss: [
     {
       isTransparent: ['*'],
-      inverseColor: ['*'],
+    },
+    {
+      isTransparent: ['true'],
+      inverseColor: ['true'],
+    },
+    {
       borderStyle: ['*'],
     },
   ],
