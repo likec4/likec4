@@ -8,10 +8,10 @@ import type {
   LangiumDocumentFactory,
 } from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
-import { hasAtLeast } from 'remeda'
+import { hasAtLeast, uniqueBy } from 'remeda'
 import { type WorkspaceFolder, CancellationToken } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
-import type { FileSystemProvider } from '../filesystem'
+import type { FileNode, FileSystemProvider } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
 import { logger, logWarnError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
@@ -68,11 +68,14 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     folders: WorkspaceFolder[],
     collector: (document: LangiumDocument) => void,
   ): Promise<void> {
+    // Built-in library
     collector(this.documentFactory.fromString(BuiltIn.Content, URI.parse(BuiltIn.Uri)))
 
     // Load documents from project include paths
     const includePaths = this.services.workspace.ProjectsManager.getAllIncludePaths()
     let totalFilesLoaded = 0
+
+    const foundFiles = [] as FileNode[]
 
     for (const { projectId, includePath, includeConfig } of includePaths) {
       try {
@@ -81,20 +84,23 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
           recursive: true,
           maxDepth: includeConfig.maxDepth,
         })
-
-        let filesLoadedFromPath = 0
-        for (const file of files) {
-          if (file.isFile && !this.services.workspace.ProjectsManager.isExcluded(file.uri)) {
-            const doc = await this.documentFactory.fromUri(file.uri)
-            collector(doc)
-            filesLoadedFromPath++
-            totalFilesLoaded++
-          }
-        }
-
-        logger.debug`loaded ${filesLoadedFromPath} files from include path ${includePath.fsPath}`
+        foundFiles.push(...files)
+        logger.debug`loaded ${files.length} files from include path ${includePath.fsPath}`
       } catch (error) {
-        logWarnError(error)
+        logger.warn(`Failed to scan include path ${includePath.fsPath}`, { error })
+      }
+    }
+
+    for (const file of uniqueBy(foundFiles, (f) => f.uri.path)) {
+      if (this.services.workspace.ProjectsManager.isExcluded(file.uri)) {
+        continue
+      }
+      try {
+        const doc = await this.langiumDocuments.getOrCreateDocument(file.uri)
+        collector(doc)
+        totalFilesLoaded++
+      } catch (error) {
+        logger.warn(`Failed to load document ${file.uri.fsPath}`, { error })
       }
     }
 
@@ -113,8 +119,6 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         logger.info`loaded ${totalFilesLoaded} total files from ${includePaths.length} include paths`
       }
     }
-
-    await super.loadAdditionalDocuments(folders, collector)
   }
 
   /**
@@ -128,10 +132,11 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     if (this.services.workspace.ProjectsManager.isConfigFile(entry.uri)) {
       return false
     }
-    if (entry.isFile) {
+    const isLikely = super.includeEntry(_workspaceFolder, entry, selector)
+    if (isLikely && entry.isFile) {
       return !this.services.workspace.ProjectsManager.isExcluded(entry.uri)
     }
-    return super.includeEntry(_workspaceFolder, entry, selector)
+    return isLikely
   }
 
   public workspace() {

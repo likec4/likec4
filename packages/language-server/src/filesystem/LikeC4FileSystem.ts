@@ -11,7 +11,7 @@ import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
 import { chokidarFileSystemWatcher } from './ChokidarWatcher'
 import { NoFileSystemWatcher } from './FileSystemWatcher'
-import type { FileSystemModuleContext, FileSystemProvider } from './index'
+import type { FileNode, FileSystemModuleContext, FileSystemProvider } from './index'
 
 const logger = rootLogger.getChild('filesystem')
 
@@ -55,10 +55,11 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
   override async readDirectory(
     folderPath: URI,
     opts?: { recursive?: boolean; maxDepth?: number },
-  ): Promise<FileSystemNode[]> {
+  ): Promise<FileNode[]> {
     const recursive = opts?.recursive ?? true
     const maxDepth = opts?.maxDepth ?? Infinity
-    const entries = [] as FileSystemNode[]
+    const entries = [] as FileNode[]
+
     try {
       let crawler = new fdir()
         .withSymlinks({ resolvePaths: false })
@@ -95,8 +96,8 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
   async scanDirectory(
     directory: URI,
     filter: (filepath: string, isDirectory: boolean) => boolean,
-  ): Promise<FileSystemNode[]> {
-    const entries = [] as FileSystemNode[]
+  ): Promise<FileNode[]> {
+    const entries = [] as FileNode[]
     try {
       const crawled = await new fdir()
         .withSymlinks({ resolvePaths: false })

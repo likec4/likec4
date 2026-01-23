@@ -82,12 +82,17 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
    */
   projectDocuments(projectId: ProjectId): Stream<LikeC4LangiumDocument> {
     const projects = this.services.workspace.ProjectsManager
-    return this.all.filter(doc => {
-      if (isLikeC4Builtin(doc.uri)) {
-        return false
-      }
-      return projects.isIncluded(projectId, doc.uri)
-    })
+    return this.allKnownDocuments
+      .filter((doc): doc is LikeC4LangiumDocument => {
+        if (isLikeC4Builtin(doc.uri) || doc.textDocument.languageId !== LikeC4LanguageMetaData.languageId) {
+          return false
+        }
+        if (!projects.isIncluded(projectId, doc.uri)) {
+          return false
+        }
+        doc.likec4ProjectId = projectId
+        return true
+      })
   }
 
   groupedByProject(): Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>> {

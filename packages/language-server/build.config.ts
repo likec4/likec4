@@ -18,7 +18,7 @@ export default defineBuildConfig([{
     'raw-body': resolve('./src/empty.ts'),
     'content-type': resolve('./src/empty.ts'),
   },
-  failOnWarn: true,
+  failOnWarn: isProd,
   declaration: true,
   rollup: {
     esbuild: {
