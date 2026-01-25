@@ -32,9 +32,9 @@
   "pnpm": {
     "overrides": {
       "@likec4/core": "file:../packages/core/package.tgz",
+      "@likec4/icons": "file:../packages/icons/package.tgz",
       "@likec4/config": "file:../packages/config/package.tgz",
       "@likec4/log": "file:../packages/log/package.tgz",
-      "@likec4/layouts": "file:../packages/layouts/package.tgz",
       "@likec4/language-server": "file:../packages/language-server/package.tgz",
       "likec4": "file:../packages/likec4/package.tgz"
     }

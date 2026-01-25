@@ -41,7 +41,7 @@ export function CompoundNodeContainer({
   })
   const isTransparent = opacity < 98
 
-  const MIN_OPACITY = 65
+  const MIN_OPACITY = 50
   const borderOpacity = MIN_OPACITY + clamp((100 - MIN_OPACITY) * (opacity / 100), {
     min: 0,
     max: 100 - MIN_OPACITY,
