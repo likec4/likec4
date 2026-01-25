@@ -55,7 +55,7 @@ export function findRedundantConnections<A extends AnyAux>(
         accum = union(accum, connection.directRelations)
       }
       // Check if there is any reversed connection to descendant
-      if (findDeepestNestedConnection(all, connection.reversed(false))) {
+      if (findDeepestNestedConnection(all, connection.reversed())) {
         accum = union(accum, connection.directRelations)
       }
 
