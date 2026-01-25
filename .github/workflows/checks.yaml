@@ -172,9 +172,7 @@ jobs:
           pnpm install
           pnpm add \
             ../packages/core/package.tgz \
-            ../packages/log/package.tgz \
             ../packages/icons/package.tgz \
-            ../packages/config/package.tgz \
             ../packages/likec4/package.tgz
           pnpm install:chromium
           pnpm bootstrap
@@ -241,9 +239,7 @@ jobs:
           pnpm install
           pnpm add \
             ../packages/core/package.tgz \
-            ../packages/log/package.tgz \
             ../packages/icons/package.tgz \
-            ../packages/config/package.tgz \
             ../packages/likec4/package.tgz
           pnpm bootstrap
 

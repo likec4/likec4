@@ -16,14 +16,6 @@
     "packages/create-likec4/",
     "examples/"
   ],
-  "categories": {
-    "correctness": "error",
-    "suspicious": "warn",
-    "perf": "warn",
-    // "style": "off",
-    // "restriction": "warn",
-    // "nursery": "off"
-  },
   "rules": {
     "max-dependencies": "off",
     "max-lines-per-function": "off",

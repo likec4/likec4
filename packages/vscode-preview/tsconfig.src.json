@@ -4,13 +4,15 @@
   "compilerOptions": {
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedLocals": false,
+    "incremental": true,
+    "rootDir": "src",
     "types": [
       "vite/client",
       "vscode-webview"
     ]
   },
   "include": [
-    "src",
+    "src/",
   ],
   "references": [
     {
