@@ -10,22 +10,12 @@ import type {
   LikeC4Model,
 } from '../../model'
 import { deploymentConnection } from '../../model'
-import {
-  type AnyAux,
-  type aux,
-  type ComputedEdge,
-  type ComputedNode,
-  type DeploymentViewRule,
-  type scalar,
-  type Unknown,
-  exact,
-  FqnExpr,
-  isViewRuleStyle,
-  preferSummary,
-} from '../../types'
+import type { AnyAux, aux, ComputedEdge, ComputedNode, DeploymentViewRule, scalar, Unknown } from '../../types'
+import { exact, FqnExpr, isViewRuleStyle, preferSummary } from '../../types'
 import { invariant, nonexhaustive, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
-import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
+import type { ComputedNodeSource } from '../utils/buildComputedNodes'
+import { buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { Memory } from './_types'
 
