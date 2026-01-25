@@ -43,7 +43,6 @@ export const Route = createFileRoute('/project/$projectId')({
 
 function RouteComponent() {
   const { $likec4model, projectId } = Route.useLoaderData()
-
   return (
     <ViewOutlet>
       <ErrorBoundary FallbackComponent={Fallback}>

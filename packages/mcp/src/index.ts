@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { createLanguageServices, LikeC4FileSystem, WithMCPServer } from '@likec4/language-server'
+import { createLanguageServices, WithFileSystem, WithLikeC4ManualLayouts, WithMCPServer } from '@likec4/language-server'
 import {
   configureLogger,
   getAnsiColorFormatter,
@@ -80,7 +80,8 @@ const main = defineCommand({
     }
 
     const langium = createLanguageServices({
-      ...LikeC4FileSystem(args.watch),
+      ...WithFileSystem(args.watch),
+      ...WithLikeC4ManualLayouts,
       ...WithMCPServer(useStdio ? 'stdio' : { port }),
     })
 

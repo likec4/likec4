@@ -3,27 +3,48 @@
   "env": {
     "es2024": true
   },
+  "plugins": [
+    "eslint",
+    "typescript",
+    "unicorn",
+    "react",
+    "react-perf",
+    "oxc",
+    "import",
+    "node",
+    "vitest"
+  ],
   "ignorePatterns": [
     "packages/create-likec4/",
+    "apps/docs/",
     "examples/"
   ],
-  "settings": {},
   "rules": {
-    "oxc/no-accumulating-spread": "error",
-    "import/no-commonjs": "error",
-    "import/consistent-type-specifier-style": [
-      "error",
-      {
-        "prefer-top-level": true
-      }
-    ],
+    "max-dependencies": "off",
+    "max-lines-per-function": "off",
+    "no-optional-chaining": "off",
+    "no-undefined": "off",
+    "no-inline-comments": "off",
+    "no-named-as-default-member": "off",
+    "no-accumulating-spread": "error",
+    "no-array-reverse": "off",
+    "no-await-in-loop": "off",
+    "no-commonjs": "error",
+    // TODO: Enable these rules later
+    "no-cycle": "off",
+    "import/consistent-type-specifier-style": "off",
+    // "import/consistent-type-specifier-style": [
+    //   "warn",
+    //   {
+    //     "prefer-top-level": true
+    //   }
+    // ],
     "import/first": [
       "warn",
       {
         "absolute-first": true
       }
     ],
-    "import/no-cycle": "error",
     "no-restricted-imports": [
       "error",
       {
@@ -31,6 +52,9 @@
           {
             "name": "type-fest",
             "allowTypeImports": true
+          },
+          {
+            "name": "."
           }
         ]
       }
@@ -45,8 +69,11 @@
     "typescript/restrict-template-expressions": "off",
     "typescript/no-duplicate-type-constituents": "off",
     "typescript/no-misused-spread": "off",
+    "typescript/no-unsafe-type-assertion": "off",
     "typescript/unbound-method": "off",
+    "typescript/explicit-function-return-type": "off",
     "typescript/no-non-null-asserted-optional-chain": "error",
+    "typescript/no-unnecessary-type-arguments": "off",
     "typescript/no-redundant-type-constituents": "off"
   },
   "overrides": [
@@ -55,9 +82,16 @@
         "**/*.spec.ts",
         "**/*.test-d.ts",
         "**/*.spec.tsx",
-        "**/__test__/**"
+        "**/__*/**"
       ],
       "rules": {
+        "import/consistent-type-specifier-style": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unnecessary-type-assertion": "off",
+        "typescript/no-unnecessary-template-expression": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-type-assertion": "off",
+        "typescript/no-non-null-assertion": "off",
         "typescript/no-non-null-asserted-optional-chain": "off",
         "no-unused-vars": "off"
       }

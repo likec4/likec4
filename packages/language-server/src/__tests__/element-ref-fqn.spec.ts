@@ -1,7 +1,7 @@
 import { describe } from 'vitest'
 import { test } from './asserts'
 
-describe.concurrent('FqnElementRef', () => {
+describe('FqnElementRef', () => {
   test('valid').valid`
     specification {
       element component

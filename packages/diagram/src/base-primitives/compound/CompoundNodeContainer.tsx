@@ -4,6 +4,7 @@ import { compoundNode } from '@likec4/styles/recipes'
 import * as m from 'motion/react-m'
 import type { HTMLAttributes, PropsWithChildren } from 'react'
 import { clamp } from 'remeda'
+import { MAX_COMPOUND_DEPTH } from '../../base/const'
 import type { BaseNode, BaseNodeProps } from '../../base/types'
 
 export type RequiredData = {
@@ -38,9 +39,9 @@ export function CompoundNodeContainer({
     min: 0,
     max: 100,
   })
-  const isTransparent = opacity < 99
+  const isTransparent = opacity < 98
 
-  const MIN_OPACITY = 65
+  const MIN_OPACITY = 50
   const borderOpacity = MIN_OPACITY + clamp((100 - MIN_OPACITY) * (opacity / 100), {
     min: 0,
     max: 100 - MIN_OPACITY,
@@ -48,13 +49,13 @@ export function CompoundNodeContainer({
 
   const compoundClass = compoundNode({
     isTransparent,
-    inverseColor: opacity < 60,
+    inverseColor: opacity < 70,
     borderStyle: data.style.border ?? (isTransparent ? 'dashed' : 'none'),
   })
 
   const depth = clamp(data.depth ?? 1, {
     min: 1,
-    max: 5,
+    max: MAX_COMPOUND_DEPTH,
   })
 
   return (
@@ -70,6 +71,7 @@ export function CompoundNodeContainer({
       {...isDimmed !== false && {
         'data-likec4-dimmed': isDimmed,
       }}
+      tabIndex={-1}
       style={{
         ...style,
         // @ts-expect-error

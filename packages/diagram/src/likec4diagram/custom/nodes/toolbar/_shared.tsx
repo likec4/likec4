@@ -85,7 +85,7 @@ export function BorderStyleOption({
   return (
     <SegmentedControl
       size="xs"
-      fz={9}
+      fz="xxs"
       fullWidth
       withItemsBorders={false}
       value={value}

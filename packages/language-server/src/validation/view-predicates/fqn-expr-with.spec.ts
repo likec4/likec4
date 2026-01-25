@@ -1,7 +1,7 @@
-import { describe, it, vi } from 'vitest'
+import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
-describe.concurrent('checkFqnExprWith', () => {
+describe('checkFqnExprWith', () => {
   //
   it('should not warn', async ({ expect }) => {
     const { validate } = createTestServices()

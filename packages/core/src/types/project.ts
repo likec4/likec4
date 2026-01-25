@@ -1,6 +1,6 @@
 import type { PartialDeep, WritableDeep } from 'type-fest'
 import type { LikeC4StyleDefaults, LikeC4Theme } from '../styles/types'
-import * as scalar from './scalar'
+import type { ProjectId } from './scalar'
 
 export type LikeC4ProjectTheme = PartialDeep<WritableDeep<LikeC4Theme>, {
   recurseIntoArrays: false
@@ -12,9 +12,22 @@ export type LikeC4ProjectStyleDefaults = PartialDeep<WritableDeep<LikeC4StyleDef
   allowUndefinedInNonTupleArrays: false
 }>
 
+export interface LikeC4ProjectStylesCustomStylesheets {
+  /**
+   * List of paths to CSS files, relative to the project root
+   * (available in LSP, but not in dumped JSON)
+   */
+  paths?: string[]
+  /**
+   * Merged CSS
+   */
+  content: string
+}
+
 export interface LikeC4ProjectStylesConfig {
   theme?: LikeC4ProjectTheme
   defaults?: LikeC4ProjectStyleDefaults
+  customCss?: LikeC4ProjectStylesCustomStylesheets
 }
 
 export interface LikeC4ProjectManualLayoutsConfig {
@@ -27,9 +40,9 @@ export interface LikeC4ProjectManualLayoutsConfig {
  */
 export interface LikeC4Project {
   /**
-   * ID of the project, casted to {@link scalar.ProjectId}
+   * ID of the project, casted to {@link ProjectId}
    */
-  readonly id: scalar.ProjectId
+  readonly id: ProjectId
 
   title?: string
 

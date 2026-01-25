@@ -1,4 +1,4 @@
-import { type TestContext, describe, it, vi } from 'vitest'
+import { type TestContext, describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 const model = `
@@ -66,7 +66,7 @@ async function mkTestServices({ expect }: TestContext) {
   }
 }
 
-describe.concurrent('dynamic views', () => {
+describe('dynamic views', () => {
   it('valid dynamic view', async ctx => {
     const { valid } = await mkTestServices(ctx)
     await valid(`

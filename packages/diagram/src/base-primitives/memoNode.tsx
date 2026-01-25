@@ -6,6 +6,7 @@ function nodePropsEqual<P extends BaseNodeProps>(prev: Readonly<P>, next: Readon
   return (
     prev.id === next.id
     && eq(prev.type, next.type)
+    && eq(prev.parentId ?? '', next.parentId ?? '')
     && eq(prev.selected ?? false, next.selected ?? false)
     && eq(prev.dragging ?? false, next.dragging ?? false)
     && eq(prev.width ?? 0, next.width ?? 0)

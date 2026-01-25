@@ -57,7 +57,7 @@ export function IconRenderer({
   }
   let icon: ReactNode
   if (
-    element.icon.startsWith('http://') || element.icon.startsWith('https://')
+    element.icon.startsWith('http://') || element.icon.startsWith('https://') || element.icon.startsWith('data:image')
   ) {
     icon = <img src={element.icon} alt={element.title} />
   } else if (RenderIcon) {

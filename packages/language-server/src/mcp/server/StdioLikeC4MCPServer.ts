@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import type { AsyncDisposable } from 'langium'
 import type { LikeC4Services } from '../../module'
-import type { LikeC4MCPServer } from '../interfaces'
+import type { LikeC4MCPServer } from '../types'
 import { logger } from '../utils'
 
 export class StdioLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {

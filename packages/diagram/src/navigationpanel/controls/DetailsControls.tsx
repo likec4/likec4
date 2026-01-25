@@ -101,7 +101,7 @@ const ViewDetailsCardTrigger = ({ linksCount, onOpen }: { linksCount: number; on
           <Box
             css={{
               fontSize: '11px',
-              fontWeight: 600,
+              fontWeight: 'bold',
               lineHeight: 1,
               opacity: 0.8,
             }}>
@@ -117,7 +117,7 @@ const SectionHeader = styled('div', {
   base: {
     fontSize: 'xs',
     color: 'mantine.colors.dimmed',
-    fontWeight: 500,
+    fontWeight: 'medium',
     userSelect: 'none',
     mb: 'xxs',
   },
@@ -256,7 +256,7 @@ const ViewBadge = ({
 const ViewBadgeLabel = styled('div', {
   base: {
     color: 'mantine.colors.dimmed',
-    fontWeight: 500,
+    fontWeight: 'medium',
     fontSize: 'xxs',
     userSelect: 'none',
   },

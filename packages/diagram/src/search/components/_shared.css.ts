@@ -99,7 +99,7 @@ const icon = css.raw({
 
 const title = css.raw({
   fontSize: '16px',
-  fontWeight: 500,
+  fontWeight: 'medium',
   lineHeight: '1.1',
   [`:where([data-disabled]) &`]: {
     opacity: 0.4,

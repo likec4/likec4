@@ -27,11 +27,17 @@ export const BroadcastProjectsUpdate: NotificationType<never> = {
   method: 'projects-updated',
 }
 
-export const FetchComputedModel: RequestType<never, { model: ComputedLikeC4ModelData | null }> = {
+export const FetchComputedModel: RequestType<{
+  projectId: ProjectId
+}, {
+  model: ComputedLikeC4ModelData | null
+  error: string | null
+}> = {
   method: 'fetch-computed-model',
 }
 
 export const FetchLayoutedView: RequestType<{
+  projectId: ProjectId
   viewId: ViewId
   // by default, prefers manual layout if available
   layoutType?: 'manual' | 'auto'
@@ -76,19 +82,9 @@ export const ReadLocalIcon: RequestType</* uri */ string, ReadLocalIconResult> =
 }
 
 export const ViewChangeReq = { method: 'webview:change' } as RequestType<
-  { viewId: ViewId; change: ViewChange },
+  { projectId: ProjectId; viewId: ViewId; change: ViewChange },
   { success: true } | { success: false; error: string }
 >
-
-export const WebviewMsgs = {
-  CloseMe: { method: 'webview:closeMe' } as NotificationType<never>,
-  Locate: { method: 'webview:locate' } as NotificationType<LocateParams>,
-  NavigateTo: { method: 'webview:navigate' } as NotificationType<
-    | { screen: 'view'; viewId: ViewId; projectId: ProjectId | undefined }
-    | { screen: 'projects' }
-  >,
-  UpdateMyTitle: { method: 'webview:update-my-title' } as NotificationType<{ title: string }>,
-}
 
 export type LocateParams = ExclusiveUnion<{
   Element: {
@@ -108,6 +104,17 @@ export type LocateParams = ExclusiveUnion<{
     deployment: DeploymentFqn
   }
 }>
+export type WebviewLocateReq = { projectId: ProjectId } & LocateParams
+
+export const WebviewMsgs = {
+  CloseMe: { method: 'webview:closeMe' } as NotificationType<never>,
+  Locate: { method: 'webview:locate' } as NotificationType<WebviewLocateReq>,
+  NavigateTo: { method: 'webview:navigate' } as NotificationType<
+    | { screen: 'view'; viewId: ViewId; projectId: ProjectId | undefined }
+    | { screen: 'projects' }
+  >,
+  UpdateMyTitle: { method: 'webview:update-my-title' } as NotificationType<{ title: string }>,
+}
 
 export type Handler<T> =
   // dprint-ignore

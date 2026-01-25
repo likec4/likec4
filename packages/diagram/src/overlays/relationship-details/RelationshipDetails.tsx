@@ -33,7 +33,7 @@ const nodeTypes: Types.NodeRenderers = {
   compound: CompoundNode,
 }
 
-export const edgeTypes = {
+const edgeTypes = {
   relationship: RelationshipEdge,
 }
 

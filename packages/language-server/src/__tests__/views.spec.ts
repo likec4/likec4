@@ -1,4 +1,4 @@
-import { describe, vi } from 'vitest'
+import { describe } from 'vitest'
 import { test } from './asserts'
 
 const model = `
@@ -34,7 +34,7 @@ const model = `
   }
 `
 
-describe.concurrent('views', () => {
+describe('views', () => {
   test('valid index').valid`${model}
     views {
       view index {

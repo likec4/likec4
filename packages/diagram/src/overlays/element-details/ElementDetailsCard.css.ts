@@ -59,7 +59,7 @@ export const title = css({
   fontFamily: 'likec4.element',
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
-  fontWeight: 600,
+  fontWeight: 'bold',
   fontSize: '24px',
   // lineHeight: 1.15,
   lineHeight: 'xs',
@@ -148,7 +148,7 @@ export const viewButtonTitle = css({
   transition: 'fast',
   color: `[var(${viewTitleColor}, {colors.mantine.colors.gray[7]})]`,
   fontSize: '15px',
-  fontWeight: 500,
+  fontWeight: 'medium',
   lineHeight: '1.4',
 })
 
@@ -175,7 +175,7 @@ export const tabsList = css({
 
 export const tabsTab = css({
   fontSize: 'xs',
-  fontWeight: 500,
+  fontWeight: 'medium',
   flexGrow: 1,
   padding: '[6px 8px]',
   transition: 'fast',
@@ -248,7 +248,7 @@ export const resizeHandle = css({
   borderColor: 'mantine.colors.dark[3]',
   borderTop: 'none',
   borderLeft: 'none',
-  borderRadius: '2px',
+  borderRadius: 'xs',
   bottom: '0.5',
   right: '0.5',
   transition: 'fast',

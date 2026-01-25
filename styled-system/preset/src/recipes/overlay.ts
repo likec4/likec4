@@ -64,16 +64,16 @@ export const overlay = defineRecipe({
             height: 'calc(100vh - var(--_offset) - var(--_inset))',
             [borderRadius]: '6px',
             padding: '1.5', // 6px
-            [offset]: '1rem',
+            [offset]: '{spacing.4}',
           },
           md: {
-            [offset]: '1rem',
+            [offset]: '{spacing.4}',
           },
           lg: {
-            [offset]: '2rem',
+            [offset]: '{spacing.8}',
           },
           xl: {
-            [offset]: '4rem',
+            [offset]: '{spacing.16}',
           },
         },
         body: {

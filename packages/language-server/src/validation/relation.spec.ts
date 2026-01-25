@@ -1,7 +1,7 @@
-import { describe, it, vi } from 'vitest'
+import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
-describe.concurrent('relationChecks', () => {
+describe('relationChecks', () => {
   it('should not report invalid relations', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`

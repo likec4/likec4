@@ -3,6 +3,8 @@ import type {
   BorderStyle,
   Color,
   ElementShape,
+  IconPosition,
+  IconSize,
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
@@ -16,6 +18,9 @@ import type * as scalar from './scalar'
 
 export interface ElementStyle {
   readonly icon?: scalar.Icon
+  readonly iconColor?: Color
+  readonly iconSize?: IconSize
+  readonly iconPosition?: IconPosition
   readonly shape?: ElementShape
   readonly color?: Color
   readonly border?: BorderStyle
@@ -43,26 +48,32 @@ export interface ElementStyle {
   readonly textSize?: TextSize
 }
 
-type WithSizes = Pick<ElementStyle, 'size' | 'padding' | 'textSize'>
+type WithSizes = Pick<ElementStyle, 'size' | 'padding' | 'textSize' | 'iconSize'>
 
 /**
  * Ensures that the sizes are set to default values if they are not set
  */
-export function ensureSizes<S extends WithSizes>({
-  size,
-  padding,
-  textSize,
-  ...rest
-}: S, defaultSize = defaultStyle.defaults.size): Omit<S, 'size' | 'padding' | 'textSize'> & Required<WithSizes> {
+export function ensureSizes<S extends WithSizes>(
+  {
+    size,
+    padding,
+    textSize,
+    iconSize,
+    ...rest
+  }: S,
+  defaultSize = defaultStyle.defaults.size,
+): Omit<S, keyof WithSizes> & Required<WithSizes> {
   size ??= defaultSize
   textSize ??= size
   padding ??= size
+  iconSize ??= size
 
   return {
     ...rest,
     size,
     padding,
     textSize,
+    iconSize,
   }
 }
 

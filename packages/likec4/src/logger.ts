@@ -1,10 +1,10 @@
-import { type Logger as LOGGER, rootLogger } from '@likec4/log'
+import { rootLogger } from '@likec4/log'
 import { hrtime } from 'node:process'
 import prettyMilliseconds from 'pretty-ms'
 import k from 'tinyrainbow'
 import type { LogErrorOptions, LogType } from 'vite'
 
-export const logger: LOGGER = rootLogger.getChild('cli')
+export const logger = rootLogger.getChild('cli')
 
 export function createLikeC4Logger(prefix: string | readonly [string, ...string[]]) {
   const logger = rootLogger.getChild(prefix)

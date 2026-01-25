@@ -15,10 +15,19 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
-      "path": "../language-server/tsconfig.json"
+      "path": "../config/"
+    },
+    {
+      "path": "../log/"
+    },
+    {
+      "path": "../layouts/"
+    },
+    {
+      "path": "../language-server/"
     }
   ]
 }

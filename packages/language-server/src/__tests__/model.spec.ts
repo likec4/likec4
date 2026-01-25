@@ -1,4 +1,4 @@
-import { ElementShapes } from '@likec4/core/styles'
+import { ElementShapes, IconPositions } from '@likec4/core/styles'
 import { describe } from 'vitest'
 import { test } from './asserts'
 
@@ -57,14 +57,19 @@ describe('model', () => {
       element el2
     }`
 
-  for (const shape of ElementShapes) {
-    test(`allow element with name of shape "${shape}"`).valid`
+  for (
+    const constv of [
+      ...ElementShapes,
+      ...IconPositions,
+    ]
+  ) {
+    test(`allow element with name of constant "${constv}"`).valid`
       specification {
-        element ${shape}
+        element ${constv}
       }
       model {
-        ${shape} el1
-        el2 = ${shape}
+        ${constv} el1
+        el2 = ${constv}
       }`
   }
 

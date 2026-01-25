@@ -1,6 +1,7 @@
 import type { Fqn, NodeId } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import {
+  type ElementTagsProps,
   CompoundDetailsButton,
   CompoundNodeContainer,
   CompoundTitle,
@@ -9,10 +10,11 @@ import {
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
-  ElementTags,
+  ElementTags as ElementTagsPrimitive,
 } from '../../../base-primitives'
 import type { BaseNodeData } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
+import { useCallbackRef } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
@@ -20,6 +22,25 @@ import { DeploymentElementActions, ElementActions } from './ElementActions'
 import { NodeDrifts } from './NodeDrifts'
 import { CompoundDeploymentToolbar, CompoundElementToolbar } from './toolbar/CompoundToolbar'
 import { DeploymentElementToolbar, ElementToolbar } from './toolbar/ElementToolbar'
+
+function ElementTags(props: ElementTagsProps) {
+  const diagram = useDiagram()
+
+  return (
+    <ElementTagsPrimitive
+      onTagClick={useCallbackRef((tag) => {
+        diagram.openSearch(tag)
+      })}
+      onTagMouseEnter={useCallbackRef((tag) => {
+        diagram.send({ type: 'tag.highlight', tag })
+      })}
+      onTagMouseLeave={useCallbackRef((_tag) => {
+        diagram.send({ type: 'tag.unhighlight' })
+      })}
+      {...props}
+    />
+  )
+}
 
 export function ElementDetailsButtonWithHandler(
   props: {
@@ -77,7 +98,7 @@ export function ElementNode(props: Types.NodeProps<'element'>) {
       <ElementActions {...props} />
       {enableElementDetails && <ElementDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <ElementToolbar {...props} />}
-      <DefaultHandles />
+      <DefaultHandles direction={props.data.viewLayoutDir} />
     </ElementNodeContainer>
   )
 }
@@ -93,7 +114,7 @@ export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
       <DeploymentElementActions {...props} />
       {enableElementDetails && <ElementDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <DeploymentElementToolbar {...props} />}
-      <DefaultHandles />
+      <DefaultHandles direction={props.data.viewLayoutDir} />
     </ElementNodeContainer>
   )
 }
@@ -122,7 +143,7 @@ export function CompoundElementNode(props: Types.NodeProps<'compound-element'>) 
       <CompoundActions {...props} />
       {enableElementDetails && <CompoundDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <CompoundElementToolbar {...props} />}
-      <DefaultHandles />
+      <DefaultHandles direction={props.data.viewLayoutDir} />
     </CompoundNodeContainer>
   )
 }
@@ -140,7 +161,7 @@ export function CompoundDeploymentNode(props: Types.NodeProps<'compound-deployme
       <CompoundActions {...props} />
       {enableElementDetails && <CompoundDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <CompoundDeploymentToolbar {...props} />}
-      <DefaultHandles />
+      <DefaultHandles direction={props.data.viewLayoutDir} />
     </CompoundNodeContainer>
   )
 }
@@ -155,7 +176,7 @@ export function ViewGroupNode(props: Types.NodeProps<'view-group'>) {
     >
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
       <CompoundTitle {...props} />
-      <DefaultHandles />
+      <DefaultHandles direction={props.data.viewLayoutDir} />
     </CompoundNodeContainer>
   )
 }

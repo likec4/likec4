@@ -34,10 +34,10 @@ html, body {
   overflow: hidden;
 }
 
-:where(#root) .react-flow .react-flow__attribution {
+#root .likec4-root .react-flow__attribution {
   display: none;
 }
 
-:where(#root) .likec4-root {
+#root .likec4-root {
   --colors-likec4-background: var(--vscode-editor-background);
 }

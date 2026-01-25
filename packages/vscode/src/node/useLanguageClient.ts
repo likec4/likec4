@@ -43,6 +43,9 @@ const useLanguageClient = createSingletonComposable(() => {
       transport: TransportKind.ipc,
       options: {
         detached: false,
+        env: {
+          NODE_ENV: 'development',
+        },
         execArgv: [
           '--enable-source-maps',
           '--nolazy',

@@ -3,7 +3,7 @@ import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
 describe('LikeC4ModelBuilder -- caches', () => {
-  it.concurrent('build model returns cached result', async ({ expect }) => {
+  it('build model returns cached result', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     await validate(`
       specification {
@@ -26,7 +26,7 @@ describe('LikeC4ModelBuilder -- caches', () => {
     expect(model1).toStrictEqual(model2)
   })
 
-  it.concurrent('return cached views if there are no changes', async ({ expect }) => {
+  it('return cached views if there are no changes', async ({ expect }) => {
     const { parse, validateAll, buildModel } = createTestServices()
     await parse(`
       specification {

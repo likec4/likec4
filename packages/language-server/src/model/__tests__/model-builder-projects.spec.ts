@@ -2,7 +2,7 @@ import { URI } from 'langium'
 import { describe, it } from 'vitest'
 import { createMultiProjectTestServices } from '../../test'
 
-describe.concurrent('LikeC4ModelBuilder -- projects', () => {
+describe('LikeC4ModelBuilder -- projects', () => {
   it('should assign default project data', async ({ expect }) => {
     const { buildLikeC4Model } = await createMultiProjectTestServices({
       project1: {

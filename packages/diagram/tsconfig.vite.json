@@ -6,11 +6,19 @@
     "exactOptionalPropertyTypes": false,
     "rootDir": ".",
     "types": [
-      "node",
-    ],
+      "node"
+    ]
   },
   "include": [
     "*.config.ts",
     "package.json"
+  ],
+  "references": [
+    {
+      "path": "../../styled-system/preset/"
+    },
+    {
+      "path": "../../styled-system/styles/"
+    }
   ]
 }

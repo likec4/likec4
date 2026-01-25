@@ -63,7 +63,7 @@ export const LayoutWarning = memo(() => {
                   userSelect: 'none',
                   cursor: 'pointer',
                   fontSize: 'xs',
-                  fontWeight: 600,
+                  fontWeight: 'bold',
                 }),
               )}>
               {isActive ? <>Stop Compare</> : <IconAlertTriangle size={18} />}

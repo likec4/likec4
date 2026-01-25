@@ -39,6 +39,7 @@ export function CompoundDetailsButton({
       }}
       whileTap={{ scale: 1 }}
       className="likec4-compound-details details-button"
+      tabIndex={-1}
     >
       <ActionIcon
         className={cx(
@@ -48,6 +49,7 @@ export function CompoundDetailsButton({
           }),
           actionBtn({ variant: 'transparent' }),
         )}
+        tabIndex={-1}
         onClick={onClick}
         onDoubleClick={stopPropagation}>
         {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}

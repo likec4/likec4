@@ -71,5 +71,5 @@ export function queryAllFocusable(
 export function whenSearchAnimationEnds(
   callback: () => void,
 ): void {
-  setTimeout(callback, 300)
+  setTimeout(callback, 400)
 }

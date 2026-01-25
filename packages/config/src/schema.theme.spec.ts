@@ -1,11 +1,7 @@
-import {
-  type LikeC4StyleDefaults,
-  BorderStyles,
-  ElementShapes,
-  RelationshipArrowTypes,
-  Sizes,
-} from '@likec4/core/styles'
-import { type ExpectStatic, describe, it } from 'vitest'
+import type { LikeC4StyleDefaults } from '@likec4/core/styles'
+import { BorderStyles, ElementShapes, IconPositions, RelationshipArrowTypes, Sizes } from '@likec4/core/styles'
+import type { ExpectStatic } from 'vitest'
+import { describe, it } from 'vitest'
 import { defineStyle, defineThemeColor } from './define-config'
 import type { LikeC4StylesConfigInput } from './schema.theme'
 
@@ -65,7 +61,7 @@ describe('LikeC4StylesConfig', () => {
       expect(theme).toHaveProperty('colors.primary.relationships.line', '#555555')
       expect(theme).toHaveProperty('colors.primary.relationships.label', '#666666')
       // default should be injected by schema
-      expect(theme).toHaveProperty('colors.primary.relationships.labelBg', 'rgba(0, 0, 0, 0)')
+      expect(theme).toHaveProperty('colors.primary.relationships.labelBg', 'rgba(0, 0, 0, 0.5)')
       // red2 should be parsed
       expect(theme).toHaveProperty('colors.red2', themecolorValues(expect))
     })
@@ -77,6 +73,7 @@ describe('LikeC4StylesConfig', () => {
         border: first(BorderStyles),
         size: first(Sizes),
         shape: first(ElementShapes),
+        iconPosition: first(IconPositions),
         group: {
           color: 'secondary',
           opacity: 80,
@@ -95,6 +92,7 @@ describe('LikeC4StylesConfig', () => {
       expect(r.border).toBe(defaults.border)
       expect(r.size).toBe(defaults.size)
       expect(r.shape).toBe(defaults.shape)
+      expect(r.iconPosition).toBe(defaults.iconPosition)
       expect(r.group).toEqual({ color: 'secondary', opacity: 80 })
       expect(r.relationship).toEqual(defaults.relationship)
     })
@@ -125,7 +123,7 @@ describe('LikeC4StylesConfig', () => {
       expect(parsed.relationships).toEqual({
         line: '#505050',
         label: '#606060',
-        labelBg: 'rgba(0, 0, 0, 0)',
+        labelBg: 'rgba(0, 0, 0, 0.5)',
       })
       expect(parsed.elements).toEqual(input.elements)
     })

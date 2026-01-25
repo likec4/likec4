@@ -7,7 +7,7 @@ import { ProjectFolder } from './ProjectsManager'
 
 const isWin = process.platform === 'win32'
 
-describe.concurrent('ProjectsManager', () => {
+describe('ProjectsManager', () => {
   it('should assign likec4ProjectId to docs', async ({ expect }) => {
     const { projects, addDocumentOutside, validateAll } = await createMultiProjectTestServices({
       project1: {

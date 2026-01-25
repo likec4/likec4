@@ -32,7 +32,7 @@ export const likec4tag = defineRecipe({
       },
       true: {
         '& > span': {
-          color: '[transparent]',
+          color: 'transparent',
           filter: 'invert(1) grayscale(1) brightness(1.3) contrast(1000)',
           background: 'inherit',
           backgroundClip: 'text',

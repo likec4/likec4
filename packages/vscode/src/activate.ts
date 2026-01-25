@@ -20,7 +20,7 @@ import { performanceMark } from './utils'
 
 export function activateExtension(extensionKind: 'node' | 'web') {
   const m = performanceMark()
-  const { logger } = useExtensionLogger()
+  const { logger, output } = useExtensionLogger()
   logger.info(`activateExtension: ${extensionKind}`)
 
   registerBuiltinFileSystem()
@@ -53,7 +53,7 @@ export function activateExtension(extensionKind: 'node' | 'web') {
   })
 
   onDeactivate(() => {
-    logger.info('deactivate extension')
+    output.info('deactivate extension')
   })
 
   return {

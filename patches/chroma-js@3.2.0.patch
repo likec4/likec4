@@ -1,0 +1,29 @@
+diff --git a/package.json b/package.json
+index 813af3540fc16885f80246b0807645121ae0f201..f749a6ad82459f5727cb8593c596454515384942 100644
+--- a/package.json
++++ b/package.json
+@@ -22,12 +22,10 @@
+   },
+   "exports": {
+     ".": {
+-      "import": "./index.js",
+-      "require": "./dist/chroma.cjs"
++      "default": "./index.js"
+     },
+     "./light": {
+-      "import": "./index-light.js",
+-      "require": "./dist/chroma-light.cjs"
++      "default": "./index-light.js"
+     },
+     "./src/colors/*.js": {
+       "import": "./src/colors/*.js"
+@@ -48,7 +46,8 @@
+       "import": "./src/utils/*.js"
+     }
+   },
+-  "main": "./index.js",
++  "module": "index.js",
++  "main": "index.js",
+   "devDependencies": {
+     "@babel/eslint-parser": "^7.28.5",
+     "@eslint/eslintrc": "^3.3.1",

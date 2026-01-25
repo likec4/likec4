@@ -3,6 +3,7 @@ import { LikeC4Model } from '@likec4/core/model'
 import type {
   DiagramNode,
   LayoutType,
+  ProjectId,
   scalar,
 } from '@likec4/core/types'
 import type { LikeC4EditorPort } from '@likec4/diagram'
@@ -10,9 +11,8 @@ import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { atom, batched, onSet } from 'nanostores'
 import { useEffect, useMemo, useRef } from 'react'
-import { isDeepEqual } from 'remeda'
 import { queries, queryClient } from './queries'
-import { type VscodeState, ExtensionApi, getVscodeState, saveVscodeState } from './vscode'
+import { ExtensionApi, getVscodeState, saveVscodeState } from './vscode'
 
 const vscodeState = getVscodeState()
 
@@ -49,7 +49,7 @@ export function useProjectId() {
 
 if (vscodeState.model) {
   queryClient.setQueryData(
-    queries.fetchComputedModel(vscodeState.model.projectId).queryKey,
+    queries.fetchComputedModel(vscodeState.model.projectId as ProjectId).queryKey,
     vscodeState.model,
     {
       updatedAt: vscodeState.updatedAt,
@@ -57,7 +57,11 @@ if (vscodeState.model) {
   )
   if (vscodeState.view) {
     queryClient.setQueryData(
-      queries.fetchDiagramView(vscodeState.model.projectId, vscodeState.viewId, vscodeState.view._layout ?? 'manual')
+      queries.fetchDiagramView(
+        vscodeState.model.projectId as ProjectId,
+        vscodeState.view.id,
+        vscodeState.view._layout ?? 'manual',
+      )
         .queryKey,
       vscodeState.view,
       {
@@ -66,36 +70,45 @@ if (vscodeState.model) {
     )
   }
 }
-
-type VscodeAppState = Omit<VscodeState, 'viewId' | 'projectId' | 'layouted'>
-const $appstate = atom({
-  nodesDraggable: vscodeState.nodesDraggable,
-  edgesEditable: vscodeState.edgesEditable,
-})
-
-const setVscodeAppstate = (state: Partial<VscodeAppState>) => {
-  const nextstate = {
-    ...$appstate.get(),
-    ...state,
-  }
-  if (!isDeepEqual(nextstate, $appstate.get())) {
-    $appstate.set(nextstate)
-  }
-  saveVscodeState(nextstate)
+if (vscodeState.projectsOverview) {
+  queryClient.setQueryData(
+    queries.projectsOverview.queryKey,
+    vscodeState.projectsOverview,
+    {
+      updatedAt: vscodeState.updatedAt,
+    },
+  )
 }
 
-export const useVscodeAppState = () => {
-  const value = useStore($appstate)
-  return [
-    value,
-    setVscodeAppstate,
-  ] as const
-}
+// type VscodeAppState = Omit<VscodeState, 'viewId' | 'projectId' | 'layouted'>
+// const $appstate = atom({
+//   nodesDraggable: vscodeState.nodesDraggable,
+//   edgesEditable: vscodeState.edgesEditable,
+// })
 
-export const changeViewId = (viewId: scalar.ViewId, projectId?: scalar.ProjectId) => {
-  projectId = projectId ?? $projectId.get()
-  saveVscodeState({ viewId, projectId })
-  if ($projectId.get() !== projectId) {
+// const setVscodeAppstate = (state: Partial<VscodeAppState>) => {
+//   const currentstate = $appstate.get()
+//   const nextstate = {
+//     ...currentstate,
+//     ...state,
+//   }
+//   if (!isDeepEqual(nextstate, currentstate)) {
+//     $appstate.set(nextstate)
+//   }
+//   saveVscodeState(nextstate)
+// }
+
+// export const useVscodeAppState = () => {
+//   const value = useStore($appstate)
+//   return [
+//     value,
+//     setVscodeAppstate,
+//   ] as const
+// }
+
+export function changeViewId(viewId: scalar.ViewId, projectId?: scalar.ProjectId) {
+  $screen.set('view')
+  if (projectId) {
     $projectId.set(projectId)
   }
   if ($viewId.get() !== viewId) {
@@ -112,9 +125,7 @@ export const setLastClickedNode = (node?: DiagramNode) => {
 
 ExtensionApi.onOpenViewNotification((next) => {
   if (next.screen === 'projects') {
-    void queryClient.invalidateQueries({
-      queryKey: queries.projectsOverview.queryKey,
-    })
+    void queryClient.invalidateQueries()
     $screen.set('projects')
     return
   }
@@ -133,27 +144,21 @@ ExtensionApi.onGetLastClickedNodeRequest(() => {
 })
 
 ExtensionApi.onModelUpdateNotification(async () => {
-  // Project overview is not affected by model updates
-  if ($screen.get() !== 'view') {
-    return
-  }
-  // Then fetch fresh data
-  await queryClient.refetchQueries({
-    queryKey: queries.fetchComputedModel($projectId.get()).queryKey,
-    stale: true,
-    type: 'active',
-  })
-  // Invalidate inactive diagram views,
+  // Invalidate inactive queries,
   // so they will be refetched when accessed next time
   await queryClient.invalidateQueries({
     type: 'inactive',
     refetchType: 'none',
-    queryKey: [$projectId.get(), 'diagram'],
+    queryKey: [$projectId.get()],
   })
-  // Refetch active diagram views
+  // First refetch active model
+  await queryClient.refetchQueries({
+    queryKey: [$projectId.get(), 'model'],
+    type: 'active',
+  })
+  // Then refetch active diagram views
   await queryClient.refetchQueries({
     type: 'active',
-    stale: true,
     queryKey: [$projectId.get(), 'diagram'],
   })
 })
@@ -171,7 +176,7 @@ const projectAndView = batched(
 
 export function useComputedModel() {
   const { projectId } = useStore(projectAndView)
-  const { data: model, error } = useQuery(
+  const { data: model, error, refetch } = useQuery(
     queries.fetchComputedModel(projectId),
   )
 
@@ -196,12 +201,18 @@ export function useComputedModel() {
     model,
     error,
     likec4Model: likec4modelref.current,
+    reset: async () => {
+      await refetch({
+        cancelRefetch: true,
+        throwOnError: false,
+      })
+    },
   }
 }
 
 export function useDiagramView() {
   const { projectId, viewId, layoutType } = useStore(projectAndView)
-  const { data: view, error } = useQuery(
+  const { data: view, error, refetch } = useQuery(
     queries.fetchDiagramView(projectId, viewId, layoutType),
   )
 
@@ -225,8 +236,17 @@ export function useDiagramView() {
   }, [title])
 
   return {
+    projectId,
+    viewId,
+    layoutType,
     view: viewRef.current,
     error,
+    reset: async () => {
+      await refetch({
+        cancelRefetch: true,
+        throwOnError: false,
+      })
+    },
   }
 }
 
@@ -236,7 +256,11 @@ const editorPort: LikeC4EditorPort = {
     return nonNullable(view, `View ${viewId} not found`)
   },
   handleChange: async (viewId, change) => {
-    await ExtensionApi.change(viewId, change)
+    await ExtensionApi.change({
+      projectId: $projectId.get(),
+      viewId,
+      change,
+    })
   },
 }
 

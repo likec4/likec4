@@ -1,4 +1,3 @@
-import type { ProjectId } from '@likec4/core/types'
 import { loggable, wrapError } from '@likec4/log'
 import {
   executeCommand,
@@ -22,12 +21,11 @@ export function activateMessenger() {
 
   logger.debug('activating messenger <-> preview panel')
 
-  messenger.handleFetchComputedModel(async () => {
+  messenger.handleFetchComputedModel(async ({ projectId }) => {
     const t0 = performanceMark()
-    const projectId = toValue(preview.projectId) ?? 'default'
     try {
-      const result = await rpc.fetchComputedModel(projectId)
-      if (result.model) {
+      const { model } = await rpc.fetchComputedModel(projectId)
+      if (model) {
         logger.debug(`request {req} of {projectId} in ${t0.pretty}`, { req: 'fetchComputedModel', projectId })
       } else {
         logger.warn(`No data returned in request {req} for {projectId} in ${t0.pretty}`, {
@@ -35,14 +33,22 @@ export function activateMessenger() {
           projectId,
         })
       }
-      return result
+      return {
+        model,
+        error: null,
+      }
     } catch (err) {
       logger.warn(`request {req} of {projectId} failed after ${t0.pretty}`, {
         req: 'fetchComputedModel',
         projectId,
         err,
       })
-      throw err // propagate to client
+      const error = loggable(err)
+      output.show()
+      return {
+        model: null,
+        error,
+      }
     }
   })
 
@@ -50,7 +56,7 @@ export function activateMessenger() {
     const t0 = performanceMark()
     const { viewId, layoutType = 'manual' } = params
     try {
-      const projectId = toValue(preview.projectId) ?? 'default'
+      const projectId = params.projectId ?? toValue(preview.projectId) ?? 'default'
       const result = await rpc.layoutView({ viewId, projectId, layoutType })
       if (!result) {
         logger.warn(
@@ -75,6 +81,7 @@ export function activateMessenger() {
     } catch (err) {
       logger.warn(`request {req} of {viewId} failed after ${t0.pretty}`, { req: 'layoutView', err, viewId })
       const error = loggable(err)
+      output.show()
       return {
         view: null,
         error,
@@ -95,8 +102,7 @@ export function activateMessenger() {
   })
 
   messenger.onWebviewLocate(async (params) => {
-    const projectId = toValue(preview.projectId) ?? 'default'
-    await executeCommand(commands.locate, { ...params, projectId })
+    await executeCommand(commands.locate, params)
   })
 
   // Moved to useDiagramPanel
@@ -106,9 +112,8 @@ export function activateMessenger() {
   // })
 
   const activeTextEditor = useActiveTextEditor()
-  messenger.handleViewChange(async ({ viewId, change }, sender) => {
+  messenger.handleViewChange(async ({ projectId, viewId, change }, sender) => {
     try {
-      const projectId = toValue(preview.projectId) ?? 'default' as ProjectId
       logger.debug`request ${change.op} of ${viewId} in project ${projectId}`
       const result = await rpc.changeView({ viewId, projectId, change })
 

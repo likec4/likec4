@@ -7,7 +7,7 @@ import {
   validateProjectConfig,
 } from '@likec4/config'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
-import type { ProjectId, scalar } from '@likec4/core/types'
+import type { ProjectId } from '@likec4/core/types'
 import {
   BiMap,
   compareNaturalHierarchically,
@@ -83,13 +83,14 @@ export function ProjectFolder(folder: URI | string): ProjectFolder {
   return withTrailingSlash(folder) as ProjectFolder
 }
 
-interface ProjectData {
-  id: scalar.ProjectId
+export interface ProjectData {
+  id: ProjectId
   config: LikeC4ProjectConfig
   folder: ProjectFolder // URI.toString()
   folderUri: URI
-  // exclude?: (path: string) => boolean
-  exclude?: picomatch.Matcher
+  exclude?: {
+    (test: string): boolean
+  }
   /**
    * Resolved include paths with both URI and folder string representations.
    * These are additional directories that are part of this project.
@@ -105,7 +106,7 @@ interface ProjectData {
 }
 
 export interface Project {
-  id: scalar.ProjectId
+  id: ProjectId
   folderUri: URI
   config: LikeC4ProjectConfig
   /**
@@ -115,7 +116,7 @@ export interface Project {
 }
 
 const DefaultProject = {
-  id: 'default' as scalar.ProjectId,
+  id: 'default' as ProjectId,
   config: {
     name: 'default',
     exclude: ['**/node_modules/**'],
@@ -137,7 +138,7 @@ export class ProjectsManager {
    * Configured default project ID.
    * (it is used in CLI and Vite plugin)
    */
-  #defaultProjectId: scalar.ProjectId | undefined = undefined
+  #defaultProjectId: ProjectId | undefined = undefined
   /**
    * Cached default project.
    */
@@ -146,7 +147,7 @@ export class ProjectsManager {
   /**
    * The mapping between project config files and project IDs.
    */
-  #projectIdToFolder = new BiMap<scalar.ProjectId, string>()
+  #projectIdToFolder = new BiMap<ProjectId, string>()
 
   /**
    * Registered projects.
@@ -158,7 +159,7 @@ export class ProjectsManager {
   /**
    * This is a cached lookup for performance.
    */
-  #lookupById = new DefaultMap((id: scalar.ProjectId): ProjectData => {
+  #lookupById = new DefaultMap((id: ProjectId): ProjectData => {
     if (id === ProjectsManager.DefaultProjectId) {
       const folder = ProjectFolder(this.getWorkspaceFolder())
       return {
@@ -186,7 +187,7 @@ export class ProjectsManager {
    *  - the ID of the only project
    *  - undefined if there are multiple projects.
    */
-  get defaultProjectId(): scalar.ProjectId | undefined {
+  get defaultProjectId(): ProjectId | undefined {
     if (this.#defaultProjectId) {
       return this.#defaultProjectId
     }
@@ -196,7 +197,7 @@ export class ProjectsManager {
     return this.#projects[0]?.id ?? ProjectsManager.DefaultProjectId
   }
 
-  set defaultProjectId(id: string | scalar.ProjectId | undefined) {
+  set defaultProjectId(id: string | ProjectId | undefined) {
     if (id === this.#defaultProjectId) {
       return
     }
@@ -208,7 +209,7 @@ export class ProjectsManager {
     }
     invariant(this.#projects.find(p => p.id === id), `Project "${id}" not found`)
     logger.debug`set default project ID to ${id}`
-    this.#defaultProjectId = id as scalar.ProjectId
+    this.#defaultProjectId = id as ProjectId
   }
 
   get default(): ProjectData {
@@ -219,9 +220,9 @@ export class ProjectsManager {
     return this.#defaultProject
   }
 
-  get all(): NonEmptyReadonlyArray<scalar.ProjectId> {
+  get all(): NonEmptyReadonlyArray<ProjectId> {
     if (hasAtLeast(this.#projects, 1)) {
-      const ids: NonEmptyArray<scalar.ProjectId> = [
+      const ids: NonEmptyArray<ProjectId> = [
         ...map(this.#projects, prop('id')),
         DefaultProject.id,
       ]
@@ -238,7 +239,7 @@ export class ProjectsManager {
     return [DefaultProject.id]
   }
 
-  getProject(arg: scalar.ProjectId | LangiumDocument): Project {
+  getProject(arg: ProjectId | LangiumDocument): Project {
     const id = typeof arg === 'string' ? arg : (arg.likec4ProjectId || this.belongsTo(arg))
     const project = this.#lookupById.get(id)
     return {
@@ -264,7 +265,7 @@ export class ProjectsManager {
    * If no project ID is specified, returns default project ID
    * If there are multiple projects and default project is not set, throws an error
    */
-  ensureProjectId(projectId?: scalar.ProjectId | undefined): scalar.ProjectId {
+  ensureProjectId(projectId?: ProjectId | undefined): ProjectId {
     if (projectId === ProjectsManager.DefaultProjectId) {
       return this.defaultProjectId ?? ProjectsManager.DefaultProjectId
     }
@@ -280,7 +281,7 @@ export class ProjectsManager {
   /**
    * Validates and ensures the project.
    */
-  ensureProject(projectId?: scalar.ProjectId | undefined): Project {
+  ensureProject(projectId?: ProjectId | undefined): Project {
     projectId = this.ensureProjectId(projectId)
     return this.getProject(projectId)
   }
@@ -396,10 +397,10 @@ export class ProjectsManager {
 
     let mustReset = false
 
-    let id: scalar.ProjectId
+    let id: ProjectId
 
     if (!project) {
-      if (this.#projectIdToFolder.has(config.name as scalar.ProjectId)) {
+      if (this.#projectIdToFolder.has(config.name as ProjectId)) {
         logger.warn`Project "${config.name}" already exists, generating unique ID`
       }
       id = this.uniqueProjectId(config.name)
@@ -546,7 +547,7 @@ export class ProjectsManager {
    * Determines which project the given document belongs to.
    * If the document does not belong to any project, returns the default project ID.
    */
-  belongsTo(document: LangiumDocument | URI | string): scalar.ProjectId {
+  belongsTo(document: LangiumDocument | URI | string): ProjectId {
     if (URI.isUri(document) || typeof document === 'string') {
       const documentUri = normalizeUri(document)
       return this.findProjectForDocument(documentUri).id
@@ -630,11 +631,11 @@ export class ProjectsManager {
     await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
   }
 
-  protected uniqueProjectId(name: string): scalar.ProjectId {
-    let id = name as scalar.ProjectId
+  protected uniqueProjectId(name: string): ProjectId {
+    let id = name as ProjectId
     let i = 1
     while (this.#projectIdToFolder.has(id)) {
-      id = `${name}-${i++}` as scalar.ProjectId
+      id = `${name}-${i++}` as ProjectId
     }
     return id
   }
@@ -743,12 +744,12 @@ export class ProjectsManager {
    * Used by WorkspaceManager to scan additional directories for C4 files.
    */
   public getAllIncludePaths(): Array<{
-    projectId: scalar.ProjectId
+    projectId: ProjectId
     includePath: URI
     includeConfig: IncludeConfig
   }> {
     const result: Array<{
-      projectId: scalar.ProjectId
+      projectId: ProjectId
       includePath: URI
       includeConfig: IncludeConfig
     }> = []

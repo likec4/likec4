@@ -67,10 +67,6 @@ await build({
     },
   },
   plugins: [
-    // tsconfig({
-    //   projects: ['./tsconfig.react-bundle.json'],
-    // }),
-    // react({}),
     dts({
       root: 'react',
       tsconfigPath: '../tsconfig.react-bundle.json',

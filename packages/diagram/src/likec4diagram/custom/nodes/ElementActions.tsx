@@ -1,6 +1,5 @@
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
-import { deepEqual as eq, shallowEqual } from 'fast-equals'
-import { memo, useMemo } from 'react'
+import { useMemo } from 'react'
 import { hasAtLeast } from 'remeda'
 import type { SimplifyDeep } from 'type-fest'
 import { ElementActionButtons } from '../../../base-primitives'
@@ -39,18 +38,6 @@ export type ElementActionsProps =
   }>
   & WithExtraButtons
 
-const compareElementActionsProps = (a: ElementActionsProps, b: ElementActionsProps) => {
-  return eq(a.data.id, b.data.id)
-    && eq(a.selected ?? false, b.selected ?? false)
-    && eq(a.data.modelFqn ?? null, b.data.modelFqn ?? null)
-    && eq(a.data.navigateTo ?? null, b.data.navigateTo ?? null)
-    && eq(a.data.hovered ?? false, b.data.hovered ?? false)
-    && (
-      (!a.extraButtons && !b.extraButtons)
-      || shallowEqual(a.extraButtons, b.extraButtons)
-    )
-}
-
 /**
  * Center-Bottom action bar, includes zoom-in and browse relationships actions, if the features are enabled.
  * Intended to be used with model elements.
@@ -76,10 +63,10 @@ const compareElementActionsProps = (a: ElementActionsProps, b: ElementActionsPro
  * />
  * ```
  */
-export const ElementActions = memo<ElementActionsProps>(({
+export function ElementActions({
   extraButtons,
   ...props
-}) => {
+}: ElementActionsProps) {
   const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeatures()
   const diagram = useDiagram()
   const { id, navigateTo, modelFqn } = props.data
@@ -115,7 +102,7 @@ export const ElementActions = memo<ElementActionsProps>(({
 
   // Spread all ReactFlow node props and override buttons with our computed buttons
   return <ElementActionButtons {...props} buttons={buttons} />
-}, compareElementActionsProps)
+}
 
 export type DeploymentElementActionsProps =
   & SimplifyDeep<{

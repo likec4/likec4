@@ -72,7 +72,11 @@
     },
     "./vite-plugin/internal": {
       "sources": "./src/vite-plugin/internal.ts",
-      "default": "./dist/vite-plugin/internal.mjs"
+      "default": {
+        "types": "./dist/vite-plugin/internal.d.mts",
+        "import": "./dist/vite-plugin/internal.mjs",
+        "default": "./dist/vite-plugin/internal.mjs"
+      }
     },
     "./vite-plugin": {
       "sources": "./src/vite-plugin/index.ts",
@@ -81,16 +85,6 @@
         "import": "./dist/vite-plugin/index.mjs",
         "default": "./dist/vite-plugin/index.mjs"
       }
-    },
-    "./icons/all": {
-      "types": "./icons/all.d.ts",
-      "import": "./icons/all.js",
-      "default": "./icons/all.js"
-    },
-    "./icons/*": {
-      "types": "./icons/icon.d.ts",
-      "import": "./icons/*",
-      "default": "./icons/*"
     },
     "./package.json": "./package.json"
   },
@@ -102,12 +96,11 @@
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
-    "build-cli": "unbuild",
+    "build-cli": "obuild",
     "build-app": "tsx scripts/bundle-app.ts",
     "build-react": "tsx scripts/bundle-react.ts",
     "build": "echo \"use pnpm turbo run build\" || true",
-    "generate:app": "tsr generate && panda codegen",
-    "generate:icons": "tsx --conditions=sources scripts/generate-icons.ts",
+    "generate:app": "tsr generate",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
@@ -126,7 +119,7 @@
     "dev:example-dev": "pnpm cli:serve ../../examples/diagrams-dev/likec4",
     "dev:examples": "pnpm cli:serve ../../examples",
     "cli": "tsx --conditions=sources src/cli/index.ts",
-    "cli:serve": "tsx watch --conditions=sources --exclude=\"./../../{examples,e2e}/**/*.{js,ts,mjs}\" src/cli/index.ts serve",
+    "cli:serve": "tsx watch --conditions=sources --exclude=\"./../../{examples,e2e}/**/*.{js,ts,mjs}\" --exclude=\"./../core/src/styles/**/*.{js,ts,mjs}\" src/cli/index.ts serve",
     "cli:build": "pnpm cli build -o dev/dist dev",
     "cli:preview": "pnpm cli preview -o dev/dist dev",
     "cli:export": "pnpm cli export png -o dev/export dev",
@@ -136,43 +129,47 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils",
+    "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
+    "@likec4/icons": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
     "boxen": "^8.0.1",
-    "bundle-require": "catalog:utils",
+    "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild",
-    "fdir": "catalog:utils",
+    "fdir": "catalog:externals",
+    "chokidar": "catalog:externals",
     "playwright": "catalog:",
     "rollup": "catalog:vite",
-    "std-env": "catalog:utils",
-    "type-fest": "catalog:utils",
+    "std-env": "catalog:externals",
+    "type-fest": "catalog:externals",
+    "nanostores": "catalog:react",
+    "@nanostores/react": "catalog:react",
     "vite": "catalog:vite",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
-    "yargs": "17.7.2"
+    "yargs": "17.7.2",
+    "nano-spawn": "catalog:externals"
   },
   "peerDependencies": {
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
+    "@likec4/log": "workspace:*",
+    "langium": "catalog:langium",
+    "@likec4/config": "workspace:*",
+    "@likec4/language-server": "workspace:*",
     "@dagrejs/dagre": "catalog:",
     "@fontsource/ibm-plex-sans": "^5.2.8",
-    "@likec4/config": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
-    "@likec4/generators": "workspace:*",
-    "@likec4/icons": "workspace:*",
-    "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
-    "@likec4/log": "workspace:*",
+    "@likec4/generators": "workspace:*",
     "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
-    "@nanostores/react": "catalog:react",
     "@pandacss/dev": "catalog:css",
     "@react-hookz/web": "catalog:react",
     "@tabler/icons-react": "catalog:react",
@@ -180,7 +177,7 @@
     "@tanstack/router-cli": "catalog:tanstack",
     "@tanstack/router-vite-plugin": "catalog:tanstack",
     "@types/node": "catalog:",
-    "@types/picomatch": "catalog:utils",
+    "@types/picomatch": "catalog:externals",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@types/semver": "^7.7.1",
@@ -188,6 +185,7 @@
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
     "autoprefixer": "^10.4.23",
+    "picomatch": "catalog:externals",
     "clsx": "catalog:react",
     "conf": "^15.0.2",
     "defu": "^6.1.4",
@@ -199,15 +197,13 @@
     "is-inside-container": "^1.0.0",
     "json5": "catalog:utils",
     "ky": "^1.14.1",
-    "langium": "catalog:langium",
     "merge-error-cause": "^5.0.2",
     "mkdirp": "^3.0.1",
     "motion": "catalog:react",
-    "nano-spawn": "catalog:utils",
-    "nanostores": "catalog:react",
+
     "npm-run-all2": "^8.0.4",
     "p-limit": "catalog:utils",
-    "picomatch": "catalog:utils",
+
     "package-manager-detector": "catalog:utils",
     "package-up": "catalog:utils",
     "postcss": "catalog:css",
@@ -225,7 +221,7 @@
     "turbo": "catalog:",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "vite-plugin-dts": "catalog:vite",
     "vite-plugin-inspect": "^11.3.3",
     "vite-plugin-singlefile": "^2.3.0",
@@ -236,7 +232,7 @@
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
     "wireit": "catalog:",
-    "zod": "catalog:utils",
+    "zod": "catalog:externals",
     "xstate": "catalog:xstate"
   }
 }

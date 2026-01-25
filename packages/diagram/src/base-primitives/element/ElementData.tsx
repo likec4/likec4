@@ -1,8 +1,8 @@
 import type { ComputedNodeStyle, MarkdownOrString, NodeId } from '@likec4/core'
-import { type Color, ensureSizes, RichText } from '@likec4/core/types'
-import { css, cx } from '@likec4/styles/css'
+import type { ColorLiteral, LikeC4Styles } from '@likec4/core/styles'
+import { type Color, RichText } from '@likec4/core/types'
+import { cx } from '@likec4/styles/css'
 import { elementNodeData } from '@likec4/styles/recipes'
-import { Text } from '@mantine/core'
 import {
   type CSSProperties,
   type DetailedHTMLProps,
@@ -10,9 +10,10 @@ import {
   type PropsWithChildren,
   forwardRef,
 } from 'react'
-import { isNumber, isTruthy } from 'remeda'
+import { isTruthy } from 'remeda'
 import type { MergeExclusive } from 'type-fest'
 import { IconRenderer } from '../../context/IconRenderer'
+import { useLikeC4Styles } from '../../hooks/useLikeC4Styles'
 import { Markdown } from '../Markdown'
 
 type RequiredData = {
@@ -25,25 +26,71 @@ type RequiredData = {
   icon?: string | null
 }
 
-type ElementDataProps = {
+export type ElementDataProps = {
   data: RequiredData
-  iconSize?: number
 }
 
-const Root = forwardRef<HTMLDivElement, DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>>((
-  { className, ...props },
+type RootProps = HTMLAttributes<HTMLDivElement> & ElementDataProps
+
+/**
+ * Resolve the icon color based on the node's style and color.
+ *
+ * If the node's style icon color is not defined, returns undefined.
+ * If the node's style icon color is the same as the node's color, returns the stroke color.
+ * Otherwise, returns the fill color.
+ */
+const resolveIconColor = (styles: LikeC4Styles, data: RequiredData): ColorLiteral | undefined => {
+  const iconColor = data.style.iconColor
+  if (!iconColor) {
+    return undefined
+  }
+  const colors = styles.colors(iconColor).elements
+  return iconColor === data.color ? colors.stroke : colors.fill
+}
+
+const Root = forwardRef<
+  HTMLDivElement,
+  RootProps
+>((
+  {
+    className,
+    style,
+    data,
+    ...props
+  },
   ref,
-) => (
-  <div
-    {...props}
-    ref={ref}
-    className={cx(
-      className,
-      elementNodeData(),
-      'likec4-element',
-    )}
-  />
-))
+) => {
+  const styles = useLikeC4Styles()
+  const iconSize = data.style.iconSize
+    ? styles.nodeSizes(data.style).values.iconSize
+    : undefined
+  const resolvedIconColor = resolveIconColor(styles, data)
+  return (
+    <div
+      {...props}
+      ref={ref}
+      className={cx(
+        className,
+        elementNodeData({
+          iconPosition: data.style.iconPosition,
+          withIconColor: !!resolvedIconColor,
+        }),
+        'likec4-element',
+      )}
+      style={{
+        ...style,
+        ...(iconSize && {
+          // @ts-ignore
+          '--likec4-icon-size': `${iconSize}px`,
+        }),
+        ...(resolvedIconColor && {
+          // @ts-ignore
+          '--likec4-icon-color': resolvedIconColor,
+        }),
+      }}
+    />
+  )
+})
 
 type IconProps = {
   data: {
@@ -75,28 +122,25 @@ type SlotProps = {
   data: RequiredData
   className?: string
   style?: CSSProperties
+  [key: `data-${string}`]: string
 }
 
 const Title = forwardRef<HTMLDivElement, SlotProps>((
-  { data: { title, style }, className, ...props },
+  { data: { title }, className, ...props },
   ref,
 ) => {
-  const { size } = ensureSizes(style)
-  const isSm = size === 'sm' || size === 'xs'
   return (
-    <Text
-      component="div"
+    <div
       {...props}
       className={cx(
         className,
         'likec4-element-title',
       )}
       data-likec4-node-title=""
-      lineClamp={isSm ? 2 : 3}
       ref={ref}
     >
       {title}
-    </Text>
+    </div>
   )
 })
 
@@ -107,8 +151,7 @@ const Technology = forwardRef<HTMLDivElement, MergeExclusive<SlotProps, PropsWit
   const text = data?.technology ?? children
   return isTruthy(text)
     ? (
-      <Text
-        component="div"
+      <div
         {...props}
         className={cx(
           className,
@@ -118,7 +161,7 @@ const Technology = forwardRef<HTMLDivElement, MergeExclusive<SlotProps, PropsWit
         ref={ref}
       >
         {text}
-      </Text>
+      </div>
     )
     : null
 })
@@ -127,24 +170,19 @@ const Description = forwardRef<
   HTMLDivElement,
   SlotProps
 >((
-  { data: { description, style }, className, ...props },
+  { data: { description }, className, ...props },
   ref,
 ) => {
   if (!description) {
     return null
   }
   const desc = RichText.from(description)
-  const { size } = ensureSizes(style)
-  const isSm = size === 'sm' || size === 'xs'
   return (
     <Markdown
       {...props}
       className={cx(
         className,
         'likec4-element-description',
-        css({
-          lineClamp: isSm ? 3 : 5,
-        }),
       )}
       data-likec4-node-description=""
       value={desc}
@@ -168,26 +206,19 @@ const Description = forwardRef<
  * ```
  * or
  * ```tsx
- * <ElementData.Root>
+ * <ElementData.Root {...nodeProps} >
  *   <ElementData.Icon {...nodeProps} />
- *   <ElementData.Root>
+ *   <ElementData.Content>
  *     <ElementData.Title {...nodeProps} />
  *     <ElementData.Technology {...nodeProps} />
  *     <ElementData.Description {...nodeProps} />
- *   </ElementData.Root>
+ *   </ElementData.Content>
  * </ElementData.Root>
  * ```
  */
-export function ElementData({ iconSize, data }: ElementDataProps) {
+export function ElementData({ data }: ElementDataProps) {
   return (
-    <Root
-      style={isNumber(iconSize)
-        ? {
-          // @ts-ignore
-          ['--likec4-icon-size']: `${iconSize}px`,
-        }
-        : undefined}
-    >
+    <Root data={data}>
       <Icon data={data} />
       <Content>
         <Title data={data} />

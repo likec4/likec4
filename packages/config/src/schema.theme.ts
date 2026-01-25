@@ -1,24 +1,30 @@
+// oxlint-disable no-unsafe-type-assertion
+import type {
+  ColorLiteral,
+  ElementColorValues,
+  RelationshipColorValues,
+  ThemeColorValues,
+} from '@likec4/core/styles'
 import {
-  type ColorLiteral,
-  type ElementColorValues,
-  type RelationshipColorValues,
-  type ThemeColor,
-  type ThemeColorValues,
   BorderStyles,
   computeColorValues,
   ElementShapes,
+  IconPositions,
   RelationshipArrowTypes,
   Sizes,
   ThemeColors,
 } from '@likec4/core/styles'
-import {
-  type LikeC4ProjectStyleDefaults,
-  type LikeC4ProjectStylesConfig,
-  type LikeC4ProjectTheme,
-  exact,
+import type {
+  CustomColor,
+  LikeC4ProjectStyleDefaults,
+  LikeC4ProjectStylesConfig,
+  LikeC4ProjectStylesCustomStylesheets,
+  LikeC4ProjectTheme,
+  ThemeColor,
 } from '@likec4/core/types'
+import { exact } from '@likec4/core/types'
 import { fromKeys } from 'remeda'
-import * as z from 'zod'
+import z from 'zod/v4'
 
 const opacity = z
   .int()
@@ -41,6 +47,10 @@ const size = z
   .literal(Sizes)
   .meta({ id: 'ElementSize' })
 
+const iconPosition = z
+  .literal(IconPositions)
+  .meta({ id: 'IconPosition' })
+
 const arrow = z
   .literal(RelationshipArrowTypes)
   .meta({ id: 'ArrowType' })
@@ -53,10 +63,19 @@ const themeColor = z
   .literal(ThemeColors)
   .meta({ id: 'ThemeColor' })
 
+const customColor = z
+  .string()
+  .min(1, 'Custom color name cannot be empty')
+  .transform(value => value as unknown as CustomColor)
+  .meta({ id: 'CustomColorName' })
+
+// type ColorNameLiteral = ThemeColor | string & Record<never, never>
+
 const color = z
+  // .custom<ColorNameLiteral>(v => typeof v === 'string')
   .union([
     themeColor,
-    z.string().min(1, 'Color name cannot be empty'),
+    customColor,
   ])
   .transform(value => value as ThemeColor)
   .meta({ id: 'ColorName' })
@@ -90,35 +109,40 @@ const RelationshipColorValuesSchema = z
     label: colorSchema.meta({ description: 'Label text color' }),
     labelBg: colorSchema
       .optional()
-      .default('rgba(0, 0, 0, 0)')
+      .default('rgba(0, 0, 0, 0.5)')
       .meta({ description: 'Label background color' }),
   })
   .meta({ id: 'RelationshipColorValues' })
   .transform(value => value as RelationshipColorValues)
 
+const StrictThemeColorValuesSchema = z.strictObject({
+  elements: z
+    .union([colorSchema, ElementColorValuesSchema])
+    .meta({ description: 'Element color value (or a breakdown of specific color values)' })
+    .transform((value): ElementColorValues => {
+      if (typeof value === 'string') {
+        return computeColorValues(value).elements
+      }
+      return value
+    }),
+  relationships: z
+    .union([colorSchema, RelationshipColorValuesSchema])
+    .meta({
+      description: 'Relationship color value (or a breakdown of specific color values)',
+    })
+    .transform((value): RelationshipColorValues => {
+      if (typeof value === 'string') {
+        return computeColorValues(value).relationships
+      }
+      return value
+    }),
+})
+  .meta({ id: 'StrictThemeColorValues' })
+
 export const ThemeColorValuesSchema = z
   .union([
     colorSchema,
-    z.strictObject({
-      elements: z
-        .union([colorSchema, ElementColorValuesSchema])
-        .meta({ description: 'Element color value (or a breakdown of specific color values)' })
-        .transform((value): ElementColorValues => {
-          if (typeof value === 'string') {
-            return computeColorValues(value).elements
-          }
-          return value
-        }),
-      relationships: z
-        .union([colorSchema, RelationshipColorValuesSchema])
-        .meta({ description: 'Relationship color value (or a breakdown of specific color values)' })
-        .transform((value): RelationshipColorValues => {
-          if (typeof value === 'string') {
-            return computeColorValues(value).relationships
-          }
-          return value
-        }),
-    }),
+    StrictThemeColorValuesSchema,
   ])
   .meta({
     id: 'ThemeColorValues',
@@ -132,18 +156,12 @@ export const ThemeColorValuesSchema = z
   })
 export type ThemeColorValuesInput = z.input<typeof ThemeColorValuesSchema>
 
-const ThemeColorsSchema = z.union([
-  z.record(
-    color,
-    ThemeColorValuesSchema,
-  ),
-  z.object(
-    fromKeys(ThemeColors, () => ThemeColorValuesSchema.optional()),
-  ),
-]).meta({
-  id: 'ThemeColors',
-  description: 'Override theme colors',
-})
+const ThemeColorsSchema = z.record(color, ThemeColorValuesSchema)
+  .meta({
+    id: 'ThemeColors',
+    description: 'Override theme colors',
+  })
+  .transform(value => value as Record<ThemeColor, ThemeColorValues>)
 
 const DimensionsSchema = z.strictObject({
   width: z.number().min(50),
@@ -220,6 +238,7 @@ const LikeC4Config_Styles_Defaults = z
     }),
     size: size.optional().meta({ description: 'Default size for elements' }),
     shape: shape.optional().meta({ description: 'Default shape for elements' }),
+    iconPosition: iconPosition.optional().meta({ description: 'Default icon position for elements' }),
     group: LikeC4Config_Styles_Defaults_Group.optional().meta({ description: 'Default style values for groups' }),
     relationship: LikeC4Config_Styles_Defaults_Relationship.optional().meta({
       description: 'Default style values for relationships',
@@ -231,21 +250,32 @@ const LikeC4Config_Styles_Defaults = z
       'Override default values for style properties\nThese values will be used if such property is not defined',
   })
 
+const LikeC4Config_Styles_CustomStylesheets = z
+  .union([
+    z.string().min(1, 'Custom CSS file path cannot be empty'),
+    z.array(
+      z.string().min(1, 'Custom CSS file path cannot be empty'),
+    ),
+  ])
+  .meta({
+    id: 'CustomStylesheets',
+    description: 'Custom CSS (or list of CSS files) to be included in the generated diagrams',
+  })
+
 export const LikeC4StylesConfigSchema = z
   .strictObject({
     theme: LikeC4Config_Styles_Theme.optional(),
     defaults: LikeC4Config_Styles_Defaults.optional(),
-    // customCss: z
-    //   .array(z.string())
-    //   .meta({ description: 'List of custom CSS files' }),
+    customCss: LikeC4Config_Styles_CustomStylesheets.optional(),
   })
   .meta({
     id: 'StylesConfiguration',
     description: 'Project styles customization',
   })
-  .transform(({ theme, defaults }): LikeC4ProjectStylesConfig =>
+  .transform(({ theme, defaults, customCss }): LikeC4ProjectStylesConfig =>
     exact({
       defaults: normalizeDefaults(defaults),
+      customCss: normalizeStylesheets(customCss),
       theme,
     })
   )
@@ -262,7 +292,24 @@ function normalizeDefaults(
   const { relationship, group, ...rest } = defaults
   return exact({
     ...rest,
-    relationship: relationship && exact(relationship) as LikeC4ProjectStyleDefaults['relationship'],
-    group: group && exact(group) as LikeC4ProjectStyleDefaults['group'],
+    relationship: relationship && exact(relationship) satisfies LikeC4ProjectStyleDefaults['relationship'],
+    group: group && exact(group) satisfies LikeC4ProjectStyleDefaults['group'],
   })
+}
+
+function normalizeStylesheets(
+  stylesheets?: z.infer<typeof LikeC4Config_Styles_CustomStylesheets>,
+): LikeC4ProjectStylesCustomStylesheets | undefined {
+  if (!stylesheets) {
+    return undefined
+  }
+  const paths = (Array.isArray(stylesheets) ? stylesheets : [stylesheets]).filter(Boolean)
+  if (paths.length === 0) {
+    return undefined
+  }
+
+  return {
+    paths,
+    content: '',
+  }
 }

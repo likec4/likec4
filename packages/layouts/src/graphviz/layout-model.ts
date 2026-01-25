@@ -1,5 +1,5 @@
 import { LikeC4Model } from '@likec4/core/model'
-import type { aux } from '@likec4/core/types'
+import type { Any } from '@likec4/core/types'
 import { _stage } from '@likec4/core/types'
 import { invariant } from '@likec4/core/utils'
 import { mapToObj } from 'remeda'
@@ -11,7 +11,7 @@ import { QueueGraphvizLayoter } from './QueueGraphvizLayoter'
  * @param options - Options for th2 layouter.
  * @returns A promise that resolves to the layouted model.
  */
-export async function layoutLikeC4Model<A extends aux.Any>(
+export async function layoutLikeC4Model<A extends Any>(
   model: LikeC4Model<A>,
   options?: ConstructorParameters<typeof QueueGraphvizLayoter>[0],
 ): Promise<LikeC4Model.Layouted<A>> {

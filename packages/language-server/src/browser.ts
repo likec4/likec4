@@ -1,14 +1,18 @@
 import { configureLogger, getConsoleSink, getTextFormatter } from '@likec4/log'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser'
-import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
+import type { LikeC4Services, LikeC4SharedServices } from './module'
+import { createLanguageServices } from './module'
 
-export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
+export type * from './common-exports'
 
-export type { LikeC4LanguageServices } from './LikeC4LanguageServices'
-export { createLanguageServices } from './module'
-export type { LikeC4Services, LikeC4SharedServices } from './module'
-export type { LikeC4Views } from './views'
+export {
+  createLanguageServices,
+  NoFileSystem,
+  NoFileSystemWatcher,
+  NoLikeC4ManualLayouts,
+  NoMCPServer,
+} from './common-exports'
 
 export function startLanguageServer(port: MessagePort | DedicatedWorkerGlobalScope): {
   shared: LikeC4SharedServices

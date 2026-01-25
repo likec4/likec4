@@ -10,8 +10,7 @@
     "dist",
     "src",
     "**/package.json",
-    "!**/__fixtures__/*",
-    "!**/__snapshots__/*",
+    "!**/__*/**",
     "!**/*.spec.*",
     "!**/*.snap",
     "!**/*.map"
@@ -27,37 +26,37 @@
     ".": {
       "sources": "./src/index.ts",
       "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
       }
     },
     "./sequence": {
       "sources": "./src/sequence/index.ts",
       "default": {
-        "types": "./dist/sequence/index.d.ts",
-        "import": "./dist/sequence/index.js",
-        "default": "./dist/sequence/index.js"
+        "types": "./dist/sequence/index.d.mts",
+        "import": "./dist/sequence/index.mjs",
+        "default": "./dist/sequence/index.mjs"
       }
     },
     "./graphviz/binary": {
       "sources": "./src/graphviz/binary/index.ts",
       "default": {
-        "types": "./dist/graphviz/binary/index.d.ts",
-        "import": "./dist/graphviz/binary/index.js",
-        "default": "./dist/graphviz/binary/index.js"
+        "types": "./dist/graphviz/binary/index.d.mts",
+        "import": "./dist/graphviz/binary/index.mjs",
+        "default": "./dist/graphviz/binary/index.mjs"
       }
     }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "dist/index.d.ts",
-    "module": "dist/index.js"
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
+    "build": "obuild",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
@@ -68,22 +67,22 @@
     "postpack": "cp likec4-layouts-$npm_package_version.tgz package.tgz || true"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils",
+    "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
-    "@lume/kiwi": "catalog:utils",
-    "fast-equals": "catalog:utils",
-    "indent-string": "catalog:utils",
-    "khroma": "catalog:utils",
-    "nano-spawn": "catalog:utils",
+    "nano-spawn": "catalog:externals",
+    "type-fest": "catalog:externals",
     "p-limit": "catalog:utils",
     "p-queue": "catalog:utils",
     "remeda": "catalog:utils",
+    "word-wrap": "^1.2.5",
+    "indent-string": "catalog:utils",
+    "khroma": "catalog:utils",
     "strip-indent": "catalog:utils",
+    "fast-equals": "catalog:utils",
     "ts-graphviz": "^1.8.2",
-    "type-fest": "catalog:utils",
-    "which": "^5.0.0",
-    "word-wrap": "^1.2.5"
+    "@lume/kiwi": "catalog:utils",
+    "which": "^5.0.0"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
@@ -92,7 +91,7 @@
     "@types/which": "^3.0.4",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "vitest": "catalog:vitest"
   }
 }

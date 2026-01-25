@@ -44,6 +44,8 @@ export const NavigationPanelControls = memo(() => {
   const {
     enableNavigationButtons,
     enableDynamicViewWalkthrough,
+    enableCompareWithLatest,
+    enableSearch,
   } = useEnabledFeatures()
   const {
     folders,
@@ -140,7 +142,7 @@ export const NavigationPanelControls = memo(() => {
         <ToggleReadonly />
       </m.div>
       {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
-      <SearchControl key="search-control" />
+      {enableSearch && !enableCompareWithLatest && <SearchControl key="search-control" />}
       <LayoutWarning key="outdated-manual-layout-warning" />
     </AnimatePresence>
   )

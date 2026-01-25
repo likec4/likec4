@@ -1,14 +1,13 @@
 import { Box, Button, Group, Notification, ScrollAreaAutosize, Stack, Text } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import { QueryErrorResetBoundary, useQueryErrorResetBoundary } from '@tanstack/react-query'
+import { QueryErrorResetBoundary } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
 import { stateAlert } from './App.css'
 import { ExtensionApi as extensionApi } from './vscode'
 
-export const ErrorMessage = ({ error }: { error: Error | string | null }) => {
-  const { reset } = useQueryErrorResetBoundary()
-  return <Fallback error={error} resetErrorBoundary={reset} />
+export const ErrorMessage = ({ error, onReset }: { error: Error | string | null; onReset?: () => void }) => {
+  return <Fallback error={error} resetErrorBoundary={onReset ?? extensionApi.closeMe} />
 }
 
 const Fallback = ({ error, resetErrorBoundary }: FallbackProps) => {

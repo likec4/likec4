@@ -2,8 +2,8 @@ import { css } from '@likec4/styles/css'
 
 export const toolbarTitle = css({
   color: 'mantine.colors.dimmed',
-  fontSize: '10px',
-  fontWeight: 600,
+  fontSize: 'xxs',
+  fontWeight: 'bold',
   maxWidth: '220px',
   cursor: 'default',
   userSelect: 'all',

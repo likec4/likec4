@@ -193,13 +193,15 @@ function ElementsTree({
         subtree: styles.treeSubtree,
       }}
       onKeyDownCapture={onKeyDownCapture}
-      renderNode={ElementTreeNode}
+      renderNode={p => <ElementTreeNode {...p} handleClick={handleClick} />}
     />
   )
 }
 
 function ElementTreeNode(
-  { node, elementProps, hasChildren, expanded }: RenderTreeNodePayload,
+  { node, elementProps, hasChildren, expanded, handleClick }: RenderTreeNodePayload & {
+    handleClick: (element: LikeC4Model.Element) => void
+  },
 ) {
   const { element, searchTerms } = node as LikeC4ModelTreeNodeData
   const elementIcon = IconOrShapeRenderer({
@@ -212,8 +214,6 @@ function ElementTreeNode(
     className: cx(btn.icon, styles.elementIcon),
   })
   const views = [...element.views()]
-
-  const handleClick = useHandleElementSelection()
 
   const key = `@tree.${node.value}`
 

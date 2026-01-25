@@ -3,7 +3,7 @@ import { ThemeColors } from '@likec4/core/styles'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
-describe.concurrent('LikeC4ModelBuilder - Custom Colors', () => {
+describe('LikeC4ModelBuilder - Custom Colors', () => {
   it('parses custom color definitions', async ({ expect }) => {
     const { validate, buildModel, buildLikeC4Model } = createTestServices()
     const { errors, warnings } = await validate(`

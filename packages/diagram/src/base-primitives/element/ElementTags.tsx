@@ -1,16 +1,16 @@
-import { isTagColorSpecified } from '@likec4/core'
+import { type NonEmptyReadonlyArray, isTagColorSpecified } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
 import { likec4tag } from '@likec4/styles/recipes'
 import { useDebouncedState, useHover } from '@mantine/hooks'
-import { NodeToolbar, Position } from '@xyflow/react'
+import { NodeToolbar, Position, useStore } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { type ComponentPropsWithoutRef, forwardRef, memo, useCallback, useEffect } from 'react'
+import { hasAtLeast } from 'remeda'
 import type { BaseNodePropsWithData } from '../../base/types'
 import { useTagSpecification } from '../../context/TagStylesContext'
-import { useDiagram } from '../../hooks/useDiagram'
-import { useCurrentZoom } from '../../hooks/useXYFlow'
+import { useCurrentZoomAtLeast } from '../../hooks/useXYFlow'
 import { stopPropagation } from '../../utils/xyflow'
 
 export type ElementTagProps = {
@@ -48,16 +48,59 @@ type Data = {
   tags: readonly string[] | null | undefined
   width: number
 }
-type ElementTagsProps = BaseNodePropsWithData<Data>
+export type ElementTagsProps = BaseNodePropsWithData<Data> & {
+  onTagClick?: (tag: `#${string}`) => void
+  onTagMouseEnter?: (tag: `#${string}`) => void
+  onTagMouseLeave?: (tag: `#${string}`) => void
+}
 
 const propsAreEqual = (prev: ElementTagsProps, next: ElementTagsProps) => {
   return (
+    prev.id === next.id &&
     prev.data.width === next.data.width &&
-    deepEqual(prev.data.tags, next.data.tags) &&
-    (prev.data.hovered ?? false) === (next.data.hovered ?? false)
+    (prev.data.hovered ?? false) === (next.data.hovered ?? false) &&
+    deepEqual(prev.data.tags, next.data.tags)
   )
 }
-export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }: ElementTagsProps) => {
+export const ElementTags = memo(
+  ({ id, data: { tags, width, hovered = false }, onTagClick, onTagMouseEnter, onTagMouseLeave }: ElementTagsProps) => {
+    if (!tags || !hasAtLeast(tags, 1)) {
+      return null
+    }
+
+    return (
+      <WithElementTags
+        id={id}
+        tags={tags}
+        width={width}
+        hovered={hovered}
+        onTagClick={onTagClick}
+        onTagMouseEnter={onTagMouseEnter}
+        onTagMouseLeave={onTagMouseLeave}
+      />
+    )
+  },
+  propsAreEqual,
+)
+ElementTags.displayName = 'ElementTags'
+
+function WithElementTags({
+  id,
+  tags,
+  width,
+  hovered,
+  onTagClick,
+  onTagMouseEnter,
+  onTagMouseLeave,
+}: {
+  id: string
+  tags: NonEmptyReadonlyArray<string>
+  width: number
+  hovered: boolean
+  onTagClick?: ((tag: `#${string}`) => void) | undefined
+  onTagMouseEnter?: ((tag: `#${string}`) => void) | undefined
+  onTagMouseLeave?: ((tag: `#${string}`) => void) | undefined
+}) {
   const {
     hovered: isTagsBarHovered,
     ref: tagsBarRef,
@@ -78,23 +121,14 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
     })
   }, [isTagsBarHovered, isTagsToolbarHovered, hovered])
 
-  const zoom = useCurrentZoom()
-  const zoomIsLargeEnough = zoom > 1.2
+  const zoomIsLargeEnough = useCurrentZoomAtLeast(1.2)
 
-  const diagram = useDiagram()
-
-  const onHover = (tag: string) => {
-    diagram.send({ type: 'tag.highlight', tag })
-  }
-
-  const onLeave = useCallback(() => {
-    diagram.send({ type: 'tag.unhighlight' })
-  }, [])
-
-  if (!tags || tags.length === 0) {
-    return null
-  }
-  const maxWidth = Math.max(Math.round(width * zoom) - 10, 200)
+  const maxWidth = useStore(
+    useCallback(
+      state => Math.max(Math.round(width * state.transform[2]) - 10, 200),
+      [Math.round(width)],
+    ),
+  )
 
   return (
     <>
@@ -136,11 +170,11 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              maxWidth: 50,
-              height: 5,
+              maxWidth: '50px',
+              height: '5px',
               _whenHovered: {
-                height: 12,
-                borderRadius: 4,
+                height: '12px',
+                borderRadius: 'sm',
                 transitionDelay: '.08s',
               },
               transition: 'fast',
@@ -158,6 +192,8 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
             pb: 'sm',
             translate: 'auto',
             x: '[-8px]',
+          }}
+          style={{
             maxWidth,
           }}
         >
@@ -170,21 +206,26 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
                 userSelect: 'none',
                 ...(zoomIsLargeEnough && {
                   fontSize: 'lg',
-                  borderRadius: '[4px]',
+                  borderRadius: 'sm',
                   px: '1.5', // 6px
                 }),
               })}
-              onClick={e => {
-                e.stopPropagation()
-                diagram.openSearch(`#${tag}`)
-              }}
-              onMouseEnter={() => onHover(tag)}
-              onMouseLeave={onLeave}
+              onClick={onTagClick
+                ? ((e) => {
+                  e.stopPropagation()
+                  onTagClick(`#${tag}`)
+                })
+                : undefined}
+              onMouseEnter={onTagMouseEnter
+                ? () => onTagMouseEnter(`#${tag}`)
+                : undefined}
+              onMouseLeave={onTagMouseLeave
+                ? () => onTagMouseLeave(`#${tag}`)
+                : undefined}
             />
           ))}
         </HStack>
       </NodeToolbar>
     </>
   )
-}, propsAreEqual)
-ElementTags.displayName = 'ElementTags'
+}

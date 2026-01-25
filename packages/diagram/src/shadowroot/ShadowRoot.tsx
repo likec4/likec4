@@ -1,12 +1,13 @@
-import { type MantineThemeOverride, MantineProvider } from '@mantine/core'
+import type { MantineThemeOverride } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
-import { type HTMLAttributes, forwardRef, useCallback, useRef } from 'react'
+import { type HTMLAttributes, forwardRef, memo, useRef, useState } from 'react'
 import root from 'react-shadow'
 import { isDefined } from 'remeda'
+import { DefaultMantineProvider } from '../context/DefaultMantineProvider'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useId } from '../hooks/useId'
-import { DefaultTheme, useBundledStyleSheet, useColorScheme } from './styles.css'
+import { useBundledStyleSheet, useColorScheme } from './styles.css'
 
 const Root = root['div']!
 
@@ -71,7 +72,7 @@ function useShadowRootStyle(
 export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
   {
     children,
-    theme = DefaultTheme,
+    theme,
     injectFontCss = true,
     styleNonce,
     colorScheme: explicitColorScheme,
@@ -85,7 +86,7 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
   const cssstyle = useShadowRootStyle(id, keepAspectRatio)
   const rootRef = useRef<HTMLDivElement>(null)
   const styleSheets = useBundledStyleSheet(injectFontCss, styleNonce)
-  const getRootElement = useCallback(() => rootRef.current ?? undefined, [rootRef])
+  const getRootElement = useCallbackRef(() => rootRef.current ?? undefined)
 
   const getStyleNonce = useCallbackRef(() => {
     if (isDefined(styleNonce)) {
@@ -97,35 +98,46 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
     }
     return ''
   })
-  let nonce = isDefined(styleNonce) ? getStyleNonce() : undefined
+  const [nonce] = useState(getStyleNonce)
 
   return (
     <>
-      <style
-        type="text/css"
-        nonce={nonce}
-        dangerouslySetInnerHTML={{ __html: cssstyle }}
-      />
+      <MemoizedStyle nonce={nonce} cssstyle={cssstyle} />
       <Root ssr={false} {...props} styleSheets={styleSheets} data-likec4-instance={id}>
         <div
           ref={useMergedRef(rootRef, ref)}
           data-mantine-color-scheme={colorScheme}
           className={'likec4-shadow-root'}
         >
-          <MantineProvider
-            {...(explicitColorScheme && { forceColorScheme: explicitColorScheme })}
+          <DefaultMantineProvider
             defaultColorScheme={colorScheme}
             getRootElement={getRootElement}
-            {...!!nonce && { getStyleNonce }}
             cssVariablesSelector={'.likec4-shadow-root'}
-            theme={theme}>
+            getStyleNonce={getStyleNonce}
+            {...(explicitColorScheme && { forceColorScheme: explicitColorScheme })}
+            {...theme && { theme }}>
             <FramerMotionConfig>
               {children}
             </FramerMotionConfig>
-          </MantineProvider>
+          </DefaultMantineProvider>
         </div>
       </Root>
     </>
   )
 })
-ShadowRoot.displayName = 'ShadowRoot'
+
+/**
+ * @internal Memoized styles gives a performance boost during development
+ */
+const MemoizedStyle = memo<{
+  nonce: string | undefined
+  cssstyle: string
+}>((
+  { nonce, cssstyle },
+) => (
+  <style
+    type="text/css"
+    nonce={nonce}
+    dangerouslySetInnerHTML={{ __html: cssstyle }} />
+))
+MemoizedStyle.displayName = 'MemoizedStyle'

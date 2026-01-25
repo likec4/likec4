@@ -151,13 +151,13 @@ function activateTelemetry(telemetry: TelemetryReporter, onCleanup: OnCleanup) {
   // send first telemetry in 2 minutes
   const timeout = setTimeout(() => sendTelemetryMetrics(), 2 * Minute)
 
-  // send telemetry every 1 hour
+  // send telemetry every 30 minutes
   const interval = setInterval(() => {
     void sendTelemetryMetrics()
-  }, 60 * Minute)
+  }, 30 * Minute)
 
   onCleanup(() => {
-    logger.info(`turn off telemetry`)
+    output.info(`turn off telemetry`)
     clearInterval(interval)
     clearTimeout(timeout)
   })

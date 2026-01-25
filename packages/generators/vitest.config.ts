@@ -6,6 +6,7 @@ export default defineProject({
     conditions: ['sources'],
     alias: {
       '@likec4/core': resolve(__dirname, '../core/src'),
+      '@likec4/log': resolve(__dirname, '../log/src'),
     },
   },
   test: {

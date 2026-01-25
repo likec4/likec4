@@ -16,7 +16,7 @@ const SectionHeader = styled('div', {
   base: {
     fontSize: 'xs',
     color: 'mantine.colors.dimmed',
-    fontWeight: 500,
+    fontWeight: 'medium',
     userSelect: 'none',
     mb: 'xxs',
   },

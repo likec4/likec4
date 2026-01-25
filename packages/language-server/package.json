@@ -32,55 +32,82 @@
   "exports": {
     ".": {
       "sources": "./src/index.ts",
+      "browser": {
+        "sources": "./src/browser.ts",
+        "default": {
+          "types": "./dist/browser.d.mts",
+          "import": "./dist/browser.mjs",
+          "default": "./dist/browser.mjs"
+        }
+      },
+      "node": {
+        "sources": "./src/index.ts",
+        "default": {
+          "types": "./dist/index.d.mts",
+          "import": "./dist/index.mjs",
+          "default": "./dist/index.mjs"
+        }
+      },
       "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./bundled": {
+      "sources": "./src/bundled.ts",
+      "default": {
+        "types": "./dist/bundled.d.mts",
+        "import": "./dist/bundled.mjs",
+        "default": "./dist/bundled.mjs"
       }
     },
     "./likec4lib": {
       "sources": "./src/likec4lib.ts",
       "default": {
-        "types": "./dist/likec4lib.d.ts",
-        "import": "./dist/likec4lib.js",
-        "default": "./dist/likec4lib.js"
+        "types": "./dist/likec4lib.d.mts",
+        "import": "./dist/likec4lib.mjs",
+        "default": "./dist/likec4lib.mjs"
       }
     },
     "./browser-worker": {
       "sources": "./src/browser-worker.ts",
       "default": {
-        "types": "./dist/browser-worker.d.ts",
-        "import": "./dist/browser-worker.js",
-        "default": "./dist/browser-worker.js"
+        "types": "./dist/browser-worker.d.mts",
+        "import": "./dist/browser-worker.mjs",
+        "default": "./dist/browser-worker.mjs"
       }
     },
     "./browser": {
       "sources": "./src/browser.ts",
       "default": {
-        "types": "./dist/browser.d.ts",
-        "import": "./dist/browser.js",
-        "default": "./dist/browser.js"
+        "types": "./dist/browser.d.mts",
+        "import": "./dist/browser.mjs",
+        "default": "./dist/browser.mjs"
       }
     },
     "./protocol": {
       "sources": "./src/protocol.ts",
       "default": {
-        "types": "./dist/protocol.d.ts",
-        "import": "./dist/protocol.js",
-        "default": "./dist/protocol.js"
+        "types": "./dist/protocol.d.mts",
+        "import": "./dist/protocol.mjs",
+        "default": "./dist/protocol.mjs"
       }
     },
-    "./bundled": "./dist/bundled.mjs"
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "dist/index.d.ts",
-    "module": "dist/index.js"
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs",
+    "browser": {
+      "dist/index.mjs": "dist/browser.mjs"
+    }
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
+    "build": "obuild",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-language-server-$npm_package_version.tgz package.tgz || true",
@@ -99,62 +126,78 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils",
-    "bundle-require": "catalog:utils",
-    "esbuild": "catalog:esbuild"
-  },
-  "devDependencies": {
-    "@hono/node-server": "catalog:hono",
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
-    "@likec4/devops": "workspace:*",
-    "@likec4/icons": "workspace:*",
-    "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
-    "@modelcontextprotocol/sdk": "catalog:mcp",
-    "@msgpack/msgpack": "^3.1.2",
+    "@likec4/layouts": "workspace:*",
+    "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@smithy/util-base64": "^4.3.0",
-    "@types/natural-compare-lite": "catalog:utils",
-    "@types/node": "catalog:",
-    "@types/picomatch": "catalog:utils",
-    "@types/vscode": "catalog:vscode",
-    "@types/which": "^3.0.4",
-    "chokidar": "catalog:utils",
-    "defu": "catalog:utils",
-    "esm-env": "catalog:utils",
-    "fast-equals": "catalog:utils",
-    "fdir": "catalog:utils",
-    "hono": "catalog:hono",
-    "immer": "catalog:utils",
-    "indent-string": "^5.0.0",
-    "json5": "catalog:utils",
-    "langium": "catalog:langium",
-    "langium-cli": "catalog:langium",
-    "nano-spawn": "catalog:utils",
+    "fdir": "catalog:externals",
+    "which": "^5.0.0",
+    "type-fest": "catalog:externals",
+    "chokidar": "catalog:externals",
+    "nano-spawn": "catalog:externals",
     "nanoid": "catalog:utils",
-    "natural-compare-lite": "catalog:utils",
-    "oxlint": "catalog:",
-    "p-debounce": "catalog:utils",
-    "p-queue": "catalog:utils",
-    "p-timeout": "catalog:utils",
-    "picomatch": "catalog:utils",
-    "pretty-ms": "^9.3.0",
-    "remeda": "catalog:utils",
-    "strip-indent": "catalog:utils",
-    "tsx": "catalog:",
-    "turbo": "catalog:",
-    "type-fest": "catalog:utils",
-    "typescript": "catalog:",
-    "ufo": "catalog:utils",
-    "unbuild": "catalog:",
-    "vitest": "catalog:vitest",
+    "zod": "catalog:externals",
+    "defu": "catalog:utils",
+    "std-env": "catalog:externals",
+    "langium": "catalog:langium",
+    "immer": "catalog:utils",
+    "json5": "catalog:utils",
     "vscode-jsonrpc": "catalog:vscode",
-    "vscode-languageserver": "catalog:vscode",
+    "vscode-uri": "catalog:vscode",
+    "vscode-languageserver-textdocument": "catalog:vscode",
     "vscode-languageserver-protocol": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode",
-    "vscode-uri": "catalog:vscode",
-    "which": "^5.0.0",
-    "zod": "catalog:utils"
+    "vscode-languageserver": "catalog:vscode"
+  },
+  "peerDependencies": {
+    "esbuild": "catalog:esbuild",
+    "bundle-require": "catalog:externals",
+    "@modelcontextprotocol/sdk": "catalog:mcp"
+  },
+  "peerDependenciesMeta": {
+    "esbuild": {
+      "optional": true
+    },
+    "bundle-require": {
+      "optional": true
+    },
+    "@modelcontextprotocol/sdk": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "remeda": "catalog:utils",
+    "p-queue": "catalog:utils",
+    "p-debounce": "catalog:utils",
+    "p-timeout": "catalog:utils",
+    "@msgpack/msgpack": "^3.1.2",
+    "ufo": "catalog:utils",
+    "pretty-ms": "^9.3.0",
+    "hono": "catalog:hono",
+    "@hono/node-server": "catalog:hono",
+    "fast-equals": "catalog:utils",
+    "strip-indent": "catalog:utils",
+    "indent-string": "^5.0.0",
+    "bundle-require": "catalog:externals",
+    "esbuild": "catalog:esbuild",
+    "@likec4/devops": "workspace:*",
+    "@likec4/icons": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@types/natural-compare-lite": "catalog:utils",
+    "@modelcontextprotocol/sdk": "catalog:mcp",
+    "@types/node": "catalog:",
+    "@types/picomatch": "catalog:externals",
+    "picomatch": "catalog:externals",
+    "@types/vscode": "catalog:vscode",
+    "@types/which": "^3.0.4",
+    "langium-cli": "catalog:langium",
+    "oxlint": "catalog:",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "obuild": "catalog:obuild",
+    "vitest": "catalog:vitest"
   }
 }

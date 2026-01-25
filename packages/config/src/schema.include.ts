@@ -1,4 +1,4 @@
-import * as z from 'zod'
+import z from 'zod/v4'
 
 // Relative path (no leading slash, drive letter, or protocol)
 // eslint-disable-next-line no-useless-escape
@@ -13,7 +13,7 @@ const IncludePathValue = z
     'Include path must be a relative path (no leading slash, drive letter, or protocol)',
   )
 
-export const IncludeConfigSchema = z.object({
+export const IncludeConfigSchema = z.strictObject({
   paths: z.array(IncludePathValue)
     .min(1, 'Include paths cannot be empty')
     .meta({
@@ -72,7 +72,7 @@ export function normalizeIncludeConfig(include?: LikeC4IncludeConfig): IncludeCo
   return include
 }
 
-export function validateIncludePaths(include?: LikeC4IncludeConfig) {
+export function validateIncludePaths(include?: LikeC4IncludeConfig): void {
   if (!include?.paths) {
     return
   }
@@ -85,7 +85,7 @@ export function validateIncludePaths(include?: LikeC4IncludeConfig) {
     }
   }
 
-  if (invalidPaths.length) {
+  if (invalidPaths.length > 0) {
     throw new Error(
       `Invalid include path(s): ${
         invalidPaths

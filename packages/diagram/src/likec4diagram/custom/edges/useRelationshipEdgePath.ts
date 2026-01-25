@@ -1,6 +1,7 @@
 import {
   type BBox,
   nonNullable,
+  vector,
 } from '@likec4/core'
 import type { XYPosition } from '@xyflow/react'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
@@ -62,21 +63,37 @@ export function useRelationshipEdgePath({
   if (isModified) {
     const sourceCenterPos = { x: sourceX, y: sourceY }
     const targetCenterPos = { x: targetX, y: targetY }
+    const sourceNd = {
+      ...vector(sourceX, sourceY)
+        .subtract(vector(sourceNode.width, sourceNode.height).divide(2))
+        .round()
+        .toObject(),
+      width: sourceNode.width,
+      height: sourceNode.height,
+    }
+    const targetNd = {
+      ...vector(targetX, targetY)
+        .subtract(vector(targetNode.width, targetNode.height).divide(2))
+        .round()
+        .toObject(),
+      width: targetNode.width,
+      height: targetNode.height,
+    }
 
     const nodeMargin = 6
     const points = data.dir === 'back'
       ? [
         targetCenterPos,
-        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos, nodeMargin),
+        getNodeIntersectionFromCenterToPoint(targetNd, first(controlPoints) ?? sourceCenterPos, nodeMargin),
         ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos, nodeMargin),
+        getNodeIntersectionFromCenterToPoint(sourceNd, last(controlPoints) ?? targetCenterPos, nodeMargin),
         sourceCenterPos,
       ]
       : [
         sourceCenterPos,
-        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos, nodeMargin),
+        getNodeIntersectionFromCenterToPoint(sourceNd, first(controlPoints) ?? targetCenterPos, nodeMargin),
         ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos, nodeMargin),
+        getNodeIntersectionFromCenterToPoint(targetNd, last(controlPoints) ?? sourceCenterPos, nodeMargin),
         targetCenterPos,
       ]
 

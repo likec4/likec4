@@ -1,6 +1,6 @@
 import { defineLayerStyles } from '@pandacss/dev'
 
-export const layerStyles = defineLayerStyles({
+export const layerStyles = /* @__PURE__ */ defineLayerStyles({
   likec4: {
     tag: {
       description: 'LikeC4 tag layer',

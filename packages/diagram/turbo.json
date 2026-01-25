@@ -4,6 +4,17 @@
     "//"
   ],
   "tasks": {
+    "typecheck": {
+      "dependsOn": [
+        "@likec4/styles#generate",
+        "^typecheck"
+      ],
+      "outputs": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
+      "outputLogs": "new-only"
+    },
     "build-bundle": {
       "dependsOn": [
         "@likec4/core#build",

@@ -1,7 +1,6 @@
 import { filter, flatMap, isNonNullish, map, pipe } from 'remeda'
 import type {
   DeploymentConnectionModel,
-  DeploymentElementModel,
   LikeC4DeploymentModel,
   RelationshipModel,
 } from '../../../model'
@@ -23,20 +22,7 @@ import {
 } from '../utils'
 import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
 import { filterOutgoingConnections, resolveAllOutgoingRelations } from './relation-outgoing'
-import { applyPredicate, excludeModelRelations } from './utils'
-
-export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
-  const siblings = new Set<DeploymentElementModel>()
-  for (let sibling of element.descendingSiblings()) {
-    // TODO: investigate if this is necessary
-    // if (element.isInstance() && sibling.isDeploymentNode()) {
-    //   // we flatten nodes that contain only one instance
-    //   sibling = sibling.onlyOneInstance() ?? sibling
-    // }
-    siblings.add(sibling)
-  }
-  return siblings
-}
+import { applyPredicate, excludeModelRelations, resolveAscendingSiblings } from './utils'
 
 // const resolveWildcard = (model: LikeC4DeploymentModel<AnyAux>, nonWildcard: FqnExpr.DeploymentRef) => {
 //   const sources = resolveElements(model, nonWildcard)

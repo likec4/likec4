@@ -30,6 +30,12 @@ const DeploymentNodeRenderer = ({
   </Group>
 )
 
+const zoomIcon = (
+  <ThemeIcon size={'sm'} variant="transparent" color="gray">
+    <IconZoomScan stroke={1.8} opacity={0.65} />
+  </ThemeIcon>
+)
+
 const DeployedInstanceRenderer = (
   {
     instance,
@@ -40,6 +46,7 @@ const DeployedInstanceRenderer = (
   const diagram = useDiagram()
   const currentViewId = diagram.currentView.id
   const views = [...instance.views()]
+
   return (
     (
       <Group className={css.instanceLabel} gap={4}>
@@ -80,11 +87,7 @@ const DeployedInstanceRenderer = (
                     px={'xs'}
                     py={4}
                     disabled={view.id === currentViewId}
-                    leftSection={
-                      <ThemeIcon size={'sm'} variant="transparent" color="gray">
-                        <IconZoomScan stroke={1.8} opacity={0.65} />
-                      </ThemeIcon>
-                    }
+                    leftSection={zoomIcon}
                     styles={{
                       itemSection: {
                         marginInlineEnd: rem(8),
@@ -105,6 +108,8 @@ const DeployedInstanceRenderer = (
     )
   )
 }
+
+const infoIcon = <IconInfoCircle />
 
 const setHoveredNode = () => {}
 export const TabPanelDeployments = memo<TabPanelDeploymentsProps>(({ elementFqn }) => {
@@ -160,7 +165,7 @@ export const TabPanelDeployments = memo<TabPanelDeploymentsProps>(({ elementFqn 
 
   if (deployments.length === 0) {
     return (
-      <Alert variant="light" color="gray" icon={<IconInfoCircle />}>
+      <Alert variant="light" color="gray" icon={infoIcon}>
         This element does not have any deployments
       </Alert>
     )

@@ -29,8 +29,8 @@ ReactDOM.createRoot(root).render(
     <QueryClientProvider client={queryClient}>
       <QueryErrorBoundary>
         <App />
+        <Loader />
       </QueryErrorBoundary>
-      <Loader />
     </QueryClientProvider>
   </MantineProvider>,
 )

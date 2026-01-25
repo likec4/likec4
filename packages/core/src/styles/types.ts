@@ -1,31 +1,34 @@
+import {
+  BorderStyles,
+  ElementShapes,
+  IconPositions,
+  Sizes,
+  ThemeColors,
+} from '@likec4/style-preset/defaults'
 import type { Tagged, TupleToUnion } from 'type-fest'
+
+export {
+  BorderStyles,
+  ElementShapes,
+  IconPositions,
+  Sizes,
+  ThemeColors,
+} from '@likec4/style-preset/defaults'
 
 /**
  * For padding, margin, etc.
  */
-export const Sizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const
-export type Size = TupleToUnion<typeof Sizes>
+export type Size = typeof Sizes[number]
 export type TextSize = Size
 export type ShapeSize = Size
 export type SpacingSize = Size
+export type IconSize = Size
 
-export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
+export type IconPosition = typeof IconPositions[number]
 
-export type BorderStyle = TupleToUnion<typeof BorderStyles>
+export type BorderStyle = typeof BorderStyles[number]
 
-export const ElementShapes = [
-  'rectangle',
-  'person',
-  'browser',
-  'mobile',
-  'cylinder',
-  'storage',
-  'queue',
-  'bucket',
-  'document',
-] as const
-
-export type ElementShape = TupleToUnion<typeof ElementShapes>
+export type ElementShape = typeof ElementShapes[number]
 
 export type HexColor = `#${string}`
 
@@ -51,19 +54,6 @@ export const RelationshipArrowTypes = [
 ] as const
 export type RelationshipArrowType = TupleToUnion<typeof RelationshipArrowTypes>
 
-export const ThemeColors = [
-  'amber',
-  'blue',
-  'gray',
-  'slate',
-  'green',
-  'indigo',
-  'muted',
-  'primary',
-  'red',
-  'secondary',
-  'sky',
-] as const
 export type ThemeColor = typeof ThemeColors[number]
 
 export function isThemeColor(color: string): color is ThemeColor {
@@ -110,6 +100,7 @@ export interface LikeC4StyleDefaults {
   readonly border?: BorderStyle
   readonly padding?: SpacingSize
   readonly text?: TextSize
+  readonly iconPosition?: IconPosition
   /**
    * Default style values for groups
    * If not specified, the default values for elements are used
@@ -136,6 +127,7 @@ export interface LikeC4Theme {
   >
   readonly spacing: Readonly<Record<SpacingSize, number>>
   readonly textSizes: Readonly<Record<TextSize, number>>
+  readonly iconSizes: Readonly<Record<IconSize, number>>
 }
 
 export interface LikeC4StylesConfig {

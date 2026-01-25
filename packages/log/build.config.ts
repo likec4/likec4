@@ -1,11 +1,11 @@
-import { defineBuildConfig } from 'unbuild'
+import { defineBuildConfig } from 'obuild/config'
 
 export default defineBuildConfig({
-  clean: true,
-  stub: false,
-  declaration: 'node16',
-  rollup: {
-    emitCJS: false,
-    inlineDependencies: true,
-  },
+  entries: [{
+    type: 'bundle',
+    input: './src/index.ts',
+    rolldown: {
+      platform: 'neutral',
+    },
+  }],
 })

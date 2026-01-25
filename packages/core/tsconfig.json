@@ -1,18 +1,21 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "target": "es2024",
     "rootDir": "src",
+    "target": "es2024",
     "incremental": true,
     "composite": true,
-    "declaration": true,
-    "declarationMap": true,
     "types": [
       "node"
     ]
   },
   "include": [
-    "src",
+    "src/",
     "src/**/*.json"
   ],
+  "references": [
+    {
+      "path": "../../styled-system/preset/"
+    }
+  ]
 }

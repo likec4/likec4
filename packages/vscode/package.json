@@ -293,11 +293,14 @@
     }
   },
   "dependencies": {
-    "bundle-require": "catalog:utils",
-    "esbuild": "catalog:esbuild"
+    "bundle-require": "catalog:externals",
+    "std-env": "catalog:externals",
+    "esbuild": "catalog:esbuild",
+    "fdir": "catalog:externals",
+    "chokidar": "catalog:externals"
   },
   "devDependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils",
+    "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/config": "workspace:*",
     "@likec4/language-server": "workspace:*",
@@ -320,11 +323,11 @@
     "pretty-ms": "^9.3.0",
     "reactive-vscode": "^0.4.1",
     "remeda": "catalog:utils",
-    "std-env": "catalog:utils",
+
     "tslib": "^2.8.1",
     "tsx": "catalog:",
     "turbo": "catalog:",
-    "type-fest": "catalog:utils",
+    "type-fest": "catalog:externals",
     "typescript": "catalog:",
     "vscode-ext-gen": "^1.0.2",
     "vscode-jsonrpc": "catalog:vscode",
@@ -336,7 +339,7 @@
     "ufo": "catalog:utils",
     "playwright": "catalog:",
     "vscode-uri": "catalog:vscode",
-    "zod": "catalog:utils",
+    "zod": "catalog:externals",
     "zx": "lite"
   }
 }

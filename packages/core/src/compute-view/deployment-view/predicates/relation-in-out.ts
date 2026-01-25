@@ -5,10 +5,9 @@ import { invariant } from '../../../utils'
 import { union } from '../../../utils/set'
 import type { PredicateExecutor } from '../_types'
 import { findConnectionsBetween, resolveElements, resolveModelElements } from '../utils'
-import { resolveAscendingSiblings } from './relation-direct'
 import { filterIncomingConnections } from './relation-incoming'
 import { filterOutgoingConnections } from './relation-outgoing'
-import { applyPredicate, excludeModelRelations, matchConnections } from './utils'
+import { applyPredicate, excludeModelRelations, matchConnections, resolveAscendingSiblings } from './utils'
 
 //
 export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {

@@ -78,7 +78,7 @@ function mkTestServices(expect: ExpectStatic) {
   }
 }
 
-describe.concurrent('ExpressionV2', () => {
+describe('ExpressionV2', () => {
   describe('DirectedRelationExpr', () => {
     it('should not warn', async ({ expect }) => {
       const { valid } = mkTestServices(expect)

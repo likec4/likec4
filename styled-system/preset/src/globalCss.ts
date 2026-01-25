@@ -1,7 +1,26 @@
 import type { Config } from '@pandacss/dev'
-import { generatedGlobalCss } from './generated'
+import { keys, mapToObj } from 'remeda'
+import { __v, vars } from './const.ts'
+import { defaultTheme } from './defaults/index.ts'
 
 type ExtendableGlobalCss = NonNullable<Config['globalCss']>
+
+const sizeConditions = {
+  ...mapToObj(keys(defaultTheme.textSizes), (size) =>
+    [
+      `:where([data-likec4-text-size='${size}'])`,
+      {
+        [vars.textsize]: `{fontSizes.likec4.${size}}`,
+      },
+    ] satisfies [string, Record<string, string>]),
+  ...mapToObj(keys(defaultTheme.spacing), (size) =>
+    [
+      `:where([data-likec4-spacing='${size}'])`,
+      {
+        [vars.spacing]: `{spacing.likec4.${size}}`,
+      },
+    ] satisfies [string, Record<string, string>]),
+}
 
 export const globalCss: ExtendableGlobalCss = {
   extend: {
@@ -11,10 +30,10 @@ export const globalCss: ExtendableGlobalCss = {
     // },
     ':where(:root,:host)': {
       ['--likec4-app-font-default']:
-        `'IBM Plex Sans','ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'`,
+        `'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
     },
-    ...generatedGlobalCss,
 
+    ...sizeConditions,
     '.likec4-shadow-root': {
       display: 'contents',
       '--mantine-font-family': 'var(--likec4-app-font, var(--likec4-app-font-default))',
@@ -107,32 +126,30 @@ export const globalCss: ExtendableGlobalCss = {
 
       '& :where(.react-flow__edge, .likec4-edge-container, .likec4-edge-label-container)': {
         '--xy-edge-stroke-width': 3,
-        '--xy-edge-stroke': 'var(--likec4-palette-relation-stroke)',
-        '--xy-edge-stroke-selected': 'var(--likec4-palette-relation-stroke-selected)',
-        '--xy-edge-label-color': 'var(--likec4-palette-relation-label)',
-        '--xy-edge-label-background-color': 'var(--likec4-palette-relation-label-bg)',
+        '--xy-edge-stroke': __v('palette.relationStroke'),
+        '--xy-edge-stroke-selected': __v('palette.relationStrokeSelected'),
+        '--xy-edge-label-color': __v('palette.relationLabel'),
+        '--xy-edge-label-background-color': __v('palette.relationLabelBg'),
 
         _dark: {
-          '--xy-edge-label-background-color':
-            'color-mix(in oklab, var(--likec4-palette-relation-label-bg) 50%, transparent)',
+          '--xy-edge-label-background-color': `color-mix(in oklab, ${__v('palette.relationLabelBg')} 50%, transparent)`,
         },
         _light: {
-          '--xy-edge-label-color': 'color-mix(in oklab, var(--likec4-palette-relation-label), #FFF 50%)',
-          '--xy-edge-label-background-color':
-            'color-mix(in oklab, var(--likec4-palette-relation-label-bg) 65%, transparent)',
+          '--xy-edge-label-color': `color-mix(in oklab, ${__v('palette.relationLabel')}, #FFF 50%)`,
+          '--xy-edge-label-background-color': `color-mix(in oklab, ${__v('palette.relationLabelBg')} 65%, transparent)`,
         },
 
         '&:is([data-likec4-hovered="true"], [data-edge-active="true"])': {
           '--xy-edge-stroke-width': 4,
-          '--xy-edge-stroke': 'var(--likec4-palette-relation-stroke-selected)',
+          '--xy-edge-stroke': __v('palette.relationStrokeSelected'),
         },
       },
 
-      '&:is([data-likec4-reduced-graphics]) .hide-on-reduced-graphics': {
-        display: 'none',
+      '&:is([data-likec4-reduced-graphics="true"]) .hide-on-reduced-graphics': {
+        display: 'none!',
       },
 
-      '&:not([data-likec4-reduced-graphics])': {
+      '&:not([data-likec4-reduced-graphics="true"])': {
         '& :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed])': {
           filter: 'grayscale(85%)',
         },

@@ -1,6 +1,6 @@
 import type { PartialDeep } from 'type-fest'
 import { describe, expect, it } from 'vitest'
-import type { ParsedLikeC4ModelData } from '../types'
+import { type ParsedLikeC4ModelData, isViewRuleStyle } from '../types'
 import { Builder } from './Builder'
 
 describe('Builder (style 2)', () => {
@@ -293,6 +293,47 @@ describe('Builder (style 2)', () => {
         },
       } satisfies PartialDeep<ParsedLikeC4ModelData['deployments']['elements']>,
     )
+  })
+
+  it('should preserve icon style properties in models', () => {
+    const m = spec
+      .model(({ component }, _) =>
+        _(
+          component('c1', {
+            style: {
+              iconColor: 'indigo',
+              iconSize: 'lg',
+              iconPosition: 'right',
+            },
+          }),
+        )
+      )
+      .views(({ view, $include, $style }, _) =>
+        _(
+          view('index', 'Index').with(
+            $include('*'),
+            $style('c1', {
+              iconColor: 'red',
+              iconSize: 'sm',
+              iconPosition: 'left',
+            }),
+          ),
+        )
+      )
+      .build()
+
+    expect(m.elements.c1.style).toMatchObject({
+      iconColor: 'indigo',
+      iconSize: 'lg',
+      iconPosition: 'right',
+    })
+
+    const styleRule = m.views.index.rules.find(isViewRuleStyle)
+    expect(styleRule?.style).toMatchObject({
+      iconColor: 'red',
+      iconSize: 'sm',
+      iconPosition: 'left',
+    })
   })
 
   it('should support mutliprojects', async ({ expect }) => {

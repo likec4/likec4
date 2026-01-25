@@ -1,3 +1,4 @@
+import { DefaultTagColors } from '@likec4/style-preset/defaults'
 import { concat, entries, isTruthy, map, pipe, prop, pullObject, sort } from 'remeda'
 import type { ColorLiteral, TagSpecification } from '../types'
 import type { Tag } from '../types/scalar'
@@ -7,23 +8,7 @@ import { nonNullable } from '../utils/invariant'
 /**
  * Colors are taken from the styles presets of the LikeC4 (Radix Colors)
  */
-export const DefaultTagColors = [
-  'tomato',
-  'grass',
-  'blue',
-  'ruby',
-  'orange',
-  'indigo',
-  'pink',
-  'teal',
-  'purple',
-  'amber',
-  'crimson',
-  'red',
-  'lime',
-  'yellow',
-  'violet',
-]
+export { DefaultTagColors }
 
 export function assignTagColors(tags: {
   [kind: string]: Partial<TagSpecification>

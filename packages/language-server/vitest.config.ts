@@ -20,6 +20,10 @@ export default defineProject({
       includeStack: true,
       truncateThreshold: 100,
     },
+    maxConcurrency: 10,
+    sequence: {
+      concurrent: true,
+    },
     exclude: [
       '**/node_modules/**',
       'dist/**',

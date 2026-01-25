@@ -1,20 +1,41 @@
 import { configureLogger, getConsoleStderrSink } from '@likec4/log'
+import { defu } from 'defu'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
+import { isDevelopment } from 'std-env'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
-import { LikeC4FileSystem } from './filesystem/LikeC4FileSystem'
+import { WithFileSystem } from './filesystem/LikeC4FileSystem'
 import { WithLikeC4ManualLayouts } from './filesystem/LikeC4ManualLayouts'
 import { getLspConnectionSink, logger } from './logger'
 import { WithMCPServer } from './mcp/server/WithMCPServer'
-import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
+import type { LikeC4Services, LikeC4SharedServices } from './module'
+import { createLanguageServices } from './module'
 import { ConfigurableLayouter } from './views/ConfigurableLayouter'
+
+type StartBundledLanguageServerOptions = {
+  /**
+   * Whether to enable the MCP server.
+   * @default true
+   */
+  enableMCP?: boolean | { port: number }
+
+  /**
+   * Whether to enable manual layouts, stored in json5 files.
+   * @default true
+   */
+  enableManualLayouts?: boolean
+}
 
 /**
  * This is used as `bin` entry point to start the language server.
  */
-export function startLanguageServer(): {
+export function startLanguageServer(options?: StartBundledLanguageServerOptions): {
   shared: LikeC4SharedServices
   likec4: LikeC4Services
 } {
+  const opts = defu(options, {
+    enableMCP: true,
+    enableManualLayouts: true,
+  })
   const connection = createConnection(ProposedFeatures.all)
   configureLogger({
     sinks: {
@@ -26,6 +47,7 @@ export function startLanguageServer(): {
       {
         category: ['likec4'],
         sinks: ['console', 'lsp'],
+        lowestLevel: isDevelopment ? 'trace' : 'debug',
       },
     ],
   })
@@ -42,9 +64,9 @@ export function startLanguageServer(): {
   const services = createLanguageServices(
     {
       connection,
-      ...LikeC4FileSystem(false),
-      ...WithMCPServer('sse'),
-      ...WithLikeC4ManualLayouts,
+      ...WithFileSystem(false),
+      ...(opts.enableMCP !== false && WithMCPServer(opts.enableMCP === true ? 'sse' : opts.enableMCP)),
+      ...(opts.enableManualLayouts && WithLikeC4ManualLayouts),
     },
     ConfigurableLayouter,
   )

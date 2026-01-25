@@ -125,7 +125,7 @@ async function mkTestServices({ expect }: TestContext) {
   }
 }
 
-describe.concurrent('Deployment views:', () => {
+describe('Deployment views:', () => {
   it('valid views', async ctx => {
     const { view } = await mkTestServices(ctx)
     await view.valid(`

@@ -84,7 +84,8 @@
       },
       "required": [
         "paths"
-      ]
+      ],
+      "additionalProperties": false
     },
     "StylesConfiguration": {
       "id": "StylesConfiguration",
@@ -96,6 +97,9 @@
         },
         "defaults": {
           "$ref": "#/$defs/DefaultStyleValues"
+        },
+        "customCss": {
+          "$ref": "#/$defs/CustomStylesheets"
         }
       },
       "additionalProperties": false
@@ -117,55 +121,13 @@
     "ThemeColors": {
       "id": "ThemeColors",
       "description": "Override theme colors",
-      "anyOf": [
-        {
-          "type": "object",
-          "propertyNames": {
-            "$ref": "#/$defs/ColorName"
-          },
-          "additionalProperties": {
-            "$ref": "#/$defs/ThemeColorValues"
-          }
-        },
-        {
-          "type": "object",
-          "properties": {
-            "amber": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "blue": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "gray": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "slate": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "green": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "indigo": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "muted": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "primary": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "red": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "secondary": {
-              "$ref": "#/$defs/ThemeColorValues"
-            },
-            "sky": {
-              "$ref": "#/$defs/ThemeColorValues"
-            }
-          }
-        }
-      ]
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/ColorName"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/ThemeColorValues"
+      }
     },
     "ColorName": {
       "id": "ColorName",
@@ -174,8 +136,7 @@
           "$ref": "#/$defs/ThemeColor"
         },
         {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/CustomColorName"
         }
       ]
     },
@@ -196,6 +157,11 @@
         "sky"
       ]
     },
+    "CustomColorName": {
+      "id": "CustomColorName",
+      "type": "string",
+      "minLength": 1
+    },
     "ThemeColorValues": {
       "id": "ThemeColorValues",
       "description": "Exact value (hex, rgb, rgba, hsl, hsla ...) or break down of specific color values",
@@ -204,36 +170,7 @@
           "$ref": "#/$defs/ColorLiteral"
         },
         {
-          "type": "object",
-          "properties": {
-            "elements": {
-              "description": "Element color value (or a breakdown of specific color values)",
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/ColorLiteral"
-                },
-                {
-                  "$ref": "#/$defs/ElementColorValues"
-                }
-              ]
-            },
-            "relationships": {
-              "description": "Relationship color value (or a breakdown of specific color values)",
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/ColorLiteral"
-                },
-                {
-                  "$ref": "#/$defs/RelationshipColorValues"
-                }
-              ]
-            }
-          },
-          "required": [
-            "elements",
-            "relationships"
-          ],
-          "additionalProperties": false
+          "$ref": "#/$defs/StrictThemeColorValues"
         }
       ]
     },
@@ -242,6 +179,39 @@
       "description": "Color value in any valid CSS format: hex, rgb, rgba, hsl, hsla ...",
       "type": "string",
       "minLength": 1
+    },
+    "StrictThemeColorValues": {
+      "id": "StrictThemeColorValues",
+      "type": "object",
+      "properties": {
+        "elements": {
+          "description": "Element color value (or a breakdown of specific color values)",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ColorLiteral"
+            },
+            {
+              "$ref": "#/$defs/ElementColorValues"
+            }
+          ]
+        },
+        "relationships": {
+          "description": "Relationship color value (or a breakdown of specific color values)",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ColorLiteral"
+            },
+            {
+              "$ref": "#/$defs/RelationshipColorValues"
+            }
+          ]
+        }
+      },
+      "required": [
+        "elements",
+        "relationships"
+      ],
+      "additionalProperties": false
     },
     "ElementColorValues": {
       "id": "ElementColorValues",
@@ -363,6 +333,10 @@
           "description": "Default shape for elements",
           "$ref": "#/$defs/ElementShape"
         },
+        "iconPosition": {
+          "description": "Default icon position for elements",
+          "$ref": "#/$defs/IconPosition"
+        },
         "group": {
           "description": "Default style values for groups",
           "$ref": "#/$defs/GroupDefaultStyleValues"
@@ -415,6 +389,16 @@
         "queue",
         "bucket",
         "document"
+      ]
+    },
+    "IconPosition": {
+      "id": "IconPosition",
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "top",
+        "bottom"
       ]
     },
     "GroupDefaultStyleValues": {
@@ -482,6 +466,23 @@
         "vee"
       ]
     },
+    "CustomStylesheets": {
+      "id": "CustomStylesheets",
+      "description": "Custom CSS (or list of CSS files) to be included in the generated diagrams",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ]
+    },
     "manual-layouts-config": {
       "id": "manual-layouts-config",
       "description": "Configuration for manual layouts",
@@ -492,7 +493,8 @@
           "default": ".likec4",
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }

@@ -155,7 +155,7 @@
       "match": "\\b(include|exclude)\\b"
     },
     {
-      "match": "\\b(shape|color|head|tail|line|border|icon|mode):?\\s+([^\\s]+)\\b",
+      "match": "\\b(shape|color|head|tail|line|border|icon|mode|iconColor|iconPosition|iconSize):?\\s+([^\\s]+)\\b",
       "captures": {
         "1": {
           "name": "variable.parameter.function.likec4"

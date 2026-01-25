@@ -1,55 +1,43 @@
-import spawn from 'nano-spawn'
-import { resolve } from 'node:path'
-import { type BuildEntry, defineBuildConfig } from 'unbuild'
-
-const bundled: BuildEntry = {
-  input: './src/bundled.ts',
-  name: 'bundled',
-  builder: 'rollup',
-  declaration: false,
-}
-
-const makedist: BuildEntry = {
-  builder: 'mkdist',
-  input: './src',
-  format: 'esm',
-  ext: 'js',
-  pattern: [
-    '**/*.ts',
-    '!**/*.spec.ts',
-  ],
-}
-
-// @ts-expect-error
-const isProd = process.env.NODE_ENV === 'production'
+import { defineBuildConfig } from 'obuild/config'
 
 export default defineBuildConfig({
-  entries: isProd ? [bundled] : [makedist],
-  clean: true,
-  stub: false,
-  alias: {
-    'raw-body': resolve('./src/empty.ts'),
-    'content-type': resolve('./src/empty.ts'),
-  },
-  failOnWarn: isProd,
-
-  rollup: {
-    esbuild: {
-      minify: isProd,
-      minifyIdentifiers: false,
-      lineLimit: 500,
+  entries: [
+    {
+      type: 'bundle',
+      input: [
+        './src/index.ts',
+        './src/common-exports.ts',
+        './src/bundled.ts',
+        './src/browser-worker.ts',
+        './src/browser.ts',
+        './src/ast.ts',
+        './src/module.ts',
+        './src/protocol.ts',
+        './src/likec4lib.ts',
+        './src/LikeC4LanguageServices.ts',
+        './src/filesystem/index.ts',
+        './src/mcp/index.ts',
+        './src/generated/ast.ts',
+        './src/generated/grammar.ts',
+        './src/generated/module.ts',
+        './src/generated-lib/icons.ts',
+      ],
+      rolldown: {
+        platform: 'neutral',
+        resolve: {
+          mainFields: ['module', 'main'],
+        },
+        // treeshake: {
+        //   moduleSideEffects: 'no-external',
+        //   // unknownGlobalSideEffects: false,
+        //   // propertyReadSideEffects: false,
+        //   // propertyWriteSideEffects: false,
+        // },
+      },
+      // dts: {
+      //   build: true,
+      //   resolver: 'tsc',
+      // },
     },
-    inlineDependencies: isProd,
-    resolve: {
-      exportConditions: isProd ? ['node'] : ['node', 'sources'],
-    },
-  },
-  hooks: {
-    'rollup:done': async () => {
-      console.log('Building types...')
-      await spawn('tsc', ['-p', 'tsconfig.build.json'], {
-        stdout: 'inherit',
-      })
-    },
-  },
-})
+  ],
+}) as unknown

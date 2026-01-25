@@ -17,7 +17,7 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
       isEnabled: false as const,
       isEditable: false as const,
       isActive: false as const,
-      drifts: [] as never[],
+      drifts: null as never,
       canApplyLatest: false,
       layout: context.view._layout ?? 'auto',
     })

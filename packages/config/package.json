@@ -13,7 +13,7 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
+    "build": "obuild",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
@@ -34,6 +34,7 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "sources": "./src/index.ts",
       "node": {
         "sources": "./src/node/index.ts",
         "default": {
@@ -41,7 +42,6 @@
           "default": "./dist/node/index.mjs"
         }
       },
-      "sources": "./src/index.ts",
       "default": {
         "types": "./dist/index.d.mts",
         "default": "./dist/index.mjs"
@@ -54,8 +54,6 @@
         "default": "./dist/node/index.mjs"
       }
     },
-    "./src": "./src/index.ts",
-    "./src/*": "./src/*",
     "./package.json": "./package.json",
     "./schema.json": "./schema.json"
   },
@@ -66,35 +64,35 @@
     "module": "dist/index.mjs"
   },
   "dependencies": {
-    "bundle-require": "catalog:utils",
-    "defu": "catalog:utils",
-    "json5": "catalog:utils",
-    "zod": "catalog:zod4",
-    "type-fest": "catalog:utils"
-  },
-  "peerDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
-    "esbuild": "^0.27.2",
-    "vscode-uri": "catalog:vscode"
+    "json5": "catalog:utils",
+    "zod": "catalog:externals",
+    "type-fest": "catalog:externals"
+  },
+  "peerDependencies": {
+    "bundle-require": "catalog:externals",
+    "esbuild": "catalog:esbuild"
   },
   "peerDependenciesMeta": {
-    "vscode-uri": {
+    "esbuild": {
+      "optional": true
+    },
+    "bundle-require": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
-    "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
     "remeda": "catalog:utils",
+    "defu": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
-    "nano-spawn": "catalog:utils",
+    "obuild": "catalog:obuild",
+    "nano-spawn": "catalog:externals",
     "vitest": "catalog:vitest"
   }
 }

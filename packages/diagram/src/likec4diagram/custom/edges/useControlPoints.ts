@@ -1,9 +1,9 @@
+import { type Vector, vector } from '@likec4/core/geometry'
 import type { XYPosition } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
-import { type Vector, vector } from '@likec4/core/geometry'
 import {
   bezierControlPoints,
 } from '../../../utils/xyflow'

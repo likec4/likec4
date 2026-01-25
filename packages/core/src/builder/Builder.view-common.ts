@@ -1,16 +1,16 @@
 import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
-import {
-  type Any,
-  type AnyAux,
-  type AnyViewRuleStyle as ViewRuleStyle,
-  type AutoLayoutDirection,
-  type Expression,
-  type ModelRelationExpr,
-  type NonEmptyArray,
-  type WhereOperator,
-  ModelFqnExpr,
+import type {
+  Any,
+  AnyAux,
+  AnyViewRuleStyle as ViewRuleStyle,
+  AutoLayoutDirection,
+  Expression,
+  ModelRelationExpr,
+  NonEmptyArray,
+  WhereOperator,
 } from '../types'
+import { ModelFqnExpr } from '../types'
 import type { Participant, ParticipantOperator } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
 

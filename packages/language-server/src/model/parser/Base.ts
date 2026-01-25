@@ -29,6 +29,7 @@ import {
   type ParsedElementStyle,
   type ParsedLikeC4LangiumDocument,
   ast,
+  parseAstIconPositionValue,
   parseAstOpacityProperty,
   parseAstPercent,
   parseAstSizeValue,
@@ -411,6 +412,25 @@ export class BaseParser {
             const icon = this.parseIconProperty(prop)
             if (isTruthy(icon)) {
               result.icon = icon
+            }
+            break
+          }
+          case ast.isIconColorProperty(prop): {
+            const color = toColor(prop)
+            if (isTruthy(color)) {
+              result.iconColor = color
+            }
+            break
+          }
+          case ast.isIconSizeProperty(prop): {
+            if (isTruthy(prop.value)) {
+              result.iconSize = parseAstSizeValue(prop)
+            }
+            break
+          }
+          case ast.isIconPositionProperty(prop): {
+            if (isTruthy(prop.value)) {
+              result.iconPosition = parseAstIconPositionValue(prop)
             }
             break
           }

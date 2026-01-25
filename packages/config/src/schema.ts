@@ -12,14 +12,23 @@ import type {
 } from '@likec4/core/types'
 import JSON5 from 'json5'
 import type { SimplifyDeep } from 'type-fest'
-import type { URI } from 'vscode-uri'
-import * as z from 'zod'
+import z from 'zod/v4'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
 import { IncludeSchema, validateIncludePaths } from './schema.include'
 import { LikeC4StylesConfigSchema } from './schema.theme'
 
+export interface VscodeURI {
+  readonly scheme: string
+  readonly authority: string
+  readonly path: string
+  readonly fsPath: string
+  readonly query: string
+  readonly fragment: string
+  toString(): string
+}
+
 export const ManualLayoutsConfigSchema = z
-  .object({
+  .strictObject({
     outDir: z.string()
       .default('.likec4')
       .meta({
@@ -101,7 +110,7 @@ export type LocateResult = {
   /**
    * Full path to the source file
    */
-  document: URI
+  document: VscodeURI
   /**
    * Document path relative to the project folder
    */
@@ -120,7 +129,7 @@ export interface GeneratorFnContext {
   /**
    * Workspace root directory
    */
-  readonly workspace: URI
+  readonly workspace: VscodeURI
 
   /**
    * Current project
@@ -136,7 +145,7 @@ export interface GeneratorFnContext {
     /**
      * Project folder
      */
-    readonly folder: URI
+    readonly folder: VscodeURI
   }
 
   /**
@@ -158,7 +167,7 @@ export interface GeneratorFnContext {
    * @param content - Content of the file
    */
   write(file: {
-    path: string | string[] | URI
+    path: string | string[] | VscodeURI
     content:
       | string
       | NodeJS.ArrayBufferView

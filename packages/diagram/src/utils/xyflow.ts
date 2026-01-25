@@ -2,7 +2,7 @@ import { type NonEmptyArray, type Point, BBox } from '@likec4/core'
 import { vector } from '@likec4/core/geometry'
 import { invariant } from '@likec4/core/utils'
 import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
-import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
+import { type NodeHandle, type Padding as XYFlowPadding, type PaddingWithUnit, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
@@ -80,7 +80,10 @@ export function isEqualMinimalInternalNodes(a: MinimalInternalNode, b: MinimalIn
 }
 
 export function isEqualRects(a: Rect, b: Rect) {
-  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+  return Math.trunc(a.x) === Math.trunc(b.x)
+    && Math.trunc(a.y) === Math.trunc(b.y)
+    && Math.trunc(a.width) === Math.trunc(b.width)
+    && Math.trunc(a.height) === Math.trunc(b.height)
 }
 
 export const nodeToRect = (nd: MinimalInternalNode): Rect => ({
@@ -258,4 +261,73 @@ export function createXYFlowNodeNandles(bbox: BBox): NodeHandle[] {
       y: bbox.y + bbox.height,
     },
   ])
+}
+
+/**
+ * Parses a single padding value to a number
+ * @internal
+ * @param padding - Padding to parse
+ * @param viewport - Width or height of the viewport
+ * @returns The padding in pixels
+ */
+function parsePadding(padding: PaddingWithUnit, viewport: number): number {
+  if (typeof padding === 'number') {
+    return Math.floor((viewport - viewport / (1 + padding)) * 0.5)
+  }
+
+  if (typeof padding === 'string' && padding.endsWith('px')) {
+    const paddingValue = parseFloat(padding)
+    if (!Number.isNaN(paddingValue)) {
+      return Math.floor(paddingValue)
+    }
+  }
+
+  if (typeof padding === 'string' && padding.endsWith('%')) {
+    const paddingValue = parseFloat(padding)
+    if (!Number.isNaN(paddingValue)) {
+      return Math.floor(viewport * paddingValue * 0.01)
+    }
+  }
+
+  console.error(
+    `[React Flow] The padding value "${padding}" is invalid. Please provide a number or a string with a valid unit (px or %).`,
+  )
+  return 0
+}
+
+/**
+ * Parses the paddings to an object with top, right, bottom, left, x and y paddings
+ * @internal
+ * @param padding - Padding to parse
+ * @param width - Width of the viewport
+ * @param height - Height of the viewport
+ * @returns An object with the paddings in pixels
+ */
+export function parsePaddings(
+  padding: XYFlowPadding,
+  width: number,
+  height: number,
+): { top: number; bottom: number; left: number; right: number; x: number; y: number } {
+  if (typeof padding === 'string' || typeof padding === 'number') {
+    const paddingY = parsePadding(padding, height)
+    const paddingX = parsePadding(padding, width)
+    return {
+      top: paddingY,
+      right: paddingX,
+      bottom: paddingY,
+      left: paddingX,
+      x: paddingX * 2,
+      y: paddingY * 2,
+    }
+  }
+
+  if (typeof padding === 'object') {
+    const top = parsePadding(padding.top ?? padding.y ?? 0, height)
+    const bottom = parsePadding(padding.bottom ?? padding.y ?? 0, height)
+    const left = parsePadding(padding.left ?? padding.x ?? 0, width)
+    const right = parsePadding(padding.right ?? padding.x ?? 0, width)
+    return { top, right, bottom, left, x: left + right, y: top + bottom }
+  }
+
+  return { top: 0, right: 0, bottom: 0, left: 0, x: 0, y: 0 }
 }
