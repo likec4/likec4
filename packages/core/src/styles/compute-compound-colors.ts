@@ -22,8 +22,8 @@ export function computeCompoundColorValues<Depth extends number = 6>(
   const fills = chroma
     .scale(
       isFillTooLight
-        ? [fill.darken(0.02), fill.darken(0.1)]
-        : [fill.brighten(0.02), fill.brighten(.7)],
+        ? [fill.darken(0.02).desaturate(0.05), fill.darken(0.1).desaturate(0.1)]
+        : [fill.shade(0.12, 'lch').desaturate(0.05), fill.shade(0.35, 'lch').desaturate(0.4)],
     )
     .mode('oklch')
     .correctLightness()
@@ -32,8 +32,8 @@ export function computeCompoundColorValues<Depth extends number = 6>(
   const strokes = chroma
     .scale(
       isFillTooLight
-        ? [stroke.darken(0.08), stroke.darken(0.16)]
-        : [stroke.brighten(0.2), stroke.brighten(.5)],
+        ? [stroke.darken(0.04).desaturate(0.05), stroke.darken(0.12).desaturate(0.1)]
+        : [stroke.shade(0.15, 'lch').desaturate(0.08), stroke.shade(0.4, 'lch').desaturate(0.4)],
     )
     .mode('oklch')
     .correctLightness()

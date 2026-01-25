@@ -108,8 +108,8 @@ export const actionBtn = defineRecipe({
       },
     },
     radius: {
-      sm: { '--ai-radius': `var(--mantine-radius-sm)` },
-      md: { '--ai-radius': `var(--mantine-radius-md)` },
+      sm: { '--ai-radius': `{radii.sm}` },
+      md: { '--ai-radius': `{radii.md}` },
     },
   },
   defaultVariants: {

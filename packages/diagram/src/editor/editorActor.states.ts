@@ -214,6 +214,7 @@ const executeChanges = machine.createStateConfig({
   id: 'executeChanges',
   entry: [
     assign(({ event, context }) => {
+      console.log('executeChanges entry', { event })
       if (event.type === 'change') {
         if (isLayoutChange(event.change)) {
           return {
@@ -243,7 +244,8 @@ const executeChanges = machine.createStateConfig({
       viewId: context.viewId,
     }),
     onDone: {
-      actions: enqueueActions(({ context, enqueue }) => {
+      actions: enqueueActions(({ context, event, enqueue }) => {
+        console.log('executeChanges onDone', { event })
         const snapshot = find(context.pendingChanges, c => c.op === 'save-view-snapshot')
         if (snapshot) {
           enqueue.sendTo(
@@ -262,7 +264,7 @@ const executeChanges = machine.createStateConfig({
     },
     onError: {
       actions: ({ event }) => {
-        console.error(event.error)
+        console.error('executeChanges onError', { error: event.error })
       },
       ...to.afterEdit,
     },

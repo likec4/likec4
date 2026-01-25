@@ -2,7 +2,7 @@ import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import type { ActorRef, MachineSnapshot, StateMachine } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
-import type { EditorActorRef } from '../../editor/editorActor'
+import type { EditorActorRef } from '../../editor/editorActor.states'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import {

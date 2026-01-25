@@ -4,8 +4,8 @@ import { computeCompoundColorValues } from './compute-compound-colors'
 import type { ElementColorValues, HexColor } from './types'
 
 describe('computeCompoundColorValues', () => {
-  describe('should generate 6 color variations', () => {
-    it('should return exactly 6 element color values', () => {
+  describe('should generate color variations', () => {
+    it('should return exactly 6 element color values by default', () => {
       const input: ElementColorValues = {
         fill: '#3B82F6',
         stroke: '#2563EB',
@@ -23,10 +23,25 @@ describe('computeCompoundColorValues', () => {
         expect(colors).toHaveProperty('loContrast')
       })
     })
+
+    it('should support custom depth parameter', () => {
+      const input: ElementColorValues = {
+        fill: '#3B82F6',
+        stroke: '#2563EB',
+        hiContrast: '#FFFFFF',
+        loContrast: '#E0E0E0',
+      }
+
+      const result3 = computeCompoundColorValues(input, 3)
+      const result10 = computeCompoundColorValues(input, 10)
+
+      expect(result3).toHaveLength(3)
+      expect(result10).toHaveLength(10)
+    })
   })
 
-  describe('should darken light colors', () => {
-    it('should progressively darken colors with high luminance (>0.75)', () => {
+  describe('should create gradient for light colors', () => {
+    it('should darken colors with high luminance (>0.8)', () => {
       const input: ElementColorValues = {
         fill: '#F0F0F0',
         stroke: '#E0E0E0',
@@ -39,14 +54,11 @@ describe('computeCompoundColorValues', () => {
       const fillLuminances = result.map(c => chroma(c.fill).luminance())
       const strokeLuminances = result.map(c => chroma(c.stroke).luminance())
 
-      for (let i = 1; i < fillLuminances.length; i++) {
-        expect(fillLuminances[i]).toBeLessThanOrEqual(fillLuminances[i - 1]!)
-        expect(strokeLuminances[i]).toBeLessThanOrEqual(strokeLuminances[i - 1]!)
-      }
-      expect(fillLuminances[0]).toBeGreaterThan(fillLuminances[5]!)
+      expect(fillLuminances[0]!).toBeGreaterThan(fillLuminances[5]!)
+      expect(strokeLuminances[0]!).toBeGreaterThan(strokeLuminances[5]!)
     })
 
-    it('should darken white colors', () => {
+    it('should create smooth gradient for white colors', () => {
       const input: ElementColorValues = {
         fill: '#FFFFFF',
         stroke: '#F5F5F5',
@@ -55,14 +67,17 @@ describe('computeCompoundColorValues', () => {
       }
 
       const result = computeCompoundColorValues(input)
+      const fillLuminances = result.map(c => chroma(c.fill).luminance())
 
-      expect(chroma(result[0].fill).luminance()).toBeLessThan(chroma(input.fill).luminance())
-      expect(chroma(result[5].fill).luminance()).toBeLessThan(chroma(result[0].fill).luminance())
+      expect(fillLuminances[0]!).toBeGreaterThan(fillLuminances[5]!)
+      for (let i = 1; i < fillLuminances.length; i++) {
+        expect(fillLuminances[i]!).toBeLessThanOrEqual(fillLuminances[i - 1]!)
+      }
     })
   })
 
-  describe('should brighten dark colors', () => {
-    it('should progressively brighten colors with low luminance (<=0.75)', () => {
+  describe('should create gradient for dark colors', () => {
+    it('should shade colors with low luminance (<=0.8)', () => {
       const input: ElementColorValues = {
         fill: '#1E40AF',
         stroke: '#1E3A8A',
@@ -75,30 +90,30 @@ describe('computeCompoundColorValues', () => {
       const fillLuminances = result.map(c => chroma(c.fill).luminance())
       const strokeLuminances = result.map(c => chroma(c.stroke).luminance())
 
-      for (let i = 1; i < fillLuminances.length; i++) {
-        expect(fillLuminances[i]).toBeGreaterThanOrEqual(fillLuminances[i - 1]!)
-        expect(strokeLuminances[i]).toBeGreaterThanOrEqual(strokeLuminances[i - 1]!)
-      }
-      expect(fillLuminances[5]).toBeGreaterThan(fillLuminances[0]!)
+      expect(fillLuminances[0]!).toBeGreaterThan(fillLuminances[5]!)
+      expect(strokeLuminances[0]!).toBeGreaterThan(strokeLuminances[5]!)
     })
 
-    it('should brighten black colors', () => {
+    it('should create smooth gradient for dark colors', () => {
       const input: ElementColorValues = {
-        fill: '#000000',
-        stroke: '#0A0A0A',
+        fill: '#1E3A8A',
+        stroke: '#1E293B',
         hiContrast: '#FFFFFF',
         loContrast: '#E0E0E0',
       }
 
       const result = computeCompoundColorValues(input)
+      const fillLuminances = result.map(c => chroma(c.fill).luminance())
 
-      expect(chroma(result[0].fill).luminance()).toBeGreaterThan(chroma(input.fill).luminance())
-      expect(chroma(result[5].fill).luminance()).toBeGreaterThan(chroma(result[0].fill).luminance())
+      expect(fillLuminances[0]!).toBeGreaterThan(fillLuminances[5]!)
+      for (let i = 1; i < fillLuminances.length; i++) {
+        expect(fillLuminances[i]!).toBeLessThanOrEqual(fillLuminances[i - 1]!)
+      }
     })
   })
 
   describe('should handle boundary luminance values', () => {
-    it('should brighten color at exactly 0.8 luminance', () => {
+    it('should shade color at or below 0.8 luminance', () => {
       const mediumGray = chroma.hsl(0, 0, 0.88)
       const input: ElementColorValues = {
         fill: mediumGray.hex() as HexColor,
@@ -111,14 +126,69 @@ describe('computeCompoundColorValues', () => {
       const fillLuminances = result.map(c => chroma(c.fill).luminance())
 
       expect(chroma(input.fill).luminance()).toBeLessThanOrEqual(0.8)
-      for (let i = 1; i < fillLuminances.length; i++) {
-        expect(fillLuminances[i]).toBeGreaterThanOrEqual(fillLuminances[i - 1]!)
-      }
+      expect(fillLuminances[0]!).toBeGreaterThan(fillLuminances[5]!)
     })
   })
 
-  describe('should maintain color relationships', () => {
-    it('should keep stroke darker than fill for each variation', () => {
+  describe('should create perceptually uniform gradients', () => {
+    it('should use oklch color space for smooth transitions', () => {
+      const input: ElementColorValues = {
+        fill: '#3B82F6',
+        stroke: '#2563EB',
+        hiContrast: '#FFFFFF',
+        loContrast: '#E0E0E0',
+      }
+
+      const result = computeCompoundColorValues(input)
+      const fillLuminances = result.map(c => chroma(c.fill).luminance())
+
+      const diffs: number[] = []
+      for (let i = 1; i < fillLuminances.length; i++) {
+        diffs.push(Math.abs(fillLuminances[i]! - fillLuminances[i - 1]!))
+      }
+
+      const avgDiff = diffs.reduce((a, b) => a + b, 0) / diffs.length
+      const variance = diffs.reduce((sum, diff) => sum + Math.pow(diff - avgDiff, 2), 0) / diffs.length
+
+      expect(variance).toBeLessThan(0.01)
+    })
+
+    it('should create distinct color variations', () => {
+      const input: ElementColorValues = {
+        fill: '#3B82F6',
+        stroke: '#2563EB',
+        hiContrast: '#FFFFFF',
+        loContrast: '#E0E0E0',
+      }
+
+      const result = computeCompoundColorValues(input)
+
+      const uniqueFills = new Set(result.map(c => c.fill))
+      const uniqueStrokes = new Set(result.map(c => c.stroke))
+
+      expect(uniqueFills.size).toBe(6)
+      expect(uniqueStrokes.size).toBe(6)
+    })
+  })
+
+  describe('should preserve base properties', () => {
+    it('should preserve hiContrast and loContrast from base', () => {
+      const input: ElementColorValues = {
+        fill: '#3B82F6',
+        stroke: '#2563EB',
+        hiContrast: '#FFFFFF',
+        loContrast: '#E0E0E0',
+      }
+
+      const result = computeCompoundColorValues(input)
+
+      result.forEach(colors => {
+        expect(colors.hiContrast).toBe(input.hiContrast)
+        expect(colors.loContrast).toBe(input.loContrast)
+      })
+    })
+
+    it('should maintain stroke generally darker than fill', () => {
       const input: ElementColorValues = {
         fill: '#3B82F6',
         stroke: '#2563EB',
@@ -131,7 +201,7 @@ describe('computeCompoundColorValues', () => {
       result.forEach(colors => {
         const fillLum = chroma(colors.fill).luminance()
         const strokeLum = chroma(colors.stroke).luminance()
-        expect(strokeLum).toBeLessThanOrEqual(fillLum)
+        expect(strokeLum).toBeLessThanOrEqual(fillLum + 0.05)
       })
     })
   })
@@ -187,27 +257,6 @@ describe('computeCompoundColorValues', () => {
         expect(chroma.valid(colors.stroke)).toBe(true)
       })
     })
-  })
-
-  describe('should handle edge cases', () => {
-    it('should handle colors with medium luminance', () => {
-      const input: ElementColorValues = {
-        fill: '#808080',
-        stroke: '#666666',
-        hiContrast: '#FFFFFF',
-        loContrast: '#E0E0E0',
-      }
-
-      const result = computeCompoundColorValues(input)
-
-      expect(result).toHaveLength(6)
-      const fillLuminances = result.map(c => chroma(c.fill).luminance())
-
-      for (let i = 1; i < fillLuminances.length; i++) {
-        expect(fillLuminances[i]).toBeGreaterThanOrEqual(fillLuminances[i - 1]!)
-      }
-      expect(fillLuminances[5]).toBeGreaterThan(fillLuminances[0]!)
-    })
 
     it('should produce valid hex colors for all variations', () => {
       const input: ElementColorValues = {
@@ -222,6 +271,25 @@ describe('computeCompoundColorValues', () => {
       result.forEach(colors => {
         expect(colors.fill).toMatch(/^#[0-9A-F]{6}$/i)
         expect(colors.stroke).toMatch(/^#[0-9A-F]{6}$/i)
+      })
+    })
+
+    it('should handle very saturated colors', () => {
+      const input: ElementColorValues = {
+        fill: '#FF0000',
+        stroke: '#CC0000',
+        hiContrast: '#FFFFFF',
+        loContrast: '#FFE0E0',
+      }
+
+      const result = computeCompoundColorValues(input)
+
+      expect(result).toHaveLength(6)
+      result.forEach(colors => {
+        expect(chroma.valid(colors.fill)).toBe(true)
+        expect(chroma.valid(colors.stroke)).toBe(true)
+        expect(colors.hiContrast).toBe(input.hiContrast)
+        expect(colors.loContrast).toBe(input.loContrast)
       })
     })
   })

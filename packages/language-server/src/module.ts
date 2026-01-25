@@ -174,6 +174,11 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
   return (services: LikeC4Services) => new Type(services)
 }
 
+/**
+ * Most probably you don't need to use this function directly.
+ * Use {@link createLanguageServices} instead.
+ * @internal
+ */
 export function createLikeC4Module(
   context: LikeC4MCPServerModuleContext,
 ): Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> {
@@ -230,6 +235,20 @@ export function createLikeC4Module(
   })
 }
 
+/**
+ * Create and initialize likec4 language services with the given context
+ * @example
+ * ```ts
+ * const { shared, likec4 } = createLanguageServices({
+ *   ...WithFileSystem(enableWatcher = true),
+ *   ...WithLikeC4ManualLayouts(),
+ *   ...NoMcpServer(),
+ * });
+ * ```
+ *
+ * It is possible to extend/override the context with additional modules
+ * See Langium documentation for more details (or at the CliContext in packages/likec4/src/language/module.ts).
+ */
 export function createLanguageServices(
   context: Partial<LanguageServicesContext>,
 ): { shared: LikeC4SharedServices; likec4: LikeC4Services }
@@ -287,6 +306,11 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
   return { shared, likec4 }
 }
 
+/**
+ * Most probably you don't need to use this function directly.
+ * Use {@link createLanguageServices} instead.
+ * @internal
+ */
 export function createSharedServices(context: Partial<LanguageServicesContext> = {}): LikeC4SharedServices {
   const moduleContext = {
     ...NoMCPServer,

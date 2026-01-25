@@ -110,6 +110,7 @@ export const compoundNode = defineRecipe({
       right: '30px',
       width: 'auto',
       minHeight: '28px',
+      color: compoundColor.ref,
 
       [`:where(.react-flow__node.draggable) &`]: {
         pointerEvents: 'all',
@@ -156,7 +157,7 @@ export const compoundNode = defineRecipe({
       },
     },
     actionBtn: {
-      '--actionbtn-color': compoundColor.ref,
+      '--actionbtn-color': `oklch(from ${compoundColor.ref} calc(l - 0.1) c h)`,
       '--actionbtn-color-hovered': compoundColor.ref,
       '--actionbtn-color-hovered-btn': `oklch(from ${compoundColor.ref} calc(l + 0.2) c h)`,
       opacity: {
@@ -213,7 +214,7 @@ export const compoundNode = defineRecipe({
         root: {
           backgroundColor: alpha(__v('palette.fill'), compoundTransparency.ref),
           borderColor: alpha(__v('palette.stroke'), borderTransparency.ref),
-          [compoundColor.var]: __v('palette.loContrast'),
+          [compoundColor.var]: `color-mix(in oklch, ${__v('palette.hiContrast')}, ${__v('palette.stroke')} 10%)`,
         },
       }),
     },
@@ -221,26 +222,18 @@ export const compoundNode = defineRecipe({
     inverseColor: {
       true: parts({
         root: {
+          '--_mix': `color-mix(in oklch, ${__v('palette.hiContrast')}, ${__v('palette.stroke')} 60%)`,
           [compoundColor.var]: {
-            base: `color-mix(in oklch, ${__v('palette.hiContrast')}, ${__v('palette.stroke')} 90%)`,
-            _dark: `color-mix(in oklch, ${__v('palette.hiContrast')} 70%, ${__v('palette.fill')})`,
-          },
-        },
-        titleContainer: {
-          mixBlendMode: {
-            base: 'multiply',
-            _dark: 'lighten',
+            base: 'oklch(from var(--_mix) calc(l - 0.2) c h)',
+            _dark: 'oklch(from var(--_mix) calc(l + 0.2) c h)',
           },
         },
         actionBtn: {
-          _dark: {
-            '--actionbtn-color-hovered-btn': __v('palette.loContrast'),
-          },
+          '--actionbtn-color': compoundColor.ref,
           _light: {
-            '--actionbtn-color': __v('palette.stroke'),
             '--actionbtn-color-hovered': __v('palette.stroke'),
             '--actionbtn-color-hovered-btn': __v('palette.hiContrast'),
-            '--actionbtn-bg-hovered': alpha(__v('palette.fill'), 50),
+            '--actionbtn-bg-hovered': alpha(__v('palette.fill'), 30),
             '--actionbtn-bg-hovered-btn': __v('palette.fill'),
           },
         },
