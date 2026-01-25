@@ -72,8 +72,12 @@ jobs:
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: ⚙️ build
-        run: pnpm turbo run build --filter="likec4"
+      # TODO: fix obuild on windows
+      # - name: ⚙️ build
+      #   run: pnpm turbo run build --filter="likec4"
+
+      - name: ⚙️ generate
+        run: pnpm generate
 
       - name: 🔬 test
         env:
