@@ -3,11 +3,6 @@
   "extends": [
     "../../.oxlintrc.json"
   ],
-  "env": {
-    "es2024": true,
-    "browser": true
-  },
-  "settings": {},
   "rules": {
     "react_perf/jsx-no-jsx-as-prop": "warn",
     "react/exhaustive-deps": "warn",

@@ -6,7 +6,7 @@ import type {
 import { createViewChange } from '../likec4diagram/state/createViewChange'
 import type { DiagramContext, DiagramMachineRef } from '../likec4diagram/state/machine'
 import type { Types } from '../likec4diagram/types'
-import { machine } from './editorActor'
+import { machine } from './editorActor.setup'
 
 /**
  * Actually this is DiagramActorRef

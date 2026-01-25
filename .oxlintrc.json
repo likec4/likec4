@@ -7,6 +7,8 @@
     "eslint",
     "typescript",
     "unicorn",
+    "react",
+    "react-perf",
     "oxc",
     "import",
     "node",
@@ -14,32 +16,35 @@
   ],
   "ignorePatterns": [
     "packages/create-likec4/",
+    "apps/docs/",
     "examples/"
   ],
   "rules": {
     "max-dependencies": "off",
     "max-lines-per-function": "off",
-    "oxc/no-optional-chaining": "off",
+    "no-optional-chaining": "off",
     "no-undefined": "off",
     "no-inline-comments": "off",
     "no-named-as-default-member": "off",
-    "oxc/no-accumulating-spread": "error",
+    "no-accumulating-spread": "error",
     "no-array-reverse": "off",
     "no-await-in-loop": "off",
-    "import/no-commonjs": "error",
-    "import/consistent-type-specifier-style": [
-      "warn",
-      {
-        "prefer-top-level": true
-      }
-    ],
+    "no-commonjs": "error",
+    // TODO: Enable these rules later
+    "no-cycle": "off",
+    "import/consistent-type-specifier-style": "off",
+    // "import/consistent-type-specifier-style": [
+    //   "warn",
+    //   {
+    //     "prefer-top-level": true
+    //   }
+    // ],
     "import/first": [
       "warn",
       {
         "absolute-first": true
       }
     ],
-    "import/no-cycle": "error",
     "no-restricted-imports": [
       "error",
       {

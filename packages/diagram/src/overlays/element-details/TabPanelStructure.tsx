@@ -37,6 +37,7 @@ export const ElementLabel = ({
 //   node
 // }: RenderTreeNodePayload) => {
 // }
+const infoIcon = <IconInfoCircle />
 const setHoveredNode = () => {}
 export function TabPanelStructure({
   element,
@@ -93,7 +94,7 @@ export function TabPanelStructure({
 
   return (
     <>
-      <Alert variant="light" color="orange" title="In development" icon={<IconInfoCircle />}>
+      <Alert variant="light" color="orange" title="In development" icon={infoIcon}>
         We need your feedback. Share your thoughts and ideas -{' '}
         <Anchor
           fz="sm"
