@@ -4,11 +4,8 @@ import spawn from 'nano-spawn'
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
-import { isCI, isProduction } from 'std-env'
 import { build } from 'vite'
 import { amIExecuted } from './_utils'
-
-const prodOrCI = isProduction || isCI
 
 export async function bundleApp() {
   const cwd = process.cwd()

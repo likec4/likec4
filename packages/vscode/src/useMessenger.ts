@@ -59,9 +59,10 @@ export const useMessenger = createSingletonComposable(() => {
     return useDisposable(
       messenger.onNotification(notiType, async (params: P, sender: MessageParticipant) => {
         try {
+          logger.debug(`onNotification {noti} from {sender}`, { noti: notiType.method, sender })
           await Promise.resolve().then(() => handler(params, sender))
         } catch (err) {
-          logger.warn(`notification {noti} failed`, { noti: notiType.method, err })
+          logger.warn(`onNotification {noti} failed`, { noti: notiType.method, err })
           throw err // propagate to client
         }
       }),
@@ -76,6 +77,7 @@ export const useMessenger = createSingletonComposable(() => {
   const sendRequest =
     <P, R>(reqType: RequestType<P, R>): ReqOp<P, R> => async (receiver: MessageParticipant, params?: P) => {
       try {
+        logger.debug(`sendRequest {reqType} to {receiver}`, { reqType: reqType.method, receiver })
         return await messenger.sendRequest(reqType, receiver, params)
       } catch (err) {
         logger.warn(`sendRequest {req} failed`, { req: reqType.method, err })
@@ -91,10 +93,10 @@ export const useMessenger = createSingletonComposable(() => {
   const sendNotification =
     <P>(notiType: NotificationType<P>): NotifyOp<P> => (receiver: MessageParticipant, params?: P) => {
       try {
-        logger.debug(`send {noti} to {receiver}`, { noti: notiType.method })
+        logger.debug(`sendNotification {notiType} to {receiver}`, { notiType: notiType.method, receiver })
         return messenger.sendNotification(notiType, receiver, params)
       } catch (err) {
-        logger.warn(`sendNotification {noti} failed`, { noti: notiType.method, err })
+        logger.warn(`sendNotification {notiType} failed`, { notiType: notiType.method, err })
         throw err
       }
     }

@@ -106,7 +106,7 @@ if (isProduction) {
     target: 'es2022',
     platform: 'browser',
     plugins: [nodeModulesPolyfillPlugin()],
-    conditions: ['sources', 'worker', 'browser', 'import'],
+    conditions: ['production', 'sources', 'worker', 'browser', 'import'],
   }, {
     ...base,
     sourcemap: isDev,
@@ -116,7 +116,7 @@ if (isProduction) {
     target: 'es2022',
     platform: 'browser',
     plugins: [nodeModulesPolyfillPlugin()],
-    conditions: ['sources', 'worker', 'browser', 'import'],
+    conditions: ['production', 'sources', 'worker', 'browser', 'import'],
   })
 }
 

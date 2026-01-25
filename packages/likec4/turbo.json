@@ -5,9 +5,6 @@
   ],
   "tasks": {
     "generate:app": {
-      "dependsOn": [
-        "@likec4/styles#generate"
-      ],
       "inputs": [
         "app/**",
         "!app/src/routeTree.gen.ts",
@@ -21,12 +18,13 @@
     "generate": {
       "dependsOn": [
         "generate:app",
-        "@likec4/language-server#generate"
+        "^generate"
       ],
       "outputs": []
     },
     "build-react": {
       "dependsOn": [
+        "generate",
         "@likec4/core#build",
         "@likec4/diagram#build-dist"
       ],
@@ -43,8 +41,9 @@
     },
     "build-app": {
       "dependsOn": [
-        "generate:app",
-        "@likec4/styles#generate"
+        "generate",
+        "@likec4/core#build",
+        "@likec4/diagram#build"
       ],
       "outputs": [
         "__app__/**"
@@ -58,6 +57,7 @@
     },
     "build-cli": {
       "dependsOn": [
+        "generate",
         "@likec4/core#build",
         "@likec4/language-server#build",
         "@likec4/config#build",

@@ -21,6 +21,9 @@
       "path": "../log/tsconfig.json"
     },
     {
+      "path": "../config/tsconfig.json"
+    },
+    {
       "path": "../vscode-preview/tsconfig.protocol.json"
     },
     {
