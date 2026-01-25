@@ -99,10 +99,10 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "./dist/index.d.mts",
-    "module": "./dist/index.mjs",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs",
     "browser": {
-      "./dist/index.mjs": "./dist/browser.mjs"
+      "dist/index.mjs": "dist/browser.mjs"
     }
   },
   "scripts": {

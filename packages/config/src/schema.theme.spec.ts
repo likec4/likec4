@@ -61,7 +61,7 @@ describe('LikeC4StylesConfig', () => {
       expect(theme).toHaveProperty('colors.primary.relationships.line', '#555555')
       expect(theme).toHaveProperty('colors.primary.relationships.label', '#666666')
       // default should be injected by schema
-      expect(theme).toHaveProperty('colors.primary.relationships.labelBg', 'rgba(0, 0, 0, 0)')
+      expect(theme).toHaveProperty('colors.primary.relationships.labelBg', 'rgba(0, 0, 0, 0.5)')
       // red2 should be parsed
       expect(theme).toHaveProperty('colors.red2', themecolorValues(expect))
     })
@@ -123,7 +123,7 @@ describe('LikeC4StylesConfig', () => {
       expect(parsed.relationships).toEqual({
         line: '#505050',
         label: '#606060',
-        labelBg: 'rgba(0, 0, 0, 0)',
+        labelBg: 'rgba(0, 0, 0, 0.5)',
       })
       expect(parsed.elements).toEqual(input.elements)
     })
