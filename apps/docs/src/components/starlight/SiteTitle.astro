@@ -3,7 +3,7 @@ import AstrolightSiteTitle from '@astrojs/starlight/components/SiteTitle.astro'
 
 const menuItems = [
   { name: 'Docs', href: '/tutorial' },
-  { name: 'Sponsor', href: '/sponsor' },
+  // { name: 'Sponsor', href: '/sponsor' },
   { name: 'Playground', href: 'https://playground.likec4.dev/w/tutorial/' },
 ]
 
@@ -22,7 +22,7 @@ function pathsMatch(pathA: string, pathB: string): boolean {
       <a
         href={menuItem.href}
         aria-current={pathsMatch(encodeURI(menuItem.href), Astro.url.pathname) && 'page'}
-      >s
+      >
         <span>{menuItem.name}</span>
       </a>
     ))}

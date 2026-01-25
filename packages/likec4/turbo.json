@@ -35,7 +35,8 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "!app/**",
-        "!src/**"
+        "!src/**",
+        "src/vite-plugin/**"
       ],
       "outputLogs": "new-only"
     },
@@ -51,7 +52,8 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "!react/**",
-        "!src/**"
+        "!src/**",
+        "src/vite-plugin/**"
       ],
       "outputLogs": "new-only"
     },
