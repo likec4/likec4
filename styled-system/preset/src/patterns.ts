@@ -1,6 +1,8 @@
-import { type Config, definePattern } from '@pandacss/dev'
+import type { Config } from '@pandacss/dev'
+import { definePattern } from '@pandacss/dev'
 import type { LiteralUnion } from '@pandacss/types'
-import { type ThemeColor, ThemeColors } from './defaults/types'
+import type { ThemeColor } from './defaults/types'
+import { ThemeColors } from './defaults/types'
 
 type ExtendablePatternConfig = NonNullable<Config['patterns']>
 
@@ -30,7 +32,7 @@ const txt = definePattern({
     dimmed: false,
     size: 'md',
   },
-  transform(props, helpers) {
+  transform(props, _helpers) {
     const { inline, size, dimmed, lh, likec4color, ...rest } = props
     if (dimmed && likec4color) {
       throw new Error('dimmed and likec4color are mutually exclusive')

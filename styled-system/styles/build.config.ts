@@ -11,9 +11,6 @@ export default defineBuildConfig({
     ],
     rolldown: {
       platform: 'browser',
-      treeshake: {
-        moduleSideEffects: false,
-      },
     },
   }, {
     type: 'bundle',

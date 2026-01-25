@@ -215,7 +215,7 @@ export const elementNodeData = defineRecipe({
           [hasIcon]: {
             [textAlign]: 'left',
             '& .likec4-element-node-content': {
-              minWidth: `calc(50% - calc(${__v('icon.size')} / 2))`,
+              minWidth: `calc(50% + calc(${__v('icon.size')} / 2))`,
               alignItems: 'flex-start',
             },
           },

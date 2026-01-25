@@ -8,22 +8,22 @@ import { colors } from './tokens.colors.ts'
 export const tokens = defineTokens({
   fontSizes: {
     'xxs': {
-      value: 'calc(10px * var(--mantine-scale))',
+      value: '10px',
     },
     xs: {
-      value: 'calc(12px * var(--mantine-scale))',
+      value: '12px',
     },
     sm: {
-      value: 'calc(14px * var(--mantine-scale))',
+      value: '14px',
     },
     md: {
-      value: 'calc(16px * var(--mantine-scale))',
+      value: '16px',
     },
     lg: {
-      value: 'calc(18px * var(--mantine-scale))',
+      value: '18px',
     },
     xl: {
-      value: 'calc(20px * var(--mantine-scale))',
+      value: '20px',
     },
     likec4: {
       ...mapValues(defaultTheme.textSizes, (value, key) => ({
@@ -235,7 +235,6 @@ export const tokens = defineTokens({
     out: { value: 'cubic-bezier(0, 0, 0.40, 1)' },
     inOut: { value: 'cubic-bezier(0.50, 0, 0.2, 1)' },
   },
-  cursor: {},
   durations: {
     fastest: { value: '50ms' },
     faster: { value: '100ms' },

@@ -7,6 +7,8 @@ type ExtendableGlobalVars = NonNullable<Config['globalVars']>
 
 export const globalVars: ExtendableGlobalVars = {
   extend: {
+    [vars.font]: '/*-*/ /*-*/',
+    [vars.spacing]: '/*-*/ /*-*/',
     [vars.textsize]: rem(defaultTheme.textSizes.md),
     // Use the primary color as the default palette
     [vars.palette.fill]: defaultTheme.colors.primary.elements.fill,
@@ -19,10 +21,8 @@ export const globalVars: ExtendableGlobalVars = {
     [vars.palette.relationStrokeSelected]: __v('palette.relationStroke'),
     '--mantine-scale': '1',
     [vars.palette.outline]: __v('palette.loContrast'),
-    [vars.spacing]: '/*-*/ /*-*/',
     '--text-fz': '/*-*/ /*-*/',
     [vars.icon.color]: '/*-*/ /*-*/',
     [vars.icon.size]: '/*-*/ /*-*/',
-    [vars.font]: '/*-*/ /*-*/',
   },
 }

@@ -120,7 +120,7 @@ export const compoundNode = defineRecipe({
       flex: '1',
       fontFamily: 'likec4.compound',
       fontWeight: 600,
-      fontSize: 'sm',
+      fontSize: '15px',
       textTransform: 'uppercase',
       letterSpacing: '0.25px',
       lineHeight: '1',
