@@ -1,17 +1,17 @@
-import { type LikeC4ProjectConfig, isLikeC4Config, loadConfig } from '@likec4/config/node'
-import { compareNaturalHierarchically } from '@likec4/core/utils'
+import type { LikeC4ProjectConfig } from '@likec4/config'
+import { loadConfig } from '@likec4/config/node'
 import { fdir } from 'fdir'
-import { type FileSystemNode, URI } from 'langium'
+import { URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
 import { mkdirSync } from 'node:fs'
 import { stat, unlink, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
-import { LikeC4LanguageMetaData } from '../generated/module'
 import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
-import { chokidarFileSystemWatcher } from './ChokidarWatcher'
-import { NoFileSystemWatcher } from './FileSystemWatcher'
-import type { FileNode, FileSystemModuleContext, FileSystemProvider } from './index'
+import { WithChokidarWatcher } from './ChokidarWatcher'
+import { NoFileSystemWatcher } from './noop'
+import type { FileNode, FileSystemModuleContext, FileSystemProvider } from './types'
+import { ensureOrder, excludeNodeModules, isLikeC4ConfigFile, isLikeC4File } from './utils'
 
 const logger = rootLogger.getChild('filesystem')
 
@@ -19,21 +19,8 @@ export const WithFileSystem = (
   ehableWatcher = true,
 ): FileSystemModuleContext => ({
   fileSystemProvider: () => new SymLinkTraversingFileSystemProvider(),
-  ...ehableWatcher ? chokidarFileSystemWatcher : NoFileSystemWatcher,
+  ...ehableWatcher ? WithChokidarWatcher : NoFileSystemWatcher,
 })
-
-export const isLikeC4File = (path: string, isDirectory: boolean = false) =>
-  !isDirectory && LikeC4LanguageMetaData.fileExtensions.some((ext) => path.endsWith(ext))
-
-const isLikeC4ConfigFile = (path: string, isDirectory: boolean) => !isDirectory && isLikeC4Config(path)
-
-const excludeNodeModules = (dirName: string) => ['node_modules', '.git', '.svn', '.yarn', '.pnpm'].includes(dirName)
-
-/**
- * Compare function for document paths to ensure consistent order
- */
-const compare = compareNaturalHierarchically('/')
-const ensureOrder = (a: FileSystemNode, b: FileSystemNode) => compare(a.uri.path, b.uri.path)
 
 /**
  * A file system provider that follows symbolic links.

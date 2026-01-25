@@ -40,7 +40,7 @@ export interface ProjectVirtualModule {
   }): Promise<string>
 }
 
-export function generateMatches(moduleId: string) {
+export function generateMatches(moduleId: string, extension = '.js') {
   return {
     matches: (id: string): ProjectId | null => {
       let { module, projectId } = id.match(/^likec4:plugin\/(?<projectId>.+)\/(?<module>.+)$/)?.groups ??
@@ -48,15 +48,15 @@ export function generateMatches(moduleId: string) {
       if (!module || !projectId) {
         return null
       }
-      if (module.endsWith('.js')) {
-        module = module.slice(0, -3)
+      if (module.endsWith(extension)) {
+        module = module.slice(0, -extension.length)
       }
       if (module === moduleId) {
         return projectId as ProjectId
       }
       return null
     },
-    virtualId: (projectId: ProjectId): string => joinURL(`likec4:plugin`, projectId, moduleId) + '.js',
+    virtualId: (projectId: ProjectId): string => joinURL(`likec4:plugin`, projectId, moduleId) + extension,
   }
 }
 

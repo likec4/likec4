@@ -1,83 +1,43 @@
-import { resolve } from 'node:path'
-import { defineBuildConfig } from 'unbuild'
+import { defineBuildConfig } from 'obuild/config'
 
-// @ts-expect-errorf
-const isProd = process.env.NODE_ENV === 'production'
-
-export default defineBuildConfig([
-  {
-    entries: [
-      './src/protocol.ts',
-    ],
-    clean: true,
-    stub: false,
-    failOnWarn: false,
-    declaration: isProd,
-    externals: [
-      'vscode-uri',
-      'vscode-jsonrpc',
-      'vscode-languageserver-types',
-      '@likec4/config',
-    ],
-    rollup: {
-      esbuild: {
+export default defineBuildConfig({
+  entries: [
+    {
+      type: 'bundle',
+      input: [
+        './src/index.ts',
+        './src/common-exports.ts',
+        './src/bundled.ts',
+        './src/browser-worker.ts',
+        './src/browser.ts',
+        './src/ast.ts',
+        './src/module.ts',
+        './src/protocol.ts',
+        './src/likec4lib.ts',
+        './src/LikeC4LanguageServices.ts',
+        './src/filesystem/index.ts',
+        './src/mcp/index.ts',
+        './src/generated/ast.ts',
+        './src/generated/grammar.ts',
+        './src/generated/module.ts',
+        './src/generated-lib/icons.ts',
+      ],
+      rolldown: {
         platform: 'neutral',
-        minifyIdentifiers: false,
-        lineLimit: 500,
+        resolve: {
+          mainFields: ['module', 'main'],
+        },
+        // treeshake: {
+        //   moduleSideEffects: 'no-external',
+        //   // unknownGlobalSideEffects: false,
+        //   // propertyReadSideEffects: false,
+        //   // propertyWriteSideEffects: false,
+        // },
       },
-      inlineDependencies: false,
+      // dts: {
+      //   build: true,
+      //   resolver: 'tsc',
+      // },
     },
-  },
-  {
-    entries: [
-      './src/index.ts',
-      './src/bundled.ts',
-      './src/likec4lib.ts',
-    ],
-    clean: false,
-    stub: false,
-    alias: {
-      'raw-body': resolve('./src/empty.ts'),
-      'content-type': resolve('./src/empty.ts'),
-    },
-    failOnWarn: false,
-    declaration: isProd,
-    rollup: {
-      esbuild: {
-        platform: 'node',
-        minifyIdentifiers: false,
-        lineLimit: 500,
-      },
-      inlineDependencies: isProd,
-      resolve: {
-        exportConditions: ['sources', 'node'],
-      },
-    },
-  },
-  {
-    entries: [
-      './src/browser-worker.ts',
-      './src/browser.ts',
-      './src/likec4lib.ts',
-    ],
-    clean: false,
-    stub: false,
-    failOnWarn: isProd,
-    declaration: isProd,
-    rollup: {
-      esbuild: {
-        platform: 'browser',
-        minifyIdentifiers: false,
-        lineLimit: 500,
-      },
-      output: {
-        hoistTransitiveImports: false,
-      },
-      inlineDependencies: isProd,
-      resolve: {
-        browser: true,
-        exportConditions: ['sources'],
-      },
-    },
-  },
-])
+  ],
+}) as unknown

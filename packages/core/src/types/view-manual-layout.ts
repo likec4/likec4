@@ -1,7 +1,7 @@
 import type { Simplify } from 'type-fest'
 import type { BBox } from '../geometry'
-import type { scalar } from '.'
 import type { _stage, _type } from './const'
+import type * as scalar from './scalar'
 import type {
   ViewAutoLayout,
   ViewType,

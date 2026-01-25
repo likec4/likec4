@@ -1,23 +1,35 @@
 import spawn from 'nano-spawn'
 import { existsSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
-import { defineBuildConfig } from 'unbuild'
+import { defineBuildConfig } from 'obuild/config'
 
 export default defineBuildConfig({
-  entries: [
-    'preset.ts',
-  ],
-  outDir: 'dist',
-  clean: false,
-  stub: false,
-  declaration: true,
-  failOnWarn: false,
-  rollup: {
-    inlineDependencies: true,
-  },
+  entries: [{
+    type: 'bundle',
+    input: [
+      './preset.ts',
+    ],
+    rolldown: {
+      platform: 'browser',
+      treeshake: {
+        moduleSideEffects: false,
+      },
+    },
+  }, {
+    type: 'bundle',
+    input: [
+      './vars/index.ts',
+    ],
+    rolldown: {
+      platform: 'browser',
+      treeshake: {
+        moduleSideEffects: false,
+      },
+    },
+  }],
   hooks: {
-    async 'build:before'() {
-      await spawn('panda', ['codegen'], {
+    end: async () => {
+      await spawn('panda', ['codegen', '--no-clean'], {
         stdio: 'inherit',
         preferLocal: true,
       })
@@ -29,6 +41,10 @@ export default defineBuildConfig({
           console.error('Failed to create dist/types/index.mjs', e)
         }
       }
+      await spawn('tsc', ['--build', '--verbose'], {
+        stdio: 'inherit',
+        preferLocal: true,
+      })
     },
   },
-})
+}) as unknown

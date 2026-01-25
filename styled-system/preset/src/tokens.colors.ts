@@ -1,5 +1,5 @@
 import { defineTokens } from '@pandacss/dev'
-import { tokens as generated } from './generated.ts'
+import { mantine, tokens as generated } from './generated.ts'
 
 export const colors = defineTokens.colors({
   mantine: generated.colors.mantine,
@@ -7,4 +7,14 @@ export const colors = defineTokens.colors({
   transparent: { value: 'transparent' },
   // For fill: none
   none: { value: 'none' },
+  text: {
+    DEFAULT: {
+      description: 'Default text color',
+      value: mantine.colors.text,
+    },
+    dimmed: {
+      description: 'Dimmed text color',
+      value: mantine.colors.dimmed,
+    },
+  },
 })

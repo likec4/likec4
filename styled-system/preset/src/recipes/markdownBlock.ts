@@ -1,5 +1,5 @@
 import { defineRecipe } from '@pandacss/dev'
-import { mantine } from '../generated'
+import { mantine } from '../generated.ts'
 
 export const markdownBlock = defineRecipe({
   className: 'likec4-markdown-block',

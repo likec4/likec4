@@ -3,16 +3,6 @@ import { mantine } from './generated.ts'
 import { alpha } from './helpers.ts'
 
 export const colors = defineSemanticTokens.colors({
-  text: {
-    DEFAULT: {
-      description: 'Default text color',
-      value: mantine.colors.text,
-    },
-    dimmed: {
-      description: 'Dimmed text color',
-      value: mantine.colors.dimmed,
-    },
-  },
   likec4: {
     background: {
       DEFAULT: {
@@ -22,16 +12,16 @@ export const colors = defineSemanticTokens.colors({
       pattern: {
         description: 'Background pattern color',
         value: {
+          base: mantine.colors.gray[4],
           _dark: alpha(mantine.colors.dark[4], 70),
-          _light: mantine.colors.gray[4],
         },
       },
     },
     mixColor: {
       description: 'Color to be used in color-mix',
       value: {
-        _dark: 'white',
-        _light: 'black',
+        base: '#000',
+        _dark: '#fff',
       },
     },
     tag: {
@@ -70,7 +60,7 @@ export const colors = defineSemanticTokens.colors({
         },
         dimmed: {
           description: 'LikeC4 panel dimmed text color',
-          value: mantine.colors.dimmed,
+          value: '{colors.text.dimmed}',
         },
       },
       action: {
@@ -80,7 +70,7 @@ export const colors = defineSemanticTokens.colors({
         },
         disabled: {
           description: 'LikeC4 action icon text color when disabled',
-          value: mantine.colors.dimmed,
+          value: '{colors.text.dimmed}',
         },
         hover: {
           description: 'LikeC4 panel action text color on hover',
@@ -153,8 +143,8 @@ export const colors = defineSemanticTokens.colors({
         DEFAULT: {
           description: 'LikeC4 overlay backdrop color',
           value: {
-            base: `rgb(34 34 34)`,
-            _light: `rgb(15 15 15)`,
+            base: `rgb(15 15 15)`,
+            _dark: `rgb(34 34 34)`,
           },
         },
       },
@@ -182,6 +172,7 @@ export const colors = defineSemanticTokens.colors({
           },
         },
         outline: {
+          description: 'LikeC4 Compare color for outline around nodes with manual changes',
           value: {
             _light: mantine.colors.orange[8],
             _dark: alpha(mantine.colors.orange[6], 80),

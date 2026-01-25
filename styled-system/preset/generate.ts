@@ -5,7 +5,6 @@ import JSON5 from 'json5'
 import { writeFileSync } from 'node:fs'
 import {
   mapToObj,
-  mapValues,
   range,
 } from 'remeda'
 const mantineVars = themeToVars({})
@@ -72,9 +71,6 @@ const mapcolors = (colorkey: keyof MantineColors, prefix = colorkey) => {
 }
 
 const tokens = {
-  lineHeights: {
-    ...mapValues(DEFAULT_THEME.lineHeights, (value) => ({ value })),
-  },
   colors: {
     mantine: {
       colors: {

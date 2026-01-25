@@ -6,22 +6,12 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "@likec4/style-preset#build"
+        "@likec4/style-preset#generate"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "lib/**"
       ]
-    },
-    "typecheck": {
-      "dependsOn": [
-        "generate",
-        "@likec4/style-preset#typecheck"
-      ],
-      "outputs": [
-        "lib/**",
-        "*.tsbuildinfo"
-      ],
-      "outputLogs": "new-only"
     }
   }
 }

@@ -3,9 +3,9 @@ import {
   pluginRemoveNegativeSpacing,
   pluginStrictTokensScope,
 } from '@pandabox/panda-plugins'
-import { type Config, defineConfig as pandaDefineConfig } from '@pandacss/dev'
+import { defineConfig as pandaDefineConfig } from '@pandacss/dev'
 
-export function defineConfig(config: Omit<Config, 'importMap' | 'presets' | 'plugins'>) {
+export function defineConfig(config) {
   return pandaDefineConfig({
     // Whether to use css reset
     importMap: '@likec4/styles',
@@ -13,6 +13,7 @@ export function defineConfig(config: Omit<Config, 'importMap' | 'presets' | 'plu
       likec4preset,
     ],
     cssVarRoot: ':where(:root,:host)',
+    forceConsistentTypeExtension: true,
     // hash: isProduction,
     // globalVars: {},
     // hash: true,
@@ -31,6 +32,7 @@ export function defineConfig(config: Omit<Config, 'importMap' | 'presets' | 'plu
           'easings',
           'spacing',
           'fontWeights',
+          // 'cursor',
           // 'fontSizes',
           // 'sizes',
           // 'lineHeights',

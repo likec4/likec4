@@ -13,7 +13,7 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
+    "build": "obuild",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
@@ -54,8 +54,6 @@
         "default": "./dist/node/index.mjs"
       }
     },
-    "./src": "./src/index.ts",
-    "./src/*": "./src/*",
     "./package.json": "./package.json",
     "./schema.json": "./schema.json"
   },
@@ -68,20 +66,15 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
-    "defu": "catalog:utils",
     "json5": "catalog:utils",
     "zod": "catalog:externals",
     "type-fest": "catalog:externals"
   },
   "peerDependencies": {
     "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild",
-    "vscode-uri": "catalog:vscode"
+    "esbuild": "catalog:esbuild"
   },
   "peerDependenciesMeta": {
-    "vscode-uri": {
-      "optional": true
-    },
     "esbuild": {
       "optional": true
     },
@@ -94,10 +87,11 @@
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
     "remeda": "catalog:utils",
+    "defu": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "nano-spawn": "catalog:externals",
     "vitest": "catalog:vitest"
   }

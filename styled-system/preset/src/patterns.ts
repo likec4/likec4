@@ -5,11 +5,6 @@ import { type ThemeColor, ThemeColors } from './defaults/types'
 type ExtendablePatternConfig = NonNullable<Config['patterns']>
 
 const txt = definePattern({
-  defaultValues: {
-    inline: false,
-    dimmed: false,
-    size: 'md',
-  },
   properties: {
     inline: {
       type: 'boolean',
@@ -30,11 +25,17 @@ const txt = definePattern({
       value: [...ThemeColors] as Array<LiteralUnion<ThemeColor>>,
     },
   },
-  transform: (props, helpers) => {
+  defaultValues: {
+    inline: false,
+    dimmed: false,
+    size: 'md',
+  },
+  transform(props, helpers) {
     const { inline, size, dimmed, lh, likec4color, ...rest } = props
+    if (dimmed && likec4color) {
+      throw new Error('dimmed and likec4color are mutually exclusive')
+    }
     return {
-      padding: '0',
-      margin: '0',
       userSelect: 'all',
       cursor: 'default',
       textStyle: dimmed ? `dimmed.${size}` : size,

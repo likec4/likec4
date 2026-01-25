@@ -1,22 +1,17 @@
-import { resolve } from 'node:path'
-import { defineBuildConfig } from 'unbuild'
+import { defineBuildConfig } from 'obuild/config'
 
 export default defineBuildConfig({
-  clean: true,
-  stub: false,
-  declaration: false,
-  alias: {
-    'raw-body': resolve('./src/empty.ts'),
-    'content-type': resolve('./src/empty.ts'),
-  },
-  rollup: {
-    esbuild: {
-      minify: true,
+  entries: [{
+    type: 'bundle',
+    input: './src/index.ts',
+    minify: true,
+    rolldown: {
+      platform: 'node',
+      resolve: {
+        mainFields: ['module', 'main'],
+        conditionNames: ['sources', 'node', 'import', 'default'],
+      },
     },
-    emitCJS: false,
-    inlineDependencies: true,
-    resolve: {
-      exportConditions: ['node'],
-    },
-  },
-})
+    dts: false,
+  }],
+}) as unknown

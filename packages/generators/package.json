@@ -40,7 +40,7 @@
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
+    "build": "obuild",
     "lint": "run -T eslint src/ --fix",
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
@@ -52,16 +52,16 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
+    "remeda": "catalog:utils",
     "json5": "catalog:utils",
-    "langium": "catalog:langium",
-    "remeda": "catalog:utils"
+    "langium": "catalog:langium"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "vitest": "catalog:vitest"
   }
 }

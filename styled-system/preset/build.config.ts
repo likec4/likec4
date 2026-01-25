@@ -1,21 +1,32 @@
-import { defineBuildConfig } from 'unbuild'
+import spawn from 'nano-spawn'
+import { defineBuildConfig } from 'obuild/config'
 
 export default defineBuildConfig({
-  entries: [
-    './src/index.ts',
-    './src/defaults/index.ts',
-  ],
-  clean: true,
-  declaration: true,
-  rollup: {
-    emitCJS: false,
-    esbuild: {
-      platform: 'neutral',
-      minify: false,
+  entries: [{
+    type: 'bundle',
+    input: [
+      './src/index.ts',
+      './src/defaults/index.ts',
+    ],
+    rolldown: {
+      platform: 'browser',
+      treeshake: {
+        moduleSideEffects: false,
+      },
     },
-    output: {
-      exports: 'named',
+  }],
+  hooks: {
+    start: async () => {
+      await spawn('tsx', ['generate.ts'], {
+        preferLocal: true,
+        stdio: 'inherit',
+      })
     },
-    inlineDependencies: true,
+    end: async () => {
+      await spawn('tsc', ['--build', '--verbose'], {
+        preferLocal: true,
+        stdio: 'inherit',
+      })
+    },
   },
-})
+}) as unknown

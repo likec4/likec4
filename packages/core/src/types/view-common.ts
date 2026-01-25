@@ -5,7 +5,7 @@ import type { _stage } from './const'
 
 import type { BBox, Point, XYPoint } from '../geometry'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
-import * as scalar from './scalar'
+import type * as scalar from './scalar'
 import type {
   BorderStyle,
   Color,

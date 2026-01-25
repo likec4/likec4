@@ -1,7 +1,7 @@
 import { defineTokens } from '@pandacss/dev'
 import { mapValues } from 'remeda'
 import { defaultTheme } from './defaults/index.ts'
-import { mantine, tokens as generated } from './generated.ts'
+import { mantine } from './generated.ts'
 import { rem } from './helpers.ts'
 import { colors } from './tokens.colors.ts'
 
@@ -33,7 +33,24 @@ export const tokens = defineTokens({
     },
   },
   lineHeights: {
-    ...generated.lineHeights,
+    'xxs': {
+      value: '1.1',
+    },
+    xs: {
+      value: '1.2',
+    },
+    sm: {
+      value: '1.35',
+    },
+    md: {
+      value: '1.45',
+    },
+    lg: {
+      value: '1.55',
+    },
+    xl: {
+      value: '1.6',
+    },
     '1': {
       value: '1',
     },
@@ -218,6 +235,7 @@ export const tokens = defineTokens({
     out: { value: 'cubic-bezier(0, 0, 0.40, 1)' },
     inOut: { value: 'cubic-bezier(0.50, 0, 0.2, 1)' },
   },
+  cursor: {},
   durations: {
     fastest: { value: '50ms' },
     faster: { value: '100ms' },
@@ -257,23 +275,28 @@ export const tokens = defineTokens({
     },
     likec4: {
       diagram: {
+        edge: {
+          value: '20',
+        },
         node: {
           compound: {
             value: '10',
-          },
-          edge: {
-            value: '20',
           },
           element: {
             value: '40',
           },
         },
       },
-      panel: {
-        value: '100',
-      },
       dropdown: {
         value: '200',
+      },
+      panel: {
+        DEFAULT: {
+          value: '100',
+        },
+        dropdown: {
+          value: '200',
+        },
       },
     },
   },

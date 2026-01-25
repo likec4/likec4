@@ -3,15 +3,13 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "composite": true,
-    "incremental": true,
     "rootDir": "src",
-    "allowImportingTsExtensions": true,
     "lib": [
-      "ES2022",
+      "ES2024",
       "DOM"
     ]
   },
   "include": [
-    "src"
+    "src/",
   ]
 }

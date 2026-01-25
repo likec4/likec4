@@ -1,11 +1,5 @@
-import {
-  type DiagramEdge,
-  type DiagramNode,
-  type LayoutedDynamicView,
-  type NodeId,
-  getParallelStepsPrefix,
-  isStepEdgeId,
-} from '@likec4/core/types'
+import type { DiagramEdge, DiagramNode, LayoutedDynamicView, NodeId } from '@likec4/core/types'
+import { getParallelStepsPrefix, isStepEdgeId } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
 import { flat, groupByProp, hasAtLeast, map, mapValues, pipe, values } from 'remeda'
 import type { SequenceActor, SequenceActorStepPort, Step } from './_types'

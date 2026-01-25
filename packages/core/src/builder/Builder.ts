@@ -1,3 +1,4 @@
+// oxlint-disable no-unsafe-type-assertion
 // oxlint-disable typescript/no-misused-spread
 import defu from 'defu'
 import {

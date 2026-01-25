@@ -32,14 +32,6 @@
   "exports": {
     ".": {
       "sources": "./src/index.ts",
-      "node": {
-        "sources": "./src/index.ts",
-        "default": {
-          "types": "./dist/index.d.mts",
-          "import": "./dist/index.mjs",
-          "default": "./dist/index.mjs"
-        }
-      },
       "browser": {
         "sources": "./src/browser.ts",
         "default": {
@@ -48,10 +40,26 @@
           "default": "./dist/browser.mjs"
         }
       },
+      "node": {
+        "sources": "./src/index.ts",
+        "default": {
+          "types": "./dist/index.d.mts",
+          "import": "./dist/index.mjs",
+          "default": "./dist/index.mjs"
+        }
+      },
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
+      }
+    },
+    "./bundled": {
+      "sources": "./src/bundled.ts",
+      "default": {
+        "types": "./dist/bundled.d.mts",
+        "import": "./dist/bundled.mjs",
+        "default": "./dist/bundled.mjs"
       }
     },
     "./likec4lib": {
@@ -85,18 +93,21 @@
         "import": "./dist/protocol.mjs",
         "default": "./dist/protocol.mjs"
       }
-    }
+    },
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "dist/index.d.mts",
-    "browser": "dist/browser.mjs",
-    "module": "dist/index.mjs"
+    "types": "./dist/index.d.mts",
+    "module": "./dist/index.mjs",
+    "browser": {
+      "./dist/index.mjs": "./dist/browser.mjs"
+    }
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild --no-parallel",
+    "build": "obuild",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-language-server-$npm_package_version.tgz package.tgz || true",
@@ -120,23 +131,30 @@
     "@likec4/log": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
+    "@smithy/util-base64": "^4.3.0",
     "fdir": "catalog:externals",
     "which": "^5.0.0",
     "type-fest": "catalog:externals",
     "chokidar": "catalog:externals",
     "nano-spawn": "catalog:externals",
+    "nanoid": "catalog:utils",
     "zod": "catalog:externals",
     "defu": "catalog:utils",
-    "langium": "catalog:langium",
     "std-env": "catalog:externals",
+    "langium": "catalog:langium",
     "immer": "catalog:utils",
-    "remeda": "catalog:utils",
     "json5": "catalog:utils",
-    "@modelcontextprotocol/sdk": "catalog:mcp"
+    "vscode-jsonrpc": "catalog:vscode",
+    "vscode-uri": "catalog:vscode",
+    "vscode-languageserver-textdocument": "catalog:vscode",
+    "vscode-languageserver-protocol": "catalog:vscode",
+    "vscode-languageserver-types": "catalog:vscode",
+    "vscode-languageserver": "catalog:vscode"
   },
   "peerDependencies": {
     "esbuild": "catalog:esbuild",
-    "bundle-require": "catalog:externals"
+    "bundle-require": "catalog:externals",
+    "@modelcontextprotocol/sdk": "catalog:mcp"
   },
   "peerDependenciesMeta": {
     "esbuild": {
@@ -144,19 +162,21 @@
     },
     "bundle-require": {
       "optional": true
+    },
+    "@modelcontextprotocol/sdk": {
+      "optional": true
     }
   },
   "devDependencies": {
-    "p-debounce": "catalog:utils",
+    "remeda": "catalog:utils",
     "p-queue": "catalog:utils",
+    "p-debounce": "catalog:utils",
     "p-timeout": "catalog:utils",
     "@msgpack/msgpack": "^3.1.2",
-    "@smithy/util-base64": "^4.3.0",
     "ufo": "catalog:utils",
     "pretty-ms": "^9.3.0",
     "hono": "catalog:hono",
     "@hono/node-server": "catalog:hono",
-    "nanoid": "catalog:utils",
     "fast-equals": "catalog:utils",
     "strip-indent": "catalog:utils",
     "indent-string": "^5.0.0",
@@ -166,22 +186,18 @@
     "@likec4/icons": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/natural-compare-lite": "catalog:utils",
+    "@modelcontextprotocol/sdk": "catalog:mcp",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:externals",
     "picomatch": "catalog:externals",
     "@types/vscode": "catalog:vscode",
     "@types/which": "^3.0.4",
     "langium-cli": "catalog:langium",
-    "vscode-jsonrpc": "catalog:vscode",
-    "vscode-uri": "catalog:vscode",
-    "vscode-languageserver": "catalog:vscode",
-    "vscode-languageserver-protocol": "catalog:vscode",
-    "vscode-languageserver-types": "catalog:vscode",
     "oxlint": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "vitest": "catalog:vitest"
   }
 }

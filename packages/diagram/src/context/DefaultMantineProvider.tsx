@@ -43,7 +43,7 @@ const DefaultTheme = createTheme({
   },
   components: {
     SegmentedControl: SegmentedControl.extend({
-      vars: (theme, props, ctx) => ({
+      vars: (theme, props) => ({
         root: {
           // @ts-expect-error
           '--sc-font-size': theme.fontSizes[props.fz ?? props.size],

@@ -82,7 +82,7 @@ configs.push({
   target: 'node22',
   external: ['vscode', 'esbuild', 'bundle-require', 'chokidar', 'fdir', 'std-env'],
   platform: 'node',
-  conditions: ['sources', 'node', 'import'],
+  conditions: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],
 }, {
   ...base,
   entryPoints: [
@@ -92,7 +92,7 @@ configs.push({
   target: 'node22',
   external: ['vscode', 'esbuild', 'bundle-require', 'chokidar', 'fdir', 'std-env'],
   platform: 'node',
-  conditions: ['sources', 'node', 'import'],
+  conditions: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],
 })
 
 // ----------- Browser

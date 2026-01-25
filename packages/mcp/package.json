@@ -34,20 +34,15 @@
   ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "wireit",
+    "build": "obuild",
+    "preinspector": "obuild",
     "inspector": "wireit",
     "pack": "pnpm pack",
     "postpack": "cp likec4-mcp-$npm_package_version.tgz package.tgz || true",
     "clean": "likec4ops clean"
   },
   "wireit": {
-    "build": {
-      "command": "unbuild"
-    },
     "inspector": {
-      "dependencies": [
-        "build"
-      ],
       "command": "pnpx @modelcontextprotocol/inspector node dist/index.mjs",
       "env": {
         "DANGEROUSLY_OMIT_AUTH": "true",
@@ -81,7 +76,7 @@
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "vitest": "catalog:vitest",
     "vscode-uri": "catalog:vscode",
     "wireit": "catalog:",

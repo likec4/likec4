@@ -1,18 +1,19 @@
-import { defineBuildConfig } from 'unbuild'
+import { defineBuildConfig } from 'obuild/config'
 
 export default defineBuildConfig({
-  clean: true,
-  stub: false,
-  declaration: true,
-  rollup: {
-    esbuild: {
+  entries: [{
+    type: 'bundle',
+    input: './src/index.ts',
+    rolldown: {
       platform: 'neutral',
-      minifyIdentifiers: false,
-      lineLimit: 500,
+      resolve: {
+        mainFields: ['module', 'main'],
+        // conditionNames: ['sources', 'import', 'default'],
+      },
     },
-    inlineDependencies: true,
-    resolve: {
-      exportConditions: ['sources', 'node'],
-    },
-  },
+    // dts: {
+    //   build: true,
+    //   resolver: 'tsc',
+    // },
+  }],
 })

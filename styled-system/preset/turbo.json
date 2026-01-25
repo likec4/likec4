@@ -6,7 +6,9 @@
   "tasks": {
     "generate": {
       "outputs": [
-        "src/generated.ts"
+        "src/generated.ts",
+        "dist/**",
+        "lib/**"
       ]
     }
   }

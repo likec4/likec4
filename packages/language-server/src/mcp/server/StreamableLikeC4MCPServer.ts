@@ -8,7 +8,7 @@ import { cors } from 'hono/cors'
 import type { AsyncDisposable } from 'langium'
 import { nanoid } from 'nanoid'
 import type { LikeC4Services } from '../../module'
-import type { LikeC4MCPServer, LikeC4MCPServerFactory } from '../interfaces'
+import type { LikeC4MCPServer, LikeC4MCPServerFactory } from '../types'
 import { logger } from '../utils'
 
 type Bindings = HttpBindings & {

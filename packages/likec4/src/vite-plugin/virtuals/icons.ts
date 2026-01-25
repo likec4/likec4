@@ -32,7 +32,7 @@ function code(views: ComputedView[]) {
 
     const [group, icon] = s.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
 
-    acc.imports.push(`import ${Component} from 'likec4/icons/${group}/${icon}'`)
+    acc.imports.push(`import ${Component} from '@likec4/icons/${group}/${icon}'`)
     acc.cases.push(`  '${group}:${icon}': ${Component}`)
     return acc
   }, {
@@ -53,15 +53,11 @@ export function IconRenderer({ node, ...props }) {
   }
   return jsx(IconComponent, props)
 }
-  
-if (import.meta.hot) {
-  import.meta.hot.accept()
-}
 `
 }
 
 export const projectIconsModule = {
-  ...generateMatches('icons'),
+  ...generateMatches('icons', '.jsx'),
   async load({ likec4, project, logger }) {
     logger.info(k.dim(`generating likec4:icons/${project.id}`))
     const views = await likec4.views.computedViews(project.id)
@@ -104,10 +100,7 @@ ${cases.join('\n')}
 export function ProjectIcons({ projectId, ...props }) {
   const IconComponent = getProjectIcons(projectId)
   return jsx(IconComponent, props)
-}
-if (import.meta.hot) {
-  import.meta.hot.accept()
-}  
+} 
 `
   },
 } satisfies VirtualModule

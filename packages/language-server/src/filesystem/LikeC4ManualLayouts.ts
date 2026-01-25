@@ -10,6 +10,7 @@ import {
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import type { Project } from '../workspace/ProjectsManager'
+import type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext } from './types'
 
 const layoutsLogger = rootLogger.getChild('manual-layouts')
 
@@ -28,17 +29,6 @@ function getManualLayoutsOutDir(project: Project): URI {
     project.folderUri,
     project.config.manualLayouts?.outDir ?? '.likec4',
   )
-}
-
-export interface LikeC4ManualLayouts {
-  read(project: Project): Promise<Record<ViewId, LayoutedView> | null>
-  write(project: Project, layouted: LayoutedView): Promise<Location>
-  remove(project: Project, view: ViewId): Promise<Location | null>
-  clearCaches(): void
-}
-
-export interface LikeC4ManualLayoutsModuleContext {
-  manualLayouts: (services: LikeC4SharedServices) => LikeC4ManualLayouts
 }
 
 export const WithLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {

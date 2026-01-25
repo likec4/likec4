@@ -1,6 +1,6 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
-import { __v, vars } from '../const'
-import { alpha } from '../helpers'
+import { __v, vars } from '../const.ts'
+import { alpha } from '../helpers.ts'
 
 const borderWidth = {
   var: '--_border-width',
@@ -109,7 +109,7 @@ export const compoundNode = defineRecipe({
       top: '0.5',
       right: '30px',
       width: 'auto',
-      minHeight: '30px',
+      minHeight: '28px',
 
       [`:where(.react-flow__node.draggable) &`]: {
         pointerEvents: 'all',
@@ -120,7 +120,7 @@ export const compoundNode = defineRecipe({
       flex: '1',
       fontFamily: 'likec4.compound',
       fontWeight: 600,
-      fontSize: '15px',
+      fontSize: 'sm',
       textTransform: 'uppercase',
       letterSpacing: '0.25px',
       lineHeight: '1',
@@ -174,7 +174,7 @@ export const compoundNode = defineRecipe({
     },
     navigationBtn: {
       position: 'absolute',
-      top: '1',
+      top: '0.5',
       left: '0.5',
       _smallZoom: {
         display: 'none',
@@ -279,16 +279,9 @@ export const compoundNode = defineRecipe({
     inverseColor: false,
     borderStyle: 'none',
   },
-  staticCss: [
-    {
-      isTransparent: ['*'],
-    },
-    {
-      isTransparent: ['true'],
-      inverseColor: ['true'],
-    },
-    {
-      borderStyle: ['*'],
-    },
-  ],
+  staticCss: [{
+    isTransparent: ['*'],
+    inverseColor: ['*'],
+    borderStyle: ['*'],
+  }],
 })

@@ -72,7 +72,11 @@
     },
     "./vite-plugin/internal": {
       "sources": "./src/vite-plugin/internal.ts",
-      "default": "./dist/vite-plugin/internal.mjs"
+      "default": {
+        "types": "./dist/vite-plugin/internal.d.mts",
+        "import": "./dist/vite-plugin/internal.mjs",
+        "default": "./dist/vite-plugin/internal.mjs"
+      }
     },
     "./vite-plugin": {
       "sources": "./src/vite-plugin/index.ts",
@@ -81,16 +85,6 @@
         "import": "./dist/vite-plugin/index.mjs",
         "default": "./dist/vite-plugin/index.mjs"
       }
-    },
-    "./icons/all": {
-      "types": "./icons/all.d.ts",
-      "import": "./icons/all.js",
-      "default": "./icons/all.js"
-    },
-    "./icons/*": {
-      "types": "./icons/icon.d.ts",
-      "import": "./icons/*",
-      "default": "./icons/*"
     },
     "./package.json": "./package.json"
   },
@@ -102,12 +96,11 @@
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
-    "build-cli": "unbuild --no-parallel",
+    "build-cli": "obuild",
     "build-app": "tsx scripts/bundle-app.ts",
     "build-react": "tsx scripts/bundle-react.ts",
     "build": "echo \"use pnpm turbo run build\" || true",
-    "generate:app": "tsr generate && panda codegen",
-    "generate:icons": "tsx --conditions=sources scripts/generate-icons.ts",
+    "generate:app": "tsr generate",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
@@ -138,6 +131,7 @@
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
+    "@likec4/icons": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
     "boxen": "^8.0.1",
     "bundle-require": "catalog:externals",
@@ -148,6 +142,8 @@
     "rollup": "catalog:vite",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
+    "nanostores": "catalog:react",
+    "@nanostores/react": "catalog:react",
     "vite": "catalog:vite",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
@@ -169,13 +165,11 @@
     "@likec4/diagram": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/generators": "workspace:*",
-    "@likec4/icons": "workspace:*",
     "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
-    "@nanostores/react": "catalog:react",
     "@pandacss/dev": "catalog:css",
     "@react-hookz/web": "catalog:react",
     "@tabler/icons-react": "catalog:react",
@@ -207,7 +201,6 @@
     "mkdirp": "^3.0.1",
     "motion": "catalog:react",
 
-    "nanostores": "catalog:react",
     "npm-run-all2": "^8.0.4",
     "p-limit": "catalog:utils",
 
@@ -228,7 +221,7 @@
     "turbo": "catalog:",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "vite-plugin-dts": "catalog:vite",
     "vite-plugin-inspect": "^11.3.3",
     "vite-plugin-singlefile": "^2.3.0",

@@ -13,8 +13,8 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
-    "lint": "run -T eslint src/ --fix",
+    "build": "obuild",
+    "lint": "oxlint --type-aware",
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
@@ -124,15 +124,16 @@
     "module": "dist/index.mjs"
   },
   "dependencies": {
+    "immer": "catalog:utils",
     "type-fest": "catalog:externals",
-    "immer": "catalog:utils"
+    "zod": "catalog:externals"
   },
   "devDependencies": {
     "@dagrejs/dagre": "catalog:",
     "@likec4/devops": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
     "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
     "@types/chroma-js": "catalog:utils",
     "@types/extend": "3.0.4",
@@ -142,19 +143,21 @@
     "@types/node": "catalog:",
     "@types/object-hash": "^3.0.6",
     "@types/unist": "3.0.3",
-    "chroma-js": "catalog:utils",
+    "@rolldown/plugin-node-polyfills": "catalog:obuild",
     "defu": "catalog:utils",
+    "chroma-js": "catalog:utils",
     "fdir": "catalog:externals",
     "graphology": "catalog:",
     "graphology-dag": "catalog:",
     "graphology-types": "catalog:",
     "mdast-util-from-markdown": "^2.0.2",
-    "mdast-util-to-string": "^4.0.0",
     "mdast-util-to-hast": "^13.2.1",
+    "mdast-util-to-string": "^4.0.0",
     "mnemonist": "0.40.3",
     "natural-compare-lite": "catalog:utils",
     "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
+    "obuild": "catalog:obuild",
     "oxlint": "catalog:",
     "rehype-format": "5.0.1",
     "rehype-sanitize": "^6.0.0",
@@ -166,7 +169,6 @@
     "remeda": "catalog:utils",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
     "unified": "11.0.5",
     "vitest": "catalog:vitest"
   }

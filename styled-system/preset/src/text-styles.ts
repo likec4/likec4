@@ -5,21 +5,28 @@ export const textStyles = defineTextStyles({
     xxs: {
       value: {
         fontSize: 'xxs',
-        lineHeight: '1',
+        lineHeight: 'xxs',
         color: 'text.dimmed',
       },
     },
     xs: {
       value: {
         fontSize: 'xs',
-        lineHeight: '1',
+        lineHeight: 'xs',
         color: 'text.dimmed',
       },
     },
     sm: {
       value: {
-        fontSize: 'xs',
-        lineHeight: '1.25em',
+        fontSize: 'sm',
+        lineHeight: 'sm',
+        color: 'text.dimmed',
+      },
+    },
+    md: {
+      value: {
+        fontSize: 'md',
+        lineHeight: 'md',
         color: 'text.dimmed',
       },
     },
@@ -27,19 +34,19 @@ export const textStyles = defineTextStyles({
   xxs: {
     value: {
       fontSize: 'xxs',
-      lineHeight: '1',
+      lineHeight: 'xxs',
     },
   },
   xs: {
     value: {
       fontSize: 'xs',
-      lineHeight: '1',
+      lineHeight: 'xs',
     },
   },
   sm: {
     value: {
       fontSize: 'sm',
-      lineHeight: '1.25em',
+      lineHeight: 'sm',
     },
   },
   md: {
@@ -66,7 +73,7 @@ export const textStyles = defineTextStyles({
         description: 'Text style for panel content',
         value: {
           fontSize: 'sm',
-          lineHeight: '1.25em',
+          lineHeight: 'sm',
           fontWeight: 'medium',
           color: 'likec4.panel.text',
         },
@@ -75,7 +82,7 @@ export const textStyles = defineTextStyles({
         description: 'Text style for panel action items',
         value: {
           fontSize: 'sm',
-          lineHeight: '1.25em',
+          lineHeight: 'sm',
           fontWeight: 'medium',
           color: {
             base: 'likec4.panel.action',

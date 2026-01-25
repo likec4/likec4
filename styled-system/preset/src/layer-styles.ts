@@ -1,6 +1,6 @@
 import { defineLayerStyles } from '@pandacss/dev'
 
-export const layerStyles = defineLayerStyles({
+export const layerStyles = /* @__PURE__ */ defineLayerStyles({
   likec4: {
     tag: {
       description: 'LikeC4 tag layer',
@@ -19,12 +19,12 @@ export const layerStyles = defineLayerStyles({
         description: 'LikeC4 panel layer',
         value: {
           padding: '1',
-          borderRadius: '{radii.0}',
+          borderRadius: '0',
           backgroundColor: 'likec4.panel.bg',
           border: '1px solid {colors.likec4.panel.border}',
           '@/sm': {
             boxShadow: 'lg',
-            borderRadius: '{radii.md}',
+            borderRadius: 'md',
             paddingInline: '2',
           },
           _reduceGraphicsOnPan: {
@@ -50,7 +50,7 @@ export const layerStyles = defineLayerStyles({
             paddingInline: 'xxs',
             paddingBlock: 'xxs',
             border: 'transparent',
-            borderRadius: '{radii.sm}',
+            borderRadius: 'sm',
             backgroundColor: {
               _notDisabled: {
                 _hover: 'likec4.panel.action.bg.hover',
@@ -76,7 +76,7 @@ export const layerStyles = defineLayerStyles({
             paddingInline: 'xxs',
             paddingBlock: 'xxs',
             border: 'transparent',
-            borderRadius: '{radii.sm}',
+            borderRadius: 'sm',
             backgroundColor: {
               base: 'likec4.panel.action.bg',
               _disabled: 'likec4.panel.action.bg',
@@ -95,7 +95,7 @@ export const layerStyles = defineLayerStyles({
         backgroundColor: 'likec4.dropdown.bg',
         border: '1px solid {colors.likec4.dropdown.border}',
         boxShadow: 'lg',
-        borderRadius: '{radii.md}',
+        borderRadius: 'md',
       },
     },
   },

@@ -72,6 +72,7 @@
       "vscode-languageclient": "catalog:vscode",
       "vscode-languageserver": "catalog:vscode",
       "vscode-languageserver-protocol": "catalog:vscode",
+      "vscode-languageserver-textdocument": "catalog:vscode",
       "vscode-languageserver-types": "catalog:vscode",
       "vscode-oniguruma": "catalog:vscode",
       "vscode-uri": "catalog:vscode",
@@ -83,7 +84,8 @@
     },
     "patchedDependencies": {
       "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch",
-      "xstate@5.24.0": "patches/xstate@5.24.0.patch"
+      "xstate@5.24.0": "patches/xstate@5.24.0.patch",
+      "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",

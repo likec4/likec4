@@ -113,7 +113,6 @@ export const overlay = defineRecipe({
   },
   staticCss: [{
     fullscreen: ['*'],
-  }, {
     withBackdrop: ['*'],
   }],
 })

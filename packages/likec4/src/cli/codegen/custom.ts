@@ -116,10 +116,12 @@ async function runCustomGenerator({
         },
         write: async ({ path, content }) => {
           let filepath
-          if (URI.isUri(path)) {
+          if (Array.isArray(path)) {
+            filepath = resolve(project.folder.fsPath, ...path)
+          } else if (URI.isUri(path)) {
             filepath = path.fsPath
           } else {
-            filepath = resolve(project.folder.fsPath, ...(Array.isArray(path) ? path : [path]))
+            filepath = resolve(project.folder.fsPath, `${path}`)
           }
           const outDir = dirname(filepath)
           if (!createdDirs.has(outDir)) {

@@ -1,5 +1,4 @@
-import type { Size } from './types'
-
+import type { Size } from './types.ts'
 export const defaultSizes = {
   sizes: {
     xs: {

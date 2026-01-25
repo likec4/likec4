@@ -1,6 +1,6 @@
 import type { NonEmptyArray, ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices, LikeC4Views, ProjectsManager } from '@likec4/language-server'
-import defu from 'defu'
+import { defu } from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
@@ -10,7 +10,8 @@ import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createLanguageServices } from './language/module'
 import type { Logger } from './logger'
-import { type DiagramView, LikeC4Model } from './model'
+import type { DiagramView } from './model'
+import { LikeC4Model } from './model'
 
 type LikeC4Langium = ReturnType<typeof createLanguageServices>
 

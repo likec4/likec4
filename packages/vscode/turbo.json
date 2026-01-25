@@ -17,16 +17,9 @@
       "dependsOn": [
         "generate",
         "^generate",
-        "@likec4/config#build",
-        "@likec4/core#build",
         "@likec4/vscode-preview#build"
       ],
-      "outputs": [
-        "dist/**",
-        "data/config.schema.json",
-        "!dist/src/**",
-        "!dist/**/*.metafile.json"
-      ],
+      "cache": false,
       "outputLogs": "new-only"
     }
   }

@@ -8,7 +8,7 @@ export default defineProject({
     conditions: ['sources'],
     // Seems vitest doesn't resolve conditions
     alias: {
-      '@likec4/style-preset': resolve(__dirname, '../../styled-system/preset/src'),
+      '@likec4/style-preset/defaults': resolve(__dirname, '../../styled-system/preset/src/defaults/index.ts'),
     },
   },
   test: {

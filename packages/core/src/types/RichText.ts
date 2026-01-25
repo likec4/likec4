@@ -7,10 +7,6 @@ const symb_html = Symbol.for('html')
 
 const emptyTxt = ''
 
-// Keep 500 last converted markdown/html texts in memory
-const mdcache = new LRUMap<string, RichTextOrEmpty>(500)
-const txtcache = new LRUMap<string, RichTextOrEmpty>(500)
-
 export interface RichTextEmpty {
   readonly isEmpty: true
   readonly isMarkdown: false
@@ -41,17 +37,21 @@ export type RichTextOrEmpty = RichTextNonEmpty | RichTextEmpty
  * It is used to represent the content of a node or a link.
  */
 export class RichText {
+  // Keep 500 last converted markdown/html texts in memory
+  private static mdcache = new LRUMap<string, RichTextOrEmpty>(500)
+  private static txtcache = new LRUMap<string, RichTextOrEmpty>(500)
+
   private static getOrCreateFromText(txt: string): RichTextOrEmpty {
     txt = txt.trimEnd()
     if (txt === emptyTxt) {
       return RichText.EMPTY
     }
-    let cached = txtcache.get(txt)
+    let cached = RichText.txtcache.get(txt)
     if (cached) {
       return cached
     }
     cached = new RichText({ txt }) as RichTextOrEmpty
-    txtcache.set(txt, cached)
+    RichText.txtcache.set(txt, cached)
     return cached
   }
 
@@ -60,12 +60,12 @@ export class RichText {
     if (md === emptyTxt) {
       return RichText.EMPTY
     }
-    let cached = mdcache.get(md)
+    let cached = RichText.mdcache.get(md)
     if (cached) {
       return cached
     }
     cached = new RichText({ md }) as RichTextOrEmpty
-    mdcache.set(md, cached)
+    RichText.mdcache.set(md, cached)
     return cached
   }
 

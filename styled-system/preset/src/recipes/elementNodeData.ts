@@ -1,6 +1,6 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
-import { __v, vars } from '../const'
-import { defaultSizes } from '../defaults/sizes'
+import { __v, vars } from '../const.ts'
+import { defaultSizes } from '../defaults/sizes.ts'
 
 const parts = defineParts({
   root: { selector: '&' },
@@ -295,10 +295,8 @@ export const elementNodeData = defineRecipe({
     withIconColor: false,
   },
   staticCss: [{
-    iconPosition: ['*'],
-    conditions: ['*'],
-  }, {
     withIconColor: ['*'],
+    iconPosition: ['*'],
     conditions: ['*'],
   }],
 })

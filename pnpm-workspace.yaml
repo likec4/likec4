@@ -58,12 +58,12 @@ catalogs:
     '@hpcc-js/wasm-graphviz': 1.17.0
     '@types/picomatch': ^4.0.2
     bundle-require: ^5.1.0
-    type-fest: ^4.41.0
     chokidar: ^5.0.0
     fdir: 6.4.0
     nano-spawn: ^2.0.0
-    std-env: ^3.10.0
     picomatch: ^4.0.3
+    std-env: ^3.10.0
+    type-fest: ^4.41.0
     zod: ^3.25.76
   hono:
     '@hono/node-server': ^1.19.7
@@ -83,6 +83,9 @@ catalogs:
     '@mantine/vanilla-extract': 8.3.10
   mcp:
     '@modelcontextprotocol/sdk': ^1.25.1
+  obuild:
+    obuild: ^0.4.20
+    '@rolldown/plugin-node-polyfills': ^1.0.0
   react:
     '@floating-ui/dom': ^1.7.4
     '@nanostores/media-query': 0.1.2
@@ -124,7 +127,6 @@ catalogs:
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
-
     nanoid: 5.1.6
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0
@@ -156,6 +158,7 @@ catalogs:
     vscode-languageserver: 9.0.1
     vscode-languageserver-protocol: 3.17.5
     vscode-languageserver-types: 3.17.5
+    vscode-languageserver-textdocument: 1.0.11
     vscode-oniguruma: 2.0.1
     vscode-textmate: 9.3.0
     vscode-uri: 3.1.0

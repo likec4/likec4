@@ -1,30 +1,28 @@
-import { defineBuildConfig } from 'unbuild'
+import { defineBuildConfig } from 'obuild/config'
 
-// @ts-expect-error
-const isProd = process.env.NODE_ENV === 'production'
-
+// oxlint-disable-next-line no-default-export
 export default defineBuildConfig({
   entries: [
-    './src/index.ts',
-    './src/sequence/index.ts',
-    './src/graphviz/binary/index.ts',
+    {
+      type: 'bundle',
+      input: [
+        'src/index.ts',
+        'src/sequence/index.ts',
+        'src/graphviz/GraphvizLayoter.ts',
+        'src/graphviz/QueueGraphvizLayoter.ts',
+        'src/graphviz/wasm/index.ts',
+        'src/graphviz/binary/index.ts',
+      ],
+      rolldown: {
+        platform: 'neutral',
+        resolve: {
+          mainFields: ['module', 'main'],
+        },
+      },
+      // dts: {
+      //   build: true,
+      //   resolver: 'tsc',
+      // },
+    },
   ],
-  clean: true,
-  stub: false,
-  declaration: isProd,
-  failOnWarn: isProd,
-  rollup: {
-    esbuild: {
-      platform: 'neutral',
-      minifyIdentifiers: false,
-      lineLimit: 500,
-    },
-    output: {
-      hoistTransitiveImports: false,
-    },
-    inlineDependencies: isProd,
-    resolve: {
-      exportConditions: ['sources', 'node'],
-    },
-  },
-})
+}) as unknown

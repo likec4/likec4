@@ -24,7 +24,10 @@
     "build": {
       "dependsOn": [
         "^generate",
-        "generate"
+        "generate",
+        "@likec4/core#build",
+        "@likec4/config#build",
+        "@likec4/layouts#build"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",

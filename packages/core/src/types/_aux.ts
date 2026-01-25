@@ -261,6 +261,7 @@ export type WithDescriptionAndTech = {
 /**
  * Returns summary if it is not null, otherwise returns description
  */
+/* @__NO_SIDE_EFFECTS__ */
 export function preferSummary(a: WithDescriptionAndTech): scalar.MarkdownOrString | null | undefined {
   return a.summary ?? a.description
 }
@@ -268,6 +269,7 @@ export function preferSummary(a: WithDescriptionAndTech): scalar.MarkdownOrStrin
 /**
  * Returns description if it is not null, otherwise returns summary
  */
+/* @__NO_SIDE_EFFECTS__ */
 export function preferDescription(a: WithDescriptionAndTech): scalar.MarkdownOrString | null | undefined {
   return a.description ?? a.summary
 }

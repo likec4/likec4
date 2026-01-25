@@ -30,7 +30,7 @@ export const globalCss: ExtendableGlobalCss = {
     // },
     ':where(:root,:host)': {
       ['--likec4-app-font-default']:
-        `'IBM Plex Sans','ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'`,
+        `'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
     },
 
     ...sizeConditions,
@@ -145,11 +145,11 @@ export const globalCss: ExtendableGlobalCss = {
         },
       },
 
-      '&:is([data-likec4-reduced-graphics]) .hide-on-reduced-graphics': {
+      '&:is([data-likec4-reduced-graphics="true"]) .hide-on-reduced-graphics': {
         display: 'none!',
       },
 
-      '&:not([data-likec4-reduced-graphics])': {
+      '&:not([data-likec4-reduced-graphics="true"])': {
         '& :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed])': {
           filter: 'grayscale(85%)',
         },

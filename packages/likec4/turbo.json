@@ -11,31 +11,16 @@
       "inputs": [
         "app/**",
         "!app/src/routeTree.gen.ts",
-        "panda.config.ts",
         "tsr.config.json"
       ],
       "outputs": [
-        "styled-system/**",
         "app/src/routeTree.gen.ts"
-      ],
-      "outputLogs": "new-only"
-    },
-    "generate:icons": {
-      "dependsOn": [
-        "@likec4/icons#generate"
-      ],
-      "inputs": [
-        "scripts/generate-icons.ts"
-      ],
-      "outputs": [
-        "icons/**"
       ],
       "outputLogs": "new-only"
     },
     "generate": {
       "dependsOn": [
         "generate:app",
-        "generate:icons",
         "@likec4/language-server#generate"
       ],
       "outputs": []
@@ -74,10 +59,10 @@
     "build-cli": {
       "dependsOn": [
         "@likec4/core#build",
-        "@likec4/log#build",
         "@likec4/language-server#build",
-        "@likec4/generators#build",
-        "@likec4/layouts#build"
+        "@likec4/config#build",
+        "@likec4/layouts#build",
+        "@likec4/generators#build"
       ],
       "outputs": [
         "dist/**",

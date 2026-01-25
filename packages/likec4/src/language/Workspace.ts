@@ -1,4 +1,4 @@
-import { isLikeC4Builtin } from '@likec4/language-server'
+import { isLikeC4Builtin } from '@likec4/language-server/likec4lib'
 import type { CliServices } from './module'
 
 import type { WorkspaceFolder } from 'langium'

@@ -100,6 +100,7 @@ export interface LikeC4StyleDefaults {
   readonly border?: BorderStyle
   readonly padding?: SpacingSize
   readonly text?: TextSize
+  readonly iconPosition?: IconPosition
   /**
    * Default style values for groups
    * If not specified, the default values for elements are used

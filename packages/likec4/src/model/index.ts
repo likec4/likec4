@@ -68,7 +68,10 @@ export type {
 
 export type * from '@likec4/core/types'
 
+export type {
+  SequenceViewLayout,
+} from '@likec4/layouts/sequence'
+
 export {
   calcSequenceLayout,
-  type SequenceViewLayout,
 } from '@likec4/layouts/sequence'

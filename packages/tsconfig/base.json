@@ -14,6 +14,8 @@
     ],
     "allowArbitraryExtensions": true,
     "allowImportingTsExtensions": true,
+    "resolvePackageJsonExports": true,
+    "resolvePackageJsonImports": true,
     "allowJs": true,
     "allowUnreachableCode": false,
     "checkJs": false,
@@ -41,7 +43,6 @@
     "strict": true,
     "strictBuiltinIteratorReturn": true,
     "outDir": "${configDir}/lib",
-    "tsBuildInfoFile": "${configDir}/lib/tsconfig.tsbuildinfo",
-    "useDefineForClassFields": true
+    "tsBuildInfoFile": "${configDir}/lib/tsconfig.tsbuildinfo"
   }
 }

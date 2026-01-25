@@ -23,7 +23,6 @@
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs",
         "default": "./dist/index.mjs"
       }
     }
@@ -32,12 +31,11 @@
     "registry": "https://registry.npmjs.org",
     "access": "public",
     "types": "dist/index.d.mts",
-    "main": "dist/index.cjs",
     "module": "dist/index.mjs"
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
+    "build": "obuild",
     "pack": "pnpm pack",
     "postpack": "cp likec4-log-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz",
@@ -54,7 +52,7 @@
     "merge-error-cause": "^5.0.2",
     "safe-stringify": "catalog:utils",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "wrap-error-message": "^3.0.1"
   }
 }

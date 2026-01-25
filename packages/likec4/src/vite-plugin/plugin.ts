@@ -1,4 +1,5 @@
-import { type ProjectId, type ViewChange, type ViewId, invariant, isNonEmptyArray } from '@likec4/core'
+import type { ProjectId, ViewChange, ViewId } from '@likec4/core'
+import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { relative } from 'node:path'
 import { isDeepEqual, map } from 'remeda'

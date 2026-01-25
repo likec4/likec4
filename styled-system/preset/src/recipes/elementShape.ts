@@ -1,5 +1,5 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
-import { __v, vars } from '../const'
+import { __v, vars } from '../const.ts'
 
 const parts = defineParts({
   root: { selector: '&' },
@@ -199,9 +199,6 @@ export const elementShapeRecipe = defineRecipe({
   }],
   staticCss: [{
     shapetype: ['*'],
-    conditions: ['*'],
-  }, {
-    shapetype: ['html'],
-    withBorder: ['true'],
+    withBorder: ['*'],
   }],
 })

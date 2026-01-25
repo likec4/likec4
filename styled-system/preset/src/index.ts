@@ -2,7 +2,8 @@ import { definePreset } from '@pandacss/dev'
 
 import { animationStyles, keyframes } from './animations.ts'
 import { conditions } from './conditions.ts'
-import { breakpoints } from './generated.ts'
+import { vars as likec4vars } from './defaults/vars.ts'
+import { breakpoints, mantine } from './generated.ts'
 import { globalCss } from './globalCss.ts'
 import { globalVars } from './globalVars.ts'
 import { layerStyles } from './layer-styles.ts'
@@ -34,7 +35,7 @@ export const theme = {
   animationStyles,
 }
 
-export default definePreset({
+export default /* @__PURE__ */ definePreset({
   name: 'likec4',
   presets: [
     radixColorsPreset,
@@ -53,3 +54,8 @@ export default definePreset({
     extend: theme,
   },
 })
+
+export const vars = {
+  likec4: likec4vars,
+  mantine,
+}

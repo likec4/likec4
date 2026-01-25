@@ -4,7 +4,8 @@
 import { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView, LayoutedLikeC4ModelData } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
-import { type Atom, type WritableAtom, computed } from 'nanostores'
+import type { Atom, WritableAtom } from 'nanostores'
+import { computed } from 'nanostores'
 import { useEffect, useState } from 'react'
 import { isDeepEqual, mapValues } from 'remeda'
 
