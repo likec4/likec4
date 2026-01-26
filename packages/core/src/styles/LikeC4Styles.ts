@@ -114,11 +114,11 @@ export class LikeC4Styles {
    *
    * @param baseElementColors - The base element colors to compute from
    */
-  colorsForCompounds<Depth extends number = 5>(
+  colorsForCompounds<Depth extends number = 6>(
     baseElementColors: ElementColorValues,
     depth?: Depth,
   ): NTuple<ElementColorValues, Depth> {
-    return this.compoundColorsCache.get(baseElementColors).get(depth ?? 5) as NTuple<ElementColorValues, Depth>
+    return this.compoundColorsCache.get(baseElementColors).get(depth ?? 6) as NTuple<ElementColorValues, Depth>
   }
 
   /**
@@ -210,6 +210,10 @@ export class LikeC4Styles {
   equals(other: LikeC4Styles): boolean {
     if (other === this) {
       return true
+    }
+    // Check if both objects share the same prototype/constructor
+    if (this.constructor !== other.constructor) {
+      return false
     }
     return isDeepEqual(this.config, other.config)
   }

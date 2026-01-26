@@ -1,5 +1,4 @@
 import type * as t from '@likec4/core/types'
-import type { LayoutType } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { ActionIcon } from '@mantine/core'
@@ -30,6 +29,15 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
    * View to display.
    */
   viewId: t.aux.ViewId<A>
+
+  /**
+   * Layout to display
+   * - `auto`: auto-layouted from the current sources
+   * - `manual`: manually layouted (if available, falls back to `auto`)
+   *
+   * @default 'manual'
+   */
+  layoutType?: t.LayoutType | undefined
 
   /**
    * Enable/disable panning
@@ -349,6 +357,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   colorScheme,
   injectFontCss = true,
   controls = false,
+  layoutType: initialLayoutType = 'manual',
   background = 'transparent',
   browser = true,
   showNavigationButtons = false,
@@ -369,12 +378,12 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
 }: LikeC4ViewProps<A>) {
   const rootRef = useRef<HTMLDivElement>(null)
   const likec4model = useOptionalLikeC4Model()
-  const [layoutType, setLayoutType] = useState<LayoutType>('manual')
+  const [layoutType, setLayoutType] = useState(initialLayoutType)
   const [browserViewId, _onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
   const onNavigateTo = useCallbackRef((viewId: t.aux.ViewId<t.aux.UnknownLayouted> | null) => {
     // reset layout type if we navigate to a different view
     if (viewId && viewId !== browserViewId) {
-      setLayoutType('manual')
+      setLayoutType(initialLayoutType)
     }
     _onNavigateTo(viewId)
   })
@@ -390,13 +399,13 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
     )
   }
 
-  const view = likec4model.findView(viewId)?.$layouted
+  const viewModel = likec4model.findView(viewId)
 
-  if (!view) {
+  if (!viewModel) {
     return <ViewNotFound viewId={viewId} />
   }
 
-  if (view._stage !== 'layouted') {
+  if (!viewModel.isLayouted()) {
     return (
       <ErrorMessage>
         LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
@@ -404,8 +413,15 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
     )
   }
 
+  const view = initialLayoutType === 'manual'
+    ? viewModel.$layouted
+    : viewModel.$view
+
   const browserViewModel = browserViewId ? likec4model.findView(browserViewId) : null
-  const browserView = layoutType === 'manual' ? browserViewModel?.$layouted : browserViewModel?.$view
+
+  const browserView = layoutType === 'manual'
+    ? browserViewModel?.$layouted
+    : browserViewModel?.$view
 
   const hasNotations = !!enableNotations && (view.notation?.nodes?.length ?? 0) > 0
 
@@ -464,9 +480,10 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
           }}
           reactFlowProps={reactFlowProps}
           renderNodes={renderNodes}
-          children={children}
           {...props}
-        />
+        >
+          {children}
+        </LikeC4Diagram>
         <AnimatePresence {...root}>
           {browserView && (
             <Overlay openDelay={0} onClose={() => onNavigateTo(null)}>

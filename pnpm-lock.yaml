@@ -1559,7 +1559,7 @@ importers:
       '@dagrejs/dagre':
         specifier: 'catalog:'
         version: 1.1.8
-      '@fontsource/ibm-plex-sans':
+      '@fontsource-variable/ibm-plex-sans':
         specifier: ^5.2.8
         version: 5.2.8
       '@likec4/config':
@@ -3302,9 +3302,6 @@ packages:
 
   '@fontsource-variable/ibm-plex-sans@5.2.8':
     resolution: {integrity: sha512-n5PF2iFa0CZT0QYTPzxvZ39opC9LnU0zdoRccoADbs+Dtsd+lbXOZF7RNuIPHcQX1dKjF63sxnRImQIB5eD0Ag==}
-
-  '@fontsource/ibm-plex-sans@5.2.8':
-    resolution: {integrity: sha512-eztSXjDhPhcpxNIiGTgMebdLP9qS4rWkysuE1V7c+DjOR0qiezaiDaTwQE7bTnG5HxAY/8M43XKDvs3cYq6ZYQ==}
 
   '@hono/node-server@1.19.7':
     resolution: {integrity: sha512-vUcD0uauS7EU2caukW8z5lJKtoGMokxNbJtBiwHgpqxEXokaHCBkQUmCHhjFB1VUTWdqj25QoMkMKzgjq+uhrw==}
@@ -10592,8 +10589,6 @@ snapshots:
   '@floating-ui/utils@0.2.10': {}
 
   '@fontsource-variable/ibm-plex-sans@5.2.8': {}
-
-  '@fontsource/ibm-plex-sans@5.2.8': {}
 
   '@hono/node-server@1.19.7(hono@4.11.1)':
     dependencies:

@@ -1,8 +1,8 @@
-import type {
-  DiagramEdge,
-  DiagramNode,
-  LayoutedView,
-  ViewChange,
+import {
+  type DiagramEdge,
+  type DiagramNode,
+  type LayoutedView,
+  type ViewChange,
 } from '@likec4/core/types'
 import { getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, map, omit } from 'remeda'
@@ -76,10 +76,22 @@ export function createViewChange(
       points: data.points,
     }
     if (data.labelBBox) {
-      _updated.labelBBox = data.labelBBox
+      _updated.labelBBox = {
+        x: Math.round(data.labelBBox.x),
+        y: Math.round(data.labelBBox.y),
+        width: Math.round(data.labelBBox.width),
+        height: Math.round(data.labelBBox.height),
+      }
+    } else {
+      _updated.labelBBox = null
     }
     if (hasAtLeast(controlPoints, 1)) {
-      _updated.controlPoints = controlPoints
+      _updated.controlPoints = map(controlPoints, v => ({
+        x: Math.round(v.x),
+        y: Math.round(v.y),
+      }))
+    } else {
+      delete _updated.controlPoints
     }
     return _updated
   })

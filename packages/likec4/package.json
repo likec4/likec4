@@ -160,7 +160,7 @@
     "@likec4/config": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@dagrejs/dagre": "catalog:",
-    "@fontsource/ibm-plex-sans": "^5.2.8",
+    "@fontsource-variable/ibm-plex-sans": "^5.2.8",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/layouts": "workspace:*",

@@ -30,7 +30,7 @@ export const globalCss: ExtendableGlobalCss = {
     // },
     ':where(:root,:host)': {
       ['--likec4-app-font-default']:
-        `'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
+        `'IBM Plex Sans Variable',ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
     },
 
     ...sizeConditions,

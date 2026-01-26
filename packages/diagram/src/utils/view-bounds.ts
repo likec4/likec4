@@ -1,3 +1,4 @@
+import { invariant } from '@likec4/core'
 import { type DiagramEdge, type DynamicViewDisplayVariant, type LayoutedView, BBox } from '@likec4/core/types'
 
 /**
@@ -7,11 +8,14 @@ import { type DiagramEdge, type DynamicViewDisplayVariant, type LayoutedView, BB
 export function pickViewBounds(view: LayoutedView, dynamicVariant?: DynamicViewDisplayVariant) {
   if (view._type === 'dynamic') {
     try {
-      dynamicVariant ??= view.variant
-      if (dynamicVariant === 'sequence') {
+      const variant = dynamicVariant ?? view.variant
+      if (variant === 'sequence') {
+        invariant(view.sequenceLayout, 'Sequence layout is not available')
+        invariant(view.sequenceLayout.bounds, 'Sequence layout bounds are not available')
         return view.sequenceLayout.bounds
       }
-    } catch {
+    } catch (error) {
+      console.error(error)
       // noop
     }
   }
@@ -60,8 +64,8 @@ export function calcViewBounds({ nodes, edges }: Pick<LayoutedView, 'nodes' | 'e
   return BBox.expand(
     BBox.merge(
       ...nodes,
-      ...edges.map(calcEdgeBounds),
+      ...edges.map(calcEdgeBounds).filter(box => isFinite(box.x) && isFinite(box.y)),
     ),
-    10,
+    20,
   )
 }

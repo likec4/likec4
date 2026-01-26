@@ -14,7 +14,7 @@ import {
   IconRendererProvider,
 } from './context'
 import { TagStylesProvider } from './context/TagStylesContext'
-import { useOptionalLikeC4EditorPort } from './editor'
+import { useOptionalLikeC4Editor } from './editor'
 import { useId } from './hooks/useId'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import type {
@@ -103,7 +103,7 @@ export function LikeC4Diagram<A extends Any = Any>({
     !isEmptyish(optionalLikeC4Model.$data.manualLayouts)
 
   const hasLikeC4Model = !!optionalLikeC4Model
-  const hasEditor = !!useOptionalLikeC4EditorPort()
+  const hasEditor = !!useOptionalLikeC4Editor()
   const readonly = !hasEditor
 
   nodesSelectable ??= hasEditor || enableFocusMode || !!onNavigateTo || !!onNodeClick

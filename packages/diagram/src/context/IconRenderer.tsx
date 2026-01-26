@@ -23,6 +23,20 @@ import type { ElementIconRenderer } from '../LikeC4Diagram.props'
 
 const IconRendererContext = createContext<ElementIconRenderer | null>(null)
 
+/**
+ * Provider for custom element icon renderers
+ *
+ * @example
+ * ```tsx
+ * const MyIconRenderer: ElementIconRenderer = ({ node }) => {
+ *   return <div>{node.title}</div>
+ * }
+ *
+ * <IconRendererProvider value={MyIconRenderer}>
+ *   <LikeC4Diagram />
+ * </IconRendererProvider>
+ * ```
+ */
 export function IconRendererProvider({
   value,
   children,

@@ -161,7 +161,7 @@ Here are the options:
    > Layers order is important.
 
 3. Font.\
-   LikeC4Diagram uses [`IBM Plex Sans`](https://fontsource.org/fonts/ibm-plex-sans) by default.\
+   LikeC4Diagram uses [`IBM Plex Sans Variable`](https://fontsource.org/fonts/ibm-plex-sans) by default.\
    You can import it from [fontsource](https://fontsource.org/fonts/ibm-plex-sans) or any other CDN, bundle, or import:
 
    ```css

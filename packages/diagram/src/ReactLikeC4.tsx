@@ -13,6 +13,17 @@ export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
     viewId: t.aux.ViewId<A>
 
     /**
+     * Layout to display
+     * - `auto`: auto-layouted from the current sources
+     * - `manual`: manually layouted (if available, falls back to `auto`)
+     *
+     * Uncontrolled initial value, use `onLayoutTypeChange` to control it.
+     *
+     * @default 'manual'
+     */
+    layoutType?: t.LayoutType | undefined
+
+    /**
      * Keep aspect ratio of the diagram
      *
      * @default false
@@ -25,7 +36,7 @@ export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
     colorScheme?: 'light' | 'dark' | undefined
 
     /**
-     * LikeC4 views are using 'IBM Plex Sans' font.
+     * LikeC4 views are using 'IBM Plex Sans Variable' font.
      * By default, component injects the CSS to document head.
      * Set to false if you want to handle the font yourself.
      *
@@ -53,6 +64,7 @@ export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
  */
 export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
   viewId,
+  layoutType: initialLayoutType = 'manual',
   className,
   colorScheme,
   injectFontCss = true,
@@ -72,19 +84,24 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
       </ErrorMessage>
     )
   }
-  const view = likec4model.findView(viewId)?.$view
+  const viewModel = likec4model.findView(viewId)
 
-  if (!view) {
+  if (!viewModel) {
     return <ViewNotFound viewId={viewId} />
   }
 
-  if (view._stage !== 'layouted') {
+  if (!viewModel.isLayouted()) {
     return (
       <ErrorMessage>
         LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
       </ErrorMessage>
     )
   }
+
+  const view = initialLayoutType === 'manual'
+    ? viewModel.$layouted
+    : viewModel.$view
+
   const bounds = pickViewBounds(view, props.dynamicViewVariant)
 
   const hasNotations = !!enableNotations && (view.notation?.nodes?.length ?? 0) > 0

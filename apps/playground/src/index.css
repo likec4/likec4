@@ -4,7 +4,13 @@
 
 :root {
   --likec4-app-font:
-    "IBM Plex Sans",ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "IBM Plex Sans Variable",
+    ui-sans-serif,
+    system-ui,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
     "Noto Color Emoji";
   --likec4-default-font-family: var(--likec4-app-font);
   --mantine-default-font-family: var(--likec4-app-font);
