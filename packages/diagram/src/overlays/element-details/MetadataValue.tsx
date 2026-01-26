@@ -68,7 +68,7 @@ function MultiValueDisplay({
               className={css({
                 fontSize: 'xs',
                 color: 'mantine.colors.gray[5]',
-                fontWeight: 500,
+                fontWeight: 'medium',
                 flexShrink: 0,
                 _dark: {
                   color: 'mantine.colors.dark[3]',
@@ -126,7 +126,6 @@ function MultiValueDisplay({
               userSelect: 'all',
               _dark: {
                 backgroundColor: 'mantine.colors.dark[9]',
-                color: 'mantine.colors.text',
                 borderColor: 'mantine.colors.dark[4]',
               },
             })}
@@ -139,7 +138,7 @@ function MultiValueDisplay({
               className={css({
                 fontSize: 'xs',
                 color: 'mantine.colors.gray[5]',
-                fontWeight: 500,
+                fontWeight: 'medium',
                 flexShrink: 0,
                 _dark: {
                   color: 'mantine.colors.dark[3]',
@@ -207,7 +206,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
                 component="span"
                 className={css({
                   fontSize: 'xs',
-                  fontWeight: 500,
+                  fontWeight: 'medium',
                   color: 'mantine.colors.gray[6]',
                   backgroundColor: 'mantine.colors.gray[1]',
                   padding: '[1px 4px]',
@@ -235,7 +234,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
               userSelect: 'none',
               whiteSpace: 'nowrap',
               padding: '[4px 8px]',
-              fontWeight: 700,
+              fontWeight: '[700]',
             })}
           >
             {label}:

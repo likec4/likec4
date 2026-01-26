@@ -30,7 +30,7 @@ export const utilities: ExtendableUtilityConfig = {
           }
         }
         return {
-          transition: `all ${token(`durations.${value}`)} ${token('easings.inOut')}`,
+          transition: `all ${token.raw(`durations.${value}`)!.value} ${token.raw('easings.inOut')!.value}`,
         }
       },
     },

@@ -21,6 +21,7 @@
     "*.css",
     "panda.buildinfo.json",
     "!**/*.spec.*",
+    "!**/__*/**",
     "!**/*.d.ts.map"
   ],
   "sideEffects": false,
@@ -97,13 +98,12 @@
     "d3-shape": "^3.2.0",
     "fast-equals": "catalog:utils",
     "immer": "catalog:utils",
-    "khroma": "catalog:utils",
     "motion": "catalog:react",
     "nanostores": "catalog:react",
     "react-error-boundary": "catalog:react",
     "react-shadow": "catalog:react",
     "remeda": "catalog:utils",
-    "type-fest": "catalog:utils",
+    "type-fest": "catalog:externals",
     "xstate": "catalog:xstate"
   },
   "peerDependencies": {

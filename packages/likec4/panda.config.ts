@@ -1,18 +1,16 @@
 import { defineConfig } from '@likec4/styles/dev'
-import { isCI, isProduction } from 'std-env'
-
-const notProdOrCI = !isProduction || !isCI
+import { isDevelopment } from 'std-env'
 
 export default defineConfig({
+  clean: !isDevelopment,
   include: [
-    './app/src/**/*.{ts,tsx}',
-    './app/webcomponent/**/*.{ts,tsx}',
-    './app/react/**/*.{ts,tsx}',
-    '../diagram/src/**/*.{js,jsx,ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    '../diagram/src/**/*.{ts,tsx}',
   ],
+  // logLevel: isDevelopment ? 'debug' : 'info',
   // During development, we output right away to the shared folder
   // so changes are picked up immediately
-  ...(notProdOrCI && ({
+  ...(isDevelopment && ({
     outdir: '../../styled-system/styles/dist',
   })),
 })

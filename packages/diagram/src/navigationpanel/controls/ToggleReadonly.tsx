@@ -70,7 +70,7 @@ export const ToggleReadonly = () => {
           <m.div
             className={css({
               fontSize: '11px',
-              fontWeight: 600,
+              fontWeight: 'bold',
               lineHeight: 1,
               opacity: 0.8,
             })}

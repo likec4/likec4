@@ -2,7 +2,11 @@ import { type LayoutType, invariant } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { type SegmentedControlItem, SegmentedControl } from '@mantine/core'
 import * as m from 'motion/react-m'
-import { useMemo } from 'react'
+
+const data = [
+  { value: 'manual', label: 'Saved manual' },
+  { value: 'auto', label: 'Latest auto' },
+] satisfies SegmentedControlItem[]
 
 export function LayoutTypeSwitcher({
   value,
@@ -11,10 +15,6 @@ export function LayoutTypeSwitcher({
   value: LayoutType
   onChange: (layout: LayoutType) => void
 }) {
-  const data = useMemo((): SegmentedControlItem[] => [
-    { value: 'manual', label: 'Saved manual' },
-    { value: 'auto', label: 'Latest auto' },
-  ], [])
   return (
     <m.div layout="position">
       <SegmentedControl

@@ -1,7 +1,7 @@
 import { describe } from 'vitest'
 import { test } from './asserts'
 
-describe.concurrent('specification', () => {
+describe('specification', () => {
   test('valid').valid`
       specification {
         element container

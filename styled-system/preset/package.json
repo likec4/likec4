@@ -8,10 +8,11 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
   "sideEffects": false,
+  "types": "dist/index.d.mts",
+  "module": "dist/index.mjs",
   "scripts": {
-    "generate": "pnpm tsx --conditions=sources ./generate.ts",
-    "typecheck": "tsc --build --verbose",
-    "build": "unbuild",
+    "generate": "obuild",
+    "typecheck": "tsc --noEmit",
     "pack": "pnpm pack",
     "postpack": "cp likec4-style-preset-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz",
@@ -24,9 +25,7 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs"
+    "access": "public"
   },
   "files": [
     "dist",
@@ -41,7 +40,20 @@
         "default": "./dist/index.mjs"
       }
     },
+    "./defaults": {
+      "sources": "./src/defaults/index.ts",
+      "default": {
+        "types": "./dist/defaults/index.d.mts",
+        "import": "./dist/defaults/index.mjs",
+        "default": "./dist/defaults/index.mjs"
+      }
+    },
     "./src": "./src/index.ts"
+  },
+  "dependencies": {
+    "@radix-ui/colors": "^3.0.0",
+    "pandacss-preset-radix-colors": "^0.2.0",
+    "remeda": "catalog:utils"
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
@@ -49,19 +61,17 @@
   },
   "devDependencies": {
     "@types/react": "catalog:react",
+    "@types/node": "catalog:",
     "@types/react-dom": "catalog:react",
-    "@radix-ui/colors": "^3.0.0",
-    "pandacss-preset-radix-colors": "^0.2.0",
-    "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/vanilla-extract": "catalog:mantine",
     "@pandacss/dev": "catalog:css",
-    "khroma": "catalog:utils",
+    "@pandacss/types": "catalog:css",
     "json5": "catalog:utils",
-    "remeda": "catalog:utils",
+    "nano-spawn": "catalog:externals",
     "typescript": "catalog:",
-    "unbuild": "catalog:"
+    "obuild": "catalog:obuild"
   }
 }

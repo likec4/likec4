@@ -55,7 +55,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "target": "amazon.s3",
     },
   ],
-  "hash": "b038953ca958a69a2a5b2f1b2c72f6c0a47e0624",
+  "hash": "3ff8602f0821826cb3967913e512aae439878d09",
   "id": "amazon",
   "links": null,
   "nodes": [
@@ -441,7 +441,7 @@ sso authentification",
       "target": "cloud.backend.storage",
     },
   ],
-  "hash": "d751dec82be7d5259fc5d15e926ca47a1ff4e69e",
+  "hash": "0a593496698a44b4cbe93443b69da1abe70f6ce8",
   "id": "cloud3levels",
   "links": null,
   "nodes": [
@@ -948,7 +948,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "ae5f26f9d79696739b08b98885dcc5215200b0b2",
+  "hash": "a1c5862ab937980c517be7629c15da5150f076f7",
   "id": "cloudView",
   "links": null,
   "nodes": [
@@ -1297,7 +1297,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "cloud",
     },
   ],
-  "hash": "a7e8b58fed2c69c756bf4d0cab743a0002a24e2a",
+  "hash": "eb9a350094f4421f2c4d40dd6d83a436527ce292",
   "id": "index",
   "links": null,
   "nodes": [

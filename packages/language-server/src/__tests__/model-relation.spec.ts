@@ -1,7 +1,7 @@
 import { describe, test } from 'vitest'
 import { invalid, valid } from './asserts'
 
-describe.concurrent('model relation', () => {
+describe('model relation', () => {
   test(
     'valid',
     valid`

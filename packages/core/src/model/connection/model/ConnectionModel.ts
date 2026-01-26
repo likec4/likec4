@@ -9,7 +9,6 @@ import type { ElementModel } from '../../ElementModel'
 import type { RelationshipModel } from '../../RelationModel'
 import type { Connection } from '../Connection'
 import { hasSameSourceTarget } from '../ops'
-import { findConnection } from './find'
 
 /**
  * Connection refers to any relationships between two elements,
@@ -146,13 +145,8 @@ export class ConnectionModel<A extends AnyAux = Unknown> implements Connection<E
 
   /**
    * Creates a new connection with reversed direction (target becomes source and vice versa)
-   * @param search - When true, attempts to find an existing connection between the reversed nodes
    */
-  reversed(search = false): ConnectionModel<A> {
-    if (!search) {
-      return new ConnectionModel(this.target, this.source)
-    }
-    const [found] = findConnection(this.target, this.source, 'directed')
-    return found ?? new ConnectionModel(this.target, this.source, new Set())
+  reversed(): ConnectionModel<A> {
+    return new ConnectionModel(this.target, this.source)
   }
 }

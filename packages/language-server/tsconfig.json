@@ -6,12 +6,12 @@
       "sources"
     ],
     "composite": true,
-    "emitDeclarationOnly": false,
+    "incremental": true,
     "lib": [
-      "ES2022",
+      "ES2024",
       "WebWorker"
     ],
-    "target": "ES2022",
+    "target": "ES2024",
     "rootDirs": [
       "src",
       "."
@@ -34,6 +34,9 @@
     },
     {
       "path": "../layouts/tsconfig.json"
+    },
+    {
+      "path": "../log/tsconfig.json"
     }
   ]
 }

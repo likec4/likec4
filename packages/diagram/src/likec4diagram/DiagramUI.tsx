@@ -3,7 +3,6 @@ import { memo, useCallback } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { useOverlaysActorRef } from '../hooks/useOverlaysActor'
-import { useSearchActorRef } from '../hooks/useSearchActor'
 import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
@@ -21,7 +20,6 @@ export const LikeC4DiagramUI = memo(() => {
   } = useEnabledFeatures()
   const rerender = useRerender()
   const overlaysActorRef = useOverlaysActorRef()
-  const searchActorRef = useSearchActorRef()
 
   const handleReset = useCallback(() => {
     console.warn('DiagramUI: resetting error boundary and rerendering...')
@@ -33,7 +31,7 @@ export const LikeC4DiagramUI = memo(() => {
       {enableControls && <NavigationPanel />}
       {overlaysActorRef && <Overlays overlaysActorRef={overlaysActorRef} />}
       {enableNotations && <NotationPanel />}
-      {enableSearch && searchActorRef && <Search searchActorRef={searchActorRef} />}
+      {enableSearch && <Search />}
       {enableRelationshipDetails && enableReadOnly && <RelationshipPopover />}
       {enableCompareWithLatest && <LayoutDriftFrame />}
     </ErrorBoundary>

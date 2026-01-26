@@ -1,5 +1,4 @@
 import { css } from '@likec4/styles/css'
-import { type MantineThemeOverride, createTheme, Portal, Tooltip } from '@mantine/core'
 import {
   useColorScheme as usePreferredColorScheme,
   useDebouncedCallback,
@@ -10,39 +9,6 @@ import { useState } from 'react'
 import { first, isFunction, isString } from 'remeda'
 import fontsCss from '../styles-font.css?inline'
 import inlinedStyles from '../styles.css?inline'
-
-export const DefaultTheme = createTheme({
-  autoContrast: true,
-  primaryColor: 'indigo',
-  cursorType: 'pointer',
-  defaultRadius: 'sm',
-  fontFamily: 'var(--likec4-app-font, var(--likec4-app-font-default))',
-  headings: {
-    fontWeight: '500',
-    sizes: {
-      h1: {
-        // fontSize: '2rem',
-        fontWeight: '600',
-      },
-      h2: {
-        fontWeight: '500',
-        // fontSize: '1.85rem',
-      },
-    },
-  },
-  components: {
-    Portal: Portal.extend({
-      defaultProps: {
-        reuseTargetNode: true,
-      },
-    }),
-    Tooltip: Tooltip.extend({
-      defaultProps: {
-        color: 'dark',
-      },
-    }),
-  },
-}) as MantineThemeOverride
 
 export const cssInteractive = css({
   cursor: 'pointer',

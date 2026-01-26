@@ -4,7 +4,8 @@ import type { AnyAux } from './_aux'
 import type { ExclusiveUnion, NonEmptyReadonlyArray } from './_common'
 import type { _type } from './const'
 import type { ModelFqnExpr } from './expression-model'
-import { type MarkdownOrString, isStepEdgeId } from './scalar'
+import type { MarkdownOrString } from './scalar'
+import { isStepEdgeId } from './scalar'
 import type { Color, RelationshipArrowType, RelationshipLineType } from './styles'
 import type {
   BaseParsedViewProperties,

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 //
-// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2023-2026 Denis Davydkov
 // Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
@@ -10,7 +10,7 @@ import { nameFromFqn } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramEdge, DiagramNode, EdgeId, ViewId } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import { Box, HStack, styled, VStack } from '@likec4/styles/jsx'
+import { Box, HStack, styled, Txt, VStack } from '@likec4/styles/jsx'
 import { bleed } from '@likec4/styles/patterns'
 import {
   ActionIcon,
@@ -50,7 +50,7 @@ import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { roundDpr } from '../../utils'
 import { findDiagramEdge, findDiagramNode } from '../state/utils'
 import { RelationshipPopoverActorLogic } from './actor'
-import * as styles from './styles.css'
+import { Endpoint, RelationshipTitle } from './components'
 
 function selectDiagramContext(c: DiagramContext) {
   let selected: EdgeId | null = null
@@ -353,7 +353,7 @@ const RelationshipPopoverInternal = ({
           size="compact-xs"
           style={{
             alignSelf: 'flex-start',
-            fontWeight: 500,
+            fontWeight: 'medium',
             ['--button-fz']: 'var(--font-sizes-xxs)',
           }}
           onClick={(e) => {
@@ -398,9 +398,9 @@ const EdgeDrifts = ({ diagramEdge }: { diagramEdge: DiagramEdge }) => {
       withCloseButton={false}
       title="Changes:">
       {drifts.map((drift) => (
-        <Text mt={2} size="sm" lh="xs" key={drift}>
+        <Txt mt={'1'} size="xs" key={drift}>
           - {drift}
-        </Text>
+        </Txt>
       ))}
     </Notification>
   )
@@ -439,7 +439,7 @@ const Relationship = forwardRef<
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       <div
         style={{
-          fontWeight: 600,
+          fontWeight: 'bold',
           fontSize: '10px',
           color: '#868e96',
           marginBottom: '2px',
@@ -462,7 +462,7 @@ const Relationship = forwardRef<
             <div key={key} style={{ display: 'flex', gap: '12px', fontSize: '12px', lineHeight: '1.4' }}>
               <span
                 style={{
-                  fontWeight: 600,
+                  fontWeight: 'bold',
                   minWidth: '110px',
                   color: '#495057',
                 }}>
@@ -504,15 +504,15 @@ const Relationship = forwardRef<
       <HStack gap={'0.5'}>
         <TooltipGroup openDelay={200}>
           <Tooltip label={sourceId.full} offset={2} position="top-start">
-            <Text component="div" data-likec4-color={sourceNode.color} className={styles.endpoint}>
+            <Endpoint likec4color={sourceNode.color}>
               {sourceId.short}
-            </Text>
+            </Endpoint>
           </Tooltip>
           <IconArrowRight stroke={2.5} size={'11px'} opacity={0.65} />
           <Tooltip label={targetId.full} offset={2} position="top-start">
-            <Text component="div" data-likec4-color={targetNode.color} className={styles.endpoint}>
+            <Endpoint likec4color={targetNode.color}>
               {targetId.short}
-            </Text>
+            </Endpoint>
           </Tooltip>
           {navigateTo && (
             <Tooltip label={'Open dynamic view'}>
@@ -552,7 +552,7 @@ const Relationship = forwardRef<
         </TooltipGroup>
       </HStack>
       <HStack gap={'xs'} alignItems="center">
-        <Box className={styles.title}>{r.title || 'untitled'}</Box>
+        <RelationshipTitle>{r.title || 'untitled'}</RelationshipTitle>
         {metadataTooltipLabel && (
           <Tooltip
             label={metadataTooltipLabel}
@@ -627,7 +627,7 @@ const Label = styled('div', {
   base: {
     display: 'block',
     fontSize: 'xxs',
-    fontWeight: 500,
+    fontWeight: 'medium',
     userSelect: 'none',
     lineHeight: 'sm',
     color: 'mantine.colors.dimmed',

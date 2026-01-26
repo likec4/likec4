@@ -3,17 +3,13 @@ import { css } from '@likec4/styles/css'
 export const fqn = css({
   display: 'inline-block',
   fontSize: 'sm',
-  fontWeight: 500,
+  fontWeight: 'medium',
   whiteSpace: 'nowrap',
   padding: '[3px 6px]',
-  borderRadius: 3,
+  borderRadius: 'xs',
   background: `var(--likec4-palette-fill)/75`,
   lineHeight: 1.2,
   color: 'var(--likec4-palette-hiContrast)',
-  // selectors: {
-  //   [`${whereDark} &`]: {
-  //   }
-  // }
 })
 
 export const relationshipStat = css({
@@ -21,12 +17,6 @@ export const relationshipStat = css({
     background: 'mantine.colors.gray[1]',
     '&[data-missing': {},
   },
-  // [`&[data-zero]`]: {
-  //   color: mantine.colors.dimmed
-  // },
-  // [`${whereLight} &[data-zero]`]: {
-  //   background: mantine.colors.gray[3]
-  // },
   [`&[data-missing]`]: {
     color: 'mantine.colors.orange[4]',
     background: `mantine.colors.orange[8]/15`,
@@ -58,7 +48,7 @@ export const panelScope = css({
     top: '0',
     left: '2',
     fontSize: 'xxs',
-    fontWeight: 500,
+    fontWeight: 'medium',
     lineHeight: '1',
     color: 'mantine.colors.dimmed',
     opacity: 0.85,
@@ -74,9 +64,9 @@ export const panelScope = css({
 export const edgeNum = css({
   display: 'inline-block',
   fontSize: 'xl',
-  fontWeight: 600,
+  fontWeight: 'bold',
   padding: '[1px 5px]',
-  minWidth: 24,
+  minWidth: '24px',
   textAlign: 'center',
   borderRadius: 'sm',
   background: 'mantine.colors.dark[7]',
@@ -88,15 +78,4 @@ export const edgeNum = css({
     color: 'mantine.colors.orange[4]',
     background: `mantine.colors.orange[8]/20`,
   },
-  // _light: {
-  //   background: 'mantine.colors.gray[4]',
-  //   color: 'mantine.colors.dark[6]',
-
-  //   [`&[data-zero]`]: {
-  //     background: 'mantine.colors.gray[3]',
-  //   },
-  //   [`&[data-missing]`]: {
-  //     color: 'mantine.colors.orange[8]',
-  //   },
-  // },
 })

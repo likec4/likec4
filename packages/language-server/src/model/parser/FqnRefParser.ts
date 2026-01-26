@@ -150,6 +150,13 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             }
             return acc
           }
+          if (ast.isIconColorProperty(prop)) {
+            const color = toColor(prop)
+            if (isDefined(color)) {
+              acc.custom[prop.key] = color
+            }
+            return acc
+          }
           if (ast.isNotationProperty(prop)) {
             const value = isTruthy(prop.value) ? removeIndent(parseMarkdownAsString(prop.value)) : undefined
             if (value) {
@@ -178,6 +185,18 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
           if (ast.isPaddingSizeProperty(prop)) {
             if (isTruthy(prop.value)) {
               acc.custom[prop.key] = parseAstSizeValue(prop)
+            }
+            return acc
+          }
+          if (ast.isIconSizeProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = parseAstSizeValue(prop)
+            }
+            return acc
+          }
+          if (ast.isIconPositionProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = prop.value
             }
             return acc
           }

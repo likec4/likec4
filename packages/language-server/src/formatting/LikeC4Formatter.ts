@@ -332,6 +332,9 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isBorderProperty(node)
       || ast.isOpacityProperty(node)
       || ast.isMultipleProperty(node)
+      || ast.isIconColorProperty(node)
+      || ast.isIconSizeProperty(node)
+      || ast.isIconPositionProperty(node)
       || ast.isShapeSizeProperty(node)
       || ast.isPaddingSizeProperty(node)
       || ast.isTextSizeProperty(node)
@@ -350,6 +353,9 @@ export class LikeC4Formatter extends AbstractFormatter {
         'head',
         'tail',
         'icon',
+        'iconColor',
+        'iconSize',
+        'iconPosition',
         'shape',
         'border',
         'opacity',

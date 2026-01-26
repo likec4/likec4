@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
-describe.concurrent('LikeC4ModelBuilder - Deployment', () => {
+describe('LikeC4ModelBuilder - Deployment', () => {
   it('builds deployment model with description, summary and technology', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`

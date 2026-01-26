@@ -20,3 +20,5 @@ export const FitViewPaddings = {
     bottom: '16px',
   },
 } satisfies Record<string, ViewPadding>
+
+export const MAX_COMPOUND_DEPTH = 5

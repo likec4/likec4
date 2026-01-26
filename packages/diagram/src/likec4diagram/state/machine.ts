@@ -2,7 +2,7 @@ import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import type { ActorRef, MachineSnapshot, StateMachine } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
-import type { EditorActorRef } from '../../editor/editorActor'
+import type { EditorActorRef } from '../../editor/editorActor.states'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import {
@@ -73,24 +73,6 @@ const _diagramMachine = machine.createMachine({
     navigating,
     final: {
       type: 'final',
-      entry: [
-        stopEditorActor(),
-        cancelFitDiagram(),
-        stopChild('hotkey'),
-        stopChild('overlays'),
-        stopChild('search'),
-        stopChild('mediaPrint'),
-        assign({
-          xyflow: null,
-          xystore: null as any,
-          xyedges: [],
-          xynodes: [],
-          initialized: {
-            xydata: false,
-            xyflow: false,
-          },
-        }),
-      ],
     },
   },
   on: {
@@ -150,6 +132,24 @@ const _diagramMachine = machine.createMachine({
     },
     'destroy': {
       target: '.final',
+      actions: [
+        stopEditorActor(),
+        cancelFitDiagram(),
+        stopChild('hotkey'),
+        stopChild('overlays'),
+        stopChild('search'),
+        stopChild('mediaPrint'),
+        assign({
+          xyflow: null,
+          xystore: null as any,
+          xyedges: [],
+          xynodes: [],
+          initialized: {
+            xydata: false,
+            xyflow: false,
+          },
+        }),
+      ],
     },
   },
 })

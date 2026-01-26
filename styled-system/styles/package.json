@@ -10,7 +10,6 @@
     "dist",
     "*.mts",
     "*.mjs",
-    "*.ts",
     "**/package.json",
     "!build.config.ts"
   ],
@@ -24,8 +23,8 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --build --verbose",
-    "generate": "unbuild",
+    "typecheck": "tsc --noEmit",
+    "generate": "obuild",
     "emit-pkg": "panda emit-pkg --base dist",
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
@@ -34,32 +33,32 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "type": "module",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/types/index.d.mts",
   "module": "dist/types/index.mjs",
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
+      "types": "./dist/types/index.d.mts",
       "default": "./dist/types/index.mjs"
     },
     "./css": {
-      "types": "./dist/css/index.d.ts",
+      "types": "./dist/css/index.d.mts",
       "default": "./dist/css/index.mjs"
     },
     "./tokens": {
-      "types": "./dist/tokens/index.d.ts",
+      "types": "./dist/tokens/index.d.mts",
       "default": "./dist/tokens/index.mjs"
     },
     "./types": {
-      "types": "./dist/types/index.d.ts",
+      "types": "./dist/types/index.d.mts",
       "default": "./dist/types/index.mjs"
     },
     "./patterns": {
-      "types": "./dist/patterns/index.d.ts",
+      "types": "./dist/patterns/index.d.mts",
       "default": "./dist/patterns/index.mjs"
     },
     "./jsx": {
-      "types": "./dist/jsx/index.d.ts",
+      "types": "./dist/jsx/index.d.mts",
       "default": "./dist/jsx/index.mjs"
     },
     "./postcss": {
@@ -67,33 +66,44 @@
       "default": "./postcss.mjs"
     },
     "./recipes": {
-      "types": "./dist/recipes/index.d.ts",
+      "types": "./dist/recipes/index.d.mts",
       "default": "./dist/recipes/index.mjs"
     },
     "./preset": {
-      "sources": "./preset.ts",
-      "default": {
-        "types": "./dist/preset.d.mts",
-        "import": "./dist/preset.mjs",
-        "default": "./dist/preset.mjs"
-      }
+      "types": "./dist/preset.d.mts",
+      "default": "./dist/preset.mjs"
     },
-    "./dev": "./dev.ts"
+    "./vars": {
+      "types": "./dist/vars/index.d.mts",
+      "default": "./dist/vars/index.mjs"
+    },
+    "./dev": {
+      "types": "./dev.d.mts",
+      "default": "./dev.mjs"
+    }
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css",
     "react": "^18.x || ^19.x",
-    "@types/react": "^18.x || ^19.x"
+    "react-dom": "^18.x || ^19.x",
+    "@types/react": "^18.x || ^19.x",
+    "@types/react-dom": "^18.x || ^19.x"
   },
   "peerDependenciesMeta": {
-    "@pandacss/types": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     },
     "react": {
       "optional": true
     },
     "@types/react": {
+      "optional": true
+    },
+    "@types/react-dom": {
       "optional": true
     }
   },
@@ -106,13 +116,14 @@
     "@pandabox/unplugin": "^0.2.2",
     "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css",
-    "@types/picomatch": "catalog:utils",
+    "@types/picomatch": "catalog:externals",
     "@likec4/tsconfig": "workspace:*",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "postcss": "catalog:css",
-    "nano-spawn": "catalog:utils",
-    "unbuild": "catalog:",
+    "remeda": "catalog:utils",
+    "nano-spawn": "catalog:externals",
+    "obuild": "catalog:obuild",
     "typescript": "catalog:"
   }
 }

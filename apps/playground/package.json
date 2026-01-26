@@ -81,7 +81,7 @@
     "@codingame/monaco-vscode-views-service-override": "16.1.1",
     "@hono/oauth-providers": "catalog:hono",
     "@hono/zod-validator": "catalog:hono",
-    "@hpcc-js/wasm-graphviz": "catalog:utils",
+    "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
@@ -125,11 +125,11 @@
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
     "remeda": "catalog:utils",
-    "std-env": "catalog:utils",
+    "std-env": "catalog:externals",
     "strip-indent": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
-    "type-fest": "catalog:utils",
+    "type-fest": "catalog:externals",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
     "vite": "catalog:vite",
@@ -148,6 +148,6 @@
     "wrangler": "catalog:cloudflare",
     "xstate": "catalog:xstate",
     "import-meta-resolve": "^4.2.0",
-    "zod": "catalog:utils"
+    "zod": "catalog:externals"
   }
 }

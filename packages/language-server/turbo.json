@@ -5,6 +5,9 @@
   ],
   "tasks": {
     "generate": {
+      "dependsOn": [
+        "@likec4/icons#generate"
+      ],
       "inputs": [
         "scripts/**",
         "src/**/*.langium",
@@ -23,8 +26,8 @@
         "^generate",
         "generate",
         "@likec4/core#build",
-        "@likec4/log#build",
-        "@likec4/config#build"
+        "@likec4/config#build",
+        "@likec4/layouts#build"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",

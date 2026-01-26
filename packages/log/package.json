@@ -35,14 +35,15 @@
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
+    "build": "obuild",
     "pack": "pnpm pack",
     "postpack": "cp likec4-log-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean"
   },
   "dependencies": {
-    "@logtape/logtape": "catalog:utils"
+    "@logtape/logtape": "catalog:utils",
+    "std-env": "catalog:externals"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
@@ -50,9 +51,8 @@
     "@types/node": "catalog:",
     "merge-error-cause": "^5.0.2",
     "safe-stringify": "catalog:utils",
-    "std-env": "catalog:utils",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "wrap-error-message": "^3.0.1"
   }
 }

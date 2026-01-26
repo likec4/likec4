@@ -1,5 +1,6 @@
 {
   "files": [],
+  "include": [],
   "references": [
     {
       "path": "./tsconfig.worker.json"

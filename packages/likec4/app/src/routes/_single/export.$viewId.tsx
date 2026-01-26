@@ -1,21 +1,17 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
+import z from 'zod/v4'
 import { ExportPage } from '../../pages/ExportPage'
 
-const asBoolean = (v: unknown): boolean | undefined => {
-  if (typeof v === 'boolean') {
-    return v
-  }
-  if (typeof v === 'string') {
-    return v === 'true'
-  }
-  return undefined
-}
-
 export const Route = createFileRoute('/_single/export/$viewId')({
-  component: ExportPage,
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      download: asBoolean(search.download),
-    }
+  validateSearch: z.object({
+    download: z.boolean().optional().catch(false),
+  }),
+  search: {
+    middlewares: [
+      stripSearchParams({
+        download: false,
+      }),
+    ],
   },
+  component: ExportPage,
 })

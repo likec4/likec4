@@ -1,11 +1,12 @@
 import {
+  type ElementTagsProps,
   CompoundNodeContainer,
   CompoundTitle,
   ElementData,
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
-  ElementTags,
+  ElementTags as ElementTagsPrimitive,
   memoNode,
 } from '../../../base-primitives'
 import { ElementActions } from './ElementActions'
@@ -14,8 +15,22 @@ import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
 import type { BaseNodePropsWithData } from '../../../base'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
+import { useCallbackRef } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
+
+function ElementTags(props: ElementTagsProps) {
+  const diagram = useDiagram()
+
+  return (
+    <ElementTagsPrimitive
+      onTagClick={useCallbackRef((tag) => {
+        diagram.openSearch(tag)
+      })}
+      {...props}
+    />
+  )
+}
 
 const ElementDetailsButtonWithHandler = (props: BaseNodePropsWithData<RelationshipDetailsTypes.NodeData>) => {
   const diagram = useDiagram()

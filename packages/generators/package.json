@@ -9,9 +9,10 @@
   "files": [
     "dist",
     "src",
-    "!**/*.spec.ts",
-    "!**/__mocks__/*",
-    "!**/__snapshots__/*",
+    "**/package.json",
+    "!**/__*/**",
+    "!**/*.spec.*",
+    "!**/*.snap",
     "!**/*.map"
   ],
   "repository": {
@@ -25,38 +26,42 @@
     ".": {
       "sources": "./src/index.ts",
       "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
       }
     }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "dist/index.d.ts",
-    "module": "dist/index.js"
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
+    "build": "obuild",
     "lint": "run -T eslint src/ --fix",
     "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-generators-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/log": "workspace:*",
+    "remeda": "catalog:utils",
     "json5": "catalog:utils",
-    "langium": "catalog:langium",
-    "remeda": "catalog:utils"
+    "langium": "catalog:langium"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "vitest": "catalog:vitest"
   }
 }

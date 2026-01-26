@@ -1,48 +1,30 @@
-import type { NonEmptyArray, NonEmptyReadonlyArray, ProjectId } from '@likec4/core/types'
+import type { Fqn, NonEmptyArray, NonEmptyReadonlyArray, ProjectId } from '@likec4/core/types'
 import { useMantineColorScheme } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { projects } from 'likec4:projects'
 import { useEffect } from 'react'
-import { isTruthy, map } from 'remeda'
-import { LikeC4ProjectsContext } from '../context/LikeC4ProjectsContext'
+import { map } from 'remeda'
+import z from 'zod/v4'
 
-const asTheme = (v: unknown): 'light' | 'dark' | 'auto' => {
-  if (typeof v !== 'string') {
-    return 'auto'
-  }
-  const vlower = v.toLowerCase()
-  if (vlower === 'light' || vlower === 'dark') {
-    return vlower
-  }
-  return 'auto'
-}
+const searchParamsSchema = z.object({
+  theme: z.literal(['light', 'dark', 'auto'])
+    .default('auto')
+    .catch('auto'),
+  dynamic: z.enum(['diagram', 'sequence'])
+    .default('diagram')
+    .catch('diagram'),
+  padding: z.number()
+    .min(0)
+    .default(20)
+    .catch(20),
+  relationships: z.string()
+    .nonempty()
+    .optional()
+    .catch(undefined)
+    .transform(v => v as Fqn | undefined),
+})
 
-const asPadding = (v: unknown) => {
-  switch (true) {
-    case typeof v === 'number':
-      return Math.round(v)
-    case typeof v === 'string':
-      return Math.round(parseFloat(v))
-  }
-  return 20
-}
-
-const asDynamicVariant = (v: unknown): 'diagram' | 'sequence' => {
-  if (typeof v !== 'string') {
-    return 'diagram'
-  }
-  const vlower = v.toLowerCase()
-  if (vlower === 'diagram' || vlower === 'sequence') {
-    return vlower
-  }
-  return 'diagram'
-}
-
-export type SearchParams = {
-  theme?: 'light' | 'dark' | 'auto'
-  dynamic?: 'diagram' | 'sequence'
-  padding?: number
-}
+export type SearchParams = z.infer<typeof searchParamsSchema>
 
 export type Context = {
   /**
@@ -57,26 +39,14 @@ export type Context = {
 }
 
 export const Route = createRootRouteWithContext<Context>()({
-  validateSearch: (search: Record<string, unknown>): SearchParams => {
-    // validate and parse the search params into a typed state
-    return {
-      ...isTruthy(search.padding) && {
-        padding: asPadding(search.padding),
-      },
-      ...isTruthy(search.theme) && {
-        theme: asTheme(search.theme),
-      },
-      ...isTruthy(search.dynamic) && {
-        dynamic: asDynamicVariant(search.dynamic),
-      },
-    }
-  },
+  validateSearch: searchParamsSchema,
   search: {
     middlewares: [
       stripSearchParams({
         padding: 20,
         theme: 'auto',
         dynamic: 'diagram',
+        relationships: undefined,
       }),
     ],
   },
@@ -94,10 +64,10 @@ export const Route = createRootRouteWithContext<Context>()({
 
 function RootComponent() {
   return (
-    <LikeC4ProjectsContext>
+    <>
       <Outlet />
       <ThemeSync />
-    </LikeC4ProjectsContext>
+    </>
   )
 }
 

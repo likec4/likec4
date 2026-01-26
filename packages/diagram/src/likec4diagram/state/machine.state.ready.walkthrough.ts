@@ -3,6 +3,7 @@ import {
   getParallelStepsPrefix,
   invariant,
   isStepEdgeId,
+  nonNullable,
 } from '@likec4/core'
 import { clamp, first } from 'remeda'
 import { assertEvent } from 'xstate'
@@ -161,7 +162,7 @@ export const walkthrough = machine.createStateConfig({
           if (nextStepIndex === stepIndex) {
             return {}
           }
-          const nextStepId = context.xyedges[nextStepIndex]!.id as StepEdgeId
+          const nextStepId = nonNullable(context.xyedges[nextStepIndex]).id as StepEdgeId
           return {
             activeWalkthrough: {
               stepId: nextStepId,
@@ -174,25 +175,33 @@ export const walkthrough = machine.createStateConfig({
         emitWalkthroughStep(),
       ],
     },
-    'xyflow.edgeClick': {
-      actions: [
-        assign(({ event, context }) => {
-          if (!isStepEdgeId(event.edge.id) || event.edge.id === context.activeWalkthrough?.stepId) {
-            return {}
-          }
-          return {
-            activeWalkthrough: {
-              stepId: event.edge.id,
-              parallelPrefix: getParallelStepsPrefix(event.edge.id),
-            },
-          }
-        }),
-        updateActiveWalkthroughState(),
-        fitFocusedBounds(),
-        emitEdgeClick(),
-        emitWalkthroughStep(),
-      ],
-    },
+    'xyflow.edgeClick': [
+      {
+        guard: 'click: active walkthrough step',
+        actions: [
+          fitFocusedBounds(),
+          emitEdgeClick(),
+        ],
+      },
+      {
+        actions: [
+          assign(({ event }) => {
+            const stepId = event.edge.id
+            invariant(isStepEdgeId(stepId))
+            return {
+              activeWalkthrough: {
+                stepId,
+                parallelPrefix: getParallelStepsPrefix(stepId),
+              },
+            }
+          }),
+          updateActiveWalkthroughState(),
+          fitFocusedBounds(),
+          emitEdgeClick(),
+          emitWalkthroughStep(),
+        ],
+      },
+    ],
     'notations.unhighlight': {
       actions: updateActiveWalkthroughState(),
     },

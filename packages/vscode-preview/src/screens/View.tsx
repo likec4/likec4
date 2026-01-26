@@ -17,13 +17,13 @@ import {
 import { ExtensionApi as extensionApi } from '../vscode'
 
 export function ViewScreen() {
-  const { error, likec4Model } = useComputedModel()
+  const { error, likec4Model, reset } = useComputedModel()
 
   if (!likec4Model) {
     return (
       <>
         <section>
-          {error && <ErrorMessage error={error} />}
+          {error && <ErrorMessage error={error} onReset={reset} />}
           <p>Parsing your model...</p>
           <p>
             <Button color="gray" onClick={extensionApi.closeMe}>
@@ -37,7 +37,7 @@ export function ViewScreen() {
 
   return (
     <LikeC4ModelProvider likec4model={likec4Model}>
-      {error && <ErrorMessage error={error} />}
+      {error && <ErrorMessage error={error} onReset={reset} />}
       <LikeC4VscodeEditor />
     </LikeC4ModelProvider>
   )
@@ -54,14 +54,16 @@ const LikeC4VscodeEditor = memo(() => {
 
 const Initialized = memo(() => {
   let {
+    projectId,
     view,
     error,
+    reset,
   } = useDiagramView()
 
   if (!view) {
     return (
       <div className={likec4ParsingScreen}>
-        {error && <ErrorMessage error={error} />}
+        {error && <ErrorMessage error={error} onReset={reset} />}
         <section>
           <p>Parsing your model...</p>
           <p>
@@ -100,8 +102,8 @@ const Initialized = memo(() => {
           onNavigateTo={(_to, event) => {
             const to = _to as scalar.ViewId
             setLastClickedNode()
-            extensionApi.locate({ view: to })
-            extensionApi.navigateTo(to)
+            extensionApi.locate({ view: to, projectId })
+            extensionApi.navigateTo(to, projectId)
             event?.stopPropagation()
           }}
           onNodeContextMenu={(element) => {
@@ -114,12 +116,19 @@ const Initialized = memo(() => {
           }}
           onEdgeClick={(edge) => {
             if (view._type === 'dynamic' && edge.astPath) {
-              extensionApi.locate({ view: view.id, astPath: edge.astPath })
+              extensionApi.locate({
+                projectId,
+                view: view.id,
+                astPath: edge.astPath,
+              })
               return
             }
             const relationId = only(edge.relations)
             if (relationId) {
-              extensionApi.locate({ relation: relationId })
+              extensionApi.locate({
+                projectId,
+                relation: relationId,
+              })
             }
           }}
           onEdgeContextMenu={(edge, event) => {
@@ -129,13 +138,22 @@ const Initialized = memo(() => {
           }}
           onOpenSource={(params) => {
             setLastClickedNode()
-            extensionApi.locate(params)
+            extensionApi.locate({
+              projectId,
+              ...params,
+            })
+          }}
+          onInitialized={() => {
+            extensionApi.locate({
+              projectId,
+              view: view.id,
+            })
           }}
           onLogoClick={openProjectsScreen}
           onLayoutTypeChange={setLayoutType}
         />
       </div>
-      {error && <ErrorMessage error={error} />}
+      {error && <ErrorMessage error={error} onReset={reset} />}
     </>
   )
 })

@@ -1,27 +1,24 @@
 import { isEmpty, isEmptyish, isShallowEqual, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import {
-  type Any,
-  type Color,
-  type DeployedInstance,
-  type DeploymentElement,
-  type DeploymentNode,
-  type DeploymentRelationship,
-  type ElementShape as C4ElementShape,
-  type ElementStyle,
-  type IconUrl,
-  type IteratorLike,
-  type Link,
-  type RelationshipArrowType,
-  type RelationshipLineType,
-  type RichTextOrEmpty,
-  type scalar,
-  exact,
-  preferDescription,
-  preferSummary,
-  RichText,
+import type {
+  Any,
+  Color,
+  DeployedInstance,
+  DeploymentElement,
+  DeploymentNode,
+  DeploymentRelationship,
+  ElementShape as C4ElementShape,
+  ElementStyle,
+  IconUrl,
+  IteratorLike,
+  Link,
+  RelationshipArrowType,
+  RelationshipLineType,
+  RichTextOrEmpty,
+  scalar,
 } from '../types'
-import * as aux from '../types/_aux'
+import { exact, preferDescription, preferSummary, RichText } from '../types'
+import type * as aux from '../types/_aux'
 import { commonAncestor, hierarchyLevel, ihead, memoizeProp, nameFromFqn, nonNullable } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'

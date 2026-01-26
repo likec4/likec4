@@ -1,4 +1,5 @@
-import { type LikeC4ViteConfig, viteConfig } from '@/vite/config-app'
+import type { LikeC4ViteConfig } from '@/vite/config-app'
+import { viteConfig } from '@/vite/config-app'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
 import { loggable } from '@likec4/log'
 import getPort, { portNumbers } from 'get-port'

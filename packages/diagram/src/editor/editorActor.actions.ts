@@ -6,7 +6,7 @@ import type {
 import { createViewChange } from '../likec4diagram/state/createViewChange'
 import type { DiagramContext, DiagramMachineRef } from '../likec4diagram/state/machine'
 import type { Types } from '../likec4diagram/types'
-import { machine } from './editorActor'
+import { machine } from './editorActor.setup'
 
 /**
  * Actually this is DiagramActorRef
@@ -27,7 +27,7 @@ const getDiagramContext = function(system: ActorSystem<any>): DiagramContext {
 export const raiseSync = () => machine.raise({ type: 'sync' }, { delay: 200, id: 'sync' })
 export const cancelSync = () => machine.cancel('sync')
 
-export const reschedule = (delay = 50) => machine.raise(({ event }) => event, { delay })
+export const reschedule = (delay = 350) => machine.raise(({ event }) => event, { delay })
 
 type LayoutChanges = ViewChange.ResetManualLayout | ViewChange.SaveViewSnapshot
 export const isLayoutChange = (

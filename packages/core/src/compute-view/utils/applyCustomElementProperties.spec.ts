@@ -158,4 +158,38 @@ describe('applyElementCustomProperties', () => {
     expect(result).not.toBe(nodes) // should return new array
     expect(result).toEqual(nodes) // but with same nodes
   })
+
+  it('should apply icon style customizations', () => {
+    const nodes = [
+      {
+        ...nd('cloud'),
+        style: {
+          iconColor: 'blue',
+          iconSize: 'sm',
+          iconPosition: 'left',
+        },
+      },
+    ] satisfies ComputedNode[]
+    const rules = [
+      $include($custom('cloud', {
+        iconColor: 'red',
+        iconSize: 'lg',
+        iconPosition: 'right',
+      })),
+    ]
+
+    const result = applyCustomElementProperties(rules, nodes)
+
+    expect(result).toEqual([
+      {
+        id: 'cloud',
+        isCustomized: true,
+        style: {
+          iconColor: 'red',
+          iconSize: 'lg',
+          iconPosition: 'right',
+        },
+      },
+    ])
+  })
 })

@@ -78,7 +78,7 @@ function mkTestServices(expect: ExpectStatic) {
   }
 }
 
-describe.concurrent('checkFqnRefExpr', () => {
+describe('checkFqnRefExpr', () => {
   it('should not warn', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`${model}

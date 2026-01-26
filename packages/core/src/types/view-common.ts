@@ -5,11 +5,13 @@ import type { _stage } from './const'
 
 import type { BBox, Point, XYPoint } from '../geometry'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
-import * as scalar from './scalar'
+import type * as scalar from './scalar'
 import type {
   BorderStyle,
   Color,
   ElementShape,
+  IconPosition,
+  IconSize,
   ShapeSize,
   SpacingSize,
   TextSize,
@@ -37,6 +39,9 @@ export interface AnyViewRuleStyle<Expr> {
     color?: Color
     shape?: ElementShape
     icon?: scalar.Icon
+    iconColor?: Color
+    iconSize?: IconSize
+    iconPosition?: IconPosition
   }
 }
 

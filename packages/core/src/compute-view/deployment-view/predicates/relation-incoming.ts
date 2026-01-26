@@ -5,8 +5,7 @@ import { FqnExpr } from '../../../types'
 import { invariant, isAncestor } from '../../../utils'
 import type { Connection, Elem, PredicateExecutor } from '../_types'
 import { findConnectionsBetween, resolveElements, resolveModelElements } from '../utils'
-import { resolveAscendingSiblings } from './relation-direct'
-import { applyPredicate, excludeModelRelations } from './utils'
+import { applyPredicate, excludeModelRelations, resolveAscendingSiblings } from './utils'
 
 // from visible element incoming to this
 export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming> = {

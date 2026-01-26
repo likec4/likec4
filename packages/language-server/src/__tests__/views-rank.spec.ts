@@ -18,7 +18,7 @@ const model = `
   }
 `
 
-describe.concurrent('views-rank', () => {
+describe('views-rank', () => {
   test('valid rank expressions').valid`${model}
     views {
       view {

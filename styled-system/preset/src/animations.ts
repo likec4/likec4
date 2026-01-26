@@ -32,7 +32,7 @@ export const animationStyles: AnimationStyles = defineAnimationStyles({
   },
   'xyedgeAnimated': {
     value: {
-      animationDuration: '800ms',
+      animationDuration: '.8s',
       animationIterationCount: 'infinite',
       animationTimingFunction: 'linear',
       animationFillMode: 'both',

@@ -4,7 +4,7 @@ import type { LikeC4Services } from '../module'
 import { createMultiProjectTestServices, createTestServices } from '../test'
 import type { LikeC4DocumentLinkProvider } from './DocumentLinkProvider'
 
-describe.concurrent('DocumentLinkProvider', () => {
+describe('DocumentLinkProvider', () => {
   describe('single project', () => {
     let services: LikeC4Services
     let doc: LikeC4LangiumDocument

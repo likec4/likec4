@@ -1,9 +1,9 @@
+import { type Vector, vector } from '@likec4/core/geometry'
 import type { XYPosition } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
-import { type Vector, vector } from '@likec4/core/geometry'
 import {
   bezierControlPoints,
 } from '../../../utils/xyflow'
@@ -23,8 +23,8 @@ export function useControlPoints({
     const next = data.controlPoints ?? bezierControlPoints(data.points)
     setControlPoints(prev => deepEqual(prev, next) ? prev : next)
   }, [
-    data.controlPoints?.map(p => `${Math.round(p.x)},${Math.round(p.y)}`).join('|') ?? '',
-    data.points.map(p => `${Math.round(p[0])},${Math.round(p[1])}`).join('|'),
+    data.points,
+    data.controlPoints ?? [],
   ])
 
   /**

@@ -2,8 +2,6 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 import { ViewAsD2 } from '../../pages/ViewAsD2'
 
 export const Route = createFileRoute('/project/$projectId/view/$viewId/d2')({
-  component: Page,
-  staleTime: Infinity,
   loader: async ({ context, params }) => {
     const projectId = context.projectId
     const { viewId } = params
@@ -18,6 +16,7 @@ export const Route = createFileRoute('/project/$projectId/view/$viewId/d2')({
       throw notFound()
     }
   },
+  component: Page,
 })
 
 function Page() {

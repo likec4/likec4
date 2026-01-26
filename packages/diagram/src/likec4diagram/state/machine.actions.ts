@@ -18,6 +18,7 @@ import type {
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy } from 'remeda'
+import type { Writable } from 'type-fest'
 import {
   assertEvent,
 } from 'xstate'
@@ -63,21 +64,21 @@ export const onEdgeDoubleClick = () =>
     }
     const { nodeLookup } = context.xystore.getState()
     return {
-      xyedges: context.xyedges.map(e => {
-        if (e.id === event.edge.id) {
-          const controlPoints = resetEdgeControlPoints(nodeLookup, e)
-          const pt = controlPoints[0]
-          return {
-            ...e,
-            data: {
-              ...e.data,
-              controlPoints,
-              labelBBox: e.data.labelBBox ? { ...e.data.labelBBox, ...pt } : null,
-              labelXY: null,
-            },
-          } as Types.Edge
+      xyedges: context.xyedges.map((e) => {
+        if (e.id !== event.edge.id) {
+          return e
         }
-        return e
+        const controlPoints = resetEdgeControlPoints(nodeLookup, e)
+        const pt = controlPoints[0]
+        return {
+          ...e,
+          data: {
+            ...e.data,
+            controlPoints,
+            labelBBox: e.data.labelBBox ? { ...e.data.labelBBox, ...pt } : null,
+            labelXY: null,
+          },
+        } as Types.Edge
       }),
     }
   })
@@ -113,10 +114,11 @@ export const assignFocusedNode = () =>
       case 'xyflow.nodeClick':
         focusedNode = event.node.data.id
         break
-      case 'focus.node':
+      case 'focus.node': {
         focusedNode = event.nodeId
         autoUnfocusTimer = event.autoUnfocus === true
         break
+      }
       default:
         throw new Error(`Unexpected event type: ${event.type} in action 'assign: focusedNode'`)
     }
@@ -150,6 +152,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
     let xydata
     if (view) {
       xydata = convertToXYFlow({
+        currentViewId: context.view.id,
         dynamicViewVariant: context.dynamicViewVariant,
         view,
         where: context.where,
@@ -157,6 +160,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
     } else {
       assertEvent(event, 'update.view')
       xydata = 'xynodes' in event ? event : convertToXYFlow({
+        currentViewId: context.view.id,
         dynamicViewVariant: context.dynamicViewVariant,
         view: event.view,
         where: context.where,
@@ -824,9 +828,9 @@ export const handleNavigate = () =>
       },
     } = context
 
-    let history = [..._history]
+    let history = _history as Writable<typeof _history>
     if (currentIndex < _history.length) {
-      const updatedEntry = produce(_history[currentIndex]!, draft => {
+      const updatedEntry = produce(_history.at(currentIndex) ?? {} as typeof _history[number], draft => {
         draft.viewport = { ...viewport }
         draft.viewportChangedManually = viewportChangedManually
         draft.focusedNode = focusedNode
@@ -838,7 +842,7 @@ export const handleNavigate = () =>
           draft.dynamicViewVariant = null
         }
         if (viewportBefore) {
-          draft.viewportBefore = viewportBefore
+          draft.viewportBefore = structuredClone(viewportBefore)
         } else {
           delete draft.viewportBefore
         }

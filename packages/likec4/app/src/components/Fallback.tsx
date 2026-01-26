@@ -39,10 +39,24 @@ export function Fallback({ error, resetErrorBoundary }: FallbackProps) {
           {error.stack ?? error.message}
         </Code>
         <Group mt={'lg'}>
-          <Button onClick={resetErrorBoundary} color="red" variant="white" size="xs">
+          <Button
+            onClick={() => {
+              void router.invalidate().finally(() => {
+                resetErrorBoundary()
+              })
+            }}
+            color="red"
+            variant="white"
+            size="xs">
             Try again
           </Button>
-          <Button onClick={() => router.navigate({ to: '/' })} color="red" size="xs">
+          <Button
+            onClick={() => {
+              resetErrorBoundary()
+              void router.navigate({ to: '/' })
+            }}
+            color="red"
+            size="xs">
             Go to overview
           </Button>
         </Group>

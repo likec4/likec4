@@ -1,6 +1,7 @@
 import { Handle, Position } from '@xyflow/react'
 import type { BaseNodePropsWithData } from '../../../base'
 import {
+  type ElementTagsProps,
   CompoundDetailsButton,
   CompoundNodeContainer,
   CompoundTitle,
@@ -8,12 +9,26 @@ import {
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
-  ElementTags,
+  ElementTags as ElementTagsPrimitive,
 } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
+import { useCallbackRef } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { ElementActions } from './ElementActions'
+
+function ElementTags(props: ElementTagsProps) {
+  const diagram = useDiagram()
+
+  return (
+    <ElementTagsPrimitive
+      onTagClick={useCallbackRef((tag) => {
+        diagram.openSearch(tag)
+      })}
+      {...props}
+    />
+  )
+}
 
 const ElementDetailsButtonWithHandler = (
   props: RelationshipsBrowserTypes.NodeProps<'element' | 'compound'>,

@@ -1,4 +1,42 @@
-import { defineRecipe } from '@pandacss/dev'
+import { defineParts, defineRecipe } from '@pandacss/dev'
+
+const parts = defineParts({
+  root: { selector: '&' },
+  container: { selector: '& > div' },
+})
+
+export const actionButtons = defineRecipe({
+  className: 'action-buttons',
+  description: 'Action Buttons Container within Diagram Node (Bottom-Center)',
+  base: parts({
+    root: {
+      display: 'flex',
+      flexDirection: 'row',
+      position: 'absolute',
+      top: 'calc(100% - 30px)',
+      transform: 'translateX(-50%)',
+      left: `50%`,
+      width: 'auto',
+      minHeight: 30,
+      zIndex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      _smallZoom: {
+        display: 'none',
+      },
+    },
+    container: {
+      display: 'flex',
+      flexDirection: 'row',
+      gap: '1.5',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  }),
+  staticCss: [{
+    conditions: ['*'],
+  }],
+})
 
 export const actionBtn = defineRecipe({
   className: 'action-btn',
@@ -70,8 +108,8 @@ export const actionBtn = defineRecipe({
       },
     },
     radius: {
-      sm: { '--ai-radius': `var(--mantine-radius-sm)` },
-      md: { '--ai-radius': `var(--mantine-radius-md)` },
+      sm: { '--ai-radius': `{radii.sm}` },
+      md: { '--ai-radius': `{radii.md}` },
     },
   },
   defaultVariants: {

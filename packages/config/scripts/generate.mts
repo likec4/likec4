@@ -1,10 +1,10 @@
-import { writeFile } from 'node:fs/promises'
-import * as z from 'zod'
+import { writeFileSync } from 'node:fs'
+import z from 'zod/v4'
 import { LikeC4ProjectJsonConfigSchema } from '../src/schema'
 
 const schema = z.toJSONSchema(LikeC4ProjectJsonConfigSchema, { io: 'input' })
 
-await writeFile(
+writeFileSync(
   './schema.json',
   JSON.stringify(
     schema,
@@ -13,7 +13,7 @@ await writeFile(
   ),
 )
 
-await writeFile(
+writeFileSync(
   '../../schemas/likec4-config.schema.json',
   JSON.stringify(
     schema,

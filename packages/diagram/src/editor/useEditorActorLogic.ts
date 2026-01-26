@@ -2,11 +2,11 @@ import type * as t from '@likec4/core/types'
 import { fromPromise } from 'xstate'
 import { useCallbackRef } from '../hooks'
 import { applyChangesToManualLayout } from './applyChangesToManualLayout'
-import { type EditorCalls, editorActorLogic } from './editorActor'
-import { useOptionalLikeC4EditorPort } from './LikeC4EditorProvider'
+import { type EditorCalls, editorActorLogic } from './editorActor.states'
+import { useOptionalLikeC4Editor } from './LikeC4EditorProvider'
 
 export function useEditorActorLogic(viewId: t.ViewId) {
-  const port = useOptionalLikeC4EditorPort()
+  const port = useOptionalLikeC4Editor()
 
   const applyLatest: EditorCalls.ApplyLatestToManual = useCallbackRef(
     async ({ input: { viewId, current } }) => {

@@ -1,20 +1,26 @@
-import pandaCss from '@pandacss/dev/postcss'
+import pandacss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
-import { $ } from 'execa'
+import spawn from 'nano-spawn'
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
 import { build } from 'vite'
-import pkg from '../package.json' with { type: 'json' }
-
 import { amIExecuted } from './_utils'
 
 export async function bundleApp() {
   const cwd = process.cwd()
 
-  console.info(`Run tanstack-router generate`)
-  await $`tsr generate`
-  await $`panda codegen`
+  console.info('Running tsr generate')
+  await spawn('tsr', ['generate'], {
+    preferLocal: true,
+    stdio: 'inherit',
+  })
+
+  console.info('Running panda codegen')
+  await spawn('panda', ['codegen'], {
+    preferLocal: true,
+    stdio: 'inherit',
+  })
 
   const root = resolve(cwd, 'app')
   const outDir = resolve(cwd, '__app__/src')
@@ -36,9 +42,8 @@ export async function bundleApp() {
     resolve: {
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
+        'react-dom/server': resolve('./app/react/react-dom-server-mock.ts'),
         '@likec4/diagram': resolve('../diagram/src'),
-        '@likec4/styles': resolve('../../styled-system/styles/dist'),
       },
     },
     mode: 'production',
@@ -49,6 +54,11 @@ export async function bundleApp() {
       jsxDev: false,
       minifyIdentifiers: false,
       tsconfigRaw: tsconfig,
+    },
+    css: {
+      postcss: {
+        plugins: [pandacss()],
+      },
     },
     build: {
       emptyOutDir: true,
@@ -118,14 +128,6 @@ export async function bundleApp() {
           resolve(cwd, 'app/src/const.js'),
           /@likec4\/core.*/,
           /likec4:/,
-        ],
-      },
-    },
-    css: {
-      modules: false,
-      postcss: {
-        plugins: [
-          pandaCss(),
         ],
       },
     },

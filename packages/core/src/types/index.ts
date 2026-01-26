@@ -19,11 +19,11 @@ export type {
 
 export { preferDescription, preferSummary } from './_aux'
 
+export * from '../geometry'
 export * from './const'
 export * from './expression'
 export * from './expression-model'
 export * from './fqnRef'
-export * from '../geometry'
 export * from './global'
 export * from './model-data'
 export * from './model-deployment'

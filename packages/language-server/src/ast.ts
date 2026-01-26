@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 //
-// Copyright (c) 2023-2025 Denis Davydkov
+// Copyright (c) 2023-2026 Denis Davydkov
 // Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type * as c4 from '@likec4/core'
-import { invariant, MultiMap, nonexhaustive } from '@likec4/core/utils'
+import { MultiMap, nonexhaustive } from '@likec4/core/utils'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
 import { AstUtils, DocumentState } from 'langium'
 import { clamp, isNullish, isTruthy } from 'remeda'
@@ -54,6 +54,9 @@ declare module './generated/ast' {
 export type ParsedElementStyle = {
   shape?: c4.ElementShape
   icon?: c4.IconUrl
+  iconColor?: c4.Color
+  iconSize?: c4.ShapeSize
+  iconPosition?: c4.IconPosition
   color?: c4.Color
   border?: c4.BorderStyle
   opacity?: number
@@ -253,7 +256,6 @@ export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Requ
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
   if (doc.textDocument.languageId === LikeC4LanguageMetaData.languageId) {
-    invariant(isTruthy(doc.likec4ProjectId), `LikeC4Document must have projectId defined: ${doc.uri.fsPath}`)
     return true
   }
   return false
@@ -314,6 +316,18 @@ export function parseAstSizeValue({ value }: { value: ast.SizeValue }): 'xs' | '
   }
 }
 
+export function parseAstIconPositionValue({ value }: { value: ast.IconPositionValue }): c4.IconPosition {
+  switch (value) {
+    case 'left':
+    case 'right':
+    case 'top':
+    case 'bottom':
+      return value
+    default:
+      nonexhaustive(value)
+  }
+}
+
 export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | undefined, isValid: IsValidFn) {
   const result = {} as {
     color?: c4.Color
@@ -364,7 +378,7 @@ export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | und
   return result
 }
 
-export function toColor(astNode: ast.ColorProperty): c4.Color | undefined {
+export function toColor(astNode: ast.ColorProperty | ast.IconColorProperty): c4.Color | undefined {
   return astNode?.themeColor ?? (astNode?.customColor?.$refText as (c4.CustomColor | undefined))
 }
 

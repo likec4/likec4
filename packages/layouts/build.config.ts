@@ -1,20 +1,28 @@
-import { defineBuildConfig } from 'unbuild'
+import { defineBuildConfig } from 'obuild/config'
 
+// oxlint-disable-next-line no-default-export
 export default defineBuildConfig({
-  entries: [{
-    input: './src/',
-    outDir: './dist/',
-    builder: 'mkdist',
-    addRelativeDeclarationExtensions: false,
-    ext: 'js',
-    declaration: true,
-    globOptions: {
-      ignore: [
-        '**/__*/**',
-        '**/*.spec.ts',
+  entries: [
+    {
+      type: 'bundle',
+      input: [
+        'src/index.ts',
+        'src/sequence/index.ts',
+        'src/graphviz/GraphvizLayoter.ts',
+        'src/graphviz/QueueGraphvizLayoter.ts',
+        'src/graphviz/wasm/index.ts',
+        'src/graphviz/binary/index.ts',
       ],
+      rolldown: {
+        platform: 'neutral',
+        resolve: {
+          mainFields: ['module', 'main'],
+        },
+      },
+      // dts: {
+      //   build: true,
+      //   resolver: 'tsc',
+      // },
     },
-  }],
-  clean: true,
-  stub: false,
-})
+  ],
+}) as unknown

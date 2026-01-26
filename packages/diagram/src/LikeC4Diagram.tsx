@@ -3,7 +3,7 @@ import { useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { type PropsWithChildren, Profiler, useRef } from 'react'
-import { isPlainObject, mapValues } from 'remeda'
+import { isEmptyish, isPlainObject, mapValues } from 'remeda'
 import { FitViewPaddings, MaxZoom, MinZoom } from './base'
 import { RootContainer } from './components/RootContainer'
 import {
@@ -14,8 +14,9 @@ import {
   IconRendererProvider,
 } from './context'
 import { TagStylesProvider } from './context/TagStylesContext'
-import { useOptionalLikeC4EditorPort } from './editor'
+import { useOptionalLikeC4Editor } from './editor'
 import { useId } from './hooks/useId'
+import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import type {
   LikeC4DiagramEventHandlers,
   LikeC4DiagramProperties,
@@ -94,7 +95,15 @@ export function LikeC4Diagram<A extends Any = Any>({
     initialMaxZoom: number
   }>(null)
 
-  const hasEditor = !!useOptionalLikeC4EditorPort()
+  // Enable compare with latest if there are manual layouts
+  const optionalLikeC4Model = useOptionalLikeC4Model()
+  enableCompareWithLatest = enableCompareWithLatest &&
+    !!onLayoutTypeChange &&
+    !!optionalLikeC4Model &&
+    !isEmptyish(optionalLikeC4Model.$data.manualLayouts)
+
+  const hasLikeC4Model = !!optionalLikeC4Model
+  const hasEditor = !!useOptionalLikeC4Editor()
   const readonly = !hasEditor
 
   nodesSelectable ??= hasEditor || enableFocusMode || !!onNavigateTo || !!onNodeClick
@@ -139,17 +148,17 @@ export function LikeC4Diagram<A extends Any = Any>({
                 enableReadOnly: readonly,
                 enableFocusMode,
                 enableNavigateTo: !!onNavigateTo,
-                enableElementDetails,
-                enableRelationshipDetails,
-                enableRelationshipBrowser,
-                enableSearch,
+                enableElementDetails: enableElementDetails && hasLikeC4Model,
+                enableRelationshipDetails: enableRelationshipDetails && hasLikeC4Model,
+                enableRelationshipBrowser: enableRelationshipBrowser && hasLikeC4Model,
+                enableSearch: enableSearch && hasLikeC4Model,
                 enableNavigationButtons: showNavigationButtons && !!onNavigateTo,
                 enableDynamicViewWalkthrough: view._type === 'dynamic' && enableDynamicViewWalkthrough,
                 enableNotations,
                 enableVscode: !!onOpenSource,
                 enableControls: controls,
                 enableElementTags,
-                enableCompareWithLatest: enableCompareWithLatest && !!onLayoutTypeChange,
+                enableCompareWithLatest,
               }}
             >
               <DiagramEventHandlers
@@ -175,6 +184,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                       {...initialRef.current}
                     >
                       <DiagramActorProvider
+                        id={id}
                         view={view}
                         zoomable={zoomable}
                         pannable={pannable}

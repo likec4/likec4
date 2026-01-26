@@ -1,18 +1,19 @@
 import { invariant } from '@likec4/core'
+import { rootLogger } from '@likec4/log'
 import { bundleRequire } from 'bundle-require'
 import * as fs from 'node:fs/promises'
 import { dirname } from 'node:path'
-import type { URI } from 'vscode-uri'
 import { defineConfig } from '../define-config'
 import { isLikeC4JsonConfig, isLikeC4NonJsonConfig } from '../filenames'
-import { logger } from '../logger'
-import { type LikeC4ProjectConfig, validateProjectConfig } from '../schema'
+import type { LikeC4ProjectConfig, VscodeURI } from '../schema'
+import { validateProjectConfig } from '../schema'
 
 /**
  * Load LikeC4 Project config file.
  * If filepath is a non-JSON file, it will be bundled and required
  */
-export async function loadConfig(filepath: URI): Promise<LikeC4ProjectConfig> {
+export async function loadConfig(filepath: VscodeURI): Promise<LikeC4ProjectConfig> {
+  const logger = rootLogger.getChild('config')
   logger.debug`Loading config file: ${filepath.fsPath}`
   if (isLikeC4JsonConfig(filepath.fsPath)) {
     try {

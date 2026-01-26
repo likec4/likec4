@@ -4,7 +4,7 @@ import { map, mapToObj, pipe } from 'remeda'
 import { describe, it } from 'vitest'
 import { LikeC4 } from './LikeC4'
 
-describe.concurrent('LikeC4', () => {
+describe('LikeC4', () => {
   it('should parse source and build computed model', async ({ expect }) => {
     const likec4 = await LikeC4.fromSource(`
       specification {

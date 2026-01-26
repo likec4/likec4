@@ -194,6 +194,59 @@ describe('applyManualLayout', () => {
       expect(nodes['saas.frontend'].drifts).toBeUndefined()
     })
 
+    it('should auto-apply icon color change', () => {
+      const { nodes } = testApplyManualLayout({
+        nodes: {
+          'saas.frontend': d => {
+            d.style.iconColor = 'indigo'
+          },
+        },
+      })
+
+      expect(nodes['saas.frontend'].style.iconColor).toBe('indigo')
+      expect(nodes['saas.frontend'].drifts).toBeUndefined()
+    })
+
+    it('should auto-apply icon size change when size not changed', () => {
+      const { nodes } = testApplyManualLayout({
+        nodes: {
+          'saas.frontend': d => {
+            d.style.iconSize = 'lg'
+          },
+        },
+      })
+
+      expect(nodes['saas.frontend'].style.iconSize).toBe('lg')
+      expect(nodes['saas.frontend'].drifts).toBeUndefined()
+    })
+
+    it('should detect label-changed drift when icon size changed and size increased', () => {
+      const { result, nodes } = testApplyManualLayout({
+        nodes: {
+          'saas.frontend': d => {
+            d.style.iconSize = 'lg'
+            d.width = d.width + 100
+          },
+        },
+      })
+
+      expect(nodes['saas.frontend'].drifts).toEqual(['label-changed'])
+      expect(result.drifts).toEqual(['nodes-drift'])
+    })
+
+    it('should auto-apply icon position change when size not changed', () => {
+      const { nodes } = testApplyManualLayout({
+        nodes: {
+          'saas.frontend': d => {
+            d.style.iconPosition = 'right'
+          },
+        },
+      })
+
+      expect(nodes['saas.frontend'].style.iconPosition).toBe('right')
+      expect(nodes['saas.frontend'].drifts).toBeUndefined()
+    })
+
     it('should detect label-changed drift when icon added and size increased', () => {
       const { result, nodes: { customer } } = testApplyManualLayout({
         nodes: {

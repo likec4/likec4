@@ -1,9 +1,12 @@
 declare module 'likec4:projects' {
-  import type { LikeC4Project } from 'likec4/model'
-  export type { LikeC4Project }
+  import type { ProjectId } from 'likec4/model'
+  type Project = {
+    id: ProjectId
+    title?: string
+  }
   export const isSingleProject: boolean
-  export const projects: readonly [LikeC4Project, ...LikeC4Project[]]
-  export function useLikeC4Projects(): readonly [LikeC4Project, ...LikeC4Project[]]
+  export const projects: readonly [Project, ...Project[]]
+  export function useLikeC4Projects(): readonly [Project, ...Project[]]
 }
 
 declare module 'likec4:projects-overview' {
@@ -30,94 +33,12 @@ declare module 'likec4:icons' {
 
 declare module 'likec4:model' {
   import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'
+  import type { Atom } from 'likec4/vite-plugin/internal'
 
-  /**
-   * Temporary copy-paste of the `Atom` interface from `nanostores` to avoid
-   * type errors in the Vite plugin.
-   */
-  export interface Atom<T> {
-    /**
-     * Get store value.
-     *
-     * In contrast with {@link Atom#value} this value will be always
-     * initialized even if store had no listeners.
-     *
-     * ```js
-     * $store.get()
-     * ```
-     *
-     * @returns Store value.
-     */
-    get(): T
-
-    /**
-     * Listeners count.
-     */
-    readonly lc: number
-
-    /**
-     * Subscribe to store changes.
-     *
-     * In contrast with {@link Store#subscribe} it do not call listener
-     * immediately.
-     *
-     * @param listener Callback with store value and old value.
-     * @returns Function to remove listener.
-     */
-    listen(
-      listener: (
-        value: T,
-        oldValue: T,
-      ) => void,
-    ): () => void
-
-    /**
-     * Low-level method to notify listeners about changes in the store.
-     *
-     * Can cause unexpected behaviour when combined with frontend frameworks
-     * that perform equality checks for values, such as React.
-     */
-    notify(oldValue?: ReadonlyIfObject<Value>): void
-
-    /**
-     * Unbind all listeners.
-     */
-    off(): void
-
-    /**
-     * Subscribe to store changes and call listener immediately.
-     *
-     * ```
-     * import { $router } from '../store'
-     *
-     * $router.subscribe(page => {
-     *   console.log(page)
-     * })
-     * ```
-     *
-     * @param listener Callback with store value and old value.
-     * @returns Function to remove listener.
-     */
-    subscribe(
-      listener: (
-        value: T,
-        oldValue?: T,
-      ) => void,
-    ): () => void
-
-    /**
-     * Low-level method to read store’s value without calling `onStart`.
-     *
-     * Try to use only {@link Atom#get}.
-     * Without subscribers, value can be undefined.
-     */
-    readonly value: undefined | T
-  }
-
-  export type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted }
+  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted }
 
   export function loadModel(projectId: string): Promise<{
-    $likec4data: Atom<LayoutedLikeC4ModelData<UnknownLayouted>>
+    $likec4data: Atom<LayoutedLikeC4ModelData>
     $likec4model: Atom<LikeC4Model<UnknownLayouted>>
     useLikeC4Model: () => LikeC4Model<UnknownLayouted>
     useLikeC4Views: () => ReadonlyArray<DiagramView<UnknownLayouted>>
@@ -126,11 +47,17 @@ declare module 'likec4:model' {
 }
 
 declare module 'likec4:single-project' {
-  import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, ProjectId, UnknownLayouted } from 'likec4/model'
+  import type {
+    DiagramView,
+    LayoutedLikeC4ModelData,
+    LikeC4Model,
+    types,
+    UnknownLayouted,
+  } from 'likec4/model'
   import type { ElementIconRenderer } from 'likec4:icons'
   import type { Atom } from 'likec4:model'
 
-  export const $likec4data: Atom<LayoutedLikeC4ModelData<UnknownLayouted>>
+  export const $likec4data: Atom<LayoutedLikeC4ModelData>
   export const $likec4model: Atom<LikeC4Model<UnknownLayouted>>
   export function useLikeC4Model(): LikeC4Model<UnknownLayouted>
   export function useLikeC4Views(): ReadonlyArray<DiagramView<UnknownLayouted>>
@@ -138,7 +65,7 @@ declare module 'likec4:single-project' {
 
   export const IconRenderer: ElementIconRenderer
 
-  export const projectId: ProjectId
+  export const projectId: types.ProjectId
 }
 
 declare module 'likec4:react' {

@@ -1,7 +1,7 @@
 import { describe } from 'vitest'
 import { test } from './asserts'
 
-describe.concurrent('comments', () => {
+describe('comments', () => {
   test('line comment').valid`
     // line1
     specification { // }

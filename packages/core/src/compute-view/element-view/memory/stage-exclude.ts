@@ -1,7 +1,8 @@
 import { filter, forEach, pipe } from 'remeda'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import { difference, hasIntersection, intersection } from '../../../utils/set'
-import { type MutableState, type StageExpression, AbstractStageExclude } from '../../memory'
+import type { MutableState, StageExpression } from '../../memory'
+import { AbstractStageExclude } from '../../memory'
 import type { ActiveGroupCtx, ActiveGroupMemory, Ctx } from './memory'
 
 export class StageExclude<C extends Ctx = Ctx> extends AbstractStageExclude<C> {

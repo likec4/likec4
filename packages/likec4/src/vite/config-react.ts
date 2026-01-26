@@ -82,7 +82,6 @@ export async function viteReactConfig({
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
-          /likec4\/icons\/.*/,
           /likec4\/vite-plugin\/.*/,
           /@likec4\/core.*/,
         ],

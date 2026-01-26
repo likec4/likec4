@@ -5,9 +5,9 @@ on:
 
 env:
   NODE_ENV: production
-  CLOUDFLARE_ENV: "production"
+  CLOUDFLARE_ENV: 'production'
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   check-types:
@@ -59,8 +59,7 @@ jobs:
           name: tarballs
           compression-level: 0
           path: |
-            packages/core/package.tgz
-            packages/likec4/package.tgz
+            packages/*/package.tgz
           if-no-files-found: error
 
   check-on-windows:
@@ -73,8 +72,12 @@ jobs:
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: ⚙️ build
-        run: pnpm turbo run build --filter="likec4"
+      # TODO: fix obuild on windows
+      # - name: ⚙️ build
+      #   run: pnpm turbo run build --filter="likec4"
+
+      - name: ⚙️ generate
+        run: pnpm generate
 
       - name: 🔬 test
         env:
@@ -159,7 +162,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v5
@@ -171,7 +174,10 @@ jobs:
         working-directory: e2e
         run: |
           pnpm install
-          pnpm add ../packages/core/package.tgz ../packages/likec4/package.tgz
+          pnpm add \
+            ../packages/core/package.tgz \
+            ../packages/icons/package.tgz \
+            ../packages/likec4/package.tgz
           pnpm install:chromium
           pnpm bootstrap
 
@@ -223,7 +229,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v5
@@ -235,7 +241,10 @@ jobs:
         working-directory: e2e
         run: |
           pnpm install
-          pnpm add ../packages/core/package.tgz ../packages/likec4/package.tgz
+          pnpm add \
+            ../packages/core/package.tgz \
+            ../packages/icons/package.tgz \
+            ../packages/likec4/package.tgz
           pnpm bootstrap
 
       - name: ʦ typecheck test

@@ -1,21 +1,20 @@
 import { isEmpty, isShallowEqual, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { Any, AnyAux, Color, IteratorLike } from '../types'
-import {
-  type Element as C4Element,
-  type ElementShape as C4ElementShape,
-  type ElementStyle,
-  type IconUrl,
-  type Link,
-  type ProjectId,
-  type RichTextOrEmpty,
-  exact,
-  preferDescription,
-  preferSummary,
-  RichText,
-  splitGlobalFqn,
+import type {
+  Any,
+  AnyAux,
+  Color,
+  Element as C4Element,
+  ElementShape as C4ElementShape,
+  ElementStyle,
+  IconUrl,
+  IteratorLike,
+  Link,
+  ProjectId,
+  RichTextOrEmpty,
 } from '../types'
-import * as aux from '../types/_aux'
+import { exact, preferDescription, preferSummary, RichText, splitGlobalFqn } from '../types'
+import type * as aux from '../types/_aux'
 import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, nameFromFqn, sortNaturalByFqn } from '../utils'
 import type { DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'

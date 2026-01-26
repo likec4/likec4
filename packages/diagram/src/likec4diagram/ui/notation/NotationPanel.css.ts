@@ -88,7 +88,7 @@ export const shapeSvg = css({
 })
 
 export const shapeBadge = css({
-  fontWeight: 500,
+  fontWeight: 'medium',
   letterSpacing: '0.2px',
   paddingTop: '0',
   paddingBottom: '0',

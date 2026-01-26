@@ -102,6 +102,37 @@ describe('applyViewRuleStyles', () => {
     ])
   })
 
+  it('updates icon style properties on matched node', () => {
+    const nodes = [nd('support', {
+      style: {
+        iconColor: 'blue',
+        iconSize: 'sm',
+        iconPosition: 'left',
+      },
+    })] as ComputedNode[]
+
+    const rules = [
+      r([$expr('support')], {
+        style: {
+          iconColor: 'red',
+          iconSize: 'lg',
+          iconPosition: 'right',
+        },
+      }),
+    ]
+
+    expect(applyViewRuleStyles(rules, nodes)).toStrictEqual([
+      {
+        ...nodes[0],
+        style: {
+          iconColor: 'red',
+          iconSize: 'lg',
+          iconPosition: 'right',
+        },
+      },
+    ])
+  })
+
   it('skips nullish properties in rule', () => {
     const nodes = [nd('support', {
       notation: 'some notation',

@@ -1,4 +1,6 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
+import { __v, vars } from '../const.ts'
+import { alpha } from '../helpers.ts'
 
 const borderWidth = {
   var: '--_border-width',
@@ -57,29 +59,29 @@ export const compoundNode = defineRecipe({
       borderWidth: borderWidth.ref,
       borderRadius: borderRadius.ref,
       boxSizing: 'border-box',
-      ['--likec4-palette-outline']: {
-        base: 'oklab(from var(--likec4-palette-stroke) calc(l - 0.05) a b)',
-        _dark: 'oklab(from var(--likec4-palette-stroke) calc(l + 0.2) a b)',
+      [vars.palette.outline]: {
+        base: `oklch(from ${__v('palette.stroke')} calc(l - 0.15) c h)`,
+        _dark: `oklch(from ${__v('palette.stroke')} calc(l + 0.2) c h)`,
       },
       [borderWidth.var]: '3px',
       [borderRadius.var]: '6px',
       [compoundTransparency.var]: '100%',
       [borderTransparency.var]: '100%',
       [indicatorSpacing.var]: `calc(${borderWidth.ref} + 1px)`,
-      [compoundColor.var]: 'var(--likec4-palette-loContrast)',
+      [vars.icon.color]: compoundColor.ref,
       color: compoundColor.ref,
 
       _before: {
         position: 'absolute',
         content: '" "',
-        top: `[calc(-1 * ${indicatorSpacing.ref})]`,
-        left: `[calc(-1 * ${indicatorSpacing.ref})]`,
-        width: `[calc(100% + 2 * ${indicatorSpacing.ref})]`,
-        height: `[calc(100% + 2 * ${indicatorSpacing.ref})]`,
+        top: `calc(1px - ${indicatorSpacing.ref} - ${borderWidth.ref})`,
+        left: `calc(1px - ${indicatorSpacing.ref} - ${borderWidth.ref})`,
+        width: `calc(100% + 2 * (${indicatorSpacing.ref} + ${borderWidth.ref} - 1px))`,
+        height: `calc(100% + 2 * (${indicatorSpacing.ref} + ${borderWidth.ref} - 1px))`,
         borderStyle: 'solid',
         borderWidth: `calc(${borderWidth.ref} + 1px)`,
         borderRadius: `calc(${borderRadius.ref} + 4px)`,
-        borderColor: 'var(--likec4-palette-outline)',
+        borderColor: __v('palette.outline'),
         pointerEvents: 'none',
         display: {
           base: 'none',
@@ -107,7 +109,9 @@ export const compoundNode = defineRecipe({
       top: '0.5',
       right: '30px',
       width: 'auto',
-      minHeight: '30px',
+      minHeight: '28px',
+      color: compoundColor.ref,
+
       [`:where(.react-flow__node.draggable) &`]: {
         pointerEvents: 'all',
         cursor: 'grab',
@@ -121,7 +125,6 @@ export const compoundNode = defineRecipe({
       textTransform: 'uppercase',
       letterSpacing: '0.25px',
       lineHeight: '1',
-      color: compoundColor.ref,
     },
     icon: {
       flex: `0 0 ${iconSize}`,
@@ -154,9 +157,9 @@ export const compoundNode = defineRecipe({
       },
     },
     actionBtn: {
-      '--actionbtn-color': compoundColor.ref,
+      '--actionbtn-color': `oklch(from ${compoundColor.ref} calc(l - 0.1) c h)`,
       '--actionbtn-color-hovered': compoundColor.ref,
-      '--actionbtn-color-hovered-btn': `color-mix(in oklab, ${compoundColor.ref} 80%, #fff)`,
+      '--actionbtn-color-hovered-btn': `oklch(from ${compoundColor.ref} calc(l + 0.2) c h)`,
       opacity: {
         base: 0.6,
         _whenHovered: 0.75,
@@ -172,7 +175,7 @@ export const compoundNode = defineRecipe({
     },
     navigationBtn: {
       position: 'absolute',
-      top: '1',
+      top: '0.5',
       left: '0.5',
       _smallZoom: {
         display: 'none',
@@ -202,14 +205,16 @@ export const compoundNode = defineRecipe({
             _whenSelected: 'none',
             _whenPanning: 'none !important',
           },
-          backgroundColor: 'var(--likec4-palette-fill)',
-          borderColor: 'var(--likec4-palette-stroke)',
+          backgroundColor: __v('palette.fill'),
+          borderColor: __v('palette.stroke'),
+          [compoundColor.var]: alpha(__v('palette.hiContrast'), 90),
         },
       }),
       true: parts({
         root: {
-          backgroundColor: `color-mix(in oklab, var(--likec4-palette-fill) ${compoundTransparency.ref}, transparent)`,
-          borderColor: `color-mix(in oklab, var(--likec4-palette-stroke) ${borderTransparency.ref}, transparent)`,
+          backgroundColor: alpha(__v('palette.fill'), compoundTransparency.ref),
+          borderColor: alpha(__v('palette.stroke'), borderTransparency.ref),
+          [compoundColor.var]: `color-mix(in oklch, ${__v('palette.hiContrast')}, ${__v('palette.stroke')} 10%)`,
         },
       }),
     },
@@ -217,21 +222,19 @@ export const compoundNode = defineRecipe({
     inverseColor: {
       true: parts({
         root: {
+          '--_mix': `color-mix(in oklch, ${__v('palette.hiContrast')}, ${__v('palette.stroke')} 60%)`,
           [compoundColor.var]: {
-            base: 'var(--likec4-palette-stroke)',
-            _dark: '[color-mix(in oklab, var(--likec4-palette-loContrast) 60%, var(--likec4-palette-fill))]',
+            base: 'oklch(from var(--_mix) calc(l - 0.2) c h)',
+            _dark: 'oklch(from var(--_mix) calc(l + 0.2) c h)',
           },
         },
         actionBtn: {
-          _dark: {
-            '--actionbtn-color-hovered-btn': 'var(--likec4-palette-loContrast)',
-          },
+          '--actionbtn-color': compoundColor.ref,
           _light: {
-            '--actionbtn-color': 'var(--likec4-palette-stroke)',
-            '--actionbtn-color-hovered': 'var(--likec4-palette-stroke)',
-            '--actionbtn-color-hovered-btn': 'var(--likec4-palette-hiContrast)',
-            '--actionbtn-bg-hovered': `var(--likec4-palette-fill)/50`,
-            '--actionbtn-bg-hovered-btn': `var(--likec4-palette-fill)`,
+            '--actionbtn-color-hovered': __v('palette.stroke'),
+            '--actionbtn-color-hovered-btn': __v('palette.hiContrast'),
+            '--actionbtn-bg-hovered': alpha(__v('palette.fill'), 30),
+            '--actionbtn-bg-hovered-btn': __v('palette.fill'),
           },
         },
       }),
@@ -264,11 +267,14 @@ export const compoundNode = defineRecipe({
       }),
     },
   },
-  staticCss: [
-    {
-      isTransparent: ['*'],
-      inverseColor: ['*'],
-      borderStyle: ['*'],
-    },
-  ],
+  defaultVariants: {
+    isTransparent: false,
+    inverseColor: false,
+    borderStyle: 'none',
+  },
+  staticCss: [{
+    isTransparent: ['*'],
+    inverseColor: ['*'],
+    borderStyle: ['*'],
+  }],
 })

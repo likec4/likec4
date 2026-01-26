@@ -1,6 +1,6 @@
 import { getNodeDimensions } from '@xyflow/system'
-import { deepEqual as eq } from 'fast-equals'
-import { hasSubObject, isDefined, isShallowEqual, pickBy } from 'remeda'
+import { deepEqual as eq, shallowEqual as isShallowEqual } from 'fast-equals'
+import { hasSubObject, isDefined, pickBy } from 'remeda'
 import type { BaseNode } from './types'
 
 const EMPTY_OBJ = {}
@@ -67,8 +67,8 @@ function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
     const handles = haveHandles && isSameHandles ? existing.handles : update.handles
 
     return {
-      // Retain existing properties that are defined, except parentId
-      ...pickBy(existing, (v, k) => isDefined(v) && k !== 'parentId'),
+      // Retain existing properties that are defined, except parentId and handles
+      ...pickBy(existing, (v, k) => isDefined(v) && k !== 'parentId' && k !== 'handles'),
       // Retain measured dimensions from existing if present
       ...('measured' in existing && {
         measured: {

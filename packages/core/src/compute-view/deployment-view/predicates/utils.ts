@@ -280,3 +280,16 @@ function toFilterableRelation<M extends AnyAux>(c: DeploymentConnectionModel<M>)
     target: toFilterable(relation.target, c.target),
   })
 }
+
+export function resolveAscendingSiblings(element: DeploymentElementModel): Set<DeploymentElementModel> {
+  const siblings = new Set<DeploymentElementModel>()
+  for (let sibling of element.descendingSiblings()) {
+    // TODO: investigate if this is necessary
+    // if (element.isInstance() && sibling.isDeploymentNode()) {
+    //   // we flatten nodes that contain only one instance
+    //   sibling = sibling.onlyOneInstance() ?? sibling
+    // }
+    siblings.add(sibling)
+  }
+  return siblings
+}

@@ -1,5 +1,4 @@
 import type { Color, ComputedNodeStyle, NodeId } from '@likec4/core/types'
-import { Text } from '@mantine/core'
 import { IconRenderer } from '../../context/IconRenderer'
 
 type RequiredData = {
@@ -23,9 +22,9 @@ export function CompoundTitle({ data }: CompoundTitleProps) {
   return (
     <div className={'likec4-compound-title-container'}>
       {elementIcon}
-      <Text component="h3" className={'likec4-compound-title'} truncate="end">
+      <div className={'likec4-compound-title'}>
         {data.title}
-      </Text>
+      </div>
     </div>
   )
 }

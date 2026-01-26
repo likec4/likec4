@@ -29,7 +29,7 @@ import {
   setup,
 } from 'xstate'
 import type { EnabledFeatures, TogglableFeature } from '../../context/DiagramFeatures'
-import { editorActorLogic } from '../../editor/editorActor'
+import { editorActorLogic } from '../../editor/editorActor.states'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
@@ -336,6 +336,14 @@ export const machine = setup({
     'click: selected edge': ({ event }) => {
       assertEvent(event, ['xyflow.edgeClick', 'xyflow.edgeDoubleClick'])
       return event.edge.selected === true || event.edge.data.active === true
+    },
+    'click: active walkthrough step': ({ context, event }) => {
+      assertEvent(event, ['xyflow.edgeClick', 'xyflow.edgeDoubleClick'])
+      if (!context.activeWalkthrough) {
+        return false
+      }
+      const { stepId } = context.activeWalkthrough
+      return event.edge.id === stepId
     },
   },
 })

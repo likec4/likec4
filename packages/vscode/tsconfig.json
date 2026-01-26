@@ -2,8 +2,10 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "noUnusedParameters": false,
+    "composite": true,
+    "incremental": true,
     "lib": [
-      "ES2022",
+      "ES2024",
       "WebWorker"
     ],
     "rootDir": "src"
@@ -14,6 +16,15 @@
   "references": [
     {
       "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../log/tsconfig.json"
+    },
+    {
+      "path": "../config/tsconfig.json"
+    },
+    {
+      "path": "../vscode-preview/tsconfig.protocol.json"
     },
     {
       "path": "../language-server/tsconfig.json"

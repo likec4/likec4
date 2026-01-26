@@ -5,11 +5,11 @@
     "composite": true,
     "rootDir": "src",
     "lib": [
-      "ES2022",
+      "ES2024",
       "DOM"
     ]
   },
   "include": [
-    "src",
+    "src/",
   ]
 }

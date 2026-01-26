@@ -2,8 +2,6 @@ import { generateColors } from '@mantine/colors-generator'
 import chroma from 'chroma-js'
 import { isDeepEqual } from 'remeda'
 import { invariant } from '../utils'
-import { ElementColors } from './default-element-colors'
-import { RelationshipColors } from './default-relationship-colors'
 import type { ColorLiteral, HexColor, ThemeColorValues } from './types'
 
 const CONTRAST_MIN_WITH_FOREGROUND = 60
@@ -21,8 +19,7 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
     elements: {
       fill: fillColor as HexColor,
       stroke: colors[7] as HexColor,
-      hiContrast: contrastedColors[0] as HexColor,
-      loContrast: contrastedColors[1] as HexColor,
+      ...contrastedColors,
     },
     relationships: {
       line: colors[4] as HexColor,
@@ -32,7 +29,9 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
   }
 }
 
-function getContrastedColorsAPCA(refColor: string): [string, string] {
+export function getContrastedColorsAPCA(
+  refColor: string | chroma.Color,
+): { hiContrast: HexColor; loContrast: HexColor } {
   const refColorChroma = chroma(refColor)
 
   // Start with 2 steps tone difference in the CIELAB color space from reference
@@ -65,10 +64,14 @@ function getContrastedColorsAPCA(refColor: string): [string, string] {
 
   // Choose the max contrast between the two
   if (Math.abs(contrastWithLight) > Math.abs(contrastWithDark)) {
-    return [lightColorRgb.brighten(0.4).hex(), lightColorRgb.hex()]
+    return {
+      hiContrast: lightColorRgb.brighten(0.4).hex() as HexColor,
+      loContrast: lightColorRgb.hex() as HexColor,
+    }
   } else {
-    return [darkColorRgb.darken(0.4).hex(), darkColorRgb.hex()]
+    return {
+      hiContrast: darkColorRgb.darken(0.4).hex() as HexColor,
+      loContrast: darkColorRgb.hex() as HexColor,
+    }
   }
 }
-
-export { ElementColors, RelationshipColors }

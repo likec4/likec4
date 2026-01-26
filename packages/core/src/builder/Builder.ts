@@ -1,5 +1,5 @@
-// oxlint-disable typescript/no-misused-spread
-import defu from 'defu'
+// oxlint-disable consistent-type-specifier-style
+import { defu } from 'defu'
 import {
   entries,
   filter,

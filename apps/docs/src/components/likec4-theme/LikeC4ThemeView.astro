@@ -2,15 +2,18 @@
 import type { ViewPadding } from 'likec4/react'
 import type { LikeC4ViewId } from 'likec4:react/likec4-theme'
 import { LikeC4View } from 'likec4:react/likec4-theme'
+import type { CSSProperties } from 'react'
 interface Props {
   viewId: LikeC4ViewId
   fitViewPadding?: ViewPadding
   interactive?: boolean
+  style?: CSSProperties
 }
 const {
   viewId,
   interactive = true,
   fitViewPadding = '8px',
+  style,
 } = Astro.props
 ---
 
@@ -19,15 +22,16 @@ const {
   viewId={viewId}
   fitViewPadding={fitViewPadding}
   browser={interactive
-    ? {
-      enableFocusMode: false,
-      enableElementDetails: false,
-      enableRelationshipDetails: false,
-      enableRelationshipBrowser: false,
-      enableSearch: false,
-    }
-    : false}
+  ? {
+    enableFocusMode: false,
+    enableElementDetails: false,
+    enableRelationshipDetails: false,
+    enableRelationshipBrowser: false,
+    enableSearch: false,
+  }
+  : false}
   client:only="react"
+  style={style}
 >
 </LikeC4View>
 

@@ -6,13 +6,13 @@ import type { Stats } from 'node:fs'
 import PQueue from 'p-queue'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
-import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './FileSystemWatcher'
-import { isLikeC4File } from './LikeC4FileSystem'
 import { isManualLayoutFile } from './LikeC4ManualLayouts'
+import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './types'
+import { isLikeC4File } from './utils'
 
 const logger = mainLogger.getChild('chokidar')
 
-export const chokidarFileSystemWatcher: FileSystemWatcherModuleContext = {
+export const WithChokidarWatcher: FileSystemWatcherModuleContext = {
   fileSystemWatcher: (services: LikeC4SharedServices) => new ChokidarFileSystemWatcher(services),
 }
 

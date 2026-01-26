@@ -1,4 +1,4 @@
-import type { LayoutedView, LayoutType } from '@likec4/core/types'
+import type { LayoutedView, LayoutType, ViewId } from '@likec4/core/types'
 import { useUpdateEffect } from '@likec4/diagram'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useMatches, useParams } from '@tanstack/react-router'
@@ -43,11 +43,12 @@ export function useLikeC4Views(): ReadonlyArray<LayoutedView> {
   return views
 }
 
-export function useCurrentViewId(): string {
-  return useParams({
-    select: (params) => params.viewId ?? 'index',
+export function useCurrentViewId(): ViewId {
+  const viewId = useParams({
+    select: params => params.viewId,
     strict: false,
   })
+  return (viewId ?? 'index') as ViewId
 }
 
 /**
@@ -56,13 +57,13 @@ export function useCurrentViewId(): string {
 export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType) => void] {
   const viewId = useCurrentViewId()
   const $likec4model = useLikeC4ModelAtom()
-  const [layoutType, setLayoutType] = useState('manual' as LayoutType)
+  const [layoutType, setLayoutType] = useState<LayoutType>('manual')
 
   useUpdateEffect(() => {
     setLayoutType('manual')
   }, [viewId])
 
-  const [view, setView] = useState($likec4model.value?.findView(viewId)?.$layouted ?? null)
+  const [view, setView] = useState(() => $likec4model.get().findView(viewId)?.$layouted ?? null)
   useEffect(() => {
     return $likec4model.subscribe((next) => {
       setView(current => {

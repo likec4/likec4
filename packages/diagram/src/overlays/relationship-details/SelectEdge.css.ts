@@ -7,7 +7,7 @@ const edgeEnpoint = css.raw({
   '& .mantine-Text-root': {
     color: 'mantine.colors.text/90',
     fontSize: 'xs',
-    fontWeight: 500,
+    fontWeight: 'medium',
     lineHeight: '1.2',
   },
 })
@@ -40,7 +40,7 @@ export const edgeLabel = cx(
     width: '100%',
     '& .mantine-Text-root': {
       fontSize: 'xxs',
-      fontWeight: 400,
+      fontWeight: 'normal',
       lineHeight: 'xs',
       color: 'mantine.colors.dimmed',
     },

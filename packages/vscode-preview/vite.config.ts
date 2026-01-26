@@ -10,6 +10,10 @@ export default defineConfig(({ mode }) => {
   return {
     resolve: {
       conditions: ['sources'],
+      alias: {
+        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+        '@likec4/diagram': resolve('../diagram/src'),
+      },
     },
     define: {
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),

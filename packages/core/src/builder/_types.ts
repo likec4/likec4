@@ -6,6 +6,7 @@ import type {
   ElementShape,
   ElementSpecification as ElementKindSpecification,
   Expression,
+  IconPosition,
   KeysOf,
   LikeC4ProjectStylesConfig,
   MarkdownOrString,
@@ -78,6 +79,9 @@ export type NewElementProps<Tag, Metadata> = {
     size?: ShapeSize
     padding?: SpacingSize
     textSize?: TextSize
+    iconColor?: Color
+    iconSize?: ShapeSize
+    iconPosition?: IconPosition
   }
 }
 
@@ -99,6 +103,9 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
     size?: ShapeSize
     padding?: SpacingSize
     textSize?: TextSize
+    iconColor?: Color
+    iconSize?: ShapeSize
+    iconPosition?: IconPosition
   }
 }
 

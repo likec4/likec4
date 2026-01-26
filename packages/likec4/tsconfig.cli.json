@@ -5,12 +5,18 @@
     "customConditions": [
       "sources"
     ],
+    "target": "es2024",
     "composite": true,
+    "incremental": true,
     "tsBuildInfoFile": "lib/cli/.tsbuildinfo",
     "outDir": "lib/cli",
     "types": [
       "node",
       "./src/vite-plugin/rpc/events.d.ts"
+    ],
+    "rootDirs": [
+      "src",
+      "."
     ],
     "paths": {
       "@/vite/*": [
@@ -19,7 +25,7 @@
     }
   },
   "include": [
-    "src",
+    "src/",
     "package.json"
   ],
   "exclude": [

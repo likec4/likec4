@@ -23,6 +23,20 @@ import type { ElementIconRenderer } from '../LikeC4Diagram.props'
 
 const IconRendererContext = createContext<ElementIconRenderer | null>(null)
 
+/**
+ * Provider for custom element icon renderers
+ *
+ * @example
+ * ```tsx
+ * const MyIconRenderer: ElementIconRenderer = ({ node }) => {
+ *   return <div>{node.title}</div>
+ * }
+ *
+ * <IconRendererProvider value={MyIconRenderer}>
+ *   <LikeC4Diagram />
+ * </IconRendererProvider>
+ * ```
+ */
 export function IconRendererProvider({
   value,
   children,
@@ -57,7 +71,7 @@ export function IconRenderer({
   }
   let icon: ReactNode
   if (
-    element.icon.startsWith('http://') || element.icon.startsWith('https://')
+    element.icon.startsWith('http://') || element.icon.startsWith('https://') || element.icon.startsWith('data:image')
   ) {
     icon = <img src={element.icon} alt={element.title} />
   } else if (RenderIcon) {

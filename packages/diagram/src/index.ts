@@ -11,7 +11,6 @@ export type {
   LikeC4ColorScheme,
   NodeRenderers,
   OnCanvasClick,
-  OnChange,
   OnEdgeClick,
   OnInitialized,
   OnNavigateTo,
@@ -28,10 +27,14 @@ export {
 } from './LikeC4ModelProvider'
 
 export {
-  type LikeC4EditorPort,
   LikeC4EditorProvider,
   type LikeC4EditorProviderProps,
 } from './editor/LikeC4EditorProvider'
+
+export {
+  createLikeC4Editor,
+  type LikeC4EditorCallbacks,
+} from './editor/LikeC4EditorCallbacks'
 
 export {
   LikeC4ProjectsProvider,
@@ -52,7 +55,11 @@ export {
   useLikeC4ViewModel,
 } from './hooks/useLikeC4Model'
 
-export { useCurrentViewModel } from './hooks/useCurrentViewModel'
+export {
+  type CurrentViewModel,
+  useCurrentViewModel,
+  useOptionalCurrentViewModel,
+} from './hooks/useCurrentViewModel'
 
 export {
   useChangeLikeC4Project,
@@ -77,7 +84,10 @@ export type { LikeC4BrowserProps, LikeC4ViewProps } from './LikeC4View'
 
 export { ReactLikeC4, type ReactLikeC4Props } from './ReactLikeC4'
 
-export { useCurrentViewId } from './hooks/useCurrentView'
+export {
+  useCurrentView,
+  useCurrentViewId,
+} from './hooks/useCurrentView'
 
 export { pickViewBounds } from './utils/view-bounds'
 

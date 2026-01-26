@@ -3,7 +3,7 @@ import { cva } from '@likec4/styles/css'
 export const breadcrumbTitle = cva({
   base: {
     fontSize: 'sm',
-    fontWeight: '500',
+    fontWeight: 'medium',
     transition: 'fast',
     color: {
       base: 'likec4.panel.action',

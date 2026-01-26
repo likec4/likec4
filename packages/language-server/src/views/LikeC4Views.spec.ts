@@ -3,7 +3,7 @@ import { indexBy } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
-describe.concurrent('LikeC4Views', () => {
+describe('LikeC4Views', () => {
   it('diagrams returns cached result', async ({ expect }) => {
     const { validate, services } = createTestServices()
     await validate(`

@@ -5,7 +5,6 @@ import type {
   DynamicViewDisplayVariant,
   LayoutedView,
   LayoutType,
-  ViewChange,
   WhereOperator,
 } from '@likec4/core/types'
 import type { ReactFlowProps } from '@xyflow/react'
@@ -324,11 +323,6 @@ export type OnEdgeClick<A extends Any = Unknown> = (
 export type OnCanvasClick = (event: ReactMouseEvent) => void
 
 export type OnCanvasContextMenu = (event: ReactMouseEvent | MouseEvent) => void
-
-export type ChangeEvent = {
-  change: ViewChange
-}
-export type OnChange = (event: ChangeEvent) => void
 
 export type OnInitialized = (params: { diagram: DiagramApi; xyflow: XYFlowInstance }) => void
 

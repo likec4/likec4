@@ -8,7 +8,7 @@ env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   publish:
@@ -29,6 +29,10 @@ jobs:
         run: |
           pnpx pkg-pr-new publish --pnpm --comment=update \
             './packages/core' \
+            './packages/config' \
+            './packages/icons' \
+            './packages/log' \
+            './packages/layouts' \
             './packages/diagram' \
             './packages/language-server' \
             './packages/likec4' \

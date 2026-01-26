@@ -1,9 +1,15 @@
-import { createSafeContext } from '@mantine/core'
 import { useSelector } from '@xstate/react'
 import { useCallback, useDeferredValue } from 'react'
-import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
+import { useSearchActorRef } from '../hooks/useSearchActor'
+import type { SearchActorSnapshot } from './searchActor'
 
-export const [SearchActorContext, useSearchActor] = createSafeContext<SearchActorRef>('SearchActorContext')
+export function useSearchActor() {
+  const searchActorRef = useSearchActorRef()
+  if (!searchActorRef) {
+    throw new Error('Search actor not found')
+  }
+  return searchActorRef
+}
 
 const selectSearchValue = (s: SearchActorSnapshot) => s.context.searchValue
 export function useSearch(): [string, (search: string) => void] {
@@ -16,7 +22,9 @@ export function useSearch(): [string, (search: string) => void] {
 }
 
 const selectNormalizedSearchValue = (s: SearchActorSnapshot) => {
-  const v = s.context.searchValue.trim().toLowerCase()
+  let v = selectSearchValue(s)
+  if (v === '') return ''
+  v = v.trim().toLowerCase()
   return v.length > 1 ? v : ''
 }
 export function useNormalizedSearch() {
@@ -29,10 +37,4 @@ export function useUpdateSearch() {
   return useCallback((search: string) => {
     searchActorRef.send({ type: 'change.search', search })
   }, [searchActorRef])
-}
-
-const selectPickViewFor = (s: SearchActorSnapshot) => s.context.pickViewFor
-export function usePickViewFor() {
-  const searchActorRef = useSearchActor()
-  return useSelector(searchActorRef, selectPickViewFor)
 }

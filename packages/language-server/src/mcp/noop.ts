@@ -1,8 +1,7 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import type { LikeC4MCPServer } from './interfaces'
+import type { LikeC4MCPServer, LikeC4MCPServerFactory } from './types'
 
 export class NoopLikeC4MCPServer implements LikeC4MCPServer {
-  get mcp(): McpServer {
+  get mcp(): any {
     throw new Error('NoopLikeC4MCPServer does not have a McpServer')
   }
   get isStarted(): boolean {
@@ -16,5 +15,11 @@ export class NoopLikeC4MCPServer implements LikeC4MCPServer {
   }
   stop() {
     return Promise.resolve()
+  }
+}
+
+export class NoopLikeC4MCPServerFactory implements LikeC4MCPServerFactory {
+  create(_options?: any): any {
+    throw new Error('NoopLikeC4MCPServerFactory')
   }
 }

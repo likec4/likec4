@@ -1,34 +1,46 @@
 import { configureLogger, getConsoleSink, getConsoleStderrSink, getTextFormatter } from '@likec4/log'
 import { defu } from 'defu'
-import { DEV } from 'esm-env'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
-import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
-import { NoopFileSystem } from './filesystem'
-import { LikeC4FileSystem } from './filesystem/LikeC4FileSystem'
+import { isDevelopment } from 'std-env'
+import type { Connection } from 'vscode-languageserver'
+import { WithFileSystem } from './filesystem/LikeC4FileSystem'
 import { WithLikeC4ManualLayouts } from './filesystem/LikeC4ManualLayouts'
 import { getTelemetrySink, logger } from './logger'
 import { WithMCPServer } from './mcp/server/WithMCPServer'
-import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
+import type { LikeC4Services, LikeC4SharedServices } from './module'
+import { createLanguageServices } from './module'
 import { ConfigurableLayouter } from './views/ConfigurableLayouter'
 
-export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
+export type * from './common-exports'
 
-export type { LikeC4LanguageServices } from './LikeC4LanguageServices'
-export { isLikeC4Builtin } from './likec4lib'
-export { createLanguageServices } from './module'
-export type { LikeC4Services, LikeC4SharedServices } from './module'
-export type { LikeC4Views } from './views'
-export type { ProjectsManager } from './workspace'
-export { LikeC4FileSystem, NoopFileSystem, WithMCPServer }
+export {
+  createLanguageServices,
+  NoFileSystem,
+  NoFileSystemWatcher,
+  NoLikeC4ManualLayouts,
+  NoMCPServer,
+} from './common-exports'
 
-export { WithLikeC4ManualLayouts }
+export {
+  WithFileSystem,
+  WithLikeC4ManualLayouts,
+  WithMCPServer,
+}
 
 type StartLanguageServerOptions = {
+  /**
+   * The Language Server Protocol connection to use.
+   */
+  connection?: Connection
   /**
    * Whether to enable the file system watcher.
    * @default true
    */
   enableWatcher?: boolean
+  /**
+   * @default true
+   */
+  enableTelemetry?: boolean
   /**
    * Whether to enable the MCP server.
    * @default 'sse'
@@ -46,42 +58,57 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
   shared: LikeC4SharedServices
   likec4: LikeC4Services
 } {
+  const connection = options?.connection
+
   const opts = defu(options, {
     enableWatcher: true,
     enableMCP: 'sse' as const,
+    enableTelemetry: !!connection,
     enableManualLayouts: true,
   })
-  const connection = createConnection(ProposedFeatures.all)
+
+  const enableTelemetry = !!connection && opts.enableTelemetry && !isDevelopment
 
   configureLogger({
     sinks: {
-      console: opts.enableMCP === 'stdio' ? getConsoleStderrSink() : getConsoleSink({
-        formatter: getTextFormatter(),
+      // dprint-ignore
+      console: opts.enableMCP === 'stdio' || connection
+        ? getConsoleStderrSink({ formatter: getTextFormatter() })
+        : getConsoleSink({ formatter: getTextFormatter() }),
+      ...(enableTelemetry && {
+        telemetry: getTelemetrySink(connection),
       }),
-      telemetry: getTelemetrySink(connection),
     },
     loggers: [
       {
         category: ['likec4'],
-        sinks: ['console', 'telemetry'],
-        lowestLevel: DEV ? 'trace' : 'debug',
+        sinks: ['console', ...(enableTelemetry ? ['telemetry'] : [])],
+        lowestLevel: isDevelopment ? 'trace' : 'debug',
       },
     ],
   })
-  logger.info('Starting LikeC4 language server')
+
+  if (connection) {
+    logger.info('Starting LikeC4 language server')
+  } else {
+    logger.warn('Starting LikeC4 language server (headless - no LSP connection)')
+  }
+
   // Inject the shared services and language-specific services
   const services = createLanguageServices(
     {
-      connection,
-      ...LikeC4FileSystem(opts.enableWatcher),
+      ...connection && { connection },
+      ...WithFileSystem(opts.enableWatcher),
       ...!!opts.enableMCP && WithMCPServer(opts.enableMCP),
       ...opts.enableManualLayouts && WithLikeC4ManualLayouts,
     },
-    {
-      likec4: {
-        ...ConfigurableLayouter.likec4,
-      },
-    },
+    connection
+      ? {
+        likec4: {
+          ...ConfigurableLayouter.likec4,
+        },
+      }
+      : undefined,
   )
 
   // Start the language server with the shared services

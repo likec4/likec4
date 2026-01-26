@@ -1,11 +1,12 @@
 import { loggable } from '@likec4/log'
 import type { LikeC4Services } from '../../module'
-import type { LikeC4MCPServer, LikeC4MCPServerModuleContext } from '../interfaces'
+import type { LikeC4MCPServer, LikeC4MCPServerFactory, LikeC4MCPServerModuleContext } from '../types'
 import { logger } from '../utils'
+import { MCPServerFactory } from './MCPServerFactory'
 import { StdioLikeC4MCPServer } from './StdioLikeC4MCPServer'
 import { StreamableLikeC4MCPServer } from './StreamableLikeC4MCPServer'
 
-const streamableLikeC4MCPServer = (services: LikeC4Services, defaultPort = 33335): LikeC4MCPServer => {
+function streamableLikeC4MCPServer(services: LikeC4Services, defaultPort = 33335): LikeC4MCPServer {
   logger.debug('Creating StreamableLikeC4MCPServer')
   const server = new StreamableLikeC4MCPServer(services, defaultPort)
   const langId = services.LanguageMetaData.languageId
@@ -52,16 +53,21 @@ const streamableLikeC4MCPServer = (services: LikeC4Services, defaultPort = 33335
   return server
 }
 
-const stdioLikeC4MCPServer = (services: LikeC4Services): LikeC4MCPServer => {
+function stdioLikeC4MCPServer(services: LikeC4Services): LikeC4MCPServer {
   return new StdioLikeC4MCPServer(services)
 }
 
-export const WithMCPServer = (type: 'stdio' | 'sse' | { port: number } = 'sse'): LikeC4MCPServerModuleContext => ({
-  mcpServer: (services: LikeC4Services): LikeC4MCPServer => {
-    if (type === 'stdio') {
-      return stdioLikeC4MCPServer(services)
-    }
-    const port = typeof type === 'object' ? type.port : 33335
-    return streamableLikeC4MCPServer(services, port)
-  },
-})
+export function WithMCPServer(type: 'stdio' | 'sse' | { port: number } = 'sse'): LikeC4MCPServerModuleContext {
+  return ({
+    mcpServer: (services: LikeC4Services): LikeC4MCPServer => {
+      if (type === 'stdio') {
+        return stdioLikeC4MCPServer(services)
+      }
+      const port = typeof type === 'object' ? type.port : 33335
+      return streamableLikeC4MCPServer(services, port)
+    },
+    mcpServerFactory: (services: LikeC4Services): LikeC4MCPServerFactory => {
+      return new MCPServerFactory(services)
+    },
+  })
+}

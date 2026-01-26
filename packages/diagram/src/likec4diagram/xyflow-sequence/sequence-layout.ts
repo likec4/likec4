@@ -5,6 +5,7 @@ import type {
   DiagramNode,
   LayoutedDynamicView,
   NodeId,
+  ViewId,
 } from '@likec4/core/types'
 import type { Writable } from 'type-fest'
 import type { Types } from '../types'
@@ -13,8 +14,14 @@ import {
   SeqZIndex,
 } from './const'
 
+/**
+ * Converts a sequence layout to XY flow nodes and edges.
+ * @param view The next dynamic view which contains the sequence layout.
+ * @param currentViewId The ID of the current view (optional, used to exclude navigation to the current view)
+ */
 export function sequenceLayoutToXY(
   view: LayoutedDynamicView,
+  currentViewId: ViewId | undefined,
 ): {
   xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.ViewGroupNode>
   xyedges: Array<Types.SequenceStepEdge>
@@ -45,7 +52,7 @@ export function sequenceLayoutToXY(
     if (!edge) {
       throw new Error(`Edge ${step.id} not found`)
     }
-    xyedges.push(toSeqStepEdge(step, edge))
+    xyedges.push(toSeqStepEdge(step, edge, currentViewId ?? view.id))
   }
 
   return {
@@ -78,6 +85,7 @@ function toCompoundArea(
       depth,
       isViewGroup: true,
       drifts: node.drifts ?? null,
+      viewLayoutDir: 'LR',
     },
     // zIndex: SeqZIndex.compound,
     position: {
@@ -122,6 +130,7 @@ function toSeqParallelArea(
       viewId: view.id,
       parallelPrefix,
       drifts: null,
+      viewLayoutDir: 'LR',
     },
     zIndex: SeqZIndex.parallel,
     position: {
@@ -173,6 +182,7 @@ function toSeqActorNode(
       viewId: view.id,
       ports: ports as Writable<typeof ports>,
       drifts: actor.drifts ?? null,
+      viewLayoutDir: 'LR',
     },
     deletable: false,
     selectable: true,
@@ -187,6 +197,7 @@ function toSeqActorNode(
 function toSeqStepEdge(
   { id, labelBBox, sourceHandle, targetHandle }: LayoutedDynamicView.Sequence.Step,
   edge: DiagramEdge,
+  currentViewId: ViewId,
 ): Types.SequenceStepEdge {
   return {
     id,
@@ -196,7 +207,7 @@ function toSeqStepEdge(
       label: edge.label,
       technology: edge.technology,
       notes: edge.notes ?? null,
-      navigateTo: edge.navigateTo,
+      navigateTo: edge.navigateTo !== currentViewId ? edge.navigateTo : null,
       controlPoints: null,
       labelBBox: {
         x: 0,

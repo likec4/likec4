@@ -2,7 +2,7 @@ import { describe, it } from 'vitest'
 import { createTestServices } from '../test/testServices'
 import { test } from './asserts'
 
-describe.concurrent('Deployment model:', () => {
+describe('Deployment model:', () => {
   test('deployment node with properties').valid`
      specification {
       deploymentNode environment

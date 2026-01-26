@@ -10,6 +10,13 @@
   "bin": {
     "likec4-mcp-server": "dist/index.mjs"
   },
+  "files": [
+    "dist",
+    "**/package.json",
+    "!**/__*/**",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
@@ -27,18 +34,15 @@
   ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "wireit",
+    "build": "obuild",
+    "preinspector": "obuild",
     "inspector": "wireit",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-mcp-$npm_package_version.tgz package.tgz || true",
     "clean": "likec4ops clean"
   },
   "wireit": {
-    "build": {
-      "command": "unbuild"
-    },
     "inspector": {
-      "dependencies": [
-        "build"
-      ],
       "command": "pnpx @modelcontextprotocol/inspector node dist/index.mjs",
       "env": {
         "DANGEROUSLY_OMIT_AUTH": "true",
@@ -52,13 +56,15 @@
     }
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils",
-    "bundle-require": "catalog:utils",
+    "@hpcc-js/wasm-graphviz": "catalog:externals",
+    "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild",
-    "std-env": "catalog:utils"
+    "std-env": "catalog:externals"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/config": "workspace:*",
+    "@likec4/layouts": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
@@ -70,10 +76,10 @@
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "obuild": "catalog:obuild",
     "vitest": "catalog:vitest",
     "vscode-uri": "catalog:vscode",
     "wireit": "catalog:",
-    "zod": "catalog:utils"
+    "zod": "catalog:externals"
   }
 }

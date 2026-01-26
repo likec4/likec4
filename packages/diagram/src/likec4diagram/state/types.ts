@@ -1,7 +1,7 @@
 import type {
   ActorSystem,
 } from 'xstate'
-import type { EditorActorRef } from '../../editor/editorActor'
+import type { EditorActorRef } from '../../editor/editorActor.states'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type {

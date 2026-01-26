@@ -104,7 +104,7 @@ function ElementShapeButton({
       offset={2}
       styles={{
         item: {
-          padding: 'calc(var(--mantine-spacing-xs) / 1.5) var(--mantine-spacing-xs)',
+          padding: 'calc(var(--spacing-xs) / 1.5) var(--spacing-xs)',
         },
       }}
       withinPortal={false}
@@ -114,23 +114,21 @@ function ElementShapeButton({
           variant="light"
           color="gray"
           size="xs"
-          px={8}
+          fz={'xxs'}
+          px={'xs'}
           rightSection={<IconSelector size={12} />}
         >
           {elementShape}
         </Button>
       </MenuTarget>
       <MenuDropdown
-        // className={css.menuDropdown}
-        // onPointerDownCapture={stopEventPropagation}
-        // onPointerDown={stopEventPropagation}
         onDoubleClick={stopPropagation}
         onClick={stopPropagation}
       >
         {ElementShapes.map(shape => (
           <MenuItem
-            fz={12}
-            fw={500}
+            fz={'xs'}
+            fw={'500'}
             key={shape}
             value={shape}
             rightSection={elementShape === shape ? <IconCheck size={12} /> : undefined}

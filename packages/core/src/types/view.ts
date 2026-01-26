@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
+import type * as aux from './_aux'
 import type { Any } from './_aux'
-import * as aux from './_aux'
 import type { _stage, _type, ExtractOnStage, ModelStage } from './const'
 import type { ViewType } from './view-common'
 import type {

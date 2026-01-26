@@ -3,7 +3,7 @@ import { prop } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
-describe.concurrent('LikeC4ModelBuilder -- globals', () => {
+describe('LikeC4ModelBuilder -- globals', () => {
   it('local styles are applied to all views', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`

@@ -32,6 +32,6 @@ export const description = css({
 export const title = css({
   // fontFamily: ['Greycliff CF', mantine.fontFamily],
   textAlign: 'center',
-  fontWeight: '900',
+  fontWeight: '[900]',
   fontSize: 38,
 })

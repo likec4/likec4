@@ -25,7 +25,7 @@
     "@expressive-code/plugin-line-numbers": "catalog:astro",
     "@likec4/config": "workspace:*",
     "@tailwindcss/vite": "catalog:css",
-    "@types/picomatch": "catalog:utils",
+    "@types/picomatch": "catalog:externals",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "astro": "catalog:astro",

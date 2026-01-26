@@ -1,15 +1,18 @@
 import chroma from 'chroma-js'
-import defu from 'defu'
+import { defu } from 'defu'
 import { hasAtLeast, isDeepEqual } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
-import { type ComputedNodeStyle, type LikeC4ProjectStylesConfig, ensureSizes } from '../types'
-import { memoizeProp } from '../utils'
+import type { ComputedNodeStyle, LikeC4ProjectStylesConfig, NTuple } from '../types'
+import { ensureSizes } from '../types'
+import { DefaultMap, DefaultWeakMap, memoizeProp } from '../utils'
 import { computeColorValues } from './compute-color-values'
+import { computeCompoundColorValues } from './compute-compound-colors'
 import { styleDefaults } from './defaults'
 import { defaultTheme } from './theme'
 import type {
   ColorLiteral,
   ElementColorValues,
+  IconSize,
   LikeC4StyleDefaults,
   LikeC4StylesConfig,
   LikeC4Theme,
@@ -103,6 +106,21 @@ export class LikeC4Styles {
     throw new Error(`Unknown color: ${color}`)
   }
 
+  private compoundColorsCache = new DefaultWeakMap((baseElementColors: ElementColorValues) =>
+    new DefaultMap((depth: number) => computeCompoundColorValues(baseElementColors, depth))
+  )
+  /**
+   * Get colors for compound nodes
+   *
+   * @param baseElementColors - The base element colors to compute from
+   */
+  colorsForCompounds<Depth extends number = 6>(
+    baseElementColors: ElementColorValues,
+    depth?: Depth,
+  ): NTuple<ElementColorValues, Depth> {
+    return this.compoundColorsCache.get(baseElementColors).get(depth ?? 6) as NTuple<ElementColorValues, Depth>
+  }
+
   /**
    * Get font size in pixels
    *
@@ -125,6 +143,17 @@ export class LikeC4Styles {
     return this.theme.spacing[paddingSize]
   }
 
+  /**
+   * Get icon size in pixels
+   *
+   * @param iconSize - The icon size to use
+   * @default iconSize From the defaults
+   */
+  iconSize(iconSize?: IconSize): number {
+    iconSize ??= this.defaults.size
+    return this.theme.iconSizes[iconSize]
+  }
+
   isThemeColor(color: string): color is ThemeColor {
     return color in this.theme.colors
   }
@@ -140,11 +169,13 @@ export class LikeC4Styles {
    * sizes.size     // enum Size
    * sizes.padding  // enum SpacingSize
    * sizes.textSize // enum TextSize
+   * sizes.iconSize // enum ShapeSize
    *
    * // values
    * values.sizes    // { width: number, height: number }
    * values.padding  // number
    * values.textSize // number
+   * values.iconSize // number
    * ```
    */
   nodeSizes(nodestyles: ComputedNodeStyle) {
@@ -155,6 +186,7 @@ export class LikeC4Styles {
         sizes: this.theme.sizes[sizes.size],
         padding: this.padding(sizes.padding),
         textSize: this.fontSize(sizes.textSize),
+        iconSize: this.iconSize(sizes.iconSize),
       },
     }
   }
@@ -178,6 +210,10 @@ export class LikeC4Styles {
   equals(other: LikeC4Styles): boolean {
     if (other === this) {
       return true
+    }
+    // Check if both objects share the same prototype/constructor
+    if (this.constructor !== other.constructor) {
+      return false
     }
     return isDeepEqual(this.config, other.config)
   }

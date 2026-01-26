@@ -4,7 +4,15 @@ export { useMantinePortalProps } from './useMantinePortalProps'
 export { useMediaPrint } from './useMediaPrint'
 export { useSetState } from './useSetState'
 export { useUpdateEffect } from './useUpdateEffect'
-export { useCurrentZoom, useIsZoomTooSmall, useXYFlow, useXYInternalNode, useXYStore, useXYStoreApi } from './useXYFlow'
+export {
+  useCurrentZoom,
+  useCurrentZoomAtLeast,
+  useIsZoomTooSmall,
+  useXYFlow,
+  useXYInternalNode,
+  useXYStore,
+  useXYStoreApi,
+} from './useXYFlow'
 export type { XYFlowInstance, XYStoreApi, XYStoreState } from './useXYFlow'
 
 export { useCurrentView, useCurrentViewId } from './useCurrentView'

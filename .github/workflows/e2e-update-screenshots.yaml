@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/checkout@v6
         with:
-          token: ${{ steps.app-token.outputs.tokenT }}
+          token: ${{ steps.app-token.outputs.token }}
           ssh-strict: 'no'
 
       - name: Get GitHub App User ID
@@ -59,13 +59,16 @@ jobs:
 
       - name: 📦 pack
         run: |
-          pnpm turbo run pack --filter='@likec4/core' --filter='likec4'
+          pnpm turbo run pack --filter="!./apps/*"
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
         run: |
           pnpm install
-          pnpm add ../packages/core/package.tgz ../packages/likec4/package.tgz
+          pnpm add \
+            ../packages/core/package.tgz \
+            ../packages/icons/package.tgz \
+            ../packages/likec4/package.tgz
           pnpm install:chromium
           pnpm bootstrap
 

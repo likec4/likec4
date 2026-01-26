@@ -1,14 +1,8 @@
 import type { LikeC4ProjectStylesConfig, LikeC4ProjectTheme, ThemeColorValues } from '@likec4/core/types'
 import type { GeneratorFn, LikeC4ProjectConfig, LikeC4ProjectConfigInput } from './schema'
 import { GeneratorsSchema, LikeC4ProjectConfigSchema } from './schema'
-import {
-  type LikeC4ConfigThemeInput,
-  type LikeC4StylesConfigInput,
-  type ThemeColorValuesInput,
-  LikeC4Config_Styles_Theme,
-  LikeC4StylesConfigSchema,
-  ThemeColorValuesSchema,
-} from './schema.theme'
+import type { LikeC4ConfigThemeInput, LikeC4StylesConfigInput, ThemeColorValuesInput } from './schema.theme'
+import { LikeC4Config_Styles_Theme, LikeC4StylesConfigSchema, ThemeColorValuesSchema } from './schema.theme'
 
 /**
  * Defines LikeC4 Project, allows custom generators that can be executed using CLI:

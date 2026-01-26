@@ -6,8 +6,7 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "@likec4/styles#generate",
-        "@likec4/language-server#generate"
+        "^generate"
       ],
       "outputs": [
         "src/routeTree.gen.ts",

@@ -24,17 +24,17 @@ export const NavigationButtons = () => {
         onClick={e => {
           e.stopPropagation()
           diagram.navigate('back')
-        }}
-        children={<IconArrowLeft size={14} />}
-      />
+        }}>
+        <IconArrowLeft size={14} />
+      </PanelActionIcon>
       <PanelActionIcon
         disabled={!hasStepForward}
         onClick={e => {
           e.stopPropagation()
           diagram.navigate('forward')
-        }}
-        children={<IconArrowRight size={14} />}
-      />
+        }}>
+        <IconArrowRight size={14} />
+      </PanelActionIcon>
     </m.div>
   )
 }

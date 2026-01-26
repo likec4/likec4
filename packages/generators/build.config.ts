@@ -1,20 +1,19 @@
-import { defineBuildConfig } from 'unbuild'
+import { defineBuildConfig } from 'obuild/config'
 
 export default defineBuildConfig({
   entries: [{
-    input: './src/',
-    outDir: './dist/',
-    builder: 'mkdist',
-    addRelativeDeclarationExtensions: false,
-    ext: 'js',
-    declaration: true,
-    globOptions: {
-      ignore: [
-        '**/__*/**',
-        '**/*.spec.ts',
-      ],
+    type: 'bundle',
+    input: './src/index.ts',
+    rolldown: {
+      platform: 'neutral',
+      resolve: {
+        mainFields: ['module', 'main'],
+        // conditionNames: ['sources', 'import', 'default'],
+      },
     },
+    // dts: {
+    //   build: true,
+    //   resolver: 'tsc',
+    // },
   }],
-  clean: true,
-  stub: false,
 })

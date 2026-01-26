@@ -59,8 +59,8 @@ export const Markdown = forwardRef<HTMLDivElement, MarkdownProps>(({
     : { children: <Text component="span" fz={'xs'} c="dimmed" style={{ userSelect: 'none' }}>{emptyText}</Text> }
   return (
     <Box
-      ref={ref}
       {...props}
+      ref={ref}
       className={cx(
         markdownBlock({
           uselikec4palette,

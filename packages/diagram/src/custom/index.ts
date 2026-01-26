@@ -15,7 +15,6 @@ export type {
 } from '../base/types'
 
 export type {
-  ChangeEvent,
   DiagramNodeWithNavigate,
   ElementIconRenderer,
   ElementIconRendererProps,
@@ -24,7 +23,6 @@ export type {
   LikeC4DiagramProperties,
   NodeRenderers,
   OnCanvasClick,
-  OnChange,
   OnEdgeClick,
   OnNavigateTo,
   OnNodeClick,

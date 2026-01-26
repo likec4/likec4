@@ -1,10 +1,56 @@
 import { defineTokens } from '@pandacss/dev'
-import { mantine, tokens as generated } from './generated'
+import { mapValues } from 'remeda'
+import { defaultTheme } from './defaults/index.ts'
+import { mantine } from './generated.ts'
+import { rem } from './helpers.ts'
+import { colors } from './tokens.colors.ts'
 
 export const tokens = defineTokens({
-  ...generated,
+  fontSizes: {
+    'xxs': {
+      value: '10px',
+    },
+    xs: {
+      value: '12px',
+    },
+    sm: {
+      value: '14px',
+    },
+    md: {
+      value: '16px',
+    },
+    lg: {
+      value: '18px',
+    },
+    xl: {
+      value: '20px',
+    },
+    likec4: {
+      ...mapValues(defaultTheme.textSizes, (value, key) => ({
+        description: `LikeC4 Diagram Text Size: ${key}`,
+        value: rem(value),
+      })),
+    },
+  },
   lineHeights: {
-    ...generated.lineHeights,
+    'xxs': {
+      value: '1.1',
+    },
+    xs: {
+      value: '1.2',
+    },
+    sm: {
+      value: '1.35',
+    },
+    md: {
+      value: '1.45',
+    },
+    lg: {
+      value: '1.55',
+    },
+    xl: {
+      value: '1.6',
+    },
     '1': {
       value: '1',
     },
@@ -23,7 +69,6 @@ export const tokens = defineTokens({
     default: { value: `1px solid ${mantine.colors.defaultBorder}` },
   },
   spacing: {
-    ...generated.spacing,
     '0': {
       description: 'Non-scalable spacing value - 0px',
       value: '0px',
@@ -88,64 +133,78 @@ export const tokens = defineTokens({
       description: 'Non-scalable spacing value - (10 * 4px)',
       value: '40px',
     },
+    '12': {
+      description: 'Non-scalable spacing value - (12 * 4px)',
+      value: '48px',
+    },
+    '16': {
+      description: 'Non-scalable spacing value - (16 * 4px)',
+      value: '64px',
+    },
     xxs: {
-      description: 'Scalable spacing value - (0.5rem * var(--scale)) (8px)',
-      value: 'calc(0.5rem * var(--mantine-scale))', // 8px
+      description: 'Scalable spacing value - (8px * var(--scale)) (8px)',
+      value: 'calc(8px * var(--mantine-scale))', // 8px
     },
     xs: {
-      description: 'Scalable spacing value - (0.625rem * var(--scale)) (10px)',
-      value: 'calc(0.625rem * var(--mantine-scale))', // 10px
+      description: 'Scalable spacing value - (10px * var(--scale)) (10px)',
+      value: 'calc(10px * var(--mantine-scale))', // 10px
     },
     sm: {
-      description: 'Scalable spacing value - (0.75rem * var(--scale)) (12px)',
-      value: 'calc(0.75rem * var(--mantine-scale))', // 12px
+      description: 'Scalable spacing value - (12px * var(--scale)) (12px)',
+      value: 'calc(12px * var(--mantine-scale))', // 12px
     },
     md: {
-      description: 'Scalable spacing value - (1rem * var(--scale)) (16px)',
-      value: 'calc(1rem * var(--mantine-scale))', // 16px
+      description: 'Scalable spacing value - (16px * var(--scale)) (16px)',
+      value: 'calc(16px * var(--mantine-scale))', // 16px
     },
     lg: {
-      description: 'Scalable spacing value - (1.25rem * var(--scale)) (20px)',
-      value: 'calc(1.25rem * var(--mantine-scale))', // 20px
+      description: 'Scalable spacing value - (20px * var(--scale)) (20px)',
+      value: 'calc(20px * var(--mantine-scale))', // 20px
     },
     xl: {
-      description: 'Scalable spacing value - (2rem * var(--scale)) (32px)',
-      value: 'calc(2rem * var(--mantine-scale))', // 32px
+      description: 'Scalable spacing value - (32px * var(--scale)) (32px)',
+      value: 'calc(32px * var(--mantine-scale))', // 32px
+    },
+    likec4: {
+      ...mapValues(defaultTheme.spacing, (value, key) => ({
+        description: `LikeC4 Diagram Spacing: ${key}`,
+        value: `${value}px`,
+      })),
     },
   },
   radii: {
-    0: {
+    '0': {
       value: '0px',
     },
     xs: {
-      value: '0.125rem',
+      value: '2px',
     },
     sm: {
-      value: '0.25rem',
+      value: '4px',
     },
     md: {
-      value: '0.5rem',
+      value: '8px',
     },
     lg: {
-      value: '1rem',
+      value: '16px',
     },
     xl: {
-      value: '2rem',
+      value: '32px',
     },
   },
-  colors: {
-    ...generated.colors,
-    // For typesafety, otherwise wrap with []
-    transparent: { value: 'transparent' },
-    // For fill: none
-    none: { value: 'none' },
-  },
+  colors,
   fontWeights: {
     normal: {
       value: '400',
     },
     medium: {
       value: '500',
+    },
+    bold: {
+      value: '600',
+    },
+    bolder: {
+      value: '700',
     },
   },
   fonts: {
@@ -214,11 +273,29 @@ export const tokens = defineTokens({
       value: '1',
     },
     likec4: {
-      panel: {
-        value: '100',
+      diagram: {
+        edge: {
+          value: '20',
+        },
+        node: {
+          compound: {
+            value: '10',
+          },
+          element: {
+            value: '40',
+          },
+        },
       },
       dropdown: {
         value: '200',
+      },
+      panel: {
+        DEFAULT: {
+          value: '100',
+        },
+        dropdown: {
+          value: '200',
+        },
       },
     },
   },

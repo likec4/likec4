@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
-describe.concurrent('property-checks', () => {
+describe('property-checks', () => {
   describe('icon', () => {
     it('should error duplicate icon inside style', async ({ expect }) => {
       const { validate } = createTestServices()

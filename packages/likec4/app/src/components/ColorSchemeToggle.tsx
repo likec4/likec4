@@ -16,7 +16,8 @@ export function ColorSchemeToggle() {
       onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
       aria-label="Toggle color scheme"
     >
-      {computedColorScheme === 'light' ? <IconMoonStars stroke={1.5} /> : <IconSun stroke={1.5} />}
+      <IconMoonStars stroke={1.5} display={computedColorScheme === 'light' ? 'block' : 'none'} />
+      <IconSun stroke={1.5} display={computedColorScheme === 'dark' ? 'block' : 'none'} />
     </ActionIcon>
   )
 }
