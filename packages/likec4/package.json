@@ -133,8 +133,6 @@
     "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "boxen": "^8.0.1",
     "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild",
@@ -209,7 +207,6 @@
 
     "package-manager-detector": "catalog:utils",
     "package-up": "catalog:utils",
-    "picomatch": "catalog:utils",
     "postcss": "catalog:css",
     "pretty-ms": "^9.3.0",
     "react": "catalog:react",

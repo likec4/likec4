@@ -48,7 +48,7 @@ export function LikeC4AdHocViewEditor({ service }: { service: AdhocViewService }
             <TagStylesProvider rootSelector={`#${id}`}>
               <RootContainer id={id}>
                 <AdhocEditorActorProvider service={service}>
-                  <LikeC4AdHocView />
+                  <LikeC4AdHocView id={id} />
                   <EditorNavigationPanel />
                   <SelectElementOverlay />
                 </AdhocEditorActorProvider>
@@ -64,11 +64,12 @@ export function LikeC4AdHocViewEditor({ service }: { service: AdhocViewService }
 //   view: LayoutedElementView
 // }
 
-function LikeC4AdHocView() {
+function LikeC4AdHocView({ id }: { id: string }) {
   const view = useAdhocView()
   return (
     <XYFlowProvider fitView initialNodes={[]} initialEdges={[]}>
       <DiagramActorProvider
+        id={id}
         view={view}
         zoomable
         pannable

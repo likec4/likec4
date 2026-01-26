@@ -1,11 +1,13 @@
+import { useSelector } from '@xstate/react'
 import { prop } from 'remeda'
 import { NavigationPanel } from '../components/NavigationPanel'
-import { selectFromContext, useAdhocEditorSnapshot } from './hooks'
+import { selectFromContext, useAdhocEditorActor } from './hooks'
 import { ViewRulesPanel } from './viewrules/ViewRulesPanel'
 
 const selectRules = selectFromContext(prop('rules'))
 export const EditorNavigationPanel = () => {
-  const rules = useAdhocEditorSnapshot(selectRules)
+  const actorRef = useAdhocEditorActor()
+  const rules = useSelector(actorRef, selectRules)
 
   return (
     <NavigationPanel.Root>
@@ -16,8 +18,16 @@ export const EditorNavigationPanel = () => {
         </NavigationPanel.Label>
       </NavigationPanel.Body>
       {rules.length > 0 && (
-        <NavigationPanel.Dropdown>
-          <ViewRulesPanel rules={rules} />
+        <NavigationPanel.Dropdown css={{ maxW: '250px' }}>
+          <ViewRulesPanel
+            rules={rules}
+            onToggle={rule => {
+              actorRef.send({ type: 'toggle.rule', ruleId: rule.id })
+            }}
+            onDelete={rule => {
+              actorRef.send({ type: 'delete.rule', ruleId: rule.id })
+            }}
+          />
         </NavigationPanel.Dropdown>
       )}
     </NavigationPanel.Root>

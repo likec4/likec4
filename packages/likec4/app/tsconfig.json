@@ -18,7 +18,6 @@
     "types": [
       "vite/client",
       "../src/vite-plugin/modules.d.ts",
-      "../src/vite-plugin/rpc/events.d.ts"
     ]
   },
   "include": [

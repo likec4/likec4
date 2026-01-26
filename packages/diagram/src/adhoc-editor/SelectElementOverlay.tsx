@@ -14,9 +14,10 @@ function SelectElementsButton({ onClick }: { onClick: () => void }) {
   return (
     <m.div
       layout="position"
-      layoutId="select-button"
+      layoutId="select-button-container"
       className={cx(
         flex({
+          pointerEvents: 'none',
           position: 'absolute',
           justifyContent: 'center',
         }),
@@ -26,22 +27,32 @@ function SelectElementsButton({ onClick }: { onClick: () => void }) {
           width: '100%',
         }),
       )}>
-      <Button size={isEmpty ? 'xl' : 'lg'} variant="default" radius={isEmpty ? 'xl' : 'lg'} onClick={onClick}>
+      <Button
+        component={m.button}
+        layout="position"
+        layoutId="select-button"
+        className={css({
+          pointerEvents: 'all',
+        })}
+        size={isEmpty ? 'xl' : 'lg'}
+        variant="default"
+        radius={isEmpty ? 'xl' : 'lg'}
+        onClick={onClick}>
         Add elements
       </Button>
     </m.div>
   )
 }
 
-const isSelecting = selectFromSnapshot(s => s.value == 'selecting')
+const isSelecting = selectFromSnapshot(s => s.value.editor === 'selecting')
 export function SelectElementOverlay() {
   const editor = useAdhocEditor()
   const isOpened = useAdhocEditorSnapshot(isSelecting)
   return (
-    <AnimatePresence>
-      <SelectElementsButton onClick={() => editor.open()} />
+    <AnimatePresence mode="popLayout">
+      <SelectElementsButton key="select-button" onClick={() => editor.open()} />
       {isOpened && (
-        <Overlay onClose={() => editor.close()}>
+        <Overlay key="select-overlay" onClose={() => editor.close()}>
           <SelectElementOverlayBody />
         </Overlay>
       )}

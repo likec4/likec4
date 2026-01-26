@@ -1,4 +1,4 @@
-import objecthash from 'object-hash'
+import { hash } from 'ohash'
 import { isNonNullish } from 'remeda'
 import { invariant } from '../utils/invariant'
 
@@ -7,8 +7,5 @@ export function objectHash(value: any): string {
     typeof value === 'object' && isNonNullish(value),
     'objectHash: value must be an object',
   )
-  return objecthash(value, {
-    ignoreUnknown: true,
-    respectType: false,
-  })
+  return hash(value)
 }

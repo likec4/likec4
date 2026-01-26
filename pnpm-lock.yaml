@@ -298,6 +298,9 @@ catalogs:
     object-hash:
       specifier: ^3.0.0
       version: 3.0.0
+    ohash:
+      specifier: ^2.0.11
+      version: 2.0.11
     p-debounce:
       specifier: 5.1.0
       version: 5.1.0
@@ -905,6 +908,9 @@ importers:
       immer:
         specifier: catalog:utils
         version: 11.1.0
+      ohash:
+        specifier: catalog:utils
+        version: 2.0.11
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -990,9 +996,6 @@ importers:
       natural-compare-lite:
         specifier: catalog:utils
         version: 1.4.0
-      object-hash:
-        specifier: catalog:utils
-        version: 3.0.0
       obliterator:
         specifier: ^2.0.5
         version: 2.0.5

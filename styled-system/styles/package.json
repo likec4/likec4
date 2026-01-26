@@ -97,9 +97,6 @@
     "react-dom": {
       "optional": true
     },
-    "react": {
-      "optional": true
-    },
     "@types/react": {
       "optional": true
     },

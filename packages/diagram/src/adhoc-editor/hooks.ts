@@ -15,6 +15,7 @@ export function useAdhocEditor() {
   return useMemo(() => ({
     open: () => actorRef.send({ type: 'select.open' }),
     close: () => actorRef.send({ type: 'select.close' }),
+    toggleRule: (ruleId: string) => actorRef.send({ type: 'toggle.rule', ruleId }),
     include: (element: ElementModel) => actorRef.send({ type: 'include.element', model: element.id }),
   }), [actorRef])
 }

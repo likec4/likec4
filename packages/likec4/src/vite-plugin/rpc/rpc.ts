@@ -2,10 +2,10 @@ import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { createBirpc } from 'birpc'
 import type { MinimalPluginContextWithoutEnvironment, ViteDevServer } from 'vite'
 import type { ViteLogger } from '../../logger'
-import { calcAdhocView } from './adhoc:view'
+import { calcAdhocView } from './calcAdhocView'
 import type { LikeC4VitePluginRpc } from './protocol'
 import { sendError } from './sendError'
-import { updateView } from './view:onChange'
+import { updateView } from './updateView'
 
 export type PluginRPCParams = {
   logger: ViteLogger
@@ -28,6 +28,4 @@ export function enablePluginRPC(
       sendError(server, { name: error.name, error: error.stack ?? error.message })
     },
   })
-  // handleOnViewChange.call(this, params)
-  // handleAdhocRequest.call(this, params)
 }

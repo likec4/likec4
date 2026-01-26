@@ -84,8 +84,8 @@ catalogs:
   mcp:
     '@modelcontextprotocol/sdk': ^1.25.1
   obuild:
-    obuild: ^0.4.20
     '@rolldown/plugin-node-polyfills': ^1.0.0
+    obuild: ^0.4.20
   react:
     '@floating-ui/dom': ^1.7.4
     '@nanostores/media-query': 0.1.2
@@ -130,6 +130,7 @@ catalogs:
     nanoid: 5.1.6
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0
+    ohash: ^2.0.11
     p-debounce: 5.1.0
     p-limit: 7.2.0
     p-queue: 8.1.1
@@ -158,8 +159,8 @@ catalogs:
     vscode-languageclient: 9.0.1
     vscode-languageserver: 9.0.1
     vscode-languageserver-protocol: 3.17.5
-    vscode-languageserver-types: 3.17.5
     vscode-languageserver-textdocument: 1.0.11
+    vscode-languageserver-types: 3.17.5
     vscode-oniguruma: 2.0.1
     vscode-textmate: 9.3.0
     vscode-uri: 3.1.0
