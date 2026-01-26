@@ -41,7 +41,7 @@ export function Fallback({ error, resetErrorBoundary }: FallbackProps) {
         <Group mt={'lg'}>
           <Button
             onClick={() => {
-              router.invalidate().finally(() => {
+              void router.invalidate().finally(() => {
                 resetErrorBoundary()
               })
             }}
@@ -50,7 +50,13 @@ export function Fallback({ error, resetErrorBoundary }: FallbackProps) {
             size="xs">
             Try again
           </Button>
-          <Button onClick={() => router.navigate({ to: '/' })} color="red" size="xs">
+          <Button
+            onClick={() => {
+              resetErrorBoundary()
+              void router.navigate({ to: '/' })
+            }}
+            color="red"
+            size="xs">
             Go to overview
           </Button>
         </Group>

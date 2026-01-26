@@ -1,7 +1,6 @@
 import type { ProjectId } from '@likec4/core/types'
 import { Button, Container, Stack, Title } from '@mantine/core'
-import { createFileRoute, Link, notFound, Outlet } from '@tanstack/react-router'
-import { loadModel } from 'likec4:model'
+import { createFileRoute, Link, notFound, Outlet, redirect } from '@tanstack/react-router'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Fallback } from '../../components/Fallback'
 import { ViewOutlet } from '../../components/ViewOutlet'
@@ -17,16 +16,31 @@ export const Route = createFileRoute('/project/$projectId')({
   },
   loader: async ({ context }) => {
     const projectId = context.projectId
-    try {
-      const { $likec4model } = await loadModel(projectId)
-      return {
-        $likec4model,
-        projectId,
-      }
-    } catch (err) {
-      console.error(err)
-      throw notFound()
-    }
+    return await import('likec4:model')
+      .then(m => m.loadModel(projectId))
+      .catch(err => {
+        console.error(err)
+        throw notFound()
+      })
+      .then(likec4model => {
+        const data = likec4model.$likec4data.value
+        if (!data) {
+          throw notFound()
+        }
+        if (data.projectId !== projectId) {
+          throw redirect({
+            to: '/project/$projectId/',
+            search: true,
+            params: {
+              projectId: data.projectId,
+            },
+          })
+        }
+        return {
+          $likec4model: likec4model.$likec4model,
+          projectId,
+        }
+      })
   },
   component: RouteComponent,
   notFoundComponent: () => (
@@ -48,7 +62,9 @@ function RouteComponent() {
       <ErrorBoundary FallbackComponent={Fallback}>
         <LikeC4IconRendererContext projectId={projectId}>
           <LikeC4ModelContext likec4model={$likec4model}>
-            <Outlet />
+            <ErrorBoundary FallbackComponent={Fallback}>
+              <Outlet />
+            </ErrorBoundary>
           </LikeC4ModelContext>
         </LikeC4IconRendererContext>
       </ErrorBoundary>

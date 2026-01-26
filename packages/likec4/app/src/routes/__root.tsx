@@ -3,61 +3,28 @@ import { useMantineColorScheme } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { projects } from 'likec4:projects'
 import { useEffect } from 'react'
-import { isTruthy, map } from 'remeda'
+import { map } from 'remeda'
+import z from 'zod/v4'
 
-const asTheme = (v: unknown): 'light' | 'dark' | 'auto' => {
-  if (typeof v !== 'string') {
-    return 'auto'
-  }
-  const vlower = v.toLowerCase()
-  if (vlower === 'light' || vlower === 'dark') {
-    return vlower
-  }
-  return 'auto'
-}
+const searchParamsSchema = z.object({
+  theme: z.literal(['light', 'dark', 'auto'])
+    .default('auto')
+    .catch('auto'),
+  dynamic: z.enum(['diagram', 'sequence'])
+    .default('diagram')
+    .catch('diagram'),
+  padding: z.number()
+    .min(0)
+    .default(20)
+    .catch(20),
+  relationships: z.string()
+    .nonempty()
+    .optional()
+    .catch(undefined)
+    .transform(v => v as Fqn | undefined),
+})
 
-const asPadding = (v: unknown) => {
-  switch (true) {
-    case typeof v === 'number':
-      return Math.round(v)
-    case typeof v === 'string':
-      return Math.round(parseFloat(v))
-  }
-  return 20
-}
-
-const asDynamicVariant = (v: unknown): 'diagram' | 'sequence' => {
-  if (typeof v !== 'string') {
-    return 'diagram'
-  }
-  const vlower = v.toLowerCase()
-  if (vlower === 'diagram' || vlower === 'sequence') {
-    return vlower
-  }
-  return 'diagram'
-}
-
-/**
- * Validates and normalizes a value as an FQN.
- * @param v - Value to validate from URL parameters
- * @returns Trimmed FQN string or undefined
- */
-const asFqn = (v: unknown): Fqn | undefined => {
-  if (typeof v === 'string') {
-    const trimmed = v.trim()
-    if (trimmed.length > 0) {
-      return trimmed as Fqn
-    }
-  }
-  return undefined
-}
-
-export type SearchParams = {
-  theme?: 'light' | 'dark' | 'auto' | undefined
-  dynamic?: 'diagram' | 'sequence' | undefined
-  padding?: number | undefined
-  relationships?: Fqn | undefined // Element FQN to open relationship browser
-}
+export type SearchParams = z.infer<typeof searchParamsSchema>
 
 export type Context = {
   /**
@@ -72,23 +39,7 @@ export type Context = {
 }
 
 export const Route = createRootRouteWithContext<Context>()({
-  validateSearch: (search: Record<string, unknown>): SearchParams => {
-    // validate and parse the search params into a typed state
-    return {
-      ...isTruthy(search.padding) && {
-        padding: asPadding(search.padding),
-      },
-      ...isTruthy(search.theme) && {
-        theme: asTheme(search.theme),
-      },
-      ...isTruthy(search.dynamic) && {
-        dynamic: asDynamicVariant(search.dynamic),
-      },
-      ...isTruthy(search.relationships) && {
-        relationships: asFqn(search.relationships),
-      },
-    }
-  },
+  validateSearch: searchParamsSchema,
   search: {
     middlewares: [
       stripSearchParams({

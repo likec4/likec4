@@ -91,6 +91,22 @@ const machine = setup({
   },
 })
 
+type OverlayType = 'elementDetails' | 'relationshipsBrowser' | 'relationshipDetails'
+
+const emitOpened = (overlay: OverlayType | `${OverlayType}-${number}`) =>
+  machine.emit({
+    type: 'opened',
+    overlay: overlay.split('-')[0] as OverlayType,
+  })
+
+const emitClosed = (overlay: OverlayType | `${OverlayType}-${number}`) =>
+  machine.emit({
+    type: 'closed',
+    overlay: overlay.split('-')[0] as OverlayType,
+  })
+
+const emitIdle = () => machine.emit({ type: 'idle' })
+
 const closeLastOverlay = () =>
   machine.enqueueActions(({ context, enqueue }) => {
     if (context.overlays.length === 0) {
@@ -105,6 +121,7 @@ const closeLastOverlay = () =>
     enqueue.assign({
       overlays: context.overlays.filter(o => o.id !== lastOverlay),
     })
+    enqueue(emitClosed(lastOverlay))
   })
 
 const closeSpecificOverlay = () =>
@@ -121,6 +138,7 @@ const closeSpecificOverlay = () =>
       enqueue.assign({
         overlays: context.overlays.filter(o => o.id !== toClose),
       })
+      enqueue(emitClosed(toClose))
     }
   })
 
@@ -129,6 +147,7 @@ const closeAllOverlays = () =>
     for (const { id } of reverse(context.overlays)) {
       enqueue.sendTo(id, { type: 'close' })
       enqueue.stopChild(id)
+      enqueue(emitClosed(id))
     }
     enqueue.assign({ overlays: [] })
   })
@@ -156,6 +175,7 @@ const openElementDetails = () =>
         },
       ],
     })
+    enqueue(emitOpened(id))
   })
 
 const openRelationshipDetails = () =>
@@ -185,6 +205,7 @@ const openRelationshipDetails = () =>
         },
       ],
     })
+    enqueue(emitOpened(id))
   })
 
 const openRelationshipsBrowser = () =>
@@ -216,6 +237,7 @@ const openRelationshipsBrowser = () =>
         },
       ],
     })
+    enqueue(emitOpened(id))
   })
 
 const openOverlay = () =>
@@ -262,6 +284,9 @@ const _overlaysActorLogic = machine.createMachine({
   initial: 'idle',
   states: {
     idle: {
+      entry: [
+        emitIdle(),
+      ],
       on: {
         'open.*': {
           actions: openOverlay(),

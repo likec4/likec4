@@ -137,7 +137,7 @@ export const elementNodeData = defineRecipe({
       fontFamily: 'likec4.element',
       fontWeight: 'medium',
       fontSize: __v('textsize'),
-      lineHeight: 1.15,
+      lineHeight: 'sm',
       textWrapStyle: 'balance',
       whiteSpace: 'preserve-breaks',
 
@@ -154,9 +154,9 @@ export const elementNodeData = defineRecipe({
       flexShrink: '1',
 
       fontFamily: 'likec4.element',
-      fontWeight: 'normal',
+      fontWeight: '420',
       fontSize: `calc(${__v('textsize')} * 0.74)`,
-      lineHeight: 1.3,
+      lineHeight: 'xs',
       textWrapStyle: 'pretty',
       '--text-fz': `calc(${__v('textsize')} * 0.74)`,
 
@@ -187,24 +187,20 @@ export const elementNodeData = defineRecipe({
       fontFamily: 'likec4.element',
       fontWeight: 'normal',
       fontSize: `calc(${__v('textsize')} * 0.635)`,
-      lineHeight: 1.125,
+      lineHeight: 'xs',
       '--text-fz': `calc(${__v('textsize')} * 0.635)`,
 
       color: __v('palette.loContrast'),
       textAlign: varTextAlign,
       textWrap: 'balance',
-      opacity: 0.92,
-      _whenHovered: {
-        opacity: 1,
+      opacity: {
+        base: 0.92,
+        _whenHovered: 1,
       },
-      _shapeSizeXs: {
-        display: 'none!',
-      },
-      _shapeSizeSm: {
-        display: 'none!',
-      },
-      _smallZoom: {
-        display: 'none!',
+      display: {
+        _shapeSizeXs: 'none!',
+        _shapeSizeSm: 'none!',
+        _smallZoom: 'none!',
       },
     },
   }),

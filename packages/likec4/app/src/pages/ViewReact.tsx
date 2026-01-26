@@ -8,8 +8,9 @@ import {
   useUpdateEffect,
 } from '@likec4/diagram'
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
+import { useIsMounted } from '@react-hookz/web'
 import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { NotFound } from '../components/NotFound'
 import { pageTitle as defaultPageTitle } from '../const'
 import { useCurrentView } from '../hooks'
@@ -96,41 +97,35 @@ export function OpenRelationshipBrowserFromUrl() {
   })
   const processedRef = useRef<Fqn | null>(null)
   const isInitializedRef = useRef(false)
-  const isProcessingRef = useRef(false)
-  const isMountedRef = useRef(true)
+  const isProcessingRef = useRef(Promise.resolve())
+  const isMounted = useIsMounted()
 
-  const openAndClear = async (fqn: Fqn) => {
-    if (isProcessingRef.current || !isMountedRef.current) return
-    isProcessingRef.current = true
-    try {
-      if (!isMountedRef.current) return
-      processedRef.current = fqn
-      diagram.openRelationshipsBrowser(fqn)
-      if (!isMountedRef.current) return
-      await router.buildAndCommitLocation({
-        search: (current: Record<string, unknown>) => {
-          const { relationships: _, ...rest } = current
-          return rest
-        },
-        viewTransition: false,
-      })
-    } catch (error) {
-      if (isMountedRef.current) {
+  const openAndClear = (fqn: Fqn) => {
+    isProcessingRef.current = isProcessingRef.current.then(async () => {
+      if (!isMounted() || processedRef.current === fqn) return
+      try {
+        processedRef.current = fqn
+        diagram.openRelationshipsBrowser(fqn)
+        await router.buildAndCommitLocation({
+          search: (s: Record<string, unknown>) => {
+            const { relationships: _, ...rest } = s
+            return rest
+          },
+          replace: true,
+          viewTransition: false,
+        })
+      } catch (error) {
         console.error('Failed to open relationship browser:', error)
-        processedRef.current = null
       }
-    } finally {
-      isProcessingRef.current = false
-    }
+    })
   }
 
   const process = () => {
-    if (!isMountedRef.current || !isInitializedRef.current || isProcessingRef.current) return
     if (!relationships) {
       processedRef.current = null
       return
     }
-    if (processedRef.current !== relationships) {
+    if (relationships && processedRef.current !== relationships) {
       void openAndClear(relationships)
     }
   }
@@ -144,16 +139,6 @@ export function OpenRelationshipBrowserFromUrl() {
   useUpdateEffect(() => {
     process()
   }, [relationships])
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false
-      processedRef.current = null
-      isInitializedRef.current = false
-      isProcessingRef.current = false
-    }
-  }, [])
 
   return null
 }

@@ -104,7 +104,7 @@ export async function ${fnName}(projectId) {
   let fn = ${fnName}Fn[projectId]
   if (!fn) {
     const projects = Object.keys(${fnName}Fn)
-    console.error('Unknown projectId: ' + projectId + ' (available: ' + projectIds + ')')
+    console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
     if (projects.length === 0) {
       throw new Error('No projects found, invalid state')
     }

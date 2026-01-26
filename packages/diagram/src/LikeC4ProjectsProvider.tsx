@@ -26,9 +26,12 @@ export function LikeC4ProjectsProvider({
   onProjectChange: _onProjectChange,
 }: PropsWithChildren<LikeC4ProjectsProviderProps>) {
   const outerScope = useContext(LikeC4ProjectsContext)
-  if (outerScope) {
-    console.warn('LikeC4ProjectsProvider should not be nested inside another one')
-  }
+
+  useEffect(() => {
+    if (outerScope) {
+      console.warn('LikeC4ProjectsProvider should not be nested inside another one')
+    }
+  }, [])
 
   const onProjectChange = useCallbackRef(_onProjectChange)
 
@@ -36,7 +39,7 @@ export function LikeC4ProjectsProvider({
 
   useEffect(() => {
     setValue(current => {
-      return deepEqual(current.projects, projects) ? current : { projects, onProjectChange }
+      return deepEqual(current.projects, projects) ? current : { ...current, projects }
     })
   }, [projects])
 

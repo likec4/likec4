@@ -89,8 +89,8 @@ export function isEqualRects(a: Rect, b: Rect) {
 export const nodeToRect = (nd: MinimalInternalNode): Rect => ({
   x: Math.round(nd.internals.positionAbsolute.x),
   y: Math.round(nd.internals.positionAbsolute.y),
-  width: nd.measured?.width ?? nd.width ?? nd.initialWidth ?? 0,
-  height: nd.measured?.height ?? nd.height ?? nd.initialHeight ?? 0,
+  width: Math.round(nd.measured?.width ?? nd.width ?? nd.initialWidth ?? 0),
+  height: Math.round(nd.measured?.height ?? nd.height ?? nd.initialHeight ?? 0),
 })
 
 export function getNodeCenter(node: MinimalInternalNode): XYPosition {
@@ -125,7 +125,7 @@ export function getNodeIntersectionFromCenterToPoint(
 
   const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
 
-  return vector(v).multiply(scale).add(nodeCenter).round()
+  return vector(v).multiply(scale).add(nodeCenter).round().toObject()
 }
 
 /**
@@ -205,14 +205,18 @@ export function stopPropagation(e: ReactMouseEvent) {
   return e.stopPropagation()
 }
 
+function printPoint(point: Point) {
+  return `${Math.round(point[0])},${Math.round(point[1])}`
+}
+
 export function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   let [start, ...points] = bezierSpline
   invariant(start, 'start should be defined')
-  let path = `M ${start[0]},${start[1]}`
+  let path = `M ${printPoint(start)}`
 
   while (hasAtLeast(points, 3)) {
     const [cp1, cp2, end, ...rest] = points
-    path = path + ` C ${cp1[0]},${cp1[1]} ${cp2[0]},${cp2[1]} ${end[0]},${end[1]}`
+    path = path + ` C ${printPoint(cp1)} ${printPoint(cp2)} ${printPoint(end)}`
     points = rest
   }
   invariant(points.length === 0, 'all points should be consumed')

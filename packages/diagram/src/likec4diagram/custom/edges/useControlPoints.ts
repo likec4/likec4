@@ -23,8 +23,8 @@ export function useControlPoints({
     const next = data.controlPoints ?? bezierControlPoints(data.points)
     setControlPoints(prev => deepEqual(prev, next) ? prev : next)
   }, [
-    data.controlPoints?.map(p => `${Math.round(p.x)},${Math.round(p.y)}`).join('|') ?? '',
-    data.points.map(p => `${Math.round(p[0])},${Math.round(p[1])}`).join('|'),
+    data.points,
+    data.controlPoints ?? [],
   ])
 
   /**
