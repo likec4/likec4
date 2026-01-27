@@ -81,7 +81,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         '@likec4/core/types',
         '@likec4/core/model',
         '@likec4/core/styles',
-        '@likec4/core/compute-view/relationships',
         '@likec4/core/utils',
         '@likec4/core',
         'likec4/model',
