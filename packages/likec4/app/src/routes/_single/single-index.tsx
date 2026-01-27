@@ -46,7 +46,7 @@ function ViewCard({ view }: { view: DiagramView }) {
     if (!inViewport || visible) return
     const tm = setTimeout(() => setVisible(true), randomInteger(30, 80))
     return () => clearTimeout(tm)
-  }, [inViewport])
+  }, [inViewport, visible])
 
   return (
     <Card

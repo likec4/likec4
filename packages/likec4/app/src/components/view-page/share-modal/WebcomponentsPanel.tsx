@@ -62,8 +62,9 @@ export function WebcomponentsPanel({ diagram }: { diagram: DiagramView }) {
             </ActionIcon>
             <CopyButton
               value={jscode}
-              timeout={1500}
-              children={CopyButtonChild} />
+              timeout={1500}>
+              {CopyButtonChild}
+            </CopyButton>
           </Group>
         </Group>
         <Code block>

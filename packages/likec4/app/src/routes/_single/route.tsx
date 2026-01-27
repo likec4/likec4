@@ -7,6 +7,9 @@ import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 
 export const Route = createFileRoute('/_single')({
   staleTime: Infinity,
+  loaderDeps() {
+    return []
+  },
   loader: async ({ context }) => {
     const { loadModel } = await import('likec4:model')
     const projectId = context.projectId
@@ -16,7 +19,6 @@ export const Route = createFileRoute('/_single')({
       projectId,
     }
   },
-
   component: RouteComponent,
 })
 
