@@ -100,7 +100,7 @@ catalogs:
     react: 19.2.3
     react-dom: 19.2.3
     react-error-boundary: ^6.0.0
-    react-resizable-panels: ^4.0.11
+    react-resizable-panels: ^4.5.1
     react-shadow: ^20.6.0
   tanstack:
     '@tanstack/pacer': ^0.17.1
