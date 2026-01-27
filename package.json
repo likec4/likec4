@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "license": "MIT",
-  "version": "1.47.0",
+  "version": "1.48.0",
   "packageManager": "pnpm@10.28.1",
   "type": "module",
   "workspaces": [

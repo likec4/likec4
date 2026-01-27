@@ -1,5 +1,23 @@
 # likec4
 
+## 1.48.0
+
+### Minor Changes
+
+- [`cd71c00`](https://github.com/likec4/likec4/commit/cd71c00a36cfe3a065a578befe87f6b1d2d26a6d) Thanks [@ckeller42](https://github.com/ckeller42)! - Direct links to Relationship Views, thanks to @ckeller42 in [#2547](https://github.com/ckeller/likec4/pull/2547)
+
+### Patch Changes
+
+- [`ee4cdc2`](https://github.com/likec4/likec4/commit/ee4cdc29db81fddc54b401a8af954a352fdbb142) Thanks [@davydkov](https://github.com/davydkov)! - Enable D2/DOT/MMD/PUML pages when viewing multiple projects.
+  Improve export page behavior.
+
+- [`ec06c45`](https://github.com/likec4/likec4/commit/ec06c4530ef92bf466a54764d21dccad7c50cb59) Thanks [@davydkov](https://github.com/davydkov)! - Fix export to PNG of sequence diagrams, closes [#2532](https://github.com/likec4/likec4/issues/2532)
+
+- [`6ab5089`](https://github.com/likec4/likec4/commit/6ab5089fc2c1ce472fa5f5a471061056676e5546) Thanks [@davydkov](https://github.com/davydkov)! - Improved font loading performance by migrating to variable fonts and enhanced diagram bounds calculation with better edge handling
+
+- Updated dependencies [[`c333592`](https://github.com/likec4/likec4/commit/c333592b6342dc4a726864e970c8056bc65fafa8), [`68c6bf2`](https://github.com/likec4/likec4/commit/68c6bf286536e39ec316db906a425e2bfc852a83), [`9aa59c8`](https://github.com/likec4/likec4/commit/9aa59c81f40ac948b32842a265bfdfe48d21bddf), [`c186a08`](https://github.com/likec4/likec4/commit/c186a082c6fbb26d2b5169a9c28ca51e540622f6), [`6677d12`](https://github.com/likec4/likec4/commit/6677d124aaf6c45fb1456ce66a5c538634fe5fa0), [`c12f7a1`](https://github.com/likec4/likec4/commit/c12f7a108c19418403f5afc0c06c1e25565f6bf2), [`6ab5089`](https://github.com/likec4/likec4/commit/6ab5089fc2c1ce472fa5f5a471061056676e5546)]:
+  - @likec4/core@1.48.0
+
 ## 1.47.0
 
 ### Patch Changes
