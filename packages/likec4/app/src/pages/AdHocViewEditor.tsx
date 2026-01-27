@@ -1,5 +1,5 @@
 import type { ProjectId } from '@likec4/core/types'
-import { LikeC4AdHocViewEditor } from '@likec4/diagram/adhoc-editor'
+import { LikeC4AdHocViewEditor } from '@likec4/diagram'
 import { likec4rpc } from 'likec4:rpc'
 
 export function AdHocViewEditor({ projectId }: { projectId: ProjectId }) {

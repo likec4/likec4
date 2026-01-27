@@ -16,8 +16,6 @@ import { EditorNavigationPanel } from './EditorNavigationPanel'
 import { useAdhocView } from './hooks'
 import { SelectElementOverlay } from './SelectElementOverlay'
 
-export type { AdhocViewService } from './actor.types'
-
 export function LikeC4AdHocViewEditor({ service }: { service: AdhocViewService }) {
   const id = useId()
   return (

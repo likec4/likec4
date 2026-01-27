@@ -41,7 +41,6 @@
         "default": "./dist/index.js"
       }
     },
-    "./adhoc-editor": "./src/adhoc-editor/index.ts",
     "./custom": {
       "sources": "./src/custom/index.ts",
       "default": {
