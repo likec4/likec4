@@ -1513,9 +1513,6 @@ importers:
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
-      '@nanostores/react':
-        specifier: catalog:react
-        version: 1.0.0(nanostores@1.1.0)(react@19.2.4)
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 5.1.2(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
@@ -1543,9 +1540,6 @@ importers:
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
-      nanostores:
-        specifier: catalog:react
-        version: 1.1.0
       playwright:
         specifier: 'catalog:'
         version: 1.56.1
@@ -1561,6 +1555,9 @@ importers:
       vite:
         specifier: catalog:vite
         version: 7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
+      vite-plugin-singlefile:
+        specifier: ^2.3.0
+        version: 2.3.0(rollup@4.56.0)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
       yargs:
         specifier: 17.7.2
         version: 17.7.2
@@ -1607,6 +1604,9 @@ importers:
       '@mantine/hooks':
         specifier: catalog:mantine
         version: 8.3.13(react@19.2.4)
+      '@nanostores/react':
+        specifier: catalog:react
+        version: 1.0.0(nanostores@1.1.0)(react@19.2.4)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.8.1(hono@4.11.6)(typescript@5.9.3)
@@ -1700,6 +1700,9 @@ importers:
       motion:
         specifier: catalog:react
         version: 12.29.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      nanostores:
+        specifier: catalog:react
+        version: 1.1.0
       npm-run-all2:
         specifier: ^8.0.4
         version: 8.0.4
@@ -1769,9 +1772,6 @@ importers:
       vite-plugin-inspect:
         specifier: ^11.3.3
         version: 11.3.3(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
-      vite-plugin-singlefile:
-        specifier: ^2.3.0
-        version: 2.3.0(rollup@4.56.0)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
       vitest:
         specifier: catalog:vitest
         version: 4.0.18(@types/node@22.19.7)(@vitest/ui@4.0.18)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
@@ -16840,7 +16840,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
       postcss: 8.5.6
-      rollup: 4.53.5
+      rollup: 4.56.0
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 22.19.7
@@ -16857,7 +16857,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
       postcss: 8.5.6
-      rollup: 4.53.5
+      rollup: 4.56.0
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 22.19.7

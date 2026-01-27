@@ -55,7 +55,7 @@ declare module 'likec4:single-project' {
     UnknownLayouted,
   } from 'likec4/model'
   import type { ElementIconRenderer } from 'likec4:icons'
-  import type { Atom } from 'likec4:model'
+  import type { Atom } from 'likec4/vite-plugin/internal'
 
   export const $likec4data: Atom<LayoutedLikeC4ModelData>
   export const $likec4model: Atom<LikeC4Model<UnknownLayouted>>
