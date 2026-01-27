@@ -1,16 +1,8 @@
-import type { Types } from '@likec4/diagram'
-import type { MiniMapNodes as XYMiniMapNodes } from '@xyflow/react'
-import { MiniMap as XYMiniMap } from '@xyflow/react'
-
-type TXYMiniMap = typeof XYMiniMap<Types.AnyNode>
-
-export const MiniMap: TXYMiniMap = XYMiniMap
-export type MiniMapNodes = XYMiniMapNodes<Types.AnyNode>
-
 export {
   type Align,
   ControlButton,
   Controls,
+  MiniMap,
   MiniMapNode,
   type MiniMapNodeProps,
   NodeToolbar,

@@ -3,6 +3,7 @@ import {
   type ActorRef,
   type ActorSystem,
   type SnapshotFrom,
+  type StateMachine,
   assign,
   enqueueActions,
   log,
@@ -24,7 +25,12 @@ import {
   undo,
   withoutSnapshotChanges,
 } from './editorActor.actions'
-import type { EditorActorEmitedEvent, EditorActorEvent } from './editorActor.setup'
+import type {
+  EditorActorContext,
+  EditorActorEmitedEvent,
+  EditorActorEvent,
+  EditorActorInput,
+} from './editorActor.setup'
 import { machine } from './editorActor.setup'
 
 export type {
@@ -32,7 +38,6 @@ export type {
   EditorActorEmitedEvent,
   EditorActorEvent,
   EditorActorInput,
-  EditorCalls,
 } from './editorActor.setup'
 
 /**
@@ -346,8 +351,27 @@ const _editorActorLogic = machine.createMachine({
   },
 })
 
-type InferredMachine = typeof _editorActorLogic
-export interface EditorActorLogic extends InferredMachine {}
+// type InferredDiagramMachine = typeof _diagramMachine
+// export interface DiagramMachineLogic extends InferredDiagramMachine {}
+export interface EditorActorLogic extends
+  StateMachine<
+    EditorActorContext,
+    EditorActorEvent,
+    any,
+    any,
+    any,
+    any,
+    any,
+    'idle' | 'editing' | 'pending' | 'afterEdit' | 'applyLatestToManual' | 'executeChanges',
+    any,
+    EditorActorInput,
+    any,
+    EditorActorEmitedEvent,
+    any,
+    any
+  >
+{
+}
 export const editorActorLogic: EditorActorLogic = _editorActorLogic as any
 
 export type EditorActorSnapshot = SnapshotFrom<EditorActorLogic>
