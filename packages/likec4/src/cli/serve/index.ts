@@ -16,7 +16,6 @@ const serveCmd = (yargs: yargs.Argv) => {
           .option('webcomponent-prefix', webcomponentPrefix)
           .option('title', title)
           .option('use-hash-history', useHashHistory)
-          // .option('use-overview', useOverview)
           .option('use-dot', useDotBin)
           .option('listen', listen)
           .option('port', port)
@@ -38,7 +37,6 @@ const serveCmd = (yargs: yargs.Argv) => {
           path: args.path,
           useDotBin: args['use-dot'],
           base: args.base,
-          // useOverview: args['use-overview'] ?? false,
           webcomponentPrefix: args['webcomponent-prefix'],
           title: args['title'],
           useHashHistory: args['use-hash-history'],

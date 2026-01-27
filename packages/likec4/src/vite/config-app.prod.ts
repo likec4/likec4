@@ -112,6 +112,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       minify: true,
       copyPublicDir: true,
       chunkSizeWarningLimit,
+      assetsInlineLimit: 100_000,
       rollupOptions: {
         treeshake: {
           preset: 'recommended',

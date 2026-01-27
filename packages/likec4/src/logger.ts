@@ -1,4 +1,5 @@
 import { rootLogger } from '@likec4/log'
+import _boxen, { type Options as BoxenOptions } from 'boxen'
 import { hrtime } from 'node:process'
 import prettyMilliseconds from 'pretty-ms'
 import k from 'tinyrainbow'
@@ -85,8 +86,6 @@ export function startTimer(log?: Logger) {
     },
   }
 }
-
-import _boxen, { type Options as BoxenOptions } from 'boxen'
 
 export function boxen(text: string, options?: BoxenOptions): void {
   console.log(_boxen(text, {

@@ -59,6 +59,7 @@ export async function viteReactConfig({
       minify: false,
       copyPublicDir: false,
       chunkSizeWarningLimit,
+      assetsInlineLimit: 500_000,
       lib: {
         entry: 'react/likec4.tsx',
         fileName(_format, _entryName) {

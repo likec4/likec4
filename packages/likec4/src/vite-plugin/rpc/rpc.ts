@@ -16,6 +16,7 @@ export function enablePluginRPC(
   this: MinimalPluginContextWithoutEnvironment,
   params: PluginRPCParams,
 ) {
+  let lastError: string | null = null
   const server = params.server
   createBirpc<{}, Omit<LikeC4VitePluginRpc, 'isAvailable'>>({
     updateView: (data) => updateView(params, data),
@@ -25,7 +26,15 @@ export function enablePluginRPC(
     post: data => server.hot.send('likec4:rpc', data),
     onFunctionError: (error, functionName) => {
       params.logger.error(`RPC error in ${functionName}`, { error })
-      sendError(server, { name: error.name, error: error.stack ?? error.message })
+      const errorString = error.stack ?? error.message
+      try {
+        if (lastError !== errorString) {
+          lastError = errorString
+          sendError(server, { name: error.name, error: errorString })
+        }
+      } catch (e) {
+        params.logger.error(`Failed to send error to client`, { error: e as Error })
+      }
     },
   })
 }

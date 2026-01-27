@@ -16,7 +16,7 @@ type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
 
 export const Assets = ['favicon.ico', 'robots.txt']
 
-export const viteBuild = async ({
+export async function viteBuild({
   buildWebcomponent = true,
   webcomponentPrefix = 'likec4',
   title,
@@ -24,7 +24,7 @@ export const viteBuild = async ({
   likec4AssetsDir,
   outputSingleFile,
   ...cfg
-}: Config) => {
+}: Config) {
   likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
 
   const config = await viteConfig({
@@ -35,6 +35,8 @@ export const viteBuild = async ({
     title,
     outputSingleFile,
   })
+
+  const outDirWasEmpty = !existsSync(config.build.outDir) || readdirSync(config.build.outDir).length === 0
 
   const publicDir = await mkTempPublicDir()
 
@@ -85,7 +87,7 @@ export const viteBuild = async ({
     }
   }
 
-  if (buildWebcomponent) {
+  if (buildWebcomponent && !outputSingleFile) {
     const webcomponentConfig = await viteWebcomponentConfig({
       webcomponentPrefix,
       languageServices,
@@ -103,18 +105,22 @@ export const viteBuild = async ({
   })
 
   if (outputSingleFile) {
+    if (!outDirWasEmpty) {
+      config.customLogger.warn(k.yellow('outDir was not empty, skipping cleanup'))
+      return
+    }
     // Delete all files other than index.html
     for (let extraFile of readdirSync(resolve(config.build.outDir)).filter(f => f !== 'index.html')) {
       rmSync(resolve(config.build.outDir, extraFile), { recursive: true })
     }
-  } else {
-    // Copy index.html to 404.html
-    const indexHtml = resolve(config.build.outDir, 'index.html')
-    if (existsSync(indexHtml)) {
-      copyFileSync(
-        indexHtml,
-        resolve(config.build.outDir, '404.html'),
-      )
-    }
+  }
+
+  // Copy index.html to 404.html
+  const indexHtml = resolve(config.build.outDir, 'index.html')
+  if (existsSync(indexHtml)) {
+    copyFileSync(
+      indexHtml,
+      resolve(config.build.outDir, '404.html'),
+    )
   }
 }

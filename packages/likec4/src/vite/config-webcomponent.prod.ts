@@ -62,8 +62,8 @@ export async function viteWebcomponentConfig({
       emptyOutDir: false,
       sourcemap: false,
       minify: true,
-      // 100Kb
-      assetsInlineLimit: 100 * 1024,
+      // 1Mb
+      assetsInlineLimit: 1024 * 1024,
       chunkSizeWarningLimit,
       lib: {
         entry: 'src/webcomponent.js',

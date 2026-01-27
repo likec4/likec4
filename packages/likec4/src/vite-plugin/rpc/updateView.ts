@@ -1,7 +1,6 @@
 import k from 'tinyrainbow'
 import type { PluginRPCParams } from './index'
 import type { LikeC4VitePluginRpc } from './protocol'
-import { sendError } from './sendError'
 
 export async function updateView({
   logger,
@@ -20,8 +19,9 @@ export async function updateView({
   const result = await likec4.editor.applyChange(data)
   if (!result.success) {
     logger.error(`Failed to apply view change:\n${result.error}`)
-    sendError(server, { name: 'LikeC4ViewChangeError', error: result.error })
-    return
+    const err = new Error(result.error)
+    err.stack = result.error
+    throw err
   }
   logger.info([
     k.green('view:onChange'),

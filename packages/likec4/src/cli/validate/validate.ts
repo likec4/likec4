@@ -46,7 +46,7 @@ export async function handler({
     let hasLayoutDrift = false
 
     for (const view of views) {
-      if (view.hasLayoutDrift === true) {
+      if (view.drifts && view.drifts.length > 0) {
         hasLayoutDrift = true
         logger.error(
           k.red(`Layout drift detected on view '${view.id}' at ${resolve(path, view.sourcePath ?? '.')}`),

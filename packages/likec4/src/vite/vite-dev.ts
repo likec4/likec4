@@ -59,15 +59,16 @@ export async function viteDev({
       ],
     })
   }
-  const hmrPort = await getPort({
-    port: portNumbers(24678, 24690),
-  })
+  let hmrPort = 24678
 
   const publicDir = await mkTempPublicDir()
 
   const host = listen ?? (isInsideContainer() ? '0.0.0.0' : 'localhost')
 
   if (hmr) {
+    hmrPort = await getPort({
+      port: portNumbers(24678, 24690),
+    })
     logger.info(`Enabling HMR: localhost:${hmrPort}`)
     if (isInsideContainer()) {
       logger.info(k.yellow(`ensure port ${hmrPort} is published from container`))

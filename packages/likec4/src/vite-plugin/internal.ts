@@ -37,7 +37,7 @@ export function createRpc(options: LikeC4VitePluginRpcOptions): LikeC4VitePlugin
   return createBirpc({}, {
     post: (data) => options.send('likec4:rpc', data),
     on: (fn) => options.on('likec4:rpc', fn),
-    onGeneralError(error, functionName, args) {
+    onGeneralError(error, functionName) {
       console.error(`RPC error in ${functionName}`, { error })
     },
     onFunctionError: (error, functionName) => {
