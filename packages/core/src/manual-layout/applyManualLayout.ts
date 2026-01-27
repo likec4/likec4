@@ -1,19 +1,18 @@
-import { type WritableDraft, produce } from 'immer'
+import { type WritableDraft, castDraft, produce } from 'immer'
 import { hasAtLeast, isDeepEqual, isNullish, isNumber, isTruthy, pick, pipe } from 'remeda'
-import type { Writable } from 'type-fest'
 import { buildElementNotations } from '../compute-view/utils/buildElementNotations'
 import {
   type DiagramEdge,
   type DiagramEdgeDriftReason,
   type DiagramNode,
   type DiagramNodeDriftReason,
-  type LayoutedDynamicView,
   type LayoutedView,
   type LayoutedViewDriftReason,
   type MarkdownOrString,
   type ViewManualLayoutSnapshot,
   _layout,
   isDynamicView,
+  isElementView,
 } from '../types'
 import { ifilter, ihead, invariant, symmetricDifference } from '../utils'
 
@@ -274,67 +273,73 @@ export function applyManualLayout<
     viewDrifts.add('type-changed')
   }
 
-  const nextNodes = new Map(autoLayouted.nodes.map(n => [n.id, n]))
-  const nextEdges = new Map(autoLayouted.edges.map(e => [e.id, e]))
-
-  const nodes = applyNodesManualLayout(snapshot.nodes, nextNodes, viewDrifts)
-  const edges = applyEdgesManualLayout(snapshot.edges, nextEdges, viewDrifts)
+  const nodes = applyNodesManualLayout(snapshot.nodes, autoLayouted.nodes, viewDrifts)
+  const edges = applyEdgesManualLayout(snapshot.edges, autoLayouted.edges, viewDrifts)
 
   const nodeNotations = buildElementNotations(nodes)
 
-  // Shallow copy of snapshot
-  const result: V = Object.assign(
-    { ...snapshot } as unknown as V,
-    {
-      // Auto-layouted properties
-      title: autoLayouted.title ?? snapshot.title,
-      description: autoLayouted.description ?? snapshot.description,
-      tags: autoLayouted.tags ? [...autoLayouted.tags] : null,
-      links: autoLayouted.links ? [...autoLayouted.links] : null,
-      [_layout]: 'manual' as const,
-      ...(nodeNotations && nodeNotations.length > 0 ? { notation: { nodes: nodeNotations } } : {}),
-      nodes,
-      edges,
-    } satisfies Partial<LayoutedView>,
-  )
+  return produce(snapshot as V, (draft) => {
+    // Auto-layouted properties
+    draft.title = autoLayouted.title ?? snapshot.title
+    draft.description = autoLayouted.description ?? snapshot.description
+    draft.tags = autoLayouted.tags ? [...autoLayouted.tags] : null
+    draft.links = autoLayouted.links ? [...autoLayouted.links] : null
+    draft.sourcePath = autoLayouted.sourcePath
+    draft[_layout] = 'manual' as const
 
-  if (isDynamicView(autoLayouted) && result._type === 'dynamic') {
-    ;(result as Writable<LayoutedDynamicView>).variant = autoLayouted.variant
-  }
-
-  const writableV = result as Writable<V>
-  const drifts = [...viewDrifts]
-  if (hasAtLeast(drifts, 1)) {
-    writableV.drifts = drifts
-  } else {
-    // Clear drifts if any comes from `autoLayouted` or `snapshot`
-    // Should not happen, but just in case
-    if ('drifts' in writableV) {
-      delete writableV.drifts
+    if (nodeNotations && nodeNotations.length > 0) {
+      draft.notation = { nodes: nodeNotations }
+    } else {
+      delete draft.notation
     }
-  }
 
-  return result
+    draft.nodes = castDraft(nodes)
+    draft.edges = castDraft(edges)
+
+    if (isDynamicView(autoLayouted) && draft._type === 'dynamic') {
+      draft.variant = autoLayouted.variant
+    }
+
+    if (isElementView(autoLayouted) && draft._type === 'element') {
+      if (autoLayouted.viewOf) {
+        draft.viewOf = autoLayouted.viewOf
+      } else {
+        delete draft.viewOf
+      }
+      if (autoLayouted.extends) {
+        draft.extends = autoLayouted.extends
+      } else {
+        delete draft.extends
+      }
+    }
+
+    const drifts = [...viewDrifts]
+    if (hasAtLeast(drifts, 1)) {
+      draft.drifts = drifts
+    } else {
+      draft.hash = autoLayouted.hash
+      delete draft.drifts
+    }
+  })
 }
 
 function applyNodesManualLayout(
   snapshotNodes: ReadonlyArray<DiagramNode>,
-  nextNodes: Map<DiagramNode['id'], DiagramNode>,
+  latestNodes: ReadonlyArray<DiagramNode>,
   viewDrifts: Set<LayoutedViewDriftReason>,
 ): ReadonlyArray<DiagramNode> {
+  const nextNodes = new Map(latestNodes.map(n => [n.id, n]))
   const nodes = snapshotNodes.map((node): DiagramNode => {
     const next = nextNodes.get(node.id)
-    if (next) {
-      nextNodes.delete(next.id)
-    }
-    return produce(node, draft => {
-      if (!next) {
-        // TODO: node is missing in the next layout, update node with data from the model?
-        draft.drifts = ['removed']
-        viewDrifts.add('nodes-removed')
-        return
+    if (!next) {
+      viewDrifts.add('nodes-removed')
+      return {
+        ...node,
+        drifts: ['removed'],
       }
-
+    }
+    nextNodes.delete(next.id)
+    return produce(node, draft => {
       autoApplyMetaAndStyles(draft, next)
 
       const nodeDrifts = new Set<DiagramNodeDriftReason>()
@@ -419,9 +424,10 @@ function applyNodesManualLayout(
 
 function applyEdgesManualLayout(
   snapshotEdges: ReadonlyArray<DiagramEdge>,
-  nextEdges: Map<DiagramEdge['id'], DiagramEdge>,
+  latestEdges: ReadonlyArray<DiagramEdge>,
   viewDrifts: Set<LayoutedViewDriftReason>,
 ): ReadonlyArray<DiagramEdge> {
+  const nextEdges = new Map(latestEdges.map(e => [e.id, e]))
   const edges = snapshotEdges.map((edge): DiagramEdge => {
     let next = nextEdges.get(edge.id) ?? pipe(
       nextEdges.values(),
