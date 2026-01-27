@@ -801,6 +801,9 @@ importers:
       zod:
         specifier: catalog:externals
         version: 3.25.76
+      zx:
+        specifier: 'catalog:'
+        version: 8.8.5
 
   devops:
     dependencies:

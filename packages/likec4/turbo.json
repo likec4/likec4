@@ -60,10 +60,8 @@
     "build-cli": {
       "dependsOn": [
         "generate",
-        "@likec4/core#build",
         "@likec4/language-server#build",
         "@likec4/config#build",
-        "@likec4/layouts#build",
         "@likec4/generators#build"
       ],
       "outputs": [

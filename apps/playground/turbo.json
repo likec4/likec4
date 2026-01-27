@@ -5,18 +5,16 @@
   ],
   "tasks": {
     "generate": {
-      "dependsOn": [
-        "^generate"
-      ],
       "outputs": [
         "src/routeTree.gen.ts",
-        "styled-system/**",
         "worker-configuration.d.ts"
       ]
     },
     "build": {
       "dependsOn": [
         "generate",
+        "@likec4/core#build",
+        "@likec4/diagram#build-dist",
         "@likec4/language-server#build"
       ],
       "outputs": [

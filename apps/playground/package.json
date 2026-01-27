@@ -3,8 +3,8 @@
   "version": "1.47.0",
   "private": true,
   "scripts": {
-    "generate": "wireit",
-    "dev": "wireit",
+    "generate": "tsx scripts/generate.mts",
+    "dev": "vite dev",
     "typecheck": "tsc --build --verbose",
     "build": "vite build",
     "preview": "vite preview",
@@ -15,22 +15,6 @@
     "deploy:preview": "wireit"
   },
   "wireit": {
-    "generate-tsr": {
-      "command": "tsr generate"
-    },
-    "generate-wrangler": {
-      "command": "wrangler types"
-    },
-    "generate-pandacss": {
-      "command": "panda codegen"
-    },
-    "generate": {
-      "dependencies": [
-        "generate-tsr",
-        "generate-pandacss",
-        "generate-wrangler"
-      ]
-    },
     "build-with-turbo": {
       "command": "turbo run build"
     },
@@ -148,6 +132,7 @@
     "wrangler": "catalog:cloudflare",
     "xstate": "catalog:xstate",
     "import-meta-resolve": "^4.2.0",
-    "zod": "catalog:externals"
+    "zod": "catalog:externals",
+    "zx": "catalog:"
   }
 }
