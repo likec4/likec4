@@ -1,7 +1,7 @@
 import type { LayoutedElementView } from '@likec4/core/types'
 import k from 'tinyrainbow'
-import type { PluginRPCParams } from './index'
 import type { LikeC4VitePluginRpc } from './protocol'
+import type { PluginRPCParams } from './rpc'
 
 export async function calcAdhocView({
   logger,

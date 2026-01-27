@@ -1,4 +1,4 @@
-import type { PluginRPCParams } from './index'
+import type { PluginRPCParams } from './rpc'
 
 export function sendError(server: PluginRPCParams['server'], { name, error }: { name?: string; error: string }) {
   const lines = error.split('\n')

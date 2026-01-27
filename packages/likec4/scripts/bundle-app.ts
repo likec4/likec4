@@ -5,7 +5,6 @@ import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
 import { build } from 'vite'
-import pkg from '../package.json' with { type: 'json' }
 import { amIExecuted } from './_utils'
 
 export async function bundleApp() {
@@ -29,11 +28,6 @@ export async function bundleApp() {
   console.info(`root: ${root}`)
 
   const tsconfig = await readFile('app/tsconfig.json', 'utf-8')
-
-  const externaldependencies = [
-    ...Object.keys(pkg.dependencies),
-    ...Object.keys(pkg.peerDependencies),
-  ]
 
   // Static website
   await build({
@@ -125,7 +119,6 @@ export async function bundleApp() {
           'likec4/model',
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from motion
-          ...externaldependencies,
           resolve(cwd, 'app/src/const.js'),
           /@likec4\/core.*/,
           /likec4:/,

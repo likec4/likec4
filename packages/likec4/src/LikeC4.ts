@@ -231,7 +231,15 @@ ${k.red('Please specify a project folder')}
     return await this.langium.likec4.LanguageServices.layoutedModel(project)
   }
 
-  getErrors() {
+  getErrors(): Array<{
+    message: string
+    line: number
+    range: {
+      start: { line: number; character: number }
+      end: { line: number; character: number }
+    }
+    sourceFsPath: string
+  }> {
     const docs = this.LangiumDocuments.all.toArray()
     return docs.flatMap(doc => {
       return (doc.diagnostics ?? [])

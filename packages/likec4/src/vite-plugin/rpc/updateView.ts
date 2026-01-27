@@ -1,11 +1,10 @@
 import k from 'tinyrainbow'
-import type { PluginRPCParams } from './index'
 import type { LikeC4VitePluginRpc } from './protocol'
+import type { PluginRPCParams } from './rpc'
 
 export async function updateView({
   logger,
   likec4,
-  server,
 }: PluginRPCParams, data: Parameters<LikeC4VitePluginRpc['updateView']>[0]) {
   logger.info([
     k.green('view:onChange'),
