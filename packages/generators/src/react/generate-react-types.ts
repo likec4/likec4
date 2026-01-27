@@ -19,7 +19,7 @@ export function generateReactTypes(model: AnyLikeC4Model, options: { useCorePack
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import type { LikeC4Model } from '${useCorePackage ? '@likec4/core' : 'likec4'}/model'
-import type { DiagramView } from '${useCorePackage ? '@likec4/core/types' : 'likec4/model'}'
+import type { LayoutedView } from '${useCorePackage ? '@likec4/core/types' : 'likec4/model'}'
 import type {
   LikeC4ViewProps as GenericLikeC4ViewProps,
   ReactLikeC4Props as GenericReactLikeC4Props
@@ -31,7 +31,7 @@ declare function isLikeC4ViewId(value: unknown): value is $ViewId;
 
 declare const likec4model: LikeC4Model<$Aux>;
 declare function useLikeC4Model(): LikeC4Model<$Aux>;
-declare function useLikeC4View(viewId: $ViewId): DiagramView<$Aux>;
+declare function useLikeC4View(viewId: $ViewId): LayoutedView<$Aux>;
 
 declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
 

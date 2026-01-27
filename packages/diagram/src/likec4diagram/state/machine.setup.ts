@@ -139,8 +139,7 @@ export type Events =
   | HotKeyEvent
   | MediaPrintEvent
   | { type: 'xyflow.init'; instance: XYFlowInstance }
-  | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<Types.Node>[] }
-  | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<Types.Edge>[] }
+  | { type: 'xyflow.applyChanges'; edges?: EdgeChange<Types.Edge>[]; nodes?: NodeChange<Types.Node>[] }
   | { type: 'xyflow.viewportMoved'; viewport: Viewport; manually: boolean }
   | { type: 'xyflow.nodeClick'; node: Types.Node }
   | { type: 'xyflow.edgeClick'; edge: Types.Edge }

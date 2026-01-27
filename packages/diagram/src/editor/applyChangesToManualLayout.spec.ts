@@ -176,12 +176,12 @@ describe('applyChangesToManualLayout', () => {
 
     // API updates
     const api = resultNodes['saas.backend.api']
-    expect(api?.title).toBe('API Gateway')
-    expect(api?.icon).toBe('tech:aws')
-    expect(api?.tags).toEqual(['api', 'gateway'])
+    expect(api.title).toBe('API Gateway')
+    expect(api.icon).toBe('tech:aws')
+    expect(api.tags).toEqual(['api', 'gateway'])
     // Position preserved
-    expect(api?.x).toBe(manualNodes['saas.backend.api'].x)
-    expect(api?.y).toBe(manualNodes['saas.backend.api'].y)
+    expect(api.x).toBe(manualNodes['saas.backend.api'].x)
+    expect(api.y).toBe(manualNodes['saas.backend.api'].y)
   })
 
   it('should handle deep nesting from latest', ({ expect }) => {

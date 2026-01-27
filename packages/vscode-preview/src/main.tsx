@@ -15,7 +15,7 @@ const getStyleNonce = nonce ? () => nonce : undefined
 const Loader = () => {
   const isFetching = useIsFetching() > 0
   // Debounce loading state to prevent flickering
-  const [isLoading] = useDebouncedValue(isFetching, isFetching ? 300 : 200)
+  const [isLoading] = useDebouncedValue(isFetching, isFetching ? 350 : 200)
   return (
     <LoadingOverlay
       visible={isLoading}

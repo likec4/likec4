@@ -1,11 +1,12 @@
 import type * as t from '@likec4/core/types'
+import { useMemo } from 'react'
 import { fromPromise } from 'xstate'
 import { useCallbackRef } from '../hooks'
 import { applyChangesToManualLayout } from './applyChangesToManualLayout'
-import { type EditorCalls, editorActorLogic } from './editorActor.states'
+import { type EditorActorLogic, type EditorCalls, editorActorLogic } from './editorActor.states'
 import { useOptionalLikeC4Editor } from './LikeC4EditorProvider'
 
-export function useEditorActorLogic(viewId: t.ViewId) {
+export function useEditorActorLogic(viewId: t.ViewId): EditorActorLogic {
   const port = useOptionalLikeC4Editor()
 
   const applyLatest: EditorCalls.ApplyLatestToManual = useCallbackRef(
@@ -14,13 +15,8 @@ export function useEditorActorLogic(viewId: t.ViewId) {
         console.error('No editor port available for applying latest to manual layout')
         return Promise.reject(new Error('No editor port'))
       }
-      const [manual, latest] = await Promise.all([
-        current ?? Promise.resolve().then(() => port.fetchView(viewId, 'manual')),
-        Promise.resolve().then(() => port.fetchView(viewId, 'auto')),
-      ]).catch(err => {
-        console.error('Failed to fetch views for applying latest to manual layout', err)
-        return Promise.reject(err)
-      })
+      const manual = await Promise.resolve().then(() => current ?? port.fetchView(viewId, 'manual'))
+      const latest = await Promise.resolve().then(() => port.fetchView(viewId, 'auto'))
       const updated = applyChangesToManualLayout(manual, latest)
       return {
         updated,
@@ -47,10 +43,11 @@ export function useEditorActorLogic(viewId: t.ViewId) {
     },
   )
 
-  return editorActorLogic.provide({
-    actors: {
-      applyLatest: fromPromise(applyLatest),
-      executeChange: fromPromise(executeChange),
-    },
-  })
+  return useMemo(() =>
+    editorActorLogic.provide({
+      actors: {
+        applyLatest: fromPromise(applyLatest),
+        executeChange: fromPromise(executeChange),
+      },
+    }), [applyLatest, executeChange])
 }

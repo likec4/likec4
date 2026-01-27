@@ -97,8 +97,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   useRafEffect(() => {
     const path = svgPathRef.current
     if (!path || !isControlPointDragging) return
-    const next = getEdgeCenter(path)
-    setLabelPos(current => isSamePoint(current, next) ? current : next)
+    setLabelPos(getEdgeCenter(path))
   }, [edgePath, isControlPointDragging])
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {

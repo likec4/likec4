@@ -227,6 +227,7 @@ function makeAsStraightLine(
   const controlPoints = edgeControlPoints(sourceNode, targetNode)
   const labelPos = controlPoints[0]
   return produce(edge, draft => {
+    draft.points = controlPoints.map(p => [p.x, p.y])
     draft.controlPoints = controlPoints
     if (edge.labelBBox) {
       draft.labelBBox!.x = labelPos.x

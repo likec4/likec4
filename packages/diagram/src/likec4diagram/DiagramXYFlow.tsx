@@ -190,10 +190,10 @@ export function LikeC4DiagramXYFlow({
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       onNodesChange={useCallbackRef((changes) => {
-        diagram.send({ type: 'xyflow.applyNodeChanges', changes })
+        diagram.send({ type: 'xyflow.applyChanges', nodes: changes })
       })}
       onEdgesChange={useCallbackRef((changes) => {
-        diagram.send({ type: 'xyflow.applyEdgeChanges', changes })
+        diagram.send({ type: 'xyflow.applyChanges', edges: changes })
       })}
       background={initialized ? background : 'transparent'}
       // Fitview is handled in onInit

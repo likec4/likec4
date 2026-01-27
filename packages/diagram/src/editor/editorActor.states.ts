@@ -194,8 +194,16 @@ const applyLatestToManual = machine.createStateConfig({
     // Now we wait 350ms, take new snapshot and send save-view-snapshot
     wait: {
       entry: pushHistory(),
+      on: {
+        '*': {
+          actions: [
+            log(({ event }) => `wait received unexpected event: ${event.type}`),
+            reschedule(500),
+          ],
+        },
+      },
       after: {
-        '350ms': {
+        '500ms': {
           actions: [
             addSnapshotToPendingChanges(),
             ensureHotKey(),
@@ -214,7 +222,9 @@ const executeChanges = machine.createStateConfig({
   id: 'executeChanges',
   entry: [
     assign(({ event, context }) => {
-      console.log('executeChanges entry', { event })
+      if (import.meta.env.DEV) {
+        console.log('executeChanges entry', { event })
+      }
       if (event.type === 'change') {
         if (isLayoutChange(event.change)) {
           return {
@@ -245,7 +255,9 @@ const executeChanges = machine.createStateConfig({
     }),
     onDone: {
       actions: enqueueActions(({ context, event, enqueue }) => {
-        console.log('executeChanges onDone', { event })
+        if (import.meta.env.DEV) {
+          console.log('executeChanges onDone', { event })
+        }
         const snapshot = find(context.pendingChanges, c => c.op === 'save-view-snapshot')
         if (snapshot) {
           enqueue.sendTo(
@@ -263,19 +275,13 @@ const executeChanges = machine.createStateConfig({
       ...to.idle,
     },
     onError: {
-      actions: ({ event }) => {
+      actions: assign(({ event }) => {
         console.error('executeChanges onError', { error: event.error })
-      },
-      ...to.afterEdit,
-    },
-  },
-  on: {
-    // catch all events
-    '*': {
-      actions: [
-        log(({ event }) => `executeChanges received unexpected event: ${event.type}`),
-        reschedule(),
-      ],
+        return {
+          pendingChanges: [],
+        }
+      }),
+      ...to.idle,
     },
   },
 })

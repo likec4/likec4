@@ -5,7 +5,7 @@ import type {
   ViewChange,
 } from '@likec4/core/types'
 import { getNodeDimensions } from '@xyflow/system'
-import { hasAtLeast, map, omit } from 'remeda'
+import { hasAtLeast, map } from 'remeda'
 import { calcViewBounds } from '../../utils/view-bounds'
 import { bezierControlPoints, isSamePoint } from '../../utils/xyflow'
 import type { DiagramContext } from './types'
@@ -72,7 +72,7 @@ export function createViewChange(
       controlPoints = bezierControlPoints(data.points)
     }
     const _updated: DiagramEdge = {
-      ...omit(edge, ['controlPoints', 'labelBBox']),
+      ...edge,
       points: data.points,
     }
     if (data.labelBBox) {
@@ -91,7 +91,7 @@ export function createViewChange(
         y: Math.round(v.y),
       }))
     } else {
-      delete _updated.controlPoints
+      _updated.controlPoints = null
     }
     return _updated
   })

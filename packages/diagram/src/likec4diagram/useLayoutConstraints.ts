@@ -452,8 +452,10 @@ export function createLayoutConstraints(
     if (rectsToUpdate.length === 0) {
       return
     }
-    // Force update on next animation frame
-    animationFrameId ??= requestAnimationFrame(() => {
+    if (animationFrameId !== null) {
+      cancelAnimationFrame(animationFrameId)
+    }
+    animationFrameId = requestAnimationFrame(() => {
       animationFrameId = null
       for (const id of editingNodeIds) {
         const rect = rects.get(id)

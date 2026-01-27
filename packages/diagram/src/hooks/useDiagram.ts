@@ -29,11 +29,11 @@ export function useDiagramActorSnapshot<T = unknown>(
 export function useDiagramContext<T = unknown>(
   selector: (context: DiagramContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-  deps?: DependencyList,
+  deps: DependencyList = [],
 ): T {
   const actorRef = useDiagramActorRef()
   const selectorRef = useCallbackRef(selector)
-  const select = useCallback((s: DiagramActorSnapshot) => selectorRef(s.context), deps ?? [])
+  const select = useCallback((s: DiagramActorSnapshot) => selectorRef(s.context), deps)
   return useXstateSelector(actorRef, select, compare)
 }
 

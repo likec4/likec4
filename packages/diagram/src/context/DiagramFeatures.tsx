@@ -1,6 +1,6 @@
 import type { ExclusiveUnion } from '@likec4/core/types'
-import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, createContext, useContext, useEffect, useState } from 'react'
+import { type PropsWithChildren, createContext, useContext, useEffect } from 'react'
+import { useSetState } from '../hooks/useSetState'
 
 const FeatureNames = [
   'Controls',
@@ -72,20 +72,21 @@ export function DiagramFeatures({
   }>
 >) {
   const outerScope = useContext(DiagramFeaturesContext)
-  const [scope, setScope] = useState(outerScope)
+  const [scope, setScope] = useSetState(() => ({
+    ...outerScope,
+    ...features,
+    ...overrides,
+  }))
 
   useEffect(
     () => {
-      setScope(current => {
-        const next = {
-          ...outerScope,
-          ...features,
-          ...overrides,
-        }
-        return shallowEqual(current, next) ? current : next
+      setScope({
+        ...outerScope,
+        ...features,
+        ...overrides,
       })
     },
-    [outerScope, features, overrides],
+    [outerScope, features, overrides, setScope],
   )
 
   return (

@@ -95,7 +95,7 @@ export const machine = setup({
     tags: {} as 'pending',
   },
   delays: {
-    '350ms': 350,
+    '500ms': 500,
     'waitBeforeSync': 2_000,
   },
   actors: {

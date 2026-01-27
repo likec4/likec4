@@ -26,7 +26,7 @@ export function useSetState<T extends object>(
         }
         return equalFnRef.current(current, next) ? current : next
       }),
-    [],
+    [_setState],
   )
   return [state, setState] as const
 }

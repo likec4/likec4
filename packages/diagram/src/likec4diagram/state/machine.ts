@@ -114,14 +114,12 @@ const _diagramMachine = machine.createMachine({
     'emit.onLayoutTypeChange': {
       actions: emitOnLayoutTypeChange(),
     },
-    'xyflow.applyNodeChanges': {
-      actions: assign({
-        xynodes: ({ context, event }) => applyNodeChanges(event.changes, context.xynodes),
-      }),
-    },
-    'xyflow.applyEdgeChanges': {
-      actions: assign({
-        xyedges: ({ context, event }) => applyEdgeChanges(event.changes, context.xyedges),
+    'xyflow.applyChanges': {
+      actions: assign(({ context, event }) => {
+        return {
+          xynodes: event.nodes ? applyNodeChanges(event.nodes, context.xynodes) : context.xynodes,
+          xyedges: event.edges ? applyEdgeChanges(event.edges, context.xyedges) : context.xyedges,
+        }
       }),
     },
     'xyflow.viewportMoved': {

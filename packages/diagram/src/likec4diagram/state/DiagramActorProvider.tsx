@@ -75,19 +75,20 @@ export function DiagramActorProvider({
       previous: actorRef.current.getSnapshot().context,
       current: actor.getSnapshot().context,
     })
+    // Send destroy to the old actor to clean up resources
+    actorRef.current.send({ type: 'destroy' })
     actorRef.current = actor
   }
 
-  useUpdateEffect(
-    () => {
-      return () => {
-        console.log('DiagramActorProvider unmounting')
-        actor.send({ type: 'destroy' })
-      }
-    },
-    [actor],
-    Object.is,
-  )
+  // useUpdateEffect(
+  //   () => {
+  //     return () => {
+  //       console.log('DiagramActorProvider unmounting')
+  //       actor.send({ type: 'destroy' })
+  //     }
+  //   },
+  //   [actor.sessionId],
+  // )
 
   const [api, setApi] = useState(() => makeDiagramApi(actorRef))
   useEffect(() => {
@@ -114,7 +115,7 @@ export function DiagramActorProvider({
         type: 'update.inputs',
         inputs: { zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
       }),
-    [zoomable, where, pannable, fitViewPadding, actor, nodesDraggable, nodesSelectable, xystore],
+    [zoomable, where, pannable, fitViewPadding, actor, nodesDraggable, nodesSelectable],
   )
 
   useUpdateEffect(() => {
