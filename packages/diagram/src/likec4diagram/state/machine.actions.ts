@@ -277,6 +277,14 @@ export const emitOpenSource = (params?: OpenSourceParams) =>
     }
   })
 
+export const emitOpenSourceOfView = () =>
+  machine.emit(({ context }) => ({
+    type: 'openSource',
+    params: {
+      view: context.view.id,
+    },
+  }))
+
 export const emitInitialized = () =>
   machine.emit(({ context }) => {
     invariant(context.xyflow, 'XYFlow instance not found')
@@ -482,14 +490,15 @@ export const tagHighlight = () =>
 export const assignToggledFeatures = () =>
   machine.assign(({ context, event }) => {
     assertEvent(event, 'toggle.feature')
-    const currentValue = context.toggledFeatures[`enable${event.feature}`] ??
-      context.features[`enable${event.feature}`]
+    const feature = `enable${event.feature}` as const
+    const currentValue = context.toggledFeatures[feature] ??
+      context.features[feature]
     const nextValue = event.forceValue ?? !currentValue
 
     return {
       toggledFeatures: {
         ...context.toggledFeatures,
-        [`enable${event.feature}`]: nextValue,
+        [feature]: nextValue,
       },
     }
   })
@@ -559,7 +568,7 @@ export const sendSynced = () =>
     },
   )
 
-export const stopEditing = (wasChanged = true) =>
+export const stopEditing = (wasChanged = false) =>
   machine.sendTo(
     typedSystem.editorActor,
     {
@@ -668,6 +677,10 @@ export const openOverlay = () =>
       }
 
       case 'open.relationshipsBrowser': {
+        if (!context.features.enableRelationshipBrowser) {
+          console.warn('RelationshipBrowser feature is disabled')
+          return
+        }
         enqueue.sendTo(
           typedSystem.overlaysActor,
           {
@@ -683,6 +696,10 @@ export const openOverlay = () =>
         break
       }
       case 'open.relationshipDetails': {
+        if (!context.features.enableRelationshipDetails) {
+          console.warn('RelationshipDetails feature is disabled')
+          return
+        }
         enqueue.sendTo(
           typedSystem.overlaysActor,
           {
@@ -822,11 +839,9 @@ export const handleNavigate = () =>
       viewport,
       viewportChangedManually,
       viewportBefore,
-      navigationHistory: {
-        currentIndex,
-        history: _history,
-      },
+      navigationHistory,
     } = context
+    let { currentIndex, history: _history } = navigationHistory
 
     let history = _history as Writable<typeof _history>
     if (currentIndex < _history.length) {

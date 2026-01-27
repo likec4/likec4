@@ -18,7 +18,6 @@ export type LikeC4ViteConfig = {
   title?: string | undefined
   webcomponentPrefix?: string | undefined
   useHashHistory?: boolean | undefined
-  useOverviewGraph?: boolean | undefined
   likec4AssetsDir: string
   outputSingleFile?: boolean | undefined
 }
@@ -26,7 +25,6 @@ export type LikeC4ViteConfig = {
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
   const customLogger = cfg.customLogger ?? viteLogger
   const root = viteAppRoot()
-  const useOverviewGraph = cfg?.useOverviewGraph === true
   customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
 
   const outDir = cfg.outputDir ?? resolve(languageServices.workspace, 'dist')
@@ -103,7 +101,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       PAGE_TITLE: JSON.stringify(title),
-      __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"production"',
     },
@@ -155,7 +152,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       react(),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
-        useOverviewGraph: useOverviewGraph,
       }),
       // Enable single file output
       isSingleFile ? viteSingleFile() : undefined,

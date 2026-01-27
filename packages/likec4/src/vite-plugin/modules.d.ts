@@ -166,4 +166,6 @@ declare module 'likec4:rpc' {
 
   export type { LikeC4VitePluginRpc }
   export declare const likec4rpc: LikeC4VitePluginRpc
+
+  export declare const isRpcAvailable: boolean
 }

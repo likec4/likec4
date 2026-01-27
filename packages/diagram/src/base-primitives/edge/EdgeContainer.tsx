@@ -34,10 +34,11 @@ export function EdgeContainer({
     dimmed: isDimmed = false,
     ...data
   },
-  animated,
+  animated = false,
   children,
   style,
 }: EdgeContainerProps) {
+  animated = animated || isActive
   const props = {
     className: cx(
       className,
@@ -48,8 +49,10 @@ export function EdgeContainer({
     'data-likec4-color': color,
     'data-edge-dir': data.dir ?? 'forward',
     'data-edge-active': isActive,
-    'data-edge-animated': animated || isActive,
     'data-likec4-hovered': isHovered,
+    ...(animated && {
+      'data-likec4-animated': animated,
+    }),
     ...(selected && {
       'data-likec4-selected': selected,
     }),

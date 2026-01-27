@@ -3,7 +3,7 @@ import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo, useEffect, useRef, useState } from 'react'
-import { isNullish, omitBy } from 'remeda'
+import { isNullish } from 'remeda'
 import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { type EnabledFeatures, DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
@@ -114,7 +114,7 @@ export function DiagramActorProvider({
         type: 'update.inputs',
         inputs: { zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
       }),
-    [zoomable, where, pannable, fitViewPadding, actor, nodesDraggable, nodesSelectable],
+    [zoomable, where, pannable, fitViewPadding, actor, nodesDraggable, nodesSelectable, xystore],
   )
 
   useUpdateEffect(() => {
@@ -239,7 +239,7 @@ const DiagramActorEventListener = memo(() => {
   )
 
   useUpdateEffect(() => {
-    DiagramToggledFeaturesPersistence.write(omitBy(toggledFeatures, isNullish))
+    DiagramToggledFeaturesPersistence.write(toggledFeatures)
   }, [toggledFeatures])
 
   return null

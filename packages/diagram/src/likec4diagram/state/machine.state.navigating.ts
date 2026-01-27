@@ -12,7 +12,7 @@ import {
   disableCompareWithLatest,
   raiseSetViewport,
 } from './machine.actions'
-import { machine, targetState } from './machine.setup'
+import { machine, targetState, to } from './machine.setup'
 import { calcViewportForBounds, findCorrespondingNode, findNodeByModelFqn, nodeRef, viewBounds } from './utils'
 
 /**
@@ -78,7 +78,7 @@ const handleBrowserForwardBackward = () =>
 export const navigating = machine.createStateConfig({
   id: targetState.navigating.slice(1),
   always: {
-    target: targetState.idle,
+    ...to.idle,
     actions: [
       cancelFitDiagram(),
       handleBrowserForwardBackward(),
@@ -237,6 +237,9 @@ export const navigating = machine.createStateConfig({
         }
 
         const updatedHistory = currentIndex < history.length - 1 ? history.slice(0, currentIndex + 1) : [...history]
+        if (updatedHistory.length > 20) {
+          updatedHistory.shift()
+        }
         updatedHistory.push({
           viewId: event.view.id,
           viewport: { ...nextViewport },

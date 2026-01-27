@@ -1,7 +1,6 @@
 import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { isDeepEqual, map } from 'remeda'
-import k from 'tinyrainbow'
 import type {
   Plugin,
   PluginOption,
@@ -62,11 +61,6 @@ export type LikeC4VitePluginOptions =
      */
     watch?: boolean
 
-    /**
-     * @deprecated
-     */
-    useOverviewGraph?: boolean
-
     // This option is not allowed when using `workspace`
     languageServices?: never
   } | {
@@ -80,7 +74,6 @@ export type LikeC4VitePluginOptions =
     throwIfInvalid?: never
     graphviz?: never
     watch?: never
-    useOverviewGraph?: boolean
   })
 
 const hmrProjectVirtuals = [
@@ -111,7 +104,6 @@ const virtuals = [
 ]
 
 export function LikeC4VitePlugin({
-  useOverviewGraph = false,
   environments,
   ...opts
 }: LikeC4VitePluginOptions): Plugin {
@@ -129,16 +121,17 @@ export function LikeC4VitePlugin({
     },
 
     async configResolved(config) {
+      config.server.hmr
       logger = config.logger
-      if (useOverviewGraph === true) {
-        const resolvedAlias = config.resolve.alias.find(a => a.find === 'likec4/previews')?.replacement
-        if (resolvedAlias) {
-          assetsDir = resolvedAlias
-          logger.info(k.dim('likec4/previews alias') + ' ' + k.dim(assetsDir))
-        } else {
-          logger.warn('likec4/previews alias not found')
-        }
-      }
+      // if (useOverviewGraph === true) {
+      //   const resolvedAlias = config.resolve.alias.find(a => a.find === 'likec4/previews')?.replacement
+      //   if (resolvedAlias) {
+      //     assetsDir = resolvedAlias
+      //     logger.info(k.dim('likec4/previews alias') + ' ' + k.dim(assetsDir))
+      //   } else {
+      //     logger.warn('likec4/previews alias not found')
+      //   }
+      // }
       if (opts.languageServices) {
         likec4 = opts.languageServices
       } else {
@@ -180,7 +173,6 @@ export function LikeC4VitePlugin({
             likec4,
             project,
             assetsDir,
-            useOverviewGraph,
           })
         }
       }
@@ -194,7 +186,6 @@ export function LikeC4VitePlugin({
             likec4,
             projects,
             assetsDir,
-            useOverviewGraph,
           })
         }
       }
@@ -249,8 +240,11 @@ export function LikeC4VitePlugin({
         if (!isDeepEqual(_updated, _projects)) {
           _projects = _updated
           await reloadModule(projectsModule.virtualId)
+          await reloadModule(iconsModule.virtualId)
           await reloadModule(modelModule.virtualId)
-          await reloadModule(projectsOverviewModule.virtualId)
+          if (_projects.length > 1) {
+            await reloadModule(projectsOverviewModule.virtualId)
+          }
           return
         }
 

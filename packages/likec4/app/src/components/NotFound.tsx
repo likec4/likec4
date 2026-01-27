@@ -1,8 +1,36 @@
-import { Button, Container, Group, Text, Title } from '@mantine/core'
-import { Link } from '@tanstack/react-router'
+import { Alert, Button, Code, Container, Group, Text, Title } from '@mantine/core'
+import { Link, useParams } from '@tanstack/react-router'
 import * as classes from './NotFound.css'
 
 export function NotFound() {
+  const params = useParams({
+    strict: false,
+  })
+  if (params.viewId) {
+    return (
+      <Container my={'md'}>
+        <Alert variant="light" color="orange">
+          <Text c={'orange'} fz={'md'}>
+            The diagram{' '}
+            <Code color="orange">
+              {params.viewId}
+            </Code>{' '}
+            does not exist or contains errors
+          </Text>
+          <Button
+            component={Link}
+            to="/"
+            variant="light"
+            color="orange"
+            mt={'lg'}
+            size="xs">
+            Go to overview
+          </Button>
+        </Alert>
+      </Container>
+    )
+  }
+
   return (
     <Container className={classes.root}>
       <div className={classes.inner}>

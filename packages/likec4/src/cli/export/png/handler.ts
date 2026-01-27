@@ -156,7 +156,6 @@ export async function pngHandler({
       languageServices,
       buildWebcomponent: false,
       openBrowser: false,
-      useOverviewGraph: false,
       hmr: false,
     })
     serverUrl = resolveServerUrl(server)

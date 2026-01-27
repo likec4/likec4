@@ -1,17 +1,21 @@
 import { Alert, Button, Code, Container, Group, Text } from '@mantine/core'
-import { isNotFound, useRouter } from '@tanstack/react-router'
+import { isNotFound, useParams, useRouter } from '@tanstack/react-router'
 import type { FallbackProps } from 'react-error-boundary'
+import { isError, isNullish, isObjectType } from 'remeda'
 
-export function Fallback({ error, resetErrorBoundary }: FallbackProps) {
+export function Fallback({ error: _error, resetErrorBoundary }: FallbackProps) {
   const router = useRouter()
-  if (isNotFound(error)) {
+  const params = useParams({
+    strict: false,
+  })
+  if (isNotFound(_error)) {
     return (
       <Container my={'md'}>
         <Alert variant="light" color="orange">
           <Text c={'orange'} fz={'md'}>
             The diagram{' '}
             <Code color="orange">
-              {/* {viewId} */}
+              {params.viewId ?? 'unknown'}
             </Code>{' '}
             does not exist or contains errors
           </Text>
@@ -32,11 +36,34 @@ export function Fallback({ error, resetErrorBoundary }: FallbackProps) {
       </Container>
     )
   }
+  const error = _error as any
+  let message = 'Unknown error'
+  try {
+    switch (true) {
+      case isNullish(error):
+        message = 'Unknown error'
+        break
+      case isError(error):
+        message = error.stack ?? error.message
+        break
+      case typeof error === 'string':
+        message = error
+        break
+      case isObjectType(error):
+        message = error['stack'] ?? error['message'] ?? `${error}`
+        break
+      default:
+        message = `${error}`
+        break
+    }
+  } catch (e) {
+    message = `${e}`
+  }
   return (
     <Container my={'md'}>
       <Alert variant="filled" color="red" title={'Something went wrong'}>
         <Code block color="red">
-          {error.stack ?? error.message}
+          {message}
         </Code>
         <Group mt={'lg'}>
           <Button

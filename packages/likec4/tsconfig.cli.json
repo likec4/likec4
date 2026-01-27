@@ -12,7 +12,6 @@
     "outDir": "lib/cli",
     "types": [
       "node",
-      "./src/vite-plugin/rpc/events.d.ts"
     ],
     "rootDirs": [
       "src",
@@ -29,7 +28,6 @@
     "package.json"
   ],
   "exclude": [
-    "src/vite-plugin/rpc/events.d.ts",
     "src/vite-plugin/modules.d.ts"
   ],
   "references": [

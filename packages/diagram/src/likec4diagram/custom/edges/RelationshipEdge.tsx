@@ -1,9 +1,10 @@
 import type { EdgeId } from '@likec4/core/types'
 import { css, cx as clsx } from '@likec4/styles/css'
+import { useRafEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
+import { type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
 import {
   EdgeActionButton,
   EdgeContainer,
@@ -15,6 +16,7 @@ import {
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { useSetState } from '../../../hooks/useSetState'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
 import {
@@ -75,25 +77,24 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   let labelX = labelBBox?.x ?? 0,
     labelY = labelBBox?.y ?? 0
 
-  const [labelPos, setLabelPos] = useState<XYPosition>({
+  const [labelPos, setLabelPos] = useSetState<XYPosition>({
     x: labelXY?.x ?? labelX,
     y: labelXY?.y ?? labelY,
-  })
+  }, isSamePoint)
 
   useUpdateEffect(() => {
     if (isControlPointDraggingRef.current) {
       return
     }
-    const next = {
+    setLabelPos({
       x: labelX,
       y: labelY,
-    }
-    setLabelPos(current => isSamePoint(current, next) ? current : next)
+    })
   }, [labelX, labelY])
 
   const svgPathRef = useRef<SVGPathElement>(null)
 
-  useEffect(() => {
+  useRafEffect(() => {
     const path = svgPathRef.current
     if (!path || !isControlPointDragging) return
     const next = getEdgeCenter(path)
@@ -101,8 +102,8 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   }, [edgePath, isControlPointDragging])
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
-    const point = svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
-    if (labelBBox && point) {
+    const point = labelBBox && svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
+    if (point) {
       diagram.updateEdgeData(id as EdgeId, {
         controlPoints,
         labelBBox: {
@@ -329,11 +330,10 @@ function ControlPoints({
   }
 
   const onRmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
-    if (controlPoints.length <= 1) {
+    if (controlPoints.length <= 1 || index >= controlPoints.length) {
       return
     }
-    e.stopPropagation()
-    e.preventDefault()
+    stopAndPrevent(e)
 
     const newControlPoints = controlPoints.slice()
     newControlPoints.splice(index, 1)

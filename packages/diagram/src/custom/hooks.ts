@@ -28,13 +28,16 @@ export {
 } from '../hooks/useDiagram'
 
 export {
+  type CurrentViewModel,
   useCurrentViewModel,
+  useOptionalCurrentViewModel,
 } from '../hooks/useCurrentViewModel'
 
 export {
   useLikeC4Model,
   useLikeC4Specification,
   useLikeC4ViewModel,
+  useOptionalLikeC4Model,
 } from '../hooks/useLikeC4Model'
 
 export {

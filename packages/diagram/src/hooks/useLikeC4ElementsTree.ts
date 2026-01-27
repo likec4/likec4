@@ -35,5 +35,5 @@ export function useLikeC4ElementsTree(viewId?: ViewId): LikeC4ModelTreeNodeData[
     } else {
       return [...model.roots()].map(buildNode).sort(sortByLabel)
     }
-  }, [model, viewId ?? null])
+  }, [model, viewId])
 }

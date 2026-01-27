@@ -5,6 +5,7 @@ import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
 import { build } from 'vite'
+import pkg from '../package.json' with { type: 'json' }
 import { amIExecuted } from './_utils'
 
 export async function bundleApp() {

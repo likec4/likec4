@@ -1,6 +1,6 @@
 import { enqueueActions, log } from 'xstate'
 import { assignViewportBefore, cancelFitDiagram, returnViewportBefore, setViewport } from './machine.actions'
-import { machine, targetState } from './machine.setup'
+import { machine, targetState, to } from './machine.setup'
 import { viewBounds } from './utils'
 
 /**
@@ -33,7 +33,7 @@ export const printing = machine.createStateConfig({
   ],
   on: {
     'media.print.off': {
-      target: targetState.idle,
+      ...to.idle,
     },
     '*': {
       actions: [

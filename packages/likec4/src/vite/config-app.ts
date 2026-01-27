@@ -20,7 +20,6 @@ export const pkgRoot = resolve(_dirname, '../..')
 
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
   logger.warn(k.bold(k.yellow('DEVELOPMENT MODE')))
-  const useOverviewGraph = cfg?.useOverviewGraph === true
   const customLogger = cfg.customLogger ?? viteLogger
 
   const root = resolve(pkgRoot, 'app')
@@ -58,7 +57,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       PAGE_TITLE: JSON.stringify(title),
-      __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"development"',
     },
@@ -124,7 +122,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     plugins: [
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
-        useOverviewGraph: useOverviewGraph,
       }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',

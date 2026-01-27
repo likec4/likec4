@@ -3,7 +3,6 @@ import { Button, Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 import { CopyToClipboard } from '../components/CopyToClipboard'
-import { SidebarBurger } from '../components/sidebar/SidebarBurger'
 import { krokiPumlSvgUrl } from '../const'
 import * as styles from './styles.css'
 
@@ -73,7 +72,6 @@ export function ViewAsPuml({ pumlSource }: { pumlSource: string }) {
           </ScrollArea>
         </Panel>
       </Group>
-      <SidebarBurger />
     </>
   )
 }

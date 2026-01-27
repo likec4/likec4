@@ -2,34 +2,32 @@ import k from 'tinyrainbow'
 import type { VirtualModule } from './_shared'
 
 const code = ` 
-import { createRpc} from 'likec4/vite-plugin/internal'
+import { createRpc } from 'likec4/vite-plugin/internal'
 
-export const likec4rpc = import.meta.hot
-  ? createRpc({
-      send: (event, data) => {
-        import.meta.hot.send(event, data)
-      },
-      on: (event, fn) => {
-        import.meta.hot.on(event, fn)
-      }
-    })
-  : {
-    updateView: () => {
-      throw new Error('likec4rpc.updateView is not available in production')
-    },
-    calcAdhocView: () => {
-      throw new Error('likec4rpc.calcAdhocView is not available in production')
-    },
-  }
+export const isRpcAvailable = !!import.meta.hot
 
-Object.defineProperty(likec4rpc, 'isAvailable', {
-  enumerable: true,
-  get() {
-    return !!import.meta.hot
+let rpc 
+if (import.meta.hot) {
+  rpc = createRpc({
+    send: (event, data) => {
+      import.meta.hot.send(event, data)
+    },
+    on: (event, fn) => {
+      import.meta.hot.on(event, fn)
+    }
+  })
+
+  import.meta.hot.accept()
+}
+
+export const likec4rpc = rpc ?? {
+  updateView: () => {
+    throw new Error('likec4rpc.updateView is not available in production')
   },
-})
-
-import.meta.hot?.accept()
+  calcAdhocView: () => {
+    throw new Error('likec4rpc.calcAdhocView is not available in production')
+  },
+}
 `
 
 export const rpcModule: VirtualModule = {

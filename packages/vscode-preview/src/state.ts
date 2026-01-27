@@ -6,7 +6,7 @@ import type {
   ProjectId,
   scalar,
 } from '@likec4/core/types'
-import type { LikeC4EditorPort } from '@likec4/diagram'
+import type { LikeC4EditorCallbacks } from '@likec4/diagram'
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { atom, batched, onSet } from 'nanostores'
@@ -250,7 +250,7 @@ export function useDiagramView() {
   }
 }
 
-const editorPort: LikeC4EditorPort = {
+const editorPort: LikeC4EditorCallbacks = {
   fetchView: async (viewId, layout) => {
     const view = await queryClient.fetchQuery(queries.fetchDiagramView($projectId.get(), viewId, layout))
     return nonNullable(view, `View ${viewId} not found`)

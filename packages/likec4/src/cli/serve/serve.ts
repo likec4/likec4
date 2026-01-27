@@ -1,13 +1,8 @@
-import { delay } from '@likec4/core/utils'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { hasAtLeast } from 'remeda'
-import k from 'tinyrainbow'
-import { exportViewsToPNG } from '../../cli/export/png/handler'
 import { LikeC4 } from '../../LikeC4'
-import { createLikeC4Logger } from '../../logger'
-import { printServerUrls, resolveServerUrl } from '../../vite/printServerUrls'
+import { printServerUrls } from '../../vite/printServerUrls'
 import { viteDev } from '../../vite/vite-dev'
 
 type HandlerParams = {
@@ -23,11 +18,6 @@ type HandlerParams = {
   base?: string | undefined
 
   useHashHistory: boolean | undefined
-
-  /**
-   * overview all diagrams as graph
-   */
-  useOverview?: boolean | undefined
 
   webcomponentPrefix: string
 
@@ -67,7 +57,6 @@ export async function handler({
   webcomponentPrefix,
   title,
   useHashHistory,
-  useOverview = false,
   enableWebcomponent = true,
   enableHMR = true,
   base,
@@ -95,7 +84,6 @@ export async function handler({
     title,
     languageServices,
     useHashHistory,
-    useOverviewGraph: useOverview,
     likec4AssetsDir,
     listen,
     port,
@@ -104,39 +92,39 @@ export async function handler({
   server.config.logger.clearScreen('info')
   printServerUrls(server)
 
-  if (!useOverview) {
-    return
-  }
-  const views = await languageServices.diagrams()
+  // if (!useOverview) {
+  //   return
+  // }
+  // const views = await languageServices.diagrams()
 
-  if (hasAtLeast(views, 1)) {
-    const logger = createLikeC4Logger('c4:export')
-    const serverUrl = resolveServerUrl(server)
-    if (!serverUrl) {
-      logger.error('no preview server url')
-      return
-    }
-    logger.info(k.cyan(`wait 5sec before generating previews`))
-    await delay(5000)
+  // if (hasAtLeast(views, 1)) {
+  //   const logger = createLikeC4Logger('c4:export')
+  //   const serverUrl = resolveServerUrl(server)
+  //   if (!serverUrl) {
+  //     logger.error('no preview server url')
+  //     return
+  //   }
+  //   logger.info(k.cyan(`wait 5sec before generating previews`))
+  //   await delay(5000)
 
-    try {
-      await exportViewsToPNG({
-        serverUrl,
-        logger,
-        views,
-        theme: 'light',
-        output: likec4AssetsDir,
-        outputType: 'flat',
-      })
+  //   try {
+  //     await exportViewsToPNG({
+  //       serverUrl,
+  //       logger,
+  //       views,
+  //       theme: 'light',
+  //       output: likec4AssetsDir,
+  //       outputType: 'flat',
+  //     })
 
-      await delay(1000)
+  //     await delay(1000)
 
-      logger.info(k.yellow(`Note: changes in sources do not trigger preview updates, restart is required`))
-    } catch (error) {
-      logger.error(k.red('Failed to generate previews'))
-      logger.error(error)
-    }
-  } else {
-    server.config.logger.warn('no views found, no previews generated')
-  }
+  //     logger.info(k.yellow(`Note: changes in sources do not trigger preview updates, restart is required`))
+  //   } catch (error) {
+  //     logger.error(k.red('Failed to generate previews'))
+  //     logger.error(error)
+  //   }
+  // } else {
+  //   server.config.logger.warn('no views found, no previews generated')
+  // }
 }

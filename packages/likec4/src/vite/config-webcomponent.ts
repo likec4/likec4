@@ -79,7 +79,6 @@ export async function viteWebcomponentConfig({
       react({}),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
-        useOverviewGraph: false,
       }),
     ],
   }

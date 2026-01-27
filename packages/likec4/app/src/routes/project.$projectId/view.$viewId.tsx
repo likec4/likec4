@@ -1,10 +1,11 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { SidebarDrawer } from '../../components/sidebar/Drawer'
+import { Fallback } from '../../components/Fallback'
 import { Header } from '../../components/view-page/Header'
-import { withOverviewGraph } from '../../const'
-
 export const Route = createFileRoute('/project/$projectId/view/$viewId')({
   component: ViewLayout,
+  errorComponent: ({ error, reset }) => {
+    return <Fallback error={error} resetErrorBoundary={reset} />
+  },
 })
 
 function ViewLayout() {
@@ -12,7 +13,6 @@ function ViewLayout() {
     <>
       <Outlet />
       <Header />
-      {!withOverviewGraph && <SidebarDrawer />}
     </>
   )
 }

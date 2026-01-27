@@ -1,4 +1,4 @@
-import { sendTo, spawnChild, stopChild } from 'xstate/actions'
+import { assign, sendTo, spawnChild, stopChild } from 'xstate/actions'
 import { and } from 'xstate/guards'
 import {
   assignLastClickedNode,
@@ -11,6 +11,7 @@ import {
   emitEdgeClick,
   emitNodeClick,
   emitOpenSource,
+  emitOpenSourceOfView,
   emitPaneClick,
   ensureEditorActor,
   ensureOverlaysActor,
@@ -38,7 +39,7 @@ import {
   updateFeatures,
   updateView,
 } from './machine.actions'
-import { machine, targetState } from './machine.setup'
+import { machine, to } from './machine.setup'
 import { focused } from './machine.state.ready.focused'
 import { idle } from './machine.state.ready.idle'
 import { printing } from './machine.state.ready.printing'
@@ -68,9 +69,6 @@ export const ready = machine.createStateConfig({
     printing,
   },
   on: {
-    'navigate.*': {
-      actions: handleNavigate(),
-    },
     'layout.align': {
       guard: 'not readonly',
       actions: [
@@ -97,35 +95,46 @@ export const ready = machine.createStateConfig({
         }),
       ],
     },
-    'xyflow.resized': {
-      guard: ({ context }) => context.features.enableFitView && !context.viewportChangedManually,
-      actions: [
-        cancelFitDiagram(),
-        raiseFitDiagram({ delay: 200 }),
-      ],
+    'media.print.on': {
+      ...to.printing,
+    },
+    'navigate.*': {
+      actions: handleNavigate(),
+    },
+    'notations.highlight': {
+      actions: notationsHighlight(),
+    },
+    'notations.unhighlight': {
+      actions: undimEverything(),
     },
     'open.elementDetails': {
-      actions: openOverlay(),
-    },
-    'open.relationshipsBrowser': {
       actions: openOverlay(),
     },
     'open.relationshipDetails': {
       actions: openOverlay(),
     },
+    'open.relationshipsBrowser': {
+      actions: openOverlay(),
+    },
+    'open.search': {
+      guard: 'enabled: Search',
+      actions: sendTo(typedSystem.searchActor, ({ event }) => ({
+        type: 'open',
+        search: event.search,
+      })),
+    },
     'open.source': {
       guard: 'enabled: OpenSource',
       actions: emitOpenSource(),
     },
-    'walkthrough.start': {
-      guard: 'is dynamic view',
-      target: targetState.walkthrough,
+    'tag.highlight': {
+      actions: tagHighlight(),
+    },
+    'tag.unhighlight': {
+      actions: undimEverything(),
     },
     'toggle.feature': {
-      actions: [
-        assignToggledFeatures(),
-        ensureEditorActor(),
-      ],
+      actions: assignToggledFeatures(),
     },
     'update.features': {
       actions: [
@@ -135,17 +144,26 @@ export const ready = machine.createStateConfig({
         ensureEditorActor(),
       ],
     },
-    'xyflow.nodeMouseEnter': {
-      actions: onNodeMouseEnter(),
+    'update.view': [
+      // Redirect to navigating state if received another view
+      {
+        guard: 'is another view',
+        ...to.navigating,
+      },
+      // Otherwise, just update the view in place
+      {
+        actions: updateView(),
+      },
+    ],
+    'walkthrough.start': {
+      guard: 'is dynamic view',
+      ...to.walkthrough,
     },
-    'xyflow.nodeMouseLeave': {
-      actions: onNodeMouseLeave(),
-    },
-    'xyflow.edgeMouseEnter': {
-      actions: onEdgeMouseEnter(),
-    },
-    'xyflow.edgeMouseLeave': {
-      actions: onEdgeMouseLeave(),
+    'xyflow.edgeClick': {
+      actions: [
+        resetLastClickedNode(),
+        emitEdgeClick(),
+      ],
     },
     'xyflow.edgeDoubleClick': {
       guard: and([
@@ -158,29 +176,19 @@ export const ready = machine.createStateConfig({
         stopEditing(true),
       ],
     },
-    'notations.highlight': {
-      actions: notationsHighlight(),
+    'xyflow.edgeMouseEnter': {
+      actions: onEdgeMouseEnter(),
     },
-    'notations.unhighlight': {
-      actions: undimEverything(),
+    'xyflow.edgeMouseLeave': {
+      actions: onEdgeMouseLeave(),
     },
-    'tag.highlight': {
-      actions: tagHighlight(),
-    },
-    'tag.unhighlight': {
-      actions: undimEverything(),
-    },
-    'open.search': {
-      guard: 'enabled: Search',
-      actions: sendTo(({ system }) => typedSystem(system).searchActorRef!, ({ event }) => ({
-        type: 'open',
-        search: event.search,
-      })),
-    },
-    'xyflow.paneClick': {
+    'xyflow.fitDiagram': {
+      guard: 'enabled: FitView',
       actions: [
-        resetLastClickedNode(),
-        emitPaneClick(),
+        assign({
+          viewportChangedManually: false,
+        }),
+        fitDiagram(),
       ],
     },
     'xyflow.nodeClick': {
@@ -189,32 +197,36 @@ export const ready = machine.createStateConfig({
         emitNodeClick(),
       ],
     },
-    'xyflow.edgeClick': {
+    'xyflow.nodeMouseEnter': {
+      actions: onNodeMouseEnter(),
+    },
+    'xyflow.nodeMouseLeave': {
+      actions: onNodeMouseLeave(),
+    },
+    'xyflow.paneClick': {
       actions: [
         resetLastClickedNode(),
-        emitEdgeClick(),
+        emitPaneClick(),
       ],
     },
-    'xyflow.fitDiagram': {
-      guard: 'enabled: FitView',
-      actions: fitDiagram(),
+    'xyflow.paneDblClick': {
+      actions: [
+        resetLastClickedNode(),
+        cancelFitDiagram(),
+        raiseFitDiagram(),
+        emitOpenSourceOfView(),
+        emitPaneClick(),
+      ],
+    },
+    'xyflow.resized': {
+      guard: ({ context }) => context.features.enableFitView && !context.viewportChangedManually,
+      actions: [
+        cancelFitDiagram(),
+        raiseFitDiagram({ delay: 150 }),
+      ],
     },
     'xyflow.setViewport': {
       actions: setViewport(),
-    },
-    'update.view': [
-      // Redirect to navigating state if received another view
-      {
-        guard: 'is another view',
-        target: targetState.navigating,
-      },
-      // Otherwise, just update the view in place
-      {
-        actions: updateView(),
-      },
-    ],
-    'media.print.on': {
-      target: targetState.printing,
     },
   },
 })

@@ -2,7 +2,6 @@ import { copyFile, mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { defineBuildConfig } from 'obuild/config'
 import { isProduction } from 'std-env'
-// import { type BuildConfig, defineBuildConfig } from 'unbuild'
 
 if (!isProduction) {
   console.warn('Bundling CLI in development mode')

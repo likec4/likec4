@@ -4,7 +4,6 @@ import { useAsync } from '@react-hookz/web'
 import { useEffect } from 'react'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 import { CopyToClipboard } from '../components/CopyToClipboard'
-import { SidebarBurger } from '../components/sidebar/SidebarBurger'
 import * as styles from './styles.css'
 
 const renderSvg = async (viewId: string, diagram: string) => {
@@ -56,7 +55,6 @@ export function ViewAsMmd({ viewId, mmdSource }: { viewId: string; mmdSource: st
           </ScrollArea>
         </Panel>
       </Group>
-      <SidebarBurger />
     </>
   )
 }

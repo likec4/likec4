@@ -2,8 +2,6 @@ import type { AdhocViewPredicate } from '@likec4/core/compute-view'
 import type { LayoutedElementView, ProjectId, ViewChange, ViewId } from '@likec4/core/types'
 
 export interface LikeC4VitePluginRpc {
-  readonly isAvailable: boolean
-
   /**
    * Send a view change to the server
    * (Available in the dev server)

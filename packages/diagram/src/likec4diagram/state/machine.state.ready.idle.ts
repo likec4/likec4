@@ -1,19 +1,19 @@
 import type { StepEdgeId } from '@likec4/core'
-import { enqueueActions, raise } from 'xstate/actions'
+import { raise } from 'xstate/actions'
 import { and, or } from 'xstate/guards'
 import {
   assignFocusedNode,
   assignLastClickedNode,
   emitEdgeClick,
   emitNodeClick,
-  emitOpenSource,
+  emitOpenSourceOfView,
   emitPaneClick,
-  fitDiagram,
   openElementDetails,
   openSourceOfFocusedOrLastClickedNode,
+  raiseFitDiagram,
   resetLastClickedNode,
 } from './machine.actions'
-import { machine, targetState } from './machine.setup'
+import { machine, targetState, to } from './machine.setup'
 
 export const idle = machine.createStateConfig({
   id: targetState.idle.slice(1),
@@ -34,7 +34,7 @@ export const idle = machine.createStateConfig({
           assignFocusedNode(),
           emitNodeClick(),
         ],
-        target: targetState.focused,
+        ...to.focused,
       },
       {
         guard: and([
@@ -70,14 +70,9 @@ export const idle = machine.createStateConfig({
     'xyflow.paneDblClick': {
       actions: [
         resetLastClickedNode(),
-        enqueueActions(({ context, enqueue, check }) => {
-          if (check('enabled: FitView')) {
-            enqueue(fitDiagram())
-          }
-          enqueue(
-            emitOpenSource({ view: context.view.id }),
-          )
-        }),
+        raiseFitDiagram(),
+        emitOpenSourceOfView(),
+        emitPaneClick(),
       ],
     },
     'focus.node': [

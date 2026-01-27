@@ -22,7 +22,7 @@ import type {
 } from '@likec4/core/types'
 import type { EdgeChange, NodeChange, Rect, Viewport } from '@xyflow/system'
 import type { MouseEvent } from 'react'
-import { isTruthy } from 'remeda'
+import { isTruthy, mapValues } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import {
   assertEvent,
@@ -355,3 +355,5 @@ export const targetState = {
   printing: '#printing',
   navigating: '#navigating',
 }
+
+export const to = mapValues(targetState, (id) => ({ target: id }))

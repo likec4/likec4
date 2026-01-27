@@ -3,7 +3,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { likec4rpc } from 'likec4:rpc'
 import { NotFound } from '../components/NotFound'
-import { isDevelopment, onViewChangeViaPlugin } from '../const'
+import { isDevelopment } from '../const'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
 import { ListenForDynamicVariantChange, OpenRelationshipBrowserFromUrl } from './ViewReact'
@@ -33,8 +33,6 @@ export function ViewEditor() {
 
   const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
-
-  const onChange = onViewChangeViaPlugin ?? undefined
 
   return (
     <LikeC4EditorProvider

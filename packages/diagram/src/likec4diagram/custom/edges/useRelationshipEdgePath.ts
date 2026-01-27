@@ -1,3 +1,4 @@
+// oxlint-disable exhaustive-deps
 import {
   nonNullable,
   vector,
@@ -20,6 +21,9 @@ const curve = d3line<XYPosition>()
   .x(d => Math.round(d.x))
   .y(d => Math.round(d.y))
 
+/**
+ * @returns SVG path data string for relationship edge
+ */
 export function useRelationshipEdgePath({
   props: {
     sourceX,
@@ -36,7 +40,7 @@ export function useRelationshipEdgePath({
   props: Types.EdgeProps<'relationship'>
   controlPoints: XYPosition[]
   isControlPointDragging: boolean
-}) {
+}): string {
   // Subscribe to mimimal node changes to update edge path when nodes move
   const [
     sourceNodeWidth,
@@ -103,18 +107,19 @@ export function useRelationshipEdgePath({
 
       return nonNullable(curve(points))
     },
-    !isModified ? [data.points] : [
+    [
+      data.points,
       isModified,
-      sourceX,
-      sourceY,
-      targetX,
-      targetY,
-      sourceNodeWidth,
-      sourceNodeHeight,
-      targetNodeWidth,
-      targetNodeHeight,
-      data.dir,
-      controlPoints,
+      isModified ? sourceX : undefined,
+      isModified ? sourceY : undefined,
+      isModified ? targetX : undefined,
+      isModified ? targetY : undefined,
+      isModified ? sourceNodeWidth : undefined,
+      isModified ? sourceNodeHeight : undefined,
+      isModified ? targetNodeWidth : undefined,
+      isModified ? targetNodeHeight : undefined,
+      isModified ? data.dir : undefined,
+      isModified ? controlPoints : undefined,
     ],
   )
 }

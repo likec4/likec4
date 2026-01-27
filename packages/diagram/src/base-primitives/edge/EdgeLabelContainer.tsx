@@ -30,7 +30,7 @@ type EdgeLabelContainerProps = HTMLAttributes<HTMLDivElement> & {
 }
 
 const toCssVarValue = (value: number | string | undefined) => {
-  if (value === undefined) return undefined
+  if (value === undefined) return ''
   return isNumber(value) ? `${Math.round(value)}px` : value
 }
 
@@ -71,6 +71,8 @@ export function EdgeLabelContainer({
   }
   const translate = labelXY?.translate ?? ''
 
+  animated = animated || isActive
+
   return (
     <EdgeLabelRenderer>
       <div
@@ -85,6 +87,9 @@ export function EdgeLabelContainer({
         data-likec4-color={color}
         data-edge-active={isActive}
         data-edge-animated={animated || isActive}
+        {...animated && {
+          'data-likec4-animated': animated,
+        }}
         {...selected !== false && {
           'data-likec4-selected': selected,
         }}

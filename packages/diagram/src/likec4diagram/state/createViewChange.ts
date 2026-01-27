@@ -1,8 +1,8 @@
-import {
-  type DiagramEdge,
-  type DiagramNode,
-  type LayoutedView,
-  type ViewChange,
+import type {
+  DiagramEdge,
+  DiagramNode,
+  LayoutedView,
+  ViewChange,
 } from '@likec4/core/types'
 import { getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, map, omit } from 'remeda'

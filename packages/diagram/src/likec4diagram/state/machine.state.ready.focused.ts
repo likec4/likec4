@@ -20,7 +20,7 @@ import {
   stopHotKeyActor,
   undimEverything,
 } from './machine.actions'
-import { machine, targetState } from './machine.setup'
+import { machine, targetState, to } from './machine.setup'
 
 export const focused = machine.createStateConfig({
   id: targetState.focused.slice(1),
@@ -45,7 +45,7 @@ export const focused = machine.createStateConfig({
   ],
   on: {
     'focus.autoUnfocus': {
-      target: targetState.idle,
+      ...to.idle,
     },
     'xyflow.nodeClick': [
       {
@@ -66,7 +66,7 @@ export const focused = machine.createStateConfig({
           assignLastClickedNode(),
           emitNodeClick(),
         ],
-        target: targetState.idle,
+        ...to.idle,
       },
       {
         actions: [
@@ -88,14 +88,13 @@ export const focused = machine.createStateConfig({
       ],
     },
     'key.esc': {
-      target: targetState.idle,
+      ...to.idle,
     },
     'xyflow.paneClick': {
       actions: [
-        resetLastClickedNode(),
         emitPaneClick(),
       ],
-      target: targetState.idle,
+      ...to.idle,
     },
     'notations.unhighlight': {
       actions: focusOnNodesAndEdges(),

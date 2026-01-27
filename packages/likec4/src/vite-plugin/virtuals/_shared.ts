@@ -36,7 +36,6 @@ export interface ProjectVirtualModule {
       folder: URI
     }
     assetsDir: string
-    useOverviewGraph?: boolean
   }): Promise<string>
 }
 

@@ -1,8 +1,8 @@
 import { Box, Button, Group, Notification, ScrollAreaAutosize, Stack, Text } from '@mantine/core'
-import { IconX } from '@tabler/icons-react'
 import { QueryErrorResetBoundary } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
+import { isError, isNullish, isObjectType } from 'remeda'
 import { stateAlert } from './App.css'
 import { ExtensionApi as extensionApi } from './vscode'
 
@@ -10,16 +10,34 @@ export const ErrorMessage = ({ error, onReset }: { error: Error | string | null;
   return <Fallback error={error} resetErrorBoundary={onReset ?? extensionApi.closeMe} />
 }
 
-const Fallback = ({ error, resetErrorBoundary }: FallbackProps) => {
-  console.error(`ErrorBoundary: ${error}`, { error })
-  let errorString = 'Unknown error, check the console for more details'
-  if (error) {
-    errorString = 'message' in error ? error.message : `${error}`
+const Fallback = ({ error: _error, resetErrorBoundary }: FallbackProps) => {
+  console.error(`ErrorBoundary: ${_error}`, { _error })
+  let message = 'Unknown error, check the console for more details'
+  const error = _error as any
+  try {
+    switch (true) {
+      case isNullish(error):
+        message = 'Unknown error'
+        break
+      case isError(error):
+        message = error.stack ?? error.message
+        break
+      case typeof error === 'string':
+        message = error
+        break
+      case isObjectType(error):
+        message = error['stack'] ?? error['message'] ?? `${error}`
+        break
+      default:
+        message = `${error}`
+        break
+    }
+  } catch (e) {
+    message = `${e}`
   }
   return (
     <Box className={stateAlert}>
       <Notification
-        icon={<IconX style={{ width: 20, height: 20 }} />}
         styles={{
           icon: {
             alignSelf: 'flex-start',
@@ -38,10 +56,10 @@ const Fallback = ({ error, resetErrorBoundary }: FallbackProps) => {
             <Text
               ff="monospace"
               component="div"
-              style={{ whiteSpace: errorString.includes('\n') ? 'pre' : 'normal' }}
+              style={{ whiteSpace: message.includes('\n') ? 'pre' : 'normal' }}
               my="xs"
               fz={'sm'}>
-              {errorString}
+              {message}
             </Text>
           </ScrollAreaAutosize>
           <Group gap={'xs'} mt="sm">

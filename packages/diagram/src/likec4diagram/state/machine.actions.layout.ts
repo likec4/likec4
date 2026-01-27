@@ -71,7 +71,7 @@ export const setViewportCenter = (params?: { x: number; y: number }) =>
   })
 
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
-  machine.enqueueActions(({ context, event, enqueue }) => {
+  machine.createAction(({ context, event }) => {
     let bounds: BBox | undefined, duration: number | undefined
     if (params) {
       bounds = params.bounds
@@ -79,9 +79,6 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
     } else if (event.type === 'xyflow.fitDiagram') {
       bounds = event.bounds
       duration = event.duration
-      enqueue.assign({
-        viewportChangedManually: false,
-      })
     }
     // Default values
     bounds ??= viewBounds(context)
@@ -171,10 +168,10 @@ export const raiseUpdateView = (view?: DiagramView) =>
     view: view ?? context.view,
   }), { delay: DEFAULT_DELAY })
 
-export const assignViewportBefore = (viewport?: Viewport | null) =>
+export const assignViewportBefore = (viewport?: Viewport | false) =>
   machine.assign(({ context }) => {
-    // Assign null to indicate that there is no need to restore viewports
-    if (viewport === null) {
+    // Assign to indicate that there is no need to restore viewports
+    if (viewport === false) {
       return ({
         viewportBefore: null,
       })
@@ -191,18 +188,19 @@ export const assignViewportBefore = (viewport?: Viewport | null) =>
 export const returnViewportBefore = (params?: { delay?: number; duration?: number }) =>
   machine.enqueueActions(({ enqueue, context: { viewportBefore } }) => {
     enqueue(cancelFitDiagram())
+    const noDelay = params?.delay === 0
     if (viewportBefore) {
       enqueue.assign({
         viewportChangedManually: viewportBefore.wasChangedManually,
         viewportBefore: null,
       })
-      if (params && params.delay === 0) {
+      if (noDelay) {
         enqueue(setViewport({ viewport: viewportBefore.value, ...params }))
       } else {
         enqueue(raiseSetViewport({ viewport: viewportBefore.value, ...params }))
       }
     } else {
-      if (params && params.delay === 0) {
+      if (noDelay) {
         enqueue(fitDiagram({ ...params }))
       } else {
         enqueue(raiseFitDiagram({ ...params }))

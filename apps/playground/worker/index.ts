@@ -43,19 +43,19 @@ const app = (import.meta.env.DEV ? api.route('/viewkv', viewKv) : api)
     }
 
     return proxy(c.req.raw, {
-      fetcher: c.env.ASSETS,
+      fetcher: c.env.ASSETS!,
     })
   })
   .get('/share/:shareId/not-found', async c => {
     return proxy(c.req.raw, {
-      fetcher: c.env.ASSETS,
+      fetcher: c.env.ASSETS!,
     })
   })
   .get('/share/:shareId/*', async c => {
     const kv = sharesKV(c)
     await kv.ensureAccess(c.req.param('shareId'))
     return proxy(c.req.raw, {
-      fetcher: c.env.ASSETS,
+      fetcher: c.env.ASSETS!,
     })
   })
   .onError((error, c) => {
@@ -80,6 +80,6 @@ export default {
       return app.fetch(request, env)
     }
 
-    return env.ASSETS.fetch(request)
+    return env.ASSETS!.fetch(request)
   },
 } satisfies ExportedHandler<Env>

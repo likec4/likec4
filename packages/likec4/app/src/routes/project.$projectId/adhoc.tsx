@@ -2,11 +2,14 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { isRpcAvailable } from 'likec4:rpc'
 import { AdHocViewEditor } from '../../pages/AdHocViewEditor'
 
-export const Route = createFileRoute('/_single/adhoc')({
-  beforeLoad: () => {
+export const Route = createFileRoute('/project/$projectId/adhoc')({
+  beforeLoad: ({ params }) => {
     if (!isRpcAvailable) {
       throw redirect({
-        to: '/single-index/',
+        to: '/project/$projectId/',
+        params: {
+          projectId: params.projectId,
+        },
       })
     }
   },
