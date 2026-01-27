@@ -1,3 +1,34 @@
+## [1.48.0](https://github.com/likec4/likec4/compare/v1.47.0...v1.48.0) (2026-01-27)
+
+### 🚀 Features
+
+- **Icon Customization**:\
+  Added icon options with `iconColor`, `iconSize`, and `iconPosition` properties, allowing you to customize their appearance in diagrams.
+
+- **Direct Links to Relationship Views**:\
+  Navigate directly to relationship views with dedicated URLs. Thanks [@ckeller42](https://github.com/ckeller42), [#2547](https://github.com/likec4/likec4/pull/2547)
+
+- **Projects Overview in VSCode**:\
+  Added command _"LikeC4: Open Projects Overview"_ to VSCode Extension. Improved navigation in the preview panel.
+
+### 🐞 Bug Fixes
+
+- Fixed compound node colors based on element color and depth, improving visual appearance and color contrast for nested elements.
+
+- Fixed export to PNG of sequence diagrams, closes [#2532](https://github.com/likec4/likec4/issues/2532)
+
+- Fixed issue where including additional directories in project stopped working, closes [#2555](https://github.com/likec4/likec4/issues/2555)
+
+- Fixed regression with centering dynamic views when switching between diagram and sequence modes.
+
+- Improved font loading performance by migrating to variable fonts and enhanced diagram bounds calculation with better edge handling.
+
+- Dynamic view steps now inherit technology and description from model relationships and specification relationship kinds, closes [#2541](https://github.com/likec4/likec4/issues/2541)
+
+- Improved cache management in ProjectsManager and ManualLayouts.
+
+- Enhanced export page behavior and enabled D2/DOT/MMD/PUML pages when viewing multiple projects.
+
 ## [1.47.0](https://github.com/likec4/likec4/compare/v1.46.4...v1.47.0) (2026-01-04)
 
 ### Features
