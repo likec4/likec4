@@ -1,7 +1,6 @@
 import { describe, it } from 'vitest'
 import { validateProjectConfig as validateConfig } from './schema'
-import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
-import { IncludeSchema, validateIncludePaths } from './schema.include'
+import { ImageAliasesSchema } from './schema.image-alias'
 
 describe('ProjectConfig schema', () => {
   describe('validateProjectConfig', () => {
@@ -100,9 +99,10 @@ describe('ProjectConfig schema', () => {
         ]
 
         for (const config of validConfigs) {
-          expect(() => validateConfig(config)).not.toThrow()
-          const result = validateConfig(config)
-          expect(result.imageAliases).toEqual(config.imageAliases)
+          expect(() => {
+            const result = validateConfig(config)
+            expect(result.imageAliases).toEqual(config.imageAliases)
+          }).not.toThrow()
         }
       })
 
@@ -114,7 +114,7 @@ describe('ProjectConfig schema', () => {
           },
         }
         expect(() => validateConfig(config)).toThrow(
-          'Invalid image alias key(s): "icons" (must match /^@[A-Za-z0-9_-]*$/)',
+          `→ at imageAliases.icons`,
         )
       })
 
@@ -127,7 +127,7 @@ describe('ProjectConfig schema', () => {
             imageAliases: { [key]: './images' },
           }
           expect(() => validateConfig(config), `Key "${key}" should be rejected`).toThrow(
-            'Invalid image alias key(s):',
+            `→ at imageAliases["${key}"]`,
           )
         }
       })
@@ -209,9 +209,9 @@ describe('ProjectConfig schema', () => {
         }
       })
 
-      it('should reject empty include paths array', ({ expect }) => {
+      it('should not reject empty include paths array', ({ expect }) => {
         const config = { name: 'test', include: { paths: [] } }
-        expect(() => validateConfig(config)).toThrow('Include paths cannot be empty')
+        expect(() => validateConfig(config)).not.toThrow()
       })
 
       it('should accept undefined include', ({ expect }) => {
@@ -265,32 +265,6 @@ describe('ProjectConfig schema', () => {
           'Include path must be a relative path (no leading slash, drive letter, or protocol)',
         )
       })
-    })
-
-    it('should parse valid JSON5 config', ({ expect }) => {
-      const json5Config = `{
-        name: "test-project",
-        title: "Test Project",
-        // This is a comment
-        imageAliases: {
-          "@icons": "./images"
-        }
-      }`
-
-      const result = validateConfig(json5Config)
-      expect(result.name).toBe('test-project')
-      expect(result.title).toBe('Test Project')
-      expect(result.imageAliases).toEqual({ '@icons': './images' })
-    })
-
-    it('should throw on invalid JSON5', ({ expect }) => {
-      const invalidJson = '{ name: "test", invalid syntax }'
-      expect(() => validateConfig(invalidJson)).toThrow()
-    })
-
-    it('should throw on valid JSON5 but invalid schema', ({ expect }) => {
-      const invalidConfig = '{ name: "default" }' // 'default' is not allowed
-      expect(() => validateConfig(invalidConfig)).toThrow('Project name cannot be "default"')
     })
   })
 
@@ -366,293 +340,6 @@ describe('ProjectConfig schema', () => {
           expect(result).toEqual(aliases)
         }
       })
-    })
-  })
-
-  describe('validateImageAliases', () => {
-    it('should pass with valid image aliases', ({ expect }) => {
-      const validAliases = {
-        '@icons': './images/icons',
-        '@brand': '../assets/brand',
-        '@': './images',
-        '@my-images': 'relative/path',
-        '@icons_2': './nested/folder/path',
-        '@test-alias': 'some/path',
-      }
-
-      expect(() => validateImageAliases(validAliases)).not.toThrow()
-    })
-
-    it('should pass when imageAliases is undefined', ({ expect }) => {
-      expect(() => validateImageAliases(undefined)).not.toThrow()
-      expect(() => validateImageAliases()).not.toThrow()
-    })
-
-    it('should pass when imageAliases is empty object', ({ expect }) => {
-      expect(() => validateImageAliases({})).not.toThrow()
-    })
-
-    it('should reject keys not starting with @', ({ expect }) => {
-      const invalidAliases = {
-        'icons': './images', // Missing @
-        'brand': './assets', // Missing @
-      }
-
-      expect(() => validateImageAliases(invalidAliases)).toThrow(
-        'Invalid image alias key(s): "icons", "brand" (must match /^@[A-Za-z0-9_-]*$/)',
-      )
-    })
-
-    it('should reject keys with invalid characters', ({ expect }) => {
-      const testCases = [
-        { key: '@icons.old', expected: '"@icons.old"' },
-        { key: '@icons/sub', expected: '"@icons/sub"' },
-        { key: '@icons space', expected: '"@icons space"' },
-        { key: '@icons+new', expected: '"@icons+new"' },
-        { key: '@icons@special', expected: '"@icons@special"' },
-        { key: '@icons#hash', expected: '"@icons#hash"' },
-      ]
-
-      for (const { key, expected } of testCases) {
-        const aliases = { [key]: './images' }
-        expect(() => validateImageAliases(aliases), `Key "${key}" should be rejected`).toThrow(
-          `Invalid image alias key(s): ${expected} (must match /^@[A-Za-z0-9_-]*$/)`,
-        )
-      }
-    })
-
-    it('should reject absolute paths as values', ({ expect }) => {
-      const testCases = [
-        { '@icons': '/absolute/path' },
-        { '@brand': 'C:\\absolute\\path' },
-        { '@assets': 'D:/another/absolute/path' },
-      ]
-
-      for (const aliases of testCases) {
-        const entry = Object.entries(aliases)[0]
-        if (entry) {
-          const [_key, value] = entry
-          expect(() => validateImageAliases(aliases), `Path "${value}" should be rejected`).toThrow(
-            'Invalid image alias value(s):',
-          )
-        }
-      }
-    })
-
-    it('should reject URLs as values', ({ expect }) => {
-      const testCases = [
-        { '@icons': 'http://example.com/images' },
-        { '@brand': 'https://cdn.example.com/assets' },
-        { '@assets': 'file://local/path' },
-        { '@ftp': 'ftp://server.com/files' },
-      ]
-
-      for (const aliases of testCases) {
-        const entry = Object.entries(aliases)[0]
-        if (entry) {
-          const [key, value] = entry
-          expect(() => validateImageAliases(aliases), `URL "${value}" should be rejected`).toThrow(
-            `Invalid image alias value(s): "${key} -> ${value}"`,
-          )
-        }
-      }
-    })
-
-    it('should report multiple invalid keys', ({ expect }) => {
-      const aliases = {
-        'icons': './images', // Missing @
-        'brand': './assets', // Missing @
-        '@valid': './valid/path',
-        '@icons.old': './old', // Invalid character
-      }
-
-      expect(() => validateImageAliases(aliases)).toThrow(
-        'Invalid image alias key(s): "icons", "brand", "@icons.old" (must match /^@[A-Za-z0-9_-]*$/)',
-      )
-    })
-
-    it('should report multiple invalid values', ({ expect }) => {
-      const aliases = {
-        '@icons': '/absolute/path', // Absolute path
-        '@brand': 'http://example.com', // URL
-        '@valid': './valid/path',
-      }
-
-      expect(() => validateImageAliases(aliases)).toThrow(
-        'Invalid image alias value(s): "@icons -> /absolute/path", "@brand -> http://example.com"',
-      )
-    })
-
-    it('should report both invalid keys and values', ({ expect }) => {
-      const aliases = {
-        'icons': '/absolute/path', // Invalid key and value
-        '@brand': 'https://example.com', // Invalid value
-        '@invalid.key': './valid/path', // Invalid key
-      }
-
-      expect(() => validateImageAliases(aliases)).toThrow()
-
-      try {
-        validateImageAliases(aliases)
-      } catch (error) {
-        const message = (error as Error).message
-        expect(message).toContain('Invalid image alias key(s):')
-        expect(message).toContain('Invalid image alias value(s):')
-        expect(message).toContain('"icons"')
-        expect(message).toContain('"@invalid.key"')
-        expect(message).toContain('"@brand -> https://example.com"')
-        expect(message).toContain('"icons -> /absolute/path"')
-      }
-    })
-
-    it('should accept valid keys with various allowed characters', ({ expect }) => {
-      const validAliases = {
-        '@': './root',
-        '@a': './single-letter',
-        '@123': './numbers',
-        '@test_name': './with-underscore',
-        '@test-name': './with-dash',
-        '@Test_Name-123': './mixed-case-and-chars',
-      }
-
-      expect(() => validateImageAliases(validAliases)).not.toThrow()
-    })
-
-    it('should accept various valid relative paths', ({ expect }) => {
-      const validAliases = {
-        '@current': '.',
-        '@parent': '..',
-        '@simple': 'path',
-        '@nested': 'nested/path',
-        '@deep': 'very/deep/nested/folder/structure',
-        '@dotstart': './relative',
-        '@dotdotstart': '../parent/relative',
-        '@mixed': 'path/with-dashes_and.dots',
-      }
-
-      expect(() => validateImageAliases(validAliases)).not.toThrow()
-    })
-  })
-
-  describe('IncludeSchema', () => {
-    it('should accept valid include paths array', ({ expect }) => {
-      const validInclude = { paths: ['../shared', '../common/specs', './local', 'relative/path'] }
-
-      expect(() => IncludeSchema.parse(validInclude)).not.toThrow()
-      const result = IncludeSchema.parse(validInclude)
-      expect(result).toMatchObject({ paths: validInclude.paths })
-    })
-
-    it('should reject empty array', ({ expect }) => {
-      const emptyInclude = { paths: [] }
-      expect(() => IncludeSchema.parse(emptyInclude)).toThrow('Include paths cannot be empty')
-    })
-
-    it('should accept undefined', ({ expect }) => {
-      expect(() => IncludeSchema.parse(undefined)).not.toThrow()
-      const result = IncludeSchema.parse(undefined)
-      expect(result).toBeUndefined()
-    })
-
-    it('should reject empty strings', ({ expect }) => {
-      expect(() => IncludeSchema.parse({ paths: [''] })).toThrow('Include path cannot be empty')
-    })
-
-    it('should reject absolute paths', ({ expect }) => {
-      const absolutePaths = ['/absolute/path', 'C:\\absolute\\path', 'D:/another/path']
-
-      for (const path of absolutePaths) {
-        expect(() => IncludeSchema.parse({ paths: [path] }), `Should reject ${path}`).toThrow(
-          'Include path must be a relative path (no leading slash, drive letter, or protocol)',
-        )
-      }
-    })
-
-    it('should reject URLs', ({ expect }) => {
-      const urls = ['http://example.com/shared', 'https://cdn.example.com/specs', 'file://local/path']
-
-      for (const url of urls) {
-        expect(() => IncludeSchema.parse({ paths: [url] }), `Should reject ${url}`).toThrow(
-          'Include path must be a relative path (no leading slash, drive letter, or protocol)',
-        )
-      }
-    })
-
-    it('should accept various relative paths', ({ expect }) => {
-      const relativePaths = [
-        '.',
-        '..',
-        './relative',
-        '../parent',
-        'simple',
-        'nested/path',
-        'very/deep/nested/folder/structure',
-        '../parent/relative',
-        'path/with-dashes_and.dots',
-      ]
-
-      const validInclude = { paths: relativePaths }
-      expect(() => IncludeSchema.parse(validInclude)).not.toThrow()
-      const result = IncludeSchema.parse(validInclude)
-      expect(result).toMatchObject({ paths: relativePaths })
-    })
-  })
-
-  describe('validateIncludePaths', () => {
-    it('should pass with valid include paths', ({ expect }) => {
-      const validInclude = {
-        paths: ['../shared', '../common/specs', './local', 'relative/path'],
-        maxDepth: 3,
-        fileThreshold: 30,
-      }
-      expect(() => validateIncludePaths(validInclude)).not.toThrow()
-    })
-
-    it('should pass when include is undefined', ({ expect }) => {
-      expect(() => validateIncludePaths(undefined)).not.toThrow()
-      expect(() => validateIncludePaths()).not.toThrow()
-    })
-
-    it('should pass when include has empty paths array', ({ expect }) => {
-      expect(() => validateIncludePaths({ paths: [], maxDepth: 3, fileThreshold: 30 })).not.toThrow()
-    })
-
-    it('should reject absolute paths', ({ expect }) => {
-      const absoluteInclude = { paths: ['/absolute/path'], maxDepth: 3, fileThreshold: 30 }
-      expect(() => validateIncludePaths(absoluteInclude)).toThrow(
-        'Invalid include path(s): "/absolute/path" (must be relative paths without leading slash, drive letter, or protocol)',
-      )
-    })
-
-    it('should reject URLs', ({ expect }) => {
-      const urlInclude = { paths: ['http://example.com/shared'], maxDepth: 3, fileThreshold: 30 }
-      expect(() => validateIncludePaths(urlInclude)).toThrow(
-        'Invalid include path(s): "http://example.com/shared" (must be relative paths without leading slash, drive letter, or protocol)',
-      )
-    })
-
-    it('should report multiple invalid paths', ({ expect }) => {
-      const mixedInclude = { paths: ['/absolute/path', 'https://example.com/shared'], maxDepth: 3, fileThreshold: 30 }
-      expect(() => validateIncludePaths(mixedInclude)).toThrow(
-        'Invalid include path(s): "/absolute/path", "https://example.com/shared" (must be relative paths without leading slash, drive letter, or protocol)',
-      )
-    })
-
-    it('should accept various valid relative paths', ({ expect }) => {
-      const validInclude = {
-        paths: [
-          '.',
-          '..',
-          './relative',
-          '../parent',
-          'simple',
-          'nested/path',
-          'very/deep/nested/folder/structure',
-        ],
-        maxDepth: 3,
-        fileThreshold: 30,
-      }
-      expect(() => validateIncludePaths(validInclude)).not.toThrow()
     })
   })
 })

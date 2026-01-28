@@ -12,8 +12,5 @@ export default defineProject({
   },
   test: {
     name: 'config',
-    chaiConfig: {
-      truncateThreshold: 300,
-    },
   },
 })

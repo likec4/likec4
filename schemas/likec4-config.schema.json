@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "LikeC4 project configuration",
+  "id": "LikeC4ProjectConfig",
+  "description": "LikeC4 Project Configuration",
   "type": "object",
   "properties": {
     "name": {
@@ -18,24 +19,30 @@
       "type": "string",
       "minLength": 1
     },
-    "imageAliases": {
-      "description": "Map of image alias prefixes to relative paths (keys must match /^@\\w+$/; values must be relative paths without protocol or leading slash).",
+    "styles": {
+      "description": "Project styles customization",
       "type": "object",
-      "propertyNames": {
-        "type": "string"
+      "properties": {
+        "theme": {
+          "description": "Project theme customization",
+          "$ref": "#/$defs/ThemeCustomization"
+        },
+        "defaults": {
+          "description": "Override default values for style properties\nThese values will be used if such property is not defined",
+          "$ref": "#/$defs/DefaultStyleValues"
+        },
+        "customCss": {
+          "description": "Custom CSS (or list of CSS files) to be included in the generated diagrams",
+          "$ref": "#/$defs/CustomStylesheets"
+        }
       },
-      "additionalProperties": {
-        "type": "string",
-        "minLength": 1,
-        "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
-      }
+      "additionalProperties": false
+    },
+    "imageAliases": {
+      "$ref": "#/$defs/ImageAliases"
     },
     "include": {
-      "description": "Configuration for including additional LikeC4 source files from other directories.\nExample: { \"paths\": [\"../shared\", \"../common/specs\"], \"maxDepth\": 5, \"fileThreshold\": 50 }",
       "$ref": "#/$defs/include-config"
-    },
-    "styles": {
-      "$ref": "#/$defs/StylesConfiguration"
     },
     "exclude": {
       "description": "List of file patterns to exclude from the project, default is [\"**/node_modules/**\"]",
@@ -45,103 +52,68 @@
       }
     },
     "manualLayouts": {
-      "$ref": "#/$defs/manual-layouts-config"
+      "$ref": "#/$defs/ManualLayoutsConfig"
     }
   },
   "required": [
     "name"
   ],
   "$defs": {
-    "include-config": {
-      "id": "include-config",
-      "description": "Configuration for including additional LikeC4 source files",
-      "type": "object",
-      "properties": {
-        "paths": {
-          "description": "Additional relative directory paths to include LikeC4 source files from, searched recursively.\nPaths are relative to the project folder (the folder containing this config file).\nExample: [\"../shared\", \"../common/specs\"]",
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
-          }
-        },
-        "maxDepth": {
-          "description": "Maximum directory depth to scan when searching for .c4 files in include paths.\nPrevents excessive scanning of deeply nested directories.\nDefault: 3",
-          "default": 3,
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 20
-        },
-        "fileThreshold": {
-          "description": "Maximum number of files to load from include paths before warning.\nHelps identify performance issues from accidentally including large directories.\nDefault: 30",
-          "default": 30,
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 9007199254740991
-        }
-      },
-      "required": [
-        "paths"
-      ],
-      "additionalProperties": false
-    },
-    "StylesConfiguration": {
-      "id": "StylesConfiguration",
-      "description": "Project styles customization",
-      "type": "object",
-      "properties": {
-        "theme": {
-          "$ref": "#/$defs/ThemeCustomization"
-        },
-        "defaults": {
-          "$ref": "#/$defs/DefaultStyleValues"
-        },
-        "customCss": {
-          "$ref": "#/$defs/CustomStylesheets"
-        }
-      },
-      "additionalProperties": false
-    },
     "ThemeCustomization": {
       "id": "ThemeCustomization",
-      "description": "Theme customization",
+      "description": "Customize theme colors and sizes",
       "type": "object",
       "properties": {
         "colors": {
-          "$ref": "#/$defs/ThemeColors"
+          "description": "Override theme colors",
+          "type": "object",
+          "propertyNames": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ColorName"
+              },
+              {
+                "not": {}
+              }
+            ]
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/ThemeColorValues"
+          }
         },
         "sizes": {
-          "$ref": "#/$defs/ThemeSizes"
+          "description": "Override theme sizes",
+          "type": "object",
+          "propertyNames": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ElementSize"
+              },
+              {
+                "not": {}
+              }
+            ]
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/Dimensions"
+          }
         }
       },
       "additionalProperties": false
-    },
-    "ThemeColors": {
-      "id": "ThemeColors",
-      "description": "Override theme colors",
-      "type": "object",
-      "propertyNames": {
-        "$ref": "#/$defs/ColorName"
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/ThemeColorValues"
-      }
     },
     "ColorName": {
       "id": "ColorName",
       "anyOf": [
         {
-          "$ref": "#/$defs/ThemeColor"
+          "$ref": "#/$defs/ThemeColorName"
         },
         {
           "$ref": "#/$defs/CustomColorName"
         }
       ]
     },
-    "ThemeColor": {
-      "id": "ThemeColor",
+    "ThemeColorName": {
+      "id": "ThemeColorName",
       "type": "string",
       "enum": [
         "amber",
@@ -158,51 +130,44 @@
       ]
     },
     "CustomColorName": {
-      "id": "CustomColorName",
-      "type": "string",
-      "minLength": 1
+      "id": "CustomColorName"
     },
     "ThemeColorValues": {
       "id": "ThemeColorValues",
       "description": "Exact value (hex, rgb, rgba, hsl, hsla ...) or break down of specific color values",
       "anyOf": [
         {
-          "$ref": "#/$defs/ColorLiteral"
+          "$ref": "#/$defs/StrictThemeColorValues"
         },
         {
-          "$ref": "#/$defs/StrictThemeColorValues"
+          "$ref": "#/$defs/ColorLiteral"
         }
       ]
     },
-    "ColorLiteral": {
-      "id": "ColorLiteral",
-      "description": "Color value in any valid CSS format: hex, rgb, rgba, hsl, hsla ...",
-      "type": "string",
-      "minLength": 1
-    },
     "StrictThemeColorValues": {
       "id": "StrictThemeColorValues",
+      "description": "Exact color value (hex, rgb, rgba, hsl, hsla ...) or break down of specific color value",
       "type": "object",
       "properties": {
         "elements": {
-          "description": "Element color value (or a breakdown of specific color values)",
+          "description": "Exact color value (hex, rgb, rgba, hsl, hsla ...) or break down of specific color values",
           "anyOf": [
             {
-              "$ref": "#/$defs/ColorLiteral"
+              "$ref": "#/$defs/ElementColorValues"
             },
             {
-              "$ref": "#/$defs/ElementColorValues"
+              "$ref": "#/$defs/ColorLiteral"
             }
           ]
         },
         "relationships": {
-          "description": "Relationship color value (or a breakdown of specific color values)",
+          "description": "Exact color value (hex, rgb, rgba, hsl, hsla ...) or break down of specific color values",
           "anyOf": [
             {
-              "$ref": "#/$defs/ColorLiteral"
+              "$ref": "#/$defs/RelationshipColorValues"
             },
             {
-              "$ref": "#/$defs/RelationshipColorValues"
+              "$ref": "#/$defs/ColorLiteral"
             }
           ]
         }
@@ -242,6 +207,11 @@
       ],
       "additionalProperties": false
     },
+    "ColorLiteral": {
+      "id": "ColorLiteral",
+      "type": "string",
+      "minLength": 1
+    },
     "RelationshipColorValues": {
       "id": "RelationshipColorValues",
       "type": "object",
@@ -256,6 +226,7 @@
         },
         "labelBg": {
           "description": "Label background color",
+          "default": "rgba(0, 0, 0, 0.5)",
           "$ref": "#/$defs/ColorLiteral"
         }
       },
@@ -265,32 +236,20 @@
       ],
       "additionalProperties": false
     },
-    "ThemeSizes": {
-      "id": "ThemeSizes",
-      "description": "Override theme sizes",
-      "type": "object",
-      "properties": {
-        "xs": {
-          "$ref": "#/$defs/Dimensions"
-        },
-        "sm": {
-          "$ref": "#/$defs/Dimensions"
-        },
-        "md": {
-          "$ref": "#/$defs/Dimensions"
-        },
-        "lg": {
-          "$ref": "#/$defs/Dimensions"
-        },
-        "xl": {
-          "$ref": "#/$defs/Dimensions"
-        }
-      },
-      "additionalProperties": false
+    "ElementSize": {
+      "id": "ElementSize",
+      "type": "string",
+      "enum": [
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
+      ]
     },
     "Dimensions": {
       "id": "Dimensions",
-      "description": "Dimensions",
+      "description": "Defines dimensions for theme size",
       "type": "object",
       "properties": {
         "width": {
@@ -310,7 +269,6 @@
     },
     "DefaultStyleValues": {
       "id": "DefaultStyleValues",
-      "description": "Override default values for style properties\nThese values will be used if such property is not defined",
       "type": "object",
       "properties": {
         "color": {
@@ -338,11 +296,11 @@
           "$ref": "#/$defs/IconPosition"
         },
         "group": {
-          "description": "Default style values for groups",
+          "description": "Override default values for group style properties\nThese values will be used if such property is not defined",
           "$ref": "#/$defs/GroupDefaultStyleValues"
         },
         "relationship": {
-          "description": "Default style values for relationships",
+          "description": "Override default values for relationship style properties\nThese values will be used if such property is not defined",
           "$ref": "#/$defs/RelationshipDefaultStyleValues"
         }
       },
@@ -363,17 +321,6 @@
         "dashed",
         "dotted",
         "none"
-      ]
-    },
-    "ElementSize": {
-      "id": "ElementSize",
-      "type": "string",
-      "enum": [
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl"
       ]
     },
     "ElementShape": {
@@ -403,7 +350,6 @@
     },
     "GroupDefaultStyleValues": {
       "id": "GroupDefaultStyleValues",
-      "description": "Override default values for group style properties\nThese values will be used if such property is not defined",
       "type": "object",
       "properties": {
         "color": {
@@ -468,7 +414,6 @@
     },
     "CustomStylesheets": {
       "id": "CustomStylesheets",
-      "description": "Custom CSS (or list of CSS files) to be included in the generated diagrams",
       "anyOf": [
         {
           "type": "string",
@@ -483,8 +428,57 @@
         }
       ]
     },
-    "manual-layouts-config": {
-      "id": "manual-layouts-config",
+    "ImageAliases": {
+      "id": "ImageAliases",
+      "description": "Map of image alias prefixes to relative paths (keys must match /^@\\w+$/; values must be relative paths without protocol or leading slash).",
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^@[A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
+      }
+    },
+    "include-config": {
+      "id": "include-config",
+      "description": "Configuration for including additional LikeC4 source files from other directories.\nExample: { \"paths\": [\"../shared\", \"../common/specs\"], \"maxDepth\": 5, \"fileThreshold\": 50 }",
+      "type": "object",
+      "properties": {
+        "paths": {
+          "description": "Additional relative directory paths to include LikeC4 source files from, searched recursively.\nPaths are relative to the project folder (the folder containing this config file).\nExample: [\"../shared\", \"../common/specs\"]",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
+          }
+        },
+        "maxDepth": {
+          "description": "Maximum directory depth to scan when searching for .c4 files in include paths.\nPrevents excessive scanning of deeply nested directories.\nDefault: 3",
+          "default": 3,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "fileThreshold": {
+          "description": "Maximum number of files to load from include paths before warning.\nHelps identify performance issues from accidentally including large directories.\nDefault: 30",
+          "default": 30,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "paths"
+      ],
+      "additionalProperties": false
+    },
+    "ManualLayoutsConfig": {
+      "id": "ManualLayoutsConfig",
       "description": "Configuration for manual layouts",
       "type": "object",
       "properties": {

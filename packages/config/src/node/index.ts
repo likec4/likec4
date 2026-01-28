@@ -18,9 +18,9 @@ export type {
   LikeC4StylesConfigInput,
 } from '../schema.theme'
 
-export { validateProjectConfig } from '../schema'
+// export { validateProjectConfig } from '../schema'
 
-export { normalizeIncludeConfig, validateIncludePaths } from '../schema.include'
+// export { normalizeIncludeConfig, validateIncludePaths } from '../schema.include'
 
 export {
   ConfigFilenames,

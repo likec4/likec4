@@ -5,7 +5,7 @@
       "sources"
     ],
     "target": "es2024",
-    "rootDir": "src",
+    "rootDir": ".",
     "incremental": true,
     "composite": true,
     "declaration": true,
@@ -14,7 +14,8 @@
     ]
   },
   "include": [
-    "src/"
+    "src",
+    "*.ts"
   ],
   "references": [
     {

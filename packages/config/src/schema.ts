@@ -10,11 +10,9 @@ import type {
   aux,
   ProjectId,
 } from '@likec4/core/types'
-import JSON5 from 'json5'
-import type { SimplifyDeep } from 'type-fest'
 import z from 'zod/v4'
-import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
-import { IncludeSchema, validateIncludePaths } from './schema.include'
+import { ImageAliasesSchema } from './schema.image-alias'
+import { IncludeSchema } from './schema.include'
 import { LikeC4StylesConfigSchema } from './schema.theme'
 
 export interface VscodeURI {
@@ -41,7 +39,7 @@ export const ManualLayoutsConfigSchema = z
       }),
   })
   .meta({
-    id: 'manual-layouts-config',
+    id: 'ManualLayoutsConfig',
     description: 'Configuration for manual layouts',
   })
 
@@ -67,22 +65,22 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .nonempty('Contact person cannot be empty if specified')
     .optional()
     .meta({ description: 'A person who has been involved in creating or maintaining this project' }),
-  imageAliases: ImageAliasesSchema
-    .optional(),
-  include: IncludeSchema,
-  styles: LikeC4StylesConfigSchema
-    .optional(),
+  styles: LikeC4StylesConfigSchema.optional().meta({
+    description: 'Project styles customization',
+  }),
+  imageAliases: ImageAliasesSchema.optional(),
+  include: IncludeSchema.optional(),
   exclude: z.array(z.string())
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),
-  manualLayouts: ManualLayoutsConfigSchema
-    .optional(),
+  manualLayouts: ManualLayoutsConfigSchema.optional(),
 })
   .meta({
-    description: 'LikeC4 project configuration',
+    id: 'LikeC4ProjectConfig',
+    description: 'LikeC4 Project Configuration',
   })
 
-export type LikeC4ProjectJsonConfig = SimplifyDeep<z.input<typeof LikeC4ProjectJsonConfigSchema>>
+export type LikeC4ProjectJsonConfig = z.input<typeof LikeC4ProjectJsonConfigSchema>
 
 const FunctionType = z.instanceof(Function)
 export const GeneratorsSchema = z.record(z.string(), FunctionType)
@@ -236,30 +234,17 @@ export type LikeC4ProjectConfig = z.infer<typeof LikeC4ProjectJsonConfigSchema> 
   generators?: Record<string, GeneratorFn> | undefined
 }
 
-export type LikeC4ProjectConfigInput = SimplifyDeep<
-  z.input<typeof LikeC4ProjectJsonConfigSchema> & {
-    generators?: Record<string, GeneratorFn> | undefined
-  }
->
+export type LikeC4ProjectConfigInput = LikeC4ProjectJsonConfig & {
+  generators?: Record<string, GeneratorFn> | undefined
+}
 
 /**
- * Validates JSON string or JSON object into a LikeC4ProjectConfig object.
+ * Validates Object into a LikeC4ProjectConfig object.
  */
-export function validateProjectConfig<C extends string | Record<string, unknown>>(
-  config: C,
-): LikeC4ProjectConfig {
-  const parsed = LikeC4ProjectConfigSchema.safeParse(
-    typeof config === 'string' ? JSON5.parse(config) : config,
-  )
-  if (!parsed.success) {
-    throw new Error('Config validation failed:\n' + z.prettifyError(parsed.error))
+export function validateProjectConfig<C extends Record<string, unknown>>(config: C): LikeC4ProjectConfig {
+  const parsed = LikeC4ProjectConfigSchema.safeParse(config)
+  if (parsed.success) {
+    return parsed.data as unknown as LikeC4ProjectConfig
   }
-  // TODO: rewrite with zod refine
-  if (parsed.data.imageAliases) {
-    validateImageAliases(parsed.data.imageAliases)
-  }
-  if (parsed.data.include) {
-    validateIncludePaths(parsed.data.include)
-  }
-  return parsed.data as unknown as LikeC4ProjectConfig
+  throw new Error('Config validation failed:\n' + z.prettifyError(parsed.error))
 }

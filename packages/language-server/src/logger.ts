@@ -76,12 +76,17 @@ export function getTelemetrySink(connection: Connection): Sink {
       switch (logObj.level) {
         case 'error':
         case 'fatal': {
+          const category = logObj.category.join('.')
+          if (category === 'likec4.config') {
+            break
+          }
+
           const err = errorFromLogRecord(logObj)
           if (err) {
             connection.telemetry.logEvent({
               eventName: 'error',
               message: `${err.name}: ${err.message}`,
-              category: logObj.category.join('.'),
+              category,
               ...(err.stack && {
                 stack: err.stack,
               }),
@@ -90,7 +95,7 @@ export function getTelemetrySink(connection: Connection): Sink {
             connection.telemetry.logEvent({
               eventName: 'error',
               message: messageOnly(logObj),
-              category: logObj.category.join('.'),
+              category,
             })
           }
           break
