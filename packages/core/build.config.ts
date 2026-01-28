@@ -13,6 +13,7 @@ export default defineBuildConfig({
         'src/model/index.ts',
         'src/styles/index.ts',
         'src/types/index.ts',
+        'src/utils/graphology/index.ts',
         'src/utils/index.ts',
         'src/index.ts',
       ],
