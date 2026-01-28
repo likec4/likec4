@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { loadModel } from 'likec4:model'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Fallback } from '../../components/Fallback'
 import { ViewOutlet } from '../../components/ViewOutlet'
@@ -11,11 +12,10 @@ export const Route = createFileRoute('/_single')({
     return []
   },
   loader: async ({ context }) => {
-    const { loadModel } = await import('likec4:model')
     const projectId = context.projectId
-    const { $likec4model } = await loadModel(projectId)
+    const data = await loadModel(projectId)
     return {
-      $likec4model,
+      $likec4model: data.$likec4model,
       projectId,
     }
   },

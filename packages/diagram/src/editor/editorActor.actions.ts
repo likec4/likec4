@@ -12,7 +12,7 @@ import { machine } from './editorActor.setup'
  * Actually this is DiagramActorRef
  * But we can't use it here due to circular type inference
  */
-const diagramActorRef = function(system: ActorSystem<any>): DiagramMachineRef {
+const diagramActorRef = (system: ActorSystem<any>): DiagramMachineRef => {
   return system.get('diagram')!
 }
 
@@ -41,21 +41,17 @@ export const saveStateBeforeEdit = () =>
     const parentContext = getDiagramContext(system)
     return {
       beforeEditing: {
-        xynodes: parentContext.xynodes.map(({ measured, ...n }) =>
-          ({
-            ...omit(n, ['selected', 'dragging', 'resizing']),
-            data: omit(n.data, ['dimmed', 'hovered']),
-            measured,
-            initialWidth: measured?.width ?? n.width ?? n.initialWidth,
-            initialHeight: measured?.height ?? n.height ?? n.initialHeight,
-          }) as Types.Node
-        ),
-        xyedges: parentContext.xyedges.map(e =>
-          ({
-            ...omit(e, ['selected']),
-            data: omit(e.data, ['active', 'dimmed', 'hovered']),
-          }) as Types.Edge
-        ),
+        xynodes: parentContext.xynodes.map(({ measured, data, ...n }) => (({
+          ...omit(n, ['selected', 'dragging', 'resizing']),
+          data: omit(data, ['dimmed', 'hovered']),
+          measured,
+          initialWidth: measured?.width ?? n.width ?? n.initialWidth,
+          initialHeight: measured?.height ?? n.height ?? n.initialHeight,
+        }) as Types.Node)),
+        xyedges: parentContext.xyedges.map(({ data, ...e }) => (({
+          ...omit(e, ['selected']),
+          data: omit(data, ['active', 'dimmed', 'hovered']),
+        }) as Types.Edge)),
         change: createViewChange(parentContext),
         view: parentContext.view,
         synched: false,
@@ -100,13 +96,18 @@ export const pushHistory = () =>
       }
     }
 
+    const history = [
+      ...context.history,
+      snapshot,
+    ]
+    if (history.length > 50) {
+      history.shift()
+    }
+
     return {
       beforeEditing: null,
       editing: null,
-      history: [
-        ...context.history,
-        snapshot,
-      ],
+      history,
     }
   })
 

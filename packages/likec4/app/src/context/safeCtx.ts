@@ -1,4 +1,4 @@
-import type { LikeC4Model } from 'likec4/model'
+import type { LikeC4Model } from '@likec4/core/model'
 import type { Atom } from 'nanostores'
 import { createContext, useContext } from 'react'
 

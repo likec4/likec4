@@ -4,7 +4,6 @@ import { Button } from '@mantine/core'
 import { memo } from 'react'
 import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen } from '../App.css'
-import { IconRenderer } from '../IconRenderer'
 import { ErrorMessage } from '../QueryErrorBoundary'
 import {
   openProjectsScreen,
@@ -18,7 +17,7 @@ import { ExtensionApi as extensionApi } from '../vscode'
 
 export function ViewScreen() {
   const { error, likec4Model, reset } = useComputedModel()
-
+  const editor = useLikeC4EditorPort()
   if (!likec4Model) {
     return (
       <>
@@ -36,22 +35,14 @@ export function ViewScreen() {
   }
 
   return (
-    <LikeC4ModelProvider likec4model={likec4Model}>
+    <LikeC4ModelProvider key={likec4Model.projectId} likec4model={likec4Model}>
       {error && <ErrorMessage error={error} onReset={reset} />}
-      <LikeC4VscodeEditor />
+      <LikeC4EditorProvider editor={editor}>
+        <Initialized />
+      </LikeC4EditorProvider>
     </LikeC4ModelProvider>
   )
 }
-
-const LikeC4VscodeEditor = memo(() => {
-  const editor = useLikeC4EditorPort()
-  return (
-    <LikeC4EditorProvider editor={editor}>
-      <Initialized />
-    </LikeC4EditorProvider>
-  )
-})
-
 const Initialized = memo(() => {
   let {
     projectId,
@@ -98,7 +89,6 @@ const Initialized = memo(() => {
           enableCompareWithLatest
           showNavigationButtons
           enableNotations
-          renderIcon={IconRenderer}
           onNavigateTo={(_to, event) => {
             const to = _to as scalar.ViewId
             setLastClickedNode()

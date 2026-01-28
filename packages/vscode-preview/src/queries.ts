@@ -6,13 +6,14 @@ import { ExtensionApi } from './vscode'
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: Infinity,
+      gcTime: 5 * 60 * 1000,
       staleTime: 400,
       retry: 2,
       retryDelay: 300,
       networkMode: 'always',
       experimental_prefetchInRender: true,
       throwOnError: false,
+      structuralSharing: false,
     },
   },
 })
@@ -59,6 +60,12 @@ export const queries = {
           throw new Error(data.error)
         }
         return data.view
+      },
+      refetchInterval: (q) => {
+        if (q.isActive() && q.state.status == 'error') {
+          return 3000
+        }
+        return false
       },
     }),
 }

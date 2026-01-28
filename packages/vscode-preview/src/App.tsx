@@ -1,4 +1,4 @@
-import { ErrorMessage } from './QueryErrorBoundary'
+import { ErrorMessage, QueryErrorBoundary } from './QueryErrorBoundary'
 import { ProjectsScreen } from './screens/Projects'
 import { ViewScreen } from './screens/View'
 import { useScreen } from './state'
@@ -11,9 +11,9 @@ export function App() {
   }
 
   return (
-    <>
+    <QueryErrorBoundary>
       {screen == 'projects' && <ProjectsScreen />}
       {screen == 'view' && <ViewScreen />}
-    </>
+    </QueryErrorBoundary>
   )
 }

@@ -1,7 +1,7 @@
 import { DefaultMap } from '@likec4/core/utils'
-import type { ElementIconRenderer, ElementIconRendererProps } from '@likec4/diagram'
+import { type ElementIconRenderer, type ElementIconRendererProps, IconRendererProvider } from '@likec4/diagram'
 import { IconRenderer as DefaultIconRenderer } from '@likec4/icons/all'
-import { lazy, Suspense } from 'react'
+import { lazy, memo, Suspense } from 'react'
 import { ExtensionApi as extensionApi } from './vscode'
 
 const icons = new DefaultMap<string, ElementIconRenderer>(icon => {
@@ -34,7 +34,7 @@ const icons = new DefaultMap<string, ElementIconRenderer>(icon => {
  * Custom IconRenderer for VSCode preview that handles local file:// URLs
  * by requesting base64 data from the extension
  */
-export function IconRenderer(props: ElementIconRendererProps) {
+export const IconRenderer = memo((props: ElementIconRendererProps) => {
   const icon = props.node.icon
 
   // If not a local file URL, use the default IconRenderer
@@ -48,5 +48,13 @@ export function IconRenderer(props: ElementIconRendererProps) {
     <Suspense fallback={<DefaultIconRenderer {...props} />}>
       <LocalIcon {...props} />
     </Suspense>
+  )
+}, (a, b) => a.node.icon == b.node.icon)
+
+export function IconsProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <IconRendererProvider value={IconRenderer}>
+      {children}
+    </IconRendererProvider>
   )
 }

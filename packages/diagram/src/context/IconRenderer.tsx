@@ -114,6 +114,7 @@ const ShapeIcons = {
 export function IconOrShapeRenderer({
   element,
   className,
+  style,
 }: {
   element: {
     id: string
@@ -122,8 +123,9 @@ export function IconOrShapeRenderer({
     icon?: string | null | undefined
   }
   className: string
+  style?: CSSProperties | undefined
 }) {
-  const icon = <IconRenderer element={element} className={className} />
+  const icon = <IconRenderer element={element} className={className} style={style} />
   if (icon) {
     return icon
   }
@@ -134,6 +136,7 @@ export function IconOrShapeRenderer({
         className,
         'likec4-shape-icon',
       )}
+      style={style}
     >
       <ShapeIcon />
     </div>

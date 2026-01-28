@@ -1,6 +1,6 @@
+import type { LikeC4Model } from '@likec4/core/model'
 import { LikeC4ModelProvider } from '@likec4/diagram'
-import { useStore } from '@nanostores/react'
-import type { LikeC4Model } from 'likec4/model'
+import { useStore } from 'likec4/vite-plugin/internal'
 import type { ReadableAtom } from 'nanostores'
 import type { PropsWithChildren } from 'react'
 import { LikeC4ModelDataContextProvider } from './safeCtx'

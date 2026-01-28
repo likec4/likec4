@@ -3,8 +3,8 @@ import { useDebouncedValue } from '@mantine/hooks'
 import { QueryClientProvider, useIsFetching } from '@tanstack/react-query'
 import ReactDOM from 'react-dom/client'
 import { App } from './App'
+import { IconsProvider } from './IconRenderer'
 import { queryClient } from './queries'
-import { QueryErrorBoundary } from './QueryErrorBoundary'
 import { theme } from './theme'
 
 const root = document.getElementById('root') as HTMLDivElement
@@ -15,7 +15,7 @@ const getStyleNonce = nonce ? () => nonce : undefined
 const Loader = () => {
   const isFetching = useIsFetching() > 0
   // Debounce loading state to prevent flickering
-  const [isLoading] = useDebouncedValue(isFetching, isFetching ? 350 : 200)
+  const [isLoading] = useDebouncedValue(isFetching, isFetching ? 400 : 100)
   return (
     <LoadingOverlay
       visible={isLoading}
@@ -27,10 +27,10 @@ const Loader = () => {
 ReactDOM.createRoot(root).render(
   <MantineProvider theme={theme} forceColorScheme={scheme} {...(getStyleNonce && { getStyleNonce })}>
     <QueryClientProvider client={queryClient}>
-      <QueryErrorBoundary>
+      <IconsProvider>
         <App />
-        <Loader />
-      </QueryErrorBoundary>
+      </IconsProvider>
+      <Loader />
     </QueryClientProvider>
   </MantineProvider>,
 )

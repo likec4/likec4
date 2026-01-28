@@ -36,6 +36,8 @@ export type LikeC4DiagramProps<A extends Any = Any> = PropsWithChildren<
   & LikeC4DiagramEventHandlers<A>
 >
 
+const noop = () => {}
+
 /**
  * Low-level component to display LikeC4 view
  * Expects CSS to be injected
@@ -135,7 +137,7 @@ export function LikeC4Diagram<A extends Any = Any>({
     : reduceGraphics
 
   return (
-    <Profiler id="LikeC4Diagram" onRender={() => {}}>
+    <Profiler id="LikeC4Diagram" onRender={noop}>
       <EnsureMantine>
         <FramerMotionConfig
           {...isReducedGraphicsMode && { reducedMotion: 'always' }}

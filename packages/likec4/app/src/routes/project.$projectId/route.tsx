@@ -1,6 +1,7 @@
 import type { ProjectId } from '@likec4/core/types'
 import { Button, Container, Stack, Title } from '@mantine/core'
 import { createFileRoute, Link, notFound, Outlet, redirect } from '@tanstack/react-router'
+import { loadModel } from 'likec4:model'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Fallback } from '../../components/Fallback'
 import { ViewOutlet } from '../../components/ViewOutlet'
@@ -19,31 +20,24 @@ export const Route = createFileRoute('/project/$projectId')({
   },
   loader: async ({ context }) => {
     const projectId = context.projectId
-    return await import('likec4:model')
-      .then(m => m.loadModel(projectId))
-      .catch(err => {
-        console.error(err)
-        throw notFound()
+    const likec4model = await loadModel(projectId)
+    const data = likec4model.$likec4data.value
+    if (!data) {
+      throw notFound()
+    }
+    if (data.projectId !== projectId) {
+      throw redirect({
+        to: '/project/$projectId/',
+        search: true,
+        params: {
+          projectId: data.projectId,
+        },
       })
-      .then(likec4model => {
-        const data = likec4model.$likec4data.value
-        if (!data) {
-          throw notFound()
-        }
-        if (data.projectId !== projectId) {
-          throw redirect({
-            to: '/project/$projectId/',
-            search: true,
-            params: {
-              projectId: data.projectId,
-            },
-          })
-        }
-        return {
-          $likec4model: likec4model.$likec4model,
-          projectId,
-        }
-      })
+    }
+    return {
+      $likec4model: likec4model.$likec4model,
+      projectId,
+    }
   },
   remountDeps({ params }) {
     return [params.projectId]

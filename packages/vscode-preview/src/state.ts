@@ -198,6 +198,7 @@ export function useComputedModel() {
   }
 
   return {
+    projectId,
     model,
     error,
     likec4Model: likec4modelref.current,
@@ -212,12 +213,11 @@ export function useComputedModel() {
 
 export function useDiagramView() {
   const { projectId, viewId, layoutType } = useStore(projectAndView)
-  const { data: view, error, refetch } = useQuery(
+  const { data: view, error, refetch, isRefetchError } = useQuery(
     queries.fetchDiagramView(projectId, viewId, layoutType),
   )
 
   const viewRef = useRef(view)
-  // Always keep last known view in ref
   if (view) {
     viewRef.current = view
   }
@@ -239,7 +239,7 @@ export function useDiagramView() {
     projectId,
     viewId,
     layoutType,
-    view: viewRef.current,
+    view: view || (isRefetchError ? viewRef.current : null),
     error,
     reset: async () => {
       await refetch({

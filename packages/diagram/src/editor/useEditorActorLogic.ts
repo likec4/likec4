@@ -7,6 +7,10 @@ import type { EditorCalls } from './editorActor.setup'
 import { type EditorActorLogic, editorActorLogic } from './editorActor.states'
 import { useOptionalLikeC4Editor } from './LikeC4EditorProvider'
 
+const promisify = <T>(fn: () => T | Promise<T>): Promise<T> => {
+  return Promise.resolve().then(() => fn())
+}
+
 export function useEditorActorLogic(viewId: t.ViewId): EditorActorLogic {
   const port = useOptionalLikeC4Editor()
 
@@ -16,8 +20,8 @@ export function useEditorActorLogic(viewId: t.ViewId): EditorActorLogic {
         console.error('No editor port available for applying latest to manual layout')
         return Promise.reject(new Error('No editor port'))
       }
-      const manual = await Promise.resolve().then(() => current ?? port.fetchView(viewId, 'manual'))
-      const latest = await Promise.resolve().then(() => port.fetchView(viewId, 'auto'))
+      const manual = await promisify(() => current ?? port.fetchView(viewId, 'manual'))
+      const latest = await promisify(() => port.fetchView(viewId, 'auto'))
       const updated = applyChangesToManualLayout(manual, latest)
       return {
         updated,
@@ -32,13 +36,7 @@ export function useEditorActorLogic(viewId: t.ViewId): EditorActorLogic {
         return Promise.reject(new Error('No editor port'))
       }
       for (const change of input.changes) {
-        await Promise.resolve().then(() => port.handleChange(viewId, change)).catch(err => {
-          console.error('Failed to execute change', {
-            change,
-            err,
-          })
-          return Promise.reject(err)
-        })
+        await promisify(() => port.handleChange(viewId, change))
       }
       return {}
     },
