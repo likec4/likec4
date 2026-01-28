@@ -256,6 +256,8 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   /**
    * Render icon for an element, bundled or remote
    * By default, if icon is http:// or https://, it will be rendered as an image
+   *
+   * Consider using `IconRendererProvider`
    */
   renderIcon?: ElementIconRenderer | undefined
 

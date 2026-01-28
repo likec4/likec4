@@ -149,15 +149,6 @@ const applyLatestToManual = machine.createStateConfig({
     saveStateBeforeEdit(),
   ],
   initial: 'call',
-  on: {
-    // catch all events
-    '*': {
-      actions: [
-        log(({ event }) => `applyLatestToManual received unexpected event: ${event.type}`),
-        reschedule(500),
-      ],
-    },
-  },
   states: {
     // Fetch latest and manual layouts
     // Apply changes, send update to diagram
