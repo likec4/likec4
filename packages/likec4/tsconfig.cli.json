@@ -3,12 +3,14 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "customConditions": [
-      "sources"
+      "production",
+      "sources",
     ],
     "target": "es2024",
     "composite": true,
     "incremental": true,
     "tsBuildInfoFile": "lib/cli/.tsbuildinfo",
+    "resolvePackageJsonImports": true,
     "outDir": "lib/cli",
     "types": [
       "node",

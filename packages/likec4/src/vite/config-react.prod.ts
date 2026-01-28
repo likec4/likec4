@@ -1,4 +1,4 @@
-import { viteAliases } from '@/vite/aliases'
+import { viteAliases } from '#vite/aliases'
 import react from '@vitejs/plugin-react'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'

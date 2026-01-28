@@ -35,10 +35,11 @@
     "editor.defaultFormatter": "dprint.dprint",
   },
   "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true
-  },
-  "files.watcherExclude": {
-    "**/routeTree.gen.ts": true
+    "**/routeTree.gen.ts": true,
+    "**/worker-configuration.d.ts": true,
+    "packages/icons/**/*.tsx": true,
+    "**/__snapshots__/**": true,
+    "packages/language-server/src/generated*/**": true,
   },
   "search.exclude": {
     ".yarn/**": true,
@@ -52,12 +53,13 @@
     "**/*.tsbuildinfo": true,
     "**/.turbo": true,
     "**/.wireit": true,
+    "**/.tanstack": true,
     "**/.wrangler": true,
     ".pnpm-store/**": true,
-    // "packages/likec4/__app__": true,
+    "packages/likec4/__app__": true,
     "packages/*/.vscode-test-web": true,
-    // "packages/*/node_modules": true,
-    // "packages/*/styled-system": true,
+    "packages/*/node_modules": true,
+    "packages/*/styled-system": true,
     "packages/*/lib": true,
     "apps/*/lib": true,
     "apps/*/styled-system": true,

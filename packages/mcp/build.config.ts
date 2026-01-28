@@ -9,7 +9,7 @@ export default defineBuildConfig({
       platform: 'node',
       resolve: {
         mainFields: ['module', 'main'],
-        conditionNames: ['sources', 'node', 'import', 'default'],
+        conditionNames: ['production', 'sources', 'node', 'import', 'default'],
       },
     },
     dts: false,

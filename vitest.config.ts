@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     slowTestThreshold: 1000,
     chaiConfig: {
-      truncateThreshold: 300,
+      truncateThreshold: 100,
     },
     projects: [
       'packages/*/vitest.config.ts',

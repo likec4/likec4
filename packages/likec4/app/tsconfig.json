@@ -26,16 +26,19 @@
   ],
   "references": [
     {
+      "path": "../tsconfig.cli.json"
+    },
+    {
       "path": "../tsconfig.react.json"
     },
     {
-      "path": "../tsconfig.cli.json"
+      "path": "../../core/tsconfig.json"
     },
     {
       "path": "../../diagram/tsconfig.src.json"
     },
     {
-      "path": "../../../styled-system/styles/tsconfig.json"
+      "path": "../../../styled-system/styles/"
     }
   ]
 }

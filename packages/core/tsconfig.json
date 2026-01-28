@@ -1,13 +1,13 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "customConditions": [
+      "sources"
+    ],
     "rootDir": "src",
     "target": "es2024",
     "incremental": true,
     "composite": true,
-    "types": [
-      "node"
-    ]
   },
   "include": [
     "src/",

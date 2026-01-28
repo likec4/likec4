@@ -94,11 +94,29 @@
     "types": "dist/index.d.mts",
     "module": "dist/index.mjs"
   },
+  "imports": {
+    "#vite/aliases": {
+      "production": "./src/vite/aliases.prod.ts",
+      "sources": "./src/vite/aliases.ts"
+    },
+    "#vite/config-app": {
+      "production": "./src/vite/config-app.prod.ts",
+      "sources": "./src/vite/config-app.ts"
+    },
+    "#vite/config-react": {
+      "production": "./src/vite/config-react.prod.ts",
+      "sources": "./src/vite/config-react.ts"
+    },
+    "#vite/config-webcomponent": {
+      "production": "./src/vite/config-webcomponent.prod.ts",
+      "sources": "./src/vite/config-webcomponent.ts"
+    }
+  },
   "scripts": {
     "typecheck": "tsc --build --verbose",
     "build-cli": "obuild",
-    "build-app": "tsx scripts/bundle-app.ts",
-    "build-react": "tsx scripts/bundle-react.ts",
+    "build-app": "tsx --conditions=sources scripts/bundle-app.ts",
+    "build-react": "tsx --conditions=sources scripts/bundle-react.ts",
     "build": "echo \"use pnpm turbo run build\" || true",
     "generate:app": "tsr generate",
     "prepack": "likec4ops prepack",

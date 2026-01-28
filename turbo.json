@@ -18,9 +18,15 @@
       ],
       "outputLogs": "new-only"
     },
+    "sources": {
+      "dependsOn": [
+        "^sources"
+      ]
+    },
     "typecheck": {
       "dependsOn": [
         "^typecheck",
+        "sources",
         "generate"
       ],
       "outputs": [
@@ -32,6 +38,7 @@
     "build": {
       "dependsOn": [
         "^build",
+        "sources",
         "generate"
       ],
       "inputs": [

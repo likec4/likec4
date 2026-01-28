@@ -6,6 +6,7 @@ import { defineBuildConfig } from 'obuild/config'
 export default defineBuildConfig({
   entries: [{
     type: 'bundle',
+    outDir: 'preset',
     input: [
       './preset.ts',
     ],
@@ -14,8 +15,9 @@ export default defineBuildConfig({
     },
   }, {
     type: 'bundle',
+    outDir: 'vars',
     input: [
-      './vars/index.ts',
+      './vars.ts',
     ],
     rolldown: {
       platform: 'browser',
@@ -25,11 +27,13 @@ export default defineBuildConfig({
     },
   }],
   hooks: {
-    end: async () => {
-      await spawn('panda', ['codegen', '--no-clean'], {
+    start: async () => {
+      await spawn('panda', ['codegen', '--clean'], {
         stdio: 'inherit',
         preferLocal: true,
       })
+    },
+    end: async () => {
       // mock entry file for module resolution
       if (!existsSync('dist/types/index.mjs')) {
         try {

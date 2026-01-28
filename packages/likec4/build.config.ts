@@ -1,5 +1,4 @@
 import { copyFile, mkdir } from 'node:fs/promises'
-import { resolve } from 'node:path'
 import { defineBuildConfig } from 'obuild/config'
 import { isProduction } from 'std-env'
 
@@ -11,32 +10,28 @@ export default defineBuildConfig({
   entries: [{
     type: 'bundle',
     input: [
-      'src/index.ts',
       'src/cli/index.ts',
       'src/config/index.ts',
-      'src/model/index.ts',
       'src/model/builder.ts',
-      'src/language/module.ts',
-      'src/vite/vite-build.ts',
-      'src/vite/vite-dev.ts',
-      'src/vite/vite-preview.ts',
-      'src/vite-plugin/index.ts',
+      'src/model/index.ts',
       'src/vite-plugin/internal.ts',
+      'src/vite-plugin/index.ts',
+      'src/index.ts',
     ],
+    minify: {
+      mangle: {
+        keepNames: {
+          class: true,
+          function: true,
+        },
+      },
+    },
     rolldown: {
       platform: 'node',
-      tsconfig: false,
-      transform: {
-        target: 'es2024',
-      },
+      tsconfig: 'tsconfig.cli.json',
       resolve: {
+        mainFields: ['module', 'main'],
         conditionNames: ['production', 'sources', 'node', 'import', 'default'],
-        alias: {
-          '@/vite/aliases': resolve('./src/vite/aliases.prod.ts'),
-          '@/vite/config-app': resolve('./src/vite/config-app.prod.ts'),
-          '@/vite/config-react': resolve('./src/vite/config-react.prod.ts'),
-          '@/vite/config-webcomponent': resolve('./src/vite/config-webcomponent.prod.ts'),
-        },
       },
     },
     dts: {
@@ -52,97 +47,3 @@ export default defineBuildConfig({
     },
   },
 }) as unknown
-
-// const cli: BuildConfig = {
-//   entries: [
-//     'src/index.ts',
-//     'src/cli/index.ts',
-//     'src/config/index.ts',
-//     'src/model/index.ts',
-//     'src/model/builder.ts',
-//     'src/vite-plugin/index.ts',
-//   ],
-//   clean: true,
-//   outDir: 'dist',
-//   stub: false,
-//   failOnWarn: false,
-//   alias: {
-//     '@/vite/aliases': resolve('src/vite/aliases.prod.ts'),
-//     '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
-//     '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
-//     '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
-//   },
-//   declaration: isProduction,
-//   rollup: {
-//     emitCJS: false,
-//     inlineDependencies: true,
-//     esbuild: {
-//       platform: 'node',
-//       legalComments: 'none',
-//       minify: isProduction,
-//       minifyIdentifiers: false,
-//       lineLimit: 500,
-//     },
-//     output: {
-//       compact: isProduction,
-//       hoistTransitiveImports: false,
-//     },
-//     resolve: {
-//       exportConditions: ['node'],
-//     },
-//     dts: {
-//       tsconfig: 'tsconfig.cli.json',
-//       compilerOptions: {
-//         customConditions: [
-//           'node',
-//           // 'sources',
-//         ],
-//         // noCheck: true,
-//         // strict: false,
-//         // alwaysStrict: false,
-//         // skipLibCheck: true,
-//         // skipDefaultLibCheck: true,
-//         // exactOptionalPropertyTypes: false,
-//       },
-//     },
-//   },
-//   hooks: {
-//     async 'build:done'() {
-//       await copyFile('./src/vite-plugin/modules.d.ts', './vite-plugin-modules.d.ts')
-//       await mkdir('./config', { recursive: true })
-//       await copyFile('../config/schema.json', './config/schema.json')
-//     },
-//   },
-// }
-
-// const pluginInternal: BuildConfig = {
-//   entries: [
-//     'src/vite-plugin/internal.ts',
-//   ],
-//   clean: false,
-//   outDir: 'dist',
-//   stub: false,
-//   failOnWarn: false,
-//   declaration: isProduction,
-//   rollup: {
-//     emitCJS: false,
-//     inlineDependencies: true,
-//     esbuild: {
-//       platform: 'browser',
-//       minify: isProduction,
-//     },
-//     output: {
-//       compact: isProduction,
-//       hoistTransitiveImports: false,
-//     },
-//     resolve: {
-//       browser: true,
-//     },
-//   },
-// }
-
-// export default defineBuildConfig([
-//   // reactbundle,
-//   cli,
-//   pluginInternal,
-// ])

@@ -6,9 +6,9 @@
   "tasks": {
     "generate:app": {
       "inputs": [
-        "app/**",
-        "!app/src/routeTree.gen.ts",
-        "tsr.config.json"
+        "$TURBO_DEFAULT$",
+        "!src/**",
+        "src/vite-plugin/**"
       ],
       "outputs": [
         "app/src/routeTree.gen.ts"
@@ -24,7 +24,6 @@
     },
     "build-react": {
       "dependsOn": [
-        "generate",
         "@likec4/core#build",
         "@likec4/diagram#build-dist"
       ],
@@ -35,23 +34,20 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "!app/**",
-        "!src/**",
-        "src/vite-plugin/**"
+        "!src/**"
       ],
       "outputLogs": "new-only"
     },
     "build-app": {
       "dependsOn": [
-        "generate",
-        "@likec4/core#build",
-        "@likec4/diagram#build"
+        "@likec4/styles#generate",
+        "@likec4/diagram#sources"
       ],
       "outputs": [
         "__app__/**"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
-        "!react/**",
         "!src/**",
         "src/vite-plugin/**"
       ],
@@ -59,7 +55,7 @@
     },
     "build-cli": {
       "dependsOn": [
-        "generate",
+        "@likec4/core#build",
         "@likec4/language-server#build",
         "@likec4/config#build",
         "@likec4/generators#build"
@@ -76,7 +72,7 @@
         "!scripts/**",
         "!dev/**",
         "!test/**",
-        "!tsconfig.react*.json"
+        "!tsconfig.react*"
       ],
       "outputLogs": "new-only"
     },

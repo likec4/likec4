@@ -8,7 +8,7 @@ export default defineBuildConfig({
   ],
   hooks: {
     'end': async () => {
-      await spawn('tsx', ['scripts/generate.mts'], {
+      await spawn('pnpm', ['run', 'generate'], {
         preferLocal: true,
         stdio: 'inherit',
       })

@@ -29,6 +29,7 @@ export default defineCommand({
       'dist',
       '.wire',
       '.turbo',
+      'styled-system',
       'node_modules/.cache',
       'node_modules/.vite',
       'tsconfig.tsbuildinfo',

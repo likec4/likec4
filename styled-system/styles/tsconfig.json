@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "target": "es2024",
     "allowImportingTsExtensions": true,
     "composite": true,
     "lib": [
@@ -11,15 +12,11 @@
     "types": [
       "react",
       "node"
-    ]
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "lib",
-    "dist"
   ],
   "references": [
     {

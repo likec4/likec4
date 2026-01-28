@@ -12,6 +12,7 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
+    "generate": "tsx --conditions=sources scripts/generate.mts",
     "typecheck": "tsc -b --verbose",
     "build": "obuild",
     "lint:package": "pnpx publint ./package.tgz",

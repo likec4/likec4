@@ -35,8 +35,8 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       cssMinify: true,
       minify: !isDev,
-      assetsInlineLimit: 1_000_000,
-      chunkSizeWarningLimit: 10_000,
+      assetsInlineLimit: 10_000_000,
+      chunkSizeWarningLimit: 20000,
       assetsDir: '',
       modulePreload: false,
       commonjsOptions: {

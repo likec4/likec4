@@ -1,5 +1,5 @@
-import { viteConfig } from '@/vite/config-app'
-import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
+import { viteConfig } from '#vite/config-app'
+import { viteWebcomponentConfig } from '#vite/config-webcomponent'
 import { copyFileSync, existsSync, readdirSync, rmSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'

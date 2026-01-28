@@ -1,4 +1,4 @@
-import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
+import { viteWebcomponentConfig } from '#vite/config-webcomponent'
 import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { copyFile, mkdir, rm, stat } from 'node:fs/promises'

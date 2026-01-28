@@ -23,7 +23,10 @@
     },
     "build": {
       "dependsOn": [
-        "^build",
+        "@likec4/config#build",
+        "@likec4/core#build",
+        "@likec4/log#build",
+        "@likec4/layouts#build",
         "generate"
       ],
       "inputs": [

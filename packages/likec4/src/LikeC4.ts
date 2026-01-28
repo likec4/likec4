@@ -1,4 +1,5 @@
-import type { NonEmptyArray, ProjectId } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
+import type { LayoutedView, NonEmptyArray, ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices, LikeC4Views, ProjectsManager } from '@likec4/language-server'
 import { defu } from 'defu'
 import { URI, UriUtils } from 'langium'
@@ -10,8 +11,6 @@ import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createLanguageServices } from './language/module'
 import type { Logger } from './logger'
-import type { DiagramView } from './model'
-import { LikeC4Model } from './model'
 
 type LikeC4Langium = ReturnType<typeof createLanguageServices>
 
@@ -193,7 +192,7 @@ ${k.red('Please specify a project folder')}
    * If diagram has manual layout, it will be used.
    * Used in React components
    */
-  async diagrams(projectId?: ProjectId | undefined): Promise<DiagramView[]> {
+  async diagrams(projectId?: ProjectId | undefined): Promise<LayoutedView[]> {
     return await this.langium.likec4.Views.diagrams(projectId)
   }
 

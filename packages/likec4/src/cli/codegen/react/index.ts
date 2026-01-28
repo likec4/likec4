@@ -1,4 +1,4 @@
-import { viteReactConfig } from '@/vite/config-react'
+import { viteReactConfig } from '#vite/config-react'
 import { generateReactTypes } from '@likec4/generators'
 import { existsSync } from 'node:fs'
 import { stat, writeFile } from 'node:fs/promises'

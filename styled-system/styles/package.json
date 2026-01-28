@@ -8,8 +8,8 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
-    "*.mts",
-    "*.mjs",
+    "**/*.mts",
+    "**/*.mjs",
     "**/package.json",
     "!build.config.ts"
   ],
@@ -20,7 +20,9 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "types": "dist/types/index.d.mts",
+    "module": "dist/types/index.mjs"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -33,8 +35,6 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "type": "module",
-  "types": "dist/types/index.d.mts",
-  "module": "dist/types/index.mjs",
   "sideEffects": false,
   "exports": {
     ".": {
@@ -70,37 +70,36 @@
       "default": "./dist/recipes/index.mjs"
     },
     "./preset": {
-      "types": "./dist/preset.d.mts",
-      "default": "./dist/preset.mjs"
+      "sources": "./preset.ts",
+      "default": {
+        "types": "./preset/preset.d.mts",
+        "default": "./preset/preset.mjs"
+      }
     },
     "./vars": {
-      "types": "./dist/vars/index.d.mts",
-      "default": "./dist/vars/index.mjs"
+      "sources": "./vars.ts",
+      "default": {
+        "types": "./vars/vars.d.mts",
+        "default": "./vars/vars.mjs"
+      }
     },
     "./dev": {
       "types": "./dev.d.mts",
       "default": "./dev.mjs"
     }
   },
+  "dependencies": {
+    "@pandacss/types": "catalog:css"
+  },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
-    "@pandacss/types": "catalog:css",
-    "react": "^18.x || ^19.x",
-    "react-dom": "^18.x || ^19.x",
-    "@types/react": "^18.x || ^19.x",
-    "@types/react-dom": "^18.x || ^19.x"
+    "react": "^18.x || ^19.x"
   },
   "peerDependenciesMeta": {
+    "@pandacss/dev": {
+      "optional": true
+    },
     "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    },
-    "@types/react": {
-      "optional": true
-    },
-    "@types/react-dom": {
       "optional": true
     }
   },
@@ -112,11 +111,9 @@
     "@pandabox/utils": "^0.0.5",
     "@pandabox/unplugin": "^0.2.2",
     "@pandacss/dev": "catalog:css",
-    "@pandacss/types": "catalog:css",
     "@types/picomatch": "catalog:externals",
     "@likec4/tsconfig": "workspace:*",
     "@types/react": "catalog:react",
-    "@types/react-dom": "catalog:react",
     "postcss": "catalog:css",
     "remeda": "catalog:utils",
     "nano-spawn": "catalog:externals",

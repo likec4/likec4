@@ -9,14 +9,17 @@
         "src/meta.ts"
       ],
       "inputs": [
-        "package.json"
+        "$TURBO_DEFAULT$",
+        "!src/**"
       ],
       "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
         "generate",
-        "^generate",
+        "@likec4/language-server#generate",
+        "@likec4/config#generate",
+        "sources",
         "@likec4/vscode-preview#build"
       ],
       "cache": false,

@@ -42,8 +42,7 @@
     "clean": "likec4ops clean"
   },
   "dependencies": {
-    "@logtape/logtape": "catalog:utils",
-    "std-env": "catalog:externals"
+    "@logtape/logtape": "catalog:utils"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

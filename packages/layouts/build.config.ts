@@ -6,17 +6,15 @@ export default defineBuildConfig({
     {
       type: 'bundle',
       input: [
-        'src/index.ts',
-        'src/sequence/index.ts',
-        'src/graphviz/GraphvizLayoter.ts',
-        'src/graphviz/QueueGraphvizLayoter.ts',
-        'src/graphviz/wasm/index.ts',
         'src/graphviz/binary/index.ts',
+        'src/sequence/index.ts',
+        'src/index.ts',
       ],
       rolldown: {
         platform: 'neutral',
         resolve: {
           mainFields: ['module', 'main'],
+          conditionNames: ['sources', 'import', 'default'],
         },
       },
       // dts: {

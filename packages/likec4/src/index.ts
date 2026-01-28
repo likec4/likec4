@@ -1,2 +1,5 @@
 export type * from '@likec4/core/types'
-export * from './LikeC4'
+export {
+  LikeC4,
+  type LikeC4Options,
+} from './LikeC4'

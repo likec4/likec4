@@ -1,4 +1,4 @@
-import { viteAliases } from '@/vite/aliases'
+import { viteAliases } from '#vite/aliases'
 import { logger as consola } from '@likec4/log'
 import react from '@vitejs/plugin-react'
 import { existsSync } from 'node:fs'
