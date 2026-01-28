@@ -58,7 +58,9 @@
       "dependsOn": [
         "build"
       ],
-      "cache": false,
+      "outputs": [
+        "*.tgz"
+      ],
       "outputLogs": "new-only"
     },
     "lint:package": {
