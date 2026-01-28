@@ -25,7 +25,7 @@
     "build-react": {
       "dependsOn": [
         "@likec4/core#build",
-        "@likec4/diagram#build-dist"
+        "@likec4/diagram#build"
       ],
       "outputs": [
         "react/*.d.ts",
