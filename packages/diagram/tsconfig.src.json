@@ -6,12 +6,13 @@
       "sources"
     ],
     "composite": true,
+    "rootDir": "src",
     "types": [
       "vite/client"
     ]
   },
   "include": [
-    "src/",
+    "src",
     "src/**/*.json"
   ],
   "exclude": [
