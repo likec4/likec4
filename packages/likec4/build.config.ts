@@ -19,7 +19,7 @@ export default defineBuildConfig({
       'src/index.ts',
     ],
     minify: {
-      mangle: {
+      compress: {
         keepNames: {
           class: true,
           function: true,
@@ -29,6 +29,9 @@ export default defineBuildConfig({
     rolldown: {
       platform: 'node',
       tsconfig: 'tsconfig.cli.json',
+      transform: {
+        target: 'es2024',
+      },
       resolve: {
         mainFields: ['module', 'main'],
         conditionNames: ['production', 'sources', 'node', 'import', 'default'],

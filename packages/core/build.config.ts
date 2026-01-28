@@ -18,7 +18,7 @@ export default defineBuildConfig({
         'src/index.ts',
       ],
       minify: {
-        mangle: {
+        compress: {
           keepNames: {
             class: true,
             function: true,
@@ -28,6 +28,9 @@ export default defineBuildConfig({
       rolldown: {
         plugins: [nodePolyfills({})],
         platform: 'neutral',
+        transform: {
+          target: 'es2024',
+        },
         resolve: {
           mainFields: ['module', 'main'],
           conditionNames: ['sources', 'import', 'default'],

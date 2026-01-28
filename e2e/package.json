@@ -15,27 +15,25 @@
     "test:update-screenshots": "playwright test --update-snapshots"
   },
   "dependencies": {
-    "@likec4/core": "latest",
+    "@likec4/core": "file:../packages/core/package.tgz",
+    "@likec4/icons": "file:../packages/icons/package.tgz",
     "@playwright/test": "1.56.1",
     "@types/node": "~22.19.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "likec4": "latest",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
+    "likec4": "file:../packages/likec4/package.tgz",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "std-env": "^3.9.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16",
-    "wrangler": "~4.35.0",
-    "zx": "^8.8.4"
+    "wrangler": "~4.60.0",
+    "zx": "^8.8.5"
   },
   "pnpm": {
     "overrides": {
       "@likec4/core": "file:../packages/core/package.tgz",
       "@likec4/icons": "file:../packages/icons/package.tgz",
-      "@likec4/config": "file:../packages/config/package.tgz",
-      "@likec4/log": "file:../packages/log/package.tgz",
-      "@likec4/language-server": "file:../packages/language-server/package.tgz",
       "likec4": "file:../packages/likec4/package.tgz"
     }
   }

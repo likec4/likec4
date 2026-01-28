@@ -5,7 +5,7 @@ import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { createLikeC4Logger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin/plugin'
-import { chunkSizeWarningLimit, JsBanners, viteAppRoot } from './utils'
+import { chunkSizeWarningLimit, JsBanners, relativeToCwd, viteAppRoot } from './utils'
 
 type LikeC4ViteReactConfig = {
   languageServices: LikeC4
@@ -20,8 +20,8 @@ export async function viteReactConfig({
 }: LikeC4ViteReactConfig): Promise<InlineConfig> {
   const customLogger = createLikeC4Logger(['vite', 'react'])
   const root = viteAppRoot()
-  customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
-  customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
+  customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(relativeToCwd(root))}`)
+  customLogger.info(k.cyan('outDir') + ' ' + k.dim(relativeToCwd(outDir)))
 
   return {
     customLogger,

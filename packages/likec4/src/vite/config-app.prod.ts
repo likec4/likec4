@@ -8,7 +8,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 import type { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin/plugin'
-import { chunkSizeWarningLimit, viteAppRoot, viteLogger } from './utils'
+import { chunkSizeWarningLimit, relativeToCwd, viteAppRoot, viteLogger } from './utils'
 
 export type LikeC4ViteConfig = {
   customLogger?: ViteLogger
@@ -25,10 +25,10 @@ export type LikeC4ViteConfig = {
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
   const customLogger = cfg.customLogger ?? viteLogger
   const root = viteAppRoot()
-  customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
+  customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(relativeToCwd(root))}`)
 
   const outDir = cfg.outputDir ?? resolve(languageServices.workspace, 'dist')
-  customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
+  customLogger.info(k.cyan('outDir') + ' ' + k.dim(relativeToCwd(outDir)))
 
   let base = '/'
   if (cfg.base) {
@@ -83,8 +83,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         '@likec4/core/styles',
         '@likec4/core/utils',
         '@likec4/core',
-        'likec4/model',
-        'likec4/react',
         'likec4/vite-plugin/internal',
       ],
       noDiscovery: true,
@@ -125,7 +123,9 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
           ],
           output: {
             manualChunks: (id) => {
-              if (id.endsWith('.css') || id.endsWith('.html') || id.includes('likec4/icons')) {
+              if (
+                id.endsWith('.css') || id.endsWith('.html') || id.includes('likec4/icons') || id.includes('const.js')
+              ) {
                 return undefined
               }
               if (id.includes('__app__')) {
@@ -135,7 +135,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
                 }
                 return undefined
               }
-              if (id.includes('node_modules/likec4') || id.includes('node_modules/@likec4')) {
+              if (id.includes('likec4')) {
                 return 'likec4'
               }
               if (id.includes('node_modules')) {
