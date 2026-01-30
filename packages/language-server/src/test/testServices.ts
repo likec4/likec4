@@ -2,7 +2,7 @@ import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ComputedLikeC4ModelData, ProjectId } from '@likec4/core'
 import { type LangiumDocument, DocumentState, TextDocument, UriUtils } from 'langium'
 import * as assert from 'node:assert'
-import { entries } from 'remeda'
+import { entries, once } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { LiteralUnion } from 'type-fest'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
@@ -28,12 +28,9 @@ export function createTestServices(options?: {
     name: projectConfig?.name || 'test-project',
     uri: workspaceUri.toString(),
   }
-  let isInitialized = false
   let documentIndex = 1
 
-  async function initialize() {
-    if (isInitialized) return
-    isInitialized = true
+  const initialize = once(async () => {
     services.shared.workspace.ConfigurationProvider.updateConfiguration({
       settings: { likec4: { formatting: { quoteStyle: 'single' } } },
     })
@@ -59,7 +56,7 @@ export function createTestServices(options?: {
         folderUri: projectFolderUri,
       })
     }
-  }
+  })
 
   const addDocument = async (input: string, uri?: string) => {
     await initialize()
@@ -152,10 +149,8 @@ export function createTestServices(options?: {
    * This will clear all documents
    */
   const resetState = async () => {
-    await services.shared.workspace.WorkspaceLock.write(async (cancelToken) => {
-      const docs = langiumDocuments.allExcludingBuiltin.toArray().map(doc => doc.uri)
-      await documentBuilder.update([], docs, cancelToken)
-    })
+    const docs = langiumDocuments.resetProjectIds()
+    await documentBuilder.update([], docs)
   }
 
   return {
@@ -194,6 +189,7 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     services,
     addDocument,
     validateAll,
+    resetState,
   } = createTestServices({ workspace })
 
   const projects = {} as {
@@ -251,6 +247,7 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     validateAll,
     buildModel,
     buildLikeC4Model,
+    resetState,
   }
 }
 

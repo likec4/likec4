@@ -113,6 +113,10 @@ export class DefaultLikeC4Views implements LikeC4Views {
 
   constructor(private services: LikeC4Services) {
     this.ModelBuilder = services.likec4.ModelBuilder
+
+    services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
+      this.cache = new WeakMap<ComputedView, GraphvizOut>()
+    })
   }
 
   get layouter(): QueueGraphvizLayoter {

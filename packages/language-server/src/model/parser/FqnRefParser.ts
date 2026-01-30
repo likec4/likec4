@@ -1,38 +1,27 @@
 import type * as c4 from '@likec4/core'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core'
-import { loggable } from '@likec4/log'
-import { type AstNode, AstUtils } from 'langium'
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
 import type { Except } from 'type-fest'
 import { ast, parseAstOpacityProperty, parseAstSizeValue, parseMarkdownAsString, toColor } from '../../ast'
-import { serverLogger } from '../../logger'
 import { projectIdFrom } from '../../utils'
 import { importsRef, instanceRef } from '../../utils/fqnRef'
 import { createBinaryOperator, parseWhereClause } from '../model-parser-where'
 import { type Base, removeIndent } from './Base'
 
-const logger = serverLogger.getChild('ExpressionV2Parser')
-
 export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
-
-const location = (astNode: AstNode) => {
-  const cst = astNode.$cstNode
-  const position = cst ? `:${cst.range.start.line + 1}:${cst.range.start.character + 1}` : ''
-  return `${AstUtils.getDocument(astNode).uri.fsPath}${position}`
-}
 
 export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
   return class ExpressionV2Parser extends B {
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
       const refValue = nonNullable(
         astNode.value?.ref,
-        () => `FqnRef "${astNode.$cstNode?.text}" is empty at ${location(astNode)}`,
+        () => `Element "${astNode.$cstNode?.text}" is not resolved`,
       )
       if (ast.isImported(refValue)) {
         const fqnRef = {
           project: projectIdFrom(refValue),
           model: this.resolveFqn(
-            nonNullable(refValue.imported.ref, `FqnRef is empty of imported: ${refValue.$cstNode?.text}`),
+            nonNullable(refValue.imported.ref, `Imported "${refValue.$cstNode?.text}" is not resolved`),
           ),
         }
         this.doc.c4Imports.set(fqnRef.project, fqnRef.model)
@@ -239,14 +228,14 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         }
       }
       if (ast.isElementKindExpression(astNode)) {
-        invariant(astNode.kind?.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
+        invariant(astNode.kind?.ref, `ElementKind "${astNode.$cstNode?.text}" is not resolved`)
         return {
           elementKind: astNode.kind.ref.name as c4.ElementKind,
           isEqual: astNode.isEqual,
         }
       }
       if (ast.isElementTagExpression(astNode)) {
-        invariant(astNode.tag.tag.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
+        invariant(astNode.tag.tag.ref, `Tag ${astNode.$cstNode?.text} is not resolved`)
         let elementTag = astNode.tag.tag.$refText
         return {
           elementTag: elementTag as c4.Tag,
@@ -291,7 +280,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             exprs.push(this.parseFqnExpr(iter.value))
           }
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, iter.value, 'fqnref')
         }
         iter = iter.prev
       }
@@ -436,12 +425,11 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
 
     parseInlineKindCondition(astNode: ast.OutgoingRelationExpr): c4.WhereOperator | null {
       const kind = astNode.kind ?? astNode.dotKind?.kind
-
-      if (kind) {
-        invariant(kind.ref, 'Kind is not resolved: ' + astNode.$cstNode?.text)
-        return { kind: { eq: kind.ref?.name } }
+      if (!kind?.ref) {
+        this.logError(`Kind "${astNode.$cstNode?.text}" is not resolved`, astNode, 'fqnref')
+        return null
       }
-      return null
+      return { kind: { eq: kind.ref?.name } }
     }
 
     wrapInWhere(expr: c4.RelationExpr, condition: c4.WhereOperator | null): c4.RelationExpr.OrWhere {

@@ -52,7 +52,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
         .debug`task limit reached: ${this.queue.size} (pending: ${this.queue.pending}), waiting queue to shrink to ${this.queue.concurrency}`
       await this.queue.onSizeLessThan(this.queue.concurrency + 1)
     }
-    logger.debug`add task to queue`
+    logger.trace`add task to queue`
     return await this.queue.add(fn)
   }
 
@@ -136,10 +136,10 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
           logger
             .debug`task limit reached: ${this.queue.size}, waiting queue to shrink to ${concurrency}`
           await this.queue.onSizeLessThan(concurrency + 1)
-        }
-        if (params.cancelToken?.isCancellationRequested) {
-          logger.debug`cancellation requested`
-          break
+          if (params.cancelToken?.isCancellationRequested) {
+            logger.debug`cancellation requested`
+            break
+          }
         }
       }
     } finally {

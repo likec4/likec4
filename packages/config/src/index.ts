@@ -6,7 +6,10 @@ export type {
   LikeC4ProjectConfigInput,
   LikeC4ProjectJsonConfig,
   LocateResult,
-  ManualLayoutsConfigSchema,
+} from './schema'
+
+export {
+  LikeC4ProjectConfigOps,
 } from './schema'
 
 export type {
@@ -14,13 +17,11 @@ export type {
 } from './schema.include'
 
 export type {
+  LikeC4ConfigThemeInput,
   LikeC4StylesConfig,
   LikeC4StylesConfigInput,
+  ThemeColorValuesInput,
 } from './schema.theme'
-
-// export { validateProjectConfig } from './schema'
-
-// export { normalizeIncludeConfig, validateIncludePaths } from './schema.include'
 
 export {
   ConfigFilenames,

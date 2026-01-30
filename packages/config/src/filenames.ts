@@ -1,10 +1,10 @@
-const configJsonFilenames = [
+export const configJsonFilenames = [
   '.likec4rc',
   '.likec4.config.json',
   'likec4.config.json',
 ] as const
 
-const configNonJsonFilenames = [
+export const configNonJsonFilenames = [
   'likec4.config.js',
   'likec4.config.cjs',
   'likec4.config.mjs',

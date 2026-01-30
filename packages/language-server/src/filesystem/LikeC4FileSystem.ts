@@ -1,19 +1,26 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
-import { loadConfig } from '@likec4/config/node'
+import { isLikeC4Config, loadConfig } from '@likec4/config/node'
 import { fdir } from 'fdir'
 import { URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
-import { mkdirSync } from 'node:fs'
-import { stat, unlink, writeFile } from 'node:fs/promises'
-import { dirname } from 'node:path'
+import { mkdirSync, statSync } from 'node:fs'
+import { unlink, writeFile } from 'node:fs/promises'
+import { basename, dirname } from 'node:path'
 import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
 import { WithChokidarWatcher } from './ChokidarWatcher'
 import { NoFileSystemWatcher } from './noop'
 import type { FileNode, FileSystemModuleContext, FileSystemProvider } from './types'
-import { ensureOrder, excludeNodeModules, isLikeC4ConfigFile, isLikeC4File } from './utils'
+import { ensureOrder, excludeNodeModules, hasLikeC4Ext } from './utils'
 
 const logger = rootLogger.getChild('filesystem')
+
+function isLikeC4ConfigFile(path: string, isDirectory: boolean = false) {
+  return !isDirectory && isLikeC4Config(basename(path))
+}
+function isLikeC4File(path: string, isDirectory: boolean = false): boolean {
+  return !isDirectory && hasLikeC4Ext(basename(path))
+}
 
 export const WithFileSystem = (
   ehableWatcher = true,
@@ -51,8 +58,8 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       let crawler = new fdir()
         .withSymlinks({ resolvePaths: false })
         .exclude(excludeNodeModules)
-        .filter(isLikeC4File)
         .withFullPaths()
+        .filter(isLikeC4File)
 
       if (!recursive) {
         crawler = crawler.withMaxDepth(1)
@@ -88,9 +95,9 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     try {
       const crawled = await new fdir()
         .withSymlinks({ resolvePaths: false })
+        .exclude(excludeNodeModules)
         .withFullPaths()
         .filter(filter)
-        .exclude(excludeNodeModules)
         .crawl(directory.fsPath)
         .withPromise()
       for (const path of crawled) {
@@ -101,9 +108,9 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
         })
       }
     } catch (error) {
-      logger.warn(`Failed to scan directory ${directory.fsPath}`, { error })
+      logger.warn(`Failed to scan directory {path}`, { path: directory.fsPath, error })
     }
-    return entries.sort(ensureOrder)
+    return entries
   }
 
   async loadProjectConfig(filepath: URI): Promise<LikeC4ProjectConfig> {
@@ -112,7 +119,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
 
   async writeFile(uri: URI, content: string): Promise<void> {
     const dir = dirname(uri.fsPath)
-    const exists = await stat(dir).catch(() => null)
+    const exists = statSync(dir, { throwIfNoEntry: false })
     if (exists?.isFile()) {
       throw new Error(`Cannot create directory ${dir} because a file with the same name exists.`)
     }
@@ -131,13 +138,14 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
   async deleteFile(uri: URI): Promise<boolean> {
     try {
       const path = uri.fsPath
-      const exists = await stat(path)
-      if (exists.isFile() || exists.isSymbolicLink()) {
+      const exists = statSync(path, { throwIfNoEntry: false })
+      if (exists?.isFile() || exists?.isSymbolicLink()) {
         await unlink(path)
         logger.debug('deleted file {path}', { path })
         return true
       } else {
         logger.warn('deleteFile failed: {path} does not exist, or is not a file', { path })
+        return false
       }
     } catch (error) {
       logger.warn(`Failed to delete file ${uri.fsPath}`, { error })

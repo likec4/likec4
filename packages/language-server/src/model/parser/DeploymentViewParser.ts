@@ -56,14 +56,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         description,
         tags,
         links: isNonEmptyArray(links) ? links : null,
-        rules: body.rules.flatMap(n => {
-          try {
-            return this.isValid(n) ? this.parseDeploymentViewRule(n) : []
-          } catch (e) {
-            logWarnError(e)
-            return []
-          }
-        }),
+        rules: this.tryMap('deployment', body.rules, n => this.parseDeploymentViewRule(n)),
         ...(manualLayout && { manualLayout }),
       }
     }

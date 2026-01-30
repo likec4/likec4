@@ -7,11 +7,12 @@ import type {
   LangiumDocument,
   LangiumDocumentFactory,
 } from 'langium'
-import { DefaultWorkspaceManager } from 'langium'
+import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
 import { hasAtLeast, uniqueBy } from 'remeda'
-import { type WorkspaceFolder, CancellationToken } from 'vscode-languageserver'
+import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileNode, FileSystemProvider } from '../filesystem'
+import { excludeNodeModules } from '../filesystem/utils'
 import * as BuiltIn from '../likec4lib'
 import { logger, logWarnError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
@@ -19,6 +20,8 @@ import type { LikeC4SharedServices } from '../module'
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected readonly documentFactory: LangiumDocumentFactory
   protected override readonly fileSystemProvider: FileSystemProvider
+
+  #cacheEvicters = [] as Array<() => void>
 
   override initialBuildOptions: BuildOptions = {
     eagerLinking: true,
@@ -51,7 +54,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const projects = this.services.workspace.ProjectsManager
     for (const entry of configFiles) {
       try {
-        await projects.registerConfigFile(entry.uri, CancellationToken.None)
+        await projects.registerConfigFile(entry.uri)
       } catch (error) {
         logWarnError(error)
       }
@@ -85,16 +88,15 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
           maxDepth: includeConfig.maxDepth,
         })
         foundFiles.push(...files)
-        logger.debug`loaded ${files.length} files from include path ${includePath.fsPath}`
+        if (files.length === 0) {
+          logger.debug`loaded ${files.length} files from include path ${includePath.fsPath}`
+        }
       } catch (error) {
         logger.warn(`Failed to scan include path ${includePath.fsPath}`, { error })
       }
     }
 
     for (const file of uniqueBy(foundFiles, (f) => f.uri.path)) {
-      if (this.services.workspace.ProjectsManager.isExcluded(file.uri)) {
-        continue
-      }
       try {
         const doc = await this.langiumDocuments.getOrCreateDocument(file.uri)
         collector(doc)
@@ -124,22 +126,19 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   /**
    * Determine whether the given folder entry shall be included while indexing the workspace.
    */
-  protected override includeEntry(
-    _workspaceFolder: WorkspaceFolder,
-    entry: FileSystemNode,
-    selector: FileSelector,
-  ): boolean {
-    if (this.services.workspace.ProjectsManager.isConfigFile(entry.uri)) {
-      return false
+  protected override includeEntry(_: WorkspaceFolder, entry: FileSystemNode, selector: FileSelector): boolean {
+    const name = UriUtils.basename(entry.uri)
+    if (entry.isDirectory) {
+      return !excludeNodeModules(name)
+    } else if (entry.isFile) {
+      const selected = selector.fileExtensions.includes(UriUtils.extname(entry.uri)) ||
+        selector.fileNames.includes(name)
+      return selected && !this.services.workspace.ProjectsManager.isExcluded(entry.uri)
     }
-    const isLikely = super.includeEntry(_workspaceFolder, entry, selector)
-    if (isLikely && entry.isFile) {
-      return !this.services.workspace.ProjectsManager.isExcluded(entry.uri)
-    }
-    return isLikely
+    return false
   }
 
-  public workspace() {
+  public workspace(): WorkspaceFolder | null {
     if (this.folders && hasAtLeast(this.folders, 1)) {
       return this.folders[0]
     }
@@ -147,21 +146,42 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   public async rebuildAll(cancelToken?: Cancellation.CancellationToken): Promise<void> {
-    const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
-    logger.info('invalidate and rebuild all {docs} documents', { docs: docs.length })
-    this.services.workspace.Cache.clear()
-    await this.documentBuilder.update(docs, [], cancelToken)
+    const uris = this.services.workspace.LangiumDocuments.resetProjectIds()
+    logger.info('invalidate and rebuild all {docs} documents', { docs: uris.length })
+    this.forceCleanCaches()
+    await this.documentBuilder.update(uris, [], cancelToken)
   }
 
-  public get workspaceUri() {
+  public get workspaceUri(): URI {
     const workspace = this.workspace()
     invariant(workspace, 'Workspace not initialized')
     return URI.parse(workspace.uri)
   }
 
-  public get workspaceURL() {
+  public get workspaceURL(): URL {
     const workspace = this.workspace()
     invariant(workspace, 'Workspace not initialized')
     return new URL(workspace.uri)
+  }
+
+  /**
+   * Force clean all caches
+   */
+  public forceCleanCaches() {
+    for (const listener of this.#cacheEvicters) {
+      listener()
+    }
+    this.services.workspace.ManualLayouts.clearCaches()
+    this.services.workspace.Cache.clear()
+  }
+
+  /**
+   * Register a listener to be called when caches are force cleaned
+   */
+  public onForceCleanCache(listener: () => void): Disposable {
+    this.#cacheEvicters.push(listener)
+    return Disposable.create(() => {
+      this.#cacheEvicters = this.#cacheEvicters.filter(l => l !== listener)
+    })
   }
 }

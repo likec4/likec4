@@ -1,11 +1,19 @@
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
+import { UriUtils } from 'langium'
 import { describe, expect, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
 import { createMultiProjectTestServices } from '../test'
 import { ProjectFolder } from './ProjectsManager'
 
 const isWin = process.platform === 'win32'
+
+const configAt = (path: string) => ({
+  configUri: UriUtils.joinPath(URI.file(`/test/workspace/src`), path, '.likec4rc'),
+})
+const folderAt = (path: string) => ({
+  folderUri: UriUtils.joinPath(URI.file(`/test/workspace/src`), path),
+})
 
 describe('ProjectsManager', () => {
   it('should assign likec4ProjectId to docs', async ({ expect }) => {
@@ -46,7 +54,7 @@ describe('ProjectsManager', () => {
     expect(projects.project2.specs).toHaveProperty('likec4ProjectId', 'project2')
 
     const outside = await addDocumentOutside('specification { element component }')
-    expect(outside).not.toHaveProperty('likec4ProjectId')
+    expect(outside).toHaveProperty('likec4ProjectId', 'default')
     await validateAll()
     expect(outside).toHaveProperty('likec4ProjectId', 'default')
   })
@@ -85,8 +93,10 @@ describe('ProjectsManager', () => {
           URI.parse('file:///test/workspace/node_modules/test-project/.likec4rc'),
         ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Path to /test/workspace/node_modules/test-project/.likec4rc is excluded by: **/node_modules/**]`,
+        `[Error: Failed to register project config, path /test/workspace/node_modules/test-project/.likec4rc is excluded by: "**/node_modules/**"]`,
       )
+
+      expect(fs.loadProjectConfig).not.toHaveBeenCalled()
     })
   })
 
@@ -97,11 +107,10 @@ describe('ProjectsManager', () => {
       const config = {
         name: 'test-project',
       }
-      const folderUri = URI.parse('file:///test/workspace/src/test-project')
 
       await projectsManager.registerProject({
         config,
-        folderUri,
+        ...folderAt('test-project'),
       })
 
       expect(projectsManager.all).toContain('test-project')
@@ -131,13 +140,13 @@ describe('ProjectsManager', () => {
     it('should update project with registered folder URI', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
 
-      const folderUri = URI.parse('file:///test/workspace/src/test-project')
+      const { configUri } = configAt('test-project')
 
       const project1 = await projectsManager.registerProject({
         config: {
           name: 'tst',
         },
-        folderUri,
+        configUri,
       })
       const project1Config = project1.config
       expect(project1Config).toEqual({
@@ -150,7 +159,7 @@ describe('ProjectsManager', () => {
           name: 'tst',
           title: 'Test Project',
         },
-        folderUri,
+        configUri,
       })
       // no new project registered
       expect(projectsManager.all).toEqual(['tst', 'default'])
@@ -169,13 +178,13 @@ describe('ProjectsManager', () => {
     it('should re-register project if name is changed', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
 
-      const folderUri = URI.parse('file:///test/workspace/src/test-project')
+      const { configUri } = configAt('test-project')
 
       const project1 = await projectsManager.registerProject({
         config: {
           name: 'tst',
         },
-        folderUri,
+        configUri,
       })
       const project1Config = project1.config
       expect(project1Config).toEqual({
@@ -188,7 +197,7 @@ describe('ProjectsManager', () => {
           name: 'tst2',
           title: 'Test Project',
         },
-        folderUri,
+        configUri,
       })
       // no new project registered
       expect(projectsManager.all).toEqual(['tst2', 'default'])
@@ -233,8 +242,8 @@ describe('ProjectsManager', () => {
       const fs = services.shared.workspace.FileSystemProvider
       vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
-      const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
-      await expect(projectsManager.registerConfigFile(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
+      const configUri = configAt('test-project').configUri
+      await expect(projectsManager.registerConfigFile(configUri)).rejects.toThrowErrorMatchingInlineSnapshot(
         `
         [Error: Failed to register project config /test/workspace/src/test-project/.likec4rc:
         Config validation failed:
@@ -242,7 +251,7 @@ describe('ProjectsManager', () => {
           → at name]
       `,
       )
-      await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
+      await expect(projectsManager.registerProject({ config, configUri })).rejects
         .toThrowErrorMatchingInlineSnapshot(
           `
         [Error: Config validation failed:
@@ -263,8 +272,8 @@ describe('ProjectsManager', () => {
         const fs = services.shared.workspace.FileSystemProvider
         vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
-        const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
-        await expect(projectsManager.registerConfigFile(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
+        const { configUri } = configAt('test-project')
+        await expect(projectsManager.registerConfigFile(configUri)).rejects.toThrowErrorMatchingInlineSnapshot(
           `
         [Error: Failed to register project config /test/workspace/src/test-project/.likec4rc:
         Config validation failed:
@@ -272,7 +281,7 @@ describe('ProjectsManager', () => {
           → at name]
       `,
         )
-        await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
+        await expect(projectsManager.registerProject({ config, configUri })).rejects
           .toThrowErrorMatchingInlineSnapshot(
             `
         [Error: Config validation failed:
@@ -289,16 +298,13 @@ describe('ProjectsManager', () => {
       const config = {
         name: 'test-project',
       }
-      const folderUri1 = URI.parse('file:///test/workspace/src/test-project-1')
-      const folderUri2 = URI.parse('file:///test/workspace/src/test-project-2')
-
       await projectsManager.registerProject({
         config,
-        folderUri: folderUri1,
+        ...folderAt('test-project-1'),
       })
       await projectsManager.registerProject({
         config,
-        folderUri: folderUri2,
+        ...folderAt('test-project-2'),
       })
 
       expect(projectsManager.all).toEqual([
@@ -315,16 +321,14 @@ describe('ProjectsManager', () => {
     const config = {
       name: 'test-project',
     }
-    const folderUri1 = URI.parse('file:///test/workspace/src/test-project-1')
-    const folderUri2 = '/test/workspace/src/test-project-2'
 
     await projectsManager.registerProject({
       config,
-      folderUri: folderUri1,
+      ...folderAt('test-project-1'),
     })
     await projectsManager.registerProject({
       config,
-      folderUri: folderUri2,
+      configUri: '/test/workspace/src/test-project-2/.likec4rc',
     })
 
     expect(projectsManager.all).toContain('test-project')
@@ -347,7 +351,7 @@ describe('ProjectsManager', () => {
           name: 'projectA',
           exclude: ['excluded'],
         },
-        folderUri: URI.file('/test/workspace/src/projectA'),
+        ...folderAt('projectA'),
       })
 
       // Add a document in projectA's folder
@@ -356,11 +360,11 @@ describe('ProjectsManager', () => {
       const excludedDoc = await addDocument('projectA/excluded/wrong.c4', 'model { component c2 }')
 
       // The excluded document should belong to projectB, not projectA
-      expect(projectsManager.belongsTo(specDoc)).toBe('projectA')
-      expect(projectsManager.belongsTo(modelDoc)).toBe('projectA')
+      expect(projectsManager.ownerProjectId(specDoc)).toBe('projectA')
+      expect(projectsManager.ownerProjectId(modelDoc)).toBe('projectA')
 
       // The excluded document should belong to projectA, but be excluded
-      expect(projectsManager.belongsTo(excludedDoc)).toBe('projectA')
+      expect(projectsManager.ownerProjectId(excludedDoc)).toBe('projectA')
       expect(projectsManager.isExcluded(excludedDoc)).toBe(true)
 
       // Check project documents
@@ -383,7 +387,7 @@ describe('ProjectsManager', () => {
           name: 'projectA',
           exclude: ['**/wrong.c4'],
         },
-        folderUri: URI.file('/test/workspace/src/projectA'),
+        ...folderAt('projectA'),
       })
 
       // Add a document in projectA's folder
@@ -392,10 +396,11 @@ describe('ProjectsManager', () => {
       const excludedDoc2 = await addDocument('projectA/nested/wrong.c4', 'model { component c2 }')
 
       // The excluded document should belong to projectB, not projectA
-      expect(projectsManager.belongsTo(specDoc)).toBe('projectA')
+      expect(projectsManager.ownerProjectId(specDoc)).toBe('projectA')
+      expect(projectsManager.isExcluded(specDoc)).toBe(false)
       // The excluded document should belong to projectA, but be excluded
-      expect(projectsManager.belongsTo(excludedDoc1)).toBe('projectA')
-      expect(projectsManager.belongsTo(excludedDoc2)).toBe('projectA')
+      expect(projectsManager.ownerProjectId(excludedDoc1)).toBe('projectA')
+      expect(projectsManager.ownerProjectId(excludedDoc2)).toBe('projectA')
       expect(projectsManager.isExcluded(excludedDoc1)).toBe(true)
       expect(projectsManager.isExcluded(excludedDoc2)).toBe(true)
 
@@ -433,7 +438,7 @@ describe('ProjectsManager', () => {
           name: 'projectA',
           exclude: ['node_modules'],
         },
-        folderUri: URI.file('/test/workspace/projectA'),
+        configUri: URI.file('/test/workspace/projectA/.likec4rc'),
       })
 
       const testdata = {
@@ -457,18 +462,17 @@ describe('ProjectsManager', () => {
         name: 'test-project',
         include: { paths: ['../shared', '../common/specs'] },
       }
-      const folderUri = URI.parse('file:///test/workspace/src/test-project')
 
       await projectsManager.registerProject({
         config,
-        folderUri,
+        configUri: 'file:///test/workspace/src/test-project/.likec4rc',
       })
 
-      const project = projectsManager.getProject('test-project' as ProjectId)
-      expect(project.includePaths).toBeDefined()
-      expect(project.includePaths).toHaveLength(2)
-      expect(project.includePaths![0]!.toString()).toBe('file:///test/workspace/src/shared')
-      expect(project.includePaths![1]!.toString()).toBe('file:///test/workspace/src/common/specs')
+      const includePaths = projectsManager.getProject('test-project' as ProjectId).includePaths?.map(p => p.folder)
+      expect(includePaths).toEqual([
+        'file:///test/workspace/src/shared/',
+        'file:///test/workspace/src/common/specs/',
+      ])
     })
 
     it('should match documents from include paths to the correct project', async ({ expect }) => {
@@ -489,22 +493,22 @@ describe('ProjectsManager', () => {
       })
 
       // Document in project folder
-      expect(projectsManager.belongsTo('file:///test/include-test/src/proj-include-test/model.c4')).toBe(
+      expect(projectsManager.ownerProjectId('file:///test/include-test/src/proj-include-test/model.c4')).toBe(
         'proj-include-test',
       )
 
       // Document in include path
-      expect(projectsManager.belongsTo('file:///test/include-test/src/shared-include-test/common.c4')).toBe(
+      expect(projectsManager.ownerProjectId('file:///test/include-test/src/shared-include-test/common.c4')).toBe(
         'proj-include-test',
       )
 
       // Document in nested include path folder
-      expect(projectsManager.belongsTo('file:///test/include-test/src/shared-include-test/nested/deep.c4')).toBe(
+      expect(projectsManager.ownerProjectId('file:///test/include-test/src/shared-include-test/nested/deep.c4')).toBe(
         'proj-include-test',
       )
 
       // Document outside both project and include paths goes to default
-      expect(projectsManager.belongsTo('file:///test/include-test/src/unrelated/file.c4')).toBe('default')
+      expect(projectsManager.ownerProjectId('file:///test/include-test/src/unrelated/file.c4')).toBe('default')
     })
 
     it('should return undefined includePaths when not configured', async ({ expect }) => {
@@ -512,14 +516,14 @@ describe('ProjectsManager', () => {
 
       await projectsManager.registerProject({
         config: { name: 'no-includes' },
-        folderUri: URI.parse('file:///test/workspace/src/no-includes'),
+        ...folderAt('no-includes'),
       })
 
       const project = projectsManager.getProject('no-includes' as ProjectId)
       expect(project.includePaths).toBeUndefined()
     })
 
-    it('should reject empty includePaths array', async ({ expect }) => {
+    it('should not reject empty includePaths array', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
 
       await expect(
@@ -528,9 +532,11 @@ describe('ProjectsManager', () => {
             name: 'empty-includes',
             include: { paths: [] },
           },
-          folderUri: URI.parse('file:///test/workspace/src/empty-includes'),
+          folderUri: '/test/workspace/src/empty-includes',
         }),
-      ).rejects.toThrow('Include paths cannot be empty')
+      ).resolves.toMatchObject({
+        id: 'empty-includes',
+      })
     })
 
     it('getAllIncludePaths should return all configured include paths', async ({ expect }) => {
@@ -541,7 +547,7 @@ describe('ProjectsManager', () => {
           name: 'project1',
           include: { paths: ['../shared1'] },
         },
-        folderUri: URI.parse('file:///test/workspace/src/project1'),
+        ...folderAt('project1'),
       })
 
       await projectsManager.registerProject({
@@ -549,17 +555,16 @@ describe('ProjectsManager', () => {
           name: 'project2',
           include: { paths: ['../shared2', '../common'] },
         },
-        folderUri: URI.parse('file:///test/workspace/src/project2'),
+        ...folderAt('project2'),
       })
 
       await projectsManager.registerProject({
         config: { name: 'project3' }, // No includes
-        folderUri: URI.parse('file:///test/workspace/src/project3'),
+        ...folderAt('project3'),
       })
 
       const allIncludes = projectsManager.getAllIncludePaths()
       expect(allIncludes).toHaveLength(3)
-
       expect(allIncludes).toContainEqual({
         projectId: 'project1',
         includePath: expect.objectContaining({
@@ -595,7 +600,7 @@ describe('ProjectsManager', () => {
       // project2 includes project1's folder as an include path
       await projectsManager.registerProject({
         config: { name: 'project1' },
-        folderUri: URI.parse('file:///test/workspace/src/project1'),
+        ...folderAt('project1'),
       })
 
       await projectsManager.registerProject({
@@ -603,12 +608,12 @@ describe('ProjectsManager', () => {
           name: 'project2',
           include: { paths: ['../project1'] }, // Overlaps with project1's folder
         },
-        folderUri: URI.parse('file:///test/workspace/src/project2'),
+        ...folderAt('project2'),
       })
 
       // Documents in project1 folder should belong to project1, not project2
       // (project folder takes precedence)
-      expect(projectsManager.belongsTo('file:///test/workspace/src/project1/model.c4')).toBe('project1')
+      expect(projectsManager.ownerProjectId('file:///test/workspace/src/project1/model.c4')).toBe('project1')
     })
 
     it('should handle multiple projects sharing the same include path', async ({ expect }) => {
@@ -635,10 +640,10 @@ describe('ProjectsManager', () => {
       const project1Doc = await addDocument('a-project1/model.c4', 'model { component c1 }')
       const project2Doc = await addDocument('a-project2/model.c4', 'model { component c2 }')
 
-      expect(projectsManager.belongsTo(project1Doc)).toBe('a-project1')
-      expect(projectsManager.belongsTo(project2Doc)).toBe('a-project2')
+      expect(projectsManager.ownerProjectId(project1Doc)).toBe('a-project1')
+      expect(projectsManager.ownerProjectId(project2Doc)).toBe('a-project2')
       // Shared document should belong to the first project
-      expect(projectsManager.belongsTo(sharedDoc)).toBe('a-project1')
+      expect(projectsManager.ownerProjectId(sharedDoc)).toBe('a-project1')
 
       // Both projects should be able to access documents from the shared folder
       // when collecting their project documents
@@ -684,7 +689,7 @@ describe('ProjectsManager', () => {
 
       project = projectsManager.getProject('project3' as ProjectId)
       expect(project.includePaths).toHaveLength(1)
-      expect(project.includePaths![0]!.toString()).toBe('file:///test/workspace/src/new-shared')
+      expect(project.includePaths![0].folder).toBe('file:///test/workspace/src/new-shared/')
     })
 
     it('should remove include paths when project is reloaded without includes', async ({ expect }) => {
@@ -698,7 +703,7 @@ describe('ProjectsManager', () => {
           name: 'project1',
           include: { paths: ['../shared'] },
         },
-        folderUri,
+        ...folderAt('project1'),
       })
 
       let project = projectsManager.getProject('project1' as ProjectId)
@@ -741,11 +746,17 @@ describe('ProjectsManager', () => {
       const projectBDoc = await addDocument('projectB/specification.c4', 'specification { element component }')
 
       // The excluded document should belong to projectB, not projectA
-      expect(projectsManager.belongsTo(projectADoc)).toBe('projectA')
-      expect(projectsManager.belongsTo(projectBDoc)).toBe('projectB')
+      expect(projectsManager.ownerProjectId(projectADoc)).toBe('projectA')
+      expect(projectsManager.ownerProjectId(projectBDoc)).toBe('projectB')
       // The excluded document should belong to projectA, but be excluded
-      expect(projectsManager.belongsTo(excludedDoc)).toBe('projectA')
-      expect(projectsManager.isExcluded(excludedDoc)).toBe(true)
+      expect(projectsManager.ownerProjectId(excludedDoc)).toBe('projectA')
+
+      expect(projectsManager.isExcluded(excludedDoc)).toBe(false)
+      expect(projectsManager.isExcluded(projectA.id, excludedDoc)).toBe(true)
+      expect(projectsManager.isExcluded(projectB.id, excludedDoc)).toBe(false)
+
+      expect(projectsManager.isIncluded(projectA.id, excludedDoc)).toBe(false)
+      expect(projectsManager.isIncluded(projectB.id, excludedDoc)).toBe(true)
 
       // Check project documents
       const documents = services.shared.workspace.LangiumDocuments
@@ -780,13 +791,13 @@ describe('ProjectsManager', () => {
       })
     }
 
-    expect(pm.belongsTo('file:///test/outside/doc.likec4')).toEqual('default')
-    expect(pm.belongsTo('file:///test/project1/doc.likec4')).toEqual('project1')
-    expect(pm.belongsTo('file:///test/project1/sub1/doc.likec4')).toEqual('project1/sub1')
-    expect(pm.belongsTo('file:///test/project1/sub1/f1/doc.likec4')).toEqual('project1/sub1')
-    expect(pm.belongsTo('file:///test/project1/sub1-doc.likec4')).toEqual('project1')
-    expect(pm.belongsTo('file:///test/qwe/doc.likec4')).toEqual('qwe')
-    expect(pm.belongsTo('file:///test/qwe-qwe/doc.likec4')).toEqual('qwe-qwe')
+    expect(pm.ownerProjectId('file:///test/outside/doc.likec4')).toEqual('default')
+    expect(pm.ownerProjectId('file:///test/project1/doc.likec4')).toEqual('project1')
+    expect(pm.ownerProjectId('file:///test/project1/sub1/doc.likec4')).toEqual('project1/sub1')
+    expect(pm.ownerProjectId('file:///test/project1/sub1/f1/doc.likec4')).toEqual('project1/sub1')
+    expect(pm.ownerProjectId('file:///test/project1/sub1-doc.likec4')).toEqual('project1')
+    expect(pm.ownerProjectId('file:///test/qwe/doc.likec4')).toEqual('qwe')
+    expect(pm.ownerProjectId('file:///test/qwe-qwe/doc.likec4')).toEqual('qwe-qwe')
   })
 
   describe('onProjectsUpdate', () => {
@@ -804,7 +815,7 @@ describe('ProjectsManager', () => {
           name: 'project1',
           include: { paths: ['../projectA/excluded'] },
         },
-        folderUri: URI.parse('file:///test/workspace/src/project1'),
+        ...folderAt('project1'),
       })
 
       expect(listener1).toHaveBeenCalledTimes(1)
@@ -816,7 +827,7 @@ describe('ProjectsManager', () => {
         config: {
           name: 'project2',
         },
-        folderUri: URI.parse('file:///test/workspace/src/project1'),
+        ...folderAt('project2'),
       })
 
       expect(listener1).toHaveBeenCalledTimes(1)
@@ -1033,13 +1044,13 @@ describe('ProjectsManager', () => {
         })
       }
 
-      expect(pm.belongsTo('file:///test/outside/doc.likec4')).toEqual('default')
-      expect(pm.belongsTo('c:\\my\\files\\project1\\doc.likec4')).toEqual('project1')
-      expect(pm.belongsTo('c:\\my\\files\\project1\\sub1\\doc.likec4')).toEqual('project1\\sub1')
-      expect(pm.belongsTo('c:\\my\\files\\project1\\sub1\\f1\\doc.likec4')).toEqual('project1\\sub1')
-      expect(pm.belongsTo('c:\\my\\files\\project1\\sub1-doc.likec4')).toEqual('project1')
-      expect(pm.belongsTo('c:\\my\\files\\qwe\\doc.likec4')).toEqual('qwe')
-      expect(pm.belongsTo('c:\\my\\files\\qwe-qwe\\doc.likec4')).toEqual('qwe-qwe')
+      expect(pm.ownerProjectId('file:///test/outside/doc.likec4')).toEqual('default')
+      expect(pm.ownerProjectId('c:\\my\\files\\project1\\doc.likec4')).toEqual('project1')
+      expect(pm.ownerProjectId('c:\\my\\files\\project1\\sub1\\doc.likec4')).toEqual('project1\\sub1')
+      expect(pm.ownerProjectId('c:\\my\\files\\project1\\sub1\\f1\\doc.likec4')).toEqual('project1\\sub1')
+      expect(pm.ownerProjectId('c:\\my\\files\\project1\\sub1-doc.likec4')).toEqual('project1')
+      expect(pm.ownerProjectId('c:\\my\\files\\qwe\\doc.likec4')).toEqual('qwe')
+      expect(pm.ownerProjectId('c:\\my\\files\\qwe-qwe\\doc.likec4')).toEqual('qwe-qwe')
     })
   })
 })

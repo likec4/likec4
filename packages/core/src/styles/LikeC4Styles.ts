@@ -1,8 +1,13 @@
 import chroma from 'chroma-js'
 import { defu } from 'defu'
-import { hasAtLeast, isDeepEqual } from 'remeda'
+import { isDeepEqual, isEmptyish } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
-import type { ComputedNodeStyle, LikeC4ProjectStylesConfig, NTuple } from '../types'
+import type {
+  ComputedNodeStyle,
+  LikeC4ProjectStylesConfig,
+  LikeC4ProjectStylesCustomStylesheets,
+  NTuple,
+} from '../types'
 import { ensureSizes } from '../types'
 import { DefaultMap, DefaultWeakMap, memoizeProp } from '../utils'
 import { computeColorValues } from './compute-color-values'
@@ -11,6 +16,7 @@ import { styleDefaults } from './defaults'
 import { defaultTheme } from './theme'
 import type {
   ColorLiteral,
+  CustomColorDefinitions,
   ElementColorValues,
   IconSize,
   LikeC4StyleDefaults,
@@ -44,17 +50,29 @@ export class LikeC4Styles {
 
   public static readonly DEFAULT: LikeC4Styles = new LikeC4Styles(defaultStyle)
 
-  static from(...configs: Array<LikeC4ProjectStylesConfig | undefined | null>) {
-    if (hasAtLeast(configs, 1)) {
-      return new LikeC4Styles(
-        defu(...configs, defaultStyle) as LikeC4StylesConfig,
-      )
+  static from(
+    stylesConfig: LikeC4ProjectStylesConfig | undefined,
+    customColors: CustomColorDefinitions | undefined,
+  ) {
+    if (isEmptyish(stylesConfig) && isEmptyish(customColors)) {
+      return this.DEFAULT
     }
-    return this.DEFAULT
+    const { customCss, theme, defaults } = { ...stylesConfig }
+    return new LikeC4Styles(
+      defu(
+        { theme },
+        { defaults: { ...defaults } as LikeC4StyleDefaults },
+        // rest as LikeC4ProjectStylesConfig,
+        { theme: { colors: { ...customColors } } } satisfies LikeC4ProjectStylesConfig,
+        defaultStyle,
+      ),
+      customCss,
+    )
   }
 
   private constructor(
     protected config: LikeC4StylesConfig,
+    protected customCss?: LikeC4ProjectStylesCustomStylesheets,
   ) {
     this.theme = config.theme
     this.defaults = config.defaults

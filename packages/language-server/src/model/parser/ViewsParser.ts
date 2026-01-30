@@ -1,7 +1,6 @@
 import * as c4 from '@likec4/core'
 import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import { loggable } from '@likec4/log'
-import { filter, find, isDefined, isEmpty, isNonNullish, isNumber, isTruthy, last, mapToObj, pipe } from 'remeda'
+import { filter, find, isDefined, isEmpty, isNumber, isTruthy, last, mapToObj, pipe } from 'remeda'
 import type { Except, Writable } from 'type-fest'
 import {
   type ParsedAstDynamicView,
@@ -12,7 +11,6 @@ import {
   toColor,
   ViewOps,
 } from '../../ast'
-import { logger as mainLogger } from '../../logger'
 import { safeCall, stringHash } from '../../utils'
 import { elementRef } from '../../utils/elementRef'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
@@ -23,20 +21,16 @@ import type { WithPredicates } from './PredicatesParser'
 export type WithViewsParser = ReturnType<typeof ViewsParser>
 
 type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ViewRuleGlobalStyle
-
-const logger = mainLogger.getChild('ViewsParser')
-const rankLogger = logger.getChild('rank')
-
 export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
   return class ViewsParser extends B {
     parseViews() {
       const isValid = this.isValid
       for (const viewBlock of this.doc.parseResult.value.views) {
-        const localStyles = viewBlock.styles.flatMap(s => {
+        const localStyles = viewBlock.styles.flatMap(nd => {
           try {
-            return isValid(s) ? this.parseViewRuleStyleOrGlobalRef(s) : []
+            return isValid(nd) ? this.parseViewRuleStyleOrGlobalRef(nd) : []
           } catch (e) {
-            logger.warn(loggable(e))
+            this.logError(e, nd, 'views')
             return []
           }
         })
@@ -67,7 +61,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               view.title = folder + ' / ' + (view.title || view.id)
             }
           } catch (e) {
-            logger.warn(loggable(e))
+            this.logError(e, view, 'views')
           }
         }
       }
@@ -88,7 +82,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         if (!_viewOf) {
           const viewId = astNode.name ?? 'unnamed'
           const msg = astNode.viewOf.$cstNode?.text ?? '<unknown>'
-          logger.warn(`viewOf {viewId} not resolved {msg}`, { msg, viewId })
+          this.logError(`viewOf ${viewId} not resolved ${msg}`, astNode.viewOf)
         } else {
           viewOf = _viewOf
         }
@@ -127,14 +121,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         links: isNonEmptyArray(links) ? links : null,
         rules: [
           ...additionalStyles,
-          ...body.rules.flatMap(n => {
-            try {
-              return this.isValid(n) ? this.parseElementViewRule(n) : []
-            } catch (e) {
-              logger.warn(loggable(e))
-              return []
-            }
-          }),
+          ...this.tryMap('views', body.rules, r => this.parseElementViewRule(r)),
         ],
         ...(viewOf && { viewOf }),
         ...(manualLayout && { manualLayout }),
@@ -179,14 +166,10 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       let predicate = astNode.exprs
       while (predicate) {
         const { value, prev } = predicate
-        try {
-          if (isTruthy(value) && this.isValid(value as any)) {
-            const expr = this.parsePredicate(value)
-            exprs.unshift(expr)
-          }
-        } catch (e) {
-          logger.warn(loggable(e))
-        }
+        this.tryParse('views', value, () => {
+          const expr = this.parsePredicate(value)
+          exprs.unshift(expr)
+        })
         if (!prev) {
           break
         }
@@ -230,7 +213,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           }
           nonexhaustive(rule)
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, rule, 'views')
         }
       }
       return {
@@ -245,7 +228,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         c4.ModelExpression.isFqnExpr(e as any)
       )
       const rank = astRule.value ?? 'same'
-      rankLogger.debug`Parsed rank constraint ${rank} with ${targets.length} target(s)`
       return {
         rank,
         targets,
@@ -318,29 +300,15 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         variant,
         rules: [
           ...additionalStyles,
-          ...body.rules.flatMap(n => {
-            try {
-              return isValid(n) ? this.parseDynamicViewRule(n) : []
-            } catch (e) {
-              logger.warn(loggable(e))
-              return []
-            }
-          }, [] as Array<c4.DynamicViewRule>),
+          ...this.tryMap('views', body.rules, n => this.parseDynamicViewRule(n)),
         ],
-        steps: body.steps.reduce((acc, n) => {
-          try {
-            if (isValid(n)) {
-              if (ast.isDynamicViewParallelSteps(n)) {
-                acc.push(this.parseDynamicParallelSteps(n))
-              } else {
-                acc.push(this.parseDynamicStep(n))
-              }
-            }
-          } catch (e) {
-            logger.warn(loggable(e))
+        steps: this.tryMap('views', body.steps, n => {
+          if (ast.isDynamicViewParallelSteps(n)) {
+            return this.parseDynamicParallelSteps(n)
+          } else {
+            return this.parseDynamicStep(n)
           }
-          return acc
-        }, [] as c4.DynamicViewStep[]),
+        }),
         ...(manualLayout && { manualLayout }),
       }
     }
@@ -365,16 +333,12 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       const include = [] as c4.ModelFqnExpr.Any[]
       let iter: ast.Expressions | undefined = astRule.exprs
       while (iter) {
-        try {
-          if (isNonNullish(iter.value) && this.isValid(iter.value as any)) {
-            if (ast.isFqnExprOrWith(iter.value)) {
-              const c4expr = this.parseElementPredicate(iter.value)
-              include.unshift(c4expr)
-            }
+        this.tryParse('views', iter.value, (value) => {
+          if (ast.isFqnExprOrWith(value)) {
+            const c4expr = this.parseElementPredicate(value)
+            include.unshift(c4expr)
           }
-        } catch (e) {
-          logger.warn(loggable(e))
-        }
+        })
         iter = iter.prev
       }
       return { include }
@@ -382,7 +346,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicStepsParallel {
       const parallelId = pathInsideDynamicView(node)
-      const __parallel = node.steps.map(step => this.parseDynamicStep(step))
+      const __parallel = this.tryMap('views', node.steps, s => this.parseDynamicStep(s))
       invariant(isNonEmptyArray(__parallel), 'Dynamic parallel steps must have at least one step')
       return {
         parallelId,
@@ -395,7 +359,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
      */
     parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicStep | c4.DynamicStepsSeries {
       if (ast.isDynamicStepSingle(node)) {
-        invariant(this.isValid(node))
         return this.parseDynamicStepSingle(node)
       }
       const __series = this.recursiveParseDynamicStepChain(node)
@@ -554,7 +517,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           }
         }
         catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, prop, 'views')
         }
       }
       return step

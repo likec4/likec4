@@ -10,14 +10,14 @@ export function safeCall<T>(fn: () => T): T | undefined {
   try {
     return fn()
   } catch (e) {
-    logger.debug(`Safe call failed`, { error: e })
+    logger.trace(`Safe call failed`, { error: e })
     return undefined
   }
 }
 
 export function performanceNow() {
   try {
-    return performance.now()
+    return globalThis.performance.now()
   } catch {
     return Date.now()
   }

@@ -11,9 +11,9 @@ import { type LayoutedProjectsView, computeProjectsView } from '@likec4/core/com
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { URI } from 'langium'
-import { entries, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
+import { entries, filter, flatMap, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
-import type { Range } from 'vscode-languageserver-types'
+import type { Diagnostic, Range } from 'vscode-languageserver-types'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { logger as mainLogger } from './logger'
 import type { LikeC4ModelBuilder } from './model'
@@ -98,6 +98,8 @@ export interface LikeC4LanguageServices {
 
   dispose(): Promise<void>
 }
+
+const isErrorDiagnostic = (d: Diagnostic) => d.severity === DiagnosticSeverity.Error
 
 /**
  * Public Language Services
@@ -257,17 +259,21 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     range: Range
     sourceFsPath: string
   }> {
-    const docs = this.services.shared.workspace.LangiumDocuments.allExcludingBuiltin.toArray()
-    return docs.flatMap(doc => {
-      return (doc.diagnostics ?? [])
-        .filter(d => d.severity === DiagnosticSeverity.Error)
-        .map(({ message, range }) => ({
-          message,
-          line: range.start.line,
-          range,
-          sourceFsPath: doc.uri.fsPath,
-        }))
-    })
+    return pipe(
+      this.services.shared.workspace.LangiumDocuments.userDocuments.toArray(),
+      flatMap(doc => {
+        return pipe(
+          doc.diagnostics ?? [],
+          filter(isErrorDiagnostic),
+          map(({ message, range }) => ({
+            message,
+            line: range.start.line,
+            range,
+            sourceFsPath: doc.uri.fsPath,
+          })),
+        )
+      }),
+    )
   }
 
   locate(params: Locate.Params): Locate.Res {

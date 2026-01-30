@@ -89,6 +89,7 @@
     "@types/node": "catalog:",
     "remeda": "catalog:utils",
     "defu": "catalog:utils",
+    "ufo": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

@@ -3,9 +3,11 @@
   "useTabs": false,
   "typescript": {
     "semiColons": "asi",
+    "operatorPosition": "maintain",
+    "bracePosition": "maintain",
+    "trailingCommas": "onlyMultiLine",
     "conditionalType.operatorPosition": "maintain",
     "binaryExpression.operatorPosition": "maintain",
-    "trailingCommas": "onlyMultiLine",
     "importDeclaration.sortTypeOnlyImports": "first",
     "importDeclaration.preferSingleLine": false,
     "exportDeclaration.preferSingleLine": false,

@@ -159,20 +159,8 @@ export const ThemeColorValuesSchema = StrictThemeColorValuesSchema.or(
     id: 'ThemeColorValues',
     description: 'Exact value (hex, rgb, rgba, hsl, hsla ...) or break down of specific color values',
   })
-// .union([
-//   colorSchema,
-//   StrictThemeColorValuesSchema,
-// ])
-// .meta({
-//   id: 'ThemeColorValues',
-//   description: 'Exact value (hex, rgb, rgba, hsl, hsla ...) or break down of specific color values',
-// })
-// .transform((value): ThemeColorValues => {
-//   if (typeof value === 'string') {
-//     return computeColorValues(value)
-//   }
-//   return value
-// })
+
+export type ThemeColorValuesInput = z.input<typeof ThemeColorValuesSchema>
 
 const ThemeColorsSchema = z.partialRecord(
   color,
@@ -310,7 +298,7 @@ function normalizeDefaults(
     ...rest,
     relationship: relationship && exact(relationship) satisfies LikeC4ProjectStyleDefaults['relationship'],
     group: group && exact(group) satisfies LikeC4ProjectStyleDefaults['group'],
-  })
+  }) satisfies LikeC4ProjectStyleDefaults
 }
 
 function normalizeStylesheets(

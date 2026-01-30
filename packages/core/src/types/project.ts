@@ -44,6 +44,9 @@ export interface LikeC4Project {
    */
   readonly id: ProjectId
 
+  /**
+   * Title of the project
+   */
   title?: string
 
   /**

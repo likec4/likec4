@@ -25,6 +25,7 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
   /**
    * Loads the project config from the given file.
    * @returns The project config.
+   * @throws Error if the file does not exist or is not a valid project config.
    */
   loadProjectConfig(filepath: URI): Promise<LikeC4ProjectConfig>
 

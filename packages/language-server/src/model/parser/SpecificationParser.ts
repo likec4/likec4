@@ -1,13 +1,9 @@
 import * as c4 from '@likec4/core'
 import { exact } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
-import { loggable } from '@likec4/log'
 import { filter, isNonNullish, isNullish, isTruthy, mapToObj, omitBy, pipe } from 'remeda'
 import { ast, parseMarkdownAsString, toRelationshipStyle } from '../../ast'
-import { serverLogger } from '../../logger'
 import { type Base, removeIndent } from './Base'
-
-const logger = serverLogger.getChild('SpecificationParser')
 
 export function SpecificationParser<TBase extends Base>(B: TBase) {
   return class SpecificationParser extends B {
@@ -26,7 +22,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
         try {
           Object.assign(c4Specification.elements, this.parseElementSpecificationNode(elementSpec))
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, elementSpec, 'specification')
         }
       }
 
@@ -34,7 +30,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
         try {
           Object.assign(c4Specification.deployments, this.parseElementSpecificationNode(deploymentNodeSpec))
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, deploymentNodeSpec, 'specification')
         }
       }
 
@@ -46,7 +42,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             continue
           }
           if (kindName in c4Specification.relationships) {
-            logger.warn(`Relationship kind "${kindName}" is already defined`)
+            this.logError(`Relationship kind "${kindName}" is already defined`, kind, 'specification')
             continue
           }
           const bodyProps = pipe(
@@ -60,7 +56,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             ...toRelationshipStyle(props.filter(ast.isRelationshipStyleProperty), this.isValid),
           }
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, kind, 'specification')
         }
       }
 
@@ -71,7 +67,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           const astPath = this.getAstNodePath(tagSpec.tag)
           const color = tagSpec.color && this.parseColorLiteral(tagSpec.color)
           if (tag in c4Specification.tags) {
-            logger.warn(`Tag {tag} is already defined, skipping duplicate`, { tag })
+            this.logError(`Tag ${tag} is already defined, skipping duplicate`, tagSpec, 'specification')
             continue
           }
           if (isTruthy(tag)) {
@@ -81,7 +77,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             }
           }
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, tagSpec, 'specification')
         }
       }
 
@@ -90,14 +86,14 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
         try {
           const colorName = name.name as c4.CustomColor
           if (colorName in c4Specification.colors) {
-            logger.warn(`Custom color "${colorName}" is already defined`)
+            this.logError(`Custom color "${colorName}" is already defined`, name, 'specification')
             continue
           }
           c4Specification.colors[colorName] = {
             color: nonNullable(this.parseColorLiteral(color), `Color "${colorName}" is not valid`),
           }
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, color, 'specification')
         }
       }
     }

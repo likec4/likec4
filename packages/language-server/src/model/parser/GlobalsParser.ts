@@ -1,12 +1,9 @@
 import type * as c4 from '@likec4/core'
 import { nonexhaustive } from '@likec4/core'
-import { loggable } from '@likec4/log'
+
 import { hasAtLeast, isTruthy } from 'remeda'
 import { type ParsedAstGlobals, ast } from '../../ast'
-import { serverLogger } from '../../logger'
 import type { WithViewsParser } from './ViewsParser'
-
-const logger = serverLogger.getChild('GlobalsParser')
 
 export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
   return class GlobalsParser extends B {
@@ -24,13 +21,13 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
             continue
           }
           if (globalPredicateId in c4Globals.predicates) {
-            logger.warn(`Global predicate named "${globalPredicateId}" is already defined`)
+            this.logError(`Global predicate named "${globalPredicateId}" is already defined`, predicate, 'globals')
             continue
           }
 
           this.parseAndStoreGlobalPredicateGroupOrDynamic(predicate, globalPredicateId, c4Globals)
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, predicate, 'globals')
         }
       }
 
@@ -42,7 +39,7 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
             continue
           }
           if (globalStyleId in c4Globals.styles) {
-            logger.warn(`Global style named "${globalStyleId}" is already defined`)
+            this.logError(`Global style named "${globalStyleId}" is already defined`, style, 'globals')
             continue
           }
 
@@ -51,7 +48,7 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
             c4Globals.styles[globalStyleId] = styles
           }
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, style, 'globals')
         }
       }
     }

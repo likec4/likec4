@@ -57,10 +57,9 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   }
 
   private documents(projectId: ProjectId) {
-    return this.langiumDocuments.projectDocuments(projectId).filter((d): d is LikeC4LangiumDocument =>
-      isLikeC4LangiumDocument(d)
-      && d.state >= DocumentState.IndexedContent
-    )
+    return this.langiumDocuments
+      .projectDocuments(projectId)
+      .filter(d => d.state >= DocumentState.IndexedContent)
   }
 
   public get(document: LikeC4LangiumDocument): DocumentFqnIndex {
@@ -99,9 +98,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     return stream(this.workspaceCache.get(`${projectId}:fqn:${fqn}`, () => {
       return this
         .documents(projectId)
-        .flatMap(doc => {
-          return this.get(doc).byFqn(fqn)
-        })
+        .flatMap(doc => this.get(doc).byFqn(fqn))
         .toArray()
     }))
   }
@@ -175,7 +172,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     if (rootElements.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
-    const projectId = document.likec4ProjectId ?? this.projects.belongsTo(document)
+    const projectId = document.likec4ProjectId ?? this.projects.ownerProjectId(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()

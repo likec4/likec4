@@ -13,6 +13,7 @@ import { loggable } from '@likec4/log'
 import { deepEqual as eq } from 'fast-equals'
 import {
   type DocumentBuilder,
+  type LangiumDocument,
   type URI,
   type WorkspaceLock,
   Disposable,
@@ -21,14 +22,18 @@ import {
   WorkspaceCache,
 } from 'langium'
 import {
+  filter,
   hasAtLeast,
+  identity,
   isEmpty,
+  map,
   mapToObj,
+  piped,
   values,
 } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
 import type { LikeC4ManualLayouts } from '../filesystem'
-import { isLikeC4Builtin } from '../likec4lib'
+import { isNotLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
@@ -86,12 +91,22 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           this.notifyListeners(deleted)
         }
       }),
+      services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
+        this.clearCache()
+      }),
     )
+
+    const filterValidatedDocs = piped(
+      identity()<LangiumDocument[]>,
+      filter(d => isNotLikeC4Builtin(d) && !this.projects.isExcluded(d)),
+      map(d => d.uri),
+    )
+
     this.onDispose(
       this.DocumentBuilder.onBuildPhase(
         DocumentState.Validated,
         (docs, _cancelToken) => {
-          const validated = docs.flatMap(d => isLikeC4Builtin(d.uri) || this.projects.isExcluded(d) ? [] : d.uri)
+          const validated = filterValidatedDocs(docs)
           if (validated.length > 0) {
             this.notifyListeners(validated)
           }

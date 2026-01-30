@@ -9,7 +9,7 @@ import {
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
-import { loggable } from '@likec4/log'
+
 import { filter, first, isDefined, isEmpty, isTruthy, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
@@ -19,11 +19,9 @@ import {
   ast,
   toRelationshipStyle,
 } from '../../ast'
-import { serverLogger } from '../../logger'
+
 import { stringHash } from '../../utils/stringHash'
 import type { WithExpressionV2 } from './FqnRefParser'
-
-const logger = serverLogger.getChild('DeploymentModelParser')
 
 export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
 
@@ -80,7 +78,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
               nonexhaustive(el)
           }
         } catch (e) {
-          logger.warn(loggable(e))
+          this.logError(e, el, 'deployment')
         }
       }
     }

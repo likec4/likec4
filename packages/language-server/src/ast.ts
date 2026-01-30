@@ -254,11 +254,8 @@ export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Requ
   likec4ProjectId: c4.ProjectId
 }
 
-export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
-  if (doc.textDocument.languageId === LikeC4LanguageMetaData.languageId) {
-    return true
-  }
-  return false
+export function isLikeC4LangiumDocument(doc: LangiumDocument | undefined): doc is LikeC4LangiumDocument {
+  return doc?.textDocument.languageId === LikeC4LanguageMetaData.languageId
 }
 
 export function isParsedLikeC4LangiumDocument(

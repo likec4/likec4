@@ -905,6 +905,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      ufo:
+        specifier: catalog:utils
+        version: 1.6.3
       vitest:
         specifier: catalog:vitest
         version: 4.0.18(@types/node@22.19.7)(@vitest/ui@4.0.18)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)

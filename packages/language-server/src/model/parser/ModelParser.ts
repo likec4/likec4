@@ -8,7 +8,6 @@
 import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
 import { exact, FqnRef } from '@likec4/core/types'
-import { loggable } from '@likec4/log'
 import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
@@ -19,17 +18,14 @@ import {
   ast,
   toRelationshipStyle,
 } from '../../ast'
-import { logger as mainLogger } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>
 
-const logger = mainLogger.getChild('ModelParser')
-
 function* streamModel(doc: LikeC4LangiumDocument) {
   const traverseStack = LinkedList.from(doc.parseResult.value.models.flatMap(m => m.elements))
-  const relations = [] as ast.Relation[]
+  const relations = [] as (ast.Relation | ast.ExtendRelation)[]
   let el
   while ((el = traverseStack.shift())) {
     if (ast.isRelation(el)) {
@@ -38,7 +34,7 @@ function* streamModel(doc: LikeC4LangiumDocument) {
     }
     // Skip ExtendRelation as it doesn't have child elements
     if (ast.isExtendRelation(el)) {
-      yield el
+      relations.push(el)
       continue
     }
     if (el.body && 'elements' in el.body && el.body.elements && el.body.elements.length > 0) {
@@ -63,9 +59,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
             continue
           }
           if (ast.isRelation(el)) {
-            if (this.isValid(el)) {
-              doc.c4Relations.push(this.parseRelation(el))
-            }
+            doc.c4Relations.push(this.parseRelation(el))
             continue
           }
           if (ast.isExtendElement(el)) {
@@ -84,14 +78,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
           }
           nonexhaustive(el)
         } catch (e) {
-          const astPath = this.getAstNodePath(el)
-          const error = loggable(e)
-          const message = e instanceof Error ? e.message : String(error)
-          logger.warn(`Error on {eltype}: ${message}\n document: {path}\n astpath: {astPath}\n${error}`, {
-            path: doc.uri.path,
-            eltype: el.$type,
-            astPath,
-          })
+          this.logError(e, el, 'model')
         }
       }
     }

@@ -16,7 +16,9 @@
   ],
   "ignorePatterns": [
     "packages/create-likec4/",
+    "packages/icons/",
     "apps/docs/",
+    "styled-system/styles/",
     "examples/"
   ],
   "rules": {

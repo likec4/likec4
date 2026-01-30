@@ -26,7 +26,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
     if (rootNodes.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
-    const projectId = this.projects.belongsTo(document)
+    const projectId = document.likec4ProjectId ?? this.projects.ownerProjectId(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()

@@ -3,12 +3,13 @@ import type { FSWatcher } from 'chokidar'
 import chokidar from 'chokidar'
 import { URI } from 'langium'
 import type { Stats } from 'node:fs'
+import { basename } from 'node:path'
 import PQueue from 'p-queue'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { isManualLayoutFile } from './LikeC4ManualLayouts'
 import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './types'
-import { isLikeC4File } from './utils'
+import { hasLikeC4Ext } from './utils'
 
 const logger = mainLogger.getChild('chokidar')
 
@@ -16,7 +17,10 @@ export const WithChokidarWatcher: FileSystemWatcherModuleContext = {
   fileSystemWatcher: (services: LikeC4SharedServices) => new ChokidarFileSystemWatcher(services),
 }
 
-const isAnyLikeC4File = (path: string) => isLikeC4File(path) || isLikeC4Config(path) || isManualLayoutFile(path)
+const isAnyLikeC4File = (path: string) => {
+  const filename = basename(path)
+  return hasLikeC4Ext(filename) || isLikeC4Config(filename) || isManualLayoutFile(filename)
+}
 
 /**
  * A no-op file system watcher.
@@ -53,7 +57,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
     let watcher = chokidar.watch(folder, {
       ignored: [
         path => path.includes('node_modules') || path.includes('.git'),
-        (path, stats) => (!!stats && stats.isFile() && !isAnyLikeC4File(path)),
+        (path, stats) => !!stats?.isFile() && !isAnyLikeC4File(path),
       ],
       followSymlinks: true,
       ignoreInitial: true,
@@ -94,31 +98,33 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       try {
         await fn()
       } catch (error) {
-        logger.warn(`Failed on ${fileop}`, { error })
+        logger.warn(`Failed on {fileop}`, { fileop, error })
       }
     }).catch(error => {
-      logger.error(`Error on ${fileop}`, { error })
+      logger.error(`Error on {fileop}`, { fileop, error })
     })
   }
 
   private async onAddOrChange(path: string) {
     const workspace = this.services.workspace
+    const filename = basename(path)
     switch (true) {
-      case isLikeC4Config(path): {
+      case isLikeC4Config(filename): {
         logger.debug`project file changed: ${path}`
+        workspace.ManualLayouts.clearCaches()
         await workspace.ProjectsManager.registerConfigFile(URI.file(path))
         break
       }
-      case isLikeC4File(path): {
+      case hasLikeC4Ext(filename): {
         logger.debug`file changed: ${path}`
         await workspace.DocumentBuilder.update([URI.file(path)], [])
         break
       }
-      case isManualLayoutFile(path): {
+      case isManualLayoutFile(filename): {
         logger.debug`manual layout file changed: ${path}`
         workspace.ManualLayouts.clearCaches()
-        const projectId = workspace.ProjectsManager.belongsTo(URI.file(path))
-        await workspace.ProjectsManager.rebuidProject(projectId)
+        const projectId = workspace.ProjectsManager.ownerProjectId(URI.file(path))
+        await workspace.ProjectsManager.rebuildProject(projectId)
         break
       }
       default: {
@@ -129,22 +135,24 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
 
   private async onRemove(path: string) {
     const workspace = this.services.workspace
+    const filename = basename(path)
     switch (true) {
-      case isLikeC4Config(path): {
+      case isLikeC4Config(filename): {
         logger.debug`project file removed: ${path}`
+        workspace.ManualLayouts.clearCaches()
         await workspace.ProjectsManager.reloadProjects()
         break
       }
-      case isLikeC4File(path): {
+      case hasLikeC4Ext(filename): {
         logger.debug`file removed: ${path}`
         await workspace.DocumentBuilder.update([], [URI.file(path)])
         break
       }
-      case isManualLayoutFile(path): {
+      case isManualLayoutFile(filename): {
         logger.debug`manual layout file removed: ${path}`
-        const project = workspace.ProjectsManager.belongsTo(path)
+        const project = workspace.ProjectsManager.ownerProjectId(path)
         workspace.ManualLayouts.clearCaches()
-        await workspace.ProjectsManager.rebuidProject(project)
+        await workspace.ProjectsManager.rebuildProject(project)
         break
       }
       default: {
@@ -156,7 +164,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private async onRemoveDir(path: string) {
     logger.debug`directory removed: ${path}`
     const workspace = this.services.workspace
-    const projects = workspace.ProjectsManager.findAllProjectsByFolder(path)
+    const projects = workspace.ProjectsManager.findOverlaped(path)
     if (projects.length > 0) {
       workspace.ManualLayouts.clearCaches()
       await workspace.ProjectsManager.reloadProjects()

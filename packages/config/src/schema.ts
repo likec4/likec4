@@ -12,7 +12,7 @@ import type {
 } from '@likec4/core/types'
 import z from 'zod/v4'
 import { ImageAliasesSchema } from './schema.image-alias'
-import { IncludeSchema } from './schema.include'
+import { type IncludeConfig, IncludeSchema } from './schema.include'
 import { LikeC4StylesConfigSchema } from './schema.theme'
 
 export interface VscodeURI {
@@ -247,4 +247,19 @@ export function validateProjectConfig<C extends Record<string, unknown>>(config:
     return parsed.data as unknown as LikeC4ProjectConfig
   }
   throw new Error('Config validation failed:\n' + z.prettifyError(parsed.error))
+}
+
+export const LikeC4ProjectConfigOps = {
+  validate: validateProjectConfig,
+  normalizeInclude: (include: z.input<typeof IncludeSchema> | undefined): IncludeConfig => {
+    const parsed = IncludeSchema.safeParse(include)
+    if (parsed.success) {
+      return parsed.data
+    }
+    return {
+      paths: [],
+      maxDepth: 3,
+      fileThreshold: 30,
+    }
+  },
 }

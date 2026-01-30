@@ -2,25 +2,28 @@ import type { NonEmptyArray, ProjectId } from '@likec4/core'
 import { compareNaturalHierarchically } from '@likec4/core/utils'
 import type { LangiumDocument, Stream, URI } from 'langium'
 import { DefaultLangiumDocuments, stream } from 'langium'
-import { hasAtLeast } from 'remeda'
+import { groupBy, map, pipe, prop } from 'remeda'
 import { type LikeC4LangiumDocument, isLikeC4LangiumDocument } from '../ast'
-import { LikeC4LanguageMetaData } from '../generated/module'
-import { isLikeC4Builtin } from '../likec4lib'
+import { isNotLikeC4Builtin } from '../likec4lib'
 import type { LikeC4SharedServices } from '../module'
+import type { ProjectsManager } from './ProjectsManager'
 
 /**
  * Compare function for document paths to ensure consistent order
  */
-const compare = compareNaturalHierarchically('/', true)
+const compare = compareNaturalHierarchically('/')
 const ensureOrder = (a: LangiumDocument, b: LangiumDocument) => compare(a.uri.path, b.uri.path)
 
-const exclude = (doc: LangiumDocument) => {
-  return doc.textDocument.languageId !== LikeC4LanguageMetaData.languageId || isLikeC4Builtin(doc.uri)
-}
+const isLikeC4UserDocument = (doc: LangiumDocument | undefined): doc is LikeC4LangiumDocument =>
+  isLikeC4LangiumDocument(doc) && isNotLikeC4Builtin(doc)
 
 export class LangiumDocuments extends DefaultLangiumDocuments {
   constructor(protected services: LikeC4SharedServices) {
     super(services)
+  }
+
+  protected get projectsManager(): ProjectsManager {
+    return this.services.workspace.ProjectsManager
   }
 
   override addDocument(document: LangiumDocument): void {
@@ -34,46 +37,37 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
     for (const doc of docs) {
       this.documentMap.set(doc.uri.toString(), doc)
     }
+    if (isLikeC4UserDocument(document)) {
+      // Set project ID
+      document.likec4ProjectId = this.projectsManager.ownerProjectId(document)
+    }
   }
 
-  override getDocument(uri: URI): LikeC4LangiumDocument | undefined {
+  override getDocument(uri: URI): LangiumDocument | undefined {
     const doc = super.getDocument(uri)
-    if (doc && !isLikeC4LangiumDocument(doc)) {
-      throw new Error(`Document ${doc.uri.path} is not a LikeC4 document`)
-    }
-    if (doc && !exclude(doc)) {
-      doc.likec4ProjectId = this.services.workspace.ProjectsManager.belongsTo(doc)
+    if (isLikeC4UserDocument(doc)) {
+      // Set project ID
+      doc.likec4ProjectId = this.projectsManager.ownerProjectId(doc)
     }
     return doc
   }
 
   /**
-   * Returns all known documents, without any filtering.
+   * Returns all user documents
    */
-  get allKnownDocuments(): Stream<LangiumDocument> {
+  get userDocuments(): Stream<LikeC4LangiumDocument> {
     return stream(this.documentMap.values())
+      .filter((doc): doc is LikeC4LangiumDocument => isLikeC4UserDocument(doc) && !this.projectsManager.isExcluded(doc))
   }
-
-  override get all(): Stream<LikeC4LangiumDocument> {
-    return this.allKnownDocuments
-      .filter((doc): doc is LikeC4LangiumDocument => {
-        if (doc.textDocument.languageId === LikeC4LanguageMetaData.languageId) {
-          if (!isLikeC4Builtin(doc.uri)) {
-            doc.likec4ProjectId = this.services.workspace.ProjectsManager.belongsTo(doc)
-          }
-          return true
-        }
-        return false
-      })
-  }
-
   /**
-   * Returns all documents, excluding built-in documents and documents excluded by ProjectsManager.
+   * Returns all documents (ensures project IDs are set)
    */
-  get allExcludingBuiltin(): Stream<LikeC4LangiumDocument> {
-    const projects = this.services.workspace.ProjectsManager
-    return this.all.filter((doc): doc is LikeC4LangiumDocument => {
-      return !(isLikeC4Builtin(doc.uri) || projects.isExcluded(doc))
+  override get all(): Stream<LangiumDocument> {
+    return stream(this.documentMap.values()).map((doc) => {
+      if (isLikeC4UserDocument(doc)) {
+        doc.likec4ProjectId = this.projectsManager.ownerProjectId(doc)
+      }
+      return doc
     })
   }
 
@@ -82,43 +76,40 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
    */
   projectDocuments(projectId: ProjectId): Stream<LikeC4LangiumDocument> {
     const projects = this.services.workspace.ProjectsManager
-    return this.allKnownDocuments
+    return stream(this.documentMap.values())
       .filter((doc): doc is LikeC4LangiumDocument => {
-        if (isLikeC4Builtin(doc.uri) || doc.textDocument.languageId !== LikeC4LanguageMetaData.languageId) {
-          return false
+        if (isLikeC4UserDocument(doc) && projects.isIncluded(projectId, doc)) {
+          doc.likec4ProjectId = projectId
+          return true
         }
-        if (!projects.isIncluded(projectId, doc.uri)) {
-          return false
-        }
-        doc.likec4ProjectId = projectId
-        return true
+        return false
       })
   }
 
   groupedByProject(): Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>> {
-    return this.services.workspace.ProjectsManager
-      .all
-      .reduce(
-        (acc, projectId) => {
-          const docs = this.projectDocuments(projectId).toArray()
-          if (hasAtLeast(docs, 1)) {
-            acc[projectId] = docs
-          }
-          return acc
-        },
-        {} as Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>>,
-      )
+    const projects = this.services.workspace.ProjectsManager
+    return pipe(
+      this.userDocuments.toArray(),
+      map(doc => {
+        doc.likec4ProjectId = projects.ownerProjectId(doc)
+        return doc
+      }),
+      groupBy(prop('likec4ProjectId')),
+    )
   }
 
   /**
    * Reset the project IDs of all documents.
+   * Returns the URIs
    */
-  resetProjectIds() {
-    this.allKnownDocuments.forEach(doc => {
-      if (exclude(doc)) {
-        return
-      }
+  resetProjectIds(): URI[] {
+    const uris = [] as URI[]
+    for (const doc of this.documentMap.values()) {
       delete doc.likec4ProjectId
-    })
+      if (isLikeC4UserDocument(doc) && !this.projectsManager.isExcluded(doc)) {
+        uris.push(doc.uri)
+      }
+    }
+    return uris
   }
 }

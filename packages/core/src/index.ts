@@ -10,7 +10,6 @@ export * from './types'
 
 export {
   ancestorsFqn,
-  BiMap,
   DefaultMap,
   DefaultWeakMap,
   hasProp,

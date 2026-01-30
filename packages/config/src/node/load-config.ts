@@ -1,7 +1,10 @@
 import { invariant } from '@likec4/core'
+import { logger, wrapError } from '@likec4/log'
 import { bundleRequire } from 'bundle-require'
+import { formatMessagesSync } from 'esbuild'
+import JSON5 from 'json5'
 import * as fs from 'node:fs/promises'
-import { dirname } from 'node:path'
+import { basename, dirname } from 'node:path'
 import { isLikeC4JsonConfig, isLikeC4NonJsonConfig } from '../filenames'
 import type { LikeC4ProjectConfig, VscodeURI } from '../schema'
 import { validateProjectConfig } from '../schema'
@@ -10,18 +13,32 @@ import { validateProjectConfig } from '../schema'
  * Load LikeC4 Project config file.
  * If filepath is a non-JSON file, it will be bundled and required
  */
-export async function loadConfig(filepath: VscodeURI): Promise<LikeC4ProjectConfig> {
-  if (isLikeC4JsonConfig(filepath.fsPath)) {
-    const content = await fs.readFile(filepath.fsPath, 'utf-8')
-    const parsed = JSON.parse(content)
-    return validateProjectConfig(parsed)
+export async function loadConfig(filepath: VscodeURI | string): Promise<LikeC4ProjectConfig> {
+  filepath = typeof filepath === 'string' ? filepath : filepath.fsPath
+  logger.getChild('config').debug`Loading config: ${filepath}`
+
+  const folder = dirname(filepath)
+  const filename = basename(filepath)
+  const implicitcfg = { name: basename(folder) }
+
+  if (isLikeC4JsonConfig(filename)) {
+    const content = await fs.readFile(filepath, 'utf-8')
+    let parsed
+    try {
+      parsed = JSON5.parse(content.trim() || '{}')
+    } catch (e) {
+      throw wrapError(e, `${filepath}:`)
+    }
+    return validateProjectConfig({
+      ...implicitcfg,
+      ...parsed,
+    })
   }
 
-  invariant(isLikeC4NonJsonConfig(filepath.fsPath), `Invalid config file: ${filepath.fsPath}`)
-  const cwd = dirname(filepath.fsPath)
+  invariant(isLikeC4NonJsonConfig(filename), `Invalid name for config file: ${filepath}`)
   const { mod } = await bundleRequire({
-    filepath: filepath.fsPath,
-    cwd,
+    filepath,
+    cwd: folder,
     esbuildOptions: {
       resolveExtensions: ['.ts', '.mts', '.cts', '.mjs', '.js', '.cjs'],
       plugins: [{
@@ -34,6 +51,12 @@ export async function loadConfig(filepath: VscodeURI): Promise<LikeC4ProjectConf
             path: args.path,
             namespace: 'likec4-config',
           }))
+          build.onEnd((result) => {
+            const messages = formatMessagesSync(result.errors, { kind: 'error' })
+            for (const message of messages) {
+              logger.error(message)
+            }
+          })
           /**
            * Mock implementation, this allows to skip redundant bundling @likec4/config
            */
@@ -56,5 +79,5 @@ export {
       }],
     },
   })
-  return validateProjectConfig(mod?.default ?? mod)
+  return validateProjectConfig(Object.assign(implicitcfg, mod?.default ?? mod))
 }

@@ -1,4 +1,4 @@
-import { filter, funnel, indexBy, keys, map, mapValues, pipe, sort } from 'remeda'
+import { filter, funnel, indexBy, keys, map, mapValues, once, pipe, sort } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
@@ -41,7 +41,7 @@ export class Rpc extends ADisposable {
     super()
   }
 
-  init() {
+  init = once(() => {
     const connection = this.services.shared.lsp.Connection
     if (!connection) {
       logger.info(`no connection, skip init ServerRpc`)
@@ -102,14 +102,15 @@ export class Rpc extends ADisposable {
       // ----------
       workspace.ProjectsManager.onProjectsUpdate(() => notifyProjectsUpdate.call(1)),
       // ----------
-      connection.onRequest(FetchComputedModel.req, async ({ projectId, cleanCaches }, cancelToken) => {
-        logger.debug`received request ${'fetchComputedModel'} for project ${projectId} (cleanCaches: ${cleanCaches})`
+      connection.onRequest(FetchComputedModel.req, async ({ projectId, cleanCaches = false }, cancelToken) => {
+        logger.debug`received request ${'fetchComputedModel'} for project ${projectId}`
         if (cleanCaches) {
-          const docs = projectId
-            ? LangiumDocuments.projectDocuments(projectId as ProjectId)
-            : LangiumDocuments.allExcludingBuiltin
-          const uris = docs.toArray().map(d => d.uri)
-          await DocumentBuilder.update(uris, [], cancelToken)
+          logger.debug`cleanCaches: ${cleanCaches}`
+          if (projectId) {
+            await workspace.ProjectsManager.rebuildProject(projectId as ProjectId)
+          } else {
+            await workspace.WorkspaceManager.rebuildAll()
+          }
         }
         const likec4model = await likec4Services.ModelBuilder.computeModel(projectId as ProjectId, cancelToken)
         if (likec4model !== LikeC4Model.EMPTY) {
@@ -121,9 +122,8 @@ export class Rpc extends ADisposable {
       connection.onNotification(DidChangeSnapshotNotification.type, async ({ snapshotUri }) => {
         logger.debug`received notification ${'onDidChangeSnapshot'} for snapshot ${snapshotUri}`
         const uri = URI.parse(snapshotUri)
-        workspace.ManualLayouts.clearCaches()
-        await workspace.ProjectsManager.rebuidProject(
-          workspace.ProjectsManager.belongsTo(uri.path),
+        await workspace.ProjectsManager.rebuildProject(
+          workspace.ProjectsManager.ownerProjectId(uri.path),
         )
       }),
       // ----------
@@ -247,11 +247,11 @@ export class Rpc extends ADisposable {
       // ----------
       connection.onRequest(BuildDocuments.req, async ({ docs }, cancelToken) => {
         const changed = docs.map(d => URI.parse(d))
-        const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
-        const deleted = LangiumDocuments.allExcludingBuiltin
-          .toArray()
-          .filter(d => notChanged(d.uri))
+        const isNotChanged = (d: URI) => !changed.some(c => UriUtils.equals(c, d))
+        const deleted = LangiumDocuments.userDocuments
           .map(d => d.uri)
+          .filter(isNotChanged)
+          .toArray()
 
         logger.debug(
           `[ServerRpc] received request to build:
@@ -311,7 +311,7 @@ export class Rpc extends ADisposable {
           request.projectId &&
           (op === 'save-view-snapshot' || op === 'reset-manual-layout')
         ) {
-          await workspace.ProjectsManager.rebuidProject(request.projectId as ProjectId, cancelToken)
+          await workspace.ProjectsManager.rebuildProject(request.projectId as ProjectId, cancelToken)
         }
         return loc
       }),
@@ -392,7 +392,7 @@ export class Rpc extends ADisposable {
         }),
       )
     }
-  }
+  })
 
   async openView(params: DidRequestOpenViewNotification.Params): Promise<void> {
     const lspConnection = this.services.shared.lsp.Connection

@@ -4,7 +4,6 @@ import {
   exact,
   GlobalFqn,
   isNonEmptyArray,
-  memoizeProp,
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
@@ -43,7 +42,7 @@ import { readStrictFqn } from '../../utils/elementRef'
 import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 import type { Project } from '../../workspace/ProjectsManager'
 
-const logger = serverLogger.getChild('BaseParser')
+const logger = serverLogger.getChild('parser')
 
 // the class which this mixin is applied to
 export type GConstructor<T = {}> = new(...args: any[]) => T
@@ -106,19 +105,67 @@ export function removeIndent(
 
 export type Base = GConstructor<BaseParser>
 
+type ParserLevel =
+  | 'base'
+  | 'model'
+  | 'deployment'
+  | 'fqnref'
+  | 'relation'
+  | 'views'
+  | 'globals'
+  | 'imports'
+  | 'specification'
+
 export class BaseParser {
   isValid: IsValidFn
 
   constructor(
     public readonly services: LikeC4Services,
     public readonly doc: ParsedLikeC4LangiumDocument,
+    public readonly project: Project,
   ) {
     // do nothing
     this.isValid = checksFromDiagnostics(doc).isValid
   }
 
-  get project(): Project {
-    return memoizeProp(this, 'project', () => this.services.shared.workspace.ProjectsManager.getProject(this.doc))
+  logError(
+    error: unknown,
+    astNode?: AstNode,
+    level?: ParserLevel,
+  ) {
+    // dprint-ignore
+    let message = error instanceof Error
+      ? error.message
+      : typeof error === 'string'
+        ? error
+        : String(error)
+
+    if (astNode) {
+      const cst = astNode.$cstNode
+      const position = cst ? `:${cst.range.start.line + 1}:${cst.range.start.character + 1}` : ''
+      message += `\n\tat ${astNode.$type} (${this.doc.uri.fsPath}${position})`
+    }
+    if (level && level !== 'base') {
+      logger.getChild(level).warn(message)
+    } else {
+      logger.warn(message)
+    }
+  }
+
+  tryParse<N extends AstNode, T>(level: ParserLevel, node: N | undefined, fn: (node: NoInfer<N>) => T): T | undefined {
+    try {
+      if (!node || !this.isValid(node as any)) {
+        return undefined
+      }
+      return fn(node)
+    } catch (e) {
+      this.logError(e, node, level)
+      return undefined
+    }
+  }
+
+  tryMap<N extends AstNode, T>(level: ParserLevel, iterable: ReadonlyArray<N>, fn: (node: N) => T): T[] {
+    return iterable.flatMap(node => this.tryParse(level, node, fn) ?? [])
   }
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
@@ -258,12 +305,16 @@ export class BaseParser {
         }
         const url = p.value
         if (isTruthy(url)) {
-          const title = isTruthy(p.title) ? toSingleLine(p.title) : undefined
-          const relative = this.services.lsp.DocumentLinkProvider.relativeLink(this.doc, url)
-          return {
-            url,
-            ...(title && { title }),
-            ...(relative && relative !== url && { relative }),
+          try {
+            const title = isTruthy(p.title) ? toSingleLine(p.title) : undefined
+            const relative = this.services.lsp.DocumentLinkProvider.relativeLink(this.doc, url)
+            return {
+              url,
+              ...(title && { title }),
+              ...(relative && relative !== url && { relative }),
+            }
+          } catch (error) {
+            this.logError(error, p)
           }
         }
         return []
@@ -280,7 +331,7 @@ export class BaseParser {
       case !!libicon: {
         const name = libicon.ref?.name
         if (!name) {
-          logger.warn(`Library icon ${libicon.$refText} is not a valid library icon`)
+          this.logError(`Library icon ${libicon.$refText} is not a valid library icon`, prop)
           return undefined
         }
         return name as c4.IconUrl
@@ -290,7 +341,7 @@ export class BaseParser {
       }
       case value && hasProtocol(value): {
         if (value.startsWith('file:')) {
-          logger.warn(`Icon property '${value}' used the 'file' protocol which is not supported`)
+          this.logError(`Icon property '${value}' used the 'file' protocol which is not supported`, prop)
           return undefined
         }
 
@@ -306,7 +357,7 @@ export class BaseParser {
         return joinURL(this.project.folderUri.toString(), value) as c4.IconUrl
       }
       default: {
-        logger.warn(`Icon property '${value}' is not a valid URL, library icon, image alias or 'none'`)
+        this.logError(`Icon property '${value}' is not a valid URL, library icon, image alias or 'none'`, prop)
         return undefined
       }
     }
@@ -371,7 +422,7 @@ export class BaseParser {
           style.icon = iconProp
         }
       } catch (err) {
-        logger.warn('Failed to parse icon property on element', { err })
+        this.logError(err)
       }
       return style
     }
@@ -464,7 +515,7 @@ export class BaseParser {
             nonexhaustive(prop)
         }
       } catch (err) {
-        logger.warn('Failed to parse style property', { err })
+        this.logError(err, prop)
       }
     }
     return exact(result)

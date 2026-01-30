@@ -41,11 +41,6 @@ interface BaseLikeC4ModelData<A extends Any> {
   relations: Record<scalar.RelationId, Relationship<A>>
   globals: ModelGlobals
   imports: Record<string, NonEmptyArray<Element<A>>>
-  /**
-   * If project contains saved manual layouts
-   * This is not set for {@link ParsedLikeC4ModelData}
-   */
-  // manualLayouts?: Record<scalar.ViewId, ViewManualLayoutSnapshot>
 }
 
 export type AuxFromLikeC4ModelData<D> =
@@ -72,7 +67,6 @@ export interface ComputedLikeC4ModelData<A extends AnyComputed = UnknownComputed
 
 export interface LayoutedLikeC4ModelData<A extends AnyLayouted = UnknownLayouted> extends BaseLikeC4ModelData<A> {
   [_stage]: 'layouted'
-  // globals: ModelGlobals<A>
   views: Record<aux.ViewId<A>, LayoutedView<A>>
   /**
    * If this model contains saved manual layouts

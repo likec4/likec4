@@ -11,7 +11,6 @@ import type {
   LayoutedLikeC4ModelData,
   LikeC4ModelDump,
   LikeC4Project,
-  LikeC4StylesConfig,
   ModelGlobals,
   ParsedLikeC4ModelData,
   ProjectId,
@@ -296,14 +295,8 @@ export class LikeC4Model<A extends Any = Any> {
       'styles',
       () =>
         LikeC4Styles.from(
-          this.$data.project.styles as LikeC4StylesConfig,
-          this.$data.specification.customColors
-            ? {
-              theme: {
-                colors: this.$data.specification.customColors,
-              },
-            }
-            : undefined,
+          this.$data.project.styles,
+          this.$data.specification.customColors,
         ),
     )
   }

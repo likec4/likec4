@@ -9,7 +9,7 @@ import type { ProjectId } from '@likec4/core'
 import { DefaultWeakMap, invariant, MultiMap } from '@likec4/core/utils'
 import { type LangiumDocument, type Stream, DocumentState, UriUtils } from 'langium'
 import { pipe } from 'remeda'
-import { DiagnosticSeverity } from 'vscode-languageserver-types'
+import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4DocumentProps, type ParsedLikeC4LangiumDocument, isLikeC4LangiumDocument } from '../ast'
 import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -43,6 +43,8 @@ export class DocumentParser extends DocumentParserFromMixins {
 }
 
 const logger = rootLogger.getChild('ModelParser')
+
+const isError = (d: Diagnostic) => d.severity === DiagnosticSeverity.Error
 
 export class LikeC4ModelParser {
   protected cachedParsers = new DefaultWeakMap((doc: LangiumDocument) => this.createParser(doc))
@@ -83,7 +85,7 @@ export class LikeC4ModelParser {
     services.shared.workspace.DocumentBuilder.onDocumentPhase(
       DocumentState.Validated,
       async doc => {
-        if (doc.diagnostics?.some(d => d.severity === DiagnosticSeverity.Error) && this.cachedParsers.has(doc)) {
+        if (doc.diagnostics?.some(isError) && this.cachedParsers.has(doc)) {
           logger.trace('Validated: clear cached parser {projectId} document {doc} because of errors', {
             projectId: doc.likec4ProjectId,
             doc: UriUtils.basename(doc.uri),
@@ -111,18 +113,19 @@ export class LikeC4ModelParser {
 
   private createParser(doc: LangiumDocument): DocumentParser {
     invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
-    const docbasename = UriUtils.basename(doc.uri)
+    const project = this.services.shared.workspace.ProjectsManager.getProject(doc)
+    const docpath = UriUtils.relative(project.folderUri, doc.uri)
     if (doc.likec4ProjectId) {
       logger.trace(`create parser {projectId} document {doc}`, {
         projectId: doc.likec4ProjectId,
-        doc: docbasename,
+        doc: docpath,
       })
     } else {
       logger.warn(`create parser for document without project {doc}`, { doc: doc.uri.fsPath })
     }
     if (doc.state < DocumentState.Linked) {
       logger.warn(`Document {doc} is not linked, state is {state}`, {
-        doc: docbasename,
+        doc: docpath,
         state: doc.state,
       })
     }
@@ -151,16 +154,20 @@ export class LikeC4ModelParser {
       c4Imports: new MultiMap(Set),
     }
     doc = Object.assign(doc, props)
-    const parser = new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument)
+    const parser = new DocumentParser(
+      this.services,
+      doc as ParsedLikeC4LangiumDocument,
+      project,
+    )
     try {
       parser.parseSpecification()
       parser.parseImports()
       parser.parseModel()
-      parser.parseGlobals()
       parser.parseDeployment()
+      parser.parseGlobals()
       parser.parseViews()
     } catch (error) {
-      throw new Error(`Error parsing document ${doc.uri.fsPath}`, { cause: error })
+      throw new Error(`Error parsing document ${docpath}`, { cause: error })
     }
     return parser
   }

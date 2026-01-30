@@ -13,5 +13,5 @@ export function projectIdFrom(value: AstNode | LangiumDocument | ast.ImportsFrom
     return value.project as ProjectId
   }
   const doc = isAstNode(value) ? AstUtils.getDocument(value) : value
-  return nonNullable(doc.likec4ProjectId, () => `Invalid state, document ${doc.uri} has no project ID assigned`)
+  return nonNullable(doc.likec4ProjectId, () => `Invalid state, document ${doc.uri.fsPath} has no project ID assigned`)
 }

@@ -1,5 +1,4 @@
 export {
-  BiMap,
   DefaultMap,
   DefaultWeakMap,
   LinkedList,
