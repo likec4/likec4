@@ -73,6 +73,7 @@ const defaultConfig = defineConfig({
     rollupOptions: {
       input: [
         'src/index.ts',
+        'src/adhoc-editor/index.ts',
         'src/custom/index.ts',
         'src/styles.css',
         'src/styles-font.css',

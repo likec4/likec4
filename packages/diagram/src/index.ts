@@ -95,10 +95,3 @@ export {
   LikeC4ProjectsOverview,
   type LikeC4ProjectsOverviewProps,
 } from './LikeC4ProjectsOverview'
-
-export type {
-  AdhocViewService,
-} from './adhoc-editor/actor.types'
-export {
-  LikeC4AdHocViewEditor,
-} from './adhoc-editor/LikeC4AdHocViewEditor'

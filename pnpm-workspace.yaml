@@ -171,6 +171,10 @@ catalogs:
   xyflow:
     '@xyflow/react': 12.10.0
     '@xyflow/system': 0.0.74
+  zag:
+    '@zag-js/collection': ^1.33.1
+    '@zag-js/react': ^1.33.1
+    '@zag-js/tree-view': ^1.33.1
 
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'

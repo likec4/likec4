@@ -41,6 +41,14 @@
         "default": "./dist/index.js"
       }
     },
+    "./adhoc-editor": {
+      "sources": "./src/adhoc-editor/index.ts",
+      "default": {
+        "types": "./dist/adhoc-editor/index.d.ts",
+        "import": "./dist/adhoc-editor/index.js",
+        "default": "./dist/adhoc-editor/index.js"
+      }
+    },
     "./custom": {
       "sources": "./src/custom/index.ts",
       "default": {
@@ -93,6 +101,9 @@
     "@xstate/store": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
+    "@zag-js/collection": "catalog:zag",
+    "@zag-js/react": "catalog:zag",
+    "@zag-js/tree-view": "catalog:zag",
     "bezier-js": "^6.1.4",
     "d3-shape": "^3.2.0",
     "fast-equals": "catalog:utils",
