@@ -21,7 +21,7 @@ import type { LikeC4ModelParser } from './model-parser'
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
 const { getDocument, streamAllContents } = AstUtils
 
-const logger = serverLogger.getChild('ModelLocator')
+const logger = serverLogger.getChild('locator')
 
 export type ViewLocateResult = {
   doc: ParsedLikeC4LangiumDocument

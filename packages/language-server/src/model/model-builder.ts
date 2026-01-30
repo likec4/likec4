@@ -46,7 +46,7 @@ const parsedWithoutImportsCacheKey = (projectId: c4.ProjectId) => `parsed-withou
 const parsedModelCacheKey = (projectId: c4.ProjectId) => `parsed-model-${projectId}`
 const computedModelCacheKey = (projectId: c4.ProjectId) => `computed-model-${projectId}`
 
-const builderLogger = mainLogger.getChild('model-builder')
+const builderLogger = mainLogger.getChild('builder')
 
 type ModelParsedListener = (docs: URI[]) => void
 

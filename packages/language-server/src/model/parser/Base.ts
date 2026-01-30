@@ -146,9 +146,9 @@ export class BaseParser {
       message += `\n\tat ${astNode.$type} (${this.doc.uri.fsPath}${position})`
     }
     if (level && level !== 'base') {
-      logger.getChild(level).warn(message)
+      logger.getChild(level).debug(message)
     } else {
-      logger.warn(message)
+      logger.debug(message)
     }
   }
 

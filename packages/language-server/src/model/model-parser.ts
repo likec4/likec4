@@ -42,7 +42,7 @@ const DocumentParserFromMixins = pipe(
 export class DocumentParser extends DocumentParserFromMixins {
 }
 
-const logger = rootLogger.getChild('ModelParser')
+const logger = rootLogger.getChild('parser')
 
 const isError = (d: Diagnostic) => d.severity === DiagnosticSeverity.Error
 

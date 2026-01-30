@@ -39,7 +39,7 @@ import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 
-const logger = mainLogger.getChild('ProjectsManager')
+const logger = mainLogger.getChild('projects')
 
 export type NormalizedUri = Tagged<string, 'NormalizedUri'>
 
@@ -496,14 +496,14 @@ export class ProjectsManager {
           (a, b) => compareUri(a.folderUri, b.folderUri),
         ),
       )
-      logger.info`register project ${project.id}`
+      logger.info`register ${project.id}`
     } else {
       // if project name is changed, unregister and re-register
       if (project.config.name !== config.name) {
         // this.#projectIdToFolder.delete(project.id)
         // logger.info`unregister project ${project.id} folder: ${folder}`
         project.id = this.uniqueProjectId(config.name)
-        logger.info`re-register project ${project.id}`
+        logger.info`re-register ${project.id}`
       }
       // update fields
       project.config = config

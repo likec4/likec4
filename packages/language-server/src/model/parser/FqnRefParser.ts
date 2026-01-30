@@ -425,7 +425,10 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
 
     parseInlineKindCondition(astNode: ast.OutgoingRelationExpr): c4.WhereOperator | null {
       const kind = astNode.kind ?? astNode.dotKind?.kind
-      if (!kind?.ref) {
+      if (!kind) {
+        return null
+      }
+      if (!kind.ref) {
         this.logError(`Kind "${astNode.$cstNode?.text}" is not resolved`, astNode, 'fqnref')
         return null
       }
