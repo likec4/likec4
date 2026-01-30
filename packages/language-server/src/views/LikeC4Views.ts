@@ -67,8 +67,6 @@ export interface LikeC4Views {
    * If not specified - returns latest layout as is
    *
    * If view not found in model, but there is a snapshot - it will be returned (with empty DOT)
-   *
-   * @param projectId - project id, if not specified - uses the default project
    */
   layoutView(params: LayoutViewParams): Promise<GraphvizOut | null>
   /**

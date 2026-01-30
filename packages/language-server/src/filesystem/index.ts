@@ -6,6 +6,7 @@ export type {
   FileSystemWatcherModuleContext,
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
+  ManualLayoutsSnapshot,
 } from './types'
 
 export {

@@ -201,7 +201,7 @@ export function LikeC4VitePlugin({
         map(likec4.projects(), p => ({
           id: p.id,
           title: p.title,
-          folder: p.folder.fsPath,
+          folder: p.folder.toString(),
         }))
       let _projects = readProjects()
 
@@ -209,7 +209,7 @@ export function LikeC4VitePlugin({
         const md = server.moduleGraph.getModuleById(id)
         if (md && md.importers.size > 0) {
           try {
-            await server.reloadModule(md)
+            server.moduleGraph.invalidateModule(md, undefined, undefined, true, true)
           } catch (err) {
             logger.error(err)
           }

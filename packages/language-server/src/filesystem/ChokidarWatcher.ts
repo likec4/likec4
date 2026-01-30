@@ -108,22 +108,23 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private async onAddOrChange(path: string) {
     const workspace = this.services.workspace
     const filename = basename(path)
+    const uri = URI.file(path)
     switch (true) {
       case isLikeC4Config(filename): {
         logger.debug`project file changed: ${path}`
         workspace.ManualLayouts.clearCaches()
-        await workspace.ProjectsManager.registerConfigFile(URI.file(path))
+        await workspace.ProjectsManager.registerConfigFile(uri)
         break
       }
       case hasLikeC4Ext(filename): {
         logger.debug`file changed: ${path}`
-        await workspace.DocumentBuilder.update([URI.file(path)], [])
+        await workspace.DocumentBuilder.update([uri], [])
         break
       }
       case isManualLayoutFile(filename): {
         logger.debug`manual layout file changed: ${path}`
         workspace.ManualLayouts.clearCaches()
-        const projectId = workspace.ProjectsManager.ownerProjectId(URI.file(path))
+        const projectId = workspace.ProjectsManager.ownerProjectId(uri)
         await workspace.ProjectsManager.rebuildProject(projectId)
         break
       }
@@ -136,6 +137,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private async onRemove(path: string) {
     const workspace = this.services.workspace
     const filename = basename(path)
+    const uri = URI.file(path)
     switch (true) {
       case isLikeC4Config(filename): {
         logger.debug`project file removed: ${path}`
@@ -145,12 +147,12 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       }
       case hasLikeC4Ext(filename): {
         logger.debug`file removed: ${path}`
-        await workspace.DocumentBuilder.update([], [URI.file(path)])
+        await workspace.DocumentBuilder.update([], [uri])
         break
       }
       case isManualLayoutFile(filename): {
         logger.debug`manual layout file removed: ${path}`
-        const project = workspace.ProjectsManager.ownerProjectId(path)
+        const project = workspace.ProjectsManager.ownerProjectId(uri)
         workspace.ManualLayouts.clearCaches()
         await workspace.ProjectsManager.rebuildProject(project)
         break

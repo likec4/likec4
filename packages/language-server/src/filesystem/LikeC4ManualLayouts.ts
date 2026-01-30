@@ -1,6 +1,7 @@
 import type { DiagramNode, Icon, LayoutedView, ProjectId, ViewId } from '@likec4/core'
+import { objectHash, onNextTick } from '@likec4/core/utils'
 import JSON5 from 'json5'
-import { DocumentState, URI, UriUtils, WorkspaceCache } from 'langium'
+import { SimpleCache, URI, UriUtils } from 'langium'
 import { indexBy, prop } from 'remeda'
 import {
   type Location,
@@ -10,7 +11,7 @@ import {
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import type { Project } from '../workspace/ProjectsManager'
-import type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext } from './types'
+import type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext, ManualLayoutsSnapshot } from './types'
 
 const layoutsLogger = rootLogger.getChild('manual-layouts')
 
@@ -38,13 +39,19 @@ export const WithLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
 const RELATIVE_PATH_PREFIX = 'file://./'
 
 export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
-  protected cache: WorkspaceCache<ProjectId, Promise<Record<ViewId, LayoutedView> | null>>
+  protected cache: SimpleCache<ProjectId, Promise<ManualLayoutsSnapshot | null>>
 
   constructor(private services: LikeC4SharedServices) {
-    this.cache = new WorkspaceCache(services, DocumentState.Validated)
+    this.cache = new SimpleCache()
+
+    onNextTick(() => {
+      services.workspace.ProjectsManager.onProjectsUpdate(() => {
+        this.clearCaches()
+      })
+    })
   }
 
-  async read(project: Project): Promise<Record<ViewId, LayoutedView> | null> {
+  async read(project: Project): Promise<ManualLayoutsSnapshot | null> {
     return await this.cache.get(project.id, async () => {
       const logger = layoutsLogger.getChild(project.id)
       const fs = this.services.workspace.FileSystemProvider
@@ -56,18 +63,16 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
           return null
         }
         for (const file of files) {
-          if (file.isFile) {
-            try {
-              const content = await fs.readFile(file.uri)
-              const parsed = JSON5.parse<LayoutedView>(content)
-              const resolved = this.resolveIconPathsAfterRead(parsed, project.folderUri)
-              manualLayouts.push({
-                ...resolved,
-                _layout: 'manual',
-              })
-            } catch (err) {
-              logger.warn(`Failed to read view snapshot ${file.uri.fsPath}`, { err })
-            }
+          try {
+            const content = await fs.readFile(file.uri)
+            const parsed = JSON5.parse<LayoutedView>(content)
+            const resolved = this.resolveIconPathsAfterRead(parsed, project.folderUri)
+            manualLayouts.push({
+              ...resolved,
+              _layout: 'manual',
+            })
+          } catch (err) {
+            logger.warn(`Failed to read view snapshot ${file.uri.fsPath}`, { err })
           }
         }
         if (manualLayouts.length) {
@@ -79,7 +84,11 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       if (manualLayouts.length === 0) {
         return null
       }
-      return indexBy(manualLayouts, prop('id'))
+      const views = indexBy(manualLayouts, prop('id'))
+      return {
+        hash: objectHash(views),
+        views,
+      }
     })
   }
 
@@ -114,19 +123,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     } catch (err) {
       logger.warn(`Failed to write snapshot ${layouted.id} to ${file.fsPath}`, { err })
     }
-
-    const projectCachesPromise = this.cache.get(project.id)
-    if (projectCachesPromise) {
-      const projectCaches = await projectCachesPromise
-      if (projectCaches) {
-        logger.debug`update snapshot cache of ${layouted.id} in project ${project.id}`
-        projectCaches[layouted.id] = layouted
-      } else {
-        logger.debug`clean cache of project ${project.id}`
-        // Cache was null, remove it entirely
-        this.cache.delete(project.id)
-      }
-    }
+    this.cache.delete(project.id)
     return location
   }
 
@@ -142,6 +139,8 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       range: Range.create(0, 0, 0, 0),
     }
 
+    this.cache.delete(project.id)
+
     try {
       const fs = this.services.workspace.FileSystemProvider
       if (!(await fs.deleteFile(file))) {
@@ -151,24 +150,11 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     } catch (err) {
       logger.warn(`Failed to delete snapshot ${view} from ${file.fsPath}`, { err })
     }
-
-    const projectCachesPromise = this.cache.get(project.id)
-    if (projectCachesPromise) {
-      const projectCaches = await projectCachesPromise
-      if (projectCaches) {
-        logger.debug`clean cached view ${view} in project ${project.id}`
-        delete projectCaches[view]
-      } else {
-        logger.debug`reset empty cache of project ${project.id}`
-        // Cache was null, remove it entirely
-        this.cache.delete(project.id)
-      }
-    }
     return location
   }
 
   clearCaches(): void {
-    layoutsLogger.debug`clear caches`
+    layoutsLogger.trace`clear caches`
     this.cache.clear()
   }
 

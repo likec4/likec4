@@ -74,8 +74,13 @@ export interface LikeC4ManualLayoutsModuleContext {
   manualLayouts: (services: LikeC4SharedServices) => LikeC4ManualLayouts
 }
 
+export type ManualLayoutsSnapshot = {
+  hash: string
+  views: Record<ViewId, LayoutedView>
+}
+
 export interface LikeC4ManualLayouts {
-  read(project: Project): Promise<Record<ViewId, LayoutedView> | null>
+  read(project: Project): Promise<ManualLayoutsSnapshot | null>
   write(project: Project, layouted: LayoutedView): Promise<Location>
   remove(project: Project, view: ViewId): Promise<Location | null>
   clearCaches(): void

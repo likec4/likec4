@@ -313,7 +313,10 @@ export class ProjectsManager {
     if (this.#projects.length > 1) {
       return undefined
     }
-    return this.#projects[0]?.id ?? ProjectsManager.DefaultProjectId
+    if (hasAtLeast(this.#projects, 1)) {
+      return this.#projects[0].id
+    }
+    return ProjectsManager.DefaultProjectId
   }
 
   set defaultProjectId(id: string | ProjectId | undefined) {
@@ -394,7 +397,7 @@ export class ProjectsManager {
   /**
    * Validates and ensures the project.
    */
-  ensureProject(projectId?: ProjectId | undefined): Project {
+  ensureProject(projectId?: ProjectId | undefined): ProjectData {
     projectId = this.ensureProjectId(projectId)
     return this.getProject(projectId)
   }
@@ -522,6 +525,7 @@ export class ProjectsManager {
       // Rebuild project will notify listeners
       return project
     }
+    this.notifyListeners()
 
     await this.rebuildProject(project.id, cancelToken).catch(error => {
       if (isOperationCancelled(error)) {
@@ -534,8 +538,6 @@ export class ProjectsManager {
       // ignore error, we logged it
       return Promise.resolve()
     })
-
-    this.notifyListeners()
     return project
   }
 
@@ -628,6 +630,7 @@ export class ProjectsManager {
       }
     }
     this.resetCaches()
+    this.notifyListeners()
     await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
   }
 

@@ -121,9 +121,9 @@ export class Rpc extends ADisposable {
       // ----------
       connection.onNotification(DidChangeSnapshotNotification.type, async ({ snapshotUri }) => {
         logger.debug`received notification ${'onDidChangeSnapshot'} for snapshot ${snapshotUri}`
-        const uri = URI.parse(snapshotUri)
+        workspace.ManualLayouts.clearCaches()
         await workspace.ProjectsManager.rebuildProject(
-          workspace.ProjectsManager.ownerProjectId(uri.path),
+          workspace.ProjectsManager.ownerProjectId(snapshotUri),
         )
       }),
       // ----------
@@ -203,7 +203,7 @@ export class Rpc extends ADisposable {
       // ----------
       connection.onRequest(RegisterProject.req, async (params, cancelToken) => {
         logger.debug`received request ${'RegisterProject'}`
-
+        workspace.ManualLayouts.clearCaches()
         let project
         if ('configUri' in params) {
           project = await workspace.ProjectsManager.registerConfigFile(URI.parse(params.configUri), cancelToken)

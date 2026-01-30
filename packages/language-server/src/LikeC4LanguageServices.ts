@@ -158,16 +158,12 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     if (hasAtLeast(projectsWithDocs, 1)) {
       return projectsWithDocs
     }
-    const { folderUri, config } = projectsManager.getProject(ProjectsManager.DefaultProjectId)
-    const documents = map(
-      this.services.shared.workspace.LangiumDocuments.projectDocuments(ProjectsManager.DefaultProjectId).toArray(),
-      prop('uri'),
-    )
+    const { id, folderUri, config } = projectsManager.default
     return [{
-      id: ProjectsManager.DefaultProjectId,
+      id,
       folder: folderUri,
       title: config.title ?? config.name,
-      documents,
+      documents: [],
       config,
     }]
   }
@@ -179,15 +175,13 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     documents: ReadonlyArray<URI>
     config: LikeC4ProjectConfig
   } {
-    projectId = this.projectsManager.ensureProjectId(projectId)
-    const projectsManager = this.services.shared.workspace.ProjectsManager
-    const { folderUri, config } = projectsManager.getProject(projectId)
+    const { id, folderUri, config } = this.projectsManager.ensureProject(projectId)
     const documents = map(
-      this.services.shared.workspace.LangiumDocuments.projectDocuments(projectId).toArray(),
+      this.services.shared.workspace.LangiumDocuments.projectDocuments(id).toArray(),
       prop('uri'),
     )
     return {
-      id: projectId,
+      id,
       folder: folderUri,
       title: config.title ?? config.name,
       documents,

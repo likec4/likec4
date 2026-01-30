@@ -25,14 +25,13 @@ import {
   filter,
   hasAtLeast,
   identity,
-  isEmpty,
   map,
   mapToObj,
   piped,
   values,
 } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
-import type { LikeC4ManualLayouts } from '../filesystem'
+import type { LikeC4ManualLayouts, ManualLayoutsSnapshot } from '../filesystem'
 import { isNotLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -218,11 +217,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    */
   public unsafeSyncComputeModel(
     projectId: c4.ProjectId,
-    manualLayouts?: ManualLayouts,
+    manualLayouts?: ManualLayoutsSnapshot | null,
   ): LikeC4Model<UnknownComputed> {
     const cache = this.cache as WorkspaceCache<string, LikeC4Model<UnknownComputed>>
-    const hasManualLayouts = !!manualLayouts && !isEmpty(manualLayouts)
-    const key = computedModelCacheKey(projectId) + (hasManualLayouts ? '+manualLayouts' : '')
+    const key = computedModelCacheKey(projectId) + (manualLayouts?.hash ?? '')
     return cache.get(key, () => {
       const logger = builderLogger.getChild(projectId)
       const parsedModelData = this.unsafeSyncJoinedModelData(projectId)
@@ -238,7 +236,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           logger.warn(loggable(result.error))
           continue
         }
-        if (manualLayouts?.[view.id]) {
+        if (manualLayouts?.views[view.id]) {
           Object.assign(
             result.view,
             // satisfies enforces that the object has the property
@@ -257,13 +255,11 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       })
       const data: c4.ComputedLikeC4ModelData = {
         ...parsedModelData,
+        manualLayouts: { ...manualLayouts?.views },
         [_stage]: 'computed',
         views,
       }
-      if (hasManualLayouts) {
-        data.manualLayouts = manualLayouts
-      }
-      logger.debug(`unsafeSyncComputeModel${hasManualLayouts ? ' with manual layouts' : ''}: completed`)
+      logger.debug(`unsafeSyncComputeModel${manualLayouts ? ' with manual layouts' : ''}: completed`)
       return LikeC4Model.create(data)
     })
   }
