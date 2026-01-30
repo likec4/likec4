@@ -272,13 +272,15 @@ Use VSCode code completion to explore available icons.
 
 ### Icon color
 
-Use `iconColor` to override the icon color independently from the element fill:
+Use `iconColor` to override the icon color independently from the element fill.  
+Applies to bundled `bootstrap:*` icons.
 
 ```likec4 copy
 model {
   api = service 'API' {
     style {
-      icon bootstrap:gear
+      icon tech:nodejs    // ⛔️ Not applied
+      icon bootstrap:gear // ✅ Applies to `bootstrap:*` icons.
       iconColor indigo
     }
   }
@@ -286,7 +288,8 @@ model {
 ```
 
 `iconColor` accepts theme colors or custom colors defined in [specification](/dsl/specification/#color).  
-Applies to external svg-icons and bundled `bootstrap:*` icons.
+
+
 
 ### Icon size
 
