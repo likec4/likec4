@@ -52,20 +52,23 @@ export class LikeC4Styles {
 
   static from(
     stylesConfig: LikeC4ProjectStylesConfig | undefined,
-    customColors: CustomColorDefinitions | undefined,
+    customColors?: CustomColorDefinitions | undefined,
   ) {
-    if (isEmptyish(stylesConfig) && isEmptyish(customColors)) {
+    if (!stylesConfig && !customColors) {
       return this.DEFAULT
     }
     const { customCss, theme, defaults } = { ...stylesConfig }
+    const mergedConfig = defu(
+      { theme },
+      { defaults: { ...defaults } as LikeC4StyleDefaults },
+      { theme: { colors: { ...customColors } } } satisfies LikeC4ProjectStylesConfig,
+      defaultStyle,
+    )
+    if (isEmptyish(customCss?.content) && isDeepEqual(mergedConfig, defaultStyle)) {
+      return this.DEFAULT
+    }
     return new LikeC4Styles(
-      defu(
-        { theme },
-        { defaults: { ...defaults } as LikeC4StyleDefaults },
-        // rest as LikeC4ProjectStylesConfig,
-        { theme: { colors: { ...customColors } } } satisfies LikeC4ProjectStylesConfig,
-        defaultStyle,
-      ),
+      mergedConfig,
       customCss,
     )
   }
@@ -100,6 +103,9 @@ export class LikeC4Styles {
     if (!color) {
       return this.elementColors
     }
+    if (!this.isThemeColor(color)) {
+      throw new Error(`Default group color not found in theme: ${color}`)
+    }
     return memoizeProp(this, 'defaultGroup', () => ({
       ...this.elementColors,
       ...this.theme.colors[color].elements,
@@ -118,10 +124,10 @@ export class LikeC4Styles {
    */
   colors(color?: LiteralUnion<ThemeColor, string>): ThemeColorValues {
     color ??= this.defaults.color
-    if (this.isThemeColor(color)) {
-      return this.theme.colors[color]
+    if (!this.isThemeColor(color)) {
+      throw new Error(`Color not found in theme: ${color}`)
     }
-    throw new Error(`Unknown color: ${color}`)
+    return this.theme.colors[color]
   }
 
   private compoundColorsCache = new DefaultWeakMap((baseElementColors: ElementColorValues) =>
@@ -217,12 +223,10 @@ export class LikeC4Styles {
     if (this.isThemeColor(color)) {
       return this.theme.colors[color]
     }
-    return memoizeProp(this, `compute-${color}`, () => {
-      if (!chroma.valid(color)) {
-        throw new Error(`Invalid color value: "${color}"`)
-      }
-      return computeColorValues(color as ColorLiteral)
-    })
+    if (!chroma.valid(color)) {
+      throw new Error(`Invalid color value: "${color}"`)
+    }
+    return computeColorValues(color as ColorLiteral)
   }
 
   equals(other: LikeC4Styles): boolean {
@@ -233,6 +237,7 @@ export class LikeC4Styles {
     if (this.constructor !== other.constructor) {
       return false
     }
-    return isDeepEqual(this.config, other.config)
+    return isDeepEqual(this.config, other.config) &&
+      isDeepEqual(this.customCss ?? null, other.customCss ?? null)
   }
 }
