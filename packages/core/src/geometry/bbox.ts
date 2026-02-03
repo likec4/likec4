@@ -1,12 +1,6 @@
 import { hasAtLeast } from 'remeda'
 import { invariant } from '../utils/invariant'
-
-export type Point = readonly [x: number, y: number]
-
-export interface XYPoint {
-  x: number
-  y: number
-}
+import type { Point, XYPoint } from './types'
 
 // Bounding box
 export interface BBox {

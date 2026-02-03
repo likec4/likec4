@@ -1,3 +1,5 @@
+import { invariant } from '../utils'
+
 export interface VectorValue {
   readonly x: number
   readonly y: number
@@ -7,7 +9,18 @@ export class Vector implements VectorValue {
   constructor(
     public readonly x: number,
     public readonly y: number,
-  ) {}
+  ) {
+    // Runtime validation
+    invariant(
+      typeof x === 'number'
+        && !isNaN(x)
+        && isFinite(x)
+        && typeof y === 'number'
+        && !isNaN(y)
+        && isFinite(y),
+      `Invalid arguments for Vector: (${x}, ${y})`,
+    )
+  }
 
   static create(position: VectorValue): Vector
   static create(x: number, y: number): Vector
@@ -150,6 +163,14 @@ export class Vector implements VectorValue {
    */
   round(): Vector {
     return new Vector(Math.round(this.x), Math.round(this.y))
+  }
+
+  /**
+   * Truncates the components of the vector (removes the decimal part).
+   * @returns A new vector with truncated components.
+   */
+  trunc(): Vector {
+    return new Vector(Math.trunc(this.x), Math.trunc(this.y))
   }
 
   /**
