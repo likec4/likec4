@@ -470,8 +470,7 @@ export namespace LikeC4ViewModel {
     readonly mode: never
   }
 
-  export interface DynamicView<A extends Any, V extends $View<A>>
-    extends LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
+  export interface DynamicView<A extends Any, V extends $View<A>> extends LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
   {
     readonly mode: DynamicViewDisplayVariant
     readonly viewOf: never

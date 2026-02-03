@@ -6,10 +6,10 @@ import { IconX } from '@tabler/icons-react'
 import { AnimatePresence } from 'motion/react'
 import type { CSSProperties, ReactNode } from 'react'
 import { useRef, useState } from 'react'
+import type { JSX } from 'react/jsx-runtime'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
-import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
-import { FramerMotionConfig } from './context/FramerMotionConfig'
+import { ErrorMessage } from './components/ViewNotFound'
 import { useCallbackRef } from './hooks/useCallbackRef'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
@@ -22,8 +22,8 @@ import type {
 } from './LikeC4Diagram.props'
 import { Overlay } from './overlays/overlay/Overlay'
 import { ShadowRoot } from './shadowroot/ShadowRoot'
+import { stopPropagation } from './utils'
 import { pickViewBounds } from './utils/view-bounds'
-
 export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   /**
    * View to display.
@@ -375,7 +375,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   renderNodes,
   children,
   ...props
-}: LikeC4ViewProps<A>) {
+}: LikeC4ViewProps<A>): JSX.Element {
   const rootRef = useRef<HTMLDivElement>(null)
   const likec4model = useOptionalLikeC4Model()
   const [layoutType, setLayoutType] = useState(initialLayoutType)
@@ -390,11 +390,14 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   const onNavigateToThisView = useCallbackRef(() => {
     onNavigateTo(viewId)
   })
+  const closeBrowser = useCallbackRef(() => {
+    onNavigateTo(null)
+  })
 
   if (!likec4model) {
     return (
       <ErrorMessage>
-        LikeC4Model not found. Make sure you provided LikeC4ModelProvider.
+        LikeC4Model not found. Make sure you have LikeC4ModelProvider in the component tree.
       </ErrorMessage>
     )
   }
@@ -402,13 +405,19 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   const viewModel = likec4model.findView(viewId)
 
   if (!viewModel) {
-    return <ViewNotFound viewId={viewId} />
+    return (
+      <ErrorMessage>
+        LikeC4 View <code>{viewId}</code> not found in LikeC4Model.<br />
+        Available views: {[...likec4model.views()].map(v => v.id).join(', ')}
+      </ErrorMessage>
+    )
   }
 
   if (!viewModel.isLayouted()) {
     return (
       <ErrorMessage>
-        LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
+        LikeC4 View <code>{viewId}</code> is not layouted.<br />
+        Make sure you have LikeC4ModelProvider with layouted model.
       </ErrorMessage>
     )
   }
@@ -448,84 +457,79 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
         className,
       )}
       style={style}>
-      <FramerMotionConfig>
-        <LikeC4Diagram
-          view={view}
-          pannable={pannable}
-          zoomable={zoomable}
-          background={background}
-          fitView
-          fitViewPadding={FitViewPaddings.default}
-          enableNotations={hasNotations}
-          enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
-          showNavigationButtons={showNavigationButtons}
-          enableCompareWithLatest={false}
-          enableFocusMode={enableFocusMode}
-          enableRelationshipDetails={enableRelationshipDetails}
-          enableElementDetails={enableElementDetails}
-          enableRelationshipBrowser={enableRelationshipBrowser}
-          enableElementTags={false}
-          controls={controls}
-          reduceGraphics={reduceGraphics}
-          className={cx(
-            'likec4-static-view',
-            isBrowserEnabled && cssInteractive,
-          )}
-          // We may have multiple embedded views on the same page
-          // so we don't want enable search and hotkeys
-          enableSearch={false}
-          {...isBrowserEnabled && {
-            onCanvasClick: onNavigateToThisView,
-            onNodeClick: onNavigateToThisView,
-          }}
-          reactFlowProps={reactFlowProps}
-          renderNodes={renderNodes}
-          {...props}
-        >
-          {children}
-        </LikeC4Diagram>
-        <AnimatePresence {...root}>
-          {browserView && (
-            <Overlay openDelay={0} onClose={() => onNavigateTo(null)}>
-              <LikeC4Diagram
-                view={browserView}
-                pannable
-                zoomable
-                background="dots"
-                onNavigateTo={onNavigateTo}
-                showNavigationButtons
-                enableDynamicViewWalkthrough
-                enableFocusMode
-                enableRelationshipBrowser
-                enableElementDetails
-                enableRelationshipDetails
-                enableSearch
-                enableElementTags
-                enableCompareWithLatest
-                controls
-                fitView
-                {...props}
-                fitViewPadding={FitViewPaddings.withControls}
-                {...browserProps}
-                enableNotations={browserViewHasNotations && (browserProps.enableNotations ?? true)}
-                renderNodes={renderNodes}
-                onLayoutTypeChange={setLayoutType}
-              />
-              <Box pos="absolute" top={'4'} right={'4'} zIndex={'999'}>
-                <ActionIcon
-                  variant="default"
-                  color="gray"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onNavigateTo(null)
-                  }}>
-                  <IconX />
-                </ActionIcon>
-              </Box>
-            </Overlay>
-          )}
-        </AnimatePresence>
-      </FramerMotionConfig>
+      <LikeC4Diagram
+        view={view}
+        pannable={pannable}
+        zoomable={zoomable}
+        background={background}
+        fitView
+        fitViewPadding={FitViewPaddings.default}
+        enableNotations={hasNotations}
+        enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+        showNavigationButtons={showNavigationButtons}
+        enableCompareWithLatest={false}
+        enableFocusMode={enableFocusMode}
+        enableRelationshipDetails={enableRelationshipDetails}
+        enableElementDetails={enableElementDetails}
+        enableRelationshipBrowser={enableRelationshipBrowser}
+        enableElementTags={false}
+        controls={controls}
+        reduceGraphics={reduceGraphics}
+        className={cx(
+          'likec4-static-view',
+          isBrowserEnabled && cssInteractive,
+        )}
+        // We may have multiple embedded views on the same page
+        // so we don't want enable search and hotkeys
+        enableSearch={false}
+        {...isBrowserEnabled && {
+          onCanvasClick: onNavigateToThisView,
+          onNodeClick: onNavigateToThisView,
+        }}
+        reactFlowProps={reactFlowProps}
+        renderNodes={renderNodes}
+        {...props}
+      >
+        {children}
+      </LikeC4Diagram>
+      <AnimatePresence {...root}>
+        {browserView && (
+          <Overlay openDelay={0} onClose={closeBrowser}>
+            <LikeC4Diagram
+              view={browserView}
+              pannable
+              zoomable
+              background="dots"
+              onNavigateTo={onNavigateTo}
+              showNavigationButtons
+              enableDynamicViewWalkthrough
+              enableFocusMode
+              enableRelationshipBrowser
+              enableElementDetails
+              enableRelationshipDetails
+              enableSearch
+              enableElementTags
+              enableCompareWithLatest
+              controls
+              fitView
+              {...props}
+              fitViewPadding={FitViewPaddings.withControls}
+              {...browserProps}
+              enableNotations={browserViewHasNotations && (browserProps.enableNotations ?? true)}
+              renderNodes={renderNodes}
+              onLayoutTypeChange={setLayoutType}
+            />
+            <Box pos="absolute" top={'4'} right={'4'} zIndex={'999'} onClick={stopPropagation}>
+              <ActionIcon
+                variant="default"
+                color="gray"
+                onClick={closeBrowser}>
+                <IconX />
+              </ActionIcon>
+            </Box>
+          </Overlay>
+        )}
+      </AnimatePresence>
     </ShadowRoot>
   )
 }

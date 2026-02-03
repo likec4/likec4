@@ -1,6 +1,7 @@
 import type * as t from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import type { CSSProperties, ReactNode } from 'react'
+import type { JSX } from 'react/jsx-runtime'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
@@ -74,7 +75,7 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
   mantineTheme,
   styleNonce,
   ...props
-}: ReactLikeC4Props<A>) {
+}: ReactLikeC4Props<A>): JSX.Element {
   const likec4model = useOptionalLikeC4Model()
 
   if (!likec4model) {

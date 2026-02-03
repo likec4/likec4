@@ -1,5 +1,6 @@
 import type { Any, UnknownLayouted } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
+import type { JSX } from 'react/jsx-runtime'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramProperties } from './LikeC4Diagram.props'
 
@@ -38,7 +39,7 @@ export function StaticLikeC4Diagram<A extends Any = UnknownLayouted>({
   background = 'transparent',
   className,
   ...rest
-}: StaticLikeC4DiagramProps<A>) {
+}: StaticLikeC4DiagramProps<A>): JSX.Element {
   return (
     <LikeC4Diagram
       view={view}
