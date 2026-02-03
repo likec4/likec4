@@ -9,20 +9,20 @@ tableOfContents:
   maxHeadingLevel: 6
 ---
 
-import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, TabItem, Tabs } from '@astrojs/starlight/components';
 
-LikeC4 is model-based, and views are projections of the model from various perspectives, scopes, and levels of detail, such as:
+LikeC4 is model-based. Views are projections of the model from various perspectives, scopes, and levels of detail, such as:
 
 -	System/service overviews
 -	Component interactions in specific use cases
 -	Data flows and sequence diagrams
 
-LikeC4 does not enforce specific rules, such as a strict number of levels or what should be included; it’s entirely up to you and your context.  
+LikeC4 does not enforce specific rules, such as a strict number of levels or what should be included — it's entirely up to you and your context.  
 
 ## View definition
 
 Views are defined in `views` section.  
-They can be named (must be unique) or unnamed (can’t be referenced, but still can be exported):
+They can be named (must be unique) or unnamed (can't be referenced, but still can be exported):
 
 ```likec4
 views {
@@ -35,7 +35,7 @@ views {
 }
 ```
 
-The view’s name is used as an image filename during export and as part of the URL when sharing, so it’s advisable to define one.
+The view name is used as the image filename during export and as part of the URL when sharing, so it's advisable to define one.
 
 <Aside title="Default view">
   `index` is a special view, and is rendered by default if no view name is specified.  
@@ -66,11 +66,11 @@ views {
 }
 ```
 
-Properties must be defined before [predicates](/dsl/views/predicates/).  
+Properties must be defined before any [predicates](/dsl/views/predicates/).  
 
 ## Scoped views
 
-A view can be defined for a specific element (`view of ..`).  
+A view can be defined for a specific element (`view of ...`).  
 The view will then inherit the [scope](/dsl/references#scope) of that element:
 
 :::note
@@ -146,7 +146,7 @@ views {
 }
 ```
 
-The predicates and style rules of extended views applied after the ones from ancestors.
+The predicates and style rules of extended views are applied after the ones from ancestors.
 
 Extended view also inherits the scope:
 

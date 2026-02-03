@@ -11,11 +11,11 @@ tableOfContents:
 
 import { Aside } from '@astrojs/starlight/components';
 
-The `model` describes architecture as a set of hierarchical elements and any relationships among them.
+The `model` describes the architecture as a set of hierarchical elements and relationships among them.
 
 ## Element
 
-Element is a basic building block. It represents a logical part of the architecture.  
+An element is a basic building block. It represents a logical part of the architecture.  
 Any element must have a [`kind`](/dsl/specification#element-kind) and a `name` (_identifier_):
 
 ```likec4
@@ -35,8 +35,8 @@ model {
 }
 ```
 
-Element name is required for references.  
-It can contain letters, digits, hyphens and underscore, but can't start with a digit or contain `.`
+An element name is required for references.
+It can contain letters, digits, hyphens, and underscores, but cannot start with a digit or contain `.`
 
 | name        | valid    |
 | :---------  | :-- |
@@ -106,7 +106,7 @@ model {
 }
 ```
 
-Element may have a short `summary` (optional, falls back to `description`):
+An element may have a short `summary` (optional; falls back to `description`):
 
 ```likec4 copy
 model {
@@ -121,7 +121,7 @@ model {
 }
 ```
 
-If `summary` is provided, it will be shown on the diagram, and `description` in the details dialog.  
+If `summary` is provided, it will be shown on the diagram, and the `description` will be shown in the details dialog.  
 If you don't provide `description`, summary will be used.
 
 For inlined definition:
@@ -152,7 +152,7 @@ model {
 ```
 
 :::tip
-You can define element properties in [specification](/dsl/specification#element-kind), if it is common for all of the kind:
+You can define element properties in the [specification](/dsl/specification#element-kind) if they are common to all elements of that kind:
 
 ```likec4
 specification {
@@ -164,13 +164,13 @@ specification {
 }
 ```
 
-This allows to define properties once and reuse them across the model.  
+This allows you to define properties once and reuse them across the model.  
 Properties from the element definition override the ones from the specification.
 :::
 
 ### Tags
 
-Element [tags](/dsl/specification/#tag) are defined in a nested block and must come first, before any properties:
+Element [tags](/dsl/specification/#tag) are defined in a nested block and must come first, before any other properties:
 
 ```likec4 copy
 model {
@@ -208,7 +208,7 @@ specification {
 
 ### Links
 
-Element may have multiple links:
+An element may have multiple links:
 
 ```likec4 copy
 model {
@@ -230,7 +230,7 @@ model {
 
 ### Metadata
 
-Element metadata is a set of key-value pairs, defined in a nested block:
+Element metadata is a set of key-value pairs defined in a nested block:
 
 ```likec4 copy
 model {
@@ -353,9 +353,9 @@ model {
 
 ### Metadata Properties Behavior
 
-**Alphabetic Ordering**: Metadata properties are automatically sorted alphabetically when displayed in element details, regardless of the order they are defined in the DSL. This ensures consistent presentation across all elements.
+**Alphabetic Ordering**: Metadata properties are automatically sorted alphabetically when displayed, regardless of the order in which they are defined in the DSL. This ensures consistent presentation across all elements.
 
-**Property Duplications**: When the same property name is defined multiple times within a metadata block, all values are collected into an array, preserving their order of definition:
+**Property Duplication**: When the same property name is defined multiple times, all values are collected into an array, preserving their definition order:
 
 ```likec4 copy
 model {
@@ -517,7 +517,7 @@ model {
 
 ## Structuring Model
 
-Any element is a container and can contain other elements.  
+Any element can act as a container and include other elements.  
 This way you define the structure and internals of the element.
 
 ```likec4 filename="nested-elements.c4"
@@ -541,7 +541,7 @@ model {
 }
 ```
 
-Nested elements are _"namespaced"_, the parent name is used as a prefix.  
+Nested elements are _"namespaced"_: the parent name is used as a prefix.  
 So, the model above has the elements with these fully qualified names:
 
 - `service1`
@@ -557,7 +557,7 @@ and:
 - `service2.frontend`
 
 :::caution
-It is not possible to have elements with the same name on the same hierarchy level.  
+You cannot have elements with the same name within the same parent.  
 It is explained in detail in [references](/dsl/references).
 
 ```likec4 filename="nested-elements.c4"

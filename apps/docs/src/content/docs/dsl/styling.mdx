@@ -20,7 +20,7 @@ There are multiple ways to style elements:
 
 ### Elements of a kind
 
-To style all elements of a kind, use the `style` block in `specification`:
+To style all elements of a kind, use the `style` block in the `specification`:
 
 ```likec4 copy
 specification {
@@ -68,7 +68,7 @@ model {
 
 ### Per view
 
-[Next section](/dsl/views/predicates/#style-predicates) clarifies how to customize elements per view.
+The [next section](/dsl/views/predicates/#style-predicates) explains how to customize elements per view.
 
 ## Style properties
 
@@ -84,7 +84,7 @@ specification {
 }
 ```
 
-Available shapes: `rectangle` (default), `storage`, `cylinder`, `browser`, `mobile`, `person`, `queue`, `bucket` and `document`.  
+Available shapes: `rectangle` (default), `storage`, `cylinder`, `browser`, `mobile`, `person`, `queue`, `bucket`, and `document`.  
 
 <LikeC4ThemeView viewId="allshapes"/>
 
@@ -119,7 +119,7 @@ Size of an element is controlled by following properties:
 | padding   | space around element's title |
 | textSize  | font size of element's title  |
 
-Every property accepts: `xsmall`, `small`, `medium`, `large`, `xlarge`  
+Each property accepts: `xsmall`, `small`, `medium`, `large`, or `xlarge`  
 (or short `xs`, `sm`, `md`, `lg`, `xl`).  
 Default size is `medium`.
 
@@ -140,7 +140,7 @@ specification {
 
 ### Opacity
 
-If element displayed as a group (like a container), you can set opacity:
+If an element is displayed as a group (like a container), you can set its opacity:
 
 ```likec4 "opacity 10%"
 specification {
@@ -157,7 +157,7 @@ specification {
 
 ### Border
 
-If element displayed as a group (like a container), you can change border style:
+If an element is displayed as a group (like a container), you can change its border style:
 
 ```likec4 "border dotted"
 specification {
@@ -193,7 +193,7 @@ specification {
 
 ### Icon
 
-Elements may have an icon - any browser-supported image (png, svg, webp, etc.):
+Elements may have an icon - any browser-supported image format (png, svg, webp, etc.):
 
 ```likec4 copy
 model {
@@ -266,13 +266,13 @@ model {
 <br/>
 
 :::tip
-Use VSCode code completion to explore available icons.
+Use VS Code's code completion to explore available icons.
 :::
 
 
 ### Icon color
 
-Use `iconColor` to override the icon color independently from the element fill.  
+Use `iconColor` to override the icon color independently of the element fill.  
 Applies to bundled `bootstrap:*` icons.
 
 ```likec4 copy
@@ -287,7 +287,7 @@ model {
 }
 ```
 
-`iconColor` accepts theme colors or custom colors defined in [specification](/dsl/specification/#color).  
+`iconColor` accepts theme colors or custom colors defined in the [specification](/dsl/specification/#color).  
 
 
 
@@ -306,7 +306,7 @@ model {
 }
 ```
 
-`iconSize` uses the same values as [size](/dsl/styling/#size) and defaults to the element `size`.
+`iconSize` uses the same values as [size](/dsl/styling/#size) and defaults to the element `size` (i.e. if not specified, but size is 'large', icon will be 'large').
 
 ### Icon position
 
@@ -326,7 +326,7 @@ model {
 Supported values: `left` (default), `right`, `top`, `bottom`.
 
 
-<LikeC4ThemeView viewId="icons_position_example" style={{ '--likec4-view-max-height': '250px', minHeight: '250px' }}/>
+<LikeC4ThemeView viewId="icons_position_example" keepAspectRatio={false} style={{ '--likec4-view-max-height': '250px', minHeight: '250px' }}/>
 
 ### Aliased icons
 
@@ -381,11 +381,11 @@ model {
 
 ### Relationship per view
 
-[Next section](/dsl/views/predicates/#relationship-customization) clarifies how to customize relationships per view.
+The [next section](/dsl/views/predicates/#relationship-customization) explains how to customize relationships per view.
 
 ## Relationship properties
 
-Besides the `color`, relationships may have the following properties:  
+Besides `color`, relationships may have the following properties:  
 
 ### Line
 

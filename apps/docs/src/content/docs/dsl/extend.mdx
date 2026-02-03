@@ -8,8 +8,8 @@ sidebar:
 
 import { Aside, FileTree, TabItem, Tabs } from '@astrojs/starlight/components';
 
-You extend the model by creating new files and folders.  
-When LikeC4 source files are parsed, they are "_merged_" into a single architecture model.
+You can extend the model by creating new files and folders.  
+When LikeC4 source files are parsed, they are _merged_ into a single architecture model.
 
 You are free to organize the workspace as you want.
 
@@ -94,7 +94,7 @@ model {
 }
 ```
 
-The element extension inherits the scope of the target (or better say _**parent**_).  
+The element extension inherits the scope of the target (or, more accurately, the _**parent**_).  
 For example:
 
 ```likec4
@@ -111,7 +111,7 @@ model {
 ```
 
 <Aside type='caution'>
-Extended element must be referenced by a fully qualified name.  
+An extended element must be referenced by its fully qualified name.  
 
 Example:
 
@@ -144,7 +144,7 @@ model {
 }
 ```
 
-#### Metadata merging
+#### Metadata Merging
 
 When extending elements with metadata, duplicate keys from both the original element and the extension are merged into arrays:
 
@@ -252,9 +252,9 @@ model {
 }
 ```
 
-## Extend relation
+## Extend Relationship
 
-Similar to extending elements, you can extend relations to add metadata, tags, and links from separate files.
+Similar to extending elements, you can extend relationships to add metadata, tags, and links from separate files.
 
 <Aside type='caution'>
 **Deployment model limitation**: Extending relations is currently only supported for the logical model. Deployment model relations cannot be extended at this time.
@@ -308,9 +308,9 @@ model {
 **Title normalization**: Relations without a title and relations with an empty string title (`""`) are treated identically. Both are normalized to an empty string internally. This means `extend a -> b` will match both `a -> b` and `a -> b ""`.
 </Aside>
 
-### Metadata merging
+### Metadata Merging
 
-Relation extends follow the same metadata merging rules as element extends:
+Relationship extends follow the same metadata merging rules as element extends:
 - New keys are added
 - Duplicate keys with different values become arrays
 - Duplicate keys with the same value are de-duplicated

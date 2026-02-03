@@ -8,11 +8,11 @@ tableOfContents:
   maxHeadingLevel: 6  
 ---
 
-In the `specification` you define your notation.
+In the `specification`, you define your notation.
 
 ## Element kind
 
-Defines the element kind, that are used in the model:
+Defines element kinds that are used in the model:
 
 ```likec4 copy
 specification {
@@ -33,7 +33,7 @@ specification {
 }
 ```
 
-Later you will learn that element kinds may have properties and define style:
+You'll learn later that element kinds may have properties and define styles:
 
 ```likec4
 specification {
@@ -63,7 +63,7 @@ More in the [relationships](/dsl/relationships/#relationship-kinds)
 
 ## Tag
 
-Tags may be used to mark, group, filter elements/relationships/views, or give some additional semantics, like `#deprecated`, `#epic-123` or `#team2`.
+Tags can be used to mark, group, or filter elements/relationships/views, or to add additional semantics, like `#deprecated`, `#epic-123`, or `#team2`.
 
 ```likec4
 specification {
@@ -98,7 +98,7 @@ specification {
 
 ## Color
 
-Custom colors could be defined to extend built in themes. Being defined in specification they could be used later along with the theme colors.
+Custom colors can be defined to extend built-in themes. Once defined in the specification, they can be used alongside the theme colors.
 
 ```likec4
 specification {
@@ -118,5 +118,5 @@ specification {
 ``` 
 
 :::note
-Only a base color with a 3, 6 or 8-character hex code, and `rgb()`/`rgba()` is supported. The reason is that to draw a node, we need not only a fill color but also a border color and text color. The same applies to the color of edges, where a line color, label background color, and text color are required. Therefore, the [color palette generator from the Mantine library](https://mantine.dev/colors-generator/) is used to build a color scheme from the provided base color.
+Only base colors with 3, 6, or 8-character hex codes, and `rgb()`/`rgba()` formats are supported. The reason is that to draw a node, we need not only a fill color but also a border color and text color. The same applies to the color of edges, where a line color, label background color, and text color are required. Therefore, the [color palette generator from the Mantine library](https://mantine.dev/colors-generator/) is used to build a color scheme from the provided base color.
 :::

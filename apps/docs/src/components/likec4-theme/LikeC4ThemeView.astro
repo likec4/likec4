@@ -7,20 +7,23 @@ interface Props {
   viewId: LikeC4ViewId
   fitViewPadding?: ViewPadding
   interactive?: boolean
+  keepAspectRatio?: boolean
   style?: CSSProperties
 }
 const {
   viewId,
   interactive = true,
   fitViewPadding = '8px',
+  keepAspectRatio = true,
   style,
 } = Astro.props
 ---
 
 <LikeC4View
-  className="likec4-theme-view"
+  className={keepAspectRatio ? 'likec4-theme-view' : ''}
   viewId={viewId}
   fitViewPadding={fitViewPadding}
+  keepAspectRatio={keepAspectRatio}
   browser={interactive
   ? {
     enableFocusMode: false,
@@ -32,8 +35,7 @@ const {
   : false}
   client:only="react"
   style={style}
->
-</LikeC4View>
+/>
 
 <style>
 .likec4-theme-view {

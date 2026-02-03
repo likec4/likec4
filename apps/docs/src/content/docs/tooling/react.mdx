@@ -20,7 +20,7 @@ import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro
 <a href="https://www.npmjs.com/package/%40likec4%2Fdiagram" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
 </p>
 
-LikeC4 React library is available to embed diagrams into your applications.  
+The LikeC4 React library is available to embed diagrams into your applications.  
 Although you can use it directly, consider [Vite Plugin](/tooling/vite-plugin/)
 or [CLI](/tooling/code-generation/react/) for smoother developer experience.
 
@@ -44,12 +44,12 @@ LikeC4 React library can be used in two ways.
 ### Bundled
 
 This is the easiest way to use the library.  
-Diagram renders inside shadow DOM, already includes all the dependencies and takes care of the styling.
+The diagram renders inside the shadow DOM, includes all dependencies, and handles styling.
 
 #### LikeC4ModelProvider
 
-Diagram requires instance of `LikeC4Model.Layouted` to render.  
-You need to prepare it and wrap your diagram with`LikeC4ModelProvider` component.  
+The diagram requires an instance of `LikeC4Model.Layouted` to render.
+You need to prepare it and wrap your diagram with the `LikeC4ModelProvider` component.  
 Below are examples of how to prepare the model:
 - Using CLI codegen
 - Using Source files
@@ -84,7 +84,7 @@ Below are examples of how to prepare the model:
   </Tab>
 
   <Tab label='From Sources'>
-  It is possible to prepare model from string. See [API usage](/tooling/model-api/#usage):  
+  It's possible to prepare the model from a string. See [API usage](/tooling/model-api/#usage):  
   ```tsx copy
   import { LikeC4 } from 'likec4'
   import { LikeC4ModelProvider } from 'likec4/react'
@@ -103,7 +103,7 @@ Below are examples of how to prepare the model:
   </Tab>
 
   <Tab label='Model Builder'>   
-  You can prepare model with [Builder](/tooling/model-api/#model-builder), then layout it with `layoutLikeC4Model`:
+  You can prepare the model with the [Builder](/tooling/model-api/#model-builder), then lay it out with `layoutLikeC4Model`:
   
   ```tsx copy collapse={7-52}
   import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
@@ -160,7 +160,7 @@ Below are examples of how to prepare the model:
     )
     .toLikeC4Model()
 
-  // Builder returns computed model, and to render it you need to layout it
+  // The Builder returns a computed model. To render it, you need to lay it out
   const likec4model = await layoutLikeC4Model(computedModel)
 
   function App() {
@@ -177,7 +177,7 @@ Below are examples of how to prepare the model:
 </Tabs>
 
 :::tip
-If you have `likec4` in your dependencies, you can use:
+If you have `likec4` as a dependency, you can use:
 - `likec4/react` instead of `@likec4/diagram/bundle`
 - `likec4/model` instead of `@likec4/core/model` and `@likec4/core/types`
 - `likec4/model/builder` instead of `@likec4/core/builder`
@@ -208,8 +208,8 @@ See [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/diagra
 
 #### ReactLikeC4
 
-`LikeC4View` renders views from your model, and allows exploring in the popup browser.
-Component works in most use-cases, but if you need more - use `ReactLikeC4`:
+`LikeC4View` renders views from your model and allows exploration in the popup browser.
+This component works in most use cases, but if you need more functionality, use `ReactLikeC4`:
 
 ```tsx
 import { ReactLikeC4, LikeC4ModelProvider } from '@likec4/diagram/bundle'
@@ -300,9 +300,9 @@ function App() {
 
 ### Library
 
-If you want to use package as a library with your bundler, you have to take care of CSS.
+If you want to use the package as a library with your bundler, you need to manage the CSS yourself.
 
-Library uses [Mantine](https://mantine.dev). If you already use it and have `MantineProvider` on the scope - LikeC4 diagramr will use it.
+The library uses [Mantine](https://mantine.dev). If you already use it and have `MantineProvider` in scope, the LikeC4 diagram will use it.
 Otherwise, it will wrap itself with `MantineProvider`.  
 Even if you are not using Mantine in your app, its styles are required for the diagrams to work (don't worry, Mantine is tree-shakable).
 
@@ -316,7 +316,7 @@ Here are the options:
    @import '@likec4/diagram/styles.css'
    ```
 
-   This includes all styles, including [Mantine](https://mantine.dev) styles.
+   This includes all styles, including the [Mantine](https://mantine.dev) styles.
 
 2. If you are using Mantine
 
@@ -332,7 +332,7 @@ Here are the options:
 
 3. Font.\
    LikeC4Diagram uses [`IBM Plex Sans Variable`](https://fontsource.org/fonts/ibm-plex-sans) by default.\
-   You can bundle it, or import from [fontsource](https://fontsource.org/fonts/ibm-plex-sans), any other CDN or:
+   You can bundle it, import it from [fontsource](https://fontsource.org/fonts/ibm-plex-sans), from any other CDN, or use:
 
    ```css
    @import '@likec4/diagram/styles-font.css'
@@ -343,8 +343,8 @@ Here are the options:
    
 #### With PandaCSS
 
-Check [PandaCSS](https://panda-css.com) docs for full setup instructions.  
-LikeC4 provides preset.
+Check the [PandaCSS](https://panda-css.com) docs for full setup instructions.  
+LikeC4 provides a preset.
 
 <PackageManagers
     pkg="@likec4/styles"
@@ -390,8 +390,8 @@ You global CSS should look like this:
 
 #### Usage
 
-Same as [ReactLikeC4](#reactlikec4), but import from `@likec4/diagram`
-and you have to provide instance of `DiagramView`:
+Same as [ReactLikeC4](#reactlikec4), but import from `@likec4/diagram`.
+You must provide an instance of `DiagramView`:
 
 ```tsx
 import { LikeC4Diagram, LikeC4ModelProvider, useLikeC4ViewModel } from '@likec4/diagram'
@@ -463,7 +463,7 @@ function App() {
 ### Custom node renderers
 
 LikeC4Diagram can use custom node renderers.\
-Compose custom nodes renderers using primitives from `@likec4/diagram/custom`\
+Compose custom node renderers using primitives from `@likec4/diagram/custom`\
 (or `@likec4/diagram/bundle/custom` for the bundled version).\
 See [customNodes.ts](https://github.com/likec4/likec4/blob/main/packages/diagram/src/custom/customNodes.ts) for examples.
 

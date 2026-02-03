@@ -29,7 +29,7 @@ Available options:
 | Option                  | Description                                                                                           |
 | ----------------------- | ----------------------------------------------------------------------------------------------------- |
 | `-o, --output`          | Output directory                                                                                      |
-| `--base`                | Base URL the app is being served from, e.g. "/", "/pages/" or "./" for a relocatable app              |
+| `--base`                | Base URL from which the app is being served, e.g., "/", "/pages/", or "./" for a relocatable app      |
 | `--use-hash-history`    | Hash-based navigation, e.g. "/#/view" instead of "/view"                                              |
 | `--use-dot`             | Use local binaries of Graphviz ("dot") instead of bundled WASM                                        |
 | `--title`               | Base title of the app pages (default is "LikeC4")                                                     |
@@ -43,6 +43,6 @@ npx likec4 build -h
 
 ## Deploy
 
-LikeC4 CLI uses Vite to build the website.  
+The LikeC4 CLI uses Vite to build the website.  
 
 All the examples from [Vite documentation](https://vitejs.dev/guide/static-deploy.html) apply to LikeC4, just replace `vite build` with `likec4 build`.
