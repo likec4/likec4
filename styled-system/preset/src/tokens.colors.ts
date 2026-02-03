@@ -7,14 +7,4 @@ export const colors = defineTokens.colors({
   transparent: { value: 'transparent' },
   // For fill: none
   none: { value: 'none' },
-  text: {
-    DEFAULT: {
-      description: 'Default text color',
-      value: mantine.colors.text,
-    },
-    dimmed: {
-      description: 'Dimmed text color',
-      value: mantine.colors.dimmed,
-    },
-  },
 })

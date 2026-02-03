@@ -51,7 +51,7 @@ export const elementShapeRecipe = defineRecipe({
         root: {
           backgroundColor: 'var(--likec4-palette-fill)',
           border: 'none',
-          borderRadius: '[6px]',
+          borderRadius: '6px',
           boxShadow: {
             base: [
               '0 2px 1px 0 rgb(0 0 0 / 21%)',
@@ -67,9 +67,10 @@ export const elementShapeRecipe = defineRecipe({
             _whenPanning: 'none',
           },
           transition: {
-            base: 'background-color 120ms linear, box-shadow 130ms {easings.inOut}',
+            base: 'background-color 150ms, box-shadow 130ms',
             _reduceGraphicsOnPan: 'none',
           },
+          transitionTimingFunction: 'out',
           transitionDelay: '0ms',
         },
         multipleHtml: {

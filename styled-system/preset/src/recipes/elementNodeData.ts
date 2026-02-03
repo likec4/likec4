@@ -100,14 +100,20 @@ export const elementNodeData = defineRecipe({
         width: '100%',
         height: 'auto',
         maxHeight: '100%',
+        transition: 'fast',
         filter: {
           base: [
-            `drop-shadow(1px 2px 1px var(--likec4-palette-stroke))`,
+            'drop-shadow(0 1px 3px rgb(0 0 0 / 20%))',
             // 'drop-shadow(0 0 3px rgb(0 0 0 / 12%))',
-            // 'drop-shadow(0 1px 8px rgb(0 0 0 / 8%))',
             // 'drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))',
           ].join('\n'),
-          _reduceGraphicsOnPan: 'none',
+          _whenHovered: [
+            'drop-shadow(0 2px 4px rgb(0 0 0 / 30%))',
+            // `drop-shadow(1px 2px 3px var(--likec4-palette-stroke))`,
+            // 'drop-shadow(0 0 3px rgb(0 0 0 / 12%))',
+            // 'drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))',
+          ].join('\n'),
+          _reduceGraphicsOnPan: 'none!',
         },
       },
       '& img': {
@@ -266,14 +272,9 @@ export const elementNodeData = defineRecipe({
     withIconColor: {
       true: parts({
         icon: {
-          // visibility: 'hidden',
-          color: __v('icon.color', 'palette.stroke'),
-          // '& > svg': {
-          //   filter: [
-          //     `drop-shadow(0 0 3px ${mixTransparent(__v('palette.stroke'), 40)})`,
-          //     'drop-shadow(0 1px 8px rgb(0 0 0 / 8%))',
-          //   ].join('\n'),
-          // },
+          '& svg': {
+            color: __v('icon.color', 'palette.stroke'),
+          },
         },
       }),
       false: parts({

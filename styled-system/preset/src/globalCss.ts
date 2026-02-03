@@ -2,6 +2,7 @@ import type { Config } from '@pandacss/dev'
 import { keys, mapToObj } from 'remeda'
 import { __v, vars } from './const.ts'
 import { defaultTheme } from './defaults/index.ts'
+import { alpha } from './helpers.ts'
 
 type ExtendableGlobalCss = NonNullable<Config['globalCss']>
 
@@ -36,11 +37,13 @@ export const globalCss: ExtendableGlobalCss = {
     ...sizeConditions,
     '.likec4-shadow-root': {
       display: 'contents',
+      color: 'var(--colors-text)',
       '--mantine-font-family': 'var(--likec4-app-font, var(--likec4-app-font-default))',
       '--mantine-font-family-headings': 'var(--likec4-app-font, var(--likec4-app-font-default))',
 
       '& dialog': {
-        color: 'var(--mantine-color-text)',
+        '--mantine-font-family': 'var(--likec4-app-font, var(--likec4-app-font-default))',
+        color: 'var(--colors-text)',
       },
     },
 
@@ -132,11 +135,11 @@ export const globalCss: ExtendableGlobalCss = {
         '--xy-edge-label-background-color': __v('palette.relationLabelBg'),
 
         _dark: {
-          '--xy-edge-label-background-color': `color-mix(in oklab, ${__v('palette.relationLabelBg')} 50%, transparent)`,
+          '--xy-edge-label-background-color': alpha(__v('palette.relationLabelBg'), 50),
         },
         _light: {
           '--xy-edge-label-color': `color-mix(in oklab, ${__v('palette.relationLabel')}, #FFF 50%)`,
-          '--xy-edge-label-background-color': `color-mix(in oklab, ${__v('palette.relationLabelBg')} 65%, transparent)`,
+          '--xy-edge-label-background-color': alpha(__v('palette.relationLabelBg'), 65),
         },
 
         '&:is([data-likec4-hovered="true"], [data-edge-active="true"])': {
@@ -166,14 +169,14 @@ export const globalCss: ExtendableGlobalCss = {
           transitionTimingFunction: 'cubic-bezier(0.50, 0, 0.2, 1)',
           transitionDuration: '400ms',
         },
-        '& :where(.react-flow__edgelabel-renderer) > *': {
+        '& .react-flow__edgelabel-renderer > *': {
           mixBlendMode: {
             _dark: 'screen',
             _light: 'hard-light',
             _print: 'normal!',
           },
         },
-        '& :where(.react-flow__edges) > svg': {
+        '& .react-flow__edges > svg': {
           mixBlendMode: {
             _dark: 'plus-lighter',
             _light: 'multiply',
@@ -194,14 +197,11 @@ export const globalCss: ExtendableGlobalCss = {
           },
         },
       },
+    },
 
-      '& :where(.relationships-browser, .likec4-relationship-details) .react-flow__attribution': {
+    ':where(.likec4-static-view, .relationships-browser, .likec4-relationship-details) .react-flow .react-flow__attribution':
+      {
         display: 'none',
       },
-    },
-
-    '.likec4-static-view .react-flow .react-flow__attribution': {
-      display: 'none',
-    },
   },
 }

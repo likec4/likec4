@@ -53,8 +53,7 @@ export const conditions = {
 
     edgeActive: ':where([data-likec4-edge-active="true"]) &',
 
-    whenHovered:
-      ':where(.react-flow__node:has([data-likec4-hovered="true"]), .react-flow__edge:has([data-likec4-hovered="true"]), .likec4-edge-container[data-likec4-hovered="true"]) &',
+    whenHovered: ':where([data-likec4-hovered="true"]) &',
     whenSelectable: ':where(.react-flow__node, .react-flow__edge, .likec4-edge-container):is(.selectable) &',
     whenSelected: ':where(.react-flow__node, .react-flow__edge, .likec4-edge-container):is(.selected) &',
     whenDimmed: ':where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed]) &',

@@ -1,4 +1,5 @@
 import { defineSlotRecipe } from '@pandacss/dev'
+import { mantine } from '../generated.ts'
 
 export const navigationLink = defineSlotRecipe({
   className: 'likec4-navlink',
@@ -13,8 +14,8 @@ export const navigationLink = defineSlotRecipe({
       backgroundColor: {
         _hover: {
           '&:not([data-active])': {
-            base: 'mantine.colors.gray[1]',
-            _dark: 'mantine.colors.dark[5]',
+            base: mantine.colors.gray[1],
+            _dark: mantine.colors.dark[5],
           },
         },
       },

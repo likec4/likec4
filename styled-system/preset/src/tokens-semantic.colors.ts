@@ -3,6 +3,63 @@ import { mantine } from './generated.ts'
 import { alpha } from './helpers.ts'
 
 export const colors = defineSemanticTokens.colors({
+  white: {
+    value: '#fff',
+  },
+  black: {
+    value: '#000',
+  },
+  body: {
+    description: 'Background color',
+    value: mantine.colors.body,
+  },
+  text: {
+    DEFAULT: {
+      description: 'Default text color',
+      value: mantine.colors.text,
+    },
+    dimmed: {
+      description: 'Dimmed text color',
+      value: alpha(mantine.colors.text, 60),
+      // _dark: mantine.colors.dimmed,
+    },
+    placeholder: {
+      description: 'Placeholder text color',
+      value: mantine.colors.placeholder,
+    },
+  },
+  default: {
+    DEFAULT: {
+      description: 'Default color',
+      value: mantine.colors.default,
+    },
+    color: {
+      description: 'Default text color',
+      value: mantine.colors.defaultColor,
+    },
+    border: {
+      description: 'Default border color',
+      value: mantine.colors.defaultBorder,
+    },
+    hover: {
+      description: 'Default hover color',
+      value: mantine.colors.defaultHover,
+    },
+  },
+  disabled: {
+    text: {
+      description: 'Disabled text color',
+      value: mantine.colors.disabledText,
+    },
+    border: {
+      description: 'Disabled border color',
+      value: mantine.colors.disabledBorder,
+    },
+    body: {
+      description: 'Disabled body color',
+      value: mantine.colors.disabledBody,
+    },
+  },
   likec4: {
     background: {
       DEFAULT: {

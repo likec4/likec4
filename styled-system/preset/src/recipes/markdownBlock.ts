@@ -1,5 +1,7 @@
 import { defineRecipe } from '@pandacss/dev'
+import { __v } from '../const.ts'
 import { mantine } from '../generated.ts'
+import { alpha } from '../helpers.ts'
 
 export const markdownBlock = defineRecipe({
   className: 'likec4-markdown-block',
@@ -112,7 +114,7 @@ export const markdownBlock = defineRecipe({
     },
 
     '& :where(strong)': {
-      fontWeight: '500',
+      fontWeight: '550',
     },
 
     '& :where(mark)': {
@@ -129,7 +131,7 @@ export const markdownBlock = defineRecipe({
       fontSize: 'var(--text-fz-md)',
       color: mantine.colors.anchor,
       textDecoration: 'none',
-      fontWeight: '500',
+      fontWeight: '450',
       _hover: {
         textDecoration: 'underline',
       },
@@ -207,7 +209,7 @@ export const markdownBlock = defineRecipe({
 
       '& :where(th)': {
         textAlign: 'left',
-        fontWeight: 'bold',
+        fontWeight: '550',
         fontSize: 'var(--text-fz-sm)',
         padding: 'var(--typography-spacing)',
       },
@@ -262,7 +264,7 @@ export const markdownBlock = defineRecipe({
         alignItems: 'center',
         display: 'flex',
         fontSize: 'var(--text-fz-md)',
-        fontWeight: '500',
+        fontWeight: '550',
         lineHeight: '1.5',
         marginBottom: '0.1em',
         gap: '2',
@@ -337,14 +339,14 @@ export const markdownBlock = defineRecipe({
           },
         },
         '& :where(strong)': {
-          color: `color-mix(in oklab , var(--likec4-palette-hiContrast) 50%,  var(--likec4-palette-loContrast))`,
+          color: `color-mix(in oklab, ${__v('palette.hiContrast')} 50%,  ${__v('palette.loContrast')})`,
         },
         '& :where(blockquote)': {
           padding: 'xxs',
-          backgroundColor: 'var(--likec4-palette-stroke)/65',
+          backgroundColor: alpha(__v('palette.stroke'), 65),
         },
         '& :where(hr)': {
-          borderColor: 'var(--likec4-palette-stroke)/85',
+          borderColor: alpha(__v('palette.stroke'), 85),
         },
       },
       false: {},
