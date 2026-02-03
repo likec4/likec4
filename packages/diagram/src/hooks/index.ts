@@ -17,14 +17,23 @@ export type { XYFlowInstance, XYStoreApi, XYStoreState } from './useXYFlow'
 
 export { useCurrentView, useCurrentViewId } from './useCurrentView'
 export { useCurrentViewModel } from './useCurrentViewModel'
-export { useLikeC4Model, useLikeC4Specification, useLikeC4ViewModel } from './useLikeC4Model'
+
 export {
+  useLikeC4Model,
+  useLikeC4Specification,
+  useLikeC4ViewModel,
+  useOptionalLikeC4Model,
+} from './useLikeC4Model'
+
+export {
+  useChangeLikeC4Project,
   useHasProjects,
   useLikeC4Project,
   useLikeC4ProjectId,
   useLikeC4Projects,
   useLikeC4ProjectsContext,
 } from './useLikeC4Project'
+
 export { useLikeC4Styles } from './useLikeC4Styles'
 
 export * from './useDiagram'

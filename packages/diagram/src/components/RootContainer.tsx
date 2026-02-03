@@ -1,11 +1,11 @@
 import { cx } from '@likec4/styles/css'
-import { useIsomorphicLayoutEffect } from '@react-hookz/web'
+import { useIsMounted } from '@react-hookz/web'
 import { atom } from 'nanostores'
 import { type PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react'
 import {
   PanningAtomSafeCtx,
-  ReduceGraphicsModeCtx,
-  RootContainerContext,
+  ReduceGraphicsModeProvider,
+  RootContainerContextProvider,
 } from '../context/RootContainerContext'
 
 export function RootContainer({
@@ -18,27 +18,26 @@ export function RootContainer({
   className?: string | undefined
   reduceGraphics?: boolean
 }>) {
-  const [mounted, setMounted] = useState(false)
+  const isMounted = useIsMounted()
   const ref = useRef<HTMLDivElement>(null)
 
-  const $isPanning = useRef(atom(false)).current
-
-  useIsomorphicLayoutEffect(() => {
-    setMounted(true)
-  }, [])
+  const [$isPanning] = useState(() => atom(false))
 
   useEffect(() => {
     return $isPanning.listen((isPanning) => {
+      if (!isMounted()) {
+        return
+      }
       // Chnage DOM attribute to avoid re-rendering
       ref.current?.setAttribute('data-likec4-diagram-panning', isPanning ? 'true' : 'false')
     })
   }, [$isPanning])
 
-  const ctx = useMemo(() => ({ id, ref }), [id, ref])
+  const ctx = useMemo(() => ({ id, ref, selector: `#${id}` }), [id, ref])
 
   return (
-    <PanningAtomSafeCtx value={$isPanning}>
-      <ReduceGraphicsModeCtx.Provider value={reduceGraphics}>
+    <ReduceGraphicsModeProvider value={reduceGraphics}>
+      <PanningAtomSafeCtx value={$isPanning}>
         <div
           id={id}
           className={cx('likec4-root', className)}
@@ -46,13 +45,11 @@ export function RootContainer({
           {...reduceGraphics && {
             ['data-likec4-reduced-graphics']: true,
           }}>
-          {mounted && (
-            <RootContainerContext.Provider value={ctx}>
-              {children}
-            </RootContainerContext.Provider>
-          )}
+          <RootContainerContextProvider value={ctx}>
+            {children}
+          </RootContainerContextProvider>
         </div>
-      </ReduceGraphicsModeCtx.Provider>
-    </PanningAtomSafeCtx>
+      </PanningAtomSafeCtx>
+    </ReduceGraphicsModeProvider>
   )
 }

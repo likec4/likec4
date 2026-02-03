@@ -10,13 +10,14 @@ interface LikeC4ModelTreeNodeData {
   children: LikeC4ModelTreeNodeData[]
 }
 
-export const sortByLabel = (a: LikeC4ModelTreeNodeData, b: LikeC4ModelTreeNodeData) => compareNatural(a.label, b.label)
+export const sortByLabel = (a: LikeC4ModelTreeNodeData, b: LikeC4ModelTreeNodeData): number =>
+  compareNatural(a.label, b.label)
 
 function buildNode(
   element: LikeC4Model.Node | LikeC4Model.Element,
 ): LikeC4ModelTreeNodeData {
   return {
-    label: element.title,
+    label: element.title || element.id,
     value: element.id,
     children: [...element.children()].map(buildNode).sort(sortByLabel),
   }

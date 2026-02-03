@@ -295,8 +295,8 @@ export class LikeC4Model<A extends Any = Any> {
       'styles',
       () =>
         LikeC4Styles.from(
-          this.$data.project.styles,
-          this.$data.specification.customColors,
+          this.project.styles,
+          this.specification.customColors,
         ),
     )
   }
@@ -347,6 +347,8 @@ export class LikeC4Model<A extends Any = Any> {
   get project(): LikeC4Project {
     return this.$data.project ?? memoizeProp(this, Symbol.for('project'), () => ({
       id: this.projectId as unknown as scalar.ProjectId,
+      styles: {},
+      manualLayouts: {},
     }))
   }
 

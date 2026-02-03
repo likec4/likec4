@@ -1,3 +1,4 @@
+import type { JSX } from 'react/jsx-runtime'
 import type { Simplify } from 'type-fest'
 import { RootContainer } from './components/RootContainer'
 import {
@@ -10,7 +11,7 @@ import { LikeC4Styles } from './LikeC4Styles'
 import { type ProjectsOverviewProps, ProjectsOverview } from './projects-overview'
 
 export type LikeC4ProjectsOverviewProps = Simplify<
-  Omit<ProjectsOverviewProps, 'id'> & {
+  ProjectsOverviewProps & {
     className?: string
     onSelectProject?: ProjectsOverviewProps['onNavigateToProject']
   }
@@ -21,7 +22,7 @@ export function LikeC4ProjectsOverview({
   className,
   onNavigateToProject,
   ...props
-}: LikeC4ProjectsOverviewProps) {
+}: LikeC4ProjectsOverviewProps): JSX.Element {
   const onChangeLikeC4Project = useChangeLikeC4Project()
   const id = useId()
 

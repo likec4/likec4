@@ -7,7 +7,7 @@ import { LayoutGroup } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import type { ViewPadding } from '../LikeC4Diagram.props'
 import { projectOverviewLogic } from './actor'
-import { ProjectsOverviewActorContext } from './context'
+import { ProjectsOverviewActorContextProvider } from './context'
 import { ProjectsOverviewPanel } from './panel/ProjectsOverviewPanel'
 import { type ProjectsOverviewXYProps, ProjectsOverviewXY } from './ProjectsOverviewXY'
 
@@ -69,13 +69,13 @@ export function ProjectsOverview({
   })
 
   return (
-    <ProjectsOverviewActorContext.Provider value={actorRef}>
+    <ProjectsOverviewActorContextProvider value={actorRef}>
       <ReactFlowProvider {...initialRef.current}>
         <LayoutGroup id={actorRef.sessionId} inherit={false}>
           <ProjectsOverviewXY {...props} />
         </LayoutGroup>
         <ProjectsOverviewPanel />
       </ReactFlowProvider>
-    </ProjectsOverviewActorContext.Provider>
+    </ProjectsOverviewActorContextProvider>
   )
 }

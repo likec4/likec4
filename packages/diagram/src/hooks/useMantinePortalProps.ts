@@ -4,8 +4,8 @@ import { useRootContainerElement } from '../context'
 
 export function useMantinePortalProps():
   | {
-    portalProps: { target: HTMLDivElement }
     withinPortal: true
+    portalProps: { target: HTMLDivElement }
   }
   | {
     withinPortal: false

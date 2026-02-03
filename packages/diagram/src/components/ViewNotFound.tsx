@@ -1,25 +1,29 @@
 import type { PropsWithChildren } from 'react'
 
-export const ErrorMessage = ({ children }: PropsWithChildren) => (
-  <div
-    style={{
-      margin: '1rem 0',
-    }}>
+export function ErrorMessage({ children }: PropsWithChildren) {
+  return (
     <div
       style={{
-        margin: '0 auto',
-        display: 'inline-block',
-        padding: '2rem',
-        background: 'rgba(250,82,82,.15)',
-        color: '#ffa8a8',
+        margin: '1em 0',
       }}>
-      {children}
+      <div
+        style={{
+          margin: '0 auto',
+          display: 'inline-block',
+          padding: '2em',
+          background: 'rgba(250,82,82,.15)',
+          color: '#ffa8a8',
+        }}>
+        {children}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
-export const ViewNotFound = ({ viewId }: { viewId: string }) => (
-  <ErrorMessage>
-    View <code>{viewId}</code> not found
-  </ErrorMessage>
-)
+export function ViewNotFound({ viewId }: { viewId: string }) {
+  return (
+    <ErrorMessage>
+      View <code>{viewId}</code> not found
+    </ErrorMessage>
+  )
+}

@@ -26,7 +26,7 @@ import {
 import { assign, emit } from 'xstate/actions'
 import { MinZoom } from '../base'
 import { Base } from '../base/Base'
-import type { ViewPadding } from '../custom'
+import type { ViewPadding } from '../LikeC4Diagram.props'
 import type { ProjectsOverviewTypes, ProjectsOverviewXYFLowInstance, ProjectsOverviewXYStoreApi } from './_types'
 import { layoutedProjectsViewToXYFlow } from './layouted-to-xyflow'
 import { ProjectsOverviewViewportPersistence } from './persistence'

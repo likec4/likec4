@@ -33,7 +33,7 @@ export function useUpdateEffect<
   deps: Deps,
   equalityFn?: DependenciesComparator<Deps>,
   effectHook?: EffectHook<Callback, Deps>,
-) {
+): void {
   const isFirstMount = useFirstMountState()
   useCustomCompareEffect(
     isFirstMount ? noop as Callback : callback,

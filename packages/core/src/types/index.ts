@@ -19,7 +19,9 @@ export type {
 
 export { preferDescription, preferSummary } from './_aux'
 
-export * from '../geometry'
+export type * from '../geometry'
+export { BBox, RectBox } from '../geometry'
+
 export * from './const'
 export * from './expression'
 export * from './expression-model'

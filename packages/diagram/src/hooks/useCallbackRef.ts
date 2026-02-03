@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 
 /**
  * Memoizes a callback function so that it will not be recreated on every render.
@@ -10,10 +10,16 @@ export function useCallbackRef<T extends (...args: any[]) => any>(callback: T | 
   const ref = useRef(callback)
   ref.current = callback
 
-  const callbackRef = useRef<T>(null)
-  if (callbackRef.current == null) {
-    callbackRef.current = ((...args: any[]) => ref.current?.(...args)) as T
-  }
-
-  return callbackRef.current
+  return useMemo(() => {
+    const wrapped = ((...args: any[]) => {
+      return ref.current?.(...args)
+    }) as T
+    if (callback) {
+      Object.defineProperties(wrapped, {
+        length: { value: callback.length },
+        name: { value: `${callback.name || 'anonymous'}__callback_ref` },
+      })
+    }
+    return wrapped
+  }, [ref])
 }

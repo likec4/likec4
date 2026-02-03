@@ -1,14 +1,12 @@
-import { useContext } from 'react'
-import { type CurrentViewModel, CurrentViewModelContext } from '../context/LikeC4ModelContext'
+import {
+  type CurrentViewModel,
+  useOptionalCurrentViewModel,
+} from '../context/LikeC4ModelContext'
 
 export type { CurrentViewModel }
 
-/**
- * Returns the current view model from the context, or null if no view model is found.
- * @see useCurrentViewModel
- */
-export function useOptionalCurrentViewModel(): CurrentViewModel | null {
-  return useContext(CurrentViewModelContext)
+export {
+  useOptionalCurrentViewModel,
 }
 
 /**
@@ -18,7 +16,7 @@ export function useOptionalCurrentViewModel(): CurrentViewModel | null {
  * @see useOptionalCurrentViewModel
  */
 export function useCurrentViewModel(): CurrentViewModel {
-  const vm = useContext(CurrentViewModelContext)
+  const vm = useOptionalCurrentViewModel()
   if (!vm) {
     throw new Error('No LikeC4ViewModel in context found')
   }

@@ -1,7 +1,8 @@
 import type { LikeC4Project, ProjectId } from '@likec4/core/types'
 import { deepEqual } from 'fast-equals'
-import { type PropsWithChildren, useContext, useEffect, useState } from 'react'
-import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
+import { type PropsWithChildren, useEffect, useState } from 'react'
+import type { JSX } from 'react/jsx-runtime'
+import { LikeC4ProjectsContextProvider, useOptionalProjectsContext } from './context/LikeC4ProjectsContext'
 import { useCallbackRef } from './hooks/useCallbackRef'
 
 export interface LikeC4ProjectsProviderProps {
@@ -24,14 +25,14 @@ export function LikeC4ProjectsProvider({
   children,
   projects,
   onProjectChange: _onProjectChange,
-}: PropsWithChildren<LikeC4ProjectsProviderProps>) {
-  const outerScope = useContext(LikeC4ProjectsContext)
+}: PropsWithChildren<LikeC4ProjectsProviderProps>): JSX.Element {
+  const outerScope = useOptionalProjectsContext()
 
   useEffect(() => {
     if (outerScope) {
       console.warn('LikeC4ProjectsProvider should not be nested inside another one')
     }
-  }, [])
+  })
 
   const onProjectChange = useCallbackRef(_onProjectChange)
 
@@ -44,8 +45,8 @@ export function LikeC4ProjectsProvider({
   }, [projects])
 
   return (
-    <LikeC4ProjectsContext.Provider value={value}>
+    <LikeC4ProjectsContextProvider value={value}>
       {children}
-    </LikeC4ProjectsContext.Provider>
+    </LikeC4ProjectsContextProvider>
   )
 }

@@ -29,6 +29,7 @@ import {
 } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import {
   type ComponentPropsWithoutRef,
   type KeyboardEventHandler,
@@ -38,10 +39,9 @@ import {
   useRef,
   useState,
 } from 'react'
-import type { MouseEvent as ReactMouseEvent } from 'react'
 import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
-import { useOnDiagramEvent } from '../custom'
+import { useOnDiagramEvent } from '../hooks/useDiagram'
 import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import type { NavigationPanelActorContext, NavigationPanelActorSnapshot } from './actor'
 import { ProjectsMenu } from './dropdown/ProjectsMenu'

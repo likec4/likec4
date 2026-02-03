@@ -13,7 +13,7 @@ const nodeTypes: ProjectsOverviewTypes.NodeRenderers = {
   project: ProjectNode,
 }
 
-export const edgeTypes = {
+const edgeTypes = {
   relationship: RelationshipEdge,
 }
 
@@ -65,6 +65,7 @@ export const ProjectsOverviewXY = memo<ProjectsOverviewXYProps>(({
       )}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
+      // Fitview is handled in onInit
       fitView={false}
       onNodeClick={useCallbackRef((_e, node) => {
         _e.stopPropagation()

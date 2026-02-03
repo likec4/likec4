@@ -9,7 +9,23 @@ import type {
 import { useDiagramActorRef } from './safeContext'
 import { useCallbackRef } from './useCallbackRef'
 
-const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
+const selectCompareLayoutState = ({ context }: DiagramActorSnapshot): {
+  isEnabled: false
+  hasEditor: false
+  isEditable: false
+  isActive: false
+  drifts: never
+  canApplyLatest: boolean
+  layout: t.LayoutType
+} | {
+  isEnabled: true
+  hasEditor: boolean
+  isEditable: boolean
+  isActive: boolean
+  drifts: readonly [t.LayoutedViewDriftReason, ...t.LayoutedViewDriftReason[]]
+  canApplyLatest: boolean
+  layout: t.LayoutType
+} => {
   const drifts = context.view.drifts ?? null
   if (!context.features.enableCompareWithLatest || !drifts || drifts.length === 0) {
     return ({
@@ -38,8 +54,10 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot) => {
     layout: context.view._layout ?? 'auto',
   })
 }
-type DiagramCompareLayoutState = ReturnType<typeof selectCompareLayoutState>
-type DiagramCompareLayoutOps = {
+
+export type DiagramCompareLayoutState = ReturnType<typeof selectCompareLayoutState>
+
+export type DiagramCompareLayoutOps = {
   /**
    * Toggles the compare mode on or off.
    */

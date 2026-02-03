@@ -4,10 +4,21 @@ import type { WritableAtom } from 'nanostores'
 import type { RefObject } from 'react'
 import { createContext, useContext } from 'react'
 
-export const RootContainerContext = createContext<{ id: string; ref: RefObject<HTMLDivElement | null> } | null>(null)
+const RootContainerContext = createContext<
+  {
+    id: string
+    selector: string
+    ref: RefObject<HTMLDivElement | null>
+  } | null
+>(null)
+export const RootContainerContextProvider = RootContainerContext.Provider
+
+export function useRootContainerContext() {
+  return useContext(RootContainerContext)
+}
 
 export function useRootContainer() {
-  const ctx = useContext(RootContainerContext)
+  const ctx = useRootContainerContext()
   if (!ctx) {
     throw new Error('useRootContainer must be used within a RootContainer')
   }
@@ -22,7 +33,9 @@ export function useRootContainerElement() {
   return useRootContainer().ref.current
 }
 
-export const ReduceGraphicsModeCtx = createContext<boolean | null>(null)
+const ReduceGraphicsModeCtx = createContext<boolean | null>(null)
+export const ReduceGraphicsModeProvider = ReduceGraphicsModeCtx.Provider
+
 /**
  * Hook to determine if reduced graphics mode is enabled.
  */
