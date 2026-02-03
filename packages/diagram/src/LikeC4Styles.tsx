@@ -5,6 +5,7 @@ import type {
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
 import { memo, useMemo } from 'react'
+import type { JSX } from 'react/jsx-runtime'
 import { entries, join, map, pipe } from 'remeda'
 import { MAX_COMPOUND_DEPTH } from './base/const'
 import { useLikeC4Styles } from './hooks/useLikeC4Styles'
@@ -72,7 +73,7 @@ function generateBuiltInColorStyles(styles: LikeC4StylesLib, rootSelector: strin
   )
 }
 
-export function LikeC4Styles({ id }: { id: string }) {
+export function LikeC4Styles({ id }: { id: string }): JSX.Element {
   const rootSelector = `#${id}`
   const nonce = useMantineStyleNonce()?.()
   const $styles = useLikeC4Styles()

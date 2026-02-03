@@ -3,6 +3,7 @@ import { useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { type PropsWithChildren, Profiler, useRef } from 'react'
+import type { JSX } from 'react/jsx-runtime'
 import { isEmptyish, isPlainObject, mapValues } from 'remeda'
 import { FitViewPaddings, MaxZoom, MinZoom } from './base'
 import { RootContainer } from './components/RootContainer'
@@ -85,7 +86,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   reactFlowProps,
   renderNodes,
   children,
-}: LikeC4DiagramProps<A>) {
+}: LikeC4DiagramProps<A>): JSX.Element {
   const id = useId()
   const initialRef = useRef<{
     defaultNodes: Types.Node[]
@@ -139,9 +140,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   return (
     <Profiler id="LikeC4Diagram" onRender={noop}>
       <EnsureMantine>
-        <FramerMotionConfig
-          {...isReducedGraphicsMode && { reducedMotion: 'always' }}
-        >
+        <FramerMotionConfig reducedMotion={isReducedGraphicsMode ? 'always' : undefined}>
           <IconRendererProvider value={renderIcon ?? null}>
             <DiagramFeatures
               features={{

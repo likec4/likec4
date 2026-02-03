@@ -1,12 +1,12 @@
 import { css } from '@likec4/styles/css'
 import {
   useColorScheme as usePreferredColorScheme,
-  useDebouncedCallback,
   useMutationObserver,
 } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useState } from 'react'
 import { first, isFunction, isString } from 'remeda'
+import { useCallbackRef } from '../hooks'
 import fontsCss from '../styles-font.css?inline'
 import inlinedStyles from '../styles.css?inline'
 
@@ -79,7 +79,7 @@ export function useColorScheme(explicit?: ColorScheme): ColorScheme {
   const preferred = usePreferredColorScheme()
   const [computed, setComputed] = useState(getComputedColorScheme)
   useMutationObserver(
-    useDebouncedCallback(() => setComputed(getComputedColorScheme), 100),
+    useCallbackRef(() => setComputed(getComputedColorScheme)),
     {
       attributes: true,
       childList: false,

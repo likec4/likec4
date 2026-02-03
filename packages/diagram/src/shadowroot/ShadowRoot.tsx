@@ -18,7 +18,11 @@ type ShadowRootProps = HTMLAttributes<HTMLDivElement> & {
   delegatesFocus?: boolean
   colorScheme?: 'light' | 'dark' | undefined
   keepAspectRatio?: false | undefined | { width: number; height: number }
-  theme?: MantineThemeOverride | undefined
+  /**
+   * Mantine theme override to apply within the shadow root
+   * @see https://mantine.dev/theming/mantine-provider/#theme-prop
+   */
+  theme?: any
 }
 
 function useShadowRootStyle(
@@ -43,7 +47,8 @@ function useShadowRootStyle(
   `.trim()
   }
 
-  const { width, height } = keepAspectRatio
+  const width = Math.ceil(keepAspectRatio.width)
+  const height = Math.ceil(keepAspectRatio.height)
   const isLandscape = width > height
 
   return `
@@ -54,17 +59,17 @@ function useShadowRootStyle(
   background: transparent;
   padding: 0;
   overflow: hidden;
-  aspect-ratio: ${Math.ceil(width)} / ${Math.ceil(height)};
+  aspect-ratio: ${width} / ${height};
   ${
     isLandscape ? '' : `
-  max-width: min(100%, var(--likec4-view-max-width, ${Math.ceil(width)}px));
+  max-width: min(100%, var(--likec4-view-max-width, ${width}px));
   margin-left: auto;
   margin-right: auto;`
   }
   width: ${isLandscape ? '100%' : 'auto'};
   height: ${isLandscape ? 'auto' : '100%'};
   ${isLandscape ? `min-width: 80px;` : `min-height: 80px;`}
-  max-height: min(100%, var(--likec4-view-max-height, ${Math.ceil(height)}px));
+  max-height: min(100%, var(--likec4-view-max-height, ${height}px));
 }
 `.trim()
 }
@@ -113,6 +118,7 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
             defaultColorScheme={colorScheme}
             getRootElement={getRootElement}
             cssVariablesSelector={'.likec4-shadow-root'}
+            withCssVariables={true}
             getStyleNonce={getStyleNonce}
             {...(explicitColorScheme && { forceColorScheme: explicitColorScheme })}
             {...theme && { theme }}>
