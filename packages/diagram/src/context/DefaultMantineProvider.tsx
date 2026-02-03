@@ -65,10 +65,14 @@ const DefaultTheme = createTheme({
 
 export function DefaultMantineProvider({
   children,
+  theme,
   ...props
 }: MantineProviderProps) {
   return (
-    <MantineProvider defaultColorScheme="auto" theme={DefaultTheme} {...props}>
+    <MantineProvider
+      defaultColorScheme="auto"
+      theme={theme ?? DefaultTheme}
+      {...props}>
       {children}
     </MantineProvider>
   )

@@ -1,5 +1,6 @@
 import type { ExclusiveUnion } from '@likec4/core/types'
 import { type PropsWithChildren, createContext, useContext, useEffect } from 'react'
+import type { JSX } from 'react/jsx-runtime'
 import { useSetState } from '../hooks/useSetState'
 
 const FeatureNames = [
@@ -70,7 +71,7 @@ export function DiagramFeatures({
       overrides: Partial<EnabledFeatures>
     }
   }>
->) {
+>): JSX.Element {
   const outerScope = useContext(DiagramFeaturesContext)
   const [scope, setScope] = useSetState(() => ({
     ...outerScope,
@@ -139,22 +140,22 @@ export function IfEnabled({
   feature,
   children,
   and = true,
-}: PropsWithChildren<{ feature: FeatureName; and?: boolean }>) {
+}: PropsWithChildren<{ feature: FeatureName; and?: boolean }>): JSX.Element | null {
   const enabled = useEnabledFeatures()[`enable${feature}`] === true
   return enabled && and ? <>{children}</> : null
 }
 
-export function IfNotEnabled({ feature, children }: PropsWithChildren<{ feature: FeatureName }>) {
+export function IfNotEnabled({ feature, children }: PropsWithChildren<{ feature: FeatureName }>): JSX.Element | null {
   const notEnabled = useEnabledFeatures()[`enable${feature}`] !== true
   return notEnabled ? <>{children}</> : null
 }
 
-export function IfReadOnly({ children }: PropsWithChildren) {
+export function IfReadOnly({ children }: PropsWithChildren): JSX.Element | null {
   const isReadOnly = useEnabledFeatures().enableReadOnly === true
   return isReadOnly ? <>{children}</> : null
 }
 
-export function IfNotReadOnly({ children }: PropsWithChildren) {
+export function IfNotReadOnly({ children }: PropsWithChildren): JSX.Element | null {
   const isReadOnly = useEnabledFeatures().enableReadOnly === true
   if (isReadOnly) {
     return null

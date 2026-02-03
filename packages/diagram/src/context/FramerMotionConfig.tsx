@@ -9,10 +9,8 @@ export const FramerMotionConfig = ({
   /**
    * If true, will respect the device prefersReducedMotion setting by switching
    * transform animations off.
-   *
-   * @public
    */
-  reducedMotion?: 'always' | 'never' | 'user'
+  reducedMotion?: 'always' | 'never' | 'user' | undefined
 }>) => {
   const nonce = useMantineStyleNonce()?.()
   return (

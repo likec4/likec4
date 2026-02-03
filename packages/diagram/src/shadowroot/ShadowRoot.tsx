@@ -1,4 +1,3 @@
-import type { MantineThemeOverride } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
 import { type HTMLAttributes, forwardRef, memo, useRef, useState } from 'react'
 import root from 'react-shadow'
@@ -120,8 +119,9 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
             cssVariablesSelector={'.likec4-shadow-root'}
             withCssVariables={true}
             getStyleNonce={getStyleNonce}
+            theme={theme}
             {...(explicitColorScheme && { forceColorScheme: explicitColorScheme })}
-            {...theme && { theme }}>
+          >
             <FramerMotionConfig>
               {children}
             </FramerMotionConfig>
