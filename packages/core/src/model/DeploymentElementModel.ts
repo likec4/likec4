@@ -59,6 +59,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
         size: this.$model.$styles.defaults.size,
         padding: this.$model.$styles.defaults.padding,
         textSize: this.$model.$styles.defaults.text,
+        iconPosition: this.$model.$styles.defaults.iconPosition,
         ...this.$node.style,
       }))
   }

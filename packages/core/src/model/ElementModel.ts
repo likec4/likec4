@@ -150,6 +150,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
         size: this.$model.$styles.defaults.size,
         padding: this.$model.$styles.defaults.padding,
         textSize: this.$model.$styles.defaults.text,
+        iconPosition: this.$model.$styles.defaults.iconPosition,
         ...this.$element.style,
       }))
   }
