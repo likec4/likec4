@@ -99,7 +99,7 @@ export function getProjectIcons(projectId) {
     console.warn('Falling back to project: ' + projectId)
     fn = ProjectIconsRegistry[projectId]
   }
-  return (props) => jsx(Suspense, { children: fn(props) })
+  return (props) => jsx(Suspense, { children: jsx(fn, props) })
 }
 
 if (import.meta.hot) {

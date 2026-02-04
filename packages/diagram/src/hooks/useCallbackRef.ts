@@ -11,15 +11,9 @@ export function useCallbackRef<T extends (...args: any[]) => any>(callback: T | 
   ref.current = callback
 
   return useMemo(() => {
-    const wrapped = ((...args: any[]) => {
+    function callbackRef(...args: any[]) {
       return ref.current?.(...args)
-    }) as T
-    if (callback) {
-      Object.defineProperties(wrapped, {
-        length: { value: callback.length },
-        name: { value: `${callback.name || 'anonymous'}__callback_ref` },
-      })
     }
-    return wrapped
-  }, [ref])
+    return callbackRef as T
+  }, [])
 }

@@ -32,7 +32,7 @@ export function LikeC4ProjectsProvider({
     if (outerScope) {
       console.warn('LikeC4ProjectsProvider should not be nested inside another one')
     }
-  })
+  }, [])
 
   const onProjectChange = useCallbackRef(_onProjectChange)
 

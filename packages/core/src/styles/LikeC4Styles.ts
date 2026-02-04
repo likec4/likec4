@@ -123,11 +123,7 @@ export class LikeC4Styles {
    * @default color From the defaults
    */
   colors(color?: LiteralUnion<ThemeColor, string>): ThemeColorValues {
-    color ??= this.defaults.color
-    if (!this.isThemeColor(color)) {
-      throw new Error(`Color not found in theme: ${color}`)
-    }
-    return this.theme.colors[color]
+    return this.computeFrom(color ??= this.defaults.color)
   }
 
   private compoundColorsCache = new DefaultWeakMap((baseElementColors: ElementColorValues) =>
@@ -224,7 +220,7 @@ export class LikeC4Styles {
       return this.theme.colors[color]
     }
     if (!chroma.valid(color)) {
-      throw new Error(`Invalid color value: "${color}"`)
+      throw new Error(`Invalid color value: "${color}" (not a theme color and not a valid CSS color)`)
     }
     return computeColorValues(color as ColorLiteral)
   }

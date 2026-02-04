@@ -23,7 +23,7 @@ import {
 import { IconChevronRight } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { type KeyboardEventHandler, memo, useEffect, useMemo } from 'react'
-import { filter, first, hasAtLeast, last, only, pipe, reduce } from 'remeda'
+import { filter, first, hasAtLeast, last, only, pipe, prop, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
@@ -174,7 +174,7 @@ function ElementsTree({
         tree.expand(nd.value)
       }
     }
-  }, [all.join(',')])
+  }, [all.map(prop('id')).join(',')])
 
   const onKeyDownCapture: KeyboardEventHandler = useCallbackRef((e) => {
     const target = e.target as HTMLElement

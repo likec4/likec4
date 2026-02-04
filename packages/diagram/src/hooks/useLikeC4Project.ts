@@ -56,7 +56,8 @@ export function useLikeC4ProjectId(): ProjectId {
 
 /**
  * Returns current LikeC4 project.
- * Requires both LikeC4ModelProvider and LikeC4ProjectsProvider in the tree
+ * Requires LikeC4ModelProvider in the tree.
+ * Falls back to model's project if LikeC4ProjectsProvider is not available.
  */
 export function useLikeC4Project(): LikeC4Project {
   const modelCtx = useOptionalLikeC4Model()

@@ -417,6 +417,7 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
         size: this.$model.$styles.defaults.size,
         padding: this.$model.$styles.defaults.padding,
         textSize: this.$model.$styles.defaults.text,
+        iconPosition: this.$model.$styles.defaults.iconPosition,
         ...this.element.$element.style,
         ...this.$instance.style,
       }))

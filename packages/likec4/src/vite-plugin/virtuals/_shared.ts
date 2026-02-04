@@ -84,13 +84,14 @@ export function generateCombinedProjects(moduleId: string, fnName: string): Virt
     virtualId: `likec4:plugin/${moduleId}.js`,
     async load({ logger, projects }) {
       logger.info(k.dim(`generating likec4:${moduleId}`))
+
       const cases = projects.map(({ id }) => {
-        const pkg = JSON.stringify(
-          escapeUnsafeChars(joinURL(`likec4:${moduleId}`, id)),
+        const pkg = escapeUnsafeChars(
+          JSON.stringify(joinURL(`likec4:${moduleId}`, id)),
         )
-        return `  ${JSON.stringify(id)}: () => import(${pkg})`
-        // return `  ${JSON.stringify(id)}: () => ${pkg}`
+        return `${JSON.stringify(id)}: () => import(${pkg})`
       })
+
       return `
 export let ${fnName}Fn = {
 ${cases.join(',\n')}
