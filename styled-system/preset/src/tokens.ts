@@ -67,6 +67,23 @@ export const tokens = defineTokens({
     transparent: { value: '0px solid transparent' },
     default: { value: `1px solid {colors.default.border}` },
   },
+  borderWidths: {
+    '0': {
+      value: '0px',
+    },
+    '1': {
+      value: '1px',
+    },
+    '2': {
+      value: '2px',
+    },
+    '3': {
+      value: '3px',
+    },
+    '4': {
+      value: '4px',
+    },
+  },
   spacing: {
     '0': {
       description: 'Non-scalable spacing value - 0px',

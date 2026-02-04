@@ -327,7 +327,7 @@ function FoundedView(
       className={className}
     >
       {folderIcon}
-      <Breadcrumbs separator={<IconChevronRight size={12} stroke={1.5} />} separatorMargin={3}>
+      <Breadcrumbs separator={btnRightSection} separatorMargin={3}>
         {breadcrumbs}
       </Breadcrumbs>
     </UnstyledButton>

@@ -219,6 +219,15 @@ export const colors = defineSemanticTokens.colors({
         value: alpha(mantine.colors.defaultBorder, 50),
       },
     },
+    walkthrough: {
+      parallelFrame: {
+        description: 'LikeC4 walkthrough parallel frame color',
+        value: {
+          _light: mantine.colors.orange[8],
+          _dark: mantine.colors.orange[6],
+        },
+      },
+    },
     compare: {
       manual: {
         DEFAULT: {
