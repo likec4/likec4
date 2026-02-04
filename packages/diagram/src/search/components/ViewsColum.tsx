@@ -1,5 +1,5 @@
 import type { LikeC4Model } from '@likec4/core/model'
-import type { Fqn } from '@likec4/core/types'
+import { type Fqn, preferSummary } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import {
@@ -16,14 +16,13 @@ import {
 } from '@mantine/core'
 import { IconStack2, IconZoomScan } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import { memo, useRef } from 'react'
+import { memo, useMemo, useRef } from 'react'
 import { first } from 'remeda'
 import { useCurrentViewId } from '../../hooks/useCurrentView'
-import { useDiagram } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch, useSearchActor } from '../hooks'
 import { buttonsva } from './_shared.css'
-import { centerY, moveFocusToSearchInput, queryAllFocusable, whenSearchAnimationEnds } from './utils'
+import { centerY, moveFocusToSearchInput, queryAllFocusable } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -32,22 +31,33 @@ export const NothingFound = () => (
   </Box>
 )
 
+const useFoundViews = () => {
+  const currentViewId = useCurrentViewId() // subscribe to current view changes
+  const likec4model = useLikeC4Model()
+  const search = useNormalizedSearch()
+  return useMemo(() => {
+    let views = [...likec4model.views()]
+    if (search) {
+      if (search.startsWith('kind:')) {
+        views = []
+      } else {
+        const searchTag = search.startsWith('#') ? search.slice(1) : null
+        views = views.filter(view => {
+          if (searchTag) {
+            return view.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag))
+          }
+          const desc = preferSummary(view.$view)?.md || ' '
+          return `${view.id} ${view.title} ${desc}`.toLocaleLowerCase().includes(search)
+        })
+      }
+    }
+    return [views, search, currentViewId] as const
+  }, [likec4model, search, currentViewId])
+}
+
 export const ViewsColumn = memo(() => {
   const ref = useRef<HTMLDivElement>(null)
-  let views = [...useLikeC4Model().views()]
-  let search = useNormalizedSearch()
-  if (search) {
-    if (search.startsWith('kind:')) {
-      views = []
-    } else {
-      views = views.filter(view => {
-        if (search.startsWith('#')) {
-          return view.tags.some((tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
-        }
-        return `${view.id} ${view.title} ${view.description.text}`.toLocaleLowerCase().includes(search)
-      })
-    }
-  }
+  const [views, search, currentViewId] = useFoundViews()
 
   return (
     <Stack
@@ -87,6 +97,7 @@ export const ViewsColumn = memo(() => {
         <m.div layoutId={`@view${view.id}`} key={view.id}>
           <ViewButton
             view={view}
+            currentViewId={currentViewId}
             search={search}
             tabIndex={i === 0 ? 0 : -1}
           />
@@ -99,9 +110,10 @@ export const ViewsColumn = memo(() => {
 const btn = buttonsva()
 
 export function ViewButton(
-  { className, view, loop = false, search, focusOnElement, ...props }:
+  { className, view, loop = false, search, focusOnElement, currentViewId, ...props }:
     & {
       view: LikeC4Model.View
+      currentViewId: string
       search: string
       loop?: boolean
       focusOnElement?: Fqn
@@ -110,21 +122,14 @@ export function ViewButton(
     & ElementProps<'button'>,
 ) {
   const searchActorRef = useSearchActor()
-  const diagram = useDiagram()
   const nextViewId = view.id
-  const currentViewId = useCurrentViewId()
   const isCurrentView = nextViewId === currentViewId
 
   const navigate = () => {
-    searchActorRef.send({ type: 'close' })
-    whenSearchAnimationEnds(() => {
-      // Same view - focus on the element directly
-      if (isCurrentView && focusOnElement) {
-        diagram.focusOnElement(focusOnElement)
-        return
-      }
-      // Different view - navigate and optionally focus
-      diagram.navigateTo(nextViewId, undefined, focusOnElement)
+    searchActorRef.send({
+      type: 'navigate.to',
+      viewId: nextViewId,
+      focusOnElement,
     })
   }
 
@@ -159,7 +164,7 @@ export function ViewButton(
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">
           <Highlight component="div" highlight={search} className={btn.title!}>
-            {view.title || 'untitled'}
+            {view.titleOrUntitled}
           </Highlight>
           {isCurrentView && <Badge size="xs" fz={9} radius={'sm'}>current</Badge>}
         </Group>

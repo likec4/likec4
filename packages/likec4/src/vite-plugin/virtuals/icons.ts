@@ -76,9 +76,11 @@ export const iconsModule = {
       cases,
     } = projects.reduce((acc, { id }, i) => {
       const Component = 'Icons' + i.toString().padStart(2, '0')
-      const pkg = joinURL('likec4:icons', id)
-      acc.imports.push(`import { IconRenderer as ${Component} } from ${JSON.stringify(pkg)}`)
-      acc.cases.push(`   case ${JSON.stringify(id)}: return ${Component}`)
+      const pkg = JSON.stringify(joinURL('likec4:icons', id))
+      // acc.imports.push(`import { IconRenderer as ${Component} } from ${JSON.stringify(pkg)}`)
+      acc.cases.push(
+        `${JSON.stringify(id)}: lazy(() => import(${pkg}).then(m => ({default: m.IconRenderer})))`,
+      )
       return acc
     }, {
       imports: [] as string[],
@@ -86,21 +88,91 @@ export const iconsModule = {
     })
 
     return `
-import { jsx } from 'react/jsx-runtime'    
-${imports.join('\n')}
+import { lazy } from 'react' 
+export let ProjectIconsFn = {
+${cases.join(',\n')}
+}      
 
-function getProjectIcons(projectId) {
-  switch (projectId) {
-${cases.join('\n')}
-    default:
-      throw new Error('Unknown projectId: ' + projectId)
+
+export function getProjectIcons(projectId) {
+  let fn = ProjectIconsFn[projectId]
+  if (!fn) {
+    const projects = Object.keys(ProjectIconsFn)
+    console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
+    if (projects.length === 0) {
+      throw new Error('No projects found, invalid state')
+    }
+    projectId = projects[0]
+    console.warn('Falling back to project: ' + projectId)
+    fn = ProjectIconsFn[projectId]
   }
+  return fn
 }
 
-export function ProjectIcons({ projectId, ...props }) {
-  const IconComponent = getProjectIcons(projectId)
-  return jsx(IconComponent, props)
-} 
+if (import.meta.hot) {
+  import.meta.hot.accept(md => {
+    if (!import.meta.hot.data.$update) {
+      import.meta.hot.data.$update = ProjectIconsFn
+    }
+    const update = md.ProjectIconsFn
+    if (update) {
+      Object.assign(import.meta.hot.data.$update, update)
+    } else {
+      import.meta.hot.invalidate()
+    }
+  })
+}
 `
   },
 } satisfies VirtualModule
+
+// return {
+//   id: `likec4:${moduleId}`,
+//   virtualId: `likec4:plugin/${moduleId}.js`,
+//   async load({ logger, projects }) {
+//     logger.info(k.dim(`generating likec4:${moduleId}`))
+//     const cases = projects.map(({ id }) => {
+//       const pkg = escapeUnsafeChars(
+//         JSON.stringify(
+//           joinURL(`likec4:${moduleId}`, id),
+//         ),
+//       )
+//       return `  ${JSON.stringify(id)}: () => import(${pkg})`
+//       // return `  ${JSON.stringify(id)}: () => ${pkg}`
+//     })
+//     return `
+// export let ${fnName}Fn = {
+// ${cases.join(',\n')}
+// }
+
+// export async function ${fnName}(projectId) {
+//   let fn = ${fnName}Fn[projectId]
+//   if (!fn) {
+//     const projects = Object.keys(${fnName}Fn)
+//     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
+//     if (projects.length === 0) {
+//       throw new Error('No projects found, invalid state')
+//     }
+//     projectId = projects[0]
+//     console.warn('Falling back to project: ' + projectId)
+//     fn = ${fnName}Fn[projectId]
+//   }
+//   return await fn()
+// }
+
+// if (import.meta.hot) {
+//   import.meta.hot.accept(md => {
+//     if (!import.meta.hot.data.$update) {
+//       import.meta.hot.data.$update = ${fnName}Fn
+//     }
+//     const update = md.${fnName}Fn
+//     if (update) {
+//       Object.assign(import.meta.hot.data.$update, update)
+//     } else {
+//       import.meta.hot.invalidate()
+//     }
+//   })
+// }
+//     `
+//   },
+// }

@@ -57,6 +57,8 @@ export const globalCss: ExtendableGlobalCss = {
         _reduceGraphicsOnPan: 'none',
         _smallZoom: 'none',
       },
+      willChange: 'transform',
+      zIndex: 'likec4.diagram.edge.label',
     },
 
     '.likec4-root': {
@@ -131,15 +133,13 @@ export const globalCss: ExtendableGlobalCss = {
         '--xy-edge-stroke-width': 3,
         '--xy-edge-stroke': __v('palette.relationStroke'),
         '--xy-edge-stroke-selected': __v('palette.relationStrokeSelected'),
-        '--xy-edge-label-color': __v('palette.relationLabel'),
-        '--xy-edge-label-background-color': __v('palette.relationLabelBg'),
-
-        _dark: {
-          '--xy-edge-label-background-color': alpha(__v('palette.relationLabelBg'), 50),
+        '--xy-edge-label-color': {
+          base: __v('palette.relationLabel'),
+          _light: `oklch(from ${__v('palette.relationLabel')} calc(l + 0.05) c h)`,
         },
-        _light: {
-          '--xy-edge-label-color': `color-mix(in oklab, ${__v('palette.relationLabel')}, #FFF 50%)`,
-          '--xy-edge-label-background-color': alpha(__v('palette.relationLabelBg'), 65),
+        '--xy-edge-label-background-color': {
+          _dark: alpha(__v('palette.relationLabelBg'), 45),
+          _light: alpha(__v('palette.relationLabelBg'), 60),
         },
 
         '&:is([data-likec4-hovered="true"], [data-edge-active="true"])': {
@@ -169,17 +169,17 @@ export const globalCss: ExtendableGlobalCss = {
           transitionTimingFunction: 'cubic-bezier(0.50, 0, 0.2, 1)',
           transitionDuration: '400ms',
         },
-        '& .react-flow__edgelabel-renderer > *': {
+        '& :where(.react-flow__edgelabel-renderer) > *': {
           mixBlendMode: {
+            base: 'hard-light',
             _dark: 'screen',
-            _light: 'hard-light',
             _print: 'normal!',
           },
         },
-        '& .react-flow__edges > svg': {
+        '& :where(.react-flow__edges) > svg': {
           mixBlendMode: {
+            base: 'multiply',
             _dark: 'plus-lighter',
-            _light: 'multiply',
             _print: 'normal!',
           },
         },

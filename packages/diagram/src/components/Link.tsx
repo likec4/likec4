@@ -69,7 +69,7 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
           }),
           section: css({
             '&:is([data-position="left"])': {
-              color: 'mantine.colors.dimmed',
+              color: 'text.dimmed',
               userSelect: 'none',
               pointerEvents: 'none',
               _groupHover: {

@@ -1,11 +1,11 @@
-import {
-  type DeploymentFqn,
-  type DiagramEdge,
-  type DiagramNode,
-  type DiagramView,
-  type Fqn,
-  type XYPoint,
-  BBox,
+import { BBox } from '@likec4/core/geometry'
+import type {
+  DeploymentFqn,
+  DiagramEdge,
+  DiagramNode,
+  DiagramView,
+  Fqn,
+  XYPoint,
 } from '@likec4/core/types'
 import { nonexhaustive, nonNullable } from '@likec4/core/utils'
 import { type Viewport, getEdgePosition, getNodeDimensions, getNodesBounds, getViewportForBounds } from '@xyflow/system'

@@ -10,6 +10,7 @@ export const controlPointsContainer = css({
     _dark: 'screen',
     _light: 'multiply',
   },
+  zIndex: '[100]',
 })
 
 export const controlPoint = css({

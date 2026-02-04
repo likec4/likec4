@@ -1,11 +1,12 @@
-import { type NonEmptyArray, BBox, DefaultMap, nonNullable } from '@likec4/core'
+import { type NonEmptyArray, DefaultMap, nonNullable } from '@likec4/core'
+import { type Dimensions, type XYPoint, BBox } from '@likec4/core/geometry'
 import { invariant, isome } from '@likec4/core/utils'
 import type {
+  EdgeChange,
   EdgeReplaceChange,
   InternalNode as RFInternalNode,
   NodeChange,
   OnNodeDrag,
-  XYPosition,
 } from '@xyflow/react'
 import { type EdgeLookup, getNodeDimensions } from '@xyflow/system'
 import { produce } from 'immer'
@@ -31,26 +32,19 @@ abstract class Rect {
   maxX: number = -Infinity
   maxY: number = -Infinity
 
-  readonly initialX: number
-  readonly initialY: number
+  // Initial position absolute and dimensions
+  readonly initial: BBox
 
-  get positionAbsolute(): XYPosition {
+  get positionAbsolute(): XYPoint {
     return {
       x: this.minX,
       y: this.minY,
     }
   }
 
-  get initialPositionAbsolute(): XYPosition {
-    return {
-      x: this.initialX,
-      y: this.initialY,
-    }
-  }
-
-  set positionAbsolute(pos: XYPosition) {
-    const x = Math.round(pos.x)
-    const y = Math.round(pos.y)
+  set positionAbsolute(pos: XYPoint) {
+    const x = Math.trunc(pos.x)
+    const y = Math.trunc(pos.y)
     this.maxX += x - this.minX
     this.maxY += y - this.minY
 
@@ -58,26 +52,33 @@ abstract class Rect {
     this.minY = y
   }
 
-  get dimensions() {
+  get dimensions(): Dimensions {
     return {
-      width: Math.round(this.maxX - this.minX),
-      height: Math.round(this.maxY - this.minY),
+      width: Math.ceil(this.maxX - this.minX),
+      height: Math.ceil(this.maxY - this.minY),
     }
   }
 
-  get diff(): XYPosition {
+  get diff(): XYPoint {
+    const { x, y } = this.positionAbsolute
     return {
-      x: Math.round(this.positionAbsolute.x - this.initialX),
-      y: Math.round(this.positionAbsolute.y - this.initialY),
+      x: Math.trunc(x - this.initial.x),
+      y: Math.trunc(y - this.initial.y),
     }
   }
 
   get isMoved(): boolean {
-    return this.diff.x !== 0 || this.diff.y !== 0
+    const diff = this.diff
+    return diff.x !== 0 || diff.y !== 0
+  }
+
+  get isResized(): boolean {
+    const dim = this.dimensions
+    return dim.width !== this.initial.width || dim.height !== this.initial.height
   }
 
   // Position relative to parent
-  get position(): XYPosition {
+  get position(): XYPoint {
     const positionAbsolute = this.positionAbsolute
     if (!this.parent) {
       return positionAbsolute
@@ -105,8 +106,12 @@ abstract class Rect {
     this.maxX = this.minX + Math.ceil(width)
     this.maxY = this.minY + Math.ceil(height)
 
-    this.initialX = this.positionAbsolute.x
-    this.initialY = this.positionAbsolute.y
+    this.initial = {
+      x: this.minX,
+      y: this.minY,
+      width: Math.ceil(width),
+      height: Math.ceil(height),
+    }
 
     if (parent) {
       parent.children.push(this)
@@ -168,14 +173,13 @@ function makeEdgeModifier(
             x: pt.x + dx,
             y: pt.y + dy,
           }))
+        } else {
+          draft.data.controlPoints = null
         }
         if (edge.data.labelBBox) {
-          draft.data.labelBBox = {
-            x: edge.data.labelBBox.x + dx,
-            y: edge.data.labelBBox.y + dy,
-            width: edge.data.labelBBox.width,
-            height: edge.data.labelBBox.height,
-          }
+          draft.data.labelBBox ??= edge.data.labelBBox
+          draft.data.labelBBox.x = edge.data.labelBBox.x + dx
+          draft.data.labelBBox.y = edge.data.labelBBox.y + dy
         }
       }),
     }
@@ -215,8 +219,8 @@ function makeRelativeEdgeModifier(
     const d = vector(dx, dy)
 
     const relativePoint = (pt: { x: number; y: number }) => {
-      const p = vector(pt)
-      const staticToP = p.subtract(staticV)
+      const point = vector(pt)
+      const staticToP = point.subtract(staticV)
       const projLength = staticToP.dot(staticToAnchor)
       // relative coefficient of the point between static and anchor
       // clamp to (-1,1) to avoid invalid positions when control point goes beyond anchor
@@ -225,10 +229,14 @@ function makeRelativeEdgeModifier(
         max: 1,
       })
 
-      return p
+      const newPoint = point
         .add(d.multiply(coeff))
-        .round()
-        .toObject()
+        .trunc()
+
+      return {
+        x: newPoint.x,
+        y: newPoint.y,
+      }
     }
 
     return {
@@ -332,7 +340,17 @@ export function createLayoutConstraints(
   const edgeModifiers = new Map<Types.AnyEdge, EdgeModifier>()
 
   const findMovingAncestor = (nodeId: string): Rect | null => {
-    return rects.get(nodeId) ?? ancestorsOf.get(nodeId).map(id => rects.get(id)).find(s => !!s) ?? null
+    const r = rects.get(nodeId)
+    if (r) {
+      return r
+    }
+    for (const parent of ancestorsOf.get(nodeId)) {
+      const rect = rects.get(parent)
+      if (rect) {
+        return rect
+      }
+    }
+    return null
   }
 
   // moving nodes may have nested nodes as well
@@ -341,6 +359,10 @@ export function createLayoutConstraints(
     const isSourceMoving = movingNodes.has(edge.source)
     const isTargetMoving = movingNodes.has(edge.target)
 
+    if (!isSourceMoving && !isTargetMoving) {
+      continue
+    }
+
     // We update edges, where both source and target are moving nodes
     if (isSourceMoving && isTargetMoving) {
       // Find the anchor rectangle for the edge
@@ -348,41 +370,37 @@ export function createLayoutConstraints(
         ?? rects.get(edge.target)
         ?? findMovingAncestor(edge.source)
         ?? findMovingAncestor(edge.target)
-      if (r) {
-        edgeModifiers.set(edge, makeEdgeModifier(edge, r))
-      }
+      invariant(!!r, 'At least one of the edge nodes should have a moving ancestor')
+      edgeModifiers.set(edge, makeEdgeModifier(edge, r))
       continue
     }
 
     // When source OR target is moved, move control points and label position relatively
-    if (isSourceMoving !== isTargetMoving) {
-      const movingRect = isSourceMoving ? findMovingAncestor(edge.source) : findMovingAncestor(edge.target)
-      if (!movingRect) {
-        continue
-      }
+    invariant(isSourceMoving !== isTargetMoving, 'Logic error')
 
-      const [sourceNode, targetNode] = pipe(
-        [edge.source, edge.target] as const,
-        map(id => nonNullable(nodeLookup.get(id), `Node ${id} not found`)),
-        map(nodeToRect),
-      )
+    const movingRect = isSourceMoving ? findMovingAncestor(edge.source) : findMovingAncestor(edge.target)
+    invariant(!!movingRect, 'Moving endpoint should be found')
 
-      // Determine anchor (moving point) and static point
-      const [anchorNode, staticNode] = isSourceMoving
-        ? [sourceNode, targetNode]
-        : [targetNode, sourceNode]
+    const [sourceNode, targetNode] = pipe(
+      [edge.source, edge.target] as const,
+      map(id => nonNullable(nodeLookup.get(id), `Node ${id} not found`)),
+      map(nodeToRect),
+    )
 
-      edgeModifiers.set(
+    // Determine anchor (moving point) and static point
+    const [anchorNode, staticNode] = isSourceMoving
+      ? [sourceNode, targetNode]
+      : [targetNode, sourceNode]
+
+    edgeModifiers.set(
+      edge,
+      makeRelativeEdgeModifier(
         edge,
-        makeRelativeEdgeModifier(
-          edge,
-          movingRect,
-          anchorNode,
-          staticNode,
-        ),
-      )
-      continue
-    }
+        movingRect,
+        anchorNode,
+        staticNode,
+      ),
+    )
   }
 
   function applyConstraints(targets: Rect[]) {
@@ -416,11 +434,28 @@ export function createLayoutConstraints(
 
   const _edgeModifiers = [...edgeModifiers.values()]
 
-  function updateXYFlow() {
+  function updateXYFlow(): void {
+    const { edgeLookup, triggerNodeChanges, triggerEdgeChanges, nodeLookup } = xyflowApi.getState()
+    for (const id of editingNodeIds) {
+      const rect = rects.get(id)
+      if (!rect) {
+        console.warn(`Rect not found for id ${id}`)
+        continue
+      }
+      const node = nodeLookup.get(id)
+      if (!node) {
+        console.warn(`Node not found for id ${id}`)
+        continue
+      }
+      rect.positionAbsolute = node.internals.positionAbsolute
+    }
     applyConstraints(rectsToUpdate)
 
-    const nodeUpdates = rectsToUpdate.reduce((acc, r) => {
-      acc.push({
+    const nodeUpdates: NodeChange<Types.Node>[] = []
+    const edgeUpdates: EdgeChange<Types.AnyEdge>[] = []
+
+    for (const r of rectsToUpdate) {
+      nodeUpdates.push({
         id: r.id,
         type: 'position',
         dragging: false,
@@ -428,56 +463,63 @@ export function createLayoutConstraints(
         positionAbsolute: r.positionAbsolute,
       })
       if (r instanceof CompoundRect) {
-        acc.push({
+        nodeUpdates.push({
           id: r.id,
           type: 'dimensions',
           setAttributes: true,
+          resizing: false,
           dimensions: r.dimensions,
         })
       }
-      return acc
-    }, [] as NodeChange<Types.Node>[])
-    const { edgeLookup, triggerNodeChanges, triggerEdgeChanges } = xyflowApi.getState()
-    triggerNodeChanges(nodeUpdates)
+    }
+    if (nodeUpdates.length > 0) {
+      triggerNodeChanges(nodeUpdates)
+    }
 
-    const changes = _edgeModifiers.map(fm => fm(edgeLookup))
-    if (changes.length > 0) {
-      triggerEdgeChanges(changes)
+    for (const fm of _edgeModifiers) {
+      edgeUpdates.push(fm(edgeLookup))
+    }
+    if (edgeUpdates.length > 0) {
+      triggerEdgeChanges(edgeUpdates)
     }
   }
 
   let animationFrameId: number | null = null
 
-  function onMove() {
-    if (rectsToUpdate.length === 0) {
-      return
-    }
+  function cancelPending(): void {
     if (animationFrameId !== null) {
       cancelAnimationFrame(animationFrameId)
-    }
-    animationFrameId = requestAnimationFrame(() => {
       animationFrameId = null
-      for (const id of editingNodeIds) {
-        const rect = rects.get(id)
-        if (!rect) {
-          console.warn(`Rect not found for id ${id}`)
-          continue
-        }
-        const node = nodeLookup.get(id)
-        if (!node) {
-          console.warn(`Node not found for id ${id}`)
-          continue
-        }
-        rect.positionAbsolute = node.internals.positionAbsolute
-      }
+    }
+  }
+
+  function flushPending(): void {
+    cancelPending()
+    updateXYFlow()
+  }
+
+  function onMove(): void {
+    // if (rectsToUpdate.length === 0) {
+    //   return
+    // }
+    // cancelPending()
+    animationFrameId ??= requestAnimationFrame(() => {
+      animationFrameId = null
       updateXYFlow()
     })
+  }
+
+  function hasChanges(): boolean {
+    return isome(rectsToUpdate, r => r.isMoved || r.isResized)
   }
 
   return {
     rects: rects as ReadonlyMap<string, Leaf | CompoundRect>,
     onMove,
     updateXYFlow,
+    hasChanges,
+    cancelPending,
+    flushPending,
   }
 }
 
@@ -496,7 +538,6 @@ export function useLayoutConstraints(): LayoutConstraints {
   return useMemo((): LayoutConstraints => {
     return ({
       onNodeDragStart: (_event, xynode) => {
-        diagram.startEditing('node')
         const { nodeLookup } = xystore.getState()
         const draggingNodes = pipe(
           Array.from(nodeLookup.values()),
@@ -504,6 +545,7 @@ export function useLayoutConstraints(): LayoutConstraints {
           map(n => n.id),
         )
         if (hasAtLeast(draggingNodes, 1)) {
+          diagram.startEditing('node')
           solverRef.current = createLayoutConstraints(xystore, draggingNodes)
         }
       },
@@ -511,8 +553,16 @@ export function useLayoutConstraints(): LayoutConstraints {
         solverRef.current?.onMove()
       },
       onNodeDragStop: (_event) => {
-        const moved = solverRef.current ? isome(solverRef.current.rects.values(), r => r.isMoved) : false
-        diagram.stopEditing(moved)
+        if (!solverRef.current) {
+          return
+        }
+        const hasChanges = solverRef.current.hasChanges()
+        if (hasChanges) {
+          solverRef.current.flushPending()
+        } else {
+          solverRef.current.cancelPending()
+        }
+        diagram.stopEditing(hasChanges)
         solverRef.current = undefined
       },
     })

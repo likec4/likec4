@@ -1,19 +1,20 @@
 import type { LikeC4Model } from '@likec4/core/model'
-import type { Fqn } from '@likec4/core/types'
+import type { Fqn, NonEmptyArray } from '@likec4/core/types'
 import {
   ifilter,
+  imap,
   isAncestor,
   nameFromFqn,
-  sortParentsFirst,
+  toArray,
 } from '@likec4/core/utils'
 import { cx, cx as clsx } from '@likec4/styles/css'
+import { Txt } from '@likec4/styles/jsx'
 import {
   type RenderTreeNodePayload,
   ActionIcon,
   Box,
   Group,
   Highlight,
-  Text,
   Tooltip,
   Tree,
   UnstyledButton,
@@ -22,67 +23,97 @@ import {
 import { IconChevronRight } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { type KeyboardEventHandler, memo, useEffect, useMemo } from 'react'
-import { first, isEmpty, only, pipe, reduce } from 'remeda'
+import { filter, first, hasAtLeast, last, only, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
-import { useDiagram } from '../../hooks/useDiagram'
-import { sortByLabel } from '../../hooks/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch, useSearchActor } from '../hooks'
 import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
-import { centerY, moveFocusToSearchInput, queryAllFocusable, stopAndPrevent, whenSearchAnimationEnds } from './utils'
+import { centerY, moveFocusToSearchInput, queryAllFocusable, stopAndPrevent } from './utils'
 import { NothingFound } from './ViewsColum'
 
 interface LikeC4ModelTreeNodeData {
   label: string
   value: Fqn
   element: LikeC4Model.Element
-  searchTerms: string[]
+  viewsCount: number
   children: LikeC4ModelTreeNodeData[]
 }
 
-const btn = buttonsva()
-
-export const ElementsColumn = memo(() => {
+function useElementsColumnData() {
   const model = useLikeC4Model()
+
+  // We will mutate this array to build the tree structure
+  const allElements = useMemo(() =>
+    pipe(
+      model.elements(),
+      ifilter(i => !i.imported),
+      imap((element): LikeC4ModelTreeNodeData => ({
+        label: element.title,
+        value: element.id,
+        element,
+        // searchTerms,
+        viewsCount: [...element.views()].length,
+        children: [],
+      })),
+      toArray(),
+    ), [model])
+
   const search = useNormalizedSearch()
-  const data = useMemo(() => {
+
+  return useMemo(() => {
     const searchTerms = search.split('.')
     let elements
-    if (isEmpty(searchTerms) || searchTerms[0] === 'kind:') {
-      elements = model.elements()
+    if (search === '' || search === 'kind:') {
+      elements = allElements
+    } else if (search.startsWith('kind:')) {
+      const searchKind = search.slice(5)
+      elements = filter(allElements, ({ element }) => {
+        return element.kind.toLocaleLowerCase()[searchKind.length > 4 ? 'startsWith' : 'includes'](searchKind)
+      })
+    } else if (search.startsWith('#')) {
+      const searchTag = search.slice(1)
+      elements = filter(allElements, ({ element }) => {
+        return element.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag))
+      })
+    } else if (hasAtLeast(searchTerms, 2)) {
+      const satisfies = (element: LikeC4Model.Element) => {
+        const fqnParts = element.id.toLocaleLowerCase().split('.')
+        if (fqnParts.length < searchTerms.length) {
+          return false
+        }
+        let lastMatchIndex = 0
+        for (let i = 0; i < fqnParts.length; i++) {
+          if (fqnParts[i]!.includes(searchTerms[lastMatchIndex]!)) {
+            lastMatchIndex++
+            // All terms matched
+            if (lastMatchIndex === searchTerms.length) {
+              return true
+            }
+            continue
+          }
+        }
+        return false
+      }
+      elements = filter(allElements, ({ element }) => satisfies(element))
     } else {
-      elements = ifilter(model.elements(), element => {
-        if (search.startsWith('kind:')) {
-          return element.kind.toLocaleLowerCase().startsWith(search.slice(5))
-        }
-        if (search.startsWith('#')) {
-          return element.tags.some((tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
-        }
-        const value = element.title + ' ' + element.id + ' ' + element.summary.text
+      elements = filter(allElements, ({ element }) => {
+        const value = element.title + ' ' + element.name + ' ' + (element.summary.md || '')
         return value.toLocaleLowerCase().includes(search)
       })
     }
+
     const byid = {} as Record<Fqn, LikeC4ModelTreeNodeData>
+
     const { all, roots } = pipe(
-      [...elements],
-      sortParentsFirst,
-      reduce((acc, element) => {
-        const treeItem: LikeC4ModelTreeNodeData = {
-          label: element.title,
-          value: element.id,
-          element,
-          searchTerms,
-          children: [],
-        }
+      elements,
+      reduce((acc, treeItem) => {
+        treeItem.children = []
         byid[treeItem.value] = treeItem
         const parent = acc.all.findLast((root) => isAncestor(root.value, treeItem.value))
         if (parent) {
           parent.children.push(treeItem)
-          if (parent.children.length > 1) {
-            parent.children.sort(sortByLabel)
-          }
         } else {
           acc.roots.push(treeItem)
         }
@@ -96,9 +127,17 @@ export const ElementsColumn = memo(() => {
     return {
       all,
       byid,
-      roots: roots.sort(sortByLabel),
+      roots,
+      searchTerms: hasAtLeast(searchTerms, 1) ? searchTerms : [search] as NonEmptyArray<string>,
     }
-  }, [model, search])
+  }, [allElements, search])
+}
+type ElementsColumnData = ReturnType<typeof useElementsColumnData>
+
+const btn = buttonsva()
+
+export const ElementsColumn = memo(() => {
+  const data = useElementsColumnData()
 
   const handleClick = useHandleElementSelection()
 
@@ -113,17 +152,14 @@ const setHoveredNode = () => {}
 
 function ElementsTree({
   data: {
+    searchTerms,
     all,
     byid,
     roots,
   },
   handleClick,
 }: {
-  data: {
-    all: LikeC4ModelTreeNodeData[]
-    byid: Record<Fqn, LikeC4ModelTreeNodeData>
-    roots: LikeC4ModelTreeNodeData[]
-  }
+  data: ElementsColumnData
   handleClick: (element: LikeC4Model.Element) => void
 }) {
   const tree = useTree({
@@ -138,7 +174,7 @@ function ElementsTree({
         tree.expand(nd.value)
       }
     }
-  }, [all])
+  }, [all.join(',')])
 
   const onKeyDownCapture: KeyboardEventHandler = useCallbackRef((e) => {
     const target = e.target as HTMLElement
@@ -193,17 +229,18 @@ function ElementsTree({
         subtree: styles.treeSubtree,
       }}
       onKeyDownCapture={onKeyDownCapture}
-      renderNode={p => <ElementTreeNode {...p} handleClick={handleClick} />}
+      renderNode={p => <ElementTreeNode {...p} searchTerms={searchTerms} handleClick={handleClick} />}
     />
   )
 }
 
 function ElementTreeNode(
-  { node, elementProps, hasChildren, expanded, handleClick }: RenderTreeNodePayload & {
+  { node, elementProps, hasChildren, expanded, handleClick, searchTerms }: RenderTreeNodePayload & {
+    searchTerms: NonEmptyArray<string>
     handleClick: (element: LikeC4Model.Element) => void
   },
 ) {
-  const { element, searchTerms } = node as LikeC4ModelTreeNodeData
+  const { label, element, viewsCount } = node as LikeC4ModelTreeNodeData
   const elementIcon = IconOrShapeRenderer({
     element: {
       id: element.id,
@@ -213,8 +250,6 @@ function ElementTreeNode(
     },
     className: cx(btn.icon, styles.elementIcon),
   })
-  const views = [...element.views()]
-
   const key = `@tree.${node.value}`
 
   return (
@@ -241,7 +276,7 @@ function ElementTreeNode(
         tabIndex={-1}
         data-value={element.id}
         className={clsx(btn.root, 'group', 'likec4-element-button')}
-        {...views.length > 0 && {
+        {...viewsCount > 0 && {
           onClick: (e) => {
             if (!hasChildren || expanded) {
               e.stopPropagation()
@@ -254,37 +289,41 @@ function ElementTreeNode(
         <Box style={{ flexGrow: 1 }}>
           <Group gap={'xs'} wrap="nowrap" align="center" className={styles.elementTitleAndId}>
             <Highlight component="div" highlight={searchTerms} className={btn.title!}>
-              {node.label as any}
+              {label}
             </Highlight>
             <Tooltip label={element.id} withinPortal={false} fz={'xs'} disabled={!element.id.includes('.')}>
               <Highlight
                 component="div"
-                highlight={searchTerms}
+                highlight={last(searchTerms)}
                 className={cx(styles.elementId, btn.descriptionColor)}>
                 {nameFromFqn(element.id)}
               </Highlight>
             </Tooltip>
           </Group>
-          <Highlight component="div" highlight={searchTerms} className={btn.description!} lineClamp={1}>
-            {element.summary.text || 'No description'}
+          <Highlight
+            component="div"
+            highlight={element.summary.nonEmpty ? searchTerms : []}
+            className={btn.description!}
+            lineClamp={1}>
+            {element.summary.nonEmpty ? element.summary.text : 'No description'}
           </Highlight>
         </Box>
 
-        <Text component="div" className={cx(styles.elementViewsCount, btn.descriptionColor)} fz={'xs'}>
-          {views.length === 0 ? 'No views' : (
+        <Txt as={'div'} className={cx(styles.elementViewsCount, btn.descriptionColor)} size={'xs'}>
+          {viewsCount === 0 ? 'No views' : (
             <>
-              {views.length} view{views.length > 1 ? 's' : ''}
+              {viewsCount} view{viewsCount > 1 ? 's' : ''}
             </>
           )}
-        </Text>
+        </Txt>
       </UnstyledButton>
     </m.div>
   )
 }
 
 function useHandleElementSelection() {
-  const diagram = useDiagram()
   const searchActorRef = useSearchActor()
+
   return useCallbackRef((element: LikeC4Model.Element) => {
     const views = [...element.views()]
     if (views.length === 0) {
@@ -296,19 +335,10 @@ function useHandleElementSelection() {
       searchActorRef.send({ type: 'pickview.open', elementFqn })
       return
     }
-    const isSameView = onlyOneViewId === diagram.currentView.id
-    searchActorRef.send({ type: 'close' })
-
-    whenSearchAnimationEnds(() => {
-      // Same view - focus on the element directly
-      if (isSameView) {
-        diagram.focusOnElement(elementFqn)
-        return
-      }
-
-      // Different view - navigate and focus
-      diagram.navigateTo(onlyOneViewId, undefined, elementFqn)
+    searchActorRef.send({
+      type: 'navigate.to',
+      viewId: onlyOneViewId,
+      focusOnElement: elementFqn,
     })
-    return
   })
 }

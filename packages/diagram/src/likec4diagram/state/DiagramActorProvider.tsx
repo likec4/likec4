@@ -7,7 +7,7 @@ import { isNullish } from 'remeda'
 import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { type EnabledFeatures, DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
-import { CurrentViewModelContext } from '../../context/LikeC4ModelContext'
+import { CurrentViewModelContextProvider } from '../../context/LikeC4ModelContext'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
 import { DiagramActorContextProvider, DiagramApiContextProvider } from '../../hooks/safeContext'
 import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
@@ -44,7 +44,8 @@ export function DiagramActorProvider({
 }>) {
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
-  const editorActor = useEditorActorLogic(view.id)
+  const editorActor = useEditorActorLogic()
+  const features = useEnabledFeatures()
 
   const actor = useActorRef(
     diagramMachine.provide({
@@ -65,6 +66,7 @@ export function DiagramActorProvider({
         nodesDraggable,
         nodesSelectable,
         where,
+        features,
         dynamicViewVariant: _defaultVariant,
       },
     },
@@ -75,20 +77,8 @@ export function DiagramActorProvider({
       previous: actorRef.current.getSnapshot().context,
       current: actor.getSnapshot().context,
     })
-    // Send destroy to the old actor to clean up resources
-    actorRef.current.send({ type: 'destroy' })
     actorRef.current = actor
   }
-
-  // useUpdateEffect(
-  //   () => {
-  //     return () => {
-  //       console.log('DiagramActorProvider unmounting')
-  //       actor.send({ type: 'destroy' })
-  //     }
-  //   },
-  //   [actor.sessionId],
-  // )
 
   const [api, setApi] = useState(() => makeDiagramApi(actorRef))
   useEffect(() => {
@@ -96,32 +86,30 @@ export function DiagramActorProvider({
       if (api.ref === actorRef) {
         return api
       }
-      console.warn(
+      console.error(
         'DiagramMachine actorRef changed, creating new DiagramApi instance, this should not happen during the lifetime of the actor',
       )
       return makeDiagramApi(actorRef)
     })
   }, [actorRef])
 
-  const features = useEnabledFeatures()
-  useEffect(
-    () => actor.send({ type: 'update.features', features }),
-    [features, actor],
-  )
+  useEffect(() => {
+    actor.send({ type: 'update.features', features })
+  }, [actor, features])
 
-  useEffect(
+  useUpdateEffect(
     () =>
       actor.send({
         type: 'update.inputs',
         inputs: { zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
       }),
-    [zoomable, where, pannable, fitViewPadding, actor, nodesDraggable, nodesSelectable],
+    [actor, zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable],
   )
 
   useUpdateEffect(() => {
     if (!_defaultVariant) return
     actor.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
-  }, [_defaultVariant, actor])
+  }, [actor, _defaultVariant])
 
   useEffect(
     () => actor.send({ type: 'update.view', view, source: 'external' }),
@@ -197,11 +185,11 @@ function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ ac
   const likec4model = useOptionalLikeC4Model()
   const viewmodel = likec4model?.findView(viewId) ?? null
   return (
-    <CurrentViewModelContext.Provider value={viewmodel}>
+    <CurrentViewModelContextProvider value={viewmodel}>
       <DiagramFeatures overrides={toggledFeatures}>
         {children}
       </DiagramFeatures>
-    </CurrentViewModelContext.Provider>
+    </CurrentViewModelContextProvider>
   )
 }
 

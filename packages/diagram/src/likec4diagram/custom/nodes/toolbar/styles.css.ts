@@ -1,7 +1,7 @@
 import { css } from '@likec4/styles/css'
 
 export const toolbarTitle = css({
-  color: 'mantine.colors.dimmed',
+  color: 'text.dimmed',
   fontSize: 'xxs',
   fontWeight: 'bold',
   maxWidth: '220px',

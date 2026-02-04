@@ -37,7 +37,10 @@ const _diagramMachine = machine.createMachine({
     ...input,
     xyedges: [],
     xynodes: [],
-    features: { ...DefaultFeatures },
+    features: {
+      ...DefaultFeatures,
+      ...input.features,
+    },
     toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
       enableReadOnly: true,
       enableCompareWithLatest: false,

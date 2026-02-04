@@ -1,7 +1,7 @@
 import { cx } from '@likec4/styles/css'
-import { useIsMounted } from '@react-hookz/web'
+import { useStore } from '@nanostores/react'
 import { atom } from 'nanostores'
-import { type PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react'
+import { type PropsWithChildren, useMemo, useRef, useState } from 'react'
 import {
   PanningAtomSafeCtx,
   ReduceGraphicsModeProvider,
@@ -18,20 +18,10 @@ export function RootContainer({
   className?: string | undefined
   reduceGraphics?: boolean
 }>) {
-  const isMounted = useIsMounted()
   const ref = useRef<HTMLDivElement>(null)
 
   const [$isPanning] = useState(() => atom(false))
-
-  useEffect(() => {
-    return $isPanning.listen((isPanning) => {
-      if (!isMounted()) {
-        return
-      }
-      // Chnage DOM attribute to avoid re-rendering
-      ref.current?.setAttribute('data-likec4-diagram-panning', isPanning ? 'true' : 'false')
-    })
-  }, [$isPanning])
+  const isPanning = useStore($isPanning)
 
   const ctx = useMemo(() => ({ id, ref, selector: `#${id}` }), [id, ref])
 
@@ -42,6 +32,7 @@ export function RootContainer({
           id={id}
           className={cx('likec4-root', className)}
           ref={ref}
+          data-likec4-diagram-panning={isPanning}
           {...reduceGraphics && {
             ['data-likec4-reduced-graphics']: true,
           }}>

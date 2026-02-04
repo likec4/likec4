@@ -233,7 +233,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           onCancelMove={onControlPointerCancelMove}
           onFinishMove={onControlPointerFinishMove}
           onDelete={onControlPointerDelete}
-          zIndex={9999}
         />
       )}
     </>
@@ -250,7 +249,6 @@ function ControlPoints({
   onCancelMove,
   onFinishMove,
   onDelete,
-  zIndex,
 }: {
   isControlPointDragging: boolean
   edgeProps: Types.EdgeProps<'relationship'>
@@ -260,42 +258,48 @@ function ControlPoints({
   onCancelMove: () => void
   onFinishMove: (points: XYPosition[]) => void
   onDelete: (points: XYPosition[]) => void
-  zIndex: number
 }) {
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
   const edgeId = edgeProps.data.id
 
+  const controlPointsRef = useRef(controlPoints)
+  controlPointsRef.current = controlPoints
+
   const onLmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
     let hasMoved = false
-    let pointer = { x: e.clientX, y: e.clientY }
+    let initialPoint = { x: e.clientX, y: e.clientY }
+    let clientPoint = { ...initialPoint }
 
     let animationFrameId: number | null = null
 
-    let cp = controlPoints
+    let cp = [...controlPointsRef.current]
 
     const onPointerMove = (e: PointerEvent) => {
-      const clientPoint = {
-        x: e.clientX,
-        y: e.clientY,
-      }
-      if (!isSamePoint(pointer, clientPoint)) {
+      clientPoint.x = e.clientX
+      clientPoint.y = e.clientY
+
+      const isDragging = !isSamePoint(initialPoint, clientPoint)
+
+      // Moved
+      if (isDragging) {
         if (!hasMoved) {
           hasMoved = true
           onStartMove()
         }
-        pointer = clientPoint
+
         animationFrameId ??= requestAnimationFrame(() => {
           animationFrameId = null
-          cp = cp.slice()
-          const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
+          const { x, y } = xyflow.screenToFlowPosition(clientPoint, { snapToGrid: false })
+          cp = [...cp]
           cp[index] = {
-            x: Math.round(x),
-            y: Math.round(y),
+            x: Math.trunc(x),
+            y: Math.trunc(y),
           }
           onMove(cp)
         })
       }
+
       e.stopPropagation()
     }
 
@@ -307,6 +311,9 @@ function ControlPoints({
       domNode.removeEventListener('click', stopAndPrevent, {
         capture: true,
       })
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId)
+      }
       if (hasMoved) {
         onFinishMove(cp)
       } else {
@@ -329,12 +336,12 @@ function ControlPoints({
   }
 
   const onRmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
-    if (controlPoints.length <= 1 || index >= controlPoints.length) {
+    const newControlPoints = [...controlPointsRef.current]
+    if (newControlPoints.length <= 1 || index >= newControlPoints.length) {
       return
     }
     stopAndPrevent(e)
 
-    const newControlPoints = controlPoints.slice()
     newControlPoints.splice(index, 1)
     // Defer the update to avoid conflict with the pointerup event
     setTimeout(() => {
@@ -369,12 +376,12 @@ function ControlPoints({
   })
 
   const onControlPointerDblClick = useCallbackRef((e: ReactPointerEvent<SVGCircleElement>) => {
-    const { domNode } = xyflowStore.getState()
-    if (!domNode || e.pointerType !== 'mouse') {
+    if (e.pointerType !== 'mouse') {
       return
     }
     const index = parseFloat(e.currentTarget.getAttribute('data-control-point-index') || '')
     if (isNaN(index)) {
+      console.error(e.currentTarget)
       throw new Error('data-control-point-index is not a number')
     }
     onRmbControlPointerDown(index, e)
@@ -385,12 +392,7 @@ function ControlPoints({
       <EdgeContainer
         component="svg"
         className={edgesCss.controlPointsContainer}
-        {...edgeProps}
-        style={{
-          ...edgeProps.style,
-          zIndex,
-        }}
-      >
+        {...edgeProps}>
         <g
           data-active={isControlPointDragging ? true : undefined}
           className="group"

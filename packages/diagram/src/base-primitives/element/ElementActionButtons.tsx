@@ -15,6 +15,27 @@ type ElementActionButtonsProps = {
   buttons: ElementActionButtons.Item[]
 }
 
+const variants = {
+  normal: {
+    originY: 0,
+    opacity: 0.75,
+    scale: 0.8,
+    y: 0,
+  },
+  selected: {
+    originY: 0,
+    opacity: 1,
+    scale: 0.9,
+    y: 6,
+  },
+  hovered: {
+    originY: 0,
+    opacity: 1,
+    scale: 1.1,
+    y: 6,
+  },
+}
+
 /**
  * Center-Bottom bar with action buttons. Intended to be used inside "leaf" nodes.
  *
@@ -51,19 +72,26 @@ export function ElementActionButtons({
   if (!buttons.length) {
     return null
   }
+
+  let variant: keyof typeof variants
+  switch (true) {
+    case isHovered:
+      variant = 'hovered'
+      break
+    case selected:
+      variant = 'selected'
+      break
+    default:
+      variant = 'normal'
+  }
+
   return (
     <div className={actionButtons()}>
       <m.div
         layoutRoot
         initial={false}
-        style={{
-          originY: 0,
-        }}
-        animate={{
-          opacity: (isHovered || selected) ? 1 : 0.75,
-          scale: isHovered ? 1.1 : (selected ? 0.9 : 0.8),
-          y: (isHovered || selected) ? 6 : 0,
-        }}
+        variants={variants}
+        animate={variant}
         layoutDependency={`${isHovered}-${selected}`}
         data-likec4-hovered={isHovered}
         className={cx('nodrag nopan')}

@@ -40,14 +40,13 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
     },
     pointerEvents = 'all',
     className,
-    style: _style, // omit
     children,
     ...rest
   },
   ref,
 ) => {
   const stepNum = isStepEdgeId(id) ? extractStep(id) : null
-
+  const isStepEdge = stepNum !== null
   const hasLabel = isTruthy(label) || isTruthy(technology)
 
   return (
@@ -58,8 +57,8 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
         'likec4-edge-label',
         edgeLabel({
           pointerEvents,
-          isStepEdge: stepNum !== null,
-          cursor: selectable || stepNum !== null ? 'pointer' : 'default',
+          isStepEdge,
+          cursor: selectable || isStepEdge ? 'pointer' : 'default',
         }),
         className,
       )}

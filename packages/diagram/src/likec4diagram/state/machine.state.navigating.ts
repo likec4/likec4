@@ -1,4 +1,5 @@
-import { type NodeId, BBox } from '@likec4/core/types'
+import { BBox } from '@likec4/core/geometry'
+import type { NodeId } from '@likec4/core/types'
 import { invariant } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
 import { isTruthy } from 'remeda'

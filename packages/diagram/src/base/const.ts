@@ -4,6 +4,7 @@ export const ZIndexes = {
   Compound: 1,
   // XYFlow increments zIndexes of compounds
   Edge: 20,
+  EdgeLabel: 25,
   Element: 20,
   Max: 30,
 } as const

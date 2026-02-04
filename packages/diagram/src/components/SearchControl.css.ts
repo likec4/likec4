@@ -9,22 +9,22 @@ export const root = css({
   // color: fallbackVar('var(--search-color)', 'mantine.colors.placeholder)',
   border: '1px solid',
   borderColor: {
-    base: 'mantine.colors.defaultBorder',
+    base: 'default.border',
     _light: 'mantine.colors.gray[4]',
     _dark: 'mantine.colors.dark[4]',
-    _hover: 'mantine.colors.defaultBorder',
+    _hover: 'default.border',
   },
   cursor: 'pointer',
   background: {
-    base: 'mantine.colors.default',
-    _light: 'mantine.colors.white',
+    base: 'default',
+    _light: 'white',
     _dark: 'mantine.colors.dark[6]',
-    _hover: 'mantine.colors.defaultHover',
+    _hover: 'default.hover',
   },
 
   width: '100%',
   '& .tabler-icon': {
-    color: 'mantine.colors.text',
+    color: 'text',
   },
 
   transition: {
@@ -42,7 +42,7 @@ export const placeholder = css({
   fontSize: 'sm', // mantine.fontSizes.sm,
   fontWeight: 'medium',
   paddingRight: '2.5', // 10px
-  color: 'mantine.colors.placeholder',
+  color: 'text.placeholder',
   flex: '1',
   sm: {
     paddingRight: '[30px]',

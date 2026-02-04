@@ -30,7 +30,7 @@ export const card = css({
   padding: '4',
   gap: 'lg',
   justifyContent: 'stretch',
-  color: 'mantine.colors.text',
+  color: 'text',
   boxShadow: 'md',
   overflow: 'hidden',
   border: 'none',
@@ -100,19 +100,19 @@ const iconColor = '--icon-color'
 export const viewButton = css({
   // display: 'flex',
   width: '100%',
-  background: 'mantine.colors.body',
+  background: 'body',
   borderRadius: 'sm',
   padding: `[10px 8px]`,
   // gap: 6,
   // alignItems: 'flex-start',
   transition: 'fast',
   border: `1px dashed`,
-  borderColor: 'mantine.colors.defaultBorder',
+  borderColor: 'default.border',
   [viewTitleColor]: '{colors.mantine.colors.dark[1]}',
   _hover: {
-    background: 'mantine.colors.defaultHover',
+    background: 'default.hover',
     [iconColor]: '{colors.mantine.colors.dark[1]}',
-    [viewTitleColor]: '{colors.mantine.colors.defaultColor}',
+    [viewTitleColor]: '{colors.default.color}',
   },
   _dark: {
     background: 'mantine.colors.dark[6]',
@@ -131,7 +131,7 @@ export const viewButton = css({
     color: `[var(${iconColor}, {colors.mantine.colors.dark[2]})]`,
     '--ti-size': '22px',
     _hover: {
-      color: 'mantine.colors.defaultColor',
+      color: 'default.color',
     },
   },
 
@@ -183,24 +183,24 @@ export const tabsTab = css({
   color: 'mantine.colors.gray[7]',
   _hover: {
     transitionTimingFunction: 'out',
-    color: 'mantine.colors.defaultColor',
+    color: 'default.color',
     background: 'mantine.colors.gray[3]',
   },
   ['&[data-active]']: {
     transition: 'none',
-    background: 'mantine.colors.white',
+    background: 'white',
     shadow: 'xs',
-    color: 'mantine.colors.defaultColor',
+    color: 'default.color',
   },
   _dark: {
     color: 'mantine.colors.dark[1]',
     _hover: {
-      color: 'mantine.colors.white',
+      color: 'white',
       background: 'mantine.colors.dark[6]',
     },
 
     [`&:is([data-active])`]: {
-      color: 'mantine.colors.white',
+      color: 'white',
       background: 'mantine.colors.dark[5]',
     },
   },

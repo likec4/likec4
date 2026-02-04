@@ -1,12 +1,10 @@
 import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { EdgeLabelRenderer } from '@xyflow/react'
-import { type HTMLAttributes, useCallback } from 'react'
+import type { HTMLAttributes } from 'react'
 import { isNumber } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
-import { ZIndexes } from '../../base/const'
 import type { BaseEdgePropsWithData } from '../../base/types'
-import { useXYStore } from '../../hooks/useXYFlow'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -31,7 +29,7 @@ type EdgeLabelContainerProps = HTMLAttributes<HTMLDivElement> & {
 
 const toCssVarValue = (value: number | string | undefined) => {
   if (value === undefined) return ''
-  return isNumber(value) ? `${Math.round(value)}px` : value
+  return isNumber(value) ? `${Math.trunc(value)}px` : value
 }
 
 export function EdgeLabelContainer({
@@ -49,20 +47,10 @@ export function EdgeLabelContainer({
   },
   labelPosition: labelXY,
   className,
-  style,
+  style: _, // omit styles for container
   children,
   ...rest
 }: EdgeLabelContainerProps) {
-  let zIndex = useXYStore(
-    useCallback((state) => {
-      return state.edgeLookup.get(id)?.zIndex ?? ZIndexes.Edge
-    }, [id]),
-  )
-  // Move above the elements
-  if (isHovered || isActive) {
-    zIndex += 100
-  }
-
   let labelX = labelXY?.x ?? labelBBox?.x,
     labelY = labelXY?.y ?? labelBBox?.y
 
@@ -97,15 +85,17 @@ export function EdgeLabelContainer({
           'data-likec4-dimmed': isDimmed,
         }}
         style={{
-          ...(labelBBox && {
-            maxWidth: labelBBox.width + 18,
-          }),
-          zIndex,
-          ...style,
           transform: `translate(${toCssVarValue(labelX)}, ${toCssVarValue(labelY)}) ${translate}`,
         }}
       >
-        {children}
+        <div
+          style={labelBBox ?
+            {
+              maxWidth: labelBBox.width + 20,
+            } :
+            undefined}>
+          {children}
+        </div>
       </div>
     </EdgeLabelRenderer>
   )

@@ -302,7 +302,7 @@ function FoundedView(
       className={cx(
         css({
           _groupHover: {
-            color: 'mantine.colors.dimmed',
+            color: 'text.dimmed',
           },
         }),
         inheritColor,
@@ -572,7 +572,7 @@ function SearchInput(props: {
         }),
         input: css({
           _placeholder: {
-            color: 'mantine.colors.dimmed',
+            color: 'text.dimmed',
           },
           _focus: {
             outline: 'none',

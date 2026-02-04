@@ -64,7 +64,7 @@ export function IconRenderer({
   }
   className?: string | undefined
   style?: CSSProperties | undefined
-}) {
+}): ReactNode {
   const RenderIcon = useContext(IconRendererContext)
   if (!element || !element.icon || element.icon === 'none') {
     return null

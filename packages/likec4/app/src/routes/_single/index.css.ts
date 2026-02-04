@@ -1,7 +1,7 @@
 import { css } from '@likec4/styles/css'
 
 export const dimmed = css({
-  color: 'mantine.colors.dimmed',
+  color: 'text.dimmed',
 })
 
 export const header = css({
@@ -14,7 +14,7 @@ export const previewBg = css({
   padding: '0',
   margin: '0',
   backgroundOrigin: 'padding-box',
-  backgroundImage: `radial-gradient({colors.mantine.colors.defaultBorder} 15%, {colors.mantine.colors.body} 15%)`,
+  backgroundImage: `radial-gradient({colors.default.border} 15%, {colors.body} 15%)`,
   backgroundPosition: '0 0',
   backgroundSize: '12px 12px',
   _after: {

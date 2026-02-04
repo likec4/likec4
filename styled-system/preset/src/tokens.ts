@@ -1,7 +1,6 @@
 import { defineTokens } from '@pandacss/dev'
 import { mapValues } from 'remeda'
 import { defaultTheme } from './defaults/index.ts'
-import { mantine } from './generated.ts'
 import { rem } from './helpers.ts'
 import { colors } from './tokens.colors.ts'
 
@@ -66,7 +65,7 @@ export const tokens = defineTokens({
   borders: {
     none: { value: 'none' },
     transparent: { value: '0px solid transparent' },
-    default: { value: `1px solid ${mantine.colors.defaultBorder}` },
+    default: { value: `1px solid {colors.default.border}` },
   },
   spacing: {
     '0': {
@@ -275,7 +274,15 @@ export const tokens = defineTokens({
     likec4: {
       diagram: {
         edge: {
-          value: '20',
+          DEFAULT: {
+            value: '20',
+          },
+          label: {
+            value: '25',
+          },
+          controlPoint: {
+            value: '30',
+          },
         },
         node: {
           compound: {

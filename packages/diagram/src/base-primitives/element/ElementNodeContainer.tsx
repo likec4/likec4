@@ -1,9 +1,9 @@
 import { type Color, type ComputedNodeStyle, type ElementShape, ensureSizes } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { elementNode } from '@likec4/styles/recipes'
-import type { MotionNodeLayoutOptions } from 'motion/react'
+import type { MotionNodeLayoutOptions, MotionStyle, Variants } from 'motion/react'
 import * as m from 'motion/react-m'
-import { type CSSProperties, type PropsWithChildren, forwardRef } from 'react'
+import { type PropsWithChildren, forwardRef } from 'react'
 import type { BaseNodePropsWithData } from '../../base/types'
 
 type RequiredData = {
@@ -16,11 +16,27 @@ type ElementNodeContainerProps = PropsWithChildren<
   & {
     nodeProps: BaseNodePropsWithData<RequiredData>
     className?: string | undefined
-    style?: CSSProperties | undefined
+    style?: MotionStyle | undefined
     [key: `data-${string}`]: string | undefined
   }
   & MotionNodeLayoutOptions
 >
+
+const variants = {
+  normal: {
+    scale: 1,
+  },
+  hovered: {
+    scale: 1.05,
+  },
+  selected: {
+    scale: 1.02,
+  },
+  tap: {
+    scale: 0.98,
+  },
+} satisfies Variants
+
 /**
  * Top-level primitive to compose leaf nodes renderers.
  * This container provides the state via data-* attributes
@@ -40,14 +56,16 @@ export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContai
   children,
   ...rest
 }, ref) => {
-  let scale = 1
+  let variant: keyof typeof variants
   switch (true) {
     case isHovered:
-      scale = 1.05
+      variant = 'hovered'
       break
     case selected:
-      scale = 1.02
+      variant = 'selected'
       break
+    default:
+      variant = 'normal'
   }
 
   const {
@@ -64,12 +82,11 @@ export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContai
         'group',
         className,
       )}
+      variants={variants}
       initial={false}
       {...selectable && {
-        animate: {
-          scale,
-        },
-        whileTap: { scale: 0.98 },
+        animate: variant,
+        whileTap: 'tap',
       }}
       data-likec4-hovered={isHovered}
       data-likec4-color={data.color}
@@ -80,9 +97,7 @@ export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContai
       {...(isDimmed !== false && {
         'data-likec4-dimmed': isDimmed,
       })}
-      style={{
-        ...style as any,
-      }}
+      style={style as MotionStyle}
       tabIndex={-1}
       {...rest}
     >

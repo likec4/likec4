@@ -4,9 +4,10 @@ import { Grid, GridCol, Group, ScrollArea, Title } from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
 import { useTimeoutEffect } from '@react-hookz/web'
 import { useSelector } from '@xstate/react'
-import { AnimatePresence, LayoutGroup } from 'motion/react'
-import { memo, useRef } from 'react'
+import { AnimatePresence, LayoutGroup, usePresence } from 'motion/react'
+import { memo, Suspense, useEffect, useMemo, useRef } from 'react'
 import { isTruthy } from 'remeda'
+import { createEmptyActor } from 'xstate'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useSearchActorRef } from '../hooks/useSearchActor'
 import { Overlay } from '../overlays/overlay/Overlay'
@@ -70,50 +71,43 @@ const scrollArea = css({
   },
 })
 
-const selectIsOpened = (s: SearchActorSnapshot) => !s.matches('inactive')
-
-export function Search() {
-  const searchActorRef = useSearchActorRef()
-  if (!searchActorRef) {
-    return null
+const selectIsOpened = (s: SearchActorSnapshot) => {
+  try {
+    return s.status === 'active' && (s.value === 'opened' || s.value === 'pickView')
+  } catch (e) {
+    console.error(e)
+    return false
   }
-
-  return <SearchOverlayCtx searchActorRef={searchActorRef} />
 }
 
-const selectPickViewFor = (s: SearchActorSnapshot) => s.context.pickViewFor ?? null
-
-const SearchOverlayCtx = memo<{ searchActorRef: SearchActorRef }>(({ searchActorRef }) => {
-  const isOpened = useSelector(searchActorRef, selectIsOpened)
-  const ref = useRef<HTMLDivElement>(null)
-  const pickViewFor = useSelector(searchActorRef, selectPickViewFor)
-
-  useTimeoutEffect(() => {
-    if (isTruthy(searchActorRef.getSnapshot().context.openedWithSearch)) {
-      focusToFirstFoundElement(ref.current)
-    }
-  }, isOpened ? 150 : undefined)
-
-  const openSearch = () => {
-    searchActorRef.send({ type: 'open' })
-  }
+export const Search = memo(() => {
+  const searchActorRef = useSearchActorRef()
+  const emptyActorRef = useRef(createEmptyActor() as SearchActorRef)
+  const isOpened = useSelector(searchActorRef ?? emptyActorRef.current, selectIsOpened)
 
   const close = useCallbackRef(() => {
-    searchActorRef.send({ type: 'close' })
+    searchActorRef?.send({ type: 'close' })
   })
 
-  useHotkeys([
-    ['mod+k', openSearch, {
-      preventDefault: true,
-    }],
-    ['mod+f', openSearch, {
-      preventDefault: true,
-    }],
-  ])
+  useHotkeys(
+    useMemo(() => {
+      const openSearch = () => searchActorRef?.send({ type: 'open' })
+      return searchActorRef ?
+        [
+          ['mod+k', openSearch, {
+            preventDefault: true,
+          }],
+          ['mod+f', openSearch, {
+            preventDefault: true,
+          }],
+        ] :
+        []
+    }, [searchActorRef]),
+  )
 
   return (
     <AnimatePresence>
-      {isOpened && (
+      {searchActorRef && isOpened && (
         <Overlay
           fullscreen
           withBackdrop={false}
@@ -128,65 +122,98 @@ const SearchOverlayCtx = memo<{ searchActorRef: SearchActorRef }>(({ searchActor
           onClose={close}
           data-likec4-search="true"
         >
-          <Box ref={ref} display={'contents'}>
-            <Group
-              className={'group'}
-              wrap="nowrap"
-              onClick={e => {
-                e.stopPropagation()
-                moveFocusToSearchInput(ref.current)
-              }}>
-              <VStack flex={1} px={'sm'}>
-                <LikeC4SearchInput />
-                <SearchByTags />
-              </VStack>
-            </Group>
-            <Grid>
-              <GridCol span={6}>
-                <Title component={'div'} order={6} c="dimmed" pl="sm">Elements</Title>
-              </GridCol>
-              <GridCol span={6}>
-                <Title component={'div'} order={6} c="dimmed" pl="sm">Views</Title>
-              </GridCol>
-            </Grid>
-            <Grid
-              className={css({
-                containerName: 'likec4-search-elements',
-                containerType: 'size',
-                overflow: 'hidden',
-                flexGrow: 1,
-              })}>
-              <GridCol span={6}>
-                <ScrollArea
-                  type="scroll"
-                  className={scrollArea}
-                  pr="xs"
-                  scrollbars="y">
-                  <AnimatePresence>
-                    <LayoutGroup id="likec4-search-elements">
-                      <ElementsColumn />
-                    </LayoutGroup>
-                  </AnimatePresence>
-                </ScrollArea>
-              </GridCol>
-              <GridCol span={6}>
-                <ScrollArea
-                  type="scroll"
-                  className={scrollArea}
-                  pr="xs"
-                  scrollbars="y">
-                  <AnimatePresence>
-                    <LayoutGroup id="likec4-search-views">
-                      <ViewsColumn />
-                    </LayoutGroup>
-                  </AnimatePresence>
-                </ScrollArea>
-              </GridCol>
-            </Grid>
-            {pickViewFor && <PickView searchActorRef={searchActorRef} elementFqn={pickViewFor} />}
-          </Box>
+          <SearchOverlayBody searchActorRef={searchActorRef} />
         </Overlay>
       )}
     </AnimatePresence>
+  )
+})
+Search.displayName = 'Search'
+
+const selectPickViewFor = (s: SearchActorSnapshot) => s.context.pickViewFor
+
+const SearchOverlayBody = memo<{ searchActorRef: SearchActorRef }>(({ searchActorRef }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const pickViewFor = useSelector(searchActorRef, selectPickViewFor)
+
+  useTimeoutEffect(() => {
+    if (isTruthy(searchActorRef.getSnapshot().context.openedWithSearch)) {
+      focusToFirstFoundElement(ref.current)
+    }
+  }, 150)
+
+  const [isPresent, safeToRemove] = usePresence()
+
+  useEffect(() => {
+    if (isPresent) {
+      return
+    }
+    safeToRemove()
+    try {
+      // Actor might be stopped, so we need to catch the error
+      searchActorRef.send({ type: 'animation.presence.end' })
+    } catch (e) {
+      console.debug('SearchOverlayBody: animation.presence.end failed', e)
+    }
+  }, [isPresent, searchActorRef, safeToRemove])
+
+  return (
+    <Box ref={ref} display={'contents'}>
+      <Group
+        className={'group'}
+        wrap="nowrap"
+        onClick={e => {
+          e.stopPropagation()
+          moveFocusToSearchInput(ref.current)
+        }}>
+        <VStack flex={1} px={'sm'}>
+          <LikeC4SearchInput />
+          <SearchByTags />
+        </VStack>
+      </Group>
+      <Grid>
+        <GridCol span={6}>
+          <Title component={'div'} order={6} c="dimmed" pl="sm">Elements</Title>
+        </GridCol>
+        <GridCol span={6}>
+          <Title component={'div'} order={6} c="dimmed" pl="sm">Views</Title>
+        </GridCol>
+      </Grid>
+      <Grid
+        className={css({
+          containerName: 'likec4-search-elements',
+          containerType: 'size',
+          overflow: 'hidden',
+          flexGrow: 1,
+        })}>
+        <GridCol span={6}>
+          <ScrollArea
+            type="scroll"
+            className={scrollArea}
+            pr="xs"
+            scrollbars="y">
+            <LayoutGroup id="likec4-search-elements">
+              <Suspense>
+                <ElementsColumn />
+              </Suspense>
+            </LayoutGroup>
+          </ScrollArea>
+        </GridCol>
+        <GridCol span={6}>
+          <ScrollArea
+            type="scroll"
+            className={scrollArea}
+            pr="xs"
+            scrollbars="y">
+            <Suspense>
+              <LayoutGroup id="likec4-search-views">
+                <ViewsColumn />
+              </LayoutGroup>
+            </Suspense>
+          </ScrollArea>
+        </GridCol>
+      </Grid>
+      {pickViewFor && <PickView searchActorRef={searchActorRef} elementFqn={pickViewFor} />}
+    </Box>
   )
 })

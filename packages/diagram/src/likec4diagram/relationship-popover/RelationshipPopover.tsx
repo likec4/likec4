@@ -630,7 +630,7 @@ const Label = styled('div', {
     fontWeight: 'medium',
     userSelect: 'none',
     lineHeight: 'sm',
-    color: 'mantine.colors.dimmed',
+    color: 'text.dimmed',
   },
 })
 

@@ -1,11 +1,12 @@
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 import {
-  BBox,
+  exact,
   invariant,
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
+import { BBox } from '@likec4/core/geometry'
 import type {
   DiagramNode,
   DiagramView,
@@ -15,6 +16,7 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core/types'
+import { difference } from '@likec4/core/utils'
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy } from 'remeda'
@@ -134,17 +136,20 @@ export const resetLastClickedNode = () =>
   }))
 
 export const updateFeatures = () =>
-  machine.assign(({ event }) => {
+  machine.assign(({ context, event }) => {
     assertEvent(event, 'update.features')
     return {
-      features: { ...event.features },
+      features: {
+        ...context.features,
+        ...event.features,
+      },
     }
   })
 
 export const updateInputs = () =>
   machine.assign(({ event }) => {
     assertEvent(event, 'update.inputs')
-    return { ...event.inputs }
+    return exact({ ...event.inputs })
   })
 
 export const assignXYDataFromView = (view?: DiagramView) =>
@@ -401,7 +406,7 @@ export const layoutAlign = (params?: { mode: AlignmentMode }) =>
     const { nodeLookup, parentLookup } = xystore.getState()
 
     const selectedNodes = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
-    const nodesToAlign = [...selectedNodes.difference(new Set(parentLookup.keys()))]
+    const nodesToAlign = [...difference(selectedNodes, new Set(parentLookup.keys()))]
 
     if (!hasAtLeast(nodesToAlign, 2)) {
       console.warn('At least 2 nodes must be selected to align')
@@ -734,17 +739,21 @@ export const openSourceOfFocusedOrLastClickedNode = () =>
  */
 export const ensureOverlaysActor = () =>
   machine.enqueueActions(({ enqueue, check, system }) => {
-    const enableOverlays = check('enabled: Overlays')
-    const hasRunning = typedSystem(system).overlaysActorRef
-    if (enableOverlays && !hasRunning) {
-      enqueue.spawnChild('overlaysActorLogic', { id: 'overlays', systemId: 'overlays' })
+    const enabled = check('enabled: Overlays')
+    const running = typedSystem(system).overlaysActorRef
+    if (enabled && !running) {
+      enqueue.spawnChild('overlaysActorLogic', {
+        id: 'overlays',
+        systemId: 'overlays',
+        syncSnapshot: true,
+      })
       return
     }
-    if (!enableOverlays && hasRunning) {
-      enqueue.sendTo(hasRunning, {
+    if (!enabled && running) {
+      enqueue.sendTo(running, {
         type: 'close.all',
       })
-      enqueue.stopChild('overlays')
+      enqueue.stopChild(running)
     }
   })
 
@@ -752,17 +761,22 @@ export const ensureOverlaysActor = () =>
  * Ensure that the search actor is running or stopped based on the current feature flags
  */
 export const ensureSearchActor = () =>
-  machine.enqueueActions(({ enqueue, context: { features: { enableSearch } }, system }) => {
-    const hasRunning = typedSystem(system).searchActorRef
-    if (enableSearch && !hasRunning) {
-      enqueue.spawnChild('searchActorLogic', { id: 'search', systemId: 'search' })
+  machine.enqueueActions(({ enqueue, check, system }) => {
+    const enabled = check('enabled: Search')
+    const running = typedSystem(system).searchActorRef
+    if (enabled && !running) {
+      enqueue.spawnChild('searchActorLogic', {
+        id: 'search',
+        systemId: 'search',
+        syncSnapshot: true,
+      })
       return
     }
-    if (!enableSearch && hasRunning) {
-      enqueue.sendTo(hasRunning, {
+    if (!enabled && running) {
+      enqueue.sendTo(running, {
         type: 'close',
       })
-      enqueue.stopChild('search')
+      enqueue.stopChild(running)
     }
   })
 

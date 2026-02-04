@@ -15,6 +15,30 @@ type ElementDetailsButtonProps = {
   onClick: (e: ReactMouseEvent) => void
 }
 
+const variants = {
+  normal: {
+    originX: 0.45,
+    originY: 0.55,
+    scale: 1,
+    opacity: 0.5,
+  },
+  hovered: {
+    scale: 1.2,
+    opacity: 0.8,
+  },
+  selected: {
+    scale: 1.2,
+    opacity: 0.8,
+  },
+  whileHover: {
+    scale: 1.4,
+    opacity: 1,
+  },
+  whileTap: {
+    scale: 1.15,
+  },
+}
+
 const container = css({
   position: 'absolute',
   top: '0.5',
@@ -48,30 +72,30 @@ export function ElementDetailsButton({
   icon,
   onClick,
 }: ElementDetailsButtonProps) {
+  let variant: keyof typeof variants
+  switch (true) {
+    case isHovered:
+      variant = 'hovered'
+      break
+    case selected:
+      variant = 'selected'
+      break
+    default:
+      variant = 'normal'
+  }
   return (
     <Box className={cx(container, 'details-button')}>
       <ActionIcon
-        className={cx('nodrag nopan', actionBtn({ variant: 'transparent' }))}
+        className={cx(
+          'nodrag nopan',
+          actionBtn({ variant: 'transparent' }),
+        )}
         component={m.button}
         initial={false}
-        style={{
-          originX: 0.45,
-          originY: 0.55,
-        }}
-        animate={(isHovered || selected)
-          ? {
-            scale: 1.2,
-            opacity: 0.8,
-          }
-          : {
-            scale: 1,
-            opacity: 0.5,
-          }}
-        whileHover={{
-          scale: 1.4,
-          opacity: 1,
-        }}
-        whileTap={{ scale: 1.15 }}
+        variants={variants}
+        animate={variant}
+        whileHover="whileHover"
+        whileTap="whileTap"
         onClick={onClick}
         onDoubleClick={stopPropagation}
         tabIndex={-1}

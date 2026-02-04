@@ -17,6 +17,23 @@ type CompoundDetailsButtonProps = Simplify<
   }
 >
 
+const variants = {
+  normal: {
+    scale: 1,
+    // opacity: 0.6,
+  },
+  hovered: {
+    scale: 1.2,
+    // opacity: 1,
+  },
+  whileHover: {
+    scale: 1.4,
+  },
+  whileTap: {
+    scale: 1,
+  },
+}
+
 export function CompoundDetailsButton({
   data: {
     hovered: isHovered = false,
@@ -27,17 +44,16 @@ export function CompoundDetailsButton({
   // Debounce first "isHovered"
   const debounced = useDebouncedValue(isHovered, isHovered ? 130 : 0)
   const isHoverDebounced = debounced[0] && isHovered
+
+  const variant: keyof typeof variants = isHoverDebounced ? 'hovered' : 'normal'
+
   return (
     <m.div
       initial={false}
-      animate={{
-        scale: isHoverDebounced ? 1.2 : 1,
-        // opacity: isHoverDebounced ? 1 : 0.6,
-      }}
-      whileHover={{
-        scale: 1.4,
-      }}
-      whileTap={{ scale: 1 }}
+      variants={variants}
+      animate={variant}
+      whileHover="whileHover"
+      whileTap="whileTap"
       className="likec4-compound-details details-button"
       tabIndex={-1}
     >

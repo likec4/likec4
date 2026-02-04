@@ -92,7 +92,7 @@ export const LikeC4SearchInput = memo(() => {
           </ComboboxEmpty>,
         ]
       } else {
-        isExactMatch = likec4model.tags.some((tag) => tag.toLocaleLowerCase() === searchTag)
+        isExactMatch = alloptions.some((tag) => tag.toLocaleLowerCase() === searchTag)
         options = alloptions.map((tag) => (
           <ComboboxOption value={`#${tag}`} key={tag}>
             <Text component="span" opacity={.5} mr={1} fz={'sm'}>#</Text>

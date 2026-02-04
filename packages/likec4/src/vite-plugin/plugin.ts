@@ -209,7 +209,7 @@ export function LikeC4VitePlugin({
         const md = server.moduleGraph.getModuleById(id)
         if (md && md.importers.size > 0) {
           try {
-            server.moduleGraph.invalidateModule(md, undefined, undefined, true, true)
+            await server.reloadModule(md)
           } catch (err) {
             logger.error(err)
           }
@@ -249,7 +249,7 @@ export function LikeC4VitePlugin({
         }
 
         // Reload modules per project
-        for (const project of _projects) {
+        for (const project of _updated) {
           for (const projectModule of hmrProjectVirtuals) {
             await reloadModule(projectModule.virtualId(project.id))
           }

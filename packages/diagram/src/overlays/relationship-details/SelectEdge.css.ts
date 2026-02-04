@@ -5,7 +5,7 @@ const edgeEnpoint = css.raw({
   alignItems: 'center',
   padding: '[6px 2px 0 2px]',
   '& .mantine-Text-root': {
-    color: 'mantine.colors.text/90',
+    color: 'text/90',
     fontSize: 'xs',
     fontWeight: 'medium',
     lineHeight: '1.2',
@@ -34,7 +34,7 @@ export const edgeLabel = cx(
     gridColumnStart: 1,
     gridColumnEnd: 4,
     borderBottom: `1px solid`,
-    borderBottomColor: 'mantine.colors.defaultBorder',
+    borderBottomColor: 'default.border',
     marginBottom: '0',
     padding: '[0 4px 5px 4px]',
     width: '100%',
@@ -42,7 +42,7 @@ export const edgeLabel = cx(
       fontSize: 'xxs',
       fontWeight: 'normal',
       lineHeight: 'xs',
-      color: 'mantine.colors.dimmed',
+      color: 'text.dimmed',
     },
   }),
 )
@@ -59,7 +59,7 @@ export const edgeRow = css({
   '&:is(:hover, [data-selected=true]) > *': {
     transition: 'all 0.15s ease-out',
     cursor: 'pointer',
-    backgroundColor: 'mantine.colors.defaultHover',
+    backgroundColor: 'default.hover',
   },
 })
 

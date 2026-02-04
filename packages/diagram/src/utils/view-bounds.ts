@@ -1,11 +1,12 @@
 import { invariant } from '@likec4/core'
-import { type DiagramEdge, type DynamicViewDisplayVariant, type LayoutedView, BBox } from '@likec4/core/types'
+import { BBox } from '@likec4/core/geometry'
+import type { DiagramEdge, DynamicViewDisplayVariant, LayoutedView } from '@likec4/core/types'
 
 /**
  * Picks appropriate bounds from the view,
  * depending on its type and dynamic variant
  */
-export function pickViewBounds(view: LayoutedView, dynamicVariant?: DynamicViewDisplayVariant) {
+export function pickViewBounds(view: LayoutedView, dynamicVariant?: DynamicViewDisplayVariant): BBox {
   if (view._type === 'dynamic') {
     try {
       const variant = dynamicVariant ?? view.variant

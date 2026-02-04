@@ -47,6 +47,8 @@
     "node_modules/**": true,
     "packages/*/dist/**": true,
     "packages/*/bundle/**": true,
+    "**/panda.buildinfo.json": true,
+    "packages/diagram/*.css": true,
     "**/routeTree.gen.ts": true
   },
   "files.exclude": {

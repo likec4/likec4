@@ -8,8 +8,8 @@ export const label = css({
   _hover: {
     backgroundColor: 'mantine.colors.gray[0]',
     _dark: {
-      backgroundColor: 'mantine.colors.defaultHover',
-      color: 'mantine.colors.white',
+      backgroundColor: 'default.hover',
+      color: 'white',
     },
   },
 })

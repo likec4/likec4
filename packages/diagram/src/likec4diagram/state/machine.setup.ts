@@ -2,9 +2,9 @@
 // oxlint-disable no-floating-promises
 /// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
-  BBox,
   nonexhaustive,
 } from '@likec4/core'
+import { BBox } from '@likec4/core/geometry'
 import type {
   DiagramEdge,
   DiagramNode,
@@ -74,6 +74,7 @@ export interface Input {
   fitViewPadding: ViewPaddings
   where: WhereOperator | null
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
+  features?: EnabledFeatures
 }
 
 export type ToggledFeatures = {
@@ -169,7 +170,7 @@ export type Events =
     xyedges: Types.Edge[]
   }
   | { type: 'update.view-bounds'; bounds: BBox }
-  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant'>> }
+  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant' | 'features'>> }
   | { type: 'update.features'; features: EnabledFeatures }
   | ({ type: 'open.source' } & OpenSourceParams)
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }

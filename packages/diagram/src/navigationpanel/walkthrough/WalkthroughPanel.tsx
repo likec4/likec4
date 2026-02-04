@@ -15,7 +15,7 @@ import { useDiagramContext } from '../../hooks/useDiagram'
 const SectionHeader = styled('div', {
   base: {
     fontSize: 'xs',
-    color: 'mantine.colors.dimmed',
+    color: 'text.dimmed',
     fontWeight: 'medium',
     userSelect: 'none',
     mb: 'xxs',

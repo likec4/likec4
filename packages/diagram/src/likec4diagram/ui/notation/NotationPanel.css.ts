@@ -25,7 +25,7 @@ export const card = css({
   userSelect: 'none',
   minWidth: 200,
   maxWidth: 'calc(100vw - 20px)',
-  backgroundColor: `mantine.colors.body/80`,
+  backgroundColor: `body/80`,
   // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   sm: {

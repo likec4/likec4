@@ -1,6 +1,7 @@
 import type { Color, ElementStyle } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { compoundNode } from '@likec4/styles/recipes'
+import type { MotionStyle } from 'motion/react'
 import * as m from 'motion/react-m'
 import type { HTMLAttributes, PropsWithChildren } from 'react'
 import { clamp } from 'remeda'
@@ -72,13 +73,12 @@ export function CompoundNodeContainer({
         'data-likec4-dimmed': isDimmed,
       }}
       tabIndex={-1}
-      style={{
-        ...style,
-        // @ts-expect-error
+      animate={{
         ['--_border-transparency']: `${borderOpacity}%`,
         ['--_compound-transparency']: `${opacity}%`,
       }}
-      {...rest}
+      style={style as MotionStyle}
+      {...rest as any}
     >
       {children}
     </m.div>

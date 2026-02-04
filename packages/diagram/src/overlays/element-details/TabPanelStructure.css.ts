@@ -9,7 +9,7 @@ export const elementLabel = css({
   display: 'inline-flex',
   transition: 'fast',
   border: `1px dashed`,
-  borderColor: 'mantine.colors.defaultBorder',
+  borderColor: 'default.border',
   borderRadius: 'sm',
   px: 'md',
   py: 'xs',
@@ -26,8 +26,8 @@ export const elementLabel = css({
   _hover: {
     transitionTimingFunction: 'out',
     borderStyle: 'solid',
-    color: 'mantine.colors.defaultColor',
-    background: 'mantine.colors.defaultHover',
+    color: 'default.color',
+    background: 'default.hover',
     '& > *': {
       transitionTimingFunction: 'out',
       transform: 'translateX(1px)',

@@ -1,9 +1,10 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { Fqn } from '@likec4/core/types'
 import { ActionIcon, FocusTrap, Group, ScrollAreaAutosize, Stack, Title } from '@mantine/core'
-import { useWindowEvent } from '@mantine/hooks'
+import { useCallbackRef, useWindowEvent } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
+import { useCurrentViewId } from '../../hooks/useCurrentView'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import type { SearchActorRef } from '../searchActor'
 import * as styles from './styles.css'
@@ -16,6 +17,7 @@ export function PickView({
   searchActorRef: SearchActorRef
   elementFqn: Fqn
 }) {
+  const currentViewId = useCurrentViewId()
   const element = useLikeC4Model().element(elementFqn)
   const scoped = [] as LikeC4ViewModel[]
   const others = [] as LikeC4ViewModel[]
@@ -34,7 +36,7 @@ export function PickView({
 
   useWindowEvent(
     'keydown',
-    (event) => {
+    useCallbackRef((event) => {
       try {
         if (event.key === 'Escape') {
           event.stopPropagation()
@@ -44,7 +46,7 @@ export function PickView({
       } catch (e) {
         console.warn(e)
       }
-    },
+    }),
     {
       capture: true,
     },
@@ -105,6 +107,7 @@ export function PickView({
                   <ViewButton
                     key={view.id}
                     view={view}
+                    currentViewId={currentViewId}
                     search={''}
                     loop
                     focusOnElement={elementFqn}
@@ -123,6 +126,7 @@ export function PickView({
                   <ViewButton
                     key={view.id}
                     view={view}
+                    currentViewId={currentViewId}
                     search={''}
                     loop
                     focusOnElement={elementFqn}

@@ -44,7 +44,7 @@ export class LikeC4ModelChanges {
           'View ID does not match, expected ' + viewId + ', got ' + change.layout.id,
         )
         // If there is an existing manual layout v1
-        if (lookup.view.manualLayout) {
+        if (lookup.view.manualLayout && lspConnection) {
           // We clean it up
           await removeManualLayoutV1(this.services, { lookup }).catch(err => {
             logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })

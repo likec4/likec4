@@ -23,8 +23,13 @@ export function useSearch(): [string, (search: string) => void] {
 
 const selectNormalizedSearchValue = (s: SearchActorSnapshot) => {
   let v = selectSearchValue(s)
-  if (v === '') return ''
+  if (v === '') return v
+
   v = v.trim().toLowerCase()
+
+  if (v.startsWith('#') && v.length <= 2) {
+    return ''
+  }
   return v.length > 1 ? v : ''
 }
 export function useNormalizedSearch() {

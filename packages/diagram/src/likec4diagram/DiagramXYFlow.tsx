@@ -5,6 +5,7 @@ import { useCustomCompareMemo } from '@react-hookz/web'
 import type { OnMove, OnMoveEnd, Viewport } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import type { PropsWithChildren } from 'react'
+import type { JSX } from 'react/jsx-runtime'
 import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { memoNode } from '../base-primitives/memoNode'
@@ -115,7 +116,7 @@ export function LikeC4DiagramXYFlow({
   reactFlowProps = {},
   children,
   renderNodes,
-}: LikeC4DiagramXYFlowProps) {
+}: LikeC4DiagramXYFlowProps): JSX.Element {
   const diagram = useDiagram()
   let {
     enableReadOnly,
@@ -147,7 +148,7 @@ export function LikeC4DiagramXYFlow({
     notPanning = useDebouncedCallback(() => {
       isPanning.clear()
       $isPanning.set(false)
-    }, { delay: 200 }),
+    }, 200),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {
         isPanning.clear()

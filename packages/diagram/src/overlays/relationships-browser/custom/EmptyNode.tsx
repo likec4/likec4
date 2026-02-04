@@ -13,7 +13,7 @@ export function EmptyNode({
         width: '100%',
         height: '100%',
         border: `3px dashed`,
-        borderColor: `mantine.colors.defaultBorder`,
+        borderColor: `default.border`,
         borderRadius: 'md',
         display: 'flex',
         justifyContent: 'center',

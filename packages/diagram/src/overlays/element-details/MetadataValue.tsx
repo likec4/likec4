@@ -36,7 +36,7 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
           fontSize: 'sm',
           padding: 'xs',
           userSelect: 'all',
-          color: 'mantine.colors.text',
+          color: 'text',
           lineHeight: 1.4,
           whiteSpace: isExpanded ? 'pre-wrap' : 'nowrap',
           overflow: isExpanded ? 'visible' : 'hidden',
@@ -112,8 +112,8 @@ function MultiValueDisplay({
             className={css({
               fontSize: 'sm',
               padding: '[4px 8px]',
-              backgroundColor: 'mantine.colors.white',
-              color: 'mantine.colors.text',
+              backgroundColor: 'white',
+              color: 'text',
               borderRadius: 'sm',
               border: '1px solid',
               borderColor: 'mantine.colors.gray[3]',
@@ -176,7 +176,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
             onClick={handleToggle}
             className={css({
               fontSize: 'xs',
-              color: 'mantine.colors.dimmed',
+              color: 'text.dimmed',
               justifySelf: 'end',
               textAlign: 'right',
               userSelect: 'none',
@@ -228,7 +228,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
             component="div"
             className={css({
               fontSize: 'xs',
-              color: 'mantine.colors.dimmed',
+              color: 'text.dimmed',
               justifySelf: 'end',
               textAlign: 'right',
               userSelect: 'none',

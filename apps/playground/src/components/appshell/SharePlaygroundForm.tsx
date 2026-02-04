@@ -196,7 +196,7 @@ export function SharePlaygroundForm() {
                       href="mailto:denis@davydkov.com?subject=Feature%3A%20allow%20access%20via%20GitHub"
                       className={css({
                         fontSize: 'xs',
-                        color: 'mantine.colors.text',
+                        color: 'text',
                       })}
                     >
                       Contact

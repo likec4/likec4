@@ -32,8 +32,8 @@ export const xyflow = css({
   position: 'relative',
   width: '100%',
   height: '100%',
-  background: 'mantine.colors.body',
-  border: `1px solid {colors.mantine.colors.defaultBorder}`,
+  background: 'body',
+  border: 'default',
   borderRadius: 'sm',
   _light: {
     borderColor: 'mantine.colors.gray[3]',
@@ -50,7 +50,7 @@ export const panelScope = css({
     fontSize: 'xxs',
     fontWeight: 'medium',
     lineHeight: '1',
-    color: 'mantine.colors.dimmed',
+    color: 'text.dimmed',
     opacity: 0.85,
     transform: 'translateY(-100%) translateY(-2px)',
   },
@@ -70,9 +70,9 @@ export const edgeNum = css({
   textAlign: 'center',
   borderRadius: 'sm',
   background: 'mantine.colors.dark[7]',
-  color: 'mantine.colors.defaultColor',
+  color: 'default.color',
   [`&[data-zero]`]: {
-    color: 'mantine.colors.dimmed',
+    color: 'text.dimmed',
   },
   [`&[data-missing]`]: {
     color: 'mantine.colors.orange[4]',

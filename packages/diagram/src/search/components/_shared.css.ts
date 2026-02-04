@@ -15,7 +15,7 @@ const _treenodefocus = '.mantine-Tree-node:focus > .mantine-Tree-label &'
 const button = css.raw({
   display: 'flex',
   width: '100%',
-  background: 'mantine.colors.body',
+  background: 'body',
   rounded: 'sm',
   padding: `[12px 8px 12px 14px]`,
   minHeight: '60px',
@@ -23,10 +23,10 @@ const button = css.raw({
   // alignItems: 'flex-start',
   // transition: `all 50ms ${easings.inOut}`,
   border: `1px solid`,
-  borderColor: 'mantine.colors.defaultBorder',
+  borderColor: 'default.border',
   // [titleColor]: '{colors.mantine.colors.dark[1]}',
-  // [iconColor]: '{colors.mantine.colors.dimmed}',
-  // [descriptionColor]: '{colors.mantine.colors.dimmed}',
+  // [iconColor]: '{colors.text.dimmed}',
+  // [descriptionColor]: '{colors.text.dimmed}',
   _hover: {
     ...buttonFocused,
     borderColor: 'mantine.colors.primary[9]',
@@ -61,7 +61,7 @@ const iconSize = {
 
 const icon = css.raw({
   color: {
-    base: 'mantine.colors.dimmed',
+    base: 'text.dimmed',
     _light: 'mantine.colors.gray[5]',
     _groupHover: 'mantine.colors.primary[0]',
     _groupFocus: 'mantine.colors.primary[0]',
@@ -110,23 +110,23 @@ const title = css.raw({
     _light: 'mantine.colors.gray[7]',
     _groupHover: {
       base: 'mantine.colors.primary[1]',
-      _light: 'mantine.colors.white',
+      _light: 'white',
     },
     _groupFocus: {
       base: 'mantine.colors.primary[1]',
-      _light: 'mantine.colors.white',
+      _light: 'white',
     },
   },
   [_treenodefocus]: {
     color: {
       base: 'mantine.colors.primary[1]',
-      _light: 'mantine.colors.white',
+      _light: 'white',
     },
   },
 })
 const descriptionColor = css.raw({
   color: {
-    base: 'mantine.colors.dimmed',
+    base: 'text.dimmed',
     _groupHover: {
       base: 'mantine.colors.primary[1]',
       _light: 'mantine.colors.primary[0]',
@@ -152,13 +152,13 @@ export const emptyBoX = css({
   width: '100%',
   height: '100%',
   border: `2px dashed`,
-  borderColor: 'mantine.colors.defaultBorder',
+  borderColor: 'default.border',
   rounded: 'md',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   fontSize: 'md',
-  color: 'mantine.colors.dimmed',
+  color: 'text.dimmed',
   padding: 'md',
   paddingBlock: 'xl',
 })

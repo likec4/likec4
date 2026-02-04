@@ -17,6 +17,27 @@ type CompoundActionButtonProps = Simplify<
   }
 >
 
+const variants = {
+  normal: {
+    scale: 1,
+    x: 0,
+    y: 0,
+  },
+  hovered: {
+    scale: 1.2,
+    x: -1,
+    y: -1,
+  },
+  whileHover: {
+    scale: 1.4,
+    x: -3,
+    y: -1,
+  },
+  whileTap: {
+    scale: 1,
+  },
+}
+
 export function CompoundActionButton({
   data: {
     hovered: isHovered = false,
@@ -27,21 +48,17 @@ export function CompoundActionButton({
   // Debounce first "isHovered"
   const debounced = useDebouncedValue(isHovered, isHovered ? 130 : 0)
   const isHoverDebounced = debounced[0] && isHovered
+
+  let variant: keyof typeof variants = isHoverDebounced ? 'hovered' : 'normal'
+
   return (
     <m.div
       initial={false}
-      animate={{
-        scale: isHoverDebounced ? 1.2 : 1,
-        x: isHoverDebounced ? -1 : 0,
-        y: isHoverDebounced ? -1 : 0,
-      }}
-      whileHover={{
-        scale: 1.4,
-        x: -3,
-        y: -1,
-      }}
+      variants={variants}
+      animate={variant}
+      whileHover="whileHover"
+      whileTap="whileTap"
       className="likec4-compound-navigation compound-action"
-      whileTap={{ scale: 1 }}
       onClick={stopPropagation}
       tabIndex={-1}
     >

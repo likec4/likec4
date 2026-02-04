@@ -16,12 +16,14 @@ import { EditorNavigationPanel } from './EditorNavigationPanel'
 import { useAdhocView } from './hooks'
 import { SelectElementOverlay } from './SelectElementOverlay'
 
+const noop = () => {}
+
 export function LikeC4AdHocViewEditor({ service }: { service: AdhocViewService }) {
   const id = useId()
   return (
-    <Profiler id="LikeC4AdHocViewEditor" onRender={() => {}}>
-      <EnsureMantine>
-        <FramerMotionConfig>
+    <EnsureMantine>
+      <FramerMotionConfig>
+        <Profiler id="LikeC4AdHocViewEditor" onRender={noop}>
           <DiagramFeatures
             features={{
               enableFitView: true,
@@ -53,9 +55,9 @@ export function LikeC4AdHocViewEditor({ service }: { service: AdhocViewService }
               </RootContainer>
             </TagStylesProvider>
           </DiagramFeatures>
-        </FramerMotionConfig>
-      </EnsureMantine>
-    </Profiler>
+        </Profiler>
+      </FramerMotionConfig>
+    </EnsureMantine>
   )
 }
 // interface LikeC4AdHocViewProps {

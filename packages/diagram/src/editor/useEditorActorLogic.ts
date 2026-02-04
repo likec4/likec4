@@ -1,4 +1,3 @@
-import type * as t from '@likec4/core/types'
 import { useMemo } from 'react'
 import { fromPromise } from 'xstate'
 import { useCallbackRef } from '../hooks'
@@ -11,7 +10,7 @@ const promisify = <T>(fn: () => T | Promise<T>): Promise<T> => {
   return Promise.resolve().then(() => fn())
 }
 
-export function useEditorActorLogic(viewId: t.ViewId): EditorActorLogic {
+export function useEditorActorLogic(): EditorActorLogic {
   const port = useOptionalLikeC4Editor()
 
   const applyLatest: EditorCalls.ApplyLatestToManual = useCallbackRef(
@@ -35,8 +34,11 @@ export function useEditorActorLogic(viewId: t.ViewId): EditorActorLogic {
         console.error('No editor port available for executing change')
         return Promise.reject(new Error('No editor port'))
       }
+      if (import.meta.env.DEV) {
+        console.debug('Executing change', { input })
+      }
       for (const change of input.changes) {
-        await promisify(() => port.handleChange(viewId, change))
+        await promisify(() => port.handleChange(input.viewId, change))
       }
       return {}
     },

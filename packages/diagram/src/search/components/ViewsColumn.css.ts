@@ -25,7 +25,7 @@ export const viewButton = cx(
 export const viewButtonDescription = css({
   marginTop: '1',
   // transition: transitions.fast,
-  // color: `[var(${descriptionColor}, {colors.mantine.colors.dimmed})]`,
+  // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
   fontSize: '13px',
   lineHeight: '1.4',
   [`:where(.likec4-view-btn[data-disabled]) &`]: {

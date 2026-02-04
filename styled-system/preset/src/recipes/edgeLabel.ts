@@ -1,5 +1,4 @@
 import { defineParts, defineRecipe } from '@pandacss/dev'
-import { __v } from '../const.ts'
 
 const parts = defineParts({
   root: { selector: '&' },
@@ -42,12 +41,11 @@ export const edgeLabel = defineRecipe({
         borderRadius: '4px',
         minWidth: '24px',
       },
-      background: `color-mix(in oklab, ${__v('palette.relationLabelBg')}, {colors.likec4.mixColor} 10%)`,
+      background: `color-mix(in oklab, var(--xy-edge-label-background-color), {colors.likec4.mixColor} 12%)`,
       fontVariantNumeric: 'tabular-nums',
-      // _dark: {
       [':where([data-likec4-color="gray"]) &']: {
         _dark: {
-          background: `[color-mix(in oklab, ${__v('palette.relationLabelBg')}, {colors.likec4.mixColor} 15%)]`,
+          background: `[color-mix(in oklab, var(--xy-edge-label-background-color), {colors.likec4.mixColor} 15%)]`,
         },
       },
     },

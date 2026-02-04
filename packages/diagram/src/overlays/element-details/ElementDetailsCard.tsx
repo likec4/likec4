@@ -35,17 +35,17 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { useSessionStorage, useViewportSize } from '@mantine/hooks'
-import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hookz/web'
+import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
 import { IconExternalLink, IconFileSymlink, IconStack2, IconZoomScan } from '@tabler/icons-react'
 import type { Rect } from '@xyflow/system'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
-import { type PropsWithChildren, useCallback, useRef, useState } from 'react'
+import { type PropsWithChildren, type SyntheticEvent, useCallback, useRef, useState } from 'react'
 import { clamp, entries, isNullish, map, only, partition, pipe } from 'remeda'
 import { Markdown } from '../../base-primitives'
 import { ElementTag } from '../../base-primitives/element/ElementTags'
 import { Link } from '../../components/Link'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
-import { useUpdateEffect } from '../../hooks'
+import { useCallbackRef, useUpdateEffect } from '../../hooks'
 import { useCurrentViewModel } from '../../hooks/useCurrentViewModel'
 import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
@@ -185,18 +185,19 @@ export function ElementDetailsCard({
   const handleDrag = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     width.set(Math.max(width.get() + info.delta.x, 320))
     height.set(Math.max(height.get() + info.delta.y, 300))
-  }, [])
+  }, [width, height])
 
   const ref = useRef<HTMLDialogElement>(null)
 
-  const onCloseRef = useSyncedRef(onClose)
   const close = useDebouncedCallback(
-    () => {
-      onCloseRef.current()
-    },
+    useCallbackRef(onClose),
     [],
     50,
   )
+  const triggerClose = useCallbackRef((event?: SyntheticEvent) => {
+    event?.stopPropagation()
+    close()
+  })
 
   const notation = nodeModel?.$node.notation ?? null
 
@@ -251,10 +252,7 @@ export function ElementDetailsCard({
       }}
       onDoubleClick={stopPropagation}
       onPointerDown={stopPropagation}
-      onClose={e => {
-        e.stopPropagation()
-        close()
-      }}
+      onClose={triggerClose}
     >
       <RemoveScroll forwardProps removeScrollBar={false}>
         <m.div
@@ -310,12 +308,7 @@ export function ElementDetailsCard({
                   )}
                 </div>
               </HStack>
-              <CloseButton
-                size={'lg'}
-                onClick={e => {
-                  e.stopPropagation()
-                  close()
-                }} />
+              <CloseButton size={'lg'} onClick={triggerClose} />
             </HStack>
             <HStack alignItems="baseline" gap={'sm'} flexWrap="nowrap">
               <div>
@@ -338,20 +331,9 @@ export function ElementDetailsCard({
               </div>
               <div style={{ flex: 1 }}>
                 <SmallLabel>tags</SmallLabel>
-                <Flex gap={4} flex={1} mt={6} wrap="wrap">
-                  {elementModel.tags.map((tag) => (
-                    <ElementTag
-                      key={tag}
-                      tag={tag}
-                      cursor="pointer"
-                      onClick={e => {
-                        e.stopPropagation()
-                        diagram.openSearch(`#${tag}`)
-                      }}
-                    />
-                  ))}
-                  {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
-                </Flex>
+                <ElementTags
+                  tags={elementModel.tags}
+                  onClick={tag => diagram.openSearch(`#${tag}`)} />
               </div>
               <ActionIconGroup
                 style={{
@@ -617,5 +599,24 @@ function ElementMetata({
         </Box>
       </>
     </MetadataProvider>
+  )
+}
+
+function ElementTags({ tags, onClick }: { tags: readonly string[]; onClick: (tag: string) => void }) {
+  return (
+    <Flex gap={4} flex={1} mt={6} wrap="wrap">
+      {tags.map((tag) => (
+        <ElementTag
+          key={tag}
+          tag={tag}
+          cursor="pointer"
+          onClick={e => {
+            e.stopPropagation()
+            onClick(tag)
+          }}
+        />
+      ))}
+      {tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
+    </Flex>
   )
 }

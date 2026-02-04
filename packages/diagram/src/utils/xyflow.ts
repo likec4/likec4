@@ -1,5 +1,5 @@
-import { type NonEmptyArray, type Point, BBox } from '@likec4/core'
-import { vector } from '@likec4/core/geometry'
+import type { NonEmptyArray, Point } from '@likec4/core'
+import { type XYPoint, BBox, vector } from '@likec4/core/geometry'
 import { invariant } from '@likec4/core/utils'
 import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
 import { type NodeHandle, type Padding as XYFlowPadding, type PaddingWithUnit, getNodeDimensions } from '@xyflow/system'
@@ -7,7 +7,7 @@ import { Bezier } from 'bezier-js'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
 
-export function distance(a: XYPosition, b: XYPosition) {
+export function distance(a: XYPosition, b: XYPosition): number {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 }
 
@@ -61,7 +61,7 @@ export function extractMinimalInternalNode<N extends InternalNode>(nd: N): Minim
   return minimal
 }
 
-export function isEqualMinimalInternalNodes(a: MinimalInternalNode, b: MinimalInternalNode) {
+export function isEqualMinimalInternalNodes(a: MinimalInternalNode, b: MinimalInternalNode): boolean {
   const posA = a.internals.positionAbsolute
   const posB = b.internals.positionAbsolute
   if (posA.x !== posB.x || posA.y !== posB.y) {
@@ -79,19 +79,21 @@ export function isEqualMinimalInternalNodes(a: MinimalInternalNode, b: MinimalIn
   return heightA === heightB
 }
 
-export function isEqualRects(a: Rect, b: Rect) {
+export function isEqualRects(a: Rect, b: Rect): boolean {
   return Math.trunc(a.x) === Math.trunc(b.x)
     && Math.trunc(a.y) === Math.trunc(b.y)
     && Math.trunc(a.width) === Math.trunc(b.width)
     && Math.trunc(a.height) === Math.trunc(b.height)
 }
 
-export const nodeToRect = (nd: MinimalInternalNode): Rect => ({
-  x: Math.round(nd.internals.positionAbsolute.x),
-  y: Math.round(nd.internals.positionAbsolute.y),
-  width: Math.round(nd.measured?.width ?? nd.width ?? nd.initialWidth ?? 0),
-  height: Math.round(nd.measured?.height ?? nd.height ?? nd.initialHeight ?? 0),
-})
+export function nodeToRect(nd: MinimalInternalNode): Rect {
+  return ({
+    x: Math.trunc(nd.internals.positionAbsolute.x),
+    y: Math.trunc(nd.internals.positionAbsolute.y),
+    width: Math.round(nd.measured?.width ?? nd.width ?? nd.initialWidth ?? 0),
+    height: Math.round(nd.measured?.height ?? nd.height ?? nd.initialHeight ?? 0),
+  })
+}
 
 export function getNodeCenter(node: MinimalInternalNode): XYPosition {
   const { width, height } = getNodeDimensions(node)
@@ -116,7 +118,7 @@ export function getNodeIntersectionFromCenterToPoint(
   intersectionNode: BBox,
   target: XYPosition,
   nodeMargin: number = 0,
-) {
+): XYPosition {
   const { width, height } = intersectionNode
   const nodeCenter = BBox.center(intersectionNode)
   const v = vector(target.x, target.y).subtract(nodeCenter)
@@ -125,7 +127,7 @@ export function getNodeIntersectionFromCenterToPoint(
 
   const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
 
-  return vector(v).multiply(scale).add(nodeCenter).round().toObject()
+  return vector(v).multiply(scale).add(nodeCenter).trunc().toObject()
 }
 
 /**
@@ -150,7 +152,7 @@ export function getNodeIntersection(
  * @param target - The target rectangle.
  * @returns `true` if the `test` rectangle is completely inside the `target` rectangle, otherwise `false`.
  */
-export const isInside = (test: Rect, target: Rect) => {
+export function isInside(test: Rect, target: Rect): boolean {
   return (
     test.x >= target.x
     && test.y >= target.y
@@ -159,12 +161,12 @@ export const isInside = (test: Rect, target: Rect) => {
   )
 }
 
-export function bezierControlPoints(points: NonEmptyArray<Point>): NonEmptyArray<XYPosition> {
+export function bezierControlPoints(points: NonEmptyArray<Point>): NonEmptyArray<XYPoint> {
   let [start, ...bezierPoints] = points
   invariant(start, 'start should be defined')
   const handles = [
     // start
-  ] as XYPosition[]
+  ] as XYPoint[]
 
   while (hasAtLeast(bezierPoints, 3)) {
     const [cp1, cp2, end, ...rest] = bezierPoints
@@ -177,8 +179,8 @@ export function bezierControlPoints(points: NonEmptyArray<Point>): NonEmptyArray
     inflections.forEach(t => {
       const { x, y } = bezier.get(t)
       handles.push({
-        x: Math.round(x),
-        y: Math.round(y),
+        x: Math.trunc(x),
+        y: Math.trunc(y),
       })
     })
     bezierPoints = rest
@@ -190,26 +192,32 @@ export function bezierControlPoints(points: NonEmptyArray<Point>): NonEmptyArray
   return handles
 }
 
-// If points are within 2px, consider them the same
-export function isSamePoint(a: XYPosition | Point, b: XYPosition | Point) {
-  const pointA = isArray(a) ? { x: a[0], y: a[1] } : a
-  const pointB = isArray(b) ? { x: b[0], y: b[1] } : b
-  return distanceBetweenPoints(pointA, pointB) < 2.1
+/**
+ * Checks if two points are the same, considering both XYPoint (object ) and Point (tuple) formats.
+ * @returns `true` If points are within 2px
+ */
+export function isSamePoint(a: XYPosition | Point, b: XYPosition | Point): boolean {
+  if (a === b) {
+    return true
+  }
+  const [ax, ay] = isArray(a) ? a : [a.x, a.y]
+  const [bx, by] = isArray(b) ? b : [b.x, b.y]
+  return Math.hypot(bx - ax, by - ay) < 2.1
 }
 
-export function distanceBetweenPoints(a: XYPosition, b: XYPosition) {
+export function distanceBetweenPoints(a: XYPosition, b: XYPosition): number {
   return Math.hypot(b.x - a.x, b.y - a.y)
 }
 
-export function stopPropagation(e: ReactMouseEvent) {
+export function stopPropagation(e: ReactMouseEvent): void {
   return e.stopPropagation()
 }
 
-function printPoint(point: Point) {
-  return `${Math.round(point[0])},${Math.round(point[1])}`
+const printPoint = (point: Point) => {
+  return `${Math.trunc(point[0])},${Math.trunc(point[1])}`
 }
 
-export function bezierPath(bezierSpline: NonEmptyArray<Point>) {
+export function bezierPath(bezierSpline: NonEmptyArray<Point>): string {
   let [start, ...points] = bezierSpline
   invariant(start, 'start should be defined')
   let path = `M ${printPoint(start)}`

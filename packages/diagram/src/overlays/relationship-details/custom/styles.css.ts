@@ -5,7 +5,7 @@ export const emptyNode = css({
   h: '100%',
   borderWidth: '3px',
   borderStyle: 'dashed',
-  borderColor: 'mantine.colors.defaultBorder',
+  borderColor: 'default.border',
   rounded: 'md',
   display: 'flex',
   justifyContent: 'center',

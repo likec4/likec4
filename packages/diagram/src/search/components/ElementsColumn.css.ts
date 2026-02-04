@@ -29,7 +29,7 @@ export const treeSubtree = css({
 })
 
 export const elementExpandIcon = css({
-  color: 'mantine.colors.dimmed',
+  color: 'text.dimmed',
 })
 
 export const elementTitleAndId = css({
@@ -42,7 +42,7 @@ export const elementTitleAndId = css({
 
 // export const elementTitle = css(title)
 export const elementId = css({
-  // color: `[var(${descriptionColor}, {colors.mantine.colors.dimmed})]`,
+  // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
   fontSize: '10px',
   lineHeight: '1.3',
   display: 'block',
@@ -65,7 +65,7 @@ export const elementIcon = css({
 
 export const elementViewsCount = css({
   flex: 0,
-  // color: `[var(${descriptionColor}, {colors.mantine.colors.dimmed})]`,
+  // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
   fontSize: '10px',
   fontWeight: 'medium',
   whiteSpace: 'nowrap',
