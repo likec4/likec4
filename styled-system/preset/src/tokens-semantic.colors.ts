@@ -18,6 +18,10 @@ export const colors = defineSemanticTokens.colors({
       description: 'Default text color',
       value: mantine.colors.text,
     },
+    bright: {
+      description: 'Bright text color',
+      value: 'var(--mantine-color-bright)',
+    },
     dimmed: {
       description: 'Dimmed text color',
       value: alpha(mantine.colors.text, 60),

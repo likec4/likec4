@@ -122,23 +122,22 @@ export function IconOrShapeRenderer({
     shape: ElementShape
     icon?: string | null | undefined
   }
-  className: string
+  className?: string
   style?: CSSProperties | undefined
 }) {
-  const icon = <IconRenderer element={element} className={className} style={style} />
-  if (icon) {
-    return icon
+  if (!element.icon || element.icon === 'none') {
+    const ShapeIcon = ShapeIcons[element.shape]
+    return (
+      <div
+        className={clsx(
+          className,
+          'likec4-shape-icon',
+        )}
+        style={style}
+      >
+        <ShapeIcon />
+      </div>
+    )
   }
-  const ShapeIcon = ShapeIcons[element.shape]
-  return (
-    <div
-      className={clsx(
-        className,
-        'likec4-shape-icon',
-      )}
-      style={style}
-    >
-      <ShapeIcon />
-    </div>
-  )
+  return <IconRenderer element={element} className={className} style={style} />
 }

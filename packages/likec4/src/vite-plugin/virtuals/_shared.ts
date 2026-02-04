@@ -19,7 +19,6 @@ export interface VirtualModule {
       }
     >
     assetsDir: string
-    useOverviewGraph?: boolean
   }): Promise<string>
 }
 
@@ -86,10 +85,8 @@ export function generateCombinedProjects(moduleId: string, fnName: string): Virt
     async load({ logger, projects }) {
       logger.info(k.dim(`generating likec4:${moduleId}`))
       const cases = projects.map(({ id }) => {
-        const pkg = escapeUnsafeChars(
-          JSON.stringify(
-            joinURL(`likec4:${moduleId}`, id),
-          ),
+        const pkg = JSON.stringify(
+          escapeUnsafeChars(joinURL(`likec4:${moduleId}`, id)),
         )
         return `  ${JSON.stringify(id)}: () => import(${pkg})`
         // return `  ${JSON.stringify(id)}: () => ${pkg}`

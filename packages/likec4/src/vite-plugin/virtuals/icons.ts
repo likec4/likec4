@@ -71,50 +71,43 @@ export const iconsModule = {
   async load({ projects, logger }) {
     logger.info(k.dim(`generating likec4:icons`))
 
-    const {
-      imports,
-      cases,
-    } = projects.reduce((acc, { id }, i) => {
-      const Component = 'Icons' + i.toString().padStart(2, '0')
-      const pkg = JSON.stringify(joinURL('likec4:icons', id))
-      // acc.imports.push(`import { IconRenderer as ${Component} } from ${JSON.stringify(pkg)}`)
-      acc.cases.push(
-        `${JSON.stringify(id)}: lazy(() => import(${pkg}).then(m => ({default: m.IconRenderer})))`,
-      )
-      return acc
-    }, {
-      imports: [] as string[],
-      cases: [] as string[],
-    })
+    const registry = projects
+      .map(p => ({
+        id: JSON.stringify(p.id),
+        pkg: JSON.stringify(joinURL('likec4:icons', p.id)),
+      }))
+      .map(({ id, pkg }) => `${id}: lazy(() => import(${pkg}).then(m => ({default: m.IconRenderer})))`)
+      .join(',\n')
 
     return `
-import { lazy } from 'react' 
-export let ProjectIconsFn = {
-${cases.join(',\n')}
+import { jsx } from 'react/jsx-runtime'
+import { lazy, Suspense } from 'react' 
+export let ProjectIconsRegistry = {
+${registry}
 }      
 
 
 export function getProjectIcons(projectId) {
-  let fn = ProjectIconsFn[projectId]
+  let fn = ProjectIconsRegistry[projectId]
   if (!fn) {
-    const projects = Object.keys(ProjectIconsFn)
+    const projects = Object.keys(ProjectIconsRegistry)
     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
     if (projects.length === 0) {
       throw new Error('No projects found, invalid state')
     }
     projectId = projects[0]
     console.warn('Falling back to project: ' + projectId)
-    fn = ProjectIconsFn[projectId]
+    fn = ProjectIconsRegistry[projectId]
   }
-  return fn
+  return (props) => jsx(Suspense, { children: fn(props) })
 }
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
     if (!import.meta.hot.data.$update) {
-      import.meta.hot.data.$update = ProjectIconsFn
+      import.meta.hot.data.$update = ProjectIconsRegistry
     }
-    const update = md.ProjectIconsFn
+    const update = md.ProjectIconsRegistry
     if (update) {
       Object.assign(import.meta.hot.data.$update, update)
     } else {
@@ -125,54 +118,3 @@ if (import.meta.hot) {
 `
   },
 } satisfies VirtualModule
-
-// return {
-//   id: `likec4:${moduleId}`,
-//   virtualId: `likec4:plugin/${moduleId}.js`,
-//   async load({ logger, projects }) {
-//     logger.info(k.dim(`generating likec4:${moduleId}`))
-//     const cases = projects.map(({ id }) => {
-//       const pkg = escapeUnsafeChars(
-//         JSON.stringify(
-//           joinURL(`likec4:${moduleId}`, id),
-//         ),
-//       )
-//       return `  ${JSON.stringify(id)}: () => import(${pkg})`
-//       // return `  ${JSON.stringify(id)}: () => ${pkg}`
-//     })
-//     return `
-// export let ${fnName}Fn = {
-// ${cases.join(',\n')}
-// }
-
-// export async function ${fnName}(projectId) {
-//   let fn = ${fnName}Fn[projectId]
-//   if (!fn) {
-//     const projects = Object.keys(${fnName}Fn)
-//     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
-//     if (projects.length === 0) {
-//       throw new Error('No projects found, invalid state')
-//     }
-//     projectId = projects[0]
-//     console.warn('Falling back to project: ' + projectId)
-//     fn = ${fnName}Fn[projectId]
-//   }
-//   return await fn()
-// }
-
-// if (import.meta.hot) {
-//   import.meta.hot.accept(md => {
-//     if (!import.meta.hot.data.$update) {
-//       import.meta.hot.data.$update = ${fnName}Fn
-//     }
-//     const update = md.${fnName}Fn
-//     if (update) {
-//       Object.assign(import.meta.hot.data.$update, update)
-//     } else {
-//       import.meta.hot.invalidate()
-//     }
-//   })
-// }
-//     `
-//   },
-// }

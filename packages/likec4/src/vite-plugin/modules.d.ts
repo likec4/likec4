@@ -28,7 +28,7 @@ declare module 'likec4:icons' {
   }
 
   export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
-  export const ProjectIcons: (props: ElementIconRendererProps & { projectId: string }) => ReactNode
+  export function getProjectIcons(projectId: string): ElementIconRenderer
 }
 
 declare module 'likec4:model' {

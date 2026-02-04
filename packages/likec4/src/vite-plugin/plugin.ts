@@ -8,6 +8,7 @@ import type {
 import { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
 import { enablePluginRPC } from './rpc'
+import { splitErrorMessage } from './rpc/sendError'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
 import { iconsModule, projectIconsModule } from './virtuals/icons'
@@ -219,13 +220,11 @@ export function LikeC4VitePlugin({
       likec4.builder.onModelParsed(async () => {
         const [error] = likec4.getErrors()
         if (error) {
-          const [message, ...stack] = error.message.split('\n') as [string, ...string[]]
           hotChannel.send({
             type: 'error',
             err: {
               name: 'LikeC4ValidationError',
-              message,
-              stack: stack.join('\n'),
+              ...splitErrorMessage(error.message),
               plugin: 'vite-plugin-likec4',
               loc: {
                 file: error.sourceFsPath,

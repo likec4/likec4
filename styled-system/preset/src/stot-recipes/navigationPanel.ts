@@ -15,6 +15,12 @@ export const navigationPanel = defineSlotRecipe({
       margin: '0',
       width: '100%',
       gap: 'xxs',
+      height: 'auto',
+      overflow: 'hidden',
+      maxHeight: [
+        'calc(100vh)',
+        'calc(100cqh)',
+      ],
       maxWidth: [
         'calc(100vw)',
         'calc(100cqw)',
@@ -27,12 +33,21 @@ export const navigationPanel = defineSlotRecipe({
           'calc(100vw - 2 * {spacing.xs})',
           'calc(100cqw - 2 * {spacing.xs})',
         ],
+        maxHeight: [
+          'calc(100vh - 2 * {spacing.xs})',
+          'calc(100cqh - 2 * {spacing.xs})',
+        ],
       },
       '@/md': {
         margin: 'sm',
+        width: 'max-content',
         maxWidth: [
           'calc(100vw - 2 * {spacing.md})',
           'calc(100cqw - 2 * {spacing.md})',
+        ],
+        maxHeight: [
+          'calc(100vh - 2 * {spacing.md})',
+          'calc(100cqh - 2 * {spacing.md})',
         ],
       },
       _print: {
@@ -48,6 +63,9 @@ export const navigationPanel = defineSlotRecipe({
       gap: 'xs',
       pointerEvents: 'all',
       width: '100%',
+      '@/sm': {
+        width: 'auto',
+      },
       minHeight: '40px',
       cursor: 'default',
     },
@@ -61,7 +79,7 @@ export const navigationPanel = defineSlotRecipe({
       cursor: 'pointer',
       width: {
         base: '20px',
-        '@/md': '64px',
+        '@/sm': '64px',
       },
 
       ['& > [data-logo-icon]']: {
@@ -85,6 +103,12 @@ export const navigationPanel = defineSlotRecipe({
       color: 'likec4.panel.text',
     },
     dropdown: {
+      display: 'flex',
+      height: 'auto',
+      width: 'auto',
+      flex: '1',
+      flexGrow: 0,
+      overflow: 'hidden',
       layerStyle: 'likec4.dropdown',
       pointerEvents: 'all',
     },
