@@ -41,7 +41,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: 🛠️ Cache for turbo
-        uses: rharkor/caching-for-turbo@v2.2.1
+        uses: rharkor/caching-for-turbo@v2.3.11
         with:
           cache-prefix: 'turbo_cache_${{ runner.arch }}'
 
