@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@radix-ui/colors": "^3.0.0",
-    "pandacss-preset-radix-colors": "^0.2.0",
+    "pandacss-preset-radix-colors": "^0.2.1",
     "remeda": "catalog:utils"
   },
   "peerDependencies": {
