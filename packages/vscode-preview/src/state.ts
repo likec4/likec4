@@ -1,5 +1,4 @@
 import { nonNullable } from '@likec4/core'
-import { LikeC4Model } from '@likec4/core/model'
 import type {
   DiagramNode,
   LayoutType,
@@ -8,9 +7,9 @@ import type {
 } from '@likec4/core/types'
 import type { LikeC4EditorCallbacks } from '@likec4/diagram'
 import { useStore } from '@nanostores/react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { atom, batched, onSet } from 'nanostores'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { queries, queryClient } from './queries'
 import { ExtensionApi, getVscodeState, saveVscodeState } from './vscode'
 
@@ -144,22 +143,23 @@ ExtensionApi.onGetLastClickedNodeRequest(() => {
 })
 
 ExtensionApi.onModelUpdateNotification(async () => {
-  // Invalidate inactive queries,
+  const projectId = $projectId.get()
+  // Fetch fresh data
+  void queryClient.refetchQueries({
+    queryKey: queries.fetchComputedModel(projectId).queryKey,
+    type: 'active',
+  })
+  // Invalidate inactive diagram views
   // so they will be refetched when accessed next time
-  await queryClient.invalidateQueries({
+  void queryClient.invalidateQueries({
     type: 'inactive',
     refetchType: 'none',
-    queryKey: [$projectId.get()],
+    queryKey: [projectId, 'diagram'],
   })
-  // First refetch active model
-  await queryClient.refetchQueries({
-    queryKey: [$projectId.get(), 'model'],
+  // And refetch active diagram views
+  void queryClient.refetchQueries({
+    queryKey: [projectId, 'diagram'],
     type: 'active',
-  })
-  // Then refetch active diagram views
-  await queryClient.refetchQueries({
-    type: 'active',
-    queryKey: [$projectId.get(), 'diagram'],
   })
 })
 
@@ -176,7 +176,7 @@ const projectAndView = batched(
 
 export function useComputedModel() {
   const { projectId } = useStore(projectAndView)
-  const { data: model, error, refetch } = useQuery(
+  const { data: model, error, refetch } = useSuspenseQuery(
     queries.fetchComputedModel(projectId),
   )
 
@@ -184,24 +184,20 @@ export function useComputedModel() {
     if (!model) {
       return
     }
-    saveVscodeState({ projectId: model.project.id, model })
+    saveVscodeState({ projectId: model.project.id, model: model.$data })
   }, [model])
 
-  const likec4model = useMemo(() => {
-    return model ? LikeC4Model.create(model) : null
-  }, [model])
-
-  const likec4modelref = useRef(likec4model)
+  const likec4modelref = useRef(model)
   // Always keep last known model in ref
-  if (likec4model) {
-    likec4modelref.current = likec4model
+  if (model) {
+    likec4modelref.current = model
   }
 
   return {
     projectId,
     model,
     error,
-    likec4Model: likec4modelref.current,
+    likec4Model: model ?? likec4modelref.current,
     reset: async () => {
       await refetch({
         cancelRefetch: true,
@@ -213,7 +209,7 @@ export function useComputedModel() {
 
 export function useDiagramView() {
   const { projectId, viewId, layoutType } = useStore(projectAndView)
-  const { data: view, error, refetch, isRefetchError } = useQuery(
+  const { data: view, error, refetch } = useQuery(
     queries.fetchDiagramView(projectId, viewId, layoutType),
   )
 
@@ -235,11 +231,13 @@ export function useDiagramView() {
     ExtensionApi.updateTitle(title)
   }, [title])
 
+  const resolved = view ?? viewRef.current
+
   return {
     projectId,
-    viewId,
-    layoutType,
-    view: view || (isRefetchError ? viewRef.current : null),
+    viewId: resolved?.id ?? viewId,
+    layoutType: resolved?._layout ?? layoutType,
+    view: resolved,
     error,
     reset: async () => {
       await refetch({

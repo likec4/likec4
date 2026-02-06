@@ -7,6 +7,7 @@
     "build": {
       "dependsOn": [
         "@likec4/styles#generate",
+        "@likec4/core#build",
         "@likec4/icons#generate",
         "sources"
       ],

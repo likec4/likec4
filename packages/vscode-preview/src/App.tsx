@@ -1,4 +1,4 @@
-import { ErrorMessage, QueryErrorBoundary } from './QueryErrorBoundary'
+import { ErrorMessage } from './QueryErrorBoundary'
 import { ProjectsScreen } from './screens/Projects'
 import { ViewScreen } from './screens/View'
 import { useScreen } from './state'
@@ -6,14 +6,12 @@ import { useScreen } from './state'
 export function App() {
   const screen = useScreen()
 
-  if (screen !== 'projects' && screen !== 'view') {
-    return <ErrorMessage error={'Unknown screen' + screen} />
+  if (screen === 'projects') {
+    return <ProjectsScreen />
+  }
+  if (screen === 'view') {
+    return <ViewScreen />
   }
 
-  return (
-    <QueryErrorBoundary>
-      {screen == 'projects' && <ProjectsScreen />}
-      {screen == 'view' && <ViewScreen />}
-    </QueryErrorBoundary>
-  )
+  return <ErrorMessage error={'Unknown screen' + screen} />
 }

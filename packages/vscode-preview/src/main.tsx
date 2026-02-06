@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client'
 import { App } from './App'
 import { IconsProvider } from './IconRenderer'
 import { queryClient } from './queries'
+import { QueryErrorBoundary } from './QueryErrorBoundary'
 import { theme } from './theme'
 
 const root = document.getElementById('root') as HTMLDivElement
@@ -28,7 +29,9 @@ ReactDOM.createRoot(root).render(
   <MantineProvider theme={theme} forceColorScheme={scheme} {...(getStyleNonce && { getStyleNonce })}>
     <QueryClientProvider client={queryClient}>
       <IconsProvider>
-        <App />
+        <QueryErrorBoundary>
+          <App />
+        </QueryErrorBoundary>
       </IconsProvider>
       <Loader />
     </QueryClientProvider>

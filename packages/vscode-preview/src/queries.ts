@@ -1,4 +1,5 @@
 import { invariant } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import type { LayoutType, ProjectId, ViewId } from '@likec4/core/types'
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 import { ExtensionApi } from './vscode'
@@ -9,10 +10,9 @@ export const queryClient = new QueryClient({
       gcTime: 5 * 60 * 1000,
       staleTime: 400,
       retry: 2,
-      retryDelay: 300,
+      retryDelay: 500,
       networkMode: 'always',
       experimental_prefetchInRender: true,
-      throwOnError: false,
       structuralSharing: false,
     },
   },
@@ -44,6 +44,7 @@ export const queries = {
         }
         return response.model
       },
+      select: (model) => LikeC4Model.create(model),
     }),
   fetchDiagramView: (projectId: ProjectId, viewId: ViewId, layoutType: LayoutType = 'manual') =>
     queryOptions({
@@ -63,7 +64,7 @@ export const queries = {
       },
       refetchInterval: (q) => {
         if (q.isActive() && q.state.status == 'error') {
-          return 3000
+          return 5000
         }
         return false
       },

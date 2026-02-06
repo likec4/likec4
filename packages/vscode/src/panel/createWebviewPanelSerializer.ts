@@ -6,7 +6,6 @@ import { useDiagramPanel, ViewType } from './useDiagramPanel'
 
 export function createWebviewPanelSerializer() {
   const { logger } = useExtensionLogger()
-  let immediate = false
   const state = shallowRef({} as {
     serializedState?: any
     panel?: vscode.WebviewPanel | undefined
@@ -24,7 +23,7 @@ export function createWebviewPanelSerializer() {
         stop()
       })
     }, {
-      immediate,
+      immediate: true,
     })
   })
 
@@ -39,7 +38,6 @@ export function createWebviewPanelSerializer() {
         logger.debug('deserializeWebviewPanel')
         state.value.panel = panel
         state.value.serializedState = panelState
-        immediate = true
         triggerRef(state)
       }
     }(),
