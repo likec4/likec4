@@ -600,6 +600,7 @@ describe('LikeC4CompletionProvider', () => {
         'technology',
         'summary',
         'notation',
+        'notes',
         'color',
         'shape',
         'border',

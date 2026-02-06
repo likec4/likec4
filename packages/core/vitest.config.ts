@@ -1,8 +1,6 @@
 import { resolve } from 'node:path'
 import { defineProject } from 'vitest/config'
 
-const isNotWin = process.platform !== 'win32'
-
 export default defineProject({
   resolve: {
     conditions: ['sources'],
@@ -17,7 +15,7 @@ export default defineProject({
       truncateThreshold: 300,
     },
     typecheck: {
-      enabled: isNotWin, // skipping typecheck on windows
+      only: true,
     },
   },
 })

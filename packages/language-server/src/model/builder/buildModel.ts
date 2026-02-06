@@ -18,7 +18,7 @@ import { _stage, _type, exact, FqnRef, isExtendsElementView } from '@likec4/core
 import {
   compareNatural,
   parentFqn,
-  sortByFqnHierarchically,
+  sortParentsFirst,
 } from '@likec4/core/utils'
 import { type LangiumDocument, UriUtils } from 'langium'
 import {
@@ -96,7 +96,7 @@ export function buildModelData(
     filter(isTruthy),
     // sort from root elements to nested, so that parent is always present
     // Import to preserve the order from the source
-    sortByFqnHierarchically,
+    sortParentsFirst,
     reduce(
       (acc, el) => {
         const parent = parentFqn(el.id)
@@ -211,7 +211,7 @@ export function buildModelData(
     filter(isTruthy),
     // sort from root elements to nested, so that parent is always present
     // Import to preserve the order from the source
-    sortByFqnHierarchically,
+    sortParentsFirst,
     reduce(
       (acc, el) => {
         const parent = parentFqn(el.id)

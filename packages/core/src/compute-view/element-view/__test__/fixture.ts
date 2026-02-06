@@ -642,11 +642,11 @@ export function $expr(expr: Expression | ModelExpression<$Aux>): ModelExpression
   }
 }
 
-type CustomProps = {
+export type CustomProps = {
   where?: WhereOperator<$Aux>
   with?: {
     title?: string
-    description?: string
+    description?: string | scalar.MarkdownOrString
     technology?: string
     shape?: ElementShape
     color?: Color
@@ -654,8 +654,9 @@ type CustomProps = {
     icon?: string
     opacity?: number
     navigateTo?: string
+    notes?: string | scalar.MarkdownOrString
     multiple?: boolean
-  } & Omit<ModelRelationExpr.Custom<$Aux>['customRelation'], 'expr' | 'navigateTo'>
+  } & Omit<ModelRelationExpr.Custom<$Aux>['customRelation'], 'expr' | 'navigateTo' | 'description' | 'notes'>
 }
 export function $include(
   expr: Expression | ModelExpression<$Aux>,

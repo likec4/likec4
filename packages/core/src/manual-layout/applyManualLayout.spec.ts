@@ -113,6 +113,36 @@ describe('applyManualLayout', () => {
       expect(result.drifts).toBeUndefined()
     })
 
+    it('should auto-apply notes changes', () => {
+      const { result, nodes, snapshotNodes } = testApplyManualLayout({
+        nodes: {
+          'customer': {
+            notes: { md: '**Updated note**' },
+          },
+        },
+      })
+      expect(nodes.customer).not.toEqual(snapshotNodes.customer)
+
+      expect(nodes.customer.notes).toEqual({ md: '**Updated note**' })
+      expect(nodes.customer.drifts).toBeUndefined()
+      expect(result.drifts).toBeUndefined()
+    })
+
+    it('should auto-apply notes removal', () => {
+      const { snapshot, layouted } = prepareFixtures()
+      const snapshotNode = snapshot.nodes.find(n => n.id === 'customer')
+      expect(snapshotNode).toBeDefined()
+      snapshotNode!.notes = { txt: 'Legacy note' }
+
+      const result = applyManualLayout(layouted, snapshot)
+      const nodes = indexBy(result.nodes, n => n.id) as Record<string, unknown>
+      const customer = nodes['customer'] as { notes?: unknown; drifts?: unknown }
+
+      expect(customer.notes).toBeUndefined()
+      expect(customer.drifts).toBeUndefined()
+      expect(result.drifts).toBeUndefined()
+    })
+
     it('should auto-apply shape change when size not changed', () => {
       const { nodes: { customer } } = testApplyManualLayout({
         nodes: {

@@ -17,8 +17,21 @@ export function hasProp<T extends object, P extends keyof T & string>(
   return value[path] != null
 }
 
-type Guard<N = unknown> = (n: unknown) => n is N
-type Guarded<G> = G extends Guard<infer N> ? N : never
+export type Guard<N = unknown> = (n: unknown) => n is N
+
+/**
+ * Extracts the guarded type from a Guard type.
+ *
+ * @template G - A Guard type or union of Guard types
+ * @returns The type that the guard narrows to
+ *
+ * @example
+ * ```typescript
+ * const isString = (n): n is string => typeof n === 'string';
+ * GuardedBy<typeof isString>; // string
+ * ```
+ */
+export type GuardedBy<G> = G extends Guard<infer N> ? N : never
 
 /**
  * Creates a type guard that checks if a value matches any of the provided predicates.
@@ -39,8 +52,8 @@ type Guarded<G> = G extends Guard<infer N> ? N : never
  */
 export function isAnyOf<const Predicates extends NonEmptyArray<Guard>>(
   ...predicates: Predicates
-): (value: unknown) => value is Guarded<Predicates[number]> {
-  return (value: unknown): value is Guarded<Predicates[number]> => {
+): <T>(value: T) => value is T & GuardedBy<Predicates[number]> {
+  return ((value: any) => {
     return predicates.some(predicate => predicate(value))
-  }
+  }) as any
 }

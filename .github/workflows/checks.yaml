@@ -5,9 +5,9 @@ on:
 
 env:
   NODE_ENV: production
-  CLOUDFLARE_ENV: 'production'
+  CLOUDFLARE_ENV: "production"
   FORCE_COLOR: true
-  DO_NOT_TRACK: '1'
+  DO_NOT_TRACK: "1"
 
 jobs:
   check-types:
@@ -22,6 +22,10 @@ jobs:
 
       - name: ʦ typecheck
         run: pnpm ci:typecheck
+
+      - name: 🔬 type tests
+        working-directory: packages/core
+        run: pnpm test --typecheck
 
   check-lint:
     name: 🧹 lint
@@ -77,7 +81,7 @@ jobs:
       #   run: pnpm turbo run build --filter="likec4"
 
       - name: ⚙️ generate
-        run: pnpm generate
+        run: pnpm ci:generate
 
       - name: 🔬 test
         env:
@@ -138,6 +142,10 @@ jobs:
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
+      - name: ʦ typecheck
+        run: |
+          pnpm turbo run typecheck --filter='@likec4/playground'
+
       - name: ⚙️ build
         run: |
           pnpm turbo run build --filter='@likec4/playground'
@@ -162,7 +170,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v5
@@ -229,7 +237,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v5

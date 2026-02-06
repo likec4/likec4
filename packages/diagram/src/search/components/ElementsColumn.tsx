@@ -5,6 +5,7 @@ import {
   imap,
   isAncestor,
   nameFromFqn,
+  stringHash,
   toArray,
 } from '@likec4/core/utils'
 import { cx, cx as clsx } from '@likec4/styles/css'
@@ -106,7 +107,7 @@ function useElementsColumnData() {
 
     const byid = {} as Record<Fqn, LikeC4ModelTreeNodeData>
 
-    const { all, roots } = pipe(
+    const { hash, all, roots } = pipe(
       elements,
       reduce((acc, treeItem) => {
         treeItem.children = []
@@ -118,13 +119,16 @@ function useElementsColumnData() {
           acc.roots.push(treeItem)
         }
         acc.all.push(treeItem)
+        acc.hash = stringHash(acc.hash + treeItem.value)
         return acc
       }, {
+        hash: 'empty',
         all: [] as LikeC4ModelTreeNodeData[],
         roots: [] as LikeC4ModelTreeNodeData[],
       }),
     )
     return {
+      hash,
       all,
       byid,
       roots,
@@ -155,6 +159,7 @@ function ElementsTree({
     searchTerms,
     all,
     byid,
+    hash,
     roots,
   },
   handleClick,
@@ -174,7 +179,7 @@ function ElementsTree({
         tree.expand(nd.value)
       }
     }
-  }, [all.map(prop('id')).join(',')])
+  }, [hash])
 
   const onKeyDownCapture: KeyboardEventHandler = useCallbackRef((e) => {
     const target = e.target as HTMLElement

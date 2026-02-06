@@ -1,6 +1,7 @@
+import { hasAtLeast } from 'remeda'
 import type { Fqn, IterableContainer, ReorderedArray } from '../types'
+import { isString } from '../types/guards'
 import { compareNatural } from './compare-natural'
-import { isString } from './guards'
 
 export type Predicate<T> = (x: T) => boolean
 
@@ -140,21 +141,22 @@ export function commonAncestor<E extends string>(first: E, second: E): E | null 
 /**
  * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
  * going up from parent to the root
+ * @example
+ * ```ts
+ * ancestorsFqn('a.b.c.d')
+ * // ['a.b.c', 'a.b', 'a']
+ * ```
  */
 export function ancestorsFqn<Id extends string>(fqn: Id): Id[] {
   const path = fqn.split('.') as Id[]
   path.pop()
-  if (path.length === 0) {
-    return []
+  if (!hasAtLeast(path, 2)) {
+    return path
   }
-  return path.reduce((acc, part, idx) => {
-    if (idx === 0) {
-      acc.push(part)
-      return acc
-    }
-    acc.unshift(`${acc[0]}.${part}` as Id)
-    return acc
-  }, [] as Id[])
+  for (let i = 1; i < path.length; i++) {
+    path[i] = (path[i - 1] + '.' + path[i]) as Id
+  }
+  return path.reverse()
 }
 
 /**
@@ -226,7 +228,7 @@ export function sortByFqnHierarchically<T extends { id: string }, A extends Iter
 function findTopAncestor<T extends { id: string }>(items: T[], item: T): T | null {
   let parent = item
   for (const e of items) {
-    if (isAncestor(e, parent)) {
+    if (e !== parent && isAncestor(e, parent)) {
       parent = e
     }
   }
@@ -235,8 +237,25 @@ function findTopAncestor<T extends { id: string }>(items: T[], item: T): T | nul
 
 /**
  * Keeps initial order of the elements, but ensures that parents are before children
+ *
+ * @example
+ * ```ts
+ * const items = [
+ *   {id: 'a.c'},
+ *   {id: 'a'},
+ *   {id: 'a.b.c'},
+ *   {id: 'a.b'},
+ * ];
+ * sortParentsFirst(items);
+ * // Result: [
+ * //   { id: "a" },
+ * //   { id: "a.c" }, // because of initial order
+ * //   { id: "a.b" },
+ * //   { id: "a.b.c" },
+ * // ]
+ * ```
  */
-export function sortParentsFirst<T extends { id: string }, A extends IterableContainer<T>>(
+export function sortParentsFirst<T extends WithId<string>, A extends IterableContainer<T>>(
   array: A,
 ): ReorderedArray<A> {
   const result = [] as T[]
@@ -245,7 +264,7 @@ export function sortParentsFirst<T extends { id: string }, A extends IterableCon
   while ((item = items.shift())) {
     let parent
     while ((parent = findTopAncestor(items, item))) {
-      result.push(items.splice(items.indexOf(parent), 1)[0]!)
+      result.push(...items.splice(items.indexOf(parent), 1))
     }
     result.push(item)
   }

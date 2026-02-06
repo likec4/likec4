@@ -2,65 +2,6 @@ import { sort } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { type RelationshipLike, compareRelations } from './relations'
 
-const relations = [
-  {
-    source: {
-      id: 'customer',
-    },
-    target: {
-      id: 'cloud.frontend.dashboard',
-    },
-  },
-  {
-    source: {
-      id: 'support',
-    },
-    target: {
-      id: 'cloud.frontend.supportPanel',
-    },
-  },
-  {
-    source: {
-      id: 'cloud.backend.storage',
-    },
-    target: {
-      id: 'amazon.s3',
-    },
-  },
-  {
-    source: {
-      id: 'amazon.api',
-    },
-    target: {
-      id: 'cloud.backend.graphql',
-    },
-  },
-  {
-    source: {
-      id: 'cloud.backend.graphql',
-    },
-    target: {
-      id: 'cloud.backend.storage',
-    },
-  },
-  {
-    source: {
-      id: 'cloud.frontend.dashboard',
-    },
-    target: {
-      id: 'cloud.backend.graphql',
-    },
-  },
-  {
-    source: {
-      id: 'cloud.frontend.supportPanel',
-    },
-    target: {
-      id: 'cloud.backend.graphql',
-    },
-  },
-] satisfies RelationshipLike[]
-
 describe('compareRelations', () => {
   function rel(source: string, target: string): RelationshipLike {
     return {
@@ -156,6 +97,64 @@ describe('compareRelations', () => {
   })
 
   it('should sort relations from example', () => {
+    const relations = [
+      {
+        source: {
+          id: 'customer',
+        },
+        target: {
+          id: 'cloud.frontend.dashboard',
+        },
+      },
+      {
+        source: {
+          id: 'support',
+        },
+        target: {
+          id: 'cloud.frontend.supportPanel',
+        },
+      },
+      {
+        source: {
+          id: 'cloud.backend.storage',
+        },
+        target: {
+          id: 'amazon.s3',
+        },
+      },
+      {
+        source: {
+          id: 'amazon.api',
+        },
+        target: {
+          id: 'cloud.backend.graphql',
+        },
+      },
+      {
+        source: {
+          id: 'cloud.backend.graphql',
+        },
+        target: {
+          id: 'cloud.backend.storage',
+        },
+      },
+      {
+        source: {
+          id: 'cloud.frontend.dashboard',
+        },
+        target: {
+          id: 'cloud.backend.graphql',
+        },
+      },
+      {
+        source: {
+          id: 'cloud.frontend.supportPanel',
+        },
+        target: {
+          id: 'cloud.backend.graphql',
+        },
+      },
+    ] satisfies RelationshipLike[]
     expect(sorted(...relations)).toEqual([
       'customer -> cloud.frontend.dashboard',
       'support -> cloud.frontend.supportPanel',

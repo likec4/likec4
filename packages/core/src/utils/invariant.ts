@@ -1,6 +1,5 @@
 // Ensure that the value is NonNullable
 // Mostly as safer `value!`
-// eslint-disable-next-line @typescript-eslint/ban-types
 export function nonNullable<T>(value: T, message?: string | (() => string)): NonNullable<T> {
   if (typeof value === 'undefined' || value == null) {
     const msg = typeof message === 'function' ? message() : message

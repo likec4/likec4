@@ -1,4 +1,6 @@
-export * from './_common'
+export type * from './_common'
+
+export { exact } from './_common'
 
 export type * as aux from './_aux'
 
@@ -50,3 +52,11 @@ export * as scalar from './scalar'
 export type * from '../styles/types'
 
 export { RichText, type RichTextEmpty, type RichTextOrEmpty } from './RichText'
+
+export type * from './guards'
+export {
+  hasProp,
+  isAnyOf,
+  isNonEmptyArray,
+  isString,
+} from './guards'

@@ -192,4 +192,23 @@ describe('applyElementCustomProperties', () => {
       },
     ])
   })
+
+  it('should apply notes customizations', () => {
+    const nodes = [nd('cloud')]
+    const rules = [
+      $include($custom('cloud', {
+        notes: { md: '**note**' },
+      })),
+    ]
+
+    const result = applyCustomElementProperties(rules, nodes)
+
+    expect(result).toEqual([
+      {
+        id: 'cloud',
+        isCustomized: true,
+        notes: { md: '**note**' },
+      },
+    ])
+  })
 })

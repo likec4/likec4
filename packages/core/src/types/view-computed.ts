@@ -71,6 +71,7 @@ export interface ComputedNode<A extends AnyAux = AnyAux>
    */
   isCustomized?: boolean
   notation?: string | null
+  notes?: scalar.MarkdownOrString | undefined
 }
 
 export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptionalTags<A> {

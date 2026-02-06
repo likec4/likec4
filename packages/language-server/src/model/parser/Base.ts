@@ -7,7 +7,7 @@ import {
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
-import type { AstNode } from 'langium'
+import { type AstNode, type Reference, isAstNode } from 'langium'
 import {
   filter,
   flatMap,
@@ -15,6 +15,7 @@ import {
   isArray,
   isBoolean,
   isEmpty,
+  isEmptyish,
   isNumber,
   isString,
   isTruthy,
@@ -23,7 +24,7 @@ import {
   unique,
 } from 'remeda'
 import { dedent } from 'strip-indent'
-import { hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, joinURL } from 'ufo'
+import { cleanDoubleSlashes, hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, joinURL } from 'ufo'
 import {
   type ParsedElementStyle,
   type ParsedLikeC4LangiumDocument,
@@ -47,17 +48,14 @@ const logger = serverLogger.getChild('parser')
 // the class which this mixin is applied to
 export type GConstructor<T = {}> = new(...args: any[]) => T
 
+export function toSingleLine(str: undefined | null): undefined
 export function toSingleLine(str: string): string
-export function toSingleLine(str: string | undefined | null): string | undefined
 export function toSingleLine(str: ast.MarkdownOrString): MarkdownOrString
-export function toSingleLine(str: ast.MarkdownOrString | undefined | null): MarkdownOrString | undefined
 export function toSingleLine(str: ast.MarkdownOrString | string): MarkdownOrString | string
-export function toSingleLine(
-  str: ast.MarkdownOrString | string | undefined | null,
-): MarkdownOrString | string | undefined
-export function toSingleLine(
-  str: ast.MarkdownOrString | string | undefined | null,
-): MarkdownOrString | string | undefined {
+export function toSingleLine(str: string | undefined | null): string | undefined
+export function toSingleLine(str: ast.MarkdownOrString | undefined | null): MarkdownOrString | undefined
+export function toSingleLine<S extends ast.MarkdownOrString | string | undefined | null>(str: S): S
+export function toSingleLine(str: ast.MarkdownOrString | string | undefined | null) {
   if (str === null || str === undefined) {
     return undefined
   }
@@ -75,28 +73,31 @@ export function toSingleLine(
   }
 }
 
+export function removeIndent(str: undefined): undefined
 export function removeIndent(str: string): string
-export function removeIndent(str: string | undefined): string | undefined
 export function removeIndent(str: ast.MarkdownOrString): MarkdownOrString
+export function removeIndent(str: string | undefined): string | undefined
 export function removeIndent(str: ast.MarkdownOrString | undefined): MarkdownOrString | undefined
 export function removeIndent(str: ast.MarkdownOrString | string): MarkdownOrString | string
-// export function removeIndent(str: ast.MarkdownOrString | string): MarkdownOrString | string
-export function removeIndent(
-  str: ast.MarkdownOrString | string | undefined,
-): MarkdownOrString | string | undefined {
+export function removeIndent<S extends ast.MarkdownOrString | string | undefined>(str: S): S
+export function removeIndent(str: ast.MarkdownOrString | string | undefined) {
   if (str === null || str === undefined) {
     return undefined
   }
   switch (true) {
     case isString(str):
       return dedent(str).trim()
-    case ast.isMarkdownOrString(str) && isTruthy(str.markdown):
+    case ast.isMarkdownOrString(str) && isString(str.markdown):
       return {
         md: dedent(str.markdown).trim(),
       }
-    case ast.isMarkdownOrString(str) && isTruthy(str.text):
+    case ast.isMarkdownOrString(str) && isString(str.text):
       return {
         txt: dedent(str.text).trim(),
+      }
+    case ast.isMarkdownOrString(str):
+      return {
+        txt: '',
       }
     default:
       return undefined
@@ -130,7 +131,7 @@ export class BaseParser {
 
   logError(
     error: unknown,
-    astNode?: AstNode,
+    astNode?: AstNode | Reference<AstNode>,
     level?: ParserLevel,
   ) {
     // dprint-ignore
@@ -140,10 +141,19 @@ export class BaseParser {
         ? error
         : String(error)
 
-    if (astNode) {
+    if (isAstNode(astNode)) {
+      let name = this.services.references.NameProvider.getName(astNode)
+      if (name) {
+        name = `"${name}" (${astNode.$type})`
+      } else {
+        name = `${astNode.$type}`
+      }
+
       const cst = astNode.$cstNode
       const position = cst ? `:${cst.range.start.line + 1}:${cst.range.start.character + 1}` : ''
-      message += `\n\tat ${astNode.$type} (${this.doc.uri.fsPath}${position})`
+      message += `\n\tat ${name} (${this.doc.uri.fsPath}${position})`
+    } else if (astNode && '$refText' in astNode) {
+      message += `\n\tat reference "${astNode.$refText}" (${this.doc.uri.fsPath})`
     }
     if (level && level !== 'base') {
       logger.getChild(level).debug(message)
@@ -152,7 +162,11 @@ export class BaseParser {
     }
   }
 
-  tryParse<N extends AstNode, T>(level: ParserLevel, node: N | undefined, fn: (node: NoInfer<N>) => T): T | undefined {
+  tryParse<N extends AstNode, T>(
+    level: ParserLevel,
+    node: N | undefined,
+    fn: (node: NoInfer<N>) => T | undefined,
+  ): T | undefined {
     try {
       if (!node || !this.isValid(node as any)) {
         return undefined
@@ -164,8 +178,8 @@ export class BaseParser {
     }
   }
 
-  tryMap<N extends AstNode, T>(level: ParserLevel, iterable: ReadonlyArray<N>, fn: (node: N) => T): T[] {
-    return iterable.flatMap(node => this.tryParse(level, node, fn) ?? [])
+  tryMap<N extends AstNode, T>(level: ParserLevel, iterable: ReadonlyArray<N>, fn: (node: N) => T | undefined): T[] {
+    return flatMap(iterable, node => this.tryParse(level, node, fn) ?? [])
   }
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
@@ -274,52 +288,43 @@ export class BaseParser {
     }
     let tags = [] as c4.Tag[]
     while (iter) {
-      try {
-        if (this.isValid(iter)) {
-          const values = iter.values.map(t => t.tag.ref?.name).filter(isTruthy) as c4.Tag[]
-          if (values.length > 0) {
-            tags.push(...values)
-          }
-        }
-      } catch {
-        // ignore
-      }
+      tags.push(
+        ...this.tryMap(
+          'base',
+          iter.values,
+          t => nonNullable(t.tag.ref, `Tag reference is not resolved`).name as c4.Tag,
+        ).filter(isTruthy),
+      )
       iter = iter.prev
     }
     return isNonEmptyArray(tags) ? unique(tags) : null
   }
 
-  convertLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {
+  convertLinks(source?: ast.LinkProperty['$container']): c4.NonEmptyArray<c4.Link> | undefined {
     return this.parseLinks(source)
   }
-  parseLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {
+  parseLinks(source?: ast.LinkProperty['$container']): c4.NonEmptyArray<c4.Link> | undefined {
     if (!source?.props || source.props.length === 0) {
       return undefined
     }
-    return pipe(
-      source.props,
-      filter(ast.isLinkProperty),
-      flatMap(p => {
-        if (!this.isValid(p)) {
-          return []
-        }
+    const links = this.tryMap(
+      'base',
+      filter(source.props, ast.isLinkProperty),
+      p => {
         const url = p.value
-        if (isTruthy(url)) {
-          try {
-            const title = isTruthy(p.title) ? toSingleLine(p.title) : undefined
-            const relative = this.services.lsp.DocumentLinkProvider.relativeLink(this.doc, url)
-            return {
-              url,
-              ...(title && { title }),
-              ...(relative && relative !== url && { relative }),
-            }
-          } catch (error) {
-            this.logError(error, p)
-          }
+        if (isEmptyish(url)) {
+          return undefined
         }
-        return []
-      }),
+        const title = isTruthy(p.title) ? toSingleLine(p.title) : undefined
+        const relative = this.services.lsp.DocumentLinkProvider.relativeLink(this.doc, url)
+        return exact({
+          url,
+          title,
+          relative: relative && relative !== url ? relative : undefined,
+        }) as c4.Link
+      },
     )
+    return isNonEmptyArray(links) ? links : undefined
   }
 
   parseIconProperty(prop: ast.IconProperty | undefined): c4.IconUrl | undefined {

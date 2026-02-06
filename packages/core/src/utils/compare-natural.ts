@@ -1,5 +1,6 @@
 import compare from 'natural-compare-lite'
-import { isString } from 'remeda'
+import { isString, sort } from 'remeda'
+import type { IterableContainer, ReorderedArray } from '../types/_common'
 
 export function compareNatural(a: string | undefined, b: string | undefined): -1 | 0 | 1 {
   if (a === b) return 0
@@ -10,6 +11,16 @@ export function compareNatural(a: string | undefined, b: string | undefined): -1
     return 1
   }
   return isString(b) ? -1 : 0
+}
+
+function _sortNatural<T extends IterableContainer<string>>(elements: T): ReorderedArray<T> {
+  return sort(elements, compareNatural)
+}
+
+export function sortNatural(): <T extends IterableContainer<string>>(elements: T) => ReorderedArray<T>
+export function sortNatural<T extends IterableContainer<string>>(elements: T): ReorderedArray<T>
+export function sortNatural(...args: unknown[]) {
+  return args.length === 0 ? _sortNatural : _sortNatural(args[0] as any)
 }
 
 /**

@@ -1,4 +1,4 @@
-import { isString, isTruthy } from 'remeda'
+import { isEmptyish, isString, isTruthy } from 'remeda'
 import type { Tagged } from 'type-fest'
 import { invariant } from '../utils'
 
@@ -8,6 +8,14 @@ export function ProjectId(name: string): ProjectId {
 }
 
 export type MarkdownOrString = { txt: string; md?: never } | { md: string; txt?: never }
+export function MarkdownOrString(
+  value: { txt: string; md?: never } | { md: string; txt?: never } | string,
+): MarkdownOrString {
+  if (typeof value === 'string') {
+    return { txt: value }
+  }
+  return value
+}
 
 /**
  * Converts a MarkdownOrString object or a plain string into a simple string representation.
@@ -45,7 +53,7 @@ export type MarkdownOrString = { txt: string; md?: never } | { md: string; txt?:
 export function flattenMarkdownOrString(value: MarkdownOrString | string): string
 export function flattenMarkdownOrString(value: MarkdownOrString | string | undefined | null): string | null
 export function flattenMarkdownOrString(value: MarkdownOrString | string | undefined | null): string | null {
-  if (value === null || value === undefined) {
+  if (isEmptyish(value)) {
     return null
   }
   const content = isString(value) ? value : value.txt ?? value.md
@@ -59,15 +67,6 @@ export type IconUrl = Icon
 
 /**
  * Full-qualified-name for model elements
- *
- * @param This - Fqn of the element (specific element)
- * @param All - The type of all known FQNs
- *
- * @example
- * ```ts
- * type ElementAFqn = Fqn<'a', 'a' | ' | 'b'>
- *
- * ```
  */
 export type Fqn<Id = string> = Tagged<Id, 'Fqn'>
 export function Fqn(name: string, parent?: Fqn | null): Fqn {

@@ -84,7 +84,7 @@ describe('property-checks', () => {
   })
 
   describe('notes', () => {
-    it('should report invalid notes', async ({ expect }) => {
+    it('should allow notes in view custom properties', async ({ expect }) => {
       const { validate } = createTestServices()
       const { errors } = await validate(`
       specification {
@@ -96,13 +96,16 @@ describe('property-checks', () => {
       }
       views {
         view index {
+          include c2 with {
+            notes "element note"
+          }
           include c2 -> c1 with {
             notes "some notes"
           }
         }
       }
     `)
-      expect(errors).toEqual(['Notes can be defined only inside dynamic view'])
+      expect(errors).to.be.empty
     })
 
     it('should not report notes in dynamic view', async ({ expect }) => {

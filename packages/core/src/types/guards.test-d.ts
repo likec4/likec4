@@ -26,15 +26,15 @@ test('isAnyOf', () => {
 
   // Test with single predicate
   const checkString = isAnyOf(isString)
-  expectTypeOf(checkString).toEqualTypeOf<(value: unknown) => value is string>()
+  expectTypeOf(checkString).toEqualTypeOf<<T>(value: T) => value is T & string>()
 
   // Test with multiple predicates - should return union type
   const checkStringOrNumber = isAnyOf(isString, isNumber)
-  expectTypeOf(checkStringOrNumber).toEqualTypeOf<(value: unknown) => value is string | number>()
+  expectTypeOf(checkStringOrNumber).toEqualTypeOf<<T>(value: T) => value is T & (string | number)>()
 
   // Test with three predicates
   const checkStringOrNumberOrBoolean = isAnyOf(isString, isNumber, isBoolean)
-  expectTypeOf(checkStringOrNumberOrBoolean).toEqualTypeOf<(value: unknown) => value is string | number | boolean>()
+  expectTypeOf(checkStringOrNumberOrBoolean).toEqualTypeOf<<T>(value: T) => value is T & (string | number | boolean)>()
 
   // Test type narrowing behavior
   const unknownValue: unknown = undefined
@@ -53,7 +53,7 @@ test('isAnyOf', () => {
 
   // Test with more complex types
   const checkStringOrObject = isAnyOf(isString, isObject)
-  expectTypeOf(checkStringOrObject).toEqualTypeOf<(value: unknown) => value is string | object>()
+  expectTypeOf(checkStringOrObject).toEqualTypeOf<<T>(value: T) => value is T & (string | object)>()
 
   if (checkStringOrObject(unknownValue)) {
     expectTypeOf(unknownValue).toEqualTypeOf<string | object>()

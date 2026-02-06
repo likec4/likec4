@@ -391,6 +391,17 @@ function applyNodesManualLayout(
         nodeDrifts.add('label-changed')
       }
 
+      if (changed(draft.notes, next.notes)) {
+        if (isNullish(next.notes)) {
+          delete draft.notes
+        } else {
+          draft.notes = patchMarkdownOrString(
+            draft.notes,
+            next.notes,
+          )
+        }
+      }
+
       if (changed(node.notation, next.notation)) {
         draft.notation = next.notation ?? null
       }

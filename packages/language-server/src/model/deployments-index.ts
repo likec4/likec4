@@ -1,20 +1,25 @@
-import { ancestorsFqn, Fqn } from '@likec4/core'
+import { ancestorsFqn, Fqn, isAnyOf } from '@likec4/core'
 import { MultiMap } from '@likec4/core/utils'
-import { isDefined, isTruthy } from 'remeda'
+import { type AstNode, UriUtils } from 'langium'
+import { filter, flatMap, hasAtLeast, isTruthy, pipe } from 'remeda'
 import {
   type AstNodeDescriptionWithFqn,
   type LikeC4LangiumDocument,
   ast,
   ElementOps,
 } from '../ast'
-import { logWarnError } from '../logger'
+import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
 import { readStrictFqn } from '../utils/elementRef'
 import { DocumentFqnIndex, FqnIndex } from './fqn-index'
 
+const _isDeployment = isAnyOf(ast.isDeploymentElement, ast.isExtendDeployment)
+
 export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
   protected Names: LikeC4NameProvider
+
+  protected override logger = logger.getChild('deployments-index')
 
   constructor(protected override services: LikeC4Services) {
     super(services)
@@ -22,7 +27,8 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
   }
 
   protected override createDocumentIndex(document: LikeC4LangiumDocument): DocumentFqnIndex {
-    const rootNodes = document.parseResult.value.deployments.flatMap(m => m.elements)
+    const rootNodes = document.parseResult.value.deployments
+      .flatMap(m => m.elements.filter(_isDeployment))
     if (rootNodes.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
@@ -45,69 +51,75 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
       return desc
     }
 
-    const traverseNode = (
-      node: ast.DeploymentNode | ast.DeployedInstance | ast.ExtendDeployment,
+    function traverseElement(
+      node: ast.DeploymentElement,
       parentFqn: Fqn | null,
-    ): readonly AstNodeDescriptionWithFqn[] => {
-      let thisFqn: Fqn
-      if (ast.isExtendDeployment(node)) {
-        thisFqn = readStrictFqn(node.deploymentNode)
+    ): AstNodeDescriptionWithFqn[] {
+      const name = Names.getName(node)
+      if (!isTruthy(name)) {
+        return []
+      }
+      const thisFqn = Fqn(name, parentFqn)
+      const desc = createAndSaveDescription(node, name, thisFqn)
+      if (!parentFqn) {
+        root.push(desc)
       } else {
-        const name = Names.getName(node)
-        if (!isTruthy(name)) {
-          return []
-        }
-        thisFqn = Fqn(name, parentFqn)
-        const desc = createAndSaveDescription(node, name, thisFqn)
-        if (!parentFqn) {
-          root.push(desc)
-        } else {
-          children.set(parentFqn, desc)
-        }
-
-        if (ast.isDeployedInstance(node)) {
-          return []
-        }
+        children.set(parentFqn, desc)
       }
 
-      let _nested = [] as AstNodeDescriptionWithFqn[]
-      if (isDefined(node.body)) {
-        for (const child of node.body.elements) {
-          if (!ast.isDeploymentRelation(child)) {
-            try {
-              _nested.push(...traverseNode(child, thisFqn))
-            } catch (e) {
-              logWarnError(e)
-            }
-          }
-        }
+      if (ast.isDeployedInstance(node)) {
+        return [desc]
       }
 
-      _nested = [
-        ...children.get(thisFqn) ?? [],
-        ..._nested,
-      ]
-      for (const child of _nested) {
-        descendants.set(thisFqn, child)
+      const nested = filter(
+        node.body?.elements ?? [],
+        _isDeployment,
+      )
+      if (!hasAtLeast(nested, 1)) {
+        return [desc]
       }
-      if (ast.isExtendDeployment(node)) {
-        for (const ancestor of ancestorsFqn(thisFqn)) {
-          for (const child of _nested) {
-            descendants.set(ancestor, child)
-          }
+
+      const traversedNested = nested.flatMap(child => traverseElement(child, thisFqn))
+      for (const descendant of traversedNested) {
+        descendants.set(thisFqn, descendant)
+      }
+
+      return [desc, ...traversedNested]
+    }
+
+    function traverseExtend(el: ast.ExtendDeployment) {
+      const thisFqn = readStrictFqn(el.deploymentNode)
+      const nested = pipe(
+        el.body?.elements ?? [],
+        filter(_isDeployment),
+        flatMap(child => traverseElement(child, thisFqn)),
+      )
+      if (nested.length === 0) {
+        return
+      }
+      for (const ancestor of [thisFqn, ...ancestorsFqn(thisFqn)]) {
+        for (const child of nested) {
+          descendants.set(ancestor, child)
         }
       }
-      return descendants.get(thisFqn) ?? []
     }
 
     for (const node of rootNodes) {
       try {
-        if (ast.isDeploymentRelation(node)) {
+        if (ast.isExtendDeployment(node)) {
+          traverseExtend(node)
           continue
         }
-        traverseNode(node, null)
-      } catch (e) {
-        logWarnError(e)
+        traverseElement(node, null)
+      } catch (error) {
+        this.logger.warn(
+          `Error while traversing element {el} in document {doc}`,
+          {
+            el: node.$type,
+            doc: UriUtils.basename(document.uri),
+            error,
+          },
+        )
       }
     }
     return new DocumentFqnIndex(root, children, descendants, byfqn, projectId)

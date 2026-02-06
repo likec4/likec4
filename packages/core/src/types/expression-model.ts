@@ -78,6 +78,7 @@ export namespace ModelFqnExpr {
       description?: scalar.MarkdownOrString
       technology?: string
       notation?: string
+      notes?: scalar.MarkdownOrString
       shape?: ElementShape
       color?: Color
       icon?: scalar.Icon
@@ -192,13 +193,13 @@ export namespace ModelRelationExpr {
     customRelation: {
       expr: OrWhere<A>
       title?: string
-      description?: string
+      description?: scalar.MarkdownOrString
       technology?: string
       notation?: string
       // Link to dynamic view
       navigateTo?: aux.StrictViewId<A>
       // Notes for walkthrough
-      notes?: string
+      notes?: scalar.MarkdownOrString
       color?: Color
       line?: RelationshipLineType
       head?: RelationshipArrowType

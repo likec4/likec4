@@ -988,6 +988,7 @@ describe('LikeC4ModelBuilder', () => {
         include *,
           system1 with {
             description 'Custom description'
+            notes 'Custom note'
             navigateTo index
             color amber
           }
@@ -1009,6 +1010,7 @@ describe('LikeC4ModelBuilder', () => {
     expect(system1Node).toMatchObject({
       title: 'system1',
       description: { txt: 'Custom description' },
+      notes: { txt: 'Custom note' },
       navigateTo: 'index',
     })
 
@@ -1020,6 +1022,7 @@ describe('LikeC4ModelBuilder', () => {
     system1Node = views['index' as ViewId]!.nodes.find(n => n.id === 'system1')!
     expect(system1Node).toBeDefined()
     expect(system1Node.description).toEqual({ txt: 'Custom description' })
+    expect(system1Node.notes).toEqual({ txt: 'Custom note' })
     expect(system1Node.navigateTo).toEqual('index')
     expect(system1Node.color).toEqual('amber')
 

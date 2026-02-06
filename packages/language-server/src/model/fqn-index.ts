@@ -6,16 +6,23 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { invariant, nonNullable } from '@likec4/core'
-import { type ProjectId, Fqn } from '@likec4/core/types'
-import { ancestorsFqn, compareNatural, DefaultWeakMap, MultiMap, sortNaturalByFqn } from '@likec4/core/utils'
+import { type NonEmptyArray, type ProjectId, Fqn, isAnyOf } from '@likec4/core/types'
+import {
+  ancestorsFqn,
+  compareNatural,
+  DefaultWeakMap,
+  MultiMap,
+  sortNaturalByFqn,
+} from '@likec4/core/utils'
 import {
   type Stream,
   AstUtils,
   DocumentState,
   stream,
+  UriUtils,
   WorkspaceCache,
 } from 'langium'
-import { isDefined, isEmpty, isTruthy } from 'remeda'
+import { filter, flatMap, hasAtLeast, isTruthy, pipe } from 'remeda'
 import {
   type AstNodeDescriptionWithFqn,
   type LikeC4LangiumDocument,
@@ -23,17 +30,22 @@ import {
   ElementOps,
   isLikeC4LangiumDocument,
 } from '../ast'
-import { logWarnError } from '../logger'
+import { isNotLikeC4Builtin } from '../likec4lib'
+import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
 import { readStrictFqn } from '../utils/elementRef'
 import { type LangiumDocuments, ProjectsManager } from '../workspace'
+
+const isIndexableElement = isAnyOf(ast.isElement, ast.isExtendElement)
 
 export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   protected projects: ProjectsManager
   protected langiumDocuments: LangiumDocuments
   protected documentCache: DefaultWeakMap<LikeC4LangiumDocument, DocumentFqnIndex>
   protected workspaceCache: WorkspaceCache<string, AstNodeDescriptionWithFqn[]>
+
+  protected logger = logger.getChild('fqn-index')
 
   constructor(
     protected services: LikeC4Services,
@@ -48,7 +60,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
         DocumentState.IndexedContent,
         (doc) => {
-          if (isLikeC4LangiumDocument(doc)) {
+          if (isLikeC4LangiumDocument(doc) && isNotLikeC4Builtin(doc)) {
             this.documentCache.delete(doc)
           }
         },
@@ -64,7 +76,14 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 
   public get(document: LikeC4LangiumDocument): DocumentFqnIndex {
     if (document.state < DocumentState.IndexedContent) {
-      logWarnError(`Document ${document.uri.path} is not indexed`)
+      this.logger.warn(
+        `document {doc} is in state {state}, expected at least IndexedContent ({expect}). This may lead to incorrect FQN resolution.`,
+        {
+          doc: UriUtils.basename(document.uri),
+          state: document.state,
+          expect: DocumentState.IndexedContent,
+        },
+      )
     }
     return this.documentCache.get(document)
   }
@@ -87,6 +106,13 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     }
     // Document index is not yet created
     const doc = AstUtils.getDocument(el)
+    this.logger.warn(
+      `document {doc} is not yet indexed, creating on the fly to resolve FQN for element {el}`,
+      {
+        el: el.name ?? el.$type,
+        doc: UriUtils.basename(doc.uri),
+      },
+    )
     invariant(isLikeC4LangiumDocument(doc))
     // Ensure the document is indexed
     this.get(doc)
@@ -106,14 +132,13 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   public rootElements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(`${projectId}:rootElements`, () => {
-        const allchildren = this.documents(projectId)
-          .reduce((map, doc) => {
-            this.get(doc).rootElements().forEach(desc => {
-              map.set(desc.name, desc)
-            })
-            return map
-          }, new MultiMap<string, AstNodeDescriptionWithFqn>())
-        return uniqueByName(allchildren)
+        const allroots = new MultiMap<string, AstNodeDescriptionWithFqn>()
+        for (const doc of this.documents(projectId)) {
+          for (const desc of this.get(doc).rootElements()) {
+            allroots.set(desc.name, desc)
+          }
+        }
+        return uniqueByName(allroots)
       }),
     )
   }
@@ -121,13 +146,12 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   public directChildrenOf(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(`${projectId}:directChildrenOf:${parent}`, () => {
-        const allchildren = this.documents(projectId)
-          .reduce((map, doc) => {
-            this.get(doc).children(parent).forEach(desc => {
-              map.set(desc.name, desc)
-            })
-            return map
-          }, new MultiMap<string, AstNodeDescriptionWithFqn>())
+        const allchildren = new MultiMap<string, AstNodeDescriptionWithFqn>()
+        for (const doc of this.documents(projectId)) {
+          for (const desc of this.get(doc).children(parent)) {
+            allchildren.set(desc.name, desc)
+          }
+        }
         return uniqueByName(allchildren)
       }),
     )
@@ -139,21 +163,18 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   public uniqueDescedants(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(`${projectId}:uniqueDescedants:${parent}`, () => {
-        const { children, descendants } = this.documents(projectId)
-          .reduce((map, doc) => {
-            const docIndex = this.get(doc)
-            docIndex.children(parent).forEach(desc => {
-              map.children.set(desc.name, desc)
-            })
-            docIndex.descendants(parent).forEach(desc => {
-              map.descendants.set(desc.name, desc)
-            })
-            return map
-          }, {
-            children: new MultiMap<string, AstNodeDescriptionWithFqn>(),
-            descendants: new MultiMap<string, AstNodeDescriptionWithFqn>(),
-          })
+        const children = new MultiMap<string, AstNodeDescriptionWithFqn>(),
+          descendants = new MultiMap<string, AstNodeDescriptionWithFqn>()
 
+        for (const doc of this.documents(projectId)) {
+          const docIndex = this.get(doc)
+          for (const child of docIndex.children(parent)) {
+            children.set(child.name, child)
+          }
+          for (const desc of docIndex.descendants(parent)) {
+            descendants.set(desc.name, desc)
+          }
+        }
         const uniqueChildren = uniqueByName(children)
 
         const uniqueDescendants = [...descendants.associations()]
@@ -168,7 +189,10 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   }
 
   protected createDocumentIndex(document: LikeC4LangiumDocument): DocumentFqnIndex {
-    const rootElements = document.parseResult.value.models.flatMap(m => m.elements)
+    const rootElements = document.parseResult.value
+      .models
+      .flatMap(m => m.elements.filter(isIndexableElement))
+
     if (rootElements.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
@@ -192,62 +216,61 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       return desc
     }
 
-    const traverseNode = (
-      el: ast.Element | ast.ExtendElement,
-      parentFqn: Fqn | null,
-    ): readonly AstNodeDescriptionWithFqn[] => {
-      let thisFqn: Fqn
-      if (ast.isElement(el)) {
-        thisFqn = Fqn(el.name, parentFqn)
-        const desc = createAndSaveDescription(el, el.name, thisFqn)
-        if (!parentFqn) {
-          root.push(desc)
-        } else {
-          children.set(parentFqn, desc)
-        }
+    function traverseElement(el: ast.Element, parentFqn: Fqn | null): NonEmptyArray<AstNodeDescriptionWithFqn> {
+      const thisFqn = Fqn(el.name, parentFqn)
+      const desc = createAndSaveDescription(el, el.name, thisFqn)
+      if (!parentFqn) {
+        root.push(desc)
       } else {
-        thisFqn = readStrictFqn(el.element)
+        children.set(parentFqn, desc)
       }
 
-      let _nested = [] as AstNodeDescriptionWithFqn[]
-      if (isDefined(el.body) && !isEmpty(el.body.elements)) {
-        for (const child of el.body.elements) {
-          if (!ast.isRelation(child) && !ast.isExtendRelation(child)) {
-            try {
-              _nested.push(...traverseNode(child, thisFqn))
-            } catch (e) {
-              logWarnError(e)
-            }
-          }
-        }
+      const nested = filter(el.body?.elements ?? [], isIndexableElement)
+      if (!hasAtLeast(nested, 1)) {
+        return [desc]
       }
 
-      const directChildren = children.get(thisFqn) ?? []
-      _nested = [
-        ...directChildren,
-        ..._nested,
-      ]
-      for (const child of _nested) {
-        descendants.set(thisFqn, child)
+      const traversedNested = nested.flatMap(child => traverseElement(child, thisFqn))
+      for (const descendant of traversedNested) {
+        descendants.set(thisFqn, descendant)
       }
-      if (ast.isExtendElement(el)) {
-        for (const ancestor of ancestorsFqn(thisFqn)) {
-          for (const child of _nested) {
-            descendants.set(ancestor, child)
-          }
+
+      return [desc, ...traversedNested]
+    }
+
+    function traverseExtendElement(el: ast.ExtendElement) {
+      const thisFqn = readStrictFqn(el.element)
+      const nested = pipe(
+        el.body?.elements ?? [],
+        filter(ast.isElement),
+        flatMap(child => traverseElement(child, thisFqn)),
+      )
+      if (nested.length === 0) {
+        return
+      }
+      for (const ancestor of [thisFqn, ...ancestorsFqn(thisFqn)]) {
+        for (const child of nested) {
+          descendants.set(ancestor, child)
         }
       }
-      return descendants.get(thisFqn) ?? []
     }
 
     for (const node of rootElements) {
       try {
-        if (ast.isRelation(node) || ast.isExtendRelation(node)) {
+        if (ast.isExtendElement(node)) {
+          traverseExtendElement(node)
           continue
         }
-        traverseNode(node, null)
-      } catch (e) {
-        logWarnError(e)
+        traverseElement(node, null)
+      } catch (error) {
+        this.logger.warn(
+          `Error while traversing element {el} in document {doc}`,
+          {
+            el: node.$type,
+            doc: UriUtils.basename(document.uri),
+            error,
+          },
+        )
       }
     }
 

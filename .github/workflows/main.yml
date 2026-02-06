@@ -3,9 +3,9 @@ name: main
 on:
   push:
     branches:
-      - 'main'
+      - "main"
     tags-ignore:
-      - '**'
+      - "**"
 
 permissions:
   id-token: write
@@ -19,15 +19,16 @@ env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
   FORCE_COLOR: true
-  DO_NOT_TRACK: '1'
+  DO_NOT_TRACK: "1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   checks:
     uses: ./.github/workflows/checks.yaml
     secrets: inherit
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}-checks
-      cancel-in-progress: true
 
   release-pr:
     name: prepare release pr
@@ -71,8 +72,8 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          title: 'prepare release'
-          commit: 'chore: prepare next release'
+          title: "prepare release"
+          commit: "chore: prepare next release"
           setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

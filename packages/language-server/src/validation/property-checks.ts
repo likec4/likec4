@@ -48,18 +48,6 @@ export const iconPropertyRuleChecks = (
   }
 }
 
-export const notesPropertyRuleChecks = (
-  _: LikeC4Services,
-): ValidationCheck<ast.NotesProperty> => {
-  return (node, accept) => {
-    if (!AstUtils.hasContainerOfType(node, ast.isDynamicViewStep)) {
-      accept('error', `Notes can be defined only inside dynamic view`, {
-        node,
-      })
-    }
-  }
-}
-
 export const colorLiteralRuleChecks = (_: LikeC4Services): ValidationCheck<ast.ColorLiteral> => {
   return (node, accept) => {
     if (node.$type === 'HexColor') {

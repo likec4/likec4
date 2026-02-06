@@ -87,7 +87,8 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const isValid = this.isValid
       const id = this.resolveFqn(astNode) as unknown as c4.DeploymentFqn
       const kind = nonNullable(astNode.kind.ref, 'DeploymentKind not resolved').name as c4.DeploymentKind
-      const tags = this.convertTags(astNode.body)
+      const tags = this.parseTags(astNode.body) ?? undefined
+      const links = this.parseLinks(astNode.body)
       const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
@@ -103,15 +104,13 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         summary: astNode.summary,
       })
 
-      const links = this.convertLinks(astNode.body)
-
       return exact({
         id,
         kind,
         title: title ?? nameFromFqn(id),
         ...descAndTech,
-        tags: tags ?? undefined,
-        ...(links && isNonEmptyArray(links) && { links }),
+        tags,
+        links,
         style,
         metadata,
       })
@@ -124,7 +123,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       invariant(FqnRef.isModelRef(target) || FqnRef.isImportRef(target), 'Target must be a model reference')
       // const element = FqnRef.toModelFqn(target)
 
-      const tags = this.convertTags(astNode.body)
+      const tags = this.parseTags(astNode.body) ?? undefined
       const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
@@ -140,13 +139,13 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         summary: astNode.summary,
       })
 
-      const links = this.convertLinks(astNode.body)
+      const links = this.parseLinks(astNode.body)
 
       return exact({
         id,
         element: target,
-        tags: tags ?? undefined,
-        ...(links && isNonEmptyArray(links) && { links }),
+        tags,
+        links,
         ...baseProps,
         style,
         metadata,
@@ -154,26 +153,23 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
     }
 
     parseExtendDeployment(astNode: ast.ExtendDeployment): ParsedAstExtend | null {
-      if (!this.isValid(astNode)) {
-        return null
-      }
-      const id = this.resolveFqn(astNode)
       const tags = this.parseTags(astNode.body)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
-      const astPath = this.getAstNodePath(astNode)
-      const links = this.parseLinks(astNode.body) ?? []
+      const links = this.parseLinks(astNode.body)
 
-      if (!tags && isEmpty(metadata ?? {}) && isEmpty(links)) {
+      if (!tags && isEmpty(metadata ?? {}) && !links) {
         return null
       }
 
-      return {
+      const id = this.resolveFqn(astNode)
+      const astPath = this.getAstNodePath(astNode)
+      return exact({
         id,
         astPath,
-        ...(metadata && { metadata }),
+        metadata,
         tags,
-        links: isNonEmptyArray(links) ? links : null,
-      }
+        links,
+      })
     }
 
     _resolveDeploymentRelationSource(node: ast.DeploymentRelation): FqnRef {
@@ -196,7 +192,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const target = this.parseFqnRef(astNode.target)
       invariant(FqnRef.isDeploymentRef(target), 'Invalid target for deployment relation')
 
-      const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
+      const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body) ?? undefined
       const links = this.convertLinks(astNode.body)
       const kind = (astNode.kind ?? astNode.dotKind?.kind)?.ref?.name as (c4.RelationshipKind | undefined)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
@@ -234,8 +230,8 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...titleDescAndTech,
         metadata,
         kind,
-        tags: tags ?? undefined,
-        ...(isNonEmptyArray(links) && { links }),
+        tags,
+        links,
         ...toRelationshipStyle(styleProp?.props, isValid),
         navigateTo,
         astPath,

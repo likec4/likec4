@@ -1,4 +1,4 @@
-import { isEmpty, isNullish, omitBy } from 'remeda'
+import { isEmpty, isEmptyish, isNonNullish, isNullish, omitBy, pickBy } from 'remeda'
 import {
   type AnyAux,
   type ComputedNode,
@@ -31,7 +31,7 @@ export function flattenGroupRules<A extends AnyAux, T extends ModelExpression<A>
 export function applyCustomElementProperties<A extends AnyAux>(
   _rules: ElementViewRule<A>[],
   _nodes: ComputedNode<A>[],
-) {
+): ComputedNode<A>[] {
   const rules = _rules.flatMap(flattenGroupRules(ModelFqnExpr.isCustom))
   if (rules.length === 0) {
     return _nodes
@@ -52,7 +52,6 @@ export function applyCustomElementProperties<A extends AnyAux>(
       padding,
       size,
       textSize,
-      description,
       ...rest
     } = omitBy(props, isNullish)
     const style: ComputedNodeStyle = exact({
@@ -66,8 +65,8 @@ export function applyCustomElementProperties<A extends AnyAux>(
       size,
       textSize,
     })
-    const styleNotEmpty = !isEmpty(style)
-    const propsNotEmpty = !isEmpty(rest)
+    const styleNotEmpty = !isEmptyish(style)
+    const propsNotEmpty = !isEmptyish(rest)
     const satisfies = elementExprToPredicate(expr)
     nodes.forEach((node, i) => {
       if (isGroupElementKind(node) || !satisfies(node)) {
@@ -76,15 +75,8 @@ export function applyCustomElementProperties<A extends AnyAux>(
       if (propsNotEmpty) {
         node = {
           ...node,
-          isCustomized: true,
           ...rest,
-        }
-      }
-      if (description !== undefined) {
-        node = {
-          ...node,
           isCustomized: true,
-          description,
         }
       }
       if (styleNotEmpty) {

@@ -1,5 +1,12 @@
-import { isNullish, omitBy, pick } from 'remeda'
-import { type AnyAux, type ComputedEdge, type ComputedNode, type ElementViewRule, ModelRelationExpr } from '../../types'
+import { isEmptyish, isNullish, omitBy, pick } from 'remeda'
+import {
+  type AnyAux,
+  type ComputedEdge,
+  type ComputedNode,
+  type ElementViewRule,
+  ModelRelationExpr,
+  scalar,
+} from '../../types'
 import { flattenGroupRules } from './applyCustomElementProperties'
 import { relationExpressionToPredicates } from './relationExpressionToPredicates'
 
@@ -24,8 +31,8 @@ export function applyCustomRelationProperties<A extends AnyAux>(
       },
     } of rules
   ) {
-    const description = _description ? { description: { txt: _description } } : {}
-    const notes = _notes ? { notes: { txt: _notes } } : {}
+    const description = _description ? { description: scalar.MarkdownOrString(_description) } : {}
+    const notes = _notes ? { notes: scalar.MarkdownOrString(_notes) } : {}
     const props = omitBy(customprops, isNullish)
     const satisfies = relationExpressionToPredicates(expr)
     edges.forEach((edge, i) => {

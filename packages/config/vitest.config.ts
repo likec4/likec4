@@ -8,6 +8,7 @@ export default defineProject({
     alias: {
       '@likec4/core': resolve(__dirname, '../core/src'),
       '@likec4/log': resolve(__dirname, '../log/src'),
+      '@likec4/style-preset/defaults': resolve(__dirname, '../../styled-system/preset/src/defaults/index.ts'),
     },
   },
   test: {

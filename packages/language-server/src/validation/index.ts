@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import { type Guard, type GuardedBy, isAnyOf } from '@likec4/core/types'
 import { onNextTick } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { type AstNode, DocumentState } from 'langium'
@@ -26,7 +27,6 @@ import { checkImportsFromPoject } from './imports'
 import {
   colorLiteralRuleChecks,
   iconPropertyRuleChecks,
-  notesPropertyRuleChecks,
   opacityPropertyRuleChecks,
 } from './property-checks'
 import { checkRelationBody, extendRelationChecks, relationChecks } from './relation'
@@ -54,15 +54,7 @@ import {
 
 export { LikeC4DocumentValidator } from './DocumentValidator'
 
-type Guard<N extends AstNode> = (n: AstNode) => n is N
-type Guarded<G> = G extends Guard<infer N> ? N : never
-
-function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
-  predicates: Predicates,
-) {
-  return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
-}
-const isValidatableAstNode = validatableAstNodeGuards([
+const isValidatableAstNode = isAnyOf(
   ast.isImportsFromPoject,
   ast.isImported,
   ast.isGlobals,
@@ -119,8 +111,8 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isSpecificationRule,
   ast.isExpressions,
   ast.isColorLiteral,
-])
-type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
+)
+type ValidatableAstNode = GuardedBy<typeof isValidatableAstNode>
 
 const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefined => {
   let nd = node as LikeC4AstNode['$container']
@@ -169,7 +161,6 @@ export function registerValidationChecks(services: LikeC4Services) {
     ExtendRelation: extendRelationChecks(services),
     FqnRefExpr: checkFqnRefExpr(services),
     RelationExpr: checkRelationExpr(services),
-    NotesProperty: notesPropertyRuleChecks(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),
     SpecificationRule: checkSpecificationRule(services),

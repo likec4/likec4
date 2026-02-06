@@ -6,9 +6,9 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type * as c4 from '@likec4/core'
-import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
+import { invariant, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
 import { exact, FqnRef } from '@likec4/core/types'
-import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { filter, first, hasAtLeast, isDefined, isEmpty, isEmptyish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
   type ParsedAstElement,
@@ -37,7 +37,7 @@ function* streamModel(doc: LikeC4LangiumDocument) {
       relations.push(el)
       continue
     }
-    if (el.body && 'elements' in el.body && el.body.elements && el.body.elements.length > 0) {
+    if (el.body?.elements && hasAtLeast(el.body.elements, 1)) {
       for (const child of el.body.elements) {
         traverseStack.push(child)
       }
@@ -107,8 +107,6 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         technology: _technology,
       })
 
-      const links = this.parseLinks(astNode.body)
-
       return exact({
         id,
         kind,
@@ -116,29 +114,30 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         title: title ?? astNode.name,
         metadata,
         tags: tags ?? undefined,
-        ...(links && isNonEmptyArray(links) && { links }),
+        links: this.parseLinks(astNode.body),
         ...descAndTech,
         style,
       })
     }
 
     parseExtendElement(astNode: ast.ExtendElement): ParsedAstExtend | null {
-      const id = this.resolveFqn(astNode)
       const tags = this.parseTags(astNode.body)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
-      const astPath = this.getAstNodePath(astNode)
-      const links = this.parseLinks(astNode.body) ?? []
+      const links = this.parseLinks(astNode.body)
 
-      if (!tags && isEmpty(metadata ?? {}) && isEmpty(links)) {
+      if (!tags && isEmptyish(metadata) && !links) {
         return null
       }
+
+      const astPath = this.getAstNodePath(astNode)
+      const id = this.resolveFqn(astNode)
 
       return exact({
         id,
         astPath,
         metadata,
         tags,
-        links: isNonEmptyArray(links) ? links : null,
+        links,
       })
     }
 
@@ -151,9 +150,9 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const tags = this.parseTags(astNode.body)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
-      const links = this.parseLinks(astNode.body) ?? []
+      const links = this.parseLinks(astNode.body)
 
-      if (!tags && isEmpty(metadata ?? {}) && isEmpty(links)) {
+      if (!tags && isEmpty(metadata ?? {}) && !links) {
         return null
       }
 
@@ -177,7 +176,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         astPath,
         metadata,
         tags,
-        links: isNonEmptyArray(links) ? links : null,
+        links,
       })
     }
 
@@ -206,7 +205,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const target = this.parseFqnRef(astNode.target)
       invariant(FqnRef.isModelRef(target) || FqnRef.isImportRef(target), 'Target must be a model reference')
 
-      const tags = this.parseTags(astNode) ?? this.parseTags(astNode.body)
+      const tags = this.parseTags(astNode) ?? this.parseTags(astNode.body) ?? undefined
       const links = this.parseLinks(astNode.body)
       const kind = (astNode.kind ?? astNode.dotKind?.kind)?.ref?.name as (c4.RelationshipKind | undefined)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
@@ -222,7 +221,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const navigateTo = pipe(
         astNode.body?.props ?? [],
         filter(ast.isRelationNavigateToProperty),
-        map(p => p.value.view.ref?.name),
+        map(p => p.value.view.ref?.name as c4.ViewId),
         filter(isTruthy),
         first(),
       )
@@ -247,9 +246,9 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         title,
         metadata,
         kind,
-        tags: tags ?? undefined,
-        links: isNonEmptyArray(links) ? links : undefined,
-        navigateTo: navigateTo ? navigateTo as c4.ViewId : undefined,
+        tags,
+        links,
+        navigateTo,
         description,
         technology,
         ...toRelationshipStyle(styleProp?.props, isValid),

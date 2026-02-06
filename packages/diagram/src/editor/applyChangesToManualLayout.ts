@@ -1,8 +1,8 @@
 import { invariant, nonNullable } from '@likec4/core'
-import { type VectorValue, BBox, vector } from '@likec4/core/geometry'
+import { type VectorValue, BBox, convertPoint, vector } from '@likec4/core/geometry'
 import * as t from '@likec4/core/types'
 import { castDraft, produce, setAutoFreeze } from 'immer'
-import { isNullish } from 'remeda'
+import { isNullish, map } from 'remeda'
 
 /**
  * Applies changes to a manual layout.
@@ -227,7 +227,7 @@ function makeAsStraightLine(
   const controlPoints = edgeControlPoints(sourceNode, targetNode)
   const labelPos = controlPoints[0]
   return produce(edge, draft => {
-    draft.points = controlPoints.map(p => [p.x, p.y])
+    draft.points = castDraft(map(controlPoints, convertPoint))
     draft.controlPoints = controlPoints
     if (edge.labelBBox) {
       draft.labelBBox!.x = labelPos.x
@@ -261,8 +261,8 @@ function edgeControlPoints(
       .add(sourceCenter)
 
     return [
-      centerOfTopBoundary.add(vector(-loopSize / 2.5, -loopSize)).round().toObject(),
-      centerOfTopBoundary.add(vector(loopSize / 2.5, -loopSize)).round().toObject(),
+      centerOfTopBoundary.add(vector(-loopSize / 2.5, -loopSize)).trunc().toObject(),
+      centerOfTopBoundary.add(vector(loopSize / 2.5, -loopSize)).trunc().toObject(),
     ]
   }
 
@@ -273,7 +273,7 @@ function edgeControlPoints(
   const sourceToTarget = targetBorderPoint.subtract(sourceBorderPoint)
 
   return [
-    sourceBorderPoint.add(sourceToTarget.multiply(0.4)).round().toObject(),
-    sourceBorderPoint.add(sourceToTarget.multiply(0.6)).round().toObject(),
+    sourceBorderPoint.add(sourceToTarget.multiply(0.4)).trunc().toObject(),
+    sourceBorderPoint.add(sourceToTarget.multiply(0.6)).trunc().toObject(),
   ]
 }

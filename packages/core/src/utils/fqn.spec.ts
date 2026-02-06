@@ -35,7 +35,10 @@ describe('fqn utils', () => {
     it('should return empty array if no parent', () => {
       expect(ancestorsFqn('a')).toEqual([])
     })
-    it('should return ancestors', () => {
+    it('should return ancestors if one parent', () => {
+      expect(ancestorsFqn('a.b')).toEqual(['a'])
+    })
+    it('should return all ancestors', () => {
       expect(ancestorsFqn('a.b.c.d.e')).toEqual(['a.b.c.d', 'a.b.c', 'a.b', 'a'])
     })
   })

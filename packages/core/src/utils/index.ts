@@ -10,7 +10,12 @@ export {
 export { invariant, nonexhaustive, nonNullable } from './invariant'
 
 export { commonHead } from './common-head'
-export { compareNatural, compareNaturalHierarchically } from './compare-natural'
+export {
+  compareNatural,
+  compareNaturalHierarchically,
+  sortNatural,
+} from './compare-natural'
+
 export {
   ancestorsFqn,
   commonAncestor,
@@ -30,12 +35,11 @@ export {
 
 export { getOrCreate } from './getOrCreate'
 
+// Re-export for backwards compatibility
 export {
-  hasProp,
-  isAnyOf,
   isNonEmptyArray,
   isString,
-} from './guards'
+} from '../types/guards'
 
 export {
   ifilter,

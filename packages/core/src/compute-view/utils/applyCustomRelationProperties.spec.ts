@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { ComputedEdge, ComputedNode, ElementViewRule, ViewId } from '../../types'
 import type { RelationExpr } from '../../types/expression'
-import { $include, $inout, $where } from '../element-view/__test__/fixture'
+import { type CustomProps, $include, $inout, $where } from '../element-view/__test__/fixture'
 import { applyCustomRelationProperties } from './applyCustomRelationProperties'
 
 type CustomRelationProperties = Omit<RelationExpr.Custom['customRelation'], 'expr'>
@@ -27,8 +27,8 @@ describe('applyRelationCustomProperties', () => {
   it('applies custom properties', () => {
     const nodes = [nd('1'), nd('support')]
     const edge = e('1:support')
-    const propsToOverride: CustomRelationProperties = {
-      description: 'some description',
+    const propsToOverride: CustomProps['with'] = {
+      description: { txt: 'some description' },
       technology: 'some technology',
 
       notation: 'some notation',
@@ -48,7 +48,6 @@ describe('applyRelationCustomProperties', () => {
       {
         ...edge,
         ...propsToOverride,
-        description: { txt: propsToOverride.description },
         notes: { txt: propsToOverride.notes },
         isCustomized: true,
         label: undefined,

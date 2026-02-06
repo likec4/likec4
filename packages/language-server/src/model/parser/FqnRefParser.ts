@@ -94,16 +94,24 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             }
             return acc
           }
+          if (ast.isNotesProperty(prop)) {
+            const value = this.parseMarkdownOrString(prop.value)
+            if (value) {
+              acc.custom[prop.key] = value
+            }
+            return acc
+          }
           if (ast.isElementStringProperty(prop)) {
-            if (isDefined(prop.value) && prop.key !== 'summary') {
-              if (prop.key === 'description') {
-                const parsed = this.parseMarkdownOrString(prop.value)
-                if (parsed) {
-                  acc.custom['description'] = parsed
-                }
-              } else {
-                acc.custom[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) || ''
+            if (prop.key === 'description' || prop.key === 'summary') {
+              const parsed = this.parseMarkdownOrString(prop.value)
+              if (parsed) {
+                acc.custom['description'] = parsed
               }
+              return acc
+            }
+            const parsed = removeIndent(parseMarkdownAsString(prop.value))
+            if (parsed) {
+              acc.custom[prop.key] = parsed
             }
             return acc
           }
@@ -316,8 +324,22 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       const props = custom?.props ?? []
       return props.reduce(
         (acc, prop) => {
-          if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
-            const value = isTruthy(prop.value) ? removeIndent(parseMarkdownAsString(prop.value)) : undefined
+          if (ast.isNotesProperty(prop)) {
+            const value = this.parseMarkdownOrString(prop.value)
+            if (value) {
+              acc[prop.key] = value
+            }
+            return acc
+          }
+          if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop)) {
+            if (prop.key === 'description') {
+              const parsed = this.parseMarkdownOrString(prop.value)
+              if (parsed) {
+                acc['description'] = parsed
+              }
+              return acc
+            }
+            const value = removeIndent(parseMarkdownAsString(prop.value))
             if (value) {
               acc[prop.key] = value
             }
@@ -429,7 +451,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         return null
       }
       if (!kind.ref) {
-        this.logError(`Kind "${astNode.$cstNode?.text}" is not resolved`, astNode, 'fqnref')
+        this.logError(`RelationshipKind "${kind.$refText}" is not resolved`, astNode, 'fqnref')
         return null
       }
       return { kind: { eq: kind.ref?.name } }

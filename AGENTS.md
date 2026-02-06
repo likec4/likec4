@@ -7,20 +7,20 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 - Monorepo managed by `pnpm` workspaces and `turbo`.
 - `apps/` contains user-facing apps (notably `apps/docs` and `apps/playground`).
 - `packages/` holds:
-  - `./likec4/` - CLI, Vite plugin, static site generator (main entry point)
-  - `./core/` - Core and model types, model builder, compute-view, layout drifts detection logic
-  - `./language-server/` - Langium-based DSL parser and language services (LSP)
-  - `./diagram/` - React/ReactFlow diagram renderer
-  - `./layouts/` - Graphviz-based layout algorithms
-  - `./generators/` - Export to Mermaid, PlantUML, D2, etc.
-  - `./vscode/` - VSCode extension
-  - `./vscode-preview/` - Preview panel component for VSCode
-  - `./config/` - Configuration schema and validation
-  - `./icons/` - Icon bundle (never change, unless you are asked to, package is script-generated)
-  - `./log/` - Shared logging utilities
-  - `./mcp/` - MCP Server as separate package
-  - `./tsconfig/` - Shared TypeScript configuration
-  - `./create-likec4/` - Not used for now
+  - `likec4/` - CLI, Vite plugin, static site generator (main entry point)
+  - `core/` - Core and model types, model builder, compute-view, layout drifts detection logic
+  - `language-server/` - Langium-based DSL parser and language services (LSP)
+  - `diagram/` - React/ReactFlow diagram renderer
+  - `layouts/` - Graphviz-based layout algorithms
+  - `generators/` - Export to Mermaid, PlantUML, D2, etc.
+  - `vscode/` - VSCode extension
+  - `vscode-preview/` - Preview panel component for VSCode
+  - `config/` - Configuration schema and validation
+  - `icons/` - Icon bundle (never change, unless you are asked to, package is script-generated)
+  - `log/` - Shared logging utilities
+  - `mcp/` - MCP Server as separate package
+  - `tsconfig/` - Shared TypeScript configuration
+  - `create-likec4/` - Not used for now
 - `e2e/` is an isolated workspace for Playwright end-to-end tests.
 - `styled-system/preset` holds PandaCSS preset.
 - `styled-system/styles` holds `pandacss codegen` results, shared across packages.
@@ -34,7 +34,6 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 - `pnpm build` builds packages (excludes docs/playground).
 - `pnpm typecheck` validates typescript, always run after `pnpm generate`.
 - `pnpm test` runs Vitest suites; (you can run `pnpm test --no-typecheck`)
-- `pnpm lint` (oxlint) and `pnpm fmt` (dprint) enforce style and formatting.
 
 ## Generated Files
 
@@ -43,8 +42,11 @@ Several packages have auto-generated files that MUST be generated before:
 - `packages/language-server/src/generated/*` - Langium parser (from grammar)
 - `packages/language-server/src/generated-lib/*` - Registry of bundled icons
 - `packages/vscode/src/meta.ts` - VSCode extension metadata
-- `packages/likec4/app/src/routeTree.gen.ts` - TanStack Router routes
+- `**/routeTree.gen.ts` - TanStack Router routes
 - `styled-system/preset/src/generated.ts` - Panda CSS preset
+- `styled-system/styles/dist/` - Panda CSS generated styles
+
+DO NOT edit files that are git-ignored - they are generated and your changes will be overwritten.
 
 Always run `pnpm generate` after:
 
@@ -59,16 +61,17 @@ Always run `pnpm generate` after:
 - Avoid using `any`.
 - Formatting is handled by `dprint` (120-column lines, single quotes, no semicolons).
 - Use `oxlint` for linting; keep imports sorted and type-only imports grouped first.
-- Test files are named `*.spec.ts`; may use `__tests__` folders.
 - Use JSDoc to document public classes and methods.
 - Favor switch(true) over if-else chains.
 - Use Context7 MCP tools.
 
 ## Testing Guidelines
 
-- Unit/integration tests use `vitest` and live alongside source modules.
+- Unit/integration tests use `vitest`;
+- Test files are named `*.spec.ts` and live alongside sources; may use `__tests__` folders.
 - Snapshots are stored in `__snapshots__` folders; update deliberately when behavior changes.
 - Aim to cover new features with relevant tests; keep test names descriptive.
+- Always run tests before committing.
 
 ## Commit & Pull Request Guidelines
 

@@ -495,6 +495,7 @@ CustomElementProperties: '{'
     NavigateToProperty |
     ElementStringProperty |
     NotationProperty |
+    NotesProperty |
     StyleProperty
   )*
 '}'

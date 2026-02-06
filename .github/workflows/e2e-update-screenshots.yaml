@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       create-pull-request:
-        description: 'Create pull request?'
+        description: "Create pull request?"
         type: boolean
         required: true
         default: true
 
 env:
   NODE_ENV: production
-  CLOUDFLARE_ENV: 'production'
+  CLOUDFLARE_ENV: "production"
   FORCE_COLOR: true
-  DO_NOT_TRACK: '1'
+  DO_NOT_TRACK: "1"
 
 permissions:
   pull-requests: write
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           token: ${{ steps.app-token.outputs.token }}
-          ssh-strict: 'no'
+          ssh-strict: "no"
 
       - name: Get GitHub App User ID
         id: get-user-id
@@ -83,21 +83,21 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.app-token.outputs.token }}
-          commit-message: 'chore: update e2e screenshots'
-          title: 'chore: update e2e screenshots'
+          commit-message: "chore: update e2e screenshots"
+          title: "chore: update e2e screenshots"
           branch: update-screenshots/${{ github.ref_name }}
-          add-paths: 'e2e/tests/**'
+          add-paths: "e2e/tests/**"
           delete-branch: true
 
-      # - name: enable automerge
-      #   if: ${{ inputs.create-pull-request && steps.cpr.outputs.pull-request-number }}
-      #   run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}" || true
-      #   env:
-      #     GH_TOKEN: ${{ steps.bot-token.outputs.token }}
+      - name: enable automerge
+        if: ${{ inputs.create-pull-request && steps.cpr.outputs.pull-request-number }}
+        run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: commit updates
         if: ${{ !inputs.create-pull-request }}
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: 'chore: update e2e screenshots'
-          file_pattern: 'e2e/tests/'
+          commit_message: "chore: update e2e screenshots"
+          file_pattern: "e2e/tests/"
