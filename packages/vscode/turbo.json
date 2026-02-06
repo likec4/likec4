@@ -19,6 +19,7 @@
         "generate",
         "@likec4/language-server#generate",
         "@likec4/config#generate",
+        "@likec4/styles#generate",
         "sources",
         "@likec4/vscode-preview#build"
       ],

@@ -41,8 +41,8 @@ catalogs:
     starlight-links-validator: ^0.19.2
     starlight-package-managers: ^0.12.0
   cloudflare:
-    '@cloudflare/vite-plugin': ~1.21.2
-    wrangler: ~4.60.0
+    '@cloudflare/vite-plugin': ~1.23.1
+    wrangler: ~4.63.0
   css:
     '@pandacss/dev': ^1.8.1
     '@pandacss/preset-panda': ^1.8.1
@@ -66,23 +66,24 @@ catalogs:
     type-fest: ^4.41.0
     zod: ^3.25.76
   hono:
+    '@hono/mcp': ^0.2.3
     '@hono/node-server': ^1.19.9
     '@hono/oauth-providers': ^0.8.5
     '@hono/zod-validator': ^0.7.6
-    hono: ^4.11.6
+    hono: ^4.11.8
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    '@mantine/colors-generator': 8.3.13
-    '@mantine/core': 8.3.13
-    '@mantine/hooks': 8.3.13
-    '@mantine/modals': 8.3.13
-    '@mantine/notifications': 8.3.13
-    '@mantine/vanilla-extract': 8.3.13
+    '@mantine/colors-generator': 8.3.14
+    '@mantine/core': 8.3.14
+    '@mantine/hooks': 8.3.14
+    '@mantine/modals': 8.3.14
+    '@mantine/notifications': 8.3.14
+    '@mantine/vanilla-extract': 8.3.14
   mcp:
-    '@modelcontextprotocol/sdk': ^1.25.3
+    '@modelcontextprotocol/sdk': ^1.26.0
   obuild:
     '@rolldown/plugin-node-polyfills': ^1.0.0
     obuild: ^0.4.20

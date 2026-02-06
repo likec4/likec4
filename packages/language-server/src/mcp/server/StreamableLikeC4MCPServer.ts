@@ -1,12 +1,11 @@
+import { MemoryEventStore, StreamableHTTPTransport } from '@hono/mcp'
 import type { HttpBindings, ServerType } from '@hono/node-server'
 import { serve } from '@hono/node-server'
 import { loggable } from '@likec4/log'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import type { AsyncDisposable } from 'langium'
-import { nanoid } from 'nanoid'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer, LikeC4MCPServerFactory } from '../types'
 import { logger } from '../utils'
@@ -16,10 +15,6 @@ type Bindings = HttpBindings & {
 }
 
 async function createHonoApp(factory: LikeC4MCPServerFactory) {
-  const mcp = factory.create()
-  const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: () => nanoid(),
-  })
   const app = new Hono<{ Bindings: Bindings }>()
 
   // Enable CORS for all origins
@@ -35,8 +30,22 @@ async function createHonoApp(factory: LikeC4MCPServerFactory) {
   // Health check endpoint
   app.get('/health', c => c.json({ status: 'ok' }))
 
+  const mcpServer = factory.create()
+
+  // Initialize the transport
+  const transport = new StreamableHTTPTransport({
+    eventStore: new MemoryEventStore({}),
+  })
+
   // MCP endpoint
-  app.all('/mcp', c => transport.handleRequest(c.req.raw))
+  app.all('/mcp', async c => {
+    if (!mcpServer.isConnected()) {
+      // Connect the mcp with the transport
+      await mcpServer.connect(transport)
+    }
+
+    return await transport.handleRequest(c)
+  })
 
   app.notFound((c) => {
     logger.debug(`${c.req.method} ${c.req.url} not found`)
@@ -67,9 +76,6 @@ async function createHonoApp(factory: LikeC4MCPServerFactory) {
       { status: 500 },
     )
   })
-
-  await mcp.connect(transport)
-
   return app
 }
 
