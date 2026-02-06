@@ -1,5 +1,14 @@
 import type { AdhocViewPredicate } from '@likec4/core/compute-view'
-import type { Fqn, LayoutedElementView, ModelExpression } from '@likec4/core/types'
+import {
+  type Fqn,
+  type FqnRef,
+  type LayoutedElementView,
+  type ModelExpression,
+  type ModelFqnExpr,
+  isViewRulePredicate,
+} from '@likec4/core/types'
+import { difference, intersection, toSet } from '@likec4/core/utils'
+import { filter, isNonNullish, map, pipe } from 'remeda'
 import { setup } from 'xstate'
 import type { PromiseActorLogic } from 'xstate/actors'
 
@@ -20,7 +29,7 @@ export type Input = {}
 
 export type AdhocRule = {
   id: string
-  expr: ModelExpression
+  expr: ModelFqnExpr.Ref
   enabled: boolean
   type: 'include' | 'exclude'
 }
@@ -35,11 +44,14 @@ export interface Context {
   rules: AdhocRule[]
 }
 
-export type EmittedEvents = { type: 'navigate.to' }
+export type EmittedEvents =
+  | { type: 'navigate.to' }
+  | { type: 'view.update' }
+  | { type: 'click.element'; id: Fqn }
 
 export type Events =
-  | { type: 'include.element'; model: Fqn }
-  | { type: 'exclude.element'; model: Fqn }
+  | { type: 'toggle.element'; id: Fqn }
+  | { type: 'click.element'; id: Fqn }
   | { type: 'toggle.rule'; ruleId: string }
   | { type: 'delete.rule'; ruleId: string }
   | { type: 'select.open' }
@@ -64,3 +76,11 @@ export const machine = setup({
     hasView: ({ context }) => context.view !== null,
   },
 })
+
+export function createContext(): Context {
+  return {
+    view: null,
+    error: undefined,
+    rules: [],
+  }
+}

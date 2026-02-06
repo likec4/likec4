@@ -1,10 +1,11 @@
 import { type LayoutedElementView, type ViewId, nonNullable } from '@likec4/core'
-import type { ElementModel } from '@likec4/core/model'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { useContext, useMemo } from 'react'
-import type { AdhocEditorSnapshot } from './actor'
-import { AdhocEditorActorContext } from './ActorProvider'
+import { createContext, useContext, useMemo } from 'react'
+import type { AdhocEditorActorRef, AdhocEditorSnapshot } from './state/actor'
+
+const AdhocEditorActorContext = createContext<AdhocEditorActorRef | null>(null)
+export const AdhocEditorActorContextProvider = AdhocEditorActorContext.Provider
 
 export function useAdhocEditorActor() {
   return nonNullable(useContext(AdhocEditorActorContext), 'No AdhocEditorActorContext')
@@ -16,7 +17,7 @@ export function useAdhocEditor() {
     open: () => actorRef.send({ type: 'select.open' }),
     close: () => actorRef.send({ type: 'select.close' }),
     toggleRule: (ruleId: string) => actorRef.send({ type: 'toggle.rule', ruleId }),
-    include: (element: ElementModel) => actorRef.send({ type: 'include.element', model: element.id }),
+    // include: (element: ElementModel) => actorRef.send({ type: 'include.element', model: element.id }),
   }), [actorRef])
 }
 

@@ -1,22 +1,21 @@
 import type {
   ActorRef,
   SnapshotFrom,
+  StateMachine,
 } from 'xstate'
 import { editor } from './actor.editor'
 import { layouter } from './actor.layouter'
 import {
+  type Context,
   type EmittedEvents,
   type Events,
+  createContext,
   machine,
 } from './actor.types'
 
 const _adhocEditorLogic = machine.createMachine({
   id: 'adhoc-editor',
-  context: () => ({
-    view: null,
-    error: undefined,
-    rules: [],
-  }),
+  context: createContext,
   type: 'parallel',
   states: {
     layouter,
@@ -24,8 +23,28 @@ const _adhocEditorLogic = machine.createMachine({
   },
 })
 
-type Infer = typeof _adhocEditorLogic
-export interface AdhocEditorLogic extends Infer {}
+export interface AdhocEditorLogic extends
+  StateMachine<
+    Context,
+    Events,
+    any,
+    any,
+    any,
+    any,
+    any,
+    {
+      layouter: keyof typeof layouter['states']
+      editor: keyof typeof editor['states']
+    },
+    any,
+    any,
+    EmittedEvents,
+    any,
+    any,
+    any
+  >
+{
+}
 
 export const adhocEditorLogic: AdhocEditorLogic = _adhocEditorLogic as any
 

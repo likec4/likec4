@@ -25,7 +25,7 @@ export namespace ModelFqnExpr {
     return 'wildcard' in expr && expr.wildcard === true
   }
 
-  export interface Ref<M extends AnyAux> {
+  export interface Ref<M extends AnyAux = AnyAux> {
     ref: FqnRef.ModelRef<M>
     selector?: PredicateSelector
   }

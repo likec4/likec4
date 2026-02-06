@@ -3,6 +3,7 @@ import { objectHash } from '@likec4/core/utils'
 import { filter, map, piped } from 'remeda'
 import {
   assign,
+  emit,
   log,
 } from 'xstate'
 import {
@@ -27,6 +28,8 @@ const idle = machine.createStateConfig({
   },
 })
 
+export const emitViewUpdate = () => machine.emit({ type: 'view.update' })
+
 const selectEnabled = piped(
   filter(rule => rule.enabled),
   map(ruleToPredicate),
@@ -42,17 +45,20 @@ const call = machine.createStateConfig({
       predicates: selectEnabled(context.rules),
     }),
     onDone: {
-      actions: assign({
-        view: ({ context, event }) => {
-          const id = objectHash(selectEnabled(context.rules)) as ViewId
-          return ({
-            ...event.output.view,
-            hash: id,
-            id,
-          })
-        },
-        error: undefined,
-      }),
+      actions: [
+        assign({
+          view: ({ context, event }) => {
+            const id = objectHash(selectEnabled(context.rules)) as ViewId
+            return ({
+              ...event.output.view,
+              hash: id,
+              id,
+            })
+          },
+          error: undefined,
+        }),
+        emit({ type: 'view.update' }),
+      ],
       ...to.idle,
     },
     onError: {

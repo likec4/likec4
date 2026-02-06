@@ -6,7 +6,7 @@ import { ActionIcon } from '@mantine/core'
 import { IconCirclePlus, IconTrash } from '@tabler/icons-react'
 import { AnimatePresence, LayoutGroup, m } from 'motion/react'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
-import type { AdhocRule } from '../actor.types'
+import type { AdhocRule } from '../state/actor.types'
 
 export function ViewRulesPanel({
   rules,
