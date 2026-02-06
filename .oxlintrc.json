@@ -41,12 +41,7 @@
     //     "prefer-top-level": true
     //   }
     // ],
-    "import/first": [
-      "warn",
-      {
-        "absolute-first": true
-      }
-    ],
+    "import/first": "warn",
     "no-restricted-imports": [
       "error",
       {

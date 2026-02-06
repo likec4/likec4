@@ -37,6 +37,8 @@ jobs:
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
+      # TODO: Here it says to run lint after typecheck
+      # https://oxc.rs/docs/guide/usage/linter/type-aware.html#monorepos-and-build-outputs
       - name: 🧹 lint
         run: pnpm ci:lint
 
