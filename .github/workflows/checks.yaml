@@ -27,16 +27,6 @@ jobs:
         working-directory: packages/core
         run: pnpm test --typecheck
 
-  check-lint:
-    name: 🧹 lint
-    timeout-minutes: 5
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
       # TODO: Here it says to run lint after typecheck
       # https://oxc.rs/docs/guide/usage/linter/type-aware.html#monorepos-and-build-outputs
       - name: 🧹 lint
@@ -275,7 +265,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     needs:
       - check-types
-      - check-lint
       - check-build
       - check-on-windows
       - check-tests
