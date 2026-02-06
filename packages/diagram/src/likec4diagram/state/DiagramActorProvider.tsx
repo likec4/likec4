@@ -1,24 +1,25 @@
-import type { DiagramView, DynamicViewDisplayVariant, ViewId, WhereOperator } from '@likec4/core/types'
-import { useActorRef, useSelector } from '@xstate/react'
+import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
+import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
-import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo, useEffect, useRef, useState } from 'react'
 import { isNullish } from 'remeda'
 import { ErrorBoundary } from '../../components/ErrorFallback'
-import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
-import { type EnabledFeatures, DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
-import { CurrentViewModelContextProvider } from '../../context/LikeC4ModelContext'
+import { useDiagramEventHandlersRef } from '../../context/DiagramEventHandlers'
+import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
 import { DiagramActorContextProvider, DiagramApiContextProvider } from '../../hooks/safeContext'
-import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
-import { useOptionalLikeC4Model } from '../../hooks/useLikeC4Model'
+import {
+  selectDiagramActorContext,
+  useDiagram,
+  useDiagramSnapshot,
+  useOnDiagramEvent,
+} from '../../hooks/useDiagram'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
 import { makeDiagramApi } from './diagram-api'
 import { diagramMachine } from './machine'
 import { DiagramToggledFeaturesPersistence } from './persistence'
-import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
 export function DiagramActorProvider({
   id,
@@ -120,22 +121,17 @@ export function DiagramActorProvider({
     <DiagramActorContextProvider value={actor}>
       <DiagramApiContextProvider value={api}>
         <ErrorBoundary>
-          <CurrentViewModelProvider actorRef={actor}>
+          <ToggledFeatures>
             {children}
-          </CurrentViewModelProvider>
+          </ToggledFeatures>
         </ErrorBoundary>
-        <DiagramActorEventListener />
+        <PropagateDiagramActorEvents />
       </DiagramApiContextProvider>
     </DiagramActorContextProvider>
   )
 }
 
-const selectFromActor = (
-  { context }: DiagramActorSnapshot,
-): {
-  toggledFeatures: Partial<EnabledFeatures>
-  viewId: ViewId
-} => {
+const selectToggledFeatures = selectDiagramActorContext(context => {
   let toggledFeatures = context.toggledFeatures
 
   const hasDrifts = context.view.drifts != null && context.view.drifts.length > 0
@@ -165,71 +161,43 @@ const selectFromActor = (
     }
   }
 
-  return {
-    toggledFeatures,
-    viewId: context.view.id,
-  }
-}
-const compareSelected = <T extends ReturnType<typeof selectFromActor>>(a: T, b: T): boolean => {
-  return a.viewId === b.viewId &&
-    shallowEqual(a.toggledFeatures, b.toggledFeatures)
-}
+  return toggledFeatures
+})
 
-function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ actorRef: DiagramActorRef }>) {
-  {/* Important - we use "viewId" from actor context, not from props */}
-  const { viewId, toggledFeatures } = useSelector(
-    actorRef,
-    selectFromActor,
-    compareSelected,
-  )
-  const likec4model = useOptionalLikeC4Model()
-  const viewmodel = likec4model?.findView(viewId) ?? null
+function ToggledFeatures({ children }: PropsWithChildren) {
+  const toggledFeatures = useDiagramSnapshot(selectToggledFeatures)
+  useUpdateEffect(() => {
+    DiagramToggledFeaturesPersistence.write(toggledFeatures)
+  }, [toggledFeatures])
   return (
-    <CurrentViewModelContextProvider value={viewmodel}>
-      <DiagramFeatures overrides={toggledFeatures}>
-        {children}
-      </DiagramFeatures>
-    </CurrentViewModelContextProvider>
+    <DiagramFeatures overrides={toggledFeatures}>
+      {children}
+    </DiagramFeatures>
   )
 }
 
-const DiagramActorEventListener = memo(() => {
+const PropagateDiagramActorEvents = memo(() => {
   const diagram = useDiagram()
 
-  const {
-    onNavigateTo,
-    onOpenSource,
-    // onChange,
-    onLayoutTypeChange,
-    handlersRef,
-  } = useDiagramEventHandlers()
+  const handlers = useDiagramEventHandlersRef()
 
-  useOnDiagramEvent('openSource', ({ params }) => onOpenSource?.(params))
-  useOnDiagramEvent('navigateTo', ({ viewId }) => onNavigateTo?.(viewId))
-  // useOnDiagramEvent('onChange', ({ change }) => onChange?.({ change }))
+  useOnDiagramEvent('openSource', ({ params }) => handlers.current.onOpenSource?.(params))
+  useOnDiagramEvent('navigateTo', ({ viewId }) => handlers.current.onNavigateTo?.(viewId))
+  // useOnDiagramEvent('onChange', ({ change }) => handlers.current.onChange?.({ change }))
   useOnDiagramEvent('onLayoutTypeChange', ({ layoutType }) => {
-    onLayoutTypeChange?.(layoutType)
+    handlers.current.onLayoutTypeChange?.(layoutType)
   })
   useOnDiagramEvent(
     'initialized',
     ({ instance: xyflow }) => {
       try {
-        handlersRef.current.onInitialized?.({ diagram, xyflow })
+        handlers.current.onInitialized?.({ diagram, xyflow })
       } catch (error) {
         console.error(error)
       }
     },
     { once: true },
   )
-
-  const toggledFeatures = useDiagramContext(
-    (ctx) => ctx.toggledFeatures,
-    shallowEqual,
-  )
-
-  useUpdateEffect(() => {
-    DiagramToggledFeaturesPersistence.write(toggledFeatures)
-  }, [toggledFeatures])
 
   return null
 })

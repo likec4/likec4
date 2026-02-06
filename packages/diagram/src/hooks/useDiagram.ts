@@ -15,12 +15,30 @@ export { useDiagram, useDiagramActorRef }
 
 export type { DiagramApi, DiagramContext }
 
-export function useDiagramActorSnapshot<T = unknown>(
+/**
+ * Helper to create a selector for diagram actor snapshot
+ */
+export function selectDiagramActor<T = unknown>(
+  selector: (state: DiagramActorSnapshot) => T,
+): (state: DiagramActorSnapshot) => T {
+  return selector
+}
+
+export function useDiagramSnapshot<T = unknown>(
   selector: (state: DiagramActorSnapshot) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
 ): T {
   const actorRef = useDiagramActorRef()
   return useXstateSelector(actorRef, selector, compare)
+}
+
+/**
+ * Helper to create a selector for diagram actor snapshot
+ */
+export function selectDiagramActorContext<T = unknown>(
+  selector: (state: DiagramContext) => T,
+): (state: DiagramActorSnapshot) => T {
+  return (state: DiagramActorSnapshot) => selector(state.context)
 }
 
 /**

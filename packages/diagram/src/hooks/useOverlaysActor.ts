@@ -1,11 +1,10 @@
-import type { DiagramActorSnapshot } from '../likec4diagram/state/types'
 import type { OverlaysActorRef } from '../overlays/overlaysActor'
-import { useDiagramActorSnapshot } from './useDiagram'
+import { selectDiagramActor, useDiagramSnapshot } from './useDiagram'
 
-const select = (s: DiagramActorSnapshot) => {
+const select = selectDiagramActor(s => {
   return s.children.overlays
-}
+})
 
 export function useOverlaysActorRef(): OverlaysActorRef {
-  return useDiagramActorSnapshot(select, Object.is)!
+  return useDiagramSnapshot(select, Object.is)!
 }

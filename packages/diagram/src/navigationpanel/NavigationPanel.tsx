@@ -45,7 +45,7 @@ export const NavigationPanel = memo(() => {
 
   useEffect(() => {
     actorRef.send({ type: 'update.inputs', inputs: { viewModel, view } })
-  }, [viewModel, view])
+  }, [actorRef, viewModel, view])
 
   return (
     <VStack

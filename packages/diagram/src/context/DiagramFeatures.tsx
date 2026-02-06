@@ -2,6 +2,7 @@ import type { ExclusiveUnion } from '@likec4/core/types'
 import { type PropsWithChildren, createContext, useContext, useEffect } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { useSetState } from '../hooks/useSetState'
+import { useUpdateEffect } from '../hooks/useUpdateEffect'
 
 const FeatureNames = [
   'Controls',
@@ -79,7 +80,7 @@ export function DiagramFeatures({
     ...overrides,
   }))
 
-  useEffect(
+  useUpdateEffect(
     () => {
       setScope({
         ...outerScope,

@@ -18,7 +18,7 @@ export {
 export function useCurrentViewModel(): CurrentViewModel {
   const vm = useOptionalCurrentViewModel()
   if (!vm) {
-    throw new Error('No LikeC4ViewModel in context found')
+    throw new Error('No CurrentViewModelContext found')
   }
   return vm
 }

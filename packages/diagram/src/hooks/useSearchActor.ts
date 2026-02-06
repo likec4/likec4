@@ -1,11 +1,10 @@
-import type { DiagramActorSnapshot } from '../likec4diagram/state/types'
 import type { SearchActorRef } from '../search/searchActor'
-import { useDiagramActorSnapshot } from './useDiagram'
+import { selectDiagramActor, useDiagramSnapshot } from './useDiagram'
 
-const select = (s: DiagramActorSnapshot) => {
+const select = selectDiagramActor(s => {
   return s.children.search ?? null
-}
+})
 
 export function useSearchActorRef(): SearchActorRef | null {
-  return useDiagramActorSnapshot(select, Object.is)
+  return useDiagramSnapshot(select, Object.is)
 }

@@ -9,11 +9,12 @@ const LikeC4ModelContext = createContext<LikeC4Model<any> | null>(null)
 export const LikeC4ModelContextProvider = LikeC4ModelContext.Provider
 
 export type CurrentViewModel = LikeC4ViewModel<UnknownLayouted, LayoutedView<UnknownLayouted>>
-const CurrentViewModelContext = createContext<CurrentViewModel | null>(null)
-export const CurrentViewModelContextProvider = CurrentViewModelContext.Provider
+
+const CurrentViewModelCtx = createContext<CurrentViewModel | null>(null)
+export const CurrentViewModelContext = CurrentViewModelCtx.Provider
 
 export function EnsureCurrentViewModel({ children }: PropsWithChildren) {
-  const viewmodel = useContext(CurrentViewModelContext)
+  const viewmodel = useContext(CurrentViewModelCtx)
   if (!viewmodel) {
     return null
   }
@@ -28,5 +29,5 @@ export function useOptionalLikeC4Model<A extends t.aux.Any = UnknownLayouted>():
 }
 
 export function useOptionalCurrentViewModel(): CurrentViewModel | null {
-  return useContext(CurrentViewModelContext)
+  return useContext(CurrentViewModelCtx)
 }

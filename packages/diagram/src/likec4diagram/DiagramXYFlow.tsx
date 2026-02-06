@@ -12,7 +12,7 @@ import { memoNode } from '../base-primitives/memoNode'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
 import { useIsReducedGraphics, usePanningAtom } from '../context/RootContainerContext'
-import { useCallbackRef, useDiagramActorSnapshot, useUpdateEffect } from '../hooks'
+import { selectDiagramActor, useCallbackRef, useDiagramSnapshot, useUpdateEffect } from '../hooks'
 import { useDiagram } from '../hooks/useDiagram'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
 import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
@@ -61,7 +61,7 @@ const viewportToTopLeft = (ctx: DiagramContext): Viewport => {
   }
 }
 
-const selectXYProps = ({ context: ctx, children }: DiagramActorSnapshot) => {
+const selectXYProps = selectDiagramActor(({ context: ctx, children }) => {
   const { enableReadOnly } = deriveToggledFeatures(ctx)
 
   const isNotEditingEdge = enableReadOnly || children.editor?.getSnapshot().context.editing !== 'edge'
@@ -87,19 +87,19 @@ const selectXYProps = ({ context: ctx, children }: DiagramActorSnapshot) => {
       viewport: viewportToTopLeft(ctx),
     }),
   })
-}
-const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof selectXYProps>): boolean =>
-  a.enableReadOnly === b.enableReadOnly &&
-  a.initialized === b.initialized &&
-  a.pannable === b.pannable &&
-  a.zoomable === b.zoomable &&
-  a.nodesDraggable === b.nodesDraggable &&
-  a.nodesSelectable === b.nodesSelectable &&
-  a.enableFitView === b.enableFitView &&
-  shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
-  shallowEqual(a.nodes, b.nodes) &&
-  shallowEqual(a.edges, b.edges) &&
-  shallowEqual(a.viewport ?? null, b.viewport ?? null)
+})
+// const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof selectXYProps>): boolean =>
+//   a.enableReadOnly === b.enableReadOnly &&
+//   a.initialized === b.initialized &&
+//   a.pannable === b.pannable &&
+//   a.zoomable === b.zoomable &&
+//   a.nodesDraggable === b.nodesDraggable &&
+//   a.nodesSelectable === b.nodesSelectable &&
+//   a.enableFitView === b.enableFitView &&
+//   shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
+//   a.nodes === b.nodes &&
+//   a.edges === b.edges &&
+//   shallowEqual(a.viewport ?? null, b.viewport ?? null)
 
 export type LikeC4DiagramXYFlowProps = PropsWithChildren<
   Simplify<
@@ -127,7 +127,7 @@ export function LikeC4DiagramXYFlow({
     nodesDraggable,
     nodesSelectable,
     ...props
-  } = useDiagramActorSnapshot(selectXYProps, equalsXYProps)
+  } = useDiagramSnapshot(selectXYProps)
 
   const {
     onNodeContextMenu,

@@ -25,9 +25,15 @@ const defaultHandlers: Required<LikeC4DiagramEventHandlers> = {
 
 const HandlerNames = keys(defaultHandlers)
 
+type DiagramEventHandlersRef = RefObject<Required<LikeC4DiagramEventHandlers>>
+
 export type DiagramEventHandlersContext = RequiredOrNull<LikeC4DiagramEventHandlers> & {
-  handlersRef: RefObject<Required<LikeC4DiagramEventHandlers>>
+  handlersRef: DiagramEventHandlersRef
 }
+
+const DiagramEventHandlersRefContext = createContext<DiagramEventHandlersRef>({
+  current: defaultHandlers,
+})
 
 const DiagramEventHandlersReactContext = createContext<DiagramEventHandlersContext>({
   ...mapToObj(HandlerNames, (name) => [name, null]),
@@ -36,10 +42,10 @@ const DiagramEventHandlersReactContext = createContext<DiagramEventHandlersConte
   },
 })
 
-export function DiagramEventHandlers<A extends aux.Any>({
+export function DiagramEventHandlers({
   handlers,
   children,
-}: PropsWithChildren<{ handlers: Required<LikeC4DiagramEventHandlers<A>> }>) {
+}: PropsWithChildren<{ handlers: Required<LikeC4DiagramEventHandlers> }>) {
   const handlersRef = useSyncedRef(
     handlers as Required<LikeC4DiagramEventHandlers>,
   )
@@ -58,9 +64,11 @@ export function DiagramEventHandlers<A extends aux.Any>({
   }), [handlersRef, ...deps])
 
   return (
-    <DiagramEventHandlersReactContext.Provider value={value}>
-      {children}
-    </DiagramEventHandlersReactContext.Provider>
+    <DiagramEventHandlersRefContext.Provider value={handlersRef}>
+      <DiagramEventHandlersReactContext.Provider value={value}>
+        {children}
+      </DiagramEventHandlersReactContext.Provider>
+    </DiagramEventHandlersRefContext.Provider>
   )
 }
 
@@ -68,6 +76,6 @@ export function useDiagramEventHandlers(): DiagramEventHandlersContext {
   return useContext(DiagramEventHandlersReactContext)
 }
 
-export function useDiagramEventHandlersRef<A extends aux.Any = aux.Any>(): RefObject<LikeC4DiagramEventHandlers<A>> {
-  return useContext(DiagramEventHandlersReactContext).handlersRef
+export function useDiagramEventHandlersRef(): DiagramEventHandlersRef {
+  return useContext(DiagramEventHandlersRefContext)
 }

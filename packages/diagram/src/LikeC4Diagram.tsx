@@ -14,6 +14,7 @@ import {
   FramerMotionConfig,
   IconRendererProvider,
 } from './context'
+import { CurrentViewModelProvider } from './context/CurrentViewModelProvider'
 import { TagStylesProvider } from './context/TagStylesContext'
 import { useOptionalLikeC4Editor } from './editor'
 import { useId } from './hooks/useId'
@@ -195,14 +196,16 @@ export function LikeC4Diagram<A extends Any = Any>({
                         where={where ?? null}
                         dynamicViewVariant={dynamicViewVariant}
                       >
-                        <LikeC4DiagramXYFlow
-                          background={background}
-                          reactFlowProps={reactFlowProps}
-                          renderNodes={renderNodes}
-                        >
-                          {children}
-                        </LikeC4DiagramXYFlow>
-                        <LikeC4DiagramUI />
+                        <CurrentViewModelProvider>
+                          <LikeC4DiagramXYFlow
+                            background={background}
+                            reactFlowProps={reactFlowProps}
+                            renderNodes={renderNodes}
+                          >
+                            {children}
+                          </LikeC4DiagramXYFlow>
+                          <LikeC4DiagramUI />
+                        </CurrentViewModelProvider>
                       </DiagramActorProvider>
                     </XYFlowProvider>
                   </RootContainer>
