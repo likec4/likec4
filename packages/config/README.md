@@ -172,12 +172,16 @@ for (const name of ConfigFilenames) {
 ## JSON Schema
 
 The JSON Schema is published at `@likec4/config/schema.json` and mirrors the Zod schema.
+For JSON configs you can use `extends` to reuse `styles` from other JSON configs.
+Only `styles` are merged (in order), other fields come from the root config.
 
 Fields:
 
 - `name` (required): unique project id within the workspace
 - `title` (optional): human-readable project title
 - `contactPerson` (optional): maintainer/author
+- `extends` (optional): string or array of strings, paths to JSON configs to merge `styles` from (relative to each config file)
+- `styles` (optional): theme/defaults/customCss customization
 - `exclude` (optional): array of glob patterns (picomatch) to exclude (defaults to `['**/node_modules/**']`)
 
 ## Getting help

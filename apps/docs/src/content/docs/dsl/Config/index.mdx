@@ -56,6 +56,31 @@ You can also use these names:
 See [Programmatic config](/dsl/config/programmatic) for more information.
 :::
 
+## Extend styles
+
+If you want to share styles across multiple projects, you can use `extends` in **JSON configs**.
+`extends` can be a string or an array of strings.
+Each path is resolved relative to the config file that declares it, and `extends` can be recursive.
+LikeC4 merges only the `styles` section (in order); all other fields come from the root config.
+
+```jsonc
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "extends": [
+    "../shared/base-config.json",
+    "../shared/theme-config.json"
+  ],
+  "styles": {
+    "defaults": {
+      "relationship": {
+        "arrow": "vee"
+      }
+    }
+  }
+}
+```
+
 ## Include additional directories
 
 You can include LikeC4 source files from directories outside the project folder by adding an `include` configuration to the config file.

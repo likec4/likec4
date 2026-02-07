@@ -9,6 +9,23 @@
       "type": "string",
       "minLength": 1
     },
+    "extends": {
+      "description": "Extend styles from other config files",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ]
+    },
     "title": {
       "description": "A human readable title for the project",
       "type": "string",

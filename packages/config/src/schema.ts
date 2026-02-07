@@ -57,6 +57,12 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
       error: 'Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -',
     })
     .meta({ description: 'Project name, must be unique in the workspace' }),
+  extends: z.union([
+    z.string().min(1, 'Extend path cannot be empty'),
+    z.array(z.string().min(1, 'Extend path cannot be empty')).min(1, 'Extend list cannot be empty'),
+  ])
+    .optional()
+    .meta({ description: 'Extend styles from other config files' }),
   title: z.string()
     .nonempty('Project title cannot be empty if specified')
     .optional()

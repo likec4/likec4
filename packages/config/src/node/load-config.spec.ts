@@ -1,4 +1,6 @@
+// oxlint-disable typescript/no-base-to-string
 import * as fs from 'node:fs/promises'
+import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import type { VscodeURI } from '../schema'
 import { loadConfig } from './load-config'
@@ -15,6 +17,24 @@ const mockVscodeURI = (fsPath: string): VscodeURI => ({
   toString: () => `file://${fsPath}`,
 })
 
+const normalizePath = (path: string) => resolve(path)
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const mockFsReads = (entries: Record<string, unknown>) => {
+  const files = new Map<string, string>()
+  for (const [filepath, value] of Object.entries(entries)) {
+    const content = typeof value === 'string' ? value : JSON.stringify(value)
+    files.set(normalizePath(filepath), content)
+  }
+  vi.mocked(fs.readFile).mockImplementation(async (path) => {
+    const key = normalizePath(typeof path === 'string' ? path : path.toString())
+    const content = files.get(key)
+    if (content === undefined) {
+      throw new Error(`ENOENT: no such file or directory, open '${key}'`)
+    }
+    return content
+  })
+}
+
 describe('loadConfig - JSON branch', () => {
   describe('valid JSON config files', () => {
     it('should load .likec4rc with valid config', async () => {
@@ -30,7 +50,7 @@ describe('loadConfig - JSON branch', () => {
         name: 'test-project',
         title: 'Test Project',
       })
-      expect(fs.readFile).toHaveBeenCalledWith('/project/.likec4rc', 'utf-8')
+      expect(fs.readFile).toHaveBeenCalledWith(normalizePath(filepath.fsPath), 'utf-8')
     })
   })
 
@@ -100,6 +120,199 @@ describe('loadConfig - JSON branch', () => {
     })
   })
 
+  describe('extends support', () => {
+    it('should merge styles from extended configs', async () => {
+      const filepath = mockVscodeURI('/project/.likec4rc')
+      mockFsReads({
+        '/project/.likec4rc': {
+          name: 'root',
+          extends: './base.json',
+          styles: {
+            defaults: {
+              color: 'main',
+              relationship: {
+                arrow: 'vee',
+              },
+            },
+          },
+        },
+        '/project/base.json': {
+          name: 'base',
+          styles: {
+            defaults: {
+              color: 'base',
+              relationship: {
+                line: 'dashed',
+              },
+            },
+          },
+        },
+      })
+
+      const config = await loadConfig(filepath)
+
+      expect(config).toMatchObject({
+        name: 'root',
+        styles: {
+          defaults: {
+            color: 'main',
+            relationship: {
+              line: 'dashed',
+              arrow: 'vee',
+            },
+          },
+        },
+      })
+    })
+
+    it('should respect extends order when merging styles', async () => {
+      const filepath = mockVscodeURI('/project/.likec4rc')
+      mockFsReads({
+        '/project/.likec4rc': {
+          name: 'root',
+          extends: ['./base.json', './override.json'],
+        },
+        '/project/base.json': {
+          name: 'base',
+          styles: {
+            defaults: {
+              color: 'primary',
+            },
+          },
+        },
+        '/project/override.json': {
+          name: 'override',
+          styles: {
+            defaults: {
+              color: 'secondary',
+            },
+          },
+        },
+      })
+
+      const config = await loadConfig(filepath)
+
+      expect(config).toMatchObject({
+        name: 'root',
+        styles: {
+          defaults: {
+            color: 'secondary',
+          },
+        },
+      })
+    })
+
+    it('should detect extends cycles', async () => {
+      const filepath = mockVscodeURI('/project/.likec4rc')
+      mockFsReads({
+        '/project/.likec4rc': {
+          name: 'root',
+          extends: './base.json',
+        },
+        '/project/base.json': {
+          name: 'base',
+          extends: './.likec4rc',
+        },
+      })
+
+      await expect(loadConfig(filepath)).rejects.toThrow('Config extends cycle detected')
+    })
+
+    it('should resolve extends across folders', async () => {
+      const filepath = mockVscodeURI('/project/config/.likec4rc')
+      mockFsReads({
+        '/project/config/.likec4rc': {
+          name: 'root',
+          extends: '../shared/base.json',
+          styles: {
+            defaults: {
+              relationship: {
+                line: 'dashed',
+              },
+            },
+          },
+        },
+        '/project/shared/base.json': {
+          name: 'base',
+          styles: {
+            defaults: {
+              relationship: {
+                arrow: 'normal',
+              },
+            },
+          },
+        },
+      })
+
+      const config = await loadConfig(filepath)
+
+      expect(config).toMatchObject({
+        name: 'root',
+        styles: {
+          defaults: {
+            relationship: {
+              line: 'dashed',
+              arrow: 'normal',
+            },
+          },
+        },
+      })
+    })
+
+    it('should resolve nested extends relative to each config', async () => {
+      const filepath = mockVscodeURI('/project/config/.likec4rc')
+      mockFsReads({
+        '/project/config/.likec4rc': {
+          name: 'root',
+          extends: '../shared/base.json',
+          styles: {
+            defaults: {
+              relationship: {
+                arrow: 'vee',
+              },
+            },
+          },
+        },
+        '/project/shared/base.json': {
+          name: 'base',
+          extends: '../themes/theme.json',
+          styles: {
+            defaults: {
+              relationship: {
+                line: 'dotted',
+              },
+            },
+          },
+        },
+        '/project/themes/theme.json': {
+          name: 'theme',
+          styles: {
+            defaults: {
+              relationship: {
+                color: 'primary',
+              },
+            },
+          },
+        },
+      })
+
+      const config = await loadConfig(filepath)
+
+      expect(config).toMatchObject({
+        name: 'root',
+        styles: {
+          defaults: {
+            relationship: {
+              color: 'primary',
+              line: 'dotted',
+              arrow: 'vee',
+            },
+          },
+        },
+      })
+    })
+  })
+
   describe('empty and minimal configs', () => {
     const testCases = [
       { name: 'empty-file', content: '' },
@@ -120,8 +333,9 @@ describe('loadConfig - JSON branch', () => {
       const filepath = mockVscodeURI('/project/.likec4rc')
       vi.mocked(fs.readFile).mockResolvedValue('{ invalid json }')
 
-      await expect(loadConfig(filepath)).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[SyntaxError: /project/.likec4rc: JSON5: invalid character 'j' at 1:11]`,
+      const expectedPath = escapeRegExp(normalizePath(filepath.fsPath))
+      await expect(loadConfig(filepath)).rejects.toThrowError(
+        new RegExp(`${expectedPath}: JSON5: invalid character 'j' at 1:11`),
       )
     })
   })

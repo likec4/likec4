@@ -1,6 +1,14 @@
 {
   "name": "projectA",
   "title": "Multi-Projects / Project A",
+  "styles": {
+    "defaults": {
+      // "border": "dotted",
+      "group": {
+        // "border": "solid"
+      }
+    }
+  },
   "manualLayouts": {
     "outDir": ".likec4/layouted"
   }

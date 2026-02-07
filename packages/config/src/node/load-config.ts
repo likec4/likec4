@@ -1,13 +1,68 @@
 import { invariant } from '@likec4/core'
 import { logger, wrapError } from '@likec4/log'
 import { bundleRequire } from 'bundle-require'
+import { defu } from 'defu'
 import { formatMessagesSync } from 'esbuild'
 import JSON5 from 'json5'
 import * as fs from 'node:fs/promises'
-import { basename, dirname } from 'node:path'
+import { basename, dirname, resolve } from 'node:path'
+import { hasAtLeast, isNonNullish, last, omit } from 'remeda'
+import z from 'zod/v4'
 import { isLikeC4JsonConfig, isLikeC4NonJsonConfig } from '../filenames'
 import type { LikeC4ProjectConfig, VscodeURI } from '../schema'
-import { validateProjectConfig } from '../schema'
+import { LikeC4ProjectJsonConfigSchema, validateProjectConfig } from '../schema'
+
+const JsonConfigInputSchema = LikeC4ProjectJsonConfigSchema.pick({
+  extends: true,
+  styles: true,
+}).loose()
+
+type JsonConfigInput = z.infer<typeof JsonConfigInputSchema>
+type JsonConfigStyles = NonNullable<JsonConfigInput['styles']>
+
+const normalizeExtends = (value: JsonConfigInput['extends']): string[] => {
+  if (!value) {
+    return []
+  }
+  return Array.isArray(value) ? value : [value]
+}
+
+const parseJsonConfig = async (filepath: string): Promise<JsonConfigInput> => {
+  const content = await fs.readFile(filepath, 'utf-8')
+  let parsed: unknown
+  try {
+    parsed = JSON5.parse(content.trim() || '{}')
+  } catch (e) {
+    throw wrapError(e, `${filepath}:`)
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`${filepath}: Config must be a JSON object`)
+  }
+  const result = JsonConfigInputSchema.safeParse(parsed)
+  if (!result.success) {
+    throw new Error(`${filepath}: Invalid config\n` + z.prettifyError(result.error))
+  }
+  return result.data
+}
+
+const loadJsonConfigs = async (filepath: string, stack: string[]): Promise<[...JsonConfigInput[], JsonConfigInput]> => {
+  if (stack.includes(filepath)) {
+    const cycleStart = stack.indexOf(filepath)
+    const cycle = [...stack.slice(cycleStart), filepath].join(' -> ')
+    throw new Error(`Config extends cycle detected: ${cycle}`)
+  }
+
+  const parsed = await parseJsonConfig(filepath)
+  const extendsPaths = normalizeExtends(parsed.extends)
+  const nextStack = [...stack, filepath]
+
+  const configs: JsonConfigInput[] = []
+  for (const extendPath of extendsPaths) {
+    const resolvedPath = resolve(dirname(filepath), extendPath)
+    configs.push(...await loadJsonConfigs(resolvedPath, nextStack))
+  }
+  return [...configs, parsed]
+}
 
 /**
  * Load LikeC4 Project config file.
@@ -22,16 +77,21 @@ export async function loadConfig(filepath: VscodeURI | string): Promise<LikeC4Pr
   const implicitcfg = { name: basename(folder) }
 
   if (isLikeC4JsonConfig(filename)) {
-    const content = await fs.readFile(filepath, 'utf-8')
-    let parsed
-    try {
-      parsed = JSON5.parse(content.trim() || '{}')
-    } catch (e) {
-      throw wrapError(e, `${filepath}:`)
-    }
+    const configs = await loadJsonConfigs(resolve(filepath), [])
+    invariant(hasAtLeast(configs, 1), 'Expect at least one config')
+    const rootConfig = omit(last(configs), ['extends', 'styles'])
+    const stylesChain = configs
+      .map(config => config.styles)
+      .filter(isNonNullish)
+
+    const mergedStyles = stylesChain.length > 0
+      ? defu({}, ...stylesChain.reverse())
+      : undefined
+
     return validateProjectConfig({
       ...implicitcfg,
-      ...parsed,
+      ...rootConfig,
+      ...(mergedStyles ? { styles: mergedStyles } : {}),
     })
   }
 
