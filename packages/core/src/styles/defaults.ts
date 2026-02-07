@@ -1,4 +1,6 @@
-import type { LikeC4StyleDefaults } from './types'
+import type {
+  LikeC4StyleDefaults,
+} from './types'
 
 export const styleDefaults: LikeC4StyleDefaults = {
   color: 'primary',

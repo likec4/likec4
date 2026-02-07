@@ -1,4 +1,4 @@
-import type { Config } from '@pandacss/dev'
+import { type Config, defineUtility } from '@pandacss/dev'
 
 type ExtendableUtilityConfig = NonNullable<Config['utilities']>
 
@@ -13,9 +13,9 @@ const durationValues = [
   'none',
 ]
 
-export const utilities: ExtendableUtilityConfig = {
+export const utilities = {
   extend: {
-    transition: {
+    transition: defineUtility({
       values: durationValues,
       className: 'transition',
       transform(value, { token }) {
@@ -30,9 +30,10 @@ export const utilities: ExtendableUtilityConfig = {
           }
         }
         return {
-          transition: `all ${token.raw(`durations.${value}`)!.value} ${token.raw('easings.inOut')!.value}`,
+          transitionDuration: token(`durations.${value}`),
+          transitionTimingFunction: token('easings.inOut'),
         }
       },
-    },
+    }),
   },
 }

@@ -14,7 +14,7 @@ export const edgeActionBtn = defineRecipe({
     // '--ai-bg': 'var(--xy-edge-label-background-color)',
     '--ai-bg': 'transparent',
     '--ai-hover': `color-mix(in oklab , var(--xy-edge-label-background-color), {colors.likec4.mixColor} 10%)`,
-    '--ai-size': `var(--ai-size-sm)`,
+    '--ai-size': `28px`,
     '--ai-radius': `{radii.sm}`,
     _hover: {
       translateY: '[2px]',

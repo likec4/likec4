@@ -1,7 +1,19 @@
-import { defineTextStyles } from '@pandacss/dev'
+import { type CompositionStyles, defineTextStyles as _defineTextStyles } from '@pandacss/dev'
+
+function defineTextStyles<const T extends CompositionStyles['textStyles']>(definition: T): T {
+  return _defineTextStyles(definition) as T
+}
 
 export const textStyles = defineTextStyles({
   dimmed: {
+    DEFAULT: {
+      description: 'Text style for dimmed content',
+      value: {
+        fontSize: 'md',
+        lineHeight: 'md',
+        color: 'text.dimmed',
+      },
+    },
     xxs: {
       value: {
         fontSize: 'xxs',
@@ -68,6 +80,15 @@ export const textStyles = defineTextStyles({
     },
   },
   likec4: {
+    DEFAULT: {
+      description: 'Text style for panel content',
+      value: {
+        fontSize: 'md',
+        lineHeight: 'md',
+        fontWeight: 'normal',
+        color: 'text',
+      },
+    },
     panel: {
       DEFAULT: {
         description: 'Text style for panel content',

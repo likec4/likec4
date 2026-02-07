@@ -7,6 +7,7 @@ import type { HTMLAttributes, PropsWithChildren } from 'react'
 import { clamp } from 'remeda'
 import { MAX_COMPOUND_DEPTH } from '../../base/const'
 import type { BaseNode, BaseNodeProps } from '../../base/types'
+import { useLikeC4Styles } from '../../hooks/useLikeC4Styles'
 
 export type RequiredData = {
   color: Color
@@ -36,6 +37,7 @@ export function CompoundNodeContainer({
   style,
   ...rest
 }: CompoundNodeContainerProps) {
+  const styles = useLikeC4Styles()
   let opacity = clamp(data.style.opacity ?? 100, {
     min: 0,
     max: 100,
@@ -51,7 +53,7 @@ export function CompoundNodeContainer({
   const compoundClass = compoundNode({
     isTransparent,
     inverseColor: opacity < 70,
-    borderStyle: data.style.border ?? (isTransparent ? 'dashed' : 'none'),
+    borderStyle: data.style.border ?? (isTransparent ? styles.defaults.group.border : 'none'),
   })
 
   const depth = clamp(data.depth ?? 1, {

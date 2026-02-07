@@ -105,10 +105,10 @@ export interface LikeC4StyleDefaults {
    * Default style values for groups
    * If not specified, the default values for elements are used
    */
-  readonly group?: {
+  readonly group: {
     readonly color?: ThemeColor
-    readonly opacity?: number
-    readonly border?: BorderStyle
+    readonly opacity: number
+    readonly border: BorderStyle
   }
   readonly relationship: {
     readonly color: ThemeColor

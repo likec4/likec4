@@ -101,10 +101,10 @@ export const actionBtn = defineRecipe({
     },
     size: {
       sm: {
-        ['--ai-size']: `var(--ai-size-sm)`,
+        ['--ai-size']: `22px`,
       },
       md: {
-        ['--ai-size']: `var(--ai-size-md)`,
+        ['--ai-size']: `28px`,
       },
     },
     radius: {
