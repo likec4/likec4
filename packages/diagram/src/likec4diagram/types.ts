@@ -35,6 +35,7 @@ export namespace Types {
         | 'title'
         | 'technology'
         | 'description'
+        | 'notes'
         | 'color'
         | 'shape'
         | 'width'
@@ -120,6 +121,7 @@ export namespace Types {
         DiagramNode,
         | 'id'
         | 'title'
+        | 'notes'
         | 'color'
         | 'shape'
         | 'style'

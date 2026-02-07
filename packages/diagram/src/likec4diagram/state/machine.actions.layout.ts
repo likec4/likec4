@@ -4,6 +4,7 @@
 import {
   BBox,
   invariant,
+  isNonEmptyArray,
   nonNullable,
 } from '@likec4/core'
 import type {
@@ -12,12 +13,14 @@ import type {
 } from '@likec4/core/types'
 import type { Viewport } from '@xyflow/react'
 import {
+  getNodesBounds,
   getViewportForBounds,
 } from '@xyflow/react'
 import {
   assertEvent,
 } from 'xstate'
 import { MinZoom } from '../../base'
+import { calcEdgeBounds } from '../../utils/view-bounds'
 import { machine } from './machine.setup'
 import {
   activeSequenceBounds,
@@ -68,6 +71,47 @@ export const setViewportCenter = (params?: { x: number; y: number }) =>
     ).catch((err) => {
       console.error('Error during setViewportCenter', { err })
     })
+  })
+
+export const centerOnNodeOrEdge = () =>
+  machine.raise(({ context, event }) => {
+    assertEvent(event, 'xyflow.centerViewport')
+    const xystate = context.xystore.getState()
+    if ('edgeId' in event) {
+      const edge = xystate.edgeLookup.get(event.edgeId)
+      if (!edge) {
+        return { type: 'noop' } as never
+      }
+      const sourceNode = xystate.nodeLookup.get(edge.source)
+      const targetNode = xystate.nodeLookup.get(edge.target)
+      if (!sourceNode || !targetNode) {
+        return { type: 'noop' } as never
+      }
+      const bounds = getNodesBounds([sourceNode, targetNode], xystate)
+
+      const edgeBounds = calcEdgeBounds({
+        points: edge.data.points,
+        controlPoints: edge.data.controlPoints && isNonEmptyArray(edge.data.controlPoints)
+          ? edge.data.controlPoints
+          : null,
+        labelBBox: edge.data.labelBBox ?? null,
+      })
+
+      return {
+        type: 'xyflow.fitDiagram',
+        bounds: BBox.merge(bounds, edgeBounds),
+      }
+    }
+
+    const node = xystate.nodeLookup.get(event.nodeId)
+    if (!node) {
+      return { type: 'noop' } as never
+    }
+    const bounds = getNodesBounds([node], xystate)
+    return {
+      type: 'xyflow.fitDiagram',
+      bounds,
+    }
   })
 
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>

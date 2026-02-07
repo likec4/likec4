@@ -245,6 +245,13 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   enableElementTags?: boolean | undefined
 
   /**
+   * Display element notes, if they are present in the view
+   *
+   * @default true
+   */
+  enableNotes?: boolean | undefined
+
+  /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
    * Enable it if you have a large or static view
    * - `auto` - will be `true` if view has more then 3000 * 2000 pixels

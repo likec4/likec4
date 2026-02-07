@@ -12,7 +12,10 @@ import type { OnStyleChange } from './types'
 import { useHandlers } from './useHandlers'
 
 export function ElementToolbar(props: Types.NodeProps<'element' | 'seq-actor'> & { data: { modelFqn: Fqn } }) {
-  const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()
+  const { enableVscode, enableRelationshipBrowser, enableNotes } = useEnabledFeatures()
+
+  const increaseOffset = !!(enableNotes && props.data.notes)
+
   const {
     data: {
       shape,
@@ -27,6 +30,7 @@ export function ElementToolbar(props: Types.NodeProps<'element' | 'seq-actor'> &
     <Toolbar
       nodeProps={props}
       title={modelFqn}
+      offset={increaseOffset ? 20 : 10}
       align="start">
       <ColorButton
         elementColor={elementColor}

@@ -8,6 +8,7 @@ import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import type { Types } from '../../types'
 import { ElementActions } from './ElementActions'
 import { NodeDrifts } from './NodeDrifts'
+import { NodeNotes } from './NodeNotes'
 import { ElementDetailsButtonWithHandler } from './nodes'
 import { ElementToolbar } from './toolbar/ElementToolbar'
 
@@ -70,7 +71,7 @@ const hasModelFqn = <D extends Types.NodeProps>(node: D): node is D & { data: { 
   'modelFqn' in node.data && isTruthy(node.data.modelFqn)
 
 export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
-  const { enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
+  const { enableElementDetails, enableReadOnly, enableCompareWithLatest, enableNotes } = useEnabledFeatures()
   const data = props.data
   const {
     id,
@@ -116,6 +117,7 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
             {!enableReadOnly && <ElementToolbar {...props} />}
           </>
         )}
+        {enableNotes && <NodeNotes {...props} />}
       </ElementNodeContainer>
       {ports.map(p => <ActorStepPort key={p.id} port={p} data={props.data} />)}
     </>

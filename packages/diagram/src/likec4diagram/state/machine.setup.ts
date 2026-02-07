@@ -154,6 +154,8 @@ export type Events =
   | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
   | { type: 'xyflow.fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'xyflow.setViewport'; duration?: number; viewport: Viewport }
+  | { type: 'xyflow.centerViewport'; nodeId: NodeId; duration?: number }
+  | { type: 'xyflow.centerViewport'; edgeId: EdgeId; duration?: number }
   | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | {
@@ -190,6 +192,9 @@ export type Events =
   | { type: 'walkthrough.start'; stepId?: StepEdgeId }
   | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
   | { type: 'walkthrough.end' }
+  | { type: 'highlight.node'; nodeId: NodeId }
+  | { type: 'highlight.edge'; edgeId: EdgeId }
+  | { type: 'unhighlight.all' }
   | { type: 'notations.highlight'; notation: ElementNotation; kind?: string }
   | { type: 'notations.unhighlight' }
   | { type: 'tag.highlight'; tag: string }

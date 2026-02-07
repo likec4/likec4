@@ -5,6 +5,7 @@ import {
   assignToggledFeatures,
   cancelEditing,
   cancelFitDiagram,
+  centerOnNodeOrEdge,
   closeAllOverlays,
   closeSearch,
   disableCompareWithLatest,
@@ -18,6 +19,7 @@ import {
   ensureSearchActor,
   fitDiagram,
   handleNavigate,
+  highlightNodeOrEdge,
   layoutAlign,
   notationsHighlight,
   onEdgeDoubleClick,
@@ -107,6 +109,12 @@ export const ready = machine.createStateConfig({
     'notations.unhighlight': {
       actions: undimEverything(),
     },
+    'highlight.*': {
+      actions: highlightNodeOrEdge(),
+    },
+    'unhighlight.all': {
+      actions: undimEverything(),
+    },
     'open.elementDetails': {
       actions: openOverlay(),
     },
@@ -181,6 +189,9 @@ export const ready = machine.createStateConfig({
     },
     'xyflow.edgeMouseLeave': {
       actions: onEdgeMouseLeave(),
+    },
+    'xyflow.centerViewport': {
+      actions: centerOnNodeOrEdge(),
     },
     'xyflow.fitDiagram': {
       guard: 'enabled: FitView',

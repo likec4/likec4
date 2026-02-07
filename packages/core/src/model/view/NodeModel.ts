@@ -60,6 +60,10 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
     return this.$node.technology ?? null
   }
 
+  get notes(): RichTextOrEmpty {
+    return RichText.memoize(this, 'notes', this.$node.notes)
+  }
+
   get parent(): NodeModel<A, V> | null {
     return this.$node.parent ? this.$viewModel.node(this.$node.parent) : null
   }

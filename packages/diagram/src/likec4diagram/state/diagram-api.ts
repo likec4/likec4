@@ -75,6 +75,17 @@ export interface DiagramApi<A extends Any = Unknown> {
   openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]): void
   updateNodeData(nodeId: NodeId, data: PartialDeep<Types.NodeData>): void
   updateEdgeData(edgeId: EdgeId, data: PartialDeep<Types.EdgeData>): void
+  highlightNode(nodeId: NodeId): void
+  highlightEdge(edgeId: EdgeId): void
+  unhighlightAll(): void
+  /**
+   * Center viewport on a given node
+   */
+  centerViewportOnNode(target: NodeId): void
+  /**
+   * Center viewport on a given edge (centering on edge means including both source and target nodes in view)
+   */
+  centerViewportOnEdge(target: EdgeId): void
   /**
    * Start editing, either node or edge
    */
@@ -284,6 +295,26 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
 
     switchDynamicViewVariant: (variant: DynamicViewDisplayVariant) => {
       actorRef.current.send({ type: 'switch.dynamicViewVariant', variant })
+    },
+
+    highlightNode: (nodeId: NodeId) => {
+      actorRef.current.send({ type: 'highlight.node', nodeId })
+    },
+
+    highlightEdge: (edgeId: EdgeId) => {
+      actorRef.current.send({ type: 'highlight.edge', edgeId })
+    },
+
+    unhighlightAll: () => {
+      actorRef.current.send({ type: 'unhighlight.all' })
+    },
+
+    centerViewportOnNode: (nodeId: NodeId) => {
+      actorRef.current.send({ type: 'xyflow.centerViewport', nodeId })
+    },
+
+    centerViewportOnEdge: (edgeId: EdgeId) => {
+      actorRef.current.send({ type: 'xyflow.centerViewport', edgeId })
     },
   }
 }

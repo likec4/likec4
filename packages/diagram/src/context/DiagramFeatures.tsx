@@ -19,6 +19,7 @@ const FeatureNames = [
   'DynamicViewWalkthrough',
   'FitView',
   'CompareWithLatest',
+  'Notes',
   /**
    * Running in VSCode
    */
@@ -56,6 +57,7 @@ export const DefaultFeatures: EnabledFeatures = {
   enableFitView: false,
   enableVscode: false,
   enableElementTags: false,
+  enableNotes: false,
 }
 const DiagramFeaturesContext = createContext<EnabledFeatures>(DefaultFeatures)
 

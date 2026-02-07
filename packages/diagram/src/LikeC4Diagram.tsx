@@ -79,6 +79,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   enableDynamicViewWalkthrough = false,
   dynamicViewVariant,
   enableSearch = false,
+  enableNotes = true,
   initialWidth,
   initialHeight,
   reduceGraphics = 'auto',
@@ -161,6 +162,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                 enableControls: controls,
                 enableElementTags,
                 enableCompareWithLatest,
+                enableNotes,
               }}
             >
               <DiagramEventHandlers

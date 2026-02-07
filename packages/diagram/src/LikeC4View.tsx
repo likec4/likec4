@@ -181,6 +181,13 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   enableRelationshipBrowser?: boolean | undefined
 
   /**
+   * Display element notes, if they are present in the view
+   *
+   * @default false
+   */
+  enableNotes?: boolean | undefined
+
+  /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
    *
    * @default 'auto' - will be set to true if view is pannable and has more than 3000 * 2000 pixels
@@ -311,6 +318,13 @@ export interface LikeC4BrowserProps {
   enableCompareWithLatest?: boolean | undefined
 
   /**
+   * Display element notes, if they are present in the view
+   *
+   * @default true
+   */
+  enableNotes?: boolean | undefined
+
+  /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
    *
    * @default 'auto' - will be set to true if view is pannable and has more than 3000 * 2000 pixels
@@ -367,6 +381,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   enableElementDetails = false,
   enableRelationshipDetails = false,
   enableRelationshipBrowser = enableRelationshipDetails,
+  enableNotes = false,
   reduceGraphics = 'auto',
   mantineTheme,
   styleNonce,
@@ -473,6 +488,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
         enableElementDetails={enableElementDetails}
         enableRelationshipBrowser={enableRelationshipBrowser}
         enableElementTags={false}
+        enableNotes={enableNotes}
         controls={controls}
         reduceGraphics={reduceGraphics}
         className={cx(
@@ -509,6 +525,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
               enableRelationshipDetails
               enableSearch
               enableElementTags
+              enableNotes
               enableCompareWithLatest
               controls
               fitView

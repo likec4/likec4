@@ -61,6 +61,7 @@ export function StaticLikeC4Diagram<A extends Any = UnknownLayouted>({
       enableSearch={false}
       nodesSelectable={false}
       enableElementTags={false}
+      enableNotes={false}
       {...rest}
     />
   )

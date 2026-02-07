@@ -23,7 +23,9 @@ export function pickViewBounds(view: LayoutedView, dynamicVariant?: DynamicViewD
   return view.bounds
 }
 
-export function calcEdgeBounds({ points, controlPoints, labelBBox }: DiagramEdge): BBox {
+export function calcEdgeBounds(
+  { points, controlPoints, labelBBox }: Pick<DiagramEdge, 'points' | 'controlPoints' | 'labelBBox'>,
+): BBox {
   let minX = Infinity
   let minY = Infinity
   let maxX = -Infinity

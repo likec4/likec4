@@ -128,6 +128,7 @@ export function diagramToXY(opts: {
       x: node.x,
       y: node.y,
       drifts: node.drifts ?? null,
+      notes: node.notes,
       viewLayoutDir,
     } satisfies Types.CompoundNodeData
 
@@ -145,6 +146,7 @@ export function diagramToXY(opts: {
       style: node.style,
       icon: node.icon ?? null,
       tags: node.tags,
+      notes: node.notes,
       x: node.x,
       y: node.y,
       isMultiple: node.style?.multiple ?? false,

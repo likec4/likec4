@@ -492,6 +492,51 @@ export const tagHighlight = () =>
     }
   })
 
+export const highlightNodeOrEdge = () =>
+  machine.assign(({ context, event }) => {
+    assertEvent(event, ['highlight.edge', 'highlight.node'])
+    switch (event.type) {
+      case 'highlight.node': {
+        const nodeId = event.nodeId
+        const node = context.xynodes.find(n => n.id === nodeId)
+        if (!node) {
+          console.warn(`Node with id ${nodeId} not found for highlighting`)
+          return {}
+        }
+        return {
+          xynodes: context.xynodes.map(n => {
+            return Base.setDimmed(n, n.id === nodeId ? false : true)
+          }),
+          xyedges: context.xyedges.map(Base.setData({
+            dimmed: true,
+            active: false,
+          })),
+        }
+      }
+      case 'highlight.edge': {
+        const edgeId = event.edgeId
+        let edge = context.xyedges.find(e => e.id === edgeId)
+        if (!edge) {
+          console.warn(`Edge with id ${edgeId} not found for highlighting`)
+          return {}
+        }
+        return {
+          xynodes: context.xynodes.map(n => {
+            return Base.setDimmed(n, edge.source !== n.id && edge.target !== n.id)
+          }),
+          xyedges: context.xyedges.map(e => {
+            return Base.setData(e, {
+              dimmed: e.id !== edgeId,
+              active: e.id === edgeId,
+            })
+          }),
+        }
+      }
+      default:
+        nonexhaustive(event)
+    }
+  })
+
 export const assignToggledFeatures = () =>
   machine.assign(({ context, event }) => {
     assertEvent(event, 'toggle.feature')
