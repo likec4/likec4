@@ -80,7 +80,7 @@ jobs:
       - name: create pull request
         id: cpr
         if: ${{ inputs.create-pull-request }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.app-token.outputs.token }}
           commit-message: "chore: update e2e screenshots"
