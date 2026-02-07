@@ -88,7 +88,7 @@ catalogs:
     "@rolldown/plugin-node-polyfills": ^1.0.3
     obuild: ^0.4.27
   react:
-    "@floating-ui/dom": ^1.7.4
+    "@floating-ui/dom": ^1.7.5
     "@nanostores/media-query": 0.1.2
     "@nanostores/react": 1.0.0
     "@react-hookz/web": ^25.2.0
