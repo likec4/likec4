@@ -1,7 +1,5 @@
-import type { Indicator } from '@mantine/core'
 import { defineParts, defineRecipe, defineStyles } from '@pandacss/dev'
-import { __v, vars } from '../const.ts'
-import { defaultSizes } from '../defaults/sizes.ts'
+import { __v } from '../const.ts'
 
 const parts = defineParts({
   root: { selector: '&' },

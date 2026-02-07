@@ -86,6 +86,8 @@ function toCompoundArea(
       isViewGroup: true,
       drifts: node.drifts ?? null,
       viewLayoutDir: 'LR',
+      // Ignore notes for Compound nodes
+      notes: undefined,
     },
     // zIndex: SeqZIndex.compound,
     position: {
@@ -131,6 +133,8 @@ function toSeqParallelArea(
       parallelPrefix,
       drifts: null,
       viewLayoutDir: 'LR',
+      // Ignore notes for Parallel Area nodes
+      notes: undefined,
     },
     zIndex: SeqZIndex.parallel,
     position: {
@@ -180,6 +184,7 @@ function toSeqActorNode(
       description: actor.description ?? null,
       viewHeight: bounds.height,
       viewId: view.id,
+      notes: actor.notes,
       ports: ports as Writable<typeof ports>,
       drifts: actor.drifts ?? null,
       viewLayoutDir: 'LR',
