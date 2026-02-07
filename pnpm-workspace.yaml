@@ -134,7 +134,7 @@ catalogs:
     ohash: ^2.0.11
     p-debounce: 5.1.0
     p-limit: 7.2.0
-    p-queue: 8.1.1
+    p-queue: 9.1.0
     p-timeout: 6.1.4
     package-manager-detector: 1.6.0
     package-up: ^5.0.0
