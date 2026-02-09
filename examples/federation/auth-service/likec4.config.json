@@ -1,0 +1,12 @@
+{
+  "name": "auth-service",
+  "title": "Auth Service",
+  "federation": {
+    "exports": ["authService", "authService.api", "authService.db"],
+    "exportViews": ["authServiceOverview"],
+    "publish": {
+      "outDir": "../registry/auth-service",
+      "registryDir": "../registry"
+    }
+  }
+}

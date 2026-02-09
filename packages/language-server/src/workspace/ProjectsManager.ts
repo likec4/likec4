@@ -37,6 +37,7 @@ import {
 } from 'ufo'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
+import { FederationStore } from '../model/federation-store'
 import type { LikeC4SharedServices } from '../module'
 
 const logger = mainLogger.getChild('projects')
@@ -290,6 +291,12 @@ export class ProjectsManager {
       ?? null
   })
 
+  /**
+   * Store for resolved federation manifests.
+   * Provides synthetic element descriptions for federated projects.
+   */
+  public readonly federationStore = new FederationStore()
+
   constructor(protected services: LikeC4SharedServices) {
     logger.debug`created`
     // onNextTick(() => {
@@ -359,6 +366,13 @@ export class ProjectsManager {
       return ids
     }
     return [DefaultProject.id]
+  }
+
+  /**
+   * Returns true if the project ID is a known workspace project OR a resolved federation dependency.
+   */
+  isKnownProject(projectId: ProjectId | string): boolean {
+    return this.all.includes(projectId as ProjectId) || this.federationStore.hasManifest(projectId)
   }
 
   getProject(arg: ProjectId | LangiumDocument): ProjectData {
@@ -518,6 +532,9 @@ export class ProjectsManager {
 
     this.updateIncludesExcludes(project)
 
+    // Resolve federation dependencies if configured
+    await this.resolveFederationDependencies(project)
+
     // Reset cached data
     this.resetCaches()
 
@@ -646,6 +663,57 @@ export class ProjectsManager {
       id = `${name}-${i++}` as ProjectId
     }
     return id
+  }
+
+  /**
+   * Resolve federation dependencies for a project.
+   * Reads manifests from local registry directories and stores them
+   * in the FederationStore for use by FqnIndex and ModelBuilder.
+   */
+  protected async resolveFederationDependencies(project: ProjectData): Promise<void> {
+    const deps = project.config.federation?.dependencies
+    if (!deps) return
+
+    const projectFolder = project.folderUri.fsPath
+    for (const [name, dep] of Object.entries(deps)) {
+      try {
+        // Resolve source path relative to project folder
+        const { resolve } = await import('node:path')
+        const registryDir = resolve(projectFolder, dep.source)
+
+        if (dep.version) {
+          // Semver-based resolution
+          const { createLocalRegistry, parseRange } = await import('@likec4/federation')
+          const range = parseRange(dep.version)
+          if (!range) {
+            logger.warn(
+              `Invalid semver range "${dep.version}" for federation dependency "${name}" in project ${project.id}`,
+            )
+            continue
+          }
+
+          const registry = createLocalRegistry(registryDir)
+          const manifest = await registry.findMatch(name, range)
+          if (manifest) {
+            this.federationStore.setManifest(name, manifest)
+            logger.info`resolved federation dependency "${name}@${manifest.version}" for project ${project.id}`
+          } else {
+            logger.warn(
+              `No matching version found for federation dependency "${name}@${dep.version}" in ${registryDir}`,
+            )
+          }
+        } else {
+          // Federated registry resolution — always read latest manifest
+          const { createFederatedRegistry } = await import('@likec4/federation')
+          const registry = createFederatedRegistry(registryDir)
+          const manifest = await registry.readManifest(name)
+          this.federationStore.setManifest(name, manifest)
+          logger.info`resolved federation dependency "${name}" (latest) for project ${project.id}`
+        }
+      } catch (err) {
+        logger.warn(`Failed to resolve federation dependency "${name}" for project ${project.id}`, { err })
+      }
+    }
   }
 
   protected resetCaches(): void {

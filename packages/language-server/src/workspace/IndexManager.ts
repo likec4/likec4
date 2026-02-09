@@ -17,6 +17,10 @@ export class IndexManager extends DefaultIndexManager {
 
   projectElements(projectId: ProjectId, nodeType?: string, uris?: Set<string>): Stream<AstNodeDescription> {
     const projects = this.services.workspace.ProjectsManager
+    // Federated projects have no documents — return empty stream
+    if (projects.federationStore.hasManifest(projectId)) {
+      return stream([])
+    }
     let documentUris = stream(this.symbolIndex.keys())
     return documentUris
       .filter(uri => {

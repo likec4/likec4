@@ -1,0 +1,14 @@
+{
+  "schema": "likec4/registry/v1",
+  "providers": {
+    "auth-service": { "lastPublished": "2024-01-15T00:00:00.000Z" }
+  },
+  "consumers": {
+    "core-platform": {
+      "imports": { "auth-service": ["authService", "authService.api", "authService.db"] }
+    },
+    "payments": {
+      "imports": { "auth-service": ["authService", "authService.api"] }
+    }
+  }
+}

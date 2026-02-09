@@ -11,6 +11,7 @@ import type {
   ProjectId,
 } from '@likec4/core/types'
 import z from 'zod/v4'
+import { type FederationConfig, FederationConfigSchema } from './schema.federation'
 import { ImageAliasesSchema } from './schema.image-alias'
 import { type IncludeConfig, IncludeSchema } from './schema.include'
 import { LikeC4StylesConfigSchema } from './schema.theme'
@@ -80,6 +81,9 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),
   manualLayouts: ManualLayoutsConfigSchema.optional(),
+  federation: FederationConfigSchema.optional().meta({
+    description: 'Federation configuration for cross-project model sharing',
+  }),
 })
   .meta({
     id: 'LikeC4ProjectConfig',

@@ -1,0 +1,15 @@
+{
+  "name": "payments",
+  "title": "Payments Service",
+  "federation": {
+    "exports": ["paymentService"],
+    "dependencies": {
+      "auth-service": {
+        "source": "../registry"
+      }
+    },
+    "publish": {
+      "outDir": "../registry/payments"
+    }
+  }
+}

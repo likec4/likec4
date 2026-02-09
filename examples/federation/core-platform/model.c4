@@ -1,0 +1,23 @@
+specification {
+  element service
+  element component
+}
+
+import authService from 'auth-service'
+
+model {
+  service webApp 'Web Application' {
+    component frontend 'Frontend'
+    component backend 'Backend'
+  }
+
+  // The backend depends on the federated auth service
+  webApp.backend -> authService.api 'authenticates via'
+}
+
+views {
+  view platformOverview {
+    title 'Core Platform Overview'
+    include *
+  }
+}

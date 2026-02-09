@@ -1,0 +1,46 @@
+{
+  "schema": "likec4/federation/v1",
+  "name": "auth-service",
+  "specification": {
+    "elements": {
+      "service": {},
+      "component": {},
+      "database": {}
+    },
+    "tags": {},
+    "relationships": {}
+  },
+  "elements": {
+    "authService": {
+      "id": "authService",
+      "kind": "service",
+      "title": "Auth Service",
+      "style": {}
+    },
+    "authService.api": {
+      "id": "authService.api",
+      "kind": "component",
+      "title": "Auth API",
+      "style": {}
+    },
+    "authService.db": {
+      "id": "authService.db",
+      "kind": "database",
+      "title": "Auth Database",
+      "style": {}
+    }
+  },
+  "relations": {
+    "rel-auth-api-db": {
+      "id": "rel-auth-api-db",
+      "source": { "model": "authService.api" },
+      "target": { "model": "authService.db" },
+      "title": "reads/writes"
+    }
+  },
+  "project": {
+    "id": "auth-service",
+    "name": "auth-service",
+    "title": "Auth Service"
+  }
+}

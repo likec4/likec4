@@ -10,7 +10,7 @@ const { getDocument } = AstUtils
 export const checkImportsFromPoject = (services: LikeC4Services): ValidationCheck<ast.ImportsFromPoject> => {
   const projects = services.shared.workspace.ProjectsManager
   return tryOrLog((el, accept) => {
-    if (!projects.all.includes(el.project as ProjectId)) {
+    if (!projects.isKnownProject(el.project)) {
       accept('error', 'Imported project not found', {
         node: el,
         property: 'project',

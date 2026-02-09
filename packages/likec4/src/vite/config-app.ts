@@ -74,6 +74,11 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         'react-dom/server': resolve(pkgRoot, 'app/react/react-dom-server-mock.ts'),
       },
     },
+    css: {
+      postcss: {
+        plugins: [],
+      },
+    },
     clearScreen: false,
     optimizeDeps: {
       force: true,

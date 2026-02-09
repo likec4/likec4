@@ -1,4 +1,5 @@
 export * from './deployments-index'
+export * from './federation-store'
 export * from './fqn-index'
 export * from './model-builder'
 export * from './model-locator'

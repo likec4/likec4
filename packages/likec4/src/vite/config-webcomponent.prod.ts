@@ -28,6 +28,11 @@ export async function viteWebcomponentConfig({
 
   return {
     root,
+    css: {
+      postcss: {
+        plugins: [],
+      },
+    },
     clearScreen: false,
     base,
     configFile: false,

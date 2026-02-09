@@ -70,6 +70,10 @@
     },
     "manualLayouts": {
       "$ref": "#/$defs/ManualLayoutsConfig"
+    },
+    "federation": {
+      "description": "Federation configuration for cross-project model sharing",
+      "$ref": "#/$defs/FederationConfig"
     }
   },
   "required": [
@@ -506,6 +510,71 @@
         }
       },
       "additionalProperties": false
+    },
+    "FederationConfig": {
+      "id": "FederationConfig",
+      "description": "Federation configuration for cross-project model sharing",
+      "type": "object",
+      "properties": {
+        "exports": {
+          "description": "FQN patterns of elements to export, e.g. [\"authService\", \"authService.api\"]",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "exportViews": {
+          "description": "View IDs to export, e.g. [\"authServiceOverview\"]",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "dependencies": {
+          "description": "Dependencies on other projects' published manifests",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "description": "Path to manifest directory (local directory or git repo)",
+                "type": "string",
+                "minLength": 1
+              },
+              "version": {
+                "description": "Semver version range, e.g. \"^1.0.0\". Omit for Apollo-style (always latest)",
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "source"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "publish": {
+          "description": "Configuration for publishing this project's manifest",
+          "type": "object",
+          "properties": {
+            "outDir": {
+              "description": "Output directory for published manifests, relative to project root",
+              "default": ".likec4/federation",
+              "type": "string"
+            },
+            "registryDir": {
+              "description": "Path to the Apollo-style registry directory containing registry.json",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
     }
   }
 }

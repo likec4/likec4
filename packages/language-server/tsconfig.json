@@ -33,6 +33,9 @@
       "path": "../config/tsconfig.json"
     },
     {
+      "path": "../federation/tsconfig.json"
+    },
+    {
       "path": "../layouts/tsconfig.json"
     },
     {

@@ -1,6 +1,9 @@
 import type { LikeC4ProjectStylesConfig, LikeC4ProjectTheme, ThemeColorValues } from '@likec4/core/types'
+import type z from 'zod/v4'
 import type { GeneratorFn, LikeC4ProjectConfig, LikeC4ProjectConfigInput } from './schema'
 import { GeneratorsSchema, LikeC4ProjectConfigSchema } from './schema'
+import type { FederationConfig } from './schema.federation'
+import { FederationConfigSchema } from './schema.federation'
 import type { LikeC4ConfigThemeInput, LikeC4StylesConfigInput, ThemeColorValuesInput } from './schema.theme'
 import { LikeC4Config_Styles_Theme, LikeC4StylesConfigSchema, ThemeColorValuesSchema } from './schema.theme'
 
@@ -123,4 +126,25 @@ export function defineTheme<const S extends LikeC4ConfigThemeInput>(theme: S): L
  */
 export function defineStyle<const S extends LikeC4StylesConfigInput>(styles: S): LikeC4ProjectStylesConfig {
   return LikeC4StylesConfigSchema.parse(styles)
+}
+
+/**
+ * Define federation configuration for cross-project model sharing
+ *
+ * @example
+ * ```ts
+ * export default defineConfig({
+ *   name: 'auth-service',
+ *   federation: defineFederation({
+ *     exports: ['authService', 'authService.api'],
+ *     exportViews: ['authServiceOverview'],
+ *     publish: { outDir: './registry/auth-service' },
+ *   })
+ * })
+ * ```
+ */
+export function defineFederation<const F extends z.input<typeof FederationConfigSchema>>(
+  federation: F,
+): FederationConfig {
+  return FederationConfigSchema.parse(federation)
 }

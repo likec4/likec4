@@ -13,6 +13,12 @@ export {
 } from './schema'
 
 export type {
+  FederationConfig,
+  FederationDependency,
+  FederationPublish,
+} from './schema.federation'
+
+export type {
   IncludeConfig,
 } from './schema.include'
 
@@ -32,6 +38,7 @@ export {
 
 export {
   defineConfig,
+  defineFederation,
   defineGenerators,
   defineStyle,
   defineTheme,

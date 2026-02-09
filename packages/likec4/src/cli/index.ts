@@ -14,6 +14,7 @@ import buildCmd from './build'
 import checkUpdateCmd, { notifyAvailableUpdate } from './check-update'
 import codegenCmd from './codegen'
 import exportCmd from './export'
+import federationCmd from './federation'
 import mcpCmd from './mcp'
 import previewCmd from './preview'
 import serveCmd from './serve'
@@ -50,6 +51,7 @@ async function main() {
     previewCmd,
     validateCmd,
     mcpCmd,
+    federationCmd,
     checkUpdateCmd,
     yargs =>
       yargs.command({

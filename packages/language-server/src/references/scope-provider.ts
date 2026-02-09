@@ -1,4 +1,4 @@
-import { type ProjectId, nonexhaustive } from '@likec4/core'
+import { type Fqn, type ProjectId, nonexhaustive } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
@@ -13,19 +13,20 @@ import {
   stream,
   StreamScope,
 } from 'langium'
-import { ast, isFqnRefInsideGlobals, isFqnRefInsideModel } from '../ast'
+import { ast, ElementOps, isFqnRefInsideGlobals, isFqnRefInsideModel } from '../ast'
 import { logWarnError } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import { elementRef, readStrictFqn } from '../utils/elementRef'
-import type { IndexManager } from '../workspace'
+import { type IndexManager, type ProjectsManager } from '../workspace'
 
 const { getDocument } = AstUtils
 
 export class LikeC4ScopeProvider extends DefaultScopeProvider {
   protected deploymentsIndex: DeploymentsIndex
   protected fqnIndex: FqnIndex
+  protected projects: ProjectsManager
   protected override readonly indexManager: IndexManager
 
   constructor(services: LikeC4Services) {
@@ -33,6 +34,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     this.indexManager = services.shared.workspace.IndexManager
     this.fqnIndex = services.likec4.FqnIndex
     this.deploymentsIndex = services.likec4.DeploymentsIndex
+    this.projects = services.shared.workspace.ProjectsManager
   }
 
   override getScope(context: ReferenceInfo): Scope {
@@ -80,14 +82,26 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     if (!element) {
       return
     }
-    const projectId = projectIdFrom(element)
 
     if (ast.isElement(element)) {
-      const fqn = this.fqnIndex.getFqn(element)
-      yield* this.fqnIndex.uniqueDescedants(projectId, fqn)
+      // Check if this is a synthetic federated element (has FQN via symbol but no document)
+      const fqn = ElementOps.readId(element) as Fqn | undefined
+      if (fqn) {
+        // Try to find the project ID — for federated elements, projectIdFrom will fail
+        // since they have no document. Check federation store first.
+        for (const fedId of this.projects.federationStore.manifestProjectIds) {
+          if (this.projects.federationStore.byFqn(fedId as ProjectId, fqn).length > 0) {
+            yield* this.fqnIndex.uniqueDescedants(fedId as ProjectId, fqn)
+            return
+          }
+        }
+      }
+      const projectId = projectIdFrom(element)
+      yield* this.fqnIndex.uniqueDescedants(projectId, this.fqnIndex.getFqn(element))
       return
     }
     if (ast.isDeploymentNode(element)) {
+      const projectId = projectIdFrom(element)
       const fqn = this.deploymentsIndex.getFqn(element)
       yield* this.deploymentsIndex.uniqueDescedants(projectId, fqn)
     }

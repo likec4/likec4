@@ -38,6 +38,11 @@ export async function viteWebcomponentConfig({
       conditions: ['sources'],
       alias: viteAliases(),
     },
+    css: {
+      postcss: {
+        plugins: [],
+      },
+    },
     clearScreen: false,
     base,
     publicDir: false,

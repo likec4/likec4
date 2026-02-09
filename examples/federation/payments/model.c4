@@ -1,0 +1,26 @@
+specification {
+  element service
+  element component
+  element database
+}
+
+import authService from 'auth-service'
+
+model {
+  service paymentService 'Payment Service' {
+    component processor 'Payment Processor'
+    database ledger 'Payment Ledger'
+  }
+
+  paymentService.processor -> paymentService.ledger 'records transactions'
+
+  // Depends on federated auth service for authentication
+  paymentService.processor -> authService.api 'validates tokens'
+}
+
+views {
+  view paymentsOverview of paymentService {
+    title 'Payments Overview'
+    include *
+  }
+}

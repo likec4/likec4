@@ -53,6 +53,11 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     title,
     root,
     languageServices,
+    css: {
+      postcss: {
+        plugins: [],
+      },
+    },
     clearScreen: false,
     base,
     resolve: {

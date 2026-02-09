@@ -163,11 +163,20 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       if (fqns.size === 0) {
         return acc
       }
-      const anotherProject = this.unsafeSyncParseModelData(projectId)
-      if (anotherProject) {
-        const imported = [...fqns].flatMap(fqn => anotherProject.data.elements[fqn] ?? [])
-        if (hasAtLeast(imported, 1)) {
-          acc[projectId] = structuredClone(imported)
+      // Check federation store first — federated projects have no documents
+      const federationStore = this.projects.federationStore
+      if (federationStore.hasManifest(projectId)) {
+        const fedElements = federationStore.getElementsForImport(projectId, fqns)
+        if (hasAtLeast(fedElements, 1)) {
+          acc[projectId] = structuredClone(fedElements)
+        }
+      } else {
+        const anotherProject = this.unsafeSyncParseModelData(projectId)
+        if (anotherProject) {
+          const imported = [...fqns].flatMap(fqn => anotherProject.data.elements[fqn] ?? [])
+          if (hasAtLeast(imported, 1)) {
+            acc[projectId] = structuredClone(imported)
+          }
         }
       }
       return acc

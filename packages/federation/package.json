@@ -1,0 +1,65 @@
+{
+  "name": "@likec4/federation",
+  "version": "1.48.0",
+  "license": "MIT",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "Federation support for LikeC4 — cross-project model sharing via manifests.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/federation"
+  },
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "scripts": {
+    "typecheck": "tsc -b --verbose",
+    "build": "obuild",
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest",
+    "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-federation-$npm_package_version.tgz package.tgz || true"
+  },
+  "files": [
+    "dist",
+    "src",
+    "**/package.json",
+    "!**/*.spec.ts",
+    "!**/*.test-d.ts",
+    "!**/__test__/*",
+    "!**/__snapshots__/*",
+    "!**/*.map"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*",
+    "@likec4/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "obuild": "catalog:obuild",
+    "vitest": "catalog:vitest"
+  }
+}

@@ -1,0 +1,21 @@
+specification {
+  element service
+  element component
+  element database
+}
+
+model {
+  service authService 'Auth Service' {
+    component api 'Auth API'
+    database db 'Auth Database'
+  }
+
+  authService.api -> authService.db 'reads/writes'
+}
+
+views {
+  view authServiceOverview of authService {
+    title 'Auth Service Overview'
+    include *
+  }
+}

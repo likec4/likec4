@@ -122,6 +122,10 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 
   public byFqn(projectId: ProjectId, fqn: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(this.workspaceCache.get(`${projectId}:fqn:${fqn}`, () => {
+      // Check federation store first — federated projects have no documents
+      if (this.projects.federationStore.hasManifest(projectId)) {
+        return this.projects.federationStore.byFqn(projectId, fqn)
+      }
       return this
         .documents(projectId)
         .flatMap(doc => this.get(doc).byFqn(fqn))
@@ -132,6 +136,10 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   public rootElements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(`${projectId}:rootElements`, () => {
+        // Check federation store first — federated projects have no documents
+        if (this.projects.federationStore.hasManifest(projectId)) {
+          return this.projects.federationStore.rootElements(projectId)
+        }
         const allroots = new MultiMap<string, AstNodeDescriptionWithFqn>()
         for (const doc of this.documents(projectId)) {
           for (const desc of this.get(doc).rootElements()) {
@@ -146,6 +154,10 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   public directChildrenOf(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(`${projectId}:directChildrenOf:${parent}`, () => {
+        // Check federation store first — federated projects have no documents
+        if (this.projects.federationStore.hasManifest(projectId)) {
+          return this.projects.federationStore.directChildrenOf(projectId, parent)
+        }
         const allchildren = new MultiMap<string, AstNodeDescriptionWithFqn>()
         for (const doc of this.documents(projectId)) {
           for (const desc of this.get(doc).children(parent)) {
@@ -163,6 +175,10 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   public uniqueDescedants(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(`${projectId}:uniqueDescedants:${parent}`, () => {
+        // Check federation store first — federated projects have no documents
+        if (this.projects.federationStore.hasManifest(projectId)) {
+          return this.projects.federationStore.uniqueDescendants(projectId, parent)
+        }
         const children = new MultiMap<string, AstNodeDescriptionWithFqn>(),
           descendants = new MultiMap<string, AstNodeDescriptionWithFqn>()
 

@@ -1,0 +1,11 @@
+{
+  "name": "core-platform",
+  "title": "Core Platform",
+  "federation": {
+    "dependencies": {
+      "auth-service": {
+        "source": "../registry"
+      }
+    }
+  }
+}
