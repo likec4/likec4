@@ -28,34 +28,36 @@ export async function syncHandler(args: { path: string }) {
     exit(1)
   }
 
-  // Build import map from resolved dependencies
-  const imports: Record<string, string[]> = {}
+  const { createFederatedRegistry } = await import('@likec4/federation')
+
+  // Group dependencies by registry source, since different deps may come from different registries
+  const depsBySource = new Map<string, Record<string, string[]>>()
   for (const [depName, dep] of Object.entries(deps)) {
-    // Resolve the registry to read the manifest and get element FQNs
     const registryDir = resolve(project.folderUri.fsPath, dep.source)
-    const { createFederatedRegistry } = await import('@likec4/federation')
     const registry = createFederatedRegistry(registryDir)
 
     try {
       const manifest = await registry.readManifest(depName)
-      imports[depName] = Object.keys(manifest.elements)
-      logger.info(`  ${depName}: ${imports[depName]!.length} elements`)
+      const fqns = Object.keys(manifest.elements)
+      logger.info(`  ${depName}: ${fqns.length} elements`)
+
+      const existing = depsBySource.get(registryDir) ?? {}
+      existing[depName] = fqns
+      depsBySource.set(registryDir, existing)
     } catch {
       logger.warn(`  Could not read manifest for "${depName}", skipping`)
     }
   }
 
-  if (Object.keys(imports).length === 0) {
+  if (depsBySource.size === 0) {
     logger.warn('No manifests resolved. Nothing to sync.')
     exit(0)
   }
 
-  // Find the registry dir from the first dependency's source
-  const firstDep = Object.values(deps)[0]!
-  const registryDir = resolve(project.folderUri.fsPath, firstDep.source)
-  const { createFederatedRegistry } = await import('@likec4/federation')
-  const registry = createFederatedRegistry(registryDir)
-  await registry.syncConsumer(projectId as string, imports)
-
-  logger.info(k.green(`Synced consumer contract for "${projectId}" to registry.`))
+  // Sync consumer contract to each registry
+  for (const [registryDir, imports] of depsBySource) {
+    const registry = createFederatedRegistry(registryDir)
+    await registry.syncConsumer(projectId as string, imports)
+    logger.info(k.green(`Synced consumer contract for "${projectId}" to ${registryDir}`))
+  }
 }

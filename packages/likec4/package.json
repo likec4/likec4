@@ -180,6 +180,7 @@
     "@fontsource-variable/ibm-plex-sans": "^5.2.8",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
+    "@likec4/federation": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/style-preset": "workspace:*",

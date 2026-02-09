@@ -84,20 +84,22 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     }
 
     if (ast.isElement(element)) {
-      // Check if this is a synthetic federated element (has FQN via symbol but no document)
-      const fqn = ElementOps.readId(element) as Fqn | undefined
-      if (fqn) {
-        // Try to find the project ID — for federated elements, projectIdFrom will fail
-        // since they have no document. Check federation store first.
-        for (const fedId of this.projects.federationStore.manifestProjectIds) {
-          if (this.projects.federationStore.byFqn(fedId as ProjectId, fqn).length > 0) {
-            yield* this.fqnIndex.uniqueDescedants(fedId as ProjectId, fqn)
-            return
+      if (element.$container) {
+        // Normal AST element — resolve directly
+        const projectId = projectIdFrom(element)
+        yield* this.fqnIndex.uniqueDescedants(projectId, this.fqnIndex.getFqn(element))
+      } else {
+        // Synthetic federated element (no $container) — find its project in federation store
+        const fqn = ElementOps.readId(element) as Fqn | undefined
+        if (fqn) {
+          for (const fedId of this.projects.federationStore.manifestProjectIds) {
+            if (this.projects.federationStore.byFqn(fedId as ProjectId, fqn).length > 0) {
+              yield* this.fqnIndex.uniqueDescedants(fedId as ProjectId, fqn)
+              return
+            }
           }
         }
       }
-      const projectId = projectIdFrom(element)
-      yield* this.fqnIndex.uniqueDescedants(projectId, this.fqnIndex.getFqn(element))
       return
     }
     if (ast.isDeploymentNode(element)) {

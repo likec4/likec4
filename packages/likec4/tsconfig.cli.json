@@ -43,6 +43,9 @@
       "path": "../language-server/tsconfig.json"
     },
     {
+      "path": "../federation/tsconfig.json"
+    },
+    {
       "path": "../generators/tsconfig.json"
     },
     {

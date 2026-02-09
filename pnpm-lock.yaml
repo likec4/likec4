@@ -1639,6 +1639,9 @@ importers:
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../diagram
+      '@likec4/federation':
+        specifier: workspace:*
+        version: link:../federation
       '@likec4/generators':
         specifier: workspace:*
         version: link:../generators

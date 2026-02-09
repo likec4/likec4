@@ -1,6 +1,6 @@
 import type { FederationManifest, FederationRegistry } from '@likec4/core/types'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
 
 export interface FederatedRegistryReader {
   /** Read the latest manifest for a project */
@@ -14,12 +14,6 @@ export interface FederatedRegistryWriter extends FederatedRegistryReader {
   publishManifest(projectName: string, manifest: FederationManifest): Promise<void>
   /** Update a consumer's import contract in the registry */
   syncConsumer(consumerName: string, imports: Record<string, string[]>): Promise<void>
-}
-
-const emptyRegistry: FederationRegistry = {
-  schema: 'likec4/registry/v1',
-  providers: {},
-  consumers: {},
 }
 
 /**

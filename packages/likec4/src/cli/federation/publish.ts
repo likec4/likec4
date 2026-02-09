@@ -38,7 +38,7 @@ export async function publishHandler(args: { path: string }) {
 
   const manifest = buildManifest(model, federation, {})
 
-  // If registryDir is configured, run composition check
+  // If registryDir is configured, run composition check and publish to registry
   const registryDir = publishConfig.registryDir
     ? resolve(project.folderUri.fsPath, publishConfig.registryDir)
     : undefined
@@ -59,16 +59,12 @@ export async function publishHandler(args: { path: string }) {
       exit(1)
     }
     logger.info(k.green('Composition check passed.'))
-  }
 
-  // Write manifest
-  const outDir = resolve(project.folderUri.fsPath, publishConfig.outDir)
-  if (registryDir) {
-    const registry = createFederatedRegistry(registryDir)
     await registry.publishManifest(manifest.name, manifest)
     logger.info(k.green(`Published manifest to ${registryDir}/${manifest.name}/manifest.json`))
   } else {
     // Fallback: write directly to outDir
+    const outDir = resolve(project.folderUri.fsPath, publishConfig.outDir)
     const { mkdir, writeFile } = await import('node:fs/promises')
     await mkdir(outDir, { recursive: true })
     const manifestPath = resolve(outDir, 'manifest.json')
