@@ -212,7 +212,7 @@ const RelationshipPopoverInternal = ({
   onMouseLeave,
 }: RelationshipPopoverInternalProps) => {
   const ref = useRef<HTMLDivElement>(null)
-  const { enableNavigateTo, enableVscode, enableCompareWithLatest } = useEnabledFeatures()
+  const { enableNavigateTo, enableVscode } = useEnabledFeatures()
   const { onOpenSource } = useDiagramEventHandlers()
 
   const containerRef = useRootContainerRef()
@@ -346,7 +346,6 @@ const RelationshipPopoverInternal = ({
           paddingTop: '2',
         }}
       >
-        {enableCompareWithLatest && <EdgeDrifts diagramEdge={diagramEdge} />}
         <Button
           variant="default"
           color="gray"
