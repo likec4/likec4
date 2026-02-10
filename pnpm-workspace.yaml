@@ -92,7 +92,7 @@ catalogs:
     '@nanostores/media-query': 0.1.2
     '@nanostores/react': 1.0.0
     '@react-hookz/web': ^25.2.0
-    '@tabler/icons-react': 3.36.0
+    '@tabler/icons-react': 3.36.1
     '@types/react': 19.2.13
     '@types/react-dom': 19.2.3
     clsx: ^2.1.1
