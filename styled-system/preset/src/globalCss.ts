@@ -104,9 +104,10 @@ export const globalCss: ExtendableGlobalCss = {
         '& .react-flow__pane': {
           userSelect: 'none',
         },
-        '& :where(.react-flow__nodes, .react-flow__edges, .react-flow__edgelabel-renderer)': {
-          display: 'contents',
-        },
+        '& :is(.react-flow__nodes, .react-flow__edges, .react-flow__edgelabel-renderer, .react-flow__viewport-portal)':
+          {
+            display: 'contents',
+          },
         '& .react-flow__node.draggable:has(.likec4-compound-node)': {
           cursor: 'default',
         },
