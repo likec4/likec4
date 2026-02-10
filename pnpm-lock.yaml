@@ -123,8 +123,8 @@ catalogs:
       version: 1.8.1
   externals:
     '@hpcc-js/wasm-graphviz':
-      specifier: 1.17.0
-      version: 1.17.0
+      specifier: 1.21.0
+      version: 1.21.0
     '@types/picomatch':
       specifier: ^4.0.2
       version: 4.0.2
@@ -621,7 +621,7 @@ importers:
         version: 0.7.6(hono@4.11.8)(zod@3.25.76)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
-        version: 1.17.0
+        version: 1.21.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -1307,7 +1307,7 @@ importers:
         version: 1.19.9(hono@4.11.8)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
-        version: 1.17.0
+        version: 1.21.0
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -1606,7 +1606,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
-        version: 1.17.0
+        version: 1.21.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1682,7 +1682,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
-        version: 1.17.0
+        version: 1.21.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -2011,7 +2011,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
-        version: 1.17.0
+        version: 1.21.0
       bundle-require:
         specifier: catalog:externals
         version: 5.1.0(esbuild@0.27.2)
@@ -2241,7 +2241,7 @@ importers:
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
-        version: 1.17.0
+        version: 1.21.0
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -3652,8 +3652,8 @@ packages:
       hono: '>=3.9.0'
       zod: ^3.25.0 || ^4.0.0
 
-  '@hpcc-js/wasm-graphviz@1.17.0':
-    resolution: {integrity: sha512-EeQUvc41JrFU7AWkh3//KdgRT9waJrBxFA7H9m3uI/zAHzbvTgbw05tik+fxuDPD0sXRxc8g2kXqC5jMobWUQA==}
+  '@hpcc-js/wasm-graphviz@1.21.0':
+    resolution: {integrity: sha512-BQ06v/foSTxtwUyIdJYRz+S++/fHQuPVsFmX+pI3G66cANi1mQvsgToaN5deZ6ALEDUHsfHVMYlowNiimoET5g==}
 
   '@img/colour@1.0.0':
     resolution: {integrity: sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw==}
@@ -11090,7 +11090,7 @@ snapshots:
       hono: 4.11.8
       zod: 3.25.76
 
-  '@hpcc-js/wasm-graphviz@1.17.0': {}
+  '@hpcc-js/wasm-graphviz@1.21.0': {}
 
   '@img/colour@1.0.0': {}
 

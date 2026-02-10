@@ -55,7 +55,7 @@ catalogs:
     esbuild-node-externals: 1.20.1
     esbuild-plugins-node-modules-polyfill: 1.8.1
   externals:
-    '@hpcc-js/wasm-graphviz': 1.17.0
+    '@hpcc-js/wasm-graphviz': 1.21.0
     '@types/picomatch': ^4.0.2
     bundle-require: ^5.1.0
     chokidar: ^5.0.0
