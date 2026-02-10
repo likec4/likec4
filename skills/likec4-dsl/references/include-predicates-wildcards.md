@@ -159,7 +159,6 @@ views {
 
 | Wrong | Right | Why |
 |---|---|---|
-| `include * where kind is app` in unscoped view | `include * where kind is app` (same) | Correct as written |
 | `include **` expecting only immediate children | `include *` | `**` is recursive; use `*` for one level |
 | Forgetting to add relationship filters in scoped view | `include *` + `include -> parent` | Relationships may not auto-render without explicit inclusion |
 | Assuming `include *` includes grandchildren | Use `include **` instead | `*` is immediate children only |

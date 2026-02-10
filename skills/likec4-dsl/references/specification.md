@@ -73,4 +73,3 @@ specification {
 | Duplicate tag or kind identifier | Each identifier must be unique within its type category |
 | `#tag` in specification argument | Tags are defined without `#`; they are used with `#` elsewhere: `tag critical` → `#critical` |
 | Raw hex color in style | Define a named color token first: `color my-blue #003366`, then use `color my-blue` in styles |
-```

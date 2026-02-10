@@ -15,7 +15,7 @@ Architecture-as-code tool. Describe systems in `.c4`/`.likec4` files and LikeC4 
 4. **Strings** — `'single'`, `"double"` — all support multi-line. Escape quotes with backslash: `\'` or `\"`.
 5. **Markdown** — properties like `summary`/`description`/`notes` can contain Markdown. Use triple quotes `'''` or `"""`. Begin a new line after opening quotes and indent Markdown content for better formatting and syntax highlighting.
 6. **Comments** — `// single line` and `/* multi-line */` comments supported anywhere.
-7. **Identifier** — letters, digits, hyphens, underscores only. No dots (dots are FQN separators). Can't start with a digit. Examples: `customer`, `payment-service`, `frontendApp`, `quque-1`. **Critical:** `payment-api` is valid; `payment.api` is NOT an identifier (dots separate FQN hierarchy). See `references/identifier-validity.md`.
+7. **Identifier** — letters, digits, hyphens, underscores only. No dots (dots are FQN separators). Can't start with a digit. Examples: `customer`, `payment-service`, `frontendApp`, `queue-1`. **Critical:** `payment-api` is valid; `payment.api` is NOT an identifier (dots separate FQN hierarchy). See `references/identifier-validity.md`.
 8. **FQN** — Fully Qualified Name (FQN) is a dot-separated path to an element, MUST be unique within the project. Examples: `customer`, `saas.backend.payment-service.paymentsApi`, `infra.eu.zone1.node1`.
 9. **References** — LikeC4 has lexical scoping with hoisting, nested scope may shadow outer, like in JavaScript. That scope does **not** carry across files: even with imports/includes in the same project, cross-file references must use full FQNs. Tiny reminder: `backend.api` does not survive a file boundary; across files write the full path such as `cloud.backend.api`.
 
@@ -116,7 +116,7 @@ pnpm dlx likec4 validate --json --no-layout --file <edited-file> <project-dir>
 
 - `--json` — structured output (stdout), logging goes to stderr
 - `--no-layout` — skip layout drift checks (faster, only syntax+semantic)
-- `--file <path>` — only report errors from this file (can repeat for multiple files)
+- `--file <path>` — use with `--json` to scope results to the edited files. Without `--json`, text output still prints all diagnostics. Repeat once per edited source file.
 - `<project-dir>` — path to the project directory
 - There is **no** `likec4 check` command; use `likec4 validate`.
 

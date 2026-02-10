@@ -54,7 +54,7 @@ Load this file when encountering validation errors, unexpected rendering, or whe
 | `validate` reports config not found | Ensure `likec4.config.json` exists in the project root directory |
 | Imported file shows "Module not resolved" | Use correct relative path: `import { x } from './path/to/file.c4'` |
 | Symbol from import invisible in model | Symbol must be public (defined at top level); nested elements need FQN |
-| Large error count in project but your file is clean | Use `--file <edited-file>` to filter; upstream errors are not your responsibility |
+| Large error count in project but your file is clean | Use `likec4 validate --json --no-layout --file <edited-file> <project-dir>` and check `filteredErrors`/`filteredFiles`; text mode may still print upstream diagnostics |
 
 ## Performance & Large Models
 
