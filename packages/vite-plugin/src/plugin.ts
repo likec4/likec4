@@ -1,6 +1,6 @@
 import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
-import { type LikeC4, fromWorkspace } from '@likec4/language-services'
+import { fromWorkspace } from '@likec4/language-services'
 import { loggable } from '@likec4/log'
 import { isDeepEqual, map } from 'remeda'
 import type {
