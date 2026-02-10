@@ -1,4 +1,4 @@
-import { assign, sendTo, spawnChild, stopChild } from 'xstate/actions'
+import { assign, log, sendTo, spawnChild, stopChild } from 'xstate/actions'
 import { and } from 'xstate/guards'
 import {
   assignLastClickedNode,
@@ -88,7 +88,6 @@ export const ready = machine.createStateConfig({
       ],
     },
     'layout.resetManualLayout': {
-      guard: 'not readonly',
       actions: [
         cancelEditing(),
         disableCompareWithLatest(),

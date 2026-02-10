@@ -252,7 +252,6 @@ const DriftsGroup = styled(m.div, {
     py: '2',
     cursor: 'default',
     rounded: 'sm',
-    // transition: 'faster',
     backgroundColor: 'likec4.compare.manual/10',
     border: '1px solid {colors.likec4.compare.manual.outline/20}',
     _hover: {
@@ -277,9 +276,6 @@ const SectionHeader = styled(m.div, {
     fontWeight: 'medium',
     textStyle: 'dimmed.xs',
     pl: '2',
-    // textStyle: 'xs',
-    // fontWeight: '[450]',
-    // color: 'likec4.compare.manual.outline',
   },
 }, {
   defaultProps: {
@@ -299,9 +295,6 @@ const DriftLabel = styled(m.div, {
       base: 'text',
       _groupHover: 'text.bright',
     },
-    // textStyle: 'xs',
-    // fontWeight: '[450]',
-    // color: 'likec4.compare.manual.outline',
   },
 }, {
   defaultProps: {

@@ -1,0 +1,109 @@
+{
+  "name": "@likec4/vite-plugin",
+  "description": "LikeC4 Vite Plugin",
+  "version": "1.48.0",
+  "license": "MIT",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "bin",
+    "dist",
+    "**/package.json",
+    "!**/__mocks__/",
+    "!**/__tests__/",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/vite-plugin"
+  },
+  "engines": {
+    "node": ">=22.21.1"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
+  },
+  "scripts": {
+    "typecheck": "tsc -b --verbose",
+    "build": "obuild",
+    "prepack": "likec4ops prepack",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-vite-plugin-$npm_package_version.tgz package.tgz || true",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
+    "lint:package": "pnpx publint ./package.tgz",
+    "clean": "likec4ops clean contrib src/generated src/generated-lib",
+    "test": "vitest run --no-isolate",
+    "vitest:ui": "vitest --no-isolate --ui"
+  },
+  "dependencies": {
+    "@likec4/config": "workspace:*",
+    "@likec4/core": "workspace:*",
+    "@likec4/generators": "workspace:*",
+    "@likec4/icons": "workspace:*",
+    "@likec4/language-services": "workspace:*",
+    "@likec4/language-server": "workspace:*",
+    "@likec4/layouts": "workspace:*",
+    "@likec4/log": "workspace:*",
+    "@nanostores/react": "catalog:react",
+    "nanostores": "catalog:react",
+    "langium": "catalog:langium",
+    "defu": "catalog:utils",
+    "tinyrainbow": "catalog:utils",
+    "birpc": "catalog:vite",
+    "json5": "catalog:utils",
+    "pathe": "catalog:utils",
+    "std-env": "catalog:externals",
+    "type-fest": "catalog:externals",
+    "vite": "catalog:vite",
+    "zod": "catalog:externals"
+  },
+  "peerDependencies": {
+    "react": "catalog:react"
+  },
+  "devDependencies": {
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@types/natural-compare-lite": "catalog:utils",
+    "@types/node": "catalog:",
+    "@types/picomatch": "catalog:externals",
+    "@types/vscode": "catalog:vscode",
+    "@types/react": "catalog:react",
+    "@types/semver": "^7.7.1",
+    "fast-equals": "catalog:utils",
+    "indent-string": "^5.0.0",
+    "obuild": "catalog:obuild",
+    "oxlint": "catalog:",
+    "p-debounce": "catalog:utils",
+    "p-queue": "catalog:utils",
+    "p-timeout": "catalog:utils",
+    "picomatch": "catalog:externals",
+    "pretty-ms": "^9.3.0",
+    "remeda": "catalog:utils",
+    "strip-indent": "catalog:utils",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "ufo": "catalog:utils",
+    "vitest": "catalog:vitest"
+  }
+}

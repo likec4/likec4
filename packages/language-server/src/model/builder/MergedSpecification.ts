@@ -4,6 +4,7 @@ import { exact, FqnRef } from '@likec4/core/types'
 import { isNonEmptyArray, MultiMap, nameFromFqn } from '@likec4/core/utils'
 import {
   isEmpty,
+  isEmptyish,
   isNonNullish,
   unique,
 } from 'remeda'
@@ -91,7 +92,10 @@ export class MergedSpecification {
       description ??= __kind.description
       summary ??= __kind.summary
       links ??= __kind.links
-      title = title === nameFromFqn(id) && __kind.title ? __kind.title : title
+
+      if (isEmptyish(title)) {
+        title = __kind.title || nameFromFqn(id)
+      }
 
       if (__kind.tags && isNonEmptyArray(__kind.tags)) {
         tags = tags

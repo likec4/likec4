@@ -45,11 +45,11 @@ describe('Issue 911 - Parent-relations cant contain comments', () => {
     const { edges: [edge1, edge2] } = withReadableEdges(views['index' as ViewId]!)
     expect(edge1).toMatchObject({
       id: 'a1:a2',
-      label: 'comment included'
+      label: 'comment included',
     })
     expect(edge2).toMatchObject({
       id: 'b1:b2',
-      label: 'comment not included'
+      label: 'comment not included',
     })
   })
 })

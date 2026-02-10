@@ -19,6 +19,12 @@
       "path": "./packages/language-server/"
     },
     {
+      "path": "./packages/language-services/"
+    },
+    {
+      "path": "./packages/vite-plugin/"
+    },
+    {
       "path": "./packages/layouts/"
     },
     {

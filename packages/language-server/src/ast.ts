@@ -96,7 +96,7 @@ export interface ParsedAstElement {
   id: c4.Fqn
   astPath: string
   kind: c4.ElementKind
-  title: string
+  title?: string
   summary?: c4.MarkdownOrString
   description?: c4.MarkdownOrString
   technology?: string
