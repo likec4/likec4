@@ -1862,8 +1862,8 @@ importers:
         specifier: catalog:utils
         version: 2.2.3
       ky:
-        specifier: ^1.14.1
-        version: 1.14.1
+        specifier: ^1.14.3
+        version: 1.14.3
       langium:
         specifier: catalog:langium
         version: 3.5.0
@@ -6758,8 +6758,8 @@ packages:
   kolorist@1.8.0:
     resolution: {integrity: sha512-Y+60/zizpJ3HRH8DCss+q95yr6145JXZo46OTpFvDZWLfRCE4qChOyk1b26nMaNpfHHgxagk9dXT5OP0Tfe+dQ==}
 
-  ky@1.14.1:
-    resolution: {integrity: sha512-hYje4L9JCmpEQBtudo+v52X5X8tgWXUYyPcxKSuxQNboqufecl9VMWjGiucAFH060AwPXHZuH+WB2rrqfkmafw==}
+  ky@1.14.3:
+    resolution: {integrity: sha512-9zy9lkjac+TR1c2tG+mkNSVlyOpInnWdSMiue4F+kq8TwJSgv6o8jhLRg8Ho6SnZ9wOYUq/yozts9qQCfk7bIw==}
     engines: {node: '>=18'}
 
   langium-cli@3.5.2:
@@ -14617,7 +14617,7 @@ snapshots:
 
   kolorist@1.8.0: {}
 
-  ky@1.14.1: {}
+  ky@1.14.3: {}
 
   langium-cli@3.5.2:
     dependencies:
