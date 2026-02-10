@@ -6,8 +6,8 @@ export default defineBuildConfig({
       type: 'bundle',
       input: [
         './src/bundled.ts',
-        './src/browser-worker.ts',
-        './src/browser.ts',
+        './src/browser/worker.ts',
+        './src/browser/index.ts',
         './src/protocol.ts',
         './src/likec4lib.ts',
         './src/index.ts',

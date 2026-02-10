@@ -71,19 +71,19 @@
       }
     },
     "./browser-worker": {
-      "sources": "./src/browser-worker.ts",
+      "sources": "./src/browser/worker.ts",
       "default": {
-        "types": "./dist/browser-worker.d.mts",
-        "import": "./dist/browser-worker.mjs",
-        "default": "./dist/browser-worker.mjs"
+        "types": "./dist/browser/worker.d.mts",
+        "import": "./dist/browser/worker.mjs",
+        "default": "./dist/browser/worker.mjs"
       }
     },
     "./browser": {
-      "sources": "./src/browser.ts",
+      "sources": "./src/browser/index.ts",
       "default": {
-        "types": "./dist/browser.d.mts",
-        "import": "./dist/browser.mjs",
-        "default": "./dist/browser.mjs"
+        "types": "./dist/browser/index.d.mts",
+        "import": "./dist/browser/index.mjs",
+        "default": "./dist/browser/index.mjs"
       }
     },
     "./protocol": {
