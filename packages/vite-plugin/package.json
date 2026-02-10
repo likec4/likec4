@@ -86,6 +86,8 @@
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:externals",
     "@types/vscode": "catalog:vscode",
+    "@types/react": "catalog:react",
+    "@types/semver": "^7.7.1",
     "fast-equals": "catalog:utils",
     "indent-string": "^5.0.0",
     "obuild": "catalog:obuild",

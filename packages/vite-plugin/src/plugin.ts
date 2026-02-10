@@ -1,12 +1,13 @@
 import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { type LikeC4, fromWorkspace } from '@likec4/language-services'
+import { loggable } from '@likec4/log'
 import { isDeepEqual, map } from 'remeda'
 import type {
   Plugin,
   PluginOption,
 } from 'vite'
-import type { ViteLogger } from './logger'
+import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
 import { d2Module, projectD2Module } from './virtuals/d2'
@@ -108,7 +109,7 @@ export function LikeC4VitePlugin({
   environments,
   ...opts
 }: LikeC4VitePluginOptions): Plugin {
-  let logger: ViteLogger
+  // let logger: ViteLogger
   let likec4: LikeC4LanguageServices
   let assetsDir: string
 
@@ -123,7 +124,7 @@ export function LikeC4VitePlugin({
 
     async configResolved(config) {
       config.server.hmr
-      logger = config.logger
+      // logger = config.logger
       // if (useOverviewGraph === true) {
       //   const resolvedAlias = config.resolve.alias.find(a => a.find === 'likec4/previews')?.replacement
       //   if (resolvedAlias) {
@@ -211,7 +212,7 @@ export function LikeC4VitePlugin({
           try {
             await server.reloadModule(md)
           } catch (err) {
-            logger.error(err)
+            logger.error(loggable(err))
           }
         }
       }

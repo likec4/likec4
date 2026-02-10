@@ -1,4 +1,4 @@
-import type { ComputedView } from '@likec4/core/model'
+import type { ComputedView } from '@likec4/core/types'
 
 export function diagramPreviewsSources(views: ComputedView[], assetsDir: string) {
   const {

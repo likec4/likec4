@@ -2163,6 +2163,12 @@ importers:
       '@types/picomatch':
         specifier: catalog:externals
         version: 4.0.2
+      '@types/react':
+        specifier: 19.2.9
+        version: 19.2.9
+      '@types/semver':
+        specifier: ^7.7.1
+        version: 7.7.1
       '@types/vscode':
         specifier: catalog:vscode
         version: 1.106.1
