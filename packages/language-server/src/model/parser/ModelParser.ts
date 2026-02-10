@@ -111,7 +111,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         id,
         kind,
         astPath,
-        title: title ?? astNode.name,
+        title,
         metadata,
         tags: tags ?? undefined,
         links: this.parseLinks(astNode.body),
