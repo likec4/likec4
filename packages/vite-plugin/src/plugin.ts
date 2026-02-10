@@ -123,17 +123,6 @@ export function LikeC4VitePlugin({
     },
 
     async configResolved(config) {
-      config.server.hmr
-      // logger = config.logger
-      // if (useOverviewGraph === true) {
-      //   const resolvedAlias = config.resolve.alias.find(a => a.find === 'likec4/previews')?.replacement
-      //   if (resolvedAlias) {
-      //     assetsDir = resolvedAlias
-      //     logger.info(k.dim('likec4/previews alias') + ' ' + k.dim(assetsDir))
-      //   } else {
-      //     logger.warn('likec4/previews alias not found')
-      //   }
-      // }
       if (opts.languageServices) {
         likec4 = opts.languageServices
       } else {
