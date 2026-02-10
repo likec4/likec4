@@ -136,7 +136,7 @@ const hasDrifts = (props: Types.NodeProps) => {
 }
 
 export function CompoundElementNode(props: Types.NodeProps<'compound-element'>) {
-  const { enableElementDetails, enableReadOnly, enableCompareWithLatest, enableNotes } = useEnabledFeatures()
+  const { enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   const showDrifts = enableCompareWithLatest && hasDrifts(props)
   return (
     <CompoundNodeContainer
@@ -154,7 +154,7 @@ export function CompoundElementNode(props: Types.NodeProps<'compound-element'>) 
 }
 
 export function CompoundDeploymentNode(props: Types.NodeProps<'compound-deployment'>) {
-  const { enableElementDetails, enableReadOnly, enableCompareWithLatest, enableNotes } = useEnabledFeatures()
+  const { enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   const showDrifts = enableCompareWithLatest && hasDrifts(props)
   return (
     <CompoundNodeContainer
