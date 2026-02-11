@@ -47,9 +47,11 @@ Each view becomes one diagram (tab) in the output. One `.drawio` file is produce
 | Relationship: description, technology, notes, navigateTo | Style `likec4Description`, `likec4Technology`, `likec4Notes`, `likec4NavigateTo` |
 | Relationship: kind, notation | Style `likec4RelationshipKind`, `likec4Notation` |
 | Relationship: links, metadata | Style `likec4Links` (JSON array), `likec4Metadata` (JSON object) |
-| Relationship: head/tail, line style, color | Style `endArrow`, `startArrow`, `dashed`/`dashPattern`, `strokeColor` |
+| Relationship: head/tail, line style, color | Style `endArrow`, `startArrow`, `dashed`/`dashPattern`, `strokeColor`; label uses theme `relationships.label` for font color |
 
-The generator accepts optional **options** for round-trip or tooling: `layoutOverride` (per-node `{ x, y, width, height }`), `strokeColorByNodeId`, `strokeWidthByNodeId`, and `compressed`. Set **`compressed: false`** to write diagram XML uncompressed inside the `.drawio` file (larger file; use when draw.io desktop or Open file / Import fails to open the default compressed export). The **Playground** exports uncompressed by default for maximum compatibility; the **CLI** uses compressed by default and supports `--uncompressed`.
+Export uses the **project theme** (or LikeC4 default) for element and relationship colors; containers (bounded contexts) are drawn **behind** their children as a wrapping rectangle; edge **connection points** are derived from layout so arrows attach on the correct sides of nodes.
+
+The generator accepts optional **options** for round-trip or tooling: `layoutOverride` (per-node bbox: `{ x, y, width, height }`, same shape as `@likec4/core` BBox), `strokeColorByNodeId`, `strokeWidthByNodeId`, and `compressed`. Set **`compressed: false`** to write diagram XML uncompressed inside the `.drawio` file (larger file; use when draw.io desktop or Open file / Import fails to open the default compressed export). The **Playground** exports uncompressed by default for maximum compatibility; the **CLI** uses compressed by default and supports `--uncompressed`.
 
 ### Not preserved on export
 

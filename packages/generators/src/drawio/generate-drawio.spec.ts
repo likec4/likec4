@@ -174,7 +174,6 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
   test('edge label style includes labelBackgroundColor and fontColor (theme-aligned)', () => {
     const xml = generateDrawio(mockViewModel(fakeDiagram), { compressed: false })
     const content = getAllDiagrams(xml)[0]!.content
-    // At least one edge with a label or style must have labelBackgroundColor and fontColor
     expect(
       content,
       'Edge style must include labelBackgroundColor and fontColor for label box',
