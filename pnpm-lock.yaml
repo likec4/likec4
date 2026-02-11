@@ -2282,8 +2282,8 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4
       '@vscode/extension-telemetry':
-        specifier: ^1.2.0
-        version: 1.2.0(tslib@2.8.1)
+        specifier: ^1.5.0
+        version: 1.5.0(tslib@2.8.1)
       esbuild-plugins-node-modules-polyfill:
         specifier: catalog:esbuild
         version: 1.8.1(esbuild@0.27.2)
@@ -5032,8 +5032,8 @@ packages:
   '@vscode/emmet-helper@2.11.0':
     resolution: {integrity: sha512-QLxjQR3imPZPQltfbWRnHU6JecWTF1QSWhx3GAKQpslx7y3Dp6sIIXhKjiUJ/BR9FX8PVthjr9PD6pNwOJfAzw==}
 
-  '@vscode/extension-telemetry@1.2.0':
-    resolution: {integrity: sha512-En6dTwfy5NFzSMibvOpx/lKq2jtgWuR4++KJbi3SpQ2iT8gm+PHo9868/scocW122KDwTxl4ruxZ7i4rHmJJnQ==}
+  '@vscode/extension-telemetry@1.5.0':
+    resolution: {integrity: sha512-8aZ4Ne3PtDtDXfsNBPeTwMoWS4TpgAGeLUcUtxiRKJrlBSi1NCi9sM6EBwK21+WEfEO6JgKszvp4PTTcns1HCw==}
     engines: {vscode: ^1.75.0}
 
   '@vscode/iconv-lite-umd@0.7.0':
@@ -12604,7 +12604,7 @@ snapshots:
       vscode-languageserver-types: 3.17.5
       vscode-uri: 3.1.0
 
-  '@vscode/extension-telemetry@1.2.0(tslib@2.8.1)':
+  '@vscode/extension-telemetry@1.5.0(tslib@2.8.1)':
     dependencies:
       '@microsoft/1ds-core-js': 4.3.10(tslib@2.8.1)
       '@microsoft/1ds-post-js': 4.3.10(tslib@2.8.1)
