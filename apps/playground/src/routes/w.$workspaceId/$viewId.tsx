@@ -1,3 +1,4 @@
+import { useDrawioContextMenu } from '$components/drawio/DrawioContextMenuProvider'
 import { usePlayground, usePlaygroundActorRef, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import { IconRenderer } from '$components/IconRenderer'
 import type { scalar, ViewId } from '@likec4/core/types'
@@ -79,6 +80,8 @@ function WorkspaceDiagramPage() {
   //   store.getState().showLocation(location)
   // }
 
+  const { openMenu: onCanvasContextMenu } = useDrawioContextMenu()
+
   if (_diagram && likec4model) {
     return (
       <Box
@@ -113,6 +116,7 @@ function WorkspaceDiagramPage() {
                 panActivationKeyCode: null,
               }}
               renderIcon={IconRenderer}
+              onCanvasContextMenu={onCanvasContextMenu}
               onNavigateTo={(nextView, event) => {
                 event?.stopPropagation()
                 playground.openSources({

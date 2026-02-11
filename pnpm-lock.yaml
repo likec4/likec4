@@ -628,6 +628,9 @@ importers:
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../../packages/diagram
+      '@likec4/generators':
+        specifier: workspace:*
+        version: link:../../packages/generators
       '@likec4/icons':
         specifier: workspace:*
         version: link:../../packages/icons
@@ -721,6 +724,9 @@ importers:
       langium:
         specifier: catalog:langium
         version: 3.5.0
+      miniflare:
+        specifier: 4.20260205.0
+        version: 4.20260205.0
       monaco-editor-wrapper:
         specifier: 6.7.0
         version: 6.7.0

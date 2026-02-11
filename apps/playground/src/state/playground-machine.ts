@@ -116,6 +116,7 @@ export type PlaygroundEvents =
   | { type: 'workspace.openSources'; target: LocateRequest.Params }
   | { type: 'workspace.changeActiveView'; viewId: ViewId }
   | { type: 'workspace.changeActiveFile'; filename: string }
+  | { type: 'workspace.addFile'; filename: string; content: string }
   | { type: 'workspace.switch'; workspace: PlaygroundInput }
   | { type: 'workspace.share'; options: ShareOptions }
   | { type: 'workspace.persist' }
@@ -386,6 +387,22 @@ export const playgroundMachine = setup({
           actions: [
             'persist to storage',
             assign({
+              activeFilename: ({ event }) => event.filename,
+            }),
+          ],
+        },
+        'workspace.addFile': {
+          actions: [
+            'persist to storage',
+            assign({
+              files: ({ event, context }) => ({
+                ...context.files,
+                [event.filename]: event.content,
+              }),
+              originalFiles: ({ event, context }) => ({
+                ...context.originalFiles,
+                [event.filename]: event.content,
+              }),
               activeFilename: ({ event }) => event.filename,
             }),
           ],
