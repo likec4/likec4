@@ -37,7 +37,9 @@ Each view becomes one diagram (tab) in the output. One `.drawio` file is produce
 | Element: notation | Style `likec4Notation` |
 | Element: shape | Style `shape` (rectangle, umlActor, cylinder3, document, etc.) |
 | Element: color | Style `fillColor`, `strokeColor`, `fontColor` (hex); theme/custom name in `likec4ColorName`; stroke in `likec4StrokeColor` for round-trip |
-| Element: border, opacity | Style `strokeWidth`, `likec4Border`; `opacity` |
+| Element: border, opacity | Style `strokeWidth`, `likec4Border`, `likec4StrokeWidth` (round-trip); `opacity` |
+| Element: size, padding, textSize, iconPosition | Style `likec4Size`, `likec4Padding`, `likec4TextSize`, `likec4IconPosition` |
+| View notation | Root cell `likec4ViewNotation` (round-trip) |
 | Element position/size | mxGeometry `x`, `y`, `width`, `height` (from layout) |
 | Relationship: source, target, label | mxCell edge `source`, `target`, `value` |
 | Relationship: description, technology, notes, navigateTo | Style `likec4Description`, `likec4Technology`, `likec4Notes`, `likec4NavigateTo` |
@@ -63,7 +65,7 @@ A Draw.io file is converted to a single LikeC4 source file (model + views). Elem
 | Diagram (tab) | View; diagram `name`/`id` → view id; root cell `likec4ViewTitle`/`likec4ViewDescription` → view title/description |
 | Vertex: value, parent | Element title (HTML stripped), hierarchy (FQN) |
 | Vertex: style fillColor | Element `style { color }`; hex → custom color names in specification |
-| Vertex: likec4* style keys | Element: description, technology, notes, tags, navigateTo, icon, summary, links, notation, border, opacity, shape |
+| Vertex: likec4* style keys | Element: description, technology, notes, tags, navigateTo, icon, summary, links, notation, border, opacity, shape, size, padding, textSize, iconPosition |
 | Vertex: likec4ColorName | Specification color name; element uses named color |
 | Vertex: style `link` (Draw.io native) | Element `link 'url'` when no likec4Links |
 | Edge: source, target, value | Relationship between element FQNs; label as relationship title |
@@ -78,6 +80,7 @@ On import, the following are emitted as **comment blocks** at the end of the fil
 
 - **Layout** — `// <likec4.layout.drawio>` … `// </likec4.layout.drawio>` with a JSON map of view id → node FQN → `{ x, y, width, height }`.
 - **Vertex stroke color** — `// <likec4.strokeColor.vertices>` with lines `// FQN=#hex` (LikeC4 has no element strokeColor in the DSL).
+- **Vertex stroke width** — `// <likec4.strokeWidth.vertices>` with lines `// FQN=value` (numeric strokeWidth for round-trip).
 
 ### Not preserved on import
 

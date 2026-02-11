@@ -261,7 +261,14 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     const colorStyle = elemColors != null
       ? `fillColor=${elemColors.fill};strokeColor=${elemColors.stroke};fontColor=${elemColors.stroke};`
       : ''
-    const nodeStyle = node.style as { border?: string; opacity?: number } | undefined
+    const nodeStyle = node.style as {
+      border?: string
+      opacity?: number
+      size?: string
+      padding?: string
+      textSize?: string
+      iconPosition?: string
+    } | undefined
     const borderVal = nodeStyle?.border
     const strokeWidth = borderVal === 'none' ? '0' : borderVal ? '1' : ''
     const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
@@ -289,7 +296,12 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     if (summaryStr !== '') likec4Extra.push(`likec4Summary=${encodeURIComponent(summaryStr)}`)
     if (linksJson !== '') likec4Extra.push(`likec4Links=${linksJson}`)
     if (borderVal) likec4Extra.push(`likec4Border=${encodeURIComponent(borderVal)}`)
+    if (strokeWidth !== '') likec4Extra.push(`likec4StrokeWidth=${encodeURIComponent(strokeWidth)}`)
     if (colorNameForRoundtrip !== '') likec4Extra.push(`likec4ColorName=${colorNameForRoundtrip}`)
+    if (nodeStyle?.size) likec4Extra.push(`likec4Size=${encodeURIComponent(nodeStyle.size)}`)
+    if (nodeStyle?.padding) likec4Extra.push(`likec4Padding=${encodeURIComponent(nodeStyle.padding)}`)
+    if (nodeStyle?.textSize) likec4Extra.push(`likec4TextSize=${encodeURIComponent(nodeStyle.textSize)}`)
+    if (nodeStyle?.iconPosition) likec4Extra.push(`likec4IconPosition=${encodeURIComponent(nodeStyle.iconPosition)}`)
     if (elemColors?.stroke && /^#[0-9A-Fa-f]{3,8}$/.test(elemColors.stroke)) {
       likec4Extra.push(`likec4StrokeColor=${encodeURIComponent(elemColors.stroke)}`)
     }
@@ -370,11 +382,15 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     ? viewDescRaw
     : ''
   const viewDescEnc = viewDesc.trim() !== '' ? encodeURIComponent(viewDesc.trim()) : ''
-  const rootCellStyle = viewDescEnc !== ''
-    ? `rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ffffff;likec4ViewTitle=${
-      encodeURIComponent(viewTitle ?? view.id)
-    };likec4ViewDescription=${viewDescEnc};`
-    : 'rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ffffff;'
+  const viewNotation = (view as { notation?: string }).notation
+  const viewNotationEnc = viewNotation != null && viewNotation !== '' ? encodeURIComponent(viewNotation) : ''
+  const rootParts = [
+    'rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ffffff;',
+    `likec4ViewTitle=${encodeURIComponent(viewTitle ?? view.id)};`,
+    viewDescEnc !== '' ? `likec4ViewDescription=${viewDescEnc};` : '',
+    viewNotationEnc !== '' ? `likec4ViewNotation=${viewNotationEnc};` : '',
+  ]
+  const rootCellStyle = rootParts.join('')
 
   const allCells = [
     `<mxCell id="${defaultParentId}" value="" style="${rootCellStyle}" vertex="1" parent="${rootId}">

@@ -51,8 +51,18 @@ export interface DrawioCell {
   link?: string
   /** From style likec4Border (vertex: solid|dashed|dotted|none) */
   border?: string
+  /** From style strokeWidth (vertex; numeric for round-trip comment) */
+  strokeWidth?: string
   /** From style likec4ColorName (vertex; theme/custom color name for roundtrip) */
   colorName?: string
+  /** From style likec4Size (vertex; xs/sm/md/lg/xl) */
+  size?: string
+  /** From style likec4Padding (vertex) */
+  padding?: string
+  /** From style likec4TextSize (vertex) */
+  textSize?: string
+  /** From style likec4IconPosition (vertex) */
+  iconPosition?: string
   /** From style opacity (vertex; 0-100) */
   opacity?: string
   /** From style likec4RelationshipKind (edge) */
@@ -161,9 +171,25 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       ? decodeURIComponent(summaryFromStyle)
       : undefined
     const links = linksFromStyle != null && linksFromStyle !== '' ? decodeURIComponent(linksFromStyle) : undefined
+    const border = borderFromStyle != null && borderFromStyle !== '' ? decodeURIComponent(borderFromStyle) : undefined
+    const strokeWidthFromStyle = styleMap.get('strokewidth')
+    const strokeWidth = strokeWidthFromStyle != null && strokeWidthFromStyle !== '' ? strokeWidthFromStyle : undefined
+    const sizeFromStyle = styleMap.get('likec4size')
+    const size = sizeFromStyle != null && sizeFromStyle !== '' ? decodeURIComponent(sizeFromStyle) : undefined
+    const paddingFromStyle = styleMap.get('likec4padding')
+    const padding = paddingFromStyle != null && paddingFromStyle !== ''
+      ? decodeURIComponent(paddingFromStyle)
+      : undefined
+    const textSizeFromStyle = styleMap.get('likec4textsize')
+    const textSize = textSizeFromStyle != null && textSizeFromStyle !== ''
+      ? decodeURIComponent(textSizeFromStyle)
+      : undefined
+    const iconPositionFromStyle = styleMap.get('likec4iconposition')
+    const iconPosition = iconPositionFromStyle != null && iconPositionFromStyle !== ''
+      ? decodeURIComponent(iconPositionFromStyle)
+      : undefined
     const linkFromStyle = styleMap.get('link')
     const link = linkFromStyle != null && linkFromStyle !== '' ? decodeURIComponent(linkFromStyle) : undefined
-    const border = borderFromStyle != null && borderFromStyle !== '' ? decodeURIComponent(borderFromStyle) : undefined
     const colorName = colorNameFromStyle != null && colorNameFromStyle !== ''
       ? decodeURIComponent(colorNameFromStyle)
       : undefined
@@ -207,6 +233,11 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       ...(links != null ? { links } : {}),
       ...(link != null && vertex ? { link } : {}),
       ...(border != null ? { border } : {}),
+      ...(strokeWidth != null && vertex ? { strokeWidth } : {}),
+      ...(size != null && vertex ? { size } : {}),
+      ...(padding != null && vertex ? { padding } : {}),
+      ...(textSize != null && vertex ? { textSize } : {}),
+      ...(iconPosition != null && vertex ? { iconPosition } : {}),
       ...(colorName != null ? { colorName } : {}),
       ...(opacity != null ? { opacity } : {}),
       ...(relationshipKind != null ? { relationshipKind } : {}),
@@ -522,11 +553,28 @@ export function parseDrawioToLikeC4(xml: string): string {
       border ||
       opacityVal ||
       shapeOverride ||
+      cell.size ||
+      cell.padding ||
+      cell.textSize ||
+      cell.iconPosition ||
       navigateTo ||
       icon
     if (hasBody) {
       lines.push(`${pad}{`)
-      if (colorName || border || opacityVal || shapeOverride) {
+      const sizeVal = cell.size?.trim()
+      const paddingVal = cell.padding?.trim()
+      const textSizeVal = cell.textSize?.trim()
+      const iconPositionVal = cell.iconPosition?.trim()
+      if (
+        colorName ||
+        border ||
+        opacityVal ||
+        shapeOverride ||
+        sizeVal ||
+        paddingVal ||
+        textSizeVal ||
+        iconPositionVal
+      ) {
         const styleParts: string[] = []
         if (colorName) styleParts.push(`color ${colorName}`)
         if (border && ['solid', 'dashed', 'dotted', 'none'].includes(border)) {
@@ -534,6 +582,10 @@ export function parseDrawioToLikeC4(xml: string): string {
         }
         if (opacityVal && /^\d+$/.test(opacityVal)) styleParts.push(`opacity ${opacityVal}`)
         if (shapeOverride) styleParts.push(`shape ${shapeOverride}`)
+        if (sizeVal) styleParts.push(`size ${sizeVal}`)
+        if (paddingVal) styleParts.push(`padding ${paddingVal}`)
+        if (textSizeVal) styleParts.push(`textSize ${textSizeVal}`)
+        if (iconPositionVal) styleParts.push(`iconPosition ${iconPositionVal}`)
         if (styleParts.length > 0) lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
       }
       for (const t of tagList) lines.push(`${pad}  #${t.replace(/\s+/g, '_')}`)
@@ -721,6 +773,19 @@ export function parseDrawioToLikeC4(xml: string): string {
     lines.push('// <likec4.strokeColor.vertices>')
     lines.push(...strokeColorLines)
     lines.push('// </likec4.strokeColor.vertices>')
+  }
+
+  const strokeWidthLines: string[] = []
+  for (const [cellId, fqn] of idToFqn) {
+    const cell = byId.get(cellId)
+    if (cell?.vertex && cell.strokeWidth != null && cell.strokeWidth.trim() !== '') {
+      strokeWidthLines.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
+    }
+  }
+  if (strokeWidthLines.length > 0) {
+    lines.push('// <likec4.strokeWidth.vertices>')
+    lines.push(...strokeWidthLines)
+    lines.push('// </likec4.strokeWidth.vertices>')
   }
 
   return lines.join('\n')
@@ -966,6 +1031,10 @@ views {
       !!border ||
       !!opacityVal ||
       !!shapeOverride ||
+      !!cell.size ||
+      !!cell.padding ||
+      !!cell.textSize ||
+      !!cell.iconPosition ||
       !!navigateTo ||
       !!icon
     if (kind === 'actor') {
@@ -977,12 +1046,29 @@ views {
     }
     if (hasBody) {
       lines.push(`${pad}{`)
-      if (colorName || border || opacityVal || shapeOverride) {
+      const sizeVal = cell.size?.trim()
+      const paddingVal = cell.padding?.trim()
+      const textSizeVal = cell.textSize?.trim()
+      const iconPositionVal = cell.iconPosition?.trim()
+      if (
+        colorName ||
+        border ||
+        opacityVal ||
+        shapeOverride ||
+        sizeVal ||
+        paddingVal ||
+        textSizeVal ||
+        iconPositionVal
+      ) {
         const styleParts: string[] = []
         if (colorName) styleParts.push(`color ${colorName}`)
         if (border && ['solid', 'dashed', 'dotted', 'none'].includes(border)) styleParts.push(`border ${border}`)
         if (opacityVal && /^\d+$/.test(opacityVal)) styleParts.push(`opacity ${opacityVal}`)
         if (shapeOverride) styleParts.push(`shape ${shapeOverride}`)
+        if (sizeVal) styleParts.push(`size ${sizeVal}`)
+        if (paddingVal) styleParts.push(`padding ${paddingVal}`)
+        if (textSizeVal) styleParts.push(`textSize ${textSizeVal}`)
+        if (iconPositionVal) styleParts.push(`iconPosition ${iconPositionVal}`)
         if (styleParts.length > 0) lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
       }
       for (const t of tagList) lines.push(`${pad}  #${t.replace(/\s+/g, '_')}`)
@@ -1176,6 +1262,21 @@ views {
     lines.push('// <likec4.strokeColor.vertices>')
     lines.push(...strokeColorLines)
     lines.push('// </likec4.strokeColor.vertices>')
+  }
+
+  const strokeWidthLinesMulti: string[] = []
+  for (const st of states) {
+    for (const [cellId, fqn] of st.idToFqn) {
+      const cell = st.idToCell.get(cellId)
+      if (cell?.vertex && cell.strokeWidth != null && cell.strokeWidth.trim() !== '') {
+        strokeWidthLinesMulti.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
+      }
+    }
+  }
+  if (strokeWidthLinesMulti.length > 0) {
+    lines.push('// <likec4.strokeWidth.vertices>')
+    lines.push(...strokeWidthLinesMulti)
+    lines.push('// </likec4.strokeWidth.vertices>')
   }
 
   return lines.join('\n')
