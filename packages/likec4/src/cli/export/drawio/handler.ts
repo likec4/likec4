@@ -1,13 +1,32 @@
 import type { ProjectId } from '@likec4/core/types'
-import { generateDrawio, generateDrawioMulti } from '@likec4/generators'
-import { mkdir, writeFile } from 'node:fs/promises'
-import { relative, resolve } from 'node:path'
+import { generateDrawio, generateDrawioMulti, parseDrawioRoundtripComments } from '@likec4/generators'
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { join, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
 import { LikeC4 } from '../../../LikeC4'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
+
+async function readWorkspaceSourceContent(workspacePath: string): Promise<string> {
+  const chunks: string[] = []
+  const ext = (f: string) => f.endsWith('.c4') || f.endsWith('.likec4')
+  async function walk(dir: string): Promise<void> {
+    const entries = await readdir(dir, { withFileTypes: true }).catch(() => [])
+    for (const e of entries) {
+      const full = join(dir, e.name)
+      if (e.isDirectory()) {
+        if (e.name !== 'node_modules' && e.name !== '.git') await walk(full)
+      } else if (e.isFile() && ext(e.name)) {
+        const content = await readFile(full, 'utf-8').catch(() => '')
+        if (content) chunks.push(content)
+      }
+    }
+  }
+  await walk(workspacePath)
+  return chunks.join('\n\n')
+}
 
 export function drawioCmd(yargs: Argv) {
   return yargs.command({
@@ -28,6 +47,11 @@ export function drawioCmd(yargs: Argv) {
           default: false,
           desc: 'write one .drawio file with all views as tabs (diagrams)',
         })
+        .option('roundtrip', {
+          type: 'boolean',
+          default: false,
+          desc: 'apply layout/stroke/waypoints from DrawIO round-trip comment blocks in .c4 source',
+        })
         .options({
           project,
           'use-dot': useDotBin,
@@ -38,10 +62,14 @@ export function drawioCmd(yargs: Argv) {
 
   ${k.green('$0 export drawio --all-in-one -o ./diagrams src/')}
     ${k.gray('Export all views as tabs in one .drawio file')}
+
+  ${k.green('$0 export drawio --roundtrip -o ./out')}
+    ${k.gray('Re-apply layout/waypoints from comment blocks (e.g. after import from DrawIO)')}
 `),
     handler: async args => {
       const outdir = args.outdir ?? args.path
       const allInOne = args.allInOne === true
+      const roundtrip = args.roundtrip === true
       const onlyProject = args.project
       const logger = createLikeC4Logger('c4:export')
 
@@ -79,11 +107,31 @@ export function drawioCmd(yargs: Argv) {
           })
         }
       } else {
+        let roundtripData: Awaited<ReturnType<typeof parseDrawioRoundtripComments>> = null
+        if (roundtrip) {
+          const sourceContent = await readWorkspaceSourceContent(resolve(args.path))
+          roundtripData = parseDrawioRoundtripComments(sourceContent)
+        }
         let succeeded = 0
         for (const vm of viewmodels) {
           const view = vm.$view
           try {
-            const generated = generateDrawio(vm)
+            let options: Parameters<typeof generateDrawio>[1] | undefined
+            if (roundtripData) {
+              const layoutForView = roundtripData.layoutByView[view.id]?.nodes
+              options = {}
+              if (layoutForView != null) options.layoutOverride = layoutForView
+              if (Object.keys(roundtripData.strokeColorByFqn).length > 0) {
+                options.strokeColorByNodeId = roundtripData.strokeColorByFqn
+              }
+              if (Object.keys(roundtripData.strokeWidthByFqn).length > 0) {
+                options.strokeWidthByNodeId = roundtripData.strokeWidthByFqn
+              }
+              if (Object.keys(roundtripData.edgeWaypoints).length > 0) {
+                options.edgeWaypoints = roundtripData.edgeWaypoints
+              }
+            }
+            const generated = generateDrawio(vm, options)
             const outfile = resolve(outdir, view.id + '.drawio')
             await writeFile(outfile, generated)
             logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)

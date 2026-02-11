@@ -199,11 +199,13 @@ likec4 export drawio -o ./diagrams src/
 | ---------------- | --------------------------------------------------------------------------- |
 | `path`           | Path to project (default: current directory)                                |
 | `--outdir, -o`   | Output directory for `.drawio` files (default: current directory or `path`) |
+| `--all-in-one`   | Write one `.drawio` file with all views as tabs                              |
+| `--roundtrip`    | Apply layout, stroke colors/widths, and edge waypoints from DrawIO round-trip comment blocks in `.c4` source (e.g. after import) |
 | `--project`      | Select LikeC4 project by name or path; if not set, exports all              |
 | `--use-dot`      | Use local Graphviz (`dot`) for layout instead of bundled WASM               |
 
 :::note
-Export to DrawIO requires layout. If Graphviz is not installed, the CLI uses bundled WASM; for large diagrams, install [Graphviz](https://graphviz.org/) and use `--use-dot` for better performance.
+Export to DrawIO requires layout. If Graphviz is not installed, the CLI uses bundled WASM; for large diagrams, install [Graphviz](https://graphviz.org/) and use `--use-dot` for better performance. Use `--roundtrip` when re-exporting after an import so the generated DrawIO matches the previously imported layout and waypoints.
 :::
 
 ### Import from DrawIO

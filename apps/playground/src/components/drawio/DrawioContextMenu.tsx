@@ -11,6 +11,8 @@ type DrawioContextMenuProps = {
   diagram: DiagramView | null
   /** Model for $styles when exporting */
   likec4model: LikeC4Model | null
+  /** Optional: .c4 source to apply round-trip options (layout, strokes, waypoints) on export */
+  getSourceContent?: () => string | undefined
 }
 
 /**
@@ -21,6 +23,7 @@ export function DrawioContextMenu({
   children,
   diagram,
   likec4model,
+  getSourceContent,
 }: DrawioContextMenuProps) {
   const playground = usePlayground()
   const actions = useDrawioContextMenuActions({
@@ -29,6 +32,7 @@ export function DrawioContextMenu({
     onAddFile: (filename, content) => {
       playground.actor.send({ type: 'workspace.addFile', filename, content })
     },
+    getSourceContent,
   })
 
   return (
