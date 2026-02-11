@@ -77,14 +77,14 @@ export function DrawioContextMenuDropdown({
             leftSection={<IconFileExport size={16} />}
             onClick={onExportAllViews}
             disabled={!canExportAllViews}
-            title="Export all views as one .drawio file (one tab per view)">
+            title="Export all views as one .drawio file (one tab per view). Use this to get all diagram tabs (e.g. Landscape + Our SaaS).">
             Export all…
           </Menu.Item>
           <Menu.Item
             leftSection={<IconFileExport size={16} />}
             onClick={onExport}
             disabled={!canExport}
-            title="Export current view as .drawio">
+            title="Export only the current view (single tab).">
             Export view…
           </Menu.Item>
         </Menu.Dropdown>

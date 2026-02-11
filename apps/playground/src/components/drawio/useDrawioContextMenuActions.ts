@@ -143,62 +143,62 @@ export function useDrawioContextMenuActions({
   const handleExportAllViews = useCallback(async () => {
     close()
     type ViewModel = { $view: DiagramView; get $styles(): LikeC4Model['$styles'] | null }
-    let viewModels: ViewModel[] = allViewModelsFromState
-    if (getLayoutedModel && likec4model) {
+    if (!likec4model) return
+    const viewIdsInModel = [...likec4model.views()].map(vm => vm.$view.id)
+    if (viewIdsInModel.length === 0) return
+    const styles = likec4model.$styles
+    const byId = new Map<string, ViewModel>()
+    allViewModelsFromState.forEach(vm => byId.set(vm.$view.id, vm))
+    if (getLayoutedModel) {
       try {
         const model = await getLayoutedModel()
-        if (model?.views && Object.keys(model.views).length > 0) {
-          const styles = likec4model.$styles
-          viewModels = Object.values(model.views).map(view => ({
-            $view: view,
-            get $styles() {
-              return styles ?? null
-            },
-          }))
-        }
-      } catch (e) {
-        console.error('DrawIO export: failed to fetch layouted model', e)
-      }
-    }
-    // One tab per view: merge viewStates, then fill missing by requesting layout per view from LSP
-    if (likec4model) {
-      const viewIdsInModel = [...likec4model.views()].map(vm => vm.$view.id)
-      const styles = likec4model.$styles
-      const byId = new Map<string, ViewModel>(viewModels.map(vm => [vm.$view.id, vm]))
-      for (const viewId of viewIdsInModel) {
-        if (!byId.has(viewId)) {
-          const state = viewStates[viewId]
-          if (state?.state === 'success' && state.diagram) {
-            byId.set(viewId, {
-              $view: state.diagram,
+        if (model?.views && typeof model.views === 'object') {
+          for (const view of Object.values(model.views)) {
+            byId.set(view.id, {
+              $view: view,
               get $styles() {
                 return styles ?? null
               },
             })
           }
         }
+      } catch (e) {
+        console.error('DrawIO export: failed to fetch layouted model', e)
       }
-      const missing = viewIdsInModel.filter(id => !byId.has(id))
-      if (missing.length > 0 && layoutViews) {
-        try {
-          const diagrams = await layoutViews(missing)
-          for (const viewId of missing) {
-            const diagram = diagrams[viewId]
-            if (diagram) {
-              byId.set(viewId, {
-                $view: diagram,
-                get $styles() {
-                  return likec4model.$styles ?? null
-                },
-              })
-            }
-          }
-        } catch (e) {
-          console.error('DrawIO export: layoutViews failed', e)
+    }
+    for (const viewId of viewIdsInModel) {
+      if (!byId.has(viewId)) {
+        const state = viewStates[viewId]
+        if (state?.state === 'success' && state.diagram) {
+          byId.set(viewId, {
+            $view: state.diagram,
+            get $styles() {
+              return styles ?? null
+            },
+          })
         }
       }
-      viewModels = viewIdsInModel.map(id => byId.get(id)).filter(Boolean) as ViewModel[]
     }
+    const missing = viewIdsInModel.filter(id => !byId.has(id))
+    if (missing.length > 0 && layoutViews) {
+      try {
+        const diagrams = await layoutViews(missing)
+        for (const viewId of missing) {
+          const diagram = diagrams[viewId]
+          if (diagram) {
+            byId.set(viewId, {
+              $view: diagram,
+              get $styles() {
+                return styles ?? null
+              },
+            })
+          }
+        }
+      } catch (e) {
+        console.error('DrawIO export: layoutViews failed', e)
+      }
+    }
+    const viewModels = viewIdsInModel.map(id => byId.get(id)).filter(Boolean) as ViewModel[]
     if (viewModels.length === 0) return
     try {
       let optionsByViewId: Record<string, GenerateDrawioOptions> | undefined
