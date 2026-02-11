@@ -1,13 +1,14 @@
-import { LikeC4Model } from '@likec4/core/model'
+import type { LikeC4Model } from '@likec4/core/model'
 import type { LayoutedView, NonEmptyArray, ProjectId } from '@likec4/core/types'
 import type {
   LikeC4LanguageServices,
+  LikeC4ModelBuilder,
   LikeC4Services,
   LikeC4SharedServices,
   LikeC4Views,
   ProjectsManager,
 } from '@likec4/language-server'
-import type { Logger } from '@likec4/log'
+import { type Logger, rootLogger } from '@likec4/log'
 import { map, prop } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 
@@ -16,10 +17,26 @@ export interface LikeC4Langium {
   likec4: LikeC4Services
 }
 
-export abstract class AbstractLikeC4 {
-  protected abstract langium: LikeC4Langium
+export class LikeC4 {
+  protected readonly langium: LikeC4Langium
 
-  protected abstract logger: Logger
+  protected readonly logger: Logger
+
+  constructor(
+    langium: LikeC4Langium,
+    logger: Logger = rootLogger,
+  ) {
+    this.langium = langium
+    this.logger = logger
+  }
+
+  get workspaceURI() {
+    return this.langium.shared.workspace.WorkspaceManager.workspaceUri
+  }
+
+  get workspaceURL() {
+    return this.langium.shared.workspace.WorkspaceManager.workspaceURL
+  }
 
   get languageServices(): LikeC4LanguageServices {
     return this.langium.likec4.likec4.LanguageServices
@@ -31,6 +48,10 @@ export abstract class AbstractLikeC4 {
 
   get viewsService(): LikeC4Views {
     return this.langium.likec4.likec4.Views
+  }
+
+  get modelBuilder(): LikeC4ModelBuilder {
+    return this.langium.likec4.likec4.ModelBuilder
   }
 
   private get LangiumDocuments() {
@@ -53,8 +74,9 @@ Please specify a project folder`)
    * If diagram has manual layout, it will be used.
    * Used in React components
    */
-  async diagrams(projectId?: ProjectId | undefined): Promise<LayoutedView[]> {
-    return await this.viewsService.diagrams(projectId)
+  async diagrams(project?: string | undefined): Promise<LayoutedView[]> {
+    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    return await this.viewsService.diagrams(projectId as ProjectId)
   }
 
   /**
@@ -65,9 +87,9 @@ Please specify a project folder`)
    * Sync version does not read manual layouts
    * Use {@link computedModel} for a version that includes manual layouts
    */
-  syncComputedModel(project?: ProjectId | undefined): LikeC4Model.Computed {
-    const projectId = this.langium.shared.workspace.ProjectsManager.ensureProjectId(project)
-    return this.langium.likec4.likec4.ModelBuilder.unsafeSyncComputeModel(projectId)
+  syncComputedModel(project?: string | undefined): LikeC4Model.Computed {
+    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    return this.modelBuilder.unsafeSyncComputeModel(projectId)
   }
 
   /**
@@ -75,20 +97,22 @@ Please specify a project folder`)
    * Only computes view predicates {@link ComputedView} - i.e. no layout
    * Not ready for rendering, but enough to traverse
    */
-  async computedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Computed> {
-    return await this.langium.likec4.likec4.ModelBuilder.computeModel(project)
+  async computedModel(project?: string | undefined): Promise<LikeC4Model.Computed> {
+    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    return await this.modelBuilder.computeModel(projectId)
   }
 
   projects(): NonEmptyArray<ProjectId> {
-    return map(this.langium.likec4.likec4.LanguageServices.projects(), prop('id'))
+    return map(this.languageServices.projects(), prop('id'))
   }
 
   /**
    * Same as {@link computedModel()}, but also applies layout
    * Ready for rendering
    */
-  async layoutedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Layouted> {
-    return await this.langium.likec4.likec4.LanguageServices.layoutedModel(project)
+  async layoutedModel(project?: string | undefined): Promise<LikeC4Model.Layouted> {
+    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    return await this.languageServices.layoutedModel(projectId)
   }
 
   getErrors(): Array<{
@@ -123,20 +147,17 @@ Please specify a project folder`)
    * @returns a function to dispose the listener
    */
   onModelUpdate(listener: () => void): () => void {
-    const sib = this.langium.likec4.likec4.ModelBuilder.onModelParsed(() => listener())
+    const sib = this.modelBuilder.onModelParsed(() => listener())
     return () => {
       sib.dispose()
     }
   }
 
   async dispose(): Promise<void> {
-    await this.langium.likec4.likec4.LanguageServices.dispose()
+    await this.languageServices.dispose()
   }
 
   async [Symbol.asyncDispose]() {
     await this.dispose()
   }
-}
-
-export interface LikeC4 extends AbstractLikeC4 {
 }

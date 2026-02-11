@@ -10,6 +10,7 @@ import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { configureLogger, getConsoleStderrSink, loggable, rootLogger } from '@likec4/log'
 import defu from 'defu'
+import k from 'tinyrainbow'
 import type { LikeC4Langium } from '../common/LikeC4'
 
 export type CreateLanguageServiceOptions = {
@@ -69,6 +70,8 @@ export function createLanguageServices(
 
   const useDotBin = options.graphviz === 'binary'
 
+  logger.info(`${k.dim('layout')} ${useDotBin ? 'binary' : 'wasm'}`)
+
   const langium = createCustomLanguageServices(
     {
       ...options.useFileSystem
@@ -80,7 +83,7 @@ export function createLanguageServices(
           ...NoFileSystem,
           ...NoLikeC4ManualLayouts,
         },
-      ...options.mcp ? WithMCPServer(options.mcp === 'stdio' ? 'stdio' : 'sse') : {},
+      ...options.mcp ? WithMCPServer(options.mcp === 'stdio' ? 'stdio' : options.mcp) : {},
     },
     {
       likec4: {

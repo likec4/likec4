@@ -1,14 +1,9 @@
-import { LikeC4Model } from '@likec4/core/model'
-import type { LayoutedView, NonEmptyArray, ProjectId } from '@likec4/core/types'
-import type { LikeC4LanguageServices, LikeC4Views, ProjectsManager } from '@likec4/language-server'
+import { LikeC4 as AbstractLikeC4 } from '@likec4/language-services/node'
 import { defu } from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { map, prop } from 'remeda'
-import k from 'tinyrainbow'
-import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createLanguageServices } from './language/module'
 import type { Logger } from './logger'
 
@@ -60,7 +55,7 @@ const validationErrorsToError = (likec4: LikeC4) =>
     }`,
   )
 
-export class LikeC4 {
+export class LikeC4 extends AbstractLikeC4 {
   static async fromSource(likec4SourceCode: string, opts?: LikeC4Options): Promise<LikeC4> {
     const langium = createLanguageServices(
       defu(opts, {
@@ -148,168 +143,5 @@ export class LikeC4 {
     }
 
     return likec4
-  }
-
-  private logger: Logger
-
-  private constructor(
-    public readonly workspace: string,
-    public readonly langium: LikeC4Langium,
-  ) {
-    this.logger = langium.logger
-  }
-
-  get languageServices(): LikeC4LanguageServices {
-    return this.langium.likec4.LanguageServices
-  }
-
-  get projectsManager(): ProjectsManager {
-    return this.langium.shared.workspace.ProjectsManager
-  }
-
-  get viewsService(): LikeC4Views {
-    return this.langium.likec4.Views
-  }
-
-  private get LangiumDocuments() {
-    return this.langium.shared.workspace.LangiumDocuments
-  }
-
-  ensureSingleProject(): void {
-    const projects = this.langium.likec4.LanguageServices.projects()
-    if (projects.length > 1) {
-      this.logger.error(`Multiple projects found:
-${projects.map(p => `  - ${p.folder.fsPath}`).join('\n')}
-
-${k.red('Please specify a project folder')}
-`)
-      throw new Error(`Multiple projects found`)
-    }
-  }
-
-  /**
-   * Diagram is a computed view, layouted using Graphviz
-   * If diagram has manual layout, it will be used.
-   * Used in React components
-   */
-  async diagrams(projectId?: ProjectId | undefined): Promise<LayoutedView[]> {
-    return await this.langium.likec4.Views.diagrams(projectId)
-  }
-
-  /**
-   * Builds LikeC4Model from all documents
-   * Only computes view predicates {@link ComputedView} - i.e. no layout
-   * Not ready for rendering, but enough to traverse
-   *
-   * Sync version does not read manual layouts
-   * Use {@link computedModel} for a version that includes manual layouts
-   */
-  syncComputedModel(project?: ProjectId | undefined): LikeC4Model.Computed {
-    const projectId = this.langium.shared.workspace.ProjectsManager.ensureProjectId(project)
-    return this.langium.likec4.ModelBuilder.unsafeSyncComputeModel(projectId)
-  }
-
-  /**
-   * Builds LikeC4Model from all documents
-   * Only computes view predicates {@link ComputedView} - i.e. no layout
-   * Not ready for rendering, but enough to traverse
-   */
-  async computedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Computed> {
-    return await this.langium.likec4.ModelBuilder.computeModel(project)
-  }
-
-  projects(): NonEmptyArray<ProjectId> {
-    return map(this.langium.likec4.LanguageServices.projects(), prop('id'))
-  }
-
-  /**
-   * Same as {@link computedModel()}, but also applies layout
-   * Ready for rendering
-   */
-  async layoutedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Layouted> {
-    return await this.langium.likec4.LanguageServices.layoutedModel(project)
-  }
-
-  getErrors(): Array<{
-    message: string
-    line: number
-    range: {
-      start: { line: number; character: number }
-      end: { line: number; character: number }
-    }
-    sourceFsPath: string
-  }> {
-    const docs = this.LangiumDocuments.all.toArray()
-    return docs.flatMap(doc => {
-      return (doc.diagnostics ?? [])
-        .filter(d => d.severity === DiagnosticSeverity.Error)
-        .map(({ message, range }) => ({
-          message,
-          line: range.start.line,
-          range,
-          sourceFsPath: doc.uri.fsPath,
-        }))
-    })
-  }
-
-  hasErrors(): boolean {
-    return this.LangiumDocuments.all.some(doc => {
-      return doc.diagnostics?.some(d => d.severity === DiagnosticSeverity.Error) ?? false
-    })
-  }
-
-  /**
-   * @returns true if there are errors
-   */
-  printErrors(): boolean {
-    let hasErrors = false
-    for (const doc of this.LangiumDocuments.all) {
-      const errors = doc.diagnostics?.filter(e => e.severity === 1)
-      if (errors && errors.length > 0) {
-        hasErrors = true
-        const messages = errors
-          .flatMap(validationError => {
-            const line = validationError.range.start.line
-            const messages = validationError.message.split('\n')
-            if (messages.length > 10) {
-              messages.length = 10
-              messages.push('...')
-            }
-            return messages
-              .map((message, i) => {
-                if (i === 0) {
-                  return '    ' + k.dim(`Line ${line}: `) + k.red(message)
-                }
-                return ' '.repeat(10) + k.red(message)
-              })
-          })
-          .join('\n')
-        this.logger.error(`Invalid ${doc.uri.fsPath}\n${messages}`)
-      }
-    }
-    return hasErrors
-  }
-
-  /**
-   * @returns a function to dispose the listener
-   */
-  onModelUpdate(listener: () => void): () => void {
-    const sib = this.langium.likec4.ModelBuilder.onModelParsed(() => listener())
-    return () => {
-      sib.dispose()
-    }
-  }
-
-  async dispose(): Promise<void> {
-    await this.langium.likec4.LanguageServices.dispose()
-    for (const [path, likec4] of LikeC4.likec4Instances) {
-      if (likec4 === this) {
-        LikeC4.likec4Instances.delete(path)
-      }
-    }
-  }
-
-  async [Symbol.asyncDispose]() {
-    await this.dispose()
   }
 }

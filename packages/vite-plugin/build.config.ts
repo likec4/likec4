@@ -16,7 +16,7 @@ export default defineBuildConfig({
         },
       },
       rolldown: {
-        platform: 'neutral',
+        platform: 'node',
         resolve: {
           mainFields: ['module', 'main'],
           conditionNames: ['sources', 'import', 'default'],

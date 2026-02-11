@@ -1,6 +1,6 @@
 import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
-import { fromWorkspace } from '@likec4/language-services'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import { isDeepEqual, map } from 'remeda'
 import type {
@@ -67,7 +67,7 @@ export type LikeC4VitePluginOptions =
     languageServices?: never
   } | {
     /**
-     * If you have instance of {@link LikeC4}
+     * If you have instance of {@link LikeC4LanguageServices}
      * you can pass `languageServices` from it.
      */
     languageServices: LikeC4LanguageServices

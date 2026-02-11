@@ -1,4 +1,9 @@
-import { type LikeC4ViewsFolder, LikeC4ViewModel, normalizeViewPath, VIEW_FOLDERS_SEPARATOR } from '@likec4/core/model'
+import {
+  type LikeC4ViewModel,
+  type LikeC4ViewsFolder,
+  normalizeViewPath,
+  VIEW_FOLDERS_SEPARATOR,
+} from '@likec4/core/model'
 import type { ViewId } from '@likec4/core/types'
 import { compareNaturalHierarchically, ifilter, ifirst, nonexhaustive, toArray } from '@likec4/core/utils'
 import { css, cx } from '@likec4/styles/css'

@@ -10,6 +10,7 @@ import type {
   aux,
   ProjectId,
 } from '@likec4/core/types'
+import JSON5 from 'json5'
 import z from 'zod/v4'
 import { ImageAliasesSchema } from './schema.image-alias'
 import { type IncludeConfig, IncludeSchema } from './schema.include'
@@ -255,7 +256,17 @@ export function validateProjectConfig<C extends Record<string, unknown>>(config:
   throw new Error('Config validation failed:\n' + z.prettifyError(parsed.error))
 }
 
+/**
+ * Parses JSON string into a LikeC4ProjectConfig object.
+ * Does not process "extends" - use `loadConfig` function instead
+ */
+export function parseProjectConfigJSON(config: string): LikeC4ProjectConfig {
+  const parsed = JSON5.parse(config.trim() || '{}')
+  return validateProjectConfig(parsed)
+}
+
 export const LikeC4ProjectConfigOps = {
+  parse: parseProjectConfigJSON,
   validate: validateProjectConfig,
   normalizeInclude: (include: z.input<typeof IncludeSchema> | undefined): IncludeConfig => {
     const parsed = IncludeSchema.safeParse(include)

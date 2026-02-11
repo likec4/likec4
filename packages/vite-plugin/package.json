@@ -1,6 +1,7 @@
 {
   "name": "@likec4/vite-plugin",
   "description": "LikeC4 Vite Plugin",
+  "private": true,
   "version": "1.48.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -72,23 +73,21 @@
     "birpc": "catalog:vite",
     "json5": "catalog:utils",
     "pathe": "catalog:utils",
+    "remeda": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
-    "vite": "catalog:vite",
+    "strip-indent": "catalog:utils",
     "zod": "catalog:externals"
   },
   "peerDependencies": {
-    "react": "catalog:react"
+    "react": "catalog:react",
+    "vite": "catalog:vite"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/natural-compare-lite": "catalog:utils",
     "@types/node": "catalog:",
-    "@types/picomatch": "catalog:externals",
-    "@types/vscode": "catalog:vscode",
     "@types/react": "catalog:react",
-    "@types/semver": "^7.7.1",
     "fast-equals": "catalog:utils",
     "indent-string": "^5.0.0",
     "obuild": "catalog:obuild",
@@ -96,10 +95,6 @@
     "p-debounce": "catalog:utils",
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",
-    "picomatch": "catalog:externals",
-    "pretty-ms": "^9.3.0",
-    "remeda": "catalog:utils",
-    "strip-indent": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

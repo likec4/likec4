@@ -1,3 +1,5 @@
+import { basename } from 'pathe'
+
 export const configJsonFilenames = [
   '.likec4rc',
   '.likec4.config.json',
@@ -22,24 +24,14 @@ export const ConfigFilenames = [
  * Checks if the given filename is a LikeC4 JSON config file (JSON, RC).
  */
 export function isLikeC4JsonConfig(filename: string): filename is typeof configJsonFilenames[number] {
-  for (const ext of configJsonFilenames) {
-    if (filename.endsWith(ext)) {
-      return true
-    }
-  }
-  return false
+  return (configJsonFilenames as readonly string[]).includes(basename(filename))
 }
 
 /**
  * Checks if the given filename is a LikeC4 non-JSON config file (JS, MJS, TS, MTS)
  */
 export function isLikeC4NonJsonConfig(filename: string): filename is typeof configNonJsonFilenames[number] {
-  for (const ext of configNonJsonFilenames) {
-    if (filename.endsWith(ext)) {
-      return true
-    }
-  }
-  return false
+  return (configNonJsonFilenames as readonly string[]).includes(basename(filename))
 }
 
 /**

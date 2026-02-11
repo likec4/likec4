@@ -1,111 +1,151 @@
-import { defineParts, defineRecipe, defineStyles } from '@pandacss/dev'
+import { defineParts, defineRecipe } from '@pandacss/dev'
 import { __v } from '../const.ts'
 
 const parts = defineParts({
   root: { selector: '&' },
-  indicator: { selector: '& .likec4-node-notes__indicator' },
-})
-
-const paper = defineStyles({
-  pointerEvents: 'visible',
-  transitionTimingFunction: 'in',
-  transitionDuration: '130ms',
-  transitionDelay: '30ms',
-  content: '" "',
-  position: 'absolute',
-  left: 0,
-  top: 0,
-  width: '100%',
-  height: '100%',
-  border: '1px solid var(--paper-border)',
-  background: 'var(--paper-bg)',
-  zIndex: -1,
+  paper: { selector: '& .__paper' },
+  // paperBack: { selector: '& .__paper:is(.__paper-back)' },
+  // paperFront: { selector: '& .__paper:is(.__paper-front)' },
+  popover: { selector: '& .__popover' },
 })
 
 export const nodeNotes = defineRecipe({
   className: 'likec4-node-notes',
-  jsx: ['NodeNotes'],
+  jsx: ['NodeNotesr'],
   base: parts({
     root: {
-      display: 'contents',
-    },
-    indicator: {
-      pointerEvents: 'all ',
       position: 'absolute',
-      top: '-8px',
-      left: '40px',
-      width: '110px',
-      height: '50px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      top: '-20px',
+      left: '10px',
+      width: '120px',
+      height: '60px',
+      pointerEvents: 'all',
+      userSelect: 'none',
+      appearance: 'none',
+      touchAction: 'manipulation',
+      overflow: 'visible',
+      '--paper-bg': `color-mix(in oklab, ${__v('palette.fill')} 10%, #DDD)`,
+    },
+    paper: {
+      pointerEvents: 'all',
+      position: 'absolute',
+      top: '14px',
+      left: '10px',
+      width: '90px',
+      height: '120px',
+      boxShadow: [
+        'inset 0 0 20px rgba(0, 0, 0, 0.25)',
+        '0px 0px 3px 0px rgba(0, 0, 0, 0.35)',
+      ].join(', '),
+      backgroundColor: 'oklch(from var(--paper-bg) calc(l - 0.1) c h)',
+      zIndex: -1,
+      transform: 'rotateZ(-3deg)',
+      transformOrigin: '55% 90% 0',
+      overflow: 'visible',
+      transition: 'faster',
+      transitionDelay: '20ms',
       _before: {
-        ...paper as any,
-        transform: 'rotateZ(-3.5deg) scale(1.05) translate(-6px, -1px)',
-        background: 'oklch(from var(--paper-bg) calc(l - 0.05) c h)',
-        boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.2), 1px 1px 5px -1px rgba(0, 0, 0, 0.2)',
+        position: 'absolute',
+        zIndex: -1,
+        content: '" "',
+        width: '100%',
+        height: '100%',
+        transform: 'rotateZ(6deg) translate(-2px, 0px)',
+        transformOrigin: '45% 90% 0',
+        boxShadow: [
+          'inset 0 0 20px rgba(0, 0, 0, 0.25)',
+          '0px 0px 3px 0px rgba(0, 0, 0, 0.35)',
+        ].join(', '),
+        backgroundColor: 'var(--paper-bg)',
       },
-      _after: {
-        ...paper as any,
-        fontSize: '9px',
-        paddingTop: '4px',
-        textDecorationStyle: 'solid',
-        textUnderlineOffset: '3px',
-        textDecorationLine: 'underline',
-        textDecorationThickness: '2px',
-        paddingLeft: '10px',
-        fontWeight: '700',
-        lineHeight: '16px',
-        color: '#000',
-        transform: 'rotateZ(2.5deg) scale(1.05) translate(2px, 0px)',
-        boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.2), 1px 1px 3px -1px rgba(0, 0, 0, 0.15)',
-        content: '"NOTES"',
-      },
-
-      '--paper-border': {
-        base: `color-mix(in oklab, ${__v('palette.stroke')} 20%, #BBB)`,
-        _dark: `color-mix(in oklab, ${__v('palette.stroke')} 40%, #AAA)`,
-      },
-      '--paper-bg': {
-        base: `color-mix(in oklab, ${__v('palette.fill')} 10%, #DDD)`,
-        _dark: `color-mix(in oklab, ${__v('palette.fill')} 30%, #DDD)`,
-      },
-
       _whenHovered: {
-        '--paper-border': `color-mix(in oklab, ${__v('palette.stroke')} 5%, #BBB)`,
-        '--paper-bg': `color-mix(in oklab, ${__v('palette.fill')} 5%, #FFF)`,
-
+        transform: 'rotateZ(-4deg) scale(1.06)',
         _before: {
-          transitionDelay: '50ms',
-          transform: 'rotateZ(-5deg) scale(1.15) translate(-5px, -6px)',
-        },
-
-        _after: {
-          transitionDelay: '50ms',
-          transform: 'rotateZ(2.5deg) scale(1.15) translate(2px, -4px)',
+          transform: 'translate(-1px, -2px) rotateZ(6deg) scale(1.02)', // scale(1.025)',
+          // transform: 'rotateZ(7.5deg) scale(1.01)',
         },
       },
+      // _hover: {
+      //   // transform: 'rotateZ(-4deg) scale(1.06)',
+      //   _before: {
+      //     transform: 'translate(-1px, -2px) rotateZ(6deg) scale(1.04)', // scale(1.025)',
+      //     // transform: 'rotateZ(7.5deg) scale(1.01)',
+      //   },
+      // },
+    },
+    // paperBack: {
+    //   width: '77px',
+    //   height: '110px',
+    //   background: `oklch(from var(--paper-bg) calc(l - 0.1) c h)`,
+    //   zIndex: -1,
+    // },
+    // paperFront: {
+    //   top: '8px',
+    //   left: '20px',
+    //   width: '80px',
+    //   height: '120px',
+    //   background: `var(--paper-bg)`,
+    //   zIndex: -1,
+    //   boxShadow: [
+    //     'inset 0 0 20px rgba(0, 0, 0, 0.25)',
+    //     '0px 0px 3px 0px rgba(0, 0, 0, 0.35)',
+    //   ].join(', '),
 
-      _hover: {
-        _before: {
-          transitionDelay: '0ms',
-          transform: 'rotateZ(-5.3deg) scale(1.2) translate(-8px, -10px)',
-        },
-        _after: {
-          transitionDelay: '0ms',
-          transform: 'rotateZ(2.6deg) scale(1.3) translate(2px, -12px)',
-        },
-      },
+    //   _after: {
+
+    //     paddingLeft: '2',
+    //     paddingTop: '5px',
+    //     fontSize: '7px',
+    //     content: '"NOTES"',
+    //     fontWeight: 'bold',
+    //     lineHeight: '1',
+    //     color: {
+    //       base: mantine.colors.text,
+    //       _dark: mantine.colors.gray[7],
+    //     },
+    //   },
+    //   _expanded: {
+    //     _after: {
+    //       display: 'none',
+    //     },
+    //   },
+    // },
+    popover: {
+      position: 'absolute',
+      w: 'auto',
+      h: 'auto',
+      zIndex: 300,
+      top: '0',
+      left: '0',
+      display: 'block',
+      pointerEvents: 'all',
+      rounded: 'sm',
+      backgroundColor: 'likec4.overlay.body',
+      padding: 'sm',
     },
   }),
-  variants: {},
+  variants: {
+    opened: {
+      false: parts({
+        // paperFront: {
+        //   _after: {
+
+        //   },
+        // },
+      }),
+      true: parts({
+        // paperFront: {
+        //   _after: {
+        //     display: 'none',
+        //   },
+        // },
+      }),
+    },
+  },
   defaultVariants: {
-    iconPosition: 'left',
-    withIconColor: false,
+    opened: false,
   },
   staticCss: [{
-    withIconColor: ['*'],
-    iconPosition: ['*'],
-    conditions: ['*'],
+    opened: ['*'],
   }],
 })

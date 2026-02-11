@@ -12,7 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "npx wrangler pages deploy dist --commit-dirty=true --project-name likec4-docs-astro",
+    "deploy": "pnpm wrangler pages deploy dist --commit-dirty=true --project-name likec4-docs-astro",
     "deploy:prod": "run deploy --branch main",
     "clean": "pnpm rimraf dist lib .astro"
   },
