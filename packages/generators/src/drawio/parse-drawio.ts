@@ -133,7 +133,7 @@ function inferKind(style: string | undefined): 'actor' | 'system' | 'container' 
   if (!style) return 'container'
   const s = style.toLowerCase()
   if (s.includes('umlactor') || s.includes('shape=person')) return 'actor'
-  if (s.includes('swimlane') || s.includes('shape=rectangle') && s.includes('rounded')) return 'system'
+  if (s.includes('swimlane')) return 'system'
   return 'container'
 }
 
@@ -144,7 +144,7 @@ function toId(name: string): string {
   return name
     .trim()
     .replace(/\s+/g, '_')
-    .replace(/[^a-zA-Z0-9_.-]/g, '')
+    .replace(/[^a-zA-Z0-9_-]/g, '')
     .replace(/^[0-9]/, '_$&') || 'element'
 }
 

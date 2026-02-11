@@ -4,7 +4,7 @@ exports[`generate DrawIO - element view 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
   <diagram name="v1" id="likec4-v1">
-    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" vertex="1" parent="0">
@@ -47,7 +47,7 @@ exports[`generate DrawIO - fakeComputedView 3 Levels 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
   <diagram name="cloud3levels" id="likec4-cloud3levels">
-    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" vertex="1" parent="0">
@@ -109,7 +109,7 @@ exports[`generate DrawIO - fakeDiagram 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
   <diagram name="fakeView" id="likec4-fakeView">
-    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" vertex="1" parent="0">
@@ -156,7 +156,7 @@ exports[`generate DrawIO - fakeDiagram2 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
   <diagram name="74f5364fa4b" id="likec4-74f5364fa4b">
-    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" vertex="1" parent="0">
@@ -188,7 +188,7 @@ exports[`generate DrawIO - landscape 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
   <diagram name="index" id="likec4-index">
-    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" vertex="1" parent="0">

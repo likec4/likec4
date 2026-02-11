@@ -1,6 +1,7 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, DiagramNode, NodeId, ProcessedView } from '@likec4/core/types'
-import { isNullish as isNil } from 'remeda'
+import { flattenMarkdownOrString } from '@likec4/core/types'
+import { isEmptyish, isNullish as isNil } from 'remeda'
 
 type View = ProcessedView<aux.Unknown>
 type Node = View['nodes'][number]
@@ -150,22 +151,20 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
       ? `fillColor=${elemColors.fill};strokeColor=${elemColors.stroke};fontColor=${elemColors.stroke};`
       : ''
 
-    const desc = node.description != null && String(node.description).trim() !== ''
-      ? escapeXml(String(node.description))
-      : ''
-    const tech = node.technology != null && String(node.technology).trim() !== ''
-      ? escapeXml(String(node.technology))
-      : ''
+    const descRaw = flattenMarkdownOrString(node.description)
+    const techRaw = flattenMarkdownOrString(node.technology)
+    const desc = descRaw != null && !isEmptyish(descRaw) ? escapeXml(descRaw.trim()) : ''
+    const tech = techRaw != null && !isEmptyish(techRaw) ? escapeXml(techRaw.trim()) : ''
     const userData = desc !== '' || tech !== ''
-      ? `\n  <mxUserObject><data key="likec4Description">${desc}</data><data key="likec4Technology">${tech}</data></mxUserObject>`
+      ? `<mxUserObject><data key="likec4Description">${desc}</data><data key="likec4Technology">${tech}</data></mxUserObject>`
       : ''
 
     vertexCells.push(
-      `<mxCell id="${id}" value="${label}" style="${shapeStyle}${colorStyle}verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="${parentId}">${userData}
+      `<mxCell id="${id}" value="${label}" style="${shapeStyle}${colorStyle}verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="${parentId}">
   <mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${
         Math.round(height)
       }" as="geometry" />
-</mxCell>`,
+${userData ? `  ${userData}\n` : ''}</mxCell>`,
     )
   }
 
@@ -206,7 +205,7 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
   <diagram name="${escapeXml(view.id)}" id="likec4-${escapeXml(view.id)}">
-    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="${rootId}" />
         ${allCells}
