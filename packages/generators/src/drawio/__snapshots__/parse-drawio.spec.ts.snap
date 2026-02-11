@@ -81,3 +81,31 @@ views {
 }
 "
 `;
+
+exports[`parseDrawioToLikeC4Multi - two diagrams produce one model and two views with include lists 1`] = `
+"model {
+
+  A = container 'A'
+  {
+  }
+
+  B = container 'B'
+  {
+  }
+
+  C = container 'C'
+  {
+  }
+
+}
+
+views {
+  view overview {
+    include A, B
+  }
+  view detail {
+    include A, C
+  }
+}
+"
+`;

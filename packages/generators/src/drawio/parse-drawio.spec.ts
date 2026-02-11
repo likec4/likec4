@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { parseDrawioToLikeC4 } from './parse-drawio'
+import { parseDrawioToLikeC4, parseDrawioToLikeC4Multi } from './parse-drawio'
 
 const minimalDrawio = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="test">
@@ -71,4 +71,32 @@ const drawioEdgeWithLikeC4Style = `<?xml version="1.0" encoding="UTF-8"?>
 
 test('parse DrawIO to LikeC4 - edge with LikeC4 style (description, technology, notes, navigateTo, arrows, dashed)', () => {
   expect(parseDrawioToLikeC4(drawioEdgeWithLikeC4Style)).toMatchSnapshot()
+})
+
+const drawioTwoTabs = `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile>
+  <diagram name="overview">
+    <mxGraphModel><root>
+      <mxCell id="0" /><mxCell id="1" vertex="1" parent="0"><mxGeometry width="400" height="300" as="geometry" /></mxCell>
+      <mxCell id="2" value="A" style="shape=rectangle;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="80" height="40" as="geometry" /></mxCell>
+      <mxCell id="3" value="B" style="shape=rectangle;" vertex="1" parent="1"><mxGeometry x="200" y="0" width="80" height="40" as="geometry" /></mxCell>
+    </root></mxGraphModel>
+  </diagram>
+  <diagram name="detail">
+    <mxGraphModel><root>
+      <mxCell id="0" /><mxCell id="1" vertex="1" parent="0"><mxGeometry width="400" height="300" as="geometry" /></mxCell>
+      <mxCell id="2" value="A" style="shape=rectangle;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="80" height="40" as="geometry" /></mxCell>
+      <mxCell id="3" value="C" style="shape=rectangle;" vertex="1" parent="1"><mxGeometry x="200" y="0" width="80" height="40" as="geometry" /></mxCell>
+    </root></mxGraphModel>
+  </diagram>
+</mxfile>`
+
+test('parseDrawioToLikeC4Multi - two diagrams produce one model and two views with include lists', () => {
+  const result = parseDrawioToLikeC4Multi(drawioTwoTabs)
+  expect(result).toContain('view overview')
+  expect(result).toContain('view detail')
+  expect(result).toContain('include A, B')
+  expect(result).toContain('include A, C')
+  expect(result).toContain('model {')
+  expect(result).toMatchSnapshot()
 })
