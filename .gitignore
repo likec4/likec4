@@ -107,3 +107,10 @@ dist
 # Eclipse
 /.project
 /.settings/*
+
+# Local PR/review drafts (do not commit to upstream)
+.pr-description.md
+PR-2593-review.md
+COMMIT_MSG.txt
+.commit_msg_drawio_review.txt
+PR_INSTRUCTIONS.md

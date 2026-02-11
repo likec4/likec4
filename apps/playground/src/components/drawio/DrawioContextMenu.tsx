@@ -6,7 +6,7 @@ import { useDrawioContextMenuActions } from './useDrawioContextMenuActions'
 
 type DrawioContextMenuProps = {
   /** Render prop: pass the context menu handler to the diagram's onCanvasContextMenu */
-  children: (onCanvasContextMenu: (event: React.MouseEvent) => void) => React.ReactNode
+  children: (onCanvasContextMenu: (event: React.MouseEvent | MouseEvent) => void) => React.ReactNode
   /** Current diagram view (for export). Must be layouted. */
   diagram: DiagramView | null
   /** Model for $styles when exporting */

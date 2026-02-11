@@ -15,7 +15,7 @@ import { useDrawioContextMenuActions } from './useDrawioContextMenuActions'
 export { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT }
 
 export type DrawioContextMenuApi = {
-  openMenu: (event: React.MouseEvent) => void
+  openMenu: (event: React.MouseEvent | MouseEvent) => void
 }
 
 const DrawioContextMenuContext = createContext<DrawioContextMenuApi | null>(null)

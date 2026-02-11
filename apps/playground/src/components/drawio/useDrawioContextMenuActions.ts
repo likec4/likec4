@@ -21,7 +21,7 @@ export function useDrawioContextMenuActions({
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const openMenu = useCallback((event: React.MouseEvent) => {
+  const openMenu = useCallback((event: React.MouseEvent | MouseEvent) => {
     event.preventDefault()
     setMenuPosition({ x: event.clientX, y: event.clientY })
     open()
