@@ -311,8 +311,8 @@ catalogs:
       specifier: 5.1.0
       version: 5.1.0
     p-limit:
-      specifier: 7.2.0
-      version: 7.2.0
+      specifier: 7.3.0
+      version: 7.3.0
     p-queue:
       specifier: 8.1.1
       version: 8.1.1
@@ -1636,7 +1636,7 @@ importers:
         version: 2.0.0
       p-limit:
         specifier: catalog:utils
-        version: 7.2.0
+        version: 7.3.0
       p-queue:
         specifier: catalog:utils
         version: 8.1.1
@@ -1893,7 +1893,7 @@ importers:
         version: 0.4.27(@typescript/native-preview@7.0.0-dev.20260208.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
       p-limit:
         specifier: catalog:utils
-        version: 7.2.0
+        version: 7.3.0
       package-manager-detector:
         specifier: catalog:utils
         version: 1.6.0
@@ -7450,8 +7450,8 @@ packages:
     resolution: {integrity: sha512-kuUqqHNUqoIWp/c467RI4X6mmyuojY5jGutNU0wVTmEOOfcuwLqyMVoAi9MKi2Ak+5i9+nhmrK4ufZE8069kHA==}
     engines: {node: '>=18'}
 
-  p-limit@7.2.0:
-    resolution: {integrity: sha512-ATHLtwoTNDloHRFFxFJdHnG6n2WUeFjaR8XQMFdKIv0xkXjrER8/iG9iu265jOM95zXHAfv9oTkqhrfbIzosrQ==}
+  p-limit@7.3.0:
+    resolution: {integrity: sha512-7cIXg/Z0M5WZRblrsOla88S4wAK+zOQQWeBYfV3qJuJXMr+LnbYjaadrFaS0JILfEDPVqHyKnZ1Z/1d6J9VVUw==}
     engines: {node: '>=20'}
 
   p-locate@4.1.0:
@@ -15641,7 +15641,7 @@ snapshots:
     dependencies:
       yocto-queue: 1.2.2
 
-  p-limit@7.2.0:
+  p-limit@7.3.0:
     dependencies:
       yocto-queue: 1.2.2
 
