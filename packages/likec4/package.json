@@ -205,7 +205,7 @@
     "picomatch": "catalog:externals",
     "birpc": "catalog:vite",
     "clsx": "catalog:react",
-    "conf": "^15.0.2",
+    "conf": "^15.1.0",
     "defu": "^6.1.4",
     "esbuild-node-externals": "catalog:esbuild",
     "esm-env": "catalog:utils",
