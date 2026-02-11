@@ -73,6 +73,8 @@ export interface DrawioCell {
   metadata?: string
   /** From mxUserObject/data keys not mapped to fields above (JSON object for round-trip comment) */
   customData?: string
+  /** From mxGeometry Array/mxPoint (edge waypoints; JSON array of [x,y][]) */
+  edgePoints?: string
 }
 
 function getAttr(attrs: string, name: string): string | undefined {
@@ -119,6 +121,24 @@ function parseAllUserData(fullTag: string): Record<string, string> {
     if (key && raw !== undefined) out[key] = decodeXmlEntities(raw)
   }
   return out
+}
+
+/** Extract edge waypoints from mxGeometry Array/mxPoint inside cell XML. Returns JSON array of [x,y][] or undefined. */
+function parseEdgePoints(fullTag: string): string | undefined {
+  const geomMatch = fullTag.match(/<mxGeometry[\s\S]*?>([\s\S]*?)<\/mxGeometry>/i)
+  if (!geomMatch?.[1]) return undefined
+  const inner = geomMatch[1]
+  const points: [number, number][] = []
+  const mxPointTagRe = /<mxPoint\s[^>]*\/?>/gi
+  let tagMatch
+  while ((tagMatch = mxPointTagRe.exec(inner)) !== null) {
+    const tag = tagMatch[0]
+    const px = parseNum(getAttr(tag, 'x'))
+    const py = parseNum(getAttr(tag, 'y'))
+    if (px !== undefined && py !== undefined) points.push([px, py])
+  }
+  if (points.length === 0) return undefined
+  return JSON.stringify(points)
 }
 
 /** Extract LikeC4 custom data from mxUserObject/data inside cell XML. */
@@ -269,6 +289,12 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       ...(notation != null ? { notation } : {}),
       ...(metadata != null && edge ? { metadata } : {}),
       ...(userData.customData != null ? { customData: userData.customData } : {}),
+      ...(edge
+        ? (() => {
+          const pts = parseEdgePoints(fullTag)
+          return pts != null ? { edgePoints: pts } : {}
+        })()
+        : {}),
     }
     cells.push(cell)
   }
@@ -381,7 +407,7 @@ function getFirstDiagram(fullXml: string): DiagramInfo {
 /**
  * Extract all diagram name, id and content from mxfile (for multi-tab .drawio).
  */
-function getAllDiagrams(fullXml: string): DiagramInfo[] {
+export function getAllDiagrams(fullXml: string): DiagramInfo[] {
   const results: DiagramInfo[] = []
   const re = /<diagram\s*([^>]*?)>([\s\S]*?)<\/diagram>/gi
   let m
@@ -751,8 +777,10 @@ export function parseDrawioToLikeC4(xml: string): string {
   const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
   const viewTitleRaw = rootStyle.get('likec4viewtitle')
   const viewDescRaw = rootStyle.get('likec4viewdescription')
+  const viewNotationRaw = rootStyle.get('likec4viewnotation')
   const viewTitle = viewTitleRaw != null && viewTitleRaw !== '' ? decodeURIComponent(viewTitleRaw) : ''
   const viewDesc = viewDescRaw != null && viewDescRaw !== '' ? decodeURIComponent(viewDescRaw) : ''
+  const viewNotation = viewNotationRaw != null && viewNotationRaw !== '' ? decodeURIComponent(viewNotationRaw) : ''
   lines.push('views {')
   lines.push(`  view ${viewId} {`)
   if (viewTitle) lines.push(`    title '${viewTitle.replace(/'/g, '\'\'')}'`)
@@ -761,6 +789,10 @@ export function parseDrawioToLikeC4(xml: string): string {
   lines.push('  }')
   lines.push('}')
   lines.push('')
+
+  if (viewNotation) {
+    lines.push(`// likec4.view.notation ${viewId} '${viewNotation.replace(/'/g, '\'\'')}'`)
+  }
 
   // Emit layout as comment for round-trip or tooling (Phase 1.2)
   const layoutNodes: Record<string, { x: number; y: number; width: number; height: number }> = {}
@@ -832,6 +864,18 @@ export function parseDrawioToLikeC4(xml: string): string {
     lines.push('// </likec4.customData>')
   }
 
+  const waypointLines: string[] = []
+  for (const e of edges) {
+    const src = idToFqn.get(e.source!)
+    const tgt = idToFqn.get(e.target!)
+    if (src && tgt && e.edgePoints?.trim()) waypointLines.push(`// ${src}|${tgt} ${e.edgePoints.trim()}`)
+  }
+  if (waypointLines.length > 0) {
+    lines.push('// <likec4.edge.waypoints>')
+    lines.push(...waypointLines)
+    lines.push('// </likec4.edge.waypoints>')
+  }
+
   return lines.join('\n')
 }
 
@@ -846,6 +890,7 @@ interface DiagramState {
   viewId: string
   viewTitle: string
   viewDesc: string
+  viewNotation: string
 }
 
 function buildDiagramState(content: string, diagramName: string): DiagramState | null {
@@ -929,6 +974,9 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   const viewDesc = rootStyle.get('likec4viewdescription') != null && rootStyle.get('likec4viewdescription') !== ''
     ? decodeURIComponent(rootStyle.get('likec4viewdescription')!)
     : ''
+  const viewNotation = rootStyle.get('likec4viewnotation') != null && rootStyle.get('likec4viewnotation') !== ''
+    ? decodeURIComponent(rootStyle.get('likec4viewnotation')!)
+    : ''
   return {
     idToFqn,
     idToCell,
@@ -939,6 +987,7 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
     viewId,
     viewTitle,
     viewDesc,
+    viewNotation,
   }
 }
 
@@ -973,7 +1022,13 @@ views {
   const fqnToCell = new Map<string, DrawioCell>()
   const relationKeyToEdge = new Map<string, { src: string; tgt: string; cell: DrawioCell }>()
   const hexToCustomName = new Map<string, string>()
-  const viewInfos: Array<{ viewId: string; viewTitle: string; viewDesc: string; fqnSet: Set<string> }> = []
+  const viewInfos: Array<{
+    viewId: string
+    viewTitle: string
+    viewDesc: string
+    viewNotation: string
+    fqnSet: Set<string>
+  }> = []
 
   for (const st of states) {
     for (const [cellId, fqn] of st.idToFqn) {
@@ -995,6 +1050,7 @@ views {
       viewId: st.viewId,
       viewTitle: st.viewTitle,
       viewDesc: st.viewDesc,
+      viewNotation: st.viewNotation,
       fqnSet: new Set(st.idToFqn.values()),
     })
   }
@@ -1256,13 +1312,20 @@ views {
   lines.push('}')
   lines.push('')
 
+  for (const v of viewInfos) {
+    if (v.viewNotation) {
+      lines.push(`// likec4.view.notation ${v.viewId} '${v.viewNotation.replace(/'/g, '\'\'')}'`)
+    }
+  }
+
   // Emit layout as comment for round-trip or tooling (Phase 1.2)
   const layoutByView: Record<
     string,
     { nodes: Record<string, { x: number; y: number; width: number; height: number }> }
   > = {}
   for (const st of states) {
-    layoutByView[st.viewId] = { nodes: {} }
+    const layout = { nodes: {} as Record<string, { x: number; y: number; width: number; height: number }> }
+    layoutByView[st.viewId] = layout
     for (const [cellId, fqn] of st.idToFqn) {
       const cell = st.idToCell.get(cellId)
       if (
@@ -1272,7 +1335,7 @@ views {
         cell.width != null &&
         cell.height != null
       ) {
-        layoutByView[st.viewId].nodes[fqn] = {
+        layout.nodes[fqn] = {
           x: cell.x,
           y: cell.y,
           width: cell.width,
@@ -1343,5 +1406,149 @@ views {
     lines.push('// </likec4.customData>')
   }
 
+  const waypointLinesMulti: string[] = []
+  for (const st of states) {
+    for (const e of st.edges) {
+      const src = st.idToFqn.get(e.source!)
+      const tgt = st.idToFqn.get(e.target!)
+      if (src && tgt && e.edgePoints?.trim()) {
+        waypointLinesMulti.push(`// ${src}|${tgt} ${e.edgePoints.trim()}`)
+      }
+    }
+  }
+  if (waypointLinesMulti.length > 0) {
+    lines.push('// <likec4.edge.waypoints>')
+    lines.push(...waypointLinesMulti)
+    lines.push('// </likec4.edge.waypoints>')
+  }
+
   return lines.join('\n')
+}
+
+/** Data extracted from DrawIO round-trip comment blocks in .c4 source (for re-export). */
+export type DrawioRoundtripData = {
+  layoutByView: Record<
+    string,
+    { nodes: Record<string, { x: number; y: number; width: number; height: number }> }
+  >
+  strokeColorByFqn: Record<string, string>
+  strokeWidthByFqn: Record<string, string>
+  /** Key = "src|tgt" (FQN), value = array of [x, y] waypoints */
+  edgeWaypoints: Record<string, number[][]>
+}
+
+const LAYOUT_START = '// <likec4.layout.drawio>'
+const LAYOUT_END = '// </likec4.layout.drawio>'
+const STROKE_COLOR_START = '// <likec4.strokeColor.vertices>'
+const STROKE_COLOR_END = '// </likec4.strokeColor.vertices>'
+const STROKE_WIDTH_START = '// <likec4.strokeWidth.vertices>'
+const STROKE_WIDTH_END = '// </likec4.strokeWidth.vertices>'
+const WAYPOINTS_START = '// <likec4.edge.waypoints>'
+const WAYPOINTS_END = '// </likec4.edge.waypoints>'
+
+/**
+ * Parse DrawIO round-trip comment blocks from .c4 source.
+ * Returns structured data to pass as GenerateDrawioOptions for re-export, or null if no blocks found.
+ */
+export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripData | null {
+  const lines = c4Source.split(/\r?\n/)
+  let layoutByView: DrawioRoundtripData['layoutByView'] = {}
+  let strokeColorByFqn: Record<string, string> = {}
+  let strokeWidthByFqn: Record<string, string> = {}
+  let edgeWaypoints: Record<string, number[][]> = {}
+  let found = false
+
+  let i = 0
+  while (i < lines.length) {
+    const line = lines[i]
+    if (line == null) {
+      i += 1
+      continue
+    }
+    if (line.trim() === LAYOUT_START) {
+      found = true
+      i += 1
+      const dataLine = lines[i]?.trim()
+      if (dataLine?.startsWith('// ')) {
+        try {
+          const json = dataLine.slice(3)
+          layoutByView = JSON.parse(json) as DrawioRoundtripData['layoutByView']
+        } catch {
+          // ignore invalid JSON
+        }
+      }
+      i += 1
+      continue
+    }
+    if (line.trim() === STROKE_COLOR_START) {
+      found = true
+      i += 1
+      while (i < lines.length && lines[i]?.trim() !== STROKE_COLOR_END) {
+        const ln = lines[i]
+        if (ln != null && ln.trim().startsWith('// ') && ln.includes('=')) {
+          const rest = ln.slice(3).trim()
+          const eq = rest.indexOf('=')
+          if (eq > 0) {
+            const fqn = rest.slice(0, eq).trim()
+            const hex = rest.slice(eq + 1).trim()
+            if (fqn && hex) strokeColorByFqn[fqn] = hex
+          }
+        }
+        i += 1
+      }
+      continue
+    }
+    if (line.trim() === STROKE_WIDTH_START) {
+      found = true
+      i += 1
+      while (i < lines.length && lines[i]?.trim() !== STROKE_WIDTH_END) {
+        const ln = lines[i]
+        if (ln != null && ln.trim().startsWith('// ') && ln.includes('=')) {
+          const rest = ln.slice(3).trim()
+          const eq = rest.indexOf('=')
+          if (eq > 0) {
+            const fqn = rest.slice(0, eq).trim()
+            const val = rest.slice(eq + 1).trim()
+            if (fqn && val !== '') strokeWidthByFqn[fqn] = val
+          }
+        }
+        i += 1
+      }
+      continue
+    }
+    if (line.trim() === WAYPOINTS_START) {
+      found = true
+      i += 1
+      while (i < lines.length && lines[i]?.trim() !== WAYPOINTS_END) {
+        const ln = lines[i]
+        if (ln != null && ln.trim().startsWith('// ')) {
+          const rest = ln.slice(3).trim()
+          const space = rest.indexOf(' ')
+          if (space > 0) {
+            const key = rest.slice(0, space).trim()
+            const json = rest.slice(space + 1).trim()
+            if (key && json) {
+              try {
+                const pts = JSON.parse(json) as number[][]
+                if (Array.isArray(pts)) edgeWaypoints[key] = pts
+              } catch {
+                // ignore
+              }
+            }
+          }
+        }
+        i += 1
+      }
+      continue
+    }
+    i += 1
+  }
+
+  if (!found) return null
+  return {
+    layoutByView,
+    strokeColorByFqn,
+    strokeWidthByFqn,
+    edgeWaypoints,
+  }
 }

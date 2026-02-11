@@ -52,14 +52,16 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
+    "langium": "catalog:langium",
+    "pako": "^2.1.0",
     "remeda": "catalog:utils",
-    "json5": "catalog:utils",
-    "langium": "catalog:langium"
+    "json5": "catalog:utils"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
+    "@types/pako": "^2.0.3",
     "typescript": "catalog:",
     "obuild": "catalog:obuild",
     "vitest": "catalog:vitest"

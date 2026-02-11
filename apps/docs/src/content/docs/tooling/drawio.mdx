@@ -40,18 +40,21 @@ Each view becomes one diagram (tab) in the output. One `.drawio` file is produce
 | Element: border, opacity | Style `strokeWidth`, `likec4Border`, `likec4StrokeWidth` (round-trip); `opacity` |
 | Element: size, padding, textSize, iconPosition | Style `likec4Size`, `likec4Padding`, `likec4TextSize`, `likec4IconPosition` |
 | View notation | Root cell `likec4ViewNotation` (round-trip) |
-| Element position/size | mxGeometry `x`, `y`, `width`, `height` (from layout) |
+| Element position/size | mxGeometry `x`, `y`, `width`, `height` (from layout; overridable via options) |
+| Element/edge custom data | mxUserObject `<data key="k">v</data>` (round-trip) |
+| Edge waypoints | mxGeometry `relative="0"` with `<Array>` of `<mxPoint>` (when viewmodel has `points`) |
 | Relationship: source, target, label | mxCell edge `source`, `target`, `value` |
 | Relationship: description, technology, notes, navigateTo | Style `likec4Description`, `likec4Technology`, `likec4Notes`, `likec4NavigateTo` |
 | Relationship: kind, notation | Style `likec4RelationshipKind`, `likec4Notation` |
 | Relationship: links, metadata | Style `likec4Links` (JSON array), `likec4Metadata` (JSON object) |
 | Relationship: head/tail, line style, color | Style `endArrow`, `startArrow`, `dashed`/`dashPattern`, `strokeColor` |
 
+The generator accepts optional **options** for round-trip or tooling: `layoutOverride` (per-node `{ x, y, width, height }`), `strokeColorByNodeId`, and `strokeWidthByNodeId`. When present, element/edge **customData** is written as mxUserObject, and edge **waypoints** (viewmodel `points`) are written as mxGeometry with an Array of mxPoints.
+
 ### Not preserved on export
 
 - View rules (include/exclude, style rules) — only the resulting nodes and edges are exported.
-- Manual layout waypoints / edge waypoints — edges use default Draw.io routing.
-- Layout drifts / fine position tweaks — only final node position is written.
+- Layout drifts / fine position tweaks — only final node position is written (or the provided `layoutOverride`).
 - Theme color names — stored as hex in Draw.io; `likec4ColorName` keeps the name for round-trip.
 
 ## Import (Draw.io → LikeC4)
@@ -82,12 +85,13 @@ On import, the following are emitted as **comment blocks** at the end of the fil
 - **Vertex stroke color** — `// <likec4.strokeColor.vertices>` with lines `// FQN=#hex` (LikeC4 has no element strokeColor in the DSL).
 - **Vertex stroke width** — `// <likec4.strokeWidth.vertices>` with lines `// FQN=value` (numeric strokeWidth for round-trip).
 - **Custom mxUserObject data** — `// <likec4.customData>` with lines `// FQN {"key":"value",…}` or `// src|tgt {...}` for edges. Any `<data key="...">` not mapped to a LikeC4 field is preserved here for round-trip.
+- **View notation** — `// likec4.view.notation viewId '...'` for each diagram that has root style `likec4ViewNotation` (single or multi).
+- **Edge waypoints** — `// <likec4.edge.waypoints>` with lines `// src|tgt [ [x,y], … ]` (JSON array of points from edge mxGeometry). For tooling or round-trip; not part of the LikeC4 DSL.
 
 ### Not preserved on import
 
 - **Layout in model** — Node position/size are not in the `.c4` model; they are only in the layout comment block above. Layout is recalculated or manual in LikeC4.
 - **Font style** — fontSize, fontColor, fontStyle, fontFamily are not mapped.
-- **Edge waypoints** — Draw.io routing/waypoints are not emitted in LikeC4.
 - **Layers** — All cells are merged into one model.
 - **Non-vertex/non-edge cells** — Ignored.
 - **Images** — Not supported in the parser.
@@ -110,6 +114,8 @@ For a **round-trip** (LikeC4 → Draw.io → LikeC4), the following survive well
 - Element border, opacity, shape, color (as named color when using likec4ColorName); vertex stroke color in comment block
 - Relationship kind, notation, links, metadata, head/tail, line style, color
 - Multi-diagram: multiple tabs become multiple views on import
-- Layout and vertex stroke colors in comment blocks (for tooling / round-trip)
+- Layout, vertex stroke colors, customData, view notation, and edge waypoints in comment blocks (for tooling / round-trip)
 
-Font options and edge waypoints are not stored in the `.c4` source.
+**Re-export using comment blocks:** When you export to Draw.io from the **Playground**, if the current workspace source contains the Draw.io round-trip comment blocks (e.g. after an import), the exporter automatically applies layout, vertex stroke color/width, and edge waypoints from those comments so the generated `.drawio` file matches the previously imported diagram. The generators API exposes `parseDrawioRoundtripComments(source)` and `GenerateDrawioOptions` (including `edgeWaypoints`) for custom tooling.
+
+Font options are not stored in the `.c4` source. Edge waypoints are emitted only in comment blocks, not in the model.

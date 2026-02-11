@@ -1,5 +1,9 @@
 import { expect, test } from 'vitest'
-import { parseDrawioToLikeC4, parseDrawioToLikeC4Multi } from './parse-drawio'
+import {
+  parseDrawioRoundtripComments,
+  parseDrawioToLikeC4,
+  parseDrawioToLikeC4Multi,
+} from './parse-drawio'
 
 const minimalDrawio = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="test">
@@ -121,4 +125,43 @@ test('parseDrawioToLikeC4Multi - two diagrams produce one model and two views wi
   expect(result).toContain('include A, C')
   expect(result).toContain('model {')
   expect(result).toMatchSnapshot()
+})
+
+test('parseDrawioRoundtripComments - extracts layout, stroke, waypoints from comment blocks', () => {
+  const c4WithComments = `
+model { }
+views { view v1 { include * } }
+
+// <likec4.layout.drawio>
+// {"v1":{"nodes":{"A":{"x":10,"y":20,"width":100,"height":50},"B":{"x":200,"y":20,"width":80,"height":40}}}}
+// </likec4.layout.drawio>
+// <likec4.strokeColor.vertices>
+// A=#6c8ebf
+// B=#82b366
+// </likec4.strokeColor.vertices>
+// <likec4.strokeWidth.vertices>
+// A=2
+// B=1
+// </likec4.strokeWidth.vertices>
+// <likec4.edge.waypoints>
+// A|B [[50,40],[150,40]]
+// </likec4.edge.waypoints>
+`
+  const data = parseDrawioRoundtripComments(c4WithComments)
+  expect(data).not.toBeNull()
+  expect(data!['layoutByView']['v1']?.['nodes']?.['A']).toEqual({ x: 10, y: 20, width: 100, height: 50 })
+  expect(data!['layoutByView']['v1']?.['nodes']?.['B']).toEqual({ x: 200, y: 20, width: 80, height: 40 })
+  expect(data!['strokeColorByFqn']['A']).toBe('#6c8ebf')
+  expect(data!['strokeColorByFqn']['B']).toBe('#82b366')
+  expect(data!['strokeWidthByFqn']['A']).toBe('2')
+  expect(data!['strokeWidthByFqn']['B']).toBe('1')
+  expect(data!['edgeWaypoints']['A|B']).toEqual([
+    [50, 40],
+    [150, 40],
+  ])
+})
+
+test('parseDrawioRoundtripComments - returns null when no comment blocks', () => {
+  expect(parseDrawioRoundtripComments('model { }\nviews { }')).toBeNull()
+  expect(parseDrawioRoundtripComments('')).toBeNull()
 })

@@ -145,17 +145,37 @@ function drawioArrow(arrow: string | undefined | null): string {
   }
 }
 
+/** Optional overrides for round-trip (e.g. from parsed comment blocks). Keys are node/edge ids from the view. */
+export type GenerateDrawioOptions = {
+  /** Node id -> { x, y, width, height } to use instead of viewmodel layout */
+  layoutOverride?: Record<string, { x: number; y: number; width: number; height: number }>
+  /** Node id -> stroke color hex (e.g. from likec4.strokeColor.vertices comment) */
+  strokeColorByNodeId?: Record<string, string>
+  /** Node id -> stroke width (e.g. from likec4.strokeWidth.vertices comment) */
+  strokeWidthByNodeId?: Record<string, string>
+  /** Edge "source|target" (FQN) -> array of [x, y] waypoints (e.g. from likec4.edge.waypoints comment) */
+  edgeWaypoints?: Record<string, number[][]>
+}
+
 /**
  * Generate DrawIO (mxGraph) XML from a layouted LikeC4 view.
  * Preserves positions, hierarchy, colors, descriptions and technology so the diagram
  * can be opened and edited in draw.io with full compatibility.
  *
  * @param viewmodel - Layouted LikeC4 view model (from model.view(id))
+ * @param options - Optional overrides for layout/colors (round-trip from comment blocks)
  * @returns DrawIO .drawio XML string
  */
-export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string {
+export function generateDrawio(
+  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  options?: GenerateDrawioOptions,
+): string {
   const view = viewmodel.$view
   const { nodes, edges } = view
+  const layoutOverride = options?.layoutOverride
+  const strokeColorByNodeId = options?.strokeColorByNodeId
+  const strokeWidthByNodeId = options?.strokeWidthByNodeId
+  const edgeWaypoints = options?.edgeWaypoints
 
   const rootId = '0'
   const defaultParentId = '1'
@@ -185,8 +205,10 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     return 0
   })
 
-  /** Support both BBox (x,y,width,height) and legacy position/size used in some mocks */
+  /** Support both BBox (x,y,width,height), legacy position/size, and layoutOverride for round-trip */
   const getBBox = (n: View['nodes'][number]) => {
+    const over = layoutOverride?.[n.id]
+    if (over) return { x: over.x, y: over.y, width: over.width, height: over.height }
     const d = n as DiagramNode & { position?: [number, number]; size?: { width: number; height: number } }
     const x = typeof d.x === 'number' ? d.x : (Array.isArray(d.position) ? d.position[0] : 0)
     const y = typeof d.y === 'number' ? d.y : (Array.isArray(d.position) ? d.position[1] : 0)
@@ -257,7 +279,11 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     const value = escapeXml(valueHtml)
 
     const shapeStyle = drawioShape(node.shape)
-    const elemColors = getElementColors(viewmodel, node.color)
+    const strokeColorOverride = strokeColorByNodeId?.[node.id]
+    const strokeWidthOverride = strokeWidthByNodeId?.[node.id]
+    const elemColors = strokeColorOverride
+      ? { fill: getElementColors(viewmodel, node.color)?.fill ?? '#dae8fc', stroke: strokeColorOverride }
+      : getElementColors(viewmodel, node.color)
     const colorStyle = elemColors != null
       ? `fillColor=${elemColors.fill};strokeColor=${elemColors.stroke};fontColor=${elemColors.stroke};`
       : ''
@@ -270,7 +296,7 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
       iconPosition?: string
     } | undefined
     const borderVal = nodeStyle?.border
-    const strokeWidth = borderVal === 'none' ? '0' : borderVal ? '1' : ''
+    const strokeWidth = strokeWidthOverride ?? (borderVal === 'none' ? '0' : borderVal ? '1' : '')
     const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
     const summaryRaw = (node as Node & { summary?: MarkdownOrString }).summary
     const summaryStr = summaryRaw != null && !isEmptyish(flattenMarkdownOrString(summaryRaw))
@@ -311,11 +337,25 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     }
     const likec4Style = likec4Extra.length > 0 ? likec4Extra.join(';') + ';' : ''
 
+    const nodeCustomData = (node as Node & { customData?: Record<string, string> }).customData
+    const userObjectXml = nodeCustomData &&
+        typeof nodeCustomData === 'object' &&
+        !Array.isArray(nodeCustomData) &&
+        Object.keys(nodeCustomData).length > 0
+      ? '\n  <mxUserObject>' +
+        Object.entries(nodeCustomData)
+          .map(
+            ([k, v]) => `<data key="${escapeXml(k)}">${escapeXml(String(v ?? ''))}</data>`,
+          )
+          .join('') +
+        '</mxUserObject>'
+      : ''
+
     vertexCells.push(
       `<mxCell id="${id}" value="${value}" style="${shapeStyle}${colorStyle}${strokeWidthStyle}${opacityStyle}${likec4Style}html=1;whiteSpace=wrap;verticalAlign=top;align=center;spacingTop=4;overflow=fill;spacingLeft=2;spacingRight=2;spacingBottom=2;fontStyle=1;" vertex="1" parent="${parentId}">
   <mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${
         Math.round(height)
-      }" as="geometry" />
+      }" as="geometry" />${userObjectXml}
 </mxCell>`,
     )
   }
@@ -363,9 +403,41 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
       : ''
     if (edgeMetadataJson !== '') edgeLikec4.push(`likec4Metadata=${edgeMetadataJson}`)
     const edgeLikec4Style = edgeLikec4.length > 0 ? edgeLikec4.join(';') + ';' : ''
+
+    const edgeCustomData = (edge as Edge & { customData?: Record<string, string> }).customData
+    const edgeUserObjectXml = edgeCustomData &&
+        typeof edgeCustomData === 'object' &&
+        !Array.isArray(edgeCustomData) &&
+        Object.keys(edgeCustomData).length > 0
+      ? '\n  <mxUserObject>' +
+        Object.entries(edgeCustomData)
+          .map(
+            ([k, v]) => `<data key="${escapeXml(k)}">${escapeXml(String(v ?? ''))}</data>`,
+          )
+          .join('') +
+        '</mxUserObject>'
+      : ''
+
+    const edgePoints = (edge as { points?: readonly (readonly [number, number])[] }).points ??
+      edgeWaypoints?.[`${edge.source}|${edge.target}`]
+    const hasPoints = Array.isArray(edgePoints) && edgePoints.length > 0
+    const pointsXml = hasPoints
+      ? '<Array><Array>' +
+        (edgePoints as [number, number][]).map((pt, i) => {
+          const [px, py] = pt
+          const asAttr = i === 0 ? ' as="sourcePoint"' : i === edgePoints!.length - 1 ? ' as="targetPoint"' : ''
+          return `<mxPoint x="${Math.round(px)}" y="${Math.round(py)}"${asAttr}/>`
+        }).join('') +
+        '</Array></Array>'
+      : ''
+
+    const edgeGeometryXml = hasPoints
+      ? `<mxGeometry relative="0" as="geometry">${pointsXml}</mxGeometry>`
+      : '<mxGeometry relative="1" as="geometry" />'
+
     edgeCells.push(
       `<mxCell id="${id}" value="${label}" style="endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=${strokeColor};${dashStyle}${edgeLikec4Style}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">
-  <mxGeometry relative="1" as="geometry" />
+  ${edgeGeometryXml}${edgeUserObjectXml}
 </mxCell>`,
     )
   }
@@ -382,8 +454,9 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     ? viewDescRaw
     : ''
   const viewDescEnc = viewDesc.trim() !== '' ? encodeURIComponent(viewDesc.trim()) : ''
-  const viewNotation = (view as { notation?: string }).notation
-  const viewNotationEnc = viewNotation != null && viewNotation !== '' ? encodeURIComponent(viewNotation) : ''
+  const viewNotationRaw = (view as unknown as { notation?: unknown }).notation
+  const viewNotation = typeof viewNotationRaw === 'string' && viewNotationRaw !== '' ? viewNotationRaw : undefined
+  const viewNotationEnc = viewNotation != null ? encodeURIComponent(viewNotation) : ''
   const rootParts = [
     'rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ffffff;',
     `likec4ViewTitle=${encodeURIComponent(viewTitle ?? view.id)};`,

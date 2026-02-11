@@ -1244,6 +1244,9 @@ importers:
       langium:
         specifier: catalog:langium
         version: 3.5.0
+      pako:
+        specifier: ^2.1.0
+        version: 2.1.0
       remeda:
         specifier: catalog:utils
         version: 2.32.0
@@ -1257,6 +1260,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.7
+      '@types/pako':
+        specifier: ^2.0.3
+        version: 2.0.4
       obuild:
         specifier: catalog:obuild
         version: 0.4.27(@typescript/native-preview@7.0.0-dev.20260206.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
@@ -4873,6 +4879,9 @@ packages:
   '@types/object-hash@3.0.6':
     resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
 
+  '@types/pako@2.0.4':
+    resolution: {integrity: sha512-VWDCbrLeVXJM9fihYodcLiIv0ku+AlOa/TQ1SvYOaBuyrSKgEcro95LJyIsJ4vSo6BXIxOKxiJAat04CmST9Fw==}
+
   '@types/parse-gitignore@1.0.2':
     resolution: {integrity: sha512-AQwj+lNTWI7y1kkMe8qLByiToXoXs/du70qGFIHJZaJUVrF5jB8QzvWmLyR1VWYqRagpY8ABrqAjs7uHsJnVBQ==}
 
@@ -7489,6 +7498,9 @@ packages:
 
   pako@1.0.11:
     resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
+
+  pako@2.1.0:
+    resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
 
   pandacss-preset-radix-colors@0.2.1:
     resolution: {integrity: sha512-KDHkPEXhHZQCd28zSLTUjIThmDrGFvXmre3OpSIyawwEIzt1yQ6MRFjLkQuAGsuBt4tyS4A5i7DsYR/+Ufg7bg==}
@@ -12409,6 +12421,8 @@ snapshots:
 
   '@types/object-hash@3.0.6': {}
 
+  '@types/pako@2.0.4': {}
+
   '@types/parse-gitignore@1.0.2':
     dependencies:
       '@types/node': 22.19.7
@@ -15667,6 +15681,8 @@ snapshots:
       '@pagefind/windows-x64': 1.3.0
 
   pako@1.0.11: {}
+
+  pako@2.1.0: {}
 
   pandacss-preset-radix-colors@0.2.1(@pandacss/dev@1.8.1(typescript@5.9.3))(@radix-ui/colors@3.0.0):
     dependencies:

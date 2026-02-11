@@ -34,15 +34,20 @@ export function useOptionalDrawioContextMenu(): DrawioContextMenuApi | null {
 
 export function DrawioContextMenuProvider({ children }: PropsWithChildren) {
   const playground = usePlayground()
-  const { diagram, likec4model } = usePlaygroundSnapshot(c => {
+  const { diagram, likec4model, files } = usePlaygroundSnapshot(c => {
     if (c.value !== 'ready') {
-      return { diagram: null as DiagramView | null, likec4model: null as LikeC4Model | null }
+      return {
+        diagram: null as DiagramView | null,
+        likec4model: null as LikeC4Model | null,
+        files: {} as Record<string, string>,
+      }
     }
     const viewState = c.context.activeViewId ? c.context.viewStates[c.context.activeViewId] : null
     const diagram = viewState?.state === 'success' ? viewState.diagram : null
     return {
       diagram: diagram ?? null,
       likec4model: c.context.likec4model,
+      files: c.context.files ?? {},
     }
   })
 
@@ -53,10 +58,16 @@ export function DrawioContextMenuProvider({ children }: PropsWithChildren) {
     [playground],
   )
 
+  const getSourceContent = useCallback(() => {
+    const contents = Object.values(files).filter(Boolean)
+    return contents.length > 0 ? contents.join('\n\n') : undefined
+  }, [files])
+
   const actions = useDrawioContextMenuActions({
     diagram,
     likec4model,
     onAddFile,
+    getSourceContent,
   })
 
   useEffect(() => {
