@@ -1,2 +1,6 @@
-export { generateDrawio } from './generate-drawio'
-export { parseDrawioToLikeC4, type DrawioCell } from './parse-drawio'
+export { generateDrawio, generateDrawioMulti } from './generate-drawio'
+export {
+  type DiagramInfo,
+  type DrawioCell,
+  parseDrawioToLikeC4,
+} from './parse-drawio'

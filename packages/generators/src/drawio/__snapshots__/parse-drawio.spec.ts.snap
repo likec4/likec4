@@ -1,9 +1,36 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`parse DrawIO to LikeC4 - edge with LikeC4 style (description, technology, notes, navigateTo, arrows, dashed) 1`] = `
+"model {
+
+  A = container 'A'
+  {
+  }
+
+  B = container 'B'
+  {
+  }
+
+  A -> B 'calls' 'HTTP API' 'REST' {
+    notes 'async'
+    navigateTo detail
+    style { line dashed, head open, tail none }
+  }
+}
+
+views {
+  view index {
+    include *
+  }
+}
+"
+`;
+
 exports[`parse DrawIO to LikeC4 - minimal diagram 1`] = `
 "specification {
   color drawio_color_1 #dae8fc
   color drawio_color_2 #d5e8d4
+  color drawio_edge_color_1 #6c8ebf
 }
 
 model {
@@ -18,11 +45,13 @@ model {
     style { color drawio_color_2 }
   }
 
-  Frontend -> Backend 'requests'
+  Frontend -> Backend 'requests' {
+    style { color drawio_edge_color_1 }
+  }
 }
 
 views {
-  view index {
+  view test {
     include *
   }
 }

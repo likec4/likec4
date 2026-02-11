@@ -1,7 +1,30 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, DiagramNode, NodeId, ProcessedView } from '@likec4/core/types'
+import type { MarkdownOrString } from '@likec4/core/types'
 import { flattenMarkdownOrString } from '@likec4/core/types'
+import pako from 'pako'
 import { isEmptyish, isNullish as isNil } from 'remeda'
+
+/** DrawIO expects diagram content as base64(deflateRaw(encodeURIComponent(xml))). */
+function compressDrawioDiagramXml(xml: string): string {
+  const encoded = encodeURIComponent(xml)
+  const bytes = new TextEncoder().encode(encoded)
+  const compressed = pako.deflateRaw(bytes)
+  return uint8ArrayToBase64(compressed)
+}
+
+function uint8ArrayToBase64(bytes: Uint8Array): string {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(bytes).toString('base64')
+  }
+  let binary = ''
+  const chunk = 8192
+  for (let i = 0; i < bytes.length; i += chunk) {
+    const slice = bytes.subarray(i, i + chunk)
+    binary += String.fromCharCode.apply(null, [...slice])
+  }
+  return btoa(binary)
+}
 
 type View = ProcessedView<aux.Unknown>
 type Node = View['nodes'][number]
@@ -29,15 +52,25 @@ function escapeXml(unsafe: string): string {
     .replace(/'/g, '&apos;')
 }
 
+/** Escape for use inside HTML (e.g. cell value with html=1). */
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
 /**
  * Map LikeC4 shape to DrawIO style. DrawIO uses shape=rectangle, ellipse, cylinder, etc.
+ * LikeC4 default rectangles have slightly rounded corners (rounded=1).
  */
 function drawioShape(shape: Node['shape']): string {
   switch (shape) {
     case 'person':
       return 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;'
     case 'rectangle':
-      return 'shape=rectangle;'
+      return 'shape=rectangle;rounded=1;'
     case 'browser':
       return 'shape=rectangle;rounded=1;'
     case 'mobile':
@@ -53,7 +86,7 @@ function drawioShape(shape: Node['shape']): string {
     case 'document':
       return 'shape=document;whiteSpace=wrap;html=1;boundedLbl=1;'
     default:
-      return 'shape=rectangle;'
+      return 'shape=rectangle;rounded=1;'
   }
 }
 
@@ -87,6 +120,29 @@ function getEdgeStrokeColor(viewmodel: LikeC4ViewModel<aux.Unknown>, color: stri
     }
   }
   return DEFAULT_EDGE_COLOR
+}
+
+/** Map LikeC4 RelationshipArrowType to draw.io endArrow/startArrow style value. */
+function drawioArrow(arrow: string | undefined | null): string {
+  switch (arrow) {
+    case 'none':
+      return 'none'
+    case 'open':
+    case 'onormal':
+    case 'vee':
+      return 'open'
+    case 'diamond':
+    case 'odiamond':
+      return 'diamond'
+    case 'dot':
+    case 'odot':
+      return 'oval'
+    case 'crow':
+      return 'block'
+    case 'normal':
+    default:
+      return 'block'
+  }
 }
 
 /**
@@ -139,32 +195,109 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     return { x, y, width, height }
   }
 
+  const bboxes = new Map<NodeId, { x: number; y: number; width: number; height: number }>()
+  for (const node of sortedNodes) bboxes.set(node.id, getBBox(node))
+
+  let contentMinX = Infinity
+  let contentMinY = Infinity
+  let contentMaxX = -Infinity
+  let contentMaxY = -Infinity
+  for (const b of bboxes.values()) {
+    contentMinX = Math.min(contentMinX, b.x)
+    contentMinY = Math.min(contentMinY, b.y)
+    contentMaxX = Math.max(contentMaxX, b.x + b.width)
+    contentMaxY = Math.max(contentMaxY, b.y + b.height)
+  }
+  if (contentMinX === Infinity) contentMinX = 0
+  if (contentMinY === Infinity) contentMinY = 0
+  if (contentMaxX === -Infinity) contentMaxX = contentMinX + 800
+  if (contentMaxY === -Infinity) contentMaxY = contentMinY + 600
+  const contentCx = contentMinX + (contentMaxX - contentMinX) / 2
+  const contentCy = contentMinY + (contentMaxY - contentMinY) / 2
+  let pageBounds: { x: number; y: number; width: number; height: number } = {
+    x: 0,
+    y: 0,
+    width: 800,
+    height: 600,
+  }
+  try {
+    const b = viewmodel.bounds
+    if (b != null && typeof b.x === 'number') pageBounds = b
+  } catch {
+    // not layouted
+  }
+  const offsetX = pageBounds.x + pageBounds.width / 2 - contentCx
+  const offsetY = pageBounds.y + pageBounds.height / 2 - contentCy
+
   for (const node of sortedNodes) {
     const id = getCellId(node.id)
     const parentId = node.parent ? getCellId(node.parent) : defaultParentId
-    const label = escapeXml(node.title)
-    const shapeStyle = drawioShape(node.shape)
-    const { x, y, width, height } = getBBox(node)
+    const bbox = bboxes.get(node.id)!
+    const { width, height } = bbox
+    const x = bbox.x + offsetX
+    const y = bbox.y + offsetY
 
+    const title = node.title
+    const descRaw = flattenMarkdownOrString(node.description)
+    const techRaw = flattenMarkdownOrString(node.technology)
+    const notesRaw = flattenMarkdownOrString((node as Node & { notes?: MarkdownOrString }).notes)
+    const desc = descRaw != null && !isEmptyish(descRaw) ? descRaw.trim() : ''
+    const tech = techRaw != null && !isEmptyish(techRaw) ? techRaw.trim() : ''
+    const notes = notesRaw != null && !isEmptyish(notesRaw) ? notesRaw.trim() : ''
+    const tags = (node as Node & { tags?: readonly string[] }).tags
+    const tagList = Array.isArray(tags) && tags.length > 0 ? tags.join(',') : ''
+    const navigateTo = (node as Node & { navigateTo?: string | null }).navigateTo
+    const navTo = navigateTo != null && navigateTo !== '' ? String(navigateTo) : ''
+    const icon = (node as Node & { icon?: string | null }).icon
+    const iconName = icon != null && icon !== '' ? String(icon) : ''
+
+    const valueHtml = desc !== ''
+      ? `<b>${escapeHtml(title)}</b><br/><span style="font-weight: normal; font-size: 11px;">${escapeHtml(desc)}</span>`
+      : escapeHtml(title)
+    const value = escapeXml(valueHtml)
+
+    const shapeStyle = drawioShape(node.shape)
     const elemColors = getElementColors(viewmodel, node.color)
     const colorStyle = elemColors != null
       ? `fillColor=${elemColors.fill};strokeColor=${elemColors.stroke};fontColor=${elemColors.stroke};`
       : ''
-
-    const descRaw = flattenMarkdownOrString(node.description)
-    const techRaw = flattenMarkdownOrString(node.technology)
-    const desc = descRaw != null && !isEmptyish(descRaw) ? escapeXml(descRaw.trim()) : ''
-    const tech = techRaw != null && !isEmptyish(techRaw) ? escapeXml(techRaw.trim()) : ''
-    const userData = desc !== '' || tech !== ''
-      ? `<mxUserObject><data key="likec4Description">${desc}</data><data key="likec4Technology">${tech}</data></mxUserObject>`
+    const nodeStyle = node.style as { border?: string; opacity?: number } | undefined
+    const borderVal = nodeStyle?.border
+    const strokeWidth = borderVal === 'none' ? '0' : borderVal ? '1' : ''
+    const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
+    const summaryRaw = (node as Node & { summary?: MarkdownOrString }).summary
+    const summaryStr = summaryRaw != null && !isEmptyish(flattenMarkdownOrString(summaryRaw))
+      ? flattenMarkdownOrString(summaryRaw)!.trim()
       : ''
+    const links = (node as Node & { links?: readonly { url: string; title?: string }[] }).links
+    const linksJson = Array.isArray(links) && links.length > 0
+      ? encodeURIComponent(JSON.stringify(links.map(l => ({ url: l.url, title: l.title }))))
+      : ''
+    const opacityVal = nodeStyle?.opacity
+    const opacityStyle = typeof opacityVal === 'number' && opacityVal >= 0 && opacityVal <= 100
+      ? `opacity=${opacityVal};`
+      : ''
+    const colorNameForRoundtrip = node.color ? encodeURIComponent(String(node.color)) : ''
+
+    const likec4Extra: string[] = []
+    if (desc !== '') likec4Extra.push(`likec4Description=${encodeURIComponent(desc)}`)
+    if (tech !== '') likec4Extra.push(`likec4Technology=${encodeURIComponent(tech)}`)
+    if (notes !== '') likec4Extra.push(`likec4Notes=${encodeURIComponent(notes)}`)
+    if (tagList !== '') likec4Extra.push(`likec4Tags=${encodeURIComponent(tagList)}`)
+    if (navTo !== '') likec4Extra.push(`likec4NavigateTo=${encodeURIComponent(navTo)}`)
+    if (iconName !== '') likec4Extra.push(`likec4Icon=${encodeURIComponent(iconName)}`)
+    if (summaryStr !== '') likec4Extra.push(`likec4Summary=${encodeURIComponent(summaryStr)}`)
+    if (linksJson !== '') likec4Extra.push(`likec4Links=${linksJson}`)
+    if (borderVal) likec4Extra.push(`likec4Border=${encodeURIComponent(borderVal)}`)
+    if (colorNameForRoundtrip !== '') likec4Extra.push(`likec4ColorName=${colorNameForRoundtrip}`)
+    const likec4Style = likec4Extra.length > 0 ? likec4Extra.join(';') + ';' : ''
 
     vertexCells.push(
-      `<mxCell id="${id}" value="${label}" style="${shapeStyle}${colorStyle}verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="${parentId}">
+      `<mxCell id="${id}" value="${value}" style="${shapeStyle}${colorStyle}${strokeWidthStyle}${opacityStyle}${likec4Style}html=1;whiteSpace=wrap;verticalAlign=top;align=center;spacingTop=4;overflow=fill;spacingLeft=2;spacingRight=2;spacingBottom=2;fontStyle=1;" vertex="1" parent="${parentId}">
   <mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${
         Math.round(height)
       }" as="geometry" />
-${userData ? `  ${userData}\n` : ''}</mxCell>`,
+</mxCell>`,
     )
   }
 
@@ -175,43 +308,112 @@ ${userData ? `  ${userData}\n` : ''}</mxCell>`,
     const label = edge.label ? escapeXml(edge.label) : ''
     const strokeColor = getEdgeStrokeColor(viewmodel, edge.color)
     const dashStyle = edge.line === 'dashed' ? 'dashed=1;' : edge.line === 'dotted' ? 'dashed=1;dashPattern=1 1;' : ''
+    const endArrow = drawioArrow(edge.head)
+    const startArrow = drawioArrow(edge.tail)
+    const edgeDescRaw = flattenMarkdownOrString(edge.description)
+    const edgeTechRaw = flattenMarkdownOrString(edge.technology)
+    const edgeNotesRaw = flattenMarkdownOrString(edge.notes)
+    const edgeDesc = edgeDescRaw != null && !isEmptyish(edgeDescRaw) ? edgeDescRaw.trim() : ''
+    const edgeTech = edgeTechRaw != null && !isEmptyish(edgeTechRaw) ? edgeTechRaw.trim() : ''
+    const edgeNotes = edgeNotesRaw != null && !isEmptyish(edgeNotesRaw) ? edgeNotesRaw.trim() : ''
+    const edgeNavTo = edge.navigateTo != null && edge.navigateTo !== '' ? String(edge.navigateTo) : ''
+    const edgeKind = (edge as Edge & { kind?: string }).kind
+    const edgeNotation = (edge as Edge & { notation?: string }).notation
+    const edgeLikec4: string[] = []
+    if (edgeDesc !== '') edgeLikec4.push(`likec4Description=${encodeURIComponent(edgeDesc)}`)
+    if (edgeTech !== '') edgeLikec4.push(`likec4Technology=${encodeURIComponent(edgeTech)}`)
+    if (edgeNotes !== '') edgeLikec4.push(`likec4Notes=${encodeURIComponent(edgeNotes)}`)
+    if (edgeNavTo !== '') edgeLikec4.push(`likec4NavigateTo=${encodeURIComponent(edgeNavTo)}`)
+    if (edgeKind != null && edgeKind !== '') {
+      edgeLikec4.push(`likec4RelationshipKind=${encodeURIComponent(String(edgeKind))}`)
+    }
+    if (edgeNotation != null && edgeNotation !== '') {
+      edgeLikec4.push(`likec4Notation=${encodeURIComponent(edgeNotation)}`)
+    }
+    const edgeLikec4Style = edgeLikec4.length > 0 ? edgeLikec4.join(';') + ';' : ''
     edgeCells.push(
-      `<mxCell id="${id}" value="${label}" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=${strokeColor};${dashStyle}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">
+      `<mxCell id="${id}" value="${label}" style="endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=${strokeColor};${dashStyle}${edgeLikec4Style}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">
   <mxGeometry relative="1" as="geometry" />
 </mxCell>`,
     )
   }
 
-  let bounds: { x: number; y: number; width: number; height: number } = {
-    x: 0,
-    y: 0,
-    width: 800,
-    height: 600,
-  }
-  try {
-    const b = viewmodel.bounds
-    if (b != null && typeof b.x === 'number') bounds = b
-  } catch {
-    // View not layouted (e.g. in tests); use default canvas size
-  }
+  const viewTitle = typeof (view as { title?: string | null }).title === 'string'
+    ? (view as { title: string }).title
+    : null
+  const viewDescRaw = (view as { description?: unknown }).description
+  const viewDesc = viewDescRaw != null && typeof viewDescRaw === 'object' && 'txt' in viewDescRaw
+    ? String((viewDescRaw as { txt: string }).txt)
+    : viewDescRaw != null && typeof viewDescRaw === 'object' && 'md' in viewDescRaw
+    ? String((viewDescRaw as { md: string }).md)
+    : typeof viewDescRaw === 'string'
+    ? viewDescRaw
+    : ''
+  const viewDescEnc = viewDesc.trim() !== '' ? encodeURIComponent(viewDesc.trim()) : ''
+  const rootCellStyle = viewDescEnc !== ''
+    ? `rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ffffff;likec4ViewTitle=${
+      encodeURIComponent(viewTitle ?? view.id)
+    };likec4ViewDescription=${viewDescEnc};`
+    : 'rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ffffff;'
+
   const allCells = [
-    `<mxCell id="${defaultParentId}" vertex="1" parent="${rootId}">
-  <mxGeometry x="${bounds.x}" y="${bounds.y}" width="${bounds.width}" height="${bounds.height}" as="geometry" />
+    `<mxCell id="${defaultParentId}" value="" style="${rootCellStyle}" vertex="1" parent="${rootId}">
+  <mxGeometry x="${pageBounds.x}" y="${pageBounds.y}" width="${pageBounds.width}" height="${pageBounds.height}" as="geometry" />
 </mxCell>`,
     ...vertexCells,
     ...edgeCells,
   ].join('\n')
 
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
-  <diagram name="${escapeXml(view.id)}" id="likec4-${escapeXml(view.id)}">
-    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  const diagramName = (viewTitle ?? view.id).trim() || view.id
+  const mxGraphModelXml =
+    `<mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="${rootId}" />
         ${allCells}
       </root>
-    </mxGraphModel>
-  </diagram>
+    </mxGraphModel>`
+  const compressed = compressDrawioDiagramXml(mxGraphModelXml)
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
+  <diagram name="${escapeXml(diagramName)}" id="likec4-${escapeXml(view.id)}">${compressed}</diagram>
+</mxfile>
+`
+}
+
+/**
+ * Generate a single DrawIO file with multiple diagrams (tabs).
+ * Each view becomes one tab in draw.io. Use this when exporting a project
+ * so all views open in one file with one tab per view.
+ *
+ * @param viewmodels - Layouted view models (e.g. from model.views())
+ * @returns DrawIO .drawio XML string with multiple <diagram> elements
+ */
+export function generateDrawioMulti(
+  viewmodels: Array<LikeC4ViewModel<aux.Unknown>>,
+): string {
+  if (viewmodels.length === 0) {
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
+</mxfile>
+`
+  }
+  if (viewmodels.length === 1) {
+    return generateDrawio(viewmodels[0]!)
+  }
+  const diagramParts = viewmodels.map(vm => {
+    const single = generateDrawio(vm)
+    const m = single.match(/<diagram[^>]*>([\s\S]*?)<\/diagram>/)
+    const view = vm.$view
+    if (!m) return ''
+    const diagramName = (typeof (view as { title?: string | null }).title === 'string'
+      ? (view as { title: string }).title
+      : null) ?? view.id
+    return `  <diagram name="${escapeXml(diagramName)}" id="likec4-${escapeXml(view.id)}">${m[1]}</diagram>`
+  }).filter(Boolean)
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
+${diagramParts.join('\n')}
 </mxfile>
 `
 }

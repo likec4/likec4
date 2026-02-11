@@ -2,7 +2,11 @@
  * Parse DrawIO (mxGraph) XML and generate LikeC4 source code.
  * Extracts vertices as elements and edges as relations; preserves colors, descriptions,
  * technology and other compatible attributes for full bidirectional compatibility.
+ * Supports both uncompressed (raw mxGraphModel inside <diagram>) and compressed
+ * (base64 + deflate, draw.io default) diagram content.
  */
+
+import pako from 'pako'
 
 export interface DrawioCell {
   id: string
@@ -20,9 +24,39 @@ export interface DrawioCell {
   /** From style fillColor= or mxUserObject */
   fillColor?: string
   strokeColor?: string
-  /** From mxUserObject data likec4Description / likec4Technology (exported by LikeC4) */
+  /** From style likec4Description / mxUserObject (exported by LikeC4) */
   description?: string
   technology?: string
+  /** From style likec4Notes */
+  notes?: string
+  /** From style likec4Tags (comma-separated) */
+  tags?: string
+  /** From style likec4NavigateTo (view id for drill-down link) */
+  navigateTo?: string
+  /** From style likec4Icon (icon name) */
+  icon?: string
+  /** Edge only: from style endArrow (draw.io: none, block, open, diamond, oval) */
+  endArrow?: string
+  /** Edge only: from style startArrow */
+  startArrow?: string
+  /** Edge only: from style dashed=1 */
+  dashed?: string
+  /** Edge only: from style dashPattern (e.g. "1 1" for dotted) */
+  dashPattern?: string
+  /** From style likec4Summary (vertex) */
+  summary?: string
+  /** From style likec4Links (vertex; JSON array of {url, title?}) */
+  links?: string
+  /** From style likec4Border (vertex: solid|dashed|dotted|none) */
+  border?: string
+  /** From style likec4ColorName (vertex; theme/custom color name for roundtrip) */
+  colorName?: string
+  /** From style opacity (vertex; 0-100) */
+  opacity?: string
+  /** From style likec4RelationshipKind (edge) */
+  relationshipKind?: string
+  /** From style likec4Notation (edge) */
+  notation?: string
 }
 
 function getAttr(attrs: string, name: string): string | undefined {
@@ -94,6 +128,46 @@ function parseDrawioXml(xml: string): DrawioCell[] {
     const height = parseNum(geomAttr(geomStr, 'height'))
     const fillColor = styleMap.get('fillcolor') ?? styleMap.get('fillColor')
     const strokeColor = styleMap.get('strokecolor') ?? styleMap.get('strokeColor')
+    const descFromStyle = styleMap.get('likec4description')
+    const techFromStyle = styleMap.get('likec4technology')
+    const notesFromStyle = styleMap.get('likec4notes')
+    const tagsFromStyle = styleMap.get('likec4tags')
+    const navFromStyle = styleMap.get('likec4navigateto')
+    const iconFromStyle = styleMap.get('likec4icon')
+    const description = userData.description ??
+      (descFromStyle != null && descFromStyle !== '' ? decodeURIComponent(descFromStyle) : undefined)
+    const technology = userData.technology ??
+      (techFromStyle != null && techFromStyle !== '' ? decodeURIComponent(techFromStyle) : undefined)
+    const notes = notesFromStyle != null && notesFromStyle !== '' ? decodeURIComponent(notesFromStyle) : undefined
+    const tags = tagsFromStyle != null && tagsFromStyle !== '' ? decodeURIComponent(tagsFromStyle) : undefined
+    const navigateTo = navFromStyle != null && navFromStyle !== '' ? decodeURIComponent(navFromStyle) : undefined
+    const icon = iconFromStyle != null && iconFromStyle !== '' ? decodeURIComponent(iconFromStyle) : undefined
+    const endArrow = styleMap.get('endarrow')
+    const startArrow = styleMap.get('startarrow')
+    const dashed = styleMap.get('dashed')
+    const dashPattern = styleMap.get('dashpattern')
+    const summaryFromStyle = styleMap.get('likec4summary')
+    const linksFromStyle = styleMap.get('likec4links')
+    const borderFromStyle = styleMap.get('likec4border')
+    const colorNameFromStyle = styleMap.get('likec4colorname')
+    const opacityFromStyle = styleMap.get('opacity')
+    const relKindFromStyle = styleMap.get('likec4relationshipkind')
+    const notationFromStyle = styleMap.get('likec4notation')
+    const summary = summaryFromStyle != null && summaryFromStyle !== ''
+      ? decodeURIComponent(summaryFromStyle)
+      : undefined
+    const links = linksFromStyle != null && linksFromStyle !== '' ? decodeURIComponent(linksFromStyle) : undefined
+    const border = borderFromStyle != null && borderFromStyle !== '' ? decodeURIComponent(borderFromStyle) : undefined
+    const colorName = colorNameFromStyle != null && colorNameFromStyle !== ''
+      ? decodeURIComponent(colorNameFromStyle)
+      : undefined
+    const opacity = opacityFromStyle != null && opacityFromStyle !== '' ? opacityFromStyle : undefined
+    const relationshipKind = relKindFromStyle != null && relKindFromStyle !== ''
+      ? decodeURIComponent(relKindFromStyle)
+      : undefined
+    const notation = notationFromStyle != null && notationFromStyle !== ''
+      ? decodeURIComponent(notationFromStyle)
+      : undefined
     const cell: DrawioCell = {
       id,
       ...(valueRaw != null && valueRaw !== '' ? { value: decodeXmlEntities(valueRaw) } : {}),
@@ -109,8 +183,23 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       ...(height !== undefined ? { height } : {}),
       ...(fillColor !== undefined ? { fillColor } : {}),
       ...(strokeColor !== undefined ? { strokeColor } : {}),
-      ...(userData.description != null ? { description: userData.description } : {}),
-      ...(userData.technology != null ? { technology: userData.technology } : {}),
+      ...(description != null ? { description } : {}),
+      ...(technology != null ? { technology } : {}),
+      ...(notes != null ? { notes } : {}),
+      ...(tags != null ? { tags } : {}),
+      ...(navigateTo != null ? { navigateTo } : {}),
+      ...(icon != null ? { icon } : {}),
+      ...(endArrow != null && endArrow !== '' ? { endArrow } : {}),
+      ...(startArrow != null && startArrow !== '' ? { startArrow } : {}),
+      ...(dashed != null && dashed !== '' ? { dashed } : {}),
+      ...(dashPattern != null && dashPattern !== '' ? { dashPattern } : {}),
+      ...(summary != null ? { summary } : {}),
+      ...(links != null ? { links } : {}),
+      ...(border != null ? { border } : {}),
+      ...(colorName != null ? { colorName } : {}),
+      ...(opacity != null ? { opacity } : {}),
+      ...(relationshipKind != null ? { relationshipKind } : {}),
+      ...(notation != null ? { notation } : {}),
     }
     cells.push(cell)
   }
@@ -126,6 +215,39 @@ function decodeXmlEntities(s: string): string {
     .replace(/&amp;/g, '&')
 }
 
+/** Map draw.io endArrow/startArrow style value to LikeC4 RelationshipArrowType. */
+function likec4Arrow(drawioArrow: string | undefined): string | undefined {
+  if (!drawioArrow || drawioArrow === '') return undefined
+  const a = drawioArrow.toLowerCase()
+  switch (a) {
+    case 'none':
+      return 'none'
+    case 'block':
+      return 'normal'
+    case 'open':
+      return 'open'
+    case 'diamond':
+      return 'diamond'
+    case 'oval':
+      return 'dot'
+    default:
+      return 'normal'
+  }
+}
+
+/** Map draw.io dashed/dashPattern to LikeC4 line type. */
+function likec4LineType(
+  dashed: string | undefined,
+  dashPattern: string | undefined,
+): 'dashed' | 'dotted' | 'solid' | undefined {
+  if (dashed === '1' || dashed === 'true') {
+    const pattern = (dashPattern ?? '').trim()
+    if (pattern === '1 1' || pattern === '2 2' || /^[\d.]+\s+[\d.]+$/.test(pattern)) return 'dotted'
+    return 'dashed'
+  }
+  return undefined
+}
+
 /**
  * Infer LikeC4 element kind from DrawIO shape style.
  */
@@ -135,6 +257,16 @@ function inferKind(style: string | undefined): 'actor' | 'system' | 'container' 
   if (s.includes('umlactor') || s.includes('shape=person')) return 'actor'
   if (s.includes('swimlane')) return 'system'
   return 'container'
+}
+
+/** Infer LikeC4 shape from DrawIO style when possible (cylinder, document, etc.). */
+function inferShape(style: string | undefined): string | undefined {
+  if (!style) return undefined
+  const s = style.toLowerCase()
+  if (s.includes('shape=cylinder') || s.includes('cylinder3')) return 'cylinder'
+  if (s.includes('shape=document')) return 'document'
+  if (s.includes('shape=rectangle') && s.includes('rounded')) return 'rectangle'
+  return undefined
 }
 
 /**
@@ -148,14 +280,52 @@ function toId(name: string): string {
     .replace(/^[0-9]/, '_$&') || 'element'
 }
 
+/** Decompress draw.io diagram content: base64 → inflateRaw → decodeURIComponent. */
+function decompressDrawioDiagram(base64Content: string): string {
+  const trimmed = base64Content.trim()
+  let bytes: Uint8Array
+  if (typeof Buffer !== 'undefined') {
+    bytes = new Uint8Array(Buffer.from(trimmed, 'base64'))
+  } else {
+    const binary = atob(trimmed)
+    bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  }
+  const inflated = pako.inflateRaw(bytes, { to: 'string' })
+  return decodeURIComponent(inflated)
+}
+
+export interface DiagramInfo {
+  name: string
+  id: string
+  content: string
+}
+
+/**
+ * Extract first diagram name, id and content from mxfile. Handles compressed (base64+deflate) and uncompressed content.
+ */
+function getFirstDiagram(fullXml: string): DiagramInfo {
+  const diagramTagMatch = fullXml.match(/<diagram\s*([^>]*?)>([\s\S]*?)<\/diagram>/i)
+  const attrs = diagramTagMatch?.[1] ?? ''
+  let inner = diagramTagMatch?.[2] ?? ''
+  const nameMatch = attrs.match(/\bname="([^"]*)"/i)
+  const idMatch = attrs.match(/\bid="([^"]*)"/i)
+  const name = nameMatch?.[1] ?? 'index'
+  const id = idMatch?.[1] ?? 'likec4-index'
+  const content = inner.includes('<mxGraphModel') ? inner : decompressDrawioDiagram(inner)
+  return { name, id, content }
+}
+
 /**
  * Convert DrawIO XML to LikeC4 source (.c4) string.
  * - Vertices become model elements (actor/container); hierarchy from parent refs.
  * - Edges become relations (->).
  * - Root diagram cells (parent "1") are top-level; others are nested by parent.
+ * - Uses first diagram only; diagram name becomes view id; root cell style likec4ViewTitle/likec4ViewDescription become view title/description.
  */
 export function parseDrawioToLikeC4(xml: string): string {
-  const cells = parseDrawioXml(xml)
+  const { name: diagramName, content: xmlToParse } = getFirstDiagram(xml)
+  const cells = parseDrawioXml(xmlToParse)
   const byId = new Map<string, DrawioCell>()
   for (const c of cells) {
     byId.set(c.id, c)
@@ -214,15 +384,25 @@ export function parseDrawioToLikeC4(xml: string): string {
     }
   }
 
-  // Collect unique hex colors from vertices for specification customColors
+  // Collect unique hex colors from vertices for specification customColors; prefer likec4ColorName when present
   const hexToCustomName = new Map<string, string>()
   let customColorIndex = 0
   for (const v of vertices) {
     const fill = v.fillColor?.trim()
     if (fill && /^#[0-9A-Fa-f]{3,8}$/.test(fill)) {
-      if (!hexToCustomName.has(fill)) {
+      if (v.colorName && v.colorName.trim() !== '') {
+        const name = v.colorName.trim().replace(/\s+/g, '_')
+        if (!hexToCustomName.has(fill)) hexToCustomName.set(fill, name)
+      } else if (!hexToCustomName.has(fill)) {
         hexToCustomName.set(fill, `drawio_color_${++customColorIndex}`)
       }
+    }
+  }
+  let edgeColorIndex = 0
+  for (const e of edges) {
+    const stroke = e.strokeColor?.trim()
+    if (stroke && /^#[0-9A-Fa-f]{3,8}$/.test(stroke) && !hexToCustomName.has(stroke)) {
+      hexToCustomName.set(stroke, `drawio_edge_color_${++edgeColorIndex}`)
     }
   }
 
@@ -259,18 +439,39 @@ export function parseDrawioToLikeC4(xml: string): string {
     }
   }
 
+  /** Strip HTML tags for use as plain title when emitting .c4 */
+  function stripHtmlForTitle(raw: string | undefined): string {
+    if (!raw || raw.trim() === '') return ''
+    const decoded = raw
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+    return decoded.replace(/<[^>]+>/g, '').trim().split(/\n|<br\s*\/?>/i)[0]?.trim() ?? ''
+  }
+
   function emitElement(cellId: string, fqn: string, indent: number): void {
     const cell = idToCell.get(cellId)
     if (!cell) return
     const kind = inferKind(cell.style)
-    const title = (cell.value && cell.value.trim()) || fqn.split('.').pop() || 'Element'
+    const rawTitle = (cell.value && cell.value.trim()) || ''
+    const title = stripHtmlForTitle(rawTitle) || fqn.split('.').pop() || 'Element'
     const name = fqn.split('.').pop()!
     const pad = '  '.repeat(indent)
     const desc = cell.description?.trim()
     const tech = cell.technology?.trim()
+    const notes = cell.notes?.trim()
+    const tagsStr = cell.tags?.trim()
+    const tagList = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : []
+    const navigateTo = cell.navigateTo?.trim()
+    const icon = cell.icon?.trim()
+    const summary = cell.summary?.trim()
+    const linksJson = cell.links?.trim()
+    const border = cell.border?.trim()
     const colorName = cell.fillColor && /^#[0-9A-Fa-f]{3,8}$/.test(cell.fillColor.trim())
       ? hexToCustomName.get(cell.fillColor.trim())
       : undefined
+    const shapeOverride = inferShape(cell.style)
 
     if (kind === 'actor') {
       lines.push(`${pad}${name} = actor '${title.replace(/'/g, '\'\'')}'`)
@@ -280,12 +481,55 @@ export function parseDrawioToLikeC4(xml: string): string {
       lines.push(`${pad}${name} = container '${title.replace(/'/g, '\'\'')}'`)
     }
     const childList = children.get(fqn)
-    const hasBody = (childList && childList.length > 0) || desc || tech || colorName
+    const opacityVal = cell.opacity
+    const hasBody = (childList && childList.length > 0) ||
+      desc ||
+      tech ||
+      notes ||
+      summary ||
+      linksJson ||
+      tagList.length > 0 ||
+      colorName ||
+      border ||
+      opacityVal ||
+      shapeOverride ||
+      navigateTo ||
+      icon
     if (hasBody) {
       lines.push(`${pad}{`)
-      if (colorName) lines.push(`${pad}  style { color ${colorName} }`)
+      if (colorName || border || opacityVal || shapeOverride) {
+        const styleParts: string[] = []
+        if (colorName) styleParts.push(`color ${colorName}`)
+        if (border && ['solid', 'dashed', 'dotted', 'none'].includes(border)) {
+          styleParts.push(`border ${border}`)
+        }
+        if (opacityVal && /^\d+$/.test(opacityVal)) styleParts.push(`opacity ${opacityVal}`)
+        if (shapeOverride) styleParts.push(`shape ${shapeOverride}`)
+        if (styleParts.length > 0) lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
+      }
+      for (const t of tagList) lines.push(`${pad}  #${t.replace(/\s+/g, '_')}`)
       if (desc) lines.push(`${pad}  description '${desc.replace(/'/g, '\'\'')}'`)
       if (tech) lines.push(`${pad}  technology '${tech.replace(/'/g, '\'\'')}'`)
+      if (summary) lines.push(`${pad}  summary '${summary.replace(/'/g, '\'\'')}'`)
+      if (notes) lines.push(`${pad}  notes '${notes.replace(/'/g, '\'\'')}'`)
+      try {
+        const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
+        if (Array.isArray(linksArr)) {
+          for (const link of linksArr) {
+            if (link?.url) {
+              lines.push(
+                `${pad}  link '${String(link.url).replace(/'/g, '\'\'')}'${
+                  link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
+                }`,
+              )
+            }
+          }
+        }
+      } catch {
+        // ignore invalid JSON
+      }
+      if (navigateTo) lines.push(`${pad}  navigateTo ${navigateTo}`)
+      if (icon) lines.push(`${pad}  icon '${icon.replace(/'/g, '\'\'')}'`)
       if (childList && childList.length > 0) {
         for (const ch of childList) {
           emitElement(ch.cellId, ch.fqn, indent + 1)
@@ -307,14 +551,62 @@ export function parseDrawioToLikeC4(xml: string): string {
     const src = idToFqn.get(e.source!)
     const tgt = idToFqn.get(e.target!)
     if (!src || !tgt) continue
-    const label = (e.value && e.value.trim()) ? ` '${e.value.replace(/'/g, '\'\'')}'` : ''
-    lines.push(`  ${src} -> ${tgt}${label}`)
+    const title = (e.value && e.value.trim()) ? e.value.replace(/'/g, '\'\'').trim() : ''
+    const desc = e.description?.trim()
+    const tech = e.technology?.trim()
+    const notes = e.notes?.trim()
+    const navTo = e.navigateTo?.trim()
+    const head = likec4Arrow(e.endArrow)
+    const tail = likec4Arrow(e.startArrow)
+    const line = likec4LineType(e.dashed, e.dashPattern)
+    const relKind = e.relationshipKind?.trim()
+    const notation = e.notation?.trim()
+    const edgeStrokeHex = e.strokeColor?.trim()
+    const hasBody = notes || navTo || head || tail || line || notation || edgeStrokeHex
+
+    const arrowPart = relKind && /^[a-zA-Z0-9_-]+$/.test(relKind) ? ` -[${relKind}]-> ` : ' -> '
+    const titlePart = title ? ` '${title}'` : desc || tech ? ` ''` : ''
+    const descPart = desc ? ` '${desc.replace(/'/g, '\'\'')}'` : ''
+    const techPart = tech ? ` '${tech.replace(/'/g, '\'\'')}'` : ''
+    const relationHead = `  ${src}${arrowPart}${tgt}${titlePart}${descPart}${techPart}`
+
+    if (hasBody) {
+      const bodyLines: string[] = []
+      if (notes) bodyLines.push(`    notes '${notes.replace(/'/g, '\'\'')}'`)
+      if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
+      if (notation) bodyLines.push(`    notation '${notation.replace(/'/g, '\'\'')}'`)
+      if (head || tail || line || edgeStrokeHex) {
+        const styleParts: string[] = []
+        if (line) styleParts.push(`line ${line}`)
+        if (head) styleParts.push(`head ${head}`)
+        if (tail) styleParts.push(`tail ${tail}`)
+        if (edgeStrokeHex && /^#[0-9A-Fa-f]{3,8}$/.test(edgeStrokeHex)) {
+          const edgeColorName = hexToCustomName.get(edgeStrokeHex)
+          if (edgeColorName) styleParts.push(`color ${edgeColorName}`)
+        }
+        if (styleParts.length > 0) bodyLines.push(`    style { ${styleParts.join(', ')} }`)
+      }
+      lines.push(relationHead + ' {')
+      lines.push(...bodyLines)
+      lines.push('  }')
+    } else {
+      lines.push(relationHead)
+    }
   }
 
   lines.push('}')
   lines.push('')
+  const viewId = toId(diagramName) || 'index'
+  const rootCell = byId.get('1')
+  const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
+  const viewTitleRaw = rootStyle.get('likec4viewtitle')
+  const viewDescRaw = rootStyle.get('likec4viewdescription')
+  const viewTitle = viewTitleRaw != null && viewTitleRaw !== '' ? decodeURIComponent(viewTitleRaw) : ''
+  const viewDesc = viewDescRaw != null && viewDescRaw !== '' ? decodeURIComponent(viewDescRaw) : ''
   lines.push('views {')
-  lines.push('  view index {')
+  lines.push(`  view ${viewId} {`)
+  if (viewTitle) lines.push(`    title '${viewTitle.replace(/'/g, '\'\'')}'`)
+  if (viewDesc) lines.push(`    description '${viewDesc.replace(/'/g, '\'\'')}'`)
   lines.push('    include *')
   lines.push('  }')
   lines.push('}')
