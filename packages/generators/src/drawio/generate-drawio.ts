@@ -1,6 +1,7 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, DiagramNode, NodeId, ProcessedView } from '@likec4/core/types'
-import { isNullish as isNil } from 'remeda'
+import { flattenMarkdownOrString } from '@likec4/core/types'
+import { isEmptyish, isNullish as isNil } from 'remeda'
 
 type View = ProcessedView<aux.Unknown>
 type Node = View['nodes'][number]
@@ -150,19 +151,17 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
       ? `fillColor=${elemColors.fill};strokeColor=${elemColors.stroke};fontColor=${elemColors.stroke};`
       : ''
 
-    const desc = node.description != null && String(node.description).trim() !== ''
-      ? escapeXml(String(node.description))
-      : ''
-    const tech = node.technology != null && String(node.technology).trim() !== ''
-      ? escapeXml(String(node.technology))
-      : ''
+    const description = node.description && flattenMarkdownOrString(node.description)
+    const desc = isEmptyish(description) ? '' : escapeXml(description)
+    const technology = node.technology && flattenMarkdownOrString(node.technology)
+    const tech = isEmptyish(technology) ? '' : escapeXml(technology)
     const userData = desc !== '' || tech !== ''
-      ? `\n  <mxUserObject><data key="likec4Description">${desc}</data><data key="likec4Technology">${tech}</data></mxUserObject>`
+      ? `<mxUserObject><data key="likec4Description">${desc}</data><data key="likec4Technology">${tech}</data></mxUserObject>\n  `
       : ''
 
     vertexCells.push(
-      `<mxCell id="${id}" value="${label}" style="${shapeStyle}${colorStyle}verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="${parentId}">${userData}
-  <mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${
+      `<mxCell id="${id}" value="${label}" style="${shapeStyle}${colorStyle}verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="${parentId}">
+  ${userData}<mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${
         Math.round(height)
       }" as="geometry" />
 </mxCell>`,
