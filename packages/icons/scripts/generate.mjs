@@ -1,7 +1,7 @@
 import { build } from 'esbuild'
 import { fdir } from 'fdir'
 import { cp, writeFile } from 'node:fs/promises'
-import { sep } from 'path'
+import { sep, relative } from 'node:path'
 import { $ } from 'zx'
 
 console.info('Generating all.js and all.d.ts')
@@ -184,11 +184,19 @@ export default function BundledIcon({ name, ...props }) {
 
 console.info('Generate js for all icons')
 
+const indexFiles = new fdir()
+  .glob('**/index.ts')
+  .withBasePath()
+  .crawl()
+  .sync()
+  .filter((p) => !p.includes('node_modules'))
+const entryPoints = [
+  ...files.map((f) => relative(process.cwd(), f)),
+  ...indexFiles,
+]
+
 await build({
-  entryPoints: [
-    '**/*.tsx',
-    '**/index.ts',
-  ],
+  entryPoints,
   sourceRoot: '.',
   outdir: '.',
   minify: true,

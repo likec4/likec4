@@ -54,6 +54,7 @@
   "type": "module",
   "dependencies": {
     "@cloudflare/vite-plugin": "catalog:cloudflare",
+    "miniflare": "4.20260205.0",
     "@codingame/monaco-vscode-editor-api": "16.1.1",
     "@codingame/monaco-vscode-editor-service-override": "16.1.1",
     "@codingame/monaco-vscode-files-service-override": "16.1.1",
@@ -68,6 +69,7 @@
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
+    "@likec4/generators": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/log": "workspace:*",
