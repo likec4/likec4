@@ -47,9 +47,9 @@ catalogs:
     '@pandacss/dev': ^1.8.1
     '@pandacss/preset-panda': ^1.8.1
     '@pandacss/types': ^1.8.1
-    '@tailwindcss/vite': ^4.1.17
+    '@tailwindcss/vite': ^4.1.18
     postcss: 8.5.6
-    tailwindcss: ^4.1.17
+    tailwindcss: ^4.1.18
   esbuild:
     esbuild: 0.27.3
     esbuild-node-externals: 1.20.1
@@ -70,7 +70,7 @@ catalogs:
     '@hono/node-server': ^1.19.9
     '@hono/oauth-providers': ^0.8.5
     '@hono/zod-validator': ^0.7.6
-    hono: ^4.11.8
+    hono: ^4.11.9
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
@@ -96,7 +96,7 @@ catalogs:
     '@types/react': 19.2.13
     '@types/react-dom': 19.2.3
     clsx: ^2.1.1
-    motion: ^12.29.2
+    motion: ^12.33.0
     nanostores: 1.1.0
     react: 19.2.4
     react-dom: 19.2.4
@@ -134,7 +134,7 @@ catalogs:
     object-hash: ^3.0.0
     ohash: ^2.0.11
     p-debounce: 5.1.0
-    p-limit: 7.2.0
+    p-limit: 7.3.0
     p-queue: 8.1.1
     p-timeout: 6.1.4
     package-manager-detector: 1.6.0
