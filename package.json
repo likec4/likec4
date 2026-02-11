@@ -11,7 +11,7 @@
     "styled-system/*"
   ],
   "engines": {
-    "node": ">=22.21.1"
+    "node": ">=22.22.0"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",
