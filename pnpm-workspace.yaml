@@ -141,7 +141,7 @@ catalogs:
     package-up: ^5.0.0
     pathe: ^2.0.3
     remeda: ^2.32.0
-    safe-stringify: ^1.2.0
+    safe-stringify: ^1.3.0
     sharp: 0.34.5
     strip-indent: ^4.1.1
     ufo: 1.6.3
