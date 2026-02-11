@@ -35,12 +35,16 @@ export function drawioCmd(yargs: Argv) {
       const logger = createLikeC4Logger('c4:import')
       const timer = startTimer(logger)
 
-      const xml = await readFile(args.input, 'utf-8')
+      const inputPath = args.input
+      if (!inputPath) {
+        throw new Error('Missing required argument: input')
+      }
+      const xml = await readFile(inputPath, 'utf-8')
       const likec4Source = parseDrawioToLikeC4(xml)
 
       let outfile = args.outfile
       if (!outfile) {
-        const base = args.input.replace(/\.drawio(\.xml)?$/i, '')
+        const base = inputPath.replace(/\.drawio(\.xml)?$/i, '')
         outfile = base + '.c4'
       } else if (extname(outfile) !== '.c4') {
         outfile = outfile + '.c4'

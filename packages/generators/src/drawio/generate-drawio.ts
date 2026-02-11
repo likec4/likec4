@@ -72,7 +72,7 @@ function getElementColors(
       // custom color or missing
     }
   }
-  return DEFAULT_ELEMENT_COLORS[color] ?? DEFAULT_ELEMENT_COLORS.primary
+  return DEFAULT_ELEMENT_COLORS[color] ?? DEFAULT_ELEMENT_COLORS['primary']
 }
 
 function getEdgeStrokeColor(viewmodel: LikeC4ViewModel<aux.Unknown>, color: string): string {
@@ -146,27 +146,25 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     const { x, y, width, height } = getBBox(node)
 
     const elemColors = getElementColors(viewmodel, node.color)
-    const colorStyle =
-      elemColors != null
-        ? `fillColor=${elemColors.fill};strokeColor=${elemColors.stroke};fontColor=${elemColors.stroke};`
-        : ''
+    const colorStyle = elemColors != null
+      ? `fillColor=${elemColors.fill};strokeColor=${elemColors.stroke};fontColor=${elemColors.stroke};`
+      : ''
 
-    const desc =
-      node.description != null && String(node.description).trim() !== ''
-        ? escapeXml(String(node.description))
-        : ''
-    const tech =
-      node.technology != null && String(node.technology).trim() !== ''
-        ? escapeXml(String(node.technology))
-        : ''
-    const userData =
-      desc !== '' || tech !== ''
-        ? `\n  <mxUserObject><data key="likec4Description">${desc}</data><data key="likec4Technology">${tech}</data></mxUserObject>`
-        : ''
+    const desc = node.description != null && String(node.description).trim() !== ''
+      ? escapeXml(String(node.description))
+      : ''
+    const tech = node.technology != null && String(node.technology).trim() !== ''
+      ? escapeXml(String(node.technology))
+      : ''
+    const userData = desc !== '' || tech !== ''
+      ? `\n  <mxUserObject><data key="likec4Description">${desc}</data><data key="likec4Technology">${tech}</data></mxUserObject>`
+      : ''
 
     vertexCells.push(
       `<mxCell id="${id}" value="${label}" style="${shapeStyle}${colorStyle}verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="${parentId}">${userData}
-  <mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${Math.round(height)}" as="geometry" />
+  <mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${
+        Math.round(height)
+      }" as="geometry" />
 </mxCell>`,
     )
   }
@@ -177,8 +175,7 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     const targetId = getCellId(edge.target)
     const label = edge.label ? escapeXml(edge.label) : ''
     const strokeColor = getEdgeStrokeColor(viewmodel, edge.color)
-    const dashStyle =
-      edge.line === 'dashed' ? 'dashed=1;' : edge.line === 'dotted' ? 'dashed=1;dashPattern=1 1;' : ''
+    const dashStyle = edge.line === 'dashed' ? 'dashed=1;' : edge.line === 'dotted' ? 'dashed=1;dashPattern=1 1;' : ''
     edgeCells.push(
       `<mxCell id="${id}" value="${label}" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=${strokeColor};${dashStyle}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">
   <mxGeometry relative="1" as="geometry" />
@@ -186,9 +183,21 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     )
   }
 
+  let bounds: { x: number; y: number; width: number; height: number } = {
+    x: 0,
+    y: 0,
+    width: 800,
+    height: 600,
+  }
+  try {
+    const b = viewmodel.bounds
+    if (b != null && typeof b.x === 'number') bounds = b
+  } catch {
+    // View not layouted (e.g. in tests); use default canvas size
+  }
   const allCells = [
     `<mxCell id="${defaultParentId}" vertex="1" parent="${rootId}">
-  <mxGeometry x="${view.bounds?.x ?? 0}" y="${view.bounds?.y ?? 0}" width="${view.bounds?.width ?? 800}" height="${view.bounds?.height ?? 600}" as="geometry" />
+  <mxGeometry x="${bounds.x}" y="${bounds.y}" width="${bounds.width}" height="${bounds.height}" as="geometry" />
 </mxCell>`,
     ...vertexCells,
     ...edgeCells,

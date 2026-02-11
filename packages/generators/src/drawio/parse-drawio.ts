@@ -72,11 +72,11 @@ function parseDrawioXml(xml: string): DrawioCell[] {
   const geomAttr = (tag: string, name: string) => getAttr(tag, name)
   let m
   while ((m = mxCellRe.exec(xml)) !== null) {
-    const attrs = m[1]
+    const attrs = m[1] ?? ''
     const inner = m[2] ?? ''
     const id = getAttr(attrs, 'id')
     if (!id) continue
-    const value = getAttr(attrs, 'value')
+    const valueRaw = getAttr(attrs, 'value')
     const parent = getAttr(attrs, 'parent')
     const source = getAttr(attrs, 'source')
     const target = getAttr(attrs, 'target')
@@ -86,25 +86,31 @@ function parseDrawioXml(xml: string): DrawioCell[] {
     const fullTag = m[0]
     const geomMatch = fullTag.match(/<mxGeometry[^>]*>/i)
     const geomStr = geomMatch ? geomMatch[0] : ''
-    const styleMap = parseStyle(style)
+    const styleMap = parseStyle(style ?? undefined)
     const userData = parseUserData(inner)
+    const x = parseNum(geomAttr(geomStr, 'x'))
+    const y = parseNum(geomAttr(geomStr, 'y'))
+    const width = parseNum(geomAttr(geomStr, 'width'))
+    const height = parseNum(geomAttr(geomStr, 'height'))
+    const fillColor = styleMap.get('fillcolor') ?? styleMap.get('fillColor')
+    const strokeColor = styleMap.get('strokecolor') ?? styleMap.get('strokeColor')
     const cell: DrawioCell = {
       id,
-      value: value ? decodeXmlEntities(value) : undefined,
-      parent,
-      source,
-      target,
+      ...(valueRaw != null && valueRaw !== '' ? { value: decodeXmlEntities(valueRaw) } : {}),
+      ...(parent != null && parent !== '' ? { parent } : {}),
+      ...(source != null && source !== '' ? { source } : {}),
+      ...(target != null && target !== '' ? { target } : {}),
       vertex,
       edge,
-      style,
-      x: parseNum(geomAttr(geomStr, 'x')),
-      y: parseNum(geomAttr(geomStr, 'y')),
-      width: parseNum(geomAttr(geomStr, 'width')),
-      height: parseNum(geomAttr(geomStr, 'height')),
-      fillColor: styleMap.get('fillcolor') ?? styleMap.get('fillColor'),
-      strokeColor: styleMap.get('strokecolor') ?? styleMap.get('strokeColor'),
-      description: userData.description,
-      technology: userData.technology,
+      ...(style != null && style !== '' ? { style } : {}),
+      ...(x !== undefined ? { x } : {}),
+      ...(y !== undefined ? { y } : {}),
+      ...(width !== undefined ? { width } : {}),
+      ...(height !== undefined ? { height } : {}),
+      ...(fillColor !== undefined ? { fillColor } : {}),
+      ...(strokeColor !== undefined ? { strokeColor } : {}),
+      ...(userData.description != null ? { description: userData.description } : {}),
+      ...(userData.technology != null ? { technology: userData.technology } : {}),
     }
     cells.push(cell)
   }
@@ -116,7 +122,7 @@ function decodeXmlEntities(s: string): string {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
+    .replace(/&apos;/g, '\'')
     .replace(/&amp;/g, '&')
 }
 
@@ -262,25 +268,24 @@ export function parseDrawioToLikeC4(xml: string): string {
     const pad = '  '.repeat(indent)
     const desc = cell.description?.trim()
     const tech = cell.technology?.trim()
-    const colorName =
-      cell.fillColor && /^#[0-9A-Fa-f]{3,8}$/.test(cell.fillColor.trim())
-        ? hexToCustomName.get(cell.fillColor.trim())
-        : undefined
+    const colorName = cell.fillColor && /^#[0-9A-Fa-f]{3,8}$/.test(cell.fillColor.trim())
+      ? hexToCustomName.get(cell.fillColor.trim())
+      : undefined
 
     if (kind === 'actor') {
-      lines.push(`${pad}${name} = actor '${title.replace(/'/g, "''")}'`)
+      lines.push(`${pad}${name} = actor '${title.replace(/'/g, '\'\'')}'`)
     } else if (kind === 'system') {
-      lines.push(`${pad}${name} = system '${title.replace(/'/g, "''")}'`)
+      lines.push(`${pad}${name} = system '${title.replace(/'/g, '\'\'')}'`)
     } else {
-      lines.push(`${pad}${name} = container '${title.replace(/'/g, "''")}'`)
+      lines.push(`${pad}${name} = container '${title.replace(/'/g, '\'\'')}'`)
     }
     const childList = children.get(fqn)
     const hasBody = (childList && childList.length > 0) || desc || tech || colorName
     if (hasBody) {
       lines.push(`${pad}{`)
       if (colorName) lines.push(`${pad}  style { color ${colorName} }`)
-      if (desc) lines.push(`${pad}  description '${desc.replace(/'/g, "''")}'`)
-      if (tech) lines.push(`${pad}  technology '${tech.replace(/'/g, "''")}'`)
+      if (desc) lines.push(`${pad}  description '${desc.replace(/'/g, '\'\'')}'`)
+      if (tech) lines.push(`${pad}  technology '${tech.replace(/'/g, '\'\'')}'`)
       if (childList && childList.length > 0) {
         for (const ch of childList) {
           emitElement(ch.cellId, ch.fqn, indent + 1)
@@ -302,7 +307,7 @@ export function parseDrawioToLikeC4(xml: string): string {
     const src = idToFqn.get(e.source!)
     const tgt = idToFqn.get(e.target!)
     if (!src || !tgt) continue
-    const label = (e.value && e.value.trim()) ? ` '${e.value.replace(/'/g, "''")}'` : ''
+    const label = (e.value && e.value.trim()) ? ` '${e.value.replace(/'/g, '\'\'')}'` : ''
     lines.push(`  ${src} -> ${tgt}${label}`)
   }
 

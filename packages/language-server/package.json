@@ -112,7 +112,7 @@
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-language-server-$npm_package_version.tgz package.tgz || true",
-    "pregenerate": "rm -f src/generated/* || true",
+    "pregenerate": "node -e \"const fs=require('fs');const p=require('path');const d='src/generated';if(fs.existsSync(d)){fs.readdirSync(d).forEach(f=>{try{fs.unlinkSync(p.join(d,f))}catch(e){}})}\"",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate && tsx scripts/generate-icons.ts",

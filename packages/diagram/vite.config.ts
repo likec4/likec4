@@ -1,11 +1,12 @@
 import pandacss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
+import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin as PostcssPlugin } from 'postcss'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
-import { $, fs } from 'zx'
+import { fs } from 'zx'
 import packageJson from './package.json' with { type: 'json' }
 
 const rewriteRootSelector: PostcssPlugin = {
@@ -122,7 +123,10 @@ const defaultConfig = defineConfig({
           return
         }
         this.info('shipping panda')
-        await $({ stdio: 'inherit' })`pnpm panda ship --outfile ./panda.buildinfo.json`
+        execSync('pnpm panda ship --outfile ./panda.buildinfo.json', {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        })
       },
     },
     {

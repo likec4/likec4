@@ -1,3 +1,4 @@
+import type { ProjectId } from '@likec4/core/types'
 import { generateDrawio } from '@likec4/generators'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
@@ -39,15 +40,18 @@ export function drawioCmd(yargs: Argv) {
       const logger = createLikeC4Logger('c4:export')
 
       const timer = startTimer(logger)
-      const languageServices = await LikeC4.fromWorkspace(args.path, {
+      const likec4 = await LikeC4.fromWorkspace(args.path, {
         logger,
         graphviz: useDotBin ? 'binary' : 'wasm',
         watch: false,
       })
 
-      languageServices.ensureSingleProject()
+      likec4.ensureSingleProject()
 
-      const model = await languageServices.layoutedModel(onlyProject ?? undefined)
+      const projectId: ProjectId | undefined = onlyProject != null
+        ? likec4.languageServices.projectsManager.ensureProjectId(onlyProject as ProjectId)
+        : undefined
+      const model = await likec4.layoutedModel(projectId)
       if (model === LikeC4Model.EMPTY) {
         logger.error('No project or empty model')
         throw new Error('No project or empty model')
@@ -65,7 +69,9 @@ export function drawioCmd(yargs: Argv) {
           logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
           succeeded++
         } catch (err) {
-          logger.error(`Failed to export view ${view.id}`, { err })
+          logger.error(`Failed to export view ${view.id}`, {
+            error: err instanceof Error ? err : new Error(String(err)),
+          })
         }
       }
 
