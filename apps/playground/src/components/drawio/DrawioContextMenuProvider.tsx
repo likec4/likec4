@@ -1,4 +1,4 @@
-import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
+import { usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import { useDisclosure } from '@mantine/hooks'
@@ -77,13 +77,11 @@ export function DrawioContextMenuProvider({ children }: PropsWithChildren) {
   }, [close, handleExport])
 
   useEffect(() => {
-    const onImport = () => triggerImport()
-    const onExport = () => handleExport()
-    window.addEventListener(DRAWIO_IMPORT_EVENT, onImport)
-    window.addEventListener(DRAWIO_EXPORT_EVENT, onExport)
+    window.addEventListener(DRAWIO_IMPORT_EVENT, triggerImport)
+    window.addEventListener(DRAWIO_EXPORT_EVENT, handleExport)
     return () => {
-      window.removeEventListener(DRAWIO_IMPORT_EVENT, onImport)
-      window.removeEventListener(DRAWIO_EXPORT_EVENT, onExport)
+      window.removeEventListener(DRAWIO_IMPORT_EVENT, triggerImport)
+      window.removeEventListener(DRAWIO_EXPORT_EVENT, handleExport)
     }
   }, [triggerImport, handleExport])
 
