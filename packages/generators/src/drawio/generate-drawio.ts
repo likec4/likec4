@@ -220,6 +220,11 @@ export function generateDrawio(
   const bboxes = new Map<NodeId, { x: number; y: number; width: number; height: number }>()
   for (const node of sortedNodes) bboxes.set(node.id, getBBox(node))
 
+  /** Node ids that have children: export as DrawIO containers (bounded context) with dashed border and fill opacity. */
+  const containerNodeIds = new Set(
+    (nodes as Node[]).filter(n => n.children && n.children.length > 0).map(n => n.id),
+  )
+
   let contentMinX = Infinity
   let contentMinY = Infinity
   let contentMaxX = -Infinity
@@ -278,7 +283,10 @@ export function generateDrawio(
       : escapeHtml(title)
     const value = escapeXml(valueHtml)
 
-    const shapeStyle = drawioShape(node.shape)
+    const isContainer = containerNodeIds.has(node.id)
+    const shapeStyle = isContainer
+      ? 'shape=rectangle;rounded=0;container=1;'
+      : drawioShape(node.shape)
     const strokeColorOverride = strokeColorByNodeId?.[node.id]
     const strokeWidthOverride = strokeWidthByNodeId?.[node.id]
     const elemColors = strokeColorOverride
@@ -296,8 +304,17 @@ export function generateDrawio(
       iconPosition?: string
     } | undefined
     const borderVal = nodeStyle?.border
-    const strokeWidth = strokeWidthOverride ?? (borderVal === 'none' ? '0' : borderVal ? '1' : '')
+    const strokeWidth = strokeWidthOverride ?? (borderVal === 'none' ? '0' : isContainer ? '1' : borderVal ? '1' : '')
     const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
+    const containerDashed = isContainer && borderVal !== 'none'
+      ? 'dashed=1;'
+      : borderVal === 'dashed'
+      ? 'dashed=1;'
+      : ''
+    const containerOpacityNum = isContainer ? (nodeStyle?.opacity ?? 15) : null
+    const fillOpacityStyle = containerOpacityNum != null
+      ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
+      : ''
     const summaryRaw = (node as Node & { summary?: MarkdownOrString }).summary
     const summaryStr = summaryRaw != null && !isEmptyish(flattenMarkdownOrString(summaryRaw))
       ? flattenMarkdownOrString(summaryRaw)!.trim()
@@ -307,9 +324,9 @@ export function generateDrawio(
       ? encodeURIComponent(JSON.stringify(links.map(l => ({ url: l.url, title: l.title }))))
       : ''
     const opacityVal = nodeStyle?.opacity
-    const opacityStyle = typeof opacityVal === 'number' && opacityVal >= 0 && opacityVal <= 100
+    const opacityStyle = fillOpacityStyle || (typeof opacityVal === 'number' && opacityVal >= 0 && opacityVal <= 100
       ? `opacity=${opacityVal};`
-      : ''
+      : '')
     const colorNameForRoundtrip = node.color ? encodeURIComponent(String(node.color)) : ''
 
     const likec4Extra: string[] = []
@@ -322,6 +339,7 @@ export function generateDrawio(
     if (summaryStr !== '') likec4Extra.push(`likec4Summary=${encodeURIComponent(summaryStr)}`)
     if (linksJson !== '') likec4Extra.push(`likec4Links=${linksJson}`)
     if (borderVal) likec4Extra.push(`likec4Border=${encodeURIComponent(borderVal)}`)
+    if (containerOpacityNum != null) likec4Extra.push(`likec4Opacity=${containerOpacityNum}`)
     if (strokeWidth !== '') likec4Extra.push(`likec4StrokeWidth=${encodeURIComponent(strokeWidth)}`)
     if (colorNameForRoundtrip !== '') likec4Extra.push(`likec4ColorName=${colorNameForRoundtrip}`)
     if (nodeStyle?.size) likec4Extra.push(`likec4Size=${encodeURIComponent(nodeStyle.size)}`)
@@ -351,8 +369,13 @@ export function generateDrawio(
         '</mxUserObject>'
       : ''
 
+    const navLinkStyle = navTo !== ''
+      ? `link=${encodeURIComponent(`data:action/json,{"actions":[{"open":"data:page/id,likec4-${navTo}"}]}`)};`
+      : ''
+    const fontSizeStyle = 'fontSize=12;'
+
     vertexCells.push(
-      `<mxCell id="${id}" value="${value}" style="${shapeStyle}${colorStyle}${strokeWidthStyle}${opacityStyle}${likec4Style}html=1;whiteSpace=wrap;verticalAlign=top;align=center;spacingTop=4;overflow=fill;spacingLeft=2;spacingRight=2;spacingBottom=2;fontStyle=1;" vertex="1" parent="${parentId}">
+      `<mxCell id="${id}" value="${value}" style="${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${fontSizeStyle}${navLinkStyle}${likec4Style}html=1;whiteSpace=wrap;verticalAlign=middle;align=center;verticalLabelPosition=middle;labelPosition=center;spacingTop=4;overflow=fill;spacingLeft=2;spacingRight=2;spacingBottom=2;fontStyle=1;" vertex="1" parent="${parentId}">
   <mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${
         Math.round(height)
       }" as="geometry" />${userObjectXml}

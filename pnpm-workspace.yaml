@@ -10,12 +10,12 @@ catalog:
   '@changesets/cli': ^2.29.8
   '@dagrejs/dagre': 1.1.8
   '@types/node': ~22.19.7
-  '@typescript/native-preview': 7.0.0-dev.20260206.1
+  '@typescript/native-preview': 7.0.0-dev.20260208.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
   oxlint: 1.43.0
-  oxlint-tsgolint: 0.11.4
+  oxlint-tsgolint: 0.11.5
   playwright: 1.56.1
   tsx: 4.21.0
   turbo: 2.8.3
@@ -51,11 +51,11 @@ catalogs:
     postcss: 8.5.6
     tailwindcss: ^4.1.17
   esbuild:
-    esbuild: 0.27.2
+    esbuild: 0.27.3
     esbuild-node-externals: 1.20.1
     esbuild-plugins-node-modules-polyfill: 1.8.1
   externals:
-    '@hpcc-js/wasm-graphviz': 1.17.0
+    '@hpcc-js/wasm-graphviz': 1.21.0
     '@types/picomatch': ^4.0.2
     bundle-require: ^5.1.0
     chokidar: ^5.0.0

@@ -331,7 +331,7 @@ export type OnEdgeClick<A extends Any = Unknown> = (
  */
 export type OnCanvasClick = (event: ReactMouseEvent) => void
 
-export type OnCanvasContextMenu = (event: ReactMouseEvent | MouseEvent) => void
+export type OnCanvasContextMenu = (event: ReactMouseEvent) => void
 
 export type OnInitialized = (params: { diagram: DiagramApi; xyflow: XYFlowInstance }) => void
 
