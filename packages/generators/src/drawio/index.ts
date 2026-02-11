@@ -1,4 +1,4 @@
-export { generateDrawio, generateDrawioMulti } from './generate-drawio'
+export { generateDrawio, generateDrawioMulti, type GenerateDrawioOptions } from './generate-drawio'
 export {
   type DiagramInfo,
   type DrawioCell,

@@ -1,4 +1,4 @@
-import { parseDrawioToLikeC4 } from '@likec4/generators'
+import { getAllDiagrams, parseDrawioToLikeC4, parseDrawioToLikeC4Multi } from '@likec4/generators'
 import { readFile, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
@@ -40,7 +40,8 @@ export function drawioCmd(yargs: Argv) {
         throw new Error('Missing required argument: input')
       }
       const xml = await readFile(inputPath, 'utf-8')
-      const likec4Source = parseDrawioToLikeC4(xml)
+      const diagrams = getAllDiagrams(xml)
+      const likec4Source = diagrams.length > 1 ? parseDrawioToLikeC4Multi(xml) : parseDrawioToLikeC4(xml)
 
       let outfile = args.outfile
       if (!outfile) {

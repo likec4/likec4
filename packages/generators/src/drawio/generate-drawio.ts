@@ -155,6 +155,8 @@ export type GenerateDrawioOptions = {
   strokeWidthByNodeId?: Record<string, string>
   /** Edge "source|target" (FQN) -> array of [x, y] waypoints (e.g. from likec4.edge.waypoints comment) */
   edgeWaypoints?: Record<string, number[][]>
+  /** If false, embed raw mxGraphModel XML inside <diagram> (no base64/deflate). Draw.io accepts both. */
+  compressed?: boolean
 }
 
 /**
@@ -176,6 +178,7 @@ export function generateDrawio(
   const strokeColorByNodeId = options?.strokeColorByNodeId
   const strokeWidthByNodeId = options?.strokeWidthByNodeId
   const edgeWaypoints = options?.edgeWaypoints
+  const useCompressed = options?.compressed !== false
 
   const rootId = '0'
   const defaultParentId = '1'
@@ -441,17 +444,29 @@ export function generateDrawio(
         '</mxUserObject>'
       : ''
 
-    const edgePoints = (edge as { points?: readonly (readonly [number, number])[] }).points ??
+    const rawEdgePoints = (edge as { points?: readonly (readonly [number, number])[] }).points ??
       edgeWaypoints?.[`${edge.source}|${edge.target}`]
-    const hasPoints = Array.isArray(edgePoints) && edgePoints.length > 0
+    /** Flatten to [x,y][] so we never emit nested <Array><Array> (draw.io rejects it). */
+    const edgePoints: [number, number][] = Array.isArray(rawEdgePoints)
+      ? rawEdgePoints.flatMap(pt =>
+        Array.isArray(pt) && pt.length >= 2 && typeof pt[0] === 'number' && typeof pt[1] === 'number'
+          ? [[pt[0], pt[1]] as [number, number]]
+          : (typeof (pt as { x?: number; y?: number }).x === 'number' &&
+              typeof (pt as { x?: number; y?: number }).y === 'number'
+            ? [[(pt as { x: number; y: number }).x, (pt as { x: number; y: number }).y] as [number, number]]
+            : [])
+      )
+      : []
+    const hasPoints = edgePoints.length > 0
     const pointsXml = hasPoints
-      ? '<Array><Array>' +
-        (edgePoints as [number, number][]).map((pt, i) => {
-          const [px, py] = pt
-          const asAttr = i === 0 ? ' as="sourcePoint"' : i === edgePoints!.length - 1 ? ' as="targetPoint"' : ''
-          return `<mxPoint x="${Math.round(px)}" y="${Math.round(py)}"${asAttr}/>`
-        }).join('') +
-        '</Array></Array>'
+      ? '<Array>' +
+        edgePoints
+          .map(([px, py], i) => {
+            const asAttr = i === 0 ? ' as="sourcePoint"' : i === edgePoints.length - 1 ? ' as="targetPoint"' : ''
+            return `<mxPoint x="${Math.round(px)}" y="${Math.round(py)}"${asAttr}/>`
+          })
+          .join('') +
+        '</Array>'
       : ''
 
     const edgeGeometryXml = hasPoints
@@ -504,11 +519,13 @@ export function generateDrawio(
         ${allCells}
       </root>
     </mxGraphModel>`
-  const compressed = compressDrawioDiagramXml(mxGraphModelXml)
+  const diagramContent = useCompressed
+    ? compressDrawioDiagramXml(mxGraphModelXml)
+    : mxGraphModelXml
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
-  <diagram name="${escapeXml(diagramName)}" id="likec4-${escapeXml(view.id)}">${compressed}</diagram>
+  <diagram name="${escapeXml(diagramName)}" id="likec4-${escapeXml(view.id)}">${diagramContent}</diagram>
 </mxfile>
 `
 }

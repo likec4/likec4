@@ -11,7 +11,9 @@ export type DrawioContextMenuDropdownProps = {
   onImport: () => void
   onImportFile: (e: React.ChangeEvent<HTMLInputElement>) => void
   onExport: () => void
+  onExportAllViews?: () => void
   canExport: boolean
+  canExportAllViews?: boolean
 }
 
 /**
@@ -26,7 +28,9 @@ export function DrawioContextMenuDropdown({
   onImport,
   onImportFile,
   onExport,
+  onExportAllViews,
   canExport,
+  canExportAllViews = false,
 }: DrawioContextMenuDropdownProps) {
   return (
     <>
@@ -66,14 +70,22 @@ export function DrawioContextMenuDropdown({
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Label>DrawIO</Menu.Label>
-          <Menu.Item leftSection={<IconFileImport size={16} />} onClick={onImport}>
-            Import from DrawIO…
+          <Menu.Item leftSection={<IconFileImport size={16} />} onClick={onImport} title="Import .drawio file">
+            Import…
+          </Menu.Item>
+          <Menu.Item
+            leftSection={<IconFileExport size={16} />}
+            onClick={onExportAllViews}
+            disabled={!canExportAllViews}
+            title="Export all views as one .drawio file (one tab per view)">
+            Export all…
           </Menu.Item>
           <Menu.Item
             leftSection={<IconFileExport size={16} />}
             onClick={onExport}
-            disabled={!canExport}>
-            Export to DrawIO
+            disabled={!canExport}
+            title="Export current view as .drawio">
+            Export view…
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>

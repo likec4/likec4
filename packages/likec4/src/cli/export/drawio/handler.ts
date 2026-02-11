@@ -1,4 +1,5 @@
 import type { ProjectId } from '@likec4/core/types'
+import type { GenerateDrawioOptions } from '@likec4/generators'
 import { generateDrawio, generateDrawioMulti, parseDrawioRoundtripComments } from '@likec4/generators'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
@@ -52,6 +53,12 @@ export function drawioCmd(yargs: Argv) {
           default: false,
           desc: 'apply layout/stroke/waypoints from DrawIO round-trip comment blocks in .c4 source',
         })
+        .option('uncompressed', {
+          type: 'boolean',
+          default: false,
+          desc:
+            'write diagram XML uncompressed inside .drawio (larger file; use if draw.io desktop fails to open compressed export)',
+        })
         .options({
           project,
           'use-dot': useDotBin,
@@ -65,11 +72,15 @@ export function drawioCmd(yargs: Argv) {
 
   ${k.green('$0 export drawio --roundtrip -o ./out')}
     ${k.gray('Re-apply layout/waypoints from comment blocks (e.g. after import from DrawIO)')}
+
+  ${k.green('$0 export drawio --uncompressed -o ./out')}
+    ${k.gray('Export with raw XML (no compression) for draw.io desktop compatibility')}
 `),
     handler: async args => {
       const outdir = args.outdir ?? args.path
       const allInOne = args.allInOne === true
       const roundtrip = args.roundtrip === true
+      const uncompressed = args.uncompressed === true
       const onlyProject = args.project
       const logger = createLikeC4Logger('c4:export')
 
@@ -97,7 +108,40 @@ export function drawioCmd(yargs: Argv) {
 
       if (allInOne && viewmodels.length > 0) {
         try {
-          const generated = generateDrawioMulti(viewmodels)
+          let optionsByViewId: Record<string, GenerateDrawioOptions> | undefined
+          if (roundtrip || uncompressed) {
+            if (roundtrip) {
+              const sourceContent = await readWorkspaceSourceContent(resolve(args.path))
+              const roundtripData = parseDrawioRoundtripComments(sourceContent)
+              if (roundtripData) {
+                optionsByViewId = {}
+                for (const vm of viewmodels) {
+                  const view = vm.$view
+                  const opts: GenerateDrawioOptions = {}
+                  const layoutForView = roundtripData.layoutByView[view.id]?.nodes
+                  if (layoutForView != null) opts.layoutOverride = layoutForView
+                  if (Object.keys(roundtripData.strokeColorByFqn).length > 0) {
+                    opts.strokeColorByNodeId = roundtripData.strokeColorByFqn
+                  }
+                  if (Object.keys(roundtripData.strokeWidthByFqn).length > 0) {
+                    opts.strokeWidthByNodeId = roundtripData.strokeWidthByFqn
+                  }
+                  if (Object.keys(roundtripData.edgeWaypoints).length > 0) {
+                    opts.edgeWaypoints = roundtripData.edgeWaypoints
+                  }
+                  if (uncompressed) opts.compressed = false
+                  optionsByViewId[view.id] = opts
+                }
+              }
+            }
+            if (uncompressed && !optionsByViewId) {
+              optionsByViewId = {}
+              for (const vm of viewmodels) {
+                optionsByViewId[vm.$view.id] = { compressed: false }
+              }
+            }
+          }
+          const generated = generateDrawioMulti(viewmodels, optionsByViewId)
           const outfile = resolve(outdir, 'diagrams.drawio')
           await writeFile(outfile, generated)
           logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)} (${viewmodels.length} tab(s))`)
@@ -117,18 +161,21 @@ export function drawioCmd(yargs: Argv) {
           const view = vm.$view
           try {
             let options: Parameters<typeof generateDrawio>[1] | undefined
-            if (roundtripData) {
-              const layoutForView = roundtripData.layoutByView[view.id]?.nodes
+            if (roundtripData || uncompressed) {
               options = {}
-              if (layoutForView != null) options.layoutOverride = layoutForView
-              if (Object.keys(roundtripData.strokeColorByFqn).length > 0) {
-                options.strokeColorByNodeId = roundtripData.strokeColorByFqn
-              }
-              if (Object.keys(roundtripData.strokeWidthByFqn).length > 0) {
-                options.strokeWidthByNodeId = roundtripData.strokeWidthByFqn
-              }
-              if (Object.keys(roundtripData.edgeWaypoints).length > 0) {
-                options.edgeWaypoints = roundtripData.edgeWaypoints
+              if (uncompressed) options.compressed = false
+              if (roundtripData) {
+                const layoutForView = roundtripData.layoutByView[view.id]?.nodes
+                if (layoutForView != null) options.layoutOverride = layoutForView
+                if (Object.keys(roundtripData.strokeColorByFqn).length > 0) {
+                  options.strokeColorByNodeId = roundtripData.strokeColorByFqn
+                }
+                if (Object.keys(roundtripData.strokeWidthByFqn).length > 0) {
+                  options.strokeWidthByNodeId = roundtripData.strokeWidthByFqn
+                }
+                if (Object.keys(roundtripData.edgeWaypoints).length > 0) {
+                  options.edgeWaypoints = roundtripData.edgeWaypoints
+                }
               }
             }
             const generated = generateDrawio(vm, options)

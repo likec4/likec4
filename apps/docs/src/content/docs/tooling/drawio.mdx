@@ -49,7 +49,7 @@ Each view becomes one diagram (tab) in the output. One `.drawio` file is produce
 | Relationship: links, metadata | Style `likec4Links` (JSON array), `likec4Metadata` (JSON object) |
 | Relationship: head/tail, line style, color | Style `endArrow`, `startArrow`, `dashed`/`dashPattern`, `strokeColor` |
 
-The generator accepts optional **options** for round-trip or tooling: `layoutOverride` (per-node `{ x, y, width, height }`), `strokeColorByNodeId`, and `strokeWidthByNodeId`. When present, element/edge **customData** is written as mxUserObject, and edge **waypoints** (viewmodel `points`) are written as mxGeometry with an Array of mxPoints.
+The generator accepts optional **options** for round-trip or tooling: `layoutOverride` (per-node `{ x, y, width, height }`), `strokeColorByNodeId`, `strokeWidthByNodeId`, and `compressed`. Set **`compressed: false`** to write diagram XML uncompressed inside the `.drawio` file (larger file; use when draw.io desktop or Open file / Import fails to open the default compressed export). The **Playground** exports uncompressed by default for maximum compatibility; the **CLI** uses compressed by default and supports `--uncompressed`.
 
 ### Not preserved on export
 
@@ -104,7 +104,19 @@ When **importing**, if the Draw.io file has **multiple diagrams** (tabs):
 - **One view per diagram** is generated; each view includes the elements that appear in that tab (via `include` with FQNs).
 - Diagram `name`/`id` becomes the view id (first diagram without a name becomes view `index`).
 
-When **exporting**, each LikeC4 view is written to a **separate** `.drawio` file (one file per view).
+When **exporting**, each LikeC4 view is written to a **separate** `.drawio` file (one file per view). With `--all-in-one`, all views are written as tabs in a single file; combined with `--roundtrip`, layout, stroke colors/widths, and edge waypoints from the round-trip comment blocks are applied per view in that file.
+
+## Troubleshooting
+
+**The exported .drawio file does not open in draw.io** (e.g. "Could not add object Array", blank diagram, or draw.io desktop / Open file / Import does nothing):
+
+- **Playground:** Exports are now **uncompressed** by default so the file opens in draw.io desktop and via Open file / Import. Refresh the app and export again.
+- **CLI:** Use **`--uncompressed`** so the diagram XML is written raw (no compression): `likec4 export drawio --uncompressed -o ./out`. This produces a larger file that opens reliably in draw.io desktop.
+- If you still use compressed export, use a **recent build** of LikeC4 (older exports used an invalid XML structure for edge waypoints). Run `pnpm build` and export again.
+
+**The diagram shows fewer elements than expected:**
+
+- Each view exports **exactly what you see** in that view. A top-level view (e.g. `view index { include * }`) typically shows only **top-level elements** (e.g. Customer and Our SaaS). Nested elements (e.g. Frontend, Backend inside the system) appear in the **element view** of that system (e.g. `view saas of saas { include * }`). To get all elements in Draw.io in one file, use **Export all views** (CLI: `--all-in-one`) and open the tab for the nested view, or switch to that view in the Playground before exporting.
 
 ## Round-trip summary
 

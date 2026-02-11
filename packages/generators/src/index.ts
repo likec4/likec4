@@ -1,6 +1,7 @@
 export { generateD2 } from './d2/generate-d2'
-export { generateDrawio, generateDrawioMulti } from './drawio/generate-drawio'
+export { generateDrawio, generateDrawioMulti, type GenerateDrawioOptions } from './drawio/generate-drawio'
 export {
+  getAllDiagrams,
   parseDrawioRoundtripComments,
   parseDrawioToLikeC4,
   parseDrawioToLikeC4Multi,

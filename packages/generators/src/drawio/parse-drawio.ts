@@ -439,11 +439,12 @@ export function parseDrawioToLikeC4(xml: string): string {
     byId.set(c.id, c)
   }
 
-  const vertices = cells.filter(c => c.vertex && c.id !== '1')
+  const vertices = cells.filter(c => c.vertex && c.id !== '0' && c.id !== '1')
   const edges = cells.filter(c => c.edge && c.source && c.target)
 
-  // Build hierarchy: root is parent "1". Assign FQN by traversing parent chain.
-  const rootId = '1'
+  // Build hierarchy: root is parent "0" (no wrapper) or "1" (legacy wrapper). Assign FQN by traversing parent chain.
+  const rootIds = ['0', '1']
+  const isRootParent = (p: string | undefined) => !p || rootIds.includes(p)
   const idToFqn = new Map<string, string>()
   const idToCell = new Map<string, DrawioCell>()
   for (const v of vertices) {
@@ -464,7 +465,7 @@ export function parseDrawioToLikeC4(xml: string): string {
   }
 
   for (const v of vertices) {
-    if (v.parent === rootId || !v.parent) {
+    if (isRootParent(v.parent)) {
       const name = uniqueName(v.value ?? v.id)
       idToFqn.set(v.id, name)
     }
@@ -533,7 +534,7 @@ export function parseDrawioToLikeC4(xml: string): string {
   for (const [cellId, fqn] of idToFqn) {
     const cell = idToCell.get(cellId)
     if (!cell) continue
-    if (cell.parent === rootId || !cell.parent) {
+    if (isRootParent(cell.parent)) {
       roots.push({ cellId, fqn })
     } else {
       const parentFqn = idToFqn.get(cell.parent)
@@ -897,9 +898,10 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   const cells = parseDrawioXml(content)
   const byId = new Map<string, DrawioCell>()
   for (const c of cells) byId.set(c.id, c)
-  const vertices = cells.filter(c => c.vertex && c.id !== '1')
+  const vertices = cells.filter(c => c.vertex && c.id !== '0' && c.id !== '1')
   const edges = cells.filter(c => c.edge && c.source && c.target)
-  const rootId = '1'
+  const rootIds = ['0', '1']
+  const isRootParent = (p: string | undefined) => !p || rootIds.includes(p)
   const idToFqn = new Map<string, string>()
   const idToCell = new Map<string, DrawioCell>()
   for (const v of vertices) idToCell.set(v.id, v)
@@ -913,7 +915,7 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
     return n
   }
   for (const v of vertices) {
-    if (v.parent === rootId || !v.parent) idToFqn.set(v.id, uniqueName(v.value ?? v.id))
+    if (isRootParent(v.parent)) idToFqn.set(v.id, uniqueName(v.value ?? v.id))
   }
   let changed = true
   while (changed) {
@@ -952,7 +954,7 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   for (const [cellId, fqn] of idToFqn) {
     const cell = idToCell.get(cellId)
     if (!cell) continue
-    if (cell.parent === rootId || !cell.parent) {
+    if (isRootParent(cell.parent)) {
       roots.push({ cellId, fqn })
     } else {
       const parentFqn = idToFqn.get(cell.parent)
