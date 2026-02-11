@@ -157,12 +157,12 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
       ? escapeXml(String(node.technology))
       : ''
     const userData = desc !== '' || tech !== ''
-      ? `\n  <mxUserObject><data key="likec4Description">${desc}</data><data key="likec4Technology">${tech}</data></mxUserObject>`
+      ? `<mxUserObject><data key="likec4Description">${desc}</data><data key="likec4Technology">${tech}</data></mxUserObject>\n  `
       : ''
 
     vertexCells.push(
-      `<mxCell id="${id}" value="${label}" style="${shapeStyle}${colorStyle}verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="${parentId}">${userData}
-  <mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${
+      `<mxCell id="${id}" value="${label}" style="${shapeStyle}${colorStyle}verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="${parentId}">
+  ${userData}<mxGeometry x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(width)}" height="${
         Math.round(height)
       }" as="geometry" />
 </mxCell>`,
