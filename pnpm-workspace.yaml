@@ -70,7 +70,7 @@ catalogs:
     '@hono/node-server': ^1.19.9
     '@hono/oauth-providers': ^0.8.5
     '@hono/zod-validator': ^0.7.6
-    hono: ^4.11.8
+    hono: ^4.11.9
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
