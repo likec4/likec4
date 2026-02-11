@@ -71,6 +71,8 @@ export interface DrawioCell {
   notation?: string
   /** From style likec4Metadata (edge; JSON object for relation metadata block) */
   metadata?: string
+  /** From mxUserObject/data keys not mapped to fields above (JSON object for round-trip comment) */
+  customData?: string
 }
 
 function getAttr(attrs: string, name: string): string | undefined {
@@ -100,13 +102,36 @@ function parseStyle(style: string | undefined): Map<string, string> {
   return map
 }
 
+/** Keys we map to dedicated DrawioCell fields; other data keys go to customData. */
+const MAPPED_DATA_KEYS = new Set([
+  'likec4description',
+  'likec4technology',
+])
+
+/** Extract all <data key="...">...</data> from mxUserObject inner XML. */
+function parseAllUserData(fullTag: string): Record<string, string> {
+  const out: Record<string, string> = {}
+  const dataRe = /<data\s+key="([^"]*)"[^>]*>([\s\S]*?)<\/data>/gi
+  let match
+  while ((match = dataRe.exec(fullTag)) !== null) {
+    const key = match[1]?.trim()
+    const raw = match[2]?.trim()
+    if (key && raw !== undefined) out[key] = decodeXmlEntities(raw)
+  }
+  return out
+}
+
 /** Extract LikeC4 custom data from mxUserObject/data inside cell XML. */
-function parseUserData(fullTag: string): { description?: string; technology?: string } {
-  const out: { description?: string; technology?: string } = {}
-  const descMatch = fullTag.match(/<data\s+key="likec4Description"[^>]*>([\s\S]*?)<\/data>/i)
-  if (descMatch?.[1]) out.description = decodeXmlEntities(descMatch[1].trim())
-  const techMatch = fullTag.match(/<data\s+key="likec4Technology"[^>]*>([\s\S]*?)<\/data>/i)
-  if (techMatch?.[1]) out.technology = decodeXmlEntities(techMatch[1].trim())
+function parseUserData(fullTag: string): { description?: string; technology?: string; customData?: string } {
+  const all = parseAllUserData(fullTag)
+  const out: { description?: string; technology?: string; customData?: string } = {}
+  if (all['likec4Description'] != null) out.description = all['likec4Description']
+  if (all['likec4Technology'] != null) out.technology = all['likec4Technology']
+  const rest: Record<string, string> = {}
+  for (const [k, v] of Object.entries(all)) {
+    if (!MAPPED_DATA_KEYS.has(k.toLowerCase()) && v != null && v !== '') rest[k] = v
+  }
+  if (Object.keys(rest).length > 0) out.customData = JSON.stringify(rest)
   return out
 }
 
@@ -243,6 +268,7 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       ...(relationshipKind != null ? { relationshipKind } : {}),
       ...(notation != null ? { notation } : {}),
       ...(metadata != null && edge ? { metadata } : {}),
+      ...(userData.customData != null ? { customData: userData.customData } : {}),
     }
     cells.push(cell)
   }
@@ -788,6 +814,24 @@ export function parseDrawioToLikeC4(xml: string): string {
     lines.push('// </likec4.strokeWidth.vertices>')
   }
 
+  const customDataLines: string[] = []
+  for (const [cellId, fqn] of idToFqn) {
+    const cell = byId.get(cellId)
+    if (cell?.customData?.trim()) customDataLines.push(`// ${fqn} ${cell.customData.trim()}`)
+  }
+  for (const e of edges) {
+    const src = idToFqn.get(e.source!)
+    const tgt = idToFqn.get(e.target!)
+    if (src && tgt && e.customData?.trim()) {
+      customDataLines.push(`// ${src}|${tgt} ${e.customData.trim()}`)
+    }
+  }
+  if (customDataLines.length > 0) {
+    lines.push('// <likec4.customData>')
+    lines.push(...customDataLines)
+    lines.push('// </likec4.customData>')
+  }
+
   return lines.join('\n')
 }
 
@@ -1277,6 +1321,26 @@ views {
     lines.push('// <likec4.strokeWidth.vertices>')
     lines.push(...strokeWidthLinesMulti)
     lines.push('// </likec4.strokeWidth.vertices>')
+  }
+
+  const customDataLinesMulti: string[] = []
+  for (const st of states) {
+    for (const [cellId, fqn] of st.idToFqn) {
+      const cell = st.idToCell.get(cellId)
+      if (cell?.customData?.trim()) customDataLinesMulti.push(`// ${fqn} ${cell.customData.trim()}`)
+    }
+    for (const e of st.edges) {
+      const src = st.idToFqn.get(e.source!)
+      const tgt = st.idToFqn.get(e.target!)
+      if (src && tgt && e.customData?.trim()) {
+        customDataLinesMulti.push(`// ${src}|${tgt} ${e.customData.trim()}`)
+      }
+    }
+  }
+  if (customDataLinesMulti.length > 0) {
+    lines.push('// <likec4.customData>')
+    lines.push(...customDataLinesMulti)
+    lines.push('// </likec4.customData>')
   }
 
   return lines.join('\n')

@@ -81,6 +81,7 @@ On import, the following are emitted as **comment blocks** at the end of the fil
 - **Layout** — `// <likec4.layout.drawio>` … `// </likec4.layout.drawio>` with a JSON map of view id → node FQN → `{ x, y, width, height }`.
 - **Vertex stroke color** — `// <likec4.strokeColor.vertices>` with lines `// FQN=#hex` (LikeC4 has no element strokeColor in the DSL).
 - **Vertex stroke width** — `// <likec4.strokeWidth.vertices>` with lines `// FQN=value` (numeric strokeWidth for round-trip).
+- **Custom mxUserObject data** — `// <likec4.customData>` with lines `// FQN {"key":"value",…}` or `// src|tgt {...}` for edges. Any `<data key="...">` not mapped to a LikeC4 field is preserved here for round-trip.
 
 ### Not preserved on import
 

@@ -54,6 +54,28 @@ test('parse DrawIO to LikeC4 - empty XML returns minimal model', () => {
   expect(result).toContain('include *')
 })
 
+const drawioWithCustomDataKeys = `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile>
+  <diagram>
+    <mxGraphModel><root>
+      <mxCell id="0" />
+      <mxCell id="1" vertex="1" parent="0"><mxGeometry width="400" height="300" as="geometry" /></mxCell>
+      <mxCell id="2" value="Widget" style="shape=rectangle;fillColor=#dae8fc;" vertex="1" parent="1">
+        <mxGeometry x="50" y="50" width="100" height="50" as="geometry" />
+        <mxUserObject><data key="customKey">customValue</data><data key="likec4Description">Mapped desc</data></mxUserObject>
+      </mxCell>
+    </root></mxGraphModel>
+  </diagram>
+</mxfile>`
+
+test('parse DrawIO to LikeC4 - vertex with custom mxUserObject data keys emits customData comment', () => {
+  const result = parseDrawioToLikeC4(drawioWithCustomDataKeys)
+  expect(result).toContain('description \'Mapped desc\'')
+  expect(result).toContain('// <likec4.customData>')
+  expect(result).toContain('// </likec4.customData>')
+  expect(result).toContain('"customKey":"customValue"')
+})
+
 const drawioEdgeWithLikeC4Style = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile>
   <diagram>
