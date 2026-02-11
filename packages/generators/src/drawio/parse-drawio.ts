@@ -47,6 +47,8 @@ export interface DrawioCell {
   summary?: string
   /** From style likec4Links (vertex; JSON array of {url, title?}) */
   links?: string
+  /** From style link (Draw.io native cell link URL; vertex) */
+  link?: string
   /** From style likec4Border (vertex: solid|dashed|dotted|none) */
   border?: string
   /** From style likec4ColorName (vertex; theme/custom color name for roundtrip) */
@@ -57,6 +59,8 @@ export interface DrawioCell {
   relationshipKind?: string
   /** From style likec4Notation (edge) */
   notation?: string
+  /** From style likec4Metadata (edge; JSON object for relation metadata block) */
+  metadata?: string
 }
 
 function getAttr(attrs: string, name: string): string | undefined {
@@ -157,6 +161,8 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       ? decodeURIComponent(summaryFromStyle)
       : undefined
     const links = linksFromStyle != null && linksFromStyle !== '' ? decodeURIComponent(linksFromStyle) : undefined
+    const linkFromStyle = styleMap.get('link')
+    const link = linkFromStyle != null && linkFromStyle !== '' ? decodeURIComponent(linkFromStyle) : undefined
     const border = borderFromStyle != null && borderFromStyle !== '' ? decodeURIComponent(borderFromStyle) : undefined
     const colorName = colorNameFromStyle != null && colorNameFromStyle !== ''
       ? decodeURIComponent(colorNameFromStyle)
@@ -167,6 +173,10 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       : undefined
     const notation = notationFromStyle != null && notationFromStyle !== ''
       ? decodeURIComponent(notationFromStyle)
+      : undefined
+    const metadataFromStyle = styleMap.get('likec4metadata')
+    const metadata = metadataFromStyle != null && metadataFromStyle !== ''
+      ? decodeURIComponent(metadataFromStyle)
       : undefined
     const cell: DrawioCell = {
       id,
@@ -195,11 +205,13 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       ...(dashPattern != null && dashPattern !== '' ? { dashPattern } : {}),
       ...(summary != null ? { summary } : {}),
       ...(links != null ? { links } : {}),
+      ...(link != null && vertex ? { link } : {}),
       ...(border != null ? { border } : {}),
       ...(colorName != null ? { colorName } : {}),
       ...(opacity != null ? { opacity } : {}),
       ...(relationshipKind != null ? { relationshipKind } : {}),
       ...(notation != null ? { notation } : {}),
+      ...(metadata != null && edge ? { metadata } : {}),
     }
     cells.push(cell)
   }
@@ -480,6 +492,8 @@ export function parseDrawioToLikeC4(xml: string): string {
     const icon = cell.icon?.trim()
     const summary = cell.summary?.trim()
     const linksJson = cell.links?.trim()
+    const nativeLink = cell.link?.trim()
+    const notation = cell.notation?.trim()
     const border = cell.border?.trim()
     const colorName = cell.fillColor && /^#[0-9A-Fa-f]{3,8}$/.test(cell.fillColor.trim())
       ? hexToCustomName.get(cell.fillColor.trim())
@@ -501,6 +515,8 @@ export function parseDrawioToLikeC4(xml: string): string {
       notes ||
       summary ||
       linksJson ||
+      nativeLink ||
+      notation ||
       tagList.length > 0 ||
       colorName ||
       border ||
@@ -525,6 +541,7 @@ export function parseDrawioToLikeC4(xml: string): string {
       if (tech) lines.push(`${pad}  technology '${tech.replace(/'/g, '\'\'')}'`)
       if (summary) lines.push(`${pad}  summary '${summary.replace(/'/g, '\'\'')}'`)
       if (notes) lines.push(`${pad}  notes '${notes.replace(/'/g, '\'\'')}'`)
+      if (notation) lines.push(`${pad}  notation '${notation.replace(/'/g, '\'\'')}'`)
       try {
         const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
         if (Array.isArray(linksArr)) {
@@ -537,9 +554,12 @@ export function parseDrawioToLikeC4(xml: string): string {
               )
             }
           }
+        } else if (nativeLink) {
+          lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
         }
       } catch {
-        // ignore invalid JSON
+        // ignore invalid JSON; fallback to native link
+        if (nativeLink) lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
       }
       if (navigateTo) lines.push(`${pad}  navigateTo ${navigateTo}`)
       if (icon) lines.push(`${pad}  icon '${icon.replace(/'/g, '\'\'')}'`)
@@ -574,8 +594,10 @@ export function parseDrawioToLikeC4(xml: string): string {
     const line = likec4LineType(e.dashed, e.dashPattern)
     const relKind = e.relationshipKind?.trim()
     const notation = e.notation?.trim()
+    const linksJson = e.links?.trim()
+    const metadataJson = e.metadata?.trim()
     const edgeStrokeHex = e.strokeColor?.trim()
-    const hasBody = notes || navTo || head || tail || line || notation || edgeStrokeHex
+    const hasBody = notes || navTo || head || tail || line || notation || linksJson || metadataJson || edgeStrokeHex
 
     const arrowPart = relKind && /^[a-zA-Z0-9_-]+$/.test(relKind) ? ` -[${relKind}]-> ` : ' -> '
     const titlePart = title ? ` '${title}'` : desc || tech ? ` ''` : ''
@@ -588,6 +610,43 @@ export function parseDrawioToLikeC4(xml: string): string {
       if (notes) bodyLines.push(`    notes '${notes.replace(/'/g, '\'\'')}'`)
       if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
       if (notation) bodyLines.push(`    notation '${notation.replace(/'/g, '\'\'')}'`)
+      try {
+        const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
+        if (Array.isArray(linksArr)) {
+          for (const link of linksArr) {
+            if (link?.url) {
+              bodyLines.push(
+                `    link '${String(link.url).replace(/'/g, '\'\'')}'${
+                  link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
+                }`,
+              )
+            }
+          }
+        }
+      } catch {
+        // ignore invalid JSON
+      }
+      try {
+        const metaObj = metadataJson ? (JSON.parse(metadataJson) as Record<string, string | string[]>) : null
+        if (metaObj && typeof metaObj === 'object' && !Array.isArray(metaObj)) {
+          const metaAttrs: string[] = []
+          for (const [k, v] of Object.entries(metaObj)) {
+            if (k.trim() === '') continue
+            const safeKey = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(k) ? k : `'${k.replace(/'/g, '\'\'')}'`
+            if (Array.isArray(v)) {
+              const arrVals = v.map(s => `'${String(s).replace(/'/g, '\'\'')}'`)
+              metaAttrs.push(` ${safeKey} [ ${arrVals.join(', ')} ];`)
+            } else if (v != null && typeof v === 'string') {
+              metaAttrs.push(` ${safeKey} '${v.replace(/'/g, '\'\'')}';`)
+            }
+          }
+          if (metaAttrs.length > 0) {
+            bodyLines.push('    metadata {' + metaAttrs.join('') + ' }')
+          }
+        }
+      } catch {
+        // ignore invalid JSON
+      }
       if (head || tail || line || edgeStrokeHex) {
         const styleParts: string[] = []
         if (line) styleParts.push(`line ${line}`)
@@ -624,6 +683,45 @@ export function parseDrawioToLikeC4(xml: string): string {
   lines.push('  }')
   lines.push('}')
   lines.push('')
+
+  // Emit layout as comment for round-trip or tooling (Phase 1.2)
+  const layoutNodes: Record<string, { x: number; y: number; width: number; height: number }> = {}
+  for (const [cellId, fqn] of idToFqn) {
+    const cell = byId.get(cellId)
+    if (
+      cell?.vertex &&
+      cell.x != null &&
+      cell.y != null &&
+      cell.width != null &&
+      cell.height != null
+    ) {
+      layoutNodes[fqn] = { x: cell.x, y: cell.y, width: cell.width, height: cell.height }
+    }
+  }
+  if (Object.keys(layoutNodes).length > 0) {
+    const layoutBlock = JSON.stringify({ [viewId]: { nodes: layoutNodes } })
+    lines.push('// <likec4.layout.drawio>')
+    lines.push('// ' + layoutBlock)
+    lines.push('// </likec4.layout.drawio>')
+  }
+
+  // Emit vertex strokeColor as comment for round-trip (Phase 1.3; DSL has no element strokeColor)
+  const strokeColorLines: string[] = []
+  for (const [cellId, fqn] of idToFqn) {
+    const cell = byId.get(cellId)
+    if (
+      cell?.vertex &&
+      cell.strokeColor?.trim() &&
+      /^#[0-9A-Fa-f]{3,8}$/.test(cell.strokeColor.trim())
+    ) {
+      strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
+    }
+  }
+  if (strokeColorLines.length > 0) {
+    lines.push('// <likec4.strokeColor.vertices>')
+    lines.push(...strokeColorLines)
+    lines.push('// </likec4.strokeColor.vertices>')
+  }
 
   return lines.join('\n')
 }
@@ -846,6 +944,8 @@ views {
     const icon = cell.icon?.trim()
     const summary = cell.summary?.trim()
     const linksJson = cell.links?.trim()
+    const nativeLink = cell.link?.trim()
+    const notation = cell.notation?.trim()
     const border = cell.border?.trim()
     const colorName = cell.fillColor && /^#[0-9A-Fa-f]{3,8}$/.test(cell.fillColor.trim())
       ? hexToCustomName.get(cell.fillColor.trim())
@@ -859,6 +959,8 @@ views {
       !!notes ||
       !!summary ||
       !!linksJson ||
+      !!nativeLink ||
+      !!notation ||
       tagList.length > 0 ||
       !!colorName ||
       !!border ||
@@ -888,6 +990,7 @@ views {
       if (tech) lines.push(`${pad}  technology '${tech.replace(/'/g, '\'\'')}'`)
       if (summary) lines.push(`${pad}  summary '${summary.replace(/'/g, '\'\'')}'`)
       if (notes) lines.push(`${pad}  notes '${notes.replace(/'/g, '\'\'')}'`)
+      if (notation) lines.push(`${pad}  notation '${notation.replace(/'/g, '\'\'')}'`)
       try {
         const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
         if (Array.isArray(linksArr)) {
@@ -900,9 +1003,12 @@ views {
               )
             }
           }
+        } else if (nativeLink) {
+          lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
         }
       } catch {
-        // ignore
+        // ignore; fallback to native link
+        if (nativeLink) lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
       }
       if (navigateTo) lines.push(`${pad}  navigateTo ${navigateTo}`)
       if (icon) lines.push(`${pad}  icon '${icon.replace(/'/g, '\'\'')}'`)
@@ -928,8 +1034,18 @@ views {
     const line = likec4LineType(e.dashed, e.dashPattern)
     const relKind = e.relationshipKind?.trim()
     const notation = e.notation?.trim()
+    const linksJson = e.links?.trim()
+    const metadataJson = e.metadata?.trim()
     const edgeStrokeHex = e.strokeColor?.trim()
-    const hasBody = !!notes || !!navTo || !!head || !!tail || !!line || !!notation || !!edgeStrokeHex
+    const hasBody = !!notes ||
+      !!navTo ||
+      !!head ||
+      !!tail ||
+      !!line ||
+      !!notation ||
+      !!linksJson ||
+      !!metadataJson ||
+      !!edgeStrokeHex
     const arrowPart = relKind && /^[a-zA-Z0-9_-]+$/.test(relKind) ? ` -[${relKind}]-> ` : ' -> '
     const titlePart = title ? ` '${title}'` : desc || tech ? ` ''` : ''
     const descPart = desc ? ` '${desc.replace(/'/g, '\'\'')}'` : ''
@@ -940,6 +1056,43 @@ views {
       if (notes) bodyLines.push(`    notes '${notes.replace(/'/g, '\'\'')}'`)
       if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
       if (notation) bodyLines.push(`    notation '${notation.replace(/'/g, '\'\'')}'`)
+      try {
+        const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
+        if (Array.isArray(linksArr)) {
+          for (const link of linksArr) {
+            if (link?.url) {
+              bodyLines.push(
+                `    link '${String(link.url).replace(/'/g, '\'\'')}'${
+                  link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
+                }`,
+              )
+            }
+          }
+        }
+      } catch {
+        // ignore invalid JSON
+      }
+      try {
+        const metaObj = metadataJson ? (JSON.parse(metadataJson) as Record<string, string | string[]>) : null
+        if (metaObj && typeof metaObj === 'object' && !Array.isArray(metaObj)) {
+          const metaAttrs: string[] = []
+          for (const [k, v] of Object.entries(metaObj)) {
+            if (k.trim() === '') continue
+            const safeKey = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(k) ? k : `'${k.replace(/'/g, '\'\'')}'`
+            if (Array.isArray(v)) {
+              const arrVals = v.map(s => `'${String(s).replace(/'/g, '\'\'')}'`)
+              metaAttrs.push(` ${safeKey} [ ${arrVals.join(', ')} ];`)
+            } else if (v != null && typeof v === 'string') {
+              metaAttrs.push(` ${safeKey} '${v.replace(/'/g, '\'\'')}';`)
+            }
+          }
+          if (metaAttrs.length > 0) {
+            bodyLines.push('    metadata {' + metaAttrs.join('') + ' }')
+          }
+        }
+      } catch {
+        // ignore invalid JSON
+      }
       if (head || tail || line || edgeStrokeHex) {
         const styleParts: string[] = []
         if (line) styleParts.push(`line ${line}`)
@@ -972,5 +1125,58 @@ views {
   }
   lines.push('}')
   lines.push('')
+
+  // Emit layout as comment for round-trip or tooling (Phase 1.2)
+  const layoutByView: Record<
+    string,
+    { nodes: Record<string, { x: number; y: number; width: number; height: number }> }
+  > = {}
+  for (const st of states) {
+    layoutByView[st.viewId] = { nodes: {} }
+    for (const [cellId, fqn] of st.idToFqn) {
+      const cell = st.idToCell.get(cellId)
+      if (
+        cell?.vertex &&
+        cell.x != null &&
+        cell.y != null &&
+        cell.width != null &&
+        cell.height != null
+      ) {
+        layoutByView[st.viewId].nodes[fqn] = {
+          x: cell.x,
+          y: cell.y,
+          width: cell.width,
+          height: cell.height,
+        }
+      }
+    }
+  }
+  const hasLayout = Object.values(layoutByView).some(v => Object.keys(v.nodes).length > 0)
+  if (hasLayout) {
+    lines.push('// <likec4.layout.drawio>')
+    lines.push('// ' + JSON.stringify(layoutByView))
+    lines.push('// </likec4.layout.drawio>')
+  }
+
+  // Emit vertex strokeColor as comment for round-trip (Phase 1.3)
+  const strokeColorLines: string[] = []
+  for (const st of states) {
+    for (const [cellId, fqn] of st.idToFqn) {
+      const cell = st.idToCell.get(cellId)
+      if (
+        cell?.vertex &&
+        cell.strokeColor?.trim() &&
+        /^#[0-9A-Fa-f]{3,8}$/.test(cell.strokeColor.trim())
+      ) {
+        strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
+      }
+    }
+  }
+  if (strokeColorLines.length > 0) {
+    lines.push('// <likec4.strokeColor.vertices>')
+    lines.push(...strokeColorLines)
+    lines.push('// </likec4.strokeColor.vertices>')
+  }
+
   return lines.join('\n')
 }

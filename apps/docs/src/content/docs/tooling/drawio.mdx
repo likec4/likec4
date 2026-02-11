@@ -1,0 +1,111 @@
+---
+title: Draw.io integration
+description: Export LikeC4 views to Draw.io and import Draw.io diagrams to LikeC4. Mapping, limitations, and multi-diagram support.
+head:
+  - tag: title
+    content: Draw.io integration
+sidebar:
+  label: Draw.io
+  order: 3
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 4
+---
+
+LikeC4 can **export** views to [Draw.io](https://draw.io) (`.drawio`) and **import** Draw.io files into LikeC4 source (`.c4`). This allows editing diagrams in Draw.io, reusing them in tools that support the format, and round-tripping between LikeC4 and Draw.io.
+
+Use the CLI:
+
+- **Export:** `likec4 export drawio` — see [CLI — Export to DrawIO](/tooling/cli/#export-to-drawio)
+- **Import:** `likec4 import drawio <file>` — see [CLI — Import from DrawIO](/tooling/cli/#import-from-drawio)
+
+This page describes what is mapped in each direction, limitations, and multi-diagram behavior.
+
+## Export (LikeC4 → Draw.io)
+
+Each view becomes one diagram (tab) in the output. One `.drawio` file is produced per view.
+
+### Mapped to Draw.io
+
+| LikeC4 | Draw.io |
+|--------|---------|
+| View (view id) | Diagram tab `name` and `id`; view title/description in root cell as `likec4ViewTitle`, `likec4ViewDescription` |
+| Element id | mxCell `id` (internal); hierarchy via `parent` |
+| Element title, description | mxCell `value` (title; description in HTML or in style `likec4Description`) |
+| Element: technology, notes, tags, navigateTo, icon | Style `likec4Technology`, `likec4Notes`, `likec4Tags`, `likec4NavigateTo`, `likec4Icon` (URI-encoded) |
+| Element: summary, links | Style `likec4Summary`, `likec4Links` (JSON array) |
+| Element: notation | Style `likec4Notation` |
+| Element: shape | Style `shape` (rectangle, umlActor, cylinder3, document, etc.) |
+| Element: color | Style `fillColor`, `strokeColor`, `fontColor` (hex); theme/custom name in `likec4ColorName`; stroke in `likec4StrokeColor` for round-trip |
+| Element: border, opacity | Style `strokeWidth`, `likec4Border`; `opacity` |
+| Element position/size | mxGeometry `x`, `y`, `width`, `height` (from layout) |
+| Relationship: source, target, label | mxCell edge `source`, `target`, `value` |
+| Relationship: description, technology, notes, navigateTo | Style `likec4Description`, `likec4Technology`, `likec4Notes`, `likec4NavigateTo` |
+| Relationship: kind, notation | Style `likec4RelationshipKind`, `likec4Notation` |
+| Relationship: links, metadata | Style `likec4Links` (JSON array), `likec4Metadata` (JSON object) |
+| Relationship: head/tail, line style, color | Style `endArrow`, `startArrow`, `dashed`/`dashPattern`, `strokeColor` |
+
+### Not preserved on export
+
+- View rules (include/exclude, style rules) — only the resulting nodes and edges are exported.
+- Manual layout waypoints / edge waypoints — edges use default Draw.io routing.
+- Layout drifts / fine position tweaks — only final node position is written.
+- Theme color names — stored as hex in Draw.io; `likec4ColorName` keeps the name for round-trip.
+
+## Import (Draw.io → LikeC4)
+
+A Draw.io file is converted to a single LikeC4 source file (model + views). Elements and relationships are inferred from vertices and edges.
+
+### Mapped to LikeC4
+
+| Draw.io | LikeC4 |
+|---------|--------|
+| Diagram (tab) | View; diagram `name`/`id` → view id; root cell `likec4ViewTitle`/`likec4ViewDescription` → view title/description |
+| Vertex: value, parent | Element title (HTML stripped), hierarchy (FQN) |
+| Vertex: style fillColor | Element `style { color }`; hex → custom color names in specification |
+| Vertex: likec4* style keys | Element: description, technology, notes, tags, navigateTo, icon, summary, links, notation, border, opacity, shape |
+| Vertex: likec4ColorName | Specification color name; element uses named color |
+| Vertex: style `link` (Draw.io native) | Element `link 'url'` when no likec4Links |
+| Edge: source, target, value | Relationship between element FQNs; label as relationship title |
+| Edge: likec4* style keys | Relationship: description, technology, notes, navigateTo, notation, links, kind, metadata |
+| Edge: likec4Metadata | Relationship `metadata { key value; … }` block |
+| Edge: endArrow, startArrow, dashed, dashPattern | Relationship `style { head, tail, line }` |
+| Edge: strokeColor | Specification color + relationship `style { color }` |
+
+### Comment blocks for round-trip (import)
+
+On import, the following are emitted as **comment blocks** at the end of the file so that tooling or a future round-trip can use them. They are not part of the LikeC4 model syntax:
+
+- **Layout** — `// <likec4.layout.drawio>` … `// </likec4.layout.drawio>` with a JSON map of view id → node FQN → `{ x, y, width, height }`.
+- **Vertex stroke color** — `// <likec4.strokeColor.vertices>` with lines `// FQN=#hex` (LikeC4 has no element strokeColor in the DSL).
+
+### Not preserved on import
+
+- **Layout in model** — Node position/size are not in the `.c4` model; they are only in the layout comment block above. Layout is recalculated or manual in LikeC4.
+- **Font style** — fontSize, fontColor, fontStyle, fontFamily are not mapped.
+- **Edge waypoints** — Draw.io routing/waypoints are not emitted in LikeC4.
+- **Layers** — All cells are merged into one model.
+- **Non-vertex/non-edge cells** — Ignored.
+- **Images** — Not supported in the parser.
+
+## Multi-diagram (multiple tabs)
+
+When **importing**, if the Draw.io file has **multiple diagrams** (tabs):
+
+- All diagrams are merged into **one model** (one set of elements and relationships).
+- **One view per diagram** is generated; each view includes the elements that appear in that tab (via `include` with FQNs).
+- Diagram `name`/`id` becomes the view id (first diagram without a name becomes view `index`).
+
+When **exporting**, each LikeC4 view is written to a **separate** `.drawio` file (one file per view).
+
+## Round-trip summary
+
+For a **round-trip** (LikeC4 → Draw.io → LikeC4), the following survive well:
+
+- Elements and relationships with title, description, technology, notes, tags, navigateTo, icon, summary, links, notation
+- Element border, opacity, shape, color (as named color when using likec4ColorName); vertex stroke color in comment block
+- Relationship kind, notation, links, metadata, head/tail, line style, color
+- Multi-diagram: multiple tabs become multiple views on import
+- Layout and vertex stroke colors in comment blocks (for tooling / round-trip)
+
+Font options and edge waypoints are not stored in the `.c4` source.

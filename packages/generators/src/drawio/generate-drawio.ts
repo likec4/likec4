@@ -290,6 +290,13 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     if (linksJson !== '') likec4Extra.push(`likec4Links=${linksJson}`)
     if (borderVal) likec4Extra.push(`likec4Border=${encodeURIComponent(borderVal)}`)
     if (colorNameForRoundtrip !== '') likec4Extra.push(`likec4ColorName=${colorNameForRoundtrip}`)
+    if (elemColors?.stroke && /^#[0-9A-Fa-f]{3,8}$/.test(elemColors.stroke)) {
+      likec4Extra.push(`likec4StrokeColor=${encodeURIComponent(elemColors.stroke)}`)
+    }
+    const nodeNotation = (node as Node & { notation?: string }).notation
+    if (nodeNotation != null && nodeNotation !== '') {
+      likec4Extra.push(`likec4Notation=${encodeURIComponent(nodeNotation)}`)
+    }
     const likec4Style = likec4Extra.length > 0 ? likec4Extra.join(';') + ';' : ''
 
     vertexCells.push(
@@ -330,6 +337,19 @@ export function generateDrawio(viewmodel: LikeC4ViewModel<aux.Unknown>): string 
     if (edgeNotation != null && edgeNotation !== '') {
       edgeLikec4.push(`likec4Notation=${encodeURIComponent(edgeNotation)}`)
     }
+    const edgeLinks = (edge as Edge & { links?: readonly { url: string; title?: string }[] }).links
+    const edgeLinksJson = Array.isArray(edgeLinks) && edgeLinks.length > 0
+      ? encodeURIComponent(JSON.stringify(edgeLinks.map(l => ({ url: l.url, title: l.title }))))
+      : ''
+    if (edgeLinksJson !== '') edgeLikec4.push(`likec4Links=${edgeLinksJson}`)
+    const edgeMetadata = (edge as Edge & { metadata?: Record<string, string | string[]> }).metadata
+    const edgeMetadataJson = edgeMetadata &&
+        typeof edgeMetadata === 'object' &&
+        !Array.isArray(edgeMetadata) &&
+        Object.keys(edgeMetadata).length > 0
+      ? encodeURIComponent(JSON.stringify(edgeMetadata))
+      : ''
+    if (edgeMetadataJson !== '') edgeLikec4.push(`likec4Metadata=${edgeMetadataJson}`)
     const edgeLikec4Style = edgeLikec4.length > 0 ? edgeLikec4.join(';') + ';' : ''
     edgeCells.push(
       `<mxCell id="${id}" value="${label}" style="endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=${strokeColor};${dashStyle}${edgeLikec4Style}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">
