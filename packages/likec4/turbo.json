@@ -25,20 +25,20 @@
       "dependsOn": [
         "@likec4/react#build"
       ],
-      "cache": false
+      "outputs": [
+        "react/**"
+      ]
     },
     "build-app": {
       "dependsOn": [
-        "@likec4/styles#generate",
-        "@likec4/diagram#sources"
+        "@likec4/diagram#build"
       ],
       "outputs": [
         "__app__/**"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
-        "!src/**",
-        "src/vite-plugin/**"
+        "!src/**"
       ],
       "outputLogs": "new-only"
     },

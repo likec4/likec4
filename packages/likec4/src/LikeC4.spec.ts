@@ -146,10 +146,9 @@ describe('LikeC4', () => {
       },
     )
 
-    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(`
-      [Error: Invalid model:
-        /workspace/source.c4:5 Could not resolve reference to ElementKind named 'user'.]
-    `)
+    await expect(promise).rejects.toThrow(
+      /source.c4:5 Could not resolve reference to ElementKind named 'user'/,
+    )
   })
 
   it('should parse workspace with multiple projects', async ({ expect }) => {

@@ -44,7 +44,7 @@ export default defineConfig({
     postcss: {
       plugins: [
         pandacss(),
-        rewriteRootSelector,
+        // rewriteRootSelector,
       ],
     },
   },

@@ -199,6 +199,8 @@
     "@types/yargs": "^17.0.33",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "autoprefixer": "^10.4.24",
     "picomatch": "catalog:externals",
     "birpc": "catalog:vite",

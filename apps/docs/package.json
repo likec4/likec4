@@ -31,6 +31,7 @@
     "astro": "catalog:astro",
     "astro-og-canvas": "catalog:astro",
     "canvaskit-wasm": "0.40.0",
+    "@likec4/react": "workspace:*",
     "likec4": "workspace:*",
     "react": "catalog:react",
     "react-dom": "catalog:react",
