@@ -896,9 +896,6 @@ importers:
       json5:
         specifier: catalog:utils
         version: 2.2.3
-      pathe:
-        specifier: catalog:utils
-        version: 2.0.3
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
