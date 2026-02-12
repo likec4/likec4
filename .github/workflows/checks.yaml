@@ -10,9 +10,10 @@ env:
   DO_NOT_TRACK: "1"
 
 jobs:
-  check-types:
-    name: ʦ typescript
-    timeout-minutes: 5
+  # Single job running the same pipeline as local `pnpm validate` (PR green check)
+  check-validate:
+    name: ✅ validate
+    timeout-minutes: 15
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
@@ -20,34 +21,10 @@ jobs:
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: ʦ typecheck
-        run: pnpm ci:typecheck
-
-      - name: 🔬 type tests
-        working-directory: packages/core
-        run: pnpm test --typecheck
-
-      # TODO: Here it says to run lint after typecheck
-      # https://oxc.rs/docs/guide/usage/linter/type-aware.html#monorepos-and-build-outputs
-      - name: 🧹 lint
-        run: pnpm ci:lint
-
-  check-build:
-    name: 🛠️ build
-    timeout-minutes: 5
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: ⚙️ build
-        run: pnpm ci:build
-
-      - name: ⚙️ lint:package
-        run: |
-          pnpm lint:package
+      - name: ✅ validate
+        env:
+          NODE_ENV: test
+        run: pnpm validate
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6
@@ -103,9 +80,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
     needs:
-      - check-build
-      - check-types
-      - check-tests
+      - check-validate
     steps:
       - uses: actions/checkout@v6
 
@@ -125,9 +100,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
     needs:
-      - check-build
-      - check-types
-      - check-tests
+      - check-validate
     steps:
       - uses: actions/checkout@v6
 
@@ -147,9 +120,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-24.04-arm
     needs:
-      - check-build
-      - check-types
-      - check-tests
+      - check-validate
     steps:
       - uses: actions/checkout@v6
 
@@ -214,9 +185,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-24.04-arm
     needs:
-      - check-build
-      - check-types
-      - check-tests
+      - check-validate
     steps:
       - uses: actions/checkout@v6
 
@@ -264,10 +233,8 @@ jobs:
     name: 🚦 quality gate
     runs-on: ubuntu-24.04-arm
     needs:
-      - check-types
-      - check-build
+      - check-validate
       - check-on-windows
-      - check-tests
       - check-docs-astro
       - check-playground
       - check-e2e-tests
