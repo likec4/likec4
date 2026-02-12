@@ -7,7 +7,7 @@ import { expect, test } from '@playwright/test'
  * Starts the playground on port 5174.
  */
 test.describe('DrawIO in Playground', () => {
-  test('context menu shows Import from DrawIO and Export to DrawIO', async ({ page }) => {
+  test('context menu shows DrawIO Export to DrawIO and Export all', async ({ page }) => {
     test.setTimeout(35000)
     await page.goto('/w/tutorial/')
     await page.waitForURL(/\/w\/tutorial/)
@@ -19,7 +19,7 @@ test.describe('DrawIO in Playground', () => {
     const menu = page.getByRole('menu').or(page.locator('.mantine-Menu-dropdown'))
     await expect(menu).toBeVisible({ timeout: 5000 })
     await expect(page.getByText('DrawIO', { exact: false })).toBeVisible()
-    await expect(page.getByText('Import from DrawIO', { exact: false })).toBeVisible()
     await expect(page.getByText('Export to DrawIO', { exact: false })).toBeVisible()
+    await expect(page.getByText('Export all', { exact: false })).toBeVisible()
   })
 })

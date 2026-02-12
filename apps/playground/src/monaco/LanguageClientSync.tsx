@@ -1,5 +1,5 @@
 import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
-import { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT } from '$components/drawio/drawio-events'
+import { DRAWIO_EXPORT_EVENT } from '$components/drawio/drawio-events'
 import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
 import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
@@ -290,15 +290,6 @@ export function LanguageClientSync({
     const editor = wrapper.getEditor()
     if (!editor) return
     const disposables: IDisposable[] = [
-      editor.addAction({
-        id: 'likec4.drawio.import',
-        label: 'Import from DrawIO…',
-        contextMenuGroupId: '9_cutcopypaste',
-        contextMenuOrder: 100,
-        run: () => {
-          window.dispatchEvent(new CustomEvent(DRAWIO_IMPORT_EVENT))
-        },
-      }),
       editor.addAction({
         id: 'likec4.drawio.export',
         label: 'Export to DrawIO',

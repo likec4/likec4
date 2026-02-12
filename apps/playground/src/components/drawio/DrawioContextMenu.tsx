@@ -29,23 +29,19 @@ export function DrawioContextMenu({
   const actions = useDrawioContextMenuActions({
     diagram,
     likec4model,
-    onAddFile: (filename, content) => {
-      playground.actor.send({ type: 'workspace.addFile', filename, content })
-    },
     ...(getSourceContent !== undefined && { getSourceContent }),
   })
 
   return (
     <>
       <DrawioContextMenuDropdown
-        fileInputRef={actions.fileInputRef}
         menuPosition={actions.menuPosition}
         opened={actions.opened}
         onClose={actions.close}
-        onImport={actions.handleImport}
-        onImportFile={actions.handleImportFile}
         onExport={actions.handleExport}
+        onExportAllViews={actions.handleExportAllViews}
         canExport={actions.canExport}
+        canExportAllViews={actions.canExportAllViews}
       />
       {children(actions.openMenu)}
     </>

@@ -5,13 +5,10 @@ import {
   generateDrawio,
   generateDrawioMulti,
   parseDrawioRoundtripComments,
-  parseDrawioToLikeC4,
 } from '@likec4/generators'
 import type { GenerateDrawioOptions } from '@likec4/generators'
 import { useDisclosure } from '@mantine/hooks'
-import { useCallback, useMemo, useRef, useState } from 'react'
-
-const DRAWIO_ACCEPT = '.drawio,.drawio.xml,application/x-drawio'
+import { useCallback, useMemo, useState } from 'react'
 
 export type DiagramStateLike = {
   state: string
@@ -22,7 +19,6 @@ export type UseDrawioContextMenuActionsParams = {
   diagram: DiagramView | null
   likec4model: LikeC4Model | null
   viewStates?: Record<string, DiagramStateLike>
-  onAddFile: (filename: string, content: string) => void
   /** Optional: .c4 source content to parse round-trip comment blocks for re-export (layout, strokes, waypoints). */
   getSourceContent?: () => string | undefined
   /** Optional: fetch full layouted model from LSP so "Export all views" includes every view as a tab. */
@@ -35,7 +31,6 @@ export function useDrawioContextMenuActions({
   diagram,
   likec4model,
   viewStates = {},
-  onAddFile,
   getSourceContent,
   getLayoutedModel,
   layoutViews,
@@ -58,40 +53,12 @@ export function useDrawioContextMenuActions({
   }, [likec4model, viewStates])
   const [opened, { open, close }] = useDisclosure(false)
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const openMenu = useCallback((event: React.MouseEvent | MouseEvent) => {
     event.preventDefault()
     setMenuPosition({ x: event.clientX, y: event.clientY })
     open()
   }, [open])
-
-  const handleImport = useCallback(() => {
-    close()
-    fileInputRef.current?.click()
-  }, [close])
-
-  const handleImportFile = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (!file) return
-      e.target.value = ''
-      const reader = new FileReader()
-      reader.onload = () => {
-        const xml = reader.result as string
-        try {
-          const likec4Source = parseDrawioToLikeC4(xml)
-          const base = file.name.replace(/\.drawio(\.xml)?$/i, '')
-          const filename = `${base}.c4`
-          onAddFile(filename, likec4Source)
-        } catch (err) {
-          console.error('DrawIO import failed', err)
-        }
-      }
-      reader.readAsText(file, 'utf-8')
-    },
-    [onAddFile],
-  )
 
   const handleExport = useCallback(async () => {
     close()
@@ -273,11 +240,8 @@ export function useDrawioContextMenuActions({
 
   return {
     openMenu,
-    handleImport,
     handleExport,
     handleExportAllViews,
-    handleImportFile,
-    fileInputRef,
     menuPosition,
     opened,
     close,
@@ -285,5 +249,3 @@ export function useDrawioContextMenuActions({
     canExportAllViews: allViewModelsFromState.length > 0 || (!!getLayoutedModel && !!likec4model),
   }
 }
-
-export { DRAWIO_ACCEPT }

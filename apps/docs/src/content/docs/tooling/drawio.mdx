@@ -1,6 +1,6 @@
 ---
 title: Draw.io integration
-description: Export LikeC4 views to Draw.io and import Draw.io diagrams to LikeC4. Mapping, limitations, and multi-diagram support.
+description: Export LikeC4 views to Draw.io (.drawio). Mapping, limitations, and multi-diagram support.
 head:
   - tag: title
     content: Draw.io integration
@@ -12,14 +12,11 @@ tableOfContents:
   maxHeadingLevel: 4
 ---
 
-LikeC4 can **export** views to [Draw.io](https://draw.io) (`.drawio`) and **import** Draw.io files into LikeC4 source (`.c4`). This allows editing diagrams in Draw.io, reusing them in tools that support the format, and round-tripping between LikeC4 and Draw.io.
+LikeC4 can **export** views to [Draw.io](https://draw.io) (`.drawio`) so you can edit diagrams in Draw.io or reuse them in tools that support the format.
 
-Use the CLI:
+**CLI:** `likec4 export drawio` — see [CLI — Export to DrawIO](/tooling/cli/#export-to-drawio).
 
-- **Export:** `likec4 export drawio` — see [CLI — Export to DrawIO](/tooling/cli/#export-to-drawio)
-- **Import:** `likec4 import drawio <file>` — see [CLI — Import from DrawIO](/tooling/cli/#import-from-drawio)
-
-This page describes what is mapped in each direction, limitations, and multi-diagram behavior.
+This page describes what is mapped on export, limitations, and multi-diagram behavior.
 
 ## Export (LikeC4 → Draw.io)
 
@@ -61,56 +58,9 @@ The generator accepts optional **options** for round-trip or tooling: `layoutOve
 - Layout drifts / fine position tweaks — only final node position is written (or the provided `layoutOverride`).
 - Theme color names — stored as hex in Draw.io; `likec4ColorName` keeps the name for round-trip.
 
-## Import (Draw.io → LikeC4)
-
-A Draw.io file is converted to a single LikeC4 source file (model + views). Elements and relationships are inferred from vertices and edges.
-
-> **Note:** Import round-trip (color mapping, source mapping, elements as containers, containers as views, and all export mappings in reverse) is **implemented but not yet fully tested or approved**. The automated tests cover basic cases; full validation and refinement of the import path are pending.
-
-### Mapped to LikeC4
-
-| Draw.io | LikeC4 |
-|---------|--------|
-| Diagram (tab) | View; diagram `name`/`id` → view id; root cell `likec4ViewTitle`/`likec4ViewDescription` → view title/description |
-| Vertex: value, parent | Element title (HTML stripped), hierarchy (FQN) |
-| Vertex: style fillColor | Element `style { color }`; hex → custom color names in specification |
-| Vertex: likec4* style keys | Element: description, technology, notes, tags, navigateTo, icon, summary, links, notation, border, opacity, shape, size, padding, textSize, iconPosition |
-| Vertex: likec4ColorName | Specification color name; element uses named color |
-| Vertex: style `link` (Draw.io native) | Element `link 'url'` when no likec4Links |
-| Edge: source, target, value | Relationship between element FQNs; label as relationship title |
-| Edge: likec4* style keys | Relationship: description, technology, notes, navigateTo, notation, links, kind, metadata |
-| Edge: likec4Metadata | Relationship `metadata { key value; … }` block |
-| Edge: endArrow, startArrow, dashed, dashPattern | Relationship `style { head, tail, line }` |
-| Edge: strokeColor | Specification color + relationship `style { color }` |
-
-### Comment blocks for round-trip (import)
-
-On import, the following are emitted as **comment blocks** at the end of the file so that tooling or a future round-trip can use them. They are not part of the LikeC4 model syntax:
-
-- **Layout** — `// <likec4.layout.drawio>` … `// </likec4.layout.drawio>` with a JSON map of view id → node FQN → `{ x, y, width, height }`.
-- **Vertex stroke color** — `// <likec4.strokeColor.vertices>` with lines `// FQN=#hex` (LikeC4 has no element strokeColor in the DSL).
-- **Vertex stroke width** — `// <likec4.strokeWidth.vertices>` with lines `// FQN=value` (numeric strokeWidth for round-trip).
-- **Custom mxUserObject data** — `// <likec4.customData>` with lines `// FQN {"key":"value",…}` or `// src|tgt {...}` for edges. Any `<data key="...">` not mapped to a LikeC4 field is preserved here for round-trip.
-- **View notation** — `// likec4.view.notation viewId '...'` for each diagram that has root style `likec4ViewNotation` (single or multi).
-- **Edge waypoints** — `// <likec4.edge.waypoints>` with lines `// src|tgt [ [x,y], … ]` (JSON array of points from edge mxGeometry). For tooling or round-trip; not part of the LikeC4 DSL.
-
-### Not preserved on import
-
-- **Layout in model** — Node position/size are not in the `.c4` model; they are only in the layout comment block above. Layout is recalculated or manual in LikeC4.
-- **Font style** — fontSize, fontColor, fontStyle, fontFamily are not mapped.
-- **Layers** — All cells are merged into one model.
-- **Non-vertex/non-edge cells** — Ignored.
-- **Images** — Not supported in the parser.
-
 ## Multi-diagram (multiple tabs)
 
-When **importing**, if the Draw.io file has **multiple diagrams** (tabs):
-
-- All diagrams are merged into **one model** (one set of elements and relationships).
-- **One view per diagram** is generated; each view includes the elements that appear in that tab (via `include` with FQNs).
-- Diagram `name`/`id` becomes the view id (first diagram without a name becomes view `index`).
-
-When **exporting**, each LikeC4 view is written to a **separate** `.drawio` file (one file per view). With `--all-in-one`, all views are written as tabs in a single file; combined with `--roundtrip`, layout, stroke colors/widths, and edge waypoints from the round-trip comment blocks are applied per view in that file.
+When **exporting**, each LikeC4 view is written to a **separate** `.drawio` file (one file per view). With `--all-in-one`, all views are written as tabs in a single file; combined with `--roundtrip`, layout, stroke colors/widths, and edge waypoints from the round-trip comment blocks in `.c4` source are applied per view in that file.
 
 ## Troubleshooting
 
@@ -124,16 +74,6 @@ When **exporting**, each LikeC4 view is written to a **separate** `.drawio` file
 
 - Each view exports **exactly what you see** in that view. A top-level view (e.g. `view index { include * }`) typically shows only **top-level elements** (e.g. Customer and Our SaaS). Nested elements (e.g. Frontend, Backend inside the system) appear in the **element view** of that system (e.g. `view saas of saas { include * }`). To get all elements in Draw.io in one file, use **Export all views** (CLI: `--all-in-one`) and open the tab for the nested view, or switch to that view in the Playground before exporting.
 
-## Round-trip summary
+## Re-export using comment blocks
 
-For a **round-trip** (LikeC4 → Draw.io → LikeC4), the following survive well:
-
-- Elements and relationships with title, description, technology, notes, tags, navigateTo, icon, summary, links, notation
-- Element border, opacity, shape, color (as named color when using likec4ColorName); vertex stroke color in comment block
-- Relationship kind, notation, links, metadata, head/tail, line style, color
-- Multi-diagram: multiple tabs become multiple views on import
-- Layout, vertex stroke colors, customData, view notation, and edge waypoints in comment blocks (for tooling / round-trip)
-
-**Re-export using comment blocks:** When you export to Draw.io from the **Playground**, if the current workspace source contains the Draw.io round-trip comment blocks (e.g. after an import), the exporter automatically applies layout, vertex stroke color/width, and edge waypoints from those comments so the generated `.drawio` file matches the previously imported diagram. The generators API exposes `parseDrawioRoundtripComments(source)` and `GenerateDrawioOptions` (including `edgeWaypoints`) for custom tooling.
-
-Font options are not stored in the `.c4` source. Edge waypoints are emitted only in comment blocks, not in the model.
+When you export to Draw.io from the **Playground**, if the current workspace source contains Draw.io round-trip comment blocks (e.g. `// <likec4.layout.drawio>` … `// </likec4.layout.drawio>`), the exporter can apply layout, vertex stroke color/width, and edge waypoints from those comments so the generated `.drawio` file matches a previously edited diagram. The CLI supports `--roundtrip` for the same behavior. The generators API exposes `parseDrawioRoundtripComments(source)` and `GenerateDrawioOptions` (including `edgeWaypoints`) for custom tooling.

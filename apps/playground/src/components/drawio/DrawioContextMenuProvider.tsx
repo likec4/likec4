@@ -9,11 +9,11 @@ import {
   useContext,
   useEffect,
 } from 'react'
-import { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT } from './drawio-events'
+import { DRAWIO_EXPORT_EVENT } from './drawio-events'
 import { DrawioContextMenuDropdown } from './DrawioContextMenuDropdown'
 import { useDrawioContextMenuActions } from './useDrawioContextMenuActions'
 
-export { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT }
+export { DRAWIO_EXPORT_EVENT }
 
 /** API to fetch layouted model / per-view diagrams from LSP (used for "Export all views"). */
 export type LayoutedModelApi = {
@@ -63,13 +63,6 @@ export function DrawioContextMenuProvider({
     }
   })
 
-  const onAddFile = useCallback(
-    (filename: string, content: string) => {
-      playground.actor.send({ type: 'workspace.addFile', filename, content })
-    },
-    [playground],
-  )
-
   const getSourceContent = useCallback(() => {
     const contents = Object.values(files).filter(Boolean)
     return contents.length > 0 ? contents.join('\n\n') : undefined
@@ -79,7 +72,6 @@ export function DrawioContextMenuProvider({
     diagram,
     likec4model,
     viewStates,
-    onAddFile,
     getSourceContent,
     ...(layoutedModelApi && {
       getLayoutedModel: layoutedModelApi.getLayoutedModel,
@@ -88,27 +80,21 @@ export function DrawioContextMenuProvider({
   })
 
   useEffect(() => {
-    const onImport = () => actions.handleImport()
     const onExport = () => actions.handleExport()
-    window.addEventListener(DRAWIO_IMPORT_EVENT, onImport)
     window.addEventListener(DRAWIO_EXPORT_EVENT, onExport)
     return () => {
-      window.removeEventListener(DRAWIO_IMPORT_EVENT, onImport)
       window.removeEventListener(DRAWIO_EXPORT_EVENT, onExport)
     }
-  }, [actions.handleImport, actions.handleExport])
+  }, [actions.handleExport])
 
   const api: DrawioContextMenuApi = { openMenu: actions.openMenu }
 
   return (
     <DrawioContextMenuContext.Provider value={api}>
       <DrawioContextMenuDropdown
-        fileInputRef={actions.fileInputRef}
         menuPosition={actions.menuPosition}
         opened={actions.opened}
         onClose={actions.close}
-        onImport={actions.handleImport}
-        onImportFile={actions.handleImportFile}
         onExport={actions.handleExport}
         onExportAllViews={actions.handleExportAllViews}
         canExport={actions.canExport}

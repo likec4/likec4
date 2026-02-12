@@ -14,7 +14,6 @@ import buildCmd from './build'
 import checkUpdateCmd, { notifyAvailableUpdate } from './check-update'
 import codegenCmd from './codegen'
 import exportCmd from './export'
-import importCmd from './import'
 import mcpCmd from './mcp'
 import previewCmd from './preview'
 import serveCmd from './serve'
@@ -48,7 +47,6 @@ async function main() {
     buildCmd,
     codegenCmd,
     exportCmd,
-    importCmd,
     previewCmd,
     validateCmd,
     mcpCmd,

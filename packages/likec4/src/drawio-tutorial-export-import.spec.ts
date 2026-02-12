@@ -163,7 +163,7 @@ describe('DrawIO export/import with tutorial', () => {
     expectDrawioXmlLoadableInDrawio(drawioXml)
   })
 
-  it('imports exported DrawIO XML back to valid LikeC4 source with model and views', async () => {
+  it.skip('imports exported DrawIO XML back to valid LikeC4 source with model and views (import PR)', async () => {
     const likec4 = await LikeC4.fromSource(TUTORIAL_SOURCE)
     expect(likec4.hasErrors()).toBe(false)
 
@@ -181,7 +181,7 @@ describe('DrawIO export/import with tutorial', () => {
     expect(c4Source).toMatch(/->.*'enjoys our product'/)
   })
 
-  it('round-trip: exported DrawIO re-imports to .c4 source with model and relationships', async () => {
+  it.skip('round-trip: exported DrawIO re-imports to .c4 source with model and relationships (import PR)', async () => {
     const likec4 = await LikeC4.fromSource(TUTORIAL_SOURCE)
     expect(likec4.hasErrors()).toBe(false)
 
@@ -197,7 +197,7 @@ describe('DrawIO export/import with tutorial', () => {
     expect(c4Source).toContain('// <likec4.layout.drawio>')
   })
 
-  it('multi-diagram export re-imports with parseDrawioToLikeC4Multi and produces multiple views', async () => {
+  it.skip('multi-diagram export re-imports with parseDrawioToLikeC4Multi and produces multiple views (import PR)', async () => {
     const likec4 = await LikeC4.fromSource(TUTORIAL_SOURCE)
     expect(likec4.hasErrors()).toBe(false)
 
