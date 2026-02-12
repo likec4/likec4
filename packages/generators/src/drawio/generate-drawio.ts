@@ -1218,3 +1218,21 @@ export function buildDrawioExportOptionsFromSource(
   }
   return options
 }
+
+/**
+ * Build export options per view id from .c4 source (DRY for CLI and Playground).
+ * @param viewIds - View ids to build options for
+ * @param sourceContent - Full .c4 source (e.g. joined workspace files)
+ * @param overrides - Optional overrides (e.g. compressed: false)
+ */
+export function buildDrawioExportOptionsForViews(
+  viewIds: string[],
+  sourceContent: string | undefined,
+  overrides?: Partial<GenerateDrawioOptions>,
+): Record<string, GenerateDrawioOptions> {
+  const optionsByViewId: Record<string, GenerateDrawioOptions> = {}
+  for (const viewId of viewIds) {
+    optionsByViewId[viewId] = buildDrawioExportOptionsFromSource(viewId, sourceContent, overrides)
+  }
+  return optionsByViewId
+}

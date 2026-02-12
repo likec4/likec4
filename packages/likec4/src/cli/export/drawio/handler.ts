@@ -2,7 +2,7 @@ import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, ProjectId } from '@likec4/core/types'
 import type { GenerateDrawioOptions } from '@likec4/generators'
 import {
-  buildDrawioExportOptionsFromSource,
+  buildDrawioExportOptionsForViews,
   DEFAULT_DRAWIO_ALL_FILENAME,
   generateDrawio,
   generateDrawioMulti,
@@ -20,17 +20,54 @@ import { path, project, useDotBin } from '../../options'
 /** File extension for DrawIO files (single source of truth in CLI). */
 const DRAWIO_FILE_EXT = '.drawio'
 
-async function readWorkspaceSourceContent(workspacePath: string): Promise<string> {
+/** Directories to skip when reading workspace for round-trip (single source of truth). */
+const ROUNDTRIP_IGNORED_DIRS = new Set(['node_modules', '.git'])
+
+/** Predicate: file is .c4 or .likec4 source (intent-revealing name). */
+function isSourceFile(name: string): boolean {
+  return name.endsWith('.c4') || name.endsWith('.likec4')
+}
+
+/** User-facing error messages (single source of truth for CLI contract). */
+const ERR_EMPTY_MODEL = 'No project or empty model'
+const ERR_EXPORT_FAILED = 'Failed to export DrawIO'
+const ERR_NO_VIEWS_EXPORTED = 'No views could be exported'
+
+/** Normalize thrown value to Error for logging and rethrowing (single responsibility). */
+function toError(err: unknown): Error {
+  return err instanceof Error ? err : new Error(loggable(err))
+}
+
+/** Log error and rethrow so CLI exits with code 1 (align with PNG/JSON export). */
+function logAndRethrow(logger: ViteLogger, message: string, err: unknown): never {
+  const error = toError(err)
+  logger.error(message, { error })
+  throw error
+}
+
+/**
+ * Read all .c4/.likec4 source in workspace for round-trip. Best-effort: readdir/readFile
+ * failures are logged at debug and skipped; partial content may be returned.
+ */
+async function readWorkspaceSourceContent(
+  workspacePath: string,
+  logger?: ViteLogger,
+): Promise<string> {
   const chunks: string[] = []
-  const ext = (f: string) => f.endsWith('.c4') || f.endsWith('.likec4')
   async function walk(dir: string): Promise<void> {
-    const entries = await readdir(dir, { withFileTypes: true }).catch(() => [])
+    const entries = await readdir(dir, { withFileTypes: true }).catch(err => {
+      logger?.debug?.('Roundtrip: readdir failed', dir, err)
+      return []
+    })
     for (const e of entries) {
       const full = join(dir, e.name)
       if (e.isDirectory()) {
-        if (e.name !== 'node_modules' && e.name !== '.git') await walk(full)
-      } else if (e.isFile() && ext(e.name)) {
-        const content = await readFile(full, 'utf-8').catch(() => '')
+        if (!ROUNDTRIP_IGNORED_DIRS.has(e.name)) await walk(full)
+      } else if (e.isFile() && isSourceFile(e.name)) {
+        const content = await readFile(full, 'utf-8').catch(err => {
+          logger?.debug?.('Roundtrip: readFile failed', full, err)
+          return ''
+        })
         if (content) chunks.push(content)
       }
     }
@@ -43,37 +80,37 @@ async function readWorkspaceSourceContent(workspacePath: string): Promise<string
 async function getSourceContentIfRoundtrip(
   workspacePath: string,
   roundtrip: boolean,
+  logger?: ViteLogger,
 ): Promise<string | undefined> {
   if (!roundtrip) return undefined
-  return readWorkspaceSourceContent(resolve(workspacePath))
+  return readWorkspaceSourceContent(resolve(workspacePath), logger)
 }
 
-/** Build per-view export options from optional source (DRY for all-in-one and per-view). */
+/** Build per-view export options from optional source (delegates to shared generator). */
 function buildOptionsByViewId(
   viewmodels: LikeC4ViewModel<aux.Unknown>[],
   sourceContent: string | undefined,
   uncompressed: boolean,
 ): Record<string, GenerateDrawioOptions> {
-  const optionsByViewId: Record<string, GenerateDrawioOptions> = {}
+  const viewIds = viewmodels.map(vm => vm.$view.id as string)
   const overrides = uncompressed ? { compressed: false } : undefined
-  for (const vm of viewmodels) {
-    const viewId = vm.$view.id as string
-    optionsByViewId[viewId] = buildDrawioExportOptionsFromSource(viewId, sourceContent, overrides)
-  }
-  return optionsByViewId
+  return buildDrawioExportOptionsForViews(viewIds, sourceContent, overrides)
 }
 
-/** Export all views as one .drawio file (one tab per view). */
-async function exportDrawioAllInOne(params: {
+/** Shared parameters for all-in-one and per-view export (single source of truth). */
+interface ExportDrawioParams {
   viewmodels: LikeC4ViewModel<aux.Unknown>[]
   outdir: string
   workspacePath: string
   roundtrip: boolean
   uncompressed: boolean
   logger: ViteLogger
-}): Promise<void> {
+}
+
+/** Export all views as one .drawio file (one tab per view). */
+async function exportDrawioAllInOne(params: ExportDrawioParams): Promise<void> {
   const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, logger } = params
-  const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip)
+  const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip, logger)
   const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed)
   const generated = generateDrawioMulti(viewmodels, optionsByViewId)
   const outfile = resolve(outdir, DEFAULT_DRAWIO_ALL_FILENAME)
@@ -82,16 +119,9 @@ async function exportDrawioAllInOne(params: {
 }
 
 /** Export each view to a separate .drawio file. */
-async function exportDrawioPerView(params: {
-  viewmodels: LikeC4ViewModel<aux.Unknown>[]
-  outdir: string
-  workspacePath: string
-  roundtrip: boolean
-  uncompressed: boolean
-  logger: ViteLogger
-}): Promise<{ succeeded: number }> {
+async function exportDrawioPerView(params: ExportDrawioParams): Promise<{ succeeded: number }> {
   const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, logger } = params
-  const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip)
+  const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip, logger)
   const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed)
   let succeeded = 0
   for (const vm of viewmodels) {
@@ -103,14 +133,13 @@ async function exportDrawioPerView(params: {
       logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
       succeeded++
     } catch (err) {
-      logger.error(`Failed to export view ${viewId}`, {
-        error: err instanceof Error ? err : new Error(loggable(err)),
-      })
+      logger.error(`Failed to export view ${viewId}`, { error: toError(err) })
     }
   }
   return { succeeded }
 }
 
+/** CLI args for export drawio command (single type for handler and runExportDrawio). */
 type DrawioExportArgs = {
   path: string
   outdir: string
@@ -135,8 +164,8 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
     : undefined
   const model = await likec4.layoutedModel(projectId)
   if (model === LikeC4Model.EMPTY) {
-    logger.error('No project or empty model')
-    throw new Error('No project or empty model')
+    logger.error(ERR_EMPTY_MODEL)
+    throw new Error(ERR_EMPTY_MODEL)
   }
 
   await mkdir(args.outdir, { recursive: true })
@@ -155,12 +184,14 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
     try {
       await exportDrawioAllInOne(exportParams)
     } catch (err) {
-      logger.error('Failed to export DrawIO', {
-        error: err instanceof Error ? err : new Error(loggable(err)),
-      })
+      logAndRethrow(logger, ERR_EXPORT_FAILED, err)
     }
   } else {
     const { succeeded } = await exportDrawioPerView(exportParams)
+    if (succeeded === 0 && viewmodels.length > 0) {
+      logger.error(ERR_NO_VIEWS_EXPORTED)
+      throw new Error(ERR_NO_VIEWS_EXPORTED)
+    }
     if (succeeded > 0) logger.info(`${k.dim('total')} ${succeeded} DrawIO file(s)`)
   }
 

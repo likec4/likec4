@@ -2,6 +2,7 @@ import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import {
+  buildDrawioExportOptionsForViews,
   buildDrawioExportOptionsFromSource,
   DEFAULT_DRAWIO_ALL_FILENAME,
   generateDrawio,
@@ -38,6 +39,19 @@ function toViewModel(view: DiagramView, styles: LikeC4Model['$styles'] | null): 
   }
 }
 
+/** Callback when export fails; single type for params and report helper (DRY). */
+export type OnDrawioExportError = (message: string, err: unknown) => void
+
+/** Single place to report export errors: callback when provided, else console (no silent failure). */
+function reportExportError(
+  message: string,
+  err: unknown,
+  onExportError?: OnDrawioExportError,
+): void {
+  if (onExportError) onExportError(message, err)
+  else console.error(message, err)
+}
+
 export type DiagramStateLike = {
   state: string
   diagram?: DiagramView | null
@@ -53,17 +67,32 @@ export type UseDrawioContextMenuActionsParams = {
   getLayoutedModel?: () => Promise<LayoutedLikeC4ModelData | null>
   /** Optional: layout each view by id and return diagrams (fallback when getLayoutedModel returns fewer views). */
   layoutViews?: (viewIds: string[]) => Promise<Record<string, DiagramView>>
+  /** Optional: called when export fails so UI can show toast/snackbar; otherwise errors are only logged to console. */
+  onExportError?: OnDrawioExportError
+}
+
+/** Options for collectViewModelsForExportAll (single object keeps signature stable). */
+interface CollectViewModelsOptions {
+  viewIdsInModel: string[]
+  allViewModelsFromState: ViewModelLike[]
+  likec4model: LikeC4Model | null
+  viewStates: Record<string, DiagramStateLike>
+  getLayoutedModel: (() => Promise<LayoutedLikeC4ModelData | null>) | undefined
+  layoutViews: ((viewIds: string[]) => Promise<Record<string, DiagramView>>) | undefined
+  onExportError?: OnDrawioExportError
 }
 
 /** Gather all view models needed for "Export all views" (single responsibility; testable). */
-async function collectViewModelsForExportAll(
-  viewIdsInModel: string[],
-  allViewModelsFromState: ViewModelLike[],
-  likec4model: LikeC4Model | null,
-  viewStates: Record<string, DiagramStateLike>,
-  getLayoutedModel: (() => Promise<LayoutedLikeC4ModelData | null>) | undefined,
-  layoutViews: ((viewIds: string[]) => Promise<Record<string, DiagramView>>) | undefined,
-): Promise<ViewModelLike[]> {
+async function collectViewModelsForExportAll(options: CollectViewModelsOptions): Promise<ViewModelLike[]> {
+  const {
+    viewIdsInModel,
+    allViewModelsFromState,
+    likec4model,
+    viewStates,
+    getLayoutedModel,
+    layoutViews,
+    onExportError,
+  } = options
   if (!likec4model || viewIdsInModel.length === 0) return []
   const styles = likec4model.$styles
   const byId = new Map<string, ViewModelLike>()
@@ -77,7 +106,7 @@ async function collectViewModelsForExportAll(
         }
       }
     } catch (e) {
-      console.error('DrawIO export: failed to fetch layouted model', e)
+      reportExportError('DrawIO export: failed to fetch layouted model', e, onExportError)
     }
   }
   for (const viewId of viewIdsInModel) {
@@ -97,7 +126,7 @@ async function collectViewModelsForExportAll(
         if (diagram) byId.set(viewId, toViewModel(diagram, styles ?? null))
       }
     } catch (e) {
-      console.error('DrawIO export: layoutViews failed', e)
+      reportExportError('DrawIO export: layoutViews failed', e, onExportError)
     }
   }
   for (const viewId of viewIdsInModel) {
@@ -120,6 +149,7 @@ export function useDrawioContextMenuActions({
   getSourceContent,
   getLayoutedModel,
   layoutViews,
+  onExportError,
 }: UseDrawioContextMenuActionsParams) {
   const allViewModelsFromState = useMemo(() => {
     if (!likec4model) return []
@@ -160,38 +190,46 @@ export function useDrawioContextMenuActions({
       )
       downloadDrawioBlob(xml, `${diagram.id}.drawio`)
     } catch (err) {
-      console.error('DrawIO export failed', err)
+      reportExportError('DrawIO export failed', err, onExportError)
     }
-  }, [close, diagram, likec4model, getSourceContent, layoutViews])
+  }, [close, diagram, likec4model, getSourceContent, layoutViews, onExportError])
 
   const handleExportAllViews = useCallback(async () => {
     close()
     if (!likec4model) return
     const viewIdsInModel = [...likec4model.views()].map(vm => vm.$view.id)
-    const viewModels = await collectViewModelsForExportAll(
+    const viewModels = await collectViewModelsForExportAll({
       viewIdsInModel,
       allViewModelsFromState,
       likec4model,
       viewStates,
       getLayoutedModel,
       layoutViews,
-    )
+      onExportError,
+    })
     if (viewModels.length === 0) return
     try {
       const sourceContent = getSourceContent?.()
-      const optionsByViewId: Record<string, GenerateDrawioOptions> = {}
-      for (const vm of viewModels) {
-        optionsByViewId[vm.$view.id] = buildDrawioExportOptionsFromSource(vm.$view.id, sourceContent)
-      }
+      const viewIds = viewModels.map(vm => vm.$view.id)
+      const optionsByViewId = buildDrawioExportOptionsForViews(viewIds, sourceContent)
       const xml = generateDrawioMulti(
         viewModels as Parameters<typeof generateDrawioMulti>[0],
         optionsByViewId,
       )
       downloadDrawioBlob(xml, DEFAULT_DRAWIO_ALL_FILENAME)
     } catch (err) {
-      console.error('DrawIO export all views failed', err)
+      reportExportError('DrawIO export all views failed', err, onExportError)
     }
-  }, [close, allViewModelsFromState, getSourceContent, getLayoutedModel, layoutViews, likec4model, viewStates])
+  }, [
+    close,
+    allViewModelsFromState,
+    getSourceContent,
+    getLayoutedModel,
+    layoutViews,
+    likec4model,
+    viewStates,
+    onExportError,
+  ])
 
   return {
     openMenu,

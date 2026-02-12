@@ -16,6 +16,11 @@ import {
 } from './constants'
 import { decodeXmlEntities } from './xml-utils'
 
+/** Normalize unknown to a string for error messages (Error → message; else String). */
+export function toErrorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err)
+}
+
 export interface DrawioCell {
   id: string
   value?: string
@@ -1170,7 +1175,6 @@ function emitRoundtripCommentsMulti(
 /** Decompress draw.io diagram content: base64 → inflateRaw → decodeURIComponent. */
 function decompressDrawioDiagram(base64Content: string): string {
   const trimmed = base64Content.trim()
-  const toMsg = (err: unknown) => (err instanceof Error ? err.message : String(err))
   let bytes: Uint8Array
   try {
     if (typeof Buffer !== 'undefined') {
@@ -1181,18 +1185,18 @@ function decompressDrawioDiagram(base64Content: string): string {
       for (let i = 0; i < binary.length; i++) bytes[i] = (binary.codePointAt(i) ?? 0) & 0xff
     }
   } catch (err) {
-    throw new Error(`DrawIO diagram decompression failed (base64 decode): ${toMsg(err)}`)
+    throw new Error(`DrawIO diagram decompression failed (base64 decode): ${toErrorMessage(err)}`)
   }
   let inflated: string
   try {
     inflated = pako.inflateRaw(bytes, { to: 'string' })
   } catch (err) {
-    throw new Error(`DrawIO diagram decompression failed (inflate): ${toMsg(err)}`)
+    throw new Error(`DrawIO diagram decompression failed (inflate): ${toErrorMessage(err)}`)
   }
   try {
     return decodeURIComponent(inflated)
   } catch (err) {
-    throw new Error(`DrawIO diagram decompression failed (URI decode): ${toMsg(err)}`)
+    throw new Error(`DrawIO diagram decompression failed (URI decode): ${toErrorMessage(err)}`)
   }
 }
 

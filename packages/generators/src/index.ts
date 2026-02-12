@@ -1,6 +1,7 @@
 export { generateD2 } from './d2/generate-d2'
 export { DEFAULT_DRAWIO_ALL_FILENAME } from './drawio/constants'
 export {
+  buildDrawioExportOptionsForViews,
   buildDrawioExportOptionsFromSource,
   generateDrawio,
   generateDrawioMulti,

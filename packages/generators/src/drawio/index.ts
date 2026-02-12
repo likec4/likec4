@@ -1,4 +1,5 @@
 export {
+  buildDrawioExportOptionsForViews,
   buildDrawioExportOptionsFromSource,
   generateDrawio,
   generateDrawioMulti,
@@ -12,4 +13,5 @@ export {
   parseDrawioRoundtripComments,
   parseDrawioToLikeC4,
   parseDrawioToLikeC4Multi,
+  toErrorMessage,
 } from './parse-drawio'
