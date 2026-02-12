@@ -5,6 +5,7 @@ const parts = defineParts({
   root: { selector: '&' },
   outline: { selector: '& .likec4-shape-outline' },
   multipleHtml: { selector: '& .likec4-shape-multiple' },
+  componentTopLeftRect: { selector: '& .top-left-rect' },
   multipleSvg: { selector: '&:is([data-likec4-shape-multiple="true"])' },
 })
 
@@ -28,6 +29,7 @@ export const elementShapeRecipe = defineRecipe({
     },
     outline: {
       opacity: 0.8,
+      transitionBehavior: 'allow-discrete',
       visibility: {
         base: 'hidden',
         _smallZoom: 'hidden',
@@ -114,7 +116,11 @@ export const elementShapeRecipe = defineRecipe({
         root: {
           fill: 'var(--likec4-palette-fill)',
           stroke: 'var(--likec4-palette-stroke)',
-          transition: `fill 120ms linear, filter 130ms {easings.inOut}`,
+          transition: `fill 120ms {easings.in}, filter 130ms {easings.in}`,
+          transitionTimingFunction: {
+            base: 'out',
+            _whenHovered: 'in',
+          },
           transitionDelay: '0ms',
           filter: {
             base: [
@@ -140,7 +146,24 @@ export const elementShapeRecipe = defineRecipe({
             fill: 'var(--likec4-palette-stroke)',
           },
           '& [data-likec4-fill="mix-stroke"]': {
-            fill: '[color-mix(in oklab, var(--likec4-palette-stroke) 80%, var(--likec4-palette-fill))]',
+            fill: 'color-mix(in oklab, var(--likec4-palette-stroke) 80%, var(--likec4-palette-fill))',
+          },
+        },
+        componentTopLeftRect: {
+          '--mix-bg': '40%',
+          fill: 'color-mix(in oklab, var(--likec4-palette-stroke) var(--mix-bg), var(--likec4-palette-fill))',
+          transition: `all 120ms {easings.in}`,
+          transitionDelay: '0ms',
+          strokeOpacity: 0.8,
+          _whenSelected: {
+            transitionTimingFunction: 'out',
+            '--mix-bg': '60%',
+            strokeOpacity: 1,
+          },
+          _whenHovered: {
+            transitionTimingFunction: 'out',
+            '--mix-bg': '60%',
+            strokeOpacity: 1,
           },
         },
         multipleSvg: {
@@ -154,7 +177,9 @@ export const elementShapeRecipe = defineRecipe({
             base: 'translate(14px, 14px) perspective(200px) translateZ(-4px)',
             _whenHovered: 'translate(2px, 2px) perspective(200px) translateZ(-4px)',
           },
-          transition: 'fast',
+          transitionBehavior: 'allow-discrete',
+          transitionProperty: 'fill, filter, transform',
+          transitionDuration: 'faster',
           filter: 'brightness(0.5) !important',
           stroke: 'none',
           display: {
@@ -179,9 +204,22 @@ export const elementShapeRecipe = defineRecipe({
       true: {},
       false: {},
     },
+    withOutline: {
+      true: parts({
+        outline: {
+          display: 'block',
+        },
+      }),
+      false: parts({
+        outline: {
+          display: 'none',
+        },
+      }),
+    },
   },
   defaultVariants: {
     withBorder: false,
+    withOutline: false,
   },
   compoundVariants: [{
     shapetype: 'html',
@@ -200,6 +238,7 @@ export const elementShapeRecipe = defineRecipe({
   }],
   staticCss: [{
     shapetype: ['*'],
+    withOutline: ['*'],
     withBorder: ['*'],
   }],
 })

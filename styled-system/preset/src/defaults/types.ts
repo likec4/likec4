@@ -21,6 +21,7 @@ export const ElementShapes = [
   'queue',
   'bucket',
   'document',
+  'component',
 ] as const
 
 export type ElementShape = typeof ElementShapes[number]
