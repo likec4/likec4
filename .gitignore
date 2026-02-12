@@ -108,9 +108,11 @@ dist
 /.project
 /.settings/*
 
-# Local PR/review drafts (do not commit to upstream)
-.pr-description.md
-PR-2593-review.md
-COMMIT_MSG.txt
-.commit_msg_drawio_review.txt
+# Local / temporary PR and process docs (do not commit)
+.pr-description*.md
+PR-*-review.md
 PR_INSTRUCTIONS.md
+*-PR-SPLIT.md
+COMMIT_MSG.txt
+.commit_msg*.txt
+BEGINNER_*.md
