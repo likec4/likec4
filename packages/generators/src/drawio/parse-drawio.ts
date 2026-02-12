@@ -473,7 +473,12 @@ function stripTags(s: string): string {
     }
     out += s.slice(i, open)
     const close = s.indexOf('>', open)
-    i = close === -1 ? s.length : close + 1
+    if (close === -1) {
+      out += '<'
+      i = open + 1
+    } else {
+      i = close + 1
+    }
   }
   return out
 }
