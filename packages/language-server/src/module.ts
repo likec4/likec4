@@ -18,7 +18,7 @@ import type {
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
 } from './filesystem'
-import { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem'
+import { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/noop'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
   LikeC4GeneratedModule,
@@ -35,8 +35,8 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider,
 } from './lsp'
-import type { LikeC4MCPServer, LikeC4MCPServerFactory, LikeC4MCPServerModuleContext } from './mcp/index'
-import { NoMCPServer } from './mcp/index'
+import { NoMCPServer } from './mcp/noop'
+import type { LikeC4MCPServer, LikeC4MCPServerFactory, LikeC4MCPServerModuleContext } from './mcp/types'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
@@ -67,6 +67,9 @@ import {
   LikeC4WorkspaceManager,
   ProjectsManager,
 } from './workspace'
+
+export { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/noop'
+export { NoMCPServer } from './mcp/noop'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
