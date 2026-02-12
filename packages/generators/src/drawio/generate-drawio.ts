@@ -139,11 +139,14 @@ function escapeHtml(text: string): string {
     .replaceAll('"', '&quot;')
 }
 
-/** Coerce to non-empty string for style/attribute use; empty string when null/undefined/empty. DRY for navTo, iconName, etc. */
+/** Coerce to non-empty string for style/attribute use; empty string when null/undefined/empty or non-primitive. DRY for navTo, iconName, etc. */
 function toNonEmptyString(value: unknown): string {
   if (value == null) return ''
-  const str = String(value)
-  return str.trim() === '' ? '' : str
+  const t = typeof value
+  if (t === 'string') return value.trim() === '' ? '' : value
+  if (t === 'number') return String(value as number)
+  if (t === 'boolean') return String(value as boolean)
+  return ''
 }
 
 /** Container dashed style from border (KISS: single place for 3-way branch). */
