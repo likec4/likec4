@@ -12,6 +12,7 @@ const colors = Object.keys(LikeC4Styles.DEFAULT.theme.colors)
 
 const shapes = [
   'rectangle',
+  'component',
   'browser',
   'storage',
   'bucket',
