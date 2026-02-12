@@ -43,10 +43,8 @@ function uint8ArrayToBase64(bytes: Uint8Array): string {
     return Buffer.from(bytes).toString('base64')
   }
   let binary = ''
-  const chunk = 8192
-  for (let i = 0; i < bytes.length; i += chunk) {
-    const slice = bytes.subarray(i, i + chunk)
-    binary += String.fromCodePoint(...slice)
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]!)
   }
   return btoa(binary)
 }
@@ -252,7 +250,7 @@ export type GenerateDrawioOptions = {
   strokeColorByNodeId?: Record<string, string>
   /** Node id -> stroke width (e.g. from likec4.strokeWidth.vertices comment) */
   strokeWidthByNodeId?: Record<string, string>
-  /** Edge "source|target" (FQN) -> array of [x, y] waypoints (e.g. from likec4.edge.waypoints comment) */
+  /** Edge waypoints: key "source|target" or "source|target|edgeId" (FQN, optional id for parallel edges), value = [x,y][] (e.g. from likec4.edge.waypoints comment) */
   edgeWaypoints?: Record<string, number[][]>
   /** If false, embed raw mxGraphModel XML inside <diagram> (no base64/deflate). Draw.io accepts both. */
   compressed?: boolean
@@ -265,12 +263,12 @@ export type GenerateDrawioOptions = {
  *
  * @param viewmodel - Layouted LikeC4 view model (from model.view(id))
  * @param options - Optional overrides for layout/colors (round-trip from comment blocks)
- * @returns DrawIO .drawio XML string
+ * @returns Diagram name, id and content (for single or multi composition)
  */
-export function generateDrawio(
+function generateDiagramContent(
   viewmodel: LikeC4ViewModel<aux.Unknown>,
   options?: GenerateDrawioOptions,
-): string {
+): { name: string; id: string; content: string } {
   const view = viewmodel.$view
   const { nodes, edges } = view
   const layoutOverride = options?.layoutOverride
@@ -601,9 +599,9 @@ export function generateDrawio(
       const titleValue = escapeXml(title)
       const titleWidth = Math.max(60, Math.min(260, title.length * 8))
       const titleHeight = 18
-      const titleParentId = parentId
-      const titleX = x + 8
-      const titleY = y + 8
+      const titleParentId = id
+      const titleX = 8
+      const titleY = 8
       const titleStyle =
         `shape=text;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontSize=${containerTitleFontSizePx};fontStyle=1;fontColor=${containerTitleColor};fontFamily=${
           encodeURIComponent(fontFamily)
@@ -694,8 +692,9 @@ export function generateDrawio(
         '</mxUserObject>'
       : ''
 
-    /** Only round-trip waypoints; layout edge.points create too many vertices in draw.io. */
-    const rawEdgePoints = edgeWaypoints?.[`${edge.source}|${edge.target}`]
+    /** Only round-trip waypoints; layout edge.points create too many vertices in draw.io. Use composite key so parallel edges get distinct waypoints. */
+    const rawEdgePoints = edgeWaypoints?.[`${edge.source}|${edge.target}|${edge.id}`] ??
+      edgeWaypoints?.[`${edge.source}|${edge.target}`]
     /** Flatten to [x,y][] so we never emit nested <Array><Array> (draw.io rejects it). */
     const edgePoints: [number, number][] = Array.isArray(rawEdgePoints)
       ? rawEdgePoints.flatMap(normalizeEdgePoint)
@@ -769,15 +768,45 @@ export function generateDrawio(
         ${allCells}
       </root>
     </mxGraphModel>`
-  const diagramContent = useCompressed
+  const content = useCompressed
     ? compressDrawioDiagramXml(mxGraphModelXml)
     : mxGraphModelXml
+  return { name: diagramName, id: view.id, content }
+}
 
-  return `<?xml version="1.0" encoding="UTF-8"?>
+/** Wrap one or more diagram contents in mxfile XML. */
+function wrapInMxFile(diagrams: Array<{ name: string; id: string; content: string }>): string {
+  if (diagrams.length === 0) {
+    return `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
-  <diagram name="${escapeXml(diagramName)}" id="likec4-${escapeXml(view.id)}">${diagramContent}</diagram>
 </mxfile>
 `
+  }
+  const pagesAttr = diagrams.length > 1 ? ` pages="${diagrams.length}"` : ''
+  const diagramParts = diagrams.map(
+    d => `  <diagram name="${escapeXml(d.name)}" id="likec4-${escapeXml(d.id)}">${d.content}</diagram>`,
+  )
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="LikeC4" modified="${
+    new Date().toISOString()
+  }" agent="LikeC4" version="1.0" etag="" type="device"${pagesAttr}>
+${diagramParts.join('\n')}
+</mxfile>
+`
+}
+
+/**
+ * Generate a single DrawIO file from one view.
+ *
+ * @param viewmodel - Layouted LikeC4 view model (from model.view(id))
+ * @param options - Optional overrides for layout/colors (round-trip from comment blocks)
+ * @returns DrawIO .drawio XML string
+ */
+export function generateDrawio(
+  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  options?: GenerateDrawioOptions,
+): string {
+  return wrapInMxFile([generateDiagramContent(viewmodel, options)])
 }
 
 /**
@@ -793,34 +822,6 @@ export function generateDrawioMulti(
   viewmodels: Array<LikeC4ViewModel<aux.Unknown>>,
   optionsByViewId?: Record<string, GenerateDrawioOptions>,
 ): string {
-  if (viewmodels.length === 0) {
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
-</mxfile>
-`
-  }
-  if (viewmodels.length === 1) {
-    const opts = optionsByViewId?.[viewmodels[0]!.$view.id]
-    return generateDrawio(viewmodels[0]!, opts)
-  }
-  const diagramRe = /<diagram[^>]*>([\s\S]*?)<\/diagram>/
-  const diagramParts = viewmodels.map(vm => {
-    const view = vm.$view
-    const opts = optionsByViewId?.[view.id]
-    const single = generateDrawio(vm, opts)
-    const m = diagramRe.exec(single)
-    if (!m) return ''
-    const diagramName = (typeof (view as { title?: string | null }).title === 'string'
-      ? (view as { title: string }).title
-      : null) ?? view.id
-    return `  <diagram name="${escapeXml(diagramName)}" id="likec4-${escapeXml(view.id)}">${m[1]}</diagram>`
-  }).filter(Boolean)
-  const pagesAttr = diagramParts.length > 0 ? ` pages="${diagramParts.length}"` : ''
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="LikeC4" modified="${
-    new Date().toISOString()
-  }" agent="LikeC4" version="1.0" etag="" type="device"${pagesAttr}>
-${diagramParts.join('\n')}
-</mxfile>
-`
+  const diagrams = viewmodels.map(vm => generateDiagramContent(vm, optionsByViewId?.[vm.$view.id]))
+  return wrapInMxFile(diagrams)
 }

@@ -77,6 +77,12 @@ export interface DrawioCell {
   edgePoints?: string
 }
 
+/** Edge cell with required source and target; use after filtering with isEdgeWithEndpoints. */
+type DrawioEdgeWithEndpoints = DrawioCell & { source: string; target: string }
+function isEdgeWithEndpoints(c: DrawioCell): c is DrawioEdgeWithEndpoints {
+  return c.edge === true && typeof c.source === 'string' && typeof c.target === 'string'
+}
+
 function getAttr(attrs: string, name: string): string | undefined {
   const re = new RegExp(`${name}="([^"]*)"`, 'i')
   const m = re.exec(attrs)
@@ -114,6 +120,12 @@ function parseNum(s: string | undefined): number | undefined {
   if (s === undefined || s === '') return undefined
   const n = Number.parseFloat(s)
   return Number.isNaN(n) ? undefined : n
+}
+
+/** Get style value decoded for URI component; undefined if missing or empty. */
+function getDecodedStyle(styleMap: Map<string, string>, key: string): string | undefined {
+  const v = styleMap.get(key)
+  return v != null && v !== '' ? decodeURIComponent(v) : undefined
 }
 
 /** Parse DrawIO style string (semicolon-separated key=value) into a map. */
@@ -225,73 +237,36 @@ function buildCellFromMxCell(
   const height = parseNum(getAttr(geomStr, 'height'))
   const fillColor = styleMap.get('fillcolor')
   const strokeColor = styleMap.get('strokecolor')
-  const descFromStyle = styleMap.get('likec4description')
-  const techFromStyle = styleMap.get('likec4technology')
-  const notesFromStyle = styleMap.get('likec4notes')
-  const tagsFromStyle = styleMap.get('likec4tags')
-  const navFromStyle = styleMap.get('likec4navigateto')
-  const iconFromStyle = styleMap.get('likec4icon')
-  const description = userData.description ??
-    (descFromStyle != null && descFromStyle !== '' ? decodeURIComponent(descFromStyle) : undefined)
-  const technology = userData.technology ??
-    (techFromStyle != null && techFromStyle !== '' ? decodeURIComponent(techFromStyle) : undefined)
-  const notes = notesFromStyle != null && notesFromStyle !== '' ? decodeURIComponent(notesFromStyle) : undefined
-  const tags = tagsFromStyle != null && tagsFromStyle !== '' ? decodeURIComponent(tagsFromStyle) : undefined
-  const navigateTo = overrides?.navigateTo ??
-    (navFromStyle != null && navFromStyle !== '' ? decodeURIComponent(navFromStyle) : undefined)
-  const icon = iconFromStyle != null && iconFromStyle !== '' ? decodeURIComponent(iconFromStyle) : undefined
+  const description = userData.description ?? getDecodedStyle(styleMap, 'likec4description')
+  const technology = userData.technology ?? getDecodedStyle(styleMap, 'likec4technology')
+  const notes = getDecodedStyle(styleMap, 'likec4notes')
+  const tags = getDecodedStyle(styleMap, 'likec4tags')
+  const navigateTo = overrides?.navigateTo ?? getDecodedStyle(styleMap, 'likec4navigateto')
+  const icon = getDecodedStyle(styleMap, 'likec4icon')
   const endArrow = styleMap.get('endarrow')
   const startArrow = styleMap.get('startarrow')
   const dashed = styleMap.get('dashed')
   const dashPattern = styleMap.get('dashpattern')
-  const summaryFromStyle = styleMap.get('likec4summary')
-  const linksFromStyle = styleMap.get('likec4links')
-  const borderFromStyle = styleMap.get('likec4border')
-  const colorNameFromStyle = styleMap.get('likec4colorname')
+  const summary = getDecodedStyle(styleMap, 'likec4summary')
+  const links = getDecodedStyle(styleMap, 'likec4links')
+  const border = getDecodedStyle(styleMap, 'likec4border')
+  const colorName = getDecodedStyle(styleMap, 'likec4colorname')
   const opacityFromStyle = styleMap.get('opacity')
-  const relKindFromStyle = styleMap.get('likec4relationshipkind')
-  const notationFromStyle = styleMap.get('likec4notation')
-  const summary = summaryFromStyle != null && summaryFromStyle !== ''
-    ? decodeURIComponent(summaryFromStyle)
-    : undefined
-  const links = linksFromStyle != null && linksFromStyle !== '' ? decodeURIComponent(linksFromStyle) : undefined
-  const border = borderFromStyle != null && borderFromStyle !== '' ? decodeURIComponent(borderFromStyle) : undefined
-  const strokeWidthFromStyle = styleMap.get('strokewidth')
-  const strokeWidth = strokeWidthFromStyle != null && strokeWidthFromStyle !== '' ? strokeWidthFromStyle : undefined
-  const sizeFromStyle = styleMap.get('likec4size')
-  const size = sizeFromStyle != null && sizeFromStyle !== '' ? decodeURIComponent(sizeFromStyle) : undefined
-  const paddingFromStyle = styleMap.get('likec4padding')
-  const padding = paddingFromStyle != null && paddingFromStyle !== ''
-    ? decodeURIComponent(paddingFromStyle)
-    : undefined
-  const textSizeFromStyle = styleMap.get('likec4textsize')
-  const textSize = textSizeFromStyle != null && textSizeFromStyle !== ''
-    ? decodeURIComponent(textSizeFromStyle)
-    : undefined
-  const iconPositionFromStyle = styleMap.get('likec4iconposition')
-  const iconPosition = iconPositionFromStyle != null && iconPositionFromStyle !== ''
-    ? decodeURIComponent(iconPositionFromStyle)
-    : undefined
-  const linkFromStyle = styleMap.get('link')
-  const link = linkFromStyle != null && linkFromStyle !== '' ? decodeURIComponent(linkFromStyle) : undefined
-  const colorName = colorNameFromStyle != null && colorNameFromStyle !== ''
-    ? decodeURIComponent(colorNameFromStyle)
-    : undefined
   const opacityFromLikec4 = styleMap.get('likec4opacity')
   const opacityFromFill = styleMap.get('fillopacity')
   const opacity = (opacityFromLikec4 != null && opacityFromLikec4 !== '' ? opacityFromLikec4 : undefined) ??
     (opacityFromStyle != null && opacityFromStyle !== '' ? opacityFromStyle : undefined) ??
     (opacityFromFill != null && opacityFromFill !== '' ? opacityFromFill : undefined)
-  const relationshipKind = relKindFromStyle != null && relKindFromStyle !== ''
-    ? decodeURIComponent(relKindFromStyle)
-    : undefined
-  const notation = notationFromStyle != null && notationFromStyle !== ''
-    ? decodeURIComponent(notationFromStyle)
-    : undefined
-  const metadataFromStyle = styleMap.get('likec4metadata')
-  const metadata = metadataFromStyle != null && metadataFromStyle !== ''
-    ? decodeURIComponent(metadataFromStyle)
-    : undefined
+  const strokeWidthRaw = styleMap.get('strokewidth')
+  const strokeWidth = strokeWidthRaw != null && strokeWidthRaw !== '' ? strokeWidthRaw : undefined
+  const size = getDecodedStyle(styleMap, 'likec4size')
+  const padding = getDecodedStyle(styleMap, 'likec4padding')
+  const textSize = getDecodedStyle(styleMap, 'likec4textsize')
+  const iconPosition = getDecodedStyle(styleMap, 'likec4iconposition')
+  const link = getDecodedStyle(styleMap, 'link')
+  const relationshipKind = getDecodedStyle(styleMap, 'likec4relationshipkind')
+  const notation = getDecodedStyle(styleMap, 'likec4notation')
+  const metadata = getDecodedStyle(styleMap, 'likec4metadata')
   return {
     id,
     ...(valueRaw != null && valueRaw !== '' ? { value: decodeXmlEntities(valueRaw) } : {}),
@@ -518,19 +493,6 @@ function toId(name: string): string {
   )
 }
 
-/** Strip HTML/entities and take first line; used for cell value → plain text. */
-function stripHtml(s: string): string {
-  const decoded = s
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
-    .replaceAll('&quot;', '"')
-    .replaceAll('&amp;', '&')
-  const firstLine = decoded.split('\n')[0] ?? ''
-  const brIdx = firstLine.toLowerCase().indexOf('<br')
-  const segment = brIdx === -1 ? firstLine : firstLine.slice(0, brIdx)
-  return stripTags(segment).trim() || ''
-}
-
 /** Strip XML/HTML tags without regex to avoid S5852 (super-linear backtracking). */
 function stripTags(s: string): string {
   let out = ''
@@ -553,8 +515,8 @@ function stripTags(s: string): string {
   return out
 }
 
-/** Strip HTML for use as plain title when emitting .c4. */
-function stripHtmlForTitle(raw: string | undefined): string {
+/** Decode XML entities, take first line up to <br, strip tags. Shared by stripHtml and stripHtmlForTitle. */
+function stripHtmlFromValue(raw: string | undefined): string {
   if (!raw || raw.trim() === '') return ''
   const decoded = raw
     .replaceAll('&lt;', '<')
@@ -565,6 +527,16 @@ function stripHtmlForTitle(raw: string | undefined): string {
   const brIdx = firstLine.toLowerCase().indexOf('<br')
   const segment = brIdx === -1 ? firstLine : firstLine.slice(0, brIdx)
   return stripTags(segment).trim() || ''
+}
+
+/** Strip HTML/entities and take first line; used for cell value → plain text. */
+function stripHtml(s: string): string {
+  return stripHtmlFromValue(s)
+}
+
+/** Strip HTML for use as plain title when emitting .c4. */
+function stripHtmlForTitle(raw: string | undefined): string {
+  return stripHtmlFromValue(raw)
 }
 
 /** Context for emitting element/edge lines (shared by single and multi diagram paths). */
@@ -789,13 +761,19 @@ function emitEdgesToLines(
   }
 }
 
-function emitRoundtripCommentsSingle(
-  lines: string[],
+/** Collect layout, stroke, customData and waypoint lines for one diagram state (shared by single and multi emit). */
+function collectRoundtripForState(
   viewId: string,
   idToFqn: Map<string, string>,
   byId: Map<string, DrawioCell>,
   edges: DrawioCell[],
-): void {
+): {
+  layoutNodes: Record<string, { x: number; y: number; width: number; height: number }>
+  strokeColorLines: string[]
+  strokeWidthLines: string[]
+  customDataLines: string[]
+  waypointLines: string[]
+} {
   const layoutNodes: Record<string, { x: number; y: number; width: number; height: number }> = {}
   for (const [cellId, fqn] of idToFqn) {
     const cell = byId.get(cellId)
@@ -809,13 +787,6 @@ function emitRoundtripCommentsSingle(
       layoutNodes[fqn] = { x: cell.x, y: cell.y, width: cell.width, height: cell.height }
     }
   }
-  if (Object.keys(layoutNodes).length > 0) {
-    lines.push(
-      '// <likec4.layout.drawio>',
-      '// ' + JSON.stringify({ [viewId]: { nodes: layoutNodes } }),
-      '// </likec4.layout.drawio>',
-    )
-  }
   const strokeColorLines: string[] = []
   for (const [cellId, fqn] of idToFqn) {
     const cell = byId.get(cellId)
@@ -827,9 +798,6 @@ function emitRoundtripCommentsSingle(
       strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
     }
   }
-  if (strokeColorLines.length > 0) {
-    lines.push('// <likec4.strokeColor.vertices>', ...strokeColorLines, '// </likec4.strokeColor.vertices>')
-  }
   const strokeWidthLines: string[] = []
   for (const [cellId, fqn] of idToFqn) {
     const cell = byId.get(cellId)
@@ -837,32 +805,56 @@ function emitRoundtripCommentsSingle(
       strokeWidthLines.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
     }
   }
-  if (strokeWidthLines.length > 0) {
-    lines.push('// <likec4.strokeWidth.vertices>', ...strokeWidthLines, '// </likec4.strokeWidth.vertices>')
-  }
   const customDataLines: string[] = []
   for (const [cellId, fqn] of idToFqn) {
     const cell = byId.get(cellId)
     if (cell?.customData?.trim()) customDataLines.push(`// ${fqn} ${cell.customData.trim()}`)
   }
-  for (const e of edges) {
-    const src = idToFqn.get(e.source!)
-    const tgt = idToFqn.get(e.target!)
+  const edgesWithEndpoints = edges.filter(isEdgeWithEndpoints)
+  for (const e of edgesWithEndpoints) {
+    const src = idToFqn.get(e.source)
+    const tgt = idToFqn.get(e.target)
     if (src && tgt && e.customData?.trim()) {
       customDataLines.push(`// ${src}|${tgt} ${e.customData.trim()}`)
     }
   }
-  if (customDataLines.length > 0) {
-    lines.push('// <likec4.customData>', ...customDataLines, '// </likec4.customData>')
-  }
   const waypointLines: string[] = []
-  for (const e of edges) {
-    const src = idToFqn.get(e.source!)
-    const tgt = idToFqn.get(e.target!)
-    if (src && tgt && e.edgePoints?.trim()) waypointLines.push(`// ${src}|${tgt} ${e.edgePoints.trim()}`)
+  for (const e of edgesWithEndpoints) {
+    const src = idToFqn.get(e.source)
+    const tgt = idToFqn.get(e.target)
+    if (src && tgt && e.edgePoints?.trim()) {
+      waypointLines.push(`// ${src}|${tgt}|${e.id} ${e.edgePoints.trim()}`)
+    }
   }
-  if (waypointLines.length > 0) {
-    lines.push('// <likec4.edge.waypoints>', ...waypointLines, '// </likec4.edge.waypoints>')
+  return { layoutNodes, strokeColorLines, strokeWidthLines, customDataLines, waypointLines }
+}
+
+function emitRoundtripCommentsSingle(
+  lines: string[],
+  viewId: string,
+  idToFqn: Map<string, string>,
+  byId: Map<string, DrawioCell>,
+  edges: DrawioCell[],
+): void {
+  const r = collectRoundtripForState(viewId, idToFqn, byId, edges)
+  if (Object.keys(r.layoutNodes).length > 0) {
+    lines.push(
+      '// <likec4.layout.drawio>',
+      '// ' + JSON.stringify({ [viewId]: { nodes: r.layoutNodes } }),
+      '// </likec4.layout.drawio>',
+    )
+  }
+  if (r.strokeColorLines.length > 0) {
+    lines.push('// <likec4.strokeColor.vertices>', ...r.strokeColorLines, '// </likec4.strokeColor.vertices>')
+  }
+  if (r.strokeWidthLines.length > 0) {
+    lines.push('// <likec4.strokeWidth.vertices>', ...r.strokeWidthLines, '// </likec4.strokeWidth.vertices>')
+  }
+  if (r.customDataLines.length > 0) {
+    lines.push('// <likec4.customData>', ...r.customDataLines, '// </likec4.customData>')
+  }
+  if (r.waypointLines.length > 0) {
+    lines.push('// <likec4.edge.waypoints>', ...r.waypointLines, '// </likec4.edge.waypoints>')
   }
 }
 
@@ -882,23 +874,21 @@ function emitRoundtripCommentsMulti(
     string,
     { nodes: Record<string, { x: number; y: number; width: number; height: number }> }
   > = {}
+  const strokeColorLines: string[] = []
+  const strokeWidthLines: string[] = []
+  const customDataLines: string[] = []
+  const waypointLines: string[] = []
   for (const st of states) {
-    const layout = { nodes: {} as Record<string, { x: number; y: number; width: number; height: number }> }
-    layoutByView[st.viewId] = layout
-    for (const [cellId, fqn] of st.idToFqn) {
-      const cell = st.idToCell.get(cellId)
-      if (
-        cell?.vertex &&
-        cell.x != null &&
-        cell.y != null &&
-        cell.width != null &&
-        cell.height != null
-      ) {
-        layout.nodes[fqn] = { x: cell.x, y: cell.y, width: cell.width, height: cell.height }
-      }
-    }
+    const r = collectRoundtripForState(st.viewId, st.idToFqn, st.idToCell, st.edges)
+    layoutByView[st.viewId] = { nodes: r.layoutNodes }
+    strokeColorLines.push(...r.strokeColorLines)
+    strokeWidthLines.push(...r.strokeWidthLines)
+    customDataLines.push(...r.customDataLines)
+    waypointLines.push(...r.waypointLines)
   }
-  const hasLayout = Object.values(layoutByView).some(v => Object.keys(v.nodes).length > 0)
+  const hasLayout = Object.values(layoutByView).some(
+    v => v != null && Object.keys(v.nodes).length > 0,
+  )
   if (hasLayout) {
     lines.push(
       '// <likec4.layout.drawio>',
@@ -906,60 +896,14 @@ function emitRoundtripCommentsMulti(
       '// </likec4.layout.drawio>',
     )
   }
-  const strokeColorLines: string[] = []
-  for (const st of states) {
-    for (const [cellId, fqn] of st.idToFqn) {
-      const cell = st.idToCell.get(cellId)
-      if (
-        cell?.vertex &&
-        cell.strokeColor?.trim() &&
-        /^#[0-9A-Fa-f]{3,8}$/.test(cell.strokeColor.trim())
-      ) {
-        strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
-      }
-    }
-  }
   if (strokeColorLines.length > 0) {
     lines.push('// <likec4.strokeColor.vertices>', ...strokeColorLines, '// </likec4.strokeColor.vertices>')
-  }
-  const strokeWidthLines: string[] = []
-  for (const st of states) {
-    for (const [cellId, fqn] of st.idToFqn) {
-      const cell = st.idToCell.get(cellId)
-      if (cell?.vertex && cell.strokeWidth != null && cell.strokeWidth.trim() !== '') {
-        strokeWidthLines.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
-      }
-    }
   }
   if (strokeWidthLines.length > 0) {
     lines.push('// <likec4.strokeWidth.vertices>', ...strokeWidthLines, '// </likec4.strokeWidth.vertices>')
   }
-  const customDataLines: string[] = []
-  for (const st of states) {
-    for (const [cellId, fqn] of st.idToFqn) {
-      const cell = st.idToCell.get(cellId)
-      if (cell?.customData?.trim()) customDataLines.push(`// ${fqn} ${cell.customData.trim()}`)
-    }
-    for (const e of st.edges) {
-      const src = st.idToFqn.get(e.source!)
-      const tgt = st.idToFqn.get(e.target!)
-      if (src && tgt && e.customData?.trim()) {
-        customDataLines.push(`// ${src}|${tgt} ${e.customData.trim()}`)
-      }
-    }
-  }
   if (customDataLines.length > 0) {
     lines.push('// <likec4.customData>', ...customDataLines, '// </likec4.customData>')
-  }
-  const waypointLines: string[] = []
-  for (const st of states) {
-    for (const e of st.edges) {
-      const src = st.idToFqn.get(e.source!)
-      const tgt = st.idToFqn.get(e.target!)
-      if (src && tgt && e.edgePoints?.trim()) {
-        waypointLines.push(`// ${src}|${tgt} ${e.edgePoints.trim()}`)
-      }
-    }
   }
   if (waypointLines.length > 0) {
     lines.push('// <likec4.edge.waypoints>', ...waypointLines, '// </likec4.edge.waypoints>')
@@ -1213,9 +1157,9 @@ export function parseDrawioToLikeC4(xml: string): string {
   }
 
   const edgeEntries: EdgeEntry[] = []
-  for (const e of edges) {
-    const src = idToFqn.get(e.source!)
-    const tgt = idToFqn.get(e.target!)
+  for (const e of edges.filter(isEdgeWithEndpoints)) {
+    const src = idToFqn.get(e.source)
+    const tgt = idToFqn.get(e.target)
     if (src && tgt) edgeEntries.push({ cell: e, src, tgt })
   }
   emitEdgesToLines(lines, edgeEntries, hexToCustomName)
@@ -1452,9 +1396,9 @@ views {
       if (containerIdToTitle.has(id)) continue
       containerIdToTitle.set(id, title)
     }
-    for (const e of st.edges) {
-      const src = st.idToFqn.get(e.source!)
-      const tgt = st.idToFqn.get(e.target!)
+    for (const e of st.edges.filter(isEdgeWithEndpoints)) {
+      const src = st.idToFqn.get(e.source)
+      const tgt = st.idToFqn.get(e.target)
       if (src && tgt) {
         const key = `${src}|${tgt}`
         if (relationKeyToEdge.has(key)) continue
@@ -1559,7 +1503,7 @@ export type DrawioRoundtripData = {
   >
   strokeColorByFqn: Record<string, string>
   strokeWidthByFqn: Record<string, string>
-  /** Key = "src|tgt" (FQN), value = array of [x, y] waypoints */
+  /** Key = "src|tgt" or "src|tgt|edgeId" (FQN, optional edge id for parallel edges), value = array of [x, y] waypoints */
   edgeWaypoints: Record<string, number[][]>
 }
 
@@ -1594,10 +1538,15 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
     if (line.trim() === LAYOUT_START) {
       found = true
       i += 1
-      const dataLine = lines[i]?.trim()
-      if (dataLine?.startsWith('// ')) {
+      const layoutLines: string[] = []
+      while (i < lines.length && lines[i]?.trim() !== LAYOUT_END) {
+        const ln = lines[i]?.trim()
+        if (ln?.startsWith('// ')) layoutLines.push(ln.slice(3))
+        i += 1
+      }
+      if (layoutLines.length > 0) {
         try {
-          const json = dataLine.slice(3)
+          const json = layoutLines.join('\n')
           layoutByView = JSON.parse(json) as DrawioRoundtripData['layoutByView']
         } catch {
           // ignore invalid JSON
