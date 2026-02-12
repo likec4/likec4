@@ -37,3 +37,12 @@ export const CONTAINER_TITLE_AREA_MAX_HEIGHT_PX = 40
 export const CONTAINER_TITLE_AREA_HEIGHT_RATIO = 0.5
 /** Tolerance (px) for title cell position inside container bounds (parse). */
 export const CONTAINER_TITLE_AREA_TOLERANCE = 2
+
+/** Default node fill/stroke/font when no theme color (hex). */
+export const DEFAULT_NODE_FILL_HEX = '#dae8fc'
+export const DEFAULT_NODE_STROKE_HEX = '#2563eb'
+export const DEFAULT_NODE_FONT_HEX = '#1e40af'
+
+/** mxGraphModel page dimensions (draw.io default A4-like). */
+export const MXGRAPH_PAGE_WIDTH = 827
+export const MXGRAPH_PAGE_HEIGHT = 1169

@@ -24,10 +24,15 @@ import {
   CONTAINER_TITLE_MIN_WIDTH_PX,
   DEFAULT_CANVAS_HEIGHT,
   DEFAULT_CANVAS_WIDTH,
+  DEFAULT_NODE_FILL_HEX,
+  DEFAULT_NODE_FONT_HEX,
   DEFAULT_NODE_HEIGHT,
+  DEFAULT_NODE_STROKE_HEX,
   DEFAULT_NODE_WIDTH,
   DRAWIO_DIAGRAM_ID_PREFIX,
   DRAWIO_PAGE_LINK_PREFIX,
+  MXGRAPH_PAGE_HEIGHT,
+  MXGRAPH_PAGE_WIDTH,
   NODES_SPREAD_GAP,
 } from './constants'
 import { parseDrawioRoundtripComments } from './parse-drawio'
@@ -440,6 +445,170 @@ function buildEdgeCellXml(
 </mxCell>`
 }
 
+/** Result of building one node's cell(s): vertex XML and optional container title cell (single responsibility). */
+type NodeCellResult = { vertexXml: string; titleCellXml?: string; isContainer: boolean }
+
+/** Build one node's vertex mxCell XML (and optional container title cell) so generateDiagramContent stays short. */
+function buildNodeCellXml(
+  node: Node,
+  layout: DiagramLayoutState,
+  options: GenerateDrawioOptions | undefined,
+  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  getCellId: (nodeId: NodeId) => string,
+  containerTitleCellId: number,
+): NodeCellResult {
+  const {
+    bboxes,
+    containerNodeIds,
+    defaultParentId,
+    nodeIdsInView,
+    effectiveStyles,
+    fontFamily,
+    containerTitleFontSizePx,
+    containerTitleColor,
+  } = layout
+  const strokeColorByNodeId = options?.strokeColorByNodeId
+  const strokeWidthByNodeId = options?.strokeWidthByNodeId
+
+  const id = getCellId(node.id)
+  const bbox = bboxes.get(node.id)!
+  const { width, height } = bbox
+  const parentId = node.parent != null && nodeIdsInView.has(node.parent)
+    ? getCellId(node.parent)
+    : defaultParentId
+  const parentBbox = node.parent != null ? bboxes.get(node.parent) : undefined
+  const x = parentBbox == null ? bbox.x + layout.offsetX : bbox.x - parentBbox.x
+  const y = parentBbox == null ? bbox.y + layout.offsetY : bbox.y - parentBbox.y
+
+  const title = node.title
+  const descRaw = flattenMarkdownOrString(node.description)
+  const techRaw = flattenMarkdownOrString(node.technology)
+  const notesRaw = flattenMarkdownOrString((node as Node & { notes?: MarkdownOrString }).notes)
+  const desc = descRaw != null && !isEmptyish(descRaw) ? descRaw.trim() : ''
+  const tech = techRaw != null && !isEmptyish(techRaw) ? techRaw.trim() : ''
+  const notes = notesRaw != null && !isEmptyish(notesRaw) ? notesRaw.trim() : ''
+  const tags = (node as Node & { tags?: readonly string[] }).tags
+  const tagList = Array.isArray(tags) && tags.length > 0 ? tags.join(',') : ''
+  const navigateTo = (node as Node & { navigateTo?: string | null }).navigateTo
+  const navTo = navigateTo != null && navigateTo !== '' ? String(navigateTo) : ''
+  const icon = (node as Node & { icon?: string | null }).icon
+  const iconName = icon != null && icon !== '' ? String(icon) : ''
+
+  const isContainer = containerNodeIds.has(node.id)
+  const shapeStyle = isContainer
+    ? 'shape=rectangle;rounded=0;container=1;collapsible=0;startSize=0;'
+    : drawioShape(node.shape)
+  const strokeColorOverride = strokeColorByNodeId?.[node.id]
+  const strokeWidthOverride = strokeWidthByNodeId?.[node.id]
+  const elemColors = strokeColorOverride
+    ? ((): ElementColors => {
+      const base = getElementColors(viewmodel, node.color)
+      return {
+        fill: base?.fill ?? DEFAULT_NODE_FILL_HEX,
+        stroke: strokeColorOverride,
+        font: base?.font ?? strokeColorOverride,
+      }
+    })()
+    : getElementColors(viewmodel, node.color)
+  const fillHex = elemColors?.fill ?? DEFAULT_NODE_FILL_HEX
+  const strokeHex = elemColors?.stroke ?? DEFAULT_NODE_STROKE_HEX
+  const fontHex = elemColors?.font ?? elemColors?.stroke ?? DEFAULT_NODE_FONT_HEX
+  const colorStyle = `fillColor=${fillHex};strokeColor=${strokeHex};fontColor=${fontHex};`
+  const nodeStyle = node.style as {
+    border?: string
+    opacity?: number
+    size?: string
+    padding?: string
+    textSize?: TextSize
+    iconPosition?: string
+  } | undefined
+  const fontSizePx = effectiveStyles.fontSize(nodeStyle?.textSize)
+  const valueHtml = buildNodeValueHtml(title, desc, isContainer, fontHex, fontFamily, fontSizePx)
+  const value = escapeXml(valueHtml)
+  const borderVal = nodeStyle?.border
+  const strokeWidthDefault = borderVal === 'none' ? '0' : (isContainer ? '1' : (borderVal ? '1' : ''))
+  const strokeWidth = strokeWidthOverride ?? strokeWidthDefault
+  const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
+  let containerDashed: string
+  if (isContainer && borderVal !== 'none') containerDashed = 'dashed=1;'
+  else if (borderVal === 'dashed') containerDashed = 'dashed=1;'
+  else containerDashed = ''
+  const containerOpacityNum = isContainer === true ? (nodeStyle?.opacity ?? 15) : undefined
+  const fillOpacityStyle = containerOpacityNum != null && isContainer === true
+    ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
+    : ''
+  const summaryRaw = (node as Node & { summary?: MarkdownOrString }).summary
+  const summaryFlat = summaryRaw != null ? flattenMarkdownOrString(summaryRaw) : null
+  const summaryStr = summaryFlat != null && !isEmptyish(summaryFlat) ? summaryFlat.trim() : ''
+  const links = (node as Node & { links?: readonly { url: string; title?: string }[] }).links
+  const linksJson = Array.isArray(links) && links.length > 0
+    ? encodeURIComponent(JSON.stringify(links.map(l => ({ url: l.url, title: l.title }))))
+    : ''
+  const opacityStyle = fillOpacityStyle
+  const colorNameForRoundtrip = node.color ? encodeURIComponent(String(node.color)) : ''
+
+  const nodeNotation = (node as Node & { notation?: string }).notation
+  const likec4Style = buildLikec4StyleForNode({
+    desc,
+    tech,
+    notes,
+    tagList,
+    navTo,
+    iconName,
+    summaryStr,
+    linksJson,
+    borderVal,
+    containerOpacityNum,
+    strokeWidth,
+    colorNameForRoundtrip,
+    nodeStyle,
+    strokeHex,
+    nodeNotation,
+  })
+
+  const nodeCustomData = (node as Node & { customData?: Record<string, string> }).customData
+  const userObjectXml = buildMxUserObjectXml(nodeCustomData)
+
+  const navLinkStyle = navTo === '' ? '' : `link=${encodeURIComponent(`${DRAWIO_PAGE_LINK_PREFIX}${navTo}`)};`
+  const vertexTextStyle = isContainer
+    ? 'align=left;verticalAlign=top;overflow=fill;whiteSpace=wrap;html=1;'
+    : `align=center;verticalAlign=middle;verticalLabelPosition=middle;labelPosition=center;fontSize=${fontSizePx};fontStyle=1;spacingTop=4;spacingLeft=2;spacingRight=2;spacingBottom=2;overflow=fill;whiteSpace=wrap;html=1;fontFamily=${
+      encodeURIComponent(fontFamily)
+    };`
+
+  const userObjectLabel = isContainer ? escapeXml(title) : value
+  const geometryAttr = `height="${Math.round(height)}" width="${Math.round(width)}" x="${Math.round(x)}" y="${
+    Math.round(y)
+  }" as="geometry"`
+  const innerCellXml =
+    `<mxCell parent="${parentId}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" value="${value}" vertex="1">
+  <mxGeometry ${geometryAttr} />${userObjectXml}
+</mxCell>`
+  const cellXml = navTo === ''
+    ? `<mxCell id="${id}" value="${value}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" vertex="1" parent="${parentId}">\n  <mxGeometry x="${
+      Math.round(x)
+    }" y="${Math.round(y)}" width="${Math.round(width)}" height="${
+      Math.round(height)
+    }" as="geometry" />${userObjectXml}\n</mxCell>`
+    : `<UserObject label="${userObjectLabel}" link="${DRAWIO_PAGE_LINK_PREFIX}${
+      escapeXml(navTo)
+    }" id="${id}">\n  ${innerCellXml}\n</UserObject>`
+
+  if (!isContainer) return { vertexXml: cellXml, isContainer: false }
+
+  const titleId = String(containerTitleCellId)
+  const titleCellXml = buildContainerTitleCellXml(
+    title,
+    titleId,
+    navTo,
+    id,
+    fontFamily,
+    containerTitleFontSizePx,
+    containerTitleColor,
+  )
+  return { vertexXml: cellXml, titleCellXml, isContainer: true }
+}
+
 /** Build container title cell XML (child of container, relative position CONTAINER_TITLE_INSET_*). */
 function buildContainerTitleCellXml(
   title: string,
@@ -747,22 +916,7 @@ function generateDiagramContent(
   const useCompressed = options?.compressed !== false
 
   const layout = computeDiagramLayout(viewmodel, options)
-  const {
-    bboxes,
-    containerNodeIds,
-    sortedNodes,
-    offsetX,
-    offsetY,
-    canvasWidth,
-    canvasHeight,
-    defaultParentId,
-    rootId,
-    effectiveStyles,
-    fontFamily,
-    containerTitleFontSizePx,
-    containerTitleColor,
-    nodeIdsInView,
-  } = layout
+  const { sortedNodes, defaultParentId, rootId, canvasWidth, canvasHeight } = layout
 
   const nodeIds = new Map<NodeId, string>()
   let cellId = 2
@@ -781,147 +935,21 @@ function generateDiagramContent(
   let containerTitleCellId = CONTAINER_TITLE_CELL_ID_START
 
   for (const node of sortedNodes) {
-    const id = getCellId(node.id)
-    const bbox = bboxes.get(node.id)!
-    const { width, height } = bbox
-    const parentId = node.parent != null && nodeIdsInView.has(node.parent)
-      ? getCellId(node.parent)
-      : defaultParentId
-    const parentBbox = node.parent != null ? bboxes.get(node.parent) : undefined
-    const x = parentBbox == null ? bbox.x + offsetX : bbox.x - parentBbox.x
-    const y = parentBbox == null ? bbox.y + offsetY : bbox.y - parentBbox.y
-
-    const title = node.title
-    const descRaw = flattenMarkdownOrString(node.description)
-    const techRaw = flattenMarkdownOrString(node.technology)
-    const notesRaw = flattenMarkdownOrString((node as Node & { notes?: MarkdownOrString }).notes)
-    const desc = descRaw != null && !isEmptyish(descRaw) ? descRaw.trim() : ''
-    const tech = techRaw != null && !isEmptyish(techRaw) ? techRaw.trim() : ''
-    const notes = notesRaw != null && !isEmptyish(notesRaw) ? notesRaw.trim() : ''
-    const tags = (node as Node & { tags?: readonly string[] }).tags
-    const tagList = Array.isArray(tags) && tags.length > 0 ? tags.join(',') : ''
-    const navigateTo = (node as Node & { navigateTo?: string | null }).navigateTo
-    const navTo = navigateTo != null && navigateTo !== '' ? String(navigateTo) : ''
-    const icon = (node as Node & { icon?: string | null }).icon
-    const iconName = icon != null && icon !== '' ? String(icon) : ''
-
-    const isContainer = containerNodeIds.has(node.id)
-    const shapeStyle = isContainer
-      ? 'shape=rectangle;rounded=0;container=1;collapsible=0;startSize=0;'
-      : drawioShape(node.shape)
-    const strokeColorOverride = strokeColorByNodeId?.[node.id]
-    const strokeWidthOverride = strokeWidthByNodeId?.[node.id]
-    const elemColors = strokeColorOverride
-      ? ((): ElementColors => {
-        const base = getElementColors(viewmodel, node.color)
-        return {
-          fill: base?.fill ?? '#dae8fc',
-          stroke: strokeColorOverride,
-          font: base?.font ?? strokeColorOverride,
-        }
-      })()
-      : getElementColors(viewmodel, node.color)
-    const fillHex = elemColors?.fill ?? '#dae8fc'
-    const strokeHex = elemColors?.stroke ?? '#2563eb'
-    const fontHex = elemColors?.font ?? elemColors?.stroke ?? '#1e40af'
-    const colorStyle = `fillColor=${fillHex};strokeColor=${strokeHex};fontColor=${fontHex};`
-    const nodeStyle = node.style as {
-      border?: string
-      opacity?: number
-      size?: string
-      padding?: string
-      textSize?: TextSize
-      iconPosition?: string
-    } | undefined
-    const fontSizePx = effectiveStyles.fontSize(nodeStyle?.textSize)
-    const valueHtml = buildNodeValueHtml(title, desc, isContainer, fontHex, fontFamily, fontSizePx)
-    const value = escapeXml(valueHtml)
-    const borderVal = nodeStyle?.border
-    const strokeWidthDefault = borderVal === 'none' ? '0' : (isContainer ? '1' : (borderVal ? '1' : ''))
-    const strokeWidth = strokeWidthOverride ?? strokeWidthDefault
-    const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
-    let containerDashed: string
-    if (isContainer && borderVal !== 'none') containerDashed = 'dashed=1;'
-    else if (borderVal === 'dashed') containerDashed = 'dashed=1;'
-    else containerDashed = ''
-    const containerOpacityNum = isContainer === true ? (nodeStyle?.opacity ?? 15) : undefined
-    const fillOpacityStyle = containerOpacityNum != null && isContainer === true
-      ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
-      : ''
-    const summaryRaw = (node as Node & { summary?: MarkdownOrString }).summary
-    const summaryFlat = summaryRaw != null ? flattenMarkdownOrString(summaryRaw) : null
-    const summaryStr = summaryFlat != null && !isEmptyish(summaryFlat) ? summaryFlat.trim() : ''
-    const links = (node as Node & { links?: readonly { url: string; title?: string }[] }).links
-    const linksJson = Array.isArray(links) && links.length > 0
-      ? encodeURIComponent(JSON.stringify(links.map(l => ({ url: l.url, title: l.title }))))
-      : ''
-    /** Only container nodes get fillOpacity; normal nodes stay fully opaque. */
-    const opacityStyle = fillOpacityStyle
-    const colorNameForRoundtrip = node.color ? encodeURIComponent(String(node.color)) : ''
-
-    const nodeNotation = (node as Node & { notation?: string }).notation
-    const likec4Style = buildLikec4StyleForNode({
-      desc,
-      tech,
-      notes,
-      tagList,
-      navTo,
-      iconName,
-      summaryStr,
-      linksJson,
-      borderVal,
-      containerOpacityNum,
-      strokeWidth,
-      colorNameForRoundtrip,
-      nodeStyle,
-      strokeHex,
-      nodeNotation,
-    })
-
-    const nodeCustomData = (node as Node & { customData?: Record<string, string> }).customData
-    const userObjectXml = buildMxUserObjectXml(nodeCustomData)
-
-    /** When the element has its own view (navigateTo), add Draw.io link so the cell opens that page (DRAWIO_PAGE_LINK_PREFIX + viewId). */
-    const navLinkStyle = navTo === '' ? '' : `link=${encodeURIComponent(`${DRAWIO_PAGE_LINK_PREFIX}${navTo}`)};`
-    const vertexTextStyle = isContainer
-      ? 'align=left;verticalAlign=top;overflow=fill;whiteSpace=wrap;html=1;'
-      : `align=center;verticalAlign=middle;verticalLabelPosition=middle;labelPosition=center;fontSize=${fontSizePx};fontStyle=1;spacingTop=4;spacingLeft=2;spacingRight=2;spacingBottom=2;overflow=fill;whiteSpace=wrap;html=1;fontFamily=${
-        encodeURIComponent(fontFamily)
-      };`
-
-    /** Draw.io internal page link: UserObject must have label = cell value (HTML) so Edit Link shows "Internal page link". */
-    const userObjectLabel = isContainer ? escapeXml(title) : value
-    const geometryAttr = `height="${Math.round(height)}" width="${Math.round(width)}" x="${Math.round(x)}" y="${
-      Math.round(y)
-    }" as="geometry"`
-    const innerCellXml =
-      `<mxCell parent="${parentId}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" value="${value}" vertex="1">
-  <mxGeometry ${geometryAttr} />${userObjectXml}
-</mxCell>`
-    const cellXml = navTo === ''
-      ? `<mxCell id="${id}" value="${value}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" vertex="1" parent="${parentId}">\n  <mxGeometry x="${
-        Math.round(x)
-      }" y="${Math.round(y)}" width="${Math.round(width)}" height="${
-        Math.round(height)
-      }" as="geometry" />${userObjectXml}\n</mxCell>`
-      : `<UserObject label="${userObjectLabel}" link="${DRAWIO_PAGE_LINK_PREFIX}${
-        escapeXml(navTo)
-      }" id="${id}">\n  ${innerCellXml}\n</UserObject>`
-
-    if (isContainer) {
-      containerCells.push(cellXml)
-      const titleId = String(containerTitleCellId++)
-      const titleCellXml = buildContainerTitleCellXml(
-        title,
-        titleId,
-        navTo,
-        id,
-        fontFamily,
-        containerTitleFontSizePx,
-        containerTitleColor,
-      )
-      containerCells.push(titleCellXml)
-    } else vertexCells.push(cellXml)
+    const result = buildNodeCellXml(
+      node,
+      layout,
+      options,
+      viewmodel,
+      getCellId,
+      containerTitleCellId,
+    )
+    if (result.isContainer) {
+      containerCells.push(result.vertexXml)
+      if (result.titleCellXml) containerCells.push(result.titleCellXml)
+      containerTitleCellId++
+    } else {
+      vertexCells.push(result.vertexXml)
+    }
   }
 
   for (const edge of edges as Edge[]) {
@@ -944,7 +972,7 @@ function generateDiagramContent(
 
   const diagramName = (getViewTitle(view) ?? view.id).trim() || view.id
   const mxGraphModelXml =
-    `<mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    `<mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="${MXGRAPH_PAGE_WIDTH}" pageHeight="${MXGRAPH_PAGE_HEIGHT}" math="0" shadow="0">
       <root>
         <mxCell id="${rootId}" />
         ${allCells}

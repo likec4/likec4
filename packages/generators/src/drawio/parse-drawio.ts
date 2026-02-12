@@ -661,6 +661,101 @@ function stripHtmlForTitle(raw: string | undefined): string {
   return stripHtmlFromValue(raw)
 }
 
+/** Escape single quotes for LikeC4 string literals (DRY). */
+function escapeLikec4Quotes(s: string): string {
+  return s.replaceAll('\'', '\'\'')
+}
+
+/** Push element declaration line: name = actor|system|container 'title'. */
+function pushElementHeader(
+  ctx: ElementEmitContext,
+  pad: string,
+  name: string,
+  kind: 'actor' | 'system' | 'container' | 'component',
+  title: string,
+): void {
+  const escaped = escapeLikec4Quotes(title)
+  switch (kind) {
+    case 'actor':
+      ctx.lines.push(`${pad}${name} = actor '${escaped}'`)
+      break
+    case 'system':
+      ctx.lines.push(`${pad}${name} = system '${escaped}'`)
+      break
+    case 'container':
+    case 'component':
+    default:
+      ctx.lines.push(`${pad}${name} = container '${escaped}'`)
+  }
+}
+
+/** Push style { ... } block for element when any style part is present. */
+function pushElementStyleBlock(
+  ctx: ElementEmitContext,
+  pad: string,
+  cell: DrawioCell,
+  colorName: string | undefined,
+): void {
+  const border = cell.border?.trim()
+  const opacityVal = cell.opacity
+  const shapeOverride = inferShape(cell.style)
+  const sizeVal = cell.size?.trim()
+  const paddingVal = cell.padding?.trim()
+  const textSizeVal = cell.textSize?.trim()
+  const iconPositionVal = cell.iconPosition?.trim()
+  if (
+    !colorName &&
+    !(border && ['solid', 'dashed', 'dotted', 'none'].includes(border)) &&
+    !(opacityVal && /^\d+$/.test(opacityVal)) &&
+    !shapeOverride &&
+    !sizeVal &&
+    !paddingVal &&
+    !textSizeVal &&
+    !iconPositionVal
+  ) {
+    return
+  }
+  const styleParts: string[] = []
+  if (colorName) styleParts.push(`color ${colorName}`)
+  if (border && ['solid', 'dashed', 'dotted', 'none'].includes(border)) {
+    styleParts.push(`border ${border}`)
+  }
+  if (opacityVal && /^\d+$/.test(opacityVal)) styleParts.push(`opacity ${opacityVal}`)
+  if (shapeOverride) styleParts.push(`shape ${shapeOverride}`)
+  if (sizeVal) styleParts.push(`size ${sizeVal}`)
+  if (paddingVal) styleParts.push(`padding ${paddingVal}`)
+  if (textSizeVal) styleParts.push(`textSize ${textSizeVal}`)
+  if (iconPositionVal) styleParts.push(`iconPosition ${iconPositionVal}`)
+  if (styleParts.length > 0) ctx.lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
+}
+
+/** Push link line(s) from linksJson or nativeLink (DRY with emitEdgesToLines). */
+function pushElementLinks(
+  ctx: ElementEmitContext,
+  pad: string,
+  linksJson: string | undefined,
+  nativeLink: string | undefined,
+): void {
+  try {
+    const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
+    if (Array.isArray(linksArr)) {
+      for (const link of linksArr) {
+        if (link?.url) {
+          ctx.lines.push(
+            `${pad}  link '${escapeLikec4Quotes(String(link.url))}'${
+              link.title ? ` '${escapeLikec4Quotes(String(link.title))}'` : ''
+            }`,
+          )
+        }
+      }
+    } else if (nativeLink) {
+      ctx.lines.push(`${pad}  link '${escapeLikec4Quotes(nativeLink)}'`)
+    }
+  } catch {
+    if (nativeLink) ctx.lines.push(`${pad}  link '${escapeLikec4Quotes(nativeLink)}'`)
+  }
+}
+
 /** Context for emitting element/edge lines (shared by single and multi diagram paths). */
 interface ElementEmitContext {
   lines: string[]
@@ -694,13 +789,10 @@ function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string
   const linksJson = cell.links?.trim()
   const nativeLink = cell.link?.trim()
   const notation = cell.notation?.trim()
-  const border = cell.border?.trim()
   const colorName = cell.fillColor && /^#[0-9A-Fa-f]{3,8}$/.test(cell.fillColor.trim())
     ? ctx.hexToCustomName.get(cell.fillColor.trim())
     : undefined
-  const shapeOverride = inferShape(cell.style)
   const childList = ctx.children.get(fqn)
-  const opacityVal = cell.opacity
   const hasBody = (childList && childList.length > 0) ||
     !!desc ||
     !!tech ||
@@ -711,77 +803,30 @@ function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string
     !!notation ||
     tagList.length > 0 ||
     !!colorName ||
-    !!border ||
-    !!opacityVal ||
-    !!shapeOverride ||
+    !!cell.border?.trim() ||
+    !!cell.opacity ||
+    !!inferShape(cell.style) ||
     !!cell.size ||
     !!cell.padding ||
     !!cell.textSize ||
     !!cell.iconPosition ||
     !!navigateTo ||
     !!icon
-  if (kind === 'actor') {
-    ctx.lines.push(`${pad}${name} = actor '${title.replaceAll('\'', '\'\'')}'`)
-  } else if (kind === 'system') {
-    ctx.lines.push(`${pad}${name} = system '${title.replaceAll('\'', '\'\'')}'`)
-  } else {
-    ctx.lines.push(`${pad}${name} = container '${title.replaceAll('\'', '\'\'')}'`)
-  }
+
+  pushElementHeader(ctx, pad, name, kind, title)
+
   if (hasBody) {
     ctx.lines.push(`${pad}{`)
-    const sizeVal = cell.size?.trim()
-    const paddingVal = cell.padding?.trim()
-    const textSizeVal = cell.textSize?.trim()
-    const iconPositionVal = cell.iconPosition?.trim()
-    if (
-      colorName ||
-      border ||
-      opacityVal ||
-      shapeOverride ||
-      sizeVal ||
-      paddingVal ||
-      textSizeVal ||
-      iconPositionVal
-    ) {
-      const styleParts: string[] = []
-      if (colorName) styleParts.push(`color ${colorName}`)
-      if (border && ['solid', 'dashed', 'dotted', 'none'].includes(border)) {
-        styleParts.push(`border ${border}`)
-      }
-      if (opacityVal && /^\d+$/.test(opacityVal)) styleParts.push(`opacity ${opacityVal}`)
-      if (shapeOverride) styleParts.push(`shape ${shapeOverride}`)
-      if (sizeVal) styleParts.push(`size ${sizeVal}`)
-      if (paddingVal) styleParts.push(`padding ${paddingVal}`)
-      if (textSizeVal) styleParts.push(`textSize ${textSizeVal}`)
-      if (iconPositionVal) styleParts.push(`iconPosition ${iconPositionVal}`)
-      if (styleParts.length > 0) ctx.lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
-    }
+    pushElementStyleBlock(ctx, pad, cell, colorName)
     for (const t of tagList) ctx.lines.push(`${pad}  #${t.replaceAll(/\s+/g, '_')}`)
-    if (desc) ctx.lines.push(`${pad}  description '${desc.replaceAll('\'', '\'\'')}'`)
-    if (tech) ctx.lines.push(`${pad}  technology '${tech.replaceAll('\'', '\'\'')}'`)
-    if (summary) ctx.lines.push(`${pad}  summary '${summary.replaceAll('\'', '\'\'')}'`)
-    if (notes) ctx.lines.push(`${pad}  notes '${notes.replaceAll('\'', '\'\'')}'`)
-    if (notation) ctx.lines.push(`${pad}  notation '${notation.replaceAll('\'', '\'\'')}'`)
-    try {
-      const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
-      if (Array.isArray(linksArr)) {
-        for (const link of linksArr) {
-          if (link?.url) {
-            ctx.lines.push(
-              `${pad}  link '${String(link.url).replaceAll('\'', '\'\'')}'${
-                link.title ? ` '${String(link.title).replaceAll('\'', '\'\'')}'` : ''
-              }`,
-            )
-          }
-        }
-      } else if (nativeLink) {
-        ctx.lines.push(`${pad}  link '${nativeLink.replaceAll('\'', '\'\'')}'`)
-      }
-    } catch {
-      if (nativeLink) ctx.lines.push(`${pad}  link '${nativeLink.replaceAll('\'', '\'\'')}'`)
-    }
+    if (desc) ctx.lines.push(`${pad}  description '${escapeLikec4Quotes(desc)}'`)
+    if (tech) ctx.lines.push(`${pad}  technology '${escapeLikec4Quotes(tech)}'`)
+    if (summary) ctx.lines.push(`${pad}  summary '${escapeLikec4Quotes(summary)}'`)
+    if (notes) ctx.lines.push(`${pad}  notes '${escapeLikec4Quotes(notes)}'`)
+    if (notation) ctx.lines.push(`${pad}  notation '${escapeLikec4Quotes(notation)}'`)
+    pushElementLinks(ctx, pad, linksJson, nativeLink)
     if (navigateTo) ctx.lines.push(`${pad}  navigateTo ${navigateTo}`)
-    if (icon) ctx.lines.push(`${pad}  icon '${icon.replaceAll('\'', '\'\'')}'`)
+    if (icon) ctx.lines.push(`${pad}  icon '${escapeLikec4Quotes(icon)}'`)
     if (childList && childList.length > 0) {
       for (const ch of childList) {
         emitElementToLines(ctx, ch.cellId, ch.fqn, indent + 1)
@@ -803,7 +848,7 @@ function emitEdgesToLines(
   hexToCustomName: Map<string, string>,
 ): void {
   for (const { cell: e, src, tgt } of edgeEntries) {
-    const title = (e.value && e.value.trim()) ? e.value.replaceAll('\'', '\'\'').trim() : ''
+    const title = (e.value && e.value.trim()) ? escapeLikec4Quotes(e.value.trim()) : ''
     const desc = e.description?.trim()
     const tech = e.technology?.trim()
     const notes = e.notes?.trim()
@@ -820,22 +865,22 @@ function emitEdgesToLines(
       !!metadataJson || !!edgeStrokeHex
     const arrowPart = relKind && /^[a-zA-Z0-9_-]+$/.test(relKind) ? ` -[${relKind}]-> ` : ' -> '
     const titlePart = title ? ` '${title}'` : desc || tech ? ` ''` : ''
-    const descPart = desc ? ` '${desc.replaceAll('\'', '\'\'')}'` : ''
-    const techPart = tech ? ` '${tech.replaceAll('\'', '\'\'')}'` : ''
+    const descPart = desc ? ` '${escapeLikec4Quotes(desc)}'` : ''
+    const techPart = tech ? ` '${escapeLikec4Quotes(tech)}'` : ''
     const relationHead = `  ${src}${arrowPart}${tgt}${titlePart}${descPart}${techPart}`
     if (hasBody) {
       const bodyLines: string[] = []
-      if (notes) bodyLines.push(`    notes '${notes.replaceAll('\'', '\'\'')}'`)
+      if (notes) bodyLines.push(`    notes '${escapeLikec4Quotes(notes)}'`)
       if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
-      if (notation) bodyLines.push(`    notation '${notation.replaceAll('\'', '\'\'')}'`)
+      if (notation) bodyLines.push(`    notation '${escapeLikec4Quotes(notation)}'`)
       try {
         const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
         if (Array.isArray(linksArr)) {
           for (const link of linksArr) {
             if (link?.url) {
               bodyLines.push(
-                `    link '${String(link.url).replaceAll('\'', '\'\'')}'${
-                  link.title ? ` '${String(link.title).replaceAll('\'', '\'\'')}'` : ''
+                `    link '${escapeLikec4Quotes(String(link.url))}'${
+                  link.title ? ` '${escapeLikec4Quotes(String(link.title))}'` : ''
                 }`,
               )
             }
@@ -850,12 +895,12 @@ function emitEdgesToLines(
           const metaAttrs: string[] = []
           for (const [k, v] of Object.entries(metaObj)) {
             if (k.trim() === '') continue
-            const safeKey = /^[a-zA-Z_]\w*$/.test(k) ? k : `'${k.replaceAll('\'', '\'\'')}'`
+            const safeKey = /^[a-zA-Z_]\w*$/.test(k) ? k : `'${escapeLikec4Quotes(k)}'`
             if (Array.isArray(v)) {
-              const arrVals = v.map(s => `'${String(s).replaceAll('\'', '\'\'')}'`)
+              const arrVals = v.map(s => `'${escapeLikec4Quotes(String(s))}'`)
               metaAttrs.push(` ${safeKey} [ ${arrVals.join(', ')} ];`)
             } else if (v != null && typeof v === 'string') {
-              metaAttrs.push(` ${safeKey} '${v.replaceAll('\'', '\'\'')}';`)
+              metaAttrs.push(` ${safeKey} '${escapeLikec4Quotes(v)}';`)
             }
           }
           if (metaAttrs.length > 0) {
