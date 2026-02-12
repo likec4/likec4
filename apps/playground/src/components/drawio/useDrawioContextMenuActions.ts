@@ -2,13 +2,38 @@ import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import {
+  buildDrawioExportOptionsFromSource,
+  DEFAULT_DRAWIO_ALL_FILENAME,
   generateDrawio,
   generateDrawioMulti,
-  parseDrawioRoundtripComments,
 } from '@likec4/generators'
 import type { GenerateDrawioOptions } from '@likec4/generators'
 import { useDisclosure } from '@mantine/hooks'
 import { useCallback, useMemo, useState } from 'react'
+import { DRAWIO_MIME_TYPE } from './drawio-events'
+
+type ViewModelLike = { $view: DiagramView; get $styles(): LikeC4Model['$styles'] | null }
+
+/** Single place for "blob → object URL → download link → revoke" (DRY). */
+function downloadDrawioBlob(xml: string, filename: string): void {
+  const blob = new Blob([xml], { type: DRAWIO_MIME_TYPE })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+/** Build viewmodel shape expected by generateDrawio / generateDrawioMulti (single responsibility). */
+function toViewModel(view: DiagramView, styles: LikeC4Model['$styles'] | null): ViewModelLike {
+  return {
+    $view: view,
+    get $styles() {
+      return styles ?? null
+    },
+  }
+}
 
 export type DiagramStateLike = {
   state: string
@@ -27,6 +52,64 @@ export type UseDrawioContextMenuActionsParams = {
   layoutViews?: (viewIds: string[]) => Promise<Record<string, DiagramView>>
 }
 
+/** Gather all view models needed for "Export all views" (single responsibility; testable). */
+async function collectViewModelsForExportAll(
+  viewIdsInModel: string[],
+  allViewModelsFromState: ViewModelLike[],
+  likec4model: LikeC4Model | null,
+  viewStates: Record<string, DiagramStateLike>,
+  getLayoutedModel: (() => Promise<LayoutedLikeC4ModelData | null>) | undefined,
+  layoutViews: ((viewIds: string[]) => Promise<Record<string, DiagramView>>) | undefined,
+): Promise<ViewModelLike[]> {
+  if (!likec4model || viewIdsInModel.length === 0) return []
+  const styles = likec4model.$styles
+  const byId = new Map<string, ViewModelLike>()
+  for (const vm of allViewModelsFromState) byId.set(vm.$view.id, vm)
+  if (getLayoutedModel) {
+    try {
+      const model = await getLayoutedModel()
+      if (model?.views && typeof model.views === 'object') {
+        for (const view of Object.values(model.views)) {
+          byId.set(view.id, toViewModel(view, styles ?? null))
+        }
+      }
+    } catch (e) {
+      console.error('DrawIO export: failed to fetch layouted model', e)
+    }
+  }
+  for (const viewId of viewIdsInModel) {
+    if (!byId.has(viewId)) {
+      const state = viewStates[viewId]
+      if (state?.state === 'success' && state.diagram) {
+        byId.set(viewId, toViewModel(state.diagram, styles ?? null))
+      }
+    }
+  }
+  const missing = viewIdsInModel.filter(id => !byId.has(id))
+  if (missing.length > 0 && layoutViews) {
+    try {
+      const diagrams = await layoutViews(missing)
+      for (const viewId of missing) {
+        const diagram = diagrams[viewId]
+        if (diagram) byId.set(viewId, toViewModel(diagram, styles ?? null))
+      }
+    } catch (e) {
+      console.error('DrawIO export: layoutViews failed', e)
+    }
+  }
+  for (const viewId of viewIdsInModel) {
+    if (!byId.has(viewId)) {
+      try {
+        const vm = likec4model.view(viewId as Parameters<LikeC4Model['view']>[0])
+        if (vm?.$view) byId.set(viewId, toViewModel(vm.$view as DiagramView, styles ?? null))
+      } catch {
+        // view might not exist for this id
+      }
+    }
+  }
+  return viewIdsInModel.map(id => byId.get(id)).filter(Boolean) as ViewModelLike[]
+}
+
 export function useDrawioContextMenuActions({
   diagram,
   likec4model,
@@ -37,19 +120,10 @@ export function useDrawioContextMenuActions({
 }: UseDrawioContextMenuActionsParams) {
   const allViewModelsFromState = useMemo(() => {
     if (!likec4model) return []
-    const list: Array<{ $view: DiagramView; get $styles(): LikeC4Model['$styles'] }> = []
     const styles = likec4model.$styles
-    for (const vs of Object.values(viewStates)) {
-      if (vs?.state === 'success' && vs.diagram) {
-        list.push({
-          $view: vs.diagram,
-          get $styles() {
-            return styles ?? null
-          },
-        })
-      }
-    }
-    return list
+    return (Object.values(viewStates) ?? [])
+      .filter((vs): vs is DiagramStateLike & { diagram: DiagramView } => vs?.state === 'success' && !!vs.diagram)
+      .map(vs => toViewModel(vs.diagram!, styles ?? null))
   }, [likec4model, viewStates])
   const [opened, { open, close }] = useDisclosure(false)
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
@@ -75,44 +149,13 @@ export function useDrawioContextMenuActions({
           // use current diagram if layout fetch fails
         }
       }
-      const viewmodel = {
-        $view: viewToExport,
-        get $styles() {
-          return likec4model?.$styles ?? null
-        },
-      }
-      let options: Parameters<typeof generateDrawio>[1] | undefined
-      const sourceContent = getSourceContent?.()
-      if (sourceContent) {
-        const roundtrip = parseDrawioRoundtripComments(sourceContent)
-        if (roundtrip) {
-          const layoutForView = roundtrip.layoutByView[diagram.id]?.nodes
-          options = { compressed: false }
-          if (layoutForView != null) options.layoutOverride = layoutForView
-          if (Object.keys(roundtrip.strokeColorByFqn).length > 0) {
-            options.strokeColorByNodeId = roundtrip.strokeColorByFqn
-          }
-          if (Object.keys(roundtrip.strokeWidthByFqn).length > 0) {
-            options.strokeWidthByNodeId = roundtrip.strokeWidthByFqn
-          }
-          if (Object.keys(roundtrip.edgeWaypoints).length > 0) {
-            options.edgeWaypoints = roundtrip.edgeWaypoints
-          }
-        }
-      }
-      if (options) options.compressed = false
-      else options = { compressed: false }
+      const viewmodel = toViewModel(viewToExport, likec4model?.$styles ?? null)
+      const options = buildDrawioExportOptionsFromSource(diagram.id, getSourceContent?.())
       const xml = generateDrawio(
         viewmodel as Parameters<typeof generateDrawio>[0],
         options,
       )
-      const blob = new Blob([xml], { type: 'application/x-drawio' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${diagram.id}.drawio`
-      a.click()
-      setTimeout(() => URL.revokeObjectURL(url), 1000)
+      downloadDrawioBlob(xml, `${diagram.id}.drawio`)
     } catch (err) {
       console.error('DrawIO export failed', err)
     }
@@ -120,119 +163,28 @@ export function useDrawioContextMenuActions({
 
   const handleExportAllViews = useCallback(async () => {
     close()
-    type ViewModel = { $view: DiagramView; get $styles(): LikeC4Model['$styles'] | null }
     if (!likec4model) return
     const viewIdsInModel = [...likec4model.views()].map(vm => vm.$view.id)
-    if (viewIdsInModel.length === 0) return
-    const styles = likec4model.$styles
-    const byId = new Map<string, ViewModel>()
-    for (const vm of allViewModelsFromState) byId.set(vm.$view.id, vm)
-    if (getLayoutedModel) {
-      try {
-        const model = await getLayoutedModel()
-        if (model?.views && typeof model.views === 'object') {
-          for (const view of Object.values(model.views)) {
-            byId.set(view.id, {
-              $view: view,
-              get $styles() {
-                return styles ?? null
-              },
-            })
-          }
-        }
-      } catch (e) {
-        console.error('DrawIO export: failed to fetch layouted model', e)
-      }
-    }
-    for (const viewId of viewIdsInModel) {
-      if (!byId.has(viewId)) {
-        const state = viewStates[viewId]
-        if (state?.state === 'success' && state.diagram) {
-          byId.set(viewId, {
-            $view: state.diagram,
-            get $styles() {
-              return styles ?? null
-            },
-          })
-        }
-      }
-    }
-    const missing = viewIdsInModel.filter(id => !byId.has(id))
-    if (missing.length > 0 && layoutViews) {
-      try {
-        const diagrams = await layoutViews(missing)
-        for (const viewId of missing) {
-          const diagram = diagrams[viewId]
-          if (diagram) {
-            byId.set(viewId, {
-              $view: diagram,
-              get $styles() {
-                return styles ?? null
-              },
-            })
-          }
-        }
-      } catch (e) {
-        console.error('DrawIO export: layoutViews failed', e)
-      }
-    }
-    for (const viewId of viewIdsInModel) {
-      if (!byId.has(viewId)) {
-        try {
-          const vm = likec4model.view(viewId as Parameters<LikeC4Model['view']>[0])
-          if (vm?.$view) {
-            byId.set(viewId, {
-              $view: vm.$view as DiagramView,
-              get $styles() {
-                return styles ?? null
-              },
-            })
-          }
-        } catch {
-          // view might not exist for this id
-        }
-      }
-    }
-    const viewModels = viewIdsInModel.map(id => byId.get(id)).filter(Boolean) as ViewModel[]
+    const viewModels = await collectViewModelsForExportAll(
+      viewIdsInModel,
+      allViewModelsFromState,
+      likec4model,
+      viewStates,
+      getLayoutedModel,
+      layoutViews,
+    )
     if (viewModels.length === 0) return
     try {
-      let optionsByViewId: Record<string, GenerateDrawioOptions> | undefined
       const sourceContent = getSourceContent?.()
-      if (sourceContent) {
-        const roundtrip = parseDrawioRoundtripComments(sourceContent)
-        if (roundtrip) {
-          optionsByViewId = {}
-          for (const vm of viewModels) {
-            const view = vm.$view
-            const opts: GenerateDrawioOptions = { compressed: false }
-            const layoutForView = roundtrip.layoutByView[view.id]?.nodes
-            if (layoutForView != null) opts.layoutOverride = layoutForView
-            if (Object.keys(roundtrip.strokeColorByFqn).length > 0) {
-              opts.strokeColorByNodeId = roundtrip.strokeColorByFqn
-            }
-            if (Object.keys(roundtrip.strokeWidthByFqn).length > 0) {
-              opts.strokeWidthByNodeId = roundtrip.strokeWidthByFqn
-            }
-            if (Object.keys(roundtrip.edgeWaypoints).length > 0) opts.edgeWaypoints = roundtrip.edgeWaypoints
-            optionsByViewId[view.id] = opts
-          }
-        }
-      }
-      if (!optionsByViewId) {
-        optionsByViewId = {}
-        for (const vm of viewModels) optionsByViewId[vm.$view.id] = { compressed: false }
+      const optionsByViewId: Record<string, GenerateDrawioOptions> = {}
+      for (const vm of viewModels) {
+        optionsByViewId[vm.$view.id] = buildDrawioExportOptionsFromSource(vm.$view.id, sourceContent)
       }
       const xml = generateDrawioMulti(
         viewModels as Parameters<typeof generateDrawioMulti>[0],
         optionsByViewId,
       )
-      const blob = new Blob([xml], { type: 'application/x-drawio' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'diagrams.drawio'
-      a.click()
-      setTimeout(() => URL.revokeObjectURL(url), 1000)
+      downloadDrawioBlob(xml, DEFAULT_DRAWIO_ALL_FILENAME)
     } catch (err) {
       console.error('DrawIO export all views failed', err)
     }

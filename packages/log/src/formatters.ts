@@ -13,6 +13,14 @@ import mergeErrorCause from 'merge-error-cause'
 import wrapErrorMessage from 'wrap-error-message'
 import { indent, parseStack } from './utils'
 
+function safeStringify(value: unknown): string {
+  try {
+    return JSON.stringify(value)
+  } catch {
+    return '[unserializable value]'
+  }
+}
+
 function gerErrorFromLogRecord(record: LogRecord): Error | null {
   const errors = Object
     .entries(record.properties)
@@ -28,13 +36,7 @@ function gerErrorFromLogRecord(record: LogRecord): Error | null {
         const msg = typeof err === 'string'
           ? err
           : err !== null && typeof err === 'object'
-          ? (() => {
-            try {
-              return JSON.stringify(err)
-            } catch {
-              return '[unserializable value]'
-            }
-          })()
+          ? safeStringify(err)
           : String(err)
         return [new Error(msg)]
       }

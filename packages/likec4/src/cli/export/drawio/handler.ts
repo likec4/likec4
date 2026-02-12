@@ -1,15 +1,24 @@
-import type { ProjectId } from '@likec4/core/types'
+import type { LikeC4ViewModel } from '@likec4/core/model'
+import type { aux, ProjectId } from '@likec4/core/types'
 import type { GenerateDrawioOptions } from '@likec4/generators'
-import { generateDrawio, generateDrawioMulti, parseDrawioRoundtripComments } from '@likec4/generators'
+import {
+  buildDrawioExportOptionsFromSource,
+  DEFAULT_DRAWIO_ALL_FILENAME,
+  generateDrawio,
+  generateDrawioMulti,
+} from '@likec4/generators'
 import { loggable } from '@likec4/log'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
 import { LikeC4 } from '../../../LikeC4'
-import { createLikeC4Logger, startTimer } from '../../../logger'
+import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
+
+/** File extension for DrawIO files (single source of truth in CLI). */
+const DRAWIO_FILE_EXT = '.drawio'
 
 async function readWorkspaceSourceContent(workspacePath: string): Promise<string> {
   const chunks: string[] = []
@@ -28,6 +37,134 @@ async function readWorkspaceSourceContent(workspacePath: string): Promise<string
   }
   await walk(workspacePath)
   return chunks.join('\n\n')
+}
+
+/** Single place for roundtrip source: only reads workspace when roundtrip is true (DRY). */
+async function getSourceContentIfRoundtrip(
+  workspacePath: string,
+  roundtrip: boolean,
+): Promise<string | undefined> {
+  if (!roundtrip) return undefined
+  return readWorkspaceSourceContent(resolve(workspacePath))
+}
+
+/** Build per-view export options from optional source (DRY for all-in-one and per-view). */
+function buildOptionsByViewId(
+  viewmodels: LikeC4ViewModel<aux.Unknown>[],
+  sourceContent: string | undefined,
+  uncompressed: boolean,
+): Record<string, GenerateDrawioOptions> {
+  const optionsByViewId: Record<string, GenerateDrawioOptions> = {}
+  const overrides = uncompressed ? { compressed: false } : undefined
+  for (const vm of viewmodels) {
+    const viewId = vm.$view.id as string
+    optionsByViewId[viewId] = buildDrawioExportOptionsFromSource(viewId, sourceContent, overrides)
+  }
+  return optionsByViewId
+}
+
+/** Export all views as one .drawio file (one tab per view). */
+async function exportDrawioAllInOne(params: {
+  viewmodels: LikeC4ViewModel<aux.Unknown>[]
+  outdir: string
+  workspacePath: string
+  roundtrip: boolean
+  uncompressed: boolean
+  logger: ViteLogger
+}): Promise<void> {
+  const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, logger } = params
+  const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip)
+  const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed)
+  const generated = generateDrawioMulti(viewmodels, optionsByViewId)
+  const outfile = resolve(outdir, DEFAULT_DRAWIO_ALL_FILENAME)
+  await writeFile(outfile, generated)
+  logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)} (${viewmodels.length} tab(s))`)
+}
+
+/** Export each view to a separate .drawio file. */
+async function exportDrawioPerView(params: {
+  viewmodels: LikeC4ViewModel<aux.Unknown>[]
+  outdir: string
+  workspacePath: string
+  roundtrip: boolean
+  uncompressed: boolean
+  logger: ViteLogger
+}): Promise<{ succeeded: number }> {
+  const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, logger } = params
+  const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip)
+  const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed)
+  let succeeded = 0
+  for (const vm of viewmodels) {
+    const viewId = vm.$view.id as string
+    try {
+      const generated = generateDrawio(vm, optionsByViewId[viewId])
+      const outfile = resolve(outdir, viewId + DRAWIO_FILE_EXT)
+      await writeFile(outfile, generated)
+      logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
+      succeeded++
+    } catch (err) {
+      logger.error(`Failed to export view ${viewId}`, {
+        error: err instanceof Error ? err : new Error(loggable(err)),
+      })
+    }
+  }
+  return { succeeded }
+}
+
+type DrawioExportArgs = {
+  path: string
+  outdir: string
+  allInOne: boolean
+  roundtrip: boolean
+  uncompressed: boolean
+  project: string | undefined
+}
+
+/** Run the export workflow: init workspace, load model, then delegate to all-in-one or per-view (single responsibility). */
+async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Promise<void> {
+  const timer = startTimer(logger)
+  const likec4 = await LikeC4.fromWorkspace(args.path, {
+    logger,
+    graphviz: useDotBin ? 'binary' : 'wasm',
+    watch: false,
+  })
+  likec4.ensureSingleProject()
+
+  const projectId: ProjectId | undefined = args.project != null
+    ? likec4.languageServices.projectsManager.ensureProjectId(args.project as ProjectId)
+    : undefined
+  const model = await likec4.layoutedModel(projectId)
+  if (model === LikeC4Model.EMPTY) {
+    logger.error('No project or empty model')
+    throw new Error('No project or empty model')
+  }
+
+  await mkdir(args.outdir, { recursive: true })
+  const viewmodels = [...model.views()]
+
+  const exportParams = {
+    viewmodels,
+    outdir: args.outdir,
+    workspacePath: args.path,
+    roundtrip: args.roundtrip,
+    uncompressed: args.uncompressed,
+    logger,
+  }
+
+  if (args.allInOne && viewmodels.length > 0) {
+    try {
+      await exportDrawioAllInOne(exportParams)
+    } catch (err) {
+      logger.error('Failed to export DrawIO', {
+        error: err instanceof Error ? err : new Error(loggable(err)),
+      })
+    }
+  } else {
+    const { succeeded } = await exportDrawioPerView(exportParams)
+    if (succeeded > 0) logger.info(`${k.dim('total')} ${succeeded} DrawIO file(s)`)
+  }
+
+  timer.stopAndLog(`✓ export drawio in `)
 }
 
 export function drawioCmd(yargs: Argv) {
@@ -78,124 +215,18 @@ export function drawioCmd(yargs: Argv) {
     ${k.gray('Export with raw XML (no compression) for draw.io desktop compatibility')}
 `),
     handler: async args => {
-      const outdir = args.outdir ?? args.path
-      const allInOne = args.allInOne === true
-      const roundtrip = args.roundtrip === true
-      const uncompressed = args.uncompressed === true
-      const onlyProject = args.project
       const logger = createLikeC4Logger('c4:export')
-
-      const timer = startTimer(logger)
-      const likec4 = await LikeC4.fromWorkspace(args.path, {
+      await runExportDrawio(
+        {
+          path: args.path,
+          outdir: args.outdir ?? args.path,
+          allInOne: args.allInOne === true,
+          roundtrip: args.roundtrip === true,
+          uncompressed: args.uncompressed === true,
+          project: args.project,
+        },
         logger,
-        graphviz: useDotBin ? 'binary' : 'wasm',
-        watch: false,
-      })
-
-      likec4.ensureSingleProject()
-
-      const projectId: ProjectId | undefined = onlyProject != null
-        ? likec4.languageServices.projectsManager.ensureProjectId(onlyProject as ProjectId)
-        : undefined
-      const model = await likec4.layoutedModel(projectId)
-      if (model === LikeC4Model.EMPTY) {
-        logger.error('No project or empty model')
-        throw new Error('No project or empty model')
-      }
-
-      await mkdir(outdir, { recursive: true })
-
-      const viewmodels = [...model.views()]
-
-      if (allInOne && viewmodels.length > 0) {
-        try {
-          let optionsByViewId: Record<string, GenerateDrawioOptions> | undefined
-          if (roundtrip || uncompressed) {
-            if (roundtrip) {
-              const sourceContent = await readWorkspaceSourceContent(resolve(args.path))
-              const roundtripData = parseDrawioRoundtripComments(sourceContent)
-              if (roundtripData) {
-                optionsByViewId = {}
-                for (const vm of viewmodels) {
-                  const view = vm.$view
-                  const opts: GenerateDrawioOptions = {}
-                  const layoutForView = roundtripData.layoutByView[view.id]?.nodes
-                  if (layoutForView != null) opts.layoutOverride = layoutForView
-                  if (Object.keys(roundtripData.strokeColorByFqn).length > 0) {
-                    opts.strokeColorByNodeId = roundtripData.strokeColorByFqn
-                  }
-                  if (Object.keys(roundtripData.strokeWidthByFqn).length > 0) {
-                    opts.strokeWidthByNodeId = roundtripData.strokeWidthByFqn
-                  }
-                  if (Object.keys(roundtripData.edgeWaypoints).length > 0) {
-                    opts.edgeWaypoints = roundtripData.edgeWaypoints
-                  }
-                  if (uncompressed) opts.compressed = false
-                  optionsByViewId[view.id] = opts
-                }
-              }
-            }
-            if (uncompressed && !optionsByViewId) {
-              optionsByViewId = {}
-              for (const vm of viewmodels) {
-                optionsByViewId[vm.$view.id] = { compressed: false }
-              }
-            }
-          }
-          const generated = generateDrawioMulti(viewmodels, optionsByViewId)
-          const outfile = resolve(outdir, 'diagrams.drawio')
-          await writeFile(outfile, generated)
-          logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)} (${viewmodels.length} tab(s))`)
-        } catch (err) {
-          logger.error('Failed to export DrawIO', {
-            error: err instanceof Error ? err : new Error(loggable(err)),
-          })
-        }
-      } else {
-        let roundtripData: Awaited<ReturnType<typeof parseDrawioRoundtripComments>> = null
-        if (roundtrip) {
-          const sourceContent = await readWorkspaceSourceContent(resolve(args.path))
-          roundtripData = parseDrawioRoundtripComments(sourceContent)
-        }
-        let succeeded = 0
-        for (const vm of viewmodels) {
-          const view = vm.$view
-          try {
-            let options: Parameters<typeof generateDrawio>[1] | undefined
-            if (roundtripData || uncompressed) {
-              options = {}
-              if (uncompressed) options.compressed = false
-              if (roundtripData) {
-                const layoutForView = roundtripData.layoutByView[view.id]?.nodes
-                if (layoutForView != null) options.layoutOverride = layoutForView
-                if (Object.keys(roundtripData.strokeColorByFqn).length > 0) {
-                  options.strokeColorByNodeId = roundtripData.strokeColorByFqn
-                }
-                if (Object.keys(roundtripData.strokeWidthByFqn).length > 0) {
-                  options.strokeWidthByNodeId = roundtripData.strokeWidthByFqn
-                }
-                if (Object.keys(roundtripData.edgeWaypoints).length > 0) {
-                  options.edgeWaypoints = roundtripData.edgeWaypoints
-                }
-              }
-            }
-            const generated = generateDrawio(vm, options)
-            const outfile = resolve(outdir, view.id + '.drawio')
-            await writeFile(outfile, generated)
-            logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
-            succeeded++
-          } catch (err) {
-            logger.error(`Failed to export view ${view.id}`, {
-              error: err instanceof Error ? err : new Error(loggable(err)),
-            })
-          }
-        }
-        if (succeeded > 0) {
-          logger.info(`${k.dim('total')} ${succeeded} DrawIO file(s)`)
-        }
-      }
-
-      timer.stopAndLog(`✓ export drawio in `)
+      )
     },
   })
 }

@@ -1,5 +1,11 @@
 export { generateD2 } from './d2/generate-d2'
-export { generateDrawio, generateDrawioMulti, type GenerateDrawioOptions } from './drawio/generate-drawio'
+export { DEFAULT_DRAWIO_ALL_FILENAME } from './drawio/constants'
+export {
+  buildDrawioExportOptionsFromSource,
+  generateDrawio,
+  generateDrawioMulti,
+  type GenerateDrawioOptions,
+} from './drawio/generate-drawio'
 export {
   getAllDiagrams,
   parseDrawioRoundtripComments,

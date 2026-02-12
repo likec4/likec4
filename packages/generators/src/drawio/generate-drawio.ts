@@ -14,6 +14,28 @@ import type {
 import { flattenMarkdownOrString } from '@likec4/core/types'
 import pako from 'pako'
 import { isEmptyish, isNullish as isNil } from 'remeda'
+import {
+  CONTAINER_TITLE_CELL_ID_START,
+  CONTAINER_TITLE_CHAR_WIDTH_PX,
+  CONTAINER_TITLE_HEIGHT_PX,
+  CONTAINER_TITLE_INSET_X,
+  CONTAINER_TITLE_INSET_Y,
+  CONTAINER_TITLE_MAX_WIDTH_PX,
+  CONTAINER_TITLE_MIN_WIDTH_PX,
+  DEFAULT_CANVAS_HEIGHT,
+  DEFAULT_CANVAS_WIDTH,
+  DEFAULT_NODE_FILL_HEX,
+  DEFAULT_NODE_FONT_HEX,
+  DEFAULT_NODE_HEIGHT,
+  DEFAULT_NODE_STROKE_HEX,
+  DEFAULT_NODE_WIDTH,
+  DRAWIO_DIAGRAM_ID_PREFIX,
+  DRAWIO_PAGE_LINK_PREFIX,
+  MXGRAPH_PAGE_HEIGHT,
+  MXGRAPH_PAGE_WIDTH,
+  NODES_SPREAD_GAP,
+} from './constants'
+import { parseDrawioRoundtripComments } from './parse-drawio'
 
 /**
  * DrawIO diagram generator.
@@ -43,10 +65,8 @@ function uint8ArrayToBase64(bytes: Uint8Array): string {
     return Buffer.from(bytes).toString('base64')
   }
   let binary = ''
-  const chunk = 8192
-  for (let i = 0; i < bytes.length; i += chunk) {
-    const slice = bytes.subarray(i, i + chunk)
-    binary += String.fromCodePoint(...slice)
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]!)
   }
   return btoa(binary)
 }
@@ -219,6 +239,446 @@ function normalizeEdgePoint(
   return []
 }
 
+/** Build HTML value for a vertex cell (title only or title + description). */
+function buildNodeValueHtml(
+  title: string,
+  desc: string,
+  isContainer: boolean,
+  fontHex: string,
+  fontFamily: string,
+  fontSizePx: number,
+): string {
+  if (isContainer) return ''
+  if (desc !== '') {
+    return `<div style="box-sizing:border-box;width:100%;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:${fontHex};font-family:${fontFamily};"><b style="font-size:${fontSizePx}px;">${
+      escapeHtml(title)
+    }</b><br/><span style="font-weight:normal;font-size:${fontSizePx}px;">${escapeHtml(desc)}</span></div>`
+  }
+  return `<div style="box-sizing:border-box;width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;text-align:center;color:${fontHex};font-family:${fontFamily};"><b style="font-size:${fontSizePx}px;">${
+    escapeHtml(title)
+  }</b></div>`
+}
+
+/** Push "key=value" to parts when value is set; encodes value for style string (avoids repeated conditionals). */
+function pushStylePart(parts: string[], key: string, value: string | undefined | null): void {
+  if (value != null && value !== '') parts.push(`${key}=${encodeURIComponent(value)}`)
+}
+
+/** Push "key=value" for numeric value (no encoding). */
+function pushStylePartNum(parts: string[], key: string, value: number | undefined | null): void {
+  if (value != null) parts.push(`${key}=${value}`)
+}
+
+const HEX_COLOR_RE = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/
+
+/** Build LikeC4 style string (likec4Description=...; etc.) for round-trip. */
+function buildLikec4StyleForNode(params: {
+  desc: string
+  tech: string
+  notes: string
+  tagList: string
+  navTo: string
+  iconName: string
+  summaryStr: string
+  linksJson: string
+  borderVal: string | undefined
+  containerOpacityNum: number | undefined
+  strokeWidth: string
+  colorNameForRoundtrip: string
+  nodeStyle: { size?: string; padding?: string; textSize?: string; iconPosition?: string } | undefined
+  strokeHex: string
+  nodeNotation: string | undefined
+}): string {
+  const parts: string[] = []
+  pushStylePart(parts, 'likec4Description', params.desc)
+  pushStylePart(parts, 'likec4Technology', params.tech)
+  pushStylePart(parts, 'likec4Notes', params.notes)
+  pushStylePart(parts, 'likec4Tags', params.tagList)
+  pushStylePart(parts, 'likec4NavigateTo', params.navTo)
+  pushStylePart(parts, 'likec4Icon', params.iconName)
+  pushStylePart(parts, 'likec4Summary', params.summaryStr)
+  if (params.linksJson !== '') parts.push(`likec4Links=${params.linksJson}`)
+  pushStylePart(parts, 'likec4Border', params.borderVal)
+  pushStylePartNum(parts, 'likec4Opacity', params.containerOpacityNum)
+  pushStylePart(parts, 'likec4StrokeWidth', params.strokeWidth)
+  if (params.colorNameForRoundtrip !== '') parts.push(`likec4ColorName=${params.colorNameForRoundtrip}`)
+  pushStylePart(parts, 'likec4Size', params.nodeStyle?.size)
+  pushStylePart(parts, 'likec4Padding', params.nodeStyle?.padding)
+  pushStylePart(parts, 'likec4TextSize', params.nodeStyle?.textSize)
+  pushStylePart(parts, 'likec4IconPosition', params.nodeStyle?.iconPosition)
+  if (params.strokeHex && HEX_COLOR_RE.test(params.strokeHex)) {
+    pushStylePart(parts, 'likec4StrokeColor', params.strokeHex)
+  }
+  pushStylePart(parts, 'likec4Notation', params.nodeNotation ?? undefined)
+  return parts.length > 0 ? parts.join(';') + ';' : ''
+}
+
+/** Build mxUserObject XML from customData for round-trip; returns empty string when customData is missing or empty. */
+function buildMxUserObjectXml(customData: Record<string, string> | undefined): string {
+  if (
+    !customData ||
+    typeof customData !== 'object' ||
+    Array.isArray(customData) ||
+    Object.keys(customData).length === 0
+  ) {
+    return ''
+  }
+  return (
+    '\n  <mxUserObject>' +
+    Object.entries(customData)
+      .map(([k, v]) => {
+        const safeV = typeof v === 'string' ? v : (v != null ? String(v) : '')
+        return `<data key="${escapeXml(k)}">${escapeXml(safeV)}</data>`
+      })
+      .join('') +
+    '</mxUserObject>'
+  )
+}
+
+/** Build LikeC4 style string for an edge (likec4Description=...; etc.) for round-trip. */
+function buildLikec4StyleForEdge(params: {
+  edgeDesc: string
+  edgeTech: string
+  edgeNotes: string
+  edgeNavTo: string
+  edgeKind: string | undefined
+  edgeNotation: string | undefined
+  edgeLinksJson: string
+  edgeMetadataJson: string
+}): string {
+  const parts: string[] = []
+  pushStylePart(parts, 'likec4Description', params.edgeDesc)
+  pushStylePart(parts, 'likec4Technology', params.edgeTech)
+  pushStylePart(parts, 'likec4Notes', params.edgeNotes)
+  pushStylePart(parts, 'likec4NavigateTo', params.edgeNavTo)
+  pushStylePart(parts, 'likec4RelationshipKind', params.edgeKind ?? undefined)
+  pushStylePart(parts, 'likec4Notation', params.edgeNotation ?? undefined)
+  if (params.edgeLinksJson !== '') parts.push(`likec4Links=${params.edgeLinksJson}`)
+  if (params.edgeMetadataJson !== '') parts.push(`likec4Metadata=${params.edgeMetadataJson}`)
+  return parts.length > 0 ? parts.join(';') + ';' : ''
+}
+
+/** Build a single edge mxCell XML (single responsibility; keeps generateDiagramContent shorter). */
+function buildEdgeCellXml(
+  edge: Edge,
+  layout: DiagramLayoutState,
+  options: GenerateDrawioOptions | undefined,
+  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  getCellId: (nodeId: NodeId) => string,
+  edgeCellId: string,
+): string {
+  const { bboxes, defaultParentId, fontFamily } = layout
+  const edgeWaypoints = options?.edgeWaypoints
+  const sourceId = getCellId(edge.source)
+  const targetId = getCellId(edge.target)
+  const sourceBbox = bboxes.get(edge.source)
+  const targetBbox = bboxes.get(edge.target)
+  const anchors = sourceBbox && targetBbox
+    ? edgeAnchors(sourceBbox, targetBbox)
+    : { exitX: 1, exitY: 0.5, entryX: 0, entryY: 0.5 }
+  const anchorStyle = `exitX=${anchors.exitX};exitY=${anchors.exitY};entryX=${anchors.entryX};entryY=${anchors.entryY};`
+  const label = edge.label ? escapeXml(edge.label) : ''
+  const strokeColor = getEdgeStrokeColor(viewmodel, edge.color)
+  const dashStyle = edge.line === 'dashed'
+    ? 'dashed=1;'
+    : edge.line === 'dotted'
+    ? 'dashed=1;dashPattern=1 1;'
+    : ''
+  const endArrow = drawioArrow(edge.head)
+  const startArrow = edge.tail == null || edge.tail === 'none' ? 'none' : drawioArrow(edge.tail)
+  const edgeDescRaw = flattenMarkdownOrString(edge.description)
+  const edgeTechRaw = flattenMarkdownOrString(edge.technology)
+  const edgeNotesRaw = flattenMarkdownOrString(edge.notes)
+  const edgeDesc = edgeDescRaw != null && !isEmptyish(edgeDescRaw) ? edgeDescRaw.trim() : ''
+  const edgeTech = edgeTechRaw != null && !isEmptyish(edgeTechRaw) ? edgeTechRaw.trim() : ''
+  const edgeNotes = edgeNotesRaw != null && !isEmptyish(edgeNotesRaw) ? edgeNotesRaw.trim() : ''
+  const edgeNavTo = edge.navigateTo != null && edge.navigateTo !== '' ? String(edge.navigateTo) : ''
+  const edgeKind = (edge as Edge & { kind?: string }).kind
+  const edgeNotation = (edge as Edge & { notation?: string }).notation
+  const edgeLinks = (edge as Edge & { links?: readonly { url: string; title?: string }[] }).links
+  const edgeLinksJson = Array.isArray(edgeLinks) && edgeLinks.length > 0
+    ? encodeURIComponent(JSON.stringify(edgeLinks.map(l => ({ url: l.url, title: l.title }))))
+    : ''
+  const edgeMetadata = (edge as Edge & { metadata?: Record<string, string | string[]> }).metadata
+  const edgeMetadataJson = edgeMetadata &&
+      typeof edgeMetadata === 'object' &&
+      !Array.isArray(edgeMetadata) &&
+      Object.keys(edgeMetadata).length > 0
+    ? encodeURIComponent(JSON.stringify(edgeMetadata))
+    : ''
+  const edgeLikec4Style = buildLikec4StyleForEdge({
+    edgeDesc,
+    edgeTech,
+    edgeNotes,
+    edgeNavTo,
+    edgeKind,
+    edgeNotation,
+    edgeLinksJson,
+    edgeMetadataJson,
+  })
+  const edgeCustomData = (edge as Edge & { customData?: Record<string, string> }).customData
+  const edgeUserObjectXml = buildMxUserObjectXml(edgeCustomData)
+  const rawEdgePoints = edgeWaypoints?.[`${edge.source}|${edge.target}|${edge.id}`] ??
+    edgeWaypoints?.[`${edge.source}|${edge.target}`]
+  const edgePoints: [number, number][] = Array.isArray(rawEdgePoints)
+    ? rawEdgePoints.flatMap(normalizeEdgePoint)
+    : []
+  const hasPoints = edgePoints.length > 0
+  const pointsXml = hasPoints
+    ? '<Array as="points">' +
+      edgePoints
+        .map(([px, py]) => `<mxPoint x="${Math.round(px)}" y="${Math.round(py)}"/>`)
+        .join('') +
+      '</Array>'
+    : ''
+  const edgeGeometryXml = hasPoints
+    ? `<mxGeometry relative="0" as="geometry">${pointsXml}</mxGeometry>`
+    : '<mxGeometry relative="1" as="geometry" />'
+  const edgeLabelColors = getEdgeLabelColors(viewmodel, edge.color)
+  const edgeLabelStyle = label === ''
+    ? ''
+    : `fontColor=${edgeLabelColors.font};fontSize=12;align=center;verticalAlign=middle;labelBackgroundColor=none;fontFamily=${
+      encodeURIComponent(fontFamily)
+    };`
+  return `<mxCell id="${edgeCellId}" value="${label}" style="endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;${anchorStyle}strokeColor=${strokeColor};strokeWidth=2;${dashStyle}${edgeLabelStyle}${edgeLikec4Style}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">
+  ${edgeGeometryXml}${edgeUserObjectXml}
+</mxCell>`
+}
+
+/** Result of building one node's cell(s): vertex XML and optional container title cell (single responsibility). */
+type NodeCellResult = { vertexXml: string; titleCellXml?: string; isContainer: boolean }
+
+/** Build one node's vertex mxCell XML (and optional container title cell) so generateDiagramContent stays short. */
+function buildNodeCellXml(
+  node: Node,
+  layout: DiagramLayoutState,
+  options: GenerateDrawioOptions | undefined,
+  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  getCellId: (nodeId: NodeId) => string,
+  containerTitleCellId: number,
+): NodeCellResult {
+  const {
+    bboxes,
+    containerNodeIds,
+    defaultParentId,
+    nodeIdsInView,
+    effectiveStyles,
+    fontFamily,
+    containerTitleFontSizePx,
+    containerTitleColor,
+  } = layout
+  const strokeColorByNodeId = options?.strokeColorByNodeId
+  const strokeWidthByNodeId = options?.strokeWidthByNodeId
+
+  const id = getCellId(node.id)
+  const bbox = bboxes.get(node.id)!
+  const { width, height } = bbox
+  const parentId = node.parent != null && nodeIdsInView.has(node.parent)
+    ? getCellId(node.parent)
+    : defaultParentId
+  const parentBbox = node.parent != null ? bboxes.get(node.parent) : undefined
+  const x = parentBbox == null ? bbox.x + layout.offsetX : bbox.x - parentBbox.x
+  const y = parentBbox == null ? bbox.y + layout.offsetY : bbox.y - parentBbox.y
+
+  const title = node.title
+  const descRaw = flattenMarkdownOrString(node.description)
+  const techRaw = flattenMarkdownOrString(node.technology)
+  const notesRaw = flattenMarkdownOrString((node as Node & { notes?: MarkdownOrString }).notes)
+  const desc = descRaw != null && !isEmptyish(descRaw) ? descRaw.trim() : ''
+  const tech = techRaw != null && !isEmptyish(techRaw) ? techRaw.trim() : ''
+  const notes = notesRaw != null && !isEmptyish(notesRaw) ? notesRaw.trim() : ''
+  const tags = (node as Node & { tags?: readonly string[] }).tags
+  const tagList = Array.isArray(tags) && tags.length > 0 ? tags.join(',') : ''
+  const navigateTo = (node as Node & { navigateTo?: string | null }).navigateTo
+  const navTo = navigateTo != null && navigateTo !== '' ? String(navigateTo) : ''
+  const icon = (node as Node & { icon?: string | null }).icon
+  const iconName = icon != null && icon !== '' ? String(icon) : ''
+
+  const isContainer = containerNodeIds.has(node.id)
+  const shapeStyle = isContainer
+    ? 'shape=rectangle;rounded=0;container=1;collapsible=0;startSize=0;'
+    : drawioShape(node.shape)
+  const strokeColorOverride = strokeColorByNodeId?.[node.id]
+  const strokeWidthOverride = strokeWidthByNodeId?.[node.id]
+  const elemColors = strokeColorOverride
+    ? ((): ElementColors => {
+      const base = getElementColors(viewmodel, node.color)
+      return {
+        fill: base?.fill ?? DEFAULT_NODE_FILL_HEX,
+        stroke: strokeColorOverride,
+        font: base?.font ?? strokeColorOverride,
+      }
+    })()
+    : getElementColors(viewmodel, node.color)
+  const fillHex = elemColors?.fill ?? DEFAULT_NODE_FILL_HEX
+  const strokeHex = elemColors?.stroke ?? DEFAULT_NODE_STROKE_HEX
+  const fontHex = elemColors?.font ?? elemColors?.stroke ?? DEFAULT_NODE_FONT_HEX
+  const colorStyle = `fillColor=${fillHex};strokeColor=${strokeHex};fontColor=${fontHex};`
+  const nodeStyle = node.style as {
+    border?: string
+    opacity?: number
+    size?: string
+    padding?: string
+    textSize?: TextSize
+    iconPosition?: string
+  } | undefined
+  const fontSizePx = effectiveStyles.fontSize(nodeStyle?.textSize)
+  const valueHtml = buildNodeValueHtml(title, desc, isContainer, fontHex, fontFamily, fontSizePx)
+  const value = escapeXml(valueHtml)
+  const borderVal = nodeStyle?.border
+  const strokeWidthDefault = borderVal === 'none' ? '0' : (isContainer ? '1' : (borderVal ? '1' : ''))
+  const strokeWidth = strokeWidthOverride ?? strokeWidthDefault
+  const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
+  let containerDashed: string
+  if (isContainer && borderVal !== 'none') containerDashed = 'dashed=1;'
+  else if (borderVal === 'dashed') containerDashed = 'dashed=1;'
+  else containerDashed = ''
+  const containerOpacityNum = isContainer === true ? (nodeStyle?.opacity ?? 15) : undefined
+  const fillOpacityStyle = containerOpacityNum != null && isContainer === true
+    ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
+    : ''
+  const summaryRaw = (node as Node & { summary?: MarkdownOrString }).summary
+  const summaryFlat = summaryRaw != null ? flattenMarkdownOrString(summaryRaw) : null
+  const summaryStr = summaryFlat != null && !isEmptyish(summaryFlat) ? summaryFlat.trim() : ''
+  const links = (node as Node & { links?: readonly { url: string; title?: string }[] }).links
+  const linksJson = Array.isArray(links) && links.length > 0
+    ? encodeURIComponent(JSON.stringify(links.map(l => ({ url: l.url, title: l.title }))))
+    : ''
+  const opacityStyle = fillOpacityStyle
+  const colorNameForRoundtrip = node.color ? encodeURIComponent(String(node.color)) : ''
+
+  const nodeNotation = (node as Node & { notation?: string }).notation
+  const likec4Style = buildLikec4StyleForNode({
+    desc,
+    tech,
+    notes,
+    tagList,
+    navTo,
+    iconName,
+    summaryStr,
+    linksJson,
+    borderVal,
+    containerOpacityNum,
+    strokeWidth,
+    colorNameForRoundtrip,
+    nodeStyle,
+    strokeHex,
+    nodeNotation,
+  })
+
+  const nodeCustomData = (node as Node & { customData?: Record<string, string> }).customData
+  const userObjectXml = buildMxUserObjectXml(nodeCustomData)
+
+  const navLinkStyle = navTo === '' ? '' : `link=${encodeURIComponent(`${DRAWIO_PAGE_LINK_PREFIX}${navTo}`)};`
+  const vertexTextStyle = isContainer
+    ? 'align=left;verticalAlign=top;overflow=fill;whiteSpace=wrap;html=1;'
+    : `align=center;verticalAlign=middle;verticalLabelPosition=middle;labelPosition=center;fontSize=${fontSizePx};fontStyle=1;spacingTop=4;spacingLeft=2;spacingRight=2;spacingBottom=2;overflow=fill;whiteSpace=wrap;html=1;fontFamily=${
+      encodeURIComponent(fontFamily)
+    };`
+
+  const userObjectLabel = isContainer ? escapeXml(title) : value
+  const geometryAttr = `height="${Math.round(height)}" width="${Math.round(width)}" x="${Math.round(x)}" y="${
+    Math.round(y)
+  }" as="geometry"`
+  const innerCellXml =
+    `<mxCell parent="${parentId}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" value="${value}" vertex="1">
+  <mxGeometry ${geometryAttr} />${userObjectXml}
+</mxCell>`
+  const cellXml = navTo === ''
+    ? `<mxCell id="${id}" value="${value}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" vertex="1" parent="${parentId}">\n  <mxGeometry x="${
+      Math.round(x)
+    }" y="${Math.round(y)}" width="${Math.round(width)}" height="${
+      Math.round(height)
+    }" as="geometry" />${userObjectXml}\n</mxCell>`
+    : `<UserObject label="${userObjectLabel}" link="${DRAWIO_PAGE_LINK_PREFIX}${
+      escapeXml(navTo)
+    }" id="${id}">\n  ${innerCellXml}\n</UserObject>`
+
+  if (!isContainer) return { vertexXml: cellXml, isContainer: false }
+
+  const titleId = String(containerTitleCellId)
+  const titleCellXml = buildContainerTitleCellXml(
+    title,
+    titleId,
+    navTo,
+    id,
+    fontFamily,
+    containerTitleFontSizePx,
+    containerTitleColor,
+  )
+  return { vertexXml: cellXml, titleCellXml, isContainer: true }
+}
+
+/** Build container title cell XML (child of container, relative position CONTAINER_TITLE_INSET_*). */
+function buildContainerTitleCellXml(
+  title: string,
+  titleId: string,
+  navTo: string,
+  containerId: string,
+  fontFamily: string,
+  fontSizePx: number,
+  colorHex: string,
+): string {
+  const titleValue = escapeXml(title)
+  const titleWidth = Math.max(
+    CONTAINER_TITLE_MIN_WIDTH_PX,
+    Math.min(CONTAINER_TITLE_MAX_WIDTH_PX, title.length * CONTAINER_TITLE_CHAR_WIDTH_PX),
+  )
+  const titleHeight = CONTAINER_TITLE_HEIGHT_PX
+  const titleX = CONTAINER_TITLE_INSET_X
+  const titleY = CONTAINER_TITLE_INSET_Y
+  const navLinkStyle = navTo === '' ? '' : `link=${encodeURIComponent(`${DRAWIO_PAGE_LINK_PREFIX}${navTo}`)};`
+  const titleStyle =
+    `shape=text;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontSize=${fontSizePx};fontStyle=1;fontColor=${colorHex};fontFamily=${
+      encodeURIComponent(fontFamily)
+    };${navLinkStyle}`
+  const titleInner =
+    `<mxCell parent="${containerId}" style="${titleStyle}" value="${titleValue}" vertex="1">\n  <mxGeometry x="${
+      Math.round(titleX)
+    }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
+  if (navTo === '') {
+    return `<mxCell id="${titleId}" value="${titleValue}" style="${titleStyle}" vertex="1" parent="${containerId}">\n  <mxGeometry x="${
+      Math.round(titleX)
+    }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
+  }
+  return `<UserObject label="${escapeXml(title)}" link="${DRAWIO_PAGE_LINK_PREFIX}${
+    escapeXml(navTo)
+  }" id="${titleId}">\n  ${titleInner}\n</UserObject>`
+}
+
+/** View title for diagram name and root cell (single source of truth). */
+function getViewTitle(view: View): string | null {
+  return typeof (view as { title?: string | null }).title === 'string'
+    ? (view as { title: string }).title
+    : null
+}
+
+/** Normalize view description from txt/md/string to plain string (single responsibility). */
+function getViewDescriptionString(view: View): string {
+  const raw = (view as { description?: unknown }).description
+  if (raw != null && typeof raw === 'object' && 'txt' in raw) return String((raw as { txt: string }).txt)
+  if (raw != null && typeof raw === 'object' && 'md' in raw) return String((raw as { md: string }).md)
+  if (typeof raw === 'string') return raw
+  return ''
+}
+
+/** Build root cell style string from view metadata (title, description, notation) for round-trip. */
+function buildRootCellStyle(view: View): string {
+  const viewTitle = getViewTitle(view)
+  const viewDesc = getViewDescriptionString(view)
+  const viewDescEnc = viewDesc.trim() !== '' ? encodeURIComponent(viewDesc.trim()) : ''
+  const viewNotationRaw = (view as unknown as { notation?: unknown }).notation
+  const viewNotation = typeof viewNotationRaw === 'string' && viewNotationRaw !== '' ? viewNotationRaw : undefined
+  const viewNotationEnc = viewNotation != null ? encodeURIComponent(viewNotation) : ''
+  const rootParts = [
+    'rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;',
+    `likec4ViewTitle=${encodeURIComponent(viewTitle ?? view.id)};`,
+    viewDescEnc !== '' ? `likec4ViewDescription=${viewDescEnc};` : '',
+    viewNotationEnc !== '' ? `likec4ViewNotation=${viewNotationEnc};` : '',
+  ]
+  return rootParts.join('')
+}
+
 /**
  * Map LikeC4 RelationshipArrowType to draw.io endArrow/startArrow style value.
  */
@@ -252,99 +712,61 @@ export type GenerateDrawioOptions = {
   strokeColorByNodeId?: Record<string, string>
   /** Node id -> stroke width (e.g. from likec4.strokeWidth.vertices comment) */
   strokeWidthByNodeId?: Record<string, string>
-  /** Edge "source|target" (FQN) -> array of [x, y] waypoints (e.g. from likec4.edge.waypoints comment) */
+  /** Edge waypoints: key "source|target" or "source|target|edgeId" (FQN, optional id for parallel edges), value = [x,y][] (e.g. from likec4.edge.waypoints comment) */
   edgeWaypoints?: Record<string, number[][]>
   /** If false, embed raw mxGraphModel XML inside <diagram> (no base64/deflate). Draw.io accepts both. */
   compressed?: boolean
 }
 
-/**
- * Generate DrawIO (mxGraph) XML from a layouted LikeC4 view.
- * Preserves positions, hierarchy, colors, descriptions and technology so the diagram
- * can be opened and edited in draw.io with full compatibility.
- *
- * @param viewmodel - Layouted LikeC4 view model (from model.view(id))
- * @param options - Optional overrides for layout/colors (round-trip from comment blocks)
- * @returns DrawIO .drawio XML string
- */
-export function generateDrawio(
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
-  options?: GenerateDrawioOptions,
-): string {
-  const view = viewmodel.$view
-  const { nodes, edges } = view
-  const layoutOverride = options?.layoutOverride
-  const strokeColorByNodeId = options?.strokeColorByNodeId
-  const strokeWidthByNodeId = options?.strokeWidthByNodeId
-  const edgeWaypoints = options?.edgeWaypoints
-  const useCompressed = options?.compressed !== false
+/** Result of layout phase: bboxes, offsets, and shared styling so cell-building phase stays readable. */
+type DiagramLayoutState = {
+  view: View
+  bboxes: Map<NodeId, BBox>
+  containerNodeIds: Set<NodeId>
+  sortedNodes: Node[]
+  offsetX: number
+  offsetY: number
+  canvasWidth: number
+  canvasHeight: number
+  defaultParentId: string
+  rootId: string
+  effectiveStyles: LikeC4Styles
+  fontFamily: string
+  containerTitleFontSizePx: number
+  containerTitleColor: string
+  nodeIdsInView: Set<NodeId>
+}
 
-  const rootId = '0'
-  const defaultParentId = '1'
+/** LikeC4 app font (matches --mantine-font-family / --likec4-app-font-default). */
+const LIKEC4_FONT_FAMILY = '\'IBM Plex Sans Variable\',ui-sans-serif,system-ui,sans-serif'
+/** Container title color: matches LikeC4 diagram compound title (same as in diagram UI). */
+const CONTAINER_TITLE_COLOR = '#74c0fc'
 
-  const nodeIds = new Map<NodeId, string>()
-  let cellId = 2
+const DEFAULT_BBOX: BBox = {
+  x: 0,
+  y: 0,
+  width: DEFAULT_NODE_WIDTH,
+  height: DEFAULT_NODE_HEIGHT,
+}
 
-  const getCellId = (nodeId: NodeId): string => {
-    let id = nodeIds.get(nodeId)
-    if (!id) {
-      id = String(cellId++)
-      nodeIds.set(nodeId, id)
-    }
-    return id
-  }
-
-  const containerCells: string[] = []
-  const vertexCells: string[] = []
-  const edgeCells: string[] = []
-  let containerTitleCellId = 10000
-
-  const sortedNodes = [...nodes].sort((a, b) => {
-    if (isNil(a.parent) && isNil(b.parent)) return 0
-    if (isNil(a.parent)) return -1
-    if (isNil(b.parent)) return 1
-    if (a.parent === b.parent) return 0
-    if (a.id.startsWith(b.id + '.')) return 1
-    if (b.id.startsWith(a.id + '.')) return -1
-    return 0
-  })
-
-  /** Support BBox from layout, legacy position/size, or layoutOverride for round-trip. */
-  const getBBox = (n: View['nodes'][number]): BBox => {
-    const over = layoutOverride?.[n.id]
-    if (over) return over
-    const d = n as DiagramNode & { position?: [number, number]; size?: { width: number; height: number } }
-    const x = typeof d.x === 'number' ? d.x : (Array.isArray(d.position) ? d.position[0] : 0)
-    const y = typeof d.y === 'number' ? d.y : (Array.isArray(d.position) ? d.position[1] : 0)
-    const width = typeof d.width === 'number' ? d.width : (d.size?.width ?? 120)
-    const height = typeof d.height === 'number' ? d.height : (d.size?.height ?? 60)
-    return { x, y, width, height }
-  }
-
-  const bboxes = new Map<NodeId, BBox>()
-  for (const node of sortedNodes) bboxes.set(node.id, getBBox(node))
-
-  const nodeIdsInView = new Set<NodeId>((nodes as Node[]).map(n => n.id))
-  /** Only nodes that have at least one child present in this view are containers (bounded context). Others stay normal. */
-  const containerNodeIds = new Set(
-    (nodes as Node[]).filter(
-      n =>
-        Array.isArray(n.children) &&
-        n.children.some((childId: NodeId) => nodeIdsInView.has(childId)),
-    ).map(n => n.id),
-  )
-
-  /** When multiple non-container nodes share the same bbox only apply spread when it's the default (no layout), so we don't alter real diagram positions. */
-  const DEFAULT_BBOX: BBox = { x: 0, y: 0, width: 120, height: 60 }
-  const isDefaultBbox = (b: BBox) =>
+function isDefaultBbox(b: BBox): boolean {
+  return (
     b.x === DEFAULT_BBOX.x &&
     b.y === DEFAULT_BBOX.y &&
     b.width === DEFAULT_BBOX.width &&
     b.height === DEFAULT_BBOX.height
-  const GAP = 24
+  )
+}
+
+/** Spread nodes that share the same default bbox vertically so they don't overlap (single responsibility). */
+function spreadUnlaidNodesOverVertical(
+  bboxes: Map<NodeId, BBox>,
+  sortedNodes: Node[],
+  containerNodeIds: Set<NodeId>,
+): void {
   const bboxKey = (b: BBox) => `${b.x},${b.y},${b.width},${b.height}`
   const nonContainerNodes = sortedNodes.filter(n => !containerNodeIds.has(n.id))
-  const byBbox = new Map<string, typeof nonContainerNodes>()
+  const byBbox = new Map<string, Node[]>()
   for (const n of nonContainerNodes) {
     const b = bboxes.get(n.id)
     if (!b) continue
@@ -362,17 +784,22 @@ export function generateDrawio(
         bboxes.set(node.id, {
           ...firstBbox,
           x: firstBbox.x,
-          y: firstBbox.y + i * (firstBbox.height + GAP),
+          y: firstBbox.y + i * (firstBbox.height + NODES_SPREAD_GAP),
         })
       })
     }
   }
+}
 
-  const effectiveStyles = getEffectiveStyles(viewmodel)
-  /** Margins between container wrapper and children: horizontal = xl, vertical = xl + md (vertical slightly larger). */
-  const CONTAINER_PADDING = effectiveStyles.theme.spacing.xl
-  const CONTAINER_PADDING_VERTICAL = effectiveStyles.theme.spacing.xl + effectiveStyles.theme.spacing.md
-
+/** Wrap container bboxes around children when container has default bbox (single responsibility). */
+function computeContainerBboxesFromChildren(
+  bboxes: Map<NodeId, BBox>,
+  containerNodeIds: Set<NodeId>,
+  sortedNodes: Node[],
+  nodeIdsInView: Set<NodeId>,
+  containerPadding: number,
+  containerPaddingVertical: number,
+): void {
   const containerNodesSorted = [...sortedNodes]
     .filter(n => containerNodeIds.has(n.id))
     .sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
@@ -381,35 +808,41 @@ export function generateDrawio(
     const inView = children.filter((id: NodeId) => nodeIdsInView.has(id))
     if (inView.length === 0) continue
     const initialBbox = bboxes.get(node.id)!
-    /** Use layout bbox when the diagram provides one; only wrap children when container has default bbox (no layout). */
-    if (isDefaultBbox(initialBbox)) {
-      let minX = Infinity,
-        minY = Infinity,
-        maxX = -Infinity,
-        maxY = -Infinity
-      for (const cid of inView) {
-        const b = bboxes.get(cid)
-        if (!b) continue
-        minX = Math.min(minX, b.x)
-        minY = Math.min(minY, b.y)
-        maxX = Math.max(maxX, b.x + b.width)
-        maxY = Math.max(maxY, b.y + b.height)
-      }
-      if (minX !== Infinity) {
-        bboxes.set(node.id, {
-          x: minX - CONTAINER_PADDING,
-          y: minY - CONTAINER_PADDING_VERTICAL,
-          width: maxX - minX + 2 * CONTAINER_PADDING,
-          height: maxY - minY + 2 * CONTAINER_PADDING_VERTICAL,
-        })
-      }
+    if (!isDefaultBbox(initialBbox)) continue
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity
+    for (const cid of inView) {
+      const b = bboxes.get(cid)
+      if (!b) continue
+      minX = Math.min(minX, b.x)
+      minY = Math.min(minY, b.y)
+      maxX = Math.max(maxX, b.x + b.width)
+      maxY = Math.max(maxY, b.y + b.height)
+    }
+    if (minX !== Infinity) {
+      bboxes.set(node.id, {
+        x: minX - containerPadding,
+        y: minY - containerPaddingVertical,
+        width: maxX - minX + 2 * containerPadding,
+        height: maxY - minY + 2 * containerPaddingVertical,
+      })
     }
   }
+}
 
-  let contentMinX = Infinity
-  let contentMinY = Infinity
-  let contentMaxX = -Infinity
-  let contentMaxY = -Infinity
+/** Compute canvas offsets to center content (single responsibility). */
+function computeContentBoundsAndOffsets(bboxes: Map<NodeId, BBox>): {
+  offsetX: number
+  offsetY: number
+  canvasWidth: number
+  canvasHeight: number
+} {
+  let contentMinX = Infinity,
+    contentMinY = Infinity,
+    contentMaxX = -Infinity,
+    contentMaxY = -Infinity
   for (const b of bboxes.values()) {
     contentMinX = Math.min(contentMinX, b.x)
     contentMinY = Math.min(contentMinY, b.y)
@@ -418,339 +851,163 @@ export function generateDrawio(
   }
   if (contentMinX === Infinity) contentMinX = 0
   if (contentMinY === Infinity) contentMinY = 0
-  if (contentMaxX === -Infinity) contentMaxX = contentMinX + 800
-  if (contentMaxY === -Infinity) contentMaxY = contentMinY + 600
+  if (contentMaxX === -Infinity) contentMaxX = contentMinX + DEFAULT_CANVAS_WIDTH
+  if (contentMaxY === -Infinity) contentMaxY = contentMinY + DEFAULT_CANVAS_HEIGHT
   const contentCx = contentMinX + (contentMaxX - contentMinX) / 2
   const contentCy = contentMinY + (contentMaxY - contentMinY) / 2
-  /** Use fixed canvas size for centering so the diagram always opens centered in Draw.io (layout bounds often equal content bounds, which would give offset 0 and top-left placement). */
-  const canvasWidth = 800
-  const canvasHeight = 600
-  const offsetX = canvasWidth / 2 - contentCx
-  const offsetY = canvasHeight / 2 - contentCy
+  return {
+    offsetX: DEFAULT_CANVAS_WIDTH / 2 - contentCx,
+    offsetY: DEFAULT_CANVAS_HEIGHT / 2 - contentCy,
+    canvasWidth: DEFAULT_CANVAS_WIDTH,
+    canvasHeight: DEFAULT_CANVAS_HEIGHT,
+  }
+}
 
-  /** LikeC4 app font (matches --mantine-font-family / --likec4-app-font-default). */
-  const fontFamily = '\'IBM Plex Sans Variable\',ui-sans-serif,system-ui,sans-serif'
-  /** Container title color: matches LikeC4 diagram compound title (same as in diagram UI). */
-  const containerTitleColor = '#74c0fc'
-  const containerTitleFontSizePx = Math.round(effectiveStyles.theme.textSizes.xs)
+/**
+ * Layout phase: compute bboxes, container wrap, content bounds, and offsets.
+ * Delegates to spreadUnlaidNodesOverVertical, computeContainerBboxesFromChildren, computeContentBoundsAndOffsets.
+ */
+function computeDiagramLayout(
+  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  options?: GenerateDrawioOptions,
+): DiagramLayoutState {
+  const view = viewmodel.$view
+  const { nodes } = view
+  const layoutOverride = options?.layoutOverride
+
+  const sortedNodes = [...nodes].sort((a, b) => {
+    if (isNil(a.parent) && isNil(b.parent)) return 0
+    if (isNil(a.parent)) return -1
+    if (isNil(b.parent)) return 1
+    if (a.parent === b.parent) return 0
+    if (a.id.startsWith(b.id + '.')) return 1
+    if (b.id.startsWith(a.id + '.')) return -1
+    return 0
+  })
+
+  const getBBox = (n: View['nodes'][number]): BBox => {
+    const over = layoutOverride?.[n.id]
+    if (over) return over
+    const d = n as DiagramNode & { position?: [number, number]; size?: { width: number; height: number } }
+    const x = typeof d.x === 'number' ? d.x : (Array.isArray(d.position) ? d.position[0] : 0)
+    const y = typeof d.y === 'number' ? d.y : (Array.isArray(d.position) ? d.position[1] : 0)
+    const width = typeof d.width === 'number' ? d.width : (d.size?.width ?? DEFAULT_NODE_WIDTH)
+    const height = typeof d.height === 'number' ? d.height : (d.size?.height ?? DEFAULT_NODE_HEIGHT)
+    return { x, y, width, height }
+  }
+
+  const bboxes = new Map<NodeId, BBox>()
+  for (const node of sortedNodes) bboxes.set(node.id, getBBox(node))
+
+  const nodeIdsInView = new Set<NodeId>((nodes as Node[]).map(n => n.id))
+  const containerNodeIds = new Set(
+    (nodes as Node[]).filter(
+      n =>
+        Array.isArray(n.children) &&
+        n.children.some((childId: NodeId) => nodeIdsInView.has(childId)),
+    ).map(n => n.id),
+  )
+
+  spreadUnlaidNodesOverVertical(bboxes, sortedNodes, containerNodeIds)
+
+  const effectiveStyles = getEffectiveStyles(viewmodel)
+  const containerPadding = effectiveStyles.theme.spacing.xl
+  const containerPaddingVertical = effectiveStyles.theme.spacing.xl + effectiveStyles.theme.spacing.md
+  computeContainerBboxesFromChildren(
+    bboxes,
+    containerNodeIds,
+    sortedNodes,
+    nodeIdsInView,
+    containerPadding,
+    containerPaddingVertical,
+  )
+
+  const { offsetX, offsetY, canvasWidth, canvasHeight } = computeContentBoundsAndOffsets(bboxes)
+
+  return {
+    view,
+    bboxes,
+    containerNodeIds,
+    sortedNodes,
+    offsetX,
+    offsetY,
+    canvasWidth,
+    canvasHeight,
+    defaultParentId: '1',
+    rootId: '0',
+    effectiveStyles,
+    fontFamily: LIKEC4_FONT_FAMILY,
+    containerTitleFontSizePx: Math.round(effectiveStyles.theme.textSizes.xs),
+    containerTitleColor: CONTAINER_TITLE_COLOR,
+    nodeIdsInView,
+  }
+}
+
+/**
+ * Generate DrawIO (mxGraph) XML from a layouted LikeC4 view.
+ * Preserves positions, hierarchy, colors, descriptions and technology so the diagram
+ * can be opened and edited in draw.io with full compatibility.
+ *
+ * @param viewmodel - Layouted LikeC4 view model (from model.view(id))
+ * @param options - Optional overrides for layout/colors (round-trip from comment blocks)
+ * @returns Diagram name, id and content (for single or multi composition)
+ */
+function generateDiagramContent(
+  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  options?: GenerateDrawioOptions,
+): { name: string; id: string; content: string } {
+  const view = viewmodel.$view
+  const { edges } = view
+  const strokeColorByNodeId = options?.strokeColorByNodeId
+  const strokeWidthByNodeId = options?.strokeWidthByNodeId
+  const edgeWaypoints = options?.edgeWaypoints
+  const useCompressed = options?.compressed !== false
+
+  const layout = computeDiagramLayout(viewmodel, options)
+  const { sortedNodes, defaultParentId, rootId, canvasWidth, canvasHeight } = layout
+
+  const nodeIds = new Map<NodeId, string>()
+  let cellId = 2
+  const getCellId = (nodeId: NodeId): string => {
+    let id = nodeIds.get(nodeId)
+    if (!id) {
+      id = String(cellId++)
+      nodeIds.set(nodeId, id)
+    }
+    return id
+  }
+
+  const containerCells: string[] = []
+  const vertexCells: string[] = []
+  const edgeCells: string[] = []
+  let containerTitleCellId = CONTAINER_TITLE_CELL_ID_START
 
   for (const node of sortedNodes) {
-    const id = getCellId(node.id)
-    const bbox = bboxes.get(node.id)!
-    const { width, height } = bbox
-    const parentId = node.parent != null && nodeIdsInView.has(node.parent)
-      ? getCellId(node.parent)
-      : defaultParentId
-    const parentBbox = node.parent != null ? bboxes.get(node.parent) : undefined
-    const x = parentBbox == null ? bbox.x + offsetX : bbox.x - parentBbox.x
-    const y = parentBbox == null ? bbox.y + offsetY : bbox.y - parentBbox.y
-
-    const title = node.title
-    const descRaw = flattenMarkdownOrString(node.description)
-    const techRaw = flattenMarkdownOrString(node.technology)
-    const notesRaw = flattenMarkdownOrString((node as Node & { notes?: MarkdownOrString }).notes)
-    const desc = descRaw != null && !isEmptyish(descRaw) ? descRaw.trim() : ''
-    const tech = techRaw != null && !isEmptyish(techRaw) ? techRaw.trim() : ''
-    const notes = notesRaw != null && !isEmptyish(notesRaw) ? notesRaw.trim() : ''
-    const tags = (node as Node & { tags?: readonly string[] }).tags
-    const tagList = Array.isArray(tags) && tags.length > 0 ? tags.join(',') : ''
-    const navigateTo = (node as Node & { navigateTo?: string | null }).navigateTo
-    const navTo = navigateTo != null && navigateTo !== '' ? String(navigateTo) : ''
-    const icon = (node as Node & { icon?: string | null }).icon
-    const iconName = icon != null && icon !== '' ? String(icon) : ''
-
-    const isContainer = containerNodeIds.has(node.id)
-    const shapeStyle = isContainer
-      ? 'shape=rectangle;rounded=0;container=1;collapsible=0;startSize=0;'
-      : drawioShape(node.shape)
-    const strokeColorOverride = strokeColorByNodeId?.[node.id]
-    const strokeWidthOverride = strokeWidthByNodeId?.[node.id]
-    const elemColors = strokeColorOverride
-      ? ((): ElementColors => {
-        const base = getElementColors(viewmodel, node.color)
-        return {
-          fill: base?.fill ?? '#dae8fc',
-          stroke: strokeColorOverride,
-          font: base?.font ?? strokeColorOverride,
-        }
-      })()
-      : getElementColors(viewmodel, node.color)
-    const fillHex = elemColors?.fill ?? '#dae8fc'
-    const strokeHex = elemColors?.stroke ?? '#2563eb'
-    const fontHex = elemColors?.font ?? elemColors?.stroke ?? '#1e40af'
-    const colorStyle = `fillColor=${fillHex};strokeColor=${strokeHex};fontColor=${fontHex};`
-    const nodeStyle = node.style as {
-      border?: string
-      opacity?: number
-      size?: string
-      padding?: string
-      textSize?: TextSize
-      iconPosition?: string
-    } | undefined
-    const fontSizePx = effectiveStyles.fontSize(nodeStyle?.textSize)
-    let valueHtml: string
-    if (isContainer) {
-      valueHtml = ''
-    } else if (desc !== '') {
-      valueHtml =
-        `<div style="box-sizing:border-box;width:100%;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:${fontHex};font-family:${fontFamily};"><b style="font-size:${fontSizePx}px;">${
-          escapeHtml(title)
-        }</b><br/><span style="font-weight:normal;font-size:${fontSizePx}px;">${escapeHtml(desc)}</span></div>`
+    const result = buildNodeCellXml(
+      node,
+      layout,
+      options,
+      viewmodel,
+      getCellId,
+      containerTitleCellId,
+    )
+    if (result.isContainer) {
+      containerCells.push(result.vertexXml)
+      if (result.titleCellXml) containerCells.push(result.titleCellXml)
+      containerTitleCellId++
     } else {
-      valueHtml =
-        `<div style="box-sizing:border-box;width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;text-align:center;color:${fontHex};font-family:${fontFamily};"><b style="font-size:${fontSizePx}px;">${
-          escapeHtml(title)
-        }</b></div>`
+      vertexCells.push(result.vertexXml)
     }
-    const value = escapeXml(valueHtml)
-    const borderVal = nodeStyle?.border
-    const strokeWidthDefault = borderVal === 'none' ? '0' : (isContainer ? '1' : (borderVal ? '1' : ''))
-    const strokeWidth = strokeWidthOverride ?? strokeWidthDefault
-    const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
-    let containerDashed: string
-    if (isContainer && borderVal !== 'none') containerDashed = 'dashed=1;'
-    else if (borderVal === 'dashed') containerDashed = 'dashed=1;'
-    else containerDashed = ''
-    const containerOpacityNum = isContainer === true ? (nodeStyle?.opacity ?? 15) : undefined
-    const fillOpacityStyle = containerOpacityNum != null && isContainer === true
-      ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
-      : ''
-    const summaryRaw = (node as Node & { summary?: MarkdownOrString }).summary
-    const summaryFlat = summaryRaw != null ? flattenMarkdownOrString(summaryRaw) : null
-    const summaryStr = summaryFlat != null && !isEmptyish(summaryFlat) ? summaryFlat.trim() : ''
-    const links = (node as Node & { links?: readonly { url: string; title?: string }[] }).links
-    const linksJson = Array.isArray(links) && links.length > 0
-      ? encodeURIComponent(JSON.stringify(links.map(l => ({ url: l.url, title: l.title }))))
-      : ''
-    /** Only container nodes get fillOpacity; normal nodes stay fully opaque. */
-    const opacityStyle = fillOpacityStyle
-    const colorNameForRoundtrip = node.color ? encodeURIComponent(String(node.color)) : ''
-
-    const likec4Extra: string[] = []
-    if (desc !== '') likec4Extra.push(`likec4Description=${encodeURIComponent(desc)}`)
-    if (tech !== '') likec4Extra.push(`likec4Technology=${encodeURIComponent(tech)}`)
-    if (notes !== '') likec4Extra.push(`likec4Notes=${encodeURIComponent(notes)}`)
-    if (tagList !== '') likec4Extra.push(`likec4Tags=${encodeURIComponent(tagList)}`)
-    if (navTo !== '') likec4Extra.push(`likec4NavigateTo=${encodeURIComponent(navTo)}`)
-    if (iconName !== '') likec4Extra.push(`likec4Icon=${encodeURIComponent(iconName)}`)
-    if (summaryStr !== '') likec4Extra.push(`likec4Summary=${encodeURIComponent(summaryStr)}`)
-    if (linksJson !== '') likec4Extra.push(`likec4Links=${linksJson}`)
-    if (borderVal) likec4Extra.push(`likec4Border=${encodeURIComponent(borderVal)}`)
-    if (containerOpacityNum != null) likec4Extra.push(`likec4Opacity=${containerOpacityNum}`)
-    if (strokeWidth !== '') likec4Extra.push(`likec4StrokeWidth=${encodeURIComponent(strokeWidth)}`)
-    if (colorNameForRoundtrip !== '') likec4Extra.push(`likec4ColorName=${colorNameForRoundtrip}`)
-    if (nodeStyle?.size) likec4Extra.push(`likec4Size=${encodeURIComponent(nodeStyle.size)}`)
-    if (nodeStyle?.padding) likec4Extra.push(`likec4Padding=${encodeURIComponent(nodeStyle.padding)}`)
-    if (nodeStyle?.textSize) likec4Extra.push(`likec4TextSize=${encodeURIComponent(nodeStyle.textSize)}`)
-    if (nodeStyle?.iconPosition) likec4Extra.push(`likec4IconPosition=${encodeURIComponent(nodeStyle.iconPosition)}`)
-    if (strokeHex && /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/.test(strokeHex)) {
-      likec4Extra.push(`likec4StrokeColor=${encodeURIComponent(strokeHex)}`)
-    }
-    const nodeNotation = (node as Node & { notation?: string }).notation
-    if (nodeNotation != null && nodeNotation !== '') {
-      likec4Extra.push(`likec4Notation=${encodeURIComponent(nodeNotation)}`)
-    }
-    const likec4Style = likec4Extra.length > 0 ? likec4Extra.join(';') + ';' : ''
-
-    const nodeCustomData = (node as Node & { customData?: Record<string, string> }).customData
-    const hasNodeCustomData = nodeCustomData &&
-      typeof nodeCustomData === 'object' &&
-      !Array.isArray(nodeCustomData) &&
-      Object.keys(nodeCustomData).length > 0
-    const userObjectXml = hasNodeCustomData
-      ? '\n  <mxUserObject>' +
-        Object.entries(nodeCustomData!)
-          .map(([k, v]) => {
-            const safeV = typeof v === 'string' ? v : (v != null ? String(v) : '')
-            return `<data key="${escapeXml(k)}">${escapeXml(safeV)}</data>`
-          })
-          .join('') +
-        '</mxUserObject>'
-      : ''
-
-    /** When the element has its own view (navigateTo), add Draw.io link so the cell opens that page. Use direct data:page/id,likec4-<viewId> in style so Draw.io recognizes it; UserObject link= for UI. */
-    const navLinkStyle = navTo === '' ? '' : `link=${encodeURIComponent(`data:page/id,likec4-${navTo}`)};`
-    const vertexTextStyle = isContainer
-      ? 'align=left;verticalAlign=top;overflow=fill;whiteSpace=wrap;html=1;'
-      : `align=center;verticalAlign=middle;verticalLabelPosition=middle;labelPosition=center;fontSize=${fontSizePx};fontStyle=1;spacingTop=4;spacingLeft=2;spacingRight=2;spacingBottom=2;overflow=fill;whiteSpace=wrap;html=1;fontFamily=${
-        encodeURIComponent(fontFamily)
-      };`
-
-    /** Draw.io internal page link: UserObject must have label = cell value (HTML) so Edit Link shows "Internal page link". */
-    const userObjectLabel = isContainer ? escapeXml(title) : value
-    const geometryAttr = `height="${Math.round(height)}" width="${Math.round(width)}" x="${Math.round(x)}" y="${
-      Math.round(y)
-    }" as="geometry"`
-    const innerCellXml =
-      `<mxCell parent="${parentId}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" value="${value}" vertex="1">
-  <mxGeometry ${geometryAttr} />${userObjectXml}
-</mxCell>`
-    const cellXml = navTo === ''
-      ? `<mxCell id="${id}" value="${value}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" vertex="1" parent="${parentId}">\n  <mxGeometry x="${
-        Math.round(x)
-      }" y="${Math.round(y)}" width="${Math.round(width)}" height="${
-        Math.round(height)
-      }" as="geometry" />${userObjectXml}\n</mxCell>`
-      : `<UserObject label="${userObjectLabel}" link="data:page/id,likec4-${
-        escapeXml(navTo)
-      }" id="${id}">\n  ${innerCellXml}\n</UserObject>`
-
-    if (isContainer) {
-      containerCells.push(cellXml)
-      const titleId = String(containerTitleCellId++)
-      const titleValue = escapeXml(title)
-      const titleWidth = Math.max(60, Math.min(260, title.length * 8))
-      const titleHeight = 18
-      const titleParentId = parentId
-      const titleX = x + 8
-      const titleY = y + 8
-      const titleStyle =
-        `shape=text;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontSize=${containerTitleFontSizePx};fontStyle=1;fontColor=${containerTitleColor};fontFamily=${
-          encodeURIComponent(fontFamily)
-        };${navLinkStyle}`
-      const titleInner =
-        `<mxCell parent="${titleParentId}" style="${titleStyle}" value="${titleValue}" vertex="1">\n  <mxGeometry x="${
-          Math.round(titleX)
-        }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
-      const titleCellXml = navTo === ''
-        ? `<mxCell id="${titleId}" value="${titleValue}" style="${titleStyle}" vertex="1" parent="${titleParentId}">\n  <mxGeometry x="${
-          Math.round(titleX)
-        }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
-        : `<UserObject label="${escapeXml(title)}" link="data:page/id,likec4-${
-          escapeXml(navTo)
-        }" id="${titleId}">\n  ${titleInner}\n</UserObject>`
-      containerCells.push(titleCellXml)
-    } else vertexCells.push(cellXml)
   }
 
   for (const edge of edges as Edge[]) {
-    const id = String(cellId++)
-    const sourceId = getCellId(edge.source)
-    const targetId = getCellId(edge.target)
-    const sourceBbox = bboxes.get(edge.source)
-    const targetBbox = bboxes.get(edge.target)
-    const anchors = sourceBbox && targetBbox
-      ? edgeAnchors(sourceBbox, targetBbox)
-      : { exitX: 1, exitY: 0.5, entryX: 0, entryY: 0.5 }
-    const anchorStyle =
-      `exitX=${anchors.exitX};exitY=${anchors.exitY};entryX=${anchors.entryX};entryY=${anchors.entryY};`
-    const label = edge.label ? escapeXml(edge.label) : ''
-    const strokeColor = getEdgeStrokeColor(viewmodel, edge.color)
-    const dashStyle = edge.line === 'dashed'
-      ? 'dashed=1;'
-      : edge.line === 'dotted'
-      ? 'dashed=1;dashPattern=1 1;'
-      : ''
-    const endArrow = drawioArrow(edge.head)
-    const startArrow = edge.tail == null || edge.tail === 'none' ? 'none' : drawioArrow(edge.tail)
-    const edgeDescRaw = flattenMarkdownOrString(edge.description)
-    const edgeTechRaw = flattenMarkdownOrString(edge.technology)
-    const edgeNotesRaw = flattenMarkdownOrString(edge.notes)
-    const edgeDesc = edgeDescRaw != null && !isEmptyish(edgeDescRaw) ? edgeDescRaw.trim() : ''
-    const edgeTech = edgeTechRaw != null && !isEmptyish(edgeTechRaw) ? edgeTechRaw.trim() : ''
-    const edgeNotes = edgeNotesRaw != null && !isEmptyish(edgeNotesRaw) ? edgeNotesRaw.trim() : ''
-    const edgeNavTo = edge.navigateTo != null && edge.navigateTo !== '' ? String(edge.navigateTo) : ''
-    const edgeKind = (edge as Edge & { kind?: string }).kind
-    const edgeNotation = (edge as Edge & { notation?: string }).notation
-    const edgeLikec4: string[] = []
-    if (edgeDesc !== '') edgeLikec4.push(`likec4Description=${encodeURIComponent(edgeDesc)}`)
-    if (edgeTech !== '') edgeLikec4.push(`likec4Technology=${encodeURIComponent(edgeTech)}`)
-    if (edgeNotes !== '') edgeLikec4.push(`likec4Notes=${encodeURIComponent(edgeNotes)}`)
-    if (edgeNavTo !== '') edgeLikec4.push(`likec4NavigateTo=${encodeURIComponent(edgeNavTo)}`)
-    if (edgeKind != null && edgeKind !== '') {
-      edgeLikec4.push(`likec4RelationshipKind=${encodeURIComponent(String(edgeKind))}`)
-    }
-    if (edgeNotation != null && edgeNotation !== '') {
-      edgeLikec4.push(`likec4Notation=${encodeURIComponent(edgeNotation)}`)
-    }
-    const edgeLinks = (edge as Edge & { links?: readonly { url: string; title?: string }[] }).links
-    const edgeLinksJson = Array.isArray(edgeLinks) && edgeLinks.length > 0
-      ? encodeURIComponent(JSON.stringify(edgeLinks.map(l => ({ url: l.url, title: l.title }))))
-      : ''
-    if (edgeLinksJson !== '') edgeLikec4.push(`likec4Links=${edgeLinksJson}`)
-    const edgeMetadata = (edge as Edge & { metadata?: Record<string, string | string[]> }).metadata
-    const edgeMetadataJson = edgeMetadata &&
-        typeof edgeMetadata === 'object' &&
-        !Array.isArray(edgeMetadata) &&
-        Object.keys(edgeMetadata).length > 0
-      ? encodeURIComponent(JSON.stringify(edgeMetadata))
-      : ''
-    if (edgeMetadataJson !== '') edgeLikec4.push(`likec4Metadata=${edgeMetadataJson}`)
-    const edgeLikec4Style = edgeLikec4.length > 0 ? edgeLikec4.join(';') + ';' : ''
-
-    const edgeCustomData = (edge as Edge & { customData?: Record<string, string> }).customData
-    const hasEdgeCustomData = edgeCustomData &&
-      typeof edgeCustomData === 'object' &&
-      !Array.isArray(edgeCustomData) &&
-      Object.keys(edgeCustomData).length > 0
-    const edgeUserObjectXml = hasEdgeCustomData
-      ? '\n  <mxUserObject>' +
-        Object.entries(edgeCustomData!)
-          .map(([k, v]) => {
-            const safeV = typeof v === 'string' ? v : (v != null ? String(v) : '')
-            return `<data key="${escapeXml(k)}">${escapeXml(safeV)}</data>`
-          })
-          .join('') +
-        '</mxUserObject>'
-      : ''
-
-    /** Only round-trip waypoints; layout edge.points create too many vertices in draw.io. */
-    const rawEdgePoints = edgeWaypoints?.[`${edge.source}|${edge.target}`]
-    /** Flatten to [x,y][] so we never emit nested <Array><Array> (draw.io rejects it). */
-    const edgePoints: [number, number][] = Array.isArray(rawEdgePoints)
-      ? rawEdgePoints.flatMap(normalizeEdgePoint)
-      : []
-    const hasPoints = edgePoints.length > 0
-    const pointsXml = hasPoints
-      ? '<Array as="points">' +
-        edgePoints
-          .map(([px, py]) => `<mxPoint x="${Math.round(px)}" y="${Math.round(py)}"/>`)
-          .join('') +
-        '</Array>'
-      : ''
-
-    const edgeGeometryXml = hasPoints
-      ? `<mxGeometry relative="0" as="geometry">${pointsXml}</mxGeometry>`
-      : '<mxGeometry relative="1" as="geometry" />'
-
-    const edgeLabelColors = getEdgeLabelColors(viewmodel, edge.color)
-    const edgeLabelStyle = label === ''
-      ? ''
-      : `fontColor=${edgeLabelColors.font};fontSize=12;align=center;verticalAlign=middle;labelBackgroundColor=none;fontFamily=${
-        encodeURIComponent(fontFamily)
-      };`
+    const edgeId = String(cellId++)
     edgeCells.push(
-      `<mxCell id="${id}" value="${label}" style="endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;${anchorStyle}strokeColor=${strokeColor};strokeWidth=2;${dashStyle}${edgeLabelStyle}${edgeLikec4Style}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">
-  ${edgeGeometryXml}${edgeUserObjectXml}
-</mxCell>`,
+      buildEdgeCellXml(edge, layout, options, viewmodel, getCellId, edgeId),
     )
   }
 
-  const viewTitle = typeof (view as { title?: string | null }).title === 'string'
-    ? (view as { title: string }).title
-    : null
-  const viewDescRaw = (view as { description?: unknown }).description
-  let viewDesc: string
-  if (viewDescRaw != null && typeof viewDescRaw === 'object' && 'txt' in viewDescRaw) {
-    viewDesc = String((viewDescRaw as { txt: string }).txt)
-  } else if (viewDescRaw != null && typeof viewDescRaw === 'object' && 'md' in viewDescRaw) {
-    viewDesc = String((viewDescRaw as { md: string }).md)
-  } else if (typeof viewDescRaw === 'string') {
-    viewDesc = viewDescRaw
-  } else {
-    viewDesc = ''
-  }
-  const viewDescEnc = viewDesc.trim() !== '' ? encodeURIComponent(viewDesc.trim()) : ''
-  const viewNotationRaw = (view as unknown as { notation?: unknown }).notation
-  const viewNotation = typeof viewNotationRaw === 'string' && viewNotationRaw !== '' ? viewNotationRaw : undefined
-  const viewNotationEnc = viewNotation != null ? encodeURIComponent(viewNotation) : ''
-  const rootParts = [
-    'rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;',
-    `likec4ViewTitle=${encodeURIComponent(viewTitle ?? view.id)};`,
-    viewDescEnc !== '' ? `likec4ViewDescription=${viewDescEnc};` : '',
-    viewNotationEnc !== '' ? `likec4ViewNotation=${viewNotationEnc};` : '',
-  ]
-  const rootCellStyle = rootParts.join('')
+  const rootCellStyle = buildRootCellStyle(view)
 
   const allCells = [
     `<mxCell id="${defaultParentId}" value="" style="${rootCellStyle}" vertex="1" parent="${rootId}">
@@ -761,23 +1018,56 @@ export function generateDrawio(
     ...edgeCells,
   ].join('\n')
 
-  const diagramName = (viewTitle ?? view.id).trim() || view.id
+  const diagramName = (getViewTitle(view) ?? view.id).trim() || view.id
   const mxGraphModelXml =
-    `<mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    `<mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="${MXGRAPH_PAGE_WIDTH}" pageHeight="${MXGRAPH_PAGE_HEIGHT}" math="0" shadow="0">
       <root>
         <mxCell id="${rootId}" />
         ${allCells}
       </root>
     </mxGraphModel>`
-  const diagramContent = useCompressed
+  const content = useCompressed
     ? compressDrawioDiagramXml(mxGraphModelXml)
     : mxGraphModelXml
+  return { name: diagramName, id: view.id, content }
+}
 
-  return `<?xml version="1.0" encoding="UTF-8"?>
+/** Wrap one or more diagram contents in mxfile XML. */
+function wrapInMxFile(diagrams: Array<{ name: string; id: string; content: string }>): string {
+  if (diagrams.length === 0) {
+    return `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
-  <diagram name="${escapeXml(diagramName)}" id="likec4-${escapeXml(view.id)}">${diagramContent}</diagram>
 </mxfile>
 `
+  }
+  const pagesAttr = diagrams.length > 1 ? ` pages="${diagrams.length}"` : ''
+  const diagramParts = diagrams.map(
+    d =>
+      `  <diagram name="${escapeXml(d.name)}" id="${DRAWIO_DIAGRAM_ID_PREFIX}${
+        escapeXml(d.id)
+      }">${d.content}</diagram>`,
+  )
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="LikeC4" modified="${
+    new Date().toISOString()
+  }" agent="LikeC4" version="1.0" etag="" type="device"${pagesAttr}>
+${diagramParts.join('\n')}
+</mxfile>
+`
+}
+
+/**
+ * Generate a single DrawIO file from one view.
+ *
+ * @param viewmodel - Layouted LikeC4 view model (from model.view(id))
+ * @param options - Optional overrides for layout/colors (round-trip from comment blocks)
+ * @returns DrawIO .drawio XML string
+ */
+export function generateDrawio(
+  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  options?: GenerateDrawioOptions,
+): string {
+  return wrapInMxFile([generateDiagramContent(viewmodel, options)])
 }
 
 /**
@@ -793,34 +1083,37 @@ export function generateDrawioMulti(
   viewmodels: Array<LikeC4ViewModel<aux.Unknown>>,
   optionsByViewId?: Record<string, GenerateDrawioOptions>,
 ): string {
-  if (viewmodels.length === 0) {
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
-</mxfile>
-`
+  const diagrams = viewmodels.map(vm => generateDiagramContent(vm, optionsByViewId?.[vm.$view.id]))
+  return wrapInMxFile(diagrams)
+}
+
+/**
+ * Build export options from .c4 source round-trip comment blocks (layout, strokes, waypoints).
+ * Shared by CLI and playground so options are built in one place (DRY).
+ *
+ * @param viewId - View id for layoutOverride lookup
+ * @param sourceContent - Full .c4 source (e.g. joined workspace files)
+ * @param overrides - Optional overrides (e.g. compressed: false)
+ */
+export function buildDrawioExportOptionsFromSource(
+  viewId: string,
+  sourceContent: string | undefined,
+  overrides?: Partial<GenerateDrawioOptions>,
+): GenerateDrawioOptions {
+  const options: GenerateDrawioOptions = { compressed: false, ...overrides }
+  if (!sourceContent) return options
+  const roundtrip = parseDrawioRoundtripComments(sourceContent)
+  if (!roundtrip) return options
+  const layoutForView = roundtrip.layoutByView[viewId]?.nodes
+  if (layoutForView != null) options.layoutOverride = layoutForView
+  if (Object.keys(roundtrip.strokeColorByFqn).length > 0) {
+    options.strokeColorByNodeId = roundtrip.strokeColorByFqn
   }
-  if (viewmodels.length === 1) {
-    const opts = optionsByViewId?.[viewmodels[0]!.$view.id]
-    return generateDrawio(viewmodels[0]!, opts)
+  if (Object.keys(roundtrip.strokeWidthByFqn).length > 0) {
+    options.strokeWidthByNodeId = roundtrip.strokeWidthByFqn
   }
-  const diagramRe = /<diagram[^>]*>([\s\S]*?)<\/diagram>/
-  const diagramParts = viewmodels.map(vm => {
-    const view = vm.$view
-    const opts = optionsByViewId?.[view.id]
-    const single = generateDrawio(vm, opts)
-    const m = diagramRe.exec(single)
-    if (!m) return ''
-    const diagramName = (typeof (view as { title?: string | null }).title === 'string'
-      ? (view as { title: string }).title
-      : null) ?? view.id
-    return `  <diagram name="${escapeXml(diagramName)}" id="likec4-${escapeXml(view.id)}">${m[1]}</diagram>`
-  }).filter(Boolean)
-  const pagesAttr = diagramParts.length > 0 ? ` pages="${diagramParts.length}"` : ''
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="LikeC4" modified="${
-    new Date().toISOString()
-  }" agent="LikeC4" version="1.0" etag="" type="device"${pagesAttr}>
-${diagramParts.join('\n')}
-</mxfile>
-`
+  if (Object.keys(roundtrip.edgeWaypoints).length > 0) {
+    options.edgeWaypoints = roundtrip.edgeWaypoints
+  }
+  return options
 }
