@@ -200,6 +200,7 @@ likec4 export drawio -o ./diagrams src/
 | `--outdir, -o`   | Output directory for `.drawio` files (default: current directory or `path`) |
 | `--all-in-one`   | Write one `.drawio` file with all views as tabs                              |
 | `--roundtrip`    | Apply layout, stroke colors/widths, and edge waypoints from DrawIO round-trip comment blocks in `.c4` source (e.g. after import) |
+| `--uncompressed` | Write diagram XML uncompressed (larger file; use if draw.io fails to open the default compressed export) |
 | `--project`      | Select LikeC4 project by name or path; if not set, exports all              |
 | `--use-dot`      | Use local Graphviz (`dot`) for layout instead of bundled WASM               |
 

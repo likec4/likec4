@@ -25,6 +25,7 @@ import {
   CONTAINER_TITLE_MIN_WIDTH_PX,
   DEFAULT_CANVAS_HEIGHT,
   DEFAULT_CANVAS_WIDTH,
+  DEFAULT_CONTAINER_OPACITY,
   DEFAULT_NODE_FILL_HEX,
   DEFAULT_NODE_FONT_HEX,
   DEFAULT_NODE_HEIGHT,
@@ -619,7 +620,7 @@ function computeNodeCellExportData(
   const strokeWidth = strokeWidthOverride ?? getDefaultStrokeWidth(borderVal, isContainer)
   const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
   const containerDashed = getContainerDashedStyle(isContainer, borderVal)
-  const containerOpacityNum = isContainer === true ? (nodeStyle?.opacity ?? 15) : undefined
+  const containerOpacityNum = isContainer === true ? (nodeStyle?.opacity ?? DEFAULT_CONTAINER_OPACITY) : undefined
   const fillOpacityStyle = containerOpacityNum != null && isContainer === true
     ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
     : ''
@@ -1094,7 +1095,7 @@ function generateDiagramContent(
     }
   }
 
-  for (const edge of edges as Edge[]) {
+  for (const edge of edges) {
     const edgeId = String(cellId++)
     edgeCells.push(
       buildEdgeCellXml(edge, layout, options, viewmodel, getCellId, edgeId),

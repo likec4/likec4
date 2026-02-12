@@ -38,6 +38,9 @@ export const CONTAINER_TITLE_AREA_HEIGHT_RATIO = 0.5
 /** Tolerance (px) for title cell position inside container bounds (parse). */
 export const CONTAINER_TITLE_AREA_TOLERANCE = 2
 
+/** Default container fill opacity (0–100) when not set in style. */
+export const DEFAULT_CONTAINER_OPACITY = 15
+
 /** Default node fill/stroke/font when no theme color (hex). */
 export const DEFAULT_NODE_FILL_HEX = '#dae8fc'
 export const DEFAULT_NODE_STROKE_HEX = '#2563eb'
