@@ -38,6 +38,7 @@ import {
   NODES_SPREAD_GAP,
 } from './constants'
 import { parseDrawioRoundtripComments } from './parse-drawio'
+import { escapeXml } from './xml-utils'
 
 /**
  * DrawIO diagram generator.
@@ -82,16 +83,6 @@ function getEffectiveStyles(viewmodel: LikeC4ViewModel<aux.Unknown>): LikeC4Styl
   return viewmodel.$styles ?? LikeC4Styles.DEFAULT
 }
 
-/** Escape for use inside XML attributes and text. */
-function escapeXml(unsafe: string): string {
-  return unsafe
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll('\'', '&apos;')
-}
-
 /** Escape for use inside HTML (e.g. cell value with html=1). */
 function escapeHtml(s: string): string {
   return s
@@ -99,6 +90,38 @@ function escapeHtml(s: string): string {
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
+}
+
+/** Coerce to non-empty string for style/attribute use; empty string when null/undefined/empty. DRY for navTo, iconName, etc. */
+function toNonEmptyString(x: unknown): string {
+  if (x == null) return ''
+  const s = String(x)
+  return s.trim() === '' ? '' : s
+}
+
+/** Container dashed style from border (KISS: single place for 3-way branch). */
+function getContainerDashedStyle(isContainer: boolean, borderVal: string | undefined): string {
+  if (isContainer && borderVal !== 'none') return 'dashed=1;'
+  if (borderVal === 'dashed') return 'dashed=1;'
+  return ''
+}
+
+/** Default stroke width for node from border and container (KISS). */
+function getDefaultStrokeWidth(borderVal: string | undefined, isContainer: boolean): string {
+  if (borderVal === 'none') return '0'
+  return isContainer ? '1' : borderVal ? '1' : ''
+}
+
+/** Apply stroke color override to base element colors (KISS: named function instead of IIFE). */
+function applyStrokeColorOverride(
+  base: ElementColors | undefined,
+  override: string,
+): ElementColors {
+  return {
+    fill: base?.fill ?? DEFAULT_NODE_FILL_HEX,
+    stroke: override,
+    font: base?.font ?? override,
+  }
 }
 
 /** Theme color key valid for styles.theme.colors; falls back to primary/gray for elements/edges. */
@@ -109,6 +132,21 @@ function resolveThemeColor(
 ): string {
   if (color && color in styles.theme.colors) return color
   return fallback
+}
+
+/** Get theme color values with fallback to DEFAULT on error (DRY + SRP for try/catch). */
+function getThemeColorValues(
+  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  color: string | undefined,
+  fallback: 'primary' | 'gray',
+): ThemeColorValues {
+  const styles = getEffectiveStyles(viewmodel)
+  const themeColor = resolveThemeColor(styles, color ?? fallback, fallback)
+  try {
+    return styles.colors(themeColor) as ThemeColorValues
+  } catch {
+    return LikeC4Styles.DEFAULT.colors(fallback) as ThemeColorValues
+  }
 }
 
 /**
@@ -146,37 +184,19 @@ function getElementColors(
   viewmodel: LikeC4ViewModel<aux.Unknown>,
   color: string,
 ): ElementColors | undefined {
-  const styles = getEffectiveStyles(viewmodel)
-  const themeColor = resolveThemeColor(styles, color, 'primary')
-  try {
-    const values = styles.colors(themeColor) as ThemeColorValues
-    const el = values.elements
-    return {
-      fill: el.fill,
-      stroke: el.stroke,
-      font: (el.hiContrast ?? el.stroke) as string,
-    }
-  } catch {
-    const values = LikeC4Styles.DEFAULT.colors('primary') as ThemeColorValues
-    const el = values.elements
-    return {
-      fill: el.fill,
-      stroke: el.stroke,
-      font: (el.hiContrast ?? el.stroke) as string,
-    }
+  const values = getThemeColorValues(viewmodel, color, 'primary')
+  const el = values.elements
+  return {
+    fill: el.fill,
+    stroke: el.stroke,
+    font: (el.hiContrast ?? el.stroke) as string,
   }
 }
 
 /** Edge stroke (line) color from theme RelationshipColorValues.line. */
 function getEdgeStrokeColor(viewmodel: LikeC4ViewModel<aux.Unknown>, color: string | undefined): string {
-  const styles = getEffectiveStyles(viewmodel)
-  const themeColor = resolveThemeColor(styles, color ?? 'gray', 'gray')
-  try {
-    const values = styles.colors(themeColor) as ThemeColorValues
-    return values.relationships.line as string
-  } catch {
-    return LikeC4Styles.DEFAULT.colors('gray').relationships.line as string
-  }
+  const values = getThemeColorValues(viewmodel, color ?? 'gray', 'gray')
+  return values.relationships.line as string
 }
 
 /** Edge label font and background from theme (RelationshipColorValues.label, labelBg) for readable connector text. */
@@ -184,20 +204,11 @@ function getEdgeLabelColors(
   viewmodel: LikeC4ViewModel<aux.Unknown>,
   color: string | undefined,
 ): { font: string; background: string } {
-  const styles = getEffectiveStyles(viewmodel)
-  const themeColor = resolveThemeColor(styles, color ?? 'gray', 'gray')
-  try {
-    const values = styles.colors(themeColor) as ThemeColorValues
-    const rel = values.relationships as RelationshipColorValues
-    return {
-      font: (rel.label ?? rel.line) as string,
-      background: (rel.labelBg ?? '#ffffff') as string,
-    }
-  } catch {
-    return {
-      font: getEdgeStrokeColor(viewmodel, 'gray'),
-      background: '#ffffff',
-    }
+  const values = getThemeColorValues(viewmodel, color ?? 'gray', 'gray')
+  const rel = values.relationships as RelationshipColorValues
+  return {
+    font: (rel.label ?? rel.line) as string,
+    background: (rel.labelBg ?? '#ffffff') as string,
   }
 }
 
@@ -421,7 +432,7 @@ function buildEdgeCellXml(
   const edgeDesc = toExportString(edge.description)
   const edgeTech = toExportString(edge.technology)
   const edgeNotes = toExportString(edge.notes)
-  const edgeNavTo = edge.navigateTo != null && edge.navigateTo !== '' ? String(edge.navigateTo) : ''
+  const edgeNavTo = toNonEmptyString(edge.navigateTo)
   const edgeKind = (edge as Edge & { kind?: string }).kind
   const edgeNotation = (edge as Edge & { notation?: string }).notation
   const edgeLinks = (edge as Edge & { links?: readonly { url: string; title?: string }[] }).links
@@ -508,10 +519,8 @@ function buildNodeCellXml(
   const notes = toExportString((node as Node & { notes?: MarkdownOrString }).notes)
   const tags = (node as Node & { tags?: readonly string[] }).tags
   const tagList = Array.isArray(tags) && tags.length > 0 ? tags.join(',') : ''
-  const navigateTo = (node as Node & { navigateTo?: string | null }).navigateTo
-  const navTo = navigateTo != null && navigateTo !== '' ? String(navigateTo) : ''
-  const icon = (node as Node & { icon?: string | null }).icon
-  const iconName = icon != null && icon !== '' ? String(icon) : ''
+  const navTo = toNonEmptyString((node as Node & { navigateTo?: string | null }).navigateTo)
+  const iconName = toNonEmptyString((node as Node & { icon?: string | null }).icon)
 
   const isContainer = containerNodeIds.has(node.id)
   const shapeStyle = isContainer
@@ -520,14 +529,7 @@ function buildNodeCellXml(
   const strokeColorOverride = strokeColorByNodeId?.[node.id]
   const strokeWidthOverride = strokeWidthByNodeId?.[node.id]
   const elemColors = strokeColorOverride
-    ? ((): ElementColors => {
-      const base = getElementColors(viewmodel, node.color)
-      return {
-        fill: base?.fill ?? DEFAULT_NODE_FILL_HEX,
-        stroke: strokeColorOverride,
-        font: base?.font ?? strokeColorOverride,
-      }
-    })()
+    ? applyStrokeColorOverride(getElementColors(viewmodel, node.color), strokeColorOverride)
     : getElementColors(viewmodel, node.color)
   const fillHex = elemColors?.fill ?? DEFAULT_NODE_FILL_HEX
   const strokeHex = elemColors?.stroke ?? DEFAULT_NODE_STROKE_HEX
@@ -545,13 +547,9 @@ function buildNodeCellXml(
   const valueHtml = buildNodeValueHtml(title, desc, isContainer, fontHex, fontFamily, fontSizePx)
   const value = escapeXml(valueHtml)
   const borderVal = nodeStyle?.border
-  const strokeWidthDefault = borderVal === 'none' ? '0' : (isContainer ? '1' : (borderVal ? '1' : ''))
-  const strokeWidth = strokeWidthOverride ?? strokeWidthDefault
+  const strokeWidth = strokeWidthOverride ?? getDefaultStrokeWidth(borderVal, isContainer)
   const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
-  let containerDashed: string
-  if (isContainer && borderVal !== 'none') containerDashed = 'dashed=1;'
-  else if (borderVal === 'dashed') containerDashed = 'dashed=1;'
-  else containerDashed = ''
+  const containerDashed = getContainerDashedStyle(isContainer, borderVal)
   const containerOpacityNum = isContainer === true ? (nodeStyle?.opacity ?? 15) : undefined
   const fillOpacityStyle = containerOpacityNum != null && isContainer === true
     ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`

@@ -12,6 +12,9 @@ import { useDisclosure } from '@mantine/hooks'
 import { useCallback, useMemo, useState } from 'react'
 import { DRAWIO_MIME_TYPE } from './drawio-events'
 
+/** Delay (ms) before revoking object URL after download so the browser can start the download. */
+const DRAWIO_DOWNLOAD_REVOKE_MS = 1000
+
 type ViewModelLike = { $view: DiagramView; get $styles(): LikeC4Model['$styles'] | null }
 
 /** Single place for "blob → object URL → download link → revoke" (DRY). */
@@ -22,7 +25,7 @@ function downloadDrawioBlob(xml: string, filename: string): void {
   a.href = url
   a.download = filename
   a.click()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
+  setTimeout(() => URL.revokeObjectURL(url), DRAWIO_DOWNLOAD_REVOKE_MS)
 }
 
 /** Build viewmodel shape expected by generateDrawio / generateDrawioMulti (single responsibility). */

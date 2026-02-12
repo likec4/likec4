@@ -226,4 +226,125 @@ Não obrigatório para este PR:
 
 ---
 
+## 8. Varredura minuciosa (fase 2) — oportunidades adicionais
+
+Após o commit do refactor anterior, nova varredura para identificar mais oportunidades de SOLID, DRY, YAGNI, KISS e Clean Code. Itens por prioridade (M = média, B = baixa).
+
+### 8.1 DRY
+
+**8.1.1 [M] Padrão try/catch de tema em `generate-drawio.ts`**
+
+- **Onde:** `getElementColors`, `getEdgeStrokeColor`, `getEdgeLabelColors` (linhas ~151–200).
+- **Problema:** Os três usam o mesmo padrão: `getEffectiveStyles` → `resolveThemeColor` → `try { styles.colors(themeColor) ... } catch { LikeC4Styles.DEFAULT.colors(...) }`.
+- **Recomendação:** Extrair um helper, por exemplo `getThemeValues<T>(viewmodel, color, fallback, getter: (values) => T): T`, que encapsula o try/catch e o fallback para `LikeC4Styles.DEFAULT`, e usar nos três. Reduz duplicação e facilita mudanças futuras no fallback.
+
+**8.1.2 [M] Emissão de links (elementos vs edges) em `parse-drawio.ts`**
+
+- **Onde:** `pushElementLinks` (linhas ~740–775) e o bloco `try { linksArr = JSON.parse(linksJson) ... }` dentro de `emitEdgesToLines` (linhas ~884–906).
+- **Problema:** A lógica de parse de `linksJson` e o formato da linha `link 'url' 'title'` estão duplicados (elementos usam `ctx.lines.push` com `pad`; edges usam `bodyLines.push` com indentação fixa).
+- **Recomendação:** Extrair uma função, por exemplo `formatLinkLines(linksJson, nativeLink, pad: string): string[]`, que devolve as linhas já formatadas (ou que recebe um callback `push(line)`). Reutilizar em `pushElementLinks` e em `emitEdgesToLines` para eliminar duplicação.
+
+**8.1.3 [B] Coerção “string não vazia” repetida**
+
+- **Onde:** `generate-drawio.ts`: `navTo`, `edgeNavTo`, `iconName` (padrão `x != null && x !== '' ? String(x) : ''`).
+- **Recomendação:** Helper opcional, por exemplo `toNonEmptyString(x: unknown): string`, para centralizar e documentar a regra. Baixo impacto; melhora legibilidade.
+
+### 8.2 SOLID
+
+**8.2.1 [M] Responsabilidade única em “resolver cores com fallback”**
+
+- **Onde:** `generate-drawio.ts`: as três funções de cor (element, edge stroke, edge label) misturam “obter estilo efectivo”, “resolver nome do tema” e “aplicar fallback em caso de erro”.
+- **Recomendação:** Alinhado com 8.1.1: um único ponto que “dá valores de tema com fallback” (SRP) e as funções públicas apenas mapeiam esses valores para fill/stroke/font ou line/label. Facilita testes e evolução.
+
+**8.2.2 [B] `buildCellFromMxCell` com muitos spreads condicionais**
+
+- **Onde:** `parse-drawio.ts` ~223–325: construção de um objeto com dezenas de `...(x != null ? { x } : {})`.
+- **Recomendação:** Manter por agora. Se no futuro for difícil de manter, considerar um “builder” interno ou funções pequenas que devolvem partials por grupo (geom, style, userData). Não prioritário.
+
+### 8.3 KISS
+
+**8.3.1 [M] Lógica de `containerDashed` e `strokeWidthDefault` em `buildNodeCellXml`**
+
+- **Onde:** `generate-drawio.ts` ~541–547 (containerDashed: 3 ramos) e ~538 (strokeWidthDefault: expressão ternária aninhada).
+- **Recomendação:** Extrair funções puras, por exemplo `getContainerDashedStyle(isContainer, borderVal): string` e `getDefaultStrokeWidth(borderVal, isContainer): string`. Reduz ruído e torna o fluxo de `buildNodeCellXml` mais legível.
+
+**8.3.2 [B] IIFE para `elemColors` quando há `strokeColorOverride`**
+
+- **Onde:** `generate-drawio.ts` ~516–525: `elemColors = strokeColorOverride ? ((): ElementColors => { ... })() : getElementColors(...)`.
+- **Recomendação:** Extrair função nomeada, por exemplo `applyStrokeColorOverride(base: ElementColors | undefined, override: string): ElementColors`, e chamar em uma linha. Elimina IIFE e deixa a intenção explícita.
+
+### 8.4 YAGNI
+
+**8.4.1 [B] Constante `DRAWIO_FILE_EXT` no CLI**
+
+- **Onde:** `packages/likec4/src/cli/export/drawio/handler.ts`: `const DRAWIO_FILE_EXT = '.drawio'`.
+- **Análise:** Única utilização; poderia ser inline. Manter a constante continua a ser legível e consistente com “single source of truth” para a extensão no CLI. Sem ação obrigatória.
+
+### 8.5 Clean Code
+
+**8.5.1 [M] Nome e tamanho de `emitElementToLines`**
+
+- **Onde:** `parse-drawio.ts` ~776–855: função longa com muitas variáveis locais e um `hasBody` com muitos `!!`.
+- **Recomendação:** Extrair a computação de `hasBody` para uma função, por exemplo `elementHasBody(cell, childList, colorName, ...): boolean`, e opcionalmente agrupar a escrita do “body” (style, tags, desc, tech, etc.) numa função `pushElementBody(...)`. Melhora legibilidade sem alterar comportamento.
+
+**8.5.2 [B] `decodeXmlEntities` (parse) vs `escapeXml` (generate)**
+
+- **Onde:** `parse-drawio.ts` tem `decodeXmlEntities`; `generate-drawio.ts` tem `escapeXml`. São operações inversas; não há partilha de código.
+- **Recomendação:** Opcional: criar `packages/generators/src/drawio/xml-utils.ts` com `escapeXml` e `decodeXmlEntities` e importar em ambos. Reduz risco de desalinhamento futuro (ex.: novos caracteres escapados). Baixa prioridade.
+
+**8.5.3 [B] Magic number em `downloadDrawioBlob`**
+
+- **Onde:** `useDrawioContextMenuActions.ts`: `setTimeout(..., 1000)` para revoke da object URL.
+- **Recomendação:** Constante nomeada, por exemplo `DRAWIO_DOWNLOAD_REVOKE_MS = 1000`, ou comentário a explicar o atraso. Melhora intenção.
+
+### 8.6 Resumo fase 2
+
+| Id   | Princípio | Prioridade | Esforço | Descrição curta |
+|------|-----------|------------|---------|-----------------|
+| 8.1.1 | DRY       | M          | Médio   | Helper tema (try/catch + default) em generate-drawio |
+| 8.1.2 | DRY       | M          | Médio   | formatLinkLines partilhado em parse-drawio (elementos + edges) |
+| 8.1.3 | DRY       | B          | Baixo   | toNonEmptyString em generate-drawio |
+| 8.2.1 | SOLID     | M          | Médio   | SRP para “resolver cores com fallback” (com 8.1.1) |
+| 8.2.2 | SOLID     | B          | Alto    | Builder/partials em buildCellFromMxCell (opcional) |
+| 8.3.1 | KISS      | M          | Baixo   | getContainerDashedStyle + getDefaultStrokeWidth |
+| 8.3.2 | KISS      | B          | Baixo   | applyStrokeColorOverride em vez de IIFE |
+| 8.4.1 | YAGNI     | B          | —       | Sem ação (constante CLI OK) |
+| 8.5.1 | Clean Code| M          | Médio   | elementHasBody + pushElementBody em emitElementToLines |
+| 8.5.2 | Clean Code| B          | Baixo   | xml-utils partilhado (opcional) |
+| 8.5.3 | Clean Code| B          | Baixo   | Constante para revoke delay no download |
+
+Sugestão: para um próximo PR de “drawio cleanup”, priorizar 8.1.1+8.2.1, 8.3.1 e 8.1.2; 8.5.1 e 8.3.2 em seguida; o resto quando houver tempo.
+
+---
+
+## 9. Implementação fase 2 (concluída)
+
+Todos os itens da varredura fase 2 foram implementados:
+
+- [x] **8.1.1 + 8.2.1** — `getThemeColorValues` em generate-drawio; refactor de getElementColors, getEdgeStrokeColor, getEdgeLabelColors.
+- [x] **8.1.2** — `formatLinkLines` em parse-drawio; uso em pushElementLinks e emitEdgesToLines.
+- [x] **8.1.3** — `toNonEmptyString` em generate-drawio; uso em navTo, iconName, edgeNavTo.
+- [x] **8.3.1** — `getContainerDashedStyle`, `getDefaultStrokeWidth` em generate-drawio.
+- [x] **8.3.2** — `applyStrokeColorOverride` em generate-drawio (substitui IIFE).
+- [x] **8.5.1** — `elementHasBody`, `pushElementBody` em parse-drawio; emitElementToLines simplificado.
+- [x] **8.5.2** — `packages/generators/src/drawio/xml-utils.ts` com escapeXml e decodeXmlEntities; generate-drawio e parse-drawio importam.
+- [x] **8.5.3** — `DRAWIO_DOWNLOAD_REVOKE_MS` em useDrawioContextMenuActions (playground).
+- [x] **8.2.2** — `buildCellOptionalFields` em parse-drawio; `buildCellFromMxCell` delega campos opcionais (SOLID).
+
+---
+
+## 10. Aderência ao system design do projeto
+
+Avaliação da solução Draw.io face às abstrações e convenções do repositório (AGENTS.md, estrutura de generators e CLI):
+
+- **Generators:** O módulo drawio segue o padrão dos outros formatos (d2, mmd, puml): funções de geração exportadas em `generate-drawio.ts`, re-export no `drawio/index.ts` e no `generators/src/index.ts`. A constante `DEFAULT_DRAWIO_ALL_FILENAME` está em `constants.ts` e é exportada pelo index principal (como referido no AGENTS: "Export to Mermaid, PlantUML, D2, etc." — drawio é mais um formato). O ficheiro `xml-utils.ts` é interno ao drawio (não exportado no package), alinhado com helpers locais noutros geradores.
+- **CLI:** O handler `export/drawio/handler.ts` segue a mesma estrutura que `export/png` e `export/json`: comando registado em `export/index.ts` via `drawioCmd`, uso de `path`, `project`, `useDotBin` de `options`, logger e timer. Nomenclatura e responsabilidades (runExportDrawio, exportDrawioAllInOne, exportDrawioPerView) estão alinhadas com o resto do export.
+- **Core/types:** Uso de `LikeC4ViewModel`, `ProcessedView`, `NodeId`, `BBox`, `LikeC4Styles`, `ThemeColorValues` e tipos do core mantém consistência com os outros geradores (puml, d2) que também recebem viewmodel e acedem a `$view`, `$styles`, cores e temas.
+- **Convenções de código:** TypeScript explícito, sem `any`; JSDoc nas funções públicas; constantes partilhadas em `constants.ts`; formatação dprint. Não foi introduzido `switch(true)` no drawio porque as decisões são sobretudo por `shape`/`arrow` (switch por valor), já idiomáticas.
+- **Testes:** Specs ao lado do código (`generate-drawio.spec.ts`, `parse-drawio.spec.ts`), snapshots em `__snapshots__`, nomes descritivos — em linha com as guidelines de testing.
+
+Adequações já aplicadas nos refactors anteriores (constantes centralizadas, helpers com responsabilidade única, DRY entre generate e parse, xml-utils partilhado) reforçam a aderência. Nenhuma alteração adicional de alinhamento estrutural foi necessária.
+
+---
+
 *Documento gerado para apoiar um PR mais limpo da feature Draw.io export (branch `feat/drawio-export`).*

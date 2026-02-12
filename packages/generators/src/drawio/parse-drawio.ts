@@ -14,6 +14,7 @@ import {
   DRAWIO_DIAGRAM_ID_PREFIX,
   DRAWIO_PAGE_LINK_PREFIX,
 } from './constants'
+import { decodeXmlEntities } from './xml-utils'
 
 export interface DrawioCell {
   id: string
@@ -220,25 +221,22 @@ function navigateToFromLink(link: string | undefined): string | undefined {
  */
 const GEOM_TAG_RE = /<mxGeometry[^>]*>/i
 
-function buildCellFromMxCell(
-  attrs: string,
-  inner: string,
-  fullTag: string,
-  overrides?: { id?: string; navigateTo?: string },
-): DrawioCell | null {
-  const id = overrides?.id ?? getAttr(attrs, 'id')
-  if (!id) return null
-  const valueRaw = getAttr(attrs, 'value')
-  const parent = getAttr(attrs, 'parent')
-  const source = getAttr(attrs, 'source')
-  const target = getAttr(attrs, 'target')
-  const vertex = getAttr(attrs, 'vertex') === '1'
-  const edge = getAttr(attrs, 'edge') === '1'
-  const style = getAttr(attrs, 'style')
-  const geomMatch = GEOM_TAG_RE.exec(fullTag)
-  const geomStr = geomMatch ? geomMatch[0] : ''
-  const styleMap = parseStyle(style ?? undefined)
-  const userData = parseUserData(inner)
+/** Optional fields for DrawioCell (SOLID: single place for conditional spreads). */
+function buildCellOptionalFields(params: {
+  valueRaw: string | undefined
+  parent: string | undefined
+  source: string | undefined
+  target: string | undefined
+  style: string | undefined
+  styleMap: Map<string, string>
+  userData: { description?: string; technology?: string; customData?: string }
+  geomStr: string
+  fullTag: string
+  vertex: boolean
+  edge: boolean
+  navigateTo: string | undefined
+}): Partial<DrawioCell> {
+  const { styleMap, userData, geomStr, fullTag, vertex, edge, navigateTo } = params
   const x = parseNum(getAttr(geomStr, 'x'))
   const y = parseNum(getAttr(geomStr, 'y'))
   const width = parseNum(getAttr(geomStr, 'width'))
@@ -249,7 +247,6 @@ function buildCellFromMxCell(
   const technology = userData.technology ?? getDecodedStyle(styleMap, 'likec4technology')
   const notes = getDecodedStyle(styleMap, 'likec4notes')
   const tags = getDecodedStyle(styleMap, 'likec4tags')
-  const navigateTo = overrides?.navigateTo ?? getDecodedStyle(styleMap, 'likec4navigateto')
   const icon = getDecodedStyle(styleMap, 'likec4icon')
   const endArrow = styleMap.get('endarrow')
   const startArrow = styleMap.get('startarrow')
@@ -275,53 +272,83 @@ function buildCellFromMxCell(
   const relationshipKind = getDecodedStyle(styleMap, 'likec4relationshipkind')
   const notation = getDecodedStyle(styleMap, 'likec4notation')
   const metadata = getDecodedStyle(styleMap, 'likec4metadata')
-  return {
-    id,
-    ...(valueRaw != null && valueRaw !== '' ? { value: decodeXmlEntities(valueRaw) } : {}),
-    ...(parent != null && parent !== '' ? { parent } : {}),
-    ...(source != null && source !== '' ? { source } : {}),
-    ...(target != null && target !== '' ? { target } : {}),
+  const optional: Partial<DrawioCell> = {}
+  if (params.valueRaw != null && params.valueRaw !== '') {
+    optional.value = decodeXmlEntities(params.valueRaw)
+  }
+  if (params.parent != null && params.parent !== '') optional.parent = params.parent
+  if (params.source != null && params.source !== '') optional.source = params.source
+  if (params.target != null && params.target !== '') optional.target = params.target
+  if (params.style != null && params.style !== '') optional.style = params.style
+  if (x !== undefined) optional.x = x
+  if (y !== undefined) optional.y = y
+  if (width !== undefined) optional.width = width
+  if (height !== undefined) optional.height = height
+  if (fillColor !== undefined) optional.fillColor = fillColor
+  if (strokeColor !== undefined) optional.strokeColor = strokeColor
+  if (description != null) optional.description = description
+  if (technology != null) optional.technology = technology
+  if (notes != null) optional.notes = notes
+  if (tags != null) optional.tags = tags
+  if (navigateTo != null) optional.navigateTo = navigateTo
+  if (icon != null) optional.icon = icon
+  if (endArrow != null && endArrow !== '') optional.endArrow = endArrow
+  if (startArrow != null && startArrow !== '') optional.startArrow = startArrow
+  if (dashed != null && dashed !== '') optional.dashed = dashed
+  if (dashPattern != null && dashPattern !== '') optional.dashPattern = dashPattern
+  if (summary != null) optional.summary = summary
+  if (links != null) optional.links = links
+  if (link != null && vertex) optional.link = link
+  if (border != null) optional.border = border
+  if (strokeWidth != null && vertex) optional.strokeWidth = strokeWidth
+  if (size != null && vertex) optional.size = size
+  if (padding != null && vertex) optional.padding = padding
+  if (textSize != null && vertex) optional.textSize = textSize
+  if (iconPosition != null && vertex) optional.iconPosition = iconPosition
+  if (colorName != null) optional.colorName = colorName
+  if (opacity != null) optional.opacity = opacity
+  if (relationshipKind != null) optional.relationshipKind = relationshipKind
+  if (notation != null) optional.notation = notation
+  if (metadata != null && edge) optional.metadata = metadata
+  if (userData.customData != null) optional.customData = userData.customData
+  if (edge) {
+    const pts = parseEdgePoints(fullTag)
+    if (pts != null) optional.edgePoints = pts
+  }
+  return optional
+}
+
+function buildCellFromMxCell(
+  attrs: string,
+  inner: string,
+  fullTag: string,
+  overrides?: { id?: string; navigateTo?: string },
+): DrawioCell | null {
+  const id = overrides?.id ?? getAttr(attrs, 'id')
+  if (!id) return null
+  const vertex = getAttr(attrs, 'vertex') === '1'
+  const edge = getAttr(attrs, 'edge') === '1'
+  const style = getAttr(attrs, 'style')
+  const geomMatch = GEOM_TAG_RE.exec(fullTag)
+  const geomStr = geomMatch ? geomMatch[0] : ''
+  const styleMap = parseStyle(style ?? undefined)
+  const userData = parseUserData(inner)
+  const navigateTo = overrides?.navigateTo ?? getDecodedStyle(styleMap, 'likec4navigateto')
+  const optional = buildCellOptionalFields({
+    valueRaw: getAttr(attrs, 'value'),
+    parent: getAttr(attrs, 'parent'),
+    source: getAttr(attrs, 'source'),
+    target: getAttr(attrs, 'target'),
+    style: getAttr(attrs, 'style'),
+    styleMap,
+    userData,
+    geomStr,
+    fullTag,
     vertex,
     edge,
-    ...(style != null && style !== '' ? { style } : {}),
-    ...(x !== undefined ? { x } : {}),
-    ...(y !== undefined ? { y } : {}),
-    ...(width !== undefined ? { width } : {}),
-    ...(height !== undefined ? { height } : {}),
-    ...(fillColor !== undefined ? { fillColor } : {}),
-    ...(strokeColor !== undefined ? { strokeColor } : {}),
-    ...(description != null ? { description } : {}),
-    ...(technology != null ? { technology } : {}),
-    ...(notes != null ? { notes } : {}),
-    ...(tags != null ? { tags } : {}),
-    ...(navigateTo != null ? { navigateTo } : {}),
-    ...(icon != null ? { icon } : {}),
-    ...(endArrow != null && endArrow !== '' ? { endArrow } : {}),
-    ...(startArrow != null && startArrow !== '' ? { startArrow } : {}),
-    ...(dashed != null && dashed !== '' ? { dashed } : {}),
-    ...(dashPattern != null && dashPattern !== '' ? { dashPattern } : {}),
-    ...(summary != null ? { summary } : {}),
-    ...(links != null ? { links } : {}),
-    ...(link != null && vertex ? { link } : {}),
-    ...(border != null ? { border } : {}),
-    ...(strokeWidth != null && vertex ? { strokeWidth } : {}),
-    ...(size != null && vertex ? { size } : {}),
-    ...(padding != null && vertex ? { padding } : {}),
-    ...(textSize != null && vertex ? { textSize } : {}),
-    ...(iconPosition != null && vertex ? { iconPosition } : {}),
-    ...(colorName != null ? { colorName } : {}),
-    ...(opacity != null ? { opacity } : {}),
-    ...(relationshipKind != null ? { relationshipKind } : {}),
-    ...(notation != null ? { notation } : {}),
-    ...(metadata != null && edge ? { metadata } : {}),
-    ...(userData.customData != null ? { customData: userData.customData } : {}),
-    ...(edge
-      ? (() => {
-        const pts = parseEdgePoints(fullTag)
-        return pts != null ? { edgePoints: pts } : {}
-      })()
-      : {}),
-  }
+    navigateTo,
+  })
+  return { id, vertex, edge, ...optional } as DrawioCell
 }
 
 /** Extract one mxCell from xml starting at tagStart. Returns attrs, inner, fullTag and next search index, or null. */
@@ -417,15 +444,6 @@ function parseDrawioXml(xml: string): DrawioCell[] {
     }
   }
   return cells
-}
-
-function decodeXmlEntities(s: string): string {
-  return s
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
-    .replaceAll('&quot;', '"')
-    .replaceAll('&apos;', '\'')
-    .replaceAll('&amp;', '&')
 }
 
 /** Map draw.io endArrow/startArrow style value to LikeC4 RelationshipArrowType. */
@@ -738,6 +756,35 @@ function pushElementStyleBlock(
   if (styleParts.length > 0) ctx.lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
 }
 
+/** Format link lines for .c4 (DRY: elements and edges). Returns lines with given prefix. */
+function formatLinkLines(
+  linksJson: string | undefined,
+  nativeLink: string | undefined,
+  linePrefix: string,
+): string[] {
+  const out: string[] = []
+  try {
+    const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
+    if (Array.isArray(linksArr)) {
+      for (const link of linksArr) {
+        if (link?.url) {
+          out.push(
+            `${linePrefix}link '${escapeLikec4Quotes(String(link.url))}'${
+              link.title ? ` '${escapeLikec4Quotes(String(link.title))}'` : ''
+            }`,
+          )
+        }
+      }
+    }
+    if (out.length === 0 && nativeLink) {
+      out.push(`${linePrefix}link '${escapeLikec4Quotes(nativeLink)}'`)
+    }
+  } catch {
+    if (nativeLink) out.push(`${linePrefix}link '${escapeLikec4Quotes(nativeLink)}'`)
+  }
+  return out
+}
+
 /** Push link line(s) from linksJson or nativeLink (DRY with emitEdgesToLines). */
 function pushElementLinks(
   ctx: ElementEmitContext,
@@ -745,23 +792,9 @@ function pushElementLinks(
   linksJson: string | undefined,
   nativeLink: string | undefined,
 ): void {
-  try {
-    const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
-    if (Array.isArray(linksArr)) {
-      for (const link of linksArr) {
-        if (link?.url) {
-          ctx.lines.push(
-            `${pad}  link '${escapeLikec4Quotes(String(link.url))}'${
-              link.title ? ` '${escapeLikec4Quotes(String(link.title))}'` : ''
-            }`,
-          )
-        }
-      }
-    } else if (nativeLink) {
-      ctx.lines.push(`${pad}  link '${escapeLikec4Quotes(nativeLink)}'`)
-    }
-  } catch {
-    if (nativeLink) ctx.lines.push(`${pad}  link '${escapeLikec4Quotes(nativeLink)}'`)
+  const prefix = `${pad}  `
+  for (const line of formatLinkLines(linksJson, nativeLink, prefix)) {
+    ctx.lines.push(line)
   }
 }
 
@@ -773,6 +806,88 @@ interface ElementEmitContext {
   children: Map<string, Array<{ cellId: string; fqn: string }>>
   hexToCustomName: Map<string, string>
   byId: Map<string, DrawioCell>
+}
+
+/** Whether element has any body content (Clean Code: single place for hasBody condition). */
+function elementHasBody(
+  cell: DrawioCell,
+  childList: Array<{ cellId: string; fqn: string }> | undefined,
+  colorName: string | undefined,
+  opts: {
+    desc: string | undefined
+    tech: string | undefined
+    notes: string | undefined
+    summary: string | undefined
+    linksJson: string | undefined
+    nativeLink: string | undefined
+    notation: string | undefined
+    tagList: string[]
+    navigateTo: string | undefined
+    icon: string | undefined
+  },
+): boolean {
+  return (
+    (childList?.length ?? 0) > 0 ||
+    !!opts.desc ||
+    !!opts.tech ||
+    !!opts.notes ||
+    !!opts.summary ||
+    !!opts.linksJson ||
+    !!opts.nativeLink ||
+    !!opts.notation ||
+    opts.tagList.length > 0 ||
+    !!colorName ||
+    !!cell.border?.trim() ||
+    !!cell.opacity ||
+    !!inferShape(cell.style) ||
+    !!cell.size ||
+    !!cell.padding ||
+    !!cell.textSize ||
+    !!cell.iconPosition ||
+    !!opts.navigateTo ||
+    !!opts.icon
+  )
+}
+
+/** Push element body lines (style, tags, description, links, children). */
+function pushElementBody(
+  ctx: ElementEmitContext,
+  pad: string,
+  cell: DrawioCell,
+  childList: Array<{ cellId: string; fqn: string }> | undefined,
+  fqn: string,
+  indent: number,
+  colorName: string | undefined,
+  opts: {
+    desc: string | undefined
+    tech: string | undefined
+    notes: string | undefined
+    summary: string | undefined
+    linksJson: string | undefined
+    nativeLink: string | undefined
+    notation: string | undefined
+    tagList: string[]
+    navigateTo: string | undefined
+    icon: string | undefined
+  },
+): void {
+  ctx.lines.push(`${pad}{`)
+  pushElementStyleBlock(ctx, pad, cell, colorName)
+  for (const t of opts.tagList) ctx.lines.push(`${pad}  #${t.replaceAll(/\s+/g, '_')}`)
+  if (opts.desc) ctx.lines.push(`${pad}  description '${escapeLikec4Quotes(opts.desc)}'`)
+  if (opts.tech) ctx.lines.push(`${pad}  technology '${escapeLikec4Quotes(opts.tech)}'`)
+  if (opts.summary) ctx.lines.push(`${pad}  summary '${escapeLikec4Quotes(opts.summary)}'`)
+  if (opts.notes) ctx.lines.push(`${pad}  notes '${escapeLikec4Quotes(opts.notes)}'`)
+  if (opts.notation) ctx.lines.push(`${pad}  notation '${escapeLikec4Quotes(opts.notation)}'`)
+  pushElementLinks(ctx, pad, opts.linksJson, opts.nativeLink)
+  if (opts.navigateTo) ctx.lines.push(`${pad}  navigateTo ${opts.navigateTo}`)
+  if (opts.icon) ctx.lines.push(`${pad}  icon '${escapeLikec4Quotes(opts.icon)}'`)
+  if (childList && childList.length > 0) {
+    for (const ch of childList) {
+      emitElementToLines(ctx, ch.cellId, ch.fqn, indent + 1)
+    }
+  }
+  ctx.lines.push(`${pad}}`)
 }
 
 function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string, indent: number): void {
@@ -802,46 +917,24 @@ function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string
     ? ctx.hexToCustomName.get(cell.fillColor.trim())
     : undefined
   const childList = ctx.children.get(fqn)
-  const hasBody = (childList && childList.length > 0) ||
-    !!desc ||
-    !!tech ||
-    !!notes ||
-    !!summary ||
-    !!linksJson ||
-    !!nativeLink ||
-    !!notation ||
-    tagList.length > 0 ||
-    !!colorName ||
-    !!cell.border?.trim() ||
-    !!cell.opacity ||
-    !!inferShape(cell.style) ||
-    !!cell.size ||
-    !!cell.padding ||
-    !!cell.textSize ||
-    !!cell.iconPosition ||
-    !!navigateTo ||
-    !!icon
+  const opts = {
+    desc,
+    tech,
+    notes,
+    summary,
+    linksJson,
+    nativeLink,
+    notation,
+    tagList,
+    navigateTo,
+    icon,
+  }
+  const hasBody = elementHasBody(cell, childList, colorName, opts)
 
   pushElementHeader(ctx, pad, name, kind, title)
 
   if (hasBody) {
-    ctx.lines.push(`${pad}{`)
-    pushElementStyleBlock(ctx, pad, cell, colorName)
-    for (const t of tagList) ctx.lines.push(`${pad}  #${t.replaceAll(/\s+/g, '_')}`)
-    if (desc) ctx.lines.push(`${pad}  description '${escapeLikec4Quotes(desc)}'`)
-    if (tech) ctx.lines.push(`${pad}  technology '${escapeLikec4Quotes(tech)}'`)
-    if (summary) ctx.lines.push(`${pad}  summary '${escapeLikec4Quotes(summary)}'`)
-    if (notes) ctx.lines.push(`${pad}  notes '${escapeLikec4Quotes(notes)}'`)
-    if (notation) ctx.lines.push(`${pad}  notation '${escapeLikec4Quotes(notation)}'`)
-    pushElementLinks(ctx, pad, linksJson, nativeLink)
-    if (navigateTo) ctx.lines.push(`${pad}  navigateTo ${navigateTo}`)
-    if (icon) ctx.lines.push(`${pad}  icon '${escapeLikec4Quotes(icon)}'`)
-    if (childList && childList.length > 0) {
-      for (const ch of childList) {
-        emitElementToLines(ctx, ch.cellId, ch.fqn, indent + 1)
-      }
-    }
-    ctx.lines.push(`${pad}}`)
+    pushElementBody(ctx, pad, cell, childList, fqn, indent, colorName, opts)
   } else {
     ctx.lines.push(`${pad}{`)
     ctx.lines.push(`${pad}}`)
@@ -882,21 +975,8 @@ function emitEdgesToLines(
       if (notes) bodyLines.push(`    notes '${escapeLikec4Quotes(notes)}'`)
       if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
       if (notation) bodyLines.push(`    notation '${escapeLikec4Quotes(notation)}'`)
-      try {
-        const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
-        if (Array.isArray(linksArr)) {
-          for (const link of linksArr) {
-            if (link?.url) {
-              bodyLines.push(
-                `    link '${escapeLikec4Quotes(String(link.url))}'${
-                  link.title ? ` '${escapeLikec4Quotes(String(link.title))}'` : ''
-                }`,
-              )
-            }
-          }
-        }
-      } catch {
-        // ignore invalid JSON
+      for (const line of formatLinkLines(linksJson, undefined, '    ')) {
+        bodyLines.push(line)
       }
       try {
         const metaObj = metadataJson ? (JSON.parse(metadataJson) as Record<string, string | string[]>) : null
