@@ -220,7 +220,11 @@ function printGroup(indent: CompositeGeneratorNode, group: ElementViewRuleGroup)
 // ---- Dynamic View ----
 
 function printDynamicView(indent: CompositeGeneratorNode, view: ParsedDynamicView): void {
-  indent.append('dynamic view ', view.id as string, ' {', NL)
+  indent.append('dynamic view ', view.id as string)
+  if (view.variant) {
+    indent.append(' ', view.variant)
+  }
+  indent.append(' {', NL)
   indent.indent({
     indentedChildren: inner => {
       printViewCommonProps(inner, view)

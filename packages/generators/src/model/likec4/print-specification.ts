@@ -1,16 +1,12 @@
+import type { ThemeColorValues } from '@likec4/core/styles'
 import type { ElementSpecification, RelationshipSpecification, TagSpecification } from '@likec4/core/types'
 import { isTagColorSpecified } from '@likec4/core/types'
 import { CompositeGeneratorNode, NL } from 'langium/generate'
 import { printStyleProperties } from './print-style'
 import { quoteMarkdownOrString, quoteString } from './utils'
 
-interface CustomColorValue {
-  hiContrast?: { fill?: string }
-  loContrast?: { fill?: string }
-}
-
 interface SpecificationData {
-  customColors?: Record<string, CustomColorValue>
+  customColors?: Record<string, ThemeColorValues>
   elements: Record<string, Partial<ElementSpecification>>
   deployments: Record<string, Partial<ElementSpecification>>
   relationships: Record<string, Partial<RelationshipSpecification>>
@@ -28,7 +24,7 @@ export function printSpecification(
       // Custom colors
       if (spec.customColors) {
         for (const [name, colorValues] of Object.entries(spec.customColors)) {
-          const hex = colorValues?.hiContrast?.fill ?? colorValues?.loContrast?.fill
+          const hex = colorValues?.elements?.hiContrast ?? colorValues?.elements?.loContrast
           if (hex) {
             indent.append('color ', name, ' ', hex, NL)
           }

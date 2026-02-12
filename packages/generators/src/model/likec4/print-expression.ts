@@ -49,7 +49,10 @@ export function printWhereOperator(op: WhereOperator): string {
     case isNotOperator(op):
       return `not (${printWhereOperator(op.not)})`
     case isAndOperator(op):
-      return op.and.map((o: WhereOperator) => printWhereOperator(o)).join(' and ')
+      return op.and.map((o: WhereOperator) => {
+        const inner = printWhereOperator(o)
+        return isOrOperator(o) ? `(${inner})` : inner
+      }).join(' and ')
     case isOrOperator(op):
       return op.or.map((o: WhereOperator) => printWhereOperator(o)).join(' or ')
     default:
@@ -243,7 +246,7 @@ function printFqnExprAnyInner(expr: FqnExpr.Any): string {
 
 // ---- Custom Property Printers ----
 
-function printCustomElementProps(custom: any): string {
+function printCustomElementProps(custom: FqnExpr.Custom['custom']): string {
   const lines: string[] = []
   if (custom.title) lines.push(`  title ${quoteString(custom.title)}`)
   if (custom.color) lines.push(`  color ${custom.color}`)
@@ -262,7 +265,7 @@ function printCustomElementProps(custom: any): string {
   return lines.length > 0 ? lines.join('\n') + '\n' : ''
 }
 
-function printCustomRelationProps(custom: any): string {
+function printCustomRelationProps(custom: RelationExpr.Custom['customRelation']): string {
   const lines: string[] = []
   if (custom.title) lines.push(`  title ${quoteString(custom.title)}`)
   if (custom.color) lines.push(`  color ${custom.color}`)
