@@ -404,21 +404,11 @@ export function generateDrawio(
   if (contentMaxY === -Infinity) contentMaxY = contentMinY + 600
   const contentCx = contentMinX + (contentMaxX - contentMinX) / 2
   const contentCy = contentMinY + (contentMaxY - contentMinY) / 2
-  let pageBounds: BBox = { x: 0, y: 0, width: 800, height: 600 }
-  try {
-    const b = ('bounds' in view && view.bounds != null && typeof (view.bounds as BBox).x === 'number'
-      ? (view.bounds as BBox)
-      : (viewmodel as { bounds?: BBox }).bounds) as BBox | undefined
-    if (b != null && typeof b.x === 'number') pageBounds = b
-  } catch {
-    // not layouted
-  }
-  const contentFitsInPage = contentMinX >= pageBounds.x - 2 &&
-    contentMaxX <= pageBounds.x + pageBounds.width + 2 &&
-    contentMinY >= pageBounds.y - 2 &&
-    contentMaxY <= pageBounds.y + pageBounds.height + 2
-  const offsetX = contentFitsInPage ? 0 : pageBounds.x + pageBounds.width / 2 - contentCx
-  const offsetY = contentFitsInPage ? 0 : pageBounds.y + pageBounds.height / 2 - contentCy
+  /** Use fixed canvas size for centering so the diagram always opens centered in Draw.io (layout bounds often equal content bounds, which would give offset 0 and top-left placement). */
+  const canvasWidth = 800
+  const canvasHeight = 600
+  const offsetX = canvasWidth / 2 - contentCx
+  const offsetY = canvasHeight / 2 - contentCy
 
   /** LikeC4 app font (matches --mantine-font-family / --likec4-app-font-default). */
   const fontFamily = '\'IBM Plex Sans Variable\',ui-sans-serif,system-ui,sans-serif'
@@ -736,7 +726,7 @@ export function generateDrawio(
 
   const allCells = [
     `<mxCell id="${defaultParentId}" value="" style="${rootCellStyle}" vertex="1" parent="${rootId}">
-  <mxGeometry x="${pageBounds.x}" y="${pageBounds.y}" width="${pageBounds.width}" height="${pageBounds.height}" as="geometry" />
+  <mxGeometry x="0" y="0" width="${canvasWidth}" height="${canvasHeight}" as="geometry" />
 </mxCell>`,
     ...containerCells,
     ...vertexCells,
