@@ -21,7 +21,7 @@
         "../../packages/core/src"
       ],
       "likec4/react": [
-        "../../packages/react/dist/"
+        "../../packages/react/src"
       ]
     },
     "jsx": "react-jsx",
