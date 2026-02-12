@@ -198,6 +198,23 @@ export function useDrawioContextMenuActions({
         console.error('DrawIO export: layoutViews failed', e)
       }
     }
+    for (const viewId of viewIdsInModel) {
+      if (!byId.has(viewId)) {
+        try {
+          const vm = likec4model.view(viewId as Parameters<LikeC4Model['view']>[0])
+          if (vm?.$view) {
+            byId.set(viewId, {
+              $view: vm.$view as DiagramView,
+              get $styles() {
+                return styles ?? null
+              },
+            })
+          }
+        } catch {
+          // view might not exist for this id
+        }
+      }
+    }
     const viewModels = viewIdsInModel.map(id => byId.get(id)).filter(Boolean) as ViewModel[]
     if (viewModels.length === 0) return
     try {

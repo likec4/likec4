@@ -171,13 +171,13 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
     expect(content).toMatch(/parent="1".*edge="1"|edge="1".*parent="1"/)
   })
 
-  test('edge label style includes labelBackgroundColor and fontColor (theme-aligned)', () => {
+  test('edge label style includes fontColor (theme-aligned; no background for LikeC4 look)', () => {
     const xml = generateDrawio(mockViewModel(fakeDiagram), { compressed: false })
     const content = getAllDiagrams(xml)[0]!.content
     expect(
       content,
-      'Edge style must include labelBackgroundColor and fontColor for label box',
-    ).toMatch(/labelBackgroundColor=[^;]+;fontColor=[^;]+;/)
+      'Edge with label must include fontColor for theme-aligned label text',
+    ).toMatch(/value="requests".*fontColor=[^;]+;/)
   })
 
   test('container nodes (bounded context with children) export with container=1, dashed border and fillOpacity', () => {
@@ -197,7 +197,7 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
     ).toMatch(/fillOpacity=\d+/)
   })
 
-  test('node with navigateTo exports link=data:action/json opening likec4-<viewId> page', () => {
+  test('node with navigateTo exports UserObject with link and style link=data:page/id opening likec4-<viewId> page', () => {
     const nodeWithNav = {
       ...fakeDiagram.nodes[0]!,
       navigateTo: 'saas',
@@ -210,8 +210,12 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
     const xml = generateDrawio(mockViewModel(viewWithNav), { compressed: false })
     expect(
       xml,
-      'Vertex with navigateTo must have link=data:action/json with open data:page/id,likec4-<viewId>',
-    ).toMatch(/link=data%3Aaction%2Fjson%2C.*likec4-saas/)
+      'Vertex with navigateTo must be wrapped in UserObject with link="data:page/id,likec4-<viewId>"',
+    ).toMatch(/<UserObject[^>]*link="data:page\/id,likec4-saas"/)
+    expect(
+      xml,
+      'Vertex with navigateTo must have style link=data:page/id,likec4-<viewId> so Draw.io opens the page',
+    ).toMatch(/link=data%3Apage%2Fid%2Clikec4-saas/)
   })
 
   test('generateDrawioMulti with N views produces N diagram elements and mxfile pages="N"', () => {

@@ -32,7 +32,7 @@ Each view becomes one diagram (tab) in the output. One `.drawio` file is produce
 | View (view id) | Diagram tab `name` and `id`; view title/description in root cell as `likec4ViewTitle`, `likec4ViewDescription` |
 | Element id | mxCell `id` (internal); hierarchy via `parent` |
 | Element title, description | mxCell `value` (title; description in HTML or in style `likec4Description`) |
-| Element: technology, notes, tags, navigateTo, icon | Style `likec4Technology`, `likec4Notes`, `likec4Tags`, `likec4NavigateTo`, `likec4Icon` (URI-encoded) |
+| Element: technology, notes, tags, **navigateTo**, icon | Style `likec4Technology`, `likec4Notes`, `likec4Tags`, `likec4NavigateTo`, `likec4Icon` (URI-encoded). **navigateTo** is also written as a Draw.io cell **link** so the element opens the view tab when clicked (see below). |
 | Element: summary, links | Style `likec4Summary`, `likec4Links` (JSON array) |
 | Element: notation | Style `likec4Notation` |
 | Element: shape | Style `shape` (rectangle, umlActor, cylinder3, document, etc.) |
@@ -48,6 +48,8 @@ Each view becomes one diagram (tab) in the output. One `.drawio` file is produce
 | Relationship: kind, notation | Style `likec4RelationshipKind`, `likec4Notation` |
 | Relationship: links, metadata | Style `likec4Links` (JSON array), `likec4Metadata` (JSON object) |
 | Relationship: head/tail, line style, color | Style `endArrow`, `startArrow`, `dashed`/`dashPattern`, `strokeColor`; label uses theme `relationships.label` for font color |
+
+**Navigability (elements with their own view):** If an element has **navigateTo** set (in the model) to a view id, the exported Draw.io cell gets a **link** that opens the diagram tab with id `likec4-<viewId>`. So when you export all views (`--all-in-one`), clicking that element in the first diagram jumps to the tab of the view that shows the element’s internals. Set `navigateTo <viewId>` on the element in your LikeC4 model so the viewmodel provides it; the exporter then adds the link automatically.
 
 Export uses the **project theme** (or LikeC4 default) for element and relationship colors; containers (bounded contexts) are drawn **behind** their children as a wrapping rectangle; edge **connection points** are derived from layout so arrows attach on the correct sides of nodes.
 

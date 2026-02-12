@@ -155,148 +155,197 @@ function parseUserData(fullTag: string): { description?: string; technology?: st
   return out
 }
 
+/** Extract viewId from Draw.io internal page link (data:page/id,likec4-<viewId>) for navigateTo round-trip. */
+function navigateToFromLink(link: string | undefined): string | undefined {
+  if (!link || link === '') return undefined
+  const m = link.match(/^data:page\/id,likec4-(.+)$/i)
+  return m ? m[1]!.trim() : undefined
+}
+
+/**
+ * Build one DrawioCell from mxCell attributes and inner content. Used for both standalone mxCell and UserObject-wrapped mxCell.
+ */
+function buildCellFromMxCell(
+  attrs: string,
+  inner: string,
+  fullTag: string,
+  overrides?: { id?: string; navigateTo?: string },
+): DrawioCell | null {
+  const geomAttr = (tag: string, name: string) => getAttr(tag, name)
+  const id = overrides?.id ?? getAttr(attrs, 'id')
+  if (!id) return null
+  const valueRaw = getAttr(attrs, 'value')
+  const parent = getAttr(attrs, 'parent')
+  const source = getAttr(attrs, 'source')
+  const target = getAttr(attrs, 'target')
+  const vertex = getAttr(attrs, 'vertex') === '1'
+  const edge = getAttr(attrs, 'edge') === '1'
+  const style = getAttr(attrs, 'style')
+  const geomMatch = fullTag.match(/<mxGeometry[^>]*>/i)
+  const geomStr = geomMatch ? geomMatch[0] : ''
+  const styleMap = parseStyle(style ?? undefined)
+  const userData = parseUserData(inner)
+  const x = parseNum(geomAttr(geomStr, 'x'))
+  const y = parseNum(geomAttr(geomStr, 'y'))
+  const width = parseNum(geomAttr(geomStr, 'width'))
+  const height = parseNum(geomAttr(geomStr, 'height'))
+  const fillColor = styleMap.get('fillcolor') ?? styleMap.get('fillColor')
+  const strokeColor = styleMap.get('strokecolor') ?? styleMap.get('strokeColor')
+  const descFromStyle = styleMap.get('likec4description')
+  const techFromStyle = styleMap.get('likec4technology')
+  const notesFromStyle = styleMap.get('likec4notes')
+  const tagsFromStyle = styleMap.get('likec4tags')
+  const navFromStyle = styleMap.get('likec4navigateto')
+  const iconFromStyle = styleMap.get('likec4icon')
+  const description = userData.description ??
+    (descFromStyle != null && descFromStyle !== '' ? decodeURIComponent(descFromStyle) : undefined)
+  const technology = userData.technology ??
+    (techFromStyle != null && techFromStyle !== '' ? decodeURIComponent(techFromStyle) : undefined)
+  const notes = notesFromStyle != null && notesFromStyle !== '' ? decodeURIComponent(notesFromStyle) : undefined
+  const tags = tagsFromStyle != null && tagsFromStyle !== '' ? decodeURIComponent(tagsFromStyle) : undefined
+  const navigateTo = overrides?.navigateTo ??
+    (navFromStyle != null && navFromStyle !== '' ? decodeURIComponent(navFromStyle) : undefined)
+  const icon = iconFromStyle != null && iconFromStyle !== '' ? decodeURIComponent(iconFromStyle) : undefined
+  const endArrow = styleMap.get('endarrow')
+  const startArrow = styleMap.get('startarrow')
+  const dashed = styleMap.get('dashed')
+  const dashPattern = styleMap.get('dashpattern')
+  const summaryFromStyle = styleMap.get('likec4summary')
+  const linksFromStyle = styleMap.get('likec4links')
+  const borderFromStyle = styleMap.get('likec4border')
+  const colorNameFromStyle = styleMap.get('likec4colorname')
+  const opacityFromStyle = styleMap.get('opacity')
+  const relKindFromStyle = styleMap.get('likec4relationshipkind')
+  const notationFromStyle = styleMap.get('likec4notation')
+  const summary = summaryFromStyle != null && summaryFromStyle !== ''
+    ? decodeURIComponent(summaryFromStyle)
+    : undefined
+  const links = linksFromStyle != null && linksFromStyle !== '' ? decodeURIComponent(linksFromStyle) : undefined
+  const border = borderFromStyle != null && borderFromStyle !== '' ? decodeURIComponent(borderFromStyle) : undefined
+  const strokeWidthFromStyle = styleMap.get('strokewidth')
+  const strokeWidth = strokeWidthFromStyle != null && strokeWidthFromStyle !== '' ? strokeWidthFromStyle : undefined
+  const sizeFromStyle = styleMap.get('likec4size')
+  const size = sizeFromStyle != null && sizeFromStyle !== '' ? decodeURIComponent(sizeFromStyle) : undefined
+  const paddingFromStyle = styleMap.get('likec4padding')
+  const padding = paddingFromStyle != null && paddingFromStyle !== ''
+    ? decodeURIComponent(paddingFromStyle)
+    : undefined
+  const textSizeFromStyle = styleMap.get('likec4textsize')
+  const textSize = textSizeFromStyle != null && textSizeFromStyle !== ''
+    ? decodeURIComponent(textSizeFromStyle)
+    : undefined
+  const iconPositionFromStyle = styleMap.get('likec4iconposition')
+  const iconPosition = iconPositionFromStyle != null && iconPositionFromStyle !== ''
+    ? decodeURIComponent(iconPositionFromStyle)
+    : undefined
+  const linkFromStyle = styleMap.get('link')
+  const link = linkFromStyle != null && linkFromStyle !== '' ? decodeURIComponent(linkFromStyle) : undefined
+  const colorName = colorNameFromStyle != null && colorNameFromStyle !== ''
+    ? decodeURIComponent(colorNameFromStyle)
+    : undefined
+  const opacity = opacityFromStyle != null && opacityFromStyle !== '' ? opacityFromStyle : undefined
+  const relationshipKind = relKindFromStyle != null && relKindFromStyle !== ''
+    ? decodeURIComponent(relKindFromStyle)
+    : undefined
+  const notation = notationFromStyle != null && notationFromStyle !== ''
+    ? decodeURIComponent(notationFromStyle)
+    : undefined
+  const metadataFromStyle = styleMap.get('likec4metadata')
+  const metadata = metadataFromStyle != null && metadataFromStyle !== ''
+    ? decodeURIComponent(metadataFromStyle)
+    : undefined
+  return {
+    id,
+    ...(valueRaw != null && valueRaw !== '' ? { value: decodeXmlEntities(valueRaw) } : {}),
+    ...(parent != null && parent !== '' ? { parent } : {}),
+    ...(source != null && source !== '' ? { source } : {}),
+    ...(target != null && target !== '' ? { target } : {}),
+    vertex,
+    edge,
+    ...(style != null && style !== '' ? { style } : {}),
+    ...(x !== undefined ? { x } : {}),
+    ...(y !== undefined ? { y } : {}),
+    ...(width !== undefined ? { width } : {}),
+    ...(height !== undefined ? { height } : {}),
+    ...(fillColor !== undefined ? { fillColor } : {}),
+    ...(strokeColor !== undefined ? { strokeColor } : {}),
+    ...(description != null ? { description } : {}),
+    ...(technology != null ? { technology } : {}),
+    ...(notes != null ? { notes } : {}),
+    ...(tags != null ? { tags } : {}),
+    ...(navigateTo != null ? { navigateTo } : {}),
+    ...(icon != null ? { icon } : {}),
+    ...(endArrow != null && endArrow !== '' ? { endArrow } : {}),
+    ...(startArrow != null && startArrow !== '' ? { startArrow } : {}),
+    ...(dashed != null && dashed !== '' ? { dashed } : {}),
+    ...(dashPattern != null && dashPattern !== '' ? { dashPattern } : {}),
+    ...(summary != null ? { summary } : {}),
+    ...(links != null ? { links } : {}),
+    ...(link != null && vertex ? { link } : {}),
+    ...(border != null ? { border } : {}),
+    ...(strokeWidth != null && vertex ? { strokeWidth } : {}),
+    ...(size != null && vertex ? { size } : {}),
+    ...(padding != null && vertex ? { padding } : {}),
+    ...(textSize != null && vertex ? { textSize } : {}),
+    ...(iconPosition != null && vertex ? { iconPosition } : {}),
+    ...(colorName != null ? { colorName } : {}),
+    ...(opacity != null ? { opacity } : {}),
+    ...(relationshipKind != null ? { relationshipKind } : {}),
+    ...(notation != null ? { notation } : {}),
+    ...(metadata != null && edge ? { metadata } : {}),
+    ...(userData.customData != null ? { customData: userData.customData } : {}),
+    ...(edge
+      ? (() => {
+        const pts = parseEdgePoints(fullTag)
+        return pts != null ? { edgePoints: pts } : {}
+      })()
+      : {}),
+  }
+}
+
 /**
  * Simple XML parser for DrawIO mxCell elements. Extracts cells with id, value, parent,
  * source, target, vertex, edge, geometry, style colors and LikeC4 user data.
+ * Also parses <UserObject id="..." link="..."> wrapping mxCell (export format for navigateTo) so the inner mxCell gets id and navigateTo from the link.
  */
 function parseDrawioXml(xml: string): DrawioCell[] {
   const cells: DrawioCell[] = []
-  const mxCellRe = /<mxCell\s+([^>]+?)(?:\s*\/>|>([\s\S]*?)<\/mxCell>)/gi
   const geomAttr = (tag: string, name: string) => getAttr(tag, name)
+
+  // First pass: UserObject with id and link (inner mxCell has no id; we build cell from UserObject + inner mxCell for round-trip)
+  const userObjectRe = /<UserObject[^>]*id="([^"]*)"[^>]*>([\s\S]*?)<\/UserObject>/gi
+  let uoMatch
+  while ((uoMatch = userObjectRe.exec(xml)) !== null) {
+    const userObjId = uoMatch[1]?.trim()
+    const innerXml = uoMatch[2] ?? ''
+    if (!userObjId) continue
+    const openTag = uoMatch[0].match(/<UserObject[^>]+>/)?.[0] ?? ''
+    const linkAttr = getAttr(openTag, 'link')
+    const navigateTo = navigateToFromLink(linkAttr ?? undefined)
+    const innerMx = innerXml.match(/<mxCell\s+([^>]+?)(?:\s*\/>|>([\s\S]*?)<\/mxCell>)/i)
+    if (!innerMx) continue
+    const innerAttrs = innerMx[1] ?? ''
+    const innerInner = innerMx[2] ?? ''
+    const fullTag = `<mxCell id="${userObjId}" ${innerAttrs}>${innerInner}</mxCell>`
+    const cell = buildCellFromMxCell(innerAttrs, innerInner, fullTag, {
+      id: userObjId,
+      navigateTo: navigateTo ?? undefined,
+    })
+    if (cell) cells.push(cell)
+  }
+
+  const mxCellRe = /<mxCell\s+([^>]+?)(?:\s*\/>|>([\s\S]*?)<\/mxCell>)/gi
   let m
   while ((m = mxCellRe.exec(xml)) !== null) {
     const attrs = m[1] ?? ''
     const inner = m[2] ?? ''
     const id = getAttr(attrs, 'id')
     if (!id) continue
-    const valueRaw = getAttr(attrs, 'value')
-    const parent = getAttr(attrs, 'parent')
-    const source = getAttr(attrs, 'source')
-    const target = getAttr(attrs, 'target')
-    const vertex = getAttr(attrs, 'vertex') === '1'
-    const edge = getAttr(attrs, 'edge') === '1'
-    const style = getAttr(attrs, 'style')
+    // Skip if this mxCell is the inner cell of a UserObject we already parsed (same id would appear in our UserObject pass)
+    if (cells.some(c => c.id === id)) continue
     const fullTag = m[0]
-    const geomMatch = fullTag.match(/<mxGeometry[^>]*>/i)
-    const geomStr = geomMatch ? geomMatch[0] : ''
-    const styleMap = parseStyle(style ?? undefined)
-    const userData = parseUserData(inner)
-    const x = parseNum(geomAttr(geomStr, 'x'))
-    const y = parseNum(geomAttr(geomStr, 'y'))
-    const width = parseNum(geomAttr(geomStr, 'width'))
-    const height = parseNum(geomAttr(geomStr, 'height'))
-    const fillColor = styleMap.get('fillcolor') ?? styleMap.get('fillColor')
-    const strokeColor = styleMap.get('strokecolor') ?? styleMap.get('strokeColor')
-    const descFromStyle = styleMap.get('likec4description')
-    const techFromStyle = styleMap.get('likec4technology')
-    const notesFromStyle = styleMap.get('likec4notes')
-    const tagsFromStyle = styleMap.get('likec4tags')
-    const navFromStyle = styleMap.get('likec4navigateto')
-    const iconFromStyle = styleMap.get('likec4icon')
-    const description = userData.description ??
-      (descFromStyle != null && descFromStyle !== '' ? decodeURIComponent(descFromStyle) : undefined)
-    const technology = userData.technology ??
-      (techFromStyle != null && techFromStyle !== '' ? decodeURIComponent(techFromStyle) : undefined)
-    const notes = notesFromStyle != null && notesFromStyle !== '' ? decodeURIComponent(notesFromStyle) : undefined
-    const tags = tagsFromStyle != null && tagsFromStyle !== '' ? decodeURIComponent(tagsFromStyle) : undefined
-    const navigateTo = navFromStyle != null && navFromStyle !== '' ? decodeURIComponent(navFromStyle) : undefined
-    const icon = iconFromStyle != null && iconFromStyle !== '' ? decodeURIComponent(iconFromStyle) : undefined
-    const endArrow = styleMap.get('endarrow')
-    const startArrow = styleMap.get('startarrow')
-    const dashed = styleMap.get('dashed')
-    const dashPattern = styleMap.get('dashpattern')
-    const summaryFromStyle = styleMap.get('likec4summary')
-    const linksFromStyle = styleMap.get('likec4links')
-    const borderFromStyle = styleMap.get('likec4border')
-    const colorNameFromStyle = styleMap.get('likec4colorname')
-    const opacityFromStyle = styleMap.get('opacity')
-    const relKindFromStyle = styleMap.get('likec4relationshipkind')
-    const notationFromStyle = styleMap.get('likec4notation')
-    const summary = summaryFromStyle != null && summaryFromStyle !== ''
-      ? decodeURIComponent(summaryFromStyle)
-      : undefined
-    const links = linksFromStyle != null && linksFromStyle !== '' ? decodeURIComponent(linksFromStyle) : undefined
-    const border = borderFromStyle != null && borderFromStyle !== '' ? decodeURIComponent(borderFromStyle) : undefined
-    const strokeWidthFromStyle = styleMap.get('strokewidth')
-    const strokeWidth = strokeWidthFromStyle != null && strokeWidthFromStyle !== '' ? strokeWidthFromStyle : undefined
-    const sizeFromStyle = styleMap.get('likec4size')
-    const size = sizeFromStyle != null && sizeFromStyle !== '' ? decodeURIComponent(sizeFromStyle) : undefined
-    const paddingFromStyle = styleMap.get('likec4padding')
-    const padding = paddingFromStyle != null && paddingFromStyle !== ''
-      ? decodeURIComponent(paddingFromStyle)
-      : undefined
-    const textSizeFromStyle = styleMap.get('likec4textsize')
-    const textSize = textSizeFromStyle != null && textSizeFromStyle !== ''
-      ? decodeURIComponent(textSizeFromStyle)
-      : undefined
-    const iconPositionFromStyle = styleMap.get('likec4iconposition')
-    const iconPosition = iconPositionFromStyle != null && iconPositionFromStyle !== ''
-      ? decodeURIComponent(iconPositionFromStyle)
-      : undefined
-    const linkFromStyle = styleMap.get('link')
-    const link = linkFromStyle != null && linkFromStyle !== '' ? decodeURIComponent(linkFromStyle) : undefined
-    const colorName = colorNameFromStyle != null && colorNameFromStyle !== ''
-      ? decodeURIComponent(colorNameFromStyle)
-      : undefined
-    const opacity = opacityFromStyle != null && opacityFromStyle !== '' ? opacityFromStyle : undefined
-    const relationshipKind = relKindFromStyle != null && relKindFromStyle !== ''
-      ? decodeURIComponent(relKindFromStyle)
-      : undefined
-    const notation = notationFromStyle != null && notationFromStyle !== ''
-      ? decodeURIComponent(notationFromStyle)
-      : undefined
-    const metadataFromStyle = styleMap.get('likec4metadata')
-    const metadata = metadataFromStyle != null && metadataFromStyle !== ''
-      ? decodeURIComponent(metadataFromStyle)
-      : undefined
-    const cell: DrawioCell = {
-      id,
-      ...(valueRaw != null && valueRaw !== '' ? { value: decodeXmlEntities(valueRaw) } : {}),
-      ...(parent != null && parent !== '' ? { parent } : {}),
-      ...(source != null && source !== '' ? { source } : {}),
-      ...(target != null && target !== '' ? { target } : {}),
-      vertex,
-      edge,
-      ...(style != null && style !== '' ? { style } : {}),
-      ...(x !== undefined ? { x } : {}),
-      ...(y !== undefined ? { y } : {}),
-      ...(width !== undefined ? { width } : {}),
-      ...(height !== undefined ? { height } : {}),
-      ...(fillColor !== undefined ? { fillColor } : {}),
-      ...(strokeColor !== undefined ? { strokeColor } : {}),
-      ...(description != null ? { description } : {}),
-      ...(technology != null ? { technology } : {}),
-      ...(notes != null ? { notes } : {}),
-      ...(tags != null ? { tags } : {}),
-      ...(navigateTo != null ? { navigateTo } : {}),
-      ...(icon != null ? { icon } : {}),
-      ...(endArrow != null && endArrow !== '' ? { endArrow } : {}),
-      ...(startArrow != null && startArrow !== '' ? { startArrow } : {}),
-      ...(dashed != null && dashed !== '' ? { dashed } : {}),
-      ...(dashPattern != null && dashPattern !== '' ? { dashPattern } : {}),
-      ...(summary != null ? { summary } : {}),
-      ...(links != null ? { links } : {}),
-      ...(link != null && vertex ? { link } : {}),
-      ...(border != null ? { border } : {}),
-      ...(strokeWidth != null && vertex ? { strokeWidth } : {}),
-      ...(size != null && vertex ? { size } : {}),
-      ...(padding != null && vertex ? { padding } : {}),
-      ...(textSize != null && vertex ? { textSize } : {}),
-      ...(iconPosition != null && vertex ? { iconPosition } : {}),
-      ...(colorName != null ? { colorName } : {}),
-      ...(opacity != null ? { opacity } : {}),
-      ...(relationshipKind != null ? { relationshipKind } : {}),
-      ...(notation != null ? { notation } : {}),
-      ...(metadata != null && edge ? { metadata } : {}),
-      ...(userData.customData != null ? { customData: userData.customData } : {}),
-      ...(edge
-        ? (() => {
-          const pts = parseEdgePoints(fullTag)
-          return pts != null ? { edgePoints: pts } : {}
-        })()
-        : {}),
-    }
-    cells.push(cell)
+    const cell = buildCellFromMxCell(attrs, inner, fullTag)
+    if (cell) cells.push(cell)
   }
   return cells
 }

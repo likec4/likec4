@@ -1,5 +1,36 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`parse DrawIO to LikeC4 - UserObject with link=data:page/id,likec4-<viewId> yields navigateTo in model 1`] = `
+"specification {
+  color drawio_color_1 #3b82f6
+}
+
+model {
+
+  Our_SaaS = container 'Our SaaS'
+  {
+    style { color drawio_color_1, shape rectangle }
+    navigateTo saas
+  }
+
+  Customer = container 'Customer'
+  {
+  }
+
+  Customer -> Our_SaaS 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}
+
+// <likec4.layout.drawio>
+// {"index":{"nodes":{"Our_SaaS":{"x":100,"y":0,"width":80,"height":40},"Customer":{"x":0,"y":0,"width":80,"height":40}}}}
+// </likec4.layout.drawio>"
+`;
+
 exports[`parse DrawIO to LikeC4 - edge with LikeC4 style (description, technology, notes, navigateTo, arrows, dashed) 1`] = `
 "model {
 

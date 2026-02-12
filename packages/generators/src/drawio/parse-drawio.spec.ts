@@ -99,6 +99,30 @@ test('parse DrawIO to LikeC4 - edge with LikeC4 style (description, technology, 
   expect(parseDrawioToLikeC4(drawioEdgeWithLikeC4Style)).toMatchSnapshot()
 })
 
+const drawioWithUserObjectLink = `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile>
+  <diagram>
+    <mxGraphModel><root>
+      <mxCell id="0" />
+      <mxCell id="1" vertex="1" parent="0"><mxGeometry width="800" height="600" as="geometry" /></mxCell>
+      <mxCell id="2" value="Customer" style="shape=rectangle;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="80" height="40" as="geometry" /></mxCell>
+      <UserObject label="Our SaaS" link="data:page/id,likec4-saas" id="3">
+        <mxCell parent="1" style="shape=rectangle;rounded=1;fillColor=#3b82f6;likec4NavigateTo=saas;" value="Our SaaS" vertex="1">
+          <mxGeometry x="100" y="0" width="80" height="40" as="geometry" />
+        </mxCell>
+      </UserObject>
+      <mxCell id="4" value="uses" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry" /></mxCell>
+    </root></mxGraphModel>
+  </diagram>
+</mxfile>`
+
+test('parse DrawIO to LikeC4 - UserObject with link=data:page/id,likec4-<viewId> yields navigateTo in model', () => {
+  const result = parseDrawioToLikeC4(drawioWithUserObjectLink)
+  expect(result).toContain('navigateTo saas')
+  expect(result).toContain('Our SaaS')
+  expect(result).toMatchSnapshot()
+})
+
 const drawioTwoTabs = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile>
   <diagram name="overview">

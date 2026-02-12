@@ -74,7 +74,7 @@ function WorkspaceContextPage() {
                 className={styles.panel}
                 collapsible={true}
                 minSize={'10'}
-                defaultSize={'40'}>
+                defaultSize={'60'}>
                 <Stack h="100%" gap={0}>
                   <WorkspaceFileTabs />
                   <EditorPanelWithDrawioMenu setLayoutedModelApi={setLayoutedModelApi} />
@@ -86,7 +86,7 @@ function WorkspaceContextPage() {
                   width: isMobile ? undefined : 5,
                   height: isMobile ? 5 : undefined,
                 }} />
-              <Panel id="preview" minSize={200} className={styles.panel}>
+              <Panel id="preview" minSize={200} defaultSize={40} className={styles.panel}>
                 <Outlet />
               </Panel>
             </Group>
