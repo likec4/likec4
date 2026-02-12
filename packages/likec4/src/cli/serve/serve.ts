@@ -1,7 +1,7 @@
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { LikeC4 } from '../../LikeC4'
 import { printServerUrls } from '../../vite/printServerUrls'
 import { viteDev } from '../../vite/vite-dev'
 
@@ -67,7 +67,7 @@ export async function handler({
   if (enableHMR) {
     process.env['NODE_ENV'] = 'development'
   }
-  const languageServices = await LikeC4.fromWorkspace(path, {
+  const languageServices = await fromWorkspace(path, {
     // logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: enableHMR,

@@ -5,16 +5,10 @@ export default defineBuildConfig({
     {
       type: 'bundle',
       input: [
-        './src/index.ts',
+        './src/node/index.ts',
+        './src/node/without-mcp/index.ts',
+        './src/browser/index.ts',
       ],
-      minify: {
-        mangle: {
-          keepNames: {
-            class: true,
-            function: true,
-          },
-        },
-      },
       rolldown: {
         platform: 'neutral',
         resolve: {

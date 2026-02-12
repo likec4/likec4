@@ -3,18 +3,18 @@ import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import { useDisclosure } from '@mantine/hooks'
 import {
+  type PropsWithChildren,
   createContext,
   useCallback,
   useContext,
   useEffect,
   useState,
-  type PropsWithChildren,
 } from 'react'
 import { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT } from './drawio-events'
 import { DrawioContextMenuView } from './DrawioContextMenuView'
 import { useDrawioActions } from './useDrawioActions'
 
-export { DRAWIO_IMPORT_EVENT, DRAWIO_EXPORT_EVENT }
+export { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT }
 
 export type DrawioContextMenuApi = {
   openMenu: (event: React.MouseEvent) => void

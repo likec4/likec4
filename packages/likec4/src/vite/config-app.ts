@@ -1,4 +1,5 @@
 import { viteAliases } from '#vite/aliases'
+import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
@@ -9,7 +10,6 @@ import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import { logger } from '../logger'
-import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import type { LikeC4ViteConfig } from './config-app.prod'
 import { chunkSizeWarningLimit, viteLogger } from './utils'
 

@@ -1,10 +1,10 @@
 import type { ProjectId } from '@likec4/core/types'
 import { generateDrawio } from '@likec4/generators'
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { mkdir, writeFile } from 'node:fs/promises'
-import { dirname, extname, relative, resolve } from 'node:path'
+import { relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
-import { LikeC4 } from '../../../LikeC4'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
@@ -40,8 +40,7 @@ export function drawioCmd(yargs: Argv) {
       const logger = createLikeC4Logger('c4:export')
 
       const timer = startTimer(logger)
-      const likec4 = await LikeC4.fromWorkspace(args.path, {
-        logger,
+      const likec4 = await fromWorkspace(args.path, {
         graphviz: useDotBin ? 'binary' : 'wasm',
         watch: false,
       })

@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ComputedLikeC4ModelData, LayoutedLikeC4ModelData } from '@likec4/core'
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
-import { LikeC4 } from '../../../LikeC4'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
@@ -50,8 +49,7 @@ export function jsonCmd(yargs: Argv) {
       const logger = createLikeC4Logger('c4:export')
 
       const timer = startTimer(logger)
-      const languageServices = await LikeC4.fromWorkspace(args.path, {
-        logger,
+      const languageServices = await fromWorkspace(args.path, {
         graphviz: useDotBin ? 'binary' : 'wasm',
         watch: false,
       })

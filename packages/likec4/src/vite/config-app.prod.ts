@@ -1,4 +1,5 @@
 import { viteAliases } from '#vite/aliases'
+import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
@@ -7,7 +8,6 @@ import type { InlineConfig } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import type { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
-import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import { chunkSizeWarningLimit, relativeToCwd, viteAppRoot, viteLogger } from './utils'
 
 export type LikeC4ViteConfig = {

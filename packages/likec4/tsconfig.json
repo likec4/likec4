@@ -10,9 +10,6 @@
       "path": "./tsconfig.cli.json"
     },
     {
-      "path": "./tsconfig.react.json"
-    },
-    {
       "path": "./app/tsconfig.json"
     }
   ]

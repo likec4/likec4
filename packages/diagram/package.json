@@ -16,7 +16,6 @@
   },
   "files": [
     "dist",
-    "bundle",
     "**/package.json",
     "*.css",
     "panda.buildinfo.json",
@@ -57,14 +56,6 @@
         "default": "./dist/custom/index.js"
       }
     },
-    "./bundle": {
-      "sources": "./src/index.ts",
-      "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./bundle/index.js",
-        "default": "./bundle/index.js"
-      }
-    },
     "./panda.buildinfo.json": "./panda.buildinfo.json",
     "./styles-min.css": "./styles-min.css",
     "./styles-font.css": "./styles-font.css",
@@ -74,9 +65,7 @@
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
-    "build-dist": "vite build -m production",
-    "build-bundle": "vite build -m bundle",
-    "build": "echo \"use pnpm turbo run build\" || true",
+    "build": "vite build -m production",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",

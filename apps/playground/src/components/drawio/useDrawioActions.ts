@@ -1,7 +1,7 @@
 import { usePlayground } from '$/hooks/usePlayground'
-import { generateDrawio, parseDrawioToLikeC4 } from '@likec4/generators'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
+import { generateDrawio, parseDrawioToLikeC4 } from '@likec4/generators'
 import { useCallback, useRef } from 'react'
 
 const DRAWIO_ACCEPT = '.drawio,.drawio.xml,application/x-drawio'

@@ -9,6 +9,7 @@ import {
   isRelationModel,
 } from '@likec4/core/model'
 import type { Locate } from '@likec4/language-server/protocol'
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import type { Logger } from '@likec4/log'
 import { UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
@@ -16,7 +17,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { URI } from 'vscode-uri'
-import { LikeC4 } from '../../LikeC4'
+import type { LikeC4 } from '../../LikeC4'
 import { logger as cliLogger, startTimer } from '../../logger'
 import { ensureProject } from '../utils'
 
@@ -31,8 +32,7 @@ type HandlerParams = {
 
 export async function customHandler({ name, path, useDotBin, project }: HandlerParams) {
   const timer = startTimer(logger)
-  await using likec4 = await LikeC4.fromWorkspace(path, {
-    logger: 'vite',
+  await using likec4 = await fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })

@@ -10,6 +10,8 @@ export default defineProject({
       '@likec4/config': resolve(__dirname, '../config/src'),
       '@likec4/log': resolve(__dirname, '../log/src'),
       '@likec4/language-server': resolve(__dirname, '../language-server/src'),
+      '@likec4/language-services': resolve(__dirname, '../language-services/src'),
+      '@likec4/vite-plugin': resolve(__dirname, '../vite-plugin/src'),
       '@likec4/layouts': resolve(__dirname, '../layouts/src'),
       '@likec4/generators': resolve(__dirname, '../generators/src'),
     },
