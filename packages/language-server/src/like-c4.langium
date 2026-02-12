@@ -947,7 +947,8 @@ ElementShape returns string:
   'storage' |
   'queue' |
   'bucket' |
-  'document';
+  'document' |
+  'component';
 
 Participant returns string:
   'source' | 'target';

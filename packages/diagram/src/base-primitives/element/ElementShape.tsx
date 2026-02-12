@@ -107,6 +107,11 @@ const PersonIcon = {
     `M57.9197 0C10.9124 0 33.5766 54.75 33.5766 54.75C38.6131 62.25 45.3285 60.75 45.3285 66C45.3285 70.5 39.4526 72 33.5766 72.75C24.3431 72.75 15.9489 71.25 7.55474 84.75C2.51825 93 0 120 0 120H115C115 120 112.482 93 108.285 84.75C99.8905 70.5 91.4963 72.75 82.2628 72C76.3869 71.25 70.5109 69.75 70.5109 65.25C70.5109 60.75 77.2263 62.25 82.2628 54C82.2628 54.75 104.927 0 57.9197 0V0Z`,
 } as const
 
+const ComponentIcon = {
+  width: 60,
+  height: 24,
+} as const
+
 type ShapeSvgProps = {
   shape: Exclude<ElementShape, 'rectangle'>
   w: number
@@ -114,6 +119,72 @@ type ShapeSvgProps = {
 }
 function ShapeSvg({ shape, w, h }: ShapeSvgProps) {
   switch (shape) {
+    case 'component': {
+      const iconX = 6
+      const iconY = h / 2 - ComponentIcon.height / 2
+      const boxW = 20
+      const boxH = 12
+      const stubW = 10
+      const stubH = 6
+      const gap = 2
+      return (
+        <>
+          <rect
+            width={w}
+            height={h}
+            rx={6}
+            strokeWidth={0} />
+          <rect
+            x={-24}
+            y={30}
+            width={ComponentIcon.width}
+            height={ComponentIcon.height}
+            rx={4}
+            data-likec4-fill="mix-stroke"
+            strokeWidth={3} />
+          <rect
+            x={-24}
+            y={30 + ComponentIcon.height + 12}
+            width={ComponentIcon.width}
+            height={ComponentIcon.height}
+            rx={4}
+            data-likec4-fill="mix-stroke"
+            strokeWidth={3} />
+          {
+            /* <rect
+            x={-24}
+            y={30}
+            width={ComponentIcon.width}
+            height={ComponentIcon.height}
+            rx={4}
+            data-likec4-fill="mix-stroke"
+            strokeWidth={2} />
+
+          <svg
+            x={iconX}
+            y={iconY}
+            width={ComponentIcon.width}
+            height={ComponentIcon.height}
+            viewBox={`0 0 ${ComponentIcon.width} ${ComponentIcon.height}`}
+            data-likec4-fill="mix-stroke"
+          >
+            <rect x={stubW / 2} y={0} width={boxW} height={boxH} rx={2} strokeWidth={0} />
+            <rect x={0} y={boxH / 2 - stubH / 2} width={stubW} height={stubH} rx={1} strokeWidth={0} />
+            <rect x={stubW / 2} y={boxH + gap} width={boxW} height={boxH} rx={2} strokeWidth={0} />
+            <rect x={0} y={boxH + gap + boxH / 2 - stubH / 2} width={stubW} height={stubH} rx={1} strokeWidth={0} />
+            <rect x={stubW / 2} y={2 * (boxH + gap)} width={boxW} height={boxH} rx={2} strokeWidth={0} />
+            <rect
+              x={0}
+              y={2 * (boxH + gap) + boxH / 2 - stubH / 2}
+              width={stubW}
+              height={stubH}
+              rx={1}
+              strokeWidth={0} />
+          </svg> */
+          }
+        </>
+      )
+    }
     case 'mobile': {
       return (
         <>

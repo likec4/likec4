@@ -52,6 +52,8 @@ function drawioShape(shape: Node['shape']): string {
       return 'shape=rectangle;rounded=1;'
     case 'document':
       return 'shape=document;whiteSpace=wrap;html=1;boundedLbl=1;'
+    case 'component':
+      return 'shape=component;'
     default:
       return 'shape=rectangle;'
   }

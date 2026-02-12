@@ -3,6 +3,7 @@ import { cx as clsx } from '@likec4/styles/css'
 import {
   type IconProps,
   IconBrowser,
+  IconComponents,
   IconCylinder,
   IconDeviceMobile,
   IconFileText,
@@ -148,6 +149,7 @@ const ShapeIcons = {
   storage: IconCylinder,
   bucket: IconCylinder,
   document: IconFileText,
+  component: IconComponents,
 } as const satisfies {
   [key in ElementShape]: ForwardRefExoticComponent<
     IconProps & RefAttributes<SVGSVGElement>
