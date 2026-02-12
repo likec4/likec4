@@ -57,9 +57,7 @@ function printDeploymentNode(
     }
     indent.append('instanceOf ', elementFqn)
 
-    const hasProps = !!(el.title || el.description || el.summary || el.technology
-      || (el.tags && el.tags.length > 0)
-      || (el.links && el.links.length > 0))
+    const hasProps = !!(el.title || hasDeploymentNodeProps(el))
 
     if (!hasProps && node.children.length === 0) {
       indent.append(NL)
