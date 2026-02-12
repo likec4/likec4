@@ -34,7 +34,6 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 - `pnpm build` builds packages (excludes docs/playground).
 - `pnpm typecheck` validates typescript, always run after `pnpm generate`.
 - `pnpm test` runs Vitest suites; (you can run `pnpm test --no-typecheck`)
-- **`pnpm validate`** runs the same pipeline as CI (generate → typecheck → type tests in core → lint → build → lint:package → test). Run before pushing to catch the same failures as the PR checks.
 
 ## Generated Files
 

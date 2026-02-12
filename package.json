@@ -32,7 +32,6 @@
     "ci:test": "vitest run --no-isolate",
     "ci:lint": "oxlint --type-aware --format=github --quiet",
     "ci:publish": "pnpm publish -r --no-git-checks",
-    "validate": "pnpm ci:generate && pnpm ci:typecheck && pnpm --filter @likec4/core test -- --typecheck && pnpm ci:lint && pnpm ci:build && pnpm lint:package && pnpm ci:test",
     "vscode:typecheck": "pnpm run typecheck",
     "release": "shipjs prepare",
     "clean": "pnpm -r run clean && rimraf -v -g \"**/.turbo\" \"**/node_modules/.cache\" \"**/node_modules/.vite\"",
