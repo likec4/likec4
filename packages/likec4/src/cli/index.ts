@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 
-import { configureLogger, getAnsiColorFormatter, getConsoleFormatter, getConsoleSink } from '@likec4/log'
+import {
+  configureLogger,
+  getAnsiColorFormatter,
+  getConsoleFormatter,
+  getConsoleSink,
+  loggable,
+} from '@likec4/log'
 import { DEV } from 'esm-env'
 import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
@@ -19,7 +25,8 @@ import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
 
-function configurelogger(isDebug = isDevelopment) {
+/** Configure likec4 logger: verbose or dev => debug level, else info. */
+function applyLoggerConfig(isDebug = isDevelopment) {
   configureLogger({
     sinks: {
       console: getConsoleSink({
@@ -84,15 +91,20 @@ async function main() {
     })
     .wrap(clamp(stdout.columns - 10, { min: 80, max: 150 }))
     .middleware((args) => {
-      configurelogger(args.verbose || isDevelopment)
+      applyLoggerConfig(args.verbose || isDevelopment)
     })
     .parseAsync()
 }
 
-main().catch(() => {
+/** Single place for CLI failure: log error (message + stack via loggable) and exit with code 1. */
+function exitWithFailure(err: unknown): never {
+  console.error(loggable(err))
   exit(1)
-})
+}
 
-process.on('unhandledRejection', (err) => {
-  console.error(`Unhandled rejection`, err)
+main().catch(exitWithFailure)
+
+process.on('unhandledRejection', (err: unknown) => {
+  console.error('Unhandled rejection:', loggable(err))
+  exit(1)
 })

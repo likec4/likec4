@@ -1,6 +1,9 @@
 import { Menu } from '@mantine/core'
 import { IconFileExport } from '@tabler/icons-react'
 
+const DROPDOWN_FONT_SIZE = '10px'
+const ITEM_FONT_SIZE = '9px'
+
 export type DrawioContextMenuDropdownProps = {
   menuPosition: { x: number; y: number }
   opened: boolean
@@ -37,16 +40,16 @@ export function DrawioContextMenuDropdown({
           position: 'fixed',
           left: menuPosition.x,
           top: menuPosition.y,
-          fontSize: '10px',
+          fontSize: DROPDOWN_FONT_SIZE,
         },
         label: {
-          fontSize: '10px',
+          fontSize: DROPDOWN_FONT_SIZE,
         },
         item: {
-          fontSize: '9px',
+          fontSize: ITEM_FONT_SIZE,
         },
         itemLabel: {
-          fontSize: '9px',
+          fontSize: ITEM_FONT_SIZE,
         },
       }}>
       <Menu.Target>

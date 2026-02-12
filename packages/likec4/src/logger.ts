@@ -32,6 +32,10 @@ export function createLikeC4Logger(prefix: string | readonly [string, ...string[
     warnOnce(msg: string): void {
       logger.warn(msg)
     },
+    /**
+     * Log an error. msg: string or Error (displayed); options?.error: Error to attach (for stack).
+     * If msg === options?.error, logs error name+message; else logs msg and attaches error.
+     */
     error(msg: unknown, options?: LogErrorOptions): void {
       let error = options?.error ?? msg
       if (error instanceof Error) {

@@ -16,38 +16,27 @@ import { ensureReact } from '../../ensure-react'
 import { path, project, useDotBin } from '../../options'
 import { takeScreenshot } from './takeScreenshot'
 
-type HandlerParams = {
-  /**
-   * The directory where c4 files are located.
-   */
+/** CLI args for export png command (single type for handler and runExportPng). */
+export type PngExportArgs = {
+  /** The directory where c4 files are located. */
   path: string
-  /**
-   * output directory
-   */
+  /** Output directory (defaults to workspace when undefined). */
   output: string | undefined
   project: string | undefined
-  /**
-   * If 'relative' png are exported keeping the same directory structure as source files.
-   */
+  /** If 'relative' PNG are exported keeping the same directory structure as source files. */
   outputType: 'relative' | 'flat'
-  /**
-   * If there is a server already running,
-   * use this served url instead of starting a new server.
-   */
+  /** If set, use this served url instead of starting a new server. */
   serverUrl?: string | undefined
   theme?: 'light' | 'dark'
   useDotBin: boolean
   timeoutMs?: number
   maxAttempts?: number
+  /** Continue if export fails for some views. */
   ignore?: boolean
   filter?: string[] | undefined
-  /**
-   * Enable/disable chromium sandbox
-   */
+  /** Enable/disable chromium sandbox (see Playwright docs). */
   chromiumSandbox?: boolean
-  /**
-   * Use sequence layout for dynamic views
-   */
+  /** Use sequence layout for dynamic views. */
   sequence?: boolean | undefined
 }
 
@@ -115,32 +104,34 @@ export async function exportViewsToPNG(
   }
 }
 
-export async function pngHandler({
-  path,
-  useDotBin,
-  project,
-  theme = 'light',
-  output,
-  outputType,
-  serverUrl,
-  ignore = false,
-  timeoutMs = 10_000,
-  maxAttempts = 3,
-  filter,
-  sequence = false,
-  chromiumSandbox = false,
-}: HandlerParams) {
-  const logger = createLikeC4Logger('export')
+/** Run the PNG export workflow: init workspace, start server if needed, export views (align with drawio/json). */
+export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Promise<void> {
+  const {
+    path: workspacePath,
+    useDotBin,
+    project,
+    theme = 'light',
+    output: outputArg,
+    outputType,
+    serverUrl,
+    ignore = false,
+    timeoutMs = 10_000,
+    maxAttempts = 3,
+    filter,
+    sequence = false,
+    chromiumSandbox = false,
+  } = args
   const startTakeScreenshot = hrtime()
 
-  await using languageServices = await LikeC4.fromWorkspace(path, {
+  await using languageServices = await LikeC4.fromWorkspace(workspacePath, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })
 
-  output ??= languageServices.workspace
+  let output = outputArg ?? languageServices.workspace
   let server: ViteDevServer | undefined
+  let resolvedServerUrl = serverUrl
 
   let projects = [...languageServices.languageServices.projects()]
   if (project) {
@@ -150,7 +141,7 @@ export async function pngHandler({
     }
   }
 
-  if (!serverUrl) {
+  if (!resolvedServerUrl) {
     logger.info(k.cyan(`start preview server`))
     server = await viteDev({
       languageServices,
@@ -158,15 +149,14 @@ export async function pngHandler({
       openBrowser: false,
       hmr: false,
     })
-    serverUrl = resolveServerUrl(server)
-    if (!serverUrl) {
+    resolvedServerUrl = resolveServerUrl(server)
+    if (!resolvedServerUrl) {
       logger.error('Vite server is not ready, no resolvedUrls')
       throw new Error('Vite server is not ready, no resolvedUrls')
     }
   }
 
   for (const prj of projects) {
-    // skip other projects if project arg specified
     if (project && prj.id !== project) {
       continue
     }
@@ -195,8 +185,10 @@ export async function pngHandler({
       continue
     }
 
-    let _serverUrl = projects.length > 1 ? withTrailingSlash(joinURL(serverUrl, 'project', prj.id)) : serverUrl
-    let _output = projects.length > 1 ? joinURL(output, prj.id) : output
+    const _serverUrl = projects.length > 1
+      ? withTrailingSlash(joinURL(resolvedServerUrl, 'project', prj.id))
+      : resolvedServerUrl
+    const _output = projects.length > 1 ? joinURL(output, prj.id) : output
 
     const succeed = await exportViewsToPNG({
       logger,
@@ -236,6 +228,12 @@ export async function pngHandler({
       logger.error(e)
     })
   }
+}
+
+/** CLI entry: create logger and delegate to runExportPng (align with drawio/json handlers). */
+export async function pngHandler(args: PngExportArgs): Promise<void> {
+  const logger = createLikeC4Logger('export')
+  await runExportPng(args, logger)
 }
 
 export function pngCmd(yargs: Argv) {
@@ -333,26 +331,27 @@ export function pngCmd(yargs: Argv) {
     ${k.gray('Export views matching use-case* using sequence layout')}
 `),
     handler: async args => {
-      // args.
       invariant(args.timeout >= 1, 'timeout must be >= 1')
       invariant(args['max-attempts'] >= 1, 'max-attempts must be >= 1')
       await ensureReact()
       const theme = args.theme ?? (args.dark ? 'dark' : 'light')
-      await pngHandler({
-        path: args.path,
-        useDotBin: args['use-dot'],
-        output: args.output,
-        project: args.project,
-        timeoutMs: args.timeout * 1000,
-        maxAttempts: args.maxAttempts,
-        ignore: args.ignore === true,
-        outputType: args.flat ? 'flat' : 'relative',
-        serverUrl: args.serverUrl,
-        theme,
-        filter: args.filter,
-        sequence: args.seq,
-        chromiumSandbox: args['chromium-sandbox'],
-      })
+      await pngHandler(
+        {
+          path: args.path,
+          useDotBin: args['use-dot'],
+          output: args.output,
+          project: args.project,
+          timeoutMs: args.timeout * 1000,
+          maxAttempts: args.maxAttempts,
+          ignore: args.ignore === true,
+          outputType: args.flat ? 'flat' : 'relative',
+          serverUrl: args.serverUrl,
+          theme,
+          filter: args.filter,
+          sequence: args.seq,
+          chromiumSandbox: args['chromium-sandbox'],
+        } satisfies PngExportArgs,
+      )
     },
   })
 }

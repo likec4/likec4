@@ -3,6 +3,7 @@ export { DEFAULT_DRAWIO_ALL_FILENAME } from './drawio/constants'
 export {
   buildDrawioExportOptionsForViews,
   buildDrawioExportOptionsFromSource,
+  type DrawioViewModelLike,
   generateDrawio,
   generateDrawioMulti,
   type GenerateDrawioOptions,

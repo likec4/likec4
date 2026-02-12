@@ -13,6 +13,7 @@ import { DRAWIO_EXPORT_EVENT } from './drawio-events'
 import { DrawioContextMenuDropdown } from './DrawioContextMenuDropdown'
 import {
   type DiagramStateLike,
+  type OnDrawioExportError,
   useDrawioContextMenuActions,
 } from './useDrawioContextMenuActions'
 
@@ -30,6 +31,14 @@ export type DrawioContextMenuApi = {
 
 const DrawioContextMenuContext = createContext<DrawioContextMenuApi | null>(null)
 
+/** Snapshot when playground is not ready (no diagram, no model, empty files/viewStates). */
+const EMPTY_DRAWIO_SNAPSHOT = {
+  diagram: null as DiagramView | null,
+  likec4model: null as LikeC4Model | null,
+  files: {} as Record<string, string>,
+  viewStates: {} as Record<string, DiagramStateLike>,
+}
+
 export function useDrawioContextMenu(): DrawioContextMenuApi {
   const api = useContext(DrawioContextMenuContext)
   if (!api) {
@@ -45,17 +54,15 @@ export function useOptionalDrawioContextMenu(): DrawioContextMenuApi | null {
 export function DrawioContextMenuProvider({
   children,
   layoutedModelApi,
-}: PropsWithChildren<{ layoutedModelApi?: LayoutedModelApi | null }>) {
+  onExportError,
+}: PropsWithChildren<{
+  layoutedModelApi?: LayoutedModelApi | null
+  /** Optional: called when export fails so UI can show toast/snackbar. */
+  onExportError?: OnDrawioExportError
+}>) {
   const playground = usePlayground()
   const { diagram, likec4model, files, viewStates } = usePlaygroundSnapshot(c => {
-    if (c.value !== 'ready') {
-      return {
-        diagram: null as DiagramView | null,
-        likec4model: null as LikeC4Model | null,
-        files: {} as Record<string, string>,
-        viewStates: {} as Record<string, DiagramStateLike>,
-      }
-    }
+    if (c.value !== 'ready') return EMPTY_DRAWIO_SNAPSHOT
     const viewState = c.context.activeViewId ? c.context.viewStates[c.context.activeViewId] : null
     const diagram = viewState?.state === 'success' ? viewState.diagram : null
     return {
@@ -76,6 +83,7 @@ export function DrawioContextMenuProvider({
     likec4model,
     viewStates,
     getSourceContent,
+    onExportError,
     ...(layoutedModelApi && {
       getLayoutedModel: layoutedModelApi.getLayoutedModel,
       layoutViews: layoutedModelApi.layoutViews,

@@ -1,6 +1,7 @@
 export {
   buildDrawioExportOptionsForViews,
   buildDrawioExportOptionsFromSource,
+  type DrawioViewModelLike,
   generateDrawio,
   generateDrawioMulti,
   type GenerateDrawioOptions,

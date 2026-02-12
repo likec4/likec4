@@ -3,6 +3,7 @@ import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, LayoutedView, ProcessedView } from '@likec4/core/types'
 import { describe, expect, test, vi } from 'vitest'
 import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
+import type { DrawioViewModelLike } from './generate-drawio'
 import { generateDrawio, generateDrawioMulti } from './generate-drawio'
 import { getAllDiagrams } from './parse-drawio'
 
@@ -74,6 +75,11 @@ const mockViewModel = vi.fn(function($view: ProcessedView<aux.Unknown>) {
   } as unknown as LikeC4ViewModel<aux.Unknown, LayoutedView<aux.Unknown>>
 })
 
+/** Build layouted view models for generateDrawioMulti from processed views (DRY in specs). */
+function getLayoutedViewmodels(views: ProcessedView<aux.Unknown>[]): DrawioViewModelLike[] {
+  return views.map(v => mockViewModel(v))
+}
+
 /** Normalize variable output (e.g. date) for stable snapshots */
 function normalizeDrawioXml(xml: string): string {
   return xml.replace(/modified="[^"]*"/, 'modified="FIXED-DATE"')
@@ -122,10 +128,7 @@ test('generated DrawIO with edge waypoints is loadable in draw.io (no nested Arr
 })
 
 test('generated DrawIO multi with edge waypoints is loadable in draw.io', () => {
-  const xml = generateDrawioMulti(
-    [mockViewModel(fakeDiagram), mockViewModel(fakeDiagram2)],
-    {},
-  )
+  const xml = generateDrawioMulti(getLayoutedViewmodels([fakeDiagram, fakeDiagram2]), {})
   expectDrawioXmlLoadableInDrawio(xml)
 })
 
@@ -220,10 +223,7 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
   })
 
   test('generateDrawioMulti with N views produces N diagram elements and mxfile pages="N"', () => {
-    const viewModels = [
-      mockViewModel(fakeDiagram),
-      mockViewModel(fakeDiagram2),
-    ] as Parameters<typeof generateDrawioMulti>[0]
+    const viewModels = getLayoutedViewmodels([fakeDiagram, fakeDiagram2])
     const xml = generateDrawioMulti(viewModels, {
       [fakeDiagram.id]: { compressed: false },
       [fakeDiagram2.id]: { compressed: false },
@@ -239,7 +239,7 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
   })
 
   test('generateDrawioMulti with 1 view produces single diagram (no multi-page wrapper)', () => {
-    const viewModels = [mockViewModel(fakeDiagram)] as Parameters<typeof generateDrawioMulti>[0]
+    const viewModels = getLayoutedViewmodels([fakeDiagram])
     const xml = generateDrawioMulti(viewModels, { [fakeDiagram.id]: { compressed: false } })
     const diagramCount = (xml.match(/<diagram\s/g) ?? []).length
     expect(diagramCount).toBe(1)

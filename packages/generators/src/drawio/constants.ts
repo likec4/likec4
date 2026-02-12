@@ -50,6 +50,10 @@ export const DEFAULT_NODE_FONT_HEX = '#1e40af'
 export const MXGRAPH_PAGE_WIDTH = 827
 export const MXGRAPH_PAGE_HEIGHT = 1169
 
+/** mxGraphModel default grid origin (dx, dy) in mxGraphModel attribute. */
+export const MXGRAPH_DEFAULT_DX = 800
+export const MXGRAPH_DEFAULT_DY = 800
+
 /** Default filename when exporting all views into one .drawio file (CLI and playground). */
 export const DEFAULT_DRAWIO_ALL_FILENAME = 'diagrams.drawio'
 

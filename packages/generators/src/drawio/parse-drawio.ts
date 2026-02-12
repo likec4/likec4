@@ -324,6 +324,11 @@ function buildCellOptionalFields(params: {
   return optional
 }
 
+/**
+ * Build one DrawioCell from parsed mxCell tag parts.
+ * attrs: open-tag attribute string; inner: content between open/close; fullTag: full tag for geometry regex.
+ * overrides: optional id/navigateTo to override parsed values. Returns null if id missing.
+ */
 function buildCellFromMxCell(
   attrs: string,
   inner: string,
@@ -890,7 +895,7 @@ function pushElementBody(
   if (opts.icon) ctx.lines.push(`${pad}  icon '${escapeLikec4Quotes(opts.icon)}'`)
   if (childList && childList.length > 0) {
     for (const ch of childList) {
-      emitElementToLines(ctx, ch.cellId, ch.fqn, indent + 1)
+      emitElement.toLines(ctx, ch.cellId, ch.fqn, indent + 1)
     }
   }
   ctx.lines.push(`${pad}}`)
@@ -946,6 +951,11 @@ function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string
     ctx.lines.push(`${pad}}`)
   }
   ctx.lines.push('')
+}
+
+/** Group element-emit helpers for navigation (header, styleBlock, links, body, toLines). */
+const emitElement = {
+  toLines: emitElementToLines,
 }
 
 type EdgeEntry = { cell: DrawioCell; src: string; tgt: string }
@@ -1214,6 +1224,9 @@ function getFirstDiagram(fullXml: string): DiagramInfo {
   return all[0] ?? { name: 'index', id: `${DRAWIO_DIAGRAM_ID_PREFIX}index`, content: '' }
 }
 
+/** Length of '<diagram' open tag for slice offset in getAllDiagrams (indexOf-based to avoid regex DoS S5852). */
+const DIAGRAM_TAG_OPEN_LEN = '<diagram'.length
+
 /**
  * Extract all diagram name, id and content from mxfile (for multi-tab .drawio).
  * Uses indexOf-based extraction instead of regex to avoid S5852 (super-linear backtracking DoS).
@@ -1225,7 +1238,7 @@ export function getAllDiagrams(fullXml: string): DiagramInfo[] {
   while (start !== -1) {
     const endOpen = findOpenTagEnd(fullXml, start)
     if (endOpen === -1) break
-    const attrs = fullXml.slice(start + 8, endOpen).trim() // '<diagram'.length === 8
+    const attrs = fullXml.slice(start + DIAGRAM_TAG_OPEN_LEN, endOpen).trim()
     const closeStart = indexOfClosingTag(fullXml, 'diagram', endOpen + 1)
     if (closeStart === -1) break
     const inner = fullXml.slice(endOpen + 1, closeStart)
@@ -1248,52 +1261,39 @@ export function getAllDiagrams(fullXml: string): DiagramInfo[] {
   return results
 }
 
-/**
- * Convert DrawIO XML to LikeC4 source (.c4) string.
- * - Vertices become model elements (actor/container); hierarchy from parent refs.
- * - Edges become relations (->).
- * - Root diagram cells (parent "1") are top-level; others are nested by parent.
- * - Uses first diagram only; diagram name becomes view id; root cell style likec4ViewTitle/likec4ViewDescription become view title/description.
- */
-export function parseDrawioToLikeC4(xml: string): string {
-  const { name: diagramName, content: xmlToParse } = getFirstDiagram(xml)
-  const cells = parseDrawioXml(xmlToParse)
-  const byId = new Map<string, DrawioCell>()
-  for (const c of cells) {
-    byId.set(c.id, c)
-  }
-
+/** Split parsed cells into vertices and edges (single responsibility). */
+function verticesAndEdgesFromCells(cells: DrawioCell[]): {
+  vertices: DrawioCell[]
+  edges: DrawioCell[]
+} {
   const vertices = cells.filter(c => c.vertex && c.id !== '0' && c.id !== '1')
   const edges = cells.filter(c => c.edge && c.source && c.target)
+  return { vertices, edges }
+}
 
-  // Build hierarchy: root is parent "0" (no wrapper) or "1" (legacy wrapper). Assign FQN by traversing parent chain.
+/** Build single-diagram state from cells and diagram name (orchestrator: vertices/edges → FQN/hierarchy → lines buffer). */
+function buildSingleDiagramState(cells: DrawioCell[], diagramName: string): SingleDiagramState {
+  const byId = new Map<string, DrawioCell>()
+  for (const c of cells) byId.set(c.id, c)
+  const { vertices, edges } = verticesAndEdgesFromCells(cells)
   const rootIds = new Set(['0', '1'])
   const isRootParent = (p: string | undefined) => !p || rootIds.has(p)
   const idToFqn = new Map<string, string>()
   const idToCell = new Map<string, DrawioCell>()
-  for (const v of vertices) {
-    idToCell.set(v.id, v)
-  }
-
+  for (const v of vertices) idToCell.set(v.id, v)
   const { containerIdToTitle, titleCellIds } = computeContainerTitles(vertices)
   const elementVertices = vertices.filter(v => !titleCellIds.has(v.id))
-
   const usedNames = new Set<string>()
   const uniqueName = makeUniqueName(usedNames)
   assignFqnsToElementVertices(idToFqn, elementVertices, containerIdToTitle, isRootParent, uniqueName)
   const hexToCustomName = buildHexToCustomName(elementVertices, edges)
-
   const lines: string[] = []
-
   if (hexToCustomName.size > 0) {
-    const specLines = ['specification {']
-    for (const [hex, name] of hexToCustomName) specLines.push(`  color ${name} ${hex}`)
-    specLines.push('}', '')
-    lines.push(...specLines)
+    lines.push('specification {')
+    for (const [hex, name] of hexToCustomName) lines.push(`  color ${name} ${hex}`)
+    lines.push('}', '')
   }
-
   lines.push('model {', '')
-
   const children = new Map<string, Array<{ cellId: string; fqn: string }>>()
   const roots: Array<{ cellId: string; fqn: string }> = []
   for (const [cellId, fqn] of idToFqn) {
@@ -1313,7 +1313,32 @@ export function parseDrawioToLikeC4(xml: string): string {
       }
     }
   }
+  const viewId = toId(diagramName) || 'index'
+  const rootCell = byId.get('1')
+  const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
+  const viewTitle = decodeRootStyleField(rootStyle.get('likec4viewtitle'))
+  const viewDesc = decodeRootStyleField(rootStyle.get('likec4viewdescription'))
+  const viewNotation = decodeRootStyleField(rootStyle.get('likec4viewnotation'))
+  return {
+    idToFqn,
+    idToCell,
+    containerIdToTitle,
+    roots,
+    children,
+    hexToCustomName,
+    edges,
+    viewId,
+    viewTitle,
+    viewDesc,
+    viewNotation,
+    lines,
+    byId,
+  }
+}
 
+/** Emit LikeC4 source from single-diagram state (orchestrator: elements + edges + view + roundtrip). */
+function emitLikeC4SourceFromSingleState(state: SingleDiagramState): string {
+  const { lines, idToCell, containerIdToTitle, children, hexToCustomName, byId } = state
   const emitCtx: ElementEmitContext = {
     lines,
     idToCell,
@@ -1322,33 +1347,37 @@ export function parseDrawioToLikeC4(xml: string): string {
     hexToCustomName,
     byId,
   }
-  for (const { cellId, fqn } of roots) {
-    emitElementToLines(emitCtx, cellId, fqn, 1)
+  for (const { cellId, fqn } of state.roots) {
+    emitElement.toLines(emitCtx, cellId, fqn, 1)
   }
-
   const edgeEntries: EdgeEntry[] = []
-  for (const e of edges.filter(isEdgeWithEndpoints)) {
-    const src = idToFqn.get(e.source)
-    const tgt = idToFqn.get(e.target)
+  for (const e of state.edges.filter(isEdgeWithEndpoints)) {
+    const src = state.idToFqn.get(e.source)
+    const tgt = state.idToFqn.get(e.target)
     if (src && tgt) edgeEntries.push({ cell: e, src, tgt })
   }
   emitEdgesToLines(lines, edgeEntries, hexToCustomName)
-
   lines.push('}', '')
-  const viewId = toId(diagramName) || 'index'
-  const rootCell = byId.get('1')
-  const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
-  const viewTitle = decodeRootStyleField(rootStyle.get('likec4viewtitle'))
-  const viewDesc = decodeRootStyleField(rootStyle.get('likec4viewdescription'))
-  const viewNotation = decodeRootStyleField(rootStyle.get('likec4viewnotation'))
-  lines.push(...buildViewBlockLines(viewId, viewTitle, viewDesc))
-  if (viewNotation) {
-    lines.push(`// likec4.view.notation ${viewId} '${escapeLikec4Quotes(viewNotation)}'`)
+  lines.push(...buildViewBlockLines(state.viewId, state.viewTitle, state.viewDesc))
+  if (state.viewNotation) {
+    lines.push(`// likec4.view.notation ${state.viewId} '${escapeLikec4Quotes(state.viewNotation)}'`)
   }
-
-  emitRoundtripCommentsSingle(lines, viewId, idToFqn, byId, edges)
-
+  emitRoundtripCommentsSingle(lines, state.viewId, state.idToFqn, byId, state.edges)
   return lines.join('\n')
+}
+
+/**
+ * Convert DrawIO XML to LikeC4 source (.c4) string.
+ * - Vertices become model elements (actor/container); hierarchy from parent refs.
+ * - Edges become relations (->).
+ * - Root diagram cells (parent "1") are top-level; others are nested by parent.
+ * - Uses first diagram only; diagram name becomes view id; root cell style likec4ViewTitle/likec4ViewDescription become view title/description.
+ */
+export function parseDrawioToLikeC4(xml: string): string {
+  const { name: diagramName, content: xmlToParse } = getFirstDiagram(xml)
+  const cells = parseDrawioXml(xmlToParse)
+  const state = buildSingleDiagramState(cells, diagramName)
+  return emitLikeC4SourceFromSingleState(state)
 }
 
 /** Per-diagram state for merging multiple diagrams. */
@@ -1364,6 +1393,12 @@ interface DiagramState {
   viewTitle: string
   viewDesc: string
   viewNotation: string
+}
+
+/** Single-diagram state including lines buffer and byId for emit (parse → cells → state → emit). */
+type SingleDiagramState = DiagramState & {
+  lines: string[]
+  byId: Map<string, DrawioCell>
 }
 
 function buildDiagramState(content: string, diagramName: string): DiagramState | null {
@@ -1548,7 +1583,7 @@ function emitMultiDiagramModel(
     byId: merged.byId,
   }
   for (const fqn of rootFqns) {
-    emitElementToLines(emitCtxMulti, fqn, fqn, 1)
+    emitElement.toLines(emitCtxMulti, fqn, fqn, 1)
   }
 
   const edgeEntriesMulti: EdgeEntry[] = []

@@ -28,10 +28,31 @@ function isSourceFile(name: string): boolean {
   return name.endsWith('.c4') || name.endsWith('.likec4')
 }
 
+/** Join non-empty file content chunks with separator (single place for round-trip source assembly). */
+function joinNonEmptyFiles(chunks: string[], separator = '\n\n'): string {
+  return chunks.filter(c => c.trim() !== '').join(separator)
+}
+
 /** User-facing error messages (single source of truth for CLI contract). */
 const ERR_EMPTY_MODEL = 'No project or empty model'
 const ERR_EXPORT_FAILED = 'Failed to export DrawIO'
 const ERR_NO_VIEWS_EXPORTED = 'No views could be exported'
+
+/** Epilog examples for drawio command help (single source of truth). */
+function getDrawioEpilog(): string {
+  return `${k.bold('Examples:')}
+  ${k.green('$0 export drawio')}
+    ${k.gray('Export each view to a separate .drawio file')}
+
+  ${k.green('$0 export drawio --all-in-one -o ./diagrams src/')}
+    ${k.gray('Export all views as tabs in one .drawio file')}
+
+  ${k.green('$0 export drawio --roundtrip -o ./out')}
+    ${k.gray('Re-apply layout/waypoints from comment blocks (e.g. after import from DrawIO)')}
+
+  ${k.green('$0 export drawio --uncompressed -o ./out')}
+    ${k.gray('Export with raw XML (no compression) for draw.io desktop compatibility')}`
+}
 
 /** Normalize thrown value to Error for logging and rethrowing (single responsibility). */
 function toError(err: unknown): Error {
@@ -73,7 +94,7 @@ async function readWorkspaceSourceContent(
     }
   }
   await walk(workspacePath)
-  return chunks.join('\n\n')
+  return joinNonEmptyFiles(chunks)
 }
 
 /** Single place for roundtrip source: only reads workspace when roundtrip is true (DRY). */
@@ -118,6 +139,26 @@ async function exportDrawioAllInOne(params: ExportDrawioParams): Promise<void> {
   logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)} (${viewmodels.length} tab(s))`)
 }
 
+/** Write one view to a .drawio file; returns true on success, false on error (logs and continues). */
+async function writeViewToFile(
+  vm: LikeC4ViewModel<aux.Unknown>,
+  optionsByViewId: Record<string, GenerateDrawioOptions>,
+  outdir: string,
+  logger: ViteLogger,
+): Promise<boolean> {
+  const viewId = vm.$view.id as string
+  try {
+    const generated = generateDrawio(vm, optionsByViewId[viewId])
+    const outfile = resolve(outdir, viewId + DRAWIO_FILE_EXT)
+    await writeFile(outfile, generated)
+    logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
+    return true
+  } catch (err) {
+    logger.error(`Failed to export view ${viewId}`, { error: toError(err) })
+    return false
+  }
+}
+
 /** Export each view to a separate .drawio file. */
 async function exportDrawioPerView(params: ExportDrawioParams): Promise<{ succeeded: number }> {
   const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, logger } = params
@@ -125,16 +166,7 @@ async function exportDrawioPerView(params: ExportDrawioParams): Promise<{ succee
   const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed)
   let succeeded = 0
   for (const vm of viewmodels) {
-    const viewId = vm.$view.id as string
-    try {
-      const generated = generateDrawio(vm, optionsByViewId[viewId])
-      const outfile = resolve(outdir, viewId + DRAWIO_FILE_EXT)
-      await writeFile(outfile, generated)
-      logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
-      succeeded++
-    } catch (err) {
-      logger.error(`Failed to export view ${viewId}`, { error: toError(err) })
-    }
+    if (await writeViewToFile(vm, optionsByViewId, outdir, logger)) succeeded++
   }
   return { succeeded }
 }
@@ -152,6 +184,8 @@ type DrawioExportArgs = {
 /** Run the export workflow: init workspace, load model, then delegate to all-in-one or per-view (single responsibility). */
 async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
+
+  // 1) Init workspace and ensure single project
   const likec4 = await LikeC4.fromWorkspace(args.path, {
     logger,
     graphviz: useDotBin ? 'binary' : 'wasm',
@@ -159,6 +193,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   })
   likec4.ensureSingleProject()
 
+  // 2) Load layouted model and validate non-empty
   const projectId: ProjectId | undefined = args.project != null
     ? likec4.languageServices.projectsManager.ensureProjectId(args.project as ProjectId)
     : undefined
@@ -168,6 +203,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
     throw new Error(ERR_EMPTY_MODEL)
   }
 
+  // 3) Prepare output dir and view list
   await mkdir(args.outdir, { recursive: true })
   const viewmodels = [...model.views()]
 
@@ -180,6 +216,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
     logger,
   }
 
+  // 4) Export: all-in-one file or one file per view
   if (args.allInOne && viewmodels.length > 0) {
     try {
       await exportDrawioAllInOne(exportParams)
@@ -232,28 +269,16 @@ export function drawioCmd(yargs: Argv) {
           project,
           'use-dot': useDotBin,
         })
-        .epilog(`${k.bold('Examples:')}
-  ${k.green('$0 export drawio')}
-    ${k.gray('Export each view to a separate .drawio file')}
-
-  ${k.green('$0 export drawio --all-in-one -o ./diagrams src/')}
-    ${k.gray('Export all views as tabs in one .drawio file')}
-
-  ${k.green('$0 export drawio --roundtrip -o ./out')}
-    ${k.gray('Re-apply layout/waypoints from comment blocks (e.g. after import from DrawIO)')}
-
-  ${k.green('$0 export drawio --uncompressed -o ./out')}
-    ${k.gray('Export with raw XML (no compression) for draw.io desktop compatibility')}
-`),
+        .epilog(getDrawioEpilog()),
     handler: async args => {
       const logger = createLikeC4Logger('c4:export')
       await runExportDrawio(
         {
           path: args.path,
           outdir: args.outdir ?? args.path,
-          allInOne: args.allInOne === true,
-          roundtrip: args.roundtrip === true,
-          uncompressed: args.uncompressed === true,
+          allInOne: !!args.allInOne,
+          roundtrip: !!args.roundtrip,
+          uncompressed: !!args.uncompressed,
           project: args.project,
         },
         logger,
