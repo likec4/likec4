@@ -35,6 +35,9 @@ function printSelector(selector: PredicateSelector | undefined): string {
 export function printWhereOperator(op: WhereOperator): string {
   switch (true) {
     case isTagEqual(op): {
+export function printWhereOperator(op: WhereOperator): string {
+  switch (true) {
+    case isTagEqual(op): {
       const tag = isString(op.tag) ? op.tag : ('eq' in op.tag ? op.tag.eq : op.tag.neq)
       const isNeg = !isString(op.tag) && 'neq' in op.tag
       return isNeg ? `tag is not #${tag}` : `tag is #${tag}`
@@ -50,14 +53,18 @@ export function printWhereOperator(op: WhereOperator): string {
       return `not (${printWhereOperator(op.not)})`
     case isAndOperator(op):
       return op.and.map((o: WhereOperator) => {
-        const inner = printWhereOperator(o)
-        return isOrOperator(o) ? `(${inner})` : inner
+        if (isOrOperator(o)) return `(${printWhereOperator(o)})`
+        return printWhereOperator(o)
       }).join(' and ')
     case isOrOperator(op):
-      return op.or.map((o: WhereOperator) => printWhereOperator(o)).join(' or ')
+      return op.or.map((o: WhereOperator) => {
+        if (isAndOperator(o)) return `(${printWhereOperator(o)})`
+        return printWhereOperator(o)
+      }).join(' or ')
     default:
       return ''
   }
+}
 }
 
 // ---- Model FQN Expression ----
