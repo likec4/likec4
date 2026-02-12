@@ -124,10 +124,11 @@ function indexOfClosingTag(xml: string, tagName: string, fromIndex: number): num
   return lower.indexOf(needle, fromIndex)
 }
 
-function parseNum(s: string | undefined): number | undefined {
-  if (s === undefined || s === '') return undefined
-  const n = Number.parseFloat(s)
-  return Number.isNaN(n) ? undefined : n
+/** Parse numeric attribute; returns undefined if missing or not a number. */
+function parseNum(str: string | undefined): number | undefined {
+  if (str === undefined || str === '') return undefined
+  const num = Number.parseFloat(str)
+  return Number.isNaN(num) ? undefined : num
 }
 
 /** Get style value decoded for URI component; undefined if missing or empty. */

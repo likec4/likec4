@@ -347,4 +347,58 @@ Adequações já aplicadas nos refactors anteriores (constantes centralizadas, h
 
 ---
 
+## 11. Avaliação final estilo Uncle Bob (Clean Code)
+
+Última volta de revisão com a lente do *Clean Code* (Robert C. Martin): nomes que revelam intenção, funções pequenas e com um nível de abstração, sem duplicação, sem variáveis redundantes, tratamento de erros explícito.
+
+### O que está bem
+
+- **Nomes:** A maioria dos nomes é clara (`getThemeColorValues`, `buildNavLinkStyle`, `toExportString`, `buildCellOptionalFields`). Constantes nomeadas em `constants.ts`; sem magic numbers soltos.
+- **Funções pequenas:** A maior parte dos helpers faz uma coisa (SRP). `edgeAnchors`, `normalizeEdgePoint`, `getContainerDashedStyle`, `applyStrokeColorOverride` são exemplos de funções curtas e focadas.
+- **Abstração:** Layout (computeDiagramLayout, spreadUnlaidNodesOverVertical, computeContainerBboxesFromChildren) está separado da construção de XML (buildNodeCellXml, buildEdgeCellXml). Um nível de abstração por função está respeitado nos fluxos principais.
+- **DRY:** Duplicação removida (formatLinkLines, xml-utils, getThemeColorValues, buildCellOptionalFields). Comentários JSDoc nas funções públicas; pouco ruído.
+- **Erros:** `getThemeColorValues` encapsula try/catch e fallback; não há exceções engolidas. `buildCellFromMxCell` devolve `null` quando não há id — comportamento explícito na fronteira.
+
+### Ajustes aplicados nesta volta
+
+- **Variável redundante:** Removido `opacityStyle` (era apenas alias de `fillOpacityStyle`). Uso direto de `fillOpacityStyle` na construção de `styleStr` (Clean Code: “eliminate redundant names”).
+- **Nome de parâmetro:** `escapeHtml(s)` → `escapeHtml(text)` para revelar intenção e alinhar com `escapeXml(unsafe)` em xml-utils.
+
+### Oportunidades restantes (não bloqueantes)
+
+- ~~**buildNodeCellXml (~170 linhas):**~~ **Implementado no drawio cleanup:** Tipo `NodeCellExportData` e `computeNodeCellExportData`; `buildNodeCellXml(data)` só monta XML. A função anterior (extração de dados do node, estilos, depois montagem da string). Uma evolução possível: extrair um tipo “NodeCellExportData” e uma função `computeNodeCellExportData(node, layout, options, viewmodel, ...)` que devolve esse objeto; `buildNodeCellXml` passaria a receber apenas esse objeto e a construir o XML. Assim a função teria dois passos ao mesmo nível de abstração (“dados da célula” → “XML”) e o número conceptual de “argumentos” cairia para um. Custo de refactor médio; benefício em legibilidade e teste.
+- **buildLikec4StyleForNode(params) com 17 campos:** O objeto já agrupa os argumentos (bom). Alternativa futura: o caller construir um “NodeStyleContext” ou “NodeExportData” e passar só esse objeto; a função continuaria a fazer uma coisa (serializar estilo likec4 para string).
+- ~~**Type assertions (node as Node & …):**~~ **Implementado:** Getters `getNodeNotes`, `getNodeSummary`, `getNodeTags`, `getNodeNavigateTo`, `getNodeIcon`, `getNodeLinks`, `getNodeNotation`, `getNodeCustomData`, `getNodeChildren` (nodes); `getEdgeKind`, `getEdgeNotation`, `getEdgeLinks`, `getEdgeMetadata`, `getEdgeCustomData` (edges). Um único sítio para o cast.
+- **buildCellOptionalFields:** A sequência de `if (x) optional.x = x` é longa mas explícita e type-safe. Um loop genérico sobre pares [key, value] reduziria linhas mas tornaria o tipo de `optional` menos óbvio; para Clean Code, a versão explícita atual é aceitável.
+
+### Conclusão (Uncle Bob)
+
+O código está legível, com responsabilidades bem separadas e pouca duplicação. O drawio cleanup implementou getters Node/Edge e NodeCellExportData + computeNodeCellExportData + buildNodeCellXml(data). **alinhado com Clean Code** (drawio cleanup e auditoria high-end aplicados).
+
+---
+
+## 12. Auditoria high-end Clean Code (Uncle Bob — segunda volta)
+
+Auditoria mais apurada nos módulos `generate-drawio.ts` e `parse-drawio.ts`: nomes que revelam intenção, zero variáveis redundantes, funções com um nível de abstração, tipos nomeados para objectos de parâmetros.
+
+### Implementado nesta volta
+
+- **NodeLikec4StyleParams:** Tipo nomeado para os 17 parâmetros de `buildLikec4StyleForNode`; a assinatura passa a `(params: NodeLikec4StyleParams)` — “um objeto conceptual” em vez de lista de argumentos.
+- **getElementColors:** Variável `el` renomeada para `elementColors` (revelar intenção).
+- **toNonEmptyString:** Parâmetro `x` → `value`; variável local `s` → `str`.
+- **parseNum (parse-drawio):** Parâmetro `s` → `str`; variável `n` → `num`; JSDoc acrescentado.
+- **Conclusão secção 11:** Texto final atualizado para refletir drawio cleanup e auditoria high-end (sem frases redundantes).
+
+### Verificado e mantido de propósito
+
+- **Nomes curtos em callbacks:** `n`, `b`, `ch` em `.filter(n => ...)`, `bboxKey(b)`, `getNodeChildren(n)` — contexto local e idiomático; renomear para `node`/`bbox`/`children` em cada uso aumentaria ruído sem ganho de clareza.
+- **buildCellOptionalFields:** Sequência explícita `if (x) optional.x = x` mantida (type-safety e legibilidade).
+- **k, v em Object.entries/map:** Mantidos (convenção universal para key/value).
+
+### Conclusão auditoria high-end
+
+O código cumpre critérios de Clean Code de alto nível: nomes significativos, funções pequenas, um nível de abstração por função, tipos nomeados para agregados, sem variáveis ou comentários redundantes. Nenhuma dívida restante identificada nos módulos drawio.
+
+---
+
 *Documento gerado para apoiar um PR mais limpo da feature Draw.io export (branch `feat/drawio-export`).*

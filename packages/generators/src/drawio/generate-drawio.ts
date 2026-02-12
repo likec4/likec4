@@ -78,14 +78,60 @@ type View = ProcessedView<aux.Unknown>
 type Node = View['nodes'][number]
 type Edge = View['edges'][number]
 
+/** Optional node fields (DSL allows more than base type). Single place for type/cast — Clean Code. */
+function getNodeNotes(node: Node): MarkdownOrString | undefined {
+  return (node as Node & { notes?: MarkdownOrString }).notes
+}
+function getNodeSummary(node: Node): MarkdownOrString | undefined {
+  return (node as Node & { summary?: MarkdownOrString }).summary
+}
+function getNodeTags(node: Node): readonly string[] | undefined {
+  return (node as Node & { tags?: readonly string[] }).tags
+}
+function getNodeNavigateTo(node: Node): string | null | undefined {
+  return (node as Node & { navigateTo?: string | null }).navigateTo
+}
+function getNodeIcon(node: Node): string | null | undefined {
+  return (node as Node & { icon?: string | null }).icon
+}
+function getNodeLinks(node: Node): readonly { url: string; title?: string }[] | undefined {
+  return (node as Node & { links?: readonly { url: string; title?: string }[] }).links
+}
+function getNodeNotation(node: Node): string | undefined {
+  return (node as Node & { notation?: string }).notation
+}
+function getNodeCustomData(node: Node): Record<string, string> | undefined {
+  return (node as Node & { customData?: Record<string, string> }).customData
+}
+function getNodeChildren(node: Node): NodeId[] | undefined {
+  return (node as Node & { children?: NodeId[] }).children
+}
+
+/** Optional edge fields. Single place for type/cast — Clean Code. */
+function getEdgeKind(edge: Edge): string | undefined {
+  return (edge as Edge & { kind?: string }).kind
+}
+function getEdgeNotation(edge: Edge): string | undefined {
+  return (edge as Edge & { notation?: string }).notation
+}
+function getEdgeLinks(edge: Edge): readonly { url: string; title?: string }[] | undefined {
+  return (edge as Edge & { links?: readonly { url: string; title?: string }[] }).links
+}
+function getEdgeMetadata(edge: Edge): Record<string, string | string[]> | undefined {
+  return (edge as Edge & { metadata?: Record<string, string | string[]> }).metadata
+}
+function getEdgeCustomData(edge: Edge): Record<string, string> | undefined {
+  return (edge as Edge & { customData?: Record<string, string> }).customData
+}
+
 /** Project styles or central default (LikeC4Styles.DEFAULT) when view has no $styles. */
 function getEffectiveStyles(viewmodel: LikeC4ViewModel<aux.Unknown>): LikeC4Styles {
   return viewmodel.$styles ?? LikeC4Styles.DEFAULT
 }
 
 /** Escape for use inside HTML (e.g. cell value with html=1). */
-function escapeHtml(s: string): string {
-  return s
+function escapeHtml(text: string): string {
+  return text
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
@@ -93,10 +139,10 @@ function escapeHtml(s: string): string {
 }
 
 /** Coerce to non-empty string for style/attribute use; empty string when null/undefined/empty. DRY for navTo, iconName, etc. */
-function toNonEmptyString(x: unknown): string {
-  if (x == null) return ''
-  const s = String(x)
-  return s.trim() === '' ? '' : s
+function toNonEmptyString(value: unknown): string {
+  if (value == null) return ''
+  const str = String(value)
+  return str.trim() === '' ? '' : str
 }
 
 /** Container dashed style from border (KISS: single place for 3-way branch). */
@@ -185,11 +231,11 @@ function getElementColors(
   color: string,
 ): ElementColors | undefined {
   const values = getThemeColorValues(viewmodel, color, 'primary')
-  const el = values.elements
+  const elementColors = values.elements
   return {
-    fill: el.fill,
-    stroke: el.stroke,
-    font: (el.hiContrast ?? el.stroke) as string,
+    fill: elementColors.fill,
+    stroke: elementColors.stroke,
+    font: (elementColors.hiContrast ?? elementColors.stroke) as string,
   }
 }
 
@@ -314,8 +360,8 @@ function metadataToStyleJson(metadata: Record<string, string | string[]> | undef
 
 const HEX_COLOR_RE = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/
 
-/** Build LikeC4 style string (likec4Description=...; etc.) for round-trip. */
-function buildLikec4StyleForNode(params: {
+/** Params for building node LikeC4 style string (single conceptual object — Clean Code). */
+type NodeLikec4StyleParams = {
   desc: string
   tech: string
   notes: string
@@ -331,7 +377,10 @@ function buildLikec4StyleForNode(params: {
   nodeStyle: { size?: string; padding?: string; textSize?: string; iconPosition?: string } | undefined
   strokeHex: string
   nodeNotation: string | undefined
-}): string {
+}
+
+/** Build LikeC4 style string (likec4Description=...; etc.) for round-trip. */
+function buildLikec4StyleForNode(params: NodeLikec4StyleParams): string {
   const parts: string[] = []
   pushStylePart(parts, 'likec4Description', params.desc)
   pushStylePart(parts, 'likec4Technology', params.tech)
@@ -433,11 +482,11 @@ function buildEdgeCellXml(
   const edgeTech = toExportString(edge.technology)
   const edgeNotes = toExportString(edge.notes)
   const edgeNavTo = toNonEmptyString(edge.navigateTo)
-  const edgeKind = (edge as Edge & { kind?: string }).kind
-  const edgeNotation = (edge as Edge & { notation?: string }).notation
-  const edgeLinks = (edge as Edge & { links?: readonly { url: string; title?: string }[] }).links
+  const edgeKind = getEdgeKind(edge)
+  const edgeNotation = getEdgeNotation(edge)
+  const edgeLinks = getEdgeLinks(edge)
   const edgeLinksJson = linksToStyleJson(edgeLinks)
-  const edgeMetadata = (edge as Edge & { metadata?: Record<string, string | string[]> }).metadata
+  const edgeMetadata = getEdgeMetadata(edge)
   const edgeMetadataJson = metadataToStyleJson(edgeMetadata)
   const edgeLikec4Style = buildLikec4StyleForEdge({
     edgeDesc,
@@ -449,7 +498,7 @@ function buildEdgeCellXml(
     edgeLinksJson,
     edgeMetadataJson,
   })
-  const edgeCustomData = (edge as Edge & { customData?: Record<string, string> }).customData
+  const edgeCustomData = getEdgeCustomData(edge)
   const edgeUserObjectXml = buildMxUserObjectXml(edgeCustomData)
   const rawEdgePoints = edgeWaypoints?.[`${edge.source}|${edge.target}|${edge.id}`] ??
     edgeWaypoints?.[`${edge.source}|${edge.target}`]
@@ -481,15 +530,35 @@ function buildEdgeCellXml(
 /** Result of building one node's cell(s): vertex XML and optional container title cell (single responsibility). */
 type NodeCellResult = { vertexXml: string; titleCellXml?: string; isContainer: boolean }
 
-/** Build one node's vertex mxCell XML (and optional container title cell) so generateDiagramContent stays short. */
-function buildNodeCellXml(
+/** All data needed to build node cell XML (Clean Code: one level of abstraction — data then XML). */
+type NodeCellExportData = {
+  id: string
+  parentId: string
+  x: number
+  y: number
+  width: number
+  height: number
+  value: string
+  styleStr: string
+  userObjectXml: string
+  navTo: string
+  isContainer: boolean
+  fontFamily: string
+  title?: string
+  titleCellId?: string
+  containerTitleFontSizePx?: number
+  containerTitleColor?: string
+}
+
+/** Compute node cell export data from view/layout/options (single responsibility). */
+function computeNodeCellExportData(
   node: Node,
   layout: DiagramLayoutState,
   options: GenerateDrawioOptions | undefined,
   viewmodel: LikeC4ViewModel<aux.Unknown>,
   getCellId: (nodeId: NodeId) => string,
   containerTitleCellId: number,
-): NodeCellResult {
+): NodeCellExportData {
   const {
     bboxes,
     containerNodeIds,
@@ -516,11 +585,11 @@ function buildNodeCellXml(
   const title = node.title
   const desc = toExportString(node.description)
   const tech = toExportString(node.technology)
-  const notes = toExportString((node as Node & { notes?: MarkdownOrString }).notes)
-  const tags = (node as Node & { tags?: readonly string[] }).tags
+  const notes = toExportString(getNodeNotes(node))
+  const tags = getNodeTags(node)
   const tagList = Array.isArray(tags) && tags.length > 0 ? tags.join(',') : ''
-  const navTo = toNonEmptyString((node as Node & { navigateTo?: string | null }).navigateTo)
-  const iconName = toNonEmptyString((node as Node & { icon?: string | null }).icon)
+  const navTo = toNonEmptyString(getNodeNavigateTo(node))
+  const iconName = toNonEmptyString(getNodeIcon(node))
 
   const isContainer = containerNodeIds.has(node.id)
   const shapeStyle = isContainer
@@ -554,13 +623,12 @@ function buildNodeCellXml(
   const fillOpacityStyle = containerOpacityNum != null && isContainer === true
     ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
     : ''
-  const summaryStr = toExportString((node as Node & { summary?: MarkdownOrString }).summary)
-  const links = (node as Node & { links?: readonly { url: string; title?: string }[] }).links
+  const summaryStr = toExportString(getNodeSummary(node))
+  const links = getNodeLinks(node)
   const linksJson = linksToStyleJson(links)
-  const opacityStyle = fillOpacityStyle
   const colorNameForRoundtrip = node.color ? encodeURIComponent(String(node.color)) : ''
 
-  const nodeNotation = (node as Node & { notation?: string }).notation
+  const nodeNotation = getNodeNotation(node)
   const likec4Style = buildLikec4StyleForNode({
     desc,
     tech,
@@ -579,7 +647,7 @@ function buildNodeCellXml(
     nodeNotation,
   })
 
-  const nodeCustomData = (node as Node & { customData?: Record<string, string> }).customData
+  const nodeCustomData = getNodeCustomData(node)
   const userObjectXml = buildMxUserObjectXml(nodeCustomData)
 
   const navLinkStyle = buildNavLinkStyle(navTo)
@@ -589,29 +657,53 @@ function buildNodeCellXml(
       encodeURIComponent(fontFamily)
     };`
 
-  const userObjectLabel = isContainer ? escapeXml(title) : value
   const styleStr =
-    `${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;`
-  const geometryLine = `<mxGeometry height="${Math.round(height)}" width="${Math.round(width)}" x="${
-    Math.round(x)
-  }" y="${Math.round(y)}" as="geometry" />${userObjectXml}`
-  const cellXml = navTo === ''
-    ? `<mxCell id="${id}" value="${value}" style="${styleStr}" vertex="1" parent="${parentId}">\n  ${geometryLine}\n</mxCell>`
-    : `<UserObject label="${userObjectLabel}" link="${DRAWIO_PAGE_LINK_PREFIX}${
-      escapeXml(navTo)
-    }" id="${id}">\n  <mxCell parent="${parentId}" style="${styleStr}" value="${value}" vertex="1">\n  ${geometryLine}\n</mxCell>\n</UserObject>`
+    `${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${fillOpacityStyle}${navLinkStyle}${likec4Style}html=1;`
 
-  if (!isContainer) return { vertexXml: cellXml, isContainer: false }
-
-  const titleId = String(containerTitleCellId)
-  const titleCellXml = buildContainerTitleCellXml(
-    title,
-    titleId,
-    navTo,
+  return {
     id,
+    parentId,
+    x,
+    y,
+    width,
+    height,
+    value,
+    styleStr,
+    userObjectXml,
+    navTo,
+    isContainer,
     fontFamily,
-    containerTitleFontSizePx,
-    containerTitleColor,
+    ...(isContainer && {
+      title,
+      titleCellId: String(containerTitleCellId),
+      containerTitleFontSizePx,
+      containerTitleColor,
+    }),
+  }
+}
+
+/** Build node vertex mxCell XML from precomputed data (single responsibility — XML assembly only). */
+function buildNodeCellXml(data: NodeCellExportData): NodeCellResult {
+  const geometryLine = `<mxGeometry height="${Math.round(data.height)}" width="${Math.round(data.width)}" x="${
+    Math.round(data.x)
+  }" y="${Math.round(data.y)}" as="geometry" />${data.userObjectXml}`
+  const userObjectLabel = data.isContainer && data.title != null ? escapeXml(data.title) : data.value
+  const cellXml = data.navTo === ''
+    ? `<mxCell id="${data.id}" value="${data.value}" style="${data.styleStr}" vertex="1" parent="${data.parentId}">\n  ${geometryLine}\n</mxCell>`
+    : `<UserObject label="${userObjectLabel}" link="${DRAWIO_PAGE_LINK_PREFIX}${
+      escapeXml(data.navTo)
+    }" id="${data.id}">\n  <mxCell parent="${data.parentId}" style="${data.styleStr}" value="${data.value}" vertex="1">\n  ${geometryLine}\n</mxCell>\n</UserObject>`
+
+  if (!data.isContainer) return { vertexXml: cellXml, isContainer: false }
+
+  const titleCellXml = buildContainerTitleCellXml(
+    data.title!,
+    data.titleCellId!,
+    data.navTo,
+    data.id,
+    data.fontFamily,
+    data.containerTitleFontSizePx!,
+    data.containerTitleColor!,
   )
   return { vertexXml: cellXml, titleCellXml, isContainer: true }
 }
@@ -806,7 +898,7 @@ function computeContainerBboxesFromChildren(
     .filter(n => containerNodeIds.has(n.id))
     .sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
   for (const node of containerNodesSorted) {
-    const children = (node as Node & { children?: NodeId[] }).children ?? []
+    const children = getNodeChildren(node) ?? []
     const inView = children.filter((id: NodeId) => nodeIdsInView.has(id))
     if (inView.length === 0) continue
     const initialBbox = bboxes.get(node.id)!
@@ -903,11 +995,10 @@ function computeDiagramLayout(
 
   const nodeIdsInView = new Set<NodeId>((nodes as Node[]).map(n => n.id))
   const containerNodeIds = new Set(
-    (nodes as Node[]).filter(
-      n =>
-        Array.isArray(n.children) &&
-        n.children.some((childId: NodeId) => nodeIdsInView.has(childId)),
-    ).map(n => n.id),
+    (nodes as Node[]).filter(n => {
+      const ch = getNodeChildren(n)
+      return Array.isArray(ch) && ch.some((childId: NodeId) => nodeIdsInView.has(childId))
+    }).map(n => n.id),
   )
 
   spreadUnlaidNodesOverVertical(bboxes, sortedNodes, containerNodeIds)
@@ -985,7 +1076,7 @@ function generateDiagramContent(
   let containerTitleCellId = CONTAINER_TITLE_CELL_ID_START
 
   for (const node of sortedNodes) {
-    const result = buildNodeCellXml(
+    const data = computeNodeCellExportData(
       node,
       layout,
       options,
@@ -993,6 +1084,7 @@ function generateDiagramContent(
       getCellId,
       containerTitleCellId,
     )
+    const result = buildNodeCellXml(data)
     if (result.isContainer) {
       containerCells.push(result.vertexXml)
       if (result.titleCellXml) containerCells.push(result.titleCellXml)
