@@ -33,29 +33,28 @@ function printSelector(selector: PredicateSelector | undefined): string {
 // ---- WhereOperator ----
 
 export function printWhereOperator(op: WhereOperator): string {
-  if (isTagEqual(op)) {
-    const tag = isString(op.tag) ? op.tag : ('eq' in op.tag ? op.tag.eq : op.tag.neq)
-    const isNeg = !isString(op.tag) && 'neq' in op.tag
-    return isNeg ? `tag is not #${tag}` : `tag is #${tag}`
+  switch (true) {
+    case isTagEqual(op): {
+      const tag = isString(op.tag) ? op.tag : ('eq' in op.tag ? op.tag.eq : op.tag.neq)
+      const isNeg = !isString(op.tag) && 'neq' in op.tag
+      return isNeg ? `tag is not #${tag}` : `tag is #${tag}`
+    }
+    case isKindEqual(op): {
+      const kind = isString(op.kind) ? op.kind : ('eq' in op.kind ? op.kind.eq : op.kind.neq)
+      const isNeg = !isString(op.kind) && 'neq' in op.kind
+      return isNeg ? `kind is not ${kind}` : `kind is ${kind}`
+    }
+    case isParticipantOperator(op):
+      return `${op.participant}.${printWhereOperator(op.operator)}`
+    case isNotOperator(op):
+      return `not (${printWhereOperator(op.not)})`
+    case isAndOperator(op):
+      return op.and.map((o: WhereOperator) => printWhereOperator(o)).join(' and ')
+    case isOrOperator(op):
+      return op.or.map((o: WhereOperator) => printWhereOperator(o)).join(' or ')
+    default:
+      return ''
   }
-  if (isKindEqual(op)) {
-    const kind = isString(op.kind) ? op.kind : ('eq' in op.kind ? op.kind.eq : op.kind.neq)
-    const isNeg = !isString(op.kind) && 'neq' in op.kind
-    return isNeg ? `kind is not ${kind}` : `kind is ${kind}`
-  }
-  if (isParticipantOperator(op)) {
-    return `${op.participant}.${printWhereOperator(op.operator)}`
-  }
-  if (isNotOperator(op)) {
-    return `not (${printWhereOperator(op.not)})`
-  }
-  if (isAndOperator(op)) {
-    return op.and.map((o: WhereOperator) => printWhereOperator(o)).join(' and ')
-  }
-  if (isOrOperator(op)) {
-    return op.or.map((o: WhereOperator) => printWhereOperator(o)).join(' or ')
-  }
-  return ''
 }
 
 // ---- Model FQN Expression ----
