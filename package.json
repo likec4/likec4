@@ -11,7 +11,7 @@
     "styled-system/*"
   ],
   "engines": {
-    "node": ">=22.21.1"
+    "node": ">=22.22.0"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",
@@ -49,7 +49,7 @@
     "@changesets/cli": "catalog:",
     "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
-    "dprint": "^0.50.2",
+    "dprint": "^0.51.1",
     "execa": "^9.6.0",
     "global": "^4.4.0",
     "husky": "^9.1.7",
