@@ -104,7 +104,10 @@ function printDeploymentNode(
       indentation: 2,
     })
     indent.append('}', NL)
+    return
   }
+
+  throw new Error(`printDeploymentNode: unexpected element type for '${node.name}' (kind: ${el.kind})`)
 }
 
 function hasDeploymentNodeProps(el: DeploymentElement): boolean {

@@ -3,6 +3,9 @@ import { FqnRef } from '@likec4/core/types'
 import { nameFromFqn, parentFqn } from '@likec4/core/utils'
 
 export function quoteString(value: string): string {
+  if (value.includes('\'') && value.includes('"')) {
+    return `'${value.replace(/'/g, '\\\'')}'`
+  }
   if (value.includes('\'')) {
     return `"${value}"`
   }

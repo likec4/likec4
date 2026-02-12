@@ -1,5 +1,4 @@
-import type { aux, Element, NonEmptyArray, Relationship } from '@likec4/core/types'
-import { FqnRef } from '@likec4/core/types'
+import type { Element, Relationship } from '@likec4/core/types'
 import { CompositeGeneratorNode, NL } from 'langium/generate'
 import { printStyleBlock } from './print-style'
 import { type ElementTreeNode, buildTree, printModelRef, quoteMarkdownOrString, quoteString } from './utils'
@@ -8,7 +7,6 @@ export function printModel(
   out: CompositeGeneratorNode,
   elements: Record<string, Element>,
   relations: Record<string, Relationship>,
-  imports: Record<string, NonEmptyArray<Element>>,
 ): void {
   out.append('model {', NL)
   out.indent({
