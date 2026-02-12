@@ -57,7 +57,7 @@ type Edge = View['edges'][number]
 
 /** Project styles or central default (LikeC4Styles.DEFAULT) when view has no $styles. */
 function getEffectiveStyles(viewmodel: LikeC4ViewModel<aux.Unknown>): LikeC4Styles {
-  return ('$styles' in viewmodel && viewmodel.$styles ? viewmodel.$styles : null) ?? LikeC4Styles.DEFAULT
+  return viewmodel.$styles ?? LikeC4Styles.DEFAULT
 }
 
 /** Escape for use inside XML attributes and text. */
@@ -353,12 +353,12 @@ export function generateDrawio(
     list.push(n)
     byBbox.set(key, list)
   }
-  for (const nodes of byBbox.values()) {
-    if (nodes.length <= 1) continue
-    const firstNode = nodes[0]
+  for (const bboxNodes of byBbox.values()) {
+    if (bboxNodes.length <= 1) continue
+    const firstNode = bboxNodes[0]
     const firstBbox = firstNode ? bboxes.get(firstNode.id) : undefined
     if (firstBbox && isDefaultBbox(firstBbox)) {
-      nodes.forEach((node, i) => {
+      bboxNodes.forEach((node, i) => {
         bboxes.set(node.id, {
           ...firstBbox,
           x: firstBbox.x,
