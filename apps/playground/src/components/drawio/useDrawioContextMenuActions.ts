@@ -3,13 +3,14 @@ import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import {
   buildDrawioExportOptionsFromSource,
+  DEFAULT_DRAWIO_ALL_FILENAME,
   generateDrawio,
   generateDrawioMulti,
 } from '@likec4/generators'
 import type { GenerateDrawioOptions } from '@likec4/generators'
 import { useDisclosure } from '@mantine/hooks'
 import { useCallback, useMemo, useState } from 'react'
-import { DEFAULT_DRAWIO_ALL_FILENAME, DRAWIO_MIME_TYPE } from './drawio-events'
+import { DRAWIO_MIME_TYPE } from './drawio-events'
 
 type ViewModelLike = { $view: DiagramView; get $styles(): LikeC4Model['$styles'] | null }
 

@@ -46,3 +46,6 @@ export const DEFAULT_NODE_FONT_HEX = '#1e40af'
 /** mxGraphModel page dimensions (draw.io default A4-like). */
 export const MXGRAPH_PAGE_WIDTH = 827
 export const MXGRAPH_PAGE_HEIGHT = 1169
+
+/** Default filename when exporting all views into one .drawio file (CLI and playground). */
+export const DEFAULT_DRAWIO_ALL_FILENAME = 'diagrams.drawio'

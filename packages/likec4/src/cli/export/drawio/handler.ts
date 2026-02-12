@@ -3,6 +3,7 @@ import type { aux, ProjectId } from '@likec4/core/types'
 import type { GenerateDrawioOptions } from '@likec4/generators'
 import {
   buildDrawioExportOptionsFromSource,
+  DEFAULT_DRAWIO_ALL_FILENAME,
   generateDrawio,
   generateDrawioMulti,
 } from '@likec4/generators'
@@ -18,8 +19,6 @@ import { path, project, useDotBin } from '../../options'
 
 /** File extension for DrawIO files (single source of truth in CLI). */
 const DRAWIO_FILE_EXT = '.drawio'
-/** Default filename when exporting all views into one file. */
-const DEFAULT_DRAWIO_ALL_FILENAME = 'diagrams.drawio'
 
 async function readWorkspaceSourceContent(workspacePath: string): Promise<string> {
   const chunks: string[] = []

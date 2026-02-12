@@ -8,7 +8,12 @@
  * causing "Could not add object Array" in draw.io) or wrong counts.
  */
 
-import { generateDrawioMulti, getAllDiagrams, parseDrawioToLikeC4Multi } from '@likec4/generators'
+import {
+  DEFAULT_DRAWIO_ALL_FILENAME,
+  generateDrawioMulti,
+  getAllDiagrams,
+  parseDrawioToLikeC4Multi,
+} from '@likec4/generators'
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -126,7 +131,7 @@ describe('DrawIO export/import with cloud-system demo', () => {
     const drawioXml = generateDrawioMulti([...model.views()])
 
     const dir = await mkdtemp(path.join(tmpdir(), 'likec4-drawio-'))
-    const filePath = path.join(dir, 'diagrams.drawio')
+    const filePath = path.join(dir, DEFAULT_DRAWIO_ALL_FILENAME)
     try {
       await writeFile(filePath, drawioXml, 'utf-8')
       const readBack = await readFile(filePath, 'utf-8')
