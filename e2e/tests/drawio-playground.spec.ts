@@ -8,12 +8,13 @@ import { expect, test } from '@playwright/test'
  */
 test.describe('DrawIO in Playground', () => {
   test('context menu shows Import from DrawIO and Export to DrawIO', async ({ page }) => {
+    test.setTimeout(35000)
     await page.goto('/w/tutorial/')
     await page.waitForURL(/\/w\/tutorial/)
     await page.waitForLoadState('networkidle').catch(() => {})
-    await page.waitForTimeout(2000)
-    const canvas = page.locator('.react-flow').or(page.locator('[data-id="likec4-diagram"]')).first()
-    await canvas.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {})
+    // Wait for diagram to be ready (same as export snapshot tests)
+    await page.waitForSelector('.react-flow.initialized', { timeout: 20000 })
+    const canvas = page.locator('.react-flow.initialized').first()
     await canvas.click({ button: 'right', position: { x: 200, y: 200 } })
     const menu = page.getByRole('menu').or(page.locator('.mantine-Menu-dropdown'))
     await expect(menu).toBeVisible({ timeout: 5000 })
