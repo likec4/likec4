@@ -64,6 +64,9 @@ export const elementNodeData = defineRecipe({
         paddingLeft: `calc(${__v('spacing')} + 20px)`,
         paddingRight: `calc(${__v('spacing')} + 20px)`,
       },
+      _shapeComponent: {
+        paddingLeft: `calc(${__v('spacing')} + 30px)`,
+      },
 
       _shapeSizeXs: {
         [vars.icon.size]: `${defaultSizes.iconSizes.xs}px`,

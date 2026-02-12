@@ -231,6 +231,8 @@ function drawioShape(shape: Node['shape']): string {
       return 'shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=15;'
     case 'document':
       return 'shape=document;whiteSpace=wrap;html=1;boundedLbl=1;'
+    case 'component':
+      return 'shape=component;'
     default:
       return rectStyle
   }

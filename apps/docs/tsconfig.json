@@ -21,7 +21,7 @@
         "../../packages/core/src"
       ],
       "likec4/react": [
-        "../../packages/likec4/react/index.ts"
+        "../../packages/react/src"
       ]
     },
     "jsx": "react-jsx",
@@ -35,9 +35,6 @@
     "dist"
   ],
   "references": [
-    {
-      "path": "../../packages/likec4/tsconfig.react.json"
-    },
     {
       "path": "../../packages/likec4/tsconfig.cli.json"
     }

@@ -1,4 +1,9 @@
-import type { LikeC4MCPServer, LikeC4MCPServerFactory } from './types'
+import type { LikeC4MCPServer, LikeC4MCPServerFactory, LikeC4MCPServerModuleContext } from './types'
+
+export const NoMCPServer: LikeC4MCPServerModuleContext = {
+  mcpServer: () => new NoopLikeC4MCPServer(),
+  mcpServerFactory: () => new NoopLikeC4MCPServerFactory(),
+}
 
 export class NoopLikeC4MCPServer implements LikeC4MCPServer {
   get mcp(): any {

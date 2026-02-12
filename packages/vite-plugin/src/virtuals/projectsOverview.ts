@@ -16,7 +16,7 @@ if (import.meta.hot) {
     if (!import.meta.hot.data.$viewdata) {
       import.meta.hot.data.$viewdata = $viewdata
     }
-    const update = md.$viewdata?.get()
+    const update = md.$viewdata?.value
     if (update) {
       import.meta.hot.data.$viewdata.set(update)
     } else {

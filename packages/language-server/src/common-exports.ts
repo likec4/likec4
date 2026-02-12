@@ -1,5 +1,5 @@
-import { NoFileSystem, NoFileSystemWatcher, NoLikeC4ManualLayouts } from './filesystem'
-import { NoMCPServer } from './mcp'
+import { NoFileSystem, NoFileSystemWatcher, NoLikeC4ManualLayouts } from './filesystem/noop'
+import { NoMCPServer } from './mcp/noop'
 import { createLanguageServices } from './module'
 
 export type {

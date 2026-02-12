@@ -45,6 +45,9 @@ const mmdshape = ({ shape, title }: Node): string => {
     case 'document': {
       return `@{ shape: doc, ${label} }`
     }
+    case 'component': {
+      return `@{ shape: rectangle, ${label} }`
+    }
     default:
       nonexhaustive(shape)
   }

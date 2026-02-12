@@ -1,11 +1,11 @@
 import { nonexhaustive } from '@likec4/core'
 import { generateD2, generateMermaid, generatePuml, generateViewsDataTs } from '@likec4/generators'
+import { type LikeC4, fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import { values } from 'remeda'
 import k from 'tinyrainbow'
 import type { Logger } from 'vite'
-import { LikeC4 } from '../../LikeC4'
 import { createLikeC4Logger, logger as cliLogger, startTimer } from '../../logger'
 
 type HandlerParams =
@@ -158,9 +158,9 @@ async function multipleFilesCodegenAction(
 export async function legacyHandler({ path, useDotBin, ...outparams }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LikeC4.fromWorkspace(path, {
-    logger: 'vite',
+  const languageServices = await fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
+    watch: false,
   })
   languageServices.ensureSingleProject()
 

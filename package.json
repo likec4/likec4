@@ -3,7 +3,7 @@
   "private": true,
   "license": "MIT",
   "version": "1.48.0",
-  "packageManager": "pnpm@10.29.2",
+  "packageManager": "pnpm@10.29.3",
   "type": "module",
   "workspaces": [
     "apps/*",

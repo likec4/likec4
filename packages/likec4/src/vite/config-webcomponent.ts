@@ -1,12 +1,12 @@
 import { viteAliases } from '#vite/aliases'
 import { logger as consola } from '@likec4/log'
+import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
-import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import type { LikeC4ViteWebcomponentConfig } from './config-webcomponent.prod'
 import { chunkSizeWarningLimit, viteLogger } from './utils'
 

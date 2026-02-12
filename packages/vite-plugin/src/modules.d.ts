@@ -54,8 +54,8 @@ declare module 'likec4:single-project' {
     types,
     UnknownLayouted,
   } from 'likec4/model'
-  import type { ElementIconRenderer } from 'likec4:icons'
   import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { ElementIconRenderer } from 'likec4:icons'
 
   export const $likec4data: Atom<LayoutedLikeC4ModelData>
   export const $likec4model: Atom<LikeC4Model<UnknownLayouted>>
@@ -117,7 +117,7 @@ declare module 'likec4:model/*' {
   import type { Atom } from 'likec4:model'
 
   // This will be used later for augmenting the types
-  declare interface Types extends UnknownLayouted {
+  interface Types extends UnknownLayouted {
   }
 
   export type LikeC4ViewId = aux.ViewId<Types>
@@ -165,7 +165,7 @@ declare module 'likec4:rpc' {
   import type { LikeC4VitePluginRpc } from 'likec4/vite-plugin/internal'
 
   export type { LikeC4VitePluginRpc }
-  export declare const likec4rpc: LikeC4VitePluginRpc
+  export const likec4rpc: LikeC4VitePluginRpc
 
-  export declare const isRpcAvailable: boolean
+  export const isRpcAvailable: boolean
 }

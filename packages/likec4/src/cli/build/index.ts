@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { fromWorkspace } from '@likec4/language-services/node'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
-import { LikeC4 } from '../../LikeC4'
 import { createLikeC4Logger } from '../../logger'
 import { viteBuild } from '../../vite/vite-build'
 import { ensureReact } from '../ensure-react'
@@ -54,7 +54,7 @@ const buildCmd = (yargs: yargs.Argv) => {
 
         const logger = createLikeC4Logger('c4:build')
 
-        await using languageServices = await LikeC4.fromWorkspace(args.path, {
+        await using languageServices = await fromWorkspace(args.path, {
           graphviz: args['use-dot'] ? 'binary' : 'wasm',
           watch: false,
         })

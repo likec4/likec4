@@ -23,7 +23,6 @@
   "engines": {
     "node": ">=22.22.0"
   },
-  "engineStrict": true,
   "type": "module",
   "sideEffects": false,
   "bin": {
@@ -34,7 +33,6 @@
       "sources": "./src/index.ts",
       "browser": {
         "sources": "./src/browser/index.ts",
-
         "default": {
           "types": "./dist/browser/index.d.mts",
           "import": "./dist/browser/index.mjs",
@@ -93,6 +91,30 @@
         "types": "./dist/protocol.d.mts",
         "import": "./dist/protocol.mjs",
         "default": "./dist/protocol.mjs"
+      }
+    },
+    "./mcp": {
+      "sources": "./src/mcp/index.ts",
+      "default": {
+        "types": "./dist/mcp/index.d.mts",
+        "import": "./dist/mcp/index.mjs",
+        "default": "./dist/mcp/index.mjs"
+      }
+    },
+    "./module": {
+      "sources": "./src/module.ts",
+      "default": {
+        "types": "./dist/module.d.mts",
+        "import": "./dist/module.mjs",
+        "default": "./dist/module.mjs"
+      }
+    },
+    "./filesystem": {
+      "sources": "./src/filesystem/index.ts",
+      "default": {
+        "types": "./dist/filesystem/index.d.mts",
+        "import": "./dist/filesystem/index.mjs",
+        "default": "./dist/filesystem/index.mjs"
       }
     },
     "./package.json": "./package.json"

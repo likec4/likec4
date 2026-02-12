@@ -9,7 +9,7 @@ import {
   useContext,
   useEffect,
 } from 'react'
-import { DRAWIO_EXPORT_EVENT } from './drawio-events'
+import { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT } from './drawio-events'
 import { DrawioContextMenuDropdown } from './DrawioContextMenuDropdown'
 import {
   type DiagramStateLike,
@@ -17,7 +17,7 @@ import {
   useDrawioContextMenuActions,
 } from './useDrawioContextMenuActions'
 
-export { DRAWIO_EXPORT_EVENT }
+export { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT }
 
 /** API to fetch layouted model / per-view diagrams from LSP (used for "Export all views"). */
 export type LayoutedModelApi = {

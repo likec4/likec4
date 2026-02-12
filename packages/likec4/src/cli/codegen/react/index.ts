@@ -1,5 +1,6 @@
 import { viteReactConfig } from '#vite/config-react'
 import { generateReactTypes } from '@likec4/generators'
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { existsSync } from 'node:fs'
 import { stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
@@ -7,7 +8,6 @@ import { cwd } from 'node:process'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
-import { LikeC4 } from '../../../LikeC4'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
 import { ensureReact } from '../../ensure-react'
 import { ensureProject } from '../../utils'
@@ -31,8 +31,7 @@ export async function reactHandler({ path, useDotBin, useCorePackage, outfile, p
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  await using languageServices = await LikeC4.fromWorkspace(path, {
-    logger: 'vite',
+  await using languageServices = await fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })

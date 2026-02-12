@@ -7,7 +7,6 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
-    "bin",
     "dist",
     "**/package.json",
     "!**/__mocks__/",
@@ -20,32 +19,59 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/language-services"
   },
-  "engines": {
-    "node": ">=22.22.0"
-  },
   "type": "module",
   "sideEffects": false,
   "exports": {
     ".": {
-      "sources": "./src/index.ts",
+      "browser": {
+        "sources": "./src/browser/index.ts",
+        "default": {
+          "types": "./dist/browser/index.d.mts",
+          "import": "./dist/browser/index.mjs",
+          "default": "./dist/browser/index.mjs"
+        }
+      },
       "default": {
-        "types": "./dist/index.d.mts",
-        "import": "./dist/index.mjs",
-        "default": "./dist/index.mjs"
+        "sources": "./src/node/index.ts",
+        "types": "./dist/node/index.d.mts",
+        "import": "./dist/node/index.mjs",
+        "default": "./dist/node/index.mjs"
+      }
+    },
+    "./browser": {
+      "sources": "./src/browser/index.ts",
+      "default": {
+        "types": "./dist/browser/index.d.mts",
+        "import": "./dist/browser/index.mjs",
+        "default": "./dist/browser/index.mjs"
+      }
+    },
+    "./node/without-mcp": {
+      "sources": "./src/node/without-mcp/index.ts",
+      "default": {
+        "types": "./dist/node/without-mcp/index.d.mts",
+        "import": "./dist/node/without-mcp/index.mjs",
+        "default": "./dist/node/without-mcp/index.mjs"
+      }
+    },
+    "./node": {
+      "sources": "./src/node/index.ts",
+      "default": {
+        "types": "./dist/node/index.d.mts",
+        "import": "./dist/node/index.mjs",
+        "default": "./dist/node/index.mjs"
       }
     },
     "./package.json": "./package.json"
   },
-  "imports": {
-    "#init": {
-      "default": "./src/node/init.ts"
-    }
-  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs"
+    "types": "dist/node/index.d.mts",
+    "module": "dist/node/index.mjs",
+    "browser": {
+      "dist/node/index.mjs": "dist/browser/index.mjs"
+    }
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
@@ -56,9 +82,7 @@
     "lint": "oxlint --type-aware",
     "lint:fix": "oxlint --type-aware --fix",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "likec4ops clean contrib src/generated src/generated-lib",
-    "test": "vitest run --no-isolate",
-    "vitest:ui": "vitest --no-isolate --ui"
+    "clean": "likec4ops clean"
   },
   "dependencies": {
     "@likec4/config": "workspace:*",
@@ -69,43 +93,23 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "defu": "catalog:utils",
-    "fdir": "catalog:externals",
-    "immer": "catalog:utils",
-    "json5": "catalog:utils",
+    "remeda": "catalog:utils",
     "langium": "catalog:langium",
     "tinyrainbow": "catalog:utils",
     "pathe": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
-    "vscode-jsonrpc": "catalog:vscode",
-    "vscode-languageserver-protocol": "catalog:vscode",
-    "vscode-languageserver-textdocument": "catalog:vscode",
-    "vscode-languageserver-types": "catalog:vscode",
-    "vscode-uri": "catalog:vscode",
-    "zod": "catalog:externals"
+    "vscode-languageserver-types": "catalog:vscode"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/natural-compare-lite": "catalog:utils",
     "@types/node": "catalog:",
-    "@types/picomatch": "catalog:externals",
-    "@types/vscode": "catalog:vscode",
-    "fast-equals": "catalog:utils",
-    "indent-string": "^5.0.0",
     "obuild": "catalog:obuild",
     "oxlint": "catalog:",
-    "p-debounce": "catalog:utils",
-    "p-queue": "catalog:utils",
-    "p-timeout": "catalog:utils",
-    "picomatch": "catalog:externals",
-    "pretty-ms": "^9.3.0",
-    "remeda": "catalog:utils",
-    "strip-indent": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "ufo": "catalog:utils",
     "vitest": "catalog:vitest"
   }
 }

@@ -11,6 +11,8 @@ import { Toolbar } from './Toolbar'
 import type { OnStyleChange } from './types'
 import { useHandlers } from './useHandlers'
 
+const SortedElementShapes = [...ElementShapes].sort()
+
 export function ElementToolbar(props: Types.NodeProps<'element' | 'seq-actor'> & { data: { modelFqn: Fqn } }) {
   const { enableVscode, enableRelationshipBrowser, enableNotes } = useEnabledFeatures()
 
@@ -117,9 +119,11 @@ function ElementShapeButton({
         <Button
           variant="light"
           color="gray"
-          size="xs"
+          size="compact-sm"
           fz={'xxs'}
-          px={'xs'}
+          px={4}
+          pl={8}
+          py={2}
           rightSection={<IconSelector size={12} />}
         >
           {elementShape}
@@ -129,10 +133,10 @@ function ElementShapeButton({
         onDoubleClick={stopPropagation}
         onClick={stopPropagation}
       >
-        {ElementShapes.map(shape => (
+        {SortedElementShapes.map(shape => (
           <MenuItem
-            fz={'xs'}
-            fw={'500'}
+            fz={'sm'}
+            // fw={'500'}
             key={shape}
             value={shape}
             rightSection={elementShape === shape ? <IconCheck size={12} /> : undefined}

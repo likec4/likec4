@@ -12,7 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "npx wrangler pages deploy dist --commit-dirty=true --project-name likec4-docs-astro",
+    "deploy": "pnpm wrangler pages deploy dist --commit-dirty=true --project-name likec4-docs-astro",
     "deploy:prod": "run deploy --branch main",
     "clean": "pnpm rimraf dist lib .astro"
   },
@@ -31,6 +31,7 @@
     "astro": "catalog:astro",
     "astro-og-canvas": "catalog:astro",
     "canvaskit-wasm": "0.40.0",
+    "@likec4/react": "workspace:*",
     "likec4": "workspace:*",
     "react": "catalog:react",
     "react-dom": "catalog:react",

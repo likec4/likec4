@@ -2,13 +2,14 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "jsx": "react-jsx",
+    "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
-    "rootDir": "react",
-    "paths": {},
-  },
-  "include": [
-    "react/index.ts",
-  ]
+    "rootDir": "src",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ]
+  }
 }

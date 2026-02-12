@@ -148,6 +148,7 @@ const ShapeIcons = {
   storage: IconCylinder,
   bucket: IconCylinder,
   document: IconFileText,
+  component: IconRectangularPrism,
 } as const satisfies {
   [key in ElementShape]: ForwardRefExoticComponent<
     IconProps & RefAttributes<SVGSVGElement>

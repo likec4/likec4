@@ -1,14 +1,15 @@
 {
   "name": "@likec4/vite-plugin",
   "description": "LikeC4 Vite Plugin",
+  "private": true,
   "version": "1.48.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
-    "bin",
     "dist",
+    "src",
     "**/package.json",
     "!**/__mocks__/",
     "!**/__tests__/",
@@ -19,9 +20,6 @@
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/vite-plugin"
-  },
-  "engines": {
-    "node": ">=22.22.0"
   },
   "type": "module",
   "sideEffects": false,
@@ -34,6 +32,15 @@
         "default": "./dist/index.mjs"
       }
     },
+    "./internal": {
+      "sources": "./src/internal.ts",
+      "default": {
+        "types": "./dist/internal.d.mts",
+        "import": "./dist/internal.mjs",
+        "default": "./dist/internal.mjs"
+      }
+    },
+    "./modules": "./src/modules.d.ts",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -50,8 +57,7 @@
     "postpack": "likec4ops postpack",
     "lint": "oxlint --type-aware",
     "lint:fix": "oxlint --type-aware --fix",
-    "lint:package": "pnpx publint ./package.tgz",
-    "clean": "likec4ops clean contrib src/generated src/generated-lib",
+    "clean": "likec4ops clean",
     "test": "vitest run --no-isolate",
     "vitest:ui": "vitest --no-isolate --ui"
   },
@@ -68,42 +74,33 @@
     "nanostores": "catalog:react",
     "langium": "catalog:langium",
     "defu": "catalog:utils",
+    "fast-equals": "catalog:utils",
     "tinyrainbow": "catalog:utils",
     "birpc": "catalog:vite",
     "json5": "catalog:utils",
     "pathe": "catalog:utils",
+    "remeda": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
-    "vite": "catalog:vite",
-    "zod": "catalog:externals"
+    "strip-indent": "catalog:utils",
+    "zod": "catalog:externals",
+    "ufo": "catalog:utils"
   },
   "peerDependencies": {
-    "react": "catalog:react"
+    "react": "catalog:react",
+    "vite": "catalog:vite"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/natural-compare-lite": "catalog:utils",
+    "@likec4/react": "workspace:*",
     "@types/node": "catalog:",
-    "@types/picomatch": "catalog:externals",
-    "@types/vscode": "catalog:vscode",
     "@types/react": "catalog:react",
-    "@types/semver": "^7.7.1",
-    "fast-equals": "catalog:utils",
-    "indent-string": "^5.0.0",
     "obuild": "catalog:obuild",
     "oxlint": "catalog:",
-    "p-debounce": "catalog:utils",
-    "p-queue": "catalog:utils",
-    "p-timeout": "catalog:utils",
-    "picomatch": "catalog:externals",
-    "pretty-ms": "^9.3.0",
-    "remeda": "catalog:utils",
-    "strip-indent": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "ufo": "catalog:utils",
     "vitest": "catalog:vitest"
   }
 }
