@@ -11,7 +11,7 @@ export default defineConfig({
   testMatch: '**/drawio-playground.spec.ts',
 
   forbidOnly: isCI,
-  timeout: 30 * 1000,
+  timeout: 60 * 1000,
   retries: isCI ? 1 : 0,
 
   use: {

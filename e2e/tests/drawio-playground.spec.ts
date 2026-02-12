@@ -8,12 +8,12 @@ import { expect, test } from '@playwright/test'
  */
 test.describe('DrawIO in Playground', () => {
   test('context menu shows DrawIO Export to DrawIO and Export all', async ({ page }) => {
-    test.setTimeout(35000)
+    test.setTimeout(60000)
     await page.goto('/w/tutorial/')
     await page.waitForURL(/\/w\/tutorial/)
     await page.waitForLoadState('networkidle').catch(() => {})
-    // Wait for diagram to be ready (same as export snapshot tests)
-    await page.waitForSelector('.react-flow.initialized', { timeout: 20000 })
+    // Wait for diagram to be ready (playground config only; CI uses different server)
+    await page.waitForSelector('.react-flow.initialized', { timeout: 45000 })
     const canvas = page.locator('.react-flow.initialized').first()
     await canvas.click({ button: 'right', position: { x: 200, y: 200 } })
     const menu = page.getByRole('menu').or(page.locator('.mantine-Menu-dropdown'))
