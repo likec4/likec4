@@ -5,6 +5,7 @@ import { basename, resolve } from 'pathe'
 import k from 'tinyrainbow'
 import { pathToFileURL } from 'url'
 import { createFromSources } from '../common/createFromSources'
+import { handleInitOptions } from '../common/handleInitOptions'
 import { type LikeC4Langium, LikeC4 } from '../common/LikeC4'
 import type { FromWorkspaceOptions, InitOptions } from '../common/options'
 import { type CreateLanguageServiceOptions, createLanguageServices } from './createLanguageServices'
@@ -68,7 +69,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
 
     logger.info(`${k.dim('workspace:')} found ${userDocuments.length} source files`)
 
-    return new LikeC4(langium, rootLogger.getChild('LikeC4'))
+    return handleInitOptions(langium, rootLogger, options)
   })
 }
 
@@ -112,7 +113,7 @@ export async function fromSources(sources: Record<string, string>, options?: Ini
     ),
   )
 
-  return await createFromSources(langium, logger, sources)
+  return await createFromSources(langium, logger, sources, options)
 }
 
 /**

@@ -10,6 +10,19 @@ export type WithFileSystem = {
 
 export type InitOptions = {
   /**
+   * By default, if LikeC4 model is invalid, errors are printed to the console.
+   * Disable this behavior by setting this option to false.
+   *
+   * @default true
+   */
+  printErrors?: boolean
+  /**
+   * If true, initialization will return rejected promise with the LikeC4 instance.
+   * Use `likec4.getErrors()` to get the errors.
+   * @default false
+   */
+  throwIfInvalid?: boolean
+  /**
    * Whether to use the `dot` binary for layouting or the WebAssembly version.
    * @default 'wasm'
    */

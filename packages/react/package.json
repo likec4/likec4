@@ -21,22 +21,13 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.js"
-  },
   "scripts": {
-    "prepack": "likec4ops prepack",
     "build": "vite build",
-    "pack": "pnpm pack",
-    "postpack": "cp likec4-react-$npm_package_version.tgz package.tgz || true",
     "clean": "likec4ops clean"
   },
   "dependencies": {

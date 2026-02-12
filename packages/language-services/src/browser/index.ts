@@ -70,7 +70,7 @@ export async function fromSources(sources: Record<string, string>): Promise<Like
 
   const langium = createBrowserLanguageServices()
 
-  return await createFromSources(langium, logger, sources)
+  return await createFromSources(langium, logger, sources, {})
 }
 
 /**

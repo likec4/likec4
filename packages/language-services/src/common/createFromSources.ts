@@ -3,7 +3,9 @@ import { type Logger, loggable } from '@likec4/log'
 import { URI, UriUtils } from 'langium'
 import { extname } from 'pathe'
 import { entries, map, partition, pipe } from 'remeda'
+import { handleInitOptions } from './handleInitOptions'
 import { type LikeC4Langium, LikeC4 } from './LikeC4'
+import type { InitOptions } from './options'
 
 /**
  * Runtime-agnostic factory function to create a LikeC4 instance from sources
@@ -12,6 +14,7 @@ export async function createFromSources(
   langium: LikeC4Langium,
   logger: Logger,
   sources: Record<string, string>,
+  initOptions: InitOptions | undefined,
 ): Promise<LikeC4> {
   const uri = URI.from({
     scheme: 'virtual',
@@ -68,5 +71,5 @@ export async function createFromSources(
     validation: true,
   })
 
-  return new LikeC4(langium, logger)
+  return handleInitOptions(langium, logger, initOptions)
 }
