@@ -143,7 +143,10 @@ function escapeHtml(text: string): string {
 function toNonEmptyString(value: unknown): string {
   if (value == null) return ''
   const t = typeof value
-  if (t === 'string') return value.trim() === '' ? '' : value
+  if (t === 'string') {
+    const s = value as string
+    return s.trim() === '' ? '' : s
+  }
   if (t === 'number') return String(value as number)
   if (t === 'boolean') return String(value as boolean)
   return ''
