@@ -68,7 +68,6 @@
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "json5": "catalog:utils",
-    "pathe": "catalog:utils",
     "zod": "catalog:externals",
     "type-fest": "catalog:externals"
   },

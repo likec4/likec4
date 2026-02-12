@@ -1,4 +1,4 @@
-import { basename } from 'pathe'
+import { basename } from 'node:path'
 
 export const configJsonFilenames = [
   '.likec4rc',
