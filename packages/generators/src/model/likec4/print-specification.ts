@@ -125,7 +125,7 @@ function printElementKindSpec(
       if (hasTechnology) inner.append('technology ', quoteString(elSpec.technology!), NL)
       if (hasTags) inner.append('#', (elSpec.tags as string[]).join(' #'), NL)
       if (hasLinks) {
-        for (const link of elSpec.links) {
+        for (const link of elSpec.links!) {
           inner.append('link ', link.url)
           if (link.title) inner.append(' ', quoteString(link.title))
           inner.append(NL)
@@ -135,7 +135,7 @@ function printElementKindSpec(
         inner.append('style {', NL)
         inner.indent({
           indentedChildren: styleInner => {
-            printStyleProperties(elSpec.style, styleInner)
+            printStyleProperties(elSpec.style!, styleInner)
           },
           indentation: 2,
         })
