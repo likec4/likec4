@@ -9,6 +9,7 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
+    "src",
     "**/package.json",
     "!**/__mocks__/",
     "!**/__tests__/",
@@ -51,13 +52,9 @@
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "obuild",
-    "prepack": "likec4ops prepack",
-    "pack": "pnpm pack",
-    "postpack": "cp likec4-vite-plugin-$npm_package_version.tgz package.tgz || true",
     "lint": "oxlint --type-aware",
     "lint:fix": "oxlint --type-aware --fix",
-    "lint:package": "pnpx publint ./package.tgz",
-    "clean": "likec4ops clean contrib src/generated src/generated-lib",
+    "clean": "likec4ops clean",
     "test": "vitest run --no-isolate",
     "vitest:ui": "vitest --no-isolate --ui"
   },
