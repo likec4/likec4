@@ -318,7 +318,13 @@ export function generateDrawio(
     ).map(n => n.id),
   )
 
-  /** When multiple non-container nodes share the same bbox (no layout or bad layoutOverride), spread them so they don't overlap. */
+  /** When multiple non-container nodes share the same bbox only apply spread when it's the default (no layout), so we don't alter real diagram positions. */
+  const DEFAULT_BBOX: BBox = { x: 0, y: 0, width: 120, height: 60 }
+  const isDefaultBbox = (b: BBox) =>
+    b.x === DEFAULT_BBOX.x &&
+    b.y === DEFAULT_BBOX.y &&
+    b.width === DEFAULT_BBOX.width &&
+    b.height === DEFAULT_BBOX.height
   const GAP = 24
   const bboxKey = (b: BBox) => `${b.x},${b.y},${b.width},${b.height}`
   const nonContainerNodes = sortedNodes.filter(n => !containerNodeIds.has(n.id))
@@ -335,7 +341,7 @@ export function generateDrawio(
     if (nodes.length <= 1) continue
     const firstNode = nodes[0]
     const firstBbox = firstNode ? bboxes.get(firstNode.id) : undefined
-    if (!firstBbox) continue
+    if (!firstBbox || !isDefaultBbox(firstBbox)) continue
     nodes.forEach((node, i) => {
       bboxes.set(node.id, {
         ...firstBbox,
@@ -346,8 +352,8 @@ export function generateDrawio(
   }
 
   const effectiveStyles = getEffectiveStyles(viewmodel)
-  /** Margins between container wrapper and children: horizontal = xl, vertical = xl + md (vertical slightly larger for top/bottom breath). */
-  const CONTAINER_PADDING_HORIZONTAL = effectiveStyles.theme.spacing.xl
+  /** Margins between container wrapper and children: horizontal = xl, vertical = xl + md (vertical slightly larger). */
+  const CONTAINER_PADDING = effectiveStyles.theme.spacing.xl
   const CONTAINER_PADDING_VERTICAL = effectiveStyles.theme.spacing.xl + effectiveStyles.theme.spacing.md
 
   const containerNodesSorted = [...sortedNodes]
@@ -357,6 +363,9 @@ export function generateDrawio(
     const children = (node as Node & { children?: NodeId[] }).children ?? []
     const inView = children.filter((id: NodeId) => nodeIdsInView.has(id))
     if (inView.length === 0) continue
+    const initialBbox = bboxes.get(node.id)!
+    /** Use layout bbox when the diagram provides one; only wrap children when container has default bbox (no layout). */
+    if (!isDefaultBbox(initialBbox)) continue
     let minX = Infinity,
       minY = Infinity,
       maxX = -Infinity,
@@ -371,9 +380,9 @@ export function generateDrawio(
     }
     if (minX !== Infinity) {
       bboxes.set(node.id, {
-        x: minX - CONTAINER_PADDING_HORIZONTAL,
+        x: minX - CONTAINER_PADDING,
         y: minY - CONTAINER_PADDING_VERTICAL,
-        width: maxX - minX + 2 * CONTAINER_PADDING_HORIZONTAL,
+        width: maxX - minX + 2 * CONTAINER_PADDING,
         height: maxY - minY + 2 * CONTAINER_PADDING_VERTICAL,
       })
     }
@@ -397,13 +406,19 @@ export function generateDrawio(
   const contentCy = contentMinY + (contentMaxY - contentMinY) / 2
   let pageBounds: BBox = { x: 0, y: 0, width: 800, height: 600 }
   try {
-    const b = viewmodel.bounds
+    const b = ('bounds' in view && view.bounds != null && typeof (view.bounds as BBox).x === 'number'
+      ? (view.bounds as BBox)
+      : (viewmodel as { bounds?: BBox }).bounds) as BBox | undefined
     if (b != null && typeof b.x === 'number') pageBounds = b
   } catch {
     // not layouted
   }
-  const offsetX = pageBounds.x + pageBounds.width / 2 - contentCx
-  const offsetY = pageBounds.y + pageBounds.height / 2 - contentCy
+  const contentFitsInPage = contentMinX >= pageBounds.x - 2 &&
+    contentMaxX <= pageBounds.x + pageBounds.width + 2 &&
+    contentMinY >= pageBounds.y - 2 &&
+    contentMaxY <= pageBounds.y + pageBounds.height + 2
+  const offsetX = contentFitsInPage ? 0 : pageBounds.x + pageBounds.width / 2 - contentCx
+  const offsetY = contentFitsInPage ? 0 : pageBounds.y + pageBounds.height / 2 - contentCy
 
   /** LikeC4 app font (matches --mantine-font-family / --likec4-app-font-default). */
   const fontFamily = '\'IBM Plex Sans Variable\',ui-sans-serif,system-ui,sans-serif'
@@ -417,7 +432,7 @@ export function generateDrawio(
     const { width, height } = bbox
     const x = bbox.x + offsetX
     const y = bbox.y + offsetY
-    const parentId = node.parent != null && nodeIdsInView.has(node.parent) ? getCellId(node.parent) : defaultParentId
+    const parentId = defaultParentId
 
     const title = node.title
     const descRaw = flattenMarkdownOrString(node.description)
@@ -570,9 +585,9 @@ export function generateDrawio(
       const titleValue = escapeXml(title)
       const titleWidth = Math.max(60, Math.min(260, title.length * 8))
       const titleHeight = 18
+      const titleParentId = parentId
       const titleX = x + 8
       const titleY = y + 8
-      const titleParentId = id
       const titleStyle =
         `shape=text;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontSize=${containerTitleFontSizePx};fontStyle=1;fontColor=${containerTitleColor};fontFamily=${
           encodeURIComponent(fontFamily)

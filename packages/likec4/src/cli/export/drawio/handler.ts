@@ -1,6 +1,7 @@
 import type { ProjectId } from '@likec4/core/types'
 import type { GenerateDrawioOptions } from '@likec4/generators'
 import { generateDrawio, generateDrawioMulti, parseDrawioRoundtripComments } from '@likec4/generators'
+import { loggable } from '@likec4/log'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
@@ -147,7 +148,7 @@ export function drawioCmd(yargs: Argv) {
           logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)} (${viewmodels.length} tab(s))`)
         } catch (err) {
           logger.error('Failed to export DrawIO', {
-            error: err instanceof Error ? err : new Error(String(err)),
+            error: err instanceof Error ? err : new Error(loggable(err)),
           })
         }
       } else {
@@ -185,7 +186,7 @@ export function drawioCmd(yargs: Argv) {
             succeeded++
           } catch (err) {
             logger.error(`Failed to export view ${view.id}`, {
-              error: err instanceof Error ? err : new Error(String(err)),
+              error: err instanceof Error ? err : new Error(loggable(err)),
             })
           }
         }

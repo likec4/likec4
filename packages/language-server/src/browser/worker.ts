@@ -11,7 +11,7 @@ function errToString(err: unknown): string {
     try {
       return JSON.stringify(err)
     } catch {
-      return String(err)
+      return '[unserializable value]'
     }
   }
   return String(err)

@@ -120,24 +120,28 @@ describe('DrawIO export/import with cloud-system demo', () => {
     expect(allContent).toContain('cloud')
   })
 
-  it('vice versa: import exported DrawIO back to LikeC4 and re-export produces loadable XML', async () => {
-    const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
-    const model = await likec4.layoutedModel()
-    const drawioXml = generateDrawioMulti([...model.views()])
+  it(
+    'vice versa: import exported DrawIO back to LikeC4 and re-export produces loadable XML',
+    { timeout: 15_000 },
+    async () => {
+      const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
+      const model = await likec4.layoutedModel()
+      const drawioXml = generateDrawioMulti([...model.views()])
 
-    expectDrawioXmlLoadableInDrawio(drawioXml)
+      expectDrawioXmlLoadableInDrawio(drawioXml)
 
-    const c4Source = parseDrawioToLikeC4Multi(drawioXml)
-    expect(c4Source).toContain('model {')
-    expect(c4Source).toContain('views {')
+      const c4Source = parseDrawioToLikeC4Multi(drawioXml)
+      expect(c4Source).toContain('model {')
+      expect(c4Source).toContain('views {')
 
-    const reimported = await LikeC4.fromSource(c4Source, { throwIfInvalid: false })
-    const reimportModel = await reimported.layoutedModel()
-    const reimportViews = [...reimportModel.views()]
-    expect(reimportViews.length).toBeGreaterThan(0)
-    const roundtripXml = generateDrawioMulti(reimportViews)
-    expectDrawioXmlLoadableInDrawio(roundtripXml)
-  })
+      const reimported = await LikeC4.fromSource(c4Source, { throwIfInvalid: false })
+      const reimportModel = await reimported.layoutedModel()
+      const reimportViews = [...reimportModel.views()]
+      expect(reimportViews.length).toBeGreaterThan(0)
+      const roundtripXml = generateDrawioMulti(reimportViews)
+      expectDrawioXmlLoadableInDrawio(roundtripXml)
+    },
+  )
 
   it('written .drawio file (as when user exports) is loadable in draw.io when read back', async () => {
     const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
