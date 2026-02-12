@@ -12,7 +12,8 @@
     "test": "playwright test",
     "start": "likec4 start",
     "typecheck": "vitest run",
-    "test:update-screenshots": "playwright test --update-snapshots"
+    "test:update-screenshots": "playwright test --update-snapshots",
+    "test:playground": "playwright test -c playwright.playground.config.ts"
   },
   "dependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",

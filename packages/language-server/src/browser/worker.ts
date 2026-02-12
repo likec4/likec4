@@ -3,7 +3,39 @@
 
 import { startLanguageServer } from './index'
 
-// the only addition is the following line:
 declare const self: DedicatedWorkerGlobalScope
 
-startLanguageServer(self)
+function errToString(err: unknown): string {
+  if (err instanceof Error) return err.message
+  if (typeof err === 'object' && err !== null) {
+    try {
+      return JSON.stringify(err)
+    } catch {
+      return '[unserializable value]'
+    }
+  }
+  return String(err)
+}
+const log = (msg: string, err?: unknown) => {
+  const line = err != null ? `${msg} ${errToString(err)}` : msg
+  try {
+    console.error('[LikeC4 LSP worker]', line)
+  } catch {
+    // ignore
+  }
+}
+
+self.onerror = (event) => {
+  log('Uncaught error', event.message ?? event.error)
+  return false
+}
+self.onunhandledrejection = (event) => {
+  log('Unhandled rejection', event.reason)
+}
+
+try {
+  startLanguageServer(self)
+} catch (err) {
+  log('Failed to start language server', err)
+  throw err
+}

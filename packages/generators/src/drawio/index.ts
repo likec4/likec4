@@ -1,2 +1,10 @@
-export { generateDrawio } from './generate-drawio'
-export { parseDrawioToLikeC4, type DrawioCell } from './parse-drawio'
+export { generateDrawio, generateDrawioMulti, type GenerateDrawioOptions } from './generate-drawio'
+export {
+  type DiagramInfo,
+  type DrawioCell,
+  type DrawioRoundtripData,
+  getAllDiagrams,
+  parseDrawioRoundtripComments,
+  parseDrawioToLikeC4,
+  parseDrawioToLikeC4Multi,
+} from './parse-drawio'
