@@ -1348,46 +1348,31 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   }
 }
 
-/**
- * Convert DrawIO XML to LikeC4 source when file has multiple diagrams (tabs).
- * Merges elements by FQN and relations by (source, target); emits one model and one view per diagram,
- * each view including only the FQNs that appear in that diagram.
- */
-export function parseDrawioToLikeC4Multi(xml: string): string {
-  const diagrams = getAllDiagrams(xml)
-  if (diagrams.length === 0) {
-    return `model {
-
+type ViewInfo = {
+  viewId: string
+  viewTitle: string
+  viewDesc: string
+  viewNotation: string
+  fqnSet: Set<string>
 }
-views {
-  view index {
-    include *
-  }
-}
-`
-  }
-  if (diagrams.length === 1) {
-    return parseDrawioToLikeC4(xml)
-  }
-  const states: DiagramState[] = []
-  for (const d of diagrams) {
-    const s = buildDiagramState(d.content, d.name)
-    if (s) states.push(s)
-  }
-  if (states.length === 0) return parseDrawioToLikeC4(xml)
 
+type MergedMultiState = {
+  fqnToCell: Map<string, DrawioCell>
+  byId: Map<string, DrawioCell>
+  containerIdToTitle: Map<string, string>
+  relationKeyToEdge: Map<string, { src: string; tgt: string; cell: DrawioCell }>
+  hexToCustomName: Map<string, string>
+  viewInfos: ViewInfo[]
+}
+
+/** Merge multiple diagram states into shared maps and view infos (single responsibility). */
+function mergeDiagramStatesIntoMaps(states: DiagramState[]): MergedMultiState {
   const fqnToCell = new Map<string, DrawioCell>()
   const byId = new Map<string, DrawioCell>()
   const containerIdToTitle = new Map<string, string>()
   const relationKeyToEdge = new Map<string, { src: string; tgt: string; cell: DrawioCell }>()
   const hexToCustomName = new Map<string, string>()
-  const viewInfos: Array<{
-    viewId: string
-    viewTitle: string
-    viewDesc: string
-    viewNotation: string
-    fqnSet: Set<string>
-  }> = []
+  const viewInfos: ViewInfo[] = []
 
   for (const st of states) {
     for (const [cellId, fqn] of st.idToFqn) {
@@ -1424,6 +1409,21 @@ views {
     })
   }
 
+  return {
+    fqnToCell,
+    byId,
+    containerIdToTitle,
+    relationKeyToEdge,
+    hexToCustomName,
+    viewInfos,
+  }
+}
+
+/** Build parent → children FQN map and root FQNs (single responsibility). */
+function buildRootsFromFqnToCell(fqnToCell: Map<string, DrawioCell>): {
+  rootsFromMap: Map<string, string[]>
+  rootFqns: string[]
+} {
   const rootsFromMap = new Map<string, string[]>()
   for (const fqn of fqnToCell.keys()) {
     const parent = fqn.includes('.') ? fqn.split('.').slice(0, -1).join('.') : ''
@@ -1437,20 +1437,27 @@ views {
       rootsFromMap.set('', list)
     }
   }
-  const rootFqns = rootsFromMap.get('') ?? []
+  return { rootsFromMap, rootFqns: rootsFromMap.get('') ?? [] }
+}
 
-  const lines: string[] = []
-  if (hexToCustomName.size > 0) {
-    const specLines = ['specification {']
-    for (const [hex, name] of hexToCustomName) specLines.push(`  color ${name} ${hex}`)
-    specLines.push('}', '')
-    lines.push(...specLines)
+/** Emit specification + model { elements + edges } for multi-diagram (single responsibility). */
+function emitMultiDiagramModel(
+  lines: string[],
+  merged: MergedMultiState,
+  rootsFromMap: Map<string, string[]>,
+  rootFqns: string[],
+): void {
+  if (merged.hexToCustomName.size > 0) {
+    lines.push('specification {')
+    for (const [hex, name] of merged.hexToCustomName) {
+      lines.push(`  color ${name} ${hex}`)
+    }
+    lines.push('}', '')
   }
   lines.push('model {', '')
 
-  // In multi, cell ids repeat across diagrams; use fqn as the key so idToCell yields the correct cell per fqn.
   const idToCellMulti = new Map<string, DrawioCell>()
-  for (const [fqn, cell] of fqnToCell) idToCellMulti.set(fqn, cell)
+  for (const [fqn, cell] of merged.fqnToCell) idToCellMulti.set(fqn, cell)
   const childrenMulti = new Map<string, Array<{ cellId: string; fqn: string }>>()
   for (const [parentFqn, childFqns] of rootsFromMap) {
     if (parentFqn === '') continue
@@ -1460,26 +1467,59 @@ views {
   const emitCtxMulti: ElementEmitContext = {
     lines,
     idToCell: idToCellMulti,
-    containerIdToTitle,
+    containerIdToTitle: merged.containerIdToTitle,
     children: childrenMulti,
-    hexToCustomName,
-    byId,
+    hexToCustomName: merged.hexToCustomName,
+    byId: merged.byId,
   }
   for (const fqn of rootFqns) {
     emitElementToLines(emitCtxMulti, fqn, fqn, 1)
   }
 
   const edgeEntriesMulti: EdgeEntry[] = []
-  for (const { src, tgt, cell } of relationKeyToEdge.values()) {
+  for (const { src, tgt, cell } of merged.relationKeyToEdge.values()) {
     edgeEntriesMulti.push({ cell, src, tgt })
   }
-  emitEdgesToLines(lines, edgeEntriesMulti, hexToCustomName)
-
+  emitEdgesToLines(lines, edgeEntriesMulti, merged.hexToCustomName)
   lines.push('}', '')
-  const viewsLines = ['views {']
-  for (const v of viewInfos) {
+}
+
+/**
+ * Convert DrawIO XML to LikeC4 source when file has multiple diagrams (tabs).
+ * Merges elements by FQN and relations by (source, target); emits one model and one view per diagram.
+ */
+export function parseDrawioToLikeC4Multi(xml: string): string {
+  const diagrams = getAllDiagrams(xml)
+  if (diagrams.length === 0) {
+    return `model {
+
+}
+views {
+  view index {
+    include *
+  }
+}
+`
+  }
+  if (diagrams.length === 1) return parseDrawioToLikeC4(xml)
+
+  const states: DiagramState[] = []
+  for (const d of diagrams) {
+    const s = buildDiagramState(d.content, d.name)
+    if (s) states.push(s)
+  }
+  if (states.length === 0) return parseDrawioToLikeC4(xml)
+
+  const merged = mergeDiagramStatesIntoMaps(states)
+  const { rootsFromMap, rootFqns } = buildRootsFromFqnToCell(merged.fqnToCell)
+
+  const lines: string[] = []
+  emitMultiDiagramModel(lines, merged, rootsFromMap, rootFqns)
+
+  lines.push('views {')
+  for (const v of merged.viewInfos) {
     const includeList = [...v.fqnSet].sort((a, b) => a.localeCompare(b))
-    viewsLines.push(
+    lines.push(
       `  view ${v.viewId} {`,
       ...(v.viewTitle ? [`    title '${escapeLikec4Quotes(v.viewTitle)}'`] : []),
       ...(v.viewDesc ? [`    description '${escapeLikec4Quotes(v.viewDesc)}'`] : []),
@@ -1487,17 +1527,15 @@ views {
       '  }',
     )
   }
-  viewsLines.push('}', '')
-  lines.push(...viewsLines)
+  lines.push('}', '')
 
-  for (const v of viewInfos) {
+  for (const v of merged.viewInfos) {
     if (v.viewNotation) {
       lines.push(`// likec4.view.notation ${v.viewId} '${escapeLikec4Quotes(v.viewNotation)}'`)
     }
   }
 
   emitRoundtripCommentsMulti(lines, states)
-
   return lines.join('\n')
 }
 
