@@ -107,7 +107,7 @@ function printDeploymentNode(
     return
   }
 
-  throw new Error(`printDeploymentNode: unexpected element type for '${node.name}' (kind: ${el.kind})`)
+  throw new Error(`printDeploymentNode: unexpected element type for '${node.name}' (kind: ${(el as any).kind})`)
 }
 
 function hasDeploymentNodeProps(el: DeploymentElement): boolean {
