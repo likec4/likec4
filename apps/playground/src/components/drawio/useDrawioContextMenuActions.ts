@@ -93,12 +93,23 @@ export function useDrawioContextMenuActions({
     [onAddFile],
   )
 
-  const handleExport = useCallback(() => {
+  const handleExport = useCallback(async () => {
     close()
     if (!diagram) return
     try {
+      // Prefer layouted diagram so export has correct positions (avoids all nodes sharing default bbox)
+      let viewToExport = diagram
+      if (layoutViews) {
+        try {
+          const diagrams = await layoutViews([diagram.id])
+          const layouted = diagrams[diagram.id]
+          if (layouted) viewToExport = layouted
+        } catch {
+          // use current diagram if layout fetch fails
+        }
+      }
       const viewmodel = {
-        $view: diagram,
+        $view: viewToExport,
         get $styles() {
           return likec4model?.$styles ?? null
         },
@@ -138,7 +149,7 @@ export function useDrawioContextMenuActions({
     } catch (err) {
       console.error('DrawIO export failed', err)
     }
-  }, [close, diagram, likec4model, getSourceContent])
+  }, [close, diagram, likec4model, getSourceContent, layoutViews])
 
   const handleExportAllViews = useCallback(async () => {
     close()
@@ -148,7 +159,7 @@ export function useDrawioContextMenuActions({
     if (viewIdsInModel.length === 0) return
     const styles = likec4model.$styles
     const byId = new Map<string, ViewModel>()
-    allViewModelsFromState.forEach(vm => byId.set(vm.$view.id, vm))
+    for (const vm of allViewModelsFromState) byId.set(vm.$view.id, vm)
     if (getLayoutedModel) {
       try {
         const model = await getLayoutedModel()

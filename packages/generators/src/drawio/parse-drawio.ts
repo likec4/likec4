@@ -392,7 +392,7 @@ function likec4LineType(
 ): 'dashed' | 'dotted' | 'solid' | undefined {
   if (dashed === '1' || dashed === 'true') {
     const pattern = (dashPattern ?? '').trim()
-    if (pattern === '1 1' || pattern === '2 2' || /^[\d.]+\s+[\d.]+$/.test(pattern)) return 'dotted'
+    if (pattern === '1 1' || pattern === '2 2') return 'dotted'
     return 'dashed'
   }
   return undefined
@@ -434,6 +434,443 @@ function toId(name: string): string {
     .replace(/\s+/g, '_')
     .replace(/[^a-zA-Z0-9_-]/g, '')
     .replace(/^[0-9]/, '_$&') || 'element'
+}
+
+/** Strip HTML/entities and take first line; used for cell value → plain text. */
+function stripHtml(s: string): string {
+  return s
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/<[^>]+>/g, '')
+    .trim()
+    .split(/\n|<br\s*\/?>/i)[0]
+    ?.trim() ?? ''
+}
+
+/** Strip HTML for use as plain title when emitting .c4. */
+function stripHtmlForTitle(raw: string | undefined): string {
+  if (!raw || raw.trim() === '') return ''
+  const decoded = raw
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+  return decoded.replace(/<[^>]+>/g, '').trim().split(/\n|<br\s*\/?>/i)[0]?.trim() ?? ''
+}
+
+/** Context for emitting element/edge lines (shared by single and multi diagram paths). */
+interface ElementEmitContext {
+  lines: string[]
+  idToCell: Map<string, DrawioCell>
+  containerIdToTitle: Map<string, string>
+  children: Map<string, Array<{ cellId: string; fqn: string }>>
+  hexToCustomName: Map<string, string>
+  byId: Map<string, DrawioCell>
+}
+
+function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string, indent: number): void {
+  const cell = ctx.idToCell.get(cellId)
+  if (!cell) return
+  const parentCell = cell.parent ? ctx.byId.get(cell.parent) : undefined
+  const kind = inferKind(cell.style, parentCell)
+  const rawTitle = (cell.value && cell.value.trim()) || ''
+  const title = stripHtmlForTitle(rawTitle) ||
+    (ctx.containerIdToTitle.get(cell.id) ?? ctx.containerIdToTitle.get(cellId) ?? '') ||
+    fqn.split('.').pop() ||
+    'Element'
+  const name = fqn.split('.').pop()!
+  const pad = '  '.repeat(indent)
+  const desc = cell.description?.trim()
+  const tech = cell.technology?.trim()
+  const notes = cell.notes?.trim()
+  const tagsStr = cell.tags?.trim()
+  const tagList = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : []
+  const navigateTo = cell.navigateTo?.trim()
+  const icon = cell.icon?.trim()
+  const summary = cell.summary?.trim()
+  const linksJson = cell.links?.trim()
+  const nativeLink = cell.link?.trim()
+  const notation = cell.notation?.trim()
+  const border = cell.border?.trim()
+  const colorName = cell.fillColor && /^#[0-9A-Fa-f]{3,8}$/.test(cell.fillColor.trim())
+    ? ctx.hexToCustomName.get(cell.fillColor.trim())
+    : undefined
+  const shapeOverride = inferShape(cell.style)
+  const childList = ctx.children.get(fqn)
+  const opacityVal = cell.opacity
+  const hasBody = (childList && childList.length > 0) ||
+    !!desc ||
+    !!tech ||
+    !!notes ||
+    !!summary ||
+    !!linksJson ||
+    !!nativeLink ||
+    !!notation ||
+    tagList.length > 0 ||
+    !!colorName ||
+    !!border ||
+    !!opacityVal ||
+    !!shapeOverride ||
+    !!cell.size ||
+    !!cell.padding ||
+    !!cell.textSize ||
+    !!cell.iconPosition ||
+    !!navigateTo ||
+    !!icon
+  if (kind === 'actor') {
+    ctx.lines.push(`${pad}${name} = actor '${title.replace(/'/g, '\'\'')}'`)
+  } else if (kind === 'system') {
+    ctx.lines.push(`${pad}${name} = system '${title.replace(/'/g, '\'\'')}'`)
+  } else {
+    ctx.lines.push(`${pad}${name} = container '${title.replace(/'/g, '\'\'')}'`)
+  }
+  if (hasBody) {
+    ctx.lines.push(`${pad}{`)
+    const sizeVal = cell.size?.trim()
+    const paddingVal = cell.padding?.trim()
+    const textSizeVal = cell.textSize?.trim()
+    const iconPositionVal = cell.iconPosition?.trim()
+    if (
+      colorName ||
+      border ||
+      opacityVal ||
+      shapeOverride ||
+      sizeVal ||
+      paddingVal ||
+      textSizeVal ||
+      iconPositionVal
+    ) {
+      const styleParts: string[] = []
+      if (colorName) styleParts.push(`color ${colorName}`)
+      if (border && ['solid', 'dashed', 'dotted', 'none'].includes(border)) {
+        styleParts.push(`border ${border}`)
+      }
+      if (opacityVal && /^\d+$/.test(opacityVal)) styleParts.push(`opacity ${opacityVal}`)
+      if (shapeOverride) styleParts.push(`shape ${shapeOverride}`)
+      if (sizeVal) styleParts.push(`size ${sizeVal}`)
+      if (paddingVal) styleParts.push(`padding ${paddingVal}`)
+      if (textSizeVal) styleParts.push(`textSize ${textSizeVal}`)
+      if (iconPositionVal) styleParts.push(`iconPosition ${iconPositionVal}`)
+      if (styleParts.length > 0) ctx.lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
+    }
+    for (const t of tagList) ctx.lines.push(`${pad}  #${t.replace(/\s+/g, '_')}`)
+    if (desc) ctx.lines.push(`${pad}  description '${desc.replace(/'/g, '\'\'')}'`)
+    if (tech) ctx.lines.push(`${pad}  technology '${tech.replace(/'/g, '\'\'')}'`)
+    if (summary) ctx.lines.push(`${pad}  summary '${summary.replace(/'/g, '\'\'')}'`)
+    if (notes) ctx.lines.push(`${pad}  notes '${notes.replace(/'/g, '\'\'')}'`)
+    if (notation) ctx.lines.push(`${pad}  notation '${notation.replace(/'/g, '\'\'')}'`)
+    try {
+      const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
+      if (Array.isArray(linksArr)) {
+        for (const link of linksArr) {
+          if (link?.url) {
+            ctx.lines.push(
+              `${pad}  link '${String(link.url).replace(/'/g, '\'\'')}'${
+                link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
+              }`,
+            )
+          }
+        }
+      } else if (nativeLink) {
+        ctx.lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
+      }
+    } catch {
+      if (nativeLink) ctx.lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
+    }
+    if (navigateTo) ctx.lines.push(`${pad}  navigateTo ${navigateTo}`)
+    if (icon) ctx.lines.push(`${pad}  icon '${icon.replace(/'/g, '\'\'')}'`)
+    if (childList && childList.length > 0) {
+      for (const ch of childList) {
+        emitElementToLines(ctx, ch.cellId, ch.fqn, indent + 1)
+      }
+    }
+    ctx.lines.push(`${pad}}`)
+  } else {
+    ctx.lines.push(`${pad}{`)
+    ctx.lines.push(`${pad}}`)
+  }
+  ctx.lines.push('')
+}
+
+type EdgeEntry = { cell: DrawioCell; src: string; tgt: string }
+
+function emitEdgesToLines(
+  lines: string[],
+  edgeEntries: EdgeEntry[],
+  hexToCustomName: Map<string, string>,
+): void {
+  for (const { cell: e, src, tgt } of edgeEntries) {
+    const title = (e.value && e.value.trim()) ? e.value.replace(/'/g, '\'\'').trim() : ''
+    const desc = e.description?.trim()
+    const tech = e.technology?.trim()
+    const notes = e.notes?.trim()
+    const navTo = e.navigateTo?.trim()
+    const head = likec4Arrow(e.endArrow)
+    const tail = likec4Arrow(e.startArrow)
+    const line = likec4LineType(e.dashed, e.dashPattern)
+    const relKind = e.relationshipKind?.trim()
+    const notation = e.notation?.trim()
+    const linksJson = e.links?.trim()
+    const metadataJson = e.metadata?.trim()
+    const edgeStrokeHex = e.strokeColor?.trim()
+    const hasBody = !!notes || !!navTo || !!head || !!tail || !!line || !!notation || !!linksJson ||
+      !!metadataJson || !!edgeStrokeHex
+    const arrowPart = relKind && /^[a-zA-Z0-9_-]+$/.test(relKind) ? ` -[${relKind}]-> ` : ' -> '
+    const titlePart = title ? ` '${title}'` : desc || tech ? ` ''` : ''
+    const descPart = desc ? ` '${desc.replace(/'/g, '\'\'')}'` : ''
+    const techPart = tech ? ` '${tech.replace(/'/g, '\'\'')}'` : ''
+    const relationHead = `  ${src}${arrowPart}${tgt}${titlePart}${descPart}${techPart}`
+    if (hasBody) {
+      const bodyLines: string[] = []
+      if (notes) bodyLines.push(`    notes '${notes.replace(/'/g, '\'\'')}'`)
+      if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
+      if (notation) bodyLines.push(`    notation '${notation.replace(/'/g, '\'\'')}'`)
+      try {
+        const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
+        if (Array.isArray(linksArr)) {
+          for (const link of linksArr) {
+            if (link?.url) {
+              bodyLines.push(
+                `    link '${String(link.url).replace(/'/g, '\'\'')}'${
+                  link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
+                }`,
+              )
+            }
+          }
+        }
+      } catch {
+        // ignore invalid JSON
+      }
+      try {
+        const metaObj = metadataJson ? (JSON.parse(metadataJson) as Record<string, string | string[]>) : null
+        if (metaObj && typeof metaObj === 'object' && !Array.isArray(metaObj)) {
+          const metaAttrs: string[] = []
+          for (const [k, v] of Object.entries(metaObj)) {
+            if (k.trim() === '') continue
+            const safeKey = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(k) ? k : `'${k.replace(/'/g, '\'\'')}'`
+            if (Array.isArray(v)) {
+              const arrVals = v.map(s => `'${String(s).replace(/'/g, '\'\'')}'`)
+              metaAttrs.push(` ${safeKey} [ ${arrVals.join(', ')} ];`)
+            } else if (v != null && typeof v === 'string') {
+              metaAttrs.push(` ${safeKey} '${v.replace(/'/g, '\'\'')}';`)
+            }
+          }
+          if (metaAttrs.length > 0) {
+            bodyLines.push('    metadata {' + metaAttrs.join('') + ' }')
+          }
+        }
+      } catch {
+        // ignore invalid JSON
+      }
+      if (head || tail || line || edgeStrokeHex) {
+        const styleParts: string[] = []
+        if (line) styleParts.push(`line ${line}`)
+        if (head) styleParts.push(`head ${head}`)
+        if (tail) styleParts.push(`tail ${tail}`)
+        if (edgeStrokeHex && /^#[0-9A-Fa-f]{3,8}$/.test(edgeStrokeHex)) {
+          const edgeColorName = hexToCustomName.get(edgeStrokeHex)
+          if (edgeColorName) styleParts.push(`color ${edgeColorName}`)
+        }
+        if (styleParts.length > 0) bodyLines.push(`    style { ${styleParts.join(', ')} }`)
+      }
+      lines.push(relationHead + ' {')
+      lines.push(...bodyLines)
+      lines.push('  }')
+    } else {
+      lines.push(relationHead)
+    }
+  }
+}
+
+function emitRoundtripCommentsSingle(
+  lines: string[],
+  viewId: string,
+  idToFqn: Map<string, string>,
+  byId: Map<string, DrawioCell>,
+  edges: DrawioCell[],
+): void {
+  const layoutNodes: Record<string, { x: number; y: number; width: number; height: number }> = {}
+  for (const [cellId, fqn] of idToFqn) {
+    const cell = byId.get(cellId)
+    if (
+      cell?.vertex &&
+      cell.x != null &&
+      cell.y != null &&
+      cell.width != null &&
+      cell.height != null
+    ) {
+      layoutNodes[fqn] = { x: cell.x, y: cell.y, width: cell.width, height: cell.height }
+    }
+  }
+  if (Object.keys(layoutNodes).length > 0) {
+    lines.push('// <likec4.layout.drawio>')
+    lines.push('// ' + JSON.stringify({ [viewId]: { nodes: layoutNodes } }))
+    lines.push('// </likec4.layout.drawio>')
+  }
+  const strokeColorLines: string[] = []
+  for (const [cellId, fqn] of idToFqn) {
+    const cell = byId.get(cellId)
+    if (
+      cell?.vertex &&
+      cell.strokeColor?.trim() &&
+      /^#[0-9A-Fa-f]{3,8}$/.test(cell.strokeColor.trim())
+    ) {
+      strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
+    }
+  }
+  if (strokeColorLines.length > 0) {
+    lines.push('// <likec4.strokeColor.vertices>')
+    lines.push(...strokeColorLines)
+    lines.push('// </likec4.strokeColor.vertices>')
+  }
+  const strokeWidthLines: string[] = []
+  for (const [cellId, fqn] of idToFqn) {
+    const cell = byId.get(cellId)
+    if (cell?.vertex && cell.strokeWidth != null && cell.strokeWidth.trim() !== '') {
+      strokeWidthLines.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
+    }
+  }
+  if (strokeWidthLines.length > 0) {
+    lines.push('// <likec4.strokeWidth.vertices>')
+    lines.push(...strokeWidthLines)
+    lines.push('// </likec4.strokeWidth.vertices>')
+  }
+  const customDataLines: string[] = []
+  for (const [cellId, fqn] of idToFqn) {
+    const cell = byId.get(cellId)
+    if (cell?.customData?.trim()) customDataLines.push(`// ${fqn} ${cell.customData.trim()}`)
+  }
+  for (const e of edges) {
+    const src = idToFqn.get(e.source!)
+    const tgt = idToFqn.get(e.target!)
+    if (src && tgt && e.customData?.trim()) {
+      customDataLines.push(`// ${src}|${tgt} ${e.customData.trim()}`)
+    }
+  }
+  if (customDataLines.length > 0) {
+    lines.push('// <likec4.customData>')
+    lines.push(...customDataLines)
+    lines.push('// </likec4.customData>')
+  }
+  const waypointLines: string[] = []
+  for (const e of edges) {
+    const src = idToFqn.get(e.source!)
+    const tgt = idToFqn.get(e.target!)
+    if (src && tgt && e.edgePoints?.trim()) waypointLines.push(`// ${src}|${tgt} ${e.edgePoints.trim()}`)
+  }
+  if (waypointLines.length > 0) {
+    lines.push('// <likec4.edge.waypoints>')
+    lines.push(...waypointLines)
+    lines.push('// </likec4.edge.waypoints>')
+  }
+}
+
+/** Per-diagram state for multi round-trip comments (viewId + idToFqn/idToCell/edges). */
+interface DiagramStateForRoundtrip {
+  viewId: string
+  idToFqn: Map<string, string>
+  idToCell: Map<string, DrawioCell>
+  edges: DrawioCell[]
+}
+
+function emitRoundtripCommentsMulti(
+  lines: string[],
+  states: DiagramStateForRoundtrip[],
+): void {
+  const layoutByView: Record<
+    string,
+    { nodes: Record<string, { x: number; y: number; width: number; height: number }> }
+  > = {}
+  for (const st of states) {
+    const layout = { nodes: {} as Record<string, { x: number; y: number; width: number; height: number }> }
+    layoutByView[st.viewId] = layout
+    for (const [cellId, fqn] of st.idToFqn) {
+      const cell = st.idToCell.get(cellId)
+      if (
+        cell?.vertex &&
+        cell.x != null &&
+        cell.y != null &&
+        cell.width != null &&
+        cell.height != null
+      ) {
+        layout.nodes[fqn] = { x: cell.x, y: cell.y, width: cell.width, height: cell.height }
+      }
+    }
+  }
+  const hasLayout = Object.values(layoutByView).some(v => Object.keys(v.nodes).length > 0)
+  if (hasLayout) {
+    lines.push('// <likec4.layout.drawio>')
+    lines.push('// ' + JSON.stringify(layoutByView))
+    lines.push('// </likec4.layout.drawio>')
+  }
+  const strokeColorLines: string[] = []
+  for (const st of states) {
+    for (const [cellId, fqn] of st.idToFqn) {
+      const cell = st.idToCell.get(cellId)
+      if (
+        cell?.vertex &&
+        cell.strokeColor?.trim() &&
+        /^#[0-9A-Fa-f]{3,8}$/.test(cell.strokeColor.trim())
+      ) {
+        strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
+      }
+    }
+  }
+  if (strokeColorLines.length > 0) {
+    lines.push('// <likec4.strokeColor.vertices>')
+    lines.push(...strokeColorLines)
+    lines.push('// </likec4.strokeColor.vertices>')
+  }
+  const strokeWidthLines: string[] = []
+  for (const st of states) {
+    for (const [cellId, fqn] of st.idToFqn) {
+      const cell = st.idToCell.get(cellId)
+      if (cell?.vertex && cell.strokeWidth != null && cell.strokeWidth.trim() !== '') {
+        strokeWidthLines.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
+      }
+    }
+  }
+  if (strokeWidthLines.length > 0) {
+    lines.push('// <likec4.strokeWidth.vertices>')
+    lines.push(...strokeWidthLines)
+    lines.push('// </likec4.strokeWidth.vertices>')
+  }
+  const customDataLines: string[] = []
+  for (const st of states) {
+    for (const [cellId, fqn] of st.idToFqn) {
+      const cell = st.idToCell.get(cellId)
+      if (cell?.customData?.trim()) customDataLines.push(`// ${fqn} ${cell.customData.trim()}`)
+    }
+    for (const e of st.edges) {
+      const src = st.idToFqn.get(e.source!)
+      const tgt = st.idToFqn.get(e.target!)
+      if (src && tgt && e.customData?.trim()) {
+        customDataLines.push(`// ${src}|${tgt} ${e.customData.trim()}`)
+      }
+    }
+  }
+  if (customDataLines.length > 0) {
+    lines.push('// <likec4.customData>')
+    lines.push(...customDataLines)
+    lines.push('// </likec4.customData>')
+  }
+  const waypointLines: string[] = []
+  for (const st of states) {
+    for (const e of st.edges) {
+      const src = st.idToFqn.get(e.source!)
+      const tgt = st.idToFqn.get(e.target!)
+      if (src && tgt && e.edgePoints?.trim()) {
+        waypointLines.push(`// ${src}|${tgt} ${e.edgePoints.trim()}`)
+      }
+    }
+  }
+  if (waypointLines.length > 0) {
+    lines.push('// <likec4.edge.waypoints>')
+    lines.push(...waypointLines)
+    lines.push('// </likec4.edge.waypoints>')
+  }
 }
 
 /** Decompress draw.io diagram content: base64 → inflateRaw → decodeURIComponent. */
@@ -479,7 +916,16 @@ export function getAllDiagrams(fullXml: string): DiagramInfo[] {
     const idMatch = attrs.match(/\bid="([^"]*)"/i)
     const name = nameMatch?.[1] ?? (results.length === 0 ? 'index' : `diagram_${results.length + 1}`)
     const id = idMatch?.[1] ?? `likec4-${name}`
-    const content = inner.includes('<mxGraphModel') ? inner : decompressDrawioDiagram(inner)
+    let content: string
+    if (inner.includes('<mxGraphModel')) content = inner
+    else if (inner.trim() === '') content = inner
+    else {
+      try {
+        content = decompressDrawioDiagram(inner)
+      } catch {
+        content = inner
+      }
+    }
     results.push({ name, id, content })
   }
   return results
@@ -520,17 +966,6 @@ export function parseDrawioToLikeC4(xml: string): string {
       v.style?.toLowerCase().includes('container=1') && v.x != null && v.y != null && v.width != null &&
       v.height != null,
   )
-  function stripHtmlOne(s: string): string {
-    return s
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&amp;/g, '&')
-      .replace(/<[^>]+>/g, '')
-      .trim()
-      .split(/\n|<br\s*\/?>/i)[0]
-      ?.trim() ?? ''
-  }
   for (const cont of containerCells) {
     const cx = cont.x!,
       cy = cont.y!,
@@ -552,7 +987,7 @@ export function parseDrawioToLikeC4(xml: string): string {
     if (best) {
       const raw = (best.value ?? '').trim()
       if (raw) {
-        containerIdToTitle.set(cont.id, stripHtmlOne(raw))
+        containerIdToTitle.set(cont.id, stripHtml(raw))
         titleCellIds.add(best.id)
       }
     }
@@ -656,230 +1091,25 @@ export function parseDrawioToLikeC4(xml: string): string {
     }
   }
 
-  /** Strip HTML tags for use as plain title when emitting .c4 */
-  function stripHtmlForTitle(raw: string | undefined): string {
-    if (!raw || raw.trim() === '') return ''
-    const decoded = raw
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&amp;/g, '&')
-    return decoded.replace(/<[^>]+>/g, '').trim().split(/\n|<br\s*\/?>/i)[0]?.trim() ?? ''
+  const emitCtx: ElementEmitContext = {
+    lines,
+    idToCell,
+    containerIdToTitle,
+    children,
+    hexToCustomName,
+    byId,
   }
-
-  function emitElement(cellId: string, fqn: string, indent: number): void {
-    const cell = idToCell.get(cellId)
-    if (!cell) return
-    const parentCell = cell.parent ? idToCell.get(cell.parent) : undefined
-    const kind = inferKind(cell.style, parentCell)
-    const rawTitle = (cell.value && cell.value.trim()) || ''
-    const title = stripHtmlForTitle(rawTitle) || (containerIdToTitle.get(cellId) ?? '') || fqn.split('.').pop() ||
-      'Element'
-    const name = fqn.split('.').pop()!
-    const pad = '  '.repeat(indent)
-    const desc = cell.description?.trim()
-    const tech = cell.technology?.trim()
-    const notes = cell.notes?.trim()
-    const tagsStr = cell.tags?.trim()
-    const tagList = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : []
-    const navigateTo = cell.navigateTo?.trim()
-    const icon = cell.icon?.trim()
-    const summary = cell.summary?.trim()
-    const linksJson = cell.links?.trim()
-    const nativeLink = cell.link?.trim()
-    const notation = cell.notation?.trim()
-    const border = cell.border?.trim()
-    const colorName = cell.fillColor && /^#[0-9A-Fa-f]{3,8}$/.test(cell.fillColor.trim())
-      ? hexToCustomName.get(cell.fillColor.trim())
-      : undefined
-    const shapeOverride = inferShape(cell.style)
-
-    if (kind === 'actor') {
-      lines.push(`${pad}${name} = actor '${title.replace(/'/g, '\'\'')}'`)
-    } else if (kind === 'system') {
-      lines.push(`${pad}${name} = system '${title.replace(/'/g, '\'\'')}'`)
-    } else {
-      lines.push(`${pad}${name} = container '${title.replace(/'/g, '\'\'')}'`)
-    }
-    const childList = children.get(fqn)
-    const opacityVal = cell.opacity
-    const hasBody = (childList && childList.length > 0) ||
-      desc ||
-      tech ||
-      notes ||
-      summary ||
-      linksJson ||
-      nativeLink ||
-      notation ||
-      tagList.length > 0 ||
-      colorName ||
-      border ||
-      opacityVal ||
-      shapeOverride ||
-      cell.size ||
-      cell.padding ||
-      cell.textSize ||
-      cell.iconPosition ||
-      navigateTo ||
-      icon
-    if (hasBody) {
-      lines.push(`${pad}{`)
-      const sizeVal = cell.size?.trim()
-      const paddingVal = cell.padding?.trim()
-      const textSizeVal = cell.textSize?.trim()
-      const iconPositionVal = cell.iconPosition?.trim()
-      if (
-        colorName ||
-        border ||
-        opacityVal ||
-        shapeOverride ||
-        sizeVal ||
-        paddingVal ||
-        textSizeVal ||
-        iconPositionVal
-      ) {
-        const styleParts: string[] = []
-        if (colorName) styleParts.push(`color ${colorName}`)
-        if (border && ['solid', 'dashed', 'dotted', 'none'].includes(border)) {
-          styleParts.push(`border ${border}`)
-        }
-        if (opacityVal && /^\d+$/.test(opacityVal)) styleParts.push(`opacity ${opacityVal}`)
-        if (shapeOverride) styleParts.push(`shape ${shapeOverride}`)
-        if (sizeVal) styleParts.push(`size ${sizeVal}`)
-        if (paddingVal) styleParts.push(`padding ${paddingVal}`)
-        if (textSizeVal) styleParts.push(`textSize ${textSizeVal}`)
-        if (iconPositionVal) styleParts.push(`iconPosition ${iconPositionVal}`)
-        if (styleParts.length > 0) lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
-      }
-      for (const t of tagList) lines.push(`${pad}  #${t.replace(/\s+/g, '_')}`)
-      if (desc) lines.push(`${pad}  description '${desc.replace(/'/g, '\'\'')}'`)
-      if (tech) lines.push(`${pad}  technology '${tech.replace(/'/g, '\'\'')}'`)
-      if (summary) lines.push(`${pad}  summary '${summary.replace(/'/g, '\'\'')}'`)
-      if (notes) lines.push(`${pad}  notes '${notes.replace(/'/g, '\'\'')}'`)
-      if (notation) lines.push(`${pad}  notation '${notation.replace(/'/g, '\'\'')}'`)
-      try {
-        const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
-        if (Array.isArray(linksArr)) {
-          for (const link of linksArr) {
-            if (link?.url) {
-              lines.push(
-                `${pad}  link '${String(link.url).replace(/'/g, '\'\'')}'${
-                  link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
-                }`,
-              )
-            }
-          }
-        } else if (nativeLink) {
-          lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
-        }
-      } catch {
-        // ignore invalid JSON; fallback to native link
-        if (nativeLink) lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
-      }
-      if (navigateTo) lines.push(`${pad}  navigateTo ${navigateTo}`)
-      if (icon) lines.push(`${pad}  icon '${icon.replace(/'/g, '\'\'')}'`)
-      if (childList && childList.length > 0) {
-        for (const ch of childList) {
-          emitElement(ch.cellId, ch.fqn, indent + 1)
-        }
-      }
-      lines.push(`${pad}}`)
-    } else {
-      lines.push(`${pad}{`)
-      lines.push(`${pad}}`)
-    }
-    lines.push('')
-  }
-
   for (const { cellId, fqn } of roots) {
-    emitElement(cellId, fqn, 1)
+    emitElementToLines(emitCtx, cellId, fqn, 1)
   }
 
+  const edgeEntries: EdgeEntry[] = []
   for (const e of edges) {
     const src = idToFqn.get(e.source!)
     const tgt = idToFqn.get(e.target!)
-    if (!src || !tgt) continue
-    const title = (e.value && e.value.trim()) ? e.value.replace(/'/g, '\'\'').trim() : ''
-    const desc = e.description?.trim()
-    const tech = e.technology?.trim()
-    const notes = e.notes?.trim()
-    const navTo = e.navigateTo?.trim()
-    const head = likec4Arrow(e.endArrow)
-    const tail = likec4Arrow(e.startArrow)
-    const line = likec4LineType(e.dashed, e.dashPattern)
-    const relKind = e.relationshipKind?.trim()
-    const notation = e.notation?.trim()
-    const linksJson = e.links?.trim()
-    const metadataJson = e.metadata?.trim()
-    const edgeStrokeHex = e.strokeColor?.trim()
-    const hasBody = notes || navTo || head || tail || line || notation || linksJson || metadataJson || edgeStrokeHex
-
-    const arrowPart = relKind && /^[a-zA-Z0-9_-]+$/.test(relKind) ? ` -[${relKind}]-> ` : ' -> '
-    const titlePart = title ? ` '${title}'` : desc || tech ? ` ''` : ''
-    const descPart = desc ? ` '${desc.replace(/'/g, '\'\'')}'` : ''
-    const techPart = tech ? ` '${tech.replace(/'/g, '\'\'')}'` : ''
-    const relationHead = `  ${src}${arrowPart}${tgt}${titlePart}${descPart}${techPart}`
-
-    if (hasBody) {
-      const bodyLines: string[] = []
-      if (notes) bodyLines.push(`    notes '${notes.replace(/'/g, '\'\'')}'`)
-      if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
-      if (notation) bodyLines.push(`    notation '${notation.replace(/'/g, '\'\'')}'`)
-      try {
-        const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
-        if (Array.isArray(linksArr)) {
-          for (const link of linksArr) {
-            if (link?.url) {
-              bodyLines.push(
-                `    link '${String(link.url).replace(/'/g, '\'\'')}'${
-                  link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
-                }`,
-              )
-            }
-          }
-        }
-      } catch {
-        // ignore invalid JSON
-      }
-      try {
-        const metaObj = metadataJson ? (JSON.parse(metadataJson) as Record<string, string | string[]>) : null
-        if (metaObj && typeof metaObj === 'object' && !Array.isArray(metaObj)) {
-          const metaAttrs: string[] = []
-          for (const [k, v] of Object.entries(metaObj)) {
-            if (k.trim() === '') continue
-            const safeKey = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(k) ? k : `'${k.replace(/'/g, '\'\'')}'`
-            if (Array.isArray(v)) {
-              const arrVals = v.map(s => `'${String(s).replace(/'/g, '\'\'')}'`)
-              metaAttrs.push(` ${safeKey} [ ${arrVals.join(', ')} ];`)
-            } else if (v != null && typeof v === 'string') {
-              metaAttrs.push(` ${safeKey} '${v.replace(/'/g, '\'\'')}';`)
-            }
-          }
-          if (metaAttrs.length > 0) {
-            bodyLines.push('    metadata {' + metaAttrs.join('') + ' }')
-          }
-        }
-      } catch {
-        // ignore invalid JSON
-      }
-      if (head || tail || line || edgeStrokeHex) {
-        const styleParts: string[] = []
-        if (line) styleParts.push(`line ${line}`)
-        if (head) styleParts.push(`head ${head}`)
-        if (tail) styleParts.push(`tail ${tail}`)
-        if (edgeStrokeHex && /^#[0-9A-Fa-f]{3,8}$/.test(edgeStrokeHex)) {
-          const edgeColorName = hexToCustomName.get(edgeStrokeHex)
-          if (edgeColorName) styleParts.push(`color ${edgeColorName}`)
-        }
-        if (styleParts.length > 0) bodyLines.push(`    style { ${styleParts.join(', ')} }`)
-      }
-      lines.push(relationHead + ' {')
-      lines.push(...bodyLines)
-      lines.push('  }')
-    } else {
-      lines.push(relationHead)
-    }
+    if (src && tgt) edgeEntries.push({ cell: e, src, tgt })
   }
+  emitEdgesToLines(lines, edgeEntries, hexToCustomName)
 
   lines.push('}')
   lines.push('')
@@ -905,87 +1135,7 @@ export function parseDrawioToLikeC4(xml: string): string {
     lines.push(`// likec4.view.notation ${viewId} '${viewNotation.replace(/'/g, '\'\'')}'`)
   }
 
-  // Emit layout as comment for round-trip or tooling (Phase 1.2)
-  const layoutNodes: Record<string, { x: number; y: number; width: number; height: number }> = {}
-  for (const [cellId, fqn] of idToFqn) {
-    const cell = byId.get(cellId)
-    if (
-      cell?.vertex &&
-      cell.x != null &&
-      cell.y != null &&
-      cell.width != null &&
-      cell.height != null
-    ) {
-      layoutNodes[fqn] = { x: cell.x, y: cell.y, width: cell.width, height: cell.height }
-    }
-  }
-  if (Object.keys(layoutNodes).length > 0) {
-    const layoutBlock = JSON.stringify({ [viewId]: { nodes: layoutNodes } })
-    lines.push('// <likec4.layout.drawio>')
-    lines.push('// ' + layoutBlock)
-    lines.push('// </likec4.layout.drawio>')
-  }
-
-  // Emit vertex strokeColor as comment for round-trip (Phase 1.3; DSL has no element strokeColor)
-  const strokeColorLines: string[] = []
-  for (const [cellId, fqn] of idToFqn) {
-    const cell = byId.get(cellId)
-    if (
-      cell?.vertex &&
-      cell.strokeColor?.trim() &&
-      /^#[0-9A-Fa-f]{3,8}$/.test(cell.strokeColor.trim())
-    ) {
-      strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
-    }
-  }
-  if (strokeColorLines.length > 0) {
-    lines.push('// <likec4.strokeColor.vertices>')
-    lines.push(...strokeColorLines)
-    lines.push('// </likec4.strokeColor.vertices>')
-  }
-
-  const strokeWidthLines: string[] = []
-  for (const [cellId, fqn] of idToFqn) {
-    const cell = byId.get(cellId)
-    if (cell?.vertex && cell.strokeWidth != null && cell.strokeWidth.trim() !== '') {
-      strokeWidthLines.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
-    }
-  }
-  if (strokeWidthLines.length > 0) {
-    lines.push('// <likec4.strokeWidth.vertices>')
-    lines.push(...strokeWidthLines)
-    lines.push('// </likec4.strokeWidth.vertices>')
-  }
-
-  const customDataLines: string[] = []
-  for (const [cellId, fqn] of idToFqn) {
-    const cell = byId.get(cellId)
-    if (cell?.customData?.trim()) customDataLines.push(`// ${fqn} ${cell.customData.trim()}`)
-  }
-  for (const e of edges) {
-    const src = idToFqn.get(e.source!)
-    const tgt = idToFqn.get(e.target!)
-    if (src && tgt && e.customData?.trim()) {
-      customDataLines.push(`// ${src}|${tgt} ${e.customData.trim()}`)
-    }
-  }
-  if (customDataLines.length > 0) {
-    lines.push('// <likec4.customData>')
-    lines.push(...customDataLines)
-    lines.push('// </likec4.customData>')
-  }
-
-  const waypointLines: string[] = []
-  for (const e of edges) {
-    const src = idToFqn.get(e.source!)
-    const tgt = idToFqn.get(e.target!)
-    if (src && tgt && e.edgePoints?.trim()) waypointLines.push(`// ${src}|${tgt} ${e.edgePoints.trim()}`)
-  }
-  if (waypointLines.length > 0) {
-    lines.push('// <likec4.edge.waypoints>')
-    lines.push(...waypointLines)
-    lines.push('// </likec4.edge.waypoints>')
-  }
+  emitRoundtripCommentsSingle(lines, viewId, idToFqn, byId, edges)
 
   return lines.join('\n')
 }
@@ -1023,17 +1173,6 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
       v.style?.toLowerCase().includes('container=1') && v.x != null && v.y != null && v.width != null &&
       v.height != null,
   )
-  function stripHtmlOneMulti(s: string): string {
-    return s
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&amp;/g, '&')
-      .replace(/<[^>]+>/g, '')
-      .trim()
-      .split(/\n|<br\s*\/?>/i)[0]
-      ?.trim() ?? ''
-  }
   for (const cont of containerCells) {
     const cx = cont.x!,
       cy = cont.y!,
@@ -1055,7 +1194,7 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
     if (best) {
       const raw = (best.value ?? '').trim()
       if (raw) {
-        containerIdToTitle.set(cont.id, stripHtmlOneMulti(raw))
+        containerIdToTitle.set(cont.id, stripHtml(raw))
         titleCellIds.add(best.id)
       }
     }
@@ -1249,223 +1388,32 @@ views {
   lines.push('model {')
   lines.push('')
 
-  function stripHtmlForTitle(raw: string | undefined): string {
-    if (!raw || raw.trim() === '') return ''
-    const decoded = raw
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&amp;/g, '&')
-    return decoded.replace(/<[^>]+>/g, '').trim().split(/\n|<br\s*\/?>/i)[0]?.trim() ?? ''
+  // In multi, cell ids repeat across diagrams; use fqn as the key so idToCell yields the correct cell per fqn.
+  const idToCellMulti = new Map<string, DrawioCell>()
+  for (const [fqn, cell] of fqnToCell) idToCellMulti.set(fqn, cell)
+  const childrenMulti = new Map<string, Array<{ cellId: string; fqn: string }>>()
+  for (const [parentFqn, childFqns] of rootsFromMap) {
+    if (parentFqn === '') continue
+    const list = childFqns.map(cf => ({ cellId: cf, fqn: cf }))
+    if (list.length > 0) childrenMulti.set(parentFqn, list)
+  }
+  const emitCtxMulti: ElementEmitContext = {
+    lines,
+    idToCell: idToCellMulti,
+    containerIdToTitle,
+    children: childrenMulti,
+    hexToCustomName,
+    byId,
+  }
+  for (const fqn of rootFqns) {
+    emitElementToLines(emitCtxMulti, fqn, fqn, 1)
   }
 
-  function emitElementMulti(fqn: string, indent: number): void {
-    const cell = fqnToCell.get(fqn)
-    if (!cell) return
-    const parentCell = cell.parent ? byId.get(cell.parent) : undefined
-    const kind = inferKind(cell.style, parentCell)
-    const rawTitle = (cell.value && cell.value.trim()) || ''
-    const title = stripHtmlForTitle(rawTitle) || (containerIdToTitle.get(cell.id) ?? '') || fqn.split('.').pop() ||
-      'Element'
-    const name = fqn.split('.').pop()!
-    const pad = '  '.repeat(indent)
-    const desc = cell.description?.trim()
-    const tech = cell.technology?.trim()
-    const notes = cell.notes?.trim()
-    const tagsStr = cell.tags?.trim()
-    const tagList = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : []
-    const navigateTo = cell.navigateTo?.trim()
-    const icon = cell.icon?.trim()
-    const summary = cell.summary?.trim()
-    const linksJson = cell.links?.trim()
-    const nativeLink = cell.link?.trim()
-    const notation = cell.notation?.trim()
-    const border = cell.border?.trim()
-    const colorName = cell.fillColor && /^#[0-9A-Fa-f]{3,8}$/.test(cell.fillColor.trim())
-      ? hexToCustomName.get(cell.fillColor.trim())
-      : undefined
-    const shapeOverride = inferShape(cell.style)
-    const opacityVal = cell.opacity
-    const childFqns = rootsFromMap.get(fqn) ?? []
-    const hasBody = childFqns.length > 0 ||
-      !!desc ||
-      !!tech ||
-      !!notes ||
-      !!summary ||
-      !!linksJson ||
-      !!nativeLink ||
-      !!notation ||
-      tagList.length > 0 ||
-      !!colorName ||
-      !!border ||
-      !!opacityVal ||
-      !!shapeOverride ||
-      !!cell.size ||
-      !!cell.padding ||
-      !!cell.textSize ||
-      !!cell.iconPosition ||
-      !!navigateTo ||
-      !!icon
-    if (kind === 'actor') {
-      lines.push(`${pad}${name} = actor '${title.replace(/'/g, '\'\'')}'`)
-    } else if (kind === 'system') {
-      lines.push(`${pad}${name} = system '${title.replace(/'/g, '\'\'')}'`)
-    } else {
-      lines.push(`${pad}${name} = container '${title.replace(/'/g, '\'\'')}'`)
-    }
-    if (hasBody) {
-      lines.push(`${pad}{`)
-      const sizeVal = cell.size?.trim()
-      const paddingVal = cell.padding?.trim()
-      const textSizeVal = cell.textSize?.trim()
-      const iconPositionVal = cell.iconPosition?.trim()
-      if (
-        colorName ||
-        border ||
-        opacityVal ||
-        shapeOverride ||
-        sizeVal ||
-        paddingVal ||
-        textSizeVal ||
-        iconPositionVal
-      ) {
-        const styleParts: string[] = []
-        if (colorName) styleParts.push(`color ${colorName}`)
-        if (border && ['solid', 'dashed', 'dotted', 'none'].includes(border)) styleParts.push(`border ${border}`)
-        if (opacityVal && /^\d+$/.test(opacityVal)) styleParts.push(`opacity ${opacityVal}`)
-        if (shapeOverride) styleParts.push(`shape ${shapeOverride}`)
-        if (sizeVal) styleParts.push(`size ${sizeVal}`)
-        if (paddingVal) styleParts.push(`padding ${paddingVal}`)
-        if (textSizeVal) styleParts.push(`textSize ${textSizeVal}`)
-        if (iconPositionVal) styleParts.push(`iconPosition ${iconPositionVal}`)
-        if (styleParts.length > 0) lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
-      }
-      for (const t of tagList) lines.push(`${pad}  #${t.replace(/\s+/g, '_')}`)
-      if (desc) lines.push(`${pad}  description '${desc.replace(/'/g, '\'\'')}'`)
-      if (tech) lines.push(`${pad}  technology '${tech.replace(/'/g, '\'\'')}'`)
-      if (summary) lines.push(`${pad}  summary '${summary.replace(/'/g, '\'\'')}'`)
-      if (notes) lines.push(`${pad}  notes '${notes.replace(/'/g, '\'\'')}'`)
-      if (notation) lines.push(`${pad}  notation '${notation.replace(/'/g, '\'\'')}'`)
-      try {
-        const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
-        if (Array.isArray(linksArr)) {
-          for (const link of linksArr) {
-            if (link?.url) {
-              lines.push(
-                `${pad}  link '${String(link.url).replace(/'/g, '\'\'')}'${
-                  link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
-                }`,
-              )
-            }
-          }
-        } else if (nativeLink) {
-          lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
-        }
-      } catch {
-        // ignore; fallback to native link
-        if (nativeLink) lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
-      }
-      if (navigateTo) lines.push(`${pad}  navigateTo ${navigateTo}`)
-      if (icon) lines.push(`${pad}  icon '${icon.replace(/'/g, '\'\'')}'`)
-      for (const ch of childFqns) emitElementMulti(ch, indent + 1)
-      lines.push(`${pad}}`)
-    } else {
-      lines.push(`${pad}{`)
-      lines.push(`${pad}}`)
-    }
-    lines.push('')
+  const edgeEntriesMulti: EdgeEntry[] = []
+  for (const { src, tgt, cell } of relationKeyToEdge.values()) {
+    edgeEntriesMulti.push({ cell, src, tgt })
   }
-
-  for (const fqn of rootFqns) emitElementMulti(fqn, 1)
-
-  for (const { src, tgt, cell: e } of relationKeyToEdge.values()) {
-    const title = (e.value && e.value.trim()) ? e.value.replace(/'/g, '\'\'').trim() : ''
-    const desc = e.description?.trim()
-    const tech = e.technology?.trim()
-    const notes = e.notes?.trim()
-    const navTo = e.navigateTo?.trim()
-    const head = likec4Arrow(e.endArrow)
-    const tail = likec4Arrow(e.startArrow)
-    const line = likec4LineType(e.dashed, e.dashPattern)
-    const relKind = e.relationshipKind?.trim()
-    const notation = e.notation?.trim()
-    const linksJson = e.links?.trim()
-    const metadataJson = e.metadata?.trim()
-    const edgeStrokeHex = e.strokeColor?.trim()
-    const hasBody = !!notes ||
-      !!navTo ||
-      !!head ||
-      !!tail ||
-      !!line ||
-      !!notation ||
-      !!linksJson ||
-      !!metadataJson ||
-      !!edgeStrokeHex
-    const arrowPart = relKind && /^[a-zA-Z0-9_-]+$/.test(relKind) ? ` -[${relKind}]-> ` : ' -> '
-    const titlePart = title ? ` '${title}'` : desc || tech ? ` ''` : ''
-    const descPart = desc ? ` '${desc.replace(/'/g, '\'\'')}'` : ''
-    const techPart = tech ? ` '${tech.replace(/'/g, '\'\'')}'` : ''
-    const relationHead = `  ${src}${arrowPart}${tgt}${titlePart}${descPart}${techPart}`
-    if (hasBody) {
-      const bodyLines: string[] = []
-      if (notes) bodyLines.push(`    notes '${notes.replace(/'/g, '\'\'')}'`)
-      if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
-      if (notation) bodyLines.push(`    notation '${notation.replace(/'/g, '\'\'')}'`)
-      try {
-        const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
-        if (Array.isArray(linksArr)) {
-          for (const link of linksArr) {
-            if (link?.url) {
-              bodyLines.push(
-                `    link '${String(link.url).replace(/'/g, '\'\'')}'${
-                  link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
-                }`,
-              )
-            }
-          }
-        }
-      } catch {
-        // ignore invalid JSON
-      }
-      try {
-        const metaObj = metadataJson ? (JSON.parse(metadataJson) as Record<string, string | string[]>) : null
-        if (metaObj && typeof metaObj === 'object' && !Array.isArray(metaObj)) {
-          const metaAttrs: string[] = []
-          for (const [k, v] of Object.entries(metaObj)) {
-            if (k.trim() === '') continue
-            const safeKey = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(k) ? k : `'${k.replace(/'/g, '\'\'')}'`
-            if (Array.isArray(v)) {
-              const arrVals = v.map(s => `'${String(s).replace(/'/g, '\'\'')}'`)
-              metaAttrs.push(` ${safeKey} [ ${arrVals.join(', ')} ];`)
-            } else if (v != null && typeof v === 'string') {
-              metaAttrs.push(` ${safeKey} '${v.replace(/'/g, '\'\'')}';`)
-            }
-          }
-          if (metaAttrs.length > 0) {
-            bodyLines.push('    metadata {' + metaAttrs.join('') + ' }')
-          }
-        }
-      } catch {
-        // ignore invalid JSON
-      }
-      if (head || tail || line || edgeStrokeHex) {
-        const styleParts: string[] = []
-        if (line) styleParts.push(`line ${line}`)
-        if (head) styleParts.push(`head ${head}`)
-        if (tail) styleParts.push(`tail ${tail}`)
-        if (edgeStrokeHex && /^#[0-9A-Fa-f]{3,8}$/.test(edgeStrokeHex)) {
-          const n = hexToCustomName.get(edgeStrokeHex)
-          if (n) styleParts.push(`color ${n}`)
-        }
-        if (styleParts.length > 0) bodyLines.push(`    style { ${styleParts.join(', ')} }`)
-      }
-      lines.push(relationHead + ' {')
-      lines.push(...bodyLines)
-      lines.push('  }')
-    } else {
-      lines.push(relationHead)
-    }
-  }
+  emitEdgesToLines(lines, edgeEntriesMulti, hexToCustomName)
 
   lines.push('}')
   lines.push('')
@@ -1487,109 +1435,7 @@ views {
     }
   }
 
-  // Emit layout as comment for round-trip or tooling (Phase 1.2)
-  const layoutByView: Record<
-    string,
-    { nodes: Record<string, { x: number; y: number; width: number; height: number }> }
-  > = {}
-  for (const st of states) {
-    const layout = { nodes: {} as Record<string, { x: number; y: number; width: number; height: number }> }
-    layoutByView[st.viewId] = layout
-    for (const [cellId, fqn] of st.idToFqn) {
-      const cell = st.idToCell.get(cellId)
-      if (
-        cell?.vertex &&
-        cell.x != null &&
-        cell.y != null &&
-        cell.width != null &&
-        cell.height != null
-      ) {
-        layout.nodes[fqn] = {
-          x: cell.x,
-          y: cell.y,
-          width: cell.width,
-          height: cell.height,
-        }
-      }
-    }
-  }
-  const hasLayout = Object.values(layoutByView).some(v => Object.keys(v.nodes).length > 0)
-  if (hasLayout) {
-    lines.push('// <likec4.layout.drawio>')
-    lines.push('// ' + JSON.stringify(layoutByView))
-    lines.push('// </likec4.layout.drawio>')
-  }
-
-  // Emit vertex strokeColor as comment for round-trip (Phase 1.3)
-  const strokeColorLines: string[] = []
-  for (const st of states) {
-    for (const [cellId, fqn] of st.idToFqn) {
-      const cell = st.idToCell.get(cellId)
-      if (
-        cell?.vertex &&
-        cell.strokeColor?.trim() &&
-        /^#[0-9A-Fa-f]{3,8}$/.test(cell.strokeColor.trim())
-      ) {
-        strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
-      }
-    }
-  }
-  if (strokeColorLines.length > 0) {
-    lines.push('// <likec4.strokeColor.vertices>')
-    lines.push(...strokeColorLines)
-    lines.push('// </likec4.strokeColor.vertices>')
-  }
-
-  const strokeWidthLinesMulti: string[] = []
-  for (const st of states) {
-    for (const [cellId, fqn] of st.idToFqn) {
-      const cell = st.idToCell.get(cellId)
-      if (cell?.vertex && cell.strokeWidth != null && cell.strokeWidth.trim() !== '') {
-        strokeWidthLinesMulti.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
-      }
-    }
-  }
-  if (strokeWidthLinesMulti.length > 0) {
-    lines.push('// <likec4.strokeWidth.vertices>')
-    lines.push(...strokeWidthLinesMulti)
-    lines.push('// </likec4.strokeWidth.vertices>')
-  }
-
-  const customDataLinesMulti: string[] = []
-  for (const st of states) {
-    for (const [cellId, fqn] of st.idToFqn) {
-      const cell = st.idToCell.get(cellId)
-      if (cell?.customData?.trim()) customDataLinesMulti.push(`// ${fqn} ${cell.customData.trim()}`)
-    }
-    for (const e of st.edges) {
-      const src = st.idToFqn.get(e.source!)
-      const tgt = st.idToFqn.get(e.target!)
-      if (src && tgt && e.customData?.trim()) {
-        customDataLinesMulti.push(`// ${src}|${tgt} ${e.customData.trim()}`)
-      }
-    }
-  }
-  if (customDataLinesMulti.length > 0) {
-    lines.push('// <likec4.customData>')
-    lines.push(...customDataLinesMulti)
-    lines.push('// </likec4.customData>')
-  }
-
-  const waypointLinesMulti: string[] = []
-  for (const st of states) {
-    for (const e of st.edges) {
-      const src = st.idToFqn.get(e.source!)
-      const tgt = st.idToFqn.get(e.target!)
-      if (src && tgt && e.edgePoints?.trim()) {
-        waypointLinesMulti.push(`// ${src}|${tgt} ${e.edgePoints.trim()}`)
-      }
-    }
-  }
-  if (waypointLinesMulti.length > 0) {
-    lines.push('// <likec4.edge.waypoints>')
-    lines.push(...waypointLinesMulti)
-    lines.push('// </likec4.edge.waypoints>')
-  }
+  emitRoundtripCommentsMulti(lines, states)
 
   return lines.join('\n')
 }

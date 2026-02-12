@@ -85,7 +85,7 @@ describe('DrawIO export/import with cloud-system demo', () => {
         n =>
           Array.isArray(n.children) &&
           n.children.length > 0 &&
-          view.nodes.some((m: { id: string }) => n.children!.includes(m.id)),
+          view.nodes.some(m => n.children!.includes(m.id)),
       ).length
       const expectedNodes = nodeCount + containerCount
 
@@ -134,10 +134,9 @@ describe('DrawIO export/import with cloud-system demo', () => {
     const reimported = await LikeC4.fromSource(c4Source, { throwIfInvalid: false })
     const reimportModel = await reimported.layoutedModel()
     const reimportViews = [...reimportModel.views()]
-    if (reimportViews.length > 0) {
-      const roundtripXml = generateDrawioMulti(reimportViews)
-      expectDrawioXmlLoadableInDrawio(roundtripXml)
-    }
+    expect(reimportViews.length).toBeGreaterThan(0)
+    const roundtripXml = generateDrawioMulti(reimportViews)
+    expectDrawioXmlLoadableInDrawio(roundtripXml)
   })
 
   it('written .drawio file (as when user exports) is loadable in draw.io when read back', async () => {

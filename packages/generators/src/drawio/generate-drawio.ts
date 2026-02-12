@@ -318,9 +318,36 @@ export function generateDrawio(
     ).map(n => n.id),
   )
 
+  /** When multiple non-container nodes share the same bbox (no layout or bad layoutOverride), spread them so they don't overlap. */
+  const GAP = 24
+  const bboxKey = (b: BBox) => `${b.x},${b.y},${b.width},${b.height}`
+  const nonContainerNodes = sortedNodes.filter(n => !containerNodeIds.has(n.id))
+  const byBbox = new Map<string, typeof nonContainerNodes>()
+  for (const n of nonContainerNodes) {
+    const b = bboxes.get(n.id)
+    if (!b) continue
+    const key = bboxKey(b)
+    const list = byBbox.get(key) ?? []
+    list.push(n)
+    byBbox.set(key, list)
+  }
+  for (const nodes of byBbox.values()) {
+    if (nodes.length <= 1) continue
+    const firstNode = nodes[0]
+    const firstBbox = firstNode ? bboxes.get(firstNode.id) : undefined
+    if (!firstBbox) continue
+    nodes.forEach((node, i) => {
+      bboxes.set(node.id, {
+        ...firstBbox,
+        x: firstBbox.x,
+        y: firstBbox.y + i * (firstBbox.height + GAP),
+      })
+    })
+  }
+
   const effectiveStyles = getEffectiveStyles(viewmodel)
-  /** Container padding from theme (design system); vertical = xl + md for more breath top/bottom. */
-  const CONTAINER_PADDING = effectiveStyles.theme.spacing.xl
+  /** Margins between container wrapper and children: horizontal = xl, vertical = xl + md (vertical slightly larger for top/bottom breath). */
+  const CONTAINER_PADDING_HORIZONTAL = effectiveStyles.theme.spacing.xl
   const CONTAINER_PADDING_VERTICAL = effectiveStyles.theme.spacing.xl + effectiveStyles.theme.spacing.md
 
   const containerNodesSorted = [...sortedNodes]
@@ -344,9 +371,9 @@ export function generateDrawio(
     }
     if (minX !== Infinity) {
       bboxes.set(node.id, {
-        x: minX - CONTAINER_PADDING,
+        x: minX - CONTAINER_PADDING_HORIZONTAL,
         y: minY - CONTAINER_PADDING_VERTICAL,
-        width: maxX - minX + 2 * CONTAINER_PADDING,
+        width: maxX - minX + 2 * CONTAINER_PADDING_HORIZONTAL,
         height: maxY - minY + 2 * CONTAINER_PADDING_VERTICAL,
       })
     }
@@ -390,7 +417,7 @@ export function generateDrawio(
     const { width, height } = bbox
     const x = bbox.x + offsetX
     const y = bbox.y + offsetY
-    const parentId = defaultParentId
+    const parentId = node.parent != null && nodeIdsInView.has(node.parent) ? getCellId(node.parent) : defaultParentId
 
     const title = node.title
     const descRaw = flattenMarkdownOrString(node.description)
@@ -486,7 +513,7 @@ export function generateDrawio(
     if (nodeStyle?.padding) likec4Extra.push(`likec4Padding=${encodeURIComponent(nodeStyle.padding)}`)
     if (nodeStyle?.textSize) likec4Extra.push(`likec4TextSize=${encodeURIComponent(nodeStyle.textSize)}`)
     if (nodeStyle?.iconPosition) likec4Extra.push(`likec4IconPosition=${encodeURIComponent(nodeStyle.iconPosition)}`)
-    if (strokeHex && /^#[0-9A-Fa-f]{3,8}$/.test(strokeHex)) {
+    if (strokeHex && /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/.test(strokeHex)) {
       likec4Extra.push(`likec4StrokeColor=${encodeURIComponent(strokeHex)}`)
     }
     const nodeNotation = (node as Node & { notation?: string }).notation
@@ -545,19 +572,20 @@ export function generateDrawio(
       const titleHeight = 18
       const titleX = x + 8
       const titleY = y + 8
+      const titleParentId = id
       const titleStyle =
         `shape=text;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontSize=${containerTitleFontSizePx};fontStyle=1;fontColor=${containerTitleColor};fontFamily=${
           encodeURIComponent(fontFamily)
         };${navLinkStyle}`
       const titleInner =
-        `<mxCell parent="${parentId}" style="${titleStyle}" value="${titleValue}" vertex="1">\n  <mxGeometry x="${
+        `<mxCell parent="${titleParentId}" style="${titleStyle}" value="${titleValue}" vertex="1">\n  <mxGeometry x="${
           Math.round(titleX)
         }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
       const titleCellXml = navTo !== ''
         ? `<UserObject label="${escapeXml(title)}" link="data:page/id,likec4-${
           escapeXml(navTo)
         }" id="${titleId}">\n  ${titleInner}\n</UserObject>`
-        : `<mxCell id="${titleId}" value="${titleValue}" style="${titleStyle}" vertex="1" parent="${parentId}">\n  <mxGeometry x="${
+        : `<mxCell id="${titleId}" value="${titleValue}" style="${titleStyle}" vertex="1" parent="${titleParentId}">\n  <mxGeometry x="${
           Math.round(titleX)
         }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
       containerCells.push(titleCellXml)
@@ -646,10 +674,7 @@ export function generateDrawio(
     const pointsXml = hasPoints
       ? '<Array as="points">' +
         edgePoints
-          .map(([px, py], i) => {
-            const asAttr = i === 0 ? ' as="sourcePoint"' : i === edgePoints.length - 1 ? ' as="targetPoint"' : ''
-            return `<mxPoint x="${Math.round(px)}" y="${Math.round(py)}"${asAttr}/>`
-          })
+          .map(([px, py]) => `<mxPoint x="${Math.round(px)}" y="${Math.round(py)}"/>`)
           .join('') +
         '</Array>'
       : ''
