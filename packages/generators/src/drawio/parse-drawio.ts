@@ -349,14 +349,15 @@ function extractOneMxCell(
   const endOpen = findOpenTagEnd(xml, tagStart)
   if (endOpen === -1) return null
   const attrs = xml.slice(tagStart + 7, endOpen).trim() // '<mxCell'.length === 7
+  // Self-closing: <mxCell ... /> — the / is before >, so check the end of the open tag
+  const tagEnd = xml.slice(Math.max(tagStart, endOpen - 10), endOpen).trimEnd()
+  const isSelfClosing = tagEnd.endsWith('/')
   const afterBracket = endOpen + 1
-  const rest = xml.slice(afterBracket, afterBracket + 20)
-  const selfClose = /^\s*\/\s*>/.exec(rest)
   let inner: string
   let endTagPos: number
-  if (selfClose) {
+  if (isSelfClosing) {
     inner = ''
-    endTagPos = afterBracket + selfClose[0].length - 1
+    endTagPos = endOpen
   } else {
     const closeStart = indexOfClosingTag(xml, 'mxCell', afterBracket)
     if (closeStart === -1) return null
