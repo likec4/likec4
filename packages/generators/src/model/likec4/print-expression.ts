@@ -59,7 +59,7 @@ export function printWhereOperator(op: WhereOperator): string {
 
 // ---- Model FQN Expression ----
 
-function printModelFqnExprBase(expr: any): string {
+function printModelFqnExprBase(expr: ModelFqnExpr.Any): string {
   if (ModelFqnExpr.isWildcard(expr)) return '*'
   if (ModelFqnExpr.isModelRef(expr)) {
     return printModelRef(expr.ref) + printSelector(expr.selector)
@@ -75,11 +75,11 @@ function printModelFqnExprBase(expr: any): string {
 
 // ---- Model Relation Expression ----
 
-function printModelRelationEndpoint(endpoint: any): string {
+function printModelRelationEndpoint(endpoint: ModelFqnExpr.Any): string {
   return printModelFqnExprBase(endpoint)
 }
 
-function printModelRelationBase(expr: any): string {
+function printModelRelationBase(expr: ModelRelationExpr.Any): string {
   if (ModelRelationExpr.isDirect(expr)) {
     const src = printModelRelationEndpoint(expr.source)
     const tgt = printModelRelationEndpoint(expr.target)
@@ -133,7 +133,7 @@ function printModelExpressionInner(expr: ModelExpression): string {
 
 // ---- Deployment Expressions ----
 
-function printFqnExprBase(expr: any): string {
+function printFqnExprBase(expr: FqnExpr.Any): string {
   if (FqnExpr.isWildcard(expr)) return '*'
   if (FqnExpr.isModelRef(expr)) {
     return printModelRef(expr.ref) + printSelector(expr.selector)
@@ -150,11 +150,11 @@ function printFqnExprBase(expr: any): string {
   return ''
 }
 
-function printRelationEndpoint(endpoint: any): string {
+function printRelationEndpoint(endpoint: FqnExpr.Any): string {
   return printFqnExprBase(endpoint)
 }
 
-function printRelationBase(expr: any): string {
+function printRelationBase(expr: RelationExpr.Any): string {
   if (RelationExpr.isDirect(expr)) {
     const src = printRelationEndpoint(expr.source)
     const tgt = printRelationEndpoint(expr.target)
@@ -206,14 +206,14 @@ function printExpressionInner(expr: Expression): string {
 
 export function printModelFqnExpr(expr: ModelFqnExpr.Any): string {
   if (ModelFqnExpr.isCustom(expr)) {
-    const inner = printModelFqnExprInner(expr.custom.expr as any)
+    const inner = printModelFqnExprInner(expr.custom.expr as ModelFqnExpr.Any)
     const props = printCustomElementProps(expr.custom)
     return props ? `${inner} with {\n${props}}` : inner
   }
   return printModelFqnExprInner(expr)
 }
 
-function printModelFqnExprInner(expr: any): string {
+function printModelFqnExprInner(expr: ModelFqnExpr.Any): string {
   if (ModelFqnExpr.isWhere(expr)) {
     const inner = printModelFqnExprBase(expr.where.expr)
     return `${inner} where ${printWhereOperator(expr.where.condition)}`
@@ -225,14 +225,14 @@ function printModelFqnExprInner(expr: any): string {
 // FqnExpr.Any (for deployment view style targets)
 export function printFqnExprAny(expr: FqnExpr.Any): string {
   if (FqnExpr.isCustom(expr)) {
-    const inner = printFqnExprAnyInner(expr.custom.expr as any)
+    const inner = printFqnExprAnyInner(expr.custom.expr as FqnExpr.Any)
     const props = printCustomElementProps(expr.custom)
     return props ? `${inner} with {\n${props}}` : inner
   }
   return printFqnExprAnyInner(expr)
 }
 
-function printFqnExprAnyInner(expr: any): string {
+function printFqnExprAnyInner(expr: FqnExpr.Any): string {
   if (FqnExpr.isWhere(expr)) {
     const inner = printFqnExprBase(expr.where.expr)
     return `${inner} where ${printWhereOperator(expr.where.condition)}`

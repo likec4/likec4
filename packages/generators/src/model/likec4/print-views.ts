@@ -1,10 +1,11 @@
 import type {
-  aux,
   DeploymentViewRule,
   DynamicViewRule,
   DynamicViewStep,
   ElementViewRule,
   ElementViewRuleGroup,
+  FqnExpr,
+  ModelFqnExpr,
   ParsedDeploymentView,
   ParsedDynamicView,
   ParsedElementView,
@@ -21,6 +22,7 @@ import {
   isViewRuleGlobalStyle,
   isViewRuleGroup,
   isViewRuleRank,
+  isViewRuleStyle,
 } from '@likec4/core/types'
 import { CompositeGeneratorNode, NL } from 'langium/generate'
 import { printExpression, printFqnExprAny, printModelExpression, printModelFqnExpr } from './print-expression'
@@ -153,8 +155,8 @@ function printElementViewRules(indent: CompositeGeneratorNode, rules: ElementVie
       continue
     }
 
-    if ('targets' in rule && 'style' in rule) {
-      const targetStrs = rule.targets.map((t: any) => printModelFqnExpr(t))
+    if (isViewRuleStyle(rule)) {
+      const targetStrs = rule.targets.map((t: ModelFqnExpr.Any) => printModelFqnExpr(t))
       indent.append('style ', targetStrs.join(', '), ' {', NL)
       indent.indent({
         indentedChildren: inner => {
@@ -332,13 +334,13 @@ function printDynamicViewRules(indent: CompositeGeneratorNode, rules: DynamicVie
       continue
     }
 
-    if ('targets' in rule && 'style' in rule) {
-      const targetStrs = (rule as any).targets.map((t: any) => printModelFqnExpr(t))
+    if (isViewRuleStyle(rule)) {
+      const targetStrs = rule.targets.map((t: ModelFqnExpr.Any) => printModelFqnExpr(t))
       indent.append('style ', targetStrs.join(', '), ' {', NL)
       indent.indent({
         indentedChildren: inner => {
-          printStyleProperties((rule as any).style, inner)
-          if ((rule as any).notation) inner.append('notation ', quoteString((rule as any).notation), NL)
+          printStyleProperties(rule.style, inner)
+          if (rule.notation) inner.append('notation ', quoteString(rule.notation), NL)
         },
         indentation: 2,
       })
@@ -398,13 +400,13 @@ function printDeploymentViewRules(indent: CompositeGeneratorNode, rules: Deploym
       continue
     }
 
-    if ('targets' in rule && 'style' in rule) {
-      const targetStrs = (rule as any).targets.map((t: any) => printFqnExprAny(t))
+    if (isViewRuleStyle(rule)) {
+      const targetStrs = rule.targets.map((t: FqnExpr.Any) => printFqnExprAny(t))
       indent.append('style ', targetStrs.join(', '), ' {', NL)
       indent.indent({
         indentedChildren: inner => {
-          printStyleProperties((rule as any).style, inner)
-          if ((rule as any).notation) inner.append('notation ', quoteString((rule as any).notation), NL)
+          printStyleProperties(rule.style, inner)
+          if (rule.notation) inner.append('notation ', quoteString(rule.notation), NL)
         },
         indentation: 2,
       })

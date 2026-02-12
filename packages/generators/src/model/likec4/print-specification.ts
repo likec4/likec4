@@ -4,8 +4,13 @@ import { CompositeGeneratorNode, NL } from 'langium/generate'
 import { printStyleProperties } from './print-style'
 import { quoteMarkdownOrString, quoteString } from './utils'
 
+interface CustomColorValue {
+  hiContrast?: { fill?: string }
+  loContrast?: { fill?: string }
+}
+
 interface SpecificationData {
-  customColors?: Record<string, any>
+  customColors?: Record<string, CustomColorValue>
   elements: Record<string, Partial<ElementSpecification>>
   deployments: Record<string, Partial<ElementSpecification>>
   relationships: Record<string, Partial<RelationshipSpecification>>
@@ -22,9 +27,8 @@ export function printSpecification(
     indentedChildren: indent => {
       // Custom colors
       if (spec.customColors) {
-        for (const [name, _colorValues] of Object.entries(spec.customColors)) {
-          const values = _colorValues as any
-          const hex = values?.hiContrast?.fill ?? values?.loContrast?.fill
+        for (const [name, colorValues] of Object.entries(spec.customColors)) {
+          const hex = colorValues?.hiContrast?.fill ?? colorValues?.loContrast?.fill
           if (hex) {
             indent.append('color ', name, ' ', hex, NL)
           }
