@@ -113,7 +113,8 @@ const MAPPED_DATA_KEYS = new Set([
 /** Extract all <data key="...">...</data> from mxUserObject inner XML. */
 function parseAllUserData(fullTag: string): Record<string, string> {
   const out: Record<string, string> = {}
-  const dataRe = /<data\s+key="([^"]*)"[^>]*>([\s\S]*?)<\/data>/gi
+  // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
+  const dataRe = /<data\s+key="([^"]*)"[^>]*>((?:(?!<\/data>)[\s\S])*)<\/data>/gi
   let match
   while ((match = dataRe.exec(fullTag)) !== null) {
     const key = match[1]?.trim()
@@ -125,7 +126,8 @@ function parseAllUserData(fullTag: string): Record<string, string> {
 
 /** Extract edge waypoints from mxGeometry Array/mxPoint inside cell XML. Returns JSON array of [x,y][] or undefined. */
 function parseEdgePoints(fullTag: string): string | undefined {
-  const geomMatch = fullTag.match(/<mxGeometry[\s\S]*?>([\s\S]*?)<\/mxGeometry>/i)
+  // Use tempered greedy (?:.(?!<\/mxGeometry>))* to avoid super-linear backtracking (S5852)
+  const geomMatch = fullTag.match(/<mxGeometry[^>]*>((?:(?!<\/mxGeometry>)[\s\S])*)<\/mxGeometry>/i)
   if (!geomMatch?.[1]) return undefined
   const inner = geomMatch[1]
   const points: [number, number][] = []
@@ -314,10 +316,12 @@ function buildCellFromMxCell(
  */
 function parseDrawioXml(xml: string): DrawioCell[] {
   const cells: DrawioCell[] = []
+  const parsedIds = new Set<string>()
   const geomAttr = (tag: string, name: string) => getAttr(tag, name)
 
   // First pass: UserObject with id and link (inner mxCell has no id; we build cell from UserObject + inner mxCell for round-trip)
-  const userObjectRe = /<UserObject[^>]*id="([^"]*)"[^>]*>([\s\S]*?)<\/UserObject>/gi
+  // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
+  const userObjectRe = /<UserObject[^>]*id="([^"]*)"[^>]*>((?:(?!<\/UserObject>)[\s\S])*)<\/UserObject>/gi
   let uoMatch
   while ((uoMatch = userObjectRe.exec(xml)) !== null) {
     const userObjId = uoMatch[1]?.trim()
@@ -326,7 +330,8 @@ function parseDrawioXml(xml: string): DrawioCell[] {
     const openTag = uoMatch[0].match(/<UserObject[^>]+>/)?.[0] ?? ''
     const linkAttr = getAttr(openTag, 'link')
     const navigateTo = navigateToFromLink(linkAttr ?? undefined)
-    const innerMx = innerXml.match(/<mxCell\s+([^>]+?)(?:\s*\/>|>([\s\S]*?)<\/mxCell>)/i)
+    // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
+    const innerMx = innerXml.match(/<mxCell\s+([^>]+)(?:\s*\/>|>((?:(?!<\/mxCell>)[\s\S])*)<\/mxCell>)/i)
     if (!innerMx) continue
     const innerAttrs = innerMx[1] ?? ''
     const innerInner = innerMx[2] ?? ''
@@ -337,10 +342,14 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       fullTag,
       navigateTo != null && navigateTo !== '' ? { id: userObjId, navigateTo } : { id: userObjId },
     )
-    if (cell) cells.push(cell)
+    if (cell) {
+      cells.push(cell)
+      parsedIds.add(cell.id)
+    }
   }
 
-  const mxCellRe = /<mxCell\s+([^>]+?)(?:\s*\/>|>([\s\S]*?)<\/mxCell>)/gi
+  // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
+  const mxCellRe = /<mxCell\s+([^>]+)(?:\s*\/>|>((?:(?!<\/mxCell>)[\s\S])*)<\/mxCell>)/gi
   let m
   while ((m = mxCellRe.exec(xml)) !== null) {
     const attrs = m[1] ?? ''
@@ -348,10 +357,13 @@ function parseDrawioXml(xml: string): DrawioCell[] {
     const id = getAttr(attrs, 'id')
     if (!id) continue
     // Skip if this mxCell is the inner cell of a UserObject we already parsed (same id would appear in our UserObject pass)
-    if (cells.some(c => c.id === id)) continue
+    if (parsedIds.has(id)) continue
     const fullTag = m[0]
     const cell = buildCellFromMxCell(attrs, inner, fullTag)
-    if (cell) cells.push(cell)
+    if (cell) {
+      cells.push(cell)
+      parsedIds.add(cell.id)
+    }
   }
   return cells
 }
@@ -438,15 +450,37 @@ function toId(name: string): string {
 
 /** Strip HTML/entities and take first line; used for cell value → plain text. */
 function stripHtml(s: string): string {
-  return s
+  const decoded = s
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, '&')
-    .replace(/<[^>]+>/g, '')
-    .trim()
-    .split(/\n|<br\s*\/?>/i)[0]
-    ?.trim() ?? ''
+  const firstLine = decoded.split('\n')[0] ?? ''
+  const brIdx = firstLine.toLowerCase().indexOf('<br')
+  const segment = brIdx === -1 ? firstLine : firstLine.slice(0, brIdx)
+  return stripTags(segment).trim() || ''
+}
+
+/** Strip XML/HTML tags without regex to avoid S5852 (super-linear backtracking). */
+function stripTags(s: string): string {
+  let out = ''
+  let i = 0
+  while (i < s.length) {
+    const open = s.indexOf('<', i)
+    if (open === -1) {
+      out += s.slice(i)
+      break
+    }
+    out += s.slice(i, open)
+    const close = s.indexOf('>', open)
+    if (close === -1) {
+      out += '<'
+      i = open + 1
+    } else {
+      i = close + 1
+    }
+  }
+  return out
 }
 
 /** Strip HTML for use as plain title when emitting .c4. */
@@ -457,7 +491,10 @@ function stripHtmlForTitle(raw: string | undefined): string {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, '&')
-  return decoded.replace(/<[^>]+>/g, '').trim().split(/\n|<br\s*\/?>/i)[0]?.trim() ?? ''
+  const firstLine = decoded.split('\n')[0] ?? ''
+  const brIdx = firstLine.toLowerCase().indexOf('<br')
+  const segment = brIdx === -1 ? firstLine : firstLine.slice(0, brIdx)
+  return stripTags(segment).trim() || ''
 }
 
 /** Context for emitting element/edge lines (shared by single and multi diagram paths). */
@@ -907,7 +944,8 @@ function getFirstDiagram(fullXml: string): DiagramInfo {
  */
 export function getAllDiagrams(fullXml: string): DiagramInfo[] {
   const results: DiagramInfo[] = []
-  const re = /<diagram\s*([^>]*?)>([\s\S]*?)<\/diagram>/gi
+  // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
+  const re = /<diagram\s*([^>]*)>((?:(?!<\/diagram>)[\s\S])*)<\/diagram>/gi
   let m
   while ((m = re.exec(fullXml)) !== null) {
     const attrs = m[1] ?? ''

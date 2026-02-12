@@ -122,10 +122,11 @@ test('generated DrawIO with edge waypoints is loadable in draw.io (no nested Arr
 })
 
 test('generated DrawIO multi with edge waypoints is loadable in draw.io', () => {
-  const xml = generateDrawio(mockViewModel(fakeDiagram)) // single view with waypoints
+  const xml = generateDrawioMulti(
+    [mockViewModel(fakeDiagram), mockViewModel(fakeDiagram2)],
+    {},
+  )
   expectDrawioXmlLoadableInDrawio(xml)
-  const xml2 = generateDrawio(mockViewModel(fakeDiagram2))
-  expectDrawioXmlLoadableInDrawio(xml2)
 })
 
 test('generateDrawio with compressed: false writes uncompressed XML inside diagram', () => {

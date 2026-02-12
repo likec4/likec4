@@ -68,7 +68,7 @@ When **exporting**, each LikeC4 view is written to a **separate** `.drawio` file
 
 - **Playground:** Exports are now **uncompressed** by default so the file opens in draw.io desktop and via Open file / Import. Refresh the app and export again.
 - **CLI:** Use **`--uncompressed`** so the diagram XML is written raw (no compression): `likec4 export drawio --uncompressed -o ./out`. This produces a larger file that opens reliably in draw.io desktop.
-- If you still use compressed export, use a **recent build** of LikeC4 (older exports used an invalid XML structure for edge waypoints). Run `pnpm build` and export again.
+- If you still use compressed export, **update to the latest release** (older versions used an invalid XML structure for edge waypoints): `pnpm update @likec4/likec4` or `npm update @likec4/likec4`, then export again.
 
 **The diagram shows fewer elements than expected:**
 
