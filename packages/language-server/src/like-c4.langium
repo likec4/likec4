@@ -940,6 +940,7 @@ ThemeColor returns string:
 
 ElementShape returns string:
   'rectangle' |
+  'component' |
   'person' |
   'browser' |
   'mobile' |
@@ -947,8 +948,7 @@ ElementShape returns string:
   'storage' |
   'queue' |
   'bucket' |
-  'document' |
-  'component';
+  'document';
 
 Participant returns string:
   'source' | 'target';

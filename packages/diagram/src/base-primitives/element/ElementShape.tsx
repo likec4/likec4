@@ -1,5 +1,5 @@
 import { nonexhaustive } from '@likec4/core'
-import type { ComputedNodeStyle, ElementShape } from '@likec4/core/types'
+import type { ComputedNodeStyle, ElementShape, ShapeSize } from '@likec4/core/types'
 import { elementShapeRecipe } from '@likec4/styles/recipes'
 import { roundDpr } from '../../utils'
 
@@ -107,26 +107,60 @@ const PersonIcon = {
     `M57.9197 0C10.9124 0 33.5766 54.75 33.5766 54.75C38.6131 62.25 45.3285 60.75 45.3285 66C45.3285 70.5 39.4526 72 33.5766 72.75C24.3431 72.75 15.9489 71.25 7.55474 84.75C2.51825 93 0 120 0 120H115C115 120 112.482 93 108.285 84.75C99.8905 70.5 91.4963 72.75 82.2628 72C76.3869 71.25 70.5109 69.75 70.5109 65.25C70.5109 60.75 77.2263 62.25 82.2628 54C82.2628 54.75 104.927 0 57.9197 0V0Z`,
 } as const
 
-const ComponentIcon = {
-  width: 60,
-  height: 24,
-} as const
+const ComponentTopLeftRect = ({ index, size }: { index: number; size: ShapeSize }) => {
+  let width: number, height: number, offsetX: number, offsetY: number, between: number
+  switch (size) {
+    case 'xs':
+    case 'sm': {
+      width = 40
+      height = 18
+      offsetX = -16
+      offsetY = 16
+      between = 10
+      break
+    }
+    case 'md': {
+      width = 60
+      height = 26
+      offsetX = -20
+      offsetY = 22
+      between = 14
+      break
+    }
+    case 'lg':
+    case 'xl': {
+      width = 70
+      height = 32
+      offsetX = -24
+      offsetY = 32
+      between = 18
+      break
+    }
+    default: {
+      nonexhaustive(size)
+    }
+  }
+  return (
+    <rect
+      x={offsetX}
+      y={offsetY + (height + between) * index}
+      width={width}
+      height={height}
+      rx={3}
+      className="top-left-rect"
+      strokeWidth={2} />
+  )
+}
 
 type ShapeSvgProps = {
   shape: Exclude<ElementShape, 'rectangle'>
+  size?: ShapeSize | undefined
   w: number
   h: number
 }
-function ShapeSvg({ shape, w, h }: ShapeSvgProps) {
+function ShapeSvg({ shape, w, h, size = 'md' }: ShapeSvgProps) {
   switch (shape) {
     case 'component': {
-      const iconX = 6
-      const iconY = h / 2 - ComponentIcon.height / 2
-      const boxW = 20
-      const boxH = 12
-      const stubW = 10
-      const stubH = 6
-      const gap = 2
       return (
         <>
           <rect
@@ -134,54 +168,8 @@ function ShapeSvg({ shape, w, h }: ShapeSvgProps) {
             height={h}
             rx={6}
             strokeWidth={0} />
-          <rect
-            x={-24}
-            y={30}
-            width={ComponentIcon.width}
-            height={ComponentIcon.height}
-            rx={4}
-            data-likec4-fill="mix-stroke"
-            strokeWidth={3} />
-          <rect
-            x={-24}
-            y={30 + ComponentIcon.height + 12}
-            width={ComponentIcon.width}
-            height={ComponentIcon.height}
-            rx={4}
-            data-likec4-fill="mix-stroke"
-            strokeWidth={3} />
-          {
-            /* <rect
-            x={-24}
-            y={30}
-            width={ComponentIcon.width}
-            height={ComponentIcon.height}
-            rx={4}
-            data-likec4-fill="mix-stroke"
-            strokeWidth={2} />
-
-          <svg
-            x={iconX}
-            y={iconY}
-            width={ComponentIcon.width}
-            height={ComponentIcon.height}
-            viewBox={`0 0 ${ComponentIcon.width} ${ComponentIcon.height}`}
-            data-likec4-fill="mix-stroke"
-          >
-            <rect x={stubW / 2} y={0} width={boxW} height={boxH} rx={2} strokeWidth={0} />
-            <rect x={0} y={boxH / 2 - stubH / 2} width={stubW} height={stubH} rx={1} strokeWidth={0} />
-            <rect x={stubW / 2} y={boxH + gap} width={boxW} height={boxH} rx={2} strokeWidth={0} />
-            <rect x={0} y={boxH + gap + boxH / 2 - stubH / 2} width={stubW} height={stubH} rx={1} strokeWidth={0} />
-            <rect x={stubW / 2} y={2 * (boxH + gap)} width={boxW} height={boxH} rx={2} strokeWidth={0} />
-            <rect
-              x={0}
-              y={2 * (boxH + gap) + boxH / 2 - stubH / 2}
-              width={stubW}
-              height={stubH}
-              rx={1}
-              strokeWidth={0} />
-          </svg> */
-          }
+          <ComponentTopLeftRect index={0} size={size} />
+          <ComponentTopLeftRect index={1} size={size} />
         </>
       )
     }
@@ -353,7 +341,7 @@ function ShapeSvgOutline({ shape, w, h }: ShapeSvgProps) {
   }
   return <g className={'likec4-shape-outline'}>{svg}</g>
 }
-type Data = {
+type RequiredData = {
   shape: ElementShape
   width: number
   height: number
@@ -361,7 +349,7 @@ type Data = {
 }
 
 type ElementShapeProps = {
-  data: Data
+  data: RequiredData
   width?: number | undefined
   height?: number | undefined
   /**
@@ -389,27 +377,29 @@ export function ElementShape(
         className={elementShapeRecipe({
           shapetype: 'html',
           withBorder,
+          withOutline: showSeletionOutline,
         })}>
         {isMultiple && <div className={'likec4-shape-multiple'} />}
-        {showSeletionOutline && <div className={'likec4-shape-outline'} />}
+        <div className={'likec4-shape-outline'} />
       </div>
     )
   }
 
   const className = elementShapeRecipe({
     shapetype: 'svg',
+    withOutline: showSeletionOutline,
   })
 
   return (
     <>
       {isMultiple && (
         <svg className={className} data-likec4-shape-multiple="true" viewBox={`0 0 ${w} ${h}`}>
-          <ShapeSvg shape={data.shape} w={w} h={h} />
+          <ShapeSvg shape={data.shape} size={data.style?.size} w={w} h={h} />
         </svg>
       )}
       <svg className={className} viewBox={`0 0 ${w} ${h}`}>
-        {showSeletionOutline && <ShapeSvgOutline shape={data.shape} w={w} h={h} />}
-        <ShapeSvg shape={data.shape} w={w} h={h} />
+        <ShapeSvgOutline shape={data.shape} w={w} h={h} />
+        <ShapeSvg shape={data.shape} size={data.style?.size} w={w} h={h} />
       </svg>
     </>
   )
