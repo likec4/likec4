@@ -1,4 +1,4 @@
-import type { AutoLayoutDirection, MarkdownOrString } from '@likec4/core/types'
+import type { AnyAux, AutoLayoutDirection, MarkdownOrString } from '@likec4/core/types'
 import { FqnRef } from '@likec4/core/types'
 import { nameFromFqn, parentFqn } from '@likec4/core/utils'
 
@@ -38,7 +38,7 @@ export function printModelRef(ref: FqnRef.ModelRef): string {
   return ref.model as string
 }
 
-export function printDeploymentRef(ref: FqnRef.DeploymentRef): string {
+export function printDeploymentRef(ref: FqnRef.DeploymentRef<AnyAux>): string {
   if (FqnRef.isInsideInstanceRef(ref)) {
     return `${ref.deployment}.${ref.element}`
   }
