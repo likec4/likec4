@@ -46,6 +46,14 @@
         "default": "./dist/browser/index.mjs"
       }
     },
+    "./node/without-mcp": {
+      "sources": "./src/node/without-mcp/index.ts",
+      "default": {
+        "types": "./dist/node/without-mcp/index.d.mts",
+        "import": "./dist/node/without-mcp/index.mjs",
+        "default": "./dist/node/without-mcp/index.mjs"
+      }
+    },
     "./node": {
       "sources": "./src/node/index.ts",
       "default": {

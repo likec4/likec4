@@ -79,6 +79,11 @@ const model = await likec4.layoutedModel()
 const projects = likec4.projects()
 ```
 
+> [!NOTE]
+> There is a separate entry point for node.js environment without MCP support: `@likec4/language-services/node/without-mcp`
+>
+> Useful to reduce bundle size
+
 ## API
 
 ### Factory Functions

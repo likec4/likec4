@@ -1,5 +1,4 @@
 import { WithFileSystem, WithLikeC4ManualLayouts } from '@likec4/language-server/filesystem'
-import { WithMCPServer } from '@likec4/language-server/mcp'
 import {
   createLanguageServices as createCustomLanguageServices,
   NoFileSystem,
@@ -7,10 +6,10 @@ import {
 } from '@likec4/language-server/module'
 import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
-import { configureLogger, getConsoleStderrSink, loggable, rootLogger } from '@likec4/log'
+import { rootLogger } from '@likec4/log'
 import defu from 'defu'
 import k from 'tinyrainbow'
-import type { LikeC4Langium } from '../common/LikeC4'
+import type { LikeC4Langium } from '../../common/LikeC4'
 
 export type CreateLanguageServiceOptions = {
   /**
@@ -36,12 +35,6 @@ export type CreateLanguageServiceOptions = {
    * @default 'wasm'
    */
   graphviz?: 'wasm' | 'binary'
-
-  /**
-   * Whether to start MCP server
-   * @default false
-   */
-  mcp?: false | 'stdio' | { port: number }
 }
 
 export function createLanguageServices(
@@ -54,18 +47,7 @@ export function createLanguageServices(
     manualLayouts: true,
     watch: false,
     graphviz: 'wasm',
-    mcp: false as const,
   })
-
-  if (options.mcp === 'stdio') {
-    configureLogger({
-      reset: true,
-      sinks: {
-        // Name it as console to override internal logger
-        console: getConsoleStderrSink(),
-      },
-    })
-  }
 
   const useDotBin = options.graphviz === 'binary'
 
@@ -82,7 +64,6 @@ export function createLanguageServices(
           ...NoFileSystem,
           ...NoLikeC4ManualLayouts,
         },
-      ...options.mcp ? WithMCPServer(options.mcp === 'stdio' ? 'stdio' : options.mcp) : {},
     },
     {
       likec4: {
@@ -93,17 +74,6 @@ export function createLanguageServices(
       },
     },
   )
-
-  if (typeof options.mcp === 'object' && options.mcp.port) {
-    void langium.likec4.mcp.Server.start(options.mcp.port).catch((e) => {
-      logger.error(loggable(e))
-    })
-  }
-  if (options.mcp === 'stdio') {
-    void langium.likec4.mcp.Server.start().catch((e) => {
-      logger.error(loggable(e))
-    })
-  }
 
   return langium
 }

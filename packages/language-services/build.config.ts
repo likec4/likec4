@@ -6,6 +6,7 @@ export default defineBuildConfig({
       type: 'bundle',
       input: [
         './src/node/index.ts',
+        './src/node/without-mcp/index.ts',
         './src/browser/index.ts',
       ],
       rolldown: {

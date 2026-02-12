@@ -30,10 +30,23 @@ export class LikeC4 {
     this.logger = logger
   }
 
+  /**
+   * File system path to the workspace root
+   */
+  get workspace() {
+    return this.langium.shared.workspace.WorkspaceManager.workspaceUri.fsPath
+  }
+
+  /**
+   * URI of the workspace root
+   */
   get workspaceURI() {
     return this.langium.shared.workspace.WorkspaceManager.workspaceUri
   }
 
+  /**
+   * URL of the workspace root
+   */
   get workspaceURL() {
     return this.langium.shared.workspace.WorkspaceManager.workspaceURL
   }
