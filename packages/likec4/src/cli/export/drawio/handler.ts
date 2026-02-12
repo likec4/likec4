@@ -11,8 +11,8 @@ import { loggable } from '@likec4/log'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
+import { fromWorkspace } from '@likec4/language-services/node'
 import type { Argv } from 'yargs'
-import { LikeC4 } from '../../../LikeC4'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
@@ -185,9 +185,8 @@ type DrawioExportArgs = {
 async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
 
-  // 1) Init workspace and ensure single project
-  const likec4 = await LikeC4.fromWorkspace(args.path, {
-    logger,
+  // 1) Init workspace and ensure single project (same fromWorkspace as build for consistent CI)
+  await using likec4 = await fromWorkspace(args.path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })
