@@ -666,6 +666,25 @@ function escapeLikec4Quotes(s: string): string {
   return s.replaceAll('\'', '\'\'')
 }
 
+/** Decode optional root cell style field (likec4ViewTitle, likec4ViewDescription, etc.). */
+function decodeRootStyleField(raw: string | undefined): string {
+  return raw != null && raw !== '' ? decodeURIComponent(raw) : ''
+}
+
+/** Build view block lines for model (single responsibility; DRY with parseDrawioToLikeC4). */
+function buildViewBlockLines(viewId: string, viewTitle: string, viewDesc: string): string[] {
+  return [
+    'views {',
+    `  view ${viewId} {`,
+    ...(viewTitle ? [`    title '${escapeLikec4Quotes(viewTitle)}'`] : []),
+    ...(viewDesc ? [`    description '${escapeLikec4Quotes(viewDesc)}'`] : []),
+    '    include *',
+    '  }',
+    '}',
+    '',
+  ]
+}
+
 /** Push element declaration line: name = actor|system|container 'title'. */
 function pushElementHeader(
   ctx: ElementEmitContext,
@@ -1244,26 +1263,12 @@ export function parseDrawioToLikeC4(xml: string): string {
   const viewId = toId(diagramName) || 'index'
   const rootCell = byId.get('1')
   const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
-  const viewTitleRaw = rootStyle.get('likec4viewtitle')
-  const viewDescRaw = rootStyle.get('likec4viewdescription')
-  const viewNotationRaw = rootStyle.get('likec4viewnotation')
-  const viewTitle = viewTitleRaw != null && viewTitleRaw !== '' ? decodeURIComponent(viewTitleRaw) : ''
-  const viewDesc = viewDescRaw != null && viewDescRaw !== '' ? decodeURIComponent(viewDescRaw) : ''
-  const viewNotation = viewNotationRaw != null && viewNotationRaw !== '' ? decodeURIComponent(viewNotationRaw) : ''
-  const viewBlock = [
-    'views {',
-    `  view ${viewId} {`,
-    ...(viewTitle ? [`    title '${viewTitle.replaceAll('\'', '\'\'')}'`] : []),
-    ...(viewDesc ? [`    description '${viewDesc.replaceAll('\'', '\'\'')}'`] : []),
-    '    include *',
-    '  }',
-    '}',
-    '',
-  ]
-  lines.push(...viewBlock)
-
+  const viewTitle = decodeRootStyleField(rootStyle.get('likec4viewtitle'))
+  const viewDesc = decodeRootStyleField(rootStyle.get('likec4viewdescription'))
+  const viewNotation = decodeRootStyleField(rootStyle.get('likec4viewnotation'))
+  lines.push(...buildViewBlockLines(viewId, viewTitle, viewDesc))
   if (viewNotation) {
-    lines.push(`// likec4.view.notation ${viewId} '${viewNotation.replaceAll('\'', '\'\'')}'`)
+    lines.push(`// likec4.view.notation ${viewId} '${escapeLikec4Quotes(viewNotation)}'`)
   }
 
   emitRoundtripCommentsSingle(lines, viewId, idToFqn, byId, edges)
@@ -1325,12 +1330,9 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   const viewId = toId(diagramName) || 'index'
   const rootCell = byId.get('1')
   const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
-  const viewTitleRaw = rootStyle.get('likec4viewtitle')
-  const viewDescRaw = rootStyle.get('likec4viewdescription')
-  const viewNotationRaw = rootStyle.get('likec4viewnotation')
-  const viewTitle = viewTitleRaw != null && viewTitleRaw !== '' ? decodeURIComponent(viewTitleRaw) : ''
-  const viewDesc = viewDescRaw != null && viewDescRaw !== '' ? decodeURIComponent(viewDescRaw) : ''
-  const viewNotation = viewNotationRaw != null && viewNotationRaw !== '' ? decodeURIComponent(viewNotationRaw) : ''
+  const viewTitle = decodeRootStyleField(rootStyle.get('likec4viewtitle'))
+  const viewDesc = decodeRootStyleField(rootStyle.get('likec4viewdescription'))
+  const viewNotation = decodeRootStyleField(rootStyle.get('likec4viewnotation'))
   return {
     idToFqn,
     idToCell,
@@ -1479,8 +1481,8 @@ views {
     const includeList = [...v.fqnSet].sort((a, b) => a.localeCompare(b))
     viewsLines.push(
       `  view ${v.viewId} {`,
-      ...(v.viewTitle ? [`    title '${v.viewTitle.replaceAll('\'', '\'\'')}'`] : []),
-      ...(v.viewDesc ? [`    description '${v.viewDesc.replaceAll('\'', '\'\'')}'`] : []),
+      ...(v.viewTitle ? [`    title '${escapeLikec4Quotes(v.viewTitle)}'`] : []),
+      ...(v.viewDesc ? [`    description '${escapeLikec4Quotes(v.viewDesc)}'`] : []),
       `    include ${includeList.length > 0 ? includeList.join(', ') : '*'}`,
       '  }',
     )
@@ -1490,7 +1492,7 @@ views {
 
   for (const v of viewInfos) {
     if (v.viewNotation) {
-      lines.push(`// likec4.view.notation ${v.viewId} '${v.viewNotation.replaceAll('\'', '\'\'')}'`)
+      lines.push(`// likec4.view.notation ${v.viewId} '${escapeLikec4Quotes(v.viewNotation)}'`)
     }
   }
 

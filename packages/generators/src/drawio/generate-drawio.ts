@@ -653,20 +653,19 @@ function getViewTitle(view: View): string | null {
     : null
 }
 
+/** Normalize view description from txt/md/string to plain string (single responsibility). */
+function getViewDescriptionString(view: View): string {
+  const raw = (view as { description?: unknown }).description
+  if (raw != null && typeof raw === 'object' && 'txt' in raw) return String((raw as { txt: string }).txt)
+  if (raw != null && typeof raw === 'object' && 'md' in raw) return String((raw as { md: string }).md)
+  if (typeof raw === 'string') return raw
+  return ''
+}
+
 /** Build root cell style string from view metadata (title, description, notation) for round-trip. */
 function buildRootCellStyle(view: View): string {
   const viewTitle = getViewTitle(view)
-  const viewDescRaw = (view as { description?: unknown }).description
-  let viewDesc: string
-  if (viewDescRaw != null && typeof viewDescRaw === 'object' && 'txt' in viewDescRaw) {
-    viewDesc = String((viewDescRaw as { txt: string }).txt)
-  } else if (viewDescRaw != null && typeof viewDescRaw === 'object' && 'md' in viewDescRaw) {
-    viewDesc = String((viewDescRaw as { md: string }).md)
-  } else if (typeof viewDescRaw === 'string') {
-    viewDesc = viewDescRaw
-  } else {
-    viewDesc = ''
-  }
+  const viewDesc = getViewDescriptionString(view)
   const viewDescEnc = viewDesc.trim() !== '' ? encodeURIComponent(viewDesc.trim()) : ''
   const viewNotationRaw = (view as unknown as { notation?: unknown }).notation
   const viewNotation = typeof viewNotationRaw === 'string' && viewNotationRaw !== '' ? viewNotationRaw : undefined
@@ -743,9 +742,130 @@ const LIKEC4_FONT_FAMILY = '\'IBM Plex Sans Variable\',ui-sans-serif,system-ui,s
 /** Container title color: matches LikeC4 diagram compound title (same as in diagram UI). */
 const CONTAINER_TITLE_COLOR = '#74c0fc'
 
+const DEFAULT_BBOX: BBox = {
+  x: 0,
+  y: 0,
+  width: DEFAULT_NODE_WIDTH,
+  height: DEFAULT_NODE_HEIGHT,
+}
+
+function isDefaultBbox(b: BBox): boolean {
+  return (
+    b.x === DEFAULT_BBOX.x &&
+    b.y === DEFAULT_BBOX.y &&
+    b.width === DEFAULT_BBOX.width &&
+    b.height === DEFAULT_BBOX.height
+  )
+}
+
+/** Spread nodes that share the same default bbox vertically so they don't overlap (single responsibility). */
+function spreadUnlaidNodesOverVertical(
+  bboxes: Map<NodeId, BBox>,
+  sortedNodes: Node[],
+  containerNodeIds: Set<NodeId>,
+): void {
+  const bboxKey = (b: BBox) => `${b.x},${b.y},${b.width},${b.height}`
+  const nonContainerNodes = sortedNodes.filter(n => !containerNodeIds.has(n.id))
+  const byBbox = new Map<string, Node[]>()
+  for (const n of nonContainerNodes) {
+    const b = bboxes.get(n.id)
+    if (!b) continue
+    const key = bboxKey(b)
+    const list = byBbox.get(key) ?? []
+    list.push(n)
+    byBbox.set(key, list)
+  }
+  for (const bboxNodes of byBbox.values()) {
+    if (bboxNodes.length <= 1) continue
+    const firstNode = bboxNodes[0]
+    const firstBbox = firstNode ? bboxes.get(firstNode.id) : undefined
+    if (firstBbox && isDefaultBbox(firstBbox)) {
+      bboxNodes.forEach((node, i) => {
+        bboxes.set(node.id, {
+          ...firstBbox,
+          x: firstBbox.x,
+          y: firstBbox.y + i * (firstBbox.height + NODES_SPREAD_GAP),
+        })
+      })
+    }
+  }
+}
+
+/** Wrap container bboxes around children when container has default bbox (single responsibility). */
+function computeContainerBboxesFromChildren(
+  bboxes: Map<NodeId, BBox>,
+  containerNodeIds: Set<NodeId>,
+  sortedNodes: Node[],
+  nodeIdsInView: Set<NodeId>,
+  containerPadding: number,
+  containerPaddingVertical: number,
+): void {
+  const containerNodesSorted = [...sortedNodes]
+    .filter(n => containerNodeIds.has(n.id))
+    .sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
+  for (const node of containerNodesSorted) {
+    const children = (node as Node & { children?: NodeId[] }).children ?? []
+    const inView = children.filter((id: NodeId) => nodeIdsInView.has(id))
+    if (inView.length === 0) continue
+    const initialBbox = bboxes.get(node.id)!
+    if (!isDefaultBbox(initialBbox)) continue
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity
+    for (const cid of inView) {
+      const b = bboxes.get(cid)
+      if (!b) continue
+      minX = Math.min(minX, b.x)
+      minY = Math.min(minY, b.y)
+      maxX = Math.max(maxX, b.x + b.width)
+      maxY = Math.max(maxY, b.y + b.height)
+    }
+    if (minX !== Infinity) {
+      bboxes.set(node.id, {
+        x: minX - containerPadding,
+        y: minY - containerPaddingVertical,
+        width: maxX - minX + 2 * containerPadding,
+        height: maxY - minY + 2 * containerPaddingVertical,
+      })
+    }
+  }
+}
+
+/** Compute canvas offsets to center content (single responsibility). */
+function computeContentBoundsAndOffsets(bboxes: Map<NodeId, BBox>): {
+  offsetX: number
+  offsetY: number
+  canvasWidth: number
+  canvasHeight: number
+} {
+  let contentMinX = Infinity,
+    contentMinY = Infinity,
+    contentMaxX = -Infinity,
+    contentMaxY = -Infinity
+  for (const b of bboxes.values()) {
+    contentMinX = Math.min(contentMinX, b.x)
+    contentMinY = Math.min(contentMinY, b.y)
+    contentMaxX = Math.max(contentMaxX, b.x + b.width)
+    contentMaxY = Math.max(contentMaxY, b.y + b.height)
+  }
+  if (contentMinX === Infinity) contentMinX = 0
+  if (contentMinY === Infinity) contentMinY = 0
+  if (contentMaxX === -Infinity) contentMaxX = contentMinX + DEFAULT_CANVAS_WIDTH
+  if (contentMaxY === -Infinity) contentMaxY = contentMinY + DEFAULT_CANVAS_HEIGHT
+  const contentCx = contentMinX + (contentMaxX - contentMinX) / 2
+  const contentCy = contentMinY + (contentMaxY - contentMinY) / 2
+  return {
+    offsetX: DEFAULT_CANVAS_WIDTH / 2 - contentCx,
+    offsetY: DEFAULT_CANVAS_HEIGHT / 2 - contentCy,
+    canvasWidth: DEFAULT_CANVAS_WIDTH,
+    canvasHeight: DEFAULT_CANVAS_HEIGHT,
+  }
+}
+
 /**
  * Layout phase: compute bboxes, container wrap, content bounds, and offsets.
- * Separated from cell-building so generateDiagramContent is easier to follow.
+ * Delegates to spreadUnlaidNodesOverVertical, computeContainerBboxesFromChildren, computeContentBoundsAndOffsets.
  */
 function computeDiagramLayout(
   viewmodel: LikeC4ViewModel<aux.Unknown>,
@@ -788,93 +908,21 @@ function computeDiagramLayout(
     ).map(n => n.id),
   )
 
-  const defaultBbox: BBox = { x: 0, y: 0, width: DEFAULT_NODE_WIDTH, height: DEFAULT_NODE_HEIGHT }
-  const isDefaultBbox = (b: BBox) =>
-    b.x === defaultBbox.x &&
-    b.y === defaultBbox.y &&
-    b.width === defaultBbox.width &&
-    b.height === defaultBbox.height
-  const bboxKey = (b: BBox) => `${b.x},${b.y},${b.width},${b.height}`
-  const nonContainerNodes = sortedNodes.filter(n => !containerNodeIds.has(n.id))
-  const byBbox = new Map<string, typeof nonContainerNodes>()
-  for (const n of nonContainerNodes) {
-    const b = bboxes.get(n.id)
-    if (!b) continue
-    const key = bboxKey(b)
-    const list = byBbox.get(key) ?? []
-    list.push(n)
-    byBbox.set(key, list)
-  }
-  for (const bboxNodes of byBbox.values()) {
-    if (bboxNodes.length <= 1) continue
-    const firstNode = bboxNodes[0]
-    const firstBbox = firstNode ? bboxes.get(firstNode.id) : undefined
-    if (firstBbox && isDefaultBbox(firstBbox)) {
-      bboxNodes.forEach((node, i) => {
-        bboxes.set(node.id, {
-          ...firstBbox,
-          x: firstBbox.x,
-          y: firstBbox.y + i * (firstBbox.height + NODES_SPREAD_GAP),
-        })
-      })
-    }
-  }
+  spreadUnlaidNodesOverVertical(bboxes, sortedNodes, containerNodeIds)
 
   const effectiveStyles = getEffectiveStyles(viewmodel)
   const containerPadding = effectiveStyles.theme.spacing.xl
   const containerPaddingVertical = effectiveStyles.theme.spacing.xl + effectiveStyles.theme.spacing.md
-  const containerNodesSorted = [...sortedNodes]
-    .filter(n => containerNodeIds.has(n.id))
-    .sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
-  for (const node of containerNodesSorted) {
-    const children = (node as Node & { children?: NodeId[] }).children ?? []
-    const inView = children.filter((id: NodeId) => nodeIdsInView.has(id))
-    if (inView.length === 0) continue
-    const initialBbox = bboxes.get(node.id)!
-    if (isDefaultBbox(initialBbox)) {
-      let minX = Infinity,
-        minY = Infinity,
-        maxX = -Infinity,
-        maxY = -Infinity
-      for (const cid of inView) {
-        const b = bboxes.get(cid)
-        if (!b) continue
-        minX = Math.min(minX, b.x)
-        minY = Math.min(minY, b.y)
-        maxX = Math.max(maxX, b.x + b.width)
-        maxY = Math.max(maxY, b.y + b.height)
-      }
-      if (minX !== Infinity) {
-        bboxes.set(node.id, {
-          x: minX - containerPadding,
-          y: minY - containerPaddingVertical,
-          width: maxX - minX + 2 * containerPadding,
-          height: maxY - minY + 2 * containerPaddingVertical,
-        })
-      }
-    }
-  }
+  computeContainerBboxesFromChildren(
+    bboxes,
+    containerNodeIds,
+    sortedNodes,
+    nodeIdsInView,
+    containerPadding,
+    containerPaddingVertical,
+  )
 
-  let contentMinX = Infinity,
-    contentMinY = Infinity,
-    contentMaxX = -Infinity,
-    contentMaxY = -Infinity
-  for (const b of bboxes.values()) {
-    contentMinX = Math.min(contentMinX, b.x)
-    contentMinY = Math.min(contentMinY, b.y)
-    contentMaxX = Math.max(contentMaxX, b.x + b.width)
-    contentMaxY = Math.max(contentMaxY, b.y + b.height)
-  }
-  if (contentMinX === Infinity) contentMinX = 0
-  if (contentMinY === Infinity) contentMinY = 0
-  if (contentMaxX === -Infinity) contentMaxX = contentMinX + DEFAULT_CANVAS_WIDTH
-  if (contentMaxY === -Infinity) contentMaxY = contentMinY + DEFAULT_CANVAS_HEIGHT
-  const contentCx = contentMinX + (contentMaxX - contentMinX) / 2
-  const contentCy = contentMinY + (contentMaxY - contentMinY) / 2
-  const canvasWidth = DEFAULT_CANVAS_WIDTH
-  const canvasHeight = DEFAULT_CANVAS_HEIGHT
-  const offsetX = canvasWidth / 2 - contentCx
-  const offsetY = canvasHeight / 2 - contentCy
+  const { offsetX, offsetY, canvasWidth, canvasHeight } = computeContentBoundsAndOffsets(bboxes)
 
   return {
     view,
