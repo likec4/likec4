@@ -4,7 +4,6 @@ import type { LikeC4ViewModel } from '@likec4/core/model'
 import type {
   aux,
   DiagramNode,
-  ElementColorValues,
   MarkdownOrString,
   NodeId,
   ProcessedView,
@@ -47,7 +46,7 @@ function uint8ArrayToBase64(bytes: Uint8Array): string {
   const chunk = 8192
   for (let i = 0; i < bytes.length; i += chunk) {
     const slice = bytes.subarray(i, i + chunk)
-    binary += String.fromCharCode.apply(null, [...slice])
+    binary += String.fromCodePoint(...slice)
   }
   return btoa(binary)
 }
@@ -64,20 +63,20 @@ function getEffectiveStyles(viewmodel: LikeC4ViewModel<aux.Unknown>): LikeC4Styl
 /** Escape for use inside XML attributes and text. */
 function escapeXml(unsafe: string): string {
   return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('\'', '&apos;')
 }
 
 /** Escape for use inside HTML (e.g. cell value with html=1). */
 function escapeHtml(s: string): string {
   return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
 }
 
 /** Theme color key valid for styles.theme.colors; falls back to primary/gray for elements/edges. */
@@ -195,11 +194,29 @@ function edgeAnchors(
   const dx = tCx - sCx
   const dy = tCy - sCy
   const hor = Math.abs(dx) >= Math.abs(dy)
-  const exitX = hor ? (dx >= 0 ? 1 : 0) : 0.5
-  const exitY = hor ? 0.5 : dy >= 0 ? 1 : 0
-  const entryX = hor ? (dx >= 0 ? 0 : 1) : 0.5
-  const entryY = hor ? 0.5 : dy >= 0 ? 0 : 1
+  const exitXWhenHor = dx >= 0 ? 1 : 0
+  const exitYWhenVert = dy >= 0 ? 1 : 0
+  const entryXWhenHor = dx >= 0 ? 0 : 1
+  const entryYWhenVert = dy >= 0 ? 0 : 1
+  const exitX = hor ? exitXWhenHor : 0.5
+  const exitY = hor ? 0.5 : exitYWhenVert
+  const entryX = hor ? entryXWhenHor : 0.5
+  const entryY = hor ? 0.5 : entryYWhenVert
   return { exitX, exitY, entryX, entryY }
+}
+
+/** Normalize one waypoint to [x, y]; returns one element or empty. */
+function normalizeEdgePoint(
+  pt: readonly (readonly [number, number])[] | number[] | { x: number; y: number },
+): [number, number][] {
+  if (Array.isArray(pt) && pt.length >= 2 && typeof pt[0] === 'number' && typeof pt[1] === 'number') {
+    return [[pt[0], pt[1]]]
+  }
+  const o = pt as { x?: number; y?: number }
+  if (typeof o.x === 'number' && typeof o.y === 'number') {
+    return [[o.x, o.y]]
+  }
+  return []
 }
 
 /**
@@ -313,7 +330,6 @@ export function generateDrawio(
     (nodes as Node[]).filter(
       n =>
         Array.isArray(n.children) &&
-        n.children.length > 0 &&
         n.children.some((childId: NodeId) => nodeIdsInView.has(childId)),
     ).map(n => n.id),
   )
@@ -341,14 +357,15 @@ export function generateDrawio(
     if (nodes.length <= 1) continue
     const firstNode = nodes[0]
     const firstBbox = firstNode ? bboxes.get(firstNode.id) : undefined
-    if (!firstBbox || !isDefaultBbox(firstBbox)) continue
-    nodes.forEach((node, i) => {
-      bboxes.set(node.id, {
-        ...firstBbox,
-        x: firstBbox.x,
-        y: firstBbox.y + i * (firstBbox.height + GAP),
+    if (firstBbox && isDefaultBbox(firstBbox)) {
+      nodes.forEach((node, i) => {
+        bboxes.set(node.id, {
+          ...firstBbox,
+          x: firstBbox.x,
+          y: firstBbox.y + i * (firstBbox.height + GAP),
+        })
       })
-    })
+    }
   }
 
   const effectiveStyles = getEffectiveStyles(viewmodel)
@@ -365,26 +382,27 @@ export function generateDrawio(
     if (inView.length === 0) continue
     const initialBbox = bboxes.get(node.id)!
     /** Use layout bbox when the diagram provides one; only wrap children when container has default bbox (no layout). */
-    if (!isDefaultBbox(initialBbox)) continue
-    let minX = Infinity,
-      minY = Infinity,
-      maxX = -Infinity,
-      maxY = -Infinity
-    for (const cid of inView) {
-      const b = bboxes.get(cid)
-      if (!b) continue
-      minX = Math.min(minX, b.x)
-      minY = Math.min(minY, b.y)
-      maxX = Math.max(maxX, b.x + b.width)
-      maxY = Math.max(maxY, b.y + b.height)
-    }
-    if (minX !== Infinity) {
-      bboxes.set(node.id, {
-        x: minX - CONTAINER_PADDING,
-        y: minY - CONTAINER_PADDING_VERTICAL,
-        width: maxX - minX + 2 * CONTAINER_PADDING,
-        height: maxY - minY + 2 * CONTAINER_PADDING_VERTICAL,
-      })
+    if (isDefaultBbox(initialBbox)) {
+      let minX = Infinity,
+        minY = Infinity,
+        maxX = -Infinity,
+        maxY = -Infinity
+      for (const cid of inView) {
+        const b = bboxes.get(cid)
+        if (!b) continue
+        minX = Math.min(minX, b.x)
+        minY = Math.min(minY, b.y)
+        maxX = Math.max(maxX, b.x + b.width)
+        maxY = Math.max(maxY, b.y + b.height)
+      }
+      if (minX !== Infinity) {
+        bboxes.set(node.id, {
+          x: minX - CONTAINER_PADDING,
+          y: minY - CONTAINER_PADDING_VERTICAL,
+          width: maxX - minX + 2 * CONTAINER_PADDING,
+          height: maxY - minY + 2 * CONTAINER_PADDING_VERTICAL,
+        })
+      }
     }
   }
 
@@ -424,12 +442,8 @@ export function generateDrawio(
       ? getCellId(node.parent)
       : defaultParentId
     const parentBbox = node.parent != null ? bboxes.get(node.parent) : undefined
-    const x = parentBbox != null
-      ? bbox.x - parentBbox.x
-      : bbox.x + offsetX
-    const y = parentBbox != null
-      ? bbox.y - parentBbox.y
-      : bbox.y + offsetY
+    const x = parentBbox == null ? bbox.x + offsetX : bbox.x - parentBbox.x
+    const y = parentBbox == null ? bbox.y + offsetY : bbox.y - parentBbox.y
 
     const title = node.title
     const descRaw = flattenMarkdownOrString(node.description)
@@ -474,32 +488,36 @@ export function generateDrawio(
       iconPosition?: string
     } | undefined
     const fontSizePx = effectiveStyles.fontSize(nodeStyle?.textSize)
-    const valueHtml = isContainer
-      ? ''
-      : desc !== ''
-      ? `<div style="box-sizing:border-box;width:100%;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:${fontHex};font-family:${fontFamily};"><b style="font-size:${fontSizePx}px;">${
-        escapeHtml(title)
-      }</b><br/><span style="font-weight:normal;font-size:${fontSizePx}px;">${escapeHtml(desc)}</span></div>`
-      : `<div style="box-sizing:border-box;width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;text-align:center;color:${fontHex};font-family:${fontFamily};"><b style="font-size:${fontSizePx}px;">${
-        escapeHtml(title)
-      }</b></div>`
+    let valueHtml: string
+    if (isContainer) {
+      valueHtml = ''
+    } else if (desc !== '') {
+      valueHtml =
+        `<div style="box-sizing:border-box;width:100%;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:${fontHex};font-family:${fontFamily};"><b style="font-size:${fontSizePx}px;">${
+          escapeHtml(title)
+        }</b><br/><span style="font-weight:normal;font-size:${fontSizePx}px;">${escapeHtml(desc)}</span></div>`
+    } else {
+      valueHtml =
+        `<div style="box-sizing:border-box;width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;text-align:center;color:${fontHex};font-family:${fontFamily};"><b style="font-size:${fontSizePx}px;">${
+          escapeHtml(title)
+        }</b></div>`
+    }
     const value = escapeXml(valueHtml)
     const borderVal = nodeStyle?.border
-    const strokeWidth = strokeWidthOverride ?? (borderVal === 'none' ? '0' : isContainer ? '1' : borderVal ? '1' : '')
+    const strokeWidthDefault = borderVal === 'none' ? '0' : (isContainer ? '1' : (borderVal ? '1' : ''))
+    const strokeWidth = strokeWidthOverride ?? strokeWidthDefault
     const strokeWidthStyle = strokeWidth !== '' ? `strokeWidth=${strokeWidth};` : ''
-    const containerDashed = isContainer && borderVal !== 'none'
-      ? 'dashed=1;'
-      : borderVal === 'dashed'
-      ? 'dashed=1;'
-      : ''
+    let containerDashed: string
+    if (isContainer && borderVal !== 'none') containerDashed = 'dashed=1;'
+    else if (borderVal === 'dashed') containerDashed = 'dashed=1;'
+    else containerDashed = ''
     const containerOpacityNum = isContainer === true ? (nodeStyle?.opacity ?? 15) : undefined
     const fillOpacityStyle = containerOpacityNum != null && isContainer === true
       ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
       : ''
     const summaryRaw = (node as Node & { summary?: MarkdownOrString }).summary
-    const summaryStr = summaryRaw != null && !isEmptyish(flattenMarkdownOrString(summaryRaw))
-      ? flattenMarkdownOrString(summaryRaw)!.trim()
-      : ''
+    const summaryFlat = summaryRaw != null ? flattenMarkdownOrString(summaryRaw) : null
+    const summaryStr = summaryFlat != null && !isEmptyish(summaryFlat) ? summaryFlat.trim() : ''
     const links = (node as Node & { links?: readonly { url: string; title?: string }[] }).links
     const linksJson = Array.isArray(links) && links.length > 0
       ? encodeURIComponent(JSON.stringify(links.map(l => ({ url: l.url, title: l.title }))))
@@ -535,23 +553,23 @@ export function generateDrawio(
     const likec4Style = likec4Extra.length > 0 ? likec4Extra.join(';') + ';' : ''
 
     const nodeCustomData = (node as Node & { customData?: Record<string, string> }).customData
-    const userObjectXml = nodeCustomData &&
-        typeof nodeCustomData === 'object' &&
-        !Array.isArray(nodeCustomData) &&
-        Object.keys(nodeCustomData).length > 0
+    const hasNodeCustomData = nodeCustomData &&
+      typeof nodeCustomData === 'object' &&
+      !Array.isArray(nodeCustomData) &&
+      Object.keys(nodeCustomData).length > 0
+    const userObjectXml = hasNodeCustomData
       ? '\n  <mxUserObject>' +
-        Object.entries(nodeCustomData)
-          .map(
-            ([k, v]) => `<data key="${escapeXml(k)}">${escapeXml(String(v ?? ''))}</data>`,
-          )
+        Object.entries(nodeCustomData!)
+          .map(([k, v]) => {
+            const safeV = typeof v === 'string' ? v : (v != null ? String(v) : '')
+            return `<data key="${escapeXml(k)}">${escapeXml(safeV)}</data>`
+          })
           .join('') +
         '</mxUserObject>'
       : ''
 
     /** When the element has its own view (navigateTo), add Draw.io link so the cell opens that page. Use direct data:page/id,likec4-<viewId> in style so Draw.io recognizes it; UserObject link= for UI. */
-    const navLinkStyle = navTo !== ''
-      ? `link=${encodeURIComponent(`data:page/id,likec4-${navTo}`)};`
-      : ''
+    const navLinkStyle = navTo === '' ? '' : `link=${encodeURIComponent(`data:page/id,likec4-${navTo}`)};`
     const vertexTextStyle = isContainer
       ? 'align=left;verticalAlign=top;overflow=fill;whiteSpace=wrap;html=1;'
       : `align=center;verticalAlign=middle;verticalLabelPosition=middle;labelPosition=center;fontSize=${fontSizePx};fontStyle=1;spacingTop=4;spacingLeft=2;spacingRight=2;spacingBottom=2;overflow=fill;whiteSpace=wrap;html=1;fontFamily=${
@@ -560,21 +578,22 @@ export function generateDrawio(
 
     /** Draw.io internal page link: UserObject must have label = cell value (HTML) so Edit Link shows "Internal page link". */
     const userObjectLabel = isContainer ? escapeXml(title) : value
+    const geometryAttr = `height="${Math.round(height)}" width="${Math.round(width)}" x="${Math.round(x)}" y="${
+      Math.round(y)
+    }" as="geometry"`
     const innerCellXml =
       `<mxCell parent="${parentId}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" value="${value}" vertex="1">
-  <mxGeometry height="${Math.round(height)}" width="${Math.round(width)}" x="${Math.round(x)}" y="${
-        Math.round(y)
-      }" as="geometry" />${userObjectXml}
+  <mxGeometry ${geometryAttr} />${userObjectXml}
 </mxCell>`
-    const cellXml = navTo !== ''
-      ? `<UserObject label="${userObjectLabel}" link="data:page/id,likec4-${
-        escapeXml(navTo)
-      }" id="${id}">\n  ${innerCellXml}\n</UserObject>`
-      : `<mxCell id="${id}" value="${value}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" vertex="1" parent="${parentId}">\n  <mxGeometry x="${
+    const cellXml = navTo === ''
+      ? `<mxCell id="${id}" value="${value}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" vertex="1" parent="${parentId}">\n  <mxGeometry x="${
         Math.round(x)
       }" y="${Math.round(y)}" width="${Math.round(width)}" height="${
         Math.round(height)
       }" as="geometry" />${userObjectXml}\n</mxCell>`
+      : `<UserObject label="${userObjectLabel}" link="data:page/id,likec4-${
+        escapeXml(navTo)
+      }" id="${id}">\n  ${innerCellXml}\n</UserObject>`
 
     if (isContainer) {
       containerCells.push(cellXml)
@@ -593,13 +612,13 @@ export function generateDrawio(
         `<mxCell parent="${titleParentId}" style="${titleStyle}" value="${titleValue}" vertex="1">\n  <mxGeometry x="${
           Math.round(titleX)
         }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
-      const titleCellXml = navTo !== ''
-        ? `<UserObject label="${escapeXml(title)}" link="data:page/id,likec4-${
-          escapeXml(navTo)
-        }" id="${titleId}">\n  ${titleInner}\n</UserObject>`
-        : `<mxCell id="${titleId}" value="${titleValue}" style="${titleStyle}" vertex="1" parent="${titleParentId}">\n  <mxGeometry x="${
+      const titleCellXml = navTo === ''
+        ? `<mxCell id="${titleId}" value="${titleValue}" style="${titleStyle}" vertex="1" parent="${titleParentId}">\n  <mxGeometry x="${
           Math.round(titleX)
         }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
+        : `<UserObject label="${escapeXml(title)}" link="data:page/id,likec4-${
+          escapeXml(navTo)
+        }" id="${titleId}">\n  ${titleInner}\n</UserObject>`
       containerCells.push(titleCellXml)
     } else vertexCells.push(cellXml)
   }
@@ -617,7 +636,11 @@ export function generateDrawio(
       `exitX=${anchors.exitX};exitY=${anchors.exitY};entryX=${anchors.entryX};entryY=${anchors.entryY};`
     const label = edge.label ? escapeXml(edge.label) : ''
     const strokeColor = getEdgeStrokeColor(viewmodel, edge.color)
-    const dashStyle = edge.line === 'dashed' ? 'dashed=1;' : edge.line === 'dotted' ? 'dashed=1;dashPattern=1 1;' : ''
+    const dashStyle = edge.line === 'dashed'
+      ? 'dashed=1;'
+      : edge.line === 'dotted'
+      ? 'dashed=1;dashPattern=1 1;'
+      : ''
     const endArrow = drawioArrow(edge.head)
     const startArrow = edge.tail == null || edge.tail === 'none' ? 'none' : drawioArrow(edge.tail)
     const edgeDescRaw = flattenMarkdownOrString(edge.description)
@@ -656,15 +679,17 @@ export function generateDrawio(
     const edgeLikec4Style = edgeLikec4.length > 0 ? edgeLikec4.join(';') + ';' : ''
 
     const edgeCustomData = (edge as Edge & { customData?: Record<string, string> }).customData
-    const edgeUserObjectXml = edgeCustomData &&
-        typeof edgeCustomData === 'object' &&
-        !Array.isArray(edgeCustomData) &&
-        Object.keys(edgeCustomData).length > 0
+    const hasEdgeCustomData = edgeCustomData &&
+      typeof edgeCustomData === 'object' &&
+      !Array.isArray(edgeCustomData) &&
+      Object.keys(edgeCustomData).length > 0
+    const edgeUserObjectXml = hasEdgeCustomData
       ? '\n  <mxUserObject>' +
-        Object.entries(edgeCustomData)
-          .map(
-            ([k, v]) => `<data key="${escapeXml(k)}">${escapeXml(String(v ?? ''))}</data>`,
-          )
+        Object.entries(edgeCustomData!)
+          .map(([k, v]) => {
+            const safeV = typeof v === 'string' ? v : (v != null ? String(v) : '')
+            return `<data key="${escapeXml(k)}">${escapeXml(safeV)}</data>`
+          })
           .join('') +
         '</mxUserObject>'
       : ''
@@ -673,14 +698,7 @@ export function generateDrawio(
     const rawEdgePoints = edgeWaypoints?.[`${edge.source}|${edge.target}`]
     /** Flatten to [x,y][] so we never emit nested <Array><Array> (draw.io rejects it). */
     const edgePoints: [number, number][] = Array.isArray(rawEdgePoints)
-      ? rawEdgePoints.flatMap((pt: readonly (readonly [number, number])[] | number[] | { x: number; y: number }) =>
-        Array.isArray(pt) && pt.length >= 2 && typeof pt[0] === 'number' && typeof pt[1] === 'number'
-          ? [[pt[0], pt[1]] as [number, number]]
-          : (typeof (pt as { x?: number; y?: number }).x === 'number' &&
-              typeof (pt as { x?: number; y?: number }).y === 'number'
-            ? [[(pt as { x: number; y: number }).x, (pt as { x: number; y: number }).y] as [number, number]]
-            : [])
-      )
+      ? rawEdgePoints.flatMap(normalizeEdgePoint)
       : []
     const hasPoints = edgePoints.length > 0
     const pointsXml = hasPoints
@@ -696,11 +714,11 @@ export function generateDrawio(
       : '<mxGeometry relative="1" as="geometry" />'
 
     const edgeLabelColors = getEdgeLabelColors(viewmodel, edge.color)
-    const edgeLabelStyle = label !== ''
-      ? `fontColor=${edgeLabelColors.font};fontSize=12;align=center;verticalAlign=middle;labelBackgroundColor=none;fontFamily=${
+    const edgeLabelStyle = label === ''
+      ? ''
+      : `fontColor=${edgeLabelColors.font};fontSize=12;align=center;verticalAlign=middle;labelBackgroundColor=none;fontFamily=${
         encodeURIComponent(fontFamily)
       };`
-      : ''
     edgeCells.push(
       `<mxCell id="${id}" value="${label}" style="endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;${anchorStyle}strokeColor=${strokeColor};strokeWidth=2;${dashStyle}${edgeLabelStyle}${edgeLikec4Style}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">
   ${edgeGeometryXml}${edgeUserObjectXml}
@@ -712,13 +730,16 @@ export function generateDrawio(
     ? (view as { title: string }).title
     : null
   const viewDescRaw = (view as { description?: unknown }).description
-  const viewDesc = viewDescRaw != null && typeof viewDescRaw === 'object' && 'txt' in viewDescRaw
-    ? String((viewDescRaw as { txt: string }).txt)
-    : viewDescRaw != null && typeof viewDescRaw === 'object' && 'md' in viewDescRaw
-    ? String((viewDescRaw as { md: string }).md)
-    : typeof viewDescRaw === 'string'
-    ? viewDescRaw
-    : ''
+  let viewDesc: string
+  if (viewDescRaw != null && typeof viewDescRaw === 'object' && 'txt' in viewDescRaw) {
+    viewDesc = String((viewDescRaw as { txt: string }).txt)
+  } else if (viewDescRaw != null && typeof viewDescRaw === 'object' && 'md' in viewDescRaw) {
+    viewDesc = String((viewDescRaw as { md: string }).md)
+  } else if (typeof viewDescRaw === 'string') {
+    viewDesc = viewDescRaw
+  } else {
+    viewDesc = ''
+  }
   const viewDescEnc = viewDesc.trim() !== '' ? encodeURIComponent(viewDesc.trim()) : ''
   const viewNotationRaw = (view as unknown as { notation?: unknown }).notation
   const viewNotation = typeof viewNotationRaw === 'string' && viewNotationRaw !== '' ? viewNotationRaw : undefined
@@ -782,11 +803,12 @@ export function generateDrawioMulti(
     const opts = optionsByViewId?.[viewmodels[0]!.$view.id]
     return generateDrawio(viewmodels[0]!, opts)
   }
+  const diagramRe = /<diagram[^>]*>([\s\S]*?)<\/diagram>/
   const diagramParts = viewmodels.map(vm => {
     const view = vm.$view
     const opts = optionsByViewId?.[view.id]
     const single = generateDrawio(vm, opts)
-    const m = single.match(/<diagram[^>]*>([\s\S]*?)<\/diagram>/)
+    const m = diagramRe.exec(single)
     if (!m) return ''
     const diagramName = (typeof (view as { title?: string | null }).title === 'string'
       ? (view as { title: string }).title

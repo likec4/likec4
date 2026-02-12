@@ -25,7 +25,18 @@ function gerErrorFromLogRecord(record: LogRecord): Error | null {
         return [mergedErr]
       }
       if (k === 'error' || k === 'err') {
-        return [new Error(`${err}`)]
+        const msg = typeof err === 'string'
+          ? err
+          : err !== null && typeof err === 'object'
+          ? (() => {
+            try {
+              return JSON.stringify(err)
+            } catch {
+              return '[unserializable value]'
+            }
+          })()
+          : String(err)
+        return [new Error(msg)]
       }
       return []
     })

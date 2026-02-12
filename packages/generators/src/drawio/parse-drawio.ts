@@ -79,8 +79,35 @@ export interface DrawioCell {
 
 function getAttr(attrs: string, name: string): string | undefined {
   const re = new RegExp(`${name}="([^"]*)"`, 'i')
-  const m = attrs.match(re)
+  const m = re.exec(attrs)
   return m ? m[1] : undefined
+}
+
+/** Find end of XML open tag (first unquoted '>'). Avoids regex for S5852. */
+function findOpenTagEnd(xml: string, start: number): number {
+  let inQuote = false
+  let i = start
+  while (i < xml.length) {
+    const c = xml[i]
+    if (c === '"') inQuote = !inQuote
+    else if (c === '>' && !inQuote) return i
+    i += 1
+  }
+  return -1
+}
+
+/** Find start of tag '<tagName' (case-insensitive). */
+function indexOfTagStart(xml: string, tagName: string, fromIndex: number): number {
+  const lower = xml.toLowerCase()
+  const needle = `<${tagName.toLowerCase()}`
+  return lower.indexOf(needle, fromIndex)
+}
+
+/** Find start of closing tag '</tagName>' (case-insensitive). */
+function indexOfClosingTag(xml: string, tagName: string, fromIndex: number): number {
+  const lower = xml.toLowerCase()
+  const needle = `</${tagName.toLowerCase()}>`
+  return lower.indexOf(needle, fromIndex)
 }
 
 function parseNum(s: string | undefined): number | undefined {
@@ -124,10 +151,12 @@ function parseAllUserData(fullTag: string): Record<string, string> {
   return out
 }
 
+const GEOM_INNER_RE = /<mxGeometry[^>]*>((?:(?!<\/mxGeometry>)[\s\S])*)<\/mxGeometry>/i
+
 /** Extract edge waypoints from mxGeometry Array/mxPoint inside cell XML. Returns JSON array of [x,y][] or undefined. */
 function parseEdgePoints(fullTag: string): string | undefined {
   // Use tempered greedy (?:.(?!<\/mxGeometry>))* to avoid super-linear backtracking (S5852)
-  const geomMatch = fullTag.match(/<mxGeometry[^>]*>((?:(?!<\/mxGeometry>)[\s\S])*)<\/mxGeometry>/i)
+  const geomMatch = GEOM_INNER_RE.exec(fullTag)
   if (!geomMatch?.[1]) return undefined
   const inner = geomMatch[1]
   const points: [number, number][] = []
@@ -157,23 +186,26 @@ function parseUserData(fullTag: string): { description?: string; technology?: st
   return out
 }
 
+const NAV_LINK_RE = /^data:page\/id,likec4-(.+)$/i
+
 /** Extract viewId from Draw.io internal page link (data:page/id,likec4-<viewId>) for navigateTo round-trip. */
 function navigateToFromLink(link: string | undefined): string | undefined {
   if (!link || link === '') return undefined
-  const m = link.match(/^data:page\/id,likec4-(.+)$/i)
+  const m = NAV_LINK_RE.exec(link)
   return m ? m[1]!.trim() : undefined
 }
 
 /**
  * Build one DrawioCell from mxCell attributes and inner content. Used for both standalone mxCell and UserObject-wrapped mxCell.
  */
+const GEOM_TAG_RE = /<mxGeometry[^>]*>/i
+
 function buildCellFromMxCell(
   attrs: string,
   inner: string,
   fullTag: string,
   overrides?: { id?: string; navigateTo?: string },
 ): DrawioCell | null {
-  const geomAttr = (tag: string, name: string) => getAttr(tag, name)
   const id = overrides?.id ?? getAttr(attrs, 'id')
   if (!id) return null
   const valueRaw = getAttr(attrs, 'value')
@@ -183,16 +215,16 @@ function buildCellFromMxCell(
   const vertex = getAttr(attrs, 'vertex') === '1'
   const edge = getAttr(attrs, 'edge') === '1'
   const style = getAttr(attrs, 'style')
-  const geomMatch = fullTag.match(/<mxGeometry[^>]*>/i)
+  const geomMatch = GEOM_TAG_RE.exec(fullTag)
   const geomStr = geomMatch ? geomMatch[0] : ''
   const styleMap = parseStyle(style ?? undefined)
   const userData = parseUserData(inner)
-  const x = parseNum(geomAttr(geomStr, 'x'))
-  const y = parseNum(geomAttr(geomStr, 'y'))
-  const width = parseNum(geomAttr(geomStr, 'width'))
-  const height = parseNum(geomAttr(geomStr, 'height'))
-  const fillColor = styleMap.get('fillcolor') ?? styleMap.get('fillColor')
-  const strokeColor = styleMap.get('strokecolor') ?? styleMap.get('strokeColor')
+  const x = parseNum(getAttr(geomStr, 'x'))
+  const y = parseNum(getAttr(geomStr, 'y'))
+  const width = parseNum(getAttr(geomStr, 'width'))
+  const height = parseNum(getAttr(geomStr, 'height'))
+  const fillColor = styleMap.get('fillcolor')
+  const strokeColor = styleMap.get('strokecolor')
   const descFromStyle = styleMap.get('likec4description')
   const techFromStyle = styleMap.get('likec4technology')
   const notesFromStyle = styleMap.get('likec4notes')
@@ -309,60 +341,95 @@ function buildCellFromMxCell(
   }
 }
 
+/** Extract one mxCell from xml starting at tagStart. Returns attrs, inner, fullTag and next search index, or null. */
+function extractOneMxCell(
+  xml: string,
+  tagStart: number,
+): { attrs: string; inner: string; fullTag: string; next: number } | null {
+  const endOpen = findOpenTagEnd(xml, tagStart)
+  if (endOpen === -1) return null
+  const attrs = xml.slice(tagStart + 7, endOpen).trim() // '<mxCell'.length === 7
+  // Self-closing: <mxCell ... /> — the / is before >, so check the end of the open tag
+  const tagEnd = xml.slice(Math.max(tagStart, endOpen - 10), endOpen).trimEnd()
+  const isSelfClosing = tagEnd.endsWith('/')
+  const afterBracket = endOpen + 1
+  let inner: string
+  let endTagPos: number
+  if (isSelfClosing) {
+    inner = ''
+    endTagPos = endOpen
+  } else {
+    const closeStart = indexOfClosingTag(xml, 'mxCell', afterBracket)
+    if (closeStart === -1) return null
+    inner = xml.slice(afterBracket, closeStart)
+    endTagPos = closeStart + '</mxCell>'.length - 1
+  }
+  const fullTag = xml.slice(tagStart, endTagPos + 1)
+  return { attrs, inner, fullTag, next: endTagPos + 1 }
+}
+
 /**
  * Simple XML parser for DrawIO mxCell elements. Extracts cells with id, value, parent,
  * source, target, vertex, edge, geometry, style colors and LikeC4 user data.
  * Also parses <UserObject id="..." link="..."> wrapping mxCell (export format for navigateTo) so the inner mxCell gets id and navigateTo from the link.
+ * Uses indexOf-based extraction instead of regex to avoid S5852 (super-linear backtracking DoS).
  */
 function parseDrawioXml(xml: string): DrawioCell[] {
   const cells: DrawioCell[] = []
   const parsedIds = new Set<string>()
-  const geomAttr = (tag: string, name: string) => getAttr(tag, name)
+  const closeUserObjectLen = '</UserObject>'.length
 
   // First pass: UserObject with id and link (inner mxCell has no id; we build cell from UserObject + inner mxCell for round-trip)
-  // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
-  const userObjectRe = /<UserObject[^>]*id="([^"]*)"[^>]*>((?:(?!<\/UserObject>)[\s\S])*)<\/UserObject>/gi
-  let uoMatch
-  while ((uoMatch = userObjectRe.exec(xml)) !== null) {
-    const userObjId = uoMatch[1]?.trim()
-    const innerXml = uoMatch[2] ?? ''
-    if (!userObjId) continue
-    const openTag = uoMatch[0].match(/<UserObject[^>]+>/)?.[0] ?? ''
+  let uoStart = indexOfTagStart(xml, 'UserObject', 0)
+  while (uoStart !== -1) {
+    const endOpen = findOpenTagEnd(xml, uoStart)
+    if (endOpen === -1) break
+    const openTag = xml.slice(uoStart, endOpen + 1)
+    const userObjId = getAttr(openTag, 'id')?.trim()
     const linkAttr = getAttr(openTag, 'link')
     const navigateTo = navigateToFromLink(linkAttr ?? undefined)
-    // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
-    const innerMx = innerXml.match(/<mxCell\s+([^>]+)(?:\s*\/>|>((?:(?!<\/mxCell>)[\s\S])*)<\/mxCell>)/i)
-    if (!innerMx) continue
-    const innerAttrs = innerMx[1] ?? ''
-    const innerInner = innerMx[2] ?? ''
-    const fullTag = `<mxCell id="${userObjId}" ${innerAttrs}>${innerInner}</mxCell>`
-    const cell = buildCellFromMxCell(
-      innerAttrs,
-      innerInner,
-      fullTag,
-      navigateTo != null && navigateTo !== '' ? { id: userObjId, navigateTo } : { id: userObjId },
-    )
-    if (cell) {
-      cells.push(cell)
-      parsedIds.add(cell.id)
+    const closeStart = indexOfClosingTag(xml, 'UserObject', endOpen + 1)
+    if (closeStart === -1) break
+    const innerXml = xml.slice(endOpen + 1, closeStart)
+
+    if (userObjId) {
+      const innerMxStart = indexOfTagStart(innerXml, 'mxCell', 0)
+      if (innerMxStart !== -1) {
+        const mx = extractOneMxCell(innerXml, innerMxStart)
+        if (mx) {
+          const fullTag = `<mxCell id="${userObjId}" ${mx.attrs}>${mx.inner}</mxCell>`
+          const cell = buildCellFromMxCell(
+            mx.attrs,
+            mx.inner,
+            fullTag,
+            navigateTo != null && navigateTo !== '' ? { id: userObjId, navigateTo } : { id: userObjId },
+          )
+          if (cell) {
+            cells.push(cell)
+            parsedIds.add(cell.id)
+          }
+        }
+      }
     }
+    uoStart = indexOfTagStart(xml, 'UserObject', closeStart + closeUserObjectLen)
   }
 
-  // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
-  const mxCellRe = /<mxCell\s+([^>]+)(?:\s*\/>|>((?:(?!<\/mxCell>)[\s\S])*)<\/mxCell>)/gi
-  let m
-  while ((m = mxCellRe.exec(xml)) !== null) {
-    const attrs = m[1] ?? ''
-    const inner = m[2] ?? ''
-    const id = getAttr(attrs, 'id')
-    if (!id) continue
-    // Skip if this mxCell is the inner cell of a UserObject we already parsed (same id would appear in our UserObject pass)
-    if (parsedIds.has(id)) continue
-    const fullTag = m[0]
-    const cell = buildCellFromMxCell(attrs, inner, fullTag)
-    if (cell) {
-      cells.push(cell)
-      parsedIds.add(cell.id)
+  // Second pass: standalone mxCell (skip those already parsed as inner of UserObject)
+  let mxStart = indexOfTagStart(xml, 'mxCell', 0)
+  while (mxStart !== -1) {
+    const mx = extractOneMxCell(xml, mxStart)
+    if (mx) {
+      const id = getAttr(mx.attrs, 'id')
+      if (id && !parsedIds.has(id)) {
+        const cell = buildCellFromMxCell(mx.attrs, mx.inner, mx.fullTag)
+        if (cell) {
+          cells.push(cell)
+          parsedIds.add(cell.id)
+        }
+      }
+      mxStart = indexOfTagStart(xml, 'mxCell', mx.next)
+    } else {
+      mxStart = indexOfTagStart(xml, 'mxCell', mxStart + 7)
     }
   }
   return cells
@@ -370,11 +437,11 @@ function parseDrawioXml(xml: string): DrawioCell[] {
 
 function decodeXmlEntities(s: string): string {
   return s
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, '\'')
-    .replace(/&amp;/g, '&')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&apos;', '\'')
+    .replaceAll('&amp;', '&')
 }
 
 /** Map draw.io endArrow/startArrow style value to LikeC4 RelationshipArrowType. */
@@ -441,20 +508,22 @@ function inferShape(style: string | undefined): string | undefined {
  * Sanitize a string for use as LikeC4 identifier (element name).
  */
 function toId(name: string): string {
-  return name
-    .trim()
-    .replace(/\s+/g, '_')
-    .replace(/[^a-zA-Z0-9_-]/g, '')
-    .replace(/^[0-9]/, '_$&') || 'element'
+  return (
+    name
+      .trim()
+      .replaceAll(/\s+/g, '_')
+      .replaceAll(/[^\w-]/g, '')
+      .replace(/^[0-9]/, '_$&') || 'element'
+  )
 }
 
 /** Strip HTML/entities and take first line; used for cell value → plain text. */
 function stripHtml(s: string): string {
   const decoded = s
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, '&')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&amp;', '&')
   const firstLine = decoded.split('\n')[0] ?? ''
   const brIdx = firstLine.toLowerCase().indexOf('<br')
   const segment = brIdx === -1 ? firstLine : firstLine.slice(0, brIdx)
@@ -487,10 +556,10 @@ function stripTags(s: string): string {
 function stripHtmlForTitle(raw: string | undefined): string {
   if (!raw || raw.trim() === '') return ''
   const decoded = raw
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, '&')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&amp;', '&')
   const firstLine = decoded.split('\n')[0] ?? ''
   const brIdx = firstLine.toLowerCase().indexOf('<br')
   const segment = brIdx === -1 ? firstLine : firstLine.slice(0, brIdx)
@@ -557,11 +626,11 @@ function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string
     !!navigateTo ||
     !!icon
   if (kind === 'actor') {
-    ctx.lines.push(`${pad}${name} = actor '${title.replace(/'/g, '\'\'')}'`)
+    ctx.lines.push(`${pad}${name} = actor '${title.replaceAll('\'', '\'\'')}'`)
   } else if (kind === 'system') {
-    ctx.lines.push(`${pad}${name} = system '${title.replace(/'/g, '\'\'')}'`)
+    ctx.lines.push(`${pad}${name} = system '${title.replaceAll('\'', '\'\'')}'`)
   } else {
-    ctx.lines.push(`${pad}${name} = container '${title.replace(/'/g, '\'\'')}'`)
+    ctx.lines.push(`${pad}${name} = container '${title.replaceAll('\'', '\'\'')}'`)
   }
   if (hasBody) {
     ctx.lines.push(`${pad}{`)
@@ -592,32 +661,32 @@ function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string
       if (iconPositionVal) styleParts.push(`iconPosition ${iconPositionVal}`)
       if (styleParts.length > 0) ctx.lines.push(`${pad}  style { ${styleParts.join(', ')} }`)
     }
-    for (const t of tagList) ctx.lines.push(`${pad}  #${t.replace(/\s+/g, '_')}`)
-    if (desc) ctx.lines.push(`${pad}  description '${desc.replace(/'/g, '\'\'')}'`)
-    if (tech) ctx.lines.push(`${pad}  technology '${tech.replace(/'/g, '\'\'')}'`)
-    if (summary) ctx.lines.push(`${pad}  summary '${summary.replace(/'/g, '\'\'')}'`)
-    if (notes) ctx.lines.push(`${pad}  notes '${notes.replace(/'/g, '\'\'')}'`)
-    if (notation) ctx.lines.push(`${pad}  notation '${notation.replace(/'/g, '\'\'')}'`)
+    for (const t of tagList) ctx.lines.push(`${pad}  #${t.replaceAll(/\s+/g, '_')}`)
+    if (desc) ctx.lines.push(`${pad}  description '${desc.replaceAll('\'', '\'\'')}'`)
+    if (tech) ctx.lines.push(`${pad}  technology '${tech.replaceAll('\'', '\'\'')}'`)
+    if (summary) ctx.lines.push(`${pad}  summary '${summary.replaceAll('\'', '\'\'')}'`)
+    if (notes) ctx.lines.push(`${pad}  notes '${notes.replaceAll('\'', '\'\'')}'`)
+    if (notation) ctx.lines.push(`${pad}  notation '${notation.replaceAll('\'', '\'\'')}'`)
     try {
       const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
       if (Array.isArray(linksArr)) {
         for (const link of linksArr) {
           if (link?.url) {
             ctx.lines.push(
-              `${pad}  link '${String(link.url).replace(/'/g, '\'\'')}'${
-                link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
+              `${pad}  link '${String(link.url).replaceAll('\'', '\'\'')}'${
+                link.title ? ` '${String(link.title).replaceAll('\'', '\'\'')}'` : ''
               }`,
             )
           }
         }
       } else if (nativeLink) {
-        ctx.lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
+        ctx.lines.push(`${pad}  link '${nativeLink.replaceAll('\'', '\'\'')}'`)
       }
     } catch {
-      if (nativeLink) ctx.lines.push(`${pad}  link '${nativeLink.replace(/'/g, '\'\'')}'`)
+      if (nativeLink) ctx.lines.push(`${pad}  link '${nativeLink.replaceAll('\'', '\'\'')}'`)
     }
     if (navigateTo) ctx.lines.push(`${pad}  navigateTo ${navigateTo}`)
-    if (icon) ctx.lines.push(`${pad}  icon '${icon.replace(/'/g, '\'\'')}'`)
+    if (icon) ctx.lines.push(`${pad}  icon '${icon.replaceAll('\'', '\'\'')}'`)
     if (childList && childList.length > 0) {
       for (const ch of childList) {
         emitElementToLines(ctx, ch.cellId, ch.fqn, indent + 1)
@@ -639,7 +708,7 @@ function emitEdgesToLines(
   hexToCustomName: Map<string, string>,
 ): void {
   for (const { cell: e, src, tgt } of edgeEntries) {
-    const title = (e.value && e.value.trim()) ? e.value.replace(/'/g, '\'\'').trim() : ''
+    const title = (e.value && e.value.trim()) ? e.value.replaceAll('\'', '\'\'').trim() : ''
     const desc = e.description?.trim()
     const tech = e.technology?.trim()
     const notes = e.notes?.trim()
@@ -656,22 +725,22 @@ function emitEdgesToLines(
       !!metadataJson || !!edgeStrokeHex
     const arrowPart = relKind && /^[a-zA-Z0-9_-]+$/.test(relKind) ? ` -[${relKind}]-> ` : ' -> '
     const titlePart = title ? ` '${title}'` : desc || tech ? ` ''` : ''
-    const descPart = desc ? ` '${desc.replace(/'/g, '\'\'')}'` : ''
-    const techPart = tech ? ` '${tech.replace(/'/g, '\'\'')}'` : ''
+    const descPart = desc ? ` '${desc.replaceAll('\'', '\'\'')}'` : ''
+    const techPart = tech ? ` '${tech.replaceAll('\'', '\'\'')}'` : ''
     const relationHead = `  ${src}${arrowPart}${tgt}${titlePart}${descPart}${techPart}`
     if (hasBody) {
       const bodyLines: string[] = []
-      if (notes) bodyLines.push(`    notes '${notes.replace(/'/g, '\'\'')}'`)
+      if (notes) bodyLines.push(`    notes '${notes.replaceAll('\'', '\'\'')}'`)
       if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
-      if (notation) bodyLines.push(`    notation '${notation.replace(/'/g, '\'\'')}'`)
+      if (notation) bodyLines.push(`    notation '${notation.replaceAll('\'', '\'\'')}'`)
       try {
         const linksArr = linksJson ? (JSON.parse(linksJson) as { url: string; title?: string }[]) : null
         if (Array.isArray(linksArr)) {
           for (const link of linksArr) {
             if (link?.url) {
               bodyLines.push(
-                `    link '${String(link.url).replace(/'/g, '\'\'')}'${
-                  link.title ? ` '${String(link.title).replace(/'/g, '\'\'')}'` : ''
+                `    link '${String(link.url).replaceAll('\'', '\'\'')}'${
+                  link.title ? ` '${String(link.title).replaceAll('\'', '\'\'')}'` : ''
                 }`,
               )
             }
@@ -686,12 +755,12 @@ function emitEdgesToLines(
           const metaAttrs: string[] = []
           for (const [k, v] of Object.entries(metaObj)) {
             if (k.trim() === '') continue
-            const safeKey = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(k) ? k : `'${k.replace(/'/g, '\'\'')}'`
+            const safeKey = /^[a-zA-Z_]\w*$/.test(k) ? k : `'${k.replaceAll('\'', '\'\'')}'`
             if (Array.isArray(v)) {
-              const arrVals = v.map(s => `'${String(s).replace(/'/g, '\'\'')}'`)
+              const arrVals = v.map(s => `'${String(s).replaceAll('\'', '\'\'')}'`)
               metaAttrs.push(` ${safeKey} [ ${arrVals.join(', ')} ];`)
             } else if (v != null && typeof v === 'string') {
-              metaAttrs.push(` ${safeKey} '${v.replace(/'/g, '\'\'')}';`)
+              metaAttrs.push(` ${safeKey} '${v.replaceAll('\'', '\'\'')}';`)
             }
           }
           if (metaAttrs.length > 0) {
@@ -702,19 +771,17 @@ function emitEdgesToLines(
         // ignore invalid JSON
       }
       if (head || tail || line || edgeStrokeHex) {
-        const styleParts: string[] = []
-        if (line) styleParts.push(`line ${line}`)
-        if (head) styleParts.push(`head ${head}`)
-        if (tail) styleParts.push(`tail ${tail}`)
+        const parts: string[] = []
+        if (line) parts.push(`line ${line}`)
+        if (head) parts.push(`head ${head}`)
+        if (tail) parts.push(`tail ${tail}`)
         if (edgeStrokeHex && /^#[0-9A-Fa-f]{3,8}$/.test(edgeStrokeHex)) {
           const edgeColorName = hexToCustomName.get(edgeStrokeHex)
-          if (edgeColorName) styleParts.push(`color ${edgeColorName}`)
+          if (edgeColorName) parts.push(`color ${edgeColorName}`)
         }
-        if (styleParts.length > 0) bodyLines.push(`    style { ${styleParts.join(', ')} }`)
+        if (parts.length > 0) bodyLines.push(`    style { ${parts.join(', ')} }`)
       }
-      lines.push(relationHead + ' {')
-      lines.push(...bodyLines)
-      lines.push('  }')
+      lines.push(relationHead + ' {', ...bodyLines, '  }')
     } else {
       lines.push(relationHead)
     }
@@ -742,9 +809,11 @@ function emitRoundtripCommentsSingle(
     }
   }
   if (Object.keys(layoutNodes).length > 0) {
-    lines.push('// <likec4.layout.drawio>')
-    lines.push('// ' + JSON.stringify({ [viewId]: { nodes: layoutNodes } }))
-    lines.push('// </likec4.layout.drawio>')
+    lines.push(
+      '// <likec4.layout.drawio>',
+      '// ' + JSON.stringify({ [viewId]: { nodes: layoutNodes } }),
+      '// </likec4.layout.drawio>',
+    )
   }
   const strokeColorLines: string[] = []
   for (const [cellId, fqn] of idToFqn) {
@@ -758,9 +827,7 @@ function emitRoundtripCommentsSingle(
     }
   }
   if (strokeColorLines.length > 0) {
-    lines.push('// <likec4.strokeColor.vertices>')
-    lines.push(...strokeColorLines)
-    lines.push('// </likec4.strokeColor.vertices>')
+    lines.push('// <likec4.strokeColor.vertices>', ...strokeColorLines, '// </likec4.strokeColor.vertices>')
   }
   const strokeWidthLines: string[] = []
   for (const [cellId, fqn] of idToFqn) {
@@ -770,9 +837,7 @@ function emitRoundtripCommentsSingle(
     }
   }
   if (strokeWidthLines.length > 0) {
-    lines.push('// <likec4.strokeWidth.vertices>')
-    lines.push(...strokeWidthLines)
-    lines.push('// </likec4.strokeWidth.vertices>')
+    lines.push('// <likec4.strokeWidth.vertices>', ...strokeWidthLines, '// </likec4.strokeWidth.vertices>')
   }
   const customDataLines: string[] = []
   for (const [cellId, fqn] of idToFqn) {
@@ -787,9 +852,7 @@ function emitRoundtripCommentsSingle(
     }
   }
   if (customDataLines.length > 0) {
-    lines.push('// <likec4.customData>')
-    lines.push(...customDataLines)
-    lines.push('// </likec4.customData>')
+    lines.push('// <likec4.customData>', ...customDataLines, '// </likec4.customData>')
   }
   const waypointLines: string[] = []
   for (const e of edges) {
@@ -798,9 +861,7 @@ function emitRoundtripCommentsSingle(
     if (src && tgt && e.edgePoints?.trim()) waypointLines.push(`// ${src}|${tgt} ${e.edgePoints.trim()}`)
   }
   if (waypointLines.length > 0) {
-    lines.push('// <likec4.edge.waypoints>')
-    lines.push(...waypointLines)
-    lines.push('// </likec4.edge.waypoints>')
+    lines.push('// <likec4.edge.waypoints>', ...waypointLines, '// </likec4.edge.waypoints>')
   }
 }
 
@@ -838,9 +899,11 @@ function emitRoundtripCommentsMulti(
   }
   const hasLayout = Object.values(layoutByView).some(v => Object.keys(v.nodes).length > 0)
   if (hasLayout) {
-    lines.push('// <likec4.layout.drawio>')
-    lines.push('// ' + JSON.stringify(layoutByView))
-    lines.push('// </likec4.layout.drawio>')
+    lines.push(
+      '// <likec4.layout.drawio>',
+      '// ' + JSON.stringify(layoutByView),
+      '// </likec4.layout.drawio>',
+    )
   }
   const strokeColorLines: string[] = []
   for (const st of states) {
@@ -856,9 +919,7 @@ function emitRoundtripCommentsMulti(
     }
   }
   if (strokeColorLines.length > 0) {
-    lines.push('// <likec4.strokeColor.vertices>')
-    lines.push(...strokeColorLines)
-    lines.push('// </likec4.strokeColor.vertices>')
+    lines.push('// <likec4.strokeColor.vertices>', ...strokeColorLines, '// </likec4.strokeColor.vertices>')
   }
   const strokeWidthLines: string[] = []
   for (const st of states) {
@@ -870,9 +931,7 @@ function emitRoundtripCommentsMulti(
     }
   }
   if (strokeWidthLines.length > 0) {
-    lines.push('// <likec4.strokeWidth.vertices>')
-    lines.push(...strokeWidthLines)
-    lines.push('// </likec4.strokeWidth.vertices>')
+    lines.push('// <likec4.strokeWidth.vertices>', ...strokeWidthLines, '// </likec4.strokeWidth.vertices>')
   }
   const customDataLines: string[] = []
   for (const st of states) {
@@ -889,9 +948,7 @@ function emitRoundtripCommentsMulti(
     }
   }
   if (customDataLines.length > 0) {
-    lines.push('// <likec4.customData>')
-    lines.push(...customDataLines)
-    lines.push('// </likec4.customData>')
+    lines.push('// <likec4.customData>', ...customDataLines, '// </likec4.customData>')
   }
   const waypointLines: string[] = []
   for (const st of states) {
@@ -904,25 +961,28 @@ function emitRoundtripCommentsMulti(
     }
   }
   if (waypointLines.length > 0) {
-    lines.push('// <likec4.edge.waypoints>')
-    lines.push(...waypointLines)
-    lines.push('// </likec4.edge.waypoints>')
+    lines.push('// <likec4.edge.waypoints>', ...waypointLines, '// </likec4.edge.waypoints>')
   }
 }
 
 /** Decompress draw.io diagram content: base64 → inflateRaw → decodeURIComponent. */
 function decompressDrawioDiagram(base64Content: string): string {
   const trimmed = base64Content.trim()
-  let bytes: Uint8Array
-  if (typeof Buffer !== 'undefined') {
-    bytes = new Uint8Array(Buffer.from(trimmed, 'base64'))
-  } else {
-    const binary = atob(trimmed)
-    bytes = new Uint8Array(binary.length)
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  try {
+    let bytes: Uint8Array
+    if (typeof Buffer !== 'undefined') {
+      bytes = new Uint8Array(Buffer.from(trimmed, 'base64'))
+    } else {
+      const binary = atob(trimmed)
+      bytes = new Uint8Array(binary.length)
+      for (let i = 0; i < binary.length; i++) bytes[i] = (binary.codePointAt(i) ?? 0) & 0xff
+    }
+    const inflated = pako.inflateRaw(bytes, { to: 'string' })
+    return decodeURIComponent(inflated)
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    throw new Error(`DrawIO diagram decompression failed: ${msg}`)
   }
-  const inflated = pako.inflateRaw(bytes, { to: 'string' })
-  return decodeURIComponent(inflated)
 }
 
 export interface DiagramInfo {
@@ -941,19 +1001,22 @@ function getFirstDiagram(fullXml: string): DiagramInfo {
 
 /**
  * Extract all diagram name, id and content from mxfile (for multi-tab .drawio).
+ * Uses indexOf-based extraction instead of regex to avoid S5852 (super-linear backtracking DoS).
  */
 export function getAllDiagrams(fullXml: string): DiagramInfo[] {
   const results: DiagramInfo[] = []
-  // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
-  const re = /<diagram\s*([^>]*)>((?:(?!<\/diagram>)[\s\S])*)<\/diagram>/gi
-  let m
-  while ((m = re.exec(fullXml)) !== null) {
-    const attrs = m[1] ?? ''
-    const inner = m[2] ?? ''
-    const nameMatch = attrs.match(/\bname="([^"]*)"/i)
-    const idMatch = attrs.match(/\bid="([^"]*)"/i)
-    const name = nameMatch?.[1] ?? (results.length === 0 ? 'index' : `diagram_${results.length + 1}`)
-    const id = idMatch?.[1] ?? `likec4-${name}`
+  const closeDiagramLen = '</diagram>'.length
+  let start = indexOfTagStart(fullXml, 'diagram', 0)
+  while (start !== -1) {
+    const endOpen = findOpenTagEnd(fullXml, start)
+    if (endOpen === -1) break
+    const attrs = fullXml.slice(start + 8, endOpen).trim() // '<diagram'.length === 8
+    const closeStart = indexOfClosingTag(fullXml, 'diagram', endOpen + 1)
+    if (closeStart === -1) break
+    const inner = fullXml.slice(endOpen + 1, closeStart)
+
+    const name = getAttr(attrs, 'name') ?? (results.length === 0 ? 'index' : `diagram_${results.length + 1}`)
+    const id = getAttr(attrs, 'id') ?? `likec4-${name}`
     let content: string
     if (inner.includes('<mxGraphModel')) content = inner
     else if (inner.trim() === '') content = inner
@@ -965,6 +1028,7 @@ export function getAllDiagrams(fullXml: string): DiagramInfo[] {
       }
     }
     results.push({ name, id, content })
+    start = indexOfTagStart(fullXml, 'diagram', closeStart + closeDiagramLen)
   }
   return results
 }
@@ -988,8 +1052,8 @@ export function parseDrawioToLikeC4(xml: string): string {
   const edges = cells.filter(c => c.edge && c.source && c.target)
 
   // Build hierarchy: root is parent "0" (no wrapper) or "1" (legacy wrapper). Assign FQN by traversing parent chain.
-  const rootIds = ['0', '1']
-  const isRootParent = (p: string | undefined) => !p || rootIds.includes(p)
+  const rootIds = new Set(['0', '1'])
+  const isRootParent = (p: string | undefined) => !p || rootIds.has(p)
   const idToFqn = new Map<string, string>()
   const idToCell = new Map<string, DrawioCell>()
   for (const v of vertices) {
@@ -1009,7 +1073,7 @@ export function parseDrawioToLikeC4(xml: string): string {
       cy = cont.y!,
       cw = cont.width!,
       ch = cont.height!
-    const titleCandidates = vertices.filter(
+    const best = vertices.find(
       v =>
         v.id !== cont.id &&
         v.parent === cont.parent &&
@@ -1021,7 +1085,6 @@ export function parseDrawioToLikeC4(xml: string): string {
         v.y >= cy - 2 &&
         v.y <= cy + Math.min(40, ch * 0.5) + 2,
     )
-    const best = titleCandidates[0]
     if (best) {
       const raw = (best.value ?? '').trim()
       if (raw) {
@@ -1081,7 +1144,7 @@ export function parseDrawioToLikeC4(xml: string): string {
     const fill = v.fillColor?.trim()
     if (fill && /^#[0-9A-Fa-f]{3,8}$/.test(fill)) {
       if (v.colorName && v.colorName.trim() !== '') {
-        const name = v.colorName.trim().replace(/\s+/g, '_')
+        const name = v.colorName.trim().replaceAll(/\s+/g, '_')
         if (!hexToCustomName.has(fill)) hexToCustomName.set(fill, name)
       } else if (!hexToCustomName.has(fill)) {
         hexToCustomName.set(fill, `drawio_color_${++customColorIndex}`)
@@ -1099,32 +1162,30 @@ export function parseDrawioToLikeC4(xml: string): string {
   const lines: string[] = []
 
   if (hexToCustomName.size > 0) {
-    lines.push('specification {')
-    for (const [hex, name] of hexToCustomName) {
-      lines.push(`  color ${name} ${hex}`)
-    }
-    lines.push('}')
-    lines.push('')
+    const specLines = ['specification {']
+    for (const [hex, name] of hexToCustomName) specLines.push(`  color ${name} ${hex}`)
+    specLines.push('}', '')
+    lines.push(...specLines)
   }
 
-  lines.push('model {')
-  lines.push('')
+  lines.push('model {', '')
 
   const children = new Map<string, Array<{ cellId: string; fqn: string }>>()
   const roots: Array<{ cellId: string; fqn: string }> = []
   for (const [cellId, fqn] of idToFqn) {
     const cell = idToCell.get(cellId)
-    if (!cell) continue
-    if (isRootParent(cell.parent)) {
-      roots.push({ cellId, fqn })
-    } else {
-      const parentFqn = cell.parent != null ? idToFqn.get(cell.parent) : undefined
-      if (parentFqn != null) {
-        const list = children.get(parentFqn) ?? []
-        list.push({ cellId, fqn })
-        children.set(parentFqn, list)
-      } else {
+    if (cell) {
+      if (isRootParent(cell.parent)) {
         roots.push({ cellId, fqn })
+      } else {
+        const parentFqn = cell.parent != null ? idToFqn.get(cell.parent) : undefined
+        if (parentFqn != null) {
+          const list = children.get(parentFqn) ?? []
+          list.push({ cellId, fqn })
+          children.set(parentFqn, list)
+        } else {
+          roots.push({ cellId, fqn })
+        }
       }
     }
   }
@@ -1149,8 +1210,7 @@ export function parseDrawioToLikeC4(xml: string): string {
   }
   emitEdgesToLines(lines, edgeEntries, hexToCustomName)
 
-  lines.push('}')
-  lines.push('')
+  lines.push('}', '')
   const viewId = toId(diagramName) || 'index'
   const rootCell = byId.get('1')
   const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
@@ -1160,17 +1220,20 @@ export function parseDrawioToLikeC4(xml: string): string {
   const viewTitle = viewTitleRaw != null && viewTitleRaw !== '' ? decodeURIComponent(viewTitleRaw) : ''
   const viewDesc = viewDescRaw != null && viewDescRaw !== '' ? decodeURIComponent(viewDescRaw) : ''
   const viewNotation = viewNotationRaw != null && viewNotationRaw !== '' ? decodeURIComponent(viewNotationRaw) : ''
-  lines.push('views {')
-  lines.push(`  view ${viewId} {`)
-  if (viewTitle) lines.push(`    title '${viewTitle.replace(/'/g, '\'\'')}'`)
-  if (viewDesc) lines.push(`    description '${viewDesc.replace(/'/g, '\'\'')}'`)
-  lines.push('    include *')
-  lines.push('  }')
-  lines.push('}')
-  lines.push('')
+  const viewBlock = [
+    'views {',
+    `  view ${viewId} {`,
+    ...(viewTitle ? [`    title '${viewTitle.replaceAll('\'', '\'\'')}'`] : []),
+    ...(viewDesc ? [`    description '${viewDesc.replaceAll('\'', '\'\'')}'`] : []),
+    '    include *',
+    '  }',
+    '}',
+    '',
+  ]
+  lines.push(...viewBlock)
 
   if (viewNotation) {
-    lines.push(`// likec4.view.notation ${viewId} '${viewNotation.replace(/'/g, '\'\'')}'`)
+    lines.push(`// likec4.view.notation ${viewId} '${viewNotation.replaceAll('\'', '\'\'')}'`)
   }
 
   emitRoundtripCommentsSingle(lines, viewId, idToFqn, byId, edges)
@@ -1199,8 +1262,8 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   for (const c of cells) byId.set(c.id, c)
   const vertices = cells.filter(c => c.vertex && c.id !== '0' && c.id !== '1')
   const edges = cells.filter(c => c.edge && c.source && c.target)
-  const rootIds = ['0', '1']
-  const isRootParent = (p: string | undefined) => !p || rootIds.includes(p)
+  const rootIds = new Set(['0', '1'])
+  const isRootParent = (p: string | undefined) => !p || rootIds.has(p)
   const idToFqn = new Map<string, string>()
   const idToCell = new Map<string, DrawioCell>()
   for (const v of vertices) idToCell.set(v.id, v)
@@ -1216,7 +1279,7 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
       cy = cont.y!,
       cw = cont.width!,
       ch = cont.height!
-    const titleCandidates = vertices.filter(
+    const best = vertices.find(
       v =>
         v.id !== cont.id &&
         v.parent === cont.parent &&
@@ -1228,7 +1291,6 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
         v.y >= cy - 2 &&
         v.y <= cy + Math.min(40, ch * 0.5) + 2,
     )
-    const best = titleCandidates[0]
     if (best) {
       const raw = (best.value ?? '').trim()
       if (raw) {
@@ -1263,7 +1325,8 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
     }
   }
   for (const v of elementVertices) {
-    if (!idToFqn.has(v.id)) idToFqn.set(v.id, uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id))
+    if (idToFqn.has(v.id)) continue
+    idToFqn.set(v.id, uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id))
   }
   const hexToCustomName = new Map<string, string>()
   let ci = 0
@@ -1272,7 +1335,7 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
     const fill = v.fillColor?.trim()
     if (fill && /^#[0-9A-Fa-f]{3,8}$/.test(fill)) {
       if (v.colorName?.trim()) {
-        if (!hexToCustomName.has(fill)) hexToCustomName.set(fill, v.colorName!.trim().replace(/\s+/g, '_'))
+        if (!hexToCustomName.has(fill)) hexToCustomName.set(fill, v.colorName!.trim().replaceAll(/\s+/g, '_'))
       } else if (!hexToCustomName.has(fill)) hexToCustomName.set(fill, `drawio_color_${++ci}`)
     }
   }
@@ -1286,32 +1349,30 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   const roots: Array<{ cellId: string; fqn: string }> = []
   for (const [cellId, fqn] of idToFqn) {
     const cell = idToCell.get(cellId)
-    if (!cell) continue
-    if (isRootParent(cell.parent)) {
-      roots.push({ cellId, fqn })
-    } else {
-      const parentFqn = cell.parent != null ? idToFqn.get(cell.parent) : undefined
-      if (parentFqn != null) {
-        const list = children.get(parentFqn) ?? []
-        list.push({ cellId, fqn })
-        children.set(parentFqn, list)
-      } else {
+    if (cell) {
+      if (isRootParent(cell.parent)) {
         roots.push({ cellId, fqn })
+      } else {
+        const parentFqn = cell.parent != null ? idToFqn.get(cell.parent) : undefined
+        if (parentFqn != null) {
+          const list = children.get(parentFqn) ?? []
+          list.push({ cellId, fqn })
+          children.set(parentFqn, list)
+        } else {
+          roots.push({ cellId, fqn })
+        }
       }
     }
   }
   const viewId = toId(diagramName) || 'index'
   const rootCell = byId.get('1')
   const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
-  const viewTitle = rootStyle.get('likec4viewtitle') != null && rootStyle.get('likec4viewtitle') !== ''
-    ? decodeURIComponent(rootStyle.get('likec4viewtitle')!)
-    : ''
-  const viewDesc = rootStyle.get('likec4viewdescription') != null && rootStyle.get('likec4viewdescription') !== ''
-    ? decodeURIComponent(rootStyle.get('likec4viewdescription')!)
-    : ''
-  const viewNotation = rootStyle.get('likec4viewnotation') != null && rootStyle.get('likec4viewnotation') !== ''
-    ? decodeURIComponent(rootStyle.get('likec4viewnotation')!)
-    : ''
+  const viewTitleRaw = rootStyle.get('likec4viewtitle')
+  const viewDescRaw = rootStyle.get('likec4viewdescription')
+  const viewNotationRaw = rootStyle.get('likec4viewnotation')
+  const viewTitle = viewTitleRaw != null && viewTitleRaw !== '' ? decodeURIComponent(viewTitleRaw) : ''
+  const viewDesc = viewDescRaw != null && viewDescRaw !== '' ? decodeURIComponent(viewDescRaw) : ''
+  const viewNotation = viewNotationRaw != null && viewNotationRaw !== '' ? decodeURIComponent(viewNotationRaw) : ''
   return {
     idToFqn,
     idToCell,
@@ -1374,21 +1435,25 @@ views {
       if (cell && !fqnToCell.has(fqn)) fqnToCell.set(fqn, cell)
     }
     for (const [id, cell] of st.idToCell) {
-      if (!byId.has(id)) byId.set(id, cell)
+      if (byId.has(id)) continue
+      byId.set(id, cell)
     }
     for (const [id, title] of st.containerIdToTitle) {
-      if (!containerIdToTitle.has(id)) containerIdToTitle.set(id, title)
+      if (containerIdToTitle.has(id)) continue
+      containerIdToTitle.set(id, title)
     }
     for (const e of st.edges) {
       const src = st.idToFqn.get(e.source!)
       const tgt = st.idToFqn.get(e.target!)
       if (src && tgt) {
         const key = `${src}|${tgt}`
-        if (!relationKeyToEdge.has(key)) relationKeyToEdge.set(key, { src, tgt, cell: e })
+        if (relationKeyToEdge.has(key)) continue
+        relationKeyToEdge.set(key, { src, tgt, cell: e })
       }
     }
     for (const [hex, name] of st.hexToCustomName) {
-      if (!hexToCustomName.has(hex)) hexToCustomName.set(hex, name)
+      if (hexToCustomName.has(hex)) continue
+      hexToCustomName.set(hex, name)
     }
     viewInfos.push({
       viewId: st.viewId,
@@ -1402,29 +1467,26 @@ views {
   const rootsFromMap = new Map<string, string[]>()
   for (const fqn of fqnToCell.keys()) {
     const parent = fqn.includes('.') ? fqn.split('.').slice(0, -1).join('.') : ''
-    if (!parent || !fqnToCell.has(parent)) {
-      const list = rootsFromMap.get('') ?? []
-      list.push(fqn)
-      rootsFromMap.set('', list)
-    } else {
+    if (parent && fqnToCell.has(parent)) {
       const list = rootsFromMap.get(parent) ?? []
       list.push(fqn)
       rootsFromMap.set(parent, list)
+    } else {
+      const list = rootsFromMap.get('') ?? []
+      list.push(fqn)
+      rootsFromMap.set('', list)
     }
   }
   const rootFqns = rootsFromMap.get('') ?? []
 
   const lines: string[] = []
   if (hexToCustomName.size > 0) {
-    lines.push('specification {')
-    for (const [hex, name] of hexToCustomName) {
-      lines.push(`  color ${name} ${hex}`)
-    }
-    lines.push('}')
-    lines.push('')
+    const specLines = ['specification {']
+    for (const [hex, name] of hexToCustomName) specLines.push(`  color ${name} ${hex}`)
+    specLines.push('}', '')
+    lines.push(...specLines)
   }
-  lines.push('model {')
-  lines.push('')
+  lines.push('model {', '')
 
   // In multi, cell ids repeat across diagrams; use fqn as the key so idToCell yields the correct cell per fqn.
   const idToCellMulti = new Map<string, DrawioCell>()
@@ -1453,23 +1515,24 @@ views {
   }
   emitEdgesToLines(lines, edgeEntriesMulti, hexToCustomName)
 
-  lines.push('}')
-  lines.push('')
-  lines.push('views {')
+  lines.push('}', '')
+  const viewsLines = ['views {']
   for (const v of viewInfos) {
-    lines.push(`  view ${v.viewId} {`)
-    if (v.viewTitle) lines.push(`    title '${v.viewTitle.replace(/'/g, '\'\'')}'`)
-    if (v.viewDesc) lines.push(`    description '${v.viewDesc.replace(/'/g, '\'\'')}'`)
-    const includeList = [...v.fqnSet].sort()
-    lines.push(`    include ${includeList.length > 0 ? includeList.join(', ') : '*'}`)
-    lines.push('  }')
+    const includeList = [...v.fqnSet].sort((a, b) => a.localeCompare(b))
+    viewsLines.push(
+      `  view ${v.viewId} {`,
+      ...(v.viewTitle ? [`    title '${v.viewTitle.replaceAll('\'', '\'\'')}'`] : []),
+      ...(v.viewDesc ? [`    description '${v.viewDesc.replaceAll('\'', '\'\'')}'`] : []),
+      `    include ${includeList.length > 0 ? includeList.join(', ') : '*'}`,
+      '  }',
+    )
   }
-  lines.push('}')
-  lines.push('')
+  viewsLines.push('}', '')
+  lines.push(...viewsLines)
 
   for (const v of viewInfos) {
     if (v.viewNotation) {
-      lines.push(`// likec4.view.notation ${v.viewId} '${v.viewNotation.replace(/'/g, '\'\'')}'`)
+      lines.push(`// likec4.view.notation ${v.viewId} '${v.viewNotation.replaceAll('\'', '\'\'')}'`)
     }
   }
 
@@ -1538,7 +1601,7 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
       i += 1
       while (i < lines.length && lines[i]?.trim() !== STROKE_COLOR_END) {
         const ln = lines[i]
-        if (ln != null && ln.trim().startsWith('// ') && ln.includes('=')) {
+        if (ln?.trim().startsWith('// ') && ln.includes('=')) {
           const rest = ln.slice(3).trim()
           const eq = rest.indexOf('=')
           if (eq > 0) {
@@ -1556,7 +1619,7 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
       i += 1
       while (i < lines.length && lines[i]?.trim() !== STROKE_WIDTH_END) {
         const ln = lines[i]
-        if (ln != null && ln.trim().startsWith('// ') && ln.includes('=')) {
+        if (ln?.trim().startsWith('// ') && ln.includes('=')) {
           const rest = ln.slice(3).trim()
           const eq = rest.indexOf('=')
           if (eq > 0) {
@@ -1574,7 +1637,7 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
       i += 1
       while (i < lines.length && lines[i]?.trim() !== WAYPOINTS_END) {
         const ln = lines[i]
-        if (ln != null && ln.trim().startsWith('// ')) {
+        if (ln?.trim().startsWith('// ')) {
           const rest = ln.slice(3).trim()
           const space = rest.indexOf(' ')
           if (space > 0) {
@@ -1597,11 +1660,13 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
     i += 1
   }
 
-  if (!found) return null
-  return {
-    layoutByView,
-    strokeColorByFqn,
-    strokeWidthByFqn,
-    edgeWaypoints,
+  if (found) {
+    return {
+      layoutByView,
+      strokeColorByFqn,
+      strokeWidthByFqn,
+      edgeWaypoints,
+    }
   }
+  return null
 }
