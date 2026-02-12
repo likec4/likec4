@@ -1,6 +1,6 @@
 import type { ParsedLikeC4ModelData } from '@likec4/core'
 import { nameFromFqn } from '@likec4/core/utils'
-import { CompositeGeneratorNode, NL, toString } from 'langium/generate'
+import { CompositeGeneratorNode, NL, toString as nodeToString } from 'langium/generate'
 import { printDeployment } from './likec4/print-deployment'
 import { printGlobals } from './likec4/print-globals'
 import { printModel } from './likec4/print-model'
@@ -8,6 +8,10 @@ import { printSpecification } from './likec4/print-specification'
 import { printViews } from './likec4/print-views'
 import { quoteString } from './likec4/utils'
 
+/**
+ * Generates LikeC4 DSL source code from parsed model data.
+ * Supports round-trip workflows: build model -> generate DSL -> parse -> verify.
+ */
 export function generateLikeC4(model: ParsedLikeC4ModelData): string {
   const out = new CompositeGeneratorNode()
 
@@ -29,11 +33,12 @@ export function generateLikeC4(model: ParsedLikeC4ModelData): string {
   out.append(NL)
 
   // Globals block (if non-empty)
-  const globalsNode = new CompositeGeneratorNode()
-  printGlobals(globalsNode, model.globals)
-  const globalsStr = toString(globalsNode)
-  if (globalsStr.trim()) {
-    out.append(globalsNode, NL)
+  const hasGlobals = Object.keys(model.globals.predicates).length > 0
+    || Object.keys(model.globals.dynamicPredicates).length > 0
+    || Object.keys(model.globals.styles).length > 0
+  if (hasGlobals) {
+    printGlobals(out, model.globals)
+    out.append(NL)
   }
 
   // Model block
@@ -51,5 +56,5 @@ export function generateLikeC4(model: ParsedLikeC4ModelData): string {
   // Views block
   printViews(out, model.views)
 
-  return toString(out).replace(/\r\n/g, '\n')
+  return nodeToString(out).replace(/\r\n/g, '\n')
 }

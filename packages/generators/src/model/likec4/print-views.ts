@@ -27,6 +27,14 @@ import { printExpression, printFqnExprAny, printModelExpression, printModelFqnEx
 import { printStyleProperties } from './print-style'
 import { printAutoLayoutDirection, quoteMarkdownOrString, quoteString } from './utils'
 
+function appendCommaSeparated(node: CompositeGeneratorNode, exprs: string[]): void {
+  for (let i = 0; i < exprs.length; i++) {
+    node.append(exprs[i])
+    if (i < exprs.length - 1) node.append(',')
+    node.append(NL)
+  }
+}
+
 export function printViews(
   out: CompositeGeneratorNode,
   views: Record<string, ParsedView>,
@@ -126,7 +134,7 @@ function printElementViewRules(indent: CompositeGeneratorNode, rules: ElementVie
       indent.append('include', NL)
       indent.indent({
         indentedChildren: inner => {
-          inner.append(exprs.join(',\n'), NL)
+          appendCommaSeparated(inner, exprs)
         },
         indentation: 2,
       })
@@ -138,7 +146,7 @@ function printElementViewRules(indent: CompositeGeneratorNode, rules: ElementVie
       indent.append('exclude', NL)
       indent.indent({
         indentedChildren: inner => {
-          inner.append(exprs.join(',\n'), NL)
+          appendCommaSeparated(inner, exprs)
         },
         indentation: 2,
       })
@@ -186,7 +194,7 @@ function printGroup(indent: CompositeGeneratorNode, group: ElementViewRuleGroup)
           inner.append('include', NL)
           inner.indent({
             indentedChildren: pred => {
-              pred.append(exprs.join(',\n'), NL)
+              appendCommaSeparated(pred, exprs)
             },
             indentation: 2,
           })
@@ -195,7 +203,7 @@ function printGroup(indent: CompositeGeneratorNode, group: ElementViewRuleGroup)
           inner.append('exclude', NL)
           inner.indent({
             indentedChildren: pred => {
-              pred.append(exprs.join(',\n'), NL)
+              appendCommaSeparated(pred, exprs)
             },
             indentation: 2,
           })
@@ -371,7 +379,7 @@ function printDeploymentViewRules(indent: CompositeGeneratorNode, rules: Deploym
       indent.append('include', NL)
       indent.indent({
         indentedChildren: inner => {
-          inner.append(exprs.join(',\n'), NL)
+          appendCommaSeparated(inner, exprs)
         },
         indentation: 2,
       })
@@ -383,7 +391,7 @@ function printDeploymentViewRules(indent: CompositeGeneratorNode, rules: Deploym
       indent.append('exclude', NL)
       indent.indent({
         indentedChildren: inner => {
-          inner.append(exprs.join(',\n'), NL)
+          appendCommaSeparated(inner, exprs)
         },
         indentation: 2,
       })
