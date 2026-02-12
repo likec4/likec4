@@ -3,7 +3,7 @@
   "private": true,
   "license": "MIT",
   "version": "1.48.0",
-  "packageManager": "pnpm@10.28.2",
+  "packageManager": "pnpm@10.29.2",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -11,7 +11,7 @@
     "styled-system/*"
   ],
   "engines": {
-    "node": ">=22.21.1"
+    "node": ">=22.22.0"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",
