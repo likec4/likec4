@@ -241,7 +241,7 @@ export function useDrawioContextMenuActions({
       viewStates,
       getLayoutedModel,
       layoutViews,
-      onExportError,
+      ...(onExportError != null && { onExportError }),
     })
     if (viewModels.length === 0) return
     try {

@@ -83,7 +83,7 @@ export function DrawioContextMenuProvider({
     likec4model,
     viewStates,
     getSourceContent,
-    onExportError,
+    ...(onExportError != null && { onExportError }),
     ...(layoutedModelApi && {
       getLayoutedModel: layoutedModelApi.getLayoutedModel,
       layoutViews: layoutedModelApi.layoutViews,
