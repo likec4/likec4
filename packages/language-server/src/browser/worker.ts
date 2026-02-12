@@ -14,10 +14,13 @@ function errToString(err: unknown): string {
       return '[unserializable value]'
     }
   }
+  // Avoid Object's default stringification for non-primitives
+  if (typeof err === 'string') return err
+  if (err === null || err === undefined) return ''
   return String(err)
 }
 const log = (msg: string, err?: unknown) => {
-  const line = err != null ? `${msg} ${errToString(err)}` : msg
+  const line = err === undefined || err === null ? msg : `${msg} ${errToString(err)}`
   try {
     console.error('[LikeC4 LSP worker]', line)
   } catch {
