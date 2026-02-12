@@ -65,6 +65,8 @@ The generator accepts optional **options** for round-trip or tooling: `layoutOve
 
 A Draw.io file is converted to a single LikeC4 source file (model + views). Elements and relationships are inferred from vertices and edges.
 
+> **Note:** Import round-trip (color mapping, source mapping, elements as containers, containers as views, and all export mappings in reverse) is **implemented but not yet fully tested or approved**. The automated tests cover basic cases; full validation and refinement of the import path are pending.
+
 ### Mapped to LikeC4
 
 | Draw.io | LikeC4 |

@@ -56,11 +56,14 @@ export function DrawioContextMenuDropdown({
             top: menuPosition.y,
             fontSize: '10px',
           },
-          item: {
+          label: {
             fontSize: '10px',
           },
+          item: {
+            fontSize: '9px',
+          },
           itemLabel: {
-            fontSize: '10px',
+            fontSize: '9px',
           },
         }}>
         <Menu.Target>
