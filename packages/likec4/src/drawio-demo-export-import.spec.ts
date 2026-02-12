@@ -78,11 +78,19 @@ describe('DrawIO export/import with cloud-system demo', () => {
       const vm = viewmodels[i]!
       const d = diagrams[i]!
       const view = vm.$view
-      const expectedNodes = view.nodes.length
+      const nodeCount = view.nodes.length
       const expectedEdges = view.edges.length
+      // Export adds one extra vertex per container (title cell); match generate-drawio logic
+      const containerCount = view.nodes.filter(
+        n =>
+          Array.isArray(n.children) &&
+          n.children.length > 0 &&
+          view.nodes.some((m: { id: string }) => n.children!.includes(m.id)),
+      ).length
+      const expectedNodes = nodeCount + containerCount
 
       const { vertices, edges } = countDrawioCells(d.content)
-      // DrawIO: 1 vertex = root/defaultParent, rest = nodes
+      // DrawIO: 1 vertex = root/defaultParent, rest = nodes + container title cells
       const actualNodes = Math.max(0, vertices - 1)
       expect(
         actualNodes,

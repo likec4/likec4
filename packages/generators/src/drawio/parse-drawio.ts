@@ -243,7 +243,11 @@ function buildCellFromMxCell(
   const colorName = colorNameFromStyle != null && colorNameFromStyle !== ''
     ? decodeURIComponent(colorNameFromStyle)
     : undefined
-  const opacity = opacityFromStyle != null && opacityFromStyle !== '' ? opacityFromStyle : undefined
+  const opacityFromLikec4 = styleMap.get('likec4opacity')
+  const opacityFromFill = styleMap.get('fillopacity')
+  const opacity = (opacityFromLikec4 != null && opacityFromLikec4 !== '' ? opacityFromLikec4 : undefined) ??
+    (opacityFromStyle != null && opacityFromStyle !== '' ? opacityFromStyle : undefined) ??
+    (opacityFromFill != null && opacityFromFill !== '' ? opacityFromFill : undefined)
   const relationshipKind = relKindFromStyle != null && relKindFromStyle !== ''
     ? decodeURIComponent(relKindFromStyle)
     : undefined
@@ -327,10 +331,12 @@ function parseDrawioXml(xml: string): DrawioCell[] {
     const innerAttrs = innerMx[1] ?? ''
     const innerInner = innerMx[2] ?? ''
     const fullTag = `<mxCell id="${userObjId}" ${innerAttrs}>${innerInner}</mxCell>`
-    const cell = buildCellFromMxCell(innerAttrs, innerInner, fullTag, {
-      id: userObjId,
-      navigateTo: navigateTo ?? undefined,
-    })
+    const cell = buildCellFromMxCell(
+      innerAttrs,
+      innerInner,
+      fullTag,
+      navigateTo != null && navigateTo !== '' ? { id: userObjId, navigateTo } : { id: userObjId },
+    )
     if (cell) cells.push(cell)
   }
 
@@ -393,13 +399,19 @@ function likec4LineType(
 }
 
 /**
- * Infer LikeC4 element kind from DrawIO shape style.
+ * Infer LikeC4 element kind from DrawIO shape style. When parent is a container (container=1), child is component.
+ * Explicit container=1 in style → system (context box); others default to container unless actor/swimlane.
  */
-function inferKind(style: string | undefined): 'actor' | 'system' | 'container' | 'component' {
-  if (!style) return 'container'
+function inferKind(
+  style: string | undefined,
+  parentCell?: DrawioCell,
+): 'actor' | 'system' | 'container' | 'component' {
+  if (!style) return parentCell?.style?.toLowerCase().includes('container=1') ? 'component' : 'container'
   const s = style.toLowerCase()
   if (s.includes('umlactor') || s.includes('shape=person')) return 'actor'
   if (s.includes('swimlane')) return 'system'
+  if (s.includes('container=1')) return 'system'
+  if (parentCell?.style?.toLowerCase().includes('container=1')) return 'component'
   return 'container'
 }
 
@@ -500,6 +512,53 @@ export function parseDrawioToLikeC4(xml: string): string {
     idToCell.set(v.id, v)
   }
 
+  // Container title cells: text shape, same parent as container=1, geometry inside/near container → merge into container, exclude from elements
+  const containerIdToTitle = new Map<string, string>()
+  const titleCellIds = new Set<string>()
+  const containerCells = vertices.filter(
+    v =>
+      v.style?.toLowerCase().includes('container=1') && v.x != null && v.y != null && v.width != null &&
+      v.height != null,
+  )
+  function stripHtmlOne(s: string): string {
+    return s
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/<[^>]+>/g, '')
+      .trim()
+      .split(/\n|<br\s*\/?>/i)[0]
+      ?.trim() ?? ''
+  }
+  for (const cont of containerCells) {
+    const cx = cont.x!,
+      cy = cont.y!,
+      cw = cont.width!,
+      ch = cont.height!
+    const titleCandidates = vertices.filter(
+      v =>
+        v.id !== cont.id &&
+        v.parent === cont.parent &&
+        (v.style?.toLowerCase().includes('shape=text') || v.style?.toLowerCase().includes('text;')) &&
+        v.x != null &&
+        v.y != null &&
+        v.x >= cx - 2 &&
+        v.x <= cx + cw + 2 &&
+        v.y >= cy - 2 &&
+        v.y <= cy + Math.min(40, ch * 0.5) + 2,
+    )
+    const best = titleCandidates[0]
+    if (best) {
+      const raw = (best.value ?? '').trim()
+      if (raw) {
+        containerIdToTitle.set(cont.id, stripHtmlOne(raw))
+        titleCellIds.add(best.id)
+      }
+    }
+  }
+  const elementVertices = vertices.filter(v => !titleCellIds.has(v.id))
+
   // Assign FQNs: use value as base name, ensure uniqueness. Flatten for simplicity if no clear hierarchy.
   const usedNames = new Set<string>()
   function uniqueName(base: string): string {
@@ -513,9 +572,9 @@ export function parseDrawioToLikeC4(xml: string): string {
     return n
   }
 
-  for (const v of vertices) {
+  for (const v of elementVertices) {
     if (isRootParent(v.parent)) {
-      const name = uniqueName(v.value ?? v.id)
+      const name = uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id)
       idToFqn.set(v.id, name)
     }
   }
@@ -524,11 +583,11 @@ export function parseDrawioToLikeC4(xml: string): string {
   let changed = true
   while (changed) {
     changed = false
-    for (const v of vertices) {
+    for (const v of elementVertices) {
       if (idToFqn.has(v.id)) continue
       const parent = v.parent ? idToFqn.get(v.parent) : null
       if (parent != null) {
-        const local = uniqueName(v.value ?? v.id)
+        const local = uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id)
         idToFqn.set(v.id, `${parent}.${local}`)
         changed = true
       }
@@ -536,16 +595,16 @@ export function parseDrawioToLikeC4(xml: string): string {
   }
 
   // Any remaining vertices (orphans) get top-level names
-  for (const v of vertices) {
+  for (const v of elementVertices) {
     if (!idToFqn.has(v.id)) {
-      idToFqn.set(v.id, uniqueName(v.value ?? v.id))
+      idToFqn.set(v.id, uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id))
     }
   }
 
   // Collect unique hex colors from vertices for specification customColors; prefer likec4ColorName when present
   const hexToCustomName = new Map<string, string>()
   let customColorIndex = 0
-  for (const v of vertices) {
+  for (const v of elementVertices) {
     const fill = v.fillColor?.trim()
     if (fill && /^#[0-9A-Fa-f]{3,8}$/.test(fill)) {
       if (v.colorName && v.colorName.trim() !== '') {
@@ -586,7 +645,7 @@ export function parseDrawioToLikeC4(xml: string): string {
     if (isRootParent(cell.parent)) {
       roots.push({ cellId, fqn })
     } else {
-      const parentFqn = idToFqn.get(cell.parent)
+      const parentFqn = cell.parent != null ? idToFqn.get(cell.parent) : undefined
       if (parentFqn != null) {
         const list = children.get(parentFqn) ?? []
         list.push({ cellId, fqn })
@@ -611,9 +670,11 @@ export function parseDrawioToLikeC4(xml: string): string {
   function emitElement(cellId: string, fqn: string, indent: number): void {
     const cell = idToCell.get(cellId)
     if (!cell) return
-    const kind = inferKind(cell.style)
+    const parentCell = cell.parent ? idToCell.get(cell.parent) : undefined
+    const kind = inferKind(cell.style, parentCell)
     const rawTitle = (cell.value && cell.value.trim()) || ''
-    const title = stripHtmlForTitle(rawTitle) || fqn.split('.').pop() || 'Element'
+    const title = stripHtmlForTitle(rawTitle) || (containerIdToTitle.get(cellId) ?? '') || fqn.split('.').pop() ||
+      'Element'
     const name = fqn.split('.').pop()!
     const pad = '  '.repeat(indent)
     const desc = cell.description?.trim()
@@ -933,6 +994,7 @@ export function parseDrawioToLikeC4(xml: string): string {
 interface DiagramState {
   idToFqn: Map<string, string>
   idToCell: Map<string, DrawioCell>
+  containerIdToTitle: Map<string, string>
   roots: Array<{ cellId: string; fqn: string }>
   children: Map<string, Array<{ cellId: string; fqn: string }>>
   hexToCustomName: Map<string, string>
@@ -954,6 +1016,51 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   const idToFqn = new Map<string, string>()
   const idToCell = new Map<string, DrawioCell>()
   for (const v of vertices) idToCell.set(v.id, v)
+  const containerIdToTitle = new Map<string, string>()
+  const titleCellIds = new Set<string>()
+  const containerCells = vertices.filter(
+    v =>
+      v.style?.toLowerCase().includes('container=1') && v.x != null && v.y != null && v.width != null &&
+      v.height != null,
+  )
+  function stripHtmlOneMulti(s: string): string {
+    return s
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/<[^>]+>/g, '')
+      .trim()
+      .split(/\n|<br\s*\/?>/i)[0]
+      ?.trim() ?? ''
+  }
+  for (const cont of containerCells) {
+    const cx = cont.x!,
+      cy = cont.y!,
+      cw = cont.width!,
+      ch = cont.height!
+    const titleCandidates = vertices.filter(
+      v =>
+        v.id !== cont.id &&
+        v.parent === cont.parent &&
+        (v.style?.toLowerCase().includes('shape=text') || v.style?.toLowerCase().includes('text;')) &&
+        v.x != null &&
+        v.y != null &&
+        v.x >= cx - 2 &&
+        v.x <= cx + cw + 2 &&
+        v.y >= cy - 2 &&
+        v.y <= cy + Math.min(40, ch * 0.5) + 2,
+    )
+    const best = titleCandidates[0]
+    if (best) {
+      const raw = (best.value ?? '').trim()
+      if (raw) {
+        containerIdToTitle.set(cont.id, stripHtmlOneMulti(raw))
+        titleCellIds.add(best.id)
+      }
+    }
+  }
+  const elementVertices = vertices.filter(v => !titleCellIds.has(v.id))
   const usedNames = new Set<string>()
   function uniqueName(base: string): string {
     let name = toId(base || 'element')
@@ -963,28 +1070,28 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
     usedNames.add(n)
     return n
   }
-  for (const v of vertices) {
-    if (isRootParent(v.parent)) idToFqn.set(v.id, uniqueName(v.value ?? v.id))
+  for (const v of elementVertices) {
+    if (isRootParent(v.parent)) idToFqn.set(v.id, uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id))
   }
   let changed = true
   while (changed) {
     changed = false
-    for (const v of vertices) {
+    for (const v of elementVertices) {
       if (idToFqn.has(v.id)) continue
       const parent = v.parent ? idToFqn.get(v.parent) : null
       if (parent != null) {
-        idToFqn.set(v.id, `${parent}.${uniqueName(v.value ?? v.id)}`)
+        idToFqn.set(v.id, `${parent}.${uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id)}`)
         changed = true
       }
     }
   }
-  for (const v of vertices) {
-    if (!idToFqn.has(v.id)) idToFqn.set(v.id, uniqueName(v.value ?? v.id))
+  for (const v of elementVertices) {
+    if (!idToFqn.has(v.id)) idToFqn.set(v.id, uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id))
   }
   const hexToCustomName = new Map<string, string>()
   let ci = 0
   let ei = 0
-  for (const v of vertices) {
+  for (const v of elementVertices) {
     const fill = v.fillColor?.trim()
     if (fill && /^#[0-9A-Fa-f]{3,8}$/.test(fill)) {
       if (v.colorName?.trim()) {
@@ -1006,7 +1113,7 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
     if (isRootParent(cell.parent)) {
       roots.push({ cellId, fqn })
     } else {
-      const parentFqn = idToFqn.get(cell.parent)
+      const parentFqn = cell.parent != null ? idToFqn.get(cell.parent) : undefined
       if (parentFqn != null) {
         const list = children.get(parentFqn) ?? []
         list.push({ cellId, fqn })
@@ -1031,6 +1138,7 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   return {
     idToFqn,
     idToCell,
+    containerIdToTitle,
     roots,
     children,
     hexToCustomName,
@@ -1071,6 +1179,8 @@ views {
   if (states.length === 0) return parseDrawioToLikeC4(xml)
 
   const fqnToCell = new Map<string, DrawioCell>()
+  const byId = new Map<string, DrawioCell>()
+  const containerIdToTitle = new Map<string, string>()
   const relationKeyToEdge = new Map<string, { src: string; tgt: string; cell: DrawioCell }>()
   const hexToCustomName = new Map<string, string>()
   const viewInfos: Array<{
@@ -1085,6 +1195,12 @@ views {
     for (const [cellId, fqn] of st.idToFqn) {
       const cell = st.idToCell.get(cellId)
       if (cell && !fqnToCell.has(fqn)) fqnToCell.set(fqn, cell)
+    }
+    for (const [id, cell] of st.idToCell) {
+      if (!byId.has(id)) byId.set(id, cell)
+    }
+    for (const [id, title] of st.containerIdToTitle) {
+      if (!containerIdToTitle.has(id)) containerIdToTitle.set(id, title)
     }
     for (const e of st.edges) {
       const src = st.idToFqn.get(e.source!)
@@ -1146,9 +1262,11 @@ views {
   function emitElementMulti(fqn: string, indent: number): void {
     const cell = fqnToCell.get(fqn)
     if (!cell) return
-    const kind = inferKind(cell.style)
+    const parentCell = cell.parent ? byId.get(cell.parent) : undefined
+    const kind = inferKind(cell.style, parentCell)
     const rawTitle = (cell.value && cell.value.trim()) || ''
-    const title = stripHtmlForTitle(rawTitle) || fqn.split('.').pop() || 'Element'
+    const title = stripHtmlForTitle(rawTitle) || (containerIdToTitle.get(cell.id) ?? '') || fqn.split('.').pop() ||
+      'Element'
     const name = fqn.split('.').pop()!
     const pad = '  '.repeat(indent)
     const desc = cell.description?.trim()

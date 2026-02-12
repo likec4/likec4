@@ -202,9 +202,9 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
       ...fakeDiagram.nodes[0]!,
       navigateTo: 'saas',
     } as typeof fakeDiagram.nodes[0] & { navigateTo: string }
-    const viewWithNav = {
+    const viewWithNav: ProcessedView<aux.Unknown> = {
       ...fakeDiagram,
-      id: 'index' as const,
+      id: 'index' as aux.StrictViewId<aux.Unknown>,
       nodes: [nodeWithNav, ...fakeDiagram.nodes.slice(1)],
     }
     const xml = generateDrawio(mockViewModel(viewWithNav), { compressed: false })

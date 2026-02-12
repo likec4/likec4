@@ -8,7 +8,7 @@ import { createLikeC4Logger, startTimer } from '../../../logger'
 export function drawioCmd(yargs: Argv) {
   return yargs.command({
     command: 'drawio <input>',
-    describe: 'convert DrawIO (.drawio) to LikeC4 source (.c4)',
+    describe: 'convert DrawIO (.drawio) to LikeC4 source (.c4) (experimental; import path not yet fully validated)',
     builder: yargs =>
       yargs
         .positional('input', {
