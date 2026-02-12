@@ -968,8 +968,9 @@ function emitRoundtripCommentsMulti(
 /** Decompress draw.io diagram content: base64 → inflateRaw → decodeURIComponent. */
 function decompressDrawioDiagram(base64Content: string): string {
   const trimmed = base64Content.trim()
+  const toMsg = (err: unknown) => (err instanceof Error ? err.message : String(err))
+  let bytes: Uint8Array
   try {
-    let bytes: Uint8Array
     if (typeof Buffer !== 'undefined') {
       bytes = new Uint8Array(Buffer.from(trimmed, 'base64'))
     } else {
@@ -977,11 +978,19 @@ function decompressDrawioDiagram(base64Content: string): string {
       bytes = new Uint8Array(binary.length)
       for (let i = 0; i < binary.length; i++) bytes[i] = (binary.codePointAt(i) ?? 0) & 0xff
     }
-    const inflated = pako.inflateRaw(bytes, { to: 'string' })
+  } catch (err) {
+    throw new Error(`DrawIO diagram decompression failed (base64 decode): ${toMsg(err)}`)
+  }
+  let inflated: string
+  try {
+    inflated = pako.inflateRaw(bytes, { to: 'string' })
+  } catch (err) {
+    throw new Error(`DrawIO diagram decompression failed (inflate): ${toMsg(err)}`)
+  }
+  try {
     return decodeURIComponent(inflated)
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
-    throw new Error(`DrawIO diagram decompression failed: ${msg}`)
+    throw new Error(`DrawIO diagram decompression failed (URI decode): ${toMsg(err)}`)
   }
 }
 
