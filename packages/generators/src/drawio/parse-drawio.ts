@@ -7,6 +7,13 @@
  */
 
 import pako from 'pako'
+import {
+  CONTAINER_TITLE_AREA_HEIGHT_RATIO,
+  CONTAINER_TITLE_AREA_MAX_HEIGHT_PX,
+  CONTAINER_TITLE_AREA_TOLERANCE,
+  DRAWIO_DIAGRAM_ID_PREFIX,
+  DRAWIO_PAGE_LINK_PREFIX,
+} from './constants'
 
 export interface DrawioCell {
   id: string
@@ -198,9 +205,10 @@ function parseUserData(fullTag: string): { description?: string; technology?: st
   return out
 }
 
-const NAV_LINK_RE = /^data:page\/id,likec4-(.+)$/i
+/** Regex to extract viewId from Draw.io internal page link (see DRAWIO_PAGE_LINK_PREFIX). */
+const NAV_LINK_RE = new RegExp(`^${DRAWIO_PAGE_LINK_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(.+)$`, 'i')
 
-/** Extract viewId from Draw.io internal page link (data:page/id,likec4-<viewId>) for navigateTo round-trip. */
+/** Extract viewId from Draw.io internal page link for navigateTo round-trip. */
 function navigateToFromLink(link: string | undefined): string | undefined {
   if (!link || link === '') return undefined
   const m = NAV_LINK_RE.exec(link)
@@ -491,6 +499,120 @@ function toId(name: string): string {
       .replaceAll(/[^\w-]/g, '')
       .replace(/^[0-9]/, '_$&') || 'element'
   )
+}
+
+/** Returns a unique name generator that avoids collisions by appending _1, _2, ... (DRY: used in parseDrawioToLikeC4 and buildDiagramState). */
+function makeUniqueName(usedNames: Set<string>): (base: string) => string {
+  return (base: string) => {
+    let name = toId(base || 'element')
+    let n = name
+    let i = 0
+    while (usedNames.has(n)) n = `${name}_${++i}`
+    usedNames.add(n)
+    return n
+  }
+}
+
+/** Assign FQNs to element vertices: root first, then hierarchy by parent, then orphans (DRY). */
+function assignFqnsToElementVertices(
+  idToFqn: Map<string, string>,
+  elementVertices: DrawioCell[],
+  containerIdToTitle: Map<string, string>,
+  isRootParent: (parent: string | undefined) => boolean,
+  uniqueName: (base: string) => string,
+): void {
+  const baseName = (v: DrawioCell) => v.value ?? containerIdToTitle.get(v.id) ?? v.id
+  for (const v of elementVertices) {
+    if (isRootParent(v.parent)) idToFqn.set(v.id, uniqueName(baseName(v)))
+  }
+  let changed = true
+  while (changed) {
+    changed = false
+    for (const v of elementVertices) {
+      if (idToFqn.has(v.id)) continue
+      const parent = v.parent ? idToFqn.get(v.parent) : null
+      if (parent != null) {
+        idToFqn.set(v.id, `${parent}.${uniqueName(baseName(v))}`)
+        changed = true
+      }
+    }
+  }
+  for (const v of elementVertices) {
+    if (!idToFqn.has(v.id)) idToFqn.set(v.id, uniqueName(baseName(v)))
+  }
+}
+
+/** Build map of hex color -> custom name from vertices and edges for specification customColors (DRY). */
+function buildHexToCustomName(
+  elementVertices: DrawioCell[],
+  edges: DrawioCell[],
+): Map<string, string> {
+  const hexToCustomName = new Map<string, string>()
+  let customColorIndex = 0
+  for (const v of elementVertices) {
+    const fill = v.fillColor?.trim()
+    if (fill && /^#[0-9A-Fa-f]{3,8}$/.test(fill)) {
+      if (v.colorName?.trim()) {
+        const name = v.colorName.trim().replaceAll(/\s+/g, '_')
+        if (!hexToCustomName.has(fill)) hexToCustomName.set(fill, name)
+      } else if (!hexToCustomName.has(fill)) {
+        hexToCustomName.set(fill, `drawio_color_${++customColorIndex}`)
+      }
+    }
+  }
+  let edgeColorIndex = 0
+  for (const e of edges) {
+    const stroke = e.strokeColor?.trim()
+    if (stroke && /^#[0-9A-Fa-f]{3,8}$/.test(stroke) && !hexToCustomName.has(stroke)) {
+      hexToCustomName.set(stroke, `drawio_edge_color_${++edgeColorIndex}`)
+    }
+  }
+  return hexToCustomName
+}
+
+/** Detect container cells and their title cells (text shape inside/near container); returns maps for FQN resolution (DRY). */
+function computeContainerTitles(vertices: DrawioCell[]): {
+  containerIdToTitle: Map<string, string>
+  titleCellIds: Set<string>
+} {
+  const containerIdToTitle = new Map<string, string>()
+  const titleCellIds = new Set<string>()
+  const containerCells = vertices.filter(
+    v =>
+      v.style?.toLowerCase().includes('container=1') &&
+      v.x != null &&
+      v.y != null &&
+      v.width != null &&
+      v.height != null,
+  )
+  for (const cont of containerCells) {
+    const cx = cont.x!,
+      cy = cont.y!,
+      cw = cont.width!,
+      ch = cont.height!
+    const titleAreaHeight = Math.min(CONTAINER_TITLE_AREA_MAX_HEIGHT_PX, ch * CONTAINER_TITLE_AREA_HEIGHT_RATIO) +
+      CONTAINER_TITLE_AREA_TOLERANCE
+    const best = vertices.find(
+      v =>
+        v.id !== cont.id &&
+        v.parent === cont.parent &&
+        (v.style?.toLowerCase().includes('shape=text') || v.style?.toLowerCase().includes('text;')) &&
+        v.x != null &&
+        v.y != null &&
+        v.x >= cx - CONTAINER_TITLE_AREA_TOLERANCE &&
+        v.x <= cx + cw + CONTAINER_TITLE_AREA_TOLERANCE &&
+        v.y >= cy - CONTAINER_TITLE_AREA_TOLERANCE &&
+        v.y <= cy + titleAreaHeight,
+    )
+    if (best) {
+      const raw = (best.value ?? '').trim()
+      if (raw) {
+        containerIdToTitle.set(cont.id, stripHtml(raw))
+        titleCellIds.add(best.id)
+      }
+    }
+  }
+  return { containerIdToTitle, titleCellIds }
 }
 
 /** Strip XML/HTML tags without regex to avoid S5852 (super-linear backtracking). */
@@ -950,7 +1072,7 @@ export interface DiagramInfo {
  */
 function getFirstDiagram(fullXml: string): DiagramInfo {
   const all = getAllDiagrams(fullXml)
-  return all[0] ?? { name: 'index', id: 'likec4-index', content: '' }
+  return all[0] ?? { name: 'index', id: `${DRAWIO_DIAGRAM_ID_PREFIX}index`, content: '' }
 }
 
 /**
@@ -970,7 +1092,7 @@ export function getAllDiagrams(fullXml: string): DiagramInfo[] {
     const inner = fullXml.slice(endOpen + 1, closeStart)
 
     const name = getAttr(attrs, 'name') ?? (results.length === 0 ? 'index' : `diagram_${results.length + 1}`)
-    const id = getAttr(attrs, 'id') ?? `likec4-${name}`
+    const id = getAttr(attrs, 'id') ?? `${DRAWIO_DIAGRAM_ID_PREFIX}${name}`
     let content: string
     if (inner.includes('<mxGraphModel')) content = inner
     else if (inner.trim() === '') content = inner
@@ -1014,104 +1136,13 @@ export function parseDrawioToLikeC4(xml: string): string {
     idToCell.set(v.id, v)
   }
 
-  // Container title cells: text shape, same parent as container=1, geometry inside/near container → merge into container, exclude from elements
-  const containerIdToTitle = new Map<string, string>()
-  const titleCellIds = new Set<string>()
-  const containerCells = vertices.filter(
-    v =>
-      v.style?.toLowerCase().includes('container=1') && v.x != null && v.y != null && v.width != null &&
-      v.height != null,
-  )
-  for (const cont of containerCells) {
-    const cx = cont.x!,
-      cy = cont.y!,
-      cw = cont.width!,
-      ch = cont.height!
-    const best = vertices.find(
-      v =>
-        v.id !== cont.id &&
-        v.parent === cont.parent &&
-        (v.style?.toLowerCase().includes('shape=text') || v.style?.toLowerCase().includes('text;')) &&
-        v.x != null &&
-        v.y != null &&
-        v.x >= cx - 2 &&
-        v.x <= cx + cw + 2 &&
-        v.y >= cy - 2 &&
-        v.y <= cy + Math.min(40, ch * 0.5) + 2,
-    )
-    if (best) {
-      const raw = (best.value ?? '').trim()
-      if (raw) {
-        containerIdToTitle.set(cont.id, stripHtml(raw))
-        titleCellIds.add(best.id)
-      }
-    }
-  }
+  const { containerIdToTitle, titleCellIds } = computeContainerTitles(vertices)
   const elementVertices = vertices.filter(v => !titleCellIds.has(v.id))
 
-  // Assign FQNs: use value as base name, ensure uniqueness. Flatten for simplicity if no clear hierarchy.
   const usedNames = new Set<string>()
-  function uniqueName(base: string): string {
-    let name = toId(base || 'element')
-    let n = name
-    let i = 0
-    while (usedNames.has(n)) {
-      n = `${name}_${++i}`
-    }
-    usedNames.add(n)
-    return n
-  }
-
-  for (const v of elementVertices) {
-    if (isRootParent(v.parent)) {
-      const name = uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id)
-      idToFqn.set(v.id, name)
-    }
-  }
-
-  // If we have parent refs that are not root, build hierarchy (e.g. parent is another vertex)
-  let changed = true
-  while (changed) {
-    changed = false
-    for (const v of elementVertices) {
-      if (idToFqn.has(v.id)) continue
-      const parent = v.parent ? idToFqn.get(v.parent) : null
-      if (parent != null) {
-        const local = uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id)
-        idToFqn.set(v.id, `${parent}.${local}`)
-        changed = true
-      }
-    }
-  }
-
-  // Any remaining vertices (orphans) get top-level names
-  for (const v of elementVertices) {
-    if (!idToFqn.has(v.id)) {
-      idToFqn.set(v.id, uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id))
-    }
-  }
-
-  // Collect unique hex colors from vertices for specification customColors; prefer likec4ColorName when present
-  const hexToCustomName = new Map<string, string>()
-  let customColorIndex = 0
-  for (const v of elementVertices) {
-    const fill = v.fillColor?.trim()
-    if (fill && /^#[0-9A-Fa-f]{3,8}$/.test(fill)) {
-      if (v.colorName && v.colorName.trim() !== '') {
-        const name = v.colorName.trim().replaceAll(/\s+/g, '_')
-        if (!hexToCustomName.has(fill)) hexToCustomName.set(fill, name)
-      } else if (!hexToCustomName.has(fill)) {
-        hexToCustomName.set(fill, `drawio_color_${++customColorIndex}`)
-      }
-    }
-  }
-  let edgeColorIndex = 0
-  for (const e of edges) {
-    const stroke = e.strokeColor?.trim()
-    if (stroke && /^#[0-9A-Fa-f]{3,8}$/.test(stroke) && !hexToCustomName.has(stroke)) {
-      hexToCustomName.set(stroke, `drawio_edge_color_${++edgeColorIndex}`)
-    }
-  }
+  const uniqueName = makeUniqueName(usedNames)
+  assignFqnsToElementVertices(idToFqn, elementVertices, containerIdToTitle, isRootParent, uniqueName)
+  const hexToCustomName = buildHexToCustomName(elementVertices, edges)
 
   const lines: string[] = []
 
@@ -1221,84 +1252,12 @@ function buildDiagramState(content: string, diagramName: string): DiagramState |
   const idToFqn = new Map<string, string>()
   const idToCell = new Map<string, DrawioCell>()
   for (const v of vertices) idToCell.set(v.id, v)
-  const containerIdToTitle = new Map<string, string>()
-  const titleCellIds = new Set<string>()
-  const containerCells = vertices.filter(
-    v =>
-      v.style?.toLowerCase().includes('container=1') && v.x != null && v.y != null && v.width != null &&
-      v.height != null,
-  )
-  for (const cont of containerCells) {
-    const cx = cont.x!,
-      cy = cont.y!,
-      cw = cont.width!,
-      ch = cont.height!
-    const best = vertices.find(
-      v =>
-        v.id !== cont.id &&
-        v.parent === cont.parent &&
-        (v.style?.toLowerCase().includes('shape=text') || v.style?.toLowerCase().includes('text;')) &&
-        v.x != null &&
-        v.y != null &&
-        v.x >= cx - 2 &&
-        v.x <= cx + cw + 2 &&
-        v.y >= cy - 2 &&
-        v.y <= cy + Math.min(40, ch * 0.5) + 2,
-    )
-    if (best) {
-      const raw = (best.value ?? '').trim()
-      if (raw) {
-        containerIdToTitle.set(cont.id, stripHtml(raw))
-        titleCellIds.add(best.id)
-      }
-    }
-  }
+  const { containerIdToTitle, titleCellIds } = computeContainerTitles(vertices)
   const elementVertices = vertices.filter(v => !titleCellIds.has(v.id))
   const usedNames = new Set<string>()
-  function uniqueName(base: string): string {
-    let name = toId(base || 'element')
-    let n = name
-    let i = 0
-    while (usedNames.has(n)) n = `${name}_${++i}`
-    usedNames.add(n)
-    return n
-  }
-  for (const v of elementVertices) {
-    if (isRootParent(v.parent)) idToFqn.set(v.id, uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id))
-  }
-  let changed = true
-  while (changed) {
-    changed = false
-    for (const v of elementVertices) {
-      if (idToFqn.has(v.id)) continue
-      const parent = v.parent ? idToFqn.get(v.parent) : null
-      if (parent != null) {
-        idToFqn.set(v.id, `${parent}.${uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id)}`)
-        changed = true
-      }
-    }
-  }
-  for (const v of elementVertices) {
-    if (idToFqn.has(v.id)) continue
-    idToFqn.set(v.id, uniqueName(v.value ?? containerIdToTitle.get(v.id) ?? v.id))
-  }
-  const hexToCustomName = new Map<string, string>()
-  let ci = 0
-  let ei = 0
-  for (const v of elementVertices) {
-    const fill = v.fillColor?.trim()
-    if (fill && /^#[0-9A-Fa-f]{3,8}$/.test(fill)) {
-      if (v.colorName?.trim()) {
-        if (!hexToCustomName.has(fill)) hexToCustomName.set(fill, v.colorName!.trim().replaceAll(/\s+/g, '_'))
-      } else if (!hexToCustomName.has(fill)) hexToCustomName.set(fill, `drawio_color_${++ci}`)
-    }
-  }
-  for (const e of edges) {
-    const stroke = e.strokeColor?.trim()
-    if (stroke && /^#[0-9A-Fa-f]{3,8}$/.test(stroke) && !hexToCustomName.has(stroke)) {
-      hexToCustomName.set(stroke, `drawio_edge_color_${++ei}`)
-    }
-  }
+  const uniqueName = makeUniqueName(usedNames)
+  assignFqnsToElementVertices(idToFqn, elementVertices, containerIdToTitle, isRootParent, uniqueName)
+  const hexToCustomName = buildHexToCustomName(elementVertices, edges)
   const children = new Map<string, Array<{ cellId: string; fqn: string }>>()
   const roots: Array<{ cellId: string; fqn: string }> = []
   for (const [cellId, fqn] of idToFqn) {

@@ -8,42 +8,15 @@
  * causing "Could not add object Array" in draw.io) or wrong counts.
  */
 
-import {
-  generateDrawioMulti,
-  getAllDiagrams,
-  parseDrawioToLikeC4Multi,
-} from '@likec4/generators'
+import { generateDrawioMulti, getAllDiagrams, parseDrawioToLikeC4Multi } from '@likec4/generators'
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { countDrawioCells, expectDrawioXmlLoadableInDrawio } from './drawio-test-utils'
 import { LikeC4 } from './LikeC4'
 
 const CLOUD_SYSTEM_PATH = path.resolve(__dirname, '../../../examples/cloud-system')
-
-function expectDrawioXmlLoadableInDrawio(drawioXml: string): void {
-  const diagrams = getAllDiagrams(drawioXml)
-  for (const d of diagrams) {
-    const content = d.content
-    expect(
-      content,
-      'Diagram must not contain nested <Array><Array> (causes "Could not add object Array" in draw.io)',
-    ).not.toMatch(/<mxGeometry[\s\S]*?<Array>\s*<Array>/)
-    if (content.includes('as="sourcePoint"') || content.includes('as="targetPoint"')) {
-      expect(
-        content,
-        'Edge geometry with points must use single <Array> of <mxPoint>, not nested Array',
-      ).toMatch(/<mxGeometry[\s\S]*?<Array(\s[^>]*)?>[\s\S]*?<mxPoint[\s\S]*?<\/Array>/)
-    }
-  }
-}
-
-/** Count vertex and edge mxCells in decompressed diagram content */
-function countDrawioCells(content: string): { vertices: number; edges: number } {
-  const vertices = (content.match(/<mxCell[^>]*\svertex="1"/gi) ?? []).length
-  const edges = (content.match(/<mxCell[^>]*\sedge="1"/gi) ?? []).length
-  return { vertices, edges }
-}
 
 describe('DrawIO export/import with cloud-system demo', () => {
   it(

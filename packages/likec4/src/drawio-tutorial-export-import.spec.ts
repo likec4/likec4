@@ -12,28 +12,8 @@ import {
   parseDrawioToLikeC4Multi,
 } from '@likec4/generators'
 import { describe, expect, it } from 'vitest'
+import { expectDrawioXmlLoadableInDrawio } from './drawio-test-utils'
 import { LikeC4 } from './LikeC4'
-
-/**
- * Asserts that the DrawIO XML does not contain the structure that causes
- * "Could not add object Array" in draw.io (nested <Array><Array> inside mxGeometry).
- */
-function expectDrawioXmlLoadableInDrawio(drawioXml: string): void {
-  const diagrams = getAllDiagrams(drawioXml)
-  for (const d of diagrams) {
-    const content = d.content
-    expect(
-      content,
-      'Diagram must not contain nested <Array><Array> (causes "Could not add object Array" in draw.io)',
-    ).not.toMatch(/<mxGeometry[\s\S]*?<Array>\s*<Array>/)
-    if (content.includes('as="sourcePoint"') || content.includes('as="targetPoint"')) {
-      expect(
-        content,
-        'Edge geometry with points must use single <Array> (or <Array as="points">) of <mxPoint>, not nested Array',
-      ).toMatch(/<mxGeometry[\s\S]*?<Array(\s[^>]*)?>[\s\S]*?<mxPoint[\s\S]*?<\/Array>/)
-    }
-  }
-}
 
 const TUTORIAL_SOURCE = `
 specification {

@@ -11,7 +11,10 @@ import {
 } from 'react'
 import { DRAWIO_EXPORT_EVENT } from './drawio-events'
 import { DrawioContextMenuDropdown } from './DrawioContextMenuDropdown'
-import { useDrawioContextMenuActions } from './useDrawioContextMenuActions'
+import {
+  type DiagramStateLike,
+  useDrawioContextMenuActions,
+} from './useDrawioContextMenuActions'
 
 export { DRAWIO_EXPORT_EVENT }
 
@@ -50,7 +53,7 @@ export function DrawioContextMenuProvider({
         diagram: null as DiagramView | null,
         likec4model: null as LikeC4Model | null,
         files: {} as Record<string, string>,
-        viewStates: {} as Record<string, { state: string; diagram?: DiagramView | null }>,
+        viewStates: {} as Record<string, DiagramStateLike>,
       }
     }
     const viewState = c.context.activeViewId ? c.context.viewStates[c.context.activeViewId] : null
