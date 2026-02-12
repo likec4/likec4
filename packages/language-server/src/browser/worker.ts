@@ -5,8 +5,13 @@ import { startLanguageServer } from './index'
 
 declare const self: DedicatedWorkerGlobalScope
 
+function errToString(err: unknown): string {
+  if (err instanceof Error) return err.message
+  if (typeof err === 'object' && err !== null) return JSON.stringify(err)
+  return String(err)
+}
 const log = (msg: string, err?: unknown) => {
-  const line = err != null ? `${msg} ${err}` : msg
+  const line = err != null ? `${msg} ${errToString(err)}` : msg
   try {
     console.error('[LikeC4 LSP worker]', line)
   } catch {
