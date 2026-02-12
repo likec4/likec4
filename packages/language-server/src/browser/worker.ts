@@ -14,10 +14,12 @@ function errToString(err: unknown): string {
       return '[unserializable value]'
     }
   }
-  // Avoid Object's default stringification for non-primitives
   if (typeof err === 'string') return err
   if (err === null || err === undefined) return ''
-  return String(err)
+  if (typeof err === 'object') return '[object]'
+  if (typeof err === 'number' || typeof err === 'boolean') return String(err)
+  if (typeof err === 'symbol') return err.toString()
+  return 'unknown'
 }
 const log = (msg: string, err?: unknown) => {
   const line = err === undefined || err === null ? msg : `${msg} ${errToString(err)}`
