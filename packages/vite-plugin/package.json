@@ -8,7 +8,6 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
-    "bin",
     "dist",
     "**/package.json",
     "!**/__mocks__/",
@@ -21,9 +20,6 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/vite-plugin"
   },
-  "engines": {
-    "node": ">=22.21.1"
-  },
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -35,6 +31,15 @@
         "default": "./dist/index.mjs"
       }
     },
+    "./internal": {
+      "sources": "./src/internal.ts",
+      "default": {
+        "types": "./dist/internal.d.mts",
+        "import": "./dist/internal.mjs",
+        "default": "./dist/internal.mjs"
+      }
+    },
+    "./modules": "./src/modules.d.ts",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -69,6 +74,7 @@
     "nanostores": "catalog:react",
     "langium": "catalog:langium",
     "defu": "catalog:utils",
+    "fast-equals": "catalog:utils",
     "tinyrainbow": "catalog:utils",
     "birpc": "catalog:vite",
     "json5": "catalog:utils",
@@ -77,7 +83,8 @@
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
     "strip-indent": "catalog:utils",
-    "zod": "catalog:externals"
+    "zod": "catalog:externals",
+    "ufo": "catalog:utils"
   },
   "peerDependencies": {
     "react": "catalog:react",
@@ -88,17 +95,11 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
-    "fast-equals": "catalog:utils",
-    "indent-string": "^5.0.0",
     "obuild": "catalog:obuild",
     "oxlint": "catalog:",
-    "p-debounce": "catalog:utils",
-    "p-queue": "catalog:utils",
-    "p-timeout": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "ufo": "catalog:utils",
     "vitest": "catalog:vitest"
   }
 }
