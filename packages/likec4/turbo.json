@@ -25,10 +25,7 @@
       "dependsOn": [
         "@likec4/react#build"
       ],
-      "outputs": [
-        "react/**"
-      ],
-      "outputLogs": "new-only"
+      "cache": false
     },
     "build-app": {
       "dependsOn": [
