@@ -412,13 +412,13 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
       }
       case 'browser': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(paddingX + 4)},${pxToInch(padding + 6)}`,
+          [_.margin]: `${pxToInch(hasIcon ? paddingX : paddingX + 4)},${pxToInch(padding + 6)}`,
         })
         break
       }
       case 'mobile': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(paddingX + 4)},${pxToInch(padding)}`,
+          [_.margin]: `${pxToInch(hasIcon ? paddingX : paddingX + 4)},${pxToInch(padding)}`,
         })
         break
       }
@@ -426,7 +426,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
         node.attributes.apply({
           [_.width]: pxToInch(width),
           [_.height]: pxToInch(height - 8),
-          [_.margin]: `${pxToInch(paddingX + 4)},${pxToInch(padding)}`,
+          [_.margin]: `${pxToInch(hasIcon ? paddingX : paddingX + 4)},${pxToInch(padding)}`,
         })
         break
       }
