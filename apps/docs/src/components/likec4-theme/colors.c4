@@ -14,6 +14,12 @@ specification {
     }
   }
 
+  element component {
+    style {
+      shape component
+    }
+  }
+
   element browser {
     style {
       shape browser
@@ -80,6 +86,19 @@ model {
         technology: '[ amber ]'
         description: '''
           Example of **Rectangle** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
+        style {
+          color amber
+        }
+      }
+
+      component = component {
+        title: 'Component'
+        technology: '[ amber ]'
+        description: '''
+          Example of **Component** shape  \
           with markdown description  \
           and **amber** color
         '''
@@ -203,6 +222,19 @@ model {
         }
       }
 
+      component = component {
+        title: 'Component'
+        technology: '[ blue ]'
+        description: '''
+          Example of **Component** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
+        style {
+          color blue
+        }
+      }
+
       browser = browser {
         title: 'Browser'
         technology: '[ blue ]'
@@ -310,6 +342,19 @@ model {
         technology: '[ gray ]'
         description: '''
           Example of **Rectangle** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
+      component = component {
+        title: 'Component'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Component** shape  \
           with markdown description  \
           and **gray** color
         '''
@@ -433,6 +478,19 @@ model {
         }
       }
 
+      component = component {
+        title: 'Component'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Component** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
       browser = browser {
         title: 'Browser'
         technology: '[ slate ]'
@@ -540,6 +598,19 @@ model {
         technology: '[ green ]'
         description: '''
           Example of **Rectangle** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
+      component = component {
+        title: 'Component'
+        technology: '[ green ]'
+        description: '''
+          Example of **Component** shape  \
           with markdown description  \
           and **green** color
         '''
@@ -663,6 +734,19 @@ model {
         }
       }
 
+      component = component {
+        title: 'Component'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Component** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
       browser = browser {
         title: 'Browser'
         technology: '[ indigo ]'
@@ -770,6 +854,19 @@ model {
         technology: '[ muted ]'
         description: '''
           Example of **Rectangle** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
+      component = component {
+        title: 'Component'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Component** shape  \
           with markdown description  \
           and **muted** color
         '''
@@ -893,6 +990,19 @@ model {
         }
       }
 
+      component = component {
+        title: 'Component'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Component** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
       browser = browser {
         title: 'Browser'
         technology: '[ primary ]'
@@ -1000,6 +1110,19 @@ model {
         technology: '[ red ]'
         description: '''
           Example of **Rectangle** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
+      component = component {
+        title: 'Component'
+        technology: '[ red ]'
+        description: '''
+          Example of **Component** shape  \
           with markdown description  \
           and **red** color
         '''
@@ -1123,6 +1246,19 @@ model {
         }
       }
 
+      component = component {
+        title: 'Component'
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Component** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
+        style {
+          color secondary
+        }
+      }
+
       browser = browser {
         title: 'Browser'
         technology: '[ secondary ]'
@@ -1230,6 +1366,19 @@ model {
         technology: '[ sky ]'
         description: '''
           Example of **Rectangle** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
+        style {
+          color sky
+        }
+      }
+
+      component = component {
+        title: 'Component'
+        technology: '[ sky ]'
+        description: '''
+          Example of **Component** shape  \
           with markdown description  \
           and **sky** color
         '''
@@ -1411,6 +1560,81 @@ views {
       sky.rectangle with {
         title 'Sky'
         technology '[ rectangle ]'
+        navigateTo themecolor_sky
+      },
+
+  }
+
+  view component {
+    title "Shape: Component"
+    include
+      colors with {
+        title "Shape: Component"
+      },
+
+      amber.component with {
+        title 'Amber'
+        technology '[ component ]'
+        navigateTo themecolor_amber
+      },
+
+      blue.component with {
+        title 'Blue'
+        technology '[ component ]'
+        navigateTo themecolor_blue
+      },
+
+      gray.component with {
+        title 'Gray'
+        technology '[ component ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.component with {
+        title 'Slate'
+        technology '[ component ]'
+        navigateTo themecolor_slate
+      },
+
+      green.component with {
+        title 'Green'
+        technology '[ component ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.component with {
+        title 'Indigo'
+        technology '[ component ]'
+        navigateTo themecolor_indigo
+      },
+
+      muted.component with {
+        title 'Muted'
+        technology '[ component ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.component with {
+        title 'Primary'
+        technology '[ component ]'
+        navigateTo themecolor_primary
+      },
+
+      red.component with {
+        title 'Red'
+        technology '[ component ]'
+        navigateTo themecolor_red
+      },
+
+      secondary.component with {
+        title 'Secondary'
+        technology '[ component ]'
+        navigateTo themecolor_secondary
+      },
+
+      sky.component with {
+        title 'Sky'
+        technology '[ component ]'
         navigateTo themecolor_sky
       },
 
@@ -1955,6 +2179,10 @@ views {
         navigateTo rectangle
       },
 
+      component with {
+        navigateTo component
+      },
+
       browser with {
         navigateTo browser
       },
@@ -1995,6 +2223,10 @@ views {
 
       rectangle with {
         navigateTo rectangle
+      },
+
+      component with {
+        navigateTo component
       },
 
       browser with {
@@ -2039,6 +2271,10 @@ views {
         navigateTo rectangle
       },
 
+      component with {
+        navigateTo component
+      },
+
       browser with {
         navigateTo browser
       },
@@ -2079,6 +2315,10 @@ views {
 
       rectangle with {
         navigateTo rectangle
+      },
+
+      component with {
+        navigateTo component
       },
 
       browser with {
@@ -2123,6 +2363,10 @@ views {
         navigateTo rectangle
       },
 
+      component with {
+        navigateTo component
+      },
+
       browser with {
         navigateTo browser
       },
@@ -2163,6 +2407,10 @@ views {
 
       rectangle with {
         navigateTo rectangle
+      },
+
+      component with {
+        navigateTo component
       },
 
       browser with {
@@ -2207,6 +2455,10 @@ views {
         navigateTo rectangle
       },
 
+      component with {
+        navigateTo component
+      },
+
       browser with {
         navigateTo browser
       },
@@ -2247,6 +2499,10 @@ views {
 
       rectangle with {
         navigateTo rectangle
+      },
+
+      component with {
+        navigateTo component
       },
 
       browser with {
@@ -2291,6 +2547,10 @@ views {
         navigateTo rectangle
       },
 
+      component with {
+        navigateTo component
+      },
+
       browser with {
         navigateTo browser
       },
@@ -2333,6 +2593,10 @@ views {
         navigateTo rectangle
       },
 
+      component with {
+        navigateTo component
+      },
+
       browser with {
         navigateTo browser
       },
@@ -2373,6 +2637,10 @@ views {
 
       rectangle with {
         navigateTo rectangle
+      },
+
+      component with {
+        navigateTo component
       },
 
       browser with {

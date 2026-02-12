@@ -170,7 +170,7 @@
     },
     "shapes": {
       "name": "keyword.control.likec4",
-      "match": "\\b(rectangle|person|browser|mobile|cylinder|storage|queue|bucket|document)\\b"
+      "match": "\\b(rectangle|component|person|browser|mobile|cylinder|storage|queue|bucket|document)\\b"
     },
     "colors": {
       "name": "entity.name.type.enum.likec4",
