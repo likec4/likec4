@@ -36,5 +36,5 @@ export function generateLikeC4(model: ParsedLikeC4ModelData): string {
   // Views block
   printViews(out, model.views)
 
-  return toString(out)
+  return toString(out).replace(/\r\n/g, '\n')
 }
