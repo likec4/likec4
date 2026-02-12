@@ -11,7 +11,11 @@ import { LanguageClientSync } from './LanguageClientSync'
 
 const logger = rootLogger.getChild('monaco-editor')
 
-const LazyMonacoEditor = memo((props: { setLayoutedModelApi?: (api: LayoutedModelApi | null) => void }) => {
+export type MonacoEditorProps = {
+  setLayoutedModelApi?: (api: LayoutedModelApi | null) => void
+}
+
+const LazyMonacoEditor = memo((props: MonacoEditorProps) => {
   const { setLayoutedModelApi } = props
   const playground = usePlayground()
 

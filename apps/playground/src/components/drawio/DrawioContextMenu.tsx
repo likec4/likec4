@@ -32,7 +32,7 @@ export function DrawioContextMenu({
     onAddFile: (filename, content) => {
       playground.actor.send({ type: 'workspace.addFile', filename, content })
     },
-    getSourceContent,
+    ...(getSourceContent !== undefined && { getSourceContent }),
   })
 
   return (
