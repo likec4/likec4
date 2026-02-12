@@ -60,12 +60,9 @@
       }
     },
     "./react": {
-      "sources": "./react/index.ts",
-      "default": {
-        "types": "./react/index.d.ts",
-        "import": "./react/index.js",
-        "default": "./react/index.js"
-      }
+      "types": "./react/index.d.mts",
+      "import": "./react/index.mjs",
+      "default": "./react/index.mjs"
     },
     "./vite-plugin-modules": {
       "types": "./vite-plugin-modules.d.ts"
@@ -124,7 +121,7 @@
     "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf --glob lib dist app/dist dev/.export dev/dist node_modules/.vite react/*.mjs react/*.d.mts icons",
+    "clean": "pnpm rimraf --glob lib dist app/dist dev/.export dev/dist node_modules/.vite react/* icons",
     "start": "tsx --conditions=sources src/cli/index.ts",
     "dev": "pnpm cli:serve dev",
     "dev:docs": "pnpm cli:serve ../../apps/docs/src",
@@ -162,8 +159,6 @@
     "type-fest": "catalog:externals",
     "vite-plugin-singlefile": "^2.3.0",
     "vite": "catalog:vite",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "yargs": "17.7.2",
     "nano-spawn": "catalog:externals"
   },
@@ -253,6 +248,7 @@
     "which": "^5.0.0",
     "wireit": "catalog:",
     "zod": "catalog:externals",
+    "zx": "catalog:",
     "xstate": "catalog:xstate"
   }
 }

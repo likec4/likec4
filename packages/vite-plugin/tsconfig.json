@@ -17,7 +17,18 @@
     ],
     "types": [
       "node"
-    ]
+    ],
+    "paths": {
+      "likec4/vite-plugin/internal": [
+        "./src/internal.ts"
+      ],
+      "likec4/model": [
+        "../core/src/index.ts"
+      ],
+      "likec4/react": [
+        "../react/dist/"
+      ]
+    }
   },
   "include": [
     "src",

@@ -93,6 +93,7 @@
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/react": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "obuild": "catalog:obuild",

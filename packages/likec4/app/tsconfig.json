@@ -17,7 +17,7 @@
     "rootDir": ".",
     "types": [
       "vite/client",
-      "../src/vite-plugin/modules.d.ts",
+      "@likec4/vite-plugin/modules",
     ]
   },
   "include": [
@@ -27,9 +27,6 @@
   "references": [
     {
       "path": "../tsconfig.cli.json"
-    },
-    {
-      "path": "../tsconfig.react.json"
     },
     {
       "path": "../../core/tsconfig.json"

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type DiagramView, type NonEmptyArray, invariant } from '@likec4/core'
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { resolve } from 'node:path'
 import { hrtime } from 'node:process'
 import picomatch from 'picomatch'
@@ -8,7 +9,6 @@ import k from 'tinyrainbow'
 import { joinURL, withTrailingSlash } from 'ufo'
 import type { ViteDevServer } from 'vite'
 import type { Argv } from 'yargs'
-import { LikeC4 } from '../../../LikeC4'
 import { type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
 import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { viteDev } from '../../../vite/vite-dev'
@@ -133,8 +133,7 @@ export async function pngHandler({
   const logger = createLikeC4Logger('export')
   const startTakeScreenshot = hrtime()
 
-  await using languageServices = await LikeC4.fromWorkspace(path, {
-    logger: 'vite',
+  await using languageServices = await fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })

@@ -1,5 +1,5 @@
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import isInsideContainer from 'is-inside-container'
-import { LikeC4 } from '../../LikeC4'
 import { printServerUrls } from '../../vite/printServerUrls'
 import { vitePreview } from '../../vite/vite-preview'
 
@@ -31,8 +31,7 @@ export async function handler({
   base,
   listen,
 }: HandlerParams) {
-  const languageServices = await LikeC4.fromWorkspace(path, {
-    logger: 'vite',
+  const languageServices = await fromWorkspace(path, {
     watch: false,
   })
 
