@@ -121,7 +121,7 @@
     "generate:app": "tsr generate",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
+    "postpack": "likec4ops postpack",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "pnpm rimraf --glob lib dist app/dist dev/.export dev/dist node_modules/.vite react/*.mjs react/*.d.mts icons",
