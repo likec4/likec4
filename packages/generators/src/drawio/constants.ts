@@ -49,3 +49,9 @@ export const MXGRAPH_PAGE_HEIGHT = 1169
 
 /** Default filename when exporting all views into one .drawio file (CLI and playground). */
 export const DEFAULT_DRAWIO_ALL_FILENAME = 'diagrams.drawio'
+
+/** LikeC4 app font (matches --mantine-font-family / --likec4-app-font-default). Used in generate-drawio for cell text. */
+export const LIKEC4_FONT_FAMILY = '\'IBM Plex Sans Variable\',ui-sans-serif,system-ui,sans-serif'
+
+/** Container title color in diagram (matches LikeC4 diagram compound title). Used in generate-drawio for container title cell. */
+export const CONTAINER_TITLE_COLOR = '#74c0fc'

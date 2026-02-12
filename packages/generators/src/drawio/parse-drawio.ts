@@ -637,8 +637,8 @@ function stripTags(s: string): string {
   return out
 }
 
-/** Decode XML entities, take first line up to <br, strip tags. Shared by stripHtml and stripHtmlForTitle. */
-function stripHtmlFromValue(raw: string | undefined): string {
+/** Decode XML entities, take first line up to <br, strip tags. Single implementation for cell value and title (DRY). */
+function stripHtml(raw: string | undefined): string {
   if (!raw || raw.trim() === '') return ''
   const decoded = raw
     .replaceAll('&lt;', '<')
@@ -649,16 +649,6 @@ function stripHtmlFromValue(raw: string | undefined): string {
   const brIdx = firstLine.toLowerCase().indexOf('<br')
   const segment = brIdx === -1 ? firstLine : firstLine.slice(0, brIdx)
   return stripTags(segment).trim() || ''
-}
-
-/** Strip HTML/entities and take first line; used for cell value → plain text. */
-function stripHtml(s: string): string {
-  return stripHtmlFromValue(s)
-}
-
-/** Strip HTML for use as plain title when emitting .c4. */
-function stripHtmlForTitle(raw: string | undefined): string {
-  return stripHtmlFromValue(raw)
 }
 
 /** Escape single quotes for LikeC4 string literals (DRY). */
@@ -791,7 +781,7 @@ function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string
   const parentCell = cell.parent ? ctx.byId.get(cell.parent) : undefined
   const kind = inferKind(cell.style, parentCell)
   const rawTitle = (cell.value && cell.value.trim()) || ''
-  const title = stripHtmlForTitle(rawTitle) ||
+  const title = stripHtml(rawTitle) ||
     (ctx.containerIdToTitle.get(cell.id) ?? ctx.containerIdToTitle.get(cellId) ?? '') ||
     fqn.split('.').pop() ||
     'Element'

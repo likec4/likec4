@@ -17,6 +17,7 @@ import { isEmptyish, isNullish as isNil } from 'remeda'
 import {
   CONTAINER_TITLE_CELL_ID_START,
   CONTAINER_TITLE_CHAR_WIDTH_PX,
+  CONTAINER_TITLE_COLOR,
   CONTAINER_TITLE_HEIGHT_PX,
   CONTAINER_TITLE_INSET_X,
   CONTAINER_TITLE_INSET_Y,
@@ -31,6 +32,7 @@ import {
   DEFAULT_NODE_WIDTH,
   DRAWIO_DIAGRAM_ID_PREFIX,
   DRAWIO_PAGE_LINK_PREFIX,
+  LIKEC4_FONT_FAMILY,
   MXGRAPH_PAGE_HEIGHT,
   MXGRAPH_PAGE_WIDTH,
   NODES_SPREAD_GAP,
@@ -269,6 +271,36 @@ function pushStylePartNum(parts: string[], key: string, value: number | undefine
   if (value != null) parts.push(`${key}=${value}`)
 }
 
+/** Build Draw.io link= style for navigateTo (empty string when no nav). DRY for node and container title. */
+function buildNavLinkStyle(navTo: string): string {
+  return navTo === '' ? '' : `link=${encodeURIComponent(`${DRAWIO_PAGE_LINK_PREFIX}${navTo}`)};`
+}
+
+/** Flatten markdown/string and trim to single export string; empty when missing or empty-ish. DRY for node/edge fields. */
+function toExportString(raw: MarkdownOrString | string | undefined | null): string {
+  const flat = raw != null ? flattenMarkdownOrString(raw as MarkdownOrString) : null
+  return flat != null && !isEmptyish(flat) ? flat.trim() : ''
+}
+
+/** Serialize links array to style-safe JSON string (empty when none). DRY for node and edge links. */
+function linksToStyleJson(links: readonly { url: string; title?: string }[] | undefined): string {
+  if (!Array.isArray(links) || links.length === 0) return ''
+  return encodeURIComponent(JSON.stringify(links.map(l => ({ url: l.url, title: l.title }))))
+}
+
+/** Serialize metadata object to style-safe JSON string (empty when none). DRY for edge metadata. */
+function metadataToStyleJson(metadata: Record<string, string | string[]> | undefined): string {
+  if (
+    metadata == null ||
+    typeof metadata !== 'object' ||
+    Array.isArray(metadata) ||
+    Object.keys(metadata).length === 0
+  ) {
+    return ''
+  }
+  return encodeURIComponent(JSON.stringify(metadata))
+}
+
 const HEX_COLOR_RE = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/
 
 /** Build LikeC4 style string (likec4Description=...; etc.) for round-trip. */
@@ -386,26 +418,16 @@ function buildEdgeCellXml(
     : ''
   const endArrow = drawioArrow(edge.head)
   const startArrow = edge.tail == null || edge.tail === 'none' ? 'none' : drawioArrow(edge.tail)
-  const edgeDescRaw = flattenMarkdownOrString(edge.description)
-  const edgeTechRaw = flattenMarkdownOrString(edge.technology)
-  const edgeNotesRaw = flattenMarkdownOrString(edge.notes)
-  const edgeDesc = edgeDescRaw != null && !isEmptyish(edgeDescRaw) ? edgeDescRaw.trim() : ''
-  const edgeTech = edgeTechRaw != null && !isEmptyish(edgeTechRaw) ? edgeTechRaw.trim() : ''
-  const edgeNotes = edgeNotesRaw != null && !isEmptyish(edgeNotesRaw) ? edgeNotesRaw.trim() : ''
+  const edgeDesc = toExportString(edge.description)
+  const edgeTech = toExportString(edge.technology)
+  const edgeNotes = toExportString(edge.notes)
   const edgeNavTo = edge.navigateTo != null && edge.navigateTo !== '' ? String(edge.navigateTo) : ''
   const edgeKind = (edge as Edge & { kind?: string }).kind
   const edgeNotation = (edge as Edge & { notation?: string }).notation
   const edgeLinks = (edge as Edge & { links?: readonly { url: string; title?: string }[] }).links
-  const edgeLinksJson = Array.isArray(edgeLinks) && edgeLinks.length > 0
-    ? encodeURIComponent(JSON.stringify(edgeLinks.map(l => ({ url: l.url, title: l.title }))))
-    : ''
+  const edgeLinksJson = linksToStyleJson(edgeLinks)
   const edgeMetadata = (edge as Edge & { metadata?: Record<string, string | string[]> }).metadata
-  const edgeMetadataJson = edgeMetadata &&
-      typeof edgeMetadata === 'object' &&
-      !Array.isArray(edgeMetadata) &&
-      Object.keys(edgeMetadata).length > 0
-    ? encodeURIComponent(JSON.stringify(edgeMetadata))
-    : ''
+  const edgeMetadataJson = metadataToStyleJson(edgeMetadata)
   const edgeLikec4Style = buildLikec4StyleForEdge({
     edgeDesc,
     edgeTech,
@@ -481,12 +503,9 @@ function buildNodeCellXml(
   const y = parentBbox == null ? bbox.y + layout.offsetY : bbox.y - parentBbox.y
 
   const title = node.title
-  const descRaw = flattenMarkdownOrString(node.description)
-  const techRaw = flattenMarkdownOrString(node.technology)
-  const notesRaw = flattenMarkdownOrString((node as Node & { notes?: MarkdownOrString }).notes)
-  const desc = descRaw != null && !isEmptyish(descRaw) ? descRaw.trim() : ''
-  const tech = techRaw != null && !isEmptyish(techRaw) ? techRaw.trim() : ''
-  const notes = notesRaw != null && !isEmptyish(notesRaw) ? notesRaw.trim() : ''
+  const desc = toExportString(node.description)
+  const tech = toExportString(node.technology)
+  const notes = toExportString((node as Node & { notes?: MarkdownOrString }).notes)
   const tags = (node as Node & { tags?: readonly string[] }).tags
   const tagList = Array.isArray(tags) && tags.length > 0 ? tags.join(',') : ''
   const navigateTo = (node as Node & { navigateTo?: string | null }).navigateTo
@@ -537,13 +556,9 @@ function buildNodeCellXml(
   const fillOpacityStyle = containerOpacityNum != null && isContainer === true
     ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
     : ''
-  const summaryRaw = (node as Node & { summary?: MarkdownOrString }).summary
-  const summaryFlat = summaryRaw != null ? flattenMarkdownOrString(summaryRaw) : null
-  const summaryStr = summaryFlat != null && !isEmptyish(summaryFlat) ? summaryFlat.trim() : ''
+  const summaryStr = toExportString((node as Node & { summary?: MarkdownOrString }).summary)
   const links = (node as Node & { links?: readonly { url: string; title?: string }[] }).links
-  const linksJson = Array.isArray(links) && links.length > 0
-    ? encodeURIComponent(JSON.stringify(links.map(l => ({ url: l.url, title: l.title }))))
-    : ''
+  const linksJson = linksToStyleJson(links)
   const opacityStyle = fillOpacityStyle
   const colorNameForRoundtrip = node.color ? encodeURIComponent(String(node.color)) : ''
 
@@ -569,7 +584,7 @@ function buildNodeCellXml(
   const nodeCustomData = (node as Node & { customData?: Record<string, string> }).customData
   const userObjectXml = buildMxUserObjectXml(nodeCustomData)
 
-  const navLinkStyle = navTo === '' ? '' : `link=${encodeURIComponent(`${DRAWIO_PAGE_LINK_PREFIX}${navTo}`)};`
+  const navLinkStyle = buildNavLinkStyle(navTo)
   const vertexTextStyle = isContainer
     ? 'align=left;verticalAlign=top;overflow=fill;whiteSpace=wrap;html=1;'
     : `align=center;verticalAlign=middle;verticalLabelPosition=middle;labelPosition=center;fontSize=${fontSizePx};fontStyle=1;spacingTop=4;spacingLeft=2;spacingRight=2;spacingBottom=2;overflow=fill;whiteSpace=wrap;html=1;fontFamily=${
@@ -577,22 +592,16 @@ function buildNodeCellXml(
     };`
 
   const userObjectLabel = isContainer ? escapeXml(title) : value
-  const geometryAttr = `height="${Math.round(height)}" width="${Math.round(width)}" x="${Math.round(x)}" y="${
-    Math.round(y)
-  }" as="geometry"`
-  const innerCellXml =
-    `<mxCell parent="${parentId}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" value="${value}" vertex="1">
-  <mxGeometry ${geometryAttr} />${userObjectXml}
-</mxCell>`
+  const styleStr =
+    `${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;`
+  const geometryLine = `<mxGeometry height="${Math.round(height)}" width="${Math.round(width)}" x="${
+    Math.round(x)
+  }" y="${Math.round(y)}" as="geometry" />${userObjectXml}`
   const cellXml = navTo === ''
-    ? `<mxCell id="${id}" value="${value}" style="${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${opacityStyle}${navLinkStyle}${likec4Style}html=1;" vertex="1" parent="${parentId}">\n  <mxGeometry x="${
-      Math.round(x)
-    }" y="${Math.round(y)}" width="${Math.round(width)}" height="${
-      Math.round(height)
-    }" as="geometry" />${userObjectXml}\n</mxCell>`
+    ? `<mxCell id="${id}" value="${value}" style="${styleStr}" vertex="1" parent="${parentId}">\n  ${geometryLine}\n</mxCell>`
     : `<UserObject label="${userObjectLabel}" link="${DRAWIO_PAGE_LINK_PREFIX}${
       escapeXml(navTo)
-    }" id="${id}">\n  ${innerCellXml}\n</UserObject>`
+    }" id="${id}">\n  <mxCell parent="${parentId}" style="${styleStr}" value="${value}" vertex="1">\n  ${geometryLine}\n</mxCell>\n</UserObject>`
 
   if (!isContainer) return { vertexXml: cellXml, isContainer: false }
 
@@ -627,7 +636,7 @@ function buildContainerTitleCellXml(
   const titleHeight = CONTAINER_TITLE_HEIGHT_PX
   const titleX = CONTAINER_TITLE_INSET_X
   const titleY = CONTAINER_TITLE_INSET_Y
-  const navLinkStyle = navTo === '' ? '' : `link=${encodeURIComponent(`${DRAWIO_PAGE_LINK_PREFIX}${navTo}`)};`
+  const navLinkStyle = buildNavLinkStyle(navTo)
   const titleStyle =
     `shape=text;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontSize=${fontSizePx};fontStyle=1;fontColor=${colorHex};fontFamily=${
       encodeURIComponent(fontFamily)
@@ -736,11 +745,6 @@ type DiagramLayoutState = {
   containerTitleColor: string
   nodeIdsInView: Set<NodeId>
 }
-
-/** LikeC4 app font (matches --mantine-font-family / --likec4-app-font-default). */
-const LIKEC4_FONT_FAMILY = '\'IBM Plex Sans Variable\',ui-sans-serif,system-ui,sans-serif'
-/** Container title color: matches LikeC4 diagram compound title (same as in diagram UI). */
-const CONTAINER_TITLE_COLOR = '#74c0fc'
 
 const DEFAULT_BBOX: BBox = {
   x: 0,
