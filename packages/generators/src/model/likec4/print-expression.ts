@@ -14,7 +14,7 @@ import {
 } from '@likec4/core/types'
 import type { Expression, ModelExpression } from '@likec4/core/types'
 import { isString } from 'remeda'
-import { printDeploymentRef, printModelRef } from './utils'
+import { printDeploymentRef, printModelRef, quoteString } from './utils'
 
 function printSelector(selector: PredicateSelector | undefined): string {
   if (!selector) return ''
@@ -246,7 +246,7 @@ function printFqnExprAnyInner(expr: any): string {
 
 function printCustomElementProps(custom: any): string {
   const lines: string[] = []
-  if (custom.title) lines.push(`  title '${custom.title}'`)
+  if (custom.title) lines.push(`  title ${quoteString(custom.title)}`)
   if (custom.color) lines.push(`  color ${custom.color}`)
   if (custom.shape) lines.push(`  shape ${custom.shape}`)
   if (custom.icon) lines.push(`  icon ${custom.icon}`)
@@ -265,7 +265,7 @@ function printCustomElementProps(custom: any): string {
 
 function printCustomRelationProps(custom: any): string {
   const lines: string[] = []
-  if (custom.title) lines.push(`  title '${custom.title}'`)
+  if (custom.title) lines.push(`  title ${quoteString(custom.title)}`)
   if (custom.color) lines.push(`  color ${custom.color}`)
   if (custom.line) lines.push(`  line ${custom.line}`)
   if (custom.head) lines.push(`  head ${custom.head}`)

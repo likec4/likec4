@@ -30,7 +30,11 @@ export function printGlobals(out: CompositeGeneratorNode, globals: ModelGlobals)
                 inner.append('include', NL)
                 inner.indent({
                   indentedChildren: predInner => {
-                    predInner.append(exprs.join(',\n'), NL)
+                    for (let i = 0; i < exprs.length; i++) {
+                      predInner.append(exprs[i])
+                      if (i < exprs.length - 1) predInner.append(',')
+                      predInner.append(NL)
+                    }
                   },
                   indentation: 2,
                 })
@@ -40,7 +44,11 @@ export function printGlobals(out: CompositeGeneratorNode, globals: ModelGlobals)
                 inner.append('exclude', NL)
                 inner.indent({
                   indentedChildren: predInner => {
-                    predInner.append(exprs.join(',\n'), NL)
+                    for (let i = 0; i < exprs.length; i++) {
+                      predInner.append(exprs[i])
+                      if (i < exprs.length - 1) predInner.append(',')
+                      predInner.append(NL)
+                    }
                   },
                   indentation: 2,
                 })

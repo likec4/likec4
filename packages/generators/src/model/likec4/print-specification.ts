@@ -2,7 +2,7 @@ import type { ElementSpecification, RelationshipSpecification, TagSpecification 
 import { isTagColorSpecified } from '@likec4/core/types'
 import { CompositeGeneratorNode, NL } from 'langium/generate'
 import { printStyleProperties } from './print-style'
-import { quoteString } from './utils'
+import { quoteMarkdownOrString, quoteString } from './utils'
 
 interface SpecificationData {
   customColors?: Record<string, any>
@@ -96,14 +96,15 @@ function printElementKindSpec(
   indent: CompositeGeneratorNode,
   keyword: 'element' | 'deploymentNode',
   kind: string,
-  elSpec: any,
+  elSpec: Partial<ElementSpecification>,
 ): void {
   const hasNotation = !!elSpec.notation
   const hasSummary = !!elSpec.summary
   const hasDescription = !!elSpec.description
   const hasTechnology = !!elSpec.technology
   const hasTitle = !!elSpec.title
-  const hasStyle = elSpec.style && Object.keys(elSpec.style).some((k: string) => (elSpec.style as any)[k] != null)
+  const hasStyle = elSpec.style &&
+    Object.keys(elSpec.style).some(k => (elSpec.style as Record<string, unknown>)[k] != null)
   const hasLinks = elSpec.links && elSpec.links.length > 0
   const hasTags = elSpec.tags && elSpec.tags.length > 0
   const hasBody = hasNotation || hasSummary || hasDescription || hasTechnology || hasTitle
@@ -117,11 +118,11 @@ function printElementKindSpec(
   indent.append(keyword, ' ', kind, ' {', NL)
   indent.indent({
     indentedChildren: inner => {
-      if (hasTitle) inner.append('title ', quoteString(elSpec.title), NL)
-      if (hasNotation) inner.append('notation ', quoteString(elSpec.notation), NL)
-      if (hasSummary) inner.append('summary ', quoteString(elSpec.summary), NL)
-      if (hasDescription) inner.append('description ', quoteString(elSpec.description), NL)
-      if (hasTechnology) inner.append('technology ', quoteString(elSpec.technology), NL)
+      if (hasTitle) inner.append('title ', quoteString(elSpec.title!), NL)
+      if (hasNotation) inner.append('notation ', quoteString(elSpec.notation!), NL)
+      if (hasSummary) inner.append('summary ', quoteMarkdownOrString(elSpec.summary!), NL)
+      if (hasDescription) inner.append('description ', quoteMarkdownOrString(elSpec.description!), NL)
+      if (hasTechnology) inner.append('technology ', quoteString(elSpec.technology!), NL)
       if (hasTags) inner.append('#', (elSpec.tags as string[]).join(' #'), NL)
       if (hasLinks) {
         for (const link of elSpec.links) {

@@ -1,13 +1,28 @@
 import type { ParsedLikeC4ModelData } from '@likec4/core'
+import { nameFromFqn } from '@likec4/core/utils'
 import { CompositeGeneratorNode, NL, toString } from 'langium/generate'
 import { printDeployment } from './likec4/print-deployment'
 import { printGlobals } from './likec4/print-globals'
 import { printModel } from './likec4/print-model'
 import { printSpecification } from './likec4/print-specification'
 import { printViews } from './likec4/print-views'
+import { quoteString } from './likec4/utils'
 
 export function generateLikeC4(model: ParsedLikeC4ModelData): string {
   const out = new CompositeGeneratorNode()
+
+  // Import declarations
+  for (const [projectId, elements] of Object.entries(model.imports) as [string, { id: string }[]][]) {
+    const names = elements.map(el => nameFromFqn(el.id))
+    if (names.length === 1) {
+      out.append('import ', names[0]!, ' from ', quoteString(projectId), NL)
+    } else {
+      out.append('import { ', names.join(', '), ' } from ', quoteString(projectId), NL)
+    }
+  }
+  if (Object.keys(model.imports).length > 0) {
+    out.append(NL)
+  }
 
   // Specification block
   printSpecification(out, model.specification)
@@ -22,7 +37,7 @@ export function generateLikeC4(model: ParsedLikeC4ModelData): string {
   }
 
   // Model block
-  printModel(out, model.elements, model.relations, model.imports)
+  printModel(out, model.elements, model.relations)
   out.append(NL)
 
   // Deployment block (if non-empty)
