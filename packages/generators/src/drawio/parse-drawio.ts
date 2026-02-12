@@ -380,8 +380,8 @@ function parseDrawioXml(xml: string): DrawioCell[] {
       if (innerMxStart !== -1) {
         const mx = extractOneMxCell(innerXml, innerMxStart)
         if (mx) {
-          const fullTag = `<mxCell id="${userObjId}" ${mx.attrs}>${mx.inner}</mxCell>`
-          // Pass UserObject inner XML so parseUserData sees UserObject-level <data> siblings of the mxCell
+          // Use innerXml (UserObject body) so parseUserData and fullTag see UserObject-level <data> siblings of the mxCell
+          const fullTag = `<mxCell id="${userObjId}" ${mx.attrs}>${innerXml}</mxCell>`
           const cell = buildCellFromMxCell(
             mx.attrs,
             innerXml,
