@@ -420,9 +420,16 @@ export function generateDrawio(
     const id = getCellId(node.id)
     const bbox = bboxes.get(node.id)!
     const { width, height } = bbox
-    const x = bbox.x + offsetX
-    const y = bbox.y + offsetY
-    const parentId = defaultParentId
+    const parentId = node.parent != null && nodeIdsInView.has(node.parent)
+      ? getCellId(node.parent)
+      : defaultParentId
+    const parentBbox = node.parent != null ? bboxes.get(node.parent) : undefined
+    const x = parentBbox != null
+      ? bbox.x - parentBbox.x
+      : bbox.x + offsetX
+    const y = parentBbox != null
+      ? bbox.y - parentBbox.y
+      : bbox.y + offsetY
 
     const title = node.title
     const descRaw = flattenMarkdownOrString(node.description)

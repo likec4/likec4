@@ -112,7 +112,7 @@ export function useDrawioContextMenuActions({
       a.href = url
       a.download = `${diagram.id}.drawio`
       a.click()
-      URL.revokeObjectURL(url)
+      setTimeout(() => URL.revokeObjectURL(url), 0)
     } catch (err) {
       console.error('DrawIO export failed', err)
     }
@@ -232,7 +232,7 @@ export function useDrawioContextMenuActions({
       a.href = url
       a.download = 'diagrams.drawio'
       a.click()
-      URL.revokeObjectURL(url)
+      setTimeout(() => URL.revokeObjectURL(url), 0)
     } catch (err) {
       console.error('DrawIO export all views failed', err)
     }

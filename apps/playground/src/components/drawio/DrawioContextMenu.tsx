@@ -1,4 +1,3 @@
-import { usePlayground } from '$/hooks/usePlayground'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import { DrawioContextMenuDropdown } from './DrawioContextMenuDropdown'
@@ -25,7 +24,6 @@ export function DrawioContextMenu({
   likec4model,
   getSourceContent,
 }: DrawioContextMenuProps) {
-  const playground = usePlayground()
   const actions = useDrawioContextMenuActions({
     diagram,
     likec4model,
