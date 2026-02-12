@@ -1,6 +1,7 @@
 export { generateDrawio } from './drawio/generate-drawio'
 export { generateD2 } from './d2/generate-d2'
 export { generateMermaid } from './mmd/generate-mmd'
+export { generateLikeC4 } from './model/generate-likec4'
 export { parseDrawioToLikeC4 } from './drawio/parse-drawio'
 export { generateLikeC4Model } from './model/generate-likec4-model'
 export { generatePuml } from './puml/generate-puml'

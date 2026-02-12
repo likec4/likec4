@@ -1,0 +1,149 @@
+specification {
+  element person {
+    style {
+      shape person
+    }
+  }
+  element system
+  element component
+  element webapp {
+    style {
+      shape browser
+    }
+  }
+  element mobile {
+    style {
+      shape mobile
+    }
+  }
+  deploymentNode env
+  deploymentNode zone
+  deploymentNode node
+  relationship async {
+    color amber
+    line dotted
+  }
+  tag external
+  tag internal
+  metadataKey key1
+}
+
+model {
+  customer = person 'customer' {
+    style {
+      shape person
+    }
+  }
+  cloud = system 'cloud' {
+    frontend = component 'frontend' {
+      dashboard = webapp 'dashboard' {
+        style {
+          shape browser
+        }
+      }
+      mobile = mobile 'mobile' {
+        style {
+          shape mobile
+        }
+      }
+    }
+    auth = component 'auth'
+    backend = component 'backend' {
+      #external
+      metadata {
+        key1 'value1'
+      }
+      api = component 'api'
+      graphql = component 'graphql'
+    }
+    media = component 'media' {
+      #internal
+      style {
+        shape storage
+      }
+    }
+  }
+  aws = system 'aws' {
+    rds = component 'rds' {
+      style {
+        shape storage
+      }
+    }
+    s3 = component 's3' {
+      metadata {
+        key1 'value2'
+      }
+      style {
+        shape storage
+      }
+    }
+  }
+  email = system 'email'
+  customer -> cloud 'uses services'
+  customer -> cloud.frontend.mobile 'opens mobile app'
+  customer -> cloud.frontend.dashboard 'opens in browser'
+  cloud.frontend.dashboard -> cloud.auth 'authenticates'
+  cloud.frontend.dashboard -> cloud.backend.api 'fetches data'
+  cloud.frontend.dashboard -> cloud.media 'fetches media'
+  cloud.frontend.mobile -> cloud.auth 'authenticates'
+  cloud.frontend.mobile -> cloud.backend.api 'fetches data'
+  cloud.frontend.mobile -> cloud.media 'fetches media'
+  cloud.backend.api -> cloud.auth 'authorizes'
+  cloud.backend.api -> cloud.media 'uploads media'
+  cloud.backend.api -> aws.rds 'reads/writes'
+  cloud.backend.api -> email 'sends emails'
+  cloud.media -> aws.s3 'uploads'
+  email -> customer 'sends emails' {
+    #external
+    metadata {
+      key1 'value3'
+    }
+  }
+}
+
+deployment {
+  node customer 'customer' {
+    instance = instanceOf customer
+  }
+  env prod 'prod' {
+    zone eu 'eu' {
+      zone zone1 'zone1' {
+        ui = instanceOf cloud.frontend.dashboard
+        instanceOf cloud.backend.api
+      }
+      zone zone2 'zone2' {
+        ui = instanceOf cloud.frontend.dashboard
+        instanceOf cloud.backend.api
+      }
+      instanceOf cloud.media
+      db = instanceOf aws.rds
+    }
+    zone us 'us' {
+      db = instanceOf aws.rds
+    }
+  }
+  prod.eu.db -> prod.us.db 'replicates'
+}
+
+views {
+
+  view index {
+    include
+      *
+  }
+
+  view cloud of cloud {
+    include
+      *
+    include
+      cloud.frontend.dashboard
+  }
+
+  deployment view prod {
+    title 'prod'
+    include
+      customer.instance
+    include
+      prod.eu.zone1.ui
+  }
+}
