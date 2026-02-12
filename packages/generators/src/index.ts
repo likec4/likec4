@@ -16,6 +16,7 @@ export {
   parseDrawioToLikeC4Multi,
 } from './drawio/parse-drawio'
 export { generateMermaid } from './mmd/generate-mmd'
+export { generateLikeC4 } from './model/generate-likec4'
 export { generateLikeC4Model } from './model/generate-likec4-model'
 export { generatePuml } from './puml/generate-puml'
 export { generateReactNext } from './react-next/generate-react-next'
