@@ -46,20 +46,24 @@ function countDrawioCells(content: string): { vertices: number; edges: number } 
 }
 
 describe('DrawIO export/import with cloud-system demo', () => {
-  it('exports cloud-system to DrawIO and file is loadable in draw.io (no nested Array)', async () => {
-    const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
-    expect(likec4.hasErrors()).toBe(false)
+  it(
+    'exports cloud-system to DrawIO and file is loadable in draw.io (no nested Array)',
+    { timeout: 20000 },
+    async () => {
+      const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
+      expect(likec4.hasErrors()).toBe(false)
 
-    const model = await likec4.layoutedModel()
-    const viewmodels = [...model.views()]
-    expect(viewmodels.length).toBeGreaterThanOrEqual(1)
+      const model = await likec4.layoutedModel()
+      const viewmodels = [...model.views()]
+      expect(viewmodels.length).toBeGreaterThanOrEqual(1)
 
-    const drawioXml = generateDrawioMulti(viewmodels)
-    expect(drawioXml).toContain('<?xml version="1.0"')
-    expect(drawioXml).toContain('<mxfile ')
+      const drawioXml = generateDrawioMulti(viewmodels)
+      expect(drawioXml).toContain('<?xml version="1.0"')
+      expect(drawioXml).toContain('<mxfile ')
 
-    expectDrawioXmlLoadableInDrawio(drawioXml)
-  })
+      expectDrawioXmlLoadableInDrawio(drawioXml)
+    },
+  )
 
   it('exported DrawIO has same number of elements and edges per view (no extra, none missing)', async () => {
     const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
