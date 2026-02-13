@@ -1182,8 +1182,8 @@ function emitRoundtripCommentsMulti(
   }
 }
 
-/** Decompress draw.io diagram content: base64 → inflateRaw → decodeURIComponent. */
-function decompressDrawioDiagram(base64Content: string): string {
+/** Decompress draw.io diagram content: base64 → inflateRaw → decodeURIComponent. Exported for tests (error message contract). */
+export function decompressDrawioDiagram(base64Content: string): string {
   const trimmed = base64Content.trim()
   let bytes: Uint8Array
   try {

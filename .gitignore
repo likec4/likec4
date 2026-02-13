@@ -117,3 +117,6 @@ COMMIT_MSG.txt
 .commit_msg*.txt
 BEGINNER_*.md
 pr-*-to-origin.md
+docs/EVALUATION-*.md
+docs/COMPARISON-*.md
+docs/TEST-*.md
