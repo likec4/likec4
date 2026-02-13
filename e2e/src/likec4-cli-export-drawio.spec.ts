@@ -1,5 +1,5 @@
 import { mkdirSync, readdirSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { test } from 'vitest'
 import { $ } from 'zx'
 
@@ -7,6 +7,8 @@ $.nothrow = false
 
 const outDir = 'test-results/drawio-export'
 const sourceDir = 'src/likec4'
+/** Absolute path so CLI resolves workspace regardless of process cwd (CI runner). */
+const sourceDirAbs = resolve(process.cwd(), sourceDir)
 const emptyWorkspaceDir = 'test-results/empty-workspace'
 /** Project id from e2e/src/likec4/likec4.config.ts (name: 'e2e') so export targets the correct project when workspace has multiple. */
 const projectId = 'e2e'
@@ -20,7 +22,7 @@ test(
   { timeout: 30000 },
   async ({ expect }) => {
     mkdirSync(outDir, { recursive: true })
-    await $`likec4 export drawio ${sourceDir} -o ${outDir} --project ${projectId}`.quiet()
+    await $`likec4 export drawio ${sourceDirAbs} -o ${outDir} --project ${projectId}`.quiet()
     const entries = readdirSync(outDir, { withFileTypes: true })
     const drawioFiles = entries.filter(isDrawioFile).sort((a, b) => a.name.localeCompare(b.name))
     expect(drawioFiles.length).toBeGreaterThan(0)
