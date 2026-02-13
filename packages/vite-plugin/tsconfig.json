@@ -43,6 +43,9 @@
       "path": "../config/tsconfig.json"
     },
     {
+      "path": "../diagram/tsconfig.src.json"
+    },
+    {
       "path": "../language-server/tsconfig.json"
     },
     {

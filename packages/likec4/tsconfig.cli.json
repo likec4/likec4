@@ -46,6 +46,9 @@
       "path": "../vite-plugin/tsconfig.json"
     },
     {
+      "path": "../diagram/tsconfig.src.json"
+    },
+    {
       "path": "../generators/tsconfig.json"
     },
     {

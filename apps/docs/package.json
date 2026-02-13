@@ -1,14 +1,14 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.48.0",
+  "version": "1.49.0",
   "private": true,
   "scripts": {
     "update-theme-c4": "tsx scripts/generate-theme-c4.mts",
     "generate": "astro sync",
     "dev": "astro dev",
     "start": "astro dev",
-    "typecheck": "astro check",
+    "typecheck": "astro check && tsc -b --verbose",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
