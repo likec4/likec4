@@ -8,7 +8,7 @@
     "generate": "astro sync",
     "dev": "astro dev",
     "start": "astro dev",
-    "typecheck": "astro check",
+    "typecheck": "astro check && tsc -b --verbose",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",

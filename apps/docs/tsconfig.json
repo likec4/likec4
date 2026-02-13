@@ -7,6 +7,11 @@
     "checkJs": false,
     "skipLibCheck": true,
     "noEmit": true,
+    "emitDeclarationOnly": true,
+    "composite": true,
+    "incremental": true,
+    "tsBuildInfoFile": "lib/tsconfig.tsbuildinfo",
+    "outDir": "lib/",
     "paths": {
       "@components/*": [
         "./src/components/*"
@@ -36,7 +41,16 @@
   ],
   "references": [
     {
+      "path": "../../packages/core/"
+    },
+    {
       "path": "../../packages/likec4/tsconfig.cli.json"
+    },
+    {
+      "path": "../../packages/diagram/tsconfig.src.json"
+    },
+    {
+      "path": "../../packages/language-services/tsconfig.json"
     }
   ]
 }
