@@ -176,7 +176,6 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       contents: {
         kind: 'markdown',
         value: lines.join('\n'),
-        supportThemeIcons: true,
       },
     }
   }
@@ -188,10 +187,10 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     const [projectId, fqn] = FqnRef.isImportRef(instance.element)
       ? [instance.element.project as ProjectId, instance.element.model as Fqn]
       : [doc.likec4ProjectId, instance.element.model as Fqn]
-    const el = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
+    const found = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
     const lines = [instance.id + '  ', `instance of \`${FqnRef.flatten(instance.element)}\``]
-    if (el) {
-      lines.push(`### ${el.title}`, 'element kind `' + el.kind + '` ')
+    if (found) {
+      lines.push(`### ${found.element.title}`, 'element kind `' + found.element.kind + '` ')
     }
     return {
       contents: {
