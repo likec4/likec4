@@ -39,6 +39,7 @@ export type PngExportArgs = {
   sequence?: boolean | undefined
 }
 
+/** Launch headless Chromium, capture each view as PNG to output dir; returns list of succeeded view ids. */
 export async function exportViewsToPNG(
   {
     logger,
@@ -140,22 +141,22 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     }
   }
 
-  if (!resolvedServerUrl) {
-    logger.info(k.cyan(`start preview server`))
-    server = await viteDev({
-      languageServices: likec4,
-      buildWebcomponent: false,
-      openBrowser: false,
-      hmr: false,
-    })
-    resolvedServerUrl = resolveServerUrl(server)
-    if (!resolvedServerUrl) {
-      logger.error('Vite server is not ready, no resolvedUrls')
-      throw new Error('Vite server is not ready, no resolvedUrls')
-    }
-  }
-
   try {
+    if (!resolvedServerUrl) {
+      logger.info(k.cyan(`start preview server`))
+      server = await viteDev({
+        languageServices: likec4,
+        buildWebcomponent: false,
+        openBrowser: false,
+        hmr: false,
+      })
+      resolvedServerUrl = resolveServerUrl(server)
+      if (!resolvedServerUrl) {
+        logger.error('Vite server is not ready, no resolvedUrls')
+        throw new Error('Vite server is not ready, no resolvedUrls')
+      }
+    }
+
     for (const prj of projects) {
       if (project && prj.id !== project) {
         continue
@@ -237,6 +238,7 @@ export async function pngHandler(args: PngExportArgs): Promise<void> {
   await runExportPng(args, logger)
 }
 
+/** Registers the `export png` subcommand with yargs (path, outdir, project, theme, etc.). */
 export function pngCmd(yargs: Argv) {
   return yargs.command({
     command: 'png [path]',

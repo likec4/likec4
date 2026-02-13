@@ -54,7 +54,7 @@ describe('parseDrawioToLikeC4', () => {
   })
 
   test('parse DrawIO to LikeC4 - empty XML returns minimal model', () => {
-    // No <diagram> wrapper: getAllDiagrams returns [], getFirstDiagram uses default { name: 'index', id: '...', content: '' }
+    // No <diagram> wrapper: getAllDiagrams returns [], getFirstDiagram fallback yields default { name: 'index', id: '...', content: '' }; exercises fallback path
     const result = parseDrawioToLikeC4('<?xml version="1.0"?><mxfile><root><mxCell id="0"/></root></mxfile>')
     expect(result).toContain('model {')
     expect(result).toContain('views {')

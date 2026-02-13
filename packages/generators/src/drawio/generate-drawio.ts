@@ -65,6 +65,7 @@ function compressDrawioDiagramXml(xml: string): string {
   return uint8ArrayToBase64(compressed)
 }
 
+/** Encode bytes to base64 (Node Buffer or btoa for browser). */
 function uint8ArrayToBase64(bytes: Uint8Array): string {
   if (typeof Buffer !== 'undefined') {
     return Buffer.from(bytes).toString('base64')
@@ -932,6 +933,7 @@ const DEFAULT_BBOX: BBox = {
   height: DEFAULT_NODE_HEIGHT,
 }
 
+/** True when bbox equals default (unlaid) dimensions. */
 function isDefaultBbox(b: BBox): boolean {
   return (
     b.x === DEFAULT_BBOX.x &&

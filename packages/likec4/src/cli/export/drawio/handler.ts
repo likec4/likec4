@@ -9,7 +9,7 @@ import {
 } from '@likec4/generators'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, realpath, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
@@ -76,13 +76,19 @@ function logAndRethrow(logger: ViteLogger, message: string, err: unknown): never
  */
 const ROUNDTRIP_MAX_DEPTH = 50
 
+/** Walk workspace and concatenate .c4/.likec4 file contents; respects depth limit and symlink cycles. */
 async function readWorkspaceSourceContent(
   workspacePath: string,
   logger?: ViteLogger,
 ): Promise<string> {
   const chunks: string[] = []
+  const visitedDirs = new Set<string>()
   async function walk(dir: string, depth: number): Promise<void> {
     if (depth >= ROUNDTRIP_MAX_DEPTH) return
+    const dirReal = await realpath(dir).catch(() => null)
+    if (dirReal == null) return
+    if (visitedDirs.has(dirReal)) return
+    visitedDirs.add(dirReal)
     const entries = await readdir(dir, { withFileTypes: true }).catch(err => {
       if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readdir failed`, { dir, err })
       return []
