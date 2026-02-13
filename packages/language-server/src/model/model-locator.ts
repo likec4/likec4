@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { splitGlobalFqn } from '@likec4/core'
+import { type ProjectId, type Tag, splitGlobalFqn } from '@likec4/core'
 import { ifilter, invariant, toArray } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import type { Cancellation, CstNode, LangiumDocument, LangiumDocuments } from 'langium'
@@ -222,20 +222,19 @@ export class LikeC4ModelLocator {
   public async locateDocumentTags(
     documentUri: URI,
     cancelToken?: Cancellation.CancellationToken,
-  ): Promise<
-    {
-      projectId: c4.ProjectId
-      tags: Array<{
-        name: c4.Tag
-        color: string
+  ): Promise<{
+    tags:
+      | null
+      | Array<{
+        name: Tag
+        color: c4.ThemeColor
         range: Range
         isSpecification: boolean
       }>
-    } | null
-  > {
+  }> {
     const doc = this.langiumDocuments.getDocument(documentUri)
     if (!doc || !doc.likec4ProjectId) {
-      return null
+      return { tags: null }
     }
     if (doc.state < DocumentState.Linked) {
       logger.debug(`Waiting for document ${doc.uri.path} to be Linked`)
@@ -250,7 +249,7 @@ export class LikeC4ModelLocator {
         logger.trace(
           `No specification or styles found for project ${projectId}, cannot locate tags for document ${doc.uri.fsPath}`,
         )
-        return null
+        return { tags: null }
       }
 
       const tags = pipe(
@@ -285,12 +284,11 @@ export class LikeC4ModelLocator {
       )
       logger.debug(`Found ${tags.length} tags in document ${doc.uri.path}`)
       return {
-        projectId,
         tags,
       }
     } catch (e) {
       logger.warn(loggable(e))
-      return null
+      return { tags: null }
     }
   }
 

@@ -1,4 +1,4 @@
-import { filter, funnel, indexBy, keys, map, mapValues, once, pipe, sort } from 'remeda'
+import { filter, funnel, indexBy, keys, map, mapValues, once, pipe, sort, tag } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
@@ -32,7 +32,7 @@ import {
   ReloadProjects,
   ValidateLayout,
 } from './protocol'
-import { ADisposable } from './utils'
+import { ADisposable, projectIdFrom } from './utils'
 
 const logger = rootLogger.getChild('rpc')
 
@@ -357,8 +357,11 @@ export class Rpc extends ADisposable {
       }),
       // ----------
       connection.onRequest(GetDocumentTags.req, async ({ documentUri }, cancelToken) => {
-        const tags = await likec4Services.ModelLocator.locateDocumentTags(URI.parse(documentUri), cancelToken)
+        const uri = URI.parse(documentUri)
+        logger.debug`received request ${'GetDocumentTags'} for document ${uri}`
+        const { tags } = await likec4Services.ModelLocator.locateDocumentTags(uri, cancelToken)
         return {
+          projectId: workspace.ProjectsManager.ownerProjectId(uri),
           tags,
         }
       }),

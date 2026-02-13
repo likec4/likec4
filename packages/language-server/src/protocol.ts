@@ -332,12 +332,14 @@ export namespace GetDocumentTags {
     /**
      * Used tags in the document
      */
-    tags: Array<{
-      name: string
-      range: Range
-      color: ThemeColor
-      isSpecification?: boolean
-    }>
+    tags:
+      | null
+      | Array<{
+        name: string
+        range: Range
+        color: ThemeColor
+        isSpecification?: boolean
+      }>
   }
   export const req = new RequestType<Params, Res, void>('likec4/document-tags')
   export type Req = typeof req
