@@ -1,4 +1,8 @@
-import { basename } from 'pathe'
+/** basename compatible with Node and browser (no node:path for Vite/playground bundle). */
+function basename(path: string): string {
+  const last = path.replace(/\/$/, '').split(/[/\\]/).pop()
+  return last ?? path
+}
 
 export const configJsonFilenames = [
   '.likec4rc',

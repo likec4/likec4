@@ -38,7 +38,7 @@
     "preinspector": "obuild",
     "inspector": "wireit",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-mcp-$npm_package_version.tgz package.tgz || true",
+    "postpack": "likec4ops postpack",
     "clean": "likec4ops clean"
   },
   "wireit": {

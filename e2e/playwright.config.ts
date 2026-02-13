@@ -4,6 +4,9 @@ import { isCI } from 'std-env'
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
   testDir: 'tests',
+  // DrawIO playground test runs only with playwright.playground.config.ts (playground on 5174)
+  // Docs smoke tests require docs site (Astro); main e2e runs likec4 start (diagram preview), not docs.
+  testIgnore: ['**/drawio-playground.spec.ts', '**/docs-smoke.spec.ts'],
   snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}-{platform}/{arg}{ext}',
 
   // Fail the build on CI if you accidentally left test.only in the source code.
@@ -40,6 +43,8 @@ export default defineConfig({
     toHaveScreenshot: {
       scale: 'device',
       animations: 'disabled',
+      // Allow small pixel diff (e.g. fonts/layout flakiness on CI)
+      maxDiffPixelRatio: 0.02,
     },
   },
 

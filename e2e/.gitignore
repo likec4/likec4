@@ -13,6 +13,7 @@ src/*.js
 test-results/*
 playwright-report/*
 tests/*.spec.ts
+!tests/drawio-playground.spec.ts
 
 pnpm-lock.yaml
 package-lock.json
