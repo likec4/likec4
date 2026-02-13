@@ -1,4 +1,4 @@
-import { filter, funnel, indexBy, keys, map, mapValues, once, pipe, sort, tag } from 'remeda'
+import { filter, funnel, indexBy, keys, map, mapValues, once, pipe, sort } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
