@@ -81,37 +81,50 @@ type View = ProcessedView<aux.Unknown>
 type Node = View['nodes'][number]
 type Edge = View['edges'][number]
 
+/** Node plus optional DSL fields (DSL allows more than base type). Single cast in accessors. */
+type ExtendedNode = Node & {
+  notes?: MarkdownOrString
+  summary?: MarkdownOrString
+  tags?: readonly string[]
+  navigateTo?: string | null
+  icon?: string | null
+  links?: readonly { url: string; title?: string }[]
+  notation?: string
+  customData?: Record<string, string>
+  children?: NodeId[]
+}
+
 /** Minimal view model shape for generateDrawio / generateDrawioMulti (single source of truth for call sites). */
 export type DrawioViewModelLike = LikeC4ViewModel<aux.Unknown>
 
 /** Optional node fields (DSL allows more than base type). Single place for type/cast — Clean Code. */
 const nodeOptionalFields = {
   getNotes(node: Node): MarkdownOrString | undefined {
-    return (node as Node & { notes?: MarkdownOrString }).notes
+    return (node as ExtendedNode).notes
   },
   getSummary(node: Node): MarkdownOrString | undefined {
-    return (node as Node & { summary?: MarkdownOrString }).summary
+    return (node as ExtendedNode).summary
   },
   getTags(node: Node): readonly string[] | undefined {
-    return (node as Node & { tags?: readonly string[] }).tags
+    return (node as ExtendedNode).tags
   },
   getNavigateTo(node: Node): string | null | undefined {
-    return (node as Node & { navigateTo?: string | null }).navigateTo
+    return (node as ExtendedNode).navigateTo
   },
   getIcon(node: Node): string | null | undefined {
-    return (node as Node & { icon?: string | null }).icon
+    return (node as ExtendedNode).icon
   },
   getLinks(node: Node): readonly { url: string; title?: string }[] | undefined {
-    return (node as Node & { links?: readonly { url: string; title?: string }[] }).links
+    return (node as ExtendedNode).links
   },
   getNotation(node: Node): string | undefined {
-    return (node as Node & { notation?: string }).notation
+    return (node as ExtendedNode).notation
   },
   getCustomData(node: Node): Record<string, string> | undefined {
-    return (node as Node & { customData?: Record<string, string> }).customData
+    return (node as ExtendedNode).customData
   },
   getChildren(node: Node): NodeId[] | undefined {
-    return (node as Node & { children?: NodeId[] }).children
+    return (node as ExtendedNode).children
   },
 }
 
