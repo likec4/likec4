@@ -1,3 +1,55 @@
+## [1.49.0](https://github.com/likec4/likec4/compare/v1.48.0...v1.49.0) (2026-02-13)
+
+### 🚀 Features
+
+- **New `component` Element Shape**:\
+  Added new `component` element shape for diagrams. [#2616](https://github.com/likec4/likec4/pull/2616)
+
+- **Enhanced VSCode Hover Tooltips**:\
+  Hover tooltips in the editor now show relationship counts and clickable links to views containing the element. [#2624](https://github.com/likec4/likec4/pull/2624)
+
+- **Extendable JSON Configs**:\
+  JSON configs can now extend other configs and merge styles from them using the `extends` property. Closes [#2573](https://github.com/likec4/likec4/issues/2573)
+
+  ```json
+  {
+    "name": "project-name",
+    "extends": [
+      "../shared/base-config.json",
+      "../shared/theme-config.json"
+    ],
+    "styles": {
+      "defaults": {
+        "relationship": {
+          "arrow": "vee"
+        }
+      }
+    }
+  }
+  ```
+
+- **Native MCP Support in VSCode**:\
+  LikeC4 Extension registers MCP server definition, enabling native MCP support in VSCode.
+
+- **Review Drifts in Compare Panel**:\
+  Added review drifts feature to the compare panel with drifts highlighting and summary panel. Includes reset manual layout button and improved processing state handling.
+  Added review drifts feature to the compare panel with drifts highlighting and summary panel. Includes reset manual layout button and improved processing state handling.
+
+### 🐞 Bug Fixes
+
+- Fixed compound nodes not respecting border style from defaults, closes [#2501](https://github.com/likec4/likec4/issues/2501)
+
+- Fixed iconColor for custom SVG icons from data URLs by inlining SVG content to enable CSS color inheritance. Thanks [@kaigritun](https://github.com/kaigritun), [#2591](https://github.com/likec4/likec4/pull/2591)
+
+- Fixed title inheritance from specification, closes [#2580](https://github.com/likec4/likec4/issues/2580)
+
+- Fixed MCP server initialization to be stateless
+
+- Fixed "reload" screen in VSCode preview
+
+- Set fixed icon sizes for consistent rendering
+
+
 ## [1.48.0](https://github.com/likec4/likec4/compare/v1.47.0...v1.48.0) (2026-01-27)
 
 ### 🚀 Features
