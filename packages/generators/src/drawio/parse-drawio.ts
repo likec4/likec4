@@ -1192,7 +1192,7 @@ export function decompressDrawioDiagram(base64Content: string): string {
     } else {
       const binary = atob(trimmed)
       bytes = new Uint8Array(binary.length)
-      for (let i = 0; i < binary.length; i++) bytes[i] = (binary.codePointAt(i) ?? 0) & 0xff
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i) & 0xff
     }
   } catch (err) {
     throw new Error(`DrawIO diagram decompression failed (base64 decode): ${toErrorMessage(err)}`)
@@ -1585,6 +1585,7 @@ views {
     const s = buildDiagramState(d.content, d.name)
     if (s) states.push(s)
   }
+  // When every diagram yields null (e.g. empty/invalid content), fall back to single-diagram path which uses getFirstDiagram + buildSingleDiagramState and always produces a state
   if (states.length === 0) return parseDrawioToLikeC4(xml)
 
   const merged = mergeDiagramStatesIntoMaps(states)

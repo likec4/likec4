@@ -1,3 +1,4 @@
+import pako from 'pako'
 import { describe, expect, test } from 'vitest'
 import {
   decompressDrawioDiagram,
@@ -53,6 +54,7 @@ describe('parseDrawioToLikeC4', () => {
   })
 
   test('parse DrawIO to LikeC4 - empty XML returns minimal model', () => {
+    // No <diagram> wrapper: getAllDiagrams returns [], getFirstDiagram uses default { name: 'index', id: '...', content: '' }
     const result = parseDrawioToLikeC4('<?xml version="1.0"?><mxfile><root><mxCell id="0"/></root></mxfile>')
     expect(result).toContain('model {')
     expect(result).toContain('views {')
@@ -200,7 +202,16 @@ views { view v1 { include * } }
 describe('decompressDrawioDiagram', () => {
   test('invalid base64 throws with clear message', () => {
     expect(() => decompressDrawioDiagram('not-valid-base64!!')).toThrow(
-      /DrawIO diagram decompression failed \((base64 decode|inflate|URI decode)\)/
+      /DrawIO diagram decompression failed \((base64 decode|inflate|URI decode)\)/,
     )
+  })
+
+  test('decompresses valid base64+deflate content', () => {
+    const original = '<mxGraphModel><root><mxCell id="0"/></root></mxGraphModel>'
+    const encoded = encodeURIComponent(original)
+    const bytes = new TextEncoder().encode(encoded)
+    const deflated = pako.deflateRaw(bytes)
+    const base64 = Buffer.from(deflated).toString('base64')
+    expect(decompressDrawioDiagram(base64)).toBe(original)
   })
 })

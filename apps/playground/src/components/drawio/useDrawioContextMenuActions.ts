@@ -150,6 +150,7 @@ function fillFromModelView(
   for (const viewId of viewIdsInModel) {
     if (!byId.has(viewId)) {
       try {
+        // Casts bridge generic model API (ViewId) and LayoutedView to concrete DiagramView for DrawIO export
         const vm = likec4model.view(viewId as Parameters<LikeC4Model['view']>[0])
         if (vm?.$view) byId.set(viewId, toViewModel(vm.$view as DiagramView, styles))
       } catch {
@@ -202,7 +203,7 @@ export function useDrawioContextMenuActions({
     const styles = likec4model.$styles
     return Object.values(viewStates)
       .filter((vs): vs is DiagramStateLike & { diagram: DiagramView } => vs?.state === 'success' && !!vs.diagram)
-      .map(vs => toViewModel(vs.diagram!, styles ?? null))
+      .map(vs => toViewModel(vs.diagram, styles ?? null))
   }, [likec4model, viewStates])
   const [opened, { open, close }] = useDisclosure(false)
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })

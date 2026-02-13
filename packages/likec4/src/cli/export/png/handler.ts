@@ -122,17 +122,17 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
   } = args
   const startTakeScreenshot = hrtime()
 
-  await using languageServices = await LikeC4.fromWorkspace(workspacePath, {
+  await using likec4 = await LikeC4.fromWorkspace(workspacePath, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })
 
-  const output = outputArg ?? languageServices.workspace
+  const output = outputArg ?? likec4.workspace
   let server: ViteDevServer | undefined
   let resolvedServerUrl = serverUrl
 
-  const projects = [...languageServices.languageServices.projects()]
+  const projects = [...likec4.languageServices.projects()]
   if (project) {
     if (!projects.some(p => p.id === project)) {
       logger.error(`project not found: ${project}`)
@@ -143,7 +143,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
   if (!resolvedServerUrl) {
     logger.info(k.cyan(`start preview server`))
     server = await viteDev({
-      languageServices,
+      languageServices: likec4,
       buildWebcomponent: false,
       openBrowser: false,
       hmr: false,
@@ -165,7 +165,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
         logger.info(`${k.dim('project:')} ${prj.id}`)
         logger.info(`${k.dim('folder:')} ${prj.folder.fsPath}`)
       }
-      let views = await languageServices.diagrams(prj.id)
+      let views = await likec4.diagrams(prj.id)
 
       if (filter && hasAtLeast(filter, 1) && hasAtLeast(views, 1)) {
         const matcher = picomatch(filter)
