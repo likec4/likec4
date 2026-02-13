@@ -1276,9 +1276,10 @@ export function generateDrawioMulti(
  * Build export options from .c4 source round-trip comment blocks (layout, strokes, waypoints).
  * Shared by CLI and playground so options are built in one place (DRY).
  *
- * @param viewId - View id for layoutOverride lookup
- * @param sourceContent - Full .c4 source (e.g. joined workspace files)
- * @param overrides - Optional overrides (e.g. compressed: false)
+ * @param viewId - View id for layoutOverride lookup.
+ * @param sourceContent - Full .c4 source (e.g. joined workspace files).
+ * @param overrides - Optional overrides (e.g. compressed: false).
+ * @returns GenerateDrawioOptions for this view.
  */
 export function buildDrawioExportOptionsFromSource(
   viewId: string,
@@ -1305,9 +1306,11 @@ export function buildDrawioExportOptionsFromSource(
 
 /**
  * Build export options per view id from .c4 source (DRY for CLI and Playground).
- * @param viewIds - View ids to build options for
- * @param sourceContent - Full .c4 source (e.g. joined workspace files)
- * @param overrides - Optional overrides (e.g. compressed: false)
+ *
+ * @param viewIds - View ids to build options for.
+ * @param sourceContent - Full .c4 source (e.g. joined workspace files).
+ * @param overrides - Optional overrides (e.g. compressed: false).
+ * @returns Record of viewId → GenerateDrawioOptions.
  */
 export function buildDrawioExportOptionsForViews(
   viewIds: string[],

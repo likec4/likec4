@@ -16,11 +16,16 @@ import {
 } from './constants'
 import { decodeXmlEntities } from './xml-utils'
 
-/** Normalize unknown to a string for error messages (Error → message; else String). */
+/**
+ * Normalize unknown to a string for error messages (Error → message; else String).
+ * @param err - Caught value (Error or other).
+ * @returns Human-readable string for logging or rethrow.
+ */
 export function toErrorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
 }
 
+/** Parsed DrawIO mxCell: id, geometry, style, and LikeC4 round-trip fields (description, technology, etc.). */
 export interface DrawioCell {
   id: string
   value?: string
@@ -1220,7 +1225,13 @@ function emitRoundtripCommentsMulti(
   }
 }
 
-/** Decompress draw.io diagram content: base64 → inflateRaw → decodeURIComponent. Exported for tests (error message contract). */
+/**
+ * Decompress draw.io diagram content: base64 → inflateRaw → decodeURIComponent.
+ * Exported for tests (error message contract). Handles both Node (Buffer) and browser (atob).
+ * @param base64Content - Compressed diagram string from <diagram> inner content.
+ * @returns Decoded mxGraphModel XML string.
+ * @throws Error when base64 decode, inflate, or URI decode fails.
+ */
 export function decompressDrawioDiagram(base64Content: string): string {
   const trimmed = base64Content.trim()
   let bytes: Uint8Array
@@ -1248,7 +1259,10 @@ export function decompressDrawioDiagram(base64Content: string): string {
   }
 }
 
-/** One diagram's name, id and raw or compressed content from mxfile (single-tab or one tab in multi-tab). */
+/**
+ * One diagram's name, id and raw or compressed content from mxfile (single-tab or one tab in multi-tab).
+ * content is decompressed mxGraphModel XML when the source was compressed.
+ */
 export interface DiagramInfo {
   name: string
   id: string
@@ -1269,6 +1283,8 @@ const DIAGRAM_TAG_OPEN_LEN = '<diagram'.length
 /**
  * Extract all diagram name, id and content from mxfile (for multi-tab .drawio).
  * Uses indexOf-based extraction instead of regex to avoid S5852 (super-linear backtracking DoS).
+ * @param fullXml - Full .drawio mxfile XML string.
+ * @returns Array of DiagramInfo (one per <diagram>); content decompressed when needed.
  */
 export function getAllDiagrams(fullXml: string): DiagramInfo[] {
   const results: DiagramInfo[] = []
@@ -1423,10 +1439,9 @@ function emitLikeC4SourceFromSingleState(state: SingleDiagramState): string {
 
 /**
  * Convert DrawIO XML to LikeC4 source (.c4) string.
- * - Vertices become model elements (actor/container); hierarchy from parent refs.
- * - Edges become relations (->).
- * - Root diagram cells (parent "1") are top-level; others are nested by parent.
- * - Uses first diagram only; diagram name becomes view id; root cell style likec4ViewTitle/likec4ViewDescription become view title/description.
+ * Vertices → model elements (actor/container); edges → relations (->). Uses first diagram only.
+ * @param xml - Full .drawio mxfile XML (single or multi-tab).
+ * @returns LikeC4 .c4 source string (model + views + round-trip comments).
  */
 export function parseDrawioToLikeC4(xml: string): string {
   const { name: diagramName, content: xmlToParse } = getFirstDiagram(xml)
@@ -1602,7 +1617,9 @@ function emitMultiDiagramModel(
 
 /**
  * Convert DrawIO XML to LikeC4 source when file has multiple diagrams (tabs).
- * Merges elements by FQN and relations by (source, target); emits one model and one view per diagram.
+ * Merges elements by FQN and relations by (source, target); one view per diagram.
+ * @param xml - Full .drawio mxfile XML with multiple <diagram> elements.
+ * @returns LikeC4 .c4 source string (model + views + round-trip comments).
  */
 export function parseDrawioToLikeC4Multi(xml: string): string {
   const diagrams = getAllDiagrams(xml)
@@ -1678,8 +1695,10 @@ const WAYPOINTS_START = '// <likec4.edge.waypoints>'
 const WAYPOINTS_END = '// </likec4.edge.waypoints>'
 
 /**
- * Parse DrawIO round-trip comment blocks from .c4 source.
- * Returns structured data to pass as GenerateDrawioOptions for re-export, or null if no blocks found.
+ * Parse DrawIO round-trip comment blocks from .c4 source (layout, strokeColor, strokeWidth, waypoints).
+ * Used to build GenerateDrawioOptions for re-export after editing in draw.io.
+ * @param c4Source - Full .c4 source string (e.g. concatenated workspace files).
+ * @returns DrawioRoundtripData or null if no likec4.* comment blocks found.
  */
 export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripData | null {
   const lines = c4Source.split(/\r?\n/)
