@@ -6,7 +6,6 @@
     "moduleResolution": "Bundler",
     "checkJs": false,
     "skipLibCheck": true,
-    "noEmit": true,
     "emitDeclarationOnly": true,
     "composite": true,
     "incremental": true,
