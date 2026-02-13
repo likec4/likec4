@@ -14,8 +14,8 @@ import { useWorkspaceId } from '../useWorkspaceId'
 
 const useOnDidChangeMcpServer = createSingletonComposable(() => useEventEmitter<void>())
 
-function isMcpStdioServerDefinition(_server: vscode.McpServerDefinition): _server is vscode.McpStdioServerDefinition {
-  return true
+function isMcpStdioServerDefinition(server: vscode.McpServerDefinition): server is vscode.McpStdioServerDefinition {
+  return 'args' in server && 'command' in server
 }
 
 export const useMcpRegistration = createSingletonComposable(() => {
