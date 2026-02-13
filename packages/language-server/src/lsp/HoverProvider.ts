@@ -96,7 +96,7 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     }
 
     const model = this.services.likec4.LastSeen.model(found.projectId)?.findElement(el.id)
-    const details = model && this.getElemenModelHover(model, found.projectId)
+    const details = model && this.getElementModelHover(model, found.projectId)
     lines.push(
       details || `\n<small>_Model not processed yet, open any view to trigger_</small>  `,
     )

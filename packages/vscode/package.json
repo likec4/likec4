@@ -329,7 +329,7 @@
     "nanoid": "catalog:utils",
     "obuild": "catalog:obuild",
     "p-queue": "catalog:utils",
-    "p-timeout": "^6.1.4",
+    "p-timeout": "catalog:utils",
     "playwright": "catalog:",
     "pretty-ms": "^9.3.0",
     "reactive-vscode": "^0.4.1",
