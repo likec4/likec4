@@ -244,10 +244,10 @@ export function pngCmd(yargs: Argv) {
       yargs
         .positional('path', path)
         .options({
-          'output': {
-            alias: ['o', 'outdir'],
+          'outdir': {
+            alias: ['o', 'output'],
             type: 'string',
-            desc: 'output directory, if not specified, images are saved next to sources',
+            desc: 'output directory for PNG files; if not specified, images are saved next to sources',
             normalize: true,
             nargs: 1,
             coerce: resolve,
@@ -280,7 +280,7 @@ export function pngCmd(yargs: Argv) {
             alias: ['flatten'],
             boolean: true,
             type: 'boolean',
-            desc: 'flatten all images in output directory ignoring sources structure',
+            desc: 'flatten all images in outdir ignoring sources structure',
           },
           'filter': {
             alias: 'f',
@@ -339,7 +339,7 @@ export function pngCmd(yargs: Argv) {
         {
           path: args.path,
           useDotBin: args['use-dot'],
-          output: args.output,
+          output: args.outdir,
           project: args.project,
           timeoutMs: args.timeout * 1000,
           maxAttempts: args.maxAttempts,

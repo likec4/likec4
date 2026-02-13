@@ -163,14 +163,14 @@ You will be prompted with a command to install if it's not found.
 
 | Option                  | Description                                                                                                   |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `--output, --outdir`    | output directory, if not specified, images are saved next to sources                                          |
+| `--outdir, -o`          | Output directory for PNG files; if not specified, images are saved next to sources. `--output` is accepted as alias for compatibility. |
 | `--project`             | select LikeC4 project to export from by name (e.g. "my-project") or by path<br/>If not specified, exports all |
 | `--theme`               | color-scheme to use, "light" (default), "dark"                                                                |
 | `--dark`                | use dark theme, shortcut for --theme=dark                                                                     |
 | `--light`               | use light theme, shortcut for --theme=light                                                                   |
 | `--use-dot`             | Use local binaries of Graphviz ("dot") instead of bundled WASM                                                |
 | `--seq, --sequence`     | use sequence layout for dynamic views                                                                         |
-| `--flat, --flatten`     | flatten all images in output directory ignoring sources structure                                             |
+| `--flat, --flatten`     | Flatten all images in outdir, ignoring source structure                                                       |
 | `-f, --filter`          | include views with ids matching given patterns<br/>(multiple patterns are combined with OR)                   |
 | `-i, --ignore`          | continue if export fails for some views                                                                       |
 | `-t, --timeout`         | timeout for playwright in seconds, default is 15                                                              |

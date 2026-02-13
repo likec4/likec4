@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest'
 import {
+  decompressDrawioDiagram,
   parseDrawioRoundtripComments,
   parseDrawioToLikeC4,
   parseDrawioToLikeC4Multi,
@@ -188,4 +189,10 @@ views { view v1 { include * } }
 test('parseDrawioRoundtripComments - returns null when no comment blocks', () => {
   expect(parseDrawioRoundtripComments('model { }\nviews { }')).toBeNull()
   expect(parseDrawioRoundtripComments('')).toBeNull()
+})
+
+test('decompressDrawioDiagram - invalid base64 throws with clear message', () => {
+  expect(() => decompressDrawioDiagram('not-valid-base64!!')).toThrow(
+    /DrawIO diagram decompression failed \((base64 decode|inflate|URI decode)\)/
+  )
 })

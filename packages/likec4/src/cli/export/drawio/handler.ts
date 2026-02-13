@@ -68,7 +68,11 @@ function logAndRethrow(logger: ViteLogger, message: string, err: unknown): never
 
 /**
  * Read all .c4/.likec4 source in workspace for round-trip. Best-effort: readdir/readFile
- * failures are logged at debug and skipped; partial content may be returned.
+ * failures are logged at debug (when logger provides debug) and skipped; partial content may be returned.
+ *
+ * Contract: when used from CLI with `--verbose`, the handler passes a full logger (createLikeC4Logger)
+ * that implements `debug`; roundtrip read failures are then visible. ViteLogger type allows optional
+ * `debug` for Vite compatibility; we only call debug when present.
  */
 async function readWorkspaceSourceContent(
   workspacePath: string,
@@ -77,7 +81,7 @@ async function readWorkspaceSourceContent(
   const chunks: string[] = []
   async function walk(dir: string): Promise<void> {
     const entries = await readdir(dir, { withFileTypes: true }).catch(err => {
-      logger?.debug?.('Roundtrip: readdir failed', dir, err)
+      if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readdir failed`, { dir, err })
       return []
     })
     for (const e of entries) {
@@ -86,7 +90,7 @@ async function readWorkspaceSourceContent(
         if (!ROUNDTRIP_IGNORED_DIRS.has(e.name)) await walk(full)
       } else if (e.isFile() && isSourceFile(e.name)) {
         const content = await readFile(full, 'utf-8').catch(err => {
-          logger?.debug?.('Roundtrip: readFile failed', full, err)
+          if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readFile failed`, { file: full, err })
           return ''
         })
         if (content) chunks.push(content)

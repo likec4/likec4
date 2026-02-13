@@ -753,17 +753,18 @@ function computeNodeCellExportData(
   }
 }
 
-/** Build node vertex mxCell XML from precomputed data (single responsibility — XML assembly only). */
+/** Build node vertex mxCell XML from precomputed data (single responsibility — XML assembly only). mxUserObject before mxGeometry for parser/roundtrip (align with draw.io expectations). */
 function buildNodeCellXml(data: NodeCellExportData): NodeCellResult {
   const geometryLine = `<mxGeometry height="${Math.round(data.height)}" width="${Math.round(data.width)}" x="${
     Math.round(data.x)
-  }" y="${Math.round(data.y)}" as="geometry" />${data.userObjectXml}`
+  }" y="${Math.round(data.y)}" as="geometry" />`
+  const innerContent = data.userObjectXml !== '' ? `${data.userObjectXml}\n  ${geometryLine}` : `\n  ${geometryLine}`
   const userObjectLabel = data.isContainer && data.title != null ? escapeXml(data.title) : data.value
   const cellXml = data.navTo === ''
-    ? `<mxCell id="${data.id}" value="${data.value}" style="${data.styleStr}" vertex="1" parent="${data.parentId}">\n  ${geometryLine}\n</mxCell>`
+    ? `<mxCell id="${data.id}" value="${data.value}" style="${data.styleStr}" vertex="1" parent="${data.parentId}">\n  ${innerContent}\n</mxCell>`
     : `<UserObject label="${userObjectLabel}" link="${DRAWIO_PAGE_LINK_PREFIX}${
       escapeXml(data.navTo)
-    }" id="${data.id}">\n  <mxCell parent="${data.parentId}" style="${data.styleStr}" value="${data.value}" vertex="1">\n  ${geometryLine}\n</mxCell>\n</UserObject>`
+    }" id="${data.id}">\n  <mxCell parent="${data.parentId}" style="${data.styleStr}" value="${data.value}" vertex="1">\n  ${innerContent}\n</mxCell>\n</UserObject>`
 
   if (!data.isContainer) return { vertexXml: cellXml, isContainer: false }
 

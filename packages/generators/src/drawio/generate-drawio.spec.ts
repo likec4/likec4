@@ -165,6 +165,16 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
     expect(content).toMatch(/<mxCell id="1"[^>]*parent="0"/)
   })
 
+  test('vertex cells have mxUserObject before mxGeometry when present (parser/roundtrip alignment)', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), { compressed: false })
+    const content = getAllDiagrams(xml)[0]!.content
+    // Wrong order would be <mxGeometry .../> before <mxUserObject> in the same cell; must not occur
+    expect(
+      content,
+      'mxUserObject must appear before mxGeometry inside vertex cells for draw.io parser compatibility',
+    ).not.toMatch(/<mxCell[^>]*vertex="1"[^>]*>\s*<mxGeometry[\s\S]*?\/>\s*<mxUserObject>/)
+  })
+
   test('vertices and edges have parent="1" (single layer, arrows draw correctly)', () => {
     const xml = generateDrawio(mockViewModel(fakeDiagram), { compressed: false })
     const content = getAllDiagrams(xml)[0]!.content
