@@ -7,11 +7,11 @@ import {
   generateDrawio,
   generateDrawioMulti,
 } from '@likec4/generators'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
-import { fromWorkspace } from '@likec4/language-services/node'
 import type { Argv } from 'yargs'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
@@ -239,6 +239,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   timer.stopAndLog(`✓ export drawio in `)
 }
 
+/** Registers the `export drawio` subcommand with yargs (path, outdir, all-in-one, roundtrip, uncompressed). */
 export function drawioCmd(yargs: Argv) {
   return yargs.command({
     command: 'drawio [path]',

@@ -26,6 +26,7 @@ export type LayoutedModelApi = {
   layoutViews: (viewIds: string[]) => Promise<Record<string, DiagramView>>
 }
 
+/** API exposed by DrawioContextMenuProvider: open the context menu at the given event. */
 export type DrawioContextMenuApi = {
   openMenu: (event: React.MouseEvent | MouseEvent) => void
 }
@@ -40,6 +41,7 @@ const EMPTY_DRAWIO_SNAPSHOT = {
   viewStates: {} as Record<string, DiagramStateLike>,
 }
 
+/** Returns the DrawIO context menu API; throws if used outside DrawioContextMenuProvider. */
 export function useDrawioContextMenu(): DrawioContextMenuApi {
   const api = useContext(DrawioContextMenuContext)
   if (!api) {
@@ -48,10 +50,12 @@ export function useDrawioContextMenu(): DrawioContextMenuApi {
   return api
 }
 
+/** Returns the DrawIO context menu API or null when not inside DrawioContextMenuProvider. */
 export function useOptionalDrawioContextMenu(): DrawioContextMenuApi | null {
   return useContext(DrawioContextMenuContext)
 }
 
+/** Provides DrawIO export (and future import) context menu; wires LSP/model/source for useDrawioContextMenuActions. */
 export function DrawioContextMenuProvider({
   children,
   layoutedModelApi,

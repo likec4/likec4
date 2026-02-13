@@ -4,6 +4,7 @@ import { IconFileExport } from '@tabler/icons-react'
 const DROPDOWN_FONT_SIZE = '10px'
 const ITEM_FONT_SIZE = '9px'
 
+/** Props for DrawioContextMenuDropdown (position, open state, export callbacks, and capability flags). */
 export type DrawioContextMenuDropdownProps = {
   menuPosition: { x: number; y: number }
   opened: boolean

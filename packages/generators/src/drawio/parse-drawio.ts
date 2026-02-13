@@ -1210,6 +1210,7 @@ export function decompressDrawioDiagram(base64Content: string): string {
   }
 }
 
+/** One diagram's name, id and raw or compressed content from mxfile (single-tab or one tab in multi-tab). */
 export interface DiagramInfo {
   name: string
   id: string

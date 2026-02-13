@@ -53,11 +53,13 @@ function reportExportError(
   else console.error(message, err)
 }
 
+/** Per-view state for DrawIO export (e.g. from XState); diagram present when state is success. */
 export type DiagramStateLike = {
   state: string
   diagram?: DiagramView | null
 }
 
+/** Parameters for useDrawioContextMenuActions (diagram, model, optional LSP/source callbacks). */
 export type UseDrawioContextMenuActionsParams = {
   diagram: DiagramView | null
   likec4model: LikeC4Model | null
@@ -182,6 +184,10 @@ async function collectViewModelsForExportAll(options: CollectViewModelsOptions):
   return viewIdsInModel.map(id => byId.get(id)).filter(Boolean) as DrawioViewModelLike[]
 }
 
+/**
+ * Hook that builds DrawIO export actions (single view and "Export all") for the context menu.
+ * Uses diagram + likec4model; optionally getSourceContent, getLayoutedModel, layoutViews for round-trip and multi-view export.
+ */
 export function useDrawioContextMenuActions({
   diagram,
   likec4model,
