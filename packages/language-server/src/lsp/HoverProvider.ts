@@ -80,6 +80,9 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     return undefined
   }
 
+  /**
+   * Builds hover content for an element node (title, summary, model details and view links).
+   */
   protected getElementHover(node: ast.Element): MaybePromise<Hover | undefined> {
     const found = this.locator.getParsedElement(node)
     if (!found) {
@@ -109,6 +112,9 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     }
   }
 
+  /**
+   * Builds markdown hover content for an element model (relationship counts and links to views).
+   */
   protected getElementModelHover(model: ElementModel, projectId: ProjectId): string | undefined {
     const lines = []
 
@@ -158,6 +164,9 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     return lines.length > 0 ? lines.join('\n') : undefined
   }
 
+  /**
+   * Builds hover content for a deployment node (id, title, kind, summary).
+   */
   protected getDeploymentNodeHover(node: ast.DeploymentNode): MaybePromise<Hover | undefined> {
     const doc = AstUtils.getDocument(node)
     const el = this.parser.forDocument(doc).parseDeploymentNode(node)
@@ -180,6 +189,9 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     }
   }
 
+  /**
+   * Builds hover content for a deployed instance (instance id, element ref, title and kind).
+   */
   protected getDeployedInstanceHover(node: ast.DeployedInstance): MaybePromise<Hover | undefined> {
     const doc = AstUtils.getDocument(node)
     const parser = this.parser.forDocument(doc)

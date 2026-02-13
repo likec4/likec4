@@ -53,6 +53,10 @@ export function createLogger(subcategory: string | readonly [string] | readonly 
   return logger.getChild(subcategory)
 }
 
+/**
+ * Configure the global logger: sinks, loggers, and lowest level per category.
+ * @param config - Optional partial config (sinks, loggers). Merged with defaults.
+ */
 export function configureLogger<TSinkId extends string, TFilterId extends string>(
   config?: Partial<Config<TSinkId, TFilterId>>,
 ) {

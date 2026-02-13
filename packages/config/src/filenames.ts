@@ -18,12 +18,14 @@ function basename(path: string): string {
   return last || trimmed
 }
 
+/** Known LikeC4 JSON config filenames (RC and .json). */
 export const configJsonFilenames = [
   '.likec4rc',
   '.likec4.config.json',
   'likec4.config.json',
 ] as const
 
+/** Known LikeC4 non-JSON config filenames (JS, MJS, TS, MTS). */
 export const configNonJsonFilenames = [
   'likec4.config.js',
   'likec4.config.cjs',
@@ -33,6 +35,7 @@ export const configNonJsonFilenames = [
   'likec4.config.mts',
 ] as const
 
+/** All known LikeC4 config filenames (JSON and non-JSON). */
 export const ConfigFilenames = [
   ...configJsonFilenames,
   ...configNonJsonFilenames,

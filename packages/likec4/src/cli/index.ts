@@ -25,7 +25,10 @@ import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
 
-/** Configure likec4 logger: verbose or dev => debug level, else info. */
+/**
+ * Configure likec4 logger: verbose or dev => debug level, else info.
+ * @param isDebug - When true, sets lowest level to debug; otherwise info.
+ */
 function applyLoggerConfig(isDebug = isDevelopment) {
   configureLogger({
     sinks: {
@@ -43,6 +46,10 @@ function applyLoggerConfig(isDebug = isDevelopment) {
   })
 }
 
+/**
+ * Parse CLI argv and run the requested command (serve, build, export, etc.).
+ * Configures logger from --verbose, then parses yargs and runs the handler.
+ */
 async function main() {
   if (!DEV && !isInsideContainer()) {
     notifyAvailableUpdate()
@@ -96,8 +103,13 @@ async function main() {
     .parseAsync()
 }
 
-/** Single place for CLI failure: log error (message + stack via loggable) and exit with code 1. */
+/**
+ * Single place for CLI failure: log error (message + stack via loggable) and exit with code 1.
+ * @param err - Caught error or rejection value
+ * @param prefix - Optional prefix for the error message (e.g. 'Unhandled rejection:')
+ */
 function exitWithFailure(err: unknown, prefix?: string): never {
+  process.exitCode = 1
   console.error(prefix != null ? `${prefix} ${loggable(err)}` : loggable(err))
   exit(1)
 }

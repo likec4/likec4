@@ -6,7 +6,7 @@ import {
 
 /**
  * Get or create a unique workspace ID. This is used to correlate the MCP server with the workspace.
- * It is generated once per workspace and stored in the workspace state.
+ * Currently generated once per extension session (not persisted in workspace state).
  */
 export const useWorkspaceId = createSingletonComposable(() => {
   // const workspaceState = extensionContext.value?.workspaceState
