@@ -1271,8 +1271,14 @@ function verticesAndEdgesFromCells(cells: DrawioCell[]): {
   return { vertices, edges }
 }
 
-/** Build single-diagram state from cells and diagram name (orchestrator: vertices/edges → FQN/hierarchy → lines buffer). */
-function buildSingleDiagramState(cells: DrawioCell[], diagramName: string): SingleDiagramState {
+/** Common diagram state built from parsed cells (shared by single- and multi-diagram flows). */
+type CommonDiagramStateFromCells = DiagramState & { byId: Map<string, DrawioCell> }
+
+/** Build common diagram state from cells and diagram name (byId, FQN/hierarchy, view fields from root). */
+function buildCommonDiagramStateFromCells(
+  cells: DrawioCell[],
+  diagramName: string,
+): CommonDiagramStateFromCells {
   const byId = new Map<string, DrawioCell>()
   for (const c of cells) byId.set(c.id, c)
   const { vertices, edges } = verticesAndEdgesFromCells(cells)
@@ -1287,13 +1293,6 @@ function buildSingleDiagramState(cells: DrawioCell[], diagramName: string): Sing
   const uniqueName = makeUniqueName(usedNames)
   assignFqnsToElementVertices(idToFqn, elementVertices, containerIdToTitle, isRootParent, uniqueName)
   const hexToCustomName = buildHexToCustomName(elementVertices, edges)
-  const lines: string[] = []
-  if (hexToCustomName.size > 0) {
-    lines.push('specification {')
-    for (const [hex, name] of hexToCustomName) lines.push(`  color ${name} ${hex}`)
-    lines.push('}', '')
-  }
-  lines.push('model {', '')
   const children = new Map<string, Array<{ cellId: string; fqn: string }>>()
   const roots: Array<{ cellId: string; fqn: string }> = []
   for (const [cellId, fqn] of idToFqn) {
@@ -1331,8 +1330,24 @@ function buildSingleDiagramState(cells: DrawioCell[], diagramName: string): Sing
     viewTitle,
     viewDesc,
     viewNotation,
-    lines,
     byId,
+  }
+}
+
+/** Build single-diagram state from cells and diagram name (orchestrator: common state + lines buffer). */
+function buildSingleDiagramState(cells: DrawioCell[], diagramName: string): SingleDiagramState {
+  const common = buildCommonDiagramStateFromCells(cells, diagramName)
+  const { hexToCustomName } = common
+  const lines: string[] = []
+  if (hexToCustomName.size > 0) {
+    lines.push('specification {')
+    for (const [hex, name] of hexToCustomName) lines.push(`  color ${name} ${hex}`)
+    lines.push('}', '')
+  }
+  lines.push('model {', '')
+  return {
+    ...common,
+    lines,
   }
 }
 
@@ -1403,59 +1418,9 @@ type SingleDiagramState = DiagramState & {
 
 function buildDiagramState(content: string, diagramName: string): DiagramState | null {
   const cells = parseDrawioXml(content)
-  const byId = new Map<string, DrawioCell>()
-  for (const c of cells) byId.set(c.id, c)
-  const vertices = cells.filter(c => c.vertex && c.id !== '0' && c.id !== '1')
-  const edges = cells.filter(c => c.edge && c.source && c.target)
-  const rootIds = new Set(['0', '1'])
-  const isRootParent = (p: string | undefined) => !p || rootIds.has(p)
-  const idToFqn = new Map<string, string>()
-  const idToCell = new Map<string, DrawioCell>()
-  for (const v of vertices) idToCell.set(v.id, v)
-  const { containerIdToTitle, titleCellIds } = computeContainerTitles(vertices)
-  const elementVertices = vertices.filter(v => !titleCellIds.has(v.id))
-  const usedNames = new Set<string>()
-  const uniqueName = makeUniqueName(usedNames)
-  assignFqnsToElementVertices(idToFqn, elementVertices, containerIdToTitle, isRootParent, uniqueName)
-  const hexToCustomName = buildHexToCustomName(elementVertices, edges)
-  const children = new Map<string, Array<{ cellId: string; fqn: string }>>()
-  const roots: Array<{ cellId: string; fqn: string }> = []
-  for (const [cellId, fqn] of idToFqn) {
-    const cell = idToCell.get(cellId)
-    if (cell) {
-      if (isRootParent(cell.parent)) {
-        roots.push({ cellId, fqn })
-      } else {
-        const parentFqn = cell.parent != null ? idToFqn.get(cell.parent) : undefined
-        if (parentFqn != null) {
-          const list = children.get(parentFqn) ?? []
-          list.push({ cellId, fqn })
-          children.set(parentFqn, list)
-        } else {
-          roots.push({ cellId, fqn })
-        }
-      }
-    }
-  }
-  const viewId = toId(diagramName) || 'index'
-  const rootCell = byId.get('1')
-  const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
-  const viewTitle = decodeRootStyleField(rootStyle.get('likec4viewtitle'))
-  const viewDesc = decodeRootStyleField(rootStyle.get('likec4viewdescription'))
-  const viewNotation = decodeRootStyleField(rootStyle.get('likec4viewnotation'))
-  return {
-    idToFqn,
-    idToCell,
-    containerIdToTitle,
-    roots,
-    children,
-    hexToCustomName,
-    edges,
-    viewId,
-    viewTitle,
-    viewDesc,
-    viewNotation,
-  }
+  const common = buildCommonDiagramStateFromCells(cells, diagramName)
+  const { byId: _byId, ...diagramState } = common
+  return diagramState
 }
 
 type ViewInfo = {

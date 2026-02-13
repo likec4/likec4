@@ -8,6 +8,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
 } from 'react'
 import { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT } from './drawio-events'
 import { DrawioContextMenuDropdown } from './DrawioContextMenuDropdown'
@@ -98,7 +99,10 @@ export function DrawioContextMenuProvider({
     }
   }, [actions.handleExport])
 
-  const api: DrawioContextMenuApi = { openMenu: actions.openMenu }
+  const api = useMemo<DrawioContextMenuApi>(
+    () => ({ openMenu: actions.openMenu }),
+    [actions.openMenu],
+  )
 
   return (
     <DrawioContextMenuContext.Provider value={api}>

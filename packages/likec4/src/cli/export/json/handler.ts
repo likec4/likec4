@@ -19,13 +19,14 @@ type JsonExportArgs = {
   project: string | undefined
   skipLayout: boolean
   pretty: boolean
+  useDot: boolean
 }
 
 async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
   const languageServices = await LikeC4.fromWorkspace(args.path, {
     logger,
-    graphviz: useDotBin ? 'binary' : 'wasm',
+    graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })
 
@@ -59,6 +60,11 @@ async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<
       continue
     }
     projectsModels.push(model.$data)
+  }
+
+  if (projectsModels.length === 0) {
+    logger.warn('No models generated, aborting export')
+    throw new Error('No models generated; all projects are empty or were skipped')
   }
 
   let outfile = args.outfile
@@ -119,6 +125,7 @@ export function jsonCmd(yargs: Argv) {
           project: args.project,
           skipLayout: !!args.skipLayout,
           pretty: !!args.pretty,
+          useDot: !!args['use-dot'],
         },
         logger,
       )

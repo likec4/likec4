@@ -213,10 +213,10 @@ function getThemeColorValues(
 
 /**
  * Map LikeC4 element shape to draw.io cell style string.
- * Rounded corners with reduced curvature (arcSize<1 = subtler curve, ângulo mais fechado).
+ * Rounded corners: arcSize as percentage integer (e.g. 12) for subtly rounded corners in Draw.io.
  */
 function drawioShape(shape: Node['shape']): string {
-  const rectStyle = 'shape=rectangle;rounded=1;arcSize=0.12;'
+  const rectStyle = 'shape=rectangle;rounded=1;arcSize=12;'
   switch (shape) {
     case 'person':
       return 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;'

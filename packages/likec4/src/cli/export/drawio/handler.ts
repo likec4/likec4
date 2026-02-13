@@ -183,6 +183,7 @@ type DrawioExportArgs = {
   roundtrip: boolean
   uncompressed: boolean
   project: string | undefined
+  useDot: boolean
 }
 
 /** Run the export workflow: init workspace, load model, then delegate to all-in-one or per-view (single responsibility). */
@@ -191,7 +192,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
 
   // 1) Init workspace and ensure single project (same fromWorkspace as build for consistent CI)
   await using likec4 = await fromWorkspace(args.path, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
+    graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })
   likec4.ensureSingleProject()
@@ -283,6 +284,7 @@ export function drawioCmd(yargs: Argv) {
           roundtrip: !!args.roundtrip,
           uncompressed: !!args.uncompressed,
           project: args.project,
+          useDot: !!args['use-dot'],
         },
         logger,
       )
