@@ -1,4 +1,4 @@
-import { type Fqn, type ProjectId, FqnRef, nonexhaustive } from '@likec4/core'
+import { type Fqn, type ProjectId, FqnRef } from '@likec4/core'
 import { type AstNode, AstUtils, DocumentState, JSDocDocumentationProvider } from 'langium'
 import { ast } from '../ast'
 import { logWarnError } from '../logger'
@@ -59,8 +59,6 @@ export class LikeC4DocumentationProvider extends JSDocDocumentationProvider {
         ]
         return lines.join('  \n')
       }
-
-      nonexhaustive(node)
     } catch (e) {
       logWarnError(e)
     }

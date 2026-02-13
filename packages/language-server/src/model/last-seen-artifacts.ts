@@ -10,7 +10,7 @@ import { MergedSpecification } from './builder/MergedSpecification'
  */
 export class LastSeenArtifacts {
   #specs = new Map<c4.ProjectId, MergedSpecification>()
-  #styles = new Map<c4.ProjectId, c4.LikeC4Styles>()
+  #styles = new Map<c4.ProjectId, LikeC4Styles>()
   #models = new Map<c4.ProjectId, LikeC4Model.Computed>()
 
   constructor(services: LikeC4Services) {
