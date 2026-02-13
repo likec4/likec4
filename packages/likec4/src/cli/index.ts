@@ -98,6 +98,7 @@ async function main() {
 
 /** Single place for CLI failure: log error (message + stack via loggable) and exit with code 1. */
 function exitWithFailure(err: unknown, prefix?: string): never {
+  process.exitCode = 1
   console.error(prefix != null ? `${prefix} ${loggable(err)}` : loggable(err))
   exit(1)
 }
