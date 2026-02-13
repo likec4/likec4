@@ -86,7 +86,7 @@ function getLayoutedViewmodels(views: ProcessedView<aux.Unknown>[]): DrawioViewM
 function normalizeDrawioXml(xml: string): string {
   return xml
     .replace(/modified="[^"]*"/g, 'modified="FIXED-DATE"')
-    .replace(/<diagram ([^>]*)>[\s\S]*?<\/diagram>/g, '<diagram $1>LAYOUT</diagram>')
+    .replace(/<diagram\b([^>]*)>[\s\S]*?<\/diagram>/g, '<diagram$1>LAYOUT</diagram>')
 }
 
 test('generate DrawIO - landscape', () => {

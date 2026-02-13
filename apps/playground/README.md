@@ -22,7 +22,7 @@ The rest of the packages are not needed to be built upfront, as `sources` condit
 
 ## Troubleshooting
 
-### LSP connection errors (e.g. "Client likec4: connection to server is erroring")
+### LSP connection errors (e.g. 'Client likec4: connection to server is erroring')
 
 The LikeC4 language server runs in a Web Worker. If the connection fails:
 

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { readFile } from 'node:fs/promises'
 import { canvas, CANVAS_SELECTOR, editor, MENU_SELECTOR } from '../helpers/selectors'
 import {
   TIMEOUT_DIAGRAM,
@@ -65,7 +66,6 @@ test.describe('DrawIO in Playground', () => {
     expect(download.suggestedFilename()).toMatch(/\.drawio$/)
     const path = await download.path()
     expect(path, 'download path should be available').toBeTruthy()
-    const { readFile } = await import('node:fs/promises')
     const content = await readFile(path!, 'utf8')
     expect(content).toContain('<mxfile')
     expect(content.length).toBeGreaterThan(200)

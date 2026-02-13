@@ -1312,7 +1312,8 @@ function buildCommonDiagramStateFromCells(
       }
     }
   }
-  const viewId = toId(diagramName) || 'index'
+  const safeName = diagramName?.trim() ? diagramName : 'index'
+  const viewId = toId(safeName) || 'index'
   const rootCell = byId.get('1')
   const rootStyle = rootCell?.style ? parseStyle(rootCell.style) : new Map<string, string>()
   const viewTitle = decodeRootStyleField(rootStyle.get('likec4viewtitle'))
