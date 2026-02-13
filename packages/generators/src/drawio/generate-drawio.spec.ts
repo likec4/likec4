@@ -1,6 +1,5 @@
 import { Builder } from '@likec4/core/builder'
-import type { LikeC4ViewModel } from '@likec4/core/model'
-import type { aux, LayoutedView, ProcessedView } from '@likec4/core/types'
+import type { aux, ProcessedView } from '@likec4/core/types'
 import { describe, expect, test, vi } from 'vitest'
 import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import type { DrawioViewModelLike } from './generate-drawio'
@@ -69,10 +68,8 @@ const b = Builder
     )
   )
 
-const mockViewModel = vi.fn(function($view: ProcessedView<aux.Unknown>) {
-  return {
-    $view,
-  } as unknown as LikeC4ViewModel<aux.Unknown, LayoutedView<aux.Unknown>>
+const mockViewModel = vi.fn(function($view: ProcessedView<aux.Unknown>): DrawioViewModelLike {
+  return { $view }
 })
 
 /** Build layouted view models for generateDrawioMulti from processed views (DRY in specs). */
