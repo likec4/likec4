@@ -1,3 +1,4 @@
+import { LikeC4Styles } from '@likec4/core'
 import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
@@ -16,8 +17,6 @@ import { DRAWIO_MIME_TYPE } from './drawio-events'
 /** Delay (ms) before revoking object URL after download so the browser can start the download. */
 const DRAWIO_DOWNLOAD_REVOKE_MS = 1000
 
-type ViewModelLike = { $view: DiagramView; get $styles(): LikeC4Model['$styles'] | null }
-
 /** Single place for "blob → object URL → download link → revoke" (DRY). */
 function downloadDrawioBlob(xml: string, filename: string): void {
   const blob = new Blob([xml], { type: DRAWIO_MIME_TYPE })
@@ -25,16 +24,18 @@ function downloadDrawioBlob(xml: string, filename: string): void {
   const a = document.createElement('a')
   a.href = url
   a.download = filename
+  document.body.appendChild(a)
   a.click()
+  document.body.removeChild(a)
   setTimeout(() => URL.revokeObjectURL(url), DRAWIO_DOWNLOAD_REVOKE_MS)
 }
 
 /** Build viewmodel shape expected by generateDrawio / generateDrawioMulti (single responsibility). */
-function toViewModel(view: DiagramView, styles: LikeC4Model['$styles'] | null): ViewModelLike {
+function toViewModel(view: DiagramView, styles: LikeC4Model['$styles'] | null): DrawioViewModelLike {
   return {
     $view: view,
     get $styles() {
-      return styles ?? null
+      return styles ?? LikeC4Styles.DEFAULT
     },
   }
 }
@@ -52,11 +53,13 @@ function reportExportError(
   else console.error(message, err)
 }
 
+/** Per-view state for DrawIO export (e.g. from XState); diagram present when state is success. */
 export type DiagramStateLike = {
   state: string
   diagram?: DiagramView | null
 }
 
+/** Parameters for useDrawioContextMenuActions (diagram, model, optional LSP/source callbacks). */
 export type UseDrawioContextMenuActionsParams = {
   diagram: DiagramView | null
   likec4model: LikeC4Model | null
@@ -74,7 +77,7 @@ export type UseDrawioContextMenuActionsParams = {
 /** Options for collectViewModelsForExportAll (single object keeps signature stable). */
 interface CollectViewModelsOptions {
   viewIdsInModel: string[]
-  allViewModelsFromState: ViewModelLike[]
+  allViewModelsFromState: DrawioViewModelLike[]
   likec4model: LikeC4Model | null
   viewStates: Record<string, DiagramStateLike>
   getLayoutedModel: (() => Promise<LayoutedLikeC4ModelData | null>) | undefined
@@ -84,7 +87,7 @@ interface CollectViewModelsOptions {
 
 /** Phase 1: fill byId from layouted model (LSP). */
 async function fillFromLayoutedModel(
-  byId: Map<string, ViewModelLike>,
+  byId: Map<string, DrawioViewModelLike>,
   getLayoutedModel: () => Promise<LayoutedLikeC4ModelData | null>,
   styles: LikeC4Model['$styles'] | null,
   onExportError?: OnDrawioExportError,
@@ -103,7 +106,7 @@ async function fillFromLayoutedModel(
 
 /** Phase 2: fill byId from viewStates (already loaded in UI). */
 function fillFromViewStates(
-  byId: Map<string, ViewModelLike>,
+  byId: Map<string, DrawioViewModelLike>,
   viewIdsInModel: string[],
   viewStates: Record<string, DiagramStateLike>,
   styles: LikeC4Model['$styles'] | null,
@@ -120,7 +123,7 @@ function fillFromViewStates(
 
 /** Phase 3: fill byId for missing ids via layoutViews. */
 async function fillFromLayoutViews(
-  byId: Map<string, ViewModelLike>,
+  byId: Map<string, DrawioViewModelLike>,
   missing: string[],
   layoutViews: (viewIds: string[]) => Promise<Record<string, DiagramView>>,
   styles: LikeC4Model['$styles'] | null,
@@ -139,7 +142,7 @@ async function fillFromLayoutViews(
 
 /** Phase 4: fallback fill from likec4model.view(id). */
 function fillFromModelView(
-  byId: Map<string, ViewModelLike>,
+  byId: Map<string, DrawioViewModelLike>,
   viewIdsInModel: string[],
   likec4model: LikeC4Model,
   styles: LikeC4Model['$styles'] | null,
@@ -157,7 +160,7 @@ function fillFromModelView(
 }
 
 /** Gather all view models needed for "Export all views" (single responsibility; testable). */
-async function collectViewModelsForExportAll(options: CollectViewModelsOptions): Promise<ViewModelLike[]> {
+async function collectViewModelsForExportAll(options: CollectViewModelsOptions): Promise<DrawioViewModelLike[]> {
   const {
     viewIdsInModel,
     allViewModelsFromState,
@@ -169,7 +172,7 @@ async function collectViewModelsForExportAll(options: CollectViewModelsOptions):
   } = options
   if (!likec4model || viewIdsInModel.length === 0) return []
   const styles = likec4model.$styles ?? null
-  const byId = new Map<string, ViewModelLike>()
+  const byId = new Map<string, DrawioViewModelLike>()
   for (const vm of allViewModelsFromState) byId.set(vm.$view.id, vm)
   if (getLayoutedModel) await fillFromLayoutedModel(byId, getLayoutedModel, styles, onExportError)
   fillFromViewStates(byId, viewIdsInModel, viewStates, styles)
@@ -178,9 +181,13 @@ async function collectViewModelsForExportAll(options: CollectViewModelsOptions):
     await fillFromLayoutViews(byId, missing, layoutViews, styles, onExportError)
   }
   fillFromModelView(byId, viewIdsInModel, likec4model, styles)
-  return viewIdsInModel.map(id => byId.get(id)).filter(Boolean) as ViewModelLike[]
+  return viewIdsInModel.map(id => byId.get(id)).filter(Boolean) as DrawioViewModelLike[]
 }
 
+/**
+ * Hook that builds DrawIO export actions (single view and "Export all") for the context menu.
+ * Uses diagram + likec4model; optionally getSourceContent, getLayoutedModel, layoutViews for round-trip and multi-view export.
+ */
 export function useDrawioContextMenuActions({
   diagram,
   likec4model,
@@ -193,7 +200,7 @@ export function useDrawioContextMenuActions({
   const allViewModelsFromState = useMemo(() => {
     if (!likec4model) return []
     const styles = likec4model.$styles
-    return (Object.values(viewStates) ?? [])
+    return Object.values(viewStates)
       .filter((vs): vs is DiagramStateLike & { diagram: DiagramView } => vs?.state === 'success' && !!vs.diagram)
       .map(vs => toViewModel(vs.diagram!, styles ?? null))
   }, [likec4model, viewStates])
@@ -223,7 +230,7 @@ export function useDrawioContextMenuActions({
       }
       const viewmodel = toViewModel(viewToExport, likec4model?.$styles ?? null)
       const options = buildDrawioExportOptionsFromSource(diagram.id, getSourceContent?.())
-      const xml = generateDrawio(viewmodel as DrawioViewModelLike, options)
+      const xml = generateDrawio(viewmodel, options)
       downloadDrawioBlob(xml, `${diagram.id}.drawio`)
     } catch (err) {
       reportExportError('DrawIO export failed', err, onExportError)
@@ -248,7 +255,7 @@ export function useDrawioContextMenuActions({
       const sourceContent = getSourceContent?.()
       const viewIds = viewModels.map(vm => vm.$view.id)
       const optionsByViewId = buildDrawioExportOptionsForViews(viewIds, sourceContent)
-      const xml = generateDrawioMulti(viewModels as DrawioViewModelLike[], optionsByViewId)
+      const xml = generateDrawioMulti(viewModels, optionsByViewId)
       downloadDrawioBlob(xml, DEFAULT_DRAWIO_ALL_FILENAME)
     } catch (err) {
       reportExportError('DrawIO export all views failed', err, onExportError)

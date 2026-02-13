@@ -1,6 +1,5 @@
 import { LikeC4Styles } from '@likec4/core'
 import type { BBox } from '@likec4/core'
-import type { LikeC4ViewModel } from '@likec4/core/model'
 import type {
   aux,
   DiagramNode,
@@ -81,37 +80,53 @@ type View = ProcessedView<aux.Unknown>
 type Node = View['nodes'][number]
 type Edge = View['edges'][number]
 
+/** Node plus optional DSL fields (DSL allows more than base type). Single cast in accessors. */
+type ExtendedNode = Node & {
+  notes?: MarkdownOrString
+  summary?: MarkdownOrString
+  tags?: readonly string[]
+  navigateTo?: string | null
+  icon?: string | null
+  links?: readonly { url: string; title?: string }[]
+  notation?: string
+  customData?: Record<string, string>
+  children?: NodeId[]
+}
+
 /** Minimal view model shape for generateDrawio / generateDrawioMulti (single source of truth for call sites). */
-export type DrawioViewModelLike = LikeC4ViewModel<aux.Unknown>
+export type DrawioViewModelLike = {
+  $view: ProcessedView<aux.Unknown>
+  readonly $styles?: LikeC4Styles | null
+}
 
 /** Optional node fields (DSL allows more than base type). Single place for type/cast — Clean Code. */
 const nodeOptionalFields = {
   getNotes(node: Node): MarkdownOrString | undefined {
-    return (node as Node & { notes?: MarkdownOrString }).notes
+    return (node as ExtendedNode).notes
   },
   getSummary(node: Node): MarkdownOrString | undefined {
-    return (node as Node & { summary?: MarkdownOrString }).summary
+    return (node as ExtendedNode).summary
   },
   getTags(node: Node): readonly string[] | undefined {
-    return (node as Node & { tags?: readonly string[] }).tags
+    return (node as ExtendedNode).tags
   },
   getNavigateTo(node: Node): string | null | undefined {
-    return (node as Node & { navigateTo?: string | null }).navigateTo
+    return (node as ExtendedNode).navigateTo
   },
   getIcon(node: Node): string | null | undefined {
-    return (node as Node & { icon?: string | null }).icon
+    return (node as ExtendedNode).icon
   },
   getLinks(node: Node): readonly { url: string; title?: string }[] | undefined {
-    return (node as Node & { links?: readonly { url: string; title?: string }[] }).links
+    return (node as ExtendedNode).links
   },
   getNotation(node: Node): string | undefined {
-    return (node as Node & { notation?: string }).notation
+    return (node as ExtendedNode).notation
   },
   getCustomData(node: Node): Record<string, string> | undefined {
-    return (node as Node & { customData?: Record<string, string> }).customData
+    return (node as ExtendedNode).customData
   },
   getChildren(node: Node): NodeId[] | undefined {
-    return (node as Node & { children?: NodeId[] }).children
+    return (node as ExtendedNode).children
   },
 }
 
@@ -135,7 +150,7 @@ const edgeOptionalFields = {
 }
 
 /** Project styles or central default (LikeC4Styles.DEFAULT) when view has no $styles. */
-function getEffectiveStyles(viewmodel: LikeC4ViewModel<aux.Unknown>): LikeC4Styles {
+function getEffectiveStyles(viewmodel: DrawioViewModelLike): LikeC4Styles {
   return viewmodel.$styles ?? LikeC4Styles.DEFAULT
 }
 
@@ -198,7 +213,7 @@ function resolveThemeColor(
 
 /** Get theme color values with fallback to DEFAULT on error (DRY + SRP for try/catch). */
 function getThemeColorValues(
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  viewmodel: DrawioViewModelLike,
   color: string | undefined,
   fallback: 'primary' | 'gray',
 ): ThemeColorValues {
@@ -213,10 +228,10 @@ function getThemeColorValues(
 
 /**
  * Map LikeC4 element shape to draw.io cell style string.
- * Rounded corners with reduced curvature (arcSize<1 = subtler curve, ângulo mais fechado).
+ * Rounded corners: arcSize as percentage integer (e.g. 12) for subtly rounded corners in Draw.io.
  */
 function drawioShape(shape: Node['shape']): string {
-  const rectStyle = 'shape=rectangle;rounded=1;arcSize=0.12;'
+  const rectStyle = 'shape=rectangle;rounded=1;arcSize=12;'
   switch (shape) {
     case 'person':
       return 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;'
@@ -245,7 +260,7 @@ type ElementColors = { fill: string; stroke: string; font: string }
  * Uses ElementColorValues (hiContrast for font when present).
  */
 function getElementColors(
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  viewmodel: DrawioViewModelLike,
   color: string,
 ): ElementColors | undefined {
   const values = getThemeColorValues(viewmodel, color, 'primary')
@@ -258,14 +273,14 @@ function getElementColors(
 }
 
 /** Edge stroke (line) color from theme RelationshipColorValues.line. */
-function getEdgeStrokeColor(viewmodel: LikeC4ViewModel<aux.Unknown>, color: string | undefined): string {
+function getEdgeStrokeColor(viewmodel: DrawioViewModelLike, color: string | undefined): string {
   const values = getThemeColorValues(viewmodel, color ?? 'gray', 'gray')
   return values.relationships.line as string
 }
 
 /** Edge label font and background from theme (RelationshipColorValues.label, labelBg) for readable connector text. */
 function getEdgeLabelColors(
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  viewmodel: DrawioViewModelLike,
   color: string | undefined,
 ): { font: string; background: string } {
   const values = getThemeColorValues(viewmodel, color ?? 'gray', 'gray')
@@ -497,7 +512,7 @@ function buildEdgeGeometryXml(
 function buildEdgeStyleString(
   edge: Edge,
   layout: DiagramLayoutState,
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  viewmodel: DrawioViewModelLike,
   label: string,
 ): string {
   const { bboxes, fontFamily } = layout
@@ -549,7 +564,7 @@ function buildEdgeCellXml(
   edge: Edge,
   layout: DiagramLayoutState,
   options: GenerateDrawioOptions | undefined,
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  viewmodel: DrawioViewModelLike,
   getCellId: (nodeId: NodeId) => string,
   edgeCellId: string,
 ): string {
@@ -613,7 +628,7 @@ function computeNodeStylePartsAndValue(
   node: Node,
   layout: DiagramLayoutState,
   options: GenerateDrawioOptions | undefined,
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  viewmodel: DrawioViewModelLike,
 ): {
   value: string
   styleStr: string
@@ -730,7 +745,7 @@ function computeNodeCellExportData(
   node: Node,
   layout: DiagramLayoutState,
   options: GenerateDrawioOptions | undefined,
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  viewmodel: DrawioViewModelLike,
   getCellId: (nodeId: NodeId) => string,
   containerTitleCellId: number,
 ): NodeCellExportData {
@@ -803,15 +818,15 @@ function buildContainerTitleCellXml(
     `shape=text;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontSize=${fontSizePx};fontStyle=1;fontColor=${colorHex};fontFamily=${
       encodeURIComponent(fontFamily)
     };${navLinkStyle}`
-  const titleInner =
-    `<mxCell parent="${containerId}" style="${titleStyle}" value="${titleValue}" vertex="1">\n  <mxGeometry x="${
-      Math.round(titleX)
-    }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
   if (navTo === '') {
     return `<mxCell id="${titleId}" value="${titleValue}" style="${titleStyle}" vertex="1" parent="${containerId}">\n  <mxGeometry x="${
       Math.round(titleX)
     }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
   }
+  const titleInner =
+    `<mxCell parent="${containerId}" style="${titleStyle}" value="${titleValue}" vertex="1">\n  <mxGeometry x="${
+      Math.round(titleX)
+    }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
   return `<UserObject label="${escapeXml(title)}" link="${DRAWIO_PAGE_LINK_PREFIX}${
     escapeXml(navTo)
   }" id="${titleId}">\n  ${titleInner}\n</UserObject>`
@@ -1034,7 +1049,7 @@ function computeContentBoundsAndOffsets(bboxes: Map<NodeId, BBox>): {
  * Delegates to spreadUnlaidNodesOverVertical, computeContainerBboxesFromChildren, computeContentBoundsAndOffsets.
  */
 function computeDiagramLayout(
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  viewmodel: DrawioViewModelLike,
   options?: GenerateDrawioOptions,
 ): DiagramLayoutState {
   const view = viewmodel.$view
@@ -1121,14 +1136,11 @@ function computeDiagramLayout(
  * @returns Diagram name, id and content (for single or multi composition)
  */
 function generateDiagramContent(
-  viewmodel: LikeC4ViewModel<aux.Unknown>,
+  viewmodel: DrawioViewModelLike,
   options?: GenerateDrawioOptions,
 ): { name: string; id: string; content: string } {
   const view = viewmodel.$view
   const { edges } = view
-  const strokeColorByNodeId = options?.strokeColorByNodeId
-  const strokeWidthByNodeId = options?.strokeWidthByNodeId
-  const edgeWaypoints = options?.edgeWaypoints
   const useCompressed = options?.compressed !== false
 
   const layout = computeDiagramLayout(viewmodel, options)

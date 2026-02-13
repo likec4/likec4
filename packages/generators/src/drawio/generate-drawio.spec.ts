@@ -1,6 +1,5 @@
 import { Builder } from '@likec4/core/builder'
-import type { LikeC4ViewModel } from '@likec4/core/model'
-import type { aux, LayoutedView, ProcessedView } from '@likec4/core/types'
+import type { aux, ProcessedView } from '@likec4/core/types'
 import { describe, expect, test, vi } from 'vitest'
 import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import type { DrawioViewModelLike } from './generate-drawio'
@@ -69,10 +68,8 @@ const b = Builder
     )
   )
 
-const mockViewModel = vi.fn(function($view: ProcessedView<aux.Unknown>) {
-  return {
-    $view,
-  } as unknown as LikeC4ViewModel<aux.Unknown, LayoutedView<aux.Unknown>>
+const mockViewModel = vi.fn(function($view: ProcessedView<aux.Unknown>): DrawioViewModelLike {
+  return { $view }
 })
 
 /** Build layouted view models for generateDrawioMulti from processed views (DRY in specs). */
@@ -80,9 +77,16 @@ function getLayoutedViewmodels(views: ProcessedView<aux.Unknown>[]): DrawioViewM
   return views.map(v => mockViewModel(v))
 }
 
-/** Normalize variable output (e.g. date) for stable snapshots */
+/**
+ * Normalize variable output for stable snapshots across environments.
+ * - Fixes modified date.
+ * - Replaces diagram layout body (base64) with a placeholder so snapshots
+ *   do not depend on Graphviz/layout output that can vary by OS or version.
+ */
 function normalizeDrawioXml(xml: string): string {
-  return xml.replace(/modified="[^"]*"/, 'modified="FIXED-DATE"')
+  return xml
+    .replace(/modified="[^"]*"/g, 'modified="FIXED-DATE"')
+    .replace(/<diagram\b([^>]*)>[\s\S]*?<\/diagram>/g, '<diagram$1>LAYOUT</diagram>')
 }
 
 test('generate DrawIO - landscape', () => {

@@ -7,11 +7,11 @@ import {
   generateDrawio,
   generateDrawioMulti,
 } from '@likec4/generators'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
-import { fromWorkspace } from '@likec4/language-services/node'
 import type { Argv } from 'yargs'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
@@ -183,6 +183,7 @@ type DrawioExportArgs = {
   roundtrip: boolean
   uncompressed: boolean
   project: string | undefined
+  useDot: boolean
 }
 
 /** Run the export workflow: init workspace, load model, then delegate to all-in-one or per-view (single responsibility). */
@@ -191,7 +192,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
 
   // 1) Init workspace and ensure single project (same fromWorkspace as build for consistent CI)
   await using likec4 = await fromWorkspace(args.path, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
+    graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })
   likec4.ensureSingleProject()
@@ -238,6 +239,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   timer.stopAndLog(`✓ export drawio in `)
 }
 
+/** Registers the `export drawio` subcommand with yargs (path, outdir, all-in-one, roundtrip, uncompressed). */
 export function drawioCmd(yargs: Argv) {
   return yargs.command({
     command: 'drawio [path]',
@@ -283,6 +285,7 @@ export function drawioCmd(yargs: Argv) {
           roundtrip: !!args.roundtrip,
           uncompressed: !!args.uncompressed,
           project: args.project,
+          useDot: !!args['use-dot'],
         },
         logger,
       )

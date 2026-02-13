@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type DiagramView, type NonEmptyArray, invariant } from '@likec4/core'
 import { resolve } from 'node:path'
 import { hrtime } from 'node:process'
@@ -129,11 +128,11 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     watch: false,
   })
 
-  let output = outputArg ?? languageServices.workspace
+  const output = outputArg ?? languageServices.workspace
   let server: ViteDevServer | undefined
   let resolvedServerUrl = serverUrl
 
-  let projects = [...languageServices.languageServices.projects()]
+  const projects = [...languageServices.languageServices.projects()]
   if (project) {
     if (!projects.some(p => p.id === project)) {
       logger.error(`project not found: ${project}`)
@@ -271,14 +270,12 @@ export function pngCmd(yargs: Argv) {
           },
           'use-dot': useDotBin,
           'seq': {
-            boolean: true,
             alias: ['sequence'],
             type: 'boolean',
             desc: 'use sequence layout for dynamic views',
           },
           'flat': {
             alias: ['flatten'],
-            boolean: true,
             type: 'boolean',
             desc: 'flatten all images in outdir ignoring sources structure',
           },

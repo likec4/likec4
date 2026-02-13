@@ -97,14 +97,13 @@ async function main() {
 }
 
 /** Single place for CLI failure: log error (message + stack via loggable) and exit with code 1. */
-function exitWithFailure(err: unknown): never {
-  console.error(loggable(err))
+function exitWithFailure(err: unknown, prefix?: string): never {
+  console.error(prefix != null ? `${prefix} ${loggable(err)}` : loggable(err))
   exit(1)
 }
 
 main().catch(exitWithFailure)
 
 process.on('unhandledRejection', (err: unknown) => {
-  console.error('Unhandled rejection:', loggable(err))
-  exit(1)
+  exitWithFailure(err, 'Unhandled rejection:')
 })
