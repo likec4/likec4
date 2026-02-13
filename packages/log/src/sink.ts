@@ -6,6 +6,7 @@ import {
 } from '@logtape/logtape'
 import { getConsoleFormatter } from './formatters'
 
+/** Create a sink that writes formatted log records to stdout (default formatter). */
 export function getConsoleSink(options?: ConsoleSinkOptions): Sink {
   return getLogtapeConsoleSink({
     formatter: getConsoleFormatter(),

@@ -25,7 +25,10 @@ import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
 
-/** Configure likec4 logger: verbose or dev => debug level, else info. */
+/**
+ * Configure likec4 logger: verbose or dev => debug level, else info.
+ * @param isDebug - When true, sets lowest level to debug; otherwise info.
+ */
 function applyLoggerConfig(isDebug = isDevelopment) {
   configureLogger({
     sinks: {
@@ -43,6 +46,7 @@ function applyLoggerConfig(isDebug = isDevelopment) {
   })
 }
 
+/** Parse CLI argv and run the requested command (serve, build, export, etc.). */
 async function main() {
   if (!DEV && !isInsideContainer()) {
     notifyAvailableUpdate()
