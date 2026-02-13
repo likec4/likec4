@@ -15,7 +15,7 @@ function basename(path: string): string {
   const trimmed = trimTrailingSlashes(path)
   const segments = splitPath(trimmed)
   const last = segments[segments.length - 1]
-  return last ?? trimmed
+  return last || trimmed
 }
 
 export const configJsonFilenames = [

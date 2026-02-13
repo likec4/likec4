@@ -505,7 +505,7 @@ function buildEdgeGeometryXml(
       .map(([px, py]) => `<mxPoint x="${Math.round(px)}" y="${Math.round(py)}"/>`)
       .join('') +
     '</Array>'
-  return `<mxGeometry relative="0" as="geometry">${pointsXml}</mxGeometry>`
+  return `<mxGeometry relative="1" as="geometry">${pointsXml}</mxGeometry>`
 }
 
 /** Full edge style string for mxCell (arrows, anchors, stroke, dash, label, likec4 roundtrip). */

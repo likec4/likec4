@@ -1680,8 +1680,8 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
       found = true
       i += 1
       while (i < lines.length && lines[i]?.trim() !== STROKE_COLOR_END) {
-        const ln = lines[i]
-        if (ln?.trim().startsWith('// ') && ln.includes('=')) {
+        const ln = lines[i]?.trim()
+        if (ln?.startsWith('// ') && ln.includes('=')) {
           const rest = ln.slice(3).trim()
           const eq = rest.indexOf('=')
           if (eq > 0) {
@@ -1699,8 +1699,8 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
       found = true
       i += 1
       while (i < lines.length && lines[i]?.trim() !== STROKE_WIDTH_END) {
-        const ln = lines[i]
-        if (ln?.trim().startsWith('// ') && ln.includes('=')) {
+        const ln = lines[i]?.trim()
+        if (ln?.startsWith('// ') && ln.includes('=')) {
           const rest = ln.slice(3).trim()
           const eq = rest.indexOf('=')
           if (eq > 0) {
@@ -1718,8 +1718,8 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
       found = true
       i += 1
       while (i < lines.length && lines[i]?.trim() !== WAYPOINTS_END) {
-        const ln = lines[i]
-        if (ln?.trim().startsWith('// ')) {
+        const ln = lines[i]?.trim()
+        if (ln?.startsWith('// ')) {
           const rest = ln.slice(3).trim()
           const space = rest.indexOf(' ')
           if (space > 0) {
