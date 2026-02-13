@@ -68,12 +68,17 @@ export const projectIconsModule = {
 /** Safe chars for project id when embedded in generated code (CodeQL: proper sanitization). */
 const SAFE_PROJECT_ID_REGEX = /^[a-zA-Z0-9_.-]+$/
 
-/** Sanitize for embedding in generated JS: allowlist + JSON string literal (CodeQL: code sanitization). */
-function embedAsJsString(value: string): string {
-  if (!SAFE_PROJECT_ID_REGEX.test(value)) {
-    throw new Error(`Unsafe value for code generation: ${value}`)
+/** Embed project id as JS string literal; allowlist only (CodeQL: code sanitization). */
+function embedProjectIdAsJsString(projectId: string): string {
+  if (!SAFE_PROJECT_ID_REGEX.test(projectId)) {
+    throw new Error(`Unsafe value for code generation: ${projectId}`)
   }
-  return JSON.stringify(value)
+  return JSON.stringify(projectId)
+}
+
+/** Embed URL as JS string literal; URL is built from allowlisted project id so only escape needed. */
+function embedUrlAsJsString(url: string): string {
+  return JSON.stringify(url)
 }
 
 export const iconsModule = {
@@ -92,8 +97,8 @@ export const iconsModule = {
 
     const registry = safeProjects
       .map(p => {
-        const idLiteral = embedAsJsString(p.id)
-        const pkgLiteral = embedAsJsString(joinURL('likec4:icons', p.id))
+        const idLiteral = embedProjectIdAsJsString(p.id)
+        const pkgLiteral = embedUrlAsJsString(joinURL('likec4:icons', p.id))
         return { idLiteral, pkgLiteral }
       })
       .map(({ idLiteral, pkgLiteral }) => `${idLiteral}: lazy(() => import(${pkgLiteral}).then(m => ({default: m.IconRenderer})))`)
