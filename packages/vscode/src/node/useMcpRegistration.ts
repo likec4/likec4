@@ -24,7 +24,7 @@ export const useMcpRegistration = createSingletonComposable(() => {
 
   const folders = useWorkspaceFolders()
   const workspaceFolders = computed(() => folders.value?.map(f => f.uri.toString()) ?? [])
-
+  const workspaceId = useWorkspaceId()
   const serverModule = extensionContext.value!.asAbsolutePath(
     join(
       'dist',
@@ -51,7 +51,6 @@ export const useMcpRegistration = createSingletonComposable(() => {
       resolveMcpServerDefinition: async (server) => {
         logger.debug`Resolving MCP server ${server.label}`
         if (server.label === 'likec4' && isMcpStdioServerDefinition(server)) {
-          const workspaceId = useWorkspaceId()
           logger.debug(`Resolved MCP server`, {
             args: server.args,
             workspaceFolders: workspaceFolders.value,
