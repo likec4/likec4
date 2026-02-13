@@ -1,15 +1,24 @@
 ## [1.49.0](https://github.com/likec4/likec4/compare/v1.48.0...v1.49.0) (2026-02-13)
 
+> [!IMPORTANT]
+> Thanks to [@dkapitan](https://github.com/dkapitan) for sponsoring the project!
+
 ### 🚀 Features
 
 - **New `component` Element Shape**:\
   Added new `component` element shape for diagrams. [#2616](https://github.com/likec4/likec4/pull/2616)
+  
+  <img width="301" height="211" alt="image" src="https://github.com/user-attachments/assets/0ba4d5dd-fcf0-403c-bb07-ef3e7b3e34c7" />
+
 
 - **Enhanced VSCode Hover Tooltips**:\
   Hover tooltips in the editor now show relationship counts and clickable links to views containing the element. [#2624](https://github.com/likec4/likec4/pull/2624)
 
+  <img width="400" alt="image" src="https://github.com/user-attachments/assets/d8b40d7d-c3e9-424f-8ad7-6614ce99290b" />
+
+
 - **Extendable JSON Configs**:\
-  JSON configs can now extend other configs and merge styles from them using the `extends` property. Closes [#2573](https://github.com/likec4/likec4/issues/2573)
+  JSON configs can now extend other configs and merge styles from them using the `extends` property, so you can share your theme. Closes [#2573](https://github.com/likec4/likec4/issues/2573)
 
   ```json
   {
@@ -33,7 +42,7 @@
 
 - **Review Drifts in Compare Panel**:\
   Added review drifts feature to the compare panel with drifts highlighting and summary panel. Includes reset manual layout button and improved processing state handling.
-  Added review drifts feature to the compare panel with drifts highlighting and summary panel. Includes reset manual layout button and improved processing state handling.
+  
 
 ### 🐞 Bug Fixes
 
