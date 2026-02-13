@@ -41,12 +41,7 @@ test(
   { timeout: 15000 },
   async ({ expect }) => {
     mkdirSync(emptyWorkspaceDir, { recursive: true })
-    try {
-      await $`likec4 export drawio ${emptyWorkspaceDir} -o test-results/drawio-fail`
-      expect.fail('CLI should have exited with non-zero code')
-    } catch (err: unknown) {
-      const exitCode = err && typeof err === 'object' && 'exitCode' in err ? (err as { exitCode: number }).exitCode : undefined
-      expect(exitCode, 'expected exitCode 1 from failed export').toBe(1)
-    }
+    const result = await $`likec4 export drawio ${emptyWorkspaceDir} -o test-results/drawio-fail`.nothrow()
+    expect(result.exitCode, 'expected exitCode 1 from failed export').toBe(1)
   },
 )
