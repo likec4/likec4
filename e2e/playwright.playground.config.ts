@@ -14,6 +14,8 @@ export default defineConfig({
   timeout: 60 * 1000,
   retries: isCI ? 1 : 0,
 
+  reporter: isCI ? [['github'], ['list'], ['html']] : 'html',
+
   use: {
     browserName: 'chromium',
     colorScheme: 'light',

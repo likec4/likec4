@@ -107,14 +107,16 @@ export function LanguageClientSync({
         const c = wrapper.getLanguageClient('likec4')
         if (!c) return {}
         const out: Record<string, DiagramView> = {}
-        for (const viewId of viewIds) {
-          try {
-            const res = await c.sendRequest(LayoutView.req, { viewId })
-            if (res.result?.diagram) out[viewId] = res.result.diagram
-          } catch {
-            // skip failed view
-          }
-        }
+        await Promise.all(
+          viewIds.map(async (viewId) => {
+            try {
+              const res = await c.sendRequest(LayoutView.req, { viewId })
+              if (res.result?.diagram) out[viewId] = res.result.diagram
+            } catch {
+              // skip failed view
+            }
+          }),
+        )
         return out
       },
     })

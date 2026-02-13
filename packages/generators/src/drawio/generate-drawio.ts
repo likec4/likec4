@@ -803,15 +803,15 @@ function buildContainerTitleCellXml(
     `shape=text;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontSize=${fontSizePx};fontStyle=1;fontColor=${colorHex};fontFamily=${
       encodeURIComponent(fontFamily)
     };${navLinkStyle}`
-  const titleInner =
-    `<mxCell parent="${containerId}" style="${titleStyle}" value="${titleValue}" vertex="1">\n  <mxGeometry x="${
-      Math.round(titleX)
-    }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
   if (navTo === '') {
     return `<mxCell id="${titleId}" value="${titleValue}" style="${titleStyle}" vertex="1" parent="${containerId}">\n  <mxGeometry x="${
       Math.round(titleX)
     }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
   }
+  const titleInner =
+    `<mxCell parent="${containerId}" style="${titleStyle}" value="${titleValue}" vertex="1">\n  <mxGeometry x="${
+      Math.round(titleX)
+    }" y="${Math.round(titleY)}" width="${titleWidth}" height="${titleHeight}" as="geometry" />\n</mxCell>`
   return `<UserObject label="${escapeXml(title)}" link="${DRAWIO_PAGE_LINK_PREFIX}${
     escapeXml(navTo)
   }" id="${titleId}">\n  ${titleInner}\n</UserObject>`
@@ -1126,9 +1126,6 @@ function generateDiagramContent(
 ): { name: string; id: string; content: string } {
   const view = viewmodel.$view
   const { edges } = view
-  const strokeColorByNodeId = options?.strokeColorByNodeId
-  const strokeWidthByNodeId = options?.strokeWidthByNodeId
-  const edgeWaypoints = options?.edgeWaypoints
   const useCompressed = options?.compressed !== false
 
   const layout = computeDiagramLayout(viewmodel, options)

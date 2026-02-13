@@ -991,8 +991,8 @@ function emitEdgesToLines(
       if (notes) bodyLines.push(`    notes '${escapeLikec4Quotes(notes)}'`)
       if (navTo) bodyLines.push(`    navigateTo ${navTo}`)
       if (notation) bodyLines.push(`    notation '${escapeLikec4Quotes(notation)}'`)
-      for (const line of formatLinkLines(linksJson, undefined, '    ')) {
-        bodyLines.push(line)
+      for (const linkLine of formatLinkLines(linksJson, undefined, '    ')) {
+        bodyLines.push(linkLine)
       }
       try {
         const metaObj = metadataJson ? (JSON.parse(metadataJson) as Record<string, string | string[]>) : null
@@ -1690,6 +1690,7 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
         }
         i += 1
       }
+      i += 1
       continue
     }
     if (line.trim() === STROKE_WIDTH_START) {
@@ -1708,6 +1709,7 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
         }
         i += 1
       }
+      i += 1
       continue
     }
     if (line.trim() === WAYPOINTS_START) {
@@ -1733,6 +1735,7 @@ export function parseDrawioRoundtripComments(c4Source: string): DrawioRoundtripD
         }
         i += 1
       }
+      i += 1
       continue
     }
     i += 1

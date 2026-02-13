@@ -80,9 +80,16 @@ function getLayoutedViewmodels(views: ProcessedView<aux.Unknown>[]): DrawioViewM
   return views.map(v => mockViewModel(v))
 }
 
-/** Normalize variable output (e.g. date) for stable snapshots */
+/**
+ * Normalize variable output for stable snapshots across environments.
+ * - Fixes modified date.
+ * - Replaces diagram layout body (base64) with a placeholder so snapshots
+ *   do not depend on Graphviz/layout output that can vary by OS or version.
+ */
 function normalizeDrawioXml(xml: string): string {
-  return xml.replace(/modified="[^"]*"/, 'modified="FIXED-DATE"')
+  return xml
+    .replace(/modified="[^"]*"/g, 'modified="FIXED-DATE"')
+    .replace(/<diagram ([^>]*)>[\s\S]*?<\/diagram>/g, '<diagram $1>LAYOUT</diagram>')
 }
 
 test('generate DrawIO - landscape', () => {

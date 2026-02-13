@@ -16,7 +16,6 @@ function errToString(err: unknown): string {
   }
   if (typeof err === 'string') return err
   if (err === null || err === undefined) return ''
-  if (typeof err === 'object') return '[object]'
   if (typeof err === 'number' || typeof err === 'boolean') return String(err)
   if (typeof err === 'symbol') return err.toString()
   return 'unknown'

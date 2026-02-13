@@ -1,4 +1,4 @@
-import { mkdirSync, readdirSync, readFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { test } from 'vitest'
 import { $ } from 'zx'
@@ -24,6 +24,7 @@ test.skip(
   'LikeC4 CLI - export drawio produces .drawio file with mxfile',
   { timeout: 30000 },
   async ({ expect }) => {
+    rmSync(outDir, { recursive: true, force: true })
     mkdirSync(outDir, { recursive: true })
     await $`likec4 export drawio ${sourceDirAbs} -o ${outDir} --project ${projectId}`.quiet()
     const entries = readdirSync(outDir, { withFileTypes: true })

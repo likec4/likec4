@@ -1,14 +1,12 @@
-import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
 import { Loader } from '@mantine/core'
 import { lazy, Suspense } from 'react'
+import type { MonacoEditorProps } from './MonacoEditor'
+
+export type { MonacoEditorProps } from './MonacoEditor'
 
 const LazyMonacoEditor = lazy(async () => {
   return await import('./MonacoEditor')
 })
-
-export type MonacoEditorProps = {
-  setLayoutedModelApi?: (api: LayoutedModelApi | null) => void
-}
 
 export function MonacoEditor(props: MonacoEditorProps) {
   return (
@@ -17,4 +15,3 @@ export function MonacoEditor(props: MonacoEditorProps) {
     </Suspense>
   )
 }
-// export { default as MonacoEditor } from './MonacoEditor'
