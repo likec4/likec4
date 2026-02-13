@@ -110,7 +110,7 @@ export function LanguageClientSync({
         await Promise.all(
           viewIds.map(async (viewId) => {
             try {
-              const res = await c.sendRequest(LayoutView.req, { viewId })
+              const res = (await c.sendRequest(LayoutView.req.method, { viewId })) as LayoutView.Res
               if (res.result?.diagram) out[viewId] = res.result.diagram
             } catch {
               // skip failed view
@@ -124,7 +124,7 @@ export function LanguageClientSync({
 
   const requestLayoutView = useCallbackRef(async (viewId: ViewId) => {
     try {
-      const res = await languageClient().sendRequest(LayoutView.req, { viewId })
+      const res = (await languageClient().sendRequest(LayoutView.req.method, { viewId })) as LayoutView.Res
       const result = res.result
       if (result) {
         playground.send({ type: 'likec4.lsp.onLayoutDone', ...result })

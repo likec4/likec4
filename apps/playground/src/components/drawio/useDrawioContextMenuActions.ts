@@ -1,3 +1,4 @@
+import { LikeC4Styles } from '@likec4/core'
 import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
@@ -34,7 +35,7 @@ function toViewModel(view: DiagramView, styles: LikeC4Model['$styles'] | null): 
   return {
     $view: view,
     get $styles() {
-      return styles ?? null
+      return styles ?? LikeC4Styles.DEFAULT
     },
   }
 }
