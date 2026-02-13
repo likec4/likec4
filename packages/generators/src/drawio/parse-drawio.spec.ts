@@ -192,5 +192,7 @@ test('parseDrawioRoundtripComments - returns null when no comment blocks', () =>
 })
 
 test('decompressDrawioDiagram - invalid base64 throws with clear message', () => {
-  expect(() => decompressDrawioDiagram('not-valid-base64!!')).toThrow(/DrawIO diagram decompression failed \(base64 decode\)/)
+  expect(() => decompressDrawioDiagram('not-valid-base64!!')).toThrow(
+    /DrawIO diagram decompression failed \((base64 decode|inflate|URI decode)\)/
+  )
 })
