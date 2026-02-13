@@ -19,7 +19,7 @@ const useLanguageClient = createSingletonComposable(() => {
     extensionContext.value!.extensionUri,
     'dist',
     'browser',
-    'language-server-worker.js',
+    'language-server-worker.iife.js',
   ).toString(true)
 
   output.info(`worker: ${serverMain}`)

@@ -8,10 +8,14 @@
       "ES2024",
       "WebWorker"
     ],
-    "rootDir": "src"
+    "rootDirs": [
+      "src",
+      "."
+    ],
   },
   "include": [
     "src",
+    "*.ts"
   ],
   "references": [
     {
