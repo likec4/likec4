@@ -22,6 +22,7 @@ type JsonExportArgs = {
   useDot: boolean
 }
 
+/** Run the JSON export workflow: init workspace, load model(s), write to outfile. */
 async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
   const languageServices = await LikeC4.fromWorkspace(args.path, {
@@ -82,6 +83,7 @@ async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<
   timer.stopAndLog(`✓ export in `)
 }
 
+/** Registers the `export json` subcommand with yargs (path, outfile, project, skip-layout, pretty). */
 export function jsonCmd(yargs: Argv) {
   return yargs.command({
     command: 'json [path]',

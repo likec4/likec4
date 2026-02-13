@@ -92,6 +92,8 @@ export interface DrawioCell {
 
 /** Edge cell with required source and target; use after filtering with isEdgeWithEndpoints. */
 type DrawioEdgeWithEndpoints = DrawioCell & { source: string; target: string }
+
+/** Type guard: true when cell is an edge with non-empty source and target. */
 function isEdgeWithEndpoints(c: DrawioCell): c is DrawioEdgeWithEndpoints {
   return c.edge === true && typeof c.source === 'string' && typeof c.target === 'string'
 }
@@ -933,6 +935,7 @@ function pushElementBody(
   ctx.lines.push(`${pad}}`)
 }
 
+/** Emit one element (and its children) to LikeC4 source lines (actor/system/container + body). */
 function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string, indent: number): void {
   const cell = ctx.idToCell.get(cellId)
   if (!cell) return
@@ -992,6 +995,7 @@ const emitElement = {
 
 type EdgeEntry = { cell: DrawioCell; src: string; tgt: string }
 
+/** Emit relation lines (src -> tgt with optional style/body) to LikeC4 source lines. */
 function emitEdgesToLines(
   lines: string[],
   edgeEntries: EdgeEntry[],
@@ -1133,6 +1137,7 @@ function collectRoundtripForState(
   return { layoutNodes, strokeColorLines, strokeWidthLines, customDataLines, waypointLines }
 }
 
+/** Append round-trip comment blocks for one diagram (layout, stroke, customData, waypoints) to lines. */
 function emitRoundtripCommentsSingle(
   lines: string[],
   viewId: string,
@@ -1170,6 +1175,7 @@ interface DiagramStateForRoundtrip {
   edges: DrawioCell[]
 }
 
+/** Append merged round-trip comment blocks for multiple diagrams to lines. */
 function emitRoundtripCommentsMulti(
   lines: string[],
   states: DiagramStateForRoundtrip[],
@@ -1450,6 +1456,7 @@ type SingleDiagramState = DiagramState & {
   byId: Map<string, DrawioCell>
 }
 
+/** Build diagram state from XML content and name (for multi-tab); returns null if parse fails. */
 function buildDiagramState(content: string, diagramName: string): DiagramState | null {
   const cells = parseDrawioXml(content)
   const common = buildCommonDiagramStateFromCells(cells, diagramName)

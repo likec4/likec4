@@ -76,6 +76,7 @@ function logAndRethrow(logger: ViteLogger, message: string, err: unknown): never
  */
 const ROUNDTRIP_MAX_DEPTH = 50
 
+/** Walk workspace and concatenate .c4/.likec4 file contents; respects depth limit and symlink cycles. */
 async function readWorkspaceSourceContent(
   workspacePath: string,
   logger?: ViteLogger,

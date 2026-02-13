@@ -39,6 +39,7 @@ export type PngExportArgs = {
   sequence?: boolean | undefined
 }
 
+/** Launch headless Chromium, capture each view as PNG to output dir; returns list of succeeded view ids. */
 export async function exportViewsToPNG(
   {
     logger,
@@ -237,6 +238,7 @@ export async function pngHandler(args: PngExportArgs): Promise<void> {
   await runExportPng(args, logger)
 }
 
+/** Registers the `export png` subcommand with yargs (path, outdir, project, theme, etc.). */
 export function pngCmd(yargs: Argv) {
   return yargs.command({
     command: 'png [path]',

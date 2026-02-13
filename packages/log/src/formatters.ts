@@ -11,15 +11,7 @@ import {
 } from '@logtape/logtape'
 import mergeErrorCause from 'merge-error-cause'
 import wrapErrorMessage from 'wrap-error-message'
-import { indent, parseStack } from './utils'
-
-function safeStringify(value: unknown): string {
-  try {
-    return JSON.stringify(value)
-  } catch {
-    return '[unserializable value]'
-  }
-}
+import { indent, loggable, parseStack } from './utils'
 
 function gerErrorFromLogRecord(record: LogRecord): Error | null {
   const errors = Object
@@ -33,12 +25,7 @@ function gerErrorFromLogRecord(record: LogRecord): Error | null {
         return [mergedErr]
       }
       if (k === 'error' || k === 'err') {
-        const msg = typeof err === 'string'
-          ? err
-          : err !== null && typeof err === 'object'
-          ? safeStringify(err)
-          : String(err)
-        return [new Error(msg)]
+        return [new Error(loggable(err))]
       }
       return []
     })
