@@ -9,6 +9,7 @@ import type {
   NonEmptyArray,
   ProjectId,
   RelationId,
+  ThemeColor,
   ViewChange,
   ViewId,
 } from '@likec4/core'
@@ -325,12 +326,16 @@ export namespace GetDocumentTags {
   }
   export type Res = {
     /**
+     * Project ID this document belongs to (if any)
+     */
+    projectId: ProjectId
+    /**
      * Used tags in the document
      */
     tags: Array<{
       name: string
       range: Range
-      color: string
+      color: ThemeColor
       isSpecification?: boolean
     }>
   }

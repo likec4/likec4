@@ -2,18 +2,17 @@ import type * as c4 from '@likec4/core'
 import { splitGlobalFqn } from '@likec4/core'
 import { ifilter, invariant, toArray } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
-import type { Cancellation, CstNode, LangiumDocuments } from 'langium'
+import type { Cancellation, CstNode, LangiumDocument, LangiumDocuments } from 'langium'
 import { AstUtils, DocumentState, GrammarUtils } from 'langium'
 import { flatMap, isString, pipe } from 'remeda'
 import type { Location, Range } from 'vscode-languageserver-types'
 import { URI } from 'vscode-uri'
 import type { ParsedAstElement, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
-import { ast, isLikeC4LangiumDocument } from '../ast'
+import { ast } from '../ast'
 import { logger as serverLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import type { ProjectsManager } from '../workspace'
-import { MergedSpecification } from './builder/MergedSpecification'
 import type { DeploymentsIndex } from './deployments-index'
 import type { FqnIndex } from './fqn-index'
 import type { LikeC4ModelParser } from './model-parser'
@@ -44,39 +43,57 @@ export class LikeC4ModelLocator {
     this.projects = services.shared.workspace.ProjectsManager
   }
 
+  /**
+   * Returns the parsed documents
+   */
   private documents(projectId: c4.ProjectId) {
     return this.parser.documents(projectId)
   }
 
-  // public getParsedElement(astNodeOrFqn: ast.Element): ParsedAstElement | null
-  // public getParsedElement(astNodeOrFqn: c4.Fqn, projectId?: c4.ProjectId): ParsedAstElement | null
-  public getParsedElement(...args: [ast.Element] | [c4.Fqn] | [c4.Fqn, c4.ProjectId]): ParsedAstElement | null {
-    let astNodeOrFqn
-    let projectId
-    if (args.length === 2) {
-      astNodeOrFqn = args[0]
-      projectId = args[1]
-    } else {
-      astNodeOrFqn = args[0]
-      projectId = isString(astNodeOrFqn) ? this.projects.ensureProjectId() : projectIdFrom(astNodeOrFqn)
-    }
-
-    if (isString(astNodeOrFqn)) {
-      const fqn = astNodeOrFqn
-      const entry = this.fqnIndex.byFqn(projectId, fqn).head()
-      if (!entry) {
-        return null
+  public getParsedElement(
+    ...args: [ast.Element] | [c4.Fqn] | [c4.Fqn, c4.ProjectId]
+  ): null | {
+    projectId: c4.ProjectId
+    element: ParsedAstElement
+    document: LangiumDocument
+  } {
+    try {
+      let astNodeOrFqn
+      let projectId
+      if (args.length === 2) {
+        astNodeOrFqn = args[0]
+        projectId = args[1]
+      } else {
+        astNodeOrFqn = args[0]
+        projectId = isString(astNodeOrFqn) ? this.projects.ensureProjectId() : projectIdFrom(astNodeOrFqn)
       }
-      const doc = this.langiumDocuments.getDocument(entry.documentUri)
-      if (!doc) {
-        return null
-      }
-      return this.parser.parse(doc).c4Elements.find(e => e.id === fqn) ?? null
-    }
 
-    const fqn = this.fqnIndex.getFqn(astNodeOrFqn)
-    const doc = this.parser.parse(getDocument(astNodeOrFqn))
-    return doc.c4Elements.find(e => e.id === fqn) ?? null
+      if (isString(astNodeOrFqn)) {
+        const fqn = astNodeOrFqn
+        const entry = this.fqnIndex.byFqn(projectId, fqn).head()
+        if (!entry) {
+          return null
+        }
+        const document = this.langiumDocuments.getDocument(entry.documentUri)
+        const element = this.findParsedElementByFqnIn(fqn, document)
+        return element && document ? { projectId, element, document } : null
+      }
+
+      const fqn = this.fqnIndex.getFqn(astNodeOrFqn)
+      const document = getDocument(astNodeOrFqn)
+      const element = this.findParsedElementByFqnIn(fqn, document)
+      return element && document ? { projectId, element, document } : null
+    } catch (e) {
+      logger.debug(loggable(e))
+      return null
+    }
+  }
+
+  private findParsedElementByFqnIn(fqn: c4.Fqn, doc: LangiumDocument | undefined): ParsedAstElement | undefined {
+    if (!doc) {
+      return undefined
+    }
+    return this.parser.parse(doc).c4Elements.find(e => e.id === fqn)
   }
 
   public locateElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {
@@ -196,30 +213,46 @@ export class LikeC4ModelLocator {
     }
   }
 
+  /**
+   * Returns an array of tags with their name, color, range and whether they are defined in the specification or not.
+   * If the document is not linked, it will wait until it is linked before locating the tags.
+   *
+   * If the document does not belong to any project, it will return null.
+   */
   public async locateDocumentTags(
     documentUri: URI,
     cancelToken?: Cancellation.CancellationToken,
   ): Promise<
-    Array<{
-      name: string
-      color: string
-      range: Range
-      isSpecification: boolean
-    }>
+    {
+      projectId: c4.ProjectId
+      tags: Array<{
+        name: c4.Tag
+        color: string
+        range: Range
+        isSpecification: boolean
+      }>
+    } | null
   > {
     const doc = this.langiumDocuments.getDocument(documentUri)
-    if (!doc || !isLikeC4LangiumDocument(doc)) {
-      return []
+    if (!doc || !doc.likec4ProjectId) {
+      return null
     }
-    if (doc.state < DocumentState.Validated) {
-      logger.debug(`Waiting for document ${doc.uri.path} to be Validated`)
-      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, doc.uri, cancelToken)
+    if (doc.state < DocumentState.Linked) {
+      logger.debug(`Waiting for document ${doc.uri.path} to be Linked`)
+      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Linked, doc.uri, cancelToken)
     }
     const projectId = projectIdFrom(doc)
-    logger.debug(`locate document tags for ${doc.uri.path} in project ${projectId}`)
+    logger.trace`locate document tags for ${doc.uri.fsPath} in project ${projectId}`
     try {
-      const tagSpecs = new MergedSpecification(this.documents(projectId).toArray()).tags
-      logger.debug(`Assigned colors to tags`, { tagSpecs })
+      const tagSpecs = this.services.likec4.LastSeen.specification(projectId)?.tags
+
+      if (!tagSpecs) {
+        logger.trace(
+          `No specification or styles found for project ${projectId}, cannot locate tags for document ${doc.uri.fsPath}`,
+        )
+        return null
+      }
+
       const tags = pipe(
         streamAllContents(doc.parseResult.value),
         ifilter(astNode => ast.isTag(astNode) || ast.isTagRef(astNode)),
@@ -251,10 +284,13 @@ export class LikeC4ModelLocator {
         }),
       )
       logger.debug(`Found ${tags.length} tags in document ${doc.uri.path}`)
-      return tags
+      return {
+        projectId,
+        tags,
+      }
     } catch (e) {
       logger.warn(loggable(e))
-      return []
+      return null
     }
   }
 

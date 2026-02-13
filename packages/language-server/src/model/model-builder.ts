@@ -39,6 +39,7 @@ import { ADisposable, performanceMark } from '../utils'
 import { assignNavigateTo } from '../view-utils'
 import type { ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
+import type { LastSeenArtifacts } from './last-seen-artifacts'
 import type { LikeC4ModelParser } from './model-parser'
 
 const parsedWithoutImportsCacheKey = (projectId: c4.ProjectId) => `parsed-without-imports-${projectId}`
@@ -74,8 +75,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   private DocumentBuilder: DocumentBuilder
   private manualLayouts: LikeC4ManualLayouts
   private mutex: WorkspaceLock
+  private lastSeen: LastSeenArtifacts
 
-  constructor(services: LikeC4Services) {
+  constructor(protected services: LikeC4Services) {
     super()
     this.projects = services.shared.workspace.ProjectsManager
     this.parser = services.likec4.ModelParser
@@ -83,6 +85,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
     this.mutex = services.shared.workspace.WorkspaceLock
     this.manualLayouts = services.shared.workspace.ManualLayouts
+    this.lastSeen = services.likec4.LastSeen
 
     this.onDispose(
       this.DocumentBuilder.onUpdate((_changed, deleted) => {
@@ -135,7 +138,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           return null
         }
         logger.debug`unsafeSyncParseModelData: completed`
-        return buildModelData(project, docs)
+        return buildModelData(this.services, project, docs)
       } catch (err) {
         builderLogger.warn(`unsafeSyncParseModelData failed for project ${projectId}`, { err })
         return null
@@ -260,7 +263,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         views,
       }
       logger.debug(`unsafeSyncComputeModel${manualLayouts ? ' with manual layouts' : ''}: completed`)
-      return LikeC4Model.create(data)
+      return this.lastSeen.rememberModel(
+        LikeC4Model.create(data),
+      )
     })
   }
 

@@ -45,6 +45,7 @@ import type {
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
 import { logger } from '../../logger'
+import type { LikeC4Services } from '../../module'
 import { stringHash } from '../../utils/stringHash'
 import type { Project } from '../../workspace/ProjectsManager'
 import { MergedExtends } from './MergedExtends'
@@ -63,10 +64,15 @@ export type BuildModelData = {
  * and globals, and applying the extends to the elements.
  */
 export function buildModelData(
+  services: LikeC4Services,
   project: Project,
   docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
 ): BuildModelData {
   const c4Specification = new MergedSpecification(docs)
+
+  if (c4Specification.projectId === project.id) {
+    services.likec4.LastSeen.rememberSpecification(c4Specification)
+  }
 
   const customColors: c4.CustomColorDefinitions = mapValues(
     c4Specification.specs.colors,

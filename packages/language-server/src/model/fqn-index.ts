@@ -106,13 +106,15 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     }
     // Document index is not yet created
     const doc = AstUtils.getDocument(el)
-    this.logger.warn(
-      `document {doc} is not yet indexed, creating on the fly to resolve FQN for element {el}`,
-      {
-        el: el.name ?? el.$type,
-        doc: UriUtils.basename(doc.uri),
-      },
-    )
+    if (doc.state < DocumentState.IndexedContent) {
+      this.logger.warn(
+        `document {doc} is not yet indexed, creating on the fly to resolve FQN for element {el}`,
+        {
+          el: el.name ?? el.$type,
+          doc: UriUtils.basename(doc.uri),
+        },
+      )
+    }
     invariant(isLikeC4LangiumDocument(doc))
     // Ensure the document is indexed
     this.get(doc)
