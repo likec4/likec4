@@ -5,7 +5,11 @@ import { drawioCmd } from './drawio/handler'
 import { jsonCmd } from './json/handler'
 import { pngCmd } from './png/handler'
 
-/** Registers the `export` command with subcommands png, json, drawio. */
+/**
+ * Registers the `export` command with subcommands png, json, drawio.
+ * @param yargs - yargs instance to extend
+ * @returns yargs chain with export <format> [path] and format-specific options
+ */
 const exportCmd = (yargs: yargs.Argv) => {
   return yargs
     .command({

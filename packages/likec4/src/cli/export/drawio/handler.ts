@@ -110,7 +110,13 @@ async function readWorkspaceSourceContent(
   return joinNonEmptyFiles(chunks)
 }
 
-/** Single place for roundtrip source: only reads workspace when roundtrip is true (DRY). */
+/**
+ * Single place for roundtrip source: only reads workspace when roundtrip is true.
+ * @param workspacePath - Project root path
+ * @param roundtrip - When true, reads and concatenates .c4/.likec4 files
+ * @param logger - Optional logger for debug on read failures
+ * @returns Concatenated source or undefined when roundtrip is false
+ */
 async function getSourceContentIfRoundtrip(
   workspacePath: string,
   roundtrip: boolean,
@@ -120,7 +126,13 @@ async function getSourceContentIfRoundtrip(
   return readWorkspaceSourceContent(resolve(workspacePath), logger)
 }
 
-/** Build per-view export options from optional source (delegates to shared generator). */
+/**
+ * Build per-view export options from optional source (delegates to shared generator).
+ * @param viewmodels - Layouted view models
+ * @param sourceContent - Concatenated .c4 source when roundtrip is enabled
+ * @param uncompressed - When true, sets compressed: false in options
+ * @returns Map of view id to GenerateDrawioOptions
+ */
 function buildOptionsByViewId(
   viewmodels: LikeC4ViewModel<aux.Unknown>[],
   sourceContent: string | undefined,
@@ -131,7 +143,10 @@ function buildOptionsByViewId(
   return buildDrawioExportOptionsForViews(viewIds, sourceContent, overrides)
 }
 
-/** Shared parameters for all-in-one and per-view export (single source of truth). */
+/**
+ * Shared parameters for all-in-one and per-view export.
+ * Passed to exportDrawioAllInOne and exportDrawioPerView.
+ */
 interface ExportDrawioParams {
   viewmodels: LikeC4ViewModel<aux.Unknown>[]
   outdir: string
@@ -141,7 +156,10 @@ interface ExportDrawioParams {
   logger: ViteLogger
 }
 
-/** Export all views as one .drawio file (one tab per view). */
+/**
+ * Export all views as one .drawio file (one tab per view).
+ * @param params - View models, outdir, workspace path, roundtrip/uncompressed flags, logger
+ */
 async function exportDrawioAllInOne(params: ExportDrawioParams): Promise<void> {
   const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, logger } = params
   const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip, logger)
@@ -152,7 +170,14 @@ async function exportDrawioAllInOne(params: ExportDrawioParams): Promise<void> {
   logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)} (${viewmodels.length} tab(s))`)
 }
 
-/** Write one view to a .drawio file; returns true on success, false on error (logs and continues). */
+/**
+ * Write one view to a .drawio file; returns true on success, false on error (logs and continues).
+ * @param vm - Layouted view model
+ * @param optionsByViewId - Per-view export options
+ * @param outdir - Output directory
+ * @param logger - Logger for info/error
+ * @returns True if file was written, false on error
+ */
 async function writeViewToFile(
   vm: LikeC4ViewModel<aux.Unknown>,
   optionsByViewId: Record<string, GenerateDrawioOptions>,
@@ -172,7 +197,11 @@ async function writeViewToFile(
   }
 }
 
-/** Export each view to a separate .drawio file. */
+/**
+ * Export each view to a separate .drawio file.
+ * @param params - View models, outdir, workspace path, roundtrip/uncompressed flags, logger
+ * @returns Count of successfully written files
+ */
 async function exportDrawioPerView(params: ExportDrawioParams): Promise<{ succeeded: number }> {
   const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, logger } = params
   const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip, logger)
@@ -195,7 +224,11 @@ type DrawioExportArgs = {
   useDot: boolean
 }
 
-/** Run the export workflow: init workspace, load model, then delegate to all-in-one or per-view (single responsibility). */
+/**
+ * Run the export workflow: init workspace, load model, then delegate to all-in-one or per-view.
+ * @param args - Parsed CLI args (path, outdir, allInOne, roundtrip, uncompressed, project, useDot)
+ * @param logger - Logger for progress and errors
+ */
 async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
 
@@ -248,7 +281,12 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   timer.stopAndLog(`✓ export drawio in `)
 }
 
-/** Registers the `export drawio` subcommand with yargs (path, outdir, all-in-one, roundtrip, uncompressed). */
+/**
+ * Registers the `export drawio` subcommand with yargs.
+ * Options: path, outdir, all-in-one, roundtrip, uncompressed, project, use-dot.
+ * @param yargs - yargs instance to extend
+ * @returns yargs chain for further commands
+ */
 export function drawioCmd(yargs: Argv) {
   return yargs.command({
     command: 'drawio [path]',

@@ -35,7 +35,11 @@ function gerErrorFromLogRecord(record: LogRecord): Error | null {
   return errors.length === 1 ? errors[0]! : new AggregateError(errors)
 }
 
-/** Extract a single Error from a log record (from properties or rawMessage). */
+/**
+ * Extract a single Error from a log record (from properties or rawMessage).
+ * @param record - Log record that may contain error in properties or rawMessage
+ * @returns Merged/wrapped Error or null if none found
+ */
 export function errorFromLogRecord(record: LogRecord): Error | null {
   const error = gerErrorFromLogRecord(record)
   if (error && typeof record.rawMessage === 'string') {
@@ -44,7 +48,12 @@ export function errorFromLogRecord(record: LogRecord): Error | null {
   return error
 }
 
-/** Append error from record properties to the formatted message (optionally colored). */
+/**
+ * Append error from record properties to the formatted message (optionally colored).
+ * @param values - Formatted values (record + message)
+ * @param color - When true, wrap error text in ANSI red
+ * @returns Updated FormattedValues with error appended to message
+ */
 export function appendErrorToMessage(values: FormattedValues, color = false): FormattedValues {
   const error = gerErrorFromLogRecord(values.record)
   if (error) {
@@ -72,7 +81,10 @@ const levelAbbreviations: Record<LogLevel, string> = {
   'fatal': 'FATAL',
 }
 
-/** Formatter that outputs only the log message (no timestamp/level/category). */
+/**
+ * Formatter that outputs only the log message (no timestamp/level/category).
+ * @returns TextFormatter that returns just the message string
+ */
 export function getMessageOnlyFormatter(): TextFormatter {
   return getTextFormatter({
     format: ({ message }): string => {
@@ -83,7 +95,11 @@ export function getMessageOnlyFormatter(): TextFormatter {
 
 const level = (l: LogLevel): string => levelAbbreviations[l]
 
-/** Build a text formatter with optional custom format; appends error from record. */
+/**
+ * Build a text formatter with optional custom format; appends error from record.
+ * @param options - Optional format and logtape options
+ * @returns TextFormatter
+ */
 export function getTextFormatter(options?: TextFormatterOptions): TextFormatter {
   const _format = options?.format ?? (({ timestamp, level, category, message }: FormattedValues): string => {
     return `${timestamp} ${level} ${category} ${message}`
@@ -113,7 +129,11 @@ const ansiColors = {
   // white: "\x1b[37m",
 } as const
 
-/** Build an ANSI-colored text formatter (level/category colors); appends error in red. */
+/**
+ * Build an ANSI-colored text formatter (level/category colors); appends error in red.
+ * @param options - Optional format and logtape ANSI options
+ * @returns TextFormatter with ANSI colors
+ */
 export function getAnsiColorFormatter(options?: AnsiColorFormatterOptions): TextFormatter {
   const _format = options?.format ?? (({ timestamp, level, category, message }: FormattedValues): string => {
     return `${timestamp} ${level} ${category} ${message}`
@@ -135,6 +155,8 @@ export function getAnsiColorFormatter(options?: AnsiColorFormatterOptions): Text
  * The formatter returns an array where:
  * - First element is the formatted message string
  * - Second element is the record properties object
+ * @param options - Optional messageFormatter (TextFormatter)
+ * @returns ConsoleFormatter for console.log/error
  */
 export function getConsoleFormatter(options?: {
   messageFormatter?: TextFormatter
