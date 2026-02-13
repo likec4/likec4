@@ -17,8 +17,7 @@ function isDrawioFile(entry: { isFile: () => boolean; name: string }): boolean {
   return entry.isFile() && entry.name.endsWith('.drawio')
 }
 
-// Skip in CI: packed likec4 in e2e reports "no LikeC4 sources found" for export drawio while build works with same path. Local run OK.
-test.skip(
+test(
   'LikeC4 CLI - export drawio produces .drawio file with mxfile',
   { timeout: 30000 },
   async ({ expect }) => {
