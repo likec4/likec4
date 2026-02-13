@@ -22,7 +22,8 @@ export const useMcpRegistration = createSingletonComposable(() => {
   const { logger } = useExtensionLogger()
   const onDidChange = useOnDidChangeMcpServer()
 
-  const workspaceFolders = computed(() => useWorkspaceFolders().value?.map(f => f.uri.toString()) ?? [])
+  const folders = useWorkspaceFolders()
+  const workspaceFolders = computed(() => folders.value?.map(f => f.uri.toString()) ?? [])
 
   const serverModule = extensionContext.value!.asAbsolutePath(
     join(
