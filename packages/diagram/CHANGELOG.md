@@ -1,5 +1,44 @@
 # @likec4/diagram
 
+## 1.49.0
+
+### Minor Changes
+
+- [#2620](https://github.com/likec4/likec4/pull/2620) [`9e7807b`](https://github.com/likec4/likec4/commit/9e7807b5157a355d23b9f3a2ddff7a10bb1d01a1) Thanks [@davydkov](https://github.com/davydkov)! - Do not build diagram bundle, as components are now exported directly from the package.
+
+### Patch Changes
+
+- [#2616](https://github.com/likec4/likec4/pull/2616) [`4a7c01c`](https://github.com/likec4/likec4/commit/4a7c01c9ee1e2d006f9002b0fed79cb5fdda9a6f) Thanks [@davydkov](https://github.com/davydkov)! - Add new `component` element shape
+
+- [`ceeb0c7`](https://github.com/likec4/likec4/commit/ceeb0c711f99bbd3de63a0ed5c43574c7bde7120) Thanks [@davydkov](https://github.com/davydkov)! - Clean up drifts display
+
+- [`f42c046`](https://github.com/likec4/likec4/commit/f42c046cd4bf1a3f4037cb2020268e729f018300) Thanks [@davydkov](https://github.com/davydkov)! - First iteration of element notes feature to diagrams
+
+  - Add notes property to NodeModel for element annotations
+  - Add enableNotes prop to diagram components for controlling notes display
+  - Implement visual notes indicator with paper-like styling
+  - Support notes in all node types (elements, deployment, sequence actors)
+  - Add hover effects and animations for notes indicators
+
+- [`e10ea04`](https://github.com/likec4/likec4/commit/e10ea04bd2119b83cbd4c625640e63cd6e3f2e96) Thanks [@davydkov](https://github.com/davydkov)! - Fix compound nodes not respecting border style from defaults
+  Closes [#2501](https://github.com/like-c4/like-c4/issues/2501)
+
+- [#2591](https://github.com/likec4/likec4/pull/2591) [`c05757e`](https://github.com/likec4/likec4/commit/c05757e94fbb791750c897b152b9b631f7ce906c) Thanks [@kaigritun](https://github.com/kaigritun)! - Fix iconColor for custom SVG icons from data URLs by inlining SVG content to enable CSS color inheritance via currentColor
+
+- [`e10ea04`](https://github.com/likec4/likec4/commit/e10ea04bd2119b83cbd4c625640e63cd6e3f2e96) Thanks [@davydkov](https://github.com/davydkov)! - Set fixed icon sizes for consistent rendering
+
+- [`fa87d71`](https://github.com/likec4/likec4/commit/fa87d7138b5c17e5fec037eb408fb9abf4cb6799) Thanks [@davydkov](https://github.com/davydkov)! - Improve compare panel:
+
+  - Add reset manual layout button with tooltip guidance
+  - Improve processing state handling with better animation timing
+  - Add tooltips for better user guidance on layout restrictions
+
+- [`f42c046`](https://github.com/likec4/likec4/commit/f42c046cd4bf1a3f4037cb2020268e729f018300) Thanks [@davydkov](https://github.com/davydkov)! - Add review drifts feature to the compare panel, highlight drifts in the diagram and add drifts summary panel.
+
+- Updated dependencies [[`f42c046`](https://github.com/likec4/likec4/commit/f42c046cd4bf1a3f4037cb2020268e729f018300), [`507bab3`](https://github.com/likec4/likec4/commit/507bab30cf9e30450cedfc4b27f67718a387b2e7), [`e10ea04`](https://github.com/likec4/likec4/commit/e10ea04bd2119b83cbd4c625640e63cd6e3f2e96), [`e10ea04`](https://github.com/likec4/likec4/commit/e10ea04bd2119b83cbd4c625640e63cd6e3f2e96), [`731a6cb`](https://github.com/likec4/likec4/commit/731a6cb278ef6bc06280bf1ba3b2d8f79c7d7fe6)]:
+  - @likec4/core@1.49.0
+  - @likec4/styles@1.49.0
+
 ## 1.48.0
 
 ### Minor Changes

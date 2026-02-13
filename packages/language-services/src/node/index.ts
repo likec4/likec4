@@ -67,7 +67,9 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
 
     if (userDocuments.length === 0) {
       logger.error(`no LikeC4 sources found`)
-      throw new Error(`no LikeC4 sources found`)
+      if (options?.throwIfInvalid) {
+        throw new Error(`no LikeC4 sources found`)
+      }
     }
 
     logger.info(`${k.dim('workspace:')} found ${userDocuments.length} source files`)

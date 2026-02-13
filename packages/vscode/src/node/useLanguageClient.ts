@@ -23,7 +23,7 @@ const useLanguageClient = createSingletonComposable(() => {
     path.join(
       'dist',
       'node',
-      'language-server.js',
+      'language-server.mjs',
     ),
   )
 

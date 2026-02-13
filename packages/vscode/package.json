@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.48.0",
+  "version": "1.49.0",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -30,7 +30,7 @@
     "open-web": "turbo run build && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
     "typecheck": "tsc -b --verbose",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
-    "build": "tsx --conditions=sources scripts/build.mts",
+    "build": "tsdown",
     "lint": "run -T eslint src/ --fix",
     "clean": "pnpm rimraf lib contrib dist src/generated",
     "package-vsix": "tsx scripts/package-vsix.mts",
@@ -50,6 +50,7 @@
     "Programming Languages",
     "Visualization"
   ],
+  "type": "module",
   "icon": "data/logo256.png",
   "galleryBanner": {
     "color": "#111111",
@@ -270,14 +271,20 @@
         "title": "%ext.cmd.open-projects-overview%",
         "category": "%ext.title%"
       }
+    ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "likec4",
+        "label": "LikeC4"
+      }
     ]
   },
   "activationEvents": [
     "workspaceContains:**/*.{c4,likec4,like-c4}",
     "onWebviewPanel:likec4-preview"
   ],
-  "main": "dist/node/extension.js",
-  "browser": "dist/browser/extension.js",
+  "main": "dist/node/extension.cjs",
+  "browser": "dist/browser/extension.cjs",
   "imports": {
     "#useDocumentSelector": {
       "browser": "./src/browser/useDocumentSelector.ts",
@@ -294,40 +301,46 @@
   },
   "dependencies": {
     "bundle-require": "catalog:externals",
-    "std-env": "catalog:externals",
     "esbuild": "catalog:esbuild",
     "fdir": "catalog:externals",
-    "chokidar": "catalog:externals"
+    "std-env": "catalog:externals"
   },
   "devDependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:externals",
-    "@likec4/core": "workspace:*",
     "@likec4/config": "workspace:*",
+    "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",
+    "@likec4/language-services": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
     "@reactive-vscode/vueuse": "^0.4.1",
     "@types/node": "catalog:",
-    "@types/which": "^3.0.4",
     "@types/vscode": "catalog:vscode",
+    "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^1.5.0",
     "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
     "esm-env": "catalog:utils",
     "execa": "^9.5.3",
+    "pathe": "catalog:utils",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
-    "p-timeout": "^6.1.4",
+    "nanoid": "catalog:utils",
+    "obuild": "catalog:obuild",
     "p-queue": "catalog:utils",
+    "p-timeout": "catalog:utils",
+    "playwright": "catalog:",
     "pretty-ms": "^9.3.0",
     "reactive-vscode": "^0.4.1",
     "remeda": "catalog:utils",
+    "tsdown": "catalog:",
     "tslib": "^2.8.1",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "type-fest": "catalog:externals",
     "typescript": "catalog:",
+    "ufo": "catalog:utils",
     "vscode-ext-gen": "^1.0.2",
     "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageclient": "catalog:vscode",
@@ -335,8 +348,6 @@
     "vscode-languageserver-types": "catalog:vscode",
     "vscode-messenger": "^0.5.1",
     "vscode-messenger-common": "^0.5.1",
-    "ufo": "catalog:utils",
-    "playwright": "catalog:",
     "vscode-uri": "catalog:vscode",
     "zod": "catalog:externals",
     "zx": "lite"

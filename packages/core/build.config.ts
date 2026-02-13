@@ -37,7 +37,7 @@ export default defineBuildConfig({
         },
       },
       dts: {
-        tsgo: true,
+        // tsgo: true,
       },
     },
   ],

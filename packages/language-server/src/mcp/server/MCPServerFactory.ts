@@ -58,6 +58,7 @@ Full documentation: https://likec4.dev/llms-full.txt
       ...options,
       capabilities: {
         tools: {},
+        logging: {},
         ...options?.capabilities,
       },
     })

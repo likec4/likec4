@@ -1,5 +1,13 @@
 # likec4-vscode
 
+## 1.49.0
+
+### Patch Changes
+
+- [`d039d0b`](https://github.com/likec4/likec4/commit/d039d0b2dd0ce98e4ec96498877bb60e2c921829) Thanks [@davydkov](https://github.com/davydkov)! - Fixed "reload" screen in VSCode preview
+
+- [#2624](https://github.com/likec4/likec4/pull/2624) [`507bab3`](https://github.com/likec4/likec4/commit/507bab30cf9e30450cedfc4b27f67718a387b2e7) Thanks [@davydkov](https://github.com/davydkov)! - LikeC4 Extension registers MCP server definition, enabling native MCP support in VSCode
+
 ## 1.48.0
 
 ### Minor Changes
