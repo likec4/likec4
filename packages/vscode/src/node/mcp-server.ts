@@ -37,7 +37,11 @@ function readEnvVar(name: string): [string, ...string[]] | undefined {
       return map(asArray, v => URI.parse(v).fsPath)
     }
   } catch {
-    // ignore
+    // Fallback: treat raw value as a single workspace path (e.g. plain path not JSON).
+    const trimmed = value.trim()
+    if (trimmed.length > 0) {
+      return [URI.file(trimmed).fsPath]
+    }
   }
   return undefined
 }

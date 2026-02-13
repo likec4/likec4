@@ -42,14 +42,23 @@ export class LastSeenArtifacts {
     return model
   }
 
+  /**
+   * Returns the last seen merged specification for the given project, if available.
+   */
   public specification(projectId: c4.ProjectId): MergedSpecification | undefined {
     return this.#specs.get(projectId)
   }
 
+  /**
+   * Returns the last seen styles for the given project, if available.
+   */
   public styles(projectId: c4.ProjectId): LikeC4Styles | undefined {
     return this.#styles.get(projectId)
   }
 
+  /**
+   * Returns the last seen computed model for the given project, if available.
+   */
   public model(projectId: c4.ProjectId): LikeC4Model.Computed | undefined {
     return this.#models.get(projectId)
   }

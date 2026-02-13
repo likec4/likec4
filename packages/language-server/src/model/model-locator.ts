@@ -59,8 +59,8 @@ export class LikeC4ModelLocator {
     document: LangiumDocument
   } {
     try {
-      let astNodeOrFqn
-      let projectId
+      let astNodeOrFqn: ast.Element | c4.Fqn
+      let projectId: c4.ProjectId
       if (args.length === 2) {
         astNodeOrFqn = args[0]
         projectId = args[1]
