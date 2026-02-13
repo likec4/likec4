@@ -6,6 +6,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import {
   type PropsWithChildren,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,

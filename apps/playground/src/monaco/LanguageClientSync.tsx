@@ -5,6 +5,7 @@ import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
 import { type DiagramView, type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
+import type { LayoutView as LayoutViewProtocol } from '@likec4/language-server/protocol'
 import {
   BuildDocuments,
   ChangeView,
@@ -110,7 +111,9 @@ export function LanguageClientSync({
         await Promise.all(
           viewIds.map(async (viewId) => {
             try {
-              const res = await c.sendRequest(LayoutView.req, { viewId })
+              const res = (await c.sendRequest(LayoutView.req.method, {
+                viewId,
+              })) as LayoutViewProtocol.Res
               if (res.result?.diagram) out[viewId] = res.result.diagram
             } catch {
               // skip failed view
@@ -124,7 +127,9 @@ export function LanguageClientSync({
 
   const requestLayoutView = useCallbackRef(async (viewId: ViewId) => {
     try {
-      const res = await languageClient().sendRequest(LayoutView.req, { viewId })
+      const res = (await languageClient().sendRequest(LayoutView.req.method, {
+        viewId,
+      })) as LayoutViewProtocol.Res
       const result = res.result
       if (result) {
         playground.send({ type: 'likec4.lsp.onLayoutDone', ...result })

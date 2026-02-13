@@ -96,10 +96,23 @@ function isEdgeWithEndpoints(c: DrawioCell): c is DrawioEdgeWithEndpoints {
   return c.edge === true && typeof c.source === 'string' && typeof c.target === 'string'
 }
 
+/** Get attribute value from open-tag string (e.g. "id=\"x\" vertex=\"1\""). No regex to avoid ReDoS on uncontrolled attrs. */
 function getAttr(attrs: string, name: string): string | undefined {
-  const re = new RegExp(`${name}="([^"]*)"`, 'i')
-  const m = re.exec(attrs)
-  return m ? m[1] : undefined
+  const needle = `${name}=`
+  const lower = attrs.toLowerCase()
+  const needleLower = needle.toLowerCase()
+  let i = 0
+  while (i < attrs.length) {
+    const start = lower.indexOf(needleLower, i)
+    if (start === -1) return undefined
+    const quoteStart = start + needle.length
+    if (quoteStart < attrs.length && attrs[quoteStart] === '"') {
+      const valueEnd = attrs.indexOf('"', quoteStart + 1)
+      if (valueEnd !== -1) return attrs.slice(quoteStart + 1, valueEnd)
+    }
+    i = start + 1
+  }
+  return undefined
 }
 
 /** Find end of XML open tag (first unquoted '>'). Avoids regex for S5852. */
@@ -163,36 +176,62 @@ const MAPPED_DATA_KEYS = new Set([
   'likec4technology',
 ])
 
-/** Extract all <data key="...">...</data> from mxUserObject inner XML. */
+/** Extract all <data key="...">...</data> from mxUserObject inner XML. Index-based to avoid ReDoS. */
 function parseAllUserData(fullTag: string): Record<string, string> {
   const out: Record<string, string> = {}
-  // Tempered greedy for inner content to avoid super-linear backtracking (S5852)
-  const dataRe = /<data\s+key="([^"]*)"[^>]*>((?:(?!<\/data>)[\s\S])*)<\/data>/gi
-  let match
-  while ((match = dataRe.exec(fullTag)) !== null) {
-    const key = match[1]?.trim()
-    const raw = match[2]?.trim()
-    if (key && raw !== undefined) out[key] = decodeXmlEntities(raw)
+  let from = 0
+  for (;;) {
+    const tagStart = indexOfTagStart(fullTag, 'data', from)
+    if (tagStart === -1) break
+    const endOpen = findOpenTagEnd(fullTag, tagStart)
+    if (endOpen === -1) break
+    const openTag = fullTag.slice(tagStart, endOpen + 1)
+    const key = getAttr(openTag, 'key')?.trim()
+    const closeStart = indexOfClosingTag(fullTag, 'data', endOpen + 1)
+    if (closeStart === -1) break
+    const raw = fullTag.slice(endOpen + 1, closeStart).trim()
+    if (key) out[key] = decodeXmlEntities(raw)
+    from = closeStart + '</data>'.length
   }
   return out
 }
 
-const GEOM_INNER_RE = /<mxGeometry[^>]*>((?:(?!<\/mxGeometry>)[\s\S])*)<\/mxGeometry>/i
+/** Extract open tag <mxGeometry ...> from cell XML. No regex to avoid ReDoS. */
+function extractMxGeometryOpenTag(fullTag: string): string {
+  const tagStart = indexOfTagStart(fullTag, 'mxGeometry', 0)
+  if (tagStart === -1) return ''
+  const endOpen = findOpenTagEnd(fullTag, tagStart)
+  if (endOpen === -1) return ''
+  return fullTag.slice(tagStart, endOpen + 1)
+}
+
+/** Extract inner content of first <mxGeometry>...</mxGeometry> in cell XML. No regex to avoid ReDoS. */
+function extractMxGeometryInner(fullTag: string): string | undefined {
+  const tagStart = indexOfTagStart(fullTag, 'mxGeometry', 0)
+  if (tagStart === -1) return undefined
+  const endOpen = findOpenTagEnd(fullTag, tagStart)
+  if (endOpen === -1) return undefined
+  const closeStart = indexOfClosingTag(fullTag, 'mxGeometry', endOpen + 1)
+  if (closeStart === -1) return undefined
+  return fullTag.slice(endOpen + 1, closeStart)
+}
 
 /** Extract edge waypoints from mxGeometry Array/mxPoint inside cell XML. Returns JSON array of [x,y][] or undefined. */
 function parseEdgePoints(fullTag: string): string | undefined {
-  // Use tempered greedy (?:.(?!<\/mxGeometry>))* to avoid super-linear backtracking (S5852)
-  const geomMatch = GEOM_INNER_RE.exec(fullTag)
-  if (!geomMatch?.[1]) return undefined
-  const inner = geomMatch[1]
+  const inner = extractMxGeometryInner(fullTag)
+  if (inner === undefined) return undefined
   const points: [number, number][] = []
-  const mxPointTagRe = /<mxPoint\s[^>]*\/?>/gi
-  let tagMatch
-  while ((tagMatch = mxPointTagRe.exec(inner)) !== null) {
-    const tag = tagMatch[0]
+  let from = 0
+  for (;;) {
+    const tagStart = indexOfTagStart(inner, 'mxPoint', from)
+    if (tagStart === -1) break
+    const endOpen = findOpenTagEnd(inner, tagStart)
+    if (endOpen === -1) break
+    const tag = inner.slice(tagStart, endOpen + 1)
     const px = parseNum(getAttr(tag, 'x'))
     const py = parseNum(getAttr(tag, 'y'))
     if (px !== undefined && py !== undefined) points.push([px, py])
+    from = endOpen + 1
   }
   if (points.length === 0) return undefined
   return JSON.stringify(points)
@@ -212,20 +251,14 @@ function parseUserData(fullTag: string): { description?: string; technology?: st
   return out
 }
 
-/** Regex to extract viewId from Draw.io internal page link (see DRAWIO_PAGE_LINK_PREFIX). */
-const NAV_LINK_RE = new RegExp(`^${DRAWIO_PAGE_LINK_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(.+)$`, 'i')
-
-/** Extract viewId from Draw.io internal page link for navigateTo round-trip. */
+/** Extract viewId from Draw.io internal page link for navigateTo round-trip. No regex to avoid ReDoS. */
 function navigateToFromLink(link: string | undefined): string | undefined {
   if (!link || link === '') return undefined
-  const m = NAV_LINK_RE.exec(link)
-  return m ? m[1]!.trim() : undefined
+  const prefix = DRAWIO_PAGE_LINK_PREFIX.toLowerCase()
+  const lower = link.toLowerCase()
+  if (!lower.startsWith(prefix)) return undefined
+  return link.slice(DRAWIO_PAGE_LINK_PREFIX.length).trim()
 }
-
-/**
- * Build one DrawioCell from mxCell attributes and inner content. Used for both standalone mxCell and UserObject-wrapped mxCell.
- */
-const GEOM_TAG_RE = /<mxGeometry[^>]*>/i
 
 /** Optional fields for DrawioCell (SOLID: single place for conditional spreads). */
 function buildCellOptionalFields(params: {
@@ -340,8 +373,7 @@ function buildCellFromMxCell(
   const vertex = getAttr(attrs, 'vertex') === '1'
   const edge = getAttr(attrs, 'edge') === '1'
   const style = getAttr(attrs, 'style')
-  const geomMatch = GEOM_TAG_RE.exec(fullTag)
-  const geomStr = geomMatch ? geomMatch[0] : ''
+  const geomStr = extractMxGeometryOpenTag(fullTag)
   const styleMap = parseStyle(style ?? undefined)
   const userData = parseUserData(inner)
   const navigateTo = overrides?.navigateTo ?? getDecodedStyle(styleMap, 'likec4navigateto')

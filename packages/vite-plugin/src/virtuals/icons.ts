@@ -65,18 +65,38 @@ export const projectIconsModule = {
   },
 } satisfies ProjectVirtualModule
 
+/** Safe chars for project id when embedded in generated code (CodeQL: proper sanitization). */
+const SAFE_PROJECT_ID_REGEX = /^[a-zA-Z0-9_.-]+$/
+
+/** Sanitize for embedding in generated JS: allowlist + JSON string literal (CodeQL: code sanitization). */
+function embedAsJsString(value: string): string {
+  if (!SAFE_PROJECT_ID_REGEX.test(value)) {
+    throw new Error(`Unsafe value for code generation: ${value}`)
+  }
+  return JSON.stringify(value)
+}
+
 export const iconsModule = {
   id: 'likec4:icons',
   virtualId: 'likec4:plugin/icons.jsx',
   async load({ projects, logger }) {
     logger.info(k.dim(`generating likec4:icons`))
 
-    const registry = projects
-      .map(p => ({
-        id: JSON.stringify(p.id),
-        pkg: JSON.stringify(joinURL('likec4:icons', p.id)),
-      }))
-      .map(({ id, pkg }) => `${id}: lazy(() => import(${pkg}).then(m => ({default: m.IconRenderer})))`)
+    const safeProjects = projects.filter(p => {
+      if (!SAFE_PROJECT_ID_REGEX.test(p.id)) {
+        logger.warn(k.yellow(`Skipping project with unsafe id for icons registry: ${p.id}`))
+        return false
+      }
+      return true
+    })
+
+    const registry = safeProjects
+      .map(p => {
+        const idLiteral = embedAsJsString(p.id)
+        const pkgLiteral = embedAsJsString(joinURL('likec4:icons', p.id))
+        return { idLiteral, pkgLiteral }
+      })
+      .map(({ idLiteral, pkgLiteral }) => `${idLiteral}: lazy(() => import(${pkgLiteral}).then(m => ({default: m.IconRenderer})))`)
       .join(',\n')
 
     return `
