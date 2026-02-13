@@ -11,5 +11,19 @@
       "ESNext",
       "DOM"
     ]
-  }
+  },
+  "references": [
+    {
+      "path": "../core/"
+    },
+    {
+      "path": "../diagram/tsconfig.src.json"
+    },
+    {
+      "path": "../../styled-system/preset/"
+    },
+    {
+      "path": "../../styled-system/styles/"
+    }
+  ]
 }

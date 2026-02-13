@@ -14,5 +14,5 @@ const connection = createConnection(ProposedFeatures.all)
 
 startLanguageServer({
   connection,
-  enableWatcher: false,
+  enableWatcher: false, // Extension is responsible for watching files and sending notifications
 })

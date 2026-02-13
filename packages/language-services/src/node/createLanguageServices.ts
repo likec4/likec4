@@ -64,6 +64,13 @@ export function createLanguageServices(
         // Name it as console to override internal logger
         console: getConsoleStderrSink(),
       },
+      loggers: [
+        {
+          category: 'likec4',
+          sinks: ['console'],
+          lowestLevel: 'warning',
+        },
+      ],
     })
   }
 

@@ -16,6 +16,8 @@ import type { CancellationToken } from 'vscode-jsonrpc'
 import type { Diagnostic, Range } from 'vscode-languageserver-types'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { logger as mainLogger } from './logger'
+import { NoopLikeC4MCPServer } from './mcp/noop'
+import type { LikeC4MCPServer } from './mcp/types'
 import type { LikeC4ModelBuilder } from './model'
 import type { LikeC4ModelChanges } from './model-change/ModelChanges'
 import type { LikeC4Services } from './module'
@@ -31,6 +33,8 @@ export interface LikeC4LanguageServices {
   readonly workspaceUri: URI
   readonly projectsManager: ProjectsManager
   readonly editor: LikeC4ModelChanges
+
+  readonly mcpServer: LikeC4MCPServer | null
 
   /**
    * Returns all projects with relevant documents
@@ -113,6 +117,14 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     this.builder = services.likec4.ModelBuilder
     this.projectsManager = services.shared.workspace.ProjectsManager
     this.editor = services.likec4.ModelChanges
+  }
+
+  get mcpServer(): LikeC4MCPServer | null {
+    const server = this.services.mcp.Server
+    if (server instanceof NoopLikeC4MCPServer) {
+      return null
+    }
+    return server
   }
 
   get views(): LikeC4Views {
