@@ -242,7 +242,7 @@ export class LikeC4Styles {
   /**
    * Get color values for a tag (including default tag colors)
    */
-  tagColor(tag: typeof DefaultTagColors[number] | ColorLiteral): ThemeColorValues['elements'] {
+  tagColor(tag: typeof DefaultTagColors[number] | ThemeColor | ColorLiteral): ThemeColorValues['elements'] {
     if (this.isThemeColor(tag)) {
       return this.theme.colors[tag].elements
     }

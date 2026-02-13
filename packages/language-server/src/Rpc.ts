@@ -32,7 +32,7 @@ import {
   ReloadProjects,
   ValidateLayout,
 } from './protocol'
-import { ADisposable, projectIdFrom } from './utils'
+import { ADisposable } from './utils'
 
 const logger = rootLogger.getChild('rpc')
 
@@ -359,10 +359,10 @@ export class Rpc extends ADisposable {
       connection.onRequest(GetDocumentTags.req, async ({ documentUri }, cancelToken) => {
         const uri = URI.parse(documentUri)
         logger.debug`received request ${'GetDocumentTags'} for document ${uri}`
-        const { tags } = await likec4Services.ModelLocator.locateDocumentTags(uri, cancelToken)
+        const tags = await likec4Services.ModelLocator.locateDocumentTags(uri, cancelToken)
         return {
           projectId: workspace.ProjectsManager.ownerProjectId(uri),
-          tags,
+          tags: tags ?? [],
         }
       }),
       // ----------

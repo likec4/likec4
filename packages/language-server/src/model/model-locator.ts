@@ -1,5 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { type ProjectId, type Tag, splitGlobalFqn } from '@likec4/core'
+import { LikeC4Styles } from '@likec4/core/styles'
 import { ifilter, invariant, toArray } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import type { Cancellation, CstNode, LangiumDocument, LangiumDocuments } from 'langium'
@@ -222,19 +223,18 @@ export class LikeC4ModelLocator {
   public async locateDocumentTags(
     documentUri: URI,
     cancelToken?: Cancellation.CancellationToken,
-  ): Promise<{
-    tags:
-      | null
-      | Array<{
-        name: Tag
-        color: c4.ThemeColor
-        range: Range
-        isSpecification: boolean
-      }>
-  }> {
+  ): Promise<
+    | null
+    | Array<{
+      name: Tag
+      color: c4.ColorLiteral
+      range: Range
+      isSpecification: boolean
+    }>
+  > {
     const doc = this.langiumDocuments.getDocument(documentUri)
     if (!doc || !doc.likec4ProjectId) {
-      return { tags: null }
+      return null
     }
     if (doc.state < DocumentState.Linked) {
       logger.debug(`Waiting for document ${doc.uri.path} to be Linked`)
@@ -244,12 +244,13 @@ export class LikeC4ModelLocator {
     logger.trace`locate document tags for ${doc.uri.fsPath} in project ${projectId}`
     try {
       const tagSpecs = this.services.likec4.LastSeen.specification(projectId)?.tags
+      const styles = this.services.likec4.LastSeen.styles(projectId) ?? LikeC4Styles.DEFAULT
 
       if (!tagSpecs) {
         logger.trace(
           `No specification or styles found for project ${projectId}, cannot locate tags for document ${doc.uri.fsPath}`,
         )
-        return { tags: null }
+        return null
       }
 
       const tags = pipe(
@@ -272,7 +273,7 @@ export class LikeC4ModelLocator {
             invariant($cstNode, `Tag ${name} does not have a $cstNode`)
             return {
               name,
-              color: specification.color,
+              color: styles.tagColor(specification.color).fill,
               range: $cstNode.range,
               isSpecification: ast.isTag(tagRef),
             }
@@ -283,12 +284,10 @@ export class LikeC4ModelLocator {
         }),
       )
       logger.debug(`Found ${tags.length} tags in document ${doc.uri.path}`)
-      return {
-        tags,
-      }
+      return tags
     } catch (e) {
       logger.warn(loggable(e))
-      return { tags: null }
+      return null
     }
   }
 

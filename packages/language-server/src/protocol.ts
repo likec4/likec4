@@ -1,5 +1,6 @@
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type {
+  ColorLiteral,
   ComputedLikeC4ModelData,
   DeploymentFqn,
   DiagramView,
@@ -9,7 +10,6 @@ import type {
   NonEmptyArray,
   ProjectId,
   RelationId,
-  ThemeColor,
   ViewChange,
   ViewId,
 } from '@likec4/core'
@@ -332,14 +332,12 @@ export namespace GetDocumentTags {
     /**
      * Used tags in the document
      */
-    tags:
-      | null
-      | Array<{
-        name: string
-        range: Range
-        color: ThemeColor
-        isSpecification?: boolean
-      }>
+    tags: Array<{
+      name: string
+      range: Range
+      color: ColorLiteral
+      isSpecification?: boolean
+    }>
   }
   export const req = new RequestType<Params, Res, void>('likec4/document-tags')
   export type Req = typeof req
