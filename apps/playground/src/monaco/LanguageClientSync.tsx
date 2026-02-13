@@ -119,7 +119,7 @@ export function LanguageClientSync({
         await Promise.all(
           viewIds.map(async (viewId) => {
             try {
-              const res = await requestLayoutView(c, viewId)
+              const res = await requestLayoutView(c, viewId as ViewId)
               if (res.result?.diagram) out[viewId] = res.result.diagram
             } catch {
               // skip failed view
