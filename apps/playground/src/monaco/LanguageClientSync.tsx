@@ -30,12 +30,14 @@ import { cleanDisposables, createMemoryFileSystem, ensureFileInWorkspace, setAct
 
 const logger = rootLogger.getChild('monaco-language-client-sync')
 
-/** Wrapper exposes sendRequest(method: string, params) only; RequestType overload fails in CI. */
+/** Type-safe layout-view request: pass LayoutView.req so params and response are inferred. */
 function requestLayoutView(
-  client: { sendRequest: (method: string, params: { viewId: ViewId }) => Promise<unknown> },
+  client: {
+    sendRequest(req: typeof LayoutView.req, params: LayoutViewProtocol.Params): Promise<LayoutViewProtocol.Res>
+  },
   viewId: ViewId,
 ): Promise<LayoutViewProtocol.Res> {
-  return client.sendRequest(LayoutView.req.method, { viewId }) as Promise<LayoutViewProtocol.Res>
+  return client.sendRequest(LayoutView.req, { viewId })
 }
 
 export function LanguageClientSync({

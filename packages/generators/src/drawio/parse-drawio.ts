@@ -1065,7 +1065,7 @@ function emitEdgesToLines(
   }
 }
 
-/** Collect layout, stroke, customData and waypoint lines for one diagram state (shared by single and multi emit). */
+/** Collect layout, stroke, customData and waypoint lines for one diagram state (shared by single and multi emit). Four passes over idToFqn; could be merged into one for very large diagrams. */
 function collectRoundtripForState(
   viewId: string,
   idToFqn: Map<string, string>,

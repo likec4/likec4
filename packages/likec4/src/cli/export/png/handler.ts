@@ -140,22 +140,22 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     }
   }
 
-  if (!resolvedServerUrl) {
-    logger.info(k.cyan(`start preview server`))
-    server = await viteDev({
-      languageServices: likec4,
-      buildWebcomponent: false,
-      openBrowser: false,
-      hmr: false,
-    })
-    resolvedServerUrl = resolveServerUrl(server)
-    if (!resolvedServerUrl) {
-      logger.error('Vite server is not ready, no resolvedUrls')
-      throw new Error('Vite server is not ready, no resolvedUrls')
-    }
-  }
-
   try {
+    if (!resolvedServerUrl) {
+      logger.info(k.cyan(`start preview server`))
+      server = await viteDev({
+        languageServices: likec4,
+        buildWebcomponent: false,
+        openBrowser: false,
+        hmr: false,
+      })
+      resolvedServerUrl = resolveServerUrl(server)
+      if (!resolvedServerUrl) {
+        logger.error('Vite server is not ready, no resolvedUrls')
+        throw new Error('Vite server is not ready, no resolvedUrls')
+      }
+    }
+
     for (const prj of projects) {
       if (project && prj.id !== project) {
         continue

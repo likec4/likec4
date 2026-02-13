@@ -96,6 +96,7 @@ export function DrawioContextMenuProvider({
     }),
   })
 
+  // useCallbackRef keeps the listener stable so the effect does not churn add/remove on every actions.handleExport identity change
   const onExport = useCallbackRef(actions.handleExport)
   useEffect(() => {
     window.addEventListener(DRAWIO_EXPORT_EVENT, onExport)
