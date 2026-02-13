@@ -108,6 +108,9 @@ dist
 /.project
 /.settings/*
 
+# Fork-only CI (keep locally; do not push to origin)
+.github/workflows/ci-pr.yaml
+
 # Local / temporary PR and process docs (do not commit)
 .pr-description*.md
 PR-*-review.md
