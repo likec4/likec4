@@ -109,7 +109,7 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     }
   }
 
-  protected getElemenModelHover(model: ElementModel, projectId: ProjectId): string | undefined {
+  protected getElementModelHover(model: ElementModel, projectId: ProjectId): string | undefined {
     const lines = []
 
     const incoming = [...model.incoming('direct')].length
