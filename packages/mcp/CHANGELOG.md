@@ -1,5 +1,11 @@
 # @likec4/mcp
 
+## 1.49.0
+
+### Patch Changes
+
+- [`1c6e427`](https://github.com/likec4/likec4/commit/1c6e4273d96774b5c5c7ee52047539e15bb265e2) Thanks [@davydkov](https://github.com/davydkov)! - Fix MCP server initialization and be stateless (according to suggestion in https://github.com/likec4/likec4/security/dependabot/179)
+
 ## 1.48.0
 
 ## 1.47.0
