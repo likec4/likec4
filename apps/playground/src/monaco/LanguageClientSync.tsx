@@ -1,11 +1,16 @@
-import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
-import { DRAWIO_EXPORT_EVENT } from '$components/drawio/drawio-events'
 import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
 import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
-import * as monaco from '@codingame/monaco-vscode-editor-api'
-import { type DiagramView, type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
-import { LikeC4Model } from '@likec4/core/model'
+import type { DiagramView, ViewChange, ViewId } from '@likec4/core'
 import type { LayoutView as LayoutViewProtocol } from '@likec4/language-server/protocol'
+import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
+import type { Location } from 'vscode-languageserver-types'
+import type { CustomWrapperConfig } from './config'
+
+import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
+import { DRAWIO_EXPORT_EVENT } from '$components/drawio/drawio-events'
+import * as monaco from '@codingame/monaco-vscode-editor-api'
+import { invariant, nonNullable } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import {
   BuildDocuments,
   ChangeView,
@@ -18,13 +23,10 @@ import {
 import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
 import { useRouter } from '@tanstack/react-router'
-import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
 import { useEffect, useRef } from 'react'
 import { funnel, isString } from 'remeda'
-import { type CustomWrapperConfig, loadLikeC4Worker } from './config'
+import { loadLikeC4Worker } from './config'
 import { cleanDisposables, createMemoryFileSystem, ensureFileInWorkspace, setActiveEditor } from './utils'
-
-import type { Location } from 'vscode-languageserver-types'
 
 const logger = rootLogger.getChild('monaco-language-client-sync')
 
