@@ -28,6 +28,14 @@ import type { Location } from 'vscode-languageserver-types'
 
 const logger = rootLogger.getChild('monaco-language-client-sync')
 
+/** Wrapper exposes sendRequest(method: string, params) only; RequestType overload fails in CI. */
+function requestLayoutView(
+  client: { sendRequest: (method: string, params: { viewId: ViewId }) => Promise<unknown> },
+  viewId: ViewId,
+): Promise<LayoutViewProtocol.Res> {
+  return client.sendRequest(LayoutView.req.method, { viewId }) as Promise<LayoutViewProtocol.Res>
+}
+
 export function LanguageClientSync({
   config,
   wrapper,
@@ -111,10 +119,7 @@ export function LanguageClientSync({
         await Promise.all(
           viewIds.map(async (viewId) => {
             try {
-              // Wrapper's sendRequest only accepts (method: string, params) in CI; use .method + cast for type safety
-              const res = (await c.sendRequest(LayoutView.req.method, {
-                viewId,
-              })) as LayoutViewProtocol.Res
+              const res = await requestLayoutView(c, viewId)
               if (res.result?.diagram) out[viewId] = res.result.diagram
             } catch {
               // skip failed view
@@ -126,12 +131,9 @@ export function LanguageClientSync({
     })
   })
 
-  const requestLayoutView = useCallbackRef(async (viewId: ViewId) => {
+  const requestLayoutViewCallback = useCallbackRef(async (viewId: ViewId) => {
     try {
-      // Wrapper's sendRequest only accepts (method: string, params) in CI; use .method + cast for type safety
-      const res = (await languageClient().sendRequest(LayoutView.req.method, {
-        viewId,
-      })) as LayoutViewProtocol.Res
+      const res = await requestLayoutView(languageClient(), viewId)
       const result = res.result
       if (result) {
         playground.send({ type: 'likec4.lsp.onLayoutDone', ...result })
@@ -343,7 +345,7 @@ export function LanguageClientSync({
     () => {
       if (playgroundState !== 'ready' || activeViewId == null) return
       if (activeViewState === 'stale' || activeViewState === 'pending') {
-        requestLayoutView(activeViewId).catch(error => {
+        requestLayoutViewCallback(activeViewId).catch(error => {
           logger.error(loggable(error))
         })
       }
