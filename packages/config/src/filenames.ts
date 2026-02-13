@@ -1,7 +1,20 @@
+/** Trim trailing slashes and backslashes (no regex, avoids S5852 ReDoS). */
+function trimTrailingSlashes(s: string): string {
+  let end = s.length
+  while (end > 0 && (s[end - 1] === '/' || s[end - 1] === '\\')) end--
+  return s.slice(0, end)
+}
+
+/** Split by / or \ without regex (avoids S5852 ReDoS). */
+function splitPath(s: string): string[] {
+  return s.split('/').flatMap(part => part.split('\\'))
+}
+
 /** basename compatible with Node and browser (no node:path for Vite/playground bundle). */
 function basename(path: string): string {
-  const trimmed = path.replace(/[/\\]+$/, '')
-  const last = trimmed.split(/[/\\]/).pop()
+  const trimmed = trimTrailingSlashes(path)
+  const segments = splitPath(trimmed)
+  const last = segments[segments.length - 1]
   return last || trimmed
 }
 

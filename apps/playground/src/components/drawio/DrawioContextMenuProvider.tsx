@@ -2,6 +2,7 @@ import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
+import { useCallbackRef } from '@mantine/hooks'
 import {
   type PropsWithChildren,
   createContext,
@@ -95,13 +96,11 @@ export function DrawioContextMenuProvider({
     }),
   })
 
+  const onExport = useCallbackRef(actions.handleExport)
   useEffect(() => {
-    const onExport = () => actions.handleExport()
     window.addEventListener(DRAWIO_EXPORT_EVENT, onExport)
-    return () => {
-      window.removeEventListener(DRAWIO_EXPORT_EVENT, onExport)
-    }
-  }, [actions.handleExport])
+    return () => window.removeEventListener(DRAWIO_EXPORT_EVENT, onExport)
+  }, [onExport])
 
   const api = useMemo<DrawioContextMenuApi>(
     () => ({ openMenu: actions.openMenu }),

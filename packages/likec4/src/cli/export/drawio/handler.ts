@@ -74,12 +74,15 @@ function logAndRethrow(logger: ViteLogger, message: string, err: unknown): never
  * that implements `debug`; roundtrip read failures are then visible. ViteLogger type allows optional
  * `debug` for Vite compatibility; we only call debug when present.
  */
+const ROUNDTRIP_MAX_DEPTH = 50
+
 async function readWorkspaceSourceContent(
   workspacePath: string,
   logger?: ViteLogger,
 ): Promise<string> {
   const chunks: string[] = []
-  async function walk(dir: string): Promise<void> {
+  async function walk(dir: string, depth: number): Promise<void> {
+    if (depth >= ROUNDTRIP_MAX_DEPTH) return
     const entries = await readdir(dir, { withFileTypes: true }).catch(err => {
       if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readdir failed`, { dir, err })
       return []
@@ -87,7 +90,7 @@ async function readWorkspaceSourceContent(
     for (const e of entries) {
       const full = join(dir, e.name)
       if (e.isDirectory()) {
-        if (!ROUNDTRIP_IGNORED_DIRS.has(e.name)) await walk(full)
+        if (!ROUNDTRIP_IGNORED_DIRS.has(e.name)) await walk(full, depth + 1)
       } else if (e.isFile() && isSourceFile(e.name)) {
         const content = await readFile(full, 'utf-8').catch(err => {
           if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readFile failed`, { file: full, err })
@@ -97,7 +100,7 @@ async function readWorkspaceSourceContent(
       }
     }
   }
-  await walk(workspacePath)
+  await walk(workspacePath, 0)
   return joinNonEmptyFiles(chunks)
 }
 

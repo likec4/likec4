@@ -317,10 +317,8 @@ function edgeAnchors(
   return { exitX, exitY, entryX, entryY }
 }
 
-/** Normalize one waypoint to [x, y]; returns one element or empty. */
-function normalizeEdgePoint(
-  pt: readonly (readonly [number, number])[] | number[] | { x: number; y: number },
-): [number, number][] {
+/** Normalize one waypoint to [x, y]; returns one element or empty. Called per element via flatMap. */
+function normalizeEdgePoint(pt: number[] | { x: number; y: number }): [number, number][] {
   if (Array.isArray(pt) && pt.length >= 2 && typeof pt[0] === 'number' && typeof pt[1] === 'number') {
     return [[pt[0], pt[1]]]
   }
@@ -505,7 +503,7 @@ function buildEdgeGeometryXml(
       .map(([px, py]) => `<mxPoint x="${Math.round(px)}" y="${Math.round(py)}"/>`)
       .join('') +
     '</Array>'
-  return `<mxGeometry relative="0" as="geometry">${pointsXml}</mxGeometry>`
+  return `<mxGeometry relative="1" as="geometry">${pointsXml}</mxGeometry>`
 }
 
 /** Full edge style string for mxCell (arrows, anchors, stroke, dash, label, likec4 roundtrip). */
@@ -783,6 +781,7 @@ function buildNodeCellXml(data: NodeCellExportData): NodeCellResult {
 
   if (!data.isContainer) return { vertexXml: cellXml, isContainer: false }
 
+  // computeNodeCellExportData sets title/titleCellId/containerTitle* only when isContainer (guarded above)
   const titleCellXml = buildContainerTitleCellXml(
     data.title!,
     data.titleCellId!,
@@ -900,7 +899,10 @@ export type GenerateDrawioOptions = {
   strokeWidthByNodeId?: Record<string, string>
   /** Edge waypoints: key "source|target" or "source|target|edgeId" (FQN, optional id for parallel edges), value = [x,y][] (e.g. from likec4.edge.waypoints comment) */
   edgeWaypoints?: Record<string, number[][]>
-  /** If false, embed raw mxGraphModel XML inside <diagram> (no base64/deflate). Draw.io accepts both. */
+  /**
+   * If false, embed raw mxGraphModel XML inside <diagram> (no base64/deflate). Draw.io accepts both.
+   * generateDrawio/generateDiagramContent default to compressed when options omitted; buildDrawioExportOptionsFromSource defaults compressed: false so CLI/playground get readable XML unless overridden.
+   */
   compressed?: boolean
 }
 

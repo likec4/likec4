@@ -216,6 +216,7 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
   })
 
   test('node with navigateTo exports UserObject with link and style link=data:page/id opening likec4-<viewId> page', () => {
+    // ExtendedNode allows navigateTo; cast for test data since ProcessedView nodes type may not include it
     const nodeWithNav = {
       ...fakeDiagram.nodes[0]!,
       navigateTo: 'saas',

@@ -114,7 +114,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     outputType,
     serverUrl,
     ignore = false,
-    timeoutMs = 10_000,
+    timeoutMs = 15_000,
     maxAttempts = 3,
     filter,
     sequence = false,
@@ -122,17 +122,17 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
   } = args
   const startTakeScreenshot = hrtime()
 
-  await using languageServices = await LikeC4.fromWorkspace(workspacePath, {
+  await using likec4 = await LikeC4.fromWorkspace(workspacePath, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })
 
-  const output = outputArg ?? languageServices.workspace
+  const output = outputArg ?? likec4.workspace
   let server: ViteDevServer | undefined
   let resolvedServerUrl = serverUrl
 
-  const projects = [...languageServices.languageServices.projects()]
+  const projects = [...likec4.languageServices.projects()]
   if (project) {
     if (!projects.some(p => p.id === project)) {
       logger.error(`project not found: ${project}`)
@@ -143,7 +143,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
   if (!resolvedServerUrl) {
     logger.info(k.cyan(`start preview server`))
     server = await viteDev({
-      languageServices,
+      languageServices: likec4,
       buildWebcomponent: false,
       openBrowser: false,
       hmr: false,
@@ -155,77 +155,79 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     }
   }
 
-  for (const prj of projects) {
-    if (project && prj.id !== project) {
-      continue
-    }
-    if (projects.length > 1) {
-      logger.info(k.dim('---------'))
-      logger.info(`${k.dim('project:')} ${prj.id}`)
-      logger.info(`${k.dim('folder:')} ${prj.folder.fsPath}`)
-    }
-    let views = await languageServices.diagrams(prj.id)
+  try {
+    for (const prj of projects) {
+      if (project && prj.id !== project) {
+        continue
+      }
+      if (projects.length > 1) {
+        logger.info(k.dim('---------'))
+        logger.info(`${k.dim('project:')} ${prj.id}`)
+        logger.info(`${k.dim('folder:')} ${prj.folder.fsPath}`)
+      }
+      let views = await likec4.diagrams(prj.id)
 
-    if (filter && hasAtLeast(filter, 1) && hasAtLeast(views, 1)) {
-      const matcher = picomatch(filter)
-      logger.info(`${k.cyan('filter')} ${k.dim(JSON.stringify(filter))}`)
-      views = views.filter((v: DiagramView) => {
-        if (matcher(v.id)) {
-          logger.info(`${k.green('include')} ${v.id} ✅`)
-          return true
-        }
-        logger.info(`${k.gray('skip')} ${k.dim(v.id)}`)
-        return false
+      if (filter && hasAtLeast(filter, 1) && hasAtLeast(views, 1)) {
+        const matcher = picomatch(filter)
+        logger.info(`${k.cyan('filter')} ${k.dim(JSON.stringify(filter))}`)
+        views = views.filter((v: DiagramView) => {
+          if (matcher(v.id)) {
+            logger.info(`${k.green('include')} ${v.id} ✅`)
+            return true
+          }
+          logger.info(`${k.gray('skip')} ${k.dim(v.id)}`)
+          return false
+        })
+      }
+
+      if (!hasAtLeast(views, 1)) {
+        logger.warn('no views found')
+        continue
+      }
+
+      const _serverUrl = projects.length > 1
+        ? withTrailingSlash(joinURL(resolvedServerUrl, 'project', prj.id))
+        : resolvedServerUrl
+      const _output = projects.length > 1 ? joinURL(output, prj.id) : output
+
+      const succeed = await exportViewsToPNG({
+        logger,
+        serverUrl: _serverUrl,
+        theme,
+        timeoutMs,
+        views,
+        output: _output,
+        outputType,
+        maxAttempts,
+        sequence,
+        chromiumSandbox,
       })
-    }
+      const { pretty } = inMillis(startTakeScreenshot)
 
-    if (!hasAtLeast(views, 1)) {
-      logger.warn('no views found')
-      continue
-    }
+      if (succeed.length > 0) {
+        logger.info(k.green(`exported ${succeed.length} views in ${pretty}`) + '\n')
+      }
+      if (succeed.length !== views.length) {
+        if (ignore && succeed.length > 0) {
+          logger.info(
+            k.dim('ignore') + ' ' + k.red(`failed ${views.length - succeed.length} out of ${views.length} views`),
+          )
+        } else {
+          logger.error(k.red(`failed ${views.length - succeed.length} out of ${views.length} views`))
+        }
+      }
 
-    const _serverUrl = projects.length > 1
-      ? withTrailingSlash(joinURL(resolvedServerUrl, 'project', prj.id))
-      : resolvedServerUrl
-    const _output = projects.length > 1 ? joinURL(output, prj.id) : output
-
-    const succeed = await exportViewsToPNG({
-      logger,
-      serverUrl: _serverUrl,
-      theme,
-      timeoutMs,
-      views,
-      output: _output,
-      outputType,
-      maxAttempts,
-      sequence,
-      chromiumSandbox,
-    })
-    const { pretty } = inMillis(startTakeScreenshot)
-
-    if (succeed.length > 0) {
-      logger.info(k.green(`exported ${succeed.length} views in ${pretty}`) + '\n')
-    }
-    if (succeed.length !== views.length) {
-      if (ignore && succeed.length > 0) {
-        logger.info(
-          k.dim('ignore') + ' ' + k.red(`failed ${views.length - succeed.length} out of ${views.length} views`),
-        )
-      } else {
-        logger.error(k.red(`failed ${views.length - succeed.length} out of ${views.length} views`))
+      if (succeed.length !== views.length && (succeed.length === 0 || !ignore)) {
+        throw new Error(`Failed ${views.length - succeed.length} out of ${views.length} views`)
       }
     }
-
-    if (succeed.length !== views.length && (succeed.length === 0 || !ignore)) {
-      throw new Error(`Failed ${views.length - succeed.length} out of ${views.length} views`)
+  } finally {
+    if (server) {
+      logger.info(k.cyan(`stop server`))
+      await server.close().catch(e => {
+        logger.error(e)
+      })
     }
-  }
-
-  if (server) {
-    logger.info(k.cyan(`stop server`))
-    await server.close().catch(e => {
-      logger.error(e)
-    })
   }
 }
 

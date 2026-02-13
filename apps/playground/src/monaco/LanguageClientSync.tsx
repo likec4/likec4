@@ -1,9 +1,15 @@
-import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
-import { DRAWIO_EXPORT_EVENT } from '$components/drawio/drawio-events'
 import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
 import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
+import type { DiagramView, ViewChange, ViewId } from '@likec4/core'
+import type { LayoutView as LayoutViewProtocol } from '@likec4/language-server/protocol'
+import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
+import type { Location } from 'vscode-languageserver-types'
+import type { CustomWrapperConfig } from './config'
+
+import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
+import { DRAWIO_EXPORT_EVENT } from '$components/drawio/drawio-events'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
-import { type DiagramView, type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
+import { invariant, nonNullable } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import {
   BuildDocuments,
@@ -17,15 +23,20 @@ import {
 import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
 import { useRouter } from '@tanstack/react-router'
-import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
 import { useEffect, useRef } from 'react'
 import { funnel, isString } from 'remeda'
-import { type CustomWrapperConfig, loadLikeC4Worker } from './config'
+import { loadLikeC4Worker } from './config'
 import { cleanDisposables, createMemoryFileSystem, ensureFileInWorkspace, setActiveEditor } from './utils'
 
-import type { Location } from 'vscode-languageserver-types'
-
 const logger = rootLogger.getChild('monaco-language-client-sync')
+
+/** Wrapper exposes sendRequest(method: string, params) only; RequestType overload fails in CI. */
+function requestLayoutView(
+  client: { sendRequest: (method: string, params: { viewId: ViewId }) => Promise<unknown> },
+  viewId: ViewId,
+): Promise<LayoutViewProtocol.Res> {
+  return client.sendRequest(LayoutView.req.method, { viewId }) as Promise<LayoutViewProtocol.Res>
+}
 
 export function LanguageClientSync({
   config,
@@ -110,7 +121,7 @@ export function LanguageClientSync({
         await Promise.all(
           viewIds.map(async (viewId) => {
             try {
-              const res = (await c.sendRequest(LayoutView.req.method, { viewId })) as LayoutView.Res
+              const res = await requestLayoutView(c, viewId as ViewId)
               if (res.result?.diagram) out[viewId] = res.result.diagram
             } catch {
               // skip failed view
@@ -122,9 +133,9 @@ export function LanguageClientSync({
     })
   })
 
-  const requestLayoutView = useCallbackRef(async (viewId: ViewId) => {
+  const requestLayoutViewCallback = useCallbackRef(async (viewId: ViewId) => {
     try {
-      const res = (await languageClient().sendRequest(LayoutView.req.method, { viewId })) as LayoutView.Res
+      const res = await requestLayoutView(languageClient(), viewId)
       const result = res.result
       if (result) {
         playground.send({ type: 'likec4.lsp.onLayoutDone', ...result })
@@ -336,7 +347,7 @@ export function LanguageClientSync({
     () => {
       if (playgroundState !== 'ready' || activeViewId == null) return
       if (activeViewState === 'stale' || activeViewState === 'pending') {
-        requestLayoutView(activeViewId).catch(error => {
+        requestLayoutViewCallback(activeViewId).catch(error => {
           logger.error(loggable(error))
         })
       }
