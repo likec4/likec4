@@ -82,7 +82,7 @@ type View = ProcessedView<aux.Unknown>
 type Node = View['nodes'][number]
 type Edge = View['edges'][number]
 
-/** Node plus optional DSL fields (DSL allows more than base type). Single cast in accessors. */
+/** Node plus optional DSL fields (DSL allows more than base type). Single cast in accessors. Consider type predicate or satisfies Partial<Node> to catch upstream field renames. */
 type ExtendedNode = Node & {
   notes?: MarkdownOrString
   summary?: MarkdownOrString
@@ -786,13 +786,13 @@ function buildNodeCellXml(data: NodeCellExportData): NodeCellResult {
 
   // computeNodeCellExportData sets title/titleCellId/containerTitle* only when isContainer (guarded above)
   const titleCellXml = buildContainerTitleCellXml(
-    data.title!,
-    data.titleCellId!,
+    data.title ?? '',
+    data.titleCellId ?? data.id,
     data.navTo,
     data.id,
     data.fontFamily,
-    data.containerTitleFontSizePx!,
-    data.containerTitleColor!,
+    data.containerTitleFontSizePx ?? 12,
+    data.containerTitleColor ?? CONTAINER_TITLE_COLOR,
   )
   return { vertexXml: cellXml, titleCellXml, isContainer: true }
 }

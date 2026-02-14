@@ -9,6 +9,7 @@
  */
 
 import {
+  type DrawioViewModelLike,
   DEFAULT_DRAWIO_ALL_FILENAME,
   generateDrawioMulti,
   getAllDiagrams,
@@ -25,8 +26,7 @@ const CLOUD_SYSTEM_PATH = path.resolve(__dirname, '../../../examples/cloud-syste
 
 describe('DrawIO export/import with cloud-system demo', () => {
   let likec4: LikeC4
-  let viewmodels: Awaited<ReturnType<LikeC4['layoutedModel']>> extends { views(): Iterable<infer V> } ? V[]
-    : never
+  let viewmodels: Array<DrawioViewModelLike>
   let drawioXml: string
 
   beforeAll(async () => {

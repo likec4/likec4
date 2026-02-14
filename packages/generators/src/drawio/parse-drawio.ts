@@ -678,12 +678,11 @@ function computeContainerTitles(vertices: DrawioCell[]): {
       v.height != null,
   )
   for (const cont of containerCells) {
-    const cx = cont.x!,
-      cy = cont.y!,
-      cw = cont.width!,
+    const cw = cont.width!,
       ch = cont.height!
     const titleAreaHeight = Math.min(CONTAINER_TITLE_AREA_MAX_HEIGHT_PX, ch * CONTAINER_TITLE_AREA_HEIGHT_RATIO) +
       CONTAINER_TITLE_AREA_TOLERANCE
+    // Child coords (v.x, v.y) are in container-local space; compare against 0..cw and 0..titleAreaHeight
     const best = vertices.find(
       v =>
         v.id !== cont.id &&
@@ -691,10 +690,10 @@ function computeContainerTitles(vertices: DrawioCell[]): {
         (v.style?.toLowerCase().includes('shape=text') || v.style?.toLowerCase().includes('text;')) &&
         v.x != null &&
         v.y != null &&
-        v.x >= cx - CONTAINER_TITLE_AREA_TOLERANCE &&
-        v.x <= cx + cw + CONTAINER_TITLE_AREA_TOLERANCE &&
-        v.y >= cy - CONTAINER_TITLE_AREA_TOLERANCE &&
-        v.y <= cy + titleAreaHeight,
+        v.x >= -CONTAINER_TITLE_AREA_TOLERANCE &&
+        v.x <= cw + CONTAINER_TITLE_AREA_TOLERANCE &&
+        v.y >= -CONTAINER_TITLE_AREA_TOLERANCE &&
+        v.y <= titleAreaHeight,
     )
     if (best) {
       const raw = (best.value ?? '').trim()

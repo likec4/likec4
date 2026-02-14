@@ -9,8 +9,8 @@ import {
 } from '@likec4/generators'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
-import { mkdir, readdir, readFile, realpath, writeFile } from 'node:fs/promises'
-import { join, relative, resolve } from 'node:path'
+import { mkdir, readdir, readFile, realpath, stat, writeFile } from 'node:fs/promises'
+import { dirname, join, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
@@ -98,6 +98,15 @@ async function readWorkspaceSourceContent(
       // Note: symlinks to directories are not followed (isDirectory() is false for symlinks).
       if (e.isDirectory()) {
         if (!ROUNDTRIP_IGNORED_DIRS.has(e.name)) await walk(full, depth + 1)
+      } else if (e.isSymbolicLink()) {
+        const st = await stat(full).catch(() => null)
+        if (st?.isFile() && isSourceFile(e.name)) {
+          const content = await readFile(full, 'utf-8').catch(err => {
+            if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readFile failed`, { file: full, err })
+            return ''
+          })
+          if (content) chunks.push(content)
+        }
       } else if (e.isFile() && isSourceFile(e.name)) {
         const content = await readFile(full, 'utf-8').catch(err => {
           if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readFile failed`, { file: full, err })
@@ -185,10 +194,11 @@ async function writeViewToFile(
   outdir: string,
   logger: ViteLogger,
 ): Promise<boolean> {
-  const viewId = vm.$view.id as string
+  const viewId = String(vm.$view.id)
   try {
     const generated = generateDrawio(vm, optionsByViewId[viewId])
     const outfile = resolve(outdir, viewId + DRAWIO_FILE_EXT)
+    await mkdir(dirname(outfile), { recursive: true })
     await writeFile(outfile, generated)
     logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
     return true
@@ -256,7 +266,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   // 3) View list and empty check before creating output dir
   const viewmodels = [...model.views()]
   if (viewmodels.length === 0) {
-    logger.warn('No views to export')
+    logger.error('No views to export')
     throw new Error(ERR_NO_VIEWS_EXPORTED)
   }
 

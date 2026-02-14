@@ -125,6 +125,7 @@ export function LanguageClientSync({
           return null
         }
       },
+      // Individual view layout failures are logged; returned Record omits failed views. Consider returning { results, errors } in a follow-up so export UI can report which views failed.
       layoutViews: async (viewIds: string[]) => {
         const c = wrapper.getLanguageClient('likec4')
         if (!c) return {}
