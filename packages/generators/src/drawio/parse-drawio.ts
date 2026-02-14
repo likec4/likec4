@@ -117,7 +117,7 @@ function getAttr(attrs: string, name: string): string | undefined {
   while (i < attrs.length) {
     const start = lower.indexOf(needleLower, i)
     if (start === -1) return undefined
-    const prev = start === 0 ? ' ' : attrs[start - 1]
+    const prev: string = start === 0 ? ' ' : (attrs[start - 1] ?? ' ')
     if (!isAttrBoundaryChar(prev)) {
       i = start + 1
       continue
