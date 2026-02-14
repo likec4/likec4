@@ -40,6 +40,7 @@ export function DrawioContextMenu({
         onExportAllViews={actions.handleExportAllViews}
         canExport={actions.canExport}
         canExportAllViews={actions.canExportAllViews}
+        exporting={actions.exporting}
       />
       {children(actions.openMenu)}
     </>

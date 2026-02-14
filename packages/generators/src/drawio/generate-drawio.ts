@@ -268,16 +268,16 @@ function getElementColors(
   const values = getThemeColorValues(viewmodel, color, 'primary')
   const elementColors = values.elements
   return {
-    fill: elementColors.fill,
-    stroke: elementColors.stroke,
-    font: (elementColors.hiContrast ?? elementColors.stroke) as string,
+    fill: String(elementColors.fill ?? DEFAULT_NODE_FILL_HEX),
+    stroke: String(elementColors.stroke ?? DEFAULT_NODE_STROKE_HEX),
+    font: String(elementColors.hiContrast ?? elementColors.stroke ?? DEFAULT_NODE_FONT_HEX),
   }
 }
 
 /** Edge stroke (line) color from theme RelationshipColorValues.line. */
 function getEdgeStrokeColor(viewmodel: DrawioViewModelLike, color: string | undefined): string {
   const values = getThemeColorValues(viewmodel, color ?? 'gray', 'gray')
-  return values.relationships.line as string
+  return String(values.relationships?.line ?? DEFAULT_NODE_FONT_HEX)
 }
 
 /** Edge label font and background from theme (RelationshipColorValues.label, labelBg) for readable connector text. */
@@ -288,8 +288,8 @@ function getEdgeLabelColors(
   const values = getThemeColorValues(viewmodel, color ?? 'gray', 'gray')
   const rel = values.relationships as RelationshipColorValues
   return {
-    font: (rel.label ?? rel.line) as string,
-    background: (rel.labelBg ?? '#ffffff') as string,
+    font: String(rel?.label ?? rel?.line ?? DEFAULT_NODE_FONT_HEX),
+    background: String(rel?.labelBg ?? '#ffffff'),
   }
 }
 
@@ -1158,10 +1158,12 @@ function generateDiagramContent(
   const { sortedNodes, defaultParentId, rootId, canvasWidth, canvasHeight } = layout
 
   const nodeIds = new Map<NodeId, string>()
+  // cellId stays below CONTAINER_TITLE_CELL_ID_START (10000); container title IDs use separate range
   let cellId = 2
   const getCellId = (nodeId: NodeId): string => {
     let id = nodeIds.get(nodeId)
     if (!id) {
+      if (cellId >= CONTAINER_TITLE_CELL_ID_START) throw new Error('DrawIO cell ID range exhausted')
       id = String(cellId++)
       nodeIds.set(nodeId, id)
     }
@@ -1193,6 +1195,7 @@ function generateDiagramContent(
   }
 
   for (const edge of edges) {
+    if (cellId >= CONTAINER_TITLE_CELL_ID_START) throw new Error('DrawIO cell ID range exhausted')
     const edgeId = String(cellId++)
     edgeCells.push(
       buildEdgeCellXml(edge, layout, options, viewmodel, getCellId, edgeId),

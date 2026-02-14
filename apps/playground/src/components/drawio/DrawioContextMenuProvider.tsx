@@ -127,6 +127,7 @@ export function DrawioContextMenuProvider({
         onExportAllViews={actions.handleExportAllViews}
         canExport={actions.canExport}
         canExportAllViews={actions.canExportAllViews}
+        exporting={actions.exporting}
       />
       {children}
     </DrawioContextMenuContext.Provider>

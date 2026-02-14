@@ -207,6 +207,7 @@ export function useDrawioContextMenuActions({
   }, [likec4model, viewStates])
   const [opened, { open, close }] = useDisclosure(false)
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
+  const [exporting, setExporting] = useState(false)
 
   const openMenu = useCallback((event: React.MouseEvent | MouseEvent) => {
     event.preventDefault()
@@ -241,8 +242,11 @@ export function useDrawioContextMenuActions({
   const handleExportAllViews = useCallback(async () => {
     close()
     if (!likec4model) return
-    const viewIdsInModel = [...likec4model.views()].map(vm => vm.$view.id)
-    const viewModels = await collectViewModelsForExportAll({
+    if (exporting) return
+    setExporting(true)
+    try {
+      const viewIdsInModel = [...likec4model.views()].map(vm => vm.$view.id)
+      const viewModels = await collectViewModelsForExportAll({
       viewIdsInModel,
       allViewModelsFromState,
       likec4model,
@@ -260,9 +264,12 @@ export function useDrawioContextMenuActions({
       downloadDrawioBlob(xml, DEFAULT_DRAWIO_ALL_FILENAME)
     } catch (err) {
       reportExportError('DrawIO export all views failed', err, onExportError)
+    } finally {
+      setExporting(false)
     }
   }, [
     close,
+    exporting,
     allViewModelsFromState,
     getSourceContent,
     getLayoutedModel,
@@ -286,5 +293,6 @@ export function useDrawioContextMenuActions({
     close,
     canExport: diagram != null,
     canExportAllViews,
+    exporting,
   }
 }
