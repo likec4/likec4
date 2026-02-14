@@ -62,8 +62,7 @@ export function configureLogger<TSinkId extends string, TFilterId extends string
   config?: Partial<Config<TSinkId, TFilterId>>,
 ) {
   try {
-    const { sinks: _sinks, loggers: _loggers, ...restConfig } = config ?? {}
-    const sinks = config?.sinks ?? {}
+    const { sinks = {}, loggers: _loggers, ...restConfig } = config ?? {}
     const sinksWithConsole: Record<TSinkId | 'console', Sink> = {
       console: getConsoleSink(),
       ...sinks,

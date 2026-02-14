@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { canvas } from '../helpers/selectors'
 import { TIMEOUT_CANVAS } from '../helpers/timeouts'
 

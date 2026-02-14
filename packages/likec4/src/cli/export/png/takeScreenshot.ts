@@ -22,8 +22,8 @@ type TakeScreenshotParams = {
 
 /**
  * Capture each view as PNG under the output directory using the provided browser context.
- * @param params - Browser context, views, output path, logger, timeout, and options (outputType, dynamicVariant, theme).
- * @returns Promise resolving when all views are captured (or failed after maxAttempts).
+ * @param params - Configuration object containing browser context, views, output path, logger, timeout, and rendering options.
+ * @returns Promise resolving to an array of successfully captured views with their file paths.
  */
 export async function takeScreenshot({
   browserContext,

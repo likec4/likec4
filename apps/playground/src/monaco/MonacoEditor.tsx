@@ -1,5 +1,5 @@
-import { usePlayground } from '$/hooks/usePlayground'
 import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
+import { usePlayground } from '$/hooks/usePlayground'
 import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSyncedRef, useUpdateEffect } from '@react-hookz/web'
@@ -15,6 +15,11 @@ export type MonacoEditorProps = {
   setLayoutedModelApi?: (api: LayoutedModelApi | null) => void
 }
 
+/**
+ * Lazy-loaded Monaco editor component. Memoized; accepts setLayoutedModelApi for Draw.io export.
+ * @param props - MonacoEditorProps (setLayoutedModelApi, etc.).
+ * @returns Rendered Monaco editor React element.
+ */
 const LazyMonacoEditor = memo((props: MonacoEditorProps) => {
   const { setLayoutedModelApi } = props
   const playground = usePlayground()

@@ -1,0 +1,131 @@
+import { memoizeProp } from '@likec4/core/utils';
+import { rootLogger } from '@likec4/log';
+import spawn, { SubprocessError } from 'nano-spawn';
+import os from 'node:os';
+import { isEmpty } from 'remeda';
+import which from 'which';
+const logger = rootLogger.getChild('graphviz-binary');
+export class GraphvizBinaryAdapter {
+    _dotpath;
+    _unflattenpath;
+    constructor(
+    /**
+     * Path to the binary, e.g. 'dot' or '/usr/bin/dot'
+     * If not provided, will be found using `which`.
+     */
+    dot_path, 
+    /**
+     * Path to the binary, e.g. 'unflatten' or '/usr/bin/unflatten'
+     * If not provided, will be found using `which`.
+     */
+    unflatten_path) {
+        this._dotpath = dot_path;
+        this._unflattenpath = unflatten_path;
+    }
+    dispose() {
+        // do nothing for now
+    }
+    [Symbol.dispose]() {
+        // do nothing for now
+    }
+    get concurrency() {
+        return Math.max(1, os.cpus().length - 2);
+    }
+    get dotpath() {
+        return this._dotpath ?? memoizeProp(this, '_dotpath', () => {
+            const path = which.sync('dot');
+            logger.debug `Found ${path}`;
+            return path;
+        });
+    }
+    get unflattenpath() {
+        return this._unflattenpath ?? memoizeProp(this, '_unflattenpath', () => {
+            const path = which.sync('unflatten');
+            logger.debug `Found ${path}`;
+            return path;
+        });
+    }
+    async unflatten(dot) {
+        let result;
+        try {
+            const unflatten = await spawn(this.unflattenpath, ['-l 1', '-c 3'], {
+                timeout: 10_000,
+                stdin: {
+                    string: dot,
+                },
+            });
+            result = unflatten.stdout;
+            if (!isEmpty(unflatten.stderr)) {
+                logger.warn(`Command ${unflatten.command} has stderr:\n` + unflatten.stderr);
+            }
+        }
+        catch (error) {
+            logger.error(`FAILED GraphvizBinaryAdapter.unflatten`, { error });
+            if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
+                logger.warn(`Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}):\n` + error.stderr);
+                result = error.stdout;
+            }
+        }
+        if (result) {
+            dot = result.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ');
+        }
+        return dot;
+    }
+    async layoutJson(dot) {
+        let result;
+        try {
+            const dotcmd = await spawn(this.dotpath, ['-Tjson', '-y'], {
+                timeout: 10_000,
+                stdin: {
+                    string: dot,
+                },
+            });
+            result = dotcmd.stdout;
+            if (!isEmpty(dotcmd.stderr)) {
+                logger.warn(`Command ${dotcmd.command} has stderr:\n` + dotcmd.stderr);
+            }
+        }
+        catch (error) {
+            logger.error(`FAILED GraphvizBinaryAdapter.layoutJson`, { error });
+            logger.warn('FAILED DOT:\n' + dot);
+            if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
+                logger.warn(`Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}): "${error.stderr}"`);
+                result = error.stdout;
+            }
+            else {
+                throw error;
+            }
+        }
+        return result;
+    }
+    async acyclic(_dot) {
+        return Promise.reject(new Error('Method not implemented.'));
+    }
+    async svg(dot) {
+        let result;
+        try {
+            const dotcmd = await spawn(this.dotpath, ['-Tsvg', '-y'], {
+                timeout: 10_000,
+                stdin: {
+                    string: dot,
+                },
+            });
+            result = dotcmd.stdout;
+            if (!isEmpty(dotcmd.stderr)) {
+                logger.warn(`Command ${dotcmd.command} has stderr:\n` + dotcmd.stderr);
+            }
+        }
+        catch (error) {
+            logger.error(`FAILED GraphvizBinaryAdapter.svg`, { error });
+            logger.warn('FAILED DOT:\n' + dot);
+            if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
+                logger.warn(`Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}):\n` + error.stderr);
+                result = error.stdout;
+            }
+            else {
+                throw error;
+            }
+        }
+        return result;
+    }
+}

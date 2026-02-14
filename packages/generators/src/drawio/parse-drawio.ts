@@ -1053,7 +1053,7 @@ function emitEdgesToLines(
       }
       try {
         const metaObj = metadataJson ? (JSON.parse(metadataJson) as Record<string, string | string[]>) : null
-        if (metaObj && typeof metaObj === 'object' && !Array.isArray(metaObj)) {
+        if (metaObj != null && typeof metaObj === 'object' && !Array.isArray(metaObj)) {
           const metaAttrs: string[] = []
           for (const [k, v] of Object.entries(metaObj)) {
             if (k.trim() === '') continue

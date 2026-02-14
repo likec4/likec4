@@ -1,0 +1,861 @@
+import { UriUtils } from 'langium';
+import { describe, expect, it, vi } from 'vitest';
+import { URI } from 'vscode-uri';
+import { createMultiProjectTestServices } from '../test';
+import { ProjectFolder } from './ProjectsManager';
+const isWin = process.platform === 'win32';
+const configAt = (path) => ({
+    configUri: UriUtils.joinPath(URI.file(`/test/workspace/src`), path, '.likec4rc'),
+});
+const folderAt = (path) => ({
+    folderUri: UriUtils.joinPath(URI.file(`/test/workspace/src`), path),
+});
+describe('ProjectsManager', () => {
+    it('should assign likec4ProjectId to docs', async ({ expect }) => {
+        const { projects, addDocumentOutside, validateAll } = await createMultiProjectTestServices({
+            project1: {
+                'specs': `
+          specification {
+            element component
+          }
+          model {
+            component c1
+          }
+        `,
+                'model': `
+          model {
+            component c2
+          }
+        `,
+            },
+            project2: {
+                'specs': `
+          specification {
+            element component
+          }
+          model {
+            component c1
+          }
+        `,
+            },
+        });
+        const { errors, warnings } = await validateAll();
+        expect(errors).toHaveLength(0);
+        expect(warnings).toHaveLength(0);
+        expect(projects.project1.specs).toHaveProperty('likec4ProjectId', 'project1');
+        expect(projects.project1.model).toHaveProperty('likec4ProjectId', 'project1');
+        expect(projects.project2.specs).toHaveProperty('likec4ProjectId', 'project2');
+        const outside = await addDocumentOutside('specification { element component }');
+        expect(outside).toHaveProperty('likec4ProjectId', 'default');
+        await validateAll();
+        expect(outside).toHaveProperty('likec4ProjectId', 'default');
+    });
+    describe('loadConfigFile', () => {
+        it('should load config file', async ({ expect }) => {
+            const { projectsManager, services } = await createMultiProjectTestServices({});
+            const config = {
+                name: 'test-project',
+                styles: {
+                    defaults: {
+                        color: 'red',
+                    },
+                },
+            };
+            const fs = services.shared.workspace.FileSystemProvider;
+            vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config);
+            const project = await projectsManager.registerConfigFile(URI.parse('file:///test/workspace/src/test-project/.likec4rc'));
+            expect(projectsManager.all).toEqual(['test-project', 'default']);
+            expect(project?.config).toEqual(config);
+            expect(project?.folder).toBe('file:///test/workspace/src/test-project/');
+        });
+        it.runIf(!isWin)('should fail to load config file from node_modules', async ({ expect }) => {
+            const { projectsManager, services } = await createMultiProjectTestServices({});
+            const fs = services.shared.workspace.FileSystemProvider;
+            vi.spyOn(fs, 'loadProjectConfig').mockRejectedValueOnce(new Error('should not be called'));
+            await expect(projectsManager.registerConfigFile(URI.parse('file:///test/workspace/node_modules/test-project/.likec4rc'))).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: Failed to register project config, path /test/workspace/node_modules/test-project/.likec4rc is excluded by: "**/node_modules/**"]`);
+            expect(fs.loadProjectConfig).not.toHaveBeenCalled();
+        });
+    });
+    describe('registerProject', () => {
+        it('should register project with URI and config', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const config = {
+                name: 'test-project',
+            };
+            await projectsManager.registerProject({
+                config,
+                ...folderAt('test-project'),
+            });
+            expect(projectsManager.all).toContain('test-project');
+            const project = projectsManager.getProject('test-project');
+            expect(project.config).toEqual(config);
+            expect(project.folderUri.toString()).toBe('file:///test/workspace/src/test-project/');
+        });
+        it('should register project with config file URI', async ({ expect }) => {
+            const { projectsManager, services } = await createMultiProjectTestServices({});
+            const config = {
+                name: 'test-project',
+            };
+            const fs = services.shared.workspace.FileSystemProvider;
+            vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config);
+            const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc');
+            await projectsManager.registerConfigFile(configFileUri);
+            expect(projectsManager.all).toContain('test-project');
+            const project = projectsManager.getProject('test-project');
+            expect(project.config).toEqual(config);
+            expect(project.folderUri.toString()).toBe('file:///test/workspace/src/test-project/');
+        });
+        it('should update project with registered folder URI', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const { configUri } = configAt('test-project');
+            const project1 = await projectsManager.registerProject({
+                config: {
+                    name: 'tst',
+                },
+                configUri,
+            });
+            const project1Config = project1.config;
+            expect(project1Config).toEqual({
+                name: 'tst',
+            });
+            expect(projectsManager.all).toEqual(['tst', 'default']);
+            const project2 = await projectsManager.registerProject({
+                config: {
+                    name: 'tst',
+                    title: 'Test Project',
+                },
+                configUri,
+            });
+            // no new project registered
+            expect(projectsManager.all).toEqual(['tst', 'default']);
+            // same project instance
+            expect(project2).toBe(project1);
+            expect(project2.config).toBe(project1.config);
+            // different config object
+            expect(project2.config).not.toBe(project1Config);
+            expect(project2.config).toEqual({
+                name: 'tst',
+                title: 'Test Project',
+            });
+        });
+        it('should re-register project if name is changed', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const { configUri } = configAt('test-project');
+            const project1 = await projectsManager.registerProject({
+                config: {
+                    name: 'tst',
+                },
+                configUri,
+            });
+            const project1Config = project1.config;
+            expect(project1Config).toEqual({
+                name: 'tst',
+            });
+            expect(projectsManager.all).toEqual(['tst', 'default']);
+            const project2 = await projectsManager.registerProject({
+                config: {
+                    name: 'tst2',
+                    title: 'Test Project',
+                },
+                configUri,
+            });
+            // no new project registered
+            expect(projectsManager.all).toEqual(['tst2', 'default']);
+            // same project instance
+            expect(project2).toBe(project1);
+            expect(project2.config).toBe(project1.config);
+            // different config object
+            expect(project2.config).not.toBe(project1Config);
+            expect(project2.config).toEqual({
+                name: 'tst2',
+                title: 'Test Project',
+            });
+        });
+        it.runIf(!isWin)('should fail to register project with empty name', async ({ expect }) => {
+            const { projectsManager, services } = await createMultiProjectTestServices({});
+            const config = {
+                name: '',
+            };
+            const fs = services.shared.workspace.FileSystemProvider;
+            vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config);
+            const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc');
+            await expect(projectsManager.registerConfigFile(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(`
+        [Error: Failed to register project config /test/workspace/src/test-project/.likec4rc:
+        Config validation failed:
+        ✖ Project name cannot be empty
+          → at name]
+      `);
+        });
+        it.runIf(!isWin)('should fail to register project with default name', async ({ expect }) => {
+            const { projectsManager, services } = await createMultiProjectTestServices({});
+            const config = {
+                name: 'default',
+            };
+            const fs = services.shared.workspace.FileSystemProvider;
+            vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config);
+            const configUri = configAt('test-project').configUri;
+            await expect(projectsManager.registerConfigFile(configUri)).rejects.toThrowErrorMatchingInlineSnapshot(`
+        [Error: Failed to register project config /test/workspace/src/test-project/.likec4rc:
+        Config validation failed:
+        ✖ Project name cannot be "default"
+          → at name]
+      `);
+            await expect(projectsManager.registerProject({ config, configUri })).rejects
+                .toThrowErrorMatchingInlineSnapshot(`
+        [Error: Config validation failed:
+        ✖ Project name cannot be "default"
+          → at name]
+      `);
+        });
+        it.runIf(process.platform !== 'win32')('should fail to register project with name containing "."', async ({ expect }) => {
+            const { projectsManager, services } = await createMultiProjectTestServices({});
+            const config = {
+                name: 'one.two',
+            };
+            const fs = services.shared.workspace.FileSystemProvider;
+            vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config);
+            const { configUri } = configAt('test-project');
+            await expect(projectsManager.registerConfigFile(configUri)).rejects.toThrowErrorMatchingInlineSnapshot(`
+        [Error: Failed to register project config /test/workspace/src/test-project/.likec4rc:
+        Config validation failed:
+        ✖ Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -
+          → at name]
+      `);
+            await expect(projectsManager.registerProject({ config, configUri })).rejects
+                .toThrowErrorMatchingInlineSnapshot(`
+        [Error: Config validation failed:
+        ✖ Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -
+          → at name]
+      `);
+        });
+        it('should handle duplicate project names by appending numbers', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const config = {
+                name: 'test-project',
+            };
+            await projectsManager.registerProject({
+                config,
+                ...folderAt('test-project-1'),
+            });
+            await projectsManager.registerProject({
+                config,
+                ...folderAt('test-project-2'),
+            });
+            expect(projectsManager.all).toEqual([
+                'test-project',
+                'test-project-1',
+                'default',
+            ]);
+        });
+    });
+    it('should handle folder URIs with and without protocol', async ({ expect }) => {
+        const { projectsManager } = await createMultiProjectTestServices({});
+        const config = {
+            name: 'test-project',
+        };
+        await projectsManager.registerProject({
+            config,
+            ...folderAt('test-project-1'),
+        });
+        await projectsManager.registerProject({
+            config,
+            configUri: '/test/workspace/src/test-project-2/.likec4rc',
+        });
+        expect(projectsManager.all).toContain('test-project');
+        expect(projectsManager.all).toContain('test-project-1');
+        expect(projectsManager.getProject('test-project').folderUri.toString()).toBe('file:///test/workspace/src/test-project-1/');
+        expect(projectsManager.getProject('test-project-1').folderUri.toString()).toBe('file:///test/workspace/src/test-project-2/');
+    });
+    describe('exclude paths', () => {
+        it('should exclude paths', async ({ expect }) => {
+            const { projectsManager, services, addDocument } = await createMultiProjectTestServices({});
+            // Project A excludes the 'excluded' folder
+            const projectA = await projectsManager.registerProject({
+                config: {
+                    name: 'projectA',
+                    exclude: ['excluded'],
+                },
+                ...folderAt('projectA'),
+            });
+            // Add a document in projectA's folder
+            const specDoc = await addDocument('projectA/specification.c4', 'specification { element component }');
+            const modelDoc = await addDocument('projectA/models/model.c4', 'model { component c1 }');
+            const excludedDoc = await addDocument('projectA/excluded/wrong.c4', 'model { component c2 }');
+            // The excluded document should belong to projectB, not projectA
+            expect(projectsManager.ownerProjectId(specDoc)).toBe('projectA');
+            expect(projectsManager.ownerProjectId(modelDoc)).toBe('projectA');
+            // The excluded document should belong to projectA, but be excluded
+            expect(projectsManager.ownerProjectId(excludedDoc)).toBe('projectA');
+            expect(projectsManager.isExcluded(excludedDoc)).toBe(true);
+            // Check project documents
+            const documents = services.shared.workspace.LangiumDocuments;
+            const projectADocs = documents.projectDocuments(projectA.id).toArray().map(d => d.uri.path);
+            // ProjectA should not have the excluded document
+            expect(projectADocs).toEqual([
+                '/test/workspace/src/projectA/models/model.c4',
+                '/test/workspace/src/projectA/specification.c4',
+            ]);
+        });
+        it('should exclude filename', async ({ expect }) => {
+            const { projectsManager, services, addDocument } = await createMultiProjectTestServices({});
+            // Project A excludes the 'excluded' folder
+            const projectA = await projectsManager.registerProject({
+                config: {
+                    name: 'projectA',
+                    exclude: ['**/wrong.c4'],
+                },
+                ...folderAt('projectA'),
+            });
+            // Add a document in projectA's folder
+            const specDoc = await addDocument('projectA/specification.c4', 'specification { element component }');
+            const excludedDoc1 = await addDocument('projectA/wrong.c4', 'model { component c2 }');
+            const excludedDoc2 = await addDocument('projectA/nested/wrong.c4', 'model { component c2 }');
+            // The excluded document should belong to projectB, not projectA
+            expect(projectsManager.ownerProjectId(specDoc)).toBe('projectA');
+            expect(projectsManager.isExcluded(specDoc)).toBe(false);
+            // The excluded document should belong to projectA, but be excluded
+            expect(projectsManager.ownerProjectId(excludedDoc1)).toBe('projectA');
+            expect(projectsManager.ownerProjectId(excludedDoc2)).toBe('projectA');
+            expect(projectsManager.isExcluded(excludedDoc1)).toBe(true);
+            expect(projectsManager.isExcluded(excludedDoc2)).toBe(true);
+            // Check project documents
+            const documents = services.shared.workspace.LangiumDocuments;
+            const projectADocs = documents.projectDocuments(projectA.id).toArray().map(d => d.uri.path);
+            // ProjectA should not have the excluded document
+            expect(projectADocs).toEqual([
+                '/test/workspace/src/projectA/specification.c4',
+            ]);
+        });
+        it('should exclude node_modules by default', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const testdata = {
+                'file:///test/workspace/doc.likec4': false,
+                '/test/workspace/doc.likec4': false,
+                'file:///test/workspace/node_modules/doc.likec4': true,
+                '/test/workspace/node_modules/doc.likec4': true,
+                'file:///node_modules/deep/doc.likec4': true,
+            };
+            Object.entries(testdata).forEach(([path, expected]) => {
+                expect(projectsManager.isExcluded(path), `path: ${path} expected: ${expected}`).toEqual(expected);
+            });
+        });
+        it('should exclude node_modules if configured', async ({ expect }) => {
+            const { projectsManager: pm } = await createMultiProjectTestServices({});
+            await pm.registerProject({
+                config: {
+                    name: 'projectA',
+                    exclude: ['node_modules'],
+                },
+                configUri: URI.file('/test/workspace/projectA/.likec4rc'),
+            });
+            const testdata = {
+                'file:///test/workspace/projectA/doc.likec4': false,
+                '/test/workspace/projectA/doc.likec4': false,
+                'file:///test/workspace/projectA/node_modules/doc.likec4': true,
+                '/test/workspace/projectA/nested/node_modules/doc.likec4': true,
+            };
+            Object.entries(testdata).forEach(([path, expected]) => {
+                expect(pm.isExcluded(path), `path: ${path}`).toBe(expected);
+            });
+        });
+    });
+    describe('include paths', () => {
+        it('should resolve include paths relative to project folder', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const config = {
+                name: 'test-project',
+                include: { paths: ['../shared', '../common/specs'] },
+            };
+            await projectsManager.registerProject({
+                config,
+                configUri: 'file:///test/workspace/src/test-project/.likec4rc',
+            });
+            const includePaths = projectsManager.getProject('test-project').includePaths?.map(p => p.folder);
+            expect(includePaths).toEqual([
+                'file:///test/workspace/src/shared/',
+                'file:///test/workspace/src/common/specs/',
+            ]);
+        });
+        it('should match documents from include paths to the correct project', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            // Register two projects so that unmatched docs go to 'default' instead of the only project
+            await projectsManager.registerProject({
+                config: {
+                    name: 'proj-include-test',
+                    include: { paths: ['../shared-include-test'] },
+                },
+                folderUri: URI.parse('file:///test/include-test/src/proj-include-test'),
+            });
+            await projectsManager.registerProject({
+                config: { name: 'other-project' },
+                folderUri: URI.parse('file:///test/include-test/src/other-project'),
+            });
+            // Document in project folder
+            expect(projectsManager.ownerProjectId('file:///test/include-test/src/proj-include-test/model.c4')).toBe('proj-include-test');
+            // Document in include path
+            expect(projectsManager.ownerProjectId('file:///test/include-test/src/shared-include-test/common.c4')).toBe('proj-include-test');
+            // Document in nested include path folder
+            expect(projectsManager.ownerProjectId('file:///test/include-test/src/shared-include-test/nested/deep.c4')).toBe('proj-include-test');
+            // Document outside both project and include paths goes to default
+            expect(projectsManager.ownerProjectId('file:///test/include-test/src/unrelated/file.c4')).toBe('default');
+        });
+        it('should return undefined includePaths when not configured', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            await projectsManager.registerProject({
+                config: { name: 'no-includes' },
+                ...folderAt('no-includes'),
+            });
+            const project = projectsManager.getProject('no-includes');
+            expect(project.includePaths).toBeUndefined();
+        });
+        it('should not reject empty includePaths array', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            await expect(projectsManager.registerProject({
+                config: {
+                    name: 'empty-includes',
+                    include: { paths: [] },
+                },
+                folderUri: '/test/workspace/src/empty-includes',
+            })).resolves.toMatchObject({
+                id: 'empty-includes',
+            });
+        });
+        it('getAllIncludePaths should return all configured include paths', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            await projectsManager.registerProject({
+                config: {
+                    name: 'project1',
+                    include: { paths: ['../shared1'] },
+                },
+                ...folderAt('project1'),
+            });
+            await projectsManager.registerProject({
+                config: {
+                    name: 'project2',
+                    include: { paths: ['../shared2', '../common'] },
+                },
+                ...folderAt('project2'),
+            });
+            await projectsManager.registerProject({
+                config: { name: 'project3' }, // No includes
+                ...folderAt('project3'),
+            });
+            const allIncludes = projectsManager.getAllIncludePaths();
+            expect(allIncludes).toHaveLength(3);
+            expect(allIncludes).toContainEqual({
+                projectId: 'project1',
+                includePath: expect.objectContaining({
+                    path: '/test/workspace/src/shared1',
+                }),
+                includeConfig: expect.objectContaining({
+                    paths: ['../shared1'],
+                }),
+            });
+            expect(allIncludes).toContainEqual({
+                projectId: 'project2',
+                includePath: expect.objectContaining({
+                    path: '/test/workspace/src/shared2',
+                }),
+                includeConfig: expect.objectContaining({
+                    paths: ['../shared2', '../common'],
+                }),
+            });
+            expect(allIncludes).toContainEqual({
+                projectId: 'project2',
+                includePath: expect.objectContaining({
+                    path: '/test/workspace/src/common',
+                }),
+                includeConfig: expect.objectContaining({
+                    paths: ['../shared2', '../common'],
+                }),
+            });
+        });
+        it('should prioritize project folder over include paths when matching documents', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            // project2 includes project1's folder as an include path
+            await projectsManager.registerProject({
+                config: { name: 'project1' },
+                ...folderAt('project1'),
+            });
+            await projectsManager.registerProject({
+                config: {
+                    name: 'project2',
+                    include: { paths: ['../project1'] }, // Overlaps with project1's folder
+                },
+                ...folderAt('project2'),
+            });
+            // Documents in project1 folder should belong to project1, not project2
+            // (project folder takes precedence)
+            expect(projectsManager.ownerProjectId('file:///test/workspace/src/project1/model.c4')).toBe('project1');
+        });
+        it('should handle multiple projects sharing the same include path', async ({ expect }) => {
+            const { projectsManager, services, addDocument } = await createMultiProjectTestServices({});
+            // Both projects include the same shared directory
+            const project1 = await projectsManager.registerProject({
+                config: {
+                    name: 'a-project1',
+                    include: { paths: ['../shared'] },
+                },
+                folderUri: URI.parse('file:///test/workspace/src/a-project1'),
+            });
+            const project2 = await projectsManager.registerProject({
+                config: {
+                    name: 'a-project2',
+                    include: { paths: ['../shared'] },
+                },
+                folderUri: URI.parse('file:///test/workspace/src/a-project2'),
+            });
+            const sharedDoc = await addDocument('shared/common.c4', 'specification { element component }');
+            const project1Doc = await addDocument('a-project1/model.c4', 'model { component c1 }');
+            const project2Doc = await addDocument('a-project2/model.c4', 'model { component c2 }');
+            expect(projectsManager.ownerProjectId(project1Doc)).toBe('a-project1');
+            expect(projectsManager.ownerProjectId(project2Doc)).toBe('a-project2');
+            // Shared document should belong to the first project
+            expect(projectsManager.ownerProjectId(sharedDoc)).toBe('a-project1');
+            // Both projects should be able to access documents from the shared folder
+            // when collecting their project documents
+            const documents = services.shared.workspace.LangiumDocuments;
+            const project1Docs = documents.projectDocuments(project1.id).toArray().map(d => d.uri.path);
+            const project2Docs = documents.projectDocuments(project2.id).toArray().map(d => d.uri.path);
+            expect(project1Docs).toEqual([
+                '/test/workspace/src/a-project1/model.c4',
+                '/test/workspace/src/shared/common.c4',
+            ]);
+            expect(project2Docs).toEqual([
+                '/test/workspace/src/a-project2/model.c4',
+                '/test/workspace/src/shared/common.c4',
+            ]);
+        });
+        it('should update include paths when project is reloaded with different config', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const folderUri = URI.parse('file:///test/workspace/src/project1');
+            // Initial registration with include paths
+            await projectsManager.registerProject({
+                config: {
+                    name: 'project1',
+                    include: { paths: ['../shared1', '../shared2'] },
+                },
+                folderUri,
+            });
+            let project = projectsManager.getProject('project1');
+            expect(project.includePaths).toHaveLength(2);
+            // Reload with different include paths
+            await projectsManager.registerProject({
+                config: {
+                    name: 'project3',
+                    include: { paths: ['../new-shared'] },
+                },
+                folderUri,
+            });
+            project = projectsManager.getProject('project3');
+            expect(project.includePaths).toHaveLength(1);
+            expect(project.includePaths[0].folder).toBe('file:///test/workspace/src/new-shared/');
+        });
+        it('should remove include paths when project is reloaded without includes', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const folderUri = URI.parse('file:///test/workspace/src/project1');
+            // Initial registration with include paths
+            await projectsManager.registerProject({
+                config: {
+                    name: 'project1',
+                    include: { paths: ['../shared'] },
+                },
+                ...folderAt('project1'),
+            });
+            let project = projectsManager.getProject('project1');
+            expect(project.includePaths).toHaveLength(1);
+            // Reload without include paths
+            await projectsManager.registerProject({
+                config: { name: 'project1' },
+                folderUri,
+            });
+            project = projectsManager.getProject('project1');
+            expect(project.includePaths).toBeUndefined();
+        });
+        it('should handle document excluded by one project but included by another', async ({ expect }) => {
+            const { projectsManager, services, addDocument } = await createMultiProjectTestServices({});
+            // Project A excludes the 'excluded' folder
+            const projectA = await projectsManager.registerProject({
+                config: {
+                    name: 'projectA',
+                    exclude: ['excluded/'],
+                },
+                folderUri: URI.parse('file:///test/workspace/src/projectA'),
+            });
+            // Project B includes the excluded folder from projectA
+            const projectB = await projectsManager.registerProject({
+                config: {
+                    name: 'projectB',
+                    include: { paths: ['../projectA/excluded'] },
+                },
+                folderUri: URI.parse('file:///test/workspace/src/projectB'),
+            });
+            // Add a document in projectA's excluded folder
+            const excludedDoc = await addDocument('projectA/excluded/model.c4', 'model { component c1 }');
+            const projectADoc = await addDocument('projectA/specification.c4', 'specification { element component }');
+            const projectBDoc = await addDocument('projectB/specification.c4', 'specification { element component }');
+            // The excluded document should belong to projectB, not projectA
+            expect(projectsManager.ownerProjectId(projectADoc)).toBe('projectA');
+            expect(projectsManager.ownerProjectId(projectBDoc)).toBe('projectB');
+            // The excluded document should belong to projectA, but be excluded
+            expect(projectsManager.ownerProjectId(excludedDoc)).toBe('projectA');
+            expect(projectsManager.isExcluded(excludedDoc)).toBe(false);
+            expect(projectsManager.isExcluded(projectA.id, excludedDoc)).toBe(true);
+            expect(projectsManager.isExcluded(projectB.id, excludedDoc)).toBe(false);
+            expect(projectsManager.isIncluded(projectA.id, excludedDoc)).toBe(false);
+            expect(projectsManager.isIncluded(projectB.id, excludedDoc)).toBe(true);
+            // Check project documents
+            const documents = services.shared.workspace.LangiumDocuments;
+            const projectADocs = documents.projectDocuments(projectA.id).toArray().map(d => d.uri.path);
+            const projectBDocs = documents.projectDocuments(projectB.id).toArray().map(d => d.uri.path);
+            // ProjectA should not have the excluded document
+            expect(projectADocs).toEqual([
+                '/test/workspace/src/projectA/specification.c4',
+            ]);
+            // ProjectB should have both its own document and the excluded document from projectA
+            expect(projectBDocs).toEqual([
+                '/test/workspace/src/projectA/excluded/model.c4',
+                '/test/workspace/src/projectB/specification.c4',
+            ]);
+        });
+    });
+    it('should correctly return project for documents', async ({ expect }) => {
+        const { projectsManager: pm } = await createMultiProjectTestServices({});
+        const projects = [
+            'project1',
+            'project1/sub1',
+            'qwe',
+            'qwe-qwe', // https://github.com/likec4/likec4/issues/2099
+        ];
+        for (const project of projects) {
+            await pm.registerProject({
+                config: { name: project },
+                folderUri: URI.parse(`file:///test/${project}`),
+            });
+        }
+        expect(pm.ownerProjectId('file:///test/outside/doc.likec4')).toEqual('default');
+        expect(pm.ownerProjectId('file:///test/project1/doc.likec4')).toEqual('project1');
+        expect(pm.ownerProjectId('file:///test/project1/sub1/doc.likec4')).toEqual('project1/sub1');
+        expect(pm.ownerProjectId('file:///test/project1/sub1/f1/doc.likec4')).toEqual('project1/sub1');
+        expect(pm.ownerProjectId('file:///test/project1/sub1-doc.likec4')).toEqual('project1');
+        expect(pm.ownerProjectId('file:///test/qwe/doc.likec4')).toEqual('qwe');
+        expect(pm.ownerProjectId('file:///test/qwe-qwe/doc.likec4')).toEqual('qwe-qwe');
+    });
+    describe('onProjectsUpdate', () => {
+        it('should register and dispose update listeners', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const listener1 = vi.fn();
+            const listener2 = vi.fn();
+            const disposable1 = projectsManager.onProjectsUpdate(listener1);
+            projectsManager.onProjectsUpdate(listener2);
+            await projectsManager.registerProject({
+                config: {
+                    name: 'project1',
+                    include: { paths: ['../projectA/excluded'] },
+                },
+                ...folderAt('project1'),
+            });
+            expect(listener1).toHaveBeenCalledTimes(1);
+            expect(listener2).toHaveBeenCalledTimes(1);
+            disposable1.dispose();
+            // Registering a new project at the same location should trigger update listeners
+            await projectsManager.registerProject({
+                config: {
+                    name: 'project2',
+                },
+                ...folderAt('project2'),
+            });
+            expect(listener1).toHaveBeenCalledTimes(1);
+            expect(listener2).toHaveBeenCalledTimes(2);
+        });
+        it('should continue notifying other listeners when one throws', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const errorListener = vi.fn(() => {
+                throw new Error('boom');
+            });
+            const normalListener = vi.fn();
+            projectsManager.onProjectsUpdate(errorListener);
+            projectsManager.onProjectsUpdate(normalListener);
+            await projectsManager.registerProject({
+                config: {
+                    name: 'project1',
+                },
+                folderUri: URI.parse('file:///test/workspace/src/project1'),
+            });
+            expect(errorListener).toHaveBeenCalledTimes(1);
+            expect(normalListener).toHaveBeenCalledTimes(1);
+        });
+        it('should notify listeners on reloadProjects and rebuidProject', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const listener = vi.fn();
+            projectsManager.onProjectsUpdate(listener);
+            const project1 = await projectsManager.registerProject({
+                config: { name: 'project1' },
+                folderUri: URI.parse('file:///test/workspace/src/project1'),
+            });
+            const project2 = await projectsManager.registerProject({
+                config: { name: 'project2' },
+                folderUri: URI.parse('file:///test/workspace/src/project2'),
+            });
+            expect(listener).toHaveBeenCalledTimes(2);
+            // reloadProjects should notify listeners once
+            await projectsManager.reloadProjects().catch(() => { });
+            expect(listener).toHaveBeenCalledTimes(3);
+        });
+    });
+    describe('#defaultProjectId', () => {
+        it('should return "default" when there are no projects', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            expect(projectsManager.defaultProjectId).toBe('default');
+            expect(projectsManager.all).toEqual(['default']);
+        });
+        it('should return the only project id when exactly one project exists', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            await projectsManager.registerProject({
+                config: { name: 'p1' },
+                folderUri: URI.parse('file:///test/workspace/src/p1'),
+            });
+            expect(projectsManager.defaultProjectId).toBe('p1');
+            expect(projectsManager.all).toEqual(['p1', 'default']);
+        });
+        it('should be undefined when multiple projects exist and no explicit default is set', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            await projectsManager.registerProject({
+                config: { name: 'p1' },
+                folderUri: URI.parse('file:///test/workspace/src/p1'),
+            });
+            await projectsManager.registerProject({
+                config: { name: 'p2' },
+                folderUri: URI.parse('file:///test/workspace/src/p2'),
+            });
+            expect(projectsManager.defaultProjectId).toBeUndefined();
+            // "all" should include both projects and the global default
+            expect(projectsManager.all).toEqual(['p1', 'p2', 'default']);
+        });
+        it('should allow setting explicit default project among multiple and make it first in all()', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            await projectsManager.registerProject({
+                config: { name: 'p1' },
+                folderUri: URI.parse('file:///test/workspace/src/p1'),
+            });
+            await projectsManager.registerProject({
+                config: { name: 'p2' },
+                folderUri: URI.parse('file:///test/workspace/src/p2'),
+            });
+            projectsManager.defaultProjectId = 'p2';
+            expect(projectsManager.defaultProjectId).toBe('p2');
+            expect(projectsManager.all).toEqual(['p2', 'p1', 'default']);
+        });
+        it('should reset explicit default when set to undefined or "default"', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            await projectsManager.registerProject({
+                config: { name: 'p1' },
+                folderUri: URI.parse('file:///test/workspace/src/p1'),
+            });
+            await projectsManager.registerProject({
+                config: { name: 'p2' },
+                folderUri: URI.parse('file:///test/workspace/src/p2'),
+            });
+            projectsManager.defaultProjectId = 'p1';
+            expect(projectsManager.defaultProjectId).toBe('p1');
+            // Reset via undefined
+            projectsManager.defaultProjectId = undefined;
+            expect(projectsManager.defaultProjectId).toBeUndefined();
+            // Set again and reset via "default"
+            projectsManager.defaultProjectId = 'p2';
+            expect(projectsManager.defaultProjectId).toBe('p2');
+            projectsManager.defaultProjectId = 'default';
+            expect(projectsManager.defaultProjectId).toBeUndefined();
+        });
+        it('setting explicit default to non-existing project should throw', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            await projectsManager.registerProject({
+                config: { name: 'p1' },
+                folderUri: URI.parse('file:///test/workspace/src/p1'),
+            });
+            expect(() => {
+                projectsManager.defaultProjectId = 'unknown';
+            }).toThrowError(/Project "unknown" not found/);
+        });
+        it('resetting explicit default in single-project workspace should fall back to that project', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            await projectsManager.registerProject({
+                config: { name: 'solo' },
+                folderUri: URI.parse('file:///test/workspace/src/solo'),
+            });
+            // Explicitly set and then reset
+            projectsManager.defaultProjectId = 'solo';
+            expect(projectsManager.defaultProjectId).toBe('solo');
+            projectsManager.defaultProjectId = undefined;
+            // With one project, getter returns that id
+            expect(projectsManager.defaultProjectId).toBe('solo');
+        });
+    });
+    describe.runIf(process.platform === 'win32')('On Windows', () => {
+        it('should handle folder URIs', async ({ expect }) => {
+            const { projectsManager } = await createMultiProjectTestServices({});
+            const folderUri1 = 'c:\\my\\files';
+            const folderUri2 = 'c:\\my\\files-ext';
+            await projectsManager.registerProject({
+                config: { name: 'test1' },
+                folderUri: folderUri1,
+            });
+            await projectsManager.registerProject({
+                config: { name: 'test2' },
+                folderUri: folderUri2,
+            });
+            expect.soft(projectsManager.all).to.include.members(['test1', 'test2']);
+            expect.soft(projectsManager.getProject('test1').folderUri.toString()).toBe('file:///c%3A/my/files/');
+            expect.soft(projectsManager.getProject('test2').folderUri.toString()).toBe('file:///c%3A/my/files-ext/');
+        });
+        it.todo('should exclude node_modules', async ({ expect }) => {
+            const { projectsManager: pm } = await createMultiProjectTestServices({});
+            await pm.registerProject({
+                config: {
+                    name: 'test1',
+                    exclude: ['node_modules'],
+                },
+                folderUri: 'c:\\my\\files',
+            });
+            expect(pm.isExcluded('c:\\my\\files\\doc.likec4')).toEqual(false);
+            expect(pm.isExcluded('c:\\my\\files\\node_modules\\doc.likec4')).toEqual(true);
+            expect(pm.isExcluded('c:\\my\\files\\nested\\node_modules\\doc.likec4')).toEqual(true);
+        });
+        it('should correctly return project for documents', async ({ expect }) => {
+            const { projectsManager: pm } = await createMultiProjectTestServices({});
+            const projects = [
+                'project1',
+                'project1\\sub1',
+                'qwe',
+                'qwe-qwe', // https://github.com/likec4/likec4/issues/2099
+            ];
+            for (const project of projects) {
+                await pm.registerProject({
+                    config: { name: project },
+                    folderUri: `c:\\my\\files\\${project}`,
+                });
+            }
+            expect(pm.ownerProjectId('file:///test/outside/doc.likec4')).toEqual('default');
+            expect(pm.ownerProjectId('c:\\my\\files\\project1\\doc.likec4')).toEqual('project1');
+            expect(pm.ownerProjectId('c:\\my\\files\\project1\\sub1\\doc.likec4')).toEqual('project1\\sub1');
+            expect(pm.ownerProjectId('c:\\my\\files\\project1\\sub1\\f1\\doc.likec4')).toEqual('project1\\sub1');
+            expect(pm.ownerProjectId('c:\\my\\files\\project1\\sub1-doc.likec4')).toEqual('project1');
+            expect(pm.ownerProjectId('c:\\my\\files\\qwe\\doc.likec4')).toEqual('qwe');
+            expect(pm.ownerProjectId('c:\\my\\files\\qwe-qwe\\doc.likec4')).toEqual('qwe-qwe');
+        });
+    });
+});
+describe('ProjectFolder', () => {
+    it.each([
+        ['file:///test/project1', 'file:///test/project1/'],
+        ['/test/project1', 'file:///test/project1/'],
+        ['file:///test/project1/', 'file:///test/project1/'],
+        ['/test/project1/', 'file:///test/project1/'],
+        ['file:///test/project1/sub1', 'file:///test/project1/sub1/'],
+        ['file:///test/project1/sub1/', 'file:///test/project1/sub1/'],
+        [URI.parse('file:///test/project1'), 'file:///test/project1/'],
+        [URI.file('/test/project1'), 'file:///test/project1/'],
+    ])('convert %s -> %s', (input, expected) => {
+        expect(ProjectFolder(input)).toEqual(expected);
+    });
+});

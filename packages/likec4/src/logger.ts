@@ -14,7 +14,8 @@ export function createLikeC4Logger(prefix: string | readonly [string, ...string[
     info(msg: string) {
       logger.info(msg)
     },
-    debug(msg: string, ...args: unknown[]) {
+    /** Logs a debug-level message; optional variadic args are attached as an args object. */
+    debug(msg: string, ...args: unknown[]): void {
       if (args.length === 0) logger.debug(msg)
       else logger.debug(msg, { args })
     },

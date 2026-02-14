@@ -82,6 +82,8 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
 
   /**
    * Builds hover content for an element node (title, summary, model details and view links).
+   * @param node - The element AST node to generate hover content for.
+   * @returns Hover information with markdown content, or undefined if element not found.
    */
   protected getElementHover(node: ast.Element): MaybePromise<Hover | undefined> {
     const found = this.locator.getParsedElement(node)
@@ -114,6 +116,9 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
 
   /**
    * Builds markdown hover content for an element model (relationship counts and links to views).
+   * @param model - The element model containing relationship and view information.
+   * @param projectId - The project identifier for constructing view links.
+   * @returns Markdown string with model details, or undefined if no details available.
    */
   protected getElementModelHover(model: ElementModel, projectId: ProjectId): string | undefined {
     const lines = []
@@ -166,6 +171,8 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
 
   /**
    * Builds hover content for a deployment node (id, title, kind, summary).
+   * @param node - The deployment node AST node to generate hover content for.
+   * @returns Hover information with markdown content.
    */
   protected getDeploymentNodeHover(node: ast.DeploymentNode): MaybePromise<Hover | undefined> {
     const doc = AstUtils.getDocument(node)
@@ -191,6 +198,8 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
 
   /**
    * Builds hover content for a deployed instance (instance id, element ref, title and kind).
+   * @param node - The deployed instance AST node to generate hover content for.
+   * @returns Hover information with markdown content showing instance details.
    */
   protected getDeployedInstanceHover(node: ast.DeployedInstance): MaybePromise<Hover | undefined> {
     const doc = AstUtils.getDocument(node)

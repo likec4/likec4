@@ -6,19 +6,26 @@ import { startLanguageServer } from './index'
 declare const self: DedicatedWorkerGlobalScope
 
 function errToString(err: unknown): string {
-  if (err instanceof Error) return err.message
-  if (typeof err === 'object' && err !== null) {
-    try {
-      return JSON.stringify(err)
-    } catch {
-      return '[unserializable value]'
-    }
+  switch (true) {
+    case err instanceof Error:
+      return err.message
+    case typeof err === 'object' && err !== null:
+      try {
+        return JSON.stringify(err)
+      } catch {
+        return '[unserializable value]'
+      }
+    case typeof err === 'string':
+      return err
+    case err === null || err === undefined:
+      return ''
+    case typeof err === 'number' || typeof err === 'boolean':
+      return String(err)
+    case typeof err === 'symbol':
+      return err.toString()
+    default:
+      return 'unknown'
   }
-  if (typeof err === 'string') return err
-  if (err === null || err === undefined) return ''
-  if (typeof err === 'number' || typeof err === 'boolean') return String(err)
-  if (typeof err === 'symbol') return err.toString()
-  return 'unknown'
 }
 const log = (msg: string, err?: unknown) => {
   const line = err === undefined || err === null ? msg : `${msg} ${errToString(err)}`

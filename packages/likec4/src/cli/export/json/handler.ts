@@ -69,7 +69,7 @@ async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<
   }
 
   let outfile = args.outfile
-  if (extname(outfile) !== '.json') outfile = outfile + '.json'
+  if (extname(outfile).toLowerCase() !== '.json') outfile = outfile + '.json'
   await mkdir(dirname(outfile), { recursive: true })
 
   const toGenerate = projectsModels.length === 1 ? projectsModels[0] : projectsModels

@@ -41,10 +41,8 @@ export const ConfigFilenames = [
   ...configNonJsonFilenames,
 ] as const
 
-/**
- * Checks if the given filename is a LikeC4 JSON config file (JSON, RC).
- */
-export function isLikeC4JsonConfig(filename: string): filename is typeof configJsonFilenames[number] {
+/** Returns true if the **basename** of the given path matches a known config filename. */
+export function isLikeC4JsonConfig(filename: string): boolean {
   return (configJsonFilenames as readonly string[]).includes(basename(filename))
 }
 

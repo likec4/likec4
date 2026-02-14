@@ -21,7 +21,7 @@ function isDrawioFile(entry: { isFile: () => boolean; name: string }): boolean {
 // with same path passes. e2e/src/likec4 exists with .c4 sources. To fix: run with --verbose in CI and
 // inspect workspace path and Langium scan, or run e2e against local likec4 (not tgz).
 test.skip(
-  'LikeC4 CLI - export drawio produces .drawio file with mxfile',
+  'LikeC4 CLI - export drawio produces .drawio file with mxfile (SKIPPED: CI tgz path resolution issue)',
   { timeout: 30000 },
   async ({ expect }) => {
     rmSync(outDir, { recursive: true, force: true })

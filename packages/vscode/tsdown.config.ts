@@ -106,7 +106,7 @@ function emptyDir(dir: string) {
   }
 }
 
-async function copyPreview() {
+async function copyPreview(): Promise<void> {
   const vscodePreview = resolve('../vscode-preview/dist/')
   if (!existsSync(vscodePreview)) {
     throw new Error(`vscode-preview dist not found: ${vscodePreview}`)

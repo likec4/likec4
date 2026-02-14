@@ -40,6 +40,14 @@ function requestLayoutView(
   return client.sendRequest(LayoutView.req, { viewId })
 }
 
+/**
+ * Syncs playground state with the Monaco language client (active file, view, layout).
+ * Sets layouted model API via setLayoutedModelApi when available; initializes and disposes LSP client.
+ * @param config - Custom wrapper config for the editor.
+ * @param wrapper - Monaco editor language client wrapper.
+ * @param setLayoutedModelApi - Optional callback to receive the layouted model API (e.g. for Draw.io export).
+ * @returns React component that provides the sync behavior.
+ */
 export function LanguageClientSync({
   config,
   wrapper,

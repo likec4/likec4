@@ -1,0 +1,60 @@
+import { loggable } from '@likec4/log';
+import { logger } from '../utils';
+import { MCPServerFactory } from './MCPServerFactory';
+import { StdioLikeC4MCPServer } from './StdioLikeC4MCPServer';
+import { StreamableLikeC4MCPServer } from './StreamableLikeC4MCPServer';
+function streamableLikeC4MCPServer(services, defaultPort = 33335) {
+    logger.debug('Creating StreamableLikeC4MCPServer');
+    const server = new StreamableLikeC4MCPServer(services, defaultPort);
+    const langId = services.LanguageMetaData.languageId;
+    const connection = services.shared.lsp.Connection;
+    services.shared.workspace.ConfigurationProvider.onConfigurationSectionUpdate((update) => {
+        if (update.section !== langId) {
+            logger.warn('Unexpected configuration update: {update}', { update });
+            return;
+        }
+        const { enabled = false, port = defaultPort, } = update.configuration.mcp;
+        if (!enabled) {
+            void server.stop();
+            return;
+        }
+        void Promise.resolve()
+            .then(() => server.start(port))
+            .then(() => {
+            connection?.telemetry?.logEvent({
+                eventName: 'mcp-server-started',
+                mcpPort: port,
+            });
+        })
+            .catch(err => {
+            const message = loggable(err);
+            connection?.telemetry?.logEvent({
+                eventName: 'mcp-server-start-failed',
+                mcpPort: port,
+                message,
+            });
+            logger.warn(`Failed to start LikeC4 MCP Server: \n${message}`);
+            if (connection) {
+                connection.window.showErrorMessage(`LikeC4: Failed to start MCP Server\n\n${message}`);
+            }
+        });
+    });
+    return server;
+}
+function stdioLikeC4MCPServer(services) {
+    return new StdioLikeC4MCPServer(services);
+}
+export function WithMCPServer(type = 'sse') {
+    return ({
+        mcpServer: (services) => {
+            if (type === 'stdio') {
+                return stdioLikeC4MCPServer(services);
+            }
+            const port = typeof type === 'object' ? type.port : 33335;
+            return streamableLikeC4MCPServer(services, port);
+        },
+        mcpServerFactory: (services) => {
+            return new MCPServerFactory(services);
+        },
+    });
+}

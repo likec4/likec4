@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 import { canvas, CANVAS_SELECTOR, editor, MENU_SELECTOR } from '../helpers/selectors'
 import {

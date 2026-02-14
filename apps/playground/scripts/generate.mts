@@ -2,14 +2,15 @@ import { existsSync, writeFileSync } from 'node:fs'
 import { platform } from 'node:os'
 import { $ as _$, quotePowerShell, usePowerShell } from 'zx'
 
+const isWindows = platform() === 'win32'
 // On Windows, zx needs PowerShell (no bash by default in v8+)
-if (platform() === 'win32') {
+if (isWindows) {
   usePowerShell()
 }
 const $ = _$({
   stdio: 'inherit',
   preferLocal: true,
-  ...(platform() === 'win32' ? { quote: quotePowerShell } : {}),
+  ...(isWindows ? { quote: quotePowerShell } : {}),
 })
 
 await $`tsr generate`

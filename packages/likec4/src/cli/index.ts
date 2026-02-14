@@ -109,7 +109,6 @@ async function main() {
  * @param prefix - Optional prefix for the error message (e.g. 'Unhandled rejection:')
  */
 function exitWithFailure(err: unknown, prefix?: string): never {
-  process.exitCode = 1
   console.error(prefix != null ? `${prefix} ${loggable(err)}` : loggable(err))
   exit(1)
 }

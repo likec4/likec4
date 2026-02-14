@@ -1,32 +1,32 @@
-# Cobertura E2E (DrawIO e export)
+# E2E coverage (DrawIO and export)
 
-## Design e clean code (DRY, SOLID, KISS, YAGNI)
+## Design and clean code (DRY, SOLID, KISS, YAGNI)
 
-- **drawio-playground.spec.ts:** Constantes no topo (TUTORIAL_PATH, TIMEOUT_*, CANVAS_SELECTOR, EDITOR_SELECTOR, MENU_SELECTOR, RIGHT_CLICK_CANVAS, EDITOR_CLICK_POSITION); helpers com responsabilidade única: `canvas(page)`, `editor(page)`, `openDrawioContextMenu(page)`, `triggerDrawioDownload(page, menuItemLabel, downloadTimeout)`; zero duplicação nos fluxos de download; asserção explícita do path do download (fail-fast, sem branch silencioso).
-- **static-navigation.spec.ts:** Helper `canvas(page)` e URL alinhada ao bootstrap (`/project/{project}/export/{viewId}/?padding=22`); `gotoViewAndAssertDiagram` usa apenas `expect(canvas(page)).toBeVisible({ timeout })` (um único ponto de espera pelo diagrama).
-- **docs-smoke.spec.ts:** Constantes `TIMEOUT_PAGE` e URLs (`DOCS_HOME`, `DOCS_TOOLING_DRAWIO`, `DOCS_TOOLING_CLI`) num único nível de abstração; testes curtos e independentes.
-- **likec4-cli-export-drawio.spec.ts:** Predicado nomeado `isDrawioFile(entry)`; variável `firstDrawioContent`; ordem determinística dos ficheiros (sort por nome) antes de ler o primeiro; constantes `outDir` e `sourceDir`.
-- **likec4-cli-build.spec.ts:** Constantes `sourceDir`, `outDir`, `outDirSingleFile` no topo, homogeneidade com export-drawio; comandos construídos a partir delas.
+- **drawio-playground.spec.ts:** Constants at the top (TUTORIAL_PATH, TIMEOUT_*, CANVAS_SELECTOR, EDITOR_SELECTOR, MENU_SELECTOR, RIGHT_CLICK_CANVAS, EDITOR_CLICK_POSITION); helpers with single responsibility: `canvas(page)`, `editor(page)`, `openDrawioContextMenu(page)`, `triggerDrawioDownload(page, menuItemLabel, downloadTimeout)`; no duplication in download flows; explicit assertion of download path (fail-fast, no silent branch).
+- **static-navigation.spec.ts:** Helper `canvas(page)` and URL aligned with bootstrap (`/project/{project}/export/{viewId}/?padding=22`); `gotoViewAndAssertDiagram` uses only `expect(canvas(page)).toBeVisible({ timeout })` (single wait point for the diagram).
+- **docs-smoke.spec.ts:** Constants `TIMEOUT_PAGE` and URLs (`DOCS_HOME`, `DOCS_TOOLING_DRAWIO`, `DOCS_TOOLING_CLI`) at a single abstraction level; short, independent tests.
+- **likec4-cli-export-drawio.spec.ts:** Named predicate `isDrawioFile(entry)`; variable `firstDrawioContent`; deterministic file order (sort by name) before reading the first; constants `outDir` and `sourceDir`.
+- **likec4-cli-build.spec.ts:** Constants `sourceDir`, `outDir`, `outDirSingleFile` at the top, homogeneity with export-drawio; commands built from them.
 
-Homogeneidade: Playwright specs usam `test.describe` + `test()`/`test.beforeEach`; Vitest CLI specs usam `test.concurrent` e `$`; seletores e URLs partilhados com o bootstrap quando aplicável. Revisão “Uncle Bob” high-end: funções pequenas e com um único propósito, nomes que revelam intenção, sem magic numbers, asserções explícitas e testes determinísticos. Integridade (varredura global): CLI export drawio: ExportDrawioParams, isSourceFile, ROUNDTRIP_IGNORED_DIRS; Playground: OnDrawioExportError, CollectViewModelsOptions; CLI: applyLoggerConfig; E2E: type Page.
+Homogeneity: Playwright specs use `test.describe` + `test()`/`test.beforeEach`; Vitest CLI specs use `test.concurrent` and `$`; selectors and URLs shared with bootstrap when applicable. High-end “Uncle Bob” review: small functions with a single purpose, names that reveal intent, no magic numbers, explicit assertions and deterministic tests. Integrity (global sweep): CLI export drawio: ExportDrawioParams, isSourceFile, ROUNDTRIP_IGNORED_DIRS; Playground: OnDrawioExportError, CollectViewModelsOptions; CLI: applyLoggerConfig; E2E: type Page.
 
-## Cenários implementados
+## Implemented scenarios
 
-- [x] Playground: menu DrawIO (Export to DrawIO, Export all).
-- [x] Playground: workspace carrega e diagrama visível.
-- [x] Playground: Export to DrawIO dispara download com conteúdo .drawio válido.
-- [x] Playground: Export all dispara download .drawio.
-- [x] Playground: menu do editor (Monaco) mostra Export to DrawIO.
-- [x] CLI: `likec4 export drawio` produz ficheiro com `<mxfile` (Vitest em `e2e/src/likec4-cli-export-drawio.spec.ts`).
+- [x] Playground: DrawIO menu (Export to DrawIO, Export all).
+- [x] Playground: workspace loads and diagram is visible.
+- [x] Playground: Export to DrawIO triggers download with valid .drawio content.
+- [x] Playground: Export all triggers .drawio download.
+- [x] Playground: editor (Monaco) menu shows Export to DrawIO.
+- [x] CLI: `likec4 export drawio` produces file with `<mxfile` (Vitest in `e2e/src/likec4-cli-export-drawio.spec.ts`).
 
-## Pendentes (opcional)
+## Pending (optional)
 
-- [x] Static site: navegação entre views (`tests/static-navigation.spec.ts`; corre com o config principal, likec4 start 5173).
-- [x] Docs: smoke de páginas principais (`tests/docs-smoke.spec.ts`; `pnpm test:docs` com `playwright.docs.config.ts`, porta 4321).
+- [x] Static site: navigation between views (`tests/static-navigation.spec.ts`; runs with main config, likec4 start 5173).
+- [x] Docs: smoke test for main pages (`tests/docs-smoke.spec.ts`; `pnpm test:docs` with `playwright.docs.config.ts`, port 4321).
 
-## Como rodar
+## How to run
 
-- **Playwright (playground):** `cd e2e && pnpm test:playground` (requer `pnpm install` e, em CI, tarballs).
-- **Playwright (static nav):** `cd e2e && pnpm test` (inclui `static-navigation.spec.ts` após bootstrap).
+- **Playwright (playground):** `cd e2e && pnpm test:playground` (requires `pnpm install` and, in CI, tarballs).
+- **Playwright (static nav):** `cd e2e && pnpm test` (includes `static-navigation.spec.ts` after bootstrap).
 - **Playwright (docs smoke):** `cd e2e && pnpm test:docs`.
 - **Vitest (incl. CLI export drawio):** `cd e2e && pnpm typecheck`.

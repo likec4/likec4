@@ -138,7 +138,7 @@ function buildOptionsByViewId(
   sourceContent: string | undefined,
   uncompressed: boolean,
 ): Record<string, GenerateDrawioOptions> {
-  const viewIds = viewmodels.map(vm => vm.$view.id as string)
+  const viewIds = viewmodels.map(vm => String(vm.$view.id))
   const overrides = uncompressed ? { compressed: false } : undefined
   return buildDrawioExportOptionsForViews(viewIds, sourceContent, overrides)
 }

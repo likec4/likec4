@@ -1,0 +1,12 @@
+import type { ComputedNode, Point, RelationshipArrowType } from '@likec4/core';
+import type { ArrowType, Color } from 'ts-graphviz';
+export declare function isCompound(node: ComputedNode): boolean;
+export declare function toArrowType(type: RelationshipArrowType): ArrowType;
+export declare function pointToPx(point: [number, number]): Point;
+export declare function pointToPx(pt: number): number;
+export declare const inchToPx: (inch: number) => number;
+export declare const pxToInch: (px: number) => number;
+export declare const pxToPoints: (px: number) => number;
+export declare const IconSizePoints: string;
+export declare function compoundColor(color: string, depth: number): Color;
+export declare function compoundLabelColor(color: string): `#${string}`;

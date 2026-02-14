@@ -27,10 +27,10 @@ configureLogger({
 const envSchema = z.string().or(z.array(z.string()))
 
 /**
- * Read LIKEC4_WORKSPACE env: JSON array of paths or single path string.
+ * Read LIKEC4_WORKSPACE env: JSON array of file URIs (e.g., "file:///path") or single path string.
  * Falls back to treating raw value as one workspace path if not valid JSON.
  * @param name - Environment variable name (e.g. 'LIKEC4_WORKSPACE').
- * @returns Array of absolute fs paths, or undefined if unset/invalid.
+ * @returns Non-empty array of absolute fs paths, or undefined if unset/empty.
  */
 function readEnvVar(name: string): [string, ...string[]] | undefined {
   const value = process.env[name]

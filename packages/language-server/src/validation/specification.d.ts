@@ -1,0 +1,12 @@
+import { type ValidationCheck } from 'langium';
+import { ast } from '../ast';
+import type { LikeC4Services } from '../module';
+export declare const checkSpecificationRule: (_: LikeC4Services) => ValidationCheck<ast.SpecificationRule>;
+export declare const checkModel: (_: LikeC4Services) => ValidationCheck<ast.Model>;
+export declare const checkGlobals: (_: LikeC4Services) => ValidationCheck<ast.Globals>;
+export declare const checkElementKind: (services: LikeC4Services) => ValidationCheck<ast.ElementKind>;
+export declare const checkDeploymentNodeKind: (services: LikeC4Services) => ValidationCheck<ast.DeploymentNodeKind>;
+export declare const checkTag: (services: LikeC4Services) => ValidationCheck<ast.Tag>;
+export declare const checkRelationshipKind: (services: LikeC4Services) => ValidationCheck<ast.RelationshipKind>;
+export declare const checkGlobalPredicate: (services: LikeC4Services) => ValidationCheck<ast.GlobalPredicateGroup | ast.GlobalDynamicPredicateGroup>;
+export declare const checkGlobalStyleId: (services: LikeC4Services) => ValidationCheck<ast.GlobalStyleId>;
