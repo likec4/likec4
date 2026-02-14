@@ -25,7 +25,11 @@ export const useMcpRegistration = createSingletonComposable(() => {
   const folders = useWorkspaceFolders()
   const workspaceFolders = computed(() => folders.value?.map(f => f.uri.toString()) ?? [])
   const workspaceId = useWorkspaceId()
-  const serverModule = extensionContext.value!.asAbsolutePath(
+  const ctx = extensionContext.value
+  if (!ctx) {
+    throw new Error('Extension context not available during MCP registration')
+  }
+  const serverModule = ctx.asAbsolutePath(
     join(
       'dist',
       'node',
@@ -49,7 +53,7 @@ export const useMcpRegistration = createSingletonComposable(() => {
         ]
       },
       resolveMcpServerDefinition: async (server) => {
-        logger.debug`Resolving MCP server ${server.label}`
+        logger.debug(`Resolving MCP server ${server.label}`)
         if (server.label === 'likec4' && isMcpStdioServerDefinition(server)) {
           logger.debug(`Resolved MCP server`, {
             args: server.args,
