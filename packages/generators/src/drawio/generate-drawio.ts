@@ -905,6 +905,11 @@ export type GenerateDrawioOptions = {
    * generateDrawio/generateDiagramContent default to compressed when options omitted; buildDrawioExportOptionsFromSource defaults compressed: false so CLI/playground get readable XML unless overridden.
    */
   compressed?: boolean
+  /**
+   * ISO timestamp for mxfile modified attribute. When omitted, uses current time (output non-deterministic).
+   * Set for deterministic output (e.g. tests, content-addressable storage).
+   */
+  modified?: string
 }
 
 /** Result of layout phase: bboxes, offsets, and shared styling so cell-building phase stays readable. */
@@ -1218,10 +1223,14 @@ function generateDiagramContent(
 }
 
 /** Wrap one or more diagram contents in mxfile XML. */
-function wrapInMxFile(diagrams: Array<{ name: string; id: string; content: string }>): string {
+function wrapInMxFile(
+  diagrams: Array<{ name: string; id: string; content: string }>,
+  modified?: string,
+): string {
+  const modifiedAttr = modified ?? new Date().toISOString()
   if (diagrams.length === 0) {
     return `<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="LikeC4" modified="${new Date().toISOString()}" agent="LikeC4" version="1.0" etag="" type="device">
+<mxfile host="LikeC4" modified="${modifiedAttr}" agent="LikeC4" version="1.0" etag="" type="device">
 </mxfile>
 `
   }
@@ -1233,9 +1242,7 @@ function wrapInMxFile(diagrams: Array<{ name: string; id: string; content: strin
       }">${d.content}</diagram>`,
   )
   return `<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="LikeC4" modified="${
-    new Date().toISOString()
-  }" agent="LikeC4" version="1.0" etag="" type="device"${pagesAttr}>
+<mxfile host="LikeC4" modified="${modifiedAttr}" agent="LikeC4" version="1.0" etag="" type="device"${pagesAttr}>
 ${diagramParts.join('\n')}
 </mxfile>
 `
@@ -1252,7 +1259,7 @@ export function generateDrawio(
   viewmodel: DrawioViewModelLike,
   options?: GenerateDrawioOptions,
 ): string {
-  return wrapInMxFile([generateDiagramContent(viewmodel, options)])
+  return wrapInMxFile([generateDiagramContent(viewmodel, options)], options?.modified)
 }
 
 /**
@@ -1262,14 +1269,16 @@ export function generateDrawio(
  *
  * @param viewmodels - Layouted view models (e.g. from model.views())
  * @param optionsByViewId - Optional per-view options (e.g. compressed: false for each tab)
+ * @param modified - Optional ISO timestamp for mxfile modified attribute (for deterministic output)
  * @returns DrawIO .drawio XML string with multiple <diagram> elements
  */
 export function generateDrawioMulti(
   viewmodels: Array<DrawioViewModelLike>,
   optionsByViewId?: Record<string, GenerateDrawioOptions>,
+  modified?: string,
 ): string {
   const diagrams = viewmodels.map(vm => generateDiagramContent(vm, optionsByViewId?.[vm.$view.id]))
-  return wrapInMxFile(diagrams)
+  return wrapInMxFile(diagrams, modified)
 }
 
 /**

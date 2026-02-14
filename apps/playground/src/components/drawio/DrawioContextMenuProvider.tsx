@@ -10,6 +10,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
 } from 'react'
 import { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT } from './drawio-events'
 import { DrawioContextMenuDropdown } from './DrawioContextMenuDropdown'
@@ -35,11 +36,16 @@ export type DrawioContextMenuApi = {
 const DrawioContextMenuContext = createContext<DrawioContextMenuApi | null>(null)
 
 /** Snapshot when playground is not ready (no diagram, no model, empty files/viewStates). */
-const EMPTY_DRAWIO_SNAPSHOT = {
-  diagram: null as DiagramView | null,
-  likec4model: null as LikeC4Model | null,
-  files: {} as Record<string, string>,
-  viewStates: {} as Record<string, DiagramStateLike>,
+const EMPTY_DRAWIO_SNAPSHOT: {
+  diagram: DiagramView | null
+  likec4model: LikeC4Model | null
+  files: Record<string, string>
+  viewStates: Record<string, DiagramStateLike>
+} = {
+  diagram: null,
+  likec4model: null,
+  files: {},
+  viewStates: {},
 }
 
 /** Returns the DrawIO context menu API; throws if used outside DrawioContextMenuProvider. */
@@ -79,10 +85,12 @@ export function DrawioContextMenuProvider({
     }
   })
 
+  const filesRef = useRef(files)
+  filesRef.current = files
   const getSourceContent = useCallback(() => {
-    const contents = Object.values(files).filter(Boolean)
+    const contents = Object.values(filesRef.current).filter(Boolean)
     return contents.length > 0 ? contents.join('\n\n') : undefined
-  }, [files])
+  }, [])
 
   const actions = useDrawioContextMenuActions({
     diagram,

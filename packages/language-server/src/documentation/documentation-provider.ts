@@ -67,6 +67,9 @@ export class LikeC4DocumentationProvider extends JSDocDocumentationProvider {
         ]
         return lines.join('  \n')
       }
+
+      // Exhaustiveness check — errors at compile time if guard admits a new node type without a handler
+      const _exhaustive: never = node
     } catch (e) {
       logWarnError(e)
     }

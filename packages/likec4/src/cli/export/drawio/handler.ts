@@ -232,12 +232,14 @@ type DrawioExportArgs = {
 async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
 
-  // 1) Init workspace and ensure single project (same fromWorkspace as build for consistent CI)
+  // 1) Init workspace (same fromWorkspace as build for consistent CI)
   await using likec4 = await fromWorkspace(args.path, {
     graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })
-  likec4.ensureSingleProject()
+  if (!args.project) {
+    likec4.ensureSingleProject()
+  }
 
   // 2) Load layouted model and validate non-empty
   const projectId: ProjectId | undefined = args.project != null
@@ -263,7 +265,11 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   }
 
   // 4) Export: all-in-one file or one file per view
-  if (args.allInOne && viewmodels.length > 0) {
+  if (viewmodels.length === 0) {
+    logger.warn('No views to export')
+    throw new Error(ERR_NO_VIEWS_EXPORTED)
+  }
+  if (args.allInOne) {
     try {
       await exportDrawioAllInOne(exportParams)
     } catch (err) {
@@ -271,11 +277,11 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
     }
   } else {
     const { succeeded } = await exportDrawioPerView(exportParams)
-    if (succeeded === 0 && viewmodels.length > 0) {
+    if (succeeded === 0) {
       logger.error(ERR_NO_VIEWS_EXPORTED)
       throw new Error(ERR_NO_VIEWS_EXPORTED)
     }
-    if (succeeded > 0) logger.info(`${k.dim('total')} ${succeeded} DrawIO file(s)`)
+    logger.info(`${k.dim('total')} ${succeeded} DrawIO file(s)`)
   }
 
   timer.stopAndLog(`✓ export drawio in `)
