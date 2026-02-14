@@ -247,16 +247,15 @@ export function useDrawioContextMenuActions({
     try {
       const viewIdsInModel = [...likec4model.views()].map(vm => vm.$view.id)
       const viewModels = await collectViewModelsForExportAll({
-      viewIdsInModel,
-      allViewModelsFromState,
-      likec4model,
-      viewStates,
-      getLayoutedModel,
-      layoutViews,
-      ...(onExportError != null && { onExportError }),
-    })
-    if (viewModels.length === 0) return
-    try {
+        viewIdsInModel,
+        allViewModelsFromState,
+        likec4model,
+        viewStates,
+        getLayoutedModel,
+        layoutViews,
+        ...(onExportError != null && { onExportError }),
+      })
+      if (viewModels.length === 0) return
       const sourceContent = getSourceContent?.()
       const viewIds = viewModels.map(vm => vm.$view.id)
       const optionsByViewId = buildDrawioExportOptionsForViews(viewIds, sourceContent)
