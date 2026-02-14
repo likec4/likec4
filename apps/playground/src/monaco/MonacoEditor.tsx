@@ -81,7 +81,7 @@ const LazyMonacoEditor = memo((props: MonacoEditorProps) => {
         <LanguageClientSync
           config={wrapperConfig}
           wrapper={wrapper}
-          setLayoutedModelApi={setLayoutedModelApi}
+          {...(setLayoutedModelApi != null && { setLayoutedModelApi })}
         />
       )}
     </>
