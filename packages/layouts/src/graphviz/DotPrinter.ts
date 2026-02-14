@@ -381,11 +381,13 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     const colorValues = this.styles.colors(element.color).elements
     const { values: { padding, sizes: { width, height } } } = this.styles.nodeSizes(element.style)
 
+    let paddingX = hasIcon ? 8 : padding
+
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
       [_.label]: nodeLabel(element, this.styles),
-      [_.margin]: `${pxToInch(hasIcon ? 8 : padding)},${pxToInch(padding)}`,
+      [_.margin]: `${pxToInch(paddingX)},${pxToInch(padding)}`,
     })
 
     node.attributes.set(_.width, pxToInch(width))
@@ -402,7 +404,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
       case 'cylinder':
       case 'storage': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 8 : padding)},${pxToInch(0)}`,
+          [_.margin]: `${pxToInch(paddingX)},${pxToInch(0)}`,
           [_.penwidth]: pxToPoints(2),
           [_.shape]: 'cylinder',
         })
@@ -410,13 +412,13 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
       }
       case 'browser': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 8 : padding + 4)},${pxToInch(padding + 6)}`,
+          [_.margin]: `${pxToInch(hasIcon ? paddingX : paddingX + 4)},${pxToInch(padding + 6)}`,
         })
         break
       }
       case 'mobile': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 8 : padding + 4)},${pxToInch(padding)}`,
+          [_.margin]: `${pxToInch(hasIcon ? paddingX : paddingX + 4)},${pxToInch(padding)}`,
         })
         break
       }
@@ -424,7 +426,14 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
         node.attributes.apply({
           [_.width]: pxToInch(width),
           [_.height]: pxToInch(height - 8),
-          [_.margin]: `${pxToInch(hasIcon ? 8 : padding + 4)},${pxToInch(padding)}`,
+          [_.margin]: `${pxToInch(hasIcon ? paddingX : paddingX + 4)},${pxToInch(padding)}`,
+        })
+        break
+      }
+      case 'component': {
+        node.attributes.apply({
+          [_.width]: pxToInch(width + 10),
+          [_.margin]: `${pxToInch(paddingX + 20)},${pxToInch(padding)}`,
         })
         break
       }

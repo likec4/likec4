@@ -17,18 +17,22 @@ type ElementDetailsButtonProps = {
 
 const variants = {
   normal: {
-    originX: 0.45,
-    originY: 0.55,
+    originX: 0.4,
+    originY: 0.6,
     scale: 1,
     opacity: 0.5,
   },
   hovered: {
-    scale: 1.2,
-    opacity: 0.8,
+    originX: 0.4,
+    originY: 0.6,
+    scale: 1.25,
+    opacity: 0.9,
   },
   selected: {
-    scale: 1.2,
-    opacity: 0.8,
+    originX: 0.4,
+    originY: 0.6,
+    scale: 1.25,
+    opacity: 0.9,
   },
   whileHover: {
     scale: 1.4,

@@ -1,5 +1,11 @@
 # @likec4/vscode-preview
 
+## 1.49.0
+
+### Patch Changes
+
+- [`d039d0b`](https://github.com/likec4/likec4/commit/d039d0b2dd0ce98e4ec96498877bb60e2c921829) Thanks [@davydkov](https://github.com/davydkov)! - Fixed "reload" screen in VSCode preview
+
 ## 1.48.0
 
 ### Minor Changes

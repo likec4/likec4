@@ -147,7 +147,7 @@ describe('LikeC4', () => {
     )
 
     await expect(promise).rejects.toThrow(
-      /source.likec4:5 Could not resolve reference to ElementKind named 'user'/,
+      /source.c4:5 Could not resolve reference to ElementKind named 'user'/,
     )
   })
 

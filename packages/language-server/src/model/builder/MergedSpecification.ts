@@ -3,8 +3,11 @@ import { assignTagColors } from '@likec4/core/styles'
 import { exact, FqnRef } from '@likec4/core/types'
 import { isNonEmptyArray, MultiMap, nameFromFqn } from '@likec4/core/utils'
 import {
+  hasAtLeast,
   isEmpty,
+  isEmptyish,
   isNonNullish,
+  only,
   unique,
 } from 'remeda'
 import type {
@@ -41,14 +44,26 @@ export class MergedSpecification {
 
   public readonly imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>> = new MultiMap(Set)
 
+  // If all documents belong to the same project, we can assign this.projectId to that project ID.
+  // Otherwise, it will be undefined.
+  public readonly projectId: c4.ProjectId | undefined
+
   constructor(docs: ReadonlyArray<ParsedLikeC4LangiumDocument>) {
     const tags = {} as ParsedAstSpecification['tags']
+    let projectIds = [] as c4.ProjectId[]
     for (const doc of docs) {
       const {
         c4Specification: spec,
         c4Globals,
         c4Imports,
       } = doc
+
+      let docProjectId = doc.likec4ProjectId
+      if (isNonNullish(docProjectId)) {
+        if (projectIds.length === 0 || projectIds[0] !== docProjectId) {
+          projectIds.push(doc.likec4ProjectId!)
+        }
+      }
 
       Object.assign(tags, spec.tags)
       Object.assign(this.specs.elements, spec.elements)
@@ -64,6 +79,8 @@ export class MergedSpecification {
       }
     }
     this.tags = assignTagColors(tags)
+
+    this.projectId = only(projectIds)
   }
 
   /**
@@ -91,7 +108,10 @@ export class MergedSpecification {
       description ??= __kind.description
       summary ??= __kind.summary
       links ??= __kind.links
-      title = title === nameFromFqn(id) && __kind.title ? __kind.title : title
+
+      if (isEmptyish(title)) {
+        title = __kind.title || nameFromFqn(id)
+      }
 
       if (__kind.tags && isNonEmptyArray(__kind.tags)) {
         tags = tags

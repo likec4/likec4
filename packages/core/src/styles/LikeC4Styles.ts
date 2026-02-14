@@ -1,3 +1,4 @@
+import { DefaultTagColorValues, isDefaultTagColor } from '@likec4/style-preset/defaults'
 import chroma from 'chroma-js'
 import { defu } from 'defu'
 import { isDeepEqual, isEmptyish } from 'remeda'
@@ -10,6 +11,7 @@ import type {
 } from '../types'
 import { ensureSizes } from '../types'
 import { DefaultMap, DefaultWeakMap, memoizeProp } from '../utils'
+import type { DefaultTagColors } from './assignTagColors'
 import { computeColorValues } from './compute-color-values'
 import { computeCompoundColorValues } from './compute-compound-colors'
 import { styleDefaults } from './defaults'
@@ -235,5 +237,18 @@ export class LikeC4Styles {
     }
     return isDeepEqual(this.config, other.config) &&
       isDeepEqual(this.customCss ?? null, other.customCss ?? null)
+  }
+
+  /**
+   * Get color values for a tag (including default tag colors)
+   */
+  tagColor(tag: typeof DefaultTagColors[number] | ThemeColor | ColorLiteral): ThemeColorValues['elements'] {
+    if (this.isThemeColor(tag)) {
+      return this.theme.colors[tag].elements
+    }
+    if (isDefaultTagColor(tag)) {
+      return this.computeFrom(DefaultTagColorValues[tag]).elements
+    }
+    return this.computeFrom(tag).elements
   }
 }

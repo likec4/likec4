@@ -1,6 +1,6 @@
 import { ancestorsFqn, Fqn, isAnyOf } from '@likec4/core'
 import { MultiMap } from '@likec4/core/utils'
-import { type AstNode, UriUtils } from 'langium'
+import { UriUtils } from 'langium'
 import { filter, flatMap, hasAtLeast, isTruthy, pipe } from 'remeda'
 import {
   type AstNodeDescriptionWithFqn,

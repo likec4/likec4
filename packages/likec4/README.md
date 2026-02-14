@@ -9,7 +9,8 @@ Features:
 
 - Preview diagrams in a local web server (with lightning-fast updates) ⚡️
 - Build a static .website (deploy to github pages, netlify...) 🔗
-- Export to PNG, JSON, Mermaid, Dot, D2 (if you need something static) 🖼️
+- Export to PNG, JSON, Mermaid, Dot, D2, DrawIO (if you need something static) 🖼️
+- Import from DrawIO (.drawio → LikeC4) for reusing existing diagrams 📥
 - Vite Plugin (for embedding diagrams into your Vite-based application) ⚙️
 - Generate React components (for custom integrations ) 🛠️
 
@@ -123,6 +124,15 @@ likec4 codegen mermaid
 likec4 codegen dot
 likec4 codegen d2
 likec4 codegen plantuml
+```
+
+### Export to DrawIO / Import from DrawIO
+
+Export LikeC4 views to DrawIO (`.drawio`) or convert existing DrawIO diagrams to LikeC4 (`.c4`):
+
+```sh
+likec4 export drawio -o ./diagrams
+likec4 import drawio diagram.drawio -o src/model.c4
 ```
 
 [📖 Read documentation](https://likec4.dev/tooling/cli/) for other CLI usage

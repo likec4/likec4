@@ -1,4 +1,6 @@
 import { MonacoEditor } from '$/monaco'
+import { DrawioContextMenuProvider } from '$components/drawio/DrawioContextMenuProvider'
+import { useDrawioContextMenu } from '$components/drawio/DrawioContextMenuProvider'
 import { Header } from '$components/appshell/Header'
 import { WorkspaceFileTabs } from '$components/workspace/WorkspaceFileTabs'
 import { PlaygroundActorContextProvider } from '$state/context'
@@ -51,29 +53,28 @@ function WorkspaceContextPage() {
 
   return (
     <PlaygroundActorContextProvider workspace={workspace}>
-      <AppShell header={{ height: 50 }}>
-        <AppShellHeader>
-          <Header />
-        </AppShellHeader>
-        <AppShellMain h={'100dvh'}>
-          <Group
-            className={css({ h: '100%' })}
-            orientation={isMobile ? 'vertical' : 'horizontal'}
-            defaultLayout={defaultLayout}
-            onLayoutChange={onLayoutChange}>
-            <Panel
-              id="editor"
-              className={styles.panel}
-              collapsible={true}
-              minSize={'10'}
-              defaultSize={'40'}>
-              <Stack h="100%" gap={0}>
-                <WorkspaceFileTabs />
-                <Box flex={1}>
-                  <MonacoEditor />
-                </Box>
-              </Stack>
-            </Panel>
+      <DrawioContextMenuProvider>
+        <AppShell header={{ height: 50 }}>
+          <AppShellHeader>
+            <Header />
+          </AppShellHeader>
+          <AppShellMain h={'100dvh'}>
+            <Group
+              className={css({ h: '100%' })}
+              orientation={isMobile ? 'vertical' : 'horizontal'}
+              defaultLayout={defaultLayout}
+              onLayoutChange={onLayoutChange}>
+              <Panel
+                id="editor"
+                className={styles.panel}
+                collapsible={true}
+                minSize={'10'}
+                defaultSize={'40'}>
+                <Stack h="100%" gap={0}>
+                  <WorkspaceFileTabs />
+                  <EditorPanelWithDrawioMenu />
+                </Stack>
+              </Panel>
             <Separator
               className={styles.resize}
               style={{
@@ -86,6 +87,22 @@ function WorkspaceContextPage() {
           </Group>
         </AppShellMain>
       </AppShell>
+      </DrawioContextMenuProvider>
     </PlaygroundActorContextProvider>
+  )
+}
+
+function EditorPanelWithDrawioMenu() {
+  const { openMenu } = useDrawioContextMenu()
+  return (
+    <Box
+      flex={1}
+      onContextMenu={e => {
+        e.preventDefault()
+        openMenu(e)
+      }}
+      style={{ minHeight: 0 }}>
+      <MonacoEditor />
+    </Box>
   )
 }

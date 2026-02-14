@@ -1,0 +1,63 @@
+{
+  "name": "@likec4/react",
+  "description": "LikeC4 React bundle",
+  "private": true,
+  "version": "1.49.0",
+  "license": "MIT",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist",
+    "**/package.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/react"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "vite build",
+    "clean": "likec4ops clean"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.x || ^19.x",
+    "react-dom": "^18.x || ^19.x"
+  },
+  "devDependencies": {
+    "@pandacss/dev": "catalog:css",
+    "@react-hookz/web": "catalog:react",
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@likec4/diagram": "workspace:*",
+    "@likec4/styles": "workspace:*",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
+    "@xstate/react": "catalog:xstate",
+    "@xstate/store": "catalog:xstate",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
+    "obuild": "catalog:obuild",
+    "oxlint": "catalog:",
+    "vite-plugin-dts": "catalog:vite",
+    "vite": "catalog:vite",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
+  }
+}

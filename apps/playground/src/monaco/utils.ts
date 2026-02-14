@@ -93,3 +93,26 @@ export function createMemoryFileSystem(
     activeModel,
   }
 }
+
+/**
+ * Ensure a single file exists in the workspace (e.g. after workspace.addFile).
+ * Registers the file with fsProvider and creates a Monaco model if not present.
+ */
+export function ensureFileInWorkspace(
+  fsProvider: RegisteredFileSystemProvider,
+  filename: string,
+  content: string,
+): monaco.editor.ITextModel {
+  const uri = monaco.Uri.file(filename)
+  const existing = monaco.editor.getModel(uri)
+  if (existing) {
+    existing.setValue(content)
+    return existing
+  }
+  try {
+    fsProvider.registerFile(new RegisteredMemoryFile(uri, content))
+  } catch {
+    // File may already be registered
+  }
+  return monaco.editor.createModel(content, 'likec4', uri)
+}

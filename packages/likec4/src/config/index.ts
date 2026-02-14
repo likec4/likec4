@@ -12,6 +12,7 @@ export {
   isLikeC4NonJsonConfig,
   type LikeC4ProjectConfig,
   type LikeC4ProjectConfigInput,
+  LikeC4ProjectConfigOps,
   type LikeC4ProjectJsonConfig,
   type LikeC4StylesConfig,
   type LikeC4StylesConfigInput,

@@ -1,7 +1,0 @@
-{
-  "name": "@likec4/react",
-  "type": "module",
-  "sideEffects": false,
-  "types": "./index.d.ts",
-  "module": "./index.js"
-}

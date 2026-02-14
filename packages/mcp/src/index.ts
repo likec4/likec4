@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
-import { createLanguageServices, WithFileSystem, WithLikeC4ManualLayouts, WithMCPServer } from '@likec4/language-server'
+import {
+  createLanguageServices,
+  WithFileSystem,
+  WithLikeC4ManualLayouts,
+  WithMCPServer,
+} from '@likec4/language-server'
 import {
   configureLogger,
   getAnsiColorFormatter,

@@ -24,7 +24,8 @@ The `likec4` CLI is a tool for various operations and automation tasks, such as:
 
 - Start development server to preview diagrams (with hot-reload)
 - Build a static website for sharing and embedding diagrams
-- Export to PNG, Mermaid, Dot, D2
+- Export to PNG, JSON, Mermaid, Dot, D2, DrawIO
+- Import from DrawIO (.drawio → LikeC4)
 - Generate [source code artifacts](/tooling/code-generation/react/):
   - React components
   - Web Components
@@ -184,6 +185,43 @@ You will be prompted with a command to install if it's not found.
 likec4 export json -o dump.json
 ```
 
+### Export to DrawIO
+
+Export views to DrawIO (`.drawio`) so you can edit diagrams in [draw.io](https://draw.io) or reuse them in tools that support the format. One `.drawio` file is generated per view.
+
+```sh
+likec4 export drawio
+likec4 export drawio -o ./diagrams
+likec4 export drawio -o ./diagrams src/
+```
+
+| Option           | Description                                                                 |
+| ---------------- | --------------------------------------------------------------------------- |
+| `path`           | Path to project (default: current directory)                                |
+| `--outdir, -o`   | Output directory for `.drawio` files (default: current directory or `path`) |
+| `--project`      | Select LikeC4 project by name or path; if not set, exports all              |
+| `--use-dot`      | Use local Graphviz (`dot`) for layout instead of bundled WASM               |
+
+:::note
+Export to DrawIO requires layout. If Graphviz is not installed, the CLI uses bundled WASM; for large diagrams, install [Graphviz](https://graphviz.org/) and use `--use-dot` for better performance.
+:::
+
+### Import from DrawIO
+
+Convert an existing DrawIO diagram to LikeC4 source (`.c4`) so you can adopt LikeC4 from DrawIO assets or round-trip between the two.
+
+```sh
+likec4 import drawio diagram.drawio
+likec4 import drawio diagram.drawio -o src/model.c4
+```
+
+| Option            | Description                                                |
+| ----------------- | ---------------------------------------------------------- |
+| `input`           | Path to `.drawio` or `.drawio.xml` file                    |
+| `--outfile, -o`   | Output `.c4` file (default: same name as input with `.c4`) |
+
+Elements (actors, systems, containers) and relationships are inferred from shapes and edges; colors and custom properties (e.g. description, technology) are preserved when present in the DrawIO file.
+
 ### Generate Mermaid, Dot, D2, PlantUml
 
 Via codegen:
@@ -195,6 +233,8 @@ likec4 gen dot
 likec4 gen d2
 likec4 gen plantuml
 ```
+
+Together with [Export to DrawIO](#export-to-drawio) and [Import from DrawIO](#import-from-drawio), this allows teams to reuse diagrams in Mermaid, Dot, D2, PlantUML, or DrawIO.
 
 <LinkCard
   title="Generate components"

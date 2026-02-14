@@ -7,6 +7,7 @@
     "generate": {
       "dependsOn": [
         "^generate",
+        "@likec4/react#build",
         "likec4#build"
       ],
       "outputs": [

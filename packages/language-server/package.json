@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "1.48.0",
+  "version": "1.49.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -21,9 +21,8 @@
     "directory": "packages/language-server"
   },
   "engines": {
-    "node": ">=22.21.1"
+    "node": ">=22.22.0"
   },
-  "engineStrict": true,
   "type": "module",
   "sideEffects": false,
   "bin": {
@@ -33,11 +32,11 @@
     ".": {
       "sources": "./src/index.ts",
       "browser": {
-        "sources": "./src/browser.ts",
+        "sources": "./src/browser/index.ts",
         "default": {
-          "types": "./dist/browser.d.mts",
-          "import": "./dist/browser.mjs",
-          "default": "./dist/browser.mjs"
+          "types": "./dist/browser/index.d.mts",
+          "import": "./dist/browser/index.mjs",
+          "default": "./dist/browser/index.mjs"
         }
       },
       "node": {
@@ -71,19 +70,19 @@
       }
     },
     "./browser-worker": {
-      "sources": "./src/browser-worker.ts",
+      "sources": "./src/browser/worker.ts",
       "default": {
-        "types": "./dist/browser-worker.d.mts",
-        "import": "./dist/browser-worker.mjs",
-        "default": "./dist/browser-worker.mjs"
+        "types": "./dist/browser/worker.d.mts",
+        "import": "./dist/browser/worker.mjs",
+        "default": "./dist/browser/worker.mjs"
       }
     },
     "./browser": {
-      "sources": "./src/browser.ts",
+      "sources": "./src/browser/index.ts",
       "default": {
-        "types": "./dist/browser.d.mts",
-        "import": "./dist/browser.mjs",
-        "default": "./dist/browser.mjs"
+        "types": "./dist/browser/index.d.mts",
+        "import": "./dist/browser/index.mjs",
+        "default": "./dist/browser/index.mjs"
       }
     },
     "./protocol": {
@@ -94,6 +93,30 @@
         "default": "./dist/protocol.mjs"
       }
     },
+    "./mcp": {
+      "sources": "./src/mcp/index.ts",
+      "default": {
+        "types": "./dist/mcp/index.d.mts",
+        "import": "./dist/mcp/index.mjs",
+        "default": "./dist/mcp/index.mjs"
+      }
+    },
+    "./module": {
+      "sources": "./src/module.ts",
+      "default": {
+        "types": "./dist/module.d.mts",
+        "import": "./dist/module.mjs",
+        "default": "./dist/module.mjs"
+      }
+    },
+    "./filesystem": {
+      "sources": "./src/filesystem/index.ts",
+      "default": {
+        "types": "./dist/filesystem/index.d.mts",
+        "import": "./dist/filesystem/index.mjs",
+        "default": "./dist/filesystem/index.mjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -102,7 +125,7 @@
     "types": "dist/index.d.mts",
     "module": "dist/index.mjs",
     "browser": {
-      "dist/index.mjs": "dist/browser.mjs"
+      "dist/index.mjs": "dist/browser/index.mjs"
     }
   },
   "scripts": {
@@ -111,7 +134,7 @@
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-language-server-$npm_package_version.tgz package.tgz || true",
-    "pregenerate": "rm -f src/generated/* || true",
+    "pregenerate": "node -e \"const fs=require('fs');const p=require('path');const d='src/generated';if(fs.existsSync(d)){fs.readdirSync(d).forEach(f=>{try{fs.unlinkSync(p.join(d,f))}catch(e){}})}\"",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate && tsx scripts/generate-icons.ts",

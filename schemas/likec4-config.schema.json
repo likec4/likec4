@@ -352,7 +352,8 @@
         "storage",
         "queue",
         "bucket",
-        "document"
+        "document",
+        "component"
       ]
     },
     "IconPosition": {

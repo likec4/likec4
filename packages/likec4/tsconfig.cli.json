@@ -29,9 +29,6 @@
     "src/",
     "package.json"
   ],
-  "exclude": [
-    "src/vite-plugin/modules.d.ts"
-  ],
   "references": [
     {
       "path": "../core/tsconfig.json"
@@ -40,7 +37,16 @@
       "path": "../config/tsconfig.json"
     },
     {
+      "path": "../language-services/tsconfig.json"
+    },
+    {
       "path": "../language-server/tsconfig.json"
+    },
+    {
+      "path": "../vite-plugin/tsconfig.json"
+    },
+    {
+      "path": "../diagram/tsconfig.src.json"
     },
     {
       "path": "../generators/tsconfig.json"

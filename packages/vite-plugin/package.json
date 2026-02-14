@@ -1,0 +1,103 @@
+{
+  "name": "@likec4/vite-plugin",
+  "description": "LikeC4 Vite Plugin",
+  "private": true,
+  "version": "1.49.0",
+  "license": "MIT",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist",
+    "src",
+    "**/package.json",
+    "!**/__mocks__/",
+    "!**/__tests__/",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/vite-plugin"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./internal": {
+      "sources": "./src/internal.ts",
+      "default": {
+        "types": "./dist/internal.d.mts",
+        "import": "./dist/internal.mjs",
+        "default": "./dist/internal.mjs"
+      }
+    },
+    "./modules": "./src/modules.d.ts",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
+  },
+  "scripts": {
+    "typecheck": "tsc -b --verbose",
+    "build": "obuild",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
+    "clean": "likec4ops clean",
+    "test": "vitest run --no-isolate",
+    "vitest:ui": "vitest --no-isolate --ui"
+  },
+  "dependencies": {
+    "@likec4/config": "workspace:*",
+    "@likec4/core": "workspace:*",
+    "@likec4/generators": "workspace:*",
+    "@likec4/icons": "workspace:*",
+    "@likec4/language-services": "workspace:*",
+    "@likec4/language-server": "workspace:*",
+    "@likec4/layouts": "workspace:*",
+    "@likec4/log": "workspace:*",
+    "@nanostores/react": "catalog:react",
+    "nanostores": "catalog:react",
+    "langium": "catalog:langium",
+    "defu": "catalog:utils",
+    "fast-equals": "catalog:utils",
+    "tinyrainbow": "catalog:utils",
+    "birpc": "catalog:vite",
+    "json5": "catalog:utils",
+    "pathe": "catalog:utils",
+    "remeda": "catalog:utils",
+    "std-env": "catalog:externals",
+    "type-fest": "catalog:externals",
+    "strip-indent": "catalog:utils",
+    "zod": "catalog:externals",
+    "ufo": "catalog:utils"
+  },
+  "peerDependencies": {
+    "react": "catalog:react",
+    "vite": "catalog:vite"
+  },
+  "devDependencies": {
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@likec4/react": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react",
+    "obuild": "catalog:obuild",
+    "oxlint": "catalog:",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:vitest"
+  }
+}

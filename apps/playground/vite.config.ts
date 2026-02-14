@@ -67,34 +67,50 @@ export default defineConfig(({ command }) => ({
         ],
         holdUntilCrawlEnd: false,
         esbuildOptions: {
-          plugins: [{
-            // Copy-pasted from @codingame/esbuild-import-meta-url-plugin
-            // But scoped to @codingame only
-            name: 'import.meta.url',
-            setup({ onLoad }) {
-              // Help vite that bundles/move files in dev mode without touching `import.meta.url` which breaks asset urls
-              onLoad({ filter: /.*@codingame.*\.js$/, namespace: 'file' }, async (args) => {
-                const code = await readFile(args.path, 'utf8')
-                const assetImportMetaUrlRE =
-                  /\bnew\s+URL\s*\(\s*('[^']+'|"[^"]+"|`[^`]+`)\s*,\s*import\.meta\.url\s*(?:,\s*)?\)/g
-                let i = 0
-                let newCode = ''
-                for (
-                  let match = assetImportMetaUrlRE.exec(code);
-                  match != null;
-                  match = assetImportMetaUrlRE.exec(code)
-                ) {
-                  newCode += code.slice(i, match.index)
-                  const path = match[1]!.slice(1, -1)
-                  const resolved = resolveImportMeta(path, url.pathToFileURL(args.path).toString())
-                  newCode += `new URL(${JSON.stringify(url.fileURLToPath(resolved))}, import.meta.url)`
-                  i = assetImportMetaUrlRE.lastIndex
-                }
-                newCode += code.slice(i)
-                return { contents: newCode }
-              })
+          plugins: [
+            {
+              // Copy-pasted from @codingame/esbuild-import-meta-url-plugin
+              // But scoped to @codingame only
+              name: 'import.meta.url',
+              setup({ onLoad }) {
+                // Help vite that bundles/move files in dev mode without touching `import.meta.url` which breaks asset urls
+                onLoad({ filter: /.*@codingame.*\.js$/, namespace: 'file' }, async (args) => {
+                  const code = await readFile(args.path, 'utf8')
+                  const assetImportMetaUrlRE =
+                    /\bnew\s+URL\s*\(\s*('[^']+'|"[^"]+"|`[^`]+`)\s*,\s*import\.meta\.url\s*(?:,\s*)?\)/g
+                  let i = 0
+                  let newCode = ''
+                  for (
+                    let match = assetImportMetaUrlRE.exec(code);
+                    match != null;
+                    match = assetImportMetaUrlRE.exec(code)
+                  ) {
+                    newCode += code.slice(i, match.index)
+                    const path = match[1]!.slice(1, -1)
+                    const resolved = resolveImportMeta(path, url.pathToFileURL(args.path).toString())
+                    newCode += `new URL(${JSON.stringify(url.fileURLToPath(resolved))}, import.meta.url)`
+                    i = assetImportMetaUrlRE.lastIndex
+                  }
+                  newCode += code.slice(i)
+                  return { contents: newCode }
+                })
+              },
             },
-          }],
+            {
+              // Strip sourceMappingURL from vscode-textmate to avoid "Could not read source map" in console
+              name: 'strip-vscode-textmate-sourcemap',
+              setup({ onLoad }) {
+                onLoad(
+                  { filter: /vscode-textmate.*[\\/]release[\\/]main\.js$/, namespace: 'file' },
+                  async (args) => {
+                    const code = await readFile(args.path, 'utf8')
+                    const stripped = code.replace(/\n?\/\/# sourceMappingURL=.*$/m, '')
+                    return { contents: stripped, loader: 'js' }
+                  },
+                )
+              },
+            },
+          ],
         },
       },
     },

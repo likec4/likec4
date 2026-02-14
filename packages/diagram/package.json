@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.48.0",
+  "version": "1.49.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -16,7 +16,6 @@
   },
   "files": [
     "dist",
-    "bundle",
     "**/package.json",
     "*.css",
     "panda.buildinfo.json",
@@ -57,14 +56,6 @@
         "default": "./dist/custom/index.js"
       }
     },
-    "./bundle": {
-      "sources": "./src/index.ts",
-      "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./bundle/index.js",
-        "default": "./bundle/index.js"
-      }
-    },
     "./panda.buildinfo.json": "./panda.buildinfo.json",
     "./styles-min.css": "./styles-min.css",
     "./styles-font.css": "./styles-font.css",
@@ -74,9 +65,7 @@
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
-    "build-dist": "vite build -m production",
-    "build-bundle": "vite build -m bundle",
-    "build": "echo \"use pnpm turbo run build\" || true",
+    "build": "vite build -m production",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
@@ -106,6 +95,7 @@
     "@zag-js/tree-view": "catalog:zag",
     "bezier-js": "^6.1.4",
     "d3-shape": "^3.2.0",
+    "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
     "immer": "catalog:utils",
     "motion": "catalog:react",
@@ -141,7 +131,7 @@
     "@statelyai/inspect": "^0.4.0",
     "@tabler/icons-react": "catalog:react",
     "@types/bezier-js": "^4.1.3",
-    "@types/d3-shape": "^3.1.7",
+    "@types/d3-shape": "^3.1.8",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",

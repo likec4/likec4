@@ -1,6 +1,6 @@
+import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
-import { LikeC4 } from '../../LikeC4'
 import { boxen } from '../../logger'
 import { path, useDotBin } from '../options'
 
@@ -50,7 +50,7 @@ ${k.green('$0 mcp -p 1234')}
 }
 
 async function startHttpMcp(path: string, useDotBin: boolean, port = 33335) {
-  await LikeC4.fromWorkspace(path, {
+  await fromWorkspace(path, {
     mcp: { port },
     watch: true,
     graphviz: useDotBin ? 'binary' : 'wasm',
@@ -75,7 +75,7 @@ ${k.underline('https://likec4.dev/tooling/mcp/#using-extension')}
 }
 
 async function startStdioMcp(path: string, useDotBin: boolean) {
-  await LikeC4.fromWorkspace(path, {
+  await fromWorkspace(path, {
     mcp: 'stdio',
     watch: true,
     graphviz: useDotBin ? 'binary' : 'wasm',

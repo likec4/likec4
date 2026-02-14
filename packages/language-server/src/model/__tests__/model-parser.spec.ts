@@ -265,11 +265,12 @@ describe('LikeC4ModelParser', () => {
         },
       })
       expect(doc.c4Specification.elements).not.toHaveProperty(['component', 'style', 'multiple'])
-      expect(doc.c4Elements).toMatchObject([
+      expect(doc.c4Elements).toEqual([
         {
           'id': 'sys',
           'kind': 'system',
-          'title': 'sys',
+          astPath: expect.any(String),
+          style: expect.any(Object),
         },
         {
           'id': 'sys.c1',
@@ -277,7 +278,7 @@ describe('LikeC4ModelParser', () => {
           'style': {
             'multiple': true,
           },
-          'title': 'c1',
+          astPath: expect.any(String),
         },
         {
           'id': 'sys.c1.c2',
@@ -285,7 +286,7 @@ describe('LikeC4ModelParser', () => {
           'style': {
             'multiple': false,
           },
-          'title': 'c2',
+          astPath: expect.any(String),
         },
       ])
     })
@@ -315,14 +316,15 @@ describe('LikeC4ModelParser', () => {
         'somefolder/index.c4',
       )
       const doc = services.likec4.ModelParser.parse(document)
-      expect(doc.c4Elements).toMatchObject([
+      expect(doc.c4Elements).toEqual([
         {
           'id': 'c1',
           'kind': 'component',
           'style': {
             'icon': 'file:///test/workspace/src/somefolder/icon1.png',
           },
-          'title': 'c1',
+          // title must not be set
+          astPath: expect.any(String),
         },
         {
           'id': 'c2',
@@ -330,9 +332,50 @@ describe('LikeC4ModelParser', () => {
           'style': {
             'icon': 'file:///test/workspace/src/icon2.png',
           },
-          'title': 'c2',
+          // title must not be set
+          astPath: expect.any(String),
         },
       ])
+    })
+
+    it('parses title and ignores if same as name', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      const { document } = await validate(`
+        specification {
+          element el1
+          element el2 {
+            title "el2 title"
+          }
+        }
+        model {
+          el_1 = el1
+          el_1_2 = el1 "el1"
+          el_2 = el2
+          el_2_2 = el2 "el2"
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(document)
+      expect(doc.c4Elements[0]).toMatchObject({
+        'id': 'el_1',
+        'kind': 'el1',
+      })
+      expect(doc.c4Elements[0]).not.toHaveProperty('title')
+      expect(doc.c4Elements[1]).toMatchObject({
+        'id': 'el_1_2',
+        'kind': 'el1',
+      })
+      expect(doc.c4Elements[1]).toHaveProperty('title', 'el1')
+      expect(doc.c4Elements[2]).toMatchObject({
+        id: 'el_2',
+        kind: 'el2',
+      })
+      expect(doc.c4Elements[2]).not.toHaveProperty('title')
+
+      expect(doc.c4Elements[3]).toMatchObject({
+        id: 'el_2_2',
+        kind: 'el2',
+      })
+      expect(doc.c4Elements[3]).toHaveProperty('title', 'el2')
     })
 
     it('parses summary, title, description', async ({ expect }) => {

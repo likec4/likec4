@@ -27,6 +27,13 @@ views {
     style cloud.* {
       color primary
     }
+    style events, legacy.backend {
+      shape component
+    }
+    style events {
+      size sm
+      textSize xlarge
+    }
   }
 
   view view-with-custom-colors {

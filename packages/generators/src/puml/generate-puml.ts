@@ -68,6 +68,9 @@ const pumlShape = ({ shape }: ComputedNode) => {
     case 'cylinder': {
       return 'database' as const
     }
+    case 'component': {
+      return 'component' as const
+    }
     case 'document':
     case 'mobile':
     case 'bucket':

@@ -1,3 +1,21 @@
+import {
+  amber,
+  blue,
+  crimson,
+  grass,
+  indigo,
+  lime,
+  orange,
+  pink,
+  purple,
+  red,
+  ruby,
+  teal,
+  tomato,
+  violet,
+  yellow,
+} from '@radix-ui/colors'
+
 export const Sizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const
 export type Size = typeof Sizes[number]
 export type TextSize = Size
@@ -21,6 +39,7 @@ export const ElementShapes = [
   'queue',
   'bucket',
   'document',
+  'component',
 ] as const
 
 export type ElementShape = typeof ElementShapes[number]
@@ -92,3 +111,25 @@ export const DefaultTagColors = [
   'yellow',
   'violet',
 ] as const
+
+export const DefaultTagColorValues = {
+  tomato: tomato.tomato9,
+  grass: grass.grass9,
+  blue: blue.blue9,
+  ruby: ruby.ruby9,
+  orange: orange.orange9,
+  indigo: indigo.indigo9,
+  pink: pink.pink9,
+  teal: teal.teal9,
+  purple: purple.purple9,
+  amber: amber.amber9,
+  crimson: crimson.crimson9,
+  red: red.red9,
+  lime: lime.lime9,
+  yellow: yellow.yellow9,
+  violet: violet.violet9,
+} as const
+
+export function isDefaultTagColor(color: string): color is keyof typeof DefaultTagColorValues {
+  return color in DefaultTagColorValues
+}

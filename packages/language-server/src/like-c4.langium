@@ -940,6 +940,7 @@ ThemeColor returns string:
 
 ElementShape returns string:
   'rectangle' |
+  'component' |
   'person' |
   'browser' |
   'mobile' |

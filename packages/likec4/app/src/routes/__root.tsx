@@ -1,4 +1,4 @@
-import type { Fqn, NonEmptyArray, NonEmptyReadonlyArray, ProjectId } from '@likec4/core/types'
+import type { Fqn, NonEmptyArray, ProjectId } from '@likec4/core/types'
 import { useMantineColorScheme } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { projects } from 'likec4:projects'
@@ -35,7 +35,7 @@ export type Context = {
   /**
    * All projects
    */
-  projects: NonEmptyReadonlyArray<ProjectId>
+  projects: readonly [ProjectId, ...ProjectId[]]
 }
 
 export const Route = createRootRouteWithContext<Context>()({

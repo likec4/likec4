@@ -1,11 +1,11 @@
 import { generateLikeC4Model } from '@likec4/generators'
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { existsSync } from 'node:fs'
 import { mkdir, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
-import { LikeC4 } from '../../../LikeC4'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
 import { ensureProject } from '../../utils'
 
@@ -27,8 +27,7 @@ type HandlerParams = {
 export async function modelHandler({ path, useDotBin, useCorePackage, outfile, project }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  await using languageServices = await LikeC4.fromWorkspace(path, {
-    logger: 'vite',
+  await using languageServices = await fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })

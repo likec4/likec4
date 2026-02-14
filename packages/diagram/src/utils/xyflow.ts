@@ -210,7 +210,8 @@ export function distanceBetweenPoints(a: XYPosition, b: XYPosition): number {
 }
 
 export function stopPropagation(e: ReactMouseEvent): void {
-  return e.stopPropagation()
+  e.nativeEvent.stopImmediatePropagation()
+  e.stopPropagation()
 }
 
 const printPoint = (point: Point) => {

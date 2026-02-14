@@ -45,6 +45,7 @@ const d2shape = ({ shape }: Node) => {
     case 'storage': {
       return 'stored_data' as const
     }
+    case 'component':
     case 'bucket':
     case 'mobile':
     case 'browser': {

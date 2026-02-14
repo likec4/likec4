@@ -35,15 +35,13 @@ You need to prepare it and wrap your diagram with`LikeC4ModelProvider` component
 
 See [📖 Documentation](https://likec4.dev/tooling/react/#likec4modelprovider) for examples.
 
-## Bundled version
-
-The easiest way to use this package is the bundled version.\
-Diagram renders inside shadow DOM and has its own styles.
-
 ### LikeC4View
 
+The easiest way to use this package is the `LikeC4View` component.\
+It renders inside shadow DOM and has its own styles.
+
 ```tsx
-import { LikeC4ModelProvider, LikeC4View } from '@likec4/diagram/bundle'
+import { LikeC4ModelProvider, LikeC4View } from '@likec4/diagram'
 /**
  * See https://likec4.dev/tooling/react/#likec4modelprovider
  */
@@ -68,7 +66,7 @@ See [LikeC4ViewProps](./src/LikeC4View.tsx) for available props.
 You may need to import icons, if you use built-in node renderers.
 
 ```tsx
-import { type ElementIconRenderer, LikeC4, LikeC4ModelProvider, LikeC4View } from '@likec4/diagram/bundle'
+import { type ElementIconRenderer, LikeC4, LikeC4ModelProvider, LikeC4View } from '@likec4/diagram'
 import { lazy, Suspense } from 'react'
 
 // Better to lazy load icons, bundle is quite large at the moment
@@ -100,7 +98,7 @@ function App() {
 Component works in most usecases, but if you need more - use `ReactLikeC4`:
 
 ```tsx
-import { ReactLikeC4, LikeC4ModelProvider } from '@likec4/diagram/bundle'
+import { ReactLikeC4, LikeC4ModelProvider } from '@likec4/diagram'
 
 function App() {
   const [viewId, setViewId] = useState('index')
@@ -279,7 +277,7 @@ function App() {
 ### Custom node renderer
 
 LikeC4Diagram can use custom node renderers.\
-Compose custom nodes renderers using primitives from `@likec4/diagram/custom` (or `@likec4/diagram/bundle/custom` for the bundled version).\
+Compose custom nodes renderers using primitives from `@likec4/diagram/custom`.\
 See [customNodes.tsx](./src/custom/customNodes.tsx) for examples.
 
 ```tsx

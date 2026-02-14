@@ -18,8 +18,9 @@ import { useRouter } from '@tanstack/react-router'
 import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
 import { useEffect, useRef } from 'react'
 import { funnel, isString } from 'remeda'
+import { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT } from '$components/drawio/drawio-events'
 import { type CustomWrapperConfig, loadLikeC4Worker } from './config'
-import { cleanDisposables, createMemoryFileSystem, setActiveEditor } from './utils'
+import { cleanDisposables, createMemoryFileSystem, ensureFileInWorkspace, setActiveEditor } from './utils'
 
 import type { Location } from 'vscode-languageserver-types'
 
@@ -243,12 +244,57 @@ export function LanguageClientSync({ config, wrapper }: {
     }
   }, [playground])
 
+  useEffect(() => {
+    const editor = wrapper.getEditor()
+    if (!editor) return
+    const disposables: IDisposable[] = [
+      editor.addAction({
+        id: 'likec4.drawio.import',
+        label: 'Import from DrawIO…',
+        contextMenuGroupId: '9_cutcopypaste',
+        contextMenuOrder: 100,
+        run: () => {
+          window.dispatchEvent(new CustomEvent(DRAWIO_IMPORT_EVENT))
+        },
+      }),
+      editor.addAction({
+        id: 'likec4.drawio.export',
+        label: 'Export to DrawIO',
+        contextMenuGroupId: '9_cutcopypaste',
+        contextMenuOrder: 101,
+        run: () => {
+          window.dispatchEvent(new CustomEvent(DRAWIO_EXPORT_EVENT))
+        },
+      }),
+    ]
+    return () => cleanDisposables(disposables)
+  }, [wrapper, playgroundState])
+
   useEffect(
     () => {
       if (playgroundState !== 'ready') return
-      setActiveEditor(monaco.Uri.file(activeFilename))
+      const uri = monaco.Uri.file(activeFilename)
+      let model = monaco.editor.getModel(uri)
+      if (!model) {
+        const ctx = playground.getContext()
+        const content = ctx.files[activeFilename]
+        if (content !== undefined) {
+          model = ensureFileInWorkspace(config.fsProvider, activeFilename, content)
+          const editor = wrapper.getEditor()
+          if (editor) {
+            editor.setModel(model)
+          }
+          const docs = Object.keys(ctx.files).map(f => monaco.Uri.file(f).toString())
+          languageClient()
+            .sendRequest(BuildDocuments.req, { docs })
+            .then(() => requestComputedModel())
+            .catch(err => logger.error(loggable(err)))
+          return
+        }
+      }
+      setActiveEditor(uri)
     },
-    [activeFilename, playgroundState],
+    [activeFilename, playgroundState, config.fsProvider, wrapper, playground],
   )
 
   useEffect(

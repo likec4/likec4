@@ -3,8 +3,7 @@ import { cx } from '@likec4/styles/css'
 import { useDebouncedCallback, useTimeout } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import type { OnMove, OnMoveEnd, Viewport } from '@xyflow/system'
-import { shallowEqual } from 'fast-equals'
-import type { PropsWithChildren } from 'react'
+import type { MouseEvent as ReactMouseEvent, PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
@@ -18,7 +17,7 @@ import { depsShallowEqual } from '../hooks/useUpdateEffect'
 import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
 import { deriveToggledFeatures } from './state/machine.setup'
-import type { DiagramActorSnapshot, DiagramContext } from './state/types'
+import type { DiagramContext } from './state/types'
 import { viewBounds } from './state/utils'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -260,7 +259,7 @@ export function LikeC4DiagramXYFlow({
         onEdgeContextMenu?.(diagramEdge, event)
       })}
       {...onCanvasContextMenu && {
-        onPaneContextMenu: onCanvasContextMenu,
+        onPaneContextMenu: onCanvasContextMenu as ((event: ReactMouseEvent | MouseEvent) => void),
       }}
       {...enableFitView && {
         onViewportResize,

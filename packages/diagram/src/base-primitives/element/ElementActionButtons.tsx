@@ -26,13 +26,13 @@ const variants = {
     originY: 0,
     opacity: 1,
     scale: 0.9,
-    y: 6,
+    y: 7,
   },
   hovered: {
     originY: 0,
     opacity: 1,
-    scale: 1.1,
-    y: 6,
+    scale: 1.12,
+    y: 7,
   },
 }
 

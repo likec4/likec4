@@ -1,0 +1,115 @@
+{
+  "name": "@likec4/language-services",
+  "description": "LikeC4 Language Services",
+  "version": "1.49.0",
+  "license": "MIT",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist",
+    "**/package.json",
+    "!**/__mocks__/",
+    "!**/__tests__/",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/language-services"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "browser": {
+        "sources": "./src/browser/index.ts",
+        "default": {
+          "types": "./dist/browser/index.d.mts",
+          "import": "./dist/browser/index.mjs",
+          "default": "./dist/browser/index.mjs"
+        }
+      },
+      "default": {
+        "sources": "./src/node/index.ts",
+        "types": "./dist/node/index.d.mts",
+        "import": "./dist/node/index.mjs",
+        "default": "./dist/node/index.mjs"
+      }
+    },
+    "./browser": {
+      "sources": "./src/browser/index.ts",
+      "default": {
+        "types": "./dist/browser/index.d.mts",
+        "import": "./dist/browser/index.mjs",
+        "default": "./dist/browser/index.mjs"
+      }
+    },
+    "./node/without-mcp": {
+      "sources": "./src/node/without-mcp/index.ts",
+      "default": {
+        "types": "./dist/node/without-mcp/index.d.mts",
+        "import": "./dist/node/without-mcp/index.mjs",
+        "default": "./dist/node/without-mcp/index.mjs"
+      }
+    },
+    "./node": {
+      "sources": "./src/node/index.ts",
+      "default": {
+        "types": "./dist/node/index.d.mts",
+        "import": "./dist/node/index.mjs",
+        "default": "./dist/node/index.mjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/node/index.d.mts",
+    "module": "dist/node/index.mjs",
+    "browser": {
+      "dist/node/index.mjs": "dist/browser/index.mjs"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -b --verbose",
+    "build": "obuild",
+    "prepack": "likec4ops prepack",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-language-services-$npm_package_version.tgz package.tgz || true",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
+    "lint:package": "pnpx publint ./package.tgz",
+    "clean": "likec4ops clean"
+  },
+  "dependencies": {
+    "@likec4/config": "workspace:*",
+    "@likec4/core": "workspace:*",
+    "@likec4/generators": "workspace:*",
+    "@likec4/icons": "workspace:*",
+    "@likec4/language-server": "workspace:*",
+    "@likec4/layouts": "workspace:*",
+    "@likec4/log": "workspace:*",
+    "defu": "catalog:utils",
+    "remeda": "catalog:utils",
+    "langium": "catalog:langium",
+    "tinyrainbow": "catalog:utils",
+    "pathe": "catalog:utils",
+    "std-env": "catalog:externals",
+    "type-fest": "catalog:externals",
+    "vscode-languageserver-types": "catalog:vscode"
+  },
+  "devDependencies": {
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "obuild": "catalog:obuild",
+    "oxlint": "catalog:",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:vitest"
+  }
+}
