@@ -1,5 +1,4 @@
-import { LikeC4Styles } from '@likec4/core'
-import type { LayoutedLikeC4ModelData } from '@likec4/core'
+import { type LayoutedLikeC4ModelData, LikeC4Styles } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import {
@@ -174,6 +173,7 @@ async function collectViewModelsForExportAll(options: CollectViewModelsOptions):
   const styles = likec4model.$styles ?? null
   const byId = new Map<string, DrawioViewModelLike>()
   for (const vm of allViewModelsFromState) byId.set(vm.$view.id, vm)
+  // Phase 1 fills only missing keys so state-seeded view models take precedence when already present
   if (getLayoutedModel) await fillFromLayoutedModel(byId, getLayoutedModel, styles, onExportError)
   fillFromViewStates(byId, viewIdsInModel, viewStates, styles)
   const missing = viewIdsInModel.filter(id => !byId.has(id))
@@ -272,7 +272,10 @@ export function useDrawioContextMenuActions({
     onExportError,
   ])
 
-  const canExportAllViews = allViewModelsFromState.length > 0 || (!!getLayoutedModel && !!likec4model)
+  const canExportAllViews =
+    allViewModelsFromState.length > 0 ||
+    (!!getLayoutedModel && !!likec4model) ||
+    (!!layoutViews && !!likec4model)
 
   return {
     openMenu,
