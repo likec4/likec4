@@ -95,6 +95,7 @@ async function readWorkspaceSourceContent(
     })
     for (const e of entries) {
       const full = join(dir, e.name)
+      // Note: symlinks to directories are not followed (isDirectory() is false for symlinks).
       if (e.isDirectory()) {
         if (!ROUNDTRIP_IGNORED_DIRS.has(e.name)) await walk(full, depth + 1)
       } else if (e.isFile() && isSourceFile(e.name)) {
@@ -252,10 +253,14 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
     throw new Error(ERR_EMPTY_MODEL)
   }
 
-  // 3) Prepare output dir and view list
-  await mkdir(args.outdir, { recursive: true })
+  // 3) View list and empty check before creating output dir
   const viewmodels = [...model.views()]
+  if (viewmodels.length === 0) {
+    logger.warn('No views to export')
+    throw new Error(ERR_NO_VIEWS_EXPORTED)
+  }
 
+  await mkdir(args.outdir, { recursive: true })
   const exportParams: ExportDrawioParams = {
     viewmodels,
     outdir: args.outdir,
@@ -266,10 +271,6 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   }
 
   // 4) Export: all-in-one file or one file per view
-  if (viewmodels.length === 0) {
-    logger.warn('No views to export')
-    throw new Error(ERR_NO_VIEWS_EXPORTED)
-  }
   if (args.allInOne) {
     try {
       await exportDrawioAllInOne(exportParams)

@@ -36,8 +36,6 @@ styled-system/*/styled-system
 
 packages/language-server/src/generated/
 packages/language-server/src/generated-lib/
-packages/log/src/*.js
-packages/diagram/src/**/*.js
 packages/vscode-preview/src/generated-icons.tsx
 
 # Compiled artifacts (do not commit). Root-level *.spec.js/*.test.js and packages/*/src/**/*.js
@@ -120,15 +118,4 @@ dist
 /.project
 /.settings/*
 
-# Local / temporary PR and process docs (do not commit). Prefer ~/.gitignore_global for personal workflow files.
-.pr-description*.md
-PR-*-review.md
-PR_INSTRUCTIONS.md
-*-PR-SPLIT.md
-COMMIT_MSG.txt
-.commit_msg*.txt
-BEGINNER_*.md
-pr-*-to-origin.md
-docs/EVALUATION-*.md
-docs/COMPARISON-*.md
-docs/TEST-*.md
+# Local / temporary PR and process docs — prefer ~/.gitignore_global for personal workflow files (PR-*, COMMIT_MSG*, etc.)

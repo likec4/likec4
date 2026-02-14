@@ -102,7 +102,6 @@ export async function viteDev({
       },
       fs: {
         allow: [],
-        deny: [],
         strict: false,
       },
       open: openBrowser ?? (!isDev && !isInsideContainer()),
