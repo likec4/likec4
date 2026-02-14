@@ -207,6 +207,7 @@ async function exportDrawioPerView(params: ExportDrawioParams): Promise<{ succee
   const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip, logger)
   const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed)
   let succeeded = 0
+  // Sequential export keeps output order deterministic; parallel could be added for very large workspaces.
   for (const vm of viewmodels) {
     if (await writeViewToFile(vm, optionsByViewId, outdir, logger)) succeeded++
   }

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 export default defineConfig({
   cacheDir: './node_modules/.vite',
@@ -8,8 +8,7 @@ export default defineConfig({
       truncateThreshold: 100,
     },
     exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
+      ...configDefaults.exclude,
       '**/*.spec.js',
       '**/*.test.js',
     ],

@@ -424,9 +424,9 @@ function extractOneMxCell(
   const endOpen = findOpenTagEnd(xml, tagStart)
   if (endOpen === -1) return null
   const attrs = xml.slice(tagStart + 7, endOpen).trim() // '<mxCell'.length === 7
-  // Self-closing: <mxCell ... /> — the / is before >, so check the end of the open tag
-  const tagEnd = xml.slice(Math.max(tagStart, endOpen - 10), endOpen).trimEnd()
-  const isSelfClosing = tagEnd.endsWith('/')
+  // Self-closing: <mxCell ... /> — check last char before > (after trim) to avoid false positives from attribute values
+  const openTagBeforeBracket = xml.slice(tagStart, endOpen).trimEnd()
+  const isSelfClosing = openTagBeforeBracket.endsWith('/')
   const afterBracket = endOpen + 1
   let inner: string
   let endTagPos: number
@@ -678,7 +678,7 @@ function computeContainerTitles(vertices: DrawioCell[]): {
     const best = vertices.find(
       v =>
         v.id !== cont.id &&
-        v.parent === cont.parent &&
+        v.parent === cont.id &&
         (v.style?.toLowerCase().includes('shape=text') || v.style?.toLowerCase().includes('text;')) &&
         v.x != null &&
         v.y != null &&
@@ -1701,6 +1701,8 @@ const WAYPOINTS_END = '// </likec4.edge.waypoints>'
 /**
  * Parse DrawIO round-trip comment blocks from .c4 source (layout, strokeColor, strokeWidth, waypoints).
  * Used to build GenerateDrawioOptions for re-export after editing in draw.io.
+ * TODO: the four section parsers (layout, strokeColor, strokeWidth, waypoints) repeat the same
+ * "parse block between markers" pattern; consider a small helper to reduce duplication.
  * @param c4Source - Full .c4 source string (e.g. concatenated workspace files).
  * @returns DrawioRoundtripData or null if no likec4.* comment blocks found.
  */

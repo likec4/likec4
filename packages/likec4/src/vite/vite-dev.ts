@@ -101,6 +101,8 @@ export async function viteDev({
         port: hmrPort,
       },
       fs: {
+        allow: [],
+        deny: [],
         strict: false,
       },
       open: openBrowser ?? (!isDev && !isInsideContainer()),

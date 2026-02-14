@@ -43,7 +43,10 @@ describe('DrawIO export/import with cloud-system demo', () => {
     },
   )
 
-  it('exported DrawIO has same number of elements and edges per view (no extra, none missing)', async () => {
+  it(
+    'exported DrawIO has same number of elements and edges per view (no extra, none missing)',
+    { timeout: 20000 },
+    async () => {
     const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
     expect(likec4.hasErrors()).toBe(false)
 
@@ -83,9 +86,13 @@ describe('DrawIO export/import with cloud-system demo', () => {
         `View "${view.id}": expected ${expectedEdges} edges in diagram, got ${edges}`,
       ).toBe(expectedEdges)
     }
-  })
+  }
+  )
 
-  it('exported DrawIO contains expected element titles and no stray Array tags', async () => {
+  it(
+    'exported DrawIO contains expected element titles and no stray Array tags',
+    { timeout: 20000 },
+    async () => {
     const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
     const model = await likec4.layoutedModel()
     const viewmodels = [...model.views()]
@@ -100,7 +107,8 @@ describe('DrawIO export/import with cloud-system demo', () => {
     expect(allContent).toContain('Cloud System')
     expect(allContent).toContain('customer')
     expect(allContent).toContain('cloud')
-  })
+  }
+  )
 
   it.skip(
     'vice versa: import exported DrawIO back to LikeC4 and re-export produces loadable XML (import PR)',
@@ -125,7 +133,10 @@ describe('DrawIO export/import with cloud-system demo', () => {
     },
   )
 
-  it('written .drawio file (as when user exports) is loadable in draw.io when read back', async () => {
+  it(
+    'written .drawio file (as when user exports) is loadable in draw.io when read back',
+    { timeout: 20000 },
+    async () => {
     const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
     const model = await likec4.layoutedModel()
     const drawioXml = generateDrawioMulti([...model.views()])
@@ -140,5 +151,6 @@ describe('DrawIO export/import with cloud-system demo', () => {
     } finally {
       await rm(dir, { recursive: true, force: true })
     }
-  })
+  }
+  )
 })

@@ -120,7 +120,8 @@ export function LanguageClientSync({
         try {
           const { model } = await c.sendRequest(FetchLayoutedModel.req, {})
           return model ?? null
-        } catch {
+        } catch (err) {
+          logger.warn(loggable(err))
           return null
         }
       },
@@ -133,8 +134,8 @@ export function LanguageClientSync({
             try {
               const res = await requestLayoutView(c, viewId as ViewId)
               if (res.result?.diagram) out[viewId] = res.result.diagram
-            } catch {
-              // skip failed view
+            } catch (err) {
+              logger.warn(`layout view ${viewId} failed: ${loggable(err)}`)
             }
           }),
         )

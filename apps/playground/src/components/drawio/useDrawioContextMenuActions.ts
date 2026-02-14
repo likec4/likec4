@@ -197,6 +197,7 @@ export function useDrawioContextMenuActions({
   layoutViews,
   onExportError,
 }: UseDrawioContextMenuActionsParams) {
+  // Caller should stabilize viewStates (e.g. via useMemo) so this memo is effective.
   const allViewModelsFromState = useMemo(() => {
     if (!likec4model) return []
     const styles = likec4model.$styles

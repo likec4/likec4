@@ -99,6 +99,12 @@ catalogs:
     oxlint-tsgolint:
       specifier: 0.11.5
       version: 0.11.5
+    pako:
+      specifier: ^2.1.0
+      version: 2.1.0
+    '@types/pako':
+      specifier: ^2.0.3
+      version: 2.0.4
     playwright:
       specifier: 1.56.1
       version: 1.56.1
@@ -1251,7 +1257,7 @@ importers:
         specifier: catalog:langium
         version: 3.5.0
       pako:
-        specifier: ^2.1.0
+        specifier: 'catalog:'
         version: 2.1.0
       remeda:
         specifier: catalog:utils
@@ -1267,7 +1273,7 @@ importers:
         specifier: 'catalog:'
         version: 22.19.11
       '@types/pako':
-        specifier: ^2.0.3
+        specifier: 'catalog:'
         version: 2.0.4
       obuild:
         specifier: catalog:obuild

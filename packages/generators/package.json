@@ -53,7 +53,7 @@
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "langium": "catalog:langium",
-    "pako": "^2.1.0",
+    "pako": "catalog:",
     "remeda": "catalog:utils",
     "json5": "catalog:utils"
   },
@@ -61,7 +61,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
-    "@types/pako": "^2.0.3",
+    "@types/pako": "catalog:",
     "typescript": "catalog:",
     "obuild": "catalog:obuild",
     "vitest": "catalog:vitest"

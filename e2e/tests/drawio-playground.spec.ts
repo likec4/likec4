@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import type { Download, Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 import { canvas, CANVAS_SELECTOR, editor, MENU_SELECTOR } from '../helpers/selectors'
@@ -31,7 +31,7 @@ async function triggerDrawioDownload(
   page: Page,
   menuItemLabel: 'Export to DrawIO' | 'Export all',
   downloadTimeout: number,
-): Promise<import('@playwright/test').Download> {
+): Promise<Download> {
   const downloadPromise = page.waitForEvent('download', { timeout: downloadTimeout })
   const menu = await openDrawioContextMenu(page)
   await expect(menu).toBeVisible({ timeout: TIMEOUT_MENU })

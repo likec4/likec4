@@ -7,7 +7,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
-import type { InlineConfig } from 'vite'
+import type { InlineConfig, Logger } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import { logger } from '../logger'
 import type { LikeC4ViteConfig } from './config-app.prod'
@@ -118,7 +118,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       //   }
       // }
     },
-    customLogger,
+    customLogger: customLogger as Logger,
     plugins: [
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,

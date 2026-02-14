@@ -6,8 +6,14 @@ import type { RollupError } from 'rollup'
 import k from 'tinyrainbow'
 import type { LogErrorOptions, LogType } from 'vite'
 
+/** Root CLI logger (e.g. for likec4 start, export). */
 export const logger = rootLogger.getChild('cli')
 
+/**
+ * Creates a logger instance compatible with Vite's config.logger (info, warn, error, debug, etc.).
+ * @param prefix - Category or tuple of categories for log output (e.g. 'vite' or ['vite', 'react']).
+ * @returns Logger object suitable for customLogger in Vite InlineConfig.
+ */
 export function createLikeC4Logger(prefix: string | readonly [string, ...string[]]) {
   const logger = rootLogger.getChild(prefix)
   return {
@@ -63,18 +69,23 @@ export function createLikeC4Logger(prefix: string | readonly [string, ...string[
     hasWarned: false,
   }
 }
-/** Full logger from createLikeC4Logger; debug is optional so Vite's config.logger is assignable. */
-export type ViteLogger = Omit<ReturnType<typeof createLikeC4Logger>, 'debug'> & {
+/** Full logger from createLikeC4Logger; debug and hasErrorLogged are optional so Vite's config.logger is assignable. */
+export type ViteLogger = Omit<
+  ReturnType<typeof createLikeC4Logger>,
+  'debug' | 'hasErrorLogged'
+> & {
   debug?: (msg: string, ...args: unknown[]) => void
   hasErrorLogged?: (error: Error | RollupError) => boolean
 }
 
+/** Minimal logger interface (info, warn, error only). */
 export type Logger = {
   info(msg: string): void
   warn(msg: unknown): void
   error(err: unknown): void
 }
 const noop = () => void 0
+/** Logger that does nothing (e.g. when logging is disabled). */
 export const NoopLogger: Logger = {
   info: noop,
   warn: noop,
@@ -83,6 +94,11 @@ export const NoopLogger: Logger = {
 
 const NS_PER_MS = 1e6
 
+/**
+ * Converts an hrtime tuple to milliseconds and a human-readable string.
+ * @param start - Tuple from process.hrtime() or hrtime().
+ * @returns Object with ms (number) and pretty (string, e.g. "1.2s").
+ */
 export function inMillis(start: [number, number]) {
   const [seconds, nanoseconds] = hrtime(start)
   const ms = seconds * 1000 + nanoseconds / NS_PER_MS
@@ -92,6 +108,11 @@ export function inMillis(start: [number, number]) {
   }
 }
 
+/**
+ * Starts a timer; call stopAndLog() to log elapsed time.
+ * @param log - Optional logger; if omitted, uses the root CLI logger.
+ * @returns Object with stopAndLog(msg?) to log elapsed time.
+ */
 export function startTimer(log?: Logger) {
   const start = hrtime()
   return {
@@ -102,6 +123,7 @@ export function startTimer(log?: Logger) {
   }
 }
 
+/** Prints text in a bordered box to stdout (e.g. for server URLs). */
 export function boxen(text: string, options?: BoxenOptions): void {
   console.log(_boxen(text, {
     padding: 1,

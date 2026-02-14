@@ -85,3 +85,4 @@ Always run `pnpm generate` after:
 
 - Pre-commit hooks use `nano-staged` to run `dprint` on staged files.
 - Use `.tool-versions` for the expected Node/pnpm versions.
+- The `.cursor/` directory is gitignored; contributors may add their own `.cursor/rules/` locally (e.g. for remotes); do not commit it.
