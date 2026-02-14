@@ -1,5 +1,6 @@
 import {
   type Config,
+  type Sink,
   configureSync as configureLogtape,
   getLogger,
 } from '@logtape/logtape'
@@ -62,13 +63,14 @@ export function configureLogger<TSinkId extends string, TFilterId extends string
 ) {
   try {
     const sinks = config?.sinks ?? {}
+    const sinksWithConsole: Record<TSinkId | 'console', Sink> = {
+      console: getConsoleSink(),
+      ...sinks,
+    } as Record<TSinkId | 'console', Sink>
     configureLogtape<TSinkId | 'console', TFilterId>({
       reset: true,
       ...config,
-      sinks: {
-        console: getConsoleSink(),
-        ...sinks,
-      },
+      sinks: sinksWithConsole,
       loggers: [
         { category: ['logtape', 'meta'], sinks: ['console'], lowestLevel: 'warning' },
         ...(config?.loggers ?? [
