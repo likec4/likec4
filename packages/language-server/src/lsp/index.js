@@ -1,9 +1,0 @@
-export * from './CodeLensProvider';
-export * from './CompletionProvider';
-export * from './DocumentHighlightProvider';
-export * from './DocumentLinkProvider';
-export * from './DocumentSymbolProvider';
-export * from './HoverProvider';
-// export * from './RenameProvider'
-export * from './CodeActionProvider';
-export * from './SemanticTokenProvider';

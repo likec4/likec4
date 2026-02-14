@@ -1,1 +1,0 @@
-export { ComparePanel } from './ComparePanel';

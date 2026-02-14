@@ -1,1 +1,0 @@
-export { GraphvizBinaryAdapter } from './GraphvizBinaryAdapter';

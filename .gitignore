@@ -39,6 +39,14 @@ packages/log/src/*.js
 packages/diagram/src/**/*.js
 packages/vscode-preview/src/generated-icons.tsx
 
+# Compiled artifacts (do not commit)
+*.spec.js
+*.test.js
+apps/playground/src/**/*.js
+apps/playground/src/**/*.d.ts
+packages/*/src/**/*.js
+packages/*/src/**/*.d.ts
+
 vite.config.ts.timestamp*
 vitest.config.ts.timestamp*
 
