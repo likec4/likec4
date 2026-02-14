@@ -1,6 +1,5 @@
 import { viteWebcomponentConfig } from '#vite/config-webcomponent'
 import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
-import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { copyFile, mkdir, rm, stat } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
@@ -73,19 +72,19 @@ export async function webcomponentHandler({
       }
     }
   }
-  consola.debug(`${k.dim('outfilepath')} ${outfilepath}`)
+  logger.debug(`${k.dim('outfilepath')} ${outfilepath}`)
 
   const filename = basename(outfilepath)
-  consola.debug(`${k.dim('filename')} ${filename}`)
+  logger.debug(`${k.dim('filename')} ${filename}`)
 
   const ext = extname(filename).toLocaleLowerCase()
   if (ext !== '.js' && ext !== '.mjs') {
-    consola.warn(`output file ${outfile} has extension "${ext}"`)
+    logger.warn(`output file ${outfile} has extension "${ext}"`)
     throw new Error(`output file ${outfile} must be a .js or .mjs`)
   }
 
   const publicDir = await mkTempPublicDir()
-  consola.debug(`${k.dim('created temp public')} ${publicDir}`)
+  logger.debug(`${k.dim('created temp public')} ${publicDir}`)
 
   const webcomponentConfig = await viteWebcomponentConfig({
     languageServices,
@@ -94,7 +93,7 @@ export async function webcomponentHandler({
     webcomponentPrefix,
     base: '/',
   })
-  consola.debug(`${k.dim('vite build webcomponent')}`)
+  logger.debug(`${k.dim('vite build webcomponent')}`)
   await build({
     ...webcomponentConfig,
     logLevel: 'warn',
@@ -109,7 +108,7 @@ export async function webcomponentHandler({
   await copyFile(viteOutputFile, outfilepath)
   logger.info(`${k.dim('generated')} ${outfilepath}`)
 
-  consola.debug(`${k.dim('remove temp public')}`)
+  logger.debug(`${k.dim('remove temp public')}`)
   await rm(publicDir, { recursive: true, force: true })
 
   timer.stopAndLog()

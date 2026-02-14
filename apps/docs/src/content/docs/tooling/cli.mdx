@@ -25,7 +25,6 @@ The `likec4` CLI is a tool for various operations and automation tasks, such as:
 - Start development server to preview diagrams (with hot-reload)
 - Build a static website for sharing and embedding diagrams
 - Export to PNG, JSON, Mermaid, Dot, D2, DrawIO
-- Import from DrawIO (.drawio → LikeC4)
 - Generate [source code artifacts](/tooling/code-generation/react/):
   - React components
   - Web Components
@@ -164,14 +163,14 @@ You will be prompted with a command to install if it's not found.
 
 | Option                  | Description                                                                                                   |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `--output, --outdir`    | output directory, if not specified, images are saved next to sources                                          |
+| `--outdir, -o`          | Output directory for PNG files; if not specified, images are saved next to sources. `--output` is accepted as alias for compatibility. |
 | `--project`             | select LikeC4 project to export from by name (e.g. "my-project") or by path<br/>If not specified, exports all |
 | `--theme`               | color-scheme to use, "light" (default), "dark"                                                                |
 | `--dark`                | use dark theme, shortcut for --theme=dark                                                                     |
 | `--light`               | use light theme, shortcut for --theme=light                                                                   |
 | `--use-dot`             | Use local binaries of Graphviz ("dot") instead of bundled WASM                                                |
 | `--seq, --sequence`     | use sequence layout for dynamic views                                                                         |
-| `--flat, --flatten`     | flatten all images in output directory ignoring sources structure                                             |
+| `--flat, --flatten`     | Flatten all images in outdir, ignoring source structure                                                       |
 | `-f, --filter`          | include views with ids matching given patterns<br/>(multiple patterns are combined with OR)                   |
 | `-i, --ignore`          | continue if export fails for some views                                                                       |
 | `-t, --timeout`         | timeout for playwright in seconds, default is 15                                                              |
@@ -199,28 +198,15 @@ likec4 export drawio -o ./diagrams src/
 | ---------------- | --------------------------------------------------------------------------- |
 | `path`           | Path to project (default: current directory)                                |
 | `--outdir, -o`   | Output directory for `.drawio` files (default: current directory or `path`) |
+| `--all-in-one`   | Write one `.drawio` file with all views as tabs                              |
+| `--roundtrip`    | Apply layout, stroke colors/widths, and edge waypoints from DrawIO round-trip comment blocks in `.c4` source (e.g. after import) |
+| `--uncompressed` | Write diagram XML uncompressed (larger file; use if draw.io fails to open the default compressed export) |
 | `--project`      | Select LikeC4 project by name or path; if not set, exports all              |
 | `--use-dot`      | Use local Graphviz (`dot`) for layout instead of bundled WASM               |
 
 :::note
-Export to DrawIO requires layout. If Graphviz is not installed, the CLI uses bundled WASM; for large diagrams, install [Graphviz](https://graphviz.org/) and use `--use-dot` for better performance.
+Export to DrawIO requires layout. If Graphviz is not installed, the CLI uses bundled WASM; for large diagrams, install [Graphviz](https://graphviz.org/) and use `--use-dot` for better performance. Use `--roundtrip` when re-exporting after an import so the generated DrawIO matches the previously imported layout and waypoints.
 :::
-
-### Import from DrawIO
-
-Convert an existing DrawIO diagram to LikeC4 source (`.c4`) so you can adopt LikeC4 from DrawIO assets or round-trip between the two.
-
-```sh
-likec4 import drawio diagram.drawio
-likec4 import drawio diagram.drawio -o src/model.c4
-```
-
-| Option            | Description                                                |
-| ----------------- | ---------------------------------------------------------- |
-| `input`           | Path to `.drawio` or `.drawio.xml` file                    |
-| `--outfile, -o`   | Output `.c4` file (default: same name as input with `.c4`) |
-
-Elements (actors, systems, containers) and relationships are inferred from shapes and edges; colors and custom properties (e.g. description, technology) are preserved when present in the DrawIO file.
 
 ### Generate Mermaid, Dot, D2, PlantUml
 
@@ -234,7 +220,7 @@ likec4 gen d2
 likec4 gen plantuml
 ```
 
-Together with [Export to DrawIO](#export-to-drawio) and [Import from DrawIO](#import-from-drawio), this allows teams to reuse diagrams in Mermaid, Dot, D2, PlantUML, or DrawIO.
+Together with [Export to DrawIO](#export-to-drawio), this allows teams to reuse diagrams in Mermaid, Dot, D2, PlantUML, or DrawIO.
 
 <LinkCard
   title="Generate components"
