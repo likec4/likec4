@@ -1,6 +1,5 @@
 ---
 "likec4": patch
-"@likec4/e2e": patch
 ---
 
 Draw.io: CLI --roundtrip, Playground E2E, DrawioContextMenu getSourceContent
