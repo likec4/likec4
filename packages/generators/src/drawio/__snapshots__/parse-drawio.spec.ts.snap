@@ -1,70 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`parse DrawIO to LikeC4 - UserObject with link=data:page/id,likec4-<viewId> yields navigateTo in model 1`] = `
-"specification {
-  color drawio_color_1 #3b82f6
-}
-
-model {
-
-  Our_SaaS = container 'Our SaaS'
-  {
-    style { color drawio_color_1, shape rectangle }
-    navigateTo saas
-  }
-
-  Customer = container 'Customer'
-  {
-  }
-
-  Customer -> Our_SaaS 'uses'
-}
-
-views {
-  view index {
-    include *
-  }
-}
-
-// <likec4.layout.drawio>
-// {"index":{"nodes":{"Our_SaaS":{"x":100,"y":0,"width":80,"height":40},"Customer":{"x":0,"y":0,"width":80,"height":40}}}}
-// </likec4.layout.drawio>"
-`;
-
-exports[`parse DrawIO to LikeC4 - edge with LikeC4 style (description, technology, notes, navigateTo, arrows, dashed) 1`] = `
-"model {
-
-  A = container 'A'
-  {
-  }
-
-  B = container 'B'
-  {
-  }
-
-  A -> B 'calls' 'HTTP API' 'REST' {
-    notes 'async'
-    navigateTo detail
-    style { line dashed, head open, tail none }
-  }
-}
-
-views {
-  view index {
-    include *
-  }
-}
-
-// <likec4.layout.drawio>
-// {"index":{"nodes":{"A":{"x":0,"y":0,"width":80,"height":40},"B":{"x":200,"y":0,"width":80,"height":40}}}}
-// </likec4.layout.drawio>"
-`;
-
-exports[`parseDrawioToLikeC4 > parse DrawIO to LikeC4 - minimal diagram 1`] = `
+exports[`parse DrawIO to LikeC4 - minimal diagram 1`] = `
 "specification {
   color drawio_color_1 #dae8fc
   color drawio_color_2 #d5e8d4
-  color drawio_edge_color_1 #6c8ebf
 }
 
 model {
@@ -79,27 +18,18 @@ model {
     style { color drawio_color_2 }
   }
 
-  Frontend -> Backend 'requests' {
-    style { color drawio_edge_color_1 }
-  }
+  Frontend -> Backend 'requests'
 }
 
 views {
-  view test {
+  view index {
     include *
   }
 }
-
-// <likec4.layout.drawio>
-// {"test":{"nodes":{"Frontend":{"x":100,"y":80,"width":120,"height":60},"Backend":{"x":100,"y":200,"width":120,"height":60}}}}
-// </likec4.layout.drawio>
-// <likec4.strokeColor.vertices>
-// Frontend=#6c8ebf
-// Backend=#82b366
-// </likec4.strokeColor.vertices>"
+"
 `;
 
-exports[`parseDrawioToLikeC4 > parse DrawIO to LikeC4 - with LikeC4 description and technology 1`] = `
+exports[`parse DrawIO to LikeC4 - with LikeC4 description and technology 1`] = `
 "specification {
   color drawio_color_1 #3b82f6
 }
@@ -120,39 +50,5 @@ views {
     include *
   }
 }
-
-// <likec4.layout.drawio>
-// {"index":{"nodes":{"API":{"x":50,"y":50,"width":100,"height":50}}}}
-// </likec4.layout.drawio>"
-`;
-
-exports[`parseDrawioToLikeC4Multi > two diagrams produce one model and two views with include lists 1`] = `
-"model {
-
-  A = container 'A'
-  {
-  }
-
-  B = container 'B'
-  {
-  }
-
-  C = container 'C'
-  {
-  }
-
-}
-
-views {
-  view overview {
-    include A, B
-  }
-  view detail {
-    include A, C
-  }
-}
-
-// <likec4.layout.drawio>
-// {"overview":{"nodes":{"A":{"x":0,"y":0,"width":80,"height":40},"B":{"x":200,"y":0,"width":80,"height":40}}},"detail":{"nodes":{"A":{"x":0,"y":0,"width":80,"height":40},"C":{"x":200,"y":0,"width":80,"height":40}}}}
-// </likec4.layout.drawio>"
+"
 `;

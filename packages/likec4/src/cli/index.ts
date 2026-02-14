@@ -1,12 +1,6 @@
 #!/usr/bin/env node
 
-import {
-  configureLogger,
-  getAnsiColorFormatter,
-  getConsoleFormatter,
-  getConsoleSink,
-  loggable,
-} from '@likec4/log'
+import { configureLogger, getAnsiColorFormatter, getConsoleFormatter, getConsoleSink } from '@likec4/log'
 import { DEV } from 'esm-env'
 import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
@@ -20,16 +14,13 @@ import buildCmd from './build'
 import checkUpdateCmd, { notifyAvailableUpdate } from './check-update'
 import codegenCmd from './codegen'
 import exportCmd from './export'
+import importCmd from './import'
 import mcpCmd from './mcp'
 import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
 
-/**
- * Configure likec4 logger: verbose or dev => debug level, else info.
- * @param isDebug - When true, sets lowest level to debug; otherwise info.
- */
-function applyLoggerConfig(isDebug = isDevelopment) {
+function configurelogger(isDebug = isDevelopment) {
   configureLogger({
     sinks: {
       console: getConsoleSink({
@@ -46,10 +37,6 @@ function applyLoggerConfig(isDebug = isDevelopment) {
   })
 }
 
-/**
- * Parse CLI argv and run the requested command (serve, build, export, etc.).
- * Configures logger from --verbose, then parses yargs and runs the handler.
- */
 async function main() {
   if (!DEV && !isInsideContainer()) {
     notifyAvailableUpdate()
@@ -61,6 +48,7 @@ async function main() {
     buildCmd,
     codegenCmd,
     exportCmd,
+    importCmd,
     previewCmd,
     validateCmd,
     mcpCmd,
@@ -98,24 +86,15 @@ async function main() {
     })
     .wrap(clamp(stdout.columns - 10, { min: 80, max: 150 }))
     .middleware((args) => {
-      applyLoggerConfig(args.verbose || isDevelopment)
+      configurelogger(args.verbose || isDevelopment)
     })
     .parseAsync()
 }
 
-/**
- * Single place for CLI failure: log error (message + stack via loggable) and exit with code 1.
- * @param err - Caught error or rejection value
- * @param prefix - Optional prefix for the error message (e.g. 'Unhandled rejection:')
- */
-function exitWithFailure(err: unknown, prefix?: string): never {
-  process.exitCode = 1
-  console.error(prefix != null ? `${prefix} ${loggable(err)}` : loggable(err))
+main().catch(() => {
   exit(1)
-}
+})
 
-main().catch(exitWithFailure)
-
-process.on('unhandledRejection', (err: unknown) => {
-  exitWithFailure(err, 'Unhandled rejection:')
+process.on('unhandledRejection', (err) => {
+  console.error(`Unhandled rejection`, err)
 })

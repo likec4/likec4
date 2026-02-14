@@ -26,12 +26,6 @@ configureLogger({
 
 const envSchema = z.string().or(z.array(z.string()))
 
-/**
- * Read LIKEC4_WORKSPACE env: JSON array of paths or single path string.
- * Falls back to treating raw value as one workspace path if not valid JSON.
- * @param name - Environment variable name (e.g. 'LIKEC4_WORKSPACE').
- * @returns Array of absolute fs paths, or undefined if unset/invalid.
- */
 function readEnvVar(name: string): [string, ...string[]] | undefined {
   const value = process.env[name]
   if (!value) return undefined
@@ -43,11 +37,7 @@ function readEnvVar(name: string): [string, ...string[]] | undefined {
       return map(asArray, v => URI.parse(v).fsPath)
     }
   } catch {
-    // Fallback: treat raw value as a single workspace path (e.g. plain path not JSON).
-    const trimmed = value.trim()
-    if (trimmed.length > 0) {
-      return [URI.file(trimmed).fsPath]
-    }
+    // ignore
   }
   return undefined
 }

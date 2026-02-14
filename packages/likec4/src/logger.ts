@@ -2,7 +2,6 @@ import { rootLogger } from '@likec4/log'
 import _boxen, { type Options as BoxenOptions } from 'boxen'
 import { hrtime } from 'node:process'
 import prettyMilliseconds from 'pretty-ms'
-import type { RollupError } from 'rollup'
 import k from 'tinyrainbow'
 import type { LogErrorOptions, LogType } from 'vite'
 
@@ -13,10 +12,6 @@ export function createLikeC4Logger(prefix: string | readonly [string, ...string[
   return {
     info(msg: string) {
       logger.info(msg)
-    },
-    debug(msg: string, ...args: unknown[]) {
-      if (args.length === 0) logger.debug(msg)
-      else logger.debug(msg, { args })
     },
     warn(msg: unknown) {
       if (msg instanceof Error) {
@@ -32,10 +27,6 @@ export function createLikeC4Logger(prefix: string | readonly [string, ...string[
     warnOnce(msg: string): void {
       logger.warn(msg)
     },
-    /**
-     * Log an error. msg: string or Error (displayed); options?.error: Error to attach (for stack).
-     * If msg === options?.error, logs error name+message; else logs msg and attaches error.
-     */
     error(msg: unknown, options?: LogErrorOptions): void {
       let error = options?.error ?? msg
       if (error instanceof Error) {
@@ -55,18 +46,13 @@ export function createLikeC4Logger(prefix: string | readonly [string, ...string[
     clearScreen: function(_type: LogType): void {
       // console.clear()
     },
-    /** Not implemented; callers should not rely on this. Returns false. */
-    hasErrorLogged: function(_error: Error | RollupError): boolean {
-      return false
+    hasErrorLogged: function(_error: any): boolean {
+      throw new Error('Function not implemented.')
     },
     hasWarned: false,
   }
 }
-/** Full logger from createLikeC4Logger; debug is optional so Vite's config.logger is assignable. */
-export type ViteLogger = Omit<ReturnType<typeof createLikeC4Logger>, 'debug'> & {
-  debug?: (msg: string, ...args: unknown[]) => void
-  hasErrorLogged?: (error: Error | RollupError) => boolean
-}
+export type ViteLogger = ReturnType<typeof createLikeC4Logger>
 
 export type Logger = {
   info(msg: string): void

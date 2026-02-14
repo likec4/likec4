@@ -45,23 +45,21 @@
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
-    "postpack": "likec4ops postpack",
+    "postpack": "cp likec4-generators-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
-    "langium": "catalog:langium",
-    "pako": "^2.1.0",
     "remeda": "catalog:utils",
-    "json5": "catalog:utils"
+    "json5": "catalog:utils",
+    "langium": "catalog:langium"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
-    "@types/pako": "^2.0.3",
     "typescript": "catalog:",
     "obuild": "catalog:obuild",
     "vitest": "catalog:vitest"

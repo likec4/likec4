@@ -6,11 +6,6 @@ import {
 } from '@logtape/logtape'
 import { getConsoleFormatter } from './formatters'
 
-/**
- * Create a sink that writes formatted log records to stdout (default formatter).
- * @param options - Optional console sink options (e.g. custom formatter)
- * @returns Sink that writes to stdout
- */
 export function getConsoleSink(options?: ConsoleSinkOptions): Sink {
   return getLogtapeConsoleSink({
     formatter: getConsoleFormatter(),
@@ -21,8 +16,6 @@ export function getConsoleSink(options?: ConsoleSinkOptions): Sink {
 /**
  * Creates a console sink that writes to stderr.
  * (MCP protocol requires stderr to be used for logging)
- * @param options - Optional console sink options (e.g. custom formatter)
- * @returns Sink that writes to stderr
  */
 export function getConsoleStderrSink(options?: ConsoleSinkOptions): Sink {
   const formatter = options?.formatter ?? getConsoleFormatter()

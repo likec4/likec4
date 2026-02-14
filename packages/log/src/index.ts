@@ -1,6 +1,5 @@
 import {
   type Config,
-  type Sink,
   configureSync as configureLogtape,
   getLogger,
 } from '@logtape/logtape'
@@ -54,24 +53,18 @@ export function createLogger(subcategory: string | readonly [string] | readonly 
   return logger.getChild(subcategory)
 }
 
-/**
- * Configure the global logger: sinks, loggers, and lowest level per category.
- * @param config - Optional partial config (sinks, loggers). Merged with defaults.
- */
 export function configureLogger<TSinkId extends string, TFilterId extends string>(
   config?: Partial<Config<TSinkId, TFilterId>>,
 ) {
   try {
-    const { sinks: _sinks, loggers: _loggers, ...restConfig } = config ?? {}
     const sinks = config?.sinks ?? {}
-    const sinksWithConsole: Record<TSinkId | 'console', Sink> = {
-      console: getConsoleSink(),
-      ...sinks,
-    } as Record<TSinkId | 'console', Sink>
-    configureLogtape<TSinkId | 'console', TFilterId>({
+    configureLogtape<any, any>({
       reset: true,
-      ...restConfig,
-      sinks: sinksWithConsole,
+      ...config,
+      sinks: {
+        console: getConsoleSink(),
+        ...sinks,
+      },
       loggers: [
         { category: ['logtape', 'meta'], sinks: ['console'], lowestLevel: 'warning' },
         ...(config?.loggers ?? [

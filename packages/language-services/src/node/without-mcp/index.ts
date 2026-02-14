@@ -28,8 +28,6 @@ export { LikeC4 } from '../../common/LikeC4'
  */
 export async function fromWorkspace(path: string, options?: FromWorkspaceOptions): Promise<LikeC4> {
   const workspacePath = resolve(path)
-  const folderUri = pathToFileURL(workspacePath).toString()
-  const workspaceUri = folderUri.endsWith('/') ? folderUri : folderUri + '/'
   return memoizeProp(globalThis, 'likec4:' + workspacePath, async () => {
     const logger = rootLogger.getChild('lang')
 
@@ -49,7 +47,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
 
     const workspace = {
       name: basename(workspacePath),
-      uri: workspaceUri,
+      uri: pathToFileURL(workspacePath).toString(),
     }
 
     const WorkspaceManager = langium.shared.workspace.WorkspaceManager

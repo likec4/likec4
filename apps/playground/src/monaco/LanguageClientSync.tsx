@@ -1,15 +1,7 @@
-import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
-import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
-import type { DiagramView, ViewChange, ViewId } from '@likec4/core'
-import type { LayoutView as LayoutViewProtocol } from '@likec4/language-server/protocol'
-import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
-import type { Location } from 'vscode-languageserver-types'
-import type { CustomWrapperConfig } from './config'
-
 import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
-import { DRAWIO_EXPORT_EVENT } from '$components/drawio/drawio-events'
+import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
-import { invariant, nonNullable } from '@likec4/core'
+import { type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import {
   BuildDocuments,
@@ -23,31 +15,20 @@ import {
 import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
 import { useRouter } from '@tanstack/react-router'
+import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
 import { useEffect, useRef } from 'react'
 import { funnel, isString } from 'remeda'
-import { loadLikeC4Worker } from './config'
+import { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT } from '$components/drawio/drawio-events'
+import { type CustomWrapperConfig, loadLikeC4Worker } from './config'
 import { cleanDisposables, createMemoryFileSystem, ensureFileInWorkspace, setActiveEditor } from './utils'
+
+import type { Location } from 'vscode-languageserver-types'
 
 const logger = rootLogger.getChild('monaco-language-client-sync')
 
-/** Type-safe layout-view request: pass LayoutView.req so params and response are inferred. */
-function requestLayoutView(
-  client: {
-    sendRequest(req: typeof LayoutView.req, params: LayoutViewProtocol.Params): Promise<LayoutViewProtocol.Res>
-  },
-  viewId: ViewId,
-): Promise<LayoutViewProtocol.Res> {
-  return client.sendRequest(LayoutView.req, { viewId })
-}
-
-export function LanguageClientSync({
-  config,
-  wrapper,
-  setLayoutedModelApi,
-}: {
+export function LanguageClientSync({ config, wrapper }: {
   config: CustomWrapperConfig
   wrapper: MonacoEditorLanguageClientWrapper
-  setLayoutedModelApi?: (api: LayoutedModelApi | null) => void
 }) {
   const router = useRouter()
   const playground = usePlayground()
@@ -101,44 +82,9 @@ export function LanguageClientSync({
     }
   })
 
-  const registerLayoutedModelApi = useCallbackRef(() => {
-    if (!setLayoutedModelApi || !wrapper) return
-    const client = wrapper.getLanguageClient('likec4')
-    if (!client) return
-    setLayoutedModelApi({
-      getLayoutedModel: async () => {
-        const c = wrapper.getLanguageClient('likec4')
-        if (!c) return null
-        try {
-          const { model } = await c.sendRequest(FetchLayoutedModel.req, {})
-          return model ?? null
-        } catch {
-          return null
-        }
-      },
-      layoutViews: async (viewIds: string[]) => {
-        const c = wrapper.getLanguageClient('likec4')
-        if (!c) return {}
-        const out: Record<string, DiagramView> = {}
-        await Promise.all(
-          viewIds.map(async (viewId) => {
-            try {
-              const res = await requestLayoutView(c, viewId as ViewId)
-              if (res.result?.diagram) out[viewId] = res.result.diagram
-            } catch {
-              // skip failed view
-            }
-          }),
-        )
-        return out
-      },
-    })
-  })
-
-  const requestLayoutViewCallback = useCallbackRef(async (viewId: ViewId) => {
+  const requestLayoutView = useCallbackRef(async (viewId: ViewId) => {
     try {
-      const res = await requestLayoutView(languageClient(), viewId)
-      const result = res.result
+      const { result } = await languageClient().sendRequest(LayoutView.req, { viewId })
       if (result) {
         playground.send({ type: 'likec4.lsp.onLayoutDone', ...result })
       } else {
@@ -263,8 +209,6 @@ export function LanguageClientSync({
           await languageClient().sendRequest(BuildDocuments.req, { docs })
           await requestComputedModel()
 
-          registerLayoutedModelApi()
-
           playground.send({
             type: 'workspace.ready',
           })
@@ -277,11 +221,10 @@ export function LanguageClientSync({
         logger.error(loggable(err))
       })
     return () => {
-      setLayoutedModelApi?.(null)
       logger.debug`cleanDisposables`
       cleanDisposables(disposables)
     }
-  }, [workspaceId, wrapper, setLayoutedModelApi, registerLayoutedModelApi])
+  }, [workspaceId, wrapper])
 
   useEffect(() => {
     const subscribe = monaco.editor.registerCommand('likec4.open-preview', (_, viewId) => {
@@ -305,6 +248,15 @@ export function LanguageClientSync({
     const editor = wrapper.getEditor()
     if (!editor) return
     const disposables: IDisposable[] = [
+      editor.addAction({
+        id: 'likec4.drawio.import',
+        label: 'Import from DrawIO…',
+        contextMenuGroupId: '9_cutcopypaste',
+        contextMenuOrder: 100,
+        run: () => {
+          window.dispatchEvent(new CustomEvent(DRAWIO_IMPORT_EVENT))
+        },
+      }),
       editor.addAction({
         id: 'likec4.drawio.export',
         label: 'Export to DrawIO',
@@ -349,7 +301,7 @@ export function LanguageClientSync({
     () => {
       if (playgroundState !== 'ready' || activeViewId == null) return
       if (activeViewState === 'stale' || activeViewState === 'pending') {
-        requestLayoutViewCallback(activeViewId).catch(error => {
+        requestLayoutView(activeViewId).catch(error => {
           logger.error(loggable(error))
         })
       }

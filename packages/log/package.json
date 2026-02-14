@@ -37,7 +37,7 @@
     "typecheck": "tsc -b --verbose",
     "build": "obuild",
     "pack": "pnpm pack",
-    "postpack": "likec4ops postpack",
+    "postpack": "cp likec4-log-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean"
   },
