@@ -35,6 +35,7 @@ styled-system/*/styled-system
 
 packages/language-server/src/generated/
 packages/language-server/src/generated-lib/
+packages/log/src/*.js
 packages/vscode-preview/src/generated-icons.tsx
 
 vite.config.ts.timestamp*
