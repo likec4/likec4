@@ -24,9 +24,7 @@ function downloadDrawioBlob(xml: string, filename: string): void {
   const a = document.createElement('a')
   a.href = url
   a.download = filename
-  document.body.appendChild(a)
   a.click()
-  document.body.removeChild(a)
   setTimeout(() => URL.revokeObjectURL(url), DRAWIO_DOWNLOAD_REVOKE_MS)
 }
 
@@ -154,7 +152,8 @@ function fillFromModelView(
         const vm = likec4model.view(viewId as Parameters<LikeC4Model['view']>[0])
         if (vm?.$view) byId.set(viewId, toViewModel(vm.$view as DiagramView, styles))
       } catch {
-        // view might not exist for this id
+        // view might not exist for this id — ignore gracefully
+        if (import.meta.env.DEV) console.warn(`fillFromModelView: skipped viewId=${viewId}`)
       }
     }
   }

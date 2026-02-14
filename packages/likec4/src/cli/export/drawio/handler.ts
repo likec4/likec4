@@ -232,12 +232,14 @@ type DrawioExportArgs = {
 async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
 
-  // 1) Init workspace and ensure single project (same fromWorkspace as build for consistent CI)
+  // 1) Init workspace (same fromWorkspace as build for consistent CI)
   await using likec4 = await fromWorkspace(args.path, {
     graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })
-  likec4.ensureSingleProject()
+  if (!args.project) {
+    likec4.ensureSingleProject()
+  }
 
   // 2) Load layouted model and validate non-empty
   const projectId: ProjectId | undefined = args.project != null
@@ -263,6 +265,10 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   }
 
   // 4) Export: all-in-one file or one file per view
+  if (args.allInOne && viewmodels.length === 0) {
+    logger.warn('No views to export in all-in-one mode')
+    throw new Error(ERR_NO_VIEWS_EXPORTED)
+  }
   if (args.allInOne && viewmodels.length > 0) {
     try {
       await exportDrawioAllInOne(exportParams)

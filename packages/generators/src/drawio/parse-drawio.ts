@@ -14,7 +14,7 @@ import {
   DRAWIO_DIAGRAM_ID_PREFIX,
   DRAWIO_PAGE_LINK_PREFIX,
 } from './constants'
-import { decodeXmlEntities } from './xml-utils'
+import { decodeXmlEntities, escapeXml } from './xml-utils'
 
 /**
  * Normalize unknown to a string for error messages (Error → message; else String).
@@ -458,7 +458,7 @@ function parseDrawioXml(xml: string): DrawioCell[] {
         const mx = extractOneMxCell(innerXml, innerMxStart)
         if (mx) {
           // Use innerXml (UserObject body) so parseUserData and fullTag see UserObject-level <data> siblings of the mxCell
-          const fullTag = `<mxCell id="${userObjId}" ${mx.attrs}>${innerXml}</mxCell>`
+          const fullTag = `<mxCell id="${escapeXml(userObjId)}" ${mx.attrs}>${innerXml}</mxCell>`
           const cell = buildCellFromMxCell(
             mx.attrs,
             innerXml,
@@ -708,11 +708,7 @@ function stripTags(s: string): string {
 /** Decode XML entities, take first line up to <br, strip tags. Single implementation for cell value and title (DRY). */
 function stripHtml(raw: string | undefined): string {
   if (!raw || raw.trim() === '') return ''
-  const decoded = raw
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
-    .replaceAll('&quot;', '"')
-    .replaceAll('&amp;', '&')
+  const decoded = decodeXmlEntities(raw)
   const firstLine = decoded.split('\n')[0] ?? ''
   const brIdx = firstLine.toLowerCase().indexOf('<br')
   const segment = brIdx === -1 ? firstLine : firstLine.slice(0, brIdx)
@@ -1074,7 +1070,7 @@ function emitEdgesToLines(
   }
 }
 
-/** Collect layout, stroke, customData and waypoint lines for one diagram state (shared by single and multi emit). Four passes over idToFqn; could be merged into one for very large diagrams. */
+/** Collect layout, stroke, customData and waypoint lines for one diagram state (shared by single and multi emit). Single pass over idToFqn. */
 function collectRoundtripForState(
   viewId: string,
   idToFqn: Map<string, string>,
@@ -1088,6 +1084,10 @@ function collectRoundtripForState(
   waypointLines: string[]
 } {
   const layoutNodes: Record<string, { x: number; y: number; width: number; height: number }> = {}
+  const strokeColorLines: string[] = []
+  const strokeWidthLines: string[] = []
+  const customDataLines: string[] = []
+  const waypointLines: string[] = []
   for (const [cellId, fqn] of idToFqn) {
     const cell = byId.get(cellId)
     if (
@@ -1099,44 +1099,28 @@ function collectRoundtripForState(
     ) {
       layoutNodes[fqn] = { x: cell.x, y: cell.y, width: cell.width, height: cell.height }
     }
-  }
-  const strokeColorLines: string[] = []
-  for (const [cellId, fqn] of idToFqn) {
-    const cell = byId.get(cellId)
-    if (
-      cell?.vertex &&
-      cell.strokeColor?.trim() &&
-      /^#[0-9A-Fa-f]{3,8}$/.test(cell.strokeColor.trim())
-    ) {
-      strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
+    if (cell?.vertex) {
+      if (
+        cell.strokeColor?.trim() &&
+        /^#[0-9A-Fa-f]{3,8}$/.test(cell.strokeColor.trim())
+      ) {
+        strokeColorLines.push(`// ${fqn}=${cell.strokeColor.trim()}`)
+      }
+      if (cell.strokeWidth != null && cell.strokeWidth.trim() !== '') {
+        strokeWidthLines.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
+      }
     }
-  }
-  const strokeWidthLines: string[] = []
-  for (const [cellId, fqn] of idToFqn) {
-    const cell = byId.get(cellId)
-    if (cell?.vertex && cell.strokeWidth != null && cell.strokeWidth.trim() !== '') {
-      strokeWidthLines.push(`// ${fqn}=${cell.strokeWidth.trim()}`)
-    }
-  }
-  const customDataLines: string[] = []
-  for (const [cellId, fqn] of idToFqn) {
-    const cell = byId.get(cellId)
     if (cell?.customData?.trim()) customDataLines.push(`// ${fqn} ${cell.customData.trim()}`)
   }
   const edgesWithEndpoints = edges.filter(isEdgeWithEndpoints)
   for (const e of edgesWithEndpoints) {
     const src = idToFqn.get(e.source)
     const tgt = idToFqn.get(e.target)
-    if (src && tgt && e.customData?.trim()) {
-      customDataLines.push(`// ${src}|${tgt} ${e.customData.trim()}`)
-    }
-  }
-  const waypointLines: string[] = []
-  for (const e of edgesWithEndpoints) {
-    const src = idToFqn.get(e.source)
-    const tgt = idToFqn.get(e.target)
-    if (src && tgt && e.edgePoints?.trim()) {
-      waypointLines.push(`// ${src}|${tgt}|${e.id} ${e.edgePoints.trim()}`)
+    if (src && tgt) {
+      if (e.customData?.trim()) customDataLines.push(`// ${src}|${tgt} ${e.customData.trim()}`)
+      if (e.edgePoints?.trim()) {
+        waypointLines.push(`// ${src}|${tgt}|${e.id} ${e.edgePoints.trim()}`)
+      }
     }
   }
   return { layoutNodes, strokeColorLines, strokeWidthLines, customDataLines, waypointLines }

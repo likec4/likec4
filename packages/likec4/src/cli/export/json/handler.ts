@@ -25,7 +25,7 @@ type JsonExportArgs = {
 /** Run the JSON export workflow: init workspace, load model(s), write to outfile. */
 async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
-  const languageServices = await LikeC4.fromWorkspace(args.path, {
+  await using languageServices = await LikeC4.fromWorkspace(args.path, {
     logger,
     graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,

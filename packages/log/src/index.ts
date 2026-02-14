@@ -62,7 +62,7 @@ export function configureLogger<TSinkId extends string, TFilterId extends string
 ) {
   try {
     const sinks = config?.sinks ?? {}
-    configureLogtape<any, any>({
+    configureLogtape<TSinkId | 'console', TFilterId>({
       reset: true,
       ...config,
       sinks: {

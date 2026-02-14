@@ -121,7 +121,6 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     sequence = false,
     chromiumSandbox = false,
   } = args
-  const startTakeScreenshot = hrtime()
 
   await using likec4 = await LikeC4.fromWorkspace(workspacePath, {
     logger: 'vite',
@@ -191,6 +190,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
         : resolvedServerUrl
       const _output = projects.length > 1 ? joinURL(output, prj.id) : output
 
+      const startTakeScreenshot = hrtime()
       const succeed = await exportViewsToPNG({
         logger,
         serverUrl: _serverUrl,
