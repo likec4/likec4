@@ -179,7 +179,10 @@ function getDecodedStyle(styleMap: Map<string, string>, key: string): string | u
   }
 }
 
-/** Parse DrawIO style string (semicolon-separated key=value) into a map. */
+/**
+ * Parse DrawIO style string (semicolon-separated key=value) into a map.
+ * Entries with empty values are intentionally dropped (meaningful style values are non-empty).
+ */
 function parseStyle(style: string | undefined): Map<string, string> {
   const map = new Map<string, string>()
   if (!style) return map
@@ -1646,7 +1649,12 @@ views {
 }
 `
   }
-  if (diagrams.length === 1) return parseDrawioToLikeC4(xml)
+  if (diagrams.length === 1) {
+    const d = diagrams[0]!
+    const cells = parseDrawioXml(d.content)
+    const state = buildSingleDiagramState(cells, d.name)
+    return emitLikeC4SourceFromSingleState(state)
+  }
 
   const states: DiagramState[] = []
   for (const d of diagrams) {

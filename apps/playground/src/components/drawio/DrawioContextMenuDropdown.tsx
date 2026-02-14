@@ -13,6 +13,7 @@ export type DrawioContextMenuDropdownProps = {
   onExportAllViews?: () => void
   canExport: boolean
   canExportAllViews?: boolean
+  exporting?: boolean
 }
 
 /**
@@ -27,6 +28,7 @@ export function DrawioContextMenuDropdown({
   onExportAllViews,
   canExport,
   canExportAllViews = false,
+  exporting = false,
 }: DrawioContextMenuDropdownProps) {
   return (
     <Menu
@@ -70,7 +72,7 @@ export function DrawioContextMenuDropdown({
         <Menu.Item
           leftSection={<IconFileExport size={16} />}
           onClick={onExportAllViews}
-          disabled={!canExportAllViews}
+          disabled={!canExportAllViews || exporting}
           title="Export all views as one .drawio file (one tab per view). Use this to get all diagram tabs (e.g. Landscape + Our SaaS).">
           Export all…
         </Menu.Item>

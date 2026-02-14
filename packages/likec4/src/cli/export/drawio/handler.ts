@@ -95,24 +95,29 @@ async function readWorkspaceSourceContent(
     })
     for (const e of entries) {
       const full = join(dir, e.name)
-      // Note: symlinks to directories are not followed (isDirectory() is false for symlinks).
-      if (e.isDirectory()) {
-        if (!ROUNDTRIP_IGNORED_DIRS.has(e.name)) await walk(full, depth + 1)
-      } else if (e.isSymbolicLink()) {
-        const st = await stat(full).catch(() => null)
-        if (st?.isFile() && isSourceFile(e.name)) {
+      switch (true) {
+        case e.isDirectory():
+          if (!ROUNDTRIP_IGNORED_DIRS.has(e.name)) await walk(full, depth + 1)
+          break
+        case e.isSymbolicLink(): {
+          const st = await stat(full).catch(() => null)
+          if (st?.isFile() && isSourceFile(e.name)) {
+            const content = await readFile(full, 'utf-8').catch(err => {
+              if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readFile failed`, { file: full, err })
+              return ''
+            })
+            if (content) chunks.push(content)
+          }
+          break
+        }
+        case e.isFile() && isSourceFile(e.name): {
           const content = await readFile(full, 'utf-8').catch(err => {
             if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readFile failed`, { file: full, err })
             return ''
           })
           if (content) chunks.push(content)
+          break
         }
-      } else if (e.isFile() && isSourceFile(e.name)) {
-        const content = await readFile(full, 'utf-8').catch(err => {
-          if (logger?.debug) logger.debug(`${k.dim('Roundtrip:')} readFile failed`, { file: full, err })
-          return ''
-        })
-        if (content) chunks.push(content)
       }
     }
   }

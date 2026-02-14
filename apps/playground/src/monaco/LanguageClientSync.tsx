@@ -140,6 +140,10 @@ export function LanguageClientSync({
             }
           }),
         )
+        const failedCount = viewIds.length - Object.keys(out).length
+        if (failedCount > 0) {
+          logger.warn(`${failedCount}/${viewIds.length} views failed to layout`)
+        }
         return out
       },
     })
