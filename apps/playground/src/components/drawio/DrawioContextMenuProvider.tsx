@@ -1,27 +1,54 @@
-import { usePlaygroundSnapshot } from '$/hooks/usePlayground'
+import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
-import { useDisclosure } from '@mantine/hooks'
+import { usePlaygroundSnapshot } from '$/hooks/usePlayground'
+import { useCallbackRef } from '@mantine/hooks'
 import {
   type PropsWithChildren,
   createContext,
   useCallback,
   useContext,
   useEffect,
-  useState,
+  useMemo,
+  useRef,
 } from 'react'
 import { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT } from './drawio-events'
-import { DrawioContextMenuView } from './DrawioContextMenuView'
-import { useDrawioActions } from './useDrawioActions'
+import { DrawioContextMenuDropdown } from './DrawioContextMenuDropdown'
+import {
+  type DiagramStateLike,
+  type OnDrawioExportError,
+  useDrawioContextMenuActions,
+} from './useDrawioContextMenuActions'
 
 export { DRAWIO_EXPORT_EVENT, DRAWIO_IMPORT_EVENT }
 
+/** API to fetch layouted model / per-view diagrams from LSP (used for "Export all views"). */
+export type LayoutedModelApi = {
+  getLayoutedModel: () => Promise<LayoutedLikeC4ModelData | null>
+  layoutViews: (viewIds: string[]) => Promise<Record<string, DiagramView>>
+}
+
+/** API exposed by DrawioContextMenuProvider: open the context menu at the given event. */
 export type DrawioContextMenuApi = {
-  openMenu: (event: React.MouseEvent) => void
+  openMenu: (event: React.MouseEvent | MouseEvent) => void
 }
 
 const DrawioContextMenuContext = createContext<DrawioContextMenuApi | null>(null)
 
+/** Snapshot when playground is not ready (no diagram, no model, empty files/viewStates). */
+const EMPTY_DRAWIO_SNAPSHOT: {
+  diagram: DiagramView | null
+  likec4model: LikeC4Model | null
+  files: Record<string, string>
+  viewStates: Record<string, DiagramStateLike>
+} = {
+  diagram: null,
+  likec4model: null,
+  files: {},
+  viewStates: {},
+}
+
+/** Returns the DrawIO context menu API; throws if used outside DrawioContextMenuProvider. */
 export function useDrawioContextMenu(): DrawioContextMenuApi {
   const api = useContext(DrawioContextMenuContext)
   if (!api) {
@@ -30,80 +57,76 @@ export function useDrawioContextMenu(): DrawioContextMenuApi {
   return api
 }
 
+/** Returns the DrawIO context menu API or null when not inside DrawioContextMenuProvider. */
 export function useOptionalDrawioContextMenu(): DrawioContextMenuApi | null {
   return useContext(DrawioContextMenuContext)
 }
 
-export function DrawioContextMenuProvider({ children }: PropsWithChildren) {
-  const { diagram, likec4model } = usePlaygroundSnapshot(c => {
-    if (c.value !== 'ready') {
-      return { diagram: null as DiagramView | null, likec4model: null as LikeC4Model | null }
-    }
+/** Provides DrawIO export (and future import) context menu; wires LSP/model/source for useDrawioContextMenuActions. */
+export function DrawioContextMenuProvider({
+  children,
+  layoutedModelApi,
+  onExportError,
+}: PropsWithChildren<{
+  layoutedModelApi?: LayoutedModelApi | null
+  /** Optional: called when export fails so UI can show toast/snackbar. */
+  onExportError?: OnDrawioExportError
+}>) {
+  const { diagram, likec4model, files, viewStates } = usePlaygroundSnapshot(c => {
+    if (c.value !== 'ready') return EMPTY_DRAWIO_SNAPSHOT
     const viewState = c.context.activeViewId ? c.context.viewStates[c.context.activeViewId] : null
     const diagram = viewState?.state === 'success' ? viewState.diagram : null
     return {
       diagram: diagram ?? null,
       likec4model: c.context.likec4model,
+      files: c.context.files ?? {},
+      viewStates: c.context.viewStates ?? {},
     }
   })
-  const [opened, { open, close }] = useDisclosure(false)
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
-  const {
-    fileInputRef,
-    handleImportFile,
-    handleExport,
-    triggerImport,
-    canExport,
-    DRAWIO_ACCEPT,
-  } = useDrawioActions({ diagram, likec4model })
 
-  const openMenu = useCallback(
-    (event: React.MouseEvent) => {
-      event.preventDefault()
-      setMenuPosition({ x: event.clientX, y: event.clientY })
-      open()
-    },
-    [open],
-  )
-
-  const handleImport = useCallback(() => {
-    close()
-    triggerImport()
-  }, [close, triggerImport])
-
-  const handleExportClick = useCallback(() => {
-    close()
-    handleExport()
-  }, [close, handleExport])
-
+  const filesRef = useRef(files)
   useEffect(() => {
-    window.addEventListener(DRAWIO_IMPORT_EVENT, triggerImport)
-    window.addEventListener(DRAWIO_EXPORT_EVENT, handleExport)
-    return () => {
-      window.removeEventListener(DRAWIO_IMPORT_EVENT, triggerImport)
-      window.removeEventListener(DRAWIO_EXPORT_EVENT, handleExport)
-    }
-  }, [triggerImport, handleExport])
+    filesRef.current = files
+  }, [files])
+  const getSourceContent = useCallback(() => {
+    const contents = Object.values(filesRef.current).filter(Boolean)
+    return contents.length > 0 ? contents.join('\n\n') : undefined
+  }, [])
 
-  const api: DrawioContextMenuApi = { openMenu }
+  const actions = useDrawioContextMenuActions({
+    diagram,
+    likec4model,
+    viewStates,
+    getSourceContent,
+    ...(onExportError != null && { onExportError }),
+    ...(layoutedModelApi && {
+      getLayoutedModel: layoutedModelApi.getLayoutedModel,
+      layoutViews: layoutedModelApi.layoutViews,
+    }),
+  })
+
+  // useCallbackRef keeps the listener stable so the effect does not churn add/remove on every actions.handleExport identity change
+  const onExport = useCallbackRef(actions.handleExport)
+  useEffect(() => {
+    window.addEventListener(DRAWIO_EXPORT_EVENT, onExport)
+    return () => window.removeEventListener(DRAWIO_EXPORT_EVENT, onExport)
+  }, [onExport])
+
+  const api = useMemo<DrawioContextMenuApi>(
+    () => ({ openMenu: actions.openMenu }),
+    [actions.openMenu],
+  )
 
   return (
     <DrawioContextMenuContext.Provider value={api}>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept={DRAWIO_ACCEPT}
-        style={{ display: 'none' }}
-        onChange={handleImportFile}
-        aria-hidden
-      />
-      <DrawioContextMenuView
-        opened={opened}
-        onClose={close}
-        menuPosition={menuPosition}
-        onImport={handleImport}
-        onExport={handleExportClick}
-        canExport={canExport}
+      <DrawioContextMenuDropdown
+        menuPosition={actions.menuPosition}
+        opened={actions.opened}
+        onClose={actions.close}
+        onExport={actions.handleExport}
+        onExportAllViews={actions.handleExportAllViews}
+        canExport={actions.canExport}
+        canExportAllViews={actions.canExportAllViews}
       />
       {children}
     </DrawioContextMenuContext.Provider>

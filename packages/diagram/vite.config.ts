@@ -38,6 +38,8 @@ const defaultConfig = defineConfig({
   },
   resolve: {
     conditions: ['sources'],
+    // Prefer .ts/.tsx over .js so build uses source (avoid CJS .js with JSX in src/)
+    extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       'react-dom/server': resolve('src/bundle/react-dom-server-mock.ts'),
@@ -160,6 +162,7 @@ const bundleConfig = defineConfig({
   },
   logLevel: 'info',
   resolve: {
+    extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       'react-dom/server': resolve('src/bundle/react-dom-server-mock.ts'),

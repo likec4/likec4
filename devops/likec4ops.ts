@@ -2,6 +2,7 @@
 
 import { defineCommand, runMain } from 'citty'
 import clean from './commands/clean.ts'
+import postpack from './commands/postpack.ts'
 import prepack from './commands/prepack.ts'
 import syncVersion from './commands/sync-version.ts'
 
@@ -21,6 +22,7 @@ const main = defineCommand({
   // },
   subCommands: {
     clean,
+    postpack,
     prepack,
     'sync-version': syncVersion,
   },

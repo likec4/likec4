@@ -7,6 +7,12 @@ export default defineConfig({
     chaiConfig: {
       truncateThreshold: 100,
     },
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/*.spec.js',
+      '**/*.test.js',
+    ],
     projects: [
       'packages/*/vitest.config.ts',
     ],

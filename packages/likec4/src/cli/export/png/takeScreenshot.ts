@@ -20,6 +20,11 @@ type TakeScreenshotParams = {
   theme: 'light' | 'dark'
 }
 
+/**
+ * Capture each view as PNG under the output directory using the provided browser context.
+ * @param params - Configuration object containing browser context, views, output path, logger, timeout, and rendering options.
+ * @returns Promise resolving to an array of successfully captured views with their file paths.
+ */
 export async function takeScreenshot({
   browserContext,
   views,

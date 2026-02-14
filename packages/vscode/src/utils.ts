@@ -1,6 +1,10 @@
 import prettyMs from 'pretty-ms'
 
-export function now() {
+/**
+ * High-resolution time (performance.now when available, else Date.now).
+ * @returns Time in milliseconds
+ */
+export function now(): number {
   try {
     return performance.now()
   } catch {
@@ -8,7 +12,16 @@ export function now() {
   }
 }
 
-export function performanceMark() {
+export type PerformanceMark = {
+  readonly ms: number
+  readonly pretty: string
+}
+
+/**
+ * Start a performance mark; returned object has .ms and .pretty for elapsed time.
+ * @returns Object with get ms() and get pretty() for elapsed time
+ */
+export function performanceMark(): PerformanceMark {
   const t0 = now()
   return {
     get ms(): number {
@@ -20,7 +33,12 @@ export function performanceMark() {
   }
 }
 
-export function isLikeC4Source(path: string) {
+/**
+ * Check if path is a LikeC4 source file (.c4, .likec4, .like-c4).
+ * @param path - File path (case-insensitive)
+ * @returns True when extension is LikeC4 source
+ */
+export function isLikeC4Source(path: string): boolean {
   const p = path.toLowerCase()
   return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
 }

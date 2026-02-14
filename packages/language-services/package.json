@@ -78,7 +78,7 @@
     "build": "obuild",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-language-services-$npm_package_version.tgz package.tgz || true",
+    "postpack": "likec4ops postpack",
     "lint": "oxlint --type-aware",
     "lint:fix": "oxlint --type-aware --fix",
     "lint:package": "pnpx publint ./package.tgz",

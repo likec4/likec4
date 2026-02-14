@@ -1,0 +1,10 @@
+---
+description: Git push — usar fork por defeito; origin só quando o utilizador disser "origin"
+alwaysApply: true
+---
+
+# Git push e remotes
+
+- **Push por defeito**: usar o remote **fork** (repositório do utilizador). Não fazer `git push origin` a menos que o utilizador peça explicitamente "push origin" ou "para origin" ou equivalente.
+- **Push para origin**: só executar `git push origin <branch>` quando o utilizador escrever claramente que quer push para **origin** (upstream likec4/likec4).
+- Neste repositório: `origin` = likec4/likec4 (upstream), `fork` = sraphaz/likec4 (fork do utilizador).

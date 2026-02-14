@@ -35,7 +35,17 @@ styled-system/*/styled-system
 
 packages/language-server/src/generated/
 packages/language-server/src/generated-lib/
+packages/log/src/*.js
+packages/diagram/src/**/*.js
 packages/vscode-preview/src/generated-icons.tsx
+
+# Compiled artifacts (do not commit)
+*.spec.js
+*.test.js
+apps/playground/src/**/*.js
+apps/playground/src/**/*.d.ts
+packages/*/src/**/*.js
+packages/*/src/**/*.d.ts
 
 vite.config.ts.timestamp*
 vitest.config.ts.timestamp*
@@ -107,3 +117,16 @@ dist
 # Eclipse
 /.project
 /.settings/*
+
+# Local / temporary PR and process docs (do not commit)
+.pr-description*.md
+PR-*-review.md
+PR_INSTRUCTIONS.md
+*-PR-SPLIT.md
+COMMIT_MSG.txt
+.commit_msg*.txt
+BEGINNER_*.md
+pr-*-to-origin.md
+docs/EVALUATION-*.md
+docs/COMPARISON-*.md
+docs/TEST-*.md

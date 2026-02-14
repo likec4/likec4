@@ -19,7 +19,7 @@
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-config-$npm_package_version.tgz package.tgz || true"
+    "postpack": "likec4ops postpack"
   },
   "files": [
     "dist",
@@ -68,7 +68,6 @@
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "json5": "catalog:utils",
-    "pathe": "catalog:utils",
     "zod": "catalog:externals",
     "type-fest": "catalog:externals"
   },
