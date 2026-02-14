@@ -151,9 +151,9 @@ function fillFromModelView(
         // Casts bridge generic model API (ViewId) and LayoutedView to concrete DiagramView for DrawIO export
         const vm = likec4model.view(viewId as Parameters<LikeC4Model['view']>[0])
         if (vm?.$view) byId.set(viewId, toViewModel(vm.$view as DiagramView, styles))
-      } catch {
+      } catch (err) {
         // view might not exist for this id — ignore gracefully
-        if (import.meta.env.DEV) console.warn(`fillFromModelView: skipped viewId=${viewId}`)
+        if (import.meta.env.DEV) console.warn(`fillFromModelView: skipped viewId=${viewId}`, err)
       }
     }
   }

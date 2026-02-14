@@ -1269,14 +1269,15 @@ export function generateDrawio(
  *
  * @param viewmodels - Layouted view models (e.g. from model.views())
  * @param optionsByViewId - Optional per-view options (e.g. compressed: false for each tab)
+ * @param modified - Optional ISO timestamp for mxfile modified attribute (for deterministic output)
  * @returns DrawIO .drawio XML string with multiple <diagram> elements
  */
 export function generateDrawioMulti(
   viewmodels: Array<DrawioViewModelLike>,
   optionsByViewId?: Record<string, GenerateDrawioOptions>,
+  modified?: string,
 ): string {
   const diagrams = viewmodels.map(vm => generateDiagramContent(vm, optionsByViewId?.[vm.$view.id]))
-  const modified = viewmodels.length > 0 ? optionsByViewId?.[viewmodels[0]!.$view.id]?.modified : undefined
   return wrapInMxFile(diagrams, modified)
 }
 
