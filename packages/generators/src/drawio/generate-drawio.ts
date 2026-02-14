@@ -185,7 +185,7 @@ function getContainerDashedStyle(isContainer: boolean, borderVal: string | undef
   return ''
 }
 
-/** Default stroke width for node from border and container (KISS). */
+/** Default stroke width for node from border and container. No stroke set ('') for leaf without border → Draw.io uses its default. */
 function getDefaultStrokeWidth(borderVal: string | undefined, isContainer: boolean): string {
   if (borderVal === 'none') return '0'
   return isContainer ? '1' : borderVal ? '1' : ''
@@ -724,8 +724,9 @@ function computeNodeStylePartsAndValue(
       encodeURIComponent(fontFamily)
     };`
 
+  // vertexTextStyle already includes html=1; for both container and non-container
   const styleStr =
-    `${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${fillOpacityStyle}${navLinkStyle}${likec4Style}html=1;`
+    `${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${fillOpacityStyle}${navLinkStyle}${likec4Style}`
 
   return {
     value,
@@ -1066,7 +1067,7 @@ function computeDiagramLayout(
   const { nodes } = view
   const layoutOverride = options?.layoutOverride
 
-  // 1) Sort nodes (roots first, then by hierarchy)
+  // 1) Sort nodes (roots first, then by hierarchy). Order is not critical for correctness (export is position-based).
   const sortedNodes = [...nodes].sort((a, b) => {
     if (isNil(a.parent) && isNil(b.parent)) return 0
     if (isNil(a.parent)) return -1

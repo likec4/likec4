@@ -12,10 +12,15 @@ import type { LikeC4Services } from '../module'
 
 const HR = '\n---\n'
 
+/**
+ * Provides hover content for LikeC4 AST nodes (elements, tags, relations, etc.)
+ * in the language server. Resolves model references and formats markdown hover text.
+ */
 export class LikeC4HoverProvider extends AstNodeHoverProvider {
   private parser: LikeC4ModelParser
   private locator: LikeC4ModelLocator
 
+  /** @param services - LikeC4 language services (parser, locator, etc.) */
   constructor(protected services: LikeC4Services) {
     super(services)
     this.parser = services.likec4.ModelParser

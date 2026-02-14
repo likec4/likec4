@@ -47,15 +47,15 @@ export function isLikeC4JsonConfig(filename: string): boolean {
 }
 
 /**
- * Checks if the given filename is a LikeC4 non-JSON config file (JS, MJS, TS, MTS)
+ * Returns true if the **basename** of the given path matches a known non-JSON config filename (JS, MJS, TS, MTS).
  */
-export function isLikeC4NonJsonConfig(filename: string): filename is typeof configNonJsonFilenames[number] {
+export function isLikeC4NonJsonConfig(filename: string): boolean {
   return (configNonJsonFilenames as readonly string[]).includes(basename(filename))
 }
 
 /**
- * Checks if the given filename is a LikeC4 config file (JSON or non-JSON)
+ * Returns true if the **basename** of the given path matches a known LikeC4 config file (JSON or non-JSON).
  */
-export function isLikeC4Config(filename: string): filename is typeof ConfigFilenames[number] {
+export function isLikeC4Config(filename: string): boolean {
   return isLikeC4JsonConfig(filename) || isLikeC4NonJsonConfig(filename)
 }

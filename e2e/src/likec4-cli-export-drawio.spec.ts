@@ -3,8 +3,6 @@ import { join, resolve } from 'node:path'
 import { test } from 'vitest'
 import { $ } from 'zx'
 
-$.nothrow = false
-
 const outDir = 'test-results/drawio-export'
 const sourceDir = 'src/likec4'
 /** Absolute path so CLI resolves workspace regardless of process cwd (CI runner). */
@@ -48,9 +46,7 @@ test(
       result.exitCode === 0 && typeof result.stderr === 'string' && result.stderr.includes('no LikeC4 sources found')
     expect(
       failedByExitCode || failedByStderr,
-      result.exitCode === 1
-        ? 'expected exitCode 1'
-        : `expected exitCode 1 or error on stderr; got exitCode ${result.exitCode}, stderr: ${String(result.stderr).slice(0, 200)}`,
+      `expected exitCode 1 or error on stderr; got exitCode ${result.exitCode}, stderr: ${String(result.stderr).slice(0, 200)}`,
     ).toBe(true)
   },
 )

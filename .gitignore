@@ -5,6 +5,7 @@
 .idea
 .fleet
 .vscode-test-web
+.cursor/
 .pnpm-store/
 .wireit
 .windsurf
@@ -39,7 +40,8 @@ packages/log/src/*.js
 packages/diagram/src/**/*.js
 packages/vscode-preview/src/generated-icons.tsx
 
-# Compiled artifacts (do not commit)
+# Compiled artifacts (do not commit). Root-level *.spec.js/*.test.js and packages/*/src/**/*.js
+# match the whole tree; if a package ever needs tracked JS in src, add an exception.
 *.spec.js
 *.test.js
 apps/playground/src/**/*.js
@@ -118,7 +120,7 @@ dist
 /.project
 /.settings/*
 
-# Local / temporary PR and process docs (do not commit)
+# Local / temporary PR and process docs (do not commit). Prefer ~/.gitignore_global for personal workflow files.
 .pr-description*.md
 PR-*-review.md
 PR_INSTRUCTIONS.md

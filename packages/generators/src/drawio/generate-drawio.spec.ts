@@ -1,6 +1,6 @@
 import { Builder } from '@likec4/core/builder'
 import type { aux, ProcessedView } from '@likec4/core/types'
-import { describe, expect, test, vi } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import type { DrawioViewModelLike } from './generate-drawio'
 import { generateDrawio, generateDrawioMulti } from './generate-drawio'
@@ -10,6 +10,7 @@ import { getAllDiagrams } from './parse-drawio'
  * Asserts that the DrawIO XML does not contain the structure that causes
  * "Could not add object Array" in draw.io. Draw.io expects a single <Array>
  * of <mxPoint> inside mxGeometry for edge waypoints; nested <Array><Array> is invalid.
+ * Duplicated from packages/likec4/src/drawio-test-utils.ts for unit specs; keep in sync if validation logic changes.
  */
 function expectDrawioXmlLoadableInDrawio(drawioXml: string): void {
   const diagrams = getAllDiagrams(drawioXml)
@@ -68,9 +69,9 @@ const b = Builder
     )
   )
 
-const mockViewModel = vi.fn(function($view: ProcessedView<aux.Unknown>): DrawioViewModelLike {
+function mockViewModel($view: ProcessedView<aux.Unknown>): DrawioViewModelLike {
   return { $view }
-})
+}
 
 /** Build layouted view models for generateDrawioMulti from processed views (DRY in specs). */
 function getLayoutedViewmodels(views: ProcessedView<aux.Unknown>[]): DrawioViewModelLike[] {

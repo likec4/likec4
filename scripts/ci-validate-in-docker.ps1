@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $workspace = (Resolve-Path $root).Path -replace '\\', '/'
 
-Write-Host "==> Starting Linux container (node:22-bookworm) with workspace: $workspace"
+Write-Output "==> Starting Linux container (node:22-bookworm) with workspace: $workspace"
 docker run --rm `
   -v "${workspace}:/workspace" `
   -w /workspace `

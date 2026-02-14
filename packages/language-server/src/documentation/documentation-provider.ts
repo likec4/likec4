@@ -44,10 +44,12 @@ export class LikeC4DocumentationProvider extends JSDocDocumentationProvider {
       switch (true) {
         case ast.isDeploymentNode(node): {
           const el = parser.parseDeploymentNode(node)
+          if (!el) return
           return `**${el.title}**`
         }
         case ast.isDeployedInstance(node): {
           const instance = parser.parseDeployedInstance(node)
+          if (!instance) return
           const [projectId, fqn] = FqnRef.isImportRef(instance.element)
             ? [instance.element.project as ProjectId, instance.element.model as Fqn]
             : [doc.likec4ProjectId, instance.element.model as Fqn]

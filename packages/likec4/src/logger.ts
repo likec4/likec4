@@ -63,8 +63,11 @@ export function createLikeC4Logger(prefix: string | readonly [string, ...string[
     hasWarned: false,
   }
 }
-/** Full logger from createLikeC4Logger; debug is optional so Vite's config.logger is assignable. */
-export type ViteLogger = Omit<ReturnType<typeof createLikeC4Logger>, 'debug'> & {
+/** Full logger from createLikeC4Logger; debug and hasErrorLogged are optional so Vite's config.logger is assignable. */
+export type ViteLogger = Omit<
+  ReturnType<typeof createLikeC4Logger>,
+  'debug' | 'hasErrorLogged'
+> & {
   debug?: (msg: string, ...args: unknown[]) => void
   hasErrorLogged?: (error: Error | RollupError) => boolean
 }

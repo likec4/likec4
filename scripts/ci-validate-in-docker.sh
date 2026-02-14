@@ -6,15 +6,17 @@
 set -e
 export CI=true
 export HUSKY=0
-export NODE_ENV=production
 
 echo "==> Installing pnpm..."
 corepack enable
-corepack prepare pnpm@10.29.2 --activate
+# Version must match .tool-versions and package.json packageManager
+corepack prepare pnpm@10.29.3 --activate
 pnpm --version
 
 echo "==> Installing dependencies..."
 pnpm install --prefer-offline
+
+export NODE_ENV=production
 
 echo "==> pnpm typecheck (monorepo, excl. apps)..."
 pnpm typecheck
