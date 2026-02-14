@@ -94,7 +94,7 @@ async function fillFromLayoutedModel(
     const model = await getLayoutedModel()
     if (model?.views && typeof model.views === 'object') {
       for (const view of Object.values(model.views)) {
-        byId.set(view.id, toViewModel(view, styles))
+        if (!byId.has(view.id)) byId.set(view.id, toViewModel(view, styles))
       }
     }
   } catch (e) {
@@ -226,7 +226,7 @@ export function useDrawioContextMenuActions({
           const layouted = diagrams[diagram.id]
           if (layouted) viewToExport = layouted
         } catch {
-          // use current diagram if layout fetch fails
+          if (import.meta.env.DEV) console.warn('DrawIO export: layout fetch failed for view, using current diagram')
         }
       }
       const viewmodel = toViewModel(viewToExport, likec4model?.$styles ?? null)

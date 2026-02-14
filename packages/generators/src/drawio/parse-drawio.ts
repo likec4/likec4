@@ -132,14 +132,16 @@ function getAttr(attrs: string, name: string): string | undefined {
   return undefined
 }
 
-/** Find end of XML open tag (first unquoted '>'). Avoids regex for S5852. */
+/** Find end of XML open tag (first unquoted '>'). Handles both single- and double-quoted attributes. Avoids regex for S5852. */
 function findOpenTagEnd(xml: string, start: number): number {
-  let inQuote = false
+  let quoteChar = ''
   let i = start
   while (i < xml.length) {
     const c = xml[i]
-    if (c === '"') inQuote = !inQuote
-    else if (c === '>' && !inQuote) return i
+    if (c === '"' || c === "'") {
+      if (quoteChar === '') quoteChar = c
+      else if (quoteChar === c) quoteChar = ''
+    } else if (c === '>' && quoteChar === '') return i
     i += 1
   }
   return -1
@@ -552,13 +554,20 @@ function inferKind(
   style: string | undefined,
   parentCell?: DrawioCell,
 ): 'actor' | 'system' | 'container' | 'component' {
-  if (!style) return parentCell?.style?.toLowerCase().includes('container=1') ? 'component' : 'container'
-  const s = style.toLowerCase()
-  if (s.includes('umlactor') || s.includes('shape=person')) return 'actor'
-  if (s.includes('swimlane')) return 'system'
-  if (s.includes('container=1')) return 'system'
-  if (parentCell?.style?.toLowerCase().includes('container=1')) return 'component'
-  return 'container'
+  const s = style?.toLowerCase() ?? ''
+  switch (true) {
+    case !style:
+      return parentCell?.style?.toLowerCase().includes('container=1') ? 'component' : 'container'
+    case s.includes('umlactor') || s.includes('shape=person'):
+      return 'actor'
+    case s.includes('swimlane'):
+    case s.includes('container=1'):
+      return 'system'
+    case !!parentCell?.style?.toLowerCase().includes('container=1'):
+      return 'component'
+    default:
+      return 'container'
+  }
 }
 
 /** Infer LikeC4 shape from DrawIO style when possible (cylinder, document, etc.). */

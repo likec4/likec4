@@ -1229,7 +1229,7 @@ function wrapInMxFile(
   diagrams: Array<{ name: string; id: string; content: string }>,
   modified?: string,
 ): string {
-  const modifiedAttr = modified ?? new Date().toISOString()
+  const modifiedAttr = escapeXml(modified ?? new Date().toISOString())
   if (diagrams.length === 0) {
     return `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="${modifiedAttr}" agent="LikeC4" version="1.0" etag="" type="device">

@@ -56,14 +56,14 @@ test.describe('DrawIO in Playground', () => {
   test('context menu shows DrawIO Export to DrawIO and Export all', async ({ page }) => {
     const menu = await openDrawioContextMenu(page)
     await expect(menu).toBeVisible({ timeout: TIMEOUT_MENU })
-    await expect(menu.getByText('DrawIO', { exact: false })).toBeVisible()
+    await expect(menu.getByText('DrawIO', { exact: true })).toBeVisible()
     await expect(menu.getByText('Export to DrawIO', { exact: false })).toBeVisible()
     await expect(menu.getByText('Export all', { exact: false })).toBeVisible()
   })
 
   test('Export to DrawIO triggers download with valid .drawio content', async ({ page }) => {
     const download = await triggerDrawioDownload(page, 'Export to DrawIO', TIMEOUT_DOWNLOAD)
-    expect(download.suggestedFilename()).toMatch(/\.drawio$/)
+    expect(download.suggestedFilename()).toMatch(/^.+\.drawio$/)
     const path = await download.path()
     expect(path, 'download path should be available').toBeTruthy()
     const content = await readFile(path!, 'utf8')
@@ -73,7 +73,7 @@ test.describe('DrawIO in Playground', () => {
 
   test('Export all triggers download with .drawio file', async ({ page }) => {
     const download = await triggerDrawioDownload(page, 'Export all', TIMEOUT_DOWNLOAD_ALL)
-    expect(download.suggestedFilename()).toMatch(/\.drawio$/)
+    expect(download.suggestedFilename()).toMatch(/^.+\.drawio$/)
   })
 
   test('editor context menu shows Export to DrawIO', async ({ page }) => {
@@ -81,6 +81,7 @@ test.describe('DrawIO in Playground', () => {
     await expect(editorLocator).toBeVisible({ timeout: TIMEOUT_EDITOR })
     await editorLocator.click({ position: EDITOR_CLICK_POSITION })
     await editorLocator.click({ button: 'right', position: EDITOR_CLICK_POSITION })
+    // Editor right-click opens a different context menu than canvas; same MENU_SELECTOR.
     const contextMenu = page.locator(MENU_SELECTOR).first()
     await expect(contextMenu).toBeVisible({ timeout: TIMEOUT_MENU })
     await expect(contextMenu.getByText('Export to DrawIO', { exact: false })).toBeVisible({

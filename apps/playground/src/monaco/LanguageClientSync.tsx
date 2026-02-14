@@ -358,9 +358,7 @@ export function LanguageClientSync({
     () => {
       if (playgroundState !== 'ready' || activeViewId == null) return
       if (activeViewState === 'stale' || activeViewState === 'pending') {
-        requestLayoutViewCallback(activeViewId).catch(error => {
-          logger.error(loggable(error))
-        })
+        void requestLayoutViewCallback(activeViewId)
       }
     },
     [activeViewState, activeViewId, playgroundState],

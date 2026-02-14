@@ -17,42 +17,38 @@ import {
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { countDrawioCells, expectDrawioXmlLoadableInDrawio } from './drawio-test-utils'
 import { LikeC4 } from './LikeC4'
 
 const CLOUD_SYSTEM_PATH = path.resolve(__dirname, '../../../examples/cloud-system')
 
 describe('DrawIO export/import with cloud-system demo', () => {
-  it(
-    'exports cloud-system to DrawIO and file is loadable in draw.io (no nested Array)',
-    { timeout: 20000 },
-    async () => {
-      const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
-      expect(likec4.hasErrors()).toBe(false)
+  let likec4: LikeC4
+  let viewmodels: Awaited<ReturnType<LikeC4['layoutedModel']>> extends { views(): Iterable<infer V> } ? V[]
+    : never
+  let drawioXml: string
 
-      const model = await likec4.layoutedModel()
-      const viewmodels = [...model.views()]
-      expect(viewmodels.length).toBeGreaterThanOrEqual(1)
+  beforeAll(async () => {
+    likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
+    const model = await likec4.layoutedModel()
+    viewmodels = [...model.views()]
+    drawioXml = generateDrawioMulti(viewmodels)
+  }, 30_000)
 
-      const drawioXml = generateDrawioMulti(viewmodels)
-      expect(drawioXml).toContain('<?xml version="1.0"')
-      expect(drawioXml).toContain('<mxfile ')
-
-      expectDrawioXmlLoadableInDrawio(drawioXml)
-    },
-  )
+  it('exports cloud-system to DrawIO and file is loadable in draw.io', () => {
+    expect(likec4.hasErrors()).toBe(false)
+    expect(viewmodels.length).toBeGreaterThanOrEqual(1)
+    expect(drawioXml).toContain('<?xml version="1.0"')
+    expect(drawioXml).toContain('<mxfile ')
+    expectDrawioXmlLoadableInDrawio(drawioXml)
+  })
 
   it(
     'exported DrawIO has same number of elements and edges per view (no extra, none missing)',
     { timeout: 20000 },
     async () => {
-    const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
     expect(likec4.hasErrors()).toBe(false)
-
-    const model = await likec4.layoutedModel()
-    const viewmodels = [...model.views()]
-    const drawioXml = generateDrawioMulti(viewmodels)
 
     expectDrawioXmlLoadableInDrawio(drawioXml)
 
@@ -89,17 +85,8 @@ describe('DrawIO export/import with cloud-system demo', () => {
   }
   )
 
-  it(
-    'exported DrawIO contains expected element titles and no stray Array tags',
-    { timeout: 20000 },
-    async () => {
-    const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
-    const model = await likec4.layoutedModel()
-    const viewmodels = [...model.views()]
-    const drawioXml = generateDrawioMulti(viewmodels)
-
+  it('exported DrawIO contains expected element titles and no stray Array tags', () => {
     expectDrawioXmlLoadableInDrawio(drawioXml)
-
     const diagrams = getAllDiagrams(drawioXml)
     const allContent = diagrams.map(d => d.content).join('\n')
 
@@ -107,17 +94,12 @@ describe('DrawIO export/import with cloud-system demo', () => {
     expect(allContent).toContain('Cloud System')
     expect(allContent).toContain('customer')
     expect(allContent).toContain('cloud')
-  }
-  )
+  })
 
   it.skip(
     'vice versa: import exported DrawIO back to LikeC4 and re-export produces loadable XML (import PR)',
     { timeout: 15_000 },
     async () => {
-      const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
-      const model = await likec4.layoutedModel()
-      const drawioXml = generateDrawioMulti([...model.views()])
-
       expectDrawioXmlLoadableInDrawio(drawioXml)
 
       const c4Source = parseDrawioToLikeC4Multi(drawioXml)
@@ -133,14 +115,7 @@ describe('DrawIO export/import with cloud-system demo', () => {
     },
   )
 
-  it(
-    'written .drawio file (as when user exports) is loadable in draw.io when read back',
-    { timeout: 20000 },
-    async () => {
-    const likec4 = await LikeC4.fromWorkspace(CLOUD_SYSTEM_PATH, { throwIfInvalid: true })
-    const model = await likec4.layoutedModel()
-    const drawioXml = generateDrawioMulti([...model.views()])
-
+  it('written .drawio file (as when user exports) is loadable in draw.io when read back', async () => {
     const dir = await mkdtemp(path.join(tmpdir(), 'likec4-drawio-'))
     const filePath = path.join(dir, DEFAULT_DRAWIO_ALL_FILENAME)
     try {
@@ -151,6 +126,5 @@ describe('DrawIO export/import with cloud-system demo', () => {
     } finally {
       await rm(dir, { recursive: true, force: true })
     }
-  }
-  )
+  })
 })

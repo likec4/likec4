@@ -14,7 +14,7 @@ corepack prepare pnpm@10.29.3 --activate
 pnpm --version
 
 echo "==> Installing dependencies..."
-pnpm install --prefer-offline
+pnpm install --frozen-lockfile --prefer-offline
 
 export NODE_ENV=production
 

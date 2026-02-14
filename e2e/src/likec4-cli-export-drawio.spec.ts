@@ -38,9 +38,10 @@ test(
   'LikeC4 CLI - export drawio with empty workspace exits with code 1',
   { timeout: 15000 },
   async ({ expect }) => {
+    rmSync(emptyWorkspaceDir, { recursive: true, force: true })
     mkdirSync(emptyWorkspaceDir, { recursive: true })
     const result = await $`likec4 export drawio ${emptyWorkspaceDir} -o test-results/drawio-fail`.nothrow()
-    // CLI must not succeed: either exit 1 (expected) or exit 0 with error on stderr (packaged CLI quirk in CI).
+    // CLI must not succeed: exit 1 (expected) or exit 0 with error on stderr (packaged CLI quirk in CI). Prefer exit 1 only once quirk is resolved.
     const failedByExitCode = result.exitCode === 1
     const failedByStderr =
       result.exitCode === 0 && typeof result.stderr === 'string' && result.stderr.includes('no LikeC4 sources found')
