@@ -62,6 +62,7 @@ export function configureLogger<TSinkId extends string, TFilterId extends string
   config?: Partial<Config<TSinkId, TFilterId>>,
 ) {
   try {
+    const { sinks: _sinks, loggers: _loggers, ...restConfig } = config ?? {}
     const sinks = config?.sinks ?? {}
     const sinksWithConsole: Record<TSinkId | 'console', Sink> = {
       console: getConsoleSink(),
@@ -69,7 +70,7 @@ export function configureLogger<TSinkId extends string, TFilterId extends string
     } as Record<TSinkId | 'console', Sink>
     configureLogtape<TSinkId | 'console', TFilterId>({
       reset: true,
-      ...config,
+      ...restConfig,
       sinks: sinksWithConsole,
       loggers: [
         { category: ['logtape', 'meta'], sinks: ['console'], lowestLevel: 'warning' },

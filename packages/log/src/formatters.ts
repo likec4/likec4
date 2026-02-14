@@ -104,7 +104,6 @@ export function getTextFormatter(options?: TextFormatterOptions): TextFormatter 
   const _format = options?.format ?? (({ timestamp, level, category, message }: FormattedValues): string => {
     return `${timestamp} ${level} ${category} ${message}`
   })
-  // const format = options?.format
   return getLogtapeTextFormatter({
     timestamp: 'time',
     level,

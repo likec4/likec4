@@ -255,7 +255,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   await mkdir(args.outdir, { recursive: true })
   const viewmodels = [...model.views()]
 
-  const exportParams = {
+  const exportParams: ExportDrawioParams = {
     viewmodels,
     outdir: args.outdir,
     workspacePath: args.path,

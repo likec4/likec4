@@ -234,7 +234,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
 
 /** CLI entry: create logger and delegate to runExportPng (align with drawio/json handlers). */
 export async function pngHandler(args: PngExportArgs): Promise<void> {
-  const logger = createLikeC4Logger('export')
+  const logger = createLikeC4Logger('c4:export')
   await runExportPng(args, logger)
 }
 

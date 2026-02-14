@@ -39,6 +39,7 @@ import {
   MXGRAPH_PAGE_WIDTH,
   NODES_SPREAD_GAP,
 } from './constants'
+import type { DrawioRoundtripData } from './parse-drawio'
 import { parseDrawioRoundtripComments } from './parse-drawio'
 import { escapeXml } from './xml-utils'
 
@@ -1286,18 +1287,16 @@ export function generateDrawioMulti(
  * Shared by CLI and playground so options are built in one place (DRY).
  *
  * @param viewId - View id for layoutOverride lookup.
- * @param sourceContent - Full .c4 source (e.g. joined workspace files).
+ * @param roundtrip - Parsed round-trip data or null (caller may parse once for many views).
  * @param overrides - Optional overrides (e.g. compressed: false).
  * @returns GenerateDrawioOptions for this view.
  */
-export function buildDrawioExportOptionsFromSource(
+function buildOptionsFromRoundtrip(
   viewId: string,
-  sourceContent: string | undefined,
+  roundtrip: DrawioRoundtripData | null,
   overrides?: Partial<GenerateDrawioOptions>,
 ): GenerateDrawioOptions {
   const options: GenerateDrawioOptions = { compressed: false, ...overrides }
-  if (!sourceContent) return options
-  const roundtrip = parseDrawioRoundtripComments(sourceContent)
   if (!roundtrip) return options
   const layoutForView = roundtrip.layoutByView[viewId]?.nodes
   if (layoutForView != null) options.layoutOverride = layoutForView
@@ -1314,7 +1313,24 @@ export function buildDrawioExportOptionsFromSource(
 }
 
 /**
- * Build export options per view id from .c4 source (DRY for CLI and Playground).
+ * Build export options for one view from .c4 source (parses source once).
+ *
+ * @param viewId - View id for layoutOverride lookup.
+ * @param sourceContent - Full .c4 source (e.g. joined workspace files).
+ * @param overrides - Optional overrides (e.g. compressed: false).
+ * @returns GenerateDrawioOptions for this view.
+ */
+export function buildDrawioExportOptionsFromSource(
+  viewId: string,
+  sourceContent: string | undefined,
+  overrides?: Partial<GenerateDrawioOptions>,
+): GenerateDrawioOptions {
+  const roundtrip = sourceContent ? parseDrawioRoundtripComments(sourceContent) : null
+  return buildOptionsFromRoundtrip(viewId, roundtrip, overrides)
+}
+
+/**
+ * Build export options per view id from .c4 source (parses source once for all views).
  *
  * @param viewIds - View ids to build options for.
  * @param sourceContent - Full .c4 source (e.g. joined workspace files).
@@ -1326,10 +1342,8 @@ export function buildDrawioExportOptionsForViews(
   sourceContent: string | undefined,
   overrides?: Partial<GenerateDrawioOptions>,
 ): Record<string, GenerateDrawioOptions> {
+  const roundtrip = sourceContent ? parseDrawioRoundtripComments(sourceContent) : null
   return Object.fromEntries(
-    viewIds.map(viewId => [
-      viewId,
-      buildDrawioExportOptionsFromSource(viewId, sourceContent, overrides),
-    ]),
+    viewIds.map(viewId => [viewId, buildOptionsFromRoundtrip(viewId, roundtrip, overrides)]),
   )
 }

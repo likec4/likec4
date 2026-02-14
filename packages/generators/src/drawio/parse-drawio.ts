@@ -156,10 +156,15 @@ function parseNum(str: string | undefined): number | undefined {
   return Number.isNaN(num) ? undefined : num
 }
 
-/** Get style value decoded for URI component; undefined if missing or empty. */
+/** Get style value decoded for URI component; undefined if missing or empty. Safe against malformed percent-encoding. */
 function getDecodedStyle(styleMap: Map<string, string>, key: string): string | undefined {
   const v = styleMap.get(key)
-  return v != null && v !== '' ? decodeURIComponent(v) : undefined
+  if (v == null || v === '') return undefined
+  try {
+    return decodeURIComponent(v)
+  } catch {
+    return v
+  }
 }
 
 /** Parse DrawIO style string (semicolon-separated key=value) into a map. */
@@ -720,9 +725,14 @@ function escapeLikec4Quotes(s: string): string {
   return s.replaceAll('\'', '\'\'')
 }
 
-/** Decode optional root cell style field (likec4ViewTitle, likec4ViewDescription, etc.). */
+/** Decode optional root cell style field (likec4ViewTitle, likec4ViewDescription, etc.). Safe against malformed percent-encoding. */
 function decodeRootStyleField(raw: string | undefined): string {
-  return raw != null && raw !== '' ? decodeURIComponent(raw) : ''
+  if (raw == null || raw === '') return ''
+  try {
+    return decodeURIComponent(raw)
+  } catch {
+    return raw
+  }
 }
 
 /** Build view block lines for model (single responsibility; DRY with parseDrawioToLikeC4). */
@@ -1019,7 +1029,7 @@ function emitEdgesToLines(
     const hasBody = !!notes || !!navTo || !!head || !!tail || !!line || !!notation || !!linksJson ||
       !!metadataJson || !!edgeStrokeHex
     const arrowPart = relKind && /^[a-zA-Z0-9_-]+$/.test(relKind) ? ` -[${relKind}]-> ` : ' -> '
-    const titlePart = title ? ` '${title}'` : desc || tech ? ` ''` : ''
+    const titlePart = title ? ` '${title}'` : (desc || tech) ? ` ''` : ''
     const descPart = desc ? ` '${escapeLikec4Quotes(desc)}'` : ''
     const techPart = tech ? ` '${escapeLikec4Quotes(tech)}'` : ''
     const relationHead = `  ${src}${arrowPart}${tgt}${titlePart}${descPart}${techPart}`

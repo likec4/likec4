@@ -86,7 +86,9 @@ export function DrawioContextMenuProvider({
   })
 
   const filesRef = useRef(files)
-  filesRef.current = files
+  useEffect(() => {
+    filesRef.current = files
+  }, [files])
   const getSourceContent = useCallback(() => {
     const contents = Object.values(filesRef.current).filter(Boolean)
     return contents.length > 0 ? contents.join('\n\n') : undefined
