@@ -1,113 +1,171 @@
-import type { AnyAux, AutoLayoutDirection, MarkdownOrString } from '@likec4/core/types'
-import { FqnRef } from '@likec4/core/types'
-import { describe, expect, it } from 'vitest'
+import { Builder } from '@likec4/core/builder'
+import { NL } from 'langium/generate'
+import { reduce, values } from 'remeda'
+import { type Assertion, describe, expect as viExpect, it, test } from 'vitest'
 import {
-  buildTree,
-  printAutoLayoutDirection,
-  printDeploymentRef,
-  printModelRef,
-  quoteMarkdownOrString,
-  quoteString,
+  type Op,
+  type PrintOp,
+  body,
+  each,
+  element,
+  inlineText,
+  keyword,
+  print,
+  PrintCtx,
+  select,
+  text,
 } from './utils'
 
-describe('quoteString', () => {
-  it('wraps simple strings in single quotes', () => {
-    expect(quoteString('hello')).toBe('\'hello\'')
+describe('text', () => {
+  function expect(...ops: Op<any>[]): Assertion<string> {
+    const result = reduce(ops, (ctx, op) => op(ctx), PrintCtx())
+    return viExpect(
+      result.toString(),
+    )
+  }
+
+  test('inline', () => {
+    expect(inlineText('hello')).toBe('\'hello\'')
+    expect(inlineText('hello\nworld')).toBe(`'hello world'`)
   })
 
-  it('uses double quotes when string contains single quotes', () => {
-    expect(quoteString('it\'s')).toBe('"it\'s"')
+  it('should print text with single quotes', () => {
+    expect(text(`hello world`)).toBe(`'hello world'`)
   })
 
-  it('escapes single quotes when both quote types present', () => {
-    expect(quoteString('it\'s a "test"')).toBe('\'it\\\'s a "test"\'')
-  })
-})
-
-describe('quoteMarkdownOrString', () => {
-  it('wraps plain text with quoteString', () => {
-    const value: MarkdownOrString = { txt: 'hello' }
-    expect(quoteMarkdownOrString(value)).toBe('\'hello\'')
+  it('should print text with single quotes and escaped quotes', () => {
+    expect(text(`hello 'world'`)).toMatchInlineSnapshot(`"'hello \\'world\\''"`)
   })
 
-  it('wraps markdown with triple-quote fences', () => {
-    const value: MarkdownOrString = { md: '# Title\nSome **bold** text' }
-    expect(quoteMarkdownOrString(value)).toBe('\'\'\'\n# Title\nSome **bold** text\n\'\'\'')
-  })
-})
-
-describe('printAutoLayoutDirection', () => {
-  it.each([
-    ['TB', 'TopBottom'],
-    ['BT', 'BottomTop'],
-    ['LR', 'LeftRight'],
-    ['RL', 'RightLeft'],
-  ] as [AutoLayoutDirection, string][])('maps %s to %s', (input, expected) => {
-    expect(printAutoLayoutDirection(input)).toBe(expected)
-  })
-})
-
-describe('printModelRef', () => {
-  it('prints simple model ref', () => {
-    const ref = { model: 'cloud.backend' } as FqnRef.ModelRef
-    expect(printModelRef(ref)).toBe('cloud.backend')
+  it('should print text with newline', () => {
+    expect(
+      text('hello\nworld'),
+    ).toMatchInlineSnapshot(`
+      "''
+        hello
+        world
+      ''"
+    `)
   })
 
-  it('prints import ref with @ prefix', () => {
-    const ref = { project: 'myproject', model: 'cloud' } as unknown as FqnRef.ModelRef
-    expect(printModelRef(ref)).toBe('@myproject.cloud')
+  it('should print text with newline and escape quotes', () => {
+    expect(
+      keyword('title'),
+      text('hello\n\'this\'\nworld'),
+    ).toMatchInlineSnapshot(`
+      "title''
+        hello
+        \\'this\\'
+        world
+      ''"
+    `)
   })
 })
 
-describe('printDeploymentRef', () => {
-  it('prints simple deployment ref', () => {
-    const ref = { deployment: 'prod.eu' } as FqnRef.DeploymentRef<AnyAux>
-    expect(printDeploymentRef(ref)).toBe('prod.eu')
+const model = Builder
+  .specification({
+    elements: {
+      actor: {},
+      system: {},
+      component: {},
+    },
+    deployments: {
+      env: {},
+      vm: {},
+    },
+    relationships: {
+      like: {},
+      dislike: {},
+    },
+    tags: {
+      tag1: {},
+      tag2: {},
+    },
+    metadataKeys: ['key1', 'key2'],
   })
+  .model(({ actor, system, component, relTo }, _) =>
+    _(
+      actor('alice'),
+      actor('bob', {
+        title: 'Bob',
+        tags: ['tag1', 'tag2' as const],
+      }),
+      system('cloud').with(
+        component('backend').with(
+          component('api', {
+            title: 'API Services',
+          }),
+          component('db'),
+        ),
+        component('frontend'),
+      ),
+    )
+  )
+  .deployment(({ env, vm, instanceOf }, _) =>
+    _(
+      env('prod').with(
+        vm('vm1'),
+        vm('vm2'),
+      ),
+      env('dev').with(
+        vm('vm1'),
+        instanceOf('cloud.backend.api'),
+      ),
+    )
+  )
+  // Test Element View
+  .views(({ view, $include }, _) =>
+    _(
+      // rules inside
+      view('view1', $include('cloud.backend')),
+      view('view2', $include('cloud.backend')),
+    )
+  )
+  .build()
 
-  it('prints inside-instance ref with element', () => {
-    const ref = { deployment: 'prod.eu.api', element: 'backend.api' } as unknown as FqnRef.DeploymentRef<AnyAux>
-    expect(printDeploymentRef(ref)).toBe('prod.eu.api.backend.api')
-  })
-})
+describe('context', () => {
+  function expect(...ops: PrintOp<typeof model>[]): Assertion<string> {
+    const result = reduce(ops, (ctx, op) => op(ctx), PrintCtx({ value: model }))
+    return viExpect(
+      result.toString(),
+    )
+  }
 
-describe('buildTree', () => {
-  it('builds a flat list for root-only elements', () => {
-    const elements = {
-      'a': { id: 'a' },
-      'b': { id: 'b' },
-    }
-    const tree = buildTree(elements)
-    expect(tree).toHaveLength(2)
-    expect(tree[0]!.name).toBe('a')
-    expect(tree[1]!.name).toBe('b')
-    expect(tree[0]!.children).toHaveLength(0)
-  })
+  it('inherits out from parent', () => {
+    expect(
+      print('model '),
+      body(
+        select(
+          c => values(c.elements),
+          each({
+            separator: NL,
+            suffix(element, index, isLast) {
+              if (!isLast) {
+                return NL
+              }
+            },
+            print: element(),
+          }),
+        ),
+      ),
+    ).toMatchInlineSnapshot(`
+      "model {
+        alice = actor 'alice' {}
 
-  it('nests children under parents by FQN', () => {
-    const elements = {
-      'cloud': { id: 'cloud' },
-      'cloud.backend': { id: 'cloud.backend' },
-      'cloud.frontend': { id: 'cloud.frontend' },
-      'cloud.backend.api': { id: 'cloud.backend.api' },
-    }
-    const tree = buildTree(elements)
-    expect(tree).toHaveLength(1)
-    expect(tree[0]!.name).toBe('cloud')
-    expect(tree[0]!.children).toHaveLength(2)
+        bob = actor 'Bob' {
+          #tag1, #tag2
+        }
 
-    const backend = tree[0]!.children.find(c => c.name === 'backend')!
-    expect(backend.children).toHaveLength(1)
-    expect(backend.children[0]!.name).toBe('api')
-  })
+        cloud = system 'cloud' {}
 
-  it('returns empty array for empty input', () => {
-    expect(buildTree({})).toEqual([])
-  })
+        backend = component 'backend' {}
 
-  it('preserves element references', () => {
-    const el = { id: 'x', extra: 'data' }
-    const tree = buildTree({ x: el })
-    expect(tree[0]!.element).toBe(el)
+        api = component 'API Services' {}
+
+        db = component 'db' {}
+
+        frontend = component 'frontend' {}
+      }"
+    `)
   })
 })

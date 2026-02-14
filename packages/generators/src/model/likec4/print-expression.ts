@@ -1,7 +1,6 @@
-import type { PredicateSelector, WhereOperator } from '@likec4/core/types'
+import type { Expression, ModelExpression, PredicateSelector, WhereOperator } from '@likec4/core/types'
 import {
   FqnExpr,
-  FqnRef,
   isAndOperator,
   isKindEqual,
   isNotOperator,
@@ -12,7 +11,6 @@ import {
   ModelRelationExpr,
   RelationExpr,
 } from '@likec4/core/types'
-import type { Expression, ModelExpression } from '@likec4/core/types'
 import { isString } from 'remeda'
 import { printDeploymentRef, printModelRef, quoteString } from './utils'
 
@@ -110,13 +108,13 @@ export function printModelExpression(expr: ModelExpression): string {
   if (ModelRelationExpr.isCustom(expr)) {
     const inner = printModelExpressionInner(expr.customRelation.expr as ModelExpression)
     const props = printCustomRelationProps(expr.customRelation)
-    return props ? `${inner} with {\n${props}}` : inner
+    return props ? `${inner} with {\t${props}}` : inner
   }
   // Custom fqn (with)
   if (ModelFqnExpr.isCustom(expr)) {
     const inner = printModelExpressionInner(expr.custom.expr as ModelExpression)
     const props = printCustomElementProps(expr.custom)
-    return props ? `${inner} with {\n${props}}` : inner
+    return props ? `${inner} with {\t${props}}` : inner
   }
   return printModelExpressionInner(expr)
 }

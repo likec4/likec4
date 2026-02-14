@@ -38,7 +38,7 @@ function printElementNode(
   const hasProps = hasElementProps(el)
   const needsBody = hasChildren || hasProps
 
-  indent.append(node.name, ' = ', el.kind as string)
+  indent.append(node.name, ' = ', el.kind)
 
   if (el.title) {
     indent.append(' ', quoteString(el.title))
