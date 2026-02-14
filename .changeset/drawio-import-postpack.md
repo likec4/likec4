@@ -1,7 +1,6 @@
 ---
 "@likec4/generators": patch
 likec4: patch
-"@likec4/devops": patch
 "@likec4/language-server": patch
 ---
 
