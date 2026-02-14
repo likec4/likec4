@@ -1,5 +1,6 @@
 import type { ParsedDeploymentView, ParsedDynamicView, ParsedElementView, ParsedView } from '@likec4/core/types'
 import { CompositeGeneratorNode, toString as nodeToString } from 'langium/generate'
+import type { OverrideProperties } from 'type-fest'
 import { describe, expect, it } from 'vitest'
 import { printViews } from './print-views'
 
@@ -9,7 +10,7 @@ function render(views: Record<string, ParsedView>): string {
   return nodeToString(out)
 }
 
-function makeElementView(overrides: Partial<ParsedElementView> & { id: string }): ParsedElementView {
+function makeElementView(overrides: OverrideProperties<Partial<ParsedElementView>, { id: string }>): ParsedElementView {
   return {
     _type: 'element',
     title: undefined,
@@ -21,7 +22,7 @@ function makeElementView(overrides: Partial<ParsedElementView> & { id: string })
   } as unknown as ParsedElementView
 }
 
-function makeDynamicView(overrides: Partial<ParsedDynamicView> & { id: string }): ParsedDynamicView {
+function makeDynamicView(overrides: OverrideProperties<Partial<ParsedDynamicView>, { id: string }>): ParsedDynamicView {
   return {
     _type: 'dynamic',
     title: undefined,
@@ -34,7 +35,9 @@ function makeDynamicView(overrides: Partial<ParsedDynamicView> & { id: string })
   } as unknown as ParsedDynamicView
 }
 
-function makeDeploymentView(overrides: Partial<ParsedDeploymentView> & { id: string }): ParsedDeploymentView {
+function makeDeploymentView(
+  overrides: OverrideProperties<Partial<ParsedDeploymentView>, { id: string }>,
+): ParsedDeploymentView {
   return {
     _type: 'deployment',
     title: undefined,

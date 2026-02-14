@@ -5,40 +5,35 @@ import {
   printFqnExprAny,
   printModelExpression,
   printModelFqnExpr,
-  printWhereOperator,
+  printWhereOperator as where,
 } from './print-expression'
 
-// ---- printWhereOperator ----
+// ---- where ----
 
-describe('printWhereOperator', () => {
+describe('where', () => {
   it('prints tag equality', () => {
-    const op = { tag: 'internal' } as WhereOperator
-    expect(printWhereOperator(op)).toBe('tag is #internal')
+    expect(where({ tag: 'internal' })).toBe('tag is #internal')
   })
 
   it('prints tag inequality (neq)', () => {
-    const op = { tag: { neq: 'external' } } as WhereOperator
-    expect(printWhereOperator(op)).toBe('tag is not #external')
+    expect(where({ tag: { neq: 'external' } })).toBe('tag is not #external')
   })
 
   it('prints tag equality (eq)', () => {
-    const op = { tag: { eq: 'internal' } } as WhereOperator
-    expect(printWhereOperator(op)).toBe('tag is #internal')
+    expect(where({ tag: { eq: 'internal' } })).toBe('tag is #internal')
   })
 
   it('prints kind equality', () => {
-    const op = { kind: 'component' } as WhereOperator
-    expect(printWhereOperator(op)).toBe('kind is component')
+    expect(where({ kind: 'component' })).toBe('kind is component')
   })
 
   it('prints kind inequality', () => {
-    const op = { kind: { neq: 'system' } } as WhereOperator
-    expect(printWhereOperator(op)).toBe('kind is not system')
+    expect(where({ kind: { neq: 'system' } })).toBe('kind is not system')
   })
 
   it('prints not operator', () => {
     const op = { not: { tag: 'internal' } } as WhereOperator
-    expect(printWhereOperator(op)).toBe('not (tag is #internal)')
+    expect(where(op)).toBe('not (tag is #internal)')
   })
 
   it('prints and operator', () => {
@@ -48,7 +43,7 @@ describe('printWhereOperator', () => {
         { kind: 'component' },
       ],
     } as WhereOperator
-    expect(printWhereOperator(op)).toBe('tag is #internal and kind is component')
+    expect(where(op)).toBe('tag is #internal and kind is component')
   })
 
   it('prints or operator', () => {
@@ -58,7 +53,7 @@ describe('printWhereOperator', () => {
         { kind: 'component' },
       ],
     } as WhereOperator
-    expect(printWhereOperator(op)).toBe('tag is #internal or kind is component')
+    expect(where(op)).toBe('tag is #internal or kind is component')
   })
 
   it('wraps or children in parentheses inside and', () => {
@@ -68,7 +63,7 @@ describe('printWhereOperator', () => {
         { kind: 'component' },
       ],
     } as WhereOperator
-    expect(printWhereOperator(op)).toBe('(tag is #a or tag is #b) and kind is component')
+    expect(where(op)).toBe('(tag is #a or tag is #b) and kind is component')
   })
 
   it('wraps and children in parentheses inside or', () => {
@@ -78,12 +73,12 @@ describe('printWhereOperator', () => {
         { kind: 'component' },
       ],
     } as WhereOperator
-    expect(printWhereOperator(op)).toBe('(tag is #a and tag is #b) or kind is component')
+    expect(where(op)).toBe('(tag is #a and tag is #b) or kind is component')
   })
 
   it('prints participant operator', () => {
     const op = { participant: 'source', operator: { tag: 'internal' } } as WhereOperator
-    expect(printWhereOperator(op)).toBe('source.tag is #internal')
+    expect(where(op)).toBe('source.tag is #internal')
   })
 })
 
@@ -190,11 +185,13 @@ describe('printModelExpression', () => {
         line: 'dotted',
       },
     } as unknown as ModelExpression
-    const result = printModelExpression(expr)
-    expect(result).toContain('a -> b with {')
-    expect(result).toContain('title \'calls\'')
-    expect(result).toContain('color red')
-    expect(result).toContain('line dotted')
+    expect(printModelExpression(expr)).toMatchInlineSnapshot(`
+      "a -> b with {
+        title 'calls'
+        color red
+        line dotted
+      }"
+    `)
   })
 })
 

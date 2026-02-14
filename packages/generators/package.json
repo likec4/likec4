@@ -55,7 +55,10 @@
     "langium": "catalog:langium",
     "pako": "catalog:",
     "remeda": "catalog:utils",
-    "json5": "catalog:utils"
+    "json5": "catalog:utils",
+    "type-fest": "catalog:utils",
+    "indent-string": "catalog:utils",
+    "strip-indent": "catalog:utils"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
