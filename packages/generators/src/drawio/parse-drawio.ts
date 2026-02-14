@@ -103,7 +103,12 @@ function isEdgeWithEndpoints(c: DrawioCell): c is DrawioEdgeWithEndpoints {
   return c.edge === true && typeof c.source === 'string' && typeof c.target === 'string'
 }
 
-/** Get attribute value from open-tag string (e.g. "id=\"x\" vertex=\"1\""). No regex to avoid ReDoS on uncontrolled attrs. */
+/** True if char is space, tab, or newline (word boundary for attr names). */
+function isAttrBoundaryChar(c: string): boolean {
+  return c === ' ' || c === '\t' || c === '\n' || c === '\r'
+}
+
+/** Get attribute value from open-tag string (e.g. "id=\"x\" vertex=\"1\""). No regex to avoid ReDoS. Matches only on word boundary so "id=" does not match "userid=". */
 function getAttr(attrs: string, name: string): string | undefined {
   const needle = `${name}=`
   const lower = attrs.toLowerCase()
@@ -112,6 +117,11 @@ function getAttr(attrs: string, name: string): string | undefined {
   while (i < attrs.length) {
     const start = lower.indexOf(needleLower, i)
     if (start === -1) return undefined
+    const prev: string = start === 0 ? ' ' : (attrs[start - 1] ?? ' ')
+    if (!isAttrBoundaryChar(prev)) {
+      i = start + 1
+      continue
+    }
     const quoteStart = start + needle.length
     if (quoteStart < attrs.length && attrs[quoteStart] === '"') {
       const valueEnd = attrs.indexOf('"', quoteStart + 1)
