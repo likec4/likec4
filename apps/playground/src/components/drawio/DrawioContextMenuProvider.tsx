@@ -1,4 +1,4 @@
-import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
+import { usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
@@ -72,7 +72,6 @@ export function DrawioContextMenuProvider({
   /** Optional: called when export fails so UI can show toast/snackbar. */
   onExportError?: OnDrawioExportError
 }>) {
-  const playground = usePlayground()
   const { diagram, likec4model, files, viewStates } = usePlaygroundSnapshot(c => {
     if (c.value !== 'ready') return EMPTY_DRAWIO_SNAPSHOT
     const viewState = c.context.activeViewId ? c.context.viewStates[c.context.activeViewId] : null
