@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
-import type { InlineConfig } from 'vite'
+import type { InlineConfig, Logger } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import type { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
@@ -147,7 +147,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         }),
       },
     },
-    customLogger,
+    customLogger: customLogger as Logger,
     plugins: [
       react(),
       LikeC4VitePlugin({

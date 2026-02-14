@@ -9,9 +9,11 @@ export default defineConfig(({ mode }) => {
   return {
     resolve: {
       conditions: ['sources'],
+      // Prefer .ts/.tsx over .js so diagram src is used (avoid CJS .js in diagram/src)
+      extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        '@likec4/diagram': resolve('../diagram/src'),
+        '@likec4/diagram': resolve('../diagram/src/index.ts'),
       },
     },
     define: {
