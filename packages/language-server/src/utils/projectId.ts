@@ -4,12 +4,6 @@ import { ast } from '../ast'
 import { logger } from '../logger'
 import { ProjectsManager } from '../workspace'
 
-/**
- * Resolve ProjectId from an AST node, document, or import node.
- * For Imported nodes walks up to ImportsFromPoject; for documents uses likec4ProjectId or default.
- * @param value - AST node, Langium document, or import-related node
- * @returns Resolved project ID (or DefaultProjectId when document has none)
- */
 export function projectIdFrom(value: AstNode | LangiumDocument | ast.ImportsFromPoject | ast.Imported): ProjectId {
   if (ast.isImported(value)) {
     while (value.$type === 'Imported' && value.$container) {

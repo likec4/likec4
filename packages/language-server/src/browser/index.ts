@@ -18,11 +18,12 @@ export function startLanguageServer(port: MessagePort | DedicatedWorkerGlobalSco
   shared: LikeC4SharedServices
   likec4: LikeC4Services
 } {
+  /* browser specific setup code */
+
   const messageReader = new BrowserMessageReader(port)
   const messageWriter = new BrowserMessageWriter(port)
 
   const connection = createConnection(messageReader, messageWriter)
-
   configureLogger({
     sinks: {
       console: getConsoleSink({

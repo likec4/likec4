@@ -3,7 +3,42 @@
 exports[`generate DrawIO - element view 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
-  <diagram name="v1" id="likec4-v1">LAYOUT</diagram>
+  <diagram name="v1" id="likec4-v1">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" vertex="1" parent="0">
+  <mxGeometry x="0" y="0" width="800" height="600" as="geometry" />
+</mxCell>
+<mxCell id="2" value="Alice" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="3" value="Bob" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="4" value="Cloud" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="5" value="frontend" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="4">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="6" value="Backend" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="4">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="7" value="uses 
+ at home" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#8D8D8D;dashed=1;" edge="1" parent="1" source="2" target="5">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="8" value="uses 
+ at work" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#8D8D8D;dashed=1;" edge="1" parent="1" source="3" target="5">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="9" value="requests" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#8D8D8D;dashed=1;" edge="1" parent="1" source="5" target="6">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>
 "
 `;
@@ -11,7 +46,61 @@ exports[`generate DrawIO - element view 1`] = `
 exports[`generate DrawIO - fakeComputedView 3 Levels 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
-  <diagram name="Context: Cloud" id="likec4-cloud3levels">LAYOUT</diagram>
+  <diagram name="cloud3levels" id="likec4-cloud3levels">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" vertex="1" parent="0">
+  <mxGeometry x="0" y="0" width="800" height="600" as="geometry" />
+</mxCell>
+<mxCell id="2" value="amazon" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="3" value="cloud" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="4" value="customer" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="5" value="support" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="6" value="backend" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="3">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="7" value="graphql" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="6">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="8" value="storage" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="6">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="9" value="adminPanel" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="3">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="10" value="dashboard" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="3">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="11" value="" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="10" target="7">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="12" value="" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="9" target="7">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="13" value="" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="8" target="2">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="14" value="" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="7" target="8">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="15" value="" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="5" target="9">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="16" value="" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="4" target="10">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>
 "
 `;
@@ -19,7 +108,46 @@ exports[`generate DrawIO - fakeComputedView 3 Levels 1`] = `
 exports[`generate DrawIO - fakeDiagram 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
-  <diagram name="fakeView" id="likec4-fakeView">LAYOUT</diagram>
+  <diagram name="fakeView" id="likec4-fakeView">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" vertex="1" parent="0">
+  <mxGeometry x="0" y="0" width="800" height="600" as="geometry" />
+</mxCell>
+<mxCell id="2" value="amazon" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="165" y="715" width="251" height="140" as="geometry" />
+</mxCell>
+<mxCell id="3" value="cloud" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="139" y="210" width="304" height="457" as="geometry" />
+</mxCell>
+<mxCell id="4" value="customer" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="251" height="140" as="geometry" />
+</mxCell>
+<mxCell id="5" value="support" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="330" y="0" width="251" height="140" as="geometry" />
+</mxCell>
+<mxCell id="6" value="backend" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="3">
+  <mxGeometry x="165" y="500" width="251" height="140" as="geometry" />
+</mxCell>
+<mxCell id="7" value="frontend" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="3">
+  <mxGeometry x="165" y="266" width="251" height="140" as="geometry" />
+</mxCell>
+<mxCell id="8" value="requests" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="7" target="6">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="9" value="" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="6" target="2">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="10" value="" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="5" target="7">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="11" value="opens" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="4" target="7">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>
 "
 `;
@@ -27,7 +155,31 @@ exports[`generate DrawIO - fakeDiagram 1`] = `
 exports[`generate DrawIO - fakeDiagram2 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
-  <diagram name="frontend" id="likec4-74f5364fa4b">LAYOUT</diagram>
+  <diagram name="74f5364fa4b" id="likec4-74f5364fa4b">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" vertex="1" parent="0">
+  <mxGeometry x="0" y="0" width="800" height="600" as="geometry" />
+</mxCell>
+<mxCell id="2" value="client" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="251" height="140" as="geometry" />
+</mxCell>
+<mxCell id="3" value="backend" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="469" width="251" height="140" as="geometry" />
+</mxCell>
+<mxCell id="4" value="frontend" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="235" width="251" height="140" as="geometry" />
+</mxCell>
+<mxCell id="5" value="requests" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="4" target="3">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="6" value="opens" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;" edge="1" parent="1" source="2" target="4">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>
 "
 `;
@@ -35,7 +187,33 @@ exports[`generate DrawIO - fakeDiagram2 1`] = `
 exports[`generate DrawIO - landscape 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="LikeC4" modified="FIXED-DATE" agent="LikeC4" version="1.0" etag="" type="device">
-  <diagram name="Layout" id="likec4-index">LAYOUT</diagram>
+  <diagram name="index" id="likec4-index">
+    <mxGraphModel dx="800" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale=1 pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" vertex="1" parent="0">
+  <mxGeometry x="0" y="0" width="800" height="600" as="geometry" />
+</mxCell>
+<mxCell id="2" value="Alice" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="3" value="Bob" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="4" value="Cloud" style="shape=rectangle;fillColor=#3b82f6;strokeColor=#2563eb;fontColor=#2563eb;verticalAlign=middle;align=center;overflow=fill;spacingLeft=2;spacingRight=2;spacingTop=2;spacingBottom=2;" vertex="1" parent="1">
+  <mxGeometry x="0" y="0" width="120" height="60" as="geometry" />
+</mxCell>
+<mxCell id="5" value="uses 
+ at home" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#8D8D8D;dashed=1;" edge="1" parent="1" source="2" target="4">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+<mxCell id="6" value="uses 
+ at work" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#8D8D8D;dashed=1;" edge="1" parent="1" source="3" target="4">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>
 "
 `;

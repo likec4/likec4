@@ -57,9 +57,7 @@ describe('Stage', () => {
       `)
     })
 
-    // Skip: excluding both ui and api leaves their parent deployment node (e.g. zone1) in final; implementation
-    // does not remove "empty" deployment nodes when all children are excluded. Decide: fix stage-exclude or adjust expectation.
-    it.skip('should remove element and all its connections', () => {
+    it.skip('should remove element and all its connections', () => { // potential issue. Empty deployment node is in the final collection.
       const model = createModel()
       const baseMemory = Memory.empty()
       const ui = model.deployment.element('prod.eu.zone1.ui')

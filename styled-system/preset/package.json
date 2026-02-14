@@ -14,7 +14,7 @@
     "generate": "obuild",
     "typecheck": "tsc --noEmit",
     "pack": "pnpm pack",
-    "postpack": "likec4ops postpack",
+    "postpack": "cp likec4-style-preset-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean"
   },

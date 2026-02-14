@@ -3,6 +3,7 @@ import { assignTagColors } from '@likec4/core/styles'
 import { exact, FqnRef } from '@likec4/core/types'
 import { isNonEmptyArray, MultiMap, nameFromFqn } from '@likec4/core/utils'
 import {
+  hasAtLeast,
   isEmpty,
   isEmptyish,
   isNonNullish,

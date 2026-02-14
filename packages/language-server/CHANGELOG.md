@@ -16,7 +16,7 @@
 
 - [`731a6cb`](https://github.com/likec4/likec4/commit/731a6cb278ef6bc06280bf1ba3b2d8f79c7d7fe6) Thanks [@davydkov](https://github.com/davydkov)! - Add notes to the elements and relationships using `with`. Example:
 
-  ```likec4
+  ```
   view {
     include
       some.element with {

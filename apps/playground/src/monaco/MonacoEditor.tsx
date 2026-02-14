@@ -1,5 +1,4 @@
 import { usePlayground } from '$/hooks/usePlayground'
-import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
 import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSyncedRef, useUpdateEffect } from '@react-hookz/web'
@@ -11,12 +10,7 @@ import { LanguageClientSync } from './LanguageClientSync'
 
 const logger = rootLogger.getChild('monaco-editor')
 
-export type MonacoEditorProps = {
-  setLayoutedModelApi?: (api: LayoutedModelApi | null) => void
-}
-
-const LazyMonacoEditor = memo((props: MonacoEditorProps) => {
-  const { setLayoutedModelApi } = props
+const LazyMonacoEditor = memo(() => {
   const playground = usePlayground()
 
   const onActiveEditorChanged = useCallbackRef((filename: string) => {
@@ -60,25 +54,10 @@ const LazyMonacoEditor = memo((props: MonacoEditorProps) => {
         wrapperConfig={wrapperConfig}
         onLoad={onLoad}
         onError={useCallbackRef(err => {
-          const message = err instanceof Error ? err.message : String(err)
-          const isConnectionError = message.includes('connection to server is erroring') ||
-            message.includes('Reader received error') ||
-            message.includes('Writer received error')
           logger.error(loggable(err))
-          if (import.meta.env.DEV && isConnectionError) {
-            console.warn(
-              '[LikeC4] Language server connection failed. Check the console for "[LikeC4 LSP worker]" for the cause. Try: refresh the page; run `pnpm build` in the repo root and restart the dev server.',
-            )
-          }
         })}
       />
-      {wrapper && (
-        <LanguageClientSync
-          config={wrapperConfig}
-          wrapper={wrapper}
-          {...(setLayoutedModelApi != null && { setLayoutedModelApi })}
-        />
-      )}
+      {wrapper && <LanguageClientSync config={wrapperConfig} wrapper={wrapper} />}
     </>
   )
 })

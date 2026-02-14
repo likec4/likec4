@@ -1,22 +1,14 @@
-import { type Fqn, type ProjectId, FqnRef } from '@likec4/core'
+import { type Fqn, type ProjectId, FqnRef, nonexhaustive } from '@likec4/core'
 import { type AstNode, AstUtils, DocumentState, JSDocDocumentationProvider } from 'langium'
 import { ast } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
 import type { LikeC4Services } from '../module'
 
-/**
- * Provides documentation for LikeC4 AST nodes, extending JSDoc parsing
- * with specialized formatting for deployment nodes, deployed instances, and elements.
- */
 export class LikeC4DocumentationProvider extends JSDocDocumentationProvider {
   private parser: LikeC4ModelParser
   private locator: LikeC4ModelLocator
 
-  /**
-   * Creates a new documentation provider.
-   * @param services - The LikeC4 language services.
-   */
   constructor(services: LikeC4Services) {
     super(services)
     this.parser = services.likec4.ModelParser
@@ -68,8 +60,7 @@ export class LikeC4DocumentationProvider extends JSDocDocumentationProvider {
         return lines.join('  \n')
       }
 
-      // Exhaustiveness check — errors at compile time if guard admits a new node type without a handler
-      const _exhaustive: never = node
+      nonexhaustive(node)
     } catch (e) {
       logWarnError(e)
     }

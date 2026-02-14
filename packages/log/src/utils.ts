@@ -2,11 +2,6 @@ import mergeErrorCause from 'merge-error-cause'
 import safeStringify from 'safe-stringify'
 import wrapErrorMessage from 'wrap-error-message'
 
-/**
- * Split stack string into lines and normalize (e.g. strip file://).
- * @param stack - Error stack string
- * @returns Array of normalized lines
- */
 export const parseStack = (stack: string): string[] => {
   const lines = stack
     .split('\n')
@@ -22,23 +17,12 @@ export const parseStack = (stack: string): string[] => {
   return lines
 }
 
-/**
- * Indent each line of value by the given number of spaces.
- * @param value - String or array of lines to indent
- * @param indentation - Number of spaces (default 2)
- * @returns Indented string
- */
 export function indent(value: string | string[], indentation = 2): string {
   value = Array.isArray(value) ? value : value.split('\n')
   const prefix = ' '.repeat(indentation)
   return value.map((l) => `${prefix}${l}`).join('\n')
 }
 
-/**
- * Serialize unknown to a string (Error → message + stack; else safe-stringify).
- * @param error - Caught value (Error, string, or arbitrary object)
- * @returns Human-readable string for logging
- */
 export function loggable(error: unknown): string {
   if (typeof error === 'string') {
     return error

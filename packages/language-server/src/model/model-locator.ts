@@ -23,17 +23,12 @@ const { getDocument, streamAllContents } = AstUtils
 
 const logger = serverLogger.getChild('locator')
 
-/** Result of locating a view: document, view AST, and view block node. */
 export type ViewLocateResult = {
   doc: ParsedLikeC4LangiumDocument
   view: ParsedAstView
   viewAst: ast.LikeC4View
 }
 
-/**
- * Locates elements, views, and documents in the LikeC4 model by FQN or AST node.
- * Used by LSP features (hover, go-to-definition, document tags, etc.).
- */
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
   private deploymentsIndex: DeploymentsIndex
@@ -56,11 +51,6 @@ export class LikeC4ModelLocator {
     return this.parser.documents(projectId)
   }
 
-  /**
-   * Get parsed element by AST node or by FQN (and optional projectId).
-   * @param args - Either [element AST], [fqn], or [fqn, projectId]
-   * @returns { projectId, element, document } or null if not found
-   */
   public getParsedElement(
     ...args: [ast.Element] | [c4.Fqn] | [c4.Fqn, c4.ProjectId]
   ): null | {
@@ -69,8 +59,8 @@ export class LikeC4ModelLocator {
     document: LangiumDocument
   } {
     try {
-      let astNodeOrFqn: ast.Element | c4.Fqn
-      let projectId: c4.ProjectId
+      let astNodeOrFqn
+      let projectId
       if (args.length === 2) {
         astNodeOrFqn = args[0]
         projectId = args[1]
@@ -107,12 +97,6 @@ export class LikeC4ModelLocator {
     return this.parser.parse(doc).c4Elements.find(e => e.id === fqn)
   }
 
-  /**
-   * Get LSP Location for an element by FQN (and optional projectId).
-   * @param fqn - Fully qualified name (may include project prefix)
-   * @param projectId - Optional project scope
-   * @returns Location or null
-   */
   public locateElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {
     let [_projectId, _fqn] = splitGlobalFqn(fqn)
     _projectId ??= this.projects.ensureProjectId(projectId)
@@ -209,12 +193,6 @@ export class LikeC4ModelLocator {
     return null
   }
 
-  /**
-   * Get LSP Location for a view by id (and optional projectId).
-   * @param viewId - View id
-   * @param projectId - Optional project scope
-   * @returns Location or null
-   */
   public locateView(viewId: c4.ViewId, projectId?: c4.ProjectId): Location | null {
     const res = this.locateViewAst(viewId, projectId)
     if (!res) {

@@ -326,7 +326,7 @@ export namespace GetDocumentTags {
   }
   export type Res = {
     /**
-     * Project ID this document belongs to (or default project if none).
+     * Project ID this document belongs to (if any)
      */
     projectId: ProjectId
     /**
