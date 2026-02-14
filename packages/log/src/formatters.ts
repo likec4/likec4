@@ -57,16 +57,16 @@ export function errorFromLogRecord(record: LogRecord): Error | null {
 export function appendErrorToMessage(values: FormattedValues, color = false): FormattedValues {
   const error = getErrorFromLogRecord(values.record)
   if (error) {
-    let errorMessge = error.message
+    let errorMessage = error.message
     if (error.stack) {
-      errorMessge = errorMessge + '\n' + indent(error.stack.split('\n').slice(1))
+      errorMessage = errorMessage + '\n' + indent(error.stack.split('\n').slice(1))
     }
     if (color) {
-      errorMessge = `${ansiColors.red}${errorMessge}${RESET}`
+      errorMessage = `${ansiColors.red}${errorMessage}${RESET}`
     }
     return {
       ...values,
-      message: values.message + '\n' + indent(errorMessge),
+      message: values.message + '\n' + indent(errorMessage),
     }
   }
   return values
