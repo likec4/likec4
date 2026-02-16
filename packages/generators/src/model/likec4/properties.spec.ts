@@ -4,7 +4,7 @@ import {
   materialize,
   withctx,
 } from './base'
-import { metadataProperty } from './properties'
+import { linksProperty, metadataProperty } from './properties'
 
 /**
  * Returns expect function to execute operations on the given context
@@ -37,6 +37,23 @@ describe('properties', () => {
         ''
         key3 'value2'
       }"
+    `)
+  })
+
+  it('links', () => {
+    const expect = expectOnCtx({
+      links: [
+        { url: 'https://example1.com', title: 'Example1' },
+        { url: 'https://example2.com' },
+        { url: '../example3.md#123' },
+      ],
+    })
+    expect(
+      linksProperty(),
+    ).toMatchInlineSnapshot(`
+      "link https://example1.com 'Example1'
+      link https://example2.com
+      link ../example3.md#123"
     `)
   })
 })

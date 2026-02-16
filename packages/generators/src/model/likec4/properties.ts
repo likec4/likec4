@@ -63,6 +63,15 @@ export function markdownProperty<A>(
   )
 }
 
+export const titleProperty = <A extends { title?: string | null }>(): Op<A> =>
+  property(
+    'title',
+    spaceBetween(
+      print('title'),
+      text(),
+    ),
+  )
+
 export const summaryProperty = <A extends { summary?: MarkdownOrString | null }>(): Op<A> =>
   property(
     'summary',

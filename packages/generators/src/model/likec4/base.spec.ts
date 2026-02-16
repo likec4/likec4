@@ -136,7 +136,7 @@ describe('lines', () => {
 
   it('should separate with given count of newlines', () => {
     expectOp(
-      lines(1, ...ops),
+      lines(1)(...ops),
     ).toMatchInlineSnapshot(`
       "one
       two
@@ -147,7 +147,7 @@ describe('lines', () => {
 
   it('should separate with given count of newlines', () => {
     expectOp(
-      lines(2, ...ops),
+      lines(2)(...ops),
     ).toMatchInlineSnapshot(`
       "one
 
