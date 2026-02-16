@@ -2,7 +2,9 @@ import type { ThemeColorValues } from '@likec4/core/styles'
 import type { ElementSpecification, RelationshipSpecification, TagSpecification } from '@likec4/core/types'
 import { isTagColorSpecified } from '@likec4/core/types'
 import { CompositeGeneratorNode, NL } from 'langium/generate'
-import { printStyleProperties } from './print-style'
+import { type Op, body, print, property, spaceBetween } from './base'
+import { printStyleProperties, styleProperty } from './print-style'
+import { descriptionProperty, notationProperty, printTags, summaryProperty, technologyProperty } from './properties'
 import { quoteMarkdownOrString, quoteString } from './utils'
 
 interface SpecificationData {
@@ -145,4 +147,19 @@ function printElementKindSpec(
     indentation: 2,
   })
   indent.append('}', NL)
+}
+
+export function elementSpecification(): Op<ElementSpecification> {
+  return spaceBetween<ElementSpecification>(
+    print('element'),
+    property('title', print()),
+    body(
+      printTags(),
+      summaryProperty(),
+      descriptionProperty(),
+      technologyProperty(),
+      notationProperty(),
+      styleProperty(),
+    ),
+  )
 }
