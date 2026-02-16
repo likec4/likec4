@@ -230,14 +230,14 @@ export function body(...args: unknown[]) {
     return (...ops: Ops<any>) =>
       merge(
         print(keyword + ' {'),
-        indent(...ops),
+        indent(lines(...ops)),
         print('}'),
       )
   }
   const ops = args as Ops<any>
   return merge(
     print('{'),
-    indent(...ops),
+    indent(lines(...ops)),
     print('}'),
   )
 }
@@ -384,27 +384,29 @@ export function spaceBetween<A>(...ops: Ops<A>): Op<A> {
 /**
  * Joins all outputs with a space between
  */
-export function lines<A>(linesBetween: number, ...ops: [Op<A>, ...Ops<A>]): Op<A>
-export function lines<A>(...ops: [Op<A>, ...Ops<A>]): Op<A>
+export function lines(linesBetween: number): <A>(...ops: Ops<A>) => Op<A>
+export function lines<A>(...ops: Ops<A>): Op<A>
 export function lines(...args: any[]) {
-  let linesBetween = 0
-  let ops: Ops<unknown>
-  if (isNumber(args[0])) {
-    linesBetween = args[0]
-    ops = args.slice(1)
-  } else {
-    linesBetween = 0
-    ops = args
+  let linesBetween = only(args)
+  if (isNumber(linesBetween)) {
+    let suffix = fresh(undefined)
+    for (let i = 0; i < linesBetween; i++) {
+      suffix.out.appendNewLine()
+    }
+    return (...ops: Ops<any>) => {
+      return join({
+        operations: ops,
+        suffix: (_node, _index, isLast) => {
+          return !isLast ? suffix.out : undefined
+        },
+        appendNewLineIfNotEmpty: true,
+        skipNewLineAfterLastItem: true,
+      })
+    }
   }
-  let suffix = fresh(undefined)
-  for (let i = 0; i < linesBetween; i++) {
-    suffix.out.appendNewLine()
-  }
+  const ops = args as Ops<any>
   return join({
     operations: ops,
-    suffix: (_node, _index, isLast) => {
-      return !isLast ? suffix.out : undefined
-    },
     appendNewLineIfNotEmpty: true,
     skipNewLineAfterLastItem: true,
   })
@@ -413,7 +415,7 @@ export function lines(...args: any[]) {
 /**
  * Forwards the given context to the given operations
  */
-export function withctx<A>(ctx: A): (...ops: Ops<A>) => Op<A>
+export function withctx<A>(ctx: A): <B>(...ops: Ops<A>) => Op<B>
 export function withctx<A, B>(ctx: B, op: Op<B>, ...ops: Ops<B>): Op<A>
 export function withctx(...args: unknown[]) {
   const ctx = args[0]
