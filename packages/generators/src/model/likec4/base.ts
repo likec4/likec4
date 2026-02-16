@@ -132,7 +132,7 @@ export function print<A extends string | number | boolean>(): Op<A>
  * Prints the given string to the output node
  */
 export function print<A>(format: (value: A) => string): Op<A>
-export function print<A>(value: string | number | boolean): Op<A>
+export function print(value: string | number | boolean): <A>() => A
 export function print(value?: unknown) {
   return operation(({ ctx, out }) => {
     let v = typeof value === 'function' ? value(ctx) : (value ?? ctx)
