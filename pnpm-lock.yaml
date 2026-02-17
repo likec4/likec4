@@ -81,6 +81,9 @@ catalogs:
     '@types/node':
       specifier: ~22.19.10
       version: 22.19.11
+    '@types/pako':
+      specifier: ^2.0.3
+      version: 2.0.4
     '@typescript/native-preview':
       specifier: 7.0.0-dev.20260208.1
       version: 7.0.0-dev.20260208.1
@@ -102,9 +105,6 @@ catalogs:
     pako:
       specifier: ^2.1.0
       version: 2.1.0
-    '@types/pako':
-      specifier: ^2.0.3
-      version: 2.0.4
     playwright:
       specifier: 1.56.1
       version: 1.56.1
@@ -243,8 +243,8 @@ catalogs:
       specifier: ^6.1.0
       version: 6.1.0
     react-resizable-panels:
-      specifier: ^4.5.2
-      version: 4.5.2
+      specifier: ^4.6.4
+      version: 4.6.4
     react-shadow:
       specifier: ^20.6.0
       version: 20.6.0
@@ -768,7 +768,7 @@ importers:
         version: 6.1.0(react@19.2.4)
       react-resizable-panels:
         specifier: catalog:react
-        version: 4.5.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 4.6.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       remeda:
         specifier: catalog:utils
         version: 2.33.6
@@ -1887,7 +1887,7 @@ importers:
         version: 6.1.0(react@19.2.4)
       react-resizable-panels:
         specifier: catalog:react
-        version: 4.5.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 4.6.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-shadow:
         specifier: catalog:react
         version: 20.6.0(prop-types@15.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -7896,8 +7896,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-resizable-panels@4.5.2:
-    resolution: {integrity: sha512-PJyyR41poi1O1MvvQzDVtEBRq1x7B/9jB6yoFbm67pm8AvPUUwhljFtxfhaYy8klsmkQ6AvxZgDxXTkDl4vy4Q==}
+  react-resizable-panels@4.6.4:
+    resolution: {integrity: sha512-E7Szs1xyaMZ7xOI2gG4TECNz4r/gmpV1AsXyZRnER6OQnfFf9uclFmrHHZR3h/iF8vQS+nQ1LKyZv9bzwGxPSg==}
     peerDependencies:
       react: 19.2.4
       react-dom: 19.2.4
@@ -16110,7 +16110,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.13
 
-  react-resizable-panels@4.5.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-resizable-panels@4.6.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
