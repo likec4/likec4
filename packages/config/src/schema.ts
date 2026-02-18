@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type {
   DeploymentElementModel,
   DeploymentRelationModel,
@@ -72,6 +79,9 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .nonempty('Contact person cannot be empty if specified')
     .optional()
     .meta({ description: 'A person who has been involved in creating or maintaining this project' }),
+  metadata: z.record(z.string(), z.any())
+    .optional()
+    .meta({ description: 'Arbitrary metadata as key-value pairs for custom project information' }),
   styles: LikeC4StylesConfigSchema.optional().meta({
     description: 'Project styles customization',
   }),
