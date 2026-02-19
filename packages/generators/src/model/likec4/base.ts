@@ -36,9 +36,11 @@ function hasContent(out: Generated): boolean {
   }
 }
 
+export type Output = CompositeGeneratorNode
+
 export type Ctx<A> = {
   ctx: A
-  out: CompositeGeneratorNode
+  out: Output
 }
 
 export type AnyCtx = Ctx<any>
@@ -51,7 +53,7 @@ export interface CtxOp<A> {
   (value: A): A
 }
 
-export type AnyOp = Op<any>
+export type AnyOp = <A>(ctx: Ctx<A>) => Ctx<A>
 
 export type ctxOf<Op extends AnyOp> = Parameters<Op>[0]['ctx']
 
@@ -67,7 +69,7 @@ export function fresh<A>(ctx: A): IfAny<A, never, Ctx<A>> {
 /**
  * Materialize context or operation into a string
  */
-export function materialize(ctx: AnyCtx | AnyOp, defaultIndentation: string | number = 2): string {
+export function materialize(ctx: AnyCtx | Op<any>, defaultIndentation: string | number = 2): string {
   const out = isFunction(ctx) ? executeOnFresh(undefined, [ctx]).out : ctx.out
   return toString(out, defaultIndentation)
 }
@@ -114,14 +116,23 @@ type CastedCtx<C> = Ctx<C>
 /**
  * Create an operation from a function
  */
-export function operation<A>(fn: (input: CastedCtx<A>) => any): Op<A> {
-  return (input: Ctx<A>) => {
-    const result = fn(input)
+export function operation<A>(fn: (input: CastedCtx<A>) => any): Op<A>
+export function operation<A>(name: string, fn: (input: CastedCtx<A>) => any): Op<A>
+export function operation(opOrName: string | Function, fn?: Function) {
+  const name = typeof opOrName === 'string' ? opOrName : 'anonymous operation'
+  const operationFn = typeof opOrName === 'function' ? opOrName : fn!
+  const wrapped = (input: Ctx<any>) => {
+    const result = operationFn(input)
     if (result instanceof CompositeGeneratorNode) {
       return { ...input, out: result }
     }
     return input
   }
+  Object.defineProperties(wrapped, {
+    length: { value: operationFn.length },
+    name: { value: name },
+  })
+  return wrapped
 }
 
 /**
@@ -132,7 +143,7 @@ export function print<A extends string | number | boolean>(): Op<A>
  * Prints the given string to the output node
  */
 export function print<A>(format: (value: A) => string): Op<A>
-export function print(value: string | number | boolean): <A>() => A
+export function print(value: string | number | boolean): AnyOp
 export function print(value?: unknown) {
   return operation(({ ctx, out }) => {
     let v = typeof value === 'function' ? value(ctx) : (value ?? ctx)
@@ -147,11 +158,11 @@ export function print(value?: unknown) {
   })
 }
 
-export const eq = <A>(): Op<A> => print('=')
+export const eq = (): AnyOp => print('=')
 
-export const keyword = <A>(value: string): Op<A> => print(value)
+export const keyword = (value: string): AnyOp => print(value)
 
-export const space = <A>(): Op<A> => print(' ')
+export const space = (): AnyOp => print(' ')
 
 export const newline = <A>(when?: 'ifNotEmpty'): Op<A> =>
   operation(({ out }) => {
@@ -166,7 +177,7 @@ export const newline = <A>(when?: 'ifNotEmpty'): Op<A> =>
  * Merge multiple operations into a single output node
  */
 export function merge<A>(...ops: Ops<A>): Op<A> {
-  return operation(({ ctx, out }) => {
+  return operation('merge', ({ ctx, out }) => {
     const nested = executeOnFresh(ctx as A, ops)
     out.appendIf(
       hasContent(nested.out),
@@ -178,7 +189,7 @@ export function merge<A>(...ops: Ops<A>): Op<A> {
 /**
  * Indent given text
  */
-export function indent<A>(value: string): Op<A>
+export function indent(value: string): AnyOp
 /**
  * Indent the given operations
  */
@@ -186,7 +197,7 @@ export function indent<A>(...args: Ops<A>): Op<A>
 export function indent(...args: AnyOp[] | [string]) {
   if (args.length === 1 && typeof args[0] === 'string') {
     const text = dedent(args[0] as string)
-    return operation(({ out }) => {
+    return operation('indent', ({ out }) => {
       if (isEmpty(text.trimStart())) {
         return
       }
@@ -204,7 +215,7 @@ export function indent(...args: AnyOp[] | [string]) {
     })
   }
   const ops = args as Ops<unknown>
-  return operation(({ ctx, out }) => {
+  return operation('indent', ({ ctx, out }) => {
     const nested = executeOnCtx(fresh(ctx), ops)
     if (hasContent(nested.out)) {
       out.indent({
@@ -223,7 +234,7 @@ export function indent(...args: AnyOp[] | [string]) {
  * Indent the given operations and wrap them in '{ ... }'
  */
 export function body(keyword: string): <A>(...ops: Ops<A>) => Op<A>
-export function body<A>(op: Op<A>, ...ops: Ops<A>): Op<A>
+export function body<A>(...ops: Ops<A>): Op<A>
 export function body(...args: unknown[]) {
   const keyword = only(args)
   if (isString(keyword)) {
@@ -284,9 +295,9 @@ function multilineText(value: string, quotes = DOUBLE_QUOTE): AnyOp {
 const DOUBLE_QUOTE = QUOTE.repeat(2)
 export function text<A extends string>(): Op<A>
 export function text<A>(format: (value: A) => string): Op<A>
-export function text<A>(value: string): Op<A>
+export function text(value: string): AnyOp
 export function text(value?: unknown) {
-  return operation(({ ctx, out }) => {
+  return operation('text', ({ ctx, out }) => {
     let v = typeof value === 'function' ? value(ctx) : (value ?? ctx)
     if (isNullish(v) || !isString(v)) {
       return
@@ -305,7 +316,7 @@ const TRIPLE_QUOTE = QUOTE.repeat(3)
 export function markdown<A extends string>(): Op<A>
 export function markdown<A>(value: string): Op<A>
 export function markdown(value?: string) {
-  return operation((ctx) => {
+  return operation('markdown', (ctx) => {
     let v = value ?? ctx.ctx
     if (isNullish(v) || !isString(v)) {
       return
@@ -317,7 +328,7 @@ export function markdown(value?: string) {
 export function markdownOrString<A extends MarkdownOrString>(): Op<A>
 export function markdownOrString<A>(value: MarkdownOrString): Op<A>
 export function markdownOrString(value?: MarkdownOrString) {
-  return operation<MarkdownOrString>(ctx => {
+  return operation<MarkdownOrString>('markdownOrString', ctx => {
     let v = value ?? ctx.ctx
     if (isNullish(v)) {
       return
@@ -340,7 +351,7 @@ export function join<A>(
     operations: Op<A> | Ops<A>
   } & JoinOptions<CompositeGeneratorNode>,
 ): Op<A> {
-  return operation<A>(({ ctx, out }) => {
+  return operation<A>('join', ({ ctx, out }) => {
     const { operations, ...joinOptions } = params
     const ops = Array.isArray(operations) ? operations : [operations]
     if (!hasAtLeast(ops, 1)) {
@@ -421,12 +432,12 @@ export function withctx(...args: unknown[]) {
   const ctx = args[0]
   if (args.length === 1) {
     return (...ops: Ops<any>) =>
-      operation(({ out }) => {
+      operation('withctx', ({ out }) => {
         executeOnCtx({ ctx, out }, ops)
       })
   }
   const ops = args.slice(1) as Ops<any>
-  return operation(({ out }) => {
+  return operation('withctx', ({ out }) => {
     executeOnCtx({ ctx, out }, ops)
   })
 }
@@ -436,9 +447,9 @@ export function withctx(...args: unknown[]) {
  */
 export function property<A, P extends keyof A & string>(
   propertyName: P,
-  op?: Op<NoInfer<A[P]> & {}>, // NonNullable
+  op?: Op<A[P] & {}>, // NonNullable
 ): Op<A> {
-  return operation(({ ctx, out }) => {
+  return operation(`property-${propertyName}`, ({ ctx, out }) => {
     const value = isObjectType(ctx) && propertyName in ctx ? (ctx as A)[propertyName] : undefined
     if (isNonNullish(value)) {
       if (!op) {
@@ -494,7 +505,7 @@ export function foreach<A extends Iterable<any>>(
   if (args.length === 2 && !isFunction(arg2)) {
     const _op = arg1
     const joinOptions = arg2
-    return operation(({ ctx, out }) => {
+    return operation('foreach', ({ ctx, out }) => {
       const items = [] as Array<CompositeGeneratorNode>
       for (const value of ctx) {
         const itemOut = _op(fresh(value)).out
@@ -531,11 +542,36 @@ export function separateNewLine(): JoinOptions<CompositeGeneratorNode> {
   }
 }
 
+/**
+ * Executes given operations on each item of the iterable context
+ * And joins the results with a new line
+ */
+export function foreachNewLine<A extends Iterable<any>>(
+  ...ops: Ops<IterableValue<A>>
+): Op<A> {
+  return operation('foreachNewLine', ({ ctx, out }) => {
+    const items = [] as Array<CompositeGeneratorNode>
+    for (const value of ctx) {
+      const itemOut = executeOnFresh(value, ops).out
+      if (hasContent(itemOut)) {
+        items.push(itemOut)
+      }
+    }
+    out.appendIf(
+      items.length > 0,
+      joinToNode(
+        items,
+        separateNewLine(),
+      ),
+    )
+  })
+}
+
 export function guard<A, N extends A>(
   condition: (ctx: A) => ctx is N,
-  ...ops: Ops<NoInfer<N>>
+  ...ops: Ops<N>
 ): Op<A> {
-  return operation(({ ctx, out }) => {
+  return operation('guard', ({ ctx, out }) => {
     if (condition(ctx)) {
       executeOnCtx({ ctx, out }, ops)
     }
@@ -546,7 +582,7 @@ export function select<A, B>(
   selector: (value: NoInfer<A>) => B,
   ...ops: Ops<B & {}> // NonNullable
 ): Op<A> {
-  return operation(({ ctx, out }) => {
+  return operation('select', ({ ctx, out }) => {
     const value = selector(ctx)
     if (isNonNullish(value)) {
       executeOnCtx({ ctx: value, out }, ops)

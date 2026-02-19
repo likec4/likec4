@@ -1,7 +1,7 @@
 import { isString } from 'remeda'
 import { type Assertion, describe, expect as viExpect, it } from 'vitest'
 import {
-  type AnyOp,
+  type Op,
   type Ops,
   body,
   eachOnFresh,
@@ -40,7 +40,7 @@ function expectOnCtx<A>(ctx: A) {
     )
 }
 
-function expectOp(...op: AnyOp[]): Assertion<string> {
+function expectOp(...op: Op<any>[]): Assertion<string> {
   return expectOnCtx(undefined)(...op)
 }
 
@@ -377,9 +377,9 @@ describe('eachOnFresh', () => {
       print('three'),
     ])
     viExpect(results).toHaveLength(3)
-    viExpect(materialize(results[0])).toBe('one')
-    viExpect(materialize(results[1])).toBe('two')
-    viExpect(materialize(results[2])).toBe('three')
+    viExpect(materialize(results[0]!)).toBe('one')
+    viExpect(materialize(results[1]!)).toBe('two')
+    viExpect(materialize(results[2]!)).toBe('three')
   })
 })
 
