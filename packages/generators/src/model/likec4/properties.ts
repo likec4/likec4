@@ -34,12 +34,12 @@ export function textProperty<A>(
 /**
  * Print a property from the context as an enum value (i.e. as it is)
  */
-export function enumProperty<A>(
-  propertyName: ConditionalKeys<NoInfer<A>, string | number | boolean | undefined | null>,
+export function enumProperty<A, P extends keyof A & string>(
+  propertyName: P,
   keyword?: string,
 ): Op<A> {
   return select(
-    e => e[propertyName] as string | number | boolean,
+    e => e[propertyName] as string,
     spaceBetween(
       print(keyword ?? propertyName as string),
       print(),
@@ -122,7 +122,7 @@ export const metadataProperty = <A extends { metadata?: Record<string, string> |
     ),
   )
 
-export const printTags = <A extends { tags?: readonly string[] | null }>(): Op<A> =>
+export const tagsProperty = <A extends { tags?: readonly string[] | null }>(): Op<A> =>
   property(
     'tags',
     print(v => v.map(t => `#${t}`).join(', ')),
