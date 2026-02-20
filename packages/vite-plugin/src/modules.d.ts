@@ -109,6 +109,11 @@ declare module 'likec4:puml' {
     pumlSource(this: void, viewId: string): string
   }>
 }
+declare module 'likec4:drawio' {
+  export function loadDrawioSources(projectId: string): Promise<{
+    drawioEditUrl(this: void, viewId: string): string
+  }>
+}
 
 // Per project
 

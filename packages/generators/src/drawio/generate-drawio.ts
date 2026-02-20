@@ -1351,3 +1351,16 @@ export function buildDrawioExportOptionsForViews(
     viewIds.map(viewId => [viewId, buildOptionsFromRoundtrip(viewId, roundtrip, overrides)]),
   )
 }
+
+/**
+ * Generate a draw.io editor URL that opens the given drawio XML pre-loaded.
+ * Uses the `#create=` fragment with compressed XML data.
+ *
+ * @param xml - A .drawio XML string (output of generateDrawio / generateDrawioMulti).
+ * @returns URL string like "https://app.diagrams.net/#create=..."
+ */
+export function generateDrawioEditUrl(xml: string): string {
+  const base64 = compressDrawioDiagramXml(xml)
+  const createObj = JSON.stringify({ type: 'xml', compressed: true, data: base64 })
+  return 'https://app.diagrams.net/#create=' + encodeURIComponent(createObj)
+}

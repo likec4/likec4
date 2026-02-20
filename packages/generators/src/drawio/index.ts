@@ -3,6 +3,7 @@ export {
   buildDrawioExportOptionsFromSource,
   type DrawioViewModelLike,
   generateDrawio,
+  generateDrawioEditUrl,
   generateDrawioMulti,
   type GenerateDrawioOptions,
 } from './generate-drawio'
