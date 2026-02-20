@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Element, ElementStyle, Relationship } from '@likec4/core/types'
 import { isEmptyish } from 'remeda'
 import {

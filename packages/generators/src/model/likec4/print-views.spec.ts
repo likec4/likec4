@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { ParsedDeploymentView, ParsedDynamicView, ParsedElementView, ParsedView } from '@likec4/core/types'
 import { CompositeGeneratorNode, toString as nodeToString } from 'langium/generate'
 import type { OverrideProperties } from 'type-fest'

@@ -410,6 +410,7 @@ describe('print', () => {
   it('should throw on non-primitive values', () => {
     viExpect(() =>
       materialize(
+        // @ts-ignore
         withctx({ obj: true }, print()),
       )
     ).toThrow('Value must be a string, number or boolean')

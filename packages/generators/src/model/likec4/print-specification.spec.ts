@@ -1,4 +1,4 @@
-import type { ElementSpecification, RelationshipSpecification, Tag, TagSpecification } from '@likec4/core/types'
+import type { ElementSpecification, Icon, RelationshipSpecification, Tag, TagSpecification } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { materialize } from './base'
 import { printSpecification } from './print-specification'
@@ -302,7 +302,7 @@ describe('printSpecification', () => {
       elements: {
         service: {
           style: {
-            icon: 'mdi:server',
+            icon: 'mdi:server' as Icon,
             iconColor: 'green',
             iconSize: 'xl',
             iconPosition: 'top',
