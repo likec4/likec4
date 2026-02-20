@@ -1,66 +1,67 @@
-import type { Element, Relationship } from '@likec4/core/types'
-import { CompositeGeneratorNode, NL } from 'langium/generate'
-import { printStyleBlock } from './print-style'
-import { type ElementTreeNode, buildTree, printModelRef, quoteMarkdownOrString, quoteString } from './utils'
+import type { Element, ElementStyle, Relationship } from '@likec4/core/types'
+import { isEmptyish } from 'remeda'
+import {
+  type AnyOp,
+  type Op,
+  body,
+  foreach,
+  inlineText,
+  lines,
+  operation,
+  print,
+  select,
+  separateNewLine,
+  spaceBetween,
+  text,
+  withctx,
+} from './base'
+import { styleProperties } from './print-style'
+import {
+  descriptionProperty,
+  enumProperty,
+  linksProperty,
+  notationProperty,
+  printTags,
+  summaryProperty,
+  technologyProperty,
+} from './properties'
 
-export function printModel(
-  out: CompositeGeneratorNode,
-  elements: Record<string, Element>,
-  relations: Record<string, Relationship>,
-): void {
-  out.append('model {', NL)
-  out.indent({
-    indentedChildren: indent => {
-      // Build element tree from flat map
-      const roots = buildTree(elements)
+// --- Tree building ---
 
-      // Print element tree
-      for (const root of roots) {
-        printElementNode(indent, root)
-      }
-
-      // Print all relations at root level
-      for (const rel of Object.values(relations)) {
-        printRelation(indent, rel)
-      }
-    },
-    indentation: 2,
-  })
-  out.append('}', NL)
+interface ElementTreeNode {
+  name: string
+  element: Element
+  children: ElementTreeNode[]
 }
 
-function printElementNode(
-  indent: CompositeGeneratorNode,
-  node: ElementTreeNode<Element>,
-): void {
-  const el = node.element
-  const hasChildren = node.children.length > 0
-  const hasProps = hasElementProps(el)
-  const needsBody = hasChildren || hasProps
+function buildTree(elements: Record<string, Element>): ElementTreeNode[] {
+  const nodeMap = new Map<string, ElementTreeNode>()
+  const roots: ElementTreeNode[] = []
+  const sorted = Object.entries(elements).sort(([a], [b]) => a.localeCompare(b))
 
-  indent.append(node.name, ' = ', el.kind)
+  for (const [id, element] of sorted) {
+    const parts = (id as string).split('.')
+    const name = parts[parts.length - 1]!
+    const node: ElementTreeNode = { name, element, children: [] }
+    nodeMap.set(id, node)
 
-  if (el.title) {
-    indent.append(' ', quoteString(el.title))
+    const parentId = parts.slice(0, -1).join('.')
+    const parent = parentId ? nodeMap.get(parentId) : undefined
+
+    if (parent) {
+      parent.children.push(node)
+    } else {
+      roots.push(node)
+    }
   }
 
-  if (!needsBody) {
-    indent.append(NL)
-    return
-  }
+  return roots
+}
 
-  indent.append(' {', NL)
-  indent.indent({
-    indentedChildren: inner => {
-      printElementProps(inner, el)
+// --- Predicates ---
 
-      for (const child of node.children) {
-        printElementNode(inner, child)
-      }
-    },
-    indentation: 2,
-  })
-  indent.append('}', NL)
+function hasStyleProps(style: ElementStyle): boolean {
+  return !isEmptyish(style)
 }
 
 function hasElementProps(el: Element): boolean {
@@ -71,94 +72,6 @@ function hasElementProps(el: Element): boolean {
     || (el.metadata && Object.keys(el.metadata).length > 0)
     || hasStyleProps(el.style)
   )
-}
-
-function hasStyleProps(style: Element['style']): boolean {
-  return !!(style.shape || style.color || style.icon || style.iconColor
-    || style.iconSize || style.iconPosition || style.border
-    || style.opacity != null || style.multiple
-    || style.size || style.padding || style.textSize)
-}
-
-function printElementProps(indent: CompositeGeneratorNode, el: Element): void {
-  if (el.description) {
-    indent.append('description ', quoteMarkdownOrString(el.description), NL)
-  }
-  if (el.summary) {
-    indent.append('summary ', quoteMarkdownOrString(el.summary), NL)
-  }
-  if (el.technology) {
-    indent.append('technology ', quoteString(el.technology), NL)
-  }
-  if (el.notation) {
-    indent.append('notation ', quoteString(el.notation), NL)
-  }
-  if (el.tags && el.tags.length > 0) {
-    indent.append('#', (el.tags as string[]).join(' #'), NL)
-  }
-  if (el.links && el.links.length > 0) {
-    for (const link of el.links) {
-      indent.append('link ', link.url)
-      if (link.title) indent.append(' ', quoteString(link.title))
-      indent.append(NL)
-    }
-  }
-  if (el.metadata) {
-    const entries = Object.entries(el.metadata)
-    if (entries.length > 0) {
-      indent.append('metadata {', NL)
-      indent.indent({
-        indentedChildren: metaIndent => {
-          for (const [key, value] of entries) {
-            if (Array.isArray(value)) {
-              metaIndent.append(key, ' [', value.map(v => quoteString(v)).join(', '), ']', NL)
-            } else {
-              metaIndent.append(key, ' ', quoteString(value as string), NL)
-            }
-          }
-        },
-        indentation: 2,
-      })
-      indent.append('}', NL)
-    }
-  }
-  if (hasStyleProps(el.style)) {
-    printStyleBlock(el.style, indent)
-  }
-}
-
-function printRelation(indent: CompositeGeneratorNode, rel: Relationship): void {
-  const source = printModelRef(rel.source)
-  const target = printModelRef(rel.target)
-
-  indent.append(source, ' ')
-
-  if (rel.kind) {
-    indent.append('-[', rel.kind as string, ']-> ')
-  } else {
-    indent.append('-> ')
-  }
-
-  indent.append(target)
-
-  if (rel.title) {
-    indent.append(' ', quoteString(rel.title))
-  }
-
-  const hasBody = hasRelationProps(rel)
-  if (!hasBody) {
-    indent.append(NL)
-    return
-  }
-
-  indent.append(' {', NL)
-  indent.indent({
-    indentedChildren: inner => {
-      printRelationProps(inner, rel)
-    },
-    indentation: 2,
-  })
-  indent.append('}', NL)
 }
 
 function hasRelationProps(rel: Relationship): boolean {
@@ -172,48 +85,136 @@ function hasRelationProps(rel: Relationship): boolean {
   )
 }
 
-function printRelationProps(indent: CompositeGeneratorNode, rel: Relationship): void {
-  if (rel.description) {
-    indent.append('description ', quoteMarkdownOrString(rel.description), NL)
-  }
-  if (rel.summary) {
-    indent.append('summary ', quoteMarkdownOrString(rel.summary), NL)
-  }
-  if (rel.technology) {
-    indent.append('technology ', quoteString(rel.technology), NL)
-  }
-  if (rel.tags && rel.tags.length > 0) {
-    indent.append('#', (rel.tags as string[]).join(' #'), NL)
-  }
-  if (rel.links && rel.links.length > 0) {
-    for (const link of rel.links) {
-      indent.append('link ', link.url)
-      if (link.title) indent.append(' ', quoteString(link.title))
-      indent.append(NL)
-    }
-  }
-  if (rel.metadata) {
-    const entries = Object.entries(rel.metadata)
-    if (entries.length > 0) {
-      indent.append('metadata {', NL)
-      indent.indent({
-        indentedChildren: metaIndent => {
-          for (const [key, value] of entries) {
-            if (Array.isArray(value)) {
-              metaIndent.append(key, ' [', value.map(v => quoteString(v)).join(', '), ']', NL)
-            } else {
-              metaIndent.append(key, ' ', quoteString(value as string), NL)
-            }
+// --- Metadata (handles string | string[]) ---
+
+function metadataBlock<A extends { metadata?: Record<string, unknown> | null }>(): Op<A> {
+  return select(
+    (e: A) => {
+      const md = e.metadata
+      if (!md) return undefined
+      const entries = Object.entries(md)
+      return entries.length > 0 ? entries : undefined
+    },
+    body('metadata')(
+      foreach(
+        operation<[string, unknown]>(({ ctx: [key, value], out }) => {
+          out.append(key, ' ')
+          if (Array.isArray(value)) {
+            const items = value.map((v: string) => `'${String(v).replaceAll('\'', '\\\'')}'`)
+            out.append(`[${items.join(', ')}]`)
+          } else {
+            text(String(value))({ ctx: String(value), out })
           }
-        },
-        indentation: 2,
-      })
-      indent.append('}', NL)
-    }
+        }),
+        separateNewLine(),
+      ),
+    ),
+  )
+}
+
+// --- Style (only if has props) ---
+
+function elementStyleBlock(): Op<Element> {
+  return select(
+    (e: Element) => hasStyleProps(e.style) ? e.style : undefined,
+    body('style')(
+      styleProperties(),
+    ),
+  )
+}
+
+// --- Element ---
+
+function elementProperties(): Op<Element> {
+  return lines(
+    printTags(),
+    descriptionProperty(),
+    summaryProperty(),
+    technologyProperty(),
+    notationProperty(),
+    linksProperty(),
+    metadataBlock(),
+    elementStyleBlock(),
+  )
+}
+
+function nodeToOp(node: ElementTreeNode): AnyOp {
+  const el = node.element
+  const needsBody = node.children.length > 0 || hasElementProps(el)
+
+  const inline: AnyOp[] = [
+    print(node.name),
+    print('='),
+    print(String(el.kind)),
+  ]
+
+  if (el.title) {
+    inline.push(inlineText(el.title))
   }
-  if (rel.color) indent.append('color ', rel.color, NL)
-  if (rel.line) indent.append('line ', rel.line, NL)
-  if (rel.head) indent.append('head ', rel.head, NL)
-  if (rel.tail) indent.append('tail ', rel.tail, NL)
-  if (rel.navigateTo) indent.append('navigateTo ', rel.navigateTo as string, NL)
+
+  if (needsBody) {
+    inline.push(body(
+      withctx(el)(elementProperties()),
+      ...node.children.map(child => nodeToOp(child)),
+    ))
+  }
+
+  return spaceBetween(...inline)
+}
+
+// --- Relationship ---
+
+function relationProperties(): Op<Relationship> {
+  return lines(
+    descriptionProperty(),
+    summaryProperty(),
+    technologyProperty(),
+    printTags(),
+    linksProperty(),
+    metadataBlock(),
+    enumProperty('color'),
+    enumProperty('line'),
+    enumProperty('head'),
+    enumProperty('tail'),
+    enumProperty('navigateTo'),
+  )
+}
+
+function relToOp(rel: Relationship): AnyOp {
+  const source = String(rel.source.model)
+  const target = String(rel.target.model)
+  const arrow = rel.kind ? `-[${String(rel.kind)}]->` : '->'
+
+  const inline: AnyOp[] = [
+    print(source),
+    print(arrow),
+    print(target),
+  ]
+
+  if (rel.title) {
+    inline.push(inlineText(rel.title))
+  }
+
+  if (hasRelationProps(rel)) {
+    inline.push(body(
+      withctx(rel)(relationProperties()),
+    ))
+  }
+
+  return spaceBetween(...inline)
+}
+
+// --- Main ---
+
+export function printModel(
+  elements: Record<string, Element>,
+  relations: Record<string, Relationship>,
+): AnyOp {
+  const tree = buildTree(elements)
+  const rels = Object.values(relations)
+
+  return body('model')(
+    ...tree.map(node => nodeToOp(node)),
+    ...rels.map(rel => relToOp(rel)),
+  )
 }

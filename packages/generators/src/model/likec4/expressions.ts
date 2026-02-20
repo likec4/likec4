@@ -2,8 +2,6 @@ import { nonexhaustive } from '@likec4/core'
 import {
   type AndOperator,
   type KindEqual,
-  type ModelExpression,
-  type ModelRelationExpr,
   type NotOperator,
   type OrOperator,
   type ParticipantOperator,
@@ -16,18 +14,28 @@ import {
   isOrOperator,
   isParticipantOperator,
   isTagEqual,
+  ModelExpression,
   ModelFqnExpr,
+  ModelRelationExpr,
 } from '@likec4/core/types'
 import { joinToNode } from 'langium/generate'
 import { isString, map } from 'remeda'
-import type { Op, Output } from './base'
 import {
+  type Op,
+  type Output,
+  body,
   fresh,
+  indent,
   merge,
   operation,
   print,
+  property,
   select,
+  space,
+  withctx,
 } from './base'
+import { styleProperties } from './print-style'
+import { descriptionProperty, enumProperty, markdownProperty, notationProperty, titleProperty } from './properties'
 
 function appendSelector(out: Output, selector: PredicateSelector | undefined) {
   if (selector) {
@@ -36,7 +44,7 @@ function appendSelector(out: Output, selector: PredicateSelector | undefined) {
         out.append('.*')
         break
       case 'descendants':
-        out.append('.__')
+        out.append('.**')
         break
       case 'expanded':
         out.append('._')
@@ -184,49 +192,208 @@ export function whereOperator(): Op<WhereOperator<any>> {
 
 export function modelExpression(): Op<ModelExpression> {
   return operation(({ ctx, out }) => {
-    switch (true) {
-      case ModelFqnExpr.isWildcard(ctx): {
-        return out.append('*')
+    if (ModelExpression.isFqnExpr(ctx)) {
+      if (ModelFqnExpr.isCustom(ctx)) {
+        return modelCustomFqnExpr()({ ctx, out })
       }
-      case ModelFqnExpr.isElementKindExpr(ctx): {
-        return out.appendTemplate`element.kind = ${ctx.elementKind}`
-      }
-      case ModelFqnExpr.isElementTagExpr(ctx): {
-        return out.appendTemplate`element.tag = #${ctx.elementTag}`
-      }
-      case ModelFqnExpr.isCustom(ctx): {
-        return out.appendTemplate`element.custom = ${ctx.custom}`
-      }
+      return modelFqnExprOrWhere()({ ctx, out })
     }
-    throw new Error('Invalid model expression')
+    if (ModelExpression.isRelationExpr(ctx)) {
+      if (ModelRelationExpr.isCustom(ctx)) {
+        return modelCustomRelationExpr()({ ctx, out })
+      }
+      return modelRelationExprOrWhere()({ ctx, out })
+    }
+    nonexhaustive(ctx)
   })
 }
 
 export function modelFqnExpr(): Op<ModelFqnExpr> {
   return operation('modelFqnExpr', ({ ctx, out }) => {
-    switch (true) {
-      case ModelFqnExpr.isWildcard(ctx): {
-        return out.append('*')
-      }
-      case ModelFqnExpr.isElementKindExpr(ctx): {
-        return out.appendTemplate`element.kind = ${ctx.elementKind}`
-      }
-      case ModelFqnExpr.isElementTagExpr(ctx): {
-        return out.appendTemplate`element.tag = #${ctx.elementTag}`
-      }
-      case ModelFqnExpr.isModelRef(ctx): {
-        out.append(ctx.ref.model)
-        appendSelector(out, ctx.selector)
-        return out
-      }
-      default:
-        nonexhaustive(ctx)
+    if (ModelFqnExpr.isWildcard(ctx)) {
+      return out.append('*')
     }
+    if (ModelFqnExpr.isElementKindExpr(ctx)) {
+      return out.appendTemplate`element.kind = ${ctx.elementKind}`
+    }
+    if (ModelFqnExpr.isElementTagExpr(ctx)) {
+      return out.appendTemplate`element.tag = #${ctx.elementTag}`
+    }
+    if (ModelFqnExpr.isModelRef(ctx)) {
+      out.append(ctx.ref.model)
+      appendSelector(out, ctx.selector)
+      return out
+    }
+    nonexhaustive(ctx)
   })
+}
+
+export function modelCustomFqnExpr(): Op<ModelFqnExpr.Custom> {
+  return operation('modelCustomFqnExpr', ({ ctx: { custom }, out }) => {
+    const exprOp = withctx(custom.expr)(
+      modelFqnExprOrWhere(),
+    )
+    const customOp = withctx(custom)(
+      body('with')(
+        titleProperty(),
+        descriptionProperty(),
+        notationProperty(),
+        markdownProperty('notes'),
+        enumProperty('navigateTo'),
+        styleProperties(),
+      ),
+    )
+    if (ModelFqnExpr.isWhere(custom.expr)) {
+      return merge(
+        exprOp,
+        indent(
+          customOp,
+        ),
+      )({ ctx: custom, out })
+    }
+    return merge(
+      exprOp,
+      space(),
+      customOp,
+    )({ ctx: custom, out })
+  })
+}
+
+export function modelFqnExprOrWhere(): Op<ModelFqnExpr.OrWhere> {
+  return operation('modelFqnExprOrWhere', ({ ctx, out }) => {
+    if (ModelFqnExpr.isWhere(ctx)) {
+      return merge(
+        withctx(ctx.where.expr)(
+          modelFqnExpr(),
+        ),
+        indent(
+          print('where'),
+          indent(
+            withctx(ctx.where.condition)(
+              whereOperator(),
+            ),
+          ),
+        ),
+      )({ ctx, out })
+    }
+    return modelFqnExpr()({ ctx, out })
+  })
+}
+
+export function modelDirectRelationExpr(): Op<ModelRelationExpr.Direct> {
+  return merge(
+    property(
+      'source',
+      modelFqnExpr(),
+    ),
+    print(v => v.isBidirectional ? ' <-> ' : ' -> '),
+    property(
+      'target',
+      modelFqnExpr(),
+    ),
+  )
+}
+
+export function modelIncomingRelationExpr(): Op<ModelRelationExpr.Incoming> {
+  return merge(
+    print('-> '),
+    property(
+      'incoming',
+      modelFqnExpr(),
+    ),
+  )
+}
+
+export function modelOutgoingRelationExpr(): Op<ModelRelationExpr.Outgoing> {
+  return merge(
+    property(
+      'outgoing',
+      modelFqnExpr(),
+    ),
+    print(' ->'),
+  )
+}
+
+export function modelInOutRelationExpr(): Op<ModelRelationExpr.InOut> {
+  return merge(
+    print('-> '),
+    property(
+      'inout',
+      modelFqnExpr(),
+    ),
+    print(' ->'),
+  )
 }
 
 export function modelRelationExpr(): Op<ModelRelationExpr> {
   return operation('modelRelationExpr', ({ ctx, out }) => {
-    // TODO
+    if (ModelRelationExpr.isDirect(ctx)) {
+      return modelDirectRelationExpr()({ ctx, out })
+    }
+    if (ModelRelationExpr.isIncoming(ctx)) {
+      return modelIncomingRelationExpr()({ ctx, out })
+    }
+    if (ModelRelationExpr.isOutgoing(ctx)) {
+      return modelOutgoingRelationExpr()({ ctx, out })
+    }
+    if (ModelRelationExpr.isInOut(ctx)) {
+      return modelInOutRelationExpr()({ ctx, out })
+    }
+    nonexhaustive(ctx)
+  })
+}
+
+export function modelRelationExprOrWhere(): Op<ModelRelationExpr.OrWhere> {
+  return operation('modelRelationExprOrWhere', ({ ctx, out }) => {
+    if (ModelRelationExpr.isWhere(ctx)) {
+      return merge(
+        withctx(ctx.where.expr)(
+          modelRelationExpr(),
+        ),
+        indent(
+          print('where'),
+          indent(
+            withctx(ctx.where.condition)(
+              whereOperator(),
+            ),
+          ),
+        ),
+      )({ ctx, out })
+    }
+    return modelRelationExpr()({ ctx, out })
+  })
+}
+
+export function modelCustomRelationExpr(): Op<ModelRelationExpr.Custom> {
+  return operation('modelCustomRelationExpr', ({ ctx: { customRelation }, out }) => {
+    const exprOp = withctx(customRelation.expr)(
+      modelRelationExprOrWhere(),
+    )
+    const customOp = withctx(customRelation)(
+      body('with')(
+        titleProperty(),
+        descriptionProperty(),
+        notationProperty(),
+        markdownProperty('notes'),
+        enumProperty('navigateTo'),
+        styleProperties(),
+        enumProperty('head'),
+        enumProperty('tail'),
+        enumProperty('line'),
+      ),
+    )
+    if (ModelRelationExpr.isWhere(customRelation.expr)) {
+      return merge(
+        exprOp,
+        indent(
+          customOp,
+        ),
+      )({ ctx: customRelation, out })
+    }
+    return merge(
+      exprOp,
+      space(),
+      customOp,
+    )({ ctx: customRelation, out })
   })
 }
