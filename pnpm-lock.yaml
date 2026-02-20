@@ -81,6 +81,9 @@ catalogs:
     '@types/node':
       specifier: ~22.19.10
       version: 22.19.11
+    '@types/pako':
+      specifier: ^2.0.3
+      version: 2.0.4
     '@typescript/native-preview':
       specifier: 7.0.0-dev.20260208.1
       version: 7.0.0-dev.20260208.1
@@ -102,9 +105,6 @@ catalogs:
     pako:
       specifier: ^2.1.0
       version: 2.1.0
-    '@types/pako':
-      specifier: ^2.0.3
-      version: 2.0.4
     playwright:
       specifier: 1.56.1
       version: 1.56.1
@@ -173,7 +173,7 @@ catalogs:
       version: 0.7.6
     hono:
       specifier: ^4.11.9
-      version: 4.11.9
+      version: 4.11.10
     hono-sessions:
       specifier: ^0.8.0
       version: 0.8.0
@@ -627,10 +627,10 @@ importers:
         version: 16.1.1
       '@hono/oauth-providers':
         specifier: catalog:hono
-        version: 0.8.5(hono@4.11.9)
+        version: 0.8.5(hono@4.11.10)
       '@hono/zod-validator':
         specifier: catalog:hono
-        version: 0.7.6(hono@4.11.9)(zod@3.25.76)
+        version: 0.7.6(hono@4.11.10)(zod@3.25.76)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.21.0
@@ -726,7 +726,7 @@ importers:
         version: 6.0.0
       hono:
         specifier: catalog:hono
-        version: 4.11.9
+        version: 4.11.10
       hono-sessions:
         specifier: catalog:hono
         version: 0.8.0
@@ -1325,10 +1325,10 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.2.3(@modelcontextprotocol/sdk@1.26.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.11.9))(hono@4.11.9)(zod@3.25.76)
+        version: 0.2.3(@modelcontextprotocol/sdk@1.26.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.11.10))(hono@4.11.10)(zod@3.25.76)
       '@hono/node-server':
         specifier: catalog:hono
-        version: 1.19.9(hono@4.11.9)
+        version: 1.19.9(hono@4.11.10)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.21.0
@@ -1358,7 +1358,7 @@ importers:
         version: 6.4.0(picomatch@4.0.3)
       hono:
         specifier: catalog:hono
-        version: 4.11.9
+        version: 4.11.10
       immer:
         specifier: catalog:utils
         version: 11.1.3
@@ -4616,8 +4616,8 @@ packages:
     peerDependencies:
       react: 19.2.4
 
-  '@tabler/icons@3.36.1':
-    resolution: {integrity: sha512-f4Jg3Fof/Vru5ioix/UO4GX+sdDsF9wQo47FbtvG+utIYYVQ/QVAC0QYgcBbAjQGfbdOh2CCf0BgiFOF9Ixtjw==}
+  '@tabler/icons@3.37.1':
+    resolution: {integrity: sha512-neLCWkuyNHEPXCyYu6nbN4S3g/59BTa4qyITAugYVpq1YzYNDOZooW7/vRWH98ZItXAudxdKU8muFT7y1PqzuA==}
 
   '@tailwindcss/node@4.1.18':
     resolution: {integrity: sha512-DoR7U1P7iYhw16qJ49fgXUlry1t4CpXeErJHnQ44JgTSKMaZUdf17cfn5mHchfJ4KRBZRFA/Coo+MUF5+gOaCQ==}
@@ -5182,8 +5182,8 @@ packages:
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
 
-  acorn@8.15.0:
-    resolution: {integrity: sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==}
+  acorn@8.16.0:
+    resolution: {integrity: sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw==}
     engines: {node: '>=0.4.0'}
     hasBin: true
 
@@ -6508,8 +6508,8 @@ packages:
   hono-sessions@0.8.0:
     resolution: {integrity: sha512-44nDuxcGTlk1hKE+7vH8KnNleKYnr8p3i/vkT8640jU8V0F1Tm873F5NdfXpctZax3CtnQ4cUKyEF1axXdkZrw==}
 
-  hono@4.11.9:
-    resolution: {integrity: sha512-Eaw2YTGM6WOxA6CXbckaEvslr2Ne4NFsKrvc0v97JD5awbmeBLO5w9Ho9L9kmKonrwF9RJlW6BxT1PVv/agBHQ==}
+  hono@4.11.10:
+    resolution: {integrity: sha512-kyWP5PAiMooEvGrA9jcD3IXF7ATu8+o7B3KCbPXid5se52NPqnOpM/r9qeW2heMnOekF4kqR1fXJqCYeCLKrZg==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -9536,8 +9536,8 @@ snapshots:
   '@astrojs/mdx@4.2.5(astro@5.16.13(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))':
     dependencies:
       '@astrojs/markdown-remark': 6.3.1
-      '@mdx-js/mdx': 3.1.0(acorn@8.15.0)
-      acorn: 8.15.0
+      '@mdx-js/mdx': 3.1.0(acorn@8.16.0)
+      acorn: 8.16.0
       astro: 5.16.13(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)
       es-module-lexer: 1.7.0
       estree-util-visit: 2.0.0
@@ -11183,25 +11183,25 @@ snapshots:
 
   '@fontsource-variable/ibm-plex-sans@5.2.8': {}
 
-  '@hono/mcp@0.2.3(@modelcontextprotocol/sdk@1.26.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.11.9))(hono@4.11.9)(zod@3.25.76)':
+  '@hono/mcp@0.2.3(@modelcontextprotocol/sdk@1.26.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.11.10))(hono@4.11.10)(zod@3.25.76)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.26.0(zod@3.25.76)
-      hono: 4.11.9
-      hono-rate-limiter: 0.4.2(hono@4.11.9)
+      hono: 4.11.10
+      hono-rate-limiter: 0.4.2(hono@4.11.10)
       pkce-challenge: 5.0.1
       zod: 3.25.76
 
-  '@hono/node-server@1.19.9(hono@4.11.9)':
+  '@hono/node-server@1.19.9(hono@4.11.10)':
     dependencies:
-      hono: 4.11.9
+      hono: 4.11.10
 
-  '@hono/oauth-providers@0.8.5(hono@4.11.9)':
+  '@hono/oauth-providers@0.8.5(hono@4.11.10)':
     dependencies:
-      hono: 4.11.9
+      hono: 4.11.10
 
-  '@hono/zod-validator@0.7.6(hono@4.11.9)(zod@3.25.76)':
+  '@hono/zod-validator@0.7.6(hono@4.11.10)(zod@3.25.76)':
     dependencies:
-      hono: 4.11.9
+      hono: 4.11.10
       zod: 3.25.76
 
   '@hpcc-js/wasm-graphviz@1.21.0': {}
@@ -11416,7 +11416,7 @@ snapshots:
       globby: 11.1.0
       read-yaml-file: 1.1.0
 
-  '@mdx-js/mdx@3.1.0(acorn@8.15.0)':
+  '@mdx-js/mdx@3.1.0(acorn@8.16.0)':
     dependencies:
       '@types/estree': 1.0.8
       '@types/estree-jsx': 1.0.5
@@ -11430,7 +11430,7 @@ snapshots:
       hast-util-to-jsx-runtime: 2.3.5
       markdown-extensions: 2.0.0
       recma-build-jsx: 1.0.0
-      recma-jsx: 1.0.0(acorn@8.15.0)
+      recma-jsx: 1.0.0(acorn@8.16.0)
       recma-stringify: 1.0.0
       rehype-recma: 1.0.0
       remark-mdx: 3.1.0
@@ -11548,7 +11548,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.26.0(zod@3.25.76)':
     dependencies:
-      '@hono/node-server': 1.19.9(hono@4.11.9)
+      '@hono/node-server': 1.19.9(hono@4.11.10)
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
       content-type: 1.0.5
@@ -11558,7 +11558,7 @@ snapshots:
       eventsource-parser: 3.0.6
       express: 5.2.1
       express-rate-limit: 8.2.1(express@5.2.1)
-      hono: 4.11.9
+      hono: 4.11.10
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -11570,7 +11570,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.26.0(zod@4.3.6)':
     dependencies:
-      '@hono/node-server': 1.19.9(hono@4.11.9)
+      '@hono/node-server': 1.19.9(hono@4.11.10)
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
       content-type: 1.0.5
@@ -11580,7 +11580,7 @@ snapshots:
       eventsource-parser: 3.0.6
       express: 5.2.1
       express-rate-limit: 8.2.1(express@5.2.1)
-      hono: 4.11.9
+      hono: 4.11.10
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -12210,10 +12210,10 @@ snapshots:
 
   '@tabler/icons-react@3.36.1(react@19.2.4)':
     dependencies:
-      '@tabler/icons': 3.36.1
+      '@tabler/icons': 3.37.1
       react: 19.2.4
 
-  '@tabler/icons@3.36.1': {}
+  '@tabler/icons@3.37.1': {}
 
   '@tailwindcss/node@4.1.18':
     dependencies:
@@ -12867,11 +12867,11 @@ snapshots:
       mime-types: 3.0.2
       negotiator: 1.0.0
 
-  acorn-jsx@5.3.2(acorn@8.15.0):
+  acorn-jsx@5.3.2(acorn@8.16.0):
     dependencies:
-      acorn: 8.15.0
+      acorn: 8.16.0
 
-  acorn@8.15.0: {}
+  acorn@8.16.0: {}
 
   ajv-draft-04@1.0.0(ajv@8.13.0):
     optionalDependencies:
@@ -13002,7 +13002,7 @@ snapshots:
       '@capsizecss/unpack': 4.0.0
       '@oslojs/encoding': 1.1.0
       '@rollup/pluginutils': 5.3.0(rollup@4.57.1)
-      acorn: 8.15.0
+      acorn: 8.16.0
       aria-query: 5.3.2
       axobject-query: 4.1.0
       boxen: 8.0.1
@@ -13856,7 +13856,7 @@ snapshots:
   esast-util-from-js@2.0.1:
     dependencies:
       '@types/estree-jsx': 1.0.5
-      acorn: 8.15.0
+      acorn: 8.16.0
       esast-util-from-estree: 2.0.0
       vfile-message: 4.0.2
 
@@ -14507,17 +14507,17 @@ snapshots:
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
 
-  hono-rate-limiter@0.4.2(hono@4.11.9):
+  hono-rate-limiter@0.4.2(hono@4.11.10):
     dependencies:
-      hono: 4.11.9
+      hono: 4.11.10
 
   hono-sessions@0.8.0:
     dependencies:
-      hono: 4.11.9
+      hono: 4.11.10
       iron-webcrypto: 1.2.1
       ohash: 2.0.11
 
-  hono@4.11.9: {}
+  hono@4.11.10: {}
 
   hookable@5.5.3: {}
 
@@ -15225,8 +15225,8 @@ snapshots:
 
   micromark-extension-mdxjs@3.0.0:
     dependencies:
-      acorn: 8.15.0
-      acorn-jsx: 5.3.2(acorn@8.15.0)
+      acorn: 8.16.0
+      acorn-jsx: 5.3.2(acorn@8.16.0)
       micromark-extension-mdx-expression: 3.0.0
       micromark-extension-mdx-jsx: 3.0.1
       micromark-extension-mdx-md: 2.0.0
@@ -15431,7 +15431,7 @@ snapshots:
 
   mlly@1.7.4:
     dependencies:
-      acorn: 8.15.0
+      acorn: 8.16.0
       pathe: 2.0.3
       pkg-types: 1.3.1
       ufo: 1.6.3
@@ -16197,9 +16197,9 @@ snapshots:
       estree-util-build-jsx: 3.0.1
       vfile: 6.0.3
 
-  recma-jsx@1.0.0(acorn@8.15.0):
+  recma-jsx@1.0.0(acorn@8.16.0):
     dependencies:
-      acorn-jsx: 5.3.2(acorn@8.15.0)
+      acorn-jsx: 5.3.2(acorn@8.16.0)
       estree-util-to-js: 2.0.0
       recma-parse: 1.0.0
       recma-stringify: 1.0.0
@@ -16912,7 +16912,7 @@ snapshots:
   terser@5.39.2:
     dependencies:
       '@jridgewell/source-map': 0.3.11
-      acorn: 8.15.0
+      acorn: 8.16.0
       commander: 2.20.3
       source-map-support: 0.5.21
     optional: true
@@ -17162,12 +17162,12 @@ snapshots:
 
   unplugin@1.16.1:
     dependencies:
-      acorn: 8.15.0
+      acorn: 8.16.0
       webpack-virtual-modules: 0.6.2
 
   unplugin@2.2.0:
     dependencies:
-      acorn: 8.15.0
+      acorn: 8.16.0
       webpack-virtual-modules: 0.6.2
 
   unrun@0.2.27:
