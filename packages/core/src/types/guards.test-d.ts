@@ -16,6 +16,10 @@ test('hasProp', () => {
   if (hasProp(obj, 'b')) {
     expectTypeOf(obj.b).toEqualTypeOf<number>()
   }
+
+  if (hasProp('b')(obj)) {
+    expectTypeOf(obj.b).toEqualTypeOf<number>()
+  }
 })
 
 test('isAnyOf', () => {

@@ -13,8 +13,18 @@ export function hasProp<T extends object, P extends keyof T & string>(
   value: T,
   path: P,
   // @ts-expect-error could be instantiated with an arbitrary type
-): value is SetRequired<SetNonNullable<T, P>, P> {
-  return value[path] != null
+): value is SetRequired<SetNonNullable<T, P>, P>
+export function hasProp<const P extends string>(
+  path: P,
+): // @ts-expect-error could be instantiated with an arbitrary type
+<T>(value: T) => value is SetRequired<SetNonNullable<T, P>, P>
+export function hasProp(...args: any[]) {
+  if (args.length === 1) {
+    const path = args[0] as string
+    return (value: unknown) => value != null && typeof value === 'object' && path in value
+  }
+  const [value, path] = args
+  return value != null && typeof value === 'object' && path in value
 }
 
 export type Guard<N = unknown> = (n: unknown) => n is N
