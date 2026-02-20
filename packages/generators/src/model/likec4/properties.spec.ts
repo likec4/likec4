@@ -41,6 +41,37 @@ describe('properties', () => {
     `)
   })
 
+  it('should print metadata with array values', () => {
+    const expect = expectOnCtx({
+      metadata: {
+        key1: ['value1', 'value2'],
+        key2: ['multiline 1\nmultiline 2', 'multiline 3\nmultiline 4'],
+        key3: 'value3',
+      },
+    })
+    expect(
+      metadataProperty(),
+    ).toMatchInlineSnapshot(`
+      "metadata {
+        key1 [
+          'value1',
+          'value2'
+        ]
+        key2 [
+          ''
+            multiline 1
+            multiline 2
+          '',
+          ''
+            multiline 3
+            multiline 4
+          ''
+        ]
+        key3 'value3'
+      }"
+    `)
+  })
+
   it('should print links', () => {
     const expect = expectOnCtx({
       links: [

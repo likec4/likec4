@@ -1,11 +1,13 @@
-import type { Link, MarkdownOrString } from '@likec4/core/types'
-import { entries } from 'remeda'
+import type { Color, ElementStyle, Icon, Link, MarkdownOrString } from '@likec4/core/types'
+import { entries, isArray, isString, piped } from 'remeda'
 import type { ConditionalKeys } from 'type-fest'
 import type { Op } from './base'
 import {
   body,
   foreach,
+  guard,
   inlineText,
+  lines,
   markdownOrString,
   print,
   property,
@@ -108,14 +110,37 @@ export const notationProperty = <A extends { notation?: string | null }>(): Op<A
     ),
   )
 
-export const metadataProperty = <A extends { metadata?: Record<string, string> | null }>(): Op<A> =>
+function metadataValue(): Op<string | string[]> {
+  return piped(
+    guard(
+      isString,
+      text(),
+    ),
+    guard(
+      isArray,
+      body('[', ']')(
+        foreach(
+          text(),
+          {
+            appendNewLineIfNotEmpty: true,
+            suffix(element, index, isLast) {
+              return !isLast ? ',' : undefined
+            },
+          },
+        ),
+      ),
+    ),
+  )
+}
+
+export const metadataProperty = <A extends { metadata?: Record<string, string | string[]> | null }>(): Op<A> =>
   select(
     e => e.metadata ? entries(e.metadata) : undefined,
     body('metadata')(
       foreach(
         spaceBetween(
           print(v => v[0]),
-          text(v => v[1]),
+          property('1', metadataValue()),
         ),
         separateNewLine(),
       ),
@@ -140,3 +165,55 @@ export const linksProperty = <A extends { links?: readonly Link[] | null }>(): O
       separateNewLine(),
     ),
   )
+
+export function styleProperty<A extends { style?: ElementStyle }>(): Op<A> {
+  return select(
+    e => e.style,
+    body('style')(
+      styleProperties(),
+    ),
+  )
+}
+
+export function colorProperty<A extends { color?: Color }>(): Op<A> {
+  return property(
+    'color',
+    spaceBetween(
+      print('color'),
+      print(),
+    ),
+  )
+}
+
+export function iconProperty<A extends { icon?: Icon }>(): Op<A> {
+  return property(
+    'icon',
+    spaceBetween(
+      print('icon'),
+      print(),
+    ),
+  )
+}
+
+export function styleProperties<A extends ElementStyle>(): Op<A> {
+  return lines(
+    enumProperty('shape'),
+    colorProperty(),
+    iconProperty(),
+    enumProperty('iconColor'),
+    enumProperty('iconSize'),
+    enumProperty('iconPosition'),
+    enumProperty('border'),
+    property(
+      'opacity',
+      spaceBetween(
+        print('opacity'),
+        print(v => `${v}%`),
+      ),
+    ),
+    enumProperty('size'),
+    enumProperty('padding'),
+    enumProperty('textSize'),
+    enumProperty('multiple'),
+  )
+}

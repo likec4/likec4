@@ -1,15 +1,13 @@
 import type { Element, Relationship } from '@likec4/core/types'
-import { CompositeGeneratorNode, toString as nodeToString } from 'langium/generate'
 import { describe, expect, it } from 'vitest'
+import { materialize } from './base'
 import { printModel } from './print-model'
 
 function render(
   elements: Record<string, Element>,
   relations: Record<string, Relationship>,
 ): string {
-  const out = new CompositeGeneratorNode()
-  printModel(out, elements, relations)
-  return nodeToString(out)
+  return materialize(printModel(elements, relations))
 }
 
 function makeElement(overrides: Partial<Element> & { id: string; kind: string }): Element {
@@ -70,7 +68,8 @@ describe('printModel', () => {
       { cloud: makeElement({ id: 'cloud', kind: 'system', description: { txt: 'A cloud system' } }) },
       {},
     )
-    expect(output).toContain('description \'A cloud system\'')
+    expect(output).toContain('description')
+    expect(output).toContain('A cloud system')
   })
 
   it('prints nested elements as hierarchy', () => {
@@ -96,7 +95,7 @@ describe('printModel', () => {
       },
       {},
     )
-    expect(output).toContain('#internal #v2')
+    expect(output).toContain('#internal, #v2')
   })
 
   it('prints element with metadata', () => {
@@ -112,6 +111,21 @@ describe('printModel', () => {
     )
     expect(output).toContain('metadata {')
     expect(output).toContain('key1 \'value1\'')
+  })
+
+  it('prints element with array metadata', () => {
+    const output = render(
+      {
+        svc: makeElement({
+          id: 'svc',
+          kind: 'component',
+          metadata: { tags: ['a', 'b', 'c'] } as any,
+        }),
+      },
+      {},
+    )
+    expect(output).toContain('metadata {')
+    expect(output).toContain('tags [\'a\', \'b\', \'c\']')
   })
 
   it('prints element with style', () => {

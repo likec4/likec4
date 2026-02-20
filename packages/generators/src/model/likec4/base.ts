@@ -164,7 +164,11 @@ export const keyword = (value: string): AnyOp => print(value)
 
 export const space = (): AnyOp => print(' ')
 
-export const newline = <A>(when?: 'ifNotEmpty'): Op<A> =>
+export function noop<A>(input: A): A {
+  return input
+}
+
+export const newline = (when?: 'ifNotEmpty'): AnyOp =>
   operation(({ out }) => {
     if (when === 'ifNotEmpty') {
       out.appendNewLineIfNotEmpty()
@@ -234,6 +238,10 @@ export function indent(...args: AnyOp[] | [string]) {
  * Indent the given operations and wrap them in '{ ... }'
  */
 export function body(keyword: string): <A>(...ops: Ops<A>) => Op<A>
+/**
+ * Indent the given operations and wrap them with the provided open and close strings
+ */
+export function body(open: string, close: string): <A>(...ops: Ops<A>) => Op<A>
 export function body<A>(...ops: Ops<A>): Op<A>
 export function body(...args: unknown[]) {
   const keyword = only(args)
@@ -243,6 +251,15 @@ export function body(...args: unknown[]) {
         print(keyword + ' {'),
         indent(lines(...ops)),
         print('}'),
+      )
+  }
+  if (args.length === 2 && isString(args[0]) && isString(args[1])) {
+    const [open, close] = args as [string, string]
+    return (...ops: Ops<any>) =>
+      merge(
+        print(open),
+        indent(lines(...ops)),
+        print(close),
       )
   }
   const ops = args as Ops<any>

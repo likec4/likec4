@@ -1,14 +1,26 @@
 import type { ThemeColorValues } from '@likec4/core/styles'
 import type { ElementSpecification, RelationshipSpecification, TagSpecification } from '@likec4/core/types'
 import { entries } from 'remeda'
-import { type Op, body, foreach, lines, print, property, select, separateNewLine, spaceBetween, withctx } from './base'
-import { styleProperty } from './print-style'
+import {
+  type AnyOp,
+  type Op,
+  body,
+  foreachNewLine,
+  lines,
+  print,
+  property,
+  select,
+  spaceBetween,
+  withctx,
+} from './base'
+import { colorProperty, styleProperty } from './print-style'
 import {
   descriptionProperty,
+  enumProperty,
   linksProperty,
   notationProperty,
-  printTags,
   summaryProperty,
+  tagsProperty,
   technologyProperty,
   titleProperty,
 } from './properties'
@@ -18,28 +30,29 @@ interface SpecificationData {
   elements: Record<string, Partial<ElementSpecification>>
   deployments: Record<string, Partial<ElementSpecification>>
   relationships: Record<string, Partial<RelationshipSpecification>>
-  tags: Record<string, TagSpecification>
+  tags: Record<string, Partial<TagSpecification>>
 }
 
-export function printSpecification(data: SpecificationData) {
+export function printSpecification(data: SpecificationData): AnyOp {
   return body('specification')(
     withctx(data)(
       lines(2)(
         select(
           c => entries(c.elements),
-          foreach(
+          foreachNewLine(
             elementSpecification(),
-            separateNewLine(),
+          ),
+        ),
+        select(
+          c => entries(c.relationships),
+          foreachNewLine(
+            relationshipSpecification(),
           ),
         ),
         select(
           c => entries(c.tags),
-          foreach(
-            spaceBetween(
-              print('tag'),
-              property('0'),
-            ),
-            separateNewLine(),
+          foreachNewLine(
+            tagSpecification(),
           ),
         ),
       ),
@@ -47,14 +60,22 @@ export function printSpecification(data: SpecificationData) {
   )
 }
 
+export function tagSpecification(): Op<[string, Partial<TagSpecification>]> {
+  return spaceBetween(
+    print('tag'),
+    property('0', print()),
+    // property('1', body(printTags())),
+  )
+}
+
 export function elementSpecification(): Op<[string, Partial<ElementSpecification>]> {
   return spaceBetween(
     print('element'),
-    property('0', print()),
-    select(
-      c => c[1],
+    property('0'),
+    property(
+      '1',
       body(
-        printTags(),
+        tagsProperty(),
         titleProperty(),
         summaryProperty(),
         descriptionProperty(),
@@ -64,5 +85,26 @@ export function elementSpecification(): Op<[string, Partial<ElementSpecification
         styleProperty(),
       ),
     ),
+  )
+}
+
+export function relationshipSpecification(): Op<[string, Partial<RelationshipSpecification>]> {
+  return spaceBetween(
+    print('relationship'),
+    property('0'),
+    property(
+      '1',
+      body(
+        technologyProperty(),
+        notationProperty(),
+        body('style')(
+          colorProperty(),
+          enumProperty('line'),
+          enumProperty('head'),
+          enumProperty('tail'),
+        ),
+      ),
+    ),
+    // property('1', body(printTags())),
   )
 }
