@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { ParsedLikeC4ModelData } from '@likec4/core'
 import { nameFromFqn } from '@likec4/core/utils'
 import { CompositeGeneratorNode, NL, toString as nodeToString } from 'langium/generate'

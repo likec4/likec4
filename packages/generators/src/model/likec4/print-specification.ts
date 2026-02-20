@@ -13,12 +13,13 @@ import {
   spaceBetween,
   withctx,
 } from './base'
-import { colorProperty, styleProperty } from './print-style'
 import {
+  colorProperty,
   descriptionProperty,
   enumProperty,
   linksProperty,
   notationProperty,
+  styleProperty,
   summaryProperty,
   tagsProperty,
   technologyProperty,

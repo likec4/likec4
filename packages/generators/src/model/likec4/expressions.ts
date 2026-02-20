@@ -34,8 +34,14 @@ import {
   space,
   withctx,
 } from './base'
-import { styleProperties } from './print-style'
-import { descriptionProperty, enumProperty, markdownProperty, notationProperty, titleProperty } from './properties'
+import {
+  descriptionProperty,
+  enumProperty,
+  markdownProperty,
+  notationProperty,
+  styleProperties,
+  titleProperty,
+} from './properties'
 
 function appendSelector(out: Output, selector: PredicateSelector | undefined) {
   if (selector) {

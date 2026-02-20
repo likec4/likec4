@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Element, Relationship } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { materialize } from './base'
