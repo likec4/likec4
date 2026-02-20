@@ -33,11 +33,17 @@ The `likec4.config.json` file must have the **name** of the project.
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",  // required
-  "title": "Project Title" // optional
+  "title": "Project Title", // optional
+  "metadata": {             // optional
+    "owner": "platform-team",
+    "domain": "payments"
+  }
 }
 ```
 
 The name must be unique if you use [multiple projects](/dsl/config/multi-projects).
+
+Use `metadata` to store arbitrary project-level key-value data that can be consumed by tooling.
 
 :::note
 You can use these names for the config file:
