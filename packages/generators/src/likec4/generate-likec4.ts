@@ -5,13 +5,12 @@ import { CompositeGeneratorNode, NL, toString as nodeToString } from 'langium/ge
 import { printDeployment } from './likec4/print-deployment'
 import { printGlobals } from './likec4/print-globals'
 import { printModel } from './likec4/print-model'
-import { printSpecification } from './likec4/print-specification'
 import { printViews } from './likec4/print-views'
+import { printSpecification } from './likec4/specification'
 import { quoteString } from './likec4/utils'
 
 /**
  * Generates LikeC4 DSL source code from parsed model data.
- * Supports round-trip workflows: build model -> generate DSL -> parse -> verify.
  */
 export function generateLikeC4(model: ParsedLikeC4ModelData): string {
   const out = new CompositeGeneratorNode()

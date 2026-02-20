@@ -52,8 +52,12 @@ export interface Op<A> {
 export interface CtxOp<A> {
   (value: A): A
 }
+export type AnyOp = Op<any>
 
-export type AnyOp = <A>(ctx: Ctx<A>) => Ctx<A>
+/**
+ * Infer the context type from an operation
+ */
+export type InferOp = <A>(ctx: A) => A
 
 export type ctxOf<Op extends AnyOp> = Parameters<Op>[0]['ctx']
 
@@ -143,7 +147,7 @@ export function print<A extends string | number | boolean>(): Op<A>
  * Prints the given string to the output node
  */
 export function print<A>(format: (value: A) => string): Op<A>
-export function print(value: string | number | boolean): AnyOp
+export function print(value: string | number | boolean): InferOp
 export function print(value?: unknown) {
   return operation(({ ctx, out }) => {
     let v = typeof value === 'function' ? value(ctx) : (value ?? ctx)
@@ -158,24 +162,25 @@ export function print(value?: unknown) {
   })
 }
 
-export const eq = (): AnyOp => print('=')
+export const eq = (): InferOp => print('=')
 
-export const keyword = (value: string): AnyOp => print(value)
+export const keyword = (value: string): InferOp => print(value)
 
-export const space = (): AnyOp => print(' ')
+export const space = (): InferOp => print(' ')
 
 export function noop<A>(input: A): A {
   return input
 }
 
-export const newline = (when?: 'ifNotEmpty'): AnyOp =>
-  operation(({ out }) => {
+export function newline(when?: 'ifNotEmpty'): InferOp {
+  return operation(({ out }) => {
     if (when === 'ifNotEmpty') {
       out.appendNewLineIfNotEmpty()
     } else {
       out.appendNewLine()
     }
-  })
+  }) as any
+}
 
 /**
  * Merge multiple operations into a single output node
@@ -193,7 +198,7 @@ export function merge<A>(...ops: Ops<A>): Op<A> {
 /**
  * Indent given text
  */
-export function indent(value: string): AnyOp
+export function indent(value: string): InferOp
 /**
  * Indent the given operations
  */
@@ -312,7 +317,7 @@ function multilineText(value: string, quotes = DOUBLE_QUOTE): AnyOp {
 const DOUBLE_QUOTE = QUOTE.repeat(2)
 export function text<A extends string>(): Op<A>
 export function text<A>(format: (value: A) => string): Op<A>
-export function text(value: string): AnyOp
+export function text(value: string): InferOp
 export function text(value?: unknown) {
   return operation('text', ({ ctx, out }) => {
     let v = typeof value === 'function' ? value(ctx) : (value ?? ctx)
@@ -584,11 +589,28 @@ export function foreachNewLine<A extends Iterable<any>>(
   })
 }
 
+/**
+ * Guards context value with a condition and executes operations if the condition is true
+ */
 export function guard<A, N extends A>(
   condition: (ctx: A) => ctx is N,
   ...ops: Ops<N>
 ): Op<A> {
   return operation('guard', ({ ctx, out }) => {
+    if (condition(ctx)) {
+      executeOnCtx({ ctx, out }, ops)
+    }
+  })
+}
+
+/**
+ * Executes operations on the context if the condition is true
+ */
+export function when<A>(
+  condition: (ctx: A) => boolean,
+  ...ops: Ops<A>
+): Op<A> {
+  return operation('when', ({ ctx, out }) => {
     if (condition(ctx)) {
       executeOnCtx({ ctx, out }, ops)
     }

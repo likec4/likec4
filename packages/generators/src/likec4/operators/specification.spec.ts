@@ -1,7 +1,7 @@
 import type { ElementSpecification, Icon, RelationshipSpecification, Tag, TagSpecification } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { materialize } from './base'
-import { printSpecification } from './print-specification'
+import { printSpecification } from './specification'
 
 function render(spec: Parameters<typeof printSpecification>[0]): string {
   return materialize(printSpecification(spec))
