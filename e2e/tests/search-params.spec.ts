@@ -73,13 +73,14 @@ test.describe('?dynamic= search parameter', () => {
   })
 
   for (
-    const [label, dynamicValue] of [
-      ['diagram', 'diagram'],
-      ['invalid (timeline)', 'timeline'],
+    const [label, extra] of [
+      ['diagram', { dynamic: 'diagram' }],
+      ['absent', {}],
+      ['invalid (timeline)', { dynamic: 'timeline' }],
     ] as const
   ) {
     test(`?dynamic=${label} renders default diagram variant`, async ({ page }) => {
-      await gotoAndWaitForCanvas(page, exportUrl(DYNAMIC_VIEW, { dynamic: dynamicValue }))
+      await gotoAndWaitForCanvas(page, exportUrl(DYNAMIC_VIEW, extra))
       await expect(page.locator(SEQ_ACTOR_SELECTOR)).toHaveCount(0)
     })
   }
