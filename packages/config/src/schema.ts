@@ -100,6 +100,11 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
         'Defaults to true.',
       ].join('\n'),
     }),
+  implicitViews: z.boolean()
+    .optional()
+    .meta({
+      description: 'Auto-generate scoped views for elements without explicit views. Defaults to true.',
+    }),
 })
   .meta({
     id: 'LikeC4ProjectConfig',
