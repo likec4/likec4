@@ -355,11 +355,11 @@ type ElementShapeProps = {
   /**
    * @default true
    */
-  showSeletionOutline?: boolean | undefined
+  showSelectionOutline?: boolean | undefined
 }
 
 export function ElementShape(
-  { data, width, height, showSeletionOutline = true }: ElementShapeProps,
+  { data, width, height, showSelectionOutline = true }: ElementShapeProps,
 ) {
   let w = !!width && width > 10 ? width : data.width
   let h = !!height && height > 10 ? height : data.height
@@ -377,7 +377,7 @@ export function ElementShape(
         className={elementShapeRecipe({
           shapetype: 'html',
           withBorder,
-          withOutline: showSeletionOutline,
+          withOutline: showSelectionOutline,
         })}>
         {isMultiple && <div className={'likec4-shape-multiple'} />}
         <div className={'likec4-shape-outline'} />
@@ -387,7 +387,7 @@ export function ElementShape(
 
   const className = elementShapeRecipe({
     shapetype: 'svg',
-    withOutline: showSeletionOutline,
+    withOutline: showSelectionOutline,
   })
 
   return (

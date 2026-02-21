@@ -3,7 +3,7 @@ import type { Atom } from 'nanostores'
 import { createContext, useContext } from 'react'
 
 /**
- * To improve experience with HMR, we move context to separate files and use as a boundary for hoooks
+ * To improve experience with HMR, we move context to separate files and use as a boundary for hooks
  */
 const LikeC4ModelDataContext = createContext<Atom<LikeC4Model.Layouted>>(null as any)
 
@@ -18,7 +18,7 @@ export const useLikeC4ModelAtom = () => {
 }
 
 // /**
-//  * To improve experience with HMR, we move context to separate files and use as a boundary for hoooks
+//  * To improve experience with HMR, we move context to separate files and use as a boundary for hooks
 //  */
 // const LikeC4ModelDataContext = createContext<Atom<LayoutedLikeC4ModelData>>(null as any)
 
