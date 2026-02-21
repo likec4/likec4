@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 export * from './builtins'
 export * from './customNodes'
 export * from './hooks'
@@ -54,3 +61,5 @@ export { PortalToContainer } from '../components/PortalToContainer'
 export { ShadowRoot } from '../shadowroot/ShadowRoot'
 
 export { FramerMotionConfig } from '../context/FramerMotionConfig'
+
+export { NavigationPanel } from '../components/NavigationPanel'

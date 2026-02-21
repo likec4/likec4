@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Fqn } from '@likec4/core'
 import {
   LikeC4Diagram,
@@ -80,6 +87,7 @@ export function ViewReact() {
     >
       <ListenForDynamicVariantChange />
       <OpenRelationshipBrowserFromUrl />
+      <FocusElementFromUrl />
     </LikeC4Diagram>
   )
 }
@@ -139,6 +147,52 @@ export function OpenRelationshipBrowserFromUrl() {
   useUpdateEffect(() => {
     process()
   }, [relationships])
+
+  return null
+}
+
+/**
+ * Focuses on an element when `?focusOnElement={elementFqn}` URL parameter is present.
+ * Used when navigating from the overview search with an element target.
+ * Clears the parameter after focusing to prevent refocusing on navigation.
+ */
+export function FocusElementFromUrl() {
+  const router = useRouter()
+  const diagram = useDiagram()
+  const { focusOnElement } = useSearch({
+    from: '__root__',
+  })
+  const processedRef = useRef<Fqn | null>(null)
+
+  const focusAndClear = useCallbackRef((fqn: Fqn) => {
+    try {
+      if (processedRef.current === fqn) return
+      processedRef.current = fqn
+      diagram.focusOnElement(fqn)
+      void router.buildAndCommitLocation({
+        search: (s: Record<string, unknown>) => {
+          const { focusOnElement: _, ...rest } = s
+          return rest
+        },
+        replace: true,
+        viewTransition: false,
+      })
+    } catch (error) {
+      console.error('focusOnElement failed:', error)
+    }
+  })
+
+  useOnDiagramEvent('initialized', () => {
+    if (focusOnElement && processedRef.current !== focusOnElement) {
+      focusAndClear(focusOnElement)
+    }
+  })
+
+  useUpdateEffect(() => {
+    if (!focusOnElement) {
+      processedRef.current = null
+    }
+  }, [focusOnElement])
 
   return null
 }

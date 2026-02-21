@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 export { IconRendererProvider } from './context/IconRenderer'
 
 export {
@@ -96,3 +103,18 @@ export {
   LikeC4ProjectsOverview,
   type LikeC4ProjectsOverviewProps,
 } from './LikeC4ProjectsOverview'
+
+export {
+  normalizeSearch,
+  SearchContext,
+  type SearchContextValue,
+  useSearchContext,
+} from './search/SearchContext'
+
+export {
+  bodyCss as searchBodyCss,
+  dialogCss as searchDialogCss,
+  SearchPanelContent,
+} from './search/Search'
+
+export { SearchControl } from './components/SearchControl'
