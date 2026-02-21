@@ -11,7 +11,7 @@ catalog:
   '@dagrejs/dagre': 1.1.8
   '@types/node': ~22.19.11
   '@types/pako': ^2.0.4
-  '@typescript/native-preview': 7.0.0-dev.20260208.1
+  '@typescript/native-preview': 7.0.0-dev.20260218.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
