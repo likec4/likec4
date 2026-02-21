@@ -163,6 +163,22 @@ You can exclude files by adding an `exclude` array to the config file.
 If no exclude pattern is provided, LikeC4 uses `["**/node_modules/**"]` as default.  
 The exclude pattern is the same as the one used by [picomatch](https://github.com/micromatch/picomatch).  
 
+## Infer technology from icon
+
+By default, LikeC4 automatically derives a human-readable `technology` label from bundled icon names (`aws:`, `azure:`, `gcp:`, `tech:`) when technology is not explicitly set on the element or its kind.
+
+For example, an element with `icon tech:apache-flink` gets technology **"Apache Flink"**, and `icon aws:simple-storage-service` gets **"Simple Storage Service"**. `bootstrap:` icons are excluded.
+
+To disable this behavior:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "inferTechnologyFromIcon": false
+}
+```
+
 ## Image Aliases
 
 When using local images in your LikeC4 model, you can create aliases for the folder your images are in to make them more readable and the files more transportable.
