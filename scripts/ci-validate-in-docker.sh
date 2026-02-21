@@ -10,7 +10,7 @@ export HUSKY=0
 echo "==> Installing pnpm..."
 corepack enable
 # Version must match .tool-versions and package.json packageManager
-corepack prepare pnpm@10.29.3 --activate
+corepack prepare pnpm@10.30.1 --activate
 pnpm --version
 
 echo "==> Installing dependencies..."
