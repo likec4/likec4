@@ -82,7 +82,7 @@ catalogs:
       specifier: ~22.19.11
       version: 22.19.11
     '@types/pako':
-      specifier: ^2.0.3
+      specifier: ^2.0.4
       version: 2.0.4
     '@typescript/native-preview':
       specifier: 7.0.0-dev.20260208.1

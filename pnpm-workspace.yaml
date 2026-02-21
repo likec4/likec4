@@ -10,7 +10,7 @@ catalog:
   '@changesets/cli': ^2.29.8
   '@dagrejs/dagre': 1.1.8
   '@types/node': ~22.19.11
-  '@types/pako': ^2.0.3
+  '@types/pako': ^2.0.4
   '@typescript/native-preview': 7.0.0-dev.20260208.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
