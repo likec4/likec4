@@ -1,24 +1,36 @@
-import { nameFromFqn, parentFqn, sortParentsFirst } from '@likec4/core'
-import type { Element, Fqn, Relationship } from '@likec4/core/types'
-import { isEmptyish, pipe, values } from 'remeda'
+import type { Fqn } from '@likec4/core/types'
+import { nameFromFqn, parentFqn, sortParentsFirst } from '@likec4/core/utils'
+import { hasAtLeast, isEmptyish, pipe, piped, values } from 'remeda'
+import type {
+  ElementData,
+  LikeC4Data,
+  RelationshipData,
+} from '../types'
 import {
   type AnyOp,
   type Op,
   body,
+  foreach,
+  foreachNewLine,
   inlineText,
+  lazy,
   lines,
+  noop,
+  operation,
   print,
+  property,
+  select,
+  separateNewLine,
   spaceBetween,
   when,
   withctx,
 } from './base'
 import {
-  colorProperty,
   descriptionProperty,
   enumProperty,
   linksProperty,
   metadataProperty,
-  styleProperty,
+  styleProperties,
   summaryProperty,
   tagsProperty,
   technologyProperty,
@@ -28,25 +40,29 @@ import {
 
 interface ElementTreeNode {
   name: string
-  element: Element
+  element: ElementData
   children: ElementTreeNode[]
 }
 
-function buildTree(elements: Record<string, Element>): ElementTreeNode[] {
-  const nodeMap = new Map<Fqn, ElementTreeNode>()
+function buildTree(elements: ElementData[]): {
+  roots: readonly ElementTreeNode[]
+  nodes: ReadonlyMap<Fqn, ElementTreeNode>
+  exists: (fqn: Fqn) => boolean
+} {
+  const nodes = new Map<Fqn, ElementTreeNode>()
   const roots: ElementTreeNode[] = []
   const sorted = pipe(
-    values(elements),
+    elements,
     sortParentsFirst,
   )
 
   for (const element of sorted) {
     const name = nameFromFqn(element.id)
     const node: ElementTreeNode = { name, element, children: [] }
-    nodeMap.set(element.id, node)
+    nodes.set(element.id, node)
 
     const parentId = parentFqn(element.id)
-    const parent = parentId ? nodeMap.get(parentId) : undefined
+    const parent = parentId ? nodes.get(parentId) : undefined
 
     if (parent) {
       parent.children.push(node)
@@ -55,16 +71,20 @@ function buildTree(elements: Record<string, Element>): ElementTreeNode[] {
     }
   }
 
-  return roots
+  return {
+    roots,
+    nodes,
+    exists: (fqn: Fqn) => nodes.has(fqn),
+  }
 }
 
 // --- Predicates ---
 
-function hasStyleProps(el: Element): boolean {
+function hasStyleProps(el: ElementData): boolean {
   return !isEmptyish(el.style)
 }
 
-function hasElementProps(el: Element): boolean {
+function hasElementProps(el: ElementData): boolean {
   return !!(
     el.description || el.summary || el.technology || el.notation
     || (el.tags && el.tags.length > 0)
@@ -74,13 +94,68 @@ function hasElementProps(el: Element): boolean {
   )
 }
 
-function hasRelationStyle(rel: Relationship): boolean {
+// --- Element ---
+
+function elementProperties(): Op<ElementData> {
+  return lines<ElementData>(
+    tagsProperty(),
+    technologyProperty(),
+    summaryProperty(),
+    descriptionProperty(),
+    linksProperty(),
+    metadataProperty(),
+    select(
+      e => hasStyleProps(e) ? e.style : undefined,
+      body('style')(
+        styleProperties(),
+      ),
+    ),
+  )
+}
+
+export function printElement(node: ElementTreeNode): AnyOp {
+  return withctx(node, elementOp())
+}
+
+export function elementOp(): Op<ElementTreeNode> {
+  return operation(({ ctx: node, out }) => {
+    const el = node.element
+    const needsBody = node.children.length > 0 || hasElementProps(el)
+
+    const inline: AnyOp[] = [
+      print(node.name),
+      print('='),
+      print(el.kind),
+    ]
+
+    if (el.title && el.title !== node.name) {
+      inline.push(inlineText(el.title))
+    }
+
+    if (needsBody) {
+      inline.push(
+        body(
+          lines(2)(
+            withctx(el, elementProperties()),
+            ...node.children.map(child => printElement(child)),
+          ),
+        ),
+      )
+    }
+
+    return spaceBetween(...inline)({ ctx: node, out }).out
+  })
+}
+
+// --- Relationship ---
+
+function hasRelationStyle(rel: RelationshipData): boolean {
   return !!(
     rel.color || rel.line || rel.head || rel.tail
   )
 }
 
-function hasRelationProps(rel: Relationship): boolean {
+function hasRelationProps(rel: RelationshipData): boolean {
   return !!(
     rel.description || rel.summary || rel.technology
     || (rel.tags && rel.tags.length > 0)
@@ -91,75 +166,28 @@ function hasRelationProps(rel: Relationship): boolean {
   )
 }
 
-// --- Element ---
-
-function elementProperties(): Op<Element> {
-  return lines(
+function relationProperties(): Op<RelationshipData> {
+  return body(
     tagsProperty(),
     technologyProperty(),
     summaryProperty(),
     descriptionProperty(),
-    linksProperty(),
-    metadataProperty(),
-    when(
-      hasStyleProps,
-      styleProperty(),
-    ),
-  )
-}
-
-function elementOp(node: ElementTreeNode): AnyOp {
-  const el = node.element
-  const needsBody = node.children.length > 0 || hasElementProps(el)
-
-  const inline: AnyOp[] = [
-    print(node.name),
-    print('='),
-    print(el.kind),
-  ]
-
-  if (el.title && el.title !== node.name) {
-    inline.push(inlineText(el.title))
-  }
-
-  if (needsBody) {
-    inline.push(
-      body(
-        lines(2)(
-          withctx(el, elementProperties()),
-          ...node.children.map(elementOp),
-        ),
-      ),
-    )
-  }
-
-  return spaceBetween(...inline)
-}
-
-// --- Relationship ---
-
-function relationProperties(): Op<Relationship> {
-  return lines(
-    tagsProperty(),
-    technologyProperty(),
-    summaryProperty(),
-    descriptionProperty(),
-    linksProperty(),
-    metadataProperty(),
     enumProperty('navigateTo'),
+    linksProperty(),
+    metadataProperty(),
     when(
       hasRelationStyle,
       body('style')(
-        colorProperty(),
-        enumProperty('line'),
+        enumProperty('color'),
         enumProperty('head'),
         enumProperty('tail'),
+        enumProperty('line'),
       ),
     ),
   )
 }
 
-function relationshipOp(rel: Relationship): AnyOp {
+export function printRelationship(rel: RelationshipData): AnyOp {
   const arrow = rel.kind ? `-[${rel.kind}]->` : '->'
 
   const inline: AnyOp[] = [
@@ -173,28 +201,84 @@ function relationshipOp(rel: Relationship): AnyOp {
   }
 
   if (hasRelationProps(rel)) {
-    inline.push(body(
-      withctx(rel)(relationProperties()),
-    ))
+    inline.push(
+      withctx(rel, relationProperties()),
+    )
   }
 
   return spaceBetween(...inline)
 }
 
-// --- Main ---
-export type PrintModelCtx = {
-  elements: Record<string, Element>
-  relations: Record<string, Relationship>
-}
-
-export function printModel(ctx: PrintModelCtx): AnyOp {
-  const tree = buildTree(ctx.elements)
-  const rels = Object.values(ctx.relations)
-
-  return body('model')(
-    lines(2)(
-      ...tree.map(node => elementOp(node)),
-      ...rels.map(rel => relationshipOp(rel)),
+export function relationshipOp(): Op<RelationshipData> {
+  return spaceBetween(
+    print(rel => rel.source.model),
+    print(rel => rel.kind ? `-[${rel.kind}]->` : '->'),
+    print(rel => rel.target.model),
+    property(
+      'title',
+      inlineText(),
+    ),
+    when(
+      hasRelationProps,
+      relationProperties(),
     ),
   )
+}
+
+// --- Main ---
+
+export function modelOp<A extends Pick<LikeC4Data, 'elements' | 'relations'>>(): Op<A> {
+  return body('model')(
+    lines(2)(
+      select(
+        d => buildTree(d.elements ? values(d.elements) : []).roots,
+        lines(2)(
+          foreach(
+            elementOp(),
+          ),
+        ),
+      ),
+      select(
+        d => d.relations ? values(d.relations) : [],
+        lines(2)(
+          foreach(
+            relationshipOp(),
+          ),
+        ),
+      ),
+    ),
+  )
+}
+
+export function printModel({ elements, relations }: Pick<LikeC4Data, 'elements' | 'relations'>): AnyOp {
+  if (isEmptyish(elements) && isEmptyish(relations)) {
+    return noop()
+  }
+
+  return withctx({ elements, relations }, modelOp())
+  // const ops: AnyOp[] = []
+
+  // const tree = buildTree(elements ? values(elements) : [])
+  // if (hasAtLeast(tree.roots, 1)) {
+  //   ops.push(
+  //     ...tree.roots.map(elementOp),
+  //   )
+  // }
+
+  // const rels = relations ? values(relations) : []
+  // if (hasAtLeast(rels, 1)) {
+  //   ops.push(
+  //     ...rels.map(relationshipOp),
+  //   )
+  // }
+
+  // if (hasAtLeast(ops, 1)) {
+  //   return body('model')(
+  //     lines(2)(
+  //       ...ops,
+  //     ),
+  //   )
+  // }
+
+  // return noop
 }

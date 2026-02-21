@@ -1,4 +1,4 @@
-import type { SetNonNullable, SetRequired } from 'type-fest'
+import type { IsAny, IsUnknown, Or, SetNonNullable, SetRequired } from 'type-fest'
 import type { NonEmptyArray } from '../types'
 
 export function isString(value: unknown): value is string {
@@ -27,7 +27,7 @@ export function hasProp(...args: any[]) {
   return value != null && typeof value === 'object' && path in value
 }
 
-export type Guard<N = unknown> = (n: unknown) => n is N
+export type Guard<To = unknown> = (value: any) => value is To
 
 /**
  * Extracts the guarded type from a Guard type.
@@ -41,8 +41,21 @@ export type Guard<N = unknown> = (n: unknown) => n is N
  * GuardedBy<typeof isString>; // string
  * ```
  */
-export type GuardedBy<G> = G extends Guard<infer N> ? N : never
+export type GuardedBy<G> =
+  // dprint-ignore
+  G extends Guard<infer To>
+    ? Or<IsAny<To>,IsUnknown<To>> extends true
+      ? never
+      : To
+    : never
 
+type NarrowTo<T, Base> =
+  // dprint-ignore
+  Extract<T, Base> extends never
+    ? Base
+    : IsAny<T> extends true
+      ? Base
+      : Extract<T, Base>
 /**
  * Creates a type guard that checks if a value matches any of the provided predicates.
  *
@@ -60,9 +73,9 @@ export type GuardedBy<G> = G extends Guard<infer N> ? N : never
  * }
  * ```
  */
-export function isAnyOf<const Predicates extends NonEmptyArray<Guard>>(
+export function isAnyOf<const Predicates extends NonEmptyArray<Guard<any>>>(
   ...predicates: Predicates
-): <T>(value: T) => value is T & GuardedBy<Predicates[number]> {
+): <T>(value: T | GuardedBy<Predicates[number]>) => value is NarrowTo<T, GuardedBy<Predicates[number]>> {
   return ((value: any) => {
     return predicates.some(predicate => predicate(value))
   }) as any

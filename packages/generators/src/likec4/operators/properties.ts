@@ -1,10 +1,13 @@
 import type { Color, ElementStyle, Icon, Link, MarkdownOrString } from '@likec4/core/types'
 import { entries, isArray, isString, piped } from 'remeda'
 import type { ConditionalKeys } from 'type-fest'
+import type z from 'zod/v4'
+import type { StylePropertiesSchema } from '../types'
 import type { Op } from './base'
 import {
   body,
   foreach,
+  foreachNewLine,
   guard,
   inlineText,
   lines,
@@ -133,7 +136,9 @@ function metadataValue(): Op<string | string[]> {
   )
 }
 
-export const metadataProperty = <A extends { metadata?: Record<string, string | string[]> | null }>(): Op<A> =>
+export const metadataProperty = <A extends { metadata?: Record<string, string | string[]> | null }>(): Op<
+  A
+> =>
   select(
     e => e.metadata ? entries(e.metadata) : undefined,
     body('metadata')(
@@ -147,26 +152,30 @@ export const metadataProperty = <A extends { metadata?: Record<string, string | 
     ),
   )
 
-export const tagsProperty = <A extends { tags?: readonly string[] | null }>(): Op<A> =>
+export const tagsProperty = <A extends { tags?: readonly string[] | undefined | null }>(): Op<A> =>
   property(
     'tags',
     print(v => v.map(t => `#${t}`).join(', ')),
   )
 
-export const linksProperty = <A extends { links?: readonly Link[] | null }>(): Op<A> =>
+export const linksProperty = <
+  A extends { links?: ReadonlyArray<string | { url: string; title?: string }> | null },
+>(): Op<A> =>
   property(
     'links',
-    foreach(
-      spaceBetween(
-        print('link'),
-        property('url'),
-        property('title', inlineText()),
+    foreachNewLine(
+      select(
+        (l): Link => typeof l === 'string' ? { url: l } : l,
+        spaceBetween(
+          print('link'),
+          property('url'),
+          property('title', inlineText()),
+        ),
       ),
-      separateNewLine(),
     ),
   )
 
-export function styleProperty<A extends { style?: ElementStyle }>(): Op<A> {
+export function styleBlockProperty<A extends { style?: ElementStyle | undefined | null }>(): Op<A> {
   return select(
     e => e.style,
     body('style')(
@@ -175,7 +184,7 @@ export function styleProperty<A extends { style?: ElementStyle }>(): Op<A> {
   )
 }
 
-export function colorProperty<A extends { color?: Color }>(): Op<A> {
+export function colorProperty<A extends { color?: Color | undefined | null }>(): Op<A> {
   return property(
     'color',
     spaceBetween(
@@ -185,7 +194,17 @@ export function colorProperty<A extends { color?: Color }>(): Op<A> {
   )
 }
 
-export function iconProperty<A extends { icon?: Icon }>(): Op<A> {
+export function opacityProperty<A extends { opacity?: number | undefined | null }>(): Op<A> {
+  return property(
+    'opacity',
+    spaceBetween(
+      print('opacity'),
+      print(v => `${v}%`),
+    ),
+  )
+}
+
+export function iconProperty<A extends { icon?: string | undefined | null }>(): Op<A> {
   return property(
     'icon',
     spaceBetween(
@@ -195,7 +214,8 @@ export function iconProperty<A extends { icon?: Icon }>(): Op<A> {
   )
 }
 
-export function styleProperties<A extends ElementStyle>(): Op<A> {
+type StyleProperties = z.infer<typeof StylePropertiesSchema>
+export function styleProperties<A extends StyleProperties>(): Op<A> {
   return lines(
     enumProperty('shape'),
     colorProperty(),
@@ -204,13 +224,7 @@ export function styleProperties<A extends ElementStyle>(): Op<A> {
     enumProperty('iconSize'),
     enumProperty('iconPosition'),
     enumProperty('border'),
-    property(
-      'opacity',
-      spaceBetween(
-        print('opacity'),
-        print(v => `${v}%`),
-      ),
-    ),
+    opacityProperty(),
     enumProperty('size'),
     enumProperty('padding'),
     enumProperty('textSize'),

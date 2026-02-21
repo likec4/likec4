@@ -1,5 +1,7 @@
+import { prop } from 'remeda'
+import type { OverrideProperties } from 'type-fest'
 import { expectTypeOf, test } from 'vitest'
-import { hasProp, isAnyOf, isString } from './guards'
+import { type GuardedBy, hasProp, isAnyOf, isString } from './guards'
 
 test('hasProp', () => {
   const obj = { a: 'a' } as {
@@ -7,41 +9,63 @@ test('hasProp', () => {
     // optional properties
     b?: number | null
   }
-  expectTypeOf(obj.a).toEqualTypeOf<string | undefined | null>()
+  // Data first
   if (hasProp(obj, 'a')) {
     expectTypeOf(obj.a).toEqualTypeOf<string>()
   }
+  // Curried
+  if (hasProp('a')(obj)) {
+    expectTypeOf(obj.a).toEqualTypeOf<string>()
+  }
+  expectTypeOf(obj.a).toEqualTypeOf<string | undefined | null>()
 
-  expectTypeOf(obj.b).toEqualTypeOf<number | undefined | null>()
+  // Test with optional property
   if (hasProp(obj, 'b')) {
     expectTypeOf(obj.b).toEqualTypeOf<number>()
   }
-
+  // Curried
   if (hasProp('b')(obj)) {
     expectTypeOf(obj.b).toEqualTypeOf<number>()
   }
+  expectTypeOf(obj.b).toEqualTypeOf<number | undefined | null>()
+})
+
+test('guardedTo', () => {
+  const isStringGuard = (value: unknown): value is string => true
+  const isNumberGuard = (value: unknown): value is number => true
+  const isPropGuard = (value: unknown): value is { prop: number } => true
+  const isAnyGuard = (value: unknown): value is any => true
+  const isUnknownGuard = (value: unknown): value is unknown => true
+
+  expectTypeOf<GuardedBy<typeof isStringGuard>>().toEqualTypeOf<string>()
+  expectTypeOf<GuardedBy<typeof isNumberGuard>>().toEqualTypeOf<number>()
+  expectTypeOf<GuardedBy<typeof isPropGuard>>().toEqualTypeOf<{ prop: number }>()
+  expectTypeOf<GuardedBy<typeof isAnyGuard>>().toBeNever()
+  expectTypeOf<GuardedBy<typeof isUnknownGuard>>().toBeNever()
 })
 
 test('isAnyOf', () => {
   // Type guards for testing
   const isNumber = (value: unknown): value is number => typeof value === 'number'
-  const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
-  const isObject = (value: unknown): value is object => typeof value === 'object' && value !== null
+  const isBoolean = (value: string | number | boolean): value is boolean => typeof value === 'boolean'
+  const isObject = (value: any): value is object => typeof value === 'object' && value !== null
 
   // Test with single predicate
   const checkString = isAnyOf(isString)
-  expectTypeOf(checkString).toEqualTypeOf<<T>(value: T) => value is T & string>()
+  expectTypeOf(checkString).guards.toBeString()
 
   // Test with multiple predicates - should return union type
   const checkStringOrNumber = isAnyOf(isString, isNumber)
-  expectTypeOf(checkStringOrNumber).toEqualTypeOf<<T>(value: T) => value is T & (string | number)>()
+  expectTypeOf(checkStringOrNumber).guards.toEqualTypeOf<string | number>()
 
   // Test with three predicates
   const checkStringOrNumberOrBoolean = isAnyOf(isString, isNumber, isBoolean)
-  expectTypeOf(checkStringOrNumberOrBoolean).toEqualTypeOf<<T>(value: T) => value is T & (string | number | boolean)>()
+  expectTypeOf(checkStringOrNumberOrBoolean).guards.toEqualTypeOf<string | number | boolean>()
 
   // Test type narrowing behavior
-  const unknownValue: unknown = undefined
+  const unknownValue = 0 as unknown
+
+  expectTypeOf(unknownValue).toBeUnknown()
 
   if (checkString(unknownValue)) {
     expectTypeOf(unknownValue).toEqualTypeOf<string>()
@@ -57,7 +81,7 @@ test('isAnyOf', () => {
 
   // Test with more complex types
   const checkStringOrObject = isAnyOf(isString, isObject)
-  expectTypeOf(checkStringOrObject).toEqualTypeOf<<T>(value: T) => value is T & (string | object)>()
+  expectTypeOf(checkStringOrObject).guards.toEqualTypeOf<string | object>()
 
   if (checkStringOrObject(unknownValue)) {
     expectTypeOf(unknownValue).toEqualTypeOf<string | object>()

@@ -39,7 +39,11 @@ const {
       },
     },
     system: {},
-    component: {},
+    component: {
+      style: {
+        shape: 'component',
+      },
+    },
     webapp: {
       style: {
         shape: 'browser',
@@ -84,10 +88,9 @@ const builder = b
             key1: 'value1',
           },
           tags: ['external'],
-        }).with(
-          component('api'),
-          component('graphql'),
-        ),
+        }),
+        component('backend.api'),
+        component('backend.graphql'),
         component('media', {
           tags: ['internal'],
           shape: 'storage',
@@ -114,12 +117,24 @@ const builder = b
       $m.rel('cloud.frontend.dashboard', 'cloud.backend.api', 'fetches data'),
       $m.rel('cloud.frontend.dashboard', 'cloud.media', 'fetches media'),
       $m.rel('cloud.frontend.mobile', 'cloud.auth', 'authenticates'),
-      $m.rel('cloud.frontend.mobile', 'cloud.backend.api', 'fetches data'),
+      $m.rel('cloud.frontend.mobile', 'cloud.backend.api', {
+        title: 'fetches data',
+        head: 'open',
+        description: {
+          md: '**Fetches data**\nfrom the backend API',
+        },
+      }),
       $m.rel('cloud.frontend.mobile', 'cloud.media', 'fetches media'),
       $m.rel('cloud.backend.api', 'cloud.auth', 'authorizes'),
       $m.rel('cloud.backend.api', 'cloud.media', 'uploads media'),
       $m.rel('cloud.backend.api', 'aws.rds', 'reads/writes'),
-      $m.rel('cloud.backend.api', 'email', 'sends emails'),
+      $m.rel('cloud.backend.api', 'email', {
+        kind: 'async',
+        title: 'sends emails',
+        metadata: {
+          key1: ['value2', 'value3'],
+        },
+      }),
       $m.rel('cloud.media', 'aws.s3', 'uploads'),
       $m.rel('email', 'customer', {
         tags: ['external'],
@@ -176,7 +191,14 @@ const builder = b
 describe('generateLikeC4', () => {
   it('generates valid DSL from parsed model data', async ({ expect }) => {
     const parsed = builder.build()
-    const output = generateLikeC4(parsed)
+    const output = generateLikeC4({
+      // @ts-expect-error - we want to test the function with the parsed data, but the types are not compatible, we only care about the fields used by the generator
+      relations: parsed.relations,
+      // @ts-expect-error - we want to test the function with the parsed data, but the types are not compatible, we only care about the fields used by the generator
+      elements: parsed.elements,
+      deployments: parsed.deployments,
+      specification: parsed.specification,
+    })
     await expect(output).toMatchFileSnapshot('__snapshots__/likec4.generate.snap')
   })
 })

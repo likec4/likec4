@@ -520,7 +520,10 @@ describe('indent', () => {
     expectOp(
       merge(
         print('parent'),
-        indent(merge()),
+        indent(
+          merge(),
+          merge(),
+        ),
       ),
     ).toBe('parent')
   })
@@ -537,6 +540,17 @@ describe('body', () => {
         child
       }"
     `)
+  })
+
+  it('should ignore empty operations', () => {
+    expectOp(
+      body(
+        spaceBetween(
+          print(),
+          print(),
+        ),
+      ),
+    ).toBe('')
   })
 
   it('should wrap with keyword prefix', () => {

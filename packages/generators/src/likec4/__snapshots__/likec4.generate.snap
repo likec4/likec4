@@ -1,0 +1,132 @@
+specification {
+  element person {
+    style {
+      shape person
+    }
+  }
+  element system
+  element component {
+    style {
+      shape component
+    }
+  }
+  element webapp {
+    style {
+      shape browser
+    }
+  }
+  element mobile {
+    style {
+      shape mobile
+    }
+  }
+
+  relationship async {
+    color amber
+    line dotted
+  }
+
+  tag external
+  tag internal
+}
+
+model {
+  customer = person
+
+  cloud = system {
+    frontend = component {
+      dashboard = webapp
+
+      mobile = mobile
+    }
+
+    auth = component
+
+    backend = component {
+      #external
+      metadata {
+        key1 'value1'
+      }
+
+      api = component
+
+      graphql = component
+    }
+
+    media = component {
+      #internal
+      style {
+        shape storage
+      }
+    }
+  }
+
+  aws = system {
+    rds = component {
+      style {
+        shape storage
+      }
+    }
+
+    s3 = component {
+      metadata {
+        key1 'value2'
+      }
+      style {
+        shape storage
+      }
+    }
+  }
+
+  email = system
+
+  customer -> cloud 'uses services'
+
+  customer -> cloud.frontend.mobile 'opens mobile app'
+
+  customer -> cloud.frontend.dashboard 'opens in browser'
+
+  cloud.frontend.dashboard -> cloud.auth 'authenticates'
+
+  cloud.frontend.dashboard -> cloud.backend.api 'fetches data'
+
+  cloud.frontend.dashboard -> cloud.media 'fetches media'
+
+  cloud.frontend.mobile -> cloud.auth 'authenticates'
+
+  cloud.frontend.mobile -> cloud.backend.api 'fetches data' {
+    description '''
+      **Fetches data**
+      from the backend API
+    '''
+    style {
+      head open
+    }
+  }
+
+  cloud.frontend.mobile -> cloud.media 'fetches media'
+
+  cloud.backend.api -> cloud.auth 'authorizes'
+
+  cloud.backend.api -> cloud.media 'uploads media'
+
+  cloud.backend.api -> aws.rds 'reads/writes'
+
+  cloud.backend.api -[async]-> email 'sends emails' {
+    metadata {
+      key1 [
+        'value2',
+        'value3'
+      ]
+    }
+  }
+
+  cloud.media -> aws.s3 'uploads'
+
+  email -> customer 'sends emails' {
+    #external
+    metadata {
+      key1 'value3'
+    }
+  }
+}

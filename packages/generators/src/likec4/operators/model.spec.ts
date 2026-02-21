@@ -1,4 +1,4 @@
-import { Builder } from '@likec4/core/builder'
+import { type Types, Builder } from '@likec4/core/builder'
 import { describe, expect as viExpect, it } from 'vitest'
 import {
   materialize,
@@ -27,7 +27,9 @@ function expectModel(builder: Builder<any>) {
   const data = builder.build()
   return viExpect(
     materialize(printModel({
+      // @ts-expect-error - elements coming from the builder are more complex than the ones expected by the model operator, but we only care about the fields used by the operator
       elements: data.elements,
+      // @ts-expect-error - relations coming from the builder are more complex than the ones expected by the model operator, but we only care about the fields used by the operator
       relations: data.relations,
     })),
   )
