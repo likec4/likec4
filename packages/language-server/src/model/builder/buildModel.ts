@@ -340,6 +340,7 @@ export function buildModelData(
       if (existingViewIds.has(viewId)) {
         continue
       }
+      existingViewIds.add(viewId)
       parsedViews.push({
         [_stage]: 'parsed',
         [_type]: 'element',
