@@ -28,8 +28,8 @@ catalogs:
       specifier: 5.17.2
       version: 5.17.2
     astro-og-canvas:
-      specifier: ^0.7.2
-      version: 0.7.2
+      specifier: ^0.10.1
+      version: 0.10.1
     shiki:
       specifier: ^3.22.0
       version: 3.22.0
@@ -546,7 +546,7 @@ importers:
         version: 5.17.2(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)
       astro-og-canvas:
         specifier: catalog:astro
-        version: 0.7.2(astro@5.17.2(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
+        version: 0.10.1(astro@5.17.2(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1))
       canvaskit-wasm:
         specifier: 0.40.0
         version: 0.40.0
@@ -5301,11 +5301,10 @@ packages:
     peerDependencies:
       astro: ^4.0.0-beta || ^5.0.0-beta || ^3.3.0
 
-  astro-og-canvas@0.7.2:
-    resolution: {integrity: sha512-i7sWbdpl2MMF7wUZqSfzMnhW4c7GQz6s7T4BUJ7E06MqasZRHjJytn0n6D0JJkGDeTpZnU7E00A6Ffx0pRB4kg==}
-    engines: {node: '>=18.14.1'}
+  astro-og-canvas@0.10.1:
+    resolution: {integrity: sha512-cUjsWIOkDBi9Bfkgta1Cr45m2UnTX/jW+tK406SVcD1idhqIHrGD+M5qtwGcJ6OanHeWSgyHGmzQuzELGAwPKg==}
     peerDependencies:
-      astro: ^3.0.0 || ^4.0.0 || ^5.0.0
+      astro: ^5.0.0 || ^6.0.0-alpha
 
   astro@5.17.2:
     resolution: {integrity: sha512-7jnMqGo53hOQNwo1N/wqeOvUp8wwW/p+DeerSjSkHNx8L/1mhy6P7rVo7EhdmF8DpKqw0tl/B5Fx1WcIzg1ysA==}
@@ -6011,8 +6010,8 @@ packages:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
     engines: {node: '>=0.12'}
 
-  entities@7.0.0:
-    resolution: {integrity: sha512-FDWG5cmEYf2Z00IkYRhbFrwIwvdFKH07uV8dvNy0omp/Qb1xcyCWp2UDtcwJF4QZZvk0sLudP6/hAu42TaqVhQ==}
+  entities@7.0.1:
+    resolution: {integrity: sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==}
     engines: {node: '>=0.12'}
 
   env-paths@3.0.0:
@@ -12986,12 +12985,12 @@ snapshots:
       astro: 5.17.2(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)
       rehype-expressive-code: 0.41.2
 
-  astro-og-canvas@0.7.2(astro@5.17.2(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)):
+  astro-og-canvas@0.10.1(astro@5.17.2(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)):
     dependencies:
       astro: 5.17.2(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1)
       canvaskit-wasm: 0.40.0
       deterministic-object-hash: 2.0.2
-      entities: 7.0.0
+      entities: 7.0.1
 
   astro@5.17.2(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.7.1):
     dependencies:
@@ -13826,7 +13825,7 @@ snapshots:
 
   entities@4.5.0: {}
 
-  entities@7.0.0: {}
+  entities@7.0.1: {}
 
   env-paths@3.0.0: {}
 
