@@ -92,7 +92,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const colors = viewmodel.$model.$styles.theme.colors
   const { nodes, edges } = view
 
-  const elemntColorProvider = (key: KeysOf<ElementColorValues>) => (colorKey: Color) =>
+  const elementColorProvider = (key: KeysOf<ElementColorValues>) => (colorKey: Color) =>
     colorKey in colors ? colors[colorKey as ThemeColor].elements[key] : undefined
   const relationshipsColorProvider = (key: KeysOf<RelationshipColorValues>) => (colorKey: Color) =>
     colorKey in colors ? colors[colorKey as ThemeColor].relationships[key] : undefined
@@ -133,13 +133,13 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
       .indent({
         indentedChildren: indent =>
           indent
-            .append('BackgroundColor ', pumlColor(node.color, elemntColorProvider('fill')), NL)
+            .append('BackgroundColor ', pumlColor(node.color, elementColorProvider('fill')), NL)
             .append(
               'FontColor ',
-              pumlColor(node.color, elemntColorProvider('hiContrast'), '#FFFFFF'),
+              pumlColor(node.color, elementColorProvider('hiContrast'), '#FFFFFF'),
               NL,
             )
-            .append('BorderColor ', pumlColor(node.color, elemntColorProvider('stroke')), NL),
+            .append('BorderColor ', pumlColor(node.color, elementColorProvider('stroke')), NL),
         indentation: 2,
       })
       .append('}', NL)
@@ -178,7 +178,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
               'RectangleBorderColor<<',
               fqn,
               '>> ',
-              pumlColor(node.color, elemntColorProvider('fill')),
+              pumlColor(node.color, elementColorProvider('fill')),
               NL,
             )
             .append(
@@ -186,7 +186,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
               'RectangleFontColor<<',
               fqn,
               '>> ',
-              pumlColor(node.color, elemntColorProvider('fill')),
+              pumlColor(node.color, elementColorProvider('fill')),
               NL,
             )
             .append('skinparam ', 'RectangleBorderStyle<<', fqn, '>> ', 'dashed', NL, NL)
