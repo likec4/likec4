@@ -1,11 +1,11 @@
-import {
-  type Tag,
+import type {
+  Tag,
 } from '@likec4/core/types'
 import { entries } from 'remeda'
-import {
-  type ElementSpecificationData,
-  type RelationshipSpecificationData,
-  type SpecificationData,
+import type {
+  ElementSpecificationData,
+  RelationshipSpecificationData,
+  SpecificationData,
 } from '../types'
 import {
   type Op,
