@@ -1,5 +1,13 @@
 # @likec4/core
 
+## 1.50.0
+
+### Patch Changes
+
+- [#2642](https://github.com/likec4/likec4/pull/2642) [`fe468d8`](https://github.com/likec4/likec4/commit/fe468d830544e6f0051ea2203ab137d46932d11e) Thanks [@davydkov](https://github.com/davydkov)! - Automatically derive element technology from icon name when not set explicitly.
+  Elements with `aws:`, `azure:`, `gcp:`, or `tech:` icons will get a human-readable technology label
+  (e.g. `tech:apache-flink` → "Apache Flink"). Can be disabled via `inferTechnologyFromIcon: false` in project config.
+
 ## 1.49.0
 
 ### Patch Changes
