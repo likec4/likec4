@@ -81,13 +81,13 @@ export interface EditorActorContext {
   editing: 'node' | 'edge' | null
 }
 
-export type EditorActorEmittedEvent = { type: 'idle' }
+export type EditorActorEmitedEvent = { type: 'idle' }
 
 export const machine = setup({
   types: {
     context: {} as EditorActorContext,
     events: {} as EditorActorEvent,
-    emitted: {} as EditorActorEmittedEvent,
+    emitted: {} as EditorActorEmitedEvent,
     input: {} as EditorActorInput,
     children: {} as {
       hotkey: 'hotkey'

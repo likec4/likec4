@@ -7,7 +7,7 @@ import { tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
 
-export const checkImportsFromProject = (services: LikeC4Services): ValidationCheck<ast.ImportsFromProject> => {
+export const checkImportsFromPoject = (services: LikeC4Services): ValidationCheck<ast.ImportsFromPoject> => {
   const projects = services.shared.workspace.ProjectsManager
   return tryOrLog((el, accept) => {
     if (!projects.all.includes(el.project as ProjectId)) {

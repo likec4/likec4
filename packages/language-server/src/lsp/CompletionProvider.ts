@@ -26,13 +26,13 @@ const STYLE_FIELDS = [
   'textSize',
 ].join(',')
 
-function isCompletionForProjectName(
+function isCompletionForPojectName(
   context: CompletionContext,
   next: NextFeature,
 ): next is NextFeature<GrammarAST.RuleCall> {
   return GrammarAST.isRuleCall(next.feature)
     && next.property === 'project'
-    && ast.isImportsFromProject(context.node)
+    && ast.isImportsFromPoject(context.node)
 }
 
 export class LikeC4CompletionProvider extends DefaultCompletionProvider {
@@ -56,7 +56,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
       case GrammarAST.isCrossReference(next.feature) && !!context.node:
         return this.completionForCrossReference(context, next as NextFeature<GrammarAST.CrossReference>, acceptor)
 
-      case isCompletionForProjectName(context, next):
+      case isCompletionForPojectName(context, next):
         return this.completionForImportedProject(context, acceptor)
     }
   }
