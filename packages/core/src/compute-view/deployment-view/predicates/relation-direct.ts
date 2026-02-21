@@ -20,7 +20,7 @@ import {
   resolveElements,
   resolveModelElements,
 } from '../utils'
-import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
+import { filterIncomingConnections, resolveAllIncomingRelations } from './relation-incoming'
 import { filterOutgoingConnections, resolveAllOutgoingRelations } from './relation-outgoing'
 import { applyPredicate, excludeModelRelations, resolveAscendingSiblings } from './utils'
 
@@ -174,7 +174,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
 
       // deployment -> model
       case FqnExpr.isModelRef(expr.target):
-        modelRelationsToExclude = resolveAllImcomingRelations(model, expr.target)
+        modelRelationsToExclude = resolveAllIncomingRelations(model, expr.target)
         return excludeModelRelations(
           modelRelationsToExclude,
           { stage, memory },
