@@ -26,7 +26,13 @@ describe('find-relationship-paths tool', () => {
 
       const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
       const result = await handler(
-        { sourceId: 'frontend', targetId: 'backend', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
+        {
+          sourceId: 'frontend',
+          targetId: 'backend',
+          maxDepth: 3,
+          includeIndirect: false,
+          project: 'default' as ProjectId,
+        },
         {} as any,
       )
 
@@ -60,7 +66,13 @@ describe('find-relationship-paths tool', () => {
 
       const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
       const result = await handler(
-        { sourceId: 'frontend', targetId: 'backend', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
+        {
+          sourceId: 'frontend',
+          targetId: 'backend',
+          maxDepth: 3,
+          includeIndirect: false,
+          project: 'default' as ProjectId,
+        },
         {} as any,
       )
 
@@ -98,7 +110,13 @@ describe('find-relationship-paths tool', () => {
 
       const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
       const result = await handler(
-        { sourceId: 'frontend', targetId: 'backend', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
+        {
+          sourceId: 'frontend',
+          targetId: 'backend',
+          maxDepth: 3,
+          includeIndirect: false,
+          project: 'default' as ProjectId,
+        },
         {} as any,
       )
 
@@ -228,7 +246,13 @@ describe('find-relationship-paths tool', () => {
 
       const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
       const result = await handler(
-        { sourceId: 'frontend', targetId: 'backend', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
+        {
+          sourceId: 'frontend',
+          targetId: 'backend',
+          maxDepth: 3,
+          includeIndirect: false,
+          project: 'default' as ProjectId,
+        },
         {} as any,
       )
 
@@ -292,7 +316,13 @@ describe('find-relationship-paths tool', () => {
 
       const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
       const result = await handler(
-        { sourceId: 'frontend', targetId: 'frontend', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
+        {
+          sourceId: 'frontend',
+          targetId: 'frontend',
+          maxDepth: 3,
+          includeIndirect: false,
+          project: 'default' as ProjectId,
+        },
         {} as any,
       )
 
@@ -318,7 +348,13 @@ describe('find-relationship-paths tool', () => {
 
       const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
       const result = await handler(
-        { sourceId: 'shop', targetId: 'shop.frontend', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
+        {
+          sourceId: 'shop',
+          targetId: 'shop.frontend',
+          maxDepth: 3,
+          includeIndirect: false,
+          project: 'default' as ProjectId,
+        },
         {} as any,
       )
 
@@ -341,7 +377,13 @@ describe('find-relationship-paths tool', () => {
 
       const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
       const result = await handler(
-        { sourceId: 'nonexistent', targetId: 'backend', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
+        {
+          sourceId: 'nonexistent',
+          targetId: 'backend',
+          maxDepth: 3,
+          includeIndirect: false,
+          project: 'default' as ProjectId,
+        },
         {} as any,
       )
 
@@ -364,7 +406,13 @@ describe('find-relationship-paths tool', () => {
 
       const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
       const result = await handler(
-        { sourceId: 'frontend', targetId: 'nonexistent', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
+        {
+          sourceId: 'frontend',
+          targetId: 'nonexistent',
+          maxDepth: 3,
+          includeIndirect: false,
+          project: 'default' as ProjectId,
+        },
         {} as any,
       )
 
@@ -396,7 +444,13 @@ describe('find-relationship-paths tool', () => {
 
       const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
       const result = await handler(
-        { sourceId: 'frontend', targetId: 'backend', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
+        {
+          sourceId: 'frontend',
+          targetId: 'backend',
+          maxDepth: 3,
+          includeIndirect: false,
+          project: 'default' as ProjectId,
+        },
         {} as any,
       )
 

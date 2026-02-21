@@ -24,6 +24,10 @@ export type {
 } from './schema.theme'
 
 export {
+  LikeC4StylesConfigSchema,
+} from './schema.theme'
+
+export {
   ConfigFilenames,
   isLikeC4Config,
   isLikeC4JsonConfig,

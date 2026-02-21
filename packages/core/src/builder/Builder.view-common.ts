@@ -29,7 +29,7 @@ export interface LikeC4ViewBuilder<
   include(...exprs: Expr[]): this
   exclude(...exprs: Expr[]): this
   style(rule: ViewRuleStyle<any>): this
-  autoLayout(layout: AutoLayoutDirection): this
+  autoLayout(layout: AutoLayoutDirection, margins: { rank: number; node: number } | undefined): this
 }
 
 export namespace ViewPredicate {
@@ -261,8 +261,9 @@ function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 
 function $autoLayout<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   layout: AutoLayoutDirection,
+  margins?: { rank: number; node: number },
 ): (b: B) => B {
-  return (b) => b.autoLayout(layout)
+  return (b) => b.autoLayout(layout, margins)
 }
 
 type Op<T> = (b: T) => T

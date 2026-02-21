@@ -138,7 +138,7 @@ function findOpenTagEnd(xml: string, start: number): number {
   let i = start
   while (i < xml.length) {
     const c = xml[i]
-    if (c === '"' || c === "'") {
+    if (c === '"' || c === '\'') {
       if (quoteChar === '') quoteChar = c
       else if (quoteChar === c) quoteChar = ''
     } else if (c === '>' && quoteChar === '') return i

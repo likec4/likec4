@@ -43,11 +43,13 @@ test(
     const result = await $`likec4 export drawio ${emptyWorkspaceDir} -o test-results/drawio-fail`.nothrow()
     // CLI must not succeed: exit 1 (expected) or exit 0 with error on stderr (packaged CLI quirk in CI). Once the quirk is fixed, tighten to only accept exitCode === 1.
     const failedByExitCode = result.exitCode === 1
-    const failedByStderr =
-      result.exitCode === 0 && typeof result.stderr === 'string' && result.stderr.includes('no LikeC4 sources found')
+    const failedByStderr = result.exitCode === 0 && typeof result.stderr === 'string' &&
+      result.stderr.includes('no LikeC4 sources found')
     expect(
       failedByExitCode || failedByStderr,
-      `expected exitCode 1 or error on stderr; got exitCode ${result.exitCode}, stderr: ${String(result.stderr).slice(0, 200)}`,
+      `expected exitCode 1 or error on stderr; got exitCode ${result.exitCode}, stderr: ${
+        String(result.stderr).slice(0, 200)
+      }`,
     ).toBe(true)
   },
 )

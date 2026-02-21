@@ -369,6 +369,5 @@ describe('query-by-metadata tool', () => {
       // Empty string is contained in all strings, so should match both
       expect(results).toHaveLength(2)
     })
-
   })
 })

@@ -101,7 +101,9 @@ export const iconsModule = {
         const pkgLiteral = embedUrlAsJsString(joinURL('likec4:icons', p.id))
         return { idLiteral, pkgLiteral }
       })
-      .map(({ idLiteral, pkgLiteral }) => `${idLiteral}: lazy(() => import(${pkgLiteral}).then(m => ({default: m.IconRenderer})))`)
+      .map(({ idLiteral, pkgLiteral }) =>
+        `${idLiteral}: lazy(() => import(${pkgLiteral}).then(m => ({default: m.IconRenderer})))`
+      )
       .join(',\n')
 
     return `

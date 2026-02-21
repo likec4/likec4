@@ -1,9 +1,12 @@
 import type { Simplify, Writable } from 'type-fest'
 import {
+  type AutoLayoutDirection,
   type LikeC4View,
   type ParsedDeploymentView as DeploymentView,
   type ParsedElementView as ElementView,
+  type ViewRuleAutoLayout,
   _type,
+  exact,
 } from '../types'
 import type { AnyTypes } from './_types'
 import type { Builder } from './Builder'
@@ -364,10 +367,14 @@ export function mkViewBuilder(
 ): DeploymentViewBuilder<AnyTypes> | ElementViewBuilder<AnyTypes> {
   const viewBuilder = {
     $expr: view[_type] === 'deployment' ? $deploymentExpr : $expr,
-    autoLayout(autoLayout: unknown) {
-      view.rules.push({
-        direction: autoLayout,
-      } as any)
+    autoLayout(direction: AutoLayoutDirection, margins: { rank: number; node: number } | undefined) {
+      view.rules.push(
+        exact({
+          direction,
+          rankSep: margins?.rank,
+          nodeSep: margins?.node,
+        }) satisfies ViewRuleAutoLayout,
+      )
       return viewBuilder
     },
     exclude(expr: unknown) {

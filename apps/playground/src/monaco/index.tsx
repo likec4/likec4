@@ -1,6 +1,6 @@
-import type { MonacoEditorProps } from './MonacoEditor'
 import { Loader } from '@mantine/core'
 import { lazy, Suspense } from 'react'
+import type { MonacoEditorProps } from './MonacoEditor'
 
 export type { MonacoEditorProps } from './MonacoEditor'
 

@@ -11,7 +11,8 @@
     "likec4ops": "./likec4ops.ts"
   },
   "exports": {
-    ".": "./likec4ops.ts"
+    ".": "./likec4ops.ts",
+    "./vitest": "./vitest.ts"
   },
   "dependencies": {
     "parse-gitignore": "^2.0.0",
@@ -19,6 +20,9 @@
     "remeda": "catalog:utils",
     "std-env": "catalog:externals",
     "indent-string": "catalog:utils",
+    "vitest": "catalog:vitest",
+    "defu": "catalog:utils",
+    "pathe": "catalog:utils",
     "tsx": "catalog:",
     "zx": "catalog:"
   },

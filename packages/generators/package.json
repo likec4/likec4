@@ -51,11 +51,17 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/config": "workspace:*",
     "@likec4/log": "workspace:*",
     "langium": "catalog:langium",
     "pako": "catalog:",
     "remeda": "catalog:utils",
-    "json5": "catalog:utils"
+    "immer": "catalog:utils",
+    "json5": "catalog:utils",
+    "type-fest": "catalog:externals",
+    "indent-string": "catalog:utils",
+    "strip-indent": "catalog:utils",
+    "zod": "catalog:externals"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

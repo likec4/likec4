@@ -1,7 +1,7 @@
+import { usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
-import { usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import { useCallbackRef } from '@mantine/hooks'
 import {
   type PropsWithChildren,

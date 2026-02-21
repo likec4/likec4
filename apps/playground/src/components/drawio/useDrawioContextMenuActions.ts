@@ -278,8 +278,7 @@ export function useDrawioContextMenuActions({
     onExportError,
   ])
 
-  const canExportAllViews =
-    allViewModelsFromState.length > 0 ||
+  const canExportAllViews = allViewModelsFromState.length > 0 ||
     (!!getLayoutedModel && !!likec4model) ||
     (!!layoutViews && !!likec4model)
 
