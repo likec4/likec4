@@ -36,7 +36,7 @@ catalogs:
     '@astrojs/starlight-tailwind': ^4.0.2
     '@expressive-code/plugin-collapsible-sections': ^0.41.6
     '@expressive-code/plugin-line-numbers': ^0.41.6
-    astro: 5.16.13
+    astro: 5.17.2
     astro-og-canvas: ^0.7.2
     shiki: ^3.21.0
     starlight-heading-badges: ^0.6.1
