@@ -338,7 +338,7 @@ catalogs:
       specifier: ^2.0.3
       version: 2.0.3
     remeda:
-      specifier: ^2.33.5
+      specifier: ^2.33.6
       version: 2.33.6
     safe-stringify:
       specifier: ^1.3.0
