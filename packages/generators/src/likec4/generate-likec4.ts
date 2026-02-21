@@ -1,60 +1,80 @@
-// @ts-nocheck
-import type { ParsedLikeC4ModelData } from '@likec4/core'
-import { nameFromFqn } from '@likec4/core/utils'
-import { CompositeGeneratorNode, NL, toString as nodeToString } from 'langium/generate'
-import { printDeployment } from './likec4/print-deployment'
-import { printGlobals } from './likec4/print-globals'
-import { printModel } from './likec4/print-model'
-import { printViews } from './likec4/print-views'
-import { printSpecification } from './likec4/specification'
-import { quoteString } from './likec4/utils'
+import type { Fqn } from '@likec4/core/types'
+import { produce } from 'immer'
+import { entries, isDeepEqual, isEmptyish, mapValues } from 'remeda'
+import { lines, materialize, property, withctx } from './operators/base'
+import { modelOp } from './operators/model'
+import { specificationOp } from './operators/specification'
+import {
+  type ElementData,
+  type ElementSpecificationData,
+  type LikeC4Data,
+  type LikeC4DataInput,
+  LikeC4DataSchema,
+} from './types'
 
-/**
- * Generates LikeC4 DSL source code from parsed model data.
- */
-export function generateLikeC4(model: ParsedLikeC4ModelData): string {
-  const out = new CompositeGeneratorNode()
+type Params = {
+  indentation?: string | number
+}
 
-  // Import declarations
-  for (const [projectId, elements] of Object.entries(model.imports) as [string, { id: string }[]][]) {
-    const names = elements.map(el => nameFromFqn(el.id))
-    if (names.length === 1) {
-      out.append('import ', names[0]!, ' from ', quoteString(projectId), NL)
-    } else {
-      out.append('import { ', names.join(', '), ' } from ', quoteString(projectId), NL)
+export function generateLikeC4(input: LikeC4DataInput, params?: Params): string {
+  params = {
+    indentation: 2,
+    ...params,
+  }
+  const data = normalizeStyles(LikeC4DataSchema.parse(input))
+
+  const generateOp = withctx(data)(
+    lines(2)(
+      property('specification', specificationOp()),
+      modelOp(),
+    ),
+  )
+
+  return materialize(generateOp, params.indentation)
+}
+
+function normalizeStyles(data: LikeC4Data): LikeC4Data {
+  const elementSpecs = data.specification?.elements
+  if (!isEmptyish(elementSpecs) && !isEmptyish(data.elements)) {
+    data = {
+      ...data,
+      elements: mapValues(data.elements, element => normalizeElementStyles(element, elementSpecs)),
     }
   }
-  if (Object.keys(model.imports).length > 0) {
-    out.append(NL)
+  return data
+}
+
+function normalizeElementStyles(element: ElementData, specs: Record<string, ElementSpecificationData>): ElementData {
+  const spec = specs[element.kind]
+  if (!spec) {
+    return element
   }
-
-  // Specification block
-  printSpecification(out, model.specification)
-  out.append(NL)
-
-  // Globals block (if non-empty)
-  const hasGlobals = Object.keys(model.globals.predicates).length > 0
-    || Object.keys(model.globals.dynamicPredicates).length > 0
-    || Object.keys(model.globals.styles).length > 0
-  if (hasGlobals) {
-    printGlobals(out, model.globals)
-    out.append(NL)
-  }
-
-  // Model block
-  printModel(out, model.elements, model.relations)
-  out.append(NL)
-
-  // Deployment block (if non-empty)
-  const hasDeployments = Object.keys(model.deployments.elements).length > 0
-    || Object.keys(model.deployments.relations).length > 0
-  if (hasDeployments) {
-    printDeployment(out, model.deployments)
-    out.append(NL)
-  }
-
-  // Views block
-  printViews(out, model.views)
-
-  return nodeToString(out).replace(/\r\n/g, '\n')
+  const specStyle = spec.style ?? {}
+  return produce(element, draft => {
+    for (
+      // Remove properties that are the same as the specification
+      const key of [
+        'description',
+        'technology',
+        'title',
+        'tags',
+        'summary',
+      ] satisfies (keyof ElementSpecificationData)[]
+    ) {
+      const specValue = spec[key]
+      const elementValue = element[key]
+      if (isDeepEqual(specValue, elementValue)) {
+        delete draft[key]
+      }
+    }
+    if (!element.style) {
+      return
+    }
+    // Remove style properties that are the same as the specification
+    for (const [key, value] of entries(specStyle)) {
+      if (isDeepEqual(element.style?.[key], value)) {
+        delete draft.style![key]
+      }
+    }
+  })
 }

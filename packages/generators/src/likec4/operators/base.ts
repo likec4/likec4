@@ -1,9 +1,11 @@
-import type { MarkdownOrString } from '@likec4/core'
+import { type MarkdownOrString, hasProp } from '@likec4/core'
 import {
   type Generated,
+  type GeneratorNode,
   type JoinOptions,
   CompositeGeneratorNode,
   joinToNode,
+  NewLineNode,
   NL,
   NLEmpty,
   toString,
@@ -11,6 +13,7 @@ import {
 import {
   filter,
   hasAtLeast,
+  identity,
   isBoolean,
   isEmpty,
   isFunction,
@@ -29,11 +32,27 @@ import type { IfAny } from 'type-fest'
 function hasContent(out: Generated): boolean {
   if (typeof out === 'string') {
     return out.trimStart().length !== 0
-  } else if (out instanceof CompositeGeneratorNode) {
-    return out.contents.some(e => hasContent(e))
-  } else {
-    return false
   }
+  if (out instanceof CompositeGeneratorNode) {
+    return out.contents.some(e => hasContent(e))
+  }
+
+  return false
+}
+
+function hasContentOrNewLine(out: Generated): boolean {
+  if (typeof out === 'string') {
+    return out.trimStart().length !== 0
+  }
+  if (out instanceof NewLineNode) {
+    return !out.ifNotEmpty
+  }
+
+  if (out instanceof CompositeGeneratorNode) {
+    return out.contents.some(e => hasContentOrNewLine(e))
+  }
+
+  return false
 }
 
 export type Output = CompositeGeneratorNode
@@ -59,7 +78,13 @@ export type AnyOp = Op<any>
  */
 export type InferOp = <A>(ctx: A) => A
 
-export type ctxOf<Op extends AnyOp> = Parameters<Op>[0]['ctx']
+export type ctxOf<O> =
+  // dprint-ignore
+  O extends Op<infer A>
+    ? A
+    : O extends (...args: any[]) => Op<infer B>
+      ? B
+      : never
 
 export type Ops<A> = Op<A>[]
 
@@ -75,7 +100,7 @@ export function fresh<A>(ctx: A): IfAny<A, never, Ctx<A>> {
  */
 export function materialize(ctx: AnyCtx | Op<any>, defaultIndentation: string | number = 2): string {
   const out = isFunction(ctx) ? executeOnFresh(undefined, [ctx]).out : ctx.out
-  return toString(out, defaultIndentation)
+  return toString(out, defaultIndentation).replaceAll(/\r\n/g, '\n')
 }
 
 /**
@@ -168,8 +193,18 @@ export const keyword = (value: string): InferOp => print(value)
 
 export const space = (): InferOp => print(' ')
 
-export function noop<A>(input: A): A {
-  return input
+export function noop(): <A>(input: A) => A {
+  return identity()
+}
+
+/**
+ * To be used for recursive operations
+ */
+export function lazy<A>(op: () => Op<A>): Op<A> {
+  return (input: Ctx<A>) => {
+    op()(input)
+    return input
+  }
 }
 
 export function newline(when?: 'ifNotEmpty'): InferOp {
@@ -215,7 +250,7 @@ export function indent(...args: AnyOp[] | [string]) {
         indentedChildren: [
           NLEmpty,
           joinToNode(
-            text.split('\n'),
+            text.split(/\r?\n/),
             { separator: NL },
           ),
           NLEmpty,
@@ -225,7 +260,7 @@ export function indent(...args: AnyOp[] | [string]) {
   }
   const ops = args as Ops<unknown>
   return operation('indent', ({ ctx, out }) => {
-    const nested = executeOnCtx(fresh(ctx), ops)
+    const nested = executeOnFresh(ctx, ops)
     if (hasContent(nested.out)) {
       out.indent({
         indentImmediately: false,
@@ -239,6 +274,7 @@ export function indent(...args: AnyOp[] | [string]) {
   })
 }
 
+export function body<A>(...ops: Ops<A>): Op<A>
 /**
  * Indent the given operations and wrap them in '{ ... }'
  */
@@ -247,32 +283,28 @@ export function body(keyword: string): <A>(...ops: Ops<A>) => Op<A>
  * Indent the given operations and wrap them with the provided open and close strings
  */
 export function body(open: string, close: string): <A>(...ops: Ops<A>) => Op<A>
-export function body<A>(...ops: Ops<A>): Op<A>
 export function body(...args: unknown[]) {
   const keyword = only(args)
   if (isString(keyword)) {
-    return (...ops: Ops<any>) =>
-      merge(
-        print(keyword + ' {'),
-        indent(lines(...ops)),
-        print('}'),
-      )
+    return body(keyword + ' {', '}')
   }
   if (args.length === 2 && isString(args[0]) && isString(args[1])) {
     const [open, close] = args as [string, string]
     return (...ops: Ops<any>) =>
-      merge(
-        print(open),
-        indent(lines(...ops)),
-        print(close),
-      )
+      operation('body ' + open + ' ' + close, ({ ctx, out }) => {
+        const bodyOutput = indent(lines(...ops))(fresh(ctx)).out
+        out.appendIf(
+          hasContent(bodyOutput),
+          joinToNode([
+            open,
+            bodyOutput,
+            close,
+          ]),
+        )
+      })
   }
   const ops = args as Ops<any>
-  return merge(
-    print('{'),
-    indent(lines(...ops)),
-    print('}'),
-  )
+  return body('{', '}')(...ops)
 }
 
 /**
@@ -359,7 +391,7 @@ export function markdownOrString(value?: MarkdownOrString) {
       return markdown(v.md)(ctx)
     }
     if ('txt' in v) {
-      return multilineText(v.txt, DOUBLE_QUOTE)(ctx)
+      return multilineText(v.txt)(ctx)
     }
     throw new Error('Invalid MarkdownOrString value: ' + v)
   })
@@ -387,10 +419,11 @@ export function join<A>(
     } else {
       nested = pipe(
         eachOnFresh(ctx as A, ops),
-        filter(n => !n.out.isEmpty()),
         map(n => n.out),
       )
     }
+
+    nested = filter(nested, hasContentOrNewLine)
 
     out.appendIf(
       nested.length > 0,
@@ -417,8 +450,8 @@ export function spaceBetween<A>(...ops: Ops<A>): Op<A> {
 /**
  * Joins all outputs with a space between
  */
-export function lines(linesBetween: number): <A>(...ops: Ops<A>) => Op<A>
 export function lines<A>(...ops: Ops<A>): Op<A>
+export function lines(linesBetween: number): <A>(...ops: Ops<A>) => Op<A>
 export function lines(...args: any[]) {
   let linesBetween = only(args)
   if (isNumber(linesBetween)) {
@@ -472,8 +505,8 @@ export function property<A, P extends keyof A & string>(
   op?: Op<A[P] & {}>, // NonNullable
 ): Op<A> {
   return operation(`property-${propertyName}`, ({ ctx, out }) => {
-    const value = isObjectType(ctx) && propertyName in ctx ? (ctx as A)[propertyName] : undefined
-    if (isNonNullish(value)) {
+    const value = isObjectType(ctx) && hasProp(ctx, propertyName) ? ctx[propertyName] : undefined
+    if (value !== undefined && value !== null) {
       if (!op) {
         print()({ ctx: value as any, out })
         return
@@ -495,9 +528,7 @@ type IterableValue<T> = T extends Iterable<infer U> ? U : never
  *   'tags',
  *   foreach(
  *     print(v => `#${v}`),
- *     {
- *       separator: ', ',
- *     },
+ *     separateComma()
  *   ),
  * )
  * ```
@@ -552,16 +583,25 @@ export function foreach<A extends Iterable<any>>(
   })
 }
 
-export function separateWith(separator: string): JoinOptions<CompositeGeneratorNode> {
+export function separateWith(separator: string | GeneratorNode): JoinOptions<CompositeGeneratorNode> {
   return {
     separator,
   }
 }
 
-export function separateNewLine(): JoinOptions<CompositeGeneratorNode> {
-  return {
-    separator: NL,
+export function separateNewLine(lines = 1): JoinOptions<CompositeGeneratorNode> {
+  if (lines > 1) {
+    let suffix = fresh(undefined)
+    for (let i = 0; i < lines; i++) {
+      suffix.out.appendNewLine()
+    }
+    return separateWith(suffix.out)
   }
+  return separateWith(NL)
+}
+
+export function separateComma(): JoinOptions<CompositeGeneratorNode> {
+  return separateWith(', ')
 }
 
 /**
@@ -608,7 +648,7 @@ export function guard<A, N extends A>(
  */
 export function when<A>(
   condition: (ctx: A) => boolean,
-  ...ops: Ops<A>
+  ...ops: Ops<NoInfer<A>>
 ): Op<A> {
   return operation('when', ({ ctx, out }) => {
     if (condition(ctx)) {

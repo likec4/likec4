@@ -1,34 +1,37 @@
-import type { ElementSpecification, Icon, RelationshipSpecification, Tag, TagSpecification } from '@likec4/core/types'
+import type { Icon, Tag, TagSpecification } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
-import { materialize } from './base'
-import { printSpecification } from './specification'
+import { type SpecificationInput, SpecificationSchema } from '../types'
+import { fresh, materialize } from './base'
+import { specificationOp } from './specification'
 
-function render(spec: Parameters<typeof printSpecification>[0]): string {
-  return materialize(printSpecification(spec))
+function render(spec: SpecificationInput): string {
+  const ctx = SpecificationSchema.parse(spec)
+  return materialize(
+    specificationOp()(fresh(ctx)),
+  )
 }
 
 const emptySpec = {
-  elements: {} as Record<string, Partial<ElementSpecification>>,
-  deployments: {} as Record<string, Partial<ElementSpecification>>,
-  relationships: {} as Record<string, Partial<RelationshipSpecification>>,
-  tags: {} as Record<string, TagSpecification>,
+  // elements: {} as Record<string, Partial<ElementSpecification>>,
+  // deployments: {} as Record<string, Partial<ElementSpecification>>,
+  // relationships: {} as Record<string, Partial<RelationshipSpecification>>,
+  // tags: {} as Record<string, TagSpecification>,
 }
 
 describe('printSpecification', () => {
   it('outputs specification block with no content for empty spec', () => {
-    const output = render(emptySpec)
-    expect(output).toMatchInlineSnapshot(`"specification {}"`)
+    const output = render({})
+    expect(output).toBe('')
   })
 
   it('prints element kinds without body when no props', () => {
     const output = render({
-      ...emptySpec,
       elements: { person: {}, system: {} },
     })
     expect(output).toMatchInlineSnapshot(`
       "specification {
-        element person {}
-        element system {}
+        element person
+        element system
       }"
     `)
   })
@@ -79,72 +82,48 @@ describe('printSpecification', () => {
 
   it.todo('prints deployment node kinds')
 
-  it.todo('prints relationship kinds without body')
+  it('prints relationship kinds without body', () => {
+    expect(render({
+      ...emptySpec,
+      relationships: { async: {}, sync: {} },
+    })).toMatchInlineSnapshot(`
+      "specification {
+        relationship async
+        relationship sync
+      }"
+    `)
+  })
 
-  // it('prints relationship kinds without body', () => {
-  //   const output = render({
-  //     ...emptySpec,
-  //     relationships: { async: {} },
-  //   })
-  //   expect(output).toContain('relationship async')
-  //   expect(output).not.toContain('relationship async {')
-  // })
-
-  // it('prints relationship kinds with props', () => {
-  //   const output = render({
-  //     ...emptySpec,
-  //     relationships: {
-  //       async: { color: 'amber', line: 'dotted' } as Partial<RelationshipSpecification>,
-  //     },
-  //   })
-  //   expect(output).toContain('relationship async {')
-  //   expect(output).toContain('color amber')
-  //   expect(output).toContain('line dotted')
-  // })
-
-  // it('prints tags without hex/rgb color as plain tag', () => {
-  //   const output = render({
-  //     ...emptySpec,
-  //     tags: { internal: { color: 'muted' } as TagSpecification },
-  //   })
-  //   expect(output).toContain('tag internal')
-  //   expect(output).not.toContain('tag internal {')
-  // })
-
-  // it('prints tags with hex color in block', () => {
-  //   const output = render({
-  //     ...emptySpec,
-  //     tags: { deprecated: { color: '#ff0000' } as TagSpecification },
-  //   })
-  //   expect(output).toContain('tag deprecated {')
-  //   expect(output).toContain('color #ff0000')
-  // })
-
-  // it('prints metadata keys', () => {
-  //   const output = render({
-  //     ...emptySpec,
-  //     metadataKeys: ['key1', 'key2'],
-  //   })
-  //   expect(output).toContain('metadataKey key1')
-  //   expect(output).toContain('metadataKey key2')
-  // })
-
-  // it('prints custom colors from ThemeColorValues', () => {
-  //   const output = render({
-  //     ...emptySpec,
-  //     customColors: {
-  //       primary: {
-  //         elements: { hiContrast: '#ffffff', loContrast: '#cccccc', fill: '#000000', stroke: '#111111' },
-  //         relationships: { line: '#222222', labelBg: '#333333', label: '#444444' },
-  //       } as ThemeColorValues,
-  //     },
-  //   })
-  //   expect(output).toContain('color primary #ffffff')
-  // })
+  it('prints relationship kinds with props', () => {
+    expect(
+      render({
+        relationships: {
+          likes: {},
+          async: {
+            technology: 'HTTP',
+            head: 'diamond',
+            tail: 'vee',
+            color: 'amber',
+            line: 'dotted',
+          },
+        },
+      }),
+    ).toMatchInlineSnapshot(`
+      "specification {
+        relationship likes
+        relationship async {
+          technology 'HTTP'
+          color amber
+          line dotted
+          head diamond
+          tail vee
+        }
+      }"
+    `)
+  })
 
   it('prints element kind with tags and links', () => {
     const output = render({
-      ...emptySpec,
       elements: {
         service: {
           tags: ['internal', 'v2'] as Tag[],
@@ -164,46 +143,56 @@ describe('printSpecification', () => {
 
   it('prints single tag', () => {
     const output = render({
-      ...emptySpec,
       tags: { internal: { color: 'muted' } as TagSpecification },
     })
     expect(output).toMatchInlineSnapshot(`
       "specification {
-        tag internal
+        tag internal {
+          color muted
+        }
       }"
     `)
   })
 
   it('prints multiple tags', () => {
     const output = render({
-      ...emptySpec,
       tags: {
-        internal: { color: 'muted' } as TagSpecification,
-        deprecated: { color: 'red' } as TagSpecification,
-        experimental: { color: 'amber' } as TagSpecification,
+        internal: { color: 'muted' },
+        deprecated: {},
+        experimental: { color: 'amber' },
       },
     })
     expect(output).toMatchInlineSnapshot(`
       "specification {
-        tag internal
+        tag internal {
+          color muted
+        }
         tag deprecated
-        tag experimental
+        tag experimental {
+          color amber
+        }
       }"
     `)
   })
 
-  it('prints elements and tags together separated by blank lines', () => {
+  it('prints elements, relationships and tags together separated by blank lines', () => {
     const output = render({
       ...emptySpec,
       elements: { person: {}, system: {} },
+      relationships: { async: {}, sync: {} },
       tags: { internal: { color: 'muted' } as TagSpecification },
     })
     expect(output).toMatchInlineSnapshot(`
       "specification {
-        element person {}
-        element system {}
+        element person
+        element system
 
-        tag internal
+        relationship async
+        relationship sync
+
+        tag internal {
+          color muted
+        }
       }"
     `)
   })
@@ -297,20 +286,18 @@ describe('printSpecification', () => {
   })
 
   it('prints element kind with icon style properties', () => {
-    const output = render({
-      ...emptySpec,
+    expect(render({
       elements: {
         service: {
           style: {
-            icon: 'mdi:server' as Icon,
+            icon: 'mdi:server',
             iconColor: 'green',
             iconSize: 'xl',
             iconPosition: 'top',
           },
         },
       },
-    })
-    expect(output).toMatchInlineSnapshot(`
+    })).toMatchInlineSnapshot(`
       "specification {
         element service {
           style {

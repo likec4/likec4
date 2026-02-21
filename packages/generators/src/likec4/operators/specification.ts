@@ -1,8 +1,13 @@
-import type { ThemeColorValues } from '@likec4/core/styles'
-import type { ElementSpecification, RelationshipSpecification, TagSpecification } from '@likec4/core/types'
+import {
+  type Tag,
+} from '@likec4/core/types'
 import { entries } from 'remeda'
 import {
-  type AnyOp,
+  type ElementSpecificationData,
+  type RelationshipSpecificationData,
+  type SpecificationData,
+} from '../types'
+import {
   type Op,
   body,
   foreachNewLine,
@@ -11,7 +16,6 @@ import {
   property,
   select,
   spaceBetween,
-  withctx,
 } from './base'
 import {
   colorProperty,
@@ -19,57 +23,55 @@ import {
   enumProperty,
   linksProperty,
   notationProperty,
-  styleProperty,
+  styleProperties,
   summaryProperty,
   tagsProperty,
   technologyProperty,
   titleProperty,
 } from './properties'
 
-interface SpecificationData {
-  customColors?: Record<string, ThemeColorValues>
-  elements: Record<string, Partial<ElementSpecification>>
-  deployments: Record<string, Partial<ElementSpecification>>
-  relationships: Record<string, Partial<RelationshipSpecification>>
-  tags: Record<string, Partial<TagSpecification>>
-}
-
-export function printSpecification(data: SpecificationData): AnyOp {
+export function specificationOp(): Op<SpecificationData> {
   return body('specification')(
-    withctx(data)(
-      lines(2)(
-        select(
-          c => entries(c.elements),
-          foreachNewLine(
-            elementSpecification(),
-          ),
+    lines(2)(
+      select(
+        c => c.elements && entries(c.elements),
+        foreachNewLine(
+          elementSpecification(),
         ),
-        select(
-          c => entries(c.relationships),
-          foreachNewLine(
-            relationshipSpecification(),
-          ),
+      ),
+      select(
+        c => c.relationships && entries(c.relationships),
+        foreachNewLine(
+          relationshipSpecification(),
         ),
-        select(
-          c => entries(c.tags),
-          foreachNewLine(
-            tagSpecification(),
-          ),
+      ),
+      select(
+        c => c.tags && entries(c.tags),
+        foreachNewLine(
+          tagSpecification(),
         ),
       ),
     ),
   )
 }
 
-export function tagSpecification(): Op<[string, Partial<TagSpecification>]> {
+export function tagSpecification(): Op<[Tag, { color?: string | undefined }]> {
   return spaceBetween(
     print('tag'),
-    property('0', print()),
-    // property('1', body(printTags())),
+    property('0'),
+    select(
+      v => v[1].color,
+      body<string>(
+        spaceBetween(
+          print('color'),
+          print(),
+        ),
+      ),
+    ),
   )
 }
 
-export function elementSpecification(): Op<[string, Partial<ElementSpecification>]> {
+export function elementSpecification(): Op<[string, ElementSpecificationData]> {
   return spaceBetween(
     print('element'),
     property('0'),
@@ -83,13 +85,18 @@ export function elementSpecification(): Op<[string, Partial<ElementSpecification
         technologyProperty(),
         notationProperty(),
         linksProperty(),
-        styleProperty(),
+        property(
+          'style',
+          body('style')(
+            styleProperties(),
+          ),
+        ),
       ),
     ),
   )
 }
 
-export function relationshipSpecification(): Op<[string, Partial<RelationshipSpecification>]> {
+export function relationshipSpecification(): Op<[string, RelationshipSpecificationData]> {
   return spaceBetween(
     print('relationship'),
     property('0'),
@@ -98,14 +105,11 @@ export function relationshipSpecification(): Op<[string, Partial<RelationshipSpe
       body(
         technologyProperty(),
         notationProperty(),
-        body('style')(
-          colorProperty(),
-          enumProperty('line'),
-          enumProperty('head'),
-          enumProperty('tail'),
-        ),
+        colorProperty(),
+        enumProperty('line'),
+        enumProperty('head'),
+        enumProperty('tail'),
       ),
     ),
-    // property('1', body(printTags())),
   )
 }
