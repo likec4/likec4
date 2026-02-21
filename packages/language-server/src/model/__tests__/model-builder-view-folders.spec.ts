@@ -4,7 +4,7 @@ import { createTestServices } from '../../test'
 
 describe('LikeC4ModelBuilder -- view folders', () => {
   it('without view folders', async ({ expect }) => {
-    const { validate, buildLikeC4Model } = createTestServices()
+    const { validate, buildLikeC4Model } = createTestServices({ projectConfig: {} })
     const { errors } = await validate(`
       specification {
         element component
@@ -21,20 +21,15 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     `)
     expect(errors).toEqual([])
     const model = await buildLikeC4Model()
-    // hasViewFolders is true because implicit view creates "Auto" folder
-    expect(model.hasViewFolders).toBe(true)
+    expect(model.hasViewFolders).toBe(false)
     expect([...model.rootViewFolder.children]).toEqual([
-      model.viewFolder('Auto'),
       model.view('index'),
       model.view('v1'),
-    ])
-    expect([...model.viewFolder('Auto').views]).toEqual([
-      model.view('__sys1'),
     ])
   })
 
   it('view folders are created', async ({ expect }) => {
-    const { validate, buildLikeC4Model } = createTestServices()
+    const { validate, buildLikeC4Model } = createTestServices({ projectConfig: {} })
     const { errors } = await validate(`
       specification {
         element component
@@ -58,12 +53,8 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     const model = await buildLikeC4Model()
     expect(model.hasViewFolders).toBe(true)
     expect([...model.rootViewFolder.children]).toEqual([
-      model.viewFolder('Auto'),
       model.viewFolder('Group 1'),
       model.view('index'),
-    ])
-    expect([...model.viewFolder('Auto').views]).toEqual([
-      model.view('__sys1'),
     ])
     expect([...model.viewFolder('Group 1').children]).toEqual([
       model.viewFolder('Group 1/Subgroup 2'),
@@ -72,7 +63,7 @@ describe('LikeC4ModelBuilder -- view folders', () => {
   })
 
   it('views inherit folder from block', async ({ expect }) => {
-    const { validate, buildLikeC4Model } = createTestServices()
+    const { validate, buildLikeC4Model } = createTestServices({ projectConfig: {} })
     const { errors } = await validate(`
       specification {
         element component
@@ -100,12 +91,8 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     const model = await buildLikeC4Model()
     expect(model.hasViewFolders).toBe(true)
     expect([...model.rootViewFolder.children]).toEqual([
-      model.viewFolder('Auto'),
       model.viewFolder('Group 1'),
       model.view('index'),
-    ])
-    expect([...model.viewFolder('Auto').views]).toEqual([
-      model.view('__sys1'),
     ])
     expect([...model.viewFolder('Group 1').children]).toEqual([
       model.viewFolder('Group 1/Subgroup 2'),
@@ -115,7 +102,7 @@ describe('LikeC4ModelBuilder -- view folders', () => {
   })
 
   it('preserves view order', async ({ expect }) => {
-    const { validate, buildModel, buildLikeC4Model } = createTestServices()
+    const { validate, buildModel, buildLikeC4Model } = createTestServices({ projectConfig: {} })
     const { errors } = await validate(`
       specification {
         element component
@@ -142,23 +129,75 @@ describe('LikeC4ModelBuilder -- view folders', () => {
       'b',
       'c',
       'a',
-      '__sys1',
     ])
 
     const model = await buildLikeC4Model()
     expect(model.hasViewFolders).toBe(true)
     expect([...model.rootViewFolder.children]).toEqual([
-      model.viewFolder('Auto'),
       model.viewFolder('Group 1'),
       model.view('index'),
-    ])
-    expect([...model.viewFolder('Auto').views]).toEqual([
-      model.view('__sys1'),
     ])
     expect([...model.viewFolder('Group 1').views]).toEqual([
       model.view('b'),
       model.view('c'),
       model.view('a'),
     ])
+  })
+
+  it('implicit views are placed in Auto folder', async ({ expect }) => {
+    const { validate, buildLikeC4Model } = createTestServices({
+      projectConfig: { implicitViews: true },
+    })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+      }
+      views {
+        view v1 {
+          title 'View 1'
+          include *
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+    const model = await buildLikeC4Model()
+    expect(model.hasViewFolders).toBe(true)
+    expect([...model.rootViewFolder.children]).toEqual([
+      model.viewFolder('Auto'),
+      model.view('index'),
+      model.view('v1'),
+    ])
+    expect([...model.viewFolder('Auto').views]).toEqual([
+      model.view('__sys1'),
+    ])
+  })
+
+  it('implicit views skip elements with explicit scoped views', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices({
+      projectConfig: { implicitViews: true },
+    })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+      }
+      views {
+        view sys1view of sys1 {
+          include *
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+    const model = await buildModel()
+    // sys1 has an explicit scoped view, so no implicit view for it
+    // sys2 gets an implicit view __sys2
+    expect(keys(model.views)).toContain('__sys2')
+    expect(keys(model.views)).not.toContain('__sys1')
   })
 })
