@@ -1,7 +1,7 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.49.0",
+  "version": "1.50.0",
   "private": true,
   "scripts": {
     "update-theme-c4": "tsx scripts/generate-theme-c4.mts",

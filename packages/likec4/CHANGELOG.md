@@ -1,5 +1,27 @@
 # likec4
 
+## 1.50.0
+
+### Patch Changes
+
+- [#2630](https://github.com/likec4/likec4/pull/2630) [`68ab5f6`](https://github.com/likec4/likec4/commit/68ab5f6652b43f2f6e52fd3cd2736cdc3672e3cf) Thanks [@sraphaz](https://github.com/sraphaz)! - Draw.io: CLI --roundtrip, Playground E2E, DrawioContextMenu getSourceContent
+
+  - **CLI:** `likec4 export drawio --roundtrip` reads all `.c4`/`.likec4` files in the workspace, parses round-trip comment blocks (layout, stroke colors/widths, edge waypoints), and applies them when generating each view's `.drawio` file.
+  - **Docs:** CLI reference updated with `--roundtrip` and `--all-in-one` options.
+  - **Playground:** `DrawioContextMenu` component accepts optional `getSourceContent` for round-trip export when used outside the provider.
+  - **E2E:** New Playwright config and test for Draw.io context menu in the Playground (`pnpm test:playground` from e2e/).
+
+- [#2639](https://github.com/likec4/likec4/pull/2639) [`871f134`](https://github.com/likec4/likec4/commit/871f134911d3a1313c62fb002f2834e94dc305d0) Thanks [@davydkov](https://github.com/davydkov)! - Enable "Export to Draw.io" in the app's export menu — opens app.diagrams.net with the current diagram pre-loaded
+
+- [#2630](https://github.com/likec4/likec4/pull/2630) [`68ab5f6`](https://github.com/likec4/likec4/commit/68ab5f6652b43f2f6e52fd3cd2736cdc3672e3cf) Thanks [@sraphaz](https://github.com/sraphaz)! - Draw.io export alignment; cross-platform postpack; language-server worker.
+
+  - **Draw.io export:** Generators and CLI export views to Draw.io (.drawio); round-trip comment blocks (layout, stroke, waypoints) and postpack behavior only. No import/parser in this PR.
+  - **Postpack:** `likec4ops postpack` copies packed tgz to package.tgz (cross-platform); all packages use it instead of `cp` so pack/lint:package works on Windows.
+  - **Language-server:** Safe error stringification in browser worker for oxlint.
+
+- Updated dependencies [[`fe468d8`](https://github.com/likec4/likec4/commit/fe468d830544e6f0051ea2203ab137d46932d11e)]:
+  - @likec4/core@1.50.0
+
 ## 1.49.0
 
 ### Patch Changes

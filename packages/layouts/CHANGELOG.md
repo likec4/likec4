@@ -1,5 +1,13 @@
 # @likec4/layouts
 
+## 1.50.0
+
+### Patch Changes
+
+- Updated dependencies [[`fe468d8`](https://github.com/likec4/likec4/commit/fe468d830544e6f0051ea2203ab137d46932d11e)]:
+  - @likec4/core@1.50.0
+  - @likec4/log@1.50.0
+
 ## 1.49.0
 
 ### Patch Changes
