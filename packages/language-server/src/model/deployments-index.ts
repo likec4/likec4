@@ -79,7 +79,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
         return [desc]
       }
 
-      const traversedNested = nested.flatMap(child => traverseElement(child as ast.DeploymentElement, thisFqn))
+      const traversedNested = flatMap(nested, child => traverseElement(child, thisFqn))
       for (const descendant of traversedNested) {
         descendants.set(thisFqn, descendant)
       }
@@ -92,7 +92,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
       const nested = pipe(
         el.body?.elements ?? [],
         filter(_isDeployment),
-        flatMap(child => traverseElement(child as ast.DeploymentElement, thisFqn)),
+        flatMap(child => traverseElement(child, thisFqn)),
       )
       if (nested.length === 0) {
         return
@@ -110,7 +110,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
           traverseExtend(node)
           continue
         }
-        traverseElement(node as ast.DeploymentElement, null)
+        traverseElement(node, null)
       } catch (error) {
         this.logger.warn(
           `Error while traversing element {el} in document {doc}`,
