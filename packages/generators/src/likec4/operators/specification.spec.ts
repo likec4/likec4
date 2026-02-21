@@ -143,12 +143,12 @@ describe('printSpecification', () => {
 
   it('prints single tag', () => {
     const output = render({
-      tags: { internal: { color: 'muted' } as TagSpecification },
+      tags: { internal: { color: '#AAA' } },
     })
     expect(output).toMatchInlineSnapshot(`
       "specification {
         tag internal {
-          color muted
+          color #AAA
         }
       }"
     `)
@@ -157,19 +157,19 @@ describe('printSpecification', () => {
   it('prints multiple tags', () => {
     const output = render({
       tags: {
-        internal: { color: 'muted' },
+        internal: { color: '#AAA' },
         deprecated: {},
-        experimental: { color: 'amber' },
+        experimental: { color: '#FFC107' },
       },
     })
     expect(output).toMatchInlineSnapshot(`
       "specification {
         tag internal {
-          color muted
+          color #AAA
         }
         tag deprecated
         tag experimental {
-          color amber
+          color #FFC107
         }
       }"
     `)
@@ -180,7 +180,7 @@ describe('printSpecification', () => {
       ...emptySpec,
       elements: { person: {}, system: {} },
       relationships: { async: {}, sync: {} },
-      tags: { internal: { color: 'muted' } as TagSpecification },
+      tags: ['internal'],
     })
     expect(output).toMatchInlineSnapshot(`
       "specification {
@@ -190,9 +190,7 @@ describe('printSpecification', () => {
         relationship async
         relationship sync
 
-        tag internal {
-          color muted
-        }
+        tag internal
       }"
     `)
   })

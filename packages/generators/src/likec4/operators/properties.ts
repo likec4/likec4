@@ -68,7 +68,7 @@ export function markdownProperty<A>(
   )
 }
 
-export const titleProperty = <A extends { title?: string | null }>(): Op<A> =>
+export const titleProperty = <A extends { title?: string | null | undefined }>(): Op<A> =>
   property(
     'title',
     spaceBetween(
@@ -77,7 +77,7 @@ export const titleProperty = <A extends { title?: string | null }>(): Op<A> =>
     ),
   )
 
-export const summaryProperty = <A extends { summary?: MarkdownOrString | null }>(): Op<A> =>
+export const summaryProperty = <A extends { summary?: MarkdownOrString | null | undefined }>(): Op<A> =>
   property(
     'summary',
     spaceBetween(
@@ -86,7 +86,7 @@ export const summaryProperty = <A extends { summary?: MarkdownOrString | null }>
     ),
   )
 
-export const descriptionProperty = <A extends { description?: MarkdownOrString | null }>(): Op<A> =>
+export const descriptionProperty = <A extends { description?: MarkdownOrString | null | undefined }>(): Op<A> =>
   property(
     'description',
     spaceBetween(
@@ -95,7 +95,7 @@ export const descriptionProperty = <A extends { description?: MarkdownOrString |
     ),
   )
 
-export const technologyProperty = <A extends { technology?: string | null }>(): Op<A> =>
+export const technologyProperty = <A extends { technology?: string | null | undefined }>(): Op<A> =>
   property(
     'technology',
     spaceBetween(
@@ -104,7 +104,7 @@ export const technologyProperty = <A extends { technology?: string | null }>(): 
     ),
   )
 
-export const notationProperty = <A extends { notation?: string | null }>(): Op<A> =>
+export const notationProperty = <A extends { notation?: string | null | undefined }>(): Op<A> =>
   property(
     'notation',
     spaceBetween(

@@ -23,6 +23,7 @@ import type {
   ViewRuleGlobalStyle,
 } from '@likec4/core/types'
 import { hasAtLeast, piped, values } from 'remeda'
+import type { ModelExpressionData } from '../types'
 import {
   type AnyOp,
   type Op,
@@ -67,14 +68,14 @@ export function elementViewRulePredicate(): Op<ElementViewPredicate> {
         print(type),
         indent(
           lines(
-            ...exprs.map(e => withctx(e, modelExpression())),
+            ...exprs.map(e => withctx(e as ModelExpressionData, modelExpression())),
           ),
         ),
       )({ ctx, out })
     }
     return spaceBetween(
       print(type),
-      ...exprs.map(e => withctx(e, modelExpression())),
+      ...exprs.map(e => withctx(e as ModelExpressionData, modelExpression())),
     )({ ctx, out })
   })
 }
@@ -87,7 +88,7 @@ export function elementViewRuleStyle(): Op<ElementViewRuleStyle> {
     property(
       'targets',
       foreach(
-        modelExpression(),
+        modelExpression() as Op<ElementViewRuleStyle['targets'][number]>,
         {
           separator: ', ',
         },
