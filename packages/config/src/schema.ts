@@ -91,6 +91,15 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),
   manualLayouts: ManualLayoutsConfigSchema.optional(),
+  inferTechnologyFromIcon: z.boolean()
+    .optional()
+    .meta({
+      description: [
+        'Automatically derive element technology from icon name when technology is not set explicitly.',
+        'Applies to aws:, azure:, gcp:, and tech: icons. Bootstrap icons are excluded.',
+        'Defaults to true.',
+      ].join('\n'),
+    }),
 })
   .meta({
     id: 'LikeC4ProjectConfig',

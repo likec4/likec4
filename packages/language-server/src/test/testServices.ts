@@ -52,6 +52,7 @@ export function createTestServices(options?: {
           contactPerson: projectConfig?.contactPerson || 'Unknown',
           imageAliases: projectConfig?.imageAliases || {},
           exclude: projectConfig?.exclude || ['node_modules'],
+          inferTechnologyFromIcon: projectConfig?.inferTechnologyFromIcon,
         },
         folderUri: projectFolderUri,
       })
