@@ -9,7 +9,7 @@ catalog:
   '@changesets/changelog-github': ^0.5.2
   '@changesets/cli': ^2.29.8
   '@dagrejs/dagre': 1.1.8
-  '@types/node': ~22.19.10
+  '@types/node': ~22.19.11
   '@types/pako': ^2.0.3
   '@typescript/native-preview': 7.0.0-dev.20260208.1
   graphology: ^0.26.0
@@ -47,9 +47,9 @@ catalogs:
     '@cloudflare/vite-plugin': ~1.23.1
     wrangler: ~4.63.0
   css:
-    '@pandacss/dev': ^1.8.1
-    '@pandacss/preset-panda': ^1.8.1
-    '@pandacss/types': ^1.8.1
+    '@pandacss/dev': ^1.8.2
+    '@pandacss/preset-panda': ^1.8.2
+    '@pandacss/types': ^1.8.2
     '@tailwindcss/vite': ^4.1.18
     postcss: 8.5.6
     tailwindcss: ^4.1.18
@@ -104,7 +104,7 @@ catalogs:
     react: 19.2.4
     react-dom: 19.2.4
     react-error-boundary: ^6.1.0
-    react-resizable-panels: ^4.5.2
+    react-resizable-panels: ^4.6.4
     react-shadow: ^20.6.0
   tanstack:
     '@tanstack/pacer': ^0.17.3
@@ -138,7 +138,7 @@ catalogs:
     p-debounce: 5.1.0
     p-limit: 7.3.0
     p-queue: 8.1.1
-    p-timeout: 6.1.4
+    p-timeout: 7.0.1
     package-manager-detector: 1.6.0
     package-up: ^5.0.0
     pathe: ^2.0.3

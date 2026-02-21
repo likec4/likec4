@@ -1,5 +1,5 @@
 import { Box, Button, Group, Notification, ScrollAreaAutosize, Stack, Text } from '@mantine/core'
-import { QueryErrorResetBoundary } from '@tanstack/react-query'
+import { QueryErrorResetBoundary, useQueryErrorResetBoundary } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
 import { isError, isNullish, isObjectType } from 'remeda'
@@ -7,11 +7,11 @@ import { stateAlert } from './App.css'
 import { ExtensionApi as extensionApi } from './vscode'
 
 export const ErrorMessage = ({ error, onReset }: { error: Error | string | null; onReset?: () => void }) => {
-  return <Fallback error={error} resetErrorBoundary={onReset ?? extensionApi.closeMe} />
+  const { reset } = useQueryErrorResetBoundary()
+  return <Fallback error={error} resetErrorBoundary={onReset ?? reset ?? extensionApi.closeMe} />
 }
 
 const Fallback = ({ error: _error, resetErrorBoundary }: FallbackProps) => {
-  console.error(`ErrorBoundary: ${_error}`, { _error })
   let message = 'Unknown error, check the console for more details'
   const error = _error as any
   try {

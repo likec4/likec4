@@ -41,6 +41,7 @@
     "@vitejs/plugin-react": "catalog:vite",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
+    "fast-equals": "catalog:utils",
     "esm-env": "catalog:utils",
     "nanostores": "catalog:react",
     "object-hash": "catalog:utils",
