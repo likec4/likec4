@@ -1,5 +1,38 @@
 # @likec4/core
 
+## 1.49.0
+
+### Patch Changes
+
+- [`f42c046`](https://github.com/likec4/likec4/commit/f42c046cd4bf1a3f4037cb2020268e729f018300) Thanks [@davydkov](https://github.com/davydkov)! - First iteration of element notes feature to diagrams
+
+  - Add notes property to NodeModel for element annotations
+  - Add enableNotes prop to diagram components for controlling notes display
+  - Implement visual notes indicator with paper-like styling
+  - Support notes in all node types (elements, deployment, sequence actors)
+  - Add hover effects and animations for notes indicators
+
+- [#2624](https://github.com/likec4/likec4/pull/2624) [`507bab3`](https://github.com/likec4/likec4/commit/507bab30cf9e30450cedfc4b27f67718a387b2e7) Thanks [@davydkov](https://github.com/davydkov)! - Enhanced hover tooltips in editor now show relationship counts and clickable links to views containing the element
+
+- [`e10ea04`](https://github.com/likec4/likec4/commit/e10ea04bd2119b83cbd4c625640e63cd6e3f2e96) Thanks [@davydkov](https://github.com/davydkov)! - Fix compound nodes not respecting border style from defaults
+  Closes [#2501](https://github.com/like-c4/like-c4/issues/2501)
+
+- [`731a6cb`](https://github.com/likec4/likec4/commit/731a6cb278ef6bc06280bf1ba3b2d8f79c7d7fe6) Thanks [@davydkov](https://github.com/davydkov)! - Add notes to the elements and relationships using `with`. Example:
+
+  ```
+  view {
+    include
+      some.element with {
+        notes '''
+          This is a note for some.element.
+          It can contain multiple lines and **markdown** formatting.
+        '''
+      }
+  }
+  ```
+
+  Relates to [#2567](https://github.com/likec4/likec4/issues/2567)
+
 ## 1.48.0
 
 ### Minor Changes

@@ -2,7 +2,7 @@
   "name": "@likec4/style-preset",
   "description": "Shared PandaCSS preset used in LikeC4",
   "license": "MIT",
-  "version": "1.48.0",
+  "version": "1.49.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -14,7 +14,7 @@
     "generate": "obuild",
     "typecheck": "tsc --noEmit",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-style-preset-$npm_package_version.tgz package.tgz || true",
+    "postpack": "likec4ops postpack",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean"
   },

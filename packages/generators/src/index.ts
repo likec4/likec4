@@ -1,6 +1,20 @@
 export { generateD2 } from './d2/generate-d2'
-export { generateDrawio } from './drawio/generate-drawio'
-export { parseDrawioToLikeC4 } from './drawio/parse-drawio'
+export { DEFAULT_DRAWIO_ALL_FILENAME } from './drawio/constants'
+export {
+  buildDrawioExportOptionsForViews,
+  buildDrawioExportOptionsFromSource,
+  type DrawioViewModelLike,
+  generateDrawio,
+  generateDrawioEditUrl,
+  generateDrawioMulti,
+  type GenerateDrawioOptions,
+} from './drawio/generate-drawio'
+export {
+  getAllDiagrams,
+  parseDrawioRoundtripComments,
+  parseDrawioToLikeC4,
+  parseDrawioToLikeC4Multi,
+} from './drawio/parse-drawio'
 export { generateLikeC4 } from './likec4/generate-likec4'
 export { generateMermaid } from './mmd/generate-mmd'
 export { generateLikeC4Model } from './model/generate-likec4-model'

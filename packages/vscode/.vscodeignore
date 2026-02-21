@@ -2,6 +2,8 @@
 
 !dist/**/*.html
 !dist/**/*.js
+!dist/**/*.cjs
+!dist/**/*.mjs
 !dist/**/*.css
 !data/
 !package.json

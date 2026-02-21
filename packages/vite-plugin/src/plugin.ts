@@ -1,6 +1,6 @@
 import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
-import { fromWorkspace } from '@likec4/language-services'
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { loggable } from '@likec4/log'
 import { isDeepEqual, map } from 'remeda'
 import type {
@@ -12,6 +12,7 @@ import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
+import { drawioModule, projectDrawioModule } from './virtuals/drawio'
 import { iconsModule, projectIconsModule } from './virtuals/icons'
 import { mmdModule, projectMmdSourcesModule } from './virtuals/mmd'
 import { modelModule, projectModelModule } from './virtuals/model'
@@ -67,7 +68,7 @@ export type LikeC4VitePluginOptions =
     languageServices?: never
   } | {
     /**
-     * If you have instance of {@link LikeC4}
+     * If you have instance of {@link LikeC4LanguageServices}
      * you can pass `languageServices` from it.
      */
     languageServices: LikeC4LanguageServices
@@ -85,6 +86,7 @@ const hmrProjectVirtuals = [
   projectDotSourcesModule,
   projectMmdSourcesModule,
   projectPumlModule,
+  projectDrawioModule,
 ]
 const projectVirtuals = [
   ...hmrProjectVirtuals,
@@ -101,6 +103,7 @@ const virtuals = [
   dotModule,
   mmdModule,
   pumlModule,
+  drawioModule,
   iconsModule,
   rpcModule,
 ]

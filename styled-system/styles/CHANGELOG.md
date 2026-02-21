@@ -1,5 +1,11 @@
 # @likec4/styles
 
+## 1.49.0
+
+### Patch Changes
+
+- [`e10ea04`](https://github.com/likec4/likec4/commit/e10ea04bd2119b83cbd4c625640e63cd6e3f2e96) Thanks [@davydkov](https://github.com/davydkov)! - Set fixed icon sizes for consistent rendering
+
 ## 1.48.0
 
 ### Minor Changes

@@ -1,4 +1,5 @@
 import { copyFile, mkdir } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 import { defineBuildConfig } from 'obuild/config'
 import { isProduction } from 'std-env'
 
@@ -10,12 +11,12 @@ export default defineBuildConfig({
   entries: [{
     type: 'bundle',
     input: [
-      'src/cli/index.ts',
+      'src/vite-plugin/internal.ts',
+      'src/vite-plugin/index.ts',
       'src/config/index.ts',
       'src/model/builder.ts',
       'src/model/index.ts',
-      'src/vite-plugin/internal.ts',
-      'src/vite-plugin/index.ts',
+      'src/cli/index.ts',
       'src/index.ts',
     ],
     minify: {
@@ -44,7 +45,8 @@ export default defineBuildConfig({
   }],
   hooks: {
     end: async () => {
-      await copyFile('./src/vite-plugin/modules.d.ts', './vite-plugin-modules.d.ts')
+      const vitePluginModulesPath = fileURLToPath(import.meta.resolve('@likec4/vite-plugin/modules'))
+      await copyFile(vitePluginModulesPath, './vite-plugin-modules.d.ts')
       await mkdir('./config', { recursive: true })
       await copyFile('../config/schema.json', './config/schema.json')
     },

@@ -18,7 +18,7 @@ import type {
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
 } from './filesystem'
-import { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem'
+import { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/noop'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
   LikeC4GeneratedModule,
@@ -35,13 +35,14 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider,
 } from './lsp'
-import type { LikeC4MCPServer, LikeC4MCPServerFactory, LikeC4MCPServerModuleContext } from './mcp/index'
-import { NoMCPServer } from './mcp/index'
+import { NoMCPServer } from './mcp/noop'
+import type { LikeC4MCPServer, LikeC4MCPServerFactory, LikeC4MCPServerModuleContext } from './mcp/types'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
   DeploymentsIndex,
   FqnIndex,
+  LastSeenArtifacts,
   LikeC4ModelLocator,
   LikeC4ModelParser,
   LikeC4ValueConverter,
@@ -67,6 +68,9 @@ import {
   LikeC4WorkspaceManager,
   ProjectsManager,
 } from './workspace'
+
+export { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/noop'
+export { NoMCPServer } from './mcp/noop'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
@@ -144,6 +148,7 @@ export interface LikeC4AddedServices {
     ModelBuilder: LikeC4ModelBuilder
     ModelLocator: LikeC4ModelLocator
     ModelChanges: LikeC4ModelChanges
+    LastSeen: LastSeenArtifacts
   }
   lsp: {
     // RenameProvider: LikeC4RenameProvider
@@ -208,6 +213,7 @@ export function createLikeC4Module(
       ModelParser: bind(LikeC4ModelParser),
       ModelBuilder: bind(DefaultLikeC4ModelBuilder),
       ModelLocator: bind(LikeC4ModelLocator),
+      LastSeen: bind(LastSeenArtifacts),
     },
     lsp: {
       // RenameProvider: bind(LikeC4RenameProvider),
@@ -249,6 +255,7 @@ export function createLikeC4Module(
  * It is possible to extend/override the context with additional modules
  * See Langium documentation for more details (or at the CliContext in packages/likec4/src/language/module.ts).
  */
+export function createLanguageServices(): { shared: LikeC4SharedServices; likec4: LikeC4Services }
 export function createLanguageServices(
   context: Partial<LanguageServicesContext>,
 ): { shared: LikeC4SharedServices; likec4: LikeC4Services }
@@ -271,7 +278,7 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
   module3: Module<I, I3>,
 ): { shared: LikeC4SharedServices; likec4: I }
 export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & LikeC4Services>(
-  context: Partial<LanguageServicesContext>,
+  context: Partial<LanguageServicesContext> = {},
   module?: Module<I, I1>,
   module2?: Module<I, I2>,
   module3?: Module<I, I3>,

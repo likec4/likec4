@@ -2,8 +2,8 @@
   "name": "root",
   "private": true,
   "license": "MIT",
-  "version": "1.48.0",
-  "packageManager": "pnpm@10.29.2",
+  "version": "1.49.0",
+  "packageManager": "pnpm@10.29.3",
   "type": "module",
   "workspaces": [
     "apps/*",

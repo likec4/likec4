@@ -1,7 +1,14 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { keys } from 'remeda'
 import * as z from 'zod/v3'
 import { likec4Tool } from '../utils'
-import { projectIdSchema } from './_common'
+import { projectConfigSchema, projectIdSchema, serializeConfig } from './_common'
 
 export const readProjectSummary = likec4Tool({
   name: 'read-project-summary',
@@ -18,6 +25,16 @@ Response (JSON object):
 - title: string — human-readable project title
 - folder: string — absolute path to the project root
 - sources: string[] — absolute file paths of model documents
+- config: object — project configuration
+  - name: string — project identifier
+  - title?: string — human-readable title
+  - contactPerson?: string — maintainer contact
+  - metadata?: object — custom project metadata as key-value pairs
+  - extends?: string | string[] — style inheritance paths
+  - exclude?: string[] — file exclusion patterns
+  - include?: object — include configuration (paths, maxDepth, fileThreshold)
+  - manualLayouts?: object — manual layouts config (outDir)
+  - styles?: object — simplified styles (hasTheme, hasDefaults, hasCustomCss)
 - specification: object
   - elementKinds: string[] — all element kinds
   - relationshipKinds: string[] — all relationship kinds
@@ -54,6 +71,11 @@ Example response:
   "sources": [
     "/abs/path/to/workspace/examples/cloud-system/model.c4"
   ],
+  "config": {
+    "name": "cloud-boutique",
+    "title": "Cloud Boutique",
+    "contactPerson": "admin@example.com"
+  },
   "specification": {
     "elementKinds": ["system", "container", "component"],
     "relationshipKinds": ["uses", "depends-on"],
@@ -80,7 +102,7 @@ Example response:
   ],
   "views": [
     {
-      "name": "system-overview",
+      "id": "system-overview",
       "title": "System Overview",
       "type": "element"
     }
@@ -94,6 +116,7 @@ Example response:
     title: z.string(),
     folder: z.string(),
     sources: z.array(z.string()),
+    config: projectConfigSchema.describe('Project configuration'),
     specification: z.object({
       elementKinds: z.array(z.string()),
       relationshipKinds: z.array(z.string()),
@@ -139,6 +162,8 @@ Example response:
   return {
     title: project.title,
     folder: project.folder.fsPath,
+    sources: project.documents?.map(d => d.fsPath) ?? [],
+    config: serializeConfig(project.config),
     specification: {
       elementKinds: keys(model.specification.elements),
       relationshipKinds: keys(model.specification.relationships),
@@ -175,6 +200,5 @@ Example response:
       title: v.titleOrId,
       type: v.$view._type,
     })),
-    sources: project.documents?.map(d => d.fsPath) ?? [],
   }
 })

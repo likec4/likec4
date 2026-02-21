@@ -9,7 +9,8 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 - `packages/` holds:
   - `likec4/` - CLI, Vite plugin, static site generator (main entry point)
   - `core/` - Core and model types, model builder, compute-view, layout drifts detection logic
-  - `language-server/` - Langium-based DSL parser and language services (LSP)
+  - `language-server/` - Langium-based DSL parser and LSP implementation
+  - `language-services/` - Language services initialization (browser and Node.js compatible)
   - `diagram/` - React/ReactFlow diagram renderer
   - `layouts/` - Graphviz-based layout algorithms
   - `generators/` - Export to Mermaid, PlantUML, D2, etc.
@@ -84,3 +85,4 @@ Always run `pnpm generate` after:
 
 - Pre-commit hooks use `nano-staged` to run `dprint` on staged files.
 - Use `.tool-versions` for the expected Node/pnpm versions.
+- The `.cursor/` directory is gitignored; contributors may add their own `.cursor/rules/` locally (e.g. for remotes); do not commit it.

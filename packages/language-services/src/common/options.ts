@@ -8,18 +8,42 @@ export type WithFileSystem = {
   watch?: boolean
 }
 
-export type FromWorkspaceOptions = {
+export type InitOptions = {
   /**
-   * Whether to read manual layouts from the workspace.
+   * By default, if LikeC4 model is invalid, errors are printed to the console.
+   * Disable this behavior by setting this option to false.
+   *
    * @default true
    */
-  manualLayouts?: boolean
-
+  printErrors?: boolean
+  /**
+   * If true, initialization will return rejected promise with the LikeC4 instance.
+   * Use `likec4.getErrors()` to get the errors.
+   * @default false
+   */
+  throwIfInvalid?: boolean
   /**
    * Whether to use the `dot` binary for layouting or the WebAssembly version.
    * @default 'wasm'
    */
   graphviz?: 'wasm' | 'binary'
+
+  /**
+   * Whether to start MCP server
+   *
+   * if port is specified, starts HTTP Streamable MCP server
+   *
+   * @default false
+   */
+  mcp?: false | 'stdio' | { port: number }
+}
+
+export type FromWorkspaceOptions = InitOptions & {
+  /**
+   * Whether to read and use manual layouts from the workspace.
+   * @default true
+   */
+  manualLayouts?: boolean
 
   /**
    * Whether to watch for changes in the workspace.

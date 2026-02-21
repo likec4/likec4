@@ -1,5 +1,6 @@
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type {
+  ColorLiteral,
   ComputedLikeC4ModelData,
   DeploymentFqn,
   DiagramView,
@@ -325,12 +326,16 @@ export namespace GetDocumentTags {
   }
   export type Res = {
     /**
+     * Project ID this document belongs to (or default project if none).
+     */
+    projectId: ProjectId
+    /**
      * Used tags in the document
      */
     tags: Array<{
       name: string
       range: Range
-      color: string
+      color: ColorLiteral
       isSpecification?: boolean
     }>
   }

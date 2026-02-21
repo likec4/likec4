@@ -6,6 +6,7 @@ import {
   isEmpty,
   isEmptyish,
   isNonNullish,
+  only,
   unique,
 } from 'remeda'
 import type {
@@ -17,6 +18,30 @@ import type {
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
 import { logger, logWarnError } from '../../logger'
+
+const iconTechPrefixRe = /^(aws|azure|gcp|tech):(.+)$/
+
+/**
+ * Derives a human-readable technology string from a built-in icon name.
+ * Applies to aws:, azure:, gcp:, and tech: prefixed icons.
+ * Strips `-icon` suffix and converts kebab-case to title case.
+ *
+ * @example
+ * deriveTechnologyFromIcon('tech:apache-flink') // "Apache Flink"
+ * deriveTechnologyFromIcon('tech:codeclimate-icon') // "Codeclimate"
+ * deriveTechnologyFromIcon('aws:simple-storage-service') // "Simple Storage Service"
+ * deriveTechnologyFromIcon('bootstrap:house') // undefined
+ */
+export function deriveTechnologyFromIcon(icon: string | undefined): string | undefined {
+  if (!icon) return undefined
+  const match = iconTechPrefixRe.exec(icon)
+  if (!match) return undefined
+  const name = match[2]!.replace(/-icon$/, '')
+  return name
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
 
 /**
  * The `MergedSpecification` class is responsible for merging multiple parsed
@@ -42,14 +67,28 @@ export class MergedSpecification {
 
   public readonly imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>> = new MultiMap(Set)
 
-  constructor(docs: ReadonlyArray<ParsedLikeC4LangiumDocument>) {
+  // If all documents belong to the same project, we can assign this.projectId to that project ID.
+  // Otherwise, it will be undefined.
+  public readonly projectId: c4.ProjectId | undefined
+
+  public readonly inferTechFromIcon: boolean
+
+  constructor(docs: ReadonlyArray<ParsedLikeC4LangiumDocument>, opts?: { inferTechFromIcon?: boolean }) {
     const tags = {} as ParsedAstSpecification['tags']
+    let projectIds = [] as c4.ProjectId[]
     for (const doc of docs) {
       const {
         c4Specification: spec,
         c4Globals,
         c4Imports,
       } = doc
+
+      let docProjectId = doc.likec4ProjectId
+      if (isNonNullish(docProjectId)) {
+        if (projectIds.length === 0 || projectIds[0] !== docProjectId) {
+          projectIds.push(doc.likec4ProjectId!)
+        }
+      }
 
       Object.assign(tags, spec.tags)
       Object.assign(this.specs.elements, spec.elements)
@@ -65,6 +104,9 @@ export class MergedSpecification {
       }
     }
     this.tags = assignTagColors(tags)
+
+    this.projectId = only(projectIds)
+    this.inferTechFromIcon = opts?.inferTechFromIcon ?? true
   }
 
   /**
@@ -106,13 +148,19 @@ export class MergedSpecification {
           : __kind.tags
       }
 
+      const mergedStyle = exact({
+        ...__kind.style,
+        ...style,
+      }) satisfies c4.ElementStyle
+
+      if (!technology && this.inferTechFromIcon) {
+        technology = deriveTechnologyFromIcon(mergedStyle.icon)
+      }
+
       return exact({
         metadata: metadata && !isEmpty(metadata) ? metadata : undefined,
         notation: __kind.notation,
-        style: exact({
-          ...__kind.style,
-          ...style,
-        }) satisfies c4.ElementStyle,
+        style: mergedStyle,
         links,
         tags,
         summary,

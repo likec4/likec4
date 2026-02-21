@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type {
   DeploymentElementModel,
   DeploymentRelationModel,
@@ -10,6 +17,7 @@ import type {
   aux,
   ProjectId,
 } from '@likec4/core/types'
+import JSON5 from 'json5'
 import z from 'zod/v4'
 import { ImageAliasesSchema } from './schema.image-alias'
 import { type IncludeConfig, IncludeSchema } from './schema.include'
@@ -71,6 +79,9 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .nonempty('Contact person cannot be empty if specified')
     .optional()
     .meta({ description: 'A person who has been involved in creating or maintaining this project' }),
+  metadata: z.record(z.string(), z.any())
+    .optional()
+    .meta({ description: 'Arbitrary metadata as key-value pairs for custom project information' }),
   styles: LikeC4StylesConfigSchema.optional().meta({
     description: 'Project styles customization',
   }),
@@ -80,6 +91,15 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),
   manualLayouts: ManualLayoutsConfigSchema.optional(),
+  inferTechnologyFromIcon: z.boolean()
+    .optional()
+    .meta({
+      description: [
+        'Automatically derive element technology from icon name when technology is not set explicitly.',
+        'Applies to aws:, azure:, gcp:, and tech: icons. Bootstrap icons are excluded.',
+        'Defaults to true.',
+      ].join('\n'),
+    }),
 })
   .meta({
     id: 'LikeC4ProjectConfig',
@@ -255,7 +275,17 @@ export function validateProjectConfig<C extends Record<string, unknown>>(config:
   throw new Error('Config validation failed:\n' + z.prettifyError(parsed.error))
 }
 
+/**
+ * Parses JSON string into a LikeC4ProjectConfig object.
+ * Does not process "extends" - use `loadConfig` function instead
+ */
+export function parseProjectConfigJSON(config: string): LikeC4ProjectConfig {
+  const parsed = JSON5.parse(config.trim() || '{}')
+  return validateProjectConfig(parsed)
+}
+
 export const LikeC4ProjectConfigOps = {
+  parse: parseProjectConfigJSON,
   validate: validateProjectConfig,
   normalizeInclude: (include: z.input<typeof IncludeSchema> | undefined): IncludeConfig => {
     const parsed = IncludeSchema.safeParse(include)

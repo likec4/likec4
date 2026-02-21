@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { SetOptional } from 'type-fest'
+import type { Logger } from 'vite'
 import { build } from 'vite'
 import type { LikeC4ViteConfig } from './config-app.prod'
 import { mkTempPublicDir } from './utils'
@@ -100,6 +101,7 @@ export async function viteBuild({
   // Static website
   await build({
     ...config,
+    customLogger: config.customLogger as Logger,
     publicDir,
     mode: 'production',
   })

@@ -1,5 +1,5 @@
 import { viteWebcomponentConfig } from '#vite/config-webcomponent'
-import { consola } from '@likec4/log'
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { existsSync } from 'node:fs'
 import { copyFile, mkdir, rm, stat } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
@@ -8,7 +8,6 @@ import { hasAtLeast } from 'remeda'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
-import { LikeC4 } from '../../../LikeC4'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
 import { mkTempPublicDir } from '../../../vite/utils'
 import { ensureReact } from '../../ensure-react'
@@ -35,8 +34,7 @@ export async function webcomponentHandler({
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  await using languageServices = await LikeC4.fromWorkspace(path, {
-    logger: 'vite',
+  await using languageServices = await fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })
@@ -74,19 +72,19 @@ export async function webcomponentHandler({
       }
     }
   }
-  consola.debug(`${k.dim('outfilepath')} ${outfilepath}`)
+  logger.debug(`${k.dim('outfilepath')} ${outfilepath}`)
 
   const filename = basename(outfilepath)
-  consola.debug(`${k.dim('filename')} ${filename}`)
+  logger.debug(`${k.dim('filename')} ${filename}`)
 
   const ext = extname(filename).toLocaleLowerCase()
   if (ext !== '.js' && ext !== '.mjs') {
-    consola.warn(`output file ${outfile} has extension "${ext}"`)
+    logger.warn(`output file ${outfile} has extension "${ext}"`)
     throw new Error(`output file ${outfile} must be a .js or .mjs`)
   }
 
   const publicDir = await mkTempPublicDir()
-  consola.debug(`${k.dim('created temp public')} ${publicDir}`)
+  logger.debug(`${k.dim('created temp public')} ${publicDir}`)
 
   const webcomponentConfig = await viteWebcomponentConfig({
     languageServices,
@@ -95,7 +93,7 @@ export async function webcomponentHandler({
     webcomponentPrefix,
     base: '/',
   })
-  consola.debug(`${k.dim('vite build webcomponent')}`)
+  logger.debug(`${k.dim('vite build webcomponent')}`)
   await build({
     ...webcomponentConfig,
     logLevel: 'warn',
@@ -110,7 +108,7 @@ export async function webcomponentHandler({
   await copyFile(viteOutputFile, outfilepath)
   logger.info(`${k.dim('generated')} ${outfilepath}`)
 
-  consola.debug(`${k.dim('remove temp public')}`)
+  logger.debug(`${k.dim('remove temp public')}`)
   await rm(publicDir, { recursive: true, force: true })
 
   timer.stopAndLog()

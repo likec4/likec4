@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@10.28.2",
+  "packageManager": "pnpm@10.29.3",
   "scripts": {
     "install:chromium": "playwright install chromium",
     "generate:png": "likec4 export png -o ./generated/images --flat",
@@ -12,7 +12,8 @@
     "test": "playwright test",
     "start": "likec4 start",
     "typecheck": "vitest run",
-    "test:update-screenshots": "playwright test --update-snapshots"
+    "test:update-screenshots": "playwright test --update-snapshots",
+    "test:playground": "playwright test -c playwright.playground.config.ts"
   },
   "dependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",

@@ -1,2 +1,2 @@
-export { LikeC4VitePlugin } from './plugin'
-export type { LikeC4VitePluginOptions } from './plugin'
+export { LikeC4VitePlugin } from '@likec4/vite-plugin'
+export type { LikeC4VitePluginOptions } from '@likec4/vite-plugin'

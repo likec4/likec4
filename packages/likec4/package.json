@@ -1,7 +1,7 @@
 {
   "name": "likec4",
   "description": "Toolchain for your architecture diagrams",
-  "version": "1.48.0",
+  "version": "1.49.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -60,12 +60,9 @@
       }
     },
     "./react": {
-      "sources": "./react/index.ts",
-      "default": {
-        "types": "./react/index.d.ts",
-        "import": "./react/index.js",
-        "default": "./react/index.js"
-      }
+      "types": "./react/index.d.mts",
+      "import": "./react/index.mjs",
+      "default": "./react/index.mjs"
     },
     "./vite-plugin-modules": {
       "types": "./vite-plugin-modules.d.ts"
@@ -121,10 +118,10 @@
     "generate:app": "tsr generate",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
+    "postpack": "likec4ops postpack",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf --glob lib dist app/dist dev/.export dev/dist node_modules/.vite react/*.mjs react/*.d.mts icons",
+    "clean": "pnpm rimraf --glob lib dist app/dist dev/.export dev/dist node_modules/.vite react/* icons",
     "start": "tsx --conditions=sources src/cli/index.ts",
     "dev": "pnpm cli:serve dev",
     "dev:docs": "pnpm cli:serve ../../apps/docs/src",
@@ -162,8 +159,6 @@
     "type-fest": "catalog:externals",
     "vite-plugin-singlefile": "^2.3.0",
     "vite": "catalog:vite",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "yargs": "17.7.2",
     "nano-spawn": "catalog:externals"
   },
@@ -176,11 +171,14 @@
     "langium": "catalog:langium",
     "@likec4/config": "workspace:*",
     "@likec4/language-server": "workspace:*",
+    "@likec4/language-services": "workspace:*",
     "@dagrejs/dagre": "catalog:",
     "@fontsource-variable/ibm-plex-sans": "^5.2.8",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/layouts": "workspace:*",
+    "@likec4/vite-plugin": "workspace:*",
+    "@likec4/react": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",
@@ -201,6 +199,8 @@
     "@types/yargs": "^17.0.33",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "autoprefixer": "^10.4.24",
     "picomatch": "catalog:externals",
     "birpc": "catalog:vite",
@@ -250,6 +250,7 @@
     "which": "^5.0.0",
     "wireit": "catalog:",
     "zod": "catalog:externals",
+    "zx": "catalog:",
     "xstate": "catalog:xstate"
   }
 }

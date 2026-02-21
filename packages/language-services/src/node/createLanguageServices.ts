@@ -1,15 +1,15 @@
+import { WithFileSystem, WithLikeC4ManualLayouts } from '@likec4/language-server/filesystem'
+import { WithMCPServer } from '@likec4/language-server/mcp'
 import {
   createLanguageServices as createCustomLanguageServices,
   NoFileSystem,
   NoLikeC4ManualLayouts,
-  WithFileSystem,
-  WithLikeC4ManualLayouts,
-  WithMCPServer,
-} from '@likec4/language-server'
+} from '@likec4/language-server/module'
 import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { configureLogger, getConsoleStderrSink, loggable, rootLogger } from '@likec4/log'
 import defu from 'defu'
+import k from 'tinyrainbow'
 import type { LikeC4Langium } from '../common/LikeC4'
 
 export type CreateLanguageServiceOptions = {
@@ -64,10 +64,19 @@ export function createLanguageServices(
         // Name it as console to override internal logger
         console: getConsoleStderrSink(),
       },
+      loggers: [
+        {
+          category: 'likec4',
+          sinks: ['console'],
+          lowestLevel: 'warning',
+        },
+      ],
     })
   }
 
   const useDotBin = options.graphviz === 'binary'
+
+  logger.info(`${k.dim('layout')} ${useDotBin ? 'binary' : 'wasm'}`)
 
   const langium = createCustomLanguageServices(
     {
@@ -80,7 +89,7 @@ export function createLanguageServices(
           ...NoFileSystem,
           ...NoLikeC4ManualLayouts,
         },
-      ...options.mcp ? WithMCPServer(options.mcp === 'stdio' ? 'stdio' : 'sse') : {},
+      ...options.mcp ? WithMCPServer(options.mcp === 'stdio' ? 'stdio' : options.mcp) : {},
     },
     {
       likec4: {

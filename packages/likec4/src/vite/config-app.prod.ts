@@ -1,13 +1,13 @@
 import { viteAliases } from '#vite/aliases'
+import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
-import type { InlineConfig } from 'vite'
+import type { InlineConfig, Logger } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import type { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
-import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import { chunkSizeWarningLimit, relativeToCwd, viteAppRoot, viteLogger } from './utils'
 
 export type LikeC4ViteConfig = {
@@ -147,7 +147,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         }),
       },
     },
-    customLogger,
+    customLogger: customLogger as Logger,
     plugins: [
       react(),
       LikeC4VitePlugin({

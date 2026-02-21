@@ -1,6 +1,6 @@
 {
   "name": "@likec4/generators",
-  "version": "1.48.0",
+  "version": "1.49.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -45,7 +45,7 @@
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-generators-$npm_package_version.tgz package.tgz || true",
+    "postpack": "likec4ops postpack",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest"
   },
@@ -53,10 +53,11 @@
     "@likec4/core": "workspace:*",
     "@likec4/config": "workspace:*",
     "@likec4/log": "workspace:*",
+    "langium": "catalog:langium",
+    "pako": "catalog:",
     "remeda": "catalog:utils",
     "immer": "catalog:utils",
     "json5": "catalog:utils",
-    "langium": "catalog:langium",
     "type-fest": "catalog:utils",
     "indent-string": "catalog:utils",
     "strip-indent": "catalog:utils",
@@ -66,6 +67,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
+    "@types/pako": "catalog:",
     "typescript": "catalog:",
     "obuild": "catalog:obuild",
     "vitest": "catalog:vitest"

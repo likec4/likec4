@@ -14,16 +14,20 @@ export {
   NoMCPServer,
 } from '../common-exports'
 
+/**
+ * Starts the LikeC4 language server in the browser, connected via the given port (e.g. a worker).
+ * @param port - MessagePort or DedicatedWorkerGlobalScope for LSP communication.
+ * @returns Shared and LikeC4-specific services after the connection is initialized.
+ */
 export function startLanguageServer(port: MessagePort | DedicatedWorkerGlobalScope): {
   shared: LikeC4SharedServices
   likec4: LikeC4Services
 } {
-  /* browser specific setup code */
-
   const messageReader = new BrowserMessageReader(port)
   const messageWriter = new BrowserMessageWriter(port)
 
   const connection = createConnection(messageReader, messageWriter)
+
   configureLogger({
     sinks: {
       console: getConsoleSink({

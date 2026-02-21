@@ -6,17 +6,10 @@ export default defineBuildConfig({
       type: 'bundle',
       input: [
         './src/index.ts',
+        './src/internal.ts',
       ],
-      minify: {
-        mangle: {
-          keepNames: {
-            class: true,
-            function: true,
-          },
-        },
-      },
       rolldown: {
-        platform: 'neutral',
+        platform: 'node',
         resolve: {
           mainFields: ['module', 'main'],
           conditionNames: ['sources', 'import', 'default'],

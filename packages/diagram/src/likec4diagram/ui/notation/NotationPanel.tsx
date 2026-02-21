@@ -14,11 +14,10 @@ import {
   TabsPanel,
   TabsTab,
   Text,
-  ThemeIcon,
   Tooltip,
 } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
-import { IconAlertTriangle, IconArrowDownRight, IconHelpCircle } from '@tabler/icons-react'
+import { IconArrowDownRight, IconHelpCircle } from '@tabler/icons-react'
 import { AnimatePresence, m } from 'motion/react'
 import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'
@@ -135,31 +134,12 @@ export const NotationPanel = memo(() => {
   const hasNotations = notations.length > 0
   const portalProps = useMantinePortalProps()
 
+  // Only show panel when the view has notations; no empty-state warning
+  if (!hasNotations) return null
+
   return (
     <AnimatePresence>
-      {!hasNotations && (
-        <m.div
-          key={'empty'}
-          initial={{ opacity: 0.75, translateX: '50%' }}
-          animate={{ opacity: 1, translateX: 0 }}
-          exit={{
-            translateX: '100%',
-            opacity: 0.6,
-          }}
-          className={styles.container}>
-          <Tooltip label="View has no notations" color="orange" {...portalProps}>
-            <ThemeIcon
-              size={'lg'}
-              variant="light"
-              color="orange"
-              radius={'md'}
-            >
-              <IconAlertTriangle />
-            </ThemeIcon>
-          </Tooltip>
-        </m.div>
-      )}
-      {hasNotations && isCollapsed && (
+      {isCollapsed && (
         <m.div
           key={'collapsed'}
           initial={{ opacity: 0.75, translateX: '50%' }}
@@ -184,7 +164,7 @@ export const NotationPanel = memo(() => {
         </m.div>
       )}
 
-      {hasNotations && !isCollapsed && (
+      {!isCollapsed && (
         <m.div
           key={id}
           initial={{

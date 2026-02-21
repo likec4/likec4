@@ -121,10 +121,10 @@ export class LikeC4ModelParser {
         doc: docpath,
       })
     } else {
-      logger.warn(`create parser for document without project {doc}`, { doc: doc.uri.fsPath })
+      logger.debug(`create parser for document without project {doc}`, { doc: doc.uri.fsPath })
     }
     if (doc.state < DocumentState.Linked) {
-      logger.warn(`Document {doc} is not linked, state is {state}`, {
+      logger.debug(`Document {doc} is not linked, state is {state}`, {
         doc: docpath,
         state: doc.state,
       })

@@ -5,9 +5,16 @@
 .idea
 .fleet
 .vscode-test-web
+.cursor/
+.claude/
 .pnpm-store/
+.dprint-cache/
 .wireit
 .windsurf
+
+# Local test scripts (not committed to repo)
+test-mcp-local.ts
+test-mcp-local.js
 
 panda.buildinfo.json
 
@@ -36,6 +43,15 @@ styled-system/*/styled-system
 packages/language-server/src/generated/
 packages/language-server/src/generated-lib/
 packages/vscode-preview/src/generated-icons.tsx
+
+# Compiled artifacts (do not commit). Root-level *.spec.js/*.test.js and packages/*/src/**/*.js
+# match the whole tree; if a package ever needs tracked JS in src, add an exception.
+*.spec.js
+*.test.js
+apps/playground/src/**/*.js
+apps/playground/src/**/*.d.ts
+packages/*/src/**/*.js
+packages/*/src/**/*.d.ts
 
 vite.config.ts.timestamp*
 vitest.config.ts.timestamp*
@@ -107,3 +123,6 @@ dist
 # Eclipse
 /.project
 /.settings/*
+
+# Local / temporary PR and process docs — prefer ~/.gitignore_global for personal workflow files (PR-*, COMMIT_MSG*, etc.)
+

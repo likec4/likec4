@@ -1,5 +1,6 @@
 import { viteConfig } from '#vite/config-app'
 import getPort, { portNumbers } from 'get-port'
+import type { Logger } from 'vite'
 import { preview } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 
@@ -24,6 +25,7 @@ export async function vitePreview(cfg: VitePreviewParams) {
 
   const previewServer = await preview({
     ...config,
+    customLogger: config.customLogger as Logger,
     mode: 'production',
     preview: {
       host: cfg.listen ?? '127.0.0.1',

@@ -14,7 +14,7 @@
       "dependsOn": [
         "generate",
         "@likec4/core#build",
-        "@likec4/diagram#build-dist",
+        "@likec4/diagram#build",
         "@likec4/language-server#build"
       ],
       "outputs": [
