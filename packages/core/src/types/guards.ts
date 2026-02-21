@@ -49,13 +49,6 @@ export type GuardedBy<G> =
       : To
     : never
 
-type NarrowTo<T, Base> =
-  // dprint-ignore
-  Extract<T, Base> extends never
-    ? Base
-    : IsAny<T> extends true
-      ? Base
-      : Extract<T, Base>
 /**
  * Creates a type guard that checks if a value matches any of the provided predicates.
  *
@@ -75,7 +68,7 @@ type NarrowTo<T, Base> =
  */
 export function isAnyOf<const Predicates extends NonEmptyArray<Guard<any>>>(
   ...predicates: Predicates
-): <T>(value: T | GuardedBy<Predicates[number]>) => value is NarrowTo<T, GuardedBy<Predicates[number]>> {
+): <T>(value: T) => value is T & GuardedBy<Predicates[number]> {
   return ((value: any) => {
     return predicates.some(predicate => predicate(value))
   }) as any
