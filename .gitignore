@@ -6,7 +6,6 @@
 .fleet
 .vscode-test-web
 .cursor/
-.claude/
 .pnpm-store/
 .dprint-cache/
 .wireit
@@ -125,4 +124,3 @@ dist
 /.settings/*
 
 # Local / temporary PR and process docs — prefer ~/.gitignore_global for personal workflow files (PR-*, COMMIT_MSG*, etc.)
-
