@@ -108,8 +108,8 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         break
       }
       default: {
-        invariant(!sourceIsWildcard, 'Inferrence failed - source should be a deployment ref')
-        invariant(!targetIsWildcard, 'Inferrence failed - target should be a deployment ref')
+        invariant(!sourceIsWildcard, 'Inference failed - source should be a deployment ref')
+        invariant(!targetIsWildcard, 'Inference failed - target should be a deployment ref')
         const sources = resolveElements(model, source)
         const targets = resolveElements(model, target)
 

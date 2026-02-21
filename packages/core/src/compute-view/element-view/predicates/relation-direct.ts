@@ -261,8 +261,8 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
       }
 
       default: {
-        invariant(!isWildcard(source), 'Inferrence failed - source must be not a wildcard')
-        invariant(!isWildcard(target), 'Inferrence failed - target must be not a wildcard')
+        invariant(!isWildcard(source), 'Inference failed - source must be not a wildcard')
+        invariant(!isWildcard(target), 'Inference failed - target must be not a wildcard')
         const sources = resolveElements(model, source)
         const targets = resolveElements(model, target)
 
