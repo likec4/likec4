@@ -240,8 +240,8 @@ catalogs:
       specifier: 1.1.0
       version: 1.1.0
     react-error-boundary:
-      specifier: ^6.1.0
-      version: 6.1.0
+      specifier: ^6.1.1
+      version: 6.1.1
     react-resizable-panels:
       specifier: ^4.6.4
       version: 4.6.4
@@ -765,7 +765,7 @@ importers:
         version: 19.2.4(react@19.2.4)
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.0(react@19.2.4)
+        version: 6.1.1(react@19.2.4)
       react-resizable-panels:
         specifier: catalog:react
         version: 4.6.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1164,7 +1164,7 @@ importers:
         version: 1.1.0
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.0(react@19.2.4)
+        version: 6.1.1(react@19.2.4)
       react-shadow:
         specifier: catalog:react
         version: 20.6.0(prop-types@15.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1884,7 +1884,7 @@ importers:
         version: 19.2.4(react@19.2.4)
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.0(react@19.2.4)
+        version: 6.1.1(react@19.2.4)
       react-resizable-panels:
         specifier: catalog:react
         version: 4.6.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2488,7 +2488,7 @@ importers:
         version: 19.2.4(react@19.2.4)
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.0(react@19.2.4)
+        version: 6.1.1(react@19.2.4)
       remeda:
         specifier: catalog:utils
         version: 2.33.6
@@ -7860,8 +7860,8 @@ packages:
     peerDependencies:
       react: 19.2.4
 
-  react-error-boundary@6.1.0:
-    resolution: {integrity: sha512-02k9WQ/mUhdbXir0tC1NiMesGzRPaCsJEWU/4bcFrbY1YMZOtHShtZP6zw0SJrBWA/31H0KT9/FgdL8+sPKgHA==}
+  react-error-boundary@6.1.1:
+    resolution: {integrity: sha512-BrYwPOdXi5mqkk5lw+Uvt0ThHx32rCt3BkukS4X23A2AIWDPSGX6iaWTc0y9TU/mHDA/6qOSGel+B2ERkOvD1w==}
     peerDependencies:
       react: 19.2.4
 
@@ -16082,7 +16082,7 @@ snapshots:
       react: 19.2.4
       scheduler: 0.27.0
 
-  react-error-boundary@6.1.0(react@19.2.4):
+  react-error-boundary@6.1.1(react@19.2.4):
     dependencies:
       react: 19.2.4
 

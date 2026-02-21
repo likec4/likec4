@@ -103,7 +103,7 @@ catalogs:
     nanostores: 1.1.0
     react: 19.2.4
     react-dom: 19.2.4
-    react-error-boundary: ^6.1.0
+    react-error-boundary: ^6.1.1
     react-resizable-panels: ^4.6.4
     react-shadow: ^20.6.0
   tanstack:
