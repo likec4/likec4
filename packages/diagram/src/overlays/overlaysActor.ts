@@ -32,7 +32,7 @@ export interface OverlaysContext {
   >
 }
 
-export type OverlayActorEmitedEvent =
+export type OverlayActorEmittedEvent =
   | { type: 'opened'; overlay: 'elementDetails' | 'relationshipsBrowser' | 'relationshipDetails' }
   | { type: 'closed'; overlay: 'elementDetails' | 'relationshipsBrowser' | 'relationshipDetails' }
   | { type: 'idle' }
@@ -60,7 +60,7 @@ const machine = setup({
   types: {
     context: {} as OverlaysContext,
     events: {} as OverlayActorEvent,
-    emitted: {} as OverlayActorEmitedEvent,
+    emitted: {} as OverlayActorEmittedEvent,
     children: {} as {
       hotkey: 'hotkey'
       [key: `elementDetails-${number}`]: 'elementDetails'
@@ -361,7 +361,7 @@ export interface OverlaysActorLogic extends
     never,
     never,
     any,
-    OverlayActorEmitedEvent,
+    OverlayActorEmittedEvent,
     any,
     any
   >
@@ -370,4 +370,5 @@ export interface OverlaysActorLogic extends
 export const overlaysActorLogic: OverlaysActorLogic = _overlaysActorLogic as any
 
 export type OverlaysActorSnapshot = SnapshotFrom<OverlaysActorLogic>
-export interface OverlaysActorRef extends ActorRef<OverlaysActorSnapshot, OverlayActorEvent, OverlayActorEmitedEvent> {}
+export interface OverlaysActorRef
+  extends ActorRef<OverlaysActorSnapshot, OverlayActorEvent, OverlayActorEmittedEvent> {}

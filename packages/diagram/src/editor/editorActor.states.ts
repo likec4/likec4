@@ -27,7 +27,7 @@ import {
 } from './editorActor.actions'
 import type {
   EditorActorContext,
-  EditorActorEmitedEvent,
+  EditorActorEmittedEvent,
   EditorActorEvent,
   EditorActorInput,
 } from './editorActor.setup'
@@ -35,7 +35,7 @@ import { machine } from './editorActor.setup'
 
 export type {
   EditorActorContext,
-  EditorActorEmitedEvent,
+  EditorActorEmittedEvent,
   EditorActorEvent,
   EditorActorInput,
 } from './editorActor.setup'
@@ -357,7 +357,7 @@ export interface EditorActorLogic extends
     any,
     EditorActorInput,
     any,
-    EditorActorEmitedEvent,
+    EditorActorEmittedEvent,
     any,
     any
   >
@@ -366,4 +366,4 @@ export interface EditorActorLogic extends
 export const editorActorLogic: EditorActorLogic = _editorActorLogic as any
 
 export type EditorActorSnapshot = SnapshotFrom<EditorActorLogic>
-export interface EditorActorRef extends ActorRef<EditorActorSnapshot, EditorActorEvent, EditorActorEmitedEvent> {}
+export interface EditorActorRef extends ActorRef<EditorActorSnapshot, EditorActorEvent, EditorActorEmittedEvent> {}
