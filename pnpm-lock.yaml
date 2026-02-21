@@ -172,7 +172,7 @@ catalogs:
       specifier: ^0.7.6
       version: 0.7.6
     hono:
-      specifier: ^4.11.9
+      specifier: ^4.11.10
       version: 4.11.10
     hono-sessions:
       specifier: ^0.8.0
