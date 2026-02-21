@@ -52,7 +52,7 @@ describe('RelationPredicate', () => {
       ))
 
       describe('* -> instance where', () => {
-        it('should include relation when porperties match', () => {
+        it('should include relation when properties match', () => {
           t.expectComputedView(
             $include('* -> a.b.d.api', { where: 'tag is #next' }),
           ).toHave(
@@ -102,7 +102,7 @@ describe('RelationPredicate', () => {
       ))
 
       describe('node -> * where', () => {
-        it('should include relation when porperties match', () => {
+        it('should include relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c -> *', { where: 'tag is #old' }),
           )).toHave({
@@ -141,7 +141,7 @@ describe('RelationPredicate', () => {
           )
         ))
 
-        it('should include relation when porperties match', () => {
+        it('should include relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c -> a.b1', { where: 'tag is #old' }),
           )).toHave({
@@ -167,7 +167,7 @@ describe('RelationPredicate', () => {
       })
 
       describe('node -> instance where', () => {
-        it('should include relation when porperties match', () => {
+        it('should include relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c -> a.b2.db', { where: 'tag is #old' }),
           )).toHave({
@@ -212,7 +212,7 @@ describe('RelationPredicate', () => {
       ))
 
       describe('instance -> * where', () => {
-        it('should include relation when porperties match', () => {
+        it('should include relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c.api -> *', { where: 'tag is #old' }),
           )).toHave({
@@ -257,7 +257,7 @@ describe('RelationPredicate', () => {
           )
         ))
 
-        it('should include relation when porperties match', () => {
+        it('should include relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c.api -> a.b2.d', { where: 'tag is #old' }),
           )).toHave({
@@ -283,7 +283,7 @@ describe('RelationPredicate', () => {
       })
 
       describe('instance -> instance where', () => {
-        it('should include relation when porperties match', () => {
+        it('should include relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c.ui -> a.b2.c.api', { where: 'tag is #next' }),
           )).toHave({
@@ -328,7 +328,7 @@ describe('RelationPredicate', () => {
       ))
 
       describe('* -> instance where', () => {
-        it('should exclude relation when porperties match', () => {
+        it('should exclude relation when properties match', () => {
           t.expectComputedView(
             $include('a.**'),
             $exclude('* -> a.b.d.api', { where: 'tag is #next' }),
@@ -392,7 +392,7 @@ describe('RelationPredicate', () => {
       ))
 
       describe('node -> * where', () => {
-        it('should exclude relation when porperties match', () => {
+        it('should exclude relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c'),
             $include('a.b2.db'),
@@ -438,7 +438,7 @@ describe('RelationPredicate', () => {
           )
         ))
 
-        it('should exclude relation when porperties match', () => {
+        it('should exclude relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c'),
             $include('a.b1'),
@@ -472,7 +472,7 @@ describe('RelationPredicate', () => {
       })
 
       describe('node -> instance where', () => {
-        it('should exclude relation when porperties match', () => {
+        it('should exclude relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.*'),
             $exclude('a.b2.c -> a.b2.db', { where: 'tag is #old' }),
@@ -522,7 +522,7 @@ describe('RelationPredicate', () => {
       ))
 
       describe('instance -> * where', () => {
-        it('should exclude relation when porperties match', () => {
+        it('should exclude relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c.api'),
             $include('a.b2.db'),
@@ -575,7 +575,7 @@ describe('RelationPredicate', () => {
           )
         ))
 
-        it('should exclude relation when porperties match', () => {
+        it('should exclude relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c.api'),
             $include('a.b2.d'),
@@ -609,7 +609,7 @@ describe('RelationPredicate', () => {
       })
 
       describe('instance -> instance where', () => {
-        it('should exclude relation when porperties match', () => {
+        it('should exclude relation when properties match', () => {
           t.expect(t.computeView(
             $include('a.b2.c.*'),
             $exclude('a.b2.c.ui -> a.b2.c.api', { where: 'tag is #next' }),
