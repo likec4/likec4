@@ -13,15 +13,19 @@ const scheme = document.body.classList.contains('dark') ? 'dark' : 'light'
 const nonce = root.getAttribute('nonce') || undefined
 const getStyleNonce = nonce ? () => nonce : undefined
 
+const overlayProps = {
+  blur: 1,
+  backgroundOpacity: 0.1,
+}
 const Loader = () => {
-  const isFetching = useIsFetching() > 0
+  const isFetching = useIsFetching({ type: 'active' }) > 0
   // Debounce loading state to prevent flickering
-  const [isLoading] = useDebouncedValue(isFetching, isFetching ? 400 : 100)
+  const [isLoading] = useDebouncedValue(isFetching, isFetching ? 500 : 100)
   return (
     <LoadingOverlay
       visible={isLoading}
       zIndex={1000}
-      overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
+      overlayProps={overlayProps} />
   )
 }
 
