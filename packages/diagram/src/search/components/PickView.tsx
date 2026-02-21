@@ -1,23 +1,28 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { Fqn } from '@likec4/core/types'
 import { ActionIcon, FocusTrap, Group, ScrollAreaAutosize, Stack, Title } from '@mantine/core'
 import { useCallbackRef, useWindowEvent } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import { useCurrentViewId } from '../../hooks/useCurrentView'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
-import type { SearchActorRef } from '../searchActor'
+import { useSearchContext } from '../SearchContext'
 import * as styles from './styles.css'
 import { ViewButton } from './ViewsColum'
 
 export function PickView({
-  searchActorRef,
   elementFqn,
 }: {
-  searchActorRef: SearchActorRef
   elementFqn: Fqn
 }) {
-  const currentViewId = useCurrentViewId()
+  const ctx = useSearchContext()
+  const currentViewId = ctx.currentViewId ?? ''
   const element = useLikeC4Model().element(elementFqn)
   const scoped = [] as LikeC4ViewModel[]
   const others = [] as LikeC4ViewModel[]
@@ -31,7 +36,7 @@ export function PickView({
   }
 
   const closePickView = () => {
-    searchActorRef.send({ type: 'pickview.close' })
+    ctx.closePickView()
   }
 
   useWindowEvent(
