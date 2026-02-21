@@ -74,7 +74,7 @@ catalogs:
     '@hono/oauth-providers': ^0.8.5
     '@hono/zod-validator': ^0.7.6
     hono: ^4.11.10
-    hono-sessions: ^0.8.0
+    hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2

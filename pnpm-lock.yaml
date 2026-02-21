@@ -175,8 +175,8 @@ catalogs:
       specifier: ^4.11.10
       version: 4.11.10
     hono-sessions:
-      specifier: ^0.8.0
-      version: 0.8.0
+      specifier: ^0.8.1
+      version: 0.8.1
   langium:
     langium:
       specifier: 3.5.0
@@ -729,7 +729,7 @@ importers:
         version: 4.11.10
       hono-sessions:
         specifier: catalog:hono
-        version: 0.8.0
+        version: 0.8.1(hono@4.11.10)
       import-meta-resolve:
         specifier: ^4.2.0
         version: 4.2.0
@@ -6505,8 +6505,10 @@ packages:
     peerDependencies:
       hono: ^4.1.1
 
-  hono-sessions@0.8.0:
-    resolution: {integrity: sha512-44nDuxcGTlk1hKE+7vH8KnNleKYnr8p3i/vkT8640jU8V0F1Tm873F5NdfXpctZax3CtnQ4cUKyEF1axXdkZrw==}
+  hono-sessions@0.8.1:
+    resolution: {integrity: sha512-YLSKuIP13yhXTQe2x3sCc1JWsqt1Z3WZB2DWE+oX+YpOsC3lv8uCHnCoNHcY9DPyflDw4XQJN+MFVvcp5QwWdw==}
+    peerDependencies:
+      hono: ^4.0.0
 
   hono@4.11.10:
     resolution: {integrity: sha512-kyWP5PAiMooEvGrA9jcD3IXF7ATu8+o7B3KCbPXid5se52NPqnOpM/r9qeW2heMnOekF4kqR1fXJqCYeCLKrZg==}
@@ -14513,7 +14515,7 @@ snapshots:
     dependencies:
       hono: 4.11.10
 
-  hono-sessions@0.8.0:
+  hono-sessions@0.8.1(hono@4.11.10):
     dependencies:
       hono: 4.11.10
       iron-webcrypto: 1.2.1
