@@ -82,6 +82,10 @@
     "inferTechnologyFromIcon": {
       "description": "Automatically derive element technology from icon name when technology is not set explicitly.\nApplies to aws:, azure:, gcp:, and tech: icons. Bootstrap icons are excluded.\nDefaults to true.",
       "type": "boolean"
+    },
+    "implicitViews": {
+      "description": "Auto-generate scoped views for elements without explicit views. Defaults to true.",
+      "type": "boolean"
     }
   },
   "required": [

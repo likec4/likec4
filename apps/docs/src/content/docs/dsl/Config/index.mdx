@@ -179,6 +179,20 @@ To disable this behavior:
 }
 ```
 
+## Implicit views
+
+By default, LikeC4 automatically generates scoped views for elements that don't have explicitly defined views. This enables drill-down navigation out of the box — clicking on an element in any diagram navigates to its auto-generated scoped view (equivalent to `view of element { include * }`).
+
+To disable this behavior:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "implicitViews": false
+}
+```
+
 ## Image Aliases
 
 When using local images in your LikeC4 model, you can create aliases for the folder your images are in to make them more readable and the files more transportable.

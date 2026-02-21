@@ -21,10 +21,15 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     `)
     expect(errors).toEqual([])
     const model = await buildLikeC4Model()
-    expect(model.hasViewFolders).toBe(false)
+    // hasViewFolders is true because implicit view creates "Auto" folder
+    expect(model.hasViewFolders).toBe(true)
     expect([...model.rootViewFolder.children]).toEqual([
+      model.viewFolder('Auto'),
       model.view('index'),
       model.view('v1'),
+    ])
+    expect([...model.viewFolder('Auto').views]).toEqual([
+      model.view('__sys1'),
     ])
   })
 
@@ -53,8 +58,12 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     const model = await buildLikeC4Model()
     expect(model.hasViewFolders).toBe(true)
     expect([...model.rootViewFolder.children]).toEqual([
+      model.viewFolder('Auto'),
       model.viewFolder('Group 1'),
       model.view('index'),
+    ])
+    expect([...model.viewFolder('Auto').views]).toEqual([
+      model.view('__sys1'),
     ])
     expect([...model.viewFolder('Group 1').children]).toEqual([
       model.viewFolder('Group 1/Subgroup 2'),
@@ -91,8 +100,12 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     const model = await buildLikeC4Model()
     expect(model.hasViewFolders).toBe(true)
     expect([...model.rootViewFolder.children]).toEqual([
+      model.viewFolder('Auto'),
       model.viewFolder('Group 1'),
       model.view('index'),
+    ])
+    expect([...model.viewFolder('Auto').views]).toEqual([
+      model.view('__sys1'),
     ])
     expect([...model.viewFolder('Group 1').children]).toEqual([
       model.viewFolder('Group 1/Subgroup 2'),
@@ -129,13 +142,18 @@ describe('LikeC4ModelBuilder -- view folders', () => {
       'b',
       'c',
       'a',
+      '__sys1',
     ])
 
     const model = await buildLikeC4Model()
     expect(model.hasViewFolders).toBe(true)
     expect([...model.rootViewFolder.children]).toEqual([
+      model.viewFolder('Auto'),
       model.viewFolder('Group 1'),
       model.view('index'),
+    ])
+    expect([...model.viewFolder('Auto').views]).toEqual([
+      model.view('__sys1'),
     ])
     expect([...model.viewFolder('Group 1').views]).toEqual([
       model.view('b'),

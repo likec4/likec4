@@ -319,6 +319,47 @@ export function buildModelData(
     })
   }
 
+  // Add implicit scoped views for elements without explicit views
+  if (project.config.implicitViews !== false) {
+    const elementsWithExplicitViews = new Set<string>()
+    for (const v of parsedViews) {
+      if (v[_type] === 'element' && 'viewOf' in v && v.viewOf) {
+        elementsWithExplicitViews.add(v.viewOf as string)
+      }
+    }
+    const existingViewIds = new Set(parsedViews.map(v => v.id as string))
+
+    for (const fqn of keys(elements)) {
+      if (
+        elementsWithExplicitViews.has(fqn)
+        || isGlobalFqn(fqn)
+      ) {
+        continue
+      }
+      const viewId = ('__' + fqn.replaceAll('.', '_')) as ViewId
+      if (existingViewIds.has(viewId)) {
+        continue
+      }
+      parsedViews.push({
+        [_stage]: 'parsed',
+        [_type]: 'element',
+        id: viewId,
+        viewOf: fqn as c4.Fqn,
+        title: `Auto / ${elements[fqn]?.title ?? fqn}`,
+        description: null,
+        rules: [
+          {
+            include: [
+              {
+                wildcard: true,
+              },
+            ],
+          },
+        ],
+      })
+    }
+  }
+
   let views = pipe(
     parsedViews,
     indexBy(prop('id')),
