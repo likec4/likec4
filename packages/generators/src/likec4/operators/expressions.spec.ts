@@ -1,6 +1,7 @@
 import type { Expression, FqnExpr, ModelExpression, ViewId, WhereOperator } from '@likec4/core'
 import { dedent } from 'strip-indent'
 import { type Assertion, describe, expect as viExpect, it } from 'vitest'
+import type { ModelExpressionData, WhereOperatorData } from '../types'
 import {
   type Ops,
   materialize,
@@ -23,7 +24,7 @@ function expectOnCtx<A>(ctx: A) {
  * Returns expect function to execute operations on the given context
  */
 function expectWhereOperator(operator: WhereOperator<any>) {
-  const exec = withctx(operator)
+  const exec = withctx(operator as unknown as WhereOperatorData)
   return viExpect(
     materialize(exec(whereOperator())),
   )
@@ -165,7 +166,7 @@ describe('whereOperator', () => {
 })
 
 function expectModelExpr(expr: ModelExpression) {
-  const exec = withctx(expr)
+  const exec = withctx(expr as unknown as ModelExpressionData)
   return viExpect(
     materialize(exec(modelExpression())).trimEnd(),
   )

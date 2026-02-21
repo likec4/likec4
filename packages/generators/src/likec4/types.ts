@@ -270,6 +270,315 @@ export const RelationshipSchema = commonProps
 export type RelationshipInput = z.input<typeof RelationshipSchema>
 export type RelationshipData = z.infer<typeof RelationshipSchema>
 
+// ============ View Expression & Rule Schemas ============
+
+const predicateSelector = z.enum(['children', 'expanded', 'descendants'])
+
+const autoLayoutDirection = z.enum(['TB', 'BT', 'LR', 'RL'])
+
+/**
+ * Accepts a value directly (shorthand for equality), or an explicit {eq: value} / {neq: value}.
+ * Replicates the EqualOperator from the core.
+ */
+function equalOp<T extends z.ZodType>(schema: T) {
+  return z.union([
+    schema,
+    z.object({ eq: schema }),
+    z.object({ neq: schema }),
+  ])
+}
+
+// Where operator types (manually defined due to recursive z.lazy schema)
+type EqualOpData<T> = T | { eq: T } | { neq: T }
+export type TagEqualData = { tag: EqualOpData<scalar.Tag> }
+export type KindEqualData = { kind: EqualOpData<string> }
+export type ParticipantOperatorData = {
+  participant: 'source' | 'target'
+  operator: TagEqualData | KindEqualData
+}
+export type NotOperatorData = { not: WhereOperatorData }
+export type AndOperatorData = { and: WhereOperatorData[] }
+export type OrOperatorData = { or: WhereOperatorData[] }
+export type WhereOperatorData =
+  | TagEqualData
+  | KindEqualData
+  | ParticipantOperatorData
+  | NotOperatorData
+  | AndOperatorData
+  | OrOperatorData
+
+const WhereOperatorSchema: z.ZodType<WhereOperatorData> = z.lazy(() =>
+  z.union([
+    z.object({ tag: equalOp(tag) }),
+    z.object({ kind: equalOp(kind) }),
+    z.object({
+      participant: z.enum(['source', 'target']),
+      operator: z.union([
+        z.object({ tag: equalOp(tag) }),
+        z.object({ kind: equalOp(kind) }),
+      ]),
+    }),
+    z.object({ not: WhereOperatorSchema }),
+    z.object({ and: z.array(WhereOperatorSchema).min(1) }),
+    z.object({ or: z.array(WhereOperatorSchema).min(1) }),
+  ])
+)
+
+const modelRef = z.union([
+  z.object({ model: fqn }),
+  z.object({ project: z.string(), model: fqn }),
+])
+
+// ---- ModelFqnExpr base variants ----
+const wildcardExpr = z.object({ wildcard: z.literal(true) })
+const refExpr = z.object({
+  ref: modelRef,
+  selector: predicateSelector.optional(),
+})
+const elementKindExpr = z.object({
+  elementKind: kind,
+  isEqual: z.boolean(),
+})
+const elementTagExpr = z.object({
+  elementTag: tag,
+  isEqual: z.boolean(),
+})
+const modelFqnExprBase = z.union([wildcardExpr, refExpr, elementKindExpr, elementTagExpr])
+
+// ---- ModelRelationExpr base variants ----
+const directExpr = z.object({
+  source: modelFqnExprBase,
+  target: modelFqnExprBase,
+  isBidirectional: z.boolean().optional(),
+})
+const incomingExpr = z.object({ incoming: modelFqnExprBase })
+const outgoingExpr = z.object({ outgoing: modelFqnExprBase })
+const inoutExpr = z.object({ inout: modelFqnExprBase })
+
+// Where expression - wraps either a fqn or relation base expression with a condition
+const whereExpr = z.object({
+  where: z.object({
+    expr: z.union([
+      wildcardExpr,
+      refExpr,
+      elementKindExpr,
+      elementTagExpr,
+      directExpr,
+      incomingExpr,
+      outgoingExpr,
+      inoutExpr,
+    ]),
+    condition: WhereOperatorSchema,
+  }),
+})
+
+// FqnExpr including where variant (used in custom expr)
+const modelFqnExprOrWhere = z.union([
+  wildcardExpr,
+  refExpr,
+  elementKindExpr,
+  elementTagExpr,
+  z.object({
+    where: z.object({
+      expr: modelFqnExprBase,
+      condition: WhereOperatorSchema,
+    }),
+  }),
+])
+
+// Custom FqnExpr with style/property overrides
+const customFqnExpr = z.object({
+  custom: z.object({
+    expr: modelFqnExprOrWhere,
+    title: z.string().optional(),
+    description: markdownOrString.optional(),
+    technology: z.string().optional(),
+    notation: z.string().optional(),
+    notes: markdownOrString.optional(),
+    navigateTo: viewId.optional(),
+    shape: shape.optional(),
+    color: color.optional(),
+    icon: icon.optional(),
+    iconColor: color.optional(),
+    iconSize: size.optional(),
+    iconPosition: iconPosition.optional(),
+    border: border.optional(),
+    opacity: opacity.optional(),
+    multiple: z.boolean().optional(),
+    size: size.optional(),
+    padding: size.optional(),
+    textSize: size.optional(),
+  }),
+})
+
+// RelationExpr including where variant (used in custom relation expr)
+const modelRelationExprOrWhere = z.union([
+  directExpr,
+  incomingExpr,
+  outgoingExpr,
+  inoutExpr,
+  z.object({
+    where: z.object({
+      expr: z.union([directExpr, incomingExpr, outgoingExpr, inoutExpr]),
+      condition: WhereOperatorSchema,
+    }),
+  }),
+])
+
+// Custom RelationExpr with property overrides
+const customRelationExpr = z.object({
+  customRelation: z.object({
+    expr: modelRelationExprOrWhere,
+    title: z.string().optional(),
+    description: markdownOrString.optional(),
+    technology: z.string().optional(),
+    notation: z.string().optional(),
+    notes: markdownOrString.optional(),
+    navigateTo: viewId.optional(),
+    color: color.optional(),
+    line: line.optional(),
+    head: arrow.optional(),
+    tail: arrow.optional(),
+  }),
+})
+
+/**
+ * Full model expression, union of all fqn and relation expression variants.
+ * Replicates ModelExpression from the core.
+ */
+export const ModelExpressionSchema = z.union([
+  wildcardExpr,
+  refExpr,
+  elementKindExpr,
+  elementTagExpr,
+  customFqnExpr,
+  directExpr,
+  incomingExpr,
+  outgoingExpr,
+  inoutExpr,
+  whereExpr,
+  customRelationExpr,
+])
+
+export type ModelExpressionInput = z.input<typeof ModelExpressionSchema>
+export type ModelExpressionData = z.infer<typeof ModelExpressionSchema>
+
+// ---- Expression sub-types for operator use ----
+
+export type WildcardExprData = z.infer<typeof wildcardExpr>
+export type RefExprData = z.infer<typeof refExpr>
+export type ElementKindExprData = z.infer<typeof elementKindExpr>
+export type ElementTagExprData = z.infer<typeof elementTagExpr>
+export type ModelFqnExprBaseData = z.infer<typeof modelFqnExprBase>
+export type ModelFqnExprOrWhereData = z.infer<typeof modelFqnExprOrWhere>
+export type CustomFqnExprData = z.infer<typeof customFqnExpr>
+
+export type DirectExprData = z.infer<typeof directExpr>
+export type IncomingExprData = z.infer<typeof incomingExpr>
+export type OutgoingExprData = z.infer<typeof outgoingExpr>
+export type InOutExprData = z.infer<typeof inoutExpr>
+export type ModelRelationExprBaseData = DirectExprData | IncomingExprData | OutgoingExprData | InOutExprData
+export type ModelRelationExprOrWhereData = z.infer<typeof modelRelationExprOrWhere>
+export type CustomRelationExprData = z.infer<typeof customRelationExpr>
+
+// ---- Element View Rule Schemas ----
+
+const autoLayoutRule = z.object({
+  direction: autoLayoutDirection,
+  nodeSep: z.number().optional(),
+  rankSep: z.number().optional(),
+})
+
+const includeRule = z.object({ include: z.array(ModelExpressionSchema) })
+const excludeRule = z.object({ exclude: z.array(ModelExpressionSchema) })
+
+const viewRuleStyle = z.object({
+  targets: z.array(ModelExpressionSchema),
+  notation: z.string().optional(),
+  style: StylePropertiesSchema,
+})
+
+const globalStyleRule = z.object({ styleId: z.string() })
+const globalPredicateRule = z.object({ predicateId: z.string() })
+
+const rankValue = z.enum(['max', 'min', 'same', 'sink', 'source'])
+const viewRuleRank = z.object({
+  targets: z.array(ModelExpressionSchema),
+  rank: rankValue,
+})
+
+// Manually typed due to recursive z.lazy schema
+export type ViewRuleGroupData = {
+  groupRules: Array<z.infer<typeof includeRule> | z.infer<typeof excludeRule> | ViewRuleGroupData>
+  title: string | null
+  color?: z.infer<typeof color> | undefined
+  border?: z.infer<typeof border> | undefined
+  opacity?: number | undefined
+  multiple?: boolean | undefined
+  size?: z.infer<typeof size> | undefined
+  padding?: z.infer<typeof size> | undefined
+  textSize?: z.infer<typeof size> | undefined
+}
+
+const ViewRuleGroupSchema: z.ZodType<ViewRuleGroupData, any> = z.lazy(() =>
+  z.object({
+    groupRules: z.array(z.union([includeRule, excludeRule, ViewRuleGroupSchema])),
+    title: z.string().nullable(),
+    color: color.optional(),
+    border: border.optional(),
+    opacity: opacity.optional(),
+    multiple: z.boolean().optional(),
+    size: size.optional(),
+    padding: size.optional(),
+    textSize: size.optional(),
+  })
+)
+
+export const ElementViewRuleSchema = z.union([
+  includeRule,
+  excludeRule,
+  autoLayoutRule,
+  viewRuleStyle,
+  globalStyleRule,
+  globalPredicateRule,
+  viewRuleRank,
+  ViewRuleGroupSchema,
+])
+
+export type ElementViewRuleInput = z.input<typeof ElementViewRuleSchema>
+export type ElementViewRuleData = z.infer<typeof ElementViewRuleSchema>
+
+// ---- Element View Schema ----
+
+/**
+ * Replicates ParsedElementView from the core,
+ * less strict, as the generator should be able to handle missing fields and provide defaults.
+ */
+export const ElementViewSchema = z
+  .object({
+    id: viewId,
+    title: z.string().nullish(),
+    description: markdownOrString.nullish(),
+    tags: tags.nullish(),
+    links: links.nullish(),
+    viewOf: fqn.nullish(),
+    extends: viewId.nullish(),
+    rules: z.array(ElementViewRuleSchema).default([]),
+  })
+  .transform(v => ({
+    ...pickBy(v, isNonNullish),
+    _stage: 'parsed' as const,
+    _type: 'element' as const,
+    title: v.title ?? null,
+    description: v.description ?? null,
+    rules: v.rules,
+  }))
+
+export type ElementViewInput = z.input<typeof ElementViewSchema>
+export type ElementViewData = z.infer<typeof ElementViewSchema>
+
+// ============ Top-Level Schema ============
+
 export const LikeC4DataSchema = z
   .object({
     elements: z.union([
@@ -285,6 +594,11 @@ export const LikeC4DataSchema = z
             r.id as string ?? stringHash(`${r.source.model}, ${r.target.model}, ${r.kind ?? ''}, ${idx}`)
           ),
         ),
+    ]),
+    views: z.union([
+      z.record(viewId, ElementViewSchema),
+      z.array(ElementViewSchema)
+        .transform(indexBy(v => v.id as string)),
     ]),
     project: z.object({
       id: z.string(),
