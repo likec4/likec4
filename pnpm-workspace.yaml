@@ -121,7 +121,7 @@ catalogs:
     '@types/natural-compare-lite': ^1.4.2
     caniuse-lite: ^1.0.30001769
     chroma-js: ^3.2.0
-    citty: ^0.2.0
+    citty: ^0.2.1
     consola: ^3.4.2
     date-fns: ^4.1.0
     defu: ^6.1.4

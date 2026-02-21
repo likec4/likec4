@@ -278,8 +278,8 @@ catalogs:
       specifier: ^3.2.0
       version: 3.2.0
     citty:
-      specifier: ^0.2.0
-      version: 0.2.0
+      specifier: ^0.2.1
+      version: 0.2.1
     date-fns:
       specifier: ^4.1.0
       version: 4.1.0
@@ -849,7 +849,7 @@ importers:
     dependencies:
       citty:
         specifier: catalog:utils
-        version: 0.2.0
+        version: 0.2.1
       indent-string:
         specifier: catalog:utils
         version: 5.0.0
@@ -2027,7 +2027,7 @@ importers:
         version: 22.19.11
       citty:
         specifier: catalog:utils
-        version: 0.2.0
+        version: 0.2.1
       obuild:
         specifier: catalog:obuild
         version: 0.4.27(@typescript/native-preview@7.0.0-dev.20260208.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
@@ -5580,8 +5580,8 @@ packages:
   citty@0.1.6:
     resolution: {integrity: sha512-tskPPKEs8D2KPafUypv2gxwJP8h/OaJmC82QQGGDQcHvXX43xF2VDACcJVmZ0EuSxkpO9Kc4MlrA3q0+FG58AQ==}
 
-  citty@0.2.0:
-    resolution: {integrity: sha512-8csy5IBFI2ex2hTVpaHN2j+LNE199AgiI7y4dMintrr8i0lQiFn+0AWMZrWdHKIgMOer65f8IThysYhoReqjWA==}
+  citty@0.2.1:
+    resolution: {integrity: sha512-kEV95lFBhQgtogAPlQfJJ0WGVSokvLr/UEoFPiKKOXF7pl98HfUVUD0ejsuTCld/9xH9vogSywZ5KqHzXrZpqg==}
 
   classcat@5.0.5:
     resolution: {integrity: sha512-JhZUT7JFcQy/EzW605k/ktHtncoo9vnyW/2GspNYwFlN1C/WmjuV/xtS04e9SOkL2sTdw0VAZ2UGCcQ9lR6p6w==}
@@ -13421,7 +13421,7 @@ snapshots:
     dependencies:
       consola: 3.4.2
 
-  citty@0.2.0: {}
+  citty@0.2.1: {}
 
   classcat@5.0.5: {}
 
@@ -15610,7 +15610,7 @@ snapshots:
 
   nypm@0.6.4:
     dependencies:
-      citty: 0.2.0
+      citty: 0.2.1
       pathe: 2.0.3
       tinyexec: 1.0.2
 
