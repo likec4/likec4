@@ -466,7 +466,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   }
 
   protected formatImports(node: AstNode) {
-    this.on(node, ast.isImportsFromPoject, (n, f) => {
+    this.on(node, ast.isImportsFromProject, (n, f) => {
       f.keyword('import').append(FormattingOptions.oneSpace)
       f.keywords('{', '}', 'from').surround(FormattingOptions.oneSpace)
     })
@@ -733,7 +733,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       ?.property('value')
     region = region ?? this.on(node, ast.isElement)
       ?.properties('props')
-    region = region ?? this.on(node, ast.isImportsFromPoject)
+    region = region ?? this.on(node, ast.isImportsFromProject)
       ?.properties('project')
     region = region ?? this.on(node, ast.isRelation)
       ?.properties('title', 'technology')

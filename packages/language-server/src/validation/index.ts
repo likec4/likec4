@@ -23,7 +23,7 @@ import {
 import { dynamicViewDisplayVariant, dynamicViewStepChain, dynamicViewStepSingle } from './dynamic-view'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
-import { checkImportsFromPoject } from './imports'
+import { checkImportsFromProject } from './imports'
 import {
   colorLiteralRuleChecks,
   iconPropertyRuleChecks,
@@ -55,7 +55,7 @@ import {
 export { LikeC4DocumentValidator } from './DocumentValidator'
 
 const isValidatableAstNode = isAnyOf(
-  ast.isImportsFromPoject,
+  ast.isImportsFromProject,
   ast.isImported,
   ast.isGlobals,
   ast.isGlobalPredicateGroup,
@@ -183,7 +183,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     RelationshipKind: checkRelationshipKind(services),
     IncomingRelationExpr: checkIncomingRelationExpr(services),
     OutgoingRelationExpr: checkOutgoingRelationExpr(services),
-    ImportsFromPoject: checkImportsFromPoject(services),
+    ImportsFromProject: checkImportsFromProject(services),
     // Imported: checkImported(services),
     ColorLiteral: colorLiteralRuleChecks(services),
     DynamicViewDisplayVariantProperty: dynamicViewDisplayVariant(services),

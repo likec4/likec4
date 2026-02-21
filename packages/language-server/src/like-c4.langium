@@ -2,7 +2,7 @@ grammar LikeC4
 
 entry LikeC4Grammar:
   (
-    imports+=ImportsFromPoject |
+    imports+=ImportsFromProject |
     specifications+=SpecificationRule |
     models+=Model  |
     views+=ModelViews |
@@ -86,7 +86,7 @@ SpecificationRelationshipStringProperty:
 
 // Imports -------------------------------------
 
-ImportsFromPoject:
+ImportsFromProject:
   'import' ( '{' imports=Imported '}' | imports=Imported) 'from' project=String ';'?
 ;
 

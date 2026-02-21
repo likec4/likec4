@@ -6,9 +6,9 @@ export function ImportsParser<TBase extends Base>(B: TBase) {
   return class ImportsParser extends B {
     parseImports() {
       const imports = this.doc.parseResult.value.imports ?? []
-      for (const importsFromPoject of imports) {
-        const project = importsFromPoject.project as ProjectId
-        let imported = importsFromPoject.imports as ast.Imported | undefined
+      for (const importsFromProject of imports) {
+        const project = importsFromProject.project as ProjectId
+        let imported = importsFromProject.imports as ast.Imported | undefined
         while (imported) {
           try {
             this.doc.c4Imports.set(
