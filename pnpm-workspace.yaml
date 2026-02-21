@@ -127,7 +127,7 @@ catalogs:
     defu: ^6.1.4
     esm-env: ^1.2.2
     fast-equals: ^6.0.0
-    immer: ^11.1.3
+    immer: ^11.1.4
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
