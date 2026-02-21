@@ -68,7 +68,9 @@ export function buildModelData(
   project: Project,
   docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
 ): BuildModelData {
-  const c4Specification = new MergedSpecification(docs)
+  const c4Specification = new MergedSpecification(docs, {
+    inferTechFromIcon: project.config.inferTechnologyFromIcon ?? true,
+  })
 
   if (c4Specification.projectId === project.id) {
     services.likec4.LastSeen.rememberSpecification(c4Specification)
@@ -341,6 +343,7 @@ export function buildModelData(
         title: project.config.title ?? project.config.name,
         styles: project.config.styles,
         manualLayouts: project.config.manualLayouts,
+        inferTechnologyFromIcon: project.config.inferTechnologyFromIcon,
       }),
       specification: {
         tags: c4Specification.tags,

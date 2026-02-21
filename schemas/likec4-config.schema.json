@@ -36,6 +36,14 @@
       "type": "string",
       "minLength": 1
     },
+    "metadata": {
+      "description": "Arbitrary metadata as key-value pairs for custom project information",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
     "styles": {
       "description": "Project styles customization",
       "type": "object",
@@ -70,6 +78,10 @@
     },
     "manualLayouts": {
       "$ref": "#/$defs/ManualLayoutsConfig"
+    },
+    "inferTechnologyFromIcon": {
+      "description": "Automatically derive element technology from icon name when technology is not set explicitly.\nApplies to aws:, azure:, gcp:, and tech: icons. Bootstrap icons are excluded.\nDefaults to true.",
+      "type": "boolean"
     }
   },
   "required": [
