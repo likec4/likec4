@@ -1,7 +1,8 @@
-import type { scalar } from '@likec4/core'
+import type { ProjectId, scalar } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider } from '@likec4/diagram'
-import { Button } from '@mantine/core'
-import { memo } from 'react'
+import { Button, Overlay } from '@mantine/core'
+import { memo, useMemo } from 'react'
 import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen } from '../App.css'
 import { ErrorMessage } from '../QueryErrorBoundary'
@@ -9,21 +10,21 @@ import {
   openProjectsScreen,
   setLastClickedNode,
   setLayoutType,
-  useComputedModel,
+  useComputedModelData,
   useDiagramView,
   useLikeC4EditorPort,
 } from '../state'
 import { ExtensionApi as extensionApi } from '../vscode'
 
 export function ViewScreen() {
-  const { error, likec4Model, reset } = useComputedModel()
+  const { error, model } = useComputedModelData()
   const editor = useLikeC4EditorPort()
+  const likec4Model = useMemo(() => model ? LikeC4Model.create(model) : null, [model])
   if (!likec4Model) {
     return (
       <>
         <section>
-          {error && <ErrorMessage error={error} onReset={reset} />}
-          <p>Parsing your model...</p>
+          {error ? <ErrorMessage error={error} /> : <p>Parsing your model...</p>}
           <p>
             <Button color="gray" onClick={extensionApi.closeMe}>
               Close
@@ -36,25 +37,23 @@ export function ViewScreen() {
 
   return (
     <LikeC4ModelProvider key={likec4Model.projectId} likec4model={likec4Model}>
-      {error && <ErrorMessage error={error} onReset={reset} />}
+      {error && <ErrorMessage error={error} />}
       <LikeC4EditorProvider editor={editor}>
-        <Initialized />
+        <LikeC4ViewMemo projectId={likec4Model.project.id} />
       </LikeC4EditorProvider>
     </LikeC4ModelProvider>
   )
 }
-const Initialized = memo(() => {
+const LikeC4ViewMemo = memo<{ projectId: ProjectId }>(({ projectId }) => {
   let {
-    projectId,
     view,
     error,
-    reset,
-  } = useDiagramView()
+  } = useDiagramView(projectId)
 
   if (!view) {
     return (
       <div className={likec4ParsingScreen}>
-        {error && <ErrorMessage error={error} onReset={reset} />}
+        {error && <ErrorMessage error={error} />}
         <section>
           <p>Parsing your model...</p>
           <p>
@@ -142,8 +141,13 @@ const Initialized = memo(() => {
           onLogoClick={openProjectsScreen}
           onLayoutTypeChange={setLayoutType}
         />
+        {error && (
+          <>
+            <Overlay blur={2} backgroundOpacity={0.2} />
+            <ErrorMessage error={error} />
+          </>
+        )}
       </div>
-      {error && <ErrorMessage error={error} onReset={reset} />}
     </>
   )
 })

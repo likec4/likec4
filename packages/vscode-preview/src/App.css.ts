@@ -26,5 +26,5 @@ export const stateAlert = css({
   left: '2',
   minHeight: '200px',
   userSelect: 'none',
-  zIndex: 100,
+  zIndex: 400,
 })
