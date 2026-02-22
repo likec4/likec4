@@ -8,6 +8,11 @@ import { TIMEOUT_CANVAS } from '../helpers/timeouts'
  *
  * Validates that each search param produces the correct observable effect
  * in the browser DOM (color scheme attribute, rendered node types, overlay).
+ *
+ * - ?theme= tests use the **export** route (lightweight, no interactive features needed).
+ * - ?dynamic= and ?relationships= tests use the **view** route because
+ *   those features (dynamic variant switching, relationship browser) are only
+ *   wired up in the interactive ViewReact page, not in ExportPage.
  */
 
 const PROJECT = 'e2e'
@@ -17,6 +22,12 @@ const DYNAMIC_VIEW = 'dynamic-view-1'
 function exportUrl(viewId: string, extra?: Record<string, string>): string {
   const params = new URLSearchParams({ padding: '20', ...extra })
   return `/project/${encodeURIComponent(PROJECT)}/export/${encodeURIComponent(viewId)}/?${params.toString()}`
+}
+
+function viewUrl(viewId: string, extra?: Record<string, string>): string {
+  const params = extra ? new URLSearchParams(extra) : undefined
+  const qs = params?.toString()
+  return `/project/${encodeURIComponent(PROJECT)}/view/${encodeURIComponent(viewId)}/${qs ? `?${qs}` : ''}`
 }
 
 const COLOR_SCHEME_ATTR = 'data-mantine-color-scheme'
@@ -68,7 +79,7 @@ test.describe('?dynamic= search parameter', () => {
   const SEQ_ACTOR_SELECTOR = '.react-flow__node-seq-actor'
 
   test('?dynamic=sequence renders sequence diagram variant', async ({ page }) => {
-    await gotoAndWaitForCanvas(page, exportUrl(DYNAMIC_VIEW, { dynamic: 'sequence' }))
+    await gotoAndWaitForCanvas(page, viewUrl(DYNAMIC_VIEW, { dynamic: 'sequence' }))
     await expect(page.locator(SEQ_ACTOR_SELECTOR).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
   })
 
@@ -80,7 +91,7 @@ test.describe('?dynamic= search parameter', () => {
     ] as const
   ) {
     test(`?dynamic=${label} renders default diagram variant`, async ({ page }) => {
-      await gotoAndWaitForCanvas(page, exportUrl(DYNAMIC_VIEW, extra))
+      await gotoAndWaitForCanvas(page, viewUrl(DYNAMIC_VIEW, extra))
       await expect(page.locator(SEQ_ACTOR_SELECTOR)).toHaveCount(0)
     })
   }
@@ -94,12 +105,12 @@ test.describe('?relationships= search parameter', () => {
   const RELATIONSHIPS_BROWSER = '.relationships-browser'
 
   test('?relationships=<fqn> opens the relationship browser overlay', async ({ page }) => {
-    await gotoAndWaitForCanvas(page, exportUrl(STATIC_VIEW, { relationships: 'cloud' }))
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud' }))
     await expect(page.locator(RELATIONSHIPS_BROWSER).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
   })
 
   test('absent ?relationships= does not open overlay', async ({ page }) => {
-    await gotoAndWaitForCanvas(page, exportUrl(STATIC_VIEW))
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW))
     await expect(page.locator(RELATIONSHIPS_BROWSER)).toHaveCount(0)
   })
 })
