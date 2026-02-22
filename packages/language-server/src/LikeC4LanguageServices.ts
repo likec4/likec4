@@ -10,11 +10,12 @@ import {
 import { type LayoutedProjectsView, computeProjectsView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
-import { URI } from 'langium'
+import { TextDocument, URI } from 'langium'
 import { entries, filter, flatMap, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
-import type { Diagnostic, Range } from 'vscode-languageserver-types'
+import type { Diagnostic, FormattingOptions, Range } from 'vscode-languageserver-types'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
+import { type LikeC4LangiumDocument, isLikeC4LangiumDocument } from './ast'
 import { logger as mainLogger } from './logger'
 import { NoopLikeC4MCPServer } from './mcp/noop'
 import type { LikeC4MCPServer } from './mcp/types'
@@ -100,7 +101,44 @@ export interface LikeC4LanguageServices {
    */
   locate(params: Locate.Params): Locate.Res
 
+  /**
+   * Formats documents and returns a map of document URI → formatted source text.
+   *
+   * Target selection uses union semantics:
+   * - No options: formats all documents across all projects
+   * - `projectIds`: includes all documents from those projects
+   * - `documentUris`: includes specific documents
+   * - Both: formats the union (deduplicated)
+   */
+  format(options?: FormatOptions): Promise<Map<string, string>>
+
   dispose(): Promise<void>
+}
+
+/**
+ * Options for {@link LikeC4LanguageServices.format}.
+ *
+ * Target selection uses union semantics:
+ * - Omit both `projectIds` and `documentUris` to format **all** documents.
+ * - Provide `projectIds` to include all documents from those projects.
+ * - Provide `documentUris` to include specific documents.
+ * - Provide both to format the **union** of project documents and specified documents.
+ */
+export interface FormatOptions {
+  /** Include all documents from these projects. */
+  projectIds?: ReadonlyArray<ProjectId>
+  /** Include these specific documents (by URI string). */
+  documentUris?: ReadonlyArray<string>
+  /** Size of a tab in spaces (default: 2). */
+  tabSize?: number
+  /** Prefer spaces over tabs (default: true). */
+  insertSpaces?: boolean
+  /** Trim trailing whitespace on a line. */
+  trimTrailingWhitespace?: boolean
+  /** Insert a newline character at the end of the file if one does not exist. */
+  insertFinalNewline?: boolean
+  /** Trim all newlines after the final newline at the end of the file. */
+  trimFinalNewlines?: boolean
 }
 
 const isErrorDiagnostic = (d: Diagnostic) => d.severity === DiagnosticSeverity.Error
@@ -300,6 +338,83 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     }
   }
 
+  /**
+   * Formats documents sequentially and returns a map of document URI → formatted source text.
+   *
+   * Sequential processing is required because `LikeC4Formatter` (and Langium's `AbstractFormatter`)
+   * stores per-call mutable state on the instance (`this.collector`, `this.extendedFormattingCommands`),
+   * so concurrent calls on the same formatter would corrupt each other's state.
+   */
+  async format(options?: FormatOptions): Promise<Map<string, string>> {
+    const langiumDocuments = this.services.shared.workspace.LangiumDocuments
+    const formatter = this.services.lsp.Formatter
+    const fmtOptions = buildFormattingOptions(options)
+
+    const documents = this.collectDocumentsToFormat(langiumDocuments, options)
+    documents.sort((a, b) => a.uri.toString().localeCompare(b.uri.toString()))
+
+    const result = new Map<string, string>()
+    for (const doc of documents) {
+      const docUri = doc.uri.toString()
+      const edits = await formatter.formatDocument(doc, {
+        options: fmtOptions,
+        textDocument: { uri: docUri },
+      })
+      const text = edits.length === 0
+        ? doc.textDocument.getText()
+        : TextDocument.applyEdits(doc.textDocument, edits)
+      result.set(docUri, text)
+    }
+    return result
+  }
+
+  /**
+   * Collects deduplicated documents to format based on the given options.
+   *
+   * - No filters specified → all documents from all projects.
+   * - `projectIds` specified → all documents from those projects.
+   * - `documentUris` specified → those specific documents.
+   * - Both → union of the above (deduplicated).
+   */
+  private collectDocumentsToFormat(
+    langiumDocuments: LikeC4Services['shared']['workspace']['LangiumDocuments'],
+    options?: FormatOptions,
+  ): LikeC4LangiumDocument[] {
+    const projectIds = options?.projectIds ?? []
+    const documentUris = options?.documentUris ?? []
+
+    const byUri = new Map<string, LikeC4LangiumDocument>()
+
+    // Collect documents from projects
+    if (projectIds.length > 0) {
+      for (const projectId of projectIds) {
+        for (const doc of langiumDocuments.projectDocuments(projectId)) {
+          byUri.set(doc.uri.toString(), doc)
+        }
+      }
+    } else if (documentUris.length === 0) {
+      // No filters at all — scan all projects
+      for (const projectId of this.projectsManager.all) {
+        for (const doc of langiumDocuments.projectDocuments(projectId)) {
+          byUri.set(doc.uri.toString(), doc)
+        }
+      }
+    }
+
+    // Collect explicitly specified documents
+    for (const uriStr of documentUris) {
+      if (byUri.has(uriStr)) continue
+      const doc = langiumDocuments.getDocument(URI.parse(uriStr))
+      if (!isLikeC4LangiumDocument(doc)) {
+        logger.warn(`format: skipping unknown document ${uriStr}`)
+        continue
+      }
+      byUri.set(uriStr, doc)
+    }
+
+    return [...byUri.values()]
+  }
+
   async dispose(): Promise<void> {
     try {
       logger.debug('disposing LikeC4LanguageServices')
@@ -314,5 +429,15 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     } finally {
       logger.debug('LikeC4LanguageServices disposed')
     }
+  }
+}
+
+function buildFormattingOptions(options?: FormatOptions): FormattingOptions {
+  return {
+    tabSize: options?.tabSize ?? 2,
+    insertSpaces: options?.insertSpaces ?? true,
+    ...(options?.trimTrailingWhitespace != null && { trimTrailingWhitespace: options.trimTrailingWhitespace }),
+    ...(options?.insertFinalNewline != null && { insertFinalNewline: options.insertFinalNewline }),
+    ...(options?.trimFinalNewlines != null && { trimFinalNewlines: options.trimFinalNewlines }),
   }
 }
