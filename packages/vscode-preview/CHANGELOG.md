@@ -1,5 +1,13 @@
 # @likec4/vscode-preview
 
+## 1.50.0
+
+### Patch Changes
+
+- [`2c1d97f`](https://github.com/likec4/likec4/commit/2c1d97fca1cce2a209152a312c28757323417099) Thanks [@davydkov](https://github.com/davydkov)! - Improve state management and error handling in VSCode extension preview
+
+  Fixes [#2625](https://github.com/likec4/likec4/issues/2625)
+
 ## 1.49.0
 
 ### Patch Changes

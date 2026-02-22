@@ -20,7 +20,7 @@ import {
   resolveElements,
   resolveModelElements,
 } from '../utils'
-import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
+import { filterIncomingConnections, resolveAllIncomingRelations } from './relation-incoming'
 import { filterOutgoingConnections, resolveAllOutgoingRelations } from './relation-outgoing'
 import { applyPredicate, excludeModelRelations, resolveAscendingSiblings } from './utils'
 
@@ -108,8 +108,8 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         break
       }
       default: {
-        invariant(!sourceIsWildcard, 'Inferrence failed - source should be a deployment ref')
-        invariant(!targetIsWildcard, 'Inferrence failed - target should be a deployment ref')
+        invariant(!sourceIsWildcard, 'Inference failed - source should be a deployment ref')
+        invariant(!targetIsWildcard, 'Inference failed - target should be a deployment ref')
         const sources = resolveElements(model, source)
         const targets = resolveElements(model, target)
 
@@ -174,7 +174,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
 
       // deployment -> model
       case FqnExpr.isModelRef(expr.target):
-        modelRelationsToExclude = resolveAllImcomingRelations(model, expr.target)
+        modelRelationsToExclude = resolveAllIncomingRelations(model, expr.target)
         return excludeModelRelations(
           modelRelationsToExclude,
           { stage, memory },

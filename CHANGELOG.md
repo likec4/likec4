@@ -1,3 +1,27 @@
+## [1.50.0](https://github.com/likec4/likec4/compare/v1.49.0...v1.50.0) (2026-02-21)
+
+### 🚀 Features
+
+- **Draw.io Export & Round-Trip**:\
+  Extended Draw.io integration with export options (`layoutOverride`, `strokeColorByNodeId`, `strokeWidthByNodeId`), edge waypoints, and view notation round-trip support. CLI now supports `likec4 export drawio --roundtrip` to preserve layout and styling when re-exporting. Added "Export to Draw.io" button in the app's export menu. Thanks [@sraphaz](https://github.com/sraphaz), [#2630](https://github.com/likec4/likec4/pull/2630), [#2639](https://github.com/likec4/likec4/pull/2639)
+
+- **New MCP Query Tools**:\
+  Added 10 new MCP query tools: `query-graph`, `query-incomers-graph`, `query-outgoers-graph`, `query-by-metadata`, `query-by-tags`, `query-by-tag-pattern`, `find-relationship-paths`, `batch-read-elements`, `subgraph-summary`, and `element-diff`. Enhanced `read-project-summary` with serialized project config and optional `metadata` field. Thanks [@ckeller42](https://github.com/ckeller42), [#2638](https://github.com/likec4/likec4/pull/2638)
+
+- **Implicit Scoped Views**:\
+  Auto-generate scoped views for elements without explicit views, enabling drill-down navigation out of the box. Configurable via `implicitViews` option in project config (enabled by default). [#2648](https://github.com/likec4/likec4/pull/2648)
+
+- **Derive Technology from Icon**:\
+  Automatically derive element technology from icon name when not set explicitly. Elements with `aws:`, `azure:`, `gcp:`, or `tech:` icons will get a human-readable technology label (e.g. `tech:apache-flink` → "Apache Flink"). Can be disabled via `inferTechnologyFromIcon: false` in project config. [#2642](https://github.com/likec4/likec4/pull/2642)
+
+### 🐞 Bug Fixes
+
+- Fixed hollow edge markers (odiamond, oarrow, odot) to display as hollow with background fill instead of solid fill, closes [#2634](https://github.com/likec4/likec4/issues/2634)
+
+- Improved state management and error handling in VSCode extension preview, closes [#2625](https://github.com/likec4/likec4/issues/2625)
+
+
+
 ## [1.49.0](https://github.com/likec4/likec4/compare/v1.48.0...v1.49.0) (2026-02-13)
 
 > [!IMPORTANT]

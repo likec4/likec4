@@ -53,6 +53,7 @@ export function createTestServices(options?: {
           imageAliases: projectConfig?.imageAliases || {},
           exclude: projectConfig?.exclude || ['node_modules'],
           inferTechnologyFromIcon: projectConfig?.inferTechnologyFromIcon,
+          implicitViews: projectConfig?.implicitViews ?? false,
         },
         folderUri: projectFolderUri,
       })

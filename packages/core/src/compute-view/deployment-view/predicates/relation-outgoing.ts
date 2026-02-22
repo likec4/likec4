@@ -88,8 +88,8 @@ export function filterOutgoingConnections(
 
 export function resolveAllOutgoingRelations<A extends AnyAux>(
   model: LikeC4DeploymentModel<A>,
-  moodelRef: FqnExpr.ModelRef<A>,
+  modelRef: FqnExpr.ModelRef<A>,
 ): Set<RelationshipModel<A>> {
-  const targets = resolveModelElements(model, moodelRef)
+  const targets = resolveModelElements(model, modelRef)
   return new Set(targets.flatMap(e => [...e.allOutgoing]))
 }

@@ -1,5 +1,13 @@
 # @likec4/mcp
 
+## 1.50.0
+
+### Minor Changes
+
+- [#2638](https://github.com/likec4/likec4/pull/2638) [`0587b66`](https://github.com/likec4/likec4/commit/0587b6609ec9eb372aa3ff8eae2fd3a82c789144) Thanks [@ckeller42](https://github.com/ckeller42)! - Add new MCP query tools: `query-graph`, `query-incomers-graph`, `query-outgoers-graph`, `query-by-metadata`, `query-by-tags`, `query-by-tag-pattern`, `find-relationship-paths`, `batch-read-elements`, `subgraph-summary`, and `element-diff`.
+
+  Enhance `read-project-summary` to include serialized project `config` and extend project config schema with optional `metadata` field.
+
 ## 1.49.0
 
 ### Patch Changes

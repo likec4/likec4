@@ -121,24 +121,26 @@ describe('DrawIO export/import with tutorial', () => {
 
     const model = await likec4.layoutedModel()
     const viewmodels = [...model.views()]
-    expect(viewmodels.length).toBe(2)
+    // 2 explicit views + 3 implicit views (customer, saas.ui, saas.backend)
+    expect(viewmodels.length).toBe(5)
 
     const drawioXml = generateDrawioMulti(viewmodels)
     expect(drawioXml).toContain('<?xml version="1.0"')
     expect(drawioXml).toContain('<mxfile ')
 
     const diagrams = getAllDiagrams(drawioXml)
-    expect(diagrams.length).toBe(2)
-    const [d0, d1] = [diagrams[0]!, diagrams[1]!]
-    expect(d0.name).toBe('Landscape view')
-    expect(d1.id).toBe('likec4-saas')
+    expect(diagrams.length).toBe(5)
+    const indexDiagram = diagrams.find(d => d.name === 'Landscape view')
+    const saasDiagram = diagrams.find(d => d.id === 'likec4-saas')
+    expect(indexDiagram).toBeDefined()
+    expect(saasDiagram).toBeDefined()
 
     for (const d of diagrams) {
       expect(d.content).toContain('<mxGraphModel')
-      expect(d.content).toContain('Customer')
     }
-    expect(d1.content).toContain('Frontend')
-    expect(d1.content).toContain('Backend')
+    expect(indexDiagram!.content).toContain('Customer')
+    expect(saasDiagram!.content).toContain('Frontend')
+    expect(saasDiagram!.content).toContain('Backend')
 
     expectDrawioXmlLoadableInDrawio(drawioXml)
   })

@@ -1,5 +1,17 @@
 # @likec4/diagram
 
+## 1.50.0
+
+### Patch Changes
+
+- [#2656](https://github.com/likec4/likec4/pull/2656) [`7f43ca1`](https://github.com/likec4/likec4/commit/7f43ca19d90f4db0b02c44a72c7eae66dfc76942) Thanks [@copilot-swe-agent](https://github.com/apps/copilot-swe-agent)! - Fix O-version edge markers (odiamond, oarrow, odot) to display as hollow with background fill instead of solid fill
+
+  Fixes [#2634](https://github.com/likec4/likec4/issues/2634)
+
+- Updated dependencies [[`fe468d8`](https://github.com/likec4/likec4/commit/fe468d830544e6f0051ea2203ab137d46932d11e)]:
+  - @likec4/core@1.50.0
+  - @likec4/styles@1.50.0
+
 ## 1.49.0
 
 ### Minor Changes

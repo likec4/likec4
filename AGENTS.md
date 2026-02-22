@@ -46,6 +46,7 @@ Several packages have auto-generated files that MUST be generated before:
 - `**/routeTree.gen.ts` - TanStack Router routes
 - `styled-system/preset/src/generated.ts` - Panda CSS preset
 - `styled-system/styles/dist/` - Panda CSS generated styles
+- `schemas/likec4-config.schema.json` - Configuration JSON-Schema, generated from `packages/config/src/schema.ts`
 
 DO NOT edit files that are git-ignored - they are generated and your changes will be overwritten.
 
@@ -59,7 +60,7 @@ Always run `pnpm generate` after:
 ## Coding Style & Naming Conventions
 
 - TypeScript-first repo; use explicit types.
-- Avoid using `any`.
+- Avoid using `any`, casts with `as`.
 - Formatting is handled by `dprint` (120-column lines, single quotes, no semicolons).
 - Use `oxlint` for linting; keep imports sorted and type-only imports grouped first.
 - Use JSDoc to document public classes and methods.
@@ -79,6 +80,7 @@ Always run `pnpm generate` after:
 - Recent history shows Conventional Commit-style prefixes (e.g., `feat:`, `chore:`); follow this pattern when possible.
 - Keep commits focused and scoped to one change.
 - Include a changeset for user-facing package changes (`pnpm changeset` or `pnpm changeset:empty`).
+  - see `.github/agents/changeset-generator.agent.md` for details.
 - PRs should include a clear description, linked issue (if any), and test results; add screenshots for UI changes.
 
 ## Configuration & Tooling Notes
