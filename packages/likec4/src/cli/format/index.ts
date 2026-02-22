@@ -68,10 +68,17 @@ const formatCmd = (yargs: yargs.Argv) => {
           }
         }
 
-        const formatted = await languageServices.format({
-          ...(projects?.length && { projects }),
-          ...(documentUris?.length && { documentUris }),
-        })
+        let formatted
+        try {
+          formatted = await languageServices.format({
+            ...(projects?.length && { projects }),
+            ...(documentUris?.length && { documentUris }),
+          })
+        } catch (e) {
+          logger.error(e instanceof Error ? e.message : String(e))
+          process.exitCode = 1
+          return
+        }
 
         logger.debug(`${formatted.size} document(s) to process`)
 
