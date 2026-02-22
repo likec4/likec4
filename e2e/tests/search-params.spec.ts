@@ -20,7 +20,7 @@ const STATIC_VIEW = 'index'
 const DYNAMIC_VIEW = 'dynamic-view-1'
 
 function exportUrl(viewId: string, extra?: Record<string, string>): string {
-  const params = new URLSearchParams({ padding: '20', ...extra })
+  const params = new URLSearchParams({ padding: '22', ...extra })
   return `/project/${encodeURIComponent(PROJECT)}/export/${encodeURIComponent(viewId)}/?${params.toString()}`
 }
 
@@ -57,12 +57,12 @@ test.describe('?theme= search parameter', () => {
   // Playwright config sets colorScheme: 'light', so the resolved default is always light.
   for (
     const [label, extra] of [
-      ['auto', { theme: 'auto' }],
-      ['absent', {}],
-      ['invalid (sepia)', { theme: 'sepia' }],
+      ['?theme=auto', { theme: 'auto' }],
+      ['no ?theme= param', {}],
+      ['?theme=sepia (invalid)', { theme: 'sepia' }],
     ] as const
   ) {
-    test(`?theme=${label} does not force — falls back to light`, async ({ page }) => {
+    test(`${label} does not force — falls back to light`, async ({ page }) => {
       await gotoAndWaitForCanvas(page, exportUrl(STATIC_VIEW, extra))
       await expect(page.locator(`[${COLOR_SCHEME_ATTR}]`).first())
         .toHaveAttribute(COLOR_SCHEME_ATTR, 'light')
@@ -85,12 +85,12 @@ test.describe('?dynamic= search parameter', () => {
 
   for (
     const [label, extra] of [
-      ['diagram', { dynamic: 'diagram' }],
-      ['absent', {}],
-      ['invalid (timeline)', { dynamic: 'timeline' }],
+      ['?dynamic=diagram', { dynamic: 'diagram' }],
+      ['no ?dynamic= param', {}],
+      ['?dynamic=timeline (invalid)', { dynamic: 'timeline' }],
     ] as const
   ) {
-    test(`?dynamic=${label} renders default diagram variant`, async ({ page }) => {
+    test(`${label} renders default diagram variant`, async ({ page }) => {
       await gotoAndWaitForCanvas(page, viewUrl(DYNAMIC_VIEW, extra))
       await expect(page.locator(SEQ_ACTOR_SELECTOR)).toHaveCount(0)
     })
