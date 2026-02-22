@@ -404,7 +404,13 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     // Collect explicitly specified documents
     for (const uriStr of documentUris) {
       if (byUri.has(uriStr)) continue
-      const doc = langiumDocuments.getDocument(URI.parse(uriStr))
+      let doc
+      try {
+        doc = langiumDocuments.getDocument(URI.parse(uriStr))
+      } catch {
+        logger.warn(`format: skipping unknown document ${uriStr}`)
+        continue
+      }
       if (!isLikeC4LangiumDocument(doc)) {
         logger.warn(`format: skipping unknown document ${uriStr}`)
         continue

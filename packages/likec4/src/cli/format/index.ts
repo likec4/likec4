@@ -70,7 +70,7 @@ const formatCmd = (yargs: yargs.Argv) => {
 
         const formatted = await languageServices.format({
           ...(projects?.length && { projects }),
-          ...(documentUris && { documentUris }),
+          ...(documentUris?.length && { documentUris }),
         })
 
         logger.debug(`${formatted.size} document(s) to process`)
