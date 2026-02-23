@@ -1,6 +1,6 @@
 ---
 import { Code } from '@astrojs/starlight/components'
-import BigBankView from '../bigbank/LikeC4View.astro'
+import LikeC4View from './LikeC4View.astro'
 
 const codeExample = `
 // You start with defining your terms and ...
@@ -84,47 +84,9 @@ views {
           <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/60"></span>
           <span class="w-2.5 h-2.5 rounded-full bg-green-400/60"></span>
           <span class="ml-3 text-xs text-zinc-500 font-mono">architecture.c4</span>
-          <button
-            id="copy-code-btn"
-            class="ml-auto p-1.5 rounded-md text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
-            aria-label="Copy code"
-          >
-            <svg id="copy-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            <svg id="check-icon" class="w-4 h-4 hidden text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <polyline points="20,6 9,17 4,12"></polyline>
-            </svg>
-          </button>
         </div>
         <div id="code-content" class="max-h-[520px] overflow-y-auto">
           <Code code={codeExample} lang="likec4" />
-        </div>
-      </div>
-
-      <!-- Diagonal slider divider (desktop only) -->
-      <div class="hidden lg:block absolute inset-y-0 left-1/2 -translate-x-1/2 w-16 z-10 pointer-events-none">
-        <svg class="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 64 100">
-          <line x1="48" y1="-2" x2="16" y2="102" stroke="url(#diag-gradient)" stroke-width="2" />
-          <defs>
-            <linearGradient id="diag-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="transparent" />
-              <stop offset="10%" stop-color="rgba(6,182,212,0.6)" />
-              <stop offset="50%" stop-color="rgba(6,182,212,0.8)" />
-              <stop offset="90%" stop-color="rgba(6,182,212,0.6)" />
-              <stop offset="100%" stop-color="transparent" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <!-- Handle -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div class="w-10 h-10 rounded-full border-2 border-cyan-500/50 bg-zinc-900 flex items-center justify-center shadow-lg shadow-cyan-500/25 ring-4 ring-cyan-500/10">
-            <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 5l-5 7 5 7"></path>
-              <path d="M15 5l5 7-5 7"></path>
-            </svg>
-          </div>
         </div>
       </div>
 
@@ -138,7 +100,7 @@ views {
           <span class="ml-3 text-xs text-zinc-500 font-mono">preview — landscape view</span>
         </div>
         <div class="p-6 flex items-center justify-center min-h-[400px] bg-zinc-900/50">
-          <BigBankView viewId="index" />
+          <LikeC4View viewId="view1" />
         </div>
       </div>
     </div>
@@ -167,32 +129,32 @@ views {
 </section>
 
 <style>
-  .demo-angle-top {
-    clip-path: polygon(0 0, 100% 0, 100% 0%, 0 100%);
-  }
+.demo-angle-top {
+  clip-path: polygon(0 0, 100% 0, 100% 0%, 0 100%);
+}
 </style>
 
 <script>
-  function copyCode(): void {
-    const codeContent = document.getElementById('code-content')
-    const copyIcon = document.getElementById('copy-icon')
-    const checkIcon = document.getElementById('check-icon')
-    if (!codeContent || !copyIcon || !checkIcon) return
+function copyCode(): void {
+  const codeContent = document.getElementById('code-content')
+  const copyIcon = document.getElementById('copy-icon')
+  const checkIcon = document.getElementById('check-icon')
+  if (!codeContent || !copyIcon || !checkIcon) return
 
-    navigator.clipboard.writeText((codeContent.textContent || '').trim()).then(() => {
-      copyIcon.classList.add('hidden')
-      checkIcon.classList.remove('hidden')
-      setTimeout(() => {
-        copyIcon.classList.remove('hidden')
-        checkIcon.classList.add('hidden')
-      }, 2000)
-    })
-  }
+  navigator.clipboard.writeText((codeContent.textContent || '').trim()).then(() => {
+    copyIcon.classList.add('hidden')
+    checkIcon.classList.remove('hidden')
+    setTimeout(() => {
+      copyIcon.classList.remove('hidden')
+      checkIcon.classList.add('hidden')
+    }, 2000)
+  })
+}
 
-  function initDemo(): void {
-    document.getElementById('copy-code-btn')?.addEventListener('click', copyCode)
-  }
+function initDemo(): void {
+  document.getElementById('copy-code-btn')?.addEventListener('click', copyCode)
+}
 
-  document.addEventListener('DOMContentLoaded', initDemo)
-  document.addEventListener('astro:page-load', initDemo)
+document.addEventListener('DOMContentLoaded', initDemo)
+document.addEventListener('astro:page-load', initDemo)
 </script>
