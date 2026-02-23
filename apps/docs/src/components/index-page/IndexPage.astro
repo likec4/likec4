@@ -1,15 +1,155 @@
 ---
+import Contributors from './Contributors.astro'
 import Demo from './Demo.astro'
 import Features from './Features.astro'
 import Footer from './Footer.astro'
 import Hero from './Hero.astro'
 import Navigation from './Navigation.astro'
+import Workflow from './Workflow.astro'
 ---
 
-<div class="min-h-screen transition-colors duration-300">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,800,900&display=swap" rel="stylesheet" />
+
+<div data-landing-page class="min-h-screen bg-stone-50 dark:bg-zinc-950 transition-colors duration-300">
   <Navigation />
   <Hero />
+  <Workflow />
   <Features />
   <Demo />
+  <Contributors />
   <Footer />
 </div>
+
+<style is:global>
+[data-landing-page] {
+  font-family: "Satoshi", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background-image:
+    linear-gradient(rgba(6, 182, 212, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+:root[data-theme="dark"] [data-landing-page],
+.dark [data-landing-page] {
+  background-image:
+    linear-gradient(rgba(6, 182, 212, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+[data-landing-page] .lp-display {
+  font-family: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes lp-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lp-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes lp-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+[data-landing-page] .lp-anim {
+  animation: lp-fade-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+[data-landing-page] .lp-anim-left {
+  animation: lp-slide-left 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+[data-landing-page] .lp-anim-right {
+  animation: lp-slide-right 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.2s;
+}
+
+[data-landing-page] .lp-d1 {
+  animation-delay: 0.06s;
+}
+[data-landing-page] .lp-d2 {
+  animation-delay: 0.14s;
+}
+[data-landing-page] .lp-d3 {
+  animation-delay: 0.24s;
+}
+[data-landing-page] .lp-d4 {
+  animation-delay: 0.36s;
+}
+[data-landing-page] .lp-d5 {
+  animation-delay: 0.5s;
+}
+
+[data-landing-page] .lp-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-landing-page] .lp-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-landing-page] .lp-stagger-1 {
+  transition-delay: 0s;
+}
+[data-landing-page] .lp-stagger-2 {
+  transition-delay: 0.1s;
+}
+[data-landing-page] .lp-stagger-3 {
+  transition-delay: 0.2s;
+}
+[data-landing-page] .lp-stagger-4 {
+  transition-delay: 0.3s;
+}
+[data-landing-page] .lp-stagger-5 {
+  transition-delay: 0.4s;
+}
+[data-landing-page] .lp-stagger-6 {
+  transition-delay: 0.5s;
+}
+</style>
+
+<script>
+function initScrollReveal(): void {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+          observer.unobserve(entry.target)
+        }
+      })
+    },
+    { threshold: 0.08, rootMargin: '0px 0px -30px 0px' },
+  )
+  document.querySelectorAll('[data-landing-page] .lp-reveal').forEach((el) => observer.observe(el))
+}
+
+document.addEventListener('DOMContentLoaded', initScrollReveal)
+document.addEventListener('astro:page-load', initScrollReveal)
+</script>
