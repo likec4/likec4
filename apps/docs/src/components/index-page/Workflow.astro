@@ -1,0 +1,103 @@
+---
+import { Code } from '@astrojs/starlight/components'
+import DynamicLikeC4View from '../dynamic-view/DynamicLikeC4View.astro'
+
+const writeCodeSnippet = `// define your model
+model {
+  customer = actor 'Customer'
+  cloud = system 'Our SaaS' {
+    ui = component 'Frontend'
+    api = component 'Backend'
+    ui -> api 'requests'
+  }
+  customer -> ui
+}
+`
+
+const terminalHtml =
+  `<span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">build</span>
+<span class="text-zinc-600">  Building static site...</span>
+<span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">generate react</span>
+<span class="text-zinc-600">  Generated React components</span>
+<span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">serve</span>
+<span class="text-zinc-600">  Serving at http://localhost:5173</span>`
+---
+
+<section class="py-24 md:py-32 px-6 overflow-hidden">
+  <div class="max-w-7xl mx-auto">
+    <!-- Left-aligned header -->
+    <div class="mb-16 lp-reveal">
+      <span
+        class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+      >
+        How it works
+      </span>
+      <h2 class="lp-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+        Write. See. Ship.
+      </h2>
+      <p class="text-base md:text-lg leading-relaxed text-stone-500 dark:text-zinc-400 max-w-xl mt-4">
+        A complete workflow from architecture definition to deployment — in three steps.
+      </p>
+    </div>
+
+    <!-- Staggered 3-column grid -->
+    <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+      <!-- Step 1: WRITE (offset up) -->
+      <div class="lp-reveal lp-stagger-1 lg:-translate-y-6">
+        <div class="h-full rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 shadow-sm dark:shadow-none overflow-hidden transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
+          <div class="p-6 pb-4">
+            <span class="lp-display text-xs font-bold tracking-[0.15em] text-stone-400 dark:text-zinc-700">01</span>
+            <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">Write</h3>
+            <p class="text-sm leading-relaxed text-stone-500 dark:text-zinc-400">
+              Describe your architecture in a clean, readable DSL. Version it alongside your code.
+            </p>
+          </div>
+          <!-- Code block using Starlight Code component -->
+          <div class="mx-4 mb-4 rounded-lg overflow-hidden text-sm">
+            <Code code={writeCodeSnippet} lang="likec4" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: SEE (centered) -->
+      <div class="lp-reveal lp-stagger-2">
+        <div class="h-full rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 shadow-sm dark:shadow-none overflow-hidden transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
+          <div class="p-6 pb-4">
+            <span class="lp-display text-xs font-bold tracking-[0.15em] text-stone-400 dark:text-zinc-700">02</span>
+            <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">See</h3>
+            <p class="text-sm leading-relaxed text-stone-500 dark:text-zinc-400">
+              Diagrams update as you type. Real-time visualization, no manual syncing needed.
+            </p>
+          </div>
+          <!-- Live dynamic diagram -->
+          <div class="mx-4 mb-4 rounded-lg border border-stone-200 dark:border-zinc-800/40 bg-stone-50 dark:bg-zinc-800/30 overflow-hidden min-h-[200px] flex items-center justify-center">
+            <DynamicLikeC4View viewId="index" variant="sequence" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: SHIP (offset down) -->
+      <div class="lp-reveal lp-stagger-3 lg:translate-y-6">
+        <div class="h-full rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 shadow-sm dark:shadow-none overflow-hidden transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
+          <div class="p-6 pb-4">
+            <span class="lp-display text-xs font-bold tracking-[0.15em] text-stone-400 dark:text-zinc-700">03</span>
+            <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">Ship</h3>
+            <p class="text-sm leading-relaxed text-stone-500 dark:text-zinc-400">
+              Export to PNG, Mermaid, DrawIO and other formats. Embed in docs or deploy as an interactive site.
+            </p>
+          </div>
+          <!-- Terminal block -->
+          <div class="mx-4 mb-4 rounded-lg bg-zinc-950 overflow-hidden">
+            <div class="flex items-center gap-2 px-4 py-2 border-b border-zinc-800">
+              <span class="w-2 h-2 rounded-full bg-green-400/80"></span>
+              <span class="text-[0.65rem] text-zinc-500 font-mono">terminal</span>
+            </div>
+            <div class="p-4">
+              <pre class="text-[0.75rem] leading-loose font-mono"><code set:html={terminalHtml} /></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

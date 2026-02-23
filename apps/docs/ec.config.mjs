@@ -5,7 +5,7 @@ import structurizr from './structurizr.tmLanguage.json' with { type: 'json' }
 
 /** @type {import('@astrojs/starlight/expressive-code').StarlightExpressiveCodeOptions} */
 export default {
-  // themes: ['dracula', 'solarized-light'],
+  themes: ['dark-plus', 'github-light'],
   plugins: [
     pluginLineNumbers(),
     pluginCollapsibleSections(),
