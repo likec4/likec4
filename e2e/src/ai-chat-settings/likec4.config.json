@@ -1,0 +1,7 @@
+{
+  "name": "ai-chat-settings",
+  "aiChat": {
+    "baseUrl": "https://mock-llm-api.test/v1",
+    "model": "test-model"
+  }
+}

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Fqn } from '@likec4/core/types'
 import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
@@ -11,6 +18,8 @@ import {
   setup,
 } from 'xstate'
 import { not } from 'xstate/guards'
+import type { AIChatSubject } from '../ai-chat/actor'
+import { aiChatLogic } from '../ai-chat/actor'
 import { elementDetailsLogic } from './element-details/actor'
 import { relationshipDetailsLogic } from './relationship-details/actor'
 import { relationshipsBrowserLogic } from './relationships-browser/actor'
@@ -20,6 +29,7 @@ export type OverlayActorEvent =
   | { type: 'open.elementDetails' } & Overlays.ElementDetails.Input
   | { type: 'open.relationshipDetails' } & Overlays.RelationshipDetails.Input
   | { type: 'open.relationshipsBrowser' } & Overlays.RelationshipsBrowser.Input
+  | { type: 'open.aiChat' } & Overlays.AIChat.Input
   | { type: 'close'; actorId?: string | undefined } // Close last overlay if actorId is not provided
   | { type: 'close.all' }
 
@@ -29,12 +39,15 @@ export interface OverlaysContext {
     | { type: 'elementDetails'; id: `elementDetails-${number}`; subject: Fqn }
     | { type: 'relationshipDetails'; id: `relationshipDetails-${number}` }
     | { type: 'relationshipsBrowser'; id: `relationshipsBrowser-${number}`; subject: Fqn }
+    | { type: 'aiChat'; id: `aiChat-${number}`; subject: AIChatSubject }
   >
 }
 
+export type OverlayType = 'elementDetails' | 'relationshipsBrowser' | 'relationshipDetails' | 'aiChat'
+
 export type OverlayActorEmitedEvent =
-  | { type: 'opened'; overlay: 'elementDetails' | 'relationshipsBrowser' | 'relationshipDetails' }
-  | { type: 'closed'; overlay: 'elementDetails' | 'relationshipsBrowser' | 'relationshipDetails' }
+  | { type: 'opened'; overlay: OverlayType }
+  | { type: 'closed'; overlay: OverlayType }
   | { type: 'idle' }
 
 type HotKeyEvent = { type: 'close' }
@@ -66,12 +79,14 @@ const machine = setup({
       [key: `elementDetails-${number}`]: 'elementDetails'
       [key: `relationshipDetails-${number}`]: 'relationshipDetails'
       [key: `relationshipsBrowser-${number}`]: 'relationshipsBrowser'
+      [key: `aiChat-${number}`]: 'aiChat'
     },
   },
   actors: {
     relationshipDetails: relationshipDetailsLogic,
     elementDetails: elementDetailsLogic,
     relationshipsBrowser: relationshipsBrowserLogic,
+    aiChat: aiChatLogic,
     hotkey: hotkeyLogic,
   },
   guards: {
@@ -90,8 +105,6 @@ const machine = setup({
     },
   },
 })
-
-type OverlayType = 'elementDetails' | 'relationshipsBrowser' | 'relationshipDetails'
 
 const emitOpened = (overlay: OverlayType | `${OverlayType}-${number}`) =>
   machine.emit({
@@ -240,12 +253,41 @@ const openRelationshipsBrowser = () =>
     enqueue(emitOpened(id))
   })
 
+const openAIChat = () =>
+  machine.enqueueActions(({ context, enqueue, event }) => {
+    assertEvent(event, 'open.aiChat')
+    // Only allow one AI chat at a time
+    const existing = context.overlays.find(o => o.type === 'aiChat')
+    if (existing) {
+      return
+    }
+    const id = `aiChat-${context.seq}` as const
+    enqueue.spawnChild('aiChat', {
+      id,
+      input: event,
+      syncSnapshot: true,
+    })
+    enqueue.assign({
+      seq: context.seq + 1,
+      overlays: [
+        ...context.overlays,
+        {
+          id,
+          type: 'aiChat',
+          subject: event.subject,
+        },
+      ],
+    })
+    enqueue(emitOpened(id))
+  })
+
 const openOverlay = () =>
   machine.enqueueActions(({ enqueue, event }) => {
     assertEvent(event, [
       'open.elementDetails',
       'open.relationshipDetails',
       'open.relationshipsBrowser',
+      'open.aiChat',
     ])
     switch (event.type) {
       case 'open.elementDetails':
@@ -256,6 +298,9 @@ const openOverlay = () =>
         break
       case 'open.relationshipsBrowser':
         enqueue(openRelationshipsBrowser())
+        break
+      case 'open.aiChat':
+        enqueue(openAIChat())
         break
     }
   })
@@ -352,6 +397,7 @@ export interface OverlaysActorLogic extends
       [key: `elementDetails-${number}`]: Overlays.ElementDetails.ActorRef | undefined
       [key: `relationshipDetails-${number}`]: Overlays.RelationshipDetails.ActorRef | undefined
       [key: `relationshipsBrowser-${number}`]: Overlays.RelationshipsBrowser.ActorRef | undefined
+      [key: `aiChat-${number}`]: Overlays.AIChat.ActorRef | undefined
     },
     any,
     any,

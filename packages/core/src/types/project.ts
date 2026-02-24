@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { PartialDeep, WritableDeep } from 'type-fest'
 import type { LikeC4StyleDefaults, LikeC4Theme } from '../styles/types'
 import type { ProjectId } from './scalar'
@@ -50,6 +57,16 @@ export interface LikeC4Project {
   title?: string
 
   /**
+   * Contact person for the project
+   */
+  contactPerson?: string | undefined
+
+  /**
+   * Arbitrary metadata as key-value pairs
+   */
+  metadata?: Record<string, unknown> | undefined
+
+  /**
    * Custom styles
    */
   styles?: LikeC4ProjectStylesConfig | undefined
@@ -66,4 +83,19 @@ export interface LikeC4Project {
    * Defaults to true.
    */
   inferTechnologyFromIcon?: boolean | undefined
+
+  /**
+   * AI Chat provider configuration (OpenAI-compatible endpoint)
+   */
+  aiChat?: {
+    enabled?: boolean | undefined
+    baseUrl?: string | undefined
+    model?: string | undefined
+    apiKey?: string | undefined
+    allowUnsafeApiKey?: boolean | undefined
+    suggestedQuestions?: {
+      element?: string[] | undefined
+    } | undefined
+    systemPrompt?: string | undefined
+  } | undefined
 }

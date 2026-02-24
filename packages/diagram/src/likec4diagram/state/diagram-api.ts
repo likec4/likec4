@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as t from '@likec4/core/types'
 import type {
   DynamicViewDisplayVariant,
@@ -72,6 +79,7 @@ export interface DiagramApi<A extends Any = Unknown> {
    * Open element details card
    */
   openElementDetails(fqn: Fqn<A>, fromNode?: NodeId): void
+  openAIChat(fqn: Fqn<A>): void
   openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]): void
   updateNodeData(nodeId: NodeId, data: PartialDeep<Types.NodeData>): void
   updateEdgeData(edgeId: EdgeId, data: PartialDeep<Types.EdgeData>): void
@@ -181,6 +189,9 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
     },
     openElementDetails: (fqn, fromNode?: NodeId) => {
       actorRef.current.send({ type: 'open.elementDetails', fqn, fromNode })
+    },
+    openAIChat: (fqn) => {
+      actorRef.current.send({ type: 'open.aiChat', fqn })
     },
     openRelationshipDetails: (...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]) => {
       if (params.length === 1) {

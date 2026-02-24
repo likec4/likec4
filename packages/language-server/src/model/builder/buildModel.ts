@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 //
 // Copyright (c) 2023-2026 Denis Davydkov
-// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
@@ -383,9 +383,17 @@ export function buildModelData(
       project: exact({
         id: project.id,
         title: project.config.title ?? project.config.name,
+        contactPerson: project.config.contactPerson,
+        metadata: project.config.metadata,
         styles: project.config.styles,
         manualLayouts: project.config.manualLayouts,
         inferTechnologyFromIcon: project.config.inferTechnologyFromIcon,
+        aiChat: project.config.aiChat
+          ? {
+            ...project.config.aiChat,
+            ...(!project.config.aiChat.allowUnsafeApiKey && { apiKey: undefined }),
+          }
+          : undefined,
       }),
       specification: {
         tags: c4Specification.tags,
