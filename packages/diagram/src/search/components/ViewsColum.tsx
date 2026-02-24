@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { LikeC4Model } from '@likec4/core/model'
 import { type Fqn, preferSummary } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
@@ -18,9 +25,9 @@ import { IconStack2, IconZoomScan } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { memo, useMemo, useRef } from 'react'
 import { first } from 'remeda'
-import { useCurrentViewId } from '../../hooks/useCurrentView'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
-import { useNormalizedSearch, useSearchActor } from '../hooks'
+import { useNormalizedSearch } from '../hooks'
+import { useSearchContext } from '../SearchContext'
 import { buttonsva } from './_shared.css'
 import { centerY, moveFocusToSearchInput, queryAllFocusable } from './utils'
 import * as styles from './ViewsColumn.css'
@@ -32,7 +39,7 @@ export const NothingFound = () => (
 )
 
 const useFoundViews = () => {
-  const currentViewId = useCurrentViewId() // subscribe to current view changes
+  const { currentViewId } = useSearchContext()
   const likec4model = useLikeC4Model()
   const search = useNormalizedSearch()
   return useMemo(() => {
@@ -97,7 +104,7 @@ export const ViewsColumn = memo(() => {
         <m.div layoutId={`@view${view.id}`} key={view.id}>
           <ViewButton
             view={view}
-            currentViewId={currentViewId}
+            currentViewId={currentViewId ?? ''}
             search={search}
             tabIndex={i === 0 ? 0 : -1}
           />
@@ -121,16 +128,12 @@ export function ViewButton(
     & UnstyledButtonProps
     & ElementProps<'button'>,
 ) {
-  const searchActorRef = useSearchActor()
+  const ctx = useSearchContext()
   const nextViewId = view.id
   const isCurrentView = nextViewId === currentViewId
 
   const navigate = () => {
-    searchActorRef.send({
-      type: 'navigate.to',
-      viewId: nextViewId,
-      focusOnElement,
-    })
+    ctx.navigateTo(nextViewId, focusOnElement)
   }
 
   return (

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { LikeC4Diagram, LikeC4EditorProvider } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useNavigate, useSearch } from '@tanstack/react-router'
@@ -6,7 +13,7 @@ import { NotFound } from '../components/NotFound'
 import { isDevelopment } from '../const'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
-import { ListenForDynamicVariantChange, OpenRelationshipBrowserFromUrl } from './ViewReact'
+import { FocusElementFromUrl, ListenForDynamicVariantChange, OpenRelationshipBrowserFromUrl } from './ViewReact'
 
 export function ViewEditor() {
   const navigate = useNavigate()
@@ -82,6 +89,7 @@ export function ViewEditor() {
       >
         <ListenForDynamicVariantChange />
         <OpenRelationshipBrowserFromUrl />
+        <FocusElementFromUrl />
       </LikeC4Diagram>
     </LikeC4EditorProvider>
   )
