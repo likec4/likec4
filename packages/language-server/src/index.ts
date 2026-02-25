@@ -29,6 +29,11 @@ export {
 
 type StartLanguageServerOptions = {
   /**
+   * The log level to use.
+   * @default 'debug'
+   */
+  logLevel?: 'trace' | 'debug' | 'info' | 'warning' | 'error'
+  /**
    * The Language Server Protocol connection to use.
    */
   connection?: Connection
@@ -65,6 +70,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
     enableMCP: 'sse' as const,
     enableTelemetry: !!connection,
     enableManualLayouts: true,
+    logLevel: (isDevelopment ? 'trace' : 'debug') as StartLanguageServerOptions['logLevel'] & string,
   })
 
   const enableTelemetry = !!connection && opts.enableTelemetry && !isDevelopment
@@ -83,7 +89,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
       {
         category: ['likec4'],
         sinks: ['console', ...(enableTelemetry ? ['telemetry'] : [])],
-        lowestLevel: isDevelopment ? 'trace' : 'debug',
+        lowestLevel: opts.logLevel,
       },
     ],
   })

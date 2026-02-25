@@ -35,7 +35,7 @@ export const useHashHistory = {
 
 export const outdir = {
   alias: 'o',
-  type: 'string',
+  string: true,
   desc: 'output directory',
   normalize: true,
   nargs: 1,
@@ -44,7 +44,7 @@ export const outdir = {
 
 export const webcomponentPrefix = {
   alias: 'w',
-  type: 'string',
+  string: true,
   desc: 'prefix for Webcomponents, e.g "c4" generates <c4-view ../>',
   default: 'likec4',
   nargs: 1,
@@ -52,7 +52,7 @@ export const webcomponentPrefix = {
 
 export const title = {
   alias: 't',
-  type: 'string',
+  string: true,
   desc: 'base title of the app pages (default is "LikeC4")',
   default: 'LikeC4',
   nargs: 1,
@@ -60,20 +60,19 @@ export const title = {
 
 export const base = {
   alias: ['base-url'],
-  type: 'string',
+  string: true,
   desc: 'base url the app is being served from, e.g. "/" or "/pages/"',
   nargs: 1,
 } as const satisfies Options
 
 export const outputSingleFile = {
   boolean: true,
-  type: 'boolean',
   desc: 'outputs a single self-contained HTML file with all required resources inlined',
 } as const satisfies Options
 
 export const listen = {
   alias: 'l',
-  type: 'string',
+  string: true,
   ...(isInsideContainer()
     ? {
       desc: 'listen 0.0.0.0 by default in container',
@@ -86,14 +85,20 @@ export const listen = {
 } as const satisfies Options
 
 export const port = {
-  type: 'number',
+  number: true,
   desc: 'port number for the dev server (default is 5173, or PORT environment variable)',
   nargs: 1,
 } as const satisfies Options
 
 export const project = {
   alias: 'p',
-  type: 'string',
+  string: true,
   desc: 'select LikeC4 project by name (e.g. "my-project") or by path',
   nargs: 1,
+} as const satisfies Options
+
+export const logLevel = {
+  hidden: true,
+  nargs: 1,
+  choices: ['debug', 'info', 'warning', 'error'],
 } as const satisfies Options
