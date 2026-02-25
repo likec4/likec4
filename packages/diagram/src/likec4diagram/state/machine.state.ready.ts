@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { assign, log, sendTo, spawnChild, stopChild } from 'xstate/actions'
 import { and } from 'xstate/guards'
 import {
@@ -27,6 +34,7 @@ import {
   onEdgeMouseLeave,
   onNodeMouseEnter,
   onNodeMouseLeave,
+  openAIChat,
   openOverlay,
   raiseFitDiagram,
   resetEdgesControlPoints,
@@ -122,6 +130,10 @@ export const ready = machine.createStateConfig({
     },
     'open.relationshipsBrowser': {
       actions: openOverlay(),
+    },
+    'open.aiChat': {
+      guard: 'enabled: AIChat',
+      actions: openAIChat(),
     },
     'open.search': {
       guard: 'enabled: Search',

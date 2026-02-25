@@ -86,6 +86,48 @@
     "implicitViews": {
       "description": "Auto-generate scoped views for elements without explicit views. Defaults to true.",
       "type": "boolean"
+    },
+    "aiChat": {
+      "description": "AI Chat provider configuration (OpenAI-compatible endpoint)",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable or disable AI Chat feature. Defaults to true when aiChat config is present.",
+          "type": "boolean"
+        },
+        "baseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "apiKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allowUnsafeApiKey": {
+          "description": "UNSAFE: When true, the API key is included in the generated static site bundle.\nThis exposes the key to anyone who can access the deployed pages.\nOnly use this for internal/private deployments where key exposure is acceptable.\nDefaults to false.",
+          "type": "boolean"
+        },
+        "suggestedQuestions": {
+          "description": "Custom suggested questions shown in the empty chat state.\nSupports template variables: {title}, {kind}, {technology}, {parent}, {tags},\n{view}, {dependencies}, {dependents}, {context}.\nQuestions whose variables resolve to empty are automatically hidden.",
+          "type": "object",
+          "properties": {
+            "element": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "systemPrompt": {
+          "description": "Custom system prompt template for the AI assistant.\nUse {context} as placeholder for the architecture context block.\nIf not provided, a default prompt is used.",
+          "type": "string"
+        }
+      }
     }
   },
   "required": [

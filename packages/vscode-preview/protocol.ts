@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type {
   ComputedLikeC4ModelData,
   DeploymentFqn,
@@ -114,6 +121,43 @@ export const WebviewMsgs = {
     | { screen: 'projects' }
   >,
   UpdateMyTitle: { method: 'webview:update-my-title' } as NotificationType<{ title: string }>,
+}
+
+// AI Chat proxy protocol — routes fetch requests through the extension host
+// to bypass CORS restrictions in the webview.
+
+export type AIChatProxyStartParams = {
+  url: string
+  method: string
+  headers: Record<string, string>
+  body: string
+}
+
+export type AIChatProxyStartResult = {
+  streamId: string
+  status: number
+  ok: boolean
+  errorBody?: string
+}
+
+export const AIChatProxyStart: RequestType<AIChatProxyStartParams, AIChatProxyStartResult> = {
+  method: 'ai-chat:proxy-start',
+}
+
+export const AIChatProxyChunk: NotificationType<{ streamId: string; chunk: string }> = {
+  method: 'ai-chat:proxy-chunk',
+}
+
+export const AIChatProxyDone: NotificationType<{ streamId: string }> = {
+  method: 'ai-chat:proxy-done',
+}
+
+export const AIChatProxyError: NotificationType<{ streamId: string; error: string }> = {
+  method: 'ai-chat:proxy-error',
+}
+
+export const AIChatProxyCancel: NotificationType<{ streamId: string }> = {
+  method: 'ai-chat:proxy-cancel',
 }
 
 export type Handler<T> =

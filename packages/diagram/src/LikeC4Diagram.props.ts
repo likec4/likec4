@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as t from '@likec4/core/types'
 import type {
   DiagramEdge,
@@ -10,6 +17,7 @@ import type {
 import type { ReactFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { CamelCasedProperties, SetRequired } from 'type-fest'
+import type { AIChatProjectConfig } from './ai-chat/AIChatConfigContext'
 import type { DiagramApi } from './hooks/useDiagram'
 import type { XYFlowInstance } from './hooks/useXYFlow'
 import type { Types } from './likec4diagram/types'
@@ -250,6 +258,19 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
    * @default true
    */
   enableNotes?: boolean | undefined
+
+  /**
+   * Enable AI Chat overlay for elements
+   * @default false
+   */
+  enableAIChat?: boolean | undefined
+
+  /**
+   * Project-level AI Chat provider configuration (OpenAI-compatible endpoint).
+   * When provided with an apiKey, the settings gear icon is hidden and this config is used directly.
+   * Without apiKey (stripped in static builds by default), falls back to localStorage settings.
+   */
+  aiChatConfig?: AIChatProjectConfig | undefined
 
   /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)

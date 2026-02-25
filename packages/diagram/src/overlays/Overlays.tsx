@@ -1,8 +1,15 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { nonexhaustive } from '@likec4/core'
 import { useSelector } from '@xstate/react'
 import { animate } from 'motion'
 import { AnimatePresence, LayoutGroup, useReducedMotionConfig } from 'motion/react'
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { isNonNullish } from 'remeda'
 import type { AnyActorRef } from 'xstate'
 import { ErrorBoundary } from '../components/ErrorFallback'
@@ -13,6 +20,8 @@ import { Overlay } from './overlay/Overlay'
 import type { OverlaysActorRef, OverlaysActorSnapshot } from './overlaysActor'
 import { RelationshipDetails } from './relationship-details/RelationshipDetails'
 import { RelationshipsBrowser } from './relationships-browser/RelationshipsBrowser'
+
+const AIChat = lazy(() => import('../ai-chat/AIChat').then(m => ({ default: m.AIChat })))
 
 const selectOverlays = (s: OverlaysActorSnapshot) => {
   return s.context.overlays.map((overlay) => {
@@ -38,6 +47,13 @@ const selectOverlays = (s: OverlaysActorSnapshot) => {
             actorRef: s.children[overlay.id]!,
           }
           : null
+      case 'aiChat':
+        return s.children[overlay.id]
+          ? {
+            type: overlay.type,
+            actorRef: s.children[overlay.id]!,
+          }
+          : null
       default:
         nonexhaustive(overlay)
     }
@@ -55,7 +71,7 @@ export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActor
   const overlays = useSelector(overlaysActorRef, selectOverlays, compareSelectOverlays)
   const isMotionReduced = useReducedMotionConfig() ?? false
 
-  const isActiveOverlay = overlays.some((overlay) => overlay.type === 'elementDetails')
+  const isActiveOverlay = overlays.some((overlay) => overlay.type === 'elementDetails' || overlay.type === 'aiChat')
 
   useEffect(() => {
     const xyflowDomNode = diagram.getContext().xystore.getState().domNode
@@ -118,6 +134,14 @@ export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActor
             key={overlay.actorRef.sessionId}
             actorRef={overlay.actorRef}
             onClose={() => close(overlay.actorRef)} />
+        )
+      case 'aiChat':
+        return (
+          <Suspense key={overlay.actorRef.sessionId} fallback={null}>
+            <AIChat
+              actorRef={overlay.actorRef}
+              onClose={() => close(overlay.actorRef)} />
+          </Suspense>
         )
       default:
         nonexhaustive(overlay)

@@ -1,3 +1,15 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import type {
+  AIChatActorRef,
+  AIChatInput,
+  AIChatLogic,
+} from '../ai-chat/actor'
 import type {
   ElementDetailsActorRef,
   ElementDetailsInput,
@@ -30,5 +42,11 @@ export namespace Overlays {
     export interface Input extends RelationshipsBrowserInput {}
     export interface Logic extends RelationshipsBrowserLogic {}
     export interface ActorRef extends RelationshipsBrowserActorRef {}
+  }
+
+  export namespace AIChat {
+    export interface Input extends AIChatInput {}
+    export interface Logic extends AIChatLogic {}
+    export interface ActorRef extends AIChatActorRef {}
   }
 }

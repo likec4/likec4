@@ -1,4 +1,12 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { loggable, wrapError } from '@likec4/log'
+import { randomUUID } from 'node:crypto'
 import {
   executeCommand,
   toValue,
@@ -199,6 +207,94 @@ export function activateMessenger() {
       logger.warn(`request {req} for {uri} failed after ${t0.pretty}`, { req: 'readLocalIcon', uri, err })
       // Return null for any errors (file not found, permission denied, etc.)
       return { base64data: null }
+    }
+  })
+
+  // AI Chat proxy: route fetch requests through the extension host to bypass webview CORS
+  const activeStreams = new Map<string, AbortController>()
+
+  messenger.handleAIChatProxyStart(async (params, sender) => {
+    const streamId = randomUUID()
+
+    // Basic URL validation
+    try {
+      new URL(params.url)
+    } catch {
+      return { streamId, status: 0, ok: false, errorBody: 'Invalid URL' }
+    }
+
+    const controller = new AbortController()
+    // Auto-abort after 2 minutes to prevent stalled connections
+    const timeoutId = setTimeout(() => controller.abort(), 2 * 60 * 1000)
+    activeStreams.set(streamId, controller)
+    logger.debug(`AI Chat proxy: ${params.method} ${params.url} (streamId: ${streamId})`)
+
+    try {
+      const response = await fetch(params.url, {
+        method: params.method,
+        headers: params.headers,
+        ...(params.body && { body: params.body }),
+        signal: controller.signal,
+      })
+
+      if (!response.ok) {
+        clearTimeout(timeoutId)
+        const errorBody = await response.text().catch(() => 'Unknown error')
+        activeStreams.delete(streamId)
+        return { streamId, status: response.status, ok: false, errorBody }
+      }
+
+      // Start streaming body chunks in the background
+      const reader = response.body?.getReader()
+      if (reader) {
+        void (async () => {
+          const decoder = new TextDecoder()
+          try {
+            while (!controller.signal.aborted) {
+              const { done, value } = await reader.read()
+              if (done) break
+              const chunk = decoder.decode(value, { stream: true })
+              if (chunk) {
+                messenger.sendAIChatProxyChunk(sender, { streamId, chunk })
+              }
+            }
+            if (!controller.signal.aborted) {
+              messenger.sendAIChatProxyDone(sender, { streamId })
+            }
+          } catch (err) {
+            if (!controller.signal.aborted) {
+              const error = err instanceof Error ? err.message : 'Stream read error'
+              messenger.sendAIChatProxyError(sender, { streamId, error })
+            }
+          } finally {
+            clearTimeout(timeoutId)
+            reader.releaseLock()
+            activeStreams.delete(streamId)
+          }
+        })()
+      } else {
+        clearTimeout(timeoutId)
+        messenger.sendAIChatProxyDone(sender, { streamId })
+        activeStreams.delete(streamId)
+      }
+
+      return { streamId, status: response.status, ok: true }
+    } catch (err) {
+      clearTimeout(timeoutId)
+      activeStreams.delete(streamId)
+      if (controller.signal.aborted) {
+        return { streamId, status: 0, ok: false, errorBody: 'Request cancelled' }
+      }
+      const errorBody = err instanceof Error ? err.message : 'Proxy fetch failed'
+      return { streamId, status: 0, ok: false, errorBody }
+    }
+  })
+
+  messenger.onAIChatProxyCancel(({ streamId }) => {
+    const controller = activeStreams.get(streamId)
+    if (controller) {
+      controller.abort()
+      activeStreams.delete(streamId)
     }
   })
 

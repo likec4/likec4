@@ -105,6 +105,41 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .meta({
       description: 'Auto-generate scoped views for elements without explicit views. Defaults to true.',
     }),
+  aiChat: z.object({
+    enabled: z.boolean()
+      .optional()
+      .meta({ description: 'Enable or disable AI Chat feature. Defaults to true when aiChat config is present.' }),
+    baseUrl: z.string().url().optional(),
+    model: z.string().nonempty().optional(),
+    apiKey: z.string().nonempty().optional(),
+    allowUnsafeApiKey: z.boolean()
+      .optional()
+      .meta({
+        description: [
+          'UNSAFE: When true, the API key is included in the generated static site bundle.',
+          'This exposes the key to anyone who can access the deployed pages.',
+          'Only use this for internal/private deployments where key exposure is acceptable.',
+          'Defaults to false.',
+        ].join('\n'),
+      }),
+    suggestedQuestions: z.object({
+      element: z.array(z.string()).optional(),
+    }).optional().meta({
+      description: [
+        'Custom suggested questions shown in the empty chat state.',
+        'Supports template variables: {title}, {kind}, {technology}, {parent}, {tags},',
+        '{view}, {dependencies}, {dependents}, {context}.',
+        'Questions whose variables resolve to empty are automatically hidden.',
+      ].join('\n'),
+    }),
+    systemPrompt: z.string().optional().meta({
+      description: [
+        'Custom system prompt template for the AI assistant.',
+        'Use {context} as placeholder for the architecture context block.',
+        'If not provided, a default prompt is used.',
+      ].join('\n'),
+    }),
+  }).optional().meta({ description: 'AI Chat provider configuration (OpenAI-compatible endpoint)' }),
 })
   .meta({
     id: 'LikeC4ProjectConfig',
