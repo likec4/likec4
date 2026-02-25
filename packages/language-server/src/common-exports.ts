@@ -11,7 +11,7 @@ export type {
   ViewLocateResult,
 } from './model'
 
-export type { LikeC4LanguageServices } from './LikeC4LanguageServices'
+export type { FormatOptions, LikeC4LanguageServices } from './LikeC4LanguageServices'
 
 export type {
   LanguageServicesContext,

@@ -1,6 +1,7 @@
 import type { LikeC4Model } from '@likec4/core/model'
 import type { LayoutedView, NonEmptyArray, ProjectId } from '@likec4/core/types'
 import type {
+  FormatOptions,
   LikeC4LanguageServices,
   LikeC4ModelBuilder,
   LikeC4Services,
@@ -200,6 +201,26 @@ Please specify a project folder`)
     }
   }
 
+  /**
+   * Formats documents and returns a map of document URI → formatted source text.
+   *
+   * Target selection uses union semantics:
+   * - Omit both `projects` and `documentUris` to format **all** documents.
+   * - Provide `projects` to include all documents from those projects.
+   * - Provide `documentUris` to include specific documents.
+   * - Provide both to format the **union** (deduplicated).
+   */
+  async format(options?: LikeC4FormatOptions): Promise<Map<string, string>> {
+    const { projects, ...rest } = options ?? {}
+    const formatOptions: FormatOptions = {
+      ...rest,
+      ...(projects && {
+        projectIds: projects.map(p => this.projectsManager.ensureProjectId(p as ProjectId)),
+      }),
+    }
+    return await this.languageServices.format(formatOptions)
+  }
+
   async dispose(): Promise<void> {
     await this.languageServices.dispose()
   }
@@ -207,4 +228,26 @@ Please specify a project folder`)
   async [Symbol.asyncDispose]() {
     await this.dispose()
   }
+}
+
+/**
+ * Options for {@link LikeC4.format}.
+ *
+ * Same as {@link FormatOptions} but uses project name strings instead of {@link ProjectId}.
+ */
+export interface LikeC4FormatOptions {
+  /** Include all documents from these projects (by name). */
+  projects?: ReadonlyArray<string>
+  /** Include these specific documents (by URI string). */
+  documentUris?: ReadonlyArray<string>
+  /** Size of a tab in spaces (default: 2). */
+  tabSize?: number
+  /** Prefer spaces over tabs (default: true). */
+  insertSpaces?: boolean
+  /** Trim trailing whitespace on a line. */
+  trimTrailingWhitespace?: boolean
+  /** Insert a newline character at the end of the file if one does not exist. */
+  insertFinalNewline?: boolean
+  /** Trim all newlines after the final newline at the end of the file. */
+  trimFinalNewlines?: boolean
 }
