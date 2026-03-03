@@ -146,7 +146,6 @@
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
-    "@likec4/log": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
     "boxen": "^8.0.1",
@@ -154,8 +153,6 @@
     "esbuild": "catalog:esbuild",
     "fdir": "catalog:externals",
     "chokidar": "catalog:externals",
-    "playwright": "catalog:",
-    "rollup": "catalog:vite",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
     "vite-plugin-singlefile": "^2.3.0",
@@ -167,9 +164,13 @@
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
   },
+  "optionalDependencies": {
+    "playwright": "catalog:"
+  },
   "devDependencies": {
     "langium": "catalog:langium",
     "@likec4/config": "workspace:*",
+    "@likec4/log": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/language-services": "workspace:*",
     "@dagrejs/dagre": "catalog:",
