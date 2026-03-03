@@ -148,10 +148,10 @@
     "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
-    "boxen": "^8.0.1",
     "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild",
     "fdir": "catalog:externals",
+    "playwright": "catalog:",
     "chokidar": "catalog:externals",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
@@ -163,9 +163,6 @@
   "peerDependencies": {
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
-  },
-  "optionalDependencies": {
-    "playwright": "catalog:"
   },
   "devDependencies": {
     "langium": "catalog:langium",
@@ -205,6 +202,7 @@
     "autoprefixer": "^10.4.24",
     "picomatch": "catalog:externals",
     "birpc": "catalog:vite",
+    "boxen": "^8.0.1",
     "clsx": "catalog:react",
     "conf": "^15.1.0",
     "defu": "^6.1.4",

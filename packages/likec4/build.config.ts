@@ -16,7 +16,6 @@ export default defineBuildConfig({
       'src/config/index.ts',
       'src/model/builder.ts',
       'src/model/index.ts',
-      'src/cli/lsp/index.ts',
       'src/cli/index.ts',
       'src/index.ts',
     ],
