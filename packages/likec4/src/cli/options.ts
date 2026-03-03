@@ -1,12 +1,14 @@
+import { DEV } from 'esm-env'
 import isInsideContainer from 'is-inside-container'
 import { resolve } from 'node:path'
+import { env } from 'std-env'
 import type { Options, PositionalOptions } from 'yargs'
 
 export const path = {
   type: 'string',
-  desc: '<directory> with LikeC4 sources (default is current directory)',
+  desc: '<directory> with LikeC4 sources (default is current directory or \'LIKEC4_WORKSPACE\' env)',
   normalize: true,
-  default: '.',
+  default: env['LIKEC4_WORKSPACE'] || '.',
   coerce: resolve,
 } as const satisfies PositionalOptions
 
@@ -100,5 +102,14 @@ export const project = {
 export const logLevel = {
   hidden: true,
   nargs: 1,
-  choices: ['debug', 'info', 'warning', 'error'],
+  choices: ['trace', 'debug', 'info', 'warning', 'error'],
+  conflicts: ['verbose'],
 } as const satisfies Options
+
+export const verbose = {
+  boolean: true,
+  desc: 'verbose logging',
+  conflicts: ['log-level'],
+} as const satisfies Options
+
+export const verboseLogLevel = DEV ? 'trace' : 'debug' as const

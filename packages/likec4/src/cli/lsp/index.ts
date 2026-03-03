@@ -1,8 +1,9 @@
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
 
-import { startLanguageServer } from '@likec4/language-server'
+import { configureLanguageServerLogger, startLanguageServer } from '@likec4/language-server'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
+import { logLevel, path, useDotBin, verbose, verboseLogLevel } from '../options'
 
 export default function<T>(yargs: Argv<T>) {
   return yargs
@@ -13,6 +14,8 @@ export default function<T>(yargs: Argv<T>) {
       builder: y =>
         y
           .usage(`${k.bold('Usage:')} $0 lsp`)
+          .option('log-level', logLevel)
+          .option('verbose', verbose)
           .options({
             'node-ipc': {
               boolean: true,
@@ -54,20 +57,20 @@ export default function<T>(yargs: Argv<T>) {
               default: true,
               defaultDescription: 'IDE setting',
               description: 'enable/disable telemetry',
+              hidden: true,
             },
           })
-          .showHidden('log-level')
+          .option('use-dot', useDotBin)
+          .showHidden()
           .epilog(`${k.bold('Examples:')}
 
 ${k.green('$0 lsp --stdio ')}
-${k.gray('Start LSP with stdio transport (DEFAULT)')}
+${k.gray('Start LSP with stdio transport')}
 
 ${k.green('$0 lsp --node-ipc --watch --no-manual-layouts --no-color ')}
 ${k.gray('Start LSP with node-ipc transport and watcher, disabled manual layouts and disabled color')}
 
 `),
-      // .positional('path', path)
-      // .option('use-dot', useDotBin),
       handler: args => {
         let connection
 
@@ -75,18 +78,23 @@ ${k.gray('Start LSP with node-ipc transport and watcher, disabled manual layouts
           connection = createConnection(ProposedFeatures.all)
         } else {
           // If no transport is specified, use stdio
-          console.error('use stdio transport')
-          connection = createConnection(process.stdin, process.stdout)
+          throw new Error('No transport specified')
         }
+
+        configureLanguageServerLogger({
+          lspConnection: connection,
+          useStdErr: args.stdio === true,
+          colors: k.isColorSupported,
+          enableTelemetry: args.telemetry,
+          logLevel: args.verbose ? verboseLogLevel : args.logLevel,
+        })
 
         startLanguageServer({
           connection,
-          enableManualLayouts: args.manualLayouts ?? true,
-          enableWatcher: args.watch ?? false,
-          // By default enabled, and it is controlled by IDE settings
-          enableTelemetry: args.telemetry ?? true,
-          // @ts-expect-error TODO: logLevel is global -
-          logLevel: args.verbose ? 'debug' : (args.logLevel ?? 'warning'),
+          enableManualLayouts: args.manualLayouts,
+          enableWatcher: args.watch,
+          graphviz: args.useDot ? 'binary' : 'wasm',
+          configureLogger: false,
         })
       },
     })

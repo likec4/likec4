@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import type { ConfigureLanguageServerLoggerOptions } from '@likec4/language-server'
 import {
   configureLogger,
   getAnsiColorFormatter,
@@ -21,7 +22,7 @@ import codegenCmd from './codegen'
 import exportCmd from './export'
 import lspCmd from './lsp'
 import mcpCmd from './mcp'
-import { logLevel } from './options'
+import { logLevel, verbose, verboseLogLevel } from './options'
 import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
@@ -29,7 +30,8 @@ import validateCmd from './validate'
 /**
  * Configure likec4 logger: verbose or dev => debug level, else info.
  */
-function applyLoggerConfig(lowestLevel: (typeof logLevel)['choices'][number] = 'info') {
+function applyLoggerConfig(logLevel: ConfigureLanguageServerLoggerOptions['logLevel']) {
+  const lowestLevel = logLevel ?? (DEV ? 'trace' : 'info')
   configureLogger({
     reset: true,
     sinks: {
@@ -86,16 +88,18 @@ async function main() {
     .help('help')
     .option('log-level', {
       ...logLevel,
-      global: true,
+      global: false,
     })
     .option('verbose', {
-      boolean: true,
-      describe: 'verbose logging',
-      global: true,
+      ...verbose,
+      global: false,
     })
     .option('color', {
       boolean: true,
-      describe: 'color output, force enable or disable with --no-color',
+      describe: [
+        'force color output, or disable with --no-color',
+        `respects 'FORCE_COLOR' and 'NO_COLOR' env variables`,
+      ].join('\n'),
       skipValidation: true,
       global: true,
     })
@@ -109,9 +113,11 @@ async function main() {
       'Examples:': k.bold('Examples:'),
     })
     .wrap(clamp(stdout.columns - 10, { min: 60, max: 180 }))
-    .middleware((args) => {
-      applyLoggerConfig(args.verbose ? 'debug' : args.logLevel)
-    })
+    .middleware(
+      (args) => {
+        applyLoggerConfig(args.verbose ? verboseLogLevel : args.logLevel)
+      },
+    )
     .parseAsync()
 }
 
