@@ -17,6 +17,7 @@ const shared = {
   outputOptions: {
     keepNames: true,
   },
+  inlineOnly: false as const,
   external: ['vscode'],
 }
 
