@@ -1641,6 +1641,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/icons':
+        specifier: workspace:*
+        version: link:../icons
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 5.1.4(vite@7.3.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
@@ -1659,9 +1662,6 @@ importers:
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.3)
-      immer:
-        specifier: catalog:utils
-        version: 11.1.4
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
@@ -1680,9 +1680,6 @@ importers:
       yargs:
         specifier: 17.7.2
         version: 17.7.2
-      zod:
-        specifier: catalog:externals
-        version: 3.25.76
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
@@ -1711,6 +1708,9 @@ importers:
       '@likec4/layouts':
         specifier: workspace:*
         version: link:../layouts
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       '@likec4/react':
         specifier: workspace:*
         version: link:../react
@@ -1930,6 +1930,9 @@ importers:
       xstate:
         specifier: catalog:xstate
         version: 5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c)
+      zod:
+        specifier: catalog:externals
+        version: 3.25.76
       zx:
         specifier: 'catalog:'
         version: 8.8.5
