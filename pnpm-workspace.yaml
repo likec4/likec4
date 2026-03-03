@@ -119,7 +119,7 @@ catalogs:
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
-    caniuse-lite: ^1.0.30001770
+    caniuse-lite: ^1.0.30001775
     chroma-js: ^3.2.0
     citty: ^0.2.1
     consola: ^3.4.2
@@ -146,7 +146,7 @@ catalogs:
     safe-stringify: ^1.3.0
     sharp: 0.34.5
     strip-indent: ^4.1.1
-    tinyrainbow: ^2.0.0
+    tinyrainbow: ^3.0.3
     ufo: 1.6.3
   vite:
     "@vitejs/plugin-react": ^5.1.4

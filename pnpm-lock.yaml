@@ -344,8 +344,8 @@ catalogs:
       specifier: ^4.1.1
       version: 4.1.1
     tinyrainbow:
-      specifier: ^2.0.0
-      version: 2.0.0
+      specifier: ^3.0.3
+      version: 3.0.3
     ufo:
       specifier: 1.6.3
       version: 1.6.3
@@ -356,9 +356,6 @@ catalogs:
     birpc:
       specifier: ^4.0.0
       version: 4.0.0
-    rollup:
-      specifier: ^4.57.1
-      version: 4.57.1
     vite:
       specifier: ^7.3.1
       version: 7.3.1
@@ -430,7 +427,7 @@ overrides:
   type-fest: ^4.41.0
   turbo: 2.8.10
   sharp: 0.34.5
-  caniuse-lite: ^1.0.30001770
+  caniuse-lite: ^1.0.30001775
   mnemonist: 0.40.3
 
 patchedDependencies:
@@ -1521,10 +1518,13 @@ importers:
         version: 3.10.0
       tinyrainbow:
         specifier: catalog:utils
-        version: 2.0.0
+        version: 3.0.3
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      ufo:
+        specifier: catalog:utils
+        version: 1.6.3
       vscode-languageserver-types:
         specifier: 3.17.5
         version: 3.17.5
@@ -1641,12 +1641,6 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
-      '@likec4/icons':
-        specifier: workspace:*
-        version: link:../icons
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 5.1.4(vite@7.3.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
@@ -1665,15 +1659,12 @@ importers:
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.3)
+      immer:
+        specifier: catalog:utils
+        version: 11.1.4
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
-      playwright:
-        specifier: 'catalog:'
-        version: 1.58.2
-      rollup:
-        specifier: catalog:vite
-        version: 4.57.1
       std-env:
         specifier: catalog:externals
         version: 3.10.0
@@ -1689,6 +1680,9 @@ importers:
       yargs:
         specifier: 17.7.2
         version: 17.7.2
+      zod:
+        specifier: catalog:externals
+        version: 3.25.76
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
@@ -1936,12 +1930,13 @@ importers:
       xstate:
         specifier: catalog:xstate
         version: 5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c)
-      zod:
-        specifier: catalog:externals
-        version: 3.25.76
       zx:
         specifier: 'catalog:'
         version: 8.8.5
+    optionalDependencies:
+      playwright:
+        specifier: 'catalog:'
+        version: 1.58.2
 
   packages/log:
     devDependencies:
@@ -2000,6 +1995,9 @@ importers:
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../language-server
+      '@likec4/language-services':
+        specifier: workspace:*
+        version: link:../language-services
       '@likec4/layouts':
         specifier: workspace:*
         version: link:../layouts
@@ -2024,6 +2022,9 @@ importers:
       remeda:
         specifier: catalog:utils
         version: 2.33.6
+      tinyrainbow:
+        specifier: catalog:utils
+        version: 3.0.3
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2182,7 +2183,7 @@ importers:
         version: 4.1.1
       tinyrainbow:
         specifier: catalog:utils
-        version: 2.0.0
+        version: 3.0.3
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -5635,8 +5636,8 @@ packages:
   caniuse-api@3.0.0:
     resolution: {integrity: sha512-bsTwuIg/BZZK/vreVTYYbSWoe2F+71P7K5QGEX+pT250DZbfU1MQ5prOKpPR+LL6uWKK3KMwMCAS74QB3Um1uw==}
 
-  caniuse-lite@1.0.30001770:
-    resolution: {integrity: sha512-x/2CLQ1jHENRbHg5PSId2sXq1CIO1CISvwWAj027ltMVG2UNgW+w9oH2+HzgEIRFembL8bUlXtfbBHR1fCg2xw==}
+  caniuse-lite@1.0.30001775:
+    resolution: {integrity: sha512-s3Qv7Lht9zbVKE9XoTyRG6wVDCKdtOFIjBGg3+Yhn6JaytuNKPIjBMTMIY1AnOH3seL5mvF+x33oGAyK3hVt3A==}
 
   canvaskit-wasm@0.40.0:
     resolution: {integrity: sha512-Od2o+ZmoEw9PBdN/yCGvzfu0WVqlufBPEWNG452wY7E9aT8RBE+ChpZF526doOlg7zumO4iCS+RAeht4P0Gbpw==}
@@ -13307,7 +13308,7 @@ snapshots:
   autoprefixer@10.4.24(postcss@8.5.6):
     dependencies:
       browserslist: 4.28.1
-      caniuse-lite: 1.0.30001770
+      caniuse-lite: 1.0.30001775
       fraction.js: 5.3.4
       picocolors: 1.1.1
       postcss: 8.5.6
@@ -13464,7 +13465,7 @@ snapshots:
   browserslist@4.28.0:
     dependencies:
       baseline-browser-mapping: 2.9.2
-      caniuse-lite: 1.0.30001770
+      caniuse-lite: 1.0.30001775
       electron-to-chromium: 1.5.265
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.0)
@@ -13472,7 +13473,7 @@ snapshots:
   browserslist@4.28.1:
     dependencies:
       baseline-browser-mapping: 2.9.2
-      caniuse-lite: 1.0.30001770
+      caniuse-lite: 1.0.30001775
       electron-to-chromium: 1.5.265
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.1)
@@ -13544,11 +13545,11 @@ snapshots:
   caniuse-api@3.0.0:
     dependencies:
       browserslist: 4.28.1
-      caniuse-lite: 1.0.30001770
+      caniuse-lite: 1.0.30001775
       lodash.memoize: 4.1.2
       lodash.uniq: 4.5.0
 
-  caniuse-lite@1.0.30001770: {}
+  caniuse-lite@1.0.30001775: {}
 
   canvaskit-wasm@0.40.0:
     dependencies:
