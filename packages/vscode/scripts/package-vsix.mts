@@ -27,6 +27,12 @@ packageJson.dependencies = Object.fromEntries(
       if (name === 'esbuild') {
         return [name, `npm:esbuild-wasm@${version}`]
       }
+      // if (name === 'likec4') {
+      //   return [name, `file:${resolve('../likec4/package.tgz')}`]
+      // }
+      // if (name === '@likec4/core') {
+      //   return [name, `file:${resolve('../core/package.tgz')}`]
+      // }
       return [name, version]
     }),
 )
