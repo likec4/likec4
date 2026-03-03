@@ -89,8 +89,8 @@ export class Rpc extends ADisposable {
       {
         reducer: (accumulator, req: number) => (accumulator ?? 0) + req,
         triggerAt: 'end',
-        minQuietPeriodMs: 100,
-        maxBurstDurationMs: 500,
+        minQuietPeriodMs: 250,
+        maxBurstDurationMs: 700,
       },
     )
 
@@ -283,21 +283,22 @@ export class Rpc extends ADisposable {
       // ----------
       connection.onRequest(Locate.req, params => {
         logger.debug`received request ${'locate'}, ${params}`
+        const projectId = params.projectId as ProjectId | undefined
         switch (true) {
           case 'element' in params:
-            return likec4Services.ModelLocator.locateElement(params.element, params.projectId as ProjectId)
+            return likec4Services.ModelLocator.locateElement(params.element, projectId)
           case 'relation' in params:
-            return likec4Services.ModelLocator.locateRelation(params.relation, params.projectId as ProjectId)
+            return likec4Services.ModelLocator.locateRelation(params.relation, projectId)
           case 'astPath' in params:
             return likec4Services.ModelLocator.locateDynamicViewStep({
               view: params.view,
               astPath: params.astPath,
-              projectId: params.projectId as ProjectId,
+              projectId,
             })
           case 'view' in params:
-            return likec4Services.ModelLocator.locateView(params.view, params.projectId as ProjectId)
+            return likec4Services.ModelLocator.locateView(params.view, projectId)
           case 'deployment' in params:
-            return likec4Services.ModelLocator.locateDeploymentElement(params.deployment, params.projectId as ProjectId)
+            return likec4Services.ModelLocator.locateDeploymentElement(params.deployment, projectId)
           default:
             nonexhaustive(params)
         }

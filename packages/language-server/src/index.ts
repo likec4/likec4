@@ -1,14 +1,15 @@
-import { configureLogger, getConsoleSink, getConsoleStderrSink, getTextFormatter } from '@likec4/log'
+import { GraphvizWasmAdapter } from '@likec4/layouts'
+import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { defu } from 'defu'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
-import { isDevelopment } from 'std-env'
 import type { Connection } from 'vscode-languageserver'
+import { configureLanguageServerLogger } from './configureLogger'
 import { WithFileSystem } from './filesystem/LikeC4FileSystem'
 import { WithLikeC4ManualLayouts } from './filesystem/LikeC4ManualLayouts'
-import { getTelemetrySink, logger } from './logger'
+import { logger } from './logger'
 import { WithMCPServer } from './mcp'
 import type { LikeC4Services, LikeC4SharedServices } from './module'
-import { createLanguageServices } from './module'
+import { createLanguageServices, WithGraphviz } from './module'
 import { ConfigurableLayouter } from './views/ConfigurableLayouter'
 
 export type * from './common-exports'
@@ -22,17 +23,17 @@ export {
 } from './common-exports'
 
 export {
+  configureLanguageServerLogger,
+  type ConfigureLanguageServerLoggerOptions,
+} from './configureLogger'
+
+export {
   WithFileSystem,
   WithLikeC4ManualLayouts,
   WithMCPServer,
 }
 
-type StartLanguageServerOptions = {
-  /**
-   * The log level to use.
-   * @default 'debug'
-   */
-  logLevel?: 'trace' | 'debug' | 'info' | 'warning' | 'error'
+interface StartLanguageServerOptions {
   /**
    * The Language Server Protocol connection to use.
    */
@@ -42,10 +43,6 @@ type StartLanguageServerOptions = {
    * @default true
    */
   enableWatcher?: boolean
-  /**
-   * @default true
-   */
-  enableTelemetry?: boolean
   /**
    * Whether to enable the MCP server.
    * @default 'sse'
@@ -57,6 +54,26 @@ type StartLanguageServerOptions = {
    * @default true
    */
   enableManualLayouts?: boolean
+
+  /**
+   * Whether to use the `dot` binary for layouting or the WebAssembly version.
+   * If {@link connection} is set, {@link ConfigurableLayouter} is started
+   * and this option controls the default layouter implementation used by it.
+   *
+   * @default 'wasm'
+   */
+  graphviz?: 'wasm' | 'binary'
+
+  /**
+   * Whether to configure the logger.
+   *
+   * - `false` - don't configure the logger
+   * - `'console'` - configure the logger with console sink
+   * - `'stderr'` - configure the logger with stderr sink
+   *
+   * @default false
+   */
+  configureLogger?: false | 'console' | 'stderr'
 }
 
 export function startLanguageServer(options?: StartLanguageServerOptions): {
@@ -68,31 +85,24 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
   const opts = defu(options, {
     enableWatcher: true,
     enableMCP: 'sse' as const,
-    enableTelemetry: !!connection,
     enableManualLayouts: true,
-    logLevel: (isDevelopment ? 'trace' : 'debug') as StartLanguageServerOptions['logLevel'] & string,
+    graphviz: 'wasm' as const,
+    configureLogger: false,
   })
 
-  const enableTelemetry = !!connection && opts.enableTelemetry && !isDevelopment
-
-  configureLogger({
-    sinks: {
-      // dprint-ignore
-      console: opts.enableMCP === 'stdio' || connection
-        ? getConsoleStderrSink({ formatter: getTextFormatter() })
-        : getConsoleSink({ formatter: getTextFormatter() }),
-      ...(enableTelemetry && {
-        telemetry: getTelemetrySink(connection),
-      }),
-    },
-    loggers: [
-      {
-        category: ['likec4'],
-        sinks: ['console', ...(enableTelemetry ? ['telemetry'] : [])],
-        lowestLevel: opts.logLevel,
-      },
-    ],
-  })
+  if (opts.configureLogger !== false) {
+    if (opts.configureLogger === 'stderr' || opts.enableMCP === 'stdio') {
+      configureLanguageServerLogger({
+        lspConnection: connection,
+        enableTelemetry: false,
+        useStdErr: true,
+      })
+    } else if (opts.configureLogger === 'console') {
+      configureLanguageServerLogger({
+        lspConnection: connection,
+      })
+    }
+  }
 
   if (connection) {
     logger.info('Starting LikeC4 language server')
@@ -107,6 +117,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
       ...WithFileSystem(opts.enableWatcher),
       ...!!opts.enableMCP && WithMCPServer(opts.enableMCP),
       ...opts.enableManualLayouts && WithLikeC4ManualLayouts,
+      ...WithGraphviz(opts.graphviz === 'binary' ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
     },
     connection
       ? {

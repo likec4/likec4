@@ -93,6 +93,9 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   }
 
   async write(project: Project, layouted: LayoutedView): Promise<Location> {
+    // Clean cache first
+    this.cache.delete(project.id)
+
     const logger = layoutsLogger.getChild(project.id)
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(layouted.id))
@@ -123,11 +126,13 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     } catch (err) {
       logger.warn(`Failed to write snapshot ${layouted.id} to ${file.fsPath}`, { err })
     }
-    this.cache.delete(project.id)
     return location
   }
 
   async remove(project: Project, view: ViewId): Promise<Location | null> {
+    // Clean cache first
+    this.cache.delete(project.id)
+
     const logger = layoutsLogger.getChild(project.id)
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(view))
@@ -138,8 +143,6 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       uri: file.toString(),
       range: Range.create(0, 0, 0, 0),
     }
-
-    this.cache.delete(project.id)
 
     try {
       const fs = this.services.workspace.FileSystemProvider

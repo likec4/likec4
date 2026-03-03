@@ -20,7 +20,8 @@ export type {
   LikeC4SharedServices,
 } from './module'
 
-export type { LikeC4Views } from './views'
+export { WithWasmGraphviz } from './views'
+export type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
 
 export type {
   LangiumDocuments,

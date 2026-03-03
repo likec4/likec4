@@ -1,7 +1,6 @@
 import { type Logger, rootLogger } from '@likec4/log'
-import defu from 'defu'
 import { type LikeC4Langium, LikeC4 } from './LikeC4'
-import type { InitOptions } from './options'
+import { type InitOptions, DefaultInitOptions } from './options'
 
 const validationErrorsToError = (likec4: LikeC4) =>
   new Error(
@@ -17,17 +16,15 @@ export async function handleInitOptions(
 ): Promise<LikeC4> {
   const likec4 = new LikeC4(langium, logger)
 
-  const opts = defu(options, {
-    printErrors: true,
-    throwIfInvalid: false,
-  })
+  const throwIfInvalid = options?.throwIfInvalid ?? DefaultInitOptions.throwIfInvalid
 
-  if (opts.throwIfInvalid === true && likec4.hasErrors()) {
+  if (throwIfInvalid === true && likec4.hasErrors()) {
     await likec4.dispose()
     return Promise.reject(validationErrorsToError(likec4))
   }
 
-  if (opts.printErrors !== false && likec4.hasErrors()) {
+  const printErrors = options?.printErrors ?? DefaultInitOptions.printErrors
+  if (printErrors && likec4.hasErrors()) {
     likec4.printErrors()
   }
 
