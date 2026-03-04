@@ -272,8 +272,8 @@ likec4 format --check
 
 | Option              | Description                                                     |
 | ------------------- | --------------------------------------------------------------- |
-| `path`              | Path to workspace (default: current directory)                  |
-| `--project`         | Format only specific project(s) by name (repeatable)            |
+| `path`              | Path to workspace (default: current directory; falls back to `LIKEC4_WORKSPACE` env) |
+| `--project, -p`     | Format only specific project(s) by name (repeatable)            |
 | `--files`           | Format only specific files (repeatable)                         |
 | `--check`           | Check if files are formatted without writing changes            |
 
