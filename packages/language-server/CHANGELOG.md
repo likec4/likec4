@@ -1,5 +1,21 @@
 # @likec4/language-server
 
+## 1.51.0
+
+### Patch Changes
+
+- [#2681](https://github.com/likec4/likec4/pull/2681) [`70e0f7d`](https://github.com/likec4/likec4/commit/70e0f7db20c0945d37a6b2f77ad9722abf4706ce) Thanks [@davydkov](https://github.com/davydkov)! - Deprecate `likec4-language-server` from `@likec4/language-server` package. Use `likec4 lsp` instead.
+
+- [#2683](https://github.com/likec4/likec4/pull/2683) [`026ef4a`](https://github.com/likec4/likec4/commit/026ef4ab673f07669f460d4b075918f5045ecddd) Thanks [@davydkov](https://github.com/davydkov)! - Fix "View title cannot contain newlines" error when using implicit views with elements that have multi-line titles
+
+  Fixes [#2669](https://github.com/likec4/likec4/issues/2669), [#2672](https://github.com/likec4/likec4/issues/2672)
+
+- Updated dependencies []:
+  - @likec4/core@1.51.0
+  - @likec4/config@1.51.0
+  - @likec4/layouts@1.51.0
+  - @likec4/log@1.51.0
+
 ## 1.50.0
 
 ### Minor Changes
