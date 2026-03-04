@@ -1,5 +1,24 @@
 # likec4
 
+## 1.51.0
+
+### Minor Changes
+
+- [#2645](https://github.com/likec4/likec4/pull/2645) [`225d1a7`](https://github.com/likec4/likec4/commit/225d1a7163c6b6d8e50b0168be34679d4b52c537) Thanks [@m9810223](https://github.com/m9810223)! - Use MantineProvider's `forceColorScheme` for the `?theme=` URL parameter instead of `setColorScheme`.
+
+  Theme preferences specified via the URL are no longer persisted to localStorage — the forced
+  color scheme applies only while the `?theme=` parameter is present in the URL.
+
+  The `theme` search param default changed from `'auto'` to `undefined`; the parameter is now
+  optional and omitted from URLs when not explicitly set.
+
+### Patch Changes
+
+- [#2681](https://github.com/likec4/likec4/pull/2681) [`70e0f7d`](https://github.com/likec4/likec4/commit/70e0f7db20c0945d37a6b2f77ad9722abf4706ce) Thanks [@davydkov](https://github.com/davydkov)! - Add `likec4 lsp` CLI command to start the LikeC4 language server
+
+- Updated dependencies []:
+  - @likec4/core@1.51.0
+
 ## 1.50.0
 
 ### Patch Changes
