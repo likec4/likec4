@@ -2244,9 +2244,6 @@ importers:
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.3)
-      likec4:
-        specifier: workspace:*
-        version: link:../likec4
       std-env:
         specifier: catalog:externals
         version: 3.10.0
