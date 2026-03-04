@@ -561,7 +561,7 @@ function inferKind(
   switch (true) {
     case !style:
       return parentCell?.style?.toLowerCase().includes('container=1') ? 'component' : 'container'
-    case s.includes('umlactor') || s.includes('shape=person'):
+    case s.includes('umlactor') || s.includes('shape=person') || s.includes('shape=actor'):
       return 'actor'
     case s.includes('swimlane'):
     case s.includes('container=1'):
