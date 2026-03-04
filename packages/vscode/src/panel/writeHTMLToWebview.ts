@@ -27,6 +27,7 @@ export function writeHTMLToWebview(
   const theme = computed(() => isDarkTheme.value ? 'dark' : 'light')
 
   watch(theme, (_theme) => {
+    const fontsUri = getUri(panel.webview, ['dist', 'preview', 'fonts.css'])
     const stylesUri = getUri(panel.webview, ['dist', 'preview', 'index.css'])
     const scriptUri = getUri(panel.webview, ['dist', 'preview', 'index.js'])
     const nonce = getNonce()
@@ -45,6 +46,7 @@ export function writeHTMLToWebview(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
     <meta http-equiv="Content-Security-Policy" content="${cspDirectives.join(' ')}">
+    <link rel="stylesheet" type="text/css" href="${fontsUri}" nonce="${nonce}">
     <link rel="stylesheet" type="text/css" href="${stylesUri}" nonce="${nonce}">
   </head>
   <body class="${_theme}">

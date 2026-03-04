@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-services",
   "description": "LikeC4 Language Services",
-  "version": "1.50.0",
+  "version": "1.51.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -97,6 +97,7 @@
     "langium": "catalog:langium",
     "tinyrainbow": "catalog:utils",
     "pathe": "catalog:utils",
+    "ufo": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
     "vscode-languageserver-types": "catalog:vscode"

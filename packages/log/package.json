@@ -2,7 +2,7 @@
   "name": "@likec4/log",
   "description": "Shared interface for logging",
   "license": "MIT",
-  "version": "1.50.0",
+  "version": "1.51.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -41,10 +41,8 @@
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean"
   },
-  "dependencies": {
-    "@logtape/logtape": "catalog:utils"
-  },
   "devDependencies": {
+    "@logtape/logtape": "catalog:utils",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",

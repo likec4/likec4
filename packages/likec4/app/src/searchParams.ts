@@ -17,6 +17,11 @@ export const searchParamsSchema = z.object({
     .optional()
     .catch(undefined)
     .transform(v => v as Fqn | undefined),
+  focusOnElement: z.string()
+    .nonempty()
+    .optional()
+    .catch(undefined)
+    .transform(v => v as Fqn | undefined),
 })
 
 export type SearchParams = z.infer<typeof searchParamsSchema>

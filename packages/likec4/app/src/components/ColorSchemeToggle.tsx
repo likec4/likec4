@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { ActionIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
 import { IconMoonStars, IconSun } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
@@ -47,7 +54,6 @@ export function ColorSchemeToggle() {
 
   return (
     <ActionIcon
-      visibleFrom="sm"
       size={'md'}
       variant="subtle"
       color="gray"

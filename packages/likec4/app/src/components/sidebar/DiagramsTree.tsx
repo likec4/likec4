@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { DiagramView } from '@likec4/core/types'
 import { StaticLikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
@@ -24,6 +31,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect } from 'react'
 import { useCurrentView, useLikeC4Views } from '../../hooks'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
+import { SidebarDrawerOps } from './state'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
 
@@ -51,13 +59,11 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   const data = useDiagramsTreeData(groupBy)
   const navigate = useNavigate()
   const navigateTo = (viewId: string) => {
+    SidebarDrawerOps.close()
     void navigate({
-      to: './',
+      to: '/view/$viewId/',
       viewTransition: false,
-      params: (p) => ({
-        ...p,
-        viewId,
-      }),
+      params: { viewId },
     })
   }
   const [diagram] = useCurrentView()

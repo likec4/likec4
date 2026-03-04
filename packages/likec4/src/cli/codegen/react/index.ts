@@ -9,7 +9,7 @@ import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
-import { ensureReact } from '../../ensure-react'
+import { ensureReact } from '../../ensure-libs'
 import { ensureProject } from '../../utils'
 
 type HandlerParams = {

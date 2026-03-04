@@ -10,11 +10,9 @@ import type {
   ProjectsManager,
 } from '@likec4/language-server'
 import { type Logger, rootLogger } from '@likec4/log'
-import defu from 'defu'
 import { map, prop } from 'remeda'
 import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
-import type { InitOptions } from './options'
 
 export interface LikeC4Langium {
   shared: LikeC4SharedServices

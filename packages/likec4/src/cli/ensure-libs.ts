@@ -20,7 +20,7 @@ export async function ensureReact() {
     logger.debug('react already installed')
     return
   }
-  logger.debug('react not installed')
+  logger.warn('react not installed')
 
   const pm = await detect()
   if (!pm) {
@@ -39,6 +39,38 @@ export async function ensureReact() {
   } catch (e) {
     logger.debug(loggable(e))
     logger.error`Please install dependencies manually: ${'react'} ${'react-dom'}`
+    process.exit(1)
+  }
+}
+
+export async function ensurePlaywright() {
+  if (isInstalled('playwright')) {
+    logger.debug('playwright already installed')
+    return
+  }
+  logger.warn('playwright not installed')
+
+  const pm = await detect()
+  if (!pm) {
+    logger
+      .error`Package manager not detected, please install dependencies manually: ${'playwright'}`
+    process.exit(1)
+  }
+
+  const cmd = resolveCommand(pm.agent, 'add', ['playwright'])
+  if (!cmd) {
+    logger.error`Please install dependencies manually: ${'playwright'}`
+    process.exit(1)
+  }
+
+  try {
+    await spawn(cmd.command, cmd.args, {
+      preferLocal: true,
+      stdio: 'inherit',
+    })
+  } catch (e) {
+    logger.debug(loggable(e))
+    logger.error`Please install dependencies manually: ${'playwright'}`
     process.exit(1)
   }
 }

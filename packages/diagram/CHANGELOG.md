@@ -1,5 +1,13 @@
 # @likec4/diagram
 
+## 1.51.0
+
+### Patch Changes
+
+- Updated dependencies [[`41ff551`](https://github.com/likec4/likec4/commit/41ff551974838696fdf4adfcd92edc30afd245c5)]:
+  - @likec4/styles@1.51.0
+  - @likec4/core@1.51.0
+
 ## 1.50.0
 
 ### Patch Changes

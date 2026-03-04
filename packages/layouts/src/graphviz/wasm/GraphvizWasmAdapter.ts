@@ -1,23 +1,24 @@
 import { Graphviz } from '@hpcc-js/wasm-graphviz'
 import { delay } from '@likec4/core/utils'
-import { rootLogger } from '@likec4/log'
+import { loggable, rootLogger } from '@likec4/log'
 import pLimit from 'p-limit'
+import { randomString } from 'remeda'
 import type { GraphvizPort } from '../GraphvizLayoter'
 import type { DotSource } from '../types'
 
 // limit to 1 concurrency to avoid wasm loading issues
 const limit = pLimit(1)
 
-const logger = rootLogger.getChild('graphviz-wasm')
-
 export class GraphvizWasmAdapter implements GraphvizPort {
-  private static _graphviz: Promise<Graphviz> | null = null
-
   /**
    * Workaround for graphviz wasm memory issues
    * After each N operations unload the wasm and reload it
    */
   private static opsCount = 0
+
+  get name() {
+    return 'wasm'
+  }
 
   get concurrency() {
     return 1
@@ -25,54 +26,45 @@ export class GraphvizWasmAdapter implements GraphvizPort {
 
   dispose(): void {
     Graphviz.unload()
-    GraphvizWasmAdapter._graphviz = null
   }
 
   [Symbol.dispose]() {
     this.dispose()
   }
 
-  private graphviz(): Promise<Graphviz> {
-    return Promise.resolve().then(async () => {
-      if (!GraphvizWasmAdapter._graphviz) {
-        logger.debug`loading wasm`
-        GraphvizWasmAdapter.opsCount = 0
-        GraphvizWasmAdapter._graphviz = Graphviz.load()
-      }
-      return await GraphvizWasmAdapter._graphviz
-    })
-  }
-
   private async attempt<T>(logMessage: string, dot: string, fn: () => Promise<T>): Promise<T> {
     return await limit(async () => {
+      const logger = rootLogger.getChild(['graphviz', 'wasm', logMessage, randomString(4)])
       try {
+        logger.trace`execute`
         const result = await fn()
-        if (++GraphvizWasmAdapter.opsCount >= 10) {
-          logger.debug`unloading wasm`
+        if (++GraphvizWasmAdapter.opsCount >= 20) {
+          GraphvizWasmAdapter.opsCount = 0
+          // very hacky, but helps
+          logger.trace`reached 20 operations, unloading wasm`
           Graphviz.unload()
-          GraphvizWasmAdapter._graphviz = null
         }
         return result
       } catch (error) {
-        logger.error(`FAILED GraphvizWasm. ${logMessage}`, { error })
-        logger.error('FAILED DOT:\n' + dot)
+        logger.debug('FAILED DOT', { dot })
+        logger.error(loggable(error))
+        GraphvizWasmAdapter.opsCount = 0
         Graphviz.unload()
-        GraphvizWasmAdapter._graphviz = null
       }
       logger.warn('Retrying...')
-      await delay(10, 500)
       try {
+        await delay(30, 300)
         return await fn()
-      } finally {
-        Graphviz.unload()
-        GraphvizWasmAdapter._graphviz = null
+      } catch (error) {
+        logger.error(loggable(error))
+        return Promise.reject(error)
       }
     })
   }
 
   async unflatten(dot: DotSource): Promise<DotSource> {
     return await this.attempt(`unflatten`, dot, async () => {
-      const graphviz = await this.graphviz()
+      const graphviz = await Graphviz.load()
       const unflattened = graphviz.unflatten(dot, 1, false, 3)
       return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ') as DotSource
     })
@@ -80,7 +72,7 @@ export class GraphvizWasmAdapter implements GraphvizPort {
 
   async acyclic(dot: DotSource): Promise<DotSource> {
     return await this.attempt(`acyclic`, dot, async () => {
-      const graphviz = await this.graphviz()
+      const graphviz = await Graphviz.load()
       const res = graphviz.acyclic(dot, true)
       return res.acyclic ? (res.outFile as DotSource || dot) : dot
     })
@@ -88,7 +80,7 @@ export class GraphvizWasmAdapter implements GraphvizPort {
 
   async layoutJson(dot: DotSource): Promise<string> {
     return await this.attempt(`layout`, dot, async () => {
-      const graphviz = await this.graphviz()
+      const graphviz = await Graphviz.load()
       return graphviz.layout(dot, 'json', undefined, {
         yInvert: true,
       })
@@ -97,7 +89,7 @@ export class GraphvizWasmAdapter implements GraphvizPort {
 
   async svg(dot: DotSource): Promise<string> {
     return await this.attempt(`svg`, dot, async () => {
-      const graphviz = await this.graphviz()
+      const graphviz = await Graphviz.load()
       return graphviz.layout(dot, 'svg')
     })
   }
