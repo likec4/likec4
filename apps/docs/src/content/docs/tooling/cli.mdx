@@ -245,3 +245,26 @@ This command checks for:
 - Layout drift (outdated manual layout)
 
 If any errors are found, the command exits with a non-zero return code.
+
+### Language Server (LSP)
+
+Start the LikeC4 language server for use with editors that support the Language Server Protocol:
+
+```sh
+likec4 lsp --stdio
+likec4 lsp --node-ipc
+likec4 lsp --socket 3000
+likec4 lsp --pipe /tmp/likec4.pipe
+```
+
+One of the transport options (`--stdio`, `--node-ipc`, `--socket`, `--pipe`) is required.
+
+| Option              | Description                                                 |
+| ------------------- | ----------------------------------------------------------- |
+| `--stdio`           | Use stdio transport                                         |
+| `--node-ipc`        | Use node-ipc transport                                      |
+| `--socket <port>`   | Use socket transport on specified port                      |
+| `--pipe <name>`     | Use pipe transport with specified pipe name                 |
+| `--watch, -w`       | Enable built-in watcher (disabled by default)               |
+| `--no-manual-layouts` | Disable manual layouts (enabled by default)               |
+| `--use-dot`         | Use local Graphviz (`dot`) for layout instead of bundled WASM |
