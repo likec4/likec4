@@ -66,10 +66,10 @@ describe('text', () => {
     expectOp(
       text('hello\nworld'),
     ).toMatchInlineSnapshot(`
-      "''
+      "'
         hello
         world
-      ''"
+      '"
     `)
   })
 
@@ -77,11 +77,11 @@ describe('text', () => {
     expectOp(
       text('hello\n\'this\'\nworld'),
     ).toMatchInlineSnapshot(`
-      "''
+      "'
         hello
         \\'this\\'
         world
-      ''"
+      '"
     `)
   })
 
@@ -110,10 +110,10 @@ describe('inline', () => {
         text('hello\nworld'),
       ),
     ).toMatchInlineSnapshot(`
-    "id = element 'oneline' multiline ''
+    "id = element 'oneline' multiline '
       hello
       world
-    ''"
+    '"
   `)
   })
 })

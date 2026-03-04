@@ -330,7 +330,7 @@ export function inlineText(value?: string) {
   })
 }
 
-function multilineText(value: string, quotes = DOUBLE_QUOTE): AnyOp {
+function multilineText(value: string, quotes = QUOTE): AnyOp {
   return merge(
     print(quotes),
     indent(
@@ -346,7 +346,6 @@ function multilineText(value: string, quotes = DOUBLE_QUOTE): AnyOp {
  *
  * Escapes single quotes by doubling them
  */
-const DOUBLE_QUOTE = QUOTE.repeat(2)
 export function text<A extends string>(): Op<A>
 export function text<A>(format: (value: A) => string): Op<A>
 export function text(value: string): InferOp

@@ -70,9 +70,9 @@ describe('printSpecification', () => {
       "specification {
         element system {
           title 'My System'
-          description ''
+          description '
             A system
-          ''
+          '
           technology 'Java'
           notation 'S'
         }
@@ -207,9 +207,9 @@ describe('printSpecification', () => {
     expect(output).toMatchInlineSnapshot(`
       "specification {
         element service {
-          summary ''
+          summary '
             A brief summary
-          ''
+          '
         }
       }"
     `)
@@ -400,12 +400,12 @@ describe('printSpecification', () => {
         element service {
           #internal
           title 'Service'
-          summary ''
+          summary '
             A service
-          ''
-          description ''
+          '
+          description '
             Full description
-          ''
+          '
           technology 'Node.js'
           notation 'SVC'
           link https://example.com 'Docs'
