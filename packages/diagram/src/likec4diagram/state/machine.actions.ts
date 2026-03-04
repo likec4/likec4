@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 import {
@@ -36,7 +43,7 @@ import {
   resetEdgeControlPoints,
 } from './assign'
 import { cancelFitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
-import { machine } from './machine.setup'
+import { type Context, machine } from './machine.setup'
 import {
   findDiagramEdge,
   findDiagramNode,
@@ -638,12 +645,30 @@ export const cancelEditing = () =>
 const hasModelFqn = <D extends Types.Node>(node: D): node is D & { data: { modelFqn: Fqn } } =>
   'modelFqn' in node.data && isTruthy(node.data.modelFqn)
 
+type InitiatedFrom = { node: NodeId; clientRect: Rect }
+
+function resolveInitiatedFrom(
+  fromNodeId: NodeId | undefined,
+  context: Pick<Context, 'xystore' | 'xyflow'>,
+): InitiatedFrom | null {
+  if (!fromNodeId) return null
+  if (!context.xyflow) return null
+  const internalNode = context.xystore.getState().nodeLookup.get(fromNodeId)
+  if (!internalNode) return null
+  const nodeRect = nodeToRect(internalNode)
+  const zoom = context.xyflow.getZoom()
+  return {
+    node: fromNodeId,
+    clientRect: {
+      ...context.xyflow.flowToScreenPosition(nodeRect),
+      width: nodeRect.width * zoom,
+      height: nodeRect.height * zoom,
+    },
+  }
+}
+
 export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | undefined }) =>
   machine.enqueueActions(({ context, event, enqueue }) => {
-    let initiatedFrom = null as null | {
-      node: NodeId
-      clientRect: Rect
-    }
     let fromNodeId: NodeId | undefined, subject: Fqn
     switch (true) {
       // Use from params if available
@@ -682,27 +707,57 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
       }
     }
 
-    const internalNode = fromNodeId ? context.xystore.getState().nodeLookup.get(fromNodeId) : null
-    if (fromNodeId && internalNode) {
-      const nodeRect = nodeToRect(internalNode)
-      const zoom = context.xyflow!.getZoom()
-
-      const clientRect = {
-        ...context.xyflow!.flowToScreenPosition(nodeRect),
-        width: nodeRect.width * zoom,
-        height: nodeRect.height * zoom,
-      }
-      initiatedFrom = {
-        node: fromNodeId,
-        clientRect,
-      }
-    }
+    const initiatedFrom = resolveInitiatedFrom(fromNodeId, context)
 
     enqueue.sendTo(
       typedSystem.overlaysActor,
       {
         type: 'open.elementDetails' as const,
         subject: subject,
+        currentView: context.view,
+        ...(initiatedFrom && { initiatedFrom }),
+      },
+    )
+  })
+
+export const openAIChat = (params?: { fqn?: Fqn; fromNode?: NodeId }) =>
+  machine.enqueueActions(({ context, event, enqueue }) => {
+    let subject: { type: 'element'; fqn: Fqn }
+    let fromNodeId: NodeId | undefined
+
+    switch (true) {
+      case !!params?.fqn: {
+        subject = { type: 'element', fqn: params.fqn }
+        fromNodeId = params.fromNode
+        break
+      }
+      case event.type === 'xyflow.nodeClick': {
+        if (!hasModelFqn(event.node)) return
+        subject = { type: 'element', fqn: event.node.data.modelFqn }
+        fromNodeId = event.node.data.id
+        break
+      }
+      case event.type === 'open.aiChat': {
+        if (event.fqn) {
+          subject = { type: 'element', fqn: event.fqn }
+          fromNodeId = event.fromNode
+        } else {
+          return
+        }
+        break
+      }
+      default: {
+        return
+      }
+    }
+
+    const initiatedFrom = resolveInitiatedFrom(fromNodeId, context)
+
+    enqueue.sendTo(
+      typedSystem.overlaysActor,
+      {
+        type: 'open.aiChat' as const,
+        subject,
         currentView: context.view,
         ...(initiatedFrom && { initiatedFrom }),
       },

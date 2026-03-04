@@ -1,0 +1,15 @@
+specification {
+  element component
+}
+
+model {
+  app = component "App"
+  db = component "Database"
+  app -> db "reads"
+}
+
+views {
+  view index {
+    include *
+  }
+}

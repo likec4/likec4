@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { ExclusiveUnion } from '@likec4/core/types'
 import { type PropsWithChildren, createContext, useContext, useEffect } from 'react'
 import type { JSX } from 'react/jsx-runtime'
@@ -25,6 +32,7 @@ const FeatureNames = [
    */
   'Vscode',
   'ElementTags',
+  'AIChat',
 ] as const
 export type FeatureName = typeof FeatureNames[number]
 
@@ -58,6 +66,7 @@ export const DefaultFeatures: EnabledFeatures = {
   enableVscode: false,
   enableElementTags: false,
   enableNotes: false,
+  enableAIChat: false,
 }
 const DiagramFeaturesContext = createContext<EnabledFeatures>(DefaultFeatures)
 

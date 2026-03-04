@@ -1,6 +1,13 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { ProjectId, scalar } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
-import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider, useLikeC4Model } from '@likec4/diagram'
 import { Button, Overlay } from '@mantine/core'
 import { memo, useMemo } from 'react'
 import { only } from 'remeda'
@@ -45,6 +52,7 @@ export function ViewScreen() {
   )
 }
 const LikeC4ViewMemo = memo<{ projectId: ProjectId }>(({ projectId }) => {
+  const model = useLikeC4Model()
   let {
     view,
     error,
@@ -82,6 +90,15 @@ const LikeC4ViewMemo = memo<{ projectId: ProjectId }>(({ projectId }) => {
           enableDynamicViewWalkthrough
           enableElementDetails
           enableRelationshipBrowser
+          enableAIChat={!!model.project.aiChat && model.project.aiChat.enabled !== false}
+          aiChatConfig={model.project.aiChat
+            ? {
+              ...model.project.aiChat,
+              // Strip apiKey unless explicitly allowed to prevent leaking secrets in the webview
+              ...(!model.project.aiChat.allowUnsafeApiKey && { apiKey: undefined }),
+              customFetch: extensionApi.proxyFetch,
+            }
+            : undefined}
           enableElementTags
           enableSearch
           enableRelationshipDetails

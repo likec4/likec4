@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 /// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
@@ -178,6 +185,7 @@ export type Events =
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; params: { edgeId: EdgeId } | { source: Fqn; target: Fqn } }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
+  | { type: 'open.aiChat'; fqn: Fqn; fromNode?: NodeId }
   | { type: 'open.search'; search?: string }
   // | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined; focusOnElement?: Fqn | undefined }
@@ -286,6 +294,7 @@ export const machine = setup({
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'enabled: Search': ({ context }) => context.features.enableSearch,
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
+    'enabled: AIChat': ({ context }) => context.features.enableAIChat,
     'enabled: OpenSource': ({ context }) => context.features.enableVscode,
     'enabled: DynamicViewWalkthrough': ({ context }) => context.features.enableDynamicViewWalkthrough,
     'focus.node: autoUnfocus': ({ event }) => {
@@ -295,7 +304,8 @@ export const machine = setup({
     'enabled: Overlays': ({ context }) =>
       context.features.enableElementDetails ||
       context.features.enableRelationshipBrowser ||
-      context.features.enableRelationshipDetails,
+      context.features.enableRelationshipDetails ||
+      context.features.enableAIChat,
     'not readonly': ({ context }) => !isReadOnly(context),
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is same view': ({ context, event }) => {

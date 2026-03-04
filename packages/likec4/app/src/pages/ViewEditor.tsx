@@ -1,4 +1,11 @@
-import { LikeC4Diagram, LikeC4EditorProvider } from '@likec4/diagram'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import { LikeC4Diagram, LikeC4EditorProvider, useLikeC4Model } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { likec4rpc } from 'likec4:rpc'
@@ -13,6 +20,7 @@ export function ViewEditor() {
   const project = useCurrentProject()
   const [view, setLayoutType] = useCurrentView()
   const $likec4model = useLikeC4ModelAtom()
+  const model = useLikeC4Model()
   const { dynamic } = useSearch({ strict: false })
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
@@ -69,6 +77,8 @@ export function ViewEditor() {
         enableElementDetails
         enableRelationshipDetails
         enableRelationshipBrowser
+        enableAIChat={!!model.project.aiChat && model.project.aiChat.enabled !== false}
+        aiChatConfig={model.project.aiChat}
         enableElementTags
         enableCompareWithLatest
         dynamicViewVariant={dynamic}

@@ -1,5 +1,17 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import {
   type OpenViewPayload,
+  AIChatProxyCancel,
+  AIChatProxyChunk,
+  AIChatProxyDone,
+  AIChatProxyError,
+  AIChatProxyStart,
   BroadcastModelUpdate,
   BroadcastProjectsUpdate,
   FetchComputedModel,
@@ -107,15 +119,20 @@ export const useMessenger = createSingletonComposable(() => {
     handleFetchProjectsOverview: requestHandler(FetchProjectsOverview),
     handleReadLocalIcon: requestHandler(ReadLocalIcon),
     handleViewChange: requestHandler(ViewChangeReq),
+    handleAIChatProxyStart: requestHandler(AIChatProxyStart),
 
     onWebviewCloseMe: notificationHandler(WebviewMsgs.CloseMe),
     onWebviewLocate: notificationHandler(WebviewMsgs.Locate),
     onWebviewNavigateTo: notificationHandler(WebviewMsgs.NavigateTo),
     onWebviewUpdateMyTitle: notificationHandler(WebviewMsgs.UpdateMyTitle),
+    onAIChatProxyCancel: notificationHandler(AIChatProxyCancel),
 
     sendOpenView: sendNotification(OnOpenView),
     sendModelUpdate: sendNotification(BroadcastModelUpdate),
     sendProjectsUpdate: sendNotification(BroadcastProjectsUpdate),
+    sendAIChatProxyChunk: sendNotification(AIChatProxyChunk),
+    sendAIChatProxyDone: sendNotification(AIChatProxyDone),
+    sendAIChatProxyError: sendNotification(AIChatProxyError),
     requestGetLastClickedNode: sendRequest(GetLastClickedNode),
   }
 

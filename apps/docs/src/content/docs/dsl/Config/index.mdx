@@ -402,3 +402,47 @@ These values will be applied to all elements and relationships, unless propertie
 ```
 
 <AdvancedCustomizationTip />
+
+## AI Chat
+
+Configure an AI-powered chat overlay for exploring architecture elements and relationships directly from diagrams.
+Requires an OpenAI-compatible API endpoint.
+
+```jsonc
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "aiChat": {
+    "baseUrl": "https://api.openai.com/v1",
+    "model": "gpt-4o",
+    "apiKey": "sk-...",
+    "allowUnsafeApiKey": false,
+    "systemPrompt": "Custom prompt with {context} placeholder",
+    "suggestedQuestions": {
+      "element": [
+        "What is the purpose of {title}?",
+        "What are the risks of {title}?"
+      ]
+    }
+  }
+}
+```
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `baseUrl` | `string` | Yes | OpenAI-compatible API base URL |
+| `model` | `string` | Yes | Model name (e.g. `gpt-4o`, `gpt-4.1`) |
+| `apiKey` | `string` | Yes | API key for authentication |
+| `enabled` | `boolean` | No | Enable/disable AI Chat. Defaults to `true` when `aiChat` is present |
+| `allowUnsafeApiKey` | `boolean` | No | Include API key in static builds. Defaults to `false` |
+| `systemPrompt` | `string` | No | Custom system prompt template. Use `{context}` for architecture context |
+| `suggestedQuestions` | `object` | No | Custom starter questions |
+| `suggestedQuestions.element` | `string[]` | No | Questions for elements. Use `{title}` placeholder |
+
+<Aside type="caution">
+  By default, the API key is stripped from static builds to prevent exposing secrets. Set `allowUnsafeApiKey: true` only for internal/private deployments.
+
+  Note that your `likec4.config` file is a source file that may be committed to version control. Avoid storing real API keys in it — they will be exposed in your repository history. Instead, leave `apiKey` out of the config and use the runtime settings panel in the UI.
+</Aside>
+
+<LinkCard title="AI Chat guide" href="/tooling/ai-chat/" description="Full guide on using AI Chat, customizing prompts, and reasoning model support" />

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Fqn } from '@likec4/core'
 import {
   LikeC4Diagram,
@@ -43,6 +50,7 @@ export function ViewReact() {
     return <NotFound />
   }
 
+  const aiChat = model.project.aiChat
   const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
 
@@ -66,6 +74,13 @@ export function ViewReact() {
       enableElementDetails
       enableRelationshipDetails
       enableRelationshipBrowser
+      enableAIChat={!!aiChat && aiChat.enabled !== false}
+      aiChatConfig={aiChat
+        ? {
+          ...aiChat,
+          ...(!aiChat.allowUnsafeApiKey && { apiKey: undefined }),
+        }
+        : undefined}
       enableElementTags
       enableCompareWithLatest
       enableNotations={hasNotations}
