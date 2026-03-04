@@ -1,5 +1,6 @@
 import { isString } from 'remeda'
 import { type Assertion, describe, expect as viExpect, it } from 'vitest'
+import z from 'zod/v4'
 import {
   type Op,
   type Ops,
@@ -20,10 +21,12 @@ import {
   merge,
   newline,
   print,
+  printProperty,
   property,
   select,
   separateNewLine,
   separateWith,
+  space,
   spaceBetween,
   text,
   withctx,
@@ -34,10 +37,7 @@ import {
  */
 function expectOnCtx<A>(ctx: A) {
   const exec = withctx(ctx)
-  return (...ops: Ops<A>): Assertion<string> =>
-    viExpect(
-      materialize(exec(...ops)),
-    )
+  return (...ops: Ops<A>): Assertion<string> => viExpect(materialize(exec(...ops)))
 }
 
 function expectOp(...op: Op<any>[]): Assertion<string> {
@@ -91,7 +91,7 @@ describe('text', () => {
     ).toMatchInlineSnapshot(`
       "'''
         # Title
-
+        
         This is a **markdown** text
       '''"
     `)
@@ -168,42 +168,53 @@ describe('lines', () => {
   })
 })
 
-describe('context', () => {
-  it('should execute operations on the context', () => {
-    expectOnCtx('world')(
-      spaceBetween(
-        print('hello'),
-        print(),
-      ),
-    ).toMatchInlineSnapshot(`"hello world"`)
-  })
-
-  it('should select property from context', () => {
-    expectOp(
-      withctx(
-        {
-          name: 'world',
-        },
-        spaceBetween(
-          print('name'),
-          eq(),
-          property('name', text()),
-        ),
-      ),
-    ).toMatchInlineSnapshot(`"name = 'world'"`)
-  })
-
-  it('should select deep property from context', () => {
-    const expect = expectOnCtx({
-      one: {
-        two: {
-          three: 'world',
-        },
+describe('property', () => {
+  const expect = expectOnCtx({
+    name: 'John',
+    home: {
+      city: 'New York',
+    },
+    one: {
+      two: {
+        three: 'deep',
       },
-    })
+    },
+  })
+
+  it('should print property name and value', () => {
+    expect(property('name')).toEqual(`name John`)
+  })
+
+  it('should print property value', () => {
+    expect(printProperty('name')).toEqual(`John`)
+  })
+
+  it('should fail when property non printable', () => {
+    viExpect(() => {
+      materialize(
+        withctx({
+          nonPrintable: {},
+        })(
+          property('nonPrintable'),
+        ),
+      )
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: Property nonPrintable is not printable "[object Object]"]`)
+  })
+
+  it('should select property from context and print using given operator', () => {
     expect(
       spaceBetween(
         print('name'),
+        eq(),
+        property('name', text()),
+      ),
+    ).toEqual(`name = 'John'`)
+  })
+
+  it('should select deep property from context', () => {
+    expect(
+      spaceBetween(
+        print('deep'),
         eq(),
         property(
           'one',
@@ -217,11 +228,22 @@ describe('context', () => {
           ),
         ),
       ),
-    ).toMatchInlineSnapshot(`"name = 'world'"`)
+    ).toEqual(`deep = 'deep'`)
+  })
+})
+
+describe('context', () => {
+  it('should execute operations on the context', () => {
+    expectOnCtx('world')(
+      spaceBetween(
+        print('hello'),
+        print(),
+      ),
+    ).toEqual(`hello world`)
   })
 
   it('should execute forEach', () => {
-    const expect = expectOnCtx(
+    expectOnCtx(
       {
         items: [
           { name: 'one' },
@@ -229,8 +251,7 @@ describe('context', () => {
           { name: 'three' },
         ],
       } as const,
-    )
-    expect(
+    )(
       property(
         'items',
         foreach(
@@ -250,14 +271,13 @@ describe('context', () => {
   })
 
   it('should allow select from context', () => {
-    const expect = expectOnCtx({
+    expectOnCtx({
       one: {
         two: {
           three: 'world',
         },
       },
-    })
-    expect(
+    })(
       spaceBetween(
         print('name'),
         eq(),
@@ -276,24 +296,41 @@ describe('context', () => {
   })
 
   it('should guard context', () => {
-    const expect = expectOnCtx({
-      one: {
-        two: 'string' as string | Date,
-      },
-    })
-    expect(
-      select(
-        c => c.one.two,
-        guard(
-          isString,
-          spaceBetween(
-            print('one.two'),
-            eq(),
-            text(),
-          ),
+    expectOnCtx('string' as string | Date)(
+      guard(
+        isString,
+        spaceBetween(
+          print('context'),
+          eq(),
+          text(),
         ),
       ),
-    ).toMatchInlineSnapshot(`"one.two = 'string'"`)
+    ).toEqual(`context = 'string'`)
+  })
+
+  it('should guard context with zod schema', () => {
+    expectOnCtx(0 as string | number)(
+      guard(
+        z.number(),
+        spaceBetween(
+          print('context is'),
+          print(v => typeof v),
+        ),
+      ),
+    ).toEqual(`context is number`)
+
+    viExpect(() => {
+      materialize(
+        withctx(
+          0 as Map<string, string> | number,
+          // @ts-expect-error - guard should fail
+          guard(
+            z.string(),
+            print(),
+          ),
+        ),
+      )
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: Guard failed: ✖ Invalid input: expected string, received number]`)
   })
 })
 
@@ -323,7 +360,7 @@ describe('materialize', () => {
     viExpect(result).toBe('hello')
   })
 
-  it('should use custom indentation', () => {
+  it('should use custom indentation if number is provided', () => {
     const result = materialize(
       merge(
         print('root {'),
@@ -335,6 +372,22 @@ describe('materialize', () => {
     viExpect(result).toMatchInlineSnapshot(`
       "root {
           child
+      }"
+    `)
+  })
+
+  it('should use custom indentation if string is provided', () => {
+    const result = materialize(
+      merge(
+        print('root {'),
+        indent(print('child')),
+        print('}'),
+      ),
+      '|___',
+    )
+    viExpect(result).toMatchInlineSnapshot(`
+      "root {
+      |___child
       }"
     `)
   })
@@ -593,8 +646,14 @@ describe('inlineText', () => {
     expectOnCtx(null as any)(inlineText()).toBe('')
   })
 
-  it('should skip non-string context', () => {
-    expectOnCtx(42 as any)(inlineText()).toBe('')
+  it('should fail non-string context', () => {
+    viExpect(() =>
+      materialize(
+        withctx(42 as any)(
+          inlineText(),
+        ),
+      )
+    ).toThrowErrorMatchingInlineSnapshot(`[Error: Value must be a string - got number]`)
   })
 })
 
@@ -613,8 +672,14 @@ describe('text', () => {
     expectOnCtx(null as any)(text()).toBe('')
   })
 
-  it('should skip non-string values', () => {
-    expectOnCtx(42 as any)(text()).toBe('')
+  it('should fail non-string context', () => {
+    viExpect(() =>
+      materialize(
+        withctx(42 as any)(
+          text(),
+        ),
+      )
+    ).toThrowErrorMatchingInlineSnapshot(`[Error: Value must be a string - got number]`)
   })
 })
 
@@ -639,7 +704,7 @@ describe('markdownOrString', () => {
     ).toMatchInlineSnapshot(`
       "'''
         # Title
-
+        
         Body
       '''"
     `)
@@ -649,10 +714,10 @@ describe('markdownOrString', () => {
     expectOp(
       markdownOrString({ txt: 'hello\nworld' }),
     ).toMatchInlineSnapshot(`
-      "''
+      "'
         hello
         world
-      ''"
+      '"
     `)
   })
 
@@ -761,124 +826,24 @@ describe('select', () => {
 })
 
 describe('withctx', () => {
-  it('should forward context with single-arg curried form', () => {
-    const forward = withctx('hello')
+  it('should forward context when curried', () => {
     expectOp(
-      forward(print()),
-    ).toBe('hello')
+      withctx('hello')(
+        print(),
+        space(),
+        print('world'),
+      ),
+    ).toBe('hello world')
   })
 
-  it('should forward context with multi-arg form', () => {
+  it('should forward context with composite', () => {
     expectOp(
-      withctx('hello', print()),
-    ).toBe('hello')
+      withctx(
+        'world',
+        print('hello'),
+        space(),
+        print(),
+      ),
+    ).toBe('hello world')
   })
 })
-
-// const model = Builder
-//   .specification({
-//     elements: {
-//       actor: {},
-//       system: {},
-//       component: {},
-//     },
-//     deployments: {
-//       env: {},
-//       vm: {},
-//     },
-//     relationships: {
-//       like: {},
-//       dislike: {},
-//     },
-//     tags: {
-//       tag1: {},
-//       tag2: {},
-//     },
-//     metadataKeys: ['key1', 'key2'],
-//   })
-//   .model(({ actor, system, component, relTo }, _) =>
-//     _(
-//       actor('alice'),
-//       actor('bob', {
-//         title: 'Bob',
-//         tags: ['tag1', 'tag2' as const],
-//       }),
-//       system('cloud').with(
-//         component('backend').with(
-//           component('api', {
-//             title: 'API Services',
-//           }),
-//           component('db'),
-//         ),
-//         component('frontend'),
-//       ),
-//     )
-//   )
-//   .deployment(({ env, vm, instanceOf }, _) =>
-//     _(
-//       env('prod').with(
-//         vm('vm1'),
-//         vm('vm2'),
-//       ),
-//       env('dev').with(
-//         vm('vm1'),
-//         instanceOf('cloud.backend.api'),
-//       ),
-//     )
-//   )
-//   // Test Element View
-//   .views(({ view, $include }, _) =>
-//     _(
-//       // rules inside
-//       view('view1', $include('cloud.backend')),
-//       view('view2', $include('cloud.backend')),
-//     )
-//   )
-//   .build()
-
-// describe('context', () => {
-//   function expect(...ops: PrintOp<typeof model>[]): Assertion<string> {
-//     const result = reduce(ops, (ctx, op) => op(ctx), PrintCtx({ value: model }))
-//     return viExpect(
-//       result.toString(),
-//     )
-//   }
-
-//   it('inherits out from parent', () => {
-//     expect(
-//       print('model '),
-//       body(
-//         select(
-//           c => values(c.elements),
-//           each({
-//             separator: NL,
-//             suffix(element, index, isLast) {
-//               if (!isLast) {
-//                 return NL
-//               }
-//             },
-//             print: element(),
-//           }),
-//         ),
-//       ),
-//     ).toMatchInlineSnapshot(`
-//       "model {
-//         alice = actor 'alice' {}
-
-//         bob = actor 'Bob' {
-//           #tag1, #tag2
-//         }
-
-//         cloud = system 'cloud' {}
-
-//         backend = component 'backend' {}
-
-//         api = component 'API Services' {}
-
-//         db = component 'db' {}
-
-//         frontend = component 'frontend' {}
-//       }"
-//     `)
-//   })
-// })

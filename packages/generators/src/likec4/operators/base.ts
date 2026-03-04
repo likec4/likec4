@@ -1,4 +1,4 @@
-import { type MarkdownOrString, hasProp } from '@likec4/core'
+import { type MarkdownOrString, hasProp, invariant } from '@likec4/core'
 import {
   type Generated,
   type GeneratorNode,
@@ -14,6 +14,7 @@ import {
   filter,
   hasAtLeast,
   identity,
+  isArray,
   isBoolean,
   isEmpty,
   isFunction,
@@ -27,7 +28,8 @@ import {
   pipe,
 } from 'remeda'
 import { dedent } from 'strip-indent'
-import type { IfAny } from 'type-fest'
+import type { IfAny, Or } from 'type-fest'
+import z from 'zod/v4'
 
 function hasContent(out: Generated): boolean {
   if (typeof out === 'string') {
@@ -57,6 +59,12 @@ function hasContentOrNewLine(out: Generated): boolean {
 
 export type Output = CompositeGeneratorNode
 
+/**
+ * Context for operation, contains the value and target output node
+ *
+ * @typeParam A - Context value
+ * @see executeOnCtx
+ */
 export type Ctx<A> = {
   ctx: A
   out: Output
@@ -90,6 +98,7 @@ export type Ops<A> = Op<A>[]
 
 /**
  * Create a new context with the given value and an empty output node
+ * @see executeOnFresh
  */
 export function fresh<A>(ctx: A): IfAny<A, never, Ctx<A>> {
   return { ctx, out: new CompositeGeneratorNode() } as never
@@ -106,13 +115,30 @@ export function materialize(ctx: AnyCtx | Op<any>, defaultIndentation: string | 
 /**
  * Execute a sequence of operations on the given context
  * This is reduce operation
+ * @see withctx
  */
 export function executeOnCtx<A>(
   ctx: Ctx<A>,
-  ops: Ops<A>,
+  op: Ops<A>,
+): Ctx<A>
+export function executeOnCtx<A>(
+  ctx: Ctx<A>,
+  op: Op<A>,
+  ...ops: Ops<A>
+): Ctx<A>
+export function executeOnCtx<A>(
+  ctx: Ctx<A>,
+  op: Op<A> | Ops<A>,
+  ...ops: Ops<A>
 ): Ctx<A> {
-  for (const op of ops) {
-    ctx = op(ctx)
+  if (isArray(op)) {
+    invariant(ops.length === 0, 'When first argument is an array, no additional operations are allowed')
+    ops = op
+  } else {
+    ops = [op, ...ops]
+  }
+  for (const o of ops) {
+    ctx = o(ctx)
   }
   return ctx
 }
@@ -123,9 +149,22 @@ export function executeOnCtx<A>(
  */
 export function executeOnFresh<A>(
   ctx: A,
-  ops: Ops<A>,
-): Ctx<A> {
-  return executeOnCtx(fresh(ctx), ops)
+  op: Ops<A>,
+): Ctx<A>
+export function executeOnFresh<A>(
+  ctx: A,
+  op: Op<A>,
+  ...ops: Ops<A>
+): Ctx<A>
+export function executeOnFresh<A>(
+  ctx: A,
+  op: Ops<A> | Op<A>,
+  ...ops: Ops<A>
+) {
+  if (isArray(op)) {
+    return executeOnCtx(fresh(ctx), op)
+  }
+  return executeOnCtx(fresh(ctx), [op, ...ops])
 }
 
 /**
@@ -139,16 +178,13 @@ export function eachOnFresh<A>(
   return ops.map(op => op(fresh(ctx)))
 }
 
-// type CastedCtx<C> = IsAny<C> extends true ? Ctx<unknown> : Ctx<C>
-type CastedCtx<C> = Ctx<C>
-
 /**
  * Create an operation from a function
+ * {@link Op} requires return type to be Ctx<A>, this helper does it for us
  */
-export function operation<A>(fn: (input: CastedCtx<A>) => any): Op<A>
-export function operation<A>(name: string, fn: (input: CastedCtx<A>) => any): Op<A>
+export function operation<A>(fn: (input: Ctx<A>) => any): Op<A>
+export function operation<A>(name: string, fn: (input: Ctx<A>) => any): Op<A>
 export function operation(opOrName: string | Function, fn?: Function) {
-  const name = typeof opOrName === 'string' ? opOrName : 'anonymous operation'
   const operationFn = typeof opOrName === 'function' ? opOrName : fn!
   const wrapped = (input: Ctx<any>) => {
     const result = operationFn(input)
@@ -157,39 +193,53 @@ export function operation(opOrName: string | Function, fn?: Function) {
     }
     return input
   }
-  Object.defineProperties(wrapped, {
-    length: { value: operationFn.length },
-    name: { value: name },
-  })
+  if (typeof opOrName === 'string' && operationFn.name == '') {
+    Object.defineProperties(wrapped, {
+      name: { value: `wrapped(${opOrName})` },
+    })
+  }
   return wrapped
 }
 
+function isPrintable(value: unknown): value is string | number | boolean {
+  return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+}
 /**
- * Prints current context to the output node
+ * Prints current context or given parameter.
+ * If function is given, it will be called with the current context and the result will be printed (i.e formatted).
+ *
+ * @example
+ * ```ts
+ * withctx('value')(
+ *   print('const and '),
+ *   print(),
+ * )
+ * // Output: const and value
+ * ```
+ *
+ * * @example
+ * ```ts
+ * withctx({tag: 'one'})(
+ *   print(c => '#' + c.tag)
+ * )
+ * // Output: #one
+ * ```
  */
 export function print<A extends string | number | boolean>(): Op<A>
-/**
- * Prints the given string to the output node
- */
 export function print<A>(format: (value: A) => string): Op<A>
 export function print(value: string | number | boolean): InferOp
 export function print(value?: unknown) {
-  return operation(({ ctx, out }) => {
+  return operation(function printOp({ ctx, out }) {
     let v = typeof value === 'function' ? value(ctx) : (value ?? ctx)
-    if (isNullish(v)) {
+    if (isNullish(v) || v === '') {
       return
     }
-    if (isString(v) || isNumber(v) || isBoolean(v)) {
-      out.append(String(v))
-      return
-    }
-    throw new Error('Value must be a string, number or boolean - got ' + typeof v)
+    invariant(isPrintable(v), 'Value must be a string, number or boolean - got ' + typeof v)
+    out.append(String(v))
   })
 }
 
 export const eq = (): InferOp => print('=')
-
-export const keyword = (value: string): InferOp => print(value)
 
 export const space = (): InferOp => print(' ')
 
@@ -221,7 +271,7 @@ export function newline(when?: 'ifNotEmpty'): InferOp {
  * Merge multiple operations into a single output node
  */
 export function merge<A>(...ops: Ops<A>): Op<A> {
-  return operation('merge', ({ ctx, out }) => {
+  return operation(function merge({ ctx, out }) {
     const nested = executeOnFresh(ctx as A, ops)
     out.appendIf(
       hasContent(nested.out),
@@ -231,57 +281,89 @@ export function merge<A>(...ops: Ops<A>): Op<A> {
 }
 
 /**
- * Indent given text
+ * Indent output of operations
  */
 export function indent(value: string): InferOp
-/**
- * Indent the given operations
- */
 export function indent<A>(...args: Ops<A>): Op<A>
 export function indent(...args: AnyOp[] | [string]) {
   if (args.length === 1 && typeof args[0] === 'string') {
     const text = dedent(args[0] as string)
-    return operation('indent', ({ out }) => {
-      if (isEmpty(text.trimStart())) {
-        return
-      }
-      out.indent({
-        indentImmediately: false,
-        indentedChildren: [
-          NLEmpty,
-          joinToNode(
-            text.split(/\r?\n/),
-            { separator: NL },
-          ),
-          NLEmpty,
-        ],
-      })
+    if (text.trimStart().length === 0) {
+      return noop()
+    }
+    return operation(function indent1({ out }) {
+      out
+        .appendNewLineIfNotEmpty()
+        .indent({
+          indentEmptyLines: true,
+          indentedChildren: [
+            joinToNode(
+              text.split(/\r?\n/),
+              { separator: NL },
+            ),
+          ],
+        })
+        .appendNewLineIfNotEmpty()
     })
   }
   const ops = args as Ops<unknown>
-  return operation('indent', ({ ctx, out }) => {
+  return operation(function indent2({ ctx, out }) {
     const nested = executeOnFresh(ctx, ops)
     if (hasContent(nested.out)) {
-      out.indent({
-        indentImmediately: false,
-        indentedChildren: [
-          NLEmpty,
-          nested.out,
-          NLEmpty,
-        ],
-      })
+      out
+        .appendNewLineIfNotEmpty()
+        .indent({
+          indentEmptyLines: true,
+          indentedChildren: nested.out.contents,
+        })
+        .appendNewLineIfNotEmpty()
     }
   })
 }
 
+/**
+ * Indent output of operations, join them with newlines and wrap them
+ * with `open` and `close` params (`{ .. }` by default)
+ *
+ * @example
+ * ```ts
+ * body(
+ *   print('name: John'),
+ *   print('age: 30'),
+ * )
+ * // Output:
+ * // {
+ * //   name: John
+ * //   age: 30
+ * // }
+ * ```
+ *
+ * @example
+ * ```ts
+ * body('style')(
+ *   print('color: red'),
+ *   print('font-size: 12px'),
+ * )
+ * // Output:
+ * // style {
+ * //   color: red
+ * //   font-size: 12px
+ * // }
+ * ```
+ *
+ * @example
+ * ```ts
+ * body('when [',']')(
+ *   print('some condition'),
+ * )
+ * // Output:
+ * // when [
+ * //   some condition
+ * // ]
+ * ```
+ */
 export function body<A>(...ops: Ops<A>): Op<A>
-/**
- * Indent the given operations and wrap them in '{ ... }'
- */
 export function body(keyword: string): <A>(...ops: Ops<A>) => Op<A>
-/**
- * Indent the given operations and wrap them with the provided open and close strings
- */
 export function body(open: string, close: string): <A>(...ops: Ops<A>) => Op<A>
 export function body(...args: unknown[]) {
   const keyword = only(args)
@@ -291,7 +373,7 @@ export function body(...args: unknown[]) {
   if (args.length === 2 && isString(args[0]) && isString(args[1])) {
     const [open, close] = args as [string, string]
     return (...ops: Ops<any>) =>
-      operation('body ' + open + ' ' + close, ({ ctx, out }) => {
+      operation(function body({ ctx, out }) {
         const bodyOutput = indent(lines(...ops))(fresh(ctx)).out
         out.appendIf(
           hasContent(bodyOutput),
@@ -307,21 +389,22 @@ export function body(...args: unknown[]) {
   return body('{', '}')(...ops)
 }
 
-/**
- * Append text to the current line, wrapped in single quotes
- * Multiple lines are joined with newlines
- * Escapes single quotes by doubling them
- */
 const QUOTE = '\''
 const ESCAPED_QUOTE = '\\' + QUOTE
+/**
+ * Append text to the current line, wrapped in single quotes
+ * Multiple lines are joined with spaces
+ * Escapes single quotes by doubling them
+ */
 export function inlineText<A extends string>(): Op<A>
 export function inlineText<A>(value: string): Op<A>
 export function inlineText(value?: string) {
   return operation(({ ctx, out }) => {
     let v = value ?? ctx
-    if (isNullish(v) || !isString(v)) {
+    if (isNullish(v)) {
       return
     }
+    invariant(isString(v), 'Value must be a string - got ' + typeof v)
     const escapedValue = v
       .replace(/(\r?\n|\t)+/g, ' ')
       .replaceAll(QUOTE, ESCAPED_QUOTE)
@@ -350,11 +433,12 @@ export function text<A extends string>(): Op<A>
 export function text<A>(format: (value: A) => string): Op<A>
 export function text(value: string): InferOp
 export function text(value?: unknown) {
-  return operation('text', ({ ctx, out }) => {
+  return operation(function text({ ctx, out }) {
     let v = typeof value === 'function' ? value(ctx) : (value ?? ctx)
-    if (isNullish(v) || !isString(v)) {
+    if (isNullish(v)) {
       return
     }
+    invariant(isString(v), 'Value must be a string - got ' + typeof v)
     if (v.includes('\n')) {
       return multilineText(v)({ ctx: v, out })
     }
@@ -363,17 +447,19 @@ export function text(value?: unknown) {
 }
 
 const TRIPLE_QUOTE = QUOTE.repeat(3)
+
 /**
  * Wraps text in triple quotes (to be transformed to markdown)
  */
 export function markdown<A extends string>(): Op<A>
 export function markdown<A>(value: string): Op<A>
 export function markdown(value?: string) {
-  return operation('markdown', (ctx) => {
+  return operation(function markdown(ctx) {
     let v = value ?? ctx.ctx
-    if (isNullish(v) || !isString(v)) {
+    if (isNullish(v)) {
       return
     }
+    invariant(isString(v), 'Value must be a string - got ' + typeof v)
     return multilineText(v, TRIPLE_QUOTE)(ctx)
   })
 }
@@ -381,7 +467,7 @@ export function markdown(value?: string) {
 export function markdownOrString<A extends MarkdownOrString>(): Op<A>
 export function markdownOrString<A>(value: MarkdownOrString): Op<A>
 export function markdownOrString(value?: MarkdownOrString) {
-  return operation<MarkdownOrString>('markdownOrString', ctx => {
+  return operation<MarkdownOrString>(function markdownOrString(ctx) {
     let v = value ?? ctx.ctx
     if (isNullish(v)) {
       return
@@ -397,7 +483,13 @@ export function markdownOrString(value?: MarkdownOrString) {
 }
 
 /**
- * Cast the given operation to a context operation
+ * helps to join operations
+ *
+ * @internal
+ *
+ * @see spaceBetween
+ * @see lines
+ * @see foreach
  */
 export function join<A>(
   params: {
@@ -407,10 +499,7 @@ export function join<A>(
   return operation<A>('join', ({ ctx, out }) => {
     const { operations, ...joinOptions } = params
     const ops = Array.isArray(operations) ? operations : [operations]
-    if (!hasAtLeast(ops, 1)) {
-      return
-    }
-
+    invariant(hasAtLeast(ops, 1), 'At least one operation is required')
     let nested
     if (ops.length === 1) {
       const result = ops[0](fresh(ctx))
@@ -436,6 +525,7 @@ export function join<A>(
 
 /**
  * Joins all outputs with a space between
+ * @see lines
  */
 export function spaceBetween<A>(...ops: Ops<A>): Op<A> {
   return join({
@@ -447,7 +537,32 @@ export function spaceBetween<A>(...ops: Ops<A>): Op<A> {
 }
 
 /**
- * Joins all outputs with a space between
+ * Joins all outputs from the operations with the specified number of new lines after each operation
+ *
+ * @see body
+ *
+ * @example
+ * ```ts
+ * lines(
+ *   print('name'),
+ *   print('value'),
+ * )
+ * // Output:
+ * // name
+ * // value
+ * ```
+ *
+ * @example
+ * ```ts
+ * lines(2)(
+ *   print('name'),
+ *   print('value'),
+ * )
+ * // Output:
+ * // name
+ * //
+ * // value
+ * ```
  */
 export function lines<A>(...ops: Ops<A>): Op<A>
 export function lines(linesBetween: number): <A>(...ops: Ops<A>) => Op<A>
@@ -464,8 +579,6 @@ export function lines(...args: any[]) {
         suffix: (_node, _index, isLast) => {
           return !isLast ? suffix.out : undefined
         },
-        appendNewLineIfNotEmpty: true,
-        skipNewLineAfterLastItem: true,
       })
     }
   }
@@ -478,7 +591,7 @@ export function lines(...args: any[]) {
 }
 
 /**
- * Forwards the given context to the given operations
+ * Forwards the context to the operations
  */
 export function withctx<A>(ctx: A): <B>(...ops: Ops<A>) => Op<B>
 export function withctx<A, B>(ctx: B, op: Op<B>, ...ops: Ops<B>): Op<A>
@@ -486,34 +599,82 @@ export function withctx(...args: unknown[]) {
   const ctx = args[0]
   if (args.length === 1) {
     return (...ops: Ops<any>) =>
-      operation('withctx', ({ out }) => {
+      operation(function withctx1({ out }) {
         executeOnCtx({ ctx, out }, ops)
       })
   }
   const ops = args.slice(1) as Ops<any>
-  return operation('withctx', ({ out }) => {
+  return operation(function withctx2({ out }) {
     executeOnCtx({ ctx, out }, ops)
   })
 }
 
 /**
  * Executes the given operation on the property of the context if it is non-nullish
+ * If no operation is provided, prints the property name and property value
+ * (use {@link printProperty} if you need print value only)
+ *
+ * @see printProperty
+ *
+ * @example
+ * ```ts
+ * withctx({name: 'John'})(
+ *   property(
+ *    'name',
+ *     spaceBetween(
+ *       print('Name:'),
+ *       print()
+ *     )
+ *   )
+ * )
+ * // Output:
+ * // Name: John
+ * ```
+ * @example
+ * ```ts
+ * withctx({name: 'John'})(
+ *   property('name')
+ * )
+ * // Output:
+ * // name John
+ * ```
  */
 export function property<A, P extends keyof A & string>(
   propertyName: P,
   op?: Op<A[P] & {}>, // NonNullable
 ): Op<A> {
-  return operation(`property-${propertyName}`, ({ ctx, out }) => {
+  return operation(function propertyOp({ ctx, out }) {
     const value = isObjectType(ctx) && hasProp(ctx, propertyName) ? ctx[propertyName] : undefined
-    if (value !== undefined && value !== null) {
-      if (!op) {
-        print()({ ctx: value as any, out })
-        return
-      }
-
-      op({ ctx: value, out })
+    if (value === null || value === undefined) {
+      return
     }
+    if (!op) {
+      invariant(isPrintable(value), `Property ${propertyName} is not printable "${value}"`)
+      out.append(propertyName, ' ', String(value))
+      return
+    }
+    op({ ctx: value, out })
   })
+}
+
+/**
+ * Prints context's property value
+ *
+ * @see property
+ *
+ * @example
+ * ```ts
+ * withctx({name: 'John'})(
+ *   printProperty('name')
+ * )
+ * // Output:
+ * // John
+ * ```
+ */
+export function printProperty<A, P extends keyof A & string>(
+  propertyName: P,
+): Op<A> {
+  return property(propertyName, print() as AnyOp)
 }
 
 type IterableValue<T> = T extends Iterable<infer U> ? U : never
@@ -543,10 +704,6 @@ export function foreach<A extends Iterable<any>>(
   op: Op<IterableValue<A>>,
   ...ops: Ops<IterableValue<A>>
 ): Op<A>
-/**
- * Executes given operations on each item of the iterable context
- */
-// export function foreach<A extends Iterable<any>>(op: Op<IterableValue<A>>, ...ops: Ops<IterableValue<A>>): Op<A>
 export function foreach<A extends Iterable<any>>(
   ...args:
     | [op: Op<IterableValue<A>>]
@@ -557,7 +714,7 @@ export function foreach<A extends Iterable<any>>(
   if (args.length === 2 && !isFunction(arg2)) {
     const _op = arg1
     const joinOptions = arg2
-    return operation('foreach', ({ ctx, out }) => {
+    return operation(function foreachSingleOp({ ctx, out }) {
       const items = [] as Array<CompositeGeneratorNode>
       for (const value of ctx) {
         const itemOut = _op(fresh(value)).out
@@ -599,8 +756,17 @@ export function separateNewLine(lines = 1): JoinOptions<CompositeGeneratorNode> 
   return separateWith(NL)
 }
 
-export function separateComma(): JoinOptions<CompositeGeneratorNode> {
-  return separateWith(', ')
+export function separateComma(addNewLine?: boolean): JoinOptions<CompositeGeneratorNode> {
+  if (addNewLine) {
+    return {
+      separator: ',',
+      appendNewLineIfNotEmpty: true,
+      skipNewLineAfterLastItem: true,
+    }
+  }
+  return {
+    separator: ', ',
+  }
 }
 
 /**
@@ -610,7 +776,7 @@ export function separateComma(): JoinOptions<CompositeGeneratorNode> {
 export function foreachNewLine<A extends Iterable<any>>(
   ...ops: Ops<IterableValue<A>>
 ): Op<A> {
-  return operation('foreachNewLine', ({ ctx, out }) => {
+  return operation(function foreachNewLineOp({ ctx, out }) {
     const items = [] as Array<CompositeGeneratorNode>
     for (const value of ctx) {
       const itemOut = executeOnFresh(value, ops).out
@@ -634,10 +800,32 @@ export function foreachNewLine<A extends Iterable<any>>(
 export function guard<A, N extends A>(
   condition: (ctx: A) => ctx is N,
   ...ops: Ops<N>
-): Op<A> {
+): Op<A>
+export function guard<A, Z extends z.ZodType<any, any, any>>(
+  zodSchema: Z,
+  ...ops: Or<
+    A extends z.input<NoInfer<Z>> ? true : false,
+    z.input<NoInfer<Z>> extends A ? true : false
+  > extends true ? Ops<z.output<NoInfer<Z>>> : ['zod guard mismatch']
+): Op<A>
+export function guard(
+  condition: Function | z.ZodSchema,
+  ...ops: Ops<any>
+) {
   return operation('guard', ({ ctx, out }) => {
+    if ('safeParse' in condition) {
+      const parsed = condition.safeParse(ctx)
+      if (parsed.success) {
+        executeOnCtx({ ctx: parsed.data, out }, ops)
+      } else {
+        throw new Error(`Guard failed: ${z.prettifyError(parsed.error)}`)
+      }
+      return
+    }
+    invariant(typeof condition === 'function')
     if (condition(ctx)) {
       executeOnCtx({ ctx, out }, ops)
+      return
     }
   })
 }
@@ -649,7 +837,7 @@ export function when<A>(
   condition: (ctx: A) => boolean,
   ...ops: Ops<NoInfer<A>>
 ): Op<A> {
-  return operation('when', ({ ctx, out }) => {
+  return operation(function whenOp({ ctx, out }) {
     if (condition(ctx)) {
       executeOnCtx({ ctx, out }, ops)
     }
@@ -657,10 +845,10 @@ export function when<A>(
 }
 
 export function select<A, B>(
-  selector: (value: NoInfer<A>) => B,
+  selector: (value: A) => B,
   ...ops: Ops<B & {}> // NonNullable
 ): Op<A> {
-  return operation('select', ({ ctx, out }) => {
+  return operation(function selectOp({ ctx, out }) {
     const value = selector(ctx)
     if (isNonNullish(value)) {
       executeOnCtx({ ctx: value, out }, ops)

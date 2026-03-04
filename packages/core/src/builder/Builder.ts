@@ -648,7 +648,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                     },
                   })
                 }
-                ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>) as any
+                ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>)
               } finally {
                 b.__fqn = __fqn
                 b.__addSourcelessRelation = __addSourcelessRelation
@@ -906,7 +906,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 const { __deploymentFqn } = b
                 try {
                   b.__deploymentFqn = (child) => `${__deploymentFqn(id)}.${child}` as DeploymentFqn
-                  ops.reduce((b, op) => op(b), b as any as DeploymentModelBuilder<T>) as any
+                  ops.reduce((b, op) => op(b), b as any as DeploymentModelBuilder<T>)
                 } finally {
                   b.__deploymentFqn = __deploymentFqn
                 }

@@ -13,6 +13,7 @@ import {
   foreachNewLine,
   lines,
   print,
+  printProperty,
   property,
   select,
   spaceBetween,
@@ -30,7 +31,7 @@ import {
   titleProperty,
 } from './properties'
 
-export function specificationOp(): Op<SpecificationData> {
+export function specificationOp<A extends SpecificationData>(): Op<A> {
   return body('specification')(
     lines(2)(
       select(
@@ -58,23 +59,26 @@ export function specificationOp(): Op<SpecificationData> {
 export function tagSpecification(): Op<[Tag, { color?: string | undefined }]> {
   return spaceBetween(
     print('tag'),
-    property('0'),
-    select(
-      v => v[1].color,
-      body<string>(
-        spaceBetween(
-          print('color'),
-          print(),
+    printProperty('0'),
+    property(
+      '1',
+      property(
+        'color',
+        body(
+          spaceBetween(
+            print('color'),
+            print(),
+          ),
         ),
       ),
     ),
   )
 }
 
-export function elementSpecification(): Op<[string, ElementSpecificationData]> {
+export function elementSpecification<A extends ElementSpecificationData>(): Op<[string, A]> {
   return spaceBetween(
     print('element'),
-    property('0'),
+    printProperty('0'),
     property(
       '1',
       body(
@@ -96,10 +100,10 @@ export function elementSpecification(): Op<[string, ElementSpecificationData]> {
   )
 }
 
-export function relationshipSpecification(): Op<[string, RelationshipSpecificationData]> {
+export function relationshipSpecification<A extends RelationshipSpecificationData>(): Op<[string, A]> {
   return spaceBetween(
     print('relationship'),
-    property('0'),
+    printProperty('0'),
     property(
       '1',
       body(

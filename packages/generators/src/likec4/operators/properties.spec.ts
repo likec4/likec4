@@ -32,10 +32,10 @@ describe('properties', () => {
     ).toMatchInlineSnapshot(`
       "metadata {
         key1 'value1'
-        key2 ''
+        key2 '
           multiline 1
           multiline 2
-        ''
+        '
         key3 'value2'
       }"
     `)
@@ -58,14 +58,14 @@ describe('properties', () => {
           'value2'
         ]
         key2 [
-          ''
+          '
             multiline 1
             multiline 2
-          '',
-          ''
+          ',
+          '
             multiline 3
             multiline 4
-          ''
+          '
         ]
         key3 'value3'
       }"

@@ -186,10 +186,10 @@ describe('printSpecification', () => {
       "specification {
         element person
         element system
-
+        
         relationship async
         relationship sync
-
+        
         tag internal
       }"
     `)

@@ -194,6 +194,8 @@ export type SpecificationData = z.infer<typeof SpecificationSchema>
 
 const metadataValue = z.union([z.string(), z.boolean(), z.number()]).transform(value => `${value}`)
 
+const metadataSchema = z.record(z.string(), metadataValue.or(z.array(metadataValue)))
+
 const commonProps = z
   .object({
     tags: tags.nullable(),
@@ -203,7 +205,7 @@ const commonProps = z
     notation: z.string(),
     technology: z.string().nullable(),
     links: links.nullable(),
-    metadata: z.record(z.string(), metadataValue.or(z.array(metadataValue))),
+    metadata: metadataSchema,
   })
   // all properties are optional, as the generator should be able to handle missing fields and provide defaults
   .partial()
@@ -324,10 +326,10 @@ const WhereOperatorSchema: z.ZodType<WhereOperatorData> = z.lazy(() =>
   ])
 )
 
-const modelRef = z.union([
-  z.object({ model: fqn }),
-  z.object({ project: z.string(), model: fqn }),
-])
+const modelRef = z.object({
+  model: fqn,
+  project: z.string().optional(),
+})
 
 // ---- ModelFqnExpr base variants ----
 const wildcardExpr = z.object({ wildcard: z.literal(true) })
@@ -343,17 +345,102 @@ const elementTagExpr = z.object({
   elementTag: tag,
   isEqual: z.boolean(),
 })
-const modelFqnExprBase = z.union([wildcardExpr, refExpr, elementKindExpr, elementTagExpr])
+const modelFqnExpr = z.union([
+  wildcardExpr,
+  refExpr,
+  elementKindExpr,
+  elementTagExpr,
+])
+
+const modelFqnExprWhere = z.object({
+  where: z.object({
+    expr: modelFqnExpr,
+    condition: WhereOperatorSchema,
+  }),
+})
+
+const modelFqnExprOrWhere = z.union([
+  modelFqnExpr,
+  modelFqnExprWhere,
+])
+
+/**
+ * Common custom properties that apply to both elements and relations
+ */
+const commonCustomProperties = z.object({
+  title: z.string(),
+  description: markdownOrString,
+  technology: z.string(),
+  notation: z.string(),
+  notes: markdownOrString,
+  navigateTo: viewId,
+  color: color,
+})
+
+const customElementProperties = commonCustomProperties.extend({
+  shape: shape,
+  icon: icon,
+  iconColor: color,
+  iconSize: size,
+  iconPosition: iconPosition,
+  border: border,
+  opacity: opacity,
+  multiple: z.boolean(),
+  size: size,
+  padding: size,
+  textSize: size,
+}).partial()
+
+const customRelationProperties = commonCustomProperties.extend({
+  line: line,
+  head: arrow,
+  tail: arrow,
+}).partial()
+
+const modelFqnExprCustom = z.object({
+  custom: customElementProperties.extend({
+    expr: modelFqnExprOrWhere,
+  }),
+})
+
+const modelFqnExprAny = z.union([
+  modelFqnExpr,
+  modelFqnExprWhere,
+  modelFqnExprCustom,
+])
 
 // ---- ModelRelationExpr base variants ----
-const directExpr = z.object({
-  source: modelFqnExprBase,
-  target: modelFqnExprBase,
+const modelDirectRelationExpr = z.object({
+  source: modelFqnExpr,
+  target: modelFqnExpr,
   isBidirectional: z.boolean().optional(),
 })
-const incomingExpr = z.object({ incoming: modelFqnExprBase })
-const outgoingExpr = z.object({ outgoing: modelFqnExprBase })
-const inoutExpr = z.object({ inout: modelFqnExprBase })
+const modelIncomingRelationExpr = z.object({ incoming: modelFqnExpr })
+const modelOutgoingRelationExpr = z.object({ outgoing: modelFqnExpr })
+const modelInoutRelationExpr = z.object({ inout: modelFqnExpr })
+
+const modelRelationExpr = z.union([
+  modelDirectRelationExpr,
+  modelIncomingRelationExpr,
+  modelOutgoingRelationExpr,
+  modelInoutRelationExpr,
+])
+
+const modelRelationExprOrWhere = z.union([
+  modelRelationExpr,
+  z.object({
+    where: z.object({
+      expr: modelRelationExpr,
+      condition: WhereOperatorSchema,
+    }),
+  }),
+])
+
+const modelRelationExprCustom = z.object({
+  customRelation: customRelationProperties.extend({
+    expr: modelRelationExprOrWhere,
+  }),
+})
 
 // Where expression - wraps either a fqn or relation base expression with a condition
 const whereExpr = z.object({
@@ -363,101 +450,87 @@ const whereExpr = z.object({
       refExpr,
       elementKindExpr,
       elementTagExpr,
-      directExpr,
-      incomingExpr,
-      outgoingExpr,
-      inoutExpr,
+      modelDirectRelationExpr,
+      modelIncomingRelationExpr,
+      modelOutgoingRelationExpr,
+      modelInoutRelationExpr,
     ]),
     condition: WhereOperatorSchema,
   }),
 })
-
-// FqnExpr including where variant (used in custom expr)
-const modelFqnExprOrWhere = z.union([
-  wildcardExpr,
-  refExpr,
-  elementKindExpr,
-  elementTagExpr,
-  z.object({
-    where: z.object({
-      expr: modelFqnExprBase,
-      condition: WhereOperatorSchema,
-    }),
-  }),
-])
-
-// Custom FqnExpr with style/property overrides
-const customFqnExpr = z.object({
-  custom: z.object({
-    expr: modelFqnExprOrWhere,
-    title: z.string().optional(),
-    description: markdownOrString.optional(),
-    technology: z.string().optional(),
-    notation: z.string().optional(),
-    notes: markdownOrString.optional(),
-    navigateTo: viewId.optional(),
-    shape: shape.optional(),
-    color: color.optional(),
-    icon: icon.optional(),
-    iconColor: color.optional(),
-    iconSize: size.optional(),
-    iconPosition: iconPosition.optional(),
-    border: border.optional(),
-    opacity: opacity.optional(),
-    multiple: z.boolean().optional(),
-    size: size.optional(),
-    padding: size.optional(),
-    textSize: size.optional(),
-  }),
-})
+//
+// // FqnExpr including where variant (used in custom expr)
+// const modelFqnExprOrWhere = z.union([
+//   wildcardExpr,
+//   refExpr,
+//   elementKindExpr,
+//   elementTagExpr,
+//   z.object({
+//     where: z.object({
+//       expr: modelFqnExprBase,
+//       condition: WhereOperatorSchema,
+//     }),
+//   }),
+// ])
+//
+// // Custom FqnExpr with style/property overrides
+// const customFqnExpr = z.object({
+//   custom: z.object({
+//     expr: modelFqnExprOrWhere,
+//     title: z.string().optional(),
+//     description: markdownOrString.optional(),
+//     technology: z.string().optional(),
+//     notation: z.string().optional(),
+//     notes: markdownOrString.optional(),
+//     navigateTo: viewId.optional(),
+//     shape: shape.optional(),
+//     color: color.optional(),
+//     icon: icon.optional(),
+//     iconColor: color.optional(),
+//     iconSize: size.optional(),
+//     iconPosition: iconPosition.optional(),
+//     border: border.optional(),
+//     opacity: opacity.optional(),
+//     multiple: z.boolean().optional(),
+//     size: size.optional(),
+//     padding: size.optional(),
+//     textSize: size.optional(),
+//   }),
+// })
 
 // RelationExpr including where variant (used in custom relation expr)
-const modelRelationExprOrWhere = z.union([
-  directExpr,
-  incomingExpr,
-  outgoingExpr,
-  inoutExpr,
-  z.object({
-    where: z.object({
-      expr: z.union([directExpr, incomingExpr, outgoingExpr, inoutExpr]),
-      condition: WhereOperatorSchema,
-    }),
-  }),
+const modelRelationExprAny = z.union([
+  modelRelationExprOrWhere,
+  modelRelationExprCustom,
 ])
 
 // Custom RelationExpr with property overrides
-const customRelationExpr = z.object({
-  customRelation: z.object({
-    expr: modelRelationExprOrWhere,
-    title: z.string().optional(),
-    description: markdownOrString.optional(),
-    technology: z.string().optional(),
-    notation: z.string().optional(),
-    notes: markdownOrString.optional(),
-    navigateTo: viewId.optional(),
-    color: color.optional(),
-    line: line.optional(),
-    head: arrow.optional(),
-    tail: arrow.optional(),
-  }),
-})
+// const customRelationExpr = z.object({
+//   customRelation: z.object({
+//     expr: modelRelationExprOrWhere,
+//     title: z.string().optional(),
+//     description: markdownOrString.optional(),
+//     technology: z.string().optional(),
+//     notation: z.string().optional(),
+//     notes: markdownOrString.optional(),
+//     navigateTo: viewId.optional(),
+//     color: color.optional(),
+//     line: line.optional(),
+//     head: arrow.optional(),
+//     tail: arrow.optional(),
+//   }),
+// })
 
 /**
  * Full model expression, union of all fqn and relation expression variants.
  * Replicates ModelExpression from the core.
  */
 export const ModelExpressionSchema = z.union([
-  wildcardExpr,
-  refExpr,
-  elementKindExpr,
-  elementTagExpr,
-  customFqnExpr,
-  directExpr,
-  incomingExpr,
-  outgoingExpr,
-  inoutExpr,
+  modelFqnExpr,
+  modelFqnExprCustom,
+  modelRelationExpr,
+  modelRelationExprCustom,
   whereExpr,
-  customRelationExpr,
 ])
 
 export type ModelExpressionInput = z.input<typeof ModelExpressionSchema>
@@ -469,17 +542,19 @@ export type WildcardExprData = z.infer<typeof wildcardExpr>
 export type RefExprData = z.infer<typeof refExpr>
 export type ElementKindExprData = z.infer<typeof elementKindExpr>
 export type ElementTagExprData = z.infer<typeof elementTagExpr>
-export type ModelFqnExprBaseData = z.infer<typeof modelFqnExprBase>
+export type ModelFqnExprData = z.infer<typeof modelFqnExpr>
 export type ModelFqnExprOrWhereData = z.infer<typeof modelFqnExprOrWhere>
-export type CustomFqnExprData = z.infer<typeof customFqnExpr>
+export type ModelFqnExprCustomData = z.infer<typeof modelFqnExprCustom>
+export type ModelFqnExprAnyData = z.infer<typeof modelFqnExprAny>
 
-export type DirectExprData = z.infer<typeof directExpr>
-export type IncomingExprData = z.infer<typeof incomingExpr>
-export type OutgoingExprData = z.infer<typeof outgoingExpr>
-export type InOutExprData = z.infer<typeof inoutExpr>
-export type ModelRelationExprBaseData = DirectExprData | IncomingExprData | OutgoingExprData | InOutExprData
+export type DirectExprData = z.infer<typeof modelDirectRelationExpr>
+export type IncomingExprData = z.infer<typeof modelIncomingRelationExpr>
+export type OutgoingExprData = z.infer<typeof modelOutgoingRelationExpr>
+export type InOutExprData = z.infer<typeof modelInoutRelationExpr>
+export type ModelRelationExprData = DirectExprData | IncomingExprData | OutgoingExprData | InOutExprData
 export type ModelRelationExprOrWhereData = z.infer<typeof modelRelationExprOrWhere>
-export type CustomRelationExprData = z.infer<typeof customRelationExpr>
+export type ModelRelationExprCustomData = z.infer<typeof modelRelationExprCustom>
+export type ModelRelationExprAnyData = z.infer<typeof modelRelationExprAny>
 
 // ---- Element View Rule Schemas ----
 
@@ -493,7 +568,7 @@ const includeRule = z.object({ include: z.array(ModelExpressionSchema) })
 const excludeRule = z.object({ exclude: z.array(ModelExpressionSchema) })
 
 const viewRuleStyle = z.object({
-  targets: z.array(ModelExpressionSchema),
+  targets: z.array(modelFqnExpr),
   notation: z.string().optional(),
   style: StylePropertiesSchema,
 })
@@ -503,7 +578,7 @@ const globalPredicateRule = z.object({ predicateId: z.string() })
 
 const rankValue = z.enum(['max', 'min', 'same', 'sink', 'source'])
 const viewRuleRank = z.object({
-  targets: z.array(ModelExpressionSchema),
+  targets: z.array(modelFqnExpr),
   rank: rankValue,
 })
 

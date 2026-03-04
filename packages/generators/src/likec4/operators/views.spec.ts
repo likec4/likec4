@@ -96,7 +96,7 @@ describe('view', () => {
           '''
           link ../some/relative
           link https://example.com 'repo'
-
+          
           include * -> cloud._
         }
       }"
@@ -121,7 +121,7 @@ describe('view', () => {
         view index {
           include * -> *
         }
-
+        
         view cloud {
           include *
           exclude cloud.** <-> cloud.frontend
@@ -174,7 +174,10 @@ describe('view', () => {
             { url: 'https://example.com', title: 'repo' },
           ],
         },
-        $include('*'),
+        $rules(
+          $include('*'),
+          $exclude('cloud.frontend'),
+        ),
       ),
     ).toMatchInlineSnapshot(`
       "views {
@@ -186,22 +189,25 @@ describe('view', () => {
           '''
           link ../some/relative
           link https://example.com 'repo'
-
+          
           include *
+          exclude cloud.frontend
         }
       }"
     `)
   })
 
-  it('should print style rules', () => {
+  it('should print view rules', () => {
     expect(
       view(
         'index',
         $rules(
+          $include('*', 'cloud', '* -> cloud._'),
           $style('cloud.backend', {
             iconPosition: 'right',
             multiple: true,
           }),
+          $include('* -> *', '* <-> cloud._', 'cloud.backend.api'),
           $style(['cloud.*', 'cloud._'], {
             color: 'primary',
             shape: 'bucket',
@@ -211,14 +217,60 @@ describe('view', () => {
     ).toMatchInlineSnapshot(`
       "views {
         view index {
+          include
+            *,
+            cloud,
+            * -> cloud._
+          
           style cloud.backend {
             iconPosition right
             multiple true
           }
+          include
+            * -> *,
+            * <-> cloud._,
+            cloud.backend.api
+          
           style cloud.*, cloud._ {
             shape bucket
             color primary
           }
+        }
+      }"
+    `)
+  })
+
+  it('should print view rules where', () => {
+    expect(
+      view(
+        'index',
+        $rules(
+          $include('* -> *', {
+            where: 'source.tag is #tag1',
+          }),
+          $include('cloud.backend'),
+          $include('*', {
+            where: {
+              and: [
+                'kind is not system',
+                'tag is #tag1',
+              ],
+            },
+          }),
+        ),
+      ),
+    ).toMatchInlineSnapshot(`
+      "views {
+        view index {
+          include * -> *
+            where
+              source.tag is #tag1
+          
+          include cloud.backend
+          include *
+            where
+              kind is not system
+              and tag is #tag1
         }
       }"
     `)
@@ -238,10 +290,10 @@ describe('view', () => {
       "views {
         view index {
           style cloud.backend {
-            notation ''
+            notation '
               multiline
               component
-            ''
+            '
           }
         }
       }"

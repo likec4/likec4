@@ -26,6 +26,7 @@ import {
   withctx,
 } from './base'
 import {
+  colorProperty,
   descriptionProperty,
   enumProperty,
   linksProperty,
@@ -172,16 +173,16 @@ function relationProperties(): Op<RelationshipData> {
     technologyProperty(),
     summaryProperty(),
     descriptionProperty(),
-    enumProperty('navigateTo'),
+    property('navigateTo'),
     linksProperty(),
     metadataProperty(),
     when(
       hasRelationStyle,
       body('style')(
-        enumProperty('color'),
-        enumProperty('head'),
-        enumProperty('tail'),
-        enumProperty('line'),
+        colorProperty(),
+        property('line'),
+        property('head'),
+        property('tail'),
       ),
     ),
   )

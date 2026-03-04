@@ -73,7 +73,7 @@ describe('model', () => {
         alice = actor 'Alice Title' {
           #tag1, #tag2
         }
-
+        
         cloud = system {
           #tag1
           technology 'some technology'
@@ -88,7 +88,7 @@ describe('model', () => {
             icon tech:cloudflare
           }
         }
-
+        
         backend = component {
           link ../some/relative
           link https://example.com 'repo'
@@ -140,17 +140,17 @@ describe('model', () => {
             #tag1
             description '''
               Backend **description**
-
+              
               > Blockquote
             '''
             style {
               shape component
             }
-
+            
             api = component 'Backend Title' {
               #tag2
             }
-
+            
             jobs = component 'Backend Jobs' {
               style {
                 color indigo
@@ -158,10 +158,10 @@ describe('model', () => {
             }
           }
         }
-
+        
         shopify = system {
           orders = component
-
+          
           inventory = component
         }
       }"
@@ -206,7 +206,7 @@ describe('model', () => {
     ).toMatchInlineSnapshot(`
       "model {
         alice = actor 'Alice Title'
-
+        
         cloud = system {
           #tag1
           technology 'some technology'
@@ -214,14 +214,14 @@ describe('model', () => {
             color green
             icon tech:cloudflare
           }
-
+          
           frontend = component
-
+          
           backend = component
         }
-
+        
         alice -[likes]-> cloud
-
+        
         alice -> cloud.frontend {
           link ../some/relative
           link https://example.com 'repo'
@@ -233,7 +233,7 @@ describe('model', () => {
             key2 'value3'
           }
         }
-
+        
         cloud.frontend -> cloud.backend 'requests' {
           #tag2
           technology 'HTTPS'

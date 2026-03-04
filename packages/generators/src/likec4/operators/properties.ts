@@ -41,12 +41,12 @@ export function textProperty<A>(
  */
 export function enumProperty<A, P extends keyof A & string>(
   propertyName: P,
-  keyword?: string,
+  // keyword?: string,
 ): Op<A> {
   return select(
     e => e[propertyName] as string,
     spaceBetween(
-      print(keyword ?? propertyName as string),
+      print(propertyName as string),
       print(),
     ),
   )
@@ -91,6 +91,15 @@ export const descriptionProperty = <A extends { description?: MarkdownOrString |
     'description',
     spaceBetween(
       print('description'),
+      markdownOrString(),
+    ),
+  )
+
+export const notesProperty = <A extends { notes?: MarkdownOrString | null | undefined }>(): Op<A> =>
+  property(
+    'notes',
+    spaceBetween(
+      print('notes'),
       markdownOrString(),
     ),
   )
@@ -158,20 +167,26 @@ export const tagsProperty = <A extends { tags?: readonly string[] | undefined | 
     print(v => v.map(t => `#${t}`).join(', ')),
   )
 
+type LinkLike = string | { url: string; title?: string }
+
+export function linkProperty<A extends LinkLike>(): Op<A> {
+  return spaceBetween(
+    select(
+      (l): Link => typeof l === 'string' ? { url: l } : l,
+      print('link'),
+      print(v => v.url),
+      property('title', inlineText()),
+    ),
+  )
+}
+
 export const linksProperty = <
-  A extends { links?: ReadonlyArray<string | { url: string; title?: string }> | null },
+  A extends { links?: ReadonlyArray<LinkLike> | null },
 >(): Op<A> =>
   property(
     'links',
     foreachNewLine(
-      select(
-        (l): Link => typeof l === 'string' ? { url: l } : l,
-        spaceBetween(
-          print('link'),
-          property('url'),
-          property('title', inlineText()),
-        ),
-      ),
+      linkProperty(),
     ),
   )
 
@@ -215,19 +230,20 @@ export function iconProperty<A extends { icon?: string | undefined | null }>(): 
 }
 
 type StyleProperties = z.infer<typeof StylePropertiesSchema>
+
 export function styleProperties<A extends StyleProperties>(): Op<A> {
   return lines(
-    enumProperty('shape'),
+    property('shape'),
     colorProperty(),
     iconProperty(),
-    enumProperty('iconColor'),
-    enumProperty('iconSize'),
-    enumProperty('iconPosition'),
-    enumProperty('border'),
+    property('iconColor'),
+    property('iconSize'),
+    property('iconPosition'),
+    property('border'),
     opacityProperty(),
-    enumProperty('size'),
-    enumProperty('padding'),
-    enumProperty('textSize'),
-    enumProperty('multiple'),
+    property('size'),
+    property('padding'),
+    property('textSize'),
+    property('multiple'),
   )
 }
