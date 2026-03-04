@@ -346,7 +346,7 @@ export function buildModelData(
         [_type]: 'element',
         id: viewId,
         viewOf: fqn as c4.Fqn,
-        title: `Auto / ${elements[fqn]?.title ?? fqn}`,
+        title: `Auto / ${(elements[fqn]?.title ?? fqn).replaceAll('\n', ' ')}`,
         description: null,
         rules: [
           {
