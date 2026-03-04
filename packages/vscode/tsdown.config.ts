@@ -17,6 +17,7 @@ const shared = {
   outputOptions: {
     keepNames: true,
   },
+  inlineOnly: false as const,
   external: ['vscode'],
 }
 
@@ -27,7 +28,6 @@ export default defineConfig([
     format: 'cjs',
     nodeProtocol: true,
     cjsDefault: true,
-    inlineOnly: false,
     inputOptions: {
       resolve: {
         conditionNames: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],
@@ -49,7 +49,6 @@ export default defineConfig([
     ],
     nodeProtocol: true,
     format: 'esm',
-    inlineOnly: false,
     inputOptions: {
       resolve: {
         conditionNames: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],
@@ -61,7 +60,9 @@ export default defineConfig([
     outDir: 'dist/browser',
     entry: 'src/browser/extension.ts',
     format: 'cjs',
-    inlineOnly: false,
+    noExternal: [
+      /@likec4/,
+    ],
     inputOptions: {
       platform: 'browser',
       resolve: {
@@ -77,7 +78,9 @@ export default defineConfig([
     outDir: 'dist/browser',
     entry: 'src/browser/language-server-worker.ts',
     format: 'iife',
-    inlineOnly: false,
+    noExternal: [
+      /@likec4/,
+    ],
     inputOptions: {
       resolve: {
         conditionNames: ['production', 'sources', 'worker', 'browser', 'import'],

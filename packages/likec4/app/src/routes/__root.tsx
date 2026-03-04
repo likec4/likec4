@@ -7,36 +7,13 @@
 
 import type { Fqn, NonEmptyArray, ProjectId } from '@likec4/core/types'
 import { useMantineColorScheme } from '@mantine/core'
+import type { NonEmptyArray, ProjectId } from '@likec4/core/types'
+import { MantineProvider } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { projects } from 'likec4:projects'
-import { useEffect } from 'react'
 import { map } from 'remeda'
-import z from 'zod/v4'
-
-const searchParamsSchema = z.object({
-  theme: z.literal(['light', 'dark', 'auto'])
-    .default('auto')
-    .catch('auto'),
-  dynamic: z.enum(['diagram', 'sequence'])
-    .default('diagram')
-    .catch('diagram'),
-  padding: z.number()
-    .min(0)
-    .default(20)
-    .catch(20),
-  relationships: z.string()
-    .nonempty()
-    .optional()
-    .catch(undefined)
-    .transform(v => v as Fqn | undefined),
-  focusOnElement: z.string()
-    .nonempty()
-    .optional()
-    .catch(undefined)
-    .transform(v => v as Fqn | undefined),
-})
-
-export type SearchParams = z.infer<typeof searchParamsSchema>
+import { resolveForceColorScheme, searchParamsSchema } from '../searchParams'
+import { theme as mantineTheme } from '../theme'
 
 export type Context = {
   /**
@@ -56,7 +33,7 @@ export const Route = createRootRouteWithContext<Context>()({
     middlewares: [
       stripSearchParams({
         padding: 20,
-        theme: 'auto',
+        theme: undefined,
         dynamic: 'diagram',
         relationships: undefined,
         focusOnElement: undefined,
@@ -76,24 +53,18 @@ export const Route = createRootRouteWithContext<Context>()({
 })
 
 function RootComponent() {
-  return (
-    <>
-      <Outlet />
-      <ThemeSync />
-    </>
-  )
-}
-
-const ThemeSync = () => {
   const { theme } = Route.useSearch()
-  const mantineColorScheme = useMantineColorScheme()
-
-  useEffect(() => {
-    if (!theme) {
-      return
-    }
-    mantineColorScheme.setColorScheme(theme)
-  }, [theme])
-
-  return null
+  // When ?theme= is explicitly set in URL, force that color scheme without
+  // writing to localStorage. This preserves the user's manual preference
+  // while allowing embeds to override the appearance via URL.
+  const forceColorScheme = resolveForceColorScheme(theme)
+  return (
+    <MantineProvider
+      theme={mantineTheme}
+      defaultColorScheme="auto"
+      {...(forceColorScheme && { forceColorScheme })}
+    >
+      <Outlet />
+    </MantineProvider>
+  )
 }

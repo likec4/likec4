@@ -8,6 +8,7 @@ import { createFromSources } from '../../common/createFromSources'
 import { handleInitOptions } from '../../common/handleInitOptions'
 import { type LikeC4Langium, LikeC4 } from '../../common/LikeC4'
 import type { FromWorkspaceOptions, InitOptions } from '../../common/options'
+import { configureLogger } from '../configureLogger'
 import { type CreateLanguageServiceOptions, createLanguageServices } from './createLanguageServices'
 
 export type {
@@ -27,6 +28,8 @@ export { LikeC4 } from '../../common/LikeC4'
  * @returns A Promise that resolves to a LikeC4 instance
  */
 export async function fromWorkspace(path: string, options?: FromWorkspaceOptions): Promise<LikeC4> {
+  configureLogger(options)
+
   const workspacePath = resolve(path)
   const folderUri = pathToFileURL(workspacePath).toString()
   const workspaceUri = folderUri.endsWith('/') ? folderUri : folderUri + '/'
@@ -103,6 +106,8 @@ export async function fromWorkdir(options?: FromWorkspaceOptions): Promise<LikeC
  * @returns A Promise that resolves to a LikeC4 instance
  */
 export async function fromSources(sources: Record<string, string>, options?: InitOptions): Promise<LikeC4> {
+  configureLogger(options)
+
   const logger = rootLogger.getChild('lang')
 
   const langium = createLanguageServices(

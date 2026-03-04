@@ -1,5 +1,5 @@
 import type * as yargs from 'yargs'
-import { ensureReact } from '../ensure-react'
+import { ensureReact } from '../ensure-libs'
 import { base, listen, path, port, title, useDotBin, useHashHistory, webcomponentPrefix } from '../options'
 import { handler } from './serve'
 

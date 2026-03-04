@@ -4,9 +4,9 @@ import ConfigStore from 'conf'
 import JSON5 from 'json5'
 import ky from 'ky'
 import spawn from 'nano-spawn'
-import { isEmpty, isNullish } from 'remeda'
+import { isEmptyish } from 'remeda'
 import { gt as semverGt } from 'semver'
-import { isMinimal, nodeENV } from 'std-env'
+import { isProduction, nodeENV } from 'std-env'
 import k from 'tinyrainbow'
 import type { PackageJson } from 'type-fest'
 import { name, version } from '../../../package.json' with { type: 'json' }
@@ -26,17 +26,23 @@ const ONE_DAY = 1000 * 60 * 60 * 24
 
 const ENV_CHECK_UPDATE = 'check-update'
 
-export function notifyAvailableUpdate() {
-  if (isMinimal || nodeENV === ENV_CHECK_UPDATE) {
+export async function notifyAvailableUpdate() {
+  if (isProduction || nodeENV === ENV_CHECK_UPDATE) {
     return
   }
   const lastUpdateCheck = conf.get('lastUpdateCheck')
+  if (!lastUpdateCheck) {
+    await checkAvailableUpdate(false)
+    return
+  }
   const latestVersion = conf.get('latestVersion')
-  const shouldUpdate = isEmpty(latestVersion) || isNullish(lastUpdateCheck) || (lastUpdateCheck + ONE_DAY < Date.now())
+  const shouldUpdate = isEmptyish(latestVersion) || isEmptyish(lastUpdateCheck) ||
+    (lastUpdateCheck + ONE_DAY < Date.now())
   if (shouldUpdate) {
     try {
       spawn('likec4', ['check-update'], {
         stdio: 'ignore',
+        timeout: 5_000,
         preferLocal: true,
         detached: true,
         env: {
@@ -59,8 +65,11 @@ export function notifyAvailableUpdate() {
   }
 }
 
-export async function checkAvailableUpdate() {
+export async function checkAvailableUpdate(reportUpToDate = true) {
   try {
+    conf.set({
+      lastUpdateCheck: Date.now(),
+    })
     const latest = await fetchLatestVersion()
     invariant(latest, 'No version found in latest npm')
     conf.set({
@@ -74,11 +83,11 @@ export async function checkAvailableUpdate() {
         k.reset(' → '),
         k.green(latest),
       ].join(''))
-    } else {
+    } else if (reportUpToDate) {
       boxen(k.dim(`Up to date: `) + ' ' + k.green(version))
     }
   } catch (error) {
-    logger.error(loggable(error))
+    logger.warning(loggable(error))
   }
 }
 
@@ -86,6 +95,10 @@ async function fetchLatestVersion() {
   const headers = {
     accept: 'application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*',
   }
-  let latest = await ky('https://registry.npmjs.org/likec4/latest', { headers, keepalive: true }).json<PackageJson>()
+  let latest = await ky('https://registry.npmjs.org/likec4/latest', {
+    headers,
+    timeout: 5_000,
+    keepalive: true,
+  }).json<PackageJson>()
   return latest.version
 }

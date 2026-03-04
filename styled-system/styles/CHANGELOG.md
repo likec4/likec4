@@ -1,5 +1,11 @@
 # @likec4/styles
 
+## 1.51.0
+
+### Patch Changes
+
+- [#2681](https://github.com/likec4/likec4/pull/2681) [`41ff551`](https://github.com/likec4/likec4/commit/41ff551974838696fdf4adfcd92edc30afd245c5) Thanks [@davydkov](https://github.com/davydkov)! - fix [#2637](https://github.com/likec4/likec4/pull/2637) - LikeC4 tag color was broken
+
 ## 1.50.0
 
 ## 1.49.0

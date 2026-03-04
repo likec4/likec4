@@ -175,6 +175,25 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     ])
   })
 
+  it('implicit views strip newlines from element titles', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices({
+      projectConfig: { implicitViews: true },
+    })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1 'Multi\nLine\nTitle'
+      }
+    `)
+    expect(errors).toEqual([])
+    const model = await buildModel()
+    const implicitView = model.views['__sys1']
+    expect(implicitView).toBeDefined()
+    expect(implicitView!.title).toBe('Auto / Multi Line Title')
+  })
+
   it('implicit views skip elements with explicit scoped views', async ({ expect }) => {
     const { validate, buildModel } = createTestServices({
       projectConfig: { implicitViews: true },

@@ -1,5 +1,5 @@
 import { onNextTick } from '@likec4/core/utils'
-import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
+import { type GraphvizPort, QueueGraphvizLayoter } from '@likec4/layouts'
 import type { Module } from 'langium'
 import { DocumentState, inject, WorkspaceCache } from 'langium'
 import type {
@@ -59,8 +59,8 @@ import {
   WorkspaceSymbolProvider,
 } from './shared'
 import { LikeC4DocumentValidator, registerValidationChecks } from './validation'
-import type { LikeC4Views } from './views'
-import { DefaultLikeC4Views } from './views'
+import type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
+import { DefaultLikeC4Views, WithWasmGraphviz } from './views'
 import {
   AstNodeDescriptionProvider,
   IndexManager,
@@ -71,15 +71,10 @@ import {
 
 export { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/noop'
 export { NoMCPServer } from './mcp/noop'
+export { WithGraphviz, WithWasmGraphviz } from './views'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
-
-export type LanguageServicesContext =
-  & Omit<DefaultSharedModuleContext, 'fileSystemProvider'>
-  & FileSystemModuleContext
-  & LikeC4MCPServerModuleContext
-  & LikeC4ManualLayoutsModuleContext
 
 interface LikeC4AddedSharedServices {
   lsp: {
@@ -100,8 +95,12 @@ interface LikeC4AddedSharedServices {
 }
 
 export type LikeC4SharedServices = LangiumSharedServices & LikeC4AddedSharedServices
+export type LikeC4SharedModuleContext =
+  & Omit<DefaultSharedModuleContext, 'fileSystemProvider'>
+  & FileSystemModuleContext
+  & LikeC4ManualLayoutsModuleContext
 
-function createLikeC4SharedModule(context: LanguageServicesContext): Module<
+function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
   LikeC4SharedServices,
   PartialLangiumSharedServices & LikeC4AddedSharedServices
 > {
@@ -141,6 +140,7 @@ export interface LikeC4AddedServices {
   likec4: {
     LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
+    Graphviz: GraphvizPort
     Layouter: QueueGraphvizLayoter
     DeploymentsIndex: DeploymentsIndex
     FqnIndex: FqnIndex
@@ -175,6 +175,10 @@ export interface LikeC4AddedServices {
 
 export type LikeC4Services = LangiumServices & LikeC4AddedServices
 
+export type LikeC4ServicesContext =
+  & LikeC4MCPServerModuleContext
+  & LikeC4ViewsModuleContext
+
 function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
   return (services: LikeC4Services) => new Type(services)
 }
@@ -185,7 +189,7 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
  * @internal
  */
 export function createLikeC4Module(
-  context: LikeC4MCPServerModuleContext,
+  context: LikeC4ServicesContext,
 ): Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> {
   return ({
     documentation: {
@@ -201,9 +205,10 @@ export function createLikeC4Module(
     },
     likec4: {
       LanguageServices: bind(DefaultLikeC4LanguageServices),
-      Layouter: (_services: LikeC4Services) => {
+      Graphviz: (services: LikeC4Services) => context.graphviz(services),
+      Layouter: (services: LikeC4Services) => {
         return new QueueGraphvizLayoter({
-          graphviz: new GraphvizWasmAdapter(),
+          graphviz: services.likec4.Graphviz,
         })
       },
       Views: bind(DefaultLikeC4Views),
@@ -240,6 +245,8 @@ export function createLikeC4Module(
     },
   })
 }
+
+export type LanguageServicesContext = LikeC4SharedModuleContext & LikeC4ServicesContext
 
 /**
  * Create and initialize likec4 language services with the given context
@@ -291,6 +298,7 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
       ...NoMCPServer,
       ...NoFileSystem,
       ...NoLikeC4ManualLayouts,
+      ...WithWasmGraphviz,
       ...context,
     }),
     module,

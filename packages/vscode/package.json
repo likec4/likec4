@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.50.0",
+  "version": "1.51.0",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -34,6 +34,7 @@
     "lint": "run -T eslint src/ --fix",
     "clean": "pnpm rimraf lib contrib dist src/generated",
     "package-vsix": "tsx scripts/package-vsix.mts",
+    "package": "pnpm run package-vsix",
     "vsce:pack": "pnpx vsce package",
     "vsce:publish": "pnpx vsce publish --skip-duplicate"
   },

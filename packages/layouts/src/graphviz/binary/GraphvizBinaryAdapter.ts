@@ -1,13 +1,13 @@
 import { memoizeProp } from '@likec4/core/utils'
-import { rootLogger } from '@likec4/log'
+import { loggable, rootLogger as mainLogger } from '@likec4/log'
 import spawn, { SubprocessError } from 'nano-spawn'
 import os from 'node:os'
-import { isEmpty } from 'remeda'
+import { isEmpty, randomString } from 'remeda'
 import which from 'which'
 import type { GraphvizPort } from '../GraphvizLayoter'
 import type { DotSource } from '../types'
 
-const logger = rootLogger.getChild('graphviz-binary')
+const rootLogger = mainLogger.getChild(['graphviz', 'binary'])
 
 export class GraphvizBinaryAdapter implements GraphvizPort {
   private _dotpath: string | undefined
@@ -29,6 +29,10 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     this._unflattenpath = unflatten_path
   }
 
+  get name() {
+    return 'binary'
+  }
+
   dispose(): void {
     // do nothing for now
   }
@@ -38,13 +42,13 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
   }
 
   get concurrency() {
-    return Math.max(1, os.cpus().length - 2)
+    return Math.max(1, os.availableParallelism() - 2)
   }
 
   get dotpath() {
     return this._dotpath ?? memoizeProp(this, '_dotpath', () => {
       const path = which.sync('dot')
-      logger.debug`Found ${path}`
+      rootLogger.debug`Found ${path}`
       return path
     })
   }
@@ -52,15 +56,16 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
   get unflattenpath() {
     return this._unflattenpath ?? memoizeProp(this, '_unflattenpath', () => {
       const path = which.sync('unflatten')
-      logger.debug`Found ${path}`
+      rootLogger.debug`Found ${path}`
       return path
     })
   }
 
   async unflatten(dot: DotSource): Promise<DotSource> {
     let result: string | undefined
+    const logger = rootLogger.getChild(['unflatten', randomString(4)])
     try {
-      const unflatten = await spawn(this.unflattenpath, ['-l 1', '-c 3'], {
+      const unflatten = await spawn(this.unflattenpath, ['-l', '1', '-c', '3'], {
         timeout: 10_000,
         stdin: {
           string: dot,
@@ -68,14 +73,24 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
       })
       result = unflatten.stdout
       if (!isEmpty(unflatten.stderr)) {
-        logger.warn(`Command ${unflatten.command} has stderr:\n` + unflatten.stderr)
+        logger.warn(`{command} has stderr:\n` + unflatten.stderr, {
+          command: unflatten.command,
+        })
+      } else {
+        logger.trace(`{command} succeeded in {durationMs}ms`, {
+          command: unflatten.command,
+          durationMs: Math.round(unflatten.durationMs),
+        })
       }
     } catch (error) {
-      logger.error(`FAILED GraphvizBinaryAdapter.unflatten`, { error })
+      logger.debug('FAILED DOT', { dot })
+      logger.error(loggable(error))
       if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
-        logger.warn(
-          `Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}):\n` + error.stderr,
-        )
+        logger.warn('{command} returned result but failed with exitcode {exitCode}:\n{stderr}', {
+          command: error.command,
+          exitCode: error.exitCode,
+          stderr: error.stderr,
+        })
         result = error.stdout
       }
     }
@@ -86,6 +101,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
   }
 
   async layoutJson(dot: DotSource): Promise<string> {
+    const logger = rootLogger.getChild(['layoutJson', randomString(4)])
     let result: string | undefined
     try {
       const dotcmd = await spawn(this.dotpath, ['-Tjson', '-y'], {
@@ -96,15 +112,24 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
       })
       result = dotcmd.stdout
       if (!isEmpty(dotcmd.stderr)) {
-        logger.warn(`Command ${dotcmd.command} has stderr:\n` + dotcmd.stderr)
+        logger.warn(`{command} has stderr:\n` + dotcmd.stderr, {
+          command: dotcmd.command,
+        })
+      } else {
+        logger.trace(`{command} succeeded in {durationMs}ms`, {
+          command: dotcmd.command,
+          durationMs: Math.round(dotcmd.durationMs),
+        })
       }
     } catch (error) {
-      logger.error(`FAILED GraphvizBinaryAdapter.layoutJson`, { error })
-      logger.warn('FAILED DOT:\n' + dot)
+      logger.debug('FAILED DOT', { dot })
+      logger.error(loggable(error))
       if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
-        logger.warn(
-          `Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}): "${error.stderr}"`,
-        )
+        logger.warn('{command} returned result but failed with exitcode {exitCode}:\n{stderr}', {
+          command: error.command,
+          exitCode: error.exitCode,
+          stderr: error.stderr,
+        })
         result = error.stdout
       } else {
         throw error
@@ -118,25 +143,35 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
   }
 
   async svg(dot: DotSource): Promise<string> {
+    const logger = rootLogger.getChild(['svg', randomString(4)])
     let result: string | undefined
     try {
-      const dotcmd = await spawn(this.dotpath, ['-Tsvg', '-y'], {
+      const cmd = await spawn(this.dotpath, ['-Tsvg', '-y'], {
         timeout: 10_000,
         stdin: {
           string: dot,
         },
       })
-      result = dotcmd.stdout
-      if (!isEmpty(dotcmd.stderr)) {
-        logger.warn(`Command ${dotcmd.command} has stderr:\n` + dotcmd.stderr)
+      result = cmd.stdout
+      if (!isEmpty(cmd.stderr)) {
+        logger.warn(`{command} has stderr:\n` + cmd.stderr, {
+          command: cmd.command,
+        })
+      } else {
+        logger.trace(`{command} succeeded in {durationMs}ms`, {
+          command: cmd.command,
+          durationMs: Math.round(cmd.durationMs),
+        })
       }
     } catch (error) {
-      logger.error(`FAILED GraphvizBinaryAdapter.svg`, { error })
-      logger.warn('FAILED DOT:\n' + dot)
+      logger.debug('FAILED DOT', { dot })
+      logger.error(loggable(error))
       if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
-        logger.warn(
-          `Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}):\n` + error.stderr,
-        )
+        logger.warn('{command} returned result but failed with exitcode {exitCode}:\n{stderr}', {
+          command: error.command,
+          exitCode: error.exitCode,
+          stderr: error.stderr,
+        })
         result = error.stdout
       } else {
         throw error

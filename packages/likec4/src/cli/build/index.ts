@@ -5,7 +5,7 @@ import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { createLikeC4Logger } from '../../logger'
 import { viteBuild } from '../../vite/vite-build'
-import { ensureReact } from '../ensure-react'
+import { ensureReact } from '../ensure-libs'
 import {
   base,
   outputSingleFile,

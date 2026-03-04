@@ -1,3 +1,21 @@
+## [1.51.0](https://github.com/likec4/likec4/compare/v1.50.0...v1.51.0) (2026-03-04)
+
+### 🚀 Features
+
+- **`likec4 lsp` CLI Command**:\
+  Added new `likec4 lsp` command to start the LikeC4 language server directly from the CLI. The standalone `likec4-language-server` binary is now deprecated. [#2681](https://github.com/likec4/likec4/pull/2681)
+
+- **Improved `?theme=` URL Parameter**:\
+  Theme preferences specified via the `?theme=` URL parameter are no longer persisted to localStorage — the forced color scheme applies only while the parameter is present in the URL. Thanks [@m9810223](https://github.com/m9810223), [#2645](https://github.com/likec4/likec4/pull/2645)
+
+### 🐞 Bug Fixes
+
+- Fixed "View title cannot contain newlines" error when using implicit views with elements that have multi-line titles, closes [#2669](https://github.com/likec4/likec4/issues/2669), [#2672](https://github.com/likec4/likec4/issues/2672)
+
+- Fixed LikeC4 tag color being broken, closes [#2637](https://github.com/likec4/likec4/issues/2637)
+
+
+
 ## [1.50.0](https://github.com/likec4/likec4/compare/v1.49.0...v1.50.0) (2026-02-21)
 
 ### 🚀 Features

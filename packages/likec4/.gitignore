@@ -18,5 +18,6 @@ vite-plugin-modules.d.ts
 config/package.json
 model/builder/package.json
 model/package.json
+react/package.json
 vite-plugin/internal/package.json
 vite-plugin/package.json

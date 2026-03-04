@@ -75,7 +75,7 @@ async function runCustomGenerator({
   const createdDirs = new Set<string>()
   const project = languageServices.project(model.project.id)
   const projectId = model.project.id
-  logger.debug(`${k.dim('runnig for project:')} ${k.green(project.id)}`)
+  logger.debug(`${k.dim('running for project:')} ${k.green(project.id)}`)
   await Promise.resolve().then(() =>
     generator({
       likec4model: model,

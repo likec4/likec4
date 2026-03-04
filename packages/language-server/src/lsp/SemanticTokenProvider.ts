@@ -1,20 +1,12 @@
 import { isAnyOf } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
-import { type AstNode, type CstNode, type LangiumDocument, type Properties, DocumentState } from 'langium'
+import type { AstNode, CstNode, Properties } from 'langium'
 import {
   type SemanticTokenAcceptor,
   AbstractSemanticTokenProvider,
 } from 'langium/lsp'
 import { isTruthy } from 'remeda'
 import {
-  type SemanticTokensDeltaParams,
-  type SemanticTokensParams,
-  type SemanticTokensRangeParams,
-  CancellationToken,
-} from 'vscode-languageserver-protocol'
-import {
-  type SemanticTokens,
-  type SemanticTokensDelta,
   SemanticTokenModifiers,
   SemanticTokenTypes,
 } from 'vscode-languageserver-types'
@@ -130,33 +122,33 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
 
     when(isAnyOf(ast.isNavigateToProperty, ast.isRelationNavigateToProperty), mark => {
       mark.property('value').readonly.definition.interface()
-      stopHighlight()
     })
     when(ast.isWildcardExpression, mark => {
       mark.cst().readonly.definition.variable()
       stopHighlight()
     })
-    when(ast.isFqnRefExpr, mark => {
-      if (!mark.node.selector) {
-        return
-      }
-      if (mark.node.ref.parent) {
-        mark.property('selector').property()
-      } else {
-        mark.property('selector').readonly.definition.variable()
-      }
-    })
+    when(
+      ast.isFqnRefExpr,
+      mark => {
+        if (!mark.node.selector) {
+          return
+        }
+        if (mark.node.ref.parent) {
+          mark.property('selector').property()
+        } else {
+          mark.property('selector').readonly.definition.variable()
+        }
+      },
+    )
     when(ast.isTagRef, mark => {
       mark.cst().type()
-      stopHighlight()
     })
     when(ast.isRelationKindDotRef, mark => {
       mark.cst().function()
-      stopHighlight()
     })
 
     when(ast.isWhereRelationKind, mark => {
-      if (isTruthy(mark.node.value)) {
+      if (isTruthy(mark.node.value?.$refText)) {
         mark.property('value').function()
       }
     })
@@ -195,16 +187,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         mark.property('value').property()
         return
       }
-      const ref = mark.node.$cstNode?.text
+      const ref = mark.node.value.$refText
       if (ref !== 'this' && ref !== 'it') {
         mark.property('value').readonly.definition.variable()
       }
-      stopHighlight()
     })
     when(ast.isStrictFqnElementRef, mark => {
       if (!mark.node.parent) {
         mark.property('el').readonly.definition.variable()
-        stopHighlight()
       } else {
         mark.property('el').property()
       }
@@ -246,22 +236,33 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         mark.property('value').string()
       }
     })
-    when(ast.isColorProperty, mark => {
-      if (isTruthy(mark.node.customColor)) {
-        mark.property('customColor').enum()
-      }
-      if (isTruthy(mark.node.themeColor)) {
-        mark.property('themeColor').enum()
-      }
-    })
-    when(ast.isIconColorProperty, mark => {
-      if (isTruthy(mark.node.customColor)) {
-        mark.property('customColor').enum()
-      }
-      if (isTruthy(mark.node.themeColor)) {
-        mark.property('themeColor').enum()
-      }
-    })
+    when(
+      isAnyOf(
+        ast.isColorProperty,
+        ast.isIconColorProperty,
+      ),
+      mark => {
+        if (isTruthy(mark.node.customColor)) {
+          mark.property('customColor').enum()
+        }
+        if (isTruthy(mark.node.themeColor)) {
+          mark.property('themeColor').enum()
+        }
+      },
+    )
+
+    when(
+      (n): n is ast.AnyProperty =>
+        ast.isAnyProperty(n) &&
+        !isAnyOf(
+          ast.isMetadataProperty,
+          ast.isElementStyleProperty,
+          ast.isRelationStyleProperty,
+        )(n) &&
+        isTruthy(n.key),
+      mark => mark.property('key').property(),
+    )
+
     when(
       isAnyOf(
         ast.isShapeProperty,
@@ -270,6 +271,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         ast.isBorderProperty,
         ast.isSizeProperty,
         ast.isIconPositionProperty,
+        ast.isIconSizeProperty,
         ast.isDynamicViewDisplayVariantProperty,
       ),
       mark => {
@@ -278,50 +280,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         }
       },
     )
-  }
-
-  override async semanticHighlight(
-    document: LangiumDocument,
-    params: SemanticTokensParams,
-    cancelToken = CancellationToken.None,
-  ): Promise<SemanticTokens> {
-    if (document.state < DocumentState.Linked) {
-      await this.ensureState(document, cancelToken)
-    }
-    return await super.semanticHighlight(document, params, cancelToken)
-  }
-
-  override async semanticHighlightRange(
-    document: LangiumDocument,
-    params: SemanticTokensRangeParams,
-    cancelToken = CancellationToken.None,
-  ): Promise<SemanticTokens> {
-    if (document.state < DocumentState.Linked) {
-      await this.ensureState(document, cancelToken)
-    }
-    return await super.semanticHighlightRange(document, params, cancelToken)
-  }
-
-  override async semanticHighlightDelta(
-    document: LangiumDocument,
-    params: SemanticTokensDeltaParams,
-    cancelToken = CancellationToken.None,
-  ): Promise<SemanticTokens | SemanticTokensDelta> {
-    if (document.state < DocumentState.Linked) {
-      await this.ensureState(document, cancelToken)
-    }
-    return await super.semanticHighlightDelta(document, params, cancelToken)
-  }
-
-  protected async ensureState(
-    document: LangiumDocument,
-    cancelToken: CancellationToken,
-  ): Promise<void> {
-    if (document.state < DocumentState.Linked) {
-      logger.debug`waiting for document ${document.uri.path} to be ${'Linked'}`
-      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Linked, document.uri, cancelToken)
-      logger.debug`document ${document.uri.path} is ${'Linked'}`
-    }
   }
 
   protected override highlightElement(
@@ -333,22 +291,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     }
     if (ast.isLikeC4View(node)) {
       return this.highlightView(node)
-    }
-
-    if (
-      ast.isAnyProperty(node) &&
-      !isAnyOf(
-        ast.isMetadataProperty,
-        ast.isElementStyleProperty,
-        ast.isRelationStyleProperty,
-      )(node) &&
-      isTruthy(node.key)
-    ) {
-      acceptor({
-        node,
-        property: 'key',
-        type: SemanticTokenTypes.property,
-      })
     }
 
     let m: Highlighter<AstNode>

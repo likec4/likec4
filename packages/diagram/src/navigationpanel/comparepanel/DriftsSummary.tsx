@@ -129,7 +129,7 @@ export function DriftsSummary() {
   }
 
   return (
-    <AnimatePresence propagate mode="wait">
+    <AnimatePresence>
       <m.div
         key={`drifts-summary`}
         layout="size"
@@ -149,22 +149,22 @@ export function DriftsSummary() {
       >
         {hasAtLeast(view, 1) && <ViewDrifts drifts={view} />}
         {nodes.length > 0 && (
-          <m.div key={`nodes-drifts`} layout="size">
+          <m.div key={`nodes-drifts`} layout>
             <SectionHeader>Elements:</SectionHeader>
-            <m.div layout="size" className={vstack({ mt: '2', gap: '2' })}>
+            <div className={vstack({ mt: '2', gap: '2' })}>
               {map(
                 nodes,
                 (node) => <NodeDrifts key={node.id} {...node} {...handlers} />,
               )}
-            </m.div>
+            </div>
           </m.div>
         )}
         {edges.length > 0 && (
-          <m.div key={`edges-drifts`} layout="size">
+          <m.div key={`edges-drifts`} layout>
             <SectionHeader>Relationships:</SectionHeader>
-            <m.div layout="size" className={vstack({ mt: '2', gap: '2' })}>
+            <div className={vstack({ mt: '2', gap: '2' })}>
               {map(edges, (edge) => <EdgeDrifts key={edge.edgeId} {...edge} {...handlers} />)}
-            </m.div>
+            </div>
           </m.div>
         )}
       </m.div>
@@ -197,9 +197,10 @@ function NodeDrifts(
     drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason>
   } & Handlers,
 ) {
+  const key = `node-drifts-${id}`
   return (
     <DriftsGroup
-      key={`node-drifts-${id}`}
+      key={key}
       data-drift-type="node"
       data-drift-id={id}
       {...handlers}
@@ -219,7 +220,7 @@ function NodeDrifts(
         fontWeight={'medium'}>
         {name}
       </Txt>
-      {map(drifts, (drift) => <DriftLabel key={id + drift}>{drift}</DriftLabel>)}
+      {map(drifts, (drift, i) => <DriftLabel key={key + drift + i}>{drift}</DriftLabel>)}
     </DriftsGroup>
   )
 }
@@ -228,16 +229,17 @@ function EdgeDrifts({ edgeId, drifts, ...handlers }: {
   edgeId: EdgeId
   drifts: NonEmptyReadonlyArray<DiagramEdgeDriftReason>
 } & Handlers) {
+  const key = `edge-drifts-${edgeId}`
   return (
     <DriftsGroup
-      key={`edge-drifts-${edgeId}`}
+      key={key}
       data-drift-type="edge"
       data-drift-id={edgeId}
       {...handlers}
     >
-      {map(drifts, (drift) => (
+      {map(drifts, (drift, i) => (
         <DriftLabel
-          key={edgeId + drift}>
+          key={key + drift + i}>
           {drift}
         </DriftLabel>
       ))}
@@ -263,7 +265,7 @@ const DriftsGroup = styled(m.div, {
   defaultProps: {
     className: 'group',
     variants,
-    layout: 'size',
+    layout: true,
     initial: 'initial',
     animate: 'animate',
     exit: 'exit',
