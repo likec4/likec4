@@ -36,15 +36,15 @@ export const TriggerWalkthroughButton = forwardRef<HTMLButtonElement, ButtonProp
 ))
 
 function StartWalkthroughButton() {
-  const { enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
+  const { enableCompareWithLatest } = useEnabledFeatures()
   const diagram = useDiagram()
   const actor = useNavigationActor()
 
   let tooltipLabel = 'Start Dynamic View Walkthrough'
   switch (true) {
-    case !enableReadOnly:
-      tooltipLabel = 'Walkthrough not available in Edit mode'
-      break
+    // case !enableReadOnly:
+    //   tooltipLabel = 'Walkthrough not available in Edit mode'
+    //   break
     case enableCompareWithLatest:
       tooltipLabel = 'Walkthrough not available when Compare is active'
       break
@@ -63,7 +63,7 @@ function StartWalkthroughButton() {
         exit={{ opacity: 0, translateX: -20 }}
         size="compact-xs"
         h={26}
-        disabled={!enableReadOnly || enableCompareWithLatest}
+        disabled={enableCompareWithLatest}
         classNames={{
           label: css({
             display: {

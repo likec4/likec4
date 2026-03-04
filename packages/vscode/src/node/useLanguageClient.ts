@@ -20,6 +20,12 @@ import { isLikeC4Source } from '../utils'
 
 const useLanguageClient = createSingletonComposable(() => {
   const serverModule = extensionContext.value!.asAbsolutePath(
+    // path.join(
+    //   'node_modules',
+    //   'likec4',
+    //   'bin',
+    //   'likec4.mjs',
+    // ),
     path.join(
       'dist',
       'node',
@@ -33,6 +39,14 @@ const useLanguageClient = createSingletonComposable(() => {
     run: {
       module: serverModule,
       transport: TransportKind.ipc,
+      runtime: 'node',
+      // args: [
+      //   'lsp',
+      //   '--node-ipc',
+      //   '--log-level',
+      //   isDev ? 'trace' : 'info',
+      //   ...config.graphviz.mode === 'binary' ? ['--use-dot'] : [],
+      // ],
       options: {
         execArgv: ['--enable-source-maps'],
       },
@@ -41,6 +55,13 @@ const useLanguageClient = createSingletonComposable(() => {
       module: serverModule,
       runtime: 'node',
       transport: TransportKind.ipc,
+      // args: [
+      //   'lsp',
+      //   '--node-ipc',
+      //   '--log-level',
+      //   isDev ? 'trace' : 'debug',
+      //   ...config.graphviz.mode === 'binary' ? ['--use-dot'] : [],
+      // ],
       options: {
         detached: false,
         env: {

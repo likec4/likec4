@@ -316,9 +316,6 @@ catalogs:
     ohash:
       specifier: ^2.0.11
       version: 2.0.11
-    p-debounce:
-      specifier: 5.1.0
-      version: 5.1.0
     p-limit:
       specifier: 7.3.0
       version: 7.3.0
@@ -347,8 +344,8 @@ catalogs:
       specifier: ^4.1.1
       version: 4.1.1
     tinyrainbow:
-      specifier: ^2.0.0
-      version: 2.0.0
+      specifier: ^3.0.3
+      version: 3.0.3
     ufo:
       specifier: 1.6.3
       version: 1.6.3
@@ -359,9 +356,6 @@ catalogs:
     birpc:
       specifier: ^4.0.0
       version: 4.0.0
-    rollup:
-      specifier: ^4.57.1
-      version: 4.57.1
     vite:
       specifier: ^7.3.1
       version: 7.3.1
@@ -431,9 +425,9 @@ overrides:
   vscode-oniguruma: 2.0.1
   vscode-uri: 3.1.0
   type-fest: ^4.41.0
-  turbo: 2.8.10
+  turbo: 2.8.12
   sharp: 0.34.5
-  caniuse-lite: ^1.0.30001770
+  caniuse-lite: ^1.0.30001775
   mnemonist: 0.40.3
 
 patchedDependencies:
@@ -464,8 +458,8 @@ importers:
         specifier: catalog:vitest
         version: 4.0.18(vitest@4.0.18)
       dprint:
-        specifier: ^0.51.1
-        version: 0.51.1
+        specifier: ^0.52.0
+        version: 0.52.0
       execa:
         specifier: ^9.6.0
         version: 9.6.0
@@ -494,8 +488,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -782,8 +776,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -937,8 +931,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1076,8 +1070,8 @@ importers:
         specifier: catalog:utils
         version: 2.33.6
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1344,6 +1338,9 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
+      '@msgpack/msgpack':
+        specifier: ^3.1.2
+        version: 3.1.2
       '@smithy/util-base64':
         specifier: ^4.3.0
         version: 4.3.0
@@ -1353,6 +1350,9 @@ importers:
       defu:
         specifier: catalog:utils
         version: 6.1.4
+      fast-equals:
+        specifier: catalog:utils
+        version: 6.0.0
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.3)
@@ -1362,6 +1362,9 @@ importers:
       immer:
         specifier: catalog:utils
         version: 11.1.4
+      indent-string:
+        specifier: ^5.0.0
+        version: 5.0.0
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -1371,12 +1374,30 @@ importers:
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
+      p-queue:
+        specifier: catalog:utils
+        version: 8.1.1
+      picomatch:
+        specifier: catalog:externals
+        version: 4.0.3
+      pretty-ms:
+        specifier: ^9.3.0
+        version: 9.3.0
+      remeda:
+        specifier: catalog:utils
+        version: 2.33.6
       std-env:
         specifier: catalog:externals
         version: 3.10.0
+      strip-indent:
+        specifier: catalog:utils
+        version: 4.1.1
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      ufo:
+        specifier: catalog:utils
+        version: 1.6.3
       vscode-jsonrpc:
         specifier: 8.2.1
         version: 8.2.1
@@ -1414,9 +1435,6 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
         version: 1.27.0(zod@3.25.76)
-      '@msgpack/msgpack':
-        specifier: ^3.1.2
-        version: 3.1.2
       '@types/natural-compare-lite':
         specifier: catalog:utils
         version: 1.4.2
@@ -1438,12 +1456,6 @@ importers:
       esbuild:
         specifier: 0.27.3
         version: 0.27.3
-      fast-equals:
-        specifier: catalog:utils
-        version: 6.0.0
-      indent-string:
-        specifier: ^5.0.0
-        version: 5.0.0
       langium-cli:
         specifier: catalog:langium
         version: 3.5.2
@@ -1453,39 +1465,15 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.43.0(oxlint-tsgolint@0.11.5)
-      p-debounce:
-        specifier: catalog:utils
-        version: 5.1.0
-      p-queue:
-        specifier: catalog:utils
-        version: 8.1.1
-      p-timeout:
-        specifier: catalog:utils
-        version: 7.0.1
-      picomatch:
-        specifier: catalog:externals
-        version: 4.0.3
-      pretty-ms:
-        specifier: ^9.3.0
-        version: 9.3.0
-      remeda:
-        specifier: catalog:utils
-        version: 2.33.6
-      strip-indent:
-        specifier: catalog:utils
-        version: 4.1.1
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
-      ufo:
-        specifier: catalog:utils
-        version: 1.6.3
       vitest:
         specifier: catalog:vitest
         version: 4.0.18(@types/node@22.19.11)(@vitest/ui@4.0.18)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
@@ -1530,10 +1518,13 @@ importers:
         version: 3.10.0
       tinyrainbow:
         specifier: catalog:utils
-        version: 2.0.0
+        version: 3.0.3
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      ufo:
+        specifier: catalog:utils
+        version: 1.6.3
       vscode-languageserver-types:
         specifier: 3.17.5
         version: 3.17.5
@@ -1557,8 +1548,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1633,8 +1624,8 @@ importers:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260221.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1656,9 +1647,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 5.1.4(vite@7.3.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
-      boxen:
-        specifier: ^8.0.1
-        version: 8.0.1
       bundle-require:
         specifier: catalog:externals
         version: 5.1.0(esbuild@0.27.3)
@@ -1677,9 +1665,6 @@ importers:
       playwright:
         specifier: 'catalog:'
         version: 1.58.2
-      rollup:
-        specifier: catalog:vite
-        version: 4.57.1
       std-env:
         specifier: catalog:externals
         version: 3.10.0
@@ -1804,6 +1789,9 @@ importers:
       birpc:
         specifier: catalog:vite
         version: 4.0.0
+      boxen:
+        specifier: ^8.0.1
+        version: 8.0.1
       clsx:
         specifier: catalog:react
         version: 2.1.1
@@ -1907,8 +1895,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1953,10 +1941,6 @@ importers:
         version: 8.8.5
 
   packages/log:
-    dependencies:
-      '@logtape/logtape':
-        specifier: catalog:utils
-        version: 1.3.7
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1964,6 +1948,9 @@ importers:
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@logtape/logtape':
+        specifier: catalog:utils
+        version: 1.3.7
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.11
@@ -2010,6 +1997,9 @@ importers:
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../language-server
+      '@likec4/language-services':
+        specifier: workspace:*
+        version: link:../language-services
       '@likec4/layouts':
         specifier: workspace:*
         version: link:../layouts
@@ -2034,12 +2024,15 @@ importers:
       remeda:
         specifier: catalog:utils
         version: 2.33.6
+      tinyrainbow:
+        specifier: catalog:utils
+        version: 3.0.3
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2114,8 +2107,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2192,7 +2185,7 @@ importers:
         version: 4.1.1
       tinyrainbow:
         specifier: catalog:utils
-        version: 2.0.0
+        version: 3.0.3
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -2231,8 +2224,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2349,8 +2342,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.8.10
-        version: 2.8.10
+        specifier: 2.8.12
+        version: 2.8.12
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -3412,65 +3405,65 @@ packages:
     resolution: {integrity: sha512-mepCf/e9+SKYy1d02/UkvSy6+6MoyXhVxP8lLDfA7BPE1X1d4dR0sZznmbM8/XVJ1GPM+Svnx7Xj6ZweByWUkw==}
     engines: {node: '>17.0.0'}
 
-  '@dprint/darwin-arm64@0.51.1':
-    resolution: {integrity: sha512-C7fkaz0/NGf/X4G9Cq65izdJgerND5jWShOaPiOgGs4A0CyCMKMLRd45m3xKIttuO8x0IQiZVixD22qmVglXmQ==}
+  '@dprint/darwin-arm64@0.52.0':
+    resolution: {integrity: sha512-HHpmHCeFw1V9qUU0pJrz7LihrMgQJ5DOejfI3GRCJOd2ue3Api3/ZrzNSIqUbnx/j0RT5c7zxZR5aTE0RHwRFQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@dprint/darwin-x64@0.51.1':
-    resolution: {integrity: sha512-/CESb4SJejshTWb/nO2gucrioKdLD/fK2gKB5Immi4XecAjhkV1HZpUMRLsIeVDQ6ha7xktKbnnvudJRI0maSg==}
+  '@dprint/darwin-x64@0.52.0':
+    resolution: {integrity: sha512-ZuoYH/hyzFhwwFUmykkm1QvLk9u7zxpKL6M8r1fY+lINucujIoGZxW1PjRbbIXaST6nDLbQB21P7LyNncAByOg==}
     cpu: [x64]
     os: [darwin]
 
-  '@dprint/linux-arm64-glibc@0.51.1':
-    resolution: {integrity: sha512-W+QD/4TkQKMPq02uz+ZIz/EI91YEtS2zHBu/Jihx2lfNh3HjUKgyY1KfqCTg2WGJVDkJtPc5KDw+M8yd4rI+Rg==}
+  '@dprint/linux-arm64-glibc@0.52.0':
+    resolution: {integrity: sha512-waghQcB32CLMuCxnVRQktc7U1S2qsL4spUmvCMyu4ufhZqXf4rQn07L1NcSmQOap40q9Db8ZBmLHfHm1Kab6uA==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@dprint/linux-arm64-musl@0.51.1':
-    resolution: {integrity: sha512-P4Cfn8wrdSvdoMoz0HtsC5zZpbh8Kk3OjRzgG4qs/gub5Ba3CCLcVaQvQmIOCvgPzdhPB41eSn5qAK87mh7vCQ==}
+  '@dprint/linux-arm64-musl@0.52.0':
+    resolution: {integrity: sha512-8ml2DmF8i7eEou1G5nqgMMhRir89Fsd9cMLZRPZN/FSw6Nc3vAhk2MqZIrYk2DGfoWts7jis6XvEu3/TwMP8fw==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@dprint/linux-loong64-glibc@0.51.1':
-    resolution: {integrity: sha512-dxDShELBrSGB9PktRqhYrm1UWCL+7N430rGuDTFg+i4d1wL4JD7EI5NDS/5IVbg3lrKJUu6gAJoY9NWF4sZ0mQ==}
+  '@dprint/linux-loong64-glibc@0.52.0':
+    resolution: {integrity: sha512-tKj7Bwtcf/zNa1onoshYfQ8CaYz0N6BRYKsovop1H1d2dsRBYAKkR/FvTaPRJp1+Sx7Lc0RjRllFezkhLMRxPw==}
     cpu: [loong64]
     os: [linux]
     libc: [glibc]
 
-  '@dprint/linux-loong64-musl@0.51.1':
-    resolution: {integrity: sha512-l+uNPzUBNxkywGN1HgvTV0CzUDpzXC+s6VEvjYRdVAEKl9TAsIfLMfZifS8rnlOi9hz/0sckmpny+wL40G6dhQ==}
+  '@dprint/linux-loong64-musl@0.52.0':
+    resolution: {integrity: sha512-8X+ICN/Pc4B+Zog2UXNDJph5uKLf0VVUItYEQbdbwqsWGzPa27Kqri5ainlFzaDs5TFkJHQKQlphg+TLyxBQ7A==}
     cpu: [loong64]
     os: [linux]
     libc: [musl]
 
-  '@dprint/linux-riscv64-glibc@0.51.1':
-    resolution: {integrity: sha512-YI6SemJRMsLUrtognhkAYOJ67j/AkiufHfx6+cPv/7qO6zBoBL6otR1e5yFYvAgEJOzRZD5g51EdqCcuK19B+g==}
+  '@dprint/linux-riscv64-glibc@0.52.0':
+    resolution: {integrity: sha512-uQb2VqSnznfZHhrAKLxpjXMc7/c3AYepllVUhcGCdrTVp1fb7inHEilT2wSXUjOipBbfPG33cZWRzAgc5/Effg==}
     cpu: [riscv64]
     os: [linux]
     libc: [glibc]
 
-  '@dprint/linux-x64-glibc@0.51.1':
-    resolution: {integrity: sha512-Hm9ntOWeclXU6/rZGYIN2XjuAhsRUZ77lRJC5EiM1rP6Ayh0J/YMsDdqlPAs+xZGdFFzt8ZeUpqJJJsbc54ZjQ==}
+  '@dprint/linux-x64-glibc@0.52.0':
+    resolution: {integrity: sha512-Yh3fZYUcHmII+swTUh0qgf0lEPrz4+7v3tq+vqXR8/xa3Sx8QH5MQJsJDw8Ll1mmKX5HrkBNxA5rC1lIDuFn9g==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@dprint/linux-x64-musl@0.51.1':
-    resolution: {integrity: sha512-iUs/9Z4Ky6+2GAK+i1jF1ZwM27CSIGaqw3LxTXtmE8eBCRwyCW+opzn9bzaFtlT9REUAGMC5PXihAPmzP3ttWg==}
+  '@dprint/linux-x64-musl@0.52.0':
+    resolution: {integrity: sha512-zdcgL6+PRjyZ4HVll9DuIn2ZnnxKuU0cwXtpfUZNdy+xRh1+OedUY5aZQRDN4163vkLxV9znXQT/TS0+giph1g==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@dprint/win32-arm64@0.51.1':
-    resolution: {integrity: sha512-oXjEL7Blf/160/j7U8MapRzSOVQvLIdAKEZbslIHA4Fwj10fvoDizqpfVU/aVj/BVrlIcZ/+AH8kfSC9XAyjLw==}
+  '@dprint/win32-arm64@0.52.0':
+    resolution: {integrity: sha512-rQGhSbl2pcnU4Tl3xXJSPRi1smfIIf7XhVwzNOG7vcSExfcK8yYrrCS3z4VImYKqhI1kvv6gSfnIligtoyaX/g==}
     cpu: [arm64]
     os: [win32]
 
-  '@dprint/win32-x64@0.51.1':
-    resolution: {integrity: sha512-RM9thb/+Jm6GkXJS+eW+0Pzmz2PNeDk8ZOWcjunE1jv2RabHgm+GbeGpS+WZPOM9W3LSntswv6f4wjzfUkWD0g==}
+  '@dprint/win32-x64@0.52.0':
+    resolution: {integrity: sha512-Bi4kW6z9eVtRdNSztSvjjYET4SQzX/OYqsexVyppxv24m5RNOG1h+c9F5MFJpYy9LqQBAKHOQfkzQwPrdgNOXQ==}
     cpu: [x64]
     os: [win32]
 
@@ -5645,8 +5638,8 @@ packages:
   caniuse-api@3.0.0:
     resolution: {integrity: sha512-bsTwuIg/BZZK/vreVTYYbSWoe2F+71P7K5QGEX+pT250DZbfU1MQ5prOKpPR+LL6uWKK3KMwMCAS74QB3Um1uw==}
 
-  caniuse-lite@1.0.30001770:
-    resolution: {integrity: sha512-x/2CLQ1jHENRbHg5PSId2sXq1CIO1CISvwWAj027ltMVG2UNgW+w9oH2+HzgEIRFembL8bUlXtfbBHR1fCg2xw==}
+  caniuse-lite@1.0.30001775:
+    resolution: {integrity: sha512-s3Qv7Lht9zbVKE9XoTyRG6wVDCKdtOFIjBGg3+Yhn6JaytuNKPIjBMTMIY1AnOH3seL5mvF+x33oGAyK3hVt3A==}
 
   canvaskit-wasm@0.40.0:
     resolution: {integrity: sha512-Od2o+ZmoEw9PBdN/yCGvzfu0WVqlufBPEWNG452wY7E9aT8RBE+ChpZF526doOlg7zumO4iCS+RAeht4P0Gbpw==}
@@ -6085,8 +6078,8 @@ packages:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
     engines: {node: '>=10'}
 
-  dprint@0.51.1:
-    resolution: {integrity: sha512-CEx+wYARxLAe9o7RCZ77GKae6DF7qjn5Rd98xbWdA3hB4PFBr+kHwLANmNHscNumBAIrCg5ZJj/Kz+OYbJ+GBA==}
+  dprint@0.52.0:
+    resolution: {integrity: sha512-qXf3B6/G4E6SJKngfo7a0z1ja21o/JJ55cF8xyhyIqvJGrpJ96vhXLr37RrbWBWIj8eV+hquBkCAV6jCwenQYA==}
     hasBin: true
 
   dset@3.1.4:
@@ -7614,10 +7607,6 @@ packages:
       oxlint-tsgolint:
         optional: true
 
-  p-debounce@5.1.0:
-    resolution: {integrity: sha512-3DNQmB7HPRMSuZ9P8JQFzEr7156s1S5Lqpi3mSrsZe5AHvl4ONfGrdB5azWqeOpNejQiemgQBkyU+IDKR5nwyg==}
-    engines: {node: '>=20'}
-
   p-filter@2.1.0:
     resolution: {integrity: sha512-ZBxxZ5sL2HghephhpGAQdoskxplTwr7ICaehZwLIlfL6acuVgZPm8yBNuRAFBGEqtD/hmUeq9eqLg2ys9Xr/yw==}
     engines: {node: '>=8'}
@@ -8771,38 +8760,38 @@ packages:
   tty-browserify@0.0.1:
     resolution: {integrity: sha512-C3TaO7K81YvjCgQH9Q1S3R3P3BtN3RIM8n+OvX4il1K1zgE8ZhI0op7kClgkxtutIE8hQrcrHBXvIheqKUUCxw==}
 
-  turbo-darwin-64@2.8.10:
-    resolution: {integrity: sha512-A03fXh+B7S8mL3PbdhTd+0UsaGrhfyPkODvzBDpKRY7bbeac4MDFpJ7I+Slf2oSkCEeSvHKR7Z4U71uKRUfX7g==}
+  turbo-darwin-64@2.8.12:
+    resolution: {integrity: sha512-EiHJmW2MeQQx+21x8hjMHw/uPhXt9PIxvDrxzOtyVwrXzL0tQmsxtO4qHf2l7uA+K6PUJ4+TjY1MHZDuCvWXrw==}
     cpu: [x64]
     os: [darwin]
 
-  turbo-darwin-arm64@2.8.10:
-    resolution: {integrity: sha512-sidzowgWL3s5xCHLeqwC9M3s9M0i16W1nuQF3Mc7fPHpZ+YPohvcbVFBB2uoRRHYZg6yBnwD4gyUHKTeXfwtXA==}
+  turbo-darwin-arm64@2.8.12:
+    resolution: {integrity: sha512-cbqqGN0vd7ly2TeuaM8k9AK9u1CABO4kBA5KPSqovTiLL3sORccn/mZzJSbvQf0EsYRfU34MgW5FotfwW3kx8Q==}
     cpu: [arm64]
     os: [darwin]
 
-  turbo-linux-64@2.8.10:
-    resolution: {integrity: sha512-YK9vcpL3TVtqonB021XwgaQhY9hJJbKKUhLv16osxV0HkcQASQWUqR56yMge7puh6nxU67rQlTq1b7ksR1T3KA==}
+  turbo-linux-64@2.8.12:
+    resolution: {integrity: sha512-jXKw9j4r4q6s0goSXuKI3aKbQK2qiNeP25lGGEnq018TM6SWRW1CCpPMxyG91aCKrub7wDm/K45sGNT4ZFBcFQ==}
     cpu: [x64]
     os: [linux]
 
-  turbo-linux-arm64@2.8.10:
-    resolution: {integrity: sha512-3+j2tL0sG95iBJTm+6J8/45JsETQABPqtFyYjVjBbi6eVGdtNTiBmHNKrbvXRlQ3ZbUG75bKLaSSDHSEEN+btQ==}
+  turbo-linux-arm64@2.8.12:
+    resolution: {integrity: sha512-BRJCMdyXjyBoL0GYpvj9d2WNfMHwc3tKmJG5ATn2Efvil9LsiOsd/93/NxDqW0jACtHFNVOPnd/CBwXRPiRbwA==}
     cpu: [arm64]
     os: [linux]
 
-  turbo-windows-64@2.8.10:
-    resolution: {integrity: sha512-hdeF5qmVY/NFgiucf8FW0CWJWtyT2QPm5mIsX0W1DXAVzqKVXGq+Zf+dg4EUngAFKjDzoBeN6ec2Fhajwfztkw==}
+  turbo-windows-64@2.8.12:
+    resolution: {integrity: sha512-vyFOlpFFzQFkikvSVhVkESEfzIopgs2J7J1rYvtSwSHQ4zmHxkC95Q8Kjkus8gg+8X2mZyP1GS5jirmaypGiPw==}
     cpu: [x64]
     os: [win32]
 
-  turbo-windows-arm64@2.8.10:
-    resolution: {integrity: sha512-QGdr/Q8LWmj+ITMkSvfiz2glf0d7JG0oXVzGL3jxkGqiBI1zXFj20oqVY0qWi+112LO9SVrYdpHS0E/oGFrMbQ==}
+  turbo-windows-arm64@2.8.12:
+    resolution: {integrity: sha512-9nRnlw5DF0LkJClkIws1evaIF36dmmMEO84J5Uj4oQ8C0QTHwlH7DNe5Kq2Jdmu8GXESCNDNuUYG8Cx6W/vm3g==}
     cpu: [arm64]
     os: [win32]
 
-  turbo@2.8.10:
-    resolution: {integrity: sha512-OxbzDES66+x7nnKGg2MwBA1ypVsZoDTLHpeaP4giyiHSixbsiTaMyeJqbEyvBdp5Cm28fc+8GG6RdQtic0ijwQ==}
+  turbo@2.8.12:
+    resolution: {integrity: sha512-auUAMLmi0eJhxDhQrxzvuhfEbICnVt0CTiYQYY8WyRJ5nwCDZxD0JG8bCSxT4nusI2CwJzmZAay5BfF6LmK7Hw==}
     hasBin: true
 
   type-fest@4.41.0:
@@ -11148,37 +11137,37 @@ snapshots:
 
   '@dagrejs/graphlib@2.2.4': {}
 
-  '@dprint/darwin-arm64@0.51.1':
+  '@dprint/darwin-arm64@0.52.0':
     optional: true
 
-  '@dprint/darwin-x64@0.51.1':
+  '@dprint/darwin-x64@0.52.0':
     optional: true
 
-  '@dprint/linux-arm64-glibc@0.51.1':
+  '@dprint/linux-arm64-glibc@0.52.0':
     optional: true
 
-  '@dprint/linux-arm64-musl@0.51.1':
+  '@dprint/linux-arm64-musl@0.52.0':
     optional: true
 
-  '@dprint/linux-loong64-glibc@0.51.1':
+  '@dprint/linux-loong64-glibc@0.52.0':
     optional: true
 
-  '@dprint/linux-loong64-musl@0.51.1':
+  '@dprint/linux-loong64-musl@0.52.0':
     optional: true
 
-  '@dprint/linux-riscv64-glibc@0.51.1':
+  '@dprint/linux-riscv64-glibc@0.52.0':
     optional: true
 
-  '@dprint/linux-x64-glibc@0.51.1':
+  '@dprint/linux-x64-glibc@0.52.0':
     optional: true
 
-  '@dprint/linux-x64-musl@0.51.1':
+  '@dprint/linux-x64-musl@0.52.0':
     optional: true
 
-  '@dprint/win32-arm64@0.51.1':
+  '@dprint/win32-arm64@0.52.0':
     optional: true
 
-  '@dprint/win32-x64@0.51.1':
+  '@dprint/win32-x64@0.52.0':
     optional: true
 
   '@emmetio/abbreviation@2.3.3':
@@ -13321,7 +13310,7 @@ snapshots:
   autoprefixer@10.4.24(postcss@8.5.6):
     dependencies:
       browserslist: 4.28.1
-      caniuse-lite: 1.0.30001770
+      caniuse-lite: 1.0.30001775
       fraction.js: 5.3.4
       picocolors: 1.1.1
       postcss: 8.5.6
@@ -13478,7 +13467,7 @@ snapshots:
   browserslist@4.28.0:
     dependencies:
       baseline-browser-mapping: 2.9.2
-      caniuse-lite: 1.0.30001770
+      caniuse-lite: 1.0.30001775
       electron-to-chromium: 1.5.265
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.0)
@@ -13486,7 +13475,7 @@ snapshots:
   browserslist@4.28.1:
     dependencies:
       baseline-browser-mapping: 2.9.2
-      caniuse-lite: 1.0.30001770
+      caniuse-lite: 1.0.30001775
       electron-to-chromium: 1.5.265
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.1)
@@ -13558,11 +13547,11 @@ snapshots:
   caniuse-api@3.0.0:
     dependencies:
       browserslist: 4.28.1
-      caniuse-lite: 1.0.30001770
+      caniuse-lite: 1.0.30001775
       lodash.memoize: 4.1.2
       lodash.uniq: 4.5.0
 
-  caniuse-lite@1.0.30001770: {}
+  caniuse-lite@1.0.30001775: {}
 
   canvaskit-wasm@0.40.0:
     dependencies:
@@ -13977,19 +13966,19 @@ snapshots:
 
   dotenv@8.6.0: {}
 
-  dprint@0.51.1:
+  dprint@0.52.0:
     optionalDependencies:
-      '@dprint/darwin-arm64': 0.51.1
-      '@dprint/darwin-x64': 0.51.1
-      '@dprint/linux-arm64-glibc': 0.51.1
-      '@dprint/linux-arm64-musl': 0.51.1
-      '@dprint/linux-loong64-glibc': 0.51.1
-      '@dprint/linux-loong64-musl': 0.51.1
-      '@dprint/linux-riscv64-glibc': 0.51.1
-      '@dprint/linux-x64-glibc': 0.51.1
-      '@dprint/linux-x64-musl': 0.51.1
-      '@dprint/win32-arm64': 0.51.1
-      '@dprint/win32-x64': 0.51.1
+      '@dprint/darwin-arm64': 0.52.0
+      '@dprint/darwin-x64': 0.52.0
+      '@dprint/linux-arm64-glibc': 0.52.0
+      '@dprint/linux-arm64-musl': 0.52.0
+      '@dprint/linux-loong64-glibc': 0.52.0
+      '@dprint/linux-loong64-musl': 0.52.0
+      '@dprint/linux-riscv64-glibc': 0.52.0
+      '@dprint/linux-x64-glibc': 0.52.0
+      '@dprint/linux-x64-musl': 0.52.0
+      '@dprint/win32-arm64': 0.52.0
+      '@dprint/win32-x64': 0.52.0
 
   dset@3.1.4: {}
 
@@ -15957,8 +15946,6 @@ snapshots:
       '@oxlint/win32-x64': 1.43.0
       oxlint-tsgolint: 0.11.5
 
-  p-debounce@5.1.0: {}
-
   p-filter@2.1.0:
     dependencies:
       p-map: 2.1.0
@@ -17294,32 +17281,32 @@ snapshots:
 
   tty-browserify@0.0.1: {}
 
-  turbo-darwin-64@2.8.10:
+  turbo-darwin-64@2.8.12:
     optional: true
 
-  turbo-darwin-arm64@2.8.10:
+  turbo-darwin-arm64@2.8.12:
     optional: true
 
-  turbo-linux-64@2.8.10:
+  turbo-linux-64@2.8.12:
     optional: true
 
-  turbo-linux-arm64@2.8.10:
+  turbo-linux-arm64@2.8.12:
     optional: true
 
-  turbo-windows-64@2.8.10:
+  turbo-windows-64@2.8.12:
     optional: true
 
-  turbo-windows-arm64@2.8.10:
+  turbo-windows-arm64@2.8.12:
     optional: true
 
-  turbo@2.8.10:
+  turbo@2.8.12:
     optionalDependencies:
-      turbo-darwin-64: 2.8.10
-      turbo-darwin-arm64: 2.8.10
-      turbo-linux-64: 2.8.10
-      turbo-linux-arm64: 2.8.10
-      turbo-windows-64: 2.8.10
-      turbo-windows-arm64: 2.8.10
+      turbo-darwin-64: 2.8.12
+      turbo-darwin-arm64: 2.8.12
+      turbo-linux-64: 2.8.12
+      turbo-linux-arm64: 2.8.12
+      turbo-windows-64: 2.8.12
+      turbo-windows-arm64: 2.8.12
 
   type-fest@4.41.0: {}
 

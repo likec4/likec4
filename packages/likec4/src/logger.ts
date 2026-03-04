@@ -2,7 +2,6 @@ import { rootLogger } from '@likec4/log'
 import _boxen, { type Options as BoxenOptions } from 'boxen'
 import { hrtime } from 'node:process'
 import prettyMilliseconds from 'pretty-ms'
-import type { RollupError } from 'rollup'
 import k from 'tinyrainbow'
 import type { LogErrorOptions, LogType } from 'vite'
 
@@ -63,20 +62,22 @@ export function createLikeC4Logger(prefix: string | readonly [string, ...string[
       // console.clear()
     },
     /** Not implemented; callers should not rely on this. Returns false. */
-    hasErrorLogged: function(_error: Error | RollupError): boolean {
+    hasErrorLogged: function(_error: Error): boolean {
       return false
     },
     hasWarned: false,
   }
 }
 /** Full logger from createLikeC4Logger; debug and hasErrorLogged are optional so Vite's config.logger is assignable. */
-export type ViteLogger = Omit<
-  ReturnType<typeof createLikeC4Logger>,
-  'debug' | 'hasErrorLogged'
-> & {
-  debug?: (msg: string, ...args: unknown[]) => void
-  hasErrorLogged?: (error: Error | RollupError) => boolean
-}
+export type ViteLogger =
+  & Omit<
+    ReturnType<typeof createLikeC4Logger>,
+    'debug' | 'hasErrorLogged'
+  >
+  & {
+    debug?: (msg: string, ...args: unknown[]) => void
+    hasErrorLogged?: (error: Error) => boolean
+  }
 
 /** Minimal logger interface (info, warn, error only). */
 export type Logger = {

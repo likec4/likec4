@@ -348,7 +348,12 @@ type AnyProperty =
   ViewProperty |
   DynamicViewProperty |
   ElementProperty |
-  RelationProperty
+  RelationProperty |
+  RelationshipStyleProperty |
+  NotationProperty |
+  NotesProperty |
+  NavigateToProperty |
+  StyleProperty
 ;
 
 ViewProperty:

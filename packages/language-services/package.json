@@ -97,6 +97,7 @@
     "langium": "catalog:langium",
     "tinyrainbow": "catalog:utils",
     "pathe": "catalog:utils",
+    "ufo": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
     "vscode-languageserver-types": "catalog:vscode"

@@ -1,5 +1,6 @@
-import { startLanguageServer } from '@likec4/language-server'
+import { configureLanguageServerLogger, startLanguageServer } from '@likec4/language-server'
 import { rootLogger } from '@likec4/log'
+import { isDevelopment } from 'std-env'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
 
 const logger = rootLogger.getChild('server')
@@ -12,7 +13,13 @@ process.on('unhandledRejection', (err) => {
 
 const connection = createConnection(ProposedFeatures.all)
 
+configureLanguageServerLogger({
+  lspConnection: connection,
+  logLevel: isDevelopment ? 'trace' : 'debug',
+})
+
 startLanguageServer({
   connection,
+  configureLogger: false,
   enableWatcher: false, // Extension is responsible for watching files and sending notifications
 })

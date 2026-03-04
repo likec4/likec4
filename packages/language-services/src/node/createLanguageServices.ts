@@ -4,10 +4,11 @@ import {
   createLanguageServices as createCustomLanguageServices,
   NoFileSystem,
   NoLikeC4ManualLayouts,
+  WithGraphviz,
 } from '@likec4/language-server/module'
-import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
+import { GraphvizWasmAdapter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
-import { configureLogger, getConsoleStderrSink, loggable, rootLogger } from '@likec4/log'
+import { loggable, rootLogger } from '@likec4/log'
 import defu from 'defu'
 import k from 'tinyrainbow'
 import type { LikeC4Langium } from '../common/LikeC4'
@@ -57,23 +58,6 @@ export function createLanguageServices(
     mcp: false as const,
   })
 
-  if (options.mcp === 'stdio') {
-    configureLogger({
-      reset: true,
-      sinks: {
-        // Name it as console to override internal logger
-        console: getConsoleStderrSink(),
-      },
-      loggers: [
-        {
-          category: 'likec4',
-          sinks: ['console'],
-          lowestLevel: 'warning',
-        },
-      ],
-    })
-  }
-
   const useDotBin = options.graphviz === 'binary'
 
   logger.info(`${k.dim('layout')} ${useDotBin ? 'binary' : 'wasm'}`)
@@ -90,14 +74,7 @@ export function createLanguageServices(
           ...NoLikeC4ManualLayouts,
         },
       ...options.mcp ? WithMCPServer(options.mcp === 'stdio' ? 'stdio' : options.mcp) : {},
-    },
-    {
-      likec4: {
-        Layouter: () =>
-          new QueueGraphvizLayoter({
-            graphviz: useDotBin ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter(),
-          }),
-      },
+      ...WithGraphviz(useDotBin ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
     },
   )
 

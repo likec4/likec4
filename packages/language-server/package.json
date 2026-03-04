@@ -53,14 +53,6 @@
         "default": "./dist/index.mjs"
       }
     },
-    "./bundled": {
-      "sources": "./src/bundled.ts",
-      "default": {
-        "types": "./dist/bundled.d.mts",
-        "import": "./dist/bundled.mjs",
-        "default": "./dist/bundled.mjs"
-      }
-    },
     "./likec4lib": {
       "sources": "./src/likec4lib.ts",
       "default": {
@@ -151,27 +143,36 @@
   "dependencies": {
     "@hono/mcp": "catalog:hono",
     "@hono/node-server": "catalog:hono",
-    "hono": "catalog:hono",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
+    "@msgpack/msgpack": "^3.1.2",
     "@smithy/util-base64": "^4.3.0",
     "chokidar": "catalog:externals",
     "defu": "catalog:utils",
+    "fast-equals": "catalog:utils",
     "fdir": "catalog:externals",
+    "hono": "catalog:hono",
     "immer": "catalog:utils",
+    "indent-string": "^5.0.0",
     "json5": "catalog:utils",
     "langium": "catalog:langium",
     "nano-spawn": "catalog:externals",
+    "p-queue": "catalog:utils",
+    "picomatch": "catalog:externals",
+    "pretty-ms": "^9.3.0",
+    "remeda": "catalog:utils",
     "std-env": "catalog:externals",
+    "strip-indent": "catalog:utils",
     "type-fest": "catalog:externals",
+    "ufo": "catalog:utils",
     "vscode-jsonrpc": "catalog:vscode",
-    "vscode-languageserver": "catalog:vscode",
     "vscode-languageserver-protocol": "catalog:vscode",
     "vscode-languageserver-textdocument": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode",
+    "vscode-languageserver": "catalog:vscode",
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
     "zod": "catalog:externals"
@@ -197,7 +198,6 @@
     "@likec4/icons": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
-    "@msgpack/msgpack": "^3.1.2",
     "@types/natural-compare-lite": "catalog:utils",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:externals",
@@ -205,22 +205,12 @@
     "@types/which": "^3.0.4",
     "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild",
-    "fast-equals": "catalog:utils",
-    "indent-string": "^5.0.0",
     "langium-cli": "catalog:langium",
     "obuild": "catalog:obuild",
     "oxlint": "catalog:",
-    "p-debounce": "catalog:utils",
-    "p-queue": "catalog:utils",
-    "p-timeout": "catalog:utils",
-    "picomatch": "catalog:externals",
-    "pretty-ms": "^9.3.0",
-    "remeda": "catalog:utils",
-    "strip-indent": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "ufo": "catalog:utils",
     "vitest": "catalog:vitest"
   }
 }

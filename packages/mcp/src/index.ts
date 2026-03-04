@@ -1,21 +1,15 @@
 #!/usr/bin/env node
 
 import {
-  createLanguageServices,
-  WithFileSystem,
-  WithLikeC4ManualLayouts,
-  WithMCPServer,
+  configureLanguageServerLogger,
 } from '@likec4/language-server'
+import { fromWorkspace } from '@likec4/language-services/node'
 import {
-  configureLogger,
-  getAnsiColorFormatter,
-  getConsoleStderrSink,
   logger,
 } from '@likec4/log'
 import { defineCommand, runMain } from 'citty'
 import { resolve } from 'node:path'
-import { isColorSupported } from 'std-env'
-import { URI } from 'vscode-uri'
+import k from 'tinyrainbow'
 
 const main = defineCommand({
   meta: {
@@ -39,6 +33,13 @@ const main = defineCommand({
       valueHint: 'number',
       required: false,
     },
+    graphviz: {
+      type: 'enum',
+      options: ['binary', 'wasm'],
+      description: 'use binary or wasm graphviz',
+      default: 'wasm',
+      required: false,
+    },
     watch: {
       type: 'boolean',
       description: 'disable watch for changes (consume less resources if you have static workspace)',
@@ -52,6 +53,12 @@ const main = defineCommand({
       required: false,
       default: process.env['LIKEC4_WORKSPACE'] || '.',
     },
+    logLevel: {
+      type: 'enum',
+      options: ['trace', 'debug', 'info', 'warning', 'error'],
+      description: 'change log level',
+      required: false,
+    },
   },
   setup({ args }) {
     if (args.stdio && (args.http || args.port)) {
@@ -61,12 +68,10 @@ const main = defineCommand({
   async run({ args }) {
     const useStdio = args.stdio || (!args.http && !args.port)
 
-    configureLogger({
-      sinks: {
-        console: getConsoleStderrSink(
-          isColorSupported && !useStdio ? { formatter: getAnsiColorFormatter() } : undefined,
-        ),
-      },
+    configureLanguageServerLogger({
+      useStdErr: useStdio,
+      colors: k.isColorSupported,
+      logLevel: args.logLevel,
     })
     process.on('uncaughtException', (err) => {
       logger.error('uncaughtException', { err })
@@ -84,18 +89,12 @@ const main = defineCommand({
       logger.warn`watch for changes enabled, use ${'--no-watch'} to consume less resources`
     }
 
-    const langium = createLanguageServices({
-      ...WithFileSystem(args.watch),
-      ...WithLikeC4ManualLayouts,
-      ...WithMCPServer(useStdio ? 'stdio' : { port }),
+    await fromWorkspace(workspace, {
+      graphviz: args.graphviz,
+      mcp: useStdio ? 'stdio' : { port },
+      configureLogger: false,
+      watch: args.watch,
     })
-
-    await langium.shared.workspace.WorkspaceManager.initializeWorkspace([{
-      uri: URI.file(workspace).toString(),
-      name: 'workspace',
-    }])
-
-    await langium.likec4.mcp.Server.start()
   },
 })
 

@@ -35,6 +35,12 @@ export const useMcpRegistration = createSingletonComposable(() => {
       'node',
       'mcp-server.mjs',
     ),
+    // join(
+    //   'node_modules',
+    //   'likec4',
+    //   'bin',
+    //   'likec4.mjs',
+    // ),
   )
 
   useDisposable(
@@ -46,7 +52,14 @@ export const useMcpRegistration = createSingletonComposable(() => {
           new vscode.McpStdioServerDefinition(
             'likec4',
             'node',
-            [serverModule],
+            [
+              serverModule,
+              // 'mcp',
+              // '--stdio',
+              // ...config.graphviz.mode === 'binary' ? ['--use-dot'] : [],
+              // '--log-level',
+              // isDev ? 'debug' : 'info',
+            ],
             {},
             version,
           ),
