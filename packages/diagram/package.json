@@ -108,19 +108,11 @@
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
-    "@types/react": "^18.x || ^19.x",
-    "@types/react-dom": "^18.x || ^19.x",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
   },
   "peerDependenciesMeta": {
     "@pandacss/dev": {
-      "optional": true
-    },
-    "@types/react": {
-      "optional": true
-    },
-    "@types/react-dom": {
       "optional": true
     }
   },
