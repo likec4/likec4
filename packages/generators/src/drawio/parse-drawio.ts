@@ -138,7 +138,7 @@ function findOpenTagEnd(xml: string, start: number): number {
   let i = start
   while (i < xml.length) {
     const c = xml[i]
-    if (c === '"' || c === "'") {
+    if (c === '"' || c === '\'') {
       if (quoteChar === '') quoteChar = c
       else if (quoteChar === c) quoteChar = ''
     } else if (c === '>' && quoteChar === '') return i
@@ -561,7 +561,7 @@ function inferKind(
   switch (true) {
     case !style:
       return parentCell?.style?.toLowerCase().includes('container=1') ? 'component' : 'container'
-    case s.includes('umlactor') || s.includes('shape=person'):
+    case s.includes('umlactor') || s.includes('shape=person') || s.includes('shape=actor'):
       return 'actor'
     case s.includes('swimlane'):
     case s.includes('container=1'):
