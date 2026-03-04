@@ -577,7 +577,7 @@ function inferKind(
 function inferShape(style: string | undefined): string | undefined {
   if (!style) return undefined
   const s = style.toLowerCase()
-  // Actor/person shape (export uses shape=actor; legacy may have shape=person or umlactor)
+  // Actor/person shape (export may use shape=actor or shape=umlActor; legacy may have shape=person)
   if (s.includes('shape=actor') || s.includes('shape=person') || s.includes('umlactor')) return 'person'
   if (s.includes('shape=cylinder') || s.includes('cylinder3')) return 'cylinder'
   if (s.includes('shape=document')) return 'document'
