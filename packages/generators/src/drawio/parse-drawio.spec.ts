@@ -85,6 +85,26 @@ test('parse DrawIO to LikeC4 - vertex with custom mxUserObject data keys emits c
   expect(result).toContain('"customKey":"customValue"')
 })
 
+const drawioWithShapeActor = `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile>
+  <diagram>
+    <mxGraphModel><root>
+      <mxCell id="0" />
+      <mxCell id="1" vertex="1" parent="0"><mxGeometry width="800" height="600" as="geometry" /></mxCell>
+      <mxCell id="2" value="User" style="shape=actor;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxGeometry x="100" y="80" width="60" height="90" as="geometry" />
+      </mxCell>
+    </root></mxGraphModel>
+  </diagram>
+</mxfile>`
+
+test('parse DrawIO to LikeC4 - vertex with shape=actor emits actor with style { shape person } for round-trip fidelity', () => {
+  const result = parseDrawioToLikeC4(drawioWithShapeActor)
+  expect(result).toContain("actor 'User'")
+  expect(result).toContain('shape person')
+  expect(result).toMatchSnapshot()
+})
+
 const drawioEdgeWithLikeC4Style = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile>
   <diagram>
