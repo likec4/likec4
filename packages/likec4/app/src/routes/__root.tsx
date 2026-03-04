@@ -5,8 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { Fqn, NonEmptyArray, ProjectId } from '@likec4/core/types'
-import { useMantineColorScheme } from '@mantine/core'
 import type { NonEmptyArray, ProjectId } from '@likec4/core/types'
 import { MantineProvider } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
