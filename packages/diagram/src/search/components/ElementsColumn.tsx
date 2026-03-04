@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { LikeC4Model } from '@likec4/core/model'
 import type { Fqn, NonEmptyArray } from '@likec4/core/types'
 import {
@@ -28,7 +35,8 @@ import { filter, first, hasAtLeast, last, only, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
-import { useNormalizedSearch, useSearchActor } from '../hooks'
+import { useNormalizedSearch } from '../hooks'
+import { useSearchContext } from '../SearchContext'
 import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
 import { centerY, moveFocusToSearchInput, queryAllFocusable, stopAndPrevent } from './utils'
@@ -327,7 +335,7 @@ function ElementTreeNode(
 }
 
 function useHandleElementSelection() {
-  const searchActorRef = useSearchActor()
+  const ctx = useSearchContext()
 
   return useCallbackRef((element: LikeC4Model.Element) => {
     const views = [...element.views()]
@@ -337,13 +345,9 @@ function useHandleElementSelection() {
     const elementFqn = element.id
     const onlyOneViewId = only(views)?.id
     if (!onlyOneViewId) {
-      searchActorRef.send({ type: 'pickview.open', elementFqn })
+      ctx.openPickView(elementFqn)
       return
     }
-    searchActorRef.send({
-      type: 'navigate.to',
-      viewId: onlyOneViewId,
-      focusOnElement: elementFqn,
-    })
+    ctx.navigateTo(onlyOneViewId, elementFqn)
   })
 }

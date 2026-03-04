@@ -1,3 +1,12 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import type { Fqn, NonEmptyArray, ProjectId } from '@likec4/core/types'
+import { useMantineColorScheme } from '@mantine/core'
 import type { NonEmptyArray, ProjectId } from '@likec4/core/types'
 import { MantineProvider } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
@@ -27,6 +36,7 @@ export const Route = createRootRouteWithContext<Context>()({
         theme: undefined,
         dynamic: 'diagram',
         relationships: undefined,
+        focusOnElement: undefined,
       }),
     ],
   },

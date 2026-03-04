@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import {
   Combobox,
   ComboboxDropdown,
@@ -16,7 +23,7 @@ import { IconSearch } from '@tabler/icons-react'
 import { type ReactNode, memo, useRef } from 'react'
 import { keys } from 'remeda'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
-import { useSearch, useSearchActor } from '../hooks'
+import { useSearchContext } from '../SearchContext'
 import * as css from './styles.css'
 import { focusToFirstFoundElement, moveFocusToSearchInput, stopAndPrevent } from './utils'
 
@@ -27,11 +34,11 @@ function startingWithKind(search: string) {
 const SEARCH_PREFIXES = ['#', 'kind:']
 
 export const LikeC4SearchInput = memo(() => {
-  const searchActorRef = useSearchActor()
+  const searchCtx = useSearchContext()
   const likec4model = useLikeC4Model()
   const inputRef = useRef<HTMLInputElement>(null)
   const { ref, focused } = useFocusWithin<HTMLInputElement>()
-  const [search, setSearch] = useSearch()
+  const { searchValue: search, setSearchValue: setSearch } = searchCtx
   // const previous = usePreviousDistinct(search)
 
   // const [isEmptyForSomeTime, cancel] = useDebouncedValue(
@@ -170,9 +177,8 @@ export const LikeC4SearchInput = memo(() => {
             <Input.ClearButton
               onClick={(e) => {
                 e.stopPropagation()
-                const openedWithSearch = searchActorRef.getSnapshot().context.openedWithSearch
-                if (search === '' || search === openedWithSearch) {
-                  searchActorRef.send({ type: 'close' })
+                if (search === '' || search === searchCtx.openedWithSearch) {
+                  searchCtx.close()
                 } else {
                   setSearch('')
                 }
