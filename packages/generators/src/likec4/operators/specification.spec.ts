@@ -1,13 +1,12 @@
-import type { Icon, Tag, TagSpecification } from '@likec4/core/types'
+import type { Tag } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
-import { type SpecificationInput, SpecificationSchema } from '../types'
+import type { schemas } from '../schemas'
 import { fresh, materialize } from './base'
-import { specificationOp } from './specification'
+import { specification } from './specification'
 
-function render(spec: SpecificationInput): string {
-  const ctx = SpecificationSchema.parse(spec)
+function render(ctx: schemas.specification.Input): string {
   return materialize(
-    specificationOp()(fresh(ctx)),
+    specification()(fresh(ctx)),
   )
 }
 

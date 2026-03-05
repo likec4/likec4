@@ -1,69 +1,30 @@
-import { nonexhaustive } from '@likec4/core'
-import {
-  type PredicateSelector,
-  Expression,
-  FqnExpr,
-  FqnRef,
-  RelationExpr,
-} from '@likec4/core/types'
+import { type PredicateSelector, nonexhaustive } from '@likec4/core'
 import { joinToNode } from 'langium/generate'
-import { isString, map } from 'remeda'
-import type {
-  AndOperatorData,
-  DirectExprData,
-  IncomingExprData,
-  InOutExprData,
-  KindEqualData,
-  ModelExpressionData,
-  ModelFqnExprAnyData,
-  ModelFqnExprCustomData,
-  ModelFqnExprData,
-  ModelFqnExprOrWhereData,
-  ModelRelationExprCustomData,
-  ModelRelationExprData,
-  ModelRelationExprOrWhereData,
-  NotOperatorData,
-  OrOperatorData,
-  OutgoingExprData,
-  ParticipantOperatorData,
-  TagEqualData,
-  WhereOperatorData,
-} from '../types'
+import { map } from 'remeda'
+import * as schemas from '../schemas/expression'
 import {
-  type Op,
-  type Ops,
   type Output,
   body,
-  executeOnCtx,
+  executeOnFresh,
   fresh,
   indent,
+  lazy,
   merge,
-  operation,
   print,
-  printProperty,
   property,
-  select,
   space,
+  spaceBetween,
   withctx,
+  zodOp,
 } from './base'
 import {
   descriptionProperty,
-  enumProperty,
   markdownProperty,
   notationProperty,
   notesProperty,
   styleProperties,
   titleProperty,
 } from './properties'
-
-/**
- * Creates an execution function that runs operations with the given output
- *
- * @see whereOperator
- */
-function execToOut(out: Output) {
-  return <A>(ctx: A, ...ops: Ops<A>) => executeOnCtx({ ctx, out }, ops)
-}
 
 function appendSelector(out: Output, selector: PredicateSelector | undefined) {
   if (selector) {
@@ -84,458 +45,205 @@ function appendSelector(out: Output, selector: PredicateSelector | undefined) {
   return out
 }
 
-export function whereTagEqual(): Op<TagEqualData> {
-  return operation(function whereTagEqualOp({ ctx: { tag }, out }) {
-    if (isString(tag)) {
-      return out.appendTemplate`tag is #${tag}`
-    }
-    if ('eq' in tag) {
-      return out.appendTemplate`tag is #${tag.eq}`
-    }
-    if ('neq' in tag) {
-      return out.appendTemplate`tag is not #${tag.neq}`
-    }
-    nonexhaustive(tag)
-  })
-}
+export const whereTagEqual = zodOp(schemas.whereTag)(function whereTagEqualOp({ ctx: { tag }, out }) {
+  if ('eq' in tag) {
+    return out.appendTemplate`tag is #${tag.eq}`
+  }
+  if ('neq' in tag) {
+    return out.appendTemplate`tag is not #${tag.neq}`
+  }
+  nonexhaustive(tag)
+})
 
-export function whereKindEqual(): Op<KindEqualData> {
-  return operation('whereKindEqual', ({ ctx: { kind }, out }) => {
-    if (isString(kind)) {
-      return out.appendTemplate`kind is ${kind}`
-    }
-    if ('eq' in kind) {
-      return out.appendTemplate`kind is ${kind.eq}`
-    }
-    if ('neq' in kind) {
-      return out.appendTemplate`kind is not ${kind.neq}`
-    }
-    nonexhaustive(kind)
-  })
-}
+export const whereKindEqual = zodOp(schemas.whereKind)(function whereKindEqualOp({ ctx: { kind }, out }) {
+  if ('eq' in kind) {
+    return out.appendTemplate`kind is ${kind.eq}`
+  }
+  if ('neq' in kind) {
+    return out.appendTemplate`kind is not ${kind.neq}`
+  }
+  nonexhaustive(kind)
+})
 
-export function whereNot(): Op<NotOperatorData> {
-  return merge(
-    print('not ( '),
-    select(
-      c => c.not,
-      whereOperator(),
+export const whereNot = zodOp(schemas.whereNot)(
+  property(
+    'not',
+    spaceBetween(
+      print('not ('),
+      lazy(() => whereOperator()),
+      print(')'),
     ),
-    print(' )'),
-  )
-}
+  ),
+)
 
-export function whereParticipantOperator(): Op<ParticipantOperatorData> {
-  return operation('whereParticipantOperator', ({ ctx: { participant, operator }, out }) => {
+export const whereParticipant = zodOp(schemas.whereParticipant)(
+  function whereParticipantOp({ ctx: { participant, operator }, out }) {
     out.append(participant, '.')
     if ('tag' in operator) {
-      return whereTagEqual()({ ctx: operator, out })
-    }
-    if ('kind' in operator) {
-      return whereKindEqual()({ ctx: operator, out })
-    }
-    nonexhaustive(operator)
-  })
-}
-
-export function whereAnd(): Op<AndOperatorData> {
-  return operation('whereAnd', ({ ctx: { and }, out }) => {
-    const operands = map(and, operand => {
-      const ctx = fresh(operand)
-      const wrapWithBraces = 'or' in operand
-      if (wrapWithBraces) {
-        merge(
-          print('('),
-          whereOperator(),
-          print(')'),
-        )(ctx)
-      } else {
-        whereOperator()(ctx)
-      }
-      return ctx.out
-    })
-    return out.append(
-      joinToNode(operands, {
-        appendNewLineIfNotEmpty: true,
-        skipNewLineAfterLastItem: true,
-        prefix(_element, index) {
-          return index > 0 ? 'and ' : undefined
-        },
-      }),
-    )
-  })
-}
-
-export function whereOr(): Op<OrOperatorData> {
-  return operation('whereOr', ({ ctx: { or }, out }) => {
-    const operands = map(or, operand => {
-      const ctx = fresh(operand)
-      const wrapWithBraces = 'and' in operand
-      if (wrapWithBraces) {
-        merge(
-          print('('),
-          whereOperator(),
-          print(')'),
-        )(ctx)
-      } else {
-        whereOperator()(ctx)
-      }
-      return ctx.out
-    })
-    return out.append(
-      joinToNode(operands, {
-        appendNewLineIfNotEmpty: true,
-        skipNewLineAfterLastItem: true,
-        prefix(_element, index) {
-          return index > 0 ? 'or ' : undefined
-        },
-      }),
-    )
-  })
-}
-
-export function whereOperator(): Op<WhereOperatorData> {
-  return operation('whereOperator', ({ ctx, out }) => {
-    const exec = execToOut(out)
-    if ('and' in ctx) {
-      return exec(ctx, whereAnd())
-    }
-    if ('or' in ctx) {
-      return exec(ctx, whereOr())
-    }
-    if ('not' in ctx) {
-      return exec(ctx, whereNot())
-    }
-    if ('tag' in ctx) {
-      return exec(ctx, whereTagEqual())
-    }
-    if ('kind' in ctx) {
-      return exec(ctx, whereKindEqual())
-    }
-    if ('participant' in ctx) {
-      return exec(ctx, whereParticipantOperator())
-    }
-    nonexhaustive(ctx)
-  })
-}
-
-export function modelExpression(): Op<ModelExpressionData> {
-  return operation(({ ctx, out }) => {
-    const exec = execToOut(out)
-    if ('custom' in ctx) {
-      return exec(ctx, modelCustomFqnExpr())
-    }
-    if ('customRelation' in ctx) {
-      return exec(ctx, modelCustomRelationExpr())
-    }
-    if ('wildcard' in ctx || 'ref' in ctx || 'elementKind' in ctx || 'elementTag' in ctx) {
-      return exec(ctx, modelFqnExprOrWhere())
-    }
-    if ('source' in ctx || 'incoming' in ctx || 'outgoing' in ctx || 'inout' in ctx) {
-      return exec(ctx, modelRelationExprOrWhere())
-    }
-    if ('where' in ctx) {
-      const { expr } = ctx.where
-      if ('source' in expr || 'incoming' in expr || 'outgoing' in expr || 'inout' in expr) {
-        return exec(ctx as ModelRelationExprOrWhereData, modelRelationExprOrWhere())
-      }
-      return exec(ctx as ModelFqnExprOrWhereData, modelFqnExprOrWhere())
-    }
-    nonexhaustive(ctx)
-  })
-}
-
-export function modelFqnExpr(): Op<ModelFqnExprData> {
-  return operation('modelFqnExpr', ({ ctx, out }) => {
-    if ('wildcard' in ctx) {
-      return out.append('*')
-    }
-    if ('elementKind' in ctx) {
-      return out.appendTemplate`element.kind = ${ctx.elementKind}`
-    }
-    if ('elementTag' in ctx) {
-      return out.appendTemplate`element.tag = #${ctx.elementTag}`
-    }
-    if ('ref' in ctx) {
-      out.append(ctx.ref.model)
-      appendSelector(out, ctx.selector)
-      return out
-    }
-    nonexhaustive(ctx)
-  })
-}
-
-export function modelCustomFqnExpr(): Op<ModelFqnExprCustomData> {
-  return operation('modelCustomFqnExpr', ({ ctx: { custom }, out }) => {
-    const exprOp = withctx(custom.expr)(
-      modelFqnExprOrWhere(),
-    )
-    const customOp = withctx(custom)(
-      body('with')(
-        titleProperty(),
-        descriptionProperty(),
-        notationProperty(),
-        notesProperty(),
-        property('navigateTo'),
-        styleProperties(),
-      ),
-    )
-    if ('where' in custom.expr) {
-      return merge(
-        exprOp,
-        indent(
-          customOp,
-        ),
-      )({ ctx: custom, out })
-    }
-    return merge(
-      exprOp,
-      space(),
-      customOp,
-    )({ ctx: custom, out })
-  })
-}
-
-export function modelFqnExprOrWhere(): Op<ModelFqnExprOrWhereData> {
-  return operation('modelFqnExprOrWhere', ({ ctx, out }) => {
-    if ('where' in ctx) {
-      executeOnCtx(
-        { ctx: undefined, out },
-        merge(
-          withctx(ctx.where.expr)(
-            modelFqnExpr(),
-          ),
-          indent(
-            print('where'),
-            indent(
-              withctx(ctx.where.condition)(
-                whereOperator(),
-              ),
-            ),
-          ),
-        ),
-      )
+      whereTagEqual()({ ctx: operator, out })
       return
     }
-    return executeOnCtx({ ctx, out }, modelFqnExpr())
+    if ('kind' in operator) {
+      whereKindEqual()({ ctx: operator, out })
+      return
+    }
+    nonexhaustive(operator)
+  },
+)
+
+export const whereAnd = zodOp(schemas.whereAnd)(function whereAndOp({ ctx: { and }, out }) {
+  const operands = map(and, operand => {
+    let { out } = executeOnFresh(operand, whereOperator())
+    const wrapWithBraces = 'or' in operand
+    if (wrapWithBraces) {
+      out = fresh().out.append('(', ...out.contents, ')')
+    }
+    return out
   })
-}
-
-export function modelDirectRelationExpr(): Op<DirectExprData> {
-  return merge(
-    property(
-      'source',
-      modelFqnExpr(),
-    ),
-    print(v => v.isBidirectional ? ' <-> ' : ' -> '),
-    property(
-      'target',
-      modelFqnExpr(),
-    ),
+  return out.append(
+    joinToNode(operands, {
+      appendNewLineIfNotEmpty: true,
+      skipNewLineAfterLastItem: true,
+      prefix(_element, index) {
+        return index > 0 ? 'and ' : undefined
+      },
+    }),
   )
-}
+})
 
-export function modelIncomingRelationExpr(): Op<IncomingExprData> {
-  return merge(
-    print('-> '),
-    property(
-      'incoming',
-      modelFqnExpr(),
-    ),
-  )
-}
-
-export function modelOutgoingRelationExpr(): Op<OutgoingExprData> {
-  return merge(
-    property(
-      'outgoing',
-      modelFqnExpr(),
-    ),
-    print(' ->'),
-  )
-}
-
-export function modelInOutRelationExpr(): Op<InOutExprData> {
-  return merge(
-    print('-> '),
-    property(
-      'inout',
-      modelFqnExpr(),
-    ),
-    print(' ->'),
-  )
-}
-
-export function modelRelationExpr(): Op<ModelRelationExprData> {
-  return operation('modelRelationExpr', ({ ctx, out }) => {
-    if ('source' in ctx) {
-      return modelDirectRelationExpr()({ ctx, out })
+export const whereOr = zodOp(schemas.whereOr)(({ ctx: { or }, out }) => {
+  const operands = map(or, operand => {
+    let { out } = executeOnFresh(operand, whereOperator())
+    const wrapWithBraces = 'and' in operand
+    if (wrapWithBraces) {
+      out = fresh().out.append('(', ...out.contents, ')')
     }
-    if ('incoming' in ctx) {
-      return modelIncomingRelationExpr()({ ctx, out })
-    }
-    if ('outgoing' in ctx) {
-      return modelOutgoingRelationExpr()({ ctx, out })
-    }
-    if ('inout' in ctx) {
-      return modelInOutRelationExpr()({ ctx, out })
-    }
-    nonexhaustive(ctx)
+    return out
   })
-}
+  return out.append(
+    joinToNode(operands, {
+      appendNewLineIfNotEmpty: true,
+      skipNewLineAfterLastItem: true,
+      prefix(_element, index) {
+        return index > 0 ? 'or ' : undefined
+      },
+    }),
+  )
+})
 
-export function modelRelationExprOrWhere(): Op<ModelRelationExprOrWhereData> {
-  return operation('modelRelationExprOrWhere', ({ ctx, out }) => {
-    if ('where' in ctx) {
-      return merge(
-        withctx(ctx.where.expr)(
-          modelRelationExpr(),
-        ),
-        indent(
-          print('where'),
-          indent(
-            withctx(ctx.where.condition)(
-              whereOperator(),
-            ),
-          ),
-        ),
-      )({ ctx, out })
-    }
-    return modelRelationExpr()({ ctx, out })
-  })
-}
+export const whereOperator = zodOp(schemas.whereOperator)(({ ctx, exec }) => {
+  if ('and' in ctx) {
+    return exec(ctx, whereAnd())
+  }
+  if ('or' in ctx) {
+    return exec(ctx, whereOr())
+  }
+  if ('not' in ctx) {
+    return exec(ctx, whereNot())
+  }
+  if ('tag' in ctx) {
+    return exec(ctx, whereTagEqual())
+  }
+  if ('kind' in ctx) {
+    return exec(ctx, whereKindEqual())
+  }
+  if ('participant' in ctx) {
+    return exec(ctx, whereParticipant())
+  }
+  nonexhaustive(ctx)
+})
 
-export function modelCustomRelationExpr(): Op<ModelRelationExprCustomData> {
-  return operation('modelCustomRelationExpr', ({ ctx: { customRelation }, out }) => {
-    const exprOp = withctx(customRelation.expr)(
-      modelRelationExprOrWhere(),
-    )
-    const customOp = withctx(customRelation)(
-      body('with')(
-        titleProperty(),
-        descriptionProperty(),
-        notationProperty(),
-        markdownProperty('notes'),
-        property('navigateTo'),
-        styleProperties(),
-        property('head'),
-        property('tail'),
-        property('line'),
-      ),
-    )
-    const hasWhere = 'where' in customRelation.expr
-
-    executeOnCtx(
-      { ctx: undefined, out },
-      merge(
-        exprOp,
-        ...(hasWhere ? [indent(customOp)] : [space(), customOp]),
-      ),
-    )
-  })
-}
-
-// ──────────────────────────────────────────────
-// FqnExpr operators (expression.ts types)
-// ──────────────────────────────────────────────
-
-export function fqnExpr(): Op<FqnExpr> {
-  return operation('fqnExpr', ({ ctx, out }) => {
-    if (FqnExpr.isWildcard(ctx)) {
-      return out.append('*')
-    }
-    if (FqnExpr.isElementKindExpr(ctx)) {
-      out.append('element.kind ', ctx.isEqual ? '=' : '!=', ' ', ctx.elementKind)
-      return out
-    }
-    if (FqnExpr.isElementTagExpr(ctx)) {
-      out.append('element.tag ', ctx.isEqual ? '=' : '!=', ' #', ctx.elementTag)
-      return out
-    }
-    if (FqnExpr.isModelRef(ctx)) {
+export const fqnExpr = zodOp(schemas.fqnExpr)(({ ctx, out }) => {
+  if ('wildcard' in ctx) {
+    return out.append('*')
+  }
+  if ('elementKind' in ctx) {
+    return out
+      .append('element.kind')
+      .append(ctx.isEqual ? ' = ' : ' != ')
+      .append(ctx.elementKind)
+  }
+  if ('elementTag' in ctx) {
+    return out
+      .append('element.tag')
+      .append(ctx.isEqual ? ' = ' : ' != ')
+      .append(`#${ctx.elementTag}`)
+  }
+  if ('ref' in ctx) {
+    if ('model' in ctx.ref) {
       out.append(ctx.ref.model)
-      appendSelector(out, ctx.selector)
-      return out
-    }
-    if (FqnExpr.isDeploymentRef(ctx)) {
+    } else {
       out.append(ctx.ref.deployment)
-      if (FqnRef.isInsideInstanceRef(ctx.ref)) {
+      if (ctx.ref.element) {
         out.append('.', ctx.ref.element)
       }
-      appendSelector(out, ctx.selector)
-      return out
     }
-    nonexhaustive(ctx)
-  })
-}
+    appendSelector(out, ctx.selector)
+    return out
+  }
+  nonexhaustive(ctx)
+})
 
-export function fqnExprOrWhere(): Op<FqnExpr.OrWhere> {
-  return operation('fqnExprOrWhere', ({ ctx, out }) => {
-    if (FqnExpr.isWhere(ctx)) {
-      return merge(
-        withctx(ctx.where.expr)(
-          fqnExpr(),
-        ),
-        indent(
-          print('where'),
-          indent(
-            withctx(ctx.where.condition as WhereOperatorData)(
-              whereOperator(),
-            ),
-          ),
-        ),
-      )({ ctx, out })
-    }
-    return fqnExpr()({ ctx, out })
-  })
-}
-
-export function fqnCustomExpr(): Op<FqnExpr.Custom> {
-  return operation('fqnCustomExpr', ({ ctx: { custom }, out }) => {
-    const exprOp = withctx(custom.expr)(
-      fqnExprOrWhere(),
-    )
-    const customOp = withctx(custom)(
-      body('with')(
-        titleProperty(),
-        descriptionProperty(),
-        notationProperty(),
-        notesProperty(),
-        property('navigateTo'),
-        styleProperties(),
+export const fqnExprCustom = zodOp(schemas.fqnExprCustom)(({ ctx: { custom }, exec }) => {
+  exec(
+    custom.expr,
+    fqnExprOrWhere(),
+  )
+  const customOp = withctx(custom)(
+    body('with')(
+      titleProperty(),
+      descriptionProperty(),
+      notationProperty(),
+      notesProperty(),
+      property('navigateTo'),
+      styleProperties(),
+    ),
+  )
+  if ('where' in custom.expr) {
+    return exec(
+      {},
+      indent(
+        customOp,
       ),
     )
-    if (FqnExpr.isWhere(custom.expr)) {
-      return merge(
-        exprOp,
-        indent(
-          customOp,
-        ),
-      )({ ctx: custom, out })
-    }
-    return merge(
-      exprOp,
-      space(),
-      customOp,
-    )({ ctx: custom, out })
-  })
-}
+  }
+  return exec(
+    {},
+    space(),
+    customOp,
+  )
+})
 
-export function fqnExprAny(): Op<FqnExpr.Any> {
-  return operation('fqnExprAny', ({ ctx, out }) => {
-    if (FqnExpr.isCustom(ctx)) {
-      return fqnCustomExpr()({ ctx, out })
-    }
-    return fqnExprOrWhere()({ ctx, out })
-  })
-}
+export const fqnExprOrWhere = zodOp(schemas.fqnExprOrWhere)(({ ctx, exec }) => {
+  if ('where' in ctx) {
+    exec(ctx.where.expr, fqnExpr())
+    exec(
+      ctx.where.condition,
+      indent(
+        print('where'),
+        indent(
+          whereOperator(),
+        ),
+      ),
+    )
+    return
+  }
+  exec(ctx, fqnExpr())
+})
+
+export const fqnExprAny = zodOp(schemas.fqnExprAny)(({ ctx, out }) => {
+  if ('custom' in ctx) {
+    return fqnExprCustom()({ ctx, out })
+  }
+  return fqnExprOrWhere()({ ctx, out })
+})
 
 // ──────────────────────────────────────────────
 // RelationExpr operators (expression.ts types)
 // ──────────────────────────────────────────────
 
-export function relationDirectExpr(): Op<RelationExpr.Direct> {
-  return merge(
+export const directRelationExpr = zodOp(schemas.directRelationExpr)(
+  merge(
     property(
       'source',
       fqnExpr(),
@@ -545,131 +253,138 @@ export function relationDirectExpr(): Op<RelationExpr.Direct> {
       'target',
       fqnExpr(),
     ),
-  )
-}
+  ),
+)
 
-export function relationIncomingExpr(): Op<RelationExpr.Incoming> {
-  return merge(
+export const incomingRelationExpr = zodOp(schemas.incomingRelationExpr)(
+  merge(
     print('-> '),
     property(
       'incoming',
       fqnExpr(),
     ),
-  )
-}
+  ),
+)
 
-export function relationOutgoingExpr(): Op<RelationExpr.Outgoing> {
-  return merge(
+export const outgoingRelationExpr = zodOp(schemas.outgoingRelationExpr)(
+  merge(
     property(
       'outgoing',
       fqnExpr(),
     ),
     print(' ->'),
-  )
-}
+  ),
+)
 
-export function relationInOutExpr(): Op<RelationExpr.InOut> {
-  return merge(
+export const inOutRelationExpr = zodOp(schemas.inoutRelationExpr)(
+  merge(
     print('-> '),
     property(
       'inout',
       fqnExpr(),
     ),
     print(' ->'),
-  )
-}
+  ),
+)
 
-export function relationExpr(): Op<RelationExpr> {
-  return operation('relationExpr', ({ ctx, out }) => {
-    if (RelationExpr.isDirect(ctx)) {
-      return relationDirectExpr()({ ctx, out })
-    }
-    if (RelationExpr.isIncoming(ctx)) {
-      return relationIncomingExpr()({ ctx, out })
-    }
-    if (RelationExpr.isOutgoing(ctx)) {
-      return relationOutgoingExpr()({ ctx, out })
-    }
-    if (RelationExpr.isInOut(ctx)) {
-      return relationInOutExpr()({ ctx, out })
-    }
-    nonexhaustive(ctx)
-  })
-}
+export const relationExpr = zodOp(schemas.relationExpr)(({ ctx, exec }) => {
+  if ('source' in ctx) {
+    return exec(ctx, directRelationExpr())
+  }
+  if ('incoming' in ctx) {
+    return exec(ctx, incomingRelationExpr())
+  }
+  if ('outgoing' in ctx) {
+    return exec(ctx, outgoingRelationExpr())
+  }
+  if ('inout' in ctx) {
+    return exec(ctx, inOutRelationExpr())
+  }
+  nonexhaustive(ctx)
+})
 
-export function relationExprOrWhere(): Op<RelationExpr.OrWhere> {
-  return operation('relationExprOrWhere', ({ ctx, out }) => {
-    if (RelationExpr.isWhere(ctx)) {
-      return merge(
-        withctx(ctx.where.expr)(
-          relationExpr(),
-        ),
+export const relationExprOrWhere = zodOp(schemas.relationExprOrWhere)(({ ctx, out }) => {
+  if ('where' in ctx) {
+    return merge(
+      withctx(ctx.where.expr)(
+        relationExpr(),
+      ),
+      indent(
+        print('where'),
         indent(
-          print('where'),
-          indent(
-            withctx(ctx.where.condition as WhereOperatorData)(
-              whereOperator(),
-            ),
+          withctx(ctx.where.condition)(
+            whereOperator(),
           ),
         ),
-      )({ ctx, out })
-    }
-    return relationExpr()({ ctx, out })
-  })
-}
-
-export function relationCustomExpr(): Op<RelationExpr.Custom> {
-  return operation('relationCustomExpr', ({ ctx: { customRelation }, out }) => {
-    const exprOp = withctx(customRelation.expr)(
-      relationExprOrWhere(),
-    )
-    const customOp = withctx(customRelation)(
-      body('with')(
-        titleProperty(),
-        descriptionProperty(),
-        notationProperty(),
-        markdownProperty('notes'),
-        property('navigateTo'),
-        styleProperties(),
-        property('head'),
-        property('tail'),
-        property('line'),
       ),
-    )
-    if (RelationExpr.isWhere(customRelation.expr)) {
-      return merge(
-        exprOp,
-        indent(
-          customOp,
-        ),
-      )({ ctx: customRelation, out })
-    }
-    return merge(
-      exprOp,
-      space(),
-      customOp,
-    )({ ctx: customRelation, out })
-  })
-}
+    )({ ctx, out })
+  }
+  return relationExpr()({ ctx, out })
+})
+
+export const relationExprCustom = zodOp(schemas.relationExprCustom)(({ ctx: { customRelation }, exec }) => {
+  exec(
+    customRelation.expr,
+    relationExprOrWhere(),
+  )
+
+  const customOp = withctx(customRelation)(
+    body('with')(
+      titleProperty(),
+      descriptionProperty(),
+      notationProperty(),
+      markdownProperty('notes'),
+      property('navigateTo'),
+      styleProperties(),
+      property('head'),
+      property('tail'),
+      property('line'),
+    ),
+  )
+  const hasWhere = 'where' in customRelation.expr
+
+  if (hasWhere) {
+    exec({}, indent(customOp))
+  } else {
+    exec({}, space(), customOp)
+  }
+})
+
+export const relationExprAny = zodOp(schemas.relationExprAny)(({ ctx, exec }) => {
+  if ('customRelation' in ctx) {
+    return exec(ctx, relationExprCustom())
+  }
+  return exec(ctx, relationExprOrWhere())
+})
 
 // ──────────────────────────────────────────────
 // Expression dispatcher (expression.ts types)
 // ──────────────────────────────────────────────
 
-export function expression(): Op<Expression> {
-  return operation('expression', ({ ctx, out }) => {
-    if (Expression.isFqnExpr(ctx)) {
-      if (FqnExpr.isCustom(ctx)) {
-        return fqnCustomExpr()({ ctx, out })
-      }
-      return fqnExprOrWhere()({ ctx, out })
+export const expression = zodOp(schemas.expression)(({ ctx, exec }) => {
+  if ('custom' in ctx) {
+    return exec(ctx, fqnExprCustom())
+  }
+  if ('customRelation' in ctx) {
+    return exec(ctx, relationExprCustom())
+  }
+  if ('wildcard' in ctx || 'ref' in ctx || 'elementKind' in ctx || 'elementTag' in ctx) {
+    return exec(ctx, fqnExpr())
+  }
+  if ('source' in ctx || 'incoming' in ctx || 'outgoing' in ctx || 'inout' in ctx) {
+    return exec(ctx, relationExpr())
+  }
+  if ('where' in ctx) {
+    const { expr, condition } = ctx.where
+    if ('source' in expr || 'incoming' in expr || 'outgoing' in expr || 'inout' in expr) {
+      return exec({
+        where: {
+          expr,
+          condition,
+        },
+      }, relationExprOrWhere())
     }
-    if (Expression.isRelation(ctx)) {
-      if (RelationExpr.isCustom(ctx)) {
-        return relationCustomExpr()({ ctx, out })
-      }
-      return relationExprOrWhere()({ ctx, out })
-    }
-    nonexhaustive(ctx)
-  })
-}
+    return exec({ where: { expr, condition } }, fqnExprOrWhere())
+  }
+  nonexhaustive(ctx)
+})

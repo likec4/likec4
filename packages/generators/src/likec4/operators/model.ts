@@ -1,34 +1,26 @@
 import type { Fqn } from '@likec4/core/types'
 import { nameFromFqn, parentFqn, sortParentsFirst } from '@likec4/core/utils'
-import { hasAtLeast, isEmptyish, pipe, piped, values } from 'remeda'
-import type {
-  ElementData,
-  LikeC4Data,
-  RelationshipData,
-} from '../types'
+import { isEmptyish, pipe, values } from 'remeda'
+
+import { schemas } from '../schemas'
 import {
   type AnyOp,
-  type Op,
+  type Ctx,
   body,
   foreach,
-  foreachNewLine,
   inlineText,
-  lazy,
   lines,
-  noop,
-  operation,
   print,
   property,
   select,
-  separateNewLine,
   spaceBetween,
   when,
   withctx,
+  zodOp,
 } from './base'
 import {
   colorProperty,
   descriptionProperty,
-  enumProperty,
   linksProperty,
   metadataProperty,
   styleProperties,
@@ -39,10 +31,10 @@ import {
 
 // --- Tree building ---
 
-interface ElementTreeNode {
-  name: string
-  element: ElementData
-  children: ElementTreeNode[]
+type ElementData = schemas.model.element.Data
+
+type ElementTreeNode = ElementData & {
+  children?: ElementTreeNode[]
 }
 
 function buildTree(elements: ElementData[]): {
@@ -58,15 +50,14 @@ function buildTree(elements: ElementData[]): {
   )
 
   for (const element of sorted) {
-    const name = nameFromFqn(element.id)
-    const node: ElementTreeNode = { name, element, children: [] }
+    const node: ElementTreeNode = { ...element, children: [] }
     nodes.set(element.id, node)
 
     const parentId = parentFqn(element.id)
     const parent = parentId ? nodes.get(parentId) : undefined
 
     if (parent) {
-      parent.children.push(node)
+      parent.children!.push(node)
     } else {
       roots.push(node)
     }
@@ -97,8 +88,8 @@ function hasElementProps(el: ElementData): boolean {
 
 // --- Element ---
 
-function elementProperties(): Op<ElementData> {
-  return lines<ElementData>(
+const elementProperties = zodOp(schemas.model.element)(
+  lines(
     tagsProperty(),
     technologyProperty(),
     summaryProperty(),
@@ -111,25 +102,25 @@ function elementProperties(): Op<ElementData> {
         styleProperties(),
       ),
     ),
-  )
-}
+  ),
+)
 
-export function printElement(node: ElementTreeNode): AnyOp {
-  return withctx(node, elementOp())
-}
+export function elementTree() {
+  return function elementTreeNodeOp<E extends ElementTreeNode>(
+    { ctx, out }: Ctx<E>,
+  ): Ctx<E> {
+    const el = ctx
+    const needsBody = (ctx.children?.length ?? 0) > 0 || hasElementProps(el)
 
-export function elementOp(): Op<ElementTreeNode> {
-  return operation(({ ctx: node, out }) => {
-    const el = node.element
-    const needsBody = node.children.length > 0 || hasElementProps(el)
+    const name = nameFromFqn(el.id)
 
     const inline: AnyOp[] = [
-      print(node.name),
+      print(name),
       print('='),
       print(el.kind),
     ]
 
-    if (el.title && el.title !== node.name) {
+    if (el.title && el.title !== name) {
       inline.push(inlineText(el.title))
     }
 
@@ -138,25 +129,25 @@ export function elementOp(): Op<ElementTreeNode> {
         body(
           lines(2)(
             withctx(el, elementProperties()),
-            ...node.children.map(child => printElement(child)),
+            ...(ctx.children ?? []).map(node => withctx(node, elementTree())),
           ),
         ),
       )
     }
 
-    return spaceBetween(...inline)({ ctx: node, out }).out
-  })
+    return spaceBetween(...inline)({ ctx, out })
+  }
 }
 
 // --- Relationship ---
 
-function hasRelationStyle(rel: RelationshipData): boolean {
+function hasRelationStyle(rel: schemas.model.relationship.Data): boolean {
   return !!(
     rel.color || rel.line || rel.head || rel.tail
   )
 }
 
-function hasRelationProps(rel: RelationshipData): boolean {
+function hasRelationProps(rel: schemas.model.relationship.Data): boolean {
   return !!(
     rel.description || rel.summary || rel.technology
     || (rel.tags && rel.tags.length > 0)
@@ -167,51 +158,8 @@ function hasRelationProps(rel: RelationshipData): boolean {
   )
 }
 
-function relationProperties(): Op<RelationshipData> {
-  return body(
-    tagsProperty(),
-    technologyProperty(),
-    summaryProperty(),
-    descriptionProperty(),
-    property('navigateTo'),
-    linksProperty(),
-    metadataProperty(),
-    when(
-      hasRelationStyle,
-      body('style')(
-        colorProperty(),
-        property('line'),
-        property('head'),
-        property('tail'),
-      ),
-    ),
-  )
-}
-
-export function printRelationship(rel: RelationshipData): AnyOp {
-  const arrow = rel.kind ? `-[${rel.kind}]->` : '->'
-
-  const inline: AnyOp[] = [
-    print(rel.source.model),
-    print(arrow),
-    print(rel.target.model),
-  ]
-
-  if (rel.title) {
-    inline.push(inlineText(rel.title))
-  }
-
-  if (hasRelationProps(rel)) {
-    inline.push(
-      withctx(rel, relationProperties()),
-    )
-  }
-
-  return spaceBetween(...inline)
-}
-
-export function relationshipOp(): Op<RelationshipData> {
-  return spaceBetween(
+export const relationship = zodOp(schemas.model.relationship)(
+  spaceBetween(
     print(rel => rel.source.model),
     print(rel => rel.kind ? `-[${rel.kind}]->` : '->'),
     print(rel => rel.target.model),
@@ -221,65 +169,53 @@ export function relationshipOp(): Op<RelationshipData> {
     ),
     when(
       hasRelationProps,
-      relationProperties(),
+      body(
+        tagsProperty(),
+        technologyProperty(),
+        summaryProperty(),
+        descriptionProperty(),
+        property('navigateTo'),
+        linksProperty(),
+        metadataProperty(),
+        when(
+          hasRelationStyle,
+          body('style')(
+            colorProperty(),
+            property('line'),
+            property('head'),
+            property('tail'),
+          ),
+        ),
+      ),
     ),
-  )
-}
+  ),
+)
+
+export const element = zodOp(schemas.model.element)(
+  elementTree(),
+)
 
 // --- Main ---
 
-export function modelOp<A extends Pick<LikeC4Data, 'elements' | 'relations'>>(): Op<A> {
-  return body('model')(
+export const model = zodOp(schemas.model.schema)(
+  body('model')(
     lines(2)(
       select(
         d => buildTree(d.elements ? values(d.elements) : []).roots,
         lines(2)(
           foreach(
-            elementOp(),
+            elementTree(),
           ),
         ),
       ),
       select(
-        d => d.relations ? values(d.relations) : [],
+        d => d.relations ? values(d.relations) : undefined,
         lines(2)(
           foreach(
-            relationshipOp(),
+            relationship(),
           ),
         ),
       ),
     ),
-  )
-}
-
-export function printModel({ elements, relations }: Pick<LikeC4Data, 'elements' | 'relations'>): AnyOp {
-  if (isEmptyish(elements) && isEmptyish(relations)) {
-    return noop()
-  }
-
-  return withctx({ elements, relations }, modelOp())
-  // const ops: AnyOp[] = []
-
-  // const tree = buildTree(elements ? values(elements) : [])
-  // if (hasAtLeast(tree.roots, 1)) {
-  //   ops.push(
-  //     ...tree.roots.map(elementOp),
-  //   )
-  // }
-
-  // const rels = relations ? values(relations) : []
-  // if (hasAtLeast(rels, 1)) {
-  //   ops.push(
-  //     ...rels.map(relationshipOp),
-  //   )
-  // }
-
-  // if (hasAtLeast(ops, 1)) {
-  //   return body('model')(
-  //     lines(2)(
-  //       ...ops,
-  //     ),
-  //   )
-  // }
-
-  // return noop
-}
+  ),
+)

@@ -1,5 +1,6 @@
 import {
   hasProp,
+  invariant,
   isDynamicStep,
   isDynamicStepsParallel,
   isDynamicStepsSeries,
@@ -8,9 +9,7 @@ import {
   isViewRuleAutoLayout,
   isViewRuleGlobalPredicateRef,
   isViewRuleGlobalStyle,
-  isViewRuleGroup,
   isViewRulePredicate,
-  isViewRuleRank,
   isViewRuleStyle,
   nonexhaustive,
 } from '@likec4/core'
@@ -18,27 +17,15 @@ import type {
   DynamicStep,
   DynamicViewRule,
   DynamicViewStep,
-  ElementViewPredicate,
-  ElementViewRule,
-  ElementViewRuleGroup,
-  ElementViewRuleRank,
-  ElementViewRuleStyle,
   ParsedDynamicView,
-  ParsedElementView,
   ParsedView,
-  ViewRuleAutoLayout,
-  ViewRuleGlobalPredicateRef,
-  ViewRuleGlobalStyle,
 } from '@likec4/core/types'
 import { hasAtLeast, piped, values } from 'remeda'
-import { ModelExpressionSchema } from '../types'
+import { schemas } from '../schemas'
 import {
   type AnyOp,
   type Op,
-  type Ops,
-  type Output,
   body,
-  executeOnCtx,
   foreach,
   foreachNewLine,
   guard,
@@ -53,8 +40,9 @@ import {
   space,
   spaceBetween,
   withctx,
+  zodOp,
 } from './base'
-import { modelExpression } from './expressions'
+import { expression } from './expressions'
 import {
   colorProperty,
   descriptionProperty,
@@ -67,50 +55,47 @@ import {
   titleProperty,
 } from './properties'
 
-export function elementViewRulePredicate(): Op<ElementViewPredicate> {
-  return operation('elementViewRule', ({ ctx, out }) => {
-    const exprs = ctx.include ?? ctx.exclude
-    let type = 'include' in ctx ? 'include' : 'exclude'
+export const viewRulePredicate = zodOp(schemas.views.viewRulePredicate)(({ ctx, exec }) => {
+  let exprs
+  let type
+  if ('include' in ctx) {
+    exprs = ctx.include
+    type = 'include'
+  } else if ('exclude' in ctx) {
+    exprs = ctx.exclude
+    type = 'exclude'
+  }
+  invariant(exprs && type, 'Invalid view rule predicate')
 
-    if (!hasAtLeast(exprs, 1)) {
-      return
-    }
+  if (!hasAtLeast(exprs, 1)) {
+    return
+  }
 
-    const isMultiple = hasAtLeast(exprs, 2)
+  const isMultiple = hasAtLeast(exprs, 2)
 
-    const exprOp = withctx(exprs)(
-      foreach(
-        guard(
-          ModelExpressionSchema,
-          modelExpression(),
-        ),
-        separateComma(isMultiple),
-      ),
-    )
+  const exprOp = withctx(exprs)(
+    foreach(
+      expression(),
+      separateComma(isMultiple),
+    ),
+  )
 
-    executeOnCtx(
-      { ctx, out },
-      merge(
-        print(type),
-        ...(isMultiple ? [indent(exprOp)] : [space(), exprOp]),
-      ),
-    )
-  })
-}
+  exec(
+    ctx,
+    merge(
+      print(type),
+      ...(isMultiple ? [indent(exprOp)] : [space(), exprOp]),
+    ),
+  )
+})
 
-export function elementViewRuleGroup(): Op<ElementViewRuleGroup> {
-  throw new Error('not implemented')
-}
-export function elementViewRuleStyle(): Op<ElementViewRuleStyle> {
-  return spaceBetween(
+export const viewRuleStyle = zodOp(schemas.views.viewRuleStyle)(
+  spaceBetween(
     print('style'),
     property(
       'targets',
       foreach(
-        guard(
-          ModelExpressionSchema,
-          modelExpression(),
-        ),
+        expression(),
         separateComma(),
       ),
     ),
@@ -118,23 +103,26 @@ export function elementViewRuleStyle(): Op<ElementViewRuleStyle> {
       notationProperty(),
       property('style', styleProperties()),
     ),
-  )
-}
-export function elementViewRuleGlobalStyle(): Op<ViewRuleGlobalStyle> {
+  ),
+)
+export const viewRuleGroup = zodOp(schemas.views.viewRuleGroup)(({ ctx, exec }) => {
   throw new Error('not implemented')
-}
-export function elementViewRuleGlobalPredicateRef(): Op<ViewRuleGlobalPredicateRef> {
+})
+export const viewRuleGlobalStyle = zodOp(schemas.views.viewRuleGlobalStyle)(({ ctx, exec }) => {
   throw new Error('not implemented')
-}
+})
+export const viewRuleGlobalPredicate = zodOp(schemas.views.viewRuleGlobalPredicate)(({ ctx, exec }) => {
+  throw new Error('not implemented')
+})
 
-export function elementViewRuleAutoLayout(): Op<ViewRuleAutoLayout> {
-  const mapping = {
-    'TB': 'TopBottom',
-    'BT': 'BottomTop',
-    'LR': 'LeftRight',
-    'RL': 'RightLeft',
-  } as const
-  return spaceBetween(
+const mapping = {
+  'TB': 'TopBottom',
+  'BT': 'BottomTop',
+  'LR': 'LeftRight',
+  'RL': 'RightLeft',
+} as const
+export const viewRuleAutoLayout = zodOp(schemas.views.viewRuleAutoLayout)(
+  spaceBetween(
     print('autoLayout'),
     property(
       'direction',
@@ -147,52 +135,42 @@ export function elementViewRuleAutoLayout(): Op<ViewRuleAutoLayout> {
         printProperty('nodeSep'),
       ),
     ),
-  )
-}
-export function elementViewRuleRank(): Op<ElementViewRuleRank> {
+  ),
+)
+
+export const viewRuleRank = zodOp(schemas.views.viewRuleRank)(({ ctx, exec }) => {
   throw new Error('not implemented')
-}
+})
 
-/**
- * Creates an execution function that runs operations with the given output
- *
- * @see elementViewRule
- */
-function execToOut(out: Output) {
-  return <A>(ctx: A, ...ops: Ops<A>) => executeOnCtx({ ctx, out }, ops)
-}
-
-export function elementViewRule(): Op<ElementViewRule> {
-  return operation('elementViewRule', ({ ctx, out }) => {
-    const exec = execToOut(out)
-
-    if (isViewRulePredicate(ctx)) {
-      return exec(ctx, elementViewRulePredicate())
+export const elementViewRule = zodOp(schemas.views.elementViewRule)(
+  ({ ctx, exec }) => {
+    if ('include' in ctx || 'exclude' in ctx) {
+      return exec(ctx, viewRulePredicate())
     }
-    if (isViewRuleGroup(ctx)) {
-      return exec(ctx, elementViewRuleGroup())
+    if ('groupRules' in ctx) {
+      return exec(ctx, viewRuleGroup())
     }
-    if (isViewRuleRank(ctx)) {
-      return exec(ctx, elementViewRuleRank())
+    if ('rank' in ctx) {
+      return exec(ctx, viewRuleRank())
     }
-    if (isViewRuleAutoLayout(ctx)) {
-      return exec(ctx, elementViewRuleAutoLayout())
+    if ('direction' in ctx) {
+      return exec(ctx, viewRuleAutoLayout())
     }
-    if (isViewRuleGlobalStyle(ctx)) {
-      return exec(ctx, elementViewRuleGlobalStyle())
+    if ('styleId' in ctx) {
+      return exec(ctx, viewRuleGlobalStyle())
     }
-    if (isViewRuleGlobalPredicateRef(ctx)) {
-      return exec(ctx, elementViewRuleGlobalPredicateRef())
+    if ('predicateId' in ctx) {
+      return exec(ctx, viewRuleGlobalPredicate())
     }
-    if (isViewRuleStyle(ctx)) {
-      return exec(ctx, elementViewRuleStyle())
+    if ('targets' in ctx && 'style' in ctx) {
+      return exec(ctx, viewRuleStyle())
     }
     nonexhaustive(ctx)
-  })
-}
+  },
+)
 
-export function elementView(): Op<ParsedElementView> {
-  return spaceBetween(
+export const elementView = zodOp(schemas.views.elementView)(
+  spaceBetween(
     print('view'),
     print(v => v.id),
     property(
@@ -202,7 +180,7 @@ export function elementView(): Op<ParsedElementView> {
         print(),
       ),
     ),
-    body<ParsedElementView>(
+    body(
       lines(2)(
         // Properties on each line
         lines(
@@ -219,8 +197,8 @@ export function elementView(): Op<ParsedElementView> {
         ),
       ),
     ),
-  )
-}
+  ),
+)
 
 // --- Dynamic View ---
 

@@ -7,7 +7,7 @@ import {
   materialize,
   withctx,
 } from './base'
-import { expression, fqnExprAny, modelExpression, whereOperator } from './expressions'
+import { expression, fqnExprAny, whereOperator } from './expressions'
 
 /**
  * Returns expect function to execute operations on the given context
@@ -168,7 +168,7 @@ describe('whereOperator', () => {
 function expectModelExpr(expr: ModelExpression) {
   const exec = withctx(expr as unknown as ModelExpressionData)
   return viExpect(
-    materialize(exec(modelExpression())).trimEnd(),
+    materialize(exec(expression())).trimEnd(),
   )
 }
 

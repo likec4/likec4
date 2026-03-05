@@ -7,7 +7,6 @@ import {
   joinToNode,
   NewLineNode,
   NL,
-  NLEmpty,
   toString,
 } from 'langium/generate'
 import {
@@ -15,8 +14,6 @@ import {
   hasAtLeast,
   identity,
   isArray,
-  isBoolean,
-  isEmpty,
   isFunction,
   isNonNullish,
   isNullish,
@@ -30,6 +27,7 @@ import {
 import { dedent } from 'strip-indent'
 import type { IfAny, Or } from 'type-fest'
 import z from 'zod/v4'
+import type * as z4 from 'zod/v4/core'
 
 function hasContent(out: Generated): boolean {
   if (typeof out === 'string') {
@@ -100,8 +98,10 @@ export type Ops<A> = Op<A>[]
  * Create a new context with the given value and an empty output node
  * @see executeOnFresh
  */
-export function fresh<A>(ctx: A): IfAny<A, never, Ctx<A>> {
-  return { ctx, out: new CompositeGeneratorNode() } as never
+export function fresh(): Ctx<never>
+export function fresh<A>(ctx: A): IfAny<A, never, Ctx<A>>
+export function fresh(ctx?: unknown) {
+  return { ctx: ctx ?? undefined, out: new CompositeGeneratorNode() } as never
 }
 
 /**
@@ -496,7 +496,7 @@ export function join<A>(
     operations: Op<A> | Ops<A>
   } & JoinOptions<CompositeGeneratorNode>,
 ): Op<A> {
-  return operation<A>('join', ({ ctx, out }) => {
+  return operation<A>(function joinOp({ ctx, out }) {
     const { operations, ...joinOptions } = params
     const ops = Array.isArray(operations) ? operations : [operations]
     invariant(hasAtLeast(ops, 1), 'At least one operation is required')
@@ -513,7 +513,7 @@ export function join<A>(
 
     nested = filter(nested, hasContentOrNewLine)
 
-    out.appendIf(
+    return out.appendIf(
       nested.length > 0,
       joinToNode(
         nested,
@@ -854,4 +854,82 @@ export function select<A, B>(
       executeOnCtx({ ctx: value, out }, ops)
     }
   })
+}
+
+/**
+ * Creates an execution function that runs operations
+ * with new context but using the same output
+ */
+function execToOut(out: Output) {
+  return <A>(ctx: A, ...ops: Ops<A>) => executeOnCtx({ ctx, out }, ops)
+}
+
+type ExecToOut = {
+  /**
+   * Execute operations using the given context and current output
+   * @param ctx The context to use
+   * @param ops The operations to execute
+   * @returns The updated context and output
+   */
+  exec: <A>(ctx: A, ...ops: Ops<A>) => Ctx<A>
+}
+
+/**
+ * Creates print operation with context based on zod schema
+ * @example
+ * ```ts
+ * const newOp = zodOp(schemas.directRelationExpr)(
+ *   merge(
+ *     property(
+ *       'source',
+ *       fqnExpr(),
+ *     ),
+ *     print(v => v.isBidirectional ? ' <-> ' : ' -> '),
+ *     property(
+ *       'target',
+ *       fqnExpr(),
+ *     ),
+ *   ),
+ * )
+ * ```
+ *
+ * @example
+ * ```ts
+ * const whereOperator = zodOp(schemas.whereOperator)(({ ctx, exec }) => {
+ *   if ('and' in ctx) {
+ *     return exec(ctx, whereAnd())
+ *   }
+ *   if ('or' in ctx) {
+ *     return exec(ctx, whereOr())
+ *   }
+ *   nonexhaustive(ctx)
+ * })
+ * ```
+ */
+export function zodOp<Z extends z4.$ZodType<any, any>>(schema: Z) {
+  return (operation: (input: Ctx<z.output<Z>> & ExecToOut) => any) => {
+    return <A extends z.input<Z>>(): Op<A> => {
+      return ({ ctx, out }: Ctx<A>): Ctx<A> => {
+        const result = z.safeParse(schema, ctx)
+        if (result.success) {
+          const opres = operation({ ctx: result.data, out, exec: execToOut(out) })
+          if (opres instanceof CompositeGeneratorNode) {
+            return {
+              ctx,
+              out: opres,
+            }
+          }
+          if (typeof opres === 'function') {
+            return {
+              ctx,
+              out,
+              ...opres({ ctx, out }),
+            }
+          }
+          return { ctx, out }
+        }
+        throw result.error
+      }
+    }
+  }
 }

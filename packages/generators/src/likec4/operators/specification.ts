@@ -1,14 +1,7 @@
-import type {
-  Tag,
-} from '@likec4/core/types'
 import { entries } from 'remeda'
-import type {
-  ElementSpecificationData,
-  RelationshipSpecificationData,
-  SpecificationData,
-} from '../types'
+import z from 'zod/v4'
+import * as schemas from '../schemas/specification'
 import {
-  type Op,
   body,
   foreachNewLine,
   lines,
@@ -17,11 +10,11 @@ import {
   property,
   select,
   spaceBetween,
+  zodOp,
 } from './base'
 import {
   colorProperty,
   descriptionProperty,
-  enumProperty,
   linksProperty,
   notationProperty,
   styleProperties,
@@ -31,33 +24,8 @@ import {
   titleProperty,
 } from './properties'
 
-export function specificationOp<A extends SpecificationData>(): Op<A> {
-  return body('specification')(
-    lines(2)(
-      select(
-        c => c.elements && entries(c.elements),
-        foreachNewLine(
-          elementSpecification(),
-        ),
-      ),
-      select(
-        c => c.relationships && entries(c.relationships),
-        foreachNewLine(
-          relationshipSpecification(),
-        ),
-      ),
-      select(
-        c => c.tags && entries(c.tags),
-        foreachNewLine(
-          tagSpecification(),
-        ),
-      ),
-    ),
-  )
-}
-
-export function tagSpecification(): Op<[Tag, { color?: string | undefined }]> {
-  return spaceBetween(
+export const tagSpecification = zodOp(z.tuple([z.string(), schemas.tagSpec]))(
+  spaceBetween(
     print('tag'),
     printProperty('0'),
     property(
@@ -72,11 +40,11 @@ export function tagSpecification(): Op<[Tag, { color?: string | undefined }]> {
         ),
       ),
     ),
-  )
-}
+  ),
+)
 
-export function elementSpecification<A extends ElementSpecificationData>(): Op<[string, A]> {
-  return spaceBetween(
+export const elementKind = zodOp(z.tuple([z.string(), schemas.element]))(
+  spaceBetween(
     print('element'),
     printProperty('0'),
     property(
@@ -97,11 +65,11 @@ export function elementSpecification<A extends ElementSpecificationData>(): Op<[
         ),
       ),
     ),
-  )
-}
+  ),
+)
 
-export function relationshipSpecification<A extends RelationshipSpecificationData>(): Op<[string, A]> {
-  return spaceBetween(
+export const relationshipKind = zodOp(z.tuple([z.string(), schemas.relationship]))(
+  spaceBetween(
     print('relationship'),
     printProperty('0'),
     property(
@@ -110,10 +78,35 @@ export function relationshipSpecification<A extends RelationshipSpecificationDat
         technologyProperty(),
         notationProperty(),
         colorProperty(),
-        enumProperty('line'),
-        enumProperty('head'),
-        enumProperty('tail'),
+        property('line'),
+        property('head'),
+        property('tail'),
       ),
     ),
-  )
-}
+  ),
+)
+
+export const specification = zodOp(schemas.schema)(
+  body('specification')(
+    lines(2)(
+      select(
+        c => c.elements && entries(c.elements),
+        foreachNewLine(
+          elementKind(),
+        ),
+      ),
+      select(
+        c => c.relationships && entries(c.relationships),
+        foreachNewLine(
+          relationshipKind(),
+        ),
+      ),
+      select(
+        c => c.tags && entries(c.tags),
+        foreachNewLine(
+          tagSpecification(),
+        ),
+      ),
+    ),
+  ),
+)
