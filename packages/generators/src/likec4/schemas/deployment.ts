@@ -5,31 +5,9 @@ import { produce } from 'immer'
 import { indexBy, isArray, isNonNullish, pickBy, prop, randomString } from 'remeda'
 import * as z from 'zod/v4'
 import * as common from './common'
+import * as expression from './expression'
 
-// export const elementTree = z.object({
-//     id: common.fqn.optional(),
-//     name: common.id.optional(),
-//     kind: common.kind,
-//     style: common.style.optional(),
-//     /**
-//      * Allowing shape, color and icon to be defined at the element level for convenience,
-//      * they will be moved to the style property during parsing
-//      * (and will override properties)
-//      */
-//     shape: common.shape.optional(),
-//     color: common.color.optional(),
-//     icon: common.icon.optional(),
-//     get children(): z.ZodOptional<z.ZodArray<typeof elementTree>> {
-//       return z.array(elementTree).optional()
-//     },
-//   })
-// .readonly()
-
-/**
- * Replicates the {@link Element} from the core,
- * less strict, as the generator should be able to handle missing fields and provide defaults.
- */
-export const element = common.props
+export const node = common.props
   .extend({
     id: common.fqn,
     kind: common.kind,
@@ -43,26 +21,51 @@ export const element = common.props
     color: common.color.optional(),
     icon: common.icon.optional(),
   })
+  .readonly()
   .transform(value => {
-    let { shape, color, icon, ...rest } = value
+    const { shape, color, icon, ...rest } = value
     if (shape || color || icon) {
-      rest = produce(rest, draft => {
+      return produce(rest, draft => {
         draft.style = rest.style || {}
         draft.style.shape = shape ?? rest.style?.shape
         draft.style.color = color ?? rest.style?.color
         draft.style.icon = icon ?? rest.style?.icon
       })
     }
-    return pickBy(rest, isNonNullish)
+    return rest
+  })
+  .transform(pickBy(isNonNullish))
+
+export const instance = common.props
+  .extend({
+    id: common.fqn,
+    element: common.fqn,
+    style: common.style.optional(),
+    /**
+     * Allowing shape, color and icon to be defined at the element level for convenience,
+     * they will be moved to the style property during parsing
+     * (and will override properties)
+     */
+    shape: common.shape.optional(),
+    color: common.color.optional(),
+    icon: common.icon.optional(),
   })
   .readonly()
+  .transform(value => {
+    const { shape, color, icon, ...rest } = value
+    if (shape || color || icon) {
+      return produce(rest, draft => {
+        draft.style = rest.style || {}
+        draft.style.shape = shape ?? rest.style?.shape
+        draft.style.color = color ?? rest.style?.color
+        draft.style.icon = icon ?? rest.style?.icon
+      })
+    }
+    return rest
+  })
+  .transform(pickBy(isNonNullish))
 
-const relationshipEndpoint = z.union([
-  common.fqn,
-  z.strictObject({
-    model: common.fqn,
-  }),
-]).transform(v => (typeof v === 'string' ? { model: v } : v))
+const relationshipEndpoint = expression.refDeployment
 
 const relationshipId = common.id.transform(value => value as unknown as RelationId)
 
@@ -79,10 +82,12 @@ export const relationship = common.props
     head: common.arrow.nullish(),
     tail: common.arrow.nullish(),
   })
-  .transform(pickBy(isNonNullish))
   .readonly()
+  .transform(pickBy(isNonNullish))
 
 // ============ Top-Level Schema ============
+
+export const element = z.union([node, instance])
 
 const elements = z.record(common.fqn, element)
 const relationships = z.record(relationshipId, relationship)
@@ -105,22 +110,4 @@ export const schema = z
       ])
       .transform(v => isArray(v) ? indexBy(v, genRelationshipId) as unknown as z.output<typeof relationships> : v)
       .optional(),
-    //     isArray(v) ?
-    //       indexBy(
-    //         v,
-    //         (r, idx) => r.id as string ?? stringHash(`${r.source.model}, ${r.target.model}, ${r.kind ?? ''}, ${idx}`),
-    //       ) :
-    //       v
-    //   )
-    //   .optional(),
-    // views: z.union([
-    //   z.record(viewId, ElementViewSchema),
-    //   z.array(ElementViewSchema)
-    //     .transform(indexBy(v => v.id as string)),
-    // ]),
-    // project: z.object({
-    //   id: z.string(),
-    //   styles: LikeC4StylesConfigSchema.nullish(),
-    // }),
-    // specification: SpecificationSchema,
   })

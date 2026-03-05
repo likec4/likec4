@@ -1,5 +1,5 @@
 import type { Fqn } from '@likec4/core/types'
-import { nameFromFqn, parentFqn, sortParentsFirst } from '@likec4/core/utils'
+import { invariant, nameFromFqn, parentFqn, sortParentsFirst } from '@likec4/core/utils'
 import { isEmptyish, pipe, values } from 'remeda'
 
 import { schemas } from '../schemas'
@@ -11,6 +11,7 @@ import {
   inlineText,
   lines,
   print,
+  printProperty,
   property,
   select,
   spaceBetween,
@@ -18,7 +19,7 @@ import {
   withctx,
   zodOp,
 } from './base'
-import { fqnRef } from './expressions.ts'
+import { fqnRef } from './expressions'
 import {
   colorProperty,
   descriptionProperty,
@@ -32,33 +33,45 @@ import {
 
 // --- Tree building ---
 
-type ElementData = schemas.model.element.Data
+type NodeData = schemas.deployment.node.Data
+type InstanceData = schemas.deployment.instance.Data
+type ElementData = schemas.deployment.element.Data
 
-type ElementTreeNode = ElementData & {
-  children?: ElementTreeNode[]
-}
+type TreeNodeData =
+  | NodeData & {
+    children: Array<TreeNodeData>
+  }
+  | InstanceData
 
 function buildTree(elements: ElementData[]): {
-  roots: readonly ElementTreeNode[]
-  nodes: ReadonlyMap<Fqn, ElementTreeNode>
+  roots: readonly TreeNodeData[]
+  nodes: ReadonlyMap<Fqn, TreeNodeData>
   exists: (fqn: Fqn) => boolean
 } {
-  const nodes = new Map<Fqn, ElementTreeNode>()
-  const roots: ElementTreeNode[] = []
+  const nodes = new Map<Fqn, TreeNodeData>()
+  const roots: TreeNodeData[] = []
   const sorted = pipe(
     elements,
     sortParentsFirst,
   )
 
   for (const element of sorted) {
-    const node: ElementTreeNode = { ...element, children: [] }
+    let node: TreeNodeData
+    if ('element' in element) {
+      node = element
+    } else {
+      node = {
+        ...element,
+        children: [],
+      }
+    }
     nodes.set(element.id, node)
 
     const parentId = parentFqn(element.id)
     const parent = parentId ? nodes.get(parentId) : undefined
 
-    if (parent) {
-      parent.children!.push(node)
+    if (parent && 'children' in parent) {
+      parent.children.push(node)
     } else {
       roots.push(node)
     }
@@ -73,7 +86,7 @@ function buildTree(elements: ElementData[]): {
 
 // --- Predicates ---
 
-function hasStyleProps(el: ElementData): boolean {
+function hasStyleProps(el: NodeData | InstanceData): boolean {
   return !isEmptyish(el.style)
 }
 
@@ -89,7 +102,7 @@ function hasElementProps(el: ElementData): boolean {
 
 // --- Element ---
 
-const elementProperties = zodOp(schemas.model.element)(
+const elementProperties = zodOp(schemas.deployment.element)(
   lines(
     tagsProperty(),
     technologyProperty(),
@@ -106,12 +119,40 @@ const elementProperties = zodOp(schemas.model.element)(
   ),
 )
 
-function elementTree() {
-  return function elementTreeNodeOp<E extends ElementTreeNode>(
+export const instance = zodOp(schemas.deployment.instance)(
+  spaceBetween(
+    when(
+      v => nameFromFqn(v.id) !== nameFromFqn(v.element),
+      print(v => nameFromFqn(v.id)),
+      print(' ='),
+    ),
+    print('instanceOf'),
+    printProperty('element'),
+    when(
+      v => !!v.title && v.title !== nameFromFqn(v.id),
+      property('title', inlineText()),
+    ),
+    when(
+      e => hasElementProps(e),
+      body(
+        elementProperties(),
+      ),
+    ),
+  ),
+)
+
+export function node() {
+  return function nodeOp<E extends TreeNodeData>(
     { ctx, out }: Ctx<E>,
   ): Ctx<E> {
     const el = ctx
-    const needsBody = (ctx.children?.length ?? 0) > 0 || hasElementProps(el)
+
+    if ('element' in el) {
+      instance()({ ctx: el, out })
+      return { ctx, out }
+    }
+    invariant('children' in el, 'Node must have children property')
+    const needsBody = el.children.length > 0 || hasElementProps(el)
 
     const name = nameFromFqn(el.id)
 
@@ -130,7 +171,7 @@ function elementTree() {
         body(
           lines(2)(
             withctx(el, elementProperties()),
-            ...(ctx.children ?? []).map(node => withctx(node, elementTree())),
+            ...el.children.map(node => withctx(node, nodeOp)),
           ),
         ),
       )
@@ -142,13 +183,13 @@ function elementTree() {
 
 // --- Relationship ---
 
-function hasRelationStyle(rel: schemas.model.relationship.Data): boolean {
+function hasRelationStyle(rel: schemas.deployment.relationship.Data): boolean {
   return !!(
     rel.color || rel.line || rel.head || rel.tail
   )
 }
 
-function hasRelationProps(rel: schemas.model.relationship.Data): boolean {
+function hasRelationProps(rel: schemas.deployment.relationship.Data): boolean {
   return !!(
     rel.description || rel.summary || rel.technology
     || (rel.tags && rel.tags.length > 0)
@@ -159,7 +200,7 @@ function hasRelationProps(rel: schemas.model.relationship.Data): boolean {
   )
 }
 
-export const relationship = zodOp(schemas.model.relationship)(
+export const relationship = zodOp(schemas.deployment.relationship)(
   spaceBetween(
     property('source', fqnRef()),
     print(rel => rel.kind ? `-[${rel.kind}]->` : '->'),
@@ -192,20 +233,20 @@ export const relationship = zodOp(schemas.model.relationship)(
   ),
 )
 
-export const element = zodOp(schemas.model.element)(
-  elementTree(),
-)
+// export const element = zodOp(schemas.model.element)(
+//   elementTree(),
+// )
 
 // --- Main ---
 
-export const model = zodOp(schemas.model.schema)(
-  body('model')(
+export const deployment = zodOp(schemas.deployment.schema)(
+  body('deployment')(
     lines(2)(
       select(
         d => buildTree(d.elements ? values(d.elements) : []).roots,
         lines(2)(
           foreach(
-            elementTree(),
+            node(),
           ),
         ),
       ),

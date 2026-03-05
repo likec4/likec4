@@ -26,7 +26,7 @@ import {
 } from 'remeda'
 import { dedent } from 'strip-indent'
 import type { IfAny, Or } from 'type-fest'
-import z from 'zod/v4'
+import * as z from 'zod/v4'
 import type * as z4 from 'zod/v4/core'
 
 function hasContent(out: Generated): boolean {
@@ -464,13 +464,16 @@ export function markdown(value?: string) {
   })
 }
 
-export function markdownOrString<A extends MarkdownOrString>(): Op<A>
+export function markdownOrString<A extends string | MarkdownOrString>(): Op<A>
 export function markdownOrString<A>(value: MarkdownOrString): Op<A>
 export function markdownOrString(value?: MarkdownOrString) {
   return operation<MarkdownOrString>(function markdownOrString(ctx) {
     let v = value ?? ctx.ctx
     if (isNullish(v)) {
       return
+    }
+    if (typeof v === 'string') {
+      return text(v)(ctx)
     }
     if ('md' in v) {
       return markdown(v.md)(ctx)
@@ -908,7 +911,7 @@ type ExecToOut = {
  */
 export function zodOp<Z extends z4.$ZodType<any, any>>(schema: Z) {
   return (operation: (input: Ctx<z.output<Z>> & ExecToOut) => any) => {
-    return <A extends z.input<Z>>(): Op<A> => {
+    return <A extends z.input<Z> = z.input<Z>>(): Op<A> => {
       return ({ ctx, out }: Ctx<A>): Ctx<A> => {
         const result = z.safeParse(schema, ctx)
         if (result.success) {

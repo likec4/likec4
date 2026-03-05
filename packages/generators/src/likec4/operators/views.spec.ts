@@ -2,8 +2,9 @@ import { type ViewsBuilder, Builder } from '@likec4/core/builder'
 import { describe, expect as viExpect, it } from 'vitest'
 import {
   materialize,
+  withctx,
 } from './base'
-import { printViews } from './views'
+import { views as viewsOp } from './views'
 
 const builder = Builder
   .specification({
@@ -44,7 +45,7 @@ function expect(...builders: Array<(input: ViewsBuilder<T>) => any>) {
     .build()
   return viExpect(
     materialize(
-      printViews(data),
+      withctx(data.views, viewsOp()),
     ),
   )
 }
@@ -118,6 +119,7 @@ describe('view', () => {
       ),
     ).toMatchInlineSnapshot(`
       "views {
+        
         view index {
           include * -> *
         }

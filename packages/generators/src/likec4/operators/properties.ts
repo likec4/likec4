@@ -1,8 +1,7 @@
-import type { Color, ElementStyle, Icon, Link, MarkdownOrString } from '@likec4/core/types'
+import { type Color, type ElementStyle, type Link, type MarkdownOrString, exact } from '@likec4/core/types'
 import { entries, isArray, isString, piped } from 'remeda'
 import type { ConditionalKeys } from 'type-fest'
-import type z from 'zod/v4'
-import type { StylePropertiesSchema } from '../types'
+import * as common from '../schemas/common'
 import type { Op } from './base'
 import {
   body,
@@ -18,6 +17,7 @@ import {
   separateNewLine,
   spaceBetween,
   text,
+  zodOp,
 } from './base'
 
 /**
@@ -32,22 +32,6 @@ export function textProperty<A>(
     spaceBetween(
       print(keyword ?? propertyName as string),
       text(),
-    ),
-  )
-}
-
-/**
- * Print a property from the context as an enum value (i.e. as it is)
- */
-export function enumProperty<A, P extends keyof A & string>(
-  propertyName: P,
-  // keyword?: string,
-): Op<A> {
-  return select(
-    e => e[propertyName] as string,
-    spaceBetween(
-      print(propertyName as string),
-      print(),
     ),
   )
 }
@@ -77,7 +61,7 @@ export const titleProperty = <A extends { title?: string | null | undefined }>()
     ),
   )
 
-export const summaryProperty = <A extends { summary?: MarkdownOrString | null | undefined }>(): Op<A> =>
+export const summaryProperty = <A extends { summary?: string | MarkdownOrString | null | undefined }>(): Op<A> =>
   property(
     'summary',
     spaceBetween(
@@ -86,7 +70,9 @@ export const summaryProperty = <A extends { summary?: MarkdownOrString | null | 
     ),
   )
 
-export const descriptionProperty = <A extends { description?: MarkdownOrString | null | undefined }>(): Op<A> =>
+export const descriptionProperty = <A extends { description?: string | MarkdownOrString | null | undefined }>(): Op<
+  A
+> =>
   property(
     'description',
     spaceBetween(
@@ -95,7 +81,7 @@ export const descriptionProperty = <A extends { description?: MarkdownOrString |
     ),
   )
 
-export const notesProperty = <A extends { notes?: MarkdownOrString | null | undefined }>(): Op<A> =>
+export const notesProperty = <A extends { notes?: string | MarkdownOrString | null | undefined }>(): Op<A> =>
   property(
     'notes',
     spaceBetween(
@@ -167,12 +153,12 @@ export const tagsProperty = <A extends { tags?: readonly string[] | undefined | 
     print(v => v.map(t => `#${t}`).join(', ')),
   )
 
-type LinkLike = string | { url: string; title?: string }
+type LinkLike = string | { url: string; title?: string | undefined }
 
 export function linkProperty<A extends LinkLike>(): Op<A> {
   return spaceBetween(
     select(
-      (l): Link => typeof l === 'string' ? { url: l } : l,
+      (l): Link => typeof l === 'string' ? { url: l } : exact({ url: l.url, title: l.title }),
       print('link'),
       print(v => v.url),
       property('title', inlineText()),
@@ -181,7 +167,7 @@ export function linkProperty<A extends LinkLike>(): Op<A> {
 }
 
 export const linksProperty = <
-  A extends { links?: ReadonlyArray<LinkLike> | null },
+  A extends { links?: ReadonlyArray<LinkLike> | null | undefined },
 >(): Op<A> =>
   property(
     'links',
@@ -229,10 +215,8 @@ export function iconProperty<A extends { icon?: string | undefined | null }>(): 
   )
 }
 
-type StyleProperties = z.infer<typeof StylePropertiesSchema>
-
-export function styleProperties<A extends StyleProperties>(): Op<A> {
-  return lines(
+export const styleProperties = zodOp(common.style)(
+  lines(
     property('shape'),
     colorProperty(),
     iconProperty(),
@@ -245,5 +229,5 @@ export function styleProperties<A extends StyleProperties>(): Op<A> {
     property('padding'),
     property('textSize'),
     property('multiple'),
-  )
-}
+  ),
+)

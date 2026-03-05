@@ -77,7 +77,8 @@ model {
         key1 'value2'
       }
       style {
-        shape storage
+        shape document
+        multiple true
       }
     }
   }
@@ -164,5 +165,40 @@ deployment {
     }
   }
   
-  prod.eu.db -> prod.us.db 'replicates'
+  prod.eu.db -> prod.us.db 'replicates' {
+    #internal
+    style {
+      color amber
+      line dotted
+    }
+  }
+}
+
+views {
+  
+  view index {
+    include *
+  }
+  
+  view cloud of cloud {
+    title 'must be one line'
+    description '''
+      Must be
+      
+      markdown
+    '''
+    
+    include
+      *,
+      cloud.frontend.dashboard,
+      * -> cloud.frontend._
+  }
+  
+  deployment view prod {
+    title 'prod'
+    
+    include
+      customer.instance,
+      prod.eu.zone1.ui
+  }
 }

@@ -1,7 +1,8 @@
 import { Builder } from '@likec4/core/builder'
 import { describe, it } from 'vitest'
-import { generateLikeC4, print, printTabIndent } from './generate-likec4'
-import * as operators from './operators'
+import type { schemas } from '../schemas'
+import { materialize, withctx } from './base'
+import { likec4data } from './likec4data'
 
 const {
   builder: b,
@@ -105,7 +106,10 @@ const builder = b
           metadata: {
             key1: 'value2',
           },
-          shape: 'storage',
+          style: {
+            multiple: true,
+          },
+          shape: 'document',
         }),
       ),
       system('email'),
@@ -166,112 +170,53 @@ const builder = b
           instanceOf('db', 'aws.rds'),
         ),
       ),
-      $d.rel('prod.eu.db', 'prod.us.db', 'replicates'),
+      $d.rel('prod.eu.db', 'prod.us.db', {
+        title: 'replicates',
+        tags: ['internal'],
+        color: 'amber',
+        line: 'dotted',
+      }),
     ),
     views(
       view('index', $include('*')),
       viewOf(
         'cloud',
         'cloud',
+        {
+          title: 'must\nbe\none line',
+          description: {
+            md: `Must be\n\nmarkdown`,
+          },
+        },
         $rules(
-          $include('*'),
-          $include('cloud.frontend.dashboard'),
+          $include('*', 'cloud.frontend.dashboard', '* -> cloud.frontend._'),
         ),
       ),
       deploymentView(
         'prod',
         'prod',
         $rules(
-          $include('customer.instance'),
-          $include('prod.eu.zone1.ui'),
+          $include('customer.instance', 'prod.eu.zone1.ui'),
         ),
       ),
     ),
   )
 
-describe('generateLikeC4', () => {
+describe('likec4data', () => {
   it('generates valid DSL from parsed model data', async ({ expect }) => {
     const parsed = builder.build()
-    const output = generateLikeC4({
-      relations: parsed.relations,
-      elements: parsed.elements,
-      deployments: parsed.deployments,
-      specification: parsed.specification,
-    })
+    const output = materialize(
+      withctx(
+        {
+          relations: parsed.relations,
+          elements: parsed.elements,
+          deployments: parsed.deployments,
+          views: parsed.views,
+          specification: parsed.specification,
+        } satisfies schemas.likec4data.Input,
+        likec4data(),
+      ),
+    )
     await expect(output).toMatchFileSnapshot('__snapshots__/likec4.generate.snap')
-  })
-})
-
-describe('print', () => {
-  it('prints expression', async ({ expect }) => {
-    const output = print(operators.expression, {
-      ref: {
-        model: 'some.el',
-      },
-      selector: 'descendants',
-    })
-    expect(output).toBe('some.el.**')
-  })
-
-  it('prints model', async ({ expect }) => {
-    const output = print(operators.model, {
-      elements: [
-        {
-          id: 'cloud',
-          kind: 'system',
-        },
-        {
-          id: 'cloud.mobile',
-          kind: 'mobile',
-          shape: 'mobile',
-          color: 'amber',
-        },
-        {
-          id: 'cloud.api',
-          kind: 'component',
-          shape: 'component',
-        },
-      ],
-    })
-    expect(output).toMatchInlineSnapshot(`
-      "model {
-        cloud = system {
-          mobile = mobile {
-            style {
-              shape mobile
-              color amber
-            }
-          }
-          
-          api = component {
-            style {
-              shape component
-            }
-          }
-        }
-      }"
-    `)
-  })
-
-  it('prints with tabs', async ({ expect }) => {
-    const output = printTabIndent(operators.model, {
-      elements: [
-        {
-          id: 'cloud',
-          kind: 'system',
-        },
-        {
-          id: 'cloud.mobile',
-          kind: 'mobile',
-        },
-      ],
-    })
-    expect(output).toMatchInlineSnapshot(`
-      "model {
-      \tcloud = system {
-      \t\tmobile = mobile
-      \t}
-      }"
-    `)
   })
 })

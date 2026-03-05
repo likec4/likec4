@@ -30,6 +30,14 @@
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
+    },
+    "./likec4": {
+      "sources": "./src/likec4/index.ts",
+      "default": {
+        "types": "./dist/likec4/index.d.mts",
+        "import": "./dist/likec4/index.mjs",
+        "default": "./dist/likec4/index.mjs"
+      }
     }
   },
   "publishConfig": {

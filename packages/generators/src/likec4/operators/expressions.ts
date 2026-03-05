@@ -153,7 +153,19 @@ export const whereOperator = zodOp(schemas.whereOperator)(({ ctx, exec }) => {
   nonexhaustive(ctx)
 })
 
-export const fqnExpr = zodOp(schemas.fqnExpr)(({ ctx, out }) => {
+export const fqnRef = zodOp(schemas.fqnRef)(({ ctx, out }) => {
+  if ('model' in ctx) {
+    out.append(ctx.model)
+  } else {
+    out.append(ctx.deployment)
+    if (ctx.element) {
+      out.append('.', ctx.element)
+    }
+  }
+  return out
+})
+
+export const fqnExpr = zodOp(schemas.fqnExpr)(({ ctx, out, exec }) => {
   if ('wildcard' in ctx) {
     return out.append('*')
   }
@@ -170,14 +182,7 @@ export const fqnExpr = zodOp(schemas.fqnExpr)(({ ctx, out }) => {
       .append(`#${ctx.elementTag}`)
   }
   if ('ref' in ctx) {
-    if ('model' in ctx.ref) {
-      out.append(ctx.ref.model)
-    } else {
-      out.append(ctx.ref.deployment)
-      if (ctx.ref.element) {
-        out.append('.', ctx.ref.element)
-      }
-    }
+    exec(ctx.ref, fqnRef())
     appendSelector(out, ctx.selector)
     return out
   }

@@ -1,9 +1,8 @@
-import type { Expression, FqnExpr, ModelExpression, ViewId, WhereOperator } from '@likec4/core'
+import type { Expression, FqnExpr, ViewId, WhereOperator } from '@likec4/core'
 import { dedent } from 'strip-indent'
-import { type Assertion, describe, expect as viExpect, it } from 'vitest'
-import type { ModelExpressionData, WhereOperatorData } from '../types'
+import { describe, expect as viExpect, it } from 'vitest'
+import type { schemas } from '../schemas'
 import {
-  type Ops,
   materialize,
   withctx,
 } from './base'
@@ -12,19 +11,8 @@ import { expression, fqnExprAny, whereOperator } from './expressions'
 /**
  * Returns expect function to execute operations on the given context
  */
-function expectOnCtx<A>(ctx: A) {
-  const exec = withctx(ctx)
-  return (...ops: Ops<A>): Assertion<string> =>
-    viExpect(
-      materialize(exec(...ops)),
-    )
-}
-
-/**
- * Returns expect function to execute operations on the given context
- */
 function expectWhereOperator(operator: WhereOperator<any>) {
-  const exec = withctx(operator as unknown as WhereOperatorData)
+  const exec = withctx(operator)
   return viExpect(
     materialize(exec(whereOperator())),
   )
@@ -165,8 +153,8 @@ describe('whereOperator', () => {
   })
 })
 
-function expectModelExpr(expr: ModelExpression) {
-  const exec = withctx(expr as unknown as ModelExpressionData)
+function expectModelExpr(expr: schemas.expr.Input) {
+  const exec = withctx(expr)
   return viExpect(
     materialize(exec(expression())).trimEnd(),
   )
@@ -236,7 +224,7 @@ describe('modelExpression', () => {
           expr,
           shape: 'browser',
           title: 'override',
-          navigateTo: 'other-view' as ViewId<string>,
+          navigateTo: 'other-view',
           description: { md: '**markdown**' },
         },
       }).toBe(dedent(`

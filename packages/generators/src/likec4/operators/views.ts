@@ -1,41 +1,25 @@
 import {
   hasProp,
   invariant,
-  isDynamicStep,
-  isDynamicStepsParallel,
-  isDynamicStepsSeries,
-  isDynamicView,
-  isElementView,
-  isViewRuleAutoLayout,
-  isViewRuleGlobalPredicateRef,
-  isViewRuleGlobalStyle,
-  isViewRulePredicate,
-  isViewRuleStyle,
   nonexhaustive,
 } from '@likec4/core'
-import type {
-  DynamicStep,
-  DynamicViewRule,
-  DynamicViewStep,
-  ParsedDynamicView,
-  ParsedView,
-} from '@likec4/core/types'
-import { hasAtLeast, piped, values } from 'remeda'
+import { CompositeGeneratorNode, NL } from 'langium/generate'
+import { hasAtLeast, values } from 'remeda'
 import { schemas } from '../schemas'
 import {
-  type AnyOp,
   type Op,
   body,
   foreach,
   foreachNewLine,
   guard,
   indent,
+  inlineText,
   lines,
   merge,
-  operation,
   print,
   printProperty,
   property,
+  select,
   separateComma,
   space,
   spaceBetween,
@@ -54,6 +38,15 @@ import {
   technologyProperty,
   titleProperty,
 } from './properties'
+
+const viewTitleProperty = <A extends { title?: string | null | undefined }>(): Op<A> =>
+  property(
+    'title',
+    spaceBetween(
+      print('title'),
+      inlineText(),
+    ),
+  )
 
 export const viewRulePredicate = zodOp(schemas.views.viewRulePredicate)(({ ctx, exec }) => {
   let exprs
@@ -169,7 +162,7 @@ export const elementViewRule = zodOp(schemas.views.elementViewRule)(
   },
 )
 
-export const elementView = zodOp(schemas.views.elementView)(
+export const elementView = zodOp(schemas.views.elementView.partial({ _type: true }))(
   spaceBetween(
     print('view'),
     print(v => v.id),
@@ -185,7 +178,7 @@ export const elementView = zodOp(schemas.views.elementView)(
         // Properties on each line
         lines(
           tagsProperty(),
-          titleProperty(),
+          viewTitleProperty(),
           descriptionProperty(),
           linksProperty(),
         ),
@@ -200,16 +193,61 @@ export const elementView = zodOp(schemas.views.elementView)(
   ),
 )
 
+// --- Deployment View ---
+
+export const deploymentViewRule = zodOp(schemas.views.deploymentViewRule)(
+  ({ ctx, exec }) => {
+    if ('include' in ctx || 'exclude' in ctx) {
+      return exec(ctx, viewRulePredicate())
+    }
+    if ('direction' in ctx) {
+      return exec(ctx, viewRuleAutoLayout())
+    }
+    if ('styleId' in ctx) {
+      return exec(ctx, viewRuleGlobalStyle())
+    }
+    if ('predicateId' in ctx) {
+      return exec(ctx, viewRuleGlobalPredicate())
+    }
+    if ('targets' in ctx && 'style' in ctx) {
+      return exec(ctx, viewRuleStyle())
+    }
+    nonexhaustive(ctx)
+  },
+)
+
+export const deploymentView = zodOp(schemas.views.deploymentView.partial({ _type: true }))(
+  spaceBetween(
+    print('deployment view'),
+    print(v => v.id),
+    body(
+      lines(2)(
+        // Properties on each line
+        lines(
+          tagsProperty(),
+          viewTitleProperty(),
+          descriptionProperty(),
+          linksProperty(),
+        ),
+        property(
+          'rules',
+          foreachNewLine(
+            deploymentViewRule(),
+          ),
+        ),
+      ),
+    ),
+  ),
+)
+
 // --- Dynamic View ---
 
-export function dynamicStep(): Op<DynamicStep> {
-  return operation('dynamicStep', ({ ctx, out }) => {
-    const step = spaceBetween<DynamicStep>(
-      print(v => v.source),
-      print(v => v.isBackward ? '<-' : '->'),
-      print(v => v.target),
-    )
-    const stepBody = body<DynamicStep>(
+export const dynamicStep = zodOp(schemas.views.dynamicStep)(
+  spaceBetween(
+    print(v => v.source),
+    print(v => v.isBackward ? '<-' : '->'),
+    print(v => v.target),
+    body(
       lines(
         titleProperty(),
         technologyProperty(),
@@ -222,70 +260,81 @@ export function dynamicStep(): Op<DynamicStep> {
         property('head'),
         property('tail'),
       ),
-    )
+    ),
+  ),
+)
 
-    return merge(
-      step,
-      stepBody,
-    )({ ctx, out })
-  })
-}
+export const dynamicStepsSeries = zodOp(schemas.views.dynamicStepsSeries)(({ ctx, exec }) => {
+  throw new Error('Not implemented')
+})
 
-export function dynamicStepsSeries(): Op<readonly DynamicStep[]> {
-  return foreachNewLine(dynamicStep())
-}
+export const dynamicStepsParallel = zodOp(schemas.views.dynamicStepsParallel)(({ ctx, exec }) => {
+  throw new Error('Not implemented')
+})
 
-export function dynamicStepsParallel(): Op<readonly DynamicViewStep[]> {
-  return body('parallel')(
-    foreachNewLine(dynamicViewStep()),
+export const dynamicViewStep = zodOp(schemas.views.dynamicViewStep)(({ ctx, exec }) => {
+  if ('__series' in ctx) {
+    return exec(ctx, dynamicStepsSeries())
+  }
+  if ('__parallel' in ctx) {
+    return exec(ctx, dynamicStepsParallel())
+  }
+  return exec(ctx, dynamicStep())
+})
+
+export const dynamicViewIncludeRule = zodOp(schemas.views.dynamicViewIncludeRule)(({ ctx, exec }) => {
+  if (!hasAtLeast(ctx.include, 1)) {
+    return
+  }
+
+  const isMultiple = hasAtLeast(ctx.include, 2)
+
+  const exprOp = withctx(ctx.include)(
+    foreach(
+      expression(),
+      separateComma(isMultiple),
+    ),
   )
-}
 
-export function dynamicViewStep(): Op<DynamicViewStep> {
-  return operation('dynamicViewStep', ({ ctx, out }) => {
-    if (isDynamicStep(ctx)) {
-      return dynamicStep()({ ctx, out })
+  exec(
+    ctx,
+    merge(
+      print('include'),
+      ...(isMultiple ? [indent(exprOp)] : [space(), exprOp]),
+    ),
+  )
+})
+
+export const dynamicViewRule = zodOp(schemas.views.dynamicViewRule)(
+  ({ ctx, exec }) => {
+    if ('include' in ctx) {
+      return exec(ctx, dynamicViewIncludeRule())
     }
-    if (isDynamicStepsSeries(ctx)) {
-      return withctx([...ctx.__series] as DynamicStep[], dynamicStepsSeries())({ ctx, out })
+    if ('predicateId' in ctx) {
+      return exec(ctx, viewRuleGlobalPredicate())
     }
-    if (isDynamicStepsParallel(ctx)) {
-      return withctx([...ctx.__parallel] as DynamicViewStep[], dynamicStepsParallel())({ ctx, out })
+    if ('targets' in ctx && 'style' in ctx) {
+      return exec(ctx, viewRuleStyle())
+    }
+    if ('styleId' in ctx) {
+      return exec(ctx, viewRuleGlobalStyle())
+    }
+    if ('direction' in ctx) {
+      return exec(ctx, viewRuleAutoLayout())
     }
     nonexhaustive(ctx)
-  })
-}
+  },
+)
 
-export function dynamicViewRule(): Op<DynamicViewRule> {
-  return operation('dynamicViewRule', ({ ctx, out }) => {
-    if (isViewRulePredicate(ctx)) {
-      return elementViewRulePredicate()({ ctx, out })
-    }
-    if (isViewRuleStyle(ctx)) {
-      return elementViewRuleStyle()({ ctx, out })
-    }
-    if (isViewRuleAutoLayout(ctx)) {
-      return elementViewRuleAutoLayout()({ ctx, out })
-    }
-    if (isViewRuleGlobalStyle(ctx)) {
-      return elementViewRuleGlobalStyle()({ ctx, out })
-    }
-    if (isViewRuleGlobalPredicateRef(ctx)) {
-      return elementViewRuleGlobalPredicateRef()({ ctx, out })
-    }
-    nonexhaustive(ctx)
-  })
-}
-
-export function dynamicView(): Op<ParsedDynamicView> {
-  return spaceBetween(
+export const dynamicView = zodOp(schemas.views.dynamicView.partial({ _type: true }))(
+  spaceBetween(
     print('dynamic view'),
     print(v => v.id),
-    body<ParsedDynamicView>(
+    body(
       lines(2)(
         lines(
           tagsProperty(),
-          titleProperty(),
+          viewTitleProperty(),
           descriptionProperty(),
           linksProperty(),
           property('variant'),
@@ -304,35 +353,38 @@ export function dynamicView(): Op<ParsedDynamicView> {
         ),
       ),
     ),
-  )
-}
+  ),
+)
 
 // --- Parsed View ---
+export const anyView = zodOp(schemas.views.anyView)(({ ctx, exec }) => {
+  if ('_type' in ctx) {
+    if (ctx._type == 'element') {
+      return exec(ctx, elementView())
+    }
+    if (ctx._type === 'deployment') {
+      return exec(ctx, deploymentView())
+    }
+    if (ctx._type === 'dynamic') {
+      return exec(ctx, dynamicView())
+    }
+  }
+  nonexhaustive(ctx)
+})
 
-export function parsedView(): Op<ParsedView> {
-  return piped(
-    guard(
-      isElementView,
-      elementView(),
+export const views = zodOp(schemas.views.views)(
+  body('views')(
+    select(
+      ctx => values(ctx),
+      foreach(
+        anyView(),
+        {
+          // Extra line between
+          separator: new CompositeGeneratorNode().appendNewLine().appendNewLine(),
+          // Add empty line before first view (if not the last one)
+          prefix: (_, index, isLast) => index === 0 && !isLast ? NL : undefined,
+        },
+      ),
     ),
-    guard(
-      isDynamicView,
-      dynamicView(),
-    ),
-  )
-}
-
-// --- Main ---
-type PrintCtx = {
-  views: Record<string, ParsedView>
-}
-
-export function printViews(ctx: PrintCtx): AnyOp {
-  const views = values(ctx.views)
-
-  return body('views')(
-    lines(2)(
-      ...views.map(v => withctx(v, parsedView())),
-    ),
-  )
-}
+  ),
+)

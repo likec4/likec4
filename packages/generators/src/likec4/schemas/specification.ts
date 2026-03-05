@@ -59,6 +59,11 @@ export const schema = z
     elements: z.record(common.kind, element),
 
     /**
+     * Element kinds specifications, where key is the kind name
+     */
+    deployments: z.record(common.kind, element),
+
+    /**
      * Relationship kinds specifications, where key is the kind name
      */
     relationships: z.record(common.kind, relationship),

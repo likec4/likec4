@@ -464,4 +464,33 @@ describe('printSpecification', () => {
       }"
     `)
   })
+
+  it('prints deploymentNodes', () => {
+    const output = render({
+      deployments: {
+        zone: {
+          style: {
+            border: 'dotted',
+          },
+        },
+        vm: {
+          tags: ['internal', 'v2'] as Tag[],
+          links: [{ url: 'https://example.com', title: 'Docs' }],
+        },
+      },
+    })
+    expect(output).toMatchInlineSnapshot(`
+      "specification {
+        deploymentNode zone {
+          style {
+            border dotted
+          }
+        }
+        deploymentNode vm {
+          #internal, #v2
+          link https://example.com 'Docs'
+        }
+      }"
+    `)
+  })
 })
