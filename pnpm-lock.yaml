@@ -173,7 +173,7 @@ catalogs:
       version: 0.7.6
     hono:
       specifier: ^4.11.10
-      version: 4.11.10
+      version: 4.12.4
     hono-sessions:
       specifier: ^0.8.1
       version: 0.8.1
@@ -621,10 +621,10 @@ importers:
         version: 16.1.1
       '@hono/oauth-providers':
         specifier: catalog:hono
-        version: 0.8.5(hono@4.11.10)
+        version: 0.8.5(hono@4.12.4)
       '@hono/zod-validator':
         specifier: catalog:hono
-        version: 0.7.6(hono@4.11.10)(zod@3.25.76)
+        version: 0.7.6(hono@4.12.4)(zod@3.25.76)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.21.0
@@ -720,10 +720,10 @@ importers:
         version: 6.0.0
       hono:
         specifier: catalog:hono
-        version: 4.11.10
+        version: 4.12.4
       hono-sessions:
         specifier: catalog:hono
-        version: 0.8.1(hono@4.11.10)
+        version: 0.8.1(hono@4.12.4)
       import-meta-resolve:
         specifier: ^4.2.0
         version: 4.2.0
@@ -1319,10 +1319,10 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.2.3(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.11.10))(hono@4.11.10)(zod@3.25.76)
+        version: 0.2.3(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)
       '@hono/node-server':
         specifier: catalog:hono
-        version: 1.19.9(hono@4.11.10)
+        version: 1.19.9(hono@4.12.4)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.21.0
@@ -1358,7 +1358,7 @@ importers:
         version: 6.4.0(picomatch@4.0.3)
       hono:
         specifier: catalog:hono
-        version: 4.11.10
+        version: 4.12.4
       immer:
         specifier: catalog:utils
         version: 11.1.4
@@ -6632,8 +6632,8 @@ packages:
     peerDependencies:
       hono: ^4.0.0
 
-  hono@4.11.10:
-    resolution: {integrity: sha512-kyWP5PAiMooEvGrA9jcD3IXF7ATu8+o7B3KCbPXid5se52NPqnOpM/r9qeW2heMnOekF4kqR1fXJqCYeCLKrZg==}
+  hono@4.12.4:
+    resolution: {integrity: sha512-ooiZW1Xy8rQ4oELQ++otI2T9DsKpV0M6c6cO6JGx4RTfav9poFFLlet9UMXHZnoM1yG0HWGlQLswBGX3RZmHtg==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -7508,8 +7508,8 @@ packages:
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
 
-  nypm@0.6.4:
-    resolution: {integrity: sha512-1TvCKjZyyklN+JJj2TS3P4uSQEInrM/HkkuSXsEzm1ApPgBffOn8gFguNnZf07r/1X6vlryfIqMUkJKQMzlZiw==}
+  nypm@0.6.5:
+    resolution: {integrity: sha512-K6AJy1GMVyfyMXRVB88700BJqNUkByijGJM8kEHpLdcAt+vSQAVfkWWHYzuRXHSY6xA2sNc5RjTj0p9rE2izVQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -11337,25 +11337,25 @@ snapshots:
 
   '@fontsource-variable/ibm-plex-sans@5.2.8': {}
 
-  '@hono/mcp@0.2.3(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.11.10))(hono@4.11.10)(zod@3.25.76)':
+  '@hono/mcp@0.2.3(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.27.0(zod@3.25.76)
-      hono: 4.11.10
-      hono-rate-limiter: 0.4.2(hono@4.11.10)
+      hono: 4.12.4
+      hono-rate-limiter: 0.4.2(hono@4.12.4)
       pkce-challenge: 5.0.1
       zod: 3.25.76
 
-  '@hono/node-server@1.19.9(hono@4.11.10)':
+  '@hono/node-server@1.19.9(hono@4.12.4)':
     dependencies:
-      hono: 4.11.10
+      hono: 4.12.4
 
-  '@hono/oauth-providers@0.8.5(hono@4.11.10)':
+  '@hono/oauth-providers@0.8.5(hono@4.12.4)':
     dependencies:
-      hono: 4.11.10
+      hono: 4.12.4
 
-  '@hono/zod-validator@0.7.6(hono@4.11.10)(zod@3.25.76)':
+  '@hono/zod-validator@0.7.6(hono@4.12.4)(zod@3.25.76)':
     dependencies:
-      hono: 4.11.10
+      hono: 4.12.4
       zod: 3.25.76
 
   '@hpcc-js/wasm-graphviz@1.21.0': {}
@@ -11702,7 +11702,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.27.0(zod@3.25.76)':
     dependencies:
-      '@hono/node-server': 1.19.9(hono@4.11.10)
+      '@hono/node-server': 1.19.9(hono@4.12.4)
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
       content-type: 1.0.5
@@ -11712,7 +11712,7 @@ snapshots:
       eventsource-parser: 3.0.6
       express: 5.2.1
       express-rate-limit: 8.2.1(express@5.2.1)
-      hono: 4.11.10
+      hono: 4.12.4
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -11724,7 +11724,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.27.0(zod@4.3.6)':
     dependencies:
-      '@hono/node-server': 1.19.9(hono@4.11.10)
+      '@hono/node-server': 1.19.9(hono@4.12.4)
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
       content-type: 1.0.5
@@ -11734,7 +11734,7 @@ snapshots:
       eventsource-parser: 3.0.6
       express: 5.2.1
       express-rate-limit: 8.2.1(express@5.2.1)
-      hono: 4.11.10
+      hono: 4.12.4
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -14402,7 +14402,7 @@ snapshots:
       consola: 3.4.2
       defu: 6.1.4
       node-fetch-native: 1.6.7
-      nypm: 0.6.4
+      nypm: 0.6.5
       pathe: 2.0.3
     optional: true
 
@@ -14705,17 +14705,17 @@ snapshots:
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
 
-  hono-rate-limiter@0.4.2(hono@4.11.10):
+  hono-rate-limiter@0.4.2(hono@4.12.4):
     dependencies:
-      hono: 4.11.10
+      hono: 4.12.4
 
-  hono-sessions@0.8.1(hono@4.11.10):
+  hono-sessions@0.8.1(hono@4.12.4):
     dependencies:
-      hono: 4.11.10
+      hono: 4.12.4
       iron-webcrypto: 1.2.1
       ohash: 2.0.11
 
-  hono@4.11.10: {}
+  hono@4.12.4: {}
 
   hookable@5.5.3: {}
 
@@ -15816,7 +15816,7 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  nypm@0.6.4:
+  nypm@0.6.5:
     dependencies:
       citty: 0.2.1
       pathe: 2.0.3
