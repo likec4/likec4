@@ -320,7 +320,7 @@
     "@types/node": "catalog:",
     "@types/vscode": "catalog:vscode",
     "@types/which": "^3.0.4",
-    "@vscode/extension-telemetry": "^1.5.0",
+    "@vscode/extension-telemetry": "^1.5.1",
     "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
     "esm-env": "catalog:utils",
     "execa": "^9.5.3",
