@@ -1,0 +1,79 @@
+@layer base, starlight, theme, components, utilities;
+
+@import "@astrojs/starlight-tailwind";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  /* Generated accent color palettes. */
+  --color-accent-200: #b3c7ff;
+  --color-accent-600: #364bff;
+  --color-accent-900: #182775;
+  --color-accent-950: #131e4f;
+  /* Generated gray color palettes. */
+  --color-gray-100: #f5f6f8;
+  --color-gray-200: #eceef2;
+  --color-gray-300: #c0c2c7;
+  --color-gray-400: #888b96;
+  --color-gray-500: #545861;
+  --color-gray-700: #353841;
+  --color-gray-800: #24272f;
+  --color-gray-900: #17181c;
+}
+
+:root {
+  /* --sl-font:
+    "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji"; */
+  /* --sl-text-2xs: 0.75rem;
+  --sl-text-xs: 0.8125rem;
+  --sl-text-sm: 0.875rem;
+  --sl-text-base: 1rem;
+  --sl-text-lg: 1.125rem;
+  --sl-text-xl: 1.25rem;
+  --sl-text-2xl: 1.5rem;
+  --sl-text-3xl: 1.8125rem;
+  --sl-text-4xl: 2.1875rem;
+  --sl-text-5xl: 2.625rem;
+  --sl-text-6xl: 4rem; */
+  --sl-text-h1: 2.1875rem;
+  --sl-text-h2: 1.8125rem;
+  --sl-text-h3: 1.5rem;
+  --sl-text-h4: 1.35rem;
+  --sl-text-h5: 1.25rem;
+  --sl-text-h6: 1.1rem;
+}
+
+.title-wrapper {
+  --sl-nav-height: 3.3rem;
+}
+
+/* Dark mode colors. */
+:root {
+  --sl-color-accent-low: #131e4f;
+  --sl-color-accent: #3447ff;
+  --sl-color-accent-high: #b3c7ff;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #eceef2;
+  --sl-color-gray-2: #c0c2c7;
+  --sl-color-gray-3: #888b96;
+  --sl-color-gray-4: #545861;
+  --sl-color-gray-5: #353841;
+  --sl-color-gray-6: #24272f;
+  --sl-color-black: #17181c;
+}
+/* Light mode colors. */
+:root[data-theme="light"] {
+  --sl-color-accent-low: #c7d6ff;
+  --sl-color-accent: #364bff;
+  --sl-color-accent-high: #182775;
+  --sl-color-white: #17181c;
+  --sl-color-gray-1: #24272f;
+  --sl-color-gray-2: #353841;
+  --sl-color-gray-3: #545861;
+  --sl-color-gray-4: #888b96;
+  --sl-color-gray-5: #c0c2c7;
+  --sl-color-gray-6: #eceef2;
+  --sl-color-gray-7: #f5f6f8;
+  --sl-color-black: #ffffff;
+}

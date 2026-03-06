@@ -2,8 +2,7 @@
 import { Code } from '@astrojs/starlight/components'
 import DynamicLikeC4View from '../dynamic-view/DynamicLikeC4View.astro'
 
-const writeCodeSnippet = `// define your model
-model {
+const writeCodeSnippet = `model {
   customer = actor 'Customer'
   cloud = system 'Our SaaS' {
     ui = component 'Frontend'
@@ -70,8 +69,13 @@ const terminalHtml =
             </p>
           </div>
           <!-- Live dynamic diagram -->
-          <div class="mx-4 mb-4 rounded-lg border border-stone-200 dark:border-zinc-800/40 bg-stone-50 dark:bg-zinc-800/30 overflow-hidden min-h-[200px] flex items-center justify-center">
+          <div class="mx-4 rounded-lg border border-stone-200 dark:border-zinc-800/40 bg-stone-50 dark:bg-zinc-800/30 overflow-hidden min-h-[200px] flex items-center justify-center">
             <DynamicLikeC4View viewId="index" variant="sequence" />
+          </div>
+          <div class="px-6 py-2">
+            <p class="text-sm leading-relaxed text-stone-500 dark:text-zinc-400">
+              Click to explore the view
+            </p>
           </div>
         </div>
       </div>
