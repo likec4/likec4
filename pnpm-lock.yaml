@@ -394,11 +394,11 @@ catalogs:
       version: 5.24.0
   xyflow:
     '@xyflow/react':
-      specifier: 12.10.0
-      version: 12.10.0
+      specifier: 12.10.1
+      version: 12.10.1
     '@xyflow/system':
-      specifier: 0.0.74
-      version: 0.0.74
+      specifier: 0.0.75
+      version: 0.0.75
   zag:
     '@zag-js/collection':
       specifier: ^1.33.1
@@ -708,10 +708,10 @@ importers:
         version: 6.0.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.10.0(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.74
+        version: 0.0.75
       date-fns:
         specifier: catalog:utils
         version: 4.1.0
@@ -1122,10 +1122,10 @@ importers:
         version: 3.14.0(react@19.2.4)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.10.0(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.74
+        version: 0.0.75
       '@zag-js/collection':
         specifier: catalog:zag
         version: 1.33.1
@@ -1779,10 +1779,10 @@ importers:
         version: 3.14.0(react@19.2.4)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.10.0(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.74
+        version: 0.0.75
       autoprefixer:
         specifier: ^10.4.24
         version: 10.4.24(postcss@8.5.6)
@@ -2087,10 +2087,10 @@ importers:
         version: 3.14.0(react@19.2.4)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.10.0(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.74
+        version: 0.0.75
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260221.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
@@ -2454,10 +2454,10 @@ importers:
         version: 5.1.4(vite@7.3.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.10.0(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.74
+        version: 0.0.75
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -4722,8 +4722,8 @@ packages:
     peerDependencies:
       react: 19.2.4
 
-  '@tabler/icons@3.38.0':
-    resolution: {integrity: sha512-FdETQSpQ3lN7BEjEUzjKhsfTDCamrvMDops4HEMphTm3DmkIFpThoODn8XXZ8Q9MhjshIvphIYVHHB7zpq167w==}
+  '@tabler/icons@3.39.0':
+    resolution: {integrity: sha512-nd9f5+OVJNDR13v6rqPdmALkVhDknDuGMLuj16sK9UaRkOTQWwQM+EWG2fMYBNSH8ISsHiXfryNGQogIpsar4g==}
 
   '@tailwindcss/node@4.1.18':
     resolution: {integrity: sha512-DoR7U1P7iYhw16qJ49fgXUlry1t4CpXeErJHnQ44JgTSKMaZUdf17cfn5mHchfJ4KRBZRFA/Coo+MUF5+gOaCQ==}
@@ -5240,14 +5240,14 @@ packages:
       solid-js:
         optional: true
 
-  '@xyflow/react@12.10.0':
-    resolution: {integrity: sha512-eOtz3whDMWrB4KWVatIBrKuxECHqip6PfA8fTpaS2RUGVpiEAe+nqDKsLqkViVWxDGreq0lWX71Xth/SPAzXiw==}
+  '@xyflow/react@12.10.1':
+    resolution: {integrity: sha512-5eSWtIK/+rkldOuFbOOz44CRgQRjtS9v5nufk77DV+XBnfCGL9HAQ8PG00o2ZYKqkEU/Ak6wrKC95Tu+2zuK3Q==}
     peerDependencies:
       react: 19.2.4
       react-dom: 19.2.4
 
-  '@xyflow/system@0.0.74':
-    resolution: {integrity: sha512-7v7B/PkiVrkdZzSbL+inGAo6tkR/WQHHG0/jhSvLQToCsfa8YubOGmBYd1s08tpKpihdHDZFwzQZeR69QSBb4Q==}
+  '@xyflow/system@0.0.75':
+    resolution: {integrity: sha512-iXs+AGFLi8w/VlAoc/iSxk+CxfT6o64Uw/k0CKASOPqjqz6E0rb5jFZgJtXGZCpfQI6OQpu5EnumP5fGxQheaQ==}
 
   '@zag-js/anatomy@1.33.1':
     resolution: {integrity: sha512-iME14VHGGEPNMakilI6qvEkv9sll4AFZHpeoMLpczesw5hmqQjjNRifDTPR+idqCb8O8PdkAPE9hyMeP+4JjtA==}
@@ -12378,10 +12378,10 @@ snapshots:
 
   '@tabler/icons-react@3.36.1(react@19.2.4)':
     dependencies:
-      '@tabler/icons': 3.38.0
+      '@tabler/icons': 3.39.0
       react: 19.2.4
 
-  '@tabler/icons@3.38.0': {}
+  '@tabler/icons@3.39.0': {}
 
   '@tailwindcss/node@4.1.18':
     dependencies:
@@ -12964,9 +12964,9 @@ snapshots:
     optionalDependencies:
       react: 19.2.4
 
-  '@xyflow/react@12.10.0(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@xyflow/react@12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@xyflow/system': 0.0.74
+      '@xyflow/system': 0.0.75
       classcat: 5.0.5
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
@@ -12975,7 +12975,7 @@ snapshots:
       - '@types/react'
       - immer
 
-  '@xyflow/system@0.0.74':
+  '@xyflow/system@0.0.75':
     dependencies:
       '@types/d3-drag': 3.0.7
       '@types/d3-interpolate': 3.0.4
