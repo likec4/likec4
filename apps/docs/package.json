@@ -23,6 +23,7 @@
     "@astrojs/starlight-tailwind": "catalog:astro",
     "@expressive-code/plugin-collapsible-sections": "catalog:astro",
     "@expressive-code/plugin-line-numbers": "catalog:astro",
+    "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/config": "workspace:*",
     "@tailwindcss/vite": "catalog:css",
     "@types/picomatch": "catalog:externals",

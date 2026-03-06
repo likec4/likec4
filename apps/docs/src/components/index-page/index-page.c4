@@ -70,10 +70,5 @@ views {
 
   view view3 {
     include customer, cloud, ui, backend
-    exclude ui -> backend
-  }
-
-  view view4 {
-    include customer, cloud, ui, backend
   }
 }

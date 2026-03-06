@@ -7,97 +7,38 @@ const steps = [
   customer = actor 'Customer' {
     description 'A user of our product'
   }
-
   cloud = system 'Our SaaS' {
+    description 'Our product'
   }
-}
-
-views {
-  view index {
-    include customer, cloud
-  }
+  customer -> cloud 'uses to manage data'
 }`,
   `model {
   customer = actor 'Customer' {
     description 'A user of our product'
-    -> ui 'opens in browser'
   }
-
   cloud = system 'Our SaaS' {
-    ui = component 'Frontend' {
-      description 'NextJS application'
-      style {
-        icon tech:nextjs
-        shape browser
-      }
-    }
+    description 'Our product'
+    ui = component 'Frontend'
+    customer -> ui 'opens in browser'
   }
-}
-
-views {
-  view index {
-    include customer, cloud, ui
-  }
+  customer -> cloud 'uses to manage data'
 }`,
   `model {
   customer = actor 'Customer' {
     description 'A user of our product'
-    -> ui 'opens in browser'
   }
-
   cloud = system 'Our SaaS' {
-    backend = component 'Backend' {
-      icon tech:graphql
-      description 'Implements business logic'
-    }
-
-    ui = component 'Frontend' {
-      description 'NextJS application'
-      style {
-        icon tech:nextjs
-        shape browser
-      }
-    }
+    description 'Our product'
+    ui = component 'Frontend'
+    customer -> ui 'opens in browser'
+    backend = component 'Backend'
+    ui -> backend 'requests via HTTPS'
   }
-}
-
-views {
-  view index {
-    include customer, cloud, ui, backend
-  }
-}`,
-  `model {
-  customer = actor 'Customer' {
-    description 'A user of our product'
-    -> ui 'opens in browser'
-  }
-
-  cloud = system 'Our SaaS' {
-    backend = component 'Backend' {
-      icon tech:graphql
-      description 'Implements business logic'
-    }
-
-    ui = component 'Frontend' {
-      description 'NextJS application'
-      style {
-        icon tech:nextjs
-        shape browser
-      }
-    }
-
-    ui -[async]-> backend 'requests via HTTPS'
-  }
-}
-
-views {
-  view index {
-    include customer, cloud, ui, backend
-  }
+  customer -> cloud 'uses to manage data'
 }`,
 ]
 
-const viewIds = ['view1', 'view2', 'view3', 'view4'] as const
+const viewIds = ['view1', 'view2', 'view3'] as const
 
 function computeNewLines(prev: string, next: string): number[] {
   const prevLines = prev.split('\n')
@@ -118,7 +59,6 @@ const newLinesPerStep = [
   Array.from({ length: steps[0].split('\n').length }, (_, i) => i),
   computeNewLines(steps[0], steps[1]),
   computeNewLines(steps[1], steps[2]),
-  computeNewLines(steps[2], steps[3]),
 ]
 ---
 
@@ -135,9 +75,6 @@ const newLinesPerStep = [
       <h2 class="lp-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mt-4">
         See it in action
       </h2>
-      <p class="text-base md:text-lg leading-relaxed text-zinc-400 max-w-2xl mt-4">
-        Write architecture like code on the left. See the diagram appear on the right. Instantly.
-      </p>
     </div>
 
     <!-- Side-by-side panels -->
@@ -153,7 +90,7 @@ const newLinesPerStep = [
         </div>
 
         <!-- Code steps container -->
-        <div id="demo-code-container" class="max-h-[360px] lg:max-h-[520px] overflow-y-auto">
+        <div id="demo-code-container" class="max-h-[360px] lg:max-h-[500px] overflow-y-auto">
           {steps.map((code, i) => (
             <div
               id={`demo-code-step-${i}`}
@@ -212,7 +149,7 @@ const newLinesPerStep = [
           <path d="M7 17l9.2-9.2M17 17V7H7"></path>
         </svg>
       </a>
-      <span class="text-sm text-zinc-500">Try it yourself — no signup required</span>
+      <span class="text-sm text-zinc-500">Try it yourself in interactive playground</span>
     </div>
   </div>
 </section>
@@ -230,17 +167,15 @@ const newLinesPerStep = [
 /* Line reveal animation */
 @keyframes demo-line-reveal {
   from {
-    opacity: 0;
     clip-path: inset(0 100% 0 0);
   }
   to {
-    opacity: 1;
     clip-path: inset(0 0 0 0);
   }
 }
 
 :global(.demo-line-new) {
-  animation: demo-line-reveal 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: demo-line-reveal 3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Diagram fills available space */
@@ -279,13 +214,16 @@ const newLinesPerStep = [
 </style>
 
 <script>
-const VIEW_IDS = ['view1', 'view2', 'view3', 'view4'] as const
+const VIEW_IDS = ['view1', 'view2', 'view3'] as const
 
 function initDemoAnimation(): void {
-  const TOTAL_STEPS = 4
+  const TOTAL_STEPS = 3
   const STEP_DURATION = 3000
-  const LAST_STEP_DURATION = 4000
-  const LINE_STAGGER = 40
+  const LAST_STEP_DURATION = 8000
+  const LINE_STAGGER = 1000
+  const LINE_ANIM_DURATION = 1000
+
+  let viewTimer: ReturnType<typeof setTimeout> | null = null
 
   let currentStep = 0
   let timer: ReturnType<typeof setTimeout> | null = null
@@ -314,14 +252,9 @@ function initDemoAnimation(): void {
       }
     })
 
-    // Change diagram viewId via custom event
-    window.dispatchEvent(
-      new CustomEvent('demo-view-change', {
-        detail: { viewId: VIEW_IDS[step] },
-      }),
-    )
+    // Animate new lines, then switch diagram view after animation ends
+    if (viewTimer) clearTimeout(viewTimer)
 
-    // Animate new lines
     if (animate) {
       const lines = codeSteps[step].querySelectorAll('.ec-line')
       const newLines = newLineIndices[step]
@@ -342,6 +275,23 @@ function initDemoAnimation(): void {
       if (codeContainer) {
         codeContainer.scrollTop = 0
       }
+
+      // Switch diagram after last line finishes animating
+      const totalAnimTime = Math.max(0, staggerIdx - 1) * LINE_STAGGER + LINE_ANIM_DURATION
+      viewTimer = setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent('demo-view-change', {
+            detail: { viewId: VIEW_IDS[step] },
+          }),
+        )
+      }, totalAnimTime)
+    } else {
+      // No animation — switch diagram immediately
+      window.dispatchEvent(
+        new CustomEvent('demo-view-change', {
+          detail: { viewId: VIEW_IDS[step] },
+        }),
+      )
     }
 
     // Update dots
@@ -358,7 +308,7 @@ function initDemoAnimation(): void {
     timer = setTimeout(() => {
       if (!isVisible) return
       const nextStep = (currentStep + 1) % TOTAL_STEPS
-      showStep(nextStep, true)
+      showStep(nextStep, nextStep !== 0)
       scheduleNext()
     }, delay)
   }
@@ -370,7 +320,7 @@ function initDemoAnimation(): void {
           isVisible = true
           if (!started) {
             started = true
-            showStep(0, true)
+            showStep(0, false)
           }
           scheduleNext()
         } else {
