@@ -2,6 +2,7 @@ import useTelemetry from '#useTelemetry'
 import { useDiagramPanel } from '../panel'
 import { useLanguageClient } from '../useLanguageClient'
 import { useRpc } from '../useRpc'
+import { registerEnhanceLayoutWithAICommand } from './enhanceLayoutWithAI'
 import { registerLocateCommand } from './locate'
 import { registerOpenPreviewCommand } from './openPreview'
 import { registerOpenProjectsOverviewCommand } from './openProjectsOverview'
@@ -37,4 +38,5 @@ export function registerCommands() {
   registerPrintDotOfCurrentViewCommand(deps)
   registerValidateLayoutCommand(deps)
   registerReloadProjectsCommand(deps)
+  registerEnhanceLayoutWithAICommand(deps)
 }
