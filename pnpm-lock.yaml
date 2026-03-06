@@ -1339,8 +1339,8 @@ importers:
         specifier: workspace:*
         version: link:../log
       '@msgpack/msgpack':
-        specifier: ^3.1.2
-        version: 3.1.2
+        specifier: ^3.1.3
+        version: 3.1.3
       '@smithy/util-base64':
         specifier: ^4.3.0
         version: 4.3.0
@@ -4024,8 +4024,8 @@ packages:
       '@cfworker/json-schema':
         optional: true
 
-  '@msgpack/msgpack@3.1.2':
-    resolution: {integrity: sha512-JEW4DEtBzfe8HvUYecLU9e6+XJnKDlUAIve8FvPzF3Kzs6Xo/KuZkZJsDH0wJXl/qEZbeeE7edxDNY3kMs39hQ==}
+  '@msgpack/msgpack@3.1.3':
+    resolution: {integrity: sha512-47XIizs9XZXvuJgoaJUIE2lFoID8ugvc0jzSHP+Ptfk8nTbnR8g788wv48N03Kx0UkAv559HWRQ3yzOgzlRNUA==}
     engines: {node: '>= 18'}
 
   '@nanostores/media-query@0.1.2':
@@ -11715,7 +11715,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@msgpack/msgpack@3.1.2': {}
+  '@msgpack/msgpack@3.1.3': {}
 
   '@nanostores/media-query@0.1.2(nanostores@1.1.0)':
     dependencies:
