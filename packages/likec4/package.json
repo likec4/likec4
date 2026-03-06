@@ -199,7 +199,7 @@
     "@xstate/store": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
-    "autoprefixer": "^10.4.24",
+    "autoprefixer": "^10.4.27",
     "picomatch": "catalog:externals",
     "birpc": "catalog:vite",
     "boxen": "^8.0.1",
