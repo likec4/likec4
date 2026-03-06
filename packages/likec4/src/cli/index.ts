@@ -20,6 +20,7 @@ import buildCmd from './build'
 import checkUpdateCmd, { notifyAvailableUpdate } from './check-update'
 import codegenCmd from './codegen'
 import exportCmd from './export'
+import formatCmd from './format'
 import lspCmd from './lsp'
 import mcpCmd from './mcp'
 import { logLevel, verbose, verboseLogLevel } from './options'
@@ -64,6 +65,7 @@ async function main() {
     buildCmd,
     codegenCmd,
     exportCmd,
+    formatCmd,
     previewCmd,
     validateCmd,
     mcpCmd,
