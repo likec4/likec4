@@ -14,6 +14,7 @@ import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger as mainLogger, wrapError } from '@likec4/log'
 import { randomString } from 'remeda'
 import { calcSequenceLayout } from '../sequence'
+import type { LayoutHints } from './ai/types'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { GraphClusterSpace } from './DotPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
@@ -50,6 +51,8 @@ const getPrinter = <A extends AnyAux>({ view, styles }: LayoutTaskParams<A>) => 
 export type LayoutTaskParams<A extends aux.Any = aux.Any> = {
   view: ComputedView<A>
   styles: LikeC4Styles
+  /** Optional AI-generated layout hints to enhance the Graphviz output */
+  layoutHints?: LayoutHints | undefined
 }
 
 export type LayoutResult<A extends aux.Any = aux.Any> = {
@@ -157,6 +160,10 @@ export class GraphvizLayouter implements Disposable {
     const logger = rootLogger.getChild(['dot', randomString(3)])
     logger.trace`generating dot for view ${params.view.id}`
     const printer = getPrinter(params)
+    if (params.layoutHints) {
+      logger.debug`applying AI layout hints to ${params.view.id}`
+      printer.applyLayoutHints(params.layoutHints)
+    }
     let dot = printer.print()
     if (!isElementView(params.view)) {
       return dot

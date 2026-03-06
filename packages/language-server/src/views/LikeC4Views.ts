@@ -11,6 +11,7 @@ import { _layout, applyCachedLayout, applyManualLayout, calcDriftsFromSnapshot, 
 import { type AdhocViewPredicate, computeAdhocView } from '@likec4/core/compute-view'
 import type { LikeC4Model } from '@likec4/core/model'
 import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
+import type { LayoutHints } from '@likec4/layouts/ai'
 import { type Logger, loggable } from '@likec4/log'
 import { type WorkspaceCache, interruptAndCheck } from 'langium'
 import { isTruthy, values } from 'remeda'
@@ -44,6 +45,8 @@ type LayoutViewParams = {
   layoutType?: LayoutType | undefined
   projectId?: ProjectId | undefined
   cancelToken?: CancellationToken | undefined
+  /** Optional AI-generated layout hints */
+  layoutHints?: LayoutHints | undefined
 }
 export interface LikeC4Views {
   readonly layouter: GraphvizLayouter
@@ -196,6 +199,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     layoutType,
     projectId,
     cancelToken,
+    layoutHints,
   }: LayoutViewParams): Promise<GraphvizOut | null> {
     const model = await this.ModelBuilder.computeModel(projectId, cancelToken)
     const view = model.findView(viewId)?.$view

@@ -273,6 +273,11 @@
         "command": "likec4.open-projects-overview",
         "title": "%ext.cmd.open-projects-overview%",
         "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.enhance-layout-with-ai",
+        "title": "%ext.cmd.enhance-layout-with-ai%",
+        "category": "%ext.title%"
       }
     ],
     "mcpServerDefinitionProviders": [
