@@ -52,6 +52,7 @@ import {
   digraph,
   toDot as modelToDot,
 } from 'ts-graphviz'
+import type { LayoutHints } from './ai/types'
 import { compoundLabel, nodeLabel } from './dot-labels'
 import type { DotSource } from './types'
 import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } from './utils'
@@ -578,6 +579,78 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
         }
       }
     }
+  }
+
+  /**
+   * Apply AI-generated layout hints to the Graphviz model.
+   * Injects rank constraints, edge weights, node groups, and graph-level overrides.
+   * Unknown node/edge IDs are silently ignored (LLM may hallucinate).
+   * Must be called after construction but before print().
+   */
+  public applyLayoutHints(hints: LayoutHints): this {
+    const G = this.graphvizModel
+
+    // Graph-level hints
+    if (hints.graph) {
+      if (hints.graph.direction) {
+        G.set(_.rankdir, hints.graph.direction)
+      }
+      if (hints.graph.nodeSep != null) {
+        G.set(_.nodesep, pxToInch(hints.graph.nodeSep))
+      }
+      if (hints.graph.rankSep != null) {
+        G.set(_.ranksep, pxToInch(hints.graph.rankSep))
+      }
+    }
+
+    // Rank constraints (same pattern as ElementViewPrinter.applyExplicitRankBlocks)
+    if (hints.ranks && hints.ranks.length > 0) {
+      let applied = false
+      for (const rank of hints.ranks) {
+        const nodeModels = [...new Set(rank.nodes)]
+          .map(id => this.nodes.get(id))
+          .filter((n): n is NodeModel => Boolean(n))
+        if (nodeModels.length === 0) continue
+        const rankSubgraph = G.createSubgraph({ [_.rank]: rank.type })
+        for (const node of nodeModels) {
+          rankSubgraph.node(node.id)
+        }
+        applied = true
+      }
+      if (applied) {
+        G.set(_.newrank, true)
+      }
+    }
+
+    // Per-node hints
+    if (hints.nodes) {
+      for (const hint of hints.nodes) {
+        const node = this.nodes.get(hint.id)
+        if (!node) continue
+        if (hint.group) {
+          node.attributes.set(_.group, hint.group)
+        }
+      }
+    }
+
+    // Per-edge hints
+    if (hints.edges) {
+      for (const hint of hints.edges) {
+        const edge = this.edges.get(hint.id)
+        if (!edge) continue
+        if (hint.weight != null) {
+          edge.attributes.set(_.weight, hint.weight)
+        }
+        if (hint.minlen != null) {
+          edge.attributes.set(_.minlen, hint.minlen)
+        }
+        if (hint.constraint != null) {
+          edge.attributes.set(_.constraint, hint.constraint)
+        }
+      }
+    }
+
+    return this
   }
 
   /**

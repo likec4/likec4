@@ -46,6 +46,14 @@
         "import": "./dist/graphviz/binary/index.mjs",
         "default": "./dist/graphviz/binary/index.mjs"
       }
+    },
+    "./ai": {
+      "sources": "./src/graphviz/ai/index.ts",
+      "default": {
+        "types": "./dist/graphviz/ai/index.d.mts",
+        "import": "./dist/graphviz/ai/index.mjs",
+        "default": "./dist/graphviz/ai/index.mjs"
+      }
     }
   },
   "publishConfig": {
@@ -82,6 +90,7 @@
     "fast-equals": "catalog:utils",
     "ts-graphviz": "^1.8.2",
     "@lume/kiwi": "catalog:utils",
+    "zod": "catalog:externals",
     "which": "^5.0.0"
   },
   "devDependencies": {

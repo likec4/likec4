@@ -2,6 +2,7 @@ import useTelemetry from '#useTelemetry'
 import { useDiagramPanel } from '../panel'
 import { useLanguageClient } from '../useLanguageClient'
 import { useRpc } from '../useRpc'
+import { registerEnhanceLayoutWithAICommand } from './enhanceLayoutWithAI'
 import { registerLocateCommand } from './locate'
 import { registerMigrateManualLayoutsCommand } from './migrateManualLayouts'
 import { registerOpenPreviewCommand } from './openPreview'
@@ -39,4 +40,5 @@ export function registerCommands() {
   registerValidateLayoutCommand(deps)
   registerReloadProjectsCommand(deps)
   registerMigrateManualLayoutsCommand(deps)
+  registerEnhanceLayoutWithAICommand(deps)
 }

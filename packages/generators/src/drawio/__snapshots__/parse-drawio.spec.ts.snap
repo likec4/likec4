@@ -60,6 +60,34 @@ views {
 // </likec4.layout.drawio>"
 `;
 
+exports[`parse DrawIO to LikeC4 - vertex with shape=actor emits actor with style { shape person } for round-trip fidelity 1`] = `
+"specification {
+  color drawio_color_1 #dae8fc
+}
+
+model {
+
+  User = actor 'User'
+  {
+    style { color drawio_color_1, shape person }
+  }
+
+}
+
+views {
+  view index {
+    include *
+  }
+}
+
+// <likec4.layout.drawio>
+// {"index":{"nodes":{"User":{"x":100,"y":80,"width":60,"height":90}}}}
+// </likec4.layout.drawio>
+// <likec4.strokeColor.vertices>
+// User=#6c8ebf
+// </likec4.strokeColor.vertices>"
+`;
+
 exports[`parseDrawioToLikeC4 > parse DrawIO to LikeC4 - minimal diagram 1`] = `
 "specification {
   color drawio_color_1 #dae8fc
@@ -155,32 +183,4 @@ views {
 // <likec4.layout.drawio>
 // {"overview":{"nodes":{"A":{"x":0,"y":0,"width":80,"height":40},"B":{"x":200,"y":0,"width":80,"height":40}}},"detail":{"nodes":{"A":{"x":0,"y":0,"width":80,"height":40},"C":{"x":200,"y":0,"width":80,"height":40}}}}
 // </likec4.layout.drawio>"
-`;
-
-exports[`parse DrawIO to LikeC4 - vertex with shape=actor emits actor with style { shape person } for round-trip fidelity 1`] = `
-"specification {
-  color drawio_color_1 #dae8fc
-}
-
-model {
-
-  User = actor 'User'
-  {
-    style { color drawio_color_1, shape person }
-  }
-
-}
-
-views {
-  view index {
-    include *
-  }
-}
-
-// <likec4.layout.drawio>
-// {"index":{"nodes":{"User":{"x":100,"y":80,"width":60,"height":90}}}}
-// </likec4.layout.drawio>
-// <likec4.strokeColor.vertices>
-// User=#6c8ebf
-// </likec4.strokeColor.vertices>"
 `;

@@ -1607,6 +1607,9 @@ importers:
       word-wrap:
         specifier: ^1.2.5
         version: 1.2.5
+      zod:
+        specifier: catalog:externals
+        version: 3.25.76
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
