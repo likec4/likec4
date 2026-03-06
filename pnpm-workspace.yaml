@@ -34,8 +34,8 @@ catalogs:
     "@astrojs/react": 4.4.2
     "@astrojs/starlight": 0.37.6
     "@astrojs/starlight-tailwind": ^4.0.2
-    "@expressive-code/plugin-collapsible-sections": ^0.41.6
-    "@expressive-code/plugin-line-numbers": ^0.41.6
+    "@expressive-code/plugin-collapsible-sections": ^0.41.7
+    "@expressive-code/plugin-line-numbers": ^0.41.7
     astro: 5.17.2
     astro-og-canvas: ^0.7.2
     shiki: ^3.22.0
