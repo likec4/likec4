@@ -104,7 +104,7 @@ export const style = z
   })
   .partial()
 
-export const metadataValue = z.union([z.string(), z.boolean(), z.number()]).transform(value => `${value}`)
+export const metadataValue = z.union([z.string(), z.boolean(), z.number()])
 
 export const metadata = z.record(z.string(), metadataValue.or(z.array(metadataValue)))
 

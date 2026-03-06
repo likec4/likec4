@@ -1,5 +1,5 @@
 import { type Color, type ElementStyle, type Link, type MarkdownOrString, exact } from '@likec4/core/types'
-import { entries, isArray, isString, piped } from 'remeda'
+import { entries, isArray, isNot, isString, piped } from 'remeda'
 import type { ConditionalKeys } from 'type-fest'
 import * as common from '../schemas/common'
 import type { Op } from './base'
@@ -11,6 +11,7 @@ import {
   inlineText,
   lines,
   markdownOrString,
+  operation,
   print,
   property,
   select,
@@ -108,17 +109,27 @@ export const notationProperty = <A extends { notation?: string | null | undefine
     ),
   )
 
-function metadataValue(): Op<string | string[]> {
+type MetadataValue = string | number | boolean
+function printMetadataValue(): Op<MetadataValue> {
+  return operation(({ ctx, out }) => {
+    if (isString(ctx)) {
+      return text()({ ctx, out })
+    }
+    return print()({ ctx, out })
+  })
+}
+
+export function metadataValue(): Op<MetadataValue | MetadataValue[]> {
   return piped(
     guard(
-      isString,
-      text(),
+      isNot(isArray),
+      printMetadataValue(),
     ),
     guard(
       isArray,
       body('[', ']')(
         foreach(
-          text(),
+          printMetadataValue(),
           {
             appendNewLineIfNotEmpty: true,
             suffix(element, index, isLast) {
@@ -131,7 +142,7 @@ function metadataValue(): Op<string | string[]> {
   )
 }
 
-export const metadataProperty = <A extends { metadata?: Record<string, string | string[]> | null }>(): Op<
+export const metadataProperty = <A extends { metadata?: Record<string, MetadataValue | MetadataValue[]> | null }>(): Op<
   A
 > =>
   select(

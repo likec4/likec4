@@ -29,8 +29,9 @@ import * as common from './common'
  * Replicates the {@link Element} from the core,
  * less strict, as the generator should be able to handle missing fields and provide defaults.
  */
-export const element = common.props
-  .extend({
+export const element = z
+  .object({
+    ...common.props.shape,
     id: common.fqn,
     kind: common.kind,
     style: common.style.optional(),
@@ -66,19 +67,19 @@ const relationshipEndpoint = z.union([
 
 const relationshipId = common.id.transform(value => value as unknown as RelationId)
 
-export const relationship = common.props
-  .extend({
-    id: relationshipId.optional(),
-    title: z.string().nullish(),
-    source: relationshipEndpoint,
-    target: relationshipEndpoint,
-    navigateTo: common.viewId.nullish(),
-    color: common.color.nullish(),
-    kind: common.kind.nullish(),
-    line: common.line.nullish(),
-    head: common.arrow.nullish(),
-    tail: common.arrow.nullish(),
-  })
+export const relationship = z.object({
+  ...common.props.shape,
+  id: relationshipId.optional(),
+  title: z.string().nullish(),
+  source: relationshipEndpoint,
+  target: relationshipEndpoint,
+  navigateTo: common.viewId.nullish(),
+  color: common.color.nullish(),
+  kind: common.kind.nullish(),
+  line: common.line.nullish(),
+  head: common.arrow.nullish(),
+  tail: common.arrow.nullish(),
+})
   .transform(pickBy(isNonNullish))
   .readonly()
 
