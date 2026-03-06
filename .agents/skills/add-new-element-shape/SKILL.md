@@ -1,6 +1,7 @@
 ---
 name: add-new-element-shape
 description: Use when you need to add a new element shape to the LikeC4 codebase. Trigger this skill whenever the user mentions adding a shape, creating a new shape, implementing a shape, or asks about how shapes work in LikeC4. Also trigger when the user provides a visual reference image and wants it turned into an element shape. Even if the user just says "new shape" or drops an image of a shape they want — use this skill.
+disable-model-invocation: true
 ---
 
 # Add New Element Shape — Agentic Workflow
@@ -75,11 +76,11 @@ Also update the corresponding `case` in `ShapeSvgOutline` if the shape has a non
 
 ### Shape pattern reference
 
-| Pattern                          | Examples                                           | Use when                              |
-| -------------------------------- | -------------------------------------------------- | ------------------------------------- |
-| Rectangle + decorations          | `'component'`, `'person'`                          | Rectangle with extras                 |
-| Custom SVG path                  | `'cylinder'`, `'queue'`, `'bucket'`, `'document'`  | Curved or non-rectangular outline     |
-| Box with inner header/chrome     | `'browser'`, `'mobile'`                            | Container with UI elements            |
+| Pattern                      | Examples                                          | Use when                          |
+| ---------------------------- | ------------------------------------------------- | --------------------------------- |
+| Rectangle + decorations      | `'component'`, `'person'`                         | Rectangle with extras             |
+| Custom SVG path              | `'cylinder'`, `'queue'`, `'bucket'`, `'document'` | Curved or non-rectangular outline |
+| Box with inner header/chrome | `'browser'`, `'mobile'`                           | Container with UI elements        |
 
 ### ✅ CHECKPOINT: User validates the sketch
 
@@ -126,6 +127,7 @@ python3 /path/to/skill/scripts/update_tmgrammars.py YOUR_SHAPE
 ```
 
 The script updates:
+
 - `packages/vscode/likec4.tmLanguage.json`
 - `apps/playground/likec4.tmLanguage.json`
 - `apps/docs/likec4.tmLanguage.json`
@@ -154,12 +156,12 @@ Read the file, find the `ShapeIcons` object, and add a mapping. The icon must be
 
 For each generator file, read it, find the shape switch, and add a case. If there's no native equivalent in the target format, fall through to `rectangle`.
 
-| File                                                     | Format   |
-| -------------------------------------------------------- | -------- |
-| `packages/generators/src/drawio/generate-drawio.ts`      | DrawIO   |
-| `packages/generators/src/puml/generate-puml.ts`          | PlantUML |
-| `packages/generators/src/mmd/generate-mmd.ts`            | Mermaid  |
-| `packages/generators/src/d2/generate-d2.ts`              | D2       |
+| File                                                | Format   |
+| --------------------------------------------------- | -------- |
+| `packages/generators/src/drawio/generate-drawio.ts` | DrawIO   |
+| `packages/generators/src/puml/generate-puml.ts`     | PlantUML |
+| `packages/generators/src/mmd/generate-mmd.ts`       | Mermaid  |
+| `packages/generators/src/d2/generate-d2.ts`         | D2       |
 
 For each one: `view` the file → find the switch → `str_replace` to add the case.
 
@@ -174,14 +176,17 @@ Find the `expectedItems` array for shape completions and add the shape in the sa
 Evaluate these based on your shape's characteristics from Phase 0. **Skip if not needed:**
 
 **Shape-specific padding** (only if decorations overlap text area):
+
 - File: `styled-system/preset/src/recipes/elementNodeData.ts`
 - Add `_shapeYourShape: { paddingLeft: ... }` (condition name is auto-generated from `ElementShapes`)
 
 **Shape-specific CSS parts** (only if custom sub-elements need their own styles):
+
 - File: `styled-system/preset/src/recipes/elementShape.ts`
 - Add part definition + styling in the `svg` variant
 
 **Layout engine sizing** (only if non-standard bounding box):
+
 - File: `packages/layouts/src/graphviz/DotPrinter.ts`
 - Add case in `addNode` method with adjusted width/margin
 
@@ -220,6 +225,7 @@ pnpm test
 ```
 
 Snapshot files will auto-update:
+
 - `packages/generators/src/mmd/__snapshots__/generate-mmd.spec.ts.snap`
 - `packages/generators/src/puml/__snapshots__/generate-puml.spec.ts.snap`
 

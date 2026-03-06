@@ -1,15 +1,14 @@
 ---
 name: changeset-generator
-description: Generate changeset based on current branch changes or staged files. Trigger whenever the user asks to create a changeset, prepare a release entry, or says something like "write a changeset for this" or "what packages changed". Also trigger at the end of a feature implementation when the user asks to wrap up or finalize changes.
+description:
+  Generates changeset files based on changes. Use when user asks to create a changeset or at the end of a feature implementation, when the user asks to wrap up or finalize changes
 ---
-
-# Changeset Generator for LikeC4
 
 Generate changeset files based on current branch changes or staged files.
 
-## 1. Identify Changes
+# 1. Identify Changes
 
-### Step 1: Detect change source
+## Step 1: Detect change source
 
 Determine where to read changes from, in this priority order:
 
@@ -35,7 +34,7 @@ fi
 
 Use whichever source has changes. If none have changes, tell the user and stop.
 
-### Step 2: Gather context
+## Step 2: Gather context
 
 For **staged changes:**
 
@@ -60,7 +59,7 @@ Read the actual diff for non-trivial files when commit messages are vague — fi
 - `feat:` / `fix:` — usually needs a changeset
 - `chore:` / `test:` / `refactor:` — usually skip unless user-facing
 
-## 2. Map Files to Packages
+# 2. Map Files to Packages
 
 Group changed files by their package:
 
@@ -76,7 +75,7 @@ Group changed files by their package:
 
 If no packages remain after filtering, tell the user there are no user-facing changes and stop — do not create a changeset.
 
-## 3. Generate Summary
+# 3. Generate Summary
 
 Write from the **user's perspective** — what they can now do, what was fixed, what changed for them.
 
@@ -88,11 +87,11 @@ Write from the **user's perspective** — what they can now do, what was fixed, 
 
 **Do NOT mention:** test changes, internal refactors, config changes, code cleanup, dependency bumps.
 
-## 4. Create Changeset File
+# 4. Create Changeset File
 
 **Always use `patch`** — versioning is handled manually by maintainers.
 
-### File naming
+## File naming
 
 Derive the filename from the summary — lowercase, hyphens, descriptive:
 
@@ -100,7 +99,7 @@ Derive the filename from the summary — lowercase, hyphens, descriptive:
 - `fix-diagram-zoom-reset.md`
 - `element-notes-feature.md`
 
-### File format
+## File format
 
 Create at `.changeset/<name>.md`:
 
@@ -113,7 +112,7 @@ Create at `.changeset/<name>.md`:
 <summary>
 ```
 
-### Validate before writing
+## Validate before writing
 
 Before creating the file, verify each package name exists:
 
@@ -124,13 +123,13 @@ cat packages/<name>/package.json | grep '"name"'
 
 If a package name doesn't match, fix it before writing the changeset.
 
-## 5. Confirm with User
+# 5. Confirm with User
 
 Show the user the changeset content and file path before or after writing. If something looks off, iterate.
 
-## Examples
+# Examples
 
-### Good:
+## Good:
 
 ```markdown
 ---
@@ -152,14 +151,14 @@ First iteration of element notes feature:
 - Display visual indicator on diagrams
 ```
 
-### Bad (avoid):
+## Bad (avoid):
 
 - "Refactored XyzService to use DI" — internal implementation detail
 - "Fixed failing tests" — tests are not user-facing
 - "Updated types for better inference" — internal improvement
 - "Bumped dependencies" — maintenance, not a feature
 
-## Notes
+# Notes
 
 - Combine multiple packages in one changeset if they're part of the same feature
 - If a branch has multiple independent features, suggest creating separate changesets for each
