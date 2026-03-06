@@ -236,7 +236,7 @@ function drawioShape(shape: Node['shape']): string {
   const rectStyle = 'shape=rectangle;rounded=1;arcSize=12;'
   switch (shape) {
     case 'person':
-      return 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;'
+      return 'shape=actor;'
     case 'rectangle':
     case 'browser':
     case 'mobile':
