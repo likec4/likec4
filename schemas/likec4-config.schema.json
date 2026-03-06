@@ -84,7 +84,7 @@
       "type": "boolean"
     },
     "implicitViews": {
-      "description": "Auto-generate scoped views for elements without explicit views. Defaults to true.",
+      "description": "Auto-generate scoped views for elements without explicit views. Defaults to false.",
       "type": "boolean"
     }
   },

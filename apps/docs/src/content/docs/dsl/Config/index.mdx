@@ -181,15 +181,15 @@ To disable this behavior:
 
 ## Implicit views
 
-By default, LikeC4 automatically generates scoped views for elements that don't have explicitly defined views. This enables drill-down navigation out of the box — clicking on an element in any diagram navigates to its auto-generated scoped view (equivalent to `view of element { include * }`).
+LikeC4 can automatically generate scoped views for elements that don't have explicitly defined views, enabling drill-down navigation — clicking on an element navigates to its auto-generated scoped view (equivalent to `view of element { include * }`). This feature is disabled by default.
 
-To disable this behavior:
+To enable this behavior:
 
 ```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
-  "implicitViews": false
+  "implicitViews": true
 }
 ```
 

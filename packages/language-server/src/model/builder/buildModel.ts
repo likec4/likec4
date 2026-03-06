@@ -320,7 +320,7 @@ export function buildModelData(
   }
 
   // Add implicit scoped views for elements without explicit views
-  if (project.config.implicitViews !== false) {
+  if (project.config.implicitViews === true) {
     const elementsWithExplicitViews = new Set<string>()
     for (const v of parsedViews) {
       if (v[_type] === 'element' && 'viewOf' in v && v.viewOf) {

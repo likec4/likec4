@@ -539,8 +539,8 @@ describe('LikeC4ModelBuilder', () => {
     })
     expect(keys(model.relations)).toHaveLength(2)
 
-    // 3 explicit views + 3 implicit views (for client, system, system.backend)
-    expect(keys(model.views)).toHaveLength(6)
+    // 3 explicit views (implicitViews is disabled by default)
+    expect(keys(model.views)).toHaveLength(3)
     expect(model.views).toMatchObject({
       index: {
         id: 'index',
