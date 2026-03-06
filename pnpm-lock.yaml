@@ -205,8 +205,8 @@ catalogs:
       version: 8.3.15
   mcp:
     '@modelcontextprotocol/sdk':
-      specifier: ^1.27.0
-      version: 1.27.0
+      specifier: ^1.27.1
+      version: 1.27.1
   obuild:
     '@rolldown/plugin-node-polyfills':
       specifier: ^1.0.3
@@ -1319,7 +1319,7 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.2.4(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)
+        version: 0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)
       '@hono/node-server':
         specifier: catalog:hono
         version: 1.19.10(hono@4.12.4)
@@ -1434,7 +1434,7 @@ importers:
         version: link:../tsconfig
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.27.0(zod@3.25.76)
+        version: 1.27.1(zod@3.25.76)
       '@types/natural-compare-lite':
         specifier: catalog:utils
         version: 1.4.2
@@ -2011,7 +2011,7 @@ importers:
         version: link:../tsconfig
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.27.0(zod@3.25.76)
+        version: 1.27.1(zod@3.25.76)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.11
@@ -4014,8 +4014,8 @@ packages:
   '@microsoft/tsdoc@0.15.1':
     resolution: {integrity: sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==}
 
-  '@modelcontextprotocol/sdk@1.27.0':
-    resolution: {integrity: sha512-qOdO524oPMkUsOJTrsH9vz/HN3B5pKyW+9zIW51A9kDMVe7ON70drz1ouoyoyOcfzc+oxhkQ6jWmbyKnlWmYqA==}
+  '@modelcontextprotocol/sdk@1.27.1':
+    resolution: {integrity: sha512-sr6GbP+4edBwFndLbM60gf07z0FQ79gaExpnsjMGePXqFcSSb7t6iscpjk9DhFhwd+mTEQrzNafGP8/iGGFYaA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -11317,9 +11317,9 @@ snapshots:
 
   '@fontsource-variable/ibm-plex-sans@5.2.8': {}
 
-  '@hono/mcp@0.2.4(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)':
+  '@hono/mcp@0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.27.0(zod@3.25.76)
+      '@modelcontextprotocol/sdk': 1.27.1(zod@3.25.76)
       hono: 4.12.4
       hono-rate-limiter: 0.4.2(hono@4.12.4)
       pkce-challenge: 5.0.1
@@ -11671,7 +11671,7 @@ snapshots:
 
   '@microsoft/tsdoc@0.15.1': {}
 
-  '@modelcontextprotocol/sdk@1.27.0(zod@3.25.76)':
+  '@modelcontextprotocol/sdk@1.27.1(zod@3.25.76)':
     dependencies:
       '@hono/node-server': 1.19.10(hono@4.12.4)
       ajv: 8.17.1
@@ -11693,7 +11693,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@modelcontextprotocol/sdk@1.27.0(zod@4.3.6)':
+  '@modelcontextprotocol/sdk@1.27.1(zod@4.3.6)':
     dependencies:
       '@hono/node-server': 1.19.10(hono@4.12.4)
       ajv: 8.17.1
@@ -11949,7 +11949,7 @@ snapshots:
   '@pandacss/mcp@1.8.2(typescript@5.9.3)':
     dependencies:
       '@clack/prompts': 0.11.0
-      '@modelcontextprotocol/sdk': 1.27.0(zod@4.3.6)
+      '@modelcontextprotocol/sdk': 1.27.1(zod@4.3.6)
       '@pandacss/logger': 1.8.2
       '@pandacss/node': 1.8.2(typescript@5.9.3)
       '@pandacss/token-dictionary': 1.8.2

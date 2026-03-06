@@ -86,7 +86,7 @@ catalogs:
     "@mantine/notifications": 8.3.15
     "@mantine/vanilla-extract": 8.3.15
   mcp:
-    "@modelcontextprotocol/sdk": ^1.27.0
+    "@modelcontextprotocol/sdk": ^1.27.1
   obuild:
     "@rolldown/plugin-node-polyfills": ^1.0.3
     obuild: ^0.4.31
