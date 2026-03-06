@@ -160,8 +160,8 @@ catalogs:
       version: 3.25.76
   hono:
     '@hono/mcp':
-      specifier: ^0.2.3
-      version: 0.2.3
+      specifier: ^0.2.4
+      version: 0.2.4
     '@hono/node-server':
       specifier: ^1.19.10
       version: 1.19.10
@@ -1319,7 +1319,7 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.2.3(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)
+        version: 0.2.4(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)
       '@hono/node-server':
         specifier: catalog:hono
         version: 1.19.10(hono@4.12.4)
@@ -3695,8 +3695,8 @@ packages:
   '@fontsource-variable/ibm-plex-sans@5.2.8':
     resolution: {integrity: sha512-n5PF2iFa0CZT0QYTPzxvZ39opC9LnU0zdoRccoADbs+Dtsd+lbXOZF7RNuIPHcQX1dKjF63sxnRImQIB5eD0Ag==}
 
-  '@hono/mcp@0.2.3':
-    resolution: {integrity: sha512-wrYKVQSjnBg4/ZinnnP/1t3jlvP3Z9fqZv8OzuhLXV4gVTLOHOHDhnXsIwD0nFVKk2pMOvA+sDfrKyRzw4yUPg==}
+  '@hono/mcp@0.2.4':
+    resolution: {integrity: sha512-BKH1qNTbrdqVeGHB32zIDNgTKdWUvlNoojM86oiKwwWtD+FQoNJbx2f3NnPvwua0+ujJed8IuEfgRKCNZ+2RNw==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.25.1
       hono: '*'
@@ -11317,7 +11317,7 @@ snapshots:
 
   '@fontsource-variable/ibm-plex-sans@5.2.8': {}
 
-  '@hono/mcp@0.2.3(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)':
+  '@hono/mcp@0.2.4(@modelcontextprotocol/sdk@1.27.0(zod@3.25.76))(hono-rate-limiter@0.4.2(hono@4.12.4))(hono@4.12.4)(zod@3.25.76)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.27.0(zod@3.25.76)
       hono: 4.12.4
