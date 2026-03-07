@@ -82,6 +82,7 @@ export type NewElementProps<Tag, Metadata> = {
     iconColor?: Color
     iconSize?: ShapeSize
     iconPosition?: IconPosition
+    multiple?: boolean
   }
 }
 
@@ -106,6 +107,7 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
     iconColor?: Color
     iconSize?: ShapeSize
     iconPosition?: IconPosition
+    multiple?: boolean
   }
 }
 

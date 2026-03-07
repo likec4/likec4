@@ -125,7 +125,7 @@ export class LikeC4Styles {
    * @default color From the defaults
    */
   colors(color?: LiteralUnion<ThemeColor, string>): ThemeColorValues {
-    return this.computeFrom(color ??= this.defaults.color)
+    return this.computeFrom(color ?? this.defaults.color)
   }
 
   private compoundColorsCache = new DefaultWeakMap((baseElementColors: ElementColorValues) =>
