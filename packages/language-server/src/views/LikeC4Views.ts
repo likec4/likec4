@@ -32,7 +32,7 @@ type GraphvizSvgOut = {
   readonly svg: string
 }
 
-type LayoutViewParams = {
+export type LayoutViewParams = {
   viewId: ViewId
   /**
    * Type of layout to apply
@@ -224,17 +224,18 @@ export class DefaultLikeC4Views implements LikeC4Views {
     }
     try {
       const m0 = performanceMark()
-      const out = (layoutHints ? null : this.cache.get(view)) ?? await this.layouter.layout({
+      // const out = (layoutHints ? null : this.cache.get(view)) ?? await this.layouter.layout({
+      const out = await this.layouter.layout({
         view,
         styles: model.$styles,
         layoutHints,
       })
-      if (this.cache.has(view)) {
-        logger.debug`layout ${viewId} from cache`
-      } else {
-        this.viewSucceed(view, model, out)
-        logger.debug(`layout {viewId} in ${m0.pretty}`, { viewId })
-      }
+      // if (this.cache.has(view)) {
+      //   logger.debug`layout ${viewId} from cache`
+      // } else {
+      this.viewSucceed(view, model, out)
+      logger.debug(`layout {viewId} in ${m0.pretty}`, { viewId })
+      // }
       if (isTruthy(layoutType)) {
         return {
           dot: out.dot,
@@ -367,7 +368,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     const projectId = likec4model.project.id
     const key = `${projectId}-${view.id}`
     this.viewsWithReportedErrors.delete(key)
-    this.cache.set(view, result)
+    // this.cache.set(view, result)
     return result
   }
 }

@@ -12,7 +12,7 @@ import {
 import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
 import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger as mainLogger, wrapError } from '@likec4/log'
-import { randomString } from 'remeda'
+import { isNonNullish, randomString } from 'remeda'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { calcSequenceLayout } from '../sequence'
 import type { LayoutHints } from './ai/types'
@@ -36,14 +36,14 @@ export interface GraphvizPort extends Disposable {
   dispose(): void
 }
 
-const getPrinter = <A extends AnyAux>({ view, styles }: LayoutTaskParams<A>) => {
+const getPrinter = <A extends AnyAux>({ view, styles, layoutHints }: LayoutTaskParams<A>) => {
   switch (true) {
     case isDynamicView(view):
-      return new DynamicViewPrinter(view, styles)
+      return new DynamicViewPrinter(view, styles, layoutHints)
     case isDeploymentView(view):
-      return new DeploymentViewPrinter(view, styles)
+      return new DeploymentViewPrinter(view, styles, layoutHints)
     case isElementView(view):
-      return new ElementViewPrinter(view, styles)
+      return new ElementViewPrinter(view, styles, layoutHints)
     default:
       nonexhaustive(view)
   }
@@ -89,14 +89,18 @@ export class GraphvizLayouter implements Disposable {
     rootLogger.trace`change port to ${this.graphviz.name}`
   }
 
+  protected newScopedLogger(operation: string) {
+    return rootLogger.getChild([operation, '_', randomString(4).toLowerCase()])
+  }
+
   async dotToJson(dot: DotSource): Promise<GraphvizJson> {
-    const logger = rootLogger.getChild(['dotToJson', randomString(3)])
+    const logger = this.newScopedLogger('dotToJson')
     let json
     try {
       json = await this.graphviz.layoutJson(dot)
     } catch (error) {
       logger.error(loggable(error))
-      logger.error`Failed to convert DOT to JSON:\n${dot}`
+      logger.error('Failed to convert DOT to JSON:\n' + dot)
       throw error
     }
     try {
@@ -109,7 +113,7 @@ export class GraphvizLayouter implements Disposable {
   }
 
   async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult<A>> {
-    const logger = rootLogger.getChild(['layout', randomString(3)])
+    const logger = this.newScopedLogger('layout')
     try {
       logger.debug`layouting view ${params.view.id}...`
       let dot = await this.dot(params)
@@ -157,15 +161,11 @@ export class GraphvizLayouter implements Disposable {
   }
 
   async dot<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<DotSource> {
-    const logger = rootLogger.getChild(['dot', randomString(3)])
+    const logger = this.newScopedLogger('dot')
     logger.trace`generating dot for view ${params.view.id}`
     const printer = getPrinter(params)
-    if (params.layoutHints) {
-      logger.debug`applying AI layout hints to ${params.view.id}`
-      printer.applyLayoutHints(params.layoutHints)
-    }
     let dot = printer.print()
-    if (!isElementView(params.view)) {
+    if (!isElementView(params.view) || isNonNullish(params.layoutHints)) {
       return dot
     }
     try {
@@ -178,7 +178,7 @@ export class GraphvizLayouter implements Disposable {
   }
 
   async layoutProjectsView(view: ComputedProjectsView): Promise<LayoutedProjectsView> {
-    const logger = rootLogger.getChild(['layoutProjectsView', randomString(3)])
+    const logger = this.newScopedLogger('layoutProjectsView')
     logger.debug`layouting projects overview...`
     const printer = new ProjectsViewPrinter(view)
     let dot = printer.print()
