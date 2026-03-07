@@ -212,7 +212,7 @@ catalogs:
       specifier: ^1.0.3
       version: 1.0.3
     obuild:
-      specifier: ^0.4.31
+      specifier: ^0.4.32
       version: 0.4.32
   react:
     '@floating-ui/dom':
@@ -1968,6 +1968,10 @@ importers:
         version: 8.8.5
 
   packages/log:
+    dependencies:
+      '@logtape/logtape':
+        specifier: catalog:utils
+        version: 2.0.4
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1975,9 +1979,6 @@ importers:
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
-      '@logtape/logtape':
-        specifier: catalog:utils
-        version: 2.0.4
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.11

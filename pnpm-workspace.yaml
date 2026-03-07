@@ -89,7 +89,7 @@ catalogs:
     "@modelcontextprotocol/sdk": ^1.27.1
   obuild:
     "@rolldown/plugin-node-polyfills": ^1.0.3
-    obuild: ^0.4.31
+    obuild: ^0.4.32
   react:
     "@floating-ui/dom": ^1.7.6
     "@nanostores/media-query": 0.1.2

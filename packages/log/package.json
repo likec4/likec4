@@ -41,8 +41,10 @@
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean"
   },
+  "dependencies": {
+    "@logtape/logtape": "catalog:utils"
+  },
   "devDependencies": {
-    "@logtape/logtape": "catalog:utils",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
