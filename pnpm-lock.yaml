@@ -228,8 +228,8 @@ catalogs:
       specifier: ^25.2.0
       version: 25.2.0
     '@tabler/icons-react':
-      specifier: 3.36.1
-      version: 3.36.1
+      specifier: 3.38.0
+      version: 3.38.0
     clsx:
       specifier: ^2.1.1
       version: 2.1.1
@@ -678,7 +678,7 @@ importers:
         version: 0.4.0(ws@8.18.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.36.1(react@19.2.4)
+        version: 3.38.0(react@19.2.4)
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.114.27(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1186,7 +1186,7 @@ importers:
         version: 0.4.0(ws@8.18.1)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.36.1(react@19.2.4)
+        version: 3.38.0(react@19.2.4)
       '@types/bezier-js':
         specifier: ^4.1.3
         version: 4.1.3
@@ -1743,7 +1743,7 @@ importers:
         version: 25.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.36.1(react@19.2.4)
+        version: 3.38.0(react@19.2.4)
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.114.27(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2427,7 +2427,7 @@ importers:
         version: 25.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.36.1(react@19.2.4)
+        version: 3.38.0(react@19.2.4)
       '@tanstack/react-query':
         specifier: catalog:tanstack
         version: 5.85.0(react@19.2.4)
@@ -4717,13 +4717,13 @@ packages:
     peerDependencies:
       xstate: ^5.5.1
 
-  '@tabler/icons-react@3.36.1':
-    resolution: {integrity: sha512-/8nOXeNeMoze9xY/QyEKG65wuvRhkT3q9aytaur6Gj8bYU2A98YVJyLc9MRmc5nVvpy+bRlrrwK/Ykr8WGyUWg==}
+  '@tabler/icons-react@3.38.0':
+    resolution: {integrity: sha512-kR5wv+m4+GgmnSszg3rQd6SrTFAQ/XnQC/yTwIfuRJSfqB12KoIC7fPbIijFgOHTFlBN5DARnN0IVrR7KYG6/A==}
     peerDependencies:
       react: 19.2.4
 
-  '@tabler/icons@3.40.0':
-    resolution: {integrity: sha512-V/Q4VgNPKubRTiLdmWjV/zscYcj5IIk+euicUtaVVqF6luSC9rDngYWgST5/yh3Mrg/mYUwRv1YVTk71Jp0twQ==}
+  '@tabler/icons@3.38.0':
+    resolution: {integrity: sha512-FdETQSpQ3lN7BEjEUzjKhsfTDCamrvMDops4HEMphTm3DmkIFpThoODn8XXZ8Q9MhjshIvphIYVHHB7zpq167w==}
 
   '@tailwindcss/node@4.1.18':
     resolution: {integrity: sha512-DoR7U1P7iYhw16qJ49fgXUlry1t4CpXeErJHnQ44JgTSKMaZUdf17cfn5mHchfJ4KRBZRFA/Coo+MUF5+gOaCQ==}
@@ -12380,12 +12380,12 @@ snapshots:
     transitivePeerDependencies:
       - ws
 
-  '@tabler/icons-react@3.36.1(react@19.2.4)':
+  '@tabler/icons-react@3.38.0(react@19.2.4)':
     dependencies:
-      '@tabler/icons': 3.40.0
+      '@tabler/icons': 3.38.0
       react: 19.2.4
 
-  '@tabler/icons@3.40.0': {}
+  '@tabler/icons@3.38.0': {}
 
   '@tailwindcss/node@4.1.18':
     dependencies:
