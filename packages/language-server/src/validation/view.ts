@@ -1,24 +1,12 @@
-import { type ValidationCheck, CstUtils } from 'langium'
+import { type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
-import { hasManualLayout } from '../view-utils/manual-layout'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.LikeC4View> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((el, accept) => {
-    const commentNode = CstUtils.findCommentNode(el.$cstNode, ['BLOCK_COMMENT'])
-    if (commentNode && hasManualLayout(commentNode.text)) {
-      accept('warning', `Migrate to the new manual layout snapshots (run LikeC4: Migrate manual layouts)`, {
-        node: el,
-        range: commentNode.range,
-        code: 'manual-layout-v1',
-        // codeDescription: {
-        //   href: 'https://likec4.dev/docs/guides/manual-layout#migrating-from-v1-to-v2-manual-layout',
-        // },
-      })
-    }
     if (!el.name) {
       return
     }

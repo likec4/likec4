@@ -13,7 +13,6 @@ import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/co
 import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger as mainLogger, wrapError } from '@likec4/log'
 import { randomString } from 'remeda'
-import { applyManualLayout } from '../manual/applyManualLayout'
 import { calcSequenceLayout } from '../sequence'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { GraphClusterSpace } from './DotPrinter'
@@ -113,10 +112,6 @@ export class GraphvizLayouter implements Disposable {
       const { view } = params
       const json = await this.dotToJson(dot)
       let diagram = parseGraphvizJson(json, view)
-
-      if (view.manualLayout) {
-        diagram = applyManualLayout(diagram, view.manualLayout)
-      }
 
       if (isDynamicView(diagram)) {
         Object.assign(
