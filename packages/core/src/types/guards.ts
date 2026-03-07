@@ -1,5 +1,6 @@
 import type { IsAny, IsUnknown, Or, SetNonNullable, SetRequired } from 'type-fest'
 import type { NonEmptyArray } from '../types'
+import { invariant } from '../utils'
 
 export function isString(value: unknown): value is string {
   return value != null && typeof value === 'string'
@@ -7,6 +8,11 @@ export function isString(value: unknown): value is string {
 
 export function isNonEmptyArray<A>(arr: ArrayLike<A> | undefined): arr is NonEmptyArray<A> {
   return !!arr && Array.isArray(arr) && arr.length > 0
+}
+
+function _hasProp(value: unknown, path: string): boolean {
+  invariant(typeof path === 'string', 'Path must be string')
+  return value != null && typeof value === 'object' && (value as any)[path] != null
 }
 
 export function hasProp<T extends object, P extends keyof T & string>(
@@ -21,10 +27,10 @@ export function hasProp<const P extends string>(
 export function hasProp(...args: any[]) {
   if (args.length === 1) {
     const path = args[0] as string
-    return (value: unknown) => value != null && typeof value === 'object' && path in value
+    return (value: unknown) => _hasProp(value, path)
   }
   const [value, path] = args
-  return value != null && typeof value === 'object' && path in value
+  return _hasProp(value, path)
 }
 
 export type Guard<To = unknown> = (value: any) => value is To
