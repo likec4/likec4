@@ -176,7 +176,6 @@ export function parseGraphvizJson(
     nodes: computedNodes,
     edges: computedEdges,
     hasManualLayout,
-    manualLayout: _manualLayout, // to omit
     ...view
   } = computedView
 

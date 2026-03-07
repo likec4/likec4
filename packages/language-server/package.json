@@ -148,8 +148,6 @@
     "@likec4/core": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
-    "@msgpack/msgpack": "^3.1.2",
-    "@smithy/util-base64": "^4.3.0",
     "chokidar": "catalog:externals",
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",

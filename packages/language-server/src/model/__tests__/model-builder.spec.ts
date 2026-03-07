@@ -1328,54 +1328,6 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  // Base64 taken from saveManualLayout.spec.ts
-  it('parses manual layout', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { errors, warnings } = await validate(`
-      specification {
-        element component
-      }
-      model {
-        component sys1
-        component sys2
-        sys1 -> sys2
-      }
-      views {
-        /**
-         * @likec4-generated(v1)
-         * iKRoYXNopGhhc2iqYXV0b0xheW91dKJUQqF49qF57KZoZWlnaHRkpXdpZHRozMilbm9kZXOBpHN5czGCoWKUAABkZKFjwqVlZGdlc4GlZWRnZTGComNwkYKheAqheQqhcJKSAACSZGQ=
-         */
-        view index {
-          include *
-        }
-      }
-    `)
-    expect(errors).toEqual([])
-    expect(warnings).toEqual([
-      'Migrate to the new manual layout snapshots (run LikeC4: Migrate manual layouts)',
-    ])
-    const model = await buildModel()
-    const indexView = model?.views['index' as ViewId]!
-    expect(indexView).toBeDefined()
-    expect(indexView).toHaveProperty('manualLayout', {
-      autoLayout: { direction: 'TB' },
-      hash: 'hash',
-      x: -10,
-      y: -20,
-      height: 100,
-      width: 200,
-      nodes: {
-        'sys1': { x: 0, y: 0, width: 100, height: 100, isCompound: false },
-      },
-      edges: {
-        'edge1': {
-          points: [[0, 0], [100, 100]],
-          controlPoints: [{ x: 10, y: 10 }],
-        },
-      },
-    })
-  })
-
   it('includes both sides of inout relation', async ({ expect }) => {
     const { validate, services } = createTestServices()
     const { errors, warnings } = await validate(`
