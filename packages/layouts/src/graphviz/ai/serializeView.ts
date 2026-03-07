@@ -1,13 +1,23 @@
-import type { ComputedView } from '@likec4/core/types'
+import { DefaultMap } from '@likec4/core'
+import {
+  type ComputedEdge,
+  type ComputedNode,
+  type ComputedView,
+  type EdgeId,
+  flattenMarkdownOrString,
+  NodeId,
+} from '@likec4/core/types'
+import { map } from 'remeda'
 
 interface SerializedNode {
   id: string
   kind: string
   title: string
-  parent: string | null
-  children: string[]
+  parent?: string
+  children?: string[]
+  inEdges?: string[]
+  outEdges?: string[]
   level: number
-  shape: string
 }
 
 interface SerializedEdge {
@@ -18,45 +28,101 @@ interface SerializedEdge {
 }
 
 export interface SerializedView {
-  viewId: string
   direction: string
-  nodeCount: number
-  edgeCount: number
   nodes: SerializedNode[]
   edges: SerializedEdge[]
 }
 
-function truncate(str: string, maxLen: number): string {
+function truncate(str: string, maxLen: number = 40): string {
+  str = str.replaceAll(/\n/g, ' ').trim()
   if (str.length <= maxLen) return str
   return str.slice(0, maxLen - 1) + '\u2026'
+}
+
+/**
+ * When serializing for the LLM, we map internal NodeIds and EdgeIds to simple strings (n1, n2, e1, e2) to keep the JSON compact.
+ * SerializedResult provides the reverse mapping for later interpretation of LLM output.
+ */
+type SerializedResult = {
+  serialized: SerializedView
+  mapping: {
+    nodes: Record<string, NodeId>
+    edges: Record<string, EdgeId>
+  }
+}
+
+function mappedEntries<T>(_map: DefaultMap<T, string>): Record<string, T> {
+  const res = {} as Record<string, T>
+  for (const [k, v] of _map.entries()) {
+    res[v] = k
+  }
+  return res
+}
+
+function edgeLabel(edge: ComputedEdge): string | null {
+  const label = edge.label ?? edge.technology ?? flattenMarkdownOrString(edge.description)
+  return label ? truncate(label) : null
 }
 
 /**
  * Serialize a ComputedView into a compact, LLM-friendly JSON string.
  * Strips cosmetic data (colors, icons, descriptions, styles) and keeps
  * only structural information relevant to layout decisions.
+ *
+ * Maps NodeIds and EdgeIds to simple strings (n1, n2, e1, e2) to keep the JSON compact.
  */
-export function serializeViewForPrompt(view: ComputedView): string {
-  const serialized: SerializedView = {
-    viewId: view.id,
-    direction: view.autoLayout.direction,
-    nodeCount: view.nodes.length,
-    edgeCount: view.edges.length,
-    nodes: view.nodes.map(n => ({
-      id: n.id,
-      kind: n.kind,
-      title: truncate(n.title, 40),
-      parent: n.parent,
-      children: n.children.slice(),
-      level: n.level,
-      shape: n.shape,
-    })),
-    edges: view.edges.map(e => ({
-      id: e.id,
-      source: e.source,
-      target: e.target,
-      label: e.label ? truncate(e.label, 40) : null,
-    })),
+export function serializeViewForPrompt(view: ComputedView): SerializedResult {
+  let seq = 1
+  const nodeIds = new DefaultMap((_key: NodeId) => `n${seq++}`)
+  const nodeId = (id: NodeId) => nodeIds.get(id)
+  const leafs = new Set<NodeId>()
+
+  // Pre-populate node IDs and identify leaf nodes
+  view.nodes.forEach(n => {
+    nodeIds.get(n.id)
+    if (n.children.length === 0) {
+      leafs.add(n.id)
+    }
+  })
+
+  let edgeseq = 1
+  const edgeId = new DefaultMap((_key: EdgeId) => `e${edgeseq++}`)
+
+  const edges = view.edges
+    .filter(e => leafs.has(e.source) && leafs.has(e.target))
+    .map((e): SerializedEdge => ({
+      id: edgeId.get(e.id),
+      source: nodeId(e.source),
+      target: nodeId(e.target),
+      label: edgeLabel(e),
+    }))
+
+  const serializeNode = ({ id, parent, ...node }: ComputedNode): SerializedNode => {
+    const isLeaf = node.children.length === 0
+    const inEdges = isLeaf ? node.inEdges.map(edge => edgeId.get(edge)) : []
+    const outEdges = isLeaf ? node.outEdges.map(edge => edgeId.get(edge)) : []
+    return ({
+      id: nodeId(id),
+      kind: node.kind,
+      title: truncate(node.title),
+      ...(parent && { parent: nodeId(parent) }),
+      ...(!isLeaf && { children: map(node.children, nodeId) }),
+      ...(inEdges.length > 0 && { inEdges }),
+      ...(outEdges.length > 0 && { outEdges }),
+      level: node.level,
+    })
   }
-  return JSON.stringify(serialized, null, 2)
+
+  const serialized: SerializedView = {
+    direction: view.autoLayout.direction,
+    nodes: view.nodes.map(serializeNode),
+    edges,
+  }
+  return {
+    serialized,
+    mapping: {
+      nodes: mappedEntries(nodeIds),
+      edges: mappedEntries(edgeId),
+    },
+  }
 }

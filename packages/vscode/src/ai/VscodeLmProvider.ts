@@ -21,7 +21,7 @@ export class VscodeLmProvider implements AILayoutProvider {
     }
 
     const messages = [
-      vscode.LanguageModelChatMessage.User(systemPrompt),
+      vscode.LanguageModelChatMessage.Assistant(systemPrompt),
       vscode.LanguageModelChatMessage.User(userPrompt),
     ]
 
