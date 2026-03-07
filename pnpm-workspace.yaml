@@ -7,7 +7,7 @@ packages:
 
 catalog:
   "@changesets/changelog-github": ^0.6.0
-  "@changesets/cli": ^2.29.8
+  "@changesets/cli": ^2.30.0
   "@dagrejs/dagre": 1.1.8
   "@types/node": ~22.19.13
   "@types/pako": ^2.0.4
