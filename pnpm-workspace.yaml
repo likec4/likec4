@@ -6,7 +6,7 @@ packages:
   - "!packages/create-likec4"
 
 catalog:
-  "@changesets/changelog-github": ^0.5.2
+  "@changesets/changelog-github": ^0.6.0
   "@changesets/cli": ^2.29.8
   "@dagrejs/dagre": 1.1.8
   "@types/node": ~22.19.13
