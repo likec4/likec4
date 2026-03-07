@@ -18,13 +18,13 @@ const footerLinks = [
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
       <div class="flex items-center gap-4">
         <Logo loading="lazy" />
-        <span class="text-sm text-stone-500 dark:text-zinc-600">Architecture as code.</span>
+        <span class="text-sm text-stone-500 dark:text-zinc-400">Architecture as code.</span>
       </div>
       <nav class="flex flex-wrap items-center gap-5">
         {footerLinks.map((link) => (
           <a
             href={link.href}
-            class="text-sm text-stone-500 dark:text-zinc-600 hover:text-stone-700 dark:hover:text-zinc-300 no-underline transition-colors duration-200"
+            class="text-sm text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-300 no-underline transition-colors duration-200"
           >
             {link.label}
           </a>
@@ -34,7 +34,7 @@ const footerLinks = [
 
     <!-- Bottom row -->
     <div class="mt-6 pt-4 border-t border-stone-200/40 dark:border-zinc-800/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <p class="text-xs text-stone-400 dark:text-zinc-700">
+      <p class="text-sm text-stone-400 dark:text-zinc-400">
         &copy; 2023-{currentYear} LikeC4. Released under the MIT License.
       </p>
       <div class="flex items-center gap-3">
