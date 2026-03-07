@@ -234,7 +234,7 @@ catalogs:
       specifier: ^2.1.1
       version: 2.1.1
     motion:
-      specifier: ^12.34.5
+      specifier: ^12.35.0
       version: 12.35.0
     nanostores:
       specifier: 1.1.1
