@@ -123,6 +123,9 @@ catalogs:
     typescript:
       specifier: 5.9.3
       version: 5.9.3
+    unstorage:
+      specifier: ^1.17.4
+      version: 1.17.4
     wireit:
       specifier: 0.14.12
       version: 0.14.12
@@ -1687,6 +1690,9 @@ importers:
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      unstorage:
+        specifier: 'catalog:'
+        version: 1.17.4
       which:
         specifier: ^5.0.0
         version: 5.0.0

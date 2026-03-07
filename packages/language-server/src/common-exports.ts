@@ -21,7 +21,7 @@ export type {
 } from './module'
 
 export { WithWasmGraphviz } from './views'
-export type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
+export type { LayoutViewParams, LikeC4Views, LikeC4ViewsModuleContext } from './views'
 
 export type {
   LangiumDocuments,

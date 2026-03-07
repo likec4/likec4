@@ -8,15 +8,22 @@ export interface AILayoutProvider {
   readonly name: string
 
   /**
-   * Send prompts to an LLM and get text back.
-   * @param systemPrompt - System/instruction prompt
-   * @param userPrompt - User message with the serialized view
+   * Send a layout hint generation request to the LLM and return the raw text response.
+   * @param request - The layout request containing system prompt, user prompt, and diagram data
    * @param signal - AbortSignal for cancellation/timeout
    * @returns The raw text response from the LLM
    */
-  generateText(
-    systemPrompt: string,
-    userPrompt: string,
+  sendRequest(
+    request: AILayoutRequest,
     signal?: AbortSignal,
   ): Promise<string>
+}
+
+export interface AILayoutRequest {
+  systemPrompt: string
+  userPrompt: string
+  /**
+   * The serialized diagram data as a JSON string.
+   */
+  diagramdata: string
 }

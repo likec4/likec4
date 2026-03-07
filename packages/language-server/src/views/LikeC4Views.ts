@@ -34,7 +34,7 @@ type GraphvizSvgOut = {
   readonly svg: string
 }
 
-type LayoutViewParams = {
+export type LayoutViewParams = {
   viewId: ViewId
   /**
    * Type of layout to apply
