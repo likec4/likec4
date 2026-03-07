@@ -42,15 +42,10 @@ export function applyStylesToManualLayout<A extends c4.AnyAux>(
     if (!latestEdge) {
       return e
     }
-    if (latestEdge.color !== e.color) {
+    if (latestEdge.color !== e.color || latestEdge.line !== e.line) {
       e = {
         ...e,
         color: latestEdge.color,
-      }
-    }
-    if (latestEdge.line !== e.line) {
-      e = {
-        ...e,
         line: latestEdge.line,
       }
     }
