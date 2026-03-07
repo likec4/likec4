@@ -80,7 +80,7 @@ const newLinesPerStep = [
     <!-- Side-by-side panels -->
     <div class="relative grid lg:grid-cols-2 gap-4 lp-reveal">
       <!-- Code panel -->
-      <div class="rounded-xl overflow-hidden border border-zinc-700/60 bg-zinc-950 shadow-2xl">
+      <div class="flex flex-col rounded-xl overflow-hidden border border-zinc-700/60 bg-zinc-950 shadow-2xl">
         <!-- Terminal chrome -->
         <div class="flex items-center gap-2 px-4 py-2.5 border-b border-zinc-800 bg-zinc-900">
           <span class="w-2.5 h-2.5 rounded-full bg-red-400/60"></span>
@@ -90,14 +90,14 @@ const newLinesPerStep = [
         </div>
 
         <!-- Code steps container -->
-        <div id="demo-code-container" class="max-h-[360px] lg:max-h-[500px] overflow-y-auto">
+        <div id="demo-code-container" class="sm:max-h-[360px] md:max-h-full flex flex-1 overflow-y-auto">
           {steps.map((code, i) => (
             <div
               id={`demo-code-step-${i}`}
-              class:list={['demo-code-step', { 'demo-code-hidden': i !== 0 }]}
-              data-new-lines={newLinesPerStep[i].join(',')}
+              class:list={['demo-code-step', 'flex flex-1', { 'demo-code-hidden': i !== 0 }]}
+              data-new-lines={newLinesPerStep[i]?.join(',')}
             >
-              <Code code={code} lang="likec4" />
+              <Code code={code} class="contents demo-code" lang="likec4" />
             </div>
           ))}
         </div>
@@ -162,6 +162,15 @@ const newLinesPerStep = [
 /* Code step visibility */
 .demo-code-hidden {
   display: none;
+}
+
+:global(.demo-code .frame) {
+  flex: 1;
+  background: var(--ec-codeBg);
+}
+
+:global(.demo-code .frame pre) {
+  border-color: transparent;
 }
 
 /* Line reveal animation */

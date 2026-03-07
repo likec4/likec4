@@ -13,7 +13,7 @@ const footerLinks = [
 ---
 
 <footer class="border-t border-stone-200 dark:border-zinc-800/80 px-6 py-8">
-  <div class="max-w-7xl mx-auto">
+  <div class="max-w-5xl mx-auto">
     <!-- Top row -->
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
       <div class="flex items-center gap-4">
@@ -21,16 +21,14 @@ const footerLinks = [
         <span class="text-sm text-stone-500 dark:text-zinc-600">Architecture as code.</span>
       </div>
       <nav class="flex flex-wrap items-center gap-5">
-        {
-          footerLinks.map((link) => (
-            <a
-              href={link.href}
-              class="text-sm text-stone-500 dark:text-zinc-600 hover:text-stone-700 dark:hover:text-zinc-300 no-underline transition-colors duration-200"
-            >
-              {link.label}
-            </a>
-          ))
-        }
+        {footerLinks.map((link) => (
+          <a
+            href={link.href}
+            class="text-sm text-stone-500 dark:text-zinc-600 hover:text-stone-700 dark:hover:text-zinc-300 no-underline transition-colors duration-200"
+          >
+            {link.label}
+          </a>
+        ))}
       </nav>
     </div>
 
