@@ -15,8 +15,8 @@ catalog:
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  oxlint: 1.43.0
-  oxlint-tsgolint: 0.11.5
+  oxlint: 1.51.0
+  oxlint-tsgolint: 0.16.0
   pako: ^2.1.0
   playwright: 1.58.2
   tsdown: ^0.20.3
