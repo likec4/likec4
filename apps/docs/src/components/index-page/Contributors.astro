@@ -1,4 +1,7 @@
 ---
+import doubleslashDark from '../../assets/sponsors/doubleslash_black.svg'
+import doubleslashLight from '../../assets/sponsors/doubleslash_light.svg'
+
 interface Contributor {
   login: string
   avatar_url: string
@@ -7,7 +10,14 @@ interface Contributor {
   type: string
 }
 
+interface Sponsor {
+  login: string
+  avatarUrl: string
+  url: string
+}
+
 let contributors: Contributor[] = []
+let sponsors: Sponsor[] = []
 
 try {
   const res = await fetch('https://api.github.com/repos/likec4/likec4/contributors?per_page=100')
@@ -16,7 +26,62 @@ try {
     contributors = data.filter((c) => c.type === 'User')
   }
 } catch {
-  // Silently fail — section will be hidden if no contributors loaded
+  // Silently fail
+}
+
+const githubToken = import.meta.env.GITHUB_TOKEN ?? process.env.GITHUB_TOKEN
+if (githubToken) {
+  try {
+    const query = `{
+      organization(login: "likec4") {
+        sponsorshipsAsMaintainer(first: 100, activeOnly: true) {
+          nodes {
+            sponsorEntity {
+              ... on User { login avatarUrl url }
+              ... on Organization { login avatarUrl url }
+            }
+          }
+        }
+      }
+      user(login: "davydkov") {
+        sponsorshipsAsMaintainer(first: 100, activeOnly: true) {
+          nodes {
+            sponsorEntity {
+              ... on User { login avatarUrl url }
+              ... on Organization { login avatarUrl url }
+            }
+          }
+        }
+      }
+    }`
+    const res = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: {
+        'Authorization': `bearer ${githubToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query }),
+    })
+    if (res.ok) {
+      const json = await res.json()
+      const orgSponsors: Sponsor[] = json.data?.organization?.sponsorshipsAsMaintainer?.nodes
+        ?.map((n: any) => n.sponsorEntity)
+        .filter(Boolean) ?? []
+      const userSponsors: Sponsor[] = json.data?.user?.sponsorshipsAsMaintainer?.nodes
+        ?.map((n: any) => n.sponsorEntity)
+        .filter(Boolean) ?? []
+      // Deduplicate by login
+      const seen = new Set<string>()
+      for (const s of [...orgSponsors, ...userSponsors]) {
+        if (!seen.has(s.login)) {
+          seen.add(s.login)
+          sponsors.push(s)
+        }
+      }
+    }
+  } catch {
+    // Silently fail
+  }
 }
 ---
 
@@ -26,7 +91,55 @@ try {
   </div>
 
   <div class="relative z-10 max-w-4xl mx-auto">
+    <!-- Sponsors -->
     <div class="text-center lp-reveal">
+      <span
+        class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+      >
+        Sponsored by
+      </span>
+      <div class="mt-5 flex items-center justify-center">
+        <a href="https://doubleSlash.de" target="_blank" rel="noopener noreferrer" class="no-underline">
+          <img
+            src={doubleslashDark.src}
+            alt="doubleSlash"
+            class="h-18 dark:hidden"
+            loading="lazy"
+          />
+          <img
+            src={doubleslashLight.src}
+            alt="doubleSlash"
+            class="h-18 hidden dark:block"
+            loading="lazy"
+          />
+        </a>
+      </div>
+      {sponsors.length > 0 && (
+        <div class="mt-5 flex flex-wrap justify-center gap-2">
+          {sponsors.map((sponsor) => (
+            <a
+              href={sponsor.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group relative no-underline"
+              title={`@${sponsor.login}`}
+            >
+              <img
+                src={`${sponsor.avatarUrl}&s=64`}
+                alt={sponsor.login}
+                width="36"
+                height="36"
+                loading="lazy"
+                class="w-12 h-12 rounded-full border-2 border-stone-200 dark:border-zinc-700 transition-all duration-200 group-hover:scale-110 group-hover:border-cyan-500/50 group-hover:shadow-lg group-hover:shadow-cyan-500/10"
+              />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <!-- Community -->
+    <div class="mt-20 text-center lp-reveal">
       <span
         class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
       >
@@ -63,7 +176,7 @@ try {
       </div>
     )}
 
-    <div class="mt-10 flex flex-col sm:flex-row gap-3 justify-center lp-reveal">
+    <div class="mt-10 flex flex-wrap gap-3 justify-center lp-reveal">
       <a
         href="https://github.com/likec4/likec4"
         target="_blank"
