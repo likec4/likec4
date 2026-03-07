@@ -54,7 +54,7 @@
   "type": "module",
   "dependencies": {
     "@cloudflare/vite-plugin": "catalog:cloudflare",
-    "miniflare": "4.20260205.0",
+    "miniflare": "4.20260301.1",
     "@codingame/monaco-vscode-editor-api": "16.1.1",
     "@codingame/monaco-vscode-editor-service-override": "16.1.1",
     "@codingame/monaco-vscode-files-service-override": "16.1.1",
