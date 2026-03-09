@@ -56,9 +56,9 @@ function computeNewLines(prev: string, next: string): number[] {
 }
 
 const newLinesPerStep = [
-  Array.from({ length: steps[0].split('\n').length }, (_, i) => i),
-  computeNewLines(steps[0], steps[1]),
-  computeNewLines(steps[1], steps[2]),
+  Array.from({ length: steps[0]!.split('\n').length }, (_, i) => i),
+  computeNewLines(steps[0]!, steps[1]!),
+  computeNewLines(steps[1]!, steps[2]!),
 ]
 ---
 
@@ -265,8 +265,8 @@ function initDemoAnimation(): void {
     if (viewTimer) clearTimeout(viewTimer)
 
     if (animate) {
-      const lines = codeSteps[step].querySelectorAll('.ec-line')
-      const newLines = newLineIndices[step]
+      const lines = codeSteps[step]!.querySelectorAll('.ec-line')
+      const newLines = newLineIndices[step]!
       let staggerIdx = 0
       lines.forEach((line, idx) => {
         const el = line as HTMLElement
