@@ -1,5 +1,25 @@
 # @likec4/language-services
 
+## 1.52.0
+
+### Minor Changes
+
+- [#2667](https://github.com/likec4/likec4/pull/2667) [`2c6a43d`](https://github.com/likec4/likec4/commit/2c6a43da4552dbd40473effba65c7b04e165a7f3) Thanks [@m9810223](https://github.com/m9810223)! - Add `likec4 format` (alias `fmt`) CLI command for formatting `.c4` source files
+
+  - `@likec4/language-server` — add `format()` method to `LikeC4LanguageServices` with `projectIds`/`documentUris` filtering and LSP formatting options
+  - `@likec4/language-services` — add `format()` method to `LikeC4` facade, translating project name strings to `ProjectId`
+  - `likec4` — add `format` CLI command with `--check` mode for CI, `--project` and `--files` filtering
+
+### Patch Changes
+
+- Updated dependencies [[`2c6a43d`](https://github.com/likec4/likec4/commit/2c6a43da4552dbd40473effba65c7b04e165a7f3), [`4d579d6`](https://github.com/likec4/likec4/commit/4d579d6990bd3f59fb8420d2adb0e246fd9dfdcc), [`a80d2e8`](https://github.com/likec4/likec4/commit/a80d2e85c8c508236262156d4ef45e28750c295c), [`aab9343`](https://github.com/likec4/likec4/commit/aab9343f0e149d978915a13429ff367dc284937b), [`bc47423`](https://github.com/likec4/likec4/commit/bc474235cf31a7d42e8c4f25328a698bb7edefe3)]:
+  - @likec4/language-server@1.52.0
+  - @likec4/config@1.52.0
+  - @likec4/generators@1.52.0
+  - @likec4/core@1.52.0
+  - @likec4/layouts@1.52.0
+  - @likec4/log@1.52.0
+
 ## 1.51.0
 
 ### Patch Changes
