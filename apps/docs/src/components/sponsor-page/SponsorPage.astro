@@ -1,68 +1,14 @@
 ---
-import doubleslashDark from '../../assets/sponsors/doubleslash_black.svg'
-import doubleslashLight from '../../assets/sponsors/doubleslash_light.svg'
+import { fetchSponsors, fetchStars } from '../../lib/githubdata'
+import '../../styles/tailwind.css'
+import Doubledash from '../index-page/Doubledash.astro'
 import Footer from '../index-page/Footer.astro'
 import Navigation from '../index-page/Navigation.astro'
-import '../../styles/tailwind.css'
+import OpenSourceBadge from '../index-page/OpenSourceBadge.astro'
+import FAQ from './FAQ.astro'
 
-interface Sponsor {
-  login: string
-  avatarUrl: string
-  url: string
-}
-
-let sponsors: Sponsor[] = []
-let stars = ''
-
-try {
-  const res = await fetch('https://api.github.com/repos/likec4/likec4')
-  if (res.ok) {
-    const data = await res.json()
-    const count = data.stargazers_count as number
-    stars = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : `${count}`
-  }
-} catch {
-  stars = '2.8k'
-}
-
-const githubToken = import.meta.env.GITHUB_TOKEN ?? process.env.GITHUB_TOKEN
-if (githubToken) {
-  try {
-    const query = `{
-      organization(login: "likec4") {
-        sponsorshipsAsMaintainer(first: 100, activeOnly: true) {
-          nodes { sponsorEntity { ... on User { login avatarUrl url } ... on Organization { login avatarUrl url } } }
-        }
-      }
-      user(login: "davydkov") {
-        sponsorshipsAsMaintainer(first: 100, activeOnly: true) {
-          nodes { sponsorEntity { ... on User { login avatarUrl url } ... on Organization { login avatarUrl url } } }
-        }
-      }
-    }`
-    const res = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
-      headers: { 'Authorization': `bearer ${githubToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query }),
-    })
-    if (res.ok) {
-      const json = await res.json()
-      const orgSponsors: Sponsor[] = json.data?.organization?.sponsorshipsAsMaintainer?.nodes
-        ?.map((n: any) => n.sponsorEntity).filter(Boolean) ?? []
-      const userSponsors: Sponsor[] = json.data?.user?.sponsorshipsAsMaintainer?.nodes
-        ?.map((n: any) => n.sponsorEntity).filter(Boolean) ?? []
-      const seen = new Set<string>()
-      for (const s of [...orgSponsors, ...userSponsors]) {
-        if (!seen.has(s.login)) {
-          seen.add(s.login)
-          sponsors.push(s)
-        }
-      }
-    }
-  } catch {
-    // Silently fail
-  }
-}
+const sponsors = await fetchSponsors()
+const stars = await fetchStars()
 ---
 
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,800,900&display=swap" rel="stylesheet" />
@@ -72,17 +18,16 @@ if (githubToken) {
 
   <!-- Hero -->
   <section class="relative overflow-hidden px-6 pt-32 pb-20">
-    <div class="absolute top-[10%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full pointer-events-none bg-cyan-400/[0.04] dark:bg-cyan-400/[0.06] blur-3xl"></div>
+    <div class="absolute top-[10%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full pointer-events-none bg-cyan-400/[0.04] dark:bg-cyan-400/[0.06] blur-3xl">
+    </div>
     <div class="relative z-10 max-w-3xl mx-auto text-center">
-      <span class="inline-flex items-center gap-2 px-3.5 py-1.5 text-[0.6875rem] font-semibold tracking-[0.12em] uppercase text-cyan-700 dark:text-cyan-400 border border-cyan-600/25 dark:border-cyan-400/20 rounded-full">
-        <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-pulse"></span>
-        Open Source
-      </span>
+      <OpenSourceBadge />
       <h1 class="lp-display mt-8 text-4xl sm:text-5xl md:text-6xl font-bold text-stone-900 dark:text-white">
         Get More From LikeC4
       </h1>
       <p class="mt-6 text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-300 max-w-2xl mx-auto">
-        LikeC4 is open source and independently maintained. Your support keeps the project sustainable, the releases predictable, and the roadmap driven by real needs.
+        LikeC4 is open source and independently maintained. Your support keeps the project sustainable, the releases
+        predictable, and the roadmap driven by real needs.
       </p>
       <div class="mt-10 flex flex-wrap gap-3 justify-center">
         <a
@@ -97,7 +42,9 @@ if (githubToken) {
           target="_blank"
           class="inline-flex items-center gap-2 px-7 py-3.5 text-base font-medium text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
         >
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+          </svg>
           View on GitHub
         </a>
       </div>
@@ -126,38 +73,63 @@ if (githubToken) {
   <section class="px-6 py-20 md:py-28">
     <div class="max-w-5xl mx-auto">
       <div class="text-center mb-14">
-        <span class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400">Why back</span>
-        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">Professional tool, professional backing</h2>
+        <span
+          class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+        >Why back</span>
+        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+          Professional tool, professional backing
+        </h2>
         <p class="text-base sm:text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-400 max-w-2xl mx-auto mt-4">
-          Your team depends on LikeC4 to model and communicate architecture. Backing the project ensures it stays reliable, evolving, and supported.
+          Your team depends on LikeC4 to model and communicate architecture.<br />
+          Backing the project ensures it stays reliable, evolving, and supported.
         </p>
       </div>
 
       <div class="grid gap-5 md:grid-cols-3">
         <div class="p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
-          <svg class="w-6 h-6 text-cyan-500 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg
+            class="w-6 h-6 text-cyan-500 mb-3"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
             <path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
           </svg>
           <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Secure your toolchain</h3>
-          <p class="text-base leading-snug text-stone-500 dark:text-zinc-400">
-            Your teams rely on LikeC4 for architecture decisions. Sponsorship ensures the project stays maintained, stable, and moving forward.
+          <p class="text-base font-medium text-stone-500 dark:text-zinc-400">
+            Your teams rely on LikeC4 for architecture decisions. Sponsorship ensures the project stays maintained,
+            stable, and moving forward.
           </p>
         </div>
         <div class="p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
-          <svg class="w-6 h-6 text-cyan-500 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg
+            class="w-6 h-6 text-cyan-500 mb-3"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
             <path d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
           </svg>
           <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Shape the roadmap</h3>
-          <p class="text-base leading-snug text-stone-500 dark:text-zinc-400">
-            Sponsors get a direct voice in what ships next. Prioritize the features and integrations your organization needs most.
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
+            Sponsors get a direct voice in what ships next. Prioritize the features and integrations your organization
+            needs most.
           </p>
         </div>
         <div class="p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
-          <svg class="w-6 h-6 text-cyan-500 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg
+            class="w-6 h-6 text-cyan-500 mb-3"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
             <path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
           </svg>
           <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Direct access</h3>
-          <p class="text-base leading-snug text-stone-500 dark:text-zinc-400">
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
             Skip the issue queue. Get priority support, architecture guidance, and a direct line to the maintainer.
           </p>
         </div>
@@ -167,69 +139,99 @@ if (githubToken) {
 
   <!-- What Support Enables -->
   <section class="relative px-6 py-20 md:py-28 overflow-hidden">
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full pointer-events-none bg-cyan-400/[0.03] dark:bg-cyan-400/[0.06] blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full pointer-events-none bg-cyan-400/[0.03] dark:bg-cyan-400/[0.06] blur-3xl">
+    </div>
     <div class="relative z-10 max-w-5xl mx-auto">
       <div class="text-center mb-14">
-        <span class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400">Impact</span>
-        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">What your support enables</h2>
+        <span
+          class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+        >Impact</span>
+        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+          What your support enables
+        </h2>
         <p class="text-base sm:text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-400 max-w-2xl mx-auto mt-4">
-          Sponsorship is a direct investment into LikeC4 development. Every dollar goes to the work that makes the tool better.
+          Sponsorship is a direct investment into LikeC4 development.<br />
+          Every contribution goes to the work that makes the tool better.
         </p>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2">
         <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
           <span class="text-cyan-500 mt-0.5 shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
           </span>
           <div>
-            <div class="font-semibold text-stone-800 dark:text-zinc-100">Core features</div>
-            <p class="text-[0.9375rem] text-stone-500 dark:text-zinc-400 mt-1">Manual layouts, deployment views, dynamic views, sequence diagrams, better layout algorithms.</p>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Core features</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Manual layouts, deployment views, dynamic views, sequence diagrams, better layout algorithms.
+            </p>
           </div>
         </div>
         <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
           <span class="text-cyan-500 mt-0.5 shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
           </span>
           <div>
-            <div class="font-semibold text-stone-800 dark:text-zinc-100">Enterprise stability</div>
-            <p class="text-[0.9375rem] text-stone-500 dark:text-zinc-400 mt-1">Performance for large models, regression testing, predictable releases, and long-term support.</p>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Enterprise stability</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Performance for large models, regression testing, predictable releases, and long-term support.
+            </p>
           </div>
         </div>
         <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
           <span class="text-cyan-500 mt-0.5 shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
           </span>
           <div>
-            <div class="font-semibold text-stone-800 dark:text-zinc-100">Tooling ecosystem</div>
-            <p class="text-[0.9375rem] text-stone-500 dark:text-zinc-400 mt-1">VS Code extension, CLI, Docker images, Vite plugin, embedding in docs and internal portals.</p>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Tooling ecosystem</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              VS Code extension, CLI, Docker images, Vite plugin, embedding in docs and internal portals.
+            </p>
           </div>
         </div>
         <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
           <span class="text-cyan-500 mt-0.5 shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
           </span>
           <div>
-            <div class="font-semibold text-stone-800 dark:text-zinc-100">AI & MCP integration</div>
-            <p class="text-[0.9375rem] text-stone-500 dark:text-zinc-400 mt-1">Machine-readable architecture context for AI agents. MCP server, API access, LLM-friendly DSL.</p>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">AI & MCP integration</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Machine-readable architecture context for AI agents. MCP server, API access, LLM-friendly DSL.
+            </p>
           </div>
         </div>
         <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
           <span class="text-cyan-500 mt-0.5 shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
           </span>
           <div>
-            <div class="font-semibold text-stone-800 dark:text-zinc-100">Documentation & guides</div>
-            <p class="text-[0.9375rem] text-stone-500 dark:text-zinc-400 mt-1">Comprehensive docs, tutorials, and examples that teams can adopt without hand-holding.</p>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Documentation & guides</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Comprehensive docs, tutorials, and examples that teams can adopt without hand-holding.
+            </p>
           </div>
         </div>
         <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
           <span class="text-cyan-500 mt-0.5 shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
           </span>
           <div>
-            <div class="font-semibold text-stone-800 dark:text-zinc-100">Open source forever</div>
-            <p class="text-[0.9375rem] text-stone-500 dark:text-zinc-400 mt-1">Keeping the core MIT-licensed and accessible for individuals and teams everywhere.</p>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Open source forever</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Keeping the core MIT-licensed and accessible for individuals and teams everywhere.
+            </p>
           </div>
         </div>
       </div>
@@ -240,8 +242,12 @@ if (githubToken) {
   <section class="px-6 py-20 md:py-28">
     <div class="max-w-5xl mx-auto">
       <div class="text-center mb-14">
-        <span class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400">Support tiers</span>
-        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">Choose your level of support</h2>
+        <span
+          class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+        >Support tiers</span>
+        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+          Choose your level of support
+        </h2>
       </div>
 
       <div class="grid gap-5 md:grid-cols-3">
@@ -249,20 +255,44 @@ if (githubToken) {
         <div class="flex flex-col p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
           <div class="text-sm font-semibold tracking-[0.1em] uppercase text-stone-400 dark:text-zinc-500">Backer</div>
           <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">For individuals</h3>
-          <p class="text-base leading-snug text-stone-500 dark:text-zinc-400 mt-3">
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400 mt-3">
             You use LikeC4 and want to see it thrive. Every contribution helps keep the releases coming.
           </p>
-          <ul class="mt-6 space-y-3 text-[0.9375rem] text-stone-600 dark:text-zinc-300 flex-1">
-            <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+          <ul class="mt-6 pl-1 space-y-3 text-base text-stone-600 dark:text-zinc-300 flex-1">
+            <li class="flex flex-1 gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Sponsor recognition on GitHub
             </li>
             <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Prioritized issue responses
             </li>
             <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Supporting open source sustainability
             </li>
           </ul>
@@ -277,27 +307,58 @@ if (githubToken) {
 
         <!-- Team (highlighted) -->
         <div class="flex flex-col p-7 rounded-xl border-2 border-cyan-500/40 dark:border-cyan-400/30 bg-white dark:bg-zinc-900/40 shadow-lg shadow-cyan-500/5 relative">
-          <div class="absolute -top-3 left-7 px-3 py-0.5 bg-cyan-500 text-cyan-950 text-xs font-bold tracking-wider uppercase rounded-full">Popular</div>
           <div class="text-sm font-semibold tracking-[0.1em] uppercase text-cyan-600 dark:text-cyan-400">Team</div>
           <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">For engineering teams</h3>
-          <p class="text-base leading-snug text-stone-500 dark:text-zinc-400 mt-3">
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400 mt-3">
             Your team depends on LikeC4. Get a direct line to influence what ships and when.
           </p>
-          <ul class="mt-6 space-y-3 text-[0.9375rem] text-stone-600 dark:text-zinc-300 flex-1">
-            <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+          <ul class="mt-6 pl-1 space-y-3 text-base text-stone-600 dark:text-zinc-300 flex-1">
+            <li class="flex flex-1 gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Everything in Backer
             </li>
             <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Direct roadmap input
             </li>
             <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Priority feature requests
             </li>
             <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Logo on likec4.dev
             </li>
           </ul>
@@ -312,31 +373,65 @@ if (githubToken) {
 
         <!-- Enterprise -->
         <div class="flex flex-col p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
-          <div class="text-sm font-semibold tracking-[0.1em] uppercase text-stone-400 dark:text-zinc-500">Enterprise</div>
+          <div class="text-sm font-semibold tracking-[0.1em] uppercase text-stone-400 dark:text-zinc-500">
+            Enterprise
+          </div>
           <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">For organizations</h3>
-          <p class="text-base leading-snug text-stone-500 dark:text-zinc-400 mt-3">
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400 mt-3">
             Need invoicing, integration help, or dedicated development time? Let's make it work.
           </p>
-          <ul class="mt-6 space-y-3 text-[0.9375rem] text-stone-600 dark:text-zinc-300 flex-1">
-            <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+          <ul class="mt-6 pl-1 space-y-3 text-base text-stone-600 dark:text-zinc-300 flex-1">
+            <li class="flex flex-1 gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Everything in Team
             </li>
             <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Dedicated support hours
             </li>
             <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Integration & architecture guidance
             </li>
             <li class="flex gap-2.5">
-              <svg class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
               Invoice & procurement friendly
             </li>
           </ul>
           <a
-            href="mailto:nicksav@hey.com?subject=LikeC4%20Enterprise%20Sponsorship"
+            href="mailto:denis@davydkov.com?subject=LikeC4%20Enterprise%20Sponsorship"
             class="mt-8 inline-flex items-center justify-center px-6 py-3 text-[0.9375rem] font-semibold text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
           >
             Contact Us
@@ -348,16 +443,18 @@ if (githubToken) {
 
   <!-- Current Sponsors -->
   <section class="relative px-6 py-20 md:py-28 overflow-hidden">
-    <div class="absolute top-[30%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full pointer-events-none bg-cyan-400/[0.03] dark:bg-cyan-400/[0.06] blur-3xl"></div>
+    <div class="absolute top-[30%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full pointer-events-none bg-cyan-400/[0.03] dark:bg-cyan-400/[0.06] blur-3xl">
+    </div>
     <div class="relative z-10 max-w-3xl mx-auto text-center">
-      <span class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400">Sponsors</span>
-      <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">Backed by these teams and individuals</h2>
+      <span
+        class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+      >Sponsors</span>
+      <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+        Backed by these teams and individuals
+      </h2>
 
       <div class="mt-10 flex items-center justify-center">
-        <a href="https://doubleSlash.de" target="_blank" rel="noopener noreferrer" class="no-underline">
-          <img src={doubleslashDark.src} alt="doubleSlash" class="h-12 dark:hidden" loading="lazy" />
-          <img src={doubleslashLight.src} alt="doubleSlash" class="h-12 hidden dark:block" loading="lazy" />
-        </a>
+        <Doubledash />
       </div>
 
       {sponsors.length > 0 && (
@@ -390,63 +487,14 @@ if (githubToken) {
   </section>
 
   <!-- FAQ -->
-  <section class="px-6 py-20 md:py-28">
-    <div class="max-w-3xl mx-auto">
-      <div class="text-center mb-14">
-        <span class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400">FAQ</span>
-        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">Common questions</h2>
-      </div>
-
-      <div class="space-y-3">
-        <details class="group rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 p-5">
-          <summary class="cursor-pointer text-stone-800 dark:text-zinc-100 font-semibold flex items-center justify-between">
-            Does sponsorship mean LikeC4 becomes closed-source?
-            <svg class="w-5 h-5 text-stone-400 dark:text-zinc-500 group-open:rotate-180 transition-transform shrink-0 ml-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-          </summary>
-          <p class="mt-3 text-base leading-relaxed text-stone-500 dark:text-zinc-400">
-            No. LikeC4 is and will remain MIT-licensed. Sponsorship makes it sustainable to maintain that promise. The goal is to keep the core open and accessible for everyone.
-          </p>
-        </details>
-
-        <details class="group rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 p-5">
-          <summary class="cursor-pointer text-stone-800 dark:text-zinc-100 font-semibold flex items-center justify-between">
-            Can you prioritize a feature for our team?
-            <svg class="w-5 h-5 text-stone-400 dark:text-zinc-500 group-open:rotate-180 transition-transform shrink-0 ml-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-          </summary>
-          <p class="mt-3 text-base leading-relaxed text-stone-500 dark:text-zinc-400">
-            Yes. Open an issue with context — your use case, constraints, and sample model — and sponsor to help fund the work. Team and Enterprise sponsors get direct input on prioritization.
-          </p>
-        </details>
-
-        <details class="group rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 p-5">
-          <summary class="cursor-pointer text-stone-800 dark:text-zinc-100 font-semibold flex items-center justify-between">
-            Do you provide invoices for procurement?
-            <svg class="w-5 h-5 text-stone-400 dark:text-zinc-500 group-open:rotate-180 transition-transform shrink-0 ml-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-          </summary>
-          <p class="mt-3 text-base leading-relaxed text-stone-500 dark:text-zinc-400">
-            Yes. For Enterprise sponsors we can provide invoices, custom terms, and work with your procurement process. Reach out directly and we'll sort it out.
-          </p>
-        </details>
-
-        <details class="group rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 p-5">
-          <summary class="cursor-pointer text-stone-800 dark:text-zinc-100 font-semibold flex items-center justify-between">
-            What do sponsors actually get?
-            <svg class="w-5 h-5 text-stone-400 dark:text-zinc-500 group-open:rotate-180 transition-transform shrink-0 ml-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-          </summary>
-          <p class="mt-3 text-base leading-relaxed text-stone-500 dark:text-zinc-400">
-            A healthier project, faster maintenance, and predictable releases. Higher tiers get public recognition, direct roadmap influence, priority support, and dedicated development time for features that benefit the ecosystem.
-          </p>
-        </details>
-      </div>
-    </div>
-  </section>
+  <FAQ />
 
   <!-- Final CTA -->
   <section class="px-6 pb-24 md:pb-32">
     <div class="max-w-3xl mx-auto">
       <div class="rounded-2xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 p-8 sm:p-12 text-center">
         <h2 class="lp-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">Take the next step</h2>
-        <p class="mt-4 text-lg text-stone-500 dark:text-zinc-400 max-w-lg mx-auto">
+        <p class="mt-4 text-lg font-medium text-stone-500 dark:text-zinc-400 max-w-lg mx-auto">
           Sponsor once or monthly. Every contribution reduces maintenance debt and increases shipping speed.
         </p>
         <div class="mt-8 flex flex-wrap gap-3 justify-center">

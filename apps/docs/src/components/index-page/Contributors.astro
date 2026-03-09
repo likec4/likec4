@@ -1,88 +1,9 @@
 ---
-import doubleslashDark from '../../assets/sponsors/doubleslash_black.svg'
-import doubleslashLight from '../../assets/sponsors/doubleslash_light.svg'
+import { fetchContributors, fetchSponsors } from '../../lib/githubdata'
+import Doubledash from './Doubledash.astro'
 
-interface Contributor {
-  login: string
-  avatar_url: string
-  html_url: string
-  contributions: number
-  type: string
-}
-
-interface Sponsor {
-  login: string
-  avatarUrl: string
-  url: string
-}
-
-let contributors: Contributor[] = []
-let sponsors: Sponsor[] = []
-
-try {
-  const res = await fetch('https://api.github.com/repos/likec4/likec4/contributors?per_page=100')
-  if (res.ok) {
-    const data: Contributor[] = await res.json()
-    contributors = data.filter((c) => c.type === 'User')
-  }
-} catch {
-  // Silently fail
-}
-
-const githubToken = import.meta.env.GITHUB_TOKEN ?? process.env.GITHUB_TOKEN
-if (githubToken) {
-  try {
-    const query = `{
-      organization(login: "likec4") {
-        sponsorshipsAsMaintainer(first: 100, activeOnly: true) {
-          nodes {
-            sponsorEntity {
-              ... on User { login avatarUrl url }
-              ... on Organization { login avatarUrl url }
-            }
-          }
-        }
-      }
-      user(login: "davydkov") {
-        sponsorshipsAsMaintainer(first: 100, activeOnly: true) {
-          nodes {
-            sponsorEntity {
-              ... on User { login avatarUrl url }
-              ... on Organization { login avatarUrl url }
-            }
-          }
-        }
-      }
-    }`
-    const res = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
-      headers: {
-        'Authorization': `bearer ${githubToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query }),
-    })
-    if (res.ok) {
-      const json = await res.json()
-      const orgSponsors: Sponsor[] = json.data?.organization?.sponsorshipsAsMaintainer?.nodes
-        ?.map((n: any) => n.sponsorEntity)
-        .filter(Boolean) ?? []
-      const userSponsors: Sponsor[] = json.data?.user?.sponsorshipsAsMaintainer?.nodes
-        ?.map((n: any) => n.sponsorEntity)
-        .filter(Boolean) ?? []
-      // Deduplicate by login
-      const seen = new Set<string>()
-      for (const s of [...orgSponsors, ...userSponsors]) {
-        if (!seen.has(s.login)) {
-          seen.add(s.login)
-          sponsors.push(s)
-        }
-      }
-    }
-  } catch {
-    // Silently fail
-  }
-}
+let contributors = await fetchContributors()
+let sponsors = await fetchSponsors()
 ---
 
 <section class="relative py-24 md:py-32 lg:py-40 px-6 overflow-hidden">
@@ -99,23 +20,10 @@ if (githubToken) {
         Sponsored by
       </span>
       <div class="mt-5 flex items-center justify-center">
-        <a href="https://doubleSlash.de" target="_blank" rel="noopener noreferrer" class="no-underline">
-          <img
-            src={doubleslashDark.src}
-            alt="doubleSlash"
-            class="h-18 dark:hidden"
-            loading="lazy"
-          />
-          <img
-            src={doubleslashLight.src}
-            alt="doubleSlash"
-            class="h-18 hidden dark:block"
-            loading="lazy"
-          />
-        </a>
+        <Doubledash />
       </div>
       {sponsors.length > 0 && (
-        <div class="mt-5 flex flex-wrap justify-center gap-2">
+        <div class="mt-8 flex flex-wrap justify-center gap-2">
           {sponsors.map((sponsor) => (
             <a
               href={sponsor.url}
@@ -136,6 +44,15 @@ if (githubToken) {
           ))}
         </div>
       )}
+      <div class="mt-8 flex items-center justify-center">
+        <a
+          href="https://github.com/sponsors/likec4"
+          target="_blank"
+          class="inline-flex items-center gap-2.5 px-7 py-3.5 bg-cyan-500 text-cyan-950 font-semibold text-base rounded-lg shadow-lg shadow-cyan-600/20 dark:shadow-cyan-500/15 hover:shadow-xl hover:-translate-y-px transition-all duration-200 no-underline"
+        >
+          Become a Sponsor
+        </a>
+      </div>
     </div>
 
     <!-- Community -->
