@@ -193,6 +193,53 @@ To enable this behavior:
 }
 ```
 
+## Landing page
+
+Configure what is shown when visiting the root URL of a generated static site.
+Three mutually exclusive modes are available:
+
+### Redirect to a view
+
+Redirect the landing page to a specific view:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "landingPage": {
+    "redirectTo": "cloud"
+  }
+}
+```
+
+### Filter views by inclusion
+
+Show only specific views on the landing page grid, by view ID or tag (`#tagName`):
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "landingPage": {
+    "include": ["cloud", "#overview"]
+  }
+}
+```
+
+### Filter views by exclusion
+
+Hide specific views from the landing page grid:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "landingPage": {
+    "exclude": ["#internal", "legacy-backend"]
+  }
+}
+```
+
 ## Image Aliases
 
 When using local images in your LikeC4 model, you can create aliases for the folder your images are in to make them more readable and the files more transportable.
