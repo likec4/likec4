@@ -1,3 +1,29 @@
+## [1.52.0](https://github.com/likec4/likec4/compare/v1.51.0...v1.52.0) (2026-03-09)
+
+### 🚀 Features
+
+- **`likec4 format` CLI Command**:\
+  New `likec4 format` (alias `fmt`) command for formatting `.c4` source files. Supports `--check` mode for CI, `--project` and `--files` filtering. Thanks [@m9810223](https://github.com/m9810223), [#2667](https://github.com/likec4/likec4/pull/2667)
+
+- **Overview Page Search, Navigation & Theme Toggle**:\
+  Added search bar (also accessible via Cmd+K), sidebar navigation drawer with file/folder/list grouping, and dark/light theme toggle to the overview page. Fixes [#1679](https://github.com/likec4/likec4/issues/1679). Thanks [@ckeller42](https://github.com/ckeller42), [#2665](https://github.com/likec4/likec4/pull/2665)
+
+- **Disable Implicit Views by Default**:\
+  Auto-generated scoped views for elements without explicit views are no longer created unless `"implicitViews": true` is set in the project config. To restore the previous behavior, add `"implicitViews": true` to your `likec4.json` configuration. [#2705](https://github.com/likec4/likec4/pull/2705)
+
+- **Draw.io Person Shape Round-Trip**:\
+  Draw.io export now correctly renders elements with `shape person` as person/actor shapes instead of ellipses. Re-import also infers the person shape for round-trip fidelity. Thanks [@sraphaz](https://github.com/sraphaz), [#2685](https://github.com/likec4/likec4/pull/2685), fixes [#2679](https://github.com/likec4/likec4/issues/2679)
+
+- **Improved Zoom Performance**:\
+  Significant performance improvement with zooming and panning diagrams, thanks to the xyflow update. [#2694](https://github.com/likec4/likec4/pull/2694)
+
+### 🐞 Bug Fixes
+
+- Added `--output` alias to all `likec4 gen` subcommands for consistency with `build` and `export` commands, fixes [#2706](https://github.com/likec4/likec4/issues/2706)
+
+- Removed deprecated ManualLayoutV1 and related migration command [#2713](https://github.com/likec4/likec4/pull/2713)
+
+
 ## [1.51.0](https://github.com/likec4/likec4/compare/v1.50.0...v1.51.0) (2026-03-04)
 
 ### 🚀 Features
