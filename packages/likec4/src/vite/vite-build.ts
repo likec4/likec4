@@ -77,6 +77,28 @@ export async function viteBuild({
         )
       }
     })
+
+    // Validate landingPage config
+    const landingPage = projects[0].config.landingPage
+    if (landingPage && 'redirectTo' in landingPage) {
+      if (!diagrams.some(v => v.id === landingPage.redirectTo)) {
+        process.exitCode = 1
+        throw new Error(
+          `landingPage.redirectTo references view '${landingPage.redirectTo}' which does not exist`,
+        )
+      }
+    }
+    if (landingPage && ('include' in landingPage || 'exclude' in landingPage)) {
+      const patterns = 'include' in landingPage ? landingPage.include : landingPage.exclude
+      const hasMatch = diagrams.some(v =>
+        patterns.some(p => p.startsWith('#') ? v.tags?.some(t => t === p.slice(1)) : v.id === p)
+      )
+      if (!hasMatch) {
+        config.customLogger.warn(
+          k.dim('landingPage:') + ' ' + k.yellow('no views match the configured filter'),
+        )
+      }
+    }
   } else {
     for (const project of projects) {
       const computed = await languageServices.viewsService.computedViews(project.id)

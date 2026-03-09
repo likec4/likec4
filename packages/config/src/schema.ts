@@ -105,6 +105,20 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .meta({
       description: 'Auto-generate scoped views for elements without explicit views. Defaults to false.',
     }),
+  landingPage: z.union([
+    z.strictObject({
+      redirectTo: z.string().nonempty('redirectTo view ID cannot be empty'),
+    }),
+    z.strictObject({
+      include: z.array(z.string().nonempty()).nonempty('include list cannot be empty'),
+    }),
+    z.strictObject({
+      exclude: z.array(z.string().nonempty()).nonempty('exclude list cannot be empty'),
+    }),
+  ]).optional().meta({
+    id: 'LandingPageConfig',
+    description: 'Configure the landing page of the generated static site.',
+  }),
 })
   .meta({
     id: 'LikeC4ProjectConfig',

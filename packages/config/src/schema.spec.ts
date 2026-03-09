@@ -268,6 +268,76 @@ describe('ProjectConfig schema', () => {
     })
   })
 
+  describe('landingPage field', () => {
+    it('should accept redirectTo', ({ expect }) => {
+      const config = { name: 'test', landingPage: { redirectTo: 'landscape' } }
+      const result = validateConfig(config)
+      expect(result.landingPage).toEqual({ redirectTo: 'landscape' })
+    })
+
+    it('should accept include with view IDs', ({ expect }) => {
+      const config = { name: 'test', landingPage: { include: ['landscape', 'context'] } }
+      const result = validateConfig(config)
+      expect(result.landingPage).toEqual({ include: ['landscape', 'context'] })
+    })
+
+    it('should accept include with tag references', ({ expect }) => {
+      const config = { name: 'test', landingPage: { include: ['#public', 'landscape'] } }
+      const result = validateConfig(config)
+      expect(result.landingPage).toEqual({ include: ['#public', 'landscape'] })
+    })
+
+    it('should accept exclude with view IDs and tags', ({ expect }) => {
+      const config = { name: 'test', landingPage: { exclude: ['internal', '#draft'] } }
+      const result = validateConfig(config)
+      expect(result.landingPage).toEqual({ exclude: ['internal', '#draft'] })
+    })
+
+    it('should reject empty redirectTo', ({ expect }) => {
+      expect(() => validateConfig({ name: 'test', landingPage: { redirectTo: '' } })).toThrow()
+    })
+
+    it('should reject empty include array', ({ expect }) => {
+      expect(() => validateConfig({ name: 'test', landingPage: { include: [] } })).toThrow()
+    })
+
+    it('should reject empty exclude array', ({ expect }) => {
+      expect(() => validateConfig({ name: 'test', landingPage: { exclude: [] } })).toThrow()
+    })
+
+    it('should reject redirectTo with include', ({ expect }) => {
+      expect(() =>
+        validateConfig({
+          name: 'test',
+          landingPage: { redirectTo: 'landscape', include: ['context'] },
+        })
+      ).toThrow()
+    })
+
+    it('should reject redirectTo with exclude', ({ expect }) => {
+      expect(() =>
+        validateConfig({
+          name: 'test',
+          landingPage: { redirectTo: 'landscape', exclude: ['internal'] },
+        })
+      ).toThrow()
+    })
+
+    it('should reject include with exclude', ({ expect }) => {
+      expect(() =>
+        validateConfig({
+          name: 'test',
+          landingPage: { include: ['landscape'], exclude: ['internal'] },
+        })
+      ).toThrow()
+    })
+
+    it('should accept undefined landingPage', ({ expect }) => {
+      const result = validateConfig({ name: 'test' })
+      expect(result.landingPage).toBeUndefined()
+    })
+  })
+
   describe('ImageAliasesSchema', () => {
     describe('validation with zod', () => {
       it('should accept valid image aliases object', ({ expect }) => {
