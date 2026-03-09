@@ -27,7 +27,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 .positional('path', path)
                 .option('project', project)
                 .option('outfile', {
-                  alias: 'o',
+                  alias: ['o', 'output'],
                   type: 'string',
                   desc: '<file> path to output file (.jsx, .mjs or .js)',
                   normalize: true,
@@ -56,7 +56,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 .positional('path', path)
                 .option('project', project)
                 .option('outfile', {
-                  alias: 'o',
+                  alias: ['o', 'output'],
                   type: 'string',
                   desc: '<file> path to output file (.mjs or .js)',
                   normalize: true,
@@ -85,7 +85,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 .positional('path', path)
                 .option('project', project)
                 .option('outfile', {
-                  alias: 'o',
+                  alias: ['o', 'output'],
                   type: 'string',
                   desc: '<file> path to output file (.ts)',
                   normalize: true,
@@ -114,7 +114,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
               yargs
                 .positional('path', path)
                 .option('outfile', {
-                  alias: 'o',
+                  alias: ['o', 'output'],
                   type: 'string',
                   desc: '<file> output .ts file',
                   normalize: true,
