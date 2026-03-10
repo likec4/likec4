@@ -1,7 +1,7 @@
 declare module 'likec4:projects' {
   import type { ProjectId } from 'likec4/model'
   type LandingPageConfig =
-    | { redirectTo: string }
+    | { redirect: true }
     | { include: string[] }
     | { exclude: string[] }
   type Project = {
