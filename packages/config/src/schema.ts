@@ -110,10 +110,14 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
       redirect: z.literal(true),
     }),
     z.strictObject({
-      include: z.array(z.string().nonempty()).nonempty('include list cannot be empty'),
+      include: z.array(z.string().nonempty().refine(s => s !== '#', { message: 'selector cannot be "#"' })).nonempty(
+        'include list cannot be empty',
+      ),
     }),
     z.strictObject({
-      exclude: z.array(z.string().nonempty()).nonempty('exclude list cannot be empty'),
+      exclude: z.array(z.string().nonempty().refine(s => s !== '#', { message: 'selector cannot be "#"' })).nonempty(
+        'exclude list cannot be empty',
+      ),
     }),
   ]).optional().meta({
     id: 'LandingPageConfig',

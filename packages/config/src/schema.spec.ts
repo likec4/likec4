@@ -292,6 +292,14 @@ describe('ProjectConfig schema', () => {
         expect(result.landingPage).toEqual({ exclude: ['internal', '#draft'] })
       })
 
+      it('should reject lone "#" selector in include', ({ expect }) => {
+        expect(() => validateConfig({ name: 'test', landingPage: { include: ['#'] } })).toThrow()
+      })
+
+      it('should reject lone "#" selector in exclude', ({ expect }) => {
+        expect(() => validateConfig({ name: 'test', landingPage: { exclude: ['#'] } })).toThrow()
+      })
+
       it('should reject empty include array', ({ expect }) => {
         expect(() => validateConfig({ name: 'test', landingPage: { include: [] } })).toThrow()
       })
