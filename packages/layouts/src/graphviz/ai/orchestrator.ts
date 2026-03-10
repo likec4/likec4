@@ -34,7 +34,7 @@ export async function enhanceLayoutWithAI(
     const rawResponse = await provider.sendRequest(
       {
         ...prompts,
-        diagramdata: JSON.stringify(serialized, null, 2),
+        diagram: serialized,
       },
       signal,
     )

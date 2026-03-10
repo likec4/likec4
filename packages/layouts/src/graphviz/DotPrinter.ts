@@ -270,7 +270,7 @@ export abstract class DotPrinter<V extends ViewToPrint> {
   protected enableNewRankIfNeeded(): this {
     if (this.graphvizModel.subgraphs.some(s => !!s.get(_.rank))) {
       this.graphvizModel.set(_.newrank, true)
-      this.graphvizModel.set(_.clusterrank, 'global')
+      // this.graphvizModel.set(_.clusterrank, 'global')
     }
     return this
   }

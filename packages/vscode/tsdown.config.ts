@@ -14,6 +14,7 @@ const shared = {
     NODE_ENV: isProduction ? 'production' : 'development',
   },
   minify: isProduction,
+
   outputOptions: {
     keepNames: true,
   },
@@ -32,6 +33,7 @@ export default defineConfig([
     format: 'cjs',
     nodeProtocol: true,
     cjsDefault: true,
+    sourcemap: isDev,
     inputOptions: {
       resolve: {
         conditionNames: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],
@@ -53,6 +55,7 @@ export default defineConfig([
     ],
     nodeProtocol: true,
     format: 'esm',
+    sourcemap: isDev,
     inputOptions: {
       resolve: {
         conditionNames: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],

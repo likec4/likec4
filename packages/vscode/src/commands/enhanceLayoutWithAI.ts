@@ -1,4 +1,4 @@
-import { enhanceLayoutWithAI, LayoutHintsCache } from '@likec4/layouts/ai'
+import { enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import { toValue, useCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
 import { VscodeLmProvider } from '../ai/VscodeLmProvider'
@@ -12,7 +12,7 @@ export interface EnhanceLayoutWithAIDeps {
   preview: PreviewPanel
 }
 
-const hintsCache = new LayoutHintsCache()
+// const hintsCache = new LayoutHintsCache()
 
 export function registerEnhanceLayoutWithAICommand({ sendTelemetry, rpc, preview }: EnhanceLayoutWithAIDeps) {
   const { logger } = useExtensionLogger()
@@ -50,30 +50,30 @@ export function registerEnhanceLayoutWithAICommand({ sendTelemetry, rpc, preview
             return
           }
 
-          // Check cache first
-          let hints = hintsCache.get(computedView)
+          // // Check cache first
+          // let hints = hintsCache.get(computedView)
+          // if (!hints) {
+          const provider = new VscodeLmProvider()
+          const abortController = new AbortController()
+          token.onCancellationRequested(() => abortController.abort())
+
+          const hints = await enhanceLayoutWithAI(
+            computedView,
+            provider,
+            abortController.signal,
+          )
+
+          if (token.isCancellationRequested) return
+
           if (!hints) {
-            const provider = new VscodeLmProvider()
-            const abortController = new AbortController()
-            token.onCancellationRequested(() => abortController.abort())
-
-            const result = await enhanceLayoutWithAI(
-              computedView,
-              provider,
-              abortController.signal,
+            vscode.window.showWarningMessage(
+              'AI could not generate layout suggestions for this view.',
             )
-
-            if (token.isCancellationRequested) return
-
-            if (!result) {
-              vscode.window.showWarningMessage(
-                'AI could not generate layout suggestions for this view.',
-              )
-              return
-            }
-            hints = result
-            hintsCache.set(computedView, hints)
+            return
           }
+          //   hints = result
+          //   hintsCache.set(computedView, hints)
+          // }
 
           // Re-layout the view with AI hints
           const result = await rpc.layoutView({ viewId, projectId, hints })
@@ -85,6 +85,8 @@ export function registerEnhanceLayoutWithAICommand({ sendTelemetry, rpc, preview
               ? `AI-enhanced layout applied. ${hints.reasoning}`
               : 'AI-enhanced layout applied!'
             vscode.window.showInformationMessage(msg)
+          } else {
+            vscode.window.showWarningMessage('Failed to apply AI-enhanced layout.')
           }
         } catch (error) {
           if (error instanceof Error && error.message.includes('No language model')) {
