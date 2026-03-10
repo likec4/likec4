@@ -29,7 +29,8 @@
         "${workspaceFolder}/examples",
       ],
       "outFiles": [
-        "${workspaceFolder}/packages/*/dist/**/*.js"
+        "${workspaceFolder}/packages/*/dist/**/*.js",
+        "${workspaceFolder}/packages/*/dist/**/*.mjs"
       ],
       "resolveSourceMapLocations": [
         "${workspaceFolder}/packages/**",
@@ -88,6 +89,26 @@
       ],
       "autoAttachChildProcesses": true,
       "preLaunchTask": "build_extension"
+    },
+    {
+      "name": "tsx",
+      "type": "node",
+      "request": "launch",
+      // Debug current file in VSCode
+      "program": "${file}",
+      "args": [
+        "--conditions=sources"
+      ],
+      "runtimeExecutable": "tsx",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      // Files to exclude from debugger (e.g. call stack)
+      "skipFiles": [
+        // Node.js internal core modules
+        "<node_internals>/**",
+        // Ignore all dependencies (optional)
+        "${workspaceFolder}/node_modules/**",
+      ],
     }
   ]
 }

@@ -1,3 +1,5 @@
+import type { SerializedView } from './serializeView'
+
 /**
  * Abstract interface for AI layout hint generation.
  * Implemented by VSCode extension (using vscode.lm API) or direct API providers.
@@ -23,7 +25,7 @@ export interface AILayoutRequest {
   systemPrompt: string
   userPrompt: string
   /**
-   * The serialized diagram data as a JSON string.
+   * The serialized diagram data.
    */
-  diagramdata: string
+  diagram: SerializedView
 }
