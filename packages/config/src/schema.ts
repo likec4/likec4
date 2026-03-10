@@ -105,6 +105,21 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .meta({
       description: 'Auto-generate scoped views for elements without explicit views. Defaults to false.',
     }),
+  landingPage: z.union([
+    z.strictObject({
+      redirect: z.literal(true),
+    }),
+    z.strictObject({
+      include: z.array(z.string().nonempty()).nonempty('include list cannot be empty'),
+    }),
+    z.strictObject({
+      exclude: z.array(z.string().nonempty()).nonempty('exclude list cannot be empty'),
+    }),
+  ]).optional().meta({
+    id: 'LandingPageConfig',
+    description:
+      'Configure the landing page. Use redirect to go to the index view, or include/exclude to filter the view grid.',
+  }),
 })
   .meta({
     id: 'LikeC4ProjectConfig',
