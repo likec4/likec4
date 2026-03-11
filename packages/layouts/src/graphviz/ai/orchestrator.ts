@@ -99,9 +99,13 @@ function restoreIdsAndMapToHints(params: {
 
   const enforcements = pipe(
     parsed.enforcements,
-    flatMap(enforcement => {
-      const source = nodeId(enforcement.source)
-      const target = nodeId(enforcement.target)
+    flatMap(({ id, ...enforcement }) => {
+      const [sourceId, targetId] = id.split('->')
+      if (!sourceId || !targetId) {
+        return []
+      }
+      const source = nodeId(sourceId as string & z.$brand<'NodeId'>)
+      const target = nodeId(targetId as string & z.$brand<'NodeId'>)
       if (source && target) {
         return {
           ...enforcement,

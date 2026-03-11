@@ -24,12 +24,12 @@ const edgeHintSchema = edgeattrs
   })
   .transform(pickBy(isNonNullish))
 
-const enforcementSchema = edgeattrs
-  .extend({
-    source: nodeId,
-    target: nodeId,
-  })
-  .transform(pickBy(isNonNullish))
+// const enforcementSchema = edgeattrs
+//   .extend({
+//     source: nodeId,
+//     target: nodeId,
+//   })
+//   .transform(pickBy(isNonNullish))
 
 const responseSchema = z.object({
   direction: direction.optional().catch(undefined),
@@ -42,7 +42,7 @@ const responseSchema = z.object({
   sources: z.array(nodeId).catch([]),
   sinks: z.array(nodeId).catch([]),
   enforcements: z
-    .array(enforcementSchema.nullable().catch(null))
+    .array(edgeHintSchema.nullable().catch(null))
     .default([])
     .transform(filter(isNonNullish)),
   reasoning: z.string().default(''),
