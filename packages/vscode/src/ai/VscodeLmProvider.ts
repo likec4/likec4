@@ -7,6 +7,9 @@ import * as vscode from 'vscode'
 export class VscodeLmProvider implements AILayoutProvider {
   readonly name = 'VS Code Language Model'
 
+  constructor(private output: vscode.LogOutputChannel) {
+  }
+
   async sendRequest(
     request: AILayoutRequest,
     signal?: AbortSignal,
@@ -16,8 +19,10 @@ export class VscodeLmProvider implements AILayoutProvider {
     })
 
     // Pick best available model for structured output
-    const model = models.find(m => m.family.includes('claude'))
-      ?? models.find(m => m.family === 'gpt-4o')
+    const model = models.find(m => m.family.includes('sonnet'))
+      ?? models.find(m => m.family.includes('claude'))
+      ?? models.find(m => m.family.includes('gpt-5'))
+      ?? models.find(m => m.family.includes('gpt-4'))
       ?? models[0]
 
     if (!model) {
@@ -46,7 +51,9 @@ export class VscodeLmProvider implements AILayoutProvider {
     try {
       const response = await model.sendRequest(
         messages,
-        { justification: 'LikeC4 needs AI assistance to optimize diagram layout' },
+        {
+          justification: 'LikeC4 needs AI assistance to optimize diagram layout',
+        },
         cancellation.token,
       )
       if (signal?.aborted) {

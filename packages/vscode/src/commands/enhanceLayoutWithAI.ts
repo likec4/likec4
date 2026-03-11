@@ -15,7 +15,7 @@ export interface EnhanceLayoutWithAIDeps {
 // const hintsCache = new LayoutHintsCache()
 
 export function registerEnhanceLayoutWithAICommand({ sendTelemetry, rpc, preview }: EnhanceLayoutWithAIDeps) {
-  const { logger } = useExtensionLogger()
+  const { logger, output } = useExtensionLogger()
 
   useCommand(commands.enhanceLayoutWithAi, async () => {
     sendTelemetry(commands.enhanceLayoutWithAi)
@@ -53,7 +53,7 @@ export function registerEnhanceLayoutWithAICommand({ sendTelemetry, rpc, preview
           // // Check cache first
           // let hints = hintsCache.get(computedView)
           // if (!hints) {
-          const provider = new VscodeLmProvider()
+          const provider = new VscodeLmProvider(output)
           const abortController = new AbortController()
           token.onCancellationRequested(() => abortController.abort())
 
@@ -79,12 +79,19 @@ export function registerEnhanceLayoutWithAICommand({ sendTelemetry, rpc, preview
           const result = await rpc.layoutView({ viewId, projectId, hints })
 
           if (result) {
-            logger.debug('AI layout enhancement result\n' + result.dot)
+            const { reasoning, ..._hints } = hints
+            output.info(`AI layout enhancement\n${reasoning}`)
+            output.info(`Applied layout hints:\n${JSON.stringify(_hints, null, 2)}`)
 
-            const msg = hints.reasoning
-              ? `AI-enhanced layout applied. ${hints.reasoning}`
-              : 'AI-enhanced layout applied!'
-            vscode.window.showInformationMessage(msg)
+            vscode.window.showInformationMessage('AI-enhanced layout applied!', { modal: false })
+            await rpc.changeView({
+              viewId,
+              projectId,
+              change: {
+                op: 'save-view-snapshot',
+                layout: result.diagram,
+              },
+            })
           } else {
             vscode.window.showWarningMessage('Failed to apply AI-enhanced layout.')
           }
