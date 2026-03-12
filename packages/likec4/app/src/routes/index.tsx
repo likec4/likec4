@@ -13,7 +13,7 @@ export const Route = createFileRoute('/')({
       })
     }
 
-    if (projects[0]?.landingPage?.redirect) {
+    if (projects[0]?.landingPage && 'redirect' in projects[0].landingPage) {
       throw redirect({
         to: '/view/$viewId/',
         params: { viewId: 'index' },
