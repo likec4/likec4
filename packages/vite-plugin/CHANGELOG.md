@@ -1,5 +1,23 @@
 # @likec4/vite-plugin
 
+## 1.52.1
+
+### Patch Changes
+
+- [#2733](https://github.com/likec4/likec4/pull/2733) [`22cde07`](https://github.com/likec4/likec4/commit/22cde07331a7d375d30c1220a1603576e8438735) Thanks [@purple52](https://github.com/purple52)! - Add `landingPage` configuration option to control the landing page behavior:
+
+  - `redirect: true` to skip the landing page and go directly to the index view
+  - `include` / `exclude` selectors to filter which views appear in the landing page grid
+
+- Updated dependencies [[`22cde07`](https://github.com/likec4/likec4/commit/22cde07331a7d375d30c1220a1603576e8438735)]:
+  - @likec4/config@1.52.1
+  - @likec4/language-server@1.52.1
+  - @likec4/language-services@1.52.1
+  - @likec4/core@1.52.1
+  - @likec4/generators@1.52.1
+  - @likec4/layouts@1.52.1
+  - @likec4/log@1.52.1
+
 ## 1.52.0
 
 ### Patch Changes
