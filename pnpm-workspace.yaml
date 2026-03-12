@@ -39,7 +39,7 @@ catalogs:
     "@expressive-code/plugin-line-numbers": ^0.41.7
     astro: 5.18.0
     astro-og-canvas: ^0.7.2
-    shiki: ^3.22.0
+    shiki: ^4.0.2
     starlight-heading-badges: ^0.6.1
     starlight-image-zoom: ^0.13.2
     starlight-links-validator: ^0.19.2
