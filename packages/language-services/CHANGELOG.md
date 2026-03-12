@@ -1,5 +1,17 @@
 # @likec4/language-services
 
+## 1.52.1
+
+### Patch Changes
+
+- Updated dependencies [[`22cde07`](https://github.com/likec4/likec4/commit/22cde07331a7d375d30c1220a1603576e8438735)]:
+  - @likec4/config@1.52.1
+  - @likec4/language-server@1.52.1
+  - @likec4/core@1.52.1
+  - @likec4/generators@1.52.1
+  - @likec4/layouts@1.52.1
+  - @likec4/log@1.52.1
+
 ## 1.52.0
 
 ### Minor Changes

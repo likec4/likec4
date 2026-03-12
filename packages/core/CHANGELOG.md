@@ -1,5 +1,7 @@
 # @likec4/core
 
+## 1.52.1
+
 ## 1.52.0
 
 ### Patch Changes

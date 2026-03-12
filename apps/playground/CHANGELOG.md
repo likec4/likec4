@@ -1,5 +1,18 @@
 # @likec4/playground
 
+## 1.52.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/language-server@1.52.1
+  - @likec4/core@1.52.1
+  - @likec4/diagram@1.52.1
+  - @likec4/generators@1.52.1
+  - @likec4/log@1.52.1
+  - @likec4/tsconfig@1.52.1
+  - @likec4/styles@1.52.1
+
 ## 1.52.0
 
 ### Patch Changes
