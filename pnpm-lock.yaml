@@ -166,7 +166,7 @@ catalogs:
       specifier: ^0.2.4
       version: 0.2.4
     '@hono/node-server':
-      specifier: ^1.19.10
+      specifier: ^1.19.11
       version: 1.19.11
     '@hono/oauth-providers':
       specifier: ^0.8.5
