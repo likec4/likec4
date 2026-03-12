@@ -12,17 +12,17 @@ catalog:
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
   "@types/node": ~22.19.11
   "@types/pako": ^2.0.4
-  "@typescript/native-preview": 7.0.0-dev.20260303.1
+  "@typescript/native-preview": 7.0.0-dev.20260312.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  oxlint: 1.43.0
-  oxlint-tsgolint: 0.11.5
+  oxlint: 1.54.0
+  oxlint-tsgolint: 0.16.0
   pako: ^2.1.0
   playwright: 1.58.2
   tsdown: ^0.20.3
   tsx: 4.21.0
-  turbo: 2.8.13
+  turbo: 2.8.16
   typescript: 5.9.3
   wireit: 0.14.12
   zx: 8.8.5

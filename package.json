@@ -3,7 +3,7 @@
   "private": true,
   "license": "MIT",
   "version": "1.52.0",
-  "packageManager": "pnpm@10.30.3",
+  "packageManager": "pnpm@10.32.1",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -18,25 +18,24 @@
     "fmt": "dprint fmt",
     "changeset:empty": "changeset --empty",
     "lint": "oxlint --type-aware",
-    "lint:fix": "oxlint --type-aware --fix-suggestions",
+    "lint:fix": "oxlint --fix-suggestions",
+    "lint:package": "turbo run lint:package --filter=\"!./apps/*\"",
     "build": "turbo run build  --filter=\"!./apps/*\"",
     "build:all": "turbo run build",
     "typecheck": "turbo run typecheck  --filter=\"!./apps/*\"",
     "typecheck:all": "turbo run typecheck",
-    "lint:package": "turbo run lint:package --filter=\"!./apps/*\"",
     "generate": "turbo run generate  --filter=\"!./apps/*\"",
     "generate:all": "turbo run generate",
     "ci:generate": "turbo run generate  --filter=\"!./apps/*\"",
     "ci:typecheck": "turbo run typecheck  --filter=\"!./apps/*\"",
     "ci:build": "turbo run build  --filter=\"!./apps/*\"",
     "ci:test": "vitest run --no-isolate",
-    "ci:lint": "oxlint --type-aware --format=github --quiet",
+    "ci:lint": "oxlint --format=github --quiet",
     "ci:publish": "pnpm publish -r --no-git-checks",
     "vscode:typecheck": "pnpm run typecheck",
-    "release": "shipjs prepare",
     "clean": "pnpm -r run clean && rimraf -v -g \"**/.turbo\" \"**/node_modules/.cache\" \"**/node_modules/.vite\"",
     "clean:lib": "rimraf -v -g \"packages/*/lib\" \"styled-system/*/lib\" \"**/.tsbuildinfo\"",
-    "git:pre-commit": "nano-staged",
+    "git:pre-commit": "pnpm nano-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
     "pretest:e2e": "NODE_ENV=production pnpm turbo run pack --filter=\"likec4...\"",
@@ -100,8 +99,10 @@
     ]
   },
   "nano-staged": {
-    "**/*.{ts,tsx,mjs,js,jsx}": [
-      "dprint fmt"
+    "*.{json,jsonc,md,yml,yaml,css}": "dprint fmt",
+    "*.{ts,tsx,mjs,js,jsx}": [
+      "dprint fmt",
+      "oxlint --fix --silent"
     ]
   }
 }

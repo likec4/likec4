@@ -1,6 +1,10 @@
 {
-  "lineWidth": 120,
+  "$schema": "./.vscode/dprint-schema.json",
+  "indentWidth": 2,
   "useTabs": false,
+  "incremental": true,
+  "lineWidth": 120,
+  "newLineKind": "lf",
   "typescript": {
     "semiColons": "asi",
     "operatorPosition": "maintain",
@@ -30,6 +34,7 @@
     ".changeset",
     ".turbo",
     ".astro",
+    ".claude",
     ".vscode",
     ".vscode-test-web",
     ".next",

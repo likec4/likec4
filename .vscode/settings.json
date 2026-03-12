@@ -1,11 +1,6 @@
 {
-  "typescript.tsdk": "./node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "eslint.enable": false,
-  "oxc.enable": true,
-  "oxc.typeAware": true,
-  "oxc.lint.run": "onSave",
-  "astro.content-intellisense": true,
+  // Editor settings
+  "editor.defaultFormatter": "dprint.dprint",
   "[typescript]": {
     "editor.defaultFormatter": "dprint.dprint",
   },
@@ -18,32 +13,33 @@
   "[javascriptreact]": {
     "editor.defaultFormatter": "dprint.dprint",
   },
-  "[json]": {
-    "editor.defaultFormatter": "dprint.dprint",
-  },
-  "[json5]": {
-    "editor.defaultFormatter": "dprint.dprint",
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "dprint.dprint",
-  },
   "[mdx]": {
     "editor.defaultFormatter": "dprint.dprint",
     "files.trimTrailingWhitespace": false,
   },
-  "[css]": {
-    "editor.defaultFormatter": "dprint.dprint",
-  },
+  // Linting settings
+  "eslint.enable": true,
+  "eslint.format.enable": false,
+  "prettier.enable": false,
+  "dprint.experimentalLsp": true,
+  "oxc.enable": true,
+  "oxc.unusedDisableDirectives": "warn",
+  "oxc.enable.oxlint": true,
+  "oxc.enable.oxfmt": false,
+  // File explorer
   "files.readonlyInclude": {
     "**/routeTree.gen.ts": true,
     "**/worker-configuration.d.ts": true,
     "packages/icons/**/*.tsx": true,
     "**/__snapshots__/**": true,
+    "*-lock.yaml": true,
+    "*-lock.json": true,
+    "schemas/likec4-config.schema.json": true,
     "packages/language-server/src/generated*/**": true,
   },
   "search.exclude": {
-    ".yarn/**": true,
-    "yarn.lock": true,
+    "*-lock.yaml": true,
+    "*-lock.json": true,
     "node_modules/**": true,
     "packages/*/dist/**": true,
     "packages/*/bundle/**": true,
@@ -69,6 +65,8 @@
     "styled-system/*/node_modules": true,
     "styled-system/*/lib": true
   },
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
   "json.schemas": [
     {
       "url": "./packages/language-server/node_modules/langium-cli/langium-config-schema.json",
@@ -108,10 +106,5 @@
     "webcola",
     "xyflow",
     "zoomable"
-  ],
-  "sonarlint.connectedMode.project": {
-    "connectionId": "likec4",
-    "projectKey": "likec4_likec4"
-  },
-  "references.preferredLocation": "peek"
+  ]
 }

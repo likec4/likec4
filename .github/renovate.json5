@@ -6,8 +6,8 @@
     'group:monorepos',
     'npm:unpublishSafe'
   ],
-  "prHourlyLimit": 30,
-  "prConcurrentLimit": 8,
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 10,
   "rangeStrategy": 'bump',
   "postUpdateOptions": [
     "pnpmDedupe"
@@ -18,7 +18,7 @@
   "ignorePaths": [
     "e2e/**",
     "examples/**",
-    "packages/create-likec4/**"
+    "packages/create-likec4/**",
   ],
   packageRules: [
     {
@@ -28,12 +28,6 @@
       automergeType: "branch",
       automerge: true,
       pinDigests: false,
-    },
-    {
-      groupName: 'oxlint',
-      matchPackageNames: [
-        '/oxlint/',
-      ],
     },
     {
       automerge: true,
@@ -46,8 +40,8 @@
         'wireit',
         'pnpm',
         'semver',
-        'oxlint',
-        'oxlint-tsgolint',
+        '/oxlint/',
+        '@typescript/native-preview',
         'terser',
         'caniuse-lite',
         'zx',

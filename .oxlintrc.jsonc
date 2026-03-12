@@ -1,8 +1,18 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "env": {
-    "es2024": true
+    "builtin": true,
+    "es2024": true,
   },
+  "settings": {
+    "vitest": {
+      "typecheck": false,
+    },
+  },
+  "options": {
+    "typeAware": true,
+  },
+  "globals": {},
   "plugins": [
     "eslint",
     "typescript",
@@ -12,14 +22,25 @@
     "oxc",
     "import",
     "node",
-    "vitest"
+    "vitest",
   ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off",
+    "perf": "warn",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off",
+  },
   "ignorePatterns": [
-    "packages/create-likec4/",
-    "packages/icons/",
-    "apps/docs/",
-    "styled-system/styles/",
-    "examples/"
+    ".claude/**",
+    "e2e/**",
+    "packages/create-likec4/**",
+    "packages/icons/**",
+    "apps/docs/**",
+    "styled-system/styles/**",
+    "examples/**",
   ],
   "rules": {
     "max-dependencies": "off",
@@ -32,34 +53,25 @@
     "no-array-reverse": "off",
     "no-await-in-loop": "off",
     "no-commonjs": "error",
-    // TODO: Enable these rules later
-    "no-cycle": "off",
-    "import/consistent-type-specifier-style": "off",
-    // "import/consistent-type-specifier-style": [
-    //   "warn",
-    //   {
-    //     "prefer-top-level": true
-    //   }
-    // ],
-    "import/first": "warn",
-    "no-restricted-imports": [
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTernary": true,
+        "allowTaggedTemplates": true,
+      },
+    ],
+    "import/no-cycle": [
       "error",
       {
-        "paths": [
-          {
-            "name": "type-fest",
-            "allowTypeImports": true
-          },
-          {
-            "name": "."
-          }
-        ]
-      }
+        "maxDepth": 100,
+      },
     ],
+    "import/first": "warn",
+    "react/react-in-jsx-scope": "off",
+    "react/exhaustive-deps": "warn",
     "react_perf/jsx-no-jsx-as-prop": "warn",
     "promise/no-new-statics": "error",
-    "react/exhaustive-deps": "warn",
-    "no-unused-expressions": "off",
     "typescript/no-base-to-string": "error",
     "typescript/no-import-type-side-effects": "error",
     "typescript/require-array-sort-compare": "off",
@@ -71,7 +83,6 @@
     "typescript/explicit-function-return-type": "off",
     "typescript/no-non-null-asserted-optional-chain": "error",
     "typescript/no-unnecessary-type-arguments": "off",
-    "typescript/no-redundant-type-constituents": "off"
   },
   "overrides": [
     {
@@ -79,9 +90,12 @@
         "**/*.spec.ts",
         "**/*.test-d.ts",
         "**/*.spec.tsx",
-        "**/__*/**"
+        "**/__*/**",
       ],
       "rules": {
+        "no-unused-vars": "off",
+        "no-shadow": "off",
+        "no-unused-expressions": "off",
         "import/consistent-type-specifier-style": "off",
         "typescript/no-unsafe-member-access": "off",
         "typescript/no-unnecessary-type-assertion": "off",
@@ -90,8 +104,8 @@
         "typescript/no-unsafe-type-assertion": "off",
         "typescript/no-non-null-assertion": "off",
         "typescript/no-non-null-asserted-optional-chain": "off",
-        "no-unused-vars": "off"
-      }
-    }
-  ]
+        "typescript/no-redundant-type-constituents": "off",
+      },
+    },
+  ],
 }
