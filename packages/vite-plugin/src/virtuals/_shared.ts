@@ -1,3 +1,4 @@
+import type { LikeC4ProjectConfig } from '@likec4/config'
 import type { LikeC4Project, NonEmptyArray, ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { URI } from 'langium'
@@ -7,17 +8,18 @@ import type { ViteLogger } from '../logger'
 
 export { k }
 
+export type VirtualModuleProject = LikeC4Project & {
+  folder: URI
+  config: Readonly<LikeC4ProjectConfig>
+}
+
 export interface VirtualModule {
   id: string
   virtualId: string
   load(opts: {
     logger: ViteLogger
     likec4: LikeC4LanguageServices
-    projects: NonEmptyArray<
-      LikeC4Project & {
-        folder: URI
-      }
-    >
+    projects: NonEmptyArray<VirtualModuleProject>
     assetsDir: string
   }): Promise<string>
 }
@@ -31,9 +33,7 @@ export interface ProjectVirtualModule {
   load(opts: {
     logger: ViteLogger
     likec4: LikeC4LanguageServices
-    project: LikeC4Project & {
-      folder: URI
-    }
+    project: VirtualModuleProject
     assetsDir: string
   }): Promise<string>
 }

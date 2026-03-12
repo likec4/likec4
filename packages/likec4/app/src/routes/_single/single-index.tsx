@@ -24,7 +24,8 @@ import { OverviewSearch } from '../../components/search/OverviewSearch'
 import { SidebarDrawer } from '../../components/sidebar/Drawer'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
 import { pageTitle } from '../../const'
-import { useLikeC4Views } from '../../hooks'
+import { filterLandingPageViews } from '../../filterLandingPageViews'
+import { useCurrentProject, useLikeC4Views } from '../../hooks'
 import * as styles from './index.css'
 
 export const Route = createFileRoute('/_single/single-index')({
@@ -33,7 +34,9 @@ export const Route = createFileRoute('/_single/single-index')({
 
 function RouteComponent() {
   useDocumentTitle(pageTitle)
-  const views = useLikeC4Views()
+  const allViews = useLikeC4Views()
+  const { landingPage } = useCurrentProject()
+  const views = filterLandingPageViews(allViews, landingPage)
   return (
     <Container size={'xl'}>
       <SidebarDrawer />

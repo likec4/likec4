@@ -77,6 +77,20 @@ export async function viteBuild({
         )
       }
     })
+
+    // Validate landingPage config
+    const landingPage = projects[0].config.landingPage
+    if (landingPage && ('include' in landingPage || 'exclude' in landingPage)) {
+      const patterns = 'include' in landingPage ? landingPage.include : landingPage.exclude
+      const hasMatch = diagrams.some(v =>
+        patterns.some(p => p.startsWith('#') ? v.tags?.some(t => t === p.slice(1)) : v.id === p)
+      )
+      if (!hasMatch) {
+        config.customLogger.warn(
+          k.dim('landingPage:') + ' ' + k.yellow('no views match the configured filter'),
+        )
+      }
+    }
   } else {
     for (const project of projects) {
       const computed = await languageServices.viewsService.computedViews(project.id)
@@ -84,6 +98,20 @@ export async function viteBuild({
         config.customLogger.warn(`${k.dim('project:')} ${project.id} ${k.yellow(`✗ no views found`)}`)
       } else {
         config.customLogger.info(`${k.dim('project:')} ${project.id} ${k.green(`${computed.length} views`)}`)
+      }
+
+      const diagrams = await languageServices.diagrams(project.id)
+      const landingPage = project.config.landingPage
+      if (landingPage && ('include' in landingPage || 'exclude' in landingPage)) {
+        const patterns = 'include' in landingPage ? landingPage.include : landingPage.exclude
+        const hasMatch = diagrams.some(v =>
+          patterns.some(p => p.startsWith('#') ? v.tags?.some(t => t === p.slice(1)) : v.id === p)
+        )
+        if (!hasMatch) {
+          config.customLogger.warn(
+            `${k.dim('project:')} ${project.id} ${k.yellow('landingPage: no views match the configured filter')}`,
+          )
+        }
       }
     }
   }
