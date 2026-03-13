@@ -157,7 +157,7 @@ async function createFactSheet(
   const variables = { input, patches }
   const data = await client.graphql<CreateResult>(mutation, variables)
   const id = data.createFactSheet?.factSheet?.id
-  if (!id) throw new Error(`createFactSheet did not return id for ${fs.name}`)
+  if (!id) throw new Error(`createFactSheet did not return id for ${String(fs.name)}`)
   return id
 }
 
@@ -244,7 +244,7 @@ async function syncFactSheetsToLeanix(
       }
       if (factSheetId) likec4IdToFactSheetId.set(fs.likec4Id, factSheetId)
     } catch (e) {
-      errors.push(`Fact sheet ${fs.likec4Id} (${fs.name}): ${toErrorMessage(e)}`)
+      errors.push(`Fact sheet ${fs.likec4Id} (${String(fs.name)}): ${toErrorMessage(e)}`)
     }
   }
 
@@ -321,7 +321,7 @@ export async function planSyncToLeanix(
       const existingId = idempotent ? await findFactSheetByNameAndType(client, fs.name, fs.type) : null
       factSheetPlans.push(buildFactSheetPlanEntry(fs, existingId))
     } catch (e) {
-      errors.push(`Fact sheet ${fs.likec4Id} (${fs.name}): ${toErrorMessage(e)}`)
+      errors.push(`Fact sheet ${fs.likec4Id} (${String(fs.name)}): ${toErrorMessage(e)}`)
       factSheetPlans.push(buildFactSheetPlanEntry(fs, null))
     }
   }
