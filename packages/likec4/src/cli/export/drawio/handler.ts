@@ -51,7 +51,10 @@ function getDrawioEpilog(): string {
     ${k.gray('Re-apply layout/waypoints from comment blocks (e.g. after import from DrawIO)')}
 
   ${k.green('$0 export drawio --uncompressed -o ./out')}
-    ${k.gray('Export with raw XML (no compression) for draw.io desktop compatibility')}`
+    ${k.gray('Export with raw XML (no compression) for draw.io desktop compatibility')}
+
+  ${k.green('$0 export drawio --profile leanix -o ./out')}
+    ${k.gray('Export with bridge-managed metadata (likec4Id, likec4ViewId, etc.) for LeanIX interoperability')}`
 }
 
 /** Normalize thrown value to Error for logging and rethrowing (single responsibility). */
@@ -146,15 +149,23 @@ async function getSourceContentIfRoundtrip(
  * @param viewmodels - Layouted view models
  * @param sourceContent - Concatenated .c4 source when roundtrip is enabled
  * @param uncompressed - When true, sets compressed: false in options
+ * @param profile - When 'leanix', adds bridge-managed metadata for LeanIX interoperability
+ * @param projectId - Project id (included when profile is 'leanix')
  * @returns Map of view id to GenerateDrawioOptions
  */
 function buildOptionsByViewId(
   viewmodels: LikeC4ViewModel<aux.Unknown>[],
   sourceContent: string | undefined,
   uncompressed: boolean,
+  profile: 'default' | 'leanix',
+  projectId: string,
 ): Record<string, GenerateDrawioOptions> {
   const viewIds = viewmodels.map(vm => String(vm.$view.id))
-  const overrides = uncompressed ? { compressed: false } : undefined
+  const overrides: Partial<GenerateDrawioOptions> = uncompressed ? { compressed: false } : {}
+  if (profile === 'leanix') {
+    overrides.profile = 'leanix'
+    overrides.projectId = projectId
+  }
   return buildDrawioExportOptionsForViews(viewIds, sourceContent, overrides)
 }
 
@@ -168,6 +179,8 @@ interface ExportDrawioParams {
   workspacePath: string
   roundtrip: boolean
   uncompressed: boolean
+  profile: 'default' | 'leanix'
+  projectId: string
   logger: ViteLogger
 }
 
@@ -176,9 +189,9 @@ interface ExportDrawioParams {
  * @param params - View models, outdir, workspace path, roundtrip/uncompressed flags, logger
  */
 async function exportDrawioAllInOne(params: ExportDrawioParams): Promise<void> {
-  const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, logger } = params
+  const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, profile, projectId, logger } = params
   const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip, logger)
-  const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed)
+  const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed, profile, projectId)
   const generated = generateDrawioMulti(viewmodels, optionsByViewId)
   const outfile = resolve(outdir, DEFAULT_DRAWIO_ALL_FILENAME)
   await writeFile(outfile, generated)
@@ -219,9 +232,9 @@ async function writeViewToFile(
  * @returns Count of successfully written files
  */
 async function exportDrawioPerView(params: ExportDrawioParams): Promise<{ succeeded: number }> {
-  const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, logger } = params
+  const { viewmodels, outdir, workspacePath, roundtrip, uncompressed, profile, projectId, logger } = params
   const sourceContent = await getSourceContentIfRoundtrip(workspacePath, roundtrip, logger)
-  const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed)
+  const optionsByViewId = buildOptionsByViewId(viewmodels, sourceContent, uncompressed, profile, projectId)
   let succeeded = 0
   // Sequential export keeps output order deterministic; parallel could be added for very large workspaces.
   for (const vm of viewmodels) {
@@ -237,6 +250,7 @@ type DrawioExportArgs = {
   allInOne: boolean
   roundtrip: boolean
   uncompressed: boolean
+  profile: 'default' | 'leanix'
   project: string | undefined
   useDot: boolean
 }
@@ -276,12 +290,15 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   }
 
   await mkdir(args.outdir, { recursive: true })
+  const projectIdForOptions = String(model.projectId)
   const exportParams: ExportDrawioParams = {
     viewmodels,
     outdir: args.outdir,
     workspacePath: args.path,
     roundtrip: args.roundtrip,
     uncompressed: args.uncompressed,
+    profile: args.profile,
+    projectId: projectIdForOptions,
     logger,
   }
 
@@ -340,6 +357,12 @@ export function drawioCmd(yargs: Argv) {
           desc:
             'write diagram XML uncompressed inside .drawio (larger file; use if draw.io desktop fails to open compressed export)',
         })
+        .option('profile', {
+          type: 'string',
+          choices: ['default', 'leanix'],
+          default: 'default',
+          desc: 'export profile: default (round-trip) or leanix (bridge-managed metadata for LeanIX interoperability)',
+        })
         .options({
           project,
           'use-dot': useDotBin,
@@ -354,6 +377,7 @@ export function drawioCmd(yargs: Argv) {
           allInOne: !!args.allInOne,
           roundtrip: !!args.roundtrip,
           uncompressed: !!args.uncompressed,
+          profile: (args.profile === 'leanix' ? 'leanix' : 'default') as 'default' | 'leanix',
           project: args.project,
           useDot: !!args['use-dot'],
         },

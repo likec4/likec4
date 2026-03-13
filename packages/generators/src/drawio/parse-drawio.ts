@@ -89,6 +89,10 @@ export interface DrawioCell {
   notation?: string
   /** From style likec4Metadata (edge; JSON object for relation metadata block) */
   metadata?: string
+  /** From style likec4Id (vertex; bridge-managed element id for round-trip) */
+  likec4Id?: string
+  /** From style likec4RelationId (edge; bridge-managed relation id for round-trip) */
+  likec4RelationId?: string
   /** From mxUserObject/data keys not mapped to fields above (JSON object for round-trip comment) */
   customData?: string
   /** From mxGeometry Array/mxPoint (edge waypoints; JSON array of [x,y][]) */
@@ -338,6 +342,8 @@ function buildCellOptionalFields(params: {
   const relationshipKind = getDecodedStyle(styleMap, 'likec4relationshipkind')
   const notation = getDecodedStyle(styleMap, 'likec4notation')
   const metadata = getDecodedStyle(styleMap, 'likec4metadata')
+  const likec4Id = getDecodedStyle(styleMap, 'likec4id')
+  const likec4RelationId = getDecodedStyle(styleMap, 'likec4relationid')
   const optional: Partial<DrawioCell> = {}
   if (params.valueRaw != null && params.valueRaw !== '') {
     optional.value = decodeXmlEntities(params.valueRaw)
@@ -376,6 +382,8 @@ function buildCellOptionalFields(params: {
   if (relationshipKind != null) optional.relationshipKind = relationshipKind
   if (notation != null) optional.notation = notation
   if (metadata != null && edge) optional.metadata = metadata
+  if (likec4Id != null && vertex) optional.likec4Id = likec4Id
+  if (likec4RelationId != null && edge) optional.likec4RelationId = likec4RelationId
   if (userData.customData != null) optional.customData = userData.customData
   if (edge) {
     const pts = parseEdgePoints(fullTag)
@@ -610,7 +618,7 @@ function makeUniqueName(usedNames: Set<string>): (base: string) => string {
   }
 }
 
-/** Assign FQNs to element vertices: root first, then hierarchy by parent, then orphans (DRY). */
+/** Assign FQNs to element vertices: bridge-managed likec4Id first, then root, hierarchy, orphans (DRY). */
 function assignFqnsToElementVertices(
   idToFqn: Map<string, string>,
   elementVertices: DrawioCell[],
@@ -620,6 +628,11 @@ function assignFqnsToElementVertices(
 ): void {
   const baseName = (v: DrawioCell) => v.value ?? containerIdToTitle.get(v.id) ?? v.id
   for (const v of elementVertices) {
+    const bridgeId = v.likec4Id?.trim()
+    if (bridgeId) idToFqn.set(v.id, bridgeId)
+  }
+  for (const v of elementVertices) {
+    if (idToFqn.has(v.id)) continue
     if (isRootParent(v.parent)) idToFqn.set(v.id, uniqueName(baseName(v)))
   }
   let changed = true

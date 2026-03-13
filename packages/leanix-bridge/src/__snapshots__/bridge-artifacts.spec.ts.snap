@@ -1,0 +1,113 @@
+exports[`bridge artifacts (golden snapshot) > manifest.json shape 1`] = `
+Object {
+  "bridgeVersion": "0.1.0",
+  "entities": Object {
+    "cloud": Object {
+      "canonicalId": "cloud",
+      "external": Object {},
+    },
+    "cloud.backend": Object {
+      "canonicalId": "cloud.backend",
+      "external": Object {},
+    },
+    "cloud.backend.api": Object {
+      "canonicalId": "cloud.backend.api",
+      "external": Object {},
+    },
+  },
+  "generatedAt": "2025-01-15T12:00:00.000Z",
+  "mappingProfile": "snapshot",
+  "manifestVersion": "1.0",
+  "projectId": "test-project",
+  "relations": Array [
+    Object {
+      "compositeKey": "cloud|cloud.backend|r1",
+      "external": Object {},
+      "relationId": "r1",
+      "sourceFqn": "cloud",
+      "targetFqn": "cloud.backend",
+    },
+    Object {
+      "compositeKey": "cloud.backend|cloud.backend.api|r2",
+      "external": Object {},
+      "relationId": "r2",
+      "sourceFqn": "cloud.backend",
+      "targetFqn": "cloud.backend.api",
+    },
+  ],
+  "views": Object {
+    "index": Object {
+      "external": Object {},
+      "viewId": "index",
+    },
+    "landscape": Object {
+      "external": Object {},
+      "viewId": "landscape",
+    },
+  },
+}
+`;
+
+exports[`bridge artifacts (golden snapshot) > leanix-dry-run.json shape 1`] = `
+Object {
+  "factSheets": Array [
+    Object {
+      "likec4Id": "cloud",
+      "name": "Cloud",
+      "type": "Application",
+    },
+    Object {
+      "likec4Id": "cloud.backend",
+      "name": "Backend",
+      "type": "ITComponent",
+    },
+    Object {
+      "likec4Id": "cloud.backend.api",
+      "name": "API",
+      "tags": Array [
+        "core",
+      ],
+      "technology": "Node",
+      "type": "ITComponent",
+    },
+  ],
+  "generatedAt": "2025-01-15T12:00:00.000Z",
+  "mappingProfile": "snapshot",
+  "projectId": "test-project",
+  "relations": Array [
+    Object {
+      "likec4RelationId": "r1",
+      "sourceLikec4Id": "cloud",
+      "targetLikec4Id": "cloud.backend",
+      "type": "depends on",
+    },
+    Object {
+      "likec4RelationId": "r2",
+      "sourceLikec4Id": "cloud.backend",
+      "targetLikec4Id": "cloud.backend.api",
+      "type": "depends on",
+    },
+  ],
+}
+`;
+
+exports[`bridge artifacts (golden snapshot) > report.json shape 1`] = `
+Object {
+  "artifacts": Object {
+    "leanixDryRun": "leanix-dry-run.json",
+    "manifest": "manifest.json",
+  },
+  "bridgeVersion": "0.1.0",
+  "counts": Object {
+    "entities": 3,
+    "factSheets": 3,
+    "leanixRelations": 2,
+    "relations": 2,
+    "views": 2,
+  },
+  "generatedAt": "2025-01-15T12:00:00.000Z",
+  "mappingProfile": "default",
+  "projectId": "test-project",
+  "manifestVersion": "1.0",
+}
+`;

@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest'
 import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import type { DrawioViewModelLike } from './generate-drawio'
 import { generateDrawio, generateDrawioMulti } from './generate-drawio'
-import { getAllDiagrams } from './parse-drawio'
+import { getAllDiagrams, parseDrawioToLikeC4 } from './parse-drawio'
 
 /**
  * Asserts that the DrawIO XML does not contain the structure that causes
@@ -260,5 +260,73 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
     const diagramCount = (xml.match(/<diagram\s/g) ?? []).length
     expect(diagramCount).toBe(1)
     expect(getAllDiagrams(xml)).toHaveLength(1)
+  })
+})
+
+describe('DrawIO export profile leanix (bridge-managed metadata)', () => {
+  test('profile leanix adds bridgeManaged, likec4Id, likec4Kind, likec4ViewId on vertices and root', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), {
+      compressed: false,
+      profile: 'leanix',
+      projectId: 'test-project',
+    })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).toContain('bridgeManaged=true')
+    expect(content).toMatch(/likec4Id=([^;]+)/)
+    expect(content).toMatch(/likec4Kind=([^;]+)/)
+    expect(content).toMatch(/likec4ViewId=([^;]+)/)
+    expect(content).toContain('likec4ProjectId=test-project')
+    // Root cell (id=1) should have likec4ViewId and likec4ProjectId
+    expect(content).toMatch(/likec4ViewId=([^;"&]+)/)
+  })
+
+  test('profile leanix adds likec4RelationId and bridgeManaged on edges', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), {
+      compressed: false,
+      profile: 'leanix',
+    })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).toMatch(/likec4RelationId=([^;]+)/)
+    expect(content, 'Edge style must contain bridgeManaged').toMatch(/bridgeManaged=true/)
+  })
+
+  test('profile leanix with leanixFactSheetTypeByKind adds leanixFactSheetType on vertices', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), {
+      compressed: false,
+      profile: 'leanix',
+      leanixFactSheetTypeByKind: { system: 'Application', component: 'ITComponent' },
+    })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).toMatch(/leanixFactSheetType=([^;]+)/)
+  })
+
+  test('profile default does not add bridgeManaged or likec4Id', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), { compressed: false })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).not.toContain('bridgeManaged=true')
+    expect(content).not.toMatch(/likec4Id=/)
+  })
+
+  test('bridge-managed export is loadable in draw.io (valid XML)', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), {
+      compressed: false,
+      profile: 'leanix',
+      projectId: 'my-project',
+    })
+    expectDrawioXmlLoadableInDrawio(xml)
+  })
+
+  test('roundtrip: export with profile leanix then parse yields LikeC4 source with elements and view', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), {
+      compressed: false,
+      profile: 'leanix',
+      projectId: 'test-project',
+    })
+    const parsed = parseDrawioToLikeC4(xml)
+    expect(parsed).toContain('view')
+    expect(parsed).toMatch(/include\s+/)
+    // Diagram has cloud, cloud.backend, cloud.backend.api, etc.; parser infers from structure
+    expect(parsed.length).toBeGreaterThan(100)
+    expect(parsed).not.toMatch(/undefined|null/)
   })
 })

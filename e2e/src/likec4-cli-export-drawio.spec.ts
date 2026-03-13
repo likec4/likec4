@@ -34,6 +34,22 @@ test.skip(
   },
 )
 
+test.skip(
+  'LikeC4 CLI - export drawio --profile leanix produces bridge-managed styles (SKIPPED: same CI path as main export)',
+  { timeout: 30000 },
+  async ({ expect }) => {
+    rmSync(outDir, { recursive: true, force: true })
+    mkdirSync(outDir, { recursive: true })
+    await $`likec4 export drawio ${sourceDirAbs} -o ${outDir} --project ${projectId} --profile leanix`.quiet()
+    const entries = readdirSync(outDir, { withFileTypes: true })
+    const drawioFiles = entries.filter(isDrawioFile).sort((a, b) => a.name.localeCompare(b.name))
+    expect(drawioFiles.length).toBeGreaterThan(0)
+    const content = readFileSync(join(outDir, drawioFiles[0]!.name), 'utf8')
+    expect(content).toContain('<mxfile')
+    expect(content).toMatch(/bridgeManaged=true|likec4Id=/)
+  },
+)
+
 test(
   'LikeC4 CLI - export drawio with empty workspace exits with code 1',
   { timeout: 15000 },

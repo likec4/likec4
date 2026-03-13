@@ -118,4 +118,12 @@ dist
 /.project
 /.settings/*
 
-# Local / temporary PR and process docs — prefer ~/.gitignore_global for personal workflow files (PR-*, COMMIT_MSG*, etc.)
+# Local / temporary PR and process docs (não subir ao repo)
+PR_BODY*.md
+.review-*.md
+.review-*.txt
+.commit_msg*.txt
+.gh-pr-*.txt
+
+# Architecture-intelligence planning docs (internal, not official project docs)
+docs/architecture-intelligence/

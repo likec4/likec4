@@ -438,6 +438,39 @@ function buildLikec4StyleForNode(params: NodeLikec4StyleParams): string {
   return parts.length > 0 ? parts.join(';') + ';' : ''
 }
 
+/** Bridge-managed style parts for profile 'leanix': likec4Id, likec4Kind, likec4ViewId, likec4ProjectId, bridgeManaged, optional leanixFactSheetType. */
+function buildBridgeManagedStyleForNode(
+  nodeId: string,
+  nodeKind: string,
+  viewId: string,
+  options: GenerateDrawioOptions | undefined,
+): string {
+  if (options?.profile !== 'leanix') return ''
+  const parts = [
+    'bridgeManaged=true',
+    `likec4Id=${encodeURIComponent(nodeId)}`,
+    `likec4Kind=${encodeURIComponent(nodeKind)}`,
+    `likec4ViewId=${encodeURIComponent(viewId)}`,
+  ]
+  if (options.projectId != null && options.projectId !== '') {
+    parts.push(`likec4ProjectId=${encodeURIComponent(options.projectId)}`)
+  }
+  const factSheetType = options.leanixFactSheetTypeByKind?.[nodeKind]
+  if (factSheetType != null && factSheetType !== '') {
+    parts.push(`leanixFactSheetType=${encodeURIComponent(factSheetType)}`)
+  }
+  return parts.join(';') + ';'
+}
+
+/** Bridge-managed style parts for edge when profile is 'leanix': likec4RelationId, bridgeManaged. */
+function buildBridgeManagedStyleForEdge(
+  relationId: string,
+  options: GenerateDrawioOptions | undefined,
+): string {
+  if (options?.profile !== 'leanix') return ''
+  return `bridgeManaged=true;likec4RelationId=${encodeURIComponent(relationId)};`
+}
+
 /** Build mxUserObject XML from customData for round-trip; returns empty string when customData is missing or empty. */
 function buildMxUserObjectXml(customData: Record<string, string> | undefined): string {
   if (
@@ -508,12 +541,13 @@ function buildEdgeGeometryXml(
   return `<mxGeometry relative="1" as="geometry">${pointsXml}</mxGeometry>`
 }
 
-/** Full edge style string for mxCell (arrows, anchors, stroke, dash, label, likec4 roundtrip). */
+/** Full edge style string for mxCell (arrows, anchors, stroke, dash, label, likec4 roundtrip, optional bridge-managed). */
 function buildEdgeStyleString(
   edge: Edge,
   layout: DiagramLayoutState,
   viewmodel: DrawioViewModelLike,
   label: string,
+  options: GenerateDrawioOptions | undefined,
 ): string {
   const { bboxes, fontFamily } = layout
   const sourceBbox = bboxes.get(edge.source)
@@ -550,13 +584,14 @@ function buildEdgeStyleString(
     edgeLinksJson,
     edgeMetadataJson,
   })
+  const edgeBridgeStyle = buildBridgeManagedStyleForEdge(edge.id, options)
   const edgeLabelColors = getEdgeLabelColors(viewmodel, edge.color)
   const edgeLabelStyle = label === ''
     ? ''
     : `fontColor=${edgeLabelColors.font};fontSize=12;align=center;verticalAlign=middle;labelBackgroundColor=none;fontFamily=${
       encodeURIComponent(fontFamily)
     };`
-  return `endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;${anchorStyle}strokeColor=${strokeColor};strokeWidth=2;${dashStyle}${edgeLabelStyle}${edgeLikec4Style}`
+  return `endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;${anchorStyle}strokeColor=${strokeColor};strokeWidth=2;${dashStyle}${edgeLabelStyle}${edgeLikec4Style}${edgeBridgeStyle}`
 }
 
 /** Build a single edge mxCell XML (orchestrator: label + geometry + style + assembly). */
@@ -573,7 +608,7 @@ function buildEdgeCellXml(
   const targetId = getCellId(edge.target)
   const label = buildEdgeLabelValue(edge)
   const edgeGeometryXml = buildEdgeGeometryXml(edge, options?.edgeWaypoints)
-  const styleStr = buildEdgeStyleString(edge, layout, viewmodel, label)
+  const styleStr = buildEdgeStyleString(edge, layout, viewmodel, label, options)
   const edgeCustomData = edgeOptionalFields.getCustomData(edge)
   const edgeUserObjectXml = buildMxUserObjectXml(edgeCustomData)
   return `<mxCell id="${edgeCellId}" value="${label}" style="${styleStr}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">
@@ -713,6 +748,9 @@ function computeNodeStylePartsAndValue(
     strokeHex,
     nodeNotation,
   })
+  const nodeKind = (node as Node & { kind?: string }).kind ?? ''
+  const bridgeStyle = buildBridgeManagedStyleForNode(node.id, nodeKind, layout.view.id, options)
+  const likec4StyleWithBridge = likec4Style + bridgeStyle
 
   const nodeCustomData = nodeOptionalFields.getCustomData(node)
   const userObjectXml = buildMxUserObjectXml(nodeCustomData)
@@ -726,7 +764,7 @@ function computeNodeStylePartsAndValue(
 
   // vertexTextStyle already includes html=1; for both container and non-container
   const styleStr =
-    `${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${fillOpacityStyle}${navLinkStyle}${likec4Style}`
+    `${vertexTextStyle}${shapeStyle}${colorStyle}${strokeWidthStyle}${containerDashed}${fillOpacityStyle}${navLinkStyle}${likec4StyleWithBridge}`
 
   return {
     value,
@@ -850,8 +888,8 @@ function getViewDescriptionString(view: View): string {
   return ''
 }
 
-/** Build root cell style string from view metadata (title, description, notation) for round-trip. */
-function buildRootCellStyle(view: View): string {
+/** Build root cell style string from view metadata (title, description, notation) for round-trip; when profile is 'leanix' adds likec4ViewId, likec4ProjectId, bridgeManaged. */
+function buildRootCellStyle(view: View, options: GenerateDrawioOptions | undefined): string {
   const viewTitle = getViewTitle(view)
   const viewDesc = getViewDescriptionString(view)
   const viewDescEnc = viewDesc.trim() !== '' ? encodeURIComponent(viewDesc.trim()) : ''
@@ -864,6 +902,12 @@ function buildRootCellStyle(view: View): string {
     viewDescEnc !== '' ? `likec4ViewDescription=${viewDescEnc};` : '',
     viewNotationEnc !== '' ? `likec4ViewNotation=${viewNotationEnc};` : '',
   ]
+  if (options?.profile === 'leanix') {
+    rootParts.push('bridgeManaged=true', `likec4ViewId=${encodeURIComponent(view.id)}`)
+    if (options.projectId != null && options.projectId !== '') {
+      rootParts.push(`likec4ProjectId=${encodeURIComponent(options.projectId)}`)
+    }
+  }
   return rootParts.join('')
 }
 
@@ -892,6 +936,9 @@ function drawioArrow(arrow: string | undefined | null): string {
   }
 }
 
+/** Draw.io export profile: default (round-trip) or leanix (bridge-managed metadata for LeanIX interoperability). */
+export type DrawioExportProfile = 'default' | 'leanix'
+
 /** Optional overrides for round-trip (e.g. from parsed comment blocks). Keys are node/edge ids from the view. */
 export type GenerateDrawioOptions = {
   /** Node id -> bbox to use instead of viewmodel layout */
@@ -912,6 +959,15 @@ export type GenerateDrawioOptions = {
    * Set for deterministic output (e.g. tests, content-addressable storage).
    */
   modified?: string
+  /**
+   * Export profile. When 'leanix', adds bridge-managed metadata (likec4Id, likec4Kind, likec4ViewId,
+   * likec4ProjectId, likec4RelationId, bridgeManaged) for round-trip and LeanIX interoperability.
+   */
+  profile?: DrawioExportProfile
+  /** Project id (included when profile is 'leanix' as likec4ProjectId). */
+  projectId?: string
+  /** Optional mapping of element kind -> LeanIX fact sheet type (included when profile is 'leanix' as leanixFactSheetType on vertices). */
+  leanixFactSheetTypeByKind?: Record<string, string>
 }
 
 /** Result of layout phase: bboxes, offsets, and shared styling so cell-building phase stays readable. */
@@ -1202,7 +1258,7 @@ function generateDiagramContent(
     )
   }
 
-  const rootCellStyle = buildRootCellStyle(view)
+  const rootCellStyle = buildRootCellStyle(view, options)
 
   const allCells = [
     `<mxCell id="${defaultParentId}" value="" style="${rootCellStyle}" vertex="1" parent="${rootId}">

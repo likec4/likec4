@@ -148,6 +148,34 @@ test('parse DrawIO to LikeC4 - UserObject with link=data:page/id,likec4-<viewId>
   expect(result).toMatchSnapshot()
 })
 
+const drawioWithBridgeManagedIds = `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile>
+  <diagram>
+    <mxGraphModel><root>
+      <mxCell id="0" />
+      <mxCell id="1" vertex="1" parent="0"><mxGeometry width="800" height="600" as="geometry" /></mxCell>
+      <mxCell id="2" value="Frontend" style="shape=rectangle;likec4Id=Frontend;fillColor=#dae8fc;" vertex="1" parent="1">
+        <mxGeometry x="50" y="50" width="100" height="50" as="geometry" />
+      </mxCell>
+      <mxCell id="3" value="Backend" style="shape=rectangle;likec4Id=Backend;fillColor=#d5e8d4;" vertex="1" parent="1">
+        <mxGeometry x="50" y="150" width="100" height="50" as="geometry" />
+      </mxCell>
+      <mxCell id="4" value="calls" style="likec4RelationId=rel-1;strokeColor=#6c8ebf;" edge="1" parent="1" source="2" target="3">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </root></mxGraphModel>
+  </diagram>
+</mxfile>`
+
+test('parse DrawIO to LikeC4 - bridge-managed likec4Id yields FQN identity and likec4RelationId is preserved on edge', () => {
+  const result = parseDrawioToLikeC4(drawioWithBridgeManagedIds)
+  expect(result).toContain('Frontend')
+  expect(result).toContain('Backend')
+  expect(result).toContain('Frontend -> Backend')
+  expect(result).not.toContain('Frontend_1')
+  expect(result).not.toContain('Backend_1')
+})
+
 const drawioTwoTabs = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile>
   <diagram name="overview">
