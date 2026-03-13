@@ -5,32 +5,48 @@ import { $ } from 'zx'
 
 const outDir = 'test-results/drawio-export'
 const sourceDir = 'src/likec4'
-/** Absolute path so CLI resolves workspace regardless of process cwd (CI runner). */
-const sourceDirAbs = resolve(process.cwd(), sourceDir)
+/** Project root: run CLI with cwd here so workspace resolution finds likec4.config and .c4 files (CI and local). */
+const projectRoot = resolve(process.cwd(), sourceDir)
+/** Output dir absolute so it works when cwd is projectRoot. */
+const outDirAbs = resolve(process.cwd(), outDir)
 const emptyWorkspaceDir = 'test-results/empty-workspace'
-/** Project id from e2e/src/likec4/likec4.config.ts (name: 'e2e') so export targets the correct project when workspace has multiple. */
+/** Project id from e2e/src/likec4/likec4.config.ts (name: 'e2e'). */
 const projectId = 'e2e'
 
 function isDrawioFile(entry: { isFile: () => boolean; name: string }): boolean {
   return entry.isFile() && entry.name.endsWith('.drawio')
 }
 
-// Skip: likec4 from package.tgz reports "no LikeC4 sources found" for export drawio in CI; likec4 build
-// with same path passes. e2e/src/likec4 exists with .c4 sources. To fix: run with --verbose in CI and
-// inspect workspace path and Langium scan, or run e2e against local likec4 (not tgz).
-test.skip(
-  'LikeC4 CLI - export drawio produces .drawio file with mxfile (SKIPPED: CI tgz path resolution issue)',
+test(
+  'LikeC4 CLI - export drawio produces .drawio file with mxfile',
   { timeout: 30000 },
   async ({ expect }) => {
-    rmSync(outDir, { recursive: true, force: true })
-    mkdirSync(outDir, { recursive: true })
-    await $`likec4 export drawio ${sourceDirAbs} -o ${outDir} --project ${projectId}`.quiet()
-    const entries = readdirSync(outDir, { withFileTypes: true })
+    rmSync(outDirAbs, { recursive: true, force: true })
+    mkdirSync(outDirAbs, { recursive: true })
+    await $({ cwd: projectRoot })`likec4 export drawio . -o ${outDirAbs} --project ${projectId}`.quiet()
+    const entries = readdirSync(outDirAbs, { withFileTypes: true })
     const drawioFiles = entries.filter(isDrawioFile).sort((a, b) => a.name.localeCompare(b.name))
     expect(drawioFiles.length).toBeGreaterThan(0)
-    const firstDrawioContent = readFileSync(join(outDir, drawioFiles[0]!.name), 'utf8')
+    const firstDrawioContent = readFileSync(join(outDirAbs, drawioFiles[0]!.name), 'utf8')
     expect(firstDrawioContent).toContain('<mxfile')
     expect(firstDrawioContent.length).toBeGreaterThan(200)
+  },
+)
+
+test(
+  'LikeC4 CLI - export drawio --profile leanix produces bridge-managed styles',
+  { timeout: 30000 },
+  async ({ expect }) => {
+    rmSync(outDirAbs, { recursive: true, force: true })
+    mkdirSync(outDirAbs, { recursive: true })
+    await $({ cwd: projectRoot })`likec4 export drawio . -o ${outDirAbs} --project ${projectId} --profile leanix --uncompressed`.quiet()
+    const entries = readdirSync(outDirAbs, { withFileTypes: true })
+    const drawioFiles = entries.filter(isDrawioFile).sort((a, b) => a.name.localeCompare(b.name))
+    expect(drawioFiles.length).toBeGreaterThan(0)
+    const content = readFileSync(join(outDirAbs, drawioFiles[0]!.name), 'utf8')
+    expect(content).toContain('<mxfile')
+    expect(content).toContain('bridgeManaged=true')
+    expect(content).toMatch(/likec4Id=/)
   },
 )
 

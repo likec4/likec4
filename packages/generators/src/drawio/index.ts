@@ -1,6 +1,7 @@
 export {
   buildDrawioExportOptionsForViews,
   buildDrawioExportOptionsFromSource,
+  type DrawioExportProfile,
   type DrawioViewModelLike,
   generateDrawio,
   generateDrawioEditUrl,
