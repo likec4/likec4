@@ -1,5 +1,13 @@
+/// <reference path="./drawio-dist-ambient.ts" />
+/**
+ * DrawIO parse tests — boundary (Clean Code: Fronteiras).
+ * - Parse helpers (getAllDiagrams, parseDrawioToLikeC4, …) from built dist so runtime matches production (e.g. actor shape).
+ * - decompressDrawioDiagram from ./parse-drawio to avoid Vitest re-export "is not a function" when using the barrel.
+ * - parseDrawioRoundtripComments is cast to DrawioRoundtripData | null because the ambient declaration uses a generic type for CI typecheck without dist; runtime is DrawioRoundtripData.
+ */
 import pako from 'pako'
 import { describe, expect, test } from 'vitest'
+import type { DrawioRoundtripData } from './parse-drawio'
 import { decompressDrawioDiagram } from './parse-drawio'
 import {
   getAllDiagrams,
@@ -235,15 +243,15 @@ views { view v1 { include * } }
 // A|B [[50,40],[150,40]]
 // </likec4.edge.waypoints>
 `
-    const data = parseDrawioRoundtripComments(c4WithComments)
+    const data = parseDrawioRoundtripComments(c4WithComments) as DrawioRoundtripData | null
     expect(data).not.toBeNull()
-    expect(data!['layoutByView']['v1']?.['nodes']?.['A']).toEqual({ x: 10, y: 20, width: 100, height: 50 })
-    expect(data!['layoutByView']['v1']?.['nodes']?.['B']).toEqual({ x: 200, y: 20, width: 80, height: 40 })
-    expect(data!['strokeColorByFqn']['A']).toBe('#6c8ebf')
-    expect(data!['strokeColorByFqn']['B']).toBe('#82b366')
-    expect(data!['strokeWidthByFqn']['A']).toBe('2')
-    expect(data!['strokeWidthByFqn']['B']).toBe('1')
-    expect(data!['edgeWaypoints']['A|B']).toEqual([
+    expect(data!.layoutByView['v1']?.nodes?.['A']).toEqual({ x: 10, y: 20, width: 100, height: 50 })
+    expect(data!.layoutByView['v1']?.nodes?.['B']).toEqual({ x: 200, y: 20, width: 80, height: 40 })
+    expect(data!.strokeColorByFqn['A']).toBe('#6c8ebf')
+    expect(data!.strokeColorByFqn['B']).toBe('#82b366')
+    expect(data!.strokeWidthByFqn['A']).toBe('2')
+    expect(data!.strokeWidthByFqn['B']).toBe('1')
+    expect(data!.edgeWaypoints['A|B']).toEqual([
       [50, 40],
       [150, 40],
     ])
