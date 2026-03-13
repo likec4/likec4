@@ -58,7 +58,7 @@ const client = new LeanixApiClient({
   baseUrl: 'https://app.leanix.net',
   requestDelayMs: 200,
 })
-const result = await syncToLeanix(manifest, leanixDryRun, client, { idempotent: true })
+const result = await syncToLeanix(manifest, dryRun, client, { idempotent: true })
 // result.manifest has external.leanix.factSheetId per entity
 const mapping = manifestToDrawioLeanixMapping(result.manifest)
 // Use mapping.likec4IdToLeanixFactSheetId for Draw.io round-trip

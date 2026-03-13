@@ -2,7 +2,8 @@
  * @likec4/leanix-bridge
  *
  * Bridge from LikeC4 semantic model to LeanIX-shaped inventory artifacts.
- * Dry-run only; no live LeanIX sync. LikeC4 remains canonical.
+ * Supports dry-run artifacts, optional LeanIX API sync (LeanixApiClient, syncToLeanix),
+ * and Draw.io round-trip helpers (manifestToDrawioLeanixMapping). LikeC4 remains canonical.
  */
 
 export {
