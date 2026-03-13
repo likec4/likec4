@@ -97,6 +97,8 @@ export interface DrawioCell {
   customData?: string
   /** From mxGeometry Array/mxPoint (edge waypoints; JSON array of [x,y][]) */
   edgePoints?: string
+  /** From style key "shape" (e.g. actor, person) for kind/shape inference when raw style string is unavailable */
+  shapeFromStyle?: string
 }
 
 /** Edge cell with required source and target; use after filtering with isEdgeWithEndpoints. */
@@ -352,6 +354,10 @@ function buildCellOptionalFields(params: {
   if (params.source != null && params.source !== '') optional.source = params.source
   if (params.target != null && params.target !== '') optional.target = params.target
   if (params.style != null && params.style !== '') optional.style = params.style
+  else if (params.styleMap.has('shape')) {
+    // Fallback: raw style string may be missing from attrs (e.g. parsing path); ensure kind/shape inference can run
+    optional.style = `shape=${params.styleMap.get('shape')};`
+  }
   if (x !== undefined) optional.x = x
   if (y !== undefined) optional.y = y
   if (width !== undefined) optional.width = width
@@ -384,6 +390,8 @@ function buildCellOptionalFields(params: {
   if (metadata != null && edge) optional.metadata = metadata
   if (likec4Id != null && vertex) optional.likec4Id = likec4Id
   if (likec4RelationId != null && edge) optional.likec4RelationId = likec4RelationId
+  const shapeFromStyle = params.styleMap.get('shape')?.trim()
+  if (shapeFromStyle != null && shapeFromStyle !== '' && vertex) optional.shapeFromStyle = shapeFromStyle
   if (userData.customData != null) optional.customData = userData.customData
   if (edge) {
     const pts = parseEdgePoints(fullTag)
@@ -426,7 +434,7 @@ function buildCellFromMxCell(
     edge,
     navigateTo,
   })
-  return { id, vertex, edge, ...optional } as DrawioCell
+  return { id, vertex, edge, ...(style != null && style !== '' ? { style } : {}), ...optional } as DrawioCell
 }
 
 /** Extract one mxCell from xml starting at tagStart. Returns attrs, inner, fullTag and next search index, or null. */
@@ -560,16 +568,25 @@ function likec4LineType(
 /**
  * Infer LikeC4 element kind from DrawIO shape style. When parent is a container (container=1), child is component.
  * Explicit container=1 in style → system (context box); others default to container unless actor/swimlane.
+ * Uses shapeFromStyle when raw style string is missing (e.g. for round-trip fidelity).
  */
 function inferKind(
   style: string | undefined,
   parentCell?: DrawioCell,
+  shapeFromStyle?: string,
 ): 'actor' | 'system' | 'container' | 'component' {
   const s = style?.toLowerCase() ?? ''
+  const shape = shapeFromStyle?.toLowerCase().trim()
+  const isActorShape = (): boolean =>
+    s.includes('umlactor') ||
+    s.includes('shape=person') ||
+    s.includes('shape=actor') ||
+    shape === 'actor' ||
+    shape === 'person'
   switch (true) {
-    case !style:
+    case !style && !shapeFromStyle:
       return parentCell?.style?.toLowerCase().includes('container=1') ? 'component' : 'container'
-    case s.includes('umlactor') || s.includes('shape=person') || s.includes('shape=actor'):
+    case isActorShape():
       return 'actor'
     case s.includes('swimlane'):
     case s.includes('container=1'):
@@ -581,12 +598,13 @@ function inferKind(
   }
 }
 
-/** Infer LikeC4 shape from DrawIO style when possible (person, cylinder, document, etc.). */
-function inferShape(style: string | undefined): string | undefined {
-  if (!style) return undefined
-  const s = style.toLowerCase()
+/** Infer LikeC4 shape from DrawIO style (or shapeFromStyle) when possible (person, cylinder, document, etc.). */
+function inferShape(style: string | undefined, shapeFromStyle?: string): string | undefined {
+  const s = style?.toLowerCase() ?? ''
+  const shape = shapeFromStyle?.toLowerCase().trim()
   // Actor/person shape (export may use shape=actor or shape=umlActor; legacy may have shape=person)
   if (s.includes('shape=actor') || s.includes('shape=person') || s.includes('umlactor')) return 'person'
+  if (shape === 'actor' || shape === 'person') return 'person'
   if (s.includes('shape=cylinder') || s.includes('cylinder3')) return 'cylinder'
   if (s.includes('shape=document')) return 'document'
   if (s.includes('shape=rectangle') && s.includes('rounded')) return 'rectangle'
@@ -821,7 +839,7 @@ function pushElementStyleBlock(
 ): void {
   const border = cell.border?.trim()
   const opacityVal = cell.opacity
-  const shapeOverride = inferShape(cell.style)
+  const shapeOverride = inferShape(cell.style, cell.shapeFromStyle)
   const sizeVal = cell.size?.trim()
   const paddingVal = cell.padding?.trim()
   const textSizeVal = cell.textSize?.trim()
@@ -935,7 +953,7 @@ function elementHasBody(
     !!colorName ||
     !!cell.border?.trim() ||
     !!cell.opacity ||
-    !!inferShape(cell.style) ||
+    !!inferShape(cell.style, cell.shapeFromStyle) ||
     !!cell.size ||
     !!cell.padding ||
     !!cell.textSize ||
@@ -991,7 +1009,7 @@ function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string
   const cell = ctx.idToCell.get(cellId)
   if (!cell) return
   const parentCell = cell.parent ? ctx.byId.get(cell.parent) : undefined
-  const kind = inferKind(cell.style, parentCell)
+  const kind = inferKind(cell.style, parentCell, cell.shapeFromStyle)
   const rawTitle = (cell.value && cell.value.trim()) || ''
   const title = stripHtml(rawTitle) ||
     (ctx.containerIdToTitle.get(cell.id) ?? ctx.containerIdToTitle.get(cellId) ?? '') ||
