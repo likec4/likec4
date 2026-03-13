@@ -101,7 +101,7 @@ const fakeActorView: ProcessedView<aux.Unknown> = {
   rules: [{ exprs: [{ wildcard: true }], isInclude: true }],
   title: 'Actors',
   width: 300,
-} as ProcessedView<aux.Unknown>
+} as unknown as ProcessedView<aux.Unknown>
 
 /** Build layouted view models for generateDrawioMulti from processed views (DRY in specs). */
 function getLayoutedViewmodels(views: ProcessedView<aux.Unknown>[]): DrawioViewModelLike[] {

@@ -146,7 +146,7 @@ function extractStyleFromAttrsFallback(attrs: string): string | undefined {
   const lower = attrs.toLowerCase()
   let i = lower.indexOf('style')
   while (i !== -1) {
-    const prev = i === 0 ? ' ' : attrs[i - 1]
+    const prev = i === 0 ? ' ' : (attrs[i - 1] ?? ' ')
     if (!isAttrBoundaryChar(prev)) {
       i = lower.indexOf('style', i + 1)
       continue

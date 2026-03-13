@@ -52,6 +52,7 @@ apps/playground/src/**/*.js
 apps/playground/src/**/*.d.ts
 packages/*/src/**/*.js
 packages/*/src/**/*.d.ts
+!packages/generators/src/drawio/dist-index.d.ts
 
 vite.config.ts.timestamp*
 vitest.config.ts.timestamp*
