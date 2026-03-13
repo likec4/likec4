@@ -17,7 +17,7 @@ function createMockClient(
         const id = existingByKey.get(key)
         return {
           allFactSheets: {
-            edges: id ? [{ node: { id, name, type } }] : [],
+            edges: id ? [{ node: { id, name: String(name), type: String(type) } }] : [],
           },
         }
       }
@@ -60,7 +60,7 @@ describe('planSyncToLeanix', () => {
     const { dryRun } = createDefaultDryRun()
     const cloudFs = dryRun.factSheets.find(f => f.likec4Id === 'cloud')!
     const existingByKey = new Map<string, string>()
-    existingByKey.set(`${cloudFs.name}|${cloudFs.type}`, 'existing-leanix-id-123')
+    existingByKey.set(`${String(cloudFs.name)}|${String(cloudFs.type)}`, 'existing-leanix-id-123')
     const client = createMockClient(existingByKey)
 
     const plan = await planSyncToLeanix(dryRun, client, { generatedAt: FIXED_DATE, idempotent: true })
@@ -78,7 +78,7 @@ describe('planSyncToLeanix', () => {
     const { dryRun } = createDefaultDryRun()
     const cloudFs = dryRun.factSheets.find(f => f.likec4Id === 'cloud')!
     const existingByKey = new Map<string, string>()
-    existingByKey.set(`${cloudFs.name}|${cloudFs.type}`, 'existing-leanix-id-123')
+    existingByKey.set(`${String(cloudFs.name)}|${String(cloudFs.type)}`, 'existing-leanix-id-123')
     const client = createMockClient(existingByKey)
 
     const plan = await planSyncToLeanix(dryRun, client, { generatedAt: FIXED_DATE, idempotent: false })

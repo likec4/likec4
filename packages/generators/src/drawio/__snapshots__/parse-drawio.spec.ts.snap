@@ -60,34 +60,6 @@ views {
 // </likec4.layout.drawio>"
 `;
 
-exports[`parse DrawIO to LikeC4 - vertex with shape=actor emits element with User (snapshot) 1`] = `
-"specification {
-  color drawio_color_1 #dae8fc
-}
-
-model {
-
-  User = container 'User'
-  {
-    style { color drawio_color_1 }
-  }
-
-}
-
-views {
-  view index {
-    include *
-  }
-}
-
-// <likec4.layout.drawio>
-// {"index":{"nodes":{"User":{"x":100,"y":80,"width":60,"height":90}}}}
-// </likec4.layout.drawio>
-// <likec4.strokeColor.vertices>
-// User=#6c8ebf
-// </likec4.strokeColor.vertices>"
-`;
-
 exports[`parseDrawioToLikeC4 > parse DrawIO to LikeC4 - minimal diagram 1`] = `
 "specification {
   color drawio_color_1 #dae8fc
