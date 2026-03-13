@@ -1642,6 +1642,34 @@ importers:
         specifier: catalog:vitest
         version: 4.0.18(@types/node@22.19.11)(@vitest/ui@4.0.18)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
 
+  packages/leanix-bridge:
+    dependencies:
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
+      remeda:
+        specifier: catalog:utils
+        version: 2.33.6
+    devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
+      '@likec4/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.19.11
+      obuild:
+        specifier: catalog:obuild
+        version: 0.4.27(@typescript/native-preview@7.0.0-dev.20260208.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: catalog:vitest
+        version: 4.0.18(@types/node@22.19.11)(@vitest/ui@4.0.18)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
+
   packages/likec4:
     dependencies:
       '@hpcc-js/wasm-graphviz':
