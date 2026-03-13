@@ -93,8 +93,10 @@ function buildPlanSummary(
 }
 
 export interface PlanSyncToLeanixOptions {
-  /** If true, plan assumes idempotent sync (look up by name+type to decide create vs update). Default: true. */
+  /** If true, plan assumes idempotent sync (look up by likec4IdAttribute or name+type to decide create vs update). Default: true. */
   idempotent?: boolean
+  /** Custom attribute key for likec4Id lookup; when set, plan uses it for idempotent resolution. */
+  likec4IdAttribute?: string
   /** ISO timestamp for the plan. Default: new Date().toISOString() */
   generatedAt?: string
 }
@@ -127,6 +129,42 @@ async function findFactSheetByNameAndType(
     }
   `
   const data = await client.graphql<AllFactSheetsResult>(query, { name, type })
+  const edges = data.allFactSheets?.edges ?? []
+  const first = edges[0]?.node
+  return first?.id ?? null
+}
+
+/**
+ * GraphQL: search fact sheets by custom attribute (e.g. likec4Id) for idempotent lookup.
+ * Uses facetFilters when likec4IdAttribute is set so distinct LikeC4 elements resolve to the correct LeanIX fact sheet.
+ * Returns null when not found; throws on API/network error.
+ */
+async function findFactSheetByLikec4IdAttribute(
+  client: LeanixApiClient,
+  attributeKey: string,
+  likec4Id: string,
+): Promise<string | null> {
+  type AllFactSheetsResult = {
+    allFactSheets?: {
+      edges?: Array<{
+        node?: { id?: string }
+      }>
+    }
+  }
+  type FilterInput = {
+    facetFilters?: Array<{ facetKey: string; operator: string; keys: string[] }>
+  }
+  const query = `
+    query FindFactSheetByAttribute($filter: FilterInput!) {
+      allFactSheets(filter: $filter) {
+        edges { node { id } }
+      }
+    }
+  `
+  const filter: FilterInput = {
+    facetFilters: [{ facetKey: attributeKey, operator: 'OR', keys: [likec4Id] }],
+  }
+  const data = await client.graphql<AllFactSheetsResult>(query, { filter })
   const edges = data.allFactSheets?.edges ?? []
   const first = edges[0]?.node
   return first?.id ?? null
@@ -181,16 +219,12 @@ async function createRelation(
       }
     }
   `
-  try {
-    const data = await client.graphql<CreateResult>(mutation, {
-      source: sourceFactSheetId,
-      target: targetFactSheetId,
-      type: relationType,
-    })
-    return data.createRelation?.relation?.id ?? null
-  } catch {
-    return null
-  }
+  const data = await client.graphql<CreateResult>(mutation, {
+    source: sourceFactSheetId,
+    target: targetFactSheetId,
+    type: relationType,
+  })
+  return data.createRelation?.relation?.id ?? null
 }
 
 /** Applies LeanIX fact sheet IDs to manifest entities; returns new entities object. */
@@ -235,7 +269,11 @@ async function syncFactSheetsToLeanix(
     try {
       let factSheetId: string | null = null
       if (idempotent) {
-        factSheetId = await findFactSheetByNameAndType(client, fs.name, fs.type)
+        if (likec4IdAttribute) {
+          factSheetId = await findFactSheetByLikec4IdAttribute(client, likec4IdAttribute, fs.likec4Id)
+        } else {
+          factSheetId = await findFactSheetByNameAndType(client, fs.name, fs.type)
+        }
         if (factSheetId) factSheetsReused++
       }
       if (!factSheetId) {
@@ -312,13 +350,21 @@ export async function planSyncToLeanix(
   options: PlanSyncToLeanixOptions = {},
 ): Promise<SyncPlan> {
   const idempotent = options.idempotent ?? true
+  const likec4IdAttribute = options.likec4IdAttribute
   const generatedAt = options.generatedAt ?? new Date().toISOString()
   const errors: string[] = []
   const factSheetPlans: SyncPlan['factSheetPlans'] = []
 
   for (const fs of leanixDryRun.factSheets) {
     try {
-      const existingId = idempotent ? await findFactSheetByNameAndType(client, fs.name, fs.type) : null
+      let existingId: string | null = null
+      if (idempotent) {
+        if (likec4IdAttribute) {
+          existingId = await findFactSheetByLikec4IdAttribute(client, likec4IdAttribute, fs.likec4Id)
+        } else {
+          existingId = await findFactSheetByNameAndType(client, fs.name, fs.type)
+        }
+      }
       factSheetPlans.push(buildFactSheetPlanEntry(fs, existingId))
     } catch (e) {
       errors.push(`Fact sheet ${fs.likec4Id} (${String(fs.name)}): ${toErrorMessage(e)}`)
