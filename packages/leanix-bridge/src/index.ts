@@ -55,8 +55,16 @@ export { LeanixApiClient } from './leanix-api-client'
 export type { LeanixApiClientConfig, GraphQLResponse } from './leanix-api-client'
 export { LeanixApiError } from './leanix-api-client'
 
-export { syncToLeanix } from './sync-to-leanix'
-export type { SyncToLeanixOptions, SyncToLeanixResult } from './sync-to-leanix'
+export { planSyncToLeanix, syncToLeanix } from './sync-to-leanix'
+export type {
+  PlanSyncToLeanixOptions,
+  SyncPlan,
+  SyncPlanFactSheetEntry,
+  SyncPlanRelationEntry,
+  SyncPlanSummary,
+  SyncToLeanixOptions,
+  SyncToLeanixResult,
+} from './sync-to-leanix'
 
 export { manifestToDrawioLeanixMapping } from './drawio-leanix-roundtrip'
 export type { DrawioLeanixMapping } from './drawio-leanix-roundtrip'

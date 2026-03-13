@@ -3,6 +3,7 @@
 Bridge from the LikeC4 semantic model to LeanIX-shaped inventory artifacts. LikeC4 remains the canonical source of truth.
 
 - **Dry-run**: identity manifest, LeanIX-shaped artifacts (fact sheets + relations), configurable mapping.
+- **Sync plan** (optional): `planSyncToLeanix(dryRun, client)` queries LeanIX (read-only) and returns a plan artifact describing what would be created vs updated; use before live sync to review changes.
 - **Live sync** (optional): `syncToLeanix(manifest, dryRun, client)` to create/update fact sheets and relations in the LeanIX API (auth, rate limiting, idempotency).
 - **Draw.io ↔ LeanIX**: `manifestToDrawioLeanixMapping(manifest)` for round-trip mapping (likec4Id ↔ LeanIX fact sheet id) after sync.
 
@@ -46,9 +47,27 @@ Then run:
 likec4 gen leanix-dry-run
 ```
 
+### Optional: sync plan (review before sync)
+
+Before pushing to LeanIX, you can produce a **sync plan** that queries LeanIX (read-only) to see what would be created vs updated:
+
+```ts
+import { LeanixApiClient, planSyncToLeanix } from '@likec4/leanix-bridge'
+
+const client = new LeanixApiClient({
+  apiToken: process.env.LEANIX_API_TOKEN!,
+  baseUrl: 'https://app.leanix.net',
+  requestDelayMs: 200,
+})
+const plan = await planSyncToLeanix(dryRun, client, { idempotent: true })
+// plan.summary: { factSheetsToCreate, factSheetsToUpdate, relationsToCreate }
+// plan.factSheetPlans: [{ likec4Id, name, type, action: 'create'|'update', existingFactSheetId? }]
+// Write plan to out/bridge/sync-plan.json for review, then run sync
+```
+
 ### Optional: sync to LeanIX API
 
-After generating the dry-run artifacts, you can push them to LeanIX (requires an API token):
+After generating the dry-run artifacts (and optionally the sync plan), you can push them to LeanIX (requires an API token):
 
 ```ts
 import { LeanixApiClient, syncToLeanix, manifestToDrawioLeanixMapping } from '@likec4/leanix-bridge'
@@ -70,6 +89,7 @@ const mapping = manifestToDrawioLeanixMapping(result.manifest)
 - **`toLeanixInventoryDryRun(model, options?)`** – builds LeanIX-shaped fact sheets and relations (no live IDs).
 - **`toReport(manifest, leanixDryRun)`** – builds a summary report with counts and artifact names.
 - **`LeanixApiClient(config)`** – GraphQL client with Bearer auth and rate limiting (`apiToken`, `baseUrl?`, `requestDelayMs?`).
+- **`planSyncToLeanix(leanixDryRun, client, options?)`** – queries LeanIX (read-only) and returns a **sync plan** (`SyncPlan`): per–fact sheet and per-relation actions (`create` / `update`), summary counts, and any query errors. Use before `syncToLeanix` to review what would change. Options: `idempotent?`, `generatedAt?`.
 - **`syncToLeanix(manifest, leanixDryRun, client, options?)`** – syncs dry-run to LeanIX API; returns updated manifest with `external.leanix.factSheetId` and relation IDs. Options: `idempotent?`, `likec4IdAttribute?`.
 - **`manifestToDrawioLeanixMapping(manifest)`** – returns `{ likec4IdToLeanixFactSheetId, relationKeyToLeanixRelationId }` for Draw.io bridge-managed export or re-import from LeanIX.
 

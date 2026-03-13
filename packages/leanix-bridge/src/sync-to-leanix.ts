@@ -1,6 +1,7 @@
 /**
  * Sync bridge manifest + LeanIX dry-run inventory to the LeanIX API.
  * Creates or updates fact sheets and relations; returns manifest with external LeanIX IDs.
+ * Supports a read-only "plan" step that queries LeanIX to produce a sync plan artifact (Phase 2).
  */
 
 import type { BridgeManifest, CanonicalId } from './contracts'
@@ -27,9 +28,85 @@ export interface SyncToLeanixResult {
   errors: string[]
 }
 
+/** Single fact sheet entry in a sync plan: what would happen when syncing. */
+export interface SyncPlanFactSheetEntry {
+  likec4Id: string
+  name: string
+  type: string
+  /** 'create' = not found in LeanIX; 'update' = found by name+type (idempotent). */
+  action: 'create' | 'update'
+  /** Set when action is 'update': existing LeanIX fact sheet id. */
+  existingFactSheetId?: string
+}
+
+/** Single relation entry in a sync plan (relations are always created when source/target exist). */
+export interface SyncPlanRelationEntry {
+  likec4RelationId: string
+  sourceLikec4Id: string
+  targetLikec4Id: string
+  type: string
+  action: 'create'
+}
+
+/** Summary counts for a sync plan. */
+export interface SyncPlanSummary {
+  factSheetsToCreate: number
+  factSheetsToUpdate: number
+  relationsToCreate: number
+}
+
+/** Sync plan artifact: what would be created/updated in LeanIX (no writes; uses API only to read existing). */
+export interface SyncPlan {
+  generatedAt: string
+  projectId: string
+  mappingProfile: string
+  summary: SyncPlanSummary
+  factSheetPlans: SyncPlanFactSheetEntry[]
+  relationPlans: SyncPlanRelationEntry[]
+  /** Errors from read-only queries (e.g. auth, rate limit). Plan may be partial. */
+  errors: string[]
+}
+
+function buildFactSheetPlanEntry(
+  fs: LeanixFactSheetDryRun,
+  existingFactSheetId: string | null,
+): SyncPlanFactSheetEntry {
+  const action = existingFactSheetId ? 'update' : 'create'
+  return {
+    likec4Id: fs.likec4Id,
+    name: fs.name,
+    type: fs.type,
+    action,
+    ...(existingFactSheetId ? { existingFactSheetId } : {}),
+  }
+}
+
+function buildPlanSummary(
+  factSheetPlans: SyncPlanFactSheetEntry[],
+  relationPlans: SyncPlanRelationEntry[],
+): SyncPlanSummary {
+  return {
+    factSheetsToCreate: factSheetPlans.filter(p => p.action === 'create').length,
+    factSheetsToUpdate: factSheetPlans.filter(p => p.action === 'update').length,
+    relationsToCreate: relationPlans.length,
+  }
+}
+
+export interface PlanSyncToLeanixOptions {
+  /** If true, plan assumes idempotent sync (look up by name+type to decide create vs update). Default: true. */
+  idempotent?: boolean
+  /** ISO timestamp for the plan. Default: new Date().toISOString() */
+  generatedAt?: string
+}
+
 const LEANIX_PROVIDER = 'leanix' as const
 
-/** GraphQL: search fact sheets by name and type (for idempotency). */
+/** Normalise caught value to a string for error reporting (Clean Code: context in errors). */
+function toErrorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err)
+}
+
+/** GraphQL: search fact sheets by name and type (for idempotency). Returns null only when not found; throws on API/network error. */
 async function findFactSheetByNameAndType(
   client: LeanixApiClient,
   name: string,
@@ -49,14 +126,10 @@ async function findFactSheetByNameAndType(
       }
     }
   `
-  try {
-    const data = await client.graphql<AllFactSheetsResult>(query, { name, type })
-    const edges = data.allFactSheets?.edges ?? []
-    const first = edges[0]?.node
-    return first?.id ?? null
-  } catch {
-    return null
-  }
+  const data = await client.graphql<AllFactSheetsResult>(query, { name, type })
+  const edges = data.allFactSheets?.edges ?? []
+  const first = edges[0]?.node
+  return first?.id ?? null
 }
 
 /** GraphQL: create fact sheet (name, type, optional patches for description and custom likec4Id). */
@@ -171,7 +244,7 @@ async function syncFactSheetsToLeanix(
       }
       if (factSheetId) likec4IdToFactSheetId.set(fs.likec4Id, factSheetId)
     } catch (e) {
-      errors.push(`Fact sheet ${fs.likec4Id} (${fs.name}): ${e instanceof Error ? e.message : String(e)}`)
+      errors.push(`Fact sheet ${fs.likec4Id} (${fs.name}): ${toErrorMessage(e)}`)
     }
   }
 
@@ -219,7 +292,7 @@ async function syncRelationsToLeanix(
             continue
           }
         } catch (e) {
-          errors.push(`Relation ${rel.compositeKey}: ${e instanceof Error ? e.message : String(e)}`)
+          errors.push(`Relation ${rel.compositeKey}: ${toErrorMessage(e)}`)
         }
       }
     }
@@ -227,6 +300,49 @@ async function syncRelationsToLeanix(
   }
 
   return { updatedRelations, relationsCreated, errors }
+}
+
+/**
+ * Produces a sync plan by querying LeanIX for existing fact sheets (read-only; no creates/updates).
+ * Use before syncToLeanix to review what would be created vs updated. Phase 2 dry-run sync planning.
+ */
+export async function planSyncToLeanix(
+  leanixDryRun: LeanixInventoryDryRun,
+  client: LeanixApiClient,
+  options: PlanSyncToLeanixOptions = {},
+): Promise<SyncPlan> {
+  const idempotent = options.idempotent ?? true
+  const generatedAt = options.generatedAt ?? new Date().toISOString()
+  const errors: string[] = []
+  const factSheetPlans: SyncPlan['factSheetPlans'] = []
+
+  for (const fs of leanixDryRun.factSheets) {
+    try {
+      const existingId = idempotent ? await findFactSheetByNameAndType(client, fs.name, fs.type) : null
+      factSheetPlans.push(buildFactSheetPlanEntry(fs, existingId))
+    } catch (e) {
+      errors.push(`Fact sheet ${fs.likec4Id} (${fs.name}): ${toErrorMessage(e)}`)
+      factSheetPlans.push(buildFactSheetPlanEntry(fs, null))
+    }
+  }
+
+  const relationPlans: SyncPlan['relationPlans'] = leanixDryRun.relations.map(rel => ({
+    likec4RelationId: rel.likec4RelationId,
+    sourceLikec4Id: rel.sourceLikec4Id,
+    targetLikec4Id: rel.targetLikec4Id,
+    type: rel.type,
+    action: 'create' as const,
+  }))
+
+  return {
+    generatedAt,
+    projectId: leanixDryRun.projectId,
+    mappingProfile: leanixDryRun.mappingProfile,
+    summary: buildPlanSummary(factSheetPlans, relationPlans),
+    factSheetPlans,
+    relationPlans,
+    errors,
+  }
 }
 
 /**

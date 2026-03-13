@@ -1,70 +1,32 @@
-exports[`bridge artifacts (golden snapshot) > manifest.json shape 1`] = `
-Object {
-  "bridgeVersion": "0.1.0",
-  "entities": Object {
-    "cloud": Object {
-      "canonicalId": "cloud",
-      "external": Object {},
-    },
-    "cloud.backend": Object {
-      "canonicalId": "cloud.backend",
-      "external": Object {},
-    },
-    "cloud.backend.api": Object {
-      "canonicalId": "cloud.backend.api",
-      "external": Object {},
-    },
-  },
-  "generatedAt": "2025-01-15T12:00:00.000Z",
-  "mappingProfile": "snapshot",
-  "manifestVersion": "1.0",
-  "projectId": "test-project",
-  "relations": Array [
-    Object {
-      "compositeKey": "cloud|cloud.backend|r1",
-      "external": Object {},
-      "relationId": "r1",
-      "sourceFqn": "cloud",
-      "targetFqn": "cloud.backend",
-    },
-    Object {
-      "compositeKey": "cloud.backend|cloud.backend.api|r2",
-      "external": Object {},
-      "relationId": "r2",
-      "sourceFqn": "cloud.backend",
-      "targetFqn": "cloud.backend.api",
-    },
-  ],
-  "views": Object {
-    "index": Object {
-      "external": Object {},
-      "viewId": "index",
-    },
-    "landscape": Object {
-      "external": Object {},
-      "viewId": "landscape",
-    },
-  },
-}
-`;
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`bridge artifacts (golden snapshot) > leanix-dry-run.json shape 1`] = `
-Object {
-  "factSheets": Array [
-    Object {
+{
+  "factSheets": [
+    {
+      "description": undefined,
       "likec4Id": "cloud",
+      "metadata": undefined,
       "name": "Cloud",
+      "tags": undefined,
+      "technology": undefined,
       "type": "Application",
     },
-    Object {
+    {
+      "description": undefined,
       "likec4Id": "cloud.backend",
+      "metadata": undefined,
       "name": "Backend",
+      "tags": undefined,
+      "technology": undefined,
       "type": "ITComponent",
     },
-    Object {
+    {
+      "description": undefined,
       "likec4Id": "cloud.backend.api",
+      "metadata": undefined,
       "name": "API",
-      "tags": Array [
+      "tags": [
         "core",
       ],
       "technology": "Node",
@@ -74,31 +36,83 @@ Object {
   "generatedAt": "2025-01-15T12:00:00.000Z",
   "mappingProfile": "snapshot",
   "projectId": "test-project",
-  "relations": Array [
-    Object {
+  "relations": [
+    {
       "likec4RelationId": "r1",
       "sourceLikec4Id": "cloud",
       "targetLikec4Id": "cloud.backend",
+      "title": "contains",
       "type": "depends on",
     },
-    Object {
+    {
       "likec4RelationId": "r2",
       "sourceLikec4Id": "cloud.backend",
       "targetLikec4Id": "cloud.backend.api",
+      "title": "contains",
       "type": "depends on",
     },
   ],
 }
 `;
 
+exports[`bridge artifacts (golden snapshot) > manifest.json shape 1`] = `
+{
+  "bridgeVersion": "0.1.0",
+  "entities": {
+    "cloud": {
+      "canonicalId": "cloud",
+      "external": {},
+    },
+    "cloud.backend": {
+      "canonicalId": "cloud.backend",
+      "external": {},
+    },
+    "cloud.backend.api": {
+      "canonicalId": "cloud.backend.api",
+      "external": {},
+    },
+  },
+  "generatedAt": "2025-01-15T12:00:00.000Z",
+  "manifestVersion": "1.0",
+  "mappingProfile": "snapshot",
+  "projectId": "test-project",
+  "relations": [
+    {
+      "compositeKey": "cloud|cloud.backend|r1",
+      "external": {},
+      "relationId": "r1",
+      "sourceFqn": "cloud",
+      "targetFqn": "cloud.backend",
+    },
+    {
+      "compositeKey": "cloud.backend|cloud.backend.api|r2",
+      "external": {},
+      "relationId": "r2",
+      "sourceFqn": "cloud.backend",
+      "targetFqn": "cloud.backend.api",
+    },
+  ],
+  "views": {
+    "index": {
+      "external": {},
+      "viewId": "index",
+    },
+    "landscape": {
+      "external": {},
+      "viewId": "landscape",
+    },
+  },
+}
+`;
+
 exports[`bridge artifacts (golden snapshot) > report.json shape 1`] = `
-Object {
-  "artifacts": Object {
+{
+  "artifacts": {
     "leanixDryRun": "leanix-dry-run.json",
     "manifest": "manifest.json",
   },
   "bridgeVersion": "0.1.0",
-  "counts": Object {
+  "counts": {
     "entities": 3,
     "factSheets": 3,
     "leanixRelations": 2,
@@ -106,8 +120,8 @@ Object {
     "views": 2,
   },
   "generatedAt": "2025-01-15T12:00:00.000Z",
-  "mappingProfile": "default",
-  "projectId": "test-project",
   "manifestVersion": "1.0",
+  "mappingProfile": "snapshot",
+  "projectId": "test-project",
 }
 `;

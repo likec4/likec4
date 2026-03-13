@@ -1,6 +1,6 @@
 import pako from 'pako'
 import { describe, expect, test } from 'vitest'
-// Imports from dist so parse and actor/shape inference are tested against the built package.
+// Import from dist to test built package; CI must run build before test (see .github/workflows/checks.yaml).
 import {
   getAllDiagrams,
   decompressDrawioDiagram,

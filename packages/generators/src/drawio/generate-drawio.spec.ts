@@ -2,8 +2,8 @@ import { Builder } from '@likec4/core/builder'
 import type { aux, ProcessedView } from '@likec4/core/types'
 import { describe, expect, test } from 'vitest'
 import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
+import type { DrawioViewModelLike } from '@likec4/generators'
 import {
-  type DrawioViewModelLike,
   generateDrawio,
   generateDrawioMulti,
   getAllDiagrams,
