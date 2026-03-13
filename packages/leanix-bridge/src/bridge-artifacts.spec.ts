@@ -24,4 +24,15 @@ describe('bridge artifacts (golden snapshot)', () => {
     const report = toReport(manifest, dryRun)
     expect(report).toMatchSnapshot()
   })
+
+  it('toReport throws with precise mismatch when projectId or mappingProfile differ', () => {
+    const manifest = toBridgeManifest(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
+    const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'other' })
+    expect(() => toReport(manifest, dryRun)).toThrow(/Mismatch:.*mappingProfile/)
+    const dryRunWrongProject = toLeanixInventoryDryRun(createFixtureModel({ projectId: 'other-project' }), {
+      generatedAt: fixedDate,
+      mappingProfile: 'snapshot',
+    })
+    expect(() => toReport(manifest, dryRunWrongProject)).toThrow(/Mismatch:.*projectId/)
+  })
 })

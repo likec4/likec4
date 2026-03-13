@@ -25,6 +25,39 @@ const defaultOptions: Omit<Required<ToBridgeManifestOptions>, 'generatedAt'> = {
   mappingProfile: 'default',
 }
 
+/** Builds manifest entities map from model elements (canonicalId + empty external). */
+function buildManifestEntities(model: BridgeModelInput): Record<CanonicalId, ManifestEntity> {
+  const entities: Record<CanonicalId, ManifestEntity> = {}
+  for (const el of model.elements()) {
+    entities[el.id] = { canonicalId: el.id, external: {} }
+  }
+  return entities
+}
+
+/** Builds manifest views map from model views (viewId + empty external). */
+function buildManifestViews(model: BridgeModelInput): Record<ViewId, ManifestView> {
+  const views: Record<ViewId, ManifestView> = {}
+  for (const v of model.views()) {
+    views[v.id] = { viewId: v.id, external: {} }
+  }
+  return views
+}
+
+/** Builds manifest relations array from model relationships (compositeKey + empty external). */
+function buildManifestRelations(model: BridgeModelInput): ManifestRelation[] {
+  const relations: ManifestRelation[] = []
+  for (const rel of model.relationships()) {
+    relations.push({
+      relationId: rel.id,
+      sourceFqn: rel.source.id,
+      targetFqn: rel.target.id,
+      compositeKey: `${rel.source.id}|${rel.target.id}|${rel.id}`,
+      external: {},
+    })
+  }
+  return relations
+}
+
 /**
  * Produces the identity manifest from a LikeC4 model (canonical IDs + placeholders for external IDs).
  * Pure function; no live API calls.
@@ -39,42 +72,14 @@ export function toBridgeManifest(
     generatedAt: options.generatedAt ?? new Date().toISOString(),
   }
 
-  const entities: Record<CanonicalId, ManifestEntity> = {}
-  for (const el of model.elements()) {
-    entities[el.id] = {
-      canonicalId: el.id,
-      external: {},
-    }
-  }
-
-  const views: Record<ViewId, ManifestView> = {}
-  for (const v of model.views()) {
-    views[v.id] = {
-      viewId: v.id,
-      external: {},
-    }
-  }
-
-  const relations: ManifestRelation[] = []
-  for (const rel of model.relationships()) {
-    const compositeKey = `${rel.source.id}|${rel.target.id}|${rel.id}`
-    relations.push({
-      relationId: rel.id,
-      sourceFqn: rel.source.id,
-      targetFqn: rel.target.id,
-      compositeKey,
-      external: {},
-    })
-  }
-
   return {
     manifestVersion: opts.manifestVersion,
     generatedAt: opts.generatedAt,
     bridgeVersion: opts.bridgeVersion,
     mappingProfile: opts.mappingProfile,
     projectId: model.projectId,
-    entities,
-    views,
-    relations,
+    entities: buildManifestEntities(model),
+    views: buildManifestViews(model),
+    relations: buildManifestRelations(model),
   }
 }

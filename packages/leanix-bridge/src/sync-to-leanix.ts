@@ -138,25 +138,27 @@ function applyLeanixIdsToEntities(
   return out
 }
 
-/**
- * Syncs the dry-run inventory to LeanIX: creates or finds fact sheets, creates relations,
- * and returns an updated manifest with external LeanIX IDs.
- */
-export async function syncToLeanix(
-  manifest: BridgeManifest,
-  leanixDryRun: LeanixInventoryDryRun,
+/** Result of syncing fact sheets: map of likec4Id → factSheetId and counts/errors. */
+interface SyncFactSheetsResult {
+  likec4IdToFactSheetId: Map<CanonicalId, string>
+  factSheetsCreated: number
+  factSheetsUpdated: number
+  errors: string[]
+}
+
+/** Creates or finds fact sheets in LeanIX; returns map and counts. Single responsibility. */
+async function syncFactSheetsToLeanix(
   client: LeanixApiClient,
-  options: SyncToLeanixOptions = {},
-): Promise<SyncToLeanixResult> {
-  const idempotent = options.idempotent ?? true
-  const likec4IdAttribute = options.likec4IdAttribute
-  const errors: string[] = []
+  factSheets: LeanixInventoryDryRun['factSheets'],
+  idempotent: boolean,
+  likec4IdAttribute: string | undefined,
+): Promise<SyncFactSheetsResult> {
   const likec4IdToFactSheetId = new Map<CanonicalId, string>()
+  const errors: string[] = []
   let factSheetsCreated = 0
   let factSheetsUpdated = 0
-  let relationsCreated = 0
 
-  for (const fs of leanixDryRun.factSheets) {
+  for (const fs of factSheets) {
     try {
       let factSheetId: string | null = null
       if (idempotent) {
@@ -173,15 +175,33 @@ export async function syncToLeanix(
     }
   }
 
-  const updatedEntities = applyLeanixIdsToEntities(manifest.entities, likec4IdToFactSheetId)
+  return { likec4IdToFactSheetId, factSheetsCreated, factSheetsUpdated, errors }
+}
 
+/** Result of syncing relations: updated relations array and count/errors. */
+interface SyncRelationsResult {
+  updatedRelations: BridgeManifest['relations']
+  relationsCreated: number
+  errors: string[]
+}
+
+/** Creates relations in LeanIX and returns manifest relations with external IDs. Single responsibility. */
+async function syncRelationsToLeanix(
+  client: LeanixApiClient,
+  manifestRelations: BridgeManifest['relations'],
+  leanixRelations: LeanixInventoryDryRun['relations'],
+  likec4IdToFactSheetId: Map<CanonicalId, string>,
+): Promise<SyncRelationsResult> {
   const updatedRelations: BridgeManifest['relations'] = []
-  for (const rel of manifest.relations) {
+  const errors: string[] = []
+  let relationsCreated = 0
+
+  for (const rel of manifestRelations) {
     const sourceId = likec4IdToFactSheetId.get(rel.sourceFqn)
     const targetId = likec4IdToFactSheetId.get(rel.targetFqn)
     const existing = rel.external?.[LEANIX_PROVIDER]
     if (sourceId && targetId && !existing?.relationId) {
-      const dryRel = leanixDryRun.relations.find(
+      const dryRel = leanixRelations.find(
         r =>
           r.sourceLikec4Id === rel.sourceFqn &&
           r.targetLikec4Id === rel.targetFqn &&
@@ -206,15 +226,46 @@ export async function syncToLeanix(
     updatedRelations.push(rel)
   }
 
+  return { updatedRelations, relationsCreated, errors }
+}
+
+/**
+ * Syncs the dry-run inventory to LeanIX: creates or finds fact sheets, creates relations,
+ * and returns an updated manifest with external LeanIX IDs.
+ */
+export async function syncToLeanix(
+  manifest: BridgeManifest,
+  leanixDryRun: LeanixInventoryDryRun,
+  client: LeanixApiClient,
+  options: SyncToLeanixOptions = {},
+): Promise<SyncToLeanixResult> {
+  const idempotent = options.idempotent ?? true
+  const likec4IdAttribute = options.likec4IdAttribute
+
+  const fsResult = await syncFactSheetsToLeanix(
+    client,
+    leanixDryRun.factSheets,
+    idempotent,
+    likec4IdAttribute,
+  )
+  const updatedEntities = applyLeanixIdsToEntities(manifest.entities, fsResult.likec4IdToFactSheetId)
+
+  const relResult = await syncRelationsToLeanix(
+    client,
+    manifest.relations,
+    leanixDryRun.relations,
+    fsResult.likec4IdToFactSheetId,
+  )
+
   return {
     manifest: {
       ...manifest,
       entities: updatedEntities,
-      relations: updatedRelations,
+      relations: relResult.updatedRelations,
     },
-    factSheetsCreated,
-    factSheetsUpdated,
-    relationsCreated,
-    errors,
+    factSheetsCreated: fsResult.factSheetsCreated,
+    factSheetsUpdated: fsResult.factSheetsUpdated,
+    relationsCreated: relResult.relationsCreated,
+    errors: [...fsResult.errors, ...relResult.errors],
   }
 }

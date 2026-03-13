@@ -39,20 +39,20 @@ export class LeanixApiError extends Error {
   }
 }
 
-/** Last request timestamp for throttling. */
-let lastRequestTime = 0
-
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 /**
  * LeanIX GraphQL API client with Bearer auth and optional rate limiting.
+ * Throttle state is per instance so multiple clients do not share delay.
  */
 export class LeanixApiClient {
   private readonly baseUrl: string
   private readonly apiToken: string
   private readonly requestDelayMs: number
+  /** Last request timestamp for throttling (per instance). */
+  private lastRequestTime = 0
 
   constructor(config: LeanixApiClientConfig) {
     this.apiToken = config.apiToken
@@ -66,11 +66,11 @@ export class LeanixApiClient {
    */
   async graphql<T = unknown>(query: string, variables?: Record<string, unknown>): Promise<T> {
     const now = Date.now()
-    const elapsed = now - lastRequestTime
+    const elapsed = now - this.lastRequestTime
     if (elapsed < this.requestDelayMs) {
       await sleep(this.requestDelayMs - elapsed)
     }
-    lastRequestTime = Date.now()
+    this.lastRequestTime = Date.now()
 
     const url = `${this.baseUrl}/services/pathfinder/v1/graphql`
     const res = await fetch(url, {

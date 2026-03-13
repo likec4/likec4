@@ -16,22 +16,38 @@ export interface DrawioLeanixMapping {
 }
 
 /**
+ * Collects likec4Id → LeanIX factSheetId from manifest entities that have LeanIX external.
+ * Single responsibility: one level of abstraction for entity extraction.
+ */
+function collectLikec4IdToLeanixFactSheetId(manifest: BridgeManifest): Record<CanonicalId, string> {
+  const out: Record<CanonicalId, string> = {}
+  for (const [canonicalId, entity] of Object.entries(manifest.entities)) {
+    const leanixId = entity.external?.[LEANIX_PROVIDER]?.factSheetId ?? entity.external?.[LEANIX_PROVIDER]?.externalId
+    if (leanixId) out[canonicalId] = leanixId
+  }
+  return out
+}
+
+/**
+ * Collects compositeKey → LeanIX relationId from manifest relations that have LeanIX external.
+ * Single responsibility: one level of abstraction for relation extraction.
+ */
+function collectRelationKeyToLeanixRelationId(manifest: BridgeManifest): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const rel of manifest.relations) {
+    const leanixRelId = rel.external?.[LEANIX_PROVIDER]?.relationId
+    if (leanixRelId) out[rel.compositeKey] = leanixRelId
+  }
+  return out
+}
+
+/**
  * Builds a mapping from manifest (after sync) for use in Draw.io bridge-managed export
  * or when re-importing from LeanIX. Elements can store leanixFactSheetId in style for round-trip.
  */
 export function manifestToDrawioLeanixMapping(manifest: BridgeManifest): DrawioLeanixMapping {
-  const likec4IdToLeanixFactSheetId: Record<CanonicalId, string> = {}
-  const relationKeyToLeanixRelationId: Record<string, string> = {}
-
-  for (const [canonicalId, entity] of Object.entries(manifest.entities)) {
-    const leanixId = entity.external?.[LEANIX_PROVIDER]?.factSheetId ?? entity.external?.[LEANIX_PROVIDER]?.externalId
-    if (leanixId) likec4IdToLeanixFactSheetId[canonicalId] = leanixId
+  return {
+    likec4IdToLeanixFactSheetId: collectLikec4IdToLeanixFactSheetId(manifest),
+    relationKeyToLeanixRelationId: collectRelationKeyToLeanixRelationId(manifest),
   }
-
-  for (const rel of manifest.relations) {
-    const leanixRelId = rel.external?.[LEANIX_PROVIDER]?.relationId
-    if (leanixRelId) relationKeyToLeanixRelationId[rel.compositeKey] = leanixRelId
-  }
-
-  return { likec4IdToLeanixFactSheetId, relationKeyToLeanixRelationId }
 }

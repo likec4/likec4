@@ -300,6 +300,14 @@ describe('DrawIO export profile leanix (bridge-managed metadata)', () => {
     expect(content).toMatch(/leanixFactSheetType=([^;]+)/)
   })
 
+  test('profile leanix without projectId adds bridgeManaged and likec4ViewId but no likec4ProjectId', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), { compressed: false, profile: 'leanix' })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).toContain('bridgeManaged=true')
+    expect(content).toMatch(/likec4ViewId=([^;"&]+)/)
+    expect(content).not.toContain('likec4ProjectId=')
+  })
+
   test('profile default does not add bridgeManaged or likec4Id', () => {
     const xml = generateDrawio(mockViewModel(fakeDiagram), { compressed: false })
     const content = getAllDiagrams(xml)[0]!.content

@@ -37,18 +37,11 @@ export interface ToLeanixInventoryDryRunOptions {
   generatedAt?: string
 }
 
-/**
- * Produces LeanIX-shaped inventory artifacts (fact sheets + relations) from a LikeC4 model.
- * Pure function; no live API. Use for dry-run and planning.
- */
-export function toLeanixInventoryDryRun(
+/** Builds LeanIX fact sheet dry-run list from model elements and mapping. */
+function buildFactSheetsFromModel(
   model: BridgeModelInput,
-  options: ToLeanixInventoryDryRunOptions = {},
-): LeanixInventoryDryRun {
-  const mapping = mergeWithDefault(options.mapping)
-  const generatedAt = options.generatedAt ?? new Date().toISOString()
-  const mappingProfile = options.mappingProfile ?? 'default'
-
+  mapping: ReturnType<typeof mergeWithDefault>,
+): LeanixFactSheetDryRun[] {
   const factSheets: LeanixFactSheetDryRun[] = []
   for (const el of model.elements()) {
     const fsType = getFactSheetType(el.kind, mapping)
@@ -63,24 +56,44 @@ export function toLeanixInventoryDryRun(
       metadata: Object.keys(meta).length > 0 ? { ...meta } : undefined,
     })
   }
+  return factSheets
+}
 
+/** Builds LeanIX relation dry-run list from model relationships and mapping. */
+function buildRelationsFromModel(
+  model: BridgeModelInput,
+  mapping: ReturnType<typeof mergeWithDefault>,
+): LeanixRelationDryRun[] {
   const relations: LeanixRelationDryRun[] = []
   for (const rel of model.relationships()) {
-    const relType = getRelationType(rel.kind, mapping)
     relations.push({
-      type: relType,
+      type: getRelationType(rel.kind, mapping),
       likec4RelationId: rel.id,
       sourceLikec4Id: rel.source.id,
       targetLikec4Id: rel.target.id,
       title: rel.title ?? rel.kind ?? undefined,
     })
   }
+  return relations
+}
+
+/**
+ * Produces LeanIX-shaped inventory artifacts (fact sheets + relations) from a LikeC4 model.
+ * Pure function; no live API. Use for dry-run and planning.
+ */
+export function toLeanixInventoryDryRun(
+  model: BridgeModelInput,
+  options: ToLeanixInventoryDryRunOptions = {},
+): LeanixInventoryDryRun {
+  const mapping = mergeWithDefault(options.mapping)
+  const generatedAt = options.generatedAt ?? new Date().toISOString()
+  const mappingProfile = options.mappingProfile ?? 'default'
 
   return {
     generatedAt,
     projectId: model.projectId,
     mappingProfile,
-    factSheets,
-    relations,
+    factSheets: buildFactSheetsFromModel(model, mapping),
+    relations: buildRelationsFromModel(model, mapping),
   }
 }

@@ -21,6 +21,23 @@ export interface BridgeReport {
   }
 }
 
+/** Builds error message listing which coherence fields mismatched (projectId, mappingProfile). */
+function buildCoherenceErrorMessage(
+  manifest: BridgeManifest,
+  leanixDryRun: LeanixInventoryDryRun,
+): string {
+  const mismatches: string[] = []
+  if (manifest.projectId !== leanixDryRun.projectId) {
+    mismatches.push(`projectId (manifest: ${manifest.projectId}, leanixDryRun: ${leanixDryRun.projectId})`)
+  }
+  if (manifest.mappingProfile !== leanixDryRun.mappingProfile) {
+    mismatches.push(
+      `mappingProfile (manifest: ${manifest.mappingProfile}, leanixDryRun: ${leanixDryRun.mappingProfile})`,
+    )
+  }
+  return `Manifest and LeanIX dry-run must belong to the same run. Mismatch: ${mismatches.join('; ')}`
+}
+
 export function toReport(
   manifest: BridgeManifest,
   leanixDryRun: LeanixInventoryDryRun,
@@ -29,9 +46,7 @@ export function toReport(
     manifest.projectId !== leanixDryRun.projectId ||
     manifest.mappingProfile !== leanixDryRun.mappingProfile
   ) {
-    throw new Error(
-      'Manifest and LeanIX dry-run artifacts must belong to the same project/profile',
-    )
+    throw new Error(buildCoherenceErrorMessage(manifest, leanixDryRun))
   }
 
   return {
