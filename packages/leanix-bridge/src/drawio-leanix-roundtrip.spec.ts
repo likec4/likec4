@@ -22,7 +22,7 @@ describe('manifestToDrawioLeanixMapping', () => {
     const manifest = minimalManifest()
     const mapping = manifestToDrawioLeanixMapping(manifest)
 
-    expect(Object.keys(mapping.likec4IdToLeanixFactSheetId)).toHaveLength(0)
+    expect(Object.keys(mapping.likec4IdToLeanixId)).toHaveLength(0)
     expect(Object.keys(mapping.relationKeyToLeanixRelationId)).toHaveLength(0)
   })
 
@@ -44,7 +44,7 @@ describe('manifestToDrawioLeanixMapping', () => {
     })
     const mapping = manifestToDrawioLeanixMapping(manifest)
 
-    expect(Object.keys(mapping.likec4IdToLeanixFactSheetId)).toHaveLength(0)
+    expect(Object.keys(mapping.likec4IdToLeanixId)).toHaveLength(0)
     expect(Object.keys(mapping.relationKeyToLeanixRelationId)).toHaveLength(0)
   })
 
@@ -59,7 +59,7 @@ describe('manifestToDrawioLeanixMapping', () => {
     })
     const mapping = manifestToDrawioLeanixMapping(manifest)
 
-    expect(mapping.likec4IdToLeanixFactSheetId['cloud']).toBe('fs-123')
+    expect(mapping.likec4IdToLeanixId['cloud']).toBe('fs-123')
     expect(Object.keys(mapping.relationKeyToLeanixRelationId)).toHaveLength(0)
   })
 
@@ -71,7 +71,7 @@ describe('manifestToDrawioLeanixMapping', () => {
     })
     const mapping = manifestToDrawioLeanixMapping(manifest)
 
-    expect(mapping.likec4IdToLeanixFactSheetId['node']).toBe('leanix-456')
+    expect(mapping.likec4IdToLeanixId['node']).toBe('leanix-456')
   })
 
   it('one relation with LeanIX relationId is included', () => {
@@ -92,8 +92,8 @@ describe('manifestToDrawioLeanixMapping', () => {
     })
     const mapping = manifestToDrawioLeanixMapping(manifest)
 
-    expect(mapping.likec4IdToLeanixFactSheetId['a']).toBe('fs-a')
-    expect(mapping.likec4IdToLeanixFactSheetId['b']).toBe('fs-b')
+    expect(mapping.likec4IdToLeanixId['a']).toBe('fs-a')
+    expect(mapping.likec4IdToLeanixId['b']).toBe('fs-b')
     expect(mapping.relationKeyToLeanixRelationId['a|b|r1']).toBe('rel-789')
   })
 
@@ -116,6 +116,6 @@ describe('manifestToDrawioLeanixMapping', () => {
     const mapping = manifestToDrawioLeanixMapping(manifest)
 
     expect(Object.keys(mapping.relationKeyToLeanixRelationId)).toHaveLength(0)
-    expect(Object.keys(mapping.likec4IdToLeanixFactSheetId)).toHaveLength(2)
+    expect(Object.keys(mapping.likec4IdToLeanixId)).toHaveLength(2)
   })
 })

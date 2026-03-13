@@ -199,7 +199,14 @@ function extractStyleFromTagContent(fullTag: string, maxScan = STYLE_VALUE_SCAN_
 /** True when style or fullTag (lowercased) indicates actor/person shape. */
 function styleOrTagIndicatesActor(style: string | undefined, fullTagLower: string): boolean {
   const s = style?.toLowerCase() ?? ''
-  return s.includes('shape=actor') || s.includes('shape=person') || fullTagLower.includes('shape=actor') || fullTagLower.includes('shape=person')
+  return (
+    s.includes('shape=actor') ||
+    s.includes('shape=person') ||
+    s.includes('umlactor') ||
+    fullTagLower.includes('shape=actor') ||
+    fullTagLower.includes('shape=person') ||
+    fullTagLower.includes('umlactor')
+  )
 }
 
 /** Find end of XML open tag (first unquoted '>'). Handles both single- and double-quoted attributes. Avoids regex for S5852. */
@@ -710,7 +717,14 @@ function makeUniqueName(usedNames: Set<string>): (base: string) => string {
   }
 }
 
-/** Assign FQNs to element vertices: bridge-managed likec4Id first, then root, hierarchy, orphans (DRY). */
+/** True when s is a syntactically valid dot-separated FQN (each segment non-empty, identifier-like). */
+function isValidFqn(s: string): boolean {
+  if (s.length === 0) return false
+  const segments = s.split('.')
+  return segments.every(seg => /^[a-zA-Z0-9_-]+$/.test(seg))
+}
+
+/** Assign FQNs to element vertices: bridge-managed likec4Id first (when valid), then root, hierarchy, orphans (DRY). */
 function assignFqnsToElementVertices(
   idToFqn: Map<string, string>,
   elementVertices: DrawioCell[],
@@ -720,11 +734,22 @@ function assignFqnsToElementVertices(
   usedNames: Set<string>,
 ): void {
   const baseName = (v: DrawioCell) => v.value ?? containerIdToTitle.get(v.id) ?? v.id
-  for (const v of elementVertices) {
+  const idToVertex = new Map(elementVertices.map(v => [v.id, v]))
+  const depth = (v: DrawioCell): number =>
+    v.parent == null || !idToVertex.has(v.parent) ? 0 : 1 + depth(idToVertex.get(v.parent)!)
+  const byDepth = [...elementVertices].sort((a, b) => depth(a) - depth(b))
+  for (const v of byDepth) {
     const bridgeId = v.likec4Id?.trim()
-    if (bridgeId) {
-      idToFqn.set(v.id, bridgeId)
-      for (const segment of bridgeId.split('.')) usedNames.add(segment)
+    if (bridgeId && isValidFqn(bridgeId)) {
+      const parentFqn = v.parent ? idToFqn.get(v.parent) : undefined
+      const useBridgeId =
+        parentFqn === undefined
+          ? isRootParent(v.parent)
+          : bridgeId.startsWith(parentFqn + '.') && bridgeId.length > parentFqn.length + 1
+      if (useBridgeId) {
+        idToFqn.set(v.id, bridgeId)
+        for (const segment of bridgeId.split('.')) usedNames.add(segment)
+      }
     }
   }
   for (const v of elementVertices) {

@@ -80,7 +80,7 @@ const client = new LeanixApiClient({
 const result = await syncToLeanix(manifest, dryRun, client, { idempotent: true })
 // result.manifest has external.leanix.factSheetId per entity
 const mapping = manifestToDrawioLeanixMapping(result.manifest)
-// Use mapping.likec4IdToLeanixFactSheetId for Draw.io round-trip
+// Use mapping.likec4IdToLeanixId for Draw.io round-trip
 ```
 
 ## API
@@ -91,7 +91,7 @@ const mapping = manifestToDrawioLeanixMapping(result.manifest)
 - **`LeanixApiClient(config)`** – GraphQL client with Bearer auth and rate limiting (`apiToken`, `baseUrl?`, `requestDelayMs?`).
 - **`planSyncToLeanix(leanixDryRun, client, options?)`** – queries LeanIX (read-only) and returns a **sync plan** (`SyncPlan`): per–fact sheet and per-relation actions (`create` / `update`), summary counts, and any query errors. Use before `syncToLeanix` to review what would change. Options: `idempotent?`, `generatedAt?`.
 - **`syncToLeanix(manifest, leanixDryRun, client, options?)`** – syncs dry-run to LeanIX API; returns updated manifest with `external.leanix.factSheetId` and relation IDs. Options: `idempotent?`, `likec4IdAttribute?`.
-- **`manifestToDrawioLeanixMapping(manifest)`** – returns `{ likec4IdToLeanixFactSheetId, relationKeyToLeanixRelationId }` for Draw.io bridge-managed export or re-import from LeanIX.
+- **`manifestToDrawioLeanixMapping(manifest)`** – returns `{ likec4IdToLeanixId, relationKeyToLeanixRelationId }` for Draw.io bridge-managed export or re-import from LeanIX.
 
 Mapping is configurable via `options.mapping` (kinds → fact sheet types, relation kinds → relation types). LeanIX GraphQL schema varies by workspace; fact sheet types and relation types are meta-model specific.
 

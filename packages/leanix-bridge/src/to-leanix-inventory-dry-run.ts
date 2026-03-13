@@ -58,6 +58,7 @@ function buildFactSheetsFromModel(
       ...(Object.keys(meta).length > 0 && { metadata: { ...meta } }),
     })
   }
+  factSheets.sort((a, b) => a.likec4Id.localeCompare(b.likec4Id))
   return factSheets
 }
 
@@ -77,6 +78,7 @@ function buildRelationsFromModel(
       ...(titleVal != null && titleVal !== '' && { title: String(titleVal) }),
     })
   }
+  relations.sort((a, b) => a.likec4RelationId.localeCompare(b.likec4RelationId))
   return relations
 }
 
@@ -90,7 +92,7 @@ export function toLeanixInventoryDryRun(
 ): LeanixInventoryDryRun {
   const mapping = mergeWithDefault(options.mapping)
   const generatedAt = options.generatedAt ?? new Date().toISOString()
-  const mappingProfile = options.mappingProfile ?? 'default'
+  const mappingProfile = options.mappingProfile ?? (options.mapping ? 'custom' : 'default')
 
   return {
     generatedAt,

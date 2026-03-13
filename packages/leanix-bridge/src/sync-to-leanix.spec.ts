@@ -25,7 +25,7 @@ function createMockClient(
           },
         }
       }
-      return {}
+      throw new Error(`Unexpected GraphQL query in test: ${query}`)
     },
   } as LeanixApiClient
 }

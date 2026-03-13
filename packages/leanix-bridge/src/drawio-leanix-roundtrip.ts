@@ -8,18 +8,18 @@ import type { BridgeManifest, CanonicalId } from './contracts'
 
 const LEANIX_PROVIDER = 'leanix' as const
 
-/** Mapping from LikeC4 canonical id to LeanIX fact sheet id (for Draw.io cells or export). */
+/** Mapping from LikeC4 canonical id to LeanIX identity (fact sheet id or externalId for Draw.io cells or export). */
 export interface DrawioLeanixMapping {
-  likec4IdToLeanixFactSheetId: Record<CanonicalId, string>
+  likec4IdToLeanixId: Record<CanonicalId, string>
   /** Composite key (sourceFqn|targetFqn|relationId) -> LeanIX relation id. */
   relationKeyToLeanixRelationId: Record<string, string>
 }
 
 /**
- * Collects likec4Id → LeanIX factSheetId from manifest entities that have LeanIX external.
+ * Collects likec4Id → LeanIX identity (factSheetId or externalId) from manifest entities that have LeanIX external.
  * Single responsibility: one level of abstraction for entity extraction.
  */
-function collectLikec4IdToLeanixFactSheetId(manifest: BridgeManifest): Record<CanonicalId, string> {
+function collectLikec4IdToLeanixId(manifest: BridgeManifest): Record<CanonicalId, string> {
   const out: Record<CanonicalId, string> = {}
   for (const [canonicalId, entity] of Object.entries(manifest.entities)) {
     const leanixId = entity.external?.[LEANIX_PROVIDER]?.factSheetId ?? entity.external?.[LEANIX_PROVIDER]?.externalId
@@ -47,7 +47,7 @@ function collectRelationKeyToLeanixRelationId(manifest: BridgeManifest): Record<
  */
 export function manifestToDrawioLeanixMapping(manifest: BridgeManifest): DrawioLeanixMapping {
   return {
-    likec4IdToLeanixFactSheetId: collectLikec4IdToLeanixFactSheetId(manifest),
+    likec4IdToLeanixId: collectLikec4IdToLeanixId(manifest),
     relationKeyToLeanixRelationId: collectRelationKeyToLeanixRelationId(manifest),
   }
 }

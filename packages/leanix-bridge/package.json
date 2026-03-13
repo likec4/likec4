@@ -5,7 +5,7 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
-  "description": "Bridge from LikeC4 semantic model to LeanIX-shaped inventory artifacts (dry-run, no live sync)",
+  "description": "Bridge from LikeC4 semantic model to LeanIX-shaped inventory artifacts (supports optional live sync or dry-run modes)",
   "files": [
     "dist",
     "src",
