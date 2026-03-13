@@ -1,13 +1,14 @@
 import pako from 'pako'
 import { describe, expect, test } from 'vitest'
-// Import from dist to test built package; CI must run build before test (see .github/workflows/checks.yaml).
+// Import from dist to test built package (actor inference, etc.); CI must run build before test.
 import {
   getAllDiagrams,
-  decompressDrawioDiagram,
   parseDrawioRoundtripComments,
   parseDrawioToLikeC4,
   parseDrawioToLikeC4Multi,
 } from '../../dist/index.mjs'
+// decompressDrawioDiagram from source: dist ESM bundle may not expose it as named export in Vitest/Windows.
+import { decompressDrawioDiagram } from './parse-drawio'
 
 const minimalDrawio = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="test">
