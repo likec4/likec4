@@ -23,7 +23,7 @@ test(
   async ({ expect }) => {
     rmSync(outDirAbs, { recursive: true, force: true })
     mkdirSync(outDirAbs, { recursive: true })
-    await $`likec4 export drawio . -o ${outDirAbs} --project ${projectId}`.quiet().cwd(projectRoot)
+    await $({ cwd: projectRoot })`likec4 export drawio . -o ${outDirAbs} --project ${projectId}`.quiet()
     const entries = readdirSync(outDirAbs, { withFileTypes: true })
     const drawioFiles = entries.filter(isDrawioFile).sort((a, b) => a.name.localeCompare(b.name))
     expect(drawioFiles.length).toBeGreaterThan(0)
@@ -39,7 +39,7 @@ test(
   async ({ expect }) => {
     rmSync(outDirAbs, { recursive: true, force: true })
     mkdirSync(outDirAbs, { recursive: true })
-    await $`likec4 export drawio . -o ${outDirAbs} --project ${projectId} --profile leanix`.quiet().cwd(projectRoot)
+    await $({ cwd: projectRoot })`likec4 export drawio . -o ${outDirAbs} --project ${projectId} --profile leanix`.quiet()
     const entries = readdirSync(outDirAbs, { withFileTypes: true })
     const drawioFiles = entries.filter(isDrawioFile).sort((a, b) => a.name.localeCompare(b.name))
     expect(drawioFiles.length).toBeGreaterThan(0)
