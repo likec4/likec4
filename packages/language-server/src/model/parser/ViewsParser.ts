@@ -13,7 +13,6 @@ import {
 } from '../../ast'
 import { safeCall, stringHash } from '../../utils'
 import { elementRef } from '../../utils/elementRef'
-import { parseViewManualLayout } from '../../view-utils/manual-layout'
 import { removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentView } from './DeploymentViewParser'
 import type { WithPredicates } from './PredicatesParser'
@@ -109,8 +108,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
 
-      const manualLayout = parseViewManualLayout(astNode)
-
       const view: ParsedAstElementView = {
         [c4._type]: 'element',
         id: id as c4.ViewId,
@@ -124,7 +121,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           ...this.tryMap('views', body.rules, r => this.parseElementViewRule(r)),
         ],
         ...(viewOf && { viewOf }),
-        ...(manualLayout && { manualLayout }),
       }
       ViewOps.writeId(astNode, view.id)
 
@@ -285,8 +281,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
-      const manualLayout = parseViewManualLayout(astNode)
-
       const variant = find(props, ast.isDynamicViewDisplayVariantProperty)?.value
 
       return {
@@ -309,7 +303,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             return this.parseDynamicStep(n)
           }
         }),
-        ...(manualLayout && { manualLayout }),
       }
     }
 

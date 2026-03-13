@@ -11,7 +11,7 @@ import { LikeC4 } from '../../../LikeC4'
 import { type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
 import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { viteDev } from '../../../vite/vite-dev'
-import { ensureReact } from '../../ensure-react'
+import { ensurePlaywright, ensureReact } from '../../ensure-libs'
 import { path, project, useDotBin } from '../../options'
 import { takeScreenshot } from './takeScreenshot'
 
@@ -335,6 +335,7 @@ export function pngCmd(yargs: Argv) {
       invariant(args.timeout >= 1, 'timeout must be >= 1')
       invariant(args['max-attempts'] >= 1, 'max-attempts must be >= 1')
       await ensureReact()
+      await ensurePlaywright()
       const theme = args.theme ?? (args.dark ? 'dark' : 'light')
       await pngHandler(
         {

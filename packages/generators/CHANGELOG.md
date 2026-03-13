@@ -1,5 +1,51 @@
 # @likec4/generators
 
+## 1.52.0
+
+### Patch Changes
+
+- [#2685](https://github.com/likec4/likec4/pull/2685) [`a80d2e8`](https://github.com/likec4/likec4/commit/a80d2e85c8c508236262156d4ef45e28750c295c) Thanks [@sraphaz](https://github.com/sraphaz)! - Draw.io: infer shape person on re-import for round-trip fidelity
+
+  - **Import:** `inferKind()` now treats `shape=actor` as actor (alongside `umlactor` and `shape=person`). `inferShape()` returns `'person'` when the DrawIO cell style contains `shape=actor`, `shape=person`, or `umlactor`. Re-imported actor cells thus get `actor 'title'` and an explicit `style { shape person }` in the emitted .c4 source. Round-trip: export may emit person as `shape=actor` or `shape=umlActor`; import recognizes both via `inferKind()` and `inferShape()` so cells become actor with shape person.
+
+- [#2682](https://github.com/likec4/likec4/pull/2682) [`aab9343`](https://github.com/likec4/likec4/commit/aab9343f0e149d978915a13429ff367dc284937b) Thanks [@davydkov](https://github.com/davydkov)! - Fix Draw.io export rendering elements with `shape person` as ellipses instead of person/actor shapes. Fixes [#2679](https://github.com/likec4/likec4/issues/2679).
+
+- Updated dependencies [[`bc47423`](https://github.com/likec4/likec4/commit/bc474235cf31a7d42e8c4f25328a698bb7edefe3)]:
+  - @likec4/core@1.52.0
+  - @likec4/log@1.52.0
+
+## 1.51.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/core@1.51.0
+  - @likec4/log@1.51.0
+
+## 1.50.0
+
+### Minor Changes
+
+- [#2630](https://github.com/likec4/likec4/pull/2630) [`68ab5f6`](https://github.com/likec4/likec4/commit/68ab5f6652b43f2f6e52fd3cd2736cdc3672e3cf) Thanks [@sraphaz](https://github.com/sraphaz)! - Draw.io: extended round-trip (export options, waypoints, view notation)
+
+  - **Export:** Optional `GenerateDrawioOptions`: `layoutOverride`, `strokeColorByNodeId`, `strokeWidthByNodeId`. Emit element/edge customData as mxUserObject; emit edge waypoints (viewmodel points) as mxGeometry Array.
+  - **Import:** Emit `// likec4.view.notation viewId '...'` from root `likec4ViewNotation`; emit `// <likec4.edge.waypoints>` with `// src|tgt [ [x,y], … ]` for edges with mxGeometry points (single and multi-diagram).
+  - **Docs:** drawio.mdx updated with options, waypoints, customData, and comment blocks for view notation and edge waypoints.
+
+### Patch Changes
+
+- [#2639](https://github.com/likec4/likec4/pull/2639) [`871f134`](https://github.com/likec4/likec4/commit/871f134911d3a1313c62fb002f2834e94dc305d0) Thanks [@davydkov](https://github.com/davydkov)! - Enable "Export to Draw.io" in the app's export menu — opens app.diagrams.net with the current diagram pre-loaded
+
+- [#2630](https://github.com/likec4/likec4/pull/2630) [`68ab5f6`](https://github.com/likec4/likec4/commit/68ab5f6652b43f2f6e52fd3cd2736cdc3672e3cf) Thanks [@sraphaz](https://github.com/sraphaz)! - Draw.io export alignment; cross-platform postpack; language-server worker.
+
+  - **Draw.io export:** Generators and CLI export views to Draw.io (.drawio); round-trip comment blocks (layout, stroke, waypoints) and postpack behavior only. No import/parser in this PR.
+  - **Postpack:** `likec4ops postpack` copies packed tgz to package.tgz (cross-platform); all packages use it instead of `cp` so pack/lint:package works on Windows.
+  - **Language-server:** Safe error stringification in browser worker for oxlint.
+
+- Updated dependencies [[`fe468d8`](https://github.com/likec4/likec4/commit/fe468d830544e6f0051ea2203ab137d46932d11e)]:
+  - @likec4/core@1.50.0
+  - @likec4/log@1.50.0
+
 ## 1.49.0
 
 ### Patch Changes

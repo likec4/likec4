@@ -1,8 +1,13 @@
 declare module 'likec4:projects' {
   import type { ProjectId } from 'likec4/model'
+  type LandingPageConfig =
+    | { redirect: true }
+    | { include: string[] }
+    | { exclude: string[] }
   type Project = {
     id: ProjectId
     title?: string
+    landingPage?: LandingPageConfig
   }
   export const isSingleProject: boolean
   export const projects: readonly [Project, ...Project[]]
@@ -107,6 +112,11 @@ declare module 'likec4:mmd' {
 declare module 'likec4:puml' {
   export function loadPumlSources(projectId: string): Promise<{
     pumlSource(this: void, viewId: string): string
+  }>
+}
+declare module 'likec4:drawio' {
+  export function loadDrawioSources(projectId: string): Promise<{
+    drawioEditUrl(this: void, viewId: string): string
   }>
 }
 

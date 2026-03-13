@@ -45,7 +45,7 @@ describe('RelationPredicate', () => {
     )
 
     describe('model', () => {
-      it('should exclude relation when porperties match', () => {
+      it('should exclude relation when properties match', () => {
         t.expectComputedView(
           $include('a.b.c.ui -> a.b.d.api'),
           $exclude('a.b.c.ui -> a.b.d.api', { where: 'source.tag is #next' }),
@@ -55,7 +55,7 @@ describe('RelationPredicate', () => {
         })
       })
 
-      it('should exclude relation when porperties do not match', () => {
+      it('should exclude relation when properties do not match', () => {
         t.expectComputedView(
           $include('a.b.c.ui -> a.b.d.api'),
           $exclude('a.b.c.ui -> a.b.d.api', { where: 'source.tag is #alpha' }),
@@ -67,21 +67,21 @@ describe('RelationPredicate', () => {
     })
 
     describe('instance', () => {
-      it('should include relation when model porperties match', () => {
+      it('should include relation when model properties match', () => {
         t.expectComputedView($include('a.b.c.ui -> a.b.d.api', { where: 'source.tag is #next' })).toHave({
           nodes: ['a.b.c.ui', 'a.b.d', 'a.b.d.api'],
           edges: ['a.b.c.ui -> a.b.d.api'],
         })
       })
 
-      it('should include relation when deployment porperties match', () => {
+      it('should include relation when deployment properties match', () => {
         t.expectComputedView($include('a.b.c.ui -> a.b.d.api', { where: 'target.tag is #alpha' })).toHave({
           nodes: ['a.b.c.ui', 'a.b.d', 'a.b.d.api'],
           edges: ['a.b.c.ui -> a.b.d.api'],
         })
       })
 
-      it('should not include relation when neither model nor deployment porperties match', () => {
+      it('should not include relation when neither model nor deployment properties match', () => {
         t.expectComputedView($include('a.b.c.ui -> a.b.d.api', { where: 'source.tag is #alpha' })).toHave({
           nodes: [],
           edges: [],
@@ -90,14 +90,14 @@ describe('RelationPredicate', () => {
     })
 
     describe('node', () => {
-      it('should include relation when porperties match', () => {
+      it('should include relation when properties match', () => {
         t.expectComputedView($include('a.b.d.api -> a.b.d.e', { where: 'target.tag is #alpha' })).toHave({
           nodes: ['a.b.d.api', 'a.b.d.e'],
           edges: ['a.b.d.api -> a.b.d.e'],
         })
       })
 
-      it('should include relation when porperties do not match', () => {
+      it('should include relation when properties do not match', () => {
         t.expectComputedView($include('a.b.d.api -> a.b.d.e', { where: 'target.tag is #next' })).toHave({
           nodes: [],
           edges: [],

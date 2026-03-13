@@ -18,7 +18,10 @@ export const ConfigurableLayouter = {
   likec4: {
     Layouter(services: LikeC4Services): QueueGraphvizLayoter {
       logger.debug('Creating ConfigurableLayouter')
-      const layouter = new QueueGraphvizLayoter()
+      const defaultGraphviz = services.likec4.Graphviz
+      const layouter = new QueueGraphvizLayoter({
+        graphviz: defaultGraphviz,
+      })
       services.shared.workspace.ConfigurationProvider.onConfigurationSectionUpdate((update) => {
         logger.debug('Configuration update: {update}', { update })
         if (update.section !== services.LanguageMetaData.languageId) {

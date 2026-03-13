@@ -8,7 +8,7 @@ export type WithFileSystem = {
   watch?: boolean
 }
 
-export type InitOptions = {
+export interface InitOptions {
   /**
    * By default, if LikeC4 model is invalid, errors are printed to the console.
    * Disable this behavior by setting this option to false.
@@ -36,7 +36,33 @@ export type InitOptions = {
    * @default false
    */
   mcp?: false | 'stdio' | { port: number }
+
+  /**
+   * Whether to configure the logger.
+   *
+   * - `false` - don't configure the logger
+   * - `'console'` - configure the logger with console sink
+   * - `'stderr'` - configure the logger with stderr (for LSP or MCP)
+   *
+   * @default false
+   */
+  configureLogger?: false | 'console' | 'stderr'
+
+  /**
+   * The log level to use.
+   * Applied if {@link configureLogger} is not `false`
+   */
+  logLevel?: 'trace' | 'debug' | 'info' | 'warning' | 'error' | undefined
 }
+
+export const DefaultInitOptions = {
+  printErrors: true,
+  throwIfInvalid: false,
+  graphviz: 'wasm',
+  mcp: false,
+  configureLogger: false,
+  logLevel: undefined,
+} as const satisfies Required<InitOptions>
 
 export type FromWorkspaceOptions = InitOptions & {
   /**

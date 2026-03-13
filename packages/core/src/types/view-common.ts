@@ -1,9 +1,7 @@
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
-import type { NonEmptyArray } from './_common'
 import type { _stage } from './const'
 
-import type { BBox, Point, XYPoint } from '../geometry'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
 import type * as scalar from './scalar'
 import type {
@@ -85,36 +83,6 @@ export interface ViewAutoLayout {
   direction: ViewRuleAutoLayout['direction']
   rankSep?: number
   nodeSep?: number
-}
-
-/**
- * v1 Manual layout of a view, stored in the block comment to the view definition.
- * Keeping this type for backward compatibility and migration purposes.
- *
- * @deprecated Use {@link ViewManualLayoutSnapshot} instead
- */
-export type ViewManualLayout = {
-  // Object hash of previous layout
-  readonly hash: string
-  readonly x: number
-  readonly y: number
-  readonly width: number
-  readonly height: number
-  readonly autoLayout: ViewAutoLayout
-  readonly nodes: Record<string, {
-    isCompound: boolean
-    x: number
-    y: number
-    width: number
-    height: number
-  }>
-  readonly edges: Record<string, {
-    // Bezier points
-    points: NonEmptyArray<Point>
-    // Control points to adjust the edge
-    controlPoints?: NonEmptyArray<XYPoint>
-    labelBBox?: BBox
-  }>
 }
 
 export type ViewType = 'element' | 'dynamic' | 'deployment'

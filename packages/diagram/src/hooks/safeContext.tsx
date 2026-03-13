@@ -3,7 +3,7 @@ import type { DiagramApi } from '../likec4diagram/state/diagram-api'
 import type { DiagramActorRef } from '../likec4diagram/state/types'
 
 /**
- * To improve experience with HMR, we move context to separate files and use as a boundary for hoooks
+ * To improve experience with HMR, we move context to separate files and use as a boundary for hooks
  */
 const DiagramActorSafeContext = createContext<DiagramActorRef>(null as any)
 DiagramActorSafeContext.displayName = 'DiagramActorSafeContext'

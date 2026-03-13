@@ -44,6 +44,7 @@ export default defineConfig({
         baseUrl: 'https://github.com/likec4/likec4/edit/main/apps/docs/',
       },
       customCss: [
+        '@fontsource-variable/ibm-plex-sans/index.css',
         './src/styles/global.css',
       ],
       sidebar: [

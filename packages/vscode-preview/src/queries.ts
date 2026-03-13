@@ -1,19 +1,16 @@
-import { invariant } from '@likec4/core'
-import { LikeC4Model } from '@likec4/core/model'
 import type { LayoutType, ProjectId, ViewId } from '@likec4/core/types'
-import { QueryClient, queryOptions } from '@tanstack/react-query'
+import { keepPreviousData, QueryClient, queryOptions } from '@tanstack/react-query'
 import { ExtensionApi } from './vscode'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: 5 * 60 * 1000,
-      staleTime: 400,
-      retry: 2,
-      retryDelay: 500,
+      staleTime: 300,
+      retry: 1,
+      retryDelay: 300,
       networkMode: 'always',
-      experimental_prefetchInRender: true,
-      structuralSharing: false,
+      throwOnError: false,
+      refetchOnWindowFocus: false, // default: true
     },
   },
 })
@@ -33,38 +30,37 @@ export const queries = {
     queryOptions({
       queryKey: [projectId, 'model'],
       queryFn: async ({ signal }) => {
-        console.log('fetchComputedModel', projectId)
         const response = await ExtensionApi.fetchComputedModel(projectId, signal)
-        invariant(response, 'Fetch computed model, no response received')
+        if (response.model) {
+          return response.model
+        }
         if (response.error) {
           throw new Error(response.error)
         }
-        if (!response.model) {
-          throw new Error(`Project ${projectId} not found`)
-        }
-        return response.model
+        throw new Error(`Project ${projectId} not found`)
       },
-      select: (model) => LikeC4Model.create(model),
+      placeholderData: keepPreviousData,
     }),
-  fetchDiagramView: (projectId: ProjectId, viewId: ViewId, layoutType: LayoutType = 'manual') =>
+  fetchDiagramView: (projectId: ProjectId, viewId: ViewId, layoutType: LayoutType = 'manual', lastHash?: string) =>
     queryOptions({
-      queryKey: [projectId, 'diagram', viewId, layoutType],
+      queryKey: [projectId, 'diagram', viewId, layoutType, lastHash ?? ''] as const,
       queryFn: async ({ signal }) => {
-        console.log('fetchDiagramView', projectId, viewId, layoutType)
         const data = await ExtensionApi.fetchDiagramView({
           projectId,
           viewId,
           layoutType,
         }, signal)
-        invariant(data, 'Fetch diagram view, no data received')
+        if (data.view) {
+          return data.view
+        }
         if (data.error) {
           throw new Error(data.error)
         }
-        return data.view
+        throw new Error('Fetch diagram view failed, no response received')
       },
       refetchInterval: (q) => {
         if (q.isActive() && q.state.status == 'error') {
-          return 5000
+          return 10000
         }
         return false
       },

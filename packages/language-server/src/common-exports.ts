@@ -11,7 +11,7 @@ export type {
   ViewLocateResult,
 } from './model'
 
-export type { LikeC4LanguageServices } from './LikeC4LanguageServices'
+export type { FormatOptions, LikeC4LanguageServices } from './LikeC4LanguageServices'
 
 export type {
   LanguageServicesContext,
@@ -20,7 +20,8 @@ export type {
   LikeC4SharedServices,
 } from './module'
 
-export type { LikeC4Views } from './views'
+export { WithWasmGraphviz } from './views'
+export type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
 
 export type {
   LangiumDocuments,

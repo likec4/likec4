@@ -15,7 +15,8 @@ import {
   Link,
   useMatches,
 } from '@tanstack/react-router'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
+import { useCurrentProject, useCurrentViewId } from '../../hooks'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { NavigationPanel } from './NavigationPanel'
 import { SelectProject } from './SelectProject'
@@ -80,11 +81,22 @@ const enableDownload = <P extends Record<string, unknown>>(params: P): P & { dow
 })
 
 function ExportButton() {
-  // const params = useParams({ strict: false })
   const isInsideProject = useMatches({
     select: matches => matches.some(({ routeId }) => routeId === '/project/$projectId'),
   })
-  // const viewId = useCurrentViewId()
+  const project = useCurrentProject()
+  const viewId = useCurrentViewId()
+
+  const handleDrawioExport = useCallback(async () => {
+    try {
+      const { loadDrawioSources } = await import('likec4:drawio')
+      const { drawioEditUrl } = await loadDrawioSources(project.id)
+      const url = drawioEditUrl(viewId)
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } catch (error) {
+      console.error('Failed to export to Draw.io:', error)
+    }
+  }, [project.id, viewId])
 
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
@@ -151,7 +163,7 @@ function ExportButton() {
           )}>
           Export as .puml
         </MenuItem>
-        <MenuItem disabled>Export to Draw.io</MenuItem>
+        <MenuItem onClick={handleDrawioExport}>Export to Draw.io</MenuItem>
         <MenuItem disabled>Export to Miro</MenuItem>
         <MenuItem disabled>Export to Notion</MenuItem>
         {

@@ -12,6 +12,7 @@ import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
+import { drawioModule, projectDrawioModule } from './virtuals/drawio'
 import { iconsModule, projectIconsModule } from './virtuals/icons'
 import { mmdModule, projectMmdSourcesModule } from './virtuals/mmd'
 import { modelModule, projectModelModule } from './virtuals/model'
@@ -85,6 +86,7 @@ const hmrProjectVirtuals = [
   projectDotSourcesModule,
   projectMmdSourcesModule,
   projectPumlModule,
+  projectDrawioModule,
 ]
 const projectVirtuals = [
   ...hmrProjectVirtuals,
@@ -101,6 +103,7 @@ const virtuals = [
   dotModule,
   mmdModule,
   pumlModule,
+  drawioModule,
   iconsModule,
   rpcModule,
 ]
@@ -129,6 +132,8 @@ export function LikeC4VitePlugin({
         const watch = shouldDisposeOnStop = opts.watch ?? config.mode === 'development'
         const instance = await fromWorkspace(opts.workspace ?? config.root, {
           graphviz: opts.graphviz ?? 'wasm',
+          configureLogger: 'console',
+
           // printErrors: opts.printErrors ?? true,
           // throwIfInvalid: opts.throwIfInvalid ?? false,
           watch,
@@ -192,6 +197,7 @@ export function LikeC4VitePlugin({
           id: p.id,
           title: p.title,
           folder: p.folder.toString(),
+          landingPage: p.config.landingPage,
         }))
       let _projects = readProjects()
 

@@ -23,7 +23,7 @@ import {
   UriUtils,
 } from 'langium'
 import picomatch from 'picomatch'
-import { find, hasAtLeast, isEmptyish, isNullish, map, pipe, prop, purry, sort } from 'remeda'
+import { find, hasAtLeast, isEmptyish, isNullish, map, prop, purry } from 'remeda'
 import type { Tagged } from 'type-fest'
 import {
   cleanDoubleSlashes,
@@ -38,9 +38,11 @@ import {
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
+import { safeCall } from '../utils'
 
 const logger = mainLogger.getChild('projects')
 
+// string containing URI with protocol and path
 export type NormalizedUri = Tagged<string, 'NormalizedUri'>
 
 type DocOrUri = LangiumDocument | string | URI
@@ -54,7 +56,7 @@ function normalizeUri(uri: DocOrUri): NormalizedUri {
     return uri.uri.toString() as NormalizedUri
   }
   if (typeof uri === 'string') {
-    if (hasProtocol(uri)) {
+    if (hasProtocol(uri, { acceptRelative: false, strict: true })) {
       return uri as NormalizedUri
     }
     return URI.file(uri).toString() as NormalizedUri
@@ -120,8 +122,8 @@ function excludes(...args: unknown[]) {
 }
 
 /**
- * A tagged string that represents a project folder URI
- * Always has trailing slash.
+ * A tagged string that represents a project folder URI (with trailing slash).
+ * Used in `startsWith` checks to determine if a document belongs to a project.
  */
 export type ProjectFolder = Tagged<string, 'ProjectFolder'>
 export function ProjectFolder(folder: URI | string): ProjectFolder {
@@ -158,6 +160,14 @@ export interface ProjectData extends Project {
    * Normalized include configuration (paths, maxDepth, fileThreshold).
    */
   includeConfig: IncludeConfig
+}
+
+const compareProjectByFolder = (a: ProjectData, b: ProjectData) => compareUri(a.folderUri, b.folderUri)
+/**
+ * Sort projects by the number of segments in the folder path (deepest first).
+ */
+function ensureProjectsOrder(projects: ProjectData[]): ProjectData[] {
+  return projects.sort(compareProjectByFolder)
 }
 
 const DefaultProject = {
@@ -228,15 +238,6 @@ export class ProjectsManager {
    * (it is used in CLI and Vite plugin)
    */
   #defaultProjectId: ProjectId | undefined = undefined
-  /**
-   * Cached default project.
-   */
-  #defaultProject: ProjectData | undefined = undefined
-
-  // /**
-  //  * The mapping between project config files and project IDs.
-  //  */
-  // #projectIdToFolder = new BiMap<ProjectId, ProjectFolder>()
 
   /**
    * Registered projects.
@@ -251,7 +252,7 @@ export class ProjectsManager {
   #projectById = new DefaultMap((id: ProjectId): ProjectData => {
     if (id === ProjectsManager.DefaultProjectId) {
       const workspaceFolder = this.getWorkspaceFolder()
-      const configUri = UriUtils.joinPath(workspaceFolder, '.likec4rc')
+      const configUri = UriUtils.joinPath(workspaceFolder, 'likec4.config.json')
       const folder = ProjectFolder(workspaceFolder)
       return {
         id,
@@ -260,7 +261,7 @@ export class ProjectsManager {
         folderUri: URI.parse(folder),
         configUri,
         exclude: DefaultProject.exclude,
-        includeConfig: DefaultProject.includeConfig,
+        includeConfig: { ...DefaultProject.includeConfig },
       }
     }
     return nonNullable(this.#projects.find(p => p.id === id), `Project ${id} not found`)
@@ -274,7 +275,7 @@ export class ProjectsManager {
     }
     // if the document is excluded by the owner project
     if (excludes(owner, docuri)) {
-      // but included by another project
+      // and not included by another project
       return !this.#projects.some(includes(docuri))
     }
     return false
@@ -323,10 +324,9 @@ export class ProjectsManager {
     if (id === this.#defaultProjectId) {
       return
     }
-    this.#defaultProject = undefined
+    this.#defaultProjectId = undefined
     if (!id || id === ProjectsManager.DefaultProjectId) {
       logger.debug`reset default project ID`
-      this.#defaultProjectId = undefined
       return
     }
     invariant(this.#projects.find(p => p.id === id), `Project "${id}" not found`)
@@ -335,11 +335,7 @@ export class ProjectsManager {
   }
 
   get default(): ProjectData {
-    if (!this.#defaultProject) {
-      const id = this.defaultProjectId ?? ProjectsManager.DefaultProjectId
-      this.#defaultProject = this.#projectById.get(id)
-    }
-    return this.#defaultProject
+    return this.#projectById.get(this.defaultProjectId ?? ProjectsManager.DefaultProjectId)
   }
 
   get all(): NonEmptyReadonlyArray<ProjectId> {
@@ -362,7 +358,7 @@ export class ProjectsManager {
   }
 
   getProject(arg: ProjectId | LangiumDocument): ProjectData {
-    const id = typeof arg === 'string' ? arg : (arg.likec4ProjectId || this.ownerProjectId(arg))
+    const id = typeof arg === 'string' ? arg : (arg.likec4ProjectId ?? this.ownerProjectId(arg))
     return this.#projectById.get(id)
   }
 
@@ -493,21 +489,21 @@ export class ProjectsManager {
         includeConfig,
       }
 
-      this.#projects = pipe(
-        [...this.#projects, project],
-        sort(
-          (a, b) => compareUri(a.folderUri, b.folderUri),
-        ),
-      )
+      // add new project and sort
+      this.#projects = ensureProjectsOrder([...this.#projects, project])
       logger.info`register ${project.id}`
     } else {
       // if project name is changed, unregister and re-register
       if (project.config.name !== config.name) {
-        // this.#projectIdToFolder.delete(project.id)
-        // logger.info`unregister project ${project.id} folder: ${folder}`
+        logger
+          .info`project name changed from ${project.config.name} to ${config.name}`
+        logger.info`unregistering ${project.id}`
         project.id = this.uniqueProjectId(config.name)
-        logger.info`re-register ${project.id}`
+        logger.info`register ${project.id}`
       }
+
+      this.warnIfConfigOverride(project, configUri)
+
       // update fields
       project.config = config
       project.folder = folder
@@ -516,15 +512,16 @@ export class ProjectsManager {
       project.includeConfig = includeConfig
     }
 
-    this.updateIncludesExcludes(project)
+    // Ignore Errors if any
+    safeCall(() => this.updateIncludesExcludes(project))
+
+    if (this.#activeReload) {
+      // Rebuild projects will notify listeners
+      return project
+    }
 
     // Reset cached data
     this.resetCaches()
-
-    if (this.#activeReload) {
-      // Rebuild project will notify listeners
-      return project
-    }
     this.notifyListeners()
 
     await this.rebuildProject(project.id, cancelToken).catch(error => {
@@ -603,9 +600,10 @@ export class ProjectsManager {
         logger.warning('No config files found')
         return
       }
-      logger.warning('No config files found, but {count} projects were registered before', {
+      logger.warning('no config files found, but {count} projects were registered before', {
         count: this.#projects.length,
       })
+      logger.warning('reset')
     }
 
     // Sort config files hierarchically, ensuring consistent order
@@ -625,7 +623,9 @@ export class ProjectsManager {
         const restore = existing.get(uri.toString())
         if (restore) {
           logger.debug`Update failed, restore project ${restore.id}`
-          await this.registerProject(restore)
+          await this.registerProject(restore).catch(error => {
+            logger.warn(`fail to restore project ${restore.id}, ignoring`, { error })
+          })
         }
       }
     }
@@ -650,7 +650,6 @@ export class ProjectsManager {
 
   protected resetCaches(): void {
     logger.trace('resetCaches')
-    this.#defaultProject = undefined
     if (this.#defaultProjectId && !this.#projects.some(p => p.id === this.#defaultProjectId)) {
       this.#defaultProjectId = undefined
     }
@@ -674,10 +673,13 @@ export class ProjectsManager {
     const _includes = (doc: DocOrUri) => includes(project, normalizeUri(doc))
 
     const docs = this.services.workspace.LangiumDocuments
-      .resetProjectIds()
+      .userDocuments
       .filter(_includes)
+      .map(doc => doc.uri)
+      .toArray()
     // If no documents are found, return early
     if (docs.length === 0) {
+      log.debug`no documents found for project ${project.id}, skipping rebuild`
       return
     }
 
@@ -758,6 +760,11 @@ export class ProjectsManager {
 
   private updateIncludesExcludes(project: ProjectData): ProjectData {
     const config = project.config
+    // Reset first
+    delete project.includePaths
+    delete project.exclude
+
+    // Update exclude patterns
     switch (true) {
       case isNullish(config.exclude):
         project.exclude = DefaultProject.exclude
@@ -775,13 +782,10 @@ export class ProjectsManager {
         })
         break
       }
-      default:
-        delete project.exclude
     }
 
     const paths = project.includeConfig.paths
     if (!hasAtLeast(paths, 1)) {
-      delete project.includePaths
       return project
     }
 
@@ -830,5 +834,16 @@ export class ProjectsManager {
       }
     }
     return project
+  }
+
+  private warnIfConfigOverride(project: ProjectData, configUri: URI): void {
+    try {
+      const [prev, next] = map([project.configUri, configUri], UriUtils.basename)
+      if (prev !== next) {
+        logger.warn`config ${next} overrides ${prev} in folder ${project.folder}`
+      }
+    } catch {
+      // ignore
+    }
   }
 }

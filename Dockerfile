@@ -1,5 +1,5 @@
 # Stage 1: Build Graphviz
-FROM node:22.22.0-bookworm AS graphviz
+FROM node:22.22.1-bookworm AS graphviz
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -34,7 +34,7 @@ RUN apt-get update && \
     ldconfig
 
 # Stage 2: Create runner image
-FROM node:22.22.0-bookworm-slim AS runner
+FROM node:22.22.1-bookworm-slim AS runner
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -43,7 +43,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Copy Graphviz binaries
 COPY --from=graphviz /install /
 
-ARG PLAYWRIGHT_VER=1.56.1
+ARG PLAYWRIGHT_VER=1.58.2
 # Install runtime dependencies
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \

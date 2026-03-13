@@ -2,7 +2,7 @@ import type { PlaygroundActorRef } from '$state/types'
 import { createContext, use } from 'react'
 
 /**
- * To improve experience with HMR, we use `createSafeContext` as a boundary for hoooks
+ * To improve experience with HMR, we use `createSafeContext` as a boundary for hooks
  */
 export const PlaygroundActorSafeContext = createContext<PlaygroundActorRef>(null as any)
 PlaygroundActorSafeContext.displayName = 'PlaygroundActorSafeContext'

@@ -138,13 +138,77 @@ function getAttr(attrs: string, name: string): string | undefined {
   return undefined
 }
 
+/**
+ * Fallback to extract style value from attrs when getAttr(attrs, 'style') returns undefined (e.g. spacing like "style =\"").
+ * Looks for style="..." (case-insensitive, optional spaces before '=') and returns the quoted value so the cell gets style when present in XML.
+ */
+function extractStyleFromAttrsFallback(attrs: string): string | undefined {
+  const lower = attrs.toLowerCase()
+  let i = lower.indexOf('style')
+  while (i !== -1) {
+    const prev = i === 0 ? ' ' : attrs[i - 1]
+    if (!isAttrBoundaryChar(prev)) {
+      i = lower.indexOf('style', i + 1)
+      continue
+    }
+    let j = i + 5 // after "style"
+    while (j < attrs.length && isAttrBoundaryChar(attrs[j] ?? '')) j += 1
+    if (j < attrs.length && attrs[j] === '=') {
+      j += 1
+      while (j < attrs.length && isAttrBoundaryChar(attrs[j] ?? '')) j += 1
+      if (j < attrs.length && attrs[j] === '"') {
+        const valueStart = j + 1
+        const valueEnd = attrs.indexOf('"', valueStart)
+        if (valueEnd !== -1) return attrs.slice(valueStart, valueEnd)
+      }
+    }
+    i = lower.indexOf('style', i + 1)
+  }
+  return undefined
+}
+
+/** Extract style value from full open tag (e.g. from fullTag.slice(0, fullTag.indexOf('>'))). Use when attrs-based extraction missed it. */
+function extractStyleFromOpenTag(fullTag: string): string | undefined {
+  const gt = fullTag.indexOf('>')
+  if (gt === -1) return undefined
+  return getAttr(fullTag.slice(7, gt), 'style') ?? extractStyleFromAttrsFallback(fullTag.slice(7, gt))
+}
+
+/** Max fullTag length to run style re-extraction (avoids scanning huge strings). */
+const MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN = 10_000
+/** Characters to scan for style=" or style=' when re-extracting from tag (covers open tag). */
+const STYLE_VALUE_SCAN_CHARS = 1500
+
+/**
+ * Re-extract style attribute value from tag content when getAttr missed it.
+ * Scans the first maxScan chars for style="..." or style='...'.
+ */
+function extractStyleFromTagContent(fullTag: string, maxScan = STYLE_VALUE_SCAN_CHARS): string | undefined {
+  const scan = fullTag.slice(0, maxScan)
+  const styleDq = scan.toLowerCase().indexOf('style="')
+  const styleSq = scan.toLowerCase().indexOf("style='")
+  const useDq = styleDq !== -1 && (styleSq === -1 || styleDq <= styleSq)
+  const styleIdx = useDq ? styleDq : styleSq
+  const quote = styleIdx !== -1 ? (useDq ? '"' : "'") : ''
+  if (styleIdx === -1 || !quote) return undefined
+  const valueStart = styleIdx + 7
+  const valueEnd = scan.indexOf(quote, valueStart)
+  return valueEnd !== -1 ? scan.slice(valueStart, valueEnd) : undefined
+}
+
+/** True when style or fullTag (lowercased) indicates actor/person shape. */
+function styleOrTagIndicatesActor(style: string | undefined, fullTagLower: string): boolean {
+  const s = style?.toLowerCase() ?? ''
+  return s.includes('shape=actor') || s.includes('shape=person') || fullTagLower.includes('shape=actor') || fullTagLower.includes('shape=person')
+}
+
 /** Find end of XML open tag (first unquoted '>'). Handles both single- and double-quoted attributes. Avoids regex for S5852. */
 function findOpenTagEnd(xml: string, start: number): number {
   let quoteChar = ''
   let i = start
   while (i < xml.length) {
     const c = xml[i]
-    if (c === '"' || c === "'") {
+    if (c === '"' || c === '\'') {
       if (quoteChar === '') quoteChar = c
       else if (quoteChar === c) quoteChar = ''
     } else if (c === '>' && quoteChar === '') return i
@@ -390,7 +454,11 @@ function buildCellOptionalFields(params: {
   if (metadata != null && edge) optional.metadata = metadata
   if (likec4Id != null && vertex) optional.likec4Id = likec4Id
   if (likec4RelationId != null && edge) optional.likec4RelationId = likec4RelationId
-  const shapeFromStyle = params.styleMap.get('shape')?.trim()
+  let shapeFromStyle = params.styleMap.get('shape')?.trim()
+  const fullTagLower = params.fullTag.toLowerCase()
+  if ((shapeFromStyle == null || shapeFromStyle === '') && vertex && styleOrTagIndicatesActor(params.style, fullTagLower)) {
+    shapeFromStyle = 'actor'
+  }
   if (shapeFromStyle != null && shapeFromStyle !== '' && vertex) optional.shapeFromStyle = shapeFromStyle
   if (userData.customData != null) optional.customData = userData.customData
   if (edge) {
@@ -415,9 +483,19 @@ function buildCellFromMxCell(
   if (!id) return null
   const vertex = getAttr(attrs, 'vertex') === '1'
   const edge = getAttr(attrs, 'edge') === '1'
-  const style = getAttr(attrs, 'style')
+  let style =
+    getAttr(attrs, 'style') ??
+    extractStyleFromAttrsFallback(attrs) ??
+    extractStyleFromOpenTag(fullTag)
+  const styleMissing = !style || style.trim() === ''
+  const tagHasActor = fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN && fullTag.toLowerCase().includes('shape=actor')
+  const needLastResort = styleMissing || (tagHasActor && !style?.toLowerCase().includes('shape=actor'))
+  if (needLastResort && fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN) {
+    const reExtracted = extractStyleFromTagContent(fullTag)
+    if (reExtracted != null) style = reExtracted
+  }
   const geomStr = extractMxGeometryOpenTag(fullTag)
-  const styleMap = parseStyle(style ?? undefined)
+  const styleMap = parseStyle(style?.trim() || undefined)
   const userData = parseUserData(inner)
   const navigateTo = overrides?.navigateTo ?? getDecodedStyle(styleMap, 'likec4navigateto')
   const optional = buildCellOptionalFields({
@@ -425,7 +503,7 @@ function buildCellFromMxCell(
     parent: getAttr(attrs, 'parent'),
     source: getAttr(attrs, 'source'),
     target: getAttr(attrs, 'target'),
-    style: getAttr(attrs, 'style'),
+    style,
     styleMap,
     userData,
     geomStr,
@@ -565,10 +643,17 @@ function likec4LineType(
   return undefined
 }
 
+/** True when style or shapeFromStyle indicates actor/person (DrawIO shape=actor, shape=person, umlActor). */
+function isActorShapeInStyle(style: string | undefined, shapeFromStyle?: string): boolean {
+  const s = style?.toLowerCase() ?? ''
+  const shape = shapeFromStyle?.toLowerCase().trim()
+  return shape === 'actor' || shape === 'person' || s.includes('shape=actor') || s.includes('shape=person') || s.includes('umlactor')
+}
+
 /**
  * Infer LikeC4 element kind from DrawIO shape style. When parent is a container (container=1), child is component.
  * Explicit container=1 in style → system (context box); others default to container unless actor/swimlane.
- * Uses shapeFromStyle when raw style string is missing (e.g. for round-trip fidelity).
+ * Uses shapeFromStyle when raw style is missing so actor/person is still inferred.
  */
 function inferKind(
   style: string | undefined,
@@ -576,18 +661,10 @@ function inferKind(
   shapeFromStyle?: string,
 ): 'actor' | 'system' | 'container' | 'component' {
   const s = style?.toLowerCase() ?? ''
-  const shape = shapeFromStyle?.toLowerCase().trim()
-  const isActorShape = (): boolean =>
-    s.includes('umlactor') ||
-    s.includes('shape=person') ||
-    s.includes('shape=actor') ||
-    shape === 'actor' ||
-    shape === 'person'
+  if (isActorShapeInStyle(style, shapeFromStyle)) return 'actor'
   switch (true) {
     case !style && !shapeFromStyle:
       return parentCell?.style?.toLowerCase().includes('container=1') ? 'component' : 'container'
-    case isActorShape():
-      return 'actor'
     case s.includes('swimlane'):
     case s.includes('container=1'):
       return 'system'
@@ -601,10 +678,7 @@ function inferKind(
 /** Infer LikeC4 shape from DrawIO style (or shapeFromStyle) when possible (person, cylinder, document, etc.). */
 function inferShape(style: string | undefined, shapeFromStyle?: string): string | undefined {
   const s = style?.toLowerCase() ?? ''
-  const shape = shapeFromStyle?.toLowerCase().trim()
-  // Actor/person shape (export may use shape=actor or shape=umlActor; legacy may have shape=person)
-  if (s.includes('shape=actor') || s.includes('shape=person') || s.includes('umlactor')) return 'person'
-  if (shape === 'actor' || shape === 'person') return 'person'
+  if (isActorShapeInStyle(style, shapeFromStyle)) return 'person'
   if (s.includes('shape=cylinder') || s.includes('cylinder3')) return 'cylinder'
   if (s.includes('shape=document')) return 'document'
   if (s.includes('shape=rectangle') && s.includes('rounded')) return 'rectangle'

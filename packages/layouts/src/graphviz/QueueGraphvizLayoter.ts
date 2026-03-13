@@ -3,10 +3,11 @@ import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/co
 import { promiseNextTick } from '@likec4/core/utils'
 import { rootLogger } from '@likec4/log'
 import PQueue from 'p-queue'
+import { randomString } from 'remeda'
 import { type GraphvizPort, type LayoutResult, type LayoutTaskParams, GraphvizLayouter } from './GraphvizLayoter'
 import type { CancellationToken } from './types'
 
-const logger = rootLogger.getChild(['layouter', 'queue'])
+const thislogger = rootLogger.getChild(['layouter-queue'])
 
 export class QueueGraphvizLayoter extends GraphvizLayouter {
   private queue: PQueue
@@ -41,18 +42,17 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
   }
 
   private async runInQueue<T>(fn: () => Promise<T>): Promise<T | void> {
+    const logger = thislogger.getChild(['run', randomString(3)])
     if (this.isProcessingBatch) {
       logger.debug`waiting for batch to finish`
       await this.queue.onIdle()
       await promiseNextTick()
+      logger.trace`try runInQueue again`
       // recursively call runInQueue (to prevent batches from running in parallel)
       return await this.runInQueue(fn)
-    } else if (this.queue.size > this.queue.concurrency * 2 + 1) {
-      logger
-        .debug`task limit reached: ${this.queue.size} (pending: ${this.queue.pending}), waiting queue to shrink to ${this.queue.concurrency}`
-      await this.queue.onSizeLessThan(this.queue.concurrency + 1)
     }
-    logger.trace`add task to queue`
+    await this.waitForQueueToShrink(this.queue.concurrency, logger)
+    thislogger.trace`add task to queue`
     return await this.queue.add(fn)
   }
 
@@ -60,7 +60,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
     super.changePort(graphvizPort)
     if (this.queue.concurrency !== graphvizPort.concurrency) {
       this.queue.concurrency = this.graphvizPort.concurrency
-      logger.debug`set queue concurrency to ${this.graphvizPort.concurrency}`
+      thislogger.debug`set queue concurrency to ${this.graphvizPort.concurrency}`
     }
   }
 
@@ -75,9 +75,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
   }
 
   override async layoutProjectsView(view: ComputedProjectsView): Promise<LayoutedProjectsView> {
-    logger.debug`adding layoutProjectsView task to queue`
     const result = await this.runInQueue(async () => {
-      logger.debug`layouting projects view`
       return await super.layoutProjectsView(view)
     })
     if (!result) {
@@ -92,21 +90,23 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
     onSuccess?: (task: LayoutTaskParams<A>, result: LayoutResult<A>) => void
     onError?: (task: LayoutTaskParams<A>, error: unknown) => void
   }): Promise<LayoutResult<A>[]> {
+    const logger = thislogger.getChild(['batch', randomString(3)])
     if (this.isProcessingBatch) {
       logger.debug`wait for previous layouts to finish`
       // wait for any previous layout to finish
       await this.queue.onIdle()
       await promiseNextTick()
+      // this batch may have been cancelled while waiting for previous batch to finish
+      if (params.cancelToken?.isCancellationRequested) {
+        logger.debug`cancellation requested`
+        return []
+      }
+      logger.debug`retry`
       // recursively call batchLayout (to prevent batches from running in parallel)
       return await this.batchLayout(params)
     }
-    // this batch may have been cancelled while waiting for previous batch to finish
-    if (params.cancelToken?.isCancellationRequested) {
-      logger.debug`cancellation requested`
-      return []
-    }
     const concurrency = this.queue.concurrency
-    logger.debug`starting batch layout, size: ${params.batch.length}, concurrency: ${concurrency}`
+    logger.debug`starting, batch size: ${params.batch.length}, concurrency: ${concurrency}`
     this.isProcessingBatch = true
     const results = [] as LayoutResult<A>[]
     try {
@@ -132,18 +132,20 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
             logger.error(`Fail layout view ${task.view.id}`, { err })
             params.onError?.(task, err)
           })
-        if (this.queue.size > concurrency + 2) {
-          logger
-            .debug`task limit reached: ${this.queue.size}, waiting queue to shrink to ${concurrency}`
-          await this.queue.onSizeLessThan(concurrency + 1)
-          if (params.cancelToken?.isCancellationRequested) {
-            logger.debug`cancellation requested`
-            break
-          }
+
+        await this.waitForQueueToShrink(concurrency, logger)
+
+        if (params.cancelToken?.isCancellationRequested) {
+          logger.debug`cancellation requested`
+          break
         }
       }
     } finally {
-      await this.queue.onIdle()
+      const total = this.queue.pending + this.queue.size
+      if (total > 0) {
+        logger.trace`waiting ${total} tasks to finish`
+        await this.queue.onIdle()
+      }
       logger.debug`batch layout done`
       this.isProcessingBatch = false
     }
@@ -162,6 +164,21 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
   //     return await super.dot(params)
   //   })
   // }
+
+  /**
+   * Custom backpressure
+   * (basically allow same amount of tasks to be in queue as concurrency)
+   */
+  private async waitForQueueToShrink(
+    concurrency = this.queue.concurrency,
+    logger = thislogger,
+  ) {
+    if (this.queue.size > concurrency + 2) {
+      logger
+        .debug`limit reached. queue size: ${this.queue.size}, running: ${this.queue.pending}, waiting shrink to ${concurrency}`
+      await this.queue.onSizeLessThan(concurrency + 1)
+    }
+  }
 
   override dispose(): void {
     this.queue.clear()

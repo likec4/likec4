@@ -167,7 +167,6 @@ export interface ParsedAstElementView {
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   rules: c4.ElementViewRule[]
-  manualLayout?: c4.ViewManualLayout
 }
 
 export interface ParsedAstDynamicView {
@@ -181,7 +180,6 @@ export interface ParsedAstDynamicView {
   steps: c4.DynamicViewStep[]
   rules: Array<c4.DynamicViewRule>
   variant: c4.DynamicViewDisplayVariant | undefined
-  manualLayout?: c4.ViewManualLayout
 }
 
 export interface ParsedAstDeploymentView {
@@ -193,7 +191,6 @@ export interface ParsedAstDeploymentView {
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   rules: Array<c4.DeploymentViewRule>
-  manualLayout?: c4.ViewManualLayout
 }
 
 export type ParsedAstView = ParsedAstElementView | ParsedAstDynamicView | ParsedAstDeploymentView

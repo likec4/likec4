@@ -140,7 +140,7 @@ export function ElementDetailsCard({
   const _width = Math.min(700, windowWidth - MIN_PADDING * 2)
   const _height = Math.min(650, windowHeight - MIN_PADDING * 2)
 
-  const fromPositon = rectFromNode
+  const fromPosition = rectFromNode
     ? {
       x: rectFromNode.x + (isCompound ? (rectFromNode.width - _width / 2) : rectFromNode.width / 2),
       y: rectFromNode.y + (isCompound ? 0 : rectFromNode.height / 2),
@@ -153,23 +153,23 @@ export function ElementDetailsCard({
   const fromScale = rectFromNode ? Math.min(rectFromNode.width / _width, rectFromNode.height / _height, 0.9) : 1
 
   const left = Math.round(
-    clamp(fromPositon.x - _width / 2, {
+    clamp(fromPosition.x - _width / 2, {
       min: MIN_PADDING,
       max: windowWidth - _width - MIN_PADDING,
     }),
   )
   const top = Math.round(
-    clamp(fromPositon.y - (isCompound ? 0 : 60), {
+    clamp(fromPosition.y - (isCompound ? 0 : 60), {
       min: MIN_PADDING,
       max: windowHeight - _height - MIN_PADDING,
     }),
   )
 
-  const originX = clamp((fromPositon.x - left) / _width, {
+  const originX = clamp((fromPosition.x - left) / _width, {
     min: 0.1,
     max: 0.9,
   })
-  const originY = clamp((fromPositon.y - top) / _height, {
+  const originY = clamp((fromPosition.y - top) / _height, {
     min: 0.1,
     max: 0.9,
   })

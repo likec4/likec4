@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { css } from '@likec4/styles/css'
 import { Box, VStack } from '@likec4/styles/jsx'
 import { Grid, GridCol, Group, ScrollArea, Title } from '@mantine/core'
@@ -18,26 +25,19 @@ import { LikeC4SearchInput } from './components/SearchInput'
 import { focusToFirstFoundElement, moveFocusToSearchInput } from './components/utils'
 import { ViewsColumn } from './components/ViewsColum'
 import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
+import { useSearchContext } from './SearchContext'
+import { XStateSearchAdapter } from './XStateSearchAdapter'
 
-const dialog = css({
+export const dialogCss = css({
   backgroundColor: `[rgb(34 34 34 / var(--_opacity, 95%))]`,
   _light: {
     backgroundColor: `[rgb(250 250 250 / var(--_opacity, 95%))]`,
   },
   backdropFilter: 'auto',
   backdropBlur: 'var(--_blur, 10px)',
-  //   base: `[rgb(34 34 34 / var(${backdropOpacity}))]`,
-  //   _light: `[rgb(255 255 255/ var(${backdropOpacity}))]`,
-  // },
 })
 
-const body = css({
-  // containerName: 'likec4-search',
-  // containerType: 'size',
-  // position: 'fixed',
-  // zIndex: 901,
-  // top: '0',
-  // left: '0',
+export const bodyCss = css({
   width: '100%',
   height: '100%',
   maxHeight: '100vh',
@@ -51,13 +51,9 @@ const body = css({
   paddingRight: 'md',
   paddingBottom: 'sm',
   background: 'transparent',
-  // backgroundColor: {
-  //   _dark: `[rgb(34 34 34 / 0.95)]`,
-  //   _light: `[rgb(255 255 255/ 0.95)]`,
-  // },
 })
 
-const scrollArea = css({
+export const scrollAreaCss = css({
   height: [
     '100%',
     '100cqh',
@@ -115,14 +111,16 @@ export const Search = memo(() => {
             opacity: 0.9,
           }}
           classes={{
-            dialog,
-            body,
+            dialog: dialogCss,
+            body: bodyCss,
           }}
           openDelay={0}
           onClose={close}
           data-likec4-search="true"
         >
-          <SearchOverlayBody searchActorRef={searchActorRef} />
+          <XStateSearchAdapter searchActorRef={searchActorRef}>
+            <SearchOverlayBody searchActorRef={searchActorRef} />
+          </XStateSearchAdapter>
         </Overlay>
       )}
     </AnimatePresence>
@@ -130,32 +128,13 @@ export const Search = memo(() => {
 })
 Search.displayName = 'Search'
 
-const selectPickViewFor = (s: SearchActorSnapshot) => s.context.pickViewFor
-
-const SearchOverlayBody = memo<{ searchActorRef: SearchActorRef }>(({ searchActorRef }) => {
+/**
+ * The shared search panel content used by both diagram and overview search.
+ * Must be rendered inside a SearchContext.Provider.
+ */
+export const SearchPanelContent = memo(() => {
   const ref = useRef<HTMLDivElement>(null)
-  const pickViewFor = useSelector(searchActorRef, selectPickViewFor)
-
-  useTimeoutEffect(() => {
-    if (isTruthy(searchActorRef.getSnapshot().context.openedWithSearch)) {
-      focusToFirstFoundElement(ref.current)
-    }
-  }, 150)
-
-  const [isPresent, safeToRemove] = usePresence()
-
-  useEffect(() => {
-    if (isPresent) {
-      return
-    }
-    safeToRemove()
-    try {
-      // Actor might be stopped, so we need to catch the error
-      searchActorRef.send({ type: 'animation.presence.end' })
-    } catch (e) {
-      console.debug('SearchOverlayBody: animation.presence.end failed', e)
-    }
-  }, [isPresent, searchActorRef, safeToRemove])
+  const { pickViewFor } = useSearchContext()
 
   return (
     <Box ref={ref} display={'contents'}>
@@ -189,7 +168,7 @@ const SearchOverlayBody = memo<{ searchActorRef: SearchActorRef }>(({ searchActo
         <GridCol span={6}>
           <ScrollArea
             type="scroll"
-            className={scrollArea}
+            className={scrollAreaCss}
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-elements">
@@ -202,7 +181,7 @@ const SearchOverlayBody = memo<{ searchActorRef: SearchActorRef }>(({ searchActo
         <GridCol span={6}>
           <ScrollArea
             type="scroll"
-            className={scrollArea}
+            className={scrollAreaCss}
             pr="xs"
             scrollbars="y">
             <Suspense>
@@ -213,7 +192,39 @@ const SearchOverlayBody = memo<{ searchActorRef: SearchActorRef }>(({ searchActo
           </ScrollArea>
         </GridCol>
       </Grid>
-      {pickViewFor && <PickView searchActorRef={searchActorRef} elementFqn={pickViewFor} />}
+      {pickViewFor && <PickView elementFqn={pickViewFor} />}
+    </Box>
+  )
+})
+SearchPanelContent.displayName = 'SearchPanelContent'
+
+const SearchOverlayBody = memo<{ searchActorRef: SearchActorRef }>(function SearchOverlayBody({ searchActorRef }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useTimeoutEffect(() => {
+    if (isTruthy(searchActorRef.getSnapshot().context.openedWithSearch)) {
+      focusToFirstFoundElement(ref.current)
+    }
+  }, 150)
+
+  const [isPresent, safeToRemove] = usePresence()
+
+  useEffect(() => {
+    if (isPresent) {
+      return
+    }
+    safeToRemove()
+    try {
+      // Actor might be stopped, so we need to catch the error
+      searchActorRef.send({ type: 'animation.presence.end' })
+    } catch (e) {
+      console.debug('SearchOverlayBody: animation.presence.end failed', e)
+    }
+  }, [isPresent, searchActorRef, safeToRemove])
+
+  return (
+    <Box ref={ref} display={'contents'}>
+      <SearchPanelContent />
     </Box>
   )
 })

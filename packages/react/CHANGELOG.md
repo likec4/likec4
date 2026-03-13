@@ -1,5 +1,26 @@
 # @likec4/react
 
+## 1.52.0
+
+### Patch Changes
+
+- Updated dependencies [[`bc47423`](https://github.com/likec4/likec4/commit/bc474235cf31a7d42e8c4f25328a698bb7edefe3)]:
+  - @likec4/core@1.52.0
+
+## 1.51.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/core@1.51.0
+
+## 1.50.0
+
+### Patch Changes
+
+- Updated dependencies [[`fe468d8`](https://github.com/likec4/likec4/commit/fe468d830544e6f0051ea2203ab137d46932d11e)]:
+  - @likec4/core@1.50.0
+
 ## 1.49.0
 
 ### Patch Changes

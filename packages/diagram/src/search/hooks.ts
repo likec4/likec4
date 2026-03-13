@@ -1,45 +1,26 @@
-import { useSelector } from '@xstate/react'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { useCallback, useDeferredValue } from 'react'
-import { useSearchActorRef } from '../hooks/useSearchActor'
-import type { SearchActorSnapshot } from './searchActor'
+import { useSearchContext } from './SearchContext'
 
-export function useSearchActor() {
-  const searchActorRef = useSearchActorRef()
-  if (!searchActorRef) {
-    throw new Error('Search actor not found')
-  }
-  return searchActorRef
-}
-
-const selectSearchValue = (s: SearchActorSnapshot) => s.context.searchValue
 export function useSearch(): [string, (search: string) => void] {
-  const searchActorRef = useSearchActor()
-  const searchValue = useSelector(searchActorRef, selectSearchValue)
-  const updateSearch = useCallback((search: string) => {
-    searchActorRef.send({ type: 'change.search', search })
-  }, [searchActorRef])
-  return [searchValue, updateSearch]
+  const ctx = useSearchContext()
+  return [ctx.searchValue, ctx.setSearchValue]
 }
 
-const selectNormalizedSearchValue = (s: SearchActorSnapshot) => {
-  let v = selectSearchValue(s)
-  if (v === '') return v
-
-  v = v.trim().toLowerCase()
-
-  if (v.startsWith('#') && v.length <= 2) {
-    return ''
-  }
-  return v.length > 1 ? v : ''
-}
-export function useNormalizedSearch() {
-  const searchActorRef = useSearchActor()
-  return useDeferredValue(useSelector(searchActorRef, selectNormalizedSearchValue))
+export function useNormalizedSearch(): string {
+  const ctx = useSearchContext()
+  return useDeferredValue(ctx.normalizedSearch)
 }
 
 export function useUpdateSearch() {
-  const searchActorRef = useSearchActor()
+  const { setSearchValue } = useSearchContext()
   return useCallback((search: string) => {
-    searchActorRef.send({ type: 'change.search', search })
-  }, [searchActorRef])
+    setSearchValue(search)
+  }, [setSearchValue])
 }

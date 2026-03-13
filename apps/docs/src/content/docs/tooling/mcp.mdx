@@ -153,4 +153,27 @@ likec4-mcp-server -h
 Disable watch mode with `--no-watch` to consume less resources, if you have static workspace.
 :::
 
+## Available tools
+
+| Tool | Description |
+|------|-------------|
+| `list-projects` | List all LikeC4 projects in the workspace |
+| `read-project-summary` | Project specification, configuration, all elements, deployment nodes and views |
+| `search-element` | Search elements and deployment nodes by id/title/kind/shape/tags/metadata |
+| `read-element` | Full element details including relationships, views, deployments, metadata |
+| `read-deployment` | Details of a deployment node or deployed instance |
+| `read-view` | Full view details (nodes/edges) and source location |
+| `find-relationships` | Direct and indirect relationships between two elements |
+| `query-graph` | Query element hierarchy (ancestors, descendants, siblings, children, parent) and single-hop relationships (incomers, outgoers) |
+| `query-incomers-graph` | Recursive BFS graph of all upstream dependencies/producers |
+| `query-outgoers-graph` | Recursive BFS graph of all downstream consumers/dependents |
+| `query-by-metadata` | Search elements by metadata key-value pairs (exact/contains/exists) |
+| `query-by-tags` | Tag filtering with boolean logic (allOf, anyOf, noneOf) |
+| `query-by-tag-pattern` | Search elements by tag patterns using prefix, contains, or suffix matching |
+| `find-relationship-paths` | Discover all multi-hop relationship chains between two elements via BFS |
+| `batch-read-elements` | Read full details for multiple elements in a single request |
+| `subgraph-summary` | Summarize descendants of an element with depth, metadata, and relationship counts |
+| `element-diff` | Compare two elements and show differences in properties, tags, metadata, and relationships |
+| `open-view` | Opens the LikeC4 view panel (editor only) |
+
 Check out [README](https://github.com/likec4/likec4/blob/main/packages/mcp/README.md) for more details.

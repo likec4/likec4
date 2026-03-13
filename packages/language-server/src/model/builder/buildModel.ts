@@ -68,7 +68,9 @@ export function buildModelData(
   project: Project,
   docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
 ): BuildModelData {
-  const c4Specification = new MergedSpecification(docs)
+  const c4Specification = new MergedSpecification(docs, {
+    inferTechFromIcon: project.config.inferTechnologyFromIcon ?? true,
+  })
 
   if (c4Specification.projectId === project.id) {
     services.likec4.LastSeen.rememberSpecification(c4Specification)
@@ -317,6 +319,48 @@ export function buildModelData(
     })
   }
 
+  // Add implicit scoped views for elements without explicit views
+  if (project.config.implicitViews === true) {
+    const elementsWithExplicitViews = new Set<string>()
+    for (const v of parsedViews) {
+      if (v[_type] === 'element' && 'viewOf' in v && v.viewOf) {
+        elementsWithExplicitViews.add(v.viewOf as string)
+      }
+    }
+    const existingViewIds = new Set(parsedViews.map(v => v.id as string))
+
+    for (const fqn of keys(elements)) {
+      if (
+        elementsWithExplicitViews.has(fqn)
+        || isGlobalFqn(fqn)
+      ) {
+        continue
+      }
+      const viewId = ('__' + fqn.replaceAll('.', '_')) as ViewId
+      if (existingViewIds.has(viewId)) {
+        continue
+      }
+      existingViewIds.add(viewId)
+      parsedViews.push({
+        [_stage]: 'parsed',
+        [_type]: 'element',
+        id: viewId,
+        viewOf: fqn as c4.Fqn,
+        title: `Auto / ${(elements[fqn]?.title ?? fqn).replaceAll('\n', ' ')}`,
+        description: null,
+        rules: [
+          {
+            include: [
+              {
+                wildcard: true,
+              },
+            ],
+          },
+        ],
+      })
+    }
+  }
+
   let views = pipe(
     parsedViews,
     indexBy(prop('id')),
@@ -341,6 +385,7 @@ export function buildModelData(
         title: project.config.title ?? project.config.name,
         styles: project.config.styles,
         manualLayouts: project.config.manualLayouts,
+        inferTechnologyFromIcon: project.config.inferTechnologyFromIcon,
       }),
       specification: {
         tags: c4Specification.tags,

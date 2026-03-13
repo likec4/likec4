@@ -27,6 +27,7 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
       emptyOutDir: true,
+      cssCodeSplit: true,
       cssMinify: true,
       minify: !isDev,
       assetsInlineLimit: 10_000_000,
@@ -44,6 +45,11 @@ export default defineConfig(({ mode }) => {
         treeshake: {
           preset: 'recommended',
         },
+        input: [
+          './index.html',
+          './src/fonts.css',
+          './src/index.css',
+        ],
         output: {
           hoistTransitiveImports: false,
           compact: true,

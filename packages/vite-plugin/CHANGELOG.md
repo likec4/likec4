@@ -1,5 +1,46 @@
 # @likec4/vite-plugin
 
+## 1.52.0
+
+### Patch Changes
+
+- Updated dependencies [[`2c6a43d`](https://github.com/likec4/likec4/commit/2c6a43da4552dbd40473effba65c7b04e165a7f3), [`4d579d6`](https://github.com/likec4/likec4/commit/4d579d6990bd3f59fb8420d2adb0e246fd9dfdcc), [`a80d2e8`](https://github.com/likec4/likec4/commit/a80d2e85c8c508236262156d4ef45e28750c295c), [`aab9343`](https://github.com/likec4/likec4/commit/aab9343f0e149d978915a13429ff367dc284937b), [`bc47423`](https://github.com/likec4/likec4/commit/bc474235cf31a7d42e8c4f25328a698bb7edefe3)]:
+  - @likec4/language-server@1.52.0
+  - @likec4/language-services@1.52.0
+  - @likec4/config@1.52.0
+  - @likec4/generators@1.52.0
+  - @likec4/core@1.52.0
+  - @likec4/layouts@1.52.0
+  - @likec4/log@1.52.0
+
+## 1.51.0
+
+### Patch Changes
+
+- Updated dependencies [[`70e0f7d`](https://github.com/likec4/likec4/commit/70e0f7db20c0945d37a6b2f77ad9722abf4706ce), [`026ef4a`](https://github.com/likec4/likec4/commit/026ef4ab673f07669f460d4b075918f5045ecddd)]:
+  - @likec4/language-server@1.51.0
+  - @likec4/language-services@1.51.0
+  - @likec4/core@1.51.0
+  - @likec4/config@1.51.0
+  - @likec4/generators@1.51.0
+  - @likec4/layouts@1.51.0
+  - @likec4/log@1.51.0
+
+## 1.50.0
+
+### Patch Changes
+
+- [#2639](https://github.com/likec4/likec4/pull/2639) [`871f134`](https://github.com/likec4/likec4/commit/871f134911d3a1313c62fb002f2834e94dc305d0) Thanks [@davydkov](https://github.com/davydkov)! - Enable "Export to Draw.io" in the app's export menu — opens app.diagrams.net with the current diagram pre-loaded
+
+- Updated dependencies [[`fe468d8`](https://github.com/likec4/likec4/commit/fe468d830544e6f0051ea2203ab137d46932d11e), [`871f134`](https://github.com/likec4/likec4/commit/871f134911d3a1313c62fb002f2834e94dc305d0), [`68ab5f6`](https://github.com/likec4/likec4/commit/68ab5f6652b43f2f6e52fd3cd2736cdc3672e3cf), [`68ab5f6`](https://github.com/likec4/likec4/commit/68ab5f6652b43f2f6e52fd3cd2736cdc3672e3cf), [`5ce02f8`](https://github.com/likec4/likec4/commit/5ce02f8e1fa437c3f7597a546ae3b08515712ac1), [`0587b66`](https://github.com/likec4/likec4/commit/0587b6609ec9eb372aa3ff8eae2fd3a82c789144)]:
+  - @likec4/core@1.50.0
+  - @likec4/config@1.50.0
+  - @likec4/language-server@1.50.0
+  - @likec4/generators@1.50.0
+  - @likec4/language-services@1.50.0
+  - @likec4/layouts@1.50.0
+  - @likec4/log@1.50.0
+
 ## 1.49.0
 
 ### Patch Changes

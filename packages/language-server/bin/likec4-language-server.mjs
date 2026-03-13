@@ -1,5 +1,4 @@
 #!/usr/bin/env node
 
-import { startLanguageServer } from '../dist/bundled.mjs'
-
-startLanguageServer()
+console.error('This package is not available as a standalone LSP server. Use `likec4 lsp` instead.')
+process.exit(1)

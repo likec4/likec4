@@ -62,30 +62,47 @@ export const ExtensionApi = {
     projectId: ProjectId
     viewId: ViewId
     change: ViewChange
-  }) => {
+  }): Promise<
+    | { success: true }
+    | { success: false; error: string }
+  > => {
     return await messenger.sendRequest(ViewChangeReq, HOST_EXTENSION, params)
   },
 
-  fetchComputedModel: async (projectId: ProjectId, signal: AbortSignal) => {
+  fetchComputedModel: async (
+    projectId: ProjectId,
+    signal: AbortSignal,
+  ): Promise<{
+    model: ComputedLikeC4ModelData | null
+    error: string | null
+  }> => {
     const cancellationToken = new CancellationTokenImpl()
-    signal.onabort = () => cancellationToken.cancel()
+    signal.addEventListener('abort', () => cancellationToken.cancel())
     return await messenger.sendRequest(FetchComputedModel, HOST_EXTENSION, { projectId }, cancellationToken)
   },
 
   // Layoted vuew
-  fetchDiagramView: async (params: {
-    projectId: ProjectId
-    viewId: ViewId
-    layoutType: LayoutType
-  }, signal: AbortSignal) => {
+  fetchDiagramView: async (
+    params: {
+      projectId: ProjectId
+      viewId: ViewId
+      layoutType: LayoutType
+    },
+    signal: AbortSignal,
+  ): Promise<{
+    view: DiagramView | null
+    error: string | null
+  }> => {
     const cancellationToken = new CancellationTokenImpl()
-    signal.onabort = () => cancellationToken.cancel()
+    signal.addEventListener('abort', () => cancellationToken.cancel())
     return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, params, cancellationToken)
   },
 
-  fetchProjectsOverview: async (signal: AbortSignal) => {
+  fetchProjectsOverview: async (signal: AbortSignal): Promise<{
+    projectsView: LayoutedProjectsView | null
+  }> => {
     const cancellationToken = new CancellationTokenImpl()
-    signal.onabort = () => cancellationToken.cancel()
+    signal.addEventListener('abort', () => cancellationToken.cancel())
     return await messenger.sendRequest(
       FetchProjectsOverview,
       HOST_EXTENSION,

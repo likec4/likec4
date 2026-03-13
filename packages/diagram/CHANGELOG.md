@@ -1,5 +1,42 @@
 # @likec4/diagram
 
+## 1.52.0
+
+### Patch Changes
+
+- [#2665](https://github.com/likec4/likec4/pull/2665) [`6257147`](https://github.com/likec4/likec4/commit/6257147265d69972b4b4f2dc472d0b58a03bc607) Thanks [@ckeller42](https://github.com/ckeller42)! - Add search bar, navigation drawer, and theme toggle to overview page
+
+  - Search for elements and views directly from the overview page via visible search bar or ⌘K
+  - Browse all diagrams through sidebar navigation drawer with file/folder/list grouping
+  - Toggle dark/light mode from the overview header
+  - Navigate from search results to a diagram view with element focus
+
+  Fixes [#1679](https://github.com/likec4/likec4/issues/1679)
+
+- Updated dependencies [[`bc47423`](https://github.com/likec4/likec4/commit/bc474235cf31a7d42e8c4f25328a698bb7edefe3)]:
+  - @likec4/core@1.52.0
+  - @likec4/styles@1.52.0
+
+## 1.51.0
+
+### Patch Changes
+
+- Updated dependencies [[`41ff551`](https://github.com/likec4/likec4/commit/41ff551974838696fdf4adfcd92edc30afd245c5)]:
+  - @likec4/styles@1.51.0
+  - @likec4/core@1.51.0
+
+## 1.50.0
+
+### Patch Changes
+
+- [#2656](https://github.com/likec4/likec4/pull/2656) [`7f43ca1`](https://github.com/likec4/likec4/commit/7f43ca19d90f4db0b02c44a72c7eae66dfc76942) Thanks [@copilot-swe-agent](https://github.com/apps/copilot-swe-agent)! - Fix O-version edge markers (odiamond, oarrow, odot) to display as hollow with background fill instead of solid fill
+
+  Fixes [#2634](https://github.com/likec4/likec4/issues/2634)
+
+- Updated dependencies [[`fe468d8`](https://github.com/likec4/likec4/commit/fe468d830544e6f0051ea2203ab137d46932d11e)]:
+  - @likec4/core@1.50.0
+  - @likec4/styles@1.50.0
+
 ## 1.49.0
 
 ### Minor Changes

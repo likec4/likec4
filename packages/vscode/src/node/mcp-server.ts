@@ -1,14 +1,19 @@
+import { configureLanguageServerLogger } from '@likec4/language-server'
 import {
   fromWorkspace,
 } from '@likec4/language-services/node'
 import {
-  configureLogger,
-  getConsoleStderrSink,
   rootLogger,
 } from '@likec4/log'
 import { URI } from 'langium'
 import { first, hasAtLeast, isString, map } from 'remeda'
+import { isDevelopment } from 'std-env'
 import z from 'zod/v4'
+
+configureLanguageServerLogger({
+  useStdErr: true,
+  logLevel: isDevelopment ? 'trace' : 'debug',
+})
 
 const logger = rootLogger.getChild('mcp')
 process.on('uncaughtException', (err) => {
@@ -16,12 +21,6 @@ process.on('uncaughtException', (err) => {
 })
 process.on('unhandledRejection', (err) => {
   logger.error('unhandledRejection', { err })
-})
-
-configureLogger({
-  sinks: {
-    console: getConsoleStderrSink(),
-  },
 })
 
 const envSchema = z.string().or(z.array(z.string()))
@@ -53,14 +52,15 @@ function readEnvVar(name: string): [string, ...string[]] | undefined {
 }
 
 const workspacePaths = readEnvVar('LIKEC4_WORKSPACE')
-logger.debug`Workspace paths: ${workspacePaths}`
-logger.debug`cwd: ${process.cwd()}`
+logger.info`Workspace paths: ${workspacePaths}`
+logger.info`cwd: ${process.cwd()}`
 
 const workspacePath = workspacePaths ? first(workspacePaths) : process.cwd()
 
 fromWorkspace(workspacePath, {
   manualLayouts: true,
   watch: true,
+  configureLogger: false,
   mcp: 'stdio',
 }).then(
   likec4 => {

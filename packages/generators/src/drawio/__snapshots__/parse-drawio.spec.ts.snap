@@ -60,16 +60,16 @@ views {
 // </likec4.layout.drawio>"
 `;
 
-exports[`parse DrawIO to LikeC4 - vertex with shape=actor emits element (actor when style/shape available, else container) with color for round-trip 1`] = `
+exports[`parse DrawIO to LikeC4 - vertex with shape=actor emits actor with shape person 1`] = `
 "specification {
   color drawio_color_1 #dae8fc
 }
 
 model {
 
-  User = container 'User'
+  User = actor 'User'
   {
-    style { color drawio_color_1 }
+    style { color drawio_color_1, shape person }
   }
 
 }

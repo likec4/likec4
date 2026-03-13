@@ -3,8 +3,9 @@ import {
   createLanguageServices as createCustomLanguageServices,
   NoFileSystem,
   NoLikeC4ManualLayouts,
+  WithGraphviz,
 } from '@likec4/language-server/module'
-import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
+import { GraphvizWasmAdapter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { rootLogger } from '@likec4/log'
 import defu from 'defu'
@@ -64,14 +65,7 @@ export function createLanguageServices(
           ...NoFileSystem,
           ...NoLikeC4ManualLayouts,
         },
-    },
-    {
-      likec4: {
-        Layouter: () =>
-          new QueueGraphvizLayoter({
-            graphviz: useDotBin ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter(),
-          }),
-      },
+      ...WithGraphviz(useDotBin ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
     },
   )
 

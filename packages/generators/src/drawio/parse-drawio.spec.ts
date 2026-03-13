@@ -1,12 +1,13 @@
 import pako from 'pako'
 import { describe, expect, test } from 'vitest'
+// Imports from dist so parse and actor/shape inference are tested against the built package.
 import {
   getAllDiagrams,
   decompressDrawioDiagram,
   parseDrawioRoundtripComments,
   parseDrawioToLikeC4,
   parseDrawioToLikeC4Multi,
-} from './parse-drawio'
+} from '../../dist/index.mjs'
 
 const minimalDrawio = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="test">
@@ -99,16 +100,17 @@ const drawioWithShapeActor = `<?xml version="1.0" encoding="UTF-8"?>
   </diagram>
 </mxfile>`
 
-test('parse DrawIO to LikeC4 - vertex with shape=actor emits element (actor when style/shape available, else container) with color for round-trip', () => {
+test('parse DrawIO - first diagram content has User mxCell with style=actor', () => {
+  const [diagram] = getAllDiagrams(drawioWithShapeActor)
+  expect(diagram?.content).toBeDefined()
+  expect(diagram!.content).toContain('style=')
+  expect(diagram!.content.toLowerCase()).toContain('shape=actor')
+})
+
+test('parse DrawIO to LikeC4 - vertex with shape=actor emits actor with shape person', () => {
   const result = parseDrawioToLikeC4(drawioWithShapeActor)
-  expect(result).toContain("'User'")
-  expect(result).toContain('drawio_color_1')
-  // When parser provides style or shapeFromStyle, we emit actor + shape person; otherwise container with color only
-  const hasActor = result.includes("actor 'User'")
-  const hasShapePerson = result.includes('shape person')
-  const hasContainer = result.includes("container 'User'")
-  expect(hasActor || hasContainer).toBe(true)
-  if (hasActor) expect(hasShapePerson).toBe(true)
+  expect(result).toContain("actor 'User'")
+  expect(result).toContain('shape person')
   expect(result).toMatchSnapshot()
 })
 

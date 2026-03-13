@@ -164,8 +164,18 @@ specification {
 }
 ```
 
-This allows you to define properties once and reuse them across the model.  
+This allows you to define properties once and reuse them across the model.
 Properties from the element definition override the ones from the specification.
+:::
+
+:::note[Auto-derived technology]
+If an element has a bundled icon (`aws:`, `azure:`, `gcp:`, or `tech:`) but no explicit technology,
+LikeC4 automatically derives a human-readable technology label from the icon name.
+For example, `icon tech:apache-flink` produces technology **"Apache Flink"**, and `icon aws:simple-storage-service` produces **"Simple Storage Service"**.
+
+`bootstrap:` icons are excluded because they are generic UI icons.
+
+This behavior is enabled by default. To disable it, set `inferTechnologyFromIcon` to `false` in the [project config](/dsl/config).
 :::
 
 ### Tags

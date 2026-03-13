@@ -29,6 +29,7 @@ The `likec4` CLI is a tool for various operations and automation tasks, such as:
   - React components
   - Web Components
   - Typed data
+- Format source files (with CI-friendly check mode)
 
 ## Install
 
@@ -245,3 +246,56 @@ This command checks for:
 - Layout drift (outdated manual layout)
 
 If any errors are found, the command exits with a non-zero return code.
+
+### Format
+
+Format `.c4` source files in place:
+
+```sh
+# Format all files in current workspace
+likec4 format
+# Alias
+likec4 fmt
+
+# Format a specific workspace directory
+likec4 format ./my-project
+
+# Format only specific project(s) in a multi-project workspace
+likec4 format --project alpha --project beta
+
+# Format specific files
+likec4 format --files src/model.c4 --files src/views.c4
+
+# Check mode (CI-friendly, exits with code 1 if any file needs formatting)
+likec4 format --check
+```
+
+| Option              | Description                                                     |
+| ------------------- | --------------------------------------------------------------- |
+| `path`              | Path to workspace (default: current directory; falls back to `LIKEC4_WORKSPACE` env) |
+| `--project, -p`     | Format only specific project(s) by name (repeatable)            |
+| `--files`           | Format only specific files (repeatable)                         |
+| `--check`           | Check if files are formatted without writing changes            |
+
+### Language Server (LSP)
+
+Start the LikeC4 language server for use with editors that support the Language Server Protocol:
+
+```sh
+likec4 lsp --stdio
+likec4 lsp --node-ipc
+likec4 lsp --socket 3000
+likec4 lsp --pipe /tmp/likec4.pipe
+```
+
+One of the transport options (`--stdio`, `--node-ipc`, `--socket`, `--pipe`) is required.
+
+| Option              | Description                                                 |
+| ------------------- | ----------------------------------------------------------- |
+| `--stdio`           | Use stdio transport                                         |
+| `--node-ipc`        | Use node-ipc transport                                      |
+| `--socket <port>`   | Use socket transport on specified port                      |
+| `--pipe <name>`     | Use pipe transport with specified pipe name                 |
+| `--watch, -w`       | Enable built-in watcher (disabled by default)               |
+| `--no-manual-layouts` | Disable manual layouts (enabled by default)               |
+| `--use-dot`         | Use local Graphviz (`dot`) for layout instead of bundled WASM |

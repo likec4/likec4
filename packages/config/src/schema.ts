@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type {
   DeploymentElementModel,
   DeploymentRelationModel,
@@ -72,6 +79,9 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .nonempty('Contact person cannot be empty if specified')
     .optional()
     .meta({ description: 'A person who has been involved in creating or maintaining this project' }),
+  metadata: z.record(z.string(), z.any())
+    .optional()
+    .meta({ description: 'Arbitrary metadata as key-value pairs for custom project information' }),
   styles: LikeC4StylesConfigSchema.optional().meta({
     description: 'Project styles customization',
   }),
@@ -81,6 +91,39 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),
   manualLayouts: ManualLayoutsConfigSchema.optional(),
+  inferTechnologyFromIcon: z.boolean()
+    .optional()
+    .meta({
+      description: [
+        'Automatically derive element technology from icon name when technology is not set explicitly.',
+        'Applies to aws:, azure:, gcp:, and tech: icons. Bootstrap icons are excluded.',
+        'Defaults to true.',
+      ].join('\n'),
+    }),
+  implicitViews: z.boolean()
+    .optional()
+    .meta({
+      description: 'Auto-generate scoped views for elements without explicit views. Defaults to false.',
+    }),
+  landingPage: z.union([
+    z.strictObject({
+      redirect: z.literal(true),
+    }),
+    z.strictObject({
+      include: z.array(z.string().nonempty().refine(s => s !== '#', { message: 'selector cannot be "#"' })).nonempty(
+        'include list cannot be empty',
+      ),
+    }),
+    z.strictObject({
+      exclude: z.array(z.string().nonempty().refine(s => s !== '#', { message: 'selector cannot be "#"' })).nonempty(
+        'exclude list cannot be empty',
+      ),
+    }),
+  ]).optional().meta({
+    id: 'LandingPageConfig',
+    description:
+      'Configure the landing page. Use redirect to go to the index view, or include/exclude to filter the view grid.',
+  }),
 })
   .meta({
     id: 'LikeC4ProjectConfig',

@@ -1,3 +1,71 @@
+## [1.52.0](https://github.com/likec4/likec4/compare/v1.51.0...v1.52.0) (2026-03-09)
+
+### 🚀 Features
+
+- **`likec4 format` CLI Command**:\
+  New `likec4 format` (alias `fmt`) command for formatting `.c4` source files. Supports `--check` mode for CI, `--project` and `--files` filtering. Thanks [@m9810223](https://github.com/m9810223), [#2667](https://github.com/likec4/likec4/pull/2667)
+
+- **Overview Page Search, Navigation & Theme Toggle**:\
+  Added search bar (also accessible via Cmd+K), sidebar navigation drawer with file/folder/list grouping, and dark/light theme toggle to the overview page. Fixes [#1679](https://github.com/likec4/likec4/issues/1679). Thanks [@ckeller42](https://github.com/ckeller42), [#2665](https://github.com/likec4/likec4/pull/2665)
+
+- **Disable Implicit Views by Default**:\
+  Auto-generated scoped views for elements without explicit views are no longer created unless `"implicitViews": true` is set in the project config. To restore the previous behavior, add `"implicitViews": true` to your `likec4.json` configuration. [#2705](https://github.com/likec4/likec4/pull/2705)
+
+- **Draw.io Person Shape Round-Trip**:\
+  Draw.io export now correctly renders elements with `shape person` as person/actor shapes instead of ellipses. Re-import also infers the person shape for round-trip fidelity. Thanks [@sraphaz](https://github.com/sraphaz), [#2685](https://github.com/likec4/likec4/pull/2685), fixes [#2679](https://github.com/likec4/likec4/issues/2679)
+
+- **Improved Zoom Performance**:\
+  Significant performance improvement with zooming and panning diagrams, thanks to the xyflow update. [#2694](https://github.com/likec4/likec4/pull/2694)
+
+### 🐞 Bug Fixes
+
+- Added `--output` alias to all `likec4 gen` subcommands for consistency with `build` and `export` commands, fixes [#2706](https://github.com/likec4/likec4/issues/2706)
+
+- Removed deprecated ManualLayoutV1 and related migration command [#2713](https://github.com/likec4/likec4/pull/2713)
+
+
+## [1.51.0](https://github.com/likec4/likec4/compare/v1.50.0...v1.51.0) (2026-03-04)
+
+### 🚀 Features
+
+- **`likec4 lsp` CLI Command**:\
+  Added new `likec4 lsp` command to start the LikeC4 language server directly from the CLI. The standalone `likec4-language-server` binary is now deprecated. [#2681](https://github.com/likec4/likec4/pull/2681)
+
+- **Improved `?theme=` URL Parameter**:\
+  Theme preferences specified via the `?theme=` URL parameter are no longer persisted to localStorage — the forced color scheme applies only while the parameter is present in the URL. Thanks [@m9810223](https://github.com/m9810223), [#2645](https://github.com/likec4/likec4/pull/2645)
+
+### 🐞 Bug Fixes
+
+- Fixed "View title cannot contain newlines" error when using implicit views with elements that have multi-line titles, closes [#2669](https://github.com/likec4/likec4/issues/2669), [#2672](https://github.com/likec4/likec4/issues/2672)
+
+- Fixed LikeC4 tag color being broken, closes [#2637](https://github.com/likec4/likec4/issues/2637)
+
+
+
+## [1.50.0](https://github.com/likec4/likec4/compare/v1.49.0...v1.50.0) (2026-02-21)
+
+### 🚀 Features
+
+- **Draw.io Export & Round-Trip**:\
+  Extended Draw.io integration with export options (`layoutOverride`, `strokeColorByNodeId`, `strokeWidthByNodeId`), edge waypoints, and view notation round-trip support. CLI now supports `likec4 export drawio --roundtrip` to preserve layout and styling when re-exporting. Added "Export to Draw.io" button in the app's export menu. Thanks [@sraphaz](https://github.com/sraphaz), [#2630](https://github.com/likec4/likec4/pull/2630), [#2639](https://github.com/likec4/likec4/pull/2639)
+
+- **New MCP Query Tools**:\
+  Added 10 new MCP query tools: `query-graph`, `query-incomers-graph`, `query-outgoers-graph`, `query-by-metadata`, `query-by-tags`, `query-by-tag-pattern`, `find-relationship-paths`, `batch-read-elements`, `subgraph-summary`, and `element-diff`. Enhanced `read-project-summary` with serialized project config and optional `metadata` field. Thanks [@ckeller42](https://github.com/ckeller42), [#2638](https://github.com/likec4/likec4/pull/2638)
+
+- **Implicit Scoped Views**:\
+  Auto-generate scoped views for elements without explicit views, enabling drill-down navigation out of the box. Configurable via `implicitViews` option in project config (enabled by default). [#2648](https://github.com/likec4/likec4/pull/2648)
+
+- **Derive Technology from Icon**:\
+  Automatically derive element technology from icon name when not set explicitly. Elements with `aws:`, `azure:`, `gcp:`, or `tech:` icons will get a human-readable technology label (e.g. `tech:apache-flink` → "Apache Flink"). Can be disabled via `inferTechnologyFromIcon: false` in project config. [#2642](https://github.com/likec4/likec4/pull/2642)
+
+### 🐞 Bug Fixes
+
+- Fixed hollow edge markers (odiamond, oarrow, odot) to display as hollow with background fill instead of solid fill, closes [#2634](https://github.com/likec4/likec4/issues/2634)
+
+- Improved state management and error handling in VSCode extension preview, closes [#2625](https://github.com/likec4/likec4/issues/2625)
+
+
+
 ## [1.49.0](https://github.com/likec4/likec4/compare/v1.48.0...v1.49.0) (2026-02-13)
 
 > [!IMPORTANT]

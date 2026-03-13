@@ -58,4 +58,12 @@ export interface LikeC4Project {
    * Configuration for manual layouts snapshots
    */
   manualLayouts?: LikeC4ProjectManualLayoutsConfig | undefined
+
+  /**
+   * Automatically derive element technology from icon name
+   * when technology is not explicitly set.
+   * Applies to aws:, azure:, gcp:, and tech: icons.
+   * Defaults to true.
+   */
+  inferTechnologyFromIcon?: boolean | undefined
 }

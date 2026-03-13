@@ -180,6 +180,7 @@ Fields:
 - `name` (required): unique project id within the workspace
 - `title` (optional): human-readable project title
 - `contactPerson` (optional): maintainer/author
+- `metadata` (optional): arbitrary project-level key-value pairs
 - `extends` (optional): string or array of strings, paths to JSON configs to merge `styles` from (relative to each config file)
 - `styles` (optional): theme/defaults/customCss customization
 - `exclude` (optional): array of glob patterns (picomatch) to exclude (defaults to `['**/node_modules/**']`)

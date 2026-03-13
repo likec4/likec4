@@ -7,7 +7,6 @@ import type { LikeC4Services } from '../module'
 import type { ChangeView } from '../protocol'
 import { changeElementStyle } from './changeElementStyle'
 import { changeViewLayout } from './changeViewLayout'
-import { removeManualLayoutV1 } from './removeManualLayoutV1'
 
 const logger = mainLogger.getChild('model-changes')
 
@@ -43,13 +42,6 @@ export class LikeC4ModelChanges {
           viewId === change.layout.id,
           'View ID does not match, expected ' + viewId + ', got ' + change.layout.id,
         )
-        // If there is an existing manual layout v1
-        if (lookup.view.manualLayout && lspConnection) {
-          // We clean it up
-          await removeManualLayoutV1(this.services, { lookup }).catch(err => {
-            logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
-          })
-        }
         const location = await workspace.ManualLayouts.write(project, change.layout)
         return {
           success: true,
@@ -58,13 +50,6 @@ export class LikeC4ModelChanges {
       }
 
       if (change.op === 'reset-manual-layout') {
-        // If there is an existing manual layout v1
-        if (lookup.view.manualLayout) {
-          // We clean it up
-          await removeManualLayoutV1(this.services, { lookup }).catch(err => {
-            logger.warn(`Failed to remove manual layout v1 for view ${viewId} in project ${project.id}`, { err })
-          })
-        }
         const location = await workspace.ManualLayouts.remove(project, viewId)
         return {
           success: true,

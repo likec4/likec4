@@ -96,7 +96,7 @@ export const machine = setup({
   },
   delays: {
     '500ms': 500,
-    'waitBeforeSync': 2_000,
+    'waitBeforeSync': 1_000,
   },
   actors: {
     applyLatest,

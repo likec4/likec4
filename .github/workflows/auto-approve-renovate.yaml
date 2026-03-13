@@ -1,0 +1,33 @@
+name: auto-approve renovate
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+
+permissions:
+  pull-requests: write
+
+jobs:
+  approve:
+    name: approve
+    if: github.actor == 'renovate[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: 🤖 bot token
+        id: bot-token
+        uses: ./.github/actions/bot-token
+        with:
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key-base64: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          configure-git: "false"
+          fetch-user-id: "false"
+
+      - name: approve PR
+        run: gh pr review --approve "${{ github.event.pull_request.html_url }}"
+        env:
+          GH_TOKEN: ${{ steps.bot-token.outputs.token }}

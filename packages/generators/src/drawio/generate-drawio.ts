@@ -236,7 +236,7 @@ function drawioShape(shape: Node['shape']): string {
   const rectStyle = 'shape=rectangle;rounded=1;arcSize=12;'
   switch (shape) {
     case 'person':
-      return 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;'
+      return 'shape=actor;'
     case 'rectangle':
     case 'browser':
     case 'mobile':
@@ -685,6 +685,7 @@ function computeNodeStylePartsAndValue(
   const strokeColorByNodeId = options?.strokeColorByNodeId
   const strokeWidthByNodeId = options?.strokeWidthByNodeId
   const isContainer = containerNodeIds.has(node.id)
+  const nodeKind = (node as Node & { kind?: string }).kind ?? ''
   const title = node.title
   const desc = toExportString(node.description)
   const tech = toExportString(node.technology)
@@ -694,9 +695,12 @@ function computeNodeStylePartsAndValue(
   const navTo = toNonEmptyString(nodeOptionalFields.getNavigateTo(node))
   const iconName = toNonEmptyString(nodeOptionalFields.getIcon(node))
 
+  const isActor = nodeKind === 'actor' || node.shape === 'person'
   const shapeStyle = isContainer
     ? 'shape=rectangle;rounded=0;container=1;collapsible=0;startSize=0;'
-    : drawioShape(node.shape)
+    : isActor
+      ? 'shape=actor;'
+      : drawioShape(node.shape)
   const strokeColorOverride = strokeColorByNodeId?.[node.id]
   const strokeWidthOverride = strokeWidthByNodeId?.[node.id]
   const elemColors = strokeColorOverride
@@ -748,7 +752,6 @@ function computeNodeStylePartsAndValue(
     strokeHex,
     nodeNotation,
   })
-  const nodeKind = (node as Node & { kind?: string }).kind ?? ''
   const bridgeStyle = buildBridgeManagedStyleForNode(node.id, nodeKind, layout.view.id, options)
   const likec4StyleWithBridge = likec4Style + bridgeStyle
 
@@ -1412,4 +1415,17 @@ export function buildDrawioExportOptionsForViews(
   return Object.fromEntries(
     viewIds.map(viewId => [viewId, buildOptionsFromRoundtrip(viewId, roundtrip, overrides)]),
   )
+}
+
+/**
+ * Generate a draw.io editor URL that opens the given drawio XML pre-loaded.
+ * Uses the `#create=` fragment with compressed XML data.
+ *
+ * @param xml - A .drawio XML string (output of generateDrawio / generateDrawioMulti).
+ * @returns URL string like "https://app.diagrams.net/#create=..."
+ */
+export function generateDrawioEditUrl(xml: string): string {
+  const base64 = compressDrawioDiagramXml(xml)
+  const createObj = JSON.stringify({ type: 'xml', compressed: true, data: base64 })
+  return 'https://app.diagrams.net/#create=' + encodeURIComponent(createObj)
 }

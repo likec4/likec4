@@ -6,6 +6,7 @@ export {
   type DrawioExportProfile,
   type DrawioViewModelLike,
   generateDrawio,
+  generateDrawioEditUrl,
   generateDrawioMulti,
   type GenerateDrawioOptions,
 } from './drawio/generate-drawio'

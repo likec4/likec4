@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.49.0",
+  "version": "1.52.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -142,7 +142,7 @@
     "graphology": "catalog:",
     "graphology-dag": "catalog:",
     "graphology-types": "catalog:",
-    "mdast-util-from-markdown": "^2.0.2",
+    "mdast-util-from-markdown": "^2.0.3",
     "mdast-util-to-hast": "^13.2.1",
     "mdast-util-to-string": "^4.0.0",
     "mnemonist": "0.40.3",
