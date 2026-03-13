@@ -52,7 +52,7 @@ describe('toBridgeManifest', () => {
     const manifest = toBridgeManifest(model)
 
     expect(Object.keys(manifest.entities)).toHaveLength(1)
-    expect(manifest.entities['only'].canonicalId).toBe('only')
+    expect(manifest.entities['only']!.canonicalId).toBe('only')
     expect(Object.keys(manifest.views)).toHaveLength(1)
     expect(manifest.relations).toHaveLength(0)
   })
