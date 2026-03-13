@@ -4,27 +4,17 @@ exports[`bridge artifacts (golden snapshot) > leanix-dry-run.json shape 1`] = `
 {
   "factSheets": [
     {
-      "description": undefined,
       "likec4Id": "cloud",
-      "metadata": undefined,
       "name": "Cloud",
-      "tags": undefined,
-      "technology": undefined,
       "type": "Application",
     },
     {
-      "description": undefined,
       "likec4Id": "cloud.backend",
-      "metadata": undefined,
       "name": "Backend",
-      "tags": undefined,
-      "technology": undefined,
       "type": "ITComponent",
     },
     {
-      "description": undefined,
       "likec4Id": "cloud.backend.api",
-      "metadata": undefined,
       "name": "API",
       "tags": [
         "core",

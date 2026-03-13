@@ -10,12 +10,14 @@ function createMockClient(
 ): LeanixApiClient {
   return {
     graphql: async (query: string, variables?: Record<string, unknown>) => {
-      if (query.includes('FindFactSheet') && variables?.name != null && variables?.type != null) {
-        const key = `${String(variables.name)}|${String(variables.type)}`
+      const name = variables?.['name']
+      const type = variables?.['type']
+      if (query.includes('FindFactSheet') && name != null && type != null) {
+        const key = `${String(name)}|${String(type)}`
         const id = existingByKey.get(key)
         return {
           allFactSheets: {
-            edges: id ? [{ node: { id, name: variables.name, type: variables.type } }] : [],
+            edges: id ? [{ node: { id, name, type } }] : [],
           },
         }
       }

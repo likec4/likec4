@@ -20,9 +20,9 @@ describe('mapping', () => {
       const result = mergeWithDefault({
         factSheetTypes: { system: 'CustomApp' },
       })
-      expect(result.factSheetTypes.system).toBe('CustomApp')
-      expect(result.factSheetTypes.container).toBe('ITComponent')
-      expect(DEFAULT_LEANIX_MAPPING.factSheetTypes.system).toBe('Application')
+      expect(result.factSheetTypes['system']).toBe('CustomApp')
+      expect(result.factSheetTypes['container']).toBe('ITComponent')
+      expect(DEFAULT_LEANIX_MAPPING.factSheetTypes['system']).toBe('Application')
     })
   })
 

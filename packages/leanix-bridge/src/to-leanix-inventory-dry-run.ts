@@ -46,14 +46,16 @@ function buildFactSheetsFromModel(
   for (const el of model.elements()) {
     const fsType = getFactSheetType(el.kind, mapping)
     const meta = el.getMetadata()
+    const desc = typeof meta['description'] === 'string' ? meta['description'] : undefined
+    const tech = el.technology ?? (typeof meta['technology'] === 'string' ? meta['technology'] : undefined)
     factSheets.push({
       type: fsType,
       likec4Id: el.id,
       name: el.title,
-      description: typeof meta.description === 'string' ? meta.description : undefined,
-      technology: el.technology ?? (typeof meta.technology === 'string' ? meta.technology : undefined),
-      tags: el.tags.length > 0 ? [...el.tags] : undefined,
-      metadata: Object.keys(meta).length > 0 ? { ...meta } : undefined,
+      ...(desc !== undefined && { description: desc }),
+      ...(tech !== undefined && { technology: tech }),
+      ...(el.tags.length > 0 && { tags: [...el.tags] }),
+      ...(Object.keys(meta).length > 0 && { metadata: { ...meta } }),
     })
   }
   return factSheets
@@ -66,12 +68,13 @@ function buildRelationsFromModel(
 ): LeanixRelationDryRun[] {
   const relations: LeanixRelationDryRun[] = []
   for (const rel of model.relationships()) {
+    const titleVal = rel.title ?? rel.kind
     relations.push({
       type: getRelationType(rel.kind, mapping),
       likec4RelationId: rel.id,
       sourceLikec4Id: rel.source.id,
       targetLikec4Id: rel.target.id,
-      title: rel.title ?? rel.kind ?? undefined,
+      ...(titleVal != null && titleVal !== '' && { title: String(titleVal) }),
     })
   }
   return relations

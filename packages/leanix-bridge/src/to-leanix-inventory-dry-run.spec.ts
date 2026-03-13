@@ -25,8 +25,8 @@ describe('toLeanixInventoryDryRun', () => {
     expect(api?.tags).toEqual(['core'])
 
     expect(dryRun.relations).toHaveLength(2)
-    expect(dryRun.relations[0].sourceLikec4Id).toBe('cloud')
-    expect(dryRun.relations[0].targetLikec4Id).toBe('cloud.backend')
+    expect(dryRun.relations[0]!.sourceLikec4Id).toBe('cloud')
+    expect(dryRun.relations[0]!.targetLikec4Id).toBe('cloud.backend')
   })
 
   it('respects custom mapping for fact sheet types', () => {
@@ -64,8 +64,8 @@ describe('toLeanixInventoryDryRun', () => {
     const dryRun = toLeanixInventoryDryRun(model)
 
     expect(dryRun.factSheets).toHaveLength(1)
-    expect(dryRun.factSheets[0].likec4Id).toBe('solo')
-    expect(dryRun.factSheets[0].type).toBe('ITComponent')
+    expect(dryRun.factSheets[0]!.likec4Id).toBe('solo')
+    expect(dryRun.factSheets[0]!.type).toBe('ITComponent')
     expect(dryRun.relations).toHaveLength(0)
   })
 
@@ -81,8 +81,8 @@ describe('toLeanixInventoryDryRun', () => {
     const dryRun = toLeanixInventoryDryRun(model)
 
     expect(dryRun.relations).toHaveLength(1)
-    expect(dryRun.relations[0].sourceLikec4Id).toBe('x')
-    expect(dryRun.relations[0].targetLikec4Id).toBe('y')
-    expect(dryRun.relations[0].title).toBe('Link')
+    expect(dryRun.relations[0]!.sourceLikec4Id).toBe('x')
+    expect(dryRun.relations[0]!.targetLikec4Id).toBe('y')
+    expect(dryRun.relations[0]!.title).toBe('Link')
   })
 })

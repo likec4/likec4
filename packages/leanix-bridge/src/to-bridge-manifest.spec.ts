@@ -18,16 +18,16 @@ describe('toBridgeManifest', () => {
     expect(manifest.projectId).toBe('test-project')
 
     expect(Object.keys(manifest.entities)).toHaveLength(3)
-    expect(manifest.entities['cloud'].canonicalId).toBe('cloud')
-    expect(manifest.entities['cloud.backend.api'].canonicalId).toBe('cloud.backend.api')
+    expect(manifest.entities['cloud']!.canonicalId).toBe('cloud')
+    expect(manifest.entities['cloud.backend.api']!.canonicalId).toBe('cloud.backend.api')
 
     expect(Object.keys(manifest.views)).toHaveLength(2)
-    expect(manifest.views['index'].viewId).toBe('index')
+    expect(manifest.views['index']!.viewId).toBe('index')
 
     expect(manifest.relations).toHaveLength(2)
-    expect(manifest.relations[0].compositeKey).toBe('cloud|cloud.backend|r1')
-    expect(manifest.relations[1].sourceFqn).toBe('cloud.backend')
-    expect(manifest.relations[1].targetFqn).toBe('cloud.backend.api')
+    expect(manifest.relations[0]!.compositeKey).toBe('cloud|cloud.backend|r1')
+    expect(manifest.relations[1]!.sourceFqn).toBe('cloud.backend')
+    expect(manifest.relations[1]!.targetFqn).toBe('cloud.backend.api')
   })
 
   it('empty model produces empty entities/views/relations', () => {
@@ -69,8 +69,8 @@ describe('toBridgeManifest', () => {
     const manifest = toBridgeManifest(model)
 
     expect(manifest.relations).toHaveLength(1)
-    expect(manifest.relations[0].compositeKey).toBe('a|b|r1')
-    expect(manifest.relations[0].sourceFqn).toBe('a')
-    expect(manifest.relations[0].targetFqn).toBe('b')
+    expect(manifest.relations[0]!.compositeKey).toBe('a|b|r1')
+    expect(manifest.relations[0]!.sourceFqn).toBe('a')
+    expect(manifest.relations[0]!.targetFqn).toBe('b')
   })
 })
