@@ -120,10 +120,15 @@ dist
 
 # Local / temporary PR and process docs (não subir ao repo)
 PR_BODY*.md
+PR_*.md
 .review-*.md
 .review-*.txt
 .commit_msg*.txt
 .gh-pr-*.txt
+bot-reply.md
+
+# Documentação de apoio (reviews, PR body drafts, etc. — fora do padrão do repo)
+docs/PR-*-REVIEW.md
 
 # Architecture-intelligence planning docs (internal, not official project docs)
 docs/architecture-intelligence/
