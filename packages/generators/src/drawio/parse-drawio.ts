@@ -625,11 +625,15 @@ function assignFqnsToElementVertices(
   containerIdToTitle: Map<string, string>,
   isRootParent: (parent: string | undefined) => boolean,
   uniqueName: (base: string) => string,
+  usedNames: Set<string>,
 ): void {
   const baseName = (v: DrawioCell) => v.value ?? containerIdToTitle.get(v.id) ?? v.id
   for (const v of elementVertices) {
     const bridgeId = v.likec4Id?.trim()
-    if (bridgeId) idToFqn.set(v.id, bridgeId)
+    if (bridgeId) {
+      idToFqn.set(v.id, bridgeId)
+      for (const segment of bridgeId.split('.')) usedNames.add(segment)
+    }
   }
   for (const v of elementVertices) {
     if (idToFqn.has(v.id)) continue
@@ -1376,7 +1380,7 @@ function buildCommonDiagramStateFromCells(
   const elementVertices = vertices.filter(v => !titleCellIds.has(v.id))
   const usedNames = new Set<string>()
   const uniqueName = makeUniqueName(usedNames)
-  assignFqnsToElementVertices(idToFqn, elementVertices, containerIdToTitle, isRootParent, uniqueName)
+  assignFqnsToElementVertices(idToFqn, elementVertices, containerIdToTitle, isRootParent, uniqueName, usedNames)
   const hexToCustomName = buildHexToCustomName(elementVertices, edges)
   const children = new Map<string, Array<{ cellId: string; fqn: string }>>()
   const roots: Array<{ cellId: string; fqn: string }> = []

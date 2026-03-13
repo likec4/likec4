@@ -9,9 +9,9 @@ export function createFixtureModel(overrides: Partial<{
 }> = {}): BridgeModelInput {
   const projectId = overrides.projectId ?? 'test-project'
   const elements = overrides.elements ?? [
-    { id: 'cloud', kind: 'system', title: 'Cloud', tags: [], getMetadata: () => ({}) },
-    { id: 'cloud.backend', kind: 'container', title: 'Backend', tags: [], getMetadata: () => ({}) },
-    { id: 'cloud.backend.api', kind: 'component', title: 'API', tags: ['core'], technology: 'Node', getMetadata: () => ({}) },
+    { id: 'cloud', kind: 'system', title: 'Cloud', tags: [], metadata: {} },
+    { id: 'cloud.backend', kind: 'container', title: 'Backend', tags: [], metadata: {} },
+    { id: 'cloud.backend.api', kind: 'component', title: 'API', tags: ['core'], technology: 'Node', metadata: {} },
   ]
   const relations = overrides.relations ?? [
     { id: 'r1', source: 'cloud', target: 'cloud.backend', kind: 'contains', title: null },

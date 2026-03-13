@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { BRIDGE_VERSION } from './contracts'
 import { toBridgeManifest } from './to-bridge-manifest'
 import { createFixtureModel } from './fixture-model'
 
@@ -12,7 +13,7 @@ describe('toBridgeManifest', () => {
 
     expect(manifest.manifestVersion).toBe('1.0')
     expect(manifest.generatedAt).toBe('2025-01-15T12:00:00.000Z')
-    expect(manifest.bridgeVersion).toBe('0.1.0')
+    expect(manifest.bridgeVersion).toBe(BRIDGE_VERSION)
     expect(manifest.mappingProfile).toBe('test')
     expect(manifest.projectId).toBe('test-project')
 

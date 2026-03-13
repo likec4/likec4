@@ -19,8 +19,8 @@ describe('bridge artifacts (golden snapshot)', () => {
   })
 
   it('report.json shape', () => {
-    const manifest = toBridgeManifest(model, { generatedAt: fixedDate })
-    const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate })
+    const manifest = toBridgeManifest(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
+    const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
     const report = toReport(manifest, dryRun)
     expect(report).toMatchSnapshot()
   })

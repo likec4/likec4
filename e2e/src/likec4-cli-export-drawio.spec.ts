@@ -45,7 +45,8 @@ test(
     expect(drawioFiles.length).toBeGreaterThan(0)
     const content = readFileSync(join(outDirAbs, drawioFiles[0]!.name), 'utf8')
     expect(content).toContain('<mxfile')
-    expect(content).toMatch(/bridgeManaged=true|likec4Id=/)
+    expect(content).toContain('bridgeManaged=true')
+    expect(content).toMatch(/likec4Id=/)
   },
 )
 

@@ -25,6 +25,15 @@ export function toReport(
   manifest: BridgeManifest,
   leanixDryRun: LeanixInventoryDryRun,
 ): BridgeReport {
+  if (
+    manifest.projectId !== leanixDryRun.projectId ||
+    manifest.mappingProfile !== leanixDryRun.mappingProfile
+  ) {
+    throw new Error(
+      'Manifest and LeanIX dry-run artifacts must belong to the same project/profile',
+    )
+  }
+
   return {
     generatedAt: manifest.generatedAt,
     projectId: manifest.projectId,

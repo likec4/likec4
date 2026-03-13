@@ -167,7 +167,7 @@ const drawioWithBridgeManagedIds = `<?xml version="1.0" encoding="UTF-8"?>
   </diagram>
 </mxfile>`
 
-test('parse DrawIO to LikeC4 - bridge-managed likec4Id yields FQN identity and likec4RelationId is preserved on edge', () => {
+test('parse DrawIO to LikeC4 - bridge-managed likec4Id yields stable FQN identity', () => {
   const result = parseDrawioToLikeC4(drawioWithBridgeManagedIds)
   expect(result).toContain('Frontend')
   expect(result).toContain('Backend')

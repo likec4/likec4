@@ -1,6 +1,6 @@
 /**
  * Configurable LeanIX mapping: LikeC4 kinds/relations/tags → LeanIX fact sheet types and fields.
- * No universal taxonomy; safe defaults, actor mapping conservative (skip or explicit).
+ * No universal taxonomy; safe defaults. Actor kind maps to 'Provider' unless overridden.
  */
 
 export interface LeanixMappingConfig {
@@ -12,7 +12,7 @@ export interface LeanixMappingConfig {
   metadataToFields?: Record<string, string>
 }
 
-/** Default mapping: conservative, skip actor unless explicitly set */
+/** Default mapping: actor → Provider; override factSheetTypes/relationTypes as needed */
 export const DEFAULT_LEANIX_MAPPING: Required<LeanixMappingConfig> = {
   factSheetTypes: {
     system: 'Application',
@@ -31,13 +31,18 @@ export const DEFAULT_LEANIX_MAPPING: Required<LeanixMappingConfig> = {
 }
 
 export function mergeWithDefault(partial?: LeanixMappingConfig | null): Required<LeanixMappingConfig> {
+  const base = {
+    factSheetTypes: { ...DEFAULT_LEANIX_MAPPING.factSheetTypes },
+    relationTypes: { ...DEFAULT_LEANIX_MAPPING.relationTypes },
+    metadataToFields: { ...DEFAULT_LEANIX_MAPPING.metadataToFields },
+  }
   if (!partial) {
-    return { ...DEFAULT_LEANIX_MAPPING }
+    return base
   }
   return {
-    factSheetTypes: { ...DEFAULT_LEANIX_MAPPING.factSheetTypes, ...partial.factSheetTypes },
-    relationTypes: { ...DEFAULT_LEANIX_MAPPING.relationTypes, ...partial.relationTypes },
-    metadataToFields: { ...DEFAULT_LEANIX_MAPPING.metadataToFields, ...partial.metadataToFields },
+    factSheetTypes: { ...base.factSheetTypes, ...partial.factSheetTypes },
+    relationTypes: { ...base.relationTypes, ...partial.relationTypes },
+    metadataToFields: { ...base.metadataToFields, ...partial.metadataToFields },
   }
 }
 
