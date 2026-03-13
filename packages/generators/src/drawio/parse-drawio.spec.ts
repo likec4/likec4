@@ -1,5 +1,6 @@
 import pako from 'pako'
 import { describe, expect, test } from 'vitest'
+import type { DiagramInfo, DrawioRoundtripData } from './parse-drawio'
 import { decompressDrawioDiagram } from './parse-drawio'
 import {
   getAllDiagrams,
@@ -7,6 +8,13 @@ import {
   parseDrawioToLikeC4,
   parseDrawioToLikeC4Multi,
 } from '../../dist/index.mjs'
+
+declare module '../../dist/index.mjs' {
+  export function getAllDiagrams(xml: string): DiagramInfo[]
+  export function parseDrawioRoundtripComments(xml: string): DrawioRoundtripData | null
+  export function parseDrawioToLikeC4(xml: string): string
+  export function parseDrawioToLikeC4Multi(xml: string): string
+}
 
 const minimalDrawio = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="test">

@@ -20,8 +20,8 @@ export interface SyncToLeanixResult {
   manifest: BridgeManifest
   /** Count of fact sheets created. */
   factSheetsCreated: number
-  /** Count of fact sheets updated (when idempotent and found). */
-  factSheetsUpdated: number
+  /** Count of fact sheets reused (when idempotent and found; no mutation). */
+  factSheetsReused: number
   /** Count of relations created. */
   relationsCreated: number
   /** Errors encountered (e.g. rate limit, validation). Partial sync may still have updated manifest. */
@@ -215,7 +215,7 @@ function applyLeanixIdsToEntities(
 interface SyncFactSheetsResult {
   likec4IdToFactSheetId: Map<CanonicalId, string>
   factSheetsCreated: number
-  factSheetsUpdated: number
+  factSheetsReused: number
   errors: string[]
 }
 
@@ -229,14 +229,14 @@ async function syncFactSheetsToLeanix(
   const likec4IdToFactSheetId = new Map<CanonicalId, string>()
   const errors: string[] = []
   let factSheetsCreated = 0
-  let factSheetsUpdated = 0
+  let factSheetsReused = 0
 
   for (const fs of factSheets) {
     try {
       let factSheetId: string | null = null
       if (idempotent) {
         factSheetId = await findFactSheetByNameAndType(client, fs.name, fs.type)
-        if (factSheetId) factSheetsUpdated++
+        if (factSheetId) factSheetsReused++
       }
       if (!factSheetId) {
         factSheetId = await createFactSheet(client, fs, likec4IdAttribute)
@@ -248,7 +248,7 @@ async function syncFactSheetsToLeanix(
     }
   }
 
-  return { likec4IdToFactSheetId, factSheetsCreated, factSheetsUpdated, errors }
+  return { likec4IdToFactSheetId, factSheetsCreated, factSheetsReused, errors }
 }
 
 /** Result of syncing relations: updated relations array and count/errors. */
@@ -380,7 +380,7 @@ export async function syncToLeanix(
       relations: relResult.updatedRelations,
     },
     factSheetsCreated: fsResult.factSheetsCreated,
-    factSheetsUpdated: fsResult.factSheetsUpdated,
+    factSheetsReused: fsResult.factSheetsReused,
     relationsCreated: relResult.relationsCreated,
     errors: [...fsResult.errors, ...relResult.errors],
   }
