@@ -105,7 +105,17 @@ const LEANIX_PROVIDER = 'leanix' as const
 
 /** Normalise caught value to a string for error reporting (Clean Code: context in errors). */
 function toErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err)
+  if (err instanceof Error) {
+    return err.stack ? `${err.message}\n${err.stack}` : err.message
+  }
+  if (typeof err === 'object' && err !== null) {
+    try {
+      return JSON.stringify(err, null, 2)
+    } catch {
+      return Object.prototype.toString.call(err)
+    }
+  }
+  return String(err)
 }
 
 /** GraphQL: search fact sheets by name and type (for idempotency). Returns null only when not found; throws on API/network error. */
@@ -170,6 +180,31 @@ async function findFactSheetByLikec4IdAttribute(
   return first?.id ?? null
 }
 
+/**
+ * GraphQL: patch an existing fact sheet to set a custom attribute (e.g. likec4Id for stable-ID backfill).
+ * Schema varies by workspace; uses updateFactSheet with a single replace patch when supported.
+ */
+async function patchFactSheetAttribute(
+  client: LeanixApiClient,
+  factSheetId: string,
+  attributeKey: string,
+  value: string,
+): Promise<void> {
+  type UpdateResult = { updateFactSheet?: { factSheet?: { id: string } } }
+  const patches = [{ op: 'replace', path: `/factSheetAttributes/${attributeKey}`, value }]
+  const mutation = `
+    mutation UpdateFactSheet($id: ID!, $patches: [Patch]) {
+      updateFactSheet(id: $id, patches: $patches) {
+        factSheet { id }
+      }
+    }
+  `
+  const data = await client.graphql<UpdateResult>(mutation, { id: factSheetId, patches })
+  if (!data.updateFactSheet?.factSheet?.id) {
+    throw new Error(`updateFactSheet did not return fact sheet (id=${factSheetId}, attribute=${attributeKey})`)
+  }
+}
+
 /** GraphQL: create fact sheet (name, type, optional patches for description and custom likec4Id). */
 async function createFactSheet(
   client: LeanixApiClient,
@@ -202,7 +237,7 @@ async function createFactSheet(
 /**
  * Create a relation between two fact sheets.
  * LeanIX GraphQL schema varies by workspace; this uses a generic createRelation if available.
- * Falls back to no-op and logs; relation types are meta-model specific.
+ * Throws when the mutation returns no relation id so callers can record the failure.
  */
 async function createRelation(
   client: LeanixApiClient,
@@ -210,7 +245,7 @@ async function createRelation(
   targetFactSheetId: string,
   relationType: string,
   _title?: string,
-): Promise<string | null> {
+): Promise<string> {
   type CreateResult = { createRelation?: { relation?: { id: string } } }
   const mutation = `
     mutation CreateRelation($source: ID!, $target: ID!, $type: String!) {
@@ -224,7 +259,14 @@ async function createRelation(
     target: targetFactSheetId,
     type: relationType,
   })
-  return data.createRelation?.relation?.id ?? null
+  const id = data.createRelation?.relation?.id
+  if (!id) {
+    const payload = JSON.stringify(data, null, 2)
+    throw new Error(
+      `createRelation did not return relation id (sourceFactSheetId=${sourceFactSheetId}, targetFactSheetId=${targetFactSheetId}, relationType=${relationType}). Response: ${payload}`,
+    )
+  }
+  return id
 }
 
 /** Applies LeanIX fact sheet IDs to manifest entities; returns new entities object. */
@@ -271,6 +313,12 @@ async function syncFactSheetsToLeanix(
       if (idempotent) {
         if (likec4IdAttribute) {
           factSheetId = await findFactSheetByLikec4IdAttribute(client, likec4IdAttribute, fs.likec4Id)
+          if (!factSheetId) {
+            factSheetId = await findFactSheetByNameAndType(client, fs.name, fs.type)
+            if (factSheetId && fs.likec4Id) {
+              await patchFactSheetAttribute(client, factSheetId, likec4IdAttribute, fs.likec4Id)
+            }
+          }
         } else {
           factSheetId = await findFactSheetByNameAndType(client, fs.name, fs.type)
         }
@@ -321,14 +369,12 @@ async function syncRelationsToLeanix(
       if (dryRel) {
         try {
           const relationId = await createRelation(client, sourceId, targetId, dryRel.type, dryRel.title)
-          if (relationId) {
-            relationsCreated++
-            updatedRelations.push({
-              ...rel,
-              external: { ...rel.external, [LEANIX_PROVIDER]: { relationId, ...rel.external?.[LEANIX_PROVIDER] } },
-            })
-            continue
-          }
+          relationsCreated++
+          updatedRelations.push({
+            ...rel,
+            external: { ...rel.external, [LEANIX_PROVIDER]: { relationId, ...rel.external?.[LEANIX_PROVIDER] } },
+          })
+          continue
         } catch (e) {
           errors.push(`Relation ${rel.compositeKey}: ${toErrorMessage(e)}`)
         }
@@ -361,6 +407,7 @@ export async function planSyncToLeanix(
       if (idempotent) {
         if (likec4IdAttribute) {
           existingId = await findFactSheetByLikec4IdAttribute(client, likec4IdAttribute, fs.likec4Id)
+          if (!existingId) existingId = await findFactSheetByNameAndType(client, fs.name, fs.type)
         } else {
           existingId = await findFactSheetByNameAndType(client, fs.name, fs.type)
         }
