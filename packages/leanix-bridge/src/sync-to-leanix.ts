@@ -120,6 +120,24 @@ async function createRelation(
   }
 }
 
+/** Applies LeanIX fact sheet IDs to manifest entities; returns new entities object. */
+function applyLeanixIdsToEntities(
+  entities: BridgeManifest['entities'],
+  likec4IdToFactSheetId: Map<CanonicalId, string>,
+): BridgeManifest['entities'] {
+  const out = { ...entities }
+  for (const [canonicalId, entity] of Object.entries(entities)) {
+    const leanixId = likec4IdToFactSheetId.get(canonicalId)
+    if (leanixId) {
+      out[canonicalId] = {
+        ...entity,
+        external: { ...entity.external, [LEANIX_PROVIDER]: { factSheetId: leanixId, externalId: leanixId } },
+      }
+    }
+  }
+  return out
+}
+
 /**
  * Syncs the dry-run inventory to LeanIX: creates or finds fact sheets, creates relations,
  * and returns an updated manifest with external LeanIX IDs.
@@ -155,16 +173,7 @@ export async function syncToLeanix(
     }
   }
 
-  const updatedEntities: BridgeManifest['entities'] = { ...manifest.entities }
-  for (const [canonicalId, entity] of Object.entries(manifest.entities)) {
-    const leanixId = likec4IdToFactSheetId.get(canonicalId)
-    if (leanixId) {
-      updatedEntities[canonicalId] = {
-        ...entity,
-        external: { ...entity.external, [LEANIX_PROVIDER]: { factSheetId: leanixId, externalId: leanixId } },
-      }
-    }
-  }
+  const updatedEntities = applyLeanixIdsToEntities(manifest.entities, likec4IdToFactSheetId)
 
   const updatedRelations: BridgeManifest['relations'] = []
   for (const rel of manifest.relations) {

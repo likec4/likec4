@@ -58,7 +58,7 @@ export function toLeanixInventoryDryRun(
       likec4Id: el.id,
       name: el.title,
       description: typeof meta.description === 'string' ? meta.description : undefined,
-      technology: el.technology ?? (meta.technology as string) ?? undefined,
+      technology: el.technology ?? (typeof meta.technology === 'string' ? meta.technology : undefined),
       tags: el.tags.length > 0 ? [...el.tags] : undefined,
       metadata: Object.keys(meta).length > 0 ? { ...meta } : undefined,
     })

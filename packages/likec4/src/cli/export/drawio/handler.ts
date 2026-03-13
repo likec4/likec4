@@ -144,6 +144,20 @@ async function getSourceContentIfRoundtrip(
   return readWorkspaceSourceContent(resolve(workspacePath), logger)
 }
 
+/** Build overrides for drawio export: compressed flag and optional leanix profile. */
+function buildDrawioExportOverrides(
+  uncompressed: boolean,
+  profile: 'default' | 'leanix',
+  projectId: string,
+): Partial<GenerateDrawioOptions> {
+  const overrides: Partial<GenerateDrawioOptions> = uncompressed ? { compressed: false } : { compressed: true }
+  if (profile === 'leanix') {
+    overrides.profile = 'leanix'
+    overrides.projectId = projectId
+  }
+  return overrides
+}
+
 /**
  * Build per-view export options from optional source (delegates to shared generator).
  * @param viewmodels - Layouted view models
@@ -161,11 +175,7 @@ function buildOptionsByViewId(
   projectId: string,
 ): Record<string, GenerateDrawioOptions> {
   const viewIds = viewmodels.map(vm => String(vm.$view.id))
-  const overrides: Partial<GenerateDrawioOptions> = uncompressed ? { compressed: false } : {}
-  if (profile === 'leanix') {
-    overrides.profile = 'leanix'
-    overrides.projectId = projectId
-  }
+  const overrides = buildDrawioExportOverrides(uncompressed, profile, projectId)
   return buildDrawioExportOptionsForViews(viewIds, sourceContent, overrides)
 }
 

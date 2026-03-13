@@ -888,6 +888,15 @@ function getViewDescriptionString(view: View): string {
   return ''
 }
 
+/** Returns draw.io style tokens for the leanix profile (bridgeManaged, likec4ViewId, likec4ProjectId). Each token ends with ";". */
+function getLeanixRootStyleParts(view: View, options: GenerateDrawioOptions): string[] {
+  const parts = ['bridgeManaged=true;', `likec4ViewId=${encodeURIComponent(view.id)};`]
+  if (options.projectId != null && options.projectId !== '') {
+    parts.push(`likec4ProjectId=${encodeURIComponent(options.projectId)};`)
+  }
+  return parts
+}
+
 /** Build root cell style string from view metadata (title, description, notation) for round-trip; when profile is 'leanix' adds likec4ViewId, likec4ProjectId, bridgeManaged. */
 function buildRootCellStyle(view: View, options: GenerateDrawioOptions | undefined): string {
   const viewTitle = getViewTitle(view)
@@ -896,17 +905,14 @@ function buildRootCellStyle(view: View, options: GenerateDrawioOptions | undefin
   const viewNotationRaw = (view as unknown as { notation?: unknown }).notation
   const viewNotation = typeof viewNotationRaw === 'string' && viewNotationRaw !== '' ? viewNotationRaw : undefined
   const viewNotationEnc = viewNotation != null ? encodeURIComponent(viewNotation) : ''
-  const rootParts = [
+  const rootParts: string[] = [
     'rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;',
     `likec4ViewTitle=${encodeURIComponent(viewTitle ?? view.id)};`,
     viewDescEnc !== '' ? `likec4ViewDescription=${viewDescEnc};` : '',
     viewNotationEnc !== '' ? `likec4ViewNotation=${viewNotationEnc};` : '',
   ]
   if (options?.profile === 'leanix') {
-    rootParts.push('bridgeManaged=true', `likec4ViewId=${encodeURIComponent(view.id)}`)
-    if (options.projectId != null && options.projectId !== '') {
-      rootParts.push(`likec4ProjectId=${encodeURIComponent(options.projectId)}`)
-    }
+    rootParts.push(...getLeanixRootStyleParts(view, options))
   }
   return rootParts.join('')
 }

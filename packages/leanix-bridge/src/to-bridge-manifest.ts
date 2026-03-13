@@ -19,9 +19,8 @@ export interface ToBridgeManifestOptions {
   mappingProfile?: string
 }
 
-const defaultOptions: Required<ToBridgeManifestOptions> = {
+const defaultOptions: Omit<Required<ToBridgeManifestOptions>, 'generatedAt'> = {
   manifestVersion: BRIDGE_MANIFEST_VERSION,
-  generatedAt: new Date().toISOString(),
   bridgeVersion: BRIDGE_VERSION,
   mappingProfile: 'default',
 }
@@ -34,7 +33,11 @@ export function toBridgeManifest(
   model: BridgeModelInput,
   options: ToBridgeManifestOptions = {},
 ): BridgeManifest {
-  const opts = { ...defaultOptions, ...options }
+  const opts: Required<ToBridgeManifestOptions> = {
+    ...defaultOptions,
+    ...options,
+    generatedAt: options.generatedAt ?? new Date().toISOString(),
+  }
 
   const entities: Record<CanonicalId, ManifestEntity> = {}
   for (const el of model.elements()) {
