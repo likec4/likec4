@@ -1653,7 +1653,7 @@ importers:
         version: 22.19.11
       obuild:
         specifier: catalog:obuild
-        version: 0.4.27(@typescript/native-preview@7.0.0-dev.20260208.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260303.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
