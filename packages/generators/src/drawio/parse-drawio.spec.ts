@@ -1,20 +1,18 @@
-/// <reference path="./drawio-dist-ambient.ts" />
 /**
  * DrawIO parse tests — boundary (Clean Code: Fronteiras).
- * - Parse helpers (getAllDiagrams, parseDrawioToLikeC4, …) from built dist so runtime matches production (e.g. actor shape).
+ * - Parse helpers loaded from built dist at runtime (beforeAll) so tests match production (e.g. actor shape). No static import from dist so CI typecheck passes without dist.
  * - decompressDrawioDiagram from ./parse-drawio to avoid Vitest re-export "is not a function" when using the barrel.
- * - parseDrawioRoundtripComments is cast to DrawioRoundtripData | null because the ambient declaration uses a generic type for CI typecheck without dist; runtime is DrawioRoundtripData.
  */
 import pako from 'pako'
-import { describe, expect, test } from 'vitest'
+import { beforeAll, describe, expect, test } from 'vitest'
+import type { DrawioDistApi } from './drawio-dist-ambient'
 import type { DrawioRoundtripData } from './parse-drawio'
 import { decompressDrawioDiagram } from './parse-drawio'
-import {
-  getAllDiagrams,
-  parseDrawioRoundtripComments,
-  parseDrawioToLikeC4,
-  parseDrawioToLikeC4Multi,
-} from '../../dist/index.mjs'
+
+let distApi: DrawioDistApi
+beforeAll(async () => {
+  distApi = await import('../../dist/index.mjs')
+})
 
 const minimalDrawio = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="test">
@@ -55,16 +53,16 @@ const drawioWithLikeC4Data = `<?xml version="1.0" encoding="UTF-8"?>
 
 describe('parseDrawioToLikeC4', () => {
   test('parse DrawIO to LikeC4 - minimal diagram', () => {
-    expect(parseDrawioToLikeC4(minimalDrawio)).toMatchSnapshot()
+    expect(distApi.parseDrawioToLikeC4(minimalDrawio)).toMatchSnapshot()
   })
 
   test('parse DrawIO to LikeC4 - with LikeC4 description and technology', () => {
-    expect(parseDrawioToLikeC4(drawioWithLikeC4Data)).toMatchSnapshot()
+    expect(distApi.parseDrawioToLikeC4(drawioWithLikeC4Data)).toMatchSnapshot()
   })
 
   test('parse DrawIO to LikeC4 - empty XML returns minimal model', () => {
     // No <diagram> wrapper: getAllDiagrams returns [], getFirstDiagram fallback yields default { name: 'index', id: '...', content: '' }; exercises fallback path
-    const result = parseDrawioToLikeC4('<?xml version="1.0"?><mxfile><root><mxCell id="0"/></root></mxfile>')
+    const result = distApi.parseDrawioToLikeC4('<?xml version="1.0"?><mxfile><root><mxCell id="0"/></root></mxfile>')
     expect(result).toContain('model {')
     expect(result).toContain('views {')
     expect(result).toContain('view index {')
@@ -87,7 +85,7 @@ const drawioWithCustomDataKeys = `<?xml version="1.0" encoding="UTF-8"?>
 </mxfile>`
 
 test('parse DrawIO to LikeC4 - vertex with custom mxUserObject data keys emits customData comment', () => {
-  const result = parseDrawioToLikeC4(drawioWithCustomDataKeys)
+  const result = distApi.parseDrawioToLikeC4(drawioWithCustomDataKeys)
   expect(result).toContain('description \'Mapped desc\'')
   expect(result).toContain('// <likec4.customData>')
   expect(result).toContain('// </likec4.customData>')
@@ -108,14 +106,14 @@ const drawioWithShapeActor = `<?xml version="1.0" encoding="UTF-8"?>
 </mxfile>`
 
 test('parse DrawIO - first diagram content has User mxCell with style=actor', () => {
-  const [diagram] = getAllDiagrams(drawioWithShapeActor)
+  const [diagram] = distApi.getAllDiagrams(drawioWithShapeActor)
   expect(diagram?.content).toBeDefined()
   expect(diagram!.content).toContain('style=')
   expect(diagram!.content.toLowerCase()).toContain('shape=actor')
 })
 
 test('parse DrawIO to LikeC4 - vertex with shape=actor emits actor with shape person', () => {
-  const result = parseDrawioToLikeC4(drawioWithShapeActor)
+  const result = distApi.parseDrawioToLikeC4(drawioWithShapeActor)
   expect(result).toContain("actor 'User'")
   expect(result).toContain('shape person')
   expect(result).toMatchSnapshot()
@@ -137,7 +135,7 @@ const drawioEdgeWithLikeC4Style = `<?xml version="1.0" encoding="UTF-8"?>
 </mxfile>`
 
 test('parse DrawIO to LikeC4 - edge with LikeC4 style (description, technology, notes, navigateTo, arrows, dashed)', () => {
-  expect(parseDrawioToLikeC4(drawioEdgeWithLikeC4Style)).toMatchSnapshot()
+  expect(distApi.parseDrawioToLikeC4(drawioEdgeWithLikeC4Style)).toMatchSnapshot()
 })
 
 const drawioWithUserObjectLink = `<?xml version="1.0" encoding="UTF-8"?>
@@ -158,7 +156,7 @@ const drawioWithUserObjectLink = `<?xml version="1.0" encoding="UTF-8"?>
 </mxfile>`
 
 test('parse DrawIO to LikeC4 - UserObject with link=data:page/id,likec4-<viewId> yields navigateTo in model', () => {
-  const result = parseDrawioToLikeC4(drawioWithUserObjectLink)
+  const result = distApi.parseDrawioToLikeC4(drawioWithUserObjectLink)
   expect(result).toContain('navigateTo saas')
   expect(result).toContain('Our SaaS')
   expect(result).toMatchSnapshot()
@@ -184,7 +182,7 @@ const drawioWithBridgeManagedIds = `<?xml version="1.0" encoding="UTF-8"?>
 </mxfile>`
 
 test('parse DrawIO to LikeC4 - bridge-managed likec4Id yields stable FQN identity', () => {
-  const result = parseDrawioToLikeC4(drawioWithBridgeManagedIds)
+  const result = distApi.parseDrawioToLikeC4(drawioWithBridgeManagedIds)
   expect(result).toContain('Frontend')
   expect(result).toContain('Backend')
   expect(result).toContain('Frontend -> Backend')
@@ -212,7 +210,7 @@ const drawioTwoTabs = `<?xml version="1.0" encoding="UTF-8"?>
 
 describe('parseDrawioToLikeC4Multi', () => {
   test('two diagrams produce one model and two views with include lists', () => {
-    const result = parseDrawioToLikeC4Multi(drawioTwoTabs)
+    const result = distApi.parseDrawioToLikeC4Multi(drawioTwoTabs)
     expect(result).toContain('view overview')
     expect(result).toContain('view detail')
     expect(result).toContain('include A, B')
@@ -243,7 +241,7 @@ views { view v1 { include * } }
 // A|B [[50,40],[150,40]]
 // </likec4.edge.waypoints>
 `
-    const data = parseDrawioRoundtripComments(c4WithComments) as DrawioRoundtripData | null
+    const data = distApi.parseDrawioRoundtripComments(c4WithComments) as DrawioRoundtripData | null
     expect(data).not.toBeNull()
     expect(data!.layoutByView['v1']?.nodes?.['A']).toEqual({ x: 10, y: 20, width: 100, height: 50 })
     expect(data!.layoutByView['v1']?.nodes?.['B']).toEqual({ x: 200, y: 20, width: 80, height: 40 })
@@ -258,8 +256,8 @@ views { view v1 { include * } }
   })
 
   test('returns null when no comment blocks', () => {
-    expect(parseDrawioRoundtripComments('model { }\nviews { }')).toBeNull()
-    expect(parseDrawioRoundtripComments('')).toBeNull()
+    expect(distApi.parseDrawioRoundtripComments('model { }\nviews { }')).toBeNull()
+    expect(distApi.parseDrawioRoundtripComments('')).toBeNull()
   })
 })
 
