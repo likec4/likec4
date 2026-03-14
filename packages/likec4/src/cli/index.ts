@@ -26,6 +26,7 @@ import mcpCmd from './mcp'
 import { logLevel, verbose, verboseLogLevel } from './options'
 import previewCmd from './preview'
 import serveCmd from './serve'
+import syncCmd from './sync'
 import validateCmd from './validate'
 
 /**
@@ -67,6 +68,7 @@ async function main() {
     exportCmd,
     formatCmd,
     previewCmd,
+    syncCmd,
     validateCmd,
     mcpCmd,
     lspCmd,

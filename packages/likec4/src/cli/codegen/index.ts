@@ -3,6 +3,7 @@ import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { outdir, path, project, useCorePackage, useDotBin, webcomponentPrefix } from '../options'
 import { customHandler } from './custom'
+import { leanixDryRunHandler } from './leanix-dry-run'
 import { legacyHandler } from './handler'
 import { modelHandler } from './model'
 import { reactHandler } from './react'
@@ -131,6 +132,33 @@ const codegenCmd = (yargs: yargs.Argv) => {
             },
           })
           // ----------------------
+          // leanix-dry-run command (bridge artifacts without live sync)
+          .command({
+            command: 'leanix-dry-run [path]',
+            describe: 'generate LeanIX bridge artifacts (manifest, dry-run inventory, report)',
+            builder: yargs =>
+              yargs
+                .positional('path', path)
+                .option('outdir', {
+                  ...outdir,
+                  desc: '<dir> output directory for manifest.json, leanix-dry-run.json, report.json',
+                })
+                .option('project', project)
+                .option('use-dot', useDotBin)
+                .example(
+                  `${k.green('$0 gen leanix-dry-run -o out/bridge')}`,
+                  k.gray('Write bridge artifacts to out/bridge'),
+                ),
+            handler: async args => {
+              await leanixDryRunHandler({
+                path: args.path,
+                outdir: args.outdir ?? resolve(process.cwd(), 'out', 'bridge'),
+                project: args.project,
+                useDotBin: args.useDotBin,
+              })
+            },
+          })
+          // ----------------------
           // dot command
           .command({
             command: 'dot [path]',
@@ -228,6 +256,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
           .epilog(`${k.bold('Examples:')}
   likec4 gen react -o dist/likec4-views.mjs ./src/likec4
   likec4 gen model -o likec4-model.ts
+  likec4 gen leanix-dry-run -o out/bridge
   likec4 gen ts --outfile likec4-model.ts
   likec4 gen webcomponent -o likec4.js --webcomponent-prefix c4 --use-dot ./src
   likec4 gen mmd --outdir assets/

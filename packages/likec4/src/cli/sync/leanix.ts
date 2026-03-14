@@ -1,0 +1,103 @@
+/**
+ * likec4 sync leanix --dry-run | --apply
+ * Writes bridge artifacts to out/bridge; with --apply runs live sync when LEANIX_API_TOKEN is set.
+ */
+
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { writeFile } from 'node:fs/promises'
+import { relative, resolve } from 'node:path'
+import k from 'tinyrainbow'
+import { LeanixApiClient, planSyncToLeanix, syncToLeanix } from '@likec4/leanix-bridge'
+import {
+  asBridgeModel,
+  BRIDGE_ARTIFACT_NAMES,
+  buildBridgeArtifacts,
+  ERR_EMPTY_MODEL,
+  ERR_LEANIX_TOKEN_REQUIRED,
+  writeBridgeArtifacts,
+} from '../bridge/shared'
+import { createLikeC4Logger, startTimer } from '../../logger'
+import { LikeC4Model } from '../../model'
+import { ensureProject } from '../utils'
+
+const LEANIX_BASE_URL_DEFAULT = 'https://app.leanix.net'
+const LEANIX_REQUEST_DELAY_MS = 200
+const SYNC_PLAN_FILENAME = 'sync-plan.json'
+
+function createLeanixClientFromEnv(): LeanixApiClient | null {
+  const apiToken = process.env['LEANIX_API_TOKEN']
+  if (!apiToken) return null
+  return new LeanixApiClient({
+    apiToken,
+    baseUrl: process.env['LEANIX_BASE_URL'] ?? LEANIX_BASE_URL_DEFAULT,
+    requestDelayMs: LEANIX_REQUEST_DELAY_MS,
+  })
+}
+
+export type SyncLeanixArgs = {
+  path: string
+  outdir: string
+  project: string | undefined
+  useDotBin: boolean
+  dryRun: boolean
+  apply: boolean
+}
+
+export async function runSyncLeanix(args: SyncLeanixArgs): Promise<void> {
+  const logger = createLikeC4Logger('c4:sync:leanix')
+  const timer = startTimer(logger)
+  const { path: workspacePath, outdir, project, useDotBin, dryRun, apply } = args
+
+  await using likec4 = await fromWorkspace(workspacePath, {
+    graphviz: useDotBin ? 'binary' : 'wasm',
+    watch: false,
+  })
+  const { projectId } = ensureProject(likec4, project)
+  if (project) {
+    logger.info(`${k.dim('project')} ${k.green(projectId)}`)
+  }
+
+  const model = await likec4.layoutedModel(projectId)
+  if (model === LikeC4Model.EMPTY) {
+    logger.error(ERR_EMPTY_MODEL)
+    throw new Error(ERR_EMPTY_MODEL)
+  }
+
+  const bridgeModel = asBridgeModel(model)
+  const artifacts = buildBridgeArtifacts(bridgeModel)
+  await writeBridgeArtifacts(outdir, artifacts, logger)
+
+  const client = createLeanixClientFromEnv()
+
+  if (dryRun || !apply) {
+    if (client) {
+      const plan = await planSyncToLeanix(artifacts.dryRun, client, { idempotent: true })
+      const planPath = resolve(outdir, SYNC_PLAN_FILENAME)
+      await writeFile(planPath, JSON.stringify(plan, null, 2))
+      logger.info(`${k.dim('generated')} ${relative(process.cwd(), planPath)}`)
+      if (plan.errors.length > 0) {
+        logger.warn(`${plan.errors.length} plan error(s): ${plan.errors.join('; ')}`)
+      }
+    } else {
+      logger.info(`${k.dim('skip')} sync-plan (set LEANIX_API_TOKEN to include plan)`)
+    }
+  }
+
+  if (apply) {
+    if (!client) {
+      logger.error(ERR_LEANIX_TOKEN_REQUIRED)
+      throw new Error(ERR_LEANIX_TOKEN_REQUIRED)
+    }
+    const result = await syncToLeanix(artifacts.manifest, artifacts.dryRun, client, {
+      idempotent: true,
+    })
+    const manifestPath = resolve(outdir, BRIDGE_ARTIFACT_NAMES.manifest)
+    await writeFile(manifestPath, JSON.stringify(result.manifest, null, 2))
+    logger.info(`${k.dim('generated')} ${relative(process.cwd(), manifestPath)} (after sync)`)
+    if (result.errors.length > 0) {
+      logger.warn(`${result.errors.length} sync error(s): ${result.errors.join('; ')}`)
+    }
+  }
+
+  timer.stopAndLog()
+}
