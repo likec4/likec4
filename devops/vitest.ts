@@ -20,7 +20,7 @@ const sharedConfig = defineConfig({
     alias: {
       '@likec4/core': src('core'),
       '@likec4/config': src('config'),
-      '@likec4/digram': src('digram'),
+      '@likec4/diagram': src('diagram'),
       '@likec4/generators': src('generators'),
       '@likec4/language-server': src('language-server'),
       '@likec4/language-services': src('language-services'),
