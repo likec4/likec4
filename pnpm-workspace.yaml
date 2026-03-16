@@ -150,7 +150,7 @@ catalogs:
     tinyrainbow: ^3.0.3
     ufo: 1.6.3
   vite:
-    "@vitejs/plugin-react": ^5.1.4
+    "@vitejs/plugin-react": ^5.2.0
     birpc: ^4.0.0
     rollup: ^4.59.0
     vite: ^7.3.1
