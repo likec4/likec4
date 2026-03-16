@@ -86,7 +86,7 @@ export function reconcileInventoryWithManifest(
   const snapshotByNameAndType = new Map<string, LeanixFactSheetSnapshotItem[]>()
   for (const fs of snapshot.factSheets) {
     if (fs.likec4Id) snapshotByLikec4Id.set(fs.likec4Id, fs)
-    const key = `${fs.name}\0${fs.type}`
+    const key = `${fs.name}${NAME_TYPE_SEP}${fs.type}`
     if (!snapshotByNameAndType.has(key)) snapshotByNameAndType.set(key, [])
     snapshotByNameAndType.get(key)!.push(fs)
   }

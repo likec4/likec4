@@ -1,8 +1,8 @@
 ---
 "@likec4/docs-astro": patch
-"@likec4/generators": patch
+"@likec4/generators": minor
 "@likec4/leanix-bridge": minor
-"likec4": patch
+"likec4": minor
 ---
 
 feat(leanix-bridge): Phase 2 & 3, CLI, tooling docs (Draw.io + CLI)

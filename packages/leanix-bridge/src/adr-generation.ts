@@ -90,5 +90,9 @@ export function generateAdrFromDriftReport(
     `- Unmatched in LeanIX: ${drift.summary.unmatchedInLeanix}`,
     `- Ambiguous: ${drift.summary.ambiguous}`,
     '',
+    '## Decision',
+    '',
+    'Review drift findings and determine whether synchronization or manual remediation is required.',
+    '',
   ].join('\n')
 }
