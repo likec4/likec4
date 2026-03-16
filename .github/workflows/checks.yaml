@@ -5,9 +5,9 @@ on:
 
 env:
   NODE_ENV: production
-  CLOUDFLARE_ENV: "production"
+  CLOUDFLARE_ENV: 'production'
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   check-types:
@@ -67,10 +67,6 @@ jobs:
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
-
-      # TODO: fix obuild on windows
-      # - name: ⚙️ build
-      #   run: pnpm turbo run build --filter="likec4"
 
       - name: ⚙️ generate
         run: pnpm ci:generate
@@ -162,7 +158,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v7
@@ -229,7 +225,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v7

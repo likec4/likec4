@@ -1,0 +1,64 @@
+{
+  "name": "@likec4/leanix-bridge",
+  "version": "0.1.0",
+  "license": "MIT",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "Bridge from LikeC4 semantic model to LeanIX-shaped inventory artifacts (supports optional live sync or dry-run modes)",
+  "files": [
+    "dist",
+    "src",
+    "**/package.json",
+    "!**/__*/**",
+    "!**/*.spec.*",
+    "!**/*.snap",
+    "!**/*.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/leanix-bridge"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      }
+    }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
+  },
+  "scripts": {
+    "typecheck": "tsc -b --verbose",
+    "build": "obuild",
+    "lint": "oxlint --type-aware",
+    "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
+    "pack": "pnpm pack",
+    "postpack": "likec4ops postpack",
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*",
+    "remeda": "catalog:utils"
+  },
+  "devDependencies": {
+    "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "obuild": "catalog:obuild",
+    "vitest": "catalog:vitest"
+  }
+}

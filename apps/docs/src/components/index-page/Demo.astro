@@ -1,187 +1,358 @@
 ---
 import { Code } from '@astrojs/starlight/components'
-import LikeC4View from './LikeC4View.astro'
-const codeExample = `
-// You start with defining your terms and ...
-specification {
-  // ... "types" of your elements
-  element actor {
-    style {
-      shape person // how to render
-    }
-  }
-  element system
-  element component
-  // and "typed" relationships (if you need)
-  relationship async
-}
+import { DemoDiagram } from './DemoDiagram'
 
-// Here goes your model, the single source of truth
-model {
+const steps = [
+  `model {
   customer = actor 'Customer' {
-    description 'A user of our product with active subscription'
-    -> ui 'opens in browser'
+    description 'A user of our product'
   }
-
   cloud = system 'Our SaaS' {
-    backend = component 'Backend' {
-      icon tech:graphql
-      description 'Implements business logic and provides GraphQL API'
-    }
-
-    ui = component 'Frontend' {
-      description 'NextJS application'
-      style {
-        icon tech:nextjs
-        shape browser
-      }
-    }
-
-    ui -[async]-> backend 'requests via HTTPS'
+    description 'Our product'
   }
+  customer -> cloud 'uses to manage data'
+}`,
+  `model {
+  customer = actor 'Customer' {
+    description 'A user of our product'
+  }
+  cloud = system 'Our SaaS' {
+    description 'Our product'
+    ui = component 'Frontend'
+    customer -> ui 'opens in browser'
+  }
+  customer -> cloud 'uses to manage data'
+}`,
+  `model {
+  customer = actor 'Customer' {
+    description 'A user of our product'
+  }
+  cloud = system 'Our SaaS' {
+    description 'Our product'
+    ui = component 'Frontend'
+    customer -> ui 'opens in browser'
+    backend = component 'Backend'
+    ui -> backend 'requests via HTTPS'
+  }
+  customer -> cloud 'uses to manage data'
+}`,
+]
+
+const viewIds = ['view1', 'view2', 'view3'] as const
+
+function computeNewLines(prev: string, next: string): number[] {
+  const prevLines = prev.split('\n')
+  const nextLines = next.split('\n')
+  const newIndices: number[] = []
+  let pi = 0
+  for (let ni = 0; ni < nextLines.length; ni++) {
+    if (pi < prevLines.length && nextLines[ni] === prevLines[pi]) {
+      pi++
+    } else {
+      newIndices.push(ni)
+    }
+  }
+  return newIndices
 }
 
-// And finally, you define what to render
-views {
-  view index {
-    title 'Landscape view'
-    include *, cloud.*
-
-    style cloud.* {
-      color green
-    }
-  }
-}
-`
+const newLinesPerStep = [
+  Array.from({ length: steps[0]!.split('\n').length }, (_, i) => i),
+  computeNewLines(steps[0]!, steps[1]!),
+  computeNewLines(steps[1]!, steps[2]!),
+]
 ---
 
-<section
-  id="demo"
-  class="py-24 px-6 bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"
->
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-16">
-      <h2 class="text-5xl md:text-6xl font-bold text-slate-900 dark:text-white mb-8">
+<section id="demo" class="relative py-24 md:py-32 px-6 bg-stone-900 dark:bg-zinc-900/80">
+  <!-- Angled top edge -->
+  <div class="demo-angle-top absolute top-0 left-0 right-0 h-16 bg-stone-50 dark:bg-zinc-950"></div>
+
+  <div class="max-w-7xl mx-auto pt-8">
+    <!-- Left-aligned header -->
+    <div class="mb-14 lp-reveal">
+      <span class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-400">
+        Demo
+      </span>
+      <h2 class="lp-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mt-4">
         See it in action
       </h2>
-      <p class="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-        Write architecture like code. See diagrams appear instantly.
-      </p>
     </div>
 
-    <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
-      <div class="flex items-center justify-between px-6 py-4 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-        <div class="flex gap-2">
-          <div class="w-3 h-3 rounded-full bg-red-500"></div>
-          <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <div class="w-3 h-3 rounded-full bg-green-500"></div>
+    <!-- Side-by-side panels -->
+    <div class="relative grid lg:grid-cols-2 gap-4 lp-reveal">
+      <!-- Code panel -->
+      <div class="flex flex-col rounded-xl overflow-hidden border border-zinc-700/60 bg-zinc-950 shadow-2xl">
+        <!-- Terminal chrome -->
+        <div class="flex items-center gap-2 px-4 py-2.5 border-b border-zinc-800 bg-zinc-900">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-400/60"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/60"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-green-400/60"></span>
+          <span class="ml-3 text-xs text-zinc-500 font-mono">architecture.c4</span>
         </div>
 
-        <div class="flex gap-2">
-          <button
-            id="code-tab"
-            class="tab-button px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-md"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <polyline points="16,18 22,12 16,6"></polyline>
-              <polyline points="8,6 2,12 8,18"></polyline>
-            </svg>
-            Code
-          </button>
-          <button
-            id="diagram-tab"
-            class="tab-button px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            Diagram
-          </button>
+        <!-- Code steps container -->
+        <div id="demo-code-container" class="sm:max-h-[360px] md:max-h-full flex flex-1 overflow-y-auto">
+          {steps.map((code, i) => (
+            <div
+              id={`demo-code-step-${i}`}
+              class:list={['demo-code-step', 'flex flex-1', { 'demo-code-hidden': i !== 0 }]}
+              data-new-lines={newLinesPerStep[i]?.join(',')}
+            >
+              <Code code={code} class="contents demo-code" lang="likec4" />
+            </div>
+          ))}
         </div>
 
-        <div>
-          <!-- <button class="p-2 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <polygon points="5,3 19,12 5,21"></polygon>
-            </svg>
-          </button> -->
+        <!-- Step indicator dots -->
+        <div class="flex items-center justify-center gap-2 py-3 border-t border-zinc-800">
+          {viewIds.map((_, i) => (
+            <button
+              class:list={['demo-dot', { 'demo-dot-active': i === 0 }]}
+              data-step={i}
+              aria-label={`Step ${i + 1}`}
+            />
+          ))}
         </div>
       </div>
 
-      <div class="relative">
-        <div id="code-content" class="tab-content p-0">
-          <Code code={codeExample} lang="likec4" />
-          <!-- <pre class="text-sm md:text-base text-slate-800 dark:text-slate-200 font-mono leading-relaxed overflow-x-auto">{codeExample}</pre> -->
+      <!-- Diagram panel -->
+      <div class="rounded-xl overflow-hidden border border-zinc-700/60 bg-zinc-950/80 shadow-2xl">
+        <!-- Terminal chrome -->
+        <div class="flex items-center gap-2 px-4 py-2.5 border-b border-zinc-800 bg-zinc-900">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-400/60"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/60"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-green-400/60"></span>
+          <span class="ml-3 text-xs text-zinc-500 font-mono">preview</span>
         </div>
 
-        <div
-          id="diagram-content"
-          class="tab-content p-8 min-h-[500px] flex items-center justify-center bg-slate-50 dark:bg-slate-800 hidden"
-        >
-          <div class="w-full max-w-4xl">
-            <LikeC4View viewId="index" />
-          </div>
+        <!-- Single diagram instance -->
+        <div id="demo-diagram" class="demo-diagram-container bg-zinc-900/50">
+          <DemoDiagram viewId="view1" client:only="react" />
         </div>
       </div>
     </div>
 
-    <div class="mt-16 text-center">
-      <p class="text-slate-600 dark:text-slate-400 mb-10 text-lg">
-        Try it yourself with our interactive playground
-      </p>
+    <!-- CTA -->
+    <div class="mt-14 flex flex-col sm:flex-row items-start sm:items-center gap-4 lp-reveal">
       <a
         href="https://playground.likec4.dev/w/tutorial/"
         target="_blank"
-        class="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 no-underline"
+        class="group inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 dark:bg-cyan-400 text-cyan-950 dark:text-cyan-950 font-semibold text-sm rounded-lg hover:bg-cyan-400 dark:hover:bg-cyan-300 transition-all duration-200 shadow-lg shadow-cyan-500/20 no-underline"
       >
         Launch Playground
+        <svg
+          class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M7 17l9.2-9.2M17 17V7H7"></path>
+        </svg>
       </a>
+      <span class="text-base font-medium text-zinc-500">Try it yourself in interactive playground</span>
     </div>
   </div>
 </section>
 
-<script>
-function switchTab(
-  activeTabId: string,
-  inactiveTabId: string,
-  activeContentId: string,
-  inactiveContentId: string,
-): void {
-  const activeTab = document.getElementById(activeTabId)
-  const inactiveTab = document.getElementById(inactiveTabId)
-  const activeContent = document.getElementById(activeContentId)
-  const inactiveContent = document.getElementById(inactiveContentId)
+<style>
+.demo-angle-top {
+  clip-path: polygon(0 0, 100% 0, 100% 0%, 0 100%);
+}
 
-  if (activeTab && inactiveTab && activeContent && inactiveContent) {
-    // Update tab styles
-    activeTab.className =
-      'tab-button px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-md'
-    inactiveTab.className =
-      'tab-button px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+/* Code step visibility */
+.demo-code-hidden {
+  display: none;
+}
 
-    // Update content visibility
-    activeContent.classList.remove('hidden')
-    inactiveContent.classList.add('hidden')
+:global(.demo-code .frame) {
+  flex: 1;
+  background: var(--ec-codeBg);
+}
+
+:global(.demo-code .frame pre) {
+  border-color: transparent;
+}
+
+/* Line reveal animation */
+@keyframes demo-line-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
   }
 }
 
-function initializeTabs(): void {
-  const codeTab = document.getElementById('code-tab')
-  const diagramTab = document.getElementById('diagram-tab')
-
-  codeTab?.addEventListener('click', () => {
-    switchTab('code-tab', 'diagram-tab', 'code-content', 'diagram-content')
-  })
-
-  diagramTab?.addEventListener('click', () => {
-    switchTab('diagram-tab', 'code-tab', 'diagram-content', 'code-content')
-  })
+:global(.demo-line-new) {
+  animation: demo-line-reveal 3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-// Initialize on DOM content loaded
-document.addEventListener('DOMContentLoaded', initializeTabs)
+/* Diagram fills available space */
+.demo-diagram-container {
+  min-height: 400px;
+  height: 100%;
+}
 
-// Handle page navigation (for Astro's client-side routing)
-document.addEventListener('astro:page-load', initializeTabs)
+:global(.likec4-demo-view) {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+}
+
+/* Step indicator dots */
+.demo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(161, 161, 170, 0.3);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.demo-dot:hover {
+  background: rgba(161, 161, 170, 0.6);
+}
+
+.demo-dot-active {
+  background: rgb(6, 182, 212);
+  width: 24px;
+  border-radius: 4px;
+}
+</style>
+
+<script>
+const VIEW_IDS = ['view1', 'view2', 'view3'] as const
+
+function initDemoAnimation(): void {
+  const TOTAL_STEPS = 3
+  const STEP_DURATION = 3000
+  const LAST_STEP_DURATION = 8000
+  const LINE_STAGGER = 1000
+  const LINE_ANIM_DURATION = 1000
+
+  let viewTimer: ReturnType<typeof setTimeout> | null = null
+
+  let currentStep = 0
+  let timer: ReturnType<typeof setTimeout> | null = null
+  let isVisible = false
+  let started = false
+
+  const section = document.getElementById('demo')
+  const codeSteps = Array.from(document.querySelectorAll('.demo-code-step')) as HTMLElement[]
+  const dots = Array.from(document.querySelectorAll('.demo-dot')) as HTMLElement[]
+  const codeContainer = document.getElementById('demo-code-container')
+
+  if (!section || codeSteps.length !== TOTAL_STEPS) return
+
+  const newLineIndices: Set<number>[] = codeSteps.map((step) => {
+    const raw = step.dataset.newLines || ''
+    return new Set(raw.split(',').filter(Boolean).map(Number))
+  })
+
+  function showStep(step: number, animate: boolean): void {
+    // Swap code blocks
+    codeSteps.forEach((el, i) => {
+      if (i === step) {
+        el.classList.remove('demo-code-hidden')
+      } else {
+        el.classList.add('demo-code-hidden')
+      }
+    })
+
+    // Animate new lines, then switch diagram view after animation ends
+    if (viewTimer) clearTimeout(viewTimer)
+
+    if (animate) {
+      const lines = codeSteps[step]!.querySelectorAll('.ec-line')
+      const newLines = newLineIndices[step]!
+      let staggerIdx = 0
+      lines.forEach((line, idx) => {
+        const el = line as HTMLElement
+        el.classList.remove('demo-line-new')
+        el.style.animationDelay = ''
+        void el.offsetWidth
+
+        if (newLines.has(idx)) {
+          el.classList.add('demo-line-new')
+          el.style.animationDelay = `${staggerIdx * LINE_STAGGER}ms`
+          staggerIdx++
+        }
+      })
+
+      if (codeContainer) {
+        codeContainer.scrollTop = 0
+      }
+
+      // Switch diagram after last line finishes animating
+      const totalAnimTime = Math.max(0, staggerIdx - 1) * LINE_STAGGER + LINE_ANIM_DURATION
+      viewTimer = setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent('demo-view-change', {
+            detail: { viewId: VIEW_IDS[step] },
+          }),
+        )
+      }, totalAnimTime)
+    } else {
+      // No animation — switch diagram immediately
+      window.dispatchEvent(
+        new CustomEvent('demo-view-change', {
+          detail: { viewId: VIEW_IDS[step] },
+        }),
+      )
+    }
+
+    // Update dots
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('demo-dot-active', i === step)
+    })
+
+    currentStep = step
+  }
+
+  function scheduleNext(): void {
+    if (timer) clearTimeout(timer)
+    const delay = currentStep === TOTAL_STEPS - 1 ? LAST_STEP_DURATION : STEP_DURATION
+    timer = setTimeout(() => {
+      if (!isVisible) return
+      const nextStep = (currentStep + 1) % TOTAL_STEPS
+      showStep(nextStep, nextStep !== 0)
+      scheduleNext()
+    }, delay)
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          isVisible = true
+          if (!started) {
+            started = true
+            showStep(0, false)
+          }
+          scheduleNext()
+        } else {
+          isVisible = false
+          if (timer) clearTimeout(timer)
+        }
+      }
+    },
+    { threshold: 0.2 },
+  )
+  observer.observe(section)
+
+  dots.forEach((dot) => {
+    dot.addEventListener('click', () => {
+      const step = parseInt(dot.dataset.step || '0', 10)
+      showStep(step, true)
+      scheduleNext()
+    })
+  })
+
+  showStep(0, false)
+}
+
+document.addEventListener('DOMContentLoaded', initDemoAnimation)
+document.addEventListener('astro:page-load', initDemoAnimation)
 </script>

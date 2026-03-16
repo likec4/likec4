@@ -197,6 +197,7 @@ export function LikeC4VitePlugin({
           id: p.id,
           title: p.title,
           folder: p.folder.toString(),
+          landingPage: p.config.landingPage,
         }))
       let _projects = readProjects()
 

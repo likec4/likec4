@@ -1,3 +1,4 @@
 {
   name: 'index-page',
+  implicitViews: false
 }

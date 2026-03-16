@@ -4,7 +4,6 @@ import { filter, isNonNullish, mapToObj, pipe } from 'remeda'
 import { type ParsedAstDeploymentView, ast, parseMarkdownAsString, toAutoLayout, ViewOps } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
-import { parseViewManualLayout } from '../../view-utils/manual-layout'
 import { removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentModel } from './DeploymentModelParser'
 import type { WithExpressionV2 } from './FqnRefParser'
@@ -46,8 +45,6 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
-      const manualLayout = parseViewManualLayout(astNode)
-
       return {
         [c4._type]: 'deployment',
         id: id as c4.ViewId,
@@ -57,7 +54,6 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         tags,
         links: isNonEmptyArray(links) ? links : null,
         rules: this.tryMap('deployment', body.rules, n => this.parseDeploymentViewRule(n)),
-        ...(manualLayout && { manualLayout }),
       }
     }
 

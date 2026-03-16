@@ -1,131 +1,77 @@
 ---
-const stats = [
-  { label: 'Simple language to describe your model, LLM-friendly', value: 'DSL' },
-  { label: 'Access your model from the code and extend capabilities', value: 'API' },
-  { label: 'Provide architectural context for your developers and agents', value: 'MCP' },
-  { label: 'Immediate feedback, preview and validation in your editor', value: 'IDE' },
-]
+import LikeC4View from './LikeC4View.astro'
+import OpenSourceBadge from './OpenSourceBadge.astro'
 ---
 
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden px-6 py-20">
-  <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+<section class="relative overflow-hidden px-6 pt-28 pb-16">
+  <!-- Dot grid background -->
+  <div class="hero-dots absolute inset-0 pointer-events-none opacity-[0.12] dark:opacity-[0.06]"></div>
+
+  <!-- Radial glow centered -->
+  <div class="absolute top-[15%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full pointer-events-none bg-cyan-400/[0.04] dark:bg-cyan-400/[0.06] blur-3xl">
   </div>
 
-  <div class="absolute inset-0 opacity-30 dark:opacity-30">
-    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400 dark:bg-blue-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-blob">
-    </div>
-    <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-cyan-300 dark:bg-cyan-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-blob animation-delay-2000">
-    </div>
-    <div class="absolute bottom-1/4 left-1/3 w-96 h-96 bg-slate-300 dark:bg-slate-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-blob animation-delay-4000">
-    </div>
-  </div>
-
-  <div class="relative max-w-6xl mx-auto text-center z-10">
-    <div class="hidden md:inline-flex items-center gap-2 px-4 py-2 mb-8 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-200 dark:border-slate-700 shadow-lg">
-      <svg class="w-4 h-4 text-yellow-500 fill-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-      <span class="text-sm font-medium text-slate-700 dark:text-slate-300">
-        Open source architecture modeling tool
-      </span>
+  <div class="relative z-10 max-w-5xl mx-auto w-full flex flex-col items-center">
+    <!-- Badge -->
+    <div class="lp-anim lp-d1">
+      <OpenSourceBadge />
     </div>
 
-    <h1 class="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-14 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white leading-tight">
-      Architecture-as-a-Code
+    <!-- Headline -->
+    <h1 class="lp-display mt-8 text-[2.75rem] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-stone-900 dark:text-white text-center">
+      Architecture as Code
     </h1>
 
-    <p class="text-md sm:text-xl md:text-2xl text-slate-600 dark:text-slate-400 mb-8 md:mb-16 max-w-100 md:max-w-150 mx-auto leading-relaxed">
-      Design, visualize, and maintain your software architecture with a modern DSL. Version controlled with your code.
+    <!-- Subtitle -->
+    <p class="mt-6 lg:mt-10 text-base sm:text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-300 max-w-[700px] text-center">
+      Describe your system architecture with code. Visualize, validate and share — all from a single source of truth.
     </p>
 
-    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+    <!-- CTAs -->
+    <div class="mt-10 flex flex-wrap gap-3 justify-center">
       <a
         href="/tutorial"
-        class="group px-4 py-2 md:px-8 md:py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-semibold text-md md:text-lg hover:bg-slate-800 dark:hover:bg-slate-100 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center gap-2 no-underline"
+        class="group inline-flex items-center gap-2 px-7 py-3.5 bg-cyan-500 dark:bg-cyan-500 text-cyan-950 dark:text-cyan-950 font-semibold text-base rounded-lg transition-all duration-200 shadow-lg shadow-cyan-600/20 dark:shadow-cyan-500/15 hover:shadow-xl hover:shadow-cyan-600/25 dark:hover:shadow-cyan-500/25 hover:-translate-y-px no-underline"
       >
         Get Started
-        <svg
-          class="w-5 h-5 group-hover:translate-x-1 transition-transform"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12,5 19,12 12,19"></polyline>
-        </svg>
       </a>
-
       <a
         href="https://github.com/likec4/likec4"
         target="_blank"
-        class="group p-3 md:px-8 md:py-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-900 dark:text-white rounded-xl font-semibold text-sm md:text-lg hover:bg-white dark:hover:bg-slate-800 transition-all duration-300 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl flex items-center gap-2 no-underline"
+        class="inline-flex items-center gap-2 px-7 py-3.5 text-base font-medium text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:text-stone-900 dark:hover:text-white hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
       >
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z">
+          </path>
         </svg>
         View on GitHub
       </a>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto">
-      {
-        stats.map((stat) => (
-  (
-          <div
-            class="
-              flex flex-col items-center justify-start p-4 rounded-xl transition-all
-              bg-slate-400/5
-              dark:bg-white/5
-              hover:bg-white/10
-              hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]
-              backdrop-blur-sm border border-white/10 shadow-sm
-            "
-          >
-            <h3 class="text-slate-900 dark:text-white font-medium">{stat.value}</h3>
-            <p class="text-sm text-slate-900 dark:text-white/60 mt-1 text-center">
-              {stat.label}
-            </p>
-          </div>
-        )
-          // <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
-          //   <div class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          //     {stat.value}
-          //   </div>
-          //   <div class="text-md text-slate-600 dark:text-slate-400">
-          //     {stat.label}
-          //   </div>
-          // </div>
-        ))
-      }
+    <!-- Product screenshot / diagram below -->
+    <div class="mt-16 w-full max-w-[900px]">
+      <div class="rounded-2xl border border-stone-300/60 dark:border-zinc-700/60 bg-white/80 dark:bg-zinc-900/50 backdrop-blur-sm shadow-xl shadow-stone-300/30 dark:shadow-cyan-500/5 overflow-hidden">
+        <!-- Terminal chrome bar -->
+        <div class="flex items-center gap-2 px-4 py-2.5 border-b border-stone-200 dark:border-zinc-800">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-400/60"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/60"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-green-400/60"></span>
+          <span class="ml-3 text-xs text-stone-400 dark:text-zinc-600 font-mono">landscape-view.c4</span>
+        </div>
+        <!-- Diagram -->
+        <div class="p-4 min-h-[250px] sm:min-h-[400px] flex items-center justify-center">
+          <LikeC4View viewId="index" />
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
+.hero-dots {
+  background-image: radial-gradient(circle, #06b6d4 0.6px, transparent 0.6px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 75% 55% at 50% 40%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 55% at 50% 40%, black 20%, transparent 70%);
 }
 </style>

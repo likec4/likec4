@@ -1,5 +1,11 @@
 # likec4-vscode
 
+## 1.52.0
+
+### Patch Changes
+
+- [#2713](https://github.com/likec4/likec4/pull/2713) [`bc47423`](https://github.com/likec4/likec4/commit/bc474235cf31a7d42e8c4f25328a698bb7edefe3) Thanks [@davydkov](https://github.com/davydkov)! - Remove deprecated ManualLayoutV1 and related migration command
+
 ## 1.51.0
 
 ## 1.50.0

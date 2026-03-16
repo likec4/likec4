@@ -1,0 +1,48 @@
+---
+title: Erode
+description: AI-powered architecture drift detection using LikeC4 models.
+sidebar:
+  label: 'Erode - Drift Detection'
+---
+
+import { LinkCard, CardGrid, LinkButton } from '@astrojs/starlight/components';
+
+:::caution[Experimental]
+Erode is experimental and in active development. APIs and behavior may change.
+:::
+
+[Erode](https://erode.dev) analyzes code changes against your LikeC4 architecture model using AI, making undeclared dependencies and structural drift visible during code review and while coding.
+
+<LinkButton
+  href="https://erode.dev"
+  variant="minimal"
+  icon="external"
+  iconPlacement="start"
+>
+  {'https://erode.dev'}
+</LinkButton>
+
+<CardGrid>
+  <LinkCard title="Getting Started" href="https://erode.dev/docs/getting-started/" />
+  <LinkCard title="GitHub" href="https://github.com/erode-app/erode" />
+</CardGrid>
+
+## Quick Start
+
+Erode can be integrated in three ways. See the [Erode docs](https://erode.dev/docs/getting-started/) for detailed setup instructions.
+
+### GitHub Actions
+
+```yaml
+- uses: erode-app/erode@0
+```
+
+### CLI
+
+```shell
+npx @erode-app/cli check
+```
+
+### Claude Code Skill
+
+Erode is also available as a Claude Code skill — see the [docs](https://erode.dev/docs/getting-started/) for details.

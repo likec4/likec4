@@ -16,15 +16,19 @@ const src = (packageName: string) => packages(packageName, 'src')
 const sharedConfig = defineConfig({
   resolve: {
     conditions: ['sources', 'development'],
+    // Seems vitest doesn't resolve conditions (did have time to investigate), so we add aliases for all packages
     alias: {
       '@likec4/core': src('core'),
       '@likec4/config': src('config'),
-      '@likec4/generator': src('generators'),
-      '@likec4/layouts': src('layouts'),
+      '@likec4/diagram': src('diagram'),
+      '@likec4/generators': src('generators'),
       '@likec4/language-server': src('language-server'),
       '@likec4/language-services': src('language-services'),
+      '@likec4/layouts': src('layouts'),
+      '@likec4/leanix-bridge': src('leanix-bridge'),
       '@likec4/vite-plugin': src('vite-plugin'),
       '@likec4/log': src('log'),
+      '@likec4/style-preset': resolve(__dirname, '..', 'styled-system', 'preset', 'src'),
     },
   },
   test: {

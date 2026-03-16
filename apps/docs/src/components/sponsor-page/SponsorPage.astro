@@ -1,251 +1,521 @@
 ---
+import { fetchSponsors, fetchStars } from '../../lib/githubdata'
+import '../../styles/tailwind.css'
+import Doubledash from '../index-page/Doubledash.astro'
 import Footer from '../index-page/Footer.astro'
 import Navigation from '../index-page/Navigation.astro'
-import Hero from './Hero.astro'
+import OpenSourceBadge from '../index-page/OpenSourceBadge.astro'
+import FAQ from './FAQ.astro'
+
+const sponsors = await fetchSponsors()
+const stars = await fetchStars()
 ---
 
-<div class="min-h-screen transition-colors duration-300">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,800,900&display=swap" rel="stylesheet" />
+
+<div data-landing-page class="min-h-screen bg-stone-50 dark:bg-zinc-950 transition-colors duration-300">
   <Navigation />
-  <Hero />
-  <div class="main-frame bg-white dark:bg-slate-950">
-    <div class="sponsor-bg">
-      <div class="mx-auto max-w-6xl px-4 pt-14 sm:pt-16 pb-20">
-        <div class="flex justify-center w-min mx-auto gap-6 text-slate-50">
-          <div class="flex-1/2 p-5 rounded-2xl bg-slate-900/55 border border-slate-700/60 shadow-sm shadow-black/10 backdrop-blur-sm">
-            <div class="text-4xl font-semibold">40k+</div>
-            <div class="mt-4 text-md w-max text-slate-300">monthly downloads</div>
-          </div>
-          <div class="flex-1/2 p-5 rounded-2xl bg-slate-900/55 border border-slate-700/60 shadow-sm shadow-black/10 backdrop-blur-sm">
-            <div class="text-4xl font-semibold">23k+</div>
-            <div class="mt-4 text-md w-max text-slate-300">IDE installs</div>
-          </div>
-        </div>
 
-        <p class="mt-5 text-xl leading-relaxed text-slate-400/90 text-center">
-          Numbers change over time. The point stays the same:
-          <br />
-          LikeC4 is used in the real world, and maintenance is real work.
-        </p>
-
-        <section class="section">
-          <div class="mx-auto max-w-5xl px-4 space-y-6">
-            <p class="section-kicker">Why it matters</p>
-            <h2 class="text-2xl font-semibold">Why sponsor LikeC4</h2>
-
-            <div class="grid gap-4 md:grid-cols-3">
-              <div class="p-5 rounded-2xl bg-slate-900/55 border border-slate-700/60 shadow-sm shadow-black/10 backdrop-blur-sm">
-                <h3 class="font-semibold text-slate-50 mb-2">Serious tooling, independent project</h3>
-                <p class="text-sm text-slate-300">
-                  A focused Architecture-as-Code toolkit used to model and visualize complex systems without click-drag
-                  theater.
-                </p>
-              </div>
-
-              <div class="p-5 rounded-2xl bg-slate-900/55 border border-slate-700/60 shadow-sm shadow-black/10 backdrop-blur-sm">
-                <h3 class="font-semibold text-slate-50 mb-2">High leverage for your teams</h3>
-                <p class="text-sm text-slate-300">
-                  Clear diagrams, shared understanding, better reviews, smoother onboarding, and documentation that
-                  stays in sync.
-                </p>
-              </div>
-
-              <div class="p-5 rounded-2xl bg-slate-900/55 border border-slate-700/60 shadow-sm shadow-black/10 backdrop-blur-sm">
-                <h3 class="font-semibold text-slate-50 mb-2">Built and maintained by practitioners</h3>
-                <p class="text-sm text-slate-300">
-                  Sponsorship funds maintenance, performance work, releases, and integrations that keep the toolkit
-                  dependable.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="mx-auto max-w-5xl px-4 space-y-4">
-            <p class="section-kicker">Where sponsorship goes</p>
-            <h2 class="text-2xl font-semibold">What your support makes possible</h2>
-            <p class="text-sm text-slate-300">
-              Sponsorship is a direct input into LikeC4 improvements, not a vague fund. It pays for the unsexy work that
-              makes the sexy features safe to ship.
-            </p>
-
-            <div class="grid gap-4 md:grid-cols-2">
-              <ul class="space-y-2 text-sm text-slate-300">
-                <li>
-                  <span class="text-cyan-400 mr-2">•</span>Core features: manual layouts, deployment views, dynamic and
-                  sequence views, better layout algorithms.
-                </li>
-                <li>
-                  <span class="text-cyan-400 mr-2">•</span>Performance and stability for large models and real world
-                  architectures.
-                </li>
-                <li>
-                  <span class="text-cyan-400 mr-2">•</span>Tooling: VS Code extension, CLI, Docker images, embedding in
-                  docs and internal portals.
-                </li>
-              </ul>
-              <ul class="space-y-2 text-sm text-slate-300">
-                <li>
-                  <span class="text-cyan-400 mr-2">•</span>AI and MCP friendly context so your architecture is machine
-                  readable without extra work.
-                </li>
-                <li>
-                  <span class="text-cyan-400 mr-2">•</span>Documentation, guides, and examples that teams can adopt
-                  without hand-holding.
-                </li>
-                <li>
-                  <span class="text-cyan-400 mr-2">•</span>Keeping the core open and accessible for individuals and
-                  teams everywhere.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="mx-auto max-w-5xl px-4 space-y-6">
-            <p class="section-kicker">Ways to help</p>
-            <h2 class="text-2xl font-semibold">How to sponsor</h2>
-
-            <div class="grid gap-4 md:grid-cols-3">
-              <div class="p-5 rounded-2xl bg-slate-900/45 border border-slate-700/60 shadow-sm shadow-black/10">
-                <div class="text-slate-50 font-semibold mb-2">Individuals</div>
-                <p class="text-sm text-slate-300">
-                  A small monthly sponsorship helps keep the lights on and makes releases more predictable.
-                </p>
-              </div>
-
-              <div class="p-5 rounded-2xl bg-slate-900/45 border border-slate-700/60 shadow-sm shadow-black/10">
-                <div class="text-slate-50 font-semibold mb-2">Teams</div>
-                <p class="text-sm text-slate-300">
-                  Sponsor to support the tooling your team depends on and to help prioritize the work that unblocks
-                  adoption.
-                </p>
-              </div>
-
-              <div class="p-5 rounded-2xl bg-slate-900/45 border border-slate-700/60 shadow-sm shadow-black/10">
-                <div class="text-slate-50 font-semibold mb-2">Companies</div>
-                <p class="text-sm text-slate-300">
-                  Need an invoice, a roadmap discussion, or help integrating LikeC4? Sponsorship can include that.
-                </p>
-              </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-3">
-              <a
-                class="inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-medium bg-cyan-500/90 hover:bg-cyan-500 text-slate-950"
-                href="https://github.com/sponsors/likec4"
-              >
-                Sponsor on GitHub
-              </a>
-              <a
-                class="inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-medium border border-slate-700/60 bg-slate-900/35 hover:bg-slate-900/70 text-slate-100"
-                href="/community/"
-              >
-                Talk in Discord / Discussions
-              </a>
-            </div>
-
-            <div class="mt-6 grid gap-3">
-              <details class="rounded-2xl border border-slate-700/60 bg-slate-900/35 p-4">
-                <summary class="cursor-pointer text-slate-50 font-medium">What do sponsors get?</summary>
-                <div class="mt-3 text-sm text-slate-300 space-y-2">
-                  <p>
-                    Mostly: a healthier project. Practically: faster maintenance, more predictable releases, and time to
-                    tackle deep work.
-                  </p>
-                  <p>
-                    For higher tiers: public sponsor recognition (if you want it), and a direct line for prioritizing
-                    work that benefits the ecosystem.
-                  </p>
-                </div>
-              </details>
-
-              <details class="rounded-2xl border border-slate-700/60 bg-slate-900/35 p-4">
-                <summary class="cursor-pointer text-slate-50 font-medium">
-                  Can you prioritize a feature for our team?
-                </summary>
-                <div class="mt-3 text-sm text-slate-300 space-y-2">
-                  <p>
-                    Yes, within reason. The best way is to open an issue with context (use-case, constraints, sample
-                    model) and sponsor to fund the work.
-                  </p>
-                </div>
-              </details>
-
-              <details class="rounded-2xl border border-slate-700/60 bg-slate-900/35 p-4">
-                <summary class="cursor-pointer text-slate-50 font-medium">
-                  Does sponsorship mean LikeC4 becomes closed-source?
-                </summary>
-                <div class="mt-3 text-sm text-slate-300 space-y-2">
-                  <p>
-                    No. The goal is to keep the core open and accessible. Sponsorship makes it sustainable to maintain
-                    that promise.
-                  </p>
-                </div>
-              </details>
-            </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="mx-auto max-w-5xl px-4">
-            <div class="rounded-3xl border border-slate-700/60 bg-slate-900/35 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <div class="text-slate-50 text-lg font-semibold">Help keep LikeC4 sustainable</div>
-                <div class="text-sm text-slate-300 mt-1">
-                  Sponsor once, or monthly. Every bit reduces maintenance debt and increases shipping speed.
-                </div>
-              </div>
-              <a
-                class="inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-medium bg-cyan-500/90 hover:bg-cyan-500 text-slate-950"
-                href="https://github.com/sponsors/likec4"
-              >
-                Become a sponsor
-              </a>
-            </div>
-          </div>
-        </section>
+  <!-- Hero -->
+  <section class="relative overflow-hidden px-6 pt-32 pb-20">
+    <div class="absolute top-[10%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full pointer-events-none bg-cyan-400/[0.04] dark:bg-cyan-400/[0.06] blur-3xl">
+    </div>
+    <div class="relative z-10 max-w-3xl mx-auto text-center">
+      <OpenSourceBadge />
+      <h1 class="lp-display mt-8 text-4xl sm:text-5xl md:text-6xl font-bold text-stone-900 dark:text-white">
+        Get More From LikeC4
+      </h1>
+      <p class="mt-6 text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-300 max-w-2xl mx-auto">
+        LikeC4 is open source and independently maintained. Your support keeps the project sustainable, the releases
+        predictable, and the roadmap driven by real needs.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-3 justify-center">
+        <a
+          href="https://github.com/sponsors/likec4"
+          target="_blank"
+          class="inline-flex items-center gap-2.5 px-7 py-3.5 bg-cyan-500 text-cyan-950 font-semibold text-base rounded-lg transition-all duration-200 shadow-lg shadow-cyan-600/20 dark:shadow-cyan-500/15 hover:shadow-xl hover:-translate-y-px no-underline"
+        >
+          Become a Sponsor
+        </a>
+        <a
+          href="https://github.com/likec4/likec4"
+          target="_blank"
+          class="inline-flex items-center gap-2 px-7 py-3.5 text-base font-medium text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+          </svg>
+          View on GitHub
+        </a>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="px-6 pb-20">
+    <div class="max-w-3xl mx-auto grid grid-cols-3 gap-4">
+      <div class="text-center p-6 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+        <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">{stars || '2.8k'}+</div>
+        <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">GitHub Stars</div>
+      </div>
+      <div class="text-center p-6 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+        <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">40k+</div>
+        <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">Monthly Downloads</div>
+      </div>
+      <div class="text-center p-6 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+        <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">23k+</div>
+        <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">IDE Installs</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Sponsor -->
+  <section class="px-6 py-20 md:py-28">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-14">
+        <span
+          class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+        >Why back</span>
+        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+          Professional tool, professional backing
+        </h2>
+        <p class="text-base sm:text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-400 max-w-2xl mx-auto mt-4">
+          Your team depends on LikeC4 to model and communicate architecture.<br />
+          Backing the project ensures it stays reliable, evolving, and supported.
+        </p>
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-3">
+        <div class="p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
+          <svg
+            class="w-6 h-6 text-cyan-500 mb-3"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+          <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Secure your toolchain</h3>
+          <p class="text-base font-medium text-stone-500 dark:text-zinc-400">
+            Your teams rely on LikeC4 for architecture decisions. Sponsorship ensures the project stays maintained,
+            stable, and moving forward.
+          </p>
+        </div>
+        <div class="p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
+          <svg
+            class="w-6 h-6 text-cyan-500 mb-3"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
+          </svg>
+          <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Shape the roadmap</h3>
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
+            Sponsors get a direct voice in what ships next. Prioritize the features and integrations your organization
+            needs most.
+          </p>
+        </div>
+        <div class="p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
+          <svg
+            class="w-6 h-6 text-cyan-500 mb-3"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+          </svg>
+          <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Direct access</h3>
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
+            Skip the issue queue. Get priority support, architecture guidance, and a direct line to the maintainer.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What Support Enables -->
+  <section class="relative px-6 py-20 md:py-28 overflow-hidden">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full pointer-events-none bg-cyan-400/[0.03] dark:bg-cyan-400/[0.06] blur-3xl">
+    </div>
+    <div class="relative z-10 max-w-5xl mx-auto">
+      <div class="text-center mb-14">
+        <span
+          class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+        >Impact</span>
+        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+          What your support enables
+        </h2>
+        <p class="text-base sm:text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-400 max-w-2xl mx-auto mt-4">
+          Sponsorship is a direct investment into LikeC4 development.<br />
+          Every contribution goes to the work that makes the tool better.
+        </p>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+          <span class="text-cyan-500 mt-0.5 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </span>
+          <div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Core features</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Manual layouts, deployment views, dynamic views, sequence diagrams, better layout algorithms.
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+          <span class="text-cyan-500 mt-0.5 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </span>
+          <div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Enterprise stability</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Performance for large models, regression testing, predictable releases, and long-term support.
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+          <span class="text-cyan-500 mt-0.5 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </span>
+          <div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Tooling ecosystem</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              VS Code extension, CLI, Docker images, Vite plugin, embedding in docs and internal portals.
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+          <span class="text-cyan-500 mt-0.5 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </span>
+          <div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">AI & MCP integration</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Machine-readable architecture context for AI agents. MCP server, API access, LLM-friendly DSL.
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+          <span class="text-cyan-500 mt-0.5 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </span>
+          <div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Documentation & guides</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Comprehensive docs, tutorials, and examples that teams can adopt without hand-holding.
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-4 p-5 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+          <span class="text-cyan-500 mt-0.5 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </span>
+          <div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Open source forever</div>
+            <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
+              Keeping the core MIT-licensed and accessible for individuals and teams everywhere.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tiers -->
+  <section class="px-6 py-20 md:py-28">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-14">
+        <span
+          class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+        >Support tiers</span>
+        <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+          Choose your level of support
+        </h2>
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-3">
+        <!-- Backer -->
+        <div class="flex flex-col p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+          <div class="text-sm font-semibold tracking-[0.1em] uppercase text-stone-400 dark:text-zinc-500">Backer</div>
+          <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">For individuals</h3>
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400 mt-3">
+            You use LikeC4 and want to see it thrive. Every contribution helps keep the releases coming.
+          </p>
+          <ul class="mt-6 pl-1 space-y-3 text-base text-stone-600 dark:text-zinc-300 flex-1">
+            <li class="flex flex-1 gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Sponsor recognition on GitHub
+            </li>
+            <li class="flex gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Prioritized issue responses
+            </li>
+            <li class="flex gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Supporting open source sustainability
+            </li>
+          </ul>
+          <a
+            href="https://github.com/sponsors/likec4"
+            target="_blank"
+            class="mt-8 inline-flex items-center justify-center px-6 py-3 text-[0.9375rem] font-semibold text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
+          >
+            Sponsor on GitHub
+          </a>
+        </div>
+
+        <!-- Team (highlighted) -->
+        <div class="flex flex-col p-7 rounded-xl border-2 border-cyan-500/40 dark:border-cyan-400/30 bg-white dark:bg-zinc-900/40 shadow-lg shadow-cyan-500/5 relative">
+          <div class="text-sm font-semibold tracking-[0.1em] uppercase text-cyan-600 dark:text-cyan-400">Team</div>
+          <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">For engineering teams</h3>
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400 mt-3">
+            Your team depends on LikeC4. Get a direct line to influence what ships and when.
+          </p>
+          <ul class="mt-6 pl-1 space-y-3 text-base text-stone-600 dark:text-zinc-300 flex-1">
+            <li class="flex flex-1 gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Everything in Backer
+            </li>
+            <li class="flex gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Direct roadmap input
+            </li>
+            <li class="flex gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Priority feature requests
+            </li>
+            <li class="flex gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Logo on likec4.dev
+            </li>
+          </ul>
+          <a
+            href="https://github.com/sponsors/likec4"
+            target="_blank"
+            class="mt-8 inline-flex items-center justify-center px-6 py-3 text-[0.9375rem] font-semibold bg-cyan-500 text-cyan-950 rounded-lg shadow-lg shadow-cyan-600/20 dark:shadow-cyan-500/15 hover:shadow-xl hover:-translate-y-px transition-all duration-200 no-underline"
+          >
+            Sponsor on GitHub
+          </a>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="flex flex-col p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
+          <div class="text-sm font-semibold tracking-[0.1em] uppercase text-stone-400 dark:text-zinc-500">
+            Enterprise
+          </div>
+          <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">For organizations</h3>
+          <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400 mt-3">
+            Need invoicing, integration help, or dedicated development time? Let's make it work.
+          </p>
+          <ul class="mt-6 pl-1 space-y-3 text-base text-stone-600 dark:text-zinc-300 flex-1">
+            <li class="flex flex-1 gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Everything in Team
+            </li>
+            <li class="flex gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Dedicated support hours
+            </li>
+            <li class="flex gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Integration & architecture guidance
+            </li>
+            <li class="flex gap-2.5">
+              <svg
+                class="w-4 h-4 text-cyan-500 mt-0.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Invoice & procurement friendly
+            </li>
+          </ul>
+          <a
+            href="mailto:denis@davydkov.com?subject=LikeC4%20Enterprise%20Sponsorship"
+            class="mt-8 inline-flex items-center justify-center px-6 py-3 text-[0.9375rem] font-semibold text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
+          >
+            Contact Us
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Current Sponsors -->
+  <section class="relative px-6 py-20 md:py-28 overflow-hidden">
+    <div class="absolute top-[30%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full pointer-events-none bg-cyan-400/[0.03] dark:bg-cyan-400/[0.06] blur-3xl">
+    </div>
+    <div class="relative z-10 max-w-3xl mx-auto text-center">
+      <span
+        class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+      >Sponsors</span>
+      <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+        Backed by these teams and individuals
+      </h2>
+
+      <div class="mt-10 flex items-center justify-center">
+        <Doubledash />
+      </div>
+
+      {sponsors.length > 0 && (
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+          {sponsors.map((sponsor) => (
+            <a
+              href={sponsor.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group no-underline"
+              title={`@${sponsor.login}`}
+            >
+              <img
+                src={`${sponsor.avatarUrl}&s=80`}
+                alt={sponsor.login}
+                width="48"
+                height="48"
+                loading="lazy"
+                class="w-12 h-12 rounded-full border-2 border-stone-200 dark:border-zinc-700 transition-all duration-200 group-hover:scale-110 group-hover:border-cyan-500/50 group-hover:shadow-lg group-hover:shadow-cyan-500/10"
+              />
+            </a>
+          ))}
+        </div>
+      )}
+
+      <p class="mt-8 text-[0.9375rem] text-stone-500 dark:text-zinc-500">
+        Your logo or avatar could be here.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <FAQ />
+
+  <!-- Final CTA -->
+  <section class="px-6 pb-24 md:pb-32">
+    <div class="max-w-3xl mx-auto">
+      <div class="rounded-2xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 p-8 sm:p-12 text-center">
+        <h2 class="lp-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">Take the next step</h2>
+        <p class="mt-4 text-lg font-medium text-stone-500 dark:text-zinc-400 max-w-lg mx-auto">
+          Sponsor once or monthly. Every contribution reduces maintenance debt and increases shipping speed.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3 justify-center">
+          <a
+            href="https://github.com/sponsors/likec4"
+            target="_blank"
+            class="inline-flex items-center gap-2.5 px-7 py-3.5 bg-cyan-500 text-cyan-950 font-semibold text-base rounded-lg shadow-lg shadow-cyan-600/20 dark:shadow-cyan-500/15 hover:shadow-xl hover:-translate-y-px transition-all duration-200 no-underline"
+          >
+            Become a Sponsor
+          </a>
+          <a
+            href="https://discord.gg/86ZSpjKAdA"
+            target="_blank"
+            class="inline-flex items-center gap-2 px-7 py-3.5 text-base font-medium text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
+          >
+            Talk to us on Discord
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <Footer />
 </div>
-
-<style>
-.main-frame {
-  .content-panel {
-    border-top: none;
-  }
-}
-
-/* Background and rhythm */
-/* .sponsor-bg {
-  position: relative;
-  overflow: hidden;
-}
-.sponsor-bg:before {
-  content: "";
-  position: absolute;
-  inset: -200px -200px auto -200px;
-  height: 520px;
-  background:
-    radial-gradient(closest-side at 30% 30%, rgba(34, 211, 238, 0.14), transparent 70%),
-    radial-gradient(closest-side at 70% 10%, rgba(99, 102, 241, 0.12), transparent 70%),
-    radial-gradient(closest-side at 50% 70%, rgba(16, 185, 129, 0.08), transparent 70%);
-  pointer-events: none;
-  filter: blur(2px);
-} */
-
-.section {
-  margin-top: 3.25rem;
-}
-
-.section-kicker {
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgb(148 163 184 / 0.85);
-}
-</style>

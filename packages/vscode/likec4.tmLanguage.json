@@ -1,9 +1,12 @@
 {
   "name": "likec4",
   "scopeName": "source.likec4",
+  "fileTypes": [
+    "likec4",
+    "c4"
+  ],
   "patterns": [
     { "include": "#comments" },
-    { "include": "#markdown-string" },
     { "include": "#link-or-icon" },
     { "include": "#string" },
     { "include": "#relationship" },
@@ -134,24 +137,6 @@
           "beginCaptures": { "0": { "name": "punctuation.definition.comment.likec4" } },
           "end": "(?=$)",
           "name": "comment.line.likec4"
-        }
-      ]
-    },
-    "markdown-string": {
-      "begin": "(?=(^|\\G)(\\s*)\\S*(:|\\b)\\s*('{3}|\"{3})\\s*$)",
-      "end": "(^|\\G)(\\s*)(\\4)(.*$)",
-      "endCaptures": { "3": { "name": "punctuation.definition.string.end.likec4" } },
-      "applyEndPatternLast": 1,
-      "patterns": [
-        {
-          "begin": "(^|\\G)(\\s*)(\\S*)(:|\\b)\\s*('{3}|\"{3})\\s*$",
-          "beginCaptures": {
-            "3": { "name": "variable.other.property.likec4" },
-            "5": { "name": "punctuation.definition.string.begin.likec4" }
-          },
-          "while": "(^|\\G)(\\2([ ]{,3}|\\t)(?!\\s*\\5)|\\s*$)",
-          "contentName": "meta.embedded.block.markdown",
-          "patterns": [{ "include": "text.html.markdown" }]
         }
       ]
     },

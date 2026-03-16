@@ -89,10 +89,16 @@ export interface DrawioCell {
   notation?: string
   /** From style likec4Metadata (edge; JSON object for relation metadata block) */
   metadata?: string
+  /** From style likec4Id (vertex; bridge-managed element id for round-trip) */
+  likec4Id?: string
+  /** From style likec4RelationId (edge; bridge-managed relation id for round-trip) */
+  likec4RelationId?: string
   /** From mxUserObject/data keys not mapped to fields above (JSON object for round-trip comment) */
   customData?: string
   /** From mxGeometry Array/mxPoint (edge waypoints; JSON array of [x,y][]) */
   edgePoints?: string
+  /** From style key "shape" (e.g. actor, person) for kind/shape inference when raw style string is unavailable */
+  shapeFromStyle?: string
 }
 
 /** Edge cell with required source and target; use after filtering with isEdgeWithEndpoints. */
@@ -130,6 +136,77 @@ function getAttr(attrs: string, name: string): string | undefined {
     i = start + 1
   }
   return undefined
+}
+
+/**
+ * Fallback to extract style value from attrs when getAttr(attrs, 'style') returns undefined (e.g. spacing like "style =\"").
+ * Looks for style="..." (case-insensitive, optional spaces before '=') and returns the quoted value so the cell gets style when present in XML.
+ */
+function extractStyleFromAttrsFallback(attrs: string): string | undefined {
+  const lower = attrs.toLowerCase()
+  let i = lower.indexOf('style')
+  while (i !== -1) {
+    const prev = i === 0 ? ' ' : (attrs[i - 1] ?? ' ')
+    if (!isAttrBoundaryChar(prev)) {
+      i = lower.indexOf('style', i + 1)
+      continue
+    }
+    let j = i + 5 // after "style"
+    while (j < attrs.length && isAttrBoundaryChar(attrs[j] ?? '')) j += 1
+    if (j < attrs.length && attrs[j] === '=') {
+      j += 1
+      while (j < attrs.length && isAttrBoundaryChar(attrs[j] ?? '')) j += 1
+      if (j < attrs.length && attrs[j] === '"') {
+        const valueStart = j + 1
+        const valueEnd = attrs.indexOf('"', valueStart)
+        if (valueEnd !== -1) return attrs.slice(valueStart, valueEnd)
+      }
+    }
+    i = lower.indexOf('style', i + 1)
+  }
+  return undefined
+}
+
+/** Extract style value from full open tag (e.g. from fullTag.slice(0, fullTag.indexOf('>'))). Use when attrs-based extraction missed it. */
+function extractStyleFromOpenTag(fullTag: string): string | undefined {
+  const gt = fullTag.indexOf('>')
+  if (gt === -1) return undefined
+  return getAttr(fullTag.slice(7, gt), 'style') ?? extractStyleFromAttrsFallback(fullTag.slice(7, gt))
+}
+
+/** Max fullTag length to run style re-extraction (avoids scanning huge strings). */
+const MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN = 10_000
+/** Characters to scan for style=" or style=' when re-extracting from tag (covers open tag). */
+const STYLE_VALUE_SCAN_CHARS = 1500
+
+/**
+ * Re-extract style attribute value from tag content when getAttr missed it.
+ * Scans the first maxScan chars for style="..." or style='...'.
+ */
+function extractStyleFromTagContent(fullTag: string, maxScan = STYLE_VALUE_SCAN_CHARS): string | undefined {
+  const scan = fullTag.slice(0, maxScan)
+  const styleDq = scan.toLowerCase().indexOf('style="')
+  const styleSq = scan.toLowerCase().indexOf('style=\'')
+  const useDq = styleDq !== -1 && (styleSq === -1 || styleDq <= styleSq)
+  const styleIdx = useDq ? styleDq : styleSq
+  const quote = styleIdx !== -1 ? (useDq ? '"' : '\'') : ''
+  if (styleIdx === -1 || !quote) return undefined
+  const valueStart = styleIdx + 7
+  const valueEnd = scan.indexOf(quote, valueStart)
+  return valueEnd !== -1 ? scan.slice(valueStart, valueEnd) : undefined
+}
+
+/** True when style or fullTag (lowercased) indicates actor/person shape. */
+function styleOrTagIndicatesActor(style: string | undefined, fullTagLower: string): boolean {
+  const s = style?.toLowerCase() ?? ''
+  return (
+    s.includes('shape=actor') ||
+    s.includes('shape=person') ||
+    s.includes('umlactor') ||
+    fullTagLower.includes('shape=actor') ||
+    fullTagLower.includes('shape=person') ||
+    fullTagLower.includes('umlactor')
+  )
 }
 
 /** Find end of XML open tag (first unquoted '>'). Handles both single- and double-quoted attributes. Avoids regex for S5852. */
@@ -338,6 +415,8 @@ function buildCellOptionalFields(params: {
   const relationshipKind = getDecodedStyle(styleMap, 'likec4relationshipkind')
   const notation = getDecodedStyle(styleMap, 'likec4notation')
   const metadata = getDecodedStyle(styleMap, 'likec4metadata')
+  const likec4Id = getDecodedStyle(styleMap, 'likec4id')
+  const likec4RelationId = getDecodedStyle(styleMap, 'likec4relationid')
   const optional: Partial<DrawioCell> = {}
   if (params.valueRaw != null && params.valueRaw !== '') {
     optional.value = decodeXmlEntities(params.valueRaw)
@@ -346,6 +425,10 @@ function buildCellOptionalFields(params: {
   if (params.source != null && params.source !== '') optional.source = params.source
   if (params.target != null && params.target !== '') optional.target = params.target
   if (params.style != null && params.style !== '') optional.style = params.style
+  else if (params.styleMap.has('shape')) {
+    // Fallback: raw style string may be missing from attrs (e.g. parsing path); ensure kind/shape inference can run
+    optional.style = `shape=${params.styleMap.get('shape')};`
+  }
   if (x !== undefined) optional.x = x
   if (y !== undefined) optional.y = y
   if (width !== undefined) optional.width = width
@@ -376,6 +459,16 @@ function buildCellOptionalFields(params: {
   if (relationshipKind != null) optional.relationshipKind = relationshipKind
   if (notation != null) optional.notation = notation
   if (metadata != null && edge) optional.metadata = metadata
+  if (likec4Id != null && vertex) optional.likec4Id = likec4Id
+  if (likec4RelationId != null && edge) optional.likec4RelationId = likec4RelationId
+  let shapeFromStyle = params.styleMap.get('shape')?.trim()
+  const fullTagLower = params.fullTag.toLowerCase()
+  if (
+    (shapeFromStyle == null || shapeFromStyle === '') && vertex && styleOrTagIndicatesActor(params.style, fullTagLower)
+  ) {
+    shapeFromStyle = 'actor'
+  }
+  if (shapeFromStyle != null && shapeFromStyle !== '' && vertex) optional.shapeFromStyle = shapeFromStyle
   if (userData.customData != null) optional.customData = userData.customData
   if (edge) {
     const pts = parseEdgePoints(fullTag)
@@ -399,9 +492,19 @@ function buildCellFromMxCell(
   if (!id) return null
   const vertex = getAttr(attrs, 'vertex') === '1'
   const edge = getAttr(attrs, 'edge') === '1'
-  const style = getAttr(attrs, 'style')
+  let style = getAttr(attrs, 'style') ??
+    extractStyleFromAttrsFallback(attrs) ??
+    extractStyleFromOpenTag(fullTag)
+  const styleMissing = !style || style.trim() === ''
+  const tagHasActor = fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN &&
+    fullTag.toLowerCase().includes('shape=actor')
+  const needLastResort = styleMissing || (tagHasActor && !style?.toLowerCase().includes('shape=actor'))
+  if (needLastResort && fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN) {
+    const reExtracted = extractStyleFromTagContent(fullTag)
+    if (reExtracted != null) style = reExtracted
+  }
   const geomStr = extractMxGeometryOpenTag(fullTag)
-  const styleMap = parseStyle(style ?? undefined)
+  const styleMap = parseStyle(style?.trim() || undefined)
   const userData = parseUserData(inner)
   const navigateTo = overrides?.navigateTo ?? getDecodedStyle(styleMap, 'likec4navigateto')
   const optional = buildCellOptionalFields({
@@ -409,7 +512,7 @@ function buildCellFromMxCell(
     parent: getAttr(attrs, 'parent'),
     source: getAttr(attrs, 'source'),
     target: getAttr(attrs, 'target'),
-    style: getAttr(attrs, 'style'),
+    style,
     styleMap,
     userData,
     geomStr,
@@ -418,7 +521,7 @@ function buildCellFromMxCell(
     edge,
     navigateTo,
   })
-  return { id, vertex, edge, ...optional } as DrawioCell
+  return { id, vertex, edge, ...(style != null && style !== '' ? { style } : {}), ...optional } as DrawioCell
 }
 
 /** Extract one mxCell from xml starting at tagStart. Returns attrs, inner, fullTag and next search index, or null. */
@@ -549,20 +652,29 @@ function likec4LineType(
   return undefined
 }
 
+/** True when style or shapeFromStyle indicates actor/person (DrawIO shape=actor, shape=person, umlActor). */
+function isActorShapeInStyle(style: string | undefined, shapeFromStyle?: string): boolean {
+  const s = style?.toLowerCase() ?? ''
+  const shape = shapeFromStyle?.toLowerCase().trim()
+  return shape === 'actor' || shape === 'person' || s.includes('shape=actor') || s.includes('shape=person') ||
+    s.includes('umlactor')
+}
+
 /**
  * Infer LikeC4 element kind from DrawIO shape style. When parent is a container (container=1), child is component.
  * Explicit container=1 in style → system (context box); others default to container unless actor/swimlane.
+ * Uses shapeFromStyle when raw style is missing so actor/person is still inferred.
  */
 function inferKind(
   style: string | undefined,
   parentCell?: DrawioCell,
+  shapeFromStyle?: string,
 ): 'actor' | 'system' | 'container' | 'component' {
   const s = style?.toLowerCase() ?? ''
+  if (isActorShapeInStyle(style, shapeFromStyle)) return 'actor'
   switch (true) {
-    case !style:
+    case !style && !shapeFromStyle:
       return parentCell?.style?.toLowerCase().includes('container=1') ? 'component' : 'container'
-    case s.includes('umlactor') || s.includes('shape=person') || s.includes('shape=actor'):
-      return 'actor'
     case s.includes('swimlane'):
     case s.includes('container=1'):
       return 'system'
@@ -573,12 +685,10 @@ function inferKind(
   }
 }
 
-/** Infer LikeC4 shape from DrawIO style when possible (person, cylinder, document, etc.). */
-function inferShape(style: string | undefined): string | undefined {
-  if (!style) return undefined
-  const s = style.toLowerCase()
-  // Actor/person shape (export may use shape=actor or shape=umlActor; legacy may have shape=person)
-  if (s.includes('shape=actor') || s.includes('shape=person') || s.includes('umlactor')) return 'person'
+/** Infer LikeC4 shape from DrawIO style (or shapeFromStyle) when possible (person, cylinder, document, etc.). */
+function inferShape(style: string | undefined, shapeFromStyle?: string): string | undefined {
+  const s = style?.toLowerCase() ?? ''
+  if (isActorShapeInStyle(style, shapeFromStyle)) return 'person'
   if (s.includes('shape=cylinder') || s.includes('cylinder3')) return 'cylinder'
   if (s.includes('shape=document')) return 'document'
   if (s.includes('shape=rectangle') && s.includes('rounded')) return 'rectangle'
@@ -610,16 +720,42 @@ function makeUniqueName(usedNames: Set<string>): (base: string) => string {
   }
 }
 
-/** Assign FQNs to element vertices: root first, then hierarchy by parent, then orphans (DRY). */
+/** True when s is a syntactically valid dot-separated FQN (each segment non-empty, identifier-like). */
+function isValidFqn(s: string): boolean {
+  if (s.length === 0) return false
+  const segments = s.split('.')
+  return segments.every(seg => /^[a-zA-Z0-9_-]+$/.test(seg))
+}
+
+/** Assign FQNs to element vertices: bridge-managed likec4Id first (when valid), then root, hierarchy, orphans (DRY). */
 function assignFqnsToElementVertices(
   idToFqn: Map<string, string>,
   elementVertices: DrawioCell[],
   containerIdToTitle: Map<string, string>,
   isRootParent: (parent: string | undefined) => boolean,
   uniqueName: (base: string) => string,
+  usedNames: Set<string>,
 ): void {
   const baseName = (v: DrawioCell) => v.value ?? containerIdToTitle.get(v.id) ?? v.id
+  const idToVertex = new Map(elementVertices.map(v => [v.id, v]))
+  const depth = (v: DrawioCell): number =>
+    v.parent == null || !idToVertex.has(v.parent) ? 0 : 1 + depth(idToVertex.get(v.parent)!)
+  const byDepth = [...elementVertices].sort((a, b) => depth(a) - depth(b))
+  for (const v of byDepth) {
+    const bridgeId = v.likec4Id?.trim()
+    if (bridgeId && isValidFqn(bridgeId)) {
+      const parentFqn = v.parent ? idToFqn.get(v.parent) : undefined
+      const useBridgeId = parentFqn === undefined
+        ? isRootParent(v.parent)
+        : bridgeId.startsWith(parentFqn + '.') && bridgeId.length > parentFqn.length + 1
+      if (useBridgeId) {
+        idToFqn.set(v.id, bridgeId)
+        for (const segment of bridgeId.split('.')) usedNames.add(segment)
+      }
+    }
+  }
   for (const v of elementVertices) {
+    if (idToFqn.has(v.id)) continue
     if (isRootParent(v.parent)) idToFqn.set(v.id, uniqueName(baseName(v)))
   }
   let changed = true
@@ -804,7 +940,7 @@ function pushElementStyleBlock(
 ): void {
   const border = cell.border?.trim()
   const opacityVal = cell.opacity
-  const shapeOverride = inferShape(cell.style)
+  const shapeOverride = inferShape(cell.style, cell.shapeFromStyle)
   const sizeVal = cell.size?.trim()
   const paddingVal = cell.padding?.trim()
   const textSizeVal = cell.textSize?.trim()
@@ -918,7 +1054,7 @@ function elementHasBody(
     !!colorName ||
     !!cell.border?.trim() ||
     !!cell.opacity ||
-    !!inferShape(cell.style) ||
+    !!inferShape(cell.style, cell.shapeFromStyle) ||
     !!cell.size ||
     !!cell.padding ||
     !!cell.textSize ||
@@ -974,7 +1110,7 @@ function emitElementToLines(ctx: ElementEmitContext, cellId: string, fqn: string
   const cell = ctx.idToCell.get(cellId)
   if (!cell) return
   const parentCell = cell.parent ? ctx.byId.get(cell.parent) : undefined
-  const kind = inferKind(cell.style, parentCell)
+  const kind = inferKind(cell.style, parentCell, cell.shapeFromStyle)
   const rawTitle = (cell.value && cell.value.trim()) || ''
   const title = stripHtml(rawTitle) ||
     (ctx.containerIdToTitle.get(cell.id) ?? ctx.containerIdToTitle.get(cellId) ?? '') ||
@@ -1363,7 +1499,7 @@ function buildCommonDiagramStateFromCells(
   const elementVertices = vertices.filter(v => !titleCellIds.has(v.id))
   const usedNames = new Set<string>()
   const uniqueName = makeUniqueName(usedNames)
-  assignFqnsToElementVertices(idToFqn, elementVertices, containerIdToTitle, isRootParent, uniqueName)
+  assignFqnsToElementVertices(idToFqn, elementVertices, containerIdToTitle, isRootParent, uniqueName, usedNames)
   const hexToCustomName = buildHexToCustomName(elementVertices, edges)
   const children = new Map<string, Array<{ cellId: string; fqn: string }>>()
   const roots: Array<{ cellId: string; fqn: string }> = []

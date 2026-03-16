@@ -1,0 +1,22 @@
+---
+import { fetchStars } from '../../lib/githubdata'
+
+const stars = await fetchStars()
+---
+<span
+  class="inline-flex items-center gap-2 px-3.5 py-1.5 text-[0.6875rem] font-semibold tracking-[0.12em] uppercase text-cyan-700 dark:text-cyan-400 border border-cyan-600/25 dark:border-cyan-400/20 rounded-full"
+>
+  <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-pulse"></span>
+  Open Source
+  {stars && (
+    <>
+      <span class="w-px h-3 bg-cyan-600/20 dark:bg-cyan-400/20"></span>
+      <span class="inline-flex items-center gap-1 normal-case tracking-normal">
+        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 19.771l-7.416 3.642 1.48-8.279L0 9.306l8.332-1.151z" />
+        </svg>
+        {stars}
+      </span>
+    </>
+  )}
+</span>

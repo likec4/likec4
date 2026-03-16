@@ -1,7 +1,7 @@
 {
   "name": "likec4",
   "description": "Toolchain for your architecture diagrams",
-  "version": "1.51.0",
+  "version": "1.52.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -20,7 +20,7 @@
     "graph"
   ],
   "engines": {
-    "node": ">=22.22.0"
+    "node": ">=22.22.1"
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
@@ -171,7 +171,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/language-services": "workspace:*",
     "@dagrejs/dagre": "catalog:",
-    "@fontsource-variable/ibm-plex-sans": "^5.2.8",
+    "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/layouts": "workspace:*",
@@ -233,7 +233,7 @@
     "remeda": "catalog:utils",
     "semver": "^7.7.4",
     "strip-indent": "catalog:utils",
-    "tinyrainbow": "^2.0.0",
+    "tinyrainbow": "^3.0.3",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

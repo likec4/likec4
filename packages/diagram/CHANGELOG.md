@@ -1,5 +1,22 @@
 # @likec4/diagram
 
+## 1.52.0
+
+### Patch Changes
+
+- [#2665](https://github.com/likec4/likec4/pull/2665) [`6257147`](https://github.com/likec4/likec4/commit/6257147265d69972b4b4f2dc472d0b58a03bc607) Thanks [@ckeller42](https://github.com/ckeller42)! - Add search bar, navigation drawer, and theme toggle to overview page
+
+  - Search for elements and views directly from the overview page via visible search bar or ⌘K
+  - Browse all diagrams through sidebar navigation drawer with file/folder/list grouping
+  - Toggle dark/light mode from the overview header
+  - Navigate from search results to a diagram view with element focus
+
+  Fixes [#1679](https://github.com/likec4/likec4/issues/1679)
+
+- Updated dependencies [[`bc47423`](https://github.com/likec4/likec4/commit/bc474235cf31a7d42e8c4f25328a698bb7edefe3)]:
+  - @likec4/core@1.52.0
+  - @likec4/styles@1.52.0
+
 ## 1.51.0
 
 ### Patch Changes

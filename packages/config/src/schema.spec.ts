@@ -266,6 +266,66 @@ describe('ProjectConfig schema', () => {
         )
       })
     })
+
+    describe('landingPage field', () => {
+      it('should accept redirect to index view', ({ expect }) => {
+        const config = { name: 'test', landingPage: { redirect: true } }
+        const result = validateConfig(config)
+        expect(result.landingPage).toEqual({ redirect: true })
+      })
+
+      it('should accept include with view IDs', ({ expect }) => {
+        const config = { name: 'test', landingPage: { include: ['landscape', 'context'] } }
+        const result = validateConfig(config)
+        expect(result.landingPage).toEqual({ include: ['landscape', 'context'] })
+      })
+
+      it('should accept include with tag references', ({ expect }) => {
+        const config = { name: 'test', landingPage: { include: ['#public', 'landscape'] } }
+        const result = validateConfig(config)
+        expect(result.landingPage).toEqual({ include: ['#public', 'landscape'] })
+      })
+
+      it('should accept exclude with view IDs and tags', ({ expect }) => {
+        const config = { name: 'test', landingPage: { exclude: ['internal', '#draft'] } }
+        const result = validateConfig(config)
+        expect(result.landingPage).toEqual({ exclude: ['internal', '#draft'] })
+      })
+
+      it('should reject lone "#" selector in include', ({ expect }) => {
+        expect(() => validateConfig({ name: 'test', landingPage: { include: ['#'] } })).toThrow()
+      })
+
+      it('should reject lone "#" selector in exclude', ({ expect }) => {
+        expect(() => validateConfig({ name: 'test', landingPage: { exclude: ['#'] } })).toThrow()
+      })
+
+      it('should reject empty include array', ({ expect }) => {
+        expect(() => validateConfig({ name: 'test', landingPage: { include: [] } })).toThrow()
+      })
+
+      it('should reject empty exclude array', ({ expect }) => {
+        expect(() => validateConfig({ name: 'test', landingPage: { exclude: [] } })).toThrow()
+      })
+
+      it('should reject include with exclude', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'test',
+            landingPage: { include: ['landscape'], exclude: ['internal'] },
+          })
+        ).toThrow()
+      })
+
+      it('should reject redirect: false', ({ expect }) => {
+        expect(() => validateConfig({ name: 'test', landingPage: { redirect: false } })).toThrow()
+      })
+
+      it('should accept undefined landingPage', ({ expect }) => {
+        const result = validateConfig({ name: 'test' })
+        expect(result.landingPage).toBeUndefined()
+      })
+    })
   })
 
   describe('ImageAliasesSchema', () => {

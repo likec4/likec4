@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "1.51.0",
+  "version": "1.52.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -21,7 +21,7 @@
     "directory": "packages/language-server"
   },
   "engines": {
-    "node": ">=22.22.0"
+    "node": ">=22.22.1"
   },
   "type": "module",
   "sideEffects": false,
@@ -148,8 +148,6 @@
     "@likec4/core": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
-    "@msgpack/msgpack": "^3.1.2",
-    "@smithy/util-base64": "^4.3.0",
     "chokidar": "catalog:externals",
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
