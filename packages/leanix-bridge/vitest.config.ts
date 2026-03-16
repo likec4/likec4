@@ -1,3 +1,3 @@
 import { defineVitest } from '@likec4/devops/vitest'
 
-export default defineVitest('diagram')
+export default defineVitest('leanix-bridge')

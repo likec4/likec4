@@ -66,6 +66,7 @@
     "apps/*/lib": true,
     "apps/*/styled-system": true,
     "devops/lib": true,
+    ".claude/worktrees": true,
     "styled-system/*/node_modules": true,
     "styled-system/*/lib": true
   },

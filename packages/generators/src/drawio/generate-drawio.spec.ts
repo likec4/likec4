@@ -2,9 +2,13 @@ import { Builder } from '@likec4/core/builder'
 import type { aux, ProcessedView } from '@likec4/core/types'
 import { describe, expect, test } from 'vitest'
 import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
-import type { DrawioViewModelLike } from './generate-drawio'
-import { generateDrawio, generateDrawioMulti } from './generate-drawio'
-import { getAllDiagrams } from './parse-drawio'
+import type { DrawioViewModelLike } from '@likec4/generators'
+import {
+  generateDrawio,
+  generateDrawioMulti,
+  getAllDiagrams,
+  parseDrawioToLikeC4,
+} from '@likec4/generators'
 
 /**
  * Asserts that the DrawIO XML does not contain the structure that causes
@@ -73,9 +77,46 @@ function mockViewModel($view: ProcessedView<aux.Unknown>): DrawioViewModelLike {
   return { $view }
 }
 
+/** Minimal view with two actor nodes (kind=actor, shape=person) for DrawIO actor tests. Inlined so this spec works with package import (@likec4/generators) without fixture resolution issues. */
+const fakeActorView: ProcessedView<aux.Unknown> = {
+  edges: [
+    {
+      headArrow: [[154, 200], [150, 210], [146, 200]],
+      id: 'alice:bob',
+      label: 'uses',
+      labelBox: { align: 'left', width: 30, x: 80, y: 175 },
+      points: [[100, 100], [100, 150], [150, 200]],
+      relations: ['alice:bob'],
+      source: 'alice',
+      target: 'bob',
+    },
+  ],
+  height: 300,
+  id: 'index',
+  nodes: [
+    { children: [], color: 'primary', id: 'alice', kind: 'actor', parent: null, position: [0, 0], relative: [0, 0], shape: 'person', size: { height: 80, width: 60 }, title: 'Alice' },
+    { children: [], color: 'primary', id: 'bob', kind: 'actor', parent: null, position: [200, 200], relative: [200, 200], shape: 'person', size: { height: 80, width: 60 }, title: 'Bob' },
+  ],
+  autoLayout: { direction: 'TB' },
+  rules: [{ exprs: [{ wildcard: true }], isInclude: true }],
+  title: 'Actors',
+  width: 300,
+} as unknown as ProcessedView<aux.Unknown>
+
 /** Build layouted view models for generateDrawioMulti from processed views (DRY in specs). */
 function getLayoutedViewmodels(views: ProcessedView<aux.Unknown>[]): DrawioViewModelLike[] {
   return views.map(v => mockViewModel(v))
+}
+
+/** View with node kinds set so leanixFactSheetTypeByKind is applied (system for containers, component for leaves). */
+function viewWithElementKindsForLeanix(view: ProcessedView<aux.Unknown>): ProcessedView<aux.Unknown> {
+  return {
+    ...view,
+    nodes: view.nodes.map(n => ({
+      ...n,
+      kind: n.id === 'cloud' || (n.children?.length ?? 0) > 0 ? 'system' : 'component',
+    })),
+  } as ProcessedView<aux.Unknown>
 }
 
 /**
@@ -216,6 +257,22 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
     ).toMatch(/fillOpacity=\d+/)
   })
 
+  test('actor (shape person) exports with shape=actor in vertex style for round-trip', () => {
+    const xml = generateDrawio(mockViewModel(fakeActorView), { compressed: false })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(
+      content,
+      'Actor nodes must export shape=actor or shape=umlActor in style so re-import infers actor',
+    ).toMatch(/style="[^"]*shape=(actor|umlActor)[^"]*"/)
+  })
+
+  test('round-trip: generated DrawIO with actor re-imports as actor', () => {
+    const xml = generateDrawio(mockViewModel(fakeActorView), { compressed: false })
+    const likec4 = parseDrawioToLikeC4(xml)
+    expect(likec4, 'Re-imported DrawIO with actors must emit actor elements').toContain("actor 'Alice'")
+    expect(likec4).toContain("actor 'Bob'")
+  })
+
   test('node with navigateTo exports UserObject with link and style link=data:page/id opening likec4-<viewId> page', () => {
     // ExtendedNode allows navigateTo; cast for test data (ProcessedView nodes type may not include it). If ProcessedView gains navigateTo, this assertion can be removed.
     const nodeWithNav = {
@@ -260,5 +317,82 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
     const diagramCount = (xml.match(/<diagram\s/g) ?? []).length
     expect(diagramCount).toBe(1)
     expect(getAllDiagrams(xml)).toHaveLength(1)
+  })
+})
+
+describe('DrawIO export profile leanix (bridge-managed metadata)', () => {
+  test('profile leanix adds bridgeManaged, likec4Id, likec4Kind, likec4ViewId on vertices and root', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), {
+      compressed: false,
+      profile: 'leanix',
+      projectId: 'test-project',
+    })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).toContain('bridgeManaged=true')
+    expect(content).toMatch(/likec4Id=([^;]+)/)
+    expect(content, 'likec4Kind key must be present (value may be empty when node has no kind)').toMatch(/likec4Kind=/)
+    expect(content).toMatch(/likec4ViewId=([^;]+)/)
+    expect(content).toContain('likec4ProjectId=test-project')
+    // Root cell (id=1) should have likec4ViewId and likec4ProjectId
+    expect(content).toMatch(/likec4ViewId=([^;"&]+)/)
+  })
+
+  test('profile leanix adds likec4RelationId and bridgeManaged on edges', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), {
+      compressed: false,
+      profile: 'leanix',
+    })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).toMatch(/likec4RelationId=([^;]+)/)
+    expect(content, 'Edge style must contain bridgeManaged').toMatch(/bridgeManaged=true/)
+  })
+
+  test('profile leanix with leanixFactSheetTypeByKind adds leanixFactSheetType on vertices', () => {
+    const viewWithElementKinds = viewWithElementKindsForLeanix(fakeDiagram)
+    const xml = generateDrawio(mockViewModel(viewWithElementKinds), {
+      compressed: false,
+      profile: 'leanix',
+      leanixFactSheetTypeByKind: { system: 'Application', component: 'ITComponent' },
+    })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).toMatch(/leanixFactSheetType=([^;]+)/)
+  })
+
+  test('profile leanix without projectId adds bridgeManaged and likec4ViewId but no likec4ProjectId', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), { compressed: false, profile: 'leanix' })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).toContain('bridgeManaged=true')
+    expect(content).toMatch(/likec4ViewId=([^;"&]+)/)
+    expect(content).not.toContain('likec4ProjectId=')
+  })
+
+  test('profile default does not add bridgeManaged or likec4Id', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), { compressed: false })
+    const content = getAllDiagrams(xml)[0]!.content
+    expect(content).not.toContain('bridgeManaged=true')
+    expect(content).not.toMatch(/likec4Id=/)
+  })
+
+  test('bridge-managed export is loadable in draw.io (valid XML)', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), {
+      compressed: false,
+      profile: 'leanix',
+      projectId: 'my-project',
+    })
+    expectDrawioXmlLoadableInDrawio(xml)
+  })
+
+  test('roundtrip: export with profile leanix then parse yields LikeC4 source with elements and view', () => {
+    const xml = generateDrawio(mockViewModel(fakeDiagram), {
+      compressed: false,
+      profile: 'leanix',
+      projectId: 'test-project',
+    })
+    const parsed = parseDrawioToLikeC4(xml)
+    expect(parsed).toContain('view')
+    expect(parsed).toMatch(/include\s+/)
+    // Diagram has cloud, cloud.backend, cloud.backend.api, etc.; parser infers from structure
+    expect(parsed.length).toBeGreaterThan(100)
+    expect(parsed).not.toMatch(/undefined|null/)
   })
 })
