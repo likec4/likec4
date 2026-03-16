@@ -6,6 +6,22 @@ import { runSyncLeanix } from './leanix'
 
 const DEFAULT_OUTDIR = resolve(process.cwd(), 'out', 'bridge')
 
+/** Shape of sync command args (yargs passes camelCase; builder sets defaults for outdir, dryRun, apply). */
+export interface SyncCmdArgs {
+  target?: string
+  path?: string
+  outdir?: string
+  dryRun?: boolean
+  apply?: boolean
+  project?: string
+  useDotBin?: boolean
+}
+
+function isSyncCmdArgs(a: unknown): a is SyncCmdArgs {
+  if (typeof a !== 'object' || a === null || !('target' in a)) return false
+  return typeof (a as Record<string, unknown>)['target'] === 'string'
+}
+
 export default function syncCmd(yargs: Argv) {
   return yargs.command({
     command: 'sync <target> [path]',
@@ -43,17 +59,16 @@ export default function syncCmd(yargs: Argv) {
           `${k.green('$0 sync leanix --apply -o out/bridge')}`,
           k.gray('Write artifacts then run live sync; updates manifest with LeanIX IDs'),
         ),
-    handler: async (args: any) => {
-      if (args.target === 'leanix') {
-        await runSyncLeanix({
-          path: args.path,
-          outdir: args.outdir ?? DEFAULT_OUTDIR,
-          project: args.project,
-          useDotBin: args.useDotBin,
-          dryRun: args.dryRun,
-          apply: args.apply,
-        })
-      }
+    handler: async (args: unknown) => {
+      if (!isSyncCmdArgs(args) || args.target !== 'leanix') return
+      await runSyncLeanix({
+        path: args.path ?? '.',
+        outdir: args.outdir ?? DEFAULT_OUTDIR,
+        project: args.project,
+        useDotBin: args.useDotBin ?? false,
+        dryRun: args.dryRun ?? true,
+        apply: args.apply ?? false,
+      })
     },
   })
 }

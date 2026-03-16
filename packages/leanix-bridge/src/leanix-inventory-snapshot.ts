@@ -115,12 +115,29 @@ async function fetchAllFactSheets(
       pageInfo?: { hasNextPage?: boolean; endCursor?: string | null }
     }
   }
+
+  const MAX_GRAPHQL_RETRIES = 3
+  const fetchPage = async (cursor: string | null): Promise<PageRes> => {
+    let lastErr: unknown
+    for (let attempt = 0; attempt < MAX_GRAPHQL_RETRIES; attempt++) {
+      try {
+        return await client.graphql<PageRes>(query, {
+          first: pageSize,
+          after: cursor,
+          filter: {},
+        })
+      } catch (err) {
+        lastErr = err
+        if (attempt < MAX_GRAPHQL_RETRIES - 1) {
+          await new Promise(r => setTimeout(r, 500 * (attempt + 1)))
+        }
+      }
+    }
+    throw lastErr
+  }
+
   while (hasNextPage && result.length < opts.maxFactSheets) {
-    const data: PageRes = await client.graphql<PageRes>(query, {
-      first: pageSize,
-      after,
-      filter: {},
-    })
+    const data: PageRes = await fetchPage(after)
     const edges = data.allFactSheets?.edges ?? []
     const pageInfo = data.allFactSheets?.pageInfo
 
@@ -144,6 +161,8 @@ async function fetchAllFactSheets(
 
   return result
 }
+
+const RELATIONS_FETCH_CONCURRENCY = 10
 
 async function fetchAllRelations(
   client: LeanixApiClient,
@@ -186,19 +205,27 @@ async function fetchAllRelations(
     }
   `
 
-  for (const sourceId of factSheetIds) {
-    const data = await client.graphql<RelationsResult>(query, { id: sourceId })
-    const edges = data.factSheet?.relations?.edges ?? []
-    for (const edge of edges) {
-      const node = edge.node
-      const targetId = node?.targetFactSheet?.id
-      if (!targetId || !idSet.has(targetId)) continue
-      relations.push({
-        ...(node.id ? { id: node.id } : {}),
-        sourceFactSheetId: sourceId,
-        targetFactSheetId: targetId,
-        type: node?.type ?? 'RELATES_TO',
-      })
+  for (let i = 0; i < factSheetIds.length; i += RELATIONS_FETCH_CONCURRENCY) {
+    const batch = factSheetIds.slice(i, i + RELATIONS_FETCH_CONCURRENCY)
+    const results = await Promise.all(
+      batch.map(sourceId => client.graphql<RelationsResult>(query, { id: sourceId })),
+    )
+    for (let j = 0; j < results.length; j++) {
+      const data = results[j]
+      const sourceId = batch[j]
+      if (sourceId === undefined) continue
+      const edges = data?.factSheet?.relations?.edges ?? []
+      for (const edge of edges) {
+        const node = edge.node
+        const targetId = node?.targetFactSheet?.id
+        if (!targetId || !idSet.has(targetId)) continue
+        relations.push({
+          ...(node?.id ? { id: node.id } : {}),
+          sourceFactSheetId: sourceId,
+          targetFactSheetId: targetId,
+          type: node?.type ?? 'RELATES_TO',
+        })
+      }
     }
   }
 

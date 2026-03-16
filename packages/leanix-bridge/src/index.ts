@@ -104,3 +104,5 @@ export type {
   GovernanceCheckResult,
   GovernanceReport,
 } from './governance-checks'
+
+export { isBridgeManifest, isLeanixInventorySnapshot } from './validate'

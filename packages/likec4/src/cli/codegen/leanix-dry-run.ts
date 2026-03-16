@@ -5,14 +5,14 @@
 
 import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import k from 'tinyrainbow'
+import { createLikeC4Logger, startTimer } from '../../logger'
+import { LikeC4Model } from '../../model'
 import {
   asBridgeModel,
   buildBridgeArtifacts,
   ERR_EMPTY_MODEL,
   writeBridgeArtifacts,
 } from '../bridge/shared'
-import { createLikeC4Logger, startTimer } from '../../logger'
-import { LikeC4Model } from '../../model'
 import { ensureProject } from '../utils'
 
 export type LeanixDryRunHandlerParams = {
@@ -27,24 +27,26 @@ export async function leanixDryRunHandler(params: LeanixDryRunHandlerParams): Pr
   const timer = startTimer(logger)
   const { path: workspacePath, outdir, project, useDotBin } = params
 
-  await using likec4 = await fromWorkspace(workspacePath, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: false,
-  })
-  const { projectId } = ensureProject(likec4, project)
-  if (project) {
-    logger.info(`${k.dim('project')} ${k.green(projectId)}`)
+  try {
+    await using likec4 = await fromWorkspace(workspacePath, {
+      graphviz: useDotBin ? 'binary' : 'wasm',
+      watch: false,
+    })
+    const { projectId } = ensureProject(likec4, project)
+    if (project) {
+      logger.info(`${k.dim('project')} ${k.green(projectId)}`)
+    }
+
+    const model = await likec4.layoutedModel(projectId)
+    if (model === LikeC4Model.EMPTY) {
+      logger.error(ERR_EMPTY_MODEL)
+      throw new Error(ERR_EMPTY_MODEL)
+    }
+
+    const bridgeModel = asBridgeModel(model)
+    const artifacts = buildBridgeArtifacts(bridgeModel)
+    await writeBridgeArtifacts(outdir, artifacts, logger)
+  } finally {
+    timer.stopAndLog()
   }
-
-  const model = await likec4.layoutedModel(projectId)
-  if (model === LikeC4Model.EMPTY) {
-    logger.error(ERR_EMPTY_MODEL)
-    throw new Error(ERR_EMPTY_MODEL)
-  }
-
-  const bridgeModel = asBridgeModel(model)
-  const artifacts = buildBridgeArtifacts(bridgeModel)
-  await writeBridgeArtifacts(outdir, artifacts, logger)
-
-  timer.stopAndLog()
 }

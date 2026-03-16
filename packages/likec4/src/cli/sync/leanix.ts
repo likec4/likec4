@@ -32,6 +32,14 @@ export type SyncLeanixArgs = {
   apply: boolean
 }
 
+/**
+ * Executes LeanIX sync workflow: builds bridge artifacts, optionally plans or applies sync.
+ * Requires LEANIX_API_TOKEN for --apply mode.
+ *
+ * @param args - path/workspacePath, outdir, project, useDotBin, dryRun, apply
+ * @returns Promise<void>
+ * @throws Error with ERR_EMPTY_MODEL when the workspace has no model; throws with ERR_LEANIX_TOKEN_REQUIRED when --apply is set but LEANIX_API_TOKEN is missing
+ */
 export async function runSyncLeanix(args: SyncLeanixArgs): Promise<void> {
   const logger = createLikeC4Logger('c4:sync:leanix')
   const timer = startTimer(logger)

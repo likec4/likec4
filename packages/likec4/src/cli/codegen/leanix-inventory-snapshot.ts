@@ -26,18 +26,20 @@ export async function leanixInventorySnapshotHandler(
   const timer = startTimer(logger)
   const { outdir, likec4IdAttribute } = params
 
-  const client = requireLeanixClient()
-  const snapshot = await fetchLeanixInventorySnapshot(client, {
-    ...(likec4IdAttribute != null ? { likec4IdAttribute } : {}),
-  })
+  try {
+    const client = requireLeanixClient()
+    const snapshot = await fetchLeanixInventorySnapshot(client, {
+      ...(likec4IdAttribute != null ? { likec4IdAttribute } : {}),
+    })
 
-  await mkdir(outdir, { recursive: true })
-  const snapshotPath = resolve(outdir, SNAPSHOT_FILENAME)
-  await writeFile(snapshotPath, JSON.stringify(snapshot, null, 2))
-  logger.info(`${k.dim('generated')} ${relative(process.cwd(), snapshotPath)}`)
-  logger.info(
-    `${k.dim('snapshot')} ${snapshot.factSheets.length} fact sheets, ${snapshot.relations.length} relations`,
-  )
-
-  timer.stopAndLog()
+    await mkdir(outdir, { recursive: true })
+    const snapshotPath = resolve(outdir, SNAPSHOT_FILENAME)
+    await writeFile(snapshotPath, JSON.stringify(snapshot, null, 2))
+    logger.info(`${k.dim('generated')} ${relative(process.cwd(), snapshotPath)}`)
+    logger.info(
+      `${k.dim('snapshot')} ${snapshot.factSheets.length} fact sheets, ${snapshot.relations.length} relations`,
+    )
+  } finally {
+    timer.stopAndLog()
+  }
 }

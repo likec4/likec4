@@ -18,6 +18,7 @@
   "dependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
     "@likec4/icons": "file:../packages/icons/package.tgz",
+    "@likec4/leanix-bridge": "file:../packages/leanix-bridge/package.tgz",
     "@playwright/test": "1.56.1",
     "@types/node": "~22.19.3",
     "@types/react": "^19.2.7",
@@ -35,6 +36,7 @@
     "overrides": {
       "@likec4/core": "file:../packages/core/package.tgz",
       "@likec4/icons": "file:../packages/icons/package.tgz",
+      "@likec4/leanix-bridge": "file:../packages/leanix-bridge/package.tgz",
       "likec4": "file:../packages/likec4/package.tgz"
     }
   }

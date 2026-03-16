@@ -140,13 +140,15 @@ export function reconcileInventoryWithManifest(
         ...(entityType !== undefined ? { type: entityType } : {}),
       })
     } else if (candidates.length === 1) {
+      const candidate = candidates[0]
+      if (!candidate) continue
       matched.push({
         canonicalId,
-        factSheetId: candidates[0]!.id,
-        name: candidates[0]!.name,
-        type: candidates[0]!.type,
+        factSheetId: candidate.id,
+        name: candidate.name,
+        type: candidate.type,
       })
-      usedFactSheetIds.add(candidates[0]!.id)
+      usedFactSheetIds.add(candidate.id)
     } else {
       ambiguous.push({
         canonicalId,

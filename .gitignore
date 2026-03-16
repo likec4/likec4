@@ -6,7 +6,6 @@
 .fleet
 .vscode-test-web
 .cursor/
-docs/PR-LEANIX-BRIDGE-DESCRIPTION.md
 .pnpm-store/
 .dprint-cache/
 .wireit
@@ -135,8 +134,17 @@ PR_*.md
 .gh-pr-*.txt
 bot-reply.md
 
-# Documentação de apoio (reviews, PR body drafts, etc. — fora do padrão do repo)
+# Documentos de apoio em docs/ (reviews, planos, refactors, validações — não oficiais)
+docs/PR-LEANIX-BRIDGE-DESCRIPTION.md
 docs/PR-*-REVIEW.md
+docs/PR-*.md
+docs/PLAN-*.md
+docs/REVIEW-*.md
+docs/REFACTOR-*.md
+docs/VALIDATION-*.md
+docs/FIX-*.md
+docs/BRIDGE-CLI.md
+docs/PR-REVIEW-AND-BOT-RESPONSES.md
 
 # Architecture-intelligence planning docs (internal, not official project docs)
 docs/architecture-intelligence/

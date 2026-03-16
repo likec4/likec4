@@ -39,7 +39,7 @@
     "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
-    "pretest:e2e": "NODE_ENV=production pnpm turbo run pack --filter=\"likec4...\"",
+    "pretest:e2e": "NODE_ENV=production pnpm turbo run pack --filter=\"@likec4/leanix-bridge\" --filter=\"likec4...\"",
     "test:e2e": "cd e2e && pnpm install --no-lockfile && pnpm install:chromium && pnpm bootstrap && pnpm test",
     "test:e2e:typecheck": "pnpm run pretest:e2e && cd e2e && pnpm install --no-lockfile && pnpm bootstrap && pnpm typecheck",
     "vitest:ui": "vitest --ui --no-isolate"
@@ -65,6 +65,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@likec4/leanix-bridge": "workspace:*",
       "esbuild": "catalog:esbuild",
       "react": "catalog:react",
       "react-dom": "catalog:react",

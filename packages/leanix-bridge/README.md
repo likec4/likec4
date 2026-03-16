@@ -29,15 +29,19 @@ likec4 sync leanix --dry-run -o out/bridge
 likec4 sync leanix --apply -o out/bridge
 
 # Phase 2 inbound: fetch LeanIX inventory (read-only), then reconcile with manifest
+# Fetch LeanIX inventory snapshot (read-only) to out/bridge
 likec4 gen leanix-inventory-snapshot -o out/bridge
+# Run reconciliation between manifest and LeanIX inventory, output to out/bridge
 likec4 gen leanix-reconcile -o out/bridge
 ```
 
-Export Draw.io with LeanIX profile:
+Export Draw.io with LeanIX profile (includes bridge-managed metadata for round-trip sync):
 
 ```bash
 likec4 export drawio --profile leanix -o ./diagrams
 ```
+
+The `--profile leanix` flag selects the LeanIX export profile so vertices and edges carry likec4Id, likec4ViewId, likec4RelationId, and bridgeManaged attributes for sync and round-trip.
 
 ### Custom generator (alternative)
 
@@ -63,6 +67,9 @@ export default defineConfig({
       await ctx.write({ path: ['out', 'bridge', 'manifest.json'], content: JSON.stringify(manifest, null, 2) })
       await ctx.write({ path: ['out', 'bridge', 'leanix-dry-run.json'], content: JSON.stringify(dryRun, null, 2) })
       await ctx.write({ path: ['out', 'bridge', 'report.json'], content: JSON.stringify(report, null, 2) })
+
+      // Phase 2 (programmatic): e.g. import { reconcile } from '@likec4/leanix-bridge', then
+      // reconciliation = reconcile(manifest, snapshot) and ctx.write(..., JSON.stringify(reconciliation, null, 2))
     },
   },
 })

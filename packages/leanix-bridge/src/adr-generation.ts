@@ -7,8 +7,9 @@ import type { DriftReport } from './drift-report'
 import type { ImpactReport } from './impact-report'
 import type { ReconciliationResult } from './reconcile'
 
-/** Returns date part YYYY-MM-DD from ISO timestamp (G25, G5). */
+/** Returns date part YYYY-MM-DD from ISO timestamp (G25, G5). Handles short strings defensively. */
 function formatIsoDateString(iso: string): string {
+  if (typeof iso !== 'string' || iso.length < 10) return iso
   return iso.slice(0, 10)
 }
 
