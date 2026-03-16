@@ -115,7 +115,8 @@ test('parse DrawIO to LikeC4 - vertex with shape=actor emits element with User',
   expect(result).toContain('User')
   expect(result).toContain('model {')
   expect(result).toContain('views {')
-  // shape=actor may be emitted as actor+shape person (built) or container (source); both valid
+  // Relaxed expectation (stopgap): shape=actor may emit as actor+shape person or container until pipeline is fixed.
+  // TODO: Structural fix — ensure raw style string is always set on cell when present in XML; then restore strict test (actor + shape person).
   const hasActor = result.includes('actor \'User\'') && result.includes('shape person')
   const hasContainer = result.includes('container \'User\'')
   expect(hasActor || hasContainer).toBe(true)
