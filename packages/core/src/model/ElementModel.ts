@@ -95,6 +95,10 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
     })
   }
 
+  get metadata(): aux.Metadata<A> {
+    return (this.$element.metadata ?? {}) as aux.Metadata<A>
+  }
+
   get title(): string {
     return this.$element.title
   }

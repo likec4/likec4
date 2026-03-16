@@ -123,6 +123,10 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
     return this.$relationship.kind ?? null
   }
 
+  get metadata(): aux.Metadata<A> {
+    return (this.$relationship.metadata ?? {}) as aux.Metadata<A>
+  }
+
   get links(): ReadonlyArray<Link> {
     return this.$relationship.links ?? []
   }

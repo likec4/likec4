@@ -35,7 +35,13 @@ export interface ComputedNode<A extends AnyAux = AnyAux>
   extends
     aux.WithTags<A>,
     aux.WithOptionalLinks
-{  
+{
+  /**
+   * Element metadata, propagated from the model.
+   * Uses a loose record type (instead of aux.WithMetadata<A>) to avoid
+   * exactOptionalPropertyTypes conflicts when MetadataKey is a literal union.
+   */
+  readonly metadata?: Readonly<Record<string, string | string[] | undefined>> | null
   id: scalar.NodeId
   kind: aux.ElementKind<A> | aux.DeploymentKind<A> | '@group'
   parent: scalar.NodeId | null

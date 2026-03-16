@@ -913,6 +913,9 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
           tags: [
             'external',
           ],
+          metadata: {
+            key1: 'value1',
+          },
           kind: 'component',
         },
         {

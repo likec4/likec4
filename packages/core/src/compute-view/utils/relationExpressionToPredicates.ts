@@ -7,6 +7,7 @@ type Predicate<T> = (x: T) => boolean
 export type FilterableEdge<A extends AnyAux> = {
   tags?: aux.Tags<A> | null | undefined
   kind?: string
+  metadata?: Readonly<Record<string, string | string[] | undefined>> | null | undefined
   source: ComputedNode<A>
   target: ComputedNode<A>
 }
@@ -23,10 +24,11 @@ export function relationExpressionToPredicates<A extends AnyAux, T extends Filte
       const where = whereOperatorAsPredicate(expr.where.condition)
       return e =>
         predicate(e) && where({
-          source: { tags: e.source.tags, kind: e.source.kind as aux.AllKinds<A> },
-          target: { tags: e.target.tags, kind: e.target.kind as aux.AllKinds<A> },
+          source: { tags: e.source.tags, kind: e.source.kind as aux.AllKinds<A>, metadata: e.source.metadata },
+          target: { tags: e.target.tags, kind: e.target.kind as aux.AllKinds<A>, metadata: e.target.metadata },
           ...(e.tags && { tags: e.tags }),
           ...(e.kind && { kind: e.kind as aux.AllKinds<A> }),
+          ...(e.metadata && { metadata: e.metadata }),
         })
     }
     case ModelRelationExpr.isDirect(expr): {

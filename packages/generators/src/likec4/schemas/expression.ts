@@ -32,12 +32,19 @@ function equalOp<T extends z.ZodType>(schema: T) {
 
 export const whereTag = z.object({ tag: equalOp(common.tag) })
 export const whereKind = z.object({ kind: equalOp(common.kind) })
+export const whereMetadata = z.object({
+  metadata: z.object({
+    key: z.string(),
+    value: equalOp(z.string()).optional(),
+  }),
+})
 
 export const whereParticipant = z.object({
   participant: z.literal(['source', 'target']),
   operator: z.union([
     whereTag,
     whereKind,
+    whereMetadata,
   ]),
 })
 
@@ -62,6 +69,7 @@ export const whereOr = z.object({
 export const whereOperator = z.union([
   whereTag,
   whereKind,
+  whereMetadata,
   whereParticipant,
   whereAnd,
   whereOr,

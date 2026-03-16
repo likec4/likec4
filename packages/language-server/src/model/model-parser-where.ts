@@ -2,6 +2,19 @@ import type * as c4 from '@likec4/core'
 import { invariant, isAndOperator, isNonEmptyArray, isOrOperator, nonexhaustive } from '@likec4/core'
 import { ast } from '../ast'
 
+const parseMetadataEquals = (
+  { operator, not }: ast.WhereMetadataEqual,
+  value: string,
+): c4.EqualOperator<string> => {
+  if (operator?.startsWith('!=')) {
+    return { neq: value }
+  }
+  if (operator?.startsWith('=')) {
+    return { eq: value }
+  }
+  return not ? { neq: value } : { eq: value }
+}
+
 const parseEquals = (
   { operator, not }: ast.WhereKindEqual | ast.WhereTagEqual,
   value: string,
@@ -20,7 +33,11 @@ const parseEquals = (
 }
 
 function parseParticipant(astNode: ast.WhereExpression): ast.Participant | null {
-  if (!ast.isWhereRelationParticipantKind(astNode) && !ast.isWhereRelationParticipantTag(astNode)) {
+  if (
+    !ast.isWhereRelationParticipantKind(astNode)
+    && !ast.isWhereRelationParticipantTag(astNode)
+    && !ast.isWhereRelationParticipantMetadata(astNode)
+  ) {
     return null
   }
 
@@ -42,6 +59,20 @@ export function parseWhereClause(astNode: ast.WhereExpression): c4.WhereOperator
       invariant(kind, 'Expected kind name')
       const kindOperator = { kind: parseEquals(astNode, kind) }
       return participant ? { participant, operator: kindOperator } : kindOperator
+    }
+    case ast.isWhereMetadataEqual(astNode): {
+      const key = astNode.key
+      const participant = parseParticipant(astNode)
+      invariant(key, 'Expected metadata key')
+      const metadataOperator: c4.MetadataEqual<c4.Any> = {
+        metadata: {
+          key,
+          ...(astNode.value != null
+            ? { value: parseMetadataEquals(astNode, String(astNode.value)) }
+            : {}),
+        },
+      }
+      return participant ? { participant, operator: metadataOperator } : metadataOperator
     }
     case ast.isWhereElementNegation(astNode) || ast.isWhereRelationNegation(astNode): {
       return {

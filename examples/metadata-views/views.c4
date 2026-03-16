@@ -1,0 +1,71 @@
+specification {
+  element container
+  element component
+  element database {
+    style {
+      shape storage
+    }
+  }
+  tag deprecated
+}
+model {
+  metadataExample = container 'Metadata Example' {
+
+    prodApi = component 'Prod API' {
+      metadata {
+        environment 'production'
+        version '2.0'
+        regions ['us-east-1', 'eu-west-1']
+        critical true
+      }
+    }
+    stagingApi = component 'Staging API' {
+      metadata {
+        environment 'staging'
+        version '2.1-beta'
+      }
+    }
+    prodDb = database 'PostgreSQL' {
+      #deprecated
+      metadata {
+        environment 'production'
+      }
+    }
+
+    prodApi -> prodDb 'queries' {
+      metadata {
+        protocol 'tcp'
+      }
+    }
+    stagingApi -> prodDb 'queries' {
+      metadata {
+        protocol 'tcp'
+      }
+    }
+  }
+}
+views {
+  view metadataProdOnly of metadataExample {
+    title 'Production Only'
+    include * where metadata.environment is "production"
+  }
+  view metadataNotStaging of metadataExample {
+    title 'Exclude Staging'
+    include *
+    exclude * where metadata.environment is "staging"
+  }
+  view metadataHasVersion of metadataExample {
+    title 'Elements with Version'
+    include * where metadata.version
+  }
+  view metadataProdComponents of metadataExample {
+    title 'Prod Components (not databases)'
+    include *
+      where metadata.environment is "production"
+        and kind is not database
+  }
+  view metadataCritical of metadataExample {
+    title 'Critical Components'
+    include * where metadata.critical is true
+  }
+}
