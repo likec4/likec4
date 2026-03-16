@@ -4,7 +4,7 @@
   "compilerOptions": {
     "customConditions": [
       "production",
-      "sources",
+      "sources"
     ],
     "target": "es2024",
     "composite": true,
@@ -13,7 +13,7 @@
     "resolvePackageJsonImports": true,
     "outDir": "lib/cli",
     "types": [
-      "node",
+      "node"
     ],
     "rootDirs": [
       "src",
@@ -22,6 +22,12 @@
     "paths": {
       "@/vite/*": [
         "./src/vite/*"
+      ],
+      "@likec4/leanix-bridge": [
+        "../leanix-bridge/src/index.ts"
+      ],
+      "@likec4/leanix-bridge/*": [
+        "../leanix-bridge/src/*"
       ]
     }
   },
@@ -53,6 +59,9 @@
     },
     {
       "path": "../layouts/tsconfig.json"
+    },
+    {
+      "path": "../leanix-bridge/tsconfig.json"
     }
   ]
 }
