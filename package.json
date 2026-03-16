@@ -101,7 +101,7 @@
   },
   "nano-staged": {
     "*.{ts,tsx,mjs,js,jsx,json,yaml,yml}": [
-      "dprint fmt"
+      "dprint fmt --allow-no-files"
     ]
   }
 }
