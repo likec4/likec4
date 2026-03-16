@@ -3,7 +3,16 @@ import type { BridgeModelInput } from './model-input'
 /** Minimal in-memory model for tests */
 export function createFixtureModel(overrides: Partial<{
   projectId: string
-  elements: Array<{ id: string; kind: string; title: string; tags?: string[]; technology?: string | null; metadata?: Record<string, unknown> }>
+  elements: Array<
+    {
+      id: string
+      kind: string
+      title: string
+      tags?: string[]
+      technology?: string | null
+      metadata?: Record<string, unknown>
+    }
+  >
   relations: Array<{ id: string; source: string; target: string; kind?: string | null; title?: string | null }>
   views: Array<{ id: string }>
 }> = {}): BridgeModelInput {
@@ -21,21 +30,23 @@ export function createFixtureModel(overrides: Partial<{
 
   return {
     projectId,
-    elements: () => elements.map(e => ({
-      id: e.id,
-      kind: e.kind,
-      title: e.title,
-      tags: e.tags ?? [],
-      technology: e.technology ?? null,
-      getMetadata: () => e.metadata ?? {},
-    })),
-    relationships: () => relations.map(r => ({
-      id: r.id,
-      source: { id: r.source },
-      target: { id: r.target },
-      kind: r.kind ?? null,
-      title: r.title ?? null,
-    })),
+    elements: () =>
+      elements.map(e => ({
+        id: e.id,
+        kind: e.kind,
+        title: e.title,
+        tags: e.tags ?? [],
+        technology: e.technology ?? null,
+        getMetadata: () => e.metadata ?? {},
+      })),
+    relationships: () =>
+      relations.map(r => ({
+        id: r.id,
+        source: { id: r.source },
+        target: { id: r.target },
+        kind: r.kind ?? null,
+        title: r.title ?? null,
+      })),
     views: () => views.map(v => ({ id: v.id })),
   }
 }

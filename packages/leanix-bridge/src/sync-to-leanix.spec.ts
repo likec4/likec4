@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { createFixtureModel } from './fixture-model'
-import { toLeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
 import type { LeanixApiClient } from './leanix-api-client'
 import { planSyncToLeanix } from './sync-to-leanix'
+import { toLeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
 
 /** Mock client: answers FindFactSheet with optional existing id per (name, type). */
 function createMockClient(

@@ -232,7 +232,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
         return [desc]
       }
 
-      const traversedNested = nested.flatMap(child => traverseElement(child, thisFqn))
+      const traversedNested = flatMap(nested, child => traverseElement(child, thisFqn))
       for (const descendant of traversedNested) {
         descendants.set(thisFqn, descendant)
       }

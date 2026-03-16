@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { BRIDGE_VERSION } from './contracts'
-import { toBridgeManifest } from './to-bridge-manifest'
 import { createFixtureModel } from './fixture-model'
+import { toBridgeManifest } from './to-bridge-manifest'
 
 describe('toBridgeManifest', () => {
   it('produces manifest with canonical IDs for entities, views, relations', () => {

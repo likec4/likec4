@@ -1,13 +1,17 @@
 import type { Simplify, Writable } from 'type-fest'
 import {
+  type AutoLayoutDirection,
   type LikeC4View,
+  type ModelExpression,
   type ParsedDeploymentView as DeploymentView,
   type ParsedElementView as ElementView,
+  type ViewRuleAutoLayout,
   _type,
+  exact,
 } from '../types'
 import type { AnyTypes } from './_types'
 import type { Builder } from './Builder'
-import type { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
+import type { $autoLayout, $exclude, $include, $rules, $style, LikeC4ViewBuilder } from './Builder.view-common'
 import { type AddDeploymentViewHelper, type DeploymentViewBuilder, $deploymentExpr } from './Builder.view-deployment'
 import {
   type AddViewHelper,
@@ -361,25 +365,29 @@ export function mkViewBuilder(view: Writable<DeploymentView<any>>): DeploymentVi
 export function mkViewBuilder(view: Writable<ElementView<any>>): ElementViewBuilder<AnyTypes>
 export function mkViewBuilder(
   view: Writable<ElementView<any> | DeploymentView<any>>,
-): DeploymentViewBuilder<AnyTypes> | ElementViewBuilder<AnyTypes> {
-  const viewBuilder = {
+) {
+  const viewBuilder: LikeC4ViewBuilder<AnyTypes, string, any> = {
     $expr: view[_type] === 'deployment' ? $deploymentExpr : $expr,
-    autoLayout(autoLayout: unknown) {
-      view.rules.push({
-        direction: autoLayout,
-      } as any)
+    autoLayout(direction: AutoLayoutDirection, margins: { rank: number; node: number } | undefined) {
+      view.rules.push(
+        exact({
+          direction,
+          rankSep: margins?.rank,
+          nodeSep: margins?.node,
+        }) satisfies ViewRuleAutoLayout,
+      )
       return viewBuilder
     },
-    exclude(expr: unknown) {
+    exclude(...exprs: any[]) {
       view.rules.push({
-        exclude: [expr],
-      } as any)
+        exclude: exprs,
+      })
       return viewBuilder
     },
-    include(expr: unknown) {
+    include(...exprs: any[]) {
       view.rules.push({
-        include: [expr],
-      } as any)
+        include: exprs,
+      })
       return viewBuilder
     },
     style(rule: any) {
@@ -394,6 +402,19 @@ export function mkViewBuilder(
     //   view.description = description
     //   return viewBuilder
     // }
+    // This is only for TypeScript
+    get Expr(): string {
+      throw new Error('Expr is not available in runtime')
+    },
+    get Types(): AnyTypes {
+      throw new Error('Types are not available in runtime')
+    },
+    get ElementExpr(): any {
+      throw new Error('ElementExpr is not available in runtime')
+    },
+    get TypedExpr(): any {
+      throw new Error('TypedExpr is not available in runtime')
+    },
   }
-  return viewBuilder as any
+  return viewBuilder
 }

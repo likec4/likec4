@@ -146,7 +146,7 @@
       "end": "(\\1)",
       "beginCaptures": { "1": { "name": "punctuation.definition.string.begin.likec4" } },
       "endCaptures": { "1": { "name": "punctuation.definition.string.likec4" } },
-      "patterns": [ { "include": "#string-character-escape" } ]
+      "patterns": [{ "include": "#string-character-escape" }]
     },
     "string-character-escape": {
       "name": "constant.character.escape.likec4",

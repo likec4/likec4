@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { toLeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
 import { createFixtureModel } from './fixture-model'
+import { toLeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
 
 describe('toLeanixInventoryDryRun', () => {
   it('maps kinds to LeanIX fact sheet types and produces relations', () => {

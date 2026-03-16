@@ -186,10 +186,10 @@ const STYLE_VALUE_SCAN_CHARS = 1500
 function extractStyleFromTagContent(fullTag: string, maxScan = STYLE_VALUE_SCAN_CHARS): string | undefined {
   const scan = fullTag.slice(0, maxScan)
   const styleDq = scan.toLowerCase().indexOf('style="')
-  const styleSq = scan.toLowerCase().indexOf("style='")
+  const styleSq = scan.toLowerCase().indexOf('style=\'')
   const useDq = styleDq !== -1 && (styleSq === -1 || styleDq <= styleSq)
   const styleIdx = useDq ? styleDq : styleSq
-  const quote = styleIdx !== -1 ? (useDq ? '"' : "'") : ''
+  const quote = styleIdx !== -1 ? (useDq ? '"' : '\'') : ''
   if (styleIdx === -1 || !quote) return undefined
   const valueStart = styleIdx + 7
   const valueEnd = scan.indexOf(quote, valueStart)
@@ -463,7 +463,9 @@ function buildCellOptionalFields(params: {
   if (likec4RelationId != null && edge) optional.likec4RelationId = likec4RelationId
   let shapeFromStyle = params.styleMap.get('shape')?.trim()
   const fullTagLower = params.fullTag.toLowerCase()
-  if ((shapeFromStyle == null || shapeFromStyle === '') && vertex && styleOrTagIndicatesActor(params.style, fullTagLower)) {
+  if (
+    (shapeFromStyle == null || shapeFromStyle === '') && vertex && styleOrTagIndicatesActor(params.style, fullTagLower)
+  ) {
     shapeFromStyle = 'actor'
   }
   if (shapeFromStyle != null && shapeFromStyle !== '' && vertex) optional.shapeFromStyle = shapeFromStyle
@@ -490,12 +492,12 @@ function buildCellFromMxCell(
   if (!id) return null
   const vertex = getAttr(attrs, 'vertex') === '1'
   const edge = getAttr(attrs, 'edge') === '1'
-  let style =
-    getAttr(attrs, 'style') ??
+  let style = getAttr(attrs, 'style') ??
     extractStyleFromAttrsFallback(attrs) ??
     extractStyleFromOpenTag(fullTag)
   const styleMissing = !style || style.trim() === ''
-  const tagHasActor = fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN && fullTag.toLowerCase().includes('shape=actor')
+  const tagHasActor = fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN &&
+    fullTag.toLowerCase().includes('shape=actor')
   const needLastResort = styleMissing || (tagHasActor && !style?.toLowerCase().includes('shape=actor'))
   if (needLastResort && fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN) {
     const reExtracted = extractStyleFromTagContent(fullTag)
@@ -654,7 +656,8 @@ function likec4LineType(
 function isActorShapeInStyle(style: string | undefined, shapeFromStyle?: string): boolean {
   const s = style?.toLowerCase() ?? ''
   const shape = shapeFromStyle?.toLowerCase().trim()
-  return shape === 'actor' || shape === 'person' || s.includes('shape=actor') || s.includes('shape=person') || s.includes('umlactor')
+  return shape === 'actor' || shape === 'person' || s.includes('shape=actor') || s.includes('shape=person') ||
+    s.includes('umlactor')
 }
 
 /**
@@ -742,10 +745,9 @@ function assignFqnsToElementVertices(
     const bridgeId = v.likec4Id?.trim()
     if (bridgeId && isValidFqn(bridgeId)) {
       const parentFqn = v.parent ? idToFqn.get(v.parent) : undefined
-      const useBridgeId =
-        parentFqn === undefined
-          ? isRootParent(v.parent)
-          : bridgeId.startsWith(parentFqn + '.') && bridgeId.length > parentFqn.length + 1
+      const useBridgeId = parentFqn === undefined
+        ? isRootParent(v.parent)
+        : bridgeId.startsWith(parentFqn + '.') && bridgeId.length > parentFqn.length + 1
       if (useBridgeId) {
         idToFqn.set(v.id, bridgeId)
         for (const segment of bridgeId.split('.')) usedNames.add(segment)
