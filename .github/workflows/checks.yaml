@@ -5,9 +5,9 @@ on:
 
 env:
   NODE_ENV: production
-  CLOUDFLARE_ENV: "production"
+  CLOUDFLARE_ENV: 'production'
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   check-types:
@@ -71,9 +71,6 @@ jobs:
       - name: ⚙️ generate
         run: pnpm ci:generate
 
-      - name: 📦 build
-        run: pnpm build
-
       - name: 🔬 test
         env:
           NODE_ENV: test
@@ -91,9 +88,6 @@ jobs:
 
       - name: ⚙️ generate
         run: pnpm generate
-
-      - name: 📦 build
-        run: pnpm build
 
       - name: 🔬 test
         env:
@@ -164,7 +158,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v7
@@ -231,7 +225,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v7
