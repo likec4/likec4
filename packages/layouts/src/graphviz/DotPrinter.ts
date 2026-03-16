@@ -18,8 +18,6 @@ import {
   invariant,
   nameFromFqn,
   nonNullable,
-  stringHash,
-  unsafePartial,
 } from '@likec4/core/utils'
 import { Graph } from '@likec4/core/utils/graphology'
 import { createLogger } from '@likec4/log'
@@ -29,9 +27,7 @@ import {
   difference,
   filter,
   flatMap,
-  hasAtLeast,
   isEmpty,
-  isNonNullish,
   isNullish,
   isNumber,
   isTruthy,
@@ -55,7 +51,6 @@ import {
   digraph,
   toDot as modelToDot,
 } from 'ts-graphviz'
-import type { AISuggestedEdgeAttrs, LayoutHints } from './ai/types'
 import { compoundLabel, nodeLabel } from './dot-labels'
 import type { DotSource } from './types'
 import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } from './utils'
@@ -82,7 +77,6 @@ type GraphologyEdgeAttributes<V extends ViewToPrint> = {
   origin: EdgeOf<V>
   weight: number
   hierarchyDistance: number
-  aiHints: AISuggestedEdgeAttrs | undefined
 }
 
 // space around clusters, but SVG output requires hack
@@ -107,7 +101,6 @@ export abstract class DotPrinter<V extends ViewToPrint> {
   constructor(
     protected readonly view: V,
     protected readonly styles: LikeC4Styles,
-    protected readonly layoutHints?: LayoutHints,
   ) {
     this.compoundIds = new Set(view.nodes.filter(isCompound).map(n => n.id))
     this.edgesWithCompounds = new Set(
@@ -143,15 +136,10 @@ export abstract class DotPrinter<V extends ViewToPrint> {
         distance = hierarchyDistance(sourceFqn, targetFqn)
       }
 
-      // First try to find edge-specific hints, then fallback to enforcement hints
-      const aiHints = layoutHints?.edges?.find(hint => hint.id === edge.id)
-        ?? layoutHints?.enforcements?.find(enf => enf.source === edge.source && enf.target === edge.target)
-
       this.graphology.addEdgeWithKey(edge.id, edge.source, edge.target, {
         origin: edge,
         hierarchyDistance: distance,
         weight: 1,
-        aiHints,
       })
 
       if (distance > this.graphology.getNodeAttribute(edge.source, 'maxConnectedHierarchyDistance')) {
@@ -189,9 +177,6 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     const G = this.graphvizModel = this.createGraph()
     this.applyNodeAttributes(G.attributes.node)
     this.applyEdgeAttributes(G.attributes.edge)
-
-    this.build(G)
-    this.postBuild(G)
   }
 
   protected get $defaults(): LikeC4StyleDefaults {
@@ -259,6 +244,8 @@ export abstract class DotPrinter<V extends ViewToPrint> {
   }
 
   public print(): DotSource {
+    this.build(this.graphvizModel)
+    this.postBuild(this.graphvizModel)
     return modelToDot(this.graphvizModel, {
       print: {
         indentStyle: 'space',
@@ -277,7 +264,7 @@ export abstract class DotPrinter<V extends ViewToPrint> {
 
   protected createGraph(): RootGraphModel {
     const autoLayout = this.view.autoLayout
-    const direction = this.layoutHints?.direction ?? autoLayout.direction
+    const direction = autoLayout.direction
     const G = digraph({
       [_.likec4_viewId]: this.view.id,
       [_.bgcolor]: 'transparent',
@@ -564,76 +551,5 @@ export abstract class DotPrinter<V extends ViewToPrint> {
       }
     }
     return this
-  }
-
-  protected hasLayoutHints(this: this): this is this & { layoutHints: LayoutHints } {
-    return this.layoutHints !== undefined
-  }
-
-  /**
-   * Apply AI-generated layout hints to the Graphviz model.
-   * Injects rank constraints, edge weights, node groups, and graph-level overrides.
-   * Unknown node/edge IDs are silently ignored (LLM may hallucinate).
-   * Must be called after construction but before print().
-   */
-  protected applyLayoutHints({ enforcements, sources, sinks }: LayoutHints): this {
-    for (const { source: sourceId, target: targetId, ...enforcement } of enforcements) {
-      const source = this.getGraphNode(sourceId)
-      const target = this.getGraphNode(targetId)
-      if (!source || !target) {
-        continue
-      }
-
-      // Skip if there is already a directed edge between these nodes
-      if (this.graphology.hasDirectedEdge(sourceId, targetId)) {
-        console.error(`Skipping enforcement ${sourceId} -> ${targetId} because it already exists`)
-        continue
-      }
-
-      // Register a dummy edge in the graphology for other looks
-      const dummyEdgeId = stringHash(`${sourceId}->${targetId}`)
-      this.graphology.addEdgeWithKey(
-        dummyEdgeId,
-        sourceId,
-        targetId,
-        unsafePartial({
-          aiHints: enforcement,
-        }),
-      )
-
-      this.applyLayoutHintsToEdge(
-        this.graphvizModel.edge([source, target], {
-          [_.style]: 'invis',
-        }),
-        enforcement,
-      )
-    }
-
-    const processRank = (nodeIds: NodeId[], rank: 'source' | 'sink') => {
-      const nodes = nodeIds.flatMap(id => this.getGraphNode(id) ?? [])
-      if (!hasAtLeast(nodes, 1)) {
-        return
-      }
-      const subgraph = this.graphvizModel.createSubgraph({ [_.rank]: rank })
-      nodes.forEach(nd => subgraph.node(nd.id))
-    }
-
-    processRank(sources, 'source')
-    processRank(sinks, 'sink')
-
-    return this
-  }
-
-  protected applyLayoutHintsToEdge(edge: EdgeModel, aiEdgeHints: AISuggestedEdgeAttrs): EdgeModel {
-    if (isNonNullish(aiEdgeHints.weight)) {
-      edge.attributes.set(_.weight, aiEdgeHints.weight)
-    }
-    if (isNonNullish(aiEdgeHints.minlen)) {
-      edge.attributes.set(_.minlen, aiEdgeHints.minlen)
-    }
-    if (isNonNullish(aiEdgeHints.constraint)) {
-      edge.attributes.set(_.constraint, aiEdgeHints.constraint)
-    }
-    return edge
   }
 }

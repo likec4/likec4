@@ -1,0 +1,350 @@
+digraph {
+  likec4_viewId = "acceptance";
+  bgcolor = "transparent";
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  splines = "spline";
+  outputorder = "nodesfirst";
+  nodesep = 1.528;
+  ranksep = 1.667;
+  pad = 0.209;
+  fontname = "Arial";
+  newrank = true;
+  graph [
+    fontsize = 20;
+    labeljust = "l";
+    labelloc = "t";
+  ];
+  edge [
+    arrowsize = 0.75;
+    fontname = "Arial";
+    fontsize = 14;
+    penwidth = 2;
+    color = "#8D8D8D";
+    fontcolor = "#C9C9C9";
+    style = "dashed";
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    style = "filled";
+    penwidth = 0;
+  ];
+  "ui" [
+    likec4_id = "acc.eu.server1.ui";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">Frontends</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#c2f0c2">All the frontend applications<BR/>of Cloud System</FONT></TD></TR></TABLE>>;
+    margin = "0.278,0.306";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#428a4f";
+    fontcolor = "#f8fafc";
+    color = "#2d5d39";
+  ];
+  "graphql" [
+    likec4_id = "acc.eu.server1.graphql";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">GraphQL</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#c2f0c2">Graphql</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#c2f0c2">GraphQL API for the backend<BR/>Uses Apollo Server</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0.223";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#428a4f";
+    fontcolor = "#f8fafc";
+    color = "#2d5d39";
+  ];
+  "backend" [
+    likec4_id = "acc.eu.server1.backend";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">Backend V2</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#c2f0c2">Nestjs</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#c2f0c2">The next version of backend</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0.223";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#428a4f";
+    fontcolor = "#f8fafc";
+    color = "#2d5d39";
+  ];
+  "ui_1" [
+    likec4_id = "acc.eu.server2.ui";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">Frontends</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#c7d2fe">All the frontend applications<BR/>of Cloud System</FONT></TD></TR></TABLE>>;
+    margin = "0.278,0.306";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#6366f1";
+    fontcolor = "#eef2ff";
+    color = "#4f46e5";
+  ];
+  "graphql_1" [
+    likec4_id = "acc.eu.server2.graphql";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">GraphQL</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#c7d2fe">Graphql</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#c7d2fe">GraphQL API for the backend<BR/>Uses Apollo Server</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0.223";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#6366f1";
+    fontcolor = "#eef2ff";
+    color = "#4f46e5";
+  ];
+  "backend_1" [
+    likec4_id = "acc.eu.server2.backend";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">Backend V2</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#c7d2fe">Nestjs</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#c7d2fe">The next version of backend</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0.223";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#6366f1";
+    fontcolor = "#eef2ff";
+    color = "#4f46e5";
+  ];
+  "backend_2" [
+    likec4_id = "acc.eu.backend";
+    likec4_level = 1;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">Backend V2</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#cbd5e1">Nestjs</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#cbd5e1">The next version of backend</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0.223";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#64748b";
+    fontcolor = "#f8fafc";
+    color = "#475569";
+  ];
+  "events" [
+    likec4_id = "acc.eu.events";
+    likec4_level = 1;
+    label = <<FONT POINT-SIZE="20">Events Manager</FONT>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#64748b";
+    fontcolor = "#f8fafc";
+    color = "#475569";
+  ];
+  "sqs" [
+    likec4_id = "acc.eu.amazon.sqs";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">SQS</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#f9b27c">Simple Queue Service</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#f9b27c">Simple Queue Service</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0.223";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#A35829";
+    fontcolor = "#FFE0C2";
+    color = "#7E451D";
+  ];
+  "rds" [
+    likec4_id = "acc.eu.amazon.rds";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">RDS</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#f9b27c">Rds</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#f9b27c">Relational Database Service</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#A35829";
+    fontcolor = "#FFE0C2";
+    color = "#7E451D";
+    penwidth = 2;
+    shape = "cylinder";
+  ];
+  "ui_2" [
+    likec4_id = "acc.us.serv1.ui";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">Frontends</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">All the frontend applications<BR/>of Cloud System</FONT></TD></TR></TABLE>>;
+    margin = "0.278,0.306";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "graphql_2" [
+    likec4_id = "acc.us.serv1.graphql";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">GraphQL</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#bfdbfe">Graphql</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#bfdbfe">GraphQL API for the backend<BR/>Uses Apollo Server</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "backend_3" [
+    likec4_id = "acc.us.serv1.backend";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">Backend V2</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#bfdbfe">Nestjs</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#bfdbfe">The next version of backend</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "rds_1" [
+    likec4_id = "acc.us.amazon.rds";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD ROWSPAN="3" WIDTH="76"> </TD><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="20">RDS</FONT></TD><TD ROWSPAN="3" WIDTH="16"> </TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="13" COLOR="#f9b27c">Rds</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="15" COLOR="#f9b27c">Relational Database Service</FONT></TD></TR></TABLE>>;
+    margin = "0.112,0";
+    width = 4.445;
+    height = 2.5;
+    fillcolor = "#A35829";
+    fontcolor = "#FFE0C2";
+    color = "#7E451D";
+    penwidth = 2;
+    shape = "cylinder";
+  ];
+  subgraph "cluster_eu" {
+    likec4_id = "acc.eu";
+    likec4_level = 0;
+    likec4_depth = 2;
+    fillcolor = "#3a404a";
+    color = "#292f37";
+    style = "filled";
+    margin = 40;
+    label = <<FONT POINT-SIZE="11" COLOR="#cbd5e1b3"><B>EU</B></FONT>>;
+    "backend_2";
+    "events";
+    subgraph "cluster_server1" {
+      likec4_id = "acc.eu.server1";
+      likec4_level = 1;
+      likec4_depth = 1;
+      fillcolor = "#2c4e32";
+      color = "#1e3524";
+      style = "filled";
+      margin = 40;
+      label = <<FONT POINT-SIZE="11" COLOR="#c2f0c2b3"><B>SERVER1</B></FONT>>;
+      "ui";
+      "graphql";
+      "backend";
+    }
+    subgraph "cluster_server2" {
+      likec4_id = "acc.eu.server2";
+      likec4_level = 1;
+      likec4_depth = 1;
+      fillcolor = "#2225aa";
+      color = "#2a2490";
+      style = "filled";
+      margin = 40;
+      label = <<FONT POINT-SIZE="11" COLOR="#c7d2feb3"><B>SERVER2</B></FONT>>;
+      "ui_1";
+      "graphql_1";
+      "backend_1";
+    }
+    subgraph "cluster_amazon" {
+      likec4_id = "acc.eu.amazon";
+      likec4_level = 1;
+      likec4_depth = 1;
+      fillcolor = "#5a3620";
+      color = "#462a17";
+      style = "filled";
+      margin = 40;
+      label = <<FONT POINT-SIZE="11" COLOR="#f9b27cb3"><B>AMAZON</B></FONT>>;
+      "sqs";
+      "rds";
+    }
+  }
+  subgraph "cluster_us" {
+    likec4_id = "acc.us";
+    likec4_level = 0;
+    likec4_depth = 2;
+    fillcolor = "#1a468d";
+    color = "#1c3979";
+    style = "filled";
+    margin = 40;
+    label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>US</B></FONT>>;
+    subgraph "cluster_serv1" {
+      likec4_id = "acc.us.serv1";
+      likec4_level = 1;
+      likec4_depth = 1;
+      fillcolor = "#194b9e";
+      color = "#1b3d88";
+      style = "filled";
+      margin = 40;
+      label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>SERV1</B></FONT>>;
+      "ui_2";
+      "graphql_2";
+      "backend_3";
+    }
+    subgraph "cluster_amazon_1" {
+      likec4_id = "acc.us.amazon";
+      likec4_level = 1;
+      likec4_depth = 1;
+      fillcolor = "#5a3620";
+      color = "#462a17";
+      style = "filled";
+      margin = 32;
+      label = <<FONT POINT-SIZE="11" COLOR="#f9b27cb3"><B>AMAZON</B></FONT>>;
+      "rds_1";
+    }
+  }
+  subgraph {
+    rank = "same";
+    "rds";
+    "rds_1";
+  }
+  "ui" -> "graphql" [
+    likec4_id = "1nl33n5";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
+    weight = 3;
+  ];
+  "graphql" -> "backend" [
+    likec4_id = "1x1lm3t";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
+    weight = 3;
+  ];
+  "ui_1" -> "graphql_1" [
+    likec4_id = "1v3gvw1";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
+    weight = 3;
+  ];
+  "graphql_1" -> "backend_1" [
+    likec4_id = "qo8eq1";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
+    weight = 3;
+  ];
+  "ui_2" -> "graphql_2" [
+    likec4_id = "xcqcj5";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
+    weight = 3;
+  ];
+  "graphql_2" -> "backend_3" [
+    likec4_id = "166y409";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
+    weight = 3;
+  ];
+  "backend" -> "events" [
+    likec4_id = "vpqrzx";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">triggers</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ REST ]</FONT></TD></TR></TABLE>>;
+    constraint = false;
+  ];
+  "backend" -> "rds" [
+    likec4_id = "r7380v";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">reads/writes</FONT></TD></TR></TABLE>>;
+    weight = 2;
+  ];
+  "backend_1" -> "events" [
+    likec4_id = "1weoaf2";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">triggers</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ REST ]</FONT></TD></TR></TABLE>>;
+    constraint = false;
+  ];
+  "backend_1" -> "rds" [
+    likec4_id = "1233xgc";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">reads/writes</FONT></TD></TR></TABLE>>;
+    weight = 2;
+  ];
+  "backend_2" -> "events" [
+    likec4_id = "1b4hkav";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">triggers</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ REST ]</FONT></TD></TR></TABLE>>;
+  ];
+  "backend_2" -> "rds" [
+    likec4_id = "2d1oo5";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">reads/writes</FONT></TD></TR></TABLE>>;
+    weight = 2;
+  ];
+  "backend_3" -> "rds_1" [
+    likec4_id = "5u9oqw";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">reads/writes</FONT></TD></TR></TABLE>>;
+    weight = 2;
+  ];
+  "rds" -> "rds_1" [
+    likec4_id = "mbkeyy";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">replicates</FONT></TD></TR></TABLE>>;
+    color = "#15803d";
+    fontcolor = "#22c55e";
+    minlen = 0;
+  ];
+  "sqs" -> "rds" [
+    style = "invis";
+    minlen = 0;
+  ];
+}

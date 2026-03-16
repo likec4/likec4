@@ -1,6 +1,4 @@
-import { type EdgeId, type NodeId, exact } from '@likec4/core/types'
-import { identity, isNonNullish } from 'remeda'
-import * as z from 'zod/v4'
+import type { EdgeId, NodeId } from '@likec4/core/types'
 
 // /**
 //  * Graph-level layout hints
@@ -34,40 +32,42 @@ import * as z from 'zod/v4'
 //   group: string
 // }
 
-export interface AISuggestedEdgeAttrs {
-  /** Higher weight = shorter/straighter edge */
-  weight?: number
-  /** Minimum length in ranks */
-  minlen?: number
-  /** Whether this edge constrains rank assignment */
-  constraint?: boolean
-}
+// export interface AISuggestedEdgeAttrs {
+//   /** Higher weight = shorter/straighter edge */
+//   weight?: number
+//   /** Minimum length in ranks */
+//   minlen?: number
+//   /** Whether this edge constrains rank assignment */
+//   constraint?: boolean
+// }
 
-/**
- * Per-edge layout hint
- */
-export interface AIEdgeHint extends AISuggestedEdgeAttrs {
-  id: EdgeId
-}
+// /**
+//  * Per-edge layout hint
+//  */
+// export interface AIEdgeHint extends AISuggestedEdgeAttrs {
+//   id: EdgeId
+// }
 
-/**
- * invisible edge added by AI to enforce better layout
- */
-export interface AIEnforcementEdge extends AISuggestedEdgeAttrs {
-  source: NodeId
-  target: NodeId
-}
+// /**
+//  * invisible edge added by AI to enforce better layout
+//  */
+// export interface AIEnforcementEdge extends AISuggestedEdgeAttrs {
+//   source: NodeId
+//   target: NodeId
+// }
 
 /**
  * Complete set of AI-generated layout hints.
  * This is the JSON schema the LLM must produce.
  */
-export interface LayoutHints {
+export interface AISuggestedLayoutHints {
   direction?: 'TB' | 'BT' | 'LR' | 'RL'
-  sources: NodeId[]
-  sinks: NodeId[]
-  edges: Array<AIEdgeHint>
-  enforcements: Array<AIEnforcementEdge>
+  ranks: ReadonlyArray<{
+    rank: 'same' | 'source' | 'sink'
+    nodes: NodeId[]
+  }>
+  edgeWeight: Record<EdgeId, number>
+  edgeMinlen: Record<EdgeId, number>
   /** LLM reasoning for debugging/display */
   reasoning: string
 }

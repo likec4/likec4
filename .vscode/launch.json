@@ -109,6 +109,18 @@
         // Ignore all dependencies (optional)
         "${workspaceFolder}/node_modules/**",
       ],
+    },
+    {
+      "name": "Attach to process",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "skipFiles": [
+        // Node.js internal core modules
+        "<node_internals>/**",
+        // Ignore all dependencies (optional)
+        "${workspaceFolder}/node_modules/**",
+      ],
     }
   ]
 }

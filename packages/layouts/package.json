@@ -64,6 +64,7 @@
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
+    "generate": "tsx scripts/generate.ts",
     "build": "obuild",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
@@ -87,7 +88,7 @@
     "p-queue": "catalog:utils",
     "remeda": "catalog:utils",
     "strip-indent": "catalog:utils",
-    "ts-graphviz": "^1.8.2",
+    "ts-graphviz": "^3.0.7",
     "type-fest": "catalog:externals",
     "unstorage": "catalog:utils",
     "which": "^5.0.0",
@@ -100,8 +101,11 @@
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
     "obuild": "catalog:obuild",
+    "ollama": "catalog:",
+    "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:vitest"
+    "vitest": "catalog:vitest",
+    "zx": "catalog:"
   }
 }

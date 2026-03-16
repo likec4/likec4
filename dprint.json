@@ -43,10 +43,12 @@
     "**/routeTree.gen.ts",
     "packages/vscode/src/meta.ts",
     "packages/*/src/generated",
+    "packages/layouts/src/graphviz/ai/prompt-system.md",
     "styled-system/preset/src/generated.ts",
     "schemas/likec4-config.schema.json"
   ],
-  "markdown": {},
+  "markdown": {
+  },
   "toml": {},
   "yaml": {
     "quotes": "preferSingle"

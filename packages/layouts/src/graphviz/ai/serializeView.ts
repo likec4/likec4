@@ -3,42 +3,43 @@ import {
   type ComputedEdge,
   type ComputedNode,
   type ComputedView,
-  type EdgeId,
   flattenMarkdownOrString,
   NodeId,
 } from '@likec4/core/types'
-import { fromEntries, isNonNull } from 'remeda'
+import { logger } from '@likec4/log'
+import type * as z from 'zod/v4'
+
+type NodeIdSerialized = `n${number}` & z.$brand<'NodeId'>
+type EdgeIdSerialized = `e${number}` & z.$brand<'EdgeId'>
+type CompoundIdSerialized = `c${number}` & z.$brand<'NodeId'>
 
 interface SerializedNode {
-  id: string
+  id: NodeIdSerialized
   kind: string
   title: string
-  parent?: string
-  inEdges?: string[]
-  outEdges?: string[]
+  parent: CompoundIdSerialized | null
   level: number
 }
 
-interface SerializedContainer {
-  id: string
+interface SerializedCompound {
+  id: CompoundIdSerialized
   kind: string
   title: string
-  parent?: string
-  children: string[]
-  // nested: string[]
-  // inEdges?: string[]
-  // outEdges?: string[]
+  parent: CompoundIdSerialized | null
+  children: Array<CompoundIdSerialized | NodeIdSerialized>
   level: number
 }
 
 interface SerializedEdge {
-  id: string
+  id: EdgeIdSerialized
+  source: NodeIdSerialized
+  target: NodeIdSerialized
   label: string | null
 }
 
 export interface SerializedView {
   direction: string
-  containers: SerializedContainer[]
+  compounds: SerializedCompound[]
   nodes: SerializedNode[]
   edges: SerializedEdge[]
 }
@@ -56,8 +57,8 @@ function truncate(str: string, maxLen: number = 40): string {
 type SerializedResult = {
   serialized: SerializedView
   mapping: {
-    nodes: Record<string, NodeId>
-    edges: Record<string, EdgeId>
+    nodes: Record<string & z.$brand<'NodeId'>, ComputedNode>
+    edges: Record<string & z.$brand<'EdgeId'>, ComputedEdge>
   }
 }
 
@@ -83,76 +84,90 @@ function edgeLabel(edge: ComputedEdge): string | null {
  */
 export function serializeViewForPrompt(view: ComputedView): SerializedResult {
   let seq = 1
-  const nodeIds = new DefaultMap((_key: NodeId) => `n${seq++}`)
-  const nodeId = (id: NodeId) => nodeIds.get(id)
+  const nodeIds = new DefaultMap((node: ComputedNode) =>
+    node.children.length === 0 ? (`n${seq++}` as NodeIdSerialized) : (`c${seq++}` as CompoundIdSerialized)
+  )
+  const findNodeById = (id: NodeId) => view.nodes.find(n => n.id === id)!
+  const nodeId = (id: NodeId) => nodeIds.get(findNodeById(id))
   const leafs = new Set<NodeId>()
 
   // Pre-populate node IDs and identify leaf nodes
   view.nodes.forEach(n => {
-    nodeIds.get(n.id)
+    nodeIds.get(n)
     if (n.children.length === 0) {
       leafs.add(n.id)
     }
   })
 
-  const findNodeById = (id: string) => view.nodes.find(n => n.id === id)!
+  const nonLeafEdge = view.edges.find(e => !leafs.has(e.source) || !leafs.has(e.target))
+  if (nonLeafEdge) {
+    logger.error('Non-leaf edge found in view', {
+      view: view.id,
+      edge: { source: nonLeafEdge.source, target: nonLeafEdge.target },
+    })
+    throw new Error('Non-leaf edge found in view, this is not supported by the current implementation')
+  }
 
-  const nestedOf = new DefaultMap((key: ComputedNode): Array<NodeId> => {
-    return key.children.flatMap(childId => {
-      const child = findNodeById(childId)
-      return [childId, ...nestedOf.get(child)]
+  let edgeSeq = 1
+  const edgeIds = new DefaultMap((_edge: ComputedEdge) => `e${edgeSeq++}` as EdgeIdSerialized)
+
+  // const nestedOf = new DefaultMap((key: ComputedNode): Array<NodeId> => {
+  //   return key.children.flatMap(childId => {
+  //     const child = findNodeById(childId)
+  //     return [childId, ...nestedOf.get(child)]
+  //   })
+  // })
+
+  // const edgesBetweenLeafs =
+
+  // const edgeId = (edge: ComputedEdge) => edgeIds.get(edge)
+
+  // const findEdgeById = (edgeId: string) => {
+  //   const edge = view.edges.find(e => e.id === edgeId)
+  //   if (edge && leafs.has(edge.source) && leafs.has(edge.target)) {
+  //     return edge
+  //   }
+  //   return null
+  // }
+
+  // Filter edges between leaf nodes and create serialized edges
+  const edges = view.edges.map((e): SerializedEdge => {
+    let source = nodeId(e.source) as NodeIdSerialized
+    let target = nodeId(e.target) as NodeIdSerialized
+    if (e.dir === 'back') {
+      ;[source, target] = [target, source]
+    }
+    return ({
+      id: edgeIds.get(e),
+      label: edgeLabel(e),
+      source,
+      target,
     })
   })
 
-  const edgesBetweenLeafs = view.edges.filter(e => leafs.has(e.source) && leafs.has(e.target))
-
-  const edgeId = (edge: ComputedEdge) => {
-    const source = nodeId(edge.source)
-    const target = nodeId(edge.target)
-    return `${source}->${target}`
-  }
-  const findEdgeById = (edgeId: string) => {
-    const edge = view.edges.find(e => e.id === edgeId)
-    if (edge && leafs.has(edge.source) && leafs.has(edge.target)) {
-      return edge
-    }
-    return null
-  }
-
-  const edges = edgesBetweenLeafs
-    .map((e): SerializedEdge => ({
-      id: edgeId(e),
-      label: edgeLabel(e),
-    }))
-
   const serializeNode = (acc: SerializedView, nd: ComputedNode) => {
-    const { id, parent, ...node } = nd
+    const { id, parent, level, ...node } = nd
     const isLeaf = node.children.length === 0
-    const inEdges = node.inEdges.map(findEdgeById).filter(isNonNull).map(edgeId)
-    const outEdges = node.outEdges.map(findEdgeById).filter(isNonNull).map(edgeId)
+    // const inEdges = node.inEdges.map(findEdgeById).filter(isNonNull).map(edgeId)
+    // const outEdges = node.outEdges.map(findEdgeById).filter(isNonNull).map(edgeId)
     if (!isLeaf) {
-      acc.containers.push({
-        id: nodeId(id),
+      acc.compounds.push({
+        id: nodeId(id) as CompoundIdSerialized,
         kind: node.kind,
         title: truncate(node.title),
-        ...(parent && { parent: nodeId(parent) }),
+        parent: parent ? nodeId(parent) as CompoundIdSerialized : null,
         children: node.children.map(nodeId),
-        // nested: nestedOf.get(nd).map(nodeId),
-        ...(inEdges.length > 0 && { inEdges }),
-        ...(outEdges.length > 0 && { outEdges }),
-        level: node.level,
+        level,
       })
       return acc
     }
 
     acc.nodes.push({
-      id: nodeId(id),
+      id: nodeId(id) as NodeIdSerialized,
       kind: node.kind,
       title: truncate(node.title),
-      ...(parent && { parent: nodeId(parent) }),
-      ...(inEdges.length > 0 && { inEdges }),
-      ...(outEdges.length > 0 && { outEdges }),
-      level: node.level,
+      parent: parent ? nodeId(parent) as CompoundIdSerialized : null,
+      level,
     })
 
     return acc
@@ -160,7 +175,7 @@ export function serializeViewForPrompt(view: ComputedView): SerializedResult {
 
   const serialized: SerializedView = view.nodes.reduce(serializeNode, {
     direction: view.autoLayout.direction,
-    containers: [],
+    compounds: [],
     nodes: [],
     edges,
   })
@@ -168,7 +183,7 @@ export function serializeViewForPrompt(view: ComputedView): SerializedResult {
     serialized,
     mapping: {
       nodes: mappedEntries(nodeIds),
-      edges: fromEntries(edgesBetweenLeafs.map(e => [edgeId(e), e.id])),
+      edges: mappedEntries(edgeIds),
     },
   }
 }
