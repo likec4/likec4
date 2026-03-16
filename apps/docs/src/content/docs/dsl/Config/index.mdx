@@ -181,15 +181,61 @@ To disable this behavior:
 
 ## Implicit views
 
-By default, LikeC4 automatically generates scoped views for elements that don't have explicitly defined views. This enables drill-down navigation out of the box — clicking on an element in any diagram navigates to its auto-generated scoped view (equivalent to `view of element { include * }`).
+LikeC4 can automatically generate scoped views for elements that don't have explicitly defined views, enabling drill-down navigation — clicking on an element navigates to its auto-generated scoped view (equivalent to `view of element { include * }`). This feature is disabled by default.
 
-To disable this behavior:
+To enable this behavior:
 
 ```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
-  "implicitViews": false
+  "implicitViews": true
+}
+```
+
+## Landing page
+
+Configure what is shown when visiting the root URL of a generated static site.
+
+### Redirect to the index view
+
+Set `redirect` to `true` to go straight to the index view instead of showing the view grid:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "landingPage": {
+    "redirect": true
+  }
+}
+```
+
+### Filter views by inclusion
+
+Show only specific views on the landing page grid, by view ID or tag (`#tagName`):
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "landingPage": {
+    "include": ["cloud", "#overview"]
+  }
+}
+```
+
+### Filter views by exclusion
+
+Hide specific views from the landing page grid:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "landingPage": {
+    "exclude": ["#internal", "legacy-backend"]
+  }
 }
 ```
 

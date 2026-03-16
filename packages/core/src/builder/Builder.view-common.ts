@@ -26,10 +26,10 @@ export interface LikeC4ViewBuilder<
   Expr: Expr
   TypedExpr: TypedExpr
   $expr(expr: Expr | TypedExpr): TypedExpr
-  include(...exprs: Expr[]): this
-  exclude(...exprs: Expr[]): this
+  include(...exprs: TypedExpr[]): this
+  exclude(...exprs: TypedExpr[]): this
   style(rule: ViewRuleStyle<any>): this
-  autoLayout(layout: AutoLayoutDirection): this
+  autoLayout(layout: AutoLayoutDirection, margins: { rank: number; node: number } | undefined): this
 }
 
 export namespace ViewPredicate {
@@ -168,10 +168,11 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
     | [B['Expr']]
     | [B['TypedExpr']]
     | [B['Expr'], ViewPredicate.Custom<B['Types']>]
+    | [B['Expr'], B['Expr'], ...B['Expr'][]]
 ): (b: B) => B {
   return (b) => {
-    let expr = b.$expr(args[0])
-    if (args.length === 2) {
+    if (args.length === 2 && typeof args[1] !== 'string' && ('where' in args[1] || 'with' in args[1])) {
+      let expr = b.$expr(args[0])
       const condition = args[1].where ? parseWhere(args[1].where) : undefined
       if (condition) {
         expr = {
@@ -184,7 +185,7 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 
       const custom = args[1].with
       if (custom) {
-        const isElement = ModelFqnExpr.is(expr)
+        const isElement = ModelFqnExpr.is(args[0])
         if (isElement) {
           expr = {
             custom: {
@@ -201,8 +202,11 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
           }
         }
       }
+      b.include(expr as any)
+      return b
     }
-    b.include(expr as any)
+    // Fallback for multiple expressions
+    b.include(...args.map(arg => b.$expr(arg)))
     return b
   }
 }
@@ -261,8 +265,9 @@ function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 
 function $autoLayout<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   layout: AutoLayoutDirection,
+  margins?: { rank: number; node: number },
 ): (b: B) => B {
-  return (b) => b.autoLayout(layout)
+  return (b) => b.autoLayout(layout, margins)
 }
 
 type Op<T> = (b: T) => T

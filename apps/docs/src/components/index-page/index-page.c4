@@ -33,7 +33,7 @@ model {
     ui = component 'Frontend' {
       description 'NextJS application'
       style {
-        icon tech:nextjs
+        icon tech:nextjs-icon
         shape browser
       }
     }
@@ -58,5 +58,17 @@ views {
     style cloud.* {
       color green
     }
+  }
+
+  view view1 {
+    include customer, cloud
+  }
+
+  view view2 {
+    include customer, cloud, ui
+  }
+
+  view view3 {
+    include customer, cloud, ui, backend
   }
 }

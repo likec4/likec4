@@ -1,0 +1,62 @@
+---
+type FaqItem = {
+  readonly question: string
+  readonly answer: string
+}
+
+const faqs: ReadonlyArray<FaqItem> = [
+  {
+    question: 'Does sponsorship mean LikeC4 becomes closed-source?',
+    answer:
+      'No. LikeC4 is and will remain MIT-licensed. Sponsorship makes it sustainable to maintain that promise. The goal is to keep the core open and accessible for everyone.',
+  },
+  {
+    question: 'Can you prioritize a feature for our team?',
+    answer:
+      'Yes. Open an issue with context — your use case, constraints, and sample model — and sponsor to help fund the work. Team and Enterprise sponsors get direct input on prioritization.',
+  },
+  {
+    question: 'Do you provide invoices for procurement?',
+    answer:
+      'Yes. For Enterprise sponsors we can provide invoices, custom terms, and work with your procurement process. Reach out directly and we\'ll sort it out.',
+  },
+  {
+    question: 'What do sponsors actually get?',
+    answer:
+      'A healthier project, faster maintenance, and predictable releases. Higher tiers get public recognition, direct roadmap influence, priority support, and dedicated development time for features that benefit the ecosystem.',
+  },
+]
+---
+<!-- FAQ -->
+<section class="px-6 py-20 md:py-28">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-14">
+      <span
+        class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
+      >FAQ</span>
+      <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
+        Common questions
+      </h2>
+    </div>
+
+    <div class="space-y-3">
+      {faqs.map((faq: FaqItem) => (
+        <details class="group rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 p-5">
+          <summary class="cursor-pointer text-stone-800 dark:text-zinc-100 font-semibold flex items-center justify-between">
+            {faq.question}
+            <svg
+              class="w-5 h-5 text-stone-400 dark:text-zinc-500 group-open:rotate-180 transition-transform shrink-0 ml-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </summary>
+          <p class="mt-3 text-base leading-relaxed text-stone-500 dark:text-zinc-400">{faq.answer}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

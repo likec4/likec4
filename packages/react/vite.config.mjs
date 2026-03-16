@@ -4,7 +4,7 @@ import process from 'node:process'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
-const rewriteRootSelector = {
+const _rewriteRootSelector = {
   postcssPlugin: 'postcss-rewrite-root',
   Once(css) {
     css.walkRules((rule) => {

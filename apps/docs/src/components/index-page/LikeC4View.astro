@@ -1,21 +1,12 @@
 ---
-import { LikeC4View as C4View, type LikeC4ViewId } from 'likec4:react/index-page';
+import { type LikeC4ViewId, LikeC4View as C4View } from 'likec4:react/index-page'
 interface Props {
-  viewId: LikeC4ViewId;
+  viewId: LikeC4ViewId
 }
 const { viewId } = Astro.props
 ---
 
 <C4View
   viewId={viewId}
-  className="likec4-index-view"
   client:only="react"
 />
-
-<style>
-  .likec4-index-view {
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-</style>

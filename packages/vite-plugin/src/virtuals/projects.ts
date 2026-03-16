@@ -1,9 +1,16 @@
+import type { LikeC4ProjectConfig } from '@likec4/config'
 import type { NonEmptyArray } from '@likec4/core'
 import JSON5 from 'json5'
-import { map, pick } from 'remeda'
+import { map } from 'remeda'
 import { type VirtualModule, k } from './_shared'
 
-const code = (projects: NonEmptyArray<{ id: string; title?: string }>) => `
+type ProjectData = {
+  id: string
+  title: string | undefined
+  landingPage: LikeC4ProjectConfig['landingPage']
+}
+
+const code = (projects: NonEmptyArray<ProjectData>) => `
 import { atom, useStore } from 'likec4/vite-plugin/internal'
 
 export const isSingleProject = ${projects.length === 1};
@@ -40,6 +47,10 @@ export const projectsModule = {
   virtualId: 'likec4:plugin/projects.js',
   async load({ logger, projects }) {
     logger.info(k.dim('generating likec4:projects'))
-    return code(map(projects, pick(['id', 'title'])))
+    return code(map(projects, p => ({
+      id: p.id,
+      title: p.title,
+      landingPage: p.config.landingPage,
+    })))
   },
 } satisfies VirtualModule

@@ -84,8 +84,11 @@
       "type": "boolean"
     },
     "implicitViews": {
-      "description": "Auto-generate scoped views for elements without explicit views. Defaults to true.",
+      "description": "Auto-generate scoped views for elements without explicit views. Defaults to false.",
       "type": "boolean"
+    },
+    "landingPage": {
+      "$ref": "#/$defs/LandingPageConfig"
     }
   },
   "required": [
@@ -523,6 +526,59 @@
         }
       },
       "additionalProperties": false
+    },
+    "LandingPageConfig": {
+      "id": "LandingPageConfig",
+      "description": "Configure the landing page. Use redirect to go to the index view, or include/exclude to filter the view grid.",
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "redirect": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "redirect"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "include": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "include"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "exclude": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "exclude"
+          ],
+          "additionalProperties": false
+        }
+      ]
     }
   }
 }

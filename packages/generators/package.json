@@ -1,6 +1,6 @@
 {
   "name": "@likec4/generators",
-  "version": "1.51.0",
+  "version": "1.52.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -30,6 +30,14 @@
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
+    },
+    "./likec4": {
+      "sources": "./src/likec4/index.ts",
+      "default": {
+        "types": "./dist/likec4/index.d.mts",
+        "import": "./dist/likec4/index.mjs",
+        "default": "./dist/likec4/index.mjs"
+      }
     }
   },
   "publishConfig": {
@@ -51,11 +59,17 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/config": "workspace:*",
     "@likec4/log": "workspace:*",
     "langium": "catalog:langium",
     "pako": "catalog:",
     "remeda": "catalog:utils",
-    "json5": "catalog:utils"
+    "immer": "catalog:utils",
+    "json5": "catalog:utils",
+    "type-fest": "catalog:externals",
+    "indent-string": "catalog:utils",
+    "strip-indent": "catalog:utils",
+    "zod": "catalog:externals"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

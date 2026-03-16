@@ -36,7 +36,7 @@ export const useHashHistory = {
 } as const satisfies Options
 
 export const outdir = {
-  alias: 'o',
+  alias: ['o', 'output'],
   string: true,
   desc: 'output directory',
   normalize: true,

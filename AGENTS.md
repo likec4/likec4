@@ -79,9 +79,9 @@ Always run `pnpm generate` after:
 
 - Recent history shows Conventional Commit-style prefixes (e.g., `feat:`, `chore:`); follow this pattern when possible.
 - Keep commits focused and scoped to one change.
-- Include a changeset for user-facing package changes (`pnpm changeset` or `pnpm changeset:empty`).
-  - see `.github/agents/changeset-generator.agent.md` for details.
-- PRs should include a clear description, linked issue (if any), and test results; add screenshots for UI changes.
+- Project requires changeset files (folder `.changeset/`).
+  - use `changeset-generator` skill.
+- PRs should include a clear description and linked issues (if any)
 
 ## Configuration & Tooling Notes
 

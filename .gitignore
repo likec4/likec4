@@ -6,6 +6,7 @@
 .fleet
 .vscode-test-web
 .cursor/
+docs/PR-LEANIX-BRIDGE-DESCRIPTION.md
 .pnpm-store/
 .dprint-cache/
 .wireit
@@ -52,6 +53,7 @@ apps/playground/src/**/*.js
 apps/playground/src/**/*.d.ts
 packages/*/src/**/*.js
 packages/*/src/**/*.d.ts
+!packages/generators/src/drawio/dist-index.d.ts
 
 vite.config.ts.timestamp*
 vitest.config.ts.timestamp*
@@ -124,4 +126,17 @@ dist
 /.project
 /.settings/*
 
-# Local / temporary PR and process docs — prefer ~/.gitignore_global for personal workflow files (PR-*, COMMIT_MSG*, etc.)
+# Local / temporary PR and process docs (não subir ao repo)
+PR_BODY*.md
+PR_*.md
+.review-*.md
+.review-*.txt
+.commit_msg*.txt
+.gh-pr-*.txt
+bot-reply.md
+
+# Documentação de apoio (reviews, PR body drafts, etc. — fora do padrão do repo)
+docs/PR-*-REVIEW.md
+
+# Architecture-intelligence planning docs (internal, not official project docs)
+docs/architecture-intelligence/

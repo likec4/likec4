@@ -1,8 +1,13 @@
 declare module 'likec4:projects' {
   import type { ProjectId } from 'likec4/model'
+  type LandingPageConfig =
+    | { redirect: true }
+    | { include: string[] }
+    | { exclude: string[] }
   type Project = {
     id: ProjectId
     title?: string
+    landingPage?: LandingPageConfig
   }
   export const isSingleProject: boolean
   export const projects: readonly [Project, ...Project[]]

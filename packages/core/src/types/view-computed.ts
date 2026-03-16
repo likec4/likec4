@@ -17,7 +17,6 @@ import type {
   BaseViewProperties,
   RankValue,
   ViewAutoLayout,
-  ViewManualLayout,
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
@@ -124,12 +123,6 @@ interface BaseComputedViewProperties<A extends AnyAux> extends BaseViewPropertie
    * If the view has manual layout (v2)
    */
   readonly hasManualLayout?: boolean
-
-  /**
-   * Manual layout data (v1), for compatibility during migration
-   * @deprecated
-   */
-  readonly manualLayout?: ViewManualLayout | undefined
 }
 
 export interface ComputedElementView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {

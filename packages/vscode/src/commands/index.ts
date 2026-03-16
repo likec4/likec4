@@ -4,7 +4,6 @@ import { useLanguageClient } from '../useLanguageClient'
 import { useRpc } from '../useRpc'
 import { registerEnhanceLayoutWithAICommand } from './enhanceLayoutWithAI'
 import { registerLocateCommand } from './locate'
-import { registerMigrateManualLayoutsCommand } from './migrateManualLayouts'
 import { registerOpenPreviewCommand } from './openPreview'
 import { registerOpenProjectsOverviewCommand } from './openProjectsOverview'
 import { registerPreviewContextOpenSourceCommand } from './previewContextOpenSource'
@@ -39,6 +38,5 @@ export function registerCommands() {
   registerPrintDotOfCurrentViewCommand(deps)
   registerValidateLayoutCommand(deps)
   registerReloadProjectsCommand(deps)
-  registerMigrateManualLayoutsCommand(deps)
   registerEnhanceLayoutWithAICommand(deps)
 }

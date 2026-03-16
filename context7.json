@@ -9,6 +9,7 @@
     "./packages/config",
     "./packages/core",
     "./packages/diagram",
+    "./packages/language-services",
     "./packages/likec4",
     "./packages/mcp"
   ],
