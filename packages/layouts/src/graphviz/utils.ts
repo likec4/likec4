@@ -16,11 +16,6 @@ export function toArrowType(type: RelationshipArrowType): ArrowType {
   }
 }
 
-// export const pointToPx = (pt: number) => Math.ceil((pt * 96 ) / 72)
-// export const inchToPx = (inch: number) => Math.ceil(inch * 96)
-// export const pxToInch = (px: number) => Math.ceil((px / 96) * 1000) / 1000
-// export const pxToPoints = (px: number) => Math.ceil(px * 0.75 * 100) / 100
-
 export function pointToPx(point: [number, number]): Point
 export function pointToPx(pt: number): number
 export function pointToPx(pt: number | [number, number]) {

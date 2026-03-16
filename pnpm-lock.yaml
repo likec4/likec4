@@ -99,6 +99,9 @@ catalogs:
     graphology-types:
       specifier: ^0.24.8
       version: 0.24.8
+    ollama:
+      specifier: ^0.6.3
+      version: 0.6.3
     oxlint:
       specifier: 1.55.0
       version: 1.55.0
@@ -120,9 +123,6 @@ catalogs:
     typescript:
       specifier: 5.9.3
       version: 5.9.3
-    unstorage:
-      specifier: ^1.17.4
-      version: 1.17.4
     wireit:
       specifier: 0.14.12
       version: 0.14.12
@@ -355,6 +355,9 @@ catalogs:
     ufo:
       specifier: 1.6.3
       version: 1.6.3
+    unstorage:
+      specifier: ^1.17.4
+      version: 1.17.4
   vite:
     '@vitejs/plugin-react':
       specifier: ^5.1.4
@@ -1626,13 +1629,13 @@ importers:
         specifier: catalog:utils
         version: 4.1.1
       ts-graphviz:
-        specifier: ^1.8.2
-        version: 1.8.2
+        specifier: ^3.0.7
+        version: 3.0.7
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
       unstorage:
-        specifier: 'catalog:'
+        specifier: catalog:utils
         version: 1.17.4
       which:
         specifier: ^5.0.0
@@ -1659,6 +1662,12 @@ importers:
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260313.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
+      ollama:
+        specifier: 'catalog:'
+        version: 0.6.3
+      tsx:
+        specifier: 'catalog:'
+        version: 4.21.0
       turbo:
         specifier: 2.8.17
         version: 2.8.17
@@ -1668,6 +1677,9 @@ importers:
       vitest:
         specifier: catalog:vitest
         version: 4.0.18(@types/node@22.19.11)(@vitest/ui@4.0.18)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
+      zx:
+        specifier: 'catalog:'
+        version: 8.8.5
 
   packages/leanix-bridge:
     dependencies:
@@ -5049,6 +5061,22 @@ packages:
     resolution: {integrity: sha512-aR13V1kSE/kUkP4a8snmqvj82OUlR5Q/rzxICmObLCsERGfzikUc4wquOy1d/RzJgsLb8o+FiOjSWynt4T7Jhg==}
     engines: {node: '>=12'}
 
+  '@ts-graphviz/adapter@3.0.6':
+    resolution: {integrity: sha512-QQSKzxaBdiuYA6jC+ajKAgDoyRTIanQZai4FLi2d2t+wY1wEUot8tcY1eG9ftegFwff2gfjZzuZlysmU3zufiw==}
+    engines: {node: '>=20'}
+
+  '@ts-graphviz/ast@3.0.6':
+    resolution: {integrity: sha512-9QOBQFanq0n7Ju9opTURHSvqXOqzHkplls3kkD6veWXNuJwaH8lzZUIEksU4i2gjAjRi+RafQWSWATZDKCCt8g==}
+    engines: {node: '>=20'}
+
+  '@ts-graphviz/common@3.0.5':
+    resolution: {integrity: sha512-CS7RMw2ywu0kqb05xD2n9dJMSEVae2MJagHkHh6u915UgW5ijDVhitNVwoVV6dKVeyf02ATm+autLKPwrNa86w==}
+    engines: {node: '>=20'}
+
+  '@ts-graphviz/core@3.0.7':
+    resolution: {integrity: sha512-Oyz9raPOihgC0CxOIJVE6iXy4AOd2X4N5DsxaRQeENhtgMBuyZMg+vSaR5q37vriWDgJeITkXeTJBrbSDddpQQ==}
+    engines: {node: '>=20'}
+
   '@ts-morph/common@0.22.0':
     resolution: {integrity: sha512-HqNBuV/oIlMKdkLshXd1zKBqNQCsuPEsgQOkfFQ/eUKjRlwndXW1AjN9LVkBEIukm00gGXSRmfkl0Wv5VXLnlw==}
 
@@ -7692,6 +7720,9 @@ packages:
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
 
+  ollama@0.6.3:
+    resolution: {integrity: sha512-KEWEhIqE5wtfzEIZbDCLH51VFZ6Z3ZSa6sIOg/E/tBV8S51flyqBOXi+bRxlOYKDf8i327zG9eSTb8IJxvm3Zg==}
+
   on-finished@2.4.1:
     resolution: {integrity: sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==}
     engines: {node: '>= 0.8'}
@@ -8826,9 +8857,9 @@ packages:
       jsdom:
         optional: true
 
-  ts-graphviz@1.8.2:
-    resolution: {integrity: sha512-5YhbFoHmjxa7pgQLkB07MtGnGJ/yhvjmc9uhsnDBEICME6gkPf83SBwLDQqGDoCa3XzUMWLk1AU2Wn1u1naDtA==}
-    engines: {node: '>=14.16'}
+  ts-graphviz@3.0.7:
+    resolution: {integrity: sha512-aGAjNs7IA+d3ZAflF9QluxWWtKCo8Ehrv0MziCY5Vi6hedugeZYfedq2cIIHX4be3ovGEDq+4D8/y9RrkdNFqw==}
+    engines: {node: '>=20'}
 
   ts-morph@21.0.1:
     resolution: {integrity: sha512-dbDtVdEAncKctzrVZ+Nr7kHpHkv+0JDJb2MjjpBaj8bFeCkePU9rHfMklmhuLFnpeq/EJZk2IhStY6NzqgjOkg==}
@@ -9494,6 +9525,9 @@ packages:
 
   webpack-virtual-modules@0.6.2:
     resolution: {integrity: sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ==}
+
+  whatwg-fetch@3.6.20:
+    resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
 
   whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
@@ -12746,6 +12780,21 @@ snapshots:
   '@tanstack/store@0.7.0': {}
 
   '@tanstack/virtual-file-routes@1.114.12': {}
+
+  '@ts-graphviz/adapter@3.0.6':
+    dependencies:
+      '@ts-graphviz/common': 3.0.5
+
+  '@ts-graphviz/ast@3.0.6':
+    dependencies:
+      '@ts-graphviz/common': 3.0.5
+
+  '@ts-graphviz/common@3.0.5': {}
+
+  '@ts-graphviz/core@3.0.7':
+    dependencies:
+      '@ts-graphviz/ast': 3.0.6
+      '@ts-graphviz/common': 3.0.5
 
   '@ts-morph/common@0.22.0':
     dependencies:
@@ -16044,6 +16093,10 @@ snapshots:
 
   ohash@2.0.11: {}
 
+  ollama@0.6.3:
+    dependencies:
+      whatwg-fetch: 3.6.20
+
   on-finished@2.4.1:
     dependencies:
       ee-first: 1.1.1
@@ -17393,7 +17446,12 @@ snapshots:
       object-path: 0.11.8
       typescript: 5.9.3
 
-  ts-graphviz@1.8.2: {}
+  ts-graphviz@3.0.7:
+    dependencies:
+      '@ts-graphviz/adapter': 3.0.6
+      '@ts-graphviz/ast': 3.0.6
+      '@ts-graphviz/common': 3.0.5
+      '@ts-graphviz/core': 3.0.7
 
   ts-morph@21.0.1:
     dependencies:
@@ -17981,6 +18039,8 @@ snapshots:
   webidl-conversions@3.0.1: {}
 
   webpack-virtual-modules@0.6.2: {}
+
+  whatwg-fetch@3.6.20: {}
 
   whatwg-url@5.0.0:
     dependencies:
