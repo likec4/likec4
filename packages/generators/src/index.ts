@@ -11,6 +11,7 @@ export {
   type GenerateDrawioOptions,
 } from './drawio/generate-drawio'
 export {
+  decompressDrawioDiagram,
   getAllDiagrams,
   parseDrawioRoundtripComments,
   parseDrawioToLikeC4,

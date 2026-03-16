@@ -193,6 +193,7 @@ Export views to DrawIO (`.drawio`) so you can edit diagrams in [draw.io](https:/
 likec4 export drawio
 likec4 export drawio -o ./diagrams
 likec4 export drawio -o ./diagrams src/
+likec4 export drawio --profile leanix -o ./diagrams
 ```
 
 | Option           | Description                                                                 |
@@ -202,11 +203,12 @@ likec4 export drawio -o ./diagrams src/
 | `--all-in-one`   | Write one `.drawio` file with all views as tabs                              |
 | `--roundtrip`    | Apply layout, stroke colors/widths, and edge waypoints from DrawIO round-trip comment blocks in `.c4` source (e.g. after import) |
 | `--uncompressed` | Write diagram XML uncompressed (larger file; use if draw.io fails to open the default compressed export) |
+| `--profile`      | Export profile: `default` (round-trip) or `leanix` (bridge-managed metadata for LeanIX interoperability). Default: `default` |
 | `--project`      | Select LikeC4 project by name or path; if not set, exports all              |
 | `--use-dot`      | Use local Graphviz (`dot`) for layout instead of bundled WASM               |
 
 :::note
-Export to DrawIO requires layout. If Graphviz is not installed, the CLI uses bundled WASM; for large diagrams, install [Graphviz](https://graphviz.org/) and use `--use-dot` for better performance. Use `--roundtrip` when re-exporting after an import so the generated DrawIO matches the previously imported layout and waypoints.
+Export to DrawIO requires layout. If Graphviz is not installed, the CLI uses bundled WASM; for large diagrams, install [Graphviz](https://graphviz.org/) and use `--use-dot` for better performance. Use `--roundtrip` when re-exporting after an import so the generated DrawIO matches the previously imported layout and waypoints. Use `--profile leanix` when exporting for LeanIX interoperability; see [Draw.io — Export profiles](/tooling/drawio/#export-profiles).
 :::
 
 ### Generate Mermaid, Dot, D2, PlantUml

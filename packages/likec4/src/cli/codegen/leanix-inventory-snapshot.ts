@@ -1,0 +1,43 @@
+/**
+ * likec4 gen leanix-inventory-snapshot
+ * Fetches a read-only snapshot from the LeanIX API and writes leanix-inventory-snapshot.json.
+ * Inbound only; no DSL generation.
+ */
+
+import { fetchLeanixInventorySnapshot } from '@likec4/leanix-bridge'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { relative, resolve } from 'node:path'
+import k from 'tinyrainbow'
+import { createLikeC4Logger, startTimer } from '../../logger'
+import { requireLeanixClient } from '../bridge/leanix-client'
+
+const SNAPSHOT_FILENAME = 'leanix-inventory-snapshot.json'
+
+export type LeanixInventorySnapshotHandlerParams = {
+  outdir: string
+  /** Custom attribute key to read likec4Id from fact sheets (e.g. "likec4Id"). */
+  likec4IdAttribute?: string
+}
+
+export async function leanixInventorySnapshotHandler(
+  params: LeanixInventorySnapshotHandlerParams,
+): Promise<void> {
+  const logger = createLikeC4Logger('c4:gen:leanix-inventory-snapshot')
+  const timer = startTimer(logger)
+  const { outdir, likec4IdAttribute } = params
+
+  const client = requireLeanixClient()
+  const snapshot = await fetchLeanixInventorySnapshot(client, {
+    ...(likec4IdAttribute != null ? { likec4IdAttribute } : {}),
+  })
+
+  await mkdir(outdir, { recursive: true })
+  const snapshotPath = resolve(outdir, SNAPSHOT_FILENAME)
+  await writeFile(snapshotPath, JSON.stringify(snapshot, null, 2))
+  logger.info(`${k.dim('generated')} ${relative(process.cwd(), snapshotPath)}`)
+  logger.info(
+    `${k.dim('snapshot')} ${snapshot.factSheets.length} fact sheets, ${snapshot.relations.length} relations`,
+  )
+
+  timer.stopAndLog()
+}

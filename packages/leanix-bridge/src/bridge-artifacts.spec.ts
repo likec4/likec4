@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
+import { createFixtureModel } from './fixture-model'
+import { toReport } from './report'
 import { toBridgeManifest } from './to-bridge-manifest'
 import { toLeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
-import { toReport } from './report'
-import { createFixtureModel } from './fixture-model'
 
 describe('bridge artifacts (golden snapshot)', () => {
   const fixedDate = '2025-01-15T12:00:00.000Z'

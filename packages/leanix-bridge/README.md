@@ -9,12 +9,39 @@ Bridge from the LikeC4 semantic model to LeanIX-shaped inventory artifacts. Like
 
 ## Scope
 
-- **In scope**: identity manifest, dry-run, configurable mapping, **LeanIX API sync** (create/update fact sheets and relations), **Draw.io–LeanIX mapping** for round-trip, tests, usage via custom generator.
+- **In scope**: identity manifest, dry-run, configurable mapping, **LeanIX API sync**, **Draw.io–LeanIX mapping**, **Phase 2 inbound** (inventory snapshot, reconciliation), **Phase 3** (impact analysis, drift detection, ADR generation, governance checks), tests.
 - **Out of scope**: AI features, new top-level CLI namespaces.
 
 ## Usage
 
-Use from a **custom generator** in your LikeC4 project config:
+### First-class CLI (recommended)
+
+From the project root:
+
+```bash
+# Generate bridge artifacts (manifest, leanix-dry-run.json, report) to out/bridge
+likec4 gen leanix-dry-run -o out/bridge
+
+# Sync workflow: write artifacts and optional sync-plan (read-only when LEANIX_API_TOKEN is set)
+likec4 sync leanix --dry-run -o out/bridge
+
+# Live sync to LeanIX (requires LEANIX_API_TOKEN)
+likec4 sync leanix --apply -o out/bridge
+
+# Phase 2 inbound: fetch LeanIX inventory (read-only), then reconcile with manifest
+likec4 gen leanix-inventory-snapshot -o out/bridge
+likec4 gen leanix-reconcile -o out/bridge
+```
+
+Export Draw.io with LeanIX profile:
+
+```bash
+likec4 export drawio --profile leanix -o ./diagrams
+```
+
+### Custom generator (alternative)
+
+You can still wire the bridge in your LikeC4 config:
 
 ```ts
 // likec4.config.ts
@@ -28,7 +55,7 @@ import {
 export default defineConfig({
   name: 'my-project',
   generators: {
-    'leanix-dry-run': async ({ likec4model, ctx }) => {
+    'my-leanix': async ({ likec4model, ctx }) => {
       const manifest = toBridgeManifest(likec4model, { mappingProfile: 'default' })
       const dryRun = toLeanixInventoryDryRun(likec4model, { mappingProfile: 'default' })
       const report = toReport(manifest, dryRun)
@@ -41,11 +68,7 @@ export default defineConfig({
 })
 ```
 
-Then run:
-
-```bash
-likec4 gen leanix-dry-run
-```
+Then run: `likec4 gen my-leanix`
 
 ### Optional: sync plan (review before sync)
 

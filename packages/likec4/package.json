@@ -146,6 +146,7 @@
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
+    "@likec4/leanix-bridge": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
     "bundle-require": "catalog:externals",

@@ -7,8 +7,7 @@ import { createRequire } from 'node:module'
 
 const require = createRequire(import.meta.url)
 /** Single source of truth: must match package.json version. */
-export const BRIDGE_VERSION: string =
-  (require('../package.json') as { version?: string }).version ?? '0.1.0'
+export const BRIDGE_VERSION: string = (require('../package.json') as { version?: string }).version ?? '0.1.0'
 
 /** Semantic anchor: LikeC4 FQN (e.g. cloud.backend.api) */
 export type CanonicalId = string

@@ -185,12 +185,15 @@ const STYLE_VALUE_SCAN_CHARS = 1500
  */
 function extractStyleFromTagContent(fullTag: string, maxScan = STYLE_VALUE_SCAN_CHARS): string | undefined {
   const scan = fullTag.slice(0, maxScan)
-  const styleDq = scan.toLowerCase().indexOf('style="')
-  const styleSq = scan.toLowerCase().indexOf("style='")
-  const useDq = styleDq !== -1 && (styleSq === -1 || styleDq <= styleSq)
-  const styleIdx = useDq ? styleDq : styleSq
-  const quote = styleIdx !== -1 ? (useDq ? '"' : "'") : ''
-  if (styleIdx === -1 || !quote) return undefined
+  const scanLower = scan.toLowerCase()
+  const styleDq = scanLower.indexOf('style="')
+  const styleSq = scanLower.indexOf('style=\'')
+  if (styleDq === -1 && styleSq === -1) return undefined
+  let styleIdx: number
+  if (styleDq === -1) styleIdx = styleSq
+  else if (styleSq === -1) styleIdx = styleDq
+  else styleIdx = Math.min(styleDq, styleSq)
+  const quote = styleIdx === styleDq ? '"' : '\''
   const valueStart = styleIdx + 7
   const valueEnd = scan.indexOf(quote, valueStart)
   return valueEnd !== -1 ? scan.slice(valueStart, valueEnd) : undefined
@@ -463,7 +466,9 @@ function buildCellOptionalFields(params: {
   if (likec4RelationId != null && edge) optional.likec4RelationId = likec4RelationId
   let shapeFromStyle = params.styleMap.get('shape')?.trim()
   const fullTagLower = params.fullTag.toLowerCase()
-  if ((shapeFromStyle == null || shapeFromStyle === '') && vertex && styleOrTagIndicatesActor(params.style, fullTagLower)) {
+  if (
+    (shapeFromStyle == null || shapeFromStyle === '') && vertex && styleOrTagIndicatesActor(params.style, fullTagLower)
+  ) {
     shapeFromStyle = 'actor'
   }
   if (shapeFromStyle != null && shapeFromStyle !== '' && vertex) optional.shapeFromStyle = shapeFromStyle
@@ -490,12 +495,12 @@ function buildCellFromMxCell(
   if (!id) return null
   const vertex = getAttr(attrs, 'vertex') === '1'
   const edge = getAttr(attrs, 'edge') === '1'
-  let style =
-    getAttr(attrs, 'style') ??
+  let style = getAttr(attrs, 'style') ??
     extractStyleFromAttrsFallback(attrs) ??
     extractStyleFromOpenTag(fullTag)
   const styleMissing = !style || style.trim() === ''
-  const tagHasActor = fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN && fullTag.toLowerCase().includes('shape=actor')
+  const tagHasActor = fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN &&
+    fullTag.toLowerCase().includes('shape=actor')
   const needLastResort = styleMissing || (tagHasActor && !style?.toLowerCase().includes('shape=actor'))
   if (needLastResort && fullTag.length < MAX_FULLTAG_LENGTH_FOR_STYLE_SCAN) {
     const reExtracted = extractStyleFromTagContent(fullTag)
@@ -654,7 +659,8 @@ function likec4LineType(
 function isActorShapeInStyle(style: string | undefined, shapeFromStyle?: string): boolean {
   const s = style?.toLowerCase() ?? ''
   const shape = shapeFromStyle?.toLowerCase().trim()
-  return shape === 'actor' || shape === 'person' || s.includes('shape=actor') || s.includes('shape=person') || s.includes('umlactor')
+  return shape === 'actor' || shape === 'person' || s.includes('shape=actor') || s.includes('shape=person') ||
+    s.includes('umlactor')
 }
 
 /**
@@ -724,6 +730,27 @@ function isValidFqn(s: string): boolean {
   return segments.every(seg => /^[a-zA-Z0-9_-]+$/.test(seg))
 }
 
+/** Depth of vertex from root (0 = root or parent not in diagram). */
+function vertexDepth(v: DrawioCell, idToVertex: Map<string, DrawioCell>): number {
+  return v.parent == null || !idToVertex.has(v.parent)
+    ? 0
+    : 1 + vertexDepth(idToVertex.get(v.parent)!, idToVertex)
+}
+
+/** True when bridgeId is valid FQN and matches parent chain (root or prefix). */
+function isUsableBridgeId(
+  bridgeId: string,
+  v: DrawioCell,
+  idToFqn: Map<string, string>,
+  _idToVertex: Map<string, DrawioCell>,
+  isRootParent: (parent: string | undefined) => boolean,
+): boolean {
+  if (!isValidFqn(bridgeId)) return false
+  const parentFqn = v.parent ? idToFqn.get(v.parent) : undefined
+  if (parentFqn === undefined) return isRootParent(v.parent)
+  return bridgeId.startsWith(parentFqn + '.') && bridgeId.length > parentFqn.length + 1
+}
+
 /** Assign FQNs to element vertices: bridge-managed likec4Id first (when valid), then root, hierarchy, orphans (DRY). */
 function assignFqnsToElementVertices(
   idToFqn: Map<string, string>,
@@ -735,21 +762,12 @@ function assignFqnsToElementVertices(
 ): void {
   const baseName = (v: DrawioCell) => v.value ?? containerIdToTitle.get(v.id) ?? v.id
   const idToVertex = new Map(elementVertices.map(v => [v.id, v]))
-  const depth = (v: DrawioCell): number =>
-    v.parent == null || !idToVertex.has(v.parent) ? 0 : 1 + depth(idToVertex.get(v.parent)!)
-  const byDepth = [...elementVertices].sort((a, b) => depth(a) - depth(b))
+  const byDepth = [...elementVertices].sort((a, b) => vertexDepth(a, idToVertex) - vertexDepth(b, idToVertex))
   for (const v of byDepth) {
     const bridgeId = v.likec4Id?.trim()
-    if (bridgeId && isValidFqn(bridgeId)) {
-      const parentFqn = v.parent ? idToFqn.get(v.parent) : undefined
-      const useBridgeId =
-        parentFqn === undefined
-          ? isRootParent(v.parent)
-          : bridgeId.startsWith(parentFqn + '.') && bridgeId.length > parentFqn.length + 1
-      if (useBridgeId) {
-        idToFqn.set(v.id, bridgeId)
-        for (const segment of bridgeId.split('.')) usedNames.add(segment)
-      }
+    if (bridgeId && isUsableBridgeId(bridgeId, v, idToFqn, idToVertex, isRootParent)) {
+      idToFqn.set(v.id, bridgeId)
+      for (const segment of bridgeId.split('.')) usedNames.add(segment)
     }
   }
   for (const v of elementVertices) {

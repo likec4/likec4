@@ -1,4 +1,4 @@
-import { mergeWithDefault, getFactSheetType, getRelationType } from './mapping'
+import { getFactSheetType, getRelationType, mergeWithDefault } from './mapping'
 import type { LeanixMappingConfig } from './mapping'
 import type { BridgeModelInput } from './model-input'
 

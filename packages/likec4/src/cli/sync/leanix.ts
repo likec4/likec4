@@ -4,10 +4,13 @@
  */
 
 import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { planSyncToLeanix, syncToLeanix } from '@likec4/leanix-bridge'
 import { writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
-import { LeanixApiClient, planSyncToLeanix, syncToLeanix } from '@likec4/leanix-bridge'
+import { createLikeC4Logger, startTimer } from '../../logger'
+import { LikeC4Model } from '../../model'
+import { createLeanixClientFromEnv } from '../bridge/leanix-client'
 import {
   asBridgeModel,
   BRIDGE_ARTIFACT_NAMES,
@@ -16,23 +19,9 @@ import {
   ERR_LEANIX_TOKEN_REQUIRED,
   writeBridgeArtifacts,
 } from '../bridge/shared'
-import { createLikeC4Logger, startTimer } from '../../logger'
-import { LikeC4Model } from '../../model'
 import { ensureProject } from '../utils'
 
-const LEANIX_BASE_URL_DEFAULT = 'https://app.leanix.net'
-const LEANIX_REQUEST_DELAY_MS = 200
 const SYNC_PLAN_FILENAME = 'sync-plan.json'
-
-function createLeanixClientFromEnv(): LeanixApiClient | null {
-  const apiToken = process.env['LEANIX_API_TOKEN']
-  if (!apiToken) return null
-  return new LeanixApiClient({
-    apiToken,
-    baseUrl: process.env['LEANIX_BASE_URL'] ?? LEANIX_BASE_URL_DEFAULT,
-    requestDelayMs: LEANIX_REQUEST_DELAY_MS,
-  })
-}
 
 export type SyncLeanixArgs = {
   path: string
