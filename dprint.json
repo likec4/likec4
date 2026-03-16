@@ -1,5 +1,7 @@
 {
   "lineWidth": 120,
+  "newLineKind": "lf",
+  "incremental": true,
   "useTabs": false,
   "typescript": {
     "semiColons": "asi",

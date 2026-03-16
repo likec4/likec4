@@ -699,8 +699,8 @@ function computeNodeStylePartsAndValue(
   const shapeStyle = isContainer
     ? 'shape=rectangle;rounded=0;container=1;collapsible=0;startSize=0;'
     : isActor
-      ? 'shape=actor;'
-      : drawioShape(node.shape)
+    ? 'shape=actor;'
+    : drawioShape(node.shape)
   const strokeColorOverride = strokeColorByNodeId?.[node.id]
   const strokeWidthOverride = strokeWidthByNodeId?.[node.id]
   const elemColors = strokeColorOverride

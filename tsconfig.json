@@ -4,10 +4,10 @@
   "include": [],
   "references": [
     {
-      "path": "./packages/config/",
+      "path": "./packages/config/"
     },
     {
-      "path": "./packages/core/",
+      "path": "./packages/core/"
     },
     {
       "path": "./packages/diagram/"
@@ -26,6 +26,9 @@
     },
     {
       "path": "./packages/layouts/"
+    },
+    {
+      "path": "./packages/leanix-bridge/"
     },
     {
       "path": "./packages/likec4/"
@@ -49,10 +52,10 @@
       "path": "./styled-system/styles/"
     },
     {
-      "path": "./devops/",
+      "path": "./devops/"
     },
     {
-      "path": "./apps/playground/",
-    },
+      "path": "./apps/playground/"
+    }
   ]
 }

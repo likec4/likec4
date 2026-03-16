@@ -116,8 +116,8 @@ test('parse DrawIO to LikeC4 - vertex with shape=actor emits element with User',
   expect(result).toContain('model {')
   expect(result).toContain('views {')
   // shape=actor may be emitted as actor+shape person (built) or container (source); both valid
-  const hasActor = result.includes("actor 'User'") && result.includes('shape person')
-  const hasContainer = result.includes("container 'User'")
+  const hasActor = result.includes('actor \'User\'') && result.includes('shape person')
+  const hasContainer = result.includes('container \'User\'')
   expect(hasActor || hasContainer).toBe(true)
 })
 

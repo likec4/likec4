@@ -185,15 +185,12 @@ const STYLE_VALUE_SCAN_CHARS = 1500
  */
 function extractStyleFromTagContent(fullTag: string, maxScan = STYLE_VALUE_SCAN_CHARS): string | undefined {
   const scan = fullTag.slice(0, maxScan)
-  const scanLower = scan.toLowerCase()
-  const styleDq = scanLower.indexOf('style="')
-  const styleSq = scanLower.indexOf('style=\'')
-  if (styleDq === -1 && styleSq === -1) return undefined
-  let styleIdx: number
-  if (styleDq === -1) styleIdx = styleSq
-  else if (styleSq === -1) styleIdx = styleDq
-  else styleIdx = Math.min(styleDq, styleSq)
-  const quote = styleIdx === styleDq ? '"' : '\''
+  const styleDq = scan.toLowerCase().indexOf('style="')
+  const styleSq = scan.toLowerCase().indexOf('style=\'')
+  const useDq = styleDq !== -1 && (styleSq === -1 || styleDq <= styleSq)
+  const styleIdx = useDq ? styleDq : styleSq
+  const quote = styleIdx !== -1 ? (useDq ? '"' : '\'') : ''
+  if (styleIdx === -1 || !quote) return undefined
   const valueStart = styleIdx + 7
   const valueEnd = scan.indexOf(quote, valueStart)
   return valueEnd !== -1 ? scan.slice(valueStart, valueEnd) : undefined

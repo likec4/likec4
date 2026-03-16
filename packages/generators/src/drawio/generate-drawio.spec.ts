@@ -1,7 +1,5 @@
 import { Builder } from '@likec4/core/builder'
 import type { aux, ProcessedView } from '@likec4/core/types'
-import { describe, expect, test } from 'vitest'
-import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import type { DrawioViewModelLike } from '@likec4/generators'
 import {
   generateDrawio,
@@ -9,6 +7,8 @@ import {
   getAllDiagrams,
   parseDrawioToLikeC4,
 } from '@likec4/generators'
+import { describe, expect, test } from 'vitest'
+import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 
 /**
  * Asserts that the DrawIO XML does not contain the structure that causes
@@ -94,8 +94,30 @@ const fakeActorView: ProcessedView<aux.Unknown> = {
   height: 300,
   id: 'index',
   nodes: [
-    { children: [], color: 'primary', id: 'alice', kind: 'actor', parent: null, position: [0, 0], relative: [0, 0], shape: 'person', size: { height: 80, width: 60 }, title: 'Alice' },
-    { children: [], color: 'primary', id: 'bob', kind: 'actor', parent: null, position: [200, 200], relative: [200, 200], shape: 'person', size: { height: 80, width: 60 }, title: 'Bob' },
+    {
+      children: [],
+      color: 'primary',
+      id: 'alice',
+      kind: 'actor',
+      parent: null,
+      position: [0, 0],
+      relative: [0, 0],
+      shape: 'person',
+      size: { height: 80, width: 60 },
+      title: 'Alice',
+    },
+    {
+      children: [],
+      color: 'primary',
+      id: 'bob',
+      kind: 'actor',
+      parent: null,
+      position: [200, 200],
+      relative: [200, 200],
+      shape: 'person',
+      size: { height: 80, width: 60 },
+      title: 'Bob',
+    },
   ],
   autoLayout: { direction: 'TB' },
   rules: [{ exprs: [{ wildcard: true }], isInclude: true }],
@@ -269,8 +291,8 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
   test('round-trip: generated DrawIO with actor re-imports as actor', () => {
     const xml = generateDrawio(mockViewModel(fakeActorView), { compressed: false })
     const likec4 = parseDrawioToLikeC4(xml)
-    expect(likec4, 'Re-imported DrawIO with actors must emit actor elements').toContain("actor 'Alice'")
-    expect(likec4).toContain("actor 'Bob'")
+    expect(likec4, 'Re-imported DrawIO with actors must emit actor elements').toContain('actor \'Alice\'')
+    expect(likec4).toContain('actor \'Bob\'')
   })
 
   test('node with navigateTo exports UserObject with link and style link=data:page/id opening likec4-<viewId> page', () => {
