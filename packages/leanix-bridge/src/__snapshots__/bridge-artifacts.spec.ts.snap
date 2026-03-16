@@ -1,0 +1,117 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`bridge artifacts (golden snapshot) > leanix-dry-run.json shape 1`] = `
+{
+  "factSheets": [
+    {
+      "likec4Id": "cloud",
+      "name": "Cloud",
+      "type": "Application",
+    },
+    {
+      "likec4Id": "cloud.backend",
+      "name": "Backend",
+      "type": "ITComponent",
+    },
+    {
+      "likec4Id": "cloud.backend.api",
+      "name": "API",
+      "tags": [
+        "core",
+      ],
+      "technology": "Node",
+      "type": "ITComponent",
+    },
+  ],
+  "generatedAt": "2025-01-15T12:00:00.000Z",
+  "mappingProfile": "snapshot",
+  "projectId": "test-project",
+  "relations": [
+    {
+      "likec4RelationId": "r1",
+      "sourceLikec4Id": "cloud",
+      "targetLikec4Id": "cloud.backend",
+      "title": "contains",
+      "type": "depends on",
+    },
+    {
+      "likec4RelationId": "r2",
+      "sourceLikec4Id": "cloud.backend",
+      "targetLikec4Id": "cloud.backend.api",
+      "title": "contains",
+      "type": "depends on",
+    },
+  ],
+}
+`;
+
+exports[`bridge artifacts (golden snapshot) > manifest.json shape 1`] = `
+{
+  "bridgeVersion": "0.1.0",
+  "entities": {
+    "cloud": {
+      "canonicalId": "cloud",
+      "external": {},
+    },
+    "cloud.backend": {
+      "canonicalId": "cloud.backend",
+      "external": {},
+    },
+    "cloud.backend.api": {
+      "canonicalId": "cloud.backend.api",
+      "external": {},
+    },
+  },
+  "generatedAt": "2025-01-15T12:00:00.000Z",
+  "manifestVersion": "1.0",
+  "mappingProfile": "snapshot",
+  "projectId": "test-project",
+  "relations": [
+    {
+      "compositeKey": "cloud|cloud.backend|r1",
+      "external": {},
+      "relationId": "r1",
+      "sourceFqn": "cloud",
+      "targetFqn": "cloud.backend",
+    },
+    {
+      "compositeKey": "cloud.backend|cloud.backend.api|r2",
+      "external": {},
+      "relationId": "r2",
+      "sourceFqn": "cloud.backend",
+      "targetFqn": "cloud.backend.api",
+    },
+  ],
+  "views": {
+    "index": {
+      "external": {},
+      "viewId": "index",
+    },
+    "landscape": {
+      "external": {},
+      "viewId": "landscape",
+    },
+  },
+}
+`;
+
+exports[`bridge artifacts (golden snapshot) > report.json shape 1`] = `
+{
+  "artifacts": {
+    "leanixDryRun": "leanix-dry-run.json",
+    "manifest": "manifest.json",
+  },
+  "bridgeVersion": "0.1.0",
+  "counts": {
+    "entities": 3,
+    "factSheets": 3,
+    "leanixRelations": 2,
+    "relations": 2,
+    "views": 2,
+  },
+  "generatedAt": "2025-01-15T12:00:00.000Z",
+  "manifestVersion": "1.0",
+  "mappingProfile": "snapshot",
+  "projectId": "test-project",
+}
+`;
