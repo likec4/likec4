@@ -68,8 +68,8 @@ export default defineConfig({
       await ctx.write({ path: ['out', 'bridge', 'leanix-dry-run.json'], content: JSON.stringify(dryRun, null, 2) })
       await ctx.write({ path: ['out', 'bridge', 'report.json'], content: JSON.stringify(report, null, 2) })
 
-      // Phase 2 (programmatic): e.g. import { reconcile } from '@likec4/leanix-bridge', then
-      // reconciliation = reconcile(manifest, snapshot) and ctx.write(..., JSON.stringify(reconciliation, null, 2))
+      // Phase 2 (programmatic): e.g. import { reconcileInventoryWithManifest } from '@likec4/leanix-bridge', then
+      // reconciliation = reconcileInventoryWithManifest(snapshot, manifest) and ctx.write(..., JSON.stringify(reconciliation, null, 2))
     },
   },
 })

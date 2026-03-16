@@ -76,7 +76,12 @@ export async function leanixReconcileHandler(params: LeanixReconcileHandlerParam
         const artifacts = buildBridgeArtifacts(asBridgeModel(model))
         dryRun = artifacts.dryRun
       }
-    } catch (_) {
+    } catch (err) {
+      logger.debug(
+        `Could not load workspace for dryRun enrichment; proceeding without it: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      )
       dryRun = undefined
     }
 

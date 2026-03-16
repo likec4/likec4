@@ -36,6 +36,9 @@ export const DEFAULT_LEANIX_MAPPING: Required<LeanixMappingConfig> = {
   },
 }
 
+/**
+ * Merges partial mapping config with DEFAULT_LEANIX_MAPPING; returns a full Required<LeanixMappingConfig>.
+ */
 export function mergeWithDefault(partial?: LeanixMappingConfig | null): Required<LeanixMappingConfig> {
   const base = {
     factSheetTypes: { ...DEFAULT_LEANIX_MAPPING.factSheetTypes },

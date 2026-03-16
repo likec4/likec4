@@ -22,6 +22,13 @@ export type LeanixDryRunHandlerParams = {
   useDotBin: boolean
 }
 
+/**
+ * Builds bridge artifacts (manifest, leanix-dry-run, report) from the workspace model and writes them to outdir.
+ *
+ * @param params - workspace path, outdir, project, useDotBin
+ * @returns Promise<void>
+ * @throws Error when workspace has no project or empty model
+ */
 export async function leanixDryRunHandler(params: LeanixDryRunHandlerParams): Promise<void> {
   const logger = createLikeC4Logger('c4:gen:leanix-dry-run')
   const timer = startTimer(logger)

@@ -46,6 +46,9 @@ export async function runSyncLeanix(args: SyncLeanixArgs): Promise<void> {
   const { path: workspacePath, outdir, project, useDotBin, dryRun, apply } = args
 
   try {
+    if (dryRun && apply) {
+      throw new Error('Choose either dryRun or apply, not both')
+    }
     await using likec4 = await fromWorkspace(workspacePath, {
       graphviz: useDotBin ? 'binary' : 'wasm',
       watch: false,
@@ -74,7 +77,9 @@ export async function runSyncLeanix(args: SyncLeanixArgs): Promise<void> {
         await writeFile(planPath, JSON.stringify(plan, null, 2))
         logger.info(`${k.dim('generated')} ${relative(process.cwd(), planPath)}`)
         if (plan.errors.length > 0) {
-          logger.warn(`${plan.errors.length} plan error(s): ${plan.errors.join('; ')}`)
+          const message = `${plan.errors.length} plan error(s): ${plan.errors.join('; ')}`
+          logger.error(message)
+          throw new Error(message)
         }
       } else {
         logger.info(`${k.dim('skip')} sync-plan (set LEANIX_API_TOKEN to include plan)`)

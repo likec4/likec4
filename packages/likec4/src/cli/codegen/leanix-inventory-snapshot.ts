@@ -19,6 +19,14 @@ export type LeanixInventorySnapshotHandlerParams = {
   likec4IdAttribute?: string
 }
 
+/**
+ * Fetches LeanIX inventory snapshot via API and writes leanix-inventory-snapshot.json to outdir.
+ * Requires LEANIX_API_TOKEN. Does not modify LikeC4 or DSL.
+ *
+ * @param params - outdir, optional likec4IdAttribute for fact sheet custom attribute
+ * @returns Promise<void>
+ * @throws when LEANIX_API_TOKEN is missing or API calls fail
+ */
 export async function leanixInventorySnapshotHandler(
   params: LeanixInventorySnapshotHandlerParams,
 ): Promise<void> {

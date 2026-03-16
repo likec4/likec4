@@ -8,12 +8,19 @@ import { LeanixApiClient } from '@likec4/leanix-bridge'
 const LEANIX_BASE_URL_DEFAULT = 'https://app.leanix.net'
 const LEANIX_REQUEST_DELAY_MS = 200
 
+/**
+ * Creates a LeanIX API client from LEANIX_API_TOKEN and LEANIX_BASE_URL (optional).
+ * Returns null if token is missing or blank (whitespace-only treated as unset).
+ *
+ * @returns LeanixApiClient or null when LEANIX_API_TOKEN is not set
+ */
 export function createLeanixClientFromEnv(): LeanixApiClient | null {
-  const apiToken = process.env['LEANIX_API_TOKEN']
+  const apiToken = process.env['LEANIX_API_TOKEN']?.trim()
   if (!apiToken) return null
+  const baseUrl = process.env['LEANIX_BASE_URL']?.trim() || LEANIX_BASE_URL_DEFAULT
   return new LeanixApiClient({
     apiToken,
-    baseUrl: process.env['LEANIX_BASE_URL'] ?? LEANIX_BASE_URL_DEFAULT,
+    baseUrl,
     requestDelayMs: LEANIX_REQUEST_DELAY_MS,
   })
 }

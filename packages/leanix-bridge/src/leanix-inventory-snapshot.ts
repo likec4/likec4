@@ -42,6 +42,22 @@ export interface FetchLeanixInventorySnapshotOptions {
 
 const DEFAULT_PAGE_SIZE = 100
 const DEFAULT_MAX_FACT_SHEETS = 1000
+const MAX_GRAPHQL_RETRIES = 3
+
+async function withGraphQLRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastErr: unknown
+  for (let attempt = 0; attempt < MAX_GRAPHQL_RETRIES; attempt++) {
+    try {
+      return await fn()
+    } catch (err) {
+      lastErr = err
+      if (attempt < MAX_GRAPHQL_RETRIES - 1) {
+        await new Promise(r => setTimeout(r, 500 * (attempt + 1)))
+      }
+    }
+  }
+  throw lastErr
+}
 
 /**
  * Fetches a read-only snapshot of the LeanIX inventory (fact sheets, then relations).
@@ -53,6 +69,9 @@ export async function fetchLeanixInventorySnapshot(
 ): Promise<LeanixInventorySnapshot> {
   const generatedAt = options.generatedAt ?? new Date().toISOString()
   const maxFactSheets = options.maxFactSheets ?? DEFAULT_MAX_FACT_SHEETS
+  if (!Number.isInteger(maxFactSheets) || maxFactSheets < 0) {
+    throw new Error('maxFactSheets must be a non-negative integer')
+  }
   const likec4IdAttribute = options.likec4IdAttribute
 
   const factSheets = await fetchAllFactSheets(client, {
@@ -116,25 +135,14 @@ async function fetchAllFactSheets(
     }
   }
 
-  const MAX_GRAPHQL_RETRIES = 3
-  const fetchPage = async (cursor: string | null): Promise<PageRes> => {
-    let lastErr: unknown
-    for (let attempt = 0; attempt < MAX_GRAPHQL_RETRIES; attempt++) {
-      try {
-        return await client.graphql<PageRes>(query, {
-          first: pageSize,
-          after: cursor,
-          filter: {},
-        })
-      } catch (err) {
-        lastErr = err
-        if (attempt < MAX_GRAPHQL_RETRIES - 1) {
-          await new Promise(r => setTimeout(r, 500 * (attempt + 1)))
-        }
-      }
-    }
-    throw lastErr
-  }
+  const fetchPage = async (cursor: string | null): Promise<PageRes> =>
+    withGraphQLRetry(() =>
+      client.graphql<PageRes>(query, {
+        first: pageSize,
+        after: cursor,
+        filter: {},
+      })
+    )
 
   while (hasNextPage && result.length < opts.maxFactSheets) {
     const data: PageRes = await fetchPage(after)
@@ -142,6 +150,7 @@ async function fetchAllFactSheets(
     const pageInfo = data.allFactSheets?.pageInfo
 
     for (const edge of edges) {
+      if (result.length >= opts.maxFactSheets) break
       const node = edge.node
       if (!node?.id) continue
       const likec4Id = likec4IdAttribute != null && Array.isArray(node.factSheetAttributes)
@@ -163,22 +172,6 @@ async function fetchAllFactSheets(
 }
 
 const RELATIONS_FETCH_CONCURRENCY = 10
-const MAX_GRAPHQL_RETRIES = 3
-
-async function withGraphQLRetry<T>(fn: () => Promise<T>): Promise<T> {
-  let lastErr: unknown
-  for (let attempt = 0; attempt < MAX_GRAPHQL_RETRIES; attempt++) {
-    try {
-      return await fn()
-    } catch (err) {
-      lastErr = err
-      if (attempt < MAX_GRAPHQL_RETRIES - 1) {
-        await new Promise(r => setTimeout(r, 500 * (attempt + 1)))
-      }
-    }
-  }
-  throw lastErr
-}
 
 async function fetchAllRelations(
   client: LeanixApiClient,

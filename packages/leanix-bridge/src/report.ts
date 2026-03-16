@@ -38,6 +38,9 @@ function buildCoherenceErrorMessage(
   return `Manifest and LeanIX dry-run must belong to the same run. Mismatch: ${mismatches.join('; ')}`
 }
 
+/**
+ * Builds a summary report (counts, artifact names) from manifest and dry-run. Throws if projectId or mappingProfile differ.
+ */
 export function toReport(
   manifest: BridgeManifest,
   leanixDryRun: LeanixInventoryDryRun,
