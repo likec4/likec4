@@ -122,6 +122,13 @@ const mapping = manifestToDrawioLeanixMapping(result.manifest)
 - **`planSyncToLeanix(leanixDryRun, client, options?)`** – queries LeanIX (read-only) and returns a **sync plan** (`SyncPlan`): per–fact sheet and per-relation actions (`create` / `update`), summary counts, and any query errors. Use before `syncToLeanix` to review what would change. Options: `idempotent?`, `generatedAt?`.
 - **`syncToLeanix(manifest, leanixDryRun, client, options?)`** – syncs dry-run to LeanIX API; returns updated manifest with `external.leanix.factSheetId` and relation IDs. Options: `idempotent?`, `likec4IdAttribute?`.
 - **`manifestToDrawioLeanixMapping(manifest)`** – returns `{ likec4IdToLeanixId, relationKeyToLeanixRelationId }` for Draw.io bridge-managed export or re-import from LeanIX.
+- **`fetchLeanixInventorySnapshot(client, options?)`** – fetches a read-only snapshot of LeanIX fact sheets and relations (paginated); returns `LeanixInventorySnapshot`. Options: `likec4IdAttribute?`, `maxFactSheets?`, `generatedAt?`.
+- **`reconcileInventoryWithManifest(snapshot, manifest, options?)`** – compares manifest to LeanIX snapshot; returns `ReconciliationResult` (matched, unmatchedInLikec4, unmatchedInLeanix, ambiguous). Optional `dryRun` improves matching.
+- **`buildDriftReport(manifest, snapshot)`** – produces a `DriftReport` listing mismatches (title, description, relations) between manifest and snapshot.
+- **`impactReportFromSyncPlan(syncPlan)`** – computes impact analysis from a sync plan; returns `ImpactReport` with affected entities and severity.
+- **`generateAdrFromReconciliation(reconciliation, options?)`** – generates ADR-style markdown from a reconciliation result. **`generateAdrFromDriftReport(driftReport, options?)`** – generates ADR-style markdown from a drift report.
+- **`runGovernanceChecks(manifest, options?)`** – runs configurable governance rules; returns `GovernanceReport` with pass/fail and violation messages.
+- **`isBridgeManifest(obj)`** / **`isLeanixInventorySnapshot(obj)`** – type guards for parsed JSON (e.g. from CLI artifact files).
 
 Mapping is configurable via `options.mapping` (kinds → fact sheet types, relation kinds → relation types). LeanIX GraphQL schema varies by workspace; fact sheet types and relation types are meta-model specific.
 

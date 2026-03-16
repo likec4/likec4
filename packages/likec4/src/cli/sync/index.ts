@@ -18,10 +18,17 @@ export interface SyncCmdArgs {
 }
 
 function isSyncCmdArgs(a: unknown): a is SyncCmdArgs {
-  if (typeof a !== 'object' || a === null || !('target' in a)) return false
-  return typeof (a as Record<string, unknown>)['target'] === 'string'
+  if (typeof a !== 'object' || a === null) return false
+  if (!Object.hasOwn(a, 'target')) return false
+  return typeof Reflect.get(a, 'target') === 'string'
 }
 
+/**
+ * Registers the sync command (e.g. sync leanix) with yargs.
+ *
+ * @param yargs - The yargs instance to attach the command to
+ * @returns The configured yargs instance (chainable)
+ */
 export default function syncCmd(yargs: Argv) {
   return yargs.command({
     command: 'sync <target> [path]',
@@ -61,13 +68,14 @@ export default function syncCmd(yargs: Argv) {
         ),
     handler: async (args: unknown) => {
       if (!isSyncCmdArgs(args) || args.target !== 'leanix') return
+      const apply = args.apply ?? false
       await runSyncLeanix({
         path: args.path ?? '.',
         outdir: args.outdir ?? DEFAULT_OUTDIR,
         project: args.project,
         useDotBin: args.useDotBin ?? false,
-        dryRun: args.dryRun ?? true,
-        apply: args.apply ?? false,
+        dryRun: apply ? false : (args.dryRun ?? true),
+        apply,
       })
     },
   })

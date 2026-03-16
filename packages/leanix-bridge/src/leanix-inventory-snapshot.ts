@@ -163,6 +163,22 @@ async function fetchAllFactSheets(
 }
 
 const RELATIONS_FETCH_CONCURRENCY = 10
+const MAX_GRAPHQL_RETRIES = 3
+
+async function withGraphQLRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastErr: unknown
+  for (let attempt = 0; attempt < MAX_GRAPHQL_RETRIES; attempt++) {
+    try {
+      return await fn()
+    } catch (err) {
+      lastErr = err
+      if (attempt < MAX_GRAPHQL_RETRIES - 1) {
+        await new Promise(r => setTimeout(r, 500 * (attempt + 1)))
+      }
+    }
+  }
+  throw lastErr
+}
 
 async function fetchAllRelations(
   client: LeanixApiClient,
@@ -208,7 +224,7 @@ async function fetchAllRelations(
   for (let i = 0; i < factSheetIds.length; i += RELATIONS_FETCH_CONCURRENCY) {
     const batch = factSheetIds.slice(i, i + RELATIONS_FETCH_CONCURRENCY)
     const results = await Promise.all(
-      batch.map(sourceId => client.graphql<RelationsResult>(query, { id: sourceId })),
+      batch.map(sourceId => withGraphQLRetry(() => client.graphql<RelationsResult>(query, { id: sourceId }))),
     )
     for (let j = 0; j < results.length; j++) {
       const data = results[j]
