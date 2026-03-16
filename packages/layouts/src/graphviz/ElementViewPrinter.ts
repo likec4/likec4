@@ -12,17 +12,6 @@ const rankLogger = createLogger('dot.rank')
 
 export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedElementView<A>> {
   protected override postBuild(G: RootGraphModel): void {
-    // Apply layout hints if present
-    // then tile nodes still having no edges
-    if (this.hasLayoutHints()) {
-      this
-        .applyLayoutHints(this.layoutHints)
-        .tileNodesWithoutEdges()
-        .enableNewRankIfNeeded()
-      return
-    }
-
-    // When No AI hints are present
     // Assign groups to improve layout
     this
       .assignGroups()

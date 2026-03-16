@@ -15,6 +15,7 @@ import { loggable, rootLogger as mainLogger, wrapError } from '@likec4/log'
 import { isNonNullish, randomString } from 'remeda'
 import { calcSequenceLayout } from '../sequence'
 import type { LayoutHints } from './ai/types'
+import { AiLayoutViewPrinter } from './AiLayoutPrinter'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { GraphClusterSpace } from './DotPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
@@ -37,12 +38,14 @@ export interface GraphvizPort extends Disposable {
 
 const getPrinter = <A extends AnyAux>({ view, styles, layoutHints }: LayoutTaskParams<A>) => {
   switch (true) {
+    case layoutHints != null:
+      return new AiLayoutViewPrinter(view, styles, layoutHints)
     case isDynamicView(view):
-      return new DynamicViewPrinter(view, styles, layoutHints)
+      return new DynamicViewPrinter(view, styles)
     case isDeploymentView(view):
-      return new DeploymentViewPrinter(view, styles, layoutHints)
+      return new DeploymentViewPrinter(view, styles)
     case isElementView(view):
-      return new ElementViewPrinter(view, styles, layoutHints)
+      return new ElementViewPrinter(view, styles)
     default:
       nonexhaustive(view)
   }

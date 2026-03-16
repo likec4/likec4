@@ -16,6 +16,7 @@ catalog:
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
+  ollama: ^0.6.3
   oxlint: 1.59.0
   oxlint-tsgolint: 0.20.0
   pako: ^2.1.0
