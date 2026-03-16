@@ -1,20 +1,7 @@
-import { resolve } from 'node:path'
-import { defineProject } from 'vitest/config'
+import { defineVitest } from '@likec4/devops/vitest'
 
-export default defineProject({
-  resolve: {
-    conditions: ['sources', 'node'],
-    // Seems vitest doesn't resolve conditions
-    alias: {
-      '@likec4/style-preset/defaults': resolve(__dirname, '../../styled-system/preset/src/defaults/index.ts'),
-      '@likec4/core': resolve(__dirname, '../core/src'),
-      '@likec4/log': resolve(__dirname, '../log/src'),
-      '@likec4/layouts': resolve(__dirname, '../layouts/src'),
-      '@likec4/config': resolve(__dirname, '../config/src'),
-    },
-  },
+export default defineVitest('language-server', {
   test: {
-    name: 'language-server',
     testTimeout: 10_000,
     chaiConfig: {
       includeStack: true,
