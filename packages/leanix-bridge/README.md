@@ -20,7 +20,7 @@ From the project root:
 
 ```bash
 # Generate bridge artifacts (manifest, leanix-dry-run.json, report) to out/bridge
-likec4 gen leanix-dry-run -o out/bridge
+likec4 gen leanix dry-run -o out/bridge
 
 # Sync workflow: write artifacts and optional sync-plan (read-only when LEANIX_API_TOKEN is set)
 likec4 sync leanix --dry-run -o out/bridge
@@ -30,9 +30,9 @@ likec4 sync leanix --apply -o out/bridge
 
 # Phase 2 inbound: fetch LeanIX inventory (read-only), then reconcile with manifest
 # Fetch LeanIX inventory snapshot (read-only) to out/bridge
-likec4 gen leanix-inventory-snapshot -o out/bridge
+likec4 gen leanix inventory -o out/bridge
 # Run reconciliation between manifest and LeanIX inventory, output to out/bridge
-likec4 gen leanix-reconcile -o out/bridge
+likec4 gen leanix reconcile -o out/bridge
 ```
 
 Export Draw.io with LeanIX profile (includes bridge-managed metadata for round-trip sync):
@@ -125,8 +125,8 @@ const mapping = manifestToDrawioLeanixMapping(result.manifest)
 - **`fetchLeanixInventorySnapshot(client, options?)`** – fetches a read-only snapshot of LeanIX fact sheets and relations (paginated); returns `LeanixInventorySnapshot`. Options: `likec4IdAttribute?`, `maxFactSheets?`, `generatedAt?`.
 - **`reconcileInventoryWithManifest(snapshot, manifest, options?)`** – compares manifest to LeanIX snapshot; returns `ReconciliationResult` (matched, unmatchedInLikec4, unmatchedInLeanix, ambiguous). Optional `dryRun` improves matching.
 - **`buildDriftReport(reconciliation)`** – builds a `DriftReport` from a `ReconciliationResult` (status, summary, description); accepts a single `ReconciliationResult` and returns `DriftReport`.
-- **`impactReportFromSyncPlan(syncPlan)`** – computes impact analysis from a sync plan; returns `ImpactReport` with affected entities and severity.
-- **`generateAdrFromReconciliation(reconciliation, options?)`** – generates ADR-style markdown from a reconciliation result. **`generateAdrFromDriftReport(driftReport, options?)`** – generates ADR-style markdown from a drift report.
+- **`impactReportFromSyncPlan(plan)`** – computes impact analysis from a sync plan; returns `ImpactReport` with affected entities and severity.
+- **`generateAdrFromReconciliation(reconciliation, options?)`** – generates ADR-style markdown from a reconciliation result. **`generateAdrFromDriftReport(drift, options?)`** – generates ADR-style markdown from a drift report.
 - **`runGovernanceChecks(reconciliation, options?)`** – runs configurable governance rules on a `ReconciliationResult`; accepts optional `GovernanceCheckOptions` and returns `GovernanceReport` with pass/fail and violation messages.
 - **`isBridgeManifest(obj)`** / **`isLeanixInventorySnapshot(obj)`** – type guards for parsed JSON (e.g. from CLI artifact files).
 

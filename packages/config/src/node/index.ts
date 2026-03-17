@@ -1,3 +1,3 @@
-export * from '@likec4/config'
+export * from '../index'
 
 export { loadConfig } from './load-config'

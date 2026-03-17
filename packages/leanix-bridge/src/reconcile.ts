@@ -106,16 +106,14 @@ function resolveByNameAndType(
       ...(entityType !== undefined ? { type: entityType } : {}),
     })
   } else if (candidates.length === 1) {
-    const candidate = candidates[0]
-    if (candidate) {
-      matched.push({
-        canonicalId,
-        factSheetId: candidate.id,
-        name: candidate.name,
-        type: candidate.type,
-      })
-      usedFactSheetIds.add(candidate.id)
-    }
+    const candidate = candidates[0]!
+    matched.push({
+      canonicalId,
+      factSheetId: candidate.id,
+      name: candidate.name,
+      type: candidate.type,
+    })
+    usedFactSheetIds.add(candidate.id)
   } else {
     ambiguous.push({
       canonicalId,

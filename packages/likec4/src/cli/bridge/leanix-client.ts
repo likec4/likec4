@@ -1,6 +1,6 @@
 /**
  * LeanIX API client from environment (LEANIX_API_TOKEN, LEANIX_BASE_URL).
- * Shared by sync leanix and gen leanix-inventory-snapshot.
+ * Shared by sync leanix and gen leanix inventory.
  */
 
 import { LeanixApiClient } from '@likec4/leanix-bridge'

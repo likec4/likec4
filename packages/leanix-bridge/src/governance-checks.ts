@@ -95,7 +95,7 @@ export function runGovernanceChecks(
   const passed = checks.every(c => c.passed)
   return {
     passed,
-    generatedAt: reconciliation.generatedAt,
+    generatedAt: new Date().toISOString(),
     checks,
   }
 }

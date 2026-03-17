@@ -1,6 +1,6 @@
 /**
  * Shared bridge CLI: model adapter, artifact building and writing.
- * Used by gen leanix-dry-run and sync leanix.
+ * Used by gen leanix dry-run and sync leanix.
  */
 
 import type { AnyLikeC4Model } from '@likec4/core/model'

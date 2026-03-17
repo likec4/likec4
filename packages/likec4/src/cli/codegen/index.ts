@@ -134,85 +134,92 @@ const codegenCmd = (yargs: yargs.Argv) => {
             },
           })
           // ----------------------
-          // leanix-dry-run command (bridge artifacts without live sync)
+          // leanix subcommands: dry-run, inventory, reconcile
           .command({
-            command: 'leanix-dry-run [path]',
-            describe: 'generate LeanIX bridge artifacts (manifest, dry-run inventory, report)',
+            command: 'leanix [path]',
+            describe: 'LeanIX bridge: dry-run, inventory snapshot, reconcile',
             builder: yargs =>
               yargs
                 .positional('path', path)
-                .option('outdir', {
-                  ...outdir,
-                  desc: '<dir> output directory for manifest.json, leanix-dry-run.json, report.json',
-                })
-                .option('project', project)
-                .option('use-dot', useDotBin)
-                .example(
-                  `${k.green('$0 gen leanix-dry-run -o out/bridge')}`,
-                  k.gray('Write bridge artifacts to out/bridge'),
+                .demandCommand(1, 'Choose a subcommand: dry-run, inventory, reconcile')
+                .command(
+                  'dry-run [path]',
+                  'generate LeanIX bridge artifacts (manifest, dry-run inventory, report)',
+                  cmd =>
+                    cmd
+                      .positional('path', path)
+                      .option('outdir', {
+                        ...outdir,
+                        desc: '<dir> output directory for manifest.json, leanix-dry-run.json, report.json',
+                      })
+                      .option('project', project)
+                      .option('use-dot', useDotBin)
+                      .example(
+                        `${k.green('$0 gen leanix dry-run -o out/bridge')}`,
+                        k.gray('Write bridge artifacts to out/bridge'),
+                      ),
+                  async args => {
+                    await leanixDryRunHandler({
+                      path: args.path,
+                      outdir: args.outdir ?? resolve(process.cwd(), 'out', 'bridge'),
+                      project: args.project,
+                      useDotBin: args.useDotBin,
+                    })
+                  },
+                )
+                .command(
+                  'inventory',
+                  'fetch LeanIX inventory (read-only) and write leanix-inventory-snapshot.json',
+                  cmd =>
+                    cmd
+                      .option('outdir', {
+                        ...outdir,
+                        default: resolve(process.cwd(), 'out', 'bridge'),
+                        desc: '<dir> output directory for leanix-inventory-snapshot.json',
+                      })
+                      .option('likec4-id-attribute', {
+                        type: 'string',
+                        desc: 'custom LeanIX attribute key for likec4Id (e.g. "likec4Id")',
+                      })
+                      .example(
+                        `${k.green('$0 gen leanix inventory -o out/bridge')}`,
+                        k.gray('Requires LEANIX_API_TOKEN'),
+                      ),
+                  async args => {
+                    await leanixInventorySnapshotHandler({
+                      outdir: args.outdir ?? resolve(process.cwd(), 'out', 'bridge'),
+                      ...(args.likec4IdAttribute != null ? { likec4IdAttribute: args.likec4IdAttribute } : {}),
+                    })
+                  },
+                )
+                .command(
+                  'reconcile [path]',
+                  'reconcile manifest with leanix-inventory-snapshot; write reconciliation-report.json',
+                  cmd =>
+                    cmd
+                      .positional('path', path)
+                      .option('outdir', {
+                        ...outdir,
+                        default: resolve(process.cwd(), 'out', 'bridge'),
+                        desc: '<dir> directory with manifest.json and leanix-inventory-snapshot.json',
+                      })
+                      .option('project', project)
+                      .option('use-dot', useDotBin)
+                      .example(
+                        `${k.green('$0 gen leanix reconcile -o out/bridge')}`,
+                        k.gray('Reads manifest + snapshot from outdir; optional workspace for name+type matching'),
+                      ),
+                  async args => {
+                    await leanixReconcileHandler({
+                      path: args.path,
+                      outdir: args.outdir ?? resolve(process.cwd(), 'out', 'bridge'),
+                      project: args.project,
+                      useDotBin: args.useDotBin,
+                    })
+                  },
                 ),
-            handler: async args => {
-              await leanixDryRunHandler({
-                path: args.path,
-                outdir: args.outdir ?? resolve(process.cwd(), 'out', 'bridge'),
-                project: args.project,
-                useDotBin: args.useDotBin,
-              })
-            },
-          })
-          // ----------------------
-          // leanix-inventory-snapshot (Phase 2 inbound: read-only snapshot from LeanIX API)
-          .command({
-            command: 'leanix-inventory-snapshot',
-            describe: 'fetch LeanIX inventory (read-only) and write leanix-inventory-snapshot.json',
-            builder: yargs =>
-              yargs
-                .option('outdir', {
-                  ...outdir,
-                  default: resolve(process.cwd(), 'out', 'bridge'),
-                  desc: '<dir> output directory for leanix-inventory-snapshot.json',
-                })
-                .option('likec4-id-attribute', {
-                  type: 'string',
-                  desc: 'custom LeanIX attribute key for likec4Id (e.g. "likec4Id")',
-                })
-                .example(
-                  `${k.green('$0 gen leanix-inventory-snapshot -o out/bridge')}`,
-                  k.gray('Requires LEANIX_API_TOKEN'),
-                ),
-            handler: async args => {
-              await leanixInventorySnapshotHandler({
-                outdir: args.outdir ?? resolve(process.cwd(), 'out', 'bridge'),
-                ...(args.likec4IdAttribute != null ? { likec4IdAttribute: args.likec4IdAttribute } : {}),
-              })
-            },
-          })
-          // ----------------------
-          // leanix-reconcile (Phase 2: matched / unmatched / ambiguous)
-          .command({
-            command: 'leanix-reconcile [path]',
-            describe: 'reconcile manifest with leanix-inventory-snapshot; write reconciliation-report.json',
-            builder: yargs =>
-              yargs
-                .positional('path', path)
-                .option('outdir', {
-                  ...outdir,
-                  default: resolve(process.cwd(), 'out', 'bridge'),
-                  desc: '<dir> directory with manifest.json and leanix-inventory-snapshot.json',
-                })
-                .option('project', project)
-                .option('use-dot', useDotBin)
-                .example(
-                  `${k.green('$0 gen leanix-reconcile -o out/bridge')}`,
-                  k.gray('Reads manifest + snapshot from outdir; optional workspace for name+type matching'),
-                ),
-            handler: async args => {
-              await leanixReconcileHandler({
-                path: args.path,
-                outdir: args.outdir ?? resolve(process.cwd(), 'out', 'bridge'),
-                project: args.project,
-                useDotBin: args.useDotBin,
-              })
+            handler: async () => {
+              // Subcommand required; yargs shows help when no subcommand given
             },
           })
           // ----------------------
@@ -313,9 +320,9 @@ const codegenCmd = (yargs: yargs.Argv) => {
           .epilog(`${k.bold('Examples:')}
   likec4 gen react -o dist/likec4-views.mjs ./src/likec4
   likec4 gen model -o likec4-model.ts
-  likec4 gen leanix-dry-run -o out/bridge
-  likec4 gen leanix-inventory-snapshot -o out/bridge
-  likec4 gen leanix-reconcile -o out/bridge
+  likec4 gen leanix dry-run -o out/bridge
+  likec4 gen leanix inventory -o out/bridge
+  likec4 gen leanix reconcile -o out/bridge
   likec4 gen ts --outfile likec4-model.ts
   likec4 gen webcomponent -o likec4.js --webcomponent-prefix c4 --use-dot ./src
   likec4 gen mmd --outdir assets/

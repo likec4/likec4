@@ -1,5 +1,5 @@
 /**
- * likec4 gen leanix-inventory-snapshot
+ * likec4 gen leanix inventory
  * Fetches a read-only snapshot from the LeanIX API and writes leanix-inventory-snapshot.json.
  * Inbound only; no DSL generation.
  */
@@ -30,7 +30,7 @@ export type LeanixInventorySnapshotHandlerParams = {
 export async function leanixInventorySnapshotHandler(
   params: LeanixInventorySnapshotHandlerParams,
 ): Promise<void> {
-  const logger = createLikeC4Logger('c4:gen:leanix-inventory-snapshot')
+  const logger = createLikeC4Logger('c4:gen:leanix:inventory')
   const timer = startTimer(logger)
   const { outdir, likec4IdAttribute } = params
 

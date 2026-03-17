@@ -71,12 +71,15 @@ export function generateAdrFromReconciliation(
   return lines.join('\n')
 }
 
+/** Options for ADR generation from a drift report (subset of AdrGenerationOptions). */
+export type DriftAdrGenerationOptions = Pick<AdrGenerationOptions, 'title' | 'status'>
+
 /**
  * Generates a short ADR-style markdown from a drift report.
  */
 export function generateAdrFromDriftReport(
   drift: DriftReport,
-  options: { title?: string; status?: string } = {},
+  options: DriftAdrGenerationOptions = {},
 ): string {
   const title = options.title ?? 'LeanIX drift report'
   const status = options.status ?? 'Proposed'

@@ -1,5 +1,6 @@
 /**
  * Built-in generator: LeanIX bridge dry-run.
+ * likec4 gen leanix dry-run [path]
  * Writes manifest.json, leanix-dry-run.json, report.json to out/bridge (or -o/--outdir).
  */
 
@@ -30,7 +31,7 @@ export type LeanixDryRunHandlerParams = {
  * @throws Error when workspace has no project or empty model
  */
 export async function leanixDryRunHandler(params: LeanixDryRunHandlerParams): Promise<void> {
-  const logger = createLikeC4Logger('c4:gen:leanix-dry-run')
+  const logger = createLikeC4Logger('c4:gen:leanix:dry-run')
   const timer = startTimer(logger)
   const { path: workspacePath, outdir, project, useDotBin } = params
 

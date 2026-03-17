@@ -97,7 +97,7 @@ export { buildDriftReport } from './drift-report'
 export type { DriftReport, DriftStatus } from './drift-report'
 
 export { generateAdrFromDriftReport, generateAdrFromReconciliation } from './adr-generation'
-export type { AdrGenerationOptions } from './adr-generation'
+export type { AdrGenerationOptions, DriftAdrGenerationOptions } from './adr-generation'
 
 export { runGovernanceChecks } from './governance-checks'
 export type {

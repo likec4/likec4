@@ -68,7 +68,6 @@ jobs:
           pnpm add \
             ../packages/core/package.tgz \
             ../packages/icons/package.tgz \
-            ../packages/leanix-bridge/package.tgz \
             ../packages/likec4/package.tgz
           pnpm install:chromium
           pnpm bootstrap

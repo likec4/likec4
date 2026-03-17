@@ -46,11 +46,11 @@ function assertE2EArtifacts(dirAbs: string, expect: ExpectLike): void {
 }
 
 test(
-  'LikeC4 CLI - gen leanix-dry-run produces manifest, leanix-dry-run, report',
+  'LikeC4 CLI - gen leanix dry-run produces manifest, leanix-dry-run, report',
   { timeout: 30000 },
   async ({ expect }) => {
     createCleanOutDir(outDirAbs)
-    await $({ cwd: projectRoot })`likec4 gen leanix-dry-run . -o ${outDirAbs} --project ${projectId}`.quiet()
+    await $({ cwd: projectRoot })`likec4 gen leanix dry-run . -o ${outDirAbs} --project ${projectId}`.quiet()
     assertE2EArtifacts(outDirAbs, expect)
   },
 )
@@ -60,7 +60,8 @@ test(
   { timeout: 30000 },
   async ({ expect }) => {
     createCleanOutDir(outDirAbs)
-    await $({ cwd: projectRoot })`likec4 sync leanix . --dry-run -o ${outDirAbs} --project ${projectId}`.quiet()
+    const env = { ...process.env, LEANIX_API_TOKEN: '' }
+    await $({ cwd: projectRoot, env })`likec4 sync leanix . --dry-run -o ${outDirAbs} --project ${projectId}`.quiet()
     assertE2EArtifacts(outDirAbs, expect)
   },
 )

@@ -1,5 +1,5 @@
 /**
- * likec4 gen leanix-reconcile [path]
+ * likec4 gen leanix reconcile [path]
  * Reads manifest.json and leanix-inventory-snapshot.json from outdir, reconciles, writes reconciliation-report.json.
  * Optional: use workspace to build dryRun for name+type matching and ambiguous detection.
  */
@@ -77,7 +77,7 @@ export type LeanixReconcileHandlerParams = {
  * @returns Promise<void>
  */
 export async function leanixReconcileHandler(params: LeanixReconcileHandlerParams): Promise<void> {
-  const logger = createLikeC4Logger('c4:gen:leanix-reconcile')
+  const logger = createLikeC4Logger('c4:gen:leanix:reconcile')
   const timer = startTimer(logger)
   const { path: workspacePath, outdir, project, useDotBin } = params
 
@@ -98,11 +98,12 @@ export async function leanixReconcileHandler(params: LeanixReconcileHandlerParam
     try {
       dryRun = await loadDryRunFromWorkspace(workspacePath, project, useDotBin)
     } catch (err) {
-      logger.warn(
-        `Could not load workspace for dryRun enrichment; proceeding without it: ${
-          err instanceof Error ? err.message : String(err)
-        }`,
-      )
+      const msg = err instanceof Error ? err.message : String(err)
+      if (project != null && project !== '') {
+        logger.error(`Failed to load workspace for dryRun enrichment: ${msg}`)
+        throw err
+      }
+      logger.warn(`Could not load workspace for dryRun enrichment; proceeding without it: ${msg}`)
       dryRun = undefined
     }
 

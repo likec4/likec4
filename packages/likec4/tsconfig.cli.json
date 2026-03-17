@@ -22,12 +22,6 @@
     "paths": {
       "@/vite/*": [
         "./src/vite/*"
-      ],
-      "@likec4/leanix-bridge": [
-        "../leanix-bridge/src/index.ts"
-      ],
-      "@likec4/leanix-bridge/*": [
-        "../leanix-bridge/src/*"
       ]
     }
   },
