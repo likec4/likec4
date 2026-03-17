@@ -1,6 +1,6 @@
 ---
-'@likec4/core': patch
-'@likec4/language-server': patch
+'@likec4/core': minor
+'@likec4/language-server': minor
 ---
 
 Support `metadata` filtering in view predicates
