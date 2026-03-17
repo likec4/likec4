@@ -45,12 +45,12 @@ catalogs:
     starlight-links-validator: ^0.19.2
     starlight-package-managers: ^0.12.0
   cloudflare:
-    "@cloudflare/vite-plugin": ~1.26.1
-    wrangler: ~4.71.0
+    "@cloudflare/vite-plugin": ~1.28.0
+    wrangler: ~4.73.0
   css:
-    "@pandacss/dev": ^1.8.2
-    "@pandacss/preset-panda": ^1.8.2
-    "@pandacss/types": ^1.8.2
+    "@pandacss/dev": ^1.9.0
+    "@pandacss/preset-panda": ^1.9.0
+    "@pandacss/types": ^1.9.0
     "@tailwindcss/vite": ^4.1.18
     postcss: 8.5.8
     tailwindcss: ^4.1.18
@@ -150,7 +150,7 @@ catalogs:
     tinyrainbow: ^3.0.3
     ufo: 1.6.3
   vite:
-    "@vitejs/plugin-react": ^5.1.4
+    "@vitejs/plugin-react": ^5.2.0
     birpc: ^4.0.0
     rollup: ^4.59.0
     vite: ^7.3.1
