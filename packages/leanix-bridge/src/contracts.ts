@@ -1,13 +1,26 @@
 /**
  * Canonical bridge contracts for LikeC4 ↔ LeanIX interoperability.
  * LikeC4 remains the semantic source of truth; external IDs are provider-scoped.
+ * Uses readFileSync (not require) so when bundled into likec4 CLI the bundler
+ * does not emit require('../package.json') which fails in the tarball layout.
  */
 
-import { createRequire } from 'node:module'
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const require = createRequire(import.meta.url)
+const _dir = dirname(fileURLToPath(import.meta.url))
+function readVersion(): string {
+  try {
+    const pkg = JSON.parse(readFileSync(join(_dir, '..', 'package.json'), 'utf8')) as { version?: string }
+    return pkg.version ?? '0.1.0'
+  } catch {
+    const pkg = JSON.parse(readFileSync(join(_dir, '..', '..', 'package.json'), 'utf8')) as { version?: string }
+    return pkg.version ?? '0.1.0'
+  }
+}
 /** Single source of truth: must match package.json version. */
-export const BRIDGE_VERSION: string = (require('../package.json') as { version?: string }).version ?? '0.1.0'
+export const BRIDGE_VERSION: string = readVersion()
 
 /** Semantic anchor: LikeC4 FQN (e.g. cloud.backend.api) */
 export type CanonicalId = string
