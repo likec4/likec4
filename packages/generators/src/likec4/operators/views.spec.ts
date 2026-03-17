@@ -154,7 +154,7 @@ describe('view', () => {
     ).toMatchInlineSnapshot(`
       "views {
         view index {
-          autoLayout RightLeft 101 102
+          autoLayout RightLeft
         }
       }"
     `)
@@ -219,20 +219,12 @@ describe('view', () => {
     ).toMatchInlineSnapshot(`
       "views {
         view index {
-          include
-            *,
-            cloud,
-            * -> cloud._
-          
+          include *
           style cloud.backend {
             iconPosition right
             multiple true
           }
-          include
-            * -> *,
-            * <-> cloud._,
-            cloud.backend.api
-          
+          include * -> *
           style cloud.*, cloud._ {
             shape bucket
             color primary

@@ -1,3 +1,11 @@
+import {
+  type LikeC4ProjectConfig,
+  type VscodeURI,
+  isLikeC4JsonConfig,
+  isLikeC4NonJsonConfig,
+  LikeC4ProjectJsonConfigSchema,
+  validateProjectConfig,
+} from '@likec4/config'
 import { invariant } from '@likec4/core'
 import { logger, wrapError } from '@likec4/log'
 import { bundleRequire } from 'bundle-require'
@@ -8,9 +16,6 @@ import * as fs from 'node:fs/promises'
 import { basename, dirname, resolve } from 'node:path'
 import { hasAtLeast, isNonNullish, last, omit } from 'remeda'
 import z from 'zod/v4'
-import { isLikeC4JsonConfig, isLikeC4NonJsonConfig } from '../filenames'
-import type { LikeC4ProjectConfig, VscodeURI } from '../schema'
-import { LikeC4ProjectJsonConfigSchema, validateProjectConfig } from '../schema'
 
 const JsonConfigInputSchema = LikeC4ProjectJsonConfigSchema.pick({
   extends: true,

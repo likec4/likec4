@@ -816,8 +816,12 @@ export function guard(
   ...ops: Ops<any>
 ) {
   return operation('guard', ({ ctx, out }) => {
-    if ('safeParse' in condition) {
-      const parsed = condition.safeParse(ctx)
+    if (
+      condition !== null &&
+      typeof condition === 'object' &&
+      'safeParse' in condition
+    ) {
+      const parsed = (condition as z.ZodSchema).safeParse(ctx)
       if (parsed.success) {
         executeOnCtx({ ctx: parsed.data, out }, ops)
       } else {
@@ -825,6 +829,7 @@ export function guard(
       }
       return
     }
+    if ((condition as unknown) === false || condition == null) return
     invariant(typeof condition === 'function')
     if (condition(ctx)) {
       executeOnCtx({ ctx, out }, ops)

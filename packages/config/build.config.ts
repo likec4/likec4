@@ -7,6 +7,9 @@ export default defineBuildConfig({
     './src/node/index.ts',
   ],
   hooks: {
+    rolldownConfig: (config) => {
+      config.external = [...(config.external as string[]), '@likec4/config']
+    },
     'end': async () => {
       await spawn('pnpm', ['run', 'generate'], {
         preferLocal: true,

@@ -12,6 +12,8 @@ const __dirname = import.meta.dirname
 const packages = (packageName: string, ...paths: string[]) =>
   resolve(__dirname, '..', 'packages', packageName, ...paths)
 const src = (packageName: string) => packages(packageName, 'src')
+const distDir = (packageName: string) => packages(packageName, 'dist')
+const distEntry = (packageName: string, entry = 'index.mjs') => resolve(distDir(packageName), entry)
 
 const sharedConfig = defineConfig({
   resolve: {
@@ -19,7 +21,9 @@ const sharedConfig = defineConfig({
     // Seems vitest doesn't resolve conditions (did have time to investigate), so we add aliases for all packages
     alias: {
       '@likec4/core': src('core'),
-      '@likec4/config': src('config'),
+      // More specific first so subpath resolves
+      '@likec4/config/node': resolve(packages('config', 'dist', 'node')),
+      '@likec4/config': distEntry('config'),
       '@likec4/diagram': src('diagram'),
       '@likec4/generators': src('generators'),
       '@likec4/language-server': src('language-server'),

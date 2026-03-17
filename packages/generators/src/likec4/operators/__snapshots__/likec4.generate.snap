@@ -188,17 +188,12 @@ views {
       markdown
     '''
     
-    include
-      *,
-      cloud.frontend.dashboard,
-      * -> cloud.frontend._
+    include *
   }
   
   deployment view prod {
     title 'prod'
     
-    include
-      customer.instance,
-      prod.eu.zone1.ui
+    include customer.instance
   }
 }

@@ -6,10 +6,13 @@ export type {
   LikeC4ProjectConfigInput,
   LikeC4ProjectJsonConfig,
   LocateResult,
+  VscodeURI,
 } from './schema'
 
 export {
   LikeC4ProjectConfigOps,
+  LikeC4ProjectJsonConfigSchema,
+  validateProjectConfig,
 } from './schema'
 
 export type {
