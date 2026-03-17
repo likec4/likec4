@@ -135,7 +135,6 @@ PR_*.md
 bot-reply.md
 
 # Documentos de apoio em docs/ (reviews, planos, refactors, validações — não oficiais)
-docs/PR-*-REVIEW.md
 docs/PR-*.md
 docs/PLAN-*.md
 docs/REVIEW-*.md

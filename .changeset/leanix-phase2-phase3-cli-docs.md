@@ -8,8 +8,8 @@
 feat(leanix-bridge): Phase 2 & 3, CLI, tooling docs (Draw.io + CLI)
 
 **@likec4/leanix-bridge**
-- Phase 2: `leanixInventorySnapshot`, `reconcile` (inbound)
-- Phase 3: `buildDriftReport`, `buildImpactReport`, `generateAdrReport`, `runGovernanceChecks`
+- Phase 2: `fetchLeanixInventorySnapshot`, `reconcileInventoryWithManifest` (inbound)
+- Phase 3: `buildDriftReport`, `impactReportFromSyncPlan`, `generateAdrFromReconciliation`, `generateAdrFromDriftReport`, `runGovernanceChecks`
 - Refactors: sync-to-leanix, to-bridge-manifest, to-leanix-inventory-dry-run, report, leanix-api-client, drawio-leanix-roundtrip
 
 **likec4 (CLI)**

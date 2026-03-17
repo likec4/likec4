@@ -36,9 +36,14 @@ export async function leanixInventorySnapshotHandler(
 
   try {
     const client = requireLeanixClient()
-    const snapshot = await fetchLeanixInventorySnapshot(client, {
-      ...(likec4IdAttribute != null ? { likec4IdAttribute } : {}),
-    })
+    const opts: { likec4IdAttribute?: string } = {}
+    if (
+      typeof likec4IdAttribute === 'string' &&
+      likec4IdAttribute.trim() !== ''
+    ) {
+      opts.likec4IdAttribute = likec4IdAttribute.trim()
+    }
+    const snapshot = await fetchLeanixInventorySnapshot(client, opts)
 
     await mkdir(outdir, { recursive: true })
     const snapshotPath = resolve(outdir, SNAPSHOT_FILENAME)

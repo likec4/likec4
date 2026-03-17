@@ -40,12 +40,11 @@ function buildCheck(
   passed: boolean,
   failedMessage?: string,
 ): GovernanceCheckResult {
-  return {
-    id,
-    name,
-    passed,
-    ...(passed ? {} : failedMessage !== undefined ? { message: failedMessage } : {}),
+  const result: GovernanceCheckResult = { id, name, passed }
+  if (!passed && failedMessage !== undefined) {
+    result.message = failedMessage
   }
+  return result
 }
 
 /**

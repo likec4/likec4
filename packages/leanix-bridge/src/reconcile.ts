@@ -4,7 +4,7 @@
  * No DSL generation; read-only comparison.
  */
 
-import type { BridgeManifest, CanonicalId } from './contracts'
+import type { BridgeManifest, CanonicalId, ManifestEntity } from './contracts'
 import type {
   LeanixFactSheetSnapshotItem,
   LeanixInventorySnapshot,
@@ -59,6 +59,74 @@ const LEANIX_PROVIDER = 'leanix' as const
 /** Separator for name+type composite key (G25: avoid magic character). */
 const NAME_TYPE_SEP = '\0'
 
+/** Tries to match by manifest entity's external.leanix.factSheetId; returns match or null. */
+function tryMatchByManifestFactSheetId(
+  entity: ManifestEntity,
+  canonicalId: CanonicalId,
+  snapshotById: Map<string, LeanixFactSheetSnapshotItem>,
+  usedFactSheetIds: Set<string>,
+): MatchedPair | null {
+  const leanixExternal = entity.external?.[LEANIX_PROVIDER]
+  const manifestFactSheetId = leanixExternal?.factSheetId ?? leanixExternal?.externalId
+  if (manifestFactSheetId == null) return null
+  const fs = snapshotById.get(manifestFactSheetId)
+  if (!fs) return null
+  usedFactSheetIds.add(fs.id)
+  return { canonicalId, factSheetId: fs.id, name: fs.name, type: fs.type }
+}
+
+/** Tries to match by snapshot fact sheet's likec4Id === canonicalId; returns match or null. */
+function tryMatchByLikec4Id(
+  canonicalId: CanonicalId,
+  snapshotByLikec4Id: Map<string, LeanixFactSheetSnapshotItem>,
+  usedFactSheetIds: Set<string>,
+): MatchedPair | null {
+  const byLikec4 = snapshotByLikec4Id.get(canonicalId)
+  if (!byLikec4 || usedFactSheetIds.has(byLikec4.id)) return null
+  usedFactSheetIds.add(byLikec4.id)
+  return { canonicalId, factSheetId: byLikec4.id, name: byLikec4.name, type: byLikec4.type }
+}
+
+/** Resolves match by name+type (or pushes to unmatchedInLikec4 / ambiguous). */
+function resolveByNameAndType(
+  canonicalId: CanonicalId,
+  entityName: string | undefined,
+  entityType: string | undefined,
+  snapshotByNameAndType: Map<string, LeanixFactSheetSnapshotItem[]>,
+  usedFactSheetIds: Set<string>,
+  matched: MatchedPair[],
+  unmatchedInLikec4: UnmatchedInLikec4[],
+  ambiguous: AmbiguousMatch[],
+): void {
+  const nameTypeKey = `${entityName ?? canonicalId}${NAME_TYPE_SEP}${entityType ?? ''}`
+  const candidates = snapshotByNameAndType.get(nameTypeKey)?.filter(f => !usedFactSheetIds.has(f.id)) ?? []
+  if (candidates.length === 0) {
+    unmatchedInLikec4.push({
+      canonicalId,
+      ...(entityName !== undefined ? { name: entityName } : {}),
+      ...(entityType !== undefined ? { type: entityType } : {}),
+    })
+  } else if (candidates.length === 1) {
+    const candidate = candidates[0]
+    if (candidate) {
+      matched.push({
+        canonicalId,
+        factSheetId: candidate.id,
+        name: candidate.name,
+        type: candidate.type,
+      })
+      usedFactSheetIds.add(candidate.id)
+    }
+  } else {
+    ambiguous.push({
+      canonicalId,
+      ...(entityName !== undefined ? { name: entityName } : {}),
+      ...(entityType !== undefined ? { type: entityType } : {}),
+      candidateFactSheetIds: candidates.map(c => c.id),
+    })
+  }
+}
+
 export interface ReconcileOptions {
   generatedAt?: string
   /** When provided, name+type matching and ambiguous detection use dry-run fact sheet names/types. */
@@ -98,65 +166,34 @@ export function reconcileInventoryWithManifest(
   const usedFactSheetIds = new Set<string>()
 
   for (const [canonicalId, entity] of Object.entries(manifest.entities)) {
-    const leanixExternal = entity.external?.[LEANIX_PROVIDER]
-    const manifestFactSheetId = leanixExternal?.factSheetId ?? leanixExternal?.externalId
-
-    if (manifestFactSheetId != null) {
-      const fs = snapshotById.get(manifestFactSheetId)
-      if (fs) {
-        matched.push({
-          canonicalId,
-          factSheetId: fs.id,
-          name: fs.name,
-          type: fs.type,
-        })
-        usedFactSheetIds.add(fs.id)
-        continue
-      }
-    }
-
-    const byLikec4 = snapshotByLikec4Id.get(canonicalId)
-    if (byLikec4 && !usedFactSheetIds.has(byLikec4.id)) {
-      matched.push({
-        canonicalId,
-        factSheetId: byLikec4.id,
-        name: byLikec4.name,
-        type: byLikec4.type,
-      })
-      usedFactSheetIds.add(byLikec4.id)
+    const byManifest = tryMatchByManifestFactSheetId(
+      entity,
+      canonicalId,
+      snapshotById,
+      usedFactSheetIds,
+    )
+    if (byManifest) {
+      matched.push(byManifest)
       continue
     }
-
+    const byLikec4 = tryMatchByLikec4Id(canonicalId, snapshotByLikec4Id, usedFactSheetIds)
+    if (byLikec4) {
+      matched.push(byLikec4)
+      continue
+    }
     const dryRunFs = dryRunByCanonicalId?.get(canonicalId)
     const entityName = dryRunFs?.name ?? undefined
     const entityType = dryRunFs?.type ?? undefined
-    const nameTypeKey = `${entityName ?? canonicalId}${NAME_TYPE_SEP}${entityType ?? ''}`
-    const candidates = snapshotByNameAndType.get(nameTypeKey)?.filter(f => !usedFactSheetIds.has(f.id)) ?? []
-
-    if (candidates.length === 0) {
-      unmatchedInLikec4.push({
-        canonicalId,
-        ...(entityName !== undefined ? { name: entityName } : {}),
-        ...(entityType !== undefined ? { type: entityType } : {}),
-      })
-    } else if (candidates.length === 1) {
-      const candidate = candidates[0]
-      if (!candidate) continue
-      matched.push({
-        canonicalId,
-        factSheetId: candidate.id,
-        name: candidate.name,
-        type: candidate.type,
-      })
-      usedFactSheetIds.add(candidate.id)
-    } else {
-      ambiguous.push({
-        canonicalId,
-        ...(entityName !== undefined ? { name: entityName } : {}),
-        ...(entityType !== undefined ? { type: entityType } : {}),
-        candidateFactSheetIds: candidates.map(c => c.id),
-      })
-    }
+    resolveByNameAndType(
+      canonicalId,
+      entityName,
+      entityType,
+      snapshotByNameAndType,
+      usedFactSheetIds,
+      matched,
+      unmatchedInLikec4,
+      ambiguous,
+    )
   }
 
   const unmatchedInLeanix: UnmatchedInLeanix[] = snapshot.factSheets

@@ -77,7 +77,7 @@ export async function leanixReconcileHandler(params: LeanixReconcileHandlerParam
         dryRun = artifacts.dryRun
       }
     } catch (err) {
-      logger.debug(
+      logger.warn(
         `Could not load workspace for dryRun enrichment; proceeding without it: ${
           err instanceof Error ? err.message : String(err)
         }`,
