@@ -1,7 +1,7 @@
 ---
 "@likec4/leanix-bridge": minor
 "@likec4/generators": patch
-"@likec4/likec4": patch
+"likec4": patch
 ---
 
 LeanIX bridge (dry-run) and Draw.io bridge-managed export profile
@@ -18,5 +18,5 @@ LeanIX bridge (dry-run) and Draw.io bridge-managed export profile
 - New options: `profile`, `projectId`, `leanixFactSheetTypeByKind`
 - Export type `DrawioExportProfile`
 
-**@likec4/likec4**
+**likec4**
 - CLI: `likec4 export drawio --profile leanix` to emit bridge-managed .drawio files
