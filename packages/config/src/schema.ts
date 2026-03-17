@@ -298,7 +298,7 @@ export type LikeC4ProjectConfigInput = LikeC4ProjectJsonConfig & {
  * we validate landingPage once with LandingPageSchema and merge onto the result.
  */
 export function validateProjectConfig<C extends Record<string, unknown>>(config: C): LikeC4ProjectConfig {
-  const inputLandingPage = config.landingPage
+  const inputLandingPage = config['landingPage']
   let validatedLandingPage: z.infer<typeof LandingPageSchema> | null = null
   if (inputLandingPage != null) {
     const lpResult = LandingPageSchema.safeParse(inputLandingPage)
@@ -315,15 +315,15 @@ export function validateProjectConfig<C extends Record<string, unknown>>(config:
   if (validatedLandingPage !== null) {
     data = { ...data, landingPage: validatedLandingPage }
   }
+  const generatorsInput = config['generators']
   if (
-    'generators' in config &&
-    config.generators != null &&
-    typeof config.generators === 'object' &&
-    !Array.isArray(config.generators)
+    generatorsInput != null &&
+    typeof generatorsInput === 'object' &&
+    !Array.isArray(generatorsInput)
   ) {
-    const genParsed = GeneratorsSchema.safeParse(config.generators)
+    const genParsed = GeneratorsSchema.safeParse(generatorsInput)
     if (genParsed.success) {
-      return { ...data, generators: genParsed.data }
+      return { ...data, generators: genParsed.data as Record<string, GeneratorFn> }
     }
   }
   return data
