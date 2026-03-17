@@ -727,11 +727,16 @@ function isValidFqn(s: string): boolean {
   return segments.every(seg => /^[a-zA-Z0-9_-]+$/.test(seg))
 }
 
-/** Depth of vertex from root (0 = root or parent not in diagram). */
-function vertexDepth(v: DrawioCell, idToVertex: Map<string, DrawioCell>): number {
-  return v.parent == null || !idToVertex.has(v.parent)
-    ? 0
-    : 1 + vertexDepth(idToVertex.get(v.parent)!, idToVertex)
+/** Depth of vertex from root (0 = root or parent not in diagram). Cycle-safe: cycles in parent graph return 0. */
+function vertexDepth(
+  v: DrawioCell,
+  idToVertex: Map<string, DrawioCell>,
+  visited: Set<string> = new Set(),
+): number {
+  if (visited.has(v.id)) return 0
+  visited.add(v.id)
+  if (v.parent == null || !idToVertex.has(v.parent)) return 0
+  return 1 + vertexDepth(idToVertex.get(v.parent)!, idToVertex, visited)
 }
 
 /** True when bridgeId is valid FQN and matches parent chain (root or prefix). */
