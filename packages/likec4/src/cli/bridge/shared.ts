@@ -5,9 +5,9 @@
 
 import type { AnyLikeC4Model } from '@likec4/core/model'
 import {
+  buildBridgeReport,
   toBridgeManifest,
   toLeanixInventoryDryRun,
-  toReport,
 } from '@likec4/leanix-bridge'
 import type {
   BridgeManifest,
@@ -51,7 +51,7 @@ export type BridgeArtifacts = {
 export function buildBridgeArtifacts(bridgeModel: BridgeModelInput): BridgeArtifacts {
   const manifest = toBridgeManifest(bridgeModel, { mappingProfile: DEFAULT_MAPPING_PROFILE })
   const dryRun = toLeanixInventoryDryRun(bridgeModel, { mappingProfile: DEFAULT_MAPPING_PROFILE })
-  const report = toReport(manifest, dryRun)
+  const report = buildBridgeReport(manifest, dryRun)
   return { manifest, dryRun, report }
 }
 

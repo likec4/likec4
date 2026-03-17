@@ -9,6 +9,7 @@
 export {
   BRIDGE_MANIFEST_VERSION,
   BRIDGE_VERSION,
+  LEANIX_PROVIDER,
 } from './contracts'
 export type {
   BridgeManifest,
@@ -50,7 +51,7 @@ export type {
   ToLeanixInventoryDryRunOptions,
 } from './to-leanix-inventory-dry-run'
 
-export { toReport } from './report'
+export { buildBridgeReport } from './report'
 export type { BridgeReport } from './report'
 
 export { LeanixApiClient } from './leanix-api-client'

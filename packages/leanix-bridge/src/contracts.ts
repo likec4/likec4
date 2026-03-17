@@ -77,3 +77,6 @@ export interface BridgeManifest {
 }
 
 export const BRIDGE_MANIFEST_VERSION = '1.0'
+
+/** Provider identifier for LeanIX (single source of truth for external.leanix). */
+export const LEANIX_PROVIDER = 'leanix' as const

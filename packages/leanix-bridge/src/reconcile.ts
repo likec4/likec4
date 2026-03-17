@@ -4,7 +4,7 @@
  * No DSL generation; read-only comparison.
  */
 
-import type { BridgeManifest, CanonicalId, ManifestEntity } from './contracts'
+import { type BridgeManifest, type CanonicalId, type ManifestEntity, LEANIX_PROVIDER } from './contracts'
 import type {
   LeanixFactSheetSnapshotItem,
   LeanixInventorySnapshot,
@@ -55,7 +55,6 @@ export interface ReconciliationResult {
   }
 }
 
-const LEANIX_PROVIDER = 'leanix' as const
 /** Separator for name+type composite key (G25: avoid magic character). */
 const NAME_TYPE_SEP = '\0'
 

@@ -4,6 +4,7 @@
  */
 
 import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import type { LeanixApiClient } from '@likec4/leanix-bridge'
 import { planSyncToLeanix, syncToLeanix } from '@likec4/leanix-bridge'
 import { writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
@@ -12,6 +13,7 @@ import { createLikeC4Logger, startTimer } from '../../logger'
 import { LikeC4Model } from '../../model'
 import { createLeanixClientFromEnv } from '../bridge/leanix-client'
 import {
+  type BridgeArtifacts,
   asBridgeModel,
   BRIDGE_ARTIFACT_NAMES,
   buildBridgeArtifacts,
@@ -30,6 +32,44 @@ export type SyncLeanixArgs = {
   useDotBin: boolean
   dryRun: boolean
   apply: boolean
+}
+
+export type SyncLogger = { info: (msg: string) => void; error: (msg: string) => void }
+
+/** Writes sync-plan.json from dry-run and client; throws when plan has errors. */
+export async function runSyncPlan(
+  outdir: string,
+  dryRun: BridgeArtifacts['dryRun'],
+  client: LeanixApiClient,
+  logger: SyncLogger,
+): Promise<void> {
+  const plan = await planSyncToLeanix(dryRun, client, { idempotent: true })
+  const planPath = resolve(outdir, SYNC_PLAN_FILENAME)
+  await writeFile(planPath, JSON.stringify(plan, null, 2))
+  logger.info(`${k.dim('generated')} ${relative(process.cwd(), planPath)}`)
+  if (plan.errors.length > 0) {
+    const message = `${plan.errors.length} plan error(s): ${plan.errors.join('; ')}`
+    logger.error(message)
+    throw new Error(message)
+  }
+}
+
+/** Runs live sync and writes updated manifest; throws when sync has errors. */
+export async function runSyncApply(
+  outdir: string,
+  artifacts: BridgeArtifacts,
+  client: LeanixApiClient,
+  logger: SyncLogger,
+): Promise<void> {
+  const result = await syncToLeanix(artifacts.manifest, artifacts.dryRun, client, { idempotent: true })
+  const manifestPath = resolve(outdir, BRIDGE_ARTIFACT_NAMES.manifest)
+  await writeFile(manifestPath, JSON.stringify(result.manifest, null, 2))
+  logger.info(`${k.dim('generated')} ${relative(process.cwd(), manifestPath)} (after sync)`)
+  if (result.errors.length > 0) {
+    const message = `${result.errors.length} sync error(s): ${result.errors.join('; ')}`
+    logger.error(message)
+    throw new Error(message)
+  }
 }
 
 /**
@@ -72,15 +112,7 @@ export async function runSyncLeanix(args: SyncLeanixArgs): Promise<void> {
 
     if (dryRun || !apply) {
       if (client) {
-        const plan = await planSyncToLeanix(artifacts.dryRun, client, { idempotent: true })
-        const planPath = resolve(outdir, SYNC_PLAN_FILENAME)
-        await writeFile(planPath, JSON.stringify(plan, null, 2))
-        logger.info(`${k.dim('generated')} ${relative(process.cwd(), planPath)}`)
-        if (plan.errors.length > 0) {
-          const message = `${plan.errors.length} plan error(s): ${plan.errors.join('; ')}`
-          logger.error(message)
-          throw new Error(message)
-        }
+        await runSyncPlan(outdir, artifacts.dryRun, client, logger)
       } else {
         logger.info(`${k.dim('skip')} sync-plan (set LEANIX_API_TOKEN to include plan)`)
       }
@@ -91,17 +123,7 @@ export async function runSyncLeanix(args: SyncLeanixArgs): Promise<void> {
         logger.error(ERR_LEANIX_TOKEN_REQUIRED)
         throw new Error(ERR_LEANIX_TOKEN_REQUIRED)
       }
-      const result = await syncToLeanix(artifacts.manifest, artifacts.dryRun, client, {
-        idempotent: true,
-      })
-      const manifestPath = resolve(outdir, BRIDGE_ARTIFACT_NAMES.manifest)
-      await writeFile(manifestPath, JSON.stringify(result.manifest, null, 2))
-      logger.info(`${k.dim('generated')} ${relative(process.cwd(), manifestPath)} (after sync)`)
-      if (result.errors.length > 0) {
-        const message = `${result.errors.length} sync error(s): ${result.errors.join('; ')}`
-        logger.error(message)
-        throw new Error(message)
-      }
+      await runSyncApply(outdir, artifacts, client, logger)
     }
   } finally {
     timer.stopAndLog()

@@ -51,9 +51,9 @@ You can still wire the bridge in your LikeC4 config:
 // likec4.config.ts
 import { defineConfig } from '@likec4/config'
 import {
+  buildBridgeReport,
   toBridgeManifest,
   toLeanixInventoryDryRun,
-  toReport,
 } from '@likec4/leanix-bridge'
 
 export default defineConfig({
@@ -62,7 +62,7 @@ export default defineConfig({
     'my-leanix': async ({ likec4model, ctx }) => {
       const manifest = toBridgeManifest(likec4model, { mappingProfile: 'default' })
       const dryRun = toLeanixInventoryDryRun(likec4model, { mappingProfile: 'default' })
-      const report = toReport(manifest, dryRun)
+      const report = buildBridgeReport(manifest, dryRun)
 
       await ctx.write({ path: ['out', 'bridge', 'manifest.json'], content: JSON.stringify(manifest, null, 2) })
       await ctx.write({ path: ['out', 'bridge', 'leanix-dry-run.json'], content: JSON.stringify(dryRun, null, 2) })
@@ -117,7 +117,7 @@ const mapping = manifestToDrawioLeanixMapping(result.manifest)
 
 - **`toBridgeManifest(model, options?)`** – builds the identity manifest (canonical IDs + placeholder external IDs).
 - **`toLeanixInventoryDryRun(model, options?)`** – builds LeanIX-shaped fact sheets and relations (no live IDs).
-- **`toReport(manifest, leanixDryRun)`** – builds a summary report with counts and artifact names.
+- **`buildBridgeReport(manifest, leanixDryRun)`** – builds a summary report with counts and artifact names.
 - **`LeanixApiClient(config)`** – GraphQL client with Bearer auth and rate limiting (`apiToken`, `baseUrl?`, `requestDelayMs?`).
 - **`planSyncToLeanix(leanixDryRun, client, options?)`** – queries LeanIX (read-only) and returns a **sync plan** (`SyncPlan`): per–fact sheet and per-relation actions (`create` / `update`), summary counts, and any query errors. Use before `syncToLeanix` to review what would change. Options: `idempotent?`, `generatedAt?`.
 - **`syncToLeanix(manifest, leanixDryRun, client, options?)`** – syncs dry-run to LeanIX API; returns updated manifest with `external.leanix.factSheetId` and relation IDs. Options: `idempotent?`, `likec4IdAttribute?`.

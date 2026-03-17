@@ -1,8 +1,14 @@
 import { mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs'
 import { join, resolve } from 'node:path'
-import type { Expect } from 'vitest'
 import { test } from 'vitest'
 import { $ } from 'zx'
+
+/** Minimal expect-like API used by assertE2EArtifacts (avoids depending on vitest's internal Expect type). */
+type ExpectLike = (value: unknown) => {
+  toContain: (item: string) => void
+  toHaveProperty: (key: string) => void
+  toBe: (value: unknown) => void
+}
 
 const outDir = 'test-results/bridge'
 const sourceDir = 'src/likec4'
@@ -17,7 +23,7 @@ function createCleanOutDir(dirAbs: string): void {
 }
 
 /** Asserts that bridge artifacts (manifest.json, leanix-dry-run.json, report.json) exist and have expected shape. */
-function assertE2EArtifacts(dirAbs: string, expect: Expect): void {
+function assertE2EArtifacts(dirAbs: string, expect: ExpectLike): void {
   const entries = readdirSync(dirAbs, { withFileTypes: true }).map(e => e.name).sort()
   expect(entries).toContain('manifest.json')
   expect(entries).toContain('leanix-dry-run.json')

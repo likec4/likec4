@@ -5,9 +5,9 @@
 
 import type { BridgeModelInput } from '@likec4/leanix-bridge'
 import {
+  buildBridgeReport,
   toBridgeManifest,
   toLeanixInventoryDryRun,
-  toReport,
 } from '@likec4/leanix-bridge'
 import { describe, expect, it } from 'vitest'
 import { buildBridgeArtifacts } from '../bridge/shared'
@@ -69,7 +69,7 @@ describe('LeanIX bridge dry-run', () => {
   it('produces report consistent with manifest and dry-run', () => {
     const manifest = toBridgeManifest(bridgeModel, { mappingProfile: 'default' })
     const dryRun = toLeanixInventoryDryRun(bridgeModel, { mappingProfile: 'default' })
-    const report = toReport(manifest, dryRun)
+    const report = buildBridgeReport(manifest, dryRun)
     expect(report.counts.factSheets).toBe(2)
     expect(report.counts.leanixRelations).toBe(1)
   })

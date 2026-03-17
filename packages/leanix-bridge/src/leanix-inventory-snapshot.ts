@@ -94,6 +94,23 @@ type FactSheetNode = {
   factSheetAttributes?: Array<{ key?: string; value?: string }>
 }
 
+/** Maps a GraphQL node to LeanixFactSheetSnapshotItem; returns null when node has no id. */
+function mapNodeToFactSheetItem(
+  node: FactSheetNode | undefined,
+  likec4IdAttribute: string | undefined,
+): LeanixFactSheetSnapshotItem | null {
+  if (!node?.id) return null
+  const likec4Id = likec4IdAttribute != null && Array.isArray(node.factSheetAttributes)
+    ? node.factSheetAttributes.find((a: { key?: string; value?: string }) => a.key === likec4IdAttribute)?.value
+    : undefined
+  return {
+    id: node.id,
+    name: node.name ?? '',
+    type: node.type ?? '',
+    ...(likec4Id ? { likec4Id } : {}),
+  }
+}
+
 async function fetchAllFactSheets(
   client: LeanixApiClient,
   opts: { likec4IdAttribute?: string; maxFactSheets: number },
@@ -151,17 +168,8 @@ async function fetchAllFactSheets(
 
     for (const edge of edges) {
       if (result.length >= opts.maxFactSheets) break
-      const node = edge.node
-      if (!node?.id) continue
-      const likec4Id = likec4IdAttribute != null && Array.isArray(node.factSheetAttributes)
-        ? node.factSheetAttributes.find((a: { key?: string; value?: string }) => a.key === likec4IdAttribute)?.value
-        : undefined
-      result.push({
-        id: node.id,
-        name: node.name ?? '',
-        type: node.type ?? '',
-        ...(likec4Id ? { likec4Id } : {}),
-      })
+      const item = mapNodeToFactSheetItem(edge.node, likec4IdAttribute)
+      if (item) result.push(item)
     }
 
     hasNextPage = pageInfo?.hasNextPage === true && result.length < opts.maxFactSheets

@@ -4,9 +4,7 @@
  * Use after syncToLeanix to get a mapping for re-export or for annotating diagrams.
  */
 
-import type { BridgeManifest, CanonicalId } from './contracts'
-
-const LEANIX_PROVIDER = 'leanix' as const
+import { type BridgeManifest, type CanonicalId, LEANIX_PROVIDER } from './contracts'
 
 /** Mapping from LikeC4 canonical id to LeanIX identity (fact sheet id or externalId for Draw.io cells or export). */
 export interface DrawioLeanixMapping {

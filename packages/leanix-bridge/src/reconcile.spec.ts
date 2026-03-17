@@ -132,4 +132,28 @@ describe('reconcileInventoryWithManifest', () => {
     expect(result.matched[0]!.canonicalId).toBe('cloud')
     expect(result.matched[0]!.factSheetId).toBe('fs-cloud')
   })
+
+  it('empty manifest: zero matched, zero unmatched in LikeC4, all snapshot fact sheets in unmatchedInLeanix', () => {
+    const manifest = createMinimalManifest({ entities: {} })
+    const snapshot = createMinimalSnapshot([
+      { id: 'fs-1', name: 'Cloud', type: 'Application' },
+      { id: 'fs-2', name: 'API', type: 'ITComponent' },
+    ])
+    const result = reconcileInventoryWithManifest(snapshot, manifest)
+
+    expect(result.summary.matched).toBe(0)
+    expect(result.summary.unmatchedInLikec4).toBe(0)
+    expect(result.summary.unmatchedInLeanix).toBe(2)
+    expect(result.unmatchedInLeanix.map(u => u.factSheetId)).toEqual(['fs-1', 'fs-2'])
+  })
+
+  it('empty snapshot: zero matched, all manifest entities in unmatchedInLikec4, zero unmatchedInLeanix', () => {
+    const manifest = createMinimalManifest()
+    const snapshot = createMinimalSnapshot([])
+    const result = reconcileInventoryWithManifest(snapshot, manifest)
+
+    expect(result.summary.matched).toBe(0)
+    expect(result.summary.unmatchedInLikec4).toBe(3)
+    expect(result.summary.unmatchedInLeanix).toBe(0)
+  })
 })

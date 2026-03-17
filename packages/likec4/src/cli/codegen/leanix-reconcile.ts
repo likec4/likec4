@@ -19,6 +19,50 @@ const RECONCILE_REPORT_FILENAME = 'reconciliation-report.json'
 const ARTIFACT_MANIFEST = 'manifest.json'
 const SNAPSHOT_FILENAME = 'leanix-inventory-snapshot.json'
 
+/**
+ * Reads and validates manifest.json and leanix-inventory-snapshot.json from outdir.
+ * @throws when files are missing, invalid JSON, or fail type guards.
+ */
+export async function readManifestAndSnapshot(outdir: string): Promise<{
+  manifest: BridgeManifest
+  snapshot: LeanixInventorySnapshot
+}> {
+  const manifestPath = resolve(outdir, ARTIFACT_MANIFEST)
+  const snapshotPath = resolve(outdir, SNAPSHOT_FILENAME)
+  const [manifestRaw, snapshotRaw] = await Promise.all([
+    readFile(manifestPath, 'utf-8'),
+    readFile(snapshotPath, 'utf-8'),
+  ])
+  const parsedManifest: unknown = JSON.parse(manifestRaw)
+  const parsedSnapshot: unknown = JSON.parse(snapshotRaw)
+  if (!isBridgeManifest(parsedManifest)) {
+    throw new Error('Invalid manifest format: missing manifestVersion, projectId, entities, relations, or views')
+  }
+  if (!isLeanixInventorySnapshot(parsedSnapshot)) {
+    throw new Error('Invalid snapshot format: missing factSheets or relations arrays')
+  }
+  return { manifest: parsedManifest, snapshot: parsedSnapshot }
+}
+
+/**
+ * Loads workspace and builds dry-run artifact for name+type matching. Returns undefined on any error (no workspace, empty model, etc).
+ */
+export async function loadDryRunFromWorkspace(
+  workspacePath: string,
+  project: string | undefined,
+  useDotBin: boolean,
+): Promise<LeanixInventoryDryRun | undefined> {
+  await using likec4 = await fromWorkspace(workspacePath, {
+    graphviz: useDotBin ? 'binary' : 'wasm',
+    watch: false,
+  })
+  const { projectId } = ensureProject(likec4, project)
+  const model = await likec4.layoutedModel(projectId)
+  if (model === LikeC4Model.EMPTY) return undefined
+  const artifacts = buildBridgeArtifacts(asBridgeModel(model))
+  return artifacts.dryRun
+}
+
 export type LeanixReconcileHandlerParams = {
   path: string
   outdir: string
@@ -37,27 +81,13 @@ export async function leanixReconcileHandler(params: LeanixReconcileHandlerParam
   const timer = startTimer(logger)
   const { path: workspacePath, outdir, project, useDotBin } = params
 
-  const manifestPath = resolve(outdir, ARTIFACT_MANIFEST)
-  const snapshotPath = resolve(outdir, SNAPSHOT_FILENAME)
-
   try {
     let manifest: BridgeManifest
     let snapshot: LeanixInventorySnapshot
     try {
-      const [manifestRaw, snapshotRaw] = await Promise.all([
-        readFile(manifestPath, 'utf-8'),
-        readFile(snapshotPath, 'utf-8'),
-      ])
-      const parsedManifest: unknown = JSON.parse(manifestRaw)
-      const parsedSnapshot: unknown = JSON.parse(snapshotRaw)
-      if (!isBridgeManifest(parsedManifest)) {
-        throw new Error('Invalid manifest format: missing manifestVersion, projectId, entities, relations, or views')
-      }
-      if (!isLeanixInventorySnapshot(parsedSnapshot)) {
-        throw new Error('Invalid snapshot format: missing factSheets or relations arrays')
-      }
-      manifest = parsedManifest
-      snapshot = parsedSnapshot
+      const read = await readManifestAndSnapshot(outdir)
+      manifest = read.manifest
+      snapshot = read.snapshot
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       logger.error(`Failed to read ${ARTIFACT_MANIFEST} or ${SNAPSHOT_FILENAME} from ${outdir}: ${msg}`)
@@ -66,16 +96,7 @@ export async function leanixReconcileHandler(params: LeanixReconcileHandlerParam
 
     let dryRun: LeanixInventoryDryRun | undefined
     try {
-      await using likec4 = await fromWorkspace(workspacePath, {
-        graphviz: useDotBin ? 'binary' : 'wasm',
-        watch: false,
-      })
-      const { projectId } = ensureProject(likec4, project)
-      const model = await likec4.layoutedModel(projectId)
-      if (model !== LikeC4Model.EMPTY) {
-        const artifacts = buildBridgeArtifacts(asBridgeModel(model))
-        dryRun = artifacts.dryRun
-      }
+      dryRun = await loadDryRunFromWorkspace(workspacePath, project, useDotBin)
     } catch (err) {
       logger.warn(
         `Could not load workspace for dryRun enrichment; proceeding without it: ${

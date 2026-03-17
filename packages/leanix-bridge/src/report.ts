@@ -41,7 +41,7 @@ function buildCoherenceErrorMessage(
 /**
  * Builds a summary report (counts, artifact names) from manifest and dry-run. Throws if projectId or mappingProfile differ.
  */
-export function toReport(
+export function buildBridgeReport(
   manifest: BridgeManifest,
   leanixDryRun: LeanixInventoryDryRun,
 ): BridgeReport {

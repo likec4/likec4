@@ -13,6 +13,17 @@ function formatIsoDateString(iso: string): string {
   return iso.slice(0, 10)
 }
 
+/** Shared ADR header lines (title, status, date). Reduces duplication between ADR generators. */
+function buildAdrHeader(title: string, status: string, dateIso: string): string[] {
+  return [
+    `# ${title}`,
+    '',
+    `- Status: ${status}`,
+    `- Date: ${formatIsoDateString(dateIso)}`,
+    '',
+  ]
+}
+
 export interface AdrGenerationOptions {
   title?: string
   /** ADR status line. Default: "Proposed". */
@@ -33,11 +44,7 @@ export function generateAdrFromReconciliation(
   const status = options.status ?? 'Proposed'
   const impact = options.impact
   const lines: string[] = [
-    `# ${title}`,
-    '',
-    `- Status: ${status}`,
-    `- Date: ${formatIsoDateString(reconciliation.generatedAt)}`,
-    '',
+    ...buildAdrHeader(title, status, reconciliation.generatedAt),
     '## Context',
     '',
     `Reconciliation of LikeC4 manifest (project: ${reconciliation.manifestProjectId}) with LeanIX inventory snapshot (${
@@ -74,11 +81,7 @@ export function generateAdrFromDriftReport(
   const title = options.title ?? 'LeanIX drift report'
   const status = options.status ?? 'Proposed'
   return [
-    `# ${title}`,
-    '',
-    `- Status: ${status}`,
-    `- Date: ${formatIsoDateString(drift.generatedAt)}`,
-    '',
+    ...buildAdrHeader(title, status, drift.generatedAt),
     '## Drift status',
     '',
     drift.description,
