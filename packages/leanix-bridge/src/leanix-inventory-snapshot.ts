@@ -180,6 +180,7 @@ async function fetchAllFactSheets(
 }
 
 const RELATIONS_FETCH_CONCURRENCY = 10
+const RELATIONS_PAGE_SIZE = 100
 
 async function fetchAllRelations(
   client: LeanixApiClient,
@@ -201,15 +202,16 @@ async function fetchAllRelations(
             targetFactSheet?: { id?: string }
           }
         }>
+        pageInfo?: { hasNextPage?: boolean; endCursor?: string | null }
       }
     }
   }
 
   const query = `
-    query FactSheetRelations($id: ID!) {
+    query FactSheetRelations($id: ID!, $first: Int, $after: String) {
       factSheet(id: $id) {
         id
-        relations {
+        relations(first: $first, after: $after) {
           edges {
             node {
               id
@@ -217,33 +219,43 @@ async function fetchAllRelations(
               targetFactSheet { id }
             }
           }
+          pageInfo { hasNextPage endCursor }
         }
       }
     }
   `
 
-  for (let i = 0; i < factSheetIds.length; i += RELATIONS_FETCH_CONCURRENCY) {
-    const batch = factSheetIds.slice(i, i + RELATIONS_FETCH_CONCURRENCY)
-    const results = await Promise.all(
-      batch.map(sourceId => withGraphQLRetry(() => client.graphql<RelationsResult>(query, { id: sourceId }))),
-    )
-    for (let j = 0; j < results.length; j++) {
-      const data = results[j]
-      const sourceId = batch[j]
-      if (sourceId === undefined) continue
+  async function fetchRelationsForFactSheet(sourceId: string): Promise<LeanixRelationSnapshotItem[]> {
+    const out: LeanixRelationSnapshotItem[] = []
+    let after: string | null = null
+    let hasNextPage = true
+    while (hasNextPage) {
+      const data = await withGraphQLRetry(() =>
+        client.graphql<RelationsResult>(query, { id: sourceId, first: RELATIONS_PAGE_SIZE, after })
+      )
       const edges = data?.factSheet?.relations?.edges ?? []
+      const pageInfo = data?.factSheet?.relations?.pageInfo
       for (const edge of edges) {
         const node = edge.node
         const targetId = node?.targetFactSheet?.id
         if (!targetId || !idSet.has(targetId)) continue
-        relations.push({
+        out.push({
           ...(node?.id ? { id: node.id } : {}),
           sourceFactSheetId: sourceId,
           targetFactSheetId: targetId,
           type: node?.type ?? 'RELATES_TO',
         })
       }
+      hasNextPage = pageInfo?.hasNextPage === true
+      after = pageInfo?.endCursor ?? null
     }
+    return out
+  }
+
+  for (let i = 0; i < factSheetIds.length; i += RELATIONS_FETCH_CONCURRENCY) {
+    const batch = factSheetIds.slice(i, i + RELATIONS_FETCH_CONCURRENCY)
+    const results = await Promise.all(batch.map(sourceId => fetchRelationsForFactSheet(sourceId)))
+    for (const items of results) relations.push(...items)
   }
 
   return relations

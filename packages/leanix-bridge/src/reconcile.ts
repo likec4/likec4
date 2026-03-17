@@ -70,6 +70,7 @@ function tryMatchByManifestFactSheetId(
   if (manifestFactSheetId == null) return null
   const fs = snapshotById.get(manifestFactSheetId)
   if (!fs) return null
+  if (usedFactSheetIds.has(fs.id)) return null
   usedFactSheetIds.add(fs.id)
   return { canonicalId, factSheetId: fs.id, name: fs.name, type: fs.type }
 }

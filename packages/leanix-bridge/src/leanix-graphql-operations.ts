@@ -28,6 +28,11 @@ export async function findFactSheetByNameAndType(
   `
   const data = await client.graphql<AllFactSheetsResult>(query, { name, type })
   const edges = data.allFactSheets?.edges ?? []
+  if (edges.length > 1) {
+    throw new Error(
+      `Multiple fact sheets found for name="${name}" type="${type}". Ensure unique name+type in LeanIX or use likec4Id attribute for lookup.`,
+    )
+  }
   const first = edges[0]?.node
   return first?.id ?? null
 }
@@ -63,6 +68,11 @@ export async function findFactSheetByLikec4IdAttribute(
   }
   const data = await client.graphql<AllFactSheetsResult>(query, { filter })
   const edges = data.allFactSheets?.edges ?? []
+  if (edges.length > 1) {
+    throw new Error(
+      `Multiple fact sheets found for attribute ${attributeKey}=${likec4Id}. Ensure unique likec4Id in LeanIX.`,
+    )
+  }
   const first = edges[0]?.node
   return first?.id ?? null
 }

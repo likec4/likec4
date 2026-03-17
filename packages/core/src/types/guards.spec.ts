@@ -15,7 +15,8 @@ describe('hasProp', () => {
   })
 
   it('returns false for missing property', () => {
-    expect(hasProp({} as any, 'some')).toBe(false)
+    const obj: Record<string, unknown> = {}
+    expect(hasProp(obj, 'some')).toBe(false)
   })
 
   it('returns true for falsy but non-nullish values', () => {
@@ -24,23 +25,21 @@ describe('hasProp', () => {
     expect(hasProp({ some: false }, 'some')).toBe(true)
   })
 
-  describe('predicate (value, path) — two-argument form', () => {
-    // Exercises the same predicate as hasProp(value, path). Curried form hasProp('path')(value)
-    // is equivalent but not exercised here due to Vite SSR overload resolution.
+  describe('curried form hasProp(path)(value)', () => {
     it('returns true for present non-nullish property', () => {
-      expect(hasProp({ some: 'value' }, 'some')).toBe(true)
+      expect(hasProp('some')({ some: 'value' })).toBe(true)
     })
 
     it('returns false for property with undefined value', () => {
-      expect(hasProp({ some: undefined }, 'some')).toBe(false)
+      expect(hasProp('some')({ some: undefined })).toBe(false)
     })
 
     it('returns false for property with null value', () => {
-      expect(hasProp({ some: null }, 'some')).toBe(false)
+      expect(hasProp('some')({ some: null })).toBe(false)
     })
 
     it('returns false for missing property', () => {
-      expect(hasProp({} as any, 'some')).toBe(false)
+      expect(hasProp('some')({ other: 1 })).toBe(false)
     })
   })
 })

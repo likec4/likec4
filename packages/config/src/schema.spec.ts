@@ -272,6 +272,7 @@ describe('ProjectConfig schema', () => {
       expect(() => validateConfig(config)).not.toThrow()
       const result = validateConfig(config)
       expect(result.name).toBe('test')
+      expect(result.landingPage).toEqual({ redirect: true })
     })
 
     // Skipped in Vitest: config object can arrive without landingPage key in this env. Behavior verified via:

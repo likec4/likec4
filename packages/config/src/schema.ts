@@ -322,9 +322,10 @@ export function validateProjectConfig<C extends Record<string, unknown>>(config:
     !Array.isArray(generatorsInput)
   ) {
     const genParsed = GeneratorsSchema.safeParse(generatorsInput)
-    if (genParsed.success) {
-      return { ...data, generators: genParsed.data as Record<string, GeneratorFn> }
+    if (!genParsed.success) {
+      throw new Error('Config validation failed (generators):\n' + z.prettifyError(genParsed.error))
     }
+    return { ...data, generators: genParsed.data as Record<string, GeneratorFn> }
   }
   return data
 }

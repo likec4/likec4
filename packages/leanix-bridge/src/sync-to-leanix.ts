@@ -154,7 +154,15 @@ async function resolveExistingFactSheetId(
     if (byAttr) return byAttr
     const byNameType = await findFactSheetByNameAndType(client, fs.name, fs.type)
     if (byNameType && fs.likec4Id) {
-      await patchFactSheetAttribute(client, byNameType, likec4IdAttribute, fs.likec4Id)
+      try {
+        await patchFactSheetAttribute(client, byNameType, likec4IdAttribute, fs.likec4Id)
+      } catch (err) {
+        console.warn(
+          `[leanix-bridge] Failed to backfill likec4Id on fact sheet ${byNameType} (${fs.name}/${fs.type}): ${
+            err instanceof Error ? err.message : String(err)
+          }. Reusing ID.`,
+        )
+      }
     }
     return byNameType ?? null
   }
