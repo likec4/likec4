@@ -40,7 +40,7 @@ catalogs:
     astro: 5.18.1
     astro-og-canvas: ^0.7.2
     shiki: ^4.0.2
-    starlight-heading-badges: ^0.6.1
+    starlight-heading-badges: ^0.7.0
     starlight-image-zoom: ^0.13.2
     starlight-links-validator: ^0.19.2
     starlight-package-managers: ^0.12.0
