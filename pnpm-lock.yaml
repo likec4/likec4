@@ -1700,9 +1700,6 @@ importers:
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
-      '@likec4/leanix-bridge':
-        specifier: workspace:*
-        version: link:../leanix-bridge
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 5.2.0(vite@7.3.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
@@ -1767,6 +1764,9 @@ importers:
       '@likec4/layouts':
         specifier: workspace:*
         version: link:../layouts
+      '@likec4/leanix-bridge':
+        specifier: workspace:*
+        version: link:../leanix-bridge
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
