@@ -48,14 +48,13 @@ export default function syncCmd(yargs: Argv) {
         })
         .option('dry-run', {
           type: 'boolean',
-          default: true,
           describe: 'Only write artifacts and optional sync-plan; do not call LeanIX API for create/update',
         })
         .option('apply', {
           type: 'boolean',
-          default: false,
           describe: 'Run live sync to LeanIX (requires LEANIX_API_TOKEN)',
         })
+        .conflicts('dry-run', 'apply')
         .option('project', project)
         .option('use-dot', useDotBin)
         .example(
@@ -69,12 +68,13 @@ export default function syncCmd(yargs: Argv) {
     handler: async (args: unknown) => {
       if (!isSyncCmdArgs(args) || args.target !== 'leanix') return
       const apply = args.apply ?? false
+      const dryRun = args.dryRun ?? !apply
       await runSyncLeanix({
         path: args.path ?? '.',
         outdir: args.outdir ?? DEFAULT_OUTDIR,
         project: args.project,
         useDotBin: args.useDotBin ?? false,
-        dryRun: apply ? false : (args.dryRun ?? true),
+        dryRun,
         apply,
       })
     },
