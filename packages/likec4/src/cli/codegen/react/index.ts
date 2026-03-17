@@ -27,6 +27,7 @@ type HandlerParams = {
   outfile: string | undefined
 }
 
+/** Generates React types and view IDs for the LikeC4 project. */
 export async function reactHandler({ path, useDotBin, useCorePackage, outfile, project }: HandlerParams) {
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')

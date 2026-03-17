@@ -5,8 +5,10 @@
 
 import type { ReconciliationResult } from './reconcile'
 
+/** Drift status: in_sync, likec4_ahead, leanix_ahead, or diverged. */
 export type DriftStatus = 'in_sync' | 'likec4_ahead' | 'leanix_ahead' | 'diverged'
 
+/** Drift report (status, summary, description). */
 export interface DriftReport {
   generatedAt: string
   manifestProjectId: string

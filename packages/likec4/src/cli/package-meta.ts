@@ -12,5 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageJsonPath = join(__dirname, '..', '..', 'package.json')
 const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as { name: string; version: string }
 
+/** CLI package name at runtime (from package.json). */
 export const name = pkg.name
+/** CLI package version at runtime (from package.json). */
 export const version = pkg.version

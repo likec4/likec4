@@ -19,7 +19,9 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
 
+/** Error message when workspace has no project or empty model. */
 export const ERR_EMPTY_MODEL = 'No project or empty model'
+/** Error message when --apply is set but LEANIX_API_TOKEN is missing. */
 export const ERR_LEANIX_TOKEN_REQUIRED = 'LEANIX_API_TOKEN is required for likec4 sync leanix --apply'
 
 const DEFAULT_MAPPING_PROFILE = 'default' as const
@@ -39,6 +41,7 @@ export function asBridgeModel(model: AnyLikeC4Model): BridgeModelInput {
   }
 }
 
+/** Manifest, dry-run inventory and report produced by buildBridgeArtifacts. */
 export type BridgeArtifacts = {
   manifest: BridgeManifest
   dryRun: LeanixInventoryDryRun
@@ -55,6 +58,7 @@ export function buildBridgeArtifacts(bridgeModel: BridgeModelInput): BridgeArtif
   return { manifest, dryRun, report }
 }
 
+/** Logger interface for bridge artifact writing (info only). */
 export type BridgeLogger = { info: (msg: string) => void }
 
 /**
@@ -78,6 +82,7 @@ export async function writeBridgeArtifacts(
   logger.info(`${k.dim('generated')} ${relative(cwd, reportPath)}`)
 }
 
+/** Default artifact file names for manifest, dry-run and report. */
 export const BRIDGE_ARTIFACT_NAMES = {
   manifest: ARTIFACT_MANIFEST,
   dryRun: ARTIFACT_DRY_RUN,

@@ -15,6 +15,7 @@ import {
 } from './leanix-graphql-operations'
 import type { LeanixFactSheetDryRun, LeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
 
+/** Options for live sync (idempotent lookup, optional likec4Id custom attribute). */
 export interface SyncToLeanixOptions {
   /** If true, only create fact sheets that do not exist (by name+type). Default: true. */
   idempotent?: boolean
@@ -22,6 +23,7 @@ export interface SyncToLeanixOptions {
   likec4IdAttribute?: string
 }
 
+/** Result of syncToLeanix (updated manifest, counts, errors). */
 export interface SyncToLeanixResult {
   /** Updated manifest with external.leanix.factSheetId and relation IDs filled. */
   manifest: BridgeManifest
@@ -99,6 +101,7 @@ function buildPlanSummary(
   }
 }
 
+/** Options for planSyncToLeanix (idempotent, likec4Id attribute, generatedAt). */
 export interface PlanSyncToLeanixOptions {
   /** If true, plan assumes idempotent sync (look up by likec4IdAttribute or name+type to decide create vs update). Default: true. */
   idempotent?: boolean

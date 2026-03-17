@@ -5,6 +5,7 @@
 
 import type { ReconciliationResult } from './reconcile'
 
+/** Single governance check result (id, name, passed, optional message). */
 export interface GovernanceCheckResult {
   id: string
   name: string
@@ -18,6 +19,7 @@ export interface GovernanceReport {
   checks: GovernanceCheckResult[]
 }
 
+/** Options for runGovernanceChecks (noAmbiguous, allLikec4Matched, noOrphanInLeanix). */
 export interface GovernanceCheckOptions {
   /** Fail if any ambiguous matches. Default: true. */
   noAmbiguous?: boolean

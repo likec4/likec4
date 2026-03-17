@@ -24,6 +24,7 @@ function buildAdrHeader(title: string, status: string, dateIso: string): string[
   ]
 }
 
+/** Options for ADR generation (title, status, optional impact report). */
 export interface AdrGenerationOptions {
   title?: string
   /** ADR status line. Default: "Proposed". */

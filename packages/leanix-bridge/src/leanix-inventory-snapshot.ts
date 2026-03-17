@@ -31,6 +31,7 @@ export interface LeanixInventorySnapshot {
   relations: LeanixRelationSnapshotItem[]
 }
 
+/** Options for fetchLeanixInventorySnapshot (likec4Id attribute, maxFactSheets, generatedAt). */
 export interface FetchLeanixInventorySnapshotOptions {
   /** Custom attribute key to read likec4Id from fact sheets (e.g. "likec4Id"). When set, snapshot items get likec4Id when present. */
   likec4IdAttribute?: string

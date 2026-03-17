@@ -5,6 +5,7 @@
 
 import type { SyncPlan, SyncPlanSummary } from './sync-to-leanix'
 
+/** Impact report from a sync plan (summary counts and human-readable impact summary). */
 export interface ImpactReport {
   generatedAt: string
   projectId: string

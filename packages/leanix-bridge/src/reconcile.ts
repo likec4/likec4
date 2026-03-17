@@ -11,6 +11,7 @@ import type {
 } from './leanix-inventory-snapshot'
 import type { LeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
 
+/** A manifest entity matched to a single LeanIX fact sheet. */
 export interface MatchedPair {
   canonicalId: CanonicalId
   factSheetId: string
@@ -18,12 +19,14 @@ export interface MatchedPair {
   type: string
 }
 
+/** Manifest entity with no matching LeanIX fact sheet. */
 export interface UnmatchedInLikec4 {
   canonicalId: CanonicalId
   name?: string | undefined
   type?: string | undefined
 }
 
+/** LeanIX fact sheet with no matching manifest entity. */
 export interface UnmatchedInLeanix {
   factSheetId: string
   name: string
@@ -31,6 +34,7 @@ export interface UnmatchedInLeanix {
   likec4Id?: string | undefined
 }
 
+/** Manifest entity that could match multiple LeanIX fact sheets (e.g. same name+type). */
 export interface AmbiguousMatch {
   canonicalId: CanonicalId
   name?: string | undefined
@@ -39,6 +43,7 @@ export interface AmbiguousMatch {
   candidateFactSheetIds: string[]
 }
 
+/** Result of reconciling a LeanIX snapshot with the bridge manifest (matched, unmatched, ambiguous). */
 export interface ReconciliationResult {
   generatedAt: string
   manifestProjectId: string
@@ -125,6 +130,7 @@ function resolveByNameAndType(
   }
 }
 
+/** Options for reconcileInventoryWithManifest (generatedAt, optional dry-run for name/type resolution). */
 export interface ReconcileOptions {
   generatedAt?: string
   /** When provided, name+type matching and ambiguous detection use dry-run fact sheet names/types. */

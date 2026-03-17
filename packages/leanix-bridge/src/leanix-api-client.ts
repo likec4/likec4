@@ -3,6 +3,7 @@
  * Handles authentication (Bearer token), request throttling, and errors.
  */
 
+/** Configuration for LeanixApiClient (apiToken, baseUrl, requestDelayMs). */
 export interface LeanixApiClientConfig {
   /** LeanIX API token (required for auth). */
   apiToken: string

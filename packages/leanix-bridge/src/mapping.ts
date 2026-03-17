@@ -3,6 +3,7 @@
  * No universal taxonomy; safe defaults. Actor kind maps to 'Provider' unless overridden.
  */
 
+/** Configurable mapping from LikeC4 kinds/relations/tags to LeanIX fact sheet and relation types. */
 export interface LeanixMappingConfig {
   /** LikeC4 element kind → LeanIX fact sheet type */
   factSheetTypes?: Record<string, string>

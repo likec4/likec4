@@ -49,26 +49,26 @@ export type MappingProfile = string
 /** Provider name (e.g. leanix, drawio) */
 export type Provider = string
 
-/** External IDs for a single provider */
+/** External IDs for a single provider (e.g. factSheetId, externalId). */
 export interface ProviderExternalIds {
   factSheetId?: string
   externalId?: string
   [key: string]: string | undefined
 }
 
-/** Entity entry in the manifest: canonical id + optional external IDs per provider */
+/** Entity entry in the manifest: canonical id + optional external IDs per provider. */
 export interface ManifestEntity {
   canonicalId: CanonicalId
   external?: Partial<Record<Provider, ProviderExternalIds>>
 }
 
-/** View entry in the manifest */
+/** View entry in the manifest (viewId + optional provider external ids). */
 export interface ManifestView {
   viewId: ViewId
   external?: Partial<Record<Provider, Record<string, string>>>
 }
 
-/** Relation entry: composite key and optional external relation id */
+/** Relation entry: composite key and optional external relation id per provider. */
 export interface ManifestRelation {
   relationId: RelationId
   sourceFqn: CanonicalId
@@ -89,6 +89,7 @@ export interface BridgeManifest {
   relations: ManifestRelation[]
 }
 
+/** Manifest schema version (semantic; must match parser). */
 export const BRIDGE_MANIFEST_VERSION = '1.0'
 
 /** Provider identifier for LeanIX (single source of truth for external.leanix). */
