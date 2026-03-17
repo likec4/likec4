@@ -56,7 +56,6 @@ export default function syncCmd(yargs: Argv) {
           default: false,
           describe: 'Run live sync to LeanIX (requires LEANIX_API_TOKEN)',
         })
-        .conflicts('apply', 'dry-run')
         .option('project', project)
         .option('use-dot', useDotBin)
         .example(
