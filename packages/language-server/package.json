@@ -157,7 +157,6 @@
     "indent-string": "^5.0.0",
     "json5": "catalog:utils",
     "langium": "catalog:langium",
-    "lru-cache": "catalog:utils",
     "nano-spawn": "catalog:externals",
     "p-limit": "catalog:utils",
     "p-queue": "catalog:utils",

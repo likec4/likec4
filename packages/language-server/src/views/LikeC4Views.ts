@@ -7,7 +7,7 @@ import type {
   ProjectId,
   ViewId,
 } from '@likec4/core'
-import { _layout, applyManualLayout, calcDriftsFromSnapshot, DefaultMap } from '@likec4/core'
+import { _layout, applyCachedLayout, applyManualLayout, calcDriftsFromSnapshot, DefaultMap } from '@likec4/core'
 import { type AdhocViewPredicate, computeAdhocView } from '@likec4/core/compute-view'
 import type { LikeC4Model } from '@likec4/core/model'
 import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
@@ -389,7 +389,7 @@ class ProjectStorage {
     const cached = await this.#storage.get(key)
     if (cached) {
       this.#logger.trace`cache hit for ${task.view.id}`
-      return cached
+      return mergeWithCachedLayout(task.view, cached)
     }
     logger.trace`cache miss for ${task.view.id}`
     return undefined
@@ -400,7 +400,7 @@ class ProjectStorage {
     const cached = await this.#storage.get(key)
     if (cached) {
       this.#logger.trace`cache hit for ${task.view.id}`
-      return cached
+      return mergeWithCachedLayout(task.view, cached)
     }
     logger.trace`cache miss for ${task.view.id}`
     const m0 = performanceMark()
@@ -439,4 +439,11 @@ class ProjectStorage {
 
 function cacheKey(task: LayoutTaskParams) {
   return `${task.view.hash}-${task.styles.fingerprint}`
+}
+
+function mergeWithCachedLayout(current: ComputedView, cached: GraphvizOut): GraphvizOut {
+  return {
+    dot: cached.dot,
+    diagram: applyCachedLayout(current, cached.diagram),
+  }
 }

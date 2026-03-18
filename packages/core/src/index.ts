@@ -30,6 +30,7 @@ export {
 } from './utils'
 
 export {
+  applyCachedLayout,
   applyManualLayout,
   calcDriftsFromSnapshot,
 } from './manual-layout'
