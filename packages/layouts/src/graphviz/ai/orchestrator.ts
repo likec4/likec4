@@ -8,7 +8,7 @@ import type { AiLayoutHints } from './types'
 
 const prompts = {
   systemPrompt: LAYOUT_SYSTEM_PROMPT,
-  userPrompt: `Analyze this diagram and suggest layout improvements if any`,
+  userPrompt: `Analyze this diagram and suggest layout improvements`,
 }
 
 /**

@@ -1,9 +1,9 @@
 import { type ComputedView, type NonEmptyArray, exact, nonNullable } from '@likec4/core'
-import { hasAtLeast, isNonNullish, map, mapKeys, pickBy } from 'remeda'
+import { filter, hasAtLeast, isNonNullish, map, mapKeys, pickBy } from 'remeda'
 import * as z from 'zod/v4'
 import type { prepareViewForPrompt } from './llm-input'
 import { logger } from './logger'
-import type { AiLayoutHints } from './types'
+import type { AIEnforcementEdge, AiLayoutHints } from './types'
 
 const direction = z.enum(['TB', 'BT', 'LR', 'RL'])
 
@@ -17,15 +17,33 @@ const nodesWithRank = z.object({
   nodes: z.array(nodeId),
 })
 
+const edgeAttrs = {
+  weight: z.coerce.number().int().min(0).max(20),
+  minlen: z.coerce.number().int().min(0).max(3),
+}
+
+const invisibleEdge = z
+  .object({
+    source: nodeId,
+    target: nodeId,
+    weight: edgeAttrs.weight.default(1),
+    minlen: edgeAttrs.minlen.default(1),
+  })
+  .transform(pickBy(isNonNullish))
+
 const responseSchema = z
   .object({
     direction: direction.optional(),
     ranks: z.array(nodesWithRank).default([]),
-    edgeWeight: z.record(edgeId, z.number().int().min(0).max(20)).default({}),
-    edgeMinlen: z.record(edgeId, z.number().int().min(0).max(3)).default({}),
+    edgeWeight: z.record(edgeId, edgeAttrs.weight.default(1)).default({}),
+    edgeMinlen: z.record(edgeId, edgeAttrs.minlen.default(1)).default({}),
     excludeFromRanking: z.array(edgeId).default([]),
     edgeOrder: z.array(edgeId).default([]),
     nodeOrder: z.array(nodeId).default([]),
+    invisibleEdges: z
+      .array(invisibleEdge.nullable().catch(null))
+      .default([])
+      .transform(filter(isNonNullish)),
     reasoning: z.string(),
   })
   .transform(pickBy(isNonNullish))
@@ -143,7 +161,7 @@ function restoreIdsAndMapToHints(
 
   const edgeId = (id: string & z.$brand<'EdgeId'>) => nonNullable(mapping.edges[id]?.id)
 
-  const mapToNonEmpty = <A extends string, O>(ids: A[], fn: (id: A) => O): NonEmptyArray<O> | undefined => {
+  const mapToNonEmpty = <A, O>(ids: A[], fn: (id: A) => O): NonEmptyArray<O> | undefined => {
     const result = map(ids, fn)
     return hasAtLeast(result, 1) ? result : undefined
   }
@@ -161,6 +179,11 @@ function restoreIdsAndMapToHints(
     excludeFromRanking: new Set(map(parsed.excludeFromRanking, edgeId)),
     edgeOrder: mapToNonEmpty(parsed.edgeOrder, edgeId),
     nodeOrder: mapToNonEmpty(parsed.nodeOrder, nodeId),
+    invisibleEdges: mapToNonEmpty(parsed.invisibleEdges, (edge): AIEnforcementEdge => ({
+      ...edge,
+      source: nodeId(edge.source),
+      target: nodeId(edge.target),
+    })),
     reasoning: parsed.reasoning,
   })
 

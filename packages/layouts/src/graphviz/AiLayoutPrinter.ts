@@ -3,11 +3,12 @@ import type {
   ComputedEdge,
   ComputedNode,
   ComputedView,
+  EdgeId,
   HexColor,
   LikeC4Styles,
 } from '@likec4/core'
 import { first, isNonNullish, last } from 'remeda'
-import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
+import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import type { AiLayoutHints } from './ai/types'
 import { edgelabel } from './dot-labels'
@@ -60,6 +61,7 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
   protected override postBuild(G: RootGraphModel): void {
     this
       .applyNodeRanks()
+      .addInvisibleEdges()
       .enableNewRankIfNeeded()
   }
 
@@ -125,5 +127,35 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
     }
 
     return e
+  }
+
+  protected addInvisibleEdges(): this {
+    if (!this.aiHints.invisibleEdges) {
+      return this
+    }
+    const G = this.G
+    for (const edge of this.aiHints.invisibleEdges) {
+      if (this.graphology.hasEdge(edge.source, edge.target)) {
+        continue
+      }
+      const source = this.getGraphNode(edge.source)
+      const target = this.getGraphNode(edge.target)
+      if (!source || !target) {
+        continue
+      }
+      const edgeId = `invisible_${edge.source}->${edge.target}` as EdgeId
+      this.graphology.addEdgeWithKey(edgeId, edge.source, edge.target, {
+        hierarchyDistance: 0,
+        origin: 'invisible' as any,
+        weight: edge.weight ?? 1,
+      })
+
+      G.edge([source, target], {
+        [_.style]: 'invis',
+        [_.weight]: edge.weight ?? 1,
+        [_.minlen]: edge.minlen ?? 1,
+      })
+    }
+    return this
   }
 }

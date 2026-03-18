@@ -3,9 +3,11 @@ import {
   type ComputedEdge,
   type ComputedNode,
   type ComputedView,
+  exact,
   flattenMarkdownOrString,
   NodeId,
 } from '@likec4/core/types'
+import { isEmptyish } from 'remeda'
 import type * as z from 'zod/v4'
 import { logger } from './logger'
 
@@ -17,7 +19,8 @@ interface SerializedNode {
   id: NodeIdSerialized
   kind: string
   title: string
-  parent: CompoundIdSerialized | null
+  description?: string
+  parent?: CompoundIdSerialized
   level: number
 }
 
@@ -25,7 +28,7 @@ interface SerializedCompound {
   id: CompoundIdSerialized
   kind: string
   title: string
-  parent: CompoundIdSerialized | null
+  parent?: CompoundIdSerialized
   children: Array<CompoundIdSerialized | NodeIdSerialized>
   level: number
 }
@@ -34,8 +37,8 @@ interface SerializedEdge {
   id: EdgeIdSerialized
   source: NodeIdSerialized
   target: NodeIdSerialized
-  parent: CompoundIdSerialized | null
-  label: string | null
+  parent?: CompoundIdSerialized
+  label?: string
 }
 
 export interface SerializedView {
@@ -71,9 +74,9 @@ function mappedEntries<T>(_map: DefaultMap<T, string>): Record<string, T> {
   return res
 }
 
-function edgeLabel(edge: ComputedEdge): string | null {
+function edgeLabel(edge: ComputedEdge): string | undefined {
   const label = edge.label ?? flattenMarkdownOrString(edge.description) ?? edge.technology
-  return label && label !== '[...]' ? truncate(label) : null
+  return label && label !== '[...]' ? truncate(label) : undefined
 }
 
 /**
@@ -112,25 +115,6 @@ export function prepareViewForPrompt(view: ComputedView): LLMInput {
   let edgeSeq = 1
   const edgeIds = new DefaultMap((_edge: ComputedEdge) => `e${edgeSeq++}` as EdgeIdSerialized)
 
-  // const nestedOf = new DefaultMap((key: ComputedNode): Array<NodeId> => {
-  //   return key.children.flatMap(childId => {
-  //     const child = findNodeById(childId)
-  //     return [childId, ...nestedOf.get(child)]
-  //   })
-  // })
-
-  // const edgesBetweenLeafs =
-
-  // const edgeId = (edge: ComputedEdge) => edgeIds.get(edge)
-
-  // const findEdgeById = (edgeId: string) => {
-  //   const edge = view.edges.find(e => e.id === edgeId)
-  //   if (edge && leafs.has(edge.source) && leafs.has(edge.target)) {
-  //     return edge
-  //   }
-  //   return null
-  // }
-
   // Filter edges between leaf nodes and create serialized edges
   const edges = view.edges.map((e): SerializedEdge => {
     let source = nodeId(e.source) as NodeIdSerialized
@@ -142,7 +126,7 @@ export function prepareViewForPrompt(view: ComputedView): LLMInput {
     return ({
       id: edgeIds.get(e),
       label: edgeLabel(e),
-      parent,
+      ...(parent && { parent }),
       source,
       target,
     })
@@ -150,28 +134,32 @@ export function prepareViewForPrompt(view: ComputedView): LLMInput {
 
   const serializeNode = (acc: SerializedView, nd: ComputedNode) => {
     const { id, parent, level, ...node } = nd
-    const isLeaf = node.children.length === 0
-    // const inEdges = node.inEdges.map(findEdgeById).filter(isNonNull).map(edgeId)
-    // const outEdges = node.outEdges.map(findEdgeById).filter(isNonNull).map(edgeId)
-    if (!isLeaf) {
-      acc.compounds.push({
+    const isCompound = node.children.length > 0
+
+    if (isCompound) {
+      acc.compounds.push(exact({
         id: nodeId(id) as CompoundIdSerialized,
         kind: node.kind,
         title: truncate(node.title),
-        parent: parent ? nodeId(parent) as CompoundIdSerialized : null,
+        parent: parent ? (nodeId(parent) as CompoundIdSerialized) : undefined,
         children: node.children.map(nodeId),
         level,
-      })
+      }))
       return acc
     }
 
-    acc.nodes.push({
-      id: nodeId(id) as NodeIdSerialized,
-      kind: node.kind,
-      title: truncate(node.title),
-      parent: parent ? nodeId(parent) as CompoundIdSerialized : null,
-      level,
-    })
+    const description = truncate(flattenMarkdownOrString(node.description) ?? '', 200)
+
+    acc.nodes.push(
+      exact({
+        id: nodeId(id) as NodeIdSerialized,
+        kind: node.kind,
+        title: truncate(node.title),
+        description: isEmptyish(description) ? undefined : description,
+        parent: parent ? (nodeId(parent) as CompoundIdSerialized) : undefined,
+        level,
+      }),
+    )
 
     return acc
   }
