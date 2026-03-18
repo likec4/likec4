@@ -9,8 +9,10 @@ import { gt as semverGt } from 'semver'
 import { isProduction, nodeENV } from 'std-env'
 import k from 'tinyrainbow'
 import type { PackageJson } from 'type-fest'
+import pkg from '../../../package.json' with { type: 'json' }
 import { boxen, logger } from '../../logger'
-import { name, version } from '../package-meta'
+
+const { name, version } = pkg
 
 type StoredConfiguration = {
   lastUpdateCheck?: number // timestamp
