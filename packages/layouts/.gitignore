@@ -6,3 +6,4 @@ sequence/package.json
 graphviz/binary/package.json
 src/graphviz/ai/prompt-system.generated.ts
 *.png
+*.dot

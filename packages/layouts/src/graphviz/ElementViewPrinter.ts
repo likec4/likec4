@@ -11,7 +11,7 @@ import { isCompound, toArrowType } from './utils'
 const rankLogger = createLogger('dot.rank')
 
 export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedElementView<A>> {
-  protected override postBuild(G: RootGraphModel): void {
+  protected override postBuild(): void {
     // Assign groups to improve layout
     this
       .assignGroups()
@@ -90,13 +90,13 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
       if (nodes.length === 0) {
         continue
       }
-      const rankSubgraph = this.graphvizModel.createSubgraph({ [_.rank]: constraint.type })
+      const rankSubgraph = this.G.createSubgraph({ [_.rank]: constraint.type })
       nodes.forEach(node => rankSubgraph.node(node.id))
       applied += 1
       rankLogger.trace`rank ${constraint.type} => ${nodes.map(node => node.id).join(', ')}`
     }
     if (applied > 0) {
-      this.graphvizModel.set('likec4_rankBlocks' as any, applied)
+      this.G.set('likec4_rankBlocks' as any, applied)
     }
     return this
   }
@@ -109,7 +109,7 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
 
     const edgeParentId = edge.parent
 
-    const { aiHints, ...edgeAttrs } = this.graphology.getEdgeAttributes(edge.id)
+    const edgeAttrs = this.graphology.getEdgeAttributes(edge.id)
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
@@ -134,11 +134,6 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
         [_.color]: colorValues.line,
         [_.fontcolor]: colorValues.label as HexColor,
       })
-    }
-
-    // AI hints take precedence over heuristics, as they are specifically generated to improve the layout
-    if (aiHints) {
-      return this.applyLayoutHintsToEdge(e, aiHints)
     }
 
     if (!this.graphology.hasDirectedEdge(edge.target, edge.source) && edgeAttrs.weight > 1) {

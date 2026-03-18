@@ -1,4 +1,4 @@
-import type { EdgeId, NodeId } from '@likec4/core/types'
+import type { EdgeId, NodeId, NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core/types'
 
 // /**
 //  * Graph-level layout hints
@@ -60,14 +60,17 @@ import type { EdgeId, NodeId } from '@likec4/core/types'
  * Complete set of AI-generated layout hints.
  * This is the JSON schema the LLM must produce.
  */
-export interface AISuggestedLayoutHints {
+export interface AiLayoutHints {
   direction?: 'TB' | 'BT' | 'LR' | 'RL'
   ranks: ReadonlyArray<{
     rank: 'same' | 'source' | 'sink'
-    nodes: NodeId[]
+    nodes: NonEmptyArray<NodeId>
   }>
   edgeWeight: Record<EdgeId, number>
   edgeMinlen: Record<EdgeId, number>
+  excludeFromRanking?: ReadonlySet<EdgeId>
+  edgeOrder?: NonEmptyReadonlyArray<EdgeId>
+  nodeOrder?: NonEmptyReadonlyArray<NodeId>
   /** LLM reasoning for debugging/display */
   reasoning: string
 }

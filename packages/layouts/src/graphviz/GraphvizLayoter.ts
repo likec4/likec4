@@ -14,7 +14,7 @@ import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger as mainLogger, wrapError } from '@likec4/log'
 import { isNonNullish, randomString } from 'remeda'
 import { calcSequenceLayout } from '../sequence'
-import type { LayoutHints } from './ai/types'
+import type { AiLayoutHints } from './ai/types'
 import { AiLayoutViewPrinter } from './AiLayoutPrinter'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { GraphClusterSpace } from './DotPrinter'
@@ -55,7 +55,7 @@ export type LayoutTaskParams<A extends aux.Any = aux.Any> = {
   view: ComputedView<A>
   styles: LikeC4Styles
   /** Optional AI-generated layout hints to enhance the Graphviz output */
-  layoutHints?: LayoutHints | undefined
+  layoutHints?: AiLayoutHints | undefined
 }
 
 export type LayoutResult<A extends aux.Any = aux.Any> = {

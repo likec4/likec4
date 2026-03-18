@@ -1,6 +1,7 @@
 import type {
   AnyAux,
   ComputedEdge,
+  ComputedNode,
   ComputedView,
   HexColor,
   LikeC4Styles,
@@ -8,20 +9,52 @@ import type {
 import { first, isNonNullish, last } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
-import type { AISuggestedLayoutHints } from './ai/types'
+import type { AiLayoutHints } from './ai/types'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 
 export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedView<A>> {
-  protected readonly aiHints: AISuggestedLayoutHints
+  protected readonly aiHints: AiLayoutHints
 
   constructor(
     view: ComputedView<A>,
     styles: LikeC4Styles,
-    aiHints: AISuggestedLayoutHints,
+    aiHints: AiLayoutHints,
   ) {
     super(view, styles)
     this.aiHints = aiHints
+  }
+
+  protected override selectViewNodes(): Iterable<ComputedNode> {
+    if (!this.aiHints.nodeOrder) {
+      return this.view.nodes
+    }
+    const viewnodes = [...this.view.nodes]
+    const sorted: ComputedNode[] = []
+    for (const nodeId of this.aiHints.nodeOrder) {
+      const index = viewnodes.findIndex(n => n.id === nodeId)
+      if (index !== -1) {
+        sorted.push(...viewnodes.splice(index, 1))
+      }
+    }
+    sorted.push(...viewnodes)
+    return sorted
+  }
+
+  protected override selectViewEdges(): Iterable<ComputedEdge> {
+    if (!this.aiHints.edgeOrder) {
+      return this.view.edges
+    }
+    const viewedges = [...this.view.edges]
+    const sorted: ComputedEdge[] = []
+    for (const edgeId of this.aiHints.edgeOrder) {
+      const index = viewedges.findIndex(e => e.id === edgeId)
+      if (index !== -1) {
+        sorted.push(...viewedges.splice(index, 1))
+      }
+    }
+    sorted.push(...viewedges)
+    return sorted
   }
 
   protected override postBuild(G: RootGraphModel): void {
@@ -31,17 +64,18 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
   }
 
   private applyNodeRanks(): this {
-    let applied = 0
+    const G = this.G
     for (const constraint of this.aiHints.ranks) {
       const nodes = [...new Set(constraint.nodes)]
         .map(id => this.getGraphNode(id))
-        .filter((node): node is NodeModel => Boolean(node))
-      if (nodes.length === 0) {
+        .filter(isNonNullish)
+      if (nodes.length === 0 || (constraint.rank === 'same' && nodes.length === 1)) {
         continue
       }
-      const rankSubgraph = this.graphvizModel.createSubgraph({ [_.rank]: constraint.rank })
-      nodes.forEach(node => rankSubgraph.node(node.id))
-      applied += 1
+      const rankSubgraph = G.createSubgraph({ [_.rank]: constraint.rank })
+      for (const node of nodes) {
+        rankSubgraph.node(node.id)
+      }
     }
     return this
   }
@@ -76,16 +110,18 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
       })
     }
 
-    const weight = this.aiHints.edgeWeight[edge.id] ?? 1
-
-    if (weight !== 1) {
+    const weight = this.aiHints.edgeWeight[edge.id]
+    if (weight !== undefined) {
       e.attributes.set(_.weight, weight)
     }
 
     const minlen = this.aiHints.edgeMinlen[edge.id]
-
     if (minlen !== undefined) {
       e.attributes.set(_.minlen, minlen)
+    }
+
+    if (this.aiHints.excludeFromRanking?.has(edge.id)) {
+      e.attributes.set(_.constraint, false)
     }
 
     return e
