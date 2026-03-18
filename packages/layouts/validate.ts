@@ -49,7 +49,7 @@ const claudeCli: AILayoutProvider = {
   sendRequest: async ({ diagram, userPrompt }) => {
     return await $({
       input: JSON.stringify(diagram, null, 2),
-    })`claude --tools "" --model haiku --system-prompt ${systemPrompt} -p --no-session-persistence ${userPrompt}`.text()
+    })`claude --model haiku --system-prompt ${systemPrompt} -p --no-session-persistence ${userPrompt}`.text()
   },
 }
 
@@ -101,6 +101,8 @@ const layout2 = await layouter.layout({
   styles: LikeC4Styles.DEFAULT,
   layoutHints: nonNullable(hints),
 })
+
+fs.writeFileSync('layout2.dot', layout2.dot)
 
 await $({ input: layout2.dot })`dot -Tpng -o ${viewId + '_2.png'}`
 
