@@ -6,8 +6,8 @@ import {
   flattenMarkdownOrString,
   NodeId,
 } from '@likec4/core/types'
-import { logger } from '@likec4/log'
 import type * as z from 'zod/v4'
+import { logger } from './logger'
 
 type NodeIdSerialized = `n${number}` & z.$brand<'NodeId'>
 type EdgeIdSerialized = `e${number}` & z.$brand<'EdgeId'>
@@ -34,6 +34,7 @@ interface SerializedEdge {
   id: EdgeIdSerialized
   source: NodeIdSerialized
   target: NodeIdSerialized
+  parent: CompoundIdSerialized | null
   label: string | null
 }
 
@@ -44,7 +45,7 @@ export interface SerializedView {
   edges: SerializedEdge[]
 }
 
-function truncate(str: string, maxLen: number = 40): string {
+function truncate(str: string, maxLen: number = 100): string {
   str = str.replaceAll(/\n/g, ' ').trim()
   if (str.length <= maxLen) return str
   return str.slice(0, maxLen - 1) + '\u2026'
@@ -52,9 +53,9 @@ function truncate(str: string, maxLen: number = 40): string {
 
 /**
  * When serializing for the LLM, we map internal NodeIds and EdgeIds to simple strings (n1, n2, e1, e2) to keep the JSON compact.
- * SerializedResult provides the reverse mapping for later interpretation of LLM output.
+ * LLMInput provides the reverse mapping for later interpretation of LLM output.
  */
-type SerializedResult = {
+type LLMInput = {
   serialized: SerializedView
   mapping: {
     nodes: Record<string & z.$brand<'NodeId'>, ComputedNode>
@@ -71,7 +72,7 @@ function mappedEntries<T>(_map: DefaultMap<T, string>): Record<string, T> {
 }
 
 function edgeLabel(edge: ComputedEdge): string | null {
-  const label = edge.label ?? edge.technology ?? flattenMarkdownOrString(edge.description)
+  const label = edge.label ?? flattenMarkdownOrString(edge.description) ?? edge.technology
   return label && label !== '[...]' ? truncate(label) : null
 }
 
@@ -82,7 +83,7 @@ function edgeLabel(edge: ComputedEdge): string | null {
  *
  * Maps NodeIds and EdgeIds to simple strings (n1, n2, e1, e2) to keep the JSON compact.
  */
-export function serializeViewForPrompt(view: ComputedView): SerializedResult {
+export function prepareViewForPrompt(view: ComputedView): LLMInput {
   let seq = 1
   const nodeIds = new DefaultMap((node: ComputedNode) =>
     node.children.length === 0 ? (`n${seq++}` as NodeIdSerialized) : (`c${seq++}` as CompoundIdSerialized)
@@ -134,12 +135,14 @@ export function serializeViewForPrompt(view: ComputedView): SerializedResult {
   const edges = view.edges.map((e): SerializedEdge => {
     let source = nodeId(e.source) as NodeIdSerialized
     let target = nodeId(e.target) as NodeIdSerialized
+    const parent = e.parent ? nodeId(e.parent) as CompoundIdSerialized : null
     if (e.dir === 'back') {
       ;[source, target] = [target, source]
     }
     return ({
       id: edgeIds.get(e),
       label: edgeLabel(e),
+      parent,
       source,
       target,
     })

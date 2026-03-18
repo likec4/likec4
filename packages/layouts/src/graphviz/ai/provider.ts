@@ -1,4 +1,4 @@
-import type { SerializedView } from './serializeView'
+import type { SerializedView } from './llm-input'
 
 /**
  * Abstract interface for AI layout hint generation.
@@ -25,7 +25,7 @@ export interface AILayoutRequest {
   systemPrompt: string
   userPrompt: string
   /**
-   * The serialized diagram data.
+   * The diagram data
    */
   diagram: SerializedView
 }

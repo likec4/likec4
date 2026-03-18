@@ -1,6 +1,7 @@
 import type { LikeC4Styles } from '@likec4/core/styles'
 import type {
   AnyFqn,
+  ComputedEdge,
   ComputedNode,
   ComputedView,
   DeploymentFqn,
@@ -96,7 +97,11 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     type: 'directed',
   })
 
-  public readonly graphvizModel: RootGraphModel
+  /**
+   * The root graphviz model
+   * @internal
+   */
+  public readonly G: RootGraphModel
 
   constructor(
     protected readonly view: V,
@@ -174,7 +179,7 @@ export abstract class DotPrinter<V extends ViewToPrint> {
       }
     })
 
-    const G = this.graphvizModel = this.createGraph()
+    const G = this.G = this.createGraph()
     this.applyNodeAttributes(G.attributes.node)
     this.applyEdgeAttributes(G.attributes.edge)
   }
@@ -200,26 +205,29 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     // override in subclass
   }
 
-  private build(G: RootGraphModel): void {
-    // ----------------------------------------------
-    // Traverse clusters first
-    const traverseClusters = (element: ComputedNode, parent: GraphBaseModel) => {
-      const id = this.generateGraphvizId(element)
-      const subgraph = this.elementToSubgraph(element, parent.subgraph(id))
-      this.subgraphs.set(element.id, subgraph)
-      for (const childId of element.children) {
-        const child = this.computedNode(childId)
-        if (isCompound(child)) {
-          traverseClusters(child, subgraph)
-        } else {
-          const gvnode = nonNullable(this.getGraphNode(child.id), `Graphviz Node not found for ${child.id}`)
-          subgraph.node(gvnode.id)
-        }
-      }
-    }
+  /**
+   * Override this method to reorder/filter nodes that should be included in the view
+   * Does not affect compound nodes - they are always processed
+   * By default, all nodes from the view are included
+   */
+  protected selectViewNodes(): Iterable<ComputedNode> {
+    return this.view.nodes
+  }
 
+  /**
+   * Override this method to filter edges that should be included in the view
+   * By default, all edges from the view are included
+   */
+  protected selectViewEdges(): Iterable<ComputedEdge> {
+    return this.view.edges
+  }
+
+  private build(): this {
+    const G = this.G
+    // ----------------------------------------------
+    // Traverse nodes
     const topCompound = [] as ComputedNode[]
-    for (const element of this.view.nodes) {
+    for (const element of this.selectViewNodes()) {
       if (isCompound(element)) {
         if (isNullish(element.parent)) {
           topCompound.push(element)
@@ -231,22 +239,45 @@ export abstract class DotPrinter<V extends ViewToPrint> {
       }
     }
 
+    // ----------------------------------------------
+    // Traverse clusters after nodes are added to the graphviz model
+    const traverseClusters = (element: ComputedNode, parent: GraphBaseModel) => {
+      const id = this.generateGraphvizId(element)
+      const subgraph = this.elementToSubgraph(element, parent.subgraph(id))
+      this.subgraphs.set(element.id, subgraph)
+      for (const childId of element.children) {
+        const child = this.computedNode(childId)
+        if (isCompound(child)) {
+          traverseClusters(child, subgraph)
+        } else {
+          const gvnode = this.getGraphNode(child.id)
+          if (gvnode) {
+            subgraph.node(gvnode.id)
+          }
+        }
+      }
+    }
+
     for (const compound of topCompound) {
       traverseClusters(compound, G)
     }
 
-    for (const edge of this.view.edges) {
+    // ----------------------------------------------
+    // Traverse edges
+    for (const edge of this.selectViewEdges()) {
       const model = this.addEdge(edge, G)
       if (model) {
         this.edges.set(edge.id, model)
       }
     }
+
+    return this
   }
 
   public print(): DotSource {
-    this.build(this.graphvizModel)
-    this.postBuild(this.graphvizModel)
-    return modelToDot(this.graphvizModel, {
+    this.build()
+    this.postBuild(this.G)
+    return modelToDot(this.G, {
       print: {
         indentStyle: 'space',
         indentSize: 2,
@@ -255,8 +286,8 @@ export abstract class DotPrinter<V extends ViewToPrint> {
   }
 
   protected enableNewRankIfNeeded(): this {
-    if (this.graphvizModel.subgraphs.some(s => !!s.get(_.rank))) {
-      this.graphvizModel.set(_.newrank, true)
+    if (this.G.subgraphs.some(s => !!s.get(_.rank))) {
+      this.G.set(_.newrank, true)
       // this.graphvizModel.set(_.clusterrank, 'global')
     }
     return this

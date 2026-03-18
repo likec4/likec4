@@ -1,6 +1,6 @@
+export type { SerializedView } from './llm-input'
 export { enhanceLayoutWithAI } from './orchestrator'
 export type { AILayoutProvider, AILayoutRequest } from './provider'
-export type { SerializedView } from './serializeView'
 export type {
   AIEdgeHint,
   AIEnforcementEdge,

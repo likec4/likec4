@@ -1,9 +1,9 @@
-import { type ComputedView, exact, nonNullable } from '@likec4/core'
-import { logger } from '@likec4/log'
-import { isNonNullish, mapKeys, pickBy } from 'remeda'
+import { type ComputedView, type NonEmptyArray, exact, nonNullable } from '@likec4/core'
+import { hasAtLeast, isNonNullish, map, mapKeys, pickBy } from 'remeda'
 import * as z from 'zod/v4'
-import type { serializeViewForPrompt } from './serializeView'
-import type { AISuggestedLayoutHints } from './types'
+import type { prepareViewForPrompt } from './llm-input'
+import { logger } from './logger'
+import type { AiLayoutHints } from './types'
 
 const direction = z.enum(['TB', 'BT', 'LR', 'RL'])
 
@@ -21,8 +21,11 @@ const responseSchema = z
   .object({
     direction: direction.optional(),
     ranks: z.array(nodesWithRank).default([]),
-    edgeWeight: z.record(edgeId, z.number().int().min(0).max(100)).default({}),
+    edgeWeight: z.record(edgeId, z.number().int().min(0).max(20)).default({}),
     edgeMinlen: z.record(edgeId, z.number().int().min(0).max(3)).default({}),
+    excludeFromRanking: z.array(edgeId).default([]),
+    edgeOrder: z.array(edgeId).default([]),
+    nodeOrder: z.array(nodeId).default([]),
     reasoning: z.string(),
   })
   .transform(pickBy(isNonNullish))
@@ -99,55 +102,65 @@ function extractJson(text: string): string {
  * Returns null on any failure (malformed JSON, invalid structure, etc.)
  * @param response - The raw text response from the LLM, potentially containing JSON with layout hints
  */
-export function parseResponse(response: string, params: {
+export function parseOutput(response: string, params: {
   view: ComputedView
-  mapping: ReturnType<typeof serializeViewForPrompt>['mapping']
-}): AISuggestedLayoutHints | null {
-  const log = logger.getChild('parser')
+  mapping: ReturnType<typeof prepareViewForPrompt>['mapping']
+}): AiLayoutHints | null {
   try {
     const jsonStr = extractJson(response)
     const parsed = JSON.parse(jsonStr)
     const result = responseSchema.safeParse(parsed, {})
     if (!result.success) {
-      logger.warn('Failed to parse LLM response', { error: z.prettifyError(result.error) })
+      logger.warn('Failed to validate LLM response\n' + z.prettifyError(result.error))
       return null
     }
-    console.log('---Parsed Data---')
-    console.log(JSON.stringify(result.data, null, 2))
-    console.log('---End Parsed Data---')
-    return restoreIdsAndMapToHints({
-      ...params,
-      parsed: result.data,
-    })
+    logger.debug`LLM response: ${result.data}`
+    return restoreIdsAndMapToHints(result.data, params)
   } catch (e) {
-    log.warn('Failed to parse LLM response', { error: e })
+    logger.warn('Failed to parse LLM response', { error: e })
     return null
   }
 }
+
+const isNonEmptyRank = <I extends string[], R extends { nodes: I }>(
+  rank: R,
+): rank is Extract<R, { nodes: readonly [I, ...I[]] }> => rank.nodes.length > 0
 
 /**
  * Restore original NodeIds and EdgeIds in the parsed response using the mapping from serialization.
  * Filters out any hints that reference nodes/edges not present in the original view.
  */
-function restoreIdsAndMapToHints(params: {
-  parsed: z.infer<typeof responseSchema>
-  view: ComputedView
-  mapping: ReturnType<typeof serializeViewForPrompt>['mapping']
-}): AISuggestedLayoutHints {
-  const { parsed, mapping, view } = params
+function restoreIdsAndMapToHints(
+  parsed: z.infer<typeof responseSchema>,
+  params: {
+    view: ComputedView
+    mapping: ReturnType<typeof prepareViewForPrompt>['mapping']
+  },
+): AiLayoutHints {
+  const { mapping } = params
   const nodeId = (id: string & z.$brand<'NodeId'>) => nonNullable(mapping.nodes[id]?.id)
   const mapToNodeId = (ids: (string & z.$brand<'NodeId'>)[]) => ids.map(nodeId)
 
   const edgeId = (id: string & z.$brand<'EdgeId'>) => nonNullable(mapping.edges[id]?.id)
 
+  const mapToNonEmpty = <A extends string, O>(ids: A[], fn: (id: A) => O): NonEmptyArray<O> | undefined => {
+    const result = map(ids, fn)
+    return hasAtLeast(result, 1) ? result : undefined
+  }
+
   return exact({
     direction: parsed.direction,
-    ranks: parsed.ranks.map(rank => ({
-      ...rank,
-      nodes: mapToNodeId(rank.nodes),
-    })),
+    ranks: parsed.ranks
+      .map(({ rank, nodes }) => ({
+        rank,
+        nodes: mapToNodeId(nodes),
+      }))
+      .filter(isNonEmptyRank),
     edgeWeight: mapKeys(parsed.edgeWeight, edgeId),
     edgeMinlen: mapKeys(parsed.edgeMinlen, edgeId),
+    excludeFromRanking: new Set(map(parsed.excludeFromRanking, edgeId)),
+    edgeOrder: mapToNonEmpty(parsed.edgeOrder, edgeId),
+    nodeOrder: mapToNonEmpty(parsed.nodeOrder, nodeId),
     reasoning: parsed.reasoning,
   })
 
