@@ -372,6 +372,8 @@ describe('applyCachedLayout', () => {
       const result = applyCachedLayout(current, cachedWithLayout)
 
       expect(result[_layout]).toBeUndefined()
+      // Key should be absent, not just undefined
+      expect(_layout in result).toBe(false)
     })
   })
 

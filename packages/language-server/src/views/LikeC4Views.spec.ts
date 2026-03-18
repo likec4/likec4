@@ -1,4 +1,4 @@
-import { shallowEqual } from 'fast-equals'
+import { deepEqual } from 'fast-equals'
 import { indexBy } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
@@ -24,7 +24,7 @@ describe('LikeC4Views', () => {
     const diagrams1 = await services.likec4.Views.diagrams()
     const diagrams2 = await services.likec4.Views.diagrams()
     expect(diagrams2 !== diagrams1).toBe(true)
-    expect(shallowEqual(diagrams1, diagrams2)).toBe(true)
+    expect(deepEqual(diagrams1, diagrams2)).toBe(true)
   })
 
   it('diagrams returns cached result if there are no changes', async ({ expect }) => {

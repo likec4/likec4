@@ -33,18 +33,25 @@ export function applyCachedLayout(current: ComputedView, cached: LayoutedView): 
       ...computed,
       points: cachedEdge.points,
       label: cachedEdge.label,
+      labelBBox: cachedEdge.labelBBox,
       ...(cachedEdge.controlPoints != null && { controlPoints: cachedEdge.controlPoints }),
-      ...(cachedEdge.labelBBox != null && { labelBBox: cachedEdge.labelBBox }),
     } as DiagramEdge
   })
 
-  return {
+  const result = {
     ...cached,
     ...viewProps,
     [_stage]: 'layouted' as const,
-    [_layout]: hasManualLayout ? 'auto' as const : undefined,
     bounds: cached.bounds,
     nodes,
     edges,
   } as LayoutedView
+
+  if (hasManualLayout) {
+    ;(result as any)[_layout] = 'auto'
+  } else {
+    delete (result as any)[_layout]
+  }
+
+  return result
 }
