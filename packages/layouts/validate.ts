@@ -25,8 +25,8 @@ configureLogger({
 const systemPrompt = fs.readFileSync('src/graphviz/ai/prompt-system.md', 'utf-8')
 
 // const viewId = 'amazon'
-// const viewId = 'cloud_next'
-const viewId = 'amazon_sqs'
+const viewId = 'cloud_ui'
+// const viewId = 'amazon_sqs'
 
 const model = fs.readJsonSync('./model.json') as ComputedLikeC4ModelData
 const amazonView = model.views[viewId]!

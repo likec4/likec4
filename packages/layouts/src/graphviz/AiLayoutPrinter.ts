@@ -7,12 +7,13 @@ import type {
   HexColor,
   LikeC4Styles,
 } from '@likec4/core'
-import { first, isNonNullish, last } from 'remeda'
+import { entries, first, isNonNullish, isNumber, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import type { AiLayoutHints } from './ai/types'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
+import { pxToInch } from './utils'
 
 export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedView<A>> {
   protected readonly aiHints: AiLayoutHints
@@ -60,6 +61,7 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
 
   protected override postBuild(G: RootGraphModel): void {
     this
+      .reduceDefaultRankSeparation()
       .applyNodeRanks()
       .addInvisibleEdges()
       .enableNewRankIfNeeded()
@@ -156,6 +158,24 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
         [_.minlen]: edge.minlen ?? 1,
       })
     }
+    return this
+  }
+
+  protected reduceDefaultRankSeparation(): this {
+    const autoLayout = this.view.autoLayout
+    const G = this.G
+
+    const hasMinlenAbove1 = entries(this.aiHints.edgeMinlen).some(([_, minlen]) => minlen > 1)
+      || (this.aiHints.invisibleEdges?.some((edge) => edge.minlen > 1) ?? false)
+
+    // If rankSep is set or there are no minlen constraints, use default layout
+    if (isNumber(autoLayout.rankSep) || !hasMinlenAbove1) {
+      return this
+    }
+
+    // Reduce rank separation, as AI tends to spread nodes too far apart
+    G.set(_.ranksep, pxToInch(80))
+
     return this
   }
 }
