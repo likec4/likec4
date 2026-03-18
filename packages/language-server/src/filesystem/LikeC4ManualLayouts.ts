@@ -180,7 +180,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   async read(project: Project): Promise<ManualLayoutsSnapshot | null> {
     return await this.#limit(async () => {
       const cached = this.cache.get(project.id)
-      if (cached) {
+      if (cached !== undefined) {
         return cached
       }
       const result = await this.readManualLayouts(project)

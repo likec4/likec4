@@ -23,11 +23,6 @@ jobs:
       - name: ʦ typecheck
         run: pnpm ci:typecheck
 
-      - name: 🔬 type tests
-        working-directory: packages/core
-        run: pnpm test --typecheck
-
-      # TODO: Here it says to run lint after typecheck
       # https://oxc.rs/docs/guide/usage/linter/type-aware.html#monorepos-and-build-outputs
       - name: 🧹 lint
         run: pnpm ci:lint
@@ -92,7 +87,7 @@ jobs:
       - name: 🔬 test
         env:
           NODE_ENV: test
-        run: pnpm ci:test
+        run: pnpm ci:test --typecheck
 
   check-docs-astro:
     name: 📖 docs
