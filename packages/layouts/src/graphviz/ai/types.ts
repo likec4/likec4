@@ -48,13 +48,15 @@ import type { EdgeId, NodeId, NonEmptyArray, NonEmptyReadonlyArray } from '@like
 //   id: EdgeId
 // }
 
-// /**
-//  * invisible edge added by AI to enforce better layout
-//  */
-// export interface AIEnforcementEdge extends AISuggestedEdgeAttrs {
-//   source: NodeId
-//   target: NodeId
-// }
+/**
+ * invisible edge added by AI to enforce better layout
+ */
+export interface AIEnforcementEdge {
+  source: NodeId
+  target: NodeId
+  weight: number
+  minlen: number
+}
 
 /**
  * Complete set of AI-generated layout hints.
@@ -71,6 +73,7 @@ export interface AiLayoutHints {
   excludeFromRanking?: ReadonlySet<EdgeId>
   edgeOrder?: NonEmptyReadonlyArray<EdgeId>
   nodeOrder?: NonEmptyReadonlyArray<NodeId>
+  invisibleEdges?: NonEmptyReadonlyArray<AIEnforcementEdge>
   /** LLM reasoning for debugging/display */
   reasoning: string
 }

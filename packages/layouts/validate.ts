@@ -1,6 +1,6 @@
 import { type ComputedLikeC4ModelData, nonNullable } from '@likec4/core'
 import { LikeC4Styles } from '@likec4/core/styles'
-import { configureLogger, getAnsiColorFormatter, getConsoleSink } from '@likec4/log'
+import { configureLogger, getAnsiColorFormatter, getConsoleSink, logger } from '@likec4/log'
 import ollama from 'ollama'
 import { $, echo, fs } from 'zx'
 import { enhanceLayoutWithAI } from './src/graphviz/ai/orchestrator'
@@ -24,6 +24,8 @@ configureLogger({
 
 const systemPrompt = fs.readFileSync('src/graphviz/ai/prompt-system.md', 'utf-8')
 
+// const viewId = 'amazon'
+// const viewId = 'cloud_next'
 const viewId = 'amazon_sqs'
 
 const model = fs.readJsonSync('./model.json') as ComputedLikeC4ModelData
@@ -56,8 +58,12 @@ const claudeCli: AILayoutProvider = {
 const ollamaProvider: AILayoutProvider = {
   name: 'ollama',
   sendRequest: async ({ diagram, userPrompt }) => {
+    const model = 'qwen3.5:9b'
+    // const model = 'gemma3:4b'
+    logger.debug('Calling Ollama with model={model}\n{diagram}', { model, diagram })
+
     const stream = await ollama.chat({
-      model: 'qwen3.5:9b',
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
