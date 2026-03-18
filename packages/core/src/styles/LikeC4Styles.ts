@@ -84,7 +84,11 @@ export class LikeC4Styles {
   }
 
   get fingerprint(): string {
-    return memoizeProp(this, 'fingerprint', () => objectHash(this.config))
+    return memoizeProp(this, 'fingerprint', () =>
+      objectHash({
+        config: this.config,
+        customCss: this.customCss,
+      }))
   }
 
   /**
