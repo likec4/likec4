@@ -1,7 +1,8 @@
-import type { DiagramNode, Icon, LayoutedView, ProjectId, ViewId } from '@likec4/core'
+import { type DiagramNode, type Icon, type LayoutedView, type ProjectId, type ViewId, exact } from '@likec4/core'
 import { objectHash, onNextTick } from '@likec4/core/utils'
 import JSON5 from 'json5'
-import { SimpleCache, URI, UriUtils } from 'langium'
+import { type Disposable, SimpleCache, URI, UriUtils } from 'langium'
+import pLimit from 'p-limit'
 import { indexBy, prop } from 'remeda'
 import {
   type Location,
@@ -10,19 +11,35 @@ import {
 } from 'vscode-languageserver-types'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
+import { safeCall } from '../utils'
 import type { Project } from '../workspace/ProjectsManager'
-import type { LikeC4ManualLayouts, LikeC4ManualLayoutsModuleContext, ManualLayoutsSnapshot } from './types'
+import type {
+  LikeC4ManualLayouts,
+  LikeC4ManualLayoutsModuleContext,
+  ManualLayoutsSnapshot,
+  ManualLayoutUpdateEvent,
+  ManualLayoutUpdateListener,
+} from './types'
 
 const layoutsLogger = rootLogger.getChild('manual-layouts')
 
+const extension = '.likec4.snap'
 /**
  * @todo sync with vscode extension watchers
  *       (search for ".likec4.snap" references)
  */
-export const isManualLayoutFile = (path: string) => path.endsWith('.likec4.snap')
+export const isManualLayoutFile = (path: string) => path.endsWith(extension)
 
 function fileName(view: ViewId): string {
-  return `${view}.likec4.snap`
+  return `${view}${extension}`
+}
+
+function viewIdFromURI(uri: URI): ViewId | null {
+  const fileName = UriUtils.basename(uri)
+  if (!isManualLayoutFile(fileName)) {
+    return null
+  }
+  return fileName.slice(0, -extension.length) as ViewId
 }
 
 function getManualLayoutsOutDir(project: Project): URI {
@@ -39,7 +56,11 @@ export const WithLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
 const RELATIVE_PATH_PREFIX = 'file://./'
 
 export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
-  protected cache: SimpleCache<ProjectId, Promise<ManualLayoutsSnapshot | null>>
+  protected cache: SimpleCache<ProjectId, ManualLayoutsSnapshot | null>
+
+  private listeners: ManualLayoutUpdateListener[] = []
+
+  #limit = pLimit(1)
 
   constructor(private services: LikeC4SharedServices) {
     this.cache = new SimpleCache()
@@ -51,44 +72,120 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     })
   }
 
-  async read(project: Project): Promise<ManualLayoutsSnapshot | null> {
-    return await this.cache.get(project.id, async () => {
-      const logger = layoutsLogger.getChild(project.id)
-      const fs = this.services.workspace.FileSystemProvider
-      const outDir = getManualLayoutsOutDir(project)
-      const manualLayouts = [] as LayoutedView[]
-      try {
-        const files = await fs.scanDirectory(outDir, isManualLayoutFile)
-        if (files.length === 0) {
-          return null
-        }
-        for (const file of files) {
-          try {
-            const content = await fs.readFile(file.uri)
-            const parsed = JSON5.parse<LayoutedView>(content)
-            const resolved = this.resolveIconPathsAfterRead(parsed, project.folderUri)
-            manualLayouts.push({
-              ...resolved,
-              _layout: 'manual',
-            })
-          } catch (err) {
-            logger.warn(`Failed to read view snapshot ${file.uri.fsPath}`, { err })
-          }
-        }
-        if (manualLayouts.length) {
-          logger.debug`read manual layouts for ${project.id}, found ${manualLayouts.length}`
-        }
-      } catch (err) {
-        logger.warn(`Failed to read manual layouts for ${project.folderUri.fsPath}`, { err })
+  async handleFileSystemUpdate(
+    event: { update: URI; delete?: never } | { delete: URI; update?: never },
+  ): Promise<void> {
+    const uri = event.update ?? event.delete
+    let viewId = viewIdFromURI(uri) ?? undefined
+    const projectId = this.services.workspace.ProjectsManager.ownerProjectId(uri)
+    this.cache.delete(projectId)
+    if ('delete' in event) {
+      this.triggerUpdate(exact({
+        removed: uri,
+        projectId,
+        viewId,
+      }))
+      return
+      // TODO: handle delete
+    }
+
+    const project = this.services.workspace.ProjectsManager.getProject(projectId)
+    if (!viewId) {
+      const snapshot = await this.readSnapshot(uri, project)
+      if (snapshot) {
+        viewId = snapshot.id
+      } else {
+        layoutsLogger.error(`File ${uri} does not exist or is not a valid manual layout file`)
+        viewId = 'index' as ViewId
       }
-      if (manualLayouts.length === 0) {
+    }
+    this.triggerUpdate({
+      updated: uri,
+      projectId,
+      viewId,
+    })
+  }
+
+  onManualLayoutUpdate(listener: ManualLayoutUpdateListener): Disposable {
+    this.listeners.push(listener)
+    return {
+      dispose: () => {
+        const index = this.listeners.indexOf(listener)
+        if (index !== -1) {
+          this.listeners.splice(index, 1)
+        }
+      },
+    }
+  }
+
+  protected async readManualLayouts(project: Project): Promise<ManualLayoutsSnapshot | null> {
+    const logger = layoutsLogger.getChild(project.id)
+    const fs = this.services.workspace.FileSystemProvider
+    const outDir = getManualLayoutsOutDir(project)
+    const manualLayouts = [] as LayoutedView[]
+    try {
+      const files = await fs.scanDirectory(outDir, isManualLayoutFile)
+      if (files.length === 0) {
         return null
       }
-      const views = indexBy(manualLayouts, prop('id'))
-      return {
-        hash: objectHash(views),
-        views,
+      for (const file of files) {
+        try {
+          const content = await fs.readFile(file.uri)
+          const parsed = JSON5.parse<LayoutedView>(content)
+          const resolved = this.resolveIconPathsAfterRead(parsed, project.folderUri)
+          manualLayouts.push({
+            ...resolved,
+            _layout: 'manual',
+          })
+        } catch (err) {
+          logger.warn(`Failed to read view snapshot ${file.uri.fsPath}`, { err })
+        }
       }
+      if (manualLayouts.length) {
+        logger.trace`read manual layouts for ${project.id}, found ${manualLayouts.length}`
+      }
+    } catch (err) {
+      logger.warn(`Failed to read manual layouts for ${project.folderUri.fsPath}`, { err })
+    }
+    if (manualLayouts.length === 0) {
+      return null
+    }
+    const views = indexBy(manualLayouts, prop('id'))
+    return {
+      hash: objectHash(views),
+      views,
+    }
+  }
+
+  async readSnapshot(uri: URI, project?: Project): Promise<LayoutedView | null> {
+    const fs = this.services.workspace.FileSystemProvider
+    try {
+      const content = await fs.readFile(uri)
+      const parsed = JSON5.parse<LayoutedView>(content)
+      if (!project) {
+        const projectId = this.services.workspace.ProjectsManager.ownerProjectId(uri)
+        project = this.services.workspace.ProjectsManager.getProject(projectId)
+      }
+      const resolved = this.resolveIconPathsAfterRead(parsed, project.folderUri)
+      return {
+        ...resolved,
+        _layout: 'manual',
+      }
+    } catch (err) {
+      layoutsLogger.warn(`Failed to read view snapshot ${uri.fsPath}`, { err })
+      return null
+    }
+  }
+
+  async read(project: Project): Promise<ManualLayoutsSnapshot | null> {
+    return await this.#limit(async () => {
+      const cached = this.cache.get(project.id)
+      if (cached) {
+        return cached
+      }
+      const result = await this.readManualLayouts(project)
+      this.cache.set(project.id, result)
+      return result
     })
   }
 
@@ -123,6 +220,11 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
     const fs = this.services.workspace.FileSystemProvider
     try {
       await fs.writeFile(file, content + '\n')
+      this.triggerUpdate({
+        updated: file,
+        projectId: project.id,
+        viewId: layouted.id,
+      })
     } catch (err) {
       logger.warn(`Failed to write snapshot ${layouted.id} to ${file.fsPath}`, { err })
     }
@@ -150,6 +252,11 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
         logger.warn`Snapshot ${view} did not exist at ${file.fsPath}`
         return null
       }
+      this.triggerUpdate({
+        removed: file,
+        projectId: project.id,
+        viewId: view,
+      })
     } catch (err) {
       logger.warn(`Failed to delete snapshot ${view} from ${file.fsPath}`, { err })
     }
@@ -159,6 +266,12 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   clearCaches(): void {
     layoutsLogger.trace`clear caches`
     this.cache.clear()
+  }
+
+  private triggerUpdate(event: ManualLayoutUpdateEvent): void {
+    for (const listener of this.listeners) {
+      safeCall(() => listener(event))
+    }
   }
 
   /**

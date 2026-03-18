@@ -22,11 +22,11 @@ export class LikeC4ModelChanges {
   ): Promise<ChangeView.Res> {
     const lspConnection = this.services.shared.lsp.Connection
     const workspace = this.services.shared.workspace
+
     try {
       let { viewId, projectId: _projectId, change } = changeView
       const project = workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
       logger.debug`Applying model change ${change.op} to view ${viewId} in project ${project.id}`
-
       const lookup = this.locator.locateViewAst(viewId, project.id)
       if (!lookup) {
         throw new Error(`View ${viewId} not found in project ${project.id}`)
@@ -35,7 +35,6 @@ export class LikeC4ModelChanges {
         uri: lookup.doc.textDocument.uri,
         version: lookup.doc.textDocument.version,
       }
-
       // TODO refactor to use separate methods for save/reset operations
       if (change.op === 'save-view-snapshot') {
         invariant(
@@ -85,6 +84,8 @@ export class LikeC4ModelChanges {
         }
       }
 
+      await workspace.DocumentBuilder.update([lookup.doc.uri], [])
+
       return {
         success: true,
         location: {
@@ -104,8 +105,6 @@ export class LikeC4ModelChanges {
         success: false,
         error,
       }
-    } finally {
-      this.services.likec4.ModelBuilder.clearCache()
     }
   }
 

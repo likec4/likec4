@@ -1,7 +1,8 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
-import type { LayoutedView, ViewId } from '@likec4/core/types'
+import type { LayoutedView, ProjectId, ViewId } from '@likec4/core/types'
 import type {
   AsyncDisposable,
+  Disposable,
   FileSystemNode,
   FileSystemProvider as LangiumFileSystemProvider,
   URI,
@@ -79,9 +80,42 @@ export type ManualLayoutsSnapshot = {
   views: Record<ViewId, LayoutedView>
 }
 
+export type ManualLayoutUpdateEvent =
+  | {
+    updated: URI
+    projectId: ProjectId
+    viewId: ViewId
+  }
+  | {
+    removed: URI
+    projectId: ProjectId
+    /**
+     * Missing if triggered by FS event (file was deleted)
+     */
+    viewId?: ViewId
+  }
+export type ManualLayoutUpdateListener = (event: ManualLayoutUpdateEvent) => void
+
 export interface LikeC4ManualLayouts {
+  /**
+   * Reads a single layouted view from the file system by its URI.
+   * Used by the language server to get the current layout state.
+   */
+  readSnapshot(uri: URI): Promise<LayoutedView | null>
   read(project: Project): Promise<ManualLayoutsSnapshot | null>
   write(project: Project, layouted: LayoutedView): Promise<Location>
   remove(project: Project, view: ViewId): Promise<Location | null>
   clearCaches(): void
+  /**
+   * Registers a listener for manual layout updates.
+   * The listener will be called when a manual layout is created, updated, or deleted.
+   */
+  onManualLayoutUpdate(listener: ManualLayoutUpdateListener): Disposable
+
+  /**
+   * Handles file system updates for manual layouts.
+   * Used by the file system watcher to notify the manual layouts module of changes.
+   * @param event The file system event
+   */
+  handleFileSystemUpdate(event: { update: URI; delete?: never } | { delete: URI; update?: never }): Promise<void>
 }

@@ -8,11 +8,11 @@ export async function updateView({
 }: PluginRPCParams, data: Parameters<LikeC4VitePluginRpc['updateView']>[0]) {
   logger.info([
     k.green('view:onChange'),
-    k.dim('project') + ':',
+    k.dim('project'),
     data.projectId,
-    k.dim('view') + ':',
+    k.dim('view'),
     data.viewId,
-    k.dim('change') + ':',
+    k.dim('change'),
     data.change.op,
   ].join(' '))
   const result = await likec4.editor.applyChange(data)

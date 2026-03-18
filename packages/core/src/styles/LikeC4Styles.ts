@@ -10,7 +10,7 @@ import type {
   NTuple,
 } from '../types'
 import { ensureSizes } from '../types'
-import { DefaultMap, DefaultWeakMap, memoizeProp } from '../utils'
+import { DefaultMap, DefaultWeakMap, memoizeProp, objectHash } from '../utils'
 import type { DefaultTagColors } from './assignTagColors'
 import { computeColorValues } from './compute-color-values'
 import { computeCompoundColorValues } from './compute-compound-colors'
@@ -81,6 +81,10 @@ export class LikeC4Styles {
   ) {
     this.theme = config.theme
     this.defaults = config.defaults
+  }
+
+  get fingerprint(): string {
+    return memoizeProp(this, 'fingerprint', () => objectHash(this.config))
   }
 
   /**
@@ -235,8 +239,7 @@ export class LikeC4Styles {
     if (this.constructor !== other.constructor) {
       return false
     }
-    return isDeepEqual(this.config, other.config) &&
-      isDeepEqual(this.customCss ?? null, other.customCss ?? null)
+    return this.fingerprint === other.fingerprint
   }
 
   /**

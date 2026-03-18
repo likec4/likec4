@@ -3,8 +3,7 @@ import { compareNaturalHierarchically } from '@likec4/core/utils'
 import type { LangiumDocument, Stream, URI } from 'langium'
 import { DefaultLangiumDocuments, stream } from 'langium'
 import { groupBy, map, pipe, prop } from 'remeda'
-import { type LikeC4LangiumDocument, isLikeC4LangiumDocument } from '../ast'
-import { isNotLikeC4Builtin } from '../likec4lib'
+import { type LikeC4LangiumDocument, isLikeC4UserDocument } from '../ast'
 import type { LikeC4SharedServices } from '../module'
 import type { ProjectsManager } from './ProjectsManager'
 
@@ -13,9 +12,6 @@ import type { ProjectsManager } from './ProjectsManager'
  */
 const compare = compareNaturalHierarchically('/')
 const ensureOrder = (a: LangiumDocument, b: LangiumDocument) => compare(a.uri.path, b.uri.path)
-
-const isLikeC4UserDocument = (doc: LangiumDocument | undefined): doc is LikeC4LangiumDocument =>
-  isLikeC4LangiumDocument(doc) && isNotLikeC4Builtin(doc)
 
 export class LangiumDocuments extends DefaultLangiumDocuments {
   constructor(protected services: LikeC4SharedServices) {

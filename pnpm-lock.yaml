@@ -307,6 +307,9 @@ catalogs:
     khroma:
       specifier: 2.1.0
       version: 2.1.0
+    lru-cache:
+      specifier: ^11.2.7
+      version: 11.2.7
     nanoid:
       specifier: 5.1.6
       version: 5.1.6
@@ -352,6 +355,9 @@ catalogs:
     ufo:
       specifier: 1.6.3
       version: 1.6.3
+    unstorage:
+      specifier: ^1.17.4
+      version: 1.17.4
   vite:
     '@vitejs/plugin-react':
       specifier: ^5.2.0
@@ -1398,9 +1404,15 @@ importers:
       langium:
         specifier: catalog:langium
         version: 3.5.0
+      lru-cache:
+        specifier: catalog:utils
+        version: 11.2.7
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
+      p-limit:
+        specifier: catalog:utils
+        version: 7.3.0
       p-queue:
         specifier: catalog:utils
         version: 8.1.1
@@ -1425,6 +1437,9 @@ importers:
       ufo:
         specifier: catalog:utils
         version: 1.6.3
+      unstorage:
+        specifier: catalog:utils
+        version: 1.17.4
       vscode-jsonrpc:
         specifier: 8.2.1
         version: 8.2.1
@@ -7261,6 +7276,10 @@ packages:
 
   lru-cache@11.2.4:
     resolution: {integrity: sha512-B5Y16Jr9LB9dHVkh6ZevG+vAbOsNOYCX+sXvFWFu7B3Iz5mijW3zdbMyhsh8ANd2mSWBYdJgnqi+mL7/LrOPYg==}
+    engines: {node: 20 || >=22}
+
+  lru-cache@11.2.7:
+    resolution: {integrity: sha512-aY/R+aEsRelme17KGQa/1ZSIpLpNYYrhcrepKTZgE+W3WM16YMCaPwOHLHsmopZHELU0Ojin1lPVxKR0MihncA==}
     engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
@@ -15279,6 +15298,8 @@ snapshots:
 
   lru-cache@11.2.4: {}
 
+  lru-cache@11.2.7: {}
+
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
@@ -17666,7 +17687,7 @@ snapshots:
       chokidar: 5.0.0
       destr: 2.0.5
       h3: 1.15.5
-      lru-cache: 11.2.4
+      lru-cache: 11.2.7
       node-fetch-native: 1.6.7
       ofetch: 1.5.1
       ufo: 1.6.3

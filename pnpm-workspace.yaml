@@ -132,6 +132,7 @@ catalogs:
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
+    lru-cache: ^11.2.7
     nanoid: 5.1.6
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0
@@ -149,6 +150,7 @@ catalogs:
     strip-indent: ^4.1.1
     tinyrainbow: ^3.0.3
     ufo: 1.6.3
+    unstorage: ^1.17.4
   vite:
     "@vitejs/plugin-react": ^5.2.0
     birpc: ^4.0.0

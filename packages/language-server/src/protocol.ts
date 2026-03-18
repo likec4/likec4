@@ -17,7 +17,10 @@ import { NotificationType, NotificationType0, RequestType, RequestType0 } from '
 import type { DiagnosticSeverity, DocumentUri, Location, Position, Range, URI } from 'vscode-languageserver-types'
 
 export namespace DidChangeModelNotification {
-  export const type = new NotificationType<string>('likec4/onDidChangeModel')
+  export type Params = {
+    projectId: ProjectId
+  }
+  export const type = new NotificationType<Params>('likec4/onDidChangeModel')
   export type Type = typeof type
 }
 
@@ -35,9 +38,7 @@ export namespace DidChangeProjectsNotification {
  * Send by the editor to the language server
  */
 export namespace DidChangeSnapshotNotification {
-  export type Params = {
-    snapshotUri: DocumentUri
-  }
+  export type Params = { update: string; delete?: never } | { delete: string; update?: never }
   export const Method = 'likec4/onDidChangeSnapshot' as const
   export const type = new NotificationType<Params>(Method)
   export type Type = typeof type

@@ -54,20 +54,35 @@ export class Rpc extends ADisposable {
     const DocumentBuilder = workspace.DocumentBuilder
 
     // ----------
+    const sendDidChangeModelNotification = (project: ProjectId) => {
+      logger.debug`send ${'onDidChangeModel'} for project ${project}`
+      connection.sendNotification(DidChangeModelNotification.type, { projectId: project }).catch(error => {
+        logger.warn(`[ServerRpc] error sending onDidChangeModel for project {project}`, { error, project })
+        return
+      })
+    }
+
     const notifyModelParsed = funnel(
-      (batch: number) => {
-        if (batch > 1) {
-          logger.debug`send ${'onDidChangeModel'} (${batch} batched)`
-        } else {
-          logger.debug`send ${'onDidChangeModel'}`
-        }
-        connection.sendNotification(DidChangeModelNotification.type, '').catch(error => {
-          logger.warn(`[ServerRpc] error sending onDidChangeModel:`, { error })
+      (project: ProjectId | Set<ProjectId>) => {
+        if (typeof project === 'string') {
+          sendDidChangeModelNotification(project)
           return
-        })
+        }
+        for (const p of project) {
+          sendDidChangeModelNotification(p)
+        }
       },
       {
-        reducer: (accumulator, req: number) => (accumulator ?? 0) + req,
+        reducer: (accumulator, project: ProjectId) => {
+          if (!accumulator || accumulator === project) {
+            return project
+          }
+          if (accumulator instanceof Set) {
+            accumulator.add(project)
+            return accumulator
+          }
+          return new Set([accumulator, project])
+        },
         triggerAt: 'end',
         minQuietPeriodMs: 130,
         maxBurstDurationMs: 400,
@@ -98,7 +113,7 @@ export class Rpc extends ADisposable {
 
     this.onDispose(
       // ----------
-      likec4Services.ModelBuilder.onModelParsed(() => notifyModelParsed.call(1)),
+      likec4Services.ModelBuilder.onModelParsed((projectId) => notifyModelParsed.call(projectId)),
       // ----------
       workspace.ProjectsManager.onProjectsUpdate(() => notifyProjectsUpdate.call(1)),
       // ----------
@@ -119,12 +134,11 @@ export class Rpc extends ADisposable {
         return { model: null }
       }),
       // ----------
-      connection.onNotification(DidChangeSnapshotNotification.type, async ({ snapshotUri }) => {
-        logger.debug`received notification ${'onDidChangeSnapshot'} for snapshot ${snapshotUri}`
-        workspace.ManualLayouts.clearCaches()
-        await workspace.ProjectsManager.rebuildProject(
-          workspace.ProjectsManager.ownerProjectId(snapshotUri),
-        )
+      connection.onNotification(DidChangeSnapshotNotification.type, async (params) => {
+        const uri = URI.parse(params.update ?? params.delete)
+        const event = 'update' in params ? { update: uri } : { delete: uri }
+        logger.debug`received notification ${'onDidChangeSnapshot'} with ${params}`
+        await workspace.ManualLayouts.handleFileSystemUpdate(event)
       }),
       // ----------
       connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {
@@ -304,17 +318,9 @@ export class Rpc extends ADisposable {
         }
       }),
       // ----------
-      connection.onRequest(ChangeView.req, async (request, cancelToken) => {
+      connection.onRequest(ChangeView.req, async (request) => {
         logger.debug`received request ${'changeView'} of ${request.viewId} from project ${request.projectId}`
-        const loc = await likec4Services.ModelChanges.applyChange(request)
-        const op = request.change.op
-        if (
-          request.projectId &&
-          (op === 'save-view-snapshot' || op === 'reset-manual-layout')
-        ) {
-          await workspace.ProjectsManager.rebuildProject(request.projectId as ProjectId, cancelToken)
-        }
-        return loc
+        return await likec4Services.ModelChanges.applyChange(request)
       }),
       // ----------
       connection.onRequest(FetchTelemetryMetrics.req, async (cancelToken) => {

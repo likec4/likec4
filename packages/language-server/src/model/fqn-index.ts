@@ -29,8 +29,8 @@ import {
   ast,
   ElementOps,
   isLikeC4LangiumDocument,
+  isLikeC4UserDocument,
 } from '../ast'
-import { isNotLikeC4Builtin } from '../likec4lib'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
@@ -60,7 +60,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
         DocumentState.IndexedContent,
         (doc) => {
-          if (isLikeC4LangiumDocument(doc) && isNotLikeC4Builtin(doc)) {
+          if (isLikeC4UserDocument(doc)) {
             this.documentCache.delete(doc)
           }
         },

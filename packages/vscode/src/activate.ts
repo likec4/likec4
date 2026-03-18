@@ -86,14 +86,14 @@ function monitorFileSystemEvents() {
   const viewSnapshotWatcher = useFsWatcher(toRef(`**/*.likec4.snap`))
   viewSnapshotWatcher.onDidChange((uri) => {
     logger.debug`view snapshot changed: ${uri.fsPath}`
-    void rpc.notifyDidChangeSnapshot(uri)
+    void rpc.notifyDidChangeSnapshot('update', uri)
   })
   viewSnapshotWatcher.onDidCreate((uri) => {
     logger.debug`view snapshot created: ${uri.fsPath}`
-    void rpc.notifyDidChangeSnapshot(uri)
+    void rpc.notifyDidChangeSnapshot('update', uri)
   })
   viewSnapshotWatcher.onDidDelete((uri) => {
     logger.debug`view snapshot deleted: ${uri.fsPath}`
-    void rpc.notifyDidChangeSnapshot(uri)
+    void rpc.notifyDidChangeSnapshot('delete', uri)
   })
 }

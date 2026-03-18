@@ -15,6 +15,7 @@ import type { Diagnostic } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
+import { isNotLikeC4Builtin } from './likec4lib'
 import type { IsValidFn } from './validation'
 
 export { ast }
@@ -253,6 +254,10 @@ export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Requ
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument | undefined): doc is LikeC4LangiumDocument {
   return doc?.textDocument.languageId === LikeC4LanguageMetaData.languageId
+}
+
+export function isLikeC4UserDocument(doc: LangiumDocument | undefined): doc is LikeC4LangiumDocument {
+  return isLikeC4LangiumDocument(doc) && isNotLikeC4Builtin(doc)
 }
 
 export function isParsedLikeC4LangiumDocument(

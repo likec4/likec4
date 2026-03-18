@@ -85,6 +85,11 @@ export class GraphvizLayouter implements Disposable {
     rootLogger.trace`change port to ${this.graphviz.name}`
   }
 
+  printToDot(params: LayoutTaskParams): DotSource {
+    const printer = getPrinter(params)
+    return printer.print()
+  }
+
   async dotToJson(dot: DotSource): Promise<GraphvizJson> {
     const logger = rootLogger.getChild(['dotToJson', randomString(3)])
     let json
