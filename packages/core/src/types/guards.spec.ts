@@ -15,7 +15,8 @@ describe('hasProp', () => {
   })
 
   it('returns false for missing property', () => {
-    expect(hasProp({} as any, 'some')).toBe(false)
+    const obj: Record<string, unknown> = {}
+    expect(hasProp(obj, 'some')).toBe(false)
   })
 
   it('returns true for falsy but non-nullish values', () => {
@@ -24,7 +25,7 @@ describe('hasProp', () => {
     expect(hasProp({ some: false }, 'some')).toBe(true)
   })
 
-  describe('curried form', () => {
+  describe('curried form hasProp(path)(value)', () => {
     it('returns true for present non-nullish property', () => {
       expect(hasProp('some')({ some: 'value' })).toBe(true)
     })
@@ -38,7 +39,7 @@ describe('hasProp', () => {
     })
 
     it('returns false for missing property', () => {
-      expect(hasProp('some')({} as any)).toBe(false)
+      expect(hasProp('some')({ other: 1 })).toBe(false)
     })
   })
 })

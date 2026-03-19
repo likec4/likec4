@@ -155,6 +155,7 @@ async function multipleFilesCodegenAction(
   }
 }
 
+/** Legacy codegen: generates output for each view in the configured format (react, webcomponent, etc.). */
 export async function legacyHandler({ path, useDotBin, ...outparams }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)

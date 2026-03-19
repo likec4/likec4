@@ -3,6 +3,7 @@
  * No universal taxonomy; safe defaults. Actor kind maps to 'Provider' unless overridden.
  */
 
+/** Configurable mapping from LikeC4 kinds/relations/tags to LeanIX fact sheet and relation types. */
 export interface LeanixMappingConfig {
   /** LikeC4 element kind → LeanIX fact sheet type */
   factSheetTypes?: Record<string, string>
@@ -11,6 +12,12 @@ export interface LeanixMappingConfig {
   /** LikeC4 tags / metadata keys → LeanIX field names (optional) */
   metadataToFields?: Record<string, string>
 }
+
+/** Fallback when element kind is unknown (G25: named constant). */
+export const FALLBACK_FACT_SHEET_TYPE = 'Application'
+
+/** Fallback when relation kind is unknown (G25: named constant). */
+export const FALLBACK_RELATION_TYPE = 'depends on'
 
 /** Default mapping: actor → Provider; override factSheetTypes/relationTypes as needed */
 export const DEFAULT_LEANIX_MAPPING: Required<LeanixMappingConfig> = {
@@ -21,7 +28,7 @@ export const DEFAULT_LEANIX_MAPPING: Required<LeanixMappingConfig> = {
     actor: 'Provider',
   },
   relationTypes: {
-    default: 'depends on',
+    default: FALLBACK_RELATION_TYPE,
   },
   metadataToFields: {
     title: 'name',
@@ -30,6 +37,9 @@ export const DEFAULT_LEANIX_MAPPING: Required<LeanixMappingConfig> = {
   },
 }
 
+/**
+ * Merges partial mapping config with DEFAULT_LEANIX_MAPPING; returns a full Required<LeanixMappingConfig>.
+ */
 export function mergeWithDefault(partial?: LeanixMappingConfig | null): Required<LeanixMappingConfig> {
   const base = {
     factSheetTypes: { ...DEFAULT_LEANIX_MAPPING.factSheetTypes },
@@ -46,17 +56,33 @@ export function mergeWithDefault(partial?: LeanixMappingConfig | null): Required
   }
 }
 
+/**
+ * Returns LeanIX fact sheet type for a LikeC4 element kind.
+ * Uses mapping.factSheetTypes[kind], then 'default', then FALLBACK_FACT_SHEET_TYPE.
+ */
 export function getFactSheetType(
   likec4Kind: string,
   mapping: Required<LeanixMappingConfig>,
 ): string {
-  return mapping.factSheetTypes[likec4Kind] ?? mapping.factSheetTypes['default'] ?? 'Application'
+  return (
+    mapping.factSheetTypes[likec4Kind] ??
+      mapping.factSheetTypes['default'] ??
+      FALLBACK_FACT_SHEET_TYPE
+  )
 }
 
+/**
+ * Returns LeanIX relation type for a LikeC4 relationship kind.
+ * Uses mapping.relationTypes[kind], then 'default', then FALLBACK_RELATION_TYPE.
+ */
 export function getRelationType(
   likec4Kind: string | null,
   mapping: Required<LeanixMappingConfig>,
 ): string {
   const kind = likec4Kind ?? 'default'
-  return mapping.relationTypes[kind] ?? mapping.relationTypes['default'] ?? 'depends on'
+  return (
+    mapping.relationTypes[kind] ??
+      mapping.relationTypes['default'] ??
+      FALLBACK_RELATION_TYPE
+  )
 }

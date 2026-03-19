@@ -15,7 +15,7 @@ import { clamp, pipe } from 'remeda'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { version } from '../../package.json' with { type: 'json' }
+import pkg from '../../package.json' with { type: 'json' }
 import buildCmd from './build'
 import checkUpdateCmd, { notifyAvailableUpdate } from './check-update'
 import codegenCmd from './codegen'
@@ -26,6 +26,7 @@ import mcpCmd from './mcp'
 import { logLevel, verbose, verboseLogLevel } from './options'
 import previewCmd from './preview'
 import serveCmd from './serve'
+import syncCmd from './sync'
 import validateCmd from './validate'
 
 /**
@@ -67,6 +68,7 @@ async function main() {
     exportCmd,
     formatCmd,
     previewCmd,
+    syncCmd,
     validateCmd,
     mcpCmd,
     lspCmd,
@@ -84,7 +86,7 @@ async function main() {
   await y
     .scriptName('likec4')
     .usage(`Usage: $0 <command>`)
-    .version(version)
+    .version(pkg.version)
     .alias('v', 'version')
     .alias('h', 'help')
     .help('help')

@@ -27,6 +27,7 @@ function ensureProjectId(likec4: LikeC4, project: string | undefined): ProjectId
   return likec4.languageServices.projectsManager.ensureProjectId(project as ProjectId)
 }
 
+/** Resolves projectId from path or default; returns projectId, projectFolder and config. */
 export function ensureProject(
   likec4: LikeC4,
   project: string | undefined,

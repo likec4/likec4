@@ -12,7 +12,12 @@ export function isNonEmptyArray<A>(arr: ArrayLike<A> | undefined): arr is NonEmp
 
 function _hasProp(value: unknown, path: string): boolean {
   invariant(typeof path === 'string', 'Path must be string')
-  return value != null && typeof value === 'object' && (value as any)[path] != null
+  return value != null && typeof value === 'object' && (value as Record<string, unknown>)[path] != null
+}
+
+/** Curried form: returns a predicate (value) => boolean. Kept as named function so bundlers/transforms preserve it. */
+function hasPropCurried(path: string): (value: unknown) => boolean {
+  return (value: unknown) => _hasProp(value, path)
 }
 
 export function hasProp<T extends object, P extends keyof T & string>(
@@ -25,9 +30,8 @@ export function hasProp<const P extends string>(
 ): // @ts-expect-error could be instantiated with an arbitrary type
 <T>(value: T) => value is SetRequired<SetNonNullable<T, P>, P>
 export function hasProp(...args: any[]) {
-  if (args.length === 1) {
-    const path = args[0] as string
-    return (value: unknown) => _hasProp(value, path)
+  if (args.length === 1 && typeof args[0] === 'string') {
+    return hasPropCurried(args[0])
   }
   const [value, path] = args
   return _hasProp(value, path)

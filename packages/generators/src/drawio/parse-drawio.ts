@@ -727,6 +727,32 @@ function isValidFqn(s: string): boolean {
   return segments.every(seg => /^[a-zA-Z0-9_-]+$/.test(seg))
 }
 
+/** Depth of vertex from root (0 = root or parent not in diagram). Cycle-safe: cycles in parent graph return 0. */
+function vertexDepth(
+  v: DrawioCell,
+  idToVertex: Map<string, DrawioCell>,
+  visited: Set<string> = new Set(),
+): number {
+  if (visited.has(v.id)) return 0
+  visited.add(v.id)
+  if (v.parent == null || !idToVertex.has(v.parent)) return 0
+  return 1 + vertexDepth(idToVertex.get(v.parent)!, idToVertex, visited)
+}
+
+/** True when bridgeId is valid FQN and matches parent chain (root or prefix). */
+function isUsableBridgeId(
+  bridgeId: string,
+  v: DrawioCell,
+  idToFqn: Map<string, string>,
+  _idToVertex: Map<string, DrawioCell>,
+  isRootParent: (parent: string | undefined) => boolean,
+): boolean {
+  if (!isValidFqn(bridgeId)) return false
+  const parentFqn = v.parent ? idToFqn.get(v.parent) : undefined
+  if (parentFqn === undefined) return isRootParent(v.parent)
+  return bridgeId.startsWith(parentFqn + '.') && bridgeId.length > parentFqn.length + 1
+}
+
 /** Assign FQNs to element vertices: bridge-managed likec4Id first (when valid), then root, hierarchy, orphans (DRY). */
 function assignFqnsToElementVertices(
   idToFqn: Map<string, string>,
@@ -738,20 +764,12 @@ function assignFqnsToElementVertices(
 ): void {
   const baseName = (v: DrawioCell) => v.value ?? containerIdToTitle.get(v.id) ?? v.id
   const idToVertex = new Map(elementVertices.map(v => [v.id, v]))
-  const depth = (v: DrawioCell): number =>
-    v.parent == null || !idToVertex.has(v.parent) ? 0 : 1 + depth(idToVertex.get(v.parent)!)
-  const byDepth = [...elementVertices].sort((a, b) => depth(a) - depth(b))
+  const byDepth = [...elementVertices].sort((a, b) => vertexDepth(a, idToVertex) - vertexDepth(b, idToVertex))
   for (const v of byDepth) {
     const bridgeId = v.likec4Id?.trim()
-    if (bridgeId && isValidFqn(bridgeId)) {
-      const parentFqn = v.parent ? idToFqn.get(v.parent) : undefined
-      const useBridgeId = parentFqn === undefined
-        ? isRootParent(v.parent)
-        : bridgeId.startsWith(parentFqn + '.') && bridgeId.length > parentFqn.length + 1
-      if (useBridgeId) {
-        idToFqn.set(v.id, bridgeId)
-        for (const segment of bridgeId.split('.')) usedNames.add(segment)
-      }
+    if (bridgeId && isUsableBridgeId(bridgeId, v, idToFqn, idToVertex, isRootParent)) {
+      idToFqn.set(v.id, bridgeId)
+      for (const segment of bridgeId.split('.')) usedNames.add(segment)
     }
   }
   for (const v of elementVertices) {

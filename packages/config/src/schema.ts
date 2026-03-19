@@ -53,6 +53,28 @@ export const ManualLayoutsConfigSchema = z
 
 export type ManualLayoutsConfig = z.infer<typeof ManualLayoutsConfigSchema>
 
+export const LandingPageSchema = z
+  .union([
+    z.strictObject({
+      redirect: z.literal(true),
+    }),
+    z.strictObject({
+      include: z.array(z.string().nonempty().refine(s => s !== '#', { message: 'selector cannot be "#"' })).nonempty(
+        'include list cannot be empty',
+      ),
+    }),
+    z.strictObject({
+      exclude: z.array(z.string().nonempty().refine(s => s !== '#', { message: 'selector cannot be "#"' })).nonempty(
+        'exclude list cannot be empty',
+      ),
+    }),
+  ])
+  .meta({
+    id: 'LandingPageConfig',
+    description:
+      'Configure the landing page. Use redirect to go to the index view, or include/exclude to filter the view grid.',
+  })
+
 export const LikeC4ProjectJsonConfigSchema = z.object({
   name: z.string()
     .nonempty('Project name cannot be empty')
@@ -105,25 +127,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .meta({
       description: 'Auto-generate scoped views for elements without explicit views. Defaults to false.',
     }),
-  landingPage: z.union([
-    z.strictObject({
-      redirect: z.literal(true),
-    }),
-    z.strictObject({
-      include: z.array(z.string().nonempty().refine(s => s !== '#', { message: 'selector cannot be "#"' })).nonempty(
-        'include list cannot be empty',
-      ),
-    }),
-    z.strictObject({
-      exclude: z.array(z.string().nonempty().refine(s => s !== '#', { message: 'selector cannot be "#"' })).nonempty(
-        'exclude list cannot be empty',
-      ),
-    }),
-  ]).optional().meta({
-    id: 'LandingPageConfig',
-    description:
-      'Configure the landing page. Use redirect to go to the index view, or include/exclude to filter the view grid.',
-  }),
+  landingPage: LandingPageSchema.optional(),
 })
   .meta({
     id: 'LikeC4ProjectConfig',
@@ -290,13 +294,40 @@ export type LikeC4ProjectConfigInput = LikeC4ProjectJsonConfig & {
 
 /**
  * Validates Object into a LikeC4ProjectConfig object.
+ * Zod v4 can strip optional union keys (e.g. landingPage) from parse output;
+ * we validate landingPage once with LandingPageSchema and merge onto the result.
  */
 export function validateProjectConfig<C extends Record<string, unknown>>(config: C): LikeC4ProjectConfig {
-  const parsed = LikeC4ProjectConfigSchema.safeParse(config)
-  if (parsed.success) {
-    return parsed.data as unknown as LikeC4ProjectConfig
+  const inputLandingPage = config['landingPage']
+  let validatedLandingPage: z.infer<typeof LandingPageSchema> | null = null
+  if (inputLandingPage != null) {
+    const lpResult = LandingPageSchema.safeParse(inputLandingPage)
+    if (!lpResult.success) {
+      throw new Error('Config validation failed:\n' + z.prettifyError(lpResult.error))
+    }
+    validatedLandingPage = lpResult.data
   }
-  throw new Error('Config validation failed:\n' + z.prettifyError(parsed.error))
+  const parsed = LikeC4ProjectJsonConfigSchema.safeParse(config)
+  if (!parsed.success) {
+    throw new Error('Config validation failed:\n' + z.prettifyError(parsed.error))
+  }
+  let data = parsed.data as unknown as LikeC4ProjectConfig
+  if (validatedLandingPage !== null) {
+    data = { ...data, landingPage: validatedLandingPage }
+  }
+  const generatorsInput = config['generators']
+  if (
+    generatorsInput != null &&
+    typeof generatorsInput === 'object' &&
+    !Array.isArray(generatorsInput)
+  ) {
+    const genParsed = GeneratorsSchema.safeParse(generatorsInput)
+    if (!genParsed.success) {
+      throw new Error('Config validation failed (generators):\n' + z.prettifyError(genParsed.error))
+    }
+    return { ...data, generators: genParsed.data as Record<string, GeneratorFn> }
+  }
+  return data
 }
 
 /**
