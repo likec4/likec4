@@ -430,6 +430,59 @@ Together with [predicate groups](#global-predicate-groups) you may define a "bas
 
 :::
 
+### Metadata filter
+
+`where` can also filter by element or relationship metadata values:
+
+```likec4
+// include only elements with environment="production"
+include cloud.*
+  where metadata.environment is "production"
+
+// exclude elements without a version metadata key
+exclude *
+  where not metadata.version
+
+// combine with other filters
+include cloud.*
+  where
+    metadata.environment is "production"
+    and kind is not database
+```
+
+Boolean metadata values can be matched with `true` or `false` directly (no quotes needed):
+
+```likec4
+// matches elements where critical is true
+include *
+  where metadata.critical is true
+```
+
+When a metadata value is an array (e.g. `regions ['us-east-1', 'eu-west-1']`), `is` checks if the array **contains** the value:
+
+```likec4
+// matches if "us-east-1" is one of the regions
+include *
+  where metadata.regions is "us-east-1"
+```
+
+For relationship predicates, filter by the relationship's own metadata or by its endpoints:
+
+```likec4
+include
+  // only relationships with protocol="grpc"
+  cloud.* -> amazon.*
+    where metadata.protocol is "grpc",
+
+  // only relations from elements with env="production"
+  cloud.* -> *
+    where source.metadata.environment is "production",
+
+  // only relations to staging targets
+  * -> *
+    where target.metadata.environment is "staging"
+```
+
 ## Global predicate groups
 
 If you find yourself repeating the same predicates in multiple views, you can define them as global group:

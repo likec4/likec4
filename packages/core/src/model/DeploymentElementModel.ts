@@ -276,6 +276,10 @@ export class DeploymentNodeModel<A extends Any = Any> extends AbstractDeployment
     return this.$node.kind
   }
 
+  get metadata(): aux.Metadata<A> {
+    return (this.$node.metadata ?? {}) as aux.Metadata<A>
+  }
+
   override get tags(): aux.Tags<A> {
     return memoizeProp(this, Symbol.for('tags'), () => {
       return unique([
@@ -434,6 +438,14 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
 
   get kind(): aux.ElementKind<A> {
     return this.element.kind
+  }
+
+  /**
+   * Instance metadata overrides element metadata entirely (replacement, not merge).
+   * This differs from tags which are merged from instance + element.
+   */
+  get metadata(): aux.Metadata<A> {
+    return (this.$instance.metadata ?? this.element.metadata ?? {}) as aux.Metadata<A>
   }
 
   override get summary(): RichTextOrEmpty {
@@ -622,6 +634,10 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
 
   get kind(): aux.RelationKind<A> | null {
     return this.$relationship.kind ?? null
+  }
+
+  get metadata(): aux.Metadata<A> {
+    return (this.$relationship.metadata ?? {}) as aux.Metadata<A>
   }
 
   get navigateTo(): LikeC4ViewModel<A> | null {

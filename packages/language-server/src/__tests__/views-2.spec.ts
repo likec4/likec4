@@ -583,6 +583,65 @@ describe('views2', () => {
       `)
     })
 
+    it('element where metadata', async ctx => {
+      const { valid } = await mkTestServices(ctx)
+
+      await valid(`
+        include * where metadata.env is "production"
+      `)
+      await valid(`
+        include * where metadata.env is not "staging"
+      `)
+      await valid(`
+        include * where metadata.version
+      `)
+      await valid(`
+        include * where not metadata.version
+      `)
+      await valid(`
+        include *
+          where metadata.env is "production"
+            and kind is component
+      `)
+      await valid(`
+        exclude * where metadata.env is "staging"
+      `)
+      await valid(`
+        include * where metadata.env == "production"
+      `)
+      await valid(`
+        include * where metadata.env != "staging"
+      `)
+      await valid(`
+        include * where metadata.critical is true
+      `)
+      await valid(`
+        include * where metadata.critical is not false
+      `)
+    })
+
+    it('relation where metadata', async ctx => {
+      const { valid } = await mkTestServices(ctx)
+
+      await valid(`
+        include * -> * where metadata.protocol is "grpc"
+      `)
+      await valid(`
+        include * -> * where metadata.version
+      `)
+      await valid(`
+        include * -> * where source.metadata.env is "prod"
+      `)
+      await valid(`
+        include * -> * where target.metadata.env is "staging"
+      `)
+      await valid(`
+        include * -> *
+          where metadata.protocol is "grpc"
+            and tag is not #next
+      `)
+    })
+
     it('element.tag', async ctx => {
       const { valid, invalid } = await mkTestServices(ctx)
 

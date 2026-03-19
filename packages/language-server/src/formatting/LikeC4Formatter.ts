@@ -598,11 +598,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.on(node, ast.isWhereRelationNegation, (n, f) => {
       f.keyword('not').append(FormattingOptions.oneSpace)
     })
-    if (
-      ast.isWhereRelation(node)
-      || ast.isWhereRelationTag(node)
-      || ast.isWhereRelationKind(node)
-    ) {
+    if (ast.isWhereRelation(node)) {
       const formatter = this.getNodeFormatter(node)
       formatter.property('operator').surround(FormattingOptions.oneSpace)
       formatter.property('not').surround(FormattingOptions.oneSpace)
@@ -616,11 +612,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.on(node, ast.isWhereElementNegation, (n, f) => {
       f.keyword('not').append(FormattingOptions.oneSpace)
     })
-    if (
-      ast.isWhereElement(node)
-      || ast.isWhereElementTag(node)
-      || ast.isWhereElementKind(node)
-    ) {
+    if (ast.isWhereElement(node)) {
       const formatter = this.getNodeFormatter(node)
       formatter.property('operator').surround(FormattingOptions.oneSpace)
       formatter.property('not').surround(FormattingOptions.oneSpace)

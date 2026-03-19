@@ -55,6 +55,48 @@ describe('whereOperator', () => {
     }).toBe('kind is not system')
   })
 
+  it('should print metadata equal', () => {
+    expectWhereOperator({
+      metadata: { key: 'environment', value: 'production' },
+    }).toBe('metadata.environment is "production"')
+
+    expectWhereOperator({
+      metadata: { key: 'environment', value: { eq: 'production' } },
+    }).toBe('metadata.environment is "production"')
+
+    expectWhereOperator({
+      metadata: { key: 'environment', value: { neq: 'staging' } },
+    }).toBe('metadata.environment is not "staging"')
+  })
+
+  it('should print metadata boolean value', () => {
+    expectWhereOperator({
+      metadata: { key: 'critical', value: 'true' },
+    }).toBe('metadata.critical is true')
+
+    expectWhereOperator({
+      metadata: { key: 'critical', value: { neq: 'false' } },
+    }).toBe('metadata.critical is not false')
+  })
+
+  it('should print metadata existence check', () => {
+    expectWhereOperator({
+      metadata: { key: 'version' },
+    }).toBe('metadata.version')
+  })
+
+  it('should print participant metadata operator', () => {
+    expectWhereOperator({
+      participant: 'source',
+      operator: { metadata: { key: 'env', value: 'prod' } },
+    }).toBe('source.metadata.env is "prod"')
+
+    expectWhereOperator({
+      participant: 'target',
+      operator: { metadata: { key: 'env' } },
+    }).toBe('target.metadata.env')
+  })
+
   it('should print participant operator', () => {
     expectWhereOperator({
       participant: 'source',
