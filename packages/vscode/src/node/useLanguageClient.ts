@@ -4,12 +4,10 @@ import {
   createSingletonComposable,
   extensionContext,
   onDeactivate,
-  ref,
   toValue,
   useDisposable,
   useOutputChannel,
   watch,
-  watchEffect,
 } from 'reactive-vscode'
 import { once } from 'remeda'
 import vscode from 'vscode'
@@ -26,9 +24,7 @@ import { useExtensionLogger } from '../useExtensionLogger'
 import { isLikeC4Source } from '../utils'
 
 const useLanguageClient = createSingletonComposable(() => {
-  const nodepath = ref(config.node.path)
-
-  const { output, logger } = useExtensionLogger()
+  const { output } = useExtensionLogger()
 
   const serverModule = extensionContext.value!.asAbsolutePath(
     // path.join(
@@ -44,7 +40,8 @@ const useLanguageClient = createSingletonComposable(() => {
     ),
   )
 
-  const nodeRuntime = config.node?.path || 'node'
+  // Computed once — changes require extension host restart (prompted by the watcher below)
+  const nodeRuntime = config.node.path || 'node'
 
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
@@ -140,9 +137,12 @@ const useLanguageClient = createSingletonComposable(() => {
       })
   })
 
+  let hasReachedRunning = false
+
   const onDidChangeState = useDisposable(
     client.onDidChangeState(({ newState }) => {
       if (newState === State.Running) {
+        hasReachedRunning = true
         // If the server is running for 5 seconds,
         // we can assume it started successfully and unsubscribe
         setTimeout(() => {
@@ -151,19 +151,16 @@ const useLanguageClient = createSingletonComposable(() => {
           }
         }, 5000).unref()
       }
-      // If the server stops within the first 5 seconds after starting, suggest checking Node.js version
-      if (newState === State.Stopped) {
+      // If the server never reached Running, suggest checking Node.js version
+      if (newState === State.Stopped && !hasReachedRunning) {
         suggestChangeNode()
         onDidChangeState.dispose()
       }
     }),
   )
 
-  watchEffect(() => {
-    nodepath.value = config.node.path
-  })
-
-  watch(nodepath, (_newPath) => {
+  watch(() => config.node.path, (_newPath, oldPath) => {
+    if (oldPath === undefined) return
     vscode.window.showInformationMessage(
       'Run command "Restart Extension Host" to use the updated Node.js path',
       'Restart Now',
@@ -173,8 +170,6 @@ const useLanguageClient = createSingletonComposable(() => {
       }
       vscode.commands.executeCommand('workbench.action.restartExtensionHost')
     })
-  }, {
-    once: true,
   })
 
   onDeactivate(async () => {
