@@ -4,21 +4,32 @@ import {
   createSingletonComposable,
   extensionContext,
   onDeactivate,
+  ref,
   toValue,
   useDisposable,
   useOutputChannel,
+  watch,
+  watchEffect,
 } from 'reactive-vscode'
+import { once } from 'remeda'
 import vscode from 'vscode'
 import {
   type LanguageClientOptions,
   type ServerOptions,
   LanguageClient as NodeLanguageClient,
+  State,
   TransportKind,
 } from 'vscode-languageclient/node'
+import { config } from '../config'
 import { globPattern, isVirtual } from '../const'
+import { useExtensionLogger } from '../useExtensionLogger'
 import { isLikeC4Source } from '../utils'
 
 const useLanguageClient = createSingletonComposable(() => {
+  const nodepath = ref(config.node.path)
+
+  const { output, logger } = useExtensionLogger()
+
   const serverModule = extensionContext.value!.asAbsolutePath(
     // path.join(
     //   'node_modules',
@@ -33,13 +44,15 @@ const useLanguageClient = createSingletonComposable(() => {
     ),
   )
 
+  const nodeRuntime = config.node?.path || 'node'
+
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
   let serverOptions: ServerOptions = {
     run: {
       module: serverModule,
       transport: TransportKind.ipc,
-      runtime: 'node',
+      runtime: nodeRuntime,
       // args: [
       //   'lsp',
       //   '--node-ipc',
@@ -53,7 +66,7 @@ const useLanguageClient = createSingletonComposable(() => {
     },
     debug: {
       module: serverModule,
-      runtime: 'node',
+      runtime: nodeRuntime,
       transport: TransportKind.ipc,
       // args: [
       //   'lsp',
@@ -109,6 +122,60 @@ const useLanguageClient = createSingletonComposable(() => {
   }
 
   const client = new NodeLanguageClient('likec4', 'LikeC4 Language Server', serverOptions, clientOptions)
+
+  const suggestChangeNode = once(() => {
+    const message =
+      'Language server failed to start. This may be caused by an incompatible Node.js version. Please make sure you have Node.js 22.22 or later installed and configured in the extension settings.'
+    output.error(message)
+    output.show(true)
+    vscode.window
+      .showErrorMessage(
+        message,
+        'Configure Node',
+      )
+      .then(selection => {
+        if (selection === 'Configure Node') {
+          vscode.commands.executeCommand('workbench.action.openSettings', 'likec4.node.path')
+        }
+      })
+  })
+
+  const onDidChangeState = useDisposable(
+    client.onDidChangeState(({ newState }) => {
+      if (newState === State.Running) {
+        // If the server is running for 5 seconds,
+        // we can assume it started successfully and unsubscribe
+        setTimeout(() => {
+          if (client.isRunning()) {
+            onDidChangeState.dispose()
+          }
+        }, 5000).unref()
+      }
+      // If the server stops within the first 5 seconds after starting, suggest checking Node.js version
+      if (newState === State.Stopped) {
+        suggestChangeNode()
+        onDidChangeState.dispose()
+      }
+    }),
+  )
+
+  watchEffect(() => {
+    nodepath.value = config.node.path
+  })
+
+  watch(nodepath, (_newPath) => {
+    vscode.window.showInformationMessage(
+      'Run command "Restart Extension Host" to use the updated Node.js path',
+      'Restart Now',
+    ).then((selection) => {
+      if (!selection) {
+        return
+      }
+      vscode.commands.executeCommand('workbench.action.restartExtensionHost')
+    })
+  }, {
+    once: true,
+  })
 
   onDeactivate(async () => {
     if (client.isRunning()) {
