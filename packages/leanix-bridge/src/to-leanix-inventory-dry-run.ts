@@ -31,6 +31,7 @@ export interface LeanixInventoryDryRun {
   relations: LeanixRelationDryRun[]
 }
 
+/** Options for toLeanixInventoryDryRun (mapping, mappingProfile, generatedAt). */
 export interface ToLeanixInventoryDryRunOptions {
   mapping?: LeanixMappingConfig | null
   mappingProfile?: string

@@ -167,6 +167,7 @@
   "devDependencies": {
     "langium": "catalog:langium",
     "@likec4/config": "workspace:*",
+    "@likec4/leanix-bridge": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/language-services": "workspace:*",

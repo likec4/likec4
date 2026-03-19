@@ -152,14 +152,31 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         mark.property('value').function()
       }
     })
-    when(isAnyOf(ast.isWhereElement, ast.isWhereRelation), mark => {
-      if (isTruthy(mark.node.value)) {
-        mark.property('value').readonly.definition.type()
-      }
-    })
-    when(isAnyOf(ast.isWhereRelationParticipantKind, ast.isWhereRelationParticipantTag), mark => {
-      mark.property('participant').keyword()
-    })
+    when(
+      isAnyOf(ast.isWhereElementMetadata, ast.isWhereRelationMetadata, ast.isWhereRelationParticipantMetadata),
+      mark => {
+        mark.keyword('metadata').keyword()
+        mark.property('key').property()
+      },
+    )
+    when(
+      isAnyOf(ast.isWhereElementTag, ast.isWhereElementKind, ast.isWhereRelationTag, ast.isWhereRelationKind),
+      mark => {
+        if (isTruthy(mark.node.value)) {
+          mark.property('value').readonly.definition.type()
+        }
+      },
+    )
+    when(
+      isAnyOf(
+        ast.isWhereRelationParticipantKind,
+        ast.isWhereRelationParticipantTag,
+        ast.isWhereRelationParticipantMetadata,
+      ),
+      mark => {
+        mark.property('participant').keyword()
+      },
+    )
     when(ast.isElementKindExpression, mark => {
       if (isTruthy(mark.node.kind)) {
         mark.property('kind').definition.type()

@@ -52,6 +52,7 @@ export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>):
     style,
     description: preferSummary(el.$element),
     tags: [...el.tags],
+    metadata: el.$element.metadata,
     ...rest,
   })
 }

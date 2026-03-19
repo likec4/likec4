@@ -414,6 +414,7 @@ catalogs:
       version: 1.33.1
 
 overrides:
+  '@likec4/leanix-bridge': workspace:*
   esbuild: 0.27.4
   react: 19.2.4
   react-dom: 19.2.4
@@ -1763,6 +1764,9 @@ importers:
       '@likec4/layouts':
         specifier: workspace:*
         version: link:../layouts
+      '@likec4/leanix-bridge':
+        specifier: workspace:*
+        version: link:../leanix-bridge
       '@likec4/log':
         specifier: workspace:*
         version: link:../log

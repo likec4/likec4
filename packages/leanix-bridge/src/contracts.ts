@@ -1,13 +1,26 @@
 /**
  * Canonical bridge contracts for LikeC4 ↔ LeanIX interoperability.
  * LikeC4 remains the semantic source of truth; external IDs are provider-scoped.
+ * Uses readFileSync (not require) so when bundled into likec4 CLI the bundler
+ * does not emit require('../package.json') which fails in the tarball layout.
  */
 
-import { createRequire } from 'node:module'
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const require = createRequire(import.meta.url)
+const _dir = dirname(fileURLToPath(import.meta.url))
+function readVersion(): string {
+  try {
+    const pkg = JSON.parse(readFileSync(join(_dir, '..', 'package.json'), 'utf8')) as { version?: string }
+    return pkg.version ?? '0.1.0'
+  } catch {
+    const pkg = JSON.parse(readFileSync(join(_dir, '..', '..', 'package.json'), 'utf8')) as { version?: string }
+    return pkg.version ?? '0.1.0'
+  }
+}
 /** Single source of truth: must match package.json version. */
-export const BRIDGE_VERSION: string = (require('../package.json') as { version?: string }).version ?? '0.1.0'
+export const BRIDGE_VERSION: string = readVersion()
 
 /** Semantic anchor: LikeC4 FQN (e.g. cloud.backend.api) */
 export type CanonicalId = string
@@ -36,26 +49,26 @@ export type MappingProfile = string
 /** Provider name (e.g. leanix, drawio) */
 export type Provider = string
 
-/** External IDs for a single provider */
+/** External IDs for a single provider (e.g. factSheetId, externalId). */
 export interface ProviderExternalIds {
   factSheetId?: string
   externalId?: string
   [key: string]: string | undefined
 }
 
-/** Entity entry in the manifest: canonical id + optional external IDs per provider */
+/** Entity entry in the manifest: canonical id + optional external IDs per provider. */
 export interface ManifestEntity {
   canonicalId: CanonicalId
   external?: Partial<Record<Provider, ProviderExternalIds>>
 }
 
-/** View entry in the manifest */
+/** View entry in the manifest (viewId + optional provider external ids). */
 export interface ManifestView {
   viewId: ViewId
   external?: Partial<Record<Provider, Record<string, string>>>
 }
 
-/** Relation entry: composite key and optional external relation id */
+/** Relation entry: composite key and optional external relation id per provider. */
 export interface ManifestRelation {
   relationId: RelationId
   sourceFqn: CanonicalId
@@ -76,4 +89,8 @@ export interface BridgeManifest {
   relations: ManifestRelation[]
 }
 
+/** Manifest schema version (semantic; must match parser). */
 export const BRIDGE_MANIFEST_VERSION = '1.0'
+
+/** Provider identifier for LeanIX (single source of truth for external.leanix). */
+export const LEANIX_PROVIDER = 'leanix' as const

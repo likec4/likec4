@@ -65,6 +65,26 @@ export const whereKindEqual = zodOp(schemas.whereKind)(function whereKindEqualOp
   nonexhaustive(kind)
 })
 
+function quoteMetadataValue(v: string): string {
+  return v === 'true' || v === 'false' ? v : `"${v}"`
+}
+
+export const whereMetadataEqual = zodOp(schemas.whereMetadata)(
+  function whereMetadataEqualOp({ ctx: { metadata }, out }) {
+    const { key, value } = metadata
+    if (value === undefined) {
+      return out.appendTemplate`metadata.${key}`
+    }
+    if ('eq' in value) {
+      return out.append(`metadata.${key} is ${quoteMetadataValue(value.eq)}`)
+    }
+    if ('neq' in value) {
+      return out.append(`metadata.${key} is not ${quoteMetadataValue(value.neq)}`)
+    }
+    nonexhaustive(value)
+  },
+)
+
 export const whereNot = zodOp(schemas.whereNot)(
   property(
     'not',
@@ -85,6 +105,10 @@ export const whereParticipant = zodOp(schemas.whereParticipant)(
     }
     if ('kind' in operator) {
       whereKindEqual()({ ctx: operator, out })
+      return
+    }
+    if ('metadata' in operator) {
+      whereMetadataEqual()({ ctx: operator, out })
       return
     }
     nonexhaustive(operator)
@@ -146,6 +170,9 @@ export const whereOperator = zodOp(schemas.whereOperator)(({ ctx, exec }) => {
   }
   if ('kind' in ctx) {
     return exec(ctx, whereKindEqual())
+  }
+  if ('metadata' in ctx) {
+    return exec(ctx, whereMetadataEqual())
   }
   if ('participant' in ctx) {
     return exec(ctx, whereParticipant())

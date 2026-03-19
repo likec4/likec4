@@ -9,43 +9,73 @@ Bridge from the LikeC4 semantic model to LeanIX-shaped inventory artifacts. Like
 
 ## Scope
 
-- **In scope**: identity manifest, dry-run, configurable mapping, **LeanIX API sync** (create/update fact sheets and relations), **Draw.io–LeanIX mapping** for round-trip, tests, usage via custom generator.
+- **In scope**: identity manifest, dry-run, configurable mapping, **LeanIX API sync**, **Draw.io–LeanIX mapping**, **Phase 2 inbound** (inventory snapshot, reconciliation), **Phase 3** (impact analysis, drift detection, ADR generation, governance checks), tests.
 - **Out of scope**: AI features, new top-level CLI namespaces.
 
 ## Usage
 
-Use from a **custom generator** in your LikeC4 project config:
+### First-class CLI (recommended)
+
+From the project root:
+
+```bash
+# Generate bridge artifacts (manifest, leanix-dry-run.json, report) to out/bridge
+likec4 gen leanix dry-run -o out/bridge
+
+# Sync workflow: write artifacts and optional sync-plan (read-only when LEANIX_API_TOKEN is set)
+likec4 sync leanix --dry-run -o out/bridge
+
+# Live sync to LeanIX (requires LEANIX_API_TOKEN)
+likec4 sync leanix --apply -o out/bridge
+
+# Phase 2 inbound: fetch LeanIX inventory (read-only), then reconcile with manifest
+# Fetch LeanIX inventory snapshot (read-only) to out/bridge
+likec4 gen leanix inventory -o out/bridge
+# Run reconciliation between manifest and LeanIX inventory, output to out/bridge
+likec4 gen leanix reconcile -o out/bridge
+```
+
+Export Draw.io with LeanIX profile (includes bridge-managed metadata for round-trip sync):
+
+```bash
+likec4 export drawio --profile leanix -o ./diagrams
+```
+
+The `--profile leanix` flag selects the LeanIX export profile so vertices and edges carry likec4Id, likec4ViewId, likec4RelationId, and bridgeManaged attributes for sync and round-trip.
+
+### Custom generator (alternative)
+
+You can still wire the bridge in your LikeC4 config:
 
 ```ts
 // likec4.config.ts
 import { defineConfig } from '@likec4/config'
 import {
+  buildBridgeReport,
   toBridgeManifest,
   toLeanixInventoryDryRun,
-  toReport,
 } from '@likec4/leanix-bridge'
 
 export default defineConfig({
   name: 'my-project',
   generators: {
-    'leanix-dry-run': async ({ likec4model, ctx }) => {
+    'my-leanix': async ({ likec4model, ctx }) => {
       const manifest = toBridgeManifest(likec4model, { mappingProfile: 'default' })
       const dryRun = toLeanixInventoryDryRun(likec4model, { mappingProfile: 'default' })
-      const report = toReport(manifest, dryRun)
+      const report = buildBridgeReport(manifest, dryRun)
 
       await ctx.write({ path: ['out', 'bridge', 'manifest.json'], content: JSON.stringify(manifest, null, 2) })
       await ctx.write({ path: ['out', 'bridge', 'leanix-dry-run.json'], content: JSON.stringify(dryRun, null, 2) })
       await ctx.write({ path: ['out', 'bridge', 'report.json'], content: JSON.stringify(report, null, 2) })
+
+      // Phase 2 (programmatic): e.g. import { reconcileInventoryWithManifest } from '@likec4/leanix-bridge', then
+      // reconciliation = reconcileInventoryWithManifest(snapshot, manifest) and ctx.write(..., JSON.stringify(reconciliation, null, 2))
     },
   },
 })
 ```
 
-Then run:
-
-```bash
-likec4 gen leanix-dry-run
-```
+Then run: `likec4 gen my-leanix`
 
 ### Optional: sync plan (review before sync)
 
@@ -87,11 +117,18 @@ const mapping = manifestToDrawioLeanixMapping(result.manifest)
 
 - **`toBridgeManifest(model, options?)`** – builds the identity manifest (canonical IDs + placeholder external IDs).
 - **`toLeanixInventoryDryRun(model, options?)`** – builds LeanIX-shaped fact sheets and relations (no live IDs).
-- **`toReport(manifest, leanixDryRun)`** – builds a summary report with counts and artifact names.
+- **`buildBridgeReport(manifest, leanixDryRun)`** – builds a summary report with counts and artifact names.
 - **`LeanixApiClient(config)`** – GraphQL client with Bearer auth and rate limiting (`apiToken`, `baseUrl?`, `requestDelayMs?`).
 - **`planSyncToLeanix(leanixDryRun, client, options?)`** – queries LeanIX (read-only) and returns a **sync plan** (`SyncPlan`): per–fact sheet and per-relation actions (`create` / `update`), summary counts, and any query errors. Use before `syncToLeanix` to review what would change. Options: `idempotent?`, `generatedAt?`.
 - **`syncToLeanix(manifest, leanixDryRun, client, options?)`** – syncs dry-run to LeanIX API; returns updated manifest with `external.leanix.factSheetId` and relation IDs. Options: `idempotent?`, `likec4IdAttribute?`.
 - **`manifestToDrawioLeanixMapping(manifest)`** – returns `{ likec4IdToLeanixId, relationKeyToLeanixRelationId }` for Draw.io bridge-managed export or re-import from LeanIX.
+- **`fetchLeanixInventorySnapshot(client, options?)`** – fetches a read-only snapshot of LeanIX fact sheets and relations (paginated); returns `LeanixInventorySnapshot`. Options: `likec4IdAttribute?`, `maxFactSheets?`, `generatedAt?`.
+- **`reconcileInventoryWithManifest(snapshot, manifest, options?)`** – compares manifest to LeanIX snapshot; returns `ReconciliationResult` (matched, unmatchedInLikec4, unmatchedInLeanix, ambiguous). Optional `dryRun` improves matching.
+- **`buildDriftReport(reconciliation)`** – builds a `DriftReport` from a `ReconciliationResult` (status, summary, description); accepts a single `ReconciliationResult` and returns `DriftReport`.
+- **`impactReportFromSyncPlan(plan)`** – computes impact analysis from a sync plan; returns `ImpactReport` with affected entities and severity.
+- **`generateAdrFromReconciliation(reconciliation, options?)`** – generates ADR-style markdown from a reconciliation result. **`generateAdrFromDriftReport(drift, options?)`** – generates ADR-style markdown from a drift report.
+- **`runGovernanceChecks(reconciliation, options?)`** – runs configurable governance rules on a `ReconciliationResult`; accepts optional `GovernanceCheckOptions` and returns `GovernanceReport` with pass/fail and violation messages.
+- **`isBridgeManifest(obj)`** / **`isLeanixInventorySnapshot(obj)`** – type guards for parsed JSON (e.g. from CLI artifact files).
 
 Mapping is configurable via `options.mapping` (kinds → fact sheet types, relation kinds → relation types). LeanIX GraphQL schema varies by workspace; fact sheet types and relation types are meta-model specific.
 

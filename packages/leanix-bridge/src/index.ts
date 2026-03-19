@@ -9,6 +9,7 @@
 export {
   BRIDGE_MANIFEST_VERSION,
   BRIDGE_VERSION,
+  LEANIX_PROVIDER,
 } from './contracts'
 export type {
   BridgeManifest,
@@ -29,6 +30,8 @@ export type {
 
 export {
   DEFAULT_LEANIX_MAPPING,
+  FALLBACK_FACT_SHEET_TYPE,
+  FALLBACK_RELATION_TYPE,
   getFactSheetType,
   getRelationType,
   mergeWithDefault,
@@ -48,7 +51,7 @@ export type {
   ToLeanixInventoryDryRunOptions,
 } from './to-leanix-inventory-dry-run'
 
-export { toReport } from './report'
+export { buildBridgeReport } from './report'
 export type { BridgeReport } from './report'
 
 export { LeanixApiClient } from './leanix-api-client'
@@ -68,3 +71,39 @@ export type {
 
 export { manifestToDrawioLeanixMapping } from './drawio-leanix-roundtrip'
 export type { DrawioLeanixMapping } from './drawio-leanix-roundtrip'
+
+export { fetchLeanixInventorySnapshot } from './leanix-inventory-snapshot'
+export type {
+  FetchLeanixInventorySnapshotOptions,
+  LeanixFactSheetSnapshotItem,
+  LeanixInventorySnapshot,
+  LeanixRelationSnapshotItem,
+} from './leanix-inventory-snapshot'
+
+export { reconcileInventoryWithManifest } from './reconcile'
+export type {
+  AmbiguousMatch,
+  MatchedPair,
+  ReconcileOptions,
+  ReconciliationResult,
+  UnmatchedInLeanix,
+  UnmatchedInLikec4,
+} from './reconcile'
+
+export { impactReportFromSyncPlan } from './impact-report'
+export type { ImpactReport } from './impact-report'
+
+export { buildDriftReport } from './drift-report'
+export type { DriftReport, DriftStatus } from './drift-report'
+
+export { generateAdrFromDriftReport, generateAdrFromReconciliation } from './adr-generation'
+export type { AdrGenerationOptions, DriftAdrGenerationOptions } from './adr-generation'
+
+export { runGovernanceChecks } from './governance-checks'
+export type {
+  GovernanceCheckOptions,
+  GovernanceCheckResult,
+  GovernanceReport,
+} from './governance-checks'
+
+export { isBridgeManifest, isLeanixInventorySnapshot } from './validate'

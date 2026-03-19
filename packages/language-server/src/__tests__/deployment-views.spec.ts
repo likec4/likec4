@@ -178,6 +178,10 @@ describe('Deployment views:', () => {
       include * -> * where kind is https or tag is #next
       include * -> * where source.kind is zone
       include * -> * where source.kind is component
+      include * -> * where metadata.protocol is "grpc"
+      include * -> * where source.metadata.env is "prod"
+      include * -> * where target.metadata.env is "staging"
+      include * -> * where metadata.version
     `)
   })
 
@@ -192,6 +196,9 @@ describe('Deployment views:', () => {
       include * where kind is zone
       include * where kind is component
       include user, * where tag is #next
+      include * where metadata.env is "production"
+      include * where metadata.env is not "staging"
+      include * where metadata.version
     `)
   })
 })

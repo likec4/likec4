@@ -51,6 +51,7 @@ type HandlerParams = {
   enableHMR?: boolean | undefined
 }
 
+/** Starts the LikeC4 dev server (Vite) for the given workspace path. */
 export async function handler({
   path,
   useDotBin,

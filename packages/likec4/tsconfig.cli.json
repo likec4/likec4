@@ -4,7 +4,7 @@
   "compilerOptions": {
     "customConditions": [
       "production",
-      "sources",
+      "sources"
     ],
     "target": "es2024",
     "composite": true,
@@ -13,7 +13,7 @@
     "resolvePackageJsonImports": true,
     "outDir": "lib/cli",
     "types": [
-      "node",
+      "node"
     ],
     "rootDirs": [
       "src",
@@ -53,6 +53,9 @@
     },
     {
       "path": "../layouts/tsconfig.json"
+    },
+    {
+      "path": "../leanix-bridge/tsconfig.json"
     }
   ]
 }

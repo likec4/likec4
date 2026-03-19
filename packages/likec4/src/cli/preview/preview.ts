@@ -25,6 +25,7 @@ type HandlerParams = {
   listen?: string | undefined
 }
 
+/** Runs the LikeC4 preview server (static build) for the given workspace path. */
 export async function handler({
   path,
   output: outputDir,

@@ -110,12 +110,21 @@ test('parse DrawIO - first diagram content has User mxCell with style=actor', ()
   expect(diagram!.content.toLowerCase()).toContain('shape=actor')
 })
 
-test('parse DrawIO to LikeC4 - vertex with shape=actor emits element with User', () => {
+// Strict contract: shape=actor must emit actor + shape person. Skip until pipeline sets raw style on cell from XML (see TODO in parse-drawio).
+test.skip('parse DrawIO to LikeC4 - vertex with shape=actor emits actor with shape person', () => {
   const result = parseDrawioToLikeC4(drawioWithShapeActor)
   expect(result).toContain('User')
   expect(result).toContain('model {')
   expect(result).toContain('views {')
-  // shape=actor may be emitted as actor+shape person (built) or container (source); both valid
+  expect(result).toContain('actor \'User\'')
+  expect(result).toContain('shape person')
+})
+
+test('parse DrawIO to LikeC4 - vertex with shape=actor emits element (actor or container until pipeline fix)', () => {
+  const result = parseDrawioToLikeC4(drawioWithShapeActor)
+  expect(result).toContain('User')
+  expect(result).toContain('model {')
+  expect(result).toContain('views {')
   const hasActor = result.includes('actor \'User\'') && result.includes('shape person')
   const hasContainer = result.includes('container \'User\'')
   expect(hasActor || hasContainer).toBe(true)
