@@ -64,7 +64,13 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      react(),
+      react({
+        babel: {
+          plugins: [
+            ['babel-plugin-react-compiler', {}],
+          ],
+        },
+      }),
     ],
   }
 })

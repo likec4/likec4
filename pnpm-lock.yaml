@@ -233,6 +233,9 @@ catalogs:
     '@tabler/icons-react':
       specifier: 3.40.0
       version: 3.40.0
+    babel-plugin-react-compiler:
+      specifier: ^1.0.0
+      version: 1.0.0
     clsx:
       specifier: ^2.1.1
       version: 2.1.1
@@ -2538,6 +2541,9 @@ importers:
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.75
+      babel-plugin-react-compiler:
+        specifier: catalog:react
+        version: 1.0.0
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -5605,6 +5611,9 @@ packages:
   babel-dead-code-elimination@1.0.9:
     resolution: {integrity: sha512-JLIhax/xullfInZjtu13UJjaLHDeTzt3vOeomaSUdO/nAMEL/pWC/laKrSvWylXMnVWyL5bpmG9njqBZlUQOdg==}
 
+  babel-plugin-react-compiler@1.0.0:
+    resolution: {integrity: sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==}
+
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
 
@@ -7288,10 +7297,6 @@ packages:
 
   lru-cache@11.2.4:
     resolution: {integrity: sha512-B5Y16Jr9LB9dHVkh6ZevG+vAbOsNOYCX+sXvFWFu7B3Iz5mijW3zdbMyhsh8ANd2mSWBYdJgnqi+mL7/LrOPYg==}
-    engines: {node: 20 || >=22}
-
-  lru-cache@11.2.7:
-    resolution: {integrity: sha512-aY/R+aEsRelme17KGQa/1ZSIpLpNYYrhcrepKTZgE+W3WM16YMCaPwOHLHsmopZHELU0Ojin1lPVxKR0MihncA==}
     engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
@@ -13570,6 +13575,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  babel-plugin-react-compiler@1.0.0:
+    dependencies:
+      '@babel/types': 7.29.0
+
   bail@2.0.2: {}
 
   balanced-match@1.0.2: {}
@@ -15321,8 +15330,6 @@ snapshots:
       js-tokens: 4.0.0
 
   lru-cache@11.2.4: {}
-
-  lru-cache@11.2.7: {}
 
   lru-cache@5.1.1:
     dependencies:
