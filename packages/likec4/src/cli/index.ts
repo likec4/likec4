@@ -8,7 +8,7 @@ import {
   getConsoleSink,
   loggable,
 } from '@likec4/log'
-import { DEV } from 'esm-env'
+import { isCI, isDevelopment, isTest } from 'std-env'
 import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
 import { clamp, pipe } from 'remeda'
@@ -33,7 +33,7 @@ import validateCmd from './validate'
  * Configure likec4 logger: verbose or dev => debug level, else info.
  */
 function applyLoggerConfig(logLevel: ConfigureLanguageServerLoggerOptions['logLevel']) {
-  const lowestLevel = logLevel ?? (DEV ? 'trace' : 'info')
+  const lowestLevel = logLevel ?? (isDevelopment ? 'trace' : 'info')
   configureLogger({
     reset: true,
     sinks: {
@@ -56,7 +56,7 @@ function applyLoggerConfig(logLevel: ConfigureLanguageServerLoggerOptions['logLe
  * Configures logger from --verbose, then parses yargs and runs the handler.
  */
 async function main() {
-  if (!DEV && !isInsideContainer()) {
+  if (!isTest && !isCI && !isInsideContainer()) {
     await notifyAvailableUpdate()
   }
 
