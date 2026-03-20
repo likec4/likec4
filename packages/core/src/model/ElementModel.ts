@@ -15,7 +15,9 @@ import type {
 } from '../types'
 import { exact, preferDescription, preferSummary, RichText, splitGlobalFqn } from '../types'
 import type * as aux from '../types/_aux'
-import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, nameFromFqn, sortNaturalByFqn } from '../utils'
+import { commonAncestor, hierarchyLevel, isAncestor, nameFromFqn, sortNaturalByFqn } from '../utils/fqn'
+import { ihead } from '../utils/iterable/head'
+import { memoizeProp } from '../utils/memoize-prop'
 import type { DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
@@ -93,6 +95,10 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
         ...(this.$model.specification.elements[this.$element.kind]?.tags ?? []),
       ] as aux.Tags<A>)
     })
+  }
+
+  get metadata(): aux.Metadata<A> {
+    return (this.$element.metadata ?? {}) as aux.Metadata<A>
   }
 
   get title(): string {

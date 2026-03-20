@@ -23,11 +23,10 @@ jobs:
       - name: ʦ typecheck
         run: pnpm ci:typecheck
 
-      - name: 🔬 type tests
+      - name: type tests
         working-directory: packages/core
-        run: pnpm test --typecheck
+        run: pnpm vitest --typecheck.only
 
-      # TODO: Here it says to run lint after typecheck
       # https://oxc.rs/docs/guide/usage/linter/type-aware.html#monorepos-and-build-outputs
       - name: 🧹 lint
         run: pnpm ci:lint
@@ -150,7 +149,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: 🛠️ Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         env:
           NODE_ENV: development
 
@@ -217,7 +216,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: 🛠️ Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         env:
           NODE_ENV: development
 

@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "license": "MIT",
-  "version": "1.52.0",
+  "version": "1.53.0",
   "packageManager": "pnpm@10.32.1",
   "type": "module",
   "workspaces": [
@@ -83,11 +83,21 @@
       "turbo": "catalog:",
       "sharp": "catalog:utils",
       "caniuse-lite": "catalog:utils",
-      "mnemonist": "0.40.3"
+      "mnemonist": "0.40.3",
+      "flatted": ">=3.4.2",
+      "h3": ">=1.15.6",
+      "undici": ">=7.24.0",
+      "devalue": ">=5.6.4",
+      "svgo": ">=4.0.1",
+      "express-rate-limit": ">=8.2.2",
+      "rollup": ">=4.59.0",
+      "@microsoft/api-extractor>minimatch": "^3.1.5",
+      "vscode-languageclient>minimatch": "^5.1.8",
+      "@ts-morph/common>minimatch": "^9.0.7",
+      "@vue/language-core>minimatch": "^9.0.7"
     },
     "patchedDependencies": {
       "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch",
-      "xstate@5.24.0": "patches/xstate@5.24.0.patch",
       "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
     },
     "onlyBuiltDependencies": [

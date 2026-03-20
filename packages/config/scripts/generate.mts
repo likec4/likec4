@@ -16,13 +16,4 @@ writeFileSync(
   ),
 )
 
-writeFileSync(
-  '../../schemas/likec4-config.schema.json',
-  JSON.stringify(
-    schema,
-    null,
-    2,
-  ),
-)
-
 console.log('JSON schema generated successfully')

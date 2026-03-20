@@ -106,10 +106,13 @@ export const useRpc = createSingletonComposable(() => {
       return await queue(() => client.sendRequest(FetchProjectsOverview.req))
     },
 
-    async notifyDidChangeSnapshot(snapshot: vscode.Uri) {
-      await client.sendNotification(DidChangeSnapshotNotification.type, {
-        snapshotUri: client.code2ProtocolConverter.asUri(snapshot),
-      })
+    async notifyDidChangeSnapshot(event: 'update' | 'delete', snapshot: vscode.Uri) {
+      await client.sendNotification(
+        DidChangeSnapshotNotification.type,
+        {
+          [`${event}` as const]: client.code2ProtocolConverter.asUri(snapshot),
+        } as DidChangeSnapshotNotification.Params,
+      )
     },
   }
 })

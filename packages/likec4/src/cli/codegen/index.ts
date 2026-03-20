@@ -2,6 +2,7 @@ import { resolve } from 'path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { outdir, path, project, useCorePackage, useDotBin, webcomponentPrefix } from '../options'
+import { showSupportUsMessage } from '../support-message'
 import { customHandler } from './custom'
 import { legacyHandler } from './handler'
 import { leanixDryRunHandler } from './leanix-dry-run'
@@ -46,6 +47,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 outfile: args.outfile,
                 useCorePackage: args.useCorePackage,
               })
+              showSupportUsMessage()
             },
           )
           // ----------------------
@@ -75,6 +77,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 outfile: args.outfile,
                 webcomponentPrefix: args.webcomponentPrefix,
               })
+              showSupportUsMessage()
             },
           })
           // ----------------------
@@ -104,6 +107,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 outfile: args.outfile,
                 project: args.project,
               })
+              showSupportUsMessage()
             },
           })
           // ----------------------
@@ -239,6 +243,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 useDotBin: args.useDotBin,
                 outdir: args.outdir,
               })
+              showSupportUsMessage()
             },
           })
           // ----------------------
@@ -258,6 +263,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 useDotBin: args.useDotBin,
                 outdir: args.outdir,
               })
+              showSupportUsMessage()
             },
           })
           // ----------------------
@@ -278,6 +284,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 path: args.path,
                 outdir: args.outdir,
               })
+              showSupportUsMessage()
             },
           })
           // ----------------------
@@ -298,6 +305,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 path: args.path,
                 outdir: args.outdir,
               })
+              showSupportUsMessage()
             },
           })
           .command({

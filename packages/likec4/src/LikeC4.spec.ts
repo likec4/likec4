@@ -48,6 +48,102 @@ describe('LikeC4', () => {
     expect([...model.view('index').edges()]).toHaveLength(1)
   })
 
+  it('should filter views by metadata predicates', async ({ expect }) => {
+    const likec4 = await LikeC4.fromSource(`
+      specification {
+        element component
+        element database {
+          style {
+            shape storage
+          }
+        }
+      }
+      model {
+        container = component 'Container' {
+          prodApi = component 'Prod API' {
+            metadata {
+              environment 'production'
+              critical true
+            }
+          }
+          stagingApi = component 'Staging API' {
+            metadata {
+              environment 'staging'
+            }
+          }
+          prodDb = database 'PostgreSQL' {
+            metadata {
+              environment 'production'
+            }
+          }
+
+          prodApi -> prodDb 'queries' {
+            metadata {
+              protocol 'tcp'
+            }
+          }
+          stagingApi -> prodDb 'queries' {
+            metadata {
+              protocol 'http'
+            }
+          }
+        }
+      }
+      views {
+        view prodOnly of container {
+          title 'Production Only'
+          include * where metadata.environment is "production"
+        }
+        view excludeStaging of container {
+          title 'Exclude Staging'
+          include *
+          exclude * where metadata.environment is "staging"
+        }
+        view criticalOnly of container {
+          title 'Critical Only'
+          include * where metadata.critical is true
+        }
+        view prodNotDb of container {
+          title 'Prod Components (not databases)'
+          include *
+            where metadata.environment is "production"
+              and kind is not database
+        }
+      }
+    `)
+    expect(likec4.hasErrors()).toBe(false)
+
+    const model = likec4.syncComputedModel()
+
+    // prodOnly: only prodApi and prodDb have environment=production
+    const prodOnlyElements = [...model.view('prodOnly').elements()]
+    const prodOnlyIds = prodOnlyElements.map(e => e.id)
+    expect(prodOnlyIds).toContain('container.prodApi')
+    expect(prodOnlyIds).toContain('container.prodDb')
+    expect(prodOnlyIds).not.toContain('container.stagingApi')
+
+    // excludeStaging: all except stagingApi
+    const excludeStagingElements = [...model.view('excludeStaging').elements()]
+    const excludeStagingIds = excludeStagingElements.map(e => e.id)
+    expect(excludeStagingIds).toContain('container.prodApi')
+    expect(excludeStagingIds).toContain('container.prodDb')
+    expect(excludeStagingIds).not.toContain('container.stagingApi')
+
+    // criticalOnly: only prodApi has critical=true
+    const criticalElements = [...model.view('criticalOnly').elements()]
+    const criticalIds = criticalElements.map(e => e.id)
+    expect(criticalIds).toContain('container.prodApi')
+    expect(criticalIds).not.toContain('container.stagingApi')
+    expect(criticalIds).not.toContain('container.prodDb')
+
+    // prodNotDb: production elements that are not database kind
+    const prodNotDbElements = [...model.view('prodNotDb').elements()]
+    const prodNotDbIds = prodNotDbElements.map(e => e.id)
+    expect(prodNotDbIds).toContain('container.prodApi')
+    expect(prodNotDbIds).not.toContain('container.prodDb')
+    expect(prodNotDbIds).not.toContain('container.stagingApi')
+  })
+
   it('should parse source and build layouted model', async ({ expect }) => {
     const likec4 = await LikeC4.fromSource(`
       specification {
@@ -217,6 +313,12 @@ describe('LikeC4', () => {
             "model.c4",
           ],
           "folder": "issue-1624",
+        },
+        "metadata-views": {
+          "documents": [
+            "views.c4",
+          ],
+          "folder": "metadata-views",
         },
         "multi-metadata-extend": {
           "documents": [

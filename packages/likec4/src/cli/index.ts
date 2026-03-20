@@ -8,7 +8,7 @@ import {
   getConsoleSink,
   loggable,
 } from '@likec4/log'
-import { DEV } from 'esm-env'
+import { isCI, isDevelopment, isTest } from 'std-env'
 import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
 import { clamp, pipe } from 'remeda'
@@ -33,7 +33,7 @@ import validateCmd from './validate'
  * Configure likec4 logger: verbose or dev => debug level, else info.
  */
 function applyLoggerConfig(logLevel: ConfigureLanguageServerLoggerOptions['logLevel']) {
-  const lowestLevel = logLevel ?? (DEV ? 'trace' : 'info')
+  const lowestLevel = logLevel ?? (isDevelopment ? 'trace' : 'info')
   configureLogger({
     reset: true,
     sinks: {
@@ -56,7 +56,7 @@ function applyLoggerConfig(logLevel: ConfigureLanguageServerLoggerOptions['logLe
  * Configures logger from --verbose, then parses yargs and runs the handler.
  */
 async function main() {
-  if (!DEV && !isInsideContainer()) {
+  if (!isTest && !isCI && !isInsideContainer()) {
     await notifyAvailableUpdate()
   }
 
@@ -90,14 +90,8 @@ async function main() {
     .alias('v', 'version')
     .alias('h', 'help')
     .help('help')
-    .option('log-level', {
-      ...logLevel,
-      global: false,
-    })
-    .option('verbose', {
-      ...verbose,
-      global: false,
-    })
+    .option('log-level', logLevel)
+    .option('verbose', verbose)
     .option('color', {
       boolean: true,
       describe: [
@@ -105,12 +99,16 @@ async function main() {
         `respects 'FORCE_COLOR' and 'NO_COLOR' env variables`,
       ].join('\n'),
       skipValidation: true,
+      hidden: true,
       global: true,
     })
+    .group(['log-level', 'verbose', 'color', 'help', 'version', 'show-hidden'], 'Globals:')
     .demandCommand(1, 'Please run with valid command')
     .recommendCommands()
     .showHelpOnFail(true)
+    .showHidden()
     .updateStrings({
+      'Globals:': k.bold('Globals:'),
       'Options:': k.bold('Options:'),
       'Positionals:': k.bold('Arguments:'),
       'Commands:': k.bold('Commands:'),

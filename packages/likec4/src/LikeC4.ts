@@ -1,9 +1,10 @@
+import { exact } from '@likec4/core'
 import {
   fromSource as fromSourceImpl,
   fromWorkspace as fromWorkspaceImpl,
   LikeC4 as AbstractLikeC4,
 } from '@likec4/language-services/node'
-import type { Logger } from './logger'
+import defu from 'defu'
 
 export type LikeC4Options = {
   /**
@@ -22,9 +23,9 @@ export type LikeC4Options = {
   /**
    * Logger to use for the language service.
    * false - no output
-   * @default 'default'
+   * @default 'console'
    */
-  logger?: Logger | 'vite' | 'default' | false
+  logger?: 'console' | 'stderr' | false
   /**
    * Whether to use the `dot` binary for layouting or the WebAssembly version.
    * @default 'wasm'
@@ -42,21 +43,46 @@ export type LikeC4Options = {
    * @default false
    */
   watch?: boolean
+  /**
+   * The log level to use.
+   * Applied if {@link logger} is not `false`
+   */
+  logLevel?: 'trace' | 'debug' | 'info' | 'warning' | 'error' | undefined
 }
 
 export interface LikeC4 extends AbstractLikeC4 {
 }
 
 export namespace LikeC4 {
-  export async function fromSource(likec4SourceCode: string, opts?: LikeC4Options): Promise<LikeC4> {
-    return fromSourceImpl(likec4SourceCode, opts)
+  export async function fromSource(likec4SourceCode: string, _opts?: LikeC4Options): Promise<LikeC4> {
+    const { logger: configureLogger, watch: _watch, ...opts } = _opts ?? {}
+    return fromSourceImpl(
+      likec4SourceCode,
+      defu(
+        exact({
+          ...opts,
+          configureLogger,
+        }),
+        { configureLogger: 'console' },
+      ),
+    )
   }
 
   /**
    * Initializes a LikeC4 instance from the specified workspace path.
    * By default in current folder
    */
-  export async function fromWorkspace(path = '.', opts?: LikeC4Options): Promise<LikeC4> {
-    return fromWorkspaceImpl(path, opts)
+  export async function fromWorkspace(path = '', _opts?: LikeC4Options): Promise<LikeC4> {
+    const { logger: configureLogger, watch: _watch, ...opts } = _opts ?? {}
+    return fromWorkspaceImpl(
+      path,
+      defu(
+        exact({
+          ...opts,
+          configureLogger,
+        }),
+        { configureLogger: 'console' },
+      ),
+    )
   }
 }

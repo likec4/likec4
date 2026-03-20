@@ -5,10 +5,10 @@ import { dirname, extname, relative, resolve } from 'node:path'
 import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
-import { LikeC4 } from '../../../LikeC4'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
+import { showSupportUsMessage } from '../../support-message'
 
 const ERR_PROJECT_NOT_FOUND = 'project not found'
 const ERR_NO_PROJECTS = 'No projects found'
@@ -25,8 +25,7 @@ type JsonExportArgs = {
 /** Run the JSON export workflow: init workspace, load model(s), write to outfile. */
 async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
-  await using languageServices = await LikeC4.fromWorkspace(args.path, {
-    logger,
+  await using languageServices = await fromWorkspace(args.path, {
     graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })
@@ -131,6 +130,7 @@ export function jsonCmd(yargs: Argv) {
         },
         logger,
       )
+      showSupportUsMessage()
     },
   })
 }

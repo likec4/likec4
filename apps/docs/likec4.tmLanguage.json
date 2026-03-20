@@ -26,6 +26,14 @@
       "name": "keyword.control.likec4"
     },
     {
+      "match": "\\b(metadata)\\.([a-zA-Z_]\\w*)(?:\\s+(is(\\s+not)?))?",
+      "captures": {
+        "1": { "name": "keyword.control.likec4" },
+        "2": { "name": "variable.other.property.likec4" },
+        "3": { "name": "keyword.control.likec4" }
+      }
+    },
+    {
       "match": "\\b(kind)\\s+(is\\s+not)\\s+([^\\s]+)\\b",
       "captures": {
         "1": {

@@ -1,5 +1,15 @@
 # likec4-vscode
 
+## 1.53.0
+
+### Patch Changes
+
+- [#2785](https://github.com/likec4/likec4/pull/2785) [`eddfe46`](https://github.com/likec4/likec4/commit/eddfe462b49d8dd598db443259bc2ba0820b76f1) Thanks [@davydkov](https://github.com/davydkov)! - Restore Markdown syntax highlighting in triple-quoted strings
+
+- [#2773](https://github.com/likec4/likec4/pull/2773) [`f4698a6`](https://github.com/likec4/likec4/commit/f4698a61129c26eadd0b73acfcff3f81f85e99fe) Thanks [@davydkov](https://github.com/davydkov)! - Add configurable Node.js path for language server runtime
+
+- [`2c8ed1c`](https://github.com/likec4/likec4/commit/2c8ed1c3cc0caa2ed45be14035156294afa68eb4) Thanks [@davydkov](https://github.com/davydkov)! - Fix web extension failing to start language server. Closes [#2702](https://github.com/likec4/likec4/issues/2702)
+
 ## 1.52.0
 
 ### Patch Changes

@@ -42,8 +42,6 @@
     "packages/language-server/src/generated*/**": true,
   },
   "search.exclude": {
-    ".yarn/**": true,
-    "yarn.lock": true,
     "node_modules/**": true,
     "packages/*/dist/**": true,
     "packages/*/bundle/**": true,

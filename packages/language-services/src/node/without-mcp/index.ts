@@ -7,7 +7,7 @@ import { pathToFileURL } from 'url'
 import { createFromSources } from '../../common/createFromSources'
 import { handleInitOptions } from '../../common/handleInitOptions'
 import { type LikeC4Langium, LikeC4 } from '../../common/LikeC4'
-import type { FromWorkspaceOptions, InitOptions } from '../../common/options'
+import { type FromWorkspaceOptions, type InitOptions, DefaultInitOptions } from '../../common/options'
 import { configureLogger } from '../configureLogger'
 import { type CreateLanguageServiceOptions, createLanguageServices } from './createLanguageServices'
 
@@ -28,8 +28,6 @@ export { LikeC4 } from '../../common/LikeC4'
  * @returns A Promise that resolves to a LikeC4 instance
  */
 export async function fromWorkspace(path: string, options?: FromWorkspaceOptions): Promise<LikeC4> {
-  configureLogger(options)
-
   const workspacePath = resolve(path)
   const folderUri = pathToFileURL(workspacePath).toString()
   const workspaceUri = folderUri.endsWith('/') ? folderUri : folderUri + '/'
@@ -39,11 +37,13 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
     const mergedOptions = defu(
       options,
       {
+        ...DefaultInitOptions,
         useFileSystem: true,
         manualLayouts: true,
         watch: false,
       } satisfies CreateLanguageServiceOptions,
     )
+    configureLogger(mergedOptions)
     if (mergedOptions.mcp) {
       throw new Error('MCP server is not supported in this build')
     }

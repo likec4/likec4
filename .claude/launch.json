@@ -1,0 +1,32 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "likec4-dev",
+      "runtimeExecutable": "pnpm",
+      "cwd": "${workspaceFolder}/packages/likec4",
+      "runtimeArgs": [
+        "dev:examples"
+      ],
+      "port": 5173
+    },
+    {
+      "name": "docs",
+      "runtimeExecutable": "pnpm",
+      "cwd": "${workspaceFolder}/apps/docs",
+      "runtimeArgs": [
+        "dev"
+      ],
+      "port": 4321
+    },
+    {
+      "name": "playground",
+      "runtimeExecutable": "pnpm",
+      "cwd": "${workspaceFolder}/apps/playground",
+      "runtimeArgs": [
+        "dev"
+      ],
+      "port": 5173
+    }
+  ]
+}

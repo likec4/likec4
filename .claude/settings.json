@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh *)",
+      "Bash(git *)",
+      "Bash(pnpm *)",
+      "Read",
+      "Edit",
+      "Agent(Explore)",
+      "MultiEdit",
+      "Task(Explore)",
+      "WebFetch",
+      "Bash(tail:*)",
+      "Bash(sed:*)",
+      "Bash(export:*)"
+    ]
+  }
+}

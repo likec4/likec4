@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { fromWorkspace } from '@likec4/language-services/node'
+import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
@@ -15,6 +14,7 @@ import {
   useHashHistory,
   webcomponentPrefix,
 } from '../options'
+import { showSupportUsMessage } from '../support-message'
 
 const buildCmd = (yargs: yargs.Argv) => {
   return yargs
@@ -73,6 +73,8 @@ const buildCmd = (yargs: yargs.Argv) => {
           outputDir,
           outputSingleFile: params.outputSingleFile,
         })
+
+        showSupportUsMessage()
       },
     })
 }

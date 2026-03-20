@@ -245,7 +245,13 @@ export class BaseParser {
     // Transform metadata attributes into key-value pairs
     const keyValuePairs = pipe(
       metadataAstNode.props,
-      flatMap(p => extractValues(p.value).map(v => [p.key, v] as [string, string])),
+      flatMap(p => {
+        if (p.value) {
+          return extractValues(p.value).map(v => [p.key, v] as [string, string])
+        }
+        // Boolean metadata values (e.g. critical true)
+        return [[p.key, String(p.boolValue)] as [string, string]]
+      }),
       filter(([_, value]) => isTruthy(value)),
     )
 

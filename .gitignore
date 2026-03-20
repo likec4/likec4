@@ -16,6 +16,7 @@ test-mcp-local.ts
 test-mcp-local.js
 
 panda.buildinfo.json
+.claude/worktrees
 .claude/settings.local.json
 
 apps/*/dist

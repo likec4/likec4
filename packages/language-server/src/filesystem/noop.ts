@@ -1,5 +1,6 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
-import type { URI } from 'langium'
+import type { LayoutedView } from '@likec4/core'
+import type { Disposable, URI } from 'langium'
 import { LibIcons } from '../generated-lib/icons'
 import { isLikeC4Builtin } from '../likec4lib'
 import type {
@@ -58,6 +59,14 @@ export class NoopFileSystemWatcher implements FileSystemWatcher {
 }
 
 export class NoopLikeC4ManualLayouts implements LikeC4ManualLayouts {
+  handleFileSystemUpdate(): Promise<void> {
+    return Promise.resolve()
+  }
+
+  readSnapshot(): Promise<LayoutedView | null> {
+    return Promise.resolve(null)
+  }
+
   read() {
     return Promise.resolve(null)
   }
@@ -73,6 +82,12 @@ export class NoopLikeC4ManualLayouts implements LikeC4ManualLayouts {
   }
 
   clearCaches() {
+  }
+
+  onManualLayoutUpdate(): Disposable {
+    return {
+      dispose: () => {},
+    }
   }
 }
 

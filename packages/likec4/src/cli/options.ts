@@ -102,6 +102,7 @@ export const project = {
 export const logLevel = {
   hidden: true,
   nargs: 1,
+  desc: 'force log level',
   choices: ['trace', 'debug', 'info', 'warning', 'error'],
   conflicts: ['verbose'],
 } as const satisfies Options

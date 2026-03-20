@@ -92,6 +92,7 @@ const main = defineCommand({
     await fromWorkspace(workspace, {
       graphviz: args.graphviz,
       mcp: useStdio ? 'stdio' : { port },
+      // Logger is already configured
       configureLogger: false,
       watch: args.watch,
     })

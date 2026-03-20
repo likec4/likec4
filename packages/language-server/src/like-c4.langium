@@ -261,7 +261,7 @@ MetadataBody: '{'
 ;
 
 MetadataAttribute:
-  key=IdTerminal ':'? value=MetadataValue ';'?
+  key=IdTerminal ':'? (value=MetadataValue | boolValue=BOOLEAN) ';'?
 ;
 
 MetadataValue:
@@ -608,7 +608,12 @@ WhereElementNegation:
 
 WhereElement:
   {infer WhereElementTag} 'tag' EqOperator value=TagRef |
-  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind]
+  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind] |
+  {infer WhereElementMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)?
+;
+
+MetadataFilterValue returns string:
+  String | BOOLEAN
 ;
 
 WhereRelationExpression:
@@ -634,12 +639,15 @@ WhereRelationNegation:
 WhereRelation:
   {infer WhereRelationTag} 'tag' EqOperator value=TagRef |
   {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id] |
+  {infer WhereRelationMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)? |
   {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=TagRef |
-  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id]
+  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id] |
+  {infer WhereRelationParticipantMetadata} participant=Participant StickyDot 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)?
 ;
 type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
 type WhereTagEqual = WhereElementTag | WhereRelationTag | WhereRelationParticipantTag;
 type WhereKindEqual = WhereElementKind | WhereRelationKind | WhereRelationParticipantKind;
+type WhereMetadataEqual = WhereElementMetadata | WhereRelationMetadata | WhereRelationParticipantMetadata;
 
 type WhereExpression = WhereElementExpression | WhereRelationExpression;
 

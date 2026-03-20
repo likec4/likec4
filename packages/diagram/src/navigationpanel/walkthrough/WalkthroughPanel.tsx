@@ -1,5 +1,4 @@
 import { RichText } from '@likec4/core'
-import { css } from '@likec4/styles/css'
 import { styled } from '@likec4/styles/jsx'
 import { vstack } from '@likec4/styles/patterns'
 import {
@@ -44,8 +43,26 @@ export const WalkthroughPanel = memo(() => {
       {isActive && !notes.isEmpty && (
         <m.div
           layout="position"
-          className={css({
+          className={vstack({
             position: 'relative',
+            layerStyle: 'likec4.dropdown',
+            gap: 'sm',
+            padding: 'md',
+            paddingTop: 'xxs',
+            pointerEvents: 'all',
+            maxWidth: 300,
+            height: 'max-content',
+            maxHeight: 'calc(100cqh - 100px)',
+            width: 'max-content',
+            cursor: 'default',
+            overflow: 'hidden',
+            '@/sm': {
+              minWidth: 400,
+              maxWidth: 550,
+            },
+            '@/lg': {
+              maxWidth: 700,
+            },
           })}
           initial={{
             opacity: 0,
@@ -60,39 +77,12 @@ export const WalkthroughPanel = memo(() => {
             translateX: -20,
           }}
         >
-          <ScrollAreaAutosize
-            className={vstack({
-              position: 'absolute',
-              layerStyle: 'likec4.dropdown',
-              gap: 'sm',
-              padding: 'md',
-              paddingTop: 'xxs',
-              pointerEvents: 'all',
-              maxWidth: 'calc(100cqw - 32px)',
-              minWidth: 'calc(100cqw - 50px)',
-              maxHeight: 'calc(100cqh - 100px)',
-              width: 'max-content',
-              cursor: 'default',
-              overflow: 'auto',
-              overscrollBehavior: 'contain',
-              '@/sm': {
-                minWidth: 400,
-                maxWidth: 550,
-              },
-              '@/lg': {
-                maxWidth: 700,
-              },
-            })}
-            type="scroll"
-          >
+          <ScrollAreaAutosize type="scroll" overscrollBehavior="contain">
             <SectionHeader>Notes</SectionHeader>
             <Markdown
               value={notes}
               fontSize="sm"
               emptyText="No description"
-              className={css({
-                userSelect: 'all',
-              })}
             />
           </ScrollAreaAutosize>
         </m.div>
