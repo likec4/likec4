@@ -28,8 +28,6 @@ export { LikeC4 } from '../../common/LikeC4'
  * @returns A Promise that resolves to a LikeC4 instance
  */
 export async function fromWorkspace(path: string, options?: FromWorkspaceOptions): Promise<LikeC4> {
-  configureLogger(options)
-
   const workspacePath = resolve(path)
   const folderUri = pathToFileURL(workspacePath).toString()
   const workspaceUri = folderUri.endsWith('/') ? folderUri : folderUri + '/'
@@ -45,6 +43,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
         watch: false,
       } satisfies CreateLanguageServiceOptions,
     )
+    configureLogger(mergedOptions)
     if (mergedOptions.mcp) {
       throw new Error('MCP server is not supported in this build')
     }

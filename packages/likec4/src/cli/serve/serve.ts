@@ -2,8 +2,10 @@ import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { setTimeout } from 'node:timers'
 import { printServerUrls } from '../../vite/printServerUrls'
 import { viteDev } from '../../vite/vite-dev'
+import { showSupportUsMessage } from '../support-message'
 
 type HandlerParams = {
   /**
@@ -91,6 +93,9 @@ export async function handler({
 
   server.config.logger.clearScreen('info')
   printServerUrls(server)
+
+  // Show support message after 1 second
+  setTimeout(showSupportUsMessage, 1000).unref()
 
   // if (!useOverview) {
   //   return

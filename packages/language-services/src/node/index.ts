@@ -29,8 +29,6 @@ export { LikeC4 } from '../common/LikeC4'
  * @returns A Promise that resolves to a LikeC4 instance
  */
 export async function fromWorkspace(path: string, options?: FromWorkspaceOptions): Promise<LikeC4> {
-  configureLogger(options)
-
   const workspacePath = resolve(path)
   // Normalize folder URI with trailing slash so LSP/workspace consumers resolve paths consistently (CI vs local)
   const folderUri = pathToFileURL(workspacePath).toString()
@@ -48,6 +46,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
         mcp: false,
       } satisfies CreateLanguageServiceOptions,
     )
+    configureLogger(opts)
 
     const langium = createLanguageServices(opts)
 

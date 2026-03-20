@@ -133,9 +133,8 @@ export function LikeC4VitePlugin({
         const instance = await fromWorkspace(opts.workspace ?? config.root, {
           graphviz: opts.graphviz ?? 'wasm',
           configureLogger: 'console',
-
-          // printErrors: opts.printErrors ?? true,
-          // throwIfInvalid: opts.throwIfInvalid ?? false,
+          printErrors: opts.printErrors ?? true,
+          throwIfInvalid: opts.throwIfInvalid ?? false,
           watch,
         })
         likec4 = instance.languageServices
