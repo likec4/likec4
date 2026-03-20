@@ -18,19 +18,6 @@ export interface LikeC4Langium {
   likec4: LikeC4Services
 }
 
-const isErrorDiagnostic = (diagnostic: { severity?: number }): boolean => {
-  return diagnostic.severity === 1
-}
-
-const firstFiveLines = (message: string): string => {
-  const messages = message.split('\n')
-  if (messages.length > 5) {
-    messages.length = 5
-    messages.push('...')
-  }
-  return messages.join('\n')
-}
-
 export class LikeC4 {
   protected readonly langium: LikeC4Langium
 
@@ -153,13 +140,14 @@ Please specify a project folder`)
   }> {
     const docs = [...this.LangiumDocuments.userDocuments]
     return docs.flatMap(doc => {
-      const errors = doc.diagnostics?.filter(isErrorDiagnostic) ?? []
-      return errors.map(({ message, range }) => ({
-        message: firstFiveLines(message),
-        line: range.start.line,
-        range,
-        sourceFsPath: doc.uri.fsPath,
-      }))
+      return (doc.diagnostics ?? [])
+        .filter(d => d.severity === DiagnosticSeverity.Error)
+        .map(({ message, range }) => ({
+          message,
+          line: range.start.line,
+          range,
+          sourceFsPath: doc.uri.fsPath,
+        }))
     })
   }
 
@@ -173,36 +161,31 @@ Please specify a project folder`)
    */
   printErrors(): boolean {
     let hasErrors = false
-    for (const doc of this.LangiumDocuments.userDocuments) {
-      const errors = doc.diagnostics?.filter(isErrorDiagnostic) ?? []
-      if (!hasAtLeast(errors, 1)) {
-        continue
-      }
-      hasErrors = true
-      const messages = pipe(
-        errors,
-        flatMap(error => {
-          const line = error.range.start.line
-          const messages = firstFiveLines(error.message).split('\n')
-          return messages.map((message, i) => {
-            if (i === 0) {
-              return '    ' + k.dim(`Line ${line}: `) + k.red(message)
+    for (const doc of this.LangiumDocuments.all) {
+      const errors = doc.diagnostics?.filter(e => e.severity === 1)
+      if (errors && errors.length > 0) {
+        hasErrors = true
+        const messages = errors
+          .flatMap(validationError => {
+            const line = validationError.range.start.line
+            const messages = validationError.message.split('\n')
+            if (messages.length > 10) {
+              messages.length = 10
+              messages.push('...')
             }
-            return ' '.repeat(10) + k.red(message)
+            return messages
+              .map((message, i) => {
+                if (i === 0) {
+                  return '    ' + k.dim(`Line ${line}: `) + k.red(message)
+                }
+                return ' '.repeat(10) + k.red(message)
+              })
           })
-        }),
-        join('\n'),
-      )
-      this.logger.error(`Invalid ${doc.uri.fsPath}\n${messages}`)
+          .join('\n')
+        this.logger.error(`Invalid ${doc.uri.fsPath}\n${messages}`)
+      }
     }
     return hasErrors
-  }
-
-  /**
-   * Returns the number of parsed documents in the workspace
-   */
-  documentCount(): number {
-    return [...this.LangiumDocuments.userDocuments].length
   }
 
   /**

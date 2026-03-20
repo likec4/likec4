@@ -4,7 +4,7 @@ import ky from 'ky'
 import spawn from 'nano-spawn'
 import { isEmptyish } from 'remeda'
 import { gt as semverGt } from 'semver'
-import { isProduction, nodeENV } from 'std-env'
+import { isCI, isTest, nodeENV } from 'std-env'
 import k from 'tinyrainbow'
 import type { PackageJson } from 'type-fest'
 import { boxen, logger } from '../../logger'
@@ -15,7 +15,7 @@ const ONE_DAY = 1000 * 60 * 60 * 24
 const ENV_CHECK_UPDATE = 'check-update'
 
 export async function notifyAvailableUpdate() {
-  if (isProduction || nodeENV === ENV_CHECK_UPDATE) {
+  if (isCI || isTest || nodeENV === ENV_CHECK_UPDATE) {
     return
   }
   const store = getConfigStore()
