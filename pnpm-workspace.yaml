@@ -94,14 +94,14 @@ catalogs:
   react:
     "@floating-ui/dom": ^1.7.6
     "@nanostores/media-query": 0.1.2
-    "@nanostores/react": 1.0.0
+    "@nanostores/react": 1.1.0
     "@react-hookz/web": ^25.2.0
     "@tabler/icons-react": 3.40.0
     "@types/react": 19.2.14
     "@types/react-dom": 19.2.3
     clsx: ^2.1.1
     motion: ^12.36.0
-    nanostores: 1.1.1
+    nanostores: 1.2.0
     react: 19.2.4
     react-dom: 19.2.4
     react-error-boundary: ^6.1.1
