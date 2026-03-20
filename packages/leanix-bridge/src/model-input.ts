@@ -3,6 +3,7 @@
  * Keeps the bridge decoupled from concrete model class.
  */
 
+/** Element shape required by the bridge (id, kind, title, tags, getMetadata). */
 export interface BridgeElementLike {
   id: string
   kind: string
@@ -12,6 +13,7 @@ export interface BridgeElementLike {
   getMetadata(): Record<string, unknown>
 }
 
+/** Relation shape required by the bridge (id, source, target, kind, title). */
 export interface BridgeRelationLike {
   id: string
   source: { id: string }
@@ -20,6 +22,7 @@ export interface BridgeRelationLike {
   title?: string | null
 }
 
+/** View shape required by the bridge (id only). */
 export interface BridgeViewLike {
   id: string
 }

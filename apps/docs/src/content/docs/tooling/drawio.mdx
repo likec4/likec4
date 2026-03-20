@@ -22,6 +22,24 @@ This page describes what is mapped on export, limitations, and multi-diagram beh
 
 By default, one `.drawio` file is produced per view (each view becomes one diagram tab in that file). Use the CLI option `--all-in-one` to combine all views into a single multi-tab `.drawio` file.
 
+### Export profiles
+
+Export can use two profiles:
+
+| Profile   | Description |
+| --------- | ----------- |
+| `default` | Standard round-trip; layout, stroke, waypoints, and existing style attributes (see [Mapped to Draw.io](#mapped-to-drawio) below). |
+| `leanix`  | Adds **bridge-managed metadata** on vertices, edges, and diagram root so diagrams can be used with the [LeanIX bridge](https://github.com/likec4/likec4/tree/main/packages/leanix-bridge) or LeanIX tooling. LikeC4 remains the source of truth; Draw.io is an interchange format. |
+
+**When using `leanix` profile:**
+
+- **Vertices and root cell:** `bridgeManaged=true`, `likec4Id`, `likec4Kind`, `likec4ViewId`, and (if provided) `likec4ProjectId`. Optionally `leanixFactSheetType` per element kind when `leanixFactSheetTypeByKind` is set (e.g. via custom generator).
+- **Edges:** `likec4RelationId`, `bridgeManaged`.
+
+**CLI:** `likec4 export drawio --profile leanix -o ./diagrams`
+
+**Programmatic:** Pass `profile: 'leanix'` (and optionally `projectId`, `leanixFactSheetTypeByKind`) in `GenerateDrawioOptions` when calling `generateDrawio` / `generateDrawioMulti`. See [@likec4/leanix-bridge](https://github.com/likec4/likec4/tree/main/packages/leanix-bridge) for sync and round-trip mapping.
+
 ### Mapped to Draw.io
 
 | LikeC4 | Draw.io |
@@ -50,7 +68,7 @@ By default, one `.drawio` file is produced per view (each view becomes one diagr
 
 Export uses the **project theme** (or LikeC4 default) for element and relationship colors; containers (bounded contexts) are drawn **behind** their children as a wrapping rectangle; edge **connection points** are derived from layout so arrows attach on the correct sides of nodes.
 
-The generator accepts optional **options** for round-trip or tooling: `layoutOverride` (per-node bbox: `{ x, y, width, height }`, same shape as `@likec4/core` BBox), `strokeColorByNodeId`, `strokeWidthByNodeId`, and `compressed`. Set **`compressed: false`** to write diagram XML uncompressed inside the `.drawio` file (larger file; use when draw.io desktop or Open file / Import fails to open the default compressed export). The **Playground** exports uncompressed by default for maximum compatibility; the **CLI** uses compressed by default and supports `--uncompressed`.
+The generator accepts optional **options** for round-trip or tooling: `layoutOverride` (per-node bbox: `{ x, y, width, height }`, same shape as `@likec4/core` BBox), `strokeColorByNodeId`, `strokeWidthByNodeId`, `compressed`, and `profile` (default or leanix; when leanix, optionally `projectId`, `leanixFactSheetTypeByKind`). Set **`compressed: false`** to write diagram XML uncompressed inside the `.drawio` file (larger file; use when draw.io desktop or Open file / Import fails to open the default compressed export). The **Playground** exports uncompressed by default for maximum compatibility; the **CLI** uses compressed by default and supports `--uncompressed`.
 
 ### Not preserved on export
 

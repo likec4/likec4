@@ -12,7 +12,7 @@ catalog:
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
   "@types/node": ~22.19.15
   "@types/pako": ^2.0.4
-  "@typescript/native-preview": 7.0.0-dev.20260313.1
+  "@typescript/native-preview": 7.0.0-dev.20260316.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
@@ -74,18 +74,18 @@ catalogs:
     "@hono/node-server": ^1.19.11
     "@hono/oauth-providers": ^0.8.5
     "@hono/zod-validator": ^0.7.6
-    hono: ^4.12.7
+    hono: ^4.12.8
     hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 8.3.15
-    "@mantine/core": 8.3.15
-    "@mantine/hooks": 8.3.15
-    "@mantine/modals": 8.3.15
-    "@mantine/notifications": 8.3.15
-    "@mantine/vanilla-extract": 8.3.15
+    "@mantine/colors-generator": 8.3.17
+    "@mantine/core": 8.3.17
+    "@mantine/hooks": 8.3.17
+    "@mantine/modals": 8.3.17
+    "@mantine/notifications": 8.3.17
+    "@mantine/vanilla-extract": 8.3.17
   mcp:
     "@modelcontextprotocol/sdk": ^1.27.1
   obuild:
@@ -96,7 +96,7 @@ catalogs:
     "@nanostores/media-query": 0.1.2
     "@nanostores/react": 1.0.0
     "@react-hookz/web": ^25.2.0
-    "@tabler/icons-react": 3.36.1
+    "@tabler/icons-react": 3.40.0
     "@types/react": 19.2.14
     "@types/react-dom": 19.2.3
     clsx: ^2.1.1
@@ -120,7 +120,7 @@ catalogs:
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
-    caniuse-lite: ^1.0.30001778
+    caniuse-lite: ^1.0.30001780
     chroma-js: ^3.2.0
     citty: ^0.2.1
     consola: ^3.4.2
@@ -132,7 +132,7 @@ catalogs:
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
-    nanoid: 5.1.6
+    nanoid: 5.1.7
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0
     ohash: ^2.0.11

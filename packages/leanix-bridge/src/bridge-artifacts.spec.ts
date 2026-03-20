@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createFixtureModel } from './fixture-model'
-import { toReport } from './report'
+import { buildBridgeReport } from './report'
 import { toBridgeManifest } from './to-bridge-manifest'
 import { toLeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
 
@@ -21,18 +21,18 @@ describe('bridge artifacts (golden snapshot)', () => {
   it('report.json shape', () => {
     const manifest = toBridgeManifest(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
     const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
-    const report = toReport(manifest, dryRun)
+    const report = buildBridgeReport(manifest, dryRun)
     expect(report).toMatchSnapshot()
   })
 
-  it('toReport throws with precise mismatch when projectId or mappingProfile differ', () => {
+  it('buildBridgeReport throws with precise mismatch when projectId or mappingProfile differ', () => {
     const manifest = toBridgeManifest(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
     const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'other' })
-    expect(() => toReport(manifest, dryRun)).toThrow(/Mismatch:.*mappingProfile/)
+    expect(() => buildBridgeReport(manifest, dryRun)).toThrow(/Mismatch:.*mappingProfile/)
     const dryRunWrongProject = toLeanixInventoryDryRun(createFixtureModel({ projectId: 'other-project' }), {
       generatedAt: fixedDate,
       mappingProfile: 'snapshot',
     })
-    expect(() => toReport(manifest, dryRunWrongProject)).toThrow(/Mismatch:.*projectId/)
+    expect(() => buildBridgeReport(manifest, dryRunWrongProject)).toThrow(/Mismatch:.*projectId/)
   })
 })

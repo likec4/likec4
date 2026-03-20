@@ -254,19 +254,21 @@ function toFilterable<M extends AnyAux>(
     return {
       kind: relationEndpoint.kind,
       tags: [...relationEndpoint.tags, ...(deployedInstance?.tags ?? [])],
+      metadata: relationEndpoint.metadata,
     }
   }
   if (isNestedElementOfDeployedInstanceModel(relationEndpoint)) { // Nested element. Has no own instance. No need to extend
-    return pick(relationEndpoint.element, ['tags', 'kind'])
+    return pick(relationEndpoint.element, ['tags', 'kind', 'metadata'])
   }
   if (isDeployedInstance(relationEndpoint)) { // Deployed instance. Extend with tags of the model element
     return {
       kind: relationEndpoint.element.kind,
       tags: [...relationEndpoint.tags, ...relationEndpoint.element.tags],
+      metadata: relationEndpoint.metadata,
     }
   }
   if (isDeploymentNode(relationEndpoint)) { // Deployment node. Has no representation in model. No need to extend
-    return pick(relationEndpoint, ['tags', 'kind'])
+    return pick(relationEndpoint, ['tags', 'kind', 'metadata'])
   }
 
   nonexhaustive(relationEndpoint)
@@ -276,6 +278,7 @@ function toFilterableRelation<M extends AnyAux>(c: DeploymentConnectionModel<M>)
   return (relation: RelationshipModel<M> | DeploymentRelationModel<M>) => ({
     tags: relation.tags,
     kind: relation.kind,
+    metadata: relation.metadata,
     source: toFilterable(relation.source, c.source),
     target: toFilterable(relation.target, c.target),
   })

@@ -15,6 +15,7 @@ function isInstalled(name: string): boolean {
   }
 }
 
+/** Ensures react and react-dom are installed; prompts to add them if missing. */
 export async function ensureReact() {
   if (isInstalled('react') && isInstalled('react-dom')) {
     logger.debug('react already installed')
@@ -43,6 +44,7 @@ export async function ensureReact() {
   }
 }
 
+/** Ensures playwright is installed; prompts to add it if missing. */
 export async function ensurePlaywright() {
   if (isInstalled('playwright')) {
     logger.debug('playwright already installed')

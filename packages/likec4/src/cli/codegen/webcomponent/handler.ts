@@ -24,6 +24,7 @@ type HandlerParams = {
   outfile: string | undefined
 }
 
+/** Generates webcomponent build and types for the LikeC4 project. */
 export async function webcomponentHandler({
   project,
   path,

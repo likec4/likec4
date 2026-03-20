@@ -24,6 +24,7 @@ type HandlerParams = {
   outfile: string | undefined
 }
 
+/** Generates LikeC4 model TypeScript (parsed + computed) for the project. */
 export async function modelHandler({ path, useDotBin, useCorePackage, outfile, project }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)

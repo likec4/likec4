@@ -18,6 +18,7 @@ type AllNever = {
   or?: never
   tag?: never
   kind?: never
+  metadata?: never
   participant?: never
   operator?: never
 }
@@ -36,10 +37,20 @@ export function isKindEqual<A extends Any>(operator: WhereOperator<A>): operator
   return 'kind' in operator
 }
 
+export type MetadataEqual<A extends Any> = Omit<AllNever, 'metadata'> & {
+  metadata: {
+    key: string
+    value?: EqualOperator<string> | string
+  }
+}
+export function isMetadataEqual<A extends Any>(operator: WhereOperator<A>): operator is MetadataEqual<A> {
+  return 'metadata' in operator
+}
+
 export type Participant = 'source' | 'target'
 export type ParticipantOperator<A extends Any> = Omit<AllNever, 'participant' | 'operator'> & {
   participant: Participant
-  operator: KindEqual<A> | TagEqual<A>
+  operator: KindEqual<A> | TagEqual<A> | MetadataEqual<A>
 }
 export function isParticipantOperator<A extends Any>(
   operator: WhereOperator<A>,
@@ -71,6 +82,7 @@ export function isOrOperator<A extends Any>(operator: WhereOperator<A>): operato
 export type WhereOperator<A extends Any = Any> =
   | TagEqual<A>
   | KindEqual<A>
+  | MetadataEqual<A>
   | ParticipantOperator<A>
   | NotOperator<A>
   | AndOperator<A>
@@ -79,6 +91,7 @@ export type WhereOperator<A extends Any = Any> =
 export type Filterable<A extends Any> = {
   tags?: aux.Tags<A> | null | undefined
   kind?: aux.AllKinds<A> | null | undefined
+  metadata?: Record<string, string | string[] | undefined> | null | undefined
   source?: Filterable<A>
   target?: Filterable<A>
 }
@@ -117,6 +130,31 @@ export function whereOperatorAsPredicate<A extends Any>(
       const kind = operator.kind.neq
       return (value) => {
         return isNullish(value.kind) || value.kind !== kind
+      }
+    }
+    case isMetadataEqual(operator): {
+      const { key, value } = operator.metadata
+      if (value === undefined) {
+        return (item) => {
+          return item.metadata != null && key in item.metadata && item.metadata[key] != null
+        }
+      }
+      if (isString(value) || 'eq' in value) {
+        const expected = isString(value) ? value : value.eq!
+        return (item) => {
+          if (!item.metadata) return false
+          const actual = item.metadata[key]
+          if (Array.isArray(actual)) return actual.includes(expected)
+          return actual === expected
+        }
+      }
+      const expected = value.neq
+      return (item) => {
+        if (!item.metadata) return true
+        const actual = item.metadata[key]
+        if (actual == null) return true
+        if (Array.isArray(actual)) return !actual.includes(expected)
+        return actual !== expected
       }
     }
     case isNotOperator(operator): {

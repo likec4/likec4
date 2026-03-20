@@ -19,7 +19,8 @@ const sharedConfig = defineConfig({
     // Seems vitest doesn't resolve conditions (did have time to investigate), so we add aliases for all packages
     alias: {
       '@likec4/core': src('core'),
-      '@likec4/config': src('config'),
+      '@likec4/config/node': packages('config', 'src', 'node'),
+      '@likec4/config': packages('config', 'src'),
       '@likec4/diagram': src('diagram'),
       '@likec4/generators': src('generators'),
       '@likec4/language-server': src('language-server'),

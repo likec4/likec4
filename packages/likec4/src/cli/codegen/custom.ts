@@ -30,6 +30,7 @@ type HandlerParams = {
   useDotBin: boolean
 }
 
+/** Runs a custom generator by name from project config (generators[name]). */
 export async function customHandler({ name, path, useDotBin, project }: HandlerParams) {
   const timer = startTimer(logger)
   await using likec4 = await fromWorkspace(path, {
