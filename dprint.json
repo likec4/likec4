@@ -43,7 +43,8 @@
     "**/routeTree.gen.ts",
     "packages/vscode/src/meta.ts",
     "packages/*/src/generated",
-    "styled-system/preset/src/generated.ts"
+    "styled-system/preset/src/generated.ts",
+    "schemas/likec4-config.schema.json"
   ],
   "markdown": {},
   "toml": {},

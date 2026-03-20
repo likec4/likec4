@@ -149,6 +149,7 @@ catalogs:
     strip-indent: ^4.1.1
     tinyrainbow: ^3.0.3
     ufo: 1.6.3
+    unstorage: ^1.17.4
   vite:
     "@vitejs/plugin-react": ^5.2.0
     birpc: ^4.0.0
@@ -158,8 +159,8 @@ catalogs:
     vite-plugin-node-polyfills: ^0.25.0
     vite-tsconfig-paths: ^6.1.1
   vitest:
-    "@vitest/ui": 4.0.18
-    vitest: 4.0.18
+    "@vitest/ui": 4.1.0
+    vitest: 4.1.0
   vscode:
     "@types/vscode": ^1.106.1
     vscode-jsonrpc: 8.2.1

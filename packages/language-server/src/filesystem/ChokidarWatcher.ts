@@ -124,8 +124,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       case isManualLayoutFile(filename): {
         logger.debug`manual layout file changed: ${path}`
         workspace.ManualLayouts.clearCaches()
-        const projectId = workspace.ProjectsManager.ownerProjectId(uri)
-        await workspace.ProjectsManager.rebuildProject(projectId)
+        await workspace.ManualLayouts.handleFileSystemUpdate({ update: uri })
         break
       }
       default: {
@@ -152,9 +151,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       }
       case isManualLayoutFile(filename): {
         logger.debug`manual layout file removed: ${path}`
-        const project = workspace.ProjectsManager.ownerProjectId(uri)
-        workspace.ManualLayouts.clearCaches()
-        await workspace.ProjectsManager.rebuildProject(project)
+        await workspace.ManualLayouts.handleFileSystemUpdate({ delete: uri })
         break
       }
       default: {

@@ -1,3 +1,4 @@
+// oxlint-disable typescript/no-floating-promises
 import type {
   ComputedView,
   DiagramView,
@@ -6,16 +7,17 @@ import type {
   ProjectId,
   ViewId,
 } from '@likec4/core'
-import { _layout, applyManualLayout, calcDriftsFromSnapshot } from '@likec4/core'
+import { _layout, applyCachedLayout, applyManualLayout, calcDriftsFromSnapshot, DefaultMap } from '@likec4/core'
 import { type AdhocViewPredicate, computeAdhocView } from '@likec4/core/compute-view'
 import type { LikeC4Model } from '@likec4/core/model'
 import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
-import { loggable } from '@likec4/log'
+import { type Logger, loggable } from '@likec4/log'
 import { type WorkspaceCache, interruptAndCheck } from 'langium'
 import { isTruthy, values } from 'remeda'
 import type { Writable } from 'type-fest'
+import { type Storage, createStorage, prefixStorage } from 'unstorage'
 import type { CancellationToken } from 'vscode-languageserver'
-import { logger as rootLogger, logWarnError } from '../logger'
+import { logger, logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
 import { performanceMark } from '../utils'
@@ -99,21 +101,24 @@ export interface LikeC4Views {
 const viewsLogger = rootLogger.getChild('views')
 
 export class DefaultLikeC4Views implements LikeC4Views {
-  private cache = new WeakMap<ComputedView, GraphvizOut>()
-
-  /**
-   * Set of viewIds with reported errors
-   * value is `${projectId}-${viewId}`
-   */
-  private viewsWithReportedErrors = new Set<string>()
+  #storage: Storage
+  #projectStorages = new DefaultMap((projectId: ProjectId) =>
+    new ProjectStorage({
+      projectId,
+      storage: prefixStorage(this.#storage, projectId),
+      layouter: this.layouter.layout.bind(this.layouter),
+    })
+  )
 
   private ModelBuilder: LikeC4ModelBuilder
 
   constructor(private services: LikeC4Services) {
     this.ModelBuilder = services.likec4.ModelBuilder
-
+    this.#storage = createStorage()
+    // this.cache = new ProjectViewsCache(services)
     services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
-      this.cache = new WeakMap<ComputedView, GraphvizOut>()
+      viewsLogger.info`force clean cache`
+      this.#storage.clear()
     })
   }
 
@@ -137,48 +142,43 @@ export class DefaultLikeC4Views implements LikeC4Views {
     if (views.length === 0) {
       return []
     }
-    const m0 = performanceMark()
     const projectId = likeC4Model.project.id
     const logger = viewsLogger.getChild(projectId)
-    logger.debug`layoutAll: ${views.length} views`
-
+    const projectScope = this.projectStorage(projectId)
     const tasks = [] as LayoutTaskParams[]
     const styles = likeC4Model.$styles
     const results = [] as GraphvizOut[]
     //
     for (const view of views) {
-      let cached = this.cache.get(view)
+      const task = { view, styles }
+      let cached = await projectScope.get(task)
       if (cached) {
-        logger.debug`layout ${view.id} from cache`
         results.push(cached)
         continue
       }
-      tasks.push({
-        view,
-        styles,
-      })
+      tasks.push(task)
     }
     if (tasks.length > 0) {
+      const m0 = performanceMark()
       await this.layouter.batchLayout({
         batch: tasks,
         cancelToken,
         onSuccess: (task, result) => {
           results.push(
-            this.viewSucceed(task.view, likeC4Model, result),
+            projectScope.remember(task, result),
           )
         },
         onError: (task, error) => {
           logger.warn(`Fail layout view ${task.view.id}`, { error })
         },
       })
+      logger.trace`layouted ${tasks.length} views in ${m0.pretty}`
     }
     if (cancelToken && cancelToken.isCancellationRequested) {
       await interruptAndCheck(cancelToken)
     }
     if (results.length !== views.length) {
-      logger.warn`layouted ${results.length} of ${views.length} views in ${m0.pretty}`
-    } else if (results.length > 0) {
-      logger.debug`layouted all ${results.length} views in ${m0.pretty}`
+      logger.warn`layouted ${results.length} of ${views.length} views`
     }
 
     return results
@@ -218,18 +218,13 @@ export class DefaultLikeC4Views implements LikeC4Views {
       }
       return null
     }
+    const projectScope = this.projectStorage(projectId)
     try {
-      const m0 = performanceMark()
-      const out = this.cache.get(view) ?? await this.layouter.layout({
+      const task = {
         view,
         styles: model.$styles,
-      })
-      if (this.cache.has(view)) {
-        logger.debug`layout ${viewId} from cache`
-      } else {
-        this.viewSucceed(view, model, out)
-        logger.debug(`layout {viewId} in ${m0.pretty}`, { viewId })
       }
+      const out = await projectScope.getOrExecute(task)
       if (isTruthy(layoutType)) {
         return {
           dot: out.dot,
@@ -320,12 +315,9 @@ export class DefaultLikeC4Views implements LikeC4Views {
   }
 
   private reportViewError(view: ComputedView, projectId: ProjectId, error: string): void {
-    const key = `${projectId}-${view.id}`
-    this.cache.delete(view)
-    if (!this.viewsWithReportedErrors.has(key)) {
+    this.projectStorage(projectId).reportViewError(view, () => {
       this.services.shared.lsp.Connection?.window.showErrorMessage(`LikeC4: ${error}`)
-      this.viewsWithReportedErrors.add(key)
-    }
+    })
   }
 
   /**
@@ -354,15 +346,104 @@ export class DefaultLikeC4Views implements LikeC4Views {
     return calcDriftsFromSnapshot(layouted, snapshot)
   }
 
-  private viewSucceed(
-    view: ComputedView,
-    likec4model: LikeC4Model.Computed,
-    result: GraphvizOut,
-  ): GraphvizOut {
-    const projectId = likec4model.project.id
-    const key = `${projectId}-${view.id}`
-    this.viewsWithReportedErrors.delete(key)
-    this.cache.set(view, result)
+  protected projectStorage(projectId: ProjectId): ProjectStorage {
+    return this.#projectStorages.get(projectId)
+  }
+}
+
+class ProjectStorage {
+  #logger: Logger
+
+  #projectId: ProjectId
+  #storage: Storage<GraphvizOut>
+  #layouter: (task: LayoutTaskParams) => Promise<GraphvizOut>
+
+  constructor(opts: {
+    projectId: ProjectId
+    storage: Storage<any>
+    layouter: (task: LayoutTaskParams) => Promise<GraphvizOut>
+  }) {
+    this.#logger = viewsLogger.getChild(opts.projectId)
+    this.#projectId = opts.projectId
+    this.#storage = opts.storage
+    this.#layouter = opts.layouter
+    // this.#storage = createStorage()
+    // this.toDispose.push(services.shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Validated, (doc) => {
+    //   const pm = services.shared.workspace.ProjectsManager
+    //   const projectId = pm.ownerProjectId(doc)
+    //   this.clear(projectId)
+    // }))
+    // this.toDispose.push(services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
+    //   if (deleted.length > 0) { // react only on deleted documents
+    //     const pm = services.shared.workspace.ProjectsManager
+    //     const projects = unique(map(deleted, pm.ownerProjectId.bind(pm)))
+    //     for (const project of projects) {
+    //       this.clear(project)
+    //     }
+    //   }
+    // }))
+  }
+
+  async get(task: LayoutTaskParams): Promise<GraphvizOut | undefined> {
+    const key = cacheKey(task)
+    const cached = await this.#storage.get(key)
+    if (cached) {
+      this.#logger.trace`cache hit for ${task.view.id}`
+      return mergeWithCachedLayout(task.view, cached)
+    }
+    logger.trace`cache miss for ${task.view.id}`
+    return undefined
+  }
+
+  async getOrExecute(task: LayoutTaskParams): Promise<GraphvizOut> {
+    const key = cacheKey(task)
+    const cached = await this.#storage.get(key)
+    if (cached) {
+      this.#logger.trace`cache hit for ${task.view.id}`
+      return mergeWithCachedLayout(task.view, cached)
+    }
+    logger.trace`cache miss for ${task.view.id}`
+    const m0 = performanceMark()
+    const result = await this.#layouter(task)
+    logger.trace(`layouted {view} in ${m0.pretty}`, { view: task.view.id })
+    await this.#storage.set(key, result)
+    this.resetViewError(task.view)
     return result
+  }
+
+  remember = <A extends GraphvizOut | undefined>(task: LayoutTaskParams, result: A): A => {
+    const key = cacheKey(task)
+    if (result) {
+      this.#storage.set(key, result).catch(err => {
+        this.#logger.error(err)
+      })
+      this.resetViewError(task.view)
+    }
+    return result
+  }
+
+  reportViewError(view: ComputedView, execIfNotReported: () => unknown) {
+    const key = `error-${view.id}`
+    this.#storage.has(key).then(yes => {
+      if (!yes) {
+        this.#storage.set<any>(key, 'true')
+        execIfNotReported()
+      }
+    })
+  }
+
+  private resetViewError(view: ComputedView) {
+    this.#storage.del(`error-${view.id}`)
+  }
+}
+
+function cacheKey(task: LayoutTaskParams) {
+  return `${task.view.hash}-${task.styles.fingerprint}`
+}
+
+function mergeWithCachedLayout(current: ComputedView, cached: GraphvizOut): GraphvizOut {
+  return {
+    dot: cached.dot,
+    diagram: applyCachedLayout(current, cached.diagram),
   }
 }
