@@ -77,7 +77,7 @@ export const WalkthroughPanel = memo(() => {
             translateX: -20,
           }}
         >
-          <ScrollAreaAutosize type="scroll" overscrollBehavior="contain">
+          <ScrollAreaAutosize mah="100%" type="scroll" overscrollBehavior="contain">
             <SectionHeader>Notes</SectionHeader>
             <Markdown
               value={notes}
