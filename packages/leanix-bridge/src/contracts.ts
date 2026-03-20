@@ -10,12 +10,16 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const _dir = dirname(fileURLToPath(import.meta.url))
+
+/** Fallback when package.json is missing or unreadable (e.g. in bundled CLI or CI). */
+const DEFAULT_BRIDGE_VERSION = '0.1.0'
+
 function readVersion(): string {
   try {
     const pkg = JSON.parse(readFileSync(join(_dir, '..', 'package.json'), 'utf8')) as { version?: string }
-    return pkg.version ?? '0.1.0'
+    return pkg.version ?? DEFAULT_BRIDGE_VERSION
   } catch {
-    return '0.1.0'
+    return DEFAULT_BRIDGE_VERSION
   }
 }
 /** Single source of truth: must match package.json version. */
