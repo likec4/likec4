@@ -225,8 +225,8 @@ catalogs:
       specifier: 0.1.2
       version: 0.1.2
     '@nanostores/react':
-      specifier: 1.0.0
-      version: 1.0.0
+      specifier: 1.1.0
+      version: 1.1.0
     '@react-hookz/web':
       specifier: ^25.2.0
       version: 25.2.0
@@ -240,8 +240,8 @@ catalogs:
       specifier: ^12.36.0
       version: 12.36.0
     nanostores:
-      specifier: 1.1.1
-      version: 1.1.1
+      specifier: 1.2.0
+      version: 1.2.0
     react-error-boundary:
       specifier: ^6.1.1
       version: 6.1.1
@@ -673,7 +673,7 @@ importers:
         version: 8.3.17(@mantine/core@8.3.17(@mantine/hooks@8.3.17(react@19.2.4))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@mantine/hooks@8.3.17(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@nanostores/react':
         specifier: catalog:react
-        version: 1.0.0(nanostores@1.1.1)(react@19.2.4)
+        version: 1.1.0(nanostores@1.2.0)(react@19.2.4)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.9.0(typescript@5.9.3)
@@ -754,7 +754,7 @@ importers:
         version: 5.1.7
       nanostores:
         specifier: catalog:react
-        version: 1.1.1
+        version: 1.2.0
       postcss:
         specifier: catalog:css
         version: 8.5.8
@@ -1123,10 +1123,10 @@ importers:
         version: 8.3.17(react@19.2.4)
       '@nanostores/media-query':
         specifier: catalog:react
-        version: 0.1.2(nanostores@1.1.1)
+        version: 0.1.2(nanostores@1.2.0)
       '@nanostores/react':
         specifier: catalog:react
-        version: 1.0.0(nanostores@1.1.1)(react@19.2.4)
+        version: 1.1.0(nanostores@1.2.0)(react@19.2.4)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1171,7 +1171,7 @@ importers:
         version: 12.36.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       nanostores:
         specifier: catalog:react
-        version: 1.1.1
+        version: 1.2.0
       react-error-boundary:
         specifier: catalog:react
         version: 6.1.1(react@19.2.4)
@@ -1793,7 +1793,7 @@ importers:
         version: 8.3.17(react@19.2.4)
       '@nanostores/react':
         specifier: catalog:react
-        version: 1.0.0(nanostores@1.1.1)(react@19.2.4)
+        version: 1.1.0(nanostores@1.2.0)(react@19.2.4)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.9.0(typescript@5.9.3)
@@ -1898,7 +1898,7 @@ importers:
         version: 12.36.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       nanostores:
         specifier: catalog:react
-        version: 1.1.1
+        version: 1.2.0
       npm-run-all2:
         specifier: ^8.0.4
         version: 8.0.4
@@ -2209,7 +2209,7 @@ importers:
         version: link:../log
       '@nanostores/react':
         specifier: catalog:react
-        version: 1.0.0(nanostores@1.1.1)(react@19.2.4)
+        version: 1.1.0(nanostores@1.2.0)(react@19.2.4)
       birpc:
         specifier: catalog:vite
         version: 4.0.0
@@ -2227,7 +2227,7 @@ importers:
         version: 3.5.0
       nanostores:
         specifier: catalog:react
-        version: 1.1.1
+        version: 1.2.0
       pathe:
         specifier: catalog:utils
         version: 2.0.3
@@ -2478,7 +2478,7 @@ importers:
         version: 8.3.17(react@19.2.4)
       '@nanostores/react':
         specifier: catalog:react
-        version: 1.0.0(nanostores@1.1.1)(react@19.2.4)
+        version: 1.1.0(nanostores@1.2.0)(react@19.2.4)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.9.0(typescript@5.9.3)
@@ -2526,7 +2526,7 @@ importers:
         version: 6.0.0
       nanostores:
         specifier: catalog:react
-        version: 1.1.1
+        version: 1.2.0
       object-hash:
         specifier: catalog:utils
         version: 3.0.0
@@ -4090,11 +4090,11 @@ packages:
     peerDependencies:
       nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^1.0.0
 
-  '@nanostores/react@1.0.0':
-    resolution: {integrity: sha512-eDduyNy+lbQJMg6XxZ/YssQqF6b4OXMFEZMYKPJCCmBevp1lg0g+4ZRi94qGHirMtsNfAWKNwsjOhC+q1gvC+A==}
+  '@nanostores/react@1.1.0':
+    resolution: {integrity: sha512-MbH35fjhcf7LAubYX5vhOChYUfTLzNLqH/mBGLVsHkcvjy0F8crO1WQwdmQ2xKbAmtpalDa2zBt3Hlg5kqr8iw==}
     engines: {node: ^20.0.0 || >=22.0.0}
     peerDependencies:
-      nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^1.0.0
+      nanostores: ^1.2.0
       react: 19.2.4
 
   '@napi-rs/wasm-runtime@1.1.1':
@@ -7624,8 +7624,8 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
-  nanostores@1.1.1:
-    resolution: {integrity: sha512-EYJqS25r2iBeTtGQCHidXl1VfZ1jXM7Q04zXJOrMlxVVmD0ptxJaNux92n1mJ7c5lN3zTq12MhH/8x59nP+qmg==}
+  nanostores@1.2.0:
+    resolution: {integrity: sha512-F0wCzbsH80G7XXo0Jd9/AVQC7ouWY6idUCTnMwW5t/Rv9W8qmO6endavDwg7TNp5GbugwSukFMVZqzPSrSMndg==}
     engines: {node: ^20.0.0 || >=22.0.0}
 
   natural-compare-lite@1.4.0:
@@ -11908,13 +11908,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@nanostores/media-query@0.1.2(nanostores@1.1.1)':
+  '@nanostores/media-query@0.1.2(nanostores@1.2.0)':
     dependencies:
-      nanostores: 1.1.1
+      nanostores: 1.2.0
 
-  '@nanostores/react@1.0.0(nanostores@1.1.1)(react@19.2.4)':
+  '@nanostores/react@1.1.0(nanostores@1.2.0)(react@19.2.4)':
     dependencies:
-      nanostores: 1.1.1
+      nanostores: 1.2.0
       react: 19.2.4
 
   '@napi-rs/wasm-runtime@1.1.1':
@@ -15957,7 +15957,7 @@ snapshots:
 
   nanoid@5.1.7: {}
 
-  nanostores@1.1.1: {}
+  nanostores@1.2.0: {}
 
   natural-compare-lite@1.4.0: {}
 
