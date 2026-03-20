@@ -1,6 +1,7 @@
 import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
 import tailwindcss from '@tailwindcss/vite'
+import skills from 'astro-skills'
 import { defineConfig } from 'astro/config'
 import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 import starlightHeadingBadges from 'starlight-heading-badges'
@@ -127,6 +128,7 @@ export default defineConfig({
         PageFrame: './src/components/starlight/PageFrame.astro',
       },
     }),
+    skills(),
   ],
 
   experimental: {
