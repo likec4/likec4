@@ -1,3 +1,4 @@
+import { isCI } from 'std-env'
 import k from 'tinyrainbow'
 import { boxen } from '../logger'
 import { getConfigStore } from './conf'
@@ -9,6 +10,10 @@ const ONE_WEEK = ONE_MINUTE * 60 * 24 * 7
  * Once per week print to stdout a message to support us
  */
 export function showSupportUsMessage() {
+  // Skip on CI
+  if (isCI) {
+    return
+  }
   try {
     const store = getConfigStore()
     const lastTime = store.get('lastSupportUsMessage')
