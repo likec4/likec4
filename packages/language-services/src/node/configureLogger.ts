@@ -5,7 +5,7 @@ import type { InitOptions } from '../common/options'
 export function configureLogger(
   options: InitOptions | undefined,
 ) {
-  const opt = options?.configureLogger ?? 'console'
+  const opt = options?.configureLogger ?? false
 
   if (opt === false) {
     return

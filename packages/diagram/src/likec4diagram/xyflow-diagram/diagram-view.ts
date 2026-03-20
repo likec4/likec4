@@ -162,7 +162,6 @@ export function diagramToXY(opts: {
           isViewGroup: true,
           ...compoundData,
         },
-        dragHandle: '.likec4-compound-title-container',
       })
       continue
     }
