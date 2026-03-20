@@ -31,7 +31,8 @@
     "clean": "likec4ops clean"
   },
   "dependencies": {
-    "@likec4/core": "workspace:*"
+    "@likec4/core": "workspace:*",
+    "type-fest": "catalog:externals"
   },
   "peerDependencies": {
     "react": "^18.x || ^19.x",
