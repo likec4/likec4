@@ -83,7 +83,7 @@ export default defineConfig([
     ],
     inputOptions: {
       resolve: {
-        conditionNames: ['production', 'sources', 'worker', 'browser', 'import'],
+        conditionNames: ['worker', 'browser', 'import'],
       },
     },
     ...shared,
