@@ -155,7 +155,7 @@
     "chokidar": "catalog:externals",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
-    "vite-plugin-singlefile": "^2.3.0",
+    "vite-plugin-singlefile": "^2.3.2",
     "vite": "catalog:vite",
     "yargs": "17.7.2",
     "nano-spawn": "catalog:externals"
