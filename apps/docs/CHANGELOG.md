@@ -1,5 +1,7 @@
 # @likec4/docs-astro
 
+## 1.53.1
+
 ## 1.53.0
 
 ### Patch Changes

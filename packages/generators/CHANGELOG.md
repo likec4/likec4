@@ -1,5 +1,14 @@
 # @likec4/generators
 
+## 1.53.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/config@1.53.1
+  - @likec4/core@1.53.1
+  - @likec4/log@1.53.1
+
 ## 1.53.0
 
 ### Minor Changes
