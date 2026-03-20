@@ -156,8 +156,8 @@ catalogs:
       specifier: ^4.0.3
       version: 4.0.3
     std-env:
-      specifier: ^3.10.0
-      version: 3.10.0
+      specifier: ^4.0.0
+      version: 4.0.0
     zod:
       specifier: ^3.25.76
       version: 3.25.76
@@ -789,7 +789,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -882,7 +882,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -1433,7 +1433,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -1563,7 +1563,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       tinyrainbow:
         specifier: catalog:utils
         version: 3.0.3
@@ -1743,7 +1743,7 @@ importers:
         version: 1.58.2
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -2063,7 +2063,7 @@ importers:
         version: 0.27.4
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
     devDependencies:
       '@likec4/config':
         specifier: workspace:*
@@ -2262,7 +2262,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -2329,7 +2329,7 @@ importers:
         version: 6.4.0(picomatch@4.0.3)
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
