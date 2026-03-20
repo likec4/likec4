@@ -69,7 +69,6 @@ export async function handler({
     process.env['NODE_ENV'] = 'development'
   }
   const languageServices = await fromWorkspace(path, {
-    // logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: enableHMR,
   })
