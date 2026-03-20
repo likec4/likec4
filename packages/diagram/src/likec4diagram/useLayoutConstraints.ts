@@ -434,8 +434,12 @@ export function createLayoutConstraints(
 
   const _edgeModifiers = [...edgeModifiers.values()]
 
-  function updateXYFlow(): void {
-    const { edgeLookup, triggerNodeChanges, triggerEdgeChanges, nodeLookup } = xyflowApi.getState()
+  /**
+   * Read current node positions from XYFlow internal state into rects.
+   * Only needed for drag operations where XYFlow already has the updated positions.
+   */
+  function syncFromXYFlow(): void {
+    const { nodeLookup } = xyflowApi.getState()
     for (const id of editingNodeIds) {
       const rect = rects.get(id)
       if (!rect) {
@@ -449,6 +453,10 @@ export function createLayoutConstraints(
       }
       rect.positionAbsolute = node.internals.positionAbsolute
     }
+  }
+
+  function updateXYFlow(): void {
+    const { edgeLookup, triggerNodeChanges, triggerEdgeChanges } = xyflowApi.getState()
     applyConstraints(rectsToUpdate)
 
     const nodeUpdates: NodeChange<Types.Node>[] = []
@@ -495,16 +503,14 @@ export function createLayoutConstraints(
 
   function flushPending(): void {
     cancelPending()
+    syncFromXYFlow()
     updateXYFlow()
   }
 
   function onMove(): void {
-    // if (rectsToUpdate.length === 0) {
-    //   return
-    // }
-    // cancelPending()
     animationFrameId ??= requestAnimationFrame(() => {
       animationFrameId = null
+      syncFromXYFlow()
       updateXYFlow()
     })
   }
