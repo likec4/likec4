@@ -1,5 +1,31 @@
 # @likec4/docs-astro
 
+## 1.53.0
+
+### Patch Changes
+
+- [#2768](https://github.com/likec4/likec4/pull/2768) [`cf5acbc`](https://github.com/likec4/likec4/commit/cf5acbcb8410cd66342e39a490fcfd9d91619916) Thanks [@sraphaz](https://github.com/sraphaz)! - feat(leanix-bridge): Phase 2 & 3, CLI, tooling docs (Draw.io + CLI)
+
+  **@likec4/leanix-bridge**
+
+  - Phase 2: `fetchLeanixInventorySnapshot`, `reconcileInventoryWithManifest` (inbound)
+  - Phase 3: `buildDriftReport`, `impactReportFromSyncPlan`, `generateAdrFromReconciliation`, `generateAdrFromDriftReport`, `runGovernanceChecks`
+  - Refactors: sync-to-leanix, to-bridge-manifest, to-leanix-inventory-dry-run, report, leanix-api-client, drawio-leanix-roundtrip
+
+  **likec4 (CLI)**
+
+  - `gen leanix-inventory-snapshot`, `gen leanix-reconcile`; `sync leanix` (dry-run / apply)
+  - Shared LeanIX API client for snapshot and sync
+
+  **@likec4/docs-astro**
+
+  - Draw.io: Export profiles (default / leanix), bridge-managed metadata
+  - CLI: `--profile` option for Export to DrawIO
+
+  **@likec4/generators**
+
+  - Parse Draw.io: compatibility with bridge-managed metadata
+
 ## 1.52.0
 
 ## 1.51.0

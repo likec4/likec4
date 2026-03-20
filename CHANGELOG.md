@@ -1,3 +1,34 @@
+## [1.53.0](https://github.com/likec4/likec4/compare/v1.52.0...v1.53.0) (2026-03-20)
+
+### 🚀 Features
+
+- **Metadata Filtering in View Predicates**:\
+  Filter elements and relations by metadata key existence (`where metadata.key`) or value (`where metadata.key = 'value'`). Works with `!=` for negation and supports `source.metadata` / `target.metadata` for relation participants. Thanks [@galuszkak](https://github.com/galuszkak), [#2769](https://github.com/likec4/likec4/pull/2769)
+
+- **LeanIX Bridge Integration**:\
+  New `@likec4/leanix-bridge` package for syncing architecture models with LeanIX. Includes identity manifest, inventory snapshots, reconciliation, drift reports, governance checks, and ADR generation. CLI adds `gen leanix-inventory-snapshot`, `gen leanix-reconcile`, and `sync leanix` commands. Draw.io export gains a `--profile leanix` option for bridge-managed metadata round-trip. Thanks [@sraphaz](https://github.com/sraphaz), [#2746](https://github.com/likec4/likec4/pull/2746), [#2768](https://github.com/likec4/likec4/pull/2768)
+
+- **Landing Page Configuration**:\
+  New `landingPage` config option to control landing page behavior: `redirect: true` to skip the landing page and go directly to the index view, and `include` / `exclude` selectors to filter which views appear in the landing page grid. Thanks [@purple52](https://github.com/purple52), [#2733](https://github.com/likec4/likec4/pull/2733)
+
+- **Improved `likec4 validate` Command**:\
+  Fix exit code (now properly exits with 1 on validation failure), add `--json` flag for structured JSON output, `--file` flag to filter errors to specific files, `--no-layout` flag to skip layout drift checks, and `--project` support for multi-project workspaces. [#2790](https://github.com/likec4/likec4/pull/2790)
+
+### 🐞 Bug Fixes
+
+- Fixed drag behavior for group nodes [#2785](https://github.com/likec4/likec4/pull/2785)
+
+- Fixed scroll in walkthrough notes panel, closes [#2729](https://github.com/likec4/likec4/issues/2729)
+
+- Fixed web extension failing to start language server, closes [#2702](https://github.com/likec4/likec4/issues/2702)
+
+- Restored Markdown syntax highlighting in triple-quoted strings in VSCode [#2785](https://github.com/likec4/likec4/pull/2785)
+
+- Added configurable Node.js path for language server runtime in VSCode [#2773](https://github.com/likec4/likec4/pull/2773)
+
+- Draw.io: improved person shape inference on re-import for round-trip fidelity. Thanks [@sraphaz](https://github.com/sraphaz), [#2685](https://github.com/likec4/likec4/pull/2685)
+
+
 ## [1.52.0](https://github.com/likec4/likec4/compare/v1.51.0...v1.52.0) (2026-03-09)
 
 ### 🚀 Features

@@ -1,5 +1,22 @@
 # @likec4/language-server
 
+## 1.53.0
+
+### Minor Changes
+
+- [#2769](https://github.com/likec4/likec4/pull/2769) [`39df42e`](https://github.com/likec4/likec4/commit/39df42e69d11a74cfbda94258321860d9437a3f7) Thanks [@galuszkak](https://github.com/galuszkak)! - Support `metadata` filtering in view predicates
+
+  - Filter elements and relations by metadata key existence (`where metadata.key`) or value (`where metadata.key = 'value'`)
+  - Works with `!=` for negation and supports `source.metadata` / `target.metadata` for relation participants
+
+### Patch Changes
+
+- Updated dependencies [[`22cde07`](https://github.com/likec4/likec4/commit/22cde07331a7d375d30c1220a1603576e8438735), [`39df42e`](https://github.com/likec4/likec4/commit/39df42e69d11a74cfbda94258321860d9437a3f7)]:
+  - @likec4/config@1.53.0
+  - @likec4/core@1.53.0
+  - @likec4/layouts@1.53.0
+  - @likec4/log@1.53.0
+
 ## 1.52.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @likec4/diagram
 
+## 1.53.0
+
+### Patch Changes
+
+- [#2785](https://github.com/likec4/likec4/pull/2785) [`eddfe46`](https://github.com/likec4/likec4/commit/eddfe462b49d8dd598db443259bc2ba0820b76f1) Thanks [@davydkov](https://github.com/davydkov)! - Fix drag behavior for group nodes
+
+- [#2784](https://github.com/likec4/likec4/pull/2784) [`16386c5`](https://github.com/likec4/likec4/commit/16386c52e0285e6b8a5c859dc45726a7cb1869d4) Thanks [@davydkov](https://github.com/davydkov)! - Fix scroll in walkthrough notes panel. Fixes [#2729](https://github.com/likec4/likec4/issues/2729)
+
+- Updated dependencies [[`39df42e`](https://github.com/likec4/likec4/commit/39df42e69d11a74cfbda94258321860d9437a3f7)]:
+  - @likec4/core@1.53.0
+  - @likec4/styles@1.53.0
+
 ## 1.52.0
 
 ### Patch Changes

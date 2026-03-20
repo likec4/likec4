@@ -1,5 +1,72 @@
 # likec4
 
+## 1.53.0
+
+### Minor Changes
+
+- [#2768](https://github.com/likec4/likec4/pull/2768) [`cf5acbc`](https://github.com/likec4/likec4/commit/cf5acbcb8410cd66342e39a490fcfd9d91619916) Thanks [@sraphaz](https://github.com/sraphaz)! - feat(leanix-bridge): Phase 2 & 3, CLI, tooling docs (Draw.io + CLI)
+
+  **@likec4/leanix-bridge**
+
+  - Phase 2: `fetchLeanixInventorySnapshot`, `reconcileInventoryWithManifest` (inbound)
+  - Phase 3: `buildDriftReport`, `impactReportFromSyncPlan`, `generateAdrFromReconciliation`, `generateAdrFromDriftReport`, `runGovernanceChecks`
+  - Refactors: sync-to-leanix, to-bridge-manifest, to-leanix-inventory-dry-run, report, leanix-api-client, drawio-leanix-roundtrip
+
+  **likec4 (CLI)**
+
+  - `gen leanix-inventory-snapshot`, `gen leanix-reconcile`; `sync leanix` (dry-run / apply)
+  - Shared LeanIX API client for snapshot and sync
+
+  **@likec4/docs-astro**
+
+  - Draw.io: Export profiles (default / leanix), bridge-managed metadata
+  - CLI: `--profile` option for Export to DrawIO
+
+  **@likec4/generators**
+
+  - Parse Draw.io: compatibility with bridge-managed metadata
+
+### Patch Changes
+
+- [#2785](https://github.com/likec4/likec4/pull/2785) [`eddfe46`](https://github.com/likec4/likec4/commit/eddfe462b49d8dd598db443259bc2ba0820b76f1) Thanks [@davydkov](https://github.com/davydkov)! - Fix logger initialization defaults and environment detection
+
+- [#2790](https://github.com/likec4/likec4/pull/2790) [`9a3fa0b`](https://github.com/likec4/likec4/commit/9a3fa0bfd78dfbbd0fa9b26f2f872445c5b9ddcf) Thanks [@davydkov](https://github.com/davydkov)! - Improve `likec4 validate` CLI command:
+
+  - Fix exit code (now properly exits with 1 on validation failure)
+  - Add `--json` flag for structured JSON output
+  - Add `--file` flag to filter errors to specific files
+  - Add `--no-layout` flag to skip layout drift checks
+  - Add success/failure summary messages
+  - Add `--project` support for multi-project workspaces
+
+- [#2733](https://github.com/likec4/likec4/pull/2733) [`22cde07`](https://github.com/likec4/likec4/commit/22cde07331a7d375d30c1220a1603576e8438735) Thanks [@purple52](https://github.com/purple52)! - Add `landingPage` configuration option to control the landing page behavior:
+
+  - `redirect: true` to skip the landing page and go directly to the index view
+  - `include` / `exclude` selectors to filter which views appear in the landing page grid
+
+- [#2746](https://github.com/likec4/likec4/pull/2746) [`bb95d5a`](https://github.com/likec4/likec4/commit/bb95d5a601f630b0d8deb73ac4e83191b00a33c1) Thanks [@sraphaz](https://github.com/sraphaz)! - LeanIX bridge (dry-run) and Draw.io bridge-managed export profile
+
+  **@likec4/leanix-bridge (new package)**
+
+  - Identity manifest and LeanIX-shaped dry-run artifacts (no live sync)
+  - Pure functions: `toBridgeManifest`, `toLeanixInventoryDryRun`, `toReport`
+  - Configurable mapping (kinds → fact sheet types, relation kinds → relation types)
+  - Outputs: manifest.json, leanix-dry-run.json, report.json
+  - Use via custom generator; see package README
+
+  **@likec4/generators**
+
+  - Draw.io export profile `leanix`: adds bridge-managed metadata (bridgeManaged, likec4Id, likec4Kind, likec4ViewId, likec4ProjectId, likec4RelationId, optional leanixFactSheetType) for round-trip and LeanIX interoperability
+  - New options: `profile`, `projectId`, `leanixFactSheetTypeByKind`
+  - Export type `DrawioExportProfile`
+
+  **likec4**
+
+  - CLI: `likec4 export drawio --profile leanix` to emit bridge-managed .drawio files
+
+- Updated dependencies [[`39df42e`](https://github.com/likec4/likec4/commit/39df42e69d11a74cfbda94258321860d9437a3f7)]:
+  - @likec4/core@1.53.0
+
 ## 1.52.0
 
 ### Minor Changes

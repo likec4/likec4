@@ -10,11 +10,15 @@ describe('bridge artifacts (golden snapshot)', () => {
 
   it('manifest.json shape', () => {
     const manifest = toBridgeManifest(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
+    // Remove version, as it varies on release
+    delete (manifest as any).bridgeVersion
     expect(manifest).toMatchSnapshot()
   })
 
   it('leanix-dry-run.json shape', () => {
-    const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
+    const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' }) // Hard-code version
+    // Remove version, as it varies on release
+    delete (dryRun as any).bridgeVersion
     expect(dryRun).toMatchSnapshot()
   })
 
@@ -22,6 +26,8 @@ describe('bridge artifacts (golden snapshot)', () => {
     const manifest = toBridgeManifest(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
     const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
     const report = buildBridgeReport(manifest, dryRun)
+    // Remove version, as it varies on release
+    delete (report as any).bridgeVersion
     expect(report).toMatchSnapshot()
   })
 

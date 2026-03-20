@@ -47,7 +47,6 @@ exports[`bridge artifacts (golden snapshot) > leanix-dry-run.json shape 1`] = `
 
 exports[`bridge artifacts (golden snapshot) > manifest.json shape 1`] = `
 {
-  "bridgeVersion": "0.1.0",
   "entities": {
     "cloud": {
       "canonicalId": "cloud",
@@ -101,7 +100,6 @@ exports[`bridge artifacts (golden snapshot) > report.json shape 1`] = `
     "leanixDryRun": "leanix-dry-run.json",
     "manifest": "manifest.json",
   },
-  "bridgeVersion": "0.1.0",
   "counts": {
     "entities": 3,
     "factSheets": 3,
