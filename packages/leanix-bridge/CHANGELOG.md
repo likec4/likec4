@@ -1,5 +1,12 @@
 # @likec4/leanix-bridge
 
+## 1.53.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/core@1.53.1
+
 ## 1.53.0
 
 ### Minor Changes
