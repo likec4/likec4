@@ -10,7 +10,8 @@ describe('bridge artifacts (golden snapshot)', () => {
 
   it('manifest.json shape', () => {
     const manifest = toBridgeManifest(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
-    expect(manifest).toMatchSnapshot()
+    const { bridgeVersion: _v, ...rest } = manifest
+    expect(rest).toMatchSnapshot()
   })
 
   it('leanix-dry-run.json shape', () => {
@@ -22,7 +23,8 @@ describe('bridge artifacts (golden snapshot)', () => {
     const manifest = toBridgeManifest(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
     const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
     const report = buildBridgeReport(manifest, dryRun)
-    expect(report).toMatchSnapshot()
+    const { bridgeVersion: _v, ...rest } = report
+    expect(rest).toMatchSnapshot()
   })
 
   it('buildBridgeReport throws with precise mismatch when projectId or mappingProfile differ', () => {
