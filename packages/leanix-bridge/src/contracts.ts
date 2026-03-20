@@ -15,8 +15,7 @@ function readVersion(): string {
     const pkg = JSON.parse(readFileSync(join(_dir, '..', 'package.json'), 'utf8')) as { version?: string }
     return pkg.version ?? '0.1.0'
   } catch {
-    const pkg = JSON.parse(readFileSync(join(_dir, '..', '..', 'package.json'), 'utf8')) as { version?: string }
-    return pkg.version ?? '0.1.0'
+    return '0.1.0'
   }
 }
 /** Single source of truth: must match package.json version. */
