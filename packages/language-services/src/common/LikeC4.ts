@@ -145,19 +145,12 @@ Please specify a project folder`)
     const docs = [...this.LangiumDocuments.userDocuments]
     return docs.flatMap(doc => {
       const errors = doc.diagnostics?.filter(isErrorDiagnostic) ?? []
-      return errors.map(({ message, range }) => {
-        const messages = message.split('\n')
-        if (messages.length > 5) {
-          messages.length = 5
-          messages.push('...')
-        }
-        return ({
-          message,
-          line: range.start.line,
-          range,
-          sourceFsPath: doc.uri.fsPath,
-        })
-      })
+      return errors.map(({ message, range }) => ({
+        message,
+        line: range.start.line,
+        range,
+        sourceFsPath: doc.uri.fsPath,
+      }))
     })
   }
 
@@ -171,7 +164,7 @@ Please specify a project folder`)
    */
   printErrors(): boolean {
     let hasErrors = false
-    for (const doc of this.LangiumDocuments.all) {
+    for (const doc of this.LangiumDocuments.userDocuments) {
       const errors = doc.diagnostics?.filter(isErrorDiagnostic) ?? []
       if (!hasAtLeast(errors, 1)) {
         continue

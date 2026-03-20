@@ -110,7 +110,7 @@ const validateCmd = (yargs: yargs.Argv) => {
               if (view.drifts && view.drifts.length > 0) {
                 layoutErrors.push({
                   message: `Layout drift detected on view '${view.id}'`,
-                  file: resolve(args.path, view.sourcePath ?? '.'),
+                  file: view.sourcePath ? resolve(args.path, view.sourcePath) : '',
                   line: 0,
                   range: null,
                 })
@@ -132,7 +132,9 @@ const validateCmd = (yargs: yargs.Argv) => {
 
         // Apply file filter
         const filteredErrors = fileFilter
-          ? allErrors.filter(e => fileFilter.some(f => e.file === f || e.file.endsWith(f)))
+          ? allErrors.filter(e =>
+            fileFilter.some(f => e.file === f || e.file.endsWith('/' + f) || e.file.endsWith('\\' + f))
+          )
           : allErrors
 
         const filteredFileSet = new Set(filteredErrors.map(e => e.file))

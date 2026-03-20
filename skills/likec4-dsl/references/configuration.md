@@ -173,14 +173,21 @@ Inherit styles from other config files (JSON only). Single path or array.
 
 Configure the landing page of the generated site.
 
+Redirect to index view:
+
 ```json
-// Redirect to index view
 { "landingPage": { "redirect": true } }
+```
 
-// Show only specific views
+Show only specific views:
+
+```json
 { "landingPage": { "include": ["overview", "cloud-detail"] } }
+```
 
-// Hide specific views
+Hide specific views:
+
+```json
 { "landingPage": { "exclude": ["internal-debug"] } }
 ```
 

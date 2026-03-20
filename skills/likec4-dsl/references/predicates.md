@@ -23,7 +23,7 @@ Example:
 include *                               // WILDCARD
 include some.element                    // ELEMENT_EXPRESSION
 include some.from -> some.to            // RELATIONSHIP_EXPRESSION
-include * where tag s #production       // FILTER_PREDICATE
+include * where tag is #production      // FILTER_PREDICATE
 include some.element with { color red } // CUSTOM_PREDICATE on BASE_PREDICATE
 include                                 // CUSTOM_PREDICATE on FILTER_PREDICATE
   some._
