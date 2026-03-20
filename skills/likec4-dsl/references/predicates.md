@@ -29,7 +29,7 @@ include                                 // CUSTOM_PREDICATE on FILTER_PREDICATE
   some._
   where
     tag is #production
-    and type is component
+    and kind is component
   with {
     color red
   }

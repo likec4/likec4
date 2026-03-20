@@ -198,7 +198,7 @@ Please specify a project folder`)
    * Returns the number of parsed documents in the workspace
    */
   documentCount(): number {
-    return this.LangiumDocuments.all.toArray().length
+    return [...this.LangiumDocuments.userDocuments].length
   }
 
   /**
