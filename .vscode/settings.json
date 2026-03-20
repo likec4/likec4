@@ -35,6 +35,7 @@
     "editor.defaultFormatter": "dprint.dprint",
   },
   "files.readonlyInclude": {
+    "packages/likec4/__app__": true,
     "**/routeTree.gen.ts": true,
     "**/worker-configuration.d.ts": true,
     "packages/icons/**/*.tsx": true,
@@ -42,8 +43,7 @@
     "packages/language-server/src/generated*/**": true,
   },
   "search.exclude": {
-    ".yarn/**": true,
-    "yarn.lock": true,
+    "packages/likec4/__app__": true,
     "node_modules/**": true,
     "packages/*/dist/**": true,
     "packages/*/bundle/**": true,
@@ -58,7 +58,6 @@
     "**/.tanstack": true,
     "**/.wrangler": true,
     ".pnpm-store/**": true,
-    "packages/likec4/__app__": true,
     "packages/*/.vscode-test-web": true,
     "packages/*/node_modules": true,
     "packages/*/styled-system": true,

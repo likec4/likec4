@@ -233,6 +233,9 @@ catalogs:
     '@tabler/icons-react':
       specifier: 3.40.0
       version: 3.40.0
+    babel-plugin-react-compiler:
+      specifier: ^1.0.0
+      version: 1.0.0
     clsx:
       specifier: ^2.1.1
       version: 2.1.1
@@ -242,6 +245,9 @@ catalogs:
     nanostores:
       specifier: 1.1.1
       version: 1.1.1
+    react-compiler-runtime:
+      specifier: ^1.0.0
+      version: 1.0.0
     react-error-boundary:
       specifier: ^6.1.1
       version: 6.1.1
@@ -1172,6 +1178,9 @@ importers:
       nanostores:
         specifier: catalog:react
         version: 1.1.1
+      react-compiler-runtime:
+        specifier: catalog:react
+        version: 1.0.0(react@19.2.4)
       react-error-boundary:
         specifier: catalog:react
         version: 6.1.1(react@19.2.4)
@@ -1845,6 +1854,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.27
         version: 10.4.27(postcss@8.5.8)
+      babel-plugin-react-compiler:
+        specifier: catalog:react
+        version: 1.0.0
       birpc:
         specifier: catalog:vite
         version: 4.0.0
@@ -1858,7 +1870,7 @@ importers:
         specifier: ^15.1.0
         version: 15.1.0
       defu:
-        specifier: ^6.1.4
+        specifier: catalog:utils
         version: 6.1.4
       esbuild-node-externals:
         specifier: catalog:esbuild
@@ -1926,6 +1938,9 @@ importers:
       react:
         specifier: 19.2.4
         version: 19.2.4
+      react-compiler-runtime:
+        specifier: catalog:react
+        version: 1.0.0(react@19.2.4)
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
@@ -1948,7 +1963,7 @@ importers:
         specifier: catalog:utils
         version: 4.1.1
       tinyrainbow:
-        specifier: ^3.0.3
+        specifier: catalog:utils
         version: 3.0.3
       tsx:
         specifier: 'catalog:'
@@ -2139,6 +2154,9 @@ importers:
       '@types/react-dom':
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.14)
+      '@vitejs/plugin-react':
+        specifier: catalog:vite
+        version: 5.2.0(vite@7.3.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.0.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.24.0(patch_hash=3a1bd6d012ec67bf6e38a00c3226d1be77089442f83aeb6e424b00ca2a11d21c))
@@ -2151,6 +2169,9 @@ importers:
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.75
+      babel-plugin-react-compiler:
+        specifier: catalog:react
+        version: 1.0.0
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260316.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.3)(rollup@4.57.1)(typescript@5.9.3)
@@ -2160,6 +2181,9 @@ importers:
       react:
         specifier: 19.2.4
         version: 19.2.4
+      react-compiler-runtime:
+        specifier: catalog:react
+        version: 1.0.0(react@19.2.4)
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
@@ -5585,6 +5609,9 @@ packages:
   babel-dead-code-elimination@1.0.9:
     resolution: {integrity: sha512-JLIhax/xullfInZjtu13UJjaLHDeTzt3vOeomaSUdO/nAMEL/pWC/laKrSvWylXMnVWyL5bpmG9njqBZlUQOdg==}
 
+  babel-plugin-react-compiler@1.0.0:
+    resolution: {integrity: sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==}
+
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
 
@@ -8159,6 +8186,11 @@ packages:
 
   rc9@3.0.0:
     resolution: {integrity: sha512-MGOue0VqscKWQ104udASX/3GYDcKyPI4j4F8gu/jHHzglpmy9a/anZK3PNe8ug6aZFl+9GxLtdhe3kVZuMaQbA==}
+
+  react-compiler-runtime@1.0.0:
+    resolution: {integrity: sha512-rRfjYv66HlG8896yPUDONgKzG5BxZD1nV9U6rkm+7VCuvQc903C4MjcoZR4zPw53IKSOX9wMQVpA1IAbRtzQ7w==}
+    peerDependencies:
+      react: 19.2.4
 
   react-dom@19.2.4:
     resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
@@ -13533,6 +13565,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  babel-plugin-react-compiler@1.0.0:
+    dependencies:
+      '@babel/types': 7.29.0
+
   bail@2.0.2: {}
 
   balanced-match@1.0.2: {}
@@ -16520,6 +16556,10 @@ snapshots:
     dependencies:
       defu: 6.1.4
       destr: 2.0.5
+
+  react-compiler-runtime@1.0.0(react@19.2.4):
+    dependencies:
+      react: 19.2.4
 
   react-dom@19.2.4(react@19.2.4):
     dependencies:

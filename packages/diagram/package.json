@@ -102,6 +102,7 @@
     "nanostores": "catalog:react",
     "react-error-boundary": "catalog:react",
     "react-shadow": "catalog:react",
+    "react-compiler-runtime": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:externals",
     "xstate": "catalog:xstate"

@@ -3,5 +3,6 @@
   "routeFileIgnorePattern": "css.ts",
   "generatedRouteTree": "app/src/routeTree.gen.ts",
   "routesDirectory": "app/src/routes",
-  "quoteStyle": "single"
+  "quoteStyle": "single",
+  "autoCodeSplitting": true
 }

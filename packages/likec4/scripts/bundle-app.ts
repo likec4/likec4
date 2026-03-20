@@ -48,6 +48,7 @@ export async function bundleApp() {
     esbuild: {
       jsxDev: false,
       minifyIdentifiers: false,
+      minifyWhitespace: true,
       tsconfigRaw: tsconfig,
     },
     css: {
@@ -87,28 +88,9 @@ export async function bundleApp() {
         ],
         treeshake: 'recommended',
         output: {
-          chunkFileNames: '[name].js',
-          manualChunks: (id) => {
-            if (id.endsWith('.css')) {
-              return undefined
-            }
-            if (id.includes('@tabler') || id.includes('diagram/src') || id.includes('styled-system')) {
-              return 'likec4'
-            }
-            if (id.includes('app/src/routes/_single')) {
-              return 'routes/single'
-            }
-            if (id.includes('app/src/routes/project.$')) {
-              return 'routes/projects'
-            }
-            if (id.includes('app/src/route')) {
-              return 'routes/index'
-            }
-            if (id.includes('node_modules')) {
-              return 'vendors'
-            }
-            return undefined
-          },
+          preserveModules: true,
+          preserveModulesRoot: './app/src',
+          compact: true,
         },
         external: [
           'react/jsx-runtime',
@@ -119,7 +101,6 @@ export async function bundleApp() {
           'likec4/model',
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from motion
-          resolve(cwd, 'app/src/const.js'),
           /@likec4\/core.*/,
           /likec4\/vite-plugin.*/,
           /likec4:/,
@@ -127,7 +108,15 @@ export async function bundleApp() {
       },
     },
     plugins: [
-      react(),
+      react({
+        babel: {
+          plugins: [
+            ['babel-plugin-react-compiler', {
+              target: '18',
+            }],
+          ],
+        },
+      }),
     ],
   })
 

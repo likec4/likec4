@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { isRpcAvailable } from 'likec4:rpc'
-import { AdHocViewEditor } from '../../pages/AdHocViewEditor'
+import { AdHocViewEditor } from '../../pages/editor'
 
 export const Route = createFileRoute('/project/$projectId/adhoc')({
   beforeLoad: ({ params }) => {
@@ -13,6 +13,7 @@ export const Route = createFileRoute('/project/$projectId/adhoc')({
       })
     }
   },
+  wrapInSuspense: true,
   component: Page,
 })
 

@@ -3,7 +3,6 @@ import { LikeC4Diagram, pickViewBounds } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
-import { toBlob } from 'html-to-image'
 import { useRef } from 'react'
 import { useCurrentView, useTransparentBackground } from '../hooks'
 
@@ -15,6 +14,7 @@ async function downloadAsPng({
   viewport: HTMLElement
 }) {
   try {
+    const { toBlob } = await import('html-to-image')
     const blob = await toBlob(viewport, {
       backgroundColor: 'transparent',
       cacheBust: true,
