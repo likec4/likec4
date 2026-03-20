@@ -170,7 +170,7 @@ views {
 
     // Styling — uses deployment FQN paths
     style eu._ { color muted }
-    style server1._, server4._ { color green }
+    style server1._, server2._ { color green }
     style us.amazon._, eu.amazon._ { color amber }
 
     autoLayout TopBottom
