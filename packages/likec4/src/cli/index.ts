@@ -8,10 +8,10 @@ import {
   getConsoleSink,
   loggable,
 } from '@likec4/log'
+import { isCI, isDevelopment, isTest } from 'std-env'
 import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
 import { clamp, pipe } from 'remeda'
-import { isCI, isDevelopment, isTest } from 'std-env'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
@@ -90,14 +90,8 @@ async function main() {
     .alias('v', 'version')
     .alias('h', 'help')
     .help('help')
-    .option('log-level', {
-      ...logLevel,
-      global: false,
-    })
-    .option('verbose', {
-      ...verbose,
-      global: false,
-    })
+    .option('log-level', logLevel)
+    .option('verbose', verbose)
     .option('color', {
       boolean: true,
       describe: [
@@ -105,12 +99,16 @@ async function main() {
         `respects 'FORCE_COLOR' and 'NO_COLOR' env variables`,
       ].join('\n'),
       skipValidation: true,
+      hidden: true,
       global: true,
     })
+    .group(['log-level', 'verbose', 'color', 'help', 'version', 'show-hidden'], 'Globals:')
     .demandCommand(1, 'Please run with valid command')
     .recommendCommands()
     .showHelpOnFail(true)
+    .showHidden()
     .updateStrings({
+      'Globals:': k.bold('Globals:'),
       'Options:': k.bold('Options:'),
       'Positionals:': k.bold('Arguments:'),
       'Commands:': k.bold('Commands:'),
