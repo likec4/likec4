@@ -16,7 +16,7 @@ describe('bridge artifacts (golden snapshot)', () => {
   })
 
   it('leanix-dry-run.json shape', () => {
-    const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' }) // Hard-code version
+    const dryRun = toLeanixInventoryDryRun(model, { generatedAt: fixedDate, mappingProfile: 'snapshot' })
     // Remove version, as it varies on release
     delete (dryRun as any).bridgeVersion
     expect(dryRun).toMatchSnapshot()
