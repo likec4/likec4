@@ -431,7 +431,7 @@ overrides:
   type-fest: ^4.41.0
   turbo: 2.8.17
   sharp: 0.34.5
-  caniuse-lite: ^1.0.30001778
+  caniuse-lite: ^1.0.30001779
   mnemonist: 0.40.3
 
 patchedDependencies:
