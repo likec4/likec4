@@ -448,7 +448,7 @@ overrides:
   rollup: '>=4.59.0'
   '@microsoft/api-extractor>minimatch': ^3.1.5
   vscode-languageclient>minimatch: ^5.1.8
-  '@ts-morph/common>minimatch': ^9.0.7
+  '@ts-morph/common>minimatch': ^9.0.9
   '@vue/language-core>minimatch': ^9.0.7
 
 patchedDependencies:
