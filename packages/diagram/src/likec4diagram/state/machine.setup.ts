@@ -1,6 +1,3 @@
-// oxlint-disable triple-slash-reference
-// oxlint-disable no-floating-promises
-/// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
   nonexhaustive,
 } from '@likec4/core'
@@ -306,7 +303,7 @@ export const machine = setup({
       if (event.type === 'navigate.to') {
         return context.view.id === event.viewId
       }
-      nonexhaustive(event.type)
+      nonexhaustive(event)
     },
     'is another view': ({ context, event }) => {
       assertEvent(event, ['update.view', 'navigate.to'])
@@ -316,7 +313,7 @@ export const machine = setup({
       if (event.type === 'navigate.to') {
         return context.view.id !== event.viewId
       }
-      nonexhaustive(event.type)
+      nonexhaustive(event)
     },
     'click: node has modelFqn': ({ event }) => {
       assertEvent(event, 'xyflow.nodeClick')
