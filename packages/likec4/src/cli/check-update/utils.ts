@@ -1,30 +1,45 @@
 import { invariant } from '@likec4/core'
 import { loggable } from '@likec4/log'
+import ConfigStore from 'conf'
+import JSON5 from 'json5'
 import ky from 'ky'
 import spawn from 'nano-spawn'
 import { isEmptyish } from 'remeda'
 import { gt as semverGt } from 'semver'
-import { isProduction, nodeENV } from 'std-env'
+import { isCI, isTest, nodeENV } from 'std-env'
 import k from 'tinyrainbow'
 import type { PackageJson } from 'type-fest'
+import pkg from '../../../package.json' with { type: 'json' }
 import { boxen, logger } from '../../logger'
-import { getConfigStore, pkg } from '../conf'
+
+const { name, version } = pkg
+
+type StoredConfiguration = {
+  lastUpdateCheck?: number // timestamp
+  latestVersion?: string
+}
+
+/** Persistent store for last update check timestamp and latest version. */
+export const conf = new ConfigStore<StoredConfiguration>({
+  projectName: name,
+  serialize: value => JSON5.stringify(value, null, 2),
+  deserialize: value => JSON5.parse(value),
+})
 
 const ONE_DAY = 1000 * 60 * 60 * 24
 
 const ENV_CHECK_UPDATE = 'check-update'
 
 export async function notifyAvailableUpdate() {
-  if (isProduction || nodeENV === ENV_CHECK_UPDATE) {
+  if (isCI || isTest || nodeENV === ENV_CHECK_UPDATE) {
     return
   }
-  const store = getConfigStore()
-  const lastUpdateCheck = store.get('lastUpdateCheck')
+  const lastUpdateCheck = conf.get('lastUpdateCheck')
   if (!lastUpdateCheck) {
     await checkAvailableUpdate(false)
     return
   }
-  const latestVersion = store.get('latestVersion')
+  const latestVersion = conf.get('latestVersion')
   const shouldUpdate = isEmptyish(latestVersion) || isEmptyish(lastUpdateCheck) ||
     (lastUpdateCheck + ONE_DAY < Date.now())
   if (shouldUpdate) {
@@ -44,10 +59,10 @@ export async function notifyAvailableUpdate() {
       // ignore error
     }
   }
-  if (latestVersion && semverGt(latestVersion, pkg.version)) {
+  if (latestVersion && semverGt(latestVersion, version)) {
     boxen([
       `Update available: `,
-      k.dim(pkg.version),
+      k.dim(version),
       k.reset(' → '),
       k.green(latestVersion),
     ].join(''))
@@ -57,25 +72,24 @@ export async function notifyAvailableUpdate() {
 /** Fetches latest version from npm, stores in conf; optionally reports up-to-date. */
 export async function checkAvailableUpdate(reportUpToDate = true) {
   try {
-    const store = getConfigStore()
-    store.set({
+    conf.set({
       lastUpdateCheck: Date.now(),
     })
     const latest = await fetchLatestVersion()
     invariant(latest, 'No version found in latest npm')
-    store.set({
+    conf.set({
       lastUpdateCheck: Date.now(),
       latestVersion: latest,
     })
-    if (semverGt(latest, pkg.version)) {
+    if (semverGt(latest, version)) {
       boxen([
         `Update available: `,
-        k.dim(pkg.version),
+        k.dim(version),
         k.reset(' → '),
         k.green(latest),
       ].join(''))
     } else if (reportUpToDate) {
-      boxen(k.dim(`Up to date: `) + ' ' + k.green(pkg.version))
+      boxen(k.dim(`Up to date: `) + ' ' + k.green(version))
     }
   } catch (error) {
     logger.warning(loggable(error))
