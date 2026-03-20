@@ -195,6 +195,13 @@ Please specify a project folder`)
   }
 
   /**
+   * Returns the number of parsed documents in the workspace
+   */
+  documentCount(): number {
+    return [...this.LangiumDocuments.userDocuments].length
+  }
+
+  /**
    * @returns a function to dispose the listener
    */
   onModelUpdate(listener: () => void): () => void {
