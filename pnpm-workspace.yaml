@@ -31,7 +31,7 @@ catalogMode: prefer
 
 catalogs:
   astro:
-    "@astrojs/check": ^0.9.7
+    "@astrojs/check": ^0.9.8
     "@astrojs/react": 4.4.2
     "@astrojs/starlight": 0.37.7
     "@astrojs/starlight-tailwind": ^4.0.2
