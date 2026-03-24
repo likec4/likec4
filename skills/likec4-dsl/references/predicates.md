@@ -1,20 +1,20 @@
 # Predicates
 
-Predicate types:
+Predicates are view rules that define what elements and relationships to include or exclude from a view. Predicate types:
 
 - Wildcard predicate - used to select all elements/relationships, based on view scope
 - Element predicates - used to select elements
 - Relationship predicates - used to select relationships
 - Filter predicates - used to apply filters to element and relationship predicates
-- Custom predicates - used to override properties of elements/relationships (can be used with `include` only)
+- Custom predicates - used to override properties of elements/relationships (can be used with `include` only)'
 
 Syntax:
 
 ```
-BASE_PREDICATE ::= WILDCARD | ELEMENT_EXPRESSION | RELATIONSHIP_EXPRESSION
-FILTER_PREDICATE ::= BASE_PREDICATE where FILTER_CONDITIONS
-CUSTOM_PREDICATE ::= (BASE_PREDICATE | FILTER_PREDICATE) with { ... }
-PREDICATE ::= BASE_PREDICATE | FILTER_PREDICATE | CUSTOM_PREDICATE
+EXPRESSION ::= WILDCARD | ELEMENT_EXPRESSION | RELATIONSHIP_EXPRESSION
+FILTER_PREDICATE ::= EXPRESSION where FILTER_CONDITIONS
+CUSTOMIZE_PREDICATE ::= (EXPRESSION | FILTER_PREDICATE) with { ... }
+PREDICATE ::= EXPRESSION | FILTER_PREDICATE | CUSTOMIZE_PREDICATE
 ```
 
 Example:
@@ -24,12 +24,11 @@ include *                               // WILDCARD
 include some.element                    // ELEMENT_EXPRESSION
 include some.from -> some.to            // RELATIONSHIP_EXPRESSION
 include * where tag is #production      // FILTER_PREDICATE
-include some.element with { color red } // CUSTOM_PREDICATE on BASE_PREDICATE
-include                                 // CUSTOM_PREDICATE on FILTER_PREDICATE
-  some._
+include some.element with { color red } // CUSTOMIZE_PREDICATE on ELEMENT_EXPRESSION
+include                                 // CUSTOMIZE_PREDICATE on FILTER_PREDICATE
+  some.*
   where
-    tag is #production
-    and kind is component
+    tag is #production and kind is component
   with {
     color red
   }
@@ -37,8 +36,7 @@ include                                 // CUSTOM_PREDICATE on FILTER_PREDICATE
 
 ## Expressions
 
-Expressions inside `exclude` clause match against the accumulated result of previous predicates.
-Expressions inside `include` clause match against the accumulated result of previous predicates and the model.
+Expressions inside `exclude` clause match against the accumulated result of previous predicates. Expressions inside `include` clause match against the accumulated result of previous predicates and the model. Element expressions select elements first, and then relationships connected to these elements. Relationship expressions select relationships first, and then elements that are connected by these relationships.
 
 ### Element expression
 
@@ -82,13 +80,14 @@ Complex:
 
 If filter applies to relationship expressions, you can filter source/target elements:
 
-- `* -> * where source.tag is #primary`
-- `* -> * where target.tag is #primary`
-- `* -> * where source.kind is component or target.kind is component`
+- `* -> * where tag is #http` - filters relationships by tag
+- `* -> * where source.tag is #primary` - filters relationships by tag on source element
+- `* -> * where target.tag is #primary` - filters relationships by tag on target element
+- `* -> * where source.kind is component or target.kind is component` - filters relationships by source or target kind
 
-## Custom Predicates
+## Customize Predicates
 
-You can override properties of selected elements/relationships.
+Customize predicates allow you to override properties of selected elements/relationships per view (for example, in different diagrams).
 For example:
 
 ```likec4

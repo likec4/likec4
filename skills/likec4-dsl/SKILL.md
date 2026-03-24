@@ -12,13 +12,14 @@ Architecture-as-code tool. Describe systems in `.c4`/`.likec4` files and LikeC4 
 ## Rules
 
 1. **Projects** - it is possible to have multiple likec4 projects in a workspace, project is determined by presence of a config file (`.likec4rc`, `likec4.config.{ts,js,json}`). LikeC4 files belong to the project of the nearest config file in the directory hierarchy.
-2. **Top-level statements** — only `import`, `specification`, `model`, `deployment`, `views`, `global` are allowed. Blocks can repeat, but at least one must be present.
-3. **Multi-file merge** — Top-level blocks across files are merged. For example, multiple `model { ... }` blocks combine into a single model.
+2. **Top-level statements** — only `import`, `specification`, `model`, `deployment`, `views`, `global` are allowed. Blocks can repeat, but at least one per file must be present.
+3. **Multi-file merge** — Top-level blocks across files are merged. For example, `model { ... }` blocks present in multiple files, parsed separately, and then merged into a single model.
 4. **Strings** — `'single'`, `"double"` — all support multi-line. Escape quotes with backslash: `\'` or `\"`.
 5. **Markdown** — properties like `summary`/`description`/`notes` can contain Markdown. Use triple quotes `'''` or `"""`. Begin a new line after opening quotes and indent Markdown content for better formatting and syntax highlighting.
 6. **Comments** — `// single line` and `/* multi-line */` comments supported anywhere.
-7. **Identifier** — letters, digits, hyphens, underscores only. No dots (dots are FQN separators). Can't start with a digit.
-8. **References** — LikeC4 has lexical scoping with hoisting, nested scope may shadow outer, like in JavaScript. To reference across files, FQN must be used.
+7. **Identifier** — letters, digits, hyphens, underscores only. No dots (dots are FQN separators). Can't start with a digit. Examples: `customer`, `payment-service`, `frontendApp`, `quque-1`.
+8. **FQN** — Fully Qualified Name (FQN) is a dot-separated path to an element, MUST be unique within the project. Examples: `customer`, `saas.backend.payment-service.paymentsApi`, `infra.eu.zone1.node1`.
+9. **References** — LikeC4 has lexical scoping with hoisting, nested scope may shadow outer, like in JavaScript. To reference across files, FQN must be used.
 
 ## Workflow
 
@@ -26,7 +27,7 @@ Architecture-as-code tool. Describe systems in `.c4`/`.likec4` files and LikeC4 
 2. (Required) Find existing or create new `specification { ... }`, this enables what kinds of elements/deployments/relationships/tags you can use. See Specification section below.
 3. Architecture elements and relationships are defined in `model { ... }` block. See Model section below.
 4. Deployment topology is defined in `deployment { ... }` block. See Deployment section below.
-5. Diagrams are defined in `views { ... }` block. See Views section below.
+5. Views (diagrams) are defined in `views { ... }` block. See Views section below.
 6. After editing LikeC4 files, validate with the CLI
 
 ## Validation
@@ -56,17 +57,15 @@ Example output:
     }
   ],
   "stats": {
-    "totalFiles": 100,
-    "totalErrors": 500,
-    "filteredFiles": 1,
-    "filteredErrors": 1
+    "totalFiles": 100, // Total number of files in the project
+    "totalErrors": 500, // Total number of errors in the project
+    "filteredFiles": 1, // Number of files that match the --file filter
+    "filteredErrors": 1 // Number of errors in the filtered files
   }
 }
 ```
 
-Broken specification/model in a large project can cascade into lots of errors across all files.
-Always use `--file` to focus on the files you edited. If `filteredErrors` is 0 but `totalErrors` is high,
-your files are clean but something else in the project is broken (not your problem).
+Broken specification/model in a large project can cascade into lots of errors across all files. Always use `--file` to focus on the files you edited. If `filteredErrors` is 0 but `totalErrors` is high, your files are clean but something else in the project is broken (not your problem). Selfcheck that `filteredFiles` matches the number of files you passed to `--file`.
 
 ## LikeC4 Project Configuration
 
@@ -80,8 +79,7 @@ Config file (`likec4.config.json`, `.likec4rc`, or `likec4.config.{ts,js}`) defi
 }
 ```
 
-Key options: `name` (required, unique ID in the workspace), `title`
-
+Key options: `name` (required, unique ID in the workspace), `title` (display name)
 Full reference → `references/configuration.md`
 
 ## Quick Decision Trees
@@ -151,7 +149,7 @@ Syntax:
 
 ```likec4
 specification {
-  // Define dict of tags, outside of specification used as #tag
+  // Define a tag, extra metadata, outside of specification used as #IDENTIFIER
   tag IDENTIFIER  
   // Define kind to use in model, with optional properties and style
   element IDENTIFIER {
@@ -177,10 +175,10 @@ specification {
 
 **Important:**
 
-- Specification is global, defined element kinds, tags etc. are available across all files in the project.
-- Duplicate identifiers (same element kind, same tag, etc.) will cause a validation error.
+- Specification is global, all defined kinds, tags etc. are available across all files in the project.
+- Duplicate identifiers (same kind, same tag, etc.) will cause a validation error.
 - Multiple specification blocks (in one file or across files) are allowed, but not recommended.
-- Prefer to keep specification in a single dedicated file, e.g. `specification.c4`.
+- Prefer to keep specification in a separate file, e.g. `specification.c4` (this improves responsiveness, as changes to the specification require parsing the entire model).
 
 Example:
 
@@ -203,16 +201,17 @@ specification {
 
 ## Model (Quick Reference)
 
-Model is a hierarchical structure of elements, where each element can contain other elements. Relationships exist between any pair of elements, but not between parent and child elements and vice versa. Relationships can be defined on any level of the hierarchy. Element MUST have an identifier (unique within its parent scope) and a kind. Element may have a body `{ .. }` with tags, properties, nested elements and relationships. Identifiers are required for referencing elements, FQN (Fully Qualified Name) is constructed by concatenating all parent identifiers with dots.
+Model is a hierarchical structure of elements, where each element can contain other elements. Element MUST have a kind (from the specification) and an identifier (also known as name). Identifier MUST be unique within its parent. Element may have a body `{ .. }` with tags, properties, nested elements and relationships.
+Relationships exist between any pair of elements, but not between parent-child elements. Relationships can be defined on any level of the hierarchy. Relationships, defined inside an element, implicitly have that element as their source.
 
 Syntax:
 
 ```likec4
 model {
   // Elements, top-levels are global, can be referenced anywhere in the project
-  IDENTIFIER = KIND "title"           // with title, without body
   IDENTIFIER = KIND                   // without title, without body (title defaults to ID)
-  KIND IDENTIFIER "title"             // if preferred by user to have kind before name  
+  IDENTIFIER = KIND "title"           // with title, without body
+  KIND IDENTIFIER "title"             // if preferred by user to have kind before OD  
   IDENTIFIER = KIND {
     TAGS                              // optional, but must come first if present, before any properties
     PROPERTIES                        // optional, but must come before nested elements and relationships
@@ -226,7 +225,7 @@ model {
 
     // Explicit Relationship, SOURCE and TARGET must be resolvable within the current scope
     SOURCE -> TARGET
-    // Sourceless Relationship (current element is SOURCE implicitly)
+    // Implicit Relationship (current element is SOURCE)
     -> TARGET "Relationship title"
     -> TARGET "Relationship title" {
       TAGS                            // optional, but must come first if present, before any properties
@@ -236,8 +235,8 @@ model {
     -[REL_KIND]-> TARGET "Relationship title" 
     .REL_KIND -> TARGET "Relationship title"   // Alternative syntax for relationship with kind
     // "it" and "this" refer to the current element
-    SOURCE -> it     // Incoming relationship to current element
-    this -> TARGET   // Outgoing relationship from current element
+    SOURCE -> it     // relationship to current element
+    this -> TARGET   // relationship from current element
   }
 
   // Relationships on top level MUST have SOURCE
@@ -256,6 +255,11 @@ model {
 
     NESTED_ELEMENTS | RELATIONSHIPS
   }
+  // Extend existing relationship (must have SOURCE and TARGET)
+  extend SOURCE -> TARGET  { 
+    TAGS                   // additional tags to apply to this relationship
+    PROPERTIES             // additional properties to merge into this relationship, allowed `metadata` and `link` only
+  }
 }
 ```
 
@@ -267,13 +271,18 @@ model {
 
   cloud = system "Cloud" {
     ui = container "Frontend" {
-      style { shape browser }
+      style { 
+        shape browser
+      }
       dashboard = app "Dashboard" { technology "React" }
     }
     backend = container "Backend" {
-      api = service "API" { #critical; technology "Node.js"; icon tech:nodejs }
+      api = service "API" { 
+        #critical
+
+        -[sql]-> db "reads/writes"
+      }
       db = database "DB" { icon tech:postgresql }
-      api -> db "reads/writes"
     }
     ui.dashboard -> backend.api "calls" { technology "HTTPS" }
   }
@@ -293,7 +302,7 @@ model {
 | Category        | Values                                                                                                           |
 | --------------- | ---------------------------------------------------------------------------------------------------------------- |
 | **title**       | String, prefer single line                                                                                       |
-| **description** | String, prefer Markdown (in triple quotes)                                                                       |
+| **description** | String, prefer Markdown                                                                                          |
 | **summary**     | String, short description, prefer Markdown                                                                       |
 | **technology**  | String, no multi-line                                                                                            |
 | **metadata**    | Syntax: `metadata { KEY VALUE }`, where key must be valid identifier and value can be string or array of strings |
