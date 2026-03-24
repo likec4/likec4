@@ -22,15 +22,6 @@ const isErrorDiagnostic = (diagnostic: { severity?: number }): boolean => {
   return diagnostic.severity === 1
 }
 
-const firstFiveLines = (message: string): string => {
-  const messages = message.split('\n')
-  if (messages.length > 5) {
-    messages.length = 5
-    messages.push('...')
-  }
-  return messages.join('\n')
-}
-
 export class LikeC4 {
   protected readonly langium: LikeC4Langium
 
@@ -155,7 +146,7 @@ Please specify a project folder`)
     return docs.flatMap(doc => {
       const errors = doc.diagnostics?.filter(isErrorDiagnostic) ?? []
       return errors.map(({ message, range }) => ({
-        message: firstFiveLines(message),
+        message,
         line: range.start.line,
         range,
         sourceFsPath: doc.uri.fsPath,
@@ -181,15 +172,20 @@ Please specify a project folder`)
       hasErrors = true
       const messages = pipe(
         errors,
-        flatMap(error => {
-          const line = error.range.start.line
-          const messages = firstFiveLines(error.message).split('\n')
-          return messages.map((message, i) => {
-            if (i === 0) {
-              return '    ' + k.dim(`Line ${line}: `) + k.red(message)
-            }
-            return ' '.repeat(10) + k.red(message)
-          })
+        flatMap(validationError => {
+          const line = validationError.range.start.line
+          const messages = validationError.message.split('\n')
+          if (messages.length > 5) {
+            messages.length = 5
+            messages.push('...')
+          }
+          return messages
+            .map((message, i) => {
+              if (i === 0) {
+                return '    ' + k.dim(`Line ${line}: `) + k.red(message)
+              }
+              return ' '.repeat(10) + k.red(message)
+            })
         }),
         join('\n'),
       )

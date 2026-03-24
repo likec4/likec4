@@ -1,16 +1,39 @@
 ---
-title: MCP Server
-description: How to setup and use LikeC4 MCP Server with LLMs
+title: AI Tools
+description: Agent skills and MCP Server for AI-powered architecture modeling
 head:
   - tag: title
-    content: MCP Server | LikeC4
+    content: AI Tools | LikeC4
 sidebar:
   order: 5
 ---
 
 import { Aside, CardGrid, LinkCard, TabItem as Tab, Tabs } from '@astrojs/starlight/components';
 
-LikeC4 <a href="https://modelcontextprotocol.io" target="_blank">MCP Server</a> provides knowledge of your LikeC4 model to LLMs.  
+LikeC4 provides two complementary tools for AI-powered development: **Agent Skills** for teaching AI assistants the DSL syntax, and an **MCP Server** for querying your architecture model.
+
+## Agent Skills
+
+Agent skills are DSL references that AI coding assistants load automatically when editing `.c4`/`.likec4` files.
+They teach agents correct LikeC4 syntax, patterns, and validation workflows — so they can write DSL code without hallucinating.
+
+### Install into any project
+
+```sh
+npx skills add https://likec4.dev/
+```
+
+This uses the <a href="https://www.skillsdk.dev/" target="_blank">Agent Skills Discovery</a> protocol. Available skills:
+
+| Skill | Description |
+|-------|-------------|
+| `likec4-dsl` | Complete DSL reference — specification, model, views, deployment, predicates, examples |
+
+Works with Claude Code, Cursor, Windsurf, and other agents that support the protocol.
+
+## MCP Server
+
+LikeC4 <a href="https://modelcontextprotocol.io" target="_blank">MCP Server</a> provides knowledge of your LikeC4 model to LLMs.
 This enables you to query your model in natural language:
 
 > _"Lookup LikeC4 model and list all incoming relationships of the backend api"_
@@ -23,14 +46,14 @@ This enables you to query your model in natural language:
 
 > _"Export to CSV all relationships between Backend and Amazon SQS"_
 
-## Usage
+### Usage
 
 Three options are available:
 - Use extension's built-in MCP Server
 - Use `likec4 mcp` CLI
 - Use `@likec4/mcp` package
 
-### Using extension
+#### Using extension
 
 When [LikeC4 extension](/tooling/editors/) is installed, MCP Server can be enabled from the extension <a href="vscode://settings/likec4.mcp.enabled" target="_blank">settings</a>.
 
@@ -49,10 +72,10 @@ To configure MCP Server:
         }
       }
     }
-    ```  
+    ```
   </Tab>
   <Tab label='Cursor'>
-    
+
     Create `.cursor/mcp.json`:
 
     ```json
@@ -73,11 +96,11 @@ To configure MCP Server:
     {
       "mcpServers": {
         "likec4": {
-          "serverUrl": "http://localhost:33335/mcp"      
+          "serverUrl": "http://localhost:33335/mcp"
         }
       }
     }
-    ```    
+    ```
   </Tab>
 </Tabs>
 
@@ -90,7 +113,7 @@ The extension activates automatically once you open any LikeC4 source file.
 If it doesn't show up, try refreshing the list of available MCP servers in your editor
 :::
 
-### Using CLI
+#### Using CLI
 
 If you have installed [`likec4`](/tooling/cli) CLI, you can start MCP server with `stdio` transport:
 
@@ -112,7 +135,7 @@ Start MCP server with `http` transport on port `1234`:
 likec4 mcp -p 1234
 ```
 
-### Using `@likec4/mcp` package
+#### Using `@likec4/mcp` package
 
 Example configuration:
 
@@ -153,7 +176,7 @@ likec4-mcp-server -h
 Disable watch mode with `--no-watch` to consume less resources, if you have static workspace.
 :::
 
-## Available tools
+### Available tools
 
 | Tool | Description |
 |------|-------------|
