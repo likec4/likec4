@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
+import { BRIDGE_VERSION } from './contracts'
 import { isBridgeManifest, isLeanixInventorySnapshot } from './validate'
 
 const validManifest = {
   manifestVersion: '1.0',
   generatedAt: '2025-01-15T12:00:00.000Z',
-  bridgeVersion: '0.1.0',
+  bridgeVersion: BRIDGE_VERSION,
   mappingProfile: 'default',
   projectId: 'test',
   entities: {

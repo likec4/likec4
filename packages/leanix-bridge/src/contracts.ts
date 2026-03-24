@@ -10,16 +10,31 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const _dir = dirname(fileURLToPath(import.meta.url))
+
+/** Last-resort fallback when no package.json is readable (e.g. CI test layout). */
+const DEFAULT_BRIDGE_VERSION = '0.1.0'
+
+/**
+ * Resolves bridge version from package.json so BRIDGE_VERSION stays in sync with the published package.
+ * 1) @likec4/leanix-bridge package (when not bundled). 2) likec4 CLI package (when bridge is bundled into CLI; versions are kept in sync). 3) Default only when neither is readable.
+ */
 function readVersion(): string {
   try {
     const pkg = JSON.parse(readFileSync(join(_dir, '..', 'package.json'), 'utf8')) as { version?: string }
-    return pkg.version ?? '0.1.0'
+    if (pkg.version) return pkg.version
   } catch {
-    const pkg = JSON.parse(readFileSync(join(_dir, '..', '..', 'package.json'), 'utf8')) as { version?: string }
-    return pkg.version ?? '0.1.0'
+    // Bundled CLI: import.meta.url is under packages/likec4/dist/cli, so ../package.json is missing; use ../../ (CLI package).
   }
+  try {
+    const pkg = JSON.parse(readFileSync(join(_dir, '..', '..', 'package.json'), 'utf8')) as { version?: string }
+    if (pkg.version) return pkg.version
+  } catch {
+    // Neither readable (e.g. test env).
+  }
+  return DEFAULT_BRIDGE_VERSION
 }
-/** Single source of truth: must match package.json version. */
+
+/** Bridge version; must match package version (from package.json when available). */
 export const BRIDGE_VERSION: string = readVersion()
 
 /** Semantic anchor: LikeC4 FQN (e.g. cloud.backend.api) */
