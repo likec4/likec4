@@ -419,3 +419,4 @@ Element view rules reference → references/views.md
 | `references/dynamic-views.md` | Steps, parallel, chained, variants, notes, navigateTo, complete examples         |
 | `references/deployment.md`    | Deployment nodes, instances, relationships, deployment views, multi-env examples |
 | `references/cli.md`           | CLI commands: serve, build, export, codegen, mcp, format                         |
+| `references/examples.md`     | Compact real-world examples: extend, groups, globals, dynamic, deployment, rank  |
