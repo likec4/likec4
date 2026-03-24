@@ -5,3 +5,4 @@
 /examples/* /showcases/:splat
 
 /tooling/vscode/ /tooling/editors/
+/tooling/mcp/ /tooling/ai-tools/
