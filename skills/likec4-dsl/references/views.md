@@ -50,16 +50,21 @@ Syntax:
 ```likec4
 include PREDICATE, PREDICATE, ...
 exclude PREDICATE, PREDICATE, ...
-style EXPRESSION, ... {
-   // Apply style properties to elements matching the expressions
+style ELEMENT_EXPRESSION, ... {
+  // Apply style properties to elements matching the expressions
 }
+global style STYLE_GROUP_IDENTIFIER
 autoLayout TopBottom|BottomTop|LeftRight|RightLeft [rankSep] [nodeSep]
 ```
 
-Rules order matters, as every next rule applies on top of the previous, accumulating result.
-I.e `exclude` rule only removes elements that were included by previous rules, and `style` rule overrides previously applied styles.
-
 See [Predicates](./predicates.md) for more information on predicates and expressions.
+
+**Important:**
+
+- Rules order matters, as every next rule applies on top of the previous, accumulating result.
+- `exclude` only removes elements that were included by previous rules.
+- `style` rules override previously applied styles.
+  - Style cascade (each override the previous): Spec defaults → element properties → local styles → view-level styles → customized predicates
 
 ## Dynamic View Rules
 
@@ -88,11 +93,6 @@ DYNAMIC_VIEW_RULES ::=
    ...
 ```
 
-Rules order matters, as every next rule applies on top of the previous, accumulating result.
-I.e `exclude` rule only removes elements that were included by previous rules, and `style` rule overrides previously applied styles.
-
-See [Predicates](./predicates.md) for more information on predicates and expressions.
-
 ## Local Style Rules
 
 Styles placed inside `views {}` but outside any `view {}` apply to all views in that block:
@@ -102,14 +102,12 @@ views {
   // This style applies to ALL views in this block
   style * { color green }
 
+  view view1 {
+    include *                      // All elements are green
+  }
   view index {
     include *
-    style backend { color red }    // Overrides green for backend only
-  }
-
-  view other {
-    include *
-    // backend is green (from local style, no override here)
+    style backend { color red }    // All elements are green, except backend which is red
   }
 }
 ```
@@ -117,6 +115,23 @@ views {
 ## Global Style Groups
 
 Reusable style groups defined in `global { ... }`:
+
+Syntax:
+
+```likec4
+global {
+  styleGroup GROUP_IDENTIFIER {
+    style EXPRESSION { ... }
+    style EXPRESSION { ... }
+  }
+}
+
+views {
+  view index {    
+    global style GROUP_IDENTIFIER
+  }
+}
+```
 
 ```likec4
 global {
@@ -136,3 +151,123 @@ views {
 ```
 
 Style groups can contain multiple `style` rules. They are applied in the order defined within the group. When used in a view, global styles sit between local styles and view-level styles in the cascade.
+
+# Dynamic Views — Detailed Reference
+
+## Steps
+
+Each step represents an interaction between two elements:
+
+```likec4
+// Forward step
+customer -> frontend "opens app"
+
+// Backward step (response/return flow)
+frontend <- backend "returns data"
+
+// Step with full properties
+customer -> frontend "places order" {
+  title "Customer places an order"       // Override step label
+  description "Detailed description"
+  technology "HTTPS"
+  notes '''
+    Additional notes displayed in sidebar.
+    Supports **Markdown** formatting.
+  '''
+  color red
+  navigateTo order-detail                // Link to another dynamic view
+}
+```
+
+Step properties: `title`, `description`, `technology`, `notes`, `navigateTo`, all relationship properties.
+
+### Chained Steps
+
+Steps can be chained to reduce repetition:
+
+```likec4
+customer
+  -> frontend "opens"     // Read as "customer opens frontend"
+  -> backend "requests"   // Read as "frontend requests backend"
+  -> database "queries"   // Read as "backend queries database"
+  <- backend "responds"   // Read as "database responds to backend"
+```
+
+Each arrow in the chain creates a separate step. The target of the previous step becomes the source of the next.
+
+## Parallel Steps
+
+Use `parallel` (or `par`) blocks for concurrent interactions:
+
+```likec4
+dynamic view flow {
+  frontend -> backend "requests data"
+
+  parallel {
+    backend -> cache "checks cache"
+    backend -> database "queries DB"
+    backend -> external-api "fetches enrichment"
+  }
+
+  backend -> frontend "returns aggregated data"
+}
+```
+
+Parallel blocks can be nested and mixed with sequential steps.
+
+## Variants
+
+| Variant             | Rendering                     | Use case                           |
+| ------------------- | ----------------------------- | ---------------------------------- |
+| `diagram` (default) | Animated box-and-line diagram | General flow visualization         |
+| `sequence`          | UML sequence diagram          | API call sequences, protocol flows |
+
+```likec4
+dynamic view api-sequence {
+  variant sequence
+
+  client -> gateway "POST /orders"
+  gateway -> auth "validate token"
+  auth <- gateway "200 OK"
+  gateway -> orders "create order"
+  orders -> db "INSERT"
+  orders <- db "order_id"
+  gateway <- orders "201 Created"
+  client <- gateway "201 Created"
+}
+```
+
+Sequence diagrams work best with leaf elements (not containers).
+
+## Include in Dynamic Views
+
+Dynamic views support the same predicates as element views, used to add context elements that don't participate in steps:
+
+```likec4
+dynamic view flow {
+  customer -> frontend "opens"
+  frontend -> backend "requests"
+
+  // Add parent containers as visual context
+  include cloud with {
+    color muted
+    opacity 10%
+  }
+  include amazon
+}
+```
+
+## Styling in Dynamic Views
+
+Same styling rules as element views:
+
+```likec4
+dynamic view flow {
+  customer -> frontend "opens"
+  frontend -> backend "requests"
+
+  style customer { color green }
+  style * { size sm }
+  style frontend { color muted }
+}
+```

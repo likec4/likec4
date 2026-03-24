@@ -1,29 +1,28 @@
 # CLI Reference
 
-The `likec4` CLI (`npx likec4`) provides commands beyond validation:
+`likec4` is npm package that provides a CLI tool for working with LikeC4 models.
+Only essential commands/parameters are listed here, for full documentation use `likec4 help`, `likec4 <command> --help`.
+Use with users prefered package manager (pnpm, bun, etc.).
 
 ## `serve` (aliases: `start`, `dev`)
 
-Start local dev server with live reload to preview diagrams.
+Starts local server with live reload to preview diagrams (default port is 5173).
 
 ```bash
-npx likec4 serve [path]
-npx likec4 serve --port 3000 ./src/likec4
-npx likec4 serve --use-hash-history --base /docs/
+npx likec4 serve <project-path>
+npx likec4 serve --port 3000 <project-path>
 ```
 
-Key options: `--port` (default 5173), `--listen` (default 127.0.0.1), `--base` (base URL), `--title`, `--use-hash-history`, `--webcomponent-prefix` (default "likec4")
+When started, you can show the diagram to user in the browser by following the URL displayed in the console.
+To navigate to specific view, use the URL path `/view/<view-id>`.
 
 ## `build` (alias: `bundle`)
 
 Build a static website for deployment.
 
 ```bash
-npx likec4 build -o ./dist [path]
-npx likec4 build --output-single-file -o ./dist   # single self-contained HTML
+npx likec4 build -o ./dist <project-path>
 ```
-
-Key options: `--output` (`-o`), `--base`, `--title`, `--use-hash-history`, `--webcomponent-prefix`, `--output-single-file`
 
 ## `export`
 
@@ -31,7 +30,7 @@ Export diagrams to various formats.
 
 ```bash
 # PNG (requires Playwright)
-npx likec4 export png -o ./images [path]
+npx likec4 export png -o ./images <project-path>
 npx likec4 export png --theme dark --flat -f "overview*" -o ./images
 
 # JSON model
@@ -87,7 +86,3 @@ Format LikeC4 source files in-place.
 ```bash
 npx likec4 format [path]
 ```
-
-## Global options (all commands)
-
-`--log-level` [trace|debug|info|warning|error], `--verbose`, `--color`/`--no-color`, `--project` (`-p`)

@@ -82,67 +82,6 @@ Config file (`likec4.config.json`, `.likec4rc`, or `likec4.config.{ts,js}`) defi
 Key options: `name` (required, unique ID in the workspace), `title` (display name)
 Full reference → `references/configuration.md`
 
-## Quick Decision Trees
-
-### "I need to create a diagram/view or show a flow or sequence"
-
-```text
-What kind of diagram?
-
-├─ Interaction flow / sequence → Dynamic View
-├─ Infrastructure / deployment → Deployment View
-├─ From architecture model → Element View
-│   ├─ Primary element known → Scoped view: `view name of element { ... }`
-│   └─ Extend existing view → `view name extends other { ... }`
-└─ Other → `view name { ... }`
-```
-
-### "My view doesn't show what I expect"
-
-```text
-View not showing correctly?
-├─ Elements missing → Check include predicates
-│   ├─ Unscoped view: `*` = top-level only
-│   ├─ Scoped view (of X): `*` = X + direct children
-│   ├─ Need children → include element.*
-│   ├─ Need all descendants → include element.**
-│   └─ Need relationships too → include source -> target
-├─ Too many elements → Add exclude after include
-│   └─ exclude only removes previously-included items
-├─ Relationships not visible → Include both endpoints AND the relationship
-│   └─ include frontend, backend, frontend -> backend
-├─ Styles not applying → Check cascade order
-│   └─ Spec defaults < global styles < local styles < view-level styles
-├─ Where conditions → references/predicates.md
-└─ Full predicate reference → references/predicates.md
-```
-
-### "I need to style ..."
-
-```text
-Styling?
-├─ Style element(s) in a view → view rule, see `references/views.md`
-├─ Style element globally → property inside element definition, see Model section
-├─ Style all elements of a kind → property inside kind specification, see Specification section
-├─ Style by tag → view rule, see `references/views.md`
-├─ Style relationship(s) in a view → view rule, see `references/views.md`
-├─ Style relationship globally → property inside relationship definition, see Model section
-├─ Style all relationships of a kind → property inside kind specification, see Specification section
-├─ Reuse same styles across views → see `references/views.md`
-```
-
-### "I need to organize across files"
-
-```text
-Multi-file project?
-├─ Import elements → import { backend } from './shared.c4'
-├─ Extend element → extend cloud.backend { service newSvc "New" }
-├─ Extend relationship → extend cloud -> amazon { metadata { ... } }
-├─ Metadata merge → Duplicate keys become arrays
-├─ Organize views → views "Use Cases" { ... } (folder label)
-└─ All blocks are mergeable across files
-```
-
 ## Specification (Quick Reference)
 
 Syntax:
@@ -348,8 +287,23 @@ Relationship style properties:
 
 ## Deployment (Quick Reference)
 
-Deployment has similar syntax as model, but is defined in `deployment` block and uses `deploymentNode` kinds.
-It allows "deploying" instances of elements from the model inside deployment nodes, using the `instanceOf` keyword.
+Deployment has same syntax as model, but is defined in `deployment` block and uses `deploymentNode` kinds.
+The deployment model maps logical architecture elements to physical infrastructure, allowing to "deploy" instances of elements from the model inside deployment nodes using the `instanceOf` keyword.
+
+```likec4
+deployment {
+  IDENTIFIER = DEPLOYMENT_KIND {
+    TAGS
+    PROPERTIES
+
+    instanceOf ELEMENT_ID
+    IDENTIFIER = instanceOf ELEMENT_ID {
+      TAGS
+      PROPERTIES
+    }
+  }
+}
+```
 
 Example:
 
@@ -366,12 +320,19 @@ deployment {
     instanceOf myapp
   }
   vm vm2 {
-    instanceOf myapp
+    // Named instances of same element within the same deployment node
+    instance1 = instanceOf myapp
+    instance2 = instanceOf myapp
   }
 }
 ```
 
+Deployment model inherits relationships from the logical model, but allows to define additional relationships between deployment nodes/instances (using same syntax as in model).
+
 ## Views (Quick Reference)
+
+Element/deployment views show elements/relationships from the model/deployment.
+Dynamic views show interactions between elements. They can render as animated flow diagrams or UML sequence diagrams.
 
 Syntax:
 
@@ -406,17 +367,71 @@ views {
 
 **View properties:** `title`, `description`, `metadata`, `link`
 
-Dynamic view reference → references/dynamic-views.md
-Element view rules reference → references/views.md
+Full view reference → references/views.md
+
+## Quick Decision Trees
+
+### "I need to create a diagram/view or show a flow or sequence"
+
+```text
+What kind of diagram?
+├─ Interaction flow / sequence → Dynamic View
+├─ Infrastructure / deployment → Deployment View
+├─ From architecture model → Element View
+│   ├─ Primary element known → Scoped view: `view name of element { ... }`
+│   └─ Extend existing view → `view name extends other { ... }`
+└─ Other → `view name { ... }`
+```
+
+### "I need to style ..."
+
+```text
+Styling?
+├─ Style element(s) in a view → view `style` rule, see `references/views.md`
+├─ Style element(s) in some views, but not all
+│   ├─ views in same file → local view rule, see `references/views.md`
+│   └─ views in different files → global view rule, see `references/views.md`
+├─ Style element globally → property inside element definition, see Model section
+├─ Style all elements of a kind → property inside kind specification, see Specification section
+├─ Style by tag → view rule, see `references/views.md`
+├─ Style relationship(s) in a view → view rule, see `references/views.md`
+├─ Style relationship globally → property inside relationship definition, see Model section
+├─ Style all relationships of a kind → property inside kind specification, see Specification section
+├─ Reuse same styles across views → see `references/views.md`
+```
+
+### "I need to organize across files"
+
+```text
+Multi-file project?
+├─ Import elements → import { backend } from './shared.c4'
+├─ Extend element → extend cloud.backend { service newSvc "New" }
+├─ Extend relationship → extend cloud -> amazon { metadata { ... } }
+├─ Metadata merge → Duplicate keys become arrays
+├─ Organize views → views "Use Cases" { ... } (folder label)
+└─ All blocks are mergeable across files
+```
+
+### "I need to show a flow or sequence"
+
+```text
+Flow / sequence diagram?
+├─ Basic steps → source -> target "title"
+├─ Response / backward → source <- target "returns"
+├─ Parallel actions → parallel { ... } (also: par { ... })
+├─ Chained steps → customer -> frontend "x" -> backend "y"
+├─ Step with notes → step { notes 'Markdown content' }
+├─ Link to another view → step { navigateTo other-view }
+├─ Sequence variant → dynamic view name { variant sequence }
+└─ Full reference → references/dynamic-views.md
+```
 
 ## Reference Index
 
 | File                          | Purpose                                                                          |
 | ----------------------------- | -------------------------------------------------------------------------------- |
-| `references/configuration.md` | Project config options, multi-project setup, styles, generators, include/exclude |
-| `references/views.md`         | Element view rules, include/exclude, style rules, groups, autoLayout             |
-| `references/predicates.md`    | Predicate syntax, wildcards, where conditions, with overrides, global groups     |
-| `references/dynamic-views.md` | Steps, parallel, chained, variants, notes, navigateTo, complete examples         |
-| `references/deployment.md`    | Deployment nodes, instances, relationships, deployment views, multi-env examples |
 | `references/cli.md`           | CLI commands: serve, build, export, codegen, mcp, format                         |
-| `references/examples.md`     | Compact real-world examples: extend, groups, globals, dynamic, deployment, rank  |
+| `references/configuration.md` | Project config options, multi-project setup, styles, generators, include/exclude |
+| `references/views.md`         | View rules, include/exclude, style rules, groups, autoLayout                     |
+| `references/predicates.md`    | Predicate syntax, wildcards, where conditions, with overrides, global groups     |
+| `references/examples.md`      | Compact real-world examples: extend, groups, globals, dynamic, deployment, rank  |
