@@ -88,7 +88,7 @@ Full reference → `references/configuration.md`
 
 ### "I need to create a diagram/view or show a flow or sequence"
 
-```
+```text
 What kind of diagram?
 
 ├─ Interaction flow / sequence → Dynamic View
@@ -101,7 +101,7 @@ What kind of diagram?
 
 ### "My view doesn't show what I expect"
 
-```
+```text
 View not showing correctly?
 ├─ Elements missing → Check include predicates
 │   ├─ Unscoped view: `*` = top-level only
@@ -121,7 +121,7 @@ View not showing correctly?
 
 ### "I need to style ..."
 
-```
+```text
 Styling?
 ├─ Style element(s) in a view → view rule, see `references/views.md`
 ├─ Style element globally → property inside element definition, see Model section
@@ -135,7 +135,7 @@ Styling?
 
 ### "I need to organize across files"
 
-```
+```text
 Multi-file project?
 ├─ Import elements → import { backend } from './shared.c4'
 ├─ Extend element → extend cloud.backend { service newSvc "New" }
@@ -149,7 +149,7 @@ Multi-file project?
 
 Syntax:
 
-```
+```likec4
 specification {
   // Define dict of tags, outside of specification used as #tag
   tag IDENTIFIER  
@@ -207,7 +207,7 @@ Model is a hierarchical structure of elements, where each element can contain ot
 
 Syntax:
 
-```
+```likec4
 model {
   // Elements, top-levels are global, can be referenced anywhere in the project
   IDENTIFIER = KIND "title"           // with title, without body
@@ -366,7 +366,7 @@ deployment {
 
 Syntax:
 
-```
+```likec4
 views {
   // element view
   view IDENTIFIER {

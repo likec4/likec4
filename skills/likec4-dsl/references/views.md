@@ -11,7 +11,7 @@ There is special view - `index`, if not defined, it will be automatically create
 
 Syntax:
 
-```
+```likec4
 views {
 
   LOCAL_STYLE_RULES     // optional style rules, applied to all views in this block
@@ -47,7 +47,7 @@ views {
 
 Syntax:
 
-```
+```likec4
 include PREDICATE, PREDICATE, ...
 exclude PREDICATE, PREDICATE, ...
 style EXPRESSION, ... {
@@ -65,7 +65,7 @@ See [Predicates](./predicates.md) for more information on predicates and express
 
 Syntax:
 
-```
+```text
 STEP ::=
    SOURCE -> TARGET [LABEL]       // forward message
    | SOURCE <- TARGET [LABEL]     // backward message

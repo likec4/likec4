@@ -1,6 +1,6 @@
 ### "I need to show a flow or sequence"
 
-```
+```text
 Flow / sequence diagram?
 ├─ Basic steps → source -> target "title"
 ├─ Response / backward → source <- target "returns"
