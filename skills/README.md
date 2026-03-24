@@ -6,8 +6,8 @@ Skills are auto-discovered by agents when working in this repository. They provi
 
 ## Available Skills
 
-| Skill | Description |
-| --- | --- |
+| Skill                       | Description                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------ |
 | [likec4-dsl](./likec4-dsl/) | LikeC4 DSL syntax reference — auto-triggers when editing `.c4`/`.likec4` files |
 
 ## Installing Skills
@@ -21,25 +21,3 @@ npx skills add https://likec4.dev/
 ```
 
 This discovers and installs available skills into your project's `.claude/skills/` directory (or equivalent for other agents).
-
-## Skill Structure
-
-Each skill is a directory with:
-
-```
-skill-name/
-  SKILL.md          # Main skill prompt (with YAML frontmatter: name, description)
-  references/       # On-demand reference files (loaded only when needed)
-```
-
-The `SKILL.md` frontmatter controls when the skill auto-triggers:
-
-```yaml
----
-name: likec4-dsl
-description: |
-  Auto-trigger when working with .c4 or .likec4 files...
----
-```
-
-Reference files in `references/` are not loaded by default — the agent reads them on demand to keep context window usage low.
