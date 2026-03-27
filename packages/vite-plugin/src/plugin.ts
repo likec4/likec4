@@ -1,8 +1,8 @@
-import { invariant, isNonEmptyArray } from '@likec4/core'
+import { DefaultMap, invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
-import { isDeepEqual, map } from 'remeda'
+import { hasAtLeast, isDeepEqual, map } from 'remeda'
 import type {
   Plugin,
   PluginOption,
@@ -10,6 +10,7 @@ import type {
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
+import { k } from './virtuals/_shared'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
 import { drawioModule, projectDrawioModule } from './virtuals/drawio'
@@ -108,6 +109,8 @@ const virtuals = [
   rpcModule,
 ]
 
+const VITE_PLUGIN_LIKEC4 = 'vite-plugin-likec4'
+
 export function LikeC4VitePlugin({
   environments,
   ...opts
@@ -118,8 +121,22 @@ export function LikeC4VitePlugin({
 
   let shouldDisposeOnStop = opts.watch ?? false
 
+  const iconsCache = new DefaultMap(async (key: `${string}:${string}`) => {
+    let [group, icon] = key.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
+    if (icon.endsWith('.jsx')) {
+      icon = icon.slice(0, -4) + '.js'
+    }
+    const url = `https://icons.like-c4.dev/${group}/${icon}`
+    logger.debug(k.dim(`fetching icon: `) + url)
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch icon: ${response.status} ${response.statusText}`)
+    }
+    return await response.text()
+  })
+
   return {
-    name: 'vite-plugin-likec4',
+    name: VITE_PLUGIN_LIKEC4,
 
     applyToEnvironment(env) {
       return environments ? environments.includes(env.name) : true
@@ -142,22 +159,53 @@ export function LikeC4VitePlugin({
       assetsDir = likec4.workspaceUri.fsPath
     },
 
-    resolveId(id) {
-      for (const module of projectVirtuals) {
-        const projectId = module.matches(id)
-        if (projectId) {
-          return module.virtualId(projectId)
+    resolveId: {
+      filter: {
+        id: /^likec4:/,
+      },
+      handler(id) {
+        if (id.includes('likec4:icon-bundle')) {
+          return {
+            id: `\0${id}`,
+            resolvedBy: VITE_PLUGIN_LIKEC4,
+          }
         }
-      }
-      for (const module of virtuals) {
-        if (module.id === id) {
-          return module.virtualId
+        for (const module of projectVirtuals) {
+          const projectId = module.matches(id)
+          if (projectId) {
+            return {
+              id: module.virtualId(projectId),
+              moduleSideEffects: false,
+              resolvedBy: VITE_PLUGIN_LIKEC4,
+            }
+          }
         }
-      }
-      return null
+        for (const module of virtuals) {
+          if (module.id === id) {
+            return {
+              id: module.virtualId,
+              resolvedBy: VITE_PLUGIN_LIKEC4,
+            }
+          }
+        }
+        return null
+      },
     },
 
     async load(id) {
+      if (id.includes('likec4:icon-bundle')) {
+        // Take last 2 parts: likec4:iconbundle/projectId/iconPath
+        const parts = id.split('/').slice(-2)
+        if (!hasAtLeast(parts, 2)) {
+          return null
+        }
+        const [group, icon] = parts
+        const code = await iconsCache.get(`${group}:${icon}`)
+        return {
+          code,
+          moduleSideEffects: false,
+        }
+      }
       for (const module of projectVirtuals) {
         const projectId = module.matches(id)
         if (projectId) {
@@ -255,5 +303,16 @@ export function LikeC4VitePlugin({
         await likec4.dispose()
       }
     },
+    // transform: {
+    //   filter: {
+    //     id: /icons\.like-c4/,
+    //   },
+    //   handler(code, id) {
+    //     console.log('icons.likec4', id)
+    //     return {
+    //       code,
+    //     }
+    //   },
+    // },
   } satisfies PluginOption
 }
