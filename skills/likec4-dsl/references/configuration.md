@@ -242,3 +242,20 @@ Use `include.paths` to share `.c4` files across projects.
   "title": "My Architecture"
 }
 ```
+
+**Important:** Always include `"$schema"` (recommended) — it enables IDE autocomplete and validation for your config file.
+
+### Common Mistake: Missing $schema
+
+```json
+// ❌ Missing $schema — no IDE validation/autocomplete
+{
+  "name": "my-project"
+}
+
+// ✅ Correct — with schema for IDE support
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "my-project"
+}
+```

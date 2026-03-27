@@ -42,9 +42,51 @@ Expressions inside `exclude` clause match against the accumulated result of prev
 
 - `<element_ref>` - selects element by reference from the current file scope, or globally available if not found in the current file, together with all relationships between this element and accumulated result
 - `<element_ref>.<child>` - selects unique child within `<element_ref>` together with all relationships between this child and accumulated result
-- `<element_ref>.*` - selects direct children of `<element_ref>`, together with all relationships between these children and accumulated result
+- `<element_ref>.*` - selects **direct children only** of `<element_ref>`, together with all relationships between these children and accumulated result
 - `<element_ref>._` - selects direct children of `<element_ref>` that have relationships with accumulated result
-- `<element_ref>.**` - selects all descendants of `<element_ref>` that have relationships with accumulated result
+- `<element_ref>.**` - selects **all recursive descendants** of `<element_ref>` that have relationships with accumulated result
+
+#### Wildcard depth selectors: `*` vs `**`
+
+Understanding the difference between `*` and `**` is crucial for correct view scoping:
+
+| Selector | Meaning | Example | Result |
+|----------|---------|---------|--------|
+| `*` | Direct children **only** (1 level) | `parent.*` | Selects immediate children of parent |
+| `**` | All descendants (recursive, all levels) | `parent.**` | Selects children, grandchildren, and all nested elements |
+
+```likec4
+// Example model structure:
+// backend
+//   ├── api (service)
+//   │   └── handlers (component)
+//   │       └── authHandler
+//   └── db (database)
+
+views {
+  // Selects ONLY: api, db (direct children of backend)
+  view direct-only {
+    include backend.*
+  }
+
+  // Selects: api, db, handlers, authHandler (all descendants)
+  view all-descendants {
+    include backend.**
+  }
+
+  // ❌ Common mistake: expecting * to include nested elements
+  view wrong-expectation {
+    include backend.*        // This does NOT include handlers or authHandler!
+    style backend.handlers { color red }  // handlers won't be styled
+  }
+
+  // ✅ Correct: use ** when you need all nested elements
+  view correct {
+    include backend.**       // Includes everything under backend
+    style backend.handlers { color red }  // Now handlers IS included
+  }
+}
+```
 
 ### Wildcard expression
 

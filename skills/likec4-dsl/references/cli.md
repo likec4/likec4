@@ -4,6 +4,31 @@
 Only essential commands/parameters are listed here, for full documentation use `likec4 help`, `likec4 <command> --help`.
 Use with users prefered package manager (pnpm, bun, etc.).
 
+## Common Commands and Frequent Mistakes
+
+### ✅ Correct commands (use these)
+
+| Task | Correct Command |
+|------|-----------------|
+| Validate files | `npx likec4@latest validate --json --no-layout --file <file> <project-dir>` |
+| Start dev server | `npx likec4 serve <project-path>` |
+| Export PNG | `npx likec4 export png -o ./images <project-path>` |
+| Build static site | `npx likec4 build -o ./dist <project-path>` |
+
+### ❌ Common mistakes (avoid these)
+
+| Incorrect | Why it fails | Correct |
+|-----------|--------------|---------|
+| `npx likec4 check ...` | Command doesn't exist | Use `npx likec4 validate ...` |
+| `npx likec4 lint ...` | Command doesn't exist | Use `npx likec4 validate ...` |
+| `npx likec4 verify ...` | Command doesn't exist | Use `npx likec4 validate ...` |
+| `npx likec4 export png --outdir ./images` | Flag is `--outdir` but short form is `-o` | Use `-o ./images` or `--outdir ./images` |
+
+**Always use `@latest` tag** to ensure you're using the latest version with all features:
+```bash
+npx likec4@latest validate --json --no-layout --file <file> <project-dir>
+```
+
 ## `serve` (aliases: `start`, `dev`)
 
 Starts local server with live reload to preview diagrams (default port is 5173).

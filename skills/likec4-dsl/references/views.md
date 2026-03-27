@@ -222,6 +222,16 @@ Parallel blocks can be nested and mixed with sequential steps.
 | `diagram` (default) | Animated box-and-line diagram | General flow visualization         |
 | `sequence`          | UML sequence diagram          | API call sequences, protocol flows |
 
+### Using `variant sequence`
+
+The `variant sequence` keyword renders the dynamic view as a UML sequence diagram. This is especially useful for API call sequences and protocol flows.
+
+**Key syntax points:**
+- Use `variant sequence` at the start of the dynamic view block
+- Use `->` for forward/call direction
+- Use `<-` for backward/return direction (not `->` with different semantics)
+- Sequence diagrams work best with leaf elements (not containers)
+
 ```likec4
 dynamic view api-sequence {
   variant sequence
@@ -237,7 +247,25 @@ dynamic view api-sequence {
 }
 ```
 
-Sequence diagrams work best with leaf elements (not containers).
+**Common mistake:** Using `->` for returns instead of `<-`. The arrow direction indicates message flow:
+- `a -> b` means "a sends to b" (request/call)
+- `a <- b` means "b sends to a" (response/return)
+
+```likec4
+// ❌ WRONG - using -> for returns
+dynamic view wrong {
+  variant sequence
+  client -> gateway "request"
+  gateway -> client "response"  // This renders incorrectly!
+}
+
+// ✅ CORRECT - using <- for returns
+dynamic view correct {
+  variant sequence
+  client -> gateway "request"
+  client <- gateway "response"  // Proper return flow
+}
+```
 
 ## Include in Dynamic Views
 
