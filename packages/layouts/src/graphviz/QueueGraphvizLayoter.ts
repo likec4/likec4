@@ -92,16 +92,16 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
   }): Promise<LayoutResult<A>[]> {
     const logger = thislogger.getChild(['batch', randomString(3)])
     if (this.isProcessingBatch) {
-      logger.debug`wait for previous layouts to finish`
+      logger.trace`wait for previous layouts to finish`
       // wait for any previous layout to finish
       await this.queue.onIdle()
       await promiseNextTick()
       // this batch may have been cancelled while waiting for previous batch to finish
       if (params.cancelToken?.isCancellationRequested) {
-        logger.debug`cancellation requested`
+        logger.trace`cancellation requested`
         return []
       }
-      logger.debug`retry`
+      logger.trace`retry`
       // recursively call batchLayout (to prevent batches from running in parallel)
       return await this.batchLayout(params)
     }
@@ -111,7 +111,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
     const results = [] as LayoutResult<A>[]
     try {
       for (const task of params.batch) {
-        logger.debug`add task for view ${task.view.id}`
+        logger.trace`add task for view ${task.view.id}`
         this.queue
           .add(async () => {
             // In WASM, we can't run tasks in parallel, and we don't want start task immediately
@@ -146,7 +146,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
         logger.trace`waiting ${total} tasks to finish`
         await this.queue.onIdle()
       }
-      logger.debug`batch layout done`
+      logger.debug`batch layout ✅`
       this.isProcessingBatch = false
     }
     return results
@@ -175,7 +175,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
   ) {
     if (this.queue.size > concurrency + 2) {
       logger
-        .debug`limit reached. queue size: ${this.queue.size}, running: ${this.queue.pending}, waiting shrink to ${concurrency}`
+        .trace`limit reached. queue size: ${this.queue.size}, running: ${this.queue.pending}, waiting shrink to ${concurrency}`
       await this.queue.onSizeLessThan(concurrency + 1)
     }
   }

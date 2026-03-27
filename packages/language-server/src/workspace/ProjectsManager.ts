@@ -600,6 +600,19 @@ export class ProjectsManager {
       ?? ProjectsManager.DefaultProjectId
   }
 
+  /**
+   * Returns path to the document relative to the project folder.
+   * If the document does not belong to any project, returns the document URI as string.
+   */
+  relativePath(document: LangiumDocument | URI | string): string {
+    const documentUri = normalizeUri(document)
+    const project = this.#ownerOf.get(documentUri)
+    if (!project) {
+      return documentUri
+    }
+    return UriUtils.relative(project.folderUri, URI.parse(documentUri))
+  }
+
   #activeReload: Promise<void> | null = null
   async reloadProjects(cancelToken?: Cancellation.CancellationToken): Promise<void> {
     if (this.#activeReload) {

@@ -112,7 +112,7 @@ export class GraphvizLayouter implements Disposable {
   async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult<A>> {
     const logger = rootLogger.getChild(['layout', randomString(3)])
     try {
-      logger.debug`layouting view ${params.view.id}...`
+      logger.trace`layouting view ${params.view.id}...`
       let dot = await this.dot(params)
       const { view } = params
       const json = await this.dotToJson(dot)
@@ -132,7 +132,7 @@ export class GraphvizLayouter implements Disposable {
         .filter((l) => !(l.includes('margin') && l.includes(`${GraphClusterSpace}`))) // see DotPrinter.ts#L175
         .join('\n') as DotSource
 
-      logger.debug`layouting view ${params.view.id} done`
+      logger.debug`layouting view ${params.view.id} ✅`
       return { dot, diagram }
     } catch (e) {
       logger.warn(loggable(e))
@@ -172,7 +172,7 @@ export class GraphvizLayouter implements Disposable {
 
   async layoutProjectsView(view: ComputedProjectsView): Promise<LayoutedProjectsView> {
     const logger = rootLogger.getChild(['layoutProjectsView', randomString(3)])
-    logger.debug`layouting projects overview...`
+    logger.trace`layouting projects overview...`
     const printer = new ProjectsViewPrinter(view)
     let dot = printer.print()
     try {
@@ -181,7 +181,7 @@ export class GraphvizLayouter implements Disposable {
       logger.warn(`Error during unflatten of projects view`, { error })
     }
     const json = await this.dotToJson(dot)
-    logger.debug`layouting projects overview done`
+    logger.debug`layouting ${'projects overview'} ✅`
     return parseGraphvizJsonOfProjectsView(json, view)
   }
 }
