@@ -284,7 +284,7 @@ model {
 | **style**       | Syntax: `style { ... }`, see Style section below                                                                       |
 | **icon**        | Shortcut for the `style { icon ... }`, takes precedence                                                                |
 | **metadata**    | Syntax: `metadata { KEY VALUE }`, where key must follow identifiers format and value can be string or array of strings |
-| **link**        | Syntax: `link URL "Optional title"`, may be used several times, URL can be relative to the document, title             |
+| **link**        | Syntax: `link URL "Optional title"`. May be used multiple times. URL can be relative to the document.                  |
 | **navigateTo**  | ID of dynamic view to navigate to                                                                                      |
 
 ## Style (Quick Reference)
