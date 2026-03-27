@@ -1,5 +1,6 @@
 import { first } from 'remeda'
-import { type ProjectVirtualModule, type VirtualModule, generateMatches, k } from './_shared'
+import { logGenerating } from '../logger'
+import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
 
 const projectCode = (id: string) => `
 import { jsx as _jsx } from "react/jsx-runtime";
@@ -28,8 +29,8 @@ export {
 
 export const projectReactModule = {
   ...generateMatches('react'),
-  async load({ project, logger }) {
-    logger.info(k.dim(`generating likec4:react/${project.id}`))
+  async load({ project }) {
+    logGenerating('react', project.id)
     return projectCode(project.id)
   },
 } satisfies ProjectVirtualModule
@@ -37,9 +38,9 @@ export const projectReactModule = {
 export const singleProjectReactModule = {
   id: 'likec4:react',
   virtualId: 'likec4:plugin/react.js',
-  async load({ logger, projects }) {
+  async load({ projects }) {
     const project = first(projects)
-    logger.info(k.dim('generating likec4:react for') + ' ' + project.id)
+    logGenerating('react', project.id)
     return projectCode(project.id)
   },
 } satisfies VirtualModule

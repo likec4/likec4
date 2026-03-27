@@ -1,6 +1,7 @@
 import type { LayoutedProjectsView } from '@likec4/core/compute-view'
 import JSON5 from 'json5'
-import { type VirtualModule, k } from './_shared'
+import { logGenerating } from '../logger'
+import type { VirtualModule } from './_shared'
 
 const code = (view: LayoutedProjectsView) => `
 import { atom, useStore } from 'likec4/vite-plugin/internal'
@@ -35,11 +36,11 @@ export function useLikeC4ProjectsOverview() {
 export const projectsOverviewModule = {
   id: 'likec4:projects-overview',
   virtualId: 'likec4:plugin/projects-overview.js',
-  async load({ logger, projects, likec4 }) {
+  async load({ projects, likec4 }) {
     if (projects.length < 2) {
       return noProjects()
     }
-    logger.info(k.dim('generating likec4:projects-overview'))
+    logGenerating('projects-overview')
     const view = await likec4.projectsOverview()
     return code(view)
   },

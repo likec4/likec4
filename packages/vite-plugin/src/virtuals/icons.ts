@@ -3,6 +3,7 @@ import { compareNatural } from '@likec4/core/utils'
 import { filter, isTruthy, pipe, sort, unique } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
+import { logGenerating } from '../logger'
 import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
@@ -54,14 +55,13 @@ export function IconRenderer({ node, ...props }) {
   }
   return jsx(IconComponent, props)
 }
-export default IconRenderer
 `
 }
 
 export const projectIconsModule = {
   ...generateMatches('icons', '.jsx'),
-  async load({ likec4, project, logger }) {
-    logger.info(k.dim(`generating likec4:icons/${project.id}`))
+  async load({ likec4, project }) {
+    logGenerating('icons', project.id)
     const views = await likec4.views.computedViews(project.id)
     return code(views)
   },
@@ -87,7 +87,7 @@ export const iconsModule = {
   id: 'likec4:icons',
   virtualId: 'likec4:plugin/icons.jsx',
   async load({ projects, logger }) {
-    logger.info(k.dim(`generating likec4:icons`))
+    logGenerating('icons')
 
     const safeProjects = projects.filter(p => {
       if (!SAFE_PROJECT_ID_REGEX.test(p.id)) {
@@ -108,7 +108,9 @@ export const iconsModule = {
         )
         return { idLiteral, pkgLiteral }
       })
-      .map(({ idLiteral, pkgLiteral }) => `${idLiteral}: lazy(async () => await import(${pkgLiteral}))`)
+      .map(({ idLiteral, pkgLiteral }) =>
+        `${idLiteral}: lazy(async () => await import(${pkgLiteral}).then(m => ({ default: m.IconRenderer })))`
+      )
       .join(',\n')
 
     return `
@@ -143,9 +145,7 @@ if (import.meta.hot) {
     }
     const update = md.ProjectIconsRegistry
     if (update) {
-      for (const key of Object.keys(update)) {
-        import.meta.hot.data.$update[key] ??= update[key]
-      }
+      Object.assign(import.meta.hot.data.$update, update)
     } else {
       import.meta.hot.invalidate()
     }

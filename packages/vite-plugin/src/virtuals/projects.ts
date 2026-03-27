@@ -2,7 +2,8 @@ import type { LikeC4ProjectConfig } from '@likec4/config'
 import type { NonEmptyArray } from '@likec4/core'
 import JSON5 from 'json5'
 import { map } from 'remeda'
-import { type VirtualModule, k } from './_shared'
+import { logGenerating } from '../logger'
+import type { VirtualModule } from './_shared'
 
 type ProjectData = {
   id: string
@@ -45,8 +46,8 @@ if (import.meta.hot) {
 export const projectsModule = {
   id: 'likec4:projects',
   virtualId: 'likec4:plugin/projects.js',
-  async load({ logger, projects }) {
-    logger.info(k.dim('generating likec4:projects'))
+  async load({ projects }) {
+    logGenerating('projects')
     return code(map(projects, p => ({
       id: p.id,
       title: p.title,

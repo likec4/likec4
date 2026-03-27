@@ -1,5 +1,6 @@
 import { first } from 'remeda'
-import { type VirtualModule, k } from './_shared'
+import { logGenerating } from '../logger'
+import type { VirtualModule } from './_shared'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 const code = (id: string) => {
@@ -20,9 +21,9 @@ export const projectId = ${projectIdLiteral}
 export const singleProjectModule = {
   id: 'likec4:single-project',
   virtualId: 'likec4:plugin/single-project.js',
-  async load({ logger, projects }) {
+  async load({ projects }) {
     const project = first(projects)
-    logger.info(k.dim('generating likec4:single-project for') + ' ' + project.id)
+    logGenerating('single-project', project.id)
     return code(project.id)
   },
 } satisfies VirtualModule
