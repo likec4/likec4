@@ -41,7 +41,7 @@ npx likec4 validate --json --no-layout --file <edited-file> <project-dir> 2>/dev
 - `--file <path>` — only report errors from this file (can repeat for multiple files)
 - `<project-dir>` — path to the project directory
 
-CLI version must be 1.53 or higher (check with `npx likec4 -v`)
+If workspace already has `likec4` as a dependency, check its version from package.json, make sure it is at least 1.53.0. Pin version `npx likec4@1.53.0 ...` otherwise (use workspace's package manager (pnpm/bun/npx), fallback to `npx`).
 
 Example output:
 
@@ -66,6 +66,8 @@ Example output:
 ```
 
 Broken specification/model in a large project can cascade into lots of errors across all files. Always use `--file` to focus on the files you edited. If `filteredErrors` is 0 but `totalErrors` is high, your files are clean but something else in the project is broken (not your problem). Selfcheck that `filteredFiles` matches the number of files you passed to `--file`.
+
+Full CLI reference → `references/cli.md`
 
 ## LikeC4 Project Configuration
 
@@ -93,7 +95,7 @@ specification {
   // Define kind to use in model, with optional properties and style
   element IDENTIFIER {
     #tag-1 #tag-2 // tags to apply to all elements of this kind
-    title "default title for this kind"
+    title "default title for this kind" // see Properties section below
     technology "default tech for this kind"
     description "default description for this kind"
     notation "legend title for this kind"
@@ -108,7 +110,9 @@ specification {
     technology "default tech for this relationship kind"
     description "default description for this relationship kind"
     style { ... } // default style for this relationship kind
-  } 
+  }
+  // Define custom color
+  color IDENTIFIER #FFFFFF // or rgba(255,255,255,1)
 }
 ```
 
@@ -194,8 +198,14 @@ model {
 
     NESTED_ELEMENTS | RELATIONSHIPS
   }
-  // Extend existing relationship (must have SOURCE and TARGET)
-  extend SOURCE -> TARGET  { 
+  // Extend existing relationship (must match existing relationship identity)
+  // SOURCE and TARGET are always required. If multiple relationships exist between the
+  // same endpoints, include kind and/or title to disambiguate the exact relationship.
+  extend SOURCE -> TARGET  {
+    TAGS                   // additional tags to apply to this relationship
+    PROPERTIES             // additional properties to merge into this relationship, allowed `metadata` and `link` only
+  }
+  extend SOURCE -[REL_KIND]-> TARGET "Relationship title" {
     TAGS                   // additional tags to apply to this relationship
     PROPERTIES             // additional properties to merge into this relationship, allowed `metadata` and `link` only
   }
@@ -206,48 +216,76 @@ Example:
 
 ```likec4
 model {
-  customer = actor "Customer" { description "End user" }
+  customer = actor { 
+    title "Customer" // Example `title` as property inside
+    summary "Consumes Cloud Services"
+    description """
+      User with **active** subscription
+      ... detailed description
+    """
+  }
 
   cloud = system "Cloud" {
     ui = container "Frontend" {
+      technology "React"
       style { 
         shape browser
       }
-      dashboard = app "Dashboard" { technology "React" }
+      metadata { 
+        version "1.0.0"
+        owners ["Name 1", "Name 2"]
+      }
+      link https://github.com/likec4/likec4 "Repository"
+      link ../relative/adr1.md
+      link ../relative/adr2.md
+      
+      dashboard = app "Dashboard" {         
+        icon tech:react
+      }
     }
     backend = container "Backend" {
       api = service "API" { 
         #critical
-
         -[sql]-> db "reads/writes"
       }
-      db = database "DB" { icon tech:postgresql }
+      db = database "DB" {         
+        style { 
+          icon tech:postgresql
+          shape storage
+        }
+      }
     }
-    ui.dashboard -> backend.api "calls" { technology "HTTPS" }
+    ui.dashboard -> backend.api { 
+      title "calls"        // Example `title` as property inside  
+      technology "HTTPS"
+    }
   }
 
   customer -> cloud.ui.dashboard "browses" {
-    navigateTo browse-flow
-    metadata { protocol "HTTPS" }
+    metadata { 
+      protocol "HTTPS"
+    }
   }
 }
 ```
 
-**Element properties:** `title`, `description`, `summary`, `technology`, `metadata`, `style`, `link`
+**Element properties:** `title`, `description`, `summary`, `technology`, `metadata`, `style`, `icon`, `link`. If `description` exceeds 150 characters, add a `summary` with a shorter version (<150 chars) and keep the full details in `description`.
+
 **Relationship properties:** `title`, `description`, `technology`, `metadata`, `style`, `link`, `navigateTo`
 
 ## Property (Quick Reference)
 
-| Category        | Values                                                                                                           |
-| --------------- | ---------------------------------------------------------------------------------------------------------------- |
-| **title**       | String, prefer single line                                                                                       |
-| **description** | String, prefer Markdown                                                                                          |
-| **summary**     | String, short description, prefer Markdown                                                                       |
-| **technology**  | String, no multi-line                                                                                            |
-| **metadata**    | Syntax: `metadata { KEY VALUE }`, where key must be valid identifier and value can be string or array of strings |
-| **link**        | Syntax: `link URL "Optional title"`, may be used several times                                                   |
-| **navigateTo**  | ID of dynamic view to navigate to                                                                                |
-| **style**       | Syntax: `style { ... }`, see Style section below                                                                 |
+| Category        | Values                                                                                                                 |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **title**       | String, single line                                                                                                    |
+| **description** | String, prefer to format with Markdown                                                                                 |
+| **summary**     | String, short description, max 150 characters                                                                          |
+| **technology**  | String, no multi-line                                                                                                  |
+| **style**       | Syntax: `style { ... }`, see Style section below                                                                       |
+| **icon**        | Shortcut for the `style { icon ... }`, takes precedence                                                                |
+| **metadata**    | Syntax: `metadata { KEY VALUE }`, where key must follow identifiers format and value can be string or array of strings |
+| **link**        | Syntax: `link URL "Optional title"`, may be used several times, URL can be relative to the document, title             |
+| **navigateTo**  | ID of dynamic view to navigate to                                                                                      |
 
 ## Style (Quick Reference)
 
@@ -260,30 +298,30 @@ style {
 }
 ```
 
-| style property   | Values                                                                                                        |
-| ---------------- | ------------------------------------------------------------------------------------------------------------- |
-| **color**        | `primary`, `secondary`, `muted`, `slate`, `blue`, `indigo`, `sky`, `red`, `gray`, `green`, `amber`            |
-| **shape**        | `rectangle`, `component`, `person`, `browser`, `mobile`, `cylinder`, `storage`, `queue`, `bucket`, `document` |
-| **border**       | `solid`, `dashed`, `dotted`, `none`                                                                           |
-| **opacity**      | `0%` - `100%`                                                                                                 |
-| **size**         | `xs`, `sm`, `md`, `lg`, `xl`                                                                                  |
-| **padding**      | same as size                                                                                                  |
-| **textSize**     | same as size                                                                                                  |
-| **icon**         | relative path, URL, or from icon pack (`aws:`, `azure:`, `gcp:`, `tech:`, `bootstrap:`)                       |
-| **iconColor**    | same as color                                                                                                 |
-| **iconSize**     | same as size                                                                                                  |
-| **iconPosition** | `top`, `left`, `right`, `bottom`                                                                              |
-| **multiple**     | `true`/`false`                                                                                                |
+| style property   | Values                                                                                                                                 |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **color**        | `primary`, `secondary`, `muted`, `slate`, `blue`, `indigo`, `sky`, `red`, `gray`, `green`, `amber`, or custom color from specification |
+| **shape**        | `rectangle`, `component`, `person`, `browser`, `mobile`, `cylinder`, `storage`, `queue`, `bucket`, `document`                          |
+| **border**       | `solid`, `dashed`, `dotted`, `none`                                                                                                    |
+| **opacity**      | `0%` - `100%`                                                                                                                          |
+| **size**         | `xs`, `sm`, `md`, `lg`, `xl`                                                                                                           |
+| **padding**      | same as size                                                                                                                           |
+| **textSize**     | same as size                                                                                                                           |
+| **icon**         | relative path, URL, or from icon pack (`aws:`, `azure:`, `gcp:`, `tech:`, `bootstrap:`)                                                |
+| **iconColor**    | same as color                                                                                                                          |
+| **iconSize**     | same as size                                                                                                                           |
+| **iconPosition** | `top`, `left`, `right`, `bottom`                                                                                                       |
+| **multiple**     | `true`/`false`                                                                                                                         |
 
-Icon packs are bundled set of icons, referenced by prefix.
+Icon pack is a bundled set of icons, referenced by prefix.
 For example, `icon aws:simple-storage-service` will use `@likec4/icons/aws/simple-storage-service` (scan package to find available icons, use lower-kebab-case).
 
 Relationship style properties:
 
 - `color` (line color): same as element colors
 - `line` (line style): `solid`, `dashed`, `dotted`
-- `head` (arrowhead style): `none`, `normal`, `onormal`, `dot`, `odot`, `diamond`, `odiamond`, `crow`, `open`, `vee`
-- `tail` (arrow tail style): same as head
+- `head` (arrow style on head, i.e to TARGET): `none`, `normal`, `onormal`, `dot`, `odot`, `diamond`, `odiamond`, `crow`, `open`, `vee`
+- `tail` (arrow style on tail, i.e to SOURCE): same as for `head`
 
 ## Deployment (Quick Reference)
 
