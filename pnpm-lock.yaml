@@ -440,7 +440,7 @@ overrides:
   type-fest: ^4.41.0
   turbo: 2.8.17
   sharp: 0.34.5
-  caniuse-lite: ^1.0.30001780
+  caniuse-lite: ^1.0.30001781
   mnemonist: 0.40.3
   flatted: '>=3.4.2'
   h3: '>=1.15.10'
