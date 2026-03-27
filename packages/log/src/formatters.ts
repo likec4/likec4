@@ -143,6 +143,14 @@ export function getAnsiColorFormatter(options?: AnsiColorFormatterOptions): Text
     categoryStyle: 'bold',
     categoryColor: 'cyan',
     category: '.',
+    levelColors: {
+      trace: 'black',
+      debug: 'blue',
+      info: 'green',
+      warning: 'yellow',
+      error: 'red',
+      fatal: 'magenta',
+    },
     ...options,
     format: (values) => {
       return _format(appendErrorToMessage(values, true))
