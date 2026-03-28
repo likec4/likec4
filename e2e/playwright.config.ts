@@ -60,6 +60,7 @@ export default defineConfig({
     command: 'pnpm likec4 start --verbose --no-react-hmr --no-build-webcomponent',
     port: 5173,
     stdout: 'pipe',
+    timeout: 60 * 1000,
     env: {
       NODE_ENV: 'production',
     },

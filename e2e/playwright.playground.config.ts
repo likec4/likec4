@@ -34,6 +34,7 @@ export default defineConfig({
     command: 'pnpm --filter @likec4/playground dev -- --port 5174',
     port: 5174,
     stdout: 'pipe',
+    timeout: 60 * 1000,
     reuseExistingServer: !isCI,
   },
 })
