@@ -22,7 +22,7 @@ catalog:
   playwright: 1.58.2
   tsdown: ^0.20.3
   tsx: 4.21.0
-  turbo: 2.8.17
+  turbo: 2.8.21
   typescript: 5.9.3
   wireit: 0.14.12
   zx: 8.8.5
