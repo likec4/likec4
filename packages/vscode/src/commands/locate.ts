@@ -4,7 +4,7 @@ import * as vscode from 'vscode'
 import { commands } from '../meta'
 import { useDiagramPanel } from '../panel/useDiagramPanel'
 import { useExtensionLogger } from '../useExtensionLogger'
-import { findSourceViewColumn } from '../utils'
+import { showEditorNextToPreview } from '../utils'
 import type { RpcClient } from './types'
 
 export interface LocateCommandDeps {
@@ -24,12 +24,11 @@ export function registerLocateCommand({ sendTelemetry, rpc }: LocateCommandDeps)
     }
     const location = rpc.client.protocol2CodeConverter.asLocation(loc)
     const preview = useDiagramPanel()
-    const viewColumn = findSourceViewColumn(toValue(preview.panelViewColumn))
-    const editor = await vscode.window.showTextDocument(location.uri, {
-      viewColumn,
-      selection: location.range,
-      preserveFocus: true,
+    await showEditorNextToPreview({
+      previewColumn: toValue(preview.panelViewColumn),
+      location,
+      preserveFocus: false,
+      reveal: vscode.TextEditorRevealType.InCenterIfOutsideViewport,
     })
-    editor.revealRange(location.range)
   })
 }

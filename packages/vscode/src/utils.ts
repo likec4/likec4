@@ -49,7 +49,7 @@ export function isLikeC4Source(path: string): boolean {
  * Prefers an existing visible editor in a different group, otherwise picks a column
  * on the opposite side from the preview.
  */
-export function findSourceViewColumn(previewColumn: vscode.ViewColumn | null | undefined): vscode.ViewColumn {
+export function findViewColumnForEditor(previewColumn: vscode.ViewColumn | null): vscode.ViewColumn {
   if (previewColumn != null) {
     for (const editor of vscode.window.visibleTextEditors) {
       if (editor.viewColumn != null && editor.viewColumn !== previewColumn) {
@@ -59,4 +59,54 @@ export function findSourceViewColumn(previewColumn: vscode.ViewColumn | null | u
     return previewColumn === vscode.ViewColumn.One ? vscode.ViewColumn.Two : vscode.ViewColumn.One
   }
   return vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
+}
+
+export async function showEditorNextToPreview(opts: {
+  /**
+   * The column of the preview panel, if known
+   */
+  previewColumn: vscode.ViewColumn | null
+  /**
+   * The location to open the editor at
+   */
+  location: vscode.Location
+  /**
+   * Whether to preserve the current focus
+   * @default true
+   */
+  preserveFocus?: boolean
+  /**
+   * Whether to show the editor
+   * @default true
+   */
+  applySelection?: boolean
+  /**
+   * Whether to reveal the selection in the editor
+   * @default true
+   */
+  reveal?: boolean | vscode.TextEditorRevealType
+}): Promise<vscode.TextEditor> {
+  const {
+    previewColumn,
+    location,
+    preserveFocus = true,
+    applySelection = true,
+    reveal = true,
+  } = opts
+  const viewColumn = findViewColumnForEditor(previewColumn)
+
+  const editor = await vscode.window.showTextDocument(location.uri, {
+    viewColumn,
+    preserveFocus,
+    ...applySelection ? { selection: location.range } : {},
+  })
+
+  if (reveal !== false) {
+    editor.revealRange(
+      location.range,
+      reveal === true ? vscode.TextEditorRevealType.Default : reveal,
+    )
+  }
+
+  return editor
 }

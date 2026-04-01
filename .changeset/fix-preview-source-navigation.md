@@ -2,4 +2,4 @@
 'likec4-vscode': patch
 ---
 
-Open source files in a different tab group from the preview panel and preserve focus on the diagram
+Improve navigation from preview panel to sources by showing editor in a different tab group (deterministically).
