@@ -12,7 +12,7 @@ catalog:
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
   "@types/node": ~22.19.15
   "@types/pako": ^2.0.4
-  "@typescript/native-preview": 7.0.0-dev.20260323.1
+  "@typescript/native-preview": 7.0.0-dev.20260329.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
@@ -22,7 +22,7 @@ catalog:
   playwright: 1.58.2
   tsdown: ^0.20.3
   tsx: 4.21.0
-  turbo: 2.8.17
+  turbo: 2.8.21
   typescript: 5.9.3
   wireit: 0.14.12
   zx: 8.8.5
@@ -49,9 +49,9 @@ catalogs:
     "@cloudflare/vite-plugin": ~1.30.0
     wrangler: ~4.76.0
   css:
-    "@pandacss/dev": ^1.9.0
-    "@pandacss/preset-panda": ^1.9.0
-    "@pandacss/types": ^1.9.0
+    "@pandacss/dev": ^1.9.1
+    "@pandacss/preset-panda": ^1.9.1
+    "@pandacss/types": ^1.9.1
     "@tailwindcss/vite": ^4.1.18
     postcss: 8.5.8
     tailwindcss: ^4.1.18
@@ -66,7 +66,7 @@ catalogs:
     chokidar: ^5.0.0
     fdir: 6.4.0
     nano-spawn: ^2.0.0
-    picomatch: ^4.0.3
+    picomatch: ^4.0.4
     std-env: ^3.10.0
     type-fest: ^4.41.0
     zod: ^3.25.76
@@ -75,7 +75,7 @@ catalogs:
     "@hono/node-server": ^1.19.11
     "@hono/oauth-providers": ^0.8.5
     "@hono/zod-validator": ^0.7.6
-    hono: ^4.12.8
+    hono: ^4.12.9
     hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
@@ -119,7 +119,7 @@ catalogs:
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
   utils:
-    "@logtape/logtape": ^2.0.4
+    "@logtape/logtape": ^2.0.5
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
@@ -177,8 +177,8 @@ catalogs:
     vscode-uri: 3.1.0
   xstate:
     "@xstate/react": 6.1.0
-    "@xstate/store": 3.17.0
-    xstate: 5.28.0
+    "@xstate/store": 3.17.1
+    xstate: 5.30.0
   xyflow:
     "@xyflow/react": 12.10.1
     "@xyflow/system": 0.0.75
