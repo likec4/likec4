@@ -52,7 +52,6 @@ function normalizeElementStyles(element: ElementData, specs: Record<string, Elem
       const key of [
         'description',
         'technology',
-        'title',
         'tags',
         'summary',
       ] satisfies (keyof ElementSpecificationData)[]
