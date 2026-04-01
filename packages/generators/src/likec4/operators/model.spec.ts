@@ -102,6 +102,29 @@ describe('model', () => {
     `)
   })
 
+  it('should print element name even when it matches the spec default', () => {
+    expectModel(
+      builder.model(({ system }, _) =>
+        _(
+          system('new-test-system', {
+            title: 'system',
+            description: {
+              md: 'This is a system in the new model',
+            },
+          }),
+        )
+      ),
+    ).toMatchInlineSnapshot(`
+      "model {
+        new-test-system = system 'system' {
+          description '''
+            This is a system in the new model
+          '''
+        }
+      }"
+    `)
+  })
+
   it('should print elements tree', () => {
     expectModel(
       builder.model(({ system, component }, _) =>
