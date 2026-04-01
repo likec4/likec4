@@ -150,7 +150,9 @@ export const navigating = machine.createStateConfig({
 
           const nextCtx = {
             ...mergeXYNodesEdges(context, eventWithXYData),
-            dynamicViewVariant: fromHistory.dynamicViewVariant ?? context.dynamicViewVariant,
+            dynamicViewVariant: fromHistory.dynamicViewVariant
+              ?? (eventWithXYData.view._type === 'dynamic' ? eventWithXYData.view.variant : undefined)
+              ?? context.dynamicViewVariant,
             viewportChangedManually: viewportBefore?.wasChangedManually ?? fromHistory.viewportChangedManually,
             viewport: viewportBefore?.value ?? fromHistory.viewport,
             viewportBefore: null,
@@ -257,6 +259,9 @@ export const navigating = machine.createStateConfig({
           ...mergeXYNodesEdges(context, eventWithXYData),
           viewportChangedManually: false,
           lastOnNavigate: null,
+          dynamicViewVariant: eventWithXYData.view._type === 'dynamic'
+            ? eventWithXYData.view.variant
+            : context.dynamicViewVariant,
           navigationHistory: {
             currentIndex: updatedHistory.length - 1,
             history: updatedHistory,
