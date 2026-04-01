@@ -12,7 +12,7 @@ catalog:
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
   "@types/node": ~22.19.15
   "@types/pako": ^2.0.4
-  "@typescript/native-preview": 7.0.0-dev.20260323.1
+  "@typescript/native-preview": 7.0.0-dev.20260329.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
