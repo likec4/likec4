@@ -177,8 +177,8 @@ catalogs:
     vscode-uri: 3.1.0
   xstate:
     "@xstate/react": 6.1.0
-    "@xstate/store": 3.17.0
-    xstate: 5.28.0
+    "@xstate/store": 3.17.1
+    xstate: 5.30.0
   xyflow:
     "@xyflow/react": 12.10.1
     "@xyflow/system": 0.0.75
