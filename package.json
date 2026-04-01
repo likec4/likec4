@@ -86,7 +86,7 @@
       "mnemonist": "0.40.3",
       "flatted": ">=3.4.2",
       "h3": ">=1.15.10",
-      "undici": ">=7.24.0",
+      "undici": ">=7.24.6",
       "devalue": ">=5.6.4",
       "svgo": ">=4.0.1",
       "express-rate-limit": ">=8.2.2",

@@ -444,7 +444,7 @@ overrides:
   mnemonist: 0.40.3
   flatted: '>=3.4.2'
   h3: '>=1.15.10'
-  undici: '>=7.24.0'
+  undici: '>=7.24.6'
   devalue: '>=5.6.4'
   svgo: '>=4.0.1'
   express-rate-limit: '>=8.2.2'
@@ -9081,8 +9081,8 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
-  undici@7.24.5:
-    resolution: {integrity: sha512-3IWdCpjgxp15CbJnsi/Y9TCDE7HWVN19j1hmzVhoAkY/+CJx449tVxT5wZc1Gwg8J+P0LWvzlBzxYRnHJ+1i7Q==}
+  undici@7.24.6:
+    resolution: {integrity: sha512-Xi4agocCbRzt0yYMZGMA6ApD7gvtUFaxm4ZmeacWI4cZxaF6C+8I8QfofC20NAePiB/IcvZmzkJ7XPa471AEtA==}
     engines: {node: '>=20.18.1'}
 
   unenv@2.0.0-rc.24:
@@ -15930,7 +15930,7 @@ snapshots:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.34.5
-      undici: 7.24.5
+      undici: 7.24.6
       workerd: 1.20260305.0
       ws: 8.18.0
       youch: 4.1.0-beta.10
@@ -15942,7 +15942,7 @@ snapshots:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.34.5
-      undici: 7.24.5
+      undici: 7.24.6
       workerd: 1.20260317.1
       ws: 8.18.0
       youch: 4.1.0-beta.10
@@ -17689,7 +17689,7 @@ snapshots:
 
   undici-types@6.21.0: {}
 
-  undici@7.24.5: {}
+  undici@7.24.6: {}
 
   unenv@2.0.0-rc.24:
     dependencies:
