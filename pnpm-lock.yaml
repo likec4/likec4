@@ -399,11 +399,11 @@ catalogs:
       specifier: 6.1.0
       version: 6.1.0
     '@xstate/store':
-      specifier: 3.17.0
-      version: 3.17.0
+      specifier: 3.17.1
+      version: 3.17.1
     xstate:
-      specifier: 5.28.0
-      version: 5.28.0
+      specifier: 5.30.0
+      version: 5.30.0
   xyflow:
     '@xyflow/react':
       specifier: 12.10.1
@@ -702,7 +702,7 @@ importers:
         version: 25.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@statelyai/inspect':
         specifier: ^0.4.0
-        version: 0.4.0(ws@8.18.1)(xstate@5.28.0)
+        version: 0.4.0(ws@8.18.1)(xstate@5.30.0)
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.40.0(react@19.2.4)
@@ -732,7 +732,7 @@ importers:
         version: 5.2.0(vite@7.3.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.28.0)
+        version: 6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.30.0)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -858,7 +858,7 @@ importers:
         version: 4.76.0
       xstate:
         specifier: catalog:xstate
-        version: 5.28.0
+        version: 5.30.0
       zod:
         specifier: catalog:externals
         version: 3.25.76
@@ -1152,10 +1152,10 @@ importers:
         version: 25.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.28.0)
+        version: 6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.30.0)
       '@xstate/store':
         specifier: catalog:xstate
-        version: 3.17.0(react@19.2.4)
+        version: 3.17.1(react@19.2.4)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1206,7 +1206,7 @@ importers:
         version: 4.41.0
       xstate:
         specifier: catalog:xstate
-        version: 5.28.0
+        version: 5.30.0
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1219,7 +1219,7 @@ importers:
         version: 1.9.0(typescript@5.9.3)
       '@statelyai/inspect':
         specifier: ^0.4.0
-        version: 0.4.0(ws@8.18.1)(xstate@5.28.0)
+        version: 0.4.0(ws@8.18.1)(xstate@5.30.0)
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.40.0(react@19.2.4)
@@ -1858,10 +1858,10 @@ importers:
         version: 17.0.33
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.28.0)
+        version: 6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.30.0)
       '@xstate/store':
         specifier: catalog:xstate
-        version: 3.17.0(react@19.2.4)
+        version: 3.17.1(react@19.2.4)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2017,7 +2017,7 @@ importers:
         version: 0.14.12
       xstate:
         specifier: catalog:xstate
-        version: 5.28.0
+        version: 5.30.0
       zod:
         specifier: catalog:externals
         version: 3.25.76
@@ -2170,10 +2170,10 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.28.0)
+        version: 6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.30.0)
       '@xstate/store':
         specifier: catalog:xstate
-        version: 3.17.0(react@19.2.4)
+        version: 3.17.1(react@19.2.4)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.10.1(@types/react@19.2.14)(immer@11.1.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -5407,8 +5407,8 @@ packages:
       xstate:
         optional: true
 
-  '@xstate/store@3.17.0':
-    resolution: {integrity: sha512-IITUYhK1e8cqs9NyzmS3Y8cuZq7lz5gWnX9TMHnVNvMVRAGLzNN8vUqnv/v/6jgdo2e9pzmMRSM8rkHPUPg81g==}
+  '@xstate/store@3.17.1':
+    resolution: {integrity: sha512-jwNJ4nXM6WNXhW8IvrWuNqf7sMTBzfRXj2mHoxVkQDLCuZCjQ3xtXeykB4fLkdmWPAjh9dEZAjMAX43IlWq1LA==}
     peerDependencies:
       react: 19.2.4
       solid-js: ^1.7.6
@@ -9724,8 +9724,8 @@ packages:
     resolution: {integrity: sha512-h3Fbisa2nKGPxCpm89Hk33lBLsnaGBvctQopaBSOW/uIs6FTe1ATyAnKFJrzVs9vpGdsTe73WF3V4lIsk4Gacw==}
     engines: {node: '>=18'}
 
-  xstate@5.28.0:
-    resolution: {integrity: sha512-Iaqq6ZrUzqeUtA3hC5LQKZfR8ZLzEFTImMHJM3jWEdVvXWdKvvVLXZEiNQWm3SCA9ZbEou/n5rcsna1wb9t28A==}
+  xstate@5.30.0:
+    resolution: {integrity: sha512-mIzIuMjtYVkqXq9dUzYQoag7b/dF1CBS/yhliuPLfR0FwKPC18HiUivb/crcqY2gknhR8gJEhnppLg6ubQ0gGw==}
 
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
@@ -12682,7 +12682,7 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@statelyai/inspect@0.4.0(ws@8.18.1)(xstate@5.28.0)':
+  '@statelyai/inspect@0.4.0(ws@8.18.1)(xstate@5.30.0)':
     dependencies:
       fast-safe-stringify: 2.1.1
       isomorphic-ws: 5.0.0(ws@8.18.1)
@@ -12690,7 +12690,7 @@ snapshots:
       safe-stable-stringify: 2.5.0
       superjson: 1.13.3
       uuid: 9.0.1
-      xstate: 5.28.0
+      xstate: 5.30.0
     transitivePeerDependencies:
       - ws
 
@@ -13270,17 +13270,17 @@ snapshots:
 
   '@webgpu/types@0.1.21': {}
 
-  '@xstate/react@6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.28.0)':
+  '@xstate/react@6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.30.0)':
     dependencies:
       react: 19.2.4
       use-isomorphic-layout-effect: 1.2.1(@types/react@19.2.14)(react@19.2.4)
       use-sync-external-store: 1.5.0(react@19.2.4)
     optionalDependencies:
-      xstate: 5.28.0
+      xstate: 5.30.0
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xstate/store@3.17.0(react@19.2.4)':
+  '@xstate/store@3.17.1(react@19.2.4)':
     optionalDependencies:
       react: 19.2.4
 
@@ -18252,7 +18252,7 @@ snapshots:
     dependencies:
       is-wsl: 3.1.0
 
-  xstate@5.28.0: {}
+  xstate@5.30.0: {}
 
   xtend@4.0.2: {}
 
