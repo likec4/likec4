@@ -359,8 +359,8 @@ catalogs:
       specifier: 1.6.3
       version: 1.6.3
     unstorage:
-      specifier: ^1.17.4
-      version: 1.17.4
+      specifier: ^1.17.5
+      version: 1.17.5
   vite:
     '@vitejs/plugin-react':
       specifier: ^5.2.0
@@ -1451,7 +1451,7 @@ importers:
         version: 1.6.3
       unstorage:
         specifier: catalog:utils
-        version: 1.17.4
+        version: 1.17.5
       vscode-jsonrpc:
         specifier: 8.2.1
         version: 8.2.1
@@ -7353,8 +7353,8 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
-  lru-cache@11.2.4:
-    resolution: {integrity: sha512-B5Y16Jr9LB9dHVkh6ZevG+vAbOsNOYCX+sXvFWFu7B3Iz5mijW3zdbMyhsh8ANd2mSWBYdJgnqi+mL7/LrOPYg==}
+  lru-cache@11.2.7:
+    resolution: {integrity: sha512-aY/R+aEsRelme17KGQa/1ZSIpLpNYYrhcrepKTZgE+W3WM16YMCaPwOHLHsmopZHELU0Ojin1lPVxKR0MihncA==}
     engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
@@ -9162,8 +9162,8 @@ packages:
       synckit:
         optional: true
 
-  unstorage@1.17.4:
-    resolution: {integrity: sha512-fHK0yNg38tBiJKp/Vgsq4j0JEsCmgqH58HAn707S7zGkArbZsVr/CwINoi+nh3h98BRCwKvx1K3Xg9u3VV83sw==}
+  unstorage@1.17.5:
+    resolution: {integrity: sha512-0i3iqvRfx29hkNntHyQvJTpf5W9dQ9ZadSoRU8+xVlhVtT7jAX57fazYO9EHvcRCfBCyi5YRya7XCDOsbTgkPg==}
     peerDependencies:
       '@azure/app-configuration': ^1.8.0
       '@azure/cosmos': ^4.2.0
@@ -13563,7 +13563,7 @@ snapshots:
       ultrahtml: 1.6.0
       unifont: 0.7.3
       unist-util-visit: 5.0.0
-      unstorage: 1.17.4
+      unstorage: 1.17.5
       vfile: 6.0.3
       vite: 6.4.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1)
       vitefu: 1.1.1(vite@6.4.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.7.1))
@@ -15408,7 +15408,7 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
-  lru-cache@11.2.4: {}
+  lru-cache@11.2.7: {}
 
   lru-cache@5.1.1:
     dependencies:
@@ -16432,7 +16432,7 @@ snapshots:
 
   path-scurry@2.0.2:
     dependencies:
-      lru-cache: 11.2.4
+      lru-cache: 11.2.7
       minipass: 7.1.3
 
   path-to-regexp@6.3.0: {}
@@ -17784,13 +17784,13 @@ snapshots:
     dependencies:
       rolldown: 1.0.0-rc.3
 
-  unstorage@1.17.4:
+  unstorage@1.17.5:
     dependencies:
       anymatch: 3.1.3
       chokidar: 5.0.0
       destr: 2.0.5
       h3: 1.15.10
-      lru-cache: 11.2.4
+      lru-cache: 11.2.7
       node-fetch-native: 1.6.7
       ofetch: 1.5.1
       ufo: 1.6.3
