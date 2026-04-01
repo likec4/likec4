@@ -1,40 +1,42 @@
-import type { DiagramView } from '@likec4/core/types'
+import type { DiagramView, LayoutedDynamicView, LayoutedElementView } from '@likec4/core/types'
+import { scalar } from '@likec4/core/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromCallback } from 'xstate'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import { diagramMachine } from './machine'
 
-// Minimal mock views
+// Minimal mock views — use `satisfies` so TypeScript validates the shapes.
+// `scalar.ViewId()` is required because the `id` field is a branded type.
 const mockElementView = {
-  _type: 'element',
-  _stage: 'layouted',
-  id: 'view:element',
+  _type: 'element' as const,
+  _stage: 'layouted' as const,
+  id: scalar.ViewId('view:element'),
   title: 'Element View',
   description: null,
   tags: null,
   links: null,
-  notation: null,
-  rules: [],
+  hash: 'mock-hash-element',
+  autoLayout: { direction: 'TB' as const },
   nodes: [],
   edges: [],
   bounds: { x: 0, y: 0, width: 800, height: 600 },
-} as unknown as DiagramView
+} satisfies LayoutedElementView
 
 const mockDiagramDynamicView = {
-  _type: 'dynamic',
-  _stage: 'layouted',
-  id: 'view:dynamic-diagram',
+  _type: 'dynamic' as const,
+  _stage: 'layouted' as const,
+  id: scalar.ViewId('view:dynamic-diagram'),
   title: 'Diagram Dynamic View',
   description: null,
   tags: null,
   links: null,
-  notation: null,
-  rules: [],
+  hash: 'mock-hash-diagram',
+  autoLayout: { direction: 'TB' as const },
   nodes: [],
   edges: [],
   bounds: { x: 0, y: 0, width: 800, height: 600 },
-  variant: 'diagram',
+  variant: 'diagram' as const,
   sequenceLayout: {
     actors: [],
     compounds: [],
@@ -42,22 +44,22 @@ const mockDiagramDynamicView = {
     steps: [],
     bounds: { x: 0, y: 0, width: 800, height: 600 },
   },
-} as unknown as DiagramView
+} satisfies LayoutedDynamicView
 
 const mockSequenceDynamicView = {
-  _type: 'dynamic',
-  _stage: 'layouted',
-  id: 'view:dynamic-sequence',
+  _type: 'dynamic' as const,
+  _stage: 'layouted' as const,
+  id: scalar.ViewId('view:dynamic-sequence'),
   title: 'Sequence Dynamic View',
   description: null,
   tags: null,
   links: null,
-  notation: null,
-  rules: [],
+  hash: 'mock-hash-sequence',
+  autoLayout: { direction: 'TB' as const },
   nodes: [],
   edges: [],
   bounds: { x: 0, y: 0, width: 800, height: 600 },
-  variant: 'sequence',
+  variant: 'sequence' as const,
   sequenceLayout: {
     actors: [],
     compounds: [],
@@ -65,8 +67,10 @@ const mockSequenceDynamicView = {
     steps: [],
     bounds: { x: 0, y: 0, width: 800, height: 600 },
   },
-} as unknown as DiagramView
+} satisfies LayoutedDynamicView
 
+// XYStore and XYFlow are intentional partial stubs: only the methods the machine
+// actually calls are implemented, so satisfies cannot be used here.
 const mockXYStore = {
   getState: () => ({
     width: 800,
