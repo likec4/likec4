@@ -2,14 +2,13 @@ import { loggable, wrapError } from '@likec4/log'
 import {
   executeCommand,
   toValue,
-  useActiveTextEditor,
 } from 'reactive-vscode'
 import vscode from 'vscode'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
 import { useMessenger } from '../useMessenger'
 import { useRpc } from '../useRpc'
-import { performanceMark } from '../utils'
+import { findSourceViewColumn, performanceMark } from '../utils'
 import { useDiagramPanel } from './useDiagramPanel'
 
 export function activateMessenger() {
@@ -111,7 +110,6 @@ export function activateMessenger() {
   //   preview.open(viewId, projectId)
   // })
 
-  const activeTextEditor = useActiveTextEditor()
   messenger.handleViewChange(async ({ projectId, viewId, change }, sender) => {
     try {
       logger.debug`request ${change.op} of ${viewId} in project ${projectId}`
@@ -133,13 +131,12 @@ export function activateMessenger() {
         return result
       }
       const location = rpc.client.protocol2CodeConverter.asLocation(loc)
-      let viewColumn = activeTextEditor.value?.viewColumn ?? vscode.ViewColumn.One
+      const viewColumn = findSourceViewColumn(toValue(preview.panelViewColumn))
       const selection = location.range
-      const preserveFocus = viewColumn === vscode.ViewColumn.Beside
       const editor = await vscode.window.showTextDocument(location.uri, {
         viewColumn,
         selection,
-        preserveFocus,
+        preserveFocus: true,
       })
       await vscode.workspace.save(location.uri)
       editor.revealRange(selection)

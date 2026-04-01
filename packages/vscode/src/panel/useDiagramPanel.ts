@@ -258,6 +258,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
     viewId: readonly(state.viewId),
     projectId: readonly(state.projectId),
     visible: readonly(state.visible),
+    panelViewColumn: computed(() => state.panel?.viewColumn ?? null),
     deserialize,
     getLastClickedElement: async () => {
       if (state.participant) {
