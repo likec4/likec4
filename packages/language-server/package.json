@@ -61,6 +61,14 @@
         "default": "./dist/likec4lib.mjs"
       }
     },
+    "./icons": {
+      "sources": "./src/icons.ts",
+      "default": {
+        "types": "./dist/icons.d.mts",
+        "import": "./dist/icons.mjs",
+        "default": "./dist/icons.mjs"
+      }
+    },
     "./browser-worker": {
       "sources": "./src/browser/worker.ts",
       "default": {

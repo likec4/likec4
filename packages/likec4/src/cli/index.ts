@@ -8,10 +8,10 @@ import {
   getConsoleSink,
   loggable,
 } from '@likec4/log'
-import { isCI, isDevelopment, isTest } from 'std-env'
 import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
 import { clamp, pipe } from 'remeda'
+import { isCI, isDevelopment, isTest } from 'std-env'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
@@ -21,6 +21,7 @@ import checkUpdateCmd, { notifyAvailableUpdate } from './check-update'
 import codegenCmd from './codegen'
 import exportCmd from './export'
 import formatCmd from './format'
+import listIconsCmd from './list-icons'
 import lspCmd from './lsp'
 import mcpCmd from './mcp'
 import { logLevel, verbose, verboseLogLevel } from './options'
@@ -70,6 +71,7 @@ async function main() {
     previewCmd,
     syncCmd,
     validateCmd,
+    listIconsCmd,
     mcpCmd,
     lspCmd,
     checkUpdateCmd,
