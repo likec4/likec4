@@ -4,7 +4,8 @@
  * (CodeQL: js/bad-code-sanitization, CWE-94 / CWE-116).
  *
  * We avoid rewriting generic backslashes here so valid JSON escape sequences from
- * JSON.stringify stay intact.
+ * JSON.stringify stay intact. Script breakouts use replaceAll; replacements encode
+ * backslash as U+005C so we do not double-escape JSON output.
  */
 function looksLikeJsonStringifyOutput(s: string): boolean {
   if (s.length === 0) {
@@ -33,9 +34,9 @@ export function hardenJsonStringLiteralForEmbeddedScript(jsonStringified: string
     )
   }
   return jsonStringified
-    .replace(/</g, '\\u003C')
-    .replace(/>/g, '\\u003E')
-    .replace(/\//g, '\\u002F')
-    .replace(/\u2028/g, '\\u2028')
-    .replace(/\u2029/g, '\\u2029')
+    .replaceAll('<', '\u005Cu003C')
+    .replaceAll('>', '\u005Cu003E')
+    .replaceAll('/', '\u005Cu002F')
+    .replaceAll('\u2028', '\u005C' + 'u2028')
+    .replaceAll('\u2029', '\u005C' + 'u2029')
 }

@@ -352,7 +352,7 @@ function _merge(target: Module<any>, source?: Module<any>): Module<unknown> {
       if (value2 === undefined) {
         continue
       }
-      const ownOnTarget = Object.prototype.hasOwnProperty.call(target, key)
+      const ownOnTarget = Object.hasOwn(target, key)
       const value1 = target[key]
       if (
         ownOnTarget &&

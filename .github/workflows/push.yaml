@@ -17,8 +17,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
   cancel-in-progress: true
 
+# Caller must allow actions: write so reusable checks jobs can upload/download artifacts (GitHub caps token to caller permissions).
 permissions:
   contents: read
+  actions: write
 
 jobs:
   checks:
