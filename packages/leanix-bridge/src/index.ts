@@ -35,6 +35,7 @@ export {
   getFactSheetType,
   getRelationType,
   mergeWithDefault,
+  parseLeanixMappingInput,
 } from './mapping'
 export type { LeanixMappingConfig } from './mapping'
 
