@@ -76,8 +76,8 @@ export async function showEditorNextToPreview(opts: {
    */
   preserveFocus?: boolean
   /**
-   * Whether to show the editor
-   * @default true
+   * Whether to set the selection to the location's range
+   * `@default` true
    */
   applySelection?: boolean
   /**
