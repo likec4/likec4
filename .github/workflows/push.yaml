@@ -7,15 +7,19 @@ on:
       - synchronize
   push:
     tags-ignore:
-      - "**"
+      - '**'
     branches-ignore:
-      - "main"
-      - "changeset-release/*"
-      - "releases/*"
+      - 'main'
+      - 'changeset-release/*'
+      - 'releases/*'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: write
 
 jobs:
   checks:

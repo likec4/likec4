@@ -27,7 +27,8 @@ jobs:
     runs-on: ubuntu-24.04-arm
     outputs:
       allowed: ${{ steps.perm.outputs.allowed }}
-      ref: ${{ steps.refs.outputs.head_ref }}
+      # Immutable commit from the API (avoids TOCTOU vs refs/pull/N/head).
+      head_sha: ${{ steps.refs.outputs.head_sha }}
     steps:
       - name: Check commenter has write access
         id: perm
@@ -56,7 +57,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = context.payload.issue.number
-            core.setOutput('head_ref', `refs/pull/${prNumber}/head`)
+            const { owner, repo } = context.repo
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: prNumber,
+            })
+            core.setOutput('head_sha', pr.head.sha)
 
   preview-playground:
     needs: check-write-access
@@ -64,7 +71,7 @@ jobs:
     if: ${{ needs.check-write-access.outputs.allowed == 'true' && (contains(github.event.comment.body, '/preview playground') || contains(github.event.comment.body, '/playground')) }}
     runs-on: ubuntu-24.04-arm
     env:
-      PR_REF: ${{ needs.check-write-access.outputs.ref }}
+      PR_HEAD_SHA: ${{ needs.check-write-access.outputs.head_sha }}
       CLOUDFLARE_ENV: production
     steps:
       - name: start deployment
@@ -74,12 +81,13 @@ jobs:
           step: start
           token: ${{ secrets.GITHUB_TOKEN }}
           env: playground-preview
-          ref: ${{ env.PR_REF }}
+          ref: ${{ env.PR_HEAD_SHA }}
 
       - uses: actions/checkout@v6
         with:
-          ref: ${{ env.PR_REF }}
+          ref: ${{ env.PR_HEAD_SHA }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -129,7 +137,7 @@ jobs:
     if: ${{ needs.check-write-access.outputs.allowed == 'true' && (contains(github.event.comment.body, '/preview docs') || contains(github.event.comment.body, '/docs')) }}
     runs-on: ubuntu-24.04-arm
     env:
-      PR_REF: ${{ needs.check-write-access.outputs.ref }}
+      PR_HEAD_SHA: ${{ needs.check-write-access.outputs.head_sha }}
     steps:
       - name: start deployment
         uses: bobheadxi/deployments@v1
@@ -138,12 +146,13 @@ jobs:
           step: start
           token: ${{ secrets.GITHUB_TOKEN }}
           env: docs-preview
-          ref: ${{ env.PR_REF }}
+          ref: ${{ env.PR_HEAD_SHA }}
 
       - uses: actions/checkout@v6
         with:
-          ref: ${{ env.PR_REF }}
+          ref: ${{ env.PR_HEAD_SHA }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap

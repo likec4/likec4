@@ -3,6 +3,10 @@ name: checks
 on:
   workflow_call:
 
+permissions:
+  contents: read
+  actions: write
+
 env:
   NODE_ENV: production
   CLOUDFLARE_ENV: 'production'
