@@ -133,6 +133,7 @@ PR_*.md
 .review-*.txt
 .commit_msg*.txt
 .gh-pr-*.txt
+.gh-pr-*.md
 bot-reply.md
 
 # Documentos de apoio em docs/ (reviews, planos, refactors, validações — não oficiais)
