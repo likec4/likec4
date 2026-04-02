@@ -74,7 +74,7 @@ Use these when the task is **LeanIX inventory**, **bridge artifacts**, or **Draw
 | Task                                           | Command                                                                  |
 | ---------------------------------------------- | ------------------------------------------------------------------------ |
 | Manifest + LeanIX dry-run + report             | `bunx likec4 gen leanix dry-run -o out/bridge [project-dir]`             |
-| Sync workflow (review / apply)                 | `bunx likec4 sync leanix --dry-run -o out/bridge` / `--apply`            |
+| Sync workflow (review / apply)                 | `bunx likec4 sync leanix --dry-run -o out/bridge [project-dir]` / `bunx likec4 sync leanix --apply -o out/bridge [project-dir]` |
 | Draw.io with `likec4Id`, `bridgeManaged`, etc. | `bunx likec4 export drawio --profile leanix -o ./diagrams [project-dir]` |
 
 Full boundaries, round-trip notes, and MCP vs bridge: **`references/bridge-leanix-drawio.md`**.
