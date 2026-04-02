@@ -4,6 +4,7 @@ import {
   type TextFormatter,
   configureLogger as _configureLogger,
   errorFromLogRecord,
+  getAnsiColorFormatter,
   getConsoleSink,
   getMessageOnlyFormatter,
   getTextFormatter,
@@ -100,7 +101,9 @@ function configureLogger(telemetry?: TelemetryReporter) {
     _configureLogger({
       reset: true,
       sinks: {
-        console: getConsoleSink(),
+        console: getConsoleSink({
+          formatter: getAnsiColorFormatter(),
+        }),
         vscode: getOutputChannelSink(),
         ...(telemetry ? { telemetry: getTelemetrySink(telemetry) } : {}),
       },
@@ -109,7 +112,7 @@ function configureLogger(telemetry?: TelemetryReporter) {
         {
           category: 'likec4',
           sinks: ['console', 'vscode'].concat(telemetry ? ['telemetry'] : []),
-          lowestLevel: 'debug',
+          lowestLevel: 'trace',
         },
       ],
     })

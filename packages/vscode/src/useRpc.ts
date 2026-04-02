@@ -2,6 +2,7 @@ import {
   BuildDocuments,
   ChangeView,
   DidChangeModelNotification,
+  DidChangeProjectsNotification,
   DidChangeSnapshotNotification,
   DidRequestOpenViewNotification,
   FetchComputedModel,
@@ -54,11 +55,15 @@ export const useRpc = createSingletonComposable(() => {
       return views ?? []
     },
 
-    async onDidChangeModel(cb: () => void) {
+    onDidChangeModel(cb: (params: DidChangeModelNotification.Params) => void) {
       return useDisposable(client.onNotification(DidChangeModelNotification.type, cb))
     },
 
-    async onRequestOpenView(cb: (params: DidRequestOpenViewNotification.Params) => void) {
+    onDidChangeProjects(cb: () => void) {
+      return useDisposable(client.onNotification(DidChangeProjectsNotification.type, cb))
+    },
+
+    onRequestOpenView(cb: (params: DidRequestOpenViewNotification.Params) => void) {
       return useDisposable(client.onNotification(DidRequestOpenViewNotification.type, cb))
     },
 
