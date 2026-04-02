@@ -15,13 +15,11 @@ on:
   schedule:
     # Run every day at 8am
     - cron: '0 8 * * *'
-  # Manual run from Actions tab (useful on forks to validate fixes before upstream PR).
+  # Manual run from Actions tab.
   workflow_dispatch:
 
 jobs:
   analyze:
-    # Upstream org only originally; include contributor fork for same CodeQL signal as likec4/likec4.
-    if: ${{ github.repository == 'likec4/likec4' || github.repository == 'sraphaz/likec4' }}
     name: Analyze
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
