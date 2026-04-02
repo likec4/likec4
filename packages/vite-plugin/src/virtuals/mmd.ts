@@ -2,6 +2,7 @@ import type { LikeC4Model } from '@likec4/core/model'
 import { generateMermaid } from '@likec4/generators'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import { type ProjectVirtualModule, generateCombinedProjects, generateMatches, k } from './_shared'
+import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 function code(model: LikeC4Model.Computed) {
   const out = new CompositeGeneratorNode()
@@ -24,8 +25,8 @@ function code(model: LikeC4Model.Computed) {
             [...model.views()],
             view =>
               expandToNode`
-              case ${JSON.stringify(view.id)}: {
-                return ${JSON.stringify(generateMermaid(view))}
+              case ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(view.id))}: {
+                return ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(generateMermaid(view)))}
               }
             `,
             {

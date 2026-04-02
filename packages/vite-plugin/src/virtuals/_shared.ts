@@ -5,6 +5,7 @@ import type { URI } from 'langium'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
 import type { ViteLogger } from '../logger'
+import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 export { k }
 
@@ -58,26 +59,6 @@ export function generateMatches(moduleId: string, extension = '.js') {
   }
 }
 
-// Escape potentially dangerous characters for safe code generation
-const charMap: Record<string, string> = {
-  '<': '\\u003C',
-  '>': '\\u003E',
-  '/': '\\u002F',
-  '\\': '\\\\',
-  '\b': '\\b',
-  '\f': '\\f',
-  '\n': '\\n',
-  '\r': '\\r',
-  '\t': '\\t',
-  '\0': '\\0',
-  '\u2028': '\\u2028',
-  '\u2029': '\\u2029',
-}
-function escapeUnsafeChars(str: string): string {
-  // oxlint-disable-next-line no-control-regex
-  return str.replace(/[<>\b\f\n\r\t\0\u2028\u2029\\]/g, x => charMap[x]!)
-}
-
 export function generateCombinedProjects(moduleId: string, fnName: string): VirtualModule {
   return {
     id: `likec4:${moduleId}`,
@@ -86,10 +67,11 @@ export function generateCombinedProjects(moduleId: string, fnName: string): Virt
       logger.info(k.dim(`generating likec4:${moduleId}`))
 
       const cases = projects.map(({ id }) => {
-        const pkg = escapeUnsafeChars(
+        const idLiteral = hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(id))
+        const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
           JSON.stringify(joinURL(`likec4:${moduleId}`, id)),
         )
-        return `${JSON.stringify(id)}: () => import(${pkg})`
+        return `${idLiteral}: () => import(${pkgLiteral})`
       })
 
       return `

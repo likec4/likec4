@@ -36,4 +36,30 @@ describe('hardenJsonStringLiteralForEmbeddedScript', () => {
     expect(out).toMatch(/\\u2028/)
     expect(out).toMatch(/\\u2029/)
   })
+
+  it('rejects non-string input', () => {
+    expect(() => hardenJsonStringLiteralForEmbeddedScript(1 as unknown as string)).toThrowError(
+      /hardenJsonStringLiteralForEmbeddedScript: expected JSON\.stringify\(\.\.\.\) output as a string/,
+    )
+  })
+
+  it('rejects strings that are not JSON.stringify-shaped output', () => {
+    expect(() => hardenJsonStringLiteralForEmbeddedScript('not-a-json-literal')).toThrowError(
+      /hardenJsonStringLiteralForEmbeddedScript: expected JSON\.stringify/,
+    )
+  })
+
+  it('accepts JSON.stringify of object and array roots', () => {
+    const obj = JSON.stringify({ a: 1 })
+    expect(hardenJsonStringLiteralForEmbeddedScript(obj)).toBe(obj)
+    const arr = JSON.stringify([1, 2])
+    expect(hardenJsonStringLiteralForEmbeddedScript(arr)).toBe(arr)
+  })
+
+  it('accepts JSON primitive roots', () => {
+    expect(() => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(true))).not.toThrow()
+    expect(() => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(null))).not.toThrow()
+    expect(() => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(42))).not.toThrow()
+    expect(() => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(-1.5e2))).not.toThrow()
+  })
 })
