@@ -100,7 +100,7 @@ export class LikeC4ModelChanges {
           `Failed to apply change ${changeView.change.op} ${changeView.viewId}`,
         ),
       )
-      logger.error(error)
+      logger.warn(error)
       return {
         success: false,
         error,

@@ -2,14 +2,13 @@ import { loggable, wrapError } from '@likec4/log'
 import {
   executeCommand,
   toValue,
-  useActiveTextEditor,
 } from 'reactive-vscode'
 import vscode from 'vscode'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
 import { useMessenger } from '../useMessenger'
 import { useRpc } from '../useRpc'
-import { performanceMark } from '../utils'
+import { performanceMark, showEditorNextToPreview } from '../utils'
 import { useDiagramPanel } from './useDiagramPanel'
 
 export function activateMessenger() {
@@ -23,13 +22,14 @@ export function activateMessenger() {
 
   messenger.handleFetchComputedModel(async ({ projectId }) => {
     const t0 = performanceMark()
+    const req = 'fetchComputedModel'
     try {
       const { model } = await rpc.fetchComputedModel(projectId)
       if (model) {
-        logger.debug(`request {req} of {projectId} in ${t0.pretty}`, { req: 'fetchComputedModel', projectId })
+        logger.debug(`{req} of {projectId} in ${t0.pretty}`, { req, projectId })
       } else {
         logger.warn(`No data returned in request {req} for {projectId} in ${t0.pretty}`, {
-          req: 'fetchComputedModel',
+          req,
           projectId,
         })
       }
@@ -38,8 +38,8 @@ export function activateMessenger() {
         error: null,
       }
     } catch (err) {
-      logger.warn(`request {req} of {projectId} failed after ${t0.pretty}`, {
-        req: 'fetchComputedModel',
+      logger.warn(`{req} of {projectId} failed after ${t0.pretty}`, {
+        req,
         projectId,
         err,
       })
@@ -54,13 +54,14 @@ export function activateMessenger() {
 
   messenger.handleFetchLayoutedView(async (params) => {
     const t0 = performanceMark()
+    const req = 'layoutView'
     const { viewId, layoutType = 'manual' } = params
     try {
       const projectId = params.projectId ?? toValue(preview.projectId) ?? 'default'
       const result = await rpc.layoutView({ viewId, projectId, layoutType })
       if (!result) {
         logger.warn(
-          `No view {viewId} can be found or layouted in {projectId} ${t0.pretty}`,
+          `no view {viewId} found (or layout failed) in {projectId} ${t0.pretty}`,
           { viewId, projectId },
         )
         return {
@@ -71,7 +72,7 @@ export function activateMessenger() {
       let view = result.diagram
       logger.debug(
         `{req} of {viewId} in {projectId} (requested: {layoutType}, actual: {viewlayout}) in ${t0.pretty}`,
-        { req: 'layoutView', viewId, projectId, layoutType, viewlayout: view._layout },
+        { req, viewId, projectId, layoutType, viewlayout: view._layout },
       )
 
       return {
@@ -91,12 +92,13 @@ export function activateMessenger() {
 
   messenger.handleFetchProjectsOverview(async () => {
     const t0 = performanceMark()
+    const req = 'fetchProjectsOverview'
     try {
       const result = await rpc.fetchProjectsOverview()
-      logger.debug(`request {req} in ${t0.pretty}`, { req: 'fetchProjectsOverview' })
+      logger.debug(`{req} in ${t0.pretty}`, { req })
       return result
     } catch (err) {
-      logger.warn(`request {req} failed after ${t0.pretty}`, { req: 'fetchProjectsOverview', err })
+      logger.warn(`{req} failed after ${t0.pretty}`, { req, err })
       throw err // propagate to client
     }
   })
@@ -105,48 +107,38 @@ export function activateMessenger() {
     await executeCommand(commands.locate, params)
   })
 
-  // Moved to useDiagramPanel
-  // messenger.onWebviewNavigateTo(({ viewId }) => {
-  //   const projectId = toValue(preview.projectId) ?? 'default' as ProjectId
-  //   preview.open(viewId, projectId)
-  // })
-
-  const activeTextEditor = useActiveTextEditor()
-  messenger.handleViewChange(async ({ projectId, viewId, change }, sender) => {
+  messenger.handleViewChange(async ({ projectId, viewId, change }) => {
     try {
       logger.debug`request ${change.op} of ${viewId} in project ${projectId}`
       const result = await rpc.changeView({ viewId, projectId, change })
 
       if (!result.success) {
-        output.error(`changeView failed\n${result.error}`)
+        // direct output to bypass telemetry error
+        output.error(result.error)
         output.show()
         return result
       }
-      const loc = result.location ?? null
-
+      // For save-view-snapshot, we don't need to navigate
       if (change.op === 'reset-manual-layout' || change.op === 'save-view-snapshot') {
-        messenger.sendModelUpdate(sender)
         return { success: true }
       }
+      const loc = result.location ?? null
       if (!loc) {
         logger.warn(`rpc.changeView returned null`)
         return result
       }
       const location = rpc.client.protocol2CodeConverter.asLocation(loc)
-      let viewColumn = activeTextEditor.value?.viewColumn ?? vscode.ViewColumn.One
-      const selection = location.range
-      const preserveFocus = viewColumn === vscode.ViewColumn.Beside
-      const editor = await vscode.window.showTextDocument(location.uri, {
-        viewColumn,
-        selection,
-        preserveFocus,
+      await showEditorNextToPreview({
+        previewColumn: toValue(preview.panelViewColumn),
+        location,
+        preserveFocus: true,
       })
       await vscode.workspace.save(location.uri)
-      editor.revealRange(selection)
       return {
         success: true,
       }
     } catch (e) {
+      // direct output to bypass telemetry error
       const error = loggable(wrapError(e, 'changeView failed:\n'))
       output.error(error)
       output.show()
@@ -159,6 +151,7 @@ export function activateMessenger() {
 
   messenger.handleReadLocalIcon(async (uri) => {
     const t0 = performanceMark()
+    const req = 'readLocalIcon'
     try {
       // Convert file:// URI to vscode.Uri
       const fileUri = vscode.Uri.parse(uri)
@@ -193,10 +186,10 @@ export function activateMessenger() {
 
       const dataUri = `data:${mimeType};base64,${base64data}`
 
-      logger.debug(`request {req} for {uri} in ${t0.pretty}`, { req: 'readLocalIcon', uri })
+      logger.debug(`{req} of {uri} in ${t0.pretty}`, { req, uri })
       return { base64data: dataUri }
     } catch (err) {
-      logger.warn(`request {req} for {uri} failed after ${t0.pretty}`, { req: 'readLocalIcon', uri, err })
+      logger.warn(`{req} of {uri} failed after ${t0.pretty}`, { req, uri, err })
       // Return null for any errors (file not found, permission denied, etc.)
       return { base64data: null }
     }

@@ -1,8 +1,10 @@
 import type { Locate } from '@likec4/language-server/protocol'
-import { useCommand } from 'reactive-vscode'
+import { toValue, useCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
 import { commands } from '../meta'
+import { useDiagramPanel } from '../panel/useDiagramPanel'
 import { useExtensionLogger } from '../useExtensionLogger'
+import { showEditorNextToPreview } from '../utils'
 import type { RpcClient } from './types'
 
 export interface LocateCommandDeps {
@@ -21,12 +23,12 @@ export function registerLocateCommand({ sendTelemetry, rpc }: LocateCommandDeps)
       return
     }
     const location = rpc.client.protocol2CodeConverter.asLocation(loc)
-    let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
-    const editor = await vscode.window.showTextDocument(location.uri, {
-      viewColumn,
-      selection: location.range,
-      preserveFocus: viewColumn === vscode.ViewColumn.Beside,
+    const preview = useDiagramPanel()
+    await showEditorNextToPreview({
+      previewColumn: toValue(preview.panelViewColumn),
+      location,
+      preserveFocus: false,
+      reveal: vscode.TextEditorRevealType.InCenterIfOutsideViewport,
     })
-    editor.revealRange(location.range)
   })
 }
