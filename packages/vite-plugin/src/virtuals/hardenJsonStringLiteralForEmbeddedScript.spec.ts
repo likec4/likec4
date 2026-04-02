@@ -49,6 +49,14 @@ describe('hardenJsonStringLiteralForEmbeddedScript', () => {
     )
   })
 
+  it('rejects malformed strings that start like JSON but are not valid', () => {
+    for (const bad of ['"x";alert(1)//', '"abc', '"abc\\', '{"broken": ', '[1,']) {
+      expect(() => hardenJsonStringLiteralForEmbeddedScript(bad)).toThrowError(
+        /hardenJsonStringLiteralForEmbeddedScript: expected JSON\.stringify/,
+      )
+    }
+  })
+
   it('accepts JSON.stringify of object and array roots', () => {
     const obj = JSON.stringify({ a: 1 })
     expect(hardenJsonStringLiteralForEmbeddedScript(obj)).toBe(obj)

@@ -20,6 +20,8 @@ on:
 
 jobs:
   analyze:
+    # Scheduled runs only on upstream; any fork can still run CodeQL via workflow_dispatch.
+    if: ${{ github.repository == 'likec4/likec4' || github.event_name == 'workflow_dispatch' }}
     name: Analyze
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql

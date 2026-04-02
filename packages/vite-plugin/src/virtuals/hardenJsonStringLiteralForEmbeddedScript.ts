@@ -7,19 +7,16 @@
  * JSON.stringify stay intact. Script breakouts use replaceAll; replacements encode
  * backslash as U+005C so we do not double-escape JSON output.
  */
-function looksLikeJsonStringifyOutput(s: string): boolean {
+function isJsonStringifyOutput(s: string): boolean {
   if (s.length === 0) {
     return false
   }
-  const first = s.charAt(0)
-  if (first === '"' || first === '{' || first === '[') {
+  try {
+    JSON.parse(s)
     return true
+  } catch {
+    return false
   }
-  if (s === 'true' || s === 'false' || s === 'null') {
-    return true
-  }
-  // JSON numbers: 0, -1, 1.5, 1e3, etc.
-  return /^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/.test(s)
 }
 
 export function hardenJsonStringLiteralForEmbeddedScript(jsonStringified: string): string {
@@ -28,7 +25,7 @@ export function hardenJsonStringLiteralForEmbeddedScript(jsonStringified: string
       'hardenJsonStringLiteralForEmbeddedScript: expected JSON.stringify(...) output as a string',
     )
   }
-  if (!looksLikeJsonStringifyOutput(jsonStringified)) {
+  if (!isJsonStringifyOutput(jsonStringified)) {
     throw new TypeError(
       'hardenJsonStringLiteralForEmbeddedScript: expected JSON.stringify(...) output (string, object, array, number, boolean, or null)',
     )
