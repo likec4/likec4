@@ -341,9 +341,14 @@ export function createSharedServices(context: Partial<LanguageServicesContext> =
 }
 
 // Copied from langium/src/dependency-injection.ts as it is not exported
+const MERGE_FORBIDDEN_KEYS = new Set(['__proto__', 'prototype', 'constructor'])
+
 function _merge(target: Module<any>, source?: Module<any>): Module<unknown> {
   if (source) {
     for (const [key, value2] of Object.entries(source)) {
+      if (MERGE_FORBIDDEN_KEYS.has(key)) {
+        continue
+      }
       if (value2 !== undefined) {
         const value1 = target[key]
         if (value1 !== null && value2 !== null && typeof value1 === 'object' && typeof value2 === 'object') {

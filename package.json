@@ -119,7 +119,8 @@
       "sha.js": ">=2.4.12",
       "smol-toml": ">=1.6.1",
       "wireit>brace-expansion": "5.0.5",
-      "yaml": ">=2.8.3"
+      "yaml": ">=2.8.3",
+      "zx": "8.8.5"
     },
     "patchedDependencies": {
       "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch",

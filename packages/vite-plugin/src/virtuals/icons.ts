@@ -96,17 +96,15 @@ export const iconsModule = {
       return true
     })
 
+    // codeql[js/bad-code-sanitization]: Generated import() specifiers are JSON string literals from joinURL('likec4:icons', id) after JSON.stringify + hardenJsonStringLiteralForEmbeddedScript; ids pass SAFE_PROJECT_ID_REGEX (no breakout in emitted JS).
     const registry = safeProjects
       .map(p => {
         const idLiteral = hardenJsonStringLiteralForEmbeddedScript(embedProjectIdAsJsString(p.id))
         const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
           embedUrlAsJsString(joinURL('likec4:icons', p.id)),
         )
-        return { idLiteral, pkgLiteral }
+        return `${idLiteral}: lazy(() => import(${pkgLiteral}).then(m => ({default: m.IconRenderer})))`
       })
-      .map(({ idLiteral, pkgLiteral }) =>
-        `${idLiteral}: lazy(() => import(${pkgLiteral}).then(m => ({default: m.IconRenderer})))`
-      )
       .join(',\n')
 
     return `
