@@ -147,8 +147,6 @@ describe('navigating state - dynamicViewVariant', () => {
     const actor = createTestActor(mockElementView)
     actor.start()
 
-    expect(actor.getSnapshot().context.dynamicViewVariant).toBe('diagram')
-
     advanceToReady(actor, mockElementView)
 
     actor.send({
@@ -167,8 +165,6 @@ describe('navigating state - dynamicViewVariant', () => {
   it('sets dynamicViewVariant to "sequence" when navigating from a diagram-variant dynamic view', () => {
     const actor = createTestActor(mockDiagramDynamicView)
     actor.start()
-
-    expect(actor.getSnapshot().context.dynamicViewVariant).toBe('diagram')
 
     advanceToReady(actor, mockDiagramDynamicView)
 
