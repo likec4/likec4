@@ -340,22 +340,30 @@ export function createSharedServices(context: Partial<LanguageServicesContext> =
   )
 }
 
-// Copied from langium/src/dependency-injection.ts as it is not exported
-const MERGE_FORBIDDEN_KEYS = new Set(['__proto__', 'prototype', 'constructor'])
-
+// Copied from langium/src/dependency-injection.ts as it is not exported.
+// Hardened for CodeQL js/prototype-pollution-utility: block dangerous keys and only
+// recurse when the key is an own property of target (see CodeQL CWE-915 guidance).
 function _merge(target: Module<any>, source?: Module<any>): Module<unknown> {
   if (source) {
     for (const [key, value2] of Object.entries(source)) {
-      if (MERGE_FORBIDDEN_KEYS.has(key)) {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
         continue
       }
-      if (value2 !== undefined) {
-        const value1 = target[key]
-        if (value1 !== null && value2 !== null && typeof value1 === 'object' && typeof value2 === 'object') {
-          target[key] = _merge(value1, value2)
-        } else {
-          target[key] = value2
-        }
+      if (value2 === undefined) {
+        continue
+      }
+      const ownOnTarget = Object.prototype.hasOwnProperty.call(target, key)
+      const value1 = target[key]
+      if (
+        ownOnTarget &&
+        value1 !== null &&
+        value2 !== null &&
+        typeof value1 === 'object' &&
+        typeof value2 === 'object'
+      ) {
+        target[key] = _merge(value1, value2)
+      } else {
+        target[key] = value2
       }
     }
   }
