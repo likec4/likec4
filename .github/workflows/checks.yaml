@@ -3,6 +3,11 @@ name: checks
 on:
   workflow_call:
 
+# Default: checkout + build only. Jobs that use actions/upload-artifact or
+# actions/download-artifact need actions: write (GitHub token scope for artifacts).
+permissions:
+  contents: read
+
 env:
   NODE_ENV: production
   CLOUDFLARE_ENV: 'production'
@@ -35,6 +40,9 @@ jobs:
     name: 🛠️ build
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      actions: write
     steps:
       - uses: actions/checkout@v6
 
@@ -145,6 +153,9 @@ jobs:
       - check-build
       - check-types
       - check-tests
+    permissions:
+      contents: read
+      actions: write
     steps:
       - uses: actions/checkout@v6
 
@@ -212,6 +223,9 @@ jobs:
       - check-build
       - check-types
       - check-tests
+    permissions:
+      contents: read
+      actions: write
     steps:
       - uses: actions/checkout@v6
 

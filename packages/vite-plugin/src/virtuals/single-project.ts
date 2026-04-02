@@ -1,7 +1,10 @@
 import { first } from 'remeda'
 import { type VirtualModule, k } from './_shared'
+import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
-const code = (id: string) => `
+const code = (id: string) => {
+  const projectIdLiteral = hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(id))
+  return `
 export { IconRenderer } from 'likec4:icons/${id}'
 export {
   $likec4data,
@@ -10,8 +13,9 @@ export {
   useLikeC4Views,
   useLikeC4View
 } from 'likec4:model/${id}'
-export const projectId = ${JSON.stringify(id)}
+export const projectId = ${projectIdLiteral}
 `
+}
 
 export const singleProjectModule = {
   id: 'likec4:single-project',
