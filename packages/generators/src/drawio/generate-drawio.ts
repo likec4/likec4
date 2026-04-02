@@ -438,7 +438,7 @@ function buildLikec4StyleForNode(params: NodeLikec4StyleParams): string {
   return parts.length > 0 ? parts.join(';') + ';' : ''
 }
 
-/** Bridge-managed style parts for profile 'leanix': likec4Id, likec4Kind, likec4ViewId, likec4ProjectId, bridgeManaged, optional leanixFactSheetType. */
+/** Bridge-managed style for leanix profile (vertex): likec4Id, likec4Kind, likec4ViewId, projectId, leanixFactSheetType. */
 function buildBridgeManagedStyleForNode(
   nodeId: string,
   nodeKind: string,
@@ -462,7 +462,7 @@ function buildBridgeManagedStyleForNode(
   return parts.join(';') + ';'
 }
 
-/** Bridge-managed style parts for edge when profile is 'leanix': likec4RelationId, bridgeManaged. */
+/** Bridge-managed style for leanix profile (edge): likec4RelationId, bridgeManaged. */
 function buildBridgeManagedStyleForEdge(
   relationId: string,
   options: GenerateDrawioOptions | undefined,
@@ -891,7 +891,7 @@ function getViewDescriptionString(view: View): string {
   return ''
 }
 
-/** Returns draw.io style tokens for the leanix profile (bridgeManaged, likec4ViewId, likec4ProjectId). Each token ends with ";". */
+/** Root-cell style tokens for leanix profile (bridgeManaged, likec4ViewId, likec4ProjectId). */
 function getLeanixRootStyleParts(view: View, options: GenerateDrawioOptions): string[] {
   const parts = ['bridgeManaged=true;', `likec4ViewId=${encodeURIComponent(view.id)};`]
   if (options.projectId != null && options.projectId !== '') {
@@ -1322,7 +1322,7 @@ ${diagramParts.join('\n')}
  * Generate a single DrawIO file from one view.
  *
  * @param viewmodel - Layouted LikeC4 view model (from model.view(id))
- * @param options - Optional overrides for layout/colors (round-trip from comment blocks)
+ * @param options - Optional overrides for layout/colors (round-trip from comment blocks); profile `leanix` adds bridge-managed metadata for LeanIX (see GenerateDrawioOptions).
  * @returns DrawIO .drawio XML string
  */
 export function generateDrawio(
@@ -1338,7 +1338,7 @@ export function generateDrawio(
  * so all views open in one file with one tab per view.
  *
  * @param viewmodels - Layouted view models (e.g. from model.views())
- * @param optionsByViewId - Optional per-view options (e.g. compressed: false for each tab)
+ * @param optionsByViewId - Optional per-view options (layout, compressed, profile leanix, etc.)
  * @param modified - Optional ISO timestamp for mxfile modified attribute (for deterministic output)
  * @returns DrawIO .drawio XML string with multiple <diagram> elements
  */

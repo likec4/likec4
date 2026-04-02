@@ -267,7 +267,7 @@ type DrawioExportArgs = {
 
 /**
  * Run the export workflow: init workspace, load model, then delegate to all-in-one or per-view.
- * @param args - Parsed CLI args (path, outdir, allInOne, roundtrip, uncompressed, project, useDot)
+ * @param args - Parsed CLI args (path, outdir, allInOne, roundtrip, uncompressed, profile, project, useDot)
  * @param logger - Logger for progress and errors
  */
 async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Promise<void> {
@@ -333,7 +333,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
 
 /**
  * Registers the `export drawio` subcommand with yargs.
- * Options: path, outdir, all-in-one, roundtrip, uncompressed, project, use-dot.
+ * Options: path, outdir, all-in-one, roundtrip, uncompressed, profile (default | leanix), project, use-dot.
  * @param yargs - yargs instance to extend
  * @returns yargs chain for further commands
  */
