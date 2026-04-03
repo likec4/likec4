@@ -9,4 +9,4 @@
 - [ ] I've verified `pnpm typecheck` and `pnpm test`.
 - [ ] I've added [changesets](https://changesets-docs.vercel.app/) (you can use `/changeset-generator` SKILL).
 - [ ] My change requires documentation updates.
-- [ ] I've updated the documentation accordingly.
+- [ ] I've updated the documentation accordingly (or will do in follow-up PR).
