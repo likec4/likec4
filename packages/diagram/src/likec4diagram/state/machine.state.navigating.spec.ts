@@ -92,11 +92,11 @@ const mockXYFlow = {
 } as unknown as XYFlowInstance
 
 /**
- * Creates a test actor for the diagram machine.
+ * Creates a test actor for the diagram machine and starts it.
  * Overrides mediaPrintActorLogic with a no-op to avoid window.addEventListener in Node.js.
  */
 function createTestActor(initialView: DiagramView) {
-  return createActor(
+  const actor = createActor(
     diagramMachine.provide({
       actors: {
         // mediaPrintActorLogic uses window.addEventListener — replace with no-op for tests
@@ -117,6 +117,8 @@ function createTestActor(initialView: DiagramView) {
       },
     },
   )
+  actor.start()
+  return actor
 }
 
 /**
@@ -145,7 +147,6 @@ describe('navigating state - dynamicViewVariant', () => {
 
   it('sets dynamicViewVariant to "sequence" when navigating from a non-dynamic view', () => {
     const actor = createTestActor(mockElementView)
-    actor.start()
 
     advanceToReady(actor, mockElementView)
 
@@ -164,7 +165,6 @@ describe('navigating state - dynamicViewVariant', () => {
 
   it('sets dynamicViewVariant to "sequence" when navigating from a diagram-variant dynamic view', () => {
     const actor = createTestActor(mockDiagramDynamicView)
-    actor.start()
 
     advanceToReady(actor, mockDiagramDynamicView)
 
@@ -183,7 +183,6 @@ describe('navigating state - dynamicViewVariant', () => {
 
   it('initializes dynamicViewVariant from the view variant on first load (sequence)', () => {
     const actor = createTestActor(mockSequenceDynamicView)
-    actor.start()
 
     // Machine initializes context.dynamicViewVariant from input.view.variant
     expect(actor.getSnapshot().context.dynamicViewVariant).toBe('sequence')
@@ -193,7 +192,6 @@ describe('navigating state - dynamicViewVariant', () => {
 
   it('restores dynamicViewVariant to "sequence" when navigating back to a sequence view', () => {
     const actor = createTestActor(mockElementView)
-    actor.start()
     advanceToReady(actor, mockElementView)
 
     // First navigation to sequence view
