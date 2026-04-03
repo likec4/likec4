@@ -17,6 +17,7 @@ If workspace already has `likec4` as a dependency, check its version from packag
 | Start dev server  | `bunx likec4 serve [project-dir]`                                     |
 | Export PNG        | `bunx likec4 export png -o ./images [project-dir]`                    |
 | Build static site | `bunx likec4 build -o ./dist [project-dir]`                           |
+| List icons        | `bunx likec4 list-icons` or `bunx likec4 list-icons --group tech`     |
 
 ### ❌ Common mistakes (avoid these)
 
@@ -101,6 +102,21 @@ bunx likec4 mcp -p 1234 [workspace]        # HTTP transport on custom port
 ```
 
 Options: `--stdio` (default), `--http`, `--port` (`-p`, default 33335), `--use-dot`
+
+## `list-icons`
+
+List all available built-in icons. Fast, no workspace initialization needed.
+
+```bash
+bunx likec4 list-icons                        # all icons, one group:name per line
+bunx likec4 list-icons --format json          # grouped JSON object
+bunx likec4 list-icons --group aws            # only AWS icons
+bunx likec4 list-icons --group tech -f json   # tech icons as JSON
+```
+
+Options: `--format` (`-f`, `text` default or `json`), `--group` (`-g`, one of: `aws`, `azure`, `gcp`, `tech`, `bootstrap`)
+
+Icon groups: `aws` (~307 icons), `azure` (~614), `gcp` (~216), `tech` (~2000), `bootstrap` (~2051).
 
 ## `format`
 

@@ -38,8 +38,13 @@ export async function findFactSheetByNameAndType(
 }
 
 /**
- * Search fact sheets by custom attribute (e.g. likec4Id) for idempotent lookup.
- * Returns null when not found; throws on API/network error.
+ * Search LeanIX fact sheets by custom attribute (e.g. likec4Id) for idempotent lookup after bridge sync.
+ *
+ * @param client - Authenticated LeanIX GraphQL client.
+ * @param attributeKey - Custom attribute facet key (e.g. workspace-specific likec4 id field).
+ * @param likec4Id - Canonical LikeC4 element id stored in LeanIX.
+ * @returns Fact sheet id when exactly one match exists; `null` when none found.
+ * @throws Error when multiple matches, network failure, or GraphQL error.
  */
 export async function findFactSheetByLikec4IdAttribute(
   client: LeanixApiClient,

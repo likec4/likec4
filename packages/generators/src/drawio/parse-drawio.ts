@@ -1611,6 +1611,8 @@ function emitLikeC4SourceFromSingleState(state: SingleDiagramState): string {
 /**
  * Convert DrawIO XML to LikeC4 source (.c4) string.
  * Vertices → model elements (actor/container); edges → relations (->). Uses first diagram only.
+ * Preserves likec4Id / likec4RelationId from leanix-profile exports when present on cells.
+ *
  * @param xml - Full .drawio mxfile XML (single or multi-tab).
  * @returns LikeC4 .c4 source string (model + views + round-trip comments).
  */
@@ -1789,6 +1791,8 @@ function emitMultiDiagramModel(
 /**
  * Convert DrawIO XML to LikeC4 source when file has multiple diagrams (tabs).
  * Merges elements by FQN and relations by (source, target); one view per diagram.
+ * Same leanix bridge style fields as parseDrawioToLikeC4 when present.
+ *
  * @param xml - Full .drawio mxfile XML with multiple <diagram> elements.
  * @returns LikeC4 .c4 source string (model + views + round-trip comments).
  */

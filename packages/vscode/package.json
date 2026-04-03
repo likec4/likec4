@@ -347,6 +347,6 @@
     "vscode-messenger-common": "^0.5.1",
     "vscode-uri": "catalog:vscode",
     "zod": "catalog:externals",
-    "zx": "lite"
+    "zx": "catalog:"
   }
 }

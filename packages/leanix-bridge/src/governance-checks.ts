@@ -13,6 +13,7 @@ export interface GovernanceCheckResult {
   message?: string
 }
 
+/** Aggregated governance outcome (passed, timestamp, per-check results). */
 export interface GovernanceReport {
   passed: boolean
   generatedAt: string

@@ -14,11 +14,14 @@ name: codeql
 on:
   schedule:
     # Run every day at 8am
-    - cron: "0 8 * * *"
+    - cron: '0 8 * * *'
+  # Manual run from Actions tab.
+  workflow_dispatch:
 
 jobs:
   analyze:
-    if: ${{ github.repository_owner == 'likec4' }}
+    # Scheduled runs only on upstream; any fork can still run CodeQL via workflow_dispatch.
+    if: ${{ github.repository == 'likec4/likec4' || github.event_name == 'workflow_dispatch' }}
     name: Analyze
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
@@ -35,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ["javascript-typescript"]
+        language: ['javascript-typescript']
         # CodeQL supports [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift' ]
         # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
         # Use only 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
@@ -75,4 +78,4 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
-          category: "/language:${{matrix.language}}"
+          category: '/language:${{matrix.language}}'
