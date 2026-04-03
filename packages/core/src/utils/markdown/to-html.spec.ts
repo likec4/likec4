@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { markdownToHtml } from './to-html'
 
+/** Strip HTML tags; loop until stable (CodeQL: js/incomplete-multi-character-sanitization). */
+function stripHtmlTags(html: string): string {
+  let prev: string
+  let cur = html
+  do {
+    prev = cur
+    cur = cur.replace(/<[^>]*>/g, '')
+  } while (cur !== prev)
+  return cur
+}
+
 describe('markdownToHtml', () => {
   it('should convert empty string to empty HTML', () => {
     expect(markdownToHtml('')).toBe('')
@@ -56,8 +67,7 @@ describe('markdownToHtml', () => {
     // Test with image in text - normalize whitespace before checking
     const result2 = markdownToHtml('Text before ![alt](img.jpg) text after').trim()
     // Extract just the text content to verify
-    const textContent = result2
-      .replace(/<[^>]*>/g, '') // Remove HTML tags
+    const textContent = stripHtmlTags(result2)
       .replace(/\s+/g, ' ') // Normalize whitespace
       .trim() // Trim outer whitespace
 

@@ -1,4 +1,5 @@
 import type { ComputedView } from '@likec4/core/types'
+import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 export function diagramPreviewsSources(views: ComputedView[], assetsDir: string) {
   const {
@@ -8,7 +9,7 @@ export function diagramPreviewsSources(views: ComputedView[], assetsDir: string)
     const Component = 'Png' + i.toString().padStart(2, '0')
 
     acc.imports.push(`import ${Component} from 'likec4/previews/${id}.png'`)
-    acc.cases.push(`  ${JSON.stringify(id)}: ${Component}`)
+    acc.cases.push(`  ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(id))}: ${Component}`)
     return acc
   }, {
     imports: [] as string[],

@@ -3,6 +3,7 @@ import { generatePuml } from '@likec4/generators'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import k from 'tinyrainbow'
 import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
+import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 function code(model: LikeC4Model.Computed) {
   const out = new CompositeGeneratorNode()
@@ -25,8 +26,8 @@ function code(model: LikeC4Model.Computed) {
             [...model.views()],
             view =>
               expandToNode`
-              case ${JSON.stringify(view.id)}: {
-                return ${JSON.stringify(generatePuml(view))}
+              case ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(view.id))}: {
+                return ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(generatePuml(view)))}
               }
             `,
             {
