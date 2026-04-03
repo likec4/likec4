@@ -6,19 +6,19 @@ LikeC4 provides a curated set of semantic color tokens. **Prefer these named tok
 
 ### Core semantic token palette
 
-| Token | Usage | Light appearance | Dark appearance |
-|---|---|---|---|
-| `primary` | Primary brand color, main emphasis | #2F80ED (blue) | lighter blue |
-| `secondary` | Secondary accent, de-emphasis | #7C3AED (purple) | lighter purple |
-| `muted` | Muted text, disabled states | #9CA3AF (gray) | lighter gray |
-| `slate` | Neutral backgrounds, borders | #475569 | lighter slate |
-| `blue` | Technical/IT systems | #3B82F6 | lighter blue |
-| `indigo` | Data/analytics systems | #6366F1 | lighter indigo |
-| `sky` | Cloud, external services | #0EA5E9 | lighter sky |
-| `red` | Alerts, critical systems | #EF4444 | lighter red |
-| `gray` | Infrastructure, generic | #6B7280 | lighter gray |
-| `green` | Success, operational systems | #10B981 | lighter green |
-| `amber` | Warnings, async/queue patterns | #F59E0B | lighter amber |
+| Token       | Usage                              | Light appearance | Dark appearance |
+| ----------- | ---------------------------------- | ---------------- | --------------- |
+| `primary`   | Primary brand color, main emphasis | #2F80ED (blue)   | lighter blue    |
+| `secondary` | Secondary accent, de-emphasis      | #7C3AED (purple) | lighter purple  |
+| `muted`     | Muted text, disabled states        | #9CA3AF (gray)   | lighter gray    |
+| `slate`     | Neutral backgrounds, borders       | #475569          | lighter slate   |
+| `blue`      | Technical/IT systems               | #3B82F6          | lighter blue    |
+| `indigo`    | Data/analytics systems             | #6366F1          | lighter indigo  |
+| `sky`       | Cloud, external services           | #0EA5E9          | lighter sky     |
+| `red`       | Alerts, critical systems           | #EF4444          | lighter red     |
+| `gray`      | Infrastructure, generic            | #6B7280          | lighter gray    |
+| `green`     | Success, operational systems       | #10B981          | lighter green   |
+| `amber`     | Warnings, async/queue patterns     | #F59E0B          | lighter amber   |
 
 ## Correct usage: semantic tokens
 
@@ -65,6 +65,20 @@ style { color "primary" }    // ✗ Wrong: quoted string (remove quotes)
 - **Semantic tokens** (`primary`, `secondary`, `muted`, etc.) automatically adapt to light/dark mode.
 - **Custom named colors** defined in specification are explicit hex values; use them sparingly for brand colors.
 - **Raw hex** in a style property is not recommended — always register in specification first.
+
+## Icon packs
+
+Icons use the format `group:name` (e.g. `tech:react`, `aws:lambda`, `azure:app-service`). Five built-in groups are available:
+
+| Group       | Count | Examples                                       |
+| ----------- | ----- | ---------------------------------------------- |
+| `aws`       | ~307  | `aws:lambda`, `aws:s3`, `aws:dynamo-db`        |
+| `azure`     | ~614  | `azure:app-service`, `azure:cosmos-db`         |
+| `gcp`       | ~216  | `gcp:cloud-run`, `gcp:bigquery`                |
+| `tech`      | ~2000 | `tech:react`, `tech:postgresql`, `tech:docker` |
+| `bootstrap` | ~2051 | `bootstrap:gear`, `bootstrap:person`           |
+
+To get the full up-to-date list, run `likec4 list-icons` or `likec4 list-icons --group tech` (see `references/cli.md`)
 
 ## Complete style example
 
@@ -125,12 +139,12 @@ model {
 
 ## Summary
 
-| Use case | Correct | Incorrect |
-|---|---|---|
-| Brand primary color | `style { color primary }` | `style { color "#2F80ED" }` |
-| Critical system alert | `style { color red }` | `style { color "#FF0000" }` |
-| Async/queue pattern | `style { color amber }` | `style { color "#FFC107" }` |
-| Custom brand color | Define in spec + use token: `color my-brand #XXXXXX` then `style { color my-brand }` | Use raw hex in style |
-| Theme-aware styling | Use semantic tokens (`primary`, `secondary`, etc.) | Use fixed hex values |
+| Use case              | Correct                                                                              | Incorrect                   |
+| --------------------- | ------------------------------------------------------------------------------------ | --------------------------- |
+| Brand primary color   | `style { color primary }`                                                            | `style { color "#2F80ED" }` |
+| Critical system alert | `style { color red }`                                                                | `style { color "#FF0000" }` |
+| Async/queue pattern   | `style { color amber }`                                                              | `style { color "#FFC107" }` |
+| Custom brand color    | Define in spec + use token: `color my-brand #XXXXXX` then `style { color my-brand }` | Use raw hex in style        |
+| Theme-aware styling   | Use semantic tokens (`primary`, `secondary`, etc.)                                   | Use fixed hex values        |
 
 **Best practice:** Use semantic color tokens for all element and relationship coloring. Define custom named colors in specification only for brand compliance, never use raw hex in styles.
