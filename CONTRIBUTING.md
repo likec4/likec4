@@ -15,8 +15,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 - Decide on what you want to contribute.
 - If you would like to implement a new feature, discuss it with the maintainers ([GitHub Discussions](https://github.com/likec4/likec4/discussions/new) or [Discord](https://discord.gg/86ZSpjKAdA)) before jumping into coding.
 - After finalizing issue details, you can begin working on the code.
-- Run tests with `pnpm test` and submit a PR once all tests have passed.
-- Get a code review and fix all issues noticed by the maintainer.
+- Submit a PR, follow the [checklist](./.github/pull_request_template.md)
 - If you cannot finish your task or if you change your mind – that's totally fine! Just let us know in the GitHub issue that you created during the first step of this process. Our community is friendly – we won't judge or ask any questions if you decide to cancel your submission.
 - Your PR is merged. You are awesome ❤️!
 
@@ -45,7 +44,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
    pnpm generate
    ```
 
-> [!TIP] Tip on TypeScript
+> [!TIP]
 > Project uses Typescript project references to optimize compile time, but sometimes it may cause issues on delete/rename.
 >
 > It is always a good idea to run `pnpm generate` after checkout or merge.
@@ -65,7 +64,8 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 6. To work on VSCode extension:
    - Launch [`Run Extension`](https://github.com/likec4/likec4/blob/c88cfdb3856aff4b28c5f72da7ded8caf8c47c62/.vscode/launch.json#L18) to start a new VSCode instance with the extension loaded.
 
-> [!TIP] Tip on VSCode extension development
+> [!TIP]
+> 
 > If you work mostly on `vscode-preview` package, you don't need to restart `Run Extension` when you make changes.\
 > Keep `pnpm dev` in `vscode-preview` running, VSCode will pick up changes when close-open the panel.
 

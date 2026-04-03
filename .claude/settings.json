@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Bash(gh *)",
@@ -7,8 +8,6 @@
       "Read",
       "Edit",
       "Agent(Explore)",
-      "MultiEdit",
-      "Task(Explore)",
       "WebFetch",
       "Bash(tail:*)",
       "Bash(sed:*)",

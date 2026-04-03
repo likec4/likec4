@@ -4,9 +4,48 @@ import {
   getFactSheetType,
   getRelationType,
   mergeWithDefault,
+  parseLeanixMappingInput,
 } from './mapping'
 
 describe('mapping', () => {
+  describe('parseLeanixMappingInput', () => {
+    it('returns null and undefined unchanged', () => {
+      expect(parseLeanixMappingInput(null)).toBeNull()
+      expect(parseLeanixMappingInput(undefined)).toBeUndefined()
+    })
+
+    it('accepts empty object', () => {
+      expect(parseLeanixMappingInput({})).toEqual({})
+    })
+
+    it('rejects array and non-object root', () => {
+      expect(() => parseLeanixMappingInput([])).toThrow(/plain object/)
+      expect(() => parseLeanixMappingInput('x')).toThrow(/plain object/)
+    })
+
+    it('rejects unknown top-level keys', () => {
+      expect(() => parseLeanixMappingInput({ extra: 1 })).toThrow(/unknown key "extra"/)
+    })
+
+    it('rejects non-string values in factSheetTypes', () => {
+      expect(() => parseLeanixMappingInput({ factSheetTypes: { system: 1 as unknown as string } })).toThrow(
+        /factSheetTypes/,
+      )
+    })
+
+    it('rejects non-string values in relationTypes', () => {
+      expect(() => parseLeanixMappingInput({ relationTypes: { someRel: 1 as unknown as string } })).toThrow(
+        /relationTypes/,
+      )
+    })
+
+    it('rejects non-string values in metadataToFields', () => {
+      expect(() => parseLeanixMappingInput({ metadataToFields: { someKey: 1 as unknown as string } })).toThrow(
+        /metadataToFields/,
+      )
+    })
+  })
+
   describe('mergeWithDefault', () => {
     it('returns copy of default when partial is null/undefined', () => {
       const a = mergeWithDefault(null)

@@ -9,6 +9,7 @@ export default defineBuildConfig({
         './src/browser/index.ts',
         './src/browser/worker.ts',
         './src/mcp/index.ts',
+        './src/icons.ts',
         './src/module.ts',
         './src/protocol.ts',
         './src/likec4lib.ts',

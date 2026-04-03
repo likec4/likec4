@@ -87,13 +87,15 @@ For strict command/snippet prompts, keep a compact loop:
 
 1. **Generate** only the requested final command/snippet.
 2. **Self-check** quickly:
-  - exact command family / required flags / repeated `--file` count
-  - snippet-first or first-line contract satisfied
-  - predicate semantics (`*`, `_`, `**`) stated precisely
-  - scope / FQN correctness
-  - deployment naming requirement satisfied
-  - relationship matcher specificity (`kind`, `title` when needed)
-  - dynamic view exactness: return arrows, chain form, single parallel block when requested
+
+- exact command family / required flags / repeated `--file` count
+- snippet-first or first-line contract satisfied
+- predicate semantics (`*`, `_`, `**`) stated precisely
+- scope / FQN correctness
+- deployment naming requirement satisfied
+- relationship matcher specificity (`kind`, `title` when needed)
+- dynamic view exactness: return arrows, chain form, single parallel block when requested
+
 3. **Finalize** by fixing in place (no extra alternatives unless explicitly requested).
 
 Before final answer, verify the required tokens are literally present when the prompt depends on them (examples: `--no-layout`, `instanceOf`, `variant sequence`, `global predicate`, `-[async]->`, `parallel {`, `<-`).
@@ -216,10 +218,10 @@ Interpretation anchor: in a scoped view, `include *` means the scoped element pl
 
 For strict repair prompts about deployment views, the safe answer is **local `style ... {}` inside the deployment view**.
 
-| Need | Prefer | Avoid as the answer |
-| --- | --- | --- |
-| Style one deployment view | `deployment view prod { include prod.** style prod._ { color primary } }` | `deployment view prod { include prod.** with { color primary } }` |
-| Reuse styling in a deployment-view fix | local `style ... {}` rules in that deployment view | `global style theme` |
+| Need                                   | Prefer                                                                    | Avoid as the answer                                               |
+| -------------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Style one deployment view              | `deployment view prod { include prod.** style prod._ { color primary } }` | `deployment view prod { include prod.** with { color primary } }` |
+| Reuse styling in a deployment-view fix | local `style ... {}` rules in that deployment view                        | `global style theme`                                              |
 
 Mini-reminder: in deployment views, treat `include ... with {}` and `global style ...` as unsupported repair patterns. Use a local `style ... {}` rule inside the deployment view instead.
 
@@ -260,6 +262,8 @@ Style properties control visual appearance: `color`, `shape`, `border`, `opacity
 
 Full color token table, all shape values, border/opacity/size tokens, icon pack prefixes (`aws:`, `azure:`, `gcp:`, `tech:`, `bootstrap:`), and correct usage patterns → `references/style-tokens-colors.md`
 
+To discover available icons, use the CLI: `likec4 list-icons` (text, one per line). Filter by group with `--group <name>`. Icon groups and approximate counts: `aws` (~307), `azure` (~614), `gcp` (~216), `tech` (~2000), `bootstrap` (~2051) (see `references/cli.md` for details).
+
 ## Deployment
 
 Maps logical model elements to physical infrastructure nodes using `instanceOf`. Uses `deploymentNode` kinds from specification. Inherits all logical model relationships automatically; additional deployment-level relationships can be defined inline.
@@ -287,11 +291,11 @@ Need inbound relation selection?
 
 ### Scoped Predicate Truth Card (`*`, `_`, `**`)
 
-| Selector | One-line truth | Typical use |
-| --- | --- | --- |
-| `parent.*` | Direct children of `parent` only | Show immediate structure |
-| `parent._` | Direct children of `parent` that have relationships with accumulated result | Keep only connected direct children |
-| `parent.**` | Recursive descendants of `parent` that have relationships with accumulated result | Explore connected deep descendants |
+| Selector    | One-line truth                                                                    | Typical use                         |
+| ----------- | --------------------------------------------------------------------------------- | ----------------------------------- |
+| `parent.*`  | Direct children of `parent` only                                                  | Show immediate structure            |
+| `parent._`  | Direct children of `parent` that have relationships with accumulated result       | Keep only connected direct children |
+| `parent.**` | Recursive descendants of `parent` that have relationships with accumulated result | Explore connected deep descendants  |
 
 Hard rule: do not describe `*` as recursive; do not describe `_` as wildcard-all; do not drop relationship-condition semantics for `_` / `**`.
 
@@ -359,16 +363,17 @@ Return-arrow precision:
 
 ## Anti-Patterns to Avoid in Strict Prompts
 
-| Anti-pattern | Why it fails | Correct behavior |
-| --- | --- | --- |
-| Substituting command families (`check`/`build`) for `validate` | Breaks exact command contract | Keep `likec4 validate` |
-| Inventing/guessing flags | Creates non-portable invalid commands | Use canonical documented flags only |
-| Multiple alternative snippets for one strict ask | Reduces precision; fails strict-output grading | Output one final answer unless alternatives are requested |
-| Extending typed relationship without kind/title in ambiguous graph | Can target wrong relationship | Match with source + target + kind (+ title when needed) |
+| Anti-pattern                                                       | Why it fails                                   | Correct behavior                                          |
+| ------------------------------------------------------------------ | ---------------------------------------------- | --------------------------------------------------------- |
+| Substituting command families (`check`/`build`) for `validate`     | Breaks exact command contract                  | Keep `likec4 validate`                                    |
+| Inventing/guessing flags                                           | Creates non-portable invalid commands          | Use canonical documented flags only                       |
+| Multiple alternative snippets for one strict ask                   | Reduces precision; fails strict-output grading | Output one final answer unless alternatives are requested |
+| Extending typed relationship without kind/title in ambiguous graph | Can target wrong relationship                  | Match with source + target + kind (+ title when needed)   |
 
 ## Common Mistakes & Debugging
 
 When a model errors or an eval answer seems wrong, load `references/troubleshooting.md` which contains:
+
 - **Syntax errors** — identifier format (dots forbidden in identifiers), unknown kinds, duplicate FQNs, malformed `where` predicates
 - **Model & Hierarchy** — broken FQN references, parent-child relationship constraint, cross-file visibility
 - **View Predicates** — `*` vs `**` confusion, missing neighbor elements, `WHERE` case sensitivity
@@ -383,20 +388,20 @@ When a model errors or an eval answer seems wrong, load `references/troubleshoot
 
 Load a reference file when the task involves the corresponding topic. Claude reads SKILL.md first; these files are loaded on demand only when needed.
 
-| File | Purpose — load when... |
-|---|---|
-| `references/specification.md` | Writing/editing `specification { }` blocks, defining element/deploymentNode/relationship/tag/color kinds |
-| `references/model.md` | Writing/editing `model { }` blocks, element hierarchy, relationships, `extend` patterns, property names |
-| `references/deployment.md` | Writing/editing `deployment { }` blocks, `instanceOf`, named instances, multi-environment topology |
-| `references/style-tokens-colors.md` | Applying colors, shapes, icons, or relationship line styles; need exact token names |
-| `references/views.md` | Writing views, include/exclude rules, style rules in views, groups, autoLayout, global predicates |
-| `references/predicates.md` | Complex `where` conditions, `with` overrides, global predicate groups, reusable predicates |
-| `references/include-predicates-wildcards.md` | Wildcard confusion suspected (`*` vs `_` vs `**`); need exact scoped-view semantics |
-| `references/dynamic-views.md` | Writing dynamic views: steps, return arrows, chained steps, parallel blocks, `variant sequence` |
-| `references/identifier-validity.md` | Identifier vs FQN confusion; "dots in names" errors; understanding FQN construction |
-| `references/relationships-bidirectional.md` | Bidirectional relationship syntax and `<->` view predicate patterns |
-| `references/bridge-leanix-drawio.md` | LeanIX bridge · `drawio --profile leanix` · round-trip · mapping · MCP vs bridge · sync/artifacts/managed cells |
-| `references/cli.md` | Full CLI reference: serve, build, export, codegen, mcp, format; flag disambiguation |
-| `references/configuration.md` | Project config options, multi-project setup, include/exclude paths, generators |
-| `references/examples.md` | Compact real-world examples: extend, groups, globals, dynamic views, deployment, rank |
-| `references/troubleshooting.md` | Errors, unexpected output, eval failures — 6 error tables, 5-step debug workflow, 7 best practices |
+| File                                         | Purpose — load when...                                                                                   |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `references/specification.md`                | Writing/editing `specification { }` blocks, defining element/deploymentNode/relationship/tag/color kinds |
+| `references/model.md`                        | Writing/editing `model { }` blocks, element hierarchy, relationships, `extend` patterns, property names  |
+| `references/deployment.md`                   | Writing/editing `deployment { }` blocks, `instanceOf`, named instances, multi-environment topology       |
+| `references/style-tokens-colors.md`          | Applying colors, shapes, icons, or relationship line styles; need exact token names                      |
+| `references/views.md`                        | Writing views, include/exclude rules, style rules in views, groups, autoLayout, global predicates        |
+| `references/predicates.md`                   | Complex `where` conditions, `with` overrides, global predicate groups, reusable predicates               |
+| `references/include-predicates-wildcards.md` | Wildcard confusion suspected (`*` vs `_` vs `**`); need exact scoped-view semantics                      |
+| `references/dynamic-views.md`                | Writing dynamic views: steps, return arrows, chained steps, parallel blocks, `variant sequence`          |
+| `references/identifier-validity.md`          | Identifier vs FQN confusion; "dots in names" errors; understanding FQN construction                      |
+| `references/relationships-bidirectional.md`  | Bidirectional relationship syntax and `<->` view predicate patterns                                      |
+| `references/bridge-leanix-drawio.md`         | LeanIX bridge · `drawio --profile leanix` · round-trip · mapping · MCP vs bridge · sync/artifacts/managed cells |
+| `references/cli.md`                          | Full CLI reference: serve, build, export, codegen, mcp, format; flag disambiguation                      |
+| `references/configuration.md`                | Project config options, multi-project setup, include/exclude paths, generators                           |
+| `references/examples.md`                     | Compact real-world examples: extend, groups, globals, dynamic views, deployment, rank                    |
+| `references/troubleshooting.md`              | Errors, unexpected output, eval failures — 6 error tables, 5-step debug workflow, 7 best practices       |

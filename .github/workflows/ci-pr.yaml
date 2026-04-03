@@ -13,14 +13,19 @@ on:
   push:
     branches-ignore:
       - main
-      - "changeset-release/*"
-      - "releases/*"
+      - 'changeset-release/*'
+      - 'releases/*'
     tags-ignore:
-      - "**"
+      - '**'
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
+
+# Caller must allow actions: write so reusable checks jobs can upload/download artifacts (GitHub caps token to caller permissions).
+permissions:
+  contents: read
+  actions: write
 
 jobs:
   checks:

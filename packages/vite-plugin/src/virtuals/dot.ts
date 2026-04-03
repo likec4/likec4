@@ -1,6 +1,7 @@
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import { mapToObj } from 'remeda'
 import { type ProjectVirtualModule, generateCombinedProjects, generateMatches, k } from './_shared'
+import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 function code(
   sources: Record<
@@ -62,8 +63,8 @@ function code(
             Object.keys(sources),
             key =>
               expandToNode`
-              case ${JSON.stringify(key)}: {
-                return ${JSON.stringify(sources[key]!.svg)}
+              case ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(key))}: {
+                return ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(sources[key]!.svg))}
               }
             `,
             {

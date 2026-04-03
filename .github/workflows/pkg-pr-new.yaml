@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   workflow_call:
 
+permissions:
+  contents: read
+
 env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
