@@ -5,8 +5,8 @@
 
 - [ ] I've thoroughly read the latest [contribution guidelines](https://github.com/likec4/likec4/blob/main/CONTRIBUTING.md).
 - [ ] I've rebased my branch onto `main` **before** creating this PR.
-- [ ] My commit messages follow [conventional spec](https://www.conventionalcommits.org/en/)
 - [ ] I've added tests to cover my changes (if applicable).
-- [ ] I've verified that all new and existing tests have passed locally for mobile, tablet, and desktop screen sizes.
+- [ ] I've verified `pnpm typecheck` and `pnpm test`.
+- [ ] I've added [changesets](https://changesets-docs.vercel.app/) (you can use `/changeset-generator` SKILL).
 - [ ] My change requires documentation updates.
 - [ ] I've updated the documentation accordingly.
