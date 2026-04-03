@@ -1,5 +1,17 @@
 # @likec4/language-server
 
+## 1.53.1
+
+### Patch Changes
+
+- [#2832](https://github.com/likec4/likec4/pull/2832) [`302f020`](https://github.com/likec4/likec4/commit/302f020e4e892d94159255a876da0119f9c8d9c9) Thanks [@davydkov](https://github.com/davydkov)! - Add `list-icons` CLI command to list all available built-in icons with `--format text|json` and `--group` filter options
+
+- Updated dependencies []:
+  - @likec4/config@1.53.1
+  - @likec4/core@1.53.1
+  - @likec4/layouts@1.53.1
+  - @likec4/log@1.53.1
+
 ## 1.53.0
 
 ### Minor Changes
