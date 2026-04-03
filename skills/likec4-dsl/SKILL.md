@@ -1,6 +1,6 @@
 ---
 name: likec4-dsl
-description: Use when working with `.c4`/`.likec4` files or LikeC4 CLI/config questions where exact DSL/CLI syntax is required, especially for strict command/snippet-first answers, validate/export flags, predicates `*`/`_`/`**`, deployment snippets, dynamic views, or relationship extension matching.
+description: Use when working with `.c4`/`.likec4` files or LikeC4 CLI/config questions where exact DSL/CLI syntax is required, especially for strict command/snippet-first answers, validate/export flags, predicates `*`/`_`/`**`, deployment snippets, dynamic views, or relationship extension matching. LeanIX bridge or drawio `--profile leanix` (sync, artifacts, bridge-managed cells) → `references/bridge-leanix-drawio.md`.
 ---
 
 # LikeC4 DSL Skill
@@ -400,6 +400,7 @@ Load a reference file when the task involves the corresponding topic. Claude rea
 | `references/dynamic-views.md`                | Writing dynamic views: steps, return arrows, chained steps, parallel blocks, `variant sequence`          |
 | `references/identifier-validity.md`          | Identifier vs FQN confusion; "dots in names" errors; understanding FQN construction                      |
 | `references/relationships-bidirectional.md`  | Bidirectional relationship syntax and `<->` view predicate patterns                                      |
+| `references/bridge-leanix-drawio.md`         | LeanIX bridge · `drawio --profile leanix` · round-trip · mapping · MCP vs bridge · sync/artifacts/managed cells |
 | `references/cli.md`                          | Full CLI reference: serve, build, export, codegen, mcp, format; flag disambiguation                      |
 | `references/configuration.md`                | Project config options, multi-project setup, include/exclude paths, generators                           |
 | `references/examples.md`                     | Compact real-world examples: extend, groups, globals, dynamic views, deployment, rank                    |

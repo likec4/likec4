@@ -68,6 +68,18 @@ bunx likec4 export drawio --all-in-one -o ./diagrams [project-dir]
 **export json** options: `--outfile` (`-o`, default "likec4.json"), `--pretty`, `--skip-layout`
 **export drawio** options: `--outdir` (`-o`), `--all-in-one`, `--roundtrip`, `--uncompressed`, `--profile` [default|leanix]
 
+### LeanIX bridge and Draw.io (LeanIX profile)
+
+Use these when the task is **LeanIX inventory**, **bridge artifacts**, or **Draw.io with stable bridge-managed ids** — not for generic DSL editing alone.
+
+| Task                                           | Command                                                                  |
+| ---------------------------------------------- | ------------------------------------------------------------------------ |
+| Manifest + LeanIX dry-run + report             | `bunx likec4 gen leanix dry-run -o out/bridge [project-dir]`             |
+| Sync workflow (review / apply)                 | `bunx likec4 sync leanix --dry-run -o out/bridge [project-dir]` / `bunx likec4 sync leanix --apply -o out/bridge [project-dir]` |
+| Draw.io with `likec4Id`, `bridgeManaged`, etc. | `bunx likec4 export drawio --profile leanix -o ./diagrams [project-dir]` |
+
+Full boundaries, round-trip notes, and MCP vs bridge: **`references/bridge-leanix-drawio.md`**.
+
 ## `codegen` (aliases: `gen`, `generate`)
 
 Generate code artifacts from the model.
