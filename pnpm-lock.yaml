@@ -290,8 +290,8 @@ catalogs:
       specifier: ^4.1.0
       version: 4.1.0
     defu:
-      specifier: ^6.1.4
-      version: 6.1.4
+      specifier: ^6.1.5
+      version: 6.1.6
     esm-env:
       specifier: ^1.2.2
       version: 1.2.2
@@ -896,7 +896,7 @@ importers:
         version: 0.2.1
       defu:
         specifier: catalog:utils
-        version: 6.1.4
+        version: 6.1.6
       indent-string:
         specifier: catalog:utils
         version: 5.0.0
@@ -976,7 +976,7 @@ importers:
         version: 22.19.15
       defu:
         specifier: catalog:utils
-        version: 6.1.4
+        version: 6.1.6
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
@@ -1064,7 +1064,7 @@ importers:
         version: 3.2.0(patch_hash=d987322bee5bda6851d8538d840c5155f1e299d91bd40b2a8eb0f3e4c0c62d1c)
       defu:
         specifier: catalog:utils
-        version: 6.1.4
+        version: 6.1.6
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.4)
@@ -1202,7 +1202,7 @@ importers:
         version: 3.2.0
       defu:
         specifier: catalog:utils
-        version: 6.1.4
+        version: 6.1.6
       fast-equals:
         specifier: catalog:utils
         version: 6.0.0
@@ -1420,7 +1420,7 @@ importers:
         version: 5.0.0
       defu:
         specifier: catalog:utils
-        version: 6.1.4
+        version: 6.1.6
       fast-equals:
         specifier: catalog:utils
         version: 6.0.0
@@ -1580,7 +1580,7 @@ importers:
         version: link:../log
       defu:
         specifier: catalog:utils
-        version: 6.1.4
+        version: 6.1.6
       langium:
         specifier: catalog:langium
         version: 3.5.0
@@ -2267,7 +2267,7 @@ importers:
         version: 4.0.0
       defu:
         specifier: catalog:utils
-        version: 6.1.4
+        version: 6.1.6
       fast-equals:
         specifier: catalog:utils
         version: 6.0.0
@@ -6187,6 +6187,9 @@ packages:
 
   defu@6.1.4:
     resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
+
+  defu@6.1.6:
+    resolution: {integrity: sha512-f8mefEW4WIVg4LckePx3mALjQSPQgFlg9U8yaPdlsbdYcHQyj9n2zL2LJEA52smeYxOvmd/nB7TpMtHGMTHcug==}
 
   depd@2.0.0:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
@@ -13803,7 +13806,7 @@ snapshots:
   c12@4.0.0-beta.3(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1):
     dependencies:
       confbox: 0.2.4
-      defu: 6.1.4
+      defu: 6.1.6
       exsolve: 1.0.8
       pathe: 2.0.3
       pkg-types: 2.3.0
@@ -14163,6 +14166,8 @@ snapshots:
       object-keys: 1.1.1
 
   defu@6.1.4: {}
+
+  defu@6.1.6: {}
 
   depd@2.0.0: {}
 
@@ -14754,7 +14759,7 @@ snapshots:
     dependencies:
       cookie-es: 1.2.2
       crossws: 0.3.5
-      defu: 6.1.4
+      defu: 6.1.6
       destr: 2.0.5
       iron-webcrypto: 1.2.1
       node-mock-http: 1.0.4
@@ -16197,7 +16202,7 @@ snapshots:
     dependencies:
       c12: 4.0.0-beta.3(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.6
       exsolve: 1.0.8
       magic-string: 0.30.21
       pathe: 2.0.3
@@ -16633,7 +16638,7 @@ snapshots:
 
   rc9@3.0.0:
     dependencies:
-      defu: 6.1.4
+      defu: 6.1.6
       destr: 2.0.5
 
   react-dom@19.2.4(react@19.2.4):
