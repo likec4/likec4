@@ -35,6 +35,18 @@ With [likec4.nvim](https://github.com/likec4/likec4.nvim):
 }
 ```
 
+### Emacs
+
+Use with [lsp-mode](https://emacs-lsp.github.io/lsp-mode/) or [eglot](https://github.com/joaotavora/eglot):
+
+```elisp
+;; eglot
+(add-to-list 'eglot-server-programs
+             '((likec4-mode) . ("likec4-lsp" "--stdio")))
+```
+
+See [#2268](https://github.com/likec4/likec4/issues/2268) for discussion on Emacs support.
+
 ### Zed
 
 See [zed-likec4](https://github.com/Lenivvenil/zed-likec4).
