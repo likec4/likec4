@@ -37,6 +37,9 @@
       "path": "./packages/log/"
     },
     {
+      "path": "./packages/lsp/"
+    },
+    {
       "path": "./packages/vscode/"
     },
     {
