@@ -1,5 +1,14 @@
 # @likec4/leanix-bridge
 
+## 1.54.0
+
+### Patch Changes
+
+- [#2829](https://github.com/likec4/likec4/pull/2829) [`baba1aa`](https://github.com/likec4/likec4/commit/baba1aa7526b5e4ad1fe76fe400a908f256a5e2e) Thanks [@sraphaz](https://github.com/sraphaz)! - - Validate LeanIX mapping partials before merge (`parseLeanixMappingInput`); align exports and mapping registry behaviour with specs.
+
+- Updated dependencies []:
+  - @likec4/core@1.54.0
+
 ## 1.53.0
 
 ### Minor Changes

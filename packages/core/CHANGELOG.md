@@ -1,5 +1,7 @@
 # @likec4/core
 
+## 1.54.0
+
 ## 1.53.0
 
 ### Minor Changes
