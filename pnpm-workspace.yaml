@@ -61,7 +61,7 @@ catalogs:
     esbuild-plugins-node-modules-polyfill: 1.8.1
   externals:
     "@hpcc-js/wasm-graphviz": 1.21.2
-    "@types/picomatch": ^4.0.2
+    "@types/picomatch": ^4.0.3
     bundle-require: ^5.1.0
     chokidar: ^5.0.0
     fdir: 6.4.0
