@@ -35,7 +35,7 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=22.22.1"
+    "node": ">=22.22.0"
   },
   "keywords": [
     "likec4",
