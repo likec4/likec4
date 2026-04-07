@@ -7,6 +7,7 @@ export default defineConfig({
   clean: true,
   minify: true,
   nodeProtocol: true,
+  inlineOnly: false,
   alias: {
     'esbuild': import.meta.resolve('esbuild-wasm')
   },
