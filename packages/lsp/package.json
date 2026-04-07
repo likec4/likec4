@@ -2,13 +2,13 @@
   "name": "@likec4/lsp",
   "description": "Standalone LikeC4 Language Server for editor integrations",
   "license": "MIT",
-  "version": "1.53.0",
+  "version": "1.53.1",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
   "bin": {
-    "likec4-lsp": "./bin/likec4-lsp.cjs"
+    "likec4-lsp": "./bin/likec4-lsp.mjs"
   },
   "types": "dist/standalone.d.ts",
   "module": "dist/standalone.mjs",
