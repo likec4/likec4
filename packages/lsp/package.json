@@ -1,0 +1,67 @@
+{
+  "name": "@likec4/lsp",
+  "description": "Standalone LikeC4 Language Server for editor integrations",
+  "license": "MIT",
+  "version": "1.53.1",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "type": "module",
+  "bin": {
+    "likec4-lsp": "./bin/likec4-lsp.mjs"
+  },
+  "types": "dist/standalone.d.ts",
+  "module": "dist/standalone.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/standalone.d.ts",
+      "default": "./dist/standalone.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "**/package.json",
+    "!**/*.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/lsp"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "keywords": [
+    "likec4",
+    "language-server",
+    "lsp",
+    "architecture"
+  ],
+  "scripts": {
+    "typecheck": "tsc -b --verbose",
+    "build": "tsdown",
+    "pack": "pnpm pack",
+    "postpack": "likec4ops postpack",
+    "clean": "likec4ops clean"
+  },
+  "devDependencies": {
+    "@likec4/devops": "workspace:*",
+    "@likec4/language-server": "workspace:*",
+    "@likec4/layouts": "workspace:*",
+    "@likec4/log": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "langium": "catalog:langium",
+    "esbuild-wasm": "catalog:esbuild",
+    "tsdown": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "vscode-languageserver": "catalog:vscode"
+  }
+}

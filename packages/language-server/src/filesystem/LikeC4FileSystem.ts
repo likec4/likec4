@@ -23,10 +23,10 @@ function isLikeC4File(path: string, isDirectory: boolean = false): boolean {
 }
 
 export const WithFileSystem = (
-  ehableWatcher = true,
+  enableWatcher = true,
 ): FileSystemModuleContext => ({
   fileSystemProvider: () => new SymLinkTraversingFileSystemProvider(),
-  ...ehableWatcher ? WithChokidarWatcher : NoFileSystemWatcher,
+  ...enableWatcher ? WithChokidarWatcher : NoFileSystemWatcher,
 })
 
 /**
