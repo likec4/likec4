@@ -91,7 +91,7 @@
       "undici": ">=7.24.6",
       "devalue": ">=5.6.4",
       "diffie-hellman>bn.js": "4.12.3",
-      "diff": ">=8.0.3",
+      "diff": ">=8.0.4",
       "svgo": ">=4.0.1",
       "express-rate-limit": ">=8.2.2",
       "express>qs": ">=6.14.2",
