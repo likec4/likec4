@@ -291,16 +291,6 @@ describe('LikeC4', () => {
           ],
           "folder": "cloud-system",
         },
-        "diagrams-dev": {
-          "documents": [
-            "_spec.c4",
-            "amazon.c4",
-            "model.c4",
-            "relationships/colors.c4",
-            "theme/colors.c4",
-          ],
-          "folder": "likec4",
-        },
         "dyn-config": {
           "documents": [
             "_spec.c4",
