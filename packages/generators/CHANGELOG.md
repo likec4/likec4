@@ -1,5 +1,16 @@
 # @likec4/generators
 
+## 1.54.0
+
+### Patch Changes
+
+- [#2825](https://github.com/likec4/likec4/pull/2825) [`b6f6a35`](https://github.com/likec4/likec4/commit/b6f6a35aff00e141c8f0a04686579b08773c2d7b) Thanks [@kavishkartha05](https://github.com/kavishkartha05)! - Fix LikeC4 generator not emitting element name in DSL output
+  Fixes [#2815](https://github.com/likec4/likec4/issues/2815)
+- Updated dependencies []:
+  - @likec4/config@1.54.0
+  - @likec4/core@1.54.0
+  - @likec4/log@1.54.0
+
 ## 1.53.0
 
 ### Minor Changes
