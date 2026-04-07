@@ -21,6 +21,17 @@ describe('model', () => {
       1aa = system
     }`
 
+  // https://github.com/likec4/likec4/issues/2836
+  test('name can start with underscore followed by digit').valid`
+    specification {
+      element system
+    }
+    model {
+      _1password = system
+      __1service = system
+      _123 = system
+    }`
+
   // https://github.com/likec4/likec4/issues/2057
   test('name does not coflict with Boolean').valid`
     specification {
