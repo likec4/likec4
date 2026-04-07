@@ -138,8 +138,8 @@ catalogs:
       specifier: 1.21.2
       version: 1.21.2
     '@types/picomatch':
-      specifier: ^4.0.2
-      version: 4.0.2
+      specifier: ^4.0.3
+      version: 4.0.3
     bundle-require:
       specifier: ^5.1.0
       version: 5.1.0
@@ -575,7 +575,7 @@ importers:
         version: 4.1.18(vite@7.3.2(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.8.3))
       '@types/picomatch':
         specifier: catalog:externals
-        version: 4.0.2
+        version: 4.0.3
       '@types/react':
         specifier: 19.2.14
         version: 19.2.14
@@ -1520,7 +1520,7 @@ importers:
         version: 22.19.15
       '@types/picomatch':
         specifier: catalog:externals
-        version: 4.0.2
+        version: 4.0.3
       '@types/vscode':
         specifier: catalog:vscode
         version: 1.106.1
@@ -1866,7 +1866,7 @@ importers:
         version: 22.19.15
       '@types/picomatch':
         specifier: catalog:externals
-        version: 4.0.2
+        version: 4.0.3
       '@types/react':
         specifier: 19.2.14
         version: 19.2.14
@@ -2706,7 +2706,7 @@ importers:
         version: 22.19.15
       '@types/picomatch':
         specifier: catalog:externals
-        version: 4.0.2
+        version: 4.0.3
       '@types/react':
         specifier: 19.2.14
         version: 19.2.14
@@ -5259,8 +5259,8 @@ packages:
   '@types/picomatch@3.0.2':
     resolution: {integrity: sha512-n0i8TD3UDB7paoMMxA3Y65vUncFJXjcUf7lQY7YyKGl6031FNjfsLs6pdLFCy2GNFxItPJG8GvvpbZc2skH7WA==}
 
-  '@types/picomatch@4.0.2':
-    resolution: {integrity: sha512-qHHxQ+P9PysNEGbALT8f8YOSHW0KJu6l2xU8DYY0fu/EmGxXdVnuTLvFUvBgPJMSqXq29SYHveejeAha+4AYgA==}
+  '@types/picomatch@4.0.3':
+    resolution: {integrity: sha512-iG0T6+nYJ9FAPmx9SsUlnwcq1ZVRuCXcVEvWnntoPlrOpwtSTKNDC9uVAxTsC3PUvJ+99n4RpAcNgBbHX3JSnQ==}
 
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
@@ -13018,7 +13018,7 @@ snapshots:
 
   '@types/picomatch@3.0.2': {}
 
-  '@types/picomatch@4.0.2': {}
+  '@types/picomatch@4.0.3': {}
 
   '@types/react-dom@19.2.3(@types/react@19.2.14)':
     dependencies:
