@@ -17,9 +17,9 @@ import {
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
 import { useIsMounted } from '@react-hookz/web'
 import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
+import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { useRef } from 'react'
 import { NotFound } from '../components/NotFound'
-import { pageTitle as defaultPageTitle } from '../const'
 import { useCurrentView } from '../hooks'
 
 export function ViewReact() {

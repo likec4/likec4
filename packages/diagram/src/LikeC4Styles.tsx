@@ -102,6 +102,6 @@ const MemoizedStyle = memo<{
     type="text/css"
     data-likec4-colors={id}
     dangerouslySetInnerHTML={{ __html: colorsStyles }}
-    nonce={nonce} />
+    nonce={nonce || undefined} />
 ))
 MemoizedStyle.displayName = 'MemoizedStyle'

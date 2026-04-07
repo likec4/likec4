@@ -15,13 +15,13 @@ export type LikeC4ViteWebcomponentConfig = {
   filename?: string
 }
 
-export async function viteWebcomponentConfig({
+export function viteWebcomponentConfig({
   languageServices,
   outDir,
   base,
   webcomponentPrefix = 'likec4',
   filename = 'likec4-views.js',
-}: LikeC4ViteWebcomponentConfig) {
+}: LikeC4ViteWebcomponentConfig): InlineConfig {
   const customLogger = createLikeC4Logger(['vite', 'webcomponent'])
   const root = viteAppRoot()
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
@@ -45,7 +45,6 @@ export async function viteWebcomponentConfig({
       ],
     },
     define: {
-      WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       'process.env.NODE_ENV': '"production"',
     },
     esbuild: {
@@ -89,6 +88,9 @@ export async function viteWebcomponentConfig({
       react(),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
+        appConfig: {
+          webcomponentPrefix,
+        },
       }),
     ],
   } satisfies InlineConfig

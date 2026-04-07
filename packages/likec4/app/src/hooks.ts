@@ -1,9 +1,9 @@
 import type { LayoutedView, LayoutType, ViewId } from '@likec4/core/types'
 import { useUpdateEffect } from '@likec4/diagram'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
-import { useMatches, useParams } from '@tanstack/react-router'
+import { type MakeRouteMatchUnion, useMatches, useParams } from '@tanstack/react-router'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { useLikeC4Projects } from 'likec4:projects'
+import { type Project, useLikeC4Projects } from 'likec4:projects'
 import { useEffect, useState } from 'react'
 import { useLikeC4ModelAtom } from './context/safeCtx'
 
@@ -83,13 +83,16 @@ export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType)
   return [view, setLayoutType] as const
 }
 
-export function useCurrentProject() {
+export function useCurrentProject(): Project {
   const projects = useLikeC4Projects()
   const projectId = useMatches({
-    select: (m) =>
-      m.find(m => m.routeId === '/project/$projectId')?.params?.projectId
-        ?? m.at(-1)?.context.projectId
-        ?? 'default',
+    select: selectProjectIdFromContext,
   })
-  return (projects.find(p => p.id === projectId) ?? projects[0])
+  return (projectId && projects.find(p => p.id === projectId)) || projects[0]
+}
+
+function selectProjectIdFromContext(matches: Array<MakeRouteMatchUnion>) {
+  return matches.find(m => m.routeId === '/project/$projectId')?.params?.projectId
+    ?? matches.at(-1)?.context.projectId
+    ?? undefined
 }

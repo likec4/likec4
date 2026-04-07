@@ -13,8 +13,8 @@ import {
 } from '@mantine/core'
 import { IconExternalLink } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
+import { useHashHistory } from 'likec4:app-config'
 import { useState } from 'react'
-import { useHashHistory } from '../../../const'
 import { AlertLocalhost } from './AlertLocalhost'
 import { CopyButtonChild } from './CopyButtonChild'
 

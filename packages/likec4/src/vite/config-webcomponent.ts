@@ -20,13 +20,13 @@ import { chunkSizeWarningLimit, viteLogger } from './utils'
 const _dirname = dirname(fileURLToPath(import.meta.url))
 const pkgRoot = resolve(_dirname, '../..')
 
-export async function viteWebcomponentConfig({
+export function viteWebcomponentConfig({
   languageServices,
   outDir,
   base,
   webcomponentPrefix = 'likec4',
   filename = 'likec4-views.js',
-}: LikeC4ViteWebcomponentConfig): Promise<InlineConfig> {
+}: LikeC4ViteWebcomponentConfig): InlineConfig {
   const customLogger = viteLogger
 
   const root = resolve(pkgRoot, 'app')
@@ -49,9 +49,6 @@ export async function viteWebcomponentConfig({
     base,
     publicDir: false,
     define: {
-      WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
-      __USE_HASH_HISTORY__: 'false',
-      __USE_OVERVIEW_GRAPH__: 'false',
       __DEFAULT_THEME__: JSON.stringify('auto'),
       'process.env.NODE_ENV': '"development"',
     },
@@ -87,6 +84,9 @@ export async function viteWebcomponentConfig({
       react({}),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
+        appConfig: {
+          webcomponentPrefix,
+        },
       }),
     ],
   }

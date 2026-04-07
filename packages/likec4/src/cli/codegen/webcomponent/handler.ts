@@ -87,7 +87,7 @@ export async function webcomponentHandler({
   const publicDir = await mkTempPublicDir()
   logger.debug(`${k.dim('created temp public')} ${publicDir}`)
 
-  const webcomponentConfig = await viteWebcomponentConfig({
+  const webcomponentConfig = viteWebcomponentConfig({
     languageServices,
     outDir: publicDir,
     filename: filename,

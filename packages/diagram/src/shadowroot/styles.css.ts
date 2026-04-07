@@ -19,7 +19,21 @@ export const cssInteractive = css({
 })
 
 export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
-  const [styleSheets, setStyleSheets] = useState([] as CSSStyleSheet[])
+  const [styleSheets] = useState(() => {
+    const css = new CSSStyleSheet()
+    css.replaceSync(
+      inlinedStyles,
+      // .replaceAll(':where(:root,:host)', `:where(.likec4-shadow-root)`)
+      // .replaceAll(':root', `.likec4-shadow-root`)
+      /**
+       * replace only top-level body selectors, for example
+       * `body { }` should be replaced with `.likec4-shadow-root { }`
+       * but `.likec4-overlay-body { }` - not
+       */
+      // .replaceAll(/(?<![-_])\bbody\s*\{/g, `.likec4-shadow-root{`),
+    )
+    return [css]
+  })
 
   useIsomorphicLayoutEffect(() => {
     // Inject font CSS into document head once
@@ -28,35 +42,21 @@ export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string
       const style = document.createElement('style')
       style.setAttribute('type', 'text/css')
       style.setAttribute('data-likec4-font', '')
+
+      let nonce: string | undefined
       if (isString(styleNonce)) {
-        style.setAttribute('nonce', styleNonce)
+        nonce = styleNonce
       }
       if (isFunction(styleNonce)) {
-        style.setAttribute('nonce', styleNonce())
+        nonce = styleNonce()
+      }
+      if (nonce) {
+        style.setAttribute('nonce', nonce)
       }
       style.appendChild(document.createTextNode(fontsCss))
       document.head.appendChild(style)
     }
   }, [injectFontCss])
-
-  useIsomorphicLayoutEffect(() => {
-    const css = new CSSStyleSheet()
-    css.replaceSync(
-      inlinedStyles
-        .replaceAll(':where(:root,:host)', `.likec4-shadow-root`)
-        .replaceAll(':root', `.likec4-shadow-root`)
-        /**
-         * replace only top-level body selectors, for example
-         * `body { }` should be replaced with `.likec4-shadow-root { }`
-         * but `.likec4-overlay-body { }` - not
-         */
-        .replaceAll(/(?<![-_])\bbody\s*\{/g, `.likec4-shadow-root{`),
-    )
-    setStyleSheets([css])
-    return () => {
-      css.replaceSync('')
-    }
-  }, [inlinedStyles])
 
   return styleSheets
 }

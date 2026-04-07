@@ -62,9 +62,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     configFile: false,
     mode: 'development',
     define: {
-      WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
-      PAGE_TITLE: JSON.stringify(title),
-      __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       __DEFAULT_THEME__: JSON.stringify(cfg?.theme ?? 'auto'),
       'process.env.NODE_ENV': '"development"',
     },
@@ -130,6 +127,11 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     plugins: [
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
+        appConfig: {
+          webcomponentPrefix,
+          pageTitle: title,
+          useHashHistory: cfg.useHashHistory,
+        },
       }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',

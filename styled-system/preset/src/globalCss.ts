@@ -43,11 +43,7 @@ export const globalCss: ExtendableGlobalCss = {
     '.likec4-shadow-root': {
       display: 'contents',
       color: 'var(--colors-text)',
-      '--mantine-font-family': 'var(--likec4-app-font, var(--likec4-app-font-default))',
-      '--mantine-font-family-headings': 'var(--likec4-app-font, var(--likec4-app-font-default))',
-
       '& dialog': {
-        '--mantine-font-family': 'var(--likec4-app-font, var(--likec4-app-font-default))',
         color: 'var(--colors-text)',
       },
     },

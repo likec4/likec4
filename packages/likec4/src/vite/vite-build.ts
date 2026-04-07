@@ -117,7 +117,7 @@ export async function viteBuild({
   }
 
   if (buildWebcomponent && !outputSingleFile) {
-    const webcomponentConfig = await viteWebcomponentConfig({
+    const webcomponentConfig = viteWebcomponentConfig({
       webcomponentPrefix,
       languageServices,
       outDir: publicDir,

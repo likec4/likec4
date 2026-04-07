@@ -11,6 +11,7 @@ import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
+import { type AppConfig, createAppConfigModule } from './virtuals/app-config'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
 import { drawioModule, projectDrawioModule } from './virtuals/drawio'
@@ -30,6 +31,11 @@ type SharedOptions = {
    * By default, the plugin is active in all environments
    */
   environments?: string | string[]
+
+  /**
+   * Configuration for the static application
+   */
+  appConfig?: AppConfig
 }
 
 export type LikeC4VitePluginOptions =
@@ -94,7 +100,7 @@ const projectVirtuals = [
   projectReactModule,
 ]
 
-const virtuals = [
+const _virtuals = [
   projectsModule,
   modelModule,
   projectsOverviewModule,
@@ -113,6 +119,7 @@ const VITE_PLUGIN_LIKEC4 = 'vite-plugin-likec4'
 
 export function LikeC4VitePlugin({
   environments,
+  appConfig,
   ...opts
 }: LikeC4VitePluginOptions): PluginOption {
   // let logger: ViteLogger
@@ -120,6 +127,11 @@ export function LikeC4VitePlugin({
   let assetsDir: string
 
   let shouldDisposeOnStop = opts.watch ?? false
+
+  const virtuals = [
+    ..._virtuals,
+    createAppConfigModule(appConfig),
+  ]
 
   const mainPlugin: Plugin = {
     name: VITE_PLUGIN_LIKEC4,

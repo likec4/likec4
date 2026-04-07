@@ -3,34 +3,10 @@ import react from '@vitejs/plugin-react'
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import type { Plugin as PostcssPlugin } from 'postcss'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import { fs } from 'zx'
 import packageJson from './package.json' with { type: 'json' }
-
-const rewriteRootSelector: PostcssPlugin = {
-  postcssPlugin: 'postcss-rewrite-root',
-  Once(css) {
-    css.walkRules((rule) => {
-      let updatedSelectors = []
-      for (let val of rule.selectors) {
-        if (val.trim() === ':root') {
-          // console.log('rewriting :root', rule.selectors)
-          updatedSelectors.push('.likec4-shadow-root')
-          continue
-        }
-        if (val.trim() === 'body') {
-          updatedSelectors.push('.likec4-shadow-root')
-          continue
-        }
-      }
-      if (updatedSelectors.length) {
-        rule.selectors = updatedSelectors
-      }
-    })
-  },
-}
 
 const defaultConfig = defineConfig({
   define: {
@@ -156,94 +132,6 @@ const defaultConfig = defineConfig({
   ],
 })
 
-const bundleConfig = defineConfig({
-  define: {
-    'process.env.NODE_ENV': JSON.stringify('production'),
-  },
-  logLevel: 'info',
-  resolve: {
-    extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
-    alias: {
-      '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-      'react-dom/server': resolve('src/bundle/react-dom-server-mock.ts'),
-    },
-  },
-  mode: 'production',
-  esbuild: {
-    jsxDev: false,
-    minifyIdentifiers: false,
-    minifyWhitespace: true,
-    minifySyntax: true,
-    tsconfigRaw: readFileSync('tsconfig.src.json', 'utf-8'),
-  },
-  build: {
-    outDir: 'bundle',
-    emptyOutDir: true,
-    cssCodeSplit: true,
-    cssMinify: true,
-    target: 'esnext',
-    lib: {
-      entry: {
-        index: 'src/index.ts',
-      },
-      formats: ['es'],
-      fileName(_format, entryName) {
-        return `${entryName}.js`
-      },
-    },
-    rollupOptions: {
-      output: {
-        chunkFileNames: 'chunk-[hash].js',
-      },
-      treeshake: {
-        preset: 'recommended',
-      },
-      external: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react-dom/client',
-        /@likec4\/core.*/,
-        '@emotion/is-prop-valid', // dev-only import from motion
-      ],
-    },
-  },
-  css: {
-    postcss: {
-      plugins: [
-        pandacss(),
-        rewriteRootSelector,
-      ],
-    },
-  },
-  plugins: [
-    react(),
-    // dts({
-    //   staticImport: true,
-    //   tsconfigPath: 'tsconfig.src.json',
-    //   rollupTypes: true,
-    //   outDir: 'dist',
-    //   strictOutput: false,
-    //   bundledPackages: [
-    //     '@react-hookz/web',
-    //   ],
-    //   compilerOptions: {
-    //     customConditions: [],
-    //     noCheck: true,
-    //     declarationMap: false,
-    //   },
-    //   afterBuild(emittedFiles) {
-    //     for (let [file, content] of emittedFiles) {
-    //       file = path.relative(path.resolve('dist'), file)
-    //       const to = path.resolve('bundle', file)
-    //       writeFileSync(to, content)
-    //     }
-    //   },
-    // }),
-  ],
-})
-
 const stylesConfig = defineConfig({
   build: {
     outDir: 'dist',
@@ -276,9 +164,6 @@ const stylesConfig = defineConfig({
 export default defineConfig(({ mode }) => {
   if (mode === 'css') {
     return stylesConfig
-  }
-  if (mode === 'bundle') {
-    return bundleConfig
   }
   return defaultConfig
 })

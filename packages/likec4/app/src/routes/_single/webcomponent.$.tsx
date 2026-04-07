@@ -1,7 +1,7 @@
 import { Box } from '@likec4/styles/jsx'
 import { useMantineColorScheme } from '@mantine/core'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { ComponentName } from '../../const'
+import { ComponentName } from 'likec4:app-config'
 
 export const Route = createFileRoute('/_single/webcomponent/$')({
   component: WebcomponentPage,

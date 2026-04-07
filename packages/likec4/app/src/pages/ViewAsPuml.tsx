@@ -1,9 +1,9 @@
 import { Box } from '@likec4/styles/jsx'
 import { Button, Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
+import { krokiPumlSvgUrl } from 'likec4:app-config'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 import { CopyToClipboard } from '../components/CopyToClipboard'
-import { krokiPumlSvgUrl } from '../const'
 import * as styles from './styles.css'
 
 const fetchFromKroki = async (puml: string) => {
