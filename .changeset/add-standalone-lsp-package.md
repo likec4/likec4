@@ -1,6 +1,5 @@
 ---
-'@likec4/lsp': patch
-'@likec4/language-server': patch
+'@likec4/lsp': minor
 ---
 
 Add standalone `@likec4/lsp` package for third-party editor integrations (Neovim, Zed, etc.)
