@@ -290,7 +290,7 @@ catalogs:
       specifier: ^4.1.0
       version: 4.1.0
     defu:
-      specifier: ^6.1.4
+      specifier: ^6.1.6
       version: 6.1.6
     esm-env:
       specifier: ^1.2.2
@@ -1907,7 +1907,7 @@ importers:
         specifier: ^15.1.0
         version: 15.1.0
       defu:
-        specifier: ^6.1.4
+        specifier: ^6.1.6
         version: 6.1.6
       esbuild-node-externals:
         specifier: catalog:esbuild
