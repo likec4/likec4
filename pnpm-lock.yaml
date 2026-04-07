@@ -2110,7 +2110,7 @@ importers:
         version: 3.5.0
       tsdown:
         specifier: 'catalog:'
-        version: 0.20.3(@typescript/native-preview@7.0.0-dev.20260329.1)(typescript@5.9.3)
+        version: 0.20.3(@typescript/native-preview@7.0.0-dev.20260404.1)(typescript@5.9.3)
       turbo:
         specifier: 2.8.21
         version: 2.8.21
