@@ -615,7 +615,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 id: _id,
                 kind: kind as any,
                 ...spec,
-                title: title ?? nameFromFqn(_id),
+                title: title ?? spec.title ?? nameFromFqn(_id),
                 ...(description && { description: toMarkdownOrString(description) }),
                 ...(summary && { summary: toMarkdownOrString(summary) }),
                 style: exact({
@@ -878,7 +878,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                   id: _id,
                   kind: kind as any,
                   ...spec,
-                  title: title ?? nameFromFqn(_id),
+                  title: title ?? spec.title ?? nameFromFqn(_id),
                   ...(description && { description: toMarkdownOrString(description) }),
                   ...(summary && { summary: toMarkdownOrString(summary) }),
                   style: exact({
