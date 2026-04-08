@@ -313,16 +313,25 @@ export class ProjectsManager {
    * Called during initial server startup; dynamic changes restart the server.
    */
   setWorkspaceExcludePatterns(patterns: Record<string, boolean>): void {
-    const excludePatterns = Object.entries(patterns)
-      .filter(([_, enabled]) => enabled)
-      .map(([pattern]) => pattern)
+    try {
+      if (!patterns || typeof patterns !== 'object') {
+        this.#workspaceExclude = undefined
+        return
+      }
+      const excludePatterns = Object.entries(patterns)
+        .filter(([_, enabled]) => enabled)
+        .map(([pattern]) => pattern)
 
-    if (excludePatterns.length === 0) {
+      if (excludePatterns.length === 0) {
+        this.#workspaceExclude = undefined
+        return
+      }
+
+      this.#workspaceExclude = picomatch(excludePatterns, { dot: true })
+    } catch (e) {
+      logger.warn('Failed to set workspace exclude patterns', { error: e })
       this.#workspaceExclude = undefined
-      return
     }
-
-    this.#workspaceExclude = picomatch(excludePatterns, { dot: true })
   }
 
   /**
