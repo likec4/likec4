@@ -1,11 +1,13 @@
 import useDocumentSelector from '#useDocumentSelector'
 import useEnvLanguageClient from '#useLanguageClient'
+import { watchDebounced } from '@reactive-vscode/vueuse'
 import {
   createSingletonComposable,
   useDisposable,
   watch,
 } from 'reactive-vscode'
 import { State } from 'vscode-languageclient'
+import { config } from './config'
 import { isDev } from './const'
 import { useExtensionLogger } from './useExtensionLogger'
 import { useIsActivated } from './useIsActivated'
@@ -69,6 +71,14 @@ export const useLanguageClient = createSingletonComposable(() => {
     logger.info('updated document selector', { selector })
     client.clientOptions.documentSelector = selector
     await restartLanguageServer()
+  })
+
+  watchDebounced(() => config.exclude, () => {
+    logger.debug`${'exclude'} configuration changed, restarting language server`
+    void restartLanguageServer()
+  }, {
+    deep: true,
+    debounce: 800,
   })
 
   return {

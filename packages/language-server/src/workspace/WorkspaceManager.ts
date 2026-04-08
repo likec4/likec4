@@ -8,6 +8,7 @@ import type {
   LangiumDocumentFactory,
 } from 'langium'
 import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
+import pTimeout from 'p-timeout'
 import { hasAtLeast, uniqueBy } from 'remeda'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
@@ -38,6 +39,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * First load all project config files, then load all documents in the workspace.
    */
   protected override async performStartup(folders: WorkspaceFolder[]): Promise<LangiumDocument[]> {
+    await this.readExcludeConfig()
     this.folders ??= folders
     const configFiles = [] as FileSystemNode[]
     for (const folder of folders) {
@@ -60,6 +62,35 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       }
     }
     return await super.performStartup(folders)
+  }
+
+  /**
+   * Read workspace exclude patterns from configuration before workspace scan.
+   * Uses a timeout fallback for third-party IDEs that may not support workspace/configuration.
+   */
+  private async readExcludeConfig(): Promise<void> {
+    if (!this.services.lsp.Connection) {
+      logger.debug`no LSP connection, skipping initial configuration read`
+      return
+    }
+    const configProvider = this.services.workspace.ConfigurationProvider
+    const wait = <T>(promise: Promise<T>) => pTimeout(promise, { milliseconds: 1000, message: false })
+    try {
+      logger.trace`waiting for ConfigurationProvider ready...`
+      await wait(configProvider.ready)
+      logger.trace`ConfigurationProvider ready, reading exclude patterns...`
+      const excludeConfig = await wait<string[]>(
+        configProvider.getConfiguration('likec4', 'exclude'),
+      )
+      if (excludeConfig) {
+        logger.trace`exclude configuration found ${excludeConfig}`
+        this.services.workspace.ProjectsManager.setWorkspaceExcludePatterns(excludeConfig)
+      } else {
+        logger.trace('no initial exclude configuration found')
+      }
+    } catch (e) {
+      logger.warn('Failed to read initial exclude configuration', { error: e })
+    }
   }
 
   /**
@@ -129,7 +160,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected override includeEntry(_: WorkspaceFolder, entry: FileSystemNode, selector: FileSelector): boolean {
     const name = UriUtils.basename(entry.uri)
     if (entry.isDirectory) {
-      return !excludeNodeModules(name)
+      return !excludeNodeModules(name) && !this.services.workspace.ProjectsManager.isExcluded(entry.uri)
     } else if (entry.isFile) {
       const selected = selector.fileExtensions.includes(UriUtils.extname(entry.uri)) ||
         selector.fileNames.includes(name)

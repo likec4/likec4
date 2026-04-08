@@ -13,6 +13,9 @@ const shared = {
   define: {
     'process.env.NODE_ENV': isProduction ? '"production"' : '"development"',
   },
+  alias: {
+    'esbuild': import.meta.resolve('esbuild-wasm'),
+  },
   minify: isProduction,
   outputOptions: {
     keepNames: true,

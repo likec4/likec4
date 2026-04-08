@@ -15,6 +15,15 @@
   ],
   "references": [
     {
+      "path": "../core/"
+    },
+    {
+      "path": "../config/"
+    },
+    {
+      "path": "../layouts/"
+    },
+    {
       "path": "../log/"
     },
     {

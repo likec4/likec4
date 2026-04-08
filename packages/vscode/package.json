@@ -39,7 +39,7 @@
     "vsce:publish": "pnpx vsce publish --skip-duplicate"
   },
   "engines": {
-    "vscode": "^1.84.0"
+    "vscode": "^1.110.0"
   },
   "keywords": [
     "architecture",
@@ -128,7 +128,7 @@
         "likec4.mcp.enabled": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "Enable MCP Server  \nAdd MCP Server to your `#mcp#` configuration: \n```jsonc\n{\n  servers: {\n    likec4: {\n      type: 'sse',\n      url: 'http://localhost:33335/mcp'\n    }\n  }\n}\n```"
+          "markdownDescription": "Enable MCP Server  \nAdd to your `mcp.json`: \n```json\n{\n  \"servers\": {\n    \"likec4\": {\n      \"type\": \"sse\",\n      \"url\": \"http://localhost:33335/mcp\"\n    }\n  }\n}\n```"
         },
         "likec4.mcp.port": {
           "description": "Port to use for MCP Server",
@@ -136,8 +136,7 @@
           "default": 33335
         },
         "likec4.graphviz.mode": {
-          "title": "Graphviz mode",
-          "description": "If you are experiencing issues with the bundled WASM Graphviz, try switch to local binary (\"dot\")",
+          "markdownDescription": "If you are experiencing issues with the bundled WASM Graphviz, try switch to local binary.  \nThe local binary mode is slower, but more stable and supports larger diagrams.  \n(`dot` must be installed and available in PATH or configured via `#likec4.graphviz.path#`)",
           "type": "string",
           "enum": [
             "wasm",
@@ -151,9 +150,8 @@
         },
         "likec4.graphviz.path": {
           "type": "string",
-          "title": "Graphviz binary path",
           "default": "",
-          "description": "Path to the Graphviz dot executable.\nIf empty, extension will try to find it in the PATH."
+          "markdownDescription": "Path to the Graphviz `dot` executable.\nIf empty, extension will try to find it in the PATH."
         },
         "likec4.trace.extension": {
           "type": "string",
@@ -184,12 +182,20 @@
             "ignore"
           ],
           "default": "auto",
-          "description": "Default quote style to use for the LikeC4 formatter. If `ignore`, the formatter will not change the quote style. If `auto`, the formatter will use the quote style of the file it is formatting."
+          "markdownDescription": "Default quote style to use for the LikeC4 formatter. If `ignore`, the formatter will not change the quote style. If `auto`, the formatter will use the quote style of the file it is formatting."
         },
         "likec4.node.path": {
           "type": "string",
           "default": "",
-          "description": "Path to the Node.js executable used to run the language server. If empty, uses 'node' from PATH."
+          "markdownDescription": "Path to the Node.js executable used to run the language server. If empty, uses `node` from PATH."
+        },
+        "likec4.exclude": {
+          "type": "array",
+          "default": [],
+          "markdownDescription": "Configure glob patterns for excluding files and folders from LikeC4 processing.  \nThe pattern format is the same as `exclude` in `likec4.config.json`.  \nExample:\n```js\n\"**/generated/**\"\n\"**/.worktrees/**\"\n```",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -297,13 +303,12 @@
     }
   },
   "dependencies": {
-    "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild",
     "fdir": "catalog:externals",
     "std-env": "catalog:externals"
   },
   "devDependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:externals",
+    "esbuild-wasm": "catalog:esbuild",
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",

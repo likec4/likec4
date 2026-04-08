@@ -42,10 +42,16 @@
       "path": "../../packages/diagram/tsconfig.src.json"
     },
     {
+      "path": "../../packages/generators/"
+    },
+    {
       "path": "../../packages/layouts/"
     },
     {
       "path": "../../packages/language-server/"
+    },
+    {
+      "path": "../../packages/log/"
     },
     {
       "path": "../../styled-system/styles/"

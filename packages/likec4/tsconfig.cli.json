@@ -31,31 +31,34 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
-      "path": "../config/tsconfig.json"
+      "path": "../config/"
     },
     {
-      "path": "../language-services/tsconfig.json"
+      "path": "../language-services/"
     },
     {
-      "path": "../language-server/tsconfig.json"
+      "path": "../language-server/"
     },
     {
-      "path": "../vite-plugin/tsconfig.json"
+      "path": "../vite-plugin/"
     },
     {
       "path": "../diagram/tsconfig.src.json"
     },
     {
-      "path": "../generators/tsconfig.json"
+      "path": "../generators/"
     },
     {
-      "path": "../layouts/tsconfig.json"
+      "path": "../layouts/"
     },
     {
-      "path": "../leanix-bridge/tsconfig.json"
+      "path": "../leanix-bridge/"
+    },
+    {
+      "path": "../log/"
     }
   ]
 }
