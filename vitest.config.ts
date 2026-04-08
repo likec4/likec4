@@ -1,6 +1,11 @@
 import { configDefaults, defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  ssr: {
+    resolve: {
+      conditions: ['sources'],
+    },
+  },
   test: {
     slowTestThreshold: 1000,
     snapshotFormat: {

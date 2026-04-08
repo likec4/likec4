@@ -17,8 +17,6 @@ const sharedConfig = defineConfig({
       omitAnnotationLines: true,
       contextLines: 6,
     },
-    isolate: false,
-    maxConcurrency: 10,
   },
 })
 

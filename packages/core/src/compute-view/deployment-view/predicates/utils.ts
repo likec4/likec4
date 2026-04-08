@@ -211,16 +211,23 @@ export function applyElementPredicate<M extends AnyAux, E extends DeploymentElem
 ):
   | boolean
   | readonly E[]
-  | ((data: readonly E[]) => readonly E[])
+  | ((data: readonly E[]) => E[])
 {
   if (args.length === 1) {
-    return x => applyElementPredicate(x, args[0]) as readonly E[]
+    const where = args[0]
+    if (where == null) {
+      return (x: readonly E[]) => x as E[]
+    }
+    return (x: readonly E[]) => x.filter(y => where(toFilterable(y, y)))
   }
 
   const [c, where] = args
 
   if (isArray(c)) {
-    return c.filter(x => applyElementPredicate(x, where))
+    if (where == null) {
+      return c as E[]
+    }
+    return c.filter(x => where(toFilterable(x, x)))
   }
 
   return where?.(toFilterable(c, c)) ?? true
