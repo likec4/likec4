@@ -34,6 +34,7 @@ import { WildcardPredicate } from './wildcard'
  */
 export function predicateToPatch(op: 'include', ctx: PredicateCtx): StageInclude | undefined
 export function predicateToPatch(op: 'exclude', ctx: PredicateCtx): StageExclude | undefined
+export function predicateToPatch(op: 'include' | 'exclude', ctx: PredicateCtx): StageInclude | StageExclude | undefined
 export function predicateToPatch(
   op: 'include' | 'exclude',
   { expr, where, ...ctx }: PredicateCtx,
