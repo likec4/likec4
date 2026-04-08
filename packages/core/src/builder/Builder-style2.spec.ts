@@ -295,6 +295,75 @@ describe('Builder (style 2)', () => {
     )
   })
 
+  it('custom description/summary should override specification defaults', () => {
+    const specWithDefaults = Builder
+      .specification({
+        elements: {
+          component: {
+            description: { txt: 'spec-description' },
+            summary: { txt: 'spec-summary' },
+          },
+        },
+        deployments: {
+          node: {
+            description: { txt: 'spec-node-description' },
+            summary: { txt: 'spec-node-summary' },
+          },
+        },
+      })
+
+    const m = specWithDefaults
+      .model(({ component }, _) =>
+        _(
+          component('c1', {
+            description: 'custom-description',
+            summary: 'custom-summary',
+          }),
+          component('c2', 'Only Title'),
+        )
+      )
+      .deployment(({ node, instanceOf }, _) =>
+        _(
+          node('n1', {
+            description: 'custom-node-description',
+            summary: 'custom-node-summary',
+          }),
+          instanceOf('n1.c1', 'c1'),
+        )
+      )
+      .build()
+
+    // Custom values should override spec defaults
+    expect(m.elements).toMatchObject(
+      {
+        c1: {
+          description: { txt: 'custom-description' },
+          summary: { txt: 'custom-summary' },
+        },
+      } satisfies PartialDeep<ParsedLikeC4ModelData['elements']>,
+    )
+
+    // Element without custom values should get spec defaults
+    expect(m.elements).toMatchObject(
+      {
+        c2: {
+          description: { txt: 'spec-description' },
+          summary: { txt: 'spec-summary' },
+        },
+      } satisfies PartialDeep<ParsedLikeC4ModelData['elements']>,
+    )
+
+    // Deployment custom values should override spec defaults
+    expect(m.deployments.elements).toMatchObject(
+      {
+        n1: {
+          description: { txt: 'custom-node-description' },
+          summary: { txt: 'custom-node-summary' },
+        },
+      } satisfies PartialDeep<ParsedLikeC4ModelData['deployments']['elements']>,
+    )
+  })
+
   it('should preserve icon style properties in models', () => {
     const m = spec
       .model(({ component }, _) =>

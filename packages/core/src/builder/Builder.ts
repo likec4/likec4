@@ -614,6 +614,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               b.__addElement(exact({
                 id: _id,
                 kind: kind as any,
+                ...spec,
                 title: title ?? nameFromFqn(_id),
                 ...(description && { description: toMarkdownOrString(description) }),
                 ...(summary && { summary: toMarkdownOrString(summary) }),
@@ -629,7 +630,6 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                   ...style,
                 }) satisfies ElementStyle,
                 links: mapLinks(links),
-                ...spec,
                 ...props,
               }))
               return b
@@ -877,6 +877,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 exact({
                   id: _id,
                   kind: kind as any,
+                  ...spec,
                   title: title ?? nameFromFqn(_id),
                   ...(description && { description: toMarkdownOrString(description) }),
                   ...(summary && { summary: toMarkdownOrString(summary) }),
@@ -892,7 +893,6 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                     ...style,
                   }) satisfies ElementStyle,
                   links: mapLinks(links),
-                  ...spec,
                   ...props,
                 }) satisfies DeploymentNode,
               )
