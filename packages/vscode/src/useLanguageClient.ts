@@ -6,6 +6,7 @@ import {
   watch,
 } from 'reactive-vscode'
 import { State } from 'vscode-languageclient'
+import { config } from './config'
 import { isDev } from './const'
 import { useExtensionLogger } from './useExtensionLogger'
 import { useIsActivated } from './useIsActivated'
@@ -68,6 +69,11 @@ export const useLanguageClient = createSingletonComposable(() => {
   watch(documentSelector, async (selector) => {
     logger.info('updated document selector', { selector })
     client.clientOptions.documentSelector = selector
+    await restartLanguageServer()
+  })
+
+  watch(() => config.exclude, async () => {
+    logger.info('likec4.exclude configuration changed, restarting language server')
     await restartLanguageServer()
   })
 

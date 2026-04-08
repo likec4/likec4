@@ -310,37 +310,19 @@ export class ProjectsManager {
 
   /**
    * Updates the workspace-level exclude patterns from VS Code settings.
-   * Returns true if patterns changed.
+   * Called during initial server startup; dynamic changes restart the server.
    */
-  setWorkspaceExcludePatterns(patterns: Record<string, boolean>): boolean {
+  setWorkspaceExcludePatterns(patterns: Record<string, boolean>): void {
     const excludePatterns = Object.entries(patterns)
       .filter(([_, enabled]) => enabled)
       .map(([pattern]) => pattern)
 
     if (excludePatterns.length === 0) {
-      if (!this.#workspaceExclude) return false
       this.#workspaceExclude = undefined
-      return true
+      return
     }
 
     this.#workspaceExclude = picomatch(excludePatterns, { dot: true })
-    return true
-  }
-
-  /**
-   * Updates workspace-level exclude patterns and triggers rebuild if changed.
-   */
-  async applyWorkspaceExcludePatterns(
-    patterns: Record<string, boolean>,
-    cancelToken?: Cancellation.CancellationToken,
-  ): Promise<void> {
-    const changed = this.setWorkspaceExcludePatterns(patterns)
-    if (!changed) return
-
-    logger.info`workspace exclude patterns updated`
-    this.resetCaches()
-    this.notifyListeners()
-    await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
   }
 
   /**

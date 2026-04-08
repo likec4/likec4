@@ -381,35 +381,10 @@ export class Rpc extends ADisposable {
         }
       }),
       // ----------
-      workspace.ConfigurationProvider.onConfigurationSectionUpdate((update) => {
-        if (update.section !== this.services.LanguageMetaData.languageId) return
-        const excludeConfig = update.configuration?.exclude
-        if (excludeConfig !== undefined) {
-          logger.debug`received workspace exclude patterns update`
-          void workspace.ProjectsManager.applyWorkspaceExcludePatterns(
-            (excludeConfig as Record<string, boolean>) ?? {},
-          )
-        }
-      }),
       Disposable.create(() => {
         notifyModelParsed.cancel()
       }),
     )
-
-    // Read initial exclude configuration (onConfigurationSectionUpdate does not fire for the initial load)
-    void workspace.ConfigurationProvider.ready.then(async () => {
-      try {
-        const excludeConfig = await workspace.ConfigurationProvider.getConfiguration(
-          this.services.LanguageMetaData.languageId,
-          'exclude',
-        )
-        if (excludeConfig && typeof excludeConfig === 'object') {
-          await workspace.ProjectsManager.applyWorkspaceExcludePatterns(excludeConfig as Record<string, boolean>)
-        }
-      } catch (e) {
-        logger.warn('Failed to read initial exclude configuration', { error: e })
-      }
-    })
 
     function reportLayoutDrift(diagrams: DiagramView[]) {
       return pipe(
