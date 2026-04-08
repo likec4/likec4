@@ -88,7 +88,7 @@
       "mnemonist": "0.40.3",
       "min-document": ">=2.19.2",
       "flatted": ">=3.4.2",
-      "h3": ">=1.15.10",
+      "h3": ">=1.15.11",
       "undici": ">=7.24.6",
       "devalue": ">=5.6.4",
       "diffie-hellman>bn.js": "4.12.3",
