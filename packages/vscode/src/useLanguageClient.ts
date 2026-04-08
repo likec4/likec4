@@ -72,9 +72,13 @@ export const useLanguageClient = createSingletonComposable(() => {
     await restartLanguageServer()
   })
 
-  watch(() => config.exclude, async () => {
-    logger.info('likec4.exclude configuration changed, restarting language server')
-    await restartLanguageServer()
+  let excludeRestartTimer: ReturnType<typeof setTimeout> | undefined
+  watch(() => config.exclude, () => {
+    clearTimeout(excludeRestartTimer)
+    excludeRestartTimer = setTimeout(() => {
+      logger.info('likec4.exclude configuration changed, restarting language server')
+      void restartLanguageServer()
+    }, 800)
   })
 
   return {
