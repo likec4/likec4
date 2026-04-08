@@ -3,6 +3,9 @@
   "env": {
     "es2024": true
   },
+  "options": {
+    "typeAware": true
+  },
   "plugins": [
     "eslint",
     "typescript",

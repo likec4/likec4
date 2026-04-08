@@ -1,5 +1,4 @@
 import { defu } from 'defu'
-import { resolve } from 'pathe'
 import {
   type UserWorkspaceConfig,
   defineConfig,
@@ -7,29 +6,10 @@ import {
   mergeConfig,
 } from 'vitest/config'
 
-const __dirname = import.meta.dirname
-
-const packages = (packageName: string, ...paths: string[]) =>
-  resolve(__dirname, '..', 'packages', packageName, ...paths)
-const src = (packageName: string) => packages(packageName, 'src')
-
 const sharedConfig = defineConfig({
-  resolve: {
-    conditions: ['sources', 'development'],
-    // Seems vitest doesn't resolve conditions (did have time to investigate), so we add aliases for all packages
-    alias: {
-      '@likec4/core': src('core'),
-      '@likec4/config/node': packages('config', 'src', 'node'),
-      '@likec4/config': packages('config', 'src'),
-      '@likec4/diagram': src('diagram'),
-      '@likec4/generators': src('generators'),
-      '@likec4/language-server': src('language-server'),
-      '@likec4/language-services': src('language-services'),
-      '@likec4/layouts': src('layouts'),
-      '@likec4/leanix-bridge': src('leanix-bridge'),
-      '@likec4/vite-plugin': src('vite-plugin'),
-      '@likec4/log': src('log'),
-      '@likec4/style-preset': resolve(__dirname, '..', 'styled-system', 'preset', 'src'),
+  ssr: {
+    resolve: {
+      conditions: ['sources'],
     },
   },
   test: {
@@ -37,11 +17,6 @@ const sharedConfig = defineConfig({
       omitAnnotationLines: true,
       contextLines: 6,
     },
-    snapshotFormat: {
-      escapeString: false,
-    },
-    isolate: false,
-    maxConcurrency: 10,
   },
 })
 
