@@ -129,7 +129,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected override includeEntry(_: WorkspaceFolder, entry: FileSystemNode, selector: FileSelector): boolean {
     const name = UriUtils.basename(entry.uri)
     if (entry.isDirectory) {
-      return !excludeNodeModules(name)
+      return !excludeNodeModules(name) && !this.services.workspace.ProjectsManager.isExcluded(entry.uri)
     } else if (entry.isFile) {
       const selected = selector.fileExtensions.includes(UriUtils.extname(entry.uri)) ||
         selector.fileNames.includes(name)

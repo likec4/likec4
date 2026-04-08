@@ -240,6 +240,11 @@ export class ProjectsManager {
   #defaultProjectId: ProjectId | undefined = undefined
 
   /**
+   * Workspace-level exclude matcher from VS Code settings (likec4.exclude).
+   */
+  #workspaceExclude: ((test: string) => boolean) | undefined = undefined
+
+  /**
    * Registered projects.
    * Sorted descending by the number of segments in the folder path.
    * This ensures that the most specific project is used for a document.
@@ -269,6 +274,10 @@ export class ProjectsManager {
 
   #excludedDocuments = new DefaultMap((document: NormalizedUri) => {
     const docuri = normalizeUri(document)
+    // Workspace-level excludes (from VS Code settings) take precedence
+    if (this.#isExcludedByWorkspace(docuri)) {
+      return true
+    }
     const owner = this.#ownerOf.get(docuri)
     if (!owner) {
       return isExcludedByDefault(docuri)
@@ -293,11 +302,45 @@ export class ProjectsManager {
 
   constructor(protected services: LikeC4SharedServices) {
     logger.debug`created`
-    // onNextTick(() => {
-    //   this.services.workspace.WorkspaceManager.onForceCleanCache(() => {
-    //     this.resetCaches()
-    //   })
-    // })
+  }
+
+  #isExcludedByWorkspace(uri: NormalizedUri): boolean {
+    return this.#workspaceExclude?.(withoutProtocol(uri)) ?? false
+  }
+
+  /**
+   * Updates the workspace-level exclude patterns from VS Code settings.
+   * Returns true if patterns changed.
+   */
+  setWorkspaceExcludePatterns(patterns: Record<string, boolean>): boolean {
+    const excludePatterns = Object.entries(patterns)
+      .filter(([_, enabled]) => enabled)
+      .map(([pattern]) => pattern)
+
+    if (excludePatterns.length === 0) {
+      if (!this.#workspaceExclude) return false
+      this.#workspaceExclude = undefined
+      return true
+    }
+
+    this.#workspaceExclude = picomatch(excludePatterns, { dot: true })
+    return true
+  }
+
+  /**
+   * Updates workspace-level exclude patterns and triggers rebuild if changed.
+   */
+  async applyWorkspaceExcludePatterns(
+    patterns: Record<string, boolean>,
+    cancelToken?: Cancellation.CancellationToken,
+  ): Promise<void> {
+    const changed = this.setWorkspaceExcludePatterns(patterns)
+    if (!changed) return
+
+    logger.info`workspace exclude patterns updated`
+    this.resetCaches()
+    this.notifyListeners()
+    await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
   }
 
   /**
@@ -427,6 +470,10 @@ export class ProjectsManager {
    */
   isIncluded(projectId: ProjectId, document: LangiumDocument | URI | string): boolean {
     const uri = normalizeUri(document)
+    // Workspace-level excludes (from VS Code settings) take precedence
+    if (this.#isExcludedByWorkspace(uri)) {
+      return false
+    }
     // If there are no projects, check if document is not excluded
     if (!hasAtLeast(this.#projects, 1)) {
       return !isExcludedByDefault(uri)
