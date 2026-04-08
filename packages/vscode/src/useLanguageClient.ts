@@ -1,5 +1,6 @@
 import useDocumentSelector from '#useDocumentSelector'
 import useEnvLanguageClient from '#useLanguageClient'
+import { watchDebounced } from '@reactive-vscode/vueuse'
 import {
   createSingletonComposable,
   useDisposable,
@@ -72,14 +73,10 @@ export const useLanguageClient = createSingletonComposable(() => {
     await restartLanguageServer()
   })
 
-  let excludeRestartTimer: ReturnType<typeof setTimeout> | undefined
-  watch(() => config.exclude, () => {
-    clearTimeout(excludeRestartTimer)
-    excludeRestartTimer = setTimeout(() => {
-      logger.info('likec4.exclude configuration changed, restarting language server')
-      void restartLanguageServer()
-    }, 800)
-  })
+  watchDebounced(() => config.exclude, () => {
+    logger.info('likec4.exclude configuration changed, restarting language server')
+    void restartLanguageServer()
+  }, { debounce: 800 })
 
   return {
     client,
