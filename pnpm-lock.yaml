@@ -159,8 +159,8 @@ catalogs:
       specifier: ^4.0.4
       version: 4.0.4
     std-env:
-      specifier: ^3.10.0
-      version: 3.10.0
+      specifier: ^4.0.0
+      version: 4.0.0
     zod:
       specifier: ^4.3.6
       version: 4.3.6
@@ -821,7 +821,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -914,7 +914,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -1465,7 +1465,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -1595,7 +1595,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       tinyrainbow:
         specifier: catalog:utils
         version: 3.0.3
@@ -1775,7 +1775,7 @@ importers:
         version: 1.58.2
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -2134,7 +2134,7 @@ importers:
         version: 0.27.4
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
     devDependencies:
       '@likec4/config':
         specifier: workspace:*
@@ -2333,7 +2333,7 @@ importers:
         version: 2.33.6
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -2400,7 +2400,7 @@ importers:
         version: 6.4.0(picomatch@4.0.4)
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.0.0
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
@@ -8842,9 +8842,6 @@ packages:
   statuses@2.0.2:
     resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
     engines: {node: '>= 0.8'}
-
-  std-env@3.10.0:
-    resolution: {integrity: sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==}
 
   std-env@4.0.0:
     resolution: {integrity: sha512-zUMPtQ/HBY3/50VbpkupYHbRroTRZJPRLvreamgErJVys0ceuzMkD44J/QjqhHjOzK42GQ3QZIeFG1OYfOtKqQ==}
@@ -17432,8 +17429,6 @@ snapshots:
       '@astrojs/starlight': 0.37.7(astro@5.18.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.60.1)(terser@5.39.2)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3))
 
   statuses@2.0.2: {}
-
-  std-env@3.10.0: {}
 
   std-env@4.0.0: {}
 
