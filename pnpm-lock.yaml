@@ -344,8 +344,8 @@ catalogs:
       specifier: ^2.0.3
       version: 2.0.3
     remeda:
-      specifier: ^2.33.6
-      version: 2.33.6
+      specifier: ^2.33.7
+      version: 2.33.7
     safe-stringify:
       specifier: ^1.3.0
       version: 1.3.0
@@ -818,7 +818,7 @@ importers:
         version: 4.7.5(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       std-env:
         specifier: catalog:externals
         version: 3.10.0
@@ -911,7 +911,7 @@ importers:
         version: 2.0.3
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       std-env:
         specifier: catalog:externals
         version: 3.10.0
@@ -988,7 +988,7 @@ importers:
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260405.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -1130,7 +1130,7 @@ importers:
         version: 11.1.2
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       turbo:
         specifier: 2.9.5
         version: 2.9.5
@@ -1226,7 +1226,7 @@ importers:
         version: 20.6.0(prop-types@15.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -1326,7 +1326,7 @@ importers:
         version: 2.1.0
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -1462,7 +1462,7 @@ importers:
         version: 9.3.0
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       std-env:
         specifier: catalog:externals
         version: 3.10.0
@@ -1592,7 +1592,7 @@ importers:
         version: 2.0.3
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       std-env:
         specifier: catalog:externals
         version: 3.10.0
@@ -1671,7 +1671,7 @@ importers:
         version: 8.1.1
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -1720,7 +1720,7 @@ importers:
         version: link:../core
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1992,7 +1992,7 @@ importers:
         version: 20.6.0(prop-types@15.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       semver:
         specifier: ^7.7.4
         version: 7.7.4
@@ -2174,7 +2174,7 @@ importers:
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260405.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       tinyrainbow:
         specifier: catalog:utils
         version: 3.0.3
@@ -2330,7 +2330,7 @@ importers:
         version: 19.2.4
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       std-env:
         specifier: catalog:externals
         version: 3.10.0
@@ -2485,7 +2485,7 @@ importers:
         version: 0.4.1(@types/vscode@1.106.1)
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       tsdown:
         specifier: 'catalog:'
         version: 0.20.3(@typescript/native-preview@7.0.0-dev.20260405.1)(typescript@5.9.3)
@@ -2641,7 +2641,7 @@ importers:
         version: 6.1.1(react@19.2.4)
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2671,7 +2671,7 @@ importers:
         version: 0.2.1(@pandacss/dev@1.9.1(typescript@5.9.3))(@radix-ui/colors@3.0.0)
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -2763,7 +2763,7 @@ importers:
         version: 8.5.8
       remeda:
         specifier: catalog:utils
-        version: 2.33.6
+        version: 2.33.7
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -8498,8 +8498,8 @@ packages:
   remark-stringify@11.0.0:
     resolution: {integrity: sha512-1OSmLd3awB/t8qdoEOMazZkNsfVTeY4fTsgzcQFdXNq8ToTN4ZGwrMnlda4K6smTFKD+GRV6O48i6Z4iKgPPpw==}
 
-  remeda@2.33.6:
-    resolution: {integrity: sha512-tazDGH7s75kUPGBKLvhgBEHMgW+TdDFhjUAMdQj57IoWz6HsGa5D2RX5yDUz6IIqiRRvZiaEHzCzWdTeixc/Kg==}
+  remeda@2.33.7:
+    resolution: {integrity: sha512-cXlyjevWx5AcslOUEETG4o8XYi9UkoCXcJmj7XhPFVbla+ITuOBxv6ijBrmbeg+ZhzmDThkNdO+iXKUfrJep1w==}
 
   request-light@0.5.8:
     resolution: {integrity: sha512-3Zjgh+8b5fhRJBQZoy+zbVKpAQGLyka0MPgW3zruTF4dFFJ8Fqcfu9YsAvi/rvdcaTeWG3MkbZv4WKxAn/84Lg==}
@@ -16932,7 +16932,7 @@ snapshots:
       mdast-util-to-markdown: 2.1.2
       unified: 11.0.5
 
-  remeda@2.33.6: {}
+  remeda@2.33.7: {}
 
   request-light@0.5.8: {}
 
