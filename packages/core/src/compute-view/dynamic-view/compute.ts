@@ -145,19 +145,13 @@ class DynamicViewCompute<A extends AnyAux> {
       const kindSpec = step.kind
         ? this.model.specification.relationships[step.kind]
         : undefined
-      const specDefaults = kindSpec
-        ? exact({
-          ...(!step.technology && !derived.technology && kindSpec.technology && { technology: kindSpec.technology }),
-          ...(!step.color && !derived.color && kindSpec.color && { color: kindSpec.color }),
-          ...(!step.line && !derived.line && kindSpec.line && { line: kindSpec.line }),
-          ...(!step.head && !derived.head && kindSpec.head && { head: kindSpec.head }),
-          ...(!step.tail && !derived.tail && kindSpec.tail && { tail: kindSpec.tail }),
-        })
-        : undefined
-
       this.steps.push(exact({
         ...derived,
-        ...specDefaults,
+        ...(!step.technology && !derived.technology && kindSpec?.technology && { technology: kindSpec.technology }),
+        ...(!step.color && !derived.color && kindSpec?.color && { color: kindSpec.color }),
+        ...(!step.line && !derived.line && kindSpec?.line && { line: kindSpec.line }),
+        ...(!step.head && kindSpec?.head && { head: kindSpec.head }),
+        ...(!step.tail && kindSpec?.tail && { tail: kindSpec.tail }),
         ...rest,
         id,
         source,
