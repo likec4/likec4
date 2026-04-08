@@ -446,7 +446,7 @@ overrides:
   min-document: '>=2.19.2'
   flatted: '>=3.4.2'
   h3: '>=1.15.11'
-  undici: '>=7.24.6'
+  undici: '>=7.24.7'
   devalue: '>=5.6.4'
   diffie-hellman>bn.js: 4.12.3
   diff: '>=8.0.4'
@@ -9142,9 +9142,9 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
-  undici@7.24.6:
-    resolution: {integrity: sha512-Xi4agocCbRzt0yYMZGMA6ApD7gvtUFaxm4ZmeacWI4cZxaF6C+8I8QfofC20NAePiB/IcvZmzkJ7XPa471AEtA==}
-    engines: {node: '>=20.18.1'}
+  undici@8.0.2:
+    resolution: {integrity: sha512-B9MeU5wuFhkFAuNeA19K2GDFcQXZxq33fL0nRy2Aq30wdufZbyyvxW3/ChaeipXVfy/wUweZyzovQGk39+9k2w==}
+    engines: {node: '>=22.19.0'}
 
   unenv@2.0.0-rc.24:
     resolution: {integrity: sha512-i7qRCmY42zmCwnYlh9H2SvLEypEFGye5iRmEMKjcGi7zk9UquigRjFtTLz0TYqr0ZGLZhaMHl/foy1bZR+Cwlw==}
@@ -15961,7 +15961,7 @@ snapshots:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.34.5
-      undici: 7.24.6
+      undici: 8.0.2
       workerd: 1.20260305.0
       ws: 8.18.0
       youch: 4.1.0-beta.10
@@ -15973,7 +15973,7 @@ snapshots:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.34.5
-      undici: 7.24.6
+      undici: 8.0.2
       workerd: 1.20260401.1
       ws: 8.18.0
       youch: 4.1.0-beta.10
@@ -17712,7 +17712,7 @@ snapshots:
 
   undici-types@6.21.0: {}
 
-  undici@7.24.6: {}
+  undici@8.0.2: {}
 
   unenv@2.0.0-rc.24:
     dependencies:
