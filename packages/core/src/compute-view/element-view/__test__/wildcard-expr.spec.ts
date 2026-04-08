@@ -45,10 +45,23 @@ describe('wildcard-expr', () => {
     expect(nodeIds).toEqual([
       'customer',
       'support',
+      'cloud',
+      'cloud.frontend',
+      'cloud.frontend.supportPanel',
+      'cloud.backend',
+      'cloud.backend.graphql',
       'email',
+      'cloud.backend.storage',
       'amazon',
+      'amazon.s3',
     ])
-    expect(edgeIds).toEqual([])
+    expect(edgeIds).toEqual([
+      'support:cloud.frontend.supportPanel',
+      'cloud.backend.graphql:cloud.backend.storage',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
+      'cloud.backend.storage:amazon.s3',
+      'cloud.backend:email',
+    ])
   })
 
   it('exclude * where kind', () => {

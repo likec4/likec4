@@ -32,6 +32,8 @@ import { WildcardPredicate } from './wildcard'
 /**
  * Builds a patch object from an expression
  */
+export function predicateToPatch(op: 'include', ctx: PredicateCtx): StageInclude | undefined
+export function predicateToPatch(op: 'exclude', ctx: PredicateCtx): StageExclude | undefined
 export function predicateToPatch(
   op: 'include' | 'exclude',
   { expr, where, ...ctx }: PredicateCtx,
@@ -199,7 +201,7 @@ export function applyElementPredicate<M extends AnyAux, E extends DeploymentElem
  */
 export function applyElementPredicate<M extends AnyAux, E extends DeploymentElementModel<M>>(
   where: OperatorPredicate<M> | null,
-): (data: readonly E[]) => readonly E[]
+): (data: readonly E[]) => E[]
 export function applyElementPredicate<M extends AnyAux, E extends DeploymentElementModel<M>>(
   ...args:
     | [readonly E[], OperatorPredicate<M> | null]
