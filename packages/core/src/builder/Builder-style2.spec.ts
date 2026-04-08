@@ -295,19 +295,21 @@ describe('Builder (style 2)', () => {
     )
   })
 
-  it('custom description/summary should override specification defaults', () => {
+  it('custom description/summary/links should override specification defaults', () => {
     const specWithDefaults = Builder
       .specification({
         elements: {
           component: {
             description: { txt: 'spec-description' },
             summary: { txt: 'spec-summary' },
+            links: [{ url: 'https://spec.example.com' }],
           },
         },
         deployments: {
           node: {
             description: { txt: 'spec-node-description' },
             summary: { txt: 'spec-node-summary' },
+            links: [{ url: 'https://spec-node.example.com' }],
           },
         },
       })
@@ -318,6 +320,7 @@ describe('Builder (style 2)', () => {
           component('c1', {
             description: 'custom-description',
             summary: 'custom-summary',
+            links: ['https://custom.example.com'],
           }),
           component('c2', 'Only Title'),
         )
@@ -327,6 +330,7 @@ describe('Builder (style 2)', () => {
           node('n1', {
             description: 'custom-node-description',
             summary: 'custom-node-summary',
+            links: ['https://custom-node.example.com'],
           }),
           instanceOf('n1.c1', 'c1'),
         )
@@ -339,6 +343,7 @@ describe('Builder (style 2)', () => {
         c1: {
           description: { txt: 'custom-description' },
           summary: { txt: 'custom-summary' },
+          links: [{ url: 'https://custom.example.com' }],
         },
       } satisfies PartialDeep<ParsedLikeC4ModelData['elements']>,
     )
@@ -349,6 +354,7 @@ describe('Builder (style 2)', () => {
         c2: {
           description: { txt: 'spec-description' },
           summary: { txt: 'spec-summary' },
+          links: [{ url: 'https://spec.example.com' }],
         },
       } satisfies PartialDeep<ParsedLikeC4ModelData['elements']>,
     )
@@ -359,6 +365,7 @@ describe('Builder (style 2)', () => {
         n1: {
           description: { txt: 'custom-node-description' },
           summary: { txt: 'custom-node-summary' },
+          links: [{ url: 'https://custom-node.example.com' }],
         },
       } satisfies PartialDeep<ParsedLikeC4ModelData['deployments']['elements']>,
     )

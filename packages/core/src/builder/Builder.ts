@@ -608,6 +608,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
               const icon = _icon ?? specStyle?.icon
+              const mappedLinks = mapLinks(links)
 
               const _id = b.__fqn(id)
 
@@ -629,7 +630,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                   textSize: specStyle?.textSize,
                   ...style,
                 }) satisfies ElementStyle,
-                links: mapLinks(links),
+                ...(mappedLinks && { links: mappedLinks }),
                 ...props,
               }))
               return b
@@ -870,6 +871,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
               const icon = _icon ?? specStyle?.icon
+              const mappedLinks = mapLinks(links)
 
               const _id = b.__deploymentFqn(id)
 
@@ -892,7 +894,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                     textSize: specStyle?.textSize,
                     ...style,
                   }) satisfies ElementStyle,
-                  links: mapLinks(links),
+                  ...(mappedLinks && { links: mappedLinks }),
                   ...props,
                 }) satisfies DeploymentNode,
               )
