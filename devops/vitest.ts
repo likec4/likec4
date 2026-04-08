@@ -9,7 +9,7 @@ import {
 const sharedConfig = defineConfig({
   ssr: {
     resolve: {
-      conditions: ['sources', 'development', 'import', 'default'],
+      conditions: ['sources'],
     },
   },
   test: {
