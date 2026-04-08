@@ -8,6 +8,7 @@ import type {
   LangiumDocumentFactory,
 } from 'langium'
 import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
+import pTimeout from 'p-timeout'
 import { hasAtLeast, uniqueBy } from 'remeda'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
@@ -70,14 +71,11 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   private async readInitialExcludeConfig(): Promise<void> {
     const configProvider = this.services.workspace.ConfigurationProvider
     try {
-      await Promise.race([
-        configProvider.ready,
-        new Promise(resolve => setTimeout(resolve, 1000)),
-      ])
-      const excludeConfig = await Promise.race([
+      await pTimeout(configProvider.ready, { milliseconds: 1000 })
+      const excludeConfig = await pTimeout(
         configProvider.getConfiguration('likec4', 'exclude'),
-        new Promise<undefined>(resolve => setTimeout(resolve, 1000)),
-      ])
+        { milliseconds: 1000 },
+      )
       if (excludeConfig && typeof excludeConfig === 'object') {
         this.services.workspace.ProjectsManager.setWorkspaceExcludePatterns(
           excludeConfig as Record<string, boolean>,

@@ -168,6 +168,7 @@
     "nano-spawn": "catalog:externals",
     "p-limit": "catalog:utils",
     "p-queue": "catalog:utils",
+    "p-timeout": "catalog:utils",
     "picomatch": "catalog:externals",
     "pretty-ms": "^9.3.0",
     "remeda": "catalog:utils",

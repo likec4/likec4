@@ -380,7 +380,6 @@ export class Rpc extends ADisposable {
           projectsView,
         }
       }),
-      // ----------
       Disposable.create(() => {
         notifyModelParsed.cancel()
       }),

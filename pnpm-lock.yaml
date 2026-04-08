@@ -1454,6 +1454,9 @@ importers:
       p-queue:
         specifier: catalog:utils
         version: 8.1.1
+      p-timeout:
+        specifier: catalog:utils
+        version: 7.0.1
       picomatch:
         specifier: catalog:externals
         version: 4.0.4
