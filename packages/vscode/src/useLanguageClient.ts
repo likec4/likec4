@@ -74,9 +74,12 @@ export const useLanguageClient = createSingletonComposable(() => {
   })
 
   watchDebounced(() => config.exclude, () => {
-    logger.info('likec4.exclude configuration changed, restarting language server')
+    logger.debug`${'exclude'} configuration changed, restarting language server`
     void restartLanguageServer()
-  }, { debounce: 800 })
+  }, {
+    deep: true,
+    debounce: 800,
+  })
 
   return {
     client,

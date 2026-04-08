@@ -39,7 +39,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * First load all project config files, then load all documents in the workspace.
    */
   protected override async performStartup(folders: WorkspaceFolder[]): Promise<LangiumDocument[]> {
-    await this.readInitialExcludeConfig()
+    await this.readExcludeConfig()
     this.folders ??= folders
     const configFiles = [] as FileSystemNode[]
     for (const folder of folders) {
@@ -68,18 +68,25 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * Read workspace exclude patterns from configuration before workspace scan.
    * Uses a timeout fallback for third-party IDEs that may not support workspace/configuration.
    */
-  private async readInitialExcludeConfig(): Promise<void> {
+  private async readExcludeConfig(): Promise<void> {
+    if (!this.services.lsp.Connection) {
+      logger.debug`no LSP connection, skipping initial configuration read`
+      return
+    }
     const configProvider = this.services.workspace.ConfigurationProvider
+    const wait = <T>(promise: Promise<T>) => pTimeout(promise, { milliseconds: 1000, message: false })
     try {
-      await pTimeout(configProvider.ready, { milliseconds: 1000 })
-      const excludeConfig = await pTimeout(
+      logger.trace`waiting for ConfigurationProvider ready...`
+      await wait(configProvider.ready)
+      logger.trace`ConfigurationProvider ready, reading exclude patterns...`
+      const excludeConfig = await wait<string[]>(
         configProvider.getConfiguration('likec4', 'exclude'),
-        { milliseconds: 1000 },
       )
-      if (excludeConfig && typeof excludeConfig === 'object') {
-        this.services.workspace.ProjectsManager.setWorkspaceExcludePatterns(
-          excludeConfig as Record<string, boolean>,
-        )
+      if (excludeConfig) {
+        logger.trace`exclude configuration found ${excludeConfig}`
+        this.services.workspace.ProjectsManager.setWorkspaceExcludePatterns(excludeConfig)
+      } else {
+        logger.trace('no initial exclude configuration found')
       }
     } catch (e) {
       logger.warn('Failed to read initial exclude configuration', { error: e })
