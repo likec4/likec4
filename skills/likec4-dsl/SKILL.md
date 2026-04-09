@@ -1,6 +1,6 @@
 ---
 name: likec4-dsl
-description: Use when working with `.c4`/`.likec4` files or LikeC4 CLI/config questions where exact DSL/CLI syntax is required, especially for strict command/snippet-first answers, validate/export flags, predicates `*`/`_`/`**`, deployment snippets, dynamic views, or relationship extension matching. LeanIX bridge or drawio `--profile leanix` (sync, artifacts, bridge-managed cells) → `references/bridge-leanix-drawio.md`.
+description: Use when working with `.c4`/`.likec4` files or LikeC4 CLI/config questions where exact DSL/CLI syntax is required, especially for strict command/snippet-first answers, validate/export flags, predicates `*`/`_`/`**`, deployment snippets, dynamic views, or relationship extension matching.
 ---
 
 # LikeC4 DSL Skill
