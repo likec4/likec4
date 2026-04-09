@@ -12,7 +12,7 @@ import {
 import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
 import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger as mainLogger, wrapError } from '@likec4/log'
-import { isNonNullish, randomString } from 'remeda'
+import { randomString } from 'remeda'
 import { calcSequenceLayout } from '../sequence'
 import type { AiLayoutHints } from './ai/types'
 import { AiLayoutViewPrinter } from './AiLayoutPrinter'
@@ -36,10 +36,8 @@ export interface GraphvizPort extends Disposable {
   dispose(): void
 }
 
-const getPrinter = <A extends AnyAux>({ view, styles, layoutHints }: LayoutTaskParams<A>) => {
+const getPrinter = <A extends AnyAux>({ view, styles }: LayoutTaskParams<A>) => {
   switch (true) {
-    case layoutHints != null:
-      return new AiLayoutViewPrinter(view, styles, layoutHints)
     case isDynamicView(view):
       return new DynamicViewPrinter(view, styles)
     case isDeploymentView(view):
@@ -54,8 +52,6 @@ const getPrinter = <A extends AnyAux>({ view, styles, layoutHints }: LayoutTaskP
 export type LayoutTaskParams<A extends aux.Any = aux.Any> = {
   view: ComputedView<A>
   styles: LikeC4Styles
-  /** Optional AI-generated layout hints to enhance the Graphviz output */
-  layoutHints?: AiLayoutHints | undefined
 }
 
 export type LayoutResult<A extends aux.Any = aux.Any> = {
@@ -64,6 +60,13 @@ export type LayoutResult<A extends aux.Any = aux.Any> = {
 }
 
 const rootLogger = mainLogger.getChild('layouter')
+
+function normalizeDot(dot: DotSource): DotSource {
+  return dot
+    .split('\n')
+    .filter((l) => !(l.includes('margin') && l.includes(`${GraphClusterSpace}`))) // see DotPrinter.ts#L175
+    .join('\n') as DotSource
+}
 
 export class GraphvizLayouter implements Disposable {
   private graphviz: GraphvizPort
@@ -122,7 +125,7 @@ export class GraphvizLayouter implements Disposable {
   async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult<A>> {
     const logger = this.newScopedLogger('layout')
     try {
-      logger.debug`layouting view ${params.view.id}...`
+      logger.trace`layouting view ${params.view.id}...`
       let dot = await this.dot(params)
       const { view } = params
       const json = await this.dotToJson(dot)
@@ -137,12 +140,9 @@ export class GraphvizLayouter implements Disposable {
         )
       }
 
-      dot = dot
-        .split('\n')
-        .filter((l) => !(l.includes('margin') && l.includes(`${GraphClusterSpace}`))) // see DotPrinter.ts#L175
-        .join('\n') as DotSource
+      dot = normalizeDot(dot)
 
-      logger.debug`layouting view ${params.view.id} done`
+      logger.trace`layouting view ${params.view.id} done`
       return { dot, diagram }
     } catch (e) {
       logger.warn(loggable(e))
@@ -150,12 +150,29 @@ export class GraphvizLayouter implements Disposable {
     }
   }
 
+  async aiLayout<A extends AnyAux>(
+    { view, styles }: LayoutTaskParams<A>,
+    hints: AiLayoutHints,
+  ): Promise<LayoutResult<A>> {
+    const logger = this.newScopedLogger('ai-layout')
+    try {
+      logger.trace`layouting view ${view.id} using AI hints...`
+      const printer = new AiLayoutViewPrinter(view, styles, hints)
+      let dot = printer.print()
+      const json = await this.dotToJson(dot)
+      let diagram = parseGraphvizJson(json, view)
+      dot = normalizeDot(dot)
+      logger.trace`layouting view ${view.id} done`
+      return { dot, diagram }
+    } catch (e) {
+      logger.warn(loggable(e))
+      throw wrapError(e, `Error during AI layout: ${view.id}`)
+    }
+  }
+
   async svg<A extends AnyAux>(params: LayoutTaskParams<A>) {
     let dot = await this.dot(params)
-    dot = dot
-      .split('\n')
-      .filter((l) => !(l.includes('margin') && l.includes(`${GraphClusterSpace}`))) // see DotPrinter.ts#L175
-      .join('\n') as DotSource
+    dot = normalizeDot(dot)
     const svg = await this.graphviz.svg(dot)
     return {
       svg,
@@ -168,7 +185,7 @@ export class GraphvizLayouter implements Disposable {
     logger.trace`generating dot for view ${params.view.id}`
     const printer = getPrinter(params)
     let dot = printer.print()
-    if (!isElementView(params.view) || isNonNullish(params.layoutHints)) {
+    if (!isElementView(params.view)) {
       return dot
     }
     try {

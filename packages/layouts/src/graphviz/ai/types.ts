@@ -1,52 +1,34 @@
 import type { EdgeId, NodeId, NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core/types'
 
-// /**
-//  * Graph-level layout hints
-//  */
-// export interface AIGraphHint {
-//   /** Override auto-layout direction */
-//   direction?: 'TB' | 'BT' | 'LR' | 'RL'
-//   /** Override node separation in pixels */
-//   nodeSep?: number
-//   /** Override rank separation in pixels */
-//   rankSep?: number
-// }
+/**
+ * Abstract interface for AI layout hint generation.
+ * Implemented by VSCode extension (using vscode.lm API) or direct API providers.
+ * Defined in layouts package to avoid vscode dependency.
+ */
+export interface AILayoutProvider {
+  /** Display name for logging/UI */
+  readonly name: string
 
-// /**
-//  * Rank group constraint produced by AI analysis.
-//  * Mirrors ComputedRankConstraint from core types.
-//  */
-// export interface AIRankConstraint {
-//   /** Graphviz rank type */
-//   type: 'same' | 'min' | 'max' | 'source' | 'sink'
-//   /** Node IDs that should share this rank */
-//   nodes: NodeId[]
-// }
+  /**
+   * Send a layout hint generation request to the LLM and return the raw text response.
+   * @param request - The layout request containing system prompt, user prompt, and diagram data
+   * @param signal - AbortSignal for cancellation/timeout
+   * @returns The raw text response from the LLM
+   */
+  sendRequest(
+    request: AILayoutRequest,
+    signal?: AbortSignal,
+  ): Promise<string>
+}
 
-// /**
-//  * Per-node layout hint
-//  */
-// export interface AINodeHint {
-//   id: NodeId
-//   /** Group name — nodes with the same group are placed closer together */
-//   group: string
-// }
-
-// export interface AISuggestedEdgeAttrs {
-//   /** Higher weight = shorter/straighter edge */
-//   weight?: number
-//   /** Minimum length in ranks */
-//   minlen?: number
-//   /** Whether this edge constrains rank assignment */
-//   constraint?: boolean
-// }
-
-// /**
-//  * Per-edge layout hint
-//  */
-// export interface AIEdgeHint extends AISuggestedEdgeAttrs {
-//   id: EdgeId
-// }
+export interface AILayoutRequest {
+  systemPrompt: string
+  userPrompt: string
+  /**
+   * The diagram data as a JSON string, to be included in the user prompt or separately if the provider supports it.
+   */
+  diagram: string
+}
 
 /**
  * invisible edge added by AI to enforce better layout
@@ -54,8 +36,8 @@ import type { EdgeId, NodeId, NonEmptyArray, NonEmptyReadonlyArray } from '@like
 export interface AIEnforcementEdge {
   source: NodeId
   target: NodeId
-  weight: number
-  minlen: number
+  weight?: number
+  minlen?: number
 }
 
 /**
@@ -65,15 +47,30 @@ export interface AIEnforcementEdge {
 export interface AiLayoutHints {
   direction?: 'TB' | 'BT' | 'LR' | 'RL'
   ranks: ReadonlyArray<{
-    rank: 'same' | 'source' | 'sink'
+    rank: 'same' | 'source' | 'sink' | 'min' | 'max'
     nodes: NonEmptyArray<NodeId>
   }>
   edgeWeight: Record<EdgeId, number>
   edgeMinlen: Record<EdgeId, number>
-  excludeFromRanking?: ReadonlySet<EdgeId>
+  /**
+   * These edges should be excluded, i.e. `constraint=false` in Graphviz, to allow more flexible layouts.
+   * Unique array of EdgeIds.
+   */
+  excludeFromRanking?: NonEmptyReadonlyArray<EdgeId>
+  /**
+   * Suggested order of edges for DOT output, to influence edge routing.
+   */
   edgeOrder?: NonEmptyReadonlyArray<EdgeId>
+  /**
+   * Suggested order of nodes for DOT output, to influence node placement.
+   */
   nodeOrder?: NonEmptyReadonlyArray<NodeId>
+  /**
+   * Invisible edges added by AI to enforce better layout
+   */
   invisibleEdges?: NonEmptyReadonlyArray<AIEnforcementEdge>
-  /** LLM reasoning for debugging/display */
+  /**
+   * LLM reasoning for debugging/display
+   */
   reasoning: string
 }

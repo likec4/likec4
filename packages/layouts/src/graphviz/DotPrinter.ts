@@ -15,6 +15,7 @@ import type {
 } from '@likec4/core/types'
 import {
   compareFqnHierarchically,
+  DefaultMap,
   hierarchyDistance,
   invariant,
   nameFromFqn,
@@ -90,6 +91,14 @@ export abstract class DotPrinter<V extends ViewToPrint> {
   protected edges = new Map<EdgeId, EdgeModel>()
   protected compoundIds: Set<NodeId>
   protected edgesWithCompounds: Set<EdgeId>
+  protected viewNodes = new DefaultMap<NodeId, NodeOf<V>>(id =>
+    nonNullable(
+      this.view.nodes.find(n => n.id === id),
+      `Node ${id} not found`,
+    )
+  )
+
+  protected logger = logger
 
   protected graphology: Graph<GraphologyNodeAttributes<V>, GraphologyEdgeAttributes<V>> = new Graph({
     allowSelfLoops: true,
@@ -210,7 +219,7 @@ export abstract class DotPrinter<V extends ViewToPrint> {
    * Does not affect compound nodes - they are always processed
    * By default, all nodes from the view are included
    */
-  protected selectViewNodes(): Iterable<ComputedNode> {
+  protected selectViewNodes(): Iterable<NodeOf<V>> {
     return this.view.nodes
   }
 
@@ -218,7 +227,7 @@ export abstract class DotPrinter<V extends ViewToPrint> {
    * Override this method to filter edges that should be included in the view
    * By default, all edges from the view are included
    */
-  protected selectViewEdges(): Iterable<ComputedEdge> {
+  protected selectViewEdges(): Iterable<EdgeOf<V>> {
     return this.view.edges
   }
 
@@ -227,15 +236,15 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     // ----------------------------------------------
     // Traverse nodes
     const topCompound = [] as ComputedNode[]
-    for (const element of this.selectViewNodes()) {
-      if (isCompound(element)) {
-        if (isNullish(element.parent)) {
-          topCompound.push(element)
+    for (const viewNode of this.selectViewNodes()) {
+      if (isCompound(viewNode)) {
+        if (isNullish(viewNode.parent)) {
+          topCompound.push(viewNode)
         }
       } else {
-        const id = this.generateGraphvizId(element)
-        const node = this.elementToNode(element, G.node(id))
-        this.nodes.set(element.id, node)
+        const id = this.generateGraphvizId(viewNode)
+        const node = this.elementToNode(viewNode, G.node(id))
+        this.nodes.set(viewNode.id, node)
       }
     }
 
@@ -341,6 +350,7 @@ export abstract class DotPrinter<V extends ViewToPrint> {
       [_.penwidth]: pxToPoints(2),
       [_.color]: colors.line,
       [_.fontcolor]: colors.label as HexColor,
+      [_.style]: this.$defaults.relationship.line,
     })
   }
 
@@ -392,7 +402,6 @@ export abstract class DotPrinter<V extends ViewToPrint> {
   protected elementToNode(element: NodeOf<V>, node: NodeModel) {
     invariant(!isCompound(element), 'node should not be compound')
     const hasIcon = isTruthy(element.icon)
-    const colorValues = this.styles.colors(element.color).elements
     const { values: { padding, sizes: { width, height } } } = this.styles.nodeSizes(element.style)
 
     let paddingX = hasIcon ? 8 : padding
@@ -408,6 +417,7 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     node.attributes.set(_.height, pxToInch(height))
 
     if (!this.styles.isDefaultColor(element.color)) {
+      const colorValues = this.styles.colors(element.color).elements
       node.attributes.apply({
         [_.fillcolor]: colorValues.fill,
         [_.fontcolor]: colorValues.hiContrast as HexColor,
@@ -464,17 +474,17 @@ export abstract class DotPrinter<V extends ViewToPrint> {
 
   protected leafElements(parentId: NodeId | null): NodeOf<V>[] {
     if (parentId === null) {
-      return this.view.nodes.filter(n => !isCompound(n))
+      return filter([...this.selectViewNodes()], n => !isCompound(n))
     }
     return this.computedNode(parentId).children.flatMap(childId => {
       const child = this.computedNode(childId)
-      return isCompound(child) ? this.leafElements(child.id) : child
+      return isCompound(child) ? this.leafElements(child.id) : [child]
     })
   }
 
   protected descendants(parentId: NodeId | null): NodeOf<V>[] {
     if (parentId === null) {
-      return this.view.nodes.slice()
+      return [...this.selectViewNodes()]
     }
     return this.computedNode(parentId).children.flatMap(childId => {
       const child = this.computedNode(childId)
@@ -482,18 +492,15 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     })
   }
 
-  protected computedNode(id: NodeId) {
-    return nonNullable(
-      this.view.nodes.find(n => n.id === id),
-      `Node ${id} not found`,
-    )
+  protected computedNode(id: NodeId): NodeOf<V> {
+    return this.viewNodes.get(id)
   }
 
-  protected getGraphNode(id: NodeId) {
+  protected getGraphNode(id: NodeId): NodeModel | null {
     return this.nodes.get(id) ?? null
   }
 
-  protected getSubgraph(id: NodeId) {
+  protected getSubgraph(id: NodeId): SubgraphModel | null {
     return this.subgraphs.get(id) ?? null
   }
 

@@ -1,38 +1,37 @@
 import type { ComputedView } from '@likec4/core/types'
-import { prepareViewForPrompt } from './llm-input'
+import { prepareLLMInput } from './llm-input'
 import { parseOutput } from './llm-output'
 import { logger } from './logger'
 import { LAYOUT_SYSTEM_PROMPT } from './prompt-system.generated'
-import type { AILayoutProvider } from './provider'
-import type { AiLayoutHints } from './types'
+import type { AiLayoutHints, AILayoutProvider } from './types'
 
 const prompts = {
   systemPrompt: LAYOUT_SYSTEM_PROMPT,
-  userPrompt: `Analyze this diagram and suggest layout improvements`,
+  userPrompt: `Analyze semantics and suggest layout for the diagram.`,
 }
 
 /**
  * Orchestrate the AI layout enhancement pipeline:
  * serialize view → build prompt → call LLM → parse hints.
  *
- * Returns null (never throws) on any failure — layout falls back to plain Graphviz.
+ * Returns undefined (never throws) on any failure — layout falls back to plain Graphviz.
  */
 export async function enhanceLayoutWithAI(
   view: ComputedView,
   provider: AILayoutProvider,
   signal?: AbortSignal,
-): Promise<AiLayoutHints | null> {
+): Promise<AiLayoutHints | undefined> {
   const label = `------ai-layout-${view.id}-------`
   console.time(label)
   try {
     logger.debug`generating AI layout hints for ${view.id} using ${provider.name}`
 
-    const { serialized, mapping } = prepareViewForPrompt(view)
+    const { serialized, mapping } = prepareLLMInput(view)
 
     const rawResponse = await provider.sendRequest(
       {
         ...prompts,
-        diagram: serialized,
+        diagram: JSON.stringify(serialized),
       },
       signal,
     )
@@ -42,6 +41,6 @@ export async function enhanceLayoutWithAI(
   } catch (error) {
     console.timeEnd(label)
     logger.warn`failed to generate AI layout hints: ${error}`
-    return null
+    return undefined
   }
 }

@@ -1,13 +1,14 @@
-import type {
-  AnyAux,
-  ComputedEdge,
-  ComputedNode,
-  ComputedView,
-  EdgeId,
-  HexColor,
-  LikeC4Styles,
+import {
+  type AnyAux,
+  type ComputedEdge,
+  type ComputedNode,
+  type ComputedView,
+  type EdgeId,
+  type HexColor,
+  type LikeC4Styles,
+  nonNullable,
 } from '@likec4/core'
-import { entries, first, isNonNullish, isNumber, last } from 'remeda'
+import { entries, first, isEmptyish, isNonNullish, isNumber, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import type { AiLayoutHints } from './ai/types'
@@ -25,6 +26,12 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
   ) {
     super(view, styles)
     this.aiHints = aiHints
+  }
+
+  protected override createGraph(): RootGraphModel {
+    const G = super.createGraph()
+    G.delete(_.TBbalance)
+    return G
   }
 
   protected override selectViewNodes(): Iterable<ComputedNode> {
@@ -61,10 +68,10 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
 
   protected override postBuild(G: RootGraphModel): void {
     this
-      .reduceDefaultRankSeparation()
       .applyNodeRanks()
       .addInvisibleEdges()
       .enableNewRankIfNeeded()
+    // .reduceDefaultRankSeparation()
   }
 
   private applyNodeRanks(): this {
@@ -91,8 +98,10 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
-      [_.style]: edge.line ?? DefaultEdgeStyle,
     })
+    if (edge.line && edge.line !== DefaultEdgeStyle) {
+      e.attributes.set(_.style, edge.line)
+    }
 
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
@@ -115,16 +124,16 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
     }
 
     const weight = this.aiHints.edgeWeight[edge.id]
-    if (weight !== undefined) {
+    if (weight !== undefined && weight !== 1) {
       e.attributes.set(_.weight, weight)
     }
 
     const minlen = this.aiHints.edgeMinlen[edge.id]
-    if (minlen !== undefined) {
+    if (minlen !== undefined && minlen !== 1) {
       e.attributes.set(_.minlen, minlen)
     }
 
-    if (this.aiHints.excludeFromRanking?.has(edge.id)) {
+    if (this.aiHints.excludeFromRanking?.includes(edge.id)) {
       e.attributes.set(_.constraint, false)
     }
 
@@ -136,27 +145,34 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
       return this
     }
     const G = this.G
-    for (const edge of this.aiHints.invisibleEdges) {
-      if (this.graphology.hasEdge(edge.source, edge.target)) {
+    for (const { source, target, ...edge } of this.aiHints.invisibleEdges) {
+      const gsource = this.getGraphNode(source)
+      const gtarget = this.getGraphNode(target)
+      if (!gsource || !gtarget) {
         continue
       }
-      const source = this.getGraphNode(edge.source)
-      const target = this.getGraphNode(edge.target)
-      if (!source || !target) {
+      const edgeId = `invisible_${source}->${target}` as EdgeId
+      if (this.edges.has(edgeId)) {
+        this.logger
+          .trace`invisible edge ${source} -> ${target} already exists with id ${edgeId}, skipping creation`
         continue
       }
-      const edgeId = `invisible_${edge.source}->${edge.target}` as EdgeId
-      this.graphology.addEdgeWithKey(edgeId, edge.source, edge.target, {
+
+      this.graphology.addEdgeWithKey(edgeId, source, target, {
         hierarchyDistance: 0,
         origin: 'invisible' as any,
         weight: edge.weight ?? 1,
       })
-
-      G.edge([source, target], {
+      const ge = G.edge([gsource, gtarget], {
         [_.style]: 'invis',
-        [_.weight]: edge.weight ?? 1,
-        [_.minlen]: edge.minlen ?? 1,
       })
+      this.edges.set(edgeId, ge)
+      if (edge.minlen !== undefined && edge.minlen !== 1) {
+        ge.attributes.set(_.minlen, edge.minlen)
+      }
+      if (edge.weight !== undefined && edge.weight !== 1) {
+        ge.attributes.set(_.weight, edge.weight)
+      }
     }
     return this
   }
@@ -165,11 +181,21 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
     const autoLayout = this.view.autoLayout
     const G = this.G
 
-    const hasMinlenAbove1 = entries(this.aiHints.edgeMinlen).some(([_, minlen]) => minlen > 1)
-      || (this.aiHints.invisibleEdges?.some((edge) => edge.minlen > 1) ?? false)
+    // If rankSep is set explicitly - use it
+    if (isNumber(autoLayout.rankSep)) {
+      return this
+    }
 
-    // If rankSep is set or there are no minlen constraints, use default layout
-    if (isNumber(autoLayout.rankSep) || !hasMinlenAbove1) {
+    const hasMinlenAbove1 =
+      // If any edge has minlen above 1
+      entries(this.aiHints.edgeMinlen).some(([_, minlen]) => minlen > 1)
+      // Or any invisible edge has minlen above 1
+      || (
+        this.aiHints.invisibleEdges?.some((edge) => edge.minlen && edge.minlen > 1)
+          ?? false
+      )
+
+    if (!hasMinlenAbove1) {
       return this
     }
 
