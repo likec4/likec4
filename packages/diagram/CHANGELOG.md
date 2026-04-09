@@ -1,5 +1,20 @@
 # @likec4/diagram
 
+## 1.54.0
+
+### Patch Changes
+
+- [#2827](https://github.com/likec4/likec4/pull/2827) [`1ae3eb6`](https://github.com/likec4/likec4/commit/1ae3eb6b19a9736f683a8b50c2c883eeb4204885) Thanks [@kavishkartha05](https://github.com/kavishkartha05)! - Fix dynamic view variant setting not being honored when navigating to a dynamic view
+  Fixes [#2802](https://github.com/likec4/likec4/issues/2802)
+
+- [#2791](https://github.com/likec4/likec4/pull/2791) [`6d6cdd2`](https://github.com/likec4/likec4/commit/6d6cdd2857f6e804a40c3963f6a4841dfa13bd6c) Thanks [@davydkov](https://github.com/davydkov)! - Fix manual layout alignment tools (Align Left, Right, Center, Top, Middle, Bottom) not working
+
+  Fixes [#2771](https://github.com/likec4/likec4/issues/2771)
+
+- Updated dependencies []:
+  - @likec4/core@1.54.0
+  - @likec4/styles@1.54.0
+
 ## 1.53.0
 
 ### Patch Changes

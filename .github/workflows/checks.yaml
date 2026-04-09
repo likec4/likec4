@@ -120,6 +120,8 @@ jobs:
           pnpm turbo run typecheck --filter='@likec4/docs-astro'
 
       - name: ⚙️ build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pnpm turbo run build --filter='@likec4/docs-astro'
 

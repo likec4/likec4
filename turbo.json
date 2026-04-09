@@ -4,6 +4,11 @@
     "NODE_ENV",
     "CLOUDFLARE_ENV"
   ],
+  "globalPassThroughEnv": [
+    "CLOUDFLARE_API_TOKEN",
+    "CLOUDFLARE_ACCOUNT_ID",
+    "GITHUB_TOKEN"
+  ],
   "globalDependencies": [
     ".tool-versions",
     "package.json",

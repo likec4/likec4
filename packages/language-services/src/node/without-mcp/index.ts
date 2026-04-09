@@ -1,4 +1,3 @@
-import { memoizeProp } from '@likec4/core'
 import { rootLogger } from '@likec4/log'
 import defu from 'defu'
 import { basename, resolve } from 'pathe'
@@ -21,7 +20,6 @@ export { LikeC4 } from '../../common/LikeC4'
 
 /**
  * Create a LikeC4 instance from a workspace directory
- * The instance is cached in globalThis to avoid creating multiple instances for the same workspace
  *
  * @param path - The workspace directory path
  * @param options - Optional configuration options
@@ -31,53 +29,51 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
   const workspacePath = resolve(path)
   const folderUri = pathToFileURL(workspacePath).toString()
   const workspaceUri = folderUri.endsWith('/') ? folderUri : folderUri + '/'
-  return memoizeProp(globalThis, 'likec4:' + workspacePath, async () => {
-    const logger = rootLogger.getChild('lang')
+  const logger = rootLogger.getChild('lang')
 
-    const mergedOptions = defu(
-      options,
-      {
-        ...DefaultInitOptions,
-        useFileSystem: true,
-        manualLayouts: true,
-        watch: false,
-      } satisfies CreateLanguageServiceOptions,
-    )
-    configureLogger(mergedOptions)
-    if (mergedOptions.mcp) {
-      throw new Error('MCP server is not supported in this build')
-    }
+  const mergedOptions = defu(
+    options,
+    {
+      ...DefaultInitOptions,
+      useFileSystem: true,
+      manualLayouts: true,
+      watch: false,
+    } satisfies CreateLanguageServiceOptions,
+  )
+  configureLogger(mergedOptions)
+  if (mergedOptions.mcp) {
+    throw new Error('MCP server is not supported in this build')
+  }
 
-    const langium = createLanguageServices(mergedOptions)
+  const langium = createLanguageServices(mergedOptions)
 
-    const workspace = {
-      name: basename(workspacePath),
-      uri: workspaceUri,
-    }
+  const workspace = {
+    name: basename(workspacePath),
+    uri: workspaceUri,
+  }
 
-    const WorkspaceManager = langium.shared.workspace.WorkspaceManager
-    logger.info(`${k.dim('workspace:')} ${workspacePath}`)
-    WorkspaceManager.initialize({
-      capabilities: {},
-      processId: null,
-      rootUri: null,
-      workspaceFolders: [workspace],
-    })
-    await WorkspaceManager.initializeWorkspace([
-      workspace,
-    ])
-
-    const userDocuments = langium.shared.workspace.LangiumDocuments.userDocuments.toArray()
-
-    if (userDocuments.length === 0) {
-      logger.error(`no LikeC4 sources found`)
-      throw new Error(`no LikeC4 sources found`)
-    }
-
-    logger.info(`${k.dim('workspace:')} found ${userDocuments.length} source files`)
-
-    return handleInitOptions(langium, rootLogger, options)
+  const WorkspaceManager = langium.shared.workspace.WorkspaceManager
+  logger.info(`${k.dim('workspace:')} ${workspacePath}`)
+  WorkspaceManager.initialize({
+    capabilities: {},
+    processId: null,
+    rootUri: null,
+    workspaceFolders: [workspace],
   })
+  await WorkspaceManager.initializeWorkspace([
+    workspace,
+  ])
+
+  const userDocuments = langium.shared.workspace.LangiumDocuments.userDocuments.toArray()
+
+  if (userDocuments.length === 0) {
+    logger.error(`no LikeC4 sources found`)
+    throw new Error(`no LikeC4 sources found`)
+  }
+
+  logger.info(`${k.dim('workspace:')} found ${userDocuments.length} source files`)
+
+  return handleInitOptions(langium, rootLogger, options)
 }
 
 /**

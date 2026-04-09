@@ -1,5 +1,5 @@
 ---
-import { fetchSponsors, fetchStars } from '../../lib/githubdata'
+import { fetchIdeInstalls, fetchNpmDownloads, fetchSponsors, fetchStars } from '../../lib/githubdata'
 import '../../styles/tailwind.css'
 import Doubledash from '../index-page/Doubledash.astro'
 import Footer from '../index-page/Footer.astro'
@@ -9,6 +9,8 @@ import FAQ from './FAQ.astro'
 
 const sponsors = await fetchSponsors()
 const stars = await fetchStars()
+const npmDownloads = await fetchNpmDownloads()
+const ideInstalls = await fetchIdeInstalls()
 ---
 
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,800,900&display=swap" rel="stylesheet" />
@@ -59,11 +61,11 @@ const stars = await fetchStars()
         <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">GitHub Stars</div>
       </div>
       <div class="text-center p-6 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
-        <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">40k+</div>
+        <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">{npmDownloads}+</div>
         <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">Monthly Downloads</div>
       </div>
       <div class="text-center p-6 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
-        <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">23k+</div>
+        <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">{ideInstalls}+</div>
         <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">IDE Installs</div>
       </div>
     </div>

@@ -1,3 +1,33 @@
+## [1.54.0](https://github.com/likec4/likec4/compare/v1.53.0...v1.54.0) (2026-04-07)
+
+### 🚀 Features
+
+- **Standalone LSP Package**:\
+  New `@likec4/lsp` package -- a self-contained, fully-bundled CJS language server with zero runtime dependencies for third-party editor integrations (Neovim, Zed, etc.). Fixes [#2840](https://github.com/likec4/likec4/issues/2840), [#2843](https://github.com/likec4/likec4/pull/2843)
+
+- **`list-icons` CLI Command**:\
+  New `likec4 list-icons` command to list all available built-in icons with `--format text|json` and `--group` filter options. [#2832](https://github.com/likec4/likec4/pull/2832)
+
+- **LikeC4 DSL Agent Skill**:\
+  AI agents can now write correct LikeC4 code without hallucinating syntax. Install skills via `npx skills add https://likec4.dev/`. Resolves [#2636](https://github.com/likec4/likec4/issues/2636), [#2782](https://github.com/likec4/likec4/pull/2782)
+
+### 🐞 Bug Fixes
+
+- Fixed dynamic view variant setting not being honored when navigating to a dynamic view, closes [#2802](https://github.com/likec4/likec4/issues/2802). Thanks [@kavishkartha05](https://github.com/kavishkartha05), [#2827](https://github.com/likec4/likec4/pull/2827)
+
+- Fixed manual layout alignment tools (Align Left, Right, Center, Top, Middle, Bottom) not working, closes [#2771](https://github.com/likec4/likec4/issues/2771), [#2791](https://github.com/likec4/likec4/pull/2791)
+
+- Fixed LikeC4 generator not emitting element name in DSL output, closes [#2815](https://github.com/likec4/likec4/issues/2815). Thanks [@kavishkartha05](https://github.com/kavishkartha05), [#2825](https://github.com/likec4/likec4/pull/2825)
+
+- Fixed element names starting with underscore followed by digit (e.g. `_1password`) being incorrectly rejected by the parser, closes [#2836](https://github.com/likec4/likec4/issues/2836), [#2845](https://github.com/likec4/likec4/pull/2845)
+
+- Improved navigation from VSCode preview panel to sources by showing editor in a different tab group [#2826](https://github.com/likec4/likec4/pull/2826)
+
+- Validate LeanIX mapping partials before merge; align exports and mapping registry behaviour with specs. Thanks [@sraphaz](https://github.com/sraphaz), [#2829](https://github.com/likec4/likec4/pull/2829)
+
+- Hardened `likec4:icons` virtual module literals for CodeQL; raised floors for transitive dependencies. Thanks [@sraphaz](https://github.com/sraphaz), [#2831](https://github.com/likec4/likec4/pull/2831)
+
+
 ## [1.53.0](https://github.com/likec4/likec4/compare/v1.52.0...v1.53.0) (2026-03-20)
 
 ### 🚀 Features

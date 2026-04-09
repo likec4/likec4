@@ -1,5 +1,24 @@
 # likec4
 
+## 1.54.0
+
+### Patch Changes
+
+- [#2832](https://github.com/likec4/likec4/pull/2832) [`302f020`](https://github.com/likec4/likec4/commit/302f020e4e892d94159255a876da0119f9c8d9c9) Thanks [@davydkov](https://github.com/davydkov)! - Add `list-icons` CLI command to list all available built-in icons with `--format text|json` and `--group` filter options
+
+- [#2782](https://github.com/likec4/likec4/pull/2782) [`d0f38c7`](https://github.com/likec4/likec4/commit/d0f38c7422a4b46879ab744e514ea4d70f546e05) Thanks [@davydkov](https://github.com/davydkov)! - Add LikeC4 DSL Agent Skill enabling AI agents to write correct LikeC4 code without hallucinating syntax, resolves [#2636](https://github.com/likec4/likec4/issues/2636)
+
+  To install LikeC4 skills into any project:
+
+  ```bash
+  npx skills add https://likec4.dev/
+  ```
+
+- [#2831](https://github.com/likec4/likec4/pull/2831) [`b442a71`](https://github.com/likec4/likec4/commit/b442a71cb4ae9614eecd472f36c43faabc793099) Thanks [@sraphaz](https://github.com/sraphaz)! - Harden `likec4:icons` virtual module literals for CodeQL (embedded dynamic `import`). Raise floors for transitive dependencies via root `pnpm.overrides` (lodash, path-to-regexp, picomatch, brace-expansion, bn.js, yaml, smol-toml, ajv, crypto-browserify chain, etc.).
+
+- Updated dependencies []:
+  - @likec4/core@1.54.0
+
 ## 1.53.0
 
 ### Minor Changes

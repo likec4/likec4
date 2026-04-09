@@ -1,5 +1,21 @@
 # @likec4/language-server
 
+## 1.54.0
+
+### Patch Changes
+
+- [#2832](https://github.com/likec4/likec4/pull/2832) [`302f020`](https://github.com/likec4/likec4/commit/302f020e4e892d94159255a876da0119f9c8d9c9) Thanks [@davydkov](https://github.com/davydkov)! - Add `list-icons` CLI command to list all available built-in icons with `--format text|json` and `--group` filter options
+
+- [#2845](https://github.com/likec4/likec4/pull/2845) [`06ca18f`](https://github.com/likec4/likec4/commit/06ca18f9f0d69602917ff90b65e165bd8edffb25) Thanks [@davydkov](https://github.com/davydkov)! - Fix element names starting with underscore followed by digit (e.g. `_1password`) being incorrectly rejected by the parser
+
+  Fixes [#2836](https://github.com/likec4/likec4/issues/2836)
+
+- Updated dependencies []:
+  - @likec4/config@1.54.0
+  - @likec4/core@1.54.0
+  - @likec4/layouts@1.54.0
+  - @likec4/log@1.54.0
+
 ## 1.53.0
 
 ### Minor Changes

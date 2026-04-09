@@ -1,7 +1,7 @@
 {
   "name": "likec4",
   "description": "Toolchain for your architecture diagrams",
-  "version": "1.53.0",
+  "version": "1.54.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -20,7 +20,7 @@
     "graph"
   ],
   "engines": {
-    "node": ">=22.22.1"
+    "node": ">=22.22.0"
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
@@ -206,7 +206,7 @@
     "boxen": "^8.0.1",
     "clsx": "catalog:react",
     "conf": "^15.1.0",
-    "defu": "^6.1.4",
+    "defu": "^6.1.6",
     "esbuild-node-externals": "catalog:esbuild",
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",

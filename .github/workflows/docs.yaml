@@ -4,20 +4,20 @@ on:
   workflow_call:
     inputs:
       environment:
-        default: "preview"
+        default: 'preview'
         required: true
         type: string
     # Map the workflow outputs to job outputs
     outputs:
       docs_url:
-        description: "docs url"
+        description: 'docs url'
         value: ${{ jobs.deploy-docs.outputs.url }}
   workflow_dispatch:
     inputs:
       environment:
-        description: "Deploy to"
+        description: 'Deploy to'
         required: true
-        default: "preview"
+        default: 'preview'
         type: choice
         options:
           - preview
@@ -33,7 +33,7 @@ permissions:
 env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
   FORCE_COLOR: true
 
 concurrency:
@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 10
     if: ${{ github.repository_owner == 'likec4' }}
     environment:
-      name: "docs-${{ inputs.environment }}"
+      name: 'docs-${{ inputs.environment }}'
       url: "${{ inputs.environment == 'production' && 'https://likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
     outputs:
       url: "${{ inputs.environment == 'production' && 'https://likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
@@ -58,6 +58,8 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: ⚙️ build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pnpm turbo run build --filter='@likec4/docs-astro'
 

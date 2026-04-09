@@ -8,11 +8,7 @@ describe('Wildcard predicate', () => {
       elements: {
         el: {},
       },
-      tags: {
-        web: {},
-        mobile: {},
-        top: {},
-      },
+      tags: ['web', 'mobile', 'top', 'ui'],
     })
     .model(({ el }, _) =>
       _(
@@ -20,12 +16,14 @@ describe('Wildcard predicate', () => {
         el('cloud', {
           tags: ['top'],
         }),
-        el('cloud.frontend'),
+        el('cloud.frontend', {
+          tags: ['ui'],
+        }),
         el('cloud.frontend.dashboard', {
-          tags: ['web'],
+          tags: ['web', 'ui'],
         }),
         el('cloud.frontend.mobile', {
-          tags: ['mobile'],
+          tags: ['mobile', 'ui'],
         }),
         el('cloud.auth'),
         el('cloud.backend'),
@@ -78,17 +76,16 @@ describe('Wildcard predicate', () => {
       const state = t.processPredicates(
         $rules(
           $include('*', {
-            where: 'tag is #top',
+            where: 'tag is #ui',
           }),
         ),
       )
       t.expect(state).toHaveElements(
-        'cloud',
-        'aws',
+        'cloud.frontend',
+        'cloud.frontend.dashboard',
+        'cloud.frontend.mobile',
       )
-      t.expect(state).toHaveConnections(
-        'cloud -> aws',
-      )
+      t.expect(state).toHaveNoConnections()
     })
 
     it('include * where not', () => {
@@ -96,14 +93,24 @@ describe('Wildcard predicate', () => {
       const state = t.processPredicates(
         $rules(
           $include('*', {
-            where: 'tag is not #top',
+            where: 'tag is not #ui',
           }),
         ),
       )
       t.expect(state).toHaveElements(
         'customer',
+        'cloud',
+        'cloud.auth',
+        'cloud.backend',
+        'cloud.backend.api',
+        'aws',
+        'aws.rds',
       )
-      t.expect(state.memory.connections).toBeEmpty()
+      t.expect(state).toHaveConnections(
+        'customer -> cloud',
+        'cloud.backend.api -> cloud.auth',
+        'cloud.backend.api -> aws.rds',
+      )
     })
   })
 
@@ -128,6 +135,43 @@ describe('Wildcard predicate', () => {
         'cloud.frontend -> cloud.backend',
         'cloud.backend -> cloud.auth',
         'cloud.backend -> aws',
+      )
+    })
+
+    it('include * in cloud where tag is #ui', () => {
+      const t = TestHelper.from(builder.clone())
+      const state = t.processPredicatesWithScope(
+        'cloud',
+        $include('*', {
+          where: 'tag is #ui',
+        }),
+      )
+      t.expect(state).toHaveElements(
+        'cloud',
+        'customer',
+        'cloud.frontend',
+      )
+      t.expect(state).toHaveConnections(
+        'customer -> cloud.frontend',
+      )
+    })
+
+    it('include * in cloud where tag is #mobile (no matches)', () => {
+      const t = TestHelper.from(builder.clone())
+      const state = t.processPredicatesWithScope(
+        'cloud',
+        $include('*', {
+          where: 'tag is #mobile',
+        }),
+      )
+      t.expect(state).toHaveElements(
+        'cloud',
+        'customer',
+        'aws',
+      )
+      t.expect(state).toHaveConnections(
+        'customer -> cloud',
+        'cloud -> aws',
       )
     })
 

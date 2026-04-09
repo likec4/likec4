@@ -1,0 +1,33 @@
+{
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "rootDirs": [
+      "src",
+      "."
+    ],
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src",
+    "tsdown.config.mts"
+  ],
+  "references": [
+    {
+      "path": "../core/"
+    },
+    {
+      "path": "../config/"
+    },
+    {
+      "path": "../layouts/"
+    },
+    {
+      "path": "../log/"
+    },
+    {
+      "path": "../language-server/"
+    }
+  ]
+}

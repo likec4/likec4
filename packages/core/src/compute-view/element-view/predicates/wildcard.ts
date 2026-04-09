@@ -8,8 +8,11 @@ import { findConnectionsBetween, findConnectionsWithin } from './_utils'
 
 export const WildcardPredicate: PredicateExecutor<ModelFqnExpr.Wildcard> = {
   include: ({ scope, model, stage, memory, where }) => {
+    // include * where ....
     if (!scope) {
-      const rootElements = [...model.roots()].filter(where)
+      const rootElements = where !== NoWhere
+        ? toArray(ifilter(model.elements(), where))
+        : [...model.roots()]
       if (rootElements.length === 0) {
         return
       }
@@ -23,31 +26,22 @@ export const WildcardPredicate: PredicateExecutor<ModelFqnExpr.Wildcard> = {
 
       return stage
     }
-    const root = where(scope) ? scope : null
 
     const children = toArray(ifilter(scope.children(), where))
     const hasChildren = children.length > 0
     if (!hasChildren) {
-      if (!root) {
-        return stage
-      } else {
-        // Any edges with siblings?
-        const edgesWithSiblings = findConnectionsBetween(root, root.siblings())
-        if (edgesWithSiblings.length === 0) {
-          // If no edges with siblings, i.e. root is orphan
-          // Lets add parent for better view
-          const parent = root.parent
-          if (parent && where(parent)) {
-            stage.addExplicit(parent)
-          }
-        }
-        children.push(root)
+      // Any edges with siblings?
+      const edgesWithSiblings = findConnectionsBetween(scope, scope.siblings())
+      const parent = scope.parent
+      if (edgesWithSiblings.length === 0 && parent) {
+        // If no edges with siblings, i.e. root is orphan
+        // Lets add parent for better view
+        stage.addExplicit(parent)
       }
+      children.push(scope)
     }
 
-    if (root) {
-      stage.addExplicit(root)
-    }
+    stage.addExplicit(scope)
 
     const neighbours = toSet([
       ...memory.elements,

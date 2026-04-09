@@ -8,7 +8,7 @@
     "composite": true,
     "incremental": true,
     "lib": [
-      "ES2024",
+      "ES2024"
     ],
     "target": "ES2024",
     "rootDirs": [
@@ -37,28 +37,28 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
-      "path": "../config/tsconfig.json"
+      "path": "../config/"
     },
     {
       "path": "../diagram/tsconfig.src.json"
     },
     {
-      "path": "../language-server/tsconfig.json"
+      "path": "../language-server/"
     },
     {
-      "path": "../language-services/tsconfig.json"
+      "path": "../language-services/"
     },
     {
-      "path": "../layouts/tsconfig.json"
+      "path": "../layouts/"
     },
     {
-      "path": "../generators/tsconfig.json"
+      "path": "../generators/"
     },
     {
-      "path": "../log/tsconfig.json"
+      "path": "../log/"
     }
   ]
 }
