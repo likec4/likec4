@@ -354,7 +354,7 @@ catalogs:
       version: 4.1.1
     tinyrainbow:
       specifier: ^3.0.3
-      version: 3.0.3
+      version: 3.1.0
     ufo:
       specifier: 1.6.3
       version: 1.6.3
@@ -441,7 +441,7 @@ overrides:
   type-fest: ^4.41.0
   turbo: 2.9.5
   sharp: 0.34.5
-  caniuse-lite: ^1.0.30001785
+  caniuse-lite: ^1.0.30001786
   mnemonist: 0.40.3
   min-document: '>=2.19.2'
   flatted: '>=3.4.2'
@@ -1604,7 +1604,7 @@ importers:
         version: 3.10.0
       tinyrainbow:
         specifier: catalog:utils
-        version: 3.0.3
+        version: 3.1.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -2007,7 +2007,7 @@ importers:
         version: 4.1.1
       tinyrainbow:
         specifier: ^3.0.3
-        version: 3.0.3
+        version: 3.1.0
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2183,7 +2183,7 @@ importers:
         version: 2.33.7
       tinyrainbow:
         specifier: catalog:utils
-        version: 3.0.3
+        version: 3.1.0
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2345,7 +2345,7 @@ importers:
         version: 4.1.1
       tinyrainbow:
         specifier: catalog:utils
-        version: 3.0.3
+        version: 3.1.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -8991,10 +8991,6 @@ packages:
   tinyglobby@0.2.15:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
     engines: {node: '>=12.0.0'}
-
-  tinyrainbow@3.0.3:
-    resolution: {integrity: sha512-PSkbLUoxOFRzJYjjxHJt9xro7D+iilgMX/C9lawzVuYiIdcihh9DXmVibBe8lmcFrRi/VzlPjBxbN7rH24q8/Q==}
-    engines: {node: '>=14.0.0'}
 
   tinyrainbow@3.1.0:
     resolution: {integrity: sha512-Bf+ILmBgretUrdJxzXM0SgXLZ3XfiaUuOj/IKQHuTXip+05Xn+uyEYdVg0kYDipTBcLrCVyUzAPz7QmArb0mmw==}
@@ -17589,8 +17585,6 @@ snapshots:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.4)
       picomatch: 4.0.4
-
-  tinyrainbow@3.0.3: {}
 
   tinyrainbow@3.1.0: {}
 
