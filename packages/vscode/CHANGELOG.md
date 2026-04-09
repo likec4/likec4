@@ -1,5 +1,11 @@
 # likec4-vscode
 
+## 1.54.0
+
+### Patch Changes
+
+- [#2826](https://github.com/likec4/likec4/pull/2826) [`0a4af22`](https://github.com/likec4/likec4/commit/0a4af22540239b5ec95f32f039a1cc230fb84940) Thanks [@davydkov](https://github.com/davydkov)! - Improve navigation from preview panel to sources by showing editor in a different tab group (deterministically).
+
 ## 1.53.0
 
 ### Patch Changes

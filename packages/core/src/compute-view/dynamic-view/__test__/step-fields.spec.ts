@@ -223,6 +223,149 @@ describe('Dynamic view step fields', () => {
     })
   })
 
+  describe('Style inheritance from specification', () => {
+    it('should inherit color, line, head, tail from specification when step has kind', () => {
+      const model = Builder
+        .specification({
+          elements: ['el'],
+          relationships: {
+            action: {
+              color: 'green',
+              line: 'solid',
+              head: 'open',
+              tail: 'diamond',
+            },
+          },
+        })
+        .model(({ el }, _) =>
+          _(
+            el('shopify'),
+            el('webhook'),
+          )
+        )
+        .toLikeC4Model()
+
+      const edge = computeEdgeFromStep(model, {
+        kind: 'action' as any,
+      })
+
+      expect(edge).toMatchObject({
+        color: 'green',
+        line: 'solid',
+        head: 'open',
+        tail: 'diamond',
+      })
+    })
+
+    it('should prefer explicit step styles over specification', () => {
+      const model = Builder
+        .specification({
+          elements: ['el'],
+          relationships: {
+            action: {
+              color: 'green',
+              line: 'solid',
+              head: 'open',
+              tail: 'diamond',
+            },
+          },
+        })
+        .model(({ el }, _) =>
+          _(
+            el('shopify'),
+            el('webhook'),
+          )
+        )
+        .toLikeC4Model()
+
+      const edge = computeEdgeFromStep(model, {
+        kind: 'action' as any,
+        color: 'red',
+        line: 'dashed',
+      })
+
+      expect(edge).toMatchObject({
+        color: 'red',
+        line: 'dashed',
+        head: 'open',
+        tail: 'diamond',
+      })
+    })
+
+    it('should prefer model relationship styles over specification', () => {
+      const model = Builder
+        .specification({
+          elements: ['el'],
+          relationships: {
+            action: {
+              color: 'green',
+              line: 'solid',
+              head: 'open',
+              tail: 'diamond',
+            },
+          },
+        })
+        .model(({ el, rel }, _) =>
+          _(
+            el('shopify'),
+            el('webhook'),
+            rel('shopify', 'webhook', {
+              kind: 'action',
+              color: 'blue',
+              line: 'dotted',
+            }),
+          )
+        )
+        .toLikeC4Model()
+
+      const edge = computeEdgeFromStep(model, {
+        kind: 'action' as any,
+      })
+
+      expect(edge).toMatchObject({
+        color: 'blue',
+        line: 'dotted',
+        head: 'open',
+        tail: 'diamond',
+      })
+    })
+
+    it('should combine technology and styles from specification', () => {
+      const model = Builder
+        .specification({
+          elements: ['el'],
+          relationships: {
+            action: {
+              technology: 'ACTION',
+              color: 'green',
+              line: 'solid',
+              head: 'open',
+              tail: 'diamond',
+            },
+          },
+        })
+        .model(({ el }, _) =>
+          _(
+            el('shopify'),
+            el('webhook'),
+          )
+        )
+        .toLikeC4Model()
+
+      const edge = computeEdgeFromStep(model, {
+        kind: 'action' as any,
+      })
+
+      expect(edge).toMatchObject({
+        technology: 'ACTION',
+        color: 'green',
+        line: 'solid',
+        head: 'open',
+        tail: 'diamond',
+      })
+    })
+  })
+
   describe('Combined fields', () => {
     it('should inherit both technology and description from model', () => {
       const model = Builder

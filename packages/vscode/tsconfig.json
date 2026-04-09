@@ -11,7 +11,7 @@
     "rootDirs": [
       "src",
       "."
-    ],
+    ]
   },
   "include": [
     "src",
@@ -19,19 +19,25 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
-      "path": "../log/tsconfig.json"
+      "path": "../log/"
     },
     {
-      "path": "../config/tsconfig.json"
+      "path": "../config/"
+    },
+    {
+      "path": "../layouts/"
     },
     {
       "path": "../vscode-preview/tsconfig.protocol.json"
     },
     {
-      "path": "../language-server/tsconfig.json"
+      "path": "../language-server/"
+    },
+    {
+      "path": "../language-services/"
     }
   ]
 }

@@ -1066,8 +1066,7 @@ terminal String: /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/;
 // terminal fragment QuotedString: ;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
-// terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
 terminal Float returns number: /\b\d+\.\d+\b/;
 terminal Number returns number: /\b\d+\b/;
-terminal IdTerminal:  /[_]*[a-zA-Z][-\w]*/;
+terminal IdTerminal:  /([a-zA-Z]|_+[a-zA-Z0-9])[-\w]*/;
 terminal Hex: /[a-fA-F0-9]{3,}(?![-_g-zG-Z])/;

@@ -132,6 +132,9 @@ export class TestHelper<T extends AnyTypes> {
     toHaveConnections: (...matchers: ConnectionEqual<T>) => {
       this.expectConnections(memory.connections as any).toEqual(...matchers)
     },
+    toHaveNoConnections: () => {
+      this.expectConnections(memory.connections as any).toBeEmpty()
+    },
   })
 
   expectElements = (elements: ReadonlySet<ElementModel<Any>>) => ({

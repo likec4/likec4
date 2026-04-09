@@ -7,6 +7,12 @@ LikeC4 Language Server Protocol (LSP) based on [langium](https://github.com/lang
 >
 > Please use the main [`likec4`](https://www.npmjs.com/package/likec4) package instead.
 
+> [!TIP]
+> For standalone LSP server usage (Neovim, Zed, and other editors), install [`@likec4/lsp`](https://www.npmjs.com/package/@likec4/lsp):
+> ```sh
+> npm install -g @likec4/lsp
+> ```
+
 ## Getting help
 
 We are always happy to help you get started:

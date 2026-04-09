@@ -295,6 +295,82 @@ describe('Builder (style 2)', () => {
     )
   })
 
+  it('custom description/summary/links should override specification defaults', () => {
+    const specWithDefaults = Builder
+      .specification({
+        elements: {
+          component: {
+            description: { txt: 'spec-description' },
+            summary: { txt: 'spec-summary' },
+            links: [{ url: 'https://spec.example.com' }],
+          },
+        },
+        deployments: {
+          node: {
+            description: { txt: 'spec-node-description' },
+            summary: { txt: 'spec-node-summary' },
+            links: [{ url: 'https://spec-node.example.com' }],
+          },
+        },
+      })
+
+    const m = specWithDefaults
+      .model(({ component }, _) =>
+        _(
+          component('c1', {
+            description: 'custom-description',
+            summary: 'custom-summary',
+            links: ['https://custom.example.com'],
+          }),
+          component('c2', 'Only Title'),
+        )
+      )
+      .deployment(({ node, instanceOf }, _) =>
+        _(
+          node('n1', {
+            description: 'custom-node-description',
+            summary: 'custom-node-summary',
+            links: ['https://custom-node.example.com'],
+          }),
+          instanceOf('n1.c1', 'c1'),
+        )
+      )
+      .build()
+
+    // Custom values should override spec defaults
+    expect(m.elements).toMatchObject(
+      {
+        c1: {
+          description: { txt: 'custom-description' },
+          summary: { txt: 'custom-summary' },
+          links: [{ url: 'https://custom.example.com' }],
+        },
+      } satisfies PartialDeep<ParsedLikeC4ModelData['elements']>,
+    )
+
+    // Element without custom values should get spec defaults
+    expect(m.elements).toMatchObject(
+      {
+        c2: {
+          description: { txt: 'spec-description' },
+          summary: { txt: 'spec-summary' },
+          links: [{ url: 'https://spec.example.com' }],
+        },
+      } satisfies PartialDeep<ParsedLikeC4ModelData['elements']>,
+    )
+
+    // Deployment custom values should override spec defaults
+    expect(m.deployments.elements).toMatchObject(
+      {
+        n1: {
+          description: { txt: 'custom-node-description' },
+          summary: { txt: 'custom-node-summary' },
+          links: [{ url: 'https://custom-node.example.com' }],
+        },
+      } satisfies PartialDeep<ParsedLikeC4ModelData['deployments']['elements']>,
+    )
+  })
+
   it('should preserve icon style properties in models', () => {
     const m = spec
       .model(({ component }, _) =>

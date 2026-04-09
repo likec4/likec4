@@ -66,7 +66,7 @@ export type NewElementProps<Tag, Metadata> = {
   summary?: MarkdownOrString | string
   description?: MarkdownOrString | string
   technology?: string
-  tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
+  tags?: [Tag, ...Tag[]]
   metadata?: Metadata
   icon?: string
   shape?: ElementShape
@@ -91,7 +91,7 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
   summary?: MarkdownOrString | string
   description?: MarkdownOrString | string
   technology?: string
-  tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
+  tags?: [Tag, ...Tag[]]
   metadata?: Metadata
   icon?: string
   shape?: ElementShape
@@ -114,7 +114,7 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
 export type NewViewProps<Tag> = {
   title?: string
   description?: MarkdownOrString | string
-  tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
+  tags?: [Tag, ...Tag[]]
   links?: Array<string | { title?: string; url: string }>
 }
 
@@ -124,7 +124,7 @@ export type NewRelationProps<Kind, Tag, Metadata> = {
   description?: MarkdownOrString | string
   technology?: string
   notes?: MarkdownOrString | string
-  tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
+  tags?: [Tag, ...Tag[]]
   metadata?: Metadata
   head?: RelationshipArrowType
   tail?: RelationshipArrowType

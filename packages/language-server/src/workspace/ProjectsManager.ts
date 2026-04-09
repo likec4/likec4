@@ -22,8 +22,9 @@ import {
   URI,
   UriUtils,
 } from 'langium'
+import { isAbsolute } from 'pathe'
 import picomatch from 'picomatch'
-import { find, hasAtLeast, isEmptyish, isNullish, map, prop, purry } from 'remeda'
+import { filter, find, hasAtLeast, isEmptyish, isNullish, isTruthy, map, pipe, prop, purry } from 'remeda'
 import type { Tagged } from 'type-fest'
 import {
   cleanDoubleSlashes,
@@ -240,6 +241,11 @@ export class ProjectsManager {
   #defaultProjectId: ProjectId | undefined = undefined
 
   /**
+   * Workspace-level exclude matcher from VS Code settings (likec4.exclude).
+   */
+  #workspaceExclude: ((test: string) => boolean) | undefined = undefined
+
+  /**
    * Registered projects.
    * Sorted descending by the number of segments in the folder path.
    * This ensures that the most specific project is used for a document.
@@ -269,6 +275,10 @@ export class ProjectsManager {
 
   #excludedDocuments = new DefaultMap((document: NormalizedUri) => {
     const docuri = normalizeUri(document)
+    // Workspace-level excludes (from VS Code settings) take precedence
+    if (this.#isExcludedByWorkspace(docuri)) {
+      return true
+    }
     const owner = this.#ownerOf.get(docuri)
     if (!owner) {
       return isExcludedByDefault(docuri)
@@ -292,12 +302,43 @@ export class ProjectsManager {
   })
 
   constructor(protected services: LikeC4SharedServices) {
-    logger.debug`created`
-    // onNextTick(() => {
-    //   this.services.workspace.WorkspaceManager.onForceCleanCache(() => {
-    //     this.resetCaches()
-    //   })
-    // })
+    logger.trace`created`
+  }
+
+  #isExcludedByWorkspace(uri: NormalizedUri): boolean {
+    return this.#workspaceExclude?.(withoutProtocol(uri)) ?? false
+  }
+
+  /**
+   * Updates the workspace-level exclude patterns from VS Code settings.
+   * Called during initial server startup; dynamic changes restart the server.
+   */
+  setWorkspaceExcludePatterns(patterns: string[] | undefined): void {
+    try {
+      if (!Array.isArray(patterns)) {
+        this.#workspaceExclude = undefined
+        return
+      }
+      const normalizedPatterns = pipe(
+        patterns,
+        filter(isTruthy),
+        map(p => {
+          if (!isAbsolute(p) && !p.startsWith('**')) {
+            p = joinURL('**', p)
+          }
+          return p
+        }),
+      )
+      if (!hasAtLeast(normalizedPatterns, 1)) {
+        this.#workspaceExclude = undefined
+        return
+      }
+      logger.debug`set workspace exclude patterns: ${normalizedPatterns}`
+      this.#workspaceExclude = picomatch(normalizedPatterns, { dot: true })
+    } catch (e) {
+      logger.warn('Failed to set workspace exclude patterns', { error: e })
+      this.#workspaceExclude = undefined
+    }
   }
 
   /**
@@ -427,6 +468,10 @@ export class ProjectsManager {
    */
   isIncluded(projectId: ProjectId, document: LangiumDocument | URI | string): boolean {
     const uri = normalizeUri(document)
+    // Workspace-level excludes (from VS Code settings) take precedence
+    if (this.#isExcludedByWorkspace(uri)) {
+      return false
+    }
     // If there are no projects, check if document is not excluded
     if (!hasAtLeast(this.#projects, 1)) {
       return !isExcludedByDefault(uri)
@@ -444,11 +489,17 @@ export class ProjectsManager {
    * Registers likec4 project by config file.
    */
   async registerConfigFile(configUri: URI, cancelToken?: Cancellation.CancellationToken): Promise<ProjectData> {
-    if (isExcludedByDefault(normalizeUri(configUri))) {
+    const normalizedUri = normalizeUri(configUri)
+    if (isExcludedByDefault(normalizedUri)) {
       throw new Error(
         `Failed to register project config, path ${configUri.fsPath} is excluded by: ${
           DefaultProject.config.exclude.map(p => `"${p}"`).join(', ')
         }`,
+      )
+    }
+    if (this.#isExcludedByWorkspace(normalizedUri)) {
+      throw new Error(
+        `Failed to register project config, path ${configUri.fsPath} is excluded by editor settings`,
       )
     }
     try {

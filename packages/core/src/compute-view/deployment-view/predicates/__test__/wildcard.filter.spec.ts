@@ -2,30 +2,19 @@ import { describe, it } from 'vitest'
 import { Builder } from '../../../../builder'
 import { TestHelper } from '../../__test__/TestHelper'
 
-describe('Wildcard', () => {
+describe('Wildcard Where', () => {
   const builder = Builder
     .specification({
-      elements: {
-        el: {},
-        app: {},
-      },
-      tags: {
-        next: {},
-        alpha: {},
-        beta: {},
-        omega: {},
-      },
-      deployments: {
-        nd: {},
-        vm: {},
-      },
+      elements: ['el', 'app'],
+      tags: ['tag-on-model', 'tag-on-instance', 'tag-on-node', 'unused'],
+      deployments: ['nd', 'vm'],
     })
     .model(({ el, app }, _) =>
       _(
-        el('customer', { tags: ['next'] }),
+        el('customer', { tags: ['tag-on-model'] }),
         el('cloud'),
         el('cloud.ui'),
-        app('cloud.ui.app', { tags: ['next'] }),
+        app('cloud.ui.app', { tags: ['tag-on-model'] }),
         el('cloud.backend'),
         el('cloud.backend.api'),
         el('cloud.backend.service'),
@@ -57,22 +46,22 @@ describe('Wildcard', () => {
       nd('customer').with(
         instanceOf('customer'),
       ),
-      nd('prod', { tags: ['alpha'] }),
-      nd('prod.z1').with(
+      nd('prod'),
+      nd('prod.z1', { tags: ['tag-on-node'] }).with(
         instanceOf('cloud.ui.app'),
-        instanceOf('cloud.backend.api'),
-        instanceOf('cloud.backend.service'),
+        instanceOf('api', 'cloud.backend.api', { tags: ['tag-on-instance'] }),
+        instanceOf('service', 'cloud.backend.service', { tags: ['tag-on-instance'] }),
       ),
       nd('prod.infra').with(
         instanceOf('infra.db'),
-        instanceOf('email', 'infra.email', { tags: ['alpha'] }),
+        instanceOf('infra.email'),
       ),
-      nd('global').with(
+      nd('global', { tags: ['tag-on-node'] }).with(
         instanceOf('integrators'),
       ),
       vm('dev').with(
         instanceOf('cloud.ui.app'),
-        instanceOf('cloud.backend.api'),
+        instanceOf('api', 'cloud.backend.api', { tags: ['tag-on-instance'] }),
         instanceOf('cloud.backend.service'),
         instanceOf('infra.db'),
         instanceOf('infra.email'),
@@ -91,61 +80,150 @@ describe('Wildcard', () => {
           $include('*', { where: 'kind is vm' }),
         ).toHaveNodes(
           'dev',
-          'dev.app',
-          'dev.api',
-          'dev.service',
-          'dev.db',
-          'dev.email',
+        )
+
+        t.expectComputedView(
+          $include('*', { where: 'kind is nd' }),
+        ).toHaveNodes(
+          'prod',
+          'prod.infra',
+          'customer',
+          'global',
+          'prod.z1',
         )
       })
     })
 
     describe('tag is', () => {
-      // Wildcard filters could not be applied to instances as instances are always wrapped into deployment node
-      // it('should include instance when model tag matches', () => {})
-      // it('should include instance when instance tag matches', () => {})
-      // it('should not include instance when neither model nor instance tag does not match', () => {})
+      it('should include instance when model tag matches', () => {
+        t.expectComputedView(
+          $include('*', { where: 'tag is #tag-on-model' }),
+        ).toHave({
+          nodes: [
+            'customer.customer',
+            'prod',
+            'dev',
+            'prod.z1.app',
+            'dev.app',
+          ],
+          edges: [
+            'customer.customer -> prod.z1.app',
+            'customer.customer -> dev.app',
+          ],
+        })
+      })
+
+      it('should include instance when instance tag matches', () => {
+        t.expectComputedView(
+          $include('*', { where: 'tag is #tag-on-instance' }),
+        ).toHave({
+          nodes: [
+            'prod.z1',
+            'prod.z1.api',
+            'prod.z1.service',
+            'dev.api',
+          ],
+          edges: [
+            'prod.z1.api -> prod.z1.service',
+          ],
+        })
+      })
 
       it('should include node when tag matches', () => {
         t.expectComputedView(
-          $include('*', { where: 'tag is #alpha' }),
-        ).toHaveNodes(
-          'prod',
-          'prod.z1',
-          'prod.infra',
-        )
+          $include('*', { where: 'tag is #tag-on-node' }),
+        ).toHave({
+          nodes: [
+            'global',
+            'prod',
+            'prod.z1',
+          ],
+          edges: [
+            'global -> prod.z1',
+          ],
+        })
       })
 
-      it('should not include node when tag does not match', () => {
+      it('should not include any when tag does not match', () => {
         t.expectComputedView(
-          $include('*', { where: 'tag is #omega' }),
+          $include('*', { where: 'tag is #unused' }),
         ).toHaveNodes()
+      })
+
+      it('should include and connect with existing nodes', () => {
+        t.expectComputedView(
+          $include('customer.customer'),
+          $include('*', { where: 'tag is #tag-on-node' }),
+        ).toHave({
+          edges: [
+            'customer.customer -> prod.z1',
+            'global -> prod.z1',
+          ],
+          nodes: [
+            'customer.customer',
+            'global',
+            'prod',
+            'prod.z1',
+          ],
+        })
       })
     })
   })
 
   describe('exclude *', () => {
     describe('tag is', () => {
-      it('should exclude staged node when tag matches', () => {
+      it('should exclude node when tag matches', () => {
         t.expectComputedView(
           $include('prod'),
           $include('prod.**'),
-          $exclude('*', { where: 'tag is #alpha' }),
+          $exclude('*', { where: 'tag is #tag-on-node' }),
         ).toHaveNodes(
-          'prod.z1',
+          'prod',
           'prod.z1.app',
           'prod.z1.api',
           'prod.z1.service',
           'prod.infra',
           'prod.infra.db',
+          'prod.infra.email',
         )
       })
-      it('should not exclude staged node when tag does not match', () => {
+
+      it('should exclude instance when model tag matches', () => {
+        t.expectComputedView(
+          $include('prod'),
+          $include('prod.**'),
+          $exclude('*', { where: 'tag is #tag-on-model' }),
+        ).toHaveNodes(
+          'prod',
+          'prod.z1',
+          'prod.z1.api',
+          'prod.z1.service',
+          'prod.infra',
+          'prod.infra.db',
+          'prod.infra.email',
+        )
+      })
+
+      it('should exclude instance when instance tag matches', () => {
+        t.expectComputedView(
+          $include('prod'),
+          $include('prod.**'),
+          $exclude('*', { where: 'tag is #tag-on-instance' }),
+        ).toHaveNodes(
+          'prod',
+          'prod.z1.app',
+          'prod.infra',
+          'prod.infra.db',
+          'prod.infra.email',
+        )
+      })
+
+      it('should not exclude when tag does not match', () => {
         t.expectComputedView(
           $include('customer'),
           $include('dev'),
           $include('dev._'),
-          $exclude('*', { where: 'tag is #alpha' }),
+          $exclude('*', { where: 'tag is #unused' }),
         ).toHaveNodes(
           'customer',
           'dev',
@@ -154,51 +232,6 @@ describe('Wildcard', () => {
           'dev.service',
           'dev.db',
           'dev.email',
-        )
-      })
-      it('should exclude staged instance when model tag matches', () => {
-        t.expectComputedView(
-          $include('prod'),
-          $include('prod.**'),
-          $exclude('*', { where: 'tag is #next' }),
-        ).toHaveNodes(
-          'prod',
-          'prod.z1',
-          'prod.z1.api',
-          'prod.z1.service',
-          'prod.infra',
-          'prod.infra.db',
-          'prod.infra.email',
-        )
-      })
-      it('should exclude staged instance when deployment tag matches', () => {
-        t.expectComputedView(
-          $include('prod'),
-          $include('prod.**'),
-          $exclude('*', { where: 'tag is #alpha' }),
-        ).toHaveNodes(
-          'prod.z1',
-          'prod.z1.app',
-          'prod.z1.api',
-          'prod.z1.service',
-          'prod.infra',
-          'prod.infra.db',
-        )
-      })
-      it('should not exclude staged instance when neither model or deployment tag does not match', () => {
-        t.expectComputedView(
-          $include('prod'),
-          $include('prod.**'),
-          $exclude('*', { where: 'tag is #omega' }),
-        ).toHaveNodes(
-          'prod',
-          'prod.z1',
-          'prod.z1.app',
-          'prod.z1.api',
-          'prod.z1.service',
-          'prod.infra',
-          'prod.infra.db',
-          'prod.infra.email',
         )
       })
     })
