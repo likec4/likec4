@@ -44,8 +44,10 @@ export class ProjectsViewPrinter extends DotPrinter<ComputedProjectsView> {
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
       [_.likec4_project]: edge.projectId,
-      [_.style]: edge.line ?? DefaultEdgeStyle,
     })
+    if (edge.line && edge.line !== this.$defaults.relationship.line) {
+      e.attributes.set(_.style, edge.line)
+    }
 
     if (!this.graphology.hasDirectedEdge(edge.target, edge.source) && edgeAttrs.weight > 1) {
       e.attributes.set(_.weight, edgeAttrs.weight)

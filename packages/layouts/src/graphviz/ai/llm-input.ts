@@ -7,7 +7,6 @@ import {
   flattenMarkdownOrString,
   NodeId,
 } from '@likec4/core/types'
-import { isEmptyish } from 'remeda'
 import type * as z from 'zod/v4'
 import { logger } from './logger'
 
@@ -26,7 +25,6 @@ interface SerializedNode {
 
 interface SerializedCompound {
   id: CompoundIdSerialized
-  kind: string
   title: string
   parent?: CompoundIdSerialized
   children: Array<CompoundIdSerialized | NodeIdSerialized>
@@ -51,14 +49,14 @@ export interface SerializedView {
 function truncate(str: string, maxLen: number = 100): string {
   str = str.replaceAll(/\n/g, ' ').trim()
   if (str.length <= maxLen) return str
-  return str.slice(0, maxLen - 1) + '\u2026'
+  return str.slice(0, maxLen - 1) + '\u2026' // ellipsis at the end
 }
 
 /**
  * When serializing for the LLM, we map internal NodeIds and EdgeIds to simple strings (n1, n2, e1, e2) to keep the JSON compact.
  * LLMInput provides the reverse mapping for later interpretation of LLM output.
  */
-type LLMInput = {
+export interface LLMInput {
   serialized: SerializedView
   mapping: {
     nodes: Record<string & z.$brand<'NodeId'>, ComputedNode>
@@ -75,8 +73,12 @@ function mappedEntries<T>(_map: DefaultMap<T, string>): Record<string, T> {
 }
 
 function edgeLabel(edge: ComputedEdge): string | undefined {
-  const label = edge.label ?? flattenMarkdownOrString(edge.description) ?? edge.technology
-  return label && label !== '[...]' ? truncate(label) : undefined
+  let label = edge.label && edge.label !== '[...]' ? edge.label : undefined
+  if (!label && edge.description) {
+    label = flattenMarkdownOrString(edge.description)
+  }
+  label ??= edge.technology ?? undefined
+  return label ? truncate(label) : undefined
 }
 
 /**
@@ -86,10 +88,10 @@ function edgeLabel(edge: ComputedEdge): string | undefined {
  *
  * Maps NodeIds and EdgeIds to simple strings (n1, n2, e1, e2) to keep the JSON compact.
  */
-export function prepareViewForPrompt(view: ComputedView): LLMInput {
-  let seq = 1
+export function prepareLLMInput(view: ComputedView): LLMInput {
+  let seqC = 1, seqN = 1
   const nodeIds = new DefaultMap((node: ComputedNode) =>
-    node.children.length === 0 ? (`n${seq++}` as NodeIdSerialized) : (`c${seq++}` as CompoundIdSerialized)
+    node.children.length === 0 ? (`n${seqN++}` as NodeIdSerialized) : (`c${seqC++}` as CompoundIdSerialized)
   )
   const findNodeById = (id: NodeId) => view.nodes.find(n => n.id === id)!
   const nodeId = (id: NodeId) => nodeIds.get(findNodeById(id))
@@ -123,40 +125,43 @@ export function prepareViewForPrompt(view: ComputedView): LLMInput {
     if (e.dir === 'back') {
       ;[source, target] = [target, source]
     }
+    const label = edgeLabel(e)
     return ({
       id: edgeIds.get(e),
-      label: edgeLabel(e),
+      ...(label && { label }),
       ...(parent && { parent }),
       source,
       target,
     })
   })
 
-  const serializeNode = (acc: SerializedView, nd: ComputedNode) => {
-    const { id, parent, level, ...node } = nd
+  const reduceNodes = (acc: SerializedView, nd: ComputedNode): SerializedView => {
+    const { level, kind, ...node } = nd
+    const id = nodeIds.get(nd)
     const isCompound = node.children.length > 0
+    const parent = node.parent ? nodeId(node.parent) as CompoundIdSerialized : undefined
+    const title = truncate(node.title)
 
     if (isCompound) {
       acc.compounds.push(exact({
-        id: nodeId(id) as CompoundIdSerialized,
-        kind: node.kind,
-        title: truncate(node.title),
-        parent: parent ? (nodeId(parent) as CompoundIdSerialized) : undefined,
+        id: id as CompoundIdSerialized,
+        title,
+        parent,
         children: node.children.map(nodeId),
         level,
       }))
       return acc
     }
 
-    const description = truncate(flattenMarkdownOrString(node.description) ?? '', 200)
+    const description = node.description ? truncate(flattenMarkdownOrString(node.description), 200) : undefined
 
     acc.nodes.push(
       exact({
-        id: nodeId(id) as NodeIdSerialized,
-        kind: node.kind,
-        title: truncate(node.title),
-        description: isEmptyish(description) ? undefined : description,
-        parent: parent ? (nodeId(parent) as CompoundIdSerialized) : undefined,
+        id: id as NodeIdSerialized,
+        kind,
+        title,
+        description,
+        parent,
         level,
       }),
     )
@@ -164,7 +169,7 @@ export function prepareViewForPrompt(view: ComputedView): LLMInput {
     return acc
   }
 
-  const serialized: SerializedView = view.nodes.reduce(serializeNode, {
+  const serialized: SerializedView = view.nodes.reduce(reduceNodes, {
     direction: view.autoLayout.direction,
     compounds: [],
     nodes: [],

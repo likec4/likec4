@@ -3,8 +3,9 @@ import { LikeC4Styles } from '@likec4/core/styles'
 import { configureLogger, getAnsiColorFormatter, getConsoleSink, logger } from '@likec4/log'
 import ollama from 'ollama'
 import { $, echo, fs } from 'zx'
+import { S } from '../core/dist/_chunks/index5.d.mts'
 import { enhanceLayoutWithAI } from './src/graphviz/ai/orchestrator'
-import type { AILayoutProvider } from './src/graphviz/ai/provider'
+import type { AILayoutProvider } from './src/graphviz/ai/types'
 import { GraphvizLayouter } from './src/graphviz/GraphvizLayoter'
 configureLogger({
   reset: true,
@@ -26,7 +27,9 @@ const systemPrompt = fs.readFileSync('src/graphviz/ai/prompt-system.md', 'utf-8'
 
 // const viewId = 'amazon'
 const viewId = 'cloud_ui'
-// const viewId = 'amazon_sqs'
+// const viewId = 'production'
+// const viewId = 'cloud_next'
+const suffix = '_v2'
 
 const model = fs.readJsonSync('./model.json') as ComputedLikeC4ModelData
 const amazonView = model.views[viewId]!
@@ -42,7 +45,7 @@ $.verbose = true
 
 echo`Layout 1`
 
-await $({ input: layout1.dot })`dot -Tpng -o ${viewId + '_1.png'}`
+await $({ input: layout1.dot })`dot -Tpng -o ${viewId + suffix + '_1.png'}`
 
 echo`Call AI`
 
@@ -50,8 +53,9 @@ const claudeCli: AILayoutProvider = {
   name: 'claude',
   sendRequest: async ({ diagram, userPrompt }) => {
     return await $({
-      input: JSON.stringify(diagram, null, 2),
-    })`claude --model haiku --system-prompt ${systemPrompt} -p --no-session-persistence ${userPrompt}`.text()
+      input: diagram,
+    })`claude --model sonnet --append-system-prompt ${systemPrompt} -p ${userPrompt}`
+      .text()
   },
 }
 
@@ -66,10 +70,9 @@ const ollamaProvider: AILayoutProvider = {
       model,
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-        { role: 'user', content: JSON.stringify(diagram, null, 2) },
+        { role: 'user', content: `${userPrompt}\n\n${diagram}` },
       ],
-      think: true,
+      think: 'low',
       stream: true,
     })
 
@@ -98,25 +101,16 @@ const ollamaProvider: AILayoutProvider = {
   },
 }
 
-const hints = await enhanceLayoutWithAI(amazonView, ollamaProvider)
+// const hints = await enhanceLayoutWithAI(amazonView, ollamaProvider)
+const hints = await enhanceLayoutWithAI(amazonView, claudeCli)
 
 echo`Layout 2`
 
-const layout2 = await layouter.layout({
+const layout2 = await layouter.aiLayout({
   view: amazonView,
   styles: LikeC4Styles.DEFAULT,
-  layoutHints: nonNullable(hints),
-})
+}, nonNullable(hints))
 
 fs.writeFileSync('layout2.dot', layout2.dot)
 
-await $({ input: layout2.dot })`dot -Tpng -o ${viewId + '_2.png'}`
-
-// const unflatten = await spawn('unflatten', ['-l', '1', '-c', '3'], {
-//   timeout: 10_000,
-//   stdin: {
-//     string: layout1.dot,
-//   },
-// })
-// console.log(unflatten.stdout)
-// console.log(layout1)
+await $({ input: layout2.dot })`dot -Tpng -o ${viewId + suffix + '_2.png'}`
