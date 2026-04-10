@@ -10,7 +10,7 @@ catalog:
   "@changesets/cli": ^2.30.0
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
-  "@types/node": ~22.19.15
+  "@types/node": ~22.19.17
   "@types/pako": ^2.0.4
   "@typescript/native-preview": 7.0.0-dev.20260405.1
   graphology: ^0.26.0
