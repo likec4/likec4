@@ -1,5 +1,11 @@
 # likec4-vscode
 
+## 1.54.1
+
+### Patch Changes
+
+- [#2861](https://github.com/likec4/likec4/pull/2861) [`9687f89`](https://github.com/likec4/likec4/commit/9687f8974309de08001db3699e8712c7beac2b07) Thanks [@davydkov](https://github.com/davydkov)! - Add `likec4.exclude` VS Code setting to exclude files and folders from LikeC4 processing via glob patterns
+
 ## 1.54.0
 
 ### Patch Changes

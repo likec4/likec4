@@ -1,5 +1,13 @@
 # @likec4/mcp
 
+## 1.54.1
+
+### Patch Changes
+
+- [#2828](https://github.com/likec4/likec4/pull/2828) [`75fa6d2`](https://github.com/likec4/likec4/commit/75fa6d2b066b42970892bfc8fac407618af160e3) Thanks [@sraphaz](https://github.com/sraphaz)! - - MCP README: clarify MCP vs LeanIX bridge and Draw.io `--profile leanix`.
+  - LikeC4 DSL Agent Skill: LeanIX + Draw.io reference (`bridge-leanix-drawio.md`), CLI reference (`cli.md`), and `SKILL.md` alignment.
+  - AGENTS.md: pointers for agent-facing docs and the LeanIX bridge workflow.
+
 ## 1.54.0
 
 ## 1.53.0

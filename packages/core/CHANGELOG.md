@@ -1,5 +1,23 @@
 # @likec4/core
 
+## 1.54.1
+
+### Patch Changes
+
+- [#2864](https://github.com/likec4/likec4/pull/2864) [`6b87578`](https://github.com/likec4/likec4/commit/6b87578486c821fdc1060d69867a10f3c7e6ca9b) Thanks [@davydkov](https://github.com/davydkov)! - Inherit relationship styles (color, line, head, tail) from specification in dynamic views
+
+  Fixes [#2797](https://github.com/likec4/likec4/issues/2797)
+
+- [#2860](https://github.com/likec4/likec4/pull/2860) [`f684e2f`](https://github.com/likec4/likec4/commit/f684e2fb59745fe62ac2b43c68f1e453ab884cc8) Thanks [@davydkov](https://github.com/davydkov)! - Fix custom element `description` and `summary` being overwritten by specification defaults in Builder API
+
+  Fixes [#2795](https://github.com/likec4/likec4/issues/2795)
+
+- [#2858](https://github.com/likec4/likec4/pull/2858) [`c0048b6`](https://github.com/likec4/likec4/commit/c0048b6ca156508c893e072dfbf9d75bbe4dd8ad) Thanks [@davydkov](https://github.com/davydkov)! - Fix predicate evaluation for wildcard expressions with `where`.
+  Previously, `include * where` was applying filter to the root elements (or children inside scoped view).
+  Now it applies the filter to all elements, to match the wildcard semantics.
+
+  Fixes [#2837](https://github.com/likec4/likec4/issues/2837)
+
 ## 1.54.0
 
 ## 1.53.0
