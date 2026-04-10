@@ -53,6 +53,11 @@ export interface AiLayoutHints {
   edgeWeight: Record<EdgeId, number>
   edgeMinlen: Record<EdgeId, number>
   /**
+   * These edges should be reversed in DOT
+   * Unique array of EdgeIds.
+   */
+  reverseRank?: NonEmptyReadonlyArray<EdgeId>
+  /**
    * These edges should be excluded, i.e. `constraint=false` in Graphviz, to allow more flexible layouts.
    * Unique array of EdgeIds.
    */

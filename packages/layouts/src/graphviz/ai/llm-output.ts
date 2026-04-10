@@ -1,4 +1,5 @@
 import { type ComputedView, type EdgeId, type NonEmptyArray, exact, nonNullable } from '@likec4/core'
+import type { NodeId } from '@likec4/core/types'
 import {
   filter,
   hasAtLeast,
@@ -9,7 +10,6 @@ import {
   unique,
 } from 'remeda'
 import * as z from 'zod/v4'
-import type { NodeId } from '../../../../core/src/types/_aux'
 import type { prepareLLMInput } from './llm-input'
 import { logger } from './logger'
 import type { AIEnforcementEdge, AiLayoutHints } from './types'
@@ -49,6 +49,7 @@ const responseSchema = z
     edgeMinlen: z
       .record(edge.id, edge.minlen)
       .default({}),
+    reverseRank: z.array(edge.id).default([]),
     excludeFromRanking: z.array(edge.id).default([]),
     edgeOrder: z.array(edge.id).default([]),
     nodeOrder: z.array(nodeId).default([]),
@@ -92,12 +93,12 @@ export function parseOutput(
   try {
     const jsonStr = extractJson(response)
     const parsed = JSON.parse(jsonStr)
+    logger.trace`Parsed LLM response: ${parsed}`
     const result = responseSchema.safeParse(parsed)
     if (!result.success) {
       logger.warn('Failed to validate LLM response\n' + z.prettifyError(result.error))
       return undefined
     }
-    logger.debug`LLM response: ${result.data}`
     return restoreIdsAndMapToHints(result.data, params)
   } catch (error) {
     logger.warn('Failed to parse LLM response\n{response}', { error, response })
@@ -136,6 +137,13 @@ function restoreIdsAndMapToHints(
     x => hasAtLeast(x, 1) ? x : undefined,
   )
 
+  const reverseRank = pipe(
+    parsed.reverseRank,
+    map(edgeId),
+    unique(),
+    x => hasAtLeast(x, 1) ? x : undefined,
+  )
+
   const ranks = pipe(
     parsed.ranks,
     map(r => {
@@ -168,6 +176,7 @@ function restoreIdsAndMapToHints(
     edgeWeight: mapKeys(parsed.edgeWeight, edgeId),
     edgeMinlen: mapKeys(parsed.edgeMinlen, edgeId),
     excludeFromRanking,
+    reverseRank,
     edgeOrder: mapToNonEmpty(parsed.edgeOrder, edgeId),
     nodeOrder: mapToNonEmpty(parsed.nodeOrder, nodeId),
     invisibleEdges,
