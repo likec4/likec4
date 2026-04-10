@@ -94,9 +94,14 @@ export class GraphvizLayouter implements Disposable {
     rootLogger.trace`change port to ${this.graphviz.name}`
   }
 
-  printToDot(params: LayoutTaskParams): DotSource {
-    const printer = getPrinter(params)
-    return printer.print()
+  /**
+   * Generates DOT source for the given view and styles.
+   * If `hints` are provided, they will be used to influence the layout (e.g. by specifying node/edge order).
+   * This method does not perform unflattening or any other post-processing on the DOT output, so it may be used for debugging or to generate DOT for external processing.
+   */
+  printToDot(params: LayoutTaskParams, hints?: AiLayoutHints): DotSource {
+    const printer = hints ? new AiLayoutViewPrinter(params.view, params.styles, hints) : getPrinter(params)
+    return normalizeDot(printer.print())
   }
 
   protected newScopedLogger(operation: string) {
@@ -186,15 +191,15 @@ export class GraphvizLayouter implements Disposable {
     const printer = getPrinter(params)
     let dot = printer.print()
     if (!isElementView(params.view)) {
-      return dot
+      return normalizeDot(dot)
     }
     try {
       logger.trace`unflattening dot`
-      return await this.graphviz.unflatten(dot)
+      dot = await this.graphviz.unflatten(dot)
     } catch (error) {
       logger.warn(`Error during unflatten: ${params.view.id}`, { error })
-      return dot
     }
+    return normalizeDot(dot)
   }
 
   async layoutProjectsView(view: ComputedProjectsView): Promise<LayoutedProjectsView> {

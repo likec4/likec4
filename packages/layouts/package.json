@@ -76,6 +76,8 @@
     "postpack": "likec4ops postpack"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "catalog:ai",
+    "ollama": "catalog:ai",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
@@ -101,7 +103,6 @@
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
     "obuild": "catalog:obuild",
-    "ollama": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
