@@ -17,6 +17,7 @@ tests/*.spec.ts
 !tests/overview-page.spec.ts
 !tests/search-params.spec.ts
 !tests/static-navigation.spec.ts
+!tests/manual-layout-views.spec.ts
 
 pnpm-lock.yaml
 package-lock.json
