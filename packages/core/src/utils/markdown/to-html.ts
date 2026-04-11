@@ -1,4 +1,3 @@
-import defu from 'defu'
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
 import remarkGfm from 'remark-gfm'
@@ -15,30 +14,31 @@ function parser() {
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(
       rehypeSanitize,
-      defu(
-        {
-          attributes: {
-            '*': [
-              'className',
-            ],
-            'svg': [
-              'width',
-              'height',
-              'viewBox',
-              'fill',
-              'ariaHidden',
-            ],
-            'path': ['d', 'fill', 'stroke', 'strokeWidth', 'strokeLinecap', 'strokeLinejoin'],
-          },
-          tagNames: [
-            'svg',
-            'g',
-            'path',
-            'div',
+      {
+        ...defaultSchema,
+        attributes: {
+          ...defaultSchema.attributes,
+          '*': [
+            ...(defaultSchema.attributes?.['*'] ?? []),
+            'className',
           ],
+          'svg': [
+            'width',
+            'height',
+            'viewBox',
+            'fill',
+            'ariaHidden',
+          ],
+          'path': ['d', 'fill', 'stroke', 'strokeWidth', 'strokeLinecap', 'strokeLinejoin'],
         },
-        defaultSchema,
-      ),
+        tagNames: [
+          ...(defaultSchema.tagNames ?? []),
+          'svg',
+          'g',
+          'path',
+          'div',
+        ],
+      },
     )
     .use(rehypeStringify, {
       allowDangerousHtml: true,
