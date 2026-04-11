@@ -9,6 +9,7 @@
   "files": [
     "bin",
     "dist",
+    "src/test",
     "**/package.json",
     "!**/__mocks__/",
     "!**/__tests__/",
