@@ -2,7 +2,7 @@ import { type AILayoutProvider, type AILayoutRequest, enhanceLayoutWithAI } from
 import { loggable } from '@likec4/log'
 import { toValue, useCommand } from 'reactive-vscode'
 import { ref } from 'reactive-vscode'
-import { hasAtLeast, once, pick } from 'remeda'
+import { hasAtLeast, once } from 'remeda'
 import vscode from 'vscode'
 import { commands } from '../meta.ts'
 import { useExtensionLogger } from '../useExtensionLogger.ts'

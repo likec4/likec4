@@ -9,7 +9,6 @@ import {
   useWorkspaceFolders,
 } from 'reactive-vscode'
 import vscode from 'vscode'
-import { config } from '../config.ts'
 import { version } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { useWorkspaceId } from '../useWorkspaceId.ts'
