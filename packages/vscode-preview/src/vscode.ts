@@ -13,6 +13,7 @@ import {
   type GetLastClickedNodeHandler,
   type Handler,
   type WebviewLocateReq,
+  BroadcastAILayoutStateUpdate,
   BroadcastModelUpdate,
   BroadcastProjectsUpdate,
   FetchComputedModel,
@@ -56,6 +57,10 @@ export const ExtensionApi = {
   },
   updateTitle: (title: string) => {
     messenger.sendNotification(WebviewMsgs.UpdateMyTitle, HOST_EXTENSION, { title })
+  },
+
+  enhanceMeWithAI: () => {
+    messenger.sendNotification(WebviewMsgs.EnhanceMeWithAI, HOST_EXTENSION)
   },
 
   change: async (params: {
@@ -118,6 +123,10 @@ export const ExtensionApi = {
 
   onOpenViewNotification: (handler: Handler<typeof OnOpenView>) => {
     messenger.onNotification(OnOpenView, handler)
+  },
+
+  onAiLayoutUpdateNotification: (handler: Handler<typeof BroadcastAILayoutStateUpdate>) => {
+    messenger.onNotification(BroadcastAILayoutStateUpdate, handler)
   },
 
   onGetLastClickedNodeRequest: (handler: GetLastClickedNodeHandler) => {

@@ -56,9 +56,6 @@
     },
     {
       "path": "./devops/"
-    },
-    {
-      "path": "./apps/playground/"
     }
   ]
 }

@@ -46,6 +46,14 @@
         "import": "./dist/graphviz/binary/index.mjs",
         "default": "./dist/graphviz/binary/index.mjs"
       }
+    },
+    "./ai": {
+      "sources": "./src/graphviz/ai/index.ts",
+      "default": {
+        "types": "./dist/graphviz/ai/index.d.mts",
+        "import": "./dist/graphviz/ai/index.mjs",
+        "default": "./dist/graphviz/ai/index.mjs"
+      }
     }
   },
   "publishConfig": {
@@ -56,6 +64,7 @@
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
+    "generate": "tsx scripts/generate.ts",
     "build": "obuild",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
@@ -70,28 +79,32 @@
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
+    "@lume/kiwi": "catalog:utils",
+    "fast-equals": "catalog:utils",
+    "indent-string": "catalog:utils",
+    "khroma": "catalog:utils",
     "nano-spawn": "catalog:externals",
-    "type-fest": "catalog:externals",
     "p-limit": "catalog:utils",
     "p-queue": "catalog:utils",
     "remeda": "catalog:utils",
-    "word-wrap": "^1.2.5",
-    "indent-string": "catalog:utils",
-    "khroma": "catalog:utils",
     "strip-indent": "catalog:utils",
-    "fast-equals": "catalog:utils",
-    "ts-graphviz": "^1.8.2",
-    "@lume/kiwi": "catalog:utils",
-    "which": "^5.0.0"
+    "ts-graphviz": "^3.0.7",
+    "type-fest": "catalog:externals",
+    "unstorage": "catalog:utils",
+    "which": "^5.0.0",
+    "word-wrap": "^1.2.5",
+    "zod": "catalog:externals"
   },
   "devDependencies": {
-    "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
+    "obuild": "catalog:obuild",
+    "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "obuild": "catalog:obuild",
-    "vitest": "catalog:vitest"
+    "vitest": "catalog:vitest",
+    "zx": "catalog:"
   }
 }

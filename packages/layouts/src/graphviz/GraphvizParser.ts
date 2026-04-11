@@ -13,7 +13,7 @@ import {
 } from '@likec4/core'
 import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
 import { invariant } from '@likec4/core/utils'
-import { logger } from '@likec4/log'
+import { loggable, logger } from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
 import type { Writable } from 'type-fest'
 import { EDGE_LABEL_MAX_CHARS, EDGE_LABEL_MAX_LINES, wrap } from './dot-labels'
@@ -242,9 +242,13 @@ export function parseGraphvizJson(
       logger.warn`View ${view.id} edge ${computedEdge.id} not found in graphviz output, skipping`
       continue
     }
-    edges.push(
-      parseGraphvizEdge(graphvizEdge, computedEdge, view.id),
-    )
+    try {
+      edges.push(
+        parseGraphvizEdge(graphvizEdge, computedEdge, view.id),
+      )
+    } catch (e) {
+      logger.warn(loggable(e))
+    }
   }
 
   return diagram

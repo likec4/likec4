@@ -1,5 +1,7 @@
+import type { ProjectId, ViewId } from '@likec4/core/types'
 import {
   type OpenViewPayload,
+  BroadcastAILayoutStateUpdate,
   BroadcastModelUpdate,
   BroadcastProjectsUpdate,
   FetchComputedModel,
@@ -16,7 +18,7 @@ import {
   useDisposable,
 } from 'reactive-vscode'
 import type { IsNever } from 'type-fest'
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 import { Messenger } from 'vscode-messenger'
 import {
   type CancellationToken,
@@ -112,6 +114,7 @@ export const useMessenger = createSingletonComposable(() => {
     onWebviewLocate: notificationHandler(WebviewMsgs.Locate),
     onWebviewNavigateTo: notificationHandler(WebviewMsgs.NavigateTo),
     onWebviewUpdateMyTitle: notificationHandler(WebviewMsgs.UpdateMyTitle),
+    onWebviewEnhanceWithAI: notificationHandler(WebviewMsgs.EnhanceMeWithAI),
 
     sendOpenView: sendNotification(OnOpenView),
     sendModelUpdate: sendNotification(BroadcastModelUpdate),
@@ -123,11 +126,19 @@ export const useMessenger = createSingletonComposable(() => {
     messenger,
 
     broadcastModelUpdate: () => messenger.sendNotification(BroadcastModelUpdate, BROADCAST),
+    broadcastAiLayoutUpdate: (
+      params: { viewId: ViewId; projectId: ProjectId; state: 'in-progress' | 'completed' | 'failed' },
+    ) => messenger.sendNotification(BroadcastAILayoutStateUpdate, BROADCAST, params),
 
     ...protocol,
 
     registerPanel: (panel: vscode.WebviewPanel) => {
-      const participant = messenger.registerWebviewPanel(panel)
+      const participant = messenger.registerWebviewPanel(panel, {
+        broadcastMethods: [
+          BroadcastModelUpdate.method,
+          BroadcastAILayoutStateUpdate.method,
+        ],
+      })
       return {
         participant,
         sendOpenView: (payload: OpenViewPayload) => protocol.sendOpenView(participant, payload),

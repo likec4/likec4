@@ -13,6 +13,7 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core'
+import type { AILayoutHints } from '@likec4/layouts/ai'
 import { NotificationType, NotificationType0, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { DiagnosticSeverity, DocumentUri, Location, Position, Range, URI } from 'vscode-languageserver-types'
 
@@ -116,6 +117,8 @@ export namespace LayoutView {
     viewId: ViewId
     projectId?: string | undefined
     layoutType?: 'auto' | 'manual' | undefined
+    /** Optional AI-generated layout hints to enhance the layout */
+    hints?: AILayoutHints | undefined
   }
   export type Res = {
     result:

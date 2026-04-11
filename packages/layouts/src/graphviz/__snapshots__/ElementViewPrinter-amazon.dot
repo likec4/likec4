@@ -24,6 +24,7 @@ digraph {
     penwidth = 2;
     color = "#8D8D8D";
     fontcolor = "#C9C9C9";
+    style = "dashed";
   ];
   node [
     fontname = "Arial";
@@ -74,9 +75,8 @@ digraph {
   }
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
-    style = "dashed";
-    weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
+    weight = 3;
     arrowhead = "normal";
     arrowtail = "odiamond";
     dir = "both";

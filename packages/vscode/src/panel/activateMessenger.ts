@@ -122,12 +122,11 @@ export function activateMessenger() {
       if (change.op === 'reset-manual-layout' || change.op === 'save-view-snapshot') {
         return { success: true }
       }
-      const loc = result.location ?? null
-      if (!loc) {
+      const location = result.location ?? null
+      if (!location) {
         logger.warn(`rpc.changeView returned null`)
         return result
       }
-      const location = rpc.client.protocol2CodeConverter.asLocation(loc)
       await showEditorNextToPreview({
         previewColumn: toValue(preview.panelViewColumn),
         location,

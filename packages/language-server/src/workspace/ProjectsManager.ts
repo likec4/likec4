@@ -730,13 +730,11 @@ export class ProjectsManager {
       .toArray()
     // If no documents are found, return early
     if (docs.length === 0) {
-      log.debug`no documents found for project ${project.id}, skipping rebuild`
+      log.trace`no documents found for project ${project.id}, skipping rebuild`
       return
     }
 
-    log.info('rebuild project documents: {docs}', {
-      docs: docs.length,
-    })
+    log.info`rebuild project documents: ${docs.length}`
     this.resetCaches()
     await this.services.workspace.DocumentBuilder
       .update(docs, [], cancelToken)

@@ -1,6 +1,7 @@
 import type { LikeC4Styles } from '@likec4/core/styles'
 import type {
   AnyFqn,
+  ComputedEdge,
   ComputedNode,
   ComputedView,
   DeploymentFqn,
@@ -11,10 +12,10 @@ import type {
   NodeId,
   RelationshipColorValues,
   RelationshipLineType,
-  XYPoint,
 } from '@likec4/core/types'
 import {
   compareFqnHierarchically,
+  DefaultMap,
   hierarchyDistance,
   invariant,
   nameFromFqn,
@@ -66,26 +67,6 @@ type ViewToPrint = Pick<ComputedView, 'id' | 'nodes' | 'edges' | 'autoLayout'>
 type NodeOf<V extends ViewToPrint> = V['nodes'][number]
 type EdgeOf<V extends ViewToPrint> = V['edges'][number]
 
-export type ApplyManualLayoutData = {
-  x: number
-  y: number
-  height: number
-
-  nodes: Array<{
-    id: string
-    center: XYPoint
-    fixedsize?: {
-      width: number
-      height: number
-    }
-  }>
-
-  edges: Array<{
-    id: string
-    dotpos: string
-  }>
-}
-
 type GraphologyNodeAttributes<V extends ViewToPrint> = {
   modelRef: Fqn | null
   deploymentRef: DeploymentFqn | null
@@ -103,13 +84,21 @@ type GraphologyEdgeAttributes<V extends ViewToPrint> = {
 // space around clusters, but SVG output requires hack
 export const GraphClusterSpace = 50.1
 
-export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | 'edges' | 'autoLayout'>> {
+export abstract class DotPrinter<V extends ViewToPrint> {
   private ids = new Set<string>()
   private subgraphs = new Map<NodeId, SubgraphModel>()
   private nodes = new Map<NodeId, NodeModel>()
   protected edges = new Map<EdgeId, EdgeModel>()
   protected compoundIds: Set<NodeId>
   protected edgesWithCompounds: Set<EdgeId>
+  protected viewNodes = new DefaultMap<NodeId, NodeOf<V>>(id =>
+    nonNullable(
+      this.view.nodes.find(n => n.id === id),
+      `Node ${id} not found`,
+    )
+  )
+
+  protected logger = logger
 
   protected graphology: Graph<GraphologyNodeAttributes<V>, GraphologyEdgeAttributes<V>> = new Graph({
     allowSelfLoops: true,
@@ -117,7 +106,11 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     type: 'directed',
   })
 
-  public readonly graphvizModel: RootGraphModel
+  /**
+   * The root graphviz model
+   * @internal
+   */
+  public readonly G: RootGraphModel
 
   constructor(
     protected readonly view: V,
@@ -195,12 +188,9 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
       }
     })
 
-    const G = this.graphvizModel = this.createGraph()
+    const G = this.G = this.createGraph()
     this.applyNodeAttributes(G.attributes.node)
     this.applyEdgeAttributes(G.attributes.edge)
-
-    this.build(G)
-    this.postBuild(G)
   }
 
   protected get $defaults(): LikeC4StyleDefaults {
@@ -224,9 +214,42 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     // override in subclass
   }
 
-  private build(G: RootGraphModel): void {
+  /**
+   * Override this method to reorder/filter nodes that should be included in the view
+   * Does not affect compound nodes - they are always processed
+   * By default, all nodes from the view are included
+   */
+  protected selectViewNodes(): Iterable<NodeOf<V>> {
+    return this.view.nodes
+  }
+
+  /**
+   * Override this method to filter edges that should be included in the view
+   * By default, all edges from the view are included
+   */
+  protected selectViewEdges(): Iterable<EdgeOf<V>> {
+    return this.view.edges
+  }
+
+  private build(): this {
+    const G = this.G
     // ----------------------------------------------
-    // Traverse clusters first
+    // Traverse nodes
+    const topCompound = [] as ComputedNode[]
+    for (const viewNode of this.selectViewNodes()) {
+      if (isCompound(viewNode)) {
+        if (isNullish(viewNode.parent)) {
+          topCompound.push(viewNode)
+        }
+      } else {
+        const id = this.generateGraphvizId(viewNode)
+        const node = this.elementToNode(viewNode, G.node(id))
+        this.nodes.set(viewNode.id, node)
+      }
+    }
+
+    // ----------------------------------------------
+    // Traverse clusters after nodes are added to the graphviz model
     const traverseClusters = (element: ComputedNode, parent: GraphBaseModel) => {
       const id = this.generateGraphvizId(element)
       const subgraph = this.elementToSubgraph(element, parent.subgraph(id))
@@ -236,22 +259,11 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
         if (isCompound(child)) {
           traverseClusters(child, subgraph)
         } else {
-          const gvnode = nonNullable(this.getGraphNode(child.id), `Graphviz Node not found for ${child.id}`)
-          subgraph.node(gvnode.id)
+          const gvnode = this.getGraphNode(child.id)
+          if (gvnode) {
+            subgraph.node(gvnode.id)
+          }
         }
-      }
-    }
-
-    const topCompound = [] as ComputedNode[]
-    for (const element of this.view.nodes) {
-      if (isCompound(element)) {
-        if (isNullish(element.parent)) {
-          topCompound.push(element)
-        }
-      } else {
-        const id = this.generateGraphvizId(element)
-        const node = this.elementToNode(element, G.node(id))
-        this.nodes.set(element.id, node)
       }
     }
 
@@ -259,16 +271,22 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
       traverseClusters(compound, G)
     }
 
-    for (const edge of this.view.edges) {
+    // ----------------------------------------------
+    // Traverse edges
+    for (const edge of this.selectViewEdges()) {
       const model = this.addEdge(edge, G)
       if (model) {
         this.edges.set(edge.id, model)
       }
     }
+
+    return this
   }
 
   public print(): DotSource {
-    return modelToDot(this.graphvizModel, {
+    this.build()
+    this.postBuild(this.G)
+    return modelToDot(this.G, {
       print: {
         indentStyle: 'space',
         indentSize: 2,
@@ -276,14 +294,23 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     }) as DotSource
   }
 
+  protected enableNewRankIfNeeded(): this {
+    if (this.G.subgraphs.some(s => !!s.get(_.rank))) {
+      this.G.set(_.newrank, true)
+      // this.graphvizModel.set(_.clusterrank, 'global')
+    }
+    return this
+  }
+
   protected createGraph(): RootGraphModel {
     const autoLayout = this.view.autoLayout
+    const direction = autoLayout.direction
     const G = digraph({
       [_.likec4_viewId]: this.view.id,
       [_.bgcolor]: 'transparent',
       [_.layout]: 'dot',
       [_.compound]: true,
-      [_.rankdir]: autoLayout.direction,
+      [_.rankdir]: direction,
       [_.TBbalance]: 'min',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
@@ -294,8 +321,8 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     })
     G.attributes.graph.apply({
       [_.fontsize]: pxToPoints(this.styles.fontSize()),
-      [_.labeljust]: autoLayout.direction === 'RL' ? 'r' : 'l',
-      [_.labelloc]: autoLayout.direction === 'BT' ? 'b' : 't',
+      [_.labeljust]: direction === 'RL' ? 'r' : 'l',
+      [_.labelloc]: direction === 'BT' ? 'b' : 't',
       [_.margin]: GraphClusterSpace,
     })
 
@@ -323,36 +350,33 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
       [_.penwidth]: pxToPoints(2),
       [_.color]: colors.line,
       [_.fontcolor]: colors.label as HexColor,
+      [_.style]: this.$defaults.relationship.line,
     })
   }
 
-  protected checkNodeId(name: string, isCompound = false) {
+  private reserveNodeId(name: string, isCompound = false): string | false {
     if (isCompound) {
       name = 'cluster_' + name
     } else if (name.toLowerCase().startsWith('cluster')) {
       name = 'nd_' + name
     }
-    if (!this.ids.has(name)) {
-      this.ids.add(name)
-      return name
+    if (this.ids.has(name)) {
+      return false
     }
-    return null
+    this.ids.add(name)
+    return name
   }
 
   protected generateGraphvizId(node: NodeOf<V>) {
     const _compound = isCompound(node)
-    let elementName = nameFromFqn(node.id).toLowerCase()
-    let name = this.checkNodeId(elementName, _compound)
-    if (name !== null) {
-      return name
-    }
+    const name = nameFromFqn(node.id).toLowerCase()
+    let id = this.reserveNodeId(name, _compound)
     // use post-index
-    elementName = nameFromFqn(node.id).toLowerCase()
     let i = 1
-    do {
-      name = this.checkNodeId(elementName + '_' + i++, _compound)
-    } while (name === null)
-    return name
+    while (id === false) {
+      id = this.reserveNodeId(name + '_' + i++, _compound)
+    }
+    return id
   }
 
   protected elementToSubgraph(compound: NodeOf<V>, subgraph: SubgraphModel) {
@@ -378,7 +402,6 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
   protected elementToNode(element: NodeOf<V>, node: NodeModel) {
     invariant(!isCompound(element), 'node should not be compound')
     const hasIcon = isTruthy(element.icon)
-    const colorValues = this.styles.colors(element.color).elements
     const { values: { padding, sizes: { width, height } } } = this.styles.nodeSizes(element.style)
 
     let paddingX = hasIcon ? 8 : padding
@@ -394,6 +417,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     node.attributes.set(_.height, pxToInch(height))
 
     if (!this.styles.isDefaultColor(element.color)) {
+      const colorValues = this.styles.colors(element.color).elements
       node.attributes.apply({
         [_.fillcolor]: colorValues.fill,
         [_.fontcolor]: colorValues.hiContrast as HexColor,
@@ -450,17 +474,17 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
 
   protected leafElements(parentId: NodeId | null): NodeOf<V>[] {
     if (parentId === null) {
-      return this.view.nodes.filter(n => !isCompound(n))
+      return filter([...this.selectViewNodes()], n => !isCompound(n))
     }
     return this.computedNode(parentId).children.flatMap(childId => {
       const child = this.computedNode(childId)
-      return isCompound(child) ? this.leafElements(child.id) : child
+      return isCompound(child) ? this.leafElements(child.id) : [child]
     })
   }
 
   protected descendants(parentId: NodeId | null): NodeOf<V>[] {
     if (parentId === null) {
-      return this.view.nodes.slice()
+      return [...this.selectViewNodes()]
     }
     return this.computedNode(parentId).children.flatMap(childId => {
       const child = this.computedNode(childId)
@@ -468,18 +492,15 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     })
   }
 
-  protected computedNode(id: NodeId) {
-    return nonNullable(
-      this.view.nodes.find(n => n.id === id),
-      `Node ${id} not found`,
-    )
+  protected computedNode(id: NodeId): NodeOf<V> {
+    return this.viewNodes.get(id)
   }
 
-  protected getGraphNode(id: NodeId) {
+  protected getGraphNode(id: NodeId): NodeModel | null {
     return this.nodes.get(id) ?? null
   }
 
-  protected getSubgraph(id: NodeId) {
+  protected getSubgraph(id: NodeId): SubgraphModel | null {
     return this.subgraphs.get(id) ?? null
   }
 
@@ -532,18 +553,7 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
     )
   }
 
-  protected withoutCompoundEdges(element: NodeOf<V>) {
-    if (this.edgesWithCompounds.size === 0) {
-      return element
-    }
-    return {
-      ...element,
-      inEdges: element.inEdges.filter(e => !this.edgesWithCompounds.has(e)),
-      outEdges: element.outEdges.filter(e => !this.edgesWithCompounds.has(e)),
-    }
-  }
-
-  protected assignGroups() {
+  protected assignGroups(): this {
     const groups = pipe(
       this.view.nodes,
       filter(isCompound),
@@ -578,83 +588,6 @@ export abstract class DotPrinter<V extends Pick<ComputedView, 'id' | 'nodes' | '
         }
       }
     }
-  }
-
-  /**
-   * Use coordinates from given diagram as initial position for nodes
-   * (try to keep existing layout as much as possible)
-   */
-  public applyManualLayout({ height, ...layout }: ApplyManualLayoutData): this {
-    const offsetX = layout.x < 0 ? -layout.x : 0
-    const offsetY = layout.y < 0 ? -layout.y : 0
-    const _isShifted = offsetX > 0 || offsetY > 0
-    for (const { id, ...manual } of layout.nodes) {
-      // we pin only nodes, not clusters
-      const model = this.getGraphNode(id as NodeId)
-      if (!model) {
-        continue
-      }
-
-      // Invert Y axis and convert to inches
-      const x = pxToInch(manual.center.x) + offsetX
-      const y = pxToInch(height - manual.center.y)
-      if (manual.fixedsize) {
-        model.attributes.apply({
-          [_.pos]: `${x},${y}!`,
-          [_.pin]: true,
-          [_.width]: pxToInch(manual.fixedsize.width),
-          [_.height]: pxToInch(manual.fixedsize.height),
-          [_.fixedsize]: true,
-        })
-      } else {
-        // Not pinned, but suggested position
-        model.attributes.set(_.pos, `${x},${y}`)
-      }
-    }
-    for (const [, edgeModel] of this.edges.entries()) {
-      edgeModel.attributes.delete(_.weight)
-      edgeModel.attributes.delete(_.minlen)
-      edgeModel.attributes.delete(_.constraint)
-    }
-    // TODO: apply manual layout fails when there are edges with compounds
-    // Array.from(this.edgesWithCompounds.values()).forEach(edgeId => {
-    //   const edge = this.edges.get(edgeId)!
-    //   if (!edge) {
-    //     return
-    //   }
-    //   const source = edge.attributes.get(_.ltail) ?? edge.targets[0]
-    //   const target = edge.attributes.get(_.lhead) ?? edge.targets[1]
-
-    //   edge.attributes.delete(_.ltail)
-    //   edge.attributes.delete(_.lhead)
-
-    //   const xlabel = edge.attributes.get(_.xlabel)
-    //   if (xlabel) {
-    //     edge.attributes.delete(_.xlabel)
-    //     edge.attributes.set(_.label, xlabel)
-    //   }
-    //   this.graphvizModel.edge([source, target]).attributes.apply(edge.attributes.values)
-    //   this.graphvizModel.removeEdge(edge)
-    // })
-
-    this.graphvizModel.apply({
-      [_.layout]: 'fdp',
-      // [_.scale]: 72.0,
-      [_.overlap]: 'vpsc',
-      [_.sep]: '+50,50',
-      [_.esep]: '+10,10',
-      [_.start]: 'random2',
-      [_.splines]: 'compound',
-      [_.K]: 10,
-    })
-    this.graphvizModel.delete(_.compound)
-    this.graphvizModel.delete(_.rankdir)
-    this.graphvizModel.delete(_.nodesep)
-    this.graphvizModel.delete(_.ranksep)
-    this.graphvizModel.delete(_.pack)
-    this.graphvizModel.delete(_.pad)
-    this.graphvizModel.delete(_.packmode)
-    this.graphvizModel.attributes.graph.delete(_.margin)
     return this
   }
 }

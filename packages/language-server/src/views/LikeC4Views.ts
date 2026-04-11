@@ -7,10 +7,18 @@ import type {
   ProjectId,
   ViewId,
 } from '@likec4/core'
-import { _layout, applyCachedLayout, applyManualLayout, calcDriftsFromSnapshot, DefaultMap } from '@likec4/core'
+import {
+  _layout,
+  applyCachedLayout,
+  applyManualLayout,
+  calcDriftsFromSnapshot,
+  DefaultMap,
+  invariant,
+} from '@likec4/core'
 import { type AdhocViewPredicate, computeAdhocView } from '@likec4/core/compute-view'
 import type { LikeC4Model } from '@likec4/core/model'
 import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
+import type { AILayoutHints } from '@likec4/layouts/ai'
 import { type Logger, loggable } from '@likec4/log'
 import { type WorkspaceCache, interruptAndCheck } from 'langium'
 import { isTruthy, values } from 'remeda'
@@ -33,7 +41,7 @@ type GraphvizSvgOut = {
   readonly svg: string
 }
 
-type LayoutViewParams = {
+export type LayoutViewParams = {
   viewId: ViewId
   /**
    * Type of layout to apply
@@ -44,6 +52,8 @@ type LayoutViewParams = {
   layoutType?: LayoutType | undefined
   projectId?: ProjectId | undefined
   cancelToken?: CancellationToken | undefined
+  /** Optional AI-generated layout hints */
+  layoutHints?: AILayoutHints | undefined
 }
 export interface LikeC4Views {
   readonly layouter: GraphvizLayouter
@@ -64,9 +74,11 @@ export interface LikeC4Views {
   ): Promise<GraphvizOut[]>
   /**
    * Layouts a view.
-   * If layoutType is 'manual' - applies manual layout if any.
-   * If layoutType is 'auto' - returns latest version with drifts from manual layout if any
+   * If `layoutType` is 'manual' - applies manual layout if any.
+   * If `layoutType` is 'auto' - returns latest version with drifts from manual layout if any
    * If not specified - returns latest layout as is
+   *
+   * If `layoutHints` are provided, they will be used, ignoring any manual snapshots, and the resulting layout will not be cached (i.e. it will be computed on every call)
    *
    * If view not found in model, but there is a snapshot - it will be returned (with empty DOT)
    */
@@ -106,7 +118,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     new ProjectStorage({
       projectId,
       storage: prefixStorage(this.#storage, projectId),
-      layouter: this.layouter.layout.bind(this.layouter),
+      layouter: (task) => this.layouter.layout(task),
     })
   )
 
@@ -119,6 +131,11 @@ export class DefaultLikeC4Views implements LikeC4Views {
     services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
       viewsLogger.info`force clean cache`
       this.#storage.clear()
+    })
+    services.shared.workspace.ManualLayouts.onManualLayoutUpdate(({ projectId, viewId }) => {
+      if (this.#projectStorages.has(projectId) && viewId) {
+        this.projectStorage(projectId).clearView(viewId)
+      }
     })
   }
 
@@ -196,11 +213,26 @@ export class DefaultLikeC4Views implements LikeC4Views {
     layoutType,
     projectId,
     cancelToken,
+    layoutHints,
   }: LayoutViewParams): Promise<GraphvizOut | null> {
     const model = await this.ModelBuilder.computeModel(projectId, cancelToken)
     const view = model.findView(viewId)?.$view
     projectId = model.project.id
     const logger = viewsLogger.getChild(projectId)
+
+    if (layoutHints) {
+      invariant(view, `View ${viewId} not found in model`) // if layoutHints are provided, the view must exist
+      logger.debug`using provided AI layout hints for view ${viewId}`
+      const { dot, diagram } = await this.layouter.aiLayout(
+        {
+          view,
+          styles: model.$styles,
+        },
+        layoutHints,
+      )
+      return { dot, diagram }
+    }
+
     if (!view) {
       logger.warn`layoutView ${viewId} not found`
       const snapshot = model.findManualLayout(viewId)
@@ -391,7 +423,7 @@ class ProjectStorage {
       this.#logger.trace`cache hit for ${task.view.id}`
       return mergeWithCachedLayout(task.view, cached)
     }
-    logger.trace`cache miss for ${task.view.id}`
+    this.#logger.trace`cache miss for ${task.view.id}`
     return undefined
   }
 
@@ -402,10 +434,10 @@ class ProjectStorage {
       this.#logger.trace`cache hit for ${task.view.id}`
       return mergeWithCachedLayout(task.view, cached)
     }
-    logger.trace`cache miss for ${task.view.id}`
+    this.#logger.trace`cache miss for ${task.view.id}`
     const m0 = performanceMark()
     const result = await this.#layouter(task)
-    logger.trace(`layouted {view} in ${m0.pretty}`, { view: task.view.id })
+    this.#logger.trace(`layouted {view} in ${m0.pretty}`, { view: task.view.id })
     await this.#storage.set(key, result)
     this.resetViewError(task.view)
     return result
@@ -423,7 +455,7 @@ class ProjectStorage {
   }
 
   reportViewError(view: ComputedView, execIfNotReported: () => unknown) {
-    const key = `error-${view.id}`
+    const key = `error:${view.id}`
     this.#storage.has(key).then(yes => {
       if (!yes) {
         this.#storage.set<any>(key, 'true')
@@ -432,13 +464,35 @@ class ProjectStorage {
     })
   }
 
+  /**
+   * Clears cache for a specific view
+   */
+  async clearView(viewId: ViewId) {
+    const keys = await this.#storage.keys(`v:${viewId}:`)
+    if (keys.length === 0) {
+      return
+    }
+    this.#logger.trace`clear ${keys.length} cached entries for view ${viewId}`
+    for (const key of keys) {
+      await this.#storage.remove(key)
+    }
+  }
+
+  /**
+   * Clears entire cache for the project
+   */
+  clearAll() {
+    this.#logger.trace`clear caches`
+    this.#storage.clear()
+  }
+
   private resetViewError(view: ComputedView) {
-    this.#storage.del(`error-${view.id}`)
+    this.#storage.del(`error:${view.id}`)
   }
 }
 
 function cacheKey(task: LayoutTaskParams) {
-  return `${task.view.hash}-${task.styles.fingerprint}`
+  return `v:${task.view.id}:${task.view.hash}:${task.styles.fingerprint}`
 }
 
 function mergeWithCachedLayout(current: ComputedView, cached: GraphvizOut): GraphvizOut {

@@ -23,6 +23,7 @@ digraph {
     penwidth = 2;
     color = "#8D8D8D";
     fontcolor = "#C9C9C9";
+    style = "dashed";
   ];
   node [
     fontname = "Arial";
@@ -54,13 +55,11 @@ digraph {
   "1pf41yp" -> "1pf41yq" [
     likec4_id = "17usd85";
     likec4_project = "projectA";
-    style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">a -&gt; b</FONT></TD></TR></TABLE>>;
   ];
   "1pf41yq" -> "1pf41yp" [
     likec4_id = "negxbp";
     likec4_project = "projectB";
-    style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">b -&gt; a</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ technology ]</FONT></TD></TR></TABLE>>;
   ];
 }

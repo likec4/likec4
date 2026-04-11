@@ -23,6 +23,18 @@ const TelemetryConnectionString =
 const useTelemetry = createSingletonComposable(() => {
   const { logger, output, configureLogger } = useConfigureLogger()
   const reporter = useDisposable(new TelemetryReporter(TelemetryConnectionString))
+  const telemetryLogger = useDisposable(vscode.env.createTelemetryLogger({
+    sendErrorData(error, data) {
+      reporter.sendTelemetryErrorEvent('error', {
+        ...data,
+        message: new vscode.TelemetryTrustedValue(error.message),
+        stack: new vscode.TelemetryTrustedValue(error.stack || ''),
+      })
+    },
+    sendEventData(eventName, data) {
+      reporter.sendTelemetryEvent(eventName, data)
+    },
+  }))
 
   function sendTelemetry(eventName: string, properties?: TelemetryEventProperties) {
     if (isDev) {
@@ -92,6 +104,8 @@ const useTelemetry = createSingletonComposable(() => {
 
   return {
     reporter,
+    logError: telemetryLogger.logError.bind(telemetryLogger),
+    logUsage: telemetryLogger.logUsage.bind(telemetryLogger),
     sendTelemetry,
     sendTelemetryError,
   }

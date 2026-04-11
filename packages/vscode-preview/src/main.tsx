@@ -6,6 +6,7 @@ import { App } from './App'
 import { IconsProvider } from './IconRenderer'
 import { queryClient } from './queries'
 import { QueryErrorBoundary } from './QueryErrorBoundary'
+import { useShowSpinner } from './state'
 import { theme } from './theme'
 
 const root = document.getElementById('root') as HTMLDivElement
@@ -19,8 +20,9 @@ const overlayProps = {
 }
 const Loader = () => {
   const isFetching = useIsFetching({ type: 'active' }) > 0
+  let isSpinnerVisible = useShowSpinner() || isFetching
   // Debounce loading state to prevent flickering
-  const [isLoading] = useDebouncedValue(isFetching, isFetching ? 500 : 100)
+  const [isLoading] = useDebouncedValue(isSpinnerVisible, isSpinnerVisible ? 500 : 100)
   return (
     <LoadingOverlay
       visible={isLoading}
