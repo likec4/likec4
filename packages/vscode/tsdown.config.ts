@@ -14,7 +14,6 @@ const shared = {
     NODE_ENV: isProduction ? 'production' : 'development',
   },
   minify: isProduction,
-
   outputOptions: {
     keepNames: true,
   },
@@ -28,21 +27,21 @@ const shared = {
 
 export default defineConfig([
   {
+    ...shared,
     outDir: 'dist/node',
     entry: 'src/node/extension.ts',
     format: 'cjs',
     nodeProtocol: true,
-    cjsDefault: true,
     sourcemap: isDev,
     inputOptions: {
       resolve: {
-        conditionNames: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],
+        conditionNames: ['sources', 'node', 'import', 'default'],
       },
     },
-    ...shared,
     hooks: {
       async 'build:done'() {
         await copySchema()
+        await copySkills()
         await copyPreview()
       },
     },
@@ -58,7 +57,7 @@ export default defineConfig([
     sourcemap: isDev,
     inputOptions: {
       resolve: {
-        conditionNames: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],
+        conditionNames: ['sources', 'node', 'import', 'default'],
       },
     },
     ...shared,
@@ -108,6 +107,12 @@ function emptyDir(dir: string) {
   for (const file of readdirSync(dir)) {
     rmSync(resolve(dir, file), { recursive: true, force: true })
   }
+}
+
+async function copySkills() {
+  const skillDir = resolve('../../skills/likec4-dsl')
+  console.info('Copy SKILLs: %s', skillDir)
+  await cp(skillDir, './data/skills/likec4-dsl', { recursive: true })
 }
 
 async function copyPreview(): Promise<void> {

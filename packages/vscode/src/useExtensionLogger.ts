@@ -12,7 +12,7 @@ import {
   rootLogger,
 } from '@likec4/log'
 import type { TelemetryReporter } from '@vscode/extension-telemetry'
-import { createSingletonComposable } from 'reactive-vscode'
+import { defineService } from 'reactive-vscode'
 import vscode, { type LogOutputChannel } from 'vscode'
 
 let outputChannel: LogOutputChannel | undefined
@@ -121,7 +121,7 @@ function configureLogger(telemetry?: TelemetryReporter) {
   }
 }
 
-export const useConfigureLogger = createSingletonComposable(() => {
+export const useConfigureLogger = defineService(() => {
   const output = getOutput()
   output.trace('Initializing extension logger')
   const logger = rootLogger.getChild('vscode')

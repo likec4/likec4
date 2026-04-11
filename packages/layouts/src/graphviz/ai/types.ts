@@ -1,33 +1,49 @@
-import type { EdgeId, NodeId, NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core/types'
+import type {
+  ComputedEdge,
+  ComputedNode,
+  ComputedView,
+  EdgeId,
+  NodeId,
+  NonEmptyArray,
+  NonEmptyReadonlyArray,
+} from '@likec4/core/types'
 
 /**
  * Abstract interface for AI layout hint generation.
  * Implemented by VSCode extension (using vscode.lm API) or direct API providers.
  * Defined in layouts package to avoid vscode dependency.
  */
-export interface AILayoutProvider {
+export interface AILayoutProvider<CancelToken = AbortSignal> {
   /** Display name for logging/UI */
   readonly name: string
 
   /**
    * Send a layout hint generation request to the LLM and return the raw text response.
    * @param request - The layout request containing system prompt, user prompt, and diagram data
-   * @param signal - AbortSignal for cancellation/timeout
+   * @param cancelToken - Cancellation token for cancellation/timeout
    * @returns The raw text response from the LLM
    */
   sendRequest(
     request: AILayoutRequest,
-    signal?: AbortSignal,
+    cancelToken: CancelToken,
   ): Promise<string>
 }
 
 export interface AILayoutRequest {
+  view: ComputedView
   systemPrompt: string
   userPrompt: string
   /**
    * The diagram data as a JSON string, to be included in the user prompt or separately if the provider supports it.
    */
   diagram: string
+  /**
+   * Mapping of serialized NodeIds and EdgeIds back to their full ComputedNode and ComputedEdge data, for LLM output interpretation.
+   */
+  mapping: {
+    nodes: Readonly<Record<string, ComputedNode>>
+    edges: Readonly<Record<string, ComputedEdge>>
+  }
 }
 
 /**
@@ -44,7 +60,7 @@ export interface AIEnforcementEdge {
  * Complete set of AI-generated layout hints.
  * This is the JSON schema the LLM must produce.
  */
-export interface AiLayoutHints {
+export interface AILayoutHints {
   direction?: 'TB' | 'BT' | 'LR' | 'RL'
   ranks: ReadonlyArray<{
     rank: 'same' | 'source' | 'sink' | 'min' | 'max'

@@ -14,7 +14,7 @@ import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger as mainLogger, wrapError } from '@likec4/log'
 import { randomString } from 'remeda'
 import { calcSequenceLayout } from '../sequence'
-import type { AiLayoutHints } from './ai/types'
+import type { AILayoutHints } from './ai/types'
 import { AiLayoutViewPrinter } from './AiLayoutPrinter'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { GraphClusterSpace } from './DotPrinter'
@@ -99,7 +99,7 @@ export class GraphvizLayouter implements Disposable {
    * If `hints` are provided, they will be used to influence the layout (e.g. by specifying node/edge order).
    * This method does not perform unflattening or any other post-processing on the DOT output, so it may be used for debugging or to generate DOT for external processing.
    */
-  printToDot(params: LayoutTaskParams, hints?: AiLayoutHints): DotSource {
+  printToDot(params: LayoutTaskParams, hints?: AILayoutHints): DotSource {
     const printer = hints ? new AiLayoutViewPrinter(params.view, params.styles, hints) : getPrinter(params)
     return normalizeDot(printer.print())
   }
@@ -157,7 +157,7 @@ export class GraphvizLayouter implements Disposable {
 
   async aiLayout<A extends AnyAux>(
     { view, styles }: LayoutTaskParams<A>,
-    hints: AiLayoutHints,
+    hints: AILayoutHints,
   ): Promise<LayoutResult<A>> {
     const logger = this.newScopedLogger('ai-layout')
     try {

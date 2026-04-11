@@ -15,6 +15,7 @@ const connection = createConnection(ProposedFeatures.all)
 
 configureLanguageServerLogger({
   lspConnection: connection,
+  useStdErr: false,
   logLevel: isDevelopment ? 'trace' : 'debug',
 })
 
