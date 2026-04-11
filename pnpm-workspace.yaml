@@ -22,7 +22,7 @@ catalog:
   playwright: 1.58.2
   tsdown: ^0.20.3
   tsx: 4.21.0
-  turbo: 2.9.5
+  turbo: 2.9.6
   typescript: 5.9.3
   wireit: 0.14.12
   zx: 8.8.5
@@ -30,9 +30,6 @@ catalog:
 catalogMode: prefer
 
 catalogs:
-  ai:
-    "@anthropic-ai/sdk": ^0.86.1
-    ollama: ^0.6.3
   astro:
     "@astrojs/check": ^0.9.7
     "@astrojs/react": 4.4.2

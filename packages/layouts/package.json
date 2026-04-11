@@ -96,8 +96,6 @@
     "zod": "catalog:externals"
   },
   "devDependencies": {
-    "@anthropic-ai/sdk": "catalog:ai",
-    "ollama": "catalog:ai",
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
