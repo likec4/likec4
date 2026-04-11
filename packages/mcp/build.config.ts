@@ -3,7 +3,10 @@ import { defineBuildConfig } from 'obuild/config'
 export default defineBuildConfig({
   entries: [{
     type: 'bundle',
-    input: './src/index.ts',
+    input: [
+      './src/cli.ts',
+      './src/index.ts',
+    ],
     minify: true,
     rolldown: {
       platform: 'node',

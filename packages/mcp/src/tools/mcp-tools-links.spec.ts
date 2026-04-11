@@ -6,10 +6,10 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { ProjectId } from '@likec4/core'
+import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { readDeployment } from '../mcp/tools/read-deployment'
-import { readElement } from '../mcp/tools/read-element'
-import { createTestServices } from '../test'
+import { readDeployment } from './read-deployment'
+import { readElement } from './read-element'
 
 describe('MCP Tools - Links', () => {
   // These tests verify that MCP server tools correctly return link information

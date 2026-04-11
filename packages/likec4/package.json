@@ -171,6 +171,7 @@
     "@likec4/log": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/language-services": "workspace:*",
+    "@likec4/mcp": "workspace:*",
     "@dagrejs/dagre": "catalog:",
     "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/devops": "workspace:*",

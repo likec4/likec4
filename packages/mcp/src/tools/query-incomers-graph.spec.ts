@@ -3,12 +3,12 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import type { ProjectId } from '@likec4/core'
+import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { createTestServices } from '../../test'
-import { queryOutgoersGraph } from './query-outgoers-graph'
+import { queryIncomersGraph } from './query-incomers-graph'
 
-describe('query-outgoers-graph', () => {
-  it('should return complete outgoers graph', async () => {
+describe('query-incomers-graph', () => {
+  it('should return complete incomers graph', async () => {
     const { validate, buildLikeC4Model, services } = createTestServices()
 
     await validate(`
@@ -16,46 +16,46 @@ describe('query-outgoers-graph', () => {
         element system
       }
       model {
-        source = system
-        consumer1 = system
-        consumer2 = system
-        consumer3 = system
+        system1 = system
+        system2 = system
+        system3 = system
+        target = system
 
-        source -> consumer1
-        source -> consumer2
-        consumer2 -> consumer3
+        system1 -> target
+        system2 -> target
+        system3 -> system2
       }
     `)
 
     await buildLikeC4Model()
 
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
+    const [, , handler] = queryIncomersGraph(services.likec4.LanguageServices)
     const result = await handler(
-      { elementId: 'source', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' as ProjectId },
+      { elementId: 'target', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' as ProjectId },
       {} as any,
     )
 
     expect(result.structuredContent).toBeDefined()
     const content = result.structuredContent!
-    const nodes = content['nodes'] as Record<string, { depth: number; outgoers: Array<{ elementId: string }> }>
+    const nodes = content['nodes'] as Record<string, { depth: number; incomers: Array<{ elementId: string }> }>
 
-    expect(content['target']).toBe('source')
+    expect(content['target']).toBe('target')
     expect(content['totalNodes']).toBe(4)
     expect(content['maxDepth']).toBe(2)
 
-    expect(nodes['source']).toBeDefined()
-    expect(nodes['source']!.depth).toBe(0)
-    expect(nodes['source']!.outgoers).toHaveLength(2)
-    expect(nodes['source']!.outgoers[0]).toHaveProperty('elementId')
+    expect(nodes['target']).toBeDefined()
+    expect(nodes['target']!.depth).toBe(0)
+    expect(nodes['target']!.incomers).toHaveLength(2)
+    expect(nodes['target']!.incomers[0]).toHaveProperty('elementId')
 
-    expect(nodes['consumer2']).toBeDefined()
-    expect(nodes['consumer2']!.depth).toBe(1)
-    expect(nodes['consumer2']!.outgoers).toHaveLength(1)
-    expect(nodes['consumer2']!.outgoers[0]).toHaveProperty('elementId')
+    expect(nodes['system2']).toBeDefined()
+    expect(nodes['system2']!.depth).toBe(1)
+    expect(nodes['system2']!.incomers).toHaveLength(1)
+    expect(nodes['system2']!.incomers[0]).toHaveProperty('elementId')
 
-    expect(nodes['consumer3']).toBeDefined()
-    expect(nodes['consumer3']!.depth).toBe(2)
-    expect(nodes['consumer3']!.outgoers).toHaveLength(0)
+    expect(nodes['system3']).toBeDefined()
+    expect(nodes['system3']!.depth).toBe(2)
+    expect(nodes['system3']!.incomers).toHaveLength(0)
   })
 
   it('should handle cycles without infinite loop', async () => {
@@ -78,7 +78,7 @@ describe('query-outgoers-graph', () => {
 
     await buildLikeC4Model()
 
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
+    const [, , handler] = queryIncomersGraph(services.likec4.LanguageServices)
     const result = await handler(
       { elementId: 'a', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' as ProjectId },
       {} as any,
@@ -111,9 +111,9 @@ describe('query-outgoers-graph', () => {
 
     await buildLikeC4Model()
 
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
+    const [, , handler] = queryIncomersGraph(services.likec4.LanguageServices)
     const result = await handler(
-      { elementId: 's1', includeIndirect: true, maxDepth: 2, maxNodes: 1000, project: 'default' as ProjectId },
+      { elementId: 's5', includeIndirect: true, maxDepth: 2, maxNodes: 1000, project: 'default' as ProjectId },
       {} as any,
     )
 
@@ -138,7 +138,7 @@ describe('query-outgoers-graph', () => {
 
     await buildLikeC4Model()
 
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
+    const [, , handler] = queryIncomersGraph(services.likec4.LanguageServices)
     const result = await handler(
       {
         elementId: 'non-existent',
@@ -164,38 +164,37 @@ describe('query-outgoers-graph', () => {
         element service
       }
       model {
-        source = system {
-          api = service
-        }
         backend = system {
+          api = service
           db = service
         }
         frontend = system {
           ui = service
         }
+        target = system
 
-        source.api -> backend.db
-        source.api -> frontend.ui
-        backend.db -> frontend.ui
+        backend.api -> target
+        backend.db -> target
+        frontend.ui -> backend.api
       }
     `)
 
     await buildLikeC4Model()
 
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
+    const [, , handler] = queryIncomersGraph(services.likec4.LanguageServices)
     const result = await handler(
-      { elementId: 'source.api', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' as ProjectId },
+      { elementId: 'target', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' as ProjectId },
       {} as any,
     )
 
     expect(result.structuredContent).toBeDefined()
     const content = result.structuredContent!
-    const nodes = content['nodes'] as Record<string, { depth: number; outgoers: Array<{ elementId: string }> }>
+    const nodes = content['nodes'] as Record<string, { depth: number; incomers: Array<{ elementId: string }> }>
     const actualNodeCount = Object.keys(nodes).length
 
     // Critical assertion: totalNodes must match actual nodes returned
     expect(content['totalNodes']).toBe(actualNodeCount)
-    expect(actualNodeCount).toBe(3) // source.api, backend.db, frontend.ui
+    expect(actualNodeCount).toBe(4) // target, backend.api, backend.db, frontend.ui
 
     // Verify maxDepth reflects actual maximum depth in returned nodes
     const maxDepthInNodes = Math.max(...Object.values(nodes).map((n: { depth: number }) => n.depth))
@@ -210,32 +209,32 @@ describe('query-outgoers-graph', () => {
         element system
       }
       model {
-        source = system
-        c1 = system
-        c2 = system
-        c3 = system
-        c4 = system
-        c5 = system
+        s1 = system
+        s2 = system
+        s3 = system
+        s4 = system
+        s5 = system
+        target = system
 
-        source -> c1
-        source -> c2
-        source -> c3
-        c1 -> c4
-        c2 -> c5
+        s1 -> target
+        s2 -> target
+        s3 -> target
+        s4 -> s1
+        s5 -> s2
       }
     `)
 
     await buildLikeC4Model()
 
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
+    const [, , handler] = queryIncomersGraph(services.likec4.LanguageServices)
     const result = await handler(
-      { elementId: 'source', includeIndirect: true, maxDepth: 50, maxNodes: 3, project: 'default' as ProjectId },
+      { elementId: 'target', includeIndirect: true, maxDepth: 50, maxNodes: 3, project: 'default' as ProjectId },
       {} as any,
     )
 
     expect(result.structuredContent).toBeDefined()
     const content = result.structuredContent!
-    const nodes = content['nodes'] as Record<string, { depth: number; outgoers: Array<{ elementId: string }> }>
+    const nodes = content['nodes'] as Record<string, { depth: number; incomers: Array<{ elementId: string }> }>
 
     // Should be truncated to maxNodes
     expect(content['truncated']).toBe(true)

@@ -1,6 +1,6 @@
 import { nonexhaustive } from '@likec4/core'
 import { generateD2, generateMermaid, generatePuml, generateViewsDataTs } from '@likec4/generators'
-import { type LikeC4, fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { type LikeC4, fromWorkspace } from '@likec4/language-services/node'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import { values } from 'remeda'
