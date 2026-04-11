@@ -25,6 +25,7 @@ digraph {
     penwidth = 2;
     color = "#8D8D8D";
     fontcolor = "#C9C9C9";
+    style = "dashed";
   ];
   node [
     fontname = "Arial";

@@ -41,7 +41,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         ast.CustomColor,
         ast.SpecificationTag,
       ):
-        return SymbolKind.TypeParameter
+        return SymbolKind.EnumMember
 
       case hasType(
         ast.RelationshipKind,
