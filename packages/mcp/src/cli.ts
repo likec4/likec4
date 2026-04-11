@@ -56,14 +56,6 @@ const main = defineCommand({
   async run({ args }) {
     const useStdio = args.stdio || (!args.http && !args.port)
 
-    process.on('uncaughtException', (err) => {
-      logger.error('uncaughtException', { err })
-    })
-
-    process.on('unhandledRejection', (err) => {
-      logger.error('unhandledRejection', { err })
-    })
-
     const port = args.port ? parseInt(args.port) : 33335
     const workspacePath = resolve(args.workspace || '.')
 
@@ -75,7 +67,6 @@ const main = defineCommand({
       workspacePath,
       graphviz: args.graphviz,
       mcp: useStdio ? 'stdio' : { port },
-      // Logger is already configured
       configureLogger: true,
       watch: args.watch,
     })

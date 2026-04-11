@@ -93,6 +93,7 @@ export async function initLikeC4MCP(
     // Logger is already configured
     configureLogger: false,
     watch: opts.watch,
+    throwIfInvalid: opts.throwIfInvalid,
   })
 
   const services = likec4.languageServices
