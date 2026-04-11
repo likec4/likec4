@@ -93,14 +93,6 @@
         "default": "./dist/protocol.mjs"
       }
     },
-    "./mcp": {
-      "sources": "./src/mcp/index.ts",
-      "default": {
-        "types": "./dist/mcp/index.d.mts",
-        "import": "./dist/mcp/index.mjs",
-        "default": "./dist/mcp/index.mjs"
-      }
-    },
     "./module": {
       "sources": "./src/module.ts",
       "default": {
@@ -117,6 +109,7 @@
         "default": "./dist/filesystem/index.mjs"
       }
     },
+    "./test": "./src/test/index.ts",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -149,8 +142,6 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hono/mcp": "catalog:hono",
-    "@hono/node-server": "catalog:hono",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
@@ -160,7 +151,6 @@
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
     "fdir": "catalog:externals",
-    "hono": "catalog:hono",
     "immer": "catalog:utils",
     "indent-string": "^5.0.0",
     "json5": "catalog:utils",
@@ -188,7 +178,6 @@
     "zod": "catalog:externals"
   },
   "peerDependencies": {
-    "@modelcontextprotocol/sdk": "catalog:mcp",
     "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild"
   },
@@ -198,16 +187,12 @@
     },
     "bundle-require": {
       "optional": true
-    },
-    "@modelcontextprotocol/sdk": {
-      "optional": true
     }
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@modelcontextprotocol/sdk": "catalog:mcp",
     "@types/natural-compare-lite": "catalog:utils",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:externals",

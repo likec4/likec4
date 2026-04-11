@@ -1,10 +1,6 @@
 import { configureLanguageServerLogger } from '@likec4/language-server'
-import {
-  fromWorkspace,
-} from '@likec4/language-services/node'
-import {
-  rootLogger,
-} from '@likec4/log'
+import { rootLogger } from '@likec4/log'
+import { startLikeC4MCP } from '@likec4/mcp'
 import { URI } from 'langium'
 import { first, hasAtLeast, isString, map } from 'remeda'
 import { isDevelopment } from 'std-env'
@@ -12,6 +8,7 @@ import z from 'zod/v4'
 
 configureLanguageServerLogger({
   useStdErr: true,
+  colors: false,
   logLevel: isDevelopment ? 'trace' : 'debug',
 })
 
@@ -57,20 +54,17 @@ logger.info`cwd: ${process.cwd()}`
 
 const workspacePath = workspacePaths ? first(workspacePaths) : process.cwd()
 
-fromWorkspace(workspacePath, {
-  manualLayouts: true,
+startLikeC4MCP({
+  workspacePath,
   watch: true,
   configureLogger: false,
   mcp: 'stdio',
 }).then(
-  likec4 => {
-    likec4.languageServices.mcpServer?.mcp.sendLoggingMessage({
+  ({ server }) =>
+    server.mcp.sendLoggingMessage({
       level: 'info',
       data: ['LikeC4 MCP server ready'],
-    }).catch(err => {
-      logger.error('Failed to send logging message to MCP client', { err })
-    })
-  },
+    }),
   err => {
     logger.error('Failed to start MCP server', { err })
     process.exit(1)

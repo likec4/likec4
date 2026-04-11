@@ -4,7 +4,7 @@
  * Optional: use workspace to build dryRun for name+type matching and ambiguous detection.
  */
 
-import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { fromWorkspace } from '@likec4/language-services/node'
 import type { BridgeManifest, LeanixInventoryDryRun, LeanixInventorySnapshot } from '@likec4/leanix-bridge'
 import { isBridgeManifest, isLeanixInventorySnapshot, reconcileInventoryWithManifest } from '@likec4/leanix-bridge'
 import { readFile, writeFile } from 'node:fs/promises'

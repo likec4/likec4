@@ -80,7 +80,7 @@ const projects = likec4.projects()
 ```
 
 > [!NOTE]
-> There is a separate entry point for node.js environment without MCP support: `@likec4/language-services/node/without-mcp`
+> There is a separate entry point for node.js environment without MCP support: `@likec4/language-services/node`
 >
 > Useful to reduce bundle size
 

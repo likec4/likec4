@@ -3,8 +3,8 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import type { ProjectId } from '@likec4/core'
+import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { createTestServices } from '../../test'
 import { elementDiff } from './element-diff'
 
 describe('element-diff tool', () => {

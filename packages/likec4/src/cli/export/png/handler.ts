@@ -1,5 +1,5 @@
 import { type DiagramView, type NonEmptyArray, invariant } from '@likec4/core'
-import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { resolve } from 'node:path'
 import { hrtime } from 'node:process'
 import picomatch from 'picomatch'

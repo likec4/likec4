@@ -3,8 +3,8 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import type { ProjectId } from '@likec4/core'
+import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { createTestServices } from '../../test'
 import { queryByMetadata } from './query-by-metadata'
 
 describe('query-by-metadata tool', () => {
@@ -369,6 +369,5 @@ describe('query-by-metadata tool', () => {
       // Empty string is contained in all strings, so should match both
       expect(results).toHaveLength(2)
     })
-
   })
 })

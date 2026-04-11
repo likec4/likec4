@@ -1,6 +1,7 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "composite": true,
     "rootDirs": [
       "src",
       "."
@@ -11,6 +12,7 @@
   },
   "include": [
     "src",
+    "package.json",
     "build.config.ts"
   ],
   "references": [
@@ -28,6 +30,9 @@
     },
     {
       "path": "../language-server/"
+    },
+    {
+      "path": "../language-services/"
     }
   ]
 }

@@ -5,18 +5,17 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { loggable } from '@likec4/log'
+import { logger } from '@likec4/log'
 import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import packageJson from '../../../package.json' with { type: 'json' }
-import { logger } from '../../logger'
-import type { LikeC4Services } from '../../module'
+import packageJson from '../../package.json' with { type: 'json' }
 import { batchReadElements } from '../tools/batch-read-elements'
 import { elementDiff } from '../tools/element-diff'
 import { findRelationshipPaths } from '../tools/find-relationship-paths'
 import { findRelationships } from '../tools/find-relationships'
 import { listProjects } from '../tools/list-projects'
-import { openView } from '../tools/open-view'
 import { queryByMetadata } from '../tools/query-by-metadata'
 import { queryByTagPattern } from '../tools/query-by-tag-pattern'
 import { queryByTags } from '../tools/query-by-tags'
@@ -29,20 +28,13 @@ import { readProjectSummary } from '../tools/read-project-summary'
 import { readView } from '../tools/read-view'
 import { searchElement } from '../tools/search-element'
 import { subgraphSummary } from '../tools/subgraph-summary'
-import type { LikeC4MCPServerFactory } from '../types'
 
-export class MCPServerFactory implements LikeC4MCPServerFactory {
-  constructor(private services: LikeC4Services) {
-  }
-
-  create(options?: ServerOptions): McpServer {
-    const isInEditor = this.services.shared.lsp.Connection !== undefined
-
-    const mcp = new McpServer({
-      name: 'LikeC4',
-      version: packageJson.version,
-    }, {
-      instructions: `LikeC4 MCP – query and navigate LikeC4 models.
+export function createMCPServer(services: LikeC4LanguageServices, options?: ServerOptions): McpServer {
+  const mcp = new McpServer({
+    name: 'LikeC4',
+    version: packageJson.version,
+  }, {
+    instructions: `LikeC4 MCP – query and navigate LikeC4 models.
 
 Conventions:
 - All tools are read-only and idempotent.
@@ -66,11 +58,6 @@ Available tools:
 - query-by-tag-pattern — Search elements by tag prefix/contains/suffix patterns. Input: { pattern, matchMode?, project? }.
 - element-diff — Compare two elements side-by-side showing differences in properties, tags, metadata, and relationships. Input: { element1Id, element2Id, project? }.
 - subgraph-summary — Compact summary of all descendants of a parent element with metadata, tags, and relationship counts. Input: { elementId, maxDepth?, metadataKeys?, project? }.
-${
-        isInEditor
-          ? '- open-view — Opens the LikeC4 view panel in the editor. Triggers UI; at most one preview panel at a time. Input: { viewId, project? }.'
-          : ''
-      }
 
 Instructions:
 - Identify the project first  
@@ -81,39 +68,35 @@ Instructions:
 
 Full documentation: https://likec4.dev/llms-full.txt
 `,
-      enforceStrictCapabilities: true,
-      ...options,
-      capabilities: {
-        tools: {},
-        logging: {},
-        ...options?.capabilities,
-      },
-    })
-    mcp.registerTool(...listProjects(this.services.likec4.LanguageServices))
-    mcp.registerTool(...readProjectSummary(this.services.likec4.LanguageServices))
-    mcp.registerTool(...readElement(this.services.likec4.LanguageServices))
-    mcp.registerTool(...readDeployment(this.services.likec4.LanguageServices))
-    mcp.registerTool(...readView(this.services.likec4.LanguageServices))
-    mcp.registerTool(...searchElement(this.services.likec4.LanguageServices))
-    mcp.registerTool(...findRelationships(this.services.likec4.LanguageServices))
-    mcp.registerTool(...queryGraph(this.services.likec4.LanguageServices))
-    mcp.registerTool(...queryIncomersGraph(this.services.likec4.LanguageServices))
-    mcp.registerTool(...queryOutgoersGraph(this.services.likec4.LanguageServices))
-    mcp.registerTool(...queryByMetadata(this.services.likec4.LanguageServices))
-    mcp.registerTool(...queryByTags(this.services.likec4.LanguageServices))
-    mcp.registerTool(...findRelationshipPaths(this.services.likec4.LanguageServices))
-    mcp.registerTool(...batchReadElements(this.services.likec4.LanguageServices))
-    mcp.registerTool(...queryByTagPattern(this.services.likec4.LanguageServices))
-    mcp.registerTool(...elementDiff(this.services.likec4.LanguageServices))
-    mcp.registerTool(...subgraphSummary(this.services.likec4.LanguageServices))
-    if (isInEditor) {
-      mcp.registerTool(...openView(this.services.likec4.LanguageServices))
-    }
+    enforceStrictCapabilities: true,
+    ...options,
+    capabilities: {
+      tools: {},
+      logging: {},
+      ...options?.capabilities,
+    },
+  })
+  mcp.registerTool(...listProjects(services))
+  mcp.registerTool(...readProjectSummary(services))
+  mcp.registerTool(...readElement(services))
+  mcp.registerTool(...readDeployment(services))
+  mcp.registerTool(...readView(services))
+  mcp.registerTool(...searchElement(services))
+  mcp.registerTool(...findRelationships(services))
+  mcp.registerTool(...queryGraph(services))
+  mcp.registerTool(...queryIncomersGraph(services))
+  mcp.registerTool(...queryOutgoersGraph(services))
+  mcp.registerTool(...queryByMetadata(services))
+  mcp.registerTool(...queryByTags(services))
+  mcp.registerTool(...findRelationshipPaths(services))
+  mcp.registerTool(...batchReadElements(services))
+  mcp.registerTool(...queryByTagPattern(services))
+  mcp.registerTool(...elementDiff(services))
+  mcp.registerTool(...subgraphSummary(services))
 
-    mcp.server.onerror = (err) => {
-      logger.error(loggable(err))
-    }
-
-    return mcp
+  mcp.server.onerror = (err) => {
+    logger.error(loggable(err))
   }
+
+  return mcp
 }

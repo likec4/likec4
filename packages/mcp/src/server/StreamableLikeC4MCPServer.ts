@@ -1,20 +1,21 @@
 import { MemoryEventStore, StreamableHTTPTransport } from '@hono/mcp'
 import type { HttpBindings, ServerType } from '@hono/node-server'
 import { serve } from '@hono/node-server'
+import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { loggable } from '@likec4/log'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import type { AsyncDisposable } from 'langium'
-import type { LikeC4Services } from '../../module'
-import type { LikeC4MCPServer, LikeC4MCPServerFactory } from '../types'
 import { logger } from '../utils'
+import { createMCPServer } from './createMCPServer'
+import type { LikeC4MCPServer } from './StdioLikeC4MCPServer'
 
 type Bindings = HttpBindings & {
   /* ... */
 }
 
-async function createHonoApp(factory: LikeC4MCPServerFactory) {
+async function createHonoApp(factory: () => McpServer) {
   const app = new Hono<{ Bindings: Bindings }>()
 
   // Enable CORS for all origins
@@ -30,7 +31,7 @@ async function createHonoApp(factory: LikeC4MCPServerFactory) {
   // Health check endpoint
   app.get('/health', c => c.json({ status: 'ok' }))
 
-  const mcpServer = factory.create()
+  const mcpServer = factory()
 
   // Initialize the transport
   const transport = new StreamableHTTPTransport({
@@ -80,7 +81,7 @@ async function createHonoApp(factory: LikeC4MCPServerFactory) {
 }
 
 async function startServer(params: {
-  factory: LikeC4MCPServerFactory
+  factory: () => McpServer
   port: number
 }): Promise<ServerType> {
   const { factory, port } = params
@@ -104,7 +105,7 @@ export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposab
   private server: ServerType | undefined = undefined
 
   constructor(
-    private services: LikeC4Services,
+    private services: LikeC4LanguageServices,
     private _port: number = 33335,
   ) {
   }
@@ -135,7 +136,7 @@ export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposab
     logger.info('Starting MCP server on port {port}', { port })
     this._port = port
     this.server = await startServer({
-      factory: this.services.mcp.ServerFactory,
+      factory: () => createMCPServer(this.services),
       port,
     })
     logger.info('MCP server ready at http://0.0.0.0:{port}/mcp', { port })

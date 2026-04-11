@@ -6,21 +6,19 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { LikeC4ProjectConfig } from '@likec4/config'
+import { invariant } from '@likec4/core'
 import type {
   DeploymentElementModel,
-  DeploymentNodeModel,
   ElementModel,
   IncomingFilter,
   LikeC4ViewModel,
   OutgoingFilter,
 } from '@likec4/core/model'
 import type { AnyAux, ProjectId } from '@likec4/core/types'
-import { invariant } from '@likec4/core'
+import type { LikeC4LanguageServices } from '@likec4/language-server'
+import type { Locate } from '@likec4/language-server/protocol'
 import { URI } from 'vscode-uri'
 import * as z from 'zod/v3'
-import type { LikeC4LanguageServices } from '../../LikeC4LanguageServices'
-import type { Locate } from '../../protocol'
-import { ProjectsManager } from '../../workspace'
 import { logger } from '../utils'
 
 /**
@@ -253,7 +251,7 @@ export const locationSchema = z.object({
 export const projectIdSchema = z.string()
   .refine((_v): _v is ProjectId => true)
   .optional()
-  .default(ProjectsManager.DefaultProjectId)
+  .default('default' as ProjectId)
   .describe('Project id (optional, will use "default" if not specified)')
 
 export const includedInViewsSchema = z.array(z.object({

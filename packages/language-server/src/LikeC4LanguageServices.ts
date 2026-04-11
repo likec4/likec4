@@ -17,8 +17,6 @@ import type { Diagnostic, FormattingOptions, Range } from 'vscode-languageserver
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4LangiumDocument, isLikeC4LangiumDocument } from './ast'
 import { logger as mainLogger } from './logger'
-import { NoopLikeC4MCPServer } from './mcp/noop'
-import type { LikeC4MCPServer } from './mcp/types'
 import type { LikeC4ModelBuilder } from './model'
 import type { LikeC4ModelChanges } from './model-change/ModelChanges'
 import type { LikeC4Services } from './module'
@@ -34,8 +32,6 @@ export interface LikeC4LanguageServices {
   readonly workspaceUri: URI
   readonly projectsManager: ProjectsManager
   readonly editor: LikeC4ModelChanges
-
-  readonly mcpServer: LikeC4MCPServer | null
 
   /**
    * Returns all projects with relevant documents
@@ -155,14 +151,6 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     this.builder = services.likec4.ModelBuilder
     this.projectsManager = services.shared.workspace.ProjectsManager
     this.editor = services.likec4.ModelChanges
-  }
-
-  get mcpServer(): LikeC4MCPServer | null {
-    const server = this.services.mcp.Server
-    if (server instanceof NoopLikeC4MCPServer) {
-      return null
-    }
-    return server
   }
 
   get views(): LikeC4Views {
@@ -425,9 +413,6 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     try {
       logger.debug('disposing LikeC4LanguageServices')
       await this.services.shared.workspace.FileSystemWatcher.dispose()
-      if (this.services.mcp.Server.isStarted) {
-        await this.services.mcp.Server.stop()
-      }
       this.services.Rpc.dispose()
       this.services.likec4.ModelBuilder.dispose()
     } catch (e) {
