@@ -274,6 +274,11 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     }
     const snapshot = this.#manualLayoutSnapshot
     if (snapshot) {
+      // If the view already has manual layout applied (can happen when the
+      // Vite client receives pre-processed data), return it as-is (#2882).
+      if (this.#view._layout === 'manual') {
+        return this.#view
+      }
       return memoizeProp(this, 'snapshotWithManualLayout', () => {
         return applyManualLayout(this.#view, snapshot)
       })
