@@ -113,6 +113,7 @@ export const WebviewMsgs = {
     | { screen: 'view'; viewId: ViewId; projectId: ProjectId | undefined }
     | { screen: 'projects' }
   >,
+  OpenExternalUrl: { method: 'webview:open-external-url' } as NotificationType<{ url: string }>,
   UpdateMyTitle: { method: 'webview:update-my-title' } as NotificationType<{ title: string }>,
 }
 
