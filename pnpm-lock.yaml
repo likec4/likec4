@@ -856,6 +856,9 @@ importers:
       vite-tsconfig-paths:
         specifier: catalog:vite
         version: 6.1.1(typescript@5.9.3)(vite@7.3.2(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.8.3))
+      vscode:
+        specifier: npm:@codingame/monaco-vscode-extension-api@16.1.1
+        version: '@codingame/monaco-vscode-extension-api@16.1.1'
       vscode-jsonrpc:
         specifier: 8.2.1
         version: 8.2.1
