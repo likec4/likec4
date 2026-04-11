@@ -5,7 +5,7 @@ You receive a JSON of Diagram data with:
 - edges (directed relationships between nodes, define flow from source to target node)
 - direction (preferred layout direction for the diagram, e.g. TB = top to bottom, LR = left to right)
 
-Your task: Suggest layout hints to produce readable, balanced and visually appealing diagram.
+Your task: Suggest layout hints to produce readable and visually balanced diagram.
 
 <input>
 Diagram (JSON object) fields:
@@ -46,19 +46,19 @@ Edge (JSON object) fields:
 5. Edge increases rank of the target node relative to the source node; `minlen` controls how many ranks apart they should be
    - by default, all edges have `minlen=1`
    - `minlen=2` adds extra space between nodes, pushing target node further away from source
-   - `minlen=0` does not enforce rank separation, but order nodes (i.e source node on the left for vertical layouts)
+   - `minlen=0` does not enforce rank separation, but order nodes (i.e source node on the left for vertical layouts); useful for auxiliary edges that should not affect semantic layout
    - keep `minlen` in range 0..4
 6. You can reverse rank separation of edge by adding its ID to the `reverseRank` array; It does not change the semantics, but gives more control over rank and layout. Especially useful to break cycles in graph
-7. You can exclude edge from rank calculations by adding its ID to the `excludeFromRanking` arra; Edge still visible but does not contribute to node ranks (`constraint=false` in graphviz)
+7. You can exclude edge from rank calculations by adding its ID to the `excludeFromRanking` arra; Edge still visible but does not contribute to node ranks and orders (`constraint=false` in graphviz); 
 8. You can fine-tune node ranks and order by adding invisible edges:
-   - invisible edges used in rank calculations as regular edges, but not drawn
+   - invisible edges affect ranks and order, but not drawn
    - to add invisible edge, use the `invisibleEdges` array (add an object with `source` and `target` node IDs, and optional `minlen` and `weight`)
    - you can add edges if only there is no same edge defined, i.e if `A -> B` edge exists you can add edge `B -> A`, but not `A -> B` again
    - invisible edges especially useful to layout orphan nodes (without edges) or to pull together nodes that are semantically connected but not directly
 9. Edge acts like "spring" that pulls connected nodes together; force is proportional to `weight`; higher weight -> shorter and straighter line;
    - by default, all edges have `weight=1` - usually sufficient for balanced layout
-   - weights of all connected to the node edges determine node position
-   - keep `weight` in range 1..10, to emphasize edge use range 5..10
+   - weights of all adjacent edges to the node affects its position and length of edges
+   - keep `weight` in range 1..10, to emphasize edge use range 6..10
 10. You can constrain node ranks by using the `ranks` array:
     - `rank="source"` constraint to put node(s) at the beginning (top/left) within compound (or entire diagram if at root level)
     - `rank="sink"` constraint to put node(s) at the end (bottom/right) within compound (or entire diagram if at root level)
@@ -73,11 +73,11 @@ Edge (JSON object) fields:
 
 <workflow>
 
-1. Analyze semantics and compounds hierarchy, determine which nodes are most likely to be sources and which are sinks, which flows should be aligned in layout direction, and which are auxiliary; Identify potential cycles in graph 
-2. Decide on rank constraints if needed
-3. Decide on edges: adjust ranks with `minlen`, reverse or exclude from ranking, add invisible edges to enforce layout
-4. Estimate node positions, size of compounds; Use these estimates for further edge adjustments, to minimize crossings and create balanced layout;
-5. If needed, adjust edges `weight` to pull together semantically connected nodes and create straighter lines for main flows
+1. Analyze semantics, identify main and auxiliary flows, which nodes are most likely to be sources and which are sinks
+2. Analyze hierarchy, compounds in main flows should aligned with layout direction
+3. Decide on rank constraints for nodes if needed
+4. Decide on edges: adjust `minlen`, reverse or exclude from ranking, add invisible edges to enforce layout
+5. Estimate node positions, size of compounds; Use these estimates for further edge adjustments to minimize crossings and balance layout
 6. Output nodes in semantic order
 7. Output existing edges in semantic order
 </workflow>

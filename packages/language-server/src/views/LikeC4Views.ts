@@ -118,7 +118,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     new ProjectStorage({
       projectId,
       storage: prefixStorage(this.#storage, projectId),
-      layouter: this.layouter.layout.bind(this.layouter),
+      layouter: (task) => this.layouter.layout(task),
     })
   )
 
@@ -131,6 +131,11 @@ export class DefaultLikeC4Views implements LikeC4Views {
     services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
       viewsLogger.info`force clean cache`
       this.#storage.clear()
+    })
+    services.shared.workspace.ManualLayouts.onManualLayoutUpdate(({ projectId, viewId }) => {
+      if (this.#projectStorages.has(projectId) && viewId) {
+        this.projectStorage(projectId).clearView(viewId)
+      }
     })
   }
 
@@ -418,7 +423,7 @@ class ProjectStorage {
       this.#logger.trace`cache hit for ${task.view.id}`
       return mergeWithCachedLayout(task.view, cached)
     }
-    logger.trace`cache miss for ${task.view.id}`
+    this.#logger.trace`cache miss for ${task.view.id}`
     return undefined
   }
 
@@ -429,10 +434,10 @@ class ProjectStorage {
       this.#logger.trace`cache hit for ${task.view.id}`
       return mergeWithCachedLayout(task.view, cached)
     }
-    logger.trace`cache miss for ${task.view.id}`
+    this.#logger.trace`cache miss for ${task.view.id}`
     const m0 = performanceMark()
     const result = await this.#layouter(task)
-    logger.trace(`layouted {view} in ${m0.pretty}`, { view: task.view.id })
+    this.#logger.trace(`layouted {view} in ${m0.pretty}`, { view: task.view.id })
     await this.#storage.set(key, result)
     this.resetViewError(task.view)
     return result
@@ -450,7 +455,7 @@ class ProjectStorage {
   }
 
   reportViewError(view: ComputedView, execIfNotReported: () => unknown) {
-    const key = `error-${view.id}`
+    const key = `error:${view.id}`
     this.#storage.has(key).then(yes => {
       if (!yes) {
         this.#storage.set<any>(key, 'true')
@@ -459,13 +464,35 @@ class ProjectStorage {
     })
   }
 
+  /**
+   * Clears cache for a specific view
+   */
+  async clearView(viewId: ViewId) {
+    const keys = await this.#storage.keys(`v:${viewId}:`)
+    if (keys.length === 0) {
+      return
+    }
+    this.#logger.trace`clear ${keys.length} cached entries for view ${viewId}`
+    for (const key of keys) {
+      await this.#storage.remove(key)
+    }
+  }
+
+  /**
+   * Clears entire cache for the project
+   */
+  clearAll() {
+    this.#logger.trace`clear caches`
+    this.#storage.clear()
+  }
+
   private resetViewError(view: ComputedView) {
-    this.#storage.del(`error-${view.id}`)
+    this.#storage.del(`error:${view.id}`)
   }
 }
 
 function cacheKey(task: LayoutTaskParams) {
-  return `${task.view.hash}-${task.styles.fingerprint}`
+  return `v:${task.view.id}:${task.view.hash}:${task.styles.fingerprint}`
 }
 
 function mergeWithCachedLayout(current: ComputedView, cached: GraphvizOut): GraphvizOut {

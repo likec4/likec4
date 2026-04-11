@@ -187,11 +187,11 @@ export const useLikeC4ChatParticipant = defineService(() => {
   ))
 
   participant.iconPath = vscode.Uri.joinPath(extensionContext.value!.extensionUri, 'data/icon-256-light.png')
-  participant.titleProvider = {
-    provideChatTitle: (context, token) => {
-      return 'LikeC4 View Layout'
-    },
-  }
+  // participant.titleProvider = {
+  //   provideChatTitle: (context, token) => {
+  //     return 'LikeC4 View Layout'
+  //   },
+  // }
   // useChatParticipant('likec4', , {
   //   iconPath: vscode.Uri.joinPath(extensionContext.value!.extensionUri, 'data/icon-256-light.png'),
   // })

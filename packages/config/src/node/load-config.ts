@@ -18,7 +18,6 @@ const JsonConfigInputSchema = LikeC4ProjectJsonConfigSchema.pick({
 }).loose()
 
 type JsonConfigInput = z.infer<typeof JsonConfigInputSchema>
-type JsonConfigStyles = NonNullable<JsonConfigInput['styles']>
 
 const normalizeExtends = (value: JsonConfigInput['extends']): string[] => {
   if (!value) {
