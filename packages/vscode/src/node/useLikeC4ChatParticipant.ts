@@ -81,54 +81,54 @@ export const useLikeC4ChatParticipant = defineService(() => {
         cancelStream.cancel()
       })
 
-      const hints = await enhanceLayoutWithAI<vscode.CancellationToken>(
-        computedView,
-        {
-          name: req.model.family,
-          sendRequest: async ({ diagram, systemPrompt, userPrompt }, cancelToken) => {
-            const messsages = [
-              vscode.LanguageModelChatMessage.Assistant(systemPrompt),
-              vscode.LanguageModelChatMessage.User(userPrompt + '\n\n' + diagram),
-            ]
+      let hints
+      try {
+        hints = await enhanceLayoutWithAI<vscode.CancellationToken>(
+          computedView,
+          {
+            name: req.model.family,
+            sendRequest: async ({ diagram, systemPrompt, userPrompt }, cancelToken) => {
+              const messsages = [
+                vscode.LanguageModelChatMessage.Assistant(systemPrompt),
+                vscode.LanguageModelChatMessage.User(userPrompt + '\n\n' + diagram),
+              ]
 
-            const res = await req.model.sendRequest(
-              messsages,
-              {
-                justification: 'LikeC4 needs AI assistance to optimize diagram layout',
-                tools: [],
-              },
-              cancelToken,
-            )
+              const res = await req.model.sendRequest(
+                messsages,
+                {
+                  justification: 'LikeC4 needs AI assistance to optimize diagram layout',
+                  tools: [],
+                },
+                cancelToken,
+              )
 
-            let text = ''
-            for await (const chunk of res.text) {
-              if (cancelToken.isCancellationRequested) {
-                throw new vscode.CancellationError()
+              let text = ''
+              for await (const chunk of res.text) {
+                if (cancelToken.isCancellationRequested) {
+                  throw new vscode.CancellationError()
+                }
+                if (text === '') {
+                  stream.markdown(`Received response from AI, processing...`)
+                }
+                text += chunk
               }
-              if (text === '') {
-                stream.markdown(`Received response from AI, processing...`)
-              }
-              text += chunk
-            }
 
-            return text
+              return text
+            },
           },
-        },
-        cancelStream.token,
-      )
-      cancelStream.dispose()
-
-      messenger.broadcastAiLayoutUpdate({
-        viewId,
-        projectId,
-        state: 'completed',
-      })
+          cancelStream.token,
+        )
+      } finally {
+        cancelStream.dispose()
+      }
 
       if (!hints) {
+        messenger.broadcastAiLayoutUpdate({ viewId, projectId, state: 'failed' })
         stream.warning(`AI could not generate layout suggestions for this view.`)
         return
       }
       if (token.isCancellationRequested) {
+        messenger.broadcastAiLayoutUpdate({ viewId, projectId, state: 'failed' })
         stream.warning(`Layout enhancement cancelled.`)
         return
       }
@@ -150,6 +150,7 @@ export const useLikeC4ChatParticipant = defineService(() => {
       })
 
       if (!result) {
+        messenger.broadcastAiLayoutUpdate({ viewId, projectId, state: 'failed' })
         stream.warning(`Failed to apply AI-enhanced layout. \nCheck output for details.`)
         return
       }
@@ -172,10 +173,12 @@ export const useLikeC4ChatParticipant = defineService(() => {
         })
 
       if (!res.success) {
+        messenger.broadcastAiLayoutUpdate({ viewId, projectId, state: 'failed' })
         stream.warning(`Failed to apply AI-enhanced layout.\nCheck output for details.\n${res.error}`)
         return
       }
 
+      messenger.broadcastAiLayoutUpdate({ viewId, projectId, state: 'completed' })
       stream.markdown(`\n\n ✅ View updated`)
 
       if (res.location) {

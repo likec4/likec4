@@ -21,18 +21,23 @@ export async function enhanceLayoutWithAI<CancelToken>(
   provider: AILayoutProvider<CancelToken>,
   signal: CancelToken,
 ): Promise<AILayoutHints | undefined> {
-  logger.debug`generating AI layout hints for ${view.id} using ${provider.name}`
+  try {
+    logger.debug`generating AI layout hints for ${view.id} using ${provider.name}`
 
-  const { serialized, mapping } = prepareLLMInput(view)
+    const { serialized, mapping } = prepareLLMInput(view)
 
-  const rawResponse = await provider.sendRequest(
-    {
-      ...prompts,
-      view,
-      mapping,
-      diagram: JSON.stringify(serialized),
-    },
-    signal,
-  )
-  return parseOutput(rawResponse, { mapping, view })
+    const rawResponse = await provider.sendRequest(
+      {
+        ...prompts,
+        view,
+        mapping,
+        diagram: JSON.stringify(serialized),
+      },
+      signal,
+    )
+    return parseOutput(rawResponse, { mapping, view })
+  } catch (error) {
+    logger.warn`AI layout enhancement failed: ${error}`
+    return undefined
+  }
 }
