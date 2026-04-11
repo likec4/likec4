@@ -1649,9 +1649,6 @@ importers:
 
   packages/layouts:
     dependencies:
-      '@anthropic-ai/sdk':
-        specifier: catalog:ai
-        version: 0.86.1(zod@4.3.6)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.21.2
@@ -1676,9 +1673,6 @@ importers:
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
-      ollama:
-        specifier: catalog:ai
-        version: 0.6.3
       p-limit:
         specifier: catalog:utils
         version: 7.3.0
@@ -1710,6 +1704,9 @@ importers:
         specifier: catalog:externals
         version: 4.3.6
     devDependencies:
+      '@anthropic-ai/sdk':
+        specifier: catalog:ai
+        version: 0.86.1(zod@4.3.6)
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -1725,6 +1722,9 @@ importers:
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260405.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+      ollama:
+        specifier: catalog:ai
+        version: 0.6.3
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2417,6 +2417,12 @@ importers:
 
   packages/vscode:
     dependencies:
+      bundle-require:
+        specifier: catalog:externals
+        version: 5.1.0(esbuild@0.27.4)
+      esbuild:
+        specifier: 0.27.4
+        version: 0.27.4
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.4)
