@@ -16,6 +16,12 @@ export function OverviewSearchAdapter({
   const navigate = useNavigate()
 
   const navigateTo = useCallback((viewId: ViewId, focusOnElement?: Fqn) => {
+    // Close any open <dialog> elements from the search overlay before
+    // navigating, so the browser properly removes them from the top layer.
+    // Without this, the dialog can persist after route change (#2353).
+    document.querySelectorAll('dialog[data-likec4-search]').forEach(d => {
+      if (d instanceof HTMLDialogElement && d.open) d.close()
+    })
     onClose()
     void navigate({
       to: '/view/$viewId/',

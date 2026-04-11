@@ -64,8 +64,18 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
 
   useLayoutEffect(() => {
     if (!dialogRef.current?.open) {
-      // Move dialog to the top of the DOM
       dialogRef.current?.showModal()
+    }
+    // Ensure the dialog is properly closed when unmounted, so the browser
+    // removes it from the top layer. Without this, AnimatePresence can
+    // remove the DOM node without calling dialog.close(), leaving a ghost
+    // entry in the top layer that traps focus and blocks interaction. (#2353)
+    const dialog = dialogRef.current
+    return () => {
+      if (dialog?.open) {
+        isClosingRef.current = true
+        dialog.close()
+      }
     }
   }, [])
 
