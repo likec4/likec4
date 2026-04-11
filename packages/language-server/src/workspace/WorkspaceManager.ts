@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { invariant } from '@likec4/core'
 import type {
   BuildOptions,
@@ -9,7 +16,7 @@ import type {
 } from 'langium'
 import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
 import pTimeout from 'p-timeout'
-import { hasAtLeast, uniqueBy } from 'remeda'
+import { hasAtLeast } from 'remeda'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileNode, FileSystemProvider } from '../filesystem'
@@ -109,7 +116,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const includePaths = this.services.workspace.ProjectsManager.getAllIncludePaths()
     let totalFilesLoaded = 0
 
-    const foundFiles = [] as FileNode[]
+    const uniqueFiles = new Map<string, FileNode>()
 
     for (const { projectId, includePath, includeConfig } of includePaths) {
       try {
@@ -118,7 +125,9 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
           recursive: true,
           maxDepth: includeConfig.maxDepth,
         })
-        foundFiles.push(...files)
+        for (const file of files) {
+          uniqueFiles.set(file.uri.path, file)
+        }
         if (files.length === 0) {
           logger.debug`loaded ${files.length} files from include path ${includePath.fsPath}`
         }
@@ -127,7 +136,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       }
     }
 
-    for (const file of uniqueBy(foundFiles, (f) => f.uri.path)) {
+    for (const file of uniqueFiles.values()) {
       try {
         const doc = await this.langiumDocuments.getOrCreateDocument(file.uri)
         collector(doc)

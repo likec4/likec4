@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { findLast, isTruthy, map, pipe } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../model'
 import type { AnyAux, aux, DynamicStep, DynamicStepsSeries, scalar } from '../../types'
@@ -18,7 +25,7 @@ import {
   stepEdgeId,
 } from '../../types'
 import { intersection, invariant, nonNullable, toArray, union } from '../../utils'
-import { ancestorsFqn, commonAncestor, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
+import { commonAncestor, forEachAncestorFqn, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
@@ -55,11 +62,25 @@ namespace DynamicViewCompute {
 class DynamicViewCompute<A extends AnyAux> {
   // Intermediate state
   private steps = [] as DynamicViewCompute.Step<A>[]
+  // Cache findRelations results within a single compute run.
+  // Key omits view.id because this.view is constant per instance
+  // (a fresh DynamicViewCompute is created for each computeDynamicView call).
+  private relationsCache = new Map<string, ReturnType<typeof findRelations<A>>>()
 
   constructor(
     protected model: LikeC4Model<A>,
     protected view: DynamicView<A>,
   ) {}
+
+  private cachedFindRelations(source: ElementModel<A>, target: ElementModel<A>): ReturnType<typeof findRelations<A>> {
+    const key = source.id + '\0' + target.id
+    let result = this.relationsCache.get(key)
+    if (!result) {
+      result = findRelations(source, target, this.view.id)
+      this.relationsCache.set(key, result)
+    }
+    return result
+  }
 
   compute(): ComputedDynamicView<A> {
     const {
@@ -135,7 +156,7 @@ class DynamicViewCompute<A extends AnyAux> {
         relations,
         navigateTo: derivedNavigateTo,
         ...derived
-      } = findRelations(source, target, this.view.id)
+      } = this.cachedFindRelations(source, target)
 
       const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id
         ? stepNavigateTo
@@ -212,19 +233,17 @@ class DynamicViewCompute<A extends AnyAux> {
       sourceNode.outEdges.push(edge.id)
       targetNode.inEdges.push(edge.id)
       // Process edge source ancestors
-      for (const sourceAncestor of ancestorsFqn(edge.source)) {
-        if (sourceAncestor === edge.parent) {
-          break
-        }
+      forEachAncestorFqn(edge.source, sourceAncestor => {
+        if (sourceAncestor === edge.parent) return false
         nodesMap.get(sourceAncestor)?.outEdges.push(edge.id)
-      }
+        return
+      })
       // Process target hierarchy
-      for (const targetAncestor of ancestorsFqn(edge.target)) {
-        if (targetAncestor === edge.parent) {
-          break
-        }
+      forEachAncestorFqn(edge.target, targetAncestor => {
+        if (targetAncestor === edge.parent) return false
         nodesMap.get(targetAncestor)?.inEdges.push(edge.id)
-      }
+        return
+      })
       return edge
     })
 

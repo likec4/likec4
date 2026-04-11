@@ -8,9 +8,9 @@
 import { invariant, nonNullable } from '@likec4/core'
 import { type NonEmptyArray, type ProjectId, Fqn, isAnyOf } from '@likec4/core/types'
 import {
-  ancestorsFqn,
   compareNatural,
   DefaultWeakMap,
+  forEachAncestorFqn,
   MultiMap,
   sortNaturalByFqn,
 } from '@likec4/core/utils'
@@ -250,11 +250,11 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       if (nested.length === 0) {
         return
       }
-      for (const ancestor of [thisFqn, ...ancestorsFqn(thisFqn)]) {
+      forEachAncestorFqn(thisFqn, ancestor => {
         for (const child of nested) {
           descendants.set(ancestor, child)
         }
-      }
+      }, { includeSelf: true })
     }
 
     for (const node of rootElements) {

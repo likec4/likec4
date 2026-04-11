@@ -1,4 +1,11 @@
-import { anyPass, filter, forEach, isDefined, isEmpty, isNot, pipe } from 'remeda'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import { anyPass, isDefined, isEmpty } from 'remeda'
 import {
   type AnyAux,
   type AnyViewRuleStyle,
@@ -17,27 +24,25 @@ export function applyViewRuleStyle<A extends AnyAux>(
 ): void {
   const { shape, color, icon, ...rest } = rule.style
   const nonEmptyStyle = !isEmpty(rest)
-  pipe(
-    nodes,
-    filter(isNot(isGroupElementKind)),
-    filter(predicate),
-    forEach(n => {
-      n.shape = shape ?? n.shape
-      n.color = color ?? n.color
-      if (isDefined(icon)) {
-        n.icon = icon
+  for (const node of nodes) {
+    if (isGroupElementKind(node) || !predicate(node)) {
+      continue
+    }
+    node.shape = shape ?? node.shape
+    node.color = color ?? node.color
+    if (isDefined(icon)) {
+      node.icon = icon
+    }
+    if (isDefined(rule.notation)) {
+      node.notation = rule.notation
+    }
+    if (nonEmptyStyle) {
+      node.style = {
+        ...node.style,
+        ...rest,
       }
-      if (isDefined(rule.notation)) {
-        n.notation = rule.notation
-      }
-      if (nonEmptyStyle) {
-        n.style = {
-          ...n.style,
-          ...rest,
-        }
-      }
-    }),
-  )
+    }
+  }
 }
 
 export function applyViewRuleStyles<A extends AnyAux, N extends ComputedNode<A>[]>(
@@ -49,9 +54,10 @@ export function applyViewRuleStyles<A extends AnyAux, N extends ComputedNode<A>[
       continue
     }
     const predicates = rule.targets.map(elementExprToPredicate)
+    const predicate = predicates.length === 1 ? predicates[0]! : anyPass(predicates)
     applyViewRuleStyle(
       rule,
-      anyPass(predicates),
+      predicate,
       nodes,
     )
   }

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { values } from 'remeda'
 import type { LikeC4Styles } from '../styles/LikeC4Styles'
 import {
@@ -12,7 +19,7 @@ import {
 } from '../types'
 import * as aux from '../types/_aux'
 import { invariant, nonNullable } from '../utils'
-import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
+import { forEachAncestorFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { DefaultMap } from '../utils/mnemonist'
 import {
@@ -401,24 +408,22 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
     const relParent = rel.boundary?.id ?? null
     // Process internal relationships
     if (relParent) {
-      for (const ancestor of [relParent, ...ancestorsFqn(relParent)]) {
+      forEachAncestorFqn(relParent, ancestor => {
         this.#internal.get(ancestor).add(rel)
-      }
+      }, { includeSelf: true })
     }
     // Process source hierarchy
-    for (const sourceAncestor of ancestorsFqn(rel.source.id)) {
-      if (sourceAncestor === relParent) {
-        break
-      }
+    forEachAncestorFqn(rel.source.id, sourceAncestor => {
+      if (sourceAncestor === relParent) return false
       this.#outgoing.get(sourceAncestor).add(rel)
-    }
+      return
+    })
     // Process target hierarchy
-    for (const targetAncestor of ancestorsFqn(rel.target.id)) {
-      if (targetAncestor === relParent) {
-        break
-      }
+    forEachAncestorFqn(rel.target.id, targetAncestor => {
+      if (targetAncestor === relParent) return false
       this.#incoming.get(targetAncestor).add(rel)
-    }
+      return
+    })
     return rel
   }
 }

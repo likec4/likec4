@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { entries, hasAtLeast, isEmpty, map, pipe, prop, sort, sortBy, split, values } from 'remeda'
 import type { IsAny } from 'type-fest'
 import { LikeC4Styles } from '../styles/LikeC4Styles'
@@ -32,7 +39,7 @@ import type {
 } from '../types/_aux'
 import * as scalar from '../types/scalar'
 import { compareNatural, compareNaturalHierarchically, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
-import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
+import { commonAncestor, forEachAncestorFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
 import type {
   DeployedInstanceModel,
@@ -844,24 +851,22 @@ export class LikeC4Model<A extends Any = Any> {
     const relParent = commonAncestor(source.id, target.id)
     // Process internal relationships
     if (relParent) {
-      for (const ancestor of [relParent, ...ancestorsFqn(relParent)]) {
+      forEachAncestorFqn(relParent, ancestor => {
         this._internal.get(ancestor).add(rel)
-      }
+      }, { includeSelf: true })
     }
     // Process source hierarchy
-    for (const sourceAncestor of ancestorsFqn(source.id)) {
-      if (sourceAncestor === relParent) {
-        break
-      }
+    forEachAncestorFqn(source.id, sourceAncestor => {
+      if (sourceAncestor === relParent) return false
       this._outgoing.get(sourceAncestor).add(rel)
-    }
+      return
+    })
     // Process target hierarchy
-    for (const targetAncestor of ancestorsFqn(target.id)) {
-      if (targetAncestor === relParent) {
-        break
-      }
+    forEachAncestorFqn(target.id, targetAncestor => {
+      if (targetAncestor === relParent) return false
       this._incoming.get(targetAncestor).add(rel)
-    }
+      return
+    })
     return rel
   }
 }

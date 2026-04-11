@@ -1,5 +1,12 @@
-import { ancestorsFqn, Fqn, isAnyOf } from '@likec4/core'
-import { MultiMap } from '@likec4/core/utils'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import { Fqn, isAnyOf } from '@likec4/core'
+import { forEachAncestorFqn, MultiMap } from '@likec4/core/utils'
 import { UriUtils } from 'langium'
 import { filter, flatMap, hasAtLeast, isTruthy, pipe } from 'remeda'
 import {
@@ -97,11 +104,11 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
       if (nested.length === 0) {
         return
       }
-      for (const ancestor of [thisFqn, ...ancestorsFqn(thisFqn)]) {
+      forEachAncestorFqn(thisFqn, ancestor => {
         for (const child of nested) {
           descendants.set(ancestor, child)
         }
-      }
+      }, { includeSelf: true })
     }
 
     for (const node of rootNodes) {

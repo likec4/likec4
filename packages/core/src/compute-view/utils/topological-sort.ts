@@ -1,41 +1,67 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import Graph from 'graphology'
 import { topologicalSort as topsort } from 'graphology-dag/topological-sort'
 import willCreateCycle from 'graphology-dag/will-create-cycle'
-import { forEach, map, partition, pipe, takeWhile } from 'remeda'
+import { map, partition, pipe } from 'remeda'
 import type { AnyAux, ComputedEdge, ComputedNode, NodeId } from '../../types'
 import { invariant, nonNullable } from '../../utils'
-import { ancestorsOfNode } from './ancestorsOfNode'
 
 /**
- * Keeps initial order of the elements, but ensures parents are placed before children
+ * Keeps initial order of the elements, but ensures parents are placed before children.
+ *
+ * Precondition: if `item.parent` is non-null, the parent ID must appear in the array.
+ * This is guaranteed by `buildComputedNodes`, which always sets `node.parent` to the
+ * nearest ancestor that exists in the computed-nodes map — never to a gap.
  */
 function ensureParentsFirst<T extends { id: string; parent: string | null }>(
   array: ReadonlyArray<T>,
 ): Array<T> {
-  const result = [] as T[]
-  const items = [...array]
-  let item
-  while ((item = items.shift())) {
-    let parent = item.parent
-    if (parent) {
-      const ancestors = [] as T[]
-      while (parent) {
-        const parentIndx = items.findIndex(i => i.id === parent)
-        if (parentIndx < 0) {
-          break
-        }
-        const [parentItem] = items.splice(parentIndx, 1)
-        if (!parentItem) {
-          throw new Error('Invalid state, should not happen')
-        }
-        ancestors.unshift(parentItem)
-        parent = parentItem.parent
-      }
-      result.push(...ancestors)
-    }
-    result.push(item)
+  if (array.length < 2) {
+    return [...array]
   }
-  return result as Array<T>
+  const result = [] as T[]
+  const remaining = new Map<string, T>()
+  for (const item of array) {
+    remaining.set(item.id, item)
+  }
+
+  // Collect all ancestors that are still in the remaining set, from root down.
+  // Stops at the first parent not found — either already emitted or not in the array.
+  const collectAncestors = (item: T): T[] => {
+    const chain = [] as T[]
+    let parentId = item.parent
+    while (parentId) {
+      const parentItem = remaining.get(parentId)
+      if (!parentItem) break
+      chain.push(parentItem)
+      parentId = parentItem.parent
+    }
+    // Reverse so root ancestors come first
+    return chain.reverse()
+  }
+
+  for (const item of array) {
+    if (!remaining.has(item.id)) {
+      continue // already emitted as an ancestor of a previous item
+    }
+    const ancestors = collectAncestors(item)
+    for (const ancestor of ancestors) {
+      if (remaining.delete(ancestor.id)) {
+        result.push(ancestor)
+      }
+    }
+    if (remaining.delete(item.id)) {
+      result.push(item)
+    }
+  }
+
+  return result
 }
 
 /**
@@ -125,20 +151,23 @@ export function topologicalSort<
   for (const { edge, source, target } of edgesBetweenLeafs) {
     addEdgeToGraph(edge)
     // Strengthen the graph by adding edges to parents
+    // Walk ancestors of target inline (no array allocation)
     if (target.parent && target.parent !== edge.parent) {
-      pipe(
-        ancestorsOfNode(target, param.nodes),
-        takeWhile(ancestor => ancestor.inEdges.includes(edge.id)),
-        forEach(ancestor => {
-          g.mergeNode(ancestor.id)
-          if (!willCreateCycle(g, edge.source, ancestor.id)) {
-            g.mergeDirectedEdge(edge.source, ancestor.id)
-          }
-          if (!willCreateCycle(g, ancestor.id, edge.target)) {
-            g.mergeDirectedEdge(ancestor.id, edge.target)
-          }
-        }),
-      )
+      let ancestorId: string | null = target.parent
+      while (ancestorId) {
+        const ancestor = param.nodes.get(ancestorId)
+        if (!ancestor || !ancestor.inEdges.includes(edge.id)) {
+          break
+        }
+        g.mergeNode(ancestor.id)
+        if (!willCreateCycle(g, edge.source, ancestor.id)) {
+          g.mergeDirectedEdge(edge.source, ancestor.id)
+        }
+        if (!willCreateCycle(g, ancestor.id, edge.target)) {
+          g.mergeDirectedEdge(ancestor.id, edge.target)
+        }
+        ancestorId = ancestor.parent
+      }
     }
     if (source.parent) {
       const sourceParent = getNode(source.parent)
@@ -160,32 +189,54 @@ export function topologicalSort<
   invariant(sortedEdges.length === edges.length, 'Not all edges were added to the graph')
 
   const sortedIds = topsort(g)
-  let sorted = [] as N[]
-  let unsorted = nodes.slice()
-  for (const sortedId of sortedIds) {
-    const indx = unsorted.findIndex(n => n.id === sortedId)
-    invariant(indx >= 0, `Node "${sortedId}" not found`)
-    sorted.push(...unsorted.splice(indx, 1))
+
+  // Build index of unsorted nodes for O(1) lookups
+  const unsortedIndex = new Map<string, { node: N; originalIdx: number }>()
+  for (let i = 0; i < nodes.length; i++) {
+    unsortedIndex.set(nodes[i]!.id, { node: nodes[i]!, originalIdx: i })
   }
-  // Merge unsorted nodes, keeping their initial order
-  if (unsorted.length > 0 && sorted.length > 0) {
+
+  let sorted = [] as N[]
+  for (const sortedId of sortedIds) {
+    const entry = unsortedIndex.get(sortedId)
+    invariant(entry, `Node "${sortedId}" not found`)
+    sorted.push(entry.node)
+    unsortedIndex.delete(sortedId)
+  }
+
+  // Merge unsorted nodes (those not in the topsort graph), keeping their initial order
+  if (unsortedIndex.size > 0 && sorted.length > 0) {
+    const unsortedNodes = [...unsortedIndex.values()]
+      .sort((a, b) => a.originalIdx - b.originalIdx)
+      .map(e => e.node)
+
+    // Build a map from node id to original index for O(1) lookup
+    const originalIndexOf = new Map<string, number>()
+    for (let i = 0; i < nodes.length; i++) {
+      originalIndexOf.set(nodes[i]!.id, i)
+    }
+
+    let unsortedIdx = 0
     sorted = sorted.flatMap(node => {
-      if (unsorted.length === 0) {
+      if (unsortedIdx >= unsortedNodes.length) {
         return node
       }
-      const wereBefore = nodes
-        .slice(0, nodes.indexOf(node))
-        .filter(n => unsorted.includes(n))
-      if (wereBefore.length > 0) {
-        unsorted = unsorted.filter(n => !wereBefore.includes(n))
-        return [...wereBefore, node]
+      const nodeOrigIdx = originalIndexOf.get(node.id)!
+      const preceding = [] as N[]
+      while (unsortedIdx < unsortedNodes.length) {
+        const unsortedOrigIdx = originalIndexOf.get(unsortedNodes[unsortedIdx]!.id)!
+        if (unsortedOrigIdx >= nodeOrigIdx) break
+        preceding.push(unsortedNodes[unsortedIdx]!)
+        unsortedIdx++
       }
-
-      return node
+      return preceding.length > 0 ? [...preceding, node] : node
     })
+    // Add any remaining unsorted nodes at the end
+    while (unsortedIdx < unsortedNodes.length) {
+      sorted.push(unsortedNodes[unsortedIdx]!)
+      unsortedIdx++
+    }
   }
-  // Add remaining unsorted nodes
-  sorted.push(...unsorted)
   return {
     nodes: updateChildren(
       ensureParentsFirst(sorted),

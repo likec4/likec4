@@ -139,6 +139,7 @@
     "cli:preview": "pnpm cli preview -o dev/dist dev",
     "cli:export": "pnpm cli export png -o dev/export dev",
     "cli:export:json": "pnpm cli export json -o dev/export/likec4.json dev",
+    "bench:workspace": "tsx --conditions=sources --expose-gc scripts/benchmark-workspace.ts",
     "test": "vitest run --no-isolate",
     "vitest:ui": "vitest --no-isolate --ui",
     "test:watch": "vitest"

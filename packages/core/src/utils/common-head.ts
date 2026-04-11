@@ -8,7 +8,7 @@ import { map, pipe, takeWhile, zip } from 'remeda'
 export function commonHead<T>(
   sources: ReadonlyArray<T>,
   targets: ReadonlyArray<T>,
-  equals?: (a: T, b: T) => boolean
+  equals?: (a: T, b: T) => boolean,
 ): T[] {
   if (sources.length === 0 || targets.length === 0) {
     return []
@@ -17,6 +17,6 @@ export function commonHead<T>(
   return pipe(
     zip(sources, targets),
     takeWhile(([source, target]) => equals(source, target)),
-    map(([source, _]) => source)
+    map(([source, _]) => source),
   )
 }

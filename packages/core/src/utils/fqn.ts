@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { hasAtLeast } from 'remeda'
 import type { Fqn, IterableContainer, ReorderedArray } from '../types'
 import { isString } from '../types/guards'
@@ -160,6 +167,44 @@ export function ancestorsFqn<Id extends string>(fqn: Id): Id[] {
 }
 
 /**
+ * Visits the FQN itself (when `includeSelf` is true) and its ancestor FQNs
+ * from direct parent up to root. Return `false` from the visitor to stop early.
+ *
+ * @param options.includeSelf - If true, visits `fqn` itself before its ancestors.
+ *
+ * @example
+ * ```ts
+ * forEachAncestorFqn('a.b.c.d', ancestor => {
+ *   console.log(ancestor) // 'a.b.c', 'a.b', 'a'
+ * })
+ *
+ * // Include the node itself:
+ * forEachAncestorFqn('a.b.c', fqn => {
+ *   console.log(fqn) // 'a.b.c', 'a.b', 'a'
+ * }, { includeSelf: true })
+ *
+ * // Early exit:
+ * forEachAncestorFqn('a.b.c.d', ancestor => {
+ *   if (ancestor === 'a.b') return false // stops after 'a.b.c' and 'a.b'
+ * })
+ * ```
+ */
+export function forEachAncestorFqn<Id extends string>(
+  fqn: Id,
+  visitor: (ancestor: Id) => boolean | void,
+  options?: { includeSelf?: boolean },
+): void {
+  let current = options?.includeSelf ? fqn : parentFqn(fqn)
+  while (current) {
+    const ancestor = current
+    if (visitor(ancestor) === false) {
+      return
+    }
+    current = parentFqn(ancestor)
+  }
+}
+
+/**
  * Compares two fully qualified names (fqns) hierarchically based on their depth.
  * From parent nodes to leaves
  *
@@ -185,6 +230,7 @@ export function compareFqnHierarchically<T extends string = string>(a: T, b: T):
   }
 }
 
+/** @deprecated No longer used internally. Will be removed in the next major version. */
 export function compareByFqnHierarchically<T extends { id: string }>(a: T, b: T): -1 | 0 | 1 {
   return compareFqnHierarchically(a.id, b.id)
 }

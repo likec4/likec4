@@ -5,6 +5,7 @@ import {
   ancestorsFqn,
   commonAncestor,
   compareFqnHierarchically,
+  forEachAncestorFqn,
   hierarchyDistance,
   isAncestor,
   isDescendantOf,
@@ -40,6 +41,51 @@ describe('fqn utils', () => {
     })
     it('should return all ancestors', () => {
       expect(ancestorsFqn('a.b.c.d.e')).toEqual(['a.b.c.d', 'a.b.c', 'a.b', 'a'])
+    })
+  })
+
+  describe('forEachAncestorFqn', () => {
+    it('should visit ancestors from parent to root', () => {
+      const visited: string[] = []
+      forEachAncestorFqn('a.b.c.d', ancestor => {
+        visited.push(ancestor)
+      })
+      expect(visited).toEqual(['a.b.c', 'a.b', 'a'])
+    })
+
+    it('should visit nothing for a root-level FQN', () => {
+      const visited: string[] = []
+      forEachAncestorFqn('a', ancestor => {
+        visited.push(ancestor)
+      })
+      expect(visited).toEqual([])
+    })
+
+    it('should visit only self with includeSelf for a root-level FQN', () => {
+      const visited: string[] = []
+      forEachAncestorFqn('a', ancestor => {
+        visited.push(ancestor)
+      }, { includeSelf: true })
+      expect(visited).toEqual(['a'])
+    })
+
+    it('should optionally include self', () => {
+      const visited: string[] = []
+      forEachAncestorFqn('a.b', ancestor => {
+        visited.push(ancestor)
+      }, { includeSelf: true })
+      expect(visited).toEqual(['a.b', 'a'])
+    })
+
+    it('should stop when visitor returns false', () => {
+      const visited: string[] = []
+      // Use explicit type param: parentFqn returns string slices at runtime,
+      // not the literal type Id, so widening to string avoids a false type error.
+      forEachAncestorFqn<string>('a.b.c.d', ancestor => {
+        visited.push(ancestor)
+        return ancestor !== 'a.b'
+      })
+      expect(visited).toEqual(['a.b.c', 'a.b'])
     })
   })
 
