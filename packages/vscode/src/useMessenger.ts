@@ -127,8 +127,9 @@ export const useMessenger = createSingletonComposable(() => {
     messenger,
 
     broadcastModelUpdate: () => messenger.sendNotification(BroadcastModelUpdate, BROADCAST),
-    broadcastAiLayoutUpdate: (params: { viewId: ViewId; projectId: ProjectId; state: 'in-progress' | 'completed' }) =>
-      messenger.sendNotification(BroadcastAILayoutStateUpdate, BROADCAST, params),
+    broadcastAiLayoutUpdate: (
+      params: { viewId: ViewId; projectId: ProjectId; state: 'in-progress' | 'completed' | 'failed' },
+    ) => messenger.sendNotification(BroadcastAILayoutStateUpdate, BROADCAST, params),
 
     ...protocol,
 

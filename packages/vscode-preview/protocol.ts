@@ -33,7 +33,7 @@ export const BroadcastProjectsUpdate: NotificationType<never> = {
 export const BroadcastAILayoutStateUpdate: NotificationType<{
   viewId: ViewId
   projectId: ProjectId
-  state: 'in-progress' | 'completed'
+  state: 'in-progress' | 'completed' | 'failed'
 }> = {
   method: 'ai-layout-update',
 }

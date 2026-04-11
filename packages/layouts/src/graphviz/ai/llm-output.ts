@@ -1,12 +1,12 @@
-import { type ComputedView, type EdgeId, type NonEmptyArray, exact, nonNullable } from '@likec4/core'
+import { type ComputedView, type EdgeId, type NonEmptyArray, exact } from '@likec4/core'
 import type { NodeId } from '@likec4/core/types'
 import {
   entries,
   filter,
   hasAtLeast,
+  isDefined,
   isTruthy,
   map,
-  mapKeys,
   pipe,
   unique,
 } from 'remeda'
@@ -118,21 +118,32 @@ function restoreIdsAndMapToHints(
   },
 ): AILayoutHints {
   const { mapping } = params
-  const nodeId = (id: string & z.$brand<'NodeId'>): NodeId =>
-    nonNullable(mapping.nodes[id]?.id, `Unknown node ID ${id} in LLM output`)
-  const mapToNodeId = (ids: (string & z.$brand<'NodeId'>)[]) => ids.map(nodeId)
+  const nodeId = (id: string & z.$brand<'NodeId'>): NodeId | undefined => {
+    const mapped = mapping.nodes[id]?.id
+    if (!mapped) {
+      logger.warn`Unknown node ID ${id} in LLM output, skipping`
+    }
+    return mapped
+  }
+  const mapToNodeId = (ids: (string & z.$brand<'NodeId'>)[]) => pipe(ids, map(nodeId), filter(isDefined))
 
-  const edgeId = (id: string & z.$brand<'EdgeId'>): EdgeId =>
-    nonNullable(mapping.edges[id]?.id, `Unknown edge ID ${id} in LLM output`)
+  const edgeId = (id: string & z.$brand<'EdgeId'>): EdgeId | undefined => {
+    const mapped = mapping.edges[id]?.id
+    if (!mapped) {
+      logger.warn`Unknown edge ID ${id} in LLM output, skipping`
+    }
+    return mapped
+  }
 
-  const mapToNonEmpty = <A, O>(ids: A[], fn: (id: A) => O): NonEmptyArray<O> | undefined => {
-    const result = map(ids, fn)
+  const mapToNonEmpty = <A, O>(ids: A[], fn: (id: A) => O | undefined): NonEmptyArray<O> | undefined => {
+    const result = ids.map(fn).filter(isDefined)
     return hasAtLeast(result, 1) ? result : undefined
   }
 
   const excludeFromRanking = pipe(
     parsed.excludeFromRanking,
     map(edgeId),
+    filter(isDefined),
     unique(),
     x => hasAtLeast(x, 1) ? x : undefined,
   )
@@ -140,6 +151,7 @@ function restoreIdsAndMapToHints(
   const reverseRank = pipe(
     parsed.reverseRank,
     map(edgeId),
+    filter(isDefined),
     unique(),
     x => hasAtLeast(x, 1) ? x : undefined,
   )
@@ -159,15 +171,21 @@ function restoreIdsAndMapToHints(
     filter(isTruthy),
   )
 
-  const invisibleEdges = mapToNonEmpty(
+  const invisibleEdges = pipe(
     parsed.invisibleEdges,
-    ({ source, target, minlen = 1, weight = 1 }): AIEnforcementEdge =>
-      exact({
+    map(({ source, target, minlen = 1, weight = 1 }): AIEnforcementEdge | undefined => {
+      const s = nodeId(source)
+      const t = nodeId(target)
+      if (!s || !t) return undefined
+      return exact({
         weight: weight !== 1 ? weight : undefined,
         minlen: minlen !== 1 ? minlen : undefined,
-        source: nodeId(source),
-        target: nodeId(target),
-      }),
+        source: s,
+        target: t,
+      })
+    }),
+    filter(isDefined),
+    x => hasAtLeast(x, 1) ? x : undefined,
   )
 
   let reasoning = parsed.reasoning
@@ -181,11 +199,22 @@ function restoreIdsAndMapToHints(
     })
   }
 
+  const safeMapEdgeKeys = (record: Record<string, number>) => {
+    const result: Record<string, number> = {}
+    for (const [key, value] of entries(record)) {
+      const mapped = edgeId(key as string & z.$brand<'EdgeId'>)
+      if (mapped) {
+        result[mapped] = value
+      }
+    }
+    return result
+  }
+
   return exact({
     direction: parsed.direction,
     ranks,
-    edgeWeight: mapKeys(parsed.edgeWeight, edgeId),
-    edgeMinlen: mapKeys(parsed.edgeMinlen, edgeId),
+    edgeWeight: safeMapEdgeKeys(parsed.edgeWeight),
+    edgeMinlen: safeMapEdgeKeys(parsed.edgeMinlen),
     excludeFromRanking,
     reverseRank,
     edgeOrder: mapToNonEmpty(parsed.edgeOrder, edgeId),

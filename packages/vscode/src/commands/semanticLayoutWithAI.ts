@@ -39,6 +39,7 @@ export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, previe
       state: 'in-progress',
     })
 
+    let completed = false
     await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
@@ -124,6 +125,7 @@ export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, previe
             return
           }
 
+          completed = true
           vscode.window.showInformationMessage('AI-enhanced layout applied!', { modal: false })
 
           if (saved.location) {
@@ -145,7 +147,7 @@ export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, previe
     messenger.broadcastAiLayoutUpdate({
       viewId,
       projectId,
-      state: 'completed',
+      state: completed ? 'completed' : 'failed',
     })
   })
 }
