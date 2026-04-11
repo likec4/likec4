@@ -59,8 +59,8 @@ function truncate(str: string, maxLen: number = 100): string {
 export interface LLMInput {
   serialized: SerializedView
   mapping: {
-    nodes: Record<string & z.$brand<'NodeId'>, ComputedNode>
-    edges: Record<string & z.$brand<'EdgeId'>, ComputedEdge>
+    nodes: Readonly<Record<string & z.$brand<'NodeId'>, ComputedNode>>
+    edges: Readonly<Record<string & z.$brand<'EdgeId'>, ComputedEdge>>
   }
 }
 

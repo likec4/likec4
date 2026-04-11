@@ -20,8 +20,8 @@ import {
 } from 'vscode-languageclient/node'
 import { config } from '../config'
 import { globPattern, isVirtual } from '../const'
-import { useExtensionLogger } from '../useExtensionLogger'
-import { isLikeC4Source } from '../utils'
+import { useExtensionLogger } from '../useExtensionLogger.ts'
+import { isLikeC4Source } from '../utils.ts'
 
 const useLanguageClient = createSingletonComposable(() => {
   const { output } = useExtensionLogger()

@@ -1,6 +1,7 @@
 import { type ComputedView, type EdgeId, type NonEmptyArray, exact, nonNullable } from '@likec4/core'
 import type { NodeId } from '@likec4/core/types'
 import {
+  entries,
   filter,
   hasAtLeast,
   isTruthy,
@@ -12,7 +13,7 @@ import {
 import * as z from 'zod/v4'
 import type { prepareLLMInput } from './llm-input'
 import { logger } from './logger'
-import type { AIEnforcementEdge, AiLayoutHints } from './types'
+import type { AIEnforcementEdge, AILayoutHints } from './types'
 
 const direction = z.enum(['TB', 'BT', 'LR', 'RL'])
 
@@ -89,11 +90,10 @@ export function parseOutput(
     view: ComputedView
     mapping: ReturnType<typeof prepareLLMInput>['mapping']
   },
-): AiLayoutHints | undefined {
+): AILayoutHints | undefined {
   try {
     const jsonStr = extractJson(response)
     const parsed = JSON.parse(jsonStr)
-    logger.trace`Parsed LLM response: ${parsed}`
     const result = responseSchema.safeParse(parsed)
     if (!result.success) {
       logger.warn('Failed to validate LLM response\n' + z.prettifyError(result.error))
@@ -116,7 +116,7 @@ function restoreIdsAndMapToHints(
     view: ComputedView
     mapping: ReturnType<typeof prepareLLMInput>['mapping']
   },
-): AiLayoutHints {
+): AILayoutHints {
   const { mapping } = params
   const nodeId = (id: string & z.$brand<'NodeId'>): NodeId =>
     nonNullable(mapping.nodes[id]?.id, `Unknown node ID ${id} in LLM output`)
@@ -170,6 +170,17 @@ function restoreIdsAndMapToHints(
       }),
   )
 
+  let reasoning = parsed.reasoning
+  if (reasoning) {
+    reasoning = reasoning.replaceAll('][', '] [') // Add space between adjacent markdown links if LLM concatenated them without space
+    entries(params.mapping.nodes).forEach(([id, nd]) => {
+      reasoning = reasoning.replaceAll(new RegExp(`\\[${id}\\]`, 'g'), '`' + nd.id + '`')
+    })
+    entries(params.mapping.edges).forEach(([id, e]) => {
+      reasoning = reasoning.replaceAll(new RegExp(`\\[${id}\\]`, 'g'), '`' + e.source + ' -> ' + e.target + '`')
+    })
+  }
+
   return exact({
     direction: parsed.direction,
     ranks,
@@ -180,6 +191,6 @@ function restoreIdsAndMapToHints(
     edgeOrder: mapToNonEmpty(parsed.edgeOrder, edgeId),
     nodeOrder: mapToNonEmpty(parsed.nodeOrder, nodeId),
     invisibleEdges,
-    reasoning: parsed.reasoning,
+    reasoning,
   })
 }

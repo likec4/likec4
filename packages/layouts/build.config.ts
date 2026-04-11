@@ -6,6 +6,7 @@ export default defineBuildConfig({
     {
       type: 'bundle',
       input: [
+        'src/graphviz/ai/index.ts',
         'src/graphviz/binary/index.ts',
         'src/sequence/index.ts',
         'src/index.ts',

@@ -3,7 +3,7 @@ import { prepareLLMInput } from './llm-input'
 import { parseOutput } from './llm-output'
 import { logger } from './logger'
 import { LAYOUT_SYSTEM_PROMPT } from './prompt-system.generated'
-import type { AiLayoutHints, AILayoutProvider } from './types'
+import type { AILayoutHints, AILayoutProvider } from './types'
 
 const prompts = {
   systemPrompt: LAYOUT_SYSTEM_PROMPT,
@@ -16,31 +16,23 @@ const prompts = {
  *
  * Returns undefined (never throws) on any failure — layout falls back to plain Graphviz.
  */
-export async function enhanceLayoutWithAI(
+export async function enhanceLayoutWithAI<CancelToken>(
   view: ComputedView,
-  provider: AILayoutProvider,
-  signal?: AbortSignal,
-): Promise<AiLayoutHints | undefined> {
-  const label = `------ai-layout-${view.id}-------`
-  console.time(label)
-  try {
-    logger.debug`generating AI layout hints for ${view.id} using ${provider.name}`
+  provider: AILayoutProvider<CancelToken>,
+  signal: CancelToken,
+): Promise<AILayoutHints | undefined> {
+  logger.debug`generating AI layout hints for ${view.id} using ${provider.name}`
 
-    const { serialized, mapping } = prepareLLMInput(view)
+  const { serialized, mapping } = prepareLLMInput(view)
 
-    const rawResponse = await provider.sendRequest(
-      {
-        ...prompts,
-        diagram: JSON.stringify(serialized),
-      },
-      signal,
-    )
-    console.timeEnd(label)
-
-    return parseOutput(rawResponse, { mapping, view })
-  } catch (error) {
-    console.timeEnd(label)
-    logger.warn`failed to generate AI layout hints: ${error}`
-    return undefined
-  }
+  const rawResponse = await provider.sendRequest(
+    {
+      ...prompts,
+      view,
+      mapping,
+      diagram: JSON.stringify(serialized),
+    },
+    signal,
+  )
+  return parseOutput(rawResponse, { mapping, view })
 }

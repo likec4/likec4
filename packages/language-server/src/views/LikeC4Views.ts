@@ -7,11 +7,18 @@ import type {
   ProjectId,
   ViewId,
 } from '@likec4/core'
-import { _layout, applyCachedLayout, applyManualLayout, calcDriftsFromSnapshot, DefaultMap } from '@likec4/core'
+import {
+  _layout,
+  applyCachedLayout,
+  applyManualLayout,
+  calcDriftsFromSnapshot,
+  DefaultMap,
+  invariant,
+} from '@likec4/core'
 import { type AdhocViewPredicate, computeAdhocView } from '@likec4/core/compute-view'
 import type { LikeC4Model } from '@likec4/core/model'
 import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
-import type { LayoutHints } from '@likec4/layouts/ai'
+import type { AILayoutHints } from '@likec4/layouts/ai'
 import { type Logger, loggable } from '@likec4/log'
 import { type WorkspaceCache, interruptAndCheck } from 'langium'
 import { isTruthy, values } from 'remeda'
@@ -46,7 +53,7 @@ export type LayoutViewParams = {
   projectId?: ProjectId | undefined
   cancelToken?: CancellationToken | undefined
   /** Optional AI-generated layout hints */
-  layoutHints?: LayoutHints | undefined
+  layoutHints?: AILayoutHints | undefined
 }
 export interface LikeC4Views {
   readonly layouter: GraphvizLayouter
@@ -67,9 +74,11 @@ export interface LikeC4Views {
   ): Promise<GraphvizOut[]>
   /**
    * Layouts a view.
-   * If layoutType is 'manual' - applies manual layout if any.
-   * If layoutType is 'auto' - returns latest version with drifts from manual layout if any
+   * If `layoutType` is 'manual' - applies manual layout if any.
+   * If `layoutType` is 'auto' - returns latest version with drifts from manual layout if any
    * If not specified - returns latest layout as is
+   *
+   * If `layoutHints` are provided, they will be used, ignoring any manual snapshots, and the resulting layout will not be cached (i.e. it will be computed on every call)
    *
    * If view not found in model, but there is a snapshot - it will be returned (with empty DOT)
    */
@@ -205,6 +214,20 @@ export class DefaultLikeC4Views implements LikeC4Views {
     const view = model.findView(viewId)?.$view
     projectId = model.project.id
     const logger = viewsLogger.getChild(projectId)
+
+    if (layoutHints) {
+      invariant(view, `View ${viewId} not found in model`) // if layoutHints are provided, the view must exist
+      logger.debug`using provided AI layout hints for view ${viewId}`
+      const { dot, diagram } = await this.layouter.aiLayout(
+        {
+          view,
+          styles: model.$styles,
+        },
+        layoutHints,
+      )
+      return { dot, diagram }
+    }
+
     if (!view) {
       logger.warn`layoutView ${viewId} not found`
       const snapshot = model.findManualLayout(viewId)

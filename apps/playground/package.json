@@ -121,7 +121,6 @@
     "vite": "catalog:vite",
     "vite-plugin-node-polyfills": "catalog:vite",
     "vite-tsconfig-paths": "catalog:vite",
-    "vscode": "npm:@codingame/monaco-vscode-extension-api@16.1.1",
     "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageclient": "catalog:vscode",
     "vscode-languageserver": "catalog:vscode",

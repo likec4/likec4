@@ -17,31 +17,31 @@ const shared = {
     'esbuild': import.meta.resolve('esbuild-wasm'),
   },
   minify: isProduction,
-
   outputOptions: {
     keepNames: true,
   },
   inlineOnly: false as const,
   external: ['vscode'],
+  noExternal: [/@likec4/],
 }
 
 export default defineConfig([
   {
+    ...shared,
     outDir: 'dist/node',
     entry: 'src/node/extension.ts',
     format: 'cjs',
     nodeProtocol: true,
-    cjsDefault: true,
     sourcemap: isDev,
     inputOptions: {
       resolve: {
-        conditionNames: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],
+        conditionNames: ['sources', 'node', 'import', 'default'],
       },
     },
-    ...shared,
     hooks: {
       async 'build:done'() {
         await copySchema()
+        await copySkills()
         await copyPreview()
       },
     },
@@ -57,7 +57,7 @@ export default defineConfig([
     sourcemap: isDev,
     inputOptions: {
       resolve: {
-        conditionNames: [isDev ? 'development' : 'production', 'sources', 'node', 'import', 'default'],
+        conditionNames: ['sources', 'node', 'import', 'default'],
       },
     },
     ...shared,
@@ -66,9 +66,6 @@ export default defineConfig([
     outDir: 'dist/browser',
     entry: 'src/browser/extension.ts',
     format: 'cjs',
-    noExternal: [
-      /@likec4/,
-    ],
     inputOptions: {
       platform: 'browser',
       resolve: {
@@ -84,9 +81,6 @@ export default defineConfig([
     outDir: 'dist/browser',
     entry: 'src/browser/language-server-worker.ts',
     format: 'iife',
-    noExternal: [
-      /@likec4/,
-    ],
     inputOptions: {
       resolve: {
         conditionNames: ['worker', 'browser', 'import'],
@@ -113,6 +107,12 @@ function emptyDir(dir: string) {
   for (const file of readdirSync(dir)) {
     rmSync(resolve(dir, file), { recursive: true, force: true })
   }
+}
+
+async function copySkills() {
+  const skillDir = resolve('../../skills/likec4-dsl')
+  console.info('Copy SKILLs: %s', skillDir)
+  await cp(skillDir, './data/skills/likec4-dsl', { recursive: true })
 }
 
 async function copyPreview(): Promise<void> {

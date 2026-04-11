@@ -37,7 +37,7 @@ Edge (JSON object) fields:
 - label?: string | undefined
 </input>
 
-# Rules
+<rules>
 
 1. Diagram is a directed hierarchical graph, not acyclic
 2. Edge exists ONLY between nodes, can be internal if both source and target are within same hierarchy
@@ -48,39 +48,38 @@ Edge (JSON object) fields:
    - `minlen=2` adds extra space between nodes, pushing target node further away from source
    - `minlen=0` does not enforce rank separation, but order nodes (i.e source node on the left for vertical layouts)
    - keep `minlen` in range 0..4
-6. You can reverse rank separation of edge by adding its ID to the `reverseRank` array; Use it to break cycles in graph or fine-tune node ranks
-7. You can exclude edge from rank calculations by adding its ID to the `excludeFromRanking` arra; edge still visible but does not contribute to node ranks and distances between them (`constraint=false` in graphviz)
-8. You can fine-tune ranks by adding invisible edges:
-   - Invisible edge used in rank calculations but not drawn
-   - invisible edges can be used to organize nodes in rows and columns:
-     - order nodes in rank with `minlen=0` 
-     - enforce rank separation with `minlen=1` or more
+6. You can reverse rank separation of edge by adding its ID to the `reverseRank` array; It does not change the semantics, but gives more control over rank and layout. Especially useful to break cycles in graph
+7. You can exclude edge from rank calculations by adding its ID to the `excludeFromRanking` arra; Edge still visible but does not contribute to node ranks (`constraint=false` in graphviz)
+8. You can fine-tune node ranks and order by adding invisible edges:
+   - invisible edges used in rank calculations as regular edges, but not drawn
    - to add invisible edge, use the `invisibleEdges` array (add an object with `source` and `target` node IDs, and optional `minlen` and `weight`)
-   - you can add edges if only there is no same edge defined, i.e if `A -> B` edge exists, you can add edge `B -> A`, but not `A -> B` again
-9. Edge acts like "spring" that pulls connected nodes together; force is proportional to `weight`; higher weight -> shorter and straighter line from source to target;
+   - you can add edges if only there is no same edge defined, i.e if `A -> B` edge exists you can add edge `B -> A`, but not `A -> B` again
+   - invisible edges especially useful to layout orphan nodes (without edges) or to pull together nodes that are semantically connected but not directly
+9. Edge acts like "spring" that pulls connected nodes together; force is proportional to `weight`; higher weight -> shorter and straighter line;
    - by default, all edges have `weight=1` - usually sufficient for balanced layout
-   - weights or all edges connected to the node determine its position
-   - keep `weight` in range 1..10, to emphasize edge set weight to 5..10
+   - weights of all connected to the node edges determine node position
+   - keep `weight` in range 1..10, to emphasize edge use range 5..10
 10. You can constrain node ranks by using the `ranks` array:
-    - `rank="source"` constraint to place node(s) at the beginning (top/left) within compound (or entire diagram for root node)
-    - `rank="sink"` constraint to place node(s) at the end (bottom/right) within compound (or entire diagram for root node)
-    - `rank="same"` constraint nodes to have same rank
+    - `rank="source"` constraint to put node(s) at the beginning (top/left) within compound (or entire diagram if at root level)
+    - `rank="sink"` constraint to put node(s) at the end (bottom/right) within compound (or entire diagram if at root level)
+    - `rank="same"` constrain nodes to have same rank
     - Node cannot have multiple rank constraints, if you encounter this, pick the most important (usually `rank="same"` produce better)
     - Rank constraint takes precedence over edge-based rank calculations
+    - If you constrain nodes to the same rank, exclude existing edges between them from ranking
 11. Vertical layout directions (TB,BT) are good for general flows (like interactions, processes, etc.), horizontal layout (LR,RL) for pipelines, request processing
     - Keep input layout direction, unless it contradicts the semantics
 12. Node size is 300x200px, rank separation is 150px, spacing on same rank is 150px, nodes/compounds do not overlap
+</rules>
 
-# Worflow:
+<workflow>
 
-1. Analyze semantics and compounds hierarchy, determine main flows and identify which nodes are most likely to be sources and which are sinks
-2. Align nodes in main flows with the layout direction, while auxiliary flows can be aligned differently 
-3. Decide on rank constraints if needed
-4. Decide on edges: adjust `minlen`, reverse or exclude from ranking, add invisible edges to enforce layout
-5. Estimate node positions, size of compounds; Use these estimations to minimize edge crossings
-6. Adjust `weight` to emphasize main flows and create a balanced layout
-7. Output nodes in semantic order
-8. Output existing edges in semantic order 
+1. Analyze semantics and compounds hierarchy, determine which nodes are most likely to be sources and which are sinks, which flows should be aligned in layout direction, and which are auxiliary; Identify potential cycles in graph 
+2. Decide on rank constraints if needed
+3. Decide on edges: adjust ranks with `minlen`, reverse or exclude from ranking, add invisible edges to enforce layout
+4. Estimate node positions, size of compounds; Use these estimates for further edge adjustments, to minimize crossings and create balanced layout;
+5. If needed, adjust edges `weight` to pull together semantically connected nodes and create straighter lines for main flows
+6. Output nodes in semantic order
+7. Output existing edges in semantic order
 </workflow>
 
 <output>

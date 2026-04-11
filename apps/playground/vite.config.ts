@@ -15,6 +15,7 @@ const alias = {
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
   'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
   '@likec4/styles/': resolve('./styled-system/'),
+  'vscode': import.meta.resolve(`@codingame/monaco-vscode-editor-api`),
   // '@likec4/core/compute-view/relationships': path.resolve(
   //   __dirname,
   //   '../../packages/core/src/compute-view/relationships-view/index.ts',

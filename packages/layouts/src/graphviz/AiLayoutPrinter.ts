@@ -11,18 +11,18 @@ import {
 import { entries, first, isEmptyish, isNonNullish, isNumber, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
-import type { AiLayoutHints } from './ai/types'
+import type { AILayoutHints } from './ai/types'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import { pxToInch } from './utils'
 
 export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedView<A>> {
-  protected readonly aiHints: AiLayoutHints
+  protected readonly aiHints: AILayoutHints
 
   constructor(
     view: ComputedView<A>,
     styles: LikeC4Styles,
-    aiHints: AiLayoutHints,
+    aiHints: AILayoutHints,
   ) {
     super(view, styles)
     this.aiHints = aiHints

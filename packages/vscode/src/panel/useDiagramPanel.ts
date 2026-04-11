@@ -5,6 +5,7 @@ import {
   computed,
   createSingletonComposable,
   effectScope,
+  executeCommand,
   readonly,
   ref,
   tryOnScopeDispose,
@@ -13,10 +14,11 @@ import {
   watch,
 } from 'reactive-vscode'
 import { isNullish } from 'remeda'
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 import { type WebviewPanel, ViewColumn, window } from 'vscode'
 import type { WebviewIdMessageParticipant } from 'vscode-messenger-common'
 import * as z from 'zod/v4'
+import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
 import { useMessenger } from '../useMessenger'
 import { useRpc } from '../useRpc'
@@ -180,6 +182,11 @@ export const useDiagramPanel = createSingletonComposable(() => {
     m.onWebviewUpdateMyTitle((params) => {
       logger.debug`webview requested updateMyTitle ${params.title}`
       state.title.value = params.title
+    })
+
+    m.onWebviewEnhanceWithAI(() => {
+      logger.debug`webview requested semanticLayoutWithAi`
+      executeCommand(commands.semanticLayoutWithAi)
     })
 
     useViewTitle(panel, panelTitle)

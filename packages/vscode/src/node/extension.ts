@@ -4,6 +4,7 @@ import {
 } from 'reactive-vscode'
 import { activateExtension } from '../activate.ts'
 import { useConfigureLogger } from '../useExtensionLogger.ts'
+import { useLikeC4ChatParticipant } from './useLikeC4ChatParticipant.ts'
 import { useMcpRegistration } from './useMcpRegistration.ts'
 
 export const { activate, deactivate } = defineExtension(() => {
@@ -12,6 +13,7 @@ export const { activate, deactivate } = defineExtension(() => {
   try {
     activateExtension('node')
     useMcpRegistration()
+    useLikeC4ChatParticipant()
   } catch (e) {
     output.error(loggable(e))
   }

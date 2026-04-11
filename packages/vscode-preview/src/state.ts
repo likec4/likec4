@@ -9,7 +9,7 @@ import type {
 import type { LikeC4EditorCallbacks } from '@likec4/diagram'
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
-import { atom, batched, onSet } from 'nanostores'
+import { atom, batched, onMount, onSet } from 'nanostores'
 import { useCallback, useEffect, useRef } from 'react'
 import { queries, queryClient } from './queries'
 import { ExtensionApi, getVscodeState, saveVscodeState } from './vscode'
@@ -96,6 +96,15 @@ const $lastClickedNode = atom<DiagramNode | null>(null)
 export const setLastClickedNode = (node?: DiagramNode) => {
   $lastClickedNode.set(node ?? null)
 }
+
+const $showSpinner = atom(false)
+export function useShowSpinner() {
+  return useStore($showSpinner)
+}
+
+ExtensionApi.onAiLayoutUpdateNotification((params) => {
+  $showSpinner.set(params.state === 'in-progress')
+})
 
 ExtensionApi.onOpenViewNotification((next) => {
   if (next.screen === 'projects') {
