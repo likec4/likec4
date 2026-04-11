@@ -75,4 +75,21 @@ test.describe('Overview page', () => {
     // Should navigate to the view page
     await expect(page).toHaveURL(/\/view\/index\//)
   })
+
+  test('search overlay closes after navigating to a view (#2353)', async ({ page }) => {
+    // Open search
+    await page.getByRole('button', { name: /Search/ }).click()
+    await expect(page.getByRole('textbox', { name: /Search by title/ })).toBeVisible()
+
+    // Navigate to a view via the search panel
+    await page.getByRole('button', { name: /Landscape/ }).click()
+    await expect(page).toHaveURL(/\/view\/index\//)
+
+    // The search dialog must be fully gone — no ghost overlay trapping focus
+    await expect(page.locator('dialog[open]')).toHaveCount(0)
+    await expect(page.locator('[data-likec4-search]')).toHaveCount(0)
+
+    // The diagram view should be interactive (not blocked by overlay)
+    await expect(page.locator('.react-flow__pane')).toBeVisible()
+  })
 })
