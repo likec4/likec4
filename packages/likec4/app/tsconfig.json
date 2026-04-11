@@ -17,10 +17,11 @@
     "rootDir": ".",
     "types": [
       "vite/client",
-      "@likec4/vite-plugin/modules",
+      "@likec4/vite-plugin/modules"
     ]
   },
   "include": [
+    "global.d.ts",
     "src",
     "react"
   ],
