@@ -293,8 +293,8 @@ catalogs:
       specifier: ^4.1.0
       version: 4.1.0
     defu:
-      specifier: ^6.1.6
-      version: 6.1.6
+      specifier: ^6.1.7
+      version: 6.1.7
     esm-env:
       specifier: ^1.2.2
       version: 1.2.2
@@ -899,7 +899,7 @@ importers:
         version: 0.2.2
       defu:
         specifier: catalog:utils
-        version: 6.1.6
+        version: 6.1.7
       indent-string:
         specifier: catalog:utils
         version: 5.0.0
@@ -979,7 +979,7 @@ importers:
         version: 22.19.15
       defu:
         specifier: catalog:utils
-        version: 6.1.6
+        version: 6.1.7
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
@@ -1067,7 +1067,7 @@ importers:
         version: 3.2.0(patch_hash=d987322bee5bda6851d8538d840c5155f1e299d91bd40b2a8eb0f3e4c0c62d1c)
       defu:
         specifier: catalog:utils
-        version: 6.1.6
+        version: 6.1.7
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.4)
@@ -1205,7 +1205,7 @@ importers:
         version: 3.2.0
       defu:
         specifier: catalog:utils
-        version: 6.1.6
+        version: 6.1.7
       fast-equals:
         specifier: catalog:utils
         version: 6.0.0
@@ -1417,7 +1417,7 @@ importers:
         version: 5.0.0
       defu:
         specifier: catalog:utils
-        version: 6.1.6
+        version: 6.1.7
       fast-equals:
         specifier: catalog:utils
         version: 6.0.0
@@ -1577,7 +1577,7 @@ importers:
         version: link:../log
       defu:
         specifier: catalog:utils
-        version: 6.1.6
+        version: 6.1.7
       langium:
         specifier: catalog:langium
         version: 3.5.0
@@ -1907,8 +1907,8 @@ importers:
         specifier: ^15.1.0
         version: 15.1.0
       defu:
-        specifier: ^6.1.6
-        version: 6.1.6
+        specifier: ^6.1.7
+        version: 6.1.7
       esbuild-node-externals:
         specifier: catalog:esbuild
         version: 1.20.1(esbuild@0.27.4)
@@ -2177,7 +2177,7 @@ importers:
         version: 0.2.2
       defu:
         specifier: catalog:utils
-        version: 6.1.6
+        version: 6.1.7
       hono:
         specifier: catalog:hono
         version: 4.12.12
@@ -2321,7 +2321,7 @@ importers:
         version: 4.0.0
       defu:
         specifier: catalog:utils
-        version: 6.1.6
+        version: 6.1.7
       fast-equals:
         specifier: catalog:utils
         version: 6.0.0
@@ -6242,8 +6242,8 @@ packages:
     resolution: {integrity: sha512-8QmQKqEASLd5nx0U1B1okLElbUuuttJ/AnYmRXbbbGDWh6uS208EjD4Xqq/I9wK7u0v6O08XhTWnt5XtEbR6Dg==}
     engines: {node: '>= 0.4'}
 
-  defu@6.1.6:
-    resolution: {integrity: sha512-f8mefEW4WIVg4LckePx3mALjQSPQgFlg9U8yaPdlsbdYcHQyj9n2zL2LJEA52smeYxOvmd/nB7TpMtHGMTHcug==}
+  defu@6.1.7:
+    resolution: {integrity: sha512-7z22QmUWiQ/2d0KkdYmANbRUVABpZ9SNYyH5vx6PZ+nE5bcC0l7uFvEfHlyld/HcGBFTL536ClDt3DEcSlEJAQ==}
 
   depd@2.0.0:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
@@ -13846,7 +13846,7 @@ snapshots:
   c12@4.0.0-beta.3(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1):
     dependencies:
       confbox: 0.2.4
-      defu: 6.1.6
+      defu: 6.1.7
       exsolve: 1.0.8
       pathe: 2.0.3
       pkg-types: 2.3.0
@@ -14205,7 +14205,7 @@ snapshots:
       has-property-descriptors: 1.0.2
       object-keys: 1.1.1
 
-  defu@6.1.6: {}
+  defu@6.1.7: {}
 
   depd@2.0.0: {}
 
@@ -14729,7 +14729,7 @@ snapshots:
     dependencies:
       citty: 0.1.6
       consola: 3.4.2
-      defu: 6.1.6
+      defu: 6.1.7
       node-fetch-native: 1.6.7
       nypm: 0.6.5
       pathe: 2.0.3
@@ -14799,7 +14799,7 @@ snapshots:
     dependencies:
       cookie-es: 1.2.3
       crossws: 0.3.5
-      defu: 6.1.6
+      defu: 6.1.7
       destr: 2.0.5
       iron-webcrypto: 1.2.1
       node-mock-http: 1.0.4
@@ -16242,7 +16242,7 @@ snapshots:
     dependencies:
       c12: 4.0.0-beta.3(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)
       consola: 3.4.2
-      defu: 6.1.6
+      defu: 6.1.7
       exsolve: 1.0.8
       magic-string: 0.30.21
       pathe: 2.0.3
@@ -16678,7 +16678,7 @@ snapshots:
 
   rc9@3.0.0:
     dependencies:
-      defu: 6.1.6
+      defu: 6.1.7
       destr: 2.0.5
 
   react-dom@19.2.4(react@19.2.4):
@@ -17651,7 +17651,7 @@ snapshots:
     dependencies:
       ansis: 4.2.0
       cac: 6.7.14
-      defu: 6.1.6
+      defu: 6.1.7
       empathic: 2.0.0
       hookable: 6.0.1
       import-without-cache: 0.2.5
