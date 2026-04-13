@@ -54,6 +54,9 @@ export const ExtensionApi = {
   locate: (params: WebviewLocateReq) => {
     messenger.sendNotification(WebviewMsgs.Locate, HOST_EXTENSION, params)
   },
+  openExternalUrl: (url: string) => {
+    messenger.sendNotification(WebviewMsgs.OpenExternalUrl, HOST_EXTENSION, { url })
+  },
   updateTitle: (title: string) => {
     messenger.sendNotification(WebviewMsgs.UpdateMyTitle, HOST_EXTENSION, { title })
   },

@@ -8,7 +8,11 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
   "bin": {
-    "likec4-mcp-server": "dist/index.mjs"
+    "likec4-mcp-server": "dist/cli.mjs"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -24,7 +28,11 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    }
   },
   "keywords": [
     "likec4",
@@ -36,24 +44,13 @@
     "typecheck": "tsc -b --verbose",
     "build": "obuild",
     "preinspector": "obuild",
-    "inspector": "wireit",
+    "inspector": "DANGEROUSLY_OMIT_AUTH=1 LIKEC4_WORKSPACE=../../examples pnpx @modelcontextprotocol/inspector node dist/cli.mjs",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
-    "clean": "likec4ops clean"
-  },
-  "wireit": {
-    "inspector": {
-      "command": "pnpx @modelcontextprotocol/inspector node dist/index.mjs",
-      "env": {
-        "DANGEROUSLY_OMIT_AUTH": "true",
-        "LIKEC4_WORKSPACE": "../../examples"
-      },
-      "service": {
-        "readyWhen": {
-          "lineMatches": "MCP Inspector is up"
-        }
-      }
-    }
+    "clean": "likec4ops clean",
+    "test": "vitest run --no-isolate",
+    "vitest:ui": "vitest --no-isolate --ui",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:externals",
@@ -62,6 +59,8 @@
     "std-env": "catalog:externals"
   },
   "devDependencies": {
+    "@hono/mcp": "catalog:hono",
+    "@hono/node-server": "catalog:hono",
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
@@ -70,9 +69,13 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@vitest/ui": "catalog:vitest",
+    "hono": "catalog:hono",
+    "langium": "catalog:langium",
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@types/node": "catalog:",
     "tinyrainbow": "catalog:utils",
+    "defu": "catalog:utils",
     "citty": "catalog:utils",
     "obuild": "catalog:obuild",
     "remeda": "catalog:utils",
@@ -81,7 +84,6 @@
     "typescript": "catalog:",
     "vitest": "catalog:vitest",
     "vscode-uri": "catalog:vscode",
-    "wireit": "catalog:",
     "zod": "catalog:externals"
   }
 }

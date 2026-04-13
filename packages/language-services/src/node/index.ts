@@ -1,10 +1,9 @@
-import { memoizeProp } from '@likec4/core'
 import { rootLogger } from '@likec4/log'
 import defu from 'defu'
-import { basename, resolve } from 'pathe'
+import { URI } from 'langium'
+import { basename, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { withTrailingSlash } from 'ufo'
-import { pathToFileURL } from 'url'
 import { createFromSources } from '../common/createFromSources'
 import { handleInitOptions } from '../common/handleInitOptions'
 import { type LikeC4Langium, LikeC4 } from '../common/LikeC4'
@@ -30,7 +29,7 @@ export { LikeC4 } from '../common/LikeC4'
 export async function fromWorkspace(path: string, options?: FromWorkspaceOptions): Promise<LikeC4> {
   const workspacePath = resolve(path)
   // Normalize folder URI with trailing slash so LSP/workspace consumers resolve paths consistently (CI vs local)
-  const folderUri = pathToFileURL(workspacePath).toString()
+  const folderUri = URI.file(workspacePath).toString()
   const workspaceUri = withTrailingSlash(folderUri)
 
   const logger = rootLogger.getChild('lang')
@@ -42,7 +41,6 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
       useFileSystem: true,
       manualLayouts: true,
       watch: false,
-      mcp: false,
     } satisfies CreateLanguageServiceOptions,
   )
   configureLogger(opts)
@@ -59,7 +57,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
   WorkspaceManager.initialize({
     capabilities: {},
     processId: null,
-    rootUri: null,
+    rootUri: workspace.uri,
     workspaceFolders: [workspace],
   })
   await WorkspaceManager.initializeWorkspace([
@@ -117,7 +115,6 @@ export async function fromSources(sources: Record<string, string>, options?: Ini
         useFileSystem: false,
         watch: false,
         manualLayouts: false,
-        mcp: false,
       } satisfies CreateLanguageServiceOptions,
     ),
   )
