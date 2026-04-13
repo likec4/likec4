@@ -73,7 +73,7 @@ catalogs:
     zod: ^4.3.6
   hono:
     "@hono/mcp": ^0.2.5
-    "@hono/node-server": ^1.19.12
+    "@hono/node-server": ^1.19.13
     "@hono/oauth-providers": ^0.8.5
     "@hono/zod-validator": ^0.7.6
     hono: ^4.12.10
