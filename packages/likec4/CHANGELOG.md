@@ -1,5 +1,23 @@
 # likec4
 
+## 1.55.0
+
+### Minor Changes
+
+- [#2874](https://github.com/likec4/likec4/pull/2874) [`54e8435`](https://github.com/likec4/likec4/commit/54e8435a0f9e888f72fe2fcbe1dfe1f72c155dd6) Thanks [@ckeller42](https://github.com/ckeller42)! - Add `--theme` option to `likec4 build` command to set the default color scheme (light/dark) for the generated static website
+
+### Patch Changes
+
+- [#2828](https://github.com/likec4/likec4/pull/2828) [`75fa6d2`](https://github.com/likec4/likec4/commit/75fa6d2b066b42970892bfc8fac407618af160e3) Thanks [@sraphaz](https://github.com/sraphaz)! - - MCP README: clarify MCP vs LeanIX bridge and Draw.io `--profile leanix`.
+
+  - LikeC4 DSL Agent Skill: LeanIX + Draw.io reference (`bridge-leanix-drawio.md`), CLI reference (`cli.md`), and `SKILL.md` alignment.
+  - AGENTS.md: pointers for agent-facing docs and the LeanIX bridge workflow.
+
+- [#2877](https://github.com/likec4/likec4/pull/2877) [`51adb85`](https://github.com/likec4/likec4/commit/51adb85ad1097cdd4c95f9082533c8b33b124a42) Thanks [@davydkov](https://github.com/davydkov)! - Extract MCP server and tools to `@likec4/mcp` package. This will allow us to reuse MCP server and tools in other projects, and also will make the codebase cleaner and more modular.
+
+- Updated dependencies [[`6b87578`](https://github.com/likec4/likec4/commit/6b87578486c821fdc1060d69867a10f3c7e6ca9b), [`f684e2f`](https://github.com/likec4/likec4/commit/f684e2fb59745fe62ac2b43c68f1e453ab884cc8), [`347b48f`](https://github.com/likec4/likec4/commit/347b48f7bb67e0a480e231d57c4feeca09b32383), [`9834ebb`](https://github.com/likec4/likec4/commit/9834ebbfa32bdcb40710aac9038839e9da70031e), [`c0048b6`](https://github.com/likec4/likec4/commit/c0048b6ca156508c893e072dfbf9d75bbe4dd8ad)]:
+  - @likec4/core@1.55.0
+
 ## 1.54.0
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @likec4/vscode-preview
 
+## 1.55.0
+
+### Patch Changes
+
+- [#2880](https://github.com/likec4/likec4/pull/2880) [`dd6de6e`](https://github.com/likec4/likec4/commit/dd6de6e8d3b302dd94c6f23b67d9026bca4f16ee) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix external links in VSCode preview opening blank page instead of browser ([#2422](https://github.com/likec4/likec4/issues/2422))
+
 ## 1.54.0
 
 ## 1.53.0
