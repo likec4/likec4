@@ -7,7 +7,7 @@ import { useStore } from '@nanostores/react'
 import { createBirpc } from 'birpc'
 import type { Atom, WritableAtom } from 'nanostores'
 import { computed } from 'nanostores'
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { isDeepEqual, mapValues } from 'remeda'
 import type { LikeC4VitePluginRpc } from './rpc/protocol'
 
@@ -72,9 +72,10 @@ export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: Writabl
     $atom.set(next as LayoutedLikeC4ModelData)
   }
 
+  // Return views with manual layouts applied via $layouted (#2553).
   const $likec4views: Atom<ReadonlyArray<DiagramView>> = computed(
-    $atom,
-    (model) => Object.values(model.views),
+    $likec4model,
+    (model) => [...model.views()].map(v => v.$layouted),
   )
 
   function useLikeC4Model(): LikeC4Model.Layouted {
@@ -86,13 +87,11 @@ export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: Writabl
   }
 
   function useLikeC4View(viewId: string): DiagramView | null {
-    const [view, setView] = useState($atom.value?.views[viewId] ?? null)
-    useEffect(() => {
-      return $atom.subscribe((next) => {
-        setView(next.views[viewId] ?? null)
-      })
-    }, [viewId])
-    return view
+    const $view = useMemo(
+      () => computed($likec4model, (model) => model.findView(viewId)?.$layouted ?? null),
+      [viewId],
+    )
+    return useStore($view)
   }
 
   return {
