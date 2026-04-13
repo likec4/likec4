@@ -7,10 +7,9 @@ import type {
 } from '@modelcontextprotocol/sdk/types.js'
 import type { z, ZodRawShape, ZodTypeAny } from 'zod/v3'
 
-import { loggable } from '@likec4/log'
+import type { LikeC4LanguageServices } from '@likec4/language-server'
+import { loggable, logger as mainLogger } from '@likec4/log'
 import type { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js'
-import type { LikeC4LanguageServices } from '../LikeC4LanguageServices'
-import { logger as mainLogger } from '../logger'
 
 export const logger = mainLogger.getChild('mcp')
 

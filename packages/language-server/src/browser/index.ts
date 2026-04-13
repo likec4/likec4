@@ -11,7 +11,6 @@ export {
   NoFileSystem,
   NoFileSystemWatcher,
   NoLikeC4ManualLayouts,
-  NoMCPServer,
 } from '../common-exports'
 
 /**

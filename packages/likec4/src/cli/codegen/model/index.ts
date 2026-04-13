@@ -1,5 +1,5 @@
 import { generateLikeC4Model } from '@likec4/generators'
-import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { existsSync } from 'node:fs'
 import { mkdir, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'

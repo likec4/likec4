@@ -35,8 +35,6 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider,
 } from './lsp'
-import { NoMCPServer } from './mcp/noop'
-import type { LikeC4MCPServer, LikeC4MCPServerFactory, LikeC4MCPServerModuleContext } from './mcp/types'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
@@ -70,7 +68,6 @@ import {
 } from './workspace'
 
 export { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/noop'
-export { NoMCPServer } from './mcp/noop'
 export { WithGraphviz, WithWasmGraphviz } from './views'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -133,10 +130,6 @@ export interface LikeC4AddedServices {
     DocumentValidator: LikeC4DocumentValidator
   }
   Rpc: Rpc
-  mcp: {
-    Server: LikeC4MCPServer
-    ServerFactory: LikeC4MCPServerFactory
-  }
   likec4: {
     LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
@@ -175,9 +168,7 @@ export interface LikeC4AddedServices {
 
 export type LikeC4Services = LangiumServices & LikeC4AddedServices
 
-export type LikeC4ServicesContext =
-  & LikeC4MCPServerModuleContext
-  & LikeC4ViewsModuleContext
+export type LikeC4ServicesContext = LikeC4ViewsModuleContext
 
 function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
   return (services: LikeC4Services) => new Type(services)
@@ -199,10 +190,6 @@ export function createLikeC4Module(
       DocumentValidator: bind(LikeC4DocumentValidator),
     },
     Rpc: bind(Rpc),
-    mcp: {
-      Server: (services: LikeC4Services) => context.mcpServer(services),
-      ServerFactory: (services: LikeC4Services) => context.mcpServerFactory(services),
-    },
     likec4: {
       LanguageServices: bind(DefaultLikeC4LanguageServices),
       Graphviz: (services: LikeC4Services) => context.graphviz(services),
@@ -255,7 +242,6 @@ export type LanguageServicesContext = LikeC4SharedModuleContext & LikeC4Services
  * const { shared, likec4 } = createLanguageServices({
  *   ...WithFileSystem(enableWatcher = true),
  *   ...WithLikeC4ManualLayouts(),
- *   ...NoMcpServer(),
  * });
  * ```
  *
@@ -295,7 +281,6 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
     createDefaultModule({ shared }),
     LikeC4GeneratedModule,
     createLikeC4Module({
-      ...NoMCPServer,
       ...NoFileSystem,
       ...NoLikeC4ManualLayouts,
       ...WithWasmGraphviz,
@@ -328,7 +313,6 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
  */
 export function createSharedServices(context: Partial<LanguageServicesContext> = {}): LikeC4SharedServices {
   const moduleContext = {
-    ...NoMCPServer,
     ...NoFileSystem,
     ...NoLikeC4ManualLayouts,
     ...context,

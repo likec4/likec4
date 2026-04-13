@@ -6,11 +6,10 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { ProjectId } from '@likec4/core'
+import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { MCPServerFactory } from '../mcp/server/MCPServerFactory'
-import { readDeployment } from '../mcp/tools/read-deployment'
-import { readElement } from '../mcp/tools/read-element'
-import { createTestServices } from '../test'
+import { readDeployment } from './read-deployment'
+import { readElement } from './read-element'
 
 describe('MCP server integration - tools expose links', () => {
   it('read-element returns links when called via tool handler by name', async () => {
@@ -29,13 +28,6 @@ describe('MCP server integration - tools expose links', () => {
     `)
 
     await buildLikeC4Model()
-
-    // Spin up MCP server (in-memory) to ensure registration works
-    const mcpFactory = new MCPServerFactory({
-      likec4: { LanguageServices: services.likec4.LanguageServices } as any,
-      shared: { lsp: {} } as any,
-    } as any)
-    const _server = mcpFactory.create()
 
     // Get the tool by name via the registration tuple
     const [name, _cfg, handler] = readElement(services.likec4.LanguageServices)
@@ -69,12 +61,6 @@ describe('MCP server integration - tools expose links', () => {
     `)
 
     await buildLikeC4Model()
-
-    const mcpFactory = new MCPServerFactory({
-      likec4: { LanguageServices: services.likec4.LanguageServices } as any,
-      shared: { lsp: {} } as any,
-    } as any)
-    const _server = mcpFactory.create()
 
     const [name, _cfg, handler] = readDeployment(services.likec4.LanguageServices)
     expect(name).toBe('read-deployment')

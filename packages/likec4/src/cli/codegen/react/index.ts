@@ -1,6 +1,6 @@
 import { viteReactConfig } from '#vite/config-react'
 import { generateReactTypes } from '@likec4/generators'
-import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { existsSync } from 'node:fs'
 import { stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'

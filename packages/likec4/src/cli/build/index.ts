@@ -1,3 +1,4 @@
+
 // SPDX-License-Identifier: MIT
 //
 // Copyright (c) 2023-2026 Denis Davydkov
@@ -5,7 +6,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'

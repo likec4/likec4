@@ -98,6 +98,3 @@ You can support us via [OpenCollective](https://opencollective.com/likec4) or [G
 ## License
 
 This project is released under the [MIT License](LICENSE)
-
-```
-```

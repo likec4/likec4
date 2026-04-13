@@ -9,7 +9,7 @@ import {
   isRelationModel,
 } from '@likec4/core/model'
 import type { Locate } from '@likec4/language-server/protocol'
-import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { fromWorkspace } from '@likec4/language-services/node'
 import type { Logger } from '@likec4/log'
 import { UriUtils } from 'langium'
 import { existsSync } from 'node:fs'

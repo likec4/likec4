@@ -1,5 +1,5 @@
 import type { ComputedLikeC4ModelData, LayoutedLikeC4ModelData } from '@likec4/core'
-import { fromWorkspace } from '@likec4/language-services/node/without-mcp'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import { hasAtLeast } from 'remeda'

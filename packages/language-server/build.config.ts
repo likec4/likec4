@@ -8,7 +8,6 @@ export default defineBuildConfig({
         './src/filesystem/index.ts',
         './src/browser/index.ts',
         './src/browser/worker.ts',
-        './src/mcp/index.ts',
         './src/icons.ts',
         './src/module.ts',
         './src/protocol.ts',
