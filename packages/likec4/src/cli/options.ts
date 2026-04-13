@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { DEV } from 'esm-env'
 import isInsideContainer from 'is-inside-container'
 import { resolve } from 'node:path'
@@ -57,6 +64,12 @@ export const title = {
   string: true,
   desc: 'base title of the app pages (default is "LikeC4")',
   default: 'LikeC4',
+  nargs: 1,
+} as const satisfies Options
+
+export const theme = {
+  choices: ['light', 'dark'] as const,
+  desc: 'default color scheme for the built website (default: auto, follows system preference)',
   nargs: 1,
 } as const satisfies Options
 

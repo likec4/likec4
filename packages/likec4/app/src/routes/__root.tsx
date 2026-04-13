@@ -56,10 +56,13 @@ function RootComponent() {
   // writing to localStorage. This preserves the user's manual preference
   // while allowing embeds to override the appearance via URL.
   const forceColorScheme = resolveForceColorScheme(theme)
+  // When ?theme=auto is explicitly set, restore system preference even if
+  // the build default is light or dark.
+  const defaultColorScheme = theme === 'auto' ? 'auto' : __DEFAULT_THEME__
   return (
     <MantineProvider
       theme={mantineTheme}
-      defaultColorScheme="auto"
+      defaultColorScheme={defaultColorScheme}
       {...(forceColorScheme && { forceColorScheme })}
     >
       <Outlet />
