@@ -1,5 +1,7 @@
 # @likec4/lsp
 
+## 1.55.0
+
 ## 1.54.0
 
 ### Minor Changes
