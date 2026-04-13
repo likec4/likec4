@@ -129,7 +129,7 @@ catalogs:
     citty: ^0.2.2
     consola: ^3.4.2
     date-fns: ^4.1.0
-    defu: ^6.1.6
+    defu: ^6.1.7
     esm-env: ^1.2.2
     fast-equals: ^6.0.0
     immer: ^11.1.4

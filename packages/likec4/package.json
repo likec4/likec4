@@ -207,7 +207,7 @@
     "boxen": "^8.0.1",
     "clsx": "catalog:react",
     "conf": "^15.1.0",
-    "defu": "^6.1.6",
+    "defu": "^6.1.7",
     "esbuild-node-externals": "catalog:esbuild",
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
