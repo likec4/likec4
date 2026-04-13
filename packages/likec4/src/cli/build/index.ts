@@ -1,3 +1,11 @@
+
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { fromWorkspace } from '@likec4/language-services/node'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
@@ -9,6 +17,7 @@ import {
   base,
   outputSingleFile,
   path,
+  theme,
   title,
   useDotBin,
   useHashHistory,
@@ -38,9 +47,14 @@ const buildCmd = (yargs: yargs.Argv) => {
           .option('webcomponent-prefix', webcomponentPrefix)
           .option('title', title)
           .option('output-single-file', outputSingleFile)
+          .option('theme', theme)
           .example(
             `${k.green('$0 build -o ./build ./src')}`,
             k.gray('Search for likec4 files in \'src\' and output static site to \'build\''),
+          )
+          .example(
+            `${k.green('$0 build --theme dark -o ./build ./src')}`,
+            k.gray('Build with dark color scheme as default'),
           ),
       handler: async (args) => {
         const params = {
@@ -68,6 +82,7 @@ const buildCmd = (yargs: yargs.Argv) => {
           customLogger: logger,
           webcomponentPrefix: params.webcomponentPrefix,
           title: args.title,
+          theme: args.theme,
           languageServices,
           likec4AssetsDir,
           outputDir,
