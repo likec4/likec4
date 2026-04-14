@@ -71,7 +71,7 @@ export async function exportViewsToPNG(
     chromiumSandbox?: boolean
     sequence?: boolean
     format?: 'png' | 'jpeg'
-    quality?: number
+    quality?: number | undefined
   },
 ) {
   logger.info(`${k.dim('output')} ${output}`)

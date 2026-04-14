@@ -19,7 +19,7 @@ type TakeScreenshotParams = {
   outputType: 'relative' | 'flat'
   theme: 'light' | 'dark'
   format?: 'png' | 'jpeg'
-  quality?: number
+  quality?: number | undefined
 }
 
 /**
