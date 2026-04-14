@@ -1007,7 +1007,8 @@ Id returns string:
   DynamicViewDisplayVariantValue |
   IconPositionValue |
   RankValue |
-  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  // Allow reserved keywords as Id
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship';
 
 fragment EqOperator:
   (
