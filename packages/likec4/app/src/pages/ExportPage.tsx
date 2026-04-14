@@ -63,6 +63,7 @@ async function downloadAsJpeg({
       backgroundColor,
       quality,
       cacheBust: true,
+      // 1x1 transparent GIF used as fallback when remote images fail to load
       imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
     })
     await triggerDownload(dataUrl, `${filename}.jpg`)
@@ -84,20 +85,18 @@ export function ExportPage() {
     return <div>Loading...</div>
   }
 
-  return <GuardedExportPage diagram={diagram} />
+  return <GuardedExportPage diagram={diagram} isJpeg={isJpeg} />
 }
 
-function GuardedExportPage({ diagram }: { diagram: LayoutedView }) {
+function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg: boolean }) {
   const {
     padding = 20,
     download = false,
-    format = 'png',
     quality,
     dynamic,
   } = useSearch({
     strict: false,
   })
-  const isJpeg = format === 'jpeg'
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
 

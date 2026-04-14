@@ -11,8 +11,10 @@ import { type PngExportArgs, runExportPng } from '../png/handler'
 /** CLI entry: create logger and delegate to runExportPng with format=jpeg. */
 export async function jpgHandler(args: PngExportArgs): Promise<void> {
   const logger = createLikeC4Logger('c4:export')
-  await runExportPng(args, logger)
+  await runExportPng({ ...args, format: 'jpeg' }, logger)
 }
+
+const DEFAULT_JPEG_QUALITY = 80
 
 /** Registers the `export jpg` subcommand with yargs. */
 export function jpgCmd(yargs: Argv) {
@@ -36,7 +38,7 @@ export function jpgCmd(yargs: Argv) {
             alias: 'q',
             type: 'number',
             desc: 'JPEG quality (1-100)',
-            default: 80,
+            default: DEFAULT_JPEG_QUALITY,
             nargs: 1,
           },
           'theme': {
