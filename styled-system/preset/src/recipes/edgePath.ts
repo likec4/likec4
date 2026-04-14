@@ -44,7 +44,10 @@ export const edgePath = defineSlotRecipe({
       pointerEvents: 'none',
       fill: 'none',
       strokeWidth: 'calc(var(--xy-edge-stroke-width) + 2)',
-      strokeOpacity: 0.08,
+      strokeOpacity: {
+        base: 0.08,
+        _dark: 0.25,
+      },
       _noReduceGraphics: {
         transitionProperty: 'stroke-width, stroke-opacity',
         transitionDuration: 'fast',
@@ -53,13 +56,22 @@ export const edgePath = defineSlotRecipe({
       _whenHovered: {
         transitionTimingFunction: 'out',
         strokeWidth: 'calc(var(--xy-edge-stroke-width) + 4)',
-        strokeOpacity: 0.2,
+        strokeOpacity: {
+          base: 0.2,
+          _dark: 0.45,
+        },
       },
       _whenSelected: {
         strokeWidth: 'calc(var(--xy-edge-stroke-width) + 6)',
-        strokeOpacity: 0.25,
+        strokeOpacity: {
+          base: 0.25,
+          _dark: 0.5,
+        },
         _whenHovered: {
-          strokeOpacity: 0.4,
+          strokeOpacity: {
+            base: 0.4,
+            _dark: 0.65,
+          },
         },
       },
     },
