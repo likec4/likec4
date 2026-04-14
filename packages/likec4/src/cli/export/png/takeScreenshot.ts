@@ -18,6 +18,8 @@ type TakeScreenshotParams = {
   dynamicVariant?: DynamicViewDisplayVariant
   outputType: 'relative' | 'flat'
   theme: 'light' | 'dark'
+  format?: 'png' | 'jpeg'
+  quality?: number
 }
 
 /**
@@ -35,6 +37,8 @@ export async function takeScreenshot({
   dynamicVariant,
   outputType,
   theme,
+  format = 'png',
+  quality,
 }: TakeScreenshotParams) {
   const padding = 20
 
@@ -75,7 +79,8 @@ export async function takeScreenshot({
           relativePath = '.'
         }
       }
-      const path = resolve(output, relativePath, `${view.id}.png`)
+      const fileExt = format === 'jpeg' ? '.jpg' : '.png'
+      const path = resolve(output, relativePath, `${view.id}${fileExt}`)
 
       page ??= await browserContext.newPage()
 
@@ -94,6 +99,7 @@ export async function takeScreenshot({
         padding,
         theme,
         dynamic: dynamicVariant,
+        ...(format === 'jpeg' ? { format: 'jpeg' } : {}),
       }))
 
       logger.info(k.cyan(url) + k.dim(` -> ${relative(output, path)}`))
@@ -108,7 +114,10 @@ export async function takeScreenshot({
       await page.getByTestId('export-page').screenshot({
         animations: 'disabled',
         path,
-        omitBackground: true,
+        type: format === 'jpeg' ? 'jpeg' : 'png',
+        ...(format === 'jpeg'
+          ? { quality: quality ?? 80, omitBackground: false }
+          : { omitBackground: true }),
       })
 
       succeed.push({ view, path })

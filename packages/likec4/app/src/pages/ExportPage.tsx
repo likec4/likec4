@@ -3,9 +3,24 @@ import { LikeC4Diagram, pickViewBounds } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
-import { toBlob } from 'html-to-image'
+import { toBlob, toJpeg } from 'html-to-image'
 import { useRef } from 'react'
 import { useCurrentView, useTransparentBackground } from '../hooks'
+
+function triggerDownload(url: string, filename: string) {
+  const link = document.createElement('a')
+  link.setAttribute('download', filename)
+  link.href = url
+  document.body.appendChild(link)
+  link.click()
+  return new Promise<void>(resolve =>
+    setTimeout(() => {
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      resolve()
+    }, 1000)
+  )
+}
 
 async function downloadAsPng({
   pngFilename,
@@ -24,26 +39,8 @@ async function downloadAsPng({
       throw new Error('Failed to create PNG blob')
     }
 
-    // Create a temporary URL for the file
-    var url = URL.createObjectURL(blob)
-
-    // Create a new link element with the download attribute set to the desired filename
-    var link = document.createElement('a')
-    link.setAttribute('download', `${pngFilename}.png`)
-
-    // Set the link's href attribute to the temporary URL
-    link.href = url
-
-    // Simulate a click on the link to trigger the download
-    document.body.appendChild(link)
-    link.click()
-
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // Clean up the temporary URL and link element
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-
+    const url = URL.createObjectURL(blob)
+    await triggerDownload(url, `${pngFilename}.png`)
     window.close()
   } catch (err) {
     console.error(err)
@@ -51,10 +48,37 @@ async function downloadAsPng({
   }
 }
 
+async function downloadAsJpeg({
+  filename,
+  viewport,
+  quality = 0.8,
+}: {
+  filename: string
+  viewport: HTMLElement
+  quality?: number
+}) {
+  try {
+    const backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--mantine-color-body')
+    const dataUrl = await toJpeg(viewport, {
+      backgroundColor,
+      quality,
+      cacheBust: true,
+      imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
+    })
+    await triggerDownload(dataUrl, `${filename}.jpg`)
+    window.close()
+  } catch (err) {
+    console.error(err)
+    window.alert(`Failed to export to JPEG, check the console for more details.`)
+  }
+}
+
 export function ExportPage() {
   const [diagram] = useCurrentView()
+  const { format } = useSearch({ strict: false })
+  const isJpeg = format === 'jpeg'
 
-  useTransparentBackground()
+  useTransparentBackground(!isJpeg)
 
   if (!diagram) {
     return <div>Loading...</div>
@@ -67,10 +91,13 @@ function GuardedExportPage({ diagram }: { diagram: LayoutedView }) {
   const {
     padding = 20,
     download = false,
+    format = 'png',
+    quality,
     dynamic,
   } = useSearch({
     strict: false,
   })
+  const isJpeg = format === 'jpeg'
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
 
@@ -89,10 +116,18 @@ function GuardedExportPage({ diagram }: { diagram: LayoutedView }) {
       loadingOverlay.style.display = 'none'
     }
     downloadedRef.current = true
-    void downloadAsPng({
-      pngFilename: diagram.id,
-      viewport,
-    })
+    if (isJpeg) {
+      void downloadAsJpeg({
+        filename: diagram.id,
+        viewport,
+        quality: quality ?? 0.8,
+      })
+    } else {
+      void downloadAsPng({
+        pngFilename: diagram.id,
+        viewport,
+      })
+    }
   }
 
   // @see https://github.com/likec4/likec4/issues/1857
@@ -110,7 +145,6 @@ function GuardedExportPage({ diagram }: { diagram: LayoutedView }) {
         left: '0',
         padding: '0',
         margin: '0',
-        background: 'transparent',
         overflow: 'hidden',
         zIndex: 2,
       }}
@@ -121,6 +155,7 @@ function GuardedExportPage({ diagram }: { diagram: LayoutedView }) {
         width: width,
         minHeight: height,
         height: height,
+        background: isJpeg ? 'var(--mantine-color-body)' : 'transparent',
       }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <LikeC4Diagram
@@ -132,7 +167,7 @@ function GuardedExportPage({ diagram }: { diagram: LayoutedView }) {
           left: '0px',
           right: '0px',
         }}
-        background={'transparent'}
+        background={isJpeg ? 'solid' : 'transparent'}
         reduceGraphics={false}
         dynamicViewVariant={dynamic}
         className={'likec4-static-view'}
