@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
 import type { Config } from '@pandacss/dev'
 import { keys, mapToObj } from 'remeda'
 import { __v, vars } from './const.ts'
@@ -59,6 +64,20 @@ export const globalCss: ExtendableGlobalCss = {
       },
       willChange: 'transform',
       zIndex: 'likec4.diagram.edge.label',
+    },
+    // Constrain edge label width in the relationship-details overlay,
+    // where edges lack labelBBox data. Text and technology lines are
+    // clamped to one line each via the rules below.
+    // In the main diagram, inline maxWidth from labelBBox (or the
+    // caller's style prop) overrides this CSS rule on the inner div.
+    ':where(.likec4-relationship-details) .likec4-edge-label-container > :first-child': {
+      maxWidth: '350px',
+    },
+    '.likec4-relationship-details :is(.likec4-edge-label__text, .likec4-edge-label__technology)': {
+      display: '-webkit-box!',
+      WebkitBoxOrient: 'vertical!',
+      WebkitLineClamp: '1!',
+      overflow: 'hidden!',
     },
 
     '.likec4-root': {

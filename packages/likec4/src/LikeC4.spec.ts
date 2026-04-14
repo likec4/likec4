@@ -326,6 +326,12 @@ describe('LikeC4', () => {
           ],
           "folder": "multi-relation-extend",
         },
+        "overflow-test": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "overflow-test",
+        },
         "projectA": {
           "documents": [
             "_spec.c4",
