@@ -1,0 +1,25 @@
+packages/likec4/scripts/check-bundle-size.ts
+  40cd702f822304d9 1-93
+packages/likec4/package.json
+  40cd702f822304d9 142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "e749bb91d30a82bafcf1fb438ce6068b1a7e049d",
+  "prompts": {
+    "40cd702f822304d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "845bff44-dfb3-4242-b9a9-5095dbd45520",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": null,
+      "messages": [],
+      "total_additions": 225,
+      "total_deletions": 337,
+      "accepted_lines": 688,
+      "overriden_lines": 0
+    }
+  }
+}
