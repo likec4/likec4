@@ -1,5 +1,7 @@
 # likec4-vscode
 
+## 1.55.2
+
 ## 1.55.1
 
 ### Patch Changes
