@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
 import { defineParts, defineRecipe } from '@pandacss/dev'
 
 const parts = defineParts({
@@ -57,6 +62,7 @@ export const edgeLabel = defineRecipe({
     },
     label: {
       whiteSpaceCollapse: 'preserve-breaks',
+      overflowWrap: 'anywhere',
       fontSize: '14px',
       lineHeight: '1.2',
       margin: '0',
@@ -64,6 +70,7 @@ export const edgeLabel = defineRecipe({
     technology: {
       textAlign: 'center',
       whiteSpaceCollapse: 'preserve-breaks',
+      overflowWrap: 'anywhere',
       fontSize: '11px',
       lineHeight: '1',
       opacity: 0.75,

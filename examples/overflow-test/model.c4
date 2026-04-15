@@ -1,0 +1,135 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Synthetic model to reproduce long-name overflow issues
+
+specification {
+  element system {
+    style {
+      opacity 10%
+    }
+  }
+  element service {
+    style {
+      opacity 50%
+    }
+  }
+  element component
+
+  tag sensor
+  tag perception
+  tag dataProcessing
+  tag plugin
+  tag graphlet
+}
+
+model {
+  system vehiclePlatform 'Vehicle Platform' {
+    description 'Central vehicle computing platform for autonomous driving'
+
+    service sensorProcessing 'SensorProcessingPipeline' {
+      description 'Handles raw sensor data acquisition, preprocessing and calibration'
+
+      component cameraFrameAcquisition 'CameraFrameAcquisitionController' {
+        #sensor #plugin #graphlet
+        description 'Acquires raw camera frames from ISP hardware via DMA ring buffer'
+      }
+
+      component rawFrameDecoder 'RawBayerFrameDecoderModule' {
+        #sensor #dataProcessing
+        description 'Decodes raw Bayer pattern frames into RGB'
+      }
+
+      component frameTimestampSync 'FrameTimestampSynchronizationModule' {
+        #sensor
+        description 'Synchronizes frame timestamps across multiple camera sensors'
+      }
+
+      component outputSelector 'outputSelectorIsp0.CameraOutputSelectorNode :CameraOutputSelectorDispatcherGraphlet :FisheyeRectificationPipelineStageController' {
+        #sensor #dataProcessing #plugin #graphlet
+        description 'Routes processed frames to downstream perception consumers based on ISP pipeline configuration'
+      }
+    }
+
+    service perceptionStack 'PerceptionProcessingStack' {
+      description 'Multi-modal perception fusion for object detection'
+
+      component objectDetector 'LidarCameraFusionObjectDetector' {
+        #perception
+        description 'Fuses lidar point clouds with camera images for 3D object detection'
+      }
+
+      component sceneClassifier 'DrivableSpaceGridClassifier' {
+        #perception
+        description 'Classifies road surface into drivable and non-drivable grid cells'
+      }
+
+      component trackingModule 'MultiObjectTrackingStateEstimator' {
+        #perception
+        description 'Maintains temporal object tracks using extended Kalman filtering'
+      }
+    }
+  }
+
+  cameraFrameAcquisition -> rawFrameDecoder 'RAW_FRAME -> TIMESTAMPED_FRAME :dwCameraFrameHandle_t' {
+    technology 'CGF Channel DMA Transfer'
+  }
+
+  rawFrameDecoder -> outputSelector 'CAMERA_FRAME -> CAMERA_FRAME :dwCameraFrameHandle_t' {
+    technology 'CGF Channel Zero-Copy Transfer'
+  }
+
+  frameTimestampSync -> outputSelector 'SYNCED_FRAME -> PROCESSED_FRAME :dwImageHandle_t' {
+    technology 'CGF Channel Synchronized Pipeline'
+  }
+
+  outputSelector -> objectDetector 'IMAGE_NATIVE_PROCESSED_CUDA_YUV420->EXTERNAL:PERCEPTION_CAMERA_SENSOR0_FISHEYE0_CUDA_PROCESSED_RECTIFIED:dwImageHandle_t' {
+    technology 'CGF Channel Multi-Consumer Broadcast Pipeline with Zero-Copy DMA Transfer and Temporal Synchronization'
+  }
+
+  outputSelector -> objectDetector 'CALIBRATION_INTRINSICS_EEPROM_FISHEYE0->CALIBRATION_OVERLAY_INTRINSICS_UNDISTORTED:dwCameraIntrinsicsHandle_t' {
+    technology 'Shared Memory IPC Zero-Copy Feedback Channel with Hardware-Accelerated Buffer Management'
+  }
+
+  outputSelector -> objectDetector 'TIMESTAMP_METADATA_PTP_SYNCED_CORRECTED->DETECTION_TIMESTAMP_SYNC_ALIGNED_EXTRAPOLATED:dwSensorTimestamp_t' {
+    technology 'CGF Channel Synchronized Metadata Pipeline with Temporal Alignment and Jitter Compensation'
+  }
+
+  objectDetector -> sceneClassifier 'FUSED_DETECTIONS->DRIVABLE_SPACE_OBSTACLE_OVERLAY:dwObjectArray_t' {
+    technology 'dwframework::dwBaseDrainerTemplate<dwObjectArray_t>::CGFNodeChannelPacketFingerprint_v2::FUSED_DETECTIONS_CUDA'
+  }
+
+  outputSelector -> sceneClassifier 'IMAGE_NATIVE_PROCESSED -> DRIVABLE_SPACE_INPUT :dwImageHandle_t' {
+    technology 'CGF Channel Filtered Pipeline'
+  }
+
+  outputSelector -> trackingModule 'IMAGE_NATIVE_PROCESSED -> TRACKING_IMAGE_INPUT :dwImageHandle_t' {
+    technology 'CGF Channel Temporal Buffer'
+  }
+
+  objectDetector -> trackingModule 'DETECTED_OBJECTS -> TRACKING_OBSERVATIONS :dwObjectArray_t' {
+    technology 'CGF Channel Low-Latency Pipeline'
+  }
+}
+
+views {
+  view index {
+    include *
+  }
+
+  view sensorPipeline of sensorProcessing {
+    description 'Sensor processing pipeline'
+    include
+      *,
+      outputSelector -> perceptionStack.*
+  }
+
+  view perceptionView of perceptionStack {
+    description 'Perception stack with incoming sensor data'
+    include
+      *,
+      sensorProcessing.* -> perceptionStack.*
+  }
+}

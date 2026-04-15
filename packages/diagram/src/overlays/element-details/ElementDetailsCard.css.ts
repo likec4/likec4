@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
 import { css } from '@likec4/styles/css'
 
 export const backdropBlur = '--_blur'
@@ -61,9 +66,11 @@ export const title = css({
   fontStyle: 'normal',
   fontWeight: 'bold',
   fontSize: '24px',
-  // lineHeight: 1.15,
   lineHeight: 'xs',
-  // color: vars.element.hiContrast
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  wordBreak: 'break-word',
+  lineClamp: 2,
 })
 
 const iconSize = '40px'

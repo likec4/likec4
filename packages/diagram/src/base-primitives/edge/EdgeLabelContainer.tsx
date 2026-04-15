@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
 import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { EdgeLabelRenderer } from '@xyflow/react'
@@ -47,7 +52,7 @@ export function EdgeLabelContainer({
   },
   labelPosition: labelXY,
   className,
-  style: _, // omit styles for container
+  style: contentStyle, // applied to inner content div, not the positioned container
   children,
   ...rest
 }: EdgeLabelContainerProps) {
@@ -89,11 +94,10 @@ export function EdgeLabelContainer({
         }}
       >
         <div
-          style={labelBBox ?
-            {
-              maxWidth: labelBBox.width + 20,
-            } :
-            undefined}>
+          style={{
+            ...contentStyle,
+            ...(labelBBox && { maxWidth: labelBBox.width + 20 }),
+          }}>
           {children}
         </div>
       </div>

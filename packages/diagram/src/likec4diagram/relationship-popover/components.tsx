@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
 import type { Color } from '@likec4/core/types'
 import { styled } from '@likec4/styles/jsx'
 import { txt } from '@likec4/styles/patterns'
@@ -11,6 +16,9 @@ export const Endpoint = ({ children, likec4color }: PropsWithChildren<{ likec4co
         size: 'xxs',
         fontWeight: 'medium',
         whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        maxWidth: '160px',
         paddingX: '1',
         paddingY: '0.5',
         rounded: 'xs',
@@ -34,5 +42,8 @@ export const RelationshipTitle = styled('div', {
     fontSize: 'sm',
     lineHeight: 'sm',
     userSelect: 'all',
+    overflowWrap: 'anywhere',
+    wordBreak: 'break-word',
+    minWidth: 0,
   },
 })

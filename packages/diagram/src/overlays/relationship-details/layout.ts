@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
 import {
   treeFromElements,
 } from '@likec4/core/compute-view'
@@ -51,7 +56,7 @@ const Sizes = {
   } satisfies GraphLabel,
   edgeLabel: {
     width: 220,
-    height: 14,
+    height: 55,
     // minlen: 1,
   } satisfies EdgeConfig,
 
@@ -69,37 +74,6 @@ const Sizes = {
   },
 }
 
-// /**
-//  * All constants related to the layout
-//  */
-// const Sizes = {
-//   dagre: {
-//     ranksep: 60,
-//     nodesep: 35,
-//     edgesep: 25,
-//   } satisfies GraphLabel,
-//   edgeLabel: {
-//     width: 120,
-//     height: 10,
-//     minlen: 1,
-//     weight: 1,
-//   } satisfies EdgeConfig,
-
-//   emptyNodeOffset: 120,
-
-//   nodeWidth: 330,
-//   nodeHeight: 180,
-
-//   // Spacer between elements in a compound node
-//   // 0 means no spacer
-//   spacerHeight: 0,
-
-//   compound: {
-//     labelHeight: 2,
-//     paddingTop: 50,
-//     paddingBottom: 32,
-//   },
-// }
 type NodeData = {
   column: RelationshipDetailsTypes.Column
   portId: string
