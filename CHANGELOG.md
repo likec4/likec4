@@ -1,3 +1,23 @@
+## [1.55.1](https://github.com/likec4/likec4/compare/v1.55.0...v1.55.1) (2026-04-15)
+
+### 🚀 Features
+
+- **JPG Export**:\
+  Add JPEG export support for architecture diagrams -- new "Export as .jpg" option in the web UI and `likec4 export jpg` CLI command with `--quality` option. JPEG renders with a solid background adapting to the current theme. [#2899](https://github.com/likec4/likec4/pull/2899), closes [#2892](https://github.com/likec4/likec4/issues/2892)
+
+### 🐞 Bug Fixes
+
+- Fixed text overflow in relationship popover and element details card when displaying long names, titles, and technology strings. Thanks [@ckeller42](https://github.com/ckeller42), [#2894](https://github.com/likec4/likec4/pull/2894)
+
+- Fixed search overlay persisting after navigating to a view via Ctrl+K search. Thanks [@ckeller42](https://github.com/ckeller42), [#2875](https://github.com/likec4/likec4/pull/2875)
+
+- Fixed programmatic config (`likec4.config.ts`) not being loaded in VSCode extension and standalone LSP. [#2896](https://github.com/likec4/likec4/pull/2896)
+
+- Allow using reserved keyword `relationship` as an identifier in LikeC4 DSL (e.g. as element kind). [#2897](https://github.com/likec4/likec4/pull/2897)
+
+- Improved edge visibility in dark mode by increasing background stroke opacity. Thanks [@ckeller42](https://github.com/ckeller42), [#2891](https://github.com/likec4/likec4/pull/2891)
+
+
 ## [1.55.0](https://github.com/likec4/likec4/compare/v1.54.0...v1.55.0) (2026-04-13)
 
 ### 🚀 Features
