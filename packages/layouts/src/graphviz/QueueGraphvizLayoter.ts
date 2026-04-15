@@ -146,7 +146,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
         logger.trace`waiting ${total} tasks to finish`
         await this.queue.onIdle()
       }
-      logger.debug`batch layout ✅`
+      logger.debug`batch layout done`
       this.isProcessingBatch = false
     }
     return results

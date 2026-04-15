@@ -346,14 +346,8 @@ class ProjectModelCache extends ContextCache<ProjectId | Project, CacheKey, unkn
 
     this.toDispose.push(services.shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Validated, (doc) => {
       const pm = services.shared.workspace.ProjectsManager
-      const project = pm.getProject(doc)
-      const projectCache = this.cacheForContext(project.id)
-      if (projectCache.size > 0) {
-        builderLogger.trace`clear project cache ${project.id} (on validated ${
-          UriUtils.relative(project.folderUri, doc.uri)
-        })`
-        projectCache.clear()
-      }
+      const projectId = pm.ownerProjectId(doc)
+      this.clear(projectId)
     }))
     this.toDispose.push(services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
       if (deleted.length > 0) { // react only on deleted documents
