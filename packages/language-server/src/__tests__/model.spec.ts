@@ -59,22 +59,21 @@ describe('model', () => {
       user2 = person
     }`
 
-  test('allow element with kind "element"').valid`
-    specification {
-      element element
-    }
-    model {
-      element el1
-      element el2
-    }`
-
   for (
     const constv of [
       ...ElementShapes,
       ...IconPositions,
+      // Reserved keywords
+      'element',
+      'model',
+      'group',
+      'node',
+      'deployment',
+      'instance',
+      'relationship',
     ]
   ) {
-    test(`allow element with name of constant "${constv}"`).valid`
+    test(`allow element kind "${constv}"`).valid`
       specification {
         element ${constv}
       }
@@ -84,13 +83,16 @@ describe('model', () => {
       }`
   }
 
-  test('allow element with kind "model"').valid`
+  test('allow element "relationship" and relationship kind "element"').valid`
     specification {
-      element model
+      element relationship
+      relationship element
     }
     model {
-      model el1
-      el2 = model
+      relationship el1
+      relationship el2 {
+        .element el1
+      }
     }`
 
   test('allow elements with names "aws"/"azure"/"tech"/"bootstrap"/"gcp"').valid`
