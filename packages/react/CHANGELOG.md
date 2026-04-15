@@ -1,5 +1,12 @@
 # @likec4/react
 
+## 1.55.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/core@1.55.1
+
 ## 1.55.0
 
 ### Patch Changes

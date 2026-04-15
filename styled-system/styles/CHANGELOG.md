@@ -1,5 +1,11 @@
 # @likec4/styles
 
+## 1.55.1
+
+### Patch Changes
+
+- [#2891](https://github.com/likec4/likec4/pull/2891) [`b5e33d1`](https://github.com/likec4/likec4/commit/b5e33d12c548e34f820e565182b0b057505c2f64) Thanks [@ckeller42](https://github.com/ckeller42)! - Improve edge visibility in dark mode by increasing background stroke opacity
+
 ## 1.55.0
 
 ## 1.54.0
