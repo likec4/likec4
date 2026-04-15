@@ -38,6 +38,10 @@ export type PngExportArgs = {
   chromiumSandbox?: boolean
   /** Use sequence layout for dynamic views. */
   sequence?: boolean | undefined
+  /** Image format: 'png' or 'jpeg'. Defaults to 'png'. */
+  format?: 'png' | 'jpeg'
+  /** JPEG quality (1-100). Only used when format is 'jpeg'. Defaults to 80. */
+  quality?: number
 }
 
 /** Launch headless Chromium, capture each view as PNG to output dir; returns list of succeeded view ids. */
@@ -53,6 +57,8 @@ export async function exportViewsToPNG(
     maxAttempts = 3,
     chromiumSandbox = false,
     sequence = false,
+    format = 'png',
+    quality,
   }: {
     logger: ViteLogger
     serverUrl: string
@@ -64,6 +70,8 @@ export async function exportViewsToPNG(
     maxAttempts?: number
     chromiumSandbox?: boolean
     sequence?: boolean
+    format?: 'png' | 'jpeg'
+    quality?: number | undefined
   },
 ) {
   logger.info(`${k.dim('output')} ${output}`)
@@ -97,6 +105,8 @@ export async function exportViewsToPNG(
       dynamicVariant: sequence ? 'sequence' : 'diagram',
       timeout: timeoutMs,
       theme,
+      format,
+      quality,
     })
   } finally {
     logger.info(k.cyan(`close chromium`))
@@ -121,6 +131,8 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     filter,
     sequence = false,
     chromiumSandbox = false,
+    format = 'png',
+    quality,
   } = args
 
   await using likec4 = await fromWorkspace(workspacePath, {
@@ -202,6 +214,8 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
         maxAttempts,
         sequence,
         chromiumSandbox,
+        format,
+        quality,
       })
       const { pretty } = inMillis(startTakeScreenshot)
 
