@@ -1,0 +1,41 @@
+packages/likec4/scripts/bundle-app.ts
+  40cd702f822304d9 95-100
+packages/generators/package.json
+  40cd702f822304d9 34-41
+packages/likec4/src/vite/config-app.prod.ts
+  40cd702f822304d9 140-147
+packages/generators/build.config.ts
+  40cd702f822304d9 8
+packages/vite-plugin/src/virtuals/drawio.ts
+  40cd702f822304d9 2
+packages/likec4/src/cli/export/drawio/handler.ts
+  40cd702f822304d9 4,9
+packages/likec4/src/drawio-test-utils.ts
+  40cd702f822304d9 5
+packages/generators/src/drawio/index.ts
+  40cd702f822304d9 1,12-14
+packages/likec4/src/drawio-tutorial-export-import.spec.ts
+  40cd702f822304d9 13
+packages/likec4/src/drawio-demo-export-import.spec.ts
+  40cd702f822304d9 17,51,53,55-56,58-71,73-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "e22e032d9c95c6b611d355164704998a45fb854b",
+  "prompts": {
+    "40cd702f822304d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "845bff44-dfb3-4242-b9a9-5095dbd45520",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Christoph Keller",
+      "messages": [],
+      "total_additions": 279,
+      "total_deletions": 1798,
+      "accepted_lines": 529,
+      "overriden_lines": 0
+    }
+  }
+}
