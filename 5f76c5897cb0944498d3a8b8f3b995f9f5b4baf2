@@ -1,0 +1,25 @@
+package.json
+  40cd702f822304d9 42
+turbo.json
+  40cd702f822304d9 24-45,65-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "5f76c5897cb0944498d3a8b8f3b995f9f5b4baf2",
+  "prompts": {
+    "40cd702f822304d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "845bff44-dfb3-4242-b9a9-5095dbd45520",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": null,
+      "messages": [],
+      "total_additions": 396,
+      "total_deletions": 2,
+      "accepted_lines": 394,
+      "overriden_lines": 0
+    }
+  }
+}
