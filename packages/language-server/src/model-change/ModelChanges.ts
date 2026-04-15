@@ -1,6 +1,8 @@
 import { type ProjectId, type ViewChange, invariant, nonexhaustive } from '@likec4/core'
 import { loggable, wrapError } from '@likec4/log'
+import { TextDocument } from 'langium'
 import { Range, TextEdit } from 'vscode-languageserver-types'
+import type { ParsedLikeC4LangiumDocument } from '../ast'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4ModelLocator, ViewLocateResult } from '../model'
 import type { LikeC4Services } from '../module'
@@ -17,10 +19,7 @@ export class LikeC4ModelChanges {
     this.locator = services.likec4.ModelLocator
   }
 
-  public async applyChange(
-    changeView: ChangeView.Params,
-  ): Promise<ChangeView.Res> {
-    const lspConnection = this.services.shared.lsp.Connection
+  public async applyChange(changeView: ChangeView.Params): Promise<ChangeView.Res> {
     const workspace = this.services.shared.workspace
 
     try {
@@ -56,8 +55,7 @@ export class LikeC4ModelChanges {
         }
       }
 
-      invariant(lspConnection, 'This change only supported in IDE (running as Extension)')
-
+      // Convert the view change to text edits
       const { edits, modifiedRange } = this.convertToTextEdit({
         lookup,
         change,
@@ -68,23 +66,15 @@ export class LikeC4ModelChanges {
           error: 'No changes to apply',
         }
       }
-      const applyResult = await lspConnection.workspace.applyEdit({
-        label: `LikeC4 - change view ${changeView.viewId}`,
-        edit: {
-          changes: {
-            [textDocument.uri]: edits,
-          },
-        },
-      })
-      if (!applyResult.applied) {
-        lspConnection.window.showErrorMessage(`Failed to apply changes ${applyResult.failureReason}`)
+
+      // Apply the text edits to the document
+      const applyResult = await this.applyTextEdits(lookup.doc, edits)
+      if (!applyResult) {
         return {
           success: false,
-          error: `Failed to apply changes ${applyResult.failureReason}`,
+          error: `Failed to apply changes`,
         }
       }
-
-      await workspace.DocumentBuilder.update([lookup.doc.uri], [])
 
       return {
         success: true,
@@ -136,5 +126,31 @@ export class LikeC4ModelChanges {
       default:
         nonexhaustive(change)
     }
+  }
+
+  protected async applyTextEdits(doc: ParsedLikeC4LangiumDocument, edits: TextEdit[]): Promise<boolean> {
+    const lsp = this.services.shared.lsp.Connection
+    const workspace = this.services.shared.workspace
+    if (!lsp) {
+      // fallback to direct text document edit if LSP connection is not available (e.g. wdhen running in MCP/CLI)
+      const updateTextDocument = TextDocument.applyEdits(doc.textDocument, edits)
+      await workspace.FileSystemProvider.writeFile(doc.uri, updateTextDocument)
+      return true
+    }
+    const applyResult = await lsp.workspace.applyEdit({
+      label: `LikeC4 - change view`,
+      edit: {
+        changes: {
+          [doc.textDocument.uri]: edits,
+        },
+      },
+    })
+    if (!applyResult.applied) {
+      logger.warn`Failed to apply text edits to document ${doc.textDocument.uri}: ${applyResult.failureReason}`
+      lsp.window.showErrorMessage(`Failed to apply changes: ${applyResult.failureReason}`)
+      return false
+    }
+    await workspace.DocumentBuilder.update([doc.uri], [])
+    return applyResult.applied
   }
 }
