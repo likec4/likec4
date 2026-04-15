@@ -31,6 +31,14 @@
         "default": "./dist/index.mjs"
       }
     },
+    "./drawio": {
+      "sources": "./src/drawio/index.ts",
+      "default": {
+        "types": "./dist/drawio/index.d.mts",
+        "import": "./dist/drawio/index.mjs",
+        "default": "./dist/drawio/index.mjs"
+      }
+    },
     "./likec4": {
       "sources": "./src/likec4/index.ts",
       "default": {

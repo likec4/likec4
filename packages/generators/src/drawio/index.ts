@@ -1,3 +1,4 @@
+export { DEFAULT_DRAWIO_ALL_FILENAME } from './constants'
 export {
   buildDrawioExportOptionsForViews,
   buildDrawioExportOptionsFromSource,
@@ -8,6 +9,9 @@ export {
   generateDrawioMulti,
   type GenerateDrawioOptions,
 } from './generate-drawio'
+export {
+  decompressDrawioDiagram,
+} from './parse-drawio'
 export {
   type DiagramInfo,
   type DrawioCell,

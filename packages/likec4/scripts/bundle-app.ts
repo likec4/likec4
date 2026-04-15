@@ -92,6 +92,12 @@ export async function bundleApp() {
             if (id.endsWith('.css')) {
               return undefined
             }
+            // Isolate drawio deps into a lazy-loaded chunk.
+            // Must check before the broad 'likec4'/'node_modules' matches.
+            // See: https://github.com/likec4/likec4/issues/2689
+            if (id.includes('drawio') || id.includes('pako')) {
+              return 'drawio'
+            }
             if (id.includes('@tabler') || id.includes('diagram/src') || id.includes('styled-system')) {
               return 'likec4'
             }
