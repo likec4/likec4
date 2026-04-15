@@ -17,6 +17,7 @@ import {
   Disposable,
   DocumentState,
   interruptAndCheck,
+  UriUtils,
 } from 'langium'
 import {
   entries,
@@ -134,10 +135,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         const project = this.projects.getProject(projectId)
         const docs = this.documents(projectId)
         if (docs.length === 0) {
-          logger.debug`unsafeSyncParseModelData: skipped due to no documents`
+          logger.trace`unsafeSyncParseModelData: ${'skipped due to no documents'}`
           return null
         }
-        logger.debug`unsafeSyncParseModelData: completed`
+        logger.debug`unsafeSyncParseModelData: ${'completed'}`
         return buildModelData(this.services, project, docs)
       } catch (err) {
         builderLogger.warn(`unsafeSyncParseModelData failed for project ${projectId}`, { err })
@@ -159,10 +160,11 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         return null
       }
       if (result.imports.size === 0) {
+        logger.trace(`unsafeSyncJoinedModelData: no imports`)
         return result.data
       }
 
-      logger.debug`processing imports of ${projectId}`
+      logger.debug(`unsafeSyncJoinedModelData: processing imports`)
       const imports = [...result.imports.associations()].reduce((acc, [projectId, fqns]) => {
         if (fqns.size === 0) {
           return acc
@@ -188,7 +190,6 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     cancelToken?: CancellationToken,
   ): Promise<LikeC4Model<UnknownParsed>> {
     projectId = this.projects.ensureProjectId(projectId)
-    const t0 = performanceMark()
     return await this.mutex.read(async () => {
       if (cancelToken?.isCancellationRequested) {
         await interruptAndCheck(cancelToken)
@@ -200,7 +201,6 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           logger.debug`parseModel: returning EMPTY`
           return LikeC4Model.EMPTY.asParsed
         }
-        logger.debug`parseModel in ${t0.pretty}`
         return LikeC4Model.create(parsedModel)
       })
     })
@@ -221,9 +221,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       const logger = builderLogger.getChild(projectId)
       const parsedModelData = this.unsafeSyncJoinedModelData(projectId)
       if (!parsedModelData) {
-        logger.debug`unsafeSyncComputeModel: returning EMPTY`
+        logger.warn`unsafeSyncComputeModel: returning EMPTY`
         return LikeC4Model.EMPTY.asComputed
       }
+      const t0 = performanceMark()
       const parsedModel = LikeC4Model.create(parsedModelData)
       const views = [] as c4.ComputedView[]
       for (const view of values(parsedModelData.views)) {
@@ -248,7 +249,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         [_stage]: 'computed',
         views: indexBy(views, prop('id')),
       }
-      logger.debug(`unsafeSyncComputeModel${manualLayouts ? ' with manual layouts' : ''}: completed`)
+      logger.debug(`unsafeSyncComputeModel${manualLayouts ? ' with manual layouts' : ''}: {status} in ${t0.pretty}`, {
+        status: 'completed',
+      })
       return this.lastSeen.rememberModel(
         LikeC4Model.create(data),
       )
@@ -261,7 +264,6 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   ): Promise<LikeC4Model<UnknownComputed>> {
     projectId = this.projects.ensureProjectId(projectId)
     const logger = builderLogger.getChild(projectId)
-    const t0 = performanceMark()
     return await this.mutex.read(async () => {
       if (cancelToken?.isCancellationRequested) {
         await interruptAndCheck(cancelToken)
@@ -270,9 +272,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       const manualLayouts = await this.manualLayouts.read(project)
       const result = this.unsafeSyncComputeModel(projectId, manualLayouts)
       if (result === LikeC4Model.EMPTY) {
-        logger.debug(`computeModel returned EMPTY`)
-      } else if (t0.ms > 10) {
-        logger.debug(`computeModel completed in ${t0.pretty}`)
+        logger.warn(`computeModel returned EMPTY`)
       }
       return result
     })
@@ -289,7 +289,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   }
 
   public clearCache(): void {
-    builderLogger.debug(`clearCache`)
+    builderLogger.debug(`clear all caches`)
     this.cache.clear()
   }
 
@@ -331,6 +331,7 @@ type CacheKey =
   | 'parsed-data'
   | 'parsed-joined-data'
   | 'parsed-model'
+  | `computed-model`
   | `computed-model-${string}`
   | `uri-${string}`
 
@@ -352,6 +353,10 @@ class ProjectModelCache extends ContextCache<ProjectId | Project, CacheKey, unkn
       if (deleted.length > 0) { // react only on deleted documents
         const pm = services.shared.workspace.ProjectsManager
         const projects = unique(map(deleted, pm.ownerProjectId.bind(pm)))
+        if (!hasAtLeast(projects, 1)) {
+          return
+        }
+        builderLogger.trace`clear project caches for: ${projects} (on delete ${deleted.map(d => d.fsPath)})`
         for (const project of projects) {
           this.clear(project)
         }
@@ -360,15 +365,42 @@ class ProjectModelCache extends ContextCache<ProjectId | Project, CacheKey, unkn
   }
 
   parsedData<R>(project: ProjectId, provider: () => R): R {
-    return super.get(project, 'parsed-data', provider) as R
+    const key = 'parsed-data'
+    const existing = this.get(project, key)
+    if (existing !== undefined) {
+      builderLogger.trace`cache hit project ${project} key: ${key}`
+      return existing as R
+    }
+    const result = provider()
+    this.set(project, key, result)
+    builderLogger.trace`cache miss project ${project} key: ${key}`
+    return result
   }
 
   parsedJoinedData<R>(project: ProjectId, provider: () => R): R {
-    return super.get(project, 'parsed-joined-data', provider) as R
+    const key = 'parsed-joined-data'
+    const existing = this.get(project, key)
+    if (existing !== undefined) {
+      builderLogger.trace`cache hit project ${project} key: ${key}`
+      return existing as R
+    }
+    const result = provider()
+    this.set(project, key, result)
+    builderLogger.trace`cache miss project ${project} key: ${key}`
+    return result
   }
 
   parsedModel<R>(project: ProjectId, compute: () => R): R {
-    return super.get(project, 'parsed-model', compute) as R
+    const key = 'parsed-model'
+    const existing = this.get(project, key)
+    if (existing !== undefined) {
+      builderLogger.trace`cache hit project ${project} key: ${key}`
+      return existing as R
+    }
+    const result = compute()
+    this.set(project, key, result)
+    builderLogger.trace`cache miss project ${project} key: ${key}`
+    return result
   }
 
   computedModel<R>(
@@ -376,6 +408,15 @@ class ProjectModelCache extends ContextCache<ProjectId | Project, CacheKey, unkn
     manualLayouts: ManualLayoutsSnapshot | null,
     compute: () => R,
   ): R {
-    return super.get(project, `computed-model-${manualLayouts?.hash ?? ''}`, compute) as R
+    const cacheKey: CacheKey = manualLayouts ? `computed-model-${manualLayouts.hash}` : 'computed-model'
+    const existing = this.get(project, cacheKey)
+    if (existing !== undefined) {
+      builderLogger.trace`cache hit project ${project} key: ${cacheKey}`
+      return existing as R
+    }
+    const result = compute()
+    this.set(project, cacheKey, result)
+    builderLogger.trace`cache miss project ${project} key: ${cacheKey}`
+    return result
   }
 }

@@ -158,6 +158,13 @@ export class DefaultLikeC4Views implements LikeC4Views {
       }
       tasks.push(task)
     }
+    if (results.length > 0) {
+      if (tasks.length > 0) {
+        logger.trace`cached ${results.length} views, need to layout ${tasks.length} views`
+      } else {
+        logger.trace`cached all ${results.length} views`
+      }
+    }
     if (tasks.length > 0) {
       const m0 = performanceMark()
       await this.layouter.batchLayout({
@@ -172,7 +179,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
           logger.warn(`Fail layout view ${task.view.id}`, { error })
         },
       })
-      logger.trace`layouted ${tasks.length} views in ${m0.pretty}`
+      logger.debug`layouted ${tasks.length} views in ${m0.pretty}`
     }
     if (cancelToken && cancelToken.isCancellationRequested) {
       await interruptAndCheck(cancelToken)
@@ -202,10 +209,10 @@ export class DefaultLikeC4Views implements LikeC4Views {
     projectId = model.project.id
     const logger = viewsLogger.getChild(projectId)
     if (!view) {
-      logger.warn`layoutView ${viewId} not found`
+      logger.warn`view ${viewId} not found in model`
       const snapshot = model.findManualLayout(viewId)
       if (snapshot) {
-        logger.debug`found manual layout for ${viewId}`
+        logger.info`found manual layout for ${viewId}`
         let diagram = { ...snapshot } as Writable<LayoutedView>
         diagram.drifts = [
           'not-exists',
@@ -299,7 +306,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
   }
 
   async adhocView(predicates: AdhocViewPredicate[], projectId?: ProjectId | undefined): Promise<LayoutedView> {
-    viewsLogger.debug`layouting adhoc view...`
+    viewsLogger.trace`layouting adhoc view...`
     const likeC4Model = await this.ModelBuilder.computeModel(projectId)
     const view = computeAdhocView(likeC4Model, predicates)
     const { diagram } = await this.layouter.layout({
@@ -338,7 +345,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     }
     if (layoutType === 'manual') {
       if (layouted[_layout] === 'manual') {
-        viewsLogger.error(`View ${layouted.id} already has manual layout, this should not happen`)
+        viewsLogger.error`View ${layouted.id} already has manual layout, this should not happen`
         return layouted
       }
       return applyManualLayout(layouted, snapshot)
@@ -391,7 +398,6 @@ class ProjectStorage {
       this.#logger.trace`cache hit for ${task.view.id}`
       return mergeWithCachedLayout(task.view, cached)
     }
-    logger.trace`cache miss for ${task.view.id}`
     return undefined
   }
 
@@ -402,10 +408,10 @@ class ProjectStorage {
       this.#logger.trace`cache hit for ${task.view.id}`
       return mergeWithCachedLayout(task.view, cached)
     }
-    logger.trace`cache miss for ${task.view.id}`
+    this.#logger.trace`cache miss for ${task.view.id}`
     const m0 = performanceMark()
     const result = await this.#layouter(task)
-    logger.trace(`layouted {view} in ${m0.pretty}`, { view: task.view.id })
+    this.#logger.debug(`layouted {view} in ${m0.pretty}`, { view: task.view.id })
     await this.#storage.set(key, result)
     this.resetViewError(task.view)
     return result

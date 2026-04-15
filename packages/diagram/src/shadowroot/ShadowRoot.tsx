@@ -143,7 +143,7 @@ const MemoizedStyle = memo<{
 ) => (
   <style
     type="text/css"
-    nonce={nonce}
+    nonce={nonce || undefined}
     dangerouslySetInnerHTML={{ __html: cssstyle }} />
 ))
 MemoizedStyle.displayName = 'MemoizedStyle'

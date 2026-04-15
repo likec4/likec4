@@ -7,7 +7,7 @@ type ExtendableGlobalVars = NonNullable<Config['globalVars']>
 
 export const globalVars: ExtendableGlobalVars = {
   extend: {
-    [vars.font]: '/*-*/ /*-*/',
+    [vars.font]: 'var(--likec4-app-font-default)',
     [vars.spacing]: '/*-*/ /*-*/',
     [vars.textsize]: rem(defaultTheme.textSizes.md),
     // Use the primary color as the default palette

@@ -4,11 +4,11 @@ import {
   createRouter as createTanstackRouter,
   RouterProvider,
 } from '@tanstack/react-router'
+import { basepath, useHashHistory } from 'likec4:app-config'
 import { projects } from 'likec4:projects'
 import { map } from 'remeda'
 import { Fallback } from './components/Fallback'
 import { NotFound } from './components/NotFound'
-import { basepath, useHashHistory } from './const'
 import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
 import { routeTree } from './routeTree.gen'
 

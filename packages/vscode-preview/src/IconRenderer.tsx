@@ -1,8 +1,19 @@
 import { DefaultMap } from '@likec4/core/utils'
 import { type ElementIconRenderer, type ElementIconRendererProps, IconRendererProvider } from '@likec4/diagram'
-import { IconRenderer as DefaultIconRenderer } from '@likec4/icons/all'
 import { lazy, memo, Suspense } from 'react'
 import { ExtensionApi as extensionApi } from './vscode'
+
+const DefaultIconRenderer: ElementIconRenderer = ({ node, ...props }) => {
+  if (!node.icon || node.icon === 'none') {
+    return null
+  }
+  const [group, name] = node.icon.split(':') as [string, string]
+  if (!group || !name) {
+    return null
+  }
+
+  return <img {...props} src={`https://icons.like-c4.dev/${group}/${name}.svg`} />
+}
 
 const icons = new DefaultMap<string, ElementIconRenderer>(icon => {
   // For local files, use lazy loading with custom loader
@@ -45,7 +56,7 @@ export const IconRenderer = memo((props: ElementIconRendererProps) => {
   // For local files, use lazy loading with custom loader
   const LocalIcon = icons.get(icon)
   return (
-    <Suspense fallback={<DefaultIconRenderer {...props} />}>
+    <Suspense>
       <LocalIcon {...props} />
     </Suspense>
   )

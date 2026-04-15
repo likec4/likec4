@@ -1,4 +1,4 @@
-import k from 'tinyrainbow'
+import { logGenerating } from '../logger'
 import type { VirtualModule } from './_shared'
 
 const code = ` 
@@ -33,8 +33,8 @@ export const likec4rpc = rpc ?? {
 export const rpcModule: VirtualModule = {
   id: 'likec4:rpc',
   virtualId: 'likec4:plugin/rpc.js',
-  async load({ logger }) {
-    logger.info(k.dim('generating likec4:rpc'))
+  async load() {
+    logGenerating('rpc')
     return code
   },
 }

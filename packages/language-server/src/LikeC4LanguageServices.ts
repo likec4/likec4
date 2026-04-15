@@ -30,6 +30,7 @@ export interface LikeC4LanguageServices {
   readonly views: LikeC4Views
   readonly builder: LikeC4ModelBuilder
   readonly workspaceUri: URI
+  readonly workspacePath: string
   readonly projectsManager: ProjectsManager
   readonly editor: LikeC4ModelChanges
 
@@ -159,6 +160,10 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
 
   get workspaceUri(): URI {
     return this.services.shared.workspace.WorkspaceManager.workspaceUri
+  }
+
+  get workspacePath(): string {
+    return this.workspaceUri.fsPath
   }
 
   projects(): NonEmptyArray<{

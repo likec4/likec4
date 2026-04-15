@@ -20,6 +20,9 @@ export async function bundleApp() {
   await spawn('panda', ['codegen'], {
     preferLocal: true,
     stdio: 'inherit',
+    env: {
+      NODE_ENV: 'production',
+    },
   })
 
   const root = resolve(cwd, 'app')
@@ -39,6 +42,7 @@ export async function bundleApp() {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'react-dom/server': resolve('./app/react/react-dom-server-mock.ts'),
         '@likec4/diagram': resolve('../diagram/src'),
+        '@likec4/styles': resolve('./styled-system'),
       },
     },
     mode: 'production',
@@ -71,13 +75,13 @@ export async function bundleApp() {
         },
         formats: ['es'],
       },
-      commonjsOptions: {
-        defaultIsModuleExports: 'auto',
-        requireReturnsDefault: 'auto',
-        extensions: ['.mjs', '.js'],
-        transformMixedEsModules: true,
-        ignoreTryCatch: 'remove',
-      },
+      // commonjsOptions: {
+      //   defaultIsModuleExports: 'auto',
+      //   requireReturnsDefault: 'auto',
+      //   extensions: ['.mjs', '.js'],
+      //   transformMixedEsModules: true,
+      //   ignoreTryCatch: 'remove',
+      // },
       rollupOptions: {
         input: [
           './app/src/main.tsx',
@@ -85,31 +89,15 @@ export async function bundleApp() {
           './app/src/fonts.css',
           './app/src/style.css',
         ],
-        treeshake: 'recommended',
-        output: {
-          chunkFileNames: '[name].js',
-          manualChunks: (id) => {
-            if (id.endsWith('.css')) {
-              return undefined
-            }
-            if (id.includes('@tabler') || id.includes('diagram/src') || id.includes('styled-system')) {
-              return 'likec4'
-            }
-            if (id.includes('app/src/routes/_single')) {
-              return 'routes/single'
-            }
-            if (id.includes('app/src/routes/project.$')) {
-              return 'routes/projects'
-            }
-            if (id.includes('app/src/route')) {
-              return 'routes/index'
-            }
-            if (id.includes('node_modules')) {
-              return 'vendors'
-            }
-            return undefined
-          },
-        },
+        treeshake: 'smallest',
+        // output: {
+        //   chunkFileNames: '[name].js',
+        //   // manualChunks: (id) => {
+        //   //   if (id.endsWith('.css')) {
+        //   //     return undefined
+        //   //   }
+        //   // },
+        // },
         external: [
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
@@ -119,7 +107,6 @@ export async function bundleApp() {
           'likec4/model',
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from motion
-          resolve(cwd, 'app/src/const.js'),
           /@likec4\/core.*/,
           /likec4\/vite-plugin.*/,
           /likec4:/,
@@ -140,7 +127,6 @@ export async function bundleApp() {
     copyFile('app/robots.txt', '__app__/robots.txt'),
     copyFile('app/favicon.ico', '__app__/favicon.ico'),
     copyFile('app/favicon.svg', '__app__/favicon.svg'),
-    copyFile('app/src/const.js', '__app__/src/const.js'),
     copyFile('app/react/likec4.tsx', '__app__/react/likec4.tsx'),
   ])
 }

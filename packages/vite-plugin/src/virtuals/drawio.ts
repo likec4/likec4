@@ -1,7 +1,7 @@
 import type { LikeC4Model } from '@likec4/core/model'
 import { generateDrawio, generateDrawioEditUrl } from '@likec4/generators'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
-import k from 'tinyrainbow'
+import { logGenerating } from '../logger'
 import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
 
 function code(model: LikeC4Model.Layouted) {
@@ -48,8 +48,8 @@ function code(model: LikeC4Model.Layouted) {
 
 export const projectDrawioModule = {
   ...generateMatches('drawio'),
-  async load({ likec4, project, logger }) {
-    logger.info(k.dim(`generating likec4:drawio/${project.id}`))
+  async load({ likec4, project }) {
+    logGenerating('drawio', project.id)
     const model = await likec4.layoutedModel(project.id)
     return code(model)
   },

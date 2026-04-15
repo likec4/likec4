@@ -179,3 +179,17 @@ declare module 'likec4:rpc' {
 
   export const isRpcAvailable: boolean
 }
+
+declare module 'likec4:app-config' {
+  export let ComponentName: {
+    View: string
+    Browser: string
+  }
+  export let pageTitle: string
+  export let useHashHistory: boolean
+  export let defaultTheme: 'light' | 'dark' | 'auto'
+  export let basepath: string
+  export let isDevelopment: boolean
+  export let krokiD2SvgUrl: string
+  export let krokiPumlSvgUrl: string
+}

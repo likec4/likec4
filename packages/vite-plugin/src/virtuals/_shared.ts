@@ -4,7 +4,7 @@ import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { URI } from 'langium'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
-import type { ViteLogger } from '../logger'
+import { type ViteLogger, logGenerating } from '../logger'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 export { k }
@@ -62,9 +62,9 @@ export function generateMatches(moduleId: string, extension = '.js') {
 export function generateCombinedProjects(moduleId: string, fnName: string): VirtualModule {
   return {
     id: `likec4:${moduleId}`,
-    virtualId: `likec4:plugin/${moduleId}.js`,
-    async load({ logger, projects }) {
-      logger.info(k.dim(`generating likec4:${moduleId}`))
+    virtualId: 'likec4:plugin/' + moduleId + '.js',
+    async load({ projects }) {
+      logGenerating(moduleId)
 
       const cases = projects.map(({ id }) => {
         const idLiteral = hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(id))

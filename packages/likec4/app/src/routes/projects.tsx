@@ -1,8 +1,8 @@
 import { Box } from '@likec4/styles/jsx'
 import { useDocumentTitle } from '@mantine/hooks'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { pageTitle } from 'likec4:app-config'
 import { lazy } from 'react'
-import { pageTitle } from '../const'
 
 const ProjectsOverviewPage = lazy(async () => {
   const { ProjectsOverviewPage } = await import('../pages/ProjectsOverview')

@@ -281,7 +281,7 @@ catalogs:
       specifier: ^1.4.2
       version: 1.4.2
     chroma-js:
-      specifier: ^3.2.0
+      specifier: 3.2.0
       version: 3.2.0
     citty:
       specifier: ^0.2.2
@@ -2571,9 +2571,6 @@ importers:
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../diagram
-      '@likec4/icons':
-        specifier: workspace:*
-        version: link:../icons
       '@likec4/style-preset':
         specifier: workspace:*
         version: link:../../styled-system/preset

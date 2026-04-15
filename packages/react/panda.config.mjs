@@ -5,4 +5,5 @@ export default defineConfig({
     './src/**/*.{ts,tsx}',
     '../diagram/src/**/*.{ts,tsx}',
   ],
+  cssVarRoot: '.likec4-shadow-root, :host',
 })

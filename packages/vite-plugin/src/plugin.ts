@@ -7,9 +7,11 @@ import type {
   Plugin,
   PluginOption,
 } from 'vite'
+import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
+import { type AppConfig, createAppConfigModule } from './virtuals/app-config'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
 import { drawioModule, projectDrawioModule } from './virtuals/drawio'
@@ -29,6 +31,11 @@ type SharedOptions = {
    * By default, the plugin is active in all environments
    */
   environments?: string | string[]
+
+  /**
+   * Configuration for the static application
+   */
+  appConfig?: AppConfig
 }
 
 export type LikeC4VitePluginOptions =
@@ -93,7 +100,7 @@ const projectVirtuals = [
   projectReactModule,
 ]
 
-const virtuals = [
+const _virtuals = [
   projectsModule,
   modelModule,
   projectsOverviewModule,
@@ -108,18 +115,26 @@ const virtuals = [
   rpcModule,
 ]
 
+const VITE_PLUGIN_LIKEC4 = 'vite-plugin-likec4'
+
 export function LikeC4VitePlugin({
   environments,
+  appConfig,
   ...opts
-}: LikeC4VitePluginOptions): Plugin {
+}: LikeC4VitePluginOptions): PluginOption {
   // let logger: ViteLogger
   let likec4: LikeC4LanguageServices
   let assetsDir: string
 
   let shouldDisposeOnStop = opts.watch ?? false
 
-  return {
-    name: 'vite-plugin-likec4',
+  const virtuals = [
+    ..._virtuals,
+    createAppConfigModule(appConfig),
+  ]
+
+  const mainPlugin: Plugin = {
+    name: VITE_PLUGIN_LIKEC4,
 
     applyToEnvironment(env) {
       return environments ? environments.includes(env.name) : true
@@ -142,48 +157,58 @@ export function LikeC4VitePlugin({
       assetsDir = likec4.workspaceUri.fsPath
     },
 
-    resolveId(id) {
-      for (const module of projectVirtuals) {
-        const projectId = module.matches(id)
-        if (projectId) {
-          return module.virtualId(projectId)
+    resolveId: {
+      filter: {
+        id: /^likec4:/,
+      },
+      handler(id) {
+        for (const module of projectVirtuals) {
+          const projectId = module.matches(id)
+          if (projectId) {
+            return module.virtualId(projectId)
+          }
         }
-      }
-      for (const module of virtuals) {
-        if (module.id === id) {
-          return module.virtualId
+        for (const module of virtuals) {
+          if (module.id === id) {
+            return module.virtualId
+          }
         }
-      }
-      return null
+        return null
+      },
     },
 
-    async load(id) {
-      for (const module of projectVirtuals) {
-        const projectId = module.matches(id)
-        if (projectId) {
-          const project = likec4.project(projectId)
-          return await module.load({
-            logger,
-            likec4,
-            project,
-            assetsDir,
-          })
+    load: {
+      filter: {
+        id: /likec4:plugin/,
+      },
+      async handler(id) {
+        for (const module of projectVirtuals) {
+          const projectId = module.matches(id)
+          if (projectId) {
+            const project = likec4.project(projectId)
+            return await module.load({
+              logger,
+              likec4,
+              project,
+              assetsDir,
+            })
+          }
         }
-      }
-      for (const module of virtuals) {
-        if (module.virtualId === id) {
-          const projects = likec4.projects()
-          invariant(isNonEmptyArray(projects))
+        for (const module of virtuals) {
+          if (module.virtualId === id) {
+            const projects = likec4.projects()
+            invariant(isNonEmptyArray(projects))
 
-          return await module.load({
-            logger,
-            likec4,
-            projects,
-            assetsDir,
-          })
+            return await module.load({
+              logger,
+              likec4,
+              projects,
+              assetsDir,
+            })
+          }
         }
-      }
-      return null
+        return null
+      },
     },
 
     configureServer(server) {
@@ -255,5 +280,13 @@ export function LikeC4VitePlugin({
         await likec4.dispose()
       }
     },
-  } satisfies PluginOption
+  }
+
+  return [
+    iconBundlePlugin({
+      environments: environments ? [environments].flat() : undefined,
+      workspace: opts.workspace ?? opts.languageServices?.workspacePath,
+    }),
+    mainPlugin,
+  ]
 }

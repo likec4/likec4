@@ -109,22 +109,19 @@ export async function viteDev({
 
   if (buildWebcomponent) {
     logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
-    viteWebcomponentConfig({
+    const webcomponentConfig = viteWebcomponentConfig({
       webcomponentPrefix,
       languageServices: languageServices,
       outDir: publicDir,
       base: config.base,
     })
-      .then(webcomponentConfig =>
-        build({
-          ...webcomponentConfig,
-          logLevel: 'warn',
-        })
-      )
-      .catch(err => {
-        logger.warn(loggable(err))
-        logger.warn('webcomponent build failed, ignoring error and continue')
-      })
+    await build({
+      ...webcomponentConfig,
+      logLevel: 'warn',
+    }).catch(err => {
+      logger.warn(loggable(err))
+      logger.warn('webcomponent build failed, ignoring error and continue')
+    })
   } else {
     logger.info(`Skip webcomponent build`)
   }

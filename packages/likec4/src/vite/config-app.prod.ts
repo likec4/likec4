@@ -104,10 +104,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       },
     },
     define: {
-      WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
-      PAGE_TITLE: JSON.stringify(title),
-      __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
-      __DEFAULT_THEME__: JSON.stringify(cfg?.theme ?? 'auto'),
       'process.env.NODE_ENV': '"production"',
     },
     build: {
@@ -133,24 +129,10 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
           output: {
             manualChunks: (id) => {
               if (
-                id.endsWith('.css') || id.endsWith('.html') || id.includes('likec4/icons') || id.includes('const.js')
+                id.endsWith('.css') || id.endsWith('.html') || id.includes('const.js')
               ) {
                 return undefined
               }
-              if (id.includes('__app__')) {
-                let match = id.match(/__app__\/src\/([\w]+)\.js/)?.[1]
-                if (match) {
-                  return match[1]
-                }
-                return undefined
-              }
-              if (id.includes('likec4')) {
-                return 'likec4'
-              }
-              if (id.includes('node_modules')) {
-                return 'vendors'
-              }
-              return undefined
             },
           },
         }),
@@ -161,6 +143,12 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       react(),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
+        appConfig: {
+          webcomponentPrefix,
+          pageTitle: title,
+          useHashHistory: cfg.useHashHistory,
+          theme: cfg.theme,
+        },
       }),
       // Enable single file output
       isSingleFile ? viteSingleFile() : undefined,

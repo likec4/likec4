@@ -5,10 +5,11 @@ import { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView, LayoutedLikeC4ModelData } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
 import { createBirpc } from 'birpc'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import type { Atom, WritableAtom } from 'nanostores'
 import { computed } from 'nanostores'
 import { useMemo } from 'react'
-import { isDeepEqual, mapValues } from 'remeda'
+import { mapValues } from 'remeda'
 import type { LikeC4VitePluginRpc } from './rpc/protocol'
 
 export { atom, batched, computed, map } from 'nanostores'
@@ -47,27 +48,27 @@ export function createRpc(options: LikeC4VitePluginRpcOptions): LikeC4VitePlugin
 }
 
 // This is a workaround to avoid type errors in the Vite plugin
-export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: WritableAtom<LayoutedLikeC4ModelData>): {
+export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>): {
   updateModel: (data: LayoutedLikeC4ModelData) => void
   $likec4model: Atom<LikeC4Model.Layouted>
   useLikeC4Model: () => LikeC4Model.Layouted
   useLikeC4Views: () => ReadonlyArray<DiagramView>
   useLikeC4View: (viewId: string) => DiagramView | null
-} => {
+} {
   const $likec4model = computed($atom, (data) => LikeC4Model.create(data))
 
   function updateModel(data: LayoutedLikeC4ModelData) {
     const current = $atom.get()
-    if (isDeepEqual(current, data)) {
-      return
-    }
-
     const next = {
       ...data,
       views: mapValues(data.views, (next) => {
         const currentView = current.views[next.id]
-        return isDeepEqual(currentView, next) ? currentView : next
+        return deepEqual(currentView, next) ? currentView : next
       }),
+    }
+    // Check for shallow first, then deep equality to avoid unnecessary updates
+    if (shallowEqual(next.views, current.views) && deepEqual(next, current)) {
+      return
     }
     $atom.set(next as LayoutedLikeC4ModelData)
   }

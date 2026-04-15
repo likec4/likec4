@@ -4,23 +4,24 @@ import process from 'node:process'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
-const _rewriteRootSelector = {
+const rewriteRootSelector = {
   postcssPlugin: 'postcss-rewrite-root',
   Once(css) {
     css.walkRules((rule) => {
+      let updated = false
       let updatedSelectors = []
       for (let val of rule.selectors) {
-        if (val.trim() === ':root') {
+        let _val = val.trim()
+        if (_val === ':root' || _val === 'body') {
           // console.log('rewriting :root', rule.selectors)
           updatedSelectors.push('.likec4-shadow-root')
+          updated = true
           continue
         }
-        if (val.trim() === 'body') {
-          updatedSelectors.push('.likec4-shadow-root')
-          continue
-        }
+        updatedSelectors.push(val)
       }
-      if (updatedSelectors.length) {
+
+      if (updated) {
         rule.selectors = updatedSelectors
       }
     })
@@ -44,7 +45,7 @@ export default defineConfig({
     postcss: {
       plugins: [
         pandacss(),
-        // rewriteRootSelector,
+        rewriteRootSelector,
       ],
     },
   },

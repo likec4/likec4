@@ -8,6 +8,7 @@
 import type { NonEmptyArray, ProjectId } from '@likec4/core/types'
 import { MantineProvider } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
+import { defaultTheme } from 'likec4:app-config'
 import { projects } from 'likec4:projects'
 import { map } from 'remeda'
 import { resolveForceColorScheme, searchParamsSchema } from '../searchParams'
@@ -58,7 +59,7 @@ function RootComponent() {
   const forceColorScheme = resolveForceColorScheme(theme)
   // When ?theme=auto is explicitly set, restore system preference even if
   // the build default is light or dark.
-  const defaultColorScheme = theme === 'auto' ? 'auto' : __DEFAULT_THEME__
+  const defaultColorScheme = theme === 'auto' ? 'auto' : defaultTheme
   return (
     <MantineProvider
       theme={mantineTheme}
