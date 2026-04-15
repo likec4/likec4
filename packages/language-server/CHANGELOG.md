@@ -1,5 +1,17 @@
 # @likec4/language-server
 
+## 1.55.1
+
+### Patch Changes
+
+- [#2897](https://github.com/likec4/likec4/pull/2897) [`41ee8b7`](https://github.com/likec4/likec4/commit/41ee8b715fabecf8022a3440c971adeea1e8f9a3) Thanks [@davydkov](https://github.com/davydkov)! - Allow using reserved keyword `relationship` as an identifier in LikeC4 DSL (i.e. as element kind)
+
+- Updated dependencies []:
+  - @likec4/core@1.55.1
+  - @likec4/config@1.55.1
+  - @likec4/layouts@1.55.1
+  - @likec4/log@1.55.1
+
 ## 1.55.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @likec4/diagram
 
+## 1.55.1
+
+### Patch Changes
+
+- [#2894](https://github.com/likec4/likec4/pull/2894) [`0b8825b`](https://github.com/likec4/likec4/commit/0b8825b8c4053a7908d0ba96145687824e2bc597) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix text overflow in relationship popover and element details card when displaying long element names, relationship titles, and technology strings
+
+- [#2875](https://github.com/likec4/likec4/pull/2875) [`36d5627`](https://github.com/likec4/likec4/commit/36d5627ccadda9d80488eaf7695cdde25b61d7df) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix search overlay persisting after navigating to a view via Ctrl+K search
+
+- Updated dependencies [[`b5e33d1`](https://github.com/likec4/likec4/commit/b5e33d12c548e34f820e565182b0b057505c2f64)]:
+  - @likec4/styles@1.55.1
+  - @likec4/core@1.55.1
+
 ## 1.55.0
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @likec4/layouts
 
+## 1.55.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/core@1.55.1
+  - @likec4/log@1.55.1
+
 ## 1.55.0
 
 ### Patch Changes

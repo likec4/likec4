@@ -1,5 +1,11 @@
 # @likec4/lsp
 
+## 1.55.1
+
+### Patch Changes
+
+- [#2896](https://github.com/likec4/likec4/pull/2896) [`d628461`](https://github.com/likec4/likec4/commit/d6284616ba5fefbd510fdbf6460238f9be94ab79) Thanks [@davydkov](https://github.com/davydkov)! - Fix programmatic config (`likec4.config.ts`) not being loaded in VSCode extension and standalone LSP
+
 ## 1.55.0
 
 ## 1.54.0
