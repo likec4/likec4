@@ -1,0 +1,25 @@
+.changeset/isolate-drawio-bundle.md
+  40cd702f822304d9 1-6
+packages/likec4/scripts/check-bundle-size.ts
+  40cd702f822304d9 34-38,43-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "965e1beb63480ffec5f2dee9ec69e4bc93a37beb",
+  "prompts": {
+    "40cd702f822304d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "845bff44-dfb3-4242-b9a9-5095dbd45520",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": null,
+      "messages": [],
+      "total_additions": 17,
+      "total_deletions": 2,
+      "accepted_lines": 482,
+      "overriden_lines": 0
+    }
+  }
+}
