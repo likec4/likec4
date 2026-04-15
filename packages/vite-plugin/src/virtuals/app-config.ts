@@ -17,6 +17,11 @@ export interface AppConfig {
    * @default false
    */
   useHashHistory?: boolean | undefined
+  /**
+   * Default color scheme for the application
+   * @default 'auto'
+   */
+  theme?: 'light' | 'dark' | undefined
 }
 
 export function createAppConfigModule(config: AppConfig | undefined): VirtualModule {
@@ -24,6 +29,7 @@ export function createAppConfigModule(config: AppConfig | undefined): VirtualMod
     webcomponentPrefix = 'likec4',
     pageTitle = 'LikeC4',
     useHashHistory = false,
+    theme = 'auto',
   } = config || {}
   return {
     id: 'likec4:app-config',
@@ -47,6 +53,8 @@ export let useHashHistory = ${useHashHistory}
 export let basepath = useHashHistory ? '/' : BASE
 
 export let isDevelopment = import.meta.env.DEV
+
+export let defaultTheme = ${JSON.stringify(theme)}
 
 export let krokiD2SvgUrl = import.meta.env.VITE_KROKI_D2_SVG_URL || 'https://kroki.io/d2/svg'
 export let krokiPumlSvgUrl = import.meta.env.VITE_KROKI_D2_SVG_URL || 'https://kroki.io/plantuml/svg'

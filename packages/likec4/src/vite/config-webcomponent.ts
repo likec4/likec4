@@ -49,7 +49,6 @@ export function viteWebcomponentConfig({
     base,
     publicDir: false,
     define: {
-      __DEFAULT_THEME__: JSON.stringify('auto'),
       'process.env.NODE_ENV': '"development"',
     },
     build: {

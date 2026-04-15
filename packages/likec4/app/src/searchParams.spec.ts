@@ -11,8 +11,8 @@ describe('resolveForceColorScheme', () => {
 })
 
 describe('--theme build option', () => {
-  // Logic from __root.tsx: theme === 'auto' ? 'auto' : __DEFAULT_THEME__
-  // Logic from config-app.prod.ts: JSON.stringify(cfg?.theme ?? 'auto')
+  // Logic from __root.tsx: theme === 'auto' ? 'auto' : defaultTheme
+  // defaultTheme comes from likec4:app-config virtual module (defaults to 'auto')
   const deriveDefault = (url: string | undefined, build: string) => url === 'auto' ? 'auto' : build
   const defineValue = (theme: string | undefined) => JSON.stringify(theme ?? 'auto')
 

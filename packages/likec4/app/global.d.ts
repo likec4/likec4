@@ -16,9 +16,6 @@ declare const SHADOW_STYLE: string
 // default is 'likec4'
 declare const WEBCOMPONENT_PREFIX: string
 
-// default is 'auto', set via --theme CLI option
-declare const __DEFAULT_THEME__: 'light' | 'dark' | 'auto'
-
 interface ImportMetaEnv {
   readonly VITE_KROKI_D2_SVG_URL?: string
 }

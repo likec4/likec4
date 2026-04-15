@@ -62,7 +62,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     configFile: false,
     mode: 'development',
     define: {
-      __DEFAULT_THEME__: JSON.stringify(cfg?.theme ?? 'auto'),
       'process.env.NODE_ENV': '"development"',
     },
     resolve: {
@@ -131,6 +130,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
           webcomponentPrefix,
           pageTitle: title,
           useHashHistory: cfg.useHashHistory,
+          theme: cfg.theme,
         },
       }),
       TanStackRouterVite({

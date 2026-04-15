@@ -104,7 +104,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       },
     },
     define: {
-      __DEFAULT_THEME__: JSON.stringify(cfg?.theme ?? 'auto'),
       'process.env.NODE_ENV': '"production"',
     },
     build: {
@@ -148,6 +147,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
           webcomponentPrefix,
           pageTitle: title,
           useHashHistory: cfg.useHashHistory,
+          theme: cfg.theme,
         },
       }),
       // Enable single file output
