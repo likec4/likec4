@@ -1,5 +1,5 @@
 import type { LikeC4Model } from '@likec4/core/model'
-import { generateDrawio, generateDrawioEditUrl } from '@likec4/generators'
+import { generateDrawio, generateDrawioEditUrl } from '@likec4/generators/drawio'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import k from 'tinyrainbow'
 import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'

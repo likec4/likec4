@@ -137,6 +137,14 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
               ) {
                 return undefined
               }
+              // Isolate drawio virtual module into a lazy-loaded chunk.
+              // The 'likec4:drawio/*' virtual module contains Draw.io URLs
+              // generated at build time. Must check before 'likec4' catch-all
+              // since the module ID contains 'likec4'.
+              // See: https://github.com/likec4/likec4/issues/2689
+              if (id.includes('drawio')) {
+                return 'drawio'
+              }
               if (id.includes('__app__')) {
                 let match = id.match(/__app__\/src\/([\w]+)\.js/)?.[1]
                 if (match) {

@@ -1,12 +1,12 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, ProjectId } from '@likec4/core/types'
-import type { GenerateDrawioOptions } from '@likec4/generators'
 import {
+  type GenerateDrawioOptions,
   buildDrawioExportOptionsForViews,
   DEFAULT_DRAWIO_ALL_FILENAME,
   generateDrawio,
   generateDrawioMulti,
-} from '@likec4/generators'
+} from '@likec4/generators/drawio'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import { mkdir, readdir, readFile, realpath, stat, writeFile } from 'node:fs/promises'
