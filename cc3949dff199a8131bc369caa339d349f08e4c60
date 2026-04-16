@@ -1,0 +1,25 @@
+packages/vscode/scripts/package-vsix.mts
+  40cd702f822304d9 11-14,18-43
+.changeset/fix-vscode-packaging-deps.md
+  40cd702f822304d9 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "cc3949dff199a8131bc369caa339d349f08e4c60",
+  "prompts": {
+    "40cd702f822304d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "845bff44-dfb3-4242-b9a9-5095dbd45520",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Christoph Keller",
+      "messages": [],
+      "total_additions": 879,
+      "total_deletions": 935,
+      "accepted_lines": 535,
+      "overriden_lines": 0
+    }
+  }
+}
