@@ -1,0 +1,23 @@
+packages/vscode/scripts/package-vsix.mts
+  40cd702f822304d9 12-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "444513ef30244f3f45525cd2b4c4c89355922fe6",
+  "prompts": {
+    "40cd702f822304d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "845bff44-dfb3-4242-b9a9-5095dbd45520",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": null,
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 2,
+      "accepted_lines": 408,
+      "overriden_lines": 0
+    }
+  }
+}
