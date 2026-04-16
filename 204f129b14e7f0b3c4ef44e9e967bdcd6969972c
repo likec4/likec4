@@ -1,0 +1,27 @@
+packages/vscode-preview/src/interceptExternalLinks.spec.ts
+  40cd702f822304d9 11,40-45,90-115,119,121,124-126,130-136,144-147,156,160-161
+packages/vscode-preview/src/interceptExternalLinks.ts
+  40cd702f822304d9 8-13,18-20,27-32,37,48-51,55
+.changeset/fix-left-click-links-vscode.md
+  40cd702f822304d9 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "204f129b14e7f0b3c4ef44e9e967bdcd6969972c",
+  "prompts": {
+    "40cd702f822304d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "845bff44-dfb3-4242-b9a9-5095dbd45520",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Christoph Keller",
+      "messages": [],
+      "total_additions": 78,
+      "total_deletions": 11,
+      "accepted_lines": 78,
+      "overriden_lines": 0
+    }
+  }
+}
