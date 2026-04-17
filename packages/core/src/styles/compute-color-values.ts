@@ -1,4 +1,3 @@
-import { generateColors } from '@mantine/colors-generator'
 import chroma from 'chroma-js'
 import { isDeepEqual } from 'remeda'
 import { invariant } from '../utils'
