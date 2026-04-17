@@ -4,6 +4,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 import { defineParts, defineRecipe } from '@pandacss/dev'
+import { __v } from '../const.ts'
 
 const parts = defineParts({
   root: { selector: '&' },
@@ -27,8 +28,8 @@ export const edgeLabel = defineRecipe({
       width: 'max-content',
       maxWidth: '100%',
       gap: '0.5',
-      color: 'var(--xy-edge-label-color)',
-      background: 'var(--xy-edge-label-background-color)',
+      color: 'colors.likec4.relation.label',
+      background: 'colors.likec4.relation.label.bg',
       border: '0px solid transparent',
       borderRadius: '4px',
     },
@@ -123,6 +124,19 @@ export const edgeLabel = defineRecipe({
           paddingRight: '0.5',
         },
       }),
+    },
+    inverseColor: {
+      true: parts({
+        root: {
+          // Inverse color logic
+          '--_mix': `color-mix(in oklch, ${__v('palette.hiContrast')}, ${__v('palette.stroke')} 60%)`,
+          color: {
+            base: 'oklch(from var(--_mix) calc(l - 0.2) c h)',
+            _dark: 'oklch(from var(--_mix) calc(l + 0.2) c h)',
+          },
+        },
+      }),
+      false: {},
     },
   },
   defaultVariants: {
