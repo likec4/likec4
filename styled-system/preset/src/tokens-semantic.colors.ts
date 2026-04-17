@@ -254,28 +254,5 @@ export const colors = defineSemanticTokens.colors({
         value: mantine.colors.green[6],
       },
     },
-    relation: {
-      line: {
-        description: 'LikeC4 relationship line color',
-        value: {
-          base: mantine.colors.gray[6],
-          _dark: mantine.colors.gray[4],
-        },
-      },
-      label: {
-        description: 'LikeC4 relationship label color',
-        value: {
-          base: mantine.colors.gray[8],
-          _dark: mantine.colors.gray[2],
-        },
-      },
-      labelBg: {
-        description: 'LikeC4 relationship label background color',
-        value: {
-          base: 'rgba(255, 255, 255, 0.8)',
-          _dark: 'rgba(0, 0, 0, 0.6)',
-        },
-      },
-    },
   },
 })

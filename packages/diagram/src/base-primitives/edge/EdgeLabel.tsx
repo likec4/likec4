@@ -9,7 +9,6 @@ import { type ReactNode, forwardRef } from 'react'
 import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
-import { useColorScheme } from '../../shadowroot/styles.css'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -49,7 +48,6 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
   const stepNum = isStepEdgeId(id) ? extractStep(id) : null
   const isStepEdge = stepNum !== null
   const hasLabel = isTruthy(label) || isTruthy(technology)
-  const colorScheme = useColorScheme()
 
   return (
     <m.div
@@ -60,7 +58,6 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
         edgeLabel({
           pointerEvents,
           isStepEdge,
-          inverseColor: colorScheme == 'light',
           cursor: selectable || isStepEdge ? 'pointer' : 'default',
         }),
         className,
