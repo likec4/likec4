@@ -1,0 +1,25 @@
+packages/vscode-preview/src/interceptExternalLinks.spec.ts
+  40cd702f822304d9 100-134
+packages/vscode-preview/src/interceptExternalLinks.ts
+  40cd702f822304d9 29-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "62d7d63c2867ec416b4c27ebececf729d53a1178",
+  "prompts": {
+    "40cd702f822304d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "845bff44-dfb3-4242-b9a9-5095dbd45520",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": null,
+      "messages": [],
+      "total_additions": 236,
+      "total_deletions": 65,
+      "accepted_lines": 581,
+      "overriden_lines": 0
+    }
+  }
+}
