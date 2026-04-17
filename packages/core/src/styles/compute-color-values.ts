@@ -1,6 +1,7 @@
 import chroma from 'chroma-js'
 import { isDeepEqual } from 'remeda'
 import { invariant } from '../utils'
+import { adjustToneHex } from '../utils/colors'
 import type { ColorLiteral, HexColor, ThemeColorValues } from './types'
 
 const CONTRAST_MIN_WITH_FOREGROUND = 60
@@ -21,14 +22,12 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
   invariant(chroma.valid(color), `Invalid color: ${color}`)
   const colors = getColorPalette(color)
 
-  const fillColor = colors.el_main
-  const contrastedColors = getContrastedColorsAPCA(fillColor)
-
   return {
     elements: {
-      fill: fillColor as HexColor,
+      fill: colors.el_main as HexColor,
       stroke: colors.el_secondary as HexColor,
-      ...contrastedColors,
+      hiContrast: colors.el_hiContrast as HexColor,
+      loContrast: colors.el_loContrast as HexColor,
     },
     relationships: {
       line: colors.rel_secondary as HexColor,
@@ -47,7 +46,7 @@ function getColorPalette(refColor: string): ColorPalette {
 
   const rel_main = el_main as HexColor
   const rel_secondary = adjustToneHex(el_main, -0.25) as HexColor
-  const rel_contrastedColor = getContrastedColorsAPCA(el_main)
+  const rel_contrastedColor = getContrastedColorsAPCA(rel_main)
   const rel_hiContrast = rel_contrastedColor.hiContrast as HexColor
 
   return {
@@ -106,21 +105,4 @@ export function getContrastedColorsAPCA(
       loContrast: darkColorRgb.hex() as HexColor,
     }
   }
-}
-
-export function adjustToneRgb(rgb: [number, number, number], factor: number): [number, number, number] {
-  // Clamp factor to range [-1, 1]
-  factor = Math.max(-1, Math.min(1, factor))
-
-  return rgb.map(channel => {
-    const adjusted = factor > 0
-      ? channel + (255 - channel) * factor // lighten
-      : channel * (1 + factor) // darken
-    // return a value between 0 and 255
-    return Math.round(Math.max(0, Math.min(255, adjusted)))
-  }) as [number, number, number]
-}
-
-export function adjustToneHex(hex: string, factor: number): string {
-  return chroma(adjustToneRgb(chroma(hex).rgb(), factor)).hex()
 }
