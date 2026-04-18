@@ -156,8 +156,8 @@ catalogs:
       specifier: ^4.0.4
       version: 4.0.4
     std-env:
-      specifier: ^3.10.0
-      version: 3.10.0
+      specifier: ^4.1.0
+      version: 4.1.0
     zod:
       specifier: ^4.3.6
       version: 4.3.6
@@ -818,7 +818,7 @@ importers:
         version: 2.33.7
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.1.0
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -911,7 +911,7 @@ importers:
         version: 2.33.7
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.1.0
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -1459,7 +1459,7 @@ importers:
         version: 2.33.7
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.1.0
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -1586,7 +1586,7 @@ importers:
         version: 2.33.7
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.1.0
       tinyrainbow:
         specifier: catalog:utils
         version: 3.1.0
@@ -1766,7 +1766,7 @@ importers:
         version: 1.58.2
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.1.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -2135,7 +2135,7 @@ importers:
         version: 0.27.4
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.1.0
     devDependencies:
       '@hono/mcp':
         specifier: catalog:hono
@@ -2349,7 +2349,7 @@ importers:
         version: 2.33.7
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.1.0
       strip-indent:
         specifier: catalog:utils
         version: 4.1.1
@@ -2416,7 +2416,7 @@ importers:
         version: 6.4.0(picomatch@4.0.4)
       std-env:
         specifier: catalog:externals
-        version: 3.10.0
+        version: 4.1.0
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
@@ -8860,11 +8860,8 @@ packages:
     resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
     engines: {node: '>= 0.8'}
 
-  std-env@3.10.0:
-    resolution: {integrity: sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==}
-
-  std-env@4.0.0:
-    resolution: {integrity: sha512-zUMPtQ/HBY3/50VbpkupYHbRroTRZJPRLvreamgErJVys0ceuzMkD44J/QjqhHjOzK42GQ3QZIeFG1OYfOtKqQ==}
+  std-env@4.1.0:
+    resolution: {integrity: sha512-Rq7ybcX2RuC55r9oaPVEW7/xu3tj8u4GeBYHBWCychFtzMIr86A7e3PPEBPT37sHStKX3+TiX/Fr/ACmJLVlLQ==}
 
   stream-browserify@3.0.0:
     resolution: {integrity: sha512-H73RAHsVBapbim0tU2JwwOiXUj+fikfiaoYAKHF3VJfA0pe2BCzkhAHBlLG6REzE+2WNZcxOXjK7lkso+9euLA==}
@@ -17454,9 +17451,7 @@ snapshots:
 
   statuses@2.0.2: {}
 
-  std-env@3.10.0: {}
-
-  std-env@4.0.0: {}
+  std-env@4.1.0: {}
 
   stream-browserify@3.0.0:
     dependencies:
@@ -18038,7 +18033,7 @@ snapshots:
       obug: 2.1.1
       pathe: 2.0.3
       picomatch: 4.0.4
-      std-env: 4.0.0
+      std-env: 4.1.0
       tinybench: 2.9.0
       tinyexec: 1.0.4
       tinyglobby: 0.2.15
