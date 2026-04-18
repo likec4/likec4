@@ -172,6 +172,25 @@ export class StageFinal {
     return memory
   }
 
+  public step4AddAncestor(memory: Memory): Memory {
+    // Collect all ancestors of elements in the final set
+    const ancestors = new Set<Elem>()
+    for (const el of memory.final) {
+      // Use el.ancestors() to get ancestor elements directly
+      for (const ancestor of el.ancestors()) {
+        ancestors.add(ancestor)
+      }
+    }
+
+    // If we found ancestors, add them to the final set
+    if (ancestors.size > 0) {
+      const updatedFinal = union(memory.final, ancestors)
+      return memory.update({ final: updatedFinal })
+    }
+
+    return memory
+  }
+
   // TODO: Lot of corner cases to cover, skip for now
   // public step3FlatNodes(memory: Memory): Memory {
   //   // final implicits
@@ -237,7 +256,8 @@ export class StageFinal {
     // return []
     const step1 = this.step1CleanConnections(this.memory)
     const step2 = this.step2ProcessImplicits(step1)
-    return this.step3ProcessBoundaries(step2)
+    const step3 = this.step3ProcessBoundaries(step2)
+    return this.step4AddAncestor(step3)
     // return step2memory
     // const step3m?emory = this.step3FlatNodes(step2memory)
     // return step3memory
