@@ -759,7 +759,12 @@ DeploymentViewBody: '{'
 DeploymentViewRule:
   DeploymentViewRulePredicate |
   DeploymentViewRuleStyle |
-  ViewRuleAutoLayout
+  ViewRuleAutoLayout |
+  ViewRuleAncestors
+;
+
+ViewRuleAncestors:
+  key='showAncestors' ':'? value=BOOLEAN ';'?
 ;
 
 DeploymentViewRuleStyle:

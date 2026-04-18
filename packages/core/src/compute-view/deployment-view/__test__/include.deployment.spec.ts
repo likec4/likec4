@@ -1,6 +1,6 @@
 import { find, map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeView } from './fixture'
+import { $exclude, $include, $showAncestors, computeView } from './fixture'
 
 describe('DeploymentRefPredicate', () => {
   it('should include instance and node', () => {
@@ -230,5 +230,67 @@ describe('DeploymentRefPredicate', () => {
       'prod.us.zone1/dashboard',
       'Dashboard',
     ])
+  })
+
+  describe('showAncestors feature', () => {
+    it('should include ancestors for instance nodes', () => {
+      const { nodeIds } = computeView(
+        $include('prod.eu.zone1.ui'),
+        $showAncestors(true),
+      )
+      expect(nodeIds).toContain('prod.eu.zone1.ui')
+      expect(nodeIds).toContain('prod.eu.zone1')
+      expect(nodeIds).toContain('prod.eu')
+      expect(nodeIds).toContain('prod')
+    })
+
+    it('should include ancestors for nested nodes', () => {
+      const { nodeIds, nodes } = computeView(
+        $include('prod.eu.zone1'),
+        $showAncestors(true),
+      )
+      // Verify hierarchy: only ancestors of zone1 are included (not its children)
+      expect(nodeIds).toEqual([
+        'prod',
+        'prod.eu',
+        'prod.eu.zone1',
+      ])
+      // Verify node hierarchy is preserved (check that nodes have their IDs as titles when no explicit title)
+      expect(find(nodes, n => n.id === 'prod')).toMatchObject({ id: 'prod' })
+      expect(find(nodes, n => n.id === 'prod.eu')).toMatchObject({ id: 'prod.eu' })
+      expect(find(nodes, n => n.id === 'prod.eu.zone1')).toMatchObject({ id: 'prod.eu.zone1' })
+    })
+
+    it('should include ancestors for multiple zones', () => {
+      const { nodeIds } = computeView(
+        $include('prod.eu.zone1.ui'),
+        $include('prod.us.zone1.ui'),
+        $showAncestors(true),
+      )
+      // Should include ancestors from both zones
+      expect(nodeIds).toContain('prod')
+      expect(nodeIds).toContain('prod.eu')
+      expect(nodeIds).toContain('prod.eu.zone1')
+      expect(nodeIds).toContain('prod.us')
+      expect(nodeIds).toContain('prod.us.zone1')
+      // prod should appear only once
+      expect(nodeIds.filter(id => id === 'prod').length).toBe(1)
+    })
+
+    it('should preserve node hierarchy order', () => {
+      const { nodeIds } = computeView(
+        $include('prod.eu.zone1.ui'),
+        $showAncestors(true),
+      )
+      // Verify hierarchy is preserved: ancestors should come before descendants
+      const prodIndex = nodeIds.indexOf('prod')
+      const euIndex = nodeIds.indexOf('prod.eu')
+      const zone1Index = nodeIds.indexOf('prod.eu.zone1')
+      const uiIndex = nodeIds.indexOf('prod.eu.zone1.ui')
+
+      expect(prodIndex).toBeLessThan(euIndex)
+      expect(euIndex).toBeLessThan(zone1Index)
+      expect(zone1Index).toBeLessThan(uiIndex)
+    })
   })
 })

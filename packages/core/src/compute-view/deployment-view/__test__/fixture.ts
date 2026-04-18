@@ -71,6 +71,8 @@ const {
   relationships: { 'https': {} },
 })
 
+const $showAncestors = (value: boolean) => (b: any) => b.showAncestors(value)
+
 export const builder = b
   .with(
     model(
@@ -204,7 +206,7 @@ export const builder = b
 
 export type Types = typeof builder['Types']
 
-export { $exclude, $include }
+export { $exclude, $include, $showAncestors }
 
 export function computeView(...rules: DeploymentRulesBuilderOp<Types>[]) {
   const modelsource = builder.clone()
