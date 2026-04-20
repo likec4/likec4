@@ -13,11 +13,9 @@ import type {
 /**
  * Predicates scoped to deployment model
  */
-export interface DeploymentViewIncludePredicate<A extends AnyAux = Unknown>
-  extends AnyIncludePredicate<Expression<A>>
+export interface DeploymentViewIncludePredicate<A extends AnyAux = Unknown> extends AnyIncludePredicate<Expression<A>>
 {}
-export interface DeploymentViewExcludePredicate<A extends AnyAux = Unknown>
-  extends AnyExcludePredicate<Expression<A>>
+export interface DeploymentViewExcludePredicate<A extends AnyAux = Unknown> extends AnyExcludePredicate<Expression<A>>
 {}
 
 export type DeploymentViewPredicate<A extends AnyAux = Unknown> =
@@ -31,7 +29,16 @@ export type DeploymentViewRule<A extends AnyAux = Unknown> = ExclusiveUnion<{
   Exclude: DeploymentViewExcludePredicate<A>
   Style: DeploymentViewRuleStyle<A>
   AutoLayout: ViewRuleAutoLayout
+  Exhaustive: ParsedViewRuleExhaustive
 }>
+
+export interface ParsedViewRuleExhaustive<A extends AnyAux = Unknown> {
+  /**
+   * When true, ancestor elements of included deployment nodes are also included in the view.
+   * @default false (ancestors are not included)
+   */
+  exhaustive?: boolean
+}
 
 export interface ParsedDeploymentView<A extends AnyAux = Unknown> extends BaseParsedViewProperties<A> {
   [_type]: 'deployment'

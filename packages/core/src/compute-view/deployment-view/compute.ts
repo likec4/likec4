@@ -23,6 +23,7 @@ export function processPredicates(
   rules: DeploymentViewRule<any>[],
 ) {
   let memory = Memory.empty()
+  let exhaustive = false
 
   for (const rule of rules) {
     if (isViewRulePredicate(rule)) {
@@ -35,8 +36,11 @@ export function processPredicates(
         memory = stage.commit()
       }
     }
+    if ('exhaustive' in rule) {
+      exhaustive = rule.exhaustive
+    }
   }
-  return StageFinal.for(memory).commit()
+  return StageFinal.for(memory, exhaustive).commit()
 }
 
 export function computeDeploymentView<M extends AnyAux>(
