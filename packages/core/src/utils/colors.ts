@@ -1,4 +1,5 @@
 import chroma from 'chroma-js'
+import type { HexColor } from '../types'
 
 /**
  * Lighten or darken the rgb color following the factor given as parameter.
@@ -23,6 +24,6 @@ export function adjustToneRgb(rgb: [number, number, number], factor: number): [n
   }) as [number, number, number]
 }
 
-export function adjustToneHex(hex: string, factor: number): string {
-  return chroma(adjustToneRgb(chroma(hex).rgb(), factor)).hex()
+export function adjustToneHex(hex: string, factor: number): HexColor {
+  return chroma(adjustToneRgb(chroma(hex).rgb(), factor)).hex() as HexColor
 }

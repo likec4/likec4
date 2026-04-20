@@ -50,7 +50,7 @@ function getColorPalette(refColor: HexColor): ColorPalette {
   const el_loContrast = el_contrastedColor.loContrast
 
   const rel_main = el_main
-  const rel_secondary = chroma(adjustToneHex(el_main, -0.25)).hex() as HexColor
+  const rel_secondary = adjustToneHex(el_main, -0.25)
   const rel_contrastedColor = getContrastedColorsAPCA(rel_main)
   const rel_hiContrast = rel_contrastedColor.hiContrast
 
@@ -102,12 +102,12 @@ export function getContrastedColorsAPCA(
   if (Math.abs(contrastWithLight) > Math.abs(contrastWithDark)) {
     return {
       hiContrast: chroma(lightColorRgb.brighten(0.4)).hex() as HexColor,
-      loContrast: chroma(lightColorRgb.hex()).hex() as HexColor,
+      loContrast: lightColorRgb.hex() as HexColor,
     }
   } else {
     return {
       hiContrast: chroma(darkColorRgb.darken(0.4)).hex() as HexColor,
-      loContrast: chroma(darkColorRgb.hex()).hex() as HexColor,
+      loContrast: darkColorRgb.hex() as HexColor,
     }
   }
 }
