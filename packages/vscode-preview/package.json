@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "1.54.0",
+  "version": "1.55.1",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -9,6 +9,8 @@
   },
   "sideEffects": false,
   "scripts": {
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest",
     "typecheck": "tsc --build --verbose",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
@@ -54,6 +56,7 @@
     "tsx": "catalog:",
     "type-fest": "catalog:externals",
     "typescript": "catalog:",
+    "vitest": "catalog:vitest",
     "vite": "catalog:vite",
     "vscode-messenger-common": "^0.5.1",
     "vscode-messenger-webview": "^0.5.1"

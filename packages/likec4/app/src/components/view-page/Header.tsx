@@ -80,6 +80,12 @@ const enableDownload = <P extends Record<string, unknown>>(params: P): P & { dow
   download: true,
 })
 
+const enableJpegDownload = <P extends Record<string, unknown>>(params: P): P & { download: true; format: 'jpeg' } => ({
+  ...params,
+  download: true,
+  format: 'jpeg' as const,
+})
+
 function ExportButton() {
   const isInsideProject = useMatches({
     select: matches => matches.some(({ routeId }) => routeId === '/project/$projectId'),
@@ -124,6 +130,17 @@ function ExportButton() {
           )}
         >
           Export as .png
+        </MenuItem>
+        <MenuItem
+          renderRoot={(props) => (
+            <Link
+              target="_blank"
+              to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
+              search={enableJpegDownload}
+              {...props} />
+          )}
+        >
+          Export as .jpg
         </MenuItem>
         <MenuItem
           renderRoot={(props) => (

@@ -1,3 +1,54 @@
+## [1.55.1](https://github.com/likec4/likec4/compare/v1.55.0...v1.55.1) (2026-04-15)
+
+### 🚀 Features
+
+- **JPG Export**:\
+  Add JPEG export support for architecture diagrams -- new "Export as .jpg" option in the web UI and `likec4 export jpg` CLI command with `--quality` option. JPEG renders with a solid background adapting to the current theme. [#2899](https://github.com/likec4/likec4/pull/2899), closes [#2892](https://github.com/likec4/likec4/issues/2892)
+
+### 🐞 Bug Fixes
+
+- Fixed text overflow in relationship popover and element details card when displaying long names, titles, and technology strings. Thanks [@ckeller42](https://github.com/ckeller42), [#2894](https://github.com/likec4/likec4/pull/2894)
+
+- Fixed search overlay persisting after navigating to a view via Ctrl+K search. Thanks [@ckeller42](https://github.com/ckeller42), [#2875](https://github.com/likec4/likec4/pull/2875)
+
+- Fixed programmatic config (`likec4.config.ts`) not being loaded in VSCode extension and standalone LSP. [#2896](https://github.com/likec4/likec4/pull/2896)
+
+- Allow using reserved keyword `relationship` as an identifier in LikeC4 DSL (e.g. as element kind). [#2897](https://github.com/likec4/likec4/pull/2897)
+
+- Improved edge visibility in dark mode by increasing background stroke opacity. Thanks [@ckeller42](https://github.com/ckeller42), [#2891](https://github.com/likec4/likec4/pull/2891)
+
+
+## [1.55.0](https://github.com/likec4/likec4/compare/v1.54.0...v1.55.0) (2026-04-13)
+
+### 🚀 Features
+
+- **`--theme` option for `likec4 build`**:\
+  Set the default color scheme (light/dark) for the generated static website. Thanks [@ckeller42](https://github.com/ckeller42), [#2874](https://github.com/likec4/likec4/pull/2874)
+
+- **`likec4.exclude` VS Code setting**:\
+  Exclude files and folders from LikeC4 processing via glob patterns. [#2861](https://github.com/likec4/likec4/pull/2861)
+
+- **Standalone `@likec4/mcp` package**:\
+  MCP server and tools extracted into a dedicated package for reuse in other projects. [#2877](https://github.com/likec4/likec4/pull/2877)
+
+### 🐞 Bug Fixes
+
+- Fixed relationship styles (color, line, head, tail) not inheriting from specification in dynamic views, closes [#2797](https://github.com/likec4/likec4/issues/2797). [#2864](https://github.com/likec4/likec4/pull/2864)
+
+- Fixed custom element `description` and `summary` being overwritten by specification defaults in Builder API, closes [#2795](https://github.com/likec4/likec4/issues/2795). [#2860](https://github.com/likec4/likec4/pull/2860)
+
+- Fixed wildcard predicate evaluation with `where` filter applying only to root/scoped elements instead of all elements, closes [#2837](https://github.com/likec4/likec4/issues/2837). [#2858](https://github.com/likec4/likec4/pull/2858)
+
+- Fixed crash on views with manual layout in dev mode (applyManualLayout invariant). Thanks [@ckeller42](https://github.com/ckeller42), [#2883](https://github.com/likec4/likec4/pull/2883)
+
+- Fixed codegen react and view hooks not applying manual layouts. Thanks [@ckeller42](https://github.com/ckeller42), [#2876](https://github.com/likec4/likec4/pull/2876)
+
+- Fixed external links in VSCode preview opening blank page instead of browser, closes [#2422](https://github.com/likec4/likec4/issues/2422). Thanks [@ckeller42](https://github.com/ckeller42), [#2880](https://github.com/likec4/likec4/pull/2880)
+
+- Allow `data:` URIs in markdown image src. Thanks [@ckeller42](https://github.com/ckeller42), [#2881](https://github.com/likec4/likec4/pull/2881), fixes [#2871](https://github.com/likec4/likec4/issues/2871)
+
+- Improved MCP and agent skill documentation for LeanIX bridge and Draw.io workflows. Thanks [@sraphaz](https://github.com/sraphaz), [#2828](https://github.com/likec4/likec4/pull/2828)
+
 ## [1.54.0](https://github.com/likec4/likec4/compare/v1.53.0...v1.54.0) (2026-04-07)
 
 ### 🚀 Features
@@ -26,7 +77,6 @@
 - Validate LeanIX mapping partials before merge; align exports and mapping registry behaviour with specs. Thanks [@sraphaz](https://github.com/sraphaz), [#2829](https://github.com/likec4/likec4/pull/2829)
 
 - Hardened `likec4:icons` virtual module literals for CodeQL; raised floors for transitive dependencies. Thanks [@sraphaz](https://github.com/sraphaz), [#2831](https://github.com/likec4/likec4/pull/2831)
-
 
 ## [1.53.0](https://github.com/likec4/likec4/compare/v1.52.0...v1.53.0) (2026-03-20)
 
@@ -58,7 +108,6 @@
 
 - Draw.io: improved person shape inference on re-import for round-trip fidelity. Thanks [@sraphaz](https://github.com/sraphaz), [#2685](https://github.com/likec4/likec4/pull/2685)
 
-
 ## [1.52.0](https://github.com/likec4/likec4/compare/v1.51.0...v1.52.0) (2026-03-09)
 
 ### 🚀 Features
@@ -84,7 +133,6 @@
 
 - Removed deprecated ManualLayoutV1 and related migration command [#2713](https://github.com/likec4/likec4/pull/2713)
 
-
 ## [1.51.0](https://github.com/likec4/likec4/compare/v1.50.0...v1.51.0) (2026-03-04)
 
 ### 🚀 Features
@@ -100,8 +148,6 @@
 - Fixed "View title cannot contain newlines" error when using implicit views with elements that have multi-line titles, closes [#2669](https://github.com/likec4/likec4/issues/2669), [#2672](https://github.com/likec4/likec4/issues/2672)
 
 - Fixed LikeC4 tag color being broken, closes [#2637](https://github.com/likec4/likec4/issues/2637)
-
-
 
 ## [1.50.0](https://github.com/likec4/likec4/compare/v1.49.0...v1.50.0) (2026-02-21)
 
@@ -125,8 +171,6 @@
 
 - Improved state management and error handling in VSCode extension preview, closes [#2625](https://github.com/likec4/likec4/issues/2625)
 
-
-
 ## [1.49.0](https://github.com/likec4/likec4/compare/v1.48.0...v1.49.0) (2026-02-13)
 
 > [!IMPORTANT]
@@ -136,15 +180,13 @@
 
 - **New `component` Element Shape**:\
   Added new `component` element shape for diagrams. [#2616](https://github.com/likec4/likec4/pull/2616)
-  
-  <img width="301" height="211" alt="image" src="https://github.com/user-attachments/assets/0ba4d5dd-fcf0-403c-bb07-ef3e7b3e34c7" />
 
+  <img width="301" height="211" alt="image" src="https://github.com/user-attachments/assets/0ba4d5dd-fcf0-403c-bb07-ef3e7b3e34c7" />
 
 - **Enhanced VSCode Hover Tooltips**:\
   Hover tooltips in the editor now show relationship counts and clickable links to views containing the element. [#2624](https://github.com/likec4/likec4/pull/2624)
 
   <img width="400" alt="image" src="https://github.com/user-attachments/assets/d8b40d7d-c3e9-424f-8ad7-6614ce99290b" />
-
 
 - **Extendable JSON Configs**:\
   JSON configs can now extend other configs and merge styles from them using the `extends` property, so you can share your theme. Closes [#2573](https://github.com/likec4/likec4/issues/2573)
@@ -171,7 +213,6 @@
 
 - **Review Drifts in Compare Panel**:\
   Added review drifts feature to the compare panel with drifts highlighting and summary panel. Includes reset manual layout button and improved processing state handling.
-  
 
 ### 🐞 Bug Fixes
 
@@ -186,7 +227,6 @@
 - Fixed "reload" screen in VSCode preview
 
 - Set fixed icon sizes for consistent rendering
-
 
 ## [1.48.0](https://github.com/likec4/likec4/compare/v1.47.0...v1.48.0) (2026-01-27)
 
@@ -465,7 +505,7 @@ This release carries a lot of heart from the community. You can see it in behind
   - Explicit order of actors [docs](https://likec4.dev/dsl/views/dynamic/#order-of-actors)
   - Webcomponents: `dynamic-variant` attribute
     ```html
-    <likec4-view view-id="index" dynamic-variant="sequence"/>
+    <likec4-view view-id="index" dynamic-variant="sequence" />
     ```
   - Export Sequence Views to PNG
     ```sh

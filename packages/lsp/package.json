@@ -2,7 +2,7 @@
   "name": "@likec4/lsp",
   "description": "Standalone LikeC4 Language Server for editor integrations",
   "license": "MIT",
-  "version": "1.54.0",
+  "version": "1.55.1",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -50,6 +50,11 @@
     "postpack": "likec4ops postpack",
     "clean": "likec4ops clean"
   },
+  "dependencies": {
+    "bundle-require": "catalog:externals",
+    "esbuild": "catalog:esbuild",
+    "fdir": "catalog:externals"
+  },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/language-server": "workspace:*",
@@ -58,7 +63,6 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "langium": "catalog:langium",
-    "esbuild-wasm": "catalog:esbuild",
     "tsdown": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

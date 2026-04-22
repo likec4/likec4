@@ -12,7 +12,7 @@ catalog:
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
   "@types/node": ~22.19.15
   "@types/pako": ^2.0.4
-  "@typescript/native-preview": 7.0.0-dev.20260405.1
+  "@typescript/native-preview": 7.0.0-dev.20260409.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
@@ -53,7 +53,7 @@ catalogs:
     "@pandacss/preset-panda": ^1.9.1
     "@pandacss/types": ^1.9.1
     "@tailwindcss/vite": ^4.1.18
-    postcss: 8.5.8
+    postcss: 8.5.9
     tailwindcss: ^4.1.18
   esbuild:
     esbuild: 0.27.4
@@ -75,21 +75,21 @@ catalogs:
     zod: ^4.3.6
   hono:
     "@hono/mcp": ^0.2.5
-    "@hono/node-server": ^1.19.12
+    "@hono/node-server": ^1.19.13
     "@hono/oauth-providers": ^0.8.5
     "@hono/zod-validator": ^0.7.6
-    hono: ^4.12.10
+    hono: ^4.12.12
     hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 8.3.17
-    "@mantine/core": 8.3.17
-    "@mantine/hooks": 8.3.17
-    "@mantine/modals": 8.3.17
-    "@mantine/notifications": 8.3.17
-    "@mantine/vanilla-extract": 8.3.17
+    "@mantine/colors-generator": 8.3.18
+    "@mantine/core": 8.3.18
+    "@mantine/hooks": 8.3.18
+    "@mantine/modals": 8.3.18
+    "@mantine/notifications": 8.3.18
+    "@mantine/vanilla-extract": 8.3.18
   mcp:
     "@modelcontextprotocol/sdk": ^1.29.0
   obuild:
@@ -126,12 +126,12 @@ catalogs:
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
-    caniuse-lite: ^1.0.30001786
+    caniuse-lite: ^1.0.30001787
     chroma-js: ^3.2.0
     citty: ^0.2.2
     consola: ^3.4.2
     date-fns: ^4.1.0
-    defu: ^6.1.6
+    defu: ^6.1.7
     esm-env: ^1.2.2
     fast-equals: ^6.0.0
     immer: ^11.1.4
@@ -184,8 +184,8 @@ catalogs:
     "@xstate/store": 3.17.1
     xstate: 5.30.0
   xyflow:
-    "@xyflow/react": 12.10.1
-    "@xyflow/system": 0.0.75
+    "@xyflow/react": 12.10.2
+    "@xyflow/system": 0.0.76
   zag:
     "@zag-js/collection": ^1.33.1
     "@zag-js/react": ^1.33.1

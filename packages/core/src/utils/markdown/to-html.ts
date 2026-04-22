@@ -36,6 +36,9 @@ function parser() {
             'path',
             'div',
           ],
+          protocols: {
+            src: ['data'],
+          },
         },
         defaultSchema,
       ),

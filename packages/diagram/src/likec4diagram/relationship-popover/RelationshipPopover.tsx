@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 //
 // Copyright (c) 2023-2026 Denis Davydkov
-// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
@@ -583,13 +583,18 @@ const Relationship = forwardRef<
       {r.kind && (
         <HStack gap="2">
           <Label>kind</Label>
-          <Text size="xs" className={css({ userSelect: 'all' })}>{r.kind}</Text>
+          <Text size="xs" className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: 0 })}>{r.kind}</Text>
         </HStack>
       )}
       {r.technology && (
         <HStack gap="2">
           <Label>technology</Label>
-          <Text size="xs" className={css({ userSelect: 'all' })}>{r.technology}</Text>
+          <Text
+            size="xs"
+            className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: 0 })}
+          >
+            {r.technology}
+          </Text>
         </HStack>
       )}
       {r.summary.nonEmpty && (

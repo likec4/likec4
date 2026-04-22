@@ -41,7 +41,6 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
       useFileSystem: true,
       manualLayouts: true,
       watch: false,
-      mcp: false,
     } satisfies CreateLanguageServiceOptions,
   )
   configureLogger(opts)
@@ -58,7 +57,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
   WorkspaceManager.initialize({
     capabilities: {},
     processId: null,
-    rootUri: null,
+    rootUri: workspace.uri,
     workspaceFolders: [workspace],
   })
   await WorkspaceManager.initializeWorkspace([
@@ -116,7 +115,6 @@ export async function fromSources(sources: Record<string, string>, options?: Ini
         useFileSystem: false,
         watch: false,
         manualLayouts: false,
-        mcp: false,
       } satisfies CreateLanguageServiceOptions,
     ),
   )

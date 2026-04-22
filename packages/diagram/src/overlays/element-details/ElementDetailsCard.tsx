@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
 // oxlint-disable no-misused-spread
 // oxlint-disable no-misused-spread
 import type {
@@ -293,14 +298,21 @@ export function ElementDetailsCard({
           }}>
           <div className={styles.cardHeader} onPointerDown={e => controls.start(e)}>
             <HStack alignItems="start" justify="space-between" gap={'sm'} mb={'sm'} flexWrap="nowrap">
-              <HStack alignItems="start" gap={'sm'} style={{ cursor: 'default' }} flexWrap="nowrap">
+              <HStack
+                alignItems="start"
+                gap={'sm'}
+                style={{ cursor: 'default', minWidth: 0, overflow: 'hidden' }}
+                flexWrap="nowrap"
+              >
                 {elementIcon}
-                <div>
-                  <Text
-                    component={'div'}
-                    className={styles.title}>
-                    {elementModel.title}
-                  </Text>
+                <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                  <Tooltip label={elementModel.title} openDelay={600} position="bottom-start">
+                    <Text
+                      component={'div'}
+                      className={styles.title}>
+                      {elementModel.title}
+                    </Text>
+                  </Tooltip>
                   {notation && (
                     <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
                       {notation}
@@ -329,7 +341,7 @@ export function ElementDetailsCard({
                   {elementModel.kind}
                 </Badge>
               </div>
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
                 <SmallLabel>tags</SmallLabel>
                 <ElementTags
                   tags={elementModel.tags}

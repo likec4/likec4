@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.54.0",
+  "version": "1.55.1",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -129,16 +129,6 @@
     "configuration": {
       "title": "%ext.title%",
       "properties": {
-        "likec4.mcp.enabled": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Enable MCP Server  \nAdd to your `mcp.json`: \n```json\n{\n  \"servers\": {\n    \"likec4\": {\n      \"type\": \"sse\",\n      \"url\": \"http://localhost:33335/mcp\"\n    }\n  }\n}\n```"
-        },
-        "likec4.mcp.port": {
-          "description": "Port to use for MCP Server",
-          "type": "number",
-          "default": 33335
-        },
         "likec4.graphviz.mode": {
           "markdownDescription": "If you are experiencing issues with the bundled WASM Graphviz, try switch to local binary.  \nThe local binary mode is slower, but more stable and supports larger diagrams.  \n(`dot` must be installed and available in PATH or configured via `#likec4.graphviz.path#`)",
           "type": "string",
@@ -348,11 +338,11 @@
   },
   "devDependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:externals",
-    "esbuild-wasm": "catalog:esbuild",
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/language-services": "workspace:*",
+    "@likec4/mcp": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",

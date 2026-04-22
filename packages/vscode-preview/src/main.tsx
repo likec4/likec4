@@ -4,10 +4,17 @@ import { QueryClientProvider, useIsFetching } from '@tanstack/react-query'
 import ReactDOM from 'react-dom/client'
 import { App } from './App'
 import { IconsProvider } from './IconRenderer'
+import { interceptExternalLinks } from './interceptExternalLinks'
 import { queryClient } from './queries'
 import { QueryErrorBoundary } from './QueryErrorBoundary'
 import { useShowSpinner } from './state'
 import { theme } from './theme'
+import { ExtensionApi } from './vscode'
+
+const cleanupLinks = interceptExternalLinks(ExtensionApi.openExternalUrl)
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => cleanupLinks())
+}
 
 const root = document.getElementById('root') as HTMLDivElement
 const scheme = document.body.classList.contains('dark') ? 'dark' : 'light'

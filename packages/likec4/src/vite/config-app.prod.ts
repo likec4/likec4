@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { viteAliases } from '#vite/aliases'
 import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import react from '@vitejs/plugin-react'
@@ -16,6 +23,7 @@ export type LikeC4ViteConfig = {
   outputDir?: string | undefined
   base?: string | undefined
   title?: string | undefined
+  theme?: 'light' | 'dark' | undefined
   webcomponentPrefix?: string | undefined
   useHashHistory?: boolean | undefined
   likec4AssetsDir: string
@@ -99,6 +107,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       PAGE_TITLE: JSON.stringify(title),
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
+      __DEFAULT_THEME__: JSON.stringify(cfg?.theme ?? 'auto'),
       'process.env.NODE_ENV': '"production"',
     },
     build: {

@@ -6,14 +6,28 @@ import { searchBodyCss, SearchControl, searchDialogCss, SearchPanelContent } fro
 import { FramerMotionConfig, Overlay } from '@likec4/diagram/custom'
 import { useHotkeys } from '@mantine/hooks'
 import { AnimatePresence } from 'motion/react'
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useRef, useState } from 'react'
 import { OverviewSearchAdapter } from './OverviewSearchAdapter'
 
 export const OverviewSearch = memo(() => {
   const [isOpened, setIsOpened] = useState(false)
+  // Retains a reference to the dialog element beyond unmount,
+  // so onExitComplete can close it after the exit animation (#2353)
+  const dialogElRef = useRef<HTMLDialogElement | null>(null)
 
   const open = useCallback(() => setIsOpened(true), [])
   const close = useCallback(() => setIsOpened(false), [])
+
+  const captureDialogRef = useCallback((node: HTMLDialogElement | null) => {
+    if (node) dialogElRef.current = node
+  }, [])
+
+  const handleExitComplete = useCallback(() => {
+    if (dialogElRef.current?.open) {
+      dialogElRef.current.close()
+    }
+    dialogElRef.current = null
+  }, [])
 
   useHotkeys([
     ['mod+k', open, { preventDefault: true }],
@@ -23,9 +37,10 @@ export const OverviewSearch = memo(() => {
     <>
       <SearchControl onClick={open} />
       <FramerMotionConfig>
-        <AnimatePresence>
+        <AnimatePresence onExitComplete={handleExitComplete}>
           {isOpened && (
             <Overlay
+              ref={captureDialogRef}
               fullscreen
               withBackdrop={false}
               backdrop={{

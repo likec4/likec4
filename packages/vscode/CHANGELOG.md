@@ -1,5 +1,21 @@
 # likec4-vscode
 
+## 1.55.1
+
+### Patch Changes
+
+- [#2896](https://github.com/likec4/likec4/pull/2896) [`d628461`](https://github.com/likec4/likec4/commit/d6284616ba5fefbd510fdbf6460238f9be94ab79) Thanks [@davydkov](https://github.com/davydkov)! - Fix programmatic config (`likec4.config.ts`) not being loaded in VSCode extension and standalone LSP
+
+## 1.55.0
+
+### Patch Changes
+
+- [#2880](https://github.com/likec4/likec4/pull/2880) [`dd6de6e`](https://github.com/likec4/likec4/commit/dd6de6e8d3b302dd94c6f23b67d9026bca4f16ee) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix external links in VSCode preview opening blank page instead of browser ([#2422](https://github.com/likec4/likec4/issues/2422))
+
+- [#2877](https://github.com/likec4/likec4/pull/2877) [`51adb85`](https://github.com/likec4/likec4/commit/51adb85ad1097cdd4c95f9082533c8b33b124a42) Thanks [@davydkov](https://github.com/davydkov)! - Extract MCP server and tools to `@likec4/mcp` package. This will allow us to reuse MCP server and tools in other projects, and also will make the codebase cleaner and more modular.
+
+- [#2861](https://github.com/likec4/likec4/pull/2861) [`9687f89`](https://github.com/likec4/likec4/commit/9687f8974309de08001db3699e8712c7beac2b07) Thanks [@davydkov](https://github.com/davydkov)! - Add `likec4.exclude` VS Code setting to exclude files and folders from LikeC4 processing via glob patterns
+
 ## 1.54.0
 
 ### Patch Changes

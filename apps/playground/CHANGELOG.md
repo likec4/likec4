@@ -1,5 +1,31 @@
 # @likec4/playground
 
+## 1.55.1
+
+### Patch Changes
+
+- Updated dependencies [[`41ee8b7`](https://github.com/likec4/likec4/commit/41ee8b715fabecf8022a3440c971adeea1e8f9a3), [`b5e33d1`](https://github.com/likec4/likec4/commit/b5e33d12c548e34f820e565182b0b057505c2f64), [`0b8825b`](https://github.com/likec4/likec4/commit/0b8825b8c4053a7908d0ba96145687824e2bc597), [`36d5627`](https://github.com/likec4/likec4/commit/36d5627ccadda9d80488eaf7695cdde25b61d7df)]:
+  - @likec4/language-server@1.55.1
+  - @likec4/styles@1.55.1
+  - @likec4/diagram@1.55.1
+  - @likec4/core@1.55.1
+  - @likec4/generators@1.55.1
+  - @likec4/log@1.55.1
+  - @likec4/tsconfig@1.55.1
+
+## 1.55.0
+
+### Patch Changes
+
+- Updated dependencies [[`6b87578`](https://github.com/likec4/likec4/commit/6b87578486c821fdc1060d69867a10f3c7e6ca9b), [`f684e2f`](https://github.com/likec4/likec4/commit/f684e2fb59745fe62ac2b43c68f1e453ab884cc8), [`347b48f`](https://github.com/likec4/likec4/commit/347b48f7bb67e0a480e231d57c4feeca09b32383), [`9834ebb`](https://github.com/likec4/likec4/commit/9834ebbfa32bdcb40710aac9038839e9da70031e), [`c0048b6`](https://github.com/likec4/likec4/commit/c0048b6ca156508c893e072dfbf9d75bbe4dd8ad), [`51adb85`](https://github.com/likec4/likec4/commit/51adb85ad1097cdd4c95f9082533c8b33b124a42), [`9687f89`](https://github.com/likec4/likec4/commit/9687f8974309de08001db3699e8712c7beac2b07)]:
+  - @likec4/core@1.55.0
+  - @likec4/language-server@1.55.0
+  - @likec4/diagram@1.55.0
+  - @likec4/generators@1.55.0
+  - @likec4/log@1.55.0
+  - @likec4/tsconfig@1.55.0
+  - @likec4/styles@1.55.0
+
 ## 1.54.0
 
 ### Patch Changes

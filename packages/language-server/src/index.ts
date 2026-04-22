@@ -7,7 +7,6 @@ import { configureLanguageServerLogger } from './configureLogger'
 import { WithFileSystem } from './filesystem/LikeC4FileSystem'
 import { WithLikeC4ManualLayouts } from './filesystem/LikeC4ManualLayouts'
 import { logger } from './logger'
-import { WithMCPServer } from './mcp'
 import type { LikeC4Services, LikeC4SharedServices } from './module'
 import { createLanguageServices, WithGraphviz } from './module'
 import { ConfigurableLayouter } from './views/ConfigurableLayouter'
@@ -19,7 +18,6 @@ export {
   NoFileSystem,
   NoFileSystemWatcher,
   NoLikeC4ManualLayouts,
-  NoMCPServer,
 } from './common-exports'
 
 export {
@@ -30,7 +28,6 @@ export {
 export {
   WithFileSystem,
   WithLikeC4ManualLayouts,
-  WithMCPServer,
 }
 
 interface StartLanguageServerOptions {
@@ -43,11 +40,6 @@ interface StartLanguageServerOptions {
    * @default true
    */
   enableWatcher?: boolean
-  /**
-   * Whether to enable the MCP server.
-   * @default 'sse'
-   */
-  enableMCP?: false | 'stdio' | 'sse' | { port: number }
 
   /**
    * Whether to enable manual layouts, stored in json5 files.
@@ -84,14 +76,13 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
 
   const opts = defu(options, {
     enableWatcher: true,
-    enableMCP: 'sse' as const,
     enableManualLayouts: true,
     graphviz: 'wasm' as const,
     configureLogger: false,
   })
 
   if (opts.configureLogger !== false) {
-    if (opts.configureLogger === 'stderr' || opts.enableMCP === 'stdio') {
+    if (opts.configureLogger === 'stderr') {
       configureLanguageServerLogger({
         lspConnection: connection,
         enableTelemetry: false,
@@ -115,7 +106,6 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
     {
       ...connection && { connection },
       ...WithFileSystem(opts.enableWatcher),
-      ...!!opts.enableMCP && WithMCPServer(opts.enableMCP),
       ...opts.enableManualLayouts && WithLikeC4ManualLayouts,
       ...WithGraphviz(opts.graphviz === 'binary' ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
     },

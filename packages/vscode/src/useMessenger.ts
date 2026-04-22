@@ -113,6 +113,7 @@ export const useMessenger = createSingletonComposable(() => {
     onWebviewCloseMe: notificationHandler(WebviewMsgs.CloseMe),
     onWebviewLocate: notificationHandler(WebviewMsgs.Locate),
     onWebviewNavigateTo: notificationHandler(WebviewMsgs.NavigateTo),
+    onWebviewOpenExternalUrl: notificationHandler(WebviewMsgs.OpenExternalUrl),
     onWebviewUpdateMyTitle: notificationHandler(WebviewMsgs.UpdateMyTitle),
     onWebviewEnhanceWithAI: notificationHandler(WebviewMsgs.EnhanceMeWithAI),
 

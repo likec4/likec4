@@ -2,11 +2,12 @@ import { pipe } from 'remeda'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { drawioCmd } from './drawio/handler'
+import { jpgCmd } from './jpg/handler'
 import { jsonCmd } from './json/handler'
 import { pngCmd } from './png/handler'
 
 /**
- * Registers the `export` command with subcommands png, json, drawio.
+ * Registers the `export` command with subcommands png, jpg, json, drawio.
  * @param yargs - yargs instance to extend
  * @returns yargs chain with export <format> [path] and format-specific options
  */
@@ -19,6 +20,7 @@ const exportCmd = (yargs: yargs.Argv) => {
         pipe(
           yargs.usage(`${k.bold('Usage:')} $0 export <format> [path]`),
           pngCmd,
+          jpgCmd,
           jsonCmd,
           drawioCmd,
         )

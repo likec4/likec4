@@ -1,5 +1,5 @@
 import { configureLanguageServerLogger } from '@likec4/language-server'
-import { fromWorkspace } from '@likec4/language-services/node'
+import { startLikeC4MCP } from '@likec4/mcp'
 import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
 import { boxen } from '../../logger'
@@ -54,6 +54,7 @@ ${k.green('$0 mcp -p 1234')}
         } else {
           configureLanguageServerLogger({
             useStdErr: true,
+            colors: false,
             logLevel: args.verbose ? verboseLogLevel : args.logLevel,
           })
           await startStdioMcp(args.path, args.useDot)
@@ -63,7 +64,8 @@ ${k.green('$0 mcp -p 1234')}
 }
 
 async function startHttpMcp(path: string, useDotBin: boolean, port = 33335) {
-  await fromWorkspace(path, {
+  await startLikeC4MCP({
+    workspacePath: path,
     mcp: { port },
     watch: true,
     configureLogger: false,
@@ -89,7 +91,8 @@ ${k.underline('https://likec4.dev/tooling/mcp/#using-extension')}
 }
 
 async function startStdioMcp(path: string, useDotBin: boolean) {
-  await fromWorkspace(path, {
+  await startLikeC4MCP({
+    workspacePath: path,
     mcp: 'stdio',
     watch: true,
     configureLogger: false,

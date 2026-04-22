@@ -107,6 +107,19 @@ export function activateMessenger() {
     await executeCommand(commands.locate, params)
   })
 
+  messenger.onWebviewOpenExternalUrl(async ({ url }) => {
+    try {
+      const uri = vscode.Uri.parse(url, true)
+      if (uri.scheme !== 'http' && uri.scheme !== 'https') {
+        logger.warn('Rejected non-http(s) external URL', { url, scheme: uri.scheme })
+        return
+      }
+      await vscode.env.openExternal(uri)
+    } catch (err) {
+      logger.warn('Failed to open external URL', { url, err })
+    }
+  })
+
   messenger.handleViewChange(async ({ projectId, viewId, change }) => {
     try {
       logger.debug`request ${change.op} of ${viewId} in project ${projectId}`
