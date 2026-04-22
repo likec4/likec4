@@ -1,5 +1,3 @@
-import { castDraft, produce } from 'immer'
-import { hasAtLeast, pipe } from 'remeda'
 import {
   type DiagramEdge,
   type DiagramNode,
@@ -7,8 +5,10 @@ import {
   type LayoutedViewDriftReason,
   type ViewManualLayoutSnapshot,
   _layout,
-} from '../types'
-import { ifilter, ihead } from '../utils'
+} from '@likec4/core/types'
+import { ifilter, ihead } from '@likec4/core/utils'
+import { castDraft, produce } from 'immer'
+import { hasAtLeast, pipe } from 'remeda'
 import { applyManualLayout } from './applyManualLayout'
 
 /**

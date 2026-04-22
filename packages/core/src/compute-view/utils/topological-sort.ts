@@ -1,9 +1,7 @@
-import Graph from 'graphology'
-import { topologicalSort as topsort } from 'graphology-dag/topological-sort'
-import willCreateCycle from 'graphology-dag/will-create-cycle'
+import type { AnyAux, ComputedEdge, ComputedNode, NodeId } from '@likec4/core/types'
+import { invariant, nonNullable } from '@likec4/core/utils'
+import { Graph, topologicalSort as topsort, willCreateCycle } from '@likec4/core/utils/graphology'
 import { forEach, map, partition, pipe, takeWhile } from 'remeda'
-import type { AnyAux, ComputedEdge, ComputedNode, NodeId } from '../../types'
-import { invariant, nonNullable } from '../../utils'
 import { ancestorsOfNode } from './ancestorsOfNode'
 
 /**

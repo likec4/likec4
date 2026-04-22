@@ -1,6 +1,3 @@
-import { type WritableDraft, castDraft, produce } from 'immer'
-import { hasAtLeast, isDeepEqual, isNullish, isNumber, isTruthy, pick, pipe } from 'remeda'
-import { buildElementNotations } from '../compute-view/utils/buildElementNotations'
 import {
   type DiagramEdge,
   type DiagramEdgeDriftReason,
@@ -13,8 +10,11 @@ import {
   _layout,
   isDynamicView,
   isElementView,
-} from '../types'
-import { ifilter, ihead, invariant, symmetricDifference } from '../utils'
+} from '@likec4/core/types'
+import { ifilter, ihead, invariant, symmetricDifference } from '@likec4/core/utils'
+import { type WritableDraft, castDraft, produce } from 'immer'
+import { hasAtLeast, isDeepEqual, isNullish, isNumber, isTruthy, pick, pipe } from 'remeda'
+import { buildElementNotations } from '../compute-view/utils/buildElementNotations'
 
 const changed = (a: unknown, b: unknown) => {
   if (a === b || (isNullish(a) && isNullish(b))) {

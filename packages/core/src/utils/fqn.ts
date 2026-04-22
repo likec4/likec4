@@ -1,6 +1,6 @@
+import type { Fqn, IterableContainer, ReorderedArray } from '@likec4/core/types'
+import { isString } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
-import type { Fqn, IterableContainer, ReorderedArray } from '../types'
-import { isString } from '../types/guards'
 import { compareNatural } from './compare-natural'
 
 export type Predicate<T> = (x: T) => boolean

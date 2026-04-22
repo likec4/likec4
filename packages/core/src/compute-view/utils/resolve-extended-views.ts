@@ -1,9 +1,7 @@
 import { unique, values } from 'remeda'
 import { type LikeC4View, isElementView, isExtendsElementView } from '../../types/view'
 
-import Graph from 'graphology'
-import { topologicalSort } from 'graphology-dag/topological-sort'
-import willCreateCycle from 'graphology-dag/will-create-cycle'
+import { Graph, topologicalSort, willCreateCycle } from '@likec4/core/utils/graphology'
 import type { AnyAux, aux, ParsedElementView } from '../../types'
 import { isNonEmptyArray } from '../../utils'
 /**

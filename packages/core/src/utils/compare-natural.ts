@@ -27,6 +27,9 @@ export function sortNatural(...args: unknown[]) {
  * Compares two strings lexicographically first, then hierarchically based on their depth.\
  * From parent nodes to leaves
  *
+ * @param separator - The separator to use for splitting the strings
+ * @param deepestFirst - If true, deeper paths come first (reverse order)
+ *
  * @example
  * const lines = [
  *   'b.c',
