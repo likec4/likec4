@@ -24,7 +24,7 @@ import {
 } from 'langium'
 import { isAbsolute } from 'pathe'
 import picomatch from 'picomatch'
-import { filter, find, hasAtLeast, isEmptyish, isNullish, isTruthy, map, pipe, prop, purry } from 'remeda'
+import { filter, find, hasAtLeast, isEmptyish, isNullish, isTruthy, map, pipe, prop, purry, sort } from 'remeda'
 import type { Tagged } from 'type-fest'
 import {
   cleanDoubleSlashes,
@@ -85,7 +85,7 @@ function isParentFolderFor(uri: NormalizedUri) {
 function _overlaps(folderA: WithFolder, folderB: WithFolder): boolean {
   const a = isString(folderA) ? folderA : folderA.folder
   const b = isString(folderB) ? folderB : folderB.folder
-  return a.startsWith(b) || b.startsWith(a)
+  return a === b || a.startsWith(b) || b.startsWith(a)
 }
 
 function overlaps(folderA: WithFolder, folderB: WithFolder): boolean
@@ -167,8 +167,11 @@ const compareProjectByFolder = (a: ProjectData, b: ProjectData) => compareUri(a.
 /**
  * Sort projects by the number of segments in the folder path (deepest first).
  */
-function ensureProjectsOrder(projects: ProjectData[]): ProjectData[] {
-  return projects.sort(compareProjectByFolder)
+function ensureProjectsOrder(projects: ProjectData[]): ReadonlyArray<ProjectData> {
+  if (projects.length <= 1) {
+    return projects
+  }
+  return sort(projects, compareProjectByFolder)
 }
 
 const DefaultProject = {
@@ -250,7 +253,7 @@ export class ProjectsManager {
    * Sorted descending by the number of segments in the folder path.
    * This ensures that the most specific project is used for a document.
    */
-  #projects = [] as Array<ProjectData>
+  #projects = [] as ReadonlyArray<ProjectData>
 
   /**
    * This is a cached lookup for performance.
@@ -273,10 +276,9 @@ export class ProjectsManager {
     return nonNullable(this.#projects.find(p => p.id === id), `Project ${id} not found`)
   })
 
-  #excludedDocuments = new DefaultMap((document: NormalizedUri) => {
-    const docuri = normalizeUri(document)
+  #excludedDocuments = new DefaultMap((docuri: NormalizedUri) => {
     // Workspace-level excludes (from VS Code settings) take precedence
-    if (this.#isExcludedByWorkspace(docuri)) {
+    if (this.isExcludedByWorkspace(docuri)) {
       return true
     }
     const owner = this.#ownerOf.get(docuri)
@@ -292,6 +294,9 @@ export class ProjectsManager {
   })
 
   #ownerOf = new DefaultMap((docuri: NormalizedUri) => {
+    if (this.#projects.length === 0) {
+      return null
+    }
     const hasThisDoc = isParentFolderFor(docuri)
     // first check if the document is part of the project
     return this.#projects.find(hasThisDoc)
@@ -305,15 +310,25 @@ export class ProjectsManager {
     logger.trace`created`
   }
 
-  #isExcludedByWorkspace(uri: NormalizedUri): boolean {
-    return this.#workspaceExclude?.(withoutProtocol(uri)) ?? false
+  /**
+   * Checks if a document is excluded by workspace-level patterns.
+   * These patterns come from VS Code settings and take precedence over project-level excludes.
+   */
+  public isExcludedByWorkspace(uri: NormalizedUri | URI): boolean {
+    if (!this.#workspaceExclude) {
+      return false
+    }
+    if (URI.isUri(uri)) {
+      uri = normalizeUri(uri)
+    }
+    return this.#workspaceExclude(withoutProtocol(uri))
   }
 
   /**
    * Updates the workspace-level exclude patterns from VS Code settings.
    * Called during initial server startup; dynamic changes restart the server.
    */
-  setWorkspaceExcludePatterns(patterns: string[] | undefined): void {
+  public setWorkspaceExcludePatterns(patterns: string[] | undefined): void {
     try {
       if (!Array.isArray(patterns)) {
         this.#workspaceExclude = undefined
@@ -406,7 +421,10 @@ export class ProjectsManager {
   /**
    * Returns all projects that overlap with the specified folder (is parent or child)
    */
-  findOverlaped(folder: URI | string): ProjectData[] {
+  findOverlaped(folder: URI | string): ReadonlyArray<ProjectData> {
+    if (this.#projects.length === 0) {
+      return []
+    }
     const overlapsWith = overlaps(ProjectFolder(folder))
     const isInsideOrIncludes = (p: ProjectData) =>
       overlapsWith(p) || (!!p.includePaths && !!find(p.includePaths, overlapsWith))
@@ -432,7 +450,12 @@ export class ProjectsManager {
     )
   }
   /**
-   * Validates and ensures the project.
+   * Validates and ensures the project data.
+   * If projectId is not specified, returns default project
+   *
+   * If there are multiple projects and default project is not set, throws an error
+   *
+   * @see ensureProjectId - to validate project ID only
    */
   ensureProject(projectId?: ProjectId | undefined): ProjectData {
     projectId = this.ensureProjectId(projectId)
@@ -444,9 +467,12 @@ export class ProjectsManager {
   }
 
   /**
-   * Checks if the specified document should be excluded from processing.
+   * Checks if given document (or URI) must be excluded from processing.
    */
   isExcluded(document: DocOrUri): boolean
+  /**
+   * Checks if given document (or URI) must be excluded in the context of the project.
+   */
   isExcluded(projectId: ProjectId, document: DocOrUri): boolean
   isExcluded(...args: [DocOrUri] | [ProjectId, DocOrUri]): boolean {
     const doc = args.length === 1 ? args[0] : args[1]
@@ -469,37 +495,39 @@ export class ProjectsManager {
   isIncluded(projectId: ProjectId, document: LangiumDocument | URI | string): boolean {
     const uri = normalizeUri(document)
     // Workspace-level excludes (from VS Code settings) take precedence
-    if (this.#isExcludedByWorkspace(uri)) {
+    if (this.isExcludedByWorkspace(uri)) {
       return false
     }
     // If there are no projects, check if document is not excluded
     if (!hasAtLeast(this.#projects, 1)) {
       return !isExcludedByDefault(uri)
     }
-    // If this is the default project, check if the document not belongs to any project
+    // If context is default project
+    // - document does not belong to any project
+    // - document is not excluded
     if (projectId === ProjectsManager.DefaultProjectId) {
       const owner = this.#ownerOf.get(uri)
       return !owner && !isExcludedByDefault(uri)
     }
     const project = this.#projectById.get(projectId)
-    return includes(project, normalizeUri(document))
+    return includes(project, uri)
   }
 
   /**
    * Registers likec4 project by config file.
    */
   async registerConfigFile(configUri: URI, cancelToken?: Cancellation.CancellationToken): Promise<ProjectData> {
+    if (this.isExcludedByWorkspace(configUri)) {
+      throw new Error(
+        `Skipping project config, path ${configUri.fsPath} is excluded by editor settings`,
+      )
+    }
     const normalizedUri = normalizeUri(configUri)
     if (isExcludedByDefault(normalizedUri)) {
       throw new Error(
-        `Failed to register project config, path ${configUri.fsPath} is excluded by: ${
+        `Failed to register project config, path ${configUri.fsPath} is excluded by default: ${
           DefaultProject.config.exclude.map(p => `"${p}"`).join(', ')
         }`,
-      )
-    }
-    if (this.#isExcludedByWorkspace(normalizedUri)) {
-      throw new Error(
-        `Failed to register project config, path ${configUri.fsPath} is excluded by editor settings`,
       )
     }
     try {
@@ -542,15 +570,15 @@ export class ProjectsManager {
 
       // add new project and sort
       this.#projects = ensureProjectsOrder([...this.#projects, project])
-      logger.info`register ${project.id}`
+      logger.info`add ${project.id}`
     } else {
       // if project name is changed, unregister and re-register
       if (project.config.name !== config.name) {
         logger
           .info`project name changed from ${project.config.name} to ${config.name}`
-        logger.info`unregistering ${project.id}`
+        logger.info`remove ${project.id}`
         project.id = this.uniqueProjectId(config.name)
-        logger.info`register ${project.id}`
+        logger.info`add ${project.id}`
       }
 
       this.warnIfConfigOverride(project, configUri)
@@ -566,7 +594,7 @@ export class ProjectsManager {
     // Ignore Errors if any
     safeCall(() => this.updateIncludesExcludes(project))
 
-    if (this.#activeReload) {
+    if (this.isInitiatingOrReloading) {
       // Rebuild projects will notify listeners
       return project
     }
@@ -613,6 +641,14 @@ export class ProjectsManager {
     return UriUtils.relative(project.folderUri, URI.parse(documentUri))
   }
 
+  /**
+   * Returns true if the manager is currently initializing or reloading projects.
+   * This is used to prevent duplicate reload operations.
+   */
+  protected get isInitiatingOrReloading(): boolean {
+    return !!this.#activeReload || !this.services.workspace.WorkspaceManager.isReady
+  }
+
   #activeReload: Promise<void> | null = null
   async reloadProjects(cancelToken?: Cancellation.CancellationToken): Promise<void> {
     if (this.#activeReload) {
@@ -632,7 +668,6 @@ export class ProjectsManager {
       })
       .finally(() => {
         this.#activeReload = null
-        this.notifyListeners()
       })
 
     return await this.#activeReload

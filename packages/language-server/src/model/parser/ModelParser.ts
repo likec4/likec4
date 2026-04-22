@@ -234,9 +234,10 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
 
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
       const id = stringHash(
+        this.docUri,
         astPath,
-        source.model,
-        target.model,
+        FqnRef.flatten(source),
+        FqnRef.flatten(target),
       ) as c4.RelationId
       return exact({
         id,

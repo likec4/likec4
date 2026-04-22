@@ -31,7 +31,8 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
   loadProjectConfig(filepath: URI): Promise<LikeC4ProjectConfig>
 
   /**
-   * Reads the directory information for the given URI.
+   * Reads the directory and returns LikeC4 files.
+   *
    * @param options.recursive If true, recursively reads the directory,
    * @param options.maxDepth Maximum depth to traverse when recursive is true (default: Infinity)
    */
@@ -40,7 +41,10 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
   /**
    * Finds all files in the given directory, matching the given filter.
    */
-  scanDirectory(directory: URI, filter: (filepath: string) => boolean): Promise<FileNode[]>
+  scanDirectory(
+    directory: URI,
+    filter: (filepath: string, isDirectory: boolean) => boolean,
+  ): Promise<FileNode[]>
 
   /**
    * Writes the content to the file system.

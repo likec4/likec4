@@ -3,7 +3,6 @@ import {
   exact,
   FqnRef,
   invariant,
-  isNonEmptyArray,
   LinkedList,
   nameFromFqn,
   nonexhaustive,
@@ -218,6 +217,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
 
       const id = stringHash(
         'deployment',
+        this.docUri,
         astPath,
         source.deployment,
         target.deployment,

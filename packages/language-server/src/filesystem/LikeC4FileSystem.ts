@@ -1,17 +1,18 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import { isLikeC4Config, loadConfig } from '@likec4/config/node'
+import { compareNaturalHierarchically } from '@likec4/core/utils'
 import { fdir } from 'fdir'
 import { URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
 import { mkdirSync, statSync } from 'node:fs'
-import { unlink, writeFile } from 'node:fs/promises'
+import { unlink, writeFile as fsWriteFile } from 'node:fs/promises'
 import { basename, dirname } from 'node:path'
 import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
 import { WithChokidarWatcher } from './ChokidarWatcher'
 import { NoFileSystemWatcher } from './noop'
 import type { FileNode, FileSystemModuleContext, FileSystemProvider } from './types'
-import { ensureOrder, excludeNodeModules, hasLikeC4Ext } from './utils'
+import { ensureOrder, hasLikeC4Ext, isNodeModulesOrRepo } from './utils'
 
 const logger = rootLogger.getChild('filesystem')
 
@@ -26,7 +27,7 @@ export const WithFileSystem = (
   enableWatcher = true,
 ): FileSystemModuleContext => ({
   fileSystemProvider: () => new SymLinkTraversingFileSystemProvider(),
-  ...enableWatcher ? WithChokidarWatcher : NoFileSystemWatcher,
+  ...(enableWatcher ? WithChokidarWatcher : NoFileSystemWatcher),
 })
 
 /**
@@ -57,7 +58,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     try {
       let crawler = new fdir()
         .withSymlinks({ resolvePaths: false })
-        .exclude(excludeNodeModules)
+        .exclude(isNodeModulesOrRepo)
         .withFullPaths()
         .filter(isLikeC4File)
 
@@ -84,7 +85,15 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
   }
 
   async scanProjectFiles(folderUri: URI): Promise<FileNode[]> {
-    return await this.scanDirectory(folderUri, isLikeC4ConfigFile)
+    const files = await this.scanDirectory(folderUri, isLikeC4ConfigFile)
+    if (files.length <= 1) {
+      return files
+    }
+    const compare = compareNaturalHierarchically('/', true)
+    const compareByPath = (a: FileNode, b: FileNode): number => {
+      return compare(a.uri.path, b.uri.path)
+    }
+    return files.sort(compareByPath)
   }
 
   async scanDirectory(
@@ -95,7 +104,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     try {
       const crawled = await new fdir()
         .withSymlinks({ resolvePaths: false })
-        .exclude(excludeNodeModules)
+        .exclude(isNodeModulesOrRepo)
         .withFullPaths()
         .filter(filter)
         .crawl(directory.fsPath)
@@ -130,7 +139,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       mkdirSync(dir, { recursive: true })
     }
     logger.debug('writing file {path}', { path: uri.fsPath })
-    return await writeFile(uri.fsPath, content, {
+    return await fsWriteFile(uri.fsPath, content, {
       encoding: 'utf-8',
     })
   }

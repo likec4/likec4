@@ -28,7 +28,7 @@ const extension = '.likec4.snap'
  * @todo sync with vscode extension watchers
  *       (search for ".likec4.snap" references)
  */
-export const isManualLayoutFile = (path: string) => path.endsWith(extension)
+export const isManualLayoutFile = (path: string) => path !== extension && path.endsWith(extension)
 
 function fileName(view: ViewId): string {
   return `${view}${extension}`
@@ -95,7 +95,7 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       if (snapshot) {
         viewId = snapshot.id
       } else {
-        layoutsLogger.error(`File ${uri} does not exist or is not a valid manual layout file`)
+        layoutsLogger.error(`Snapshot ${uri.fsPath} does not exist or is invalid`)
         viewId = 'index' as ViewId
       }
     }

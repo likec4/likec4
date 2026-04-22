@@ -60,9 +60,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
     rootUri: workspace.uri,
     workspaceFolders: [workspace],
   })
-  await WorkspaceManager.initializeWorkspace([
-    workspace,
-  ])
+  await WorkspaceManager.initialized({})
 
   const userDocuments = langium.shared.workspace.LangiumDocuments.userDocuments.toArray()
 

@@ -7,7 +7,7 @@ import {
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
-import { type AstNode, type Reference, isAstNode } from 'langium'
+import { type AstNode, type Reference, isAstNode, UriUtils } from 'langium'
 import {
   filter,
   flatMap,
@@ -24,7 +24,7 @@ import {
   unique,
 } from 'remeda'
 import { dedent } from 'strip-indent'
-import { cleanDoubleSlashes, hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, joinURL } from 'ufo'
+import { hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, joinURL } from 'ufo'
 import {
   type ParsedElementStyle,
   type ParsedLikeC4LangiumDocument,
@@ -120,6 +120,11 @@ type ParserLevel =
 export class BaseParser {
   isValid: IsValidFn
 
+  /** Full URI of the document */
+  docUri: string
+  /** Path of the document relative to the project root */
+  docPathInProject: string
+
   constructor(
     public readonly services: LikeC4Services,
     public readonly doc: ParsedLikeC4LangiumDocument,
@@ -127,6 +132,8 @@ export class BaseParser {
   ) {
     // do nothing
     this.isValid = checksFromDiagnostics(doc).isValid
+    this.docUri = doc.uri.toString()
+    this.docPathInProject = UriUtils.relative(project.folderUri, doc.uri)
   }
 
   logError(

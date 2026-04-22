@@ -9,7 +9,7 @@ import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { isManualLayoutFile } from './LikeC4ManualLayouts'
 import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './types'
-import { hasLikeC4Ext } from './utils'
+import { hasLikeC4Ext, insideNodeModulesOrRepo } from './utils'
 
 const logger = mainLogger.getChild('chokidar')
 
@@ -56,8 +56,8 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
 
     let watcher = chokidar.watch(folder, {
       ignored: [
-        path => path.includes('node_modules') || path.includes('.git'),
-        (path, stats) => !!stats?.isFile() && !isAnyLikeC4File(path),
+        path => insideNodeModulesOrRepo(path),
+        (path, stats) => !!stats && stats.isFile() && !isAnyLikeC4File(path),
       ],
       followSymlinks: true,
       ignoreInitial: true,
@@ -111,20 +111,19 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
     const uri = URI.file(path)
     switch (true) {
       case isLikeC4Config(filename): {
-        logger.debug`project file changed: ${path}`
+        logger.debug`project config changed: ${path}`
         workspace.ManualLayouts.clearCaches()
         await workspace.ProjectsManager.registerConfigFile(uri)
+        break
+      }
+      case isManualLayoutFile(filename): {
+        logger.debug`manual layout file changed: ${path}`
+        await workspace.ManualLayouts.handleFileSystemUpdate({ update: uri })
         break
       }
       case hasLikeC4Ext(filename): {
         logger.debug`file changed: ${path}`
         await workspace.DocumentBuilder.update([uri], [])
-        break
-      }
-      case isManualLayoutFile(filename): {
-        logger.debug`manual layout file changed: ${path}`
-        workspace.ManualLayouts.clearCaches()
-        await workspace.ManualLayouts.handleFileSystemUpdate({ update: uri })
         break
       }
       default: {

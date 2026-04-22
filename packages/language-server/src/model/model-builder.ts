@@ -17,7 +17,6 @@ import {
   Disposable,
   DocumentState,
   interruptAndCheck,
-  UriUtils,
 } from 'langium'
 import {
   entries,
@@ -41,7 +40,7 @@ import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
 import { assignNavigateTo } from '../view-utils'
-import type { Project, ProjectsManager } from '../workspace'
+import { type Project, ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
 import type { LastSeenArtifacts } from './last-seen-artifacts'
 import type { LikeC4ModelParser } from './model-parser'
@@ -138,7 +137,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           logger.trace`unsafeSyncParseModelData: ${'skipped due to no documents'}`
           return null
         }
-        logger.debug`unsafeSyncParseModelData: ${'completed'}`
+        logger.trace`unsafeSyncParseModelData: ${'completed'}`
         return buildModelData(this.services, project, docs)
       } catch (err) {
         builderLogger.warn(`unsafeSyncParseModelData failed for project ${projectId}`, { err })
@@ -221,7 +220,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       const logger = builderLogger.getChild(projectId)
       const parsedModelData = this.unsafeSyncJoinedModelData(projectId)
       if (!parsedModelData) {
-        logger.warn`unsafeSyncComputeModel: returning EMPTY`
+        if (projectId !== ProjectsManager.DefaultProjectId) {
+          logger.warn`unsafeSyncComputeModel: returning EMPTY`
+        }
         return LikeC4Model.EMPTY.asComputed
       }
       const t0 = performanceMark()
@@ -249,7 +250,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         [_stage]: 'computed',
         views: indexBy(views, prop('id')),
       }
-      logger.debug(`unsafeSyncComputeModel${manualLayouts ? ' with manual layouts' : ''}: {status} in ${t0.pretty}`, {
+      logger.debug(`computeModel${manualLayouts ? ' with manual layouts' : ''}: {status} in ${t0.pretty}`, {
         status: 'completed',
       })
       return this.lastSeen.rememberModel(
@@ -271,7 +272,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       const project = this.projects.getProject(projectId)
       const manualLayouts = await this.manualLayouts.read(project)
       const result = this.unsafeSyncComputeModel(projectId, manualLayouts)
-      if (result === LikeC4Model.EMPTY) {
+      if (result === LikeC4Model.EMPTY && projectId !== ProjectsManager.DefaultProjectId) {
         logger.warn(`computeModel returned EMPTY`)
       }
       return result
@@ -344,24 +345,26 @@ class ProjectModelCache extends ContextCache<ProjectId | Project, CacheKey, unkn
       return project.id
     })
 
-    this.toDispose.push(services.shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Validated, (doc) => {
-      const pm = services.shared.workspace.ProjectsManager
-      const projectId = pm.ownerProjectId(doc)
-      this.clear(projectId)
-    }))
-    this.toDispose.push(services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
-      if (deleted.length > 0) { // react only on deleted documents
+    this.toDispose.push(
+      services.shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Validated, (doc) => {
         const pm = services.shared.workspace.ProjectsManager
-        const projects = unique(map(deleted, pm.ownerProjectId.bind(pm)))
-        if (!hasAtLeast(projects, 1)) {
-          return
+        const projectId = pm.ownerProjectId(doc)
+        this.clear(projectId)
+      }),
+      services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
+        if (deleted.length > 0) { // react only on deleted documents
+          const pm = services.shared.workspace.ProjectsManager
+          const projects = unique(map(deleted, pm.ownerProjectId.bind(pm)))
+          if (!hasAtLeast(projects, 1)) {
+            return
+          }
+          builderLogger.trace`clear project caches for: ${projects} (on delete ${deleted.map(d => d.fsPath)})`
+          for (const project of projects) {
+            this.clear(project)
+          }
         }
-        builderLogger.trace`clear project caches for: ${projects} (on delete ${deleted.map(d => d.fsPath)})`
-        for (const project of projects) {
-          this.clear(project)
-        }
-      }
-    }))
+      }),
+    )
   }
 
   parsedData<R>(project: ProjectId, provider: () => R): R {
