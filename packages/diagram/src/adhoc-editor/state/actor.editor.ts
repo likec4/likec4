@@ -1,4 +1,4 @@
-import { type Any, type Fqn, ModelExpression, ModelFqnExpr } from '@likec4/core'
+import { type Any, type Fqn, type ModelExpression, ModelFqnExpr } from '@likec4/core'
 import { invariant, nonexhaustive, stringHash } from '@likec4/core/utils'
 import { last } from 'remeda'
 import {

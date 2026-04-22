@@ -4,7 +4,7 @@ import { isDevelopment } from 'std-env'
 export default defineConfig({
   clean: !isDevelopment,
   include: [
-    './app/**/*.{ts,tsx}',
+    'src/**/*.{ts,tsx}',
     '../diagram/src/**/*.{ts,tsx}',
   ],
   outdir: isDevelopment ? '../../styled-system/styles/dist' : 'styled-system',

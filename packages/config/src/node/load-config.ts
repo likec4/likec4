@@ -5,7 +5,8 @@ import { defu } from 'defu'
 import { formatMessagesSync } from 'esbuild'
 import JSON5 from 'json5'
 import * as fs from 'node:fs/promises'
-import { basename, dirname, resolve } from 'node:path'
+import { basename, dirname, relative, resolve } from 'node:path'
+import { cwd } from 'node:process'
 import { hasAtLeast, isNonNullish, last, omit } from 'remeda'
 import z from 'zod/v4'
 import { isLikeC4JsonConfig, isLikeC4NonJsonConfig } from '../filenames'
@@ -70,7 +71,7 @@ const loadJsonConfigs = async (filepath: string, stack: string[]): Promise<[...J
  */
 export async function loadConfig(filepath: VscodeURI | string): Promise<LikeC4ProjectConfig> {
   filepath = typeof filepath === 'string' ? filepath : filepath.fsPath
-  logger.getChild('config').debug`Loading config: ${filepath}`
+  logger.getChild('config').debug`Loading config: ${relative(cwd(), filepath)}`
 
   const folder = dirname(filepath)
   const filename = basename(filepath)

@@ -10,6 +10,8 @@ catalog:
   "@changesets/cli": ^2.30.0
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
+  '@rolldown/plugin-babel': ~0.2.3
+  '@tsdown/css': ^0.21.9
   "@types/node": ~22.19.15
   "@types/pako": ^2.0.4
   "@typescript/native-preview": 7.0.0-dev.20260409.1
@@ -20,7 +22,8 @@ catalog:
   oxlint-tsgolint: 0.20.0
   pako: ^2.1.0
   playwright: 1.58.2
-  tsdown: ^0.20.3
+  rolldown: 1.0.0-rc.16
+  tsdown: ^0.21.9
   tsx: 4.21.0
   turbo: 2.9.5
   typescript: 5.9.3
@@ -155,10 +158,10 @@ catalogs:
     ufo: 1.6.3
     unstorage: ^1.17.5
   vite:
-    "@vitejs/plugin-react": ^5.2.0
-    birpc: ^4.0.0
+    "@vitejs/plugin-react": ^6.0.1
+    birpc: ^4.0.0p
     rollup: ^4.59.0
-    vite: ^7.3.1
+    vite: ^8.0.9
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.25.0
     vite-tsconfig-paths: ^6.1.1

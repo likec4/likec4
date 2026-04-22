@@ -29,7 +29,7 @@ export function viteWebcomponentConfig({
 }: LikeC4ViteWebcomponentConfig): InlineConfig {
   const customLogger = viteLogger
 
-  const root = resolve(pkgRoot, 'app')
+  const root = resolve(pkgRoot, '__app__')
   if (!fs.existsSync(root)) {
     consola.error(`app root does not exist: ${root}`)
     throw new Error(`app root does not exist: ${root}`)
@@ -60,7 +60,7 @@ export function viteWebcomponentConfig({
       minify: 'esbuild',
       chunkSizeWarningLimit,
       lib: {
-        entry: 'src/webcomponent.tsx',
+        entry: 'src/webcomponent.js',
         fileName(_format, _entryName) {
           return filename
         },

@@ -4,10 +4,10 @@
   "include": [],
   "references": [
     {
-      "path": "./tsconfig.scripts.json"
+      "path": "./tsconfig.src.json"
     },
     {
-      "path": "./tsconfig.cli.json"
+      "path": "./tsconfig.vite.json"
     }
   ]
 }

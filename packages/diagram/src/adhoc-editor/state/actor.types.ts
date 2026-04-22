@@ -1,14 +1,9 @@
 import type { AdhocViewPredicate } from '@likec4/core/compute-view'
-import {
-  type Fqn,
-  type FqnRef,
-  type LayoutedElementView,
-  type ModelExpression,
-  type ModelFqnExpr,
-  isViewRulePredicate,
+import type {
+  Fqn,
+  LayoutedElementView,
+  ModelFqnExpr,
 } from '@likec4/core/types'
-import { difference, intersection, toSet } from '@likec4/core/utils'
-import { filter, isNonNullish, map, pipe } from 'remeda'
 import { setup } from 'xstate'
 import type { PromiseActorLogic } from 'xstate/actors'
 

@@ -11,5 +11,5 @@ export const useDrawerOpened = () => useStore(drawerOpenedAtom)
 
 export const SidebarDrawerOps = {
   open: () => drawerOpenedAtom.set(true),
-  close: () => drawerOpenedAtom.set(false)
+  close: () => drawerOpenedAtom.set(false),
 }

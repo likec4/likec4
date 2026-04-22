@@ -116,15 +116,15 @@ export async function viteBuild({
     }
   }
 
-  if (buildWebcomponent && !outputSingleFile) {
-    const webcomponentConfig = viteWebcomponentConfig({
-      webcomponentPrefix,
-      languageServices,
-      outDir: publicDir,
-      base: config.base,
-    })
-    await build(webcomponentConfig)
-  }
+  // if (buildWebcomponent && !outputSingleFile) {
+  //   const webcomponentConfig = viteWebcomponentConfig({
+  //     webcomponentPrefix,
+  //     languageServices,
+  //     outDir: publicDir,
+  //     base: config.base,
+  //   })
+  //   await build(webcomponentConfig)
+  // }
 
   // Static website
   await build({

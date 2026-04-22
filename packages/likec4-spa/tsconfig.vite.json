@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "lib/vite/.tsbuildinfo",
+    "outDir": "lib/vite",
+    "exactOptionalPropertyTypes": false,
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "*.ts",
+    "package.json"
+  ],
+  "references": [
+    {
+      "path": "../../styled-system/preset/"
+    },
+    {
+      "path": "../../styled-system/styles/"
+    }
+  ]
+}

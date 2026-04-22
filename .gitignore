@@ -53,7 +53,9 @@ apps/playground/src/**/*.js
 apps/playground/src/**/*.d.ts
 packages/*/src/**/*.js
 packages/*/src/**/*.d.ts
+packages/**/src/routeTree.gen.ts
 !packages/generators/src/drawio/dist-index.d.ts
+!packages/likec4-spa/src/global.d.ts
 
 vite.config.ts.timestamp*
 vitest.config.ts.timestamp*

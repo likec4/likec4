@@ -23,7 +23,7 @@ type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
 }
 
 export async function viteDev({
-  buildWebcomponent = true,
+  buildWebcomponent = false,
   hmr = true,
   webcomponentPrefix = 'likec4',
   title,

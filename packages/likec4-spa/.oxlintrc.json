@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": [
+    "../../.oxlintrc.json"
+  ],
+  "rules": {
+    "react_perf/jsx-no-jsx-as-prop": "warn",
+    "react/exhaustive-deps": "warn",
+    "typescript/no-floating-promises": "off"
+  }
+}

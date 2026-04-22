@@ -6,8 +6,10 @@ import { resolve } from 'node:path'
 import { cwd } from 'node:process'
 import { hasAtLeast } from 'remeda'
 import type { Plugin } from 'vite'
-import { logger } from './logger'
+import { logger as mainLogger } from './logger'
 import { k } from './virtuals/_shared'
+
+const logger = mainLogger.getChild('icons')
 
 const PLUGIN_NAME = 'likec4:icon-bundle'
 
@@ -29,7 +31,7 @@ export function iconBundlePlugin(options: {
       const resolvedPath = require.resolve(`@likec4/icons/${group}/${icon}`, {
         paths: paths,
       })
-      logger.trace(k.dim(`resolved local `) + resolvedPath)
+      logger.trace(k.dim(`found in package `) + resolvedPath)
       return await readFile(resolvedPath, 'utf-8')
     } catch {
       // ignore

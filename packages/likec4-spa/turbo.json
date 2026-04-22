@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "generate": {
+      "outputs": [
+        "src/routeTree.gen.ts"
+      ],
+      "outputLogs": "new-only"
+    }
+  }
+}

@@ -71,6 +71,12 @@ export type LikeC4VitePluginOptions =
      */
     watch?: boolean
 
+    /**
+     * The log level to use.
+     * @default 'warning'
+     */
+    logLevel?: 'trace' | 'debug' | 'info' | 'warning' | 'error' | undefined
+
     // This option is not allowed when using `workspace`
     languageServices?: never
   } | {
@@ -84,6 +90,7 @@ export type LikeC4VitePluginOptions =
     throwIfInvalid?: never
     graphviz?: never
     watch?: never
+    logLevel?: never
   })
 
 const hmrProjectVirtuals = [
@@ -144,14 +151,57 @@ export function LikeC4VitePlugin({
       if (opts.languageServices) {
         likec4 = opts.languageServices
       } else {
-        const watch = shouldDisposeOnStop = opts.watch ?? config.mode === 'development'
+        const isDev = config.mode === 'development'
+        const watch = shouldDisposeOnStop = opts.watch ?? isDev
+
+        // if (isDev) {
+        //   const log = this
+        //   const format = getAnsiColorFormatter({
+        //     format: ({ category, message }) => {
+        //       return `${category} ${message}`
+        //     },
+        //   })
+        //   configureLogger({
+        //     reset: true,
+        //     sinks: {
+        //       console: (logObj) => {
+        //         try {
+        //           switch (logObj.level) {
+        //             case 'trace':
+        //             case 'debug':
+        //               log.debug(format(logObj))
+        //               break
+        //             case 'info':
+        //               log.info(format(logObj))
+        //               break
+        //             case 'warning':
+        //               log.warn(format(logObj))
+        //               break
+        //             case 'error':
+        //             case 'fatal': {
+        //               log.error(format(logObj))
+        //               break
+        //             }
+        //             default:
+        //               nonexhaustive(logObj.level)
+        //           }
+        //         } catch (e) {
+        //           console.error('Error while logging to LSP connection:', e)
+        //         }
+        //       },
+        //     },
+        //   })
+        // }
+
         const instance = await fromWorkspace(opts.workspace ?? config.root, {
           graphviz: opts.graphviz ?? 'wasm',
           configureLogger: 'console',
+          logLevel: opts.logLevel ?? 'warning',
           printErrors: opts.printErrors ?? true,
           throwIfInvalid: opts.throwIfInvalid ?? false,
           watch,
         })
+
         likec4 = instance.languageServices
       }
       assetsDir = likec4.workspaceUri.fsPath
@@ -280,7 +330,7 @@ export function LikeC4VitePlugin({
         await likec4.dispose()
       }
     },
-  }
+  } satisfies Plugin
 
   return [
     iconBundlePlugin({

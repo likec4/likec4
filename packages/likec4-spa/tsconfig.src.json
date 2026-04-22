@@ -11,32 +11,32 @@
     ],
     "noPropertyAccessFromIndexSignature": false,
     "module": "Preserve",
-    "moduleResolution": "bundler",
-    "tsBuildInfoFile": "../lib/app/.tsbuildinfo",
-    "outDir": "../lib/app",
-    "rootDir": ".",
+    "tsBuildInfoFile": "lib/src/.tsbuildinfo",
+    "outDir": "lib/src",
+    "rootDir": "src",
     "types": [
       "vite/client",
       "@likec4/vite-plugin/modules"
     ]
   },
   "include": [
-    "global.d.ts",
-    "src",
-    "react"
+    "src/"
   ],
   "references": [
     {
-      "path": "../tsconfig.cli.json"
+      "path": "../core/"
     },
     {
-      "path": "../../core/tsconfig.json"
+      "path": "../vite-plugin/"
     },
     {
-      "path": "../../diagram/tsconfig.src.json"
+      "path": "../diagram/tsconfig.src.json"
     },
     {
-      "path": "../../../styled-system/styles/"
+      "path": "../../styled-system/styles/"
+    },
+    {
+      "path": "../../styled-system/preset/"
     }
   ]
 }

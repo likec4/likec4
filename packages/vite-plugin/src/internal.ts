@@ -2,7 +2,7 @@
  * This module is used by the Vite plugin to generate the virtual modules
  */
 import { LikeC4Model } from '@likec4/core/model'
-import type { DiagramView, LayoutedLikeC4ModelData } from '@likec4/core/types'
+import type { LayoutedLikeC4ModelData, LayoutedView } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
 import { createBirpc } from 'birpc'
 import { deepEqual, shallowEqual } from 'fast-equals'
@@ -52,8 +52,8 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
   updateModel: (data: LayoutedLikeC4ModelData) => void
   $likec4model: Atom<LikeC4Model.Layouted>
   useLikeC4Model: () => LikeC4Model.Layouted
-  useLikeC4Views: () => ReadonlyArray<DiagramView>
-  useLikeC4View: (viewId: string) => DiagramView | null
+  useLikeC4Views: () => ReadonlyArray<LayoutedView>
+  useLikeC4View: (viewId: string) => LayoutedView | null
 } {
   const $likec4model = computed($atom, (data) => LikeC4Model.create(data))
 
@@ -74,7 +74,7 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
   }
 
   // Return views with manual layouts applied via $layouted (#2553).
-  const $likec4views: Atom<ReadonlyArray<DiagramView>> = computed(
+  const $likec4views: Atom<ReadonlyArray<LayoutedView>> = computed(
     $likec4model,
     (model) => [...model.views()].map(v => v.$layouted),
   )
@@ -83,11 +83,11 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
     return useStore($likec4model)
   }
 
-  function useLikeC4Views(): ReadonlyArray<DiagramView> {
+  function useLikeC4Views(): ReadonlyArray<LayoutedView> {
     return useStore($likec4views)
   }
 
-  function useLikeC4View(viewId: string): DiagramView | null {
+  function useLikeC4View(viewId: string): LayoutedView | null {
     const $view = useMemo(
       () => computed($likec4model, (model) => model.findView(viewId)?.$layouted ?? null),
       [viewId],

@@ -9,6 +9,7 @@ export function viteAliases() {
     '@likec4/diagram': resolve(pkg, '../diagram/src'),
     'likec4/react': resolve(pkg, '../react/src'),
     '@likec4/styles': resolve(pkg, '../../styled-system/styles/dist'),
-    'react-dom/server': resolve(pkg, 'app/react/react-dom-server-mock.ts'),
+    'likec4/vite-plugin/internal': resolve(pkg, './src/vite-plugin/internal.ts'),
+    // 'react-dom/server': resolve(pkg, 'app/react/react-dom-server-mock.ts'),
   }
 }

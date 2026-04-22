@@ -4,23 +4,6 @@
     "//"
   ],
   "tasks": {
-    "generate:app": {
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!src/**"
-      ],
-      "outputs": [
-        "app/src/routeTree.gen.ts"
-      ],
-      "outputLogs": "new-only"
-    },
-    "generate": {
-      "dependsOn": [
-        "generate:app",
-        "^generate"
-      ],
-      "outputs": []
-    },
     "build-react": {
       "dependsOn": [
         "@likec4/react#build"
@@ -31,7 +14,7 @@
     },
     "build-app": {
       "dependsOn": [
-        "@likec4/diagram#build"
+        "@likec4/spa#build"
       ],
       "outputs": [
         "__app__/**"

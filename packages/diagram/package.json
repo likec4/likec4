@@ -136,7 +136,6 @@
     "vite": "catalog:vite",
     "vite-plugin-dts": "catalog:vite",
     "vitest": "catalog:vitest",
-    "wireit": "catalog:",
     "zx": "catalog:"
   }
 }
