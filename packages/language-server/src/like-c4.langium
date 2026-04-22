@@ -760,11 +760,11 @@ DeploymentViewRule:
   DeploymentViewRulePredicate |
   DeploymentViewRuleStyle |
   ViewRuleAutoLayout |
-  ViewRuleExhaustive
+  ViewRuleAncestors
 ;
 
-ViewRuleExhaustive:
-  key='exhaustive' ':'? value=BOOLEAN ';'?
+ViewRuleAncestors:
+  key='showAncestors' ':'? value=BOOLEAN ';'?
 ;
 
 DeploymentViewRuleStyle:

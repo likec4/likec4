@@ -29,15 +29,15 @@ export type DeploymentViewRule<A extends AnyAux = Unknown> = ExclusiveUnion<{
   Exclude: DeploymentViewExcludePredicate<A>
   Style: DeploymentViewRuleStyle<A>
   AutoLayout: ViewRuleAutoLayout
-  Exhaustive: ParsedViewRuleExhaustive
+  Exhaustive: ParsedViewRuleAncestors
 }>
 
-export interface ParsedViewRuleExhaustive<A extends AnyAux = Unknown> {
+export interface ParsedViewRuleAncestors<A extends AnyAux = Unknown> {
   /**
    * When true, ancestor elements of included deployment nodes are also included in the view.
    * @default false (ancestors are not included)
    */
-  exhaustive?: boolean
+  showAncestors?: boolean
 }
 
 export interface ParsedDeploymentView<A extends AnyAux = Unknown> extends BaseParsedViewProperties<A> {
