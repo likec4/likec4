@@ -7,6 +7,7 @@ import type { ViewsBuilder } from './Builder.views'
 export interface DeploymentViewBuilder<T extends AnyTypes>
   extends LikeC4ViewBuilder<T, T['DeploymentFqn'], Types.ToExpression<T>>
 {
+  showAncestors(value: boolean): this
 }
 
 export type DeploymentRulesBuilderOp<Types extends AnyTypes> = (

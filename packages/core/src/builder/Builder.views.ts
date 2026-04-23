@@ -11,7 +11,15 @@ import {
 } from '../types'
 import type { AnyTypes } from './_types'
 import type { Builder } from './Builder'
-import type { $autoLayout, $exclude, $include, $rules, $style, LikeC4ViewBuilder } from './Builder.view-common'
+import type {
+  $autoLayout,
+  $exclude,
+  $include,
+  $rules,
+  $showAncestors,
+  $style,
+  LikeC4ViewBuilder,
+} from './Builder.view-common'
 import { type AddDeploymentViewHelper, type DeploymentViewBuilder, $deploymentExpr } from './Builder.view-deployment'
 import {
   type AddViewHelper,
@@ -347,6 +355,7 @@ export type ViewsHelpers = {
   $style: typeof $style
   $rules: typeof $rules
   $autoLayout: typeof $autoLayout
+  $showAncestors: typeof $showAncestors
 }
 
 export type ViewsBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
@@ -366,7 +375,8 @@ export function mkViewBuilder(view: Writable<ElementView<any>>): ElementViewBuil
 export function mkViewBuilder(
   view: Writable<ElementView<any> | DeploymentView<any>>,
 ) {
-  const viewBuilder: LikeC4ViewBuilder<AnyTypes, string, any> = {
+  // 1. Define all shared methods in a base object
+  const baseBuilder = {
     $expr: view[_type] === 'deployment' ? $deploymentExpr : $expr,
     autoLayout(direction: AutoLayoutDirection, margins: { rank: number; node: number } | undefined) {
       view.rules.push(
@@ -376,33 +386,20 @@ export function mkViewBuilder(
           nodeSep: margins?.node,
         }) satisfies ViewRuleAutoLayout,
       )
-      return viewBuilder
+      return this // <-- Use 'this' for chaining
     },
     exclude(...exprs: any[]) {
-      view.rules.push({
-        exclude: exprs,
-      })
-      return viewBuilder
+      view.rules.push({ exclude: exprs })
+      return this
     },
     include(...exprs: any[]) {
-      view.rules.push({
-        include: exprs,
-      })
-      return viewBuilder
+      view.rules.push({ include: exprs })
+      return this
     },
     style(rule: any) {
       view.rules.push(rule)
-      return viewBuilder
+      return this
     },
-    // title(title: string) {
-    //   view.title = title
-    //   return viewBuilder
-    // },
-    // description(description: string) {
-    //   view.description = description
-    //   return viewBuilder
-    // }
-    // This is only for TypeScript
     get Expr(): string {
       throw new Error('Expr is not available in runtime')
     },
@@ -416,5 +413,17 @@ export function mkViewBuilder(
       throw new Error('TypedExpr is not available in runtime')
     },
   }
-  return viewBuilder
+
+  // 2. Conditionally attach Deployment-specific methods
+  if (view[_type] === 'deployment') {
+    return Object.assign(baseBuilder, {
+      showAncestors(value: boolean) {
+        view.rules.push({ showAncestors: value })
+        return this
+      },
+    }) as any // Type assertion needed for the overloads
+  }
+
+  // 3. Return the standard Element builder
+  return baseBuilder as any
 }

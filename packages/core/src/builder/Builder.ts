@@ -66,7 +66,7 @@ import type {
 } from './Builder.deploymentModel'
 import type { AddElement } from './Builder.element'
 import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelpers } from './Builder.model'
-import { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
+import { $autoLayout, $exclude, $include, $rules, $showAncestors, $style } from './Builder.view-common'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 import type { ElementViewRulesBuilder } from './Builder.view-element'
 import { type ViewsBuilder, type ViewsBuilderFunction, type ViewsHelpers, mkViewBuilder } from './Builder.views'
@@ -767,6 +767,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         $include,
         $rules,
         $style,
+        $showAncestors,
       },
       deployment: {
         deployment: (...ops: ((b: DeploymentModelBuilder<T>) => DeploymentModelBuilder<T>)[]) => {

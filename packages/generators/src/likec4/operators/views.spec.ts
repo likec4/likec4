@@ -32,7 +32,9 @@ const builder = Builder
     )
   )
 
-const { views: { view, viewOf, views, $rules, $style, $include, $autoLayout, $exclude } } = builder.helpers()
+const {
+  views: { view, viewOf, deploymentView, views, $rules, $style, $include, $autoLayout, $exclude, $showAncestors },
+} = builder.helpers()
 
 type T = typeof builder['Types']
 
@@ -300,5 +302,41 @@ describe('view', () => {
         }
       }"
     `)
+  })
+
+  describe('showAncestors', () => {
+    it('should print showAncestors true', () => {
+      expect(
+        deploymentView(
+          'deployment',
+          $rules(
+            $showAncestors(true),
+          ),
+        ),
+      ).toMatchInlineSnapshot(`
+        "views {
+          deployment view deployment {
+            showAncestors true
+          }
+        }"
+      `)
+    })
+
+    it('should print showAncestors false', () => {
+      expect(
+        deploymentView(
+          'deployment',
+          $rules(
+            $showAncestors(false),
+          ),
+        ),
+      ).toMatchInlineSnapshot(`
+        "views {
+          deployment view deployment {
+            showAncestors false
+          }
+        }"
+      `)
+    })
   })
 })
