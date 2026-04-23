@@ -1,31 +1,67 @@
-import { generateColors } from '@mantine/colors-generator'
 import chroma from 'chroma-js'
 import { isDeepEqual } from 'remeda'
 import { invariant } from '../utils'
+import { adjustToneHex } from '../utils/colors'
 import type { ColorLiteral, HexColor, ThemeColorValues } from './types'
 
 const CONTRAST_MIN_WITH_FOREGROUND = 60
 const CONTRAST_START_TONE_DIFFERENCE = 2
 const CONTRAST_STEP_TONE_DIFFERENCE = 1
 
+type ColorPalette = {
+  el_main: HexColor
+  el_secondary: HexColor
+  el_hiContrast: HexColor
+  el_loContrast: HexColor
+  rel_main: HexColor
+  rel_secondary: HexColor
+  rel_hiContrast: HexColor
+}
+
 export function computeColorValues(color: ColorLiteral): ThemeColorValues {
   invariant(chroma.valid(color), `Invalid color: ${color}`)
-  const colors = generateColors(color)
+  const normalizedRefColor = color.trim()
+  const refColor = (
+    normalizedRefColor.startsWith('#') ? normalizedRefColor : chroma(normalizedRefColor).hex()
+  ) as HexColor
 
-  const fillColor = colors[6]
-  const contrastedColors = getContrastedColorsAPCA(fillColor)
+  const colors = getColorPalette(refColor)
 
   return {
     elements: {
-      fill: fillColor as HexColor,
-      stroke: colors[7] as HexColor,
-      ...contrastedColors,
+      fill: colors.el_main,
+      stroke: colors.el_secondary,
+      hiContrast: colors.el_hiContrast,
+      loContrast: colors.el_loContrast,
     },
     relationships: {
-      line: colors[4] as HexColor,
-      label: colors[3] as HexColor,
-      labelBg: colors[9] as HexColor,
+      line: colors.rel_secondary,
+      label: colors.rel_hiContrast,
+      labelBg: colors.rel_main,
     },
+  }
+}
+
+function getColorPalette(refColor: HexColor): ColorPalette {
+  const el_main = refColor
+  const el_secondary = chroma(el_main).darken(0.8).hex() as HexColor
+  const el_contrastedColor = getContrastedColorsAPCA(el_main)
+  const el_hiContrast = el_contrastedColor.hiContrast
+  const el_loContrast = el_contrastedColor.loContrast
+
+  const rel_main = el_main
+  const rel_secondary = adjustToneHex(el_main, -0.25)
+  const rel_contrastedColor = getContrastedColorsAPCA(rel_main)
+  const rel_hiContrast = rel_contrastedColor.hiContrast
+
+  return {
+    el_main,
+    el_secondary,
+    el_hiContrast,
+    el_loContrast,
+    rel_main,
+    rel_secondary,
+    rel_hiContrast,
   }
 }
 
@@ -65,12 +101,12 @@ export function getContrastedColorsAPCA(
   // Choose the max contrast between the two
   if (Math.abs(contrastWithLight) > Math.abs(contrastWithDark)) {
     return {
-      hiContrast: lightColorRgb.brighten(0.4).hex() as HexColor,
+      hiContrast: chroma(lightColorRgb.brighten(0.4)).hex() as HexColor,
       loContrast: lightColorRgb.hex() as HexColor,
     }
   } else {
     return {
-      hiContrast: darkColorRgb.darken(0.4).hex() as HexColor,
+      hiContrast: chroma(darkColorRgb.darken(0.4)).hex() as HexColor,
       loContrast: darkColorRgb.hex() as HexColor,
     }
   }

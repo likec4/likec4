@@ -155,7 +155,8 @@ export const globalCss: ExtendableGlobalCss = {
         '--xy-edge-stroke-selected': __v('palette.relationStrokeSelected'),
         '--xy-edge-label-color': {
           base: __v('palette.relationLabel'),
-          _light: `oklch(from ${__v('palette.relationLabel')} calc(l + 0.05) c h)`,
+          _light: `oklch(from ${__v('palette.relationLabel')} calc(l - 0.1) c h)`,
+          _dark: `oklch(from ${__v('palette.relationLabel')} calc(l - 0.4) c h)`,
         },
         '--xy-edge-label-background-color': {
           _dark: alpha(__v('palette.relationLabelBg'), 45),

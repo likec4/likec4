@@ -8,7 +8,7 @@ describe('LikeC4ModelBuilder - Custom Colors', () => {
     const { validate, buildModel, buildLikeC4Model } = createTestServices()
     const { errors, warnings } = await validate(`
       specification {
-        color custom-color1 rgb(219, 131, 219)
+        color custom-color1 #db83db
         color custom-color2 #FFFF00
 
         element component {
@@ -25,33 +25,32 @@ describe('LikeC4ModelBuilder - Custom Colors', () => {
     expect(modelData.specification).toHaveProperty('customColors', {
       'custom-color1': {
         elements: {
-          fill: '#c840c8',
-          hiContrast: '#ffffff',
-          loContrast: '#ffffff',
-          stroke: '#b032b1',
+          fill: '#db83db',
+          hiContrast: '#000000',
+          loContrast: '#000000',
+          stroke: '#b25db3',
         },
         relationships: {
-          label: '#db83db',
-          labelBg: '#8a1f8b',
-          line: '#d164d1',
+          label: '#000000',
+          labelBg: '#db83db',
+          line: '#a462a4',
         },
       },
       'custom-color2': {
         elements: {
-          fill: '#ffff00',
+          fill: '#FFFF00',
           hiContrast: '#4d5c00',
           loContrast: '#606e00',
-          stroke: '#e3e300',
+          stroke: '#d2d600',
         },
         relationships: {
-          labelBg: '#adae00',
-          label: '#ffff64',
-          line: '#ffff38',
+          labelBg: '#FFFF00',
+          label: '#4d5c00',
+          line: '#bfbf00',
         },
       },
     })
   })
-
   it('custom colors are available in the styles', async ({ expect }) => {
     const { validate, buildLikeC4Model } = createTestServices()
     const { errors, warnings } = await validate(`
