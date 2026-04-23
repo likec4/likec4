@@ -4,8 +4,4 @@
 "@likec4/core": minor
 ---
 
-Improve color palette used for element rendering to be more accurate with the color specified by the user
-
-- Replace Mantine colors generator with custom implementation
-- Update relationship colors for improved text legibility in both light and dark modes
-- Add dark mode support for edge label text color with proper contrast
+Improve color palette used for element rendering to be more accurate with the color specified by the user. Fix https://github.com/likec4/likec4/issues/2101
