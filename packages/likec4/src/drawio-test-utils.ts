@@ -2,7 +2,7 @@
  * Shared test helpers for DrawIO export/import specs (DRY between drawio-tutorial and drawio-demo).
  */
 
-import { getAllDiagrams } from '@likec4/generators'
+import { getAllDiagrams } from '@likec4/generators/drawio'
 import { expect } from 'vitest'
 
 /** Regex: nested <Array><Array> inside mxGeometry (invalid in draw.io; causes "Could not add object Array"). */

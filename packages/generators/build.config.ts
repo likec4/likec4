@@ -5,6 +5,7 @@ export default defineBuildConfig({
     type: 'bundle',
     input: [
       './src/index.ts',
+      './src/drawio/index.ts',
       './src/likec4/index.ts',
     ],
     rolldown: {
