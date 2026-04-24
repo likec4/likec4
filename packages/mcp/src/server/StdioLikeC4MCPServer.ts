@@ -2,6 +2,7 @@ import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import type { AsyncDisposable } from 'langium'
+import { setMcpServerCtx } from '../ctx'
 import { logger } from '../utils'
 import { createMCPServer } from './createMCPServer'
 
@@ -45,6 +46,7 @@ export class StdioLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
     }
     logger.info('Starting MCP stdio server')
     this._mcp = createMCPServer(this.services)
+    setMcpServerCtx(this._mcp)
     this.transport = new StdioServerTransport()
     await this._mcp.connect(this.transport)
     logger.info('LikeC4 MCP Server running on stdio')
@@ -63,6 +65,7 @@ export class StdioLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
     } finally {
       this._mcp = undefined
       this.transport = undefined
+      setMcpServerCtx(undefined)
     }
   }
 }
