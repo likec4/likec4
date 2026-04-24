@@ -79,7 +79,7 @@ catalogs:
     "@hono/node-server": ^1.19.13
     "@hono/oauth-providers": ^0.8.5
     "@hono/zod-validator": ^0.7.6
-    hono: ^4.12.12
+    hono: ^4.12.14
     hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
@@ -154,7 +154,7 @@ catalogs:
     safe-stringify: ^1.3.0
     sharp: 0.34.5
     strip-indent: ^4.1.1
-    tinyrainbow: ^3.0.3
+    tinyrainbow: ^3.1.0
     ufo: 1.6.3
     unstorage: ^1.17.5
   vite:

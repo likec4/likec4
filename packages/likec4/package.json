@@ -237,7 +237,7 @@
     "remeda": "catalog:utils",
     "semver": "^7.7.4",
     "strip-indent": "catalog:utils",
-    "tinyrainbow": "^3.0.3",
+    "tinyrainbow": "^3.1.0",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

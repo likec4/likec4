@@ -14,13 +14,13 @@ const slate = {
 const blue = {
   line: '#3b82f6', // 500
   labelBg: '#172554', // 950
-  label: '#60a5fa', // 400
+  label: '#eff5fd', // 400
 } satisfies RelationshipColorValues
 
 const sky = {
   line: '#0ea5e9', // 500
   labelBg: '#082f49', // 950
-  label: '#38bdf8', // 400
+  label: '#d4f2ff', // 400
 } satisfies RelationshipColorValues
 
 export const RelationshipColors: Record<ThemeColor, RelationshipColorValues> = {
@@ -34,19 +34,19 @@ export const RelationshipColors: Record<ThemeColor, RelationshipColorValues> = {
   green: {
     line: '#15803d', // 700
     labelBg: '#052e16', // 950
-    label: '#22c55e', // 500
+    label: '#bbfcd3', // 500
   },
   indigo: {
     line: '#6366f1', // 500
     labelBg: '#1e1b4b', // 950
-    label: '#818cf8', // 400
+    label: '#cbd0fd', // 400
   },
   muted: slate,
   primary: blue,
   red: {
     line: '#AC4D39',
     labelBg: '#b91c1c',
-    label: '#f5b2a3',
+    label: '#fcd9d2',
   },
   secondary: sky,
   sky,
