@@ -35,7 +35,7 @@
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "obuild",
+    "build": "tsdown",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
     "lint:package": "pnpx publint ./package.tgz",
@@ -51,7 +51,7 @@
     "merge-error-cause": "^5.0.2",
     "safe-stringify": "catalog:utils",
     "typescript": "catalog:",
-    "obuild": "catalog:obuild",
+    "tsdown": "catalog:",
     "wrap-error-message": "^3.0.1"
   }
 }

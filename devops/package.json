@@ -12,7 +12,8 @@
   },
   "exports": {
     ".": "./likec4ops.ts",
-    "./vitest": "./vitest.ts"
+    "./vitest": "./vitest.ts",
+    "./tsdown": "./tsdown.ts"
   },
   "dependencies": {
     "parse-gitignore": "^2.0.0",
@@ -24,6 +25,7 @@
     "defu": "catalog:utils",
     "pathe": "catalog:utils",
     "tsx": "catalog:",
+    "tsdown": "catalog:",
     "zx": "catalog:"
   },
   "devDependencies": {
