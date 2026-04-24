@@ -31,11 +31,11 @@ Install it globally (or use `npx`):
 
 ```sh
 npm install -g @likec4/mcp
-likec4-mcp-server -h
+likec4-mcp -h
 ```
 
 ```
-USAGE `likec4-mcp-server [OPTIONS] [WORKSPACE]`
+USAGE `likec4-mcp [OPTIONS] [WORKSPACE]`
 
 ARGUMENTS
 

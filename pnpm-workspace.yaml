@@ -155,6 +155,7 @@ catalogs:
     strip-indent: ^4.1.1
     tinyrainbow: ^3.0.3
     ufo: 1.6.3
+    unctx: 2.5.0
     unstorage: ^1.17.5
   vite:
     "@vitejs/plugin-react": ^5.2.0

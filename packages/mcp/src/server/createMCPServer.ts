@@ -5,12 +5,17 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
-import { loggable } from '@likec4/log'
-import { logger } from '@likec4/log'
+import { loggable, logger } from '@likec4/log'
+import { completable } from '@modelcontextprotocol/sdk/server/completable.js'
 import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js'
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { prop } from 'remeda'
+import z from 'zod/v3'
 import packageJson from '../../package.json' with { type: 'json' }
+import { projectIdSchema } from '../tools/_common'
+import { registerApplySemanticLayoutTool } from '../tools/apply-semantic-layout'
 import { batchReadElements } from '../tools/batch-read-elements'
 import { elementDiff } from '../tools/element-diff'
 import { findRelationshipPaths } from '../tools/find-relationship-paths'
@@ -73,6 +78,8 @@ Full documentation: https://likec4.dev/llms-full.txt
     capabilities: {
       tools: {},
       logging: {},
+      prompts: {},
+      resources: {},
       ...options?.capabilities,
     },
   })
@@ -93,6 +100,91 @@ Full documentation: https://likec4.dev/llms-full.txt
   mcp.registerTool(...queryByTagPattern(services))
   mcp.registerTool(...elementDiff(services))
   mcp.registerTool(...subgraphSummary(services))
+
+  mcp.registerPrompt(
+    'apply_semantic_layout',
+    {
+      title: 'Apply semantic layout to a view',
+      argsSchema: {
+        projectId: completable(projectIdSchema, (_value) => {
+          const value = _value ?? ''
+          return services.projects().filter(project => project.id.startsWith(value)).map(prop('id'))
+        }),
+        viewId: completable(
+          z.string().describe('View ID to apply semantic layout to'),
+          async (_value, ctx) => {
+            const projectId = ctx?.arguments?.['projectId']
+            if (!projectId) {
+              return []
+            }
+            const model = await services.builder.parseModel(projectId as ProjectId)
+            if (!model) {
+              return []
+            }
+            const value = _value ?? ''
+            return Array.from(model.views()).filter((view) => view.id.startsWith(value)).map(prop('id'))
+          },
+        ),
+      },
+    },
+    async ({ viewId, projectId }, _ctx) => {
+      return {
+        messages: [{
+          role: 'user',
+          content: {
+            type: 'text',
+            text: `Call \`apply-semantic-layout\` tool of likec4 mcp with these arguments:\n${
+              JSON.stringify({ viewId, projectId })
+            }`,
+          },
+        }],
+      }
+    },
+  )
+  registerApplySemanticLayoutTool(mcp, services)
+
+  const resource = mcp.registerResource(
+    'likec4-project',
+    new ResourceTemplate('likec4://project/{projectId}', {
+      list: async () => {
+        const projects = services.projects()
+        return ({
+          resources: projects.map(p => ({
+            uri: `likec4://project/${encodeURIComponent(p.id)}`,
+            name: p.title,
+          })),
+        })
+      },
+      complete: {
+        projectId: (value) => {
+          if (!value) {
+            return services.projects().map(p => p.id)
+          }
+          const lowerValue = value.toLowerCase()
+          return services.projects().filter(p => p.id.includes(lowerValue)).map(p => p.id)
+        },
+      },
+    }),
+    {
+      description: 'LikeC4 project resource',
+      mimeType: 'application/json',
+    },
+    async (uri: URL, { projectId }) => {
+      const ids = Array.isArray(projectId) ? projectId : [projectId]
+      const projects = services.projects().filter(p => ids.includes(p.id))
+
+      return ({
+        contents: projects.map(p => ({
+          uri: `likec4://project/${encodeURIComponent(p.id)}`,
+          text: JSON.stringify({
+            id: p.id,
+            title: p.title,
+            folder: p.folder.fsPath,
+          }),
+        })),
+      })
+    },
+  )
 
   mcp.server.onerror = (err) => {
     logger.error(loggable(err))
