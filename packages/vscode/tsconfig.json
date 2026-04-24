@@ -11,10 +11,13 @@
     "rootDirs": [
       "src",
       "."
+    ],
+    "types": [
+      "vscode"
     ]
   },
   "include": [
-    "src",
+    "src/**/*.ts",
     "*.ts"
   ],
   "references": [

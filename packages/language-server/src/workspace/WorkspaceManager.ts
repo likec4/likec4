@@ -1,4 +1,5 @@
 import { invariant } from '@likec4/core'
+import { compareNaturalHierarchically } from '@likec4/core/utils'
 import type {
   BuildOptions,
   Cancellation,
@@ -9,7 +10,7 @@ import type {
 } from 'langium'
 import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
 import pTimeout from 'p-timeout'
-import { hasAtLeast, uniqueBy } from 'remeda'
+import { hasAtLeast, sort, uniqueBy } from 'remeda'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileNode, FileSystemProvider } from '../filesystem'
@@ -52,9 +53,13 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         logWarnError(error)
       }
     }
+
+    const compare = compareNaturalHierarchically('/', true)
+    const ensureOrder = sort<FileSystemNode[]>((a, b) => compare(a.uri.path, b.uri.path))
+
     // Project config files
     const projects = this.services.workspace.ProjectsManager
-    for (const entry of configFiles) {
+    for (const entry of ensureOrder(configFiles)) {
       try {
         await projects.registerConfigFile(entry.uri)
       } catch (error) {

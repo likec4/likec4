@@ -1,0 +1,19 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "generate": {
+      "inputs": [
+        "scripts/**",
+        "src/**/*.md",
+        "package.json"
+      ],
+      "outputs": [
+        "src/**/*.generated.ts"
+      ],
+      "outputLogs": "new-only"
+    }
+  }
+}

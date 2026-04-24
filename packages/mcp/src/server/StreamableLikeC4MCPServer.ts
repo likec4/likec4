@@ -7,6 +7,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import type { AsyncDisposable } from 'langium'
+import { setMcpServerCtx } from '../ctx'
 import { logger } from '../utils'
 import { createMCPServer } from './createMCPServer'
 import type { LikeC4MCPServer } from './StdioLikeC4MCPServer'
@@ -32,6 +33,7 @@ async function createHonoApp(factory: () => McpServer) {
   app.get('/health', c => c.json({ status: 'ok' }))
 
   const mcpServer = factory()
+  setMcpServerCtx(mcpServer)
 
   // Initialize the transport
   const transport = new StreamableHTTPTransport({
@@ -150,6 +152,7 @@ export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposab
     }
     logger.info('Stopping MCP server')
     this.server = undefined
+    setMcpServerCtx(undefined)
     return new Promise((resolve) => {
       server.close((err) => {
         if (err) {

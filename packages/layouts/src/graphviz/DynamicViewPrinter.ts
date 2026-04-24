@@ -21,8 +21,10 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<ComputedDyn
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
-      [_.style]: edge.line ?? DefaultEdgeStyle,
     })
+    if (edge.line && edge.line !== this.$defaults.relationship.line) {
+      e.attributes.set(_.style, edge.line)
+    }
 
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)

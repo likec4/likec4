@@ -11,10 +11,16 @@ import { isCompound, toArrowType } from './utils'
 const rankLogger = createLogger('dot.rank')
 
 export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedElementView<A>> {
-  protected override postBuild(G: RootGraphModel): void {
-    this.assignGroups()
+  protected override postBuild(): void {
+    // Assign groups to improve layout
+    this
+      .assignGroups()
+      .tileNodesWithoutEdges()
+      .applyExplicitRankBlocks()
+      .enableNewRankIfNeeded()
+  }
 
-    // Below is custom made "tile" layout for compound nodes
+  private tileNodesWithoutEdges(): this {
     const compoundIds = new Set<Fqn>()
     const compounds = this.view.nodes.reduce((acc, node) => {
       if (isCompound(node)) {
@@ -24,14 +30,11 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
       return acc
     }, [] as ComputedNode[])
 
-    let applyNewRank = false
-
     for (const compound of compounds) {
       const children = pipe(
         compound.children,
-        filter(id => !this.compoundIds.has(id)),
+        filter(id => !this.compoundIds.has(id) && this.graphology.degree(id) === 0),
         map(id => this.computedNode(id)),
-        filter(nd => nd.inEdges.length === 0 && nd.outEdges.length === 0),
       )
       if (children.length <= 2) {
         continue
@@ -69,26 +72,15 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
             prevChunkHead = nd
           }
         })
-        applyNewRank = applyNewRank || !!ranked
       })
     }
-
-    const explicitRankBlocks = this.applyExplicitRankBlocks(G)
-
-    if (applyNewRank) {
-      G.set(_.newrank, true)
-      G.set(_.clusterrank, 'global')
-    }
-
-    if (explicitRankBlocks > 0) {
-      G.set('likec4_rankBlocks' as any, explicitRankBlocks)
-    }
+    return this
   }
 
-  private applyExplicitRankBlocks(G: RootGraphModel): number {
+  private applyExplicitRankBlocks(): this {
     const ranks = this.view.ranks ?? []
     if (ranks.length === 0) {
-      return 0
+      return this
     }
     let applied = 0
     for (const constraint of ranks) {
@@ -98,12 +90,15 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
       if (nodes.length === 0) {
         continue
       }
-      const rankSubgraph = G.createSubgraph({ [_.rank]: constraint.type })
+      const rankSubgraph = this.G.createSubgraph({ [_.rank]: constraint.type })
       nodes.forEach(node => rankSubgraph.node(node.id))
       applied += 1
-      rankLogger.debug`rank ${constraint.type} => ${nodes.map(node => node.id).join(', ')}`
+      rankLogger.trace`rank ${constraint.type} => ${nodes.map(node => node.id).join(', ')}`
     }
-    return applied
+    if (applied > 0) {
+      this.G.set('likec4_rankBlocks' as any, applied)
+    }
+    return this
   }
 
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
@@ -118,17 +113,15 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
-      [_.style]: edge.line ?? DefaultEdgeStyle,
     })
+    if (edge.line && edge.line !== this.$defaults.relationship.line) {
+      e.attributes.set(_.style, edge.line)
+    }
 
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
 
     const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
-
-    if (!this.graphology.hasDirectedEdge(edge.target, edge.source) && edgeAttrs.weight > 1) {
-      e.attributes.set(_.weight, edgeAttrs.weight)
-    }
 
     const label = edgelabel(edge)
     if (label) {
@@ -143,6 +136,10 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
         [_.color]: colorValues.line,
         [_.fontcolor]: colorValues.label as HexColor,
       })
+    }
+
+    if (!this.graphology.hasDirectedEdge(edge.target, edge.source) && edgeAttrs.weight > 1) {
+      e.attributes.set(_.weight, edgeAttrs.weight)
     }
 
     let [head, tail] = [edge.head ?? this.$defaults.relationship.arrow, edge.tail ?? 'none']

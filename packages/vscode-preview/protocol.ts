@@ -27,6 +27,17 @@ export const BroadcastProjectsUpdate: NotificationType<never> = {
   method: 'projects-updated',
 }
 
+/**
+ * Notification sent from the extension to the webview when the AI layout state is updated.
+ */
+export const BroadcastAILayoutStateUpdate: NotificationType<{
+  viewId: ViewId
+  projectId: ProjectId
+  state: 'in-progress' | 'completed' | 'failed'
+}> = {
+  method: 'ai-layout-update',
+}
+
 export const FetchComputedModel: RequestType<{
   projectId: ProjectId
 }, {
@@ -115,6 +126,7 @@ export const WebviewMsgs = {
   >,
   OpenExternalUrl: { method: 'webview:open-external-url' } as NotificationType<{ url: string }>,
   UpdateMyTitle: { method: 'webview:update-my-title' } as NotificationType<{ title: string }>,
+  EnhanceMeWithAI: { method: 'webview:enhance-me-ai' } as NotificationType<never>,
 }
 
 export type Handler<T> =

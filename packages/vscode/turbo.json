@@ -19,6 +19,7 @@
         "generate",
         "@likec4/language-server#generate",
         "@likec4/language-server#sources",
+        "@likec4/layouts#sources",
         "@likec4/language-services#sources",
         "@likec4/config#generate",
         "@likec4/styles#generate",

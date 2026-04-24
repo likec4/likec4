@@ -92,7 +92,11 @@
         ],
         "filenamePatterns": [
           "**/*.likec4.snap"
-        ]
+        ],
+        "icon": {
+          "light": "data/icon-256-light.png",
+          "dark": "data/icon-256-dark.png"
+        }
       },
       {
         "id": "likec4",
@@ -193,17 +197,21 @@
       "webview/context": [
         {
           "command": "likec4.preview-context-open-source",
-          "when": "webviewId == \"likec4-preview\""
+          "when": "activeWebviewPanelId == 'likec4-preview'"
         }
       ],
       "commandPalette": [
         {
           "command": "likec4.preview-context-open-source",
-          "when": "webviewId == \"likec4-preview\""
+          "when": "activeWebviewPanelId == 'likec4-preview'"
         },
         {
           "command": "likec4.locate",
-          "when": "webviewId == \"likec4-preview\""
+          "when": "activeWebviewPanelId == 'likec4-preview'"
+        },
+        {
+          "command": "likec4.semantic-layout-with-ai",
+          "when": "chatIsEnabled && (resourceLangId == likec4 || activeWebviewPanelId == 'likec4-preview')"
         },
         {
           "command": "likec4.restart",
@@ -263,6 +271,11 @@
         "command": "likec4.open-projects-overview",
         "title": "%ext.cmd.open-projects-overview%",
         "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.semantic-layout-with-ai",
+        "title": "%ext.cmd.semantic-layout-with-ai%",
+        "category": "%ext.title%"
       }
     ],
     "mcpServerDefinitionProviders": [
@@ -270,8 +283,33 @@
         "id": "likec4",
         "label": "LikeC4"
       }
+    ],
+    "chatSkills": [
+      {
+        "path": "./data/skills/likec4-dsl/SKILL.md",
+        "when": "resourceLangId == likec4"
+      }
+    ],
+    "chatParticipants": [
+      {
+        "id": "likec4.layout-assistant",
+        "fullName": "LikeC4 Layout Assistant",
+        "name": "likec4-layout",
+        "description": "What view would you like to enhance?",
+        "isSticky": true,
+        "when": "resourceLangId == likec4 || activeWebviewPanelId == 'likec4-preview'",
+        "commands": [
+          {
+            "name": "semantic-layout",
+            "description": "apply semantic layout"
+          }
+        ]
+      }
     ]
   },
+  "enabledApiProposals": [
+    "chatParticipantAdditions"
+  ],
   "activationEvents": [
     "workspaceContains:**/*.{c4,likec4,like-c4}",
     "onWebviewPanel:likec4-preview"
@@ -294,7 +332,7 @@
   },
   "dependencies": {
     "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild",
+    "esbuild": "catalog:esbuild-wasm",
     "fdir": "catalog:externals",
     "std-env": "catalog:externals"
   },
@@ -311,8 +349,8 @@
     "@likec4/vscode-preview": "workspace:*",
     "@reactive-vscode/vueuse": "^0.4.1",
     "@types/node": "catalog:",
-    "@types/vscode": "catalog:vscode",
     "@types/which": "^3.0.4",
+    "@types/vscode": "catalog:vscode",
     "@vscode/extension-telemetry": "^1.5.1",
     "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
     "esm-env": "catalog:utils",

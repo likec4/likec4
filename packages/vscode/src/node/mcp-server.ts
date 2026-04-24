@@ -9,6 +9,7 @@ import z from 'zod/v4'
 configureLanguageServerLogger({
   useStdErr: true,
   colors: false,
+  colors: false,
   logLevel: isDevelopment ? 'trace' : 'debug',
 })
 

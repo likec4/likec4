@@ -17,12 +17,11 @@ export function registerLocateCommand({ sendTelemetry, rpc }: LocateCommandDeps)
   useCommand(commands.locate, async (params: Locate.Params) => {
     logger.debug(`command {command} with params: {params}`, { command: commands.locate, params })
     sendTelemetry(commands.locate)
-    const loc = await rpc.locate(params)
-    if (!loc) {
+    const location = await rpc.locate(params)
+    if (!location) {
       logger.debug(`rpc.locate returned null`)
       return
     }
-    const location = rpc.client.protocol2CodeConverter.asLocation(loc)
     const preview = useDiagramPanel()
     await showEditorNextToPreview({
       previewColumn: toValue(preview.panelViewColumn),

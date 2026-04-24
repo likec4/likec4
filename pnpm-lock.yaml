@@ -355,6 +355,9 @@ catalogs:
     ufo:
       specifier: 1.6.3
       version: 1.6.3
+    unctx:
+      specifier: 2.5.0
+      version: 2.5.0
     unstorage:
       specifier: ^1.17.5
       version: 1.17.5
@@ -386,8 +389,8 @@ catalogs:
       version: 4.1.3
   vscode:
     '@types/vscode':
-      specifier: ^1.106.1
-      version: 1.106.1
+      specifier: ^1.115.0
+      version: 1.115.0
     vscode-textmate:
       specifier: 9.3.0
       version: 9.3.0
@@ -436,7 +439,7 @@ overrides:
   vscode-oniguruma: 2.0.1
   vscode-uri: 3.1.0
   type-fest: ^4.41.0
-  turbo: 2.9.5
+  turbo: 2.9.6
   sharp: 0.34.5
   caniuse-lite: ^1.0.30001787
   mnemonist: 0.40.3
@@ -532,8 +535,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -826,8 +829,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -990,8 +993,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1129,8 +1132,8 @@ importers:
         specifier: catalog:utils
         version: 2.33.7
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1517,7 +1520,7 @@ importers:
         version: 4.0.3
       '@types/vscode':
         specifier: catalog:vscode
-        version: 1.106.1
+        version: 1.115.0
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
@@ -1540,8 +1543,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1619,8 +1622,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1667,17 +1670,23 @@ importers:
         specifier: catalog:utils
         version: 4.1.1
       ts-graphviz:
-        specifier: ^1.8.2
-        version: 1.8.2
+        specifier: ^3.0.7
+        version: 3.0.7
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      unstorage:
+        specifier: catalog:utils
+        version: 1.17.5
       which:
         specifier: ^5.0.0
         version: 5.0.0
       word-wrap:
         specifier: ^1.2.5
         version: 1.2.5
+      zod:
+        specifier: catalog:externals
+        version: 4.3.6
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1694,15 +1703,21 @@ importers:
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260409.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+      tsx:
+        specifier: 'catalog:'
+        version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
       vitest:
         specifier: catalog:vitest
         version: 4.1.3(@types/node@22.19.15)(@vitest/ui@4.1.3)(vite@7.3.2(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.8.3))
+      zx:
+        specifier: 8.8.5
+        version: 8.8.5
 
   packages/leanix-bridge:
     dependencies:
@@ -2000,8 +2015,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2113,8 +2128,8 @@ importers:
         specifier: 'catalog:'
         version: 0.20.3(@typescript/native-preview@7.0.0-dev.20260409.1)(typescript@5.9.3)
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2201,11 +2216,14 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      unctx:
+        specifier: catalog:utils
+        version: 2.5.0
       vitest:
         specifier: catalog:vitest
         version: 4.1.3(@types/node@22.19.15)(@vitest/ui@4.1.3)(vite@7.3.2(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.8.3))
@@ -2277,8 +2295,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2394,8 +2412,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2456,7 +2474,7 @@ importers:
         version: 22.19.15
       '@types/vscode':
         specifier: catalog:vscode
-        version: 1.106.1
+        version: 1.115.0
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
@@ -2501,7 +2519,7 @@ importers:
         version: 9.3.0
       reactive-vscode:
         specifier: ^0.4.1
-        version: 0.4.1(@types/vscode@1.106.1)
+        version: 0.4.1(@types/vscode@1.115.0)
       remeda:
         specifier: catalog:utils
         version: 2.33.7
@@ -2515,8 +2533,8 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
       turbo:
-        specifier: 2.9.5
-        version: 2.9.5
+        specifier: 2.9.6
+        version: 2.9.6
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -2618,7 +2636,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@types/vscode':
         specifier: catalog:vscode
-        version: 1.106.1
+        version: 1.115.0
       '@types/vscode-webview':
         specifier: ^1.57.5
         version: 1.57.5
@@ -5163,39 +5181,55 @@ packages:
     resolution: {integrity: sha512-aR13V1kSE/kUkP4a8snmqvj82OUlR5Q/rzxICmObLCsERGfzikUc4wquOy1d/RzJgsLb8o+FiOjSWynt4T7Jhg==}
     engines: {node: '>=12'}
 
+  '@ts-graphviz/adapter@3.0.6':
+    resolution: {integrity: sha512-QQSKzxaBdiuYA6jC+ajKAgDoyRTIanQZai4FLi2d2t+wY1wEUot8tcY1eG9ftegFwff2gfjZzuZlysmU3zufiw==}
+    engines: {node: '>=20'}
+
+  '@ts-graphviz/ast@3.0.6':
+    resolution: {integrity: sha512-9QOBQFanq0n7Ju9opTURHSvqXOqzHkplls3kkD6veWXNuJwaH8lzZUIEksU4i2gjAjRi+RafQWSWATZDKCCt8g==}
+    engines: {node: '>=20'}
+
+  '@ts-graphviz/common@3.0.5':
+    resolution: {integrity: sha512-CS7RMw2ywu0kqb05xD2n9dJMSEVae2MJagHkHh6u915UgW5ijDVhitNVwoVV6dKVeyf02ATm+autLKPwrNa86w==}
+    engines: {node: '>=20'}
+
+  '@ts-graphviz/core@3.0.7':
+    resolution: {integrity: sha512-Oyz9raPOihgC0CxOIJVE6iXy4AOd2X4N5DsxaRQeENhtgMBuyZMg+vSaR5q37vriWDgJeITkXeTJBrbSDddpQQ==}
+    engines: {node: '>=20'}
+
   '@ts-morph/common@0.22.0':
     resolution: {integrity: sha512-HqNBuV/oIlMKdkLshXd1zKBqNQCsuPEsgQOkfFQ/eUKjRlwndXW1AjN9LVkBEIukm00gGXSRmfkl0Wv5VXLnlw==}
 
   '@ts-morph/common@0.28.1':
     resolution: {integrity: sha512-W74iWf7ILp1ZKNYXY5qbddNaml7e9Sedv5lvU1V8lftlitkc9Pq1A+jlH23ltDgWYeZFFEqGCD1Ies9hqu3O+g==}
 
-  '@turbo/darwin-64@2.9.5':
-    resolution: {integrity: sha512-qPxhKsLMQP+9+dsmPgAGidi5uNifD4AoAOnEnljab3Qgn0QZRR31Hp+/CgW3Ia5AanWj6JuLLTBYvuQj4mqTWg==}
+  '@turbo/darwin-64@2.9.6':
+    resolution: {integrity: sha512-X/56SnVXIQZBLKwniGTwEQTGmtE5brSACnKMBWpY3YafuxVYefrC2acamfjgxP7BG5w3I+6jf0UrLoSzgPcSJg==}
     cpu: [x64]
     os: [darwin]
 
-  '@turbo/darwin-arm64@2.9.5':
-    resolution: {integrity: sha512-vkF/9F/l3aWd4bHxTui5Hh0F5xrTZ4e3rbBsc57zA6O8gNbmHN3B6eZ5psAIP2CnJRZ8ZxRjV3WZHeNXMXkPBw==}
+  '@turbo/darwin-arm64@2.9.6':
+    resolution: {integrity: sha512-aalBeSl4agT/QtYGDyf/XLajedWzUC9Vg/pm/YO6QQ93vkQ91Vz5uK1ta5RbVRDozQSz4njxUNqRNmOXDzW+qw==}
     cpu: [arm64]
     os: [darwin]
 
-  '@turbo/linux-64@2.9.5':
-    resolution: {integrity: sha512-z/Get5NUaUxm5HSGFqVMICDRjFNsCUhSc4wnFa/PP1QD0NXCjr7bu9a2EM6md/KMCBW0Qe393Ac+UM7/ryDDTw==}
+  '@turbo/linux-64@2.9.6':
+    resolution: {integrity: sha512-YKi05jnNHaD7vevgYwahpzGwbsNNTwzU2c7VZdmdFm7+cGDP4oREUWSsainiMfRqjRuolQxBwRn8wf1jmu+YZA==}
     cpu: [x64]
     os: [linux]
 
-  '@turbo/linux-arm64@2.9.5':
-    resolution: {integrity: sha512-jyBifaNoI5/NheyswomiZXJvjdAdvT7hDRYzQ4meP0DKGvpXUjnqsD+4/J2YSDQ34OHxFkL30FnSCUIVOh2PHw==}
+  '@turbo/linux-arm64@2.9.6':
+    resolution: {integrity: sha512-02o/ZS69cOYEDczXvOB2xmyrtzjQ2hVFtWZK1iqxXUfzMmTjZK4UumrfNnjckSg+gqeBfnPRHa0NstA173Ik3g==}
     cpu: [arm64]
     os: [linux]
 
-  '@turbo/windows-64@2.9.5':
-    resolution: {integrity: sha512-ph24K5uPtvo7UfuyDXnBiB/8XvrO+RQWbbw5zkA/bVNoy9HDiNoIJJj3s62MxT9tjEb6DnPje5PXSz1UR7QAyg==}
+  '@turbo/windows-64@2.9.6':
+    resolution: {integrity: sha512-wVdQjvnBI15wB6JrA+43CtUtagjIMmX6XYO758oZHAsCNSxqRlJtdyujih0D8OCnwCRWiGWGI63zAxR0hO6s9g==}
     cpu: [x64]
     os: [win32]
 
-  '@turbo/windows-arm64@2.9.5':
-    resolution: {integrity: sha512-6c5RccT/+iR39SdT1G5HyZaD2n57W77o+l0TTfxG/cVlhV94Acyg2gTQW7zUOhW1BeQpBjHzu9x8yVBZwrHh7g==}
+  '@turbo/windows-arm64@2.9.6':
+    resolution: {integrity: sha512-1XUUyWW0W6FTSqGEhU8RHVqb2wP1SPkr7hIvBlMEwH9jr+sJQK5kqeosLJ/QaUv4ecSAd1ZhIrLoW7qslAzT4A==}
     cpu: [arm64]
     os: [win32]
 
@@ -5349,8 +5383,8 @@ packages:
   '@types/vscode-webview@1.57.5':
     resolution: {integrity: sha512-iBAUYNYkz+uk1kdsq05fEcoh8gJmwT3lqqFPN7MGyjQ3HVloViMdo7ZJ8DFIP8WOK74PjOEilosqAyxV2iUFUw==}
 
-  '@types/vscode@1.106.1':
-    resolution: {integrity: sha512-R/HV8u2h8CAddSbX8cjpdd7B8/GnE4UjgjpuGuHcbp1xV6yh4OeqU4L1pKjlwujCrSFS0MOpwJAIs/NexMB1fQ==}
+  '@types/vscode@1.115.0':
+    resolution: {integrity: sha512-/M8cdznOlqtMqduHKKlIF00v4eum4ZWKgn8YoPRKcN6PDdvoWeeqDaQSnw63ipDbq1Uzz78Wndk/d0uSPwORfA==}
 
   '@types/which@3.0.4':
     resolution: {integrity: sha512-liyfuo/106JdlgSchJzXEQCVArk0CvevqPote8F8HgWgJ3dRCcTHgJIsLDuee0kxk/mhbInzIZk3QWSZJ8R+2w==}
@@ -9049,9 +9083,9 @@ packages:
       jsdom:
         optional: true
 
-  ts-graphviz@1.8.2:
-    resolution: {integrity: sha512-5YhbFoHmjxa7pgQLkB07MtGnGJ/yhvjmc9uhsnDBEICME6gkPf83SBwLDQqGDoCa3XzUMWLk1AU2Wn1u1naDtA==}
-    engines: {node: '>=14.16'}
+  ts-graphviz@3.0.7:
+    resolution: {integrity: sha512-aGAjNs7IA+d3ZAflF9QluxWWtKCo8Ehrv0MziCY5Vi6hedugeZYfedq2cIIHX4be3ovGEDq+4D8/y9RrkdNFqw==}
+    engines: {node: '>=20'}
 
   ts-morph@21.0.1:
     resolution: {integrity: sha512-dbDtVdEAncKctzrVZ+Nr7kHpHkv+0JDJb2MjjpBaj8bFeCkePU9rHfMklmhuLFnpeq/EJZk2IhStY6NzqgjOkg==}
@@ -9108,8 +9142,8 @@ packages:
   tty-browserify@0.0.1:
     resolution: {integrity: sha512-C3TaO7K81YvjCgQH9Q1S3R3P3BtN3RIM8n+OvX4il1K1zgE8ZhI0op7kClgkxtutIE8hQrcrHBXvIheqKUUCxw==}
 
-  turbo@2.9.5:
-    resolution: {integrity: sha512-JXNkRe6H6MjSlk5UQRTjyoKX5YN2zlc2632xcSlSFBao5yvbMWTpv9SNolOZlZmUlcDOHuszPLItbKrvcXnnZA==}
+  turbo@2.9.6:
+    resolution: {integrity: sha512-+v2QJey7ZUeUiuigkU+uFfklvNUyPI2VO2vBpMYJA+a1hKFLFiKtUYlRHdb3P9CrAvMzi0upbjI4WT+zKtqkBg==}
     hasBin: true
 
   type-fest@4.41.0:
@@ -9155,6 +9189,9 @@ packages:
 
   uncrypto@0.1.3:
     resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
+
+  unctx@2.5.0:
+    resolution: {integrity: sha512-p+Rz9x0R7X+CYDkT+Xg8/GhpcShTlU8n+cf9OtOEf7zEQsNcCZO1dPKNRDqvUTaq+P32PMMkxWHwfrxkqfqAYg==}
 
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
@@ -9228,6 +9265,10 @@ packages:
 
   unplugin@2.2.0:
     resolution: {integrity: sha512-m1ekpSwuOT5hxkJeZGRxO7gXbXT3gF26NjQ7GdVHoLoF8/nopLcd/QfPigpCy7i51oFHiRJg/CyHhj4vs2+KGw==}
+    engines: {node: '>=18.12.0'}
+
+  unplugin@2.3.11:
+    resolution: {integrity: sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==}
     engines: {node: '>=18.12.0'}
 
   unrun@0.2.27:
@@ -12921,6 +12962,21 @@ snapshots:
 
   '@tanstack/virtual-file-routes@1.114.12': {}
 
+  '@ts-graphviz/adapter@3.0.6':
+    dependencies:
+      '@ts-graphviz/common': 3.0.5
+
+  '@ts-graphviz/ast@3.0.6':
+    dependencies:
+      '@ts-graphviz/common': 3.0.5
+
+  '@ts-graphviz/common@3.0.5': {}
+
+  '@ts-graphviz/core@3.0.7':
+    dependencies:
+      '@ts-graphviz/ast': 3.0.6
+      '@ts-graphviz/common': 3.0.5
+
   '@ts-morph/common@0.22.0':
     dependencies:
       fast-glob: 3.3.3
@@ -12934,22 +12990,22 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.15
 
-  '@turbo/darwin-64@2.9.5':
+  '@turbo/darwin-64@2.9.6':
     optional: true
 
-  '@turbo/darwin-arm64@2.9.5':
+  '@turbo/darwin-arm64@2.9.6':
     optional: true
 
-  '@turbo/linux-64@2.9.5':
+  '@turbo/linux-64@2.9.6':
     optional: true
 
-  '@turbo/linux-arm64@2.9.5':
+  '@turbo/linux-arm64@2.9.6':
     optional: true
 
-  '@turbo/windows-64@2.9.5':
+  '@turbo/windows-64@2.9.6':
     optional: true
 
-  '@turbo/windows-arm64@2.9.5':
+  '@turbo/windows-arm64@2.9.6':
     optional: true
 
   '@tybys/wasm-util@0.10.1':
@@ -13110,7 +13166,7 @@ snapshots:
 
   '@types/vscode-webview@1.57.5': {}
 
-  '@types/vscode@1.106.1': {}
+  '@types/vscode@1.115.0': {}
 
   '@types/which@3.0.4': {}
 
@@ -16760,10 +16816,10 @@ snapshots:
 
   react@19.2.4: {}
 
-  reactive-vscode@0.4.1(@types/vscode@1.106.1):
+  reactive-vscode@0.4.1(@types/vscode@1.115.0):
     dependencies:
       '@reactive-vscode/reactivity': 0.4.1
-      '@types/vscode': 1.106.1
+      '@types/vscode': 1.115.0
 
   read-package-json-fast@4.0.0:
     dependencies:
@@ -17629,7 +17685,12 @@ snapshots:
       object-path: 0.11.8
       typescript: 5.9.3
 
-  ts-graphviz@1.8.2: {}
+  ts-graphviz@3.0.7:
+    dependencies:
+      '@ts-graphviz/adapter': 3.0.6
+      '@ts-graphviz/ast': 3.0.6
+      '@ts-graphviz/common': 3.0.5
+      '@ts-graphviz/core': 3.0.7
 
   ts-morph@21.0.1:
     dependencies:
@@ -17685,14 +17746,14 @@ snapshots:
 
   tty-browserify@0.0.1: {}
 
-  turbo@2.9.5:
+  turbo@2.9.6:
     optionalDependencies:
-      '@turbo/darwin-64': 2.9.5
-      '@turbo/darwin-arm64': 2.9.5
-      '@turbo/linux-64': 2.9.5
-      '@turbo/linux-arm64': 2.9.5
-      '@turbo/windows-64': 2.9.5
-      '@turbo/windows-arm64': 2.9.5
+      '@turbo/darwin-64': 2.9.6
+      '@turbo/darwin-arm64': 2.9.6
+      '@turbo/linux-64': 2.9.6
+      '@turbo/linux-arm64': 2.9.6
+      '@turbo/windows-64': 2.9.6
+      '@turbo/windows-arm64': 2.9.6
 
   type-fest@4.41.0: {}
 
@@ -17730,6 +17791,13 @@ snapshots:
       quansync: 1.0.0
 
   uncrypto@0.1.3: {}
+
+  unctx@2.5.0:
+    dependencies:
+      acorn: 8.16.0
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+      unplugin: 2.3.11
 
   undici-types@6.21.0: {}
 
@@ -17822,6 +17890,13 @@ snapshots:
   unplugin@2.2.0:
     dependencies:
       acorn: 8.16.0
+      webpack-virtual-modules: 0.6.2
+
+  unplugin@2.3.11:
+    dependencies:
+      '@jridgewell/remapping': 2.3.5
+      acorn: 8.16.0
+      picomatch: 4.0.4
       webpack-virtual-modules: 0.6.2
 
   unrun@0.2.27:

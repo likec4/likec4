@@ -8,7 +8,7 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
   "bin": {
-    "likec4-mcp-server": "dist/cli.mjs"
+    "likec4-mcp": "./bin/likec4-mcp.mjs"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -84,6 +84,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:vitest",
     "vscode-uri": "catalog:vscode",
-    "zod": "catalog:externals"
+    "zod": "catalog:externals",
+    "unctx": "catalog:utils"
   }
 }

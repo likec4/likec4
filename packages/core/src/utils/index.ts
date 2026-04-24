@@ -73,3 +73,5 @@ export { objectHash } from './object-hash'
 export { stringHash } from './string-hash'
 
 export { markdownToHtml, markdownToText } from './markdown'
+
+export { unsafePartial } from './unsafe'
