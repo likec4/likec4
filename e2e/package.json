@@ -18,8 +18,8 @@
   "dependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
     "@likec4/icons": "file:../packages/icons/package.tgz",
-    "@playwright/test": "1.56.1",
-    "@types/node": "~22.19.3",
+    "@playwright/test": "^1.58.2",
+    "@types/node": "~22.19.17",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "likec4": "file:../packages/likec4/package.tgz",
@@ -28,7 +28,7 @@
     "std-env": "^3.9.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16",
-    "wrangler": "~4.60.0",
+    "wrangler": "^4.80.0",
     "zx": "^8.8.5"
   },
   "pnpm": {
