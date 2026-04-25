@@ -98,7 +98,6 @@
     "ufo": "catalog:utils",
     "vite": "catalog:vite",
     "vite-plugin-dts": "catalog:vite",
-    "vite-plugin-inspect": "catalog:vite",
     "vitest": "catalog:vitest",
     "xstate": "catalog:xstate",
     "zod": "catalog:externals",
