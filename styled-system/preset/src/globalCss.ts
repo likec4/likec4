@@ -151,12 +151,11 @@ export const globalCss: ExtendableGlobalCss = {
         '--xy-edge-stroke-selected': __v('palette.relationStrokeSelected'),
         '--xy-edge-label-color': {
           base: __v('palette.relationLabel'),
-          _light: `oklch(from ${__v('palette.relationLabel')} calc(l - 0.1) c h)`,
-          _dark: `oklch(from ${__v('palette.relationLabel')} calc(l - 0.4) c h)`,
+          _light: `oklch(from ${__v('palette.relationLabel')} calc(l + 0.1) c h)`,
         },
         '--xy-edge-label-background-color': {
-          _dark: alpha(__v('palette.relationLabelBg'), 45),
-          _light: alpha(__v('palette.relationLabelBg'), 60),
+          base: alpha(__v('palette.relationLabelBg'), 85),
+          _light: alpha(__v('palette.relationLabelBg'), 65),
         },
 
         '&:is([data-likec4-hovered="true"], [data-edge-active="true"])': {
@@ -188,8 +187,8 @@ export const globalCss: ExtendableGlobalCss = {
         },
         '& :where(.react-flow__edgelabel-renderer) > *': {
           mixBlendMode: {
-            base: 'hard-light',
-            _dark: 'screen',
+            base: 'luminosity',
+            _light: 'hard-light',
             _print: 'normal!',
           },
         },
@@ -202,7 +201,6 @@ export const globalCss: ExtendableGlobalCss = {
         },
         '&:has(.react-flow__node-seq-parallel) :where(.react-flow__edges > svg)': {
           mixBlendMode: {
-            // _dark: 'plus-lighter',
             _light: 'color-burn',
           },
         },
