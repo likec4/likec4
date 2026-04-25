@@ -32,6 +32,7 @@ declare function isLikeC4ViewId(value: unknown): value is $ViewId;
 declare const likec4model: LikeC4Model<$Aux>;
 declare function useLikeC4Model(): LikeC4Model<$Aux>;
 declare function useLikeC4View(viewId: $ViewId): LayoutedView<$Aux>;
+declare function useLikeC4View(viewId: string): LayoutedView<$Aux> | null;
 
 declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
 
