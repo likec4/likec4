@@ -1,15 +1,12 @@
 import { cloudflare } from '@cloudflare/vite-plugin'
-import pandaCss from '@likec4/styles/postcss'
+import pandaCss from '@pandacss/dev/postcss'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import { resolve as resolveImportMeta } from 'import-meta-resolve'
-import { readFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import url from 'url'
 import { type AliasOptions, defineConfig } from 'vite'
-import tsconfigpaths from 'vite-tsconfig-paths'
-import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
 const alias = {
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
@@ -28,15 +25,12 @@ export default defineConfig(({ command }) => ({
     alias,
     conditions: ['sources'],
     dedupe: ['vscode'],
+    tsconfigPaths: true,
   },
   css: {
     postcss: {
-      plugins: [pandaCss()],
+      plugins: [pandaCss() as any],
     },
-  },
-  esbuild: {
-    jsxDev: command !== 'build',
-    tsconfigRaw: readFileSync('./tsconfig.frontend.json', 'utf-8'),
   },
   worker: {
     format: 'es',
@@ -130,13 +124,7 @@ export default defineConfig(({ command }) => ({
     },
   },
   plugins: [
-    tsconfigpaths({
-      projects: [
-        './tsconfig.frontend.json',
-        './tsconfig.worker.json',
-      ],
-    }),
-    TanStackRouterVite(tanStackRouterViteCfg),
+    TanStackRouterVite(),
     react(),
     cloudflare({
       persistState: true,

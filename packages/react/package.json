@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "immer": "catalog:utils",
     "type-fest": "catalog:externals"
   },
   "peerDependencies": {
@@ -51,10 +52,10 @@
     "@xstate/store": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
+    "rolldown": "catalog:",
     "oxlint": "catalog:",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "obuild": "catalog:obuild",
     "vite-plugin-dts": "catalog:vite",
     "vite": "catalog:vite",
     "tsx": "catalog:",

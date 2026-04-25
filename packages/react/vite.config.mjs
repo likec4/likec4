@@ -1,4 +1,6 @@
+import { resolve } from 'node:path'
 import process from 'node:process'
+import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
@@ -6,6 +8,11 @@ export default defineConfig({
   mode: 'production',
   define: {
     'process.env.NODE_ENV': '"production"',
+  },
+  resolve: {
+    alias: {
+      'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
+    },
   },
   build: {
     target: 'esnext',
@@ -23,13 +30,20 @@ export default defineConfig({
         entryFileNames: '[name].mjs',
       },
       external: [
-        'react/jsx-runtime',
         'react/jsx-dev-runtime',
-        'react-dom/client',
-        'react',
-        'react-dom',
+        'immer',
         '@emotion/is-prop-valid', // dev-only import from motion
         /@likec4\/core.*/,
+      ],
+      plugins: [
+        esmExternalRequirePlugin({
+          external: [
+            'react',
+            'react-dom',
+            'react/jsx-runtime',
+            'react-dom/client',
+          ],
+        }),
       ],
     },
   },

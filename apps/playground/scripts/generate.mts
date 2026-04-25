@@ -10,10 +10,13 @@ if (isWindows) {
 const $ = _$({
   stdio: 'inherit',
   preferLocal: true,
+  verbose: true,
   ...(isWindows ? { quote: quotePowerShell } : {}),
 })
 
 await $`tsr generate`
+
+await $`pandacss codegen`
 
 const envTemplate = `
 OAUTH_GITHUB_ID=""
