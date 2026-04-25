@@ -56,7 +56,7 @@ catalogs:
     "@pandacss/preset-panda": ^1.9.1
     "@pandacss/types": ^1.9.1
     "@tailwindcss/vite": ^4.1.18
-    postcss: 8.5.9
+    postcss: 8.5.10
     tailwindcss: ^4.1.18
   esbuild:
     esbuild: 0.27.4
