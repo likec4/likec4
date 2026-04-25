@@ -6,13 +6,14 @@
     "noUnusedLocals": false,
     "incremental": true,
     "rootDir": "src",
+    "jsx": "react-jsx",
     "types": [
       "vite/client",
       "vscode-webview"
     ]
   },
   "include": [
-    "src/",
+    "src/"
   ],
   "references": [
     {

@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       },
     },
+    mode: isDev ? 'development' : 'production',
     define: {
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
     },
@@ -25,6 +26,11 @@ export default defineConfig(({ mode }) => {
         plugins: [
           postcssPanda() as any,
         ],
+      },
+    },
+    oxc: {
+      jsx: {
+        development: false,
       },
     },
     build: {
