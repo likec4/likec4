@@ -44,7 +44,7 @@ export default defineConfig({
       scale: 'device',
       animations: 'disabled',
       // Allow small pixel diff (e.g. fonts/layout flakiness on CI)
-      maxDiffPixelRatio: 0.02,
+      maxDiffPixelRatio: 0.01,
     },
   },
 
