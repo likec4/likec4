@@ -113,6 +113,13 @@ export const changePropertyHandler = viewChangeHandler(
         updateViewDescription(viewAst, description),
       )
     }
+
+    if (change.tag !== undefined) {
+      edits.push(
+        ...updateViewTags(viewAst, change.tag),
+      )
+    }
+
     return edits
   },
 )
@@ -187,6 +194,104 @@ function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
     ).trimEnd(),
   )
 }
+function collectAllTagRefs(tags: ast.Tags | undefined): Array<WithCst<ast.TagRef>> {
+  const result: Array<WithCst<ast.TagRef>> = []
+  let iter = tags
+  while (iter) {
+    for (const ref of iter.values) {
+      if (ref.$cstNode) {
+        result.push(ref as WithCst<ast.TagRef>)
+      }
+    }
+    iter = iter.prev
+  }
+  // Linked list traversal goes newest-first; reverse to get document order
+  return result.reverse()
+}
+
+function addTag(viewAst: ast.LikeC4View, body: NonNullable<ast.LikeC4View['body']>, tagName: string): TextEdit {
+  const tagsNode = body.tags
+
+  // Append to existing tags
+  if (tagsNode?.$cstNode) {
+    return TextEdit.insert(
+      tagsNode.$cstNode.range.end,
+      `, #${tagName}`,
+    )
+  }
+
+  // Insert new tags line at body start (right after "{")
+  return TextEdit.insert(
+    findInsertPosition(
+      viewAst,
+      body => body.$cstNode?.range.start,
+    ),
+    `\n    #${tagName}`,
+  )
+}
+
+function removeTag(body: NonNullable<ast.LikeC4View['body']>, tagName: string): TextEdit | undefined {
+  const allRefs = collectAllTagRefs(body.tags)
+  const targetIndex = allRefs.findIndex(ref => ref.tag.ref?.name === tagName)
+
+  if (targetIndex < 0) {
+    return undefined
+  }
+
+  // Only one tag — remove the entire tags line (including leading newline+indent)
+  if (allRefs.length === 1) {
+    const tagsNode = body.tags
+    if (tagsNode?.$cstNode) {
+      const { start } = tagsNode.$cstNode.range
+      // Delete from end of previous line through start of next line,
+      // so the entire tags line (including its newline) disappears
+      return TextEdit.del({
+        start: Position.create(start.line - 1, Number.MAX_SAFE_INTEGER),
+        end: Position.create(start.line + 1, 0),
+      })
+    }
+    return undefined
+  }
+
+  const target = allRefs[targetIndex]!
+
+  if (targetIndex > 0) {
+    // Not first — remove from previous tag end to this tag end
+    const prev = allRefs[targetIndex - 1]!
+    return TextEdit.del({
+      start: prev.$cstNode.range.end,
+      end: target.$cstNode.range.end,
+    })
+  }
+
+  // First tag — remove from this tag start to next tag start
+  const next = allRefs[targetIndex + 1]!
+  return TextEdit.del({
+    start: target.$cstNode.range.start,
+    end: next.$cstNode.range.start,
+  })
+}
+
+function updateViewTags(
+  viewAst: ast.LikeC4View,
+  tag: NonNullable<ViewChange.ChangeProperty['tag']>,
+): TextEdit[] {
+  const edits: TextEdit[] = []
+  const body = nonNullable(viewAst.body, 'View body is required')
+
+  if (tag.add) {
+    edits.push(addTag(viewAst, body, tag.add))
+  }
+  if (tag.remove) {
+    const edit = removeTag(body, tag.remove)
+    if (edit) {
+      edits.push(edit)
+    }
+  }
+
+  return edits
+}
+
 function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.MarkdownOrString): TextEdit {
   const existing = findExistingViewProperty(viewAst, 'description')
 
