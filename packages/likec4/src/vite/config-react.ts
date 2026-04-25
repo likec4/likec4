@@ -4,7 +4,7 @@ import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { createLikeC4Logger } from '../logger'
 import { viteAliases } from './aliases'
-import { JsBanners, relativeToCwd, viteAppRoot } from './utils'
+import { relativeToCwd, viteAppRoot } from './utils'
 
 type LikeC4ViteReactConfig = {
   languageServices: LikeC4
