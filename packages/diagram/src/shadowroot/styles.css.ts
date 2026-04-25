@@ -1,7 +1,7 @@
 import { css } from '@likec4/styles/css'
 import {
   useColorScheme as usePreferredColorScheme,
-  useMutationObserver,
+  useMutationObserverTarget,
 } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useState } from 'react'
@@ -78,7 +78,7 @@ export type ColorScheme = 'light' | 'dark'
 export function useColorScheme(explicit?: ColorScheme): ColorScheme {
   const preferred = usePreferredColorScheme()
   const [computed, setComputed] = useState(getComputedColorScheme)
-  useMutationObserver(
+  useMutationObserverTarget(
     useCallbackRef(() => setComputed(getComputedColorScheme)),
     {
       attributes: true,

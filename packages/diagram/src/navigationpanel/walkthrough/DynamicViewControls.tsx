@@ -95,7 +95,6 @@ const DynamicViewModeSwitcher = forwardRef<HTMLDivElement, {
       <SegmentedControl
         size="xs"
         value={value}
-        component={m.div}
         onChange={variant => {
           invariant(variant === 'diagram' || variant === 'sequence', 'Invalid dynamic view variant')
           onChange(variant)

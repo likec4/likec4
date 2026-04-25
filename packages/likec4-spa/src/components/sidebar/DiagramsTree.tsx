@@ -50,8 +50,6 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
   )
 }
 
-const setHoveredNode = () => {}
-
 export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   groupBy: GroupBy | undefined
 }) => {
@@ -72,7 +70,6 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   const tree = useTree({
     multiple: false,
   })
-  tree.setHoveredNode = setHoveredNode
 
   const sourcePath = diagram?.sourcePath ?? null
 
