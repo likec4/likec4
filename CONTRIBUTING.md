@@ -56,7 +56,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 5. Mostly used dev tasks:
    - `pnpm dev` in `apps/playground`\
      This command starts the playground app in development mode, picking up changes from any package with hot reloading.
-   - `pnpm dev` (or any `pnpm dev:*`) in `package/likec4`\
+   - `pnpm dev` (or any `pnpm dev:*`) in `packages/likec4-spa`\
      This command also picks up changes from any package.
    - `pnpm vitest:ui` in root to run all tests.
    - `pnpm typecheck` in root to run the typecheck.
@@ -100,8 +100,29 @@ This repository's contents are:
 
 #### `/packages/likec4`
 
-- **Purpose**: Provides CLI, Vite plugin, generates static website (sources in `/packages/likec4/app/`). Main entry point for the tool.
+- **Purpose**: Provides CLI and generates static website (consumes `@likec4/spa` from `/packages/likec4-spa`). Main entry point for the tool.
 - **Technology**: Uses [yargs](https://yargs.js.org/), [Vite](https://vite.dev/)
+
+#### SPA `/packages/likec4-spa`
+
+- **Purpose**: The webapp (`@likec4/spa`) that renders architecture diagrams. Extracted from the former `/packages/likec4/app/`. Bundled into the static site by `likec4`.
+- **Technology**: [Vite](https://vite.dev/), [React](https://react.dev/), [TanStack Router](https://tanstack.com/router), [Mantine](https://mantine.dev/)
+- **Dev**: `pnpm dev` (or any `pnpm dev:*`) picks up changes across packages.
+
+#### Vite Plugin `/packages/vite-plugin`
+
+- **Purpose**: `@likec4/vite-plugin` — the LikeC4 Vite plugin, extracted from the `likec4` package.
+- **Technology**: [Vite](https://vite.dev/)
+
+#### Language Server (Standalone) `/packages/lsp`
+
+- **Purpose**: `@likec4/lsp` — standalone Language Server binary for editor integrations (other than VSCode).
+- **Technology**: Bundles `@likec4/language-server` for distribution as a CLI.
+
+#### React `/packages/react`
+
+- **Purpose**: `@likec4/react` — React bundle for embedding LikeC4 diagrams in React apps.
+- **Technology**: [React](https://react.dev/), depends on `@likec4/diagram`.
 
 #### Core `/packages/core`
 

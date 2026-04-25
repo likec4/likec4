@@ -7,7 +7,11 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 - Monorepo managed by `pnpm` workspaces and `turbo`.
 - `apps/` contains user-facing apps (notably `apps/docs` and `apps/playground`).
 - `packages/` holds:
-  - `likec4/` - CLI, Vite plugin, static site generator (main entry point)
+  - `likec4/` - CLI and static site generator (main entry point)
+  - `likec4-spa/` - Single-page application for rendering architecture diagrams (webapp, extracted from former `packages/likec4/app/`)
+  - `vite-plugin/` - LikeC4 Vite plugin (`@likec4/vite-plugin`)
+  - `lsp/` - Standalone LikeC4 Language Server for editor integrations (`@likec4/lsp`)
+  - `react/` - LikeC4 React bundle (`@likec4/react`)
   - `core/` - Core and model types, model builder, compute-view, layout drifts detection logic
   - `language-server/` - Langium-based DSL parser and LSP implementation
   - `language-services/` - Language services initialization (browser and Node.js compatible)
@@ -30,6 +34,23 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 - **skills/** — Agent Skills for AI assistants ([`likec4-dsl`](skills/likec4-dsl/)).
 - **MCP Server:** [packages/mcp/README.md](packages/mcp/README.md).
 - **LeanIX / Draw.io (bridge):** [packages/leanix-bridge/README.md](packages/leanix-bridge/README.md); Agent Skill reference [skills/likec4-dsl/references/bridge-leanix-drawio.md](skills/likec4-dsl/references/bridge-leanix-drawio.md).
+
+## App ↔ Language Server Architecture
+
+The webapp talks to the Language Server through three layered packages. When extending the flow, pick the right layer:
+
+- **`packages/diagram`** — UI contract. Renders diagrams from a `LikeC4Model`; defines the consumer contract via `LikeC4ModelProvider` ([`packages/diagram/src/LikeC4ModelProvider.tsx`](packages/diagram/src/LikeC4ModelProvider.tsx)) and `useLikeC4Model`-style hooks. Knows nothing about how data is fetched, stored, or mutated.
+- **`packages/likec4-spa`** — UI host. Materializes the diagram into a runnable app and provides the "context": imports `likec4:*` virtual modules, wraps them in nanostores for HMR reactivity, mounts `LikeC4ModelProvider`. See [`packages/likec4-spa/src/context/LikeC4ModelContext.tsx`](packages/likec4-spa/src/context/LikeC4ModelContext.tsx).
+- **`packages/vite-plugin`** — data + RPC bridge. Owns the `likec4:*` virtual modules ([`packages/vite-plugin/src/virtuals/`](packages/vite-plugin/src/virtuals/)) and a birpc channel between SPA and Language Server over Vite HMR ([`packages/vite-plugin/src/rpc/rpc.ts`](packages/vite-plugin/src/rpc/rpc.ts), client at [`packages/vite-plugin/src/virtuals/rpc.ts`](packages/vite-plugin/src/virtuals/rpc.ts)).
+
+Dev-mode flow: `SPA → likec4:rpc (birpc over import.meta.hot) → vite-plugin (server.hot.on) → @likec4/language-services → updated likec4:model → HMR → SPA nanostore → diagram re-renders`. In production builds (`likec4 build`), RPC is absent and virtual modules are inlined as static JSON — the diagram is read-only.
+
+### Where to make changes
+
+- New visual feature, no new data → **`diagram`** only (extend hooks or contract).
+- New data shape from the model → add a virtual module in **`vite-plugin`**, surface a hook/atom in **`likec4-spa`**, consume in **`diagram`**.
+- New action that mutates the model (round-trip to LSP) → add an RPC method in **`vite-plugin/src/rpc`** (server handler + client wrapper), call from **`likec4-spa`**.
+- Do NOT import `@likec4/language-server` directly from `likec4-spa` — always go through the vite-plugin RPC.
 
 ## Build, Test, and Development Commands
 
