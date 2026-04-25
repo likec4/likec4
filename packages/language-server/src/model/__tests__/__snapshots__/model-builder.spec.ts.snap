@@ -62,8 +62,8 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
   },
   "projectId": "default",
   "relations": {
-    "90t726": {
-      "id": "90t726",
+    "rii7wh": {
+      "id": "rii7wh",
       "source": {
         "model": "system.frontend",
       },
@@ -72,8 +72,8 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
       },
       "title": "requests",
     },
-    "vcxqbt": {
-      "id": "vcxqbt",
+    "yf1iba": {
+      "id": "yf1iba",
       "source": {
         "model": "client",
       },
@@ -117,7 +117,7 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
           "line": "dashed",
           "parent": null,
           "relations": [
-            "vcxqbt",
+            "yf1iba",
           ],
           "source": "client",
           "target": "system",
@@ -225,18 +225,8 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
   },
   "projectId": "default",
   "relations": {
-    "14imtre": {
-      "id": "14imtre",
-      "source": {
-        "model": "client",
-      },
-      "target": {
-        "model": "system.frontend",
-      },
-      "title": "opens",
-    },
-    "fubnyh": {
-      "id": "fubnyh",
+    "10nwedx": {
+      "id": "10nwedx",
       "source": {
         "model": "system.frontend",
       },
@@ -244,6 +234,16 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         "model": "system.backend.api",
       },
       "title": "requests",
+    },
+    "1fsbcae": {
+      "id": "1fsbcae",
+      "source": {
+        "model": "client",
+      },
+      "target": {
+        "model": "system.frontend",
+      },
+      "title": "opens",
     },
   },
   "specification": {
@@ -281,7 +281,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "line": "dashed",
           "parent": null,
           "relations": [
-            "14imtre",
+            "1fsbcae",
           ],
           "source": "client",
           "target": "system.frontend",
@@ -294,7 +294,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "line": "dashed",
           "parent": null,
           "relations": [
-            "fubnyh",
+            "10nwedx",
           ],
           "source": "system.frontend",
           "target": "system.backend",
@@ -388,7 +388,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "line": "dashed",
           "parent": null,
           "relations": [
-            "14imtre",
+            "1fsbcae",
           ],
           "source": "client",
           "target": "system",
@@ -459,7 +459,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "line": "dashed",
           "parent": null,
           "relations": [
-            "fubnyh",
+            "10nwedx",
           ],
           "source": "system.frontend",
           "target": "system.backend.api",
@@ -577,8 +577,8 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
   },
   "projectId": "default",
   "relations": {
-    "1qlbaph": {
-      "id": "1qlbaph",
+    "lso3oq": {
+      "id": "lso3oq",
       "kind": "async",
       "source": {
         "model": "user1",
@@ -629,7 +629,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "line": "dashed",
           "parent": null,
           "relations": [
-            "1qlbaph",
+            "lso3oq",
           ],
           "source": "user1",
           "tags": [
@@ -722,8 +722,8 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
   },
   "projectId": "default",
   "relations": {
-    "1qlbaph": {
-      "id": "1qlbaph",
+    "lso3oq": {
+      "id": "lso3oq",
       "kind": "async",
       "source": {
         "model": "user1",
@@ -769,7 +769,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "line": "dashed",
           "parent": null,
           "relations": [
-            "1qlbaph",
+            "lso3oq",
           ],
           "source": "user1",
           "target": "user2",
@@ -859,10 +859,10 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
   },
   "projectId": "default",
   "relations": {
-    "1qlbaph": {
+    "lso3oq": {
       "color": "red",
       "head": "diamond",
-      "id": "1qlbaph",
+      "id": "lso3oq",
       "line": "dotted",
       "source": {
         "model": "user1",
@@ -902,7 +902,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "line": "dotted",
           "parent": null,
           "relations": [
-            "1qlbaph",
+            "lso3oq",
           ],
           "source": "user1",
           "tail": "none",

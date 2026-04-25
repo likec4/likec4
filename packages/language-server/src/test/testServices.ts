@@ -156,6 +156,7 @@ export function createTestServices(options?: {
   }
 
   return {
+    initialize,
     services,
     addDocument,
     removeDocument,
@@ -188,11 +189,14 @@ export async function createMultiProjectTestServices<const Projects extends Reco
 ) {
   const workspace = 'file:///test/workspace'
   const {
+    initialize,
     services,
     addDocument,
     validateAll,
     resetState,
   } = createTestServices({ workspace })
+
+  await initialize()
 
   const projects = {} as {
     readonly [K in keyof Projects]: {

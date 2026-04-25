@@ -93,7 +93,7 @@ describe('ProjectsManager', () => {
           URI.parse('file:///test/workspace/node_modules/test-project/.likec4rc'),
         ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Failed to register project config, path /test/workspace/node_modules/test-project/.likec4rc is excluded by: "**/node_modules/**"]`,
+        `[Error: Failed to register project config, path /test/workspace/node_modules/test-project/.likec4rc is excluded by default: "**/node_modules/**"]`,
       )
 
       expect(fs.loadProjectConfig).not.toHaveBeenCalled()
