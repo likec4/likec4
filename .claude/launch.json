@@ -4,9 +4,9 @@
     {
       "name": "likec4-dev",
       "runtimeExecutable": "pnpm",
-      "cwd": "${workspaceFolder}/packages/likec4",
+      "cwd": "${workspaceFolder}/packages/likec4-spa",
       "runtimeArgs": [
-        "dev:examples"
+        "dev"
       ],
       "port": 5173
     },

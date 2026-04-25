@@ -5,7 +5,7 @@ export {
   printTabIndent,
 } from './generate-likec4'
 
-export type * from './operators/base'
+export * from './operators/base'
 
 export type {
   schemas,

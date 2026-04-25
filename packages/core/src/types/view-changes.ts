@@ -33,9 +33,30 @@ export namespace ViewChange {
       rankSep?: number | null
     }
   }
+
+  export interface ChangeProperty {
+    op: 'change-property'
+    /**
+     * Change title
+     */
+    title?: string
+    /**
+     * Change description
+     */
+    description?: scalar.MarkdownOrString
+    /**
+     * Add or remove tags
+     */
+    tag?: {
+      add?: scalar.Tag | scalar.Tag[]
+      remove?: scalar.Tag | scalar.Tag[]
+    }
+  }
 }
+
 export type ViewChange =
   | ViewChange.ChangeElementStyle
   | ViewChange.SaveViewSnapshot
   | ViewChange.ResetManualLayout
   | ViewChange.ChangeAutoLayout
+  | ViewChange.ChangeProperty

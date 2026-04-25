@@ -32,7 +32,7 @@ export function generateLikeC4(input: schemas.likec4data.Input, params?: Params)
  *
  * @example
  * ```ts
- * print(operators.model, {
+ * print(operators.model(), {
  *   elements: [
  *     {
  *       id: 'cloud',
@@ -58,15 +58,29 @@ export function generateLikeC4(input: schemas.likec4data.Input, params?: Params)
  * // }
  * ```
  */
-export function print<O extends () => AnyOp>(operator: O, data: ctxOf<O>, params?: Params): string {
-  return materialize(withctx(data, operator()), params?.indentation)
+export function print<Operator extends AnyOp>(operator: Operator): string
+export function print<Operator extends AnyOp>(
+  operator: Operator,
+  data: ctxOf<Operator>,
+  params?: Params,
+): string
+export function print<Operator extends AnyOp>(
+  operator: Operator,
+  data?: ctxOf<Operator>,
+  params?: Params,
+): string {
+  return materialize(withctx(data ?? {}, operator), params?.indentation)
 }
 
 /**
  * Same as {@link print} but uses tab indentation
  */
-export function printTabIndent<O extends () => AnyOp>(operator: O, data: ctxOf<O>): string {
-  return materialize(withctx(data, operator()), '\t')
+export function printTabIndent(operator: AnyOp): string
+export function printTabIndent<Operator extends AnyOp>(
+  operator: Operator,
+  data?: ctxOf<Operator>,
+): string {
+  return materialize(withctx(data ?? {}, operator), '\t')
 }
 
 export { operators }

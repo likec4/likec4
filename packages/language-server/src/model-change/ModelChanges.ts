@@ -9,6 +9,7 @@ import type { LikeC4Services } from '../module'
 import type { ChangeView } from '../protocol'
 import { changeElementStyle } from './changeElementStyle'
 import { changeViewLayout } from './changeViewLayout'
+import { changePropertyHandler, preparePayload } from './viewChange'
 
 const logger = mainLogger.getChild('model-changes')
 
@@ -20,6 +21,25 @@ export class LikeC4ModelChanges {
   }
 
   public async applyChange(changeView: ChangeView.Params): Promise<ChangeView.Res> {
+    const payload = preparePayload(changeView, this.services)
+
+    const res = await changePropertyHandler(payload)
+
+    if (res) {
+      const edits = Array.isArray(res) ? res : [res]
+      const applyResult = await this.applyTextEdits(payload.doc, edits)
+      if (!applyResult) {
+        return {
+          success: false,
+          error: 'Failed to apply text edits',
+        }
+      }
+      return {
+        success: true,
+        location: null,
+      }
+    }
+
     const workspace = this.services.shared.workspace
 
     try {
@@ -133,8 +153,31 @@ export class LikeC4ModelChanges {
     const workspace = this.services.shared.workspace
     if (!lsp) {
       // fallback to direct text document edit if LSP connection is not available (e.g. wdhen running in MCP/CLI)
-      const updateTextDocument = TextDocument.applyEdits(doc.textDocument, edits)
-      await workspace.FileSystemProvider.writeFile(doc.uri, updateTextDocument)
+      let text = TextDocument.applyEdits(doc.textDocument, edits)
+      await workspace.FileSystemProvider.writeFile(doc.uri, text)
+
+      await workspace.DocumentBuilder.update([doc.uri], [])
+
+      // const formatEdits = await this.services.lsp.Formatter.formatDocument(doc, {
+      //   options: {
+      //     insertSpaces: true,
+      //     tabSize: 2,
+      //   },
+      //   textDocument: {
+      //     uri: doc.textDocument.uri,
+      //   },
+      // })
+
+      // if (formatEdits.length > 0) {
+      //   text = TextDocument.applyEdits(doc.textDocument, formatEdits)
+      //   TextDocument.update(doc.textDocument, [{ text }], doc.textDocument.version + 1)
+      // }
+
+      // try {
+      //   await workspace.FileSystemProvider.writeFile(doc.uri, text)
+      // } catch (err) {
+      //   logger.warn(err)
+      // }
       return true
     }
     const applyResult = await lsp.workspace.applyEdit({

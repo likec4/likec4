@@ -204,7 +204,7 @@ describe('generateLikeC4', () => {
 
 describe('print', () => {
   it('prints expression', async ({ expect }) => {
-    const output = print(operators.expression, {
+    const output = print(operators.expression(), {
       ref: {
         model: 'some.el',
       },
@@ -214,7 +214,7 @@ describe('print', () => {
   })
 
   it('prints model', async ({ expect }) => {
-    const output = print(operators.model, {
+    const output = print(operators.model(), {
       elements: [
         {
           id: 'cloud',
@@ -254,7 +254,7 @@ describe('print', () => {
   })
 
   it('prints with tabs', async ({ expect }) => {
-    const output = printTabIndent(operators.model, {
+    const output = printTabIndent(operators.model(), {
       elements: [
         {
           id: 'cloud',
