@@ -32,24 +32,6 @@ export async function viteReactConfig({
     resolve: {
       alias: viteAliases(),
     },
-    esbuild: {
-      banner: `'use client'\n` + JsBanners.banner,
-      footer: JsBanners.footer,
-      jsx: 'transform',
-      jsxDev: false,
-      jsxSideEffects: false,
-      minifyIdentifiers: false,
-      minifySyntax: false,
-      minifyWhitespace: false,
-      tsconfigRaw: {
-        compilerOptions: {
-          target: 'ES2022',
-          useDefineForClassFields: true,
-          verbatimModuleSyntax: true,
-          jsx: 'react-jsx',
-        },
-      },
-    },
     build: {
       outDir,
       emptyOutDir: false,
@@ -63,7 +45,7 @@ export async function viteReactConfig({
         },
         formats: ['es'],
       },
-      rollupOptions: {
+      rolldownOptions: {
         external: [
           'likec4/react',
           'likec4/model',

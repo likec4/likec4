@@ -1,11 +1,10 @@
 import { LikeC4VitePlugin } from '@likec4/vite-plugin'
-import react from '@vitejs/plugin-react'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { createLikeC4Logger } from '../logger'
 import { viteAliases } from './aliases'
-import { JsBanners, viteAppRoot } from './utils'
+import { viteAppRoot } from './utils'
 
 export type LikeC4ViteWebcomponentConfig = {
   webcomponentPrefix: string | undefined
@@ -39,20 +38,13 @@ export function viteWebcomponentConfig({
     define: {
       'process.env.NODE_ENV': '"production"',
     },
-    esbuild: {
-      ...JsBanners,
-      tsconfigRaw: {
-        compilerOptions: {
-          target: 'ESNext',
-          jsx: 'react-jsx',
-        },
-      },
-    },
     build: {
       outDir,
       emptyOutDir: false,
       sourcemap: false,
       minify: true,
+      assetsInlineLimit: 500 * 1024, // 500KB
+      chunkSizeWarningLimit: 3 * 1024, // ~3MB
       lib: {
         entry: 'codegen/webcomponent.mjs',
         fileName(_format, _entryName) {

@@ -13,27 +13,6 @@ export const viteLogger = createLikeC4Logger('vite')
 
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
-const banner = `
-/* prettier-ignore-start */
-/* eslint-disable */
-
-/******************************************************************************
- * This file was generated
- * DO NOT EDIT MANUALLY!
- ******************************************************************************/
-
-`.trimStart()
-
-const footer = `
-
-/* prettier-ignore-end */
-`
-
-export const JsBanners = {
-  banner,
-  footer,
-}
-
 /** Resolves the likec4 package root by walking up from current file. */
 export function findPkgRoot() {
   const pkgRoot = packageUpSync({
