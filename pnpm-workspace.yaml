@@ -10,16 +10,15 @@ catalog:
   "@changesets/cli": ^2.30.0
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
-  '@microsoft/api-extractor': ^7.58.7
   '@tsdown/css': ^0.21.10
   "@types/node": ~22.19.15
   "@types/pako": ^2.0.4
-  "@typescript/native-preview": 7.0.0-dev.20260409.1
+  "@typescript/native-preview": 7.0.0-dev.20260424.2
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  oxlint: 1.59.0
-  oxlint-tsgolint: 0.20.0
+  oxlint: 1.61.0
+  oxlint-tsgolint: 0.21.1
   pako: ^2.1.0
   playwright: 1.58.2
   rolldown: 1.0.0-rc.17
@@ -165,7 +164,8 @@ catalogs:
     rollup: ^4.60.2
     vite: ^8.0.10
     vite-plugin-dts: ^4.5.4
-    vite-plugin-node-polyfills: ^0.25.0
+    vite-plugin-node-polyfills: ^0.26.0
+    vite-plugin-inspect: ^11.3.3
     vite-tsconfig-paths: ^6.1.1
   vitest:
     "@vitest/ui": 4.1.3
