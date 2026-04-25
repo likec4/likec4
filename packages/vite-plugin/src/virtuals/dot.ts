@@ -89,7 +89,11 @@ export const projectDotSourcesModule = {
     logGenerating('dot', project.id)
     const views = await likec4.views.viewsAsGraphvizOut(project.id)
     const sources = mapToObj(views, ({ id, svg, dot }) => [id, { dot, svg }])
-    return code(sources)
+    return {
+      code: code(sources),
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 } satisfies ProjectVirtualModule
 

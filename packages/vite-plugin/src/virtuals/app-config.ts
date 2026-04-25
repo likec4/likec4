@@ -36,7 +36,7 @@ export function createAppConfigModule(config: AppConfig | undefined): VirtualMod
     virtualId: 'likec4:plugin/app-config.js',
     async load() {
       logGenerating('app-config')
-      return `
+      const code = `
 export let ComponentName = {
   View: ${JSON.stringify(webcomponentPrefix + '-view')},
   Browser: ${JSON.stringify(webcomponentPrefix + '-browser')},
@@ -60,6 +60,11 @@ export let krokiD2SvgUrl = import.meta.env.VITE_KROKI_D2_SVG_URL || 'https://kro
 export let krokiPumlSvgUrl = import.meta.env.VITE_KROKI_D2_SVG_URL || 'https://kroki.io/plantuml/svg'
 
 `
+      return {
+        code,
+        moduleType: 'js',
+        moduleSideEffects: false,
+      }
     },
   }
 }

@@ -1,13 +1,10 @@
-import { viteAliases } from '#vite/aliases'
-import { logger as consola } from '@likec4/log'
 import { LikeC4VitePlugin } from '@likec4/vite-plugin'
-import react from '@vitejs/plugin-react'
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
-import { chunkSizeWarningLimit, findPkgRoot, JsBanners, viteLogger } from './utils'
+import { createLikeC4Logger } from '../logger'
+import { viteAliases } from './aliases'
+import { JsBanners, relativeToCwd, viteAppRoot } from './utils'
 
 type LikeC4ViteReactConfig = {
   languageServices: LikeC4
@@ -15,44 +12,38 @@ type LikeC4ViteReactConfig = {
   filename?: string
 }
 
-export const pkgRoot = findPkgRoot()
-
 export async function viteReactConfig({
   languageServices,
   outDir,
   filename = 'likec4-react.mjs',
 }: LikeC4ViteReactConfig): Promise<InlineConfig> {
-  consola.warn('DEVELOPMENT MODE')
-  const customLogger = viteLogger
-
-  const root = resolve(pkgRoot, 'app')
-  if (!existsSync(root)) {
-    consola.error(`app root does not exist: ${root}`)
-    throw new Error(`app root does not exist: ${root}`)
-  }
-
-  customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
+  const customLogger = createLikeC4Logger(['vite', 'react'])
+  const root = viteAppRoot()
+  customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(relativeToCwd(root))}`)
+  customLogger.info(k.cyan('outDir') + ' ' + k.dim(relativeToCwd(outDir)))
 
   return {
     customLogger,
     root,
-    publicDir: false,
     configFile: false,
     clearScreen: false,
+    publicDir: false,
     mode: 'production',
     resolve: {
-      conditions: ['sources'],
       alias: viteAliases(),
     },
     esbuild: {
-      banner: JsBanners.banner,
+      banner: `'use client'\n` + JsBanners.banner,
       footer: JsBanners.footer,
+      jsx: 'transform',
       jsxDev: false,
+      jsxSideEffects: false,
       minifyIdentifiers: false,
-      minifySyntax: true,
-      minifyWhitespace: true,
+      minifySyntax: false,
+      minifyWhitespace: false,
       tsconfigRaw: {
         compilerOptions: {
+          target: 'ES2022',
           useDefineForClassFields: true,
           verbatimModuleSyntax: true,
           jsx: 'react-jsx',
@@ -63,11 +54,10 @@ export async function viteReactConfig({
       outDir,
       emptyOutDir: false,
       sourcemap: false,
-      minify: 'esbuild',
+      minify: false,
       copyPublicDir: false,
-      chunkSizeWarningLimit,
       lib: {
-        entry: 'react/likec4.tsx',
+        entry: 'codegen/likec4.mjs',
         fileName(_format, _entryName) {
           return filename
         },
@@ -82,7 +72,6 @@ export async function viteReactConfig({
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
-          /likec4\/vite-plugin\/.*/,
           /@likec4\/core.*/,
         ],
         // https://github.com/vitejs/vite/issues/15012
@@ -95,7 +84,6 @@ export async function viteReactConfig({
       },
     },
     plugins: [
-      react(),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
       }),

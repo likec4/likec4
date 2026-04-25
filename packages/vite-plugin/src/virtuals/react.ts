@@ -31,7 +31,11 @@ export const projectReactModule = {
   ...generateMatches('react'),
   async load({ project }) {
     logGenerating('react', project.id)
-    return projectCode(project.id)
+    return {
+      code: projectCode(project.id),
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 } satisfies ProjectVirtualModule
 
@@ -40,7 +44,19 @@ export const singleProjectReactModule = {
   virtualId: 'likec4:plugin/react.js',
   async load({ projects }) {
     const project = first(projects)
-    logGenerating('react', project.id)
-    return projectCode(project.id)
+    logGenerating('react-default-project')
+    const code = `export {
+  useLikeC4Model,
+  useLikeC4View,
+  useLikeC4Views,
+  LikeC4ModelProvider,
+  LikeC4View,
+  ReactLikeC4
+} from 'likec4:react/${project.id}'`
+    return {
+      code,
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 } satisfies VirtualModule

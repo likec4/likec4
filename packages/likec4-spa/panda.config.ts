@@ -1,11 +1,11 @@
 import { defineConfig } from '@likec4/styles/dev'
-import { isDevelopment } from 'std-env'
+import { isProduction } from 'std-env'
 
 export default defineConfig({
-  clean: !isDevelopment,
+  clean: isProduction,
   include: [
     'src/**/*.{ts,tsx}',
     '../diagram/src/**/*.{ts,tsx}',
   ],
-  outdir: isDevelopment ? '../../styled-system/styles/dist' : 'styled-system',
+  outdir: isProduction ? 'styled-system' : '../../styled-system/styles/dist',
 })

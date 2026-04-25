@@ -73,8 +73,3 @@ export async function mkTempPublicDir() {
 export function relativeToCwd(path: string) {
   return relative(cwd(), path)
 }
-
-/**
- * Adjust chunk size warning limit (in kB).
- */
-export const chunkSizeWarningLimit = 10_000

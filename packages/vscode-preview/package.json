@@ -40,6 +40,7 @@
     "@types/vscode": "catalog:vscode",
     "@types/vscode-webview": "^1.57.5",
     "@vitejs/plugin-react": "catalog:vite",
+    "@rolldown/plugin-babel": "catalog:vite",
     "babel-plugin-react-compiler": "catalog:react",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",

@@ -1,25 +1,30 @@
+import { outputOptions } from '@likec4/devops/tsdown'
+import postcssPanda from '@pandacss/dev/postcss'
 import pluginBabel from '@rolldown/plugin-babel'
 import { reactCompilerPreset } from '@vitejs/plugin-react'
+import { resolve } from 'node:path'
 import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'tsdown'
+import { build as viteBuild } from 'vite'
 import { $ } from 'zx'
 
 $.quiet = false
+$.verbose = true
 $.preferLocal = true
 $.env = {
   ...$.env,
   NODE_ENV: 'production',
 }
 
-export default defineConfig({
+export default defineConfig([{
   entry: [
     'src/main.tsx',
+    'src/routeTree.gen.ts',
     'src/routes/**/*.tsx',
-    'src/pages/**/*.tsx',
+    'src/pages/*.tsx',
     '!**/*.d.ts',
     '!**/*.spec.{ts,tsx}',
   ],
-  fixedExtension: true,
   root: '.',
   env: {
     'NODE_ENV': 'production',
@@ -29,13 +34,11 @@ export default defineConfig({
     'public/*',
   ],
   plugins: [
-    esmExternalRequirePlugin({
-      external: ['react', 'react-dom', 'react-compiler-runtime'],
-    }),
     pluginBabel({
-      presets: [reactCompilerPreset({
-        target: '18',
-      })],
+      presets: [reactCompilerPreset()],
+    }),
+    esmExternalRequirePlugin({
+      external: ['react', 'react-dom'],
     }),
   ],
   outDir: 'dist',
@@ -43,33 +46,26 @@ export default defineConfig({
   clean: true,
   platform: 'browser',
   minify: true,
-  outputOptions: {
-    keepNames: true,
+  cjsDefault: false,
+  outputOptions: outputOptions({
     polyfillRequire: false,
     codeSplitting: {
-      includeDependenciesRecursively: true,
-      minShareCount: 2,
       groups: [
         {
-          name: 'icons',
-          test: '@tabler',
+          name: 'styled-system',
+          test: /styled-system/,
+          priority: 5,
         },
         {
-          name: 'likec4-styles',
-          test: /(pandacss|styled-system)/,
-        },
-        {
-          name: 'd3',
-          test: /d3-/,
-        },
-        {
-          name: 'mantine',
-          test: '@mantine/',
+          name: 'commons',
+          test: /likec4-spa/,
+          minShareCount: 4,
+          priority: 4,
         },
       ],
     },
-    chunkFileNames: 'chunks/[name]-[hash].mjs',
-  },
+  }),
+  dts: false,
   tsconfig: 'tsconfig.src.json',
   deps: {
     neverBundle: [
@@ -80,15 +76,67 @@ export default defineConfig({
       /likec4\/vite-plugin.*/,
       /likec4:/,
     ],
+    // onlyBundle: false,
   },
   inputOptions: {
     resolve: {
       conditionNames: ['sources', 'import', 'default'],
+      alias: {
+        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+        'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
+      },
     },
   },
   hooks: {
+    'build:prepare': async () => {
+      await $`tsr generate`
+    },
     'build:done': async () => {
-      await $`vite build --mode styles`
+      await viteBuild({
+        configFile: false,
+        css: {
+          postcss: {
+            plugins: [
+              postcssPanda() as any,
+            ],
+          },
+        },
+        build: {
+          outDir: 'dist/src',
+          copyPublicDir: false,
+          emptyOutDir: false,
+          cssCodeSplit: true,
+          cssMinify: true,
+          lib: {
+            entry: 'src/style.css',
+            formats: ['es'],
+          },
+          rolldownOptions: {
+            input: {
+              'style.css': 'src/style.css',
+              'fonts.css': 'src/fonts.css',
+            },
+          },
+        },
+      })
     },
   },
-})
+}, {
+  entry: 'codegen/*.tsx',
+  outDir: 'dist/codegen',
+  format: 'esm',
+  fixedExtension: true,
+  platform: 'browser',
+  minify: false,
+  dts: false,
+  deps: {
+    neverBundle: [
+      'likec4/model',
+      'likec4/react',
+      /@likec4\/core.*/,
+      /likec4\/vite-plugin.*/,
+      /likec4:/,
+    ],
+    // onlyBundle: false,
+  },
+}])

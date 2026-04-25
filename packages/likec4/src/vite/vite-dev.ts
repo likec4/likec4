@@ -1,6 +1,3 @@
-import type { LikeC4ViteConfig } from '#vite/config-app'
-import { viteConfig } from '#vite/config-app'
-import { viteWebcomponentConfig } from '#vite/config-webcomponent'
 import { loggable } from '@likec4/log'
 import getPort, { portNumbers } from 'get-port'
 import isInsideContainer from 'is-inside-container'
@@ -12,6 +9,9 @@ import k from 'tinyrainbow'
 import type { SetOptional } from 'type-fest'
 import type { ViteDevServer } from 'vite'
 import { build, createServer } from 'vite'
+import type { LikeC4ViteConfig } from './config-app'
+import { viteConfig } from './config-app'
+import { viteWebcomponentConfig } from './config-webcomponent'
 import { mkTempPublicDir } from './utils'
 
 type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
@@ -87,6 +87,9 @@ export async function viteDev({
       : config.define,
     mode: hmr ? 'development' : config.mode,
     publicDir,
+    optimizeDeps: {
+      force: true,
+    },
     server: {
       host,
       // TODO: temprorary enable access to any host
@@ -108,14 +111,14 @@ export async function viteDev({
   })
 
   if (buildWebcomponent) {
-    logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
     const webcomponentConfig = viteWebcomponentConfig({
       webcomponentPrefix,
       languageServices: languageServices,
       outDir: publicDir,
       base: config.base,
     })
-    await build({
+    logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
+    build({
       ...webcomponentConfig,
       logLevel: 'warn',
     }).catch(err => {

@@ -50,10 +50,14 @@ function code(model: LikeC4Model.Computed) {
 
 export const projectMmdSourcesModule = {
   ...generateMatches('mmd'),
-  async load({ likec4, project, logger }) {
+  async load({ likec4, project }) {
     logGenerating('mmd', project.id)
     const model = await likec4.computedModel(project.id)
-    return code(model)
+    return {
+      code: code(model),
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 } satisfies ProjectVirtualModule
 

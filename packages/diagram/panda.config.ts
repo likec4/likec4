@@ -4,4 +4,5 @@ export default defineConfig({
   include: [
     'src/**/*.{ts,tsx}',
   ],
+  clean: true,
 })

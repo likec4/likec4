@@ -35,6 +35,10 @@ export const rpcModule: VirtualModule = {
   virtualId: 'likec4:plugin/rpc.js',
   async load() {
     logGenerating('rpc')
-    return code
+    return {
+      code,
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 }

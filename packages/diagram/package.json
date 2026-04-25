@@ -104,7 +104,8 @@
     "react-shadow": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:externals",
-    "xstate": "catalog:xstate"
+    "xstate": "catalog:xstate",
+    "@tabler/icons-react": "catalog:react"
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
@@ -121,7 +122,6 @@
     "@likec4/tsconfig": "workspace:*",
     "@pandacss/dev": "catalog:css",
     "@statelyai/inspect": "^0.4.0",
-    "@tabler/icons-react": "catalog:react",
     "@types/bezier-js": "^4.1.3",
     "@types/d3-shape": "^3.1.8",
     "@types/node": "catalog:",
@@ -134,7 +134,7 @@
     "react-dom": "catalog:react",
     "typescript": "catalog:",
     "vite": "catalog:vite",
-    "vite-plugin-dts": "catalog:vite",
+    "vite-plugin-dts": "5.0.0-beta.6",
     "vitest": "catalog:vitest",
     "zx": "catalog:"
   }

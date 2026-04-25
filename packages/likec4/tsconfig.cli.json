@@ -18,12 +18,7 @@
     "rootDirs": [
       "src",
       "."
-    ],
-    "paths": {
-      "@/vite/*": [
-        "./src/vite/*"
-      ]
-    }
+    ]
   },
   "include": [
     "src/",
@@ -44,9 +39,6 @@
     },
     {
       "path": "../vite-plugin/"
-    },
-    {
-      "path": "../diagram/tsconfig.src.json"
     },
     {
       "path": "../generators/"

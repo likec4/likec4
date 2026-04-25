@@ -1,5 +1,3 @@
-import { viteConfig } from '#vite/config-app'
-import { viteWebcomponentConfig } from '#vite/config-webcomponent'
 import { copyFileSync, existsSync, readdirSync, rmSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -8,7 +6,9 @@ import k from 'tinyrainbow'
 import type { SetOptional } from 'type-fest'
 import type { Logger } from 'vite'
 import { build } from 'vite'
-import type { LikeC4ViteConfig } from './config-app.prod'
+import { viteConfig } from './config-app'
+import type { LikeC4ViteConfig } from './config-app'
+import { viteWebcomponentConfig } from './config-webcomponent'
 import { mkTempPublicDir } from './utils'
 
 type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
@@ -116,15 +116,15 @@ export async function viteBuild({
     }
   }
 
-  // if (buildWebcomponent && !outputSingleFile) {
-  //   const webcomponentConfig = viteWebcomponentConfig({
-  //     webcomponentPrefix,
-  //     languageServices,
-  //     outDir: publicDir,
-  //     base: config.base,
-  //   })
-  //   await build(webcomponentConfig)
-  // }
+  if (buildWebcomponent && !outputSingleFile) {
+    const webcomponentConfig = viteWebcomponentConfig({
+      webcomponentPrefix,
+      languageServices,
+      outDir: publicDir,
+      base: config.base,
+    })
+    await build(webcomponentConfig)
+  }
 
   // Static website
   await build({

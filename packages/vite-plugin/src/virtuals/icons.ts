@@ -1,19 +1,19 @@
-import type { ComputedView } from '@likec4/core/types'
 import { compareNatural } from '@likec4/core/utils'
-import { filter, isTruthy, pipe, sort, unique } from 'remeda'
+import { filter, flatMap, isTruthy, map, pipe, sort, unique, values } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
 import { logGenerating } from '../logger'
 import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
-function code(views: ComputedView[]) {
+const startsWithHttp = /^(https?:)?\/\//i
+
+function code<V extends { nodes: ReadonlyArray<{ icon?: string | null }> }>(views: V[]) {
   const icons = pipe(
-    views.flatMap(v => v.nodes.map(n => n.icon as string | undefined)),
-    filter((s): s is string =>
-      isTruthy(s) &&
-      !(s.toLowerCase().startsWith('http:') || s.toLowerCase().startsWith('https:'))
-    ),
+    views,
+    flatMap(v => v.nodes),
+    map(n => n.icon ?? undefined),
+    filter((s): s is string => isTruthy(s) && !startsWithHttp.test(s)),
     unique(),
     sort(compareNatural),
   )
@@ -62,8 +62,16 @@ export const projectIconsModule = {
   ...generateMatches('icons', '.jsx'),
   async load({ likec4, project }) {
     logGenerating('icons', project.id)
-    const views = await likec4.views.computedViews(project.id)
-    return code(views)
+    const model = await likec4.computedModel(project.id)
+    const views = [
+      ...values(model.$data.views),
+      ...values(model.$data.manualLayouts ?? {}),
+    ]
+    return {
+      moduleSideEffects: false,
+      moduleType: 'jsx',
+      code: code(views),
+    }
   },
 } satisfies ProjectVirtualModule
 
@@ -113,7 +121,7 @@ export const iconsModule = {
       )
       .join(',\n')
 
-    return `
+    const code = `
 import { jsx } from 'react/jsx-runtime'
 import { lazy, Suspense } from 'react' 
 export let ProjectIconsRegistry = {
@@ -123,8 +131,8 @@ ${registry}
 
 export function getProjectIcons(projectId) {
   return (props) => {
-    let fn = ProjectIconsRegistry[projectId]
-    if (!fn) {
+    let Renderer = ProjectIconsRegistry[projectId]
+    if (!Renderer) {
       const projects = Object.keys(ProjectIconsRegistry)
       console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
       if (projects.length === 0) {
@@ -132,9 +140,9 @@ export function getProjectIcons(projectId) {
       }
       projectId = projects[0]
       console.warn('Falling back to project: ' + projectId)
-      fn = ProjectIconsRegistry[projectId]
+      Renderer = ProjectIconsRegistry[projectId]
     }
-    return jsx(Suspense, { children: jsx(fn, props) })
+    return jsx(Suspense, { children: jsx(Renderer, props) })
   }
 }
 
@@ -145,12 +153,19 @@ if (import.meta.hot) {
     }
     const update = md.ProjectIconsRegistry
     if (update) {
-      Object.assign(import.meta.hot.data.$update, update)
+      for (const [id, renderer] of Object.entries(update)) {
+        import.meta.hot.data.$update[id] ??= renderer
+      }
     } else {
       import.meta.hot.invalidate()
     }
   })
 }
 `
+    return {
+      code,
+      moduleType: 'jsx',
+      moduleSideEffects: false,
+    }
   },
 } satisfies VirtualModule

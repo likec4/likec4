@@ -2,12 +2,19 @@ import { ComponentName } from 'likec4:app-config'
 import { LikeC4View as ReactLikeC4View } from 'likec4:react'
 import { type Root, createRoot } from 'react-dom/client'
 
-import * as z from 'zod/v4'
+import {
+  _default as zDefault,
+  boolean as zBoolean,
+  literal as zLiteral,
+  object as zObject,
+  optional as zOptional,
+  string as zString,
+} from 'zod/v4-mini'
 
-const propsSchema = z.object({
-  viewId: z.string().default('index'),
-  browser: z.stringbool().default(true),
-  dynamicViewVariant: z.literal(['diagram', 'sequence']).optional(),
+const propsSchema = zObject({
+  viewId: zDefault(zString(), 'index'),
+  browser: zDefault(zBoolean(), true),
+  dynamicViewVariant: zOptional(zLiteral(['diagram', 'sequence'])),
 })
 
 export class LikeC4View extends HTMLElement {
@@ -71,7 +78,7 @@ export class LikeC4View extends HTMLElement {
       },
     )
     if (!props.success) {
-      console.error('Invalid props', z.formatError(props.error))
+      console.error('Invalid props', props.error)
       return {
         viewId: 'index',
       }

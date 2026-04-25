@@ -48,10 +48,14 @@ export const projectsModule = {
   virtualId: 'likec4:plugin/projects.js',
   async load({ projects }) {
     logGenerating('projects')
-    return code(map(projects, p => ({
-      id: p.id,
-      title: p.title,
-      landingPage: p.config.landingPage,
-    })))
+    return {
+      code: code(map(projects, p => ({
+        id: p.id,
+        title: p.title,
+        landingPage: p.config.landingPage,
+      }))),
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 } satisfies VirtualModule

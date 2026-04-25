@@ -1,4 +1,6 @@
+import babel from '@rolldown/plugin-babel'
 import react from '@vitejs/plugin-react'
+import { reactCompilerPreset } from '@vitejs/plugin-react'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
@@ -12,8 +14,8 @@ export default defineConfig(({ mode }) => {
       // Prefer .ts/.tsx over .js so diagram src is used (avoid CJS .js in diagram/src)
       extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
       alias: {
+        '@likec4/styles': resolve('styled-system'),
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        '@likec4/diagram': resolve('../diagram/src/index.ts'),
       },
     },
     define: {
@@ -34,27 +36,15 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 20000,
       assetsDir: '',
       modulePreload: false,
-      commonjsOptions: {
-        defaultIsModuleExports: 'auto',
-        requireReturnsDefault: 'auto',
-        extensions: ['.mjs', '.js'],
-        transformMixedEsModules: true,
-        ignoreTryCatch: 'remove',
-      },
-      rollupOptions: {
-        treeshake: {
-          preset: 'recommended',
-        },
+      rolldownOptions: {
         input: [
           './index.html',
           './src/fonts.css',
           './src/index.css',
         ],
         output: {
-          hoistTransitiveImports: false,
-          compact: true,
           entryFileNames: `[name].js`,
-          assetFileNames: `[name].[ext]`,
+          assetFileNames: `[name].[extname]`,
         },
         external: [
           'vscode',
@@ -64,12 +54,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      react({
-        babel: {
-          plugins: [
-            ['babel-plugin-react-compiler', {}],
-          ],
-        },
+      react(),
+      babel({
+        presets: [reactCompilerPreset()],
       }),
     ],
   }

@@ -36,7 +36,11 @@ export const projectModelModule = {
   async load({ likec4, project }) {
     logGenerating('model', project.id)
     const model = await likec4.layoutedModel(project.id)
-    return projectModelCode(model)
+    return {
+      code: projectModelCode(model),
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 } satisfies ProjectVirtualModule
 

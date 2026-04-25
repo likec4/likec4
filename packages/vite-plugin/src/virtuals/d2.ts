@@ -52,7 +52,11 @@ export const projectD2Module = {
   async load({ likec4, project }) {
     logGenerating('d2', project.id)
     const model = await likec4.computedModel(project.id)
-    return code(model)
+    return {
+      code: code(model),
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 } satisfies ProjectVirtualModule
 

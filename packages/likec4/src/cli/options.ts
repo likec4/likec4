@@ -5,10 +5,9 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { DEV } from 'esm-env'
 import isInsideContainer from 'is-inside-container'
 import { resolve } from 'node:path'
-import { env } from 'std-env'
+import { env, isDevelopment } from 'std-env'
 import type { Options, PositionalOptions } from 'yargs'
 
 export const path = {
@@ -126,4 +125,4 @@ export const verbose = {
   conflicts: ['log-level'],
 } as const satisfies Options
 
-export const verboseLogLevel = DEV ? 'trace' : 'debug' as const
+export const verboseLogLevel = isDevelopment ? 'trace' : 'debug' as const

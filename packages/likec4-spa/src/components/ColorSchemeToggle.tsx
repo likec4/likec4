@@ -7,9 +7,8 @@
 
 import { ActionIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
 import { IconMoonStars, IconSun } from '@tabler/icons-react'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
-import { Route as rootRoute } from '../routes/__root'
 import { resolveForceColorScheme } from '../searchParams'
 
 export function ColorSchemeToggle() {
@@ -18,7 +17,9 @@ export function ColorSchemeToggle() {
   })
   const computedColorScheme = useComputedColorScheme('light')
   const navigate = useNavigate()
-  const { theme: urlTheme } = rootRoute.useSearch()
+  const { theme: urlTheme } = useSearch({
+    from: '__root__',
+  })
 
   const isForced = resolveForceColorScheme(urlTheme) != null
 
@@ -41,7 +42,7 @@ export function ColorSchemeToggle() {
     if (isForced) {
       pendingScheme.current = next
       navigate({
-        from: rootRoute.fullPath,
+        to: '../',
         search: (prev) => ({ ...prev, theme: undefined }),
         replace: true,
       }).catch(() => {

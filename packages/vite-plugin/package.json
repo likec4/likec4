@@ -79,6 +79,7 @@
     "birpc": "catalog:vite",
     "json5": "catalog:utils",
     "pathe": "catalog:utils",
+    "p-debounce": "catalog:utils",
     "remeda": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",

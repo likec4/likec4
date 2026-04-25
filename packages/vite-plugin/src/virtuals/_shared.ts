@@ -4,25 +4,31 @@ import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { URI } from 'langium'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
+import type { Rolldown } from 'vite'
 import { type ViteLogger, logGenerating } from '../logger'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 export { k }
 
-export type VirtualModuleProject = LikeC4Project & {
+export type ProjectData = LikeC4Project & {
   folder: URI
   config: Readonly<LikeC4ProjectConfig>
 }
+export type ProjectsData = NonEmptyArray<ProjectData>
+
+export type VirtualModuleLoadResult = Rolldown.SourceDescription | string
 
 export interface VirtualModule {
   id: string
   virtualId: string
-  load(opts: {
-    logger: ViteLogger
-    likec4: LikeC4LanguageServices
-    projects: NonEmptyArray<VirtualModuleProject>
-    assetsDir: string
-  }): Promise<string>
+  load(
+    opts: {
+      logger: ViteLogger
+      likec4: LikeC4LanguageServices
+      projects: NonEmptyArray<ProjectData>
+      assetsDir: string
+    },
+  ): Promise<VirtualModuleLoadResult>
 }
 
 /**
@@ -31,19 +37,21 @@ export interface VirtualModule {
 export interface ProjectVirtualModule {
   matches: (id: string) => ProjectId | null
   virtualId: (projectId: ProjectId) => string
-  load(opts: {
-    logger: ViteLogger
-    likec4: LikeC4LanguageServices
-    project: VirtualModuleProject
-    assetsDir: string
-  }): Promise<string>
+  load(
+    opts: {
+      logger: ViteLogger
+      likec4: LikeC4LanguageServices
+      project: ProjectData
+      assetsDir: string
+    },
+  ): Promise<VirtualModuleLoadResult>
 }
 
 export function generateMatches(moduleId: string, extension = '.js') {
   return {
     matches: (id: string): ProjectId | null => {
-      let { module, projectId } = id.match(/^likec4:plugin\/(?<projectId>.+)\/(?<module>.+)$/)?.groups ??
-        id.match(/^likec4:(?<module>.+)\/(?<projectId>.+)$/)?.groups ?? {}
+      let { module, projectId } = id.match(/likec4:plugin\/(?<projectId>.+)\/(?<module>.+)$/)?.groups ??
+        id.match(/likec4:(?<module>.+)\/(?<projectId>.+)$/)?.groups ?? {}
       if (!module || !projectId) {
         return null
       }
@@ -71,10 +79,10 @@ export function generateCombinedProjects(moduleId: string, fnName: string): Virt
         const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
           JSON.stringify(joinURL(`likec4:${moduleId}`, id)),
         )
-        return `${idLiteral}: () => import(${pkgLiteral})`
+        return `${idLiteral}: async () => await import(${pkgLiteral})`
       })
 
-      return `
+      const code = `
 export let ${fnName}Fn = {
 ${cases.join(',\n')}
 }      
@@ -108,6 +116,11 @@ if (import.meta.hot) {
   })
 }
     `
+      return {
+        code,
+        moduleType: 'js',
+        moduleSideEffects: false,
+      }
     },
   }
 }

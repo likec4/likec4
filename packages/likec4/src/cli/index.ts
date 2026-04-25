@@ -34,7 +34,7 @@ import validateCmd from './validate'
  * Configure likec4 logger: verbose or dev => debug level, else info.
  */
 function applyLoggerConfig(logLevel: ConfigureLanguageServerLoggerOptions['logLevel']) {
-  const lowestLevel = logLevel ?? (isDevelopment ? 'trace' : 'info')
+  const lowestLevel = logLevel ?? (isDevelopment ? 'debug' : 'info')
   configureLogger({
     reset: true,
     sinks: {

@@ -2,6 +2,7 @@ import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
+import pDebounce from 'p-debounce'
 import { isDeepEqual, map } from 'remeda'
 import type {
   Plugin,
@@ -11,6 +12,7 @@ import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
+import type { ProjectsData } from './virtuals/_shared'
 import { type AppConfig, createAppConfigModule } from './virtuals/app-config'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
@@ -93,6 +95,9 @@ export type LikeC4VitePluginOptions =
     logLevel?: never
   })
 
+/**
+ * Virtual modules per LikeC4 project that should trigger HMR when model changes
+ */
 const hmrProjectVirtuals = [
   projectModelModule,
   projectIconsModule,
@@ -102,6 +107,9 @@ const hmrProjectVirtuals = [
   projectPumlModule,
   projectDrawioModule,
 ]
+/**
+ * All virtual modules per LikeC4 project ()
+ */
 const projectVirtuals = [
   ...hmrProjectVirtuals,
   projectReactModule,
@@ -140,6 +148,24 @@ export function LikeC4VitePlugin({
     createAppConfigModule(appConfig),
   ]
 
+  const projectsChangeDetector = <T extends ProjectsData>(initialValue: T) => {
+    const selectDataToCompare = map((p) => ({
+      id: p.id,
+      title: p.title,
+      folder: p.folder.toString(),
+      landingPage: p.config.landingPage,
+    })) satisfies (data: T) => any
+    let _last = selectDataToCompare(initialValue)
+    return (update: T): boolean => {
+      const _next = selectDataToCompare(update)
+      if (isDeepEqual(_last, _next)) {
+        return false
+      }
+      _last = _next
+      return true
+    }
+  }
+
   const mainPlugin: Plugin = {
     name: VITE_PLUGIN_LIKEC4,
 
@@ -153,45 +179,6 @@ export function LikeC4VitePlugin({
       } else {
         const isDev = config.mode === 'development'
         const watch = shouldDisposeOnStop = opts.watch ?? isDev
-
-        // if (isDev) {
-        //   const log = this
-        //   const format = getAnsiColorFormatter({
-        //     format: ({ category, message }) => {
-        //       return `${category} ${message}`
-        //     },
-        //   })
-        //   configureLogger({
-        //     reset: true,
-        //     sinks: {
-        //       console: (logObj) => {
-        //         try {
-        //           switch (logObj.level) {
-        //             case 'trace':
-        //             case 'debug':
-        //               log.debug(format(logObj))
-        //               break
-        //             case 'info':
-        //               log.info(format(logObj))
-        //               break
-        //             case 'warning':
-        //               log.warn(format(logObj))
-        //               break
-        //             case 'error':
-        //             case 'fatal': {
-        //               log.error(format(logObj))
-        //               break
-        //             }
-        //             default:
-        //               nonexhaustive(logObj.level)
-        //           }
-        //         } catch (e) {
-        //           console.error('Error while logging to LSP connection:', e)
-        //         }
-        //       },
-        //     },
-        //   })
-        // }
 
         const instance = await fromWorkspace(opts.workspace ?? config.root, {
           graphviz: opts.graphviz ?? 'wasm',
@@ -215,12 +202,20 @@ export function LikeC4VitePlugin({
         for (const module of projectVirtuals) {
           const projectId = module.matches(id)
           if (projectId) {
-            return module.virtualId(projectId)
+            return {
+              id: module.virtualId(projectId),
+              external: 'absolute',
+              moduleSideEffects: false,
+            }
           }
         }
         for (const module of virtuals) {
           if (module.id === id) {
-            return module.virtualId
+            return {
+              id: module.virtualId,
+              external: 'absolute',
+              moduleSideEffects: false,
+            }
           }
         }
         return null
@@ -266,63 +261,62 @@ export function LikeC4VitePlugin({
       const hotChannel = server.hot
       enablePluginRPC.call(this, { logger, likec4, server })
 
-      const readProjects = () =>
-        map(likec4.projects(), p => ({
-          id: p.id,
-          title: p.title,
-          folder: p.folder.toString(),
-          landingPage: p.config.landingPage,
-        }))
-      let _projects = readProjects()
+      const isProjectsChange = projectsChangeDetector(likec4.projects())
 
       const reloadModule = async (id: string) => {
         const md = server.moduleGraph.getModuleById(id)
-        if (md && md.importers.size > 0) {
-          try {
-            await server.reloadModule(md)
-          } catch (err) {
-            logger.error(loggable(err))
-          }
+        if (!md || md.importers.size === 0) {
+          return
+        }
+        try {
+          await server.reloadModule(md)
+        } catch (err) {
+          logger.error(loggable(err))
         }
       }
 
-      likec4.builder.onModelParsed(async () => {
-        const [error] = likec4.getErrors()
-        if (error) {
-          hotChannel.send({
-            type: 'error',
-            err: {
-              name: 'LikeC4ValidationError',
-              ...splitErrorMessage(error.message),
-              plugin: 'vite-plugin-likec4',
-              loc: {
-                file: error.sourceFsPath,
-                line: error.line,
-                column: error.range.start.character + 1,
-              },
-            },
-          })
-          return
-        }
-        const _updated = readProjects()
-        if (!isDeepEqual(_updated, _projects)) {
-          _projects = _updated
-          await reloadModule(projectsModule.virtualId)
-          await reloadModule(iconsModule.virtualId)
-          await reloadModule(modelModule.virtualId)
-          if (_projects.length > 1) {
-            await reloadModule(projectsOverviewModule.virtualId)
-          }
-          return
-        }
+      likec4.builder.onModelParsed(
+        pDebounce(
+          async () => {
+            const [error] = likec4.getErrors()
+            if (error) {
+              hotChannel.send({
+                type: 'error',
+                err: {
+                  name: 'LikeC4ValidationError',
+                  ...splitErrorMessage(error.message),
+                  plugin: 'vite-plugin-likec4',
+                  loc: {
+                    file: error.sourceFsPath,
+                    line: error.line,
+                    column: error.range.start.character + 1,
+                  },
+                },
+              })
+              return
+            }
+            const projects = likec4.projects()
+            // Update on project data change?
+            if (isProjectsChange(projects)) {
+              await reloadModule(projectsModule.virtualId)
+              await reloadModule(iconsModule.virtualId)
+              await reloadModule(modelModule.virtualId)
+              if (projects.length > 1) {
+                await reloadModule(projectsOverviewModule.virtualId)
+              }
+              return
+            }
 
-        // Reload modules per project
-        for (const project of _updated) {
-          for (const projectModule of hmrProjectVirtuals) {
-            await reloadModule(projectModule.virtualId(project.id))
-          }
-        }
-      })
+            // Reload project-specific Modules
+            for (const project of projects) {
+              for (const projectModule of hmrProjectVirtuals) {
+                await reloadModule(projectModule.virtualId(project.id))
+              }
+            }
+          },
+          100,
+        ),
+      )
     },
 
     async buildEnd() {

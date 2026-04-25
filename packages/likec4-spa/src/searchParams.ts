@@ -1,5 +1,5 @@
 import type { Fqn } from '@likec4/core/types'
-import * as z from 'zod/v4'
+import { z } from 'zod'
 
 export const searchParamsSchema = z.object({
   theme: z.literal(['light', 'dark', 'auto'])

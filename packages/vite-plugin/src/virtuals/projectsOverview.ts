@@ -42,6 +42,10 @@ export const projectsOverviewModule = {
     }
     logGenerating('projects-overview')
     const view = await likec4.projectsOverview()
-    return code(view)
+    return {
+      code: code(view),
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 } satisfies VirtualModule

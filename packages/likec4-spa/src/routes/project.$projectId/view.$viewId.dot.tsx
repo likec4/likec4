@@ -3,7 +3,6 @@ import { ViewAsDot } from '../../pages/ViewAsDot'
 
 export const Route = createFileRoute('/project/$projectId/view/$viewId/dot')({
   component: Page,
-  staleTime: Infinity,
   loader: async ({ params, context }) => {
     const projectId = context.projectId
     const { viewId } = params

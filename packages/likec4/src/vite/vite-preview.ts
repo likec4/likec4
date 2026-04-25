@@ -1,8 +1,8 @@
-import { viteConfig } from '#vite/config-app'
 import getPort, { portNumbers } from 'get-port'
 import type { Logger } from 'vite'
 import { preview } from 'vite'
 import type { LikeC4 } from '../LikeC4'
+import { viteConfig } from './config-app'
 
 type VitePreviewParams = {
   languageServices: LikeC4

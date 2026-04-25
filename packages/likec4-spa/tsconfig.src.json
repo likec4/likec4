@@ -13,14 +13,18 @@
     "module": "Preserve",
     "tsBuildInfoFile": "lib/src/.tsbuildinfo",
     "outDir": "lib/src",
-    "rootDir": "src",
+    "rootDirs": [
+      "src",
+      "codegen"
+    ],
     "types": [
       "vite/client",
       "@likec4/vite-plugin/modules"
     ]
   },
   "include": [
-    "src/"
+    "src/",
+    "codegen/"
   ],
   "references": [
     {

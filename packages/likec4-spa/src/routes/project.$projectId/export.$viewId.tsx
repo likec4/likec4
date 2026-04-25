@@ -1,6 +1,6 @@
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 import { lazy } from 'react'
-import * as z from 'zod/v4'
+import { z } from 'zod'
 
 const ExportPageComponent = lazy(async () => {
   const { ExportPage } = await import('../../pages/ExportPage')

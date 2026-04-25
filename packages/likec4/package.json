@@ -70,9 +70,9 @@
     "./vite-plugin/internal": {
       "sources": "./src/vite-plugin/internal.ts",
       "default": {
-        "types": "./dist/vite-plugin/internal.d.mts",
-        "import": "./dist/vite-plugin/internal.mjs",
-        "default": "./dist/vite-plugin/internal.mjs"
+        "types": "./dist/vite-plugin/internal/index.d.mts",
+        "import": "./dist/vite-plugin/internal/index.mjs",
+        "default": "./dist/vite-plugin/internal/index.mjs"
       }
     },
     "./vite-plugin": {
@@ -91,37 +91,18 @@
     "types": "dist/index.d.mts",
     "module": "dist/index.mjs"
   },
-  "imports": {
-    "#vite/aliases": {
-      "production": "./src/vite/aliases.prod.ts",
-      "sources": "./src/vite/aliases.ts"
-    },
-    "#vite/config-app": {
-      "production": "./src/vite/config-app.prod.ts",
-      "sources": "./src/vite/config-app.ts"
-    },
-    "#vite/config-react": {
-      "production": "./src/vite/config-react.prod.ts",
-      "sources": "./src/vite/config-react.ts"
-    },
-    "#vite/config-webcomponent": {
-      "production": "./src/vite/config-webcomponent.prod.ts",
-      "sources": "./src/vite/config-webcomponent.ts"
-    }
-  },
   "scripts": {
     "typecheck": "tsc --build --verbose",
-    "build-cli": "obuild",
-    "build-app": "tsx --conditions=sources scripts/bundle-app.ts",
-    "build-react": "tsx --conditions=sources scripts/bundle-react.ts",
+    "build-cli": "tsdown",
+    "bundle-app": "tsx scripts/bundle-app.ts",
+    "bundle-react": "tsx scripts/bundle-react.ts",
     "build": "echo \"use pnpm turbo run build\" || true",
-    "generate:app": "tsr generate",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf --glob lib dist app/dist dev/.export dev/dist node_modules/.vite react/* icons",
+    "clean": "pnpm rimraf --glob lib dist app/dist dev/.export dev/dist node_modules/.vite react/* __app__",
     "start": "tsx --conditions=sources src/cli/index.ts",
     "dev": "pnpm cli:serve dev",
     "dev:docs": "pnpm cli:serve ../../apps/docs/src",
@@ -242,7 +223,7 @@
     "turbo": "catalog:",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
-    "obuild": "catalog:obuild",
+    "tsdown": "catalog:",
     "vite-plugin-dts": "catalog:vite",
     "vite-plugin-inspect": "^11.3.3",
     "vitest": "catalog:vitest",

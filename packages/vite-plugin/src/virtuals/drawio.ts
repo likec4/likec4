@@ -51,7 +51,11 @@ export const projectDrawioModule = {
   async load({ likec4, project }) {
     logGenerating('drawio', project.id)
     const model = await likec4.layoutedModel(project.id)
-    return code(model)
+    return {
+      code: code(model),
+      moduleType: 'js',
+      moduleSideEffects: false,
+    }
   },
 } satisfies ProjectVirtualModule
 

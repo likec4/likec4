@@ -5,6 +5,7 @@ import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import { cwd } from 'node:process'
 import { hasAtLeast } from 'remeda'
+import { joinURL } from 'ufo'
 import type { Plugin } from 'vite'
 import { logger as mainLogger } from './logger'
 import { k } from './virtuals/_shared'
@@ -70,7 +71,7 @@ export function iconBundlePlugin(options: {
   }
 
   const fetchFromRemote = async (group: string, icon: string) => {
-    const url = `https://icons.like-c4.dev/${group}/${icon}.js`
+    const url = joinURL('https://icons.like-c4.dev', group, `${icon}.js`)
     logger.trace(k.dim(`fetching `) + url)
     const response = await fetch(url)
     if (!response.ok) {
@@ -115,8 +116,8 @@ export function iconBundlePlugin(options: {
       },
       handler(id) {
         return {
-          id: `\0${id}`,
-          resolvedBy: PLUGIN_NAME,
+          id,
+          external: 'absolute',
           moduleSideEffects: false,
         }
       },
@@ -134,7 +135,9 @@ export function iconBundlePlugin(options: {
         const [group, icon] = parts
         const code = await iconsCache.get(`${group}:${icon}`)
         return {
+          moduleType: 'jsx',
           code,
+          moduleSideEffects: false,
         }
       },
     },

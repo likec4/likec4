@@ -21,8 +21,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -39,22 +39,23 @@
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
-    "@pandacss/dev": "catalog:css",
-    "@react-hookz/web": "catalog:react",
     "@likec4/devops": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/styles": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@microsoft/api-extractor": "catalog:",
+    "@pandacss/dev": "catalog:css",
+    "@react-hookz/web": "catalog:react",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
+    "oxlint": "catalog:",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "obuild": "catalog:obuild",
-    "oxlint": "catalog:",
     "vite-plugin-dts": "catalog:vite",
     "vite": "catalog:vite",
     "tsx": "catalog:",

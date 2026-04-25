@@ -16,6 +16,12 @@
   ],
   "references": [
     {
+      "path": "../core/"
+    },
+    {
+      "path": "../vite-plugin/"
+    },
+    {
       "path": "../../styled-system/preset/"
     },
     {

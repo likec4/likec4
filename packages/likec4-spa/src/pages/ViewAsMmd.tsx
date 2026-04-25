@@ -1,27 +1,30 @@
 import { Box } from '@likec4/styles/jsx'
-import { Code, ScrollArea } from '@mantine/core'
+import { Code, ScrollArea, useMantineColorScheme } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
 import { useEffect } from 'react'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 import { CopyToClipboard } from '../components/CopyToClipboard'
 import * as styles from './styles.css'
 
-const renderSvg = async (viewId: string, diagram: string) => {
+const renderSvg = async (viewId: string, diagram: string, theme: 'light' | 'dark') => {
   // @ts-ignore
   const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11.12/dist/mermaid.esm.min.mjs')
   mermaid.initialize({
-    theme: 'dark',
+    theme,
   })
   const { svg } = await mermaid.render(viewId, diagram)
   return svg as string
 }
 
 export function ViewAsMmd({ viewId, mmdSource }: { viewId: string; mmdSource: string }) {
+  const { colorScheme } = useMantineColorScheme()
+  const theme = colorScheme === 'auto' ? 'dark' : colorScheme
+
   const [mmdSvg, { execute }] = useAsync(renderSvg, null)
 
   useEffect(() => {
-    void execute(viewId, mmdSource)
-  }, [mmdSource])
+    void execute(viewId, mmdSource, theme)
+  }, [mmdSource, theme, viewId])
 
   return (
     <>

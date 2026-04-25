@@ -5,13 +5,14 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "verbatimModuleSyntax": true,
-    "rootDir": "src",
     "lib": [
       "ESNext",
       "DOM"
     ]
   },
+  "include": [
+    "src/"
+  ],
   "references": [
     {
       "path": "../core/"

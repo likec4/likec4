@@ -4,7 +4,7 @@
     "//"
   ],
   "tasks": {
-    "build-react": {
+    "bundle-react": {
       "dependsOn": [
         "@likec4/react#build"
       ],
@@ -12,16 +12,12 @@
         "react/**"
       ]
     },
-    "build-app": {
+    "bundle-app": {
       "dependsOn": [
         "@likec4/spa#build"
       ],
       "outputs": [
         "__app__/**"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!src/**"
       ],
       "outputLogs": "new-only"
     },
@@ -39,21 +35,13 @@
         "config/schema.json",
         "vite-plugin-modules.d.ts"
       ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!app/**",
-        "!scripts/**",
-        "!dev/**",
-        "!test/**"
-      ],
       "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
-        "generate",
-        "build-app",
+        "bundle-app",
         "build-cli",
-        "build-react"
+        "bundle-react"
       ],
       "outputLogs": "new-only"
     }
