@@ -44,7 +44,7 @@ export function activateMessenger() {
         err,
       })
       const error = loggable(err)
-      output.show()
+      output.show(true)
       return {
         model: null,
         error,
@@ -82,7 +82,7 @@ export function activateMessenger() {
     } catch (err) {
       logger.warn(`request {req} of {viewId} failed after ${t0.pretty}`, { req: 'layoutView', err, viewId })
       const error = loggable(err)
-      output.show()
+      output.show(true)
       return {
         view: null,
         error,
@@ -128,7 +128,7 @@ export function activateMessenger() {
       if (!result.success) {
         // direct output to bypass telemetry error
         output.error(result.error)
-        output.show()
+        output.show(true)
         return result
       }
       // For save-view-snapshot, we don't need to navigate
@@ -154,7 +154,7 @@ export function activateMessenger() {
       // direct output to bypass telemetry error
       const error = loggable(wrapError(e, 'changeView failed:\n'))
       output.error(error)
-      output.show()
+      output.show(true)
       return {
         success: false,
         error,
