@@ -464,7 +464,6 @@ overrides:
   express>qs: '>=6.14.2'
   url>qs: '>=6.14.2'
   rollup: '>=4.59.0'
-  '@microsoft/api-extractor>minimatch': ^3.1.5
   vscode-languageclient>minimatch: ^5.1.9
   '@ts-morph/common>minimatch': ^9.0.9
   '@vue/language-core>minimatch': ^9.0.9
@@ -2478,6 +2477,9 @@ importers:
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@microsoft/api-extractor':
+        specifier: ~7.58
+        version: 7.58.7(@types/node@22.19.17)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.9.1(typescript@5.9.3)
@@ -6080,9 +6082,6 @@ packages:
     resolution: {integrity: sha512-F3PH5k5juxom4xktynS7MoFY+NUWH5LC4CnH11YB8NPew+HLpmBLCybSAEyb2F+4pRXhuhWqFesoQd6DAyc2hw==}
     engines: {node: '>=18'}
 
-  brace-expansion@1.1.14:
-    resolution: {integrity: sha512-MWPGfDxnyzKU7rNOW9SP/c50vi3xrmrua/+6hfPbCS2ABNWfx24vPidzvC7krjU/RTo235sV776ymlsMtGKj8g==}
-
   brace-expansion@2.0.3:
     resolution: {integrity: sha512-MCV/fYJEbqx68aE58kv2cA/kiky1G8vux3OR6/jbS+jIMe/6fJWa0DTzJU7dqijOWYwHi1t29FlfYI9uytqlpA==}
 
@@ -6324,9 +6323,6 @@ packages:
 
   compare-versions@6.1.1:
     resolution: {integrity: sha512-4hm4VPpIecmlg59CHXnRDnqGplJFrbLG4aFEl5vl6cK1u76ws3LLvX7ikFnTDl5vo39sjWD6AaDPYodJp/NNHg==}
-
-  concat-map@0.0.1:
-    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   conf@15.1.0:
     resolution: {integrity: sha512-Uy5YN9KEu0WWDaZAVJ5FAmZoaJt9rdK6kH+utItPyGsCqCgaTKkrmZx3zoE0/3q6S3bcp3Ihkk+ZqPxWxFK5og==}
@@ -8050,12 +8046,13 @@ packages:
   minimalistic-crypto-utils@1.0.1:
     resolution: {integrity: sha512-JIYlbt6g8i5jKfJ3xz7rF0LXmv2TkDxBLUkiBeZ7bAx4GnnNMr8xFpGnOxn6GhTEHx3SjRrZEoU+j04prX1ktg==}
 
+  minimatch@10.2.3:
+    resolution: {integrity: sha512-Rwi3pnapEqirPSbWbrZaa6N3nmqq4Xer/2XooiOKyV3q12ML06f7MOuc5DVH8ONZIFhwIYQ3yzPH4nt7iWHaTg==}
+    engines: {node: 18 || 20 || >=22}
+
   minimatch@10.2.4:
     resolution: {integrity: sha512-oRjTw/97aTBN0RHbYCdtF1MQfvusSIBQM0IZEgzl6426+8jSC0nF1a/GmnVLpfB9yyr6g6FTqWqiZVbxrtaCIg==}
     engines: {node: 18 || 20 || >=22}
-
-  minimatch@3.1.5:
-    resolution: {integrity: sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w==}
 
   minimatch@5.1.9:
     resolution: {integrity: sha512-7o1wEA2RyMP7Iu7GNba9vc0RWWGACJOCZBJX2GJWip0ikV+wcOsgVuY9uE8CPiyQhkGFSlhuSkZPavN7u1c2Fw==}
@@ -12409,7 +12406,7 @@ snapshots:
       '@rushstack/terminal': 0.24.0(@types/node@22.19.17)
       '@rushstack/ts-command-line': 5.3.9(@types/node@22.19.17)
       diff: 8.0.4
-      minimatch: 3.1.5
+      minimatch: 10.2.3
       resolve: 1.22.10
       semver: 7.7.4
       source-map: 0.6.1
@@ -14201,11 +14198,6 @@ snapshots:
       widest-line: 5.0.0
       wrap-ansi: 9.0.0
 
-  brace-expansion@1.1.14:
-    dependencies:
-      balanced-match: 1.0.2
-      concat-map: 0.0.1
-
   brace-expansion@2.0.3:
     dependencies:
       balanced-match: 1.0.2
@@ -14455,8 +14447,6 @@ snapshots:
   common-ancestor-path@1.0.1: {}
 
   compare-versions@6.1.1: {}
-
-  concat-map@0.0.1: {}
 
   conf@15.1.0:
     dependencies:
@@ -16513,13 +16503,13 @@ snapshots:
 
   minimalistic-crypto-utils@1.0.1: {}
 
-  minimatch@10.2.4:
+  minimatch@10.2.3:
     dependencies:
       brace-expansion: 5.0.5
 
-  minimatch@3.1.5:
+  minimatch@10.2.4:
     dependencies:
-      brace-expansion: 1.1.14
+      brace-expansion: 5.0.5
 
   minimatch@5.1.9:
     dependencies:
