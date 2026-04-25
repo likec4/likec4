@@ -6,7 +6,7 @@ import k from 'tinyrainbow'
 import { withTrailingSlash } from 'ufo'
 import { createFromSources } from '../common/createFromSources'
 import { handleInitOptions } from '../common/handleInitOptions'
-import { type LikeC4Langium, LikeC4 } from '../common/LikeC4'
+import { type LikeC4Langium, type LikeC4LanguageServices, LikeC4 } from '../common/LikeC4'
 import { type FromWorkspaceOptions, type InitOptions, DefaultInitOptions } from '../common/options'
 import { configureLogger } from './configureLogger'
 import { type CreateLanguageServiceOptions, createLanguageServices } from './createLanguageServices'
@@ -15,6 +15,7 @@ export type {
   FromWorkspaceOptions,
   InitOptions,
   LikeC4Langium,
+  LikeC4LanguageServices,
 }
 
 export { LikeC4 } from '../common/LikeC4'

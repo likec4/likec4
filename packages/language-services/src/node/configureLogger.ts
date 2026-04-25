@@ -11,7 +11,7 @@ export function configureLogger(
     return
   }
 
-  if (opt === 'stderr' || options?.mcp === 'stdio') {
+  if (opt === 'stderr') {
     configureLanguageServerLogger({
       useStdErr: true,
       colors: false,

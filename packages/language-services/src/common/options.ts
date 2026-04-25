@@ -29,15 +29,6 @@ export interface InitOptions {
   graphviz?: 'wasm' | 'binary'
 
   /**
-   * Whether to start MCP server
-   *
-   * if port is specified, starts HTTP Streamable MCP server
-   *
-   * @default false
-   */
-  mcp?: false | 'stdio' | { port: number }
-
-  /**
    * Whether to configure the logger.
    *
    * - `false` - don't configure the logger
@@ -59,7 +50,6 @@ export const DefaultInitOptions = {
   printErrors: true,
   throwIfInvalid: false,
   graphviz: 'wasm',
-  mcp: false,
   configureLogger: false,
   logLevel: undefined,
 } as const satisfies Required<InitOptions>

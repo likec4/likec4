@@ -18,6 +18,10 @@ export interface LikeC4Langium {
   likec4: LikeC4Services
 }
 
+export type {
+  LikeC4LanguageServices,
+}
+
 const isErrorDiagnostic = (diagnostic: { severity?: number }): boolean => {
   return diagnostic.severity === 1
 }

@@ -1,16 +1,20 @@
 import {
+  type LikeC4LanguageServices,
   createLanguageServices as createBrowserLanguageServices,
 } from '@likec4/language-server/browser'
 import { configureLogger, getConsoleSink, getTextFormatter, rootLogger } from '@likec4/log'
 import { createFromSources } from '../common/createFromSources'
-import { LikeC4 } from '../common/LikeC4'
+import { type LikeC4Langium, LikeC4 } from '../common/LikeC4'
 import type { FromWorkspaceOptions, InitOptions } from '../common/options'
 
 export type {
   FromWorkspaceOptions,
   InitOptions,
-  LikeC4,
+  LikeC4Langium,
+  LikeC4LanguageServices,
 }
+
+export { LikeC4 }
 
 /**
  * Create a LikeC4 instance from a workspace directory
