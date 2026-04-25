@@ -8,7 +8,10 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
   "bin": {
-    "likec4-mcp-server": "dist/cli.mjs"
+    "likec4-mcp": "bin/likec4-mcp.mjs"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -16,6 +19,7 @@
   },
   "files": [
     "dist",
+    "bin",
     "**/package.json",
     "!**/__*/**",
     "!**/*.spec.*",
@@ -42,9 +46,9 @@
   ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "obuild",
-    "preinspector": "obuild",
-    "inspector": "DANGEROUSLY_OMIT_AUTH=1 LIKEC4_WORKSPACE=../../examples pnpx @modelcontextprotocol/inspector node dist/cli.mjs",
+    "build": "tsdown",
+    "preinspector": "tsdown",
+    "inspector": "DANGEROUSLY_OMIT_AUTH=1 LIKEC4_WORKSPACE=../../examples pnpx @modelcontextprotocol/inspector node bin/likec4-mcp.mjs",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
     "clean": "likec4ops clean",
@@ -77,7 +81,7 @@
     "tinyrainbow": "catalog:utils",
     "defu": "catalog:utils",
     "citty": "catalog:utils",
-    "obuild": "catalog:obuild",
+    "tsdown": "catalog:",
     "remeda": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
