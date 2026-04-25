@@ -15,6 +15,7 @@ export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | Us
     env: {
       NODE_ENV: 'production',
     },
+    nodeProtocol: true,
     inputOptions: {
       resolve: {
         conditionNames: ['sources', 'import', 'default'],
@@ -39,6 +40,7 @@ export function outputOptions(outputOptions?: Rolldown.OutputOptions): Rolldown.
       keepNames: true,
       entryFileNames: '[name].mjs',
       chunkFileNames: 'chunks/[name].mjs',
+
       codeSplitting: {
         groups: [
           {

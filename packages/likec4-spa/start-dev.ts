@@ -8,6 +8,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { defineCommand, runMain } from 'citty'
 import { resolve } from 'node:path'
 import { createServer } from 'vite'
+import viteInspect from 'vite-plugin-inspect'
 
 const main = defineCommand({
   meta: {
@@ -76,6 +77,7 @@ const main = defineCommand({
           workspace,
           logLevel: context.args.verbose ? 'trace' : 'debug',
         }),
+        viteInspect(),
       ],
     })
     await server.listen()

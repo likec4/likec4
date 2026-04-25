@@ -225,7 +225,6 @@
     "ufo": "catalog:utils",
     "tsdown": "catalog:",
     "vite-plugin-dts": "catalog:vite",
-    "vite-plugin-inspect": "^11.3.3",
     "vitest": "catalog:vitest",
     "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageserver": "catalog:vscode",

@@ -1,7 +1,7 @@
+import postcssPanda from '@pandacss/dev/postcss'
 import babel from '@rolldown/plugin-babel'
 import react from '@vitejs/plugin-react'
 import { reactCompilerPreset } from '@vitejs/plugin-react'
-import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
@@ -14,17 +14,18 @@ export default defineConfig(({ mode }) => {
       // Prefer .ts/.tsx over .js so diagram src is used (avoid CJS .js in diagram/src)
       extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
       alias: {
-        '@likec4/styles': resolve('styled-system'),
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       },
     },
     define: {
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
     },
-    esbuild: {
-      jsx: 'automatic',
-      jsxDev: false,
-      tsconfigRaw: readFileSync('tsconfig.src.json', 'utf-8'),
+    css: {
+      postcss: {
+        plugins: [
+          postcssPanda() as any,
+        ],
+      },
     },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
@@ -37,14 +38,15 @@ export default defineConfig(({ mode }) => {
       assetsDir: '',
       modulePreload: false,
       rolldownOptions: {
+        tsconfig: 'tsconfig.src.json',
         input: [
-          './index.html',
-          './src/fonts.css',
-          './src/index.css',
+          'index.html',
+          'src/fonts.css',
+          'src/index.css',
         ],
         output: {
           entryFileNames: `[name].js`,
-          assetFileNames: `[name].[extname]`,
+          assetFileNames: `[name][extname]`,
         },
         external: [
           'vscode',
