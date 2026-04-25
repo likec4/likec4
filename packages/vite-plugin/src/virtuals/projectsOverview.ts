@@ -45,7 +45,6 @@ export const projectsOverviewModule = {
     return {
       code: code(view),
       moduleType: 'js',
-      moduleSideEffects: false,
     }
   },
 } satisfies VirtualModule

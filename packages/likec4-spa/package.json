@@ -19,6 +19,7 @@
     "generate": "tsr generate",
     "clean": "likec4ops clean",
     "dev": "tsx watch --conditions=sources --exclude=\"./../../{examples,e2e}/**/*.{js,ts,mjs}\" --exclude=\"./../core/src/styles/**/*.{js,ts,mjs}\" ./start-dev.ts",
+    "dev:single-project": "pnpm dev ../../examples/cloud-system",
     "dev:docs": "pnpm dev ../../apps/docs/src",
     "dev:playground:deployment": "pnpm dev ../../apps/playground/src/examples/deployment",
     "dev:playground:dynamic": "pnpm dev ../../apps/playground/src/examples/dynamic",
@@ -30,7 +31,9 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "react": "catalog:react",
-    "react-dom": "catalog:react"
+    "react-dom": "catalog:react",
+    "immer": "catalog:utils",
+    "type-fest": "catalog:externals"
   },
   "devDependencies": {
     "react-compiler-runtime": "catalog:react",
@@ -73,7 +76,6 @@
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
     "html-to-image": "1.11.11",
-    "immer": "catalog:utils",
     "json5": "catalog:utils",
     "ky": "^1.14.3",
     "motion": "catalog:react",
@@ -92,7 +94,6 @@
     "tsdown": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
-    "type-fest": "catalog:externals",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
     "vite": "catalog:vite",

@@ -58,7 +58,7 @@ export function IconRenderer({ node, ...props }) {
 `
 }
 
-export const projectIconsModule = {
+export const projectIconsModule: ProjectVirtualModule = {
   ...generateMatches('icons', '.jsx'),
   async load({ likec4, project }) {
     logGenerating('icons', project.id)
@@ -68,12 +68,11 @@ export const projectIconsModule = {
       ...values(model.$data.manualLayouts ?? {}),
     ]
     return {
-      moduleSideEffects: false,
       moduleType: 'jsx',
       code: code(views),
     }
   },
-} satisfies ProjectVirtualModule
+}
 
 /** Safe chars for project id when embedded in generated code (CodeQL: proper sanitization). */
 const SAFE_PROJECT_ID_REGEX = /^[a-zA-Z0-9_.-]+$/
@@ -106,28 +105,30 @@ export const iconsModule = {
     })
 
     // codeql[js/bad-code-sanitization]: Generated import() specifiers are JSON string literals from joinURL('likec4:icons', id) after JSON.stringify + hardenJsonStringLiteralForEmbeddedScript; ids pass SAFE_PROJECT_ID_REGEX (no breakout in emitted JS).
-    const registry = safeProjects
-      .map(p => {
+    const { imports, cases } = safeProjects
+      .reduce((acc, p, i) => {
+        const ProjectComponent = 'Project' + i.toString().padStart(2, '0')
         const idLiteral = hardenJsonStringLiteralForEmbeddedScript(
           embedProjectIdAsJsString(p.id),
         )
         const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
           embedUrlAsJsString(joinURL('likec4:icons', p.id)),
         )
-        return { idLiteral, pkgLiteral }
+        acc.imports.push(`import {IconRenderer as ${ProjectComponent}} from ${pkgLiteral}`)
+        acc.cases.push(`  ${idLiteral}: ${ProjectComponent}`)
+        return acc
+      }, {
+        imports: [] as string[],
+        cases: [] as string[],
       })
-      .map(({ idLiteral, pkgLiteral }) =>
-        `${idLiteral}: lazy(async () => await import(${pkgLiteral}).then(m => ({ default: m.IconRenderer })))`
-      )
-      .join(',\n')
 
     const code = `
 import { jsx } from 'react/jsx-runtime'
-import { lazy, Suspense } from 'react' 
-export let ProjectIconsRegistry = {
-${registry}
-}      
+${imports.join('\n')}
 
+export let ProjectIconsRegistry = {
+${cases.join(',\n')}
+}
 
 export function getProjectIcons(projectId) {
   return (props) => {
@@ -142,7 +143,7 @@ export function getProjectIcons(projectId) {
       console.warn('Falling back to project: ' + projectId)
       Renderer = ProjectIconsRegistry[projectId]
     }
-    return jsx(Suspense, { children: jsx(Renderer, props) })
+    return jsx(Renderer, props)
   }
 }
 
@@ -153,9 +154,7 @@ if (import.meta.hot) {
     }
     const update = md.ProjectIconsRegistry
     if (update) {
-      for (const [id, renderer] of Object.entries(update)) {
-        import.meta.hot.data.$update[id] ??= renderer
-      }
+      Object.assign(import.meta.hot.data.$update, update)
     } else {
       import.meta.hot.invalidate()
     }
@@ -165,7 +164,6 @@ if (import.meta.hot) {
     return {
       code,
       moduleType: 'jsx',
-      moduleSideEffects: false,
     }
   },
 } satisfies VirtualModule

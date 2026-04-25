@@ -14,7 +14,7 @@ function code(model: LikeC4Model.Computed) {
      ******************************************************************************/
     /* eslint-disable */
 
-    export function mmdSource(viewId) {
+    export let mmdSource = (viewId) => {
       switch (viewId) {
   `
     .appendNewLine()
@@ -48,7 +48,7 @@ function code(model: LikeC4Model.Computed) {
   return toString(out)
 }
 
-export const projectMmdSourcesModule = {
+export const projectMmdSourcesModule: ProjectVirtualModule = {
   ...generateMatches('mmd'),
   async load({ likec4, project }) {
     logGenerating('mmd', project.id)
@@ -56,9 +56,8 @@ export const projectMmdSourcesModule = {
     return {
       code: code(model),
       moduleType: 'js',
-      moduleSideEffects: false,
     }
   },
-} satisfies ProjectVirtualModule
+}
 
 export const mmdModule = generateCombinedProjects('mmd', 'loadMmdSources')

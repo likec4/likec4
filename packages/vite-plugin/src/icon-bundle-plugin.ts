@@ -81,19 +81,28 @@ export function iconBundlePlugin(options: {
   }
 
   const iconsCache = new DefaultMap(async (key: `${string}:${string}`) => {
-    let [group, icon] = key.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
-    if (icon.endsWith('.jsx') || icon.endsWith('.js')) {
-      icon = icon.slice(0, icon.lastIndexOf('.'))
-    }
-    logger.debug(k.dim(`resolving `) + k.green(`${group}:${icon}`))
-    let iconContent = await readFromCache(group, icon)
-    iconContent ??= await resolveIcon(group, icon)
-    if (iconContent) {
+    try {
+      let [group, icon] = key.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
+      if (icon.endsWith('.jsx') || icon.endsWith('.js')) {
+        icon = icon.slice(0, icon.lastIndexOf('.'))
+      }
+      logger.debug(k.dim(`resolving `) + k.green(`${group}:${icon}`))
+      let iconContent = await readFromCache(group, icon)
+      iconContent ??= await resolveIcon(group, icon)
+      if (iconContent) {
+        return iconContent
+      }
+      iconContent = await fetchFromRemote(group, icon)
+      await writeToCache(group, icon, iconContent)
       return iconContent
+    } catch (error) {
+      logger.error(k.dim(`failed to resolve icon `) + k.red(key), { error })
+      return `
+export default function NotFoundIcon() {
+  return null
+}
+      `
     }
-    iconContent = await fetchFromRemote(group, icon)
-    await writeToCache(group, icon, iconContent)
-    return iconContent
   })
 
   return {
@@ -117,7 +126,6 @@ export function iconBundlePlugin(options: {
       handler(id) {
         return {
           id,
-          external: 'absolute',
           moduleSideEffects: false,
         }
       },
@@ -137,7 +145,6 @@ export function iconBundlePlugin(options: {
         return {
           moduleType: 'jsx',
           code,
-          moduleSideEffects: false,
         }
       },
     },

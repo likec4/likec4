@@ -6,9 +6,9 @@ import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } 
 const projectModelCode = (model: LikeC4Model.Layouted) => `
 import { createHooksForModel, atom } from 'likec4/vite-plugin/internal'
 
-export const $likec4data = atom(${JSON5.stringify(model.$data)})
+export let $likec4data = atom(${JSON5.stringify(model.$data)})
 
-export const {
+export let {
   updateModel,
   $likec4model,
   useLikeC4Model,
@@ -31,7 +31,7 @@ if (import.meta.hot) {
 }
 `
 
-export const projectModelModule = {
+export const projectModelModule: ProjectVirtualModule = {
   ...generateMatches('model'),
   async load({ likec4, project }) {
     logGenerating('model', project.id)
@@ -39,9 +39,8 @@ export const projectModelModule = {
     return {
       code: projectModelCode(model),
       moduleType: 'js',
-      moduleSideEffects: false,
     }
   },
-} satisfies ProjectVirtualModule
+}
 
 export const modelModule = generateCombinedProjects('model', 'loadModel')

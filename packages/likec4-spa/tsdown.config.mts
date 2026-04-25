@@ -56,12 +56,6 @@ export default defineConfig([{
           test: /styled-system/,
           priority: 5,
         },
-        {
-          name: 'commons',
-          test: /likec4-spa/,
-          minShareCount: 4,
-          priority: 4,
-        },
       ],
     },
   }),
@@ -76,7 +70,6 @@ export default defineConfig([{
       /likec4\/vite-plugin.*/,
       /likec4:/,
     ],
-    // onlyBundle: false,
   },
   inputOptions: {
     resolve: {
@@ -137,6 +130,5 @@ export default defineConfig([{
       /likec4\/vite-plugin.*/,
       /likec4:/,
     ],
-    // onlyBundle: false,
   },
 }])

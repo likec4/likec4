@@ -79,9 +79,12 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       outDir,
       emptyOutDir: false,
       sourcemap: false,
-      cssMinify: false,
       minify: true,
       copyPublicDir: true,
+      chunkSizeWarningLimit: 2 * 1024, // ~2MB
+      modulePreload: {
+        polyfill: false,
+      },
       ...(!isSingleFile && {
         rolldownOptions: {
           input: [
@@ -90,6 +93,25 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
             resolve(root, 'src', 'fonts.css'),
             resolve(root, 'src', 'style.css'),
           ],
+          output: {
+            codeSplitting: {
+              groups: [
+                {
+                  name: 'likec4-core',
+                  test: /(likec4[\\/]core|core[\\/]dist|immer)/,
+                },
+                {
+                  test: /node_modules/,
+                  name: (moduleId: string) => {
+                    const pkgName = moduleId.match(/.*\/node_modules\/(?<package>@[^/]+\/[^/]+|[^/]+)/)
+                      ?.groups?.['package']
+                    const isDts = /\.d\.[mc]?ts$/.test(moduleId)
+                    return `libs/${pkgName || 'common'}${isDts ? '.d' : ''}`
+                  },
+                },
+              ],
+            },
+          },
         },
       } satisfies BuildEnvironmentOptions),
     },

@@ -60,11 +60,7 @@ export let krokiD2SvgUrl = import.meta.env.VITE_KROKI_D2_SVG_URL || 'https://kro
 export let krokiPumlSvgUrl = import.meta.env.VITE_KROKI_D2_SVG_URL || 'https://kroki.io/plantuml/svg'
 
 `
-      return {
-        code,
-        moduleType: 'js',
-        moduleSideEffects: false,
-      }
+      return code
     },
   }
 }

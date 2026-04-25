@@ -202,20 +202,12 @@ export function LikeC4VitePlugin({
         for (const module of projectVirtuals) {
           const projectId = module.matches(id)
           if (projectId) {
-            return {
-              id: module.virtualId(projectId),
-              external: 'absolute',
-              moduleSideEffects: false,
-            }
+            return module.virtualId(projectId)
           }
         }
         for (const module of virtuals) {
           if (module.id === id) {
-            return {
-              id: module.virtualId,
-              external: 'absolute',
-              moduleSideEffects: false,
-            }
+            return module.virtualId
           }
         }
         return null
@@ -231,7 +223,7 @@ export function LikeC4VitePlugin({
           const projectId = module.matches(id)
           if (projectId) {
             const project = likec4.project(projectId)
-            return await module.load({
+            return await module.load.call(this, {
               logger,
               likec4,
               project,
@@ -244,7 +236,7 @@ export function LikeC4VitePlugin({
             const projects = likec4.projects()
             invariant(isNonEmptyArray(projects))
 
-            return await module.load({
+            return await module.load.call(this, {
               logger,
               likec4,
               projects,

@@ -134,6 +134,7 @@
     "fdir": "catalog:externals",
     "playwright": "catalog:",
     "chokidar": "catalog:externals",
+    "immer": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
     "vite-plugin-singlefile": "^2.3.2",

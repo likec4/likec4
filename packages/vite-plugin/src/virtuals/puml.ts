@@ -14,7 +14,7 @@ function code(model: LikeC4Model.Computed) {
      ******************************************************************************/
     /* eslint-disable */
 
-    export function pumlSource(viewId) {
+    export let pumlSource = (viewId) => {
       switch (viewId) {
   `
     .appendNewLine()
@@ -47,7 +47,7 @@ function code(model: LikeC4Model.Computed) {
   return toString(out)
 }
 
-export const projectPumlModule = {
+export const projectPumlModule: ProjectVirtualModule = {
   ...generateMatches('puml'),
   async load({ likec4, project }) {
     logGenerating('puml', project.id)
@@ -55,9 +55,8 @@ export const projectPumlModule = {
     return {
       code: code(model),
       moduleType: 'js',
-      moduleSideEffects: false,
     }
   },
-} satisfies ProjectVirtualModule
+}
 
 export const pumlModule = generateCombinedProjects('puml', 'loadPumlSources')

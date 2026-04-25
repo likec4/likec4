@@ -55,7 +55,6 @@ export const projectsModule = {
         landingPage: p.config.landingPage,
       }))),
       moduleType: 'js',
-      moduleSideEffects: false,
     }
   },
 } satisfies VirtualModule

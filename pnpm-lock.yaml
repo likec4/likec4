@@ -1773,6 +1773,9 @@ importers:
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.4)
+      immer:
+        specifier: catalog:utils
+        version: 11.1.4
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
@@ -2071,12 +2074,18 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      immer:
+        specifier: catalog:utils
+        version: 11.1.4
       react:
         specifier: 19.2.4
         version: 19.2.4
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
@@ -2195,9 +2204,6 @@ importers:
       html-to-image:
         specifier: 1.11.11
         version: 1.11.11
-      immer:
-        specifier: catalog:utils
-        version: 11.1.4
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -2255,9 +2261,6 @@ importers:
       turbo:
         specifier: 2.9.6
         version: 2.9.6
-      type-fest:
-        specifier: ^4.41.0
-        version: 4.41.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

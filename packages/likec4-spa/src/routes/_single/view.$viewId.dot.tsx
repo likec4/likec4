@@ -1,4 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
+import { loadDotSources } from 'likec4:dot'
 import { ViewAsDot } from '../../pages/ViewAsDot'
 
 export const Route = createFileRoute('/_single/view/$viewId/dot')({
@@ -7,7 +8,6 @@ export const Route = createFileRoute('/_single/view/$viewId/dot')({
   loader: async ({ params, context }) => {
     const projectId = context.projectId
     const { viewId } = params
-    const { loadDotSources } = await import('likec4:dot')
     try {
       const { dotSource, svgSource } = await loadDotSources(projectId)
       const dot = dotSource(viewId)

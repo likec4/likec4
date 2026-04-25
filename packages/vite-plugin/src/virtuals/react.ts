@@ -27,19 +27,18 @@ export {
 }
 `
 
-export const projectReactModule = {
+export const projectReactModule: ProjectVirtualModule = {
   ...generateMatches('react'),
   async load({ project }) {
     logGenerating('react', project.id)
     return {
       code: projectCode(project.id),
       moduleType: 'js',
-      moduleSideEffects: false,
     }
   },
-} satisfies ProjectVirtualModule
+}
 
-export const singleProjectReactModule = {
+export const singleProjectReactModule: VirtualModule = {
   id: 'likec4:react',
   virtualId: 'likec4:plugin/react.js',
   async load({ projects }) {
@@ -56,7 +55,6 @@ export const singleProjectReactModule = {
     return {
       code,
       moduleType: 'js',
-      moduleSideEffects: false,
     }
   },
-} satisfies VirtualModule
+}

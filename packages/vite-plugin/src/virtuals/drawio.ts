@@ -46,7 +46,7 @@ function code(model: LikeC4Model.Layouted) {
   return toString(out)
 }
 
-export const projectDrawioModule = {
+export const projectDrawioModule: ProjectVirtualModule = {
   ...generateMatches('drawio'),
   async load({ likec4, project }) {
     logGenerating('drawio', project.id)
@@ -54,9 +54,8 @@ export const projectDrawioModule = {
     return {
       code: code(model),
       moduleType: 'js',
-      moduleSideEffects: false,
     }
   },
-} satisfies ProjectVirtualModule
+}
 
 export const drawioModule = generateCombinedProjects('drawio', 'loadDrawioSources')

@@ -1,4 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
+import { loadMmdSources } from 'likec4:mmd'
 import { ViewAsMmd } from '../../pages/ViewAsMmd'
 
 export const Route = createFileRoute('/project/$projectId/view/$viewId/mmd')({
@@ -7,7 +8,6 @@ export const Route = createFileRoute('/project/$projectId/view/$viewId/mmd')({
   loader: async ({ params, context }) => {
     const projectId = context.projectId
     const { viewId } = params
-    const { loadMmdSources } = await import('likec4:mmd')
     try {
       const { mmdSource } = await loadMmdSources(projectId)
       return {

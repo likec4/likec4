@@ -18,7 +18,7 @@ export const projectId = ${projectIdLiteral}
 `
 }
 
-export const singleProjectModule = {
+export const singleProjectModule: VirtualModule = {
   id: 'likec4:single-project',
   virtualId: 'likec4:plugin/single-project.js',
   async load({ projects }) {
@@ -26,4 +26,4 @@ export const singleProjectModule = {
     logGenerating('single-project', project.id)
     return code(project.id)
   },
-} satisfies VirtualModule
+}

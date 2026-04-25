@@ -22,7 +22,7 @@ function code(
      ******************************************************************************/
     /* eslint-disable */
 
-    export function dotSource(viewId) {
+    export let dotSource = (viewId) => {
       switch (viewId) {
   `
     .appendNewLine()
@@ -52,7 +52,7 @@ function code(
     .append(NL, '  }', NL).appendTemplate`
     }
 
-    export function svgSource(viewId) {
+    export let svgSource = (viewId) => {
       switch (viewId) {
     `
     .appendNewLine()
@@ -83,7 +83,7 @@ function code(
   return toString(out)
 }
 
-export const projectDotSourcesModule = {
+export const projectDotSourcesModule: ProjectVirtualModule = {
   ...generateMatches('dot'),
   async load({ likec4, project }) {
     logGenerating('dot', project.id)
@@ -92,9 +92,8 @@ export const projectDotSourcesModule = {
     return {
       code: code(sources),
       moduleType: 'js',
-      moduleSideEffects: false,
     }
   },
-} satisfies ProjectVirtualModule
+}
 
 export const dotModule = generateCombinedProjects('dot', 'loadDotSources')

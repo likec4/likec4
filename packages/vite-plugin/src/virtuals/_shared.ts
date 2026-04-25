@@ -22,6 +22,7 @@ export interface VirtualModule {
   id: string
   virtualId: string
   load(
+    this: Rolldown.MinimalPluginContext,
     opts: {
       logger: ViteLogger
       likec4: LikeC4LanguageServices
@@ -38,6 +39,7 @@ export interface ProjectVirtualModule {
   matches: (id: string) => ProjectId | null
   virtualId: (projectId: ProjectId) => string
   load(
+    this: Rolldown.MinimalPluginContext,
     opts: {
       logger: ViteLogger
       likec4: LikeC4LanguageServices
@@ -109,7 +111,9 @@ if (import.meta.hot) {
     }
     const update = md.${fnName}Fn
     if (update) {
-      Object.assign(import.meta.hot.data.$update, update)
+      for (const [id, fn] of Object.entries(update)) {
+        import.meta.hot.data.$update[id] ??= fn
+      }
     } else {
       import.meta.hot.invalidate()
     }
@@ -119,7 +123,6 @@ if (import.meta.hot) {
       return {
         code,
         moduleType: 'js',
-        moduleSideEffects: false,
       }
     },
   }

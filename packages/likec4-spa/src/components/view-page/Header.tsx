@@ -15,7 +15,7 @@ import {
   Link,
   useMatches,
 } from '@tanstack/react-router'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { useCurrentProject, useCurrentViewId } from '../../hooks'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { NavigationPanel } from './NavigationPanel'
@@ -58,7 +58,7 @@ export const Header = memo(() => {
             : (
               <Button
                 component={Link}
-                to={'/view/$viewId/'}
+                to={'../'}
                 size={isTablet ? 'sm' : 'xs'}
                 variant="subtle"
                 color="gray">
@@ -90,17 +90,21 @@ function ExportButton() {
   const isInsideProject = useMatches({
     select: matches => matches.some(({ routeId }) => routeId === '/project/$projectId'),
   })
+  const [isDrawioLoading, setIsDrawioLoading] = useState(false)
   const project = useCurrentProject()
   const viewId = useCurrentViewId()
 
   const handleDrawioExport = useCallback(async () => {
     try {
+      setIsDrawioLoading(true)
       const { loadDrawioSources } = await import('likec4:drawio')
       const { drawioEditUrl } = await loadDrawioSources(project.id)
       const url = drawioEditUrl(viewId)
       window.open(url, '_blank', 'noopener,noreferrer')
     } catch (error) {
       console.error('Failed to export to Draw.io:', error)
+    } finally {
+      setIsDrawioLoading(false)
     }
   }, [project.id, viewId])
 
@@ -180,7 +184,7 @@ function ExportButton() {
           )}>
           Export as .puml
         </MenuItem>
-        <MenuItem onClick={handleDrawioExport}>Export to Draw.io</MenuItem>
+        <MenuItem disabled={isDrawioLoading} onClick={handleDrawioExport}>Export to Draw.io</MenuItem>
         <MenuItem disabled>Export to Miro</MenuItem>
         <MenuItem disabled>Export to Notion</MenuItem>
         {

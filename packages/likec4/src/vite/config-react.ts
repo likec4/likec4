@@ -57,7 +57,7 @@ export async function viteReactConfig({
       minify: false,
       copyPublicDir: false,
       lib: {
-        entry: 'codegen/likec4.mjs',
+        entry: 'codegen/react.mjs',
         fileName(_format, _entryName) {
           return filename
         },
@@ -74,13 +74,6 @@ export async function viteReactConfig({
           'react-dom/client',
           /@likec4\/core.*/,
         ],
-        // https://github.com/vitejs/vite/issues/15012
-        onwarn(warning, defaultHandler) {
-          if (warning.code === 'SOURCEMAP_ERROR') {
-            return
-          }
-          defaultHandler(warning)
-        },
       },
     },
     plugins: [
