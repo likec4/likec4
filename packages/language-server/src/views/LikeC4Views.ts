@@ -17,7 +17,7 @@ import { isTruthy, values } from 'remeda'
 import type { Writable } from 'type-fest'
 import { type Storage, createStorage, prefixStorage } from 'unstorage'
 import type { CancellationToken } from 'vscode-languageserver'
-import { logger, logger as rootLogger, logWarnError } from '../logger'
+import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
 import { performanceMark } from '../utils'
@@ -361,7 +361,6 @@ export class DefaultLikeC4Views implements LikeC4Views {
 class ProjectStorage {
   #logger: Logger
 
-  #projectId: ProjectId
   #storage: Storage<GraphvizOut>
   #layouter: (task: LayoutTaskParams) => Promise<GraphvizOut>
 
@@ -371,24 +370,8 @@ class ProjectStorage {
     layouter: (task: LayoutTaskParams) => Promise<GraphvizOut>
   }) {
     this.#logger = viewsLogger.getChild(opts.projectId)
-    this.#projectId = opts.projectId
     this.#storage = opts.storage
     this.#layouter = opts.layouter
-    // this.#storage = createStorage()
-    // this.toDispose.push(services.shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Validated, (doc) => {
-    //   const pm = services.shared.workspace.ProjectsManager
-    //   const projectId = pm.ownerProjectId(doc)
-    //   this.clear(projectId)
-    // }))
-    // this.toDispose.push(services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
-    //   if (deleted.length > 0) { // react only on deleted documents
-    //     const pm = services.shared.workspace.ProjectsManager
-    //     const projects = unique(map(deleted, pm.ownerProjectId.bind(pm)))
-    //     for (const project of projects) {
-    //       this.clear(project)
-    //     }
-    //   }
-    // }))
   }
 
   async get(task: LayoutTaskParams): Promise<GraphvizOut | undefined> {
