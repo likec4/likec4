@@ -111,7 +111,6 @@ const DeployedInstanceRenderer = (
 
 const infoIcon = <IconInfoCircle />
 
-const setHoveredNode = () => {}
 export const TabPanelDeployments = memo<TabPanelDeploymentsProps>(({ elementFqn }) => {
   const element = useLikeC4Model().element(elementFqn)
   const deployments = [...element.deployments()]
@@ -119,7 +118,6 @@ export const TabPanelDeployments = memo<TabPanelDeploymentsProps>(({ elementFqn 
   const tree = useTree({
     multiple: false,
   })
-  tree.setHoveredNode = setHoveredNode
 
   const data = useMemo(() => {
     let roots = [] as TreeNodeData[]

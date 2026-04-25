@@ -38,14 +38,12 @@ export const ElementLabel = ({
 // }: RenderTreeNodePayload) => {
 // }
 const infoIcon = <IconInfoCircle />
-const setHoveredNode = () => {}
 export function TabPanelStructure({
   element,
 }: TabPanelStructureProps) {
   const tree = useTree({
     multiple: false,
   })
-  tree.setHoveredNode = setHoveredNode
 
   const data = useMemo(() => {
     let seq = 1

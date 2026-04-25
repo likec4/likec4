@@ -34,7 +34,6 @@ const selector2 = (state: RelationshipsBrowserSnapshot) => {
   })
 }
 
-const setHoveredNode = () => {}
 export const SelectElement = memo(() => {
   const browser = useRelationshipsBrowser()
   const {
@@ -54,7 +53,6 @@ export const SelectElement = memo(() => {
   const tree = useTree({
     multiple: false,
   })
-  tree.setHoveredNode = setHoveredNode
 
   useEffect(() => {
     ancestorsFqn(subjectId).reverse().forEach(id => {

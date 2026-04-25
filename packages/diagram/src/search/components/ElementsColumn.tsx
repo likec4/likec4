@@ -160,8 +160,6 @@ export const ElementsColumn = memo(() => {
   return <ElementsTree data={data} handleClick={handleClick} />
 })
 
-const setHoveredNode = () => {}
-
 function ElementsTree({
   data: {
     searchTerms,
@@ -178,7 +176,6 @@ function ElementsTree({
   const tree = useTree({
     multiple: false,
   })
-  tree.setHoveredNode = setHoveredNode
 
   useEffect(() => {
     tree.collapseAllNodes()

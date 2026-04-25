@@ -21,7 +21,6 @@ export function LayoutTypeSwitcher({
         size="xs"
         color={value === 'manual' ? 'orange' : 'green'}
         value={value}
-        component={m.div}
         onChange={layout => {
           invariant(layout === 'manual' || layout === 'auto', 'Invalid layout type')
           onChange(layout)
