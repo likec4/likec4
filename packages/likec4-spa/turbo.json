@@ -9,17 +9,6 @@
         "src/routeTree.gen.ts"
       ],
       "outputLogs": "new-only"
-    },
-    "build": {
-      "dependsOn": [
-        "generate",
-        "@likec4/vite-plugin#build",
-        "@likec4/styles#generate"
-      ],
-      "outputs": [
-        "dist/**"
-      ],
-      "outputLogs": "new-only"
     }
   }
 }

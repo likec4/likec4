@@ -93,10 +93,7 @@
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
-    "build-cli": "tsdown",
-    "bundle-app": "tsx scripts/bundle-app.ts",
-    "bundle-react": "tsx scripts/bundle-react.ts",
-    "build": "echo \"use pnpm turbo run build\" || true",
+    "build": "tsdown",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",

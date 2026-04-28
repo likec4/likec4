@@ -85,33 +85,7 @@ export default defineConfig([{
       await $`tsr generate`
     },
     'build:done': async () => {
-      await viteBuild({
-        configFile: false,
-        css: {
-          postcss: {
-            plugins: [
-              postcssPanda() as any,
-            ],
-          },
-        },
-        build: {
-          outDir: 'dist/src',
-          copyPublicDir: false,
-          emptyOutDir: false,
-          cssCodeSplit: true,
-          cssMinify: true,
-          lib: {
-            entry: 'src/style.css',
-            formats: ['es'],
-          },
-          rolldownOptions: {
-            input: {
-              'style.css': 'src/style.css',
-              'fonts.css': 'src/fonts.css',
-            },
-          },
-        },
-      })
+      await buildStyles()
     },
   },
 }, {
@@ -132,3 +106,33 @@ export default defineConfig([{
     ],
   },
 }])
+
+async function buildStyles() {
+  await viteBuild({
+    configFile: false,
+    css: {
+      postcss: {
+        plugins: [
+          postcssPanda() as any,
+        ],
+      },
+    },
+    build: {
+      outDir: 'dist/src',
+      copyPublicDir: false,
+      emptyOutDir: false,
+      cssCodeSplit: true,
+      cssMinify: true,
+      lib: {
+        entry: 'src/style.css',
+        formats: ['es'],
+      },
+      rolldownOptions: {
+        input: {
+          'style.css': 'src/style.css',
+          'fonts.css': 'src/fonts.css',
+        },
+      },
+    },
+  })
+}

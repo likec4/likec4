@@ -10,6 +10,7 @@
 !package.*.json
 !LICENSE
 !README.md
+!CHANGELOG.md
 !language-configuration.json
 !likec4.tmLanguage.json
 !node_modules/

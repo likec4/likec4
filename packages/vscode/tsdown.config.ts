@@ -10,15 +10,19 @@ const isDev = !isProduction
 
 const shared = {
   clean: true,
-  define: {
-    'process.env.NODE_ENV': isProduction ? '"production"' : '"development"',
+  env: {
+    NODE_ENV: isProduction ? 'production' : 'development',
   },
   minify: isProduction,
   outputOptions: {
     keepNames: true,
   },
-  inlineOnly: false as const,
-  external: ['vscode'],
+  deps: {
+    neverBundle: ['vscode'],
+    alwaysBundle: [
+      /@likec4/,
+    ],
+  },
 }
 
 export default defineConfig([
@@ -60,9 +64,6 @@ export default defineConfig([
     outDir: 'dist/browser',
     entry: 'src/browser/extension.ts',
     format: 'cjs',
-    noExternal: [
-      /@likec4/,
-    ],
     inputOptions: {
       platform: 'browser',
       resolve: {
@@ -78,9 +79,6 @@ export default defineConfig([
     outDir: 'dist/browser',
     entry: 'src/browser/language-server-worker.ts',
     format: 'iife',
-    noExternal: [
-      /@likec4/,
-    ],
     inputOptions: {
       resolve: {
         conditionNames: ['worker', 'browser', 'import'],

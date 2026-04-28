@@ -44,22 +44,8 @@ export default defineConfig([{
       await mkdir('./config', { recursive: true })
       await copyFile('../config/schema.json', './config/schema.json')
 
-      const likec4Spa = resolve('../likec4-spa/dist/')
-      if (!existsSync(likec4Spa)) {
-        throw new Error(`likec4 spa not found: ${likec4Spa}`)
-      }
-      console.info('Copy likec4 spa from %s', likec4Spa)
-
-      await emptyDir('__app__')
-      await mkdir('__app__', { recursive: true })
-      fs.cpSync(
-        likec4Spa,
-        '__app__',
-        {
-          recursive: true,
-          force: true,
-        },
-      )
+      await copyReact()
+      await bundleApp()
     },
   },
 }, {
@@ -74,3 +60,37 @@ export default defineConfig([{
     tsconfig: 'tsconfig.cli.json',
   },
 }])
+
+async function copyReact() {
+  const from = resolve('../react/dist/')
+  if (!existsSync(from)) {
+    throw new Error(`@likec4/react/dist/ not found: ${from}`)
+  }
+  const to = resolve('./react/')
+
+  await emptyDir(to)
+  await mkdir(to, { recursive: true })
+
+  console.info(`Copy @likec4/react`)
+  console.info(`  from: ${from}`)
+  console.info(`  to: ${to}`)
+
+  await fs.copy(from, to)
+}
+
+async function bundleApp() {
+  const from = resolve('../likec4-spa/dist/')
+  if (!existsSync(from)) {
+    throw new Error(`likec4 spa not found: ${from}`)
+  }
+  const to = resolve('__app__')
+
+  await emptyDir(to)
+  await mkdir(to, { recursive: true })
+
+  console.info(`Copy @likec4/spa`)
+  console.info(`  from: ${from}`)
+  console.info(`  to: ${to}`)
+
+  await fs.copy(from, to)
+}
