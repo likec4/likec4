@@ -1,5 +1,11 @@
 # likec4-vscode
 
+## 1.56.0
+
+### Patch Changes
+
+- [`270926d`](https://github.com/likec4/likec4/commit/270926d25b6b8e94478e5dd356e79f0647461278) Thanks [@davydkov](https://github.com/davydkov)! - Fixed greedy output panel that stole focus from the editor on errors
+
 ## 1.55.1
 
 ### Patch Changes
