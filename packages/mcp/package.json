@@ -11,7 +11,7 @@
     "likec4-mcp": "bin/likec4-mcp.mjs"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "exports": {
     ".": "./src/index.ts",
