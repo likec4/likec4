@@ -40,7 +40,7 @@ catalogs:
     "@astrojs/starlight-tailwind": ^4.0.2
     "@expressive-code/plugin-collapsible-sections": ^0.41.7
     "@expressive-code/plugin-line-numbers": ^0.41.7
-    astro: 5.18.1
+    astro: 6.1.6
     astro-og-canvas: ^0.7.2
     astro-skills: ^0.0.5
     shiki: ^4.0.2
