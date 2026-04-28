@@ -1,6 +1,6 @@
 import { Builder } from '@likec4/core/builder'
 import { describe, it } from 'vitest'
-import { generateLikeC4, print, printTabIndent } from './generate-likec4'
+import { generateLikeC4, printOperation, printWithTabIndent } from './generate-likec4'
 import * as operators from './operators'
 
 const {
@@ -204,7 +204,7 @@ describe('generateLikeC4', () => {
 
 describe('print', () => {
   it('prints expression', async ({ expect }) => {
-    const output = print(operators.expression(), {
+    const output = printOperation(operators.expression(), {
       ref: {
         model: 'some.el',
       },
@@ -214,7 +214,7 @@ describe('print', () => {
   })
 
   it('prints model', async ({ expect }) => {
-    const output = print(operators.model(), {
+    const output = printOperation(operators.model(), {
       elements: [
         {
           id: 'cloud',
@@ -254,7 +254,7 @@ describe('print', () => {
   })
 
   it('prints with tabs', async ({ expect }) => {
-    const output = printTabIndent(operators.model(), {
+    const output = printWithTabIndent(operators.model(), {
       elements: [
         {
           id: 'cloud',

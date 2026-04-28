@@ -1,4 +1,4 @@
-import * as operators from './operators'
+import * as ops from './operators'
 import { type AnyOp, type ctxOf, materialize, withctx } from './operators/base'
 import { schemas } from './schemas'
 
@@ -6,22 +6,24 @@ type Params = {
   indentation?: string | number
 }
 
+export { ops }
+
 export function generateLikeC4(input: schemas.likec4data.Input, params?: Params): string {
   params = {
     indentation: 2,
     ...params,
   }
-  return materialize(withctx(input, operators.likec4data()), params.indentation)
+  return materialize(withctx(input, ops.likec4data()), params.indentation)
 }
 
 /**
  * Prints the result of an operation with the data
  *
- * @see operators
+ * @see ops
  *
  * @example
  * ```ts
- * print(operators.expression, {
+ * printOperation(operators.expression, {
  *   ref: {
  *     model: 'some.el',
  *   },
@@ -32,7 +34,7 @@ export function generateLikeC4(input: schemas.likec4data.Input, params?: Params)
  *
  * @example
  * ```ts
- * print(operators.model(), {
+ * printOperation(operators.model(), {
  *   elements: [
  *     {
  *       id: 'cloud',
@@ -58,29 +60,27 @@ export function generateLikeC4(input: schemas.likec4data.Input, params?: Params)
  * // }
  * ```
  */
-export function print<Operator extends AnyOp>(operator: Operator): string
-export function print<Operator extends AnyOp>(
-  operator: Operator,
-  data: ctxOf<Operator>,
+export function printOperation<Operation extends AnyOp>(operation: Operation): string
+export function printOperation<Operation extends AnyOp>(
+  operation: Operation,
+  data: ctxOf<Operation>,
   params?: Params,
 ): string
-export function print<Operator extends AnyOp>(
-  operator: Operator,
-  data?: ctxOf<Operator>,
+export function printOperation<Operation extends AnyOp>(
+  operation: Operation,
+  data?: ctxOf<Operation>,
   params?: Params,
 ): string {
-  return materialize(withctx(data ?? {}, operator), params?.indentation)
+  return materialize(withctx(data ?? {}, operation), params?.indentation)
 }
 
 /**
- * Same as {@link print} but uses tab indentation
+ * Same as {@link printOperation} but uses tab indentation
  */
-export function printTabIndent(operator: AnyOp): string
-export function printTabIndent<Operator extends AnyOp>(
-  operator: Operator,
-  data?: ctxOf<Operator>,
+export function printWithTabIndent<Operation extends AnyOp>(operation: Operation): string
+export function printWithTabIndent<Operation extends AnyOp>(
+  operation: Operation,
+  data?: ctxOf<Operation>,
 ): string {
-  return materialize(withctx(data ?? {}, operator), '\t')
+  return materialize(withctx(data ?? {}, operation), '\t')
 }
-
-export { operators }

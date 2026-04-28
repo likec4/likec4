@@ -300,5 +300,319 @@ describe('viewChange', () => {
         }"
       `)
     })
+
+    it('should add tag to view with no tags', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag mytag
+          }
+          views {
+            view index {
+              include *
+            }
+          }
+        `,
+      )
+
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: { add: 'mytag' as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag mytag
+        }
+        views {
+          view index {
+            #mytag
+            include *
+          }
+        }"
+      `)
+    })
+
+    it('should add tag to view with existing tags', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag existing1
+            tag existing2
+            tag existing3
+            tag newtag
+          }
+          views {
+            view index {
+              #existing1, #existing2 #existing3
+              include *
+            }
+          }
+        `,
+      )
+
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: { add: 'newtag' as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag existing1
+          tag existing2
+          tag existing3
+          tag newtag
+        }
+        views {
+          view index {
+            #existing1, #existing2 #existing3, #newtag
+            include *
+          }
+        }"
+      `)
+    })
+
+    it('should remove tag from view with multiple tags', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag first
+            tag second
+          }
+          views {
+            view index {
+              #first, #second
+              include *
+            }
+            view index2 {
+              #first #second
+              include *
+            }
+          }
+        `,
+      )
+
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: { remove: 'first' as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag first
+          tag second
+        }
+        views {
+          view index {
+            #second
+            include *
+          }
+          view index2 {
+            #first #second
+            include *
+          }
+        }"
+      `)
+      // Now remove from index2
+      await change({
+        viewId: 'index2' as any,
+        change: {
+          op: 'change-property',
+          tag: { remove: 'first' as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag first
+          tag second
+        }
+        views {
+          view index {
+            #second
+            include *
+          }
+          view index2 {
+            #second
+            include *
+          }
+        }"
+      `)
+    })
+
+    it('should remove the only tag from view', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag lonely
+          }
+          views {
+            view index {
+              #lonely
+              include *
+            }
+          }
+        `,
+      )
+
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: { remove: 'lonely' as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag lonely
+        }
+        views {
+          view index {
+            include *
+          }
+        }"
+      `)
+    })
+
+    it('should remove middle tag from mixed space-comma group', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag a
+            tag b
+            tag c
+          }
+          views {
+            view index {
+              #a #b, #c
+              include *
+            }
+          }
+        `,
+      )
+
+      // Remove #b from "#a #b, #c" — middle of first space-separated group
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: { remove: 'b' as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag a
+          tag b
+          tag c
+        }
+        views {
+          view index {
+            #a, #c
+            include *
+          }
+        }"
+      `)
+    })
+
+    it('should remove middle tag from comma-separated chain', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag a
+            tag b
+            tag c
+          }
+          views {
+            view index {
+              #a, #b, #c
+              include *
+            }
+          }
+        `,
+      )
+
+      // Remove #b from "#a, #b, #c" — middle node in linked list
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: { remove: 'b' as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag a
+          tag b
+          tag c
+        }
+        views {
+          view index {
+            #a, #c
+            include *
+          }
+        }"
+      `)
+    })
+
+    it('should add tag to mixed space-comma group', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag a
+            tag b
+            tag c
+            tag d
+          }
+          views {
+            view index {
+              #a #b, #c
+              include *
+            }
+          }
+        `,
+      )
+
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: { add: 'd' as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag a
+          tag b
+          tag c
+          tag d
+        }
+        views {
+          view index {
+            #a #b, #c, #d
+            include *
+          }
+        }"
+      `)
+    })
   })
 })

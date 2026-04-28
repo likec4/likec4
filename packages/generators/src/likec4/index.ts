@@ -1,8 +1,8 @@
 export {
   generateLikeC4 as generate,
-  operators,
-  print,
-  printTabIndent,
+  ops,
+  printOperation,
+  printWithTabIndent,
 } from './generate-likec4'
 
 export * from './operators/base'

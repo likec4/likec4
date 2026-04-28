@@ -1,19 +1,17 @@
-import { type scalar, type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
+import { type scalar, type ViewChange, type ViewId, nonNullable } from '@likec4/core'
 import {
   type AnyOp,
-  type InferOp,
   indent,
-  merge,
+  materialize,
   newline,
-  operators,
+  ops,
   print,
-  printTabIndent,
+  printOperation,
   withctx,
 } from '@likec4/generators/likec4'
-import { type MaybePromise, TextDocument } from 'langium'
-import { find, findLast, hasAtLeast, last, piped } from 'remeda'
-import { Position, TextDocumentEdit, TextEdit } from 'vscode-languageserver-protocol'
-import { type ParsedAstView, type ParsedLikeC4LangiumDocument, ast } from '../ast'
+import { findLast, hasAtLeast, last, piped } from 'remeda'
+import { Position, TextEdit } from 'vscode-languageserver-protocol'
+import { type ParsedLikeC4LangiumDocument, ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { ChangeView } from '../protocol'
 import type { ProjectData } from '../workspace/ProjectsManager'
@@ -26,52 +24,24 @@ export type ViewChangePayload<Op extends ViewChange['op']> = {
   change: Extract<ViewChange, { op: Op }>
   services: LikeC4Services
   workspace: LikeC4Services['shared']['workspace']
-  // applyTextEdit: (edit: TextEdit) => Promise<ast.LikeC4View>
 }
 
 export function preparePayload(request: ChangeView.Params, services: LikeC4Services): AnyPayload {
   const workspace = services.shared.workspace
-  const DocumentBuilder = workspace.DocumentBuilder
   let { viewId, projectId: _projectId, change } = request
   const project = workspace.ProjectsManager.ensureProject(_projectId as scalar.ProjectId)
   const lookup = services.likec4.ModelLocator.locateViewAst(viewId, project.id)
   if (!lookup) {
     throw new Error(`View ${viewId} not found in project ${project.id}`)
   }
-  const doc = lookup.doc
-
-  // /**
-  //  * Returns the updated view AST
-  //  */
-  // const applyTextEdit = async ({ range, newText: text }: TextEdit): Promise<ast.LikeC4View> => {
-  //   TextDocument.update(
-  //     doc.textDocument,
-  //     [{ text, range }],
-  //     doc.textDocument.version + 1,
-  //   )
-  //   workspace.LangiumDocuments.invalidateDocument(doc.uri)
-  //   await DocumentBuilder.build([doc], { validation: false })
-  //   const { astPath } = nonNullable(
-  //     find(doc.c4Views, v => v.id === viewId),
-  //     `View ${viewId} was lost after text edit`,
-  //   )
-  //   const viewAst = services.workspace.AstNodeLocator.getAstNode(
-  //     doc.parseResult.value,
-  //     astPath,
-  //   )
-  //   invariant(ast.isLikeC4View(viewAst), 'AST node is not a view')
-  //   return viewAst
-  // }
-
   return {
     viewId,
     change,
     services,
     project,
-    doc,
+    doc: lookup.doc,
     viewAst: lookup.viewAst,
     workspace,
-    // applyTextEdit,
   }
 }
 
@@ -80,14 +50,14 @@ export type AnyPayload = ViewChangePayload<ViewChange['op']>
 export type ViewChangeHandlerResult = TextEdit | TextEdit[]
 
 export interface ViewChangeHandler<Op extends ViewChange['op']> {
-  (args: ViewChangePayload<Op>): MaybePromise<ViewChangeHandlerResult>
+  (args: ViewChangePayload<Op>): ViewChangeHandlerResult
 }
 
 export function viewChangeHandler<Op extends ViewChange['op']>(
   op: Op,
   handler: ViewChangeHandler<Op>,
 ) {
-  return (payload: AnyPayload): undefined | MaybePromise<ViewChangeHandlerResult> => {
+  return (payload: AnyPayload): undefined | ViewChangeHandlerResult => {
     if (payload.change.op !== op) {
       return undefined
     }
@@ -97,7 +67,7 @@ export function viewChangeHandler<Op extends ViewChange['op']>(
 
 export const changePropertyHandler = viewChangeHandler(
   'change-property',
-  async ({ change, viewAst }) => {
+  ({ change, viewAst }) => {
     const { title, description } = change
 
     const edits: TextEdit[] = []
@@ -168,14 +138,14 @@ function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
   const existing = findExistingViewProperty(viewAst, 'title')
 
   const titleOut = withctx({ title })(
-    operators.props.titleProperty(),
+    ops.props.titleProperty(),
   )
 
   // Replace existing title property
   if (existing) {
     return TextEdit.replace(
       existing.$cstNode.range,
-      print(titleOut),
+      printOperation(titleOut),
     )
   }
 
@@ -189,27 +159,31 @@ function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
           //  or after "{" (view body start)
           ?? body.$cstNode?.range.start,
     ),
-    print(
+    materialize(
       doubleIndent(titleOut),
     ).trimEnd(),
   )
 }
 function collectAllTagRefs(tags: ast.Tags | undefined): Array<WithCst<ast.TagRef>> {
-  const result: Array<WithCst<ast.TagRef>> = []
+  // Linked list: body.tags is the last comma-separated group, prev points backward.
+  // Within each group, values are in document order.
+  // We collect groups in reverse, then reverse the groups (not their contents) to get document order.
+  const groups: Array<Array<WithCst<ast.TagRef>>> = []
   let iter = tags
   while (iter) {
+    const group: Array<WithCst<ast.TagRef>> = []
     for (const ref of iter.values) {
       if (ref.$cstNode) {
-        result.push(ref as WithCst<ast.TagRef>)
+        group.push(ref as WithCst<ast.TagRef>)
       }
     }
+    groups.push(group)
     iter = iter.prev
   }
-  // Linked list traversal goes newest-first; reverse to get document order
-  return result.reverse()
+  return groups.reverse().flat()
 }
 
-function addTag(viewAst: ast.LikeC4View, body: NonNullable<ast.LikeC4View['body']>, tagName: string): TextEdit {
+function addTag(viewAst: ast.LikeC4View, body: NonNullable<ast.LikeC4View['body']>, tagName: scalar.Tag): TextEdit {
   const tagsNode = body.tags
 
   // Append to existing tags
@@ -226,11 +200,15 @@ function addTag(viewAst: ast.LikeC4View, body: NonNullable<ast.LikeC4View['body'
       viewAst,
       body => body.$cstNode?.range.start,
     ),
-    `\n    #${tagName}`,
+    materialize(
+      doubleIndent(
+        print(`#${tagName}`),
+      ),
+    ).trimEnd(),
   )
 }
 
-function removeTag(body: NonNullable<ast.LikeC4View['body']>, tagName: string): TextEdit | undefined {
+function removeTag(body: NonNullable<ast.LikeC4View['body']>, tagName: scalar.Tag): TextEdit | undefined {
   const allRefs = collectAllTagRefs(body.tags)
   const targetIndex = allRefs.findIndex(ref => ref.tag.ref?.name === tagName)
 
@@ -246,7 +224,7 @@ function removeTag(body: NonNullable<ast.LikeC4View['body']>, tagName: string): 
       // Delete from end of previous line through start of next line,
       // so the entire tags line (including its newline) disappears
       return TextEdit.del({
-        start: Position.create(start.line - 1, Number.MAX_SAFE_INTEGER),
+        start: Position.create(Math.max(0, start.line - 1), Number.MAX_SAFE_INTEGER),
         end: Position.create(start.line + 1, 0),
       })
     }
@@ -280,10 +258,14 @@ function updateViewTags(
   const body = nonNullable(viewAst.body, 'View body is required')
 
   if (tag.add) {
-    edits.push(addTag(viewAst, body, tag.add))
+    const name = Array.isArray(tag.add) ? tag.add[0] : tag.add
+    if (name) {
+      edits.push(addTag(viewAst, body, name))
+    }
   }
   if (tag.remove) {
-    const edit = removeTag(body, tag.remove)
+    const name = Array.isArray(tag.remove) ? tag.remove[0] : tag.remove
+    const edit = name ? removeTag(body, name) : undefined
     if (edit) {
       edits.push(edit)
     }
@@ -296,14 +278,14 @@ function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.Mark
   const existing = findExistingViewProperty(viewAst, 'description')
 
   const descriptionOut = withctx({ description })(
-    operators.props.descriptionProperty(),
+    ops.props.descriptionProperty(),
   )
 
   // Replace existing description property
   if (existing) {
     return TextEdit.replace(
       existing.$cstNode.range,
-      print(descriptionOut),
+      printOperation(descriptionOut),
     )
   }
   // Insert new title property, after tags or at the body start
@@ -318,7 +300,7 @@ function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.Mark
           //  or after "{" (view body start)
           ?? body.$cstNode?.range.start,
     ),
-    print(
+    materialize(
       doubleIndent(descriptionOut),
     ),
   )
