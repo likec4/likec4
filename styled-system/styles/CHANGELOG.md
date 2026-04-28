@@ -1,5 +1,7 @@
 # @likec4/styles
 
+## 1.56.0
+
 ## 1.55.1
 
 ### Patch Changes
