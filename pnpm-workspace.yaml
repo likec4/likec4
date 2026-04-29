@@ -71,7 +71,7 @@ catalogs:
     fdir: 6.4.0
     nano-spawn: ^2.0.0
     picomatch: ^4.0.4
-    std-env: ^3.10.0
+    std-env: ^4.1.0
     type-fest: ^4.41.0
     zod: ^4.3.6
   hono:
