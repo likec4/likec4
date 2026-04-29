@@ -21,6 +21,26 @@
       "dependsOn": [
         "^generate"
       ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "scripts/**",
+        "generate.ts",
+        "preset.ts",
+        "vars.ts",
+        "langium-config.json"
+      ],
+      "outputs": [
+        "src/generated/**",
+        "src/generated-lib/**",
+        "src/meta.ts",
+        "dist/**",
+        "lib/**",
+        "preset/**",
+        "vars/**",
+        "all.js",
+        "all.d.ts",
+        "schema.json"
+      ],
       "outputLogs": "new-only"
     },
     "sources": {
@@ -38,6 +58,17 @@
         "lib/**",
         "*.tsbuildinfo"
       ],
+      "outputLogs": "new-only"
+    },
+    "test": {
+      "dependsOn": [
+        "generate",
+        "^generate"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$"
+      ],
+      "cache": false,
       "outputLogs": "new-only"
     },
     "build": {

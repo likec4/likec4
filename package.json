@@ -39,6 +39,7 @@
     "clean:lib": "rimraf -v -g \"packages/*/lib\" \"styled-system/*/lib\" \"**/.tsbuildinfo\"",
     "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
+    "test:affected": "turbo run test --affected --filter=\"!./apps/*\"",
     "test:watch": "vitest --no-isolate",
     "pretest:e2e": "NODE_ENV=production pnpm turbo run pack --filter=\"@likec4/core\" --filter=\"@likec4/icons\" --filter=\"likec4\"",
     "test:e2e": "cd e2e && pnpm install --no-lockfile && pnpm install:chromium && pnpm bootstrap && pnpm test",
