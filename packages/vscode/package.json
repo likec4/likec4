@@ -39,7 +39,7 @@
     "vsce:publish": "pnpx vsce publish --skip-duplicate"
   },
   "engines": {
-    "vscode": "^1.110.0"
+    "vscode": "^1.118.1"
   },
   "keywords": [
     "architecture",
