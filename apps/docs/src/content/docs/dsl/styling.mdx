@@ -433,6 +433,47 @@ model {
 }
 ```
 
+### Multiple
+
+By default, multiple relationships between the same two elements are merged into a single edge.
+If the titles differ, the merged label becomes `[...]`.
+
+Set `multiple` to `true` to render each relationship as its own separate edge with its own label:
+
+```likec4
+specification {
+  relationship async {
+    multiple true
+    line dotted
+    color amber
+  }
+}
+```
+
+You can also enable it per-view on individual relationships:
+
+```likec4
+views {
+  view flows {
+    include *
+    include customer -> api with {
+      multiple true
+    }
+  }
+}
+```
+
+:::note
+- `multiple true` splits matching relationships into individual edges; non-matching
+  relationships in the same connection remain merged.
+- Per-view rules (`with { ... }`) take precedence over specification-level settings.
+  Set `multiple false` to disable expansion for specific relationships in a view.
+- Expanded edges are never merged into bidirectional edges; only non-expanded
+  (merged) edges participate in bidirectional merging.
+- Expansion from nested elements is supported — each relationship becomes its own edge
+  at the correct element level.
+:::
+
 ## Styles customization
 
 How to override default styles is explained in project configuration

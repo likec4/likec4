@@ -30,6 +30,10 @@ export interface AnyViewRuleStyle<Expr> {
   style: {
     border?: BorderStyle
     opacity?: number
+    /**
+     * If true, the element is rendered as multiple shapes.
+     * @default false
+     */
     multiple?: boolean
     size?: ShapeSize
     padding?: SpacingSize

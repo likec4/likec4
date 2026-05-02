@@ -22,12 +22,14 @@ import {
 } from '../../types'
 import { invariant, nonexhaustive, nonNullable, sortParentsFirst } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
-import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
+import { applyCustomElementProperties, flattenGroupRules } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
+import { relationExpressionToPredicates } from '../utils/relationExpressionToPredicates'
+import type { ExpandableRelation } from '../utils/relationExpressionToPredicates'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
@@ -190,6 +192,88 @@ export function processPredicates<A extends AnyAux>(
   return StageFinal.for(memory).commit()
 }
 
+function buildExpandPredicate<A extends AnyAux>(
+  model: LikeC4Model<any>,
+  rules: ElementViewRule<A>[],
+): ((rel: ExpandableRelation) => boolean) | undefined {
+  const multipleRules = rules
+    .flatMap(flattenGroupRules(ModelRelationExpr.isCustom))
+    .filter(r => r.customRelation.multiple === true)
+
+  const multipleFalseRules = rules
+    .flatMap(flattenGroupRules(ModelRelationExpr.isCustom))
+    .filter(r => r.customRelation.multiple === false)
+
+  const multipleKinds = new Set<string>()
+  const relSpecs = model.specification.relationships
+  for (const kind of Object.keys(relSpecs)) {
+    const spec = relSpecs[kind as keyof typeof relSpecs] as any
+    // The spec may have `multiple` nested under `style` (buildModel.ts) or flat (builder)
+    const style = spec?.style ?? spec
+    if (style?.multiple) {
+      multipleKinds.add(kind)
+    }
+  }
+
+  if (multipleRules.length === 0 && multipleFalseRules.length === 0 && multipleKinds.size === 0) {
+    return undefined
+  }
+
+  const rulePredicates = multipleRules.map(r => ({
+    pred: relationExpressionToPredicates(r.customRelation.expr),
+  }))
+  const falseRulePredicates = multipleFalseRules.map(r => ({
+    pred: relationExpressionToPredicates(r.customRelation.expr),
+  }))
+
+  return (rel: ExpandableRelation) => {
+    if (falseRulePredicates.length > 0) {
+      const source = rel.source
+      const target = rel.target
+      for (const { pred } of falseRulePredicates) {
+        if (
+          pred({
+            source: source as any,
+            target: target as any,
+            kind: rel.kind as any,
+            tags: rel.tags as any,
+            metadata: rel.metadata as any,
+          })
+        ) {
+          return false
+        }
+      }
+    }
+
+    if (multipleKinds.size > 0) {
+      const kind = rel.kind
+      if (kind && multipleKinds.has(kind)) {
+        return true
+      }
+    }
+
+    if (rulePredicates.length > 0) {
+      const source = rel.source
+      const target = rel.target
+      for (const { pred } of rulePredicates) {
+        if (
+          pred({
+            source: source as any,
+            target: target as any,
+            kind: rel.kind as any,
+            tags: rel.tags as any,
+            metadata: rel.metadata as any,
+          })
+        ) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+}
+
 export function computeElementView<A extends AnyAux>(
   likec4model: LikeC4Model<any>,
   {
@@ -217,7 +301,12 @@ export function computeElementView<A extends AnyAux>(
 
   const nodesMap = buildNodes(likec4model, memory)
 
-  const computedEdges = toComputedEdges(memory.connections as unknown as readonly ConnectionModel<A>[])
+  const expandPredicate = buildExpandPredicate(likec4model, rules)
+
+  const computedEdges = toComputedEdges(
+    memory.connections as unknown as readonly ConnectionModel<A>[],
+    expandPredicate,
+  )
 
   linkNodesWithEdges(nodesMap, computedEdges)
 
