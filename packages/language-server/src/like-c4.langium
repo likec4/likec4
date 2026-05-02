@@ -76,7 +76,8 @@ SpecificationRelationshipKind:
   'relationship' kind=RelationshipKind ('{'
     props+=(
       RelationshipStyleProperty |
-      SpecificationRelationshipStringProperty
+      SpecificationRelationshipStringProperty |
+      MultipleProperty
     )*
   '}')?
 ;
@@ -512,7 +513,8 @@ CustomRelationProperties: '{'
     RelationStringProperty |
     NotationProperty |
     NotesProperty |
-    RelationshipStyleProperty
+    RelationshipStyleProperty |
+    MultipleProperty
   )*
 '}'
 ;

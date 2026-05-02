@@ -27,6 +27,7 @@ export function applyCustomRelationProperties<A extends AnyAux>(
         title,
         description: _description,
         notes: _notes,
+        multiple: _multiple,
         ...customprops
       },
     } of rules
