@@ -18,11 +18,9 @@ import type {
 /**
  * Predicates scoped to logical model
  */
-export interface ElementViewIncludePredicate<A extends AnyAux = AnyAux>
-  extends AnyIncludePredicate<ModelExpression<A>>
+export interface ElementViewIncludePredicate<A extends AnyAux = AnyAux> extends AnyIncludePredicate<ModelExpression<A>>
 {}
-export interface ElementViewExcludePredicate<A extends AnyAux = AnyAux>
-  extends AnyExcludePredicate<ModelExpression<A>>
+export interface ElementViewExcludePredicate<A extends AnyAux = AnyAux> extends AnyExcludePredicate<ModelExpression<A>>
 {}
 
 export type ElementViewPredicate<A extends AnyAux = AnyAux> =
@@ -36,6 +34,10 @@ export interface ElementViewRuleGroup<A extends AnyAux = AnyAux> {
   border?: BorderStyle
   // 0-100
   opacity?: number
+  /**
+   * If true, each matching element in the group is rendered as multiple shapes.
+   * @default false
+   */
   multiple?: boolean
   size?: ShapeSize
   padding?: SpacingSize

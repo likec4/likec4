@@ -678,6 +678,7 @@ describe('LikeC4CompletionProvider', () => {
         'line',
         'head',
         'tail',
+        'multiple',
       ],
       disposeAfterCheck: true,
     })

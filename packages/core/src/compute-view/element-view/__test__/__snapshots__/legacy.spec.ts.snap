@@ -91,7 +91,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "pqonGL06n6bVuv5W5N3vSUZ6QoPvAm3dQjm50Sn28rw",
+  "hash": "nHBQGJk4ND30v0GBeY7-iJkg0M-id_4f4TOYqIhjIew",
   "id": "index",
   "links": null,
   "nodes": [
@@ -358,7 +358,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "target": "cloud.backend",
     },
   ],
-  "hash": "GaV11NQG3T2NqfHYDnQONUhPX3b6twb9KP3PZthEepk",
+  "hash": "0mlZZ2-VK5cGPA-WFfIzqwymNKU1f2YKRlPjJDVTt24",
   "id": "index",
   "links": null,
   "nodes": [

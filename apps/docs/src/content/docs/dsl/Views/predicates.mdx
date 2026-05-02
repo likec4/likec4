@@ -312,14 +312,18 @@ include
 ```
 :::tip
 Sometimes, connections may have a title `[...]`. This indicates that the connection has been merged from multiple relationships with different titles, and it was impossible to derive a definitive one.  
-You can change it:
+You can change the title, or set `multiple true` to render each relationship as a separate edge:
 
 ```likec4
 include
-  customer -> cloud  with {
-    // Change [...] to
+  customer -> cloud with {
+    // Render each relationship separately
+    multiple true
+  },
+  // or override the merged title
+  customer -> cloud with {
     title 'Customer uses cloud'
-  }, 
+  },
 ```
 :::
 

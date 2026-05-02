@@ -371,6 +371,12 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             }
             return acc
           }
+          if (ast.isMultipleProperty(prop)) {
+            if (isBoolean(prop.value)) {
+              acc[prop.key] = prop.value
+            }
+            return acc
+          }
           nonexhaustive(prop)
         },
         {} as Except<c4.RelationExpr.Custom['customRelation'], 'expr'>,
