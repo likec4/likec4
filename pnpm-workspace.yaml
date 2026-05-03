@@ -13,7 +13,7 @@ catalog:
   '@tsdown/css': ^0.21.10
   "@types/node": ~22.19.17
   "@types/pako": ^2.0.4
-  "@typescript/native-preview": 7.0.0-dev.20260424.2
+  "@typescript/native-preview": 7.0.0-dev.20260430.1
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
