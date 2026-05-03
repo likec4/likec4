@@ -61,4 +61,20 @@ views {
       opacity 44%
     }
   }
+
+  view multiple-expanded {
+    include
+      cloud.next.graphql,
+      cloud.next.backend,
+      cloud.next.graphql -> cloud.next.backend
+  }
+
+  view multiple-merged {
+    include
+      cloud.next.graphql,
+      cloud.next.backend,
+      cloud.next.graphql -> cloud.next.backend with {
+        multiple false
+      }
+  }
 }

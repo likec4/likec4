@@ -85,6 +85,9 @@ model {
     }
 
     backend -> events "emits"
+
+    graphql -[async]-> backend 'Query'
+    graphql -[async]-> backend 'Mutation'
   }
 }
 

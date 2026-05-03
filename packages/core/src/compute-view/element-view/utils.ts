@@ -1,4 +1,4 @@
-import { filter, hasAtLeast, only } from 'remeda'
+import { filter, hasAtLeast, only, partition, pipe } from 'remeda'
 import type { ConnectionModel, LikeC4Model } from '../../model'
 import {
   type AnyAux,
@@ -8,28 +8,99 @@ import {
   exact,
 } from '../../types'
 import { invariant } from '../../utils'
+import { stringHash } from '../../utils/string-hash'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
+import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
 import type { Memory } from './_types'
 
 export const NoWhere = () => true
 export const NoFilter = <T>(x: T[] | readonly T[]): T[] => x as T[]
 
+const hashEdgeId = (source: scalar.NodeId, target: scalar.NodeId, relId: scalar.RelationId): scalar.EdgeId =>
+  stringHash(`model:${source}:${target}:${relId}`) as scalar.EdgeId
+
 export function toComputedEdges<A extends AnyAux>(
   connections: ReadonlyArray<ConnectionModel<A>>,
+  shouldExpand?: ShouldExpandPredicate,
 ): ComputedEdge<A>[] {
-  return connections.reduce((acc, e) => {
+  return connections.flatMap((conn) => {
     // const modelRelations = []
     // const deploymentRelations = []
     const relations = [
-      ...e.relations,
+      ...conn.relations,
     ]
     invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
 
-    const $defaults = e.source.$model.$styles.defaults
+    const $defaults = conn.source.$model.$styles.defaults
 
-    const source = e.source.id
-    const target = e.target.id
+    const source = conn.source.id
+    const target = conn.target.id
+
+    const directRelsList = filter(relations, r => r.source.id === source && r.target.id === target)
+
+    if (shouldExpand && relations.length > 1) {
+      const [expanded, merged] = pipe(
+        relations,
+        partition(r => shouldExpand(r)),
+      )
+
+      if (expanded.length > 0) {
+        const results: ComputedEdge<A>[] = expanded.map(rel => {
+          const {
+            title,
+            color = $defaults.relationship.color,
+            line = $defaults.relationship.line,
+            head = $defaults.relationship.arrow,
+            ...props
+          } = mergePropsFromRelationships(
+            [rel.$relationship],
+            rel.$relationship,
+          )
+
+          return {
+            id: hashEdgeId(source as scalar.NodeId, target as scalar.NodeId, rel.id),
+            parent: conn.boundary?.id as scalar.NodeId ?? null,
+            source: source as scalar.NodeId,
+            target: target as scalar.NodeId,
+            label: title ?? null,
+            relations: [rel.id],
+            color,
+            line,
+            head,
+            ...props,
+          } as ComputedEdge<A>
+        })
+
+        if (merged.length > 0) {
+          const {
+            title,
+            color = $defaults.relationship.color,
+            line = $defaults.relationship.line,
+            head = $defaults.relationship.arrow,
+            ...props
+          } = mergePropsFromRelationships(
+            merged.map(r => r.$relationship),
+            only(filter(merged, r => r.source.id === source && r.target.id === target))?.$relationship,
+          )
+
+          results.push({
+            id: conn.id,
+            parent: conn.boundary?.id as scalar.NodeId ?? null,
+            source: source as scalar.NodeId,
+            target: target as scalar.NodeId,
+            label: title ?? null,
+            relations: merged.map((r) => r.id),
+            color,
+            line,
+            head,
+            ...props,
+          } as ComputedEdge<A>)
+        }
+
+        return results
+      }
+    }
 
     const {
       title,
@@ -41,14 +112,12 @@ export function toComputedEdges<A extends AnyAux>(
       relations.map(r => r.$relationship),
       // Prefer only single relationship
       // https://github.com/likec4/likec4/issues/1423
-      only(
-        filter(relations, r => r.source.id === source && r.target.id === target),
-      )?.$relationship,
+      only(directRelsList)?.$relationship,
     )
 
     const edge: ComputedEdge<A> = exact({
-      id: e.id,
-      parent: e.boundary?.id as scalar.NodeId ?? null,
+      id: conn.id,
+      parent: conn.boundary?.id as scalar.NodeId ?? null,
       source: source as scalar.NodeId,
       target: target as scalar.NodeId,
       label: title ?? null,
@@ -59,9 +128,8 @@ export function toComputedEdges<A extends AnyAux>(
       ...props,
     })
 
-    acc.push(edge)
-    return acc
-  }, [] as ComputedEdge<A>[])
+    return [edge]
+  })
 }
 
 export function buildNodes<A extends AnyAux>(

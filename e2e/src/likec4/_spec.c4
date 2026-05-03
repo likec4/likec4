@@ -88,6 +88,10 @@ specification {
 
   relationship uses
   relationship requests
+  relationship async {
+    multiple true
+    line dotted
+  }
 
   tag deprecated
   tag next

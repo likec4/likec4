@@ -82,6 +82,7 @@ export interface ParsedAstSpecification {
       line?: c4.RelationshipLineType
       head?: c4.RelationshipArrowType
       tail?: c4.RelationshipArrowType
+      multiple?: boolean
     }
   >
   colors: Record<

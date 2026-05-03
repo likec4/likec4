@@ -185,7 +185,7 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 
       const custom = args[1].with
       if (custom) {
-        const isElement = ModelFqnExpr.is(args[0])
+        const isElement = ModelFqnExpr.is(expr)
         if (isElement) {
           expr = {
             custom: {

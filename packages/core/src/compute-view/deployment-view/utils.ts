@@ -1,4 +1,4 @@
-import { anyPass, hasAtLeast, isEmpty, omit } from 'remeda'
+import { anyPass, filter, hasAtLeast, isEmpty, omit, only, partition, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import type {
   DeployedInstanceModel,
@@ -13,10 +13,12 @@ import { deploymentConnection } from '../../model'
 import type { AnyAux, aux, ComputedEdge, ComputedNode, DeploymentViewRule, scalar, Unknown } from '../../types'
 import { exact, FqnExpr, isViewRuleStyle, preferSummary } from '../../types'
 import { invariant, nonexhaustive, parentFqn } from '../../utils'
+import { stringHash } from '../../utils/string-hash'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import type { ComputedNodeSource } from '../utils/buildComputedNodes'
 import { buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
+import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
 import type { Memory } from './_types'
 
 export const { findConnection, findConnectionsBetween, findConnectionsWithin } = deploymentConnection
@@ -196,22 +198,116 @@ function toNodeSource<A extends AnyAux>(
   return deploymentNodeToNodeSource(el)
 }
 
+const hashEdgeId = (source: scalar.NodeId, target: scalar.NodeId, relId: scalar.RelationId): scalar.EdgeId =>
+  stringHash(`model:${source}:${target}:${relId}`) as scalar.EdgeId
+
+function mergeBidirectionalEdges<A extends AnyAux>(edges: ComputedEdge<A>[]): ComputedEdge<A>[] {
+  const toRemove = new Set<number>()
+  for (let i = 0; i < edges.length; i++) {
+    if (toRemove.has(i)) continue
+    const edge = edges[i]!
+    for (let j = i + 1; j < edges.length; j++) {
+      if (toRemove.has(j)) continue
+      const other = edges[j]!
+      if (edge.source === other.target && edge.target === other.source && edge.label === other.label) {
+        edge.dir = 'both'
+        const head = edge.head ?? other.head
+        if (head) {
+          if (!edge.head) edge.head = head
+          if (!edge.tail) edge.tail = head
+        }
+        if (other.color) {
+          if (!edge.color) edge.color = other.color
+        }
+        if (other.line) {
+          if (!edge.line) edge.line = other.line
+        }
+        toRemove.add(j)
+        break
+      }
+    }
+  }
+  return toRemove.size > 0 ? edges.filter((_, i) => !toRemove.has(i)) : edges
+}
+
 export function toComputedEdges<A extends AnyAux>(
   connections: ReadonlyArray<DeploymentConnectionModel<A>>,
+  shouldExpand?: ShouldExpandPredicate,
 ): ComputedEdge<A>[] {
-  return connections.reduce((acc, e) => {
-    // const modelRelations = []
-    // const deploymentRelations = []
+  const expandedEdges: ComputedEdge<A>[] = []
+  const nonExpandedEdges: ComputedEdge<A>[] = []
+
+  for (const conn of connections) {
     const relations = [
-      ...e.relations.model,
-      ...e.relations.deployment,
+      ...conn.relations.model,
+      ...conn.relations.deployment,
     ]
     invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
 
-    const defaults = e.source.$model.$styles.defaults
+    const defaults = conn.source.$model.$styles.defaults
 
-    const source = e.source.id as scalar.NodeId
-    const target = e.target.id as scalar.NodeId
+    const source = conn.source.id as scalar.NodeId
+    const target = conn.target.id as scalar.NodeId
+
+    if (shouldExpand && relations.length > 1) {
+      const [expanded, merged] = pipe(
+        relations,
+        partition(r => shouldExpand(r)),
+      )
+
+      if (expanded.length > 0) {
+        for (const rel of expanded) {
+          const {
+            title,
+            color = defaults.relationship.color,
+            line = defaults.relationship.line,
+            head = defaults.relationship.arrow,
+            ...props
+          } = mergePropsFromRelationships([rel.$relationship], rel.$relationship)
+
+          expandedEdges.push({
+            id: hashEdgeId(source, target, rel.id),
+            parent: conn.boundary?.id as scalar.NodeId ?? null,
+            source,
+            target,
+            label: title ?? null,
+            relations: [rel.id],
+            color,
+            line,
+            head,
+            ...props,
+          } as ComputedEdge<A>)
+        }
+
+        if (merged.length > 0) {
+          const mergedSource = only(filter(merged, r => r.source.id === source && r.target.id === target))
+          const {
+            title,
+            color = defaults.relationship.color,
+            line = defaults.relationship.line,
+            head = defaults.relationship.arrow,
+            ...props
+          } = mergePropsFromRelationships(
+            merged.map(r => r.$relationship),
+            mergedSource?.$relationship,
+          )
+
+          nonExpandedEdges.push({
+            id: conn.id,
+            parent: conn.boundary?.id as scalar.NodeId ?? null,
+            source,
+            target,
+            label: title ?? null,
+            relations: merged.map((r) => r.id),
+            color,
+            line,
+            head,
+            ...props,
+          } as ComputedEdge<A>)
+        }
+        continue
+      }
+    }
 
     const {
       title,
@@ -219,11 +315,11 @@ export function toComputedEdges<A extends AnyAux>(
       line = defaults.relationship.line,
       head = defaults.relationship.arrow,
       ...props
-    } = mergePropsFromRelationships(relations.map(r => r.$relationship)) // || relations.find(r => r.source === source && r.target === target)
+    } = mergePropsFromRelationships(relations.map(r => r.$relationship))
 
     const edge: ComputedEdge<A> = exact({
-      id: e.id,
-      parent: e.boundary?.id as scalar.NodeId ?? null,
+      id: conn.id,
+      parent: conn.boundary?.id as scalar.NodeId ?? null,
       source,
       target,
       label: title ?? null,
@@ -234,26 +330,10 @@ export function toComputedEdges<A extends AnyAux>(
       ...props,
     })
 
-    // If exists same edge but in opposite direction
-    const existing = acc.find(e => e.source === target && e.target === source)
-    if (existing && edge.label === existing.label) {
-      existing.dir = 'both'
-      const head = existing.head ?? edge.head ?? e.source.$model.$styles.defaults.relationship.arrow
-      existing.head ??= head
-      existing.tail ??= head
+    nonExpandedEdges.push(edge)
+  }
 
-      if (edge.color) {
-        existing.color ??= edge.color
-      }
-      if (edge.line) {
-        existing.line ??= edge.line
-      }
-      return acc
-    }
-
-    acc.push(edge)
-    return acc
-  }, [] as ComputedEdge<A>[])
+  return [...expandedEdges, ...mergeBidirectionalEdges(nonExpandedEdges)]
 }
 
 export function buildNodes<A extends AnyAux = Unknown>(

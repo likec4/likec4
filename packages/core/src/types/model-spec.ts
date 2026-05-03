@@ -44,6 +44,10 @@ export interface ElementSpecification {
     size?: ShapeSize
     padding?: SpacingSize
     textSize?: TextSize
+    /**
+     * If true, the element is rendered as multiple shapes.
+     * @default false
+     */
     multiple?: boolean
   }
 }
@@ -68,6 +72,12 @@ export interface RelationshipSpecification {
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
+  /**
+   * If true, matching relationships are rendered as separate edges instead of
+   * being merged into a single connection.
+   * @default false
+   */
+  multiple?: boolean
 }
 
 export type Specification<A> = A extends Any ? {
