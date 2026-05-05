@@ -2,7 +2,7 @@ import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import * as z from 'zod/v3'
-import { projectIdSchema } from './_common'
+import { projectIdSchema, toolError } from './_common'
 
 export function registerApplySemanticLayoutTool(
   mcpServer: McpServer,
@@ -23,8 +23,17 @@ export function registerApplySemanticLayoutTool(
     },
     async (args, ctx) => {
       const projectId = languageServices.projectsManager.ensureProjectId(args.projectId)
+      if (projectId !== args.projectId) {
+        await mcpServer.sendLoggingMessage({
+          level: 'notice',
+          data: `Using project "${projectId}" instead of "${args.projectId}"`,
+        }, ctx.sessionId)
+      }
       const model = await languageServices.computedModel(projectId)
-      const view = model.view(args.viewId)
+      const view = model.findView(args.viewId)
+      if (!view) {
+        return toolError(`View "${args.viewId}" not found in project "${projectId}"`)
+      }
 
       const hints = await enhanceLayoutWithAI(view.$view, {
         name: 'MCP',
@@ -63,33 +72,31 @@ export function registerApplySemanticLayoutTool(
           level: 'error',
           data: 'Failed to generate layout hints',
         }, ctx.sessionId)
-        return {
-          content: [{
-            type: 'text',
-            text: 'Failed to generate layout hints',
-          }],
-        }
+        return toolError('Failed to generate layout hints')
       }
+
+      await mcpServer.sendLoggingMessage({
+        level: 'info',
+        data: 'Applying semantic layout...',
+      }, ctx.sessionId)
 
       const result = await languageServices.views.layouter.aiLayout({
         view: view.$view,
         styles: model.$styles,
       }, hints)
 
-      if (result) {
-        await languageServices.editor.applyChange({
-          change: {
-            op: 'save-view-snapshot',
-            layout: result.diagram,
-          },
-          viewId: view.id,
-          projectId,
-        })
-        await mcpServer.sendLoggingMessage({
-          level: 'info',
-          data: 'Layout applied successfully',
-        }, ctx.sessionId)
-      }
+      await languageServices.editor.applyChange({
+        change: {
+          op: 'save-view-snapshot',
+          layout: result.diagram,
+        },
+        viewId: view.id,
+        projectId,
+      })
+      await mcpServer.sendLoggingMessage({
+        level: 'info',
+        data: 'Layout applied successfully',
+      }, ctx.sessionId)
 
       return {
         content: [{

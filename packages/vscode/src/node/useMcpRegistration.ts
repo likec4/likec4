@@ -4,11 +4,12 @@ import {
   computed,
   createSingletonComposable,
   extensionContext,
+  toValue,
   useDisposable,
   useEventEmitter,
   useWorkspaceFolders,
 } from 'reactive-vscode'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { version } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { useWorkspaceId } from '../useWorkspaceId.ts'
@@ -19,11 +20,17 @@ function isMcpStdioServerDefinition(server: vscode.McpServerDefinition): server 
 
 export const useMcpRegistration = createSingletonComposable(() => {
   const { logger } = useExtensionLogger()
+
+  if (!vscode.lm?.registerMcpServerDefinitionProvider) {
+    logger.warn('registerMcpServerDefinitionProvider API not available, update your IDE')
+    return
+  }
+
   const onDidChange = useEventEmitter<void>()
 
   const folders = useWorkspaceFolders()
   const workspaceFolders = computed(() => folders.value?.map(f => f.uri.toString()) ?? [])
-  const workspaceId = useWorkspaceId()
+  const workspaceId = toValue(useWorkspaceId())
   const ctx = nonNullable(extensionContext.value, 'Extension context not available during MCP registration')
 
   const serverModule = ctx.asAbsolutePath(

@@ -88,13 +88,13 @@ export const useLikeC4ChatParticipant = defineService(() => {
           {
             name: req.model.family,
             sendRequest: async ({ diagram, systemPrompt, userPrompt }, cancelToken) => {
-              const messsages = [
+              const messages = [
                 vscode.LanguageModelChatMessage.Assistant(systemPrompt),
                 vscode.LanguageModelChatMessage.User(userPrompt + '\n\n' + diagram),
               ]
 
               const res = await req.model.sendRequest(
-                messsages,
+                messages,
                 {
                   justification: 'LikeC4 needs AI assistance to optimize diagram layout',
                   tools: [],

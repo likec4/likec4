@@ -3,7 +3,7 @@ import { loggable } from '@likec4/log'
 import { toValue, useCommand } from 'reactive-vscode'
 import { ref } from 'reactive-vscode'
 import { hasAtLeast, once } from 'remeda'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { commands } from '../meta.ts'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { useMessenger } from '../useMessenger.ts'
@@ -152,7 +152,11 @@ export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, previe
   })
 }
 
-function createOutputChannel() {
+function createOutputChannel(): AsyncDisposable & {
+  out: vscode.OutputChannel
+  append: (value: string) => void
+  appendLine: (value: string) => void
+} {
   const out = vscode.window.createOutputChannel('LikeC4 AI Layout')
   return {
     out,
@@ -171,6 +175,10 @@ function createOutputChannel() {
 }
 
 async function selectModel(output: vscode.OutputChannel): Promise<vscode.LanguageModelChat | null> {
+  if (!vscode.lm?.selectChatModels) {
+    output.appendLine('Language model API not available')
+    return null
+  }
   // if (selectedModelId.value) {
   //   const models = await vscode.lm.selectChatModels({
   //     id: selectedModelId.value,
@@ -224,7 +232,7 @@ class VscodeAILayoutProvider implements AILayoutProvider<vscode.CancellationToke
 
   constructor(
     private readonly logger: vscode.LogOutputChannel,
-    private readonly onStartRecevingFromModel: () => void,
+    private readonly onStartReceivingFromModel: () => void,
   ) {
   }
 
@@ -278,7 +286,7 @@ ${request.diagram}
       if (text === '') {
         channel.appendLine(`response`)
         channel.appendLine(`----------------------`)
-        this.onStartRecevingFromModel()
+        this.onStartReceivingFromModel()
       }
       channel.append(chunk)
       text += chunk

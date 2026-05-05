@@ -25,6 +25,10 @@ const useTelemetry = createSingletonComposable(() => {
   const reporter = useDisposable(new TelemetryReporter(TelemetryConnectionString))
   const telemetryLogger = useDisposable(vscode.env.createTelemetryLogger({
     sendErrorData(error, data) {
+      if (isDev) {
+        output.debug('telemetry error skipped in dev mode')
+        return
+      }
       reporter.sendTelemetryErrorEvent('error', {
         ...data,
         message: new vscode.TelemetryTrustedValue(error.message),
@@ -32,6 +36,10 @@ const useTelemetry = createSingletonComposable(() => {
       })
     },
     sendEventData(eventName, data) {
+      if (isDev) {
+        output.debug('telemetry event %s skipped in dev mode', eventName)
+        return
+      }
       reporter.sendTelemetryEvent(eventName, data)
     },
   }))
