@@ -2,7 +2,6 @@ import type { Simplify, Writable } from 'type-fest'
 import {
   type AutoLayoutDirection,
   type LikeC4View,
-  type ModelExpression,
   type ParsedDeploymentView as DeploymentView,
   type ParsedElementView as ElementView,
   type ViewRuleAutoLayout,
@@ -16,10 +15,9 @@ import type {
   $exclude,
   $include,
   $rules,
-  $showAncestors,
   $style,
-  LikeC4ViewBuilder,
 } from './Builder.view-common'
+import { $showAncestors } from './Builder.view-deployment'
 import { type AddDeploymentViewHelper, type DeploymentViewBuilder, $deploymentExpr } from './Builder.view-deployment'
 import {
   type AddViewHelper,

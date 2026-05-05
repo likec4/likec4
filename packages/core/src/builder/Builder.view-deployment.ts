@@ -134,3 +134,7 @@ export function $deploymentExpr<T extends AnyTypes>(
     },
   })
 }
+
+export function $showAncestors<B extends DeploymentViewBuilder<AnyTypes>>(value: boolean): (b: B) => B {
+  return (b) => b.showAncestors(value)
+}

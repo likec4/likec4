@@ -30,7 +30,6 @@ export interface LikeC4ViewBuilder<
   exclude(...exprs: TypedExpr[]): this
   style(rule: ViewRuleStyle<any>): this
   autoLayout(layout: AutoLayoutDirection, margins: { rank: number; node: number } | undefined): this
-  showAncestors(value: boolean): this
 }
 
 export namespace ViewPredicate {
@@ -276,8 +275,4 @@ function $rules<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(...rules: Op<B>
   return (b) => rules.reduce((b, rule) => rule(b), b)
 }
 
-function $showAncestors<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(value: boolean): (b: B) => B {
-  return (b) => b.showAncestors(value)
-}
-
-export { $autoLayout, $exclude, $include, $rules, $showAncestors, $style }
+export { $autoLayout, $exclude, $include, $rules, $style }
