@@ -18,7 +18,7 @@ import {
   useDisposable,
 } from 'reactive-vscode'
 import type { IsNever } from 'type-fest'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { Messenger } from 'vscode-messenger'
 import {
   type CancellationToken,
@@ -115,7 +115,7 @@ export const useMessenger = createSingletonComposable(() => {
     onWebviewNavigateTo: notificationHandler(WebviewMsgs.NavigateTo),
     onWebviewOpenExternalUrl: notificationHandler(WebviewMsgs.OpenExternalUrl),
     onWebviewUpdateMyTitle: notificationHandler(WebviewMsgs.UpdateMyTitle),
-    onWebviewEnhanceWithAI: notificationHandler(WebviewMsgs.EnhanceMeWithAI),
+    onWebviewEnhanceWithAI: notificationHandler(WebviewMsgs.SemanticLayout),
 
     sendOpenView: sendNotification(OnOpenView),
     sendModelUpdate: sendNotification(BroadcastModelUpdate),

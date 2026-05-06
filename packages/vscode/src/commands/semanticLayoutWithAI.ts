@@ -1,9 +1,10 @@
 import { type AILayoutProvider, type AILayoutRequest, enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import { loggable } from '@likec4/log'
-import { toValue, useCommand } from 'reactive-vscode'
+import { defineService, toValue, useCommand, useOutputChannel } from 'reactive-vscode'
 import { ref } from 'reactive-vscode'
 import { hasAtLeast, once } from 'remeda'
 import * as vscode from 'vscode'
+import { hasAI } from '../const.ts'
 import { commands } from '../meta.ts'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { useMessenger } from '../useMessenger.ts'
@@ -20,6 +21,11 @@ const selectedModelId = ref<string | null>(null)
 export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, preview }: SemanticLayoutAICmdDeps) {
   const { logger, output } = useExtensionLogger()
   const messenger = useMessenger()
+
+  if (!hasAI) {
+    logger.warn('Language model API not available, AI layout enhancement disabled')
+    return
+  }
 
   useCommand(commands.semanticLayoutWithAi, async () => {
     sendTelemetry(commands.semanticLayoutWithAi)
@@ -152,27 +158,11 @@ export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, previe
   })
 }
 
-function createOutputChannel(): AsyncDisposable & {
-  out: vscode.OutputChannel
-  append: (value: string) => void
-  appendLine: (value: string) => void
-} {
-  const out = vscode.window.createOutputChannel('LikeC4 AI Layout')
-  return {
-    out,
-    append: (value: string): void => {
-      out.append(value)
-    },
-    appendLine: (value: string): void => {
-      out.appendLine(value)
-    },
-    [Symbol.asyncDispose]: async () => {
-      setTimeout(() => {
-        out.dispose()
-      }, 10000)
-    },
-  }
-}
+const useAIOutputChannel = defineService(() => {
+  const out = useOutputChannel('LikeC4 AI Layout')
+  out.show()
+  return out
+})
 
 async function selectModel(output: vscode.OutputChannel): Promise<vscode.LanguageModelChat | null> {
   if (!vscode.lm?.selectChatModels) {
@@ -240,9 +230,10 @@ class VscodeAILayoutProvider implements AILayoutProvider<vscode.CancellationToke
     request: AILayoutRequest,
     cancelToken: vscode.CancellationToken,
   ): Promise<string> {
-    await using channel = createOutputChannel()
-    channel.out.show()
-    const model = await selectModel(channel.out)
+    const channel = useAIOutputChannel()
+    channel.show()
+    channel.clear()
+    const model = await selectModel(channel)
 
     if (!model) {
       throw new Error(

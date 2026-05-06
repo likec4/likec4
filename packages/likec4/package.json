@@ -140,8 +140,34 @@
     "nano-spawn": "catalog:externals"
   },
   "peerDependencies": {
+    "@tanstack/ai": "catalog:ai",
+    "@tanstack/ai-anthropic": "catalog:ai",
+    "@tanstack/ai-gemini": "catalog:ai",
+    "@tanstack/ai-openai": "catalog:ai",
+    "@tanstack/ai-ollama": "catalog:ai",
+    "@tanstack/ai-openrouter": "catalog:ai",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/ai": {
+      "optional": true
+    },
+    "@tanstack/ai-anthropic": {
+      "optional": true
+    },
+    "@tanstack/ai-gemini": {
+      "optional": true
+    },
+    "@tanstack/ai-openai": {
+      "optional": true
+    },
+    "@tanstack/ai-ollama": {
+      "optional": true
+    },
+    "@tanstack/ai-openrouter": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "langium": "catalog:langium",
@@ -168,6 +194,7 @@
     "@pandacss/dev": "catalog:css",
     "@react-hookz/web": "catalog:react",
     "@tabler/icons-react": "catalog:react",
+    "@tanstack/ai": "catalog:ai",
     "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/router-cli": "catalog:tanstack",
     "@tanstack/router-vite-plugin": "catalog:tanstack",

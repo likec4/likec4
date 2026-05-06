@@ -1,7 +1,7 @@
 import type { ProjectId, ViewId } from '@likec4/core/types'
 import { computed, extensionContext, useIsDarkTheme, watch } from 'reactive-vscode'
 import { type Webview, type WebviewPanel, Uri } from 'vscode'
-import { isProd } from '../const'
+import { hasAI, isProd } from '../const.ts'
 
 export function writeHTMLToWebview(
   panel: WebviewPanel,
@@ -55,6 +55,7 @@ export function writeHTMLToWebview(
       var __PROJECT_ID = ${JSON.stringify(projectId)};
       var __SCREEN = ${JSON.stringify(screen)};
       var __INTERNAL_STATE = ${JSON.stringify({ internalState })};
+      var __HAS_AI = ${JSON.stringify(hasAI)};
     </script>
     <div id="root" nonce="${nonce}"></div>
     <script nonce="${nonce}" type="module" src="${scriptUri}"></script>

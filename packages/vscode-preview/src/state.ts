@@ -135,11 +135,13 @@ ExtensionApi.onModelUpdateNotification(async () => {
       refetchType: 'active',
     }),
     // Remove queries of other views
-    queryClient.removeQueries({
-      predicate({ isActive, queryKey }) {
-        return !isActive && queryKey.at(0) === projectId && queryKey.at(1) === 'diagram' && queryKey.at(2) !== viewId
-      },
-    }),
+    Promise.resolve().then(() =>
+      queryClient.removeQueries({
+        predicate({ isActive, queryKey }) {
+          return !isActive && queryKey.at(0) === projectId && queryKey.at(1) === 'diagram' && queryKey.at(2) !== viewId
+        },
+      })
+    ),
     // And refetch active diagram views
     queryClient.invalidateQueries({
       queryKey: [projectId, 'diagram', viewId],
@@ -239,6 +241,11 @@ const editorPort: LikeC4EditorCallbacks = {
       viewId,
       change,
     })
+  },
+  ...__HAS_AI && {
+    applySemanticLayout: async (viewId) => {
+      ExtensionApi.applySemanticLayout(viewId)
+    },
   },
 }
 

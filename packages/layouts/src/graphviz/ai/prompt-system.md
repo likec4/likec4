@@ -19,13 +19,13 @@ Node (JSON object) fields:
 - kind: string (semantic type, e.g. "system", "container", "component", "service", "database", etc.)
 - title: string
 - description?: string | undefined - optional description
-- parent?: string (compound ID) | undefined - optional Parent ID, undefined if node is at the root level
+- parent?: string (compound ID) | undefined - optional Parent ID, if node is nested inside a compound;
 - level: number - zero-based level in the hierarchy (root level = 0)
 
 Compound (JSON object) fields:
 - id: string (starts with "c" followed by a number, e.g. "c1", "c2", etc.)
 - title: string
-- parent?: string (compound ID) | undefined - optional Parent ID, undefined if compound is at the root level
+- parent?: string (compound ID) | undefined - optional Parent ID, if compound is nested inside another compound;
 - level: number - zero-based level in the hierarchy (root level = 0)
 - children: string[] - IDs of children (compounds or nodes)
 
@@ -33,7 +33,7 @@ Edge (JSON object) fields:
 - id: string (starts with "e" followed by a number, e.g. "e1", "e2", etc.)
 - source: string (node ID)
 - target: string (node ID)
-- parent?: string (compound ID) | undefined - optional Parent ID, undefined if edge is at the root level
+- parent?: string (compound ID) | undefined - optional Parent ID, if edge is inside a compound
 - label?: string | undefined
 </input>
 
@@ -87,7 +87,7 @@ Edge (JSON object) fields:
 
 <output>
 Output ONLY a valid JSON object matching the following schema.
-All fields are optional (omit if empty, null, undefined).
+All fields are optional (omit empty, null, undefined).
 Use `reasoning` field to explain your decision, be concise.
 Do not include any other text, comments, questions or explanations.
 Do not pretty-print, compact JSON is preferred.
@@ -168,6 +168,7 @@ INPUT:
 OUTPUT:
 ```json
 {
+  "direction": "TB",
   "ranks": [
     { "rank": "source", "nodes": ["n4"] },
     { "rank": "same", "nodes": ["n2", "n3"] },
@@ -180,7 +181,7 @@ OUTPUT:
   "excludeFromRanking": ["e1"],
   "edgeOrder": ["e3", "e4", "e5", "e6", "e7", "e1"],
   "nodeOrder": ["n4", "n2", "n3", "n6", "n7", "n8"],
-  "reasoning": "I reversed [e4] as keeps [n4] on top and pushes [n3] to the next row and balance layout, [e5] `minlen=0` to keep [n2][n3] on same rank"
+  "reasoning": "I reversed [e4] as it moves [n4] to the top, pushes [n3] to the next row and balances layout, [e5] `minlen=0` to keep [n2][n3] on same rank"
 }
 ```
 </example>

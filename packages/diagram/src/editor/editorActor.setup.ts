@@ -14,6 +14,14 @@ export namespace EditorCalls {
     export type Output = { updated: t.LayoutedView }
   }
 
+  export type ApplySemanticLayout = (
+    params: { input: ApplySemanticLayout.Input },
+  ) => Promise<ApplySemanticLayout.Output>
+  export namespace ApplySemanticLayout {
+    export type Input = { viewId: t.ViewId }
+    export type Output = {}
+  }
+
   export type ExecuteChange = (
     params: { input: ExecuteChange.Input },
   ) => Promise<ExecuteChange.Output>
@@ -35,6 +43,12 @@ const executeChange = fromPromise<EditorCalls.ExecuteChange.Output, EditorCalls.
   },
 )
 
+const applySemanticLayout = fromPromise<EditorCalls.ApplySemanticLayout.Output, EditorCalls.ApplySemanticLayout.Input>(
+  () => {
+    throw new Error('Not implemented')
+  },
+)
+
 export type EditorActorEvent =
   // Schedule a sync
   | { type: 'sync' }
@@ -44,6 +58,8 @@ export type EditorActorEvent =
   | { type: 'edit.finish'; wasChanged?: boolean }
   // triggers applying latest to manual layout
   | { type: 'applyLatestToManual' }
+  // triggers applying semantic layout
+  | { type: 'applySemanticLayout' }
   // view update has been received, consider synced
   | { type: 'synced' }
   // Cancel current editing or pending operations
@@ -83,6 +99,8 @@ export interface EditorActorContext {
 
 export type EditorActorEmitedEvent = { type: 'idle' }
 
+export type EditorActorStateTag = 'pending' | 'busy' | 'ai-semantic-layout'
+
 export const machine = setup({
   types: {
     context: {} as EditorActorContext,
@@ -92,7 +110,7 @@ export const machine = setup({
     children: {} as {
       hotkey: 'hotkey'
     },
-    tags: {} as 'pending',
+    tags: '' as EditorActorStateTag,
   },
   delays: {
     '500ms': 500,
@@ -101,6 +119,7 @@ export const machine = setup({
   actors: {
     applyLatest,
     executeChange,
+    applySemanticLayout,
     hotkey,
   },
   guards: {

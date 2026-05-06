@@ -1,5 +1,5 @@
+export { enhanceLayoutWithAI } from './enhanceLayoutWithAI'
 export type { SerializedView } from './llm-input'
-export { enhanceLayoutWithAI } from './orchestrator'
 export type {
   AIEnforcementEdge,
   AILayoutHints,

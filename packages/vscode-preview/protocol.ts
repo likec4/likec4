@@ -126,7 +126,9 @@ export const WebviewMsgs = {
   >,
   OpenExternalUrl: { method: 'webview:open-external-url' } as NotificationType<{ url: string }>,
   UpdateMyTitle: { method: 'webview:update-my-title' } as NotificationType<{ title: string }>,
-  EnhanceMeWithAI: { method: 'webview:enhance-me-ai' } as NotificationType<never>,
+  SemanticLayout: { method: 'webview:semantic-layout' } as NotificationType<{
+    viewId: ViewId
+  }>,
 }
 
 export type Handler<T> =

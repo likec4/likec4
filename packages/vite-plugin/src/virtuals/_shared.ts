@@ -1,6 +1,6 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import type { LikeC4Project, NonEmptyArray, ProjectId } from '@likec4/core'
-import type { LikeC4LanguageServices } from '@likec4/language-server'
+import type { LikeC4LanguageServices } from '@likec4/language-services'
 import type { URI } from 'langium'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
@@ -18,16 +18,21 @@ export type ProjectsData = NonEmptyArray<ProjectData>
 
 export type VirtualModuleLoadResult = Rolldown.SourceDescription | string
 
+export type SharedVirtualModuleOptions = {
+  rpcEnabled: boolean
+  isAIAvailable: boolean
+  logger: ViteLogger
+  likec4: LikeC4LanguageServices
+  assetsDir: string
+}
+
 export interface VirtualModule {
   id: string
   virtualId: string
   load(
     this: Rolldown.MinimalPluginContext,
-    opts: {
-      logger: ViteLogger
-      likec4: LikeC4LanguageServices
+    opts: SharedVirtualModuleOptions & {
       projects: NonEmptyArray<ProjectData>
-      assetsDir: string
     },
   ): Promise<VirtualModuleLoadResult>
 }
@@ -40,11 +45,8 @@ export interface ProjectVirtualModule {
   virtualId: (projectId: ProjectId) => string
   load(
     this: Rolldown.MinimalPluginContext,
-    opts: {
-      logger: ViteLogger
-      likec4: LikeC4LanguageServices
+    opts: SharedVirtualModuleOptions & {
       project: ProjectData
-      assetsDir: string
     },
   ): Promise<VirtualModuleLoadResult>
 }

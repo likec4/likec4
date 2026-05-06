@@ -30,6 +30,7 @@ import type {
   EditorActorEmitedEvent,
   EditorActorEvent,
   EditorActorInput,
+  EditorActorStateTag,
 } from './editorActor.setup'
 import { machine } from './editorActor.setup'
 
@@ -54,14 +55,17 @@ const to = {
   afterEdit: { target: '#afterEdit' },
   pending: { target: '#pending' },
   applyLatestToManual: { target: '#applyLatestToManual' },
+  applySemanticLayout: { target: '#applySemanticLayout' },
   executeChanges: { target: '#executeChanges' },
 } as const
+
+const idOf = (t: { target: string }) => t.target.substring(1)
 
 /**
  * Idle state, no pending operations
  */
 const idle = machine.createStateConfig({
-  id: 'idle',
+  id: idOf(to.idle),
   on: {
     'sync': {
       ...to.pending,
@@ -76,7 +80,7 @@ const idle = machine.createStateConfig({
  * Edit state, some operation is in progress, come to this state from idle
  */
 const editing = machine.createStateConfig({
-  id: 'editing',
+  id: idOf(to.editing),
   tags: 'pending',
   entry: [
     startEditing(),
@@ -102,7 +106,7 @@ const editing = machine.createStateConfig({
  * Syncing state, some edits are not yet synced
  */
 const pending = machine.createStateConfig({
-  id: 'pending',
+  id: idOf(to.pending),
   tags: ['pending'],
   entry: ensureHotKey(),
   on: {
@@ -132,7 +136,7 @@ const pending = machine.createStateConfig({
  * Decide where to go next
  */
 const afterEdit = machine.createStateConfig({
-  id: 'afterEdit',
+  id: idOf(to.afterEdit),
   always: [
     { guard: 'has pending', ...to.pending },
     { ...to.idle },
@@ -143,7 +147,8 @@ const afterEdit = machine.createStateConfig({
  * Syncing state, some edits are not yet synced
  */
 const applyLatestToManual = machine.createStateConfig({
-  id: 'applyLatestToManual',
+  id: idOf(to.applyLatestToManual),
+  tags: ['busy'],
   entry: [
     cancelSync(),
     saveStateBeforeEdit(),
@@ -215,7 +220,8 @@ const applyLatestToManual = machine.createStateConfig({
  * Calls `executeChange` to save the snapshot
  */
 const executeChanges = machine.createStateConfig({
-  id: 'executeChanges',
+  id: idOf(to.executeChanges),
+  tags: ['busy'],
   entry: [
     assign(({ event, context }) => {
       if (import.meta.env.DEV) {
@@ -282,6 +288,38 @@ const executeChanges = machine.createStateConfig({
   },
 })
 
+/**
+ * User requested semantic layout, we will call the AI
+ */
+const applySemanticLayout = machine.createStateConfig({
+  id: idOf(to.applySemanticLayout),
+  tags: ['busy', 'ai-semantic-layout'],
+  entry: [
+    cancelSync(),
+  ],
+  invoke: {
+    src: 'applySemanticLayout',
+    input: ({ context }) => ({
+      viewId: context.viewId,
+    }),
+    onDone: {
+      ...to.idle,
+    },
+    onError: {
+      actions: [
+        assign({
+          beforeEditing: null,
+          pendingChanges: [],
+        }),
+        ({ event }) => {
+          console.error(event.error)
+        },
+      ],
+      ...to.idle,
+    },
+  },
+})
+
 const _editorActorLogic = machine.createMachine({
   id: 'editor',
   context: ({ input }) => ({
@@ -298,6 +336,7 @@ const _editorActorLogic = machine.createMachine({
     pending,
     afterEdit,
     applyLatestToManual,
+    applySemanticLayout,
     executeChanges,
   },
   on: {
@@ -325,6 +364,9 @@ const _editorActorLogic = machine.createMachine({
     },
     'applyLatestToManual': {
       ...to.applyLatestToManual,
+    },
+    'applySemanticLayout': {
+      ...to.applySemanticLayout,
     },
     reset: {
       actions: [
@@ -354,7 +396,7 @@ export interface EditorActorLogic extends
     any,
     any,
     'idle' | 'editing' | 'pending' | 'afterEdit' | 'applyLatestToManual' | 'executeChanges',
-    any,
+    EditorActorStateTag,
     EditorActorInput,
     any,
     EditorActorEmitedEvent,

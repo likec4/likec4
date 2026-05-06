@@ -13,10 +13,10 @@ import {
 } from '@likec4/log'
 import type { TelemetryReporter } from '@vscode/extension-telemetry'
 import { defineService } from 'reactive-vscode'
-import vscode, { type LogOutputChannel } from 'vscode'
+import * as vscode from 'vscode'
 
-let outputChannel: LogOutputChannel | undefined
-function getOutput(): LogOutputChannel {
+let outputChannel: vscode.LogOutputChannel | undefined
+function getOutput(): vscode.LogOutputChannel {
   return outputChannel ??= vscode.window.createOutputChannel('LikeC4 Extension', {
     log: true,
   })

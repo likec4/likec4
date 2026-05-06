@@ -8,4 +8,6 @@ declare const __INTERNAL_STATE:
 declare const __VIEW_ID: string
 declare const __PROJECT_ID: string
 
+declare const __HAS_AI: boolean
+
 declare const __SCREEN: 'projects' | 'view'

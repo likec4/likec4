@@ -10,7 +10,7 @@ import type { Simplify } from 'type-fest'
 import { memoNode } from '../base-primitives/memoNode'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
-import { useIsReducedGraphics, usePanningAtom } from '../context/RootContainerContext'
+import { useRootContainer } from '../context/RootContainerContext'
 import { selectDiagramActor, useCallbackRef, useDiagramSnapshot, useUpdateEffect } from '../hooks'
 import { useDiagram } from '../hooks/useDiagram'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
@@ -138,9 +138,11 @@ export function LikeC4DiagramXYFlow({
     onCanvasDblClick,
   } = useDiagramEventHandlers()
 
-  const isReducedGraphics = useIsReducedGraphics(),
+  const { reducedGraphics, $panning } = useRootContainer()
+
+  const isReducedGraphics = reducedGraphics,
     layoutConstraints = useLayoutConstraints(),
-    $isPanning = usePanningAtom(),
+    $isPanning = $panning,
     isPanning = useTimeout(() => {
       $isPanning.set(true)
     }, isReducedGraphics ? 200 : 800),

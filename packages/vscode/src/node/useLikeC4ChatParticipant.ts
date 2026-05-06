@@ -25,9 +25,8 @@ export const useLikeC4ChatParticipant = defineService(() => {
     async (req, context, stream, token) => {
       logger.debug`Received chat request with command ${req.command}, model: ${req.model.family}`
 
-      if (req.command !== 'semantic-layout') {
-        stream.warning(`@likec4-layout only processes "semantic-layout" command for now.`)
-        return
+      if (req.command !== 'semantic') {
+        stream.warning(`@likec4-layout only processes "semantic" command for now.`)
       }
 
       const viewId = toValue(preview.viewId)
@@ -57,10 +56,7 @@ export const useLikeC4ChatParticipant = defineService(() => {
         stream.warning(`View "${viewId}" not found in model.`)
         return
       }
-      if (computedView._type === 'dynamic') {
-        stream.warning(`@likec4 cannot enhance layout of dynamic views.`)
-        return
-      }
+
       const location = await rpc.locate({ view: viewId, projectId }).catch(err => {
         logWarn(err)
         return null
@@ -76,9 +72,11 @@ export const useLikeC4ChatParticipant = defineService(() => {
         state: 'in-progress',
       })
 
-      stream.markdown(`I will analyze view \`${viewId}\``)
+      stream.markdown(`I'm looking at \`${viewId}\``)
       stream.anchor(location)
-      stream.markdown(` (project \`${projectId}\`) and suggest layout.\n`)
+      stream.markdown(
+        ` (project \`${projectId}\`).\nI'll analyze semantics, and suggest alternative layout\n\nI will save it as a new snapshot, so you can easily revert back.\n\nAlso you can try different models...`,
+      )
 
       stream.progress(`Analyzing view...`)
 
@@ -102,7 +100,7 @@ export const useLikeC4ChatParticipant = defineService(() => {
               const res = await req.model.sendRequest(
                 messages,
                 {
-                  justification: 'LikeC4 needs AI assistance to optimize diagram layout',
+                  justification: 'LikeC4 needs AI assistance to analyze semantics.',
                   tools: [],
                 },
                 cancelToken,
@@ -130,7 +128,7 @@ export const useLikeC4ChatParticipant = defineService(() => {
 
       if (!hints) {
         messenger.broadcastAiLayoutUpdate({ viewId, projectId, state: 'failed' })
-        stream.warning(`AI could not generate layout suggestions for this view.`)
+        stream.warning(`AI did not generate layout suggestions. Please try again.`)
         return
       }
       if (token.isCancellationRequested) {
@@ -139,7 +137,7 @@ export const useLikeC4ChatParticipant = defineService(() => {
         return
       }
 
-      stream.progress(`Received AI layout hints...`)
+      stream.progress(`Received layout hints...`)
 
       const { reasoning, ..._hints } = hints
 
@@ -147,7 +145,9 @@ export const useLikeC4ChatParticipant = defineService(() => {
       md.appendCodeblock(JSON.stringify(_hints, null, 2), 'json')
 
       stream.markdown(md)
-      stream.progress(`Applying layout hints...`)
+      stream.progress(`Applying hints...`)
+
+      output.debug(`Layout hints:`, _hints)
 
       // Re-layout the view with AI hints
       const result = await rpc.layoutView({ viewId, projectId, hints }).catch(err => {
@@ -188,9 +188,8 @@ export const useLikeC4ChatParticipant = defineService(() => {
       stream.markdown(`\n\n ✅ View updated`)
 
       if (res.location) {
-        stream.markdown(` (saved `)
+        stream.markdown(` and saved to:\n`)
         stream.anchor(res.location.uri)
-        stream.markdown(`)`)
       }
     },
   ))

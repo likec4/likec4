@@ -30,15 +30,16 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@tanstack/ai": "catalog:ai",
+    "@tanstack/ai-ollama": "catalog:ai",
+    "immer": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "immer": "catalog:utils",
     "type-fest": "catalog:externals"
   },
   "devDependencies": {
-    "react-compiler-runtime": "catalog:react",
-    "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@dagrejs/dagre": "catalog:",
+    "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/config": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
@@ -83,6 +84,7 @@
     "oxlint": "catalog:",
     "p-limit": "catalog:utils",
     "postcss": "catalog:css",
+    "react-compiler-runtime": "catalog:react",
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
     "react-shadow": "catalog:react",

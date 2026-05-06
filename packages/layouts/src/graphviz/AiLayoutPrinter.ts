@@ -1,14 +1,14 @@
-import {
-  type AnyAux,
-  type ComputedEdge,
-  type ComputedNode,
-  type ComputedView,
-  type EdgeId,
-  type HexColor,
-  type LikeC4Styles,
-  nonNullable,
+import type {
+  AnyAux,
+  ComputedEdge,
+  ComputedNode,
+  ComputedView,
+  EdgeId,
+  HexColor,
+  LikeC4Styles,
 } from '@likec4/core'
-import { entries, first, isEmptyish, isNonNullish, isNumber, last } from 'remeda'
+
+import { entries, first, isNonNullish, isNumber, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import type { AILayoutHints } from './ai/types'
@@ -94,8 +94,8 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
     const isReverse = this.aiHints.reverseRank?.includes(edge.id) ?? false
     const [sourceFqn, targetFqn] = isReverse ? [edge.target, edge.source] : [edge.source, edge.target]
-    const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
-    const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
+    const [, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
+    const [, target, lhead] = this.edgeEndpoint(targetFqn, first)
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,

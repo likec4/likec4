@@ -108,7 +108,9 @@ export function LikeC4Diagram<A extends Any = Any>({
     !isEmptyish(optionalLikeC4Model.$data.manualLayouts)
 
   const hasLikeC4Model = !!optionalLikeC4Model
-  const hasEditor = !!useOptionalLikeC4Editor()
+  const editor = useOptionalLikeC4Editor()
+  const hasEditor = !!editor
+
   const readonly = !hasEditor
 
   nodesSelectable ??= hasEditor || enableFocusMode || !!onNavigateTo || !!onNodeClick
@@ -148,6 +150,7 @@ export function LikeC4Diagram<A extends Any = Any>({
               features={{
                 enableFitView: fitView,
                 enableEditor: hasEditor,
+                enableAISemanticLayout: hasEditor && !!editor.applySemanticLayout,
                 enableReadOnly: readonly,
                 enableFocusMode,
                 enableNavigateTo: !!onNavigateTo,

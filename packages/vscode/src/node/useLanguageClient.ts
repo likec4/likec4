@@ -10,7 +10,7 @@ import {
   watch,
 } from 'reactive-vscode'
 import { once } from 'remeda'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import {
   type LanguageClientOptions,
   type ServerOptions,
@@ -27,12 +27,6 @@ const useLanguageClient = createSingletonComposable(() => {
   const { output } = useExtensionLogger()
 
   const serverModule = extensionContext.value!.asAbsolutePath(
-    // path.join(
-    //   'node_modules',
-    //   'likec4',
-    //   'bin',
-    //   'likec4.mjs',
-    // ),
     path.join(
       'dist',
       'node',
@@ -50,13 +44,6 @@ const useLanguageClient = createSingletonComposable(() => {
       module: serverModule,
       transport: TransportKind.ipc,
       runtime: nodeRuntime,
-      // args: [
-      //   'lsp',
-      //   '--node-ipc',
-      //   '--log-level',
-      //   isDev ? 'trace' : 'info',
-      //   ...config.graphviz.mode === 'binary' ? ['--use-dot'] : [],
-      // ],
       options: {
         execArgv: ['--enable-source-maps'],
       },
@@ -65,13 +52,6 @@ const useLanguageClient = createSingletonComposable(() => {
       module: serverModule,
       runtime: nodeRuntime,
       transport: TransportKind.ipc,
-      // args: [
-      //   'lsp',
-      //   '--node-ipc',
-      //   '--log-level',
-      //   isDev ? 'trace' : 'debug',
-      //   ...config.graphviz.mode === 'binary' ? ['--use-dot'] : [],
-      // ],
       options: {
         detached: false,
         env: {

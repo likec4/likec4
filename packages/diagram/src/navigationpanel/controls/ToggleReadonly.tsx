@@ -20,10 +20,12 @@ const selector = (ctx: DiagramContext) => {
   const noActiveWalkthrough = !isTruthy(ctx.activeWalkthrough)
   const hasEditor = ctx.features.enableEditor
 
+  const isReadOnly = ctx.toggledFeatures.enableReadOnly ?? false
+
   return ({
     visible: hasEditor && noActiveWalkthrough,
     disabled: comparingLatest,
-    isReadOnly: ctx.toggledFeatures.enableReadOnly ?? false,
+    isReadOnly,
   })
 }
 

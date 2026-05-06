@@ -1,7 +1,7 @@
 import { Scheme } from '@likec4/language-server/likec4lib'
 import * as BuildIn from '@likec4/language-server/likec4lib'
 import { createSingletonComposable, useDisposable } from 'reactive-vscode'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 
 class BuiltInFileSystemProvider implements vscode.FileSystemProvider {
   stat(_uri: vscode.Uri): vscode.FileStat {

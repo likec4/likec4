@@ -35,9 +35,9 @@
     "./internal": {
       "sources": "./src/internal.ts",
       "default": {
-        "types": "./dist/internal.d.mts",
-        "import": "./dist/internal.mjs",
-        "default": "./dist/internal.mjs"
+        "types": "./dist/internal/index.d.mts",
+        "import": "./dist/internal/index.mjs",
+        "default": "./dist/internal/index.mjs"
       }
     },
     "./modules": "./src/modules.d.ts",
@@ -51,7 +51,7 @@
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "obuild",
+    "build": "tsdown",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
@@ -67,37 +67,67 @@
     "@likec4/generators": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/language-services": "workspace:*",
-    "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
-    "@nanostores/react": "catalog:react",
-    "nanostores": "catalog:react",
-    "langium": "catalog:langium",
     "defu": "catalog:utils",
-    "fast-equals": "catalog:utils",
-    "tinyrainbow": "catalog:utils",
-    "birpc": "catalog:vite",
     "json5": "catalog:utils",
-    "pathe": "catalog:utils",
+    "langium": "catalog:langium",
+    "nano-spawn": "catalog:externals",
     "p-debounce": "catalog:utils",
+    "package-manager-detector": "catalog:utils",
+    "pathe": "catalog:utils",
     "remeda": "catalog:utils",
     "std-env": "catalog:externals",
-    "type-fest": "catalog:externals",
     "strip-indent": "catalog:utils",
-    "zod": "catalog:externals",
-    "ufo": "catalog:utils"
+    "tinyrainbow": "catalog:utils",
+    "type-fest": "catalog:externals",
+    "ufo": "catalog:utils",
+    "zod": "catalog:externals"
   },
   "peerDependencies": {
+    "@tanstack/ai": "catalog:ai",
+    "@tanstack/ai-anthropic": "catalog:ai",
+    "@tanstack/ai-gemini": "catalog:ai",
+    "@tanstack/ai-openai": "catalog:ai",
+    "@tanstack/ai-ollama": "catalog:ai",
+    "@tanstack/ai-openrouter": "catalog:ai",
     "react": "catalog:react",
     "vite": "catalog:vite"
   },
+  "peerDependenciesMeta": {
+    "@tanstack/ai": {
+      "optional": true
+    },
+    "@tanstack/ai-anthropic": {
+      "optional": true
+    },
+    "@tanstack/ai-gemini": {
+      "optional": true
+    },
+    "@tanstack/ai-openai": {
+      "optional": true
+    },
+    "@tanstack/ai-ollama": {
+      "optional": true
+    },
+    "@tanstack/ai-openrouter": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "fast-equals": "catalog:utils",
+    "@nanostores/react": "catalog:react",
+    "nanostores": "catalog:react",
+    "birpc": "catalog:vite",
+    "@tanstack/ai": "catalog:ai",
+    "@tanstack/ai-anthropic": "catalog:ai",
+    "@tanstack/ai-openai": "catalog:ai",
     "@likec4/devops": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
     "@likec4/react": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
-    "obuild": "catalog:obuild",
+    "tsdown": "catalog:",
     "oxlint": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",

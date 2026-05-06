@@ -127,13 +127,15 @@
       "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
     },
     "onlyBuiltDependencies": [
+      "@google/genai",
       "@tailwindcss/oxide",
+      "dprint",
+      "esbuild",
+      "oxlint",
+      "protobufjs",
       "sharp",
       "workerd",
-      "oxlint",
-      "wrangler",
-      "dprint",
-      "esbuild"
+      "wrangler"
     ]
   },
   "nano-staged": {

@@ -62,8 +62,10 @@ export const ExtensionApi = {
     messenger.sendNotification(WebviewMsgs.UpdateMyTitle, HOST_EXTENSION, { title })
   },
 
-  enhanceMeWithAI: () => {
-    messenger.sendNotification(WebviewMsgs.EnhanceMeWithAI, HOST_EXTENSION)
+  applySemanticLayout: (viewId: ViewId) => {
+    if (__HAS_AI) {
+      messenger.sendNotification(WebviewMsgs.SemanticLayout, HOST_EXTENSION, { viewId })
+    }
   },
 
   change: async (params: {

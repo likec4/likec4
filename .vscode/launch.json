@@ -29,11 +29,11 @@
         "${workspaceFolder}/examples",
       ],
       "outFiles": [
-        "${workspaceFolder}/packages/*/dist/**/*.js",
-        "${workspaceFolder}/packages/*/dist/**/*.mjs"
+        "${workspaceFolder}/packages/**/*.js",
+        "${workspaceFolder}/packages/**/*.mjs"
       ],
       "resolveSourceMapLocations": [
-        "${workspaceFolder}/packages/**",
+        "${workspaceFolder}/packages/*/src",
         "!**/node_modules/**"
       ],
       "autoAttachChildProcesses": true,

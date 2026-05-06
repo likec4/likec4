@@ -5,7 +5,7 @@ import PQueue from 'p-queue'
 import {
   defineExtension,
 } from 'reactive-vscode'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { activateExtension } from '../activate'
 import { globPattern } from '../const'
 import { useConfigureLogger } from '../useExtensionLogger'

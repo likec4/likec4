@@ -3,6 +3,7 @@ import type { LayoutedView } from '@likec4/core'
 import type { Disposable, URI } from 'langium'
 import { LibIcons } from '../generated-lib/icons'
 import { isLikeC4Builtin } from '../likec4lib'
+import { logger } from '../logger'
 import type {
   FileNode,
   FileSystemModuleContext,
@@ -49,6 +50,10 @@ export class NoopFileSystemProvider implements FileSystemProvider {
  * A no-op file system watcher.
  */
 export class NoopFileSystemWatcher implements FileSystemWatcher {
+  constructor() {
+    logger.debug`NoopFileSystemWatcher created`
+  }
+
   watch(): void {
     return
   }
@@ -59,6 +64,10 @@ export class NoopFileSystemWatcher implements FileSystemWatcher {
 }
 
 export class NoopLikeC4ManualLayouts implements LikeC4ManualLayouts {
+  constructor() {
+    logger.debug`NoopLikeC4ManualLayouts created`
+  }
+
   handleFileSystemUpdate(): Promise<void> {
     return Promise.resolve()
   }

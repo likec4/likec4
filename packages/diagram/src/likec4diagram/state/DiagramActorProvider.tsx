@@ -6,6 +6,7 @@ import { isNullish } from 'remeda'
 import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlersRef } from '../../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
+import { useRootContainer } from '../../context/RootContainerContext'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
 import { DiagramActorContextProvider, DiagramApiContextProvider } from '../../hooks/safeContext'
 import {
@@ -14,6 +15,7 @@ import {
   useDiagramSnapshot,
   useOnDiagramEvent,
 } from '../../hooks/useDiagram'
+import { useEditorActorRef } from '../../hooks/useEditorActor'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
@@ -126,6 +128,7 @@ export function DiagramActorProvider({
           </ToggledFeatures>
         </ErrorBoundary>
         <PropagateDiagramActorEvents />
+        {!editorActor.isStub && <PropagateEditorBusyState />}
       </DiagramApiContextProvider>
     </DiagramActorContextProvider>
   )
@@ -199,5 +202,20 @@ const PropagateDiagramActorEvents = memo(() => {
     { once: true },
   )
 
+  return null
+})
+
+const PropagateEditorBusyState = memo(() => {
+  const { $busy } = useRootContainer()
+  const editorActor = useEditorActorRef()
+  useEffect(() => {
+    const subscription = editorActor?.subscribe((snapshot) => {
+      $busy.set(snapshot.hasTag('busy'))
+    })
+    return () => {
+      subscription?.unsubscribe()
+      $busy.set(false)
+    }
+  }, [editorActor, $busy])
   return null
 })

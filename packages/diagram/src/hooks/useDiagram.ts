@@ -51,6 +51,7 @@ export function useDiagramContext<T = unknown>(
 ): T {
   const actorRef = useDiagramActorRef()
   const selectorRef = useCallbackRef(selector)
+  // oxlint-disable-next-line eslint-plugin-react-hooks/exhaustive-deps
   const select = useCallback((s: DiagramActorSnapshot) => selectorRef(s.context), deps)
   return useXstateSelector(actorRef, select, compare)
 }
@@ -81,7 +82,13 @@ export function useOnDiagramEvent<T extends DiagramEmittedEvents['type'] | '*'>(
       return
     }
     let subscription: Subscription | null = actorRef.on<T>(event, (payload) => {
-      callbackRef(payload as PickEmittedEvent<T>)
+      if (!once || !wasCalled.current) {
+        try {
+          callbackRef(payload as PickEmittedEvent<T>)
+        } catch (error) {
+          console.error(error)
+        }
+      }
       wasCalled.current = true
       if (once) {
         subscription?.unsubscribe()
@@ -91,5 +98,5 @@ export function useOnDiagramEvent<T extends DiagramEmittedEvents['type'] | '*'>(
     return () => {
       subscription?.unsubscribe()
     }
-  }, [actorRef, event, once])
+  }, [callbackRef, actorRef, event, once])
 }

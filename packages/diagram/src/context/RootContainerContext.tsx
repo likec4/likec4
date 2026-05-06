@@ -1,16 +1,18 @@
-import { createSafeContext } from '@mantine/core'
 import { useStore } from '@nanostores/react'
 import type { WritableAtom } from 'nanostores'
 import type { RefObject } from 'react'
 import { createContext, useContext } from 'react'
 
-const RootContainerContext = createContext<
-  {
-    id: string
-    selector: string
-    ref: RefObject<HTMLDivElement | null>
-  } | null
->(null)
+export type RootContainerContextType = {
+  readonly id: string
+  readonly selector: string
+  readonly ref: RefObject<HTMLDivElement | null>
+  readonly $panning: WritableAtom<boolean>
+  readonly reducedGraphics: boolean
+  readonly $busy: WritableAtom<boolean>
+}
+
+const RootContainerContext = createContext<RootContainerContextType | null>(null)
 export const RootContainerContextProvider = RootContainerContext.Provider
 
 export function useRootContainerContext() {
@@ -33,24 +35,17 @@ export function useRootContainerElement() {
   return useRootContainer().ref.current
 }
 
-const ReduceGraphicsModeCtx = createContext<boolean | null>(null)
-export const ReduceGraphicsModeProvider = ReduceGraphicsModeCtx.Provider
-
 /**
  * Hook to determine if reduced graphics mode is enabled.
  */
 export function useIsReducedGraphics() {
-  const isReduced = useContext(ReduceGraphicsModeCtx)
-  if (isReduced === null) {
-    console.warn('ReduceGraphicsMode is not provided')
-  }
-  return isReduced ?? false
+  return useRootContainerContext()?.reducedGraphics ?? false
 }
 
-export const [PanningAtomSafeCtx, usePanningAtom] = createSafeContext<WritableAtom<boolean>>(
-  'PanningAtomSafeCtx is not provided',
-)
-
 export function useIsPanning() {
-  return useStore(usePanningAtom())
+  return useStore(useRootContainer().$panning)
+}
+
+export function useIsRootContainerBusy() {
+  return useStore(useRootContainer().$busy)
 }

@@ -9,7 +9,7 @@ import { LikeC4Diagram, LikeC4EditorProvider } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { isDevelopment } from 'likec4:app-config'
-import { likec4rpc } from 'likec4:rpc'
+import { isAIAvailable, likec4rpc } from 'likec4:rpc'
 import { NotFound } from '../components/NotFound'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
@@ -26,7 +26,7 @@ export function ViewEditor() {
     void navigate({
       to: './',
       viewTransition: false,
-      params: (current) => ({
+      params: (current: any) => ({
         ...current,
         viewId,
       }),
@@ -56,6 +56,14 @@ export function ViewEditor() {
           }
           return likec4rpc.updateView(event)
         },
+        ...(isAIAvailable && {
+          applySemanticLayout: (viewId) => {
+            return likec4rpc.applySemanticLayout({
+              projectId: project.id,
+              viewId,
+            })
+          },
+        }),
       }}>
       <LikeC4Diagram
         view={view}

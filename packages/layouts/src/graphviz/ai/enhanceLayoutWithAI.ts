@@ -7,7 +7,8 @@ import type { AILayoutHints, AILayoutProvider } from './types'
 
 const prompts = {
   systemPrompt: LAYOUT_SYSTEM_PROMPT,
-  userPrompt: `Analyze semantics and suggest layout for the diagram.`,
+  userPrompt:
+    `Analyze semantics and suggest layout hints for the following diagram. Return only JSON object without any additional text or markdown formatting.`,
 }
 
 /**
@@ -16,7 +17,7 @@ const prompts = {
  *
  * Returns undefined (never throws) on any failure — layout falls back to plain Graphviz.
  */
-export async function enhanceLayoutWithAI<CancelToken>(
+export async function enhanceLayoutWithAI<CancelToken = AbortSignal>(
   view: ComputedView,
   provider: AILayoutProvider<CancelToken>,
   signal?: CancelToken,

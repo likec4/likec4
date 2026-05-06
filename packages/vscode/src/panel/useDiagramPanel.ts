@@ -14,15 +14,15 @@ import {
   watch,
 } from 'reactive-vscode'
 import { isNullish } from 'remeda'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { type WebviewPanel, ViewColumn, window } from 'vscode'
 import type { WebviewIdMessageParticipant } from 'vscode-messenger-common'
 import * as z from 'zod/v4'
-import { commands } from '../meta'
-import { useExtensionLogger } from '../useExtensionLogger'
-import { useMessenger } from '../useMessenger'
-import { useRpc } from '../useRpc'
-import { writeHTMLToWebview } from './writeHTMLToWebview'
+import { commands } from '../meta.ts'
+import { useExtensionLogger } from '../useExtensionLogger.ts'
+import { useMessenger } from '../useMessenger.ts'
+import { useRpc } from '../useRpc.ts'
+import { writeHTMLToWebview } from './writeHTMLToWebview.ts'
 
 const serializeStateSchema = z.looseObject({
   viewId: z.string().transform((v) => v as ViewId),

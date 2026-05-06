@@ -31,6 +31,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private queue = new PQueue({ concurrency: 1, timeout: 5000 })
 
   constructor(protected services: LikeC4SharedServices) {
+    logger.debug`ChokidarFileSystemWatcher created`
   }
 
   watch(folder: string): void {

@@ -8,6 +8,7 @@ import { invariant, nonNullable } from '@likec4/core/utils'
 import type { RefObject } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName, TogglableFeature } from '../../context/DiagramFeatures'
+import type { EditorActorRef } from '../../editor/editorActor.states'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { Types } from '../types'
@@ -39,6 +40,12 @@ export interface DiagramApi<A extends Any = Unknown> {
    * @warning Do not use in render phase
    */
   readonly currentView: t.DiagramView<A>
+
+  /**
+   * Editor actor reference
+   * @warning Do not use in render phase
+   */
+  editorActor(): EditorActorRef
 
   overlays(): OverlaysActorRef
   /**
@@ -155,8 +162,13 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
     get actor(): DiagramActorRef {
       return actorRef.current
     },
+    editorActor(): EditorActorRef {
+      const editorActor = typedSystem(actorRef.current.system).editorActorRef
+      return nonNullable(editorActor, 'Editor actor not found in actor system')
+    },
     overlays(): OverlaysActorRef {
-      return nonNullable(actorRef.current.getSnapshot().children.overlays, 'Overlays actor not found')
+      const overlaysActor = typedSystem(actorRef.current.system).overlaysActorRef
+      return nonNullable(overlaysActor, 'Overlays actor not found in actor system')
     },
     send: (event: DiagramEvents) => actorRef.current.send(event),
     navigateTo: (viewId: ViewId<A>, fromNode?: NodeId, focusOnElement?: Fqn<A>) => {

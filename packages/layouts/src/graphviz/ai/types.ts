@@ -34,7 +34,7 @@ export interface AILayoutRequest {
   systemPrompt: string
   userPrompt: string
   /**
-   * The diagram data as a JSON string, to be included in the user prompt or separately if the provider supports it.
+   * The diagram data as a JSON string, to be included in the user prompt.
    */
   diagram: string
   /**

@@ -10,7 +10,7 @@ catalog:
   "@changesets/cli": ^2.30.0
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
-  '@tsdown/css': ^0.21.10
+  "@tsdown/css": ^0.21.10
   "@types/node": ~22.19.17
   "@types/pako": ^2.0.4
   "@typescript/native-preview": 7.0.0-dev.20260424.2
@@ -35,7 +35,13 @@ catalogMode: prefer
 
 catalogs:
   ai:
-    '@anthropic-ai/sdk': ^0.94.0
+    "@anthropic-ai/sdk": ^0.94.0
+    "@tanstack/ai": ^0.14.0
+    "@tanstack/ai-anthropic": ^0.8.3
+    "@tanstack/ai-gemini": ^0.10.0
+    "@tanstack/ai-ollama": ^0.6.10
+    "@tanstack/ai-openai": ^0.8.2
+    "@tanstack/ai-openrouter": ^0.8.2
   astro:
     "@astrojs/check": ^0.9.7
     "@astrojs/react": 4.4.2

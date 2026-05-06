@@ -3,6 +3,16 @@ import type { LayoutedElementView, ProjectId, ViewChange, ViewId } from '@likec4
 
 export interface LikeC4VitePluginRpc {
   /**
+   * Apply semantic layout (if AI is available)
+   * See vite-plugin for more details
+   *
+   * (Available in the dev server)
+   */
+  applySemanticLayout(payload: {
+    projectId: ProjectId
+    viewId: ViewId
+  }): Promise<void>
+  /**
    * Send a view change to the server
    * (Available in the dev server)
    */
