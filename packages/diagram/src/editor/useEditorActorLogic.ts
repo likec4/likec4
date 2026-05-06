@@ -25,7 +25,7 @@ export function useEditorActorLogic(): EditorActorLogic & {
     async ({ input: { viewId, current } }) => {
       if (!port) {
         console.error('No editor port available for applying latest to manual layout')
-        return Promise.reject(new Error('No editor port'))
+        throw new Error('No editor port')
       }
       const manual = await promisify(() => current ?? port.fetchView(viewId, 'manual'))
       const latest = await promisify(() => port.fetchView(viewId, 'auto'))
@@ -40,7 +40,7 @@ export function useEditorActorLogic(): EditorActorLogic & {
     async ({ input }) => {
       if (!port) {
         console.error('No editor port available for executing change')
-        return Promise.reject(new Error('No editor port'))
+        throw new Error('No editor port')
       }
       if (import.meta.env.DEV) {
         console.debug('Executing change', { input })
@@ -56,11 +56,11 @@ export function useEditorActorLogic(): EditorActorLogic & {
     async ({ input }) => {
       if (!port) {
         console.error('No editor port available for applying semantic layout')
-        return Promise.reject(new Error('No editor port'))
+        throw new Error('No editor port')
       }
       if (!port.applySemanticLayout) {
         console.error('No applySemanticLayout method available on editor port')
-        return Promise.reject(new Error('No applySemanticLayout method'))
+        throw new Error('No applySemanticLayout method')
       }
       if (import.meta.env.DEV) {
         console.debug('Applying semantic layout', { input })
