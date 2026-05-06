@@ -19,7 +19,7 @@ const prompts = {
 export async function enhanceLayoutWithAI<CancelToken>(
   view: ComputedView,
   provider: AILayoutProvider<CancelToken>,
-  signal: CancelToken,
+  signal?: CancelToken,
 ): Promise<AILayoutHints | undefined> {
   try {
     logger.debug`generating AI layout hints for ${view.id} using ${provider.name}`

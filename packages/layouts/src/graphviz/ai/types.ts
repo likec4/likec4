@@ -25,7 +25,7 @@ export interface AILayoutProvider<CancelToken = AbortSignal> {
    */
   sendRequest(
     request: AILayoutRequest,
-    cancelToken: CancelToken,
+    cancelToken?: CancelToken,
   ): Promise<string>
 }
 

@@ -74,8 +74,9 @@ function mappedEntries<T>(_map: DefaultMap<T, string>): Record<string, T> {
 
 function edgeLabel(edge: ComputedEdge): string | undefined {
   let label = edge.label && edge.label !== '[...]' ? edge.label : undefined
-  if (!label && edge.description) {
-    label = flattenMarkdownOrString(edge.description)
+  let description = flattenMarkdownOrString(edge.description)
+  if (description) {
+    label = label ? `${label}\n${description}` : description
   }
   label ??= edge.technology ?? undefined
   return label ? truncate(label) : undefined

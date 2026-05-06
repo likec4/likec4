@@ -76,6 +76,7 @@
     "postpack": "likec4ops postpack"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "catalog:ai",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
@@ -89,6 +90,7 @@
     "remeda": "catalog:utils",
     "strip-indent": "catalog:utils",
     "ts-graphviz": "^3.0.7",
+    "json5": "catalog:utils",
     "type-fest": "catalog:externals",
     "unstorage": "catalog:utils",
     "which": "^5.0.0",

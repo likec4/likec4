@@ -1,14 +1,19 @@
 import { type ComputedView, type EdgeId, type NonEmptyArray, exact } from '@likec4/core'
 import type { NodeId } from '@likec4/core/types'
+import json5 from 'json5'
 import {
   entries,
   filter,
+  groupBy,
   hasAtLeast,
   isDefined,
   isTruthy,
   map,
+  mapValues,
   pipe,
+  reduce,
   unique,
+  values,
 } from 'remeda'
 import * as z from 'zod/v4'
 import type { prepareLLMInput } from './llm-input'
@@ -93,7 +98,7 @@ export function parseOutput(
 ): AILayoutHints | undefined {
   try {
     const jsonStr = extractJson(response)
-    const parsed = JSON.parse(jsonStr)
+    const parsed = json5.parse(jsonStr)
     const result = responseSchema.safeParse(parsed)
     if (!result.success) {
       logger.warn('Failed to validate LLM response\n' + z.prettifyError(result.error))
@@ -156,10 +161,25 @@ function restoreIdsAndMapToHints(
     x => hasAtLeast(x, 1) ? x : undefined,
   )
 
+  const excludeConstrainted = (() => {
+    const known = new Set<string>()
+    return (nodeIds: NodeId[]) => {
+      return nodeIds.filter(id => {
+        if (known.has(id)) {
+          return false
+        }
+        known.add(id)
+        return true
+      })
+    }
+  })()
+
   const ranks = pipe(
     parsed.ranks,
     map(r => {
-      const nodes = mapToNodeId(r.nodes)
+      const nodes = excludeConstrainted(
+        mapToNodeId(r.nodes),
+      )
       if (hasAtLeast(nodes, 1)) {
         return {
           rank: r.rank,
@@ -185,6 +205,20 @@ function restoreIdsAndMapToHints(
       })
     }),
     filter(isDefined),
+    groupBy(e => `${e.source}->${e.target}`),
+    mapValues(([e1, ...rest]) =>
+      pipe(
+        rest,
+        reduce((acc, curr) =>
+          exact({
+            ...acc,
+            ...curr,
+            weight: acc.weight && curr.weight ? Math.max(acc.weight, curr.weight) : acc.weight || curr.weight,
+            minlen: acc.minlen && curr.minlen ? Math.max(acc.minlen, curr.minlen) : acc.minlen || curr.minlen,
+          }), e1),
+      )
+    ),
+    values(),
     x => hasAtLeast(x, 1) ? x : undefined,
   )
 

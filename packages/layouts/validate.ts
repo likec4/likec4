@@ -2,7 +2,7 @@ import { Anthropic } from '@anthropic-ai/sdk'
 import { type ComputedLikeC4ModelData, nonNullable } from '@likec4/core'
 import { LikeC4Styles } from '@likec4/core/styles'
 import { configureLogger, getAnsiColorFormatter, getConsoleSink, logger } from '@likec4/log'
-import ollama from 'ollama'
+// import ollama from 'ollama'
 import { chunk } from 'remeda'
 import { $, echo, fs } from 'zx'
 import { enhanceLayoutWithAI } from './src/graphviz/ai/orchestrator'
@@ -30,8 +30,9 @@ configureLogger({
 const systemPrompt = fs.readFileSync('src/graphviz/ai/prompt-system.md', 'utf-8')
 
 // const viewId = 'amazon_sqs'
-const viewId = 'acceptance'
-// const viewId = 'production'
+// const viewId = 'acceptance'
+const viewId = 'production'
+// const viewId = 'cloud_next'
 // const viewId = 'cloud_next'
 const suffix = '_v2'
 
@@ -58,27 +59,37 @@ const claudeCli: AILayoutProvider = {
   sendRequest: async ({ diagram, userPrompt }) => {
     let response = ''
     const params = [
-      '--bare',
+      // '--bare',
       '--effort',
       'medium',
-      '--verbose',
-      '--model',
-      'opus',
-      '--output-format',
-      'text',
+      // '--verbose',
+      // '--model',
+      // 'opus',
+      // '--output-format',
+      // 'text',
       '--no-session-persistence',
       '--tools',
-      '',
+      '""',
       '--no-chrome',
-      // '--setting-sources',
-      // 'local',
+      '--setting-sources',
+      'local',
       '--append-system-prompt-file',
       './src/graphviz/ai/prompt-system.md',
       '--disable-slash-commands',
     ]
+    // const cmd = await $({
+    //   input: diagram,
+    //   // quiet: false,
+    //   // stdio: 'inherit',
+    //   verbose: true,
+    // })`claude ${params} -p ${userPrompt}`
+    // return cmd.text()
+    // console.log('Command:', cmd)
     for await (
       const _ of $({
         input: diagram,
+        quiet: false,
+        verbose: true,
       })`claude ${params} -p ${userPrompt}`
     ) {
       process.stdout.write(_)
@@ -93,7 +104,7 @@ const claudeClient: AILayoutProvider = {
   sendRequest: async ({ diagram, userPrompt }) => {
     const stream = claude.messages
       .stream({
-        model: 'claude-opus-4-6',
+        model: 'claude-opus-4-7',
         max_tokens: 5000,
         system: systemPrompt,
         thinking: {
@@ -187,7 +198,7 @@ const ollamaProvider: AILayoutProvider = {
 }
 
 // const hints = await enhanceLayoutWithAI(amazonView, ollamaProvider)
-const hints = await enhanceLayoutWithAI(amazonView, claudeClient)
+const hints = await enhanceLayoutWithAI(amazonView, claudeCli)
 
 echo`Layout 2`
 

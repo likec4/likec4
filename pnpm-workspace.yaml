@@ -34,6 +34,8 @@ catalog:
 catalogMode: prefer
 
 catalogs:
+  ai:
+    '@anthropic-ai/sdk': ^0.94.0
   astro:
     "@astrojs/check": ^0.9.7
     "@astrojs/react": 4.4.2

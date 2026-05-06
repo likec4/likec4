@@ -1,7 +1,7 @@
 import { enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import { loggable } from '@likec4/log'
 import { defineService, extensionContext, toValue, useDisposable } from 'reactive-vscode'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { commands } from '../meta.ts'
 import { useDiagramPanel } from '../panel/useDiagramPanel.ts'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
@@ -10,6 +10,12 @@ import { useRpc } from '../useRpc.ts'
 
 export const useLikeC4ChatParticipant = defineService(() => {
   const { logger, output, logWarn } = useExtensionLogger()
+
+  if (!vscode.chat?.createChatParticipant) {
+    logger.warn('createChatParticipant API not available, update your IDE')
+    return
+  }
+
   const preview = useDiagramPanel()
   const messenger = useMessenger()
   const rpc = useRpc()
@@ -104,7 +110,7 @@ export const useLikeC4ChatParticipant = defineService(() => {
 
               let text = ''
               for await (const chunk of res.text) {
-                if (cancelToken.isCancellationRequested) {
+                if (cancelToken?.isCancellationRequested) {
                   throw new vscode.CancellationError()
                 }
                 if (text === '') {
