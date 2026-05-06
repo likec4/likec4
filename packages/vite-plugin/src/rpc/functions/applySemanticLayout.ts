@@ -1,6 +1,5 @@
 import { invariant } from '@likec4/core'
 import { enhanceLayoutWithAI } from '@likec4/layouts/ai'
-import { chat, EventType } from '@tanstack/ai'
 import k from 'tinyrainbow'
 import type { LikeC4VitePluginRpc } from '../protocol'
 import type { PluginRPCParams } from '../rpc'
@@ -18,6 +17,8 @@ export async function applySemanticLayout({
     k.dim('view:'),
     data.viewId,
   ].join(' '))
+
+  const { chat, EventType } = await import('@tanstack/ai')
 
   const model = await likec4.computedModel(data.projectId)
   const view = model.findView(data.viewId)
