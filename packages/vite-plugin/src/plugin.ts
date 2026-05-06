@@ -3,7 +3,7 @@ import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import type { AnyTextAdapter } from '@tanstack/ai'
 import pDebounce from 'p-debounce'
-import { hasAtLeast, isBoolean, isDeepEqual, map, once } from 'remeda'
+import { hasAtLeast, isBoolean, isDeepEqual, map } from 'remeda'
 import type {
   Plugin,
   PluginOption,

@@ -79,11 +79,17 @@ export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, previe
             ),
             token,
           ).catch(err => {
+            if (err instanceof vscode.CancellationError || token.isCancellationRequested) {
+              return null
+            }
             logger.warn(loggable(err))
             return null
           })
 
           if (!hints) {
+            if (token.isCancellationRequested) {
+              return
+            }
             vscode.window.showWarningMessage(
               'AI could not generate layout suggestions for this view.',
             )

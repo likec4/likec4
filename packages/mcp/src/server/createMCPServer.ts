@@ -13,9 +13,8 @@ import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js'
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { ReadResourceResult } from '@modelcontextprotocol/sdk/types'
 import { prop } from 'remeda'
-import z from 'zod/v3'
+import * as z from 'zod/v3'
 import packageJson from '../../package.json' with { type: 'json' }
-import { projectIdSchema } from '../tools/_common'
 import { registerApplySemanticLayoutTool } from '../tools/apply-semantic-layout'
 import { batchReadElements } from '../tools/batch-read-elements'
 import { elementDiff } from '../tools/element-diff'
@@ -107,22 +106,28 @@ Full documentation: https://likec4.dev/llms-full.txt
     {
       title: 'Apply semantic layout to a view',
       argsSchema: {
-        projectId: completable(projectIdSchema, (_value) => {
-          const value = _value ?? ''
-          return services.projects().filter(project => project.id.startsWith(value)).map(prop('id'))
-        }),
+        projectId: completable(
+          z.string()
+            // .default('default' as ProjectId)
+            .describe('Project id (optional, will use "default" if not specified)'),
+          (value = '') => {
+            return services.projects().filter(project => project.id.startsWith(value)).map(prop('id'))
+          },
+        ),
         viewId: completable(
           z.string().describe('View ID to apply semantic layout to'),
-          async (_value, ctx) => {
-            const projectId = ctx?.arguments?.['projectId']
-            if (!projectId) {
-              return []
-            }
-            const model = await services.builder.parseModel(projectId as ProjectId)
+          async (value = '', ctx) => {
+            const projectId = ctx?.arguments?.['projectId'] ?? services.projectsManager.default.id
+            const model = await services.computedModel(projectId as ProjectId)
+            await mcp.sendLoggingMessage({
+              level: 'warning',
+              data: `Completing viewId for project ${projectId} with input value "${value}", model ${
+                model ? 'loaded' : 'not loaded'
+              }`,
+            })
             if (!model) {
               return []
             }
-            const value = _value ?? ''
             return Array.from(model.views()).filter((view) => view.id.startsWith(value)).map(prop('id'))
           },
         ),

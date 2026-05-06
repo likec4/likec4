@@ -242,13 +242,9 @@ export function parseGraphvizJson(
       logger.warn`View ${view.id} edge ${computedEdge.id} not found in graphviz output, skipping`
       continue
     }
-    try {
-      edges.push(
-        parseGraphvizEdge(graphvizEdge, computedEdge, view.id),
-      )
-    } catch (e) {
-      logger.warn(loggable(e))
-    }
+    edges.push(
+      parseGraphvizEdge(graphvizEdge, computedEdge, view.id),
+    )
   }
 
   return diagram

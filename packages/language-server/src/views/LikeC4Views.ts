@@ -458,6 +458,7 @@ class ProjectStorage {
    * Clears cache for a specific view
    */
   async clearView(viewId: ViewId) {
+    this.resetViewError(viewId)
     const keys = await this.#storage.keys(`v:${viewId}:`)
     if (keys.length === 0) {
       return
@@ -476,8 +477,9 @@ class ProjectStorage {
     this.#storage.clear()
   }
 
-  private resetViewError(view: ComputedView) {
-    this.#storage.del(`error:${view.id}`)
+  private resetViewError(view: ComputedView | ViewId) {
+    const id = typeof view === 'string' ? view : view.id
+    this.#storage.del(`error:${id}`)
   }
 }
 

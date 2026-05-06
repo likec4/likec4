@@ -184,8 +184,6 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const body = astElement.body
     if (!cst || !nameNode) return []
 
-    const fqn = readStrictFqn(astElement.element)
-
     return [
       {
         kind: this.symbolKind(astElement),

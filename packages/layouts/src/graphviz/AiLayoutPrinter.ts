@@ -165,7 +165,7 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
 
       this.graphology.addEdgeWithKey(edgeId, source, target, {
         hierarchyDistance: 0,
-        origin: 'invisible' as any,
+        origin: 'invisible',
         weight: edge.weight ?? 1,
       })
       const ge = G.edge([gsource, gtarget], {

@@ -1,7 +1,6 @@
 import type { LikeC4Styles } from '@likec4/core/styles'
 import type {
   AnyFqn,
-  ComputedEdge,
   ComputedNode,
   ComputedView,
   DeploymentFqn,
@@ -76,7 +75,7 @@ type GraphologyNodeAttributes<V extends ViewToPrint> = {
   maxConnectedHierarchyDistance: number
 }
 type GraphologyEdgeAttributes<V extends ViewToPrint> = {
-  origin: EdgeOf<V>
+  origin: EdgeOf<V> | 'invisible'
   weight: number
   hierarchyDistance: number
 }

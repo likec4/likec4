@@ -166,6 +166,14 @@ export class GraphvizLayouter implements Disposable {
       let dot = printer.print()
       const json = await this.dotToJson(dot)
       let diagram = parseGraphvizJson(json, view)
+      if (isDynamicView(diagram)) {
+        Object.assign(
+          diagram,
+          {
+            sequenceLayout: calcSequenceLayout(diagram),
+          } satisfies Partial<LayoutedDynamicView<A>>,
+        )
+      }
       dot = normalizeDot(dot)
       logger.trace`layouting view ${view.id} done`
       return { dot, diagram }

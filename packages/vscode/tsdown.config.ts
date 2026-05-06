@@ -111,6 +111,9 @@ function emptyDir(dir: string) {
 
 async function copySkills() {
   const skillDir = resolve('../../skills/likec4-dsl')
+  if (!existsSync(skillDir)) {
+    throw new Error(`skills dir not found: ${skillDir}`)
+  }
   console.info('Copy SKILLs: %s', skillDir)
   await cp(skillDir, './data/skills/likec4-dsl', { recursive: true })
 }

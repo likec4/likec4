@@ -1,8 +1,11 @@
+import type { ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { enhanceLayoutWithAI } from '@likec4/layouts/ai'
+import { completable } from '@modelcontextprotocol/sdk/server/completable'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { prop } from 'remeda'
 import * as z from 'zod/v3'
-import { projectIdSchema, toolError } from './_common'
+import { toolError } from './_common'
 
 export function registerApplySemanticLayoutTool(
   mcpServer: McpServer,
@@ -13,16 +16,30 @@ export function registerApplySemanticLayoutTool(
     {
       description: 'Apply semantic layout to the view',
       inputSchema: {
-        projectId: projectIdSchema,
-        // projectId: completable(projectIdSchema, (_value) => {
-        //   const value = _value ?? ''
-        //   return languageServices.projects().filter(project => project.id.startsWith(value)).map(prop('id'))
-        // }),
-        viewId: z.string().describe('View ID to apply semantic layout to'),
+        projectId: completable(
+          z.string()
+            .default('default' as ProjectId)
+            .describe('Project id (optional, will use "default" if not specified)'),
+          (value = '') => {
+            return languageServices.projects().filter(project => project.id.startsWith(value)).map(prop('id'))
+          },
+        ),
+        viewId: completable(
+          z.string().describe('View ID to apply semantic layout to'),
+          async (_value, ctx) => {
+            const projectId = ctx?.arguments?.['projectId'] ?? languageServices.projectsManager.default.id
+            const model = await languageServices.computedModel(projectId as ProjectId)
+            if (!model) {
+              return []
+            }
+            const value = _value ?? ''
+            return Array.from(model.views()).filter((view) => view.id.startsWith(value)).map(prop('id'))
+          },
+        ),
       },
     },
     async (args, ctx) => {
-      const projectId = languageServices.projectsManager.ensureProjectId(args.projectId)
+      const projectId = languageServices.projectsManager.ensureProjectId(args.projectId as ProjectId)
       if (projectId !== args.projectId) {
         await mcpServer.sendLoggingMessage({
           level: 'notice',
