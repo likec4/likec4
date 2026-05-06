@@ -17,13 +17,13 @@ export const ApplySemanticLayout = memo<{
       <PanelActionIcon
         loading={isBusy}
         initial={{
-          display: !visible ? 'none' : 'block',
+          display: visible ? 'block' : 'none',
         }}
         animate={{
-          display: !visible ? 'none' : 'block',
-          opacity: !visible ? 0.2 : 1,
-          x: !visible ? -5 : 0,
-          y: !visible ? -8 : 0,
+          display: visible ? 'block' : 'none',
+          opacity: visible ? 1 : 0.2,
+          x: visible ? 0 : -5,
+          y: visible ? 0 : -8,
         }}
         onClick={(e) => {
           e.stopPropagation()
