@@ -31,6 +31,7 @@ const {
     $rules,
     $include,
     $exclude,
+    $includeAncestors,
   },
 } = Builder.forSpecification({
   elements: {
@@ -204,7 +205,7 @@ export const builder = b
 
 export type Types = typeof builder['Types']
 
-export { $exclude, $include }
+export { $exclude, $include, $includeAncestors }
 
 export function computeView(...rules: DeploymentRulesBuilderOp<Types>[]) {
   const modelsource = builder.clone()

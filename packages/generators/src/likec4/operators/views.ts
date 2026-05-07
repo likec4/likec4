@@ -131,6 +131,13 @@ export const viewRuleAutoLayout = zodOp(schemas.views.viewRuleAutoLayout)(
   ),
 )
 
+export const deploymentViewRuleIncludeAncestors = zodOp(schemas.views.deploymentViewRuleIncludeAncestors)(
+  spaceBetween(
+    print('includeAncestors'),
+    printProperty('includeAncestors'),
+  ),
+)
+
 export const viewRuleRank = zodOp(schemas.views.viewRuleRank)(({ ctx, exec }) => {
   throw new Error('not implemented')
 })
@@ -199,6 +206,9 @@ export const deploymentViewRule = zodOp(schemas.views.deploymentViewRule)(
   ({ ctx, exec }) => {
     if ('include' in ctx || 'exclude' in ctx) {
       return exec(ctx, viewRulePredicate())
+    }
+    if ('includeAncestors' in ctx) {
+      return exec(ctx, deploymentViewRuleIncludeAncestors())
     }
     if ('direction' in ctx) {
       return exec(ctx, viewRuleAutoLayout())

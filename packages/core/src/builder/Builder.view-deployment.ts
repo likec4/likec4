@@ -7,6 +7,7 @@ import type { ViewsBuilder } from './Builder.views'
 export interface DeploymentViewBuilder<T extends AnyTypes>
   extends LikeC4ViewBuilder<T, T['DeploymentFqn'], Types.ToExpression<T>>
 {
+  includeAncestors(value: boolean): this
 }
 
 export type DeploymentRulesBuilderOp<Types extends AnyTypes> = (
@@ -132,4 +133,8 @@ export function $deploymentExpr<T extends AnyTypes>(
       deployment: expr as DeploymentFqn,
     },
   })
+}
+
+export function $includeAncestors<B extends DeploymentViewBuilder<AnyTypes>>(value: boolean): (b: B) => B {
+  return (b) => b.includeAncestors(value)
 }
