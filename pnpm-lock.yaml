@@ -94,8 +94,8 @@ catalogs:
       specifier: ^2.0.4
       version: 2.0.4
     '@typescript/native-preview':
-      specifier: 7.0.0-dev.20260424.2
-      version: 7.0.0-dev.20260424.2
+      specifier: 7.0.0-dev.20260504.1
+      version: 7.0.0-dev.20260504.1
     graphology:
       specifier: ^0.26.0
       version: 0.26.0
@@ -922,7 +922,7 @@ importers:
         version: 3.10.0
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260424.2)(typescript@5.9.3)
+        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260504.1)(typescript@5.9.3)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -993,7 +993,7 @@ importers:
         version: 2.0.0
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       remeda:
         specifier: catalog:utils
         version: 2.33.7
@@ -1069,7 +1069,7 @@ importers:
         version: 3.0.3
       '@typescript/native-preview':
         specifier: 'catalog:'
-        version: 7.0.0-dev.20260424.2
+        version: 7.0.0-dev.20260504.1
       chroma-js:
         specifier: catalog:utils
         version: 3.2.0(patch_hash=d987322bee5bda6851d8538d840c5155f1e299d91bd40b2a8eb0f3e4c0c62d1c)
@@ -1108,7 +1108,7 @@ importers:
         version: 2.0.5
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       ohash:
         specifier: catalog:utils
         version: 2.0.11
@@ -1356,7 +1356,7 @@ importers:
         version: 2.0.4
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1540,7 +1540,7 @@ importers:
         version: 3.5.2
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       oxlint:
         specifier: 'catalog:'
         version: 1.59.0(oxlint-tsgolint@0.21.1)
@@ -1619,7 +1619,7 @@ importers:
         version: 22.19.17
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       oxlint:
         specifier: 'catalog:'
         version: 1.59.0(oxlint-tsgolint@0.21.1)
@@ -1701,7 +1701,7 @@ importers:
         version: 3.0.4
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       turbo:
         specifier: 2.9.9
         version: 2.9.9
@@ -1732,7 +1732,7 @@ importers:
         version: 22.19.17
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2015,7 +2015,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260424.2)(typescript@5.9.3)
+        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260504.1)(typescript@5.9.3)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2247,7 +2247,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260424.2)(typescript@5.9.3)
+        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260504.1)(typescript@5.9.3)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2302,7 +2302,7 @@ importers:
         version: 1.3.0
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260424.2)(typescript@5.9.3)
+        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260504.1)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2345,7 +2345,7 @@ importers:
         version: 3.5.0
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260424.2)(typescript@5.9.3)
+        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260504.1)(typescript@5.9.3)
       turbo:
         specifier: 2.9.9
         version: 2.9.9
@@ -2430,7 +2430,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260424.2)(typescript@5.9.3)
+        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260504.1)(typescript@5.9.3)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2626,7 +2626,7 @@ importers:
         version: 19.2.14
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       oxlint:
         specifier: 'catalog:'
         version: 1.59.0(oxlint-tsgolint@0.21.1)
@@ -2723,7 +2723,7 @@ importers:
         version: 5.1.7
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       p-queue:
         specifier: catalog:utils
         version: 8.1.1
@@ -2747,7 +2747,7 @@ importers:
         version: 2.33.7
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260424.2)(typescript@5.9.3)
+        version: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260504.1)(typescript@5.9.3)
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -2964,7 +2964,7 @@ importers:
         version: 2.0.0
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -3013,7 +3013,7 @@ importers:
         version: 2.0.0
       obuild:
         specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       postcss:
         specifier: catalog:css
         version: 8.5.10
@@ -5622,55 +5622,56 @@ packages:
   '@types/yargs@17.0.33':
     resolution: {integrity: sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA==}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-Fk0pY4FaPpmYfmLG0xowocG3Q+Bo78WkTg33+OjctzkM1w8hp/d6jo3m4ROCFYBiH2EwY5RZ7cECX6el5FVPtA==}
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260504.1':
+    resolution: {integrity: sha512-+Qs1Q7Qxfp11n/hU3pweFU+EQ37FnDsdWOOxb7/vCy8QGBysrLUUYRhQ+GSW3s663oMtN6+9Kf82hk3ZT+kXlg==}
     engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [darwin]
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-/37FW1CUcUT51oGIrWyC92+pstzW+v4l9alSyLSxY62crJt+GiOff7wIau34xrfEx7VE2gRpUGs9ld25Pr9VHw==}
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260504.1':
+    resolution: {integrity: sha512-Wr3GWTRiMgibmhe88cjQ612ZyY7sbgsPYEaWKGPUxBaXtMHFIzgTBIoJMuaQqQx4GEJs6AUDyhnIHG1gx4rJjg==}
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [darwin]
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-/XoSdXZEkz5TGimjAXhC7SwbqceOgaGsFP6ChmcDPsdsSZUtFP+7jh+WnDWyACcGu289VTNmfKDoG9szFiZ9TQ==}
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260504.1':
+    resolution: {integrity: sha512-y1Qai5l55Sl+/3B0hyQtvynq//C22BKFH3CfU35fbLYUo4P/ISUycyAbcA+PAPazpDFO3E56I96QUQrbJL2VVA==}
     engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [linux]
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-xNBtutVYBKeA1iJan2La98hEt5e8HxSlLMicIaq7XwWb6lok7a3qppnk7gFrTMx3JBgFXlN/7cafV4Nxwq8DJQ==}
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260504.1':
+    resolution: {integrity: sha512-s8QkhZe0M4QD2xhK1Xiy2JUQv1AOl8kUg5DLx1G8ws0f1BK/oKyqDNbxhZMGINYLFvkjpr9lOxt7qehSnpJMYQ==}
     engines: {node: '>=16.20.0'}
     cpu: [arm]
     os: [linux]
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-pJzvZ6uaKCBNphipzAgxvNAbmj++EIAO1CpUZsUoL9GVpGZ0whyvFXIDqdlUnKcOdQMiDYB+HlKc6ahiH0OKkg==}
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260504.1':
+    resolution: {integrity: sha512-ngN3Ie3Vin6pFtqeNywxm86RTxgI0Fo0GZyJ1PxokLES8J3xfMPtMYfv85c/+5uz5+7T+m4LRLyY5IoLY4gtuw==}
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [linux]
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-4aHRCE1w77xQOn013E5/gkYkNQwNYvZfE8YR5cTeHimFZ5MB2kmoB0iLABaKXYbsMNPXixN5xeu8HdabrAuhag==}
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260504.1':
+    resolution: {integrity: sha512-/GZDJN/CsLbqIe7EdWDkXhNX9C41VjemBeUN6+9ckvEFLH8XyKTmXPYikNOn0N819M1KSeNZltplyUslfROOdw==}
     engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [win32]
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-mVQXT6/F8d51zKOBmaWdUcT0z3WZ6kAlv/tGLTixM6HKlc8lIqzVnTuTqv7ixKcle18M+r0dn951uL6Bhb3Fjg==}
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260504.1':
+    resolution: {integrity: sha512-EYQBdVZq4xIzhTtKxw6wvee9238hEb7XrPG413AEZBD3kcR3qqvPULXsPzQyEpneCReATSaihscP/LfhMQYUmA==}
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [win32]
 
-  '@typescript/native-preview@7.0.0-dev.20260424.2':
-    resolution: {integrity: sha512-NhxfO8WQHrv7SAqOVaY1NBKkWO5dKFoakvqBKiUDBiY27atZfoDkMQpOXyoPfuW3COVxHZKzm0vAZuiA7kF73g==}
+  '@typescript/native-preview@7.0.0-dev.20260504.1':
+    resolution: {integrity: sha512-bHFGxyIU83qjj6ywn3817A+Ug2ZID0GiBA5WFdbc/T7EjcrKnUUylexq0fU81N/mTbfw3FyP6ZCEdO2Ntcl/VQ==}
     engines: {node: '>=16.20.0'}
     hasBin: true
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@ver0/deep-equal@1.0.0':
     resolution: {integrity: sha512-XKIlF1i6UJiyTL52mDrSDDgRX7Qr5yJ7ts9zn2liZEmhiAEum4XKrJRAWmHdFwCQeGBU+rb+/b0ldw/9V8lOWw==}
@@ -7075,10 +7076,6 @@ packages:
   hash.js@1.1.7:
     resolution: {integrity: sha512-taOaskGt4z4SOANNseOviYDvjEJinIkRgmp7LbKP2YTTmVxWBl87s/uzK9r+44BclBSp2X7K1hqeNfz9JbBeXA==}
 
-  hasown@2.0.2:
-    resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
-    engines: {node: '>= 0.4'}
-
   hasown@2.0.3:
     resolution: {integrity: sha512-ej4AhfhfL2Q2zpMmLo7U1Uv9+PyhIZpgQLGT1F9miIGmiCJIoCgSmczFdrc97mWT4kVY72KA+WnnhJ5pghSvSg==}
     engines: {node: '>= 0.4'}
@@ -7280,10 +7277,6 @@ packages:
 
   is-callable@1.2.7:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==}
-    engines: {node: '>= 0.4'}
-
-  is-core-module@2.16.1:
-    resolution: {integrity: sha512-UfoeMA6fIJ8wTYFEUjelnaGI67v6+N7qXJEvQuIGa99l4xsCruSYOVSQ0uPANn4dAzm8lkYPaKLrrijLq7x23w==}
     engines: {node: '>= 0.4'}
 
   is-core-module@2.16.2:
@@ -8901,11 +8894,6 @@ packages:
     resolution: {integrity: sha512-OcXjMsGdhL4XnbShKpAcSqPMzQoYkYyhbEaeSko47MjRP9NfEQMhZkXL1DoFlt9LWQn4YttrdnV6X2OiyzBi+A==}
     engines: {node: '>=10'}
 
-  resolve@1.22.10:
-    resolution: {integrity: sha512-NPRy+/ncIMeDlTAsuqwKIiferiawhefFJtkNSW0qZJEqMEb+qBt/77B/jGeeek+F0uOeN05CDa6HXbbIgtVX4w==}
-    engines: {node: '>= 0.4'}
-    hasBin: true
-
   resolve@1.22.12:
     resolution: {integrity: sha512-TyeJ1zif53BPfHootBGwPRYT1RUt6oGWsaQr8UyZW/eAm9bKoijtvruSDEmZHm92CwS9nj7/fWttqPCgzep8CA==}
     engines: {node: '>= 0.4'}
@@ -9362,10 +9350,6 @@ packages:
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
 
-  tinyexec@1.1.1:
-    resolution: {integrity: sha512-VKS/ZaQhhkKFMANmAOhhXVoIfBXblQxGX1myCQ2faQrfmobMftXeJPcZGp0gS07ocvGJWDLZGyOZDadDBqYIJg==}
-    engines: {node: '>=18'}
-
   tinyexec@1.1.2:
     resolution: {integrity: sha512-dAqSqE/RabpBKI8+h26GfLq6Vb3JVXs30XYQjdMjaj/c2tS8IYYMbIzP599KtRj7c57/wYApb3QjgRgXmrCukA==}
     engines: {node: '>=18'}
@@ -9746,6 +9730,7 @@ packages:
 
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   vary@1.1.2:
@@ -12335,7 +12320,7 @@ snapshots:
       '@rushstack/ts-command-line': 5.3.9(@types/node@22.19.17)
       diff: 8.0.4
       minimatch: 10.2.3
-      resolve: 1.22.10
+      resolve: 1.22.12
       semver: 7.7.4
       source-map: 0.6.1
       typescript: 5.9.3
@@ -12392,7 +12377,7 @@ snapshots:
       '@microsoft/tsdoc': 0.16.0
       ajv: 8.18.0
       jju: 1.4.0
-      resolve: 1.22.10
+      resolve: 1.22.12
 
   '@microsoft/tsdoc@0.16.0': {}
 
@@ -13000,7 +12985,7 @@ snapshots:
       fs-extra: 11.3.2
       import-lazy: 4.0.0
       jju: 1.4.0
-      resolve: 1.22.10
+      resolve: 1.22.12
       semver: 7.7.4
     optionalDependencies:
       '@types/node': 22.19.17
@@ -13012,7 +12997,7 @@ snapshots:
   '@rushstack/rig-package@0.7.3':
     dependencies:
       jju: 1.4.0
-      resolve: 1.22.10
+      resolve: 1.22.12
 
   '@rushstack/terminal@0.24.0(@types/node@22.19.17)':
     dependencies:
@@ -13314,7 +13299,7 @@ snapshots:
       lightningcss: 1.32.0
       postcss-load-config: 6.0.1(jiti@2.6.1)(postcss@8.5.10)(tsx@4.21.0)(yaml@2.8.3)
       rolldown: 1.0.0-rc.17
-      tsdown: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260424.2)(typescript@5.9.3)
+      tsdown: 0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260504.1)(typescript@5.9.3)
     optionalDependencies:
       postcss: 8.5.10
       postcss-import: 16.1.1(postcss@8.5.10)
@@ -13509,36 +13494,36 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260504.1':
     optional: true
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260504.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260504.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260504.1':
     optional: true
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260504.1':
     optional: true
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260504.1':
     optional: true
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260424.2':
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260504.1':
     optional: true
 
-  '@typescript/native-preview@7.0.0-dev.20260424.2':
+  '@typescript/native-preview@7.0.0-dev.20260504.1':
     optionalDependencies:
-      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260424.2
-      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260424.2
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260504.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260504.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260504.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260504.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260504.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260504.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260504.1
 
   '@ungap/structured-clone@1.3.0': {}
 
@@ -13975,7 +13960,7 @@ snapshots:
       shiki: 3.22.0
       smol-toml: 1.6.1
       svgo: 4.0.1
-      tinyexec: 1.1.1
+      tinyexec: 1.1.2
       tinyglobby: 0.2.16
       tsconfck: 3.1.6(typescript@5.9.3)
       ultrahtml: 1.6.0
@@ -14140,7 +14125,7 @@ snapshots:
 
   browser-resolve@2.0.0:
     dependencies:
-      resolve: 1.22.10
+      resolve: 1.22.12
 
   browserify-aes@1.2.0:
     dependencies:
@@ -15069,7 +15054,7 @@ snapshots:
       get-proto: 1.0.1
       gopd: 1.2.0
       has-symbols: 1.1.0
-      hasown: 2.0.2
+      hasown: 2.0.3
       math-intrinsics: 1.1.0
 
   get-nonce@1.0.1: {}
@@ -15201,14 +15186,9 @@ snapshots:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
 
-  hasown@2.0.2:
-    dependencies:
-      function-bind: 1.1.2
-
   hasown@2.0.3:
     dependencies:
       function-bind: 1.1.2
-    optional: true
 
   hast-util-embedded@3.0.0:
     dependencies:
@@ -15509,14 +15489,9 @@ snapshots:
 
   is-callable@1.2.7: {}
 
-  is-core-module@2.16.1:
-    dependencies:
-      hasown: 2.0.2
-
   is-core-module@2.16.2:
     dependencies:
       hasown: 2.0.3
-    optional: true
 
   is-decimal@2.0.1: {}
 
@@ -15563,7 +15538,7 @@ snapshots:
       call-bound: 1.0.4
       gopd: 1.2.0
       has-tostringtag: 1.0.2
-      hasown: 2.0.2
+      hasown: 2.0.3
 
   is-stream@4.0.1: {}
 
@@ -16654,7 +16629,7 @@ snapshots:
 
   obug@2.1.1: {}
 
-  obuild@0.4.31(@typescript/native-preview@7.0.0-dev.20260424.2)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3):
+  obuild@0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3):
     dependencies:
       c12: 4.0.0-beta.3(chokidar@5.0.0)(dotenv@17.2.3)(giget@2.0.0)(jiti@2.6.1)(magicast@0.5.1)
       consola: 3.4.2
@@ -16664,7 +16639,7 @@ snapshots:
       pathe: 2.0.3
       pretty-bytes: 7.1.0
       rolldown: 1.0.0-rc.17
-      rolldown-plugin-dts: 0.22.1(@typescript/native-preview@7.0.0-dev.20260424.2)(rolldown@1.0.0-rc.17)(typescript@5.9.3)
+      rolldown-plugin-dts: 0.22.1(@typescript/native-preview@7.0.0-dev.20260504.1)(rolldown@1.0.0-rc.17)(typescript@5.9.3)
       rollup-plugin-license: 3.7.0(picomatch@4.0.4)(rollup@4.60.1)
       tinyglobby: 0.2.16
     transitivePeerDependencies:
@@ -17429,19 +17404,12 @@ snapshots:
 
   resolve.exports@2.0.3: {}
 
-  resolve@1.22.10:
-    dependencies:
-      is-core-module: 2.16.1
-      path-parse: 1.0.7
-      supports-preserve-symlinks-flag: 1.0.0
-
   resolve@1.22.12:
     dependencies:
       es-errors: 1.3.0
       is-core-module: 2.16.2
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
-    optional: true
 
   retext-latin@4.0.0:
     dependencies:
@@ -17482,7 +17450,7 @@ snapshots:
       hash-base: 3.1.2
       inherits: 2.0.4
 
-  rolldown-plugin-dts@0.22.1(@typescript/native-preview@7.0.0-dev.20260424.2)(rolldown@1.0.0-rc.17)(typescript@5.9.3):
+  rolldown-plugin-dts@0.22.1(@typescript/native-preview@7.0.0-dev.20260504.1)(rolldown@1.0.0-rc.17)(typescript@5.9.3):
     dependencies:
       '@babel/generator': 8.0.0-rc.1
       '@babel/helper-validator-identifier': 8.0.0-rc.1
@@ -17495,12 +17463,12 @@ snapshots:
       obug: 2.1.1
       rolldown: 1.0.0-rc.17
     optionalDependencies:
-      '@typescript/native-preview': 7.0.0-dev.20260424.2
+      '@typescript/native-preview': 7.0.0-dev.20260504.1
       typescript: 5.9.3
     transitivePeerDependencies:
       - oxc-resolver
 
-  rolldown-plugin-dts@0.23.2(@typescript/native-preview@7.0.0-dev.20260424.2)(rolldown@1.0.0-rc.17)(typescript@5.9.3):
+  rolldown-plugin-dts@0.23.2(@typescript/native-preview@7.0.0-dev.20260504.1)(rolldown@1.0.0-rc.17)(typescript@5.9.3):
     dependencies:
       '@babel/generator': 8.0.0-rc.3
       '@babel/helper-validator-identifier': 8.0.0-rc.3
@@ -17514,7 +17482,7 @@ snapshots:
       picomatch: 4.0.4
       rolldown: 1.0.0-rc.17
     optionalDependencies:
-      '@typescript/native-preview': 7.0.0-dev.20260424.2
+      '@typescript/native-preview': 7.0.0-dev.20260504.1
       typescript: 5.9.3
     transitivePeerDependencies:
       - oxc-resolver
@@ -18035,10 +18003,7 @@ snapshots:
 
   tinybench@2.9.0: {}
 
-  tinyexec@1.1.1: {}
-
-  tinyexec@1.1.2:
-    optional: true
+  tinyexec@1.1.2: {}
 
   tinyglobby@0.2.16:
     dependencies:
@@ -18094,7 +18059,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  tsdown@0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260424.2)(typescript@5.9.3):
+  tsdown@0.21.10(@tsdown/css@0.21.10)(@typescript/native-preview@7.0.0-dev.20260504.1)(typescript@5.9.3):
     dependencies:
       ansis: 4.2.0
       cac: 7.0.0
@@ -18105,9 +18070,9 @@ snapshots:
       obug: 2.1.1
       picomatch: 4.0.4
       rolldown: 1.0.0-rc.17
-      rolldown-plugin-dts: 0.23.2(@typescript/native-preview@7.0.0-dev.20260424.2)(rolldown@1.0.0-rc.17)(typescript@5.9.3)
+      rolldown-plugin-dts: 0.23.2(@typescript/native-preview@7.0.0-dev.20260504.1)(rolldown@1.0.0-rc.17)(typescript@5.9.3)
       semver: 7.7.4
-      tinyexec: 1.1.1
+      tinyexec: 1.1.2
       tinyglobby: 0.2.16
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
@@ -18470,7 +18435,7 @@ snapshots:
       picomatch: 4.0.4
       std-env: 4.0.0
       tinybench: 2.9.0
-      tinyexec: 1.1.1
+      tinyexec: 1.1.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
       vite: 8.0.10(@types/node@22.19.17)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.39.2)(tsx@4.21.0)(yaml@2.8.3)
