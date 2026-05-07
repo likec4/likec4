@@ -131,10 +131,10 @@ export const viewRuleAutoLayout = zodOp(schemas.views.viewRuleAutoLayout)(
   ),
 )
 
-export const deploymentViewRuleShowAncestors = zodOp(schemas.views.deploymentViewRuleShowAncestors)(
+export const deploymentViewRuleIncludeAncestors = zodOp(schemas.views.deploymentViewRuleIncludeAncestors)(
   spaceBetween(
-    print('showAncestors'),
-    printProperty('showAncestors'),
+    print('includeAncestors'),
+    printProperty('includeAncestors'),
   ),
 )
 
@@ -207,8 +207,8 @@ export const deploymentViewRule = zodOp(schemas.views.deploymentViewRule)(
     if ('include' in ctx || 'exclude' in ctx) {
       return exec(ctx, viewRulePredicate())
     }
-    if ('showAncestors' in ctx) {
-      return exec(ctx, deploymentViewRuleShowAncestors())
+    if ('includeAncestors' in ctx) {
+      return exec(ctx, deploymentViewRuleIncludeAncestors())
     }
     if ('direction' in ctx) {
       return exec(ctx, viewRuleAutoLayout())

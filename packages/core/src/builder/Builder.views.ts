@@ -17,7 +17,7 @@ import type {
   $rules,
   $style,
 } from './Builder.view-common'
-import { $showAncestors } from './Builder.view-deployment'
+import { $includeAncestors } from './Builder.view-deployment'
 import { type AddDeploymentViewHelper, type DeploymentViewBuilder, $deploymentExpr } from './Builder.view-deployment'
 import {
   type AddViewHelper,
@@ -353,7 +353,7 @@ export type ViewsHelpers = {
   $style: typeof $style
   $rules: typeof $rules
   $autoLayout: typeof $autoLayout
-  $showAncestors: typeof $showAncestors
+  $includeAncestors: typeof $includeAncestors
 }
 
 export type ViewsBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
@@ -415,8 +415,8 @@ export function mkViewBuilder(
   // 2. Conditionally attach Deployment-specific methods
   if (view[_type] === 'deployment') {
     return Object.assign(baseBuilder, {
-      showAncestors(value: boolean) {
-        view.rules.push({ showAncestors: value })
+      includeAncestors(value: boolean) {
+        view.rules.push({ includeAncestors: value })
         return this
       },
     }) as any // Type assertion needed for the overloads

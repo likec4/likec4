@@ -1,6 +1,6 @@
 import { find, map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, $showAncestors, computeView } from './fixture'
+import { $exclude, $include, $includeAncestors, computeView } from './fixture'
 
 describe('DeploymentRefPredicate', () => {
   it('should include instance and node', () => {
@@ -232,11 +232,11 @@ describe('DeploymentRefPredicate', () => {
     ])
   })
 
-  describe('showAncestors feature', () => {
+  describe('includeAncestors feature', () => {
     it('should include ancestors for instance nodes', () => {
       const { nodeIds } = computeView(
         $include('prod.eu.zone1.ui'),
-        $showAncestors(true),
+        $includeAncestors(true),
       )
       expect(nodeIds).toContain('prod.eu.zone1.ui')
       expect(nodeIds).toContain('prod.eu.zone1')
@@ -247,7 +247,7 @@ describe('DeploymentRefPredicate', () => {
     it('should include ancestors for nested nodes', () => {
       const { nodeIds, nodes } = computeView(
         $include('prod.eu.zone1'),
-        $showAncestors(true),
+        $includeAncestors(true),
       )
       // Verify hierarchy: only ancestors of zone1 are included (not its children)
       expect(nodeIds).toEqual([
@@ -265,7 +265,7 @@ describe('DeploymentRefPredicate', () => {
       const { nodeIds } = computeView(
         $include('prod.eu.zone1.ui'),
         $include('prod.us.zone1.ui'),
-        $showAncestors(true),
+        $includeAncestors(true),
       )
       // Should include ancestors from both zones
       expect(nodeIds).toContain('prod')
@@ -280,7 +280,7 @@ describe('DeploymentRefPredicate', () => {
     it('should preserve node hierarchy order', () => {
       const { nodeIds } = computeView(
         $include('prod.eu.zone1.ui'),
-        $showAncestors(true),
+        $includeAncestors(true),
       )
       // Verify hierarchy is preserved: ancestors should come before descendants
       const prodIndex = nodeIds.indexOf('prod')

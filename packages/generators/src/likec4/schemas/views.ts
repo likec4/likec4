@@ -27,9 +27,9 @@ export const viewRuleAutoLayout = z
   })
   .transform(v => v as ViewAutoLayout)
 
-export const deploymentViewRuleShowAncestors = z
+export const deploymentViewRuleIncludeAncestors = z
   .strictObject({
-    showAncestors: z.boolean(),
+    includeAncestors: z.boolean(),
   })
 
 export const viewRuleInclude = z.strictObject({ include: z.array(schemas.expression) })
@@ -151,7 +151,7 @@ export const deploymentViewRule = z
     viewRuleStyle,
     viewRuleGlobalStyle,
     viewRuleGlobalPredicate,
-    deploymentViewRuleShowAncestors,
+    deploymentViewRuleIncludeAncestors,
   ])
 
 /**

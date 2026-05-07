@@ -18,13 +18,13 @@ type Elem = Ctx['Element']
  * 3. Removes implicit connections between elements, if their descendants have same connection
  */
 export class StageFinal {
-  static for(memory: Memory, showAncestors: boolean) {
-    return new StageFinal(memory, showAncestors)
+  static for(memory: Memory, includeAncestors: boolean) {
+    return new StageFinal(memory, includeAncestors)
   }
 
   private constructor(
     protected readonly memory: Memory,
-    protected readonly showAncestors: boolean,
+    protected readonly includeAncestors: boolean,
   ) {
   }
 
@@ -259,7 +259,7 @@ export class StageFinal {
     const step2 = this.step2ProcessImplicits(step1)
     const step3 = this.step3ProcessBoundaries(step2)
     // Only add ancestors when exhaustive is explicitly set to true
-    if (this.showAncestors === true) {
+    if (this.includeAncestors === true) {
       return this.step4AddAncestor(step3)
     }
     return step3

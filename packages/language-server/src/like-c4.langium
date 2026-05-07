@@ -764,7 +764,7 @@ DeploymentViewRule:
 ;
 
 ViewRuleAncestors:
-  key='showAncestors' ':'? value=BOOLEAN ';'?
+  key='includeAncestors' ':'? value=BOOLEAN ';'?
 ;
 
 DeploymentViewRuleStyle:

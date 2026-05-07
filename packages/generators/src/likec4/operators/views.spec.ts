@@ -33,7 +33,7 @@ const builder = Builder
   )
 
 const {
-  views: { view, viewOf, deploymentView, views, $rules, $style, $include, $autoLayout, $exclude, $showAncestors },
+  views: { view, viewOf, deploymentView, views, $rules, $style, $include, $autoLayout, $exclude, $includeAncestors },
 } = builder.helpers()
 
 type T = typeof builder['Types']
@@ -304,36 +304,36 @@ describe('view', () => {
     `)
   })
 
-  describe('showAncestors', () => {
-    it('should print showAncestors true', () => {
+  describe('includeAncestors', () => {
+    it('should print includeAncestors true', () => {
       expect(
         deploymentView(
           'deployment',
           $rules(
-            $showAncestors(true),
+            $includeAncestors(true),
           ),
         ),
       ).toMatchInlineSnapshot(`
         "views {
           deployment view deployment {
-            showAncestors true
+            includeAncestors true
           }
         }"
       `)
     })
 
-    it('should print showAncestors false', () => {
+    it('should print includeAncestors false', () => {
       expect(
         deploymentView(
           'deployment',
           $rules(
-            $showAncestors(false),
+            $includeAncestors(false),
           ),
         ),
       ).toMatchInlineSnapshot(`
         "views {
           deployment view deployment {
-            showAncestors false
+            includeAncestors false
           }
         }"
       `)
