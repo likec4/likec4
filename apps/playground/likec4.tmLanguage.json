@@ -76,7 +76,7 @@
     { "include": "#colors" },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(and|as|autoLayout|border|color|crow|dashed|description|deployment|deploymentNode|diamond|dot|dotted|dynamic|from|global|group|element|exclude|extend|extends|head|icon|iconColor|iconPosition|iconSize|icons|import|include|instance(Of)?|it|kind|line|likec4lib|link|metadata|model|navigateTo|node|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|of|parallel|par|predicateGroup|predicate|relationship|shape|solid|specification|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with)\\b"
+      "match": "\\b(and|as|autoLayout|border|color|crow|dashed|description|deployment|deploymentNode|diamond|dot|dotted|dynamic|from|global|group|element|exclude|extend|extends|head|icon|iconColor|iconPosition|iconSize|icons|import|include|includeAncestors|instance(Of)?|it|kind|line|likec4lib|link|metadata|model|navigateTo|node|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|of|parallel|par|predicateGroup|predicate|relationship|shape|solid|specification|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with)\\b"
     },
     {
       "name": "keyword.symbol.likec4",
