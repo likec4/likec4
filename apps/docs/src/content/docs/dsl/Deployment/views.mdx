@@ -126,6 +126,75 @@ views {
 }
 ```
 
+### Include ancestors
+
+Sometime, it's usefull to visualize exactly how elements are deployed. In this case, you can use
+the `includeAncestors` attribute on a deployement view.
+
+The purpose of this attribute is to force all ancestors of already visible elements to show in the final diagram. 
+It will not affect the visible relationships. It's just a representation preference allowing to view how each relevant elements are deployed.
+
+```likec4
+specification {
+  element service
+
+  deploymentNode hypervisor {
+    style {
+      color green
+    }
+  }
+  deploymentNode vm {
+    style {
+      color red
+    }
+  }
+  deploymentNode app_server {
+    style {
+      color sky
+    }
+  }
+}
+
+model {
+  svc1 = service
+  svc2 = service
+
+  svc1 -> svc2
+}
+
+deployment {
+  hyp1 = hypervisor {
+    vm = vm {
+      tomcat1 = app_server "tomcat" {
+        instanceOf svc1
+        }
+      }
+    }
+  hyp2 = hypervisor {
+    vm = vm {
+      tomcat2 = app_server "tomcat" {
+        instanceOf svc2
+        }
+      }
+    }
+}
+
+views {
+  view index {
+    title 'Landscape'
+    include *
+  }
+
+  deployment view ancestors_test {
+    includeAncestors: true
+
+    include hyp1.tomcat1.svc1
+    include hyp2.tomcat2.svc2
+	}
+}
+```
+
+
 <br/>
 <br/>
   <LinkCard
