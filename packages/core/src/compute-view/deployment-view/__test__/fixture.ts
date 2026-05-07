@@ -31,6 +31,7 @@ const {
     $rules,
     $include,
     $exclude,
+    $includeAncestors,
   },
 } = Builder.forSpecification({
   elements: {
@@ -70,8 +71,6 @@ const {
   },
   relationships: { 'https': {} },
 })
-
-const $includeAncestors = (value: boolean) => (b: any) => b.includeAncestors(value)
 
 export const builder = b
   .with(

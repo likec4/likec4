@@ -128,8 +128,8 @@ views {
 
 ### Include ancestors
 
-Sometime, it's usefull to visualize exactly how elements are deployed. In this case, you can use
-the `includeAncestors` attribute on a deployement view.
+Sometimes, it's useful to visualize exactly how elements are deployed. In this case, you can use
+the `includeAncestors` attribute on a deployment view.
 
 The purpose of this attribute is to force all ancestors of already visible elements to show in the final diagram. 
 It will not affect the visible relationships. It's just a representation preference allowing to view how each relevant elements are deployed.
@@ -167,16 +167,16 @@ deployment {
     vm = vm {
       tomcat1 = app_server "tomcat" {
         instanceOf svc1
-        }
       }
     }
+  }
   hyp2 = hypervisor {
     vm = vm {
       tomcat2 = app_server "tomcat" {
         instanceOf svc2
-        }
       }
     }
+  }
 }
 
 views {
@@ -190,7 +190,7 @@ views {
 
     include hyp1.tomcat1.svc1
     include hyp2.tomcat2.svc2
-	}
+  }
 }
 ```
 

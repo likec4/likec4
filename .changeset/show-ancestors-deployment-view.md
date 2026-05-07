@@ -2,6 +2,7 @@
 '@likec4/core': minor
 '@likec4/generators': minor
 '@likec4/language-server': minor
+'@likec4/vscode': minor
 'likec4': minor
 ---
 
