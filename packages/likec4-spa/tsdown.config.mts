@@ -2,7 +2,6 @@ import { outputOptions } from '@likec4/devops/tsdown'
 import postcssPanda from '@pandacss/dev/postcss'
 import pluginBabel from '@rolldown/plugin-babel'
 import { reactCompilerPreset } from '@vitejs/plugin-react'
-import { resolve } from 'node:path'
 import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'tsdown'
 import { build as viteBuild } from 'vite'
@@ -35,7 +34,9 @@ export default defineConfig([{
   ],
   plugins: [
     pluginBabel({
-      presets: [reactCompilerPreset()],
+      presets: [reactCompilerPreset({
+        target: '18',
+      })],
     }),
     esmExternalRequirePlugin({
       external: ['react', 'react-dom'],
@@ -76,7 +77,7 @@ export default defineConfig([{
       conditionNames: ['sources', 'import', 'default'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
+        'react-dom/server': './src/react-dom-server-mock.ts',
       },
     },
   },

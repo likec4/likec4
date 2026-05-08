@@ -31,16 +31,14 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "immer": "catalog:utils",
     "react": "catalog:react",
-    "react-dom": "catalog:react",
-    "type-fest": "catalog:externals",
+    "react-dom": "catalog:react"
+  },
+  "devDependencies": {
     "@tanstack/ai": "catalog:ai",
     "@tanstack/ai-client": "catalog:ai",
     "@tanstack/ai-react": "catalog:ai",
-    "@tanstack/ai-react-ui": "catalog:ai"
-  },
-  "devDependencies": {
+    "@tanstack/ai-react-ui": "catalog:ai",
     "@dagrejs/dagre": "catalog:",
     "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/config": "workspace:*",
@@ -107,6 +105,8 @@
     "vitest": "catalog:vitest",
     "xstate": "catalog:xstate",
     "zod": "catalog:externals",
-    "zx": "catalog:"
+    "zx": "catalog:",
+    "immer": "catalog:utils",
+    "type-fest": "catalog:externals"
   }
 }

@@ -21,6 +21,9 @@
       "path": "../diagram/tsconfig.src.json"
     },
     {
+      "path": "../vite-plugin/"
+    },
+    {
       "path": "../../styled-system/preset/"
     },
     {

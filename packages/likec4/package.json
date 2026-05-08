@@ -126,7 +126,6 @@
     "@likec4/icons": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
     "bundle-require": "catalog:externals",
-    "react-compiler-runtime": "catalog:react",
     "esbuild": "catalog:esbuild",
     "fdir": "catalog:externals",
     "playwright": "catalog:",
