@@ -10,7 +10,7 @@ import { type NodeFormatter, AbstractFormatter, Formatting, FormattingRegion } f
 import { filter, isTruthy } from 'remeda'
 import type { FormattingOptions as LSFormattingOptions, Range, TextEdit } from 'vscode-languageserver-types'
 import * as ast from '../generated/ast'
-import { StringProperty } from '../generated/ast'
+import type { StringProperty } from '../generated/ast'
 import type { LikeC4Services } from '../module'
 import * as utils from './utils'
 import { isMultiline } from './utils'
