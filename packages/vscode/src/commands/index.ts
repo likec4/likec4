@@ -9,6 +9,7 @@ import { registerPreviewContextOpenSourceCommand } from './previewContextOpenSou
 import { registerPrintDotOfCurrentViewCommand } from './printDotOfCurrentView'
 import { registerReloadProjectsCommand } from './reloadProjects'
 import { registerRestartCommand } from './restart'
+import { registerSemanticLayoutWithAICommand } from './semanticLayoutWithAI'
 import { registerValidateLayoutCommand } from './validateLayout'
 
 export function registerCommands() {
@@ -37,4 +38,5 @@ export function registerCommands() {
   registerPrintDotOfCurrentViewCommand(deps)
   registerValidateLayoutCommand(deps)
   registerReloadProjectsCommand(deps)
+  registerSemanticLayoutWithAICommand(deps)
 }

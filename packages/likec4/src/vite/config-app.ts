@@ -8,7 +8,7 @@
 import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
-import { env, isDevelopment } from 'std-env'
+import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { BuildEnvironmentOptions, InlineConfig, Logger } from 'vite'
@@ -99,15 +99,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
                 {
                   name: 'likec4-core',
                   test: /(likec4[\\/]core|core[\\/]dist|immer)/,
-                },
-                {
-                  test: /node_modules/,
-                  name: (moduleId: string) => {
-                    const pkgName = moduleId.match(/.*\/node_modules\/(?<package>@[^/]+\/[^/]+|[^/]+)/)
-                      ?.groups?.['package']
-                    const isDts = /\.d\.[mc]?ts$/.test(moduleId)
-                    return `libs/${pkgName || 'common'}${isDts ? '.d' : ''}`
-                  },
                 },
               ],
             },

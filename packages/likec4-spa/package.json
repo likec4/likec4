@@ -2,7 +2,7 @@
   "name": "@likec4/spa",
   "private": true,
   "description": "Single-page application for rendering architecture diagrams",
-  "version": "1.55.1",
+  "version": "1.56.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -19,6 +19,7 @@
     "generate": "tsr generate",
     "clean": "likec4ops clean",
     "dev": "tsx watch --conditions=sources --exclude=\"./../../{examples,e2e}/**/*.{js,ts,mjs}\" --exclude=\"./../core/src/styles/**/*.{js,ts,mjs}\" ./start-dev.ts",
+    "dev:debug": "tsx --inspect --conditions=sources ./start-dev.ts",
     "dev:single-project": "pnpm dev ../../examples/cloud-system",
     "dev:docs": "pnpm dev ../../apps/docs/src",
     "dev:playground:deployment": "pnpm dev ../../apps/playground/src/examples/deployment",
@@ -31,14 +32,15 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "react": "catalog:react",
-    "react-dom": "catalog:react",
-    "immer": "catalog:utils",
-    "type-fest": "catalog:externals"
+    "react-dom": "catalog:react"
   },
   "devDependencies": {
-    "react-compiler-runtime": "catalog:react",
-    "@fontsource-variable/ibm-plex-sans": "catalog:",
+    "@tanstack/ai": "catalog:ai",
+    "@tanstack/ai-client": "catalog:ai",
+    "@tanstack/ai-react": "catalog:ai",
+    "@tanstack/ai-react-ui": "catalog:ai",
     "@dagrejs/dagre": "catalog:",
+    "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/config": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
@@ -83,6 +85,7 @@
     "oxlint": "catalog:",
     "p-limit": "catalog:utils",
     "postcss": "catalog:css",
+    "react-compiler-runtime": "catalog:react",
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
     "react-shadow": "catalog:react",
@@ -90,6 +93,7 @@
     "rolldown": "catalog:",
     "std-env": "catalog:externals",
     "strip-indent": "catalog:utils",
+    "superjson": "catalog:utils",
     "tinyrainbow": "catalog:utils",
     "tsdown": "catalog:",
     "tsx": "catalog:",
@@ -101,6 +105,8 @@
     "vitest": "catalog:vitest",
     "xstate": "catalog:xstate",
     "zod": "catalog:externals",
-    "zx": "catalog:"
+    "zx": "catalog:",
+    "immer": "catalog:utils",
+    "type-fest": "catalog:externals"
   }
 }

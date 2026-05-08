@@ -1,13 +1,16 @@
 import { logGenerating } from '../logger'
-import type { VirtualModule } from './_shared'
+import type { SharedVirtualModuleOptions, VirtualModule } from './_shared'
 
-const code = ` 
+const code = ({ isAIAvailable, ai, rpcEnabled }: SharedVirtualModuleOptions) =>
+  ` 
 import { createRpc } from 'likec4/vite-plugin/internal'
 
-export const isRpcAvailable = !!import.meta.hot
+export const isRpcAvailable = !!import.meta.hot && ${rpcEnabled}
+export const isAIAvailable = isRpcAvailable && ${isAIAvailable}
+export const AIAdapter = ${JSON.stringify(ai?.adapter.name)}
 
 let rpc 
-if (import.meta.hot) {
+if (isRpcAvailable) {
   rpc = createRpc({
     send: (event, data) => {
       import.meta.hot.send(event, data)
@@ -21,6 +24,9 @@ if (import.meta.hot) {
 }
 
 export const likec4rpc = rpc ?? {
+  applySemanticLayout: () => {
+    throw new Error('likec4rpc.applySemanticLayout is not available in production')
+  },
   updateView: () => {
     throw new Error('likec4rpc.updateView is not available in production')
   },
@@ -33,10 +39,10 @@ export const likec4rpc = rpc ?? {
 export const rpcModule: VirtualModule = {
   id: 'likec4:rpc',
   virtualId: 'likec4:plugin/rpc.js',
-  async load() {
+  async load(opts) {
     logGenerating('rpc')
     return {
-      code,
+      code: code(opts),
       moduleType: 'js',
       moduleSideEffects: false,
     }

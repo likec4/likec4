@@ -35,9 +35,13 @@ export interface LikeC4VitePluginRpcOptions {
  * used by the Vite plugin in virtual modules
  */
 export function createRpc(options: LikeC4VitePluginRpcOptions): LikeC4VitePluginRpc {
-  return createBirpc({}, {
+  const rpc = createBirpc<LikeC4VitePluginRpc>({}, {
+    timeout: 2 * 60 * 1000, // 2 minutes (for applySemanticLayout)
     post: (data) => options.send('likec4:rpc', data),
     on: (fn) => options.on('likec4:rpc', fn),
+    onTimeoutError(functionName) {
+      return functionName === 'applySemanticLayout'
+    },
     onGeneralError(error, functionName) {
       console.error(`RPC error in ${functionName}`, { error })
     },
@@ -45,6 +49,7 @@ export function createRpc(options: LikeC4VitePluginRpcOptions): LikeC4VitePlugin
       console.error(`RPC error in ${functionName}`, { error })
     },
   })
+  return rpc
 }
 
 // This is a workaround to avoid type errors in the Vite plugin

@@ -2,17 +2,13 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { ProjectId } from '@likec4/core'
-import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { findRelationshipPaths } from './find-relationship-paths'
+import { createMCPTestPair, structured, textContent } from '../__tests__/test-utils'
 
 describe('find-relationship-paths tool', () => {
   describe('direct paths', () => {
     it('should find 1-hop direct relationship', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -24,20 +20,19 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: {
           sourceId: 'frontend',
           targetId: 'backend',
           maxDepth: 3,
           includeIndirect: false,
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{ length: number; steps: any[] }>
+      const paths = structured(result)['paths'] as Array<{ length: number; steps: any[] }>
       expect(paths).toHaveLength(1)
       expect(paths[0]!.length).toBe(1)
       expect(paths[0]!.steps).toHaveLength(1)
@@ -48,9 +43,7 @@ describe('find-relationship-paths tool', () => {
 
   describe('multi-hop paths', () => {
     it('should find 2-hop path', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -64,20 +57,19 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: {
           sourceId: 'frontend',
           targetId: 'backend',
           maxDepth: 3,
           includeIndirect: false,
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{ length: number; steps: any[] }>
+      const paths = structured(result)['paths'] as Array<{ length: number; steps: any[] }>
       expect(paths.length).toBeGreaterThanOrEqual(1)
 
       // Find the 2-hop path
@@ -91,9 +83,7 @@ describe('find-relationship-paths tool', () => {
     })
 
     it('should find multiple paths', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -108,20 +98,19 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: {
           sourceId: 'frontend',
           targetId: 'backend',
           maxDepth: 3,
           includeIndirect: false,
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{ length: number; steps: any[] }>
+      const paths = structured(result)['paths'] as Array<{ length: number; steps: any[] }>
       expect(paths.length).toBeGreaterThanOrEqual(2)
 
       // Should have both direct (1-hop) and indirect (2-hop) paths
@@ -131,9 +120,7 @@ describe('find-relationship-paths tool', () => {
     })
 
     it('should sort paths by length', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -150,14 +137,13 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        { sourceId: 'a', targetId: 'd', maxDepth: 5, includeIndirect: false, project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: { sourceId: 'a', targetId: 'd', maxDepth: 5, includeIndirect: false, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{ length: number }>
+      const paths = structured(result)['paths'] as Array<{ length: number }>
       expect(paths.length).toBeGreaterThanOrEqual(1)
 
       // Verify paths are sorted by length (shortest first)
@@ -169,9 +155,7 @@ describe('find-relationship-paths tool', () => {
 
   describe('maxDepth', () => {
     it('should respect maxDepth limit', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -187,23 +171,20 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        { sourceId: 'a', targetId: 'd', maxDepth: 2, includeIndirect: false, project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: { sourceId: 'a', targetId: 'd', maxDepth: 2, includeIndirect: false, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{ length: number }>
+      const paths = structured(result)['paths'] as Array<{ length: number }>
 
       // Should not find the 3-hop path when maxDepth=2
       expect(paths.length).toBe(0)
     })
 
     it('should find path within maxDepth', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -217,14 +198,13 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        { sourceId: 'a', targetId: 'c', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: { sourceId: 'a', targetId: 'c', maxDepth: 3, includeIndirect: false, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{ length: number }>
+      const paths = structured(result)['paths'] as Array<{ length: number }>
       expect(paths.length).toBeGreaterThanOrEqual(1)
       expect(paths[0]!.length).toBe(2)
     })
@@ -232,9 +212,7 @@ describe('find-relationship-paths tool', () => {
 
   describe('edge cases', () => {
     it('should return empty array when no path exists', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -244,27 +222,24 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: {
           sourceId: 'frontend',
           targetId: 'backend',
           maxDepth: 3,
           includeIndirect: false,
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<any>
+      const paths = structured(result)['paths'] as Array<any>
       expect(paths).toHaveLength(0)
     })
 
     it('should avoid cycles within a returned path', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -281,14 +256,13 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        { sourceId: 'a', targetId: 'd', maxDepth: 5, includeIndirect: false, project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: { sourceId: 'a', targetId: 'd', maxDepth: 5, includeIndirect: false, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{
+      const paths = structured(result)['paths'] as Array<{
         steps: Array<{ source: string; target: string }>
       }>
       expect(paths.length).toBeGreaterThan(0)
@@ -303,9 +277,7 @@ describe('find-relationship-paths tool', () => {
     })
 
     it('should reject source equals target', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -314,27 +286,24 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: {
           sourceId: 'frontend',
           targetId: 'frontend',
           maxDepth: 3,
           includeIndirect: false,
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.isError).toBe(true)
-      const content = result.content![0]!
+      const content = textContent(result)[0]!
       expect('text' in content && content.text).toContain('Source and target must be different')
     })
 
     it('should return empty paths for parent-child with no relationships', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           element container
@@ -346,27 +315,24 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: {
           sourceId: 'shop',
           targetId: 'shop.frontend',
           maxDepth: 3,
           includeIndirect: false,
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<any>
+      const paths = structured(result)['paths'] as Array<any>
       expect(paths).toHaveLength(0)
     })
 
     it('should handle non-existent source', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -375,27 +341,24 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: {
           sourceId: 'nonexistent',
           targetId: 'backend',
           maxDepth: 3,
           includeIndirect: false,
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.isError).toBe(true)
-      const content = result.content![0]!
+      const content = textContent(result)[0]!
       expect('text' in content && content.text).toContain('Source element "nonexistent" not found')
     })
 
     it('should handle non-existent target', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -404,29 +367,26 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: {
           sourceId: 'frontend',
           targetId: 'nonexistent',
           maxDepth: 3,
           includeIndirect: false,
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.isError).toBe(true)
-      const content = result.content![0]!
+      const content = textContent(result)[0]!
       expect('text' in content && content.text).toContain('Target element "nonexistent" not found')
     })
   })
 
   describe('relationship details', () => {
     it('should include relationship metadata in path steps', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           relationship uses
@@ -442,20 +402,19 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: {
           sourceId: 'frontend',
           targetId: 'backend',
           maxDepth: 3,
           includeIndirect: false,
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{
+      const paths = structured(result)['paths'] as Array<{
         steps: Array<{
           relationship: {
             kind: string | null
@@ -474,9 +433,7 @@ describe('find-relationship-paths tool', () => {
 
   describe('default maxDepth', () => {
     it('should not find paths beyond maxDepth of 3', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -494,14 +451,13 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        { sourceId: 'a', targetId: 'e', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: { sourceId: 'a', targetId: 'e', maxDepth: 3, includeIndirect: false, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{ length: number }>
+      const paths = structured(result)['paths'] as Array<{ length: number }>
 
       // 4-hop path should not be found with default maxDepth=3
       expect(paths.length).toBe(0)
@@ -510,9 +466,7 @@ describe('find-relationship-paths tool', () => {
 
   describe('multiple relationships between same elements', () => {
     it('should distinguish multiple relationships with different properties', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -529,14 +483,13 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        { sourceId: 'api', targetId: 'database', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: { sourceId: 'api', targetId: 'database', maxDepth: 3, includeIndirect: false, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{
+      const paths = structured(result)['paths'] as Array<{
         length: number
         steps: Array<{
           source: string
@@ -568,9 +521,7 @@ describe('find-relationship-paths tool', () => {
     })
 
     it('should preserve relationship details in multi-hop paths with parallel edges', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -589,14 +540,13 @@ describe('find-relationship-paths tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = findRelationshipPaths(services.likec4.LanguageServices)
-      const result = await handler(
-        { sourceId: 'a', targetId: 'c', maxDepth: 3, includeIndirect: false, project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'find-relationship-paths',
+        arguments: { sourceId: 'a', targetId: 'c', maxDepth: 3, includeIndirect: false, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const paths = result.structuredContent!['paths'] as Array<{
+      const paths = structured(result)['paths'] as Array<{
         length: number
         steps: Array<{
           relationship: {

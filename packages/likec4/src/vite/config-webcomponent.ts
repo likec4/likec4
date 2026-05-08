@@ -57,6 +57,7 @@ export function viteWebcomponentConfig({
     customLogger,
     plugins: [
       LikeC4VitePlugin({
+        ai: 'disabled',
         languageServices: languageServices.languageServices,
         appConfig: {
           webcomponentPrefix,

@@ -2,8 +2,8 @@
   "name": "root",
   "private": true,
   "license": "MIT",
-  "version": "1.55.1",
-  "packageManager": "pnpm@10.33.2",
+  "version": "1.56.0",
+  "packageManager": "pnpm@10.33.3",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -39,6 +39,7 @@
     "clean:lib": "rimraf -v -g \"packages/*/lib\" \"styled-system/*/lib\" \"**/.tsbuildinfo\"",
     "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
+    "test:affected": "turbo run test --affected --filter=\"!./apps/*\"",
     "test:watch": "vitest --no-isolate",
     "pretest:e2e": "NODE_ENV=production pnpm turbo run pack --filter=\"@likec4/core\" --filter=\"@likec4/icons\" --filter=\"likec4\"",
     "test:e2e": "cd e2e && pnpm install --no-lockfile && pnpm install:chromium && pnpm bootstrap && pnpm test",
@@ -50,11 +51,11 @@
     "@changesets/cli": "catalog:",
     "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
-    "dprint": "^0.53.2",
+    "dprint": "^0.54.0",
     "execa": "^9.6.0",
     "global": "^4.4.0",
     "husky": "^9.1.7",
-    "nano-staged": "^0.9.0",
+    "nano-staged": "catalog:",
     "npm-run-all2": "^8.0.4",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
@@ -127,13 +128,15 @@
       "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
     },
     "onlyBuiltDependencies": [
+      "@google/genai",
       "@tailwindcss/oxide",
+      "dprint",
+      "esbuild",
+      "oxlint",
+      "protobufjs",
       "sharp",
       "workerd",
-      "oxlint",
-      "wrangler",
-      "dprint",
-      "esbuild"
+      "wrangler"
     ]
   },
   "nano-staged": {

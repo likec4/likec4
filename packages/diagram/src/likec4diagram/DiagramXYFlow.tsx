@@ -7,10 +7,9 @@ import type { MouseEvent as ReactMouseEvent, PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
-import { memoNode } from '../base-primitives/memoNode'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
-import { useIsReducedGraphics, usePanningAtom } from '../context/RootContainerContext'
+import { useRootContainer } from '../context/RootContainerContext'
 import { selectDiagramActor, useCallbackRef, useDiagramSnapshot, useUpdateEffect } from '../hooks'
 import { useDiagram } from '../hooks/useDiagram'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
@@ -28,13 +27,13 @@ const edgeTypes = {
 }
 
 const builtinNodes = {
-  element: memoNode(BuiltinNodes.ElementNode),
-  deployment: memoNode(BuiltinNodes.DeploymentNode),
-  'compound-element': memoNode(BuiltinNodes.CompoundElementNode),
-  'compound-deployment': memoNode(BuiltinNodes.CompoundDeploymentNode),
-  'view-group': memoNode(BuiltinNodes.ViewGroupNode),
-  'seq-actor': memoNode(BuiltinNodes.SequenceActorNode),
-  'seq-parallel': memoNode(BuiltinNodes.SequenceParallelArea),
+  element: BuiltinNodes.ElementNode,
+  deployment: BuiltinNodes.DeploymentNode,
+  'compound-element': BuiltinNodes.CompoundElementNode,
+  'compound-deployment': BuiltinNodes.CompoundDeploymentNode,
+  'view-group': BuiltinNodes.ViewGroupNode,
+  'seq-actor': BuiltinNodes.SequenceActorNode,
+  'seq-parallel': BuiltinNodes.SequenceParallelArea,
 }
 function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   if (!nodeTypes || isEmpty(nodeTypes)) {
@@ -138,9 +137,11 @@ export function LikeC4DiagramXYFlow({
     onCanvasDblClick,
   } = useDiagramEventHandlers()
 
-  const isReducedGraphics = useIsReducedGraphics(),
+  const { reducedGraphics, $panning } = useRootContainer()
+
+  const isReducedGraphics = reducedGraphics,
     layoutConstraints = useLayoutConstraints(),
-    $isPanning = usePanningAtom(),
+    $isPanning = $panning,
     isPanning = useTimeout(() => {
       $isPanning.set(true)
     }, isReducedGraphics ? 200 : 800),

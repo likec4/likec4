@@ -25,7 +25,8 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<Computed
     return G
   }
 
-  protected override postBuild(G: RootGraphModel): void {
+  protected override postBuild(): this {
+    const G = this.G
     pipe(
       this.view.nodes,
       map(nd => ({
@@ -64,6 +65,7 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<Computed
         G.delete(_.packmode)
       }),
     )
+    return this
   }
 
   protected override elementToSubgraph(compound: ComputedNode, subgraph: SubgraphModel) {

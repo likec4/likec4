@@ -1,15 +1,15 @@
-import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { createBirpc } from 'birpc'
 import type { MinimalPluginContextWithoutEnvironment, ViteDevServer } from 'vite'
-import type { ViteLogger } from '../logger'
-import { calcAdhocView } from './calcAdhocView'
+import type { AIOptions } from '../plugin'
+import type { SharedVirtualModuleOptions } from '../virtuals/_shared'
+import { applySemanticLayout } from './functions/applySemanticLayout'
+import { calcAdhocView } from './functions/calcAdhocView'
+import { updateView } from './functions/updateView'
 import type { LikeC4VitePluginRpc } from './protocol'
 import { sendError } from './sendError'
-import { updateView } from './updateView'
 
-export type PluginRPCParams = {
-  logger: ViteLogger
-  likec4: LikeC4LanguageServices
+export type PluginRPCParams = SharedVirtualModuleOptions & {
+  ai?: AIOptions | undefined
   server: ViteDevServer
 }
 export function enablePluginRPC(
@@ -18,12 +18,19 @@ export function enablePluginRPC(
 ) {
   let lastError: string | null = null
   const server = params.server
-  createBirpc<{}, Omit<LikeC4VitePluginRpc, 'isAvailable'>>({
+
+  const functions: LikeC4VitePluginRpc = {
     updateView: (data) => updateView(params, data),
     calcAdhocView: (data) => calcAdhocView(params, data),
-  }, {
+    applySemanticLayout: (data) => applySemanticLayout(params, data),
+  }
+
+  createBirpc(functions, {
     on: fn => server.hot.on('likec4:rpc', fn),
     post: data => server.hot.send('likec4:rpc', data),
+    onTimeoutError(functionName) {
+      return functionName === 'applySemanticLayout'
+    },
     onFunctionError: (error, functionName) => {
       params.logger.error(`RPC error in ${functionName}`, { error })
       const errorString = error.stack ?? error.message

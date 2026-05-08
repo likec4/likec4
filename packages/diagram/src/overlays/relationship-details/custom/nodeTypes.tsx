@@ -7,7 +7,6 @@ import {
   ElementNodeContainer,
   ElementShape,
   ElementTags as ElementTagsPrimitive,
-  memoNode,
 } from '../../../base-primitives'
 import { ElementActions } from './ElementActions'
 
@@ -46,7 +45,7 @@ const ElementDetailsButtonWithHandler = (props: BaseNodePropsWithData<Relationsh
   )
 }
 
-export const ElementNode = memoNode<RelationshipDetailsTypes.NodeProps<'element'>>((props) => {
+export function ElementNode(props: RelationshipDetailsTypes.NodeProps<'element'>) {
   const { enableElementTags } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
@@ -58,19 +57,17 @@ export const ElementNode = memoNode<RelationshipDetailsTypes.NodeProps<'element'
       <ElementPorts {...props} />
     </ElementNodeContainer>
   )
-})
+}
 
-export const CompoundNode = memoNode<RelationshipDetailsTypes.NodeProps<'compound'>>(
-  (props) => {
-    return (
-      <CompoundNodeContainer nodeProps={props}>
-        <ElementDetailsButtonWithHandler {...props} />
-        <CompoundTitle {...props} />
-        <CompoundPorts {...props} />
-      </CompoundNodeContainer>
-    )
-  },
-)
+export function CompoundNode(props: RelationshipDetailsTypes.NodeProps<'compound'>) {
+  return (
+    <CompoundNodeContainer nodeProps={props}>
+      <ElementDetailsButtonWithHandler {...props} />
+      <CompoundTitle {...props} />
+      <CompoundPorts {...props} />
+    </CompoundNodeContainer>
+  )
+}
 
 type ElementPortsProps = BaseNodePropsWithData<
   Pick<
@@ -80,7 +77,7 @@ type ElementPortsProps = BaseNodePropsWithData<
   >
 >
 
-export const ElementPorts = ({ data: { ports, height: h } }: ElementPortsProps) => {
+export function ElementPorts({ data: { ports, height: h } }: ElementPortsProps) {
   return (
     <>
       {ports.in.map((id, i) => (
@@ -115,29 +112,31 @@ type CompoundPortsProps = BaseNodePropsWithData<
   >
 >
 
-export const CompoundPorts = ({ data }: CompoundPortsProps) => (
-  <>
-    {data.ports.in.map((id, i) => (
-      <Handle
-        key={id}
-        id={id}
-        type="target"
-        position={Position.Left}
-        style={{
-          visibility: 'hidden',
-          top: `${20 * (i + 1)}px`,
-        }} />
-    ))}
-    {data.ports.out.map((id, i) => (
-      <Handle
-        key={id}
-        id={id}
-        type="source"
-        position={Position.Right}
-        style={{
-          visibility: 'hidden',
-          top: `${20 * (i + 1)}px`,
-        }} />
-    ))}
-  </>
-)
+export function CompoundPorts({ data }: CompoundPortsProps) {
+  return (
+    <>
+      {data.ports.in.map((id, i) => (
+        <Handle
+          key={id}
+          id={id}
+          type="target"
+          position={Position.Left}
+          style={{
+            visibility: 'hidden',
+            top: `${20 * (i + 1)}px`,
+          }} />
+      ))}
+      {data.ports.out.map((id, i) => (
+        <Handle
+          key={id}
+          id={id}
+          type="source"
+          position={Position.Right}
+          style={{
+            visibility: 'hidden',
+            top: `${20 * (i + 1)}px`,
+          }} />
+      ))}
+    </>
+  )
+}

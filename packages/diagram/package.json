@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.55.1",
+  "version": "1.56.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -128,6 +128,7 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
+    "react-compiler-runtime": "catalog:react",
     "oxlint": "catalog:",
     "postcss": "catalog:css",
     "react": "catalog:react",

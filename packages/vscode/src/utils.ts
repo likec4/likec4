@@ -1,3 +1,4 @@
+import { extname } from 'pathe'
 import prettyMs from 'pretty-ms'
 import * as vscode from 'vscode'
 
@@ -40,8 +41,8 @@ export function performanceMark(): PerformanceMark {
  * @returns True when extension is LikeC4 source
  */
 export function isLikeC4Source(path: string): boolean {
-  const p = path.toLowerCase()
-  return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
+  const p = extname(path)
+  return p === '.c4' || p === '.likec4' || p === '.like-c4'
 }
 
 /**

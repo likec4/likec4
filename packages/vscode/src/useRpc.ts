@@ -20,7 +20,7 @@ import {
 import { loggable } from '@likec4/log'
 import { createSingletonComposable, useDisposable } from 'reactive-vscode'
 import type vscode from 'vscode'
-import type { DocumentUri, Location } from 'vscode-languageserver-types'
+import type { DocumentUri } from 'vscode-languageserver-types'
 import { useExtensionLogger } from './useExtensionLogger'
 import { useLanguageClient } from './useLanguageClient'
 
@@ -80,12 +80,26 @@ export const useRpc = createSingletonComposable(() => {
       await client.sendRequest(BuildDocuments.req, { docs })
     },
 
-    async locate(params: Locate.Params): Promise<Location | null> {
-      return await client.sendRequest(Locate.req, params)
+    async locate(params: Locate.Params): Promise<vscode.Location | null> {
+      const loc = await client.sendRequest(Locate.req, params)
+      if (!loc) {
+        return null
+      }
+      return client.protocol2CodeConverter.asLocation(loc)
     },
 
     async changeView(req: ChangeView.Params) {
-      return await queue(() => client.sendRequest(ChangeView.req, req))
+      const res = await queue(() => client.sendRequest(ChangeView.req, req))
+      if (!res.success) {
+        return {
+          success: false as const,
+          error: res.error,
+        }
+      }
+      return {
+        location: res.location ? client.protocol2CodeConverter.asLocation(res.location) : null,
+        success: res.success,
+      }
     },
 
     async getDocumentTags(params: GetDocumentTags.Params) {

@@ -111,7 +111,7 @@ Example response:
     results: z.array(elementSummarySchema),
     truncated: z.boolean().describe('True if results were truncated due to exceeding maximum limit'),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
   const element = model.findElement(args.elementId)

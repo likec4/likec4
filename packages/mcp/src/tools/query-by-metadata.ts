@@ -93,7 +93,7 @@ Example response:
       matchedValue: z.string().describe('The metadata value that matched'),
     })),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
   const matchMode = args.matchMode

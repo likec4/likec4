@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process'
 import { defineBuildConfig } from 'obuild/config'
 
 // oxlint-disable-next-line no-default-export
@@ -6,6 +7,7 @@ export default defineBuildConfig({
     {
       type: 'bundle',
       input: [
+        'src/graphviz/ai/index.ts',
         'src/graphviz/binary/index.ts',
         'src/sequence/index.ts',
         'src/index.ts',
@@ -23,4 +25,11 @@ export default defineBuildConfig({
       // },
     },
   ],
+  hooks: {
+    start() {
+      execSync('pnpm generate', {
+        stdio: 'inherit',
+      })
+    },
+  },
 }) as unknown

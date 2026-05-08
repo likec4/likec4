@@ -163,6 +163,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
   protected getElementsSymbol(
     el: ast.Element | ast.Relation | ast.ExtendElement,
+    parentFqn?: string,
   ): DocumentSymbol[] {
     try {
       if (ast.isExtendElement(el)) {
@@ -189,7 +190,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: readStrictFqn(astElement.element),
         range: cst.range,
         selectionRange: nameNode.range,
-        children: body.elements.flatMap(e => this.getElementsSymbol(e)),
+        children: body.elements.flatMap(e => this.getElementsSymbol(e, readStrictFqn(astElement.element))),
       },
     ]
   }

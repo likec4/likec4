@@ -1,5 +1,24 @@
 # @likec4/vite-plugin
 
+## 1.56.0
+
+### Patch Changes
+
+- [`ab726ed`](https://github.com/likec4/likec4/commit/ab726eda9ec87b75fd72e056fb5f89ef78fe71e0) Thanks [@davydkov](https://github.com/davydkov)! - Extract web app into a separate `@likec4/spa` package, decoupling it from the CLI for better modularity, faster builds and smaller bundles — resolves [#2689](https://github.com/likec4/likec4/issues/2689)
+
+  The new package also improves DX by eliminating the dependency "magic" that existed in the CLI package
+
+- [#2906](https://github.com/likec4/likec4/pull/2906) [`af34764`](https://github.com/likec4/likec4/commit/af3476421fd8938a897240ad6fd1c70068d1e070) Thanks [@davydkov](https://github.com/davydkov)! - Load icons on demand from CDN instead of bundling all icon components, reducing bundle size. Icons are resolved from local cache, then `@likec4/icons` package, then fetched from `icons.like-c4.dev`.
+
+- Updated dependencies [[`935f6bb`](https://github.com/likec4/likec4/commit/935f6bb3fc42b88669bd8af65947a201f8e3d490), [`af34764`](https://github.com/likec4/likec4/commit/af3476421fd8938a897240ad6fd1c70068d1e070), [`ace5b2e`](https://github.com/likec4/likec4/commit/ace5b2e5cd261f47bd2e93b6f495e2122ceef16d), [`5f46082`](https://github.com/likec4/likec4/commit/5f460821526d851ef3bbf8be5a2bd749c2df6a8a)]:
+  - @likec4/language-server@1.56.0
+  - @likec4/log@1.56.0
+  - @likec4/core@1.56.0
+  - @likec4/language-services@1.56.0
+  - @likec4/config@1.56.0
+  - @likec4/generators@1.56.0
+  - @likec4/layouts@1.56.0
+
 ## 1.55.1
 
 ### Patch Changes

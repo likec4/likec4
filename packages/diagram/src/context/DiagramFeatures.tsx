@@ -1,5 +1,5 @@
 import type { ExclusiveUnion } from '@likec4/core/types'
-import { type PropsWithChildren, createContext, useContext, useEffect } from 'react'
+import { type PropsWithChildren, createContext, useContext } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { useSetState } from '../hooks/useSetState'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
@@ -7,6 +7,10 @@ import { useUpdateEffect } from '../hooks/useUpdateEffect'
 const FeatureNames = [
   'Controls',
   'Editor',
+  /**
+   * Enabled if editor available and has `applySemanticLayout` method
+   */
+  'AISemanticLayout',
   'ReadOnly',
   'FocusMode',
   'NavigateTo',
@@ -42,6 +46,10 @@ export type EnabledFeatures = {
 
 export const DefaultFeatures: EnabledFeatures = {
   enableEditor: false,
+  /**
+   * Enabled if editor has `applySemanticLayout` method
+   */
+  enableAISemanticLayout: false,
   enableReadOnly: true,
   enableCompareWithLatest: false,
   enableControls: false,
@@ -103,6 +111,7 @@ export function DiagramFeatures({
 const overridesForOverlays: Partial<EnabledFeatures> = {
   enableControls: false,
   enableReadOnly: true,
+  enableAISemanticLayout: false,
   enableCompareWithLatest: false,
 }
 DiagramFeatures.Overlays = ({ children }: PropsWithChildren) => {

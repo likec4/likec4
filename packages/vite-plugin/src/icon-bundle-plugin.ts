@@ -108,6 +108,8 @@ export default function NotFoundIcon() {
   return {
     name: PLUGIN_NAME,
 
+    sharedDuringBuild: true,
+
     applyToEnvironment(env) {
       return options.environments ? options.environments.includes(env.name) : true
     },

@@ -1,5 +1,13 @@
 # @likec4/vscode-preview
 
+## 1.56.0
+
+### Patch Changes
+
+- [#2908](https://github.com/likec4/likec4/pull/2908) [`be04c8d`](https://github.com/likec4/likec4/commit/be04c8d53b35d8a214a84a7fc433647c3d14f11a) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix left-click on external links in VSCode extension diagram preview. Links in element details now open in the default browser on left-click, not just right-click.
+
+- [#2906](https://github.com/likec4/likec4/pull/2906) [`af34764`](https://github.com/likec4/likec4/commit/af3476421fd8938a897240ad6fd1c70068d1e070) Thanks [@davydkov](https://github.com/davydkov)! - Load icons on demand from CDN instead of bundling all icon components, reducing bundle size. Icons are resolved from local cache, then `@likec4/icons` package, then fetched from `icons.like-c4.dev`.
+
 ## 1.55.1
 
 ## 1.55.0

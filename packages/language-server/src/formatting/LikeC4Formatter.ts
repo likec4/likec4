@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { nonexhaustive } from '@likec4/core'
 import {
   type AstNode,
@@ -721,8 +728,17 @@ export class LikeC4Formatter extends AbstractFormatter {
     }
 
     let region = null
-    region = region ?? this.on(node, ast.isStringProperty)
-      ?.property('value')
+    if (ast.isMetadataAttribute(node)) {
+      const value = node.value
+      if (ast.isMetadataArray(value)) {
+        region = this.getNodeFormatter(value).nodes(...value.values)
+      } else if (value) {
+        region = this.getNodeFormatter(node).property('value')
+      }
+    } else {
+      region = this.on(node, ast.isStringProperty)
+        ?.property('value')
+    }
     region = region ?? this.on(node, ast.isElement)
       ?.properties('props')
     region = region ?? this.on(node, ast.isImportsFromPoject)

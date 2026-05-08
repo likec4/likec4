@@ -164,7 +164,7 @@ Example response:
     deployedInstances: z.array(z.string()).describe('Deployed instances of this element (Array of Deployment FQNs)'),
     sourceLocation: locationSchema,
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
   const element = model.findElement(args.id)

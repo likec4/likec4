@@ -27,12 +27,6 @@ packageJson.dependencies = Object.fromEntries(
       if (name === 'esbuild') {
         return [name, `npm:esbuild-wasm@${version}`]
       }
-      // if (name === 'likec4') {
-      //   return [name, `file:${resolve('../likec4/package.tgz')}`]
-      // }
-      // if (name === '@likec4/core') {
-      //   return [name, `file:${resolve('../core/package.tgz')}`]
-      // }
       return [name, version]
     }),
 )
@@ -50,7 +44,9 @@ const cwd = process.cwd()
 
 cd(outdir)
 await writeFile('package.json', JSON.stringify(packageJson, null, 2))
-await $`npm install --production`
+// Output npm version for debugging
+await $`npm -v`
+await $`npm install --omit=dev`
 await $`npx @vscode/vsce package --out likec4.vsix`
 
 const outvsix = join(cwd, 'likec4.vsix')

@@ -11,7 +11,6 @@ Imports flow upward only — never have a lower layer import from a higher one.
 - `likec4diagram/` — top-level diagram engine. Hosts the main machine (`state/machine.ts`) and embeds the editor as a child actor when editing is enabled.
 - `editor/` — orthogonal feature, injected into `likec4diagram/` via an actor reference. Do not nest it inside `likec4diagram/`, and do not import from `likec4diagram/` here.
 - `adhoc-editor/` — separate code path with its own machine. Intentionally not re-exported from `src/index.ts`.
-- `bundle/` — passthrough re-export for the `@likec4/react` web-component build. Do not add code here; keep it a thin re-export of `src/index.ts`.
 - `context/`, `hooks/`, `components/`, `shadowroot/`, `utils/` — utility layers used by everything above.
 
 When adding a new feature, default to a sibling folder under `src/` with its own actor; promote into `likec4diagram/` only if it must coordinate with the main machine.
@@ -28,7 +27,6 @@ XState is the convention here.
 ## Public API
 
 - `src/index.ts` is the public API. `adhoc-editor/` is intentionally internal.
-- `bundle/index.ts` must mirror `src/index.ts` exactly — it's the entry for the `@likec4/react` web-component build.
 
 ## Don't break the App ↔ Language Server contract
 

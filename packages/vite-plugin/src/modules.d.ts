@@ -178,6 +178,10 @@ declare module 'likec4:rpc' {
   export const likec4rpc: LikeC4VitePluginRpc
 
   export const isRpcAvailable: boolean
+
+  export const isAIAvailable: boolean
+
+  export const AIAdapter: string | undefined
 }
 
 declare module 'likec4:app-config' {

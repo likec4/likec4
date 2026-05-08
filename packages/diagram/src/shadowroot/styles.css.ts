@@ -74,6 +74,7 @@ const getComputedColorScheme = (): ColorScheme | null => {
   return null
 }
 
+const getDocumentElement = () => document.documentElement
 export type ColorScheme = 'light' | 'dark'
 export function useColorScheme(explicit?: ColorScheme): ColorScheme {
   const preferred = usePreferredColorScheme()
@@ -85,7 +86,7 @@ export function useColorScheme(explicit?: ColorScheme): ColorScheme {
       childList: false,
       subtree: false,
     },
-    () => document.documentElement,
+    getDocumentElement,
   )
 
   return explicit ?? computed ?? preferred

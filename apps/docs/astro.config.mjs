@@ -149,6 +149,7 @@ export default defineConfig({
     },
     plugins: [
       LikeC4VitePlugin({
+        ai: 'disabled',
         workspace: 'src/components',
       }),
       tailwindcss(),

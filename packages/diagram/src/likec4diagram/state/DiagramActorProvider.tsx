@@ -14,6 +14,7 @@ import {
   useDiagramSnapshot,
   useOnDiagramEvent,
 } from '../../hooks/useDiagram'
+import { useEditorActorRef } from '../../hooks/useEditorActor'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'

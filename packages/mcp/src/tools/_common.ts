@@ -17,6 +17,7 @@ import type {
 import type { AnyAux, ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { Locate } from '@likec4/language-server/protocol'
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
 import { URI } from 'vscode-uri'
 import * as z from 'zod/v3'
 import { logger } from '../utils'
@@ -250,7 +251,6 @@ export const locationSchema = z.object({
 
 export const projectIdSchema = z.string()
   .refine((_v): _v is ProjectId => true)
-  .optional()
   .default('default' as ProjectId)
   .describe('Project id (optional, will use "default" if not specified)')
 
@@ -284,5 +284,15 @@ export const mkLocate = (
   } catch (e) {
     logger.debug(`Failed to locate {params}`, { error: e, params })
     return null
+  }
+}
+
+export function toolError(text: string): CallToolResult {
+  return {
+    isError: true,
+    content: [{
+      type: 'text',
+      text,
+    }],
   }
 }

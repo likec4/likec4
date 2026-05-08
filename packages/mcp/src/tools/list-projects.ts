@@ -42,6 +42,7 @@ Example response:
     idempotentHint: true,
     title: 'List projects',
   },
+  inputSchema: {},
   outputSchema: {
     projects: z.array(z.object({
       id: z.string(),
@@ -50,7 +51,7 @@ Example response:
       sources: z.array(z.string()),
     })),
   },
-}, async (languageServices) => {
+})(async (languageServices) => {
   const projects = languageServices.projects()
   return {
     projects: projects.map(p => ({

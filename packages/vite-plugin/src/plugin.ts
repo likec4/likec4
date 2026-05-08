@@ -1,18 +1,19 @@
-import { invariant, isNonEmptyArray } from '@likec4/core'
-import type { LikeC4LanguageServices } from '@likec4/language-server'
+import type { LikeC4LanguageServices } from '@likec4/language-services'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
+import type { AnyTextAdapter } from '@tanstack/ai'
 import pDebounce from 'p-debounce'
-import { isDeepEqual, map } from 'remeda'
+import { hasAtLeast, isBoolean, isDeepEqual, map } from 'remeda'
 import type {
   Plugin,
   PluginOption,
 } from 'vite'
+import { detectAI } from './ai/detect-ai'
 import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
-import type { ProjectsData } from './virtuals/_shared'
+import { type ProjectsData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
 import { type AppConfig, createAppConfigModule } from './virtuals/app-config'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
@@ -27,7 +28,58 @@ import { projectReactModule, singleProjectReactModule } from './virtuals/react'
 import { rpcModule } from './virtuals/rpc'
 import { singleProjectModule } from './virtuals/single-project'
 
+export interface AIOptions<TAdapter extends AnyTextAdapter = AnyTextAdapter> {
+  /**
+   * The AI adapter to use
+   *
+   * @see https://tanstack.com/ai/latest/docs/getting-started/overview#adapters
+   * @example
+   * ```ts
+   * import { openRouterText } from '@tanstack/ai-openrouter'
+   *
+   * export default defineConfig({
+   *   plugins: [
+   *     likec4VitePlugin({
+   *       ai: {
+   *         adapter: openRouterText("openai/gpt-5")
+   *       },
+   *     }),
+   *   ],
+   * })
+   * ```
+   */
+  adapter: TAdapter
+  /** Model-specific provider options (type comes from adapter) */
+  modelOptions?: TAdapter['~types']['providerOptions']
+  maxTokens?: number
+}
+
 type SharedOptions = {
+  /**
+   * AI configuration, by default enabled with automatic detection based on environment variables.
+   * You can also provide explicit configuration.
+   * Or set to `disabled` to disable AI.
+   *
+   * @default 'auto' (automatic detection based on environment variables)
+   *
+   * @see https://tanstack.com/ai/latest/docs/getting-started/overview#adapters
+   * @example
+   * ```ts
+   * import { openRouterText } from '@tanstack/ai-openrouter'
+   *
+   * export default defineConfig({
+   *   plugins: [
+   *     likec4VitePlugin({
+   *       ai: {
+   *         adapter: openRouterText("openai/gpt-5")
+   *       },
+   *     }),
+   *   ],
+   * })
+   * ```
+   */
+  ai?: 'disabled' | 'auto' | AIOptions | undefined
+
   /**
    * Define vite environments where this plugin should be active
    * By default, the plugin is active in all environments
@@ -135,29 +187,69 @@ const VITE_PLUGIN_LIKEC4 = 'vite-plugin-likec4'
 export function LikeC4VitePlugin({
   environments,
   appConfig,
-  ...opts
+  ai: _ai = 'auto',
+  ...pluginOpts
 }: LikeC4VitePluginOptions): PluginOption {
-  // let logger: ViteLogger
   let likec4: LikeC4LanguageServices
   let assetsDir: string
-
-  let shouldDisposeOnStop = opts.watch ?? false
+  let rpcEnabled = false
+  let ai: AIOptions | undefined = undefined
+  let shouldDisposeOnStop = pluginOpts.watch ?? false
 
   const virtuals = [
     ..._virtuals,
     createAppConfigModule(appConfig),
   ]
 
-  const projectsChangeDetector = <T extends ProjectsData>(initialValue: T) => {
+  const initAI = async () => {
+    if (isBoolean(_ai)) {
+      throw new Error(
+        'Invalid AI configuration: true is not allowed, use an object with adapter configuration or false to disable AI',
+      )
+    }
+    if (_ai === 'disabled') {
+      return undefined
+    }
+    if (_ai === 'auto') {
+      return await detectAI()
+    }
+    return _ai
+  }
+
+  /**
+   * Helper function to merge shared options with module-specific options
+   */
+  function moduleopts<T>(
+    value: Omit<T, keyof SharedVirtualModuleOptions> & Partial<Record<keyof SharedVirtualModuleOptions, never>>,
+  ): SharedVirtualModuleOptions & T {
+    const isAIAvailable = !!ai
+    return {
+      rpcEnabled,
+      isAIAvailable,
+      ai,
+      assetsDir,
+      likec4,
+      logger,
+      ...value,
+    }
+  }
+
+  /**
+   * Returns a function that detects changes in the projects data
+   * @returns true if the projects data has changed, false otherwise
+   */
+  const projectsChangeDetector = () => {
     const selectDataToCompare = map((p) => ({
       id: p.id,
       title: p.title,
       folder: p.folder.toString(),
       landingPage: p.config.landingPage,
-    })) satisfies (data: T) => any
-    let _last = selectDataToCompare(initialValue)
-    return (update: T): boolean => {
+    })) satisfies (data: ProjectsData) => any
+    let _last: any
+    return <T extends ProjectsData>(update: T): boolean => {
       const _next = selectDataToCompare(update)
+      // Initialize _last on first call
+      _last ??= _next
       if (isDeepEqual(_last, _next)) {
         return false
       }
@@ -169,29 +261,38 @@ export function LikeC4VitePlugin({
   const mainPlugin: Plugin = {
     name: VITE_PLUGIN_LIKEC4,
 
+    sharedDuringBuild: true,
+
     applyToEnvironment(env) {
       return environments ? environments.includes(env.name) : true
     },
 
     async configResolved(config) {
-      if (opts.languageServices) {
-        likec4 = opts.languageServices
-      } else {
-        const isDev = config.mode === 'development'
-        const watch = shouldDisposeOnStop = opts.watch ?? isDev
+      const isDev = rpcEnabled = config.command === 'serve'
 
-        const instance = await fromWorkspace(opts.workspace ?? config.root, {
-          graphviz: opts.graphviz ?? 'wasm',
+      if (pluginOpts.languageServices) {
+        likec4 = pluginOpts.languageServices
+      } else {
+        const watch = shouldDisposeOnStop = isDev && (pluginOpts.watch ?? true)
+
+        const instance = await fromWorkspace(pluginOpts.workspace ?? config.root, {
+          manualLayouts: true,
+          graphviz: pluginOpts.graphviz ?? 'wasm',
           configureLogger: 'console',
-          logLevel: opts.logLevel ?? 'warning',
-          printErrors: opts.printErrors ?? true,
-          throwIfInvalid: opts.throwIfInvalid ?? false,
+          logLevel: pluginOpts.logLevel ?? 'warning',
+          printErrors: pluginOpts.printErrors ?? true,
+          throwIfInvalid: pluginOpts.throwIfInvalid ?? false,
           watch,
         })
 
         likec4 = instance.languageServices
       }
       assetsDir = likec4.workspaceUri.fsPath
+
+      // Initialize AI only if RPC is enabled
+      if (rpcEnabled) {
+        ai = await initAI()
+      }
     },
 
     resolveId: {
@@ -223,92 +324,110 @@ export function LikeC4VitePlugin({
           const projectId = module.matches(id)
           if (projectId) {
             const project = likec4.project(projectId)
-            return await module.load.call(this, {
-              logger,
-              likec4,
-              project,
-              assetsDir,
-            })
+            return await module.load.call(
+              this,
+              moduleopts({ project }),
+            )
           }
         }
         for (const module of virtuals) {
           if (module.virtualId === id) {
             const projects = likec4.projects()
-            invariant(isNonEmptyArray(projects))
-
-            return await module.load.call(this, {
-              logger,
-              likec4,
-              projects,
-              assetsDir,
-            })
+            // Early return if no projects
+            if (!hasAtLeast(projects, 1)) {
+              return null
+            }
+            return await module.load.call(
+              this,
+              moduleopts({ projects }),
+            )
           }
         }
         return null
       },
     },
 
-    configureServer(server) {
-      // Enable RPC via HMR
-      const hotChannel = server.hot
-      enablePluginRPC.call(this, { logger, likec4, server })
-
-      const isProjectsChange = projectsChangeDetector(likec4.projects())
-
-      const reloadModule = async (id: string) => {
-        const md = server.moduleGraph.getModuleById(id)
-        if (!md || md.importers.size === 0) {
-          return
-        }
-        try {
-          await server.reloadModule(md)
-        } catch (err) {
-          logger.error(loggable(err))
-        }
+    async configureServer(server) {
+      if (!rpcEnabled) {
+        return
       }
-
-      likec4.builder.onModelParsed(
-        pDebounce(
-          async () => {
-            const [error] = likec4.getErrors()
-            if (error) {
-              hotChannel.send({
-                type: 'error',
-                err: {
-                  name: 'LikeC4ValidationError',
-                  ...splitErrorMessage(error.message),
-                  plugin: 'vite-plugin-likec4',
-                  loc: {
-                    file: error.sourceFsPath,
-                    line: error.line,
-                    column: error.range.start.character + 1,
-                  },
-                },
-              })
-              return
-            }
-            const projects = likec4.projects()
-            // Update on project data change?
-            if (isProjectsChange(projects)) {
-              await reloadModule(projectsModule.virtualId)
-              await reloadModule(iconsModule.virtualId)
-              await reloadModule(modelModule.virtualId)
-              if (projects.length > 1) {
-                await reloadModule(projectsOverviewModule.virtualId)
-              }
-              return
-            }
-
-            // Reload project-specific Modules
-            for (const project of projects) {
-              for (const projectModule of hmrProjectVirtuals) {
-                await reloadModule(projectModule.virtualId(project.id))
-              }
-            }
-          },
-          100,
-        ),
+      // Enable RPC via HMR
+      enablePluginRPC.call(
+        this,
+        moduleopts({ server }),
       )
+
+      if (ai) {
+        logger.info(
+          k.dim('enabling') + ' ' + k.magenta('AI Chat'),
+        )
+        const { enableAIServer } = await import('./ai/enableServer')
+        enableAIServer.call(
+          this,
+          moduleopts({ server }),
+        )
+      }
+      // Call when server is ready
+      return () => {
+        const hotChannel = server.hot
+
+        const isProjectsChange = projectsChangeDetector()
+
+        const reloadModule = async (id: string) => {
+          const md = server.moduleGraph.getModuleById(id)
+          if (!md || md.importers.size === 0) {
+            return
+          }
+          try {
+            await server.reloadModule(md)
+          } catch (err) {
+            logger.error(loggable(err))
+          }
+        }
+
+        likec4.builder.onModelParsed(
+          pDebounce(
+            async () => {
+              const [error] = likec4.getErrors()
+              if (error) {
+                hotChannel.send({
+                  type: 'error',
+                  err: {
+                    name: 'LikeC4ValidationError',
+                    ...splitErrorMessage(error.message),
+                    plugin: 'vite-plugin-likec4',
+                    loc: {
+                      file: error.sourceFsPath,
+                      line: error.line,
+                      column: error.range.start.character + 1,
+                    },
+                  },
+                })
+                return
+              }
+              const projects = likec4.projects()
+              // Update on project data change?
+              if (isProjectsChange(projects)) {
+                await reloadModule(projectsModule.virtualId)
+                await reloadModule(iconsModule.virtualId)
+                await reloadModule(modelModule.virtualId)
+                if (projects.length > 1) {
+                  await reloadModule(projectsOverviewModule.virtualId)
+                }
+                return
+              }
+
+              // Reload project-specific Modules
+              for (const project of projects) {
+                for (const projectModule of hmrProjectVirtuals) {
+                  await reloadModule(projectModule.virtualId(project.id))
+                }
+              }
+            },
+            100,
+          ),
+        )
+      }
     },
 
     async buildEnd() {
@@ -316,12 +435,12 @@ export function LikeC4VitePlugin({
         await likec4.dispose()
       }
     },
-  } satisfies Plugin
+  }
 
   return [
     iconBundlePlugin({
       environments: environments ? [environments].flat() : undefined,
-      workspace: opts.workspace ?? opts.languageServices?.workspacePath,
+      workspace: pluginOpts.workspace ?? pluginOpts.languageServices?.workspacePath,
     }),
     mainPlugin,
   ]

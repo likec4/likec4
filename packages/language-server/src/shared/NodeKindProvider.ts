@@ -33,7 +33,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         return SymbolKind.Namespace
 
       case hasType(ast.LikeC4View):
-        return SymbolKind.Class
+        return SymbolKind.Struct
 
       case hasType(
         ast.Tag,

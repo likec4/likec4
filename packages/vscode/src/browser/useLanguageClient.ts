@@ -6,7 +6,7 @@ import {
   tryOnScopeDispose,
   useDisposable,
 } from 'reactive-vscode'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import type { LanguageClientOptions } from 'vscode-languageclient/browser'
 import { LanguageClient as BrowserLanguageClient } from 'vscode-languageclient/browser'
 import { useExtensionLogger } from '../useExtensionLogger'

@@ -154,7 +154,7 @@ Example response:
       type: z.enum(['element', 'deployment', 'dynamic']),
     })),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const project = languageServices.project(projectId)
   const model = await languageServices.computedModel(projectId)

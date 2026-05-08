@@ -2,7 +2,6 @@ import { outputOptions } from '@likec4/devops/tsdown'
 import postcssPanda from '@pandacss/dev/postcss'
 import pluginBabel from '@rolldown/plugin-babel'
 import { reactCompilerPreset } from '@vitejs/plugin-react'
-import { resolve } from 'node:path'
 import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'tsdown'
 import { build as viteBuild } from 'vite'
@@ -35,7 +34,9 @@ export default defineConfig([{
   ],
   plugins: [
     pluginBabel({
-      presets: [reactCompilerPreset()],
+      presets: [reactCompilerPreset({
+        target: '18',
+      })],
     }),
     esmExternalRequirePlugin({
       external: ['react', 'react-dom'],
@@ -62,12 +63,14 @@ export default defineConfig([{
   dts: false,
   tsconfig: 'tsconfig.src.json',
   deps: {
+    alwaysBundle: [
+      '@likec4/vite-plugin/ai/tools',
+    ],
     neverBundle: [
       '@emotion/is-prop-valid',
       'likec4/model',
       'likec4/react',
       /@likec4\/core.*/,
-      /likec4\/vite-plugin.*/,
       /likec4:/,
     ],
   },
@@ -76,7 +79,7 @@ export default defineConfig([{
       conditionNames: ['sources', 'import', 'default'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
+        'react-dom/server': './src/react-dom-server-mock.ts',
       },
     },
   },
@@ -85,33 +88,7 @@ export default defineConfig([{
       await $`tsr generate`
     },
     'build:done': async () => {
-      await viteBuild({
-        configFile: false,
-        css: {
-          postcss: {
-            plugins: [
-              postcssPanda() as any,
-            ],
-          },
-        },
-        build: {
-          outDir: 'dist/src',
-          copyPublicDir: false,
-          emptyOutDir: false,
-          cssCodeSplit: true,
-          cssMinify: true,
-          lib: {
-            entry: 'src/style.css',
-            formats: ['es'],
-          },
-          rolldownOptions: {
-            input: {
-              'style.css': 'src/style.css',
-              'fonts.css': 'src/fonts.css',
-            },
-          },
-        },
-      })
+      await buildStyles()
     },
   },
 }, {
@@ -127,8 +104,37 @@ export default defineConfig([{
       'likec4/model',
       'likec4/react',
       /@likec4\/core.*/,
-      /likec4\/vite-plugin.*/,
       /likec4:/,
     ],
   },
 }])
+
+async function buildStyles() {
+  await viteBuild({
+    configFile: false,
+    css: {
+      postcss: {
+        plugins: [
+          postcssPanda() as any,
+        ],
+      },
+    },
+    build: {
+      outDir: 'dist/src',
+      copyPublicDir: false,
+      emptyOutDir: false,
+      cssCodeSplit: true,
+      cssMinify: true,
+      lib: {
+        entry: 'src/style.css',
+        formats: ['es'],
+      },
+      rolldownOptions: {
+        input: {
+          'style.css': 'src/style.css',
+          'fonts.css': 'src/fonts.css',
+        },
+      },
+    },
+  })
+}

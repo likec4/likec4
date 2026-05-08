@@ -97,7 +97,7 @@ Example response:
     elements: z.array(elementDetailSchema),
     notFound: z.array(z.string()).describe('Element ids that were not found'),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   invariant(args.ids.length <= MAX_IDS, `Maximum ${MAX_IDS} element ids per call`)
 
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)

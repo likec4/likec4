@@ -34,7 +34,7 @@ export class GraphvizWasmAdapter implements GraphvizPort {
 
   private async attempt<T>(logMessage: string, dot: string, fn: () => Promise<T>): Promise<T> {
     return await limit(async () => {
-      const logger = rootLogger.getChild(['graphviz', 'wasm', logMessage, randomString(4)])
+      const logger = rootLogger.getChild(['layouter', 'wasm', logMessage, '_', randomString(4).toLowerCase()])
       try {
         logger.trace`execute`
         const result = await fn()
@@ -46,19 +46,21 @@ export class GraphvizWasmAdapter implements GraphvizPort {
         }
         return result
       } catch (error) {
-        logger.debug('FAILED DOT', { dot })
-        logger.error(loggable(error))
+        logger.trace('FAILED DOT\n' + dot)
+        const errorStr = loggable(error)
+
+        // don't retry on syntax errors
+        if (errorStr.includes('syntax error')) {
+          throw error
+        }
+        logger.warn(errorStr)
+
         GraphvizWasmAdapter.opsCount = 0
         Graphviz.unload()
       }
       logger.warn('Retrying...')
-      try {
-        await delay(30, 300)
-        return await fn()
-      } catch (error) {
-        logger.error(loggable(error))
-        return Promise.reject(error)
-      }
+      await delay(30, 300)
+      return await fn()
     })
   }
 

@@ -8,37 +8,10 @@
       "dependsOn": [
         "@likec4/icons#generate"
       ],
-      "inputs": [
-        "scripts/**",
-        "src/**/*.langium",
-        "langium-config.json",
-        "package.json"
-      ],
       "outputs": [
         "contrib/**",
         "src/generated/**",
         "src/generated-lib/**"
-      ],
-      "outputLogs": "new-only"
-    },
-    "build": {
-      "dependsOn": [
-        "@likec4/config#build",
-        "@likec4/core#build",
-        "@likec4/log#build",
-        "@likec4/layouts#build",
-        "generate"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!**/*.spec.ts",
-        "!**/*.test-d.ts",
-        "!**/__tests__/**",
-        "!**/__snapshots__/**",
-        "!**/__fixtures__/**"
-      ],
-      "outputs": [
-        "dist/**"
       ],
       "outputLogs": "new-only"
     }

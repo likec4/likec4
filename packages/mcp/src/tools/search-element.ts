@@ -104,7 +104,7 @@ Example response:
     total: z.number(),
     found: searchResultSchema,
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projects = languageServices.projects()
   const found = [] as z.infer<typeof searchResultSchema>
   let search = args.search.toLowerCase()

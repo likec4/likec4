@@ -5,6 +5,12 @@ import type * as t from '@likec4/core/types'
  */
 export interface LikeC4EditorCallbacks {
   /**
+   * Apply semantic layout to a view (if AI is available)
+   * See vite-plugin settings for more details
+   */
+  applySemanticLayout?: undefined | ((viewId: t.ViewId) => Promise<void>)
+
+  /**
    * Fetch a view by its ID and layout type.
    *
    * @param viewId - The ID of the view to fetch.

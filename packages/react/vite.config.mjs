@@ -1,8 +1,36 @@
+import postcssPanda from '@pandacss/dev/postcss'
+import { execSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+
+/**
+ * @type {import('postcss').AcceptedPlugin}
+ */
+const rewriteRootSelector = {
+  postcssPlugin: 'postcss-rewrite-root',
+  Once(css) {
+    css.walkRules((rule) => {
+      let updated = false
+      let updatedSelectors = []
+      for (let val of rule.selectors) {
+        let _val = val.trim()
+        if (_val === ':root' || _val === 'body') {
+          updatedSelectors.push('.likec4-shadow-root')
+          updated = true
+          continue
+        }
+        updatedSelectors.push(val)
+      }
+
+      if (updated) {
+        rule.selectors = updatedSelectors
+      }
+    })
+  },
+}
 
 export default defineConfig({
   mode: 'production',
@@ -10,8 +38,18 @@ export default defineConfig({
     'process.env.NODE_ENV': '"production"',
   },
   resolve: {
+    conditions: ['sources'],
     alias: {
       'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
+      '@likec4/styles': resolve('./styled-system/'),
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [
+        postcssPanda(),
+        rewriteRootSelector,
+      ],
     },
   },
   build: {
@@ -31,7 +69,6 @@ export default defineConfig({
       },
       external: [
         'react/jsx-dev-runtime',
-        'immer',
         '@emotion/is-prop-valid', // dev-only import from motion
         /@likec4\/core.*/,
       ],
@@ -48,6 +85,15 @@ export default defineConfig({
     },
   },
   plugins: [
+    {
+      buildStart() {
+        this.info('pandacss')
+        execSync('pnpm pandacss codegen', {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        })
+      },
+    },
     dts({
       rollupTypes: true,
       bundledPackages: [

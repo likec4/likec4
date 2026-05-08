@@ -2,17 +2,13 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { ProjectId } from '@likec4/core'
-import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { queryByTags } from './query-by-tags'
+import { createMCPTestPair, structured, textContent } from '../__tests__/test-utils'
 
 describe('query-by-tags tool', () => {
   describe('allOf logic', () => {
     it('should match elements with all specified tags', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           tag public
@@ -35,14 +31,13 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-      const result = await handler(
-        { allOf: ['public', 'api'], anyOf: [], noneOf: [], project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: { allOf: ['public', 'api'], anyOf: [], noneOf: [], project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<{ id: string; tags: string[] }>
+      const results = structured(result)['results'] as Array<{ id: string; tags: string[] }>
       expect(results).toHaveLength(2)
       const ids = results.map(r => r.id)
       expect(ids).toContain('api1')
@@ -51,9 +46,7 @@ describe('query-by-tags tool', () => {
     })
 
     it('should not match if missing any tag', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           tag public
@@ -66,23 +59,20 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-      const result = await handler(
-        { allOf: ['public', 'api'], anyOf: [], noneOf: [], project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: { allOf: ['public', 'api'], anyOf: [], noneOf: [], project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<any>
+      const results = structured(result)['results'] as Array<any>
       expect(results).toHaveLength(0)
     })
   })
 
   describe('anyOf logic', () => {
     it('should match elements with at least one tag', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           tag deprecated
@@ -103,14 +93,13 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-      const result = await handler(
-        { allOf: [], anyOf: ['deprecated', 'legacy'], noneOf: [], project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: { allOf: [], anyOf: ['deprecated', 'legacy'], noneOf: [], project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<{ id: string }>
+      const results = structured(result)['results'] as Array<{ id: string }>
       expect(results).toHaveLength(3)
       const ids = results.map(r => r.id)
       expect(ids).toContain('old1')
@@ -120,9 +109,7 @@ describe('query-by-tags tool', () => {
     })
 
     it('should not match if has none of the tags', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           tag active
@@ -134,23 +121,20 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-      const result = await handler(
-        { allOf: [], anyOf: ['deprecated', 'legacy'], noneOf: [], project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: { allOf: [], anyOf: ['deprecated', 'legacy'], noneOf: [], project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<any>
+      const results = structured(result)['results'] as Array<any>
       expect(results).toHaveLength(0)
     })
   })
 
   describe('noneOf logic', () => {
     it('should match elements without any specified tags', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           tag active
@@ -176,14 +160,13 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-      const result = await handler(
-        { allOf: [], anyOf: [], noneOf: ['deprecated', 'legacy'], project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: { allOf: [], anyOf: [], noneOf: ['deprecated', 'legacy'], project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<{ id: string }>
+      const results = structured(result)['results'] as Array<{ id: string }>
       expect(results).toHaveLength(2)
       const ids = results.map(r => r.id)
       expect(ids).toContain('good1')
@@ -193,9 +176,7 @@ describe('query-by-tags tool', () => {
     })
 
     it('should not match if has any of the tags', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           tag active
@@ -209,23 +190,20 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-      const result = await handler(
-        { allOf: [], anyOf: [], noneOf: ['deprecated', 'legacy'], project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: { allOf: [], anyOf: [], noneOf: ['deprecated', 'legacy'], project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<any>
+      const results = structured(result)['results'] as Array<any>
       expect(results).toHaveLength(0)
     })
   })
 
   describe('combined conditions', () => {
     it('should apply AND logic across all conditions', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           tag public
@@ -253,19 +231,18 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: {
           allOf: ['microservice'],
           anyOf: ['public', 'internal'],
           noneOf: ['deprecated'],
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<{ id: string }>
+      const results = structured(result)['results'] as Array<{ id: string }>
       expect(results).toHaveLength(2)
       const ids = results.map(r => r.id)
       expect(ids).toContain('good')
@@ -275,9 +252,7 @@ describe('query-by-tags tool', () => {
     })
 
     it('should reject query with no conditions', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -286,24 +261,20 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-
-      const result = await handler(
-        { allOf: [], anyOf: [], noneOf: [], project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: { allOf: [], anyOf: [], noneOf: [], project: 'default' },
+      })
 
       expect(result.isError).toBe(true)
-      const content = result.content![0]!
+      const content = textContent(result)[0]!
       expect('text' in content && content.text).toContain('At least one condition')
     })
   })
 
   describe('edge cases', () => {
     it('should be case-sensitive', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           tag Public
@@ -315,21 +286,18 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-      const result = await handler(
-        { allOf: ['public'], anyOf: [], noneOf: [], project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: { allOf: ['public'], anyOf: [], noneOf: [], project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<any>
+      const results = structured(result)['results'] as Array<any>
       expect(results).toHaveLength(0) // Should not match due to case sensitivity
     })
 
     it('should handle elements with no tags', async () => {
-      const { validate, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           tag public
@@ -342,14 +310,13 @@ describe('query-by-tags tool', () => {
         }
       `)
 
-      const [_name, _config, handler] = queryByTags(services.likec4.LanguageServices)
-      const result = await handler(
-        { allOf: [], anyOf: [], noneOf: ['deprecated'], project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'query-by-tags',
+        arguments: { allOf: [], anyOf: [], noneOf: ['deprecated'], project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<{ id: string }>
+      const results = structured(result)['results'] as Array<{ id: string }>
       expect(results.length).toBeGreaterThanOrEqual(2)
       const ids = results.map(r => r.id)
       expect(ids).toContain('tagged')

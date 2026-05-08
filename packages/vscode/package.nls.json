@@ -7,5 +7,7 @@
   "ext.cmd.preview-context-open-source": "Open source",
   "ext.cmd.print-dot-of-currentview": "Print DOT of current view to output",
   "ext.cmd.validate-layout": "Validate layout",
-  "ext.cmd.open-projects-overview": "Open Projects Overview"
+  "ext.cmd.open-projects-overview": "Open Projects Overview",
+  "ext.config.node.path.title": "Node.js binary path",
+  "ext.cmd.semantic-layout-with-ai": "Semantic Layout with AI"
 }

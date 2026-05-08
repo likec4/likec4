@@ -131,7 +131,7 @@ Example response:
       })).describe('Ordered sequence of relationships in the path'),
     })),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
 

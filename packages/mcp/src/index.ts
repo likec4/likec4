@@ -6,6 +6,7 @@ import { defu } from 'defu'
 import { resolve } from 'node:path'
 import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
+import { setLanguageServicesCtx } from './ctx'
 import { StdioLikeC4MCPServer } from './server/StdioLikeC4MCPServer'
 import { StreamableLikeC4MCPServer } from './server/StreamableLikeC4MCPServer'
 import { logger } from './utils'
@@ -96,7 +97,7 @@ export async function initLikeC4MCP(
     throwIfInvalid: opts.throwIfInvalid,
   })
 
-  const services = likec4.languageServices
+  const services = setLanguageServicesCtx(likec4.languageServices)
 
   let server = opts.mcp === 'stdio'
     ? new StdioLikeC4MCPServer(services)

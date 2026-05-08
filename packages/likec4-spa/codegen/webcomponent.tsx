@@ -4,16 +4,16 @@ import { type Root, createRoot } from 'react-dom/client'
 
 import {
   _default as zDefault,
-  boolean as zBoolean,
   literal as zLiteral,
   object as zObject,
   optional as zOptional,
   string as zString,
-} from 'zod/v4-mini'
+  stringbool as zStringBoolean,
+} from 'zod/mini'
 
 const propsSchema = zObject({
   viewId: zDefault(zString(), 'index'),
-  browser: zDefault(zBoolean(), true),
+  browser: zDefault(zStringBoolean(), true),
   dynamicViewVariant: zOptional(zLiteral(['diagram', 'sequence'])),
 })
 

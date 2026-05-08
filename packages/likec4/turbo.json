@@ -4,44 +4,18 @@
     "//"
   ],
   "tasks": {
-    "bundle-react": {
+    "build": {
       "dependsOn": [
-        "@likec4/react#build"
-      ],
-      "outputs": [
-        "react/**"
-      ]
-    },
-    "bundle-app": {
-      "dependsOn": [
-        "@likec4/spa#build"
-      ],
-      "outputs": [
-        "__app__/**"
-      ],
-      "outputLogs": "new-only"
-    },
-    "build-cli": {
-      "dependsOn": [
-        "@likec4/core#build",
-        "@likec4/language-server#build",
-        "@likec4/language-services#build",
-        "@likec4/vite-plugin#build",
-        "@likec4/config#build",
-        "@likec4/generators#build"
+        "^build",
+        "sources",
+        "generate"
       ],
       "outputs": [
         "dist/**",
+        "react/**",
+        "__app__/**",
         "config/schema.json",
         "vite-plugin-modules.d.ts"
-      ],
-      "outputLogs": "new-only"
-    },
-    "build": {
-      "dependsOn": [
-        "bundle-app",
-        "build-cli",
-        "bundle-react"
       ],
       "outputLogs": "new-only"
     }

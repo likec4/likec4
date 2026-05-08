@@ -1,3 +1,29 @@
+## [1.56.0](https://github.com/likec4/likec4/compare/v1.55.1...v1.56.0) (2026-04-28)
+
+### 🚀 Features
+
+- **Improved Color Palette**:\
+  Element rendering now uses a more accurate color palette that better matches the color specified by the user. Thanks [@Kiiv](https://github.com/Kiiv), [#2912](https://github.com/likec4/likec4/pull/2912), closes [#2101](https://github.com/likec4/likec4/issues/2101)
+
+- **On-demand Icon Loading from CDN**:\
+  Icons are now loaded on demand from CDN instead of bundling all icon components, significantly reducing bundle size. Icons are resolved from local cache, then `@likec4/icons` package, then fetched from `icons.like-c4.dev`. [#2906](https://github.com/likec4/likec4/pull/2906)
+
+- **Extracted `@likec4/spa` Package**:\
+  Web app extracted into a separate `@likec4/spa` package, decoupling it from the CLI for better modularity, faster builds and smaller bundles. [#2689](https://github.com/likec4/likec4/issues/2689)
+
+- **Apply View Changes from dev server**:\
+  Support applying view changes in vite-plugin/CLI (previously was possible only in IDE). [#2904](https://github.com/likec4/likec4/pull/2904)
+
+### 🐞 Bug Fixes
+
+- Fixed greedy output panel that stole focus from the editor on errors in VSCode extension
+
+- Fixed left-click on external links in VSCode extension diagram preview -- links in element details now open in the default browser on left-click. Thanks [@ckeller42](https://github.com/ckeller42), [#2908](https://github.com/likec4/likec4/pull/2908)
+
+- Improved edge label readability and fixed color token references. [#2918](https://github.com/likec4/likec4/pull/2918)
+
+- Updated Mantine to 9.1.0 -- the `light` variant of Buttons, Alerts, and ActionIcons now uses solid colors instead of transparency. [#2921](https://github.com/likec4/likec4/pull/2921)
+
 ## [1.55.1](https://github.com/likec4/likec4/compare/v1.55.0...v1.55.1) (2026-04-15)
 
 ### 🚀 Features
@@ -16,7 +42,6 @@
 - Allow using reserved keyword `relationship` as an identifier in LikeC4 DSL (e.g. as element kind). [#2897](https://github.com/likec4/likec4/pull/2897)
 
 - Improved edge visibility in dark mode by increasing background stroke opacity. Thanks [@ckeller42](https://github.com/ckeller42), [#2891](https://github.com/likec4/likec4/pull/2891)
-
 
 ## [1.55.0](https://github.com/likec4/likec4/compare/v1.54.0...v1.55.0) (2026-04-13)
 

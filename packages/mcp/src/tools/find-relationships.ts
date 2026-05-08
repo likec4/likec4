@@ -112,7 +112,7 @@ Response:
   outputSchema: {
     found: z.array(searchResultSchema),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   if (isSameHierarchy(args.element1, args.element2)) {
     throw new Error('No relationships possible between parent-child')

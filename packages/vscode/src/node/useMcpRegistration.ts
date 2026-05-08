@@ -1,18 +1,18 @@
+import { nonNullable } from '@likec4/core'
 import { join } from 'pathe'
 import {
   computed,
   createSingletonComposable,
   extensionContext,
+  toValue,
   useDisposable,
   useEventEmitter,
   useWorkspaceFolders,
 } from 'reactive-vscode'
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { version } from '../meta'
-import { useExtensionLogger } from '../useExtensionLogger'
-import { useWorkspaceId } from '../useWorkspaceId'
-
-const useOnDidChangeMcpServer = createSingletonComposable(() => useEventEmitter<void>())
+import { useExtensionLogger } from '../useExtensionLogger.ts'
+import { useWorkspaceId } from '../useWorkspaceId.ts'
 
 function isMcpStdioServerDefinition(server: vscode.McpServerDefinition): server is vscode.McpStdioServerDefinition {
   return 'args' in server && 'command' in server
@@ -20,27 +20,25 @@ function isMcpStdioServerDefinition(server: vscode.McpServerDefinition): server 
 
 export const useMcpRegistration = createSingletonComposable(() => {
   const { logger } = useExtensionLogger()
-  const onDidChange = useOnDidChangeMcpServer()
+
+  if (!vscode.lm?.registerMcpServerDefinitionProvider) {
+    logger.warn('registerMcpServerDefinitionProvider API not available, update your IDE')
+    return
+  }
+
+  const onDidChange = useEventEmitter<void>()
 
   const folders = useWorkspaceFolders()
   const workspaceFolders = computed(() => folders.value?.map(f => f.uri.toString()) ?? [])
-  const workspaceId = useWorkspaceId()
-  const ctx = extensionContext.value
-  if (!ctx) {
-    throw new Error('Extension context not available during MCP registration')
-  }
+  const workspaceId = toValue(useWorkspaceId())
+  const ctx = nonNullable(extensionContext.value, 'Extension context not available during MCP registration')
+
   const serverModule = ctx.asAbsolutePath(
     join(
       'dist',
       'node',
       'mcp-server.mjs',
     ),
-    // join(
-    //   'node_modules',
-    //   'likec4',
-    //   'bin',
-    //   'likec4.mjs',
-    // ),
   )
 
   useDisposable(
@@ -60,7 +58,9 @@ export const useMcpRegistration = createSingletonComposable(() => {
               // '--log-level',
               // isDev ? 'debug' : 'info',
             ],
-            {},
+            {
+              NODE_ENV: 'production',
+            },
             version,
           ),
         ]
@@ -68,11 +68,11 @@ export const useMcpRegistration = createSingletonComposable(() => {
       resolveMcpServerDefinition: async (server) => {
         logger.debug(`Resolving MCP server ${server.label}`)
         if (server.label === 'likec4' && isMcpStdioServerDefinition(server)) {
-          logger.debug(`Resolved MCP server`, {
+          logger.debug`Resolved MCP server ${{
             args: server.args,
             workspaceFolders: workspaceFolders.value,
             workspaceId,
-          })
+          }}`
 
           Object.assign(server.env, {
             LIKEC4_WORKSPACE_ID: workspaceId,

@@ -118,7 +118,7 @@ Example response:
     truncated: z.boolean().describe('True if results were truncated due to exceeding the limit'),
     truncatedByDepth: z.boolean().describe('True if deeper descendants exist beyond maxDepth'),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
 
