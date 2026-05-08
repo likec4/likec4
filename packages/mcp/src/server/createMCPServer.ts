@@ -5,16 +5,13 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { loggable, logger } from '@likec4/log'
-import { completable } from '@modelcontextprotocol/sdk/server/completable.js'
 import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js'
-import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
-import type { ReadResourceResult } from '@modelcontextprotocol/sdk/types'
-import { prop } from 'remeda'
-import * as z from 'zod/v3'
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import packageJson from '../../package.json' with { type: 'json' }
+import { registerApplySemanticLayoutPrompt } from '../prompts/applySemanticLayout'
+import { registerProjectResource } from '../resource/project'
 import { registerApplySemanticLayoutTool } from '../tools/apply-semantic-layout'
 import { batchReadElements } from '../tools/batch-read-elements'
 import { elementDiff } from '../tools/element-diff'
@@ -101,103 +98,10 @@ Full documentation: https://likec4.dev/llms-full.txt
   mcp.registerTool(...elementDiff(services))
   mcp.registerTool(...subgraphSummary(services))
 
-  mcp.registerPrompt(
-    'apply_semantic_layout',
-    {
-      title: 'Apply semantic layout to a view',
-      argsSchema: {
-        projectId: completable(
-          z.string()
-            // .default('default' as ProjectId)
-            .describe('Project id (optional, will use "default" if not specified)'),
-          (value = '') => {
-            return services.projects().filter(project => project.id.startsWith(value)).map(prop('id'))
-          },
-        ),
-        viewId: completable(
-          z.string().describe('View ID to apply semantic layout to'),
-          async (value = '', ctx) => {
-            const projectId = ctx?.arguments?.['projectId'] ?? services.projectsManager.default.id
-            const model = await services.computedModel(projectId as ProjectId)
-            await mcp.sendLoggingMessage({
-              level: 'warning',
-              data: `Completing viewId for project ${projectId} with input value "${value}", model ${
-                model ? 'loaded' : 'not loaded'
-              }`,
-            })
-            if (!model) {
-              return []
-            }
-            return Array.from(model.views()).filter((view) => view.id.startsWith(value)).map(prop('id'))
-          },
-        ),
-      },
-    },
-    async ({ viewId, projectId }, _ctx) => {
-      return {
-        messages: [{
-          role: 'user',
-          content: {
-            type: 'text',
-            text: `Call \`apply-semantic-layout\` tool of likec4 mcp with these arguments:\n${
-              JSON.stringify({ viewId, projectId })
-            }`,
-          },
-        }],
-      }
-    },
-  )
+  registerApplySemanticLayoutPrompt(mcp, services)
   registerApplySemanticLayoutTool(mcp, services)
 
-  mcp.registerResource(
-    'likec4-project',
-    new ResourceTemplate('likec4://project/{projectId}', {
-      list: async () => {
-        const projects = services.projects()
-        return ({
-          resources: projects.map(p => ({
-            uri: `likec4://project/${encodeURIComponent(p.id)}`,
-            name: p.title,
-          })),
-        })
-      },
-      complete: {
-        projectId: (value) => {
-          if (!value) {
-            return services.projects().map(prop('id'))
-          }
-          const needle = value.toLowerCase()
-          return services.projects()
-            .filter(p => p.id.toLowerCase().includes(needle))
-            .map(prop('id'))
-        },
-      },
-    }),
-    {
-      description: 'LikeC4 project resource',
-      mimeType: 'application/json',
-    },
-    async (uri: URL, { projectId }) => {
-      if (!projectId) {
-        return {
-          contents: [],
-        } satisfies ReadResourceResult
-      }
-      const ids = typeof projectId === 'string' ? [projectId] : projectId
-      const projects = services.projects().filter(p => ids.includes(p.id))
-
-      return ({
-        contents: projects.map(p => ({
-          uri: `likec4://project/${encodeURIComponent(p.id)}`,
-          text: JSON.stringify({
-            id: p.id,
-            title: p.title,
-            folder: p.folder.fsPath,
-          }),
-        })),
-      })
-    },
-  )
+  registerProjectResource(mcp, services)
 
   mcp.server.onerror = (err) => {
     logger.error(loggable(err))
