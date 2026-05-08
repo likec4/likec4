@@ -129,6 +129,10 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
       if (files.length === 0) {
         return null
       }
+
+      // Guarantee consistent order (for hash calculation)
+      files.sort((a, b) => a.uri.path.localeCompare(b.uri.path))
+
       for (const file of files) {
         try {
           const content = await fs.readFile(file.uri)

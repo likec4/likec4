@@ -128,7 +128,6 @@ export function DiagramActorProvider({
           </ToggledFeatures>
         </ErrorBoundary>
         <PropagateDiagramActorEvents />
-        {!editorActor.isStub && <PropagateEditorBusyState />}
       </DiagramApiContextProvider>
     </DiagramActorContextProvider>
   )
@@ -202,20 +201,5 @@ const PropagateDiagramActorEvents = memo(() => {
     { once: true },
   )
 
-  return null
-})
-
-const PropagateEditorBusyState = memo(() => {
-  const { $busy } = useRootContainer()
-  const editorActor = useEditorActorRef()
-  useEffect(() => {
-    const subscription = editorActor?.subscribe((snapshot) => {
-      $busy.set(snapshot.hasTag('busy'))
-    })
-    return () => {
-      subscription?.unsubscribe()
-      $busy.set(false)
-    }
-  }, [editorActor, $busy])
   return null
 })

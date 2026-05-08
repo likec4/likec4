@@ -180,6 +180,8 @@ declare module 'likec4:rpc' {
   export const isRpcAvailable: boolean
 
   export const isAIAvailable: boolean
+
+  export const AIAdapter: string | undefined
 }
 
 declare module 'likec4:app-config' {

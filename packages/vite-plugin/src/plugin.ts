@@ -8,12 +8,12 @@ import type {
   Plugin,
   PluginOption,
 } from 'vite'
-import { detectAI } from './detect-ai'
+import { detectAI } from './ai/detect-ai'
 import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
-import type { ProjectsData, SharedVirtualModuleOptions } from './virtuals/_shared'
+import { type ProjectsData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
 import { type AppConfig, createAppConfigModule } from './virtuals/app-config'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
@@ -222,9 +222,11 @@ export function LikeC4VitePlugin({
   function moduleopts<T>(
     value: Omit<T, keyof SharedVirtualModuleOptions> & Partial<Record<keyof SharedVirtualModuleOptions, never>>,
   ): SharedVirtualModuleOptions & T {
+    const isAIAvailable = !!ai
     return {
       rpcEnabled,
-      isAIAvailable: !!ai,
+      isAIAvailable,
+      ai,
       assetsDir,
       likec4,
       logger,
@@ -345,16 +347,29 @@ export function LikeC4VitePlugin({
       },
     },
 
-    configureServer(server) {
+    async configureServer(server) {
+      if (!rpcEnabled) {
+        return
+      }
+      // Enable RPC via HMR
+      enablePluginRPC.call(
+        this,
+        moduleopts({ server }),
+      )
+
+      if (ai) {
+        logger.info(
+          k.dim('enabling') + ' ' + k.magenta('AI Chat'),
+        )
+        const { enableAIServer } = await import('./ai/enableServer')
+        enableAIServer.call(
+          this,
+          moduleopts({ server }),
+        )
+      }
       // Call when server is ready
       return () => {
         const hotChannel = server.hot
-
-        // Enable RPC via HMR
-        enablePluginRPC.call(
-          this,
-          moduleopts({ ai, server }),
-        )
 
         const isProjectsChange = projectsChangeDetector()
 

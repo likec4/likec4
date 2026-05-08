@@ -4,10 +4,10 @@ import type { OllamaTextAdapter } from '@tanstack/ai-ollama'
 import type { OpenAITextAdapter } from '@tanstack/ai-openai'
 import { isTruthy, once } from 'remeda'
 import { env } from 'std-env'
-import { ensurePackage } from './ensurePackage'
-import { logger as rootLogger } from './logger'
-import type { AIOptions } from './plugin'
-import { k } from './virtuals/_shared'
+import { ensurePackage } from '../ensurePackage'
+import { logger as rootLogger } from '../logger'
+import type { AIOptions } from '../plugin'
+import { k } from '../virtuals/_shared'
 
 const logger = rootLogger.getChild('ai')
 

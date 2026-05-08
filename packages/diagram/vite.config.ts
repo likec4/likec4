@@ -42,7 +42,7 @@ export default defineConfig({
     extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-      'react-dom/server': resolve('./src/bundle/react-dom-server-mock.ts'),
+      'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
     },
   },
   oxc: {

@@ -40,6 +40,7 @@
         "default": "./dist/internal/index.mjs"
       }
     },
+    "./ai/tools": "./src/ai/tools.ts",
     "./modules": "./src/modules.d.ts",
     "./package.json": "./package.json"
   },
@@ -69,6 +70,7 @@
     "@likec4/language-services": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
+
     "defu": "catalog:utils",
     "json5": "catalog:utils",
     "langium": "catalog:langium",
@@ -82,14 +84,15 @@
     "tinyrainbow": "catalog:utils",
     "type-fest": "catalog:externals",
     "ufo": "catalog:utils",
+    "ws": "catalog:ai",
     "zod": "catalog:externals"
   },
   "peerDependencies": {
     "@tanstack/ai": "catalog:ai",
     "@tanstack/ai-anthropic": "catalog:ai",
     "@tanstack/ai-gemini": "catalog:ai",
-    "@tanstack/ai-openai": "catalog:ai",
     "@tanstack/ai-ollama": "catalog:ai",
+    "@tanstack/ai-openai": "catalog:ai",
     "@tanstack/ai-openrouter": "catalog:ai",
     "react": "catalog:react",
     "vite": "catalog:vite"
@@ -115,20 +118,21 @@
     }
   },
   "devDependencies": {
-    "fast-equals": "catalog:utils",
-    "@nanostores/react": "catalog:react",
-    "nanostores": "catalog:react",
-    "birpc": "catalog:vite",
-    "@tanstack/ai": "catalog:ai",
-    "@tanstack/ai-anthropic": "catalog:ai",
-    "@tanstack/ai-openai": "catalog:ai",
     "@likec4/devops": "workspace:*",
     "@likec4/react": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@nanostores/react": "catalog:react",
+    "@tanstack/ai": "catalog:ai",
+    "@tanstack/ai-anthropic": "catalog:ai",
+    "@tanstack/ai-openai": "catalog:ai",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
-    "tsdown": "catalog:",
+    "@types/ws": "catalog:ai",
+    "birpc": "catalog:vite",
+    "fast-equals": "catalog:utils",
+    "nanostores": "catalog:react",
     "oxlint": "catalog:",
+    "tsdown": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

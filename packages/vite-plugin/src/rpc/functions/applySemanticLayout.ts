@@ -8,6 +8,7 @@ export async function applySemanticLayout({
   logger,
   ai,
   likec4,
+  server,
 }: PluginRPCParams, data: Parameters<LikeC4VitePluginRpc['applySemanticLayout']>[0]) {
   invariant(ai, 'AI is not configured')
   logger.info([
@@ -17,6 +18,12 @@ export async function applySemanticLayout({
     k.dim('view:'),
     data.viewId,
   ].join(' '))
+
+  const notify = {
+    started: () => server.hot.send('likec4:apply-semantic-layout', { type: 'started' }),
+    completed: () => server.hot.send('likec4:apply-semantic-layout', { type: 'completed' }),
+    log: (log: string) => server.hot.send('likec4:apply-semantic-layout', { log }),
+  }
 
   const { chat, EventType } = await import('@tanstack/ai')
 
@@ -35,6 +42,7 @@ export async function applySemanticLayout({
     {
       name: ai.adapter.name,
       async sendRequest({ systemPrompt, userPrompt, diagram }) {
+        notify.started()
         const stream = chat({
           ...ai,
           systemPrompts: [systemPrompt],
@@ -57,12 +65,12 @@ export async function applySemanticLayout({
         for await (const chunk of stream) {
           switch (chunk.type) {
             case EventType.TEXT_MESSAGE_CONTENT: {
-              process.stdout.write(chunk.delta)
+              notify.log(chunk.delta)
               content += chunk.delta
               break
             }
             case EventType.REASONING_MESSAGE_CONTENT: {
-              process.stdout.write(chunk.delta)
+              notify.log(chunk.delta)
               break
             }
           }
@@ -72,6 +80,7 @@ export async function applySemanticLayout({
       },
     },
   )
+  notify.completed()
 
   if (!hints) {
     logger.warn([

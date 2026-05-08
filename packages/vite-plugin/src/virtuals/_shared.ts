@@ -6,6 +6,7 @@ import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
 import type { Rolldown } from 'vite'
 import { type ViteLogger, logGenerating } from '../logger'
+import type { AIOptions } from '../plugin'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 export { k }
@@ -18,13 +19,22 @@ export type ProjectsData = NonEmptyArray<ProjectData>
 
 export type VirtualModuleLoadResult = Rolldown.SourceDescription | string
 
-export type SharedVirtualModuleOptions = {
-  rpcEnabled: boolean
-  isAIAvailable: boolean
-  logger: ViteLogger
-  likec4: LikeC4LanguageServices
-  assetsDir: string
-}
+export type SharedVirtualModuleOptions =
+  & {
+    rpcEnabled: boolean
+    logger: ViteLogger
+    likec4: LikeC4LanguageServices
+    assetsDir: string
+  }
+  & (
+    {
+      isAIAvailable: false
+      ai: undefined
+    } | {
+      isAIAvailable: false
+      ai: AIOptions
+    }
+  )
 
 export interface VirtualModule {
   id: string

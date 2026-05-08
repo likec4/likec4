@@ -1,17 +1,20 @@
-import type { Config } from '@pandacss/dev'
 import { definePattern } from '@pandacss/dev'
 import type { LiteralUnion } from '@pandacss/types'
-import type { ThemeColor } from './defaults/types'
-import { ThemeColors } from './defaults/types'
+import type { ThemeColor } from '../defaults/types'
+import { ThemeColors } from '../defaults/types'
 
-type ExtendablePatternConfig = NonNullable<Config['patterns']>
-
-const txt = definePattern({
+export const txt = definePattern({
   properties: {
     inline: {
+      description: 'Whether the text should be inline (default: false)',
       type: 'boolean',
     },
     dimmed: {
+      description: 'Whether the text should be dimmed (default: false)',
+      type: 'boolean',
+    },
+    noUserSelect: {
+      description: 'Whether the text should not be selectable (default: false)',
       type: 'boolean',
     },
     lh: {
@@ -31,9 +34,10 @@ const txt = definePattern({
     inline: false,
     dimmed: false,
     size: 'md',
+    noUserSelect: false,
   },
   transform(props, _helpers) {
-    const { inline, size, dimmed, lh, likec4color, ...rest } = props
+    const { inline, size, dimmed, lh, likec4color, noUserSelect, ...rest } = props
     if (dimmed && likec4color) {
       throw new Error('dimmed and likec4color are mutually exclusive')
     }
@@ -44,6 +48,7 @@ const txt = definePattern({
       ...(inline && { display: 'inline-block' }),
       ...(lh && { lineHeight: lh }),
       ...(likec4color && { 'data-likec4-color': likec4color }),
+      ...(noUserSelect && { userSelect: 'none' }),
       ...rest,
     }
   },
@@ -51,23 +56,3 @@ const txt = definePattern({
   jsxName: 'Txt',
   jsx: ['Txt'],
 })
-
-export const patterns: ExtendablePatternConfig = {
-  extend: {
-    vstack: {
-      defaultValues: {
-        alignItems: 'stretch',
-        gap: 'sm',
-      },
-    },
-    hstack: {
-      defaultValues: {
-        gap: 'sm',
-      },
-    },
-    box: {
-      jsx: ['Box', 'MarkdownBlock'],
-    },
-    txt,
-  },
-}

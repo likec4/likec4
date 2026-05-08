@@ -9,7 +9,6 @@ export type RootContainerContextType = {
   readonly ref: RefObject<HTMLDivElement | null>
   readonly $panning: WritableAtom<boolean>
   readonly reducedGraphics: boolean
-  readonly $busy: WritableAtom<boolean>
 }
 
 const RootContainerContext = createContext<RootContainerContextType | null>(null)
@@ -44,8 +43,4 @@ export function useIsReducedGraphics() {
 
 export function useIsPanning() {
   return useStore(useRootContainer().$panning)
-}
-
-export function useIsRootContainerBusy() {
-  return useStore(useRootContainer().$busy)
 }

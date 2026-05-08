@@ -16,7 +16,7 @@
     "src/**/*.json"
   ],
   "exclude": [
-    "src/bundle/react-dom-server-mock.ts"
+    "src/react-dom-server-mock.ts"
   ],
   "references": [
     {

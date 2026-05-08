@@ -5,8 +5,8 @@ import {
 } from '@mantine/core'
 import { useFocusTrap, useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
-import { m, useReducedMotionConfig } from 'motion/react'
-import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
+import { type TargetAndTransition, m, useReducedMotionConfig } from 'motion/react'
+import { type PropsWithChildren, forwardRef, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { stopPropagation } from '../../utils'
 
 const backdropBlur = '--_blur'
@@ -92,6 +92,38 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   if (backdrop?.opacity !== undefined) {
     targetBackdropOpacity = `${backdrop.opacity * 100}%`
   }
+
+  const motionProps = useMemo(() => ({
+    initial: {
+      [backdropBlur]: '0px',
+      [backdropOpacity]: '0%',
+      scale: 0.85,
+      // originY: 0.4,
+      // translateY: -10,
+      opacity: 0,
+    },
+    animate: {
+      [backdropBlur]: overlayLevel > 0 ? '4px' : '8px',
+      [backdropOpacity]: targetBackdropOpacity,
+      scale: 1,
+      opacity: 1,
+      translateY: 0,
+      // transition: {
+      //   delay: 0.075,
+      // },
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.98,
+      translateY: -20,
+      // transition: {
+      //   duration: 0.1,
+      // },
+      [backdropBlur]: '0px',
+      [backdropOpacity]: '0%',
+    },
+  } satisfies Record<string, TargetAndTransition>), [overlayLevel, targetBackdropOpacity])
+
   return (
     <m.dialog
       ref={useMergedRef(
@@ -111,43 +143,12 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
         // @ts-ignore
         [cssVarLevel]: overlayLevel,
       }}
-      {...motionNotReduced
-        ? ({
-          initial: {
-            [backdropBlur]: '0px',
-            [backdropOpacity]: '0%',
-            scale: 0.85,
-            // originY: 0.4,
-            // translateY: -10,
-            opacity: 0,
-          },
-          animate: {
-            [backdropBlur]: overlayLevel > 0 ? '4px' : '8px',
-            [backdropOpacity]: targetBackdropOpacity,
-            scale: 1,
-            opacity: 1,
-            translateY: 0,
-            // transition: {
-            //   delay: 0.075,
-            // },
-          },
-          exit: {
-            opacity: 0,
-            scale: 0.98,
-            translateY: -20,
-            // transition: {
-            //   duration: 0.1,
-            // },
-            [backdropBlur]: '0px',
-            [backdropOpacity]: '0%',
-          },
-        })
-        : {
-          initial: {
-            [backdropBlur]: '8px',
-            [backdropOpacity]: targetBackdropOpacity,
-          },
-        }}
+      {...motionNotReduced ? motionProps : {
+        initial: {
+          [backdropBlur]: '8px',
+          [backdropOpacity]: targetBackdropOpacity,
+        },
+      }}
       onClick={e => {
         e.stopPropagation()
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {

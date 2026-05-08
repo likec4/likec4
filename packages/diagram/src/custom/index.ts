@@ -42,6 +42,7 @@ export type {
 
 export { Base } from '../base/Base'
 
+export type { XYStoreState } from '../hooks/useXYFlow'
 export type { Types } from '../likec4diagram/types'
 
 export {
