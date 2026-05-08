@@ -6,7 +6,6 @@ import { isNullish } from 'remeda'
 import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlersRef } from '../../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
-import { useRootContainer } from '../../context/RootContainerContext'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
 import { DiagramActorContextProvider, DiagramApiContextProvider } from '../../hooks/safeContext'
 import {
