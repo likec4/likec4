@@ -63,12 +63,14 @@ export default defineConfig([{
   dts: false,
   tsconfig: 'tsconfig.src.json',
   deps: {
+    alwaysBundle: [
+      '@likec4/vite-plugin/ai/tools',
+    ],
     neverBundle: [
       '@emotion/is-prop-valid',
       'likec4/model',
       'likec4/react',
       /@likec4\/core.*/,
-      /likec4\/vite-plugin.*/,
       /likec4:/,
     ],
   },
@@ -102,7 +104,6 @@ export default defineConfig([{
       'likec4/model',
       'likec4/react',
       /@likec4\/core.*/,
-      /likec4\/vite-plugin.*/,
       /likec4:/,
     ],
   },
