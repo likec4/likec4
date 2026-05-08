@@ -201,6 +201,7 @@ describe('formating', () => {
           model {
             system sys1 {
               metadata {
+                tags ["frontend", 'react', 'typescript']
                 prop1    'some'
                 prop2'other'
                 prop3  :    'another'   ;
@@ -219,6 +220,7 @@ describe('formating', () => {
           model {
             system sys1 {
               metadata {
+                tags ['frontend', 'react', 'typescript']
                 prop1 'some'
                 prop2 'other'
                 prop3: 'another';

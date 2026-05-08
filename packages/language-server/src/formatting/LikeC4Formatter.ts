@@ -10,6 +10,7 @@ import { type NodeFormatter, AbstractFormatter, Formatting, FormattingRegion } f
 import { filter, isTruthy } from 'remeda'
 import type { FormattingOptions as LSFormattingOptions, Range, TextEdit } from 'vscode-languageserver-types'
 import * as ast from '../generated/ast'
+import { StringProperty } from '../generated/ast'
 import type { LikeC4Services } from '../module'
 import * as utils from './utils'
 import { isMultiline } from './utils'
@@ -721,7 +722,9 @@ export class LikeC4Formatter extends AbstractFormatter {
     }
 
     let region = null
-    region = region ?? this.on(node, ast.isStringProperty)
+    region = region ?? this.on(node, ast.isMetadataArray)
+      ?.properties('values')
+    region = region ?? this.on(node, this.isStringPropertyOrMetadataAttributeStringProperty)
       ?.property('value')
     region = region ?? this.on(node, ast.isElement)
       ?.properties('props')
@@ -745,6 +748,10 @@ export class LikeC4Formatter extends AbstractFormatter {
     if (region) {
       this.extendedFormattingCommands.push({ type: 'normalizeQuotes', region })
     }
+  }
+
+  private isStringPropertyOrMetadataAttributeStringProperty(item: unknown): item is StringProperty {
+    return ast.isStringProperty(item) && !ast.isMetadataArray(item.value)
   }
 
   private quotesNormalizerFactory(commands: ExtendedFormattingCommand[]) {
