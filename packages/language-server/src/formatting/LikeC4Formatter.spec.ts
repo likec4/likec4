@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
@@ -229,6 +236,36 @@ describe('formating', () => {
                 prop1 'some'
                 prop2 'other'
                 prop3: 'another';
+              }
+            }
+          }"
+        `),
+    )
+
+    it(
+      'keeps metadata arrays as arrays',
+      async ({ expect }) =>
+        expect(
+          await format`
+          specification {
+            element component
+          }
+          model {
+            component app {
+              metadata {
+                tags ["frontend", 'react', 'typescript']
+              }
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
+          "
+          specification {
+            element component
+          }
+          model {
+            component app {
+              metadata {
+                tags ['frontend', 'react', 'typescript']
               }
             }
           }"
