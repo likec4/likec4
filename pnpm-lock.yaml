@@ -2525,6 +2525,9 @@ importers:
       turbo:
         specifier: 2.9.9
         version: 2.9.9
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

@@ -114,7 +114,7 @@ Example response (deployed instance):
     }).nullable().describe('If type is "deployed-instance", the referenced element'),
     sourceLocation: locationSchema,
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
   const element = model.deployment.findElement(args.id)

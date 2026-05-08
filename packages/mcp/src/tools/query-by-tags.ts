@@ -90,7 +90,7 @@ Example response:
     results: z.array(elementSummarySchema),
     truncated: z.boolean().describe('True if results were truncated due to exceeding the 50-result limit'),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   invariant(
     (args.allOf && args.allOf.length > 0) ||
       (args.anyOf && args.anyOf.length > 0) ||

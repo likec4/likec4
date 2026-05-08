@@ -38,7 +38,7 @@ Example response:
   outputSchema: {
     location: locationSchema,
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
   const view = model.findView(args.viewId)

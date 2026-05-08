@@ -86,7 +86,7 @@ Example response:
     truncated: z.boolean().describe('True if results were truncated'),
     matchedTagValues: z.array(z.string()).describe('All unique tag values matching the pattern across all elements'),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
   const patternLower = args.pattern.toLowerCase()

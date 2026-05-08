@@ -86,6 +86,7 @@
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
+    "type-fest": "catalog:externals",
     "unctx": "catalog:utils",
     "vitest": "catalog:vitest",
     "vscode-uri": "catalog:vscode",

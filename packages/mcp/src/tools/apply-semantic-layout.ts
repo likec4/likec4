@@ -5,16 +5,17 @@ import { completable } from '@modelcontextprotocol/sdk/server/completable'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { prop } from 'remeda'
 import * as z from 'zod/v3'
+import { useLanguageServices } from '../ctx'
 import { toolError } from './_common'
 
-export function registerApplySemanticLayoutTool(
+export function applySemanticLayoutTool(
   mcpServer: McpServer,
-  languageServices: LikeC4LanguageServices,
 ): McpServer {
+  const languageServices = useLanguageServices()
   mcpServer.registerTool(
     'apply-semantic-layout',
     {
-      description: 'Apply semantic layout to the view',
+      description: 'Apply semantic layout to the likec4 view',
       inputSchema: {
         projectId: completable(
           z.string()
@@ -36,6 +37,10 @@ export function registerApplySemanticLayoutTool(
             return Array.from(model.views()).filter((view) => view.id.startsWith(value)).map(prop('id'))
           },
         ),
+      },
+      outputSchema: {
+        reasoning: z.string().describe('Reasoning behind the layout changes'),
+        snapshotUri: z.string().nullish().describe('Where snapshot was saved (after applying layout)'),
       },
     },
     async (args, ctx) => {
@@ -102,7 +107,7 @@ export function registerApplySemanticLayoutTool(
         styles: model.$styles,
       }, hints)
 
-      await languageServices.editor.applyChange({
+      const change = await languageServices.editor.applyChange({
         change: {
           op: 'save-view-snapshot',
           layout: result.diagram,
@@ -115,12 +120,28 @@ export function registerApplySemanticLayoutTool(
         data: 'Layout applied successfully',
       }, ctx.sessionId)
 
-      return {
-        content: [{
-          type: 'text',
-          text: `Semantic layout applied\n\n${hints.reasoning}`,
-        }],
+      const structuredContent = {
+        reasoning: hints.reasoning,
+        ...(!!change.location && { snapshotUri: change.location.uri.toString() }),
       }
+
+      return {
+        content: [],
+        structuredContent,
+      }
+
+      // return {
+      //   content: [
+      //     {
+      //       type: 'text',
+      //       text: `Semantic layout applied\n\n${hints.reasoning}`,
+      //     },
+      //     {
+      //       type: 'resource_link',
+      //       uri: change.location,
+      //     },
+      //   ],
+      // }
     },
   )
 

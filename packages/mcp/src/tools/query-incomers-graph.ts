@@ -107,7 +107,7 @@ plus all their dependencies, recursively up to maxDepth levels.
       depth: z.number().describe('Distance from target element (0 = target)'),
     })),
   },
-}, async (languageServices, args) => {
+})(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
   const targetElement = model.findElement(args.elementId)

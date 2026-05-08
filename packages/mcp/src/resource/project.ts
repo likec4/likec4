@@ -1,12 +1,12 @@
-import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { type McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { ReadResourceResult } from '@modelcontextprotocol/sdk/types'
 import { prop } from 'remeda'
+import { useLanguageServices } from '../ctx'
 
-export function registerProjectResource(
+export function projectResource(
   mcp: McpServer,
-  services: LikeC4LanguageServices,
-) {
+): McpServer {
+  const services = useLanguageServices()
   mcp.registerResource(
     'likec4-project',
     new ResourceTemplate('likec4://project/{projectId}', {
@@ -56,4 +56,5 @@ export function registerProjectResource(
       })
     },
   )
+  return mcp
 }

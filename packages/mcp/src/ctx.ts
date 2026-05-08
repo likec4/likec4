@@ -22,12 +22,13 @@ export function useLanguageServices() {
   return languageServicesCtx.use()
 }
 
-export function setMcpServerCtx(server: McpServer | undefined) {
+export function setMcpServerCtx<T extends McpServer | undefined>(server: T): T {
   if (server) {
     mcpServerCtx.set(server, true)
   } else {
     mcpServerCtx.unset()
   }
+  return server
 }
 
 export function setLanguageServicesCtx<T extends LikeC4LanguageServices | undefined>(services: T): T {

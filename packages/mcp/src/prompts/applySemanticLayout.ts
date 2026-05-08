@@ -4,26 +4,25 @@ import { completable } from '@modelcontextprotocol/sdk/server/completable'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { prop } from 'remeda'
 import * as z from 'zod/v3'
+import { useLanguageServices } from '../ctx'
 
-export function registerApplySemanticLayoutPrompt(
+export function applySemanticLayoutPrompt(
   mcp: McpServer,
-  services: LikeC4LanguageServices,
 ): McpServer {
+  const services = useLanguageServices()
   mcp.registerPrompt(
     'apply_semantic_layout',
     {
-      title: 'Apply semantic layout to a view',
+      title: 'Prepare prompt for applying semantic layout to a likec4 view',
       argsSchema: {
         projectId: completable(
-          z.string()
-            // .default('default' as ProjectId)
-            .describe('Project id (optional, will use "default" if not specified)'),
+          z.string().describe('Project id (optional, will use "default" if not specified)'),
           (value = '') => {
             return services.projects().filter(project => project.id.startsWith(value)).map(prop('id'))
           },
         ),
         viewId: completable(
-          z.string().describe('View ID to apply semantic layout to'),
+          z.string().describe('View ID'),
           async (value = '', ctx) => {
             const projectId = ctx?.arguments?.['projectId'] ?? services.projectsManager.default.id
             const model = await services.computedModel(projectId as ProjectId)
@@ -46,9 +45,11 @@ export function registerApplySemanticLayoutPrompt(
           role: 'user',
           content: {
             type: 'text',
-            text: `Call \`apply-semantic-layout\` tool of likec4 mcp with these arguments:\n${
-              JSON.stringify({ viewId, projectId })
-            }`,
+            text: [
+              'Call `apply-semantic-layout` tool from `likec4` MCP with these arguments:',
+              'projectId: `' + projectId + '`',
+              'viewId: `' + viewId + '`',
+            ].join('\n'),
           },
         }],
       }
