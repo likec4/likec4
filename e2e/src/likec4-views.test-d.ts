@@ -90,6 +90,7 @@ test('LikeC4Model in React types codegen', () => {
     | 'index'
     | 'mobile'
     | 'multiple-expanded'
+    | 'multiple-explicit'
     | 'multiple-merged'
     | 'view-with-custom-colors'
 

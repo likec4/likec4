@@ -144,6 +144,41 @@ describe('multiple-relationships integration', () => {
       }
     })
 
+    it('expands nested relationships grouped under the visible connection', () => {
+      const builder = Builder
+        .specification({
+          elements: { el: {} },
+        })
+        .model(({ el }, m) =>
+          m(
+            el('a'),
+            el('a.child'),
+            el('b'),
+          )
+        )
+
+      const t = TestHelper.from(builder.model(({ rel }, m) =>
+        m(
+          rel('a', 'b', 'alpha'),
+          rel('a.child', 'b', 'beta'),
+        )
+      ))
+
+      const view = t.computeView(
+        TestHelper.$rules(
+          t.$include('a'),
+          t.$include('b'),
+          t.$include('a -> b', { with: { multiple: true } }),
+        ),
+      )
+
+      expect(view.edges).toHaveLength(2)
+      expect(view.edges.map(e => e.label).sort()).toEqual(['alpha', 'beta'])
+      for (const edge of view.edges) {
+        expect(edge.relations).toHaveLength(1)
+      }
+    })
+
     it('does not expand edges without multiple flag in include', () => {
       const t = TestHelper.from(baseBuilder.model(({ rel }, m) =>
         m(

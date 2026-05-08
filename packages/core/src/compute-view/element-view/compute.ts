@@ -29,7 +29,7 @@ import { buildElementNotations } from '../utils/buildElementNotations'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { relationExpressionToPredicates } from '../utils/relationExpressionToPredicates'
-import type { ExpandableRelation } from '../utils/relationExpressionToPredicates'
+import type { ExpandableConnection, ExpandableRelation } from '../utils/relationExpressionToPredicates'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
@@ -226,10 +226,11 @@ function buildExpandPredicate<A extends AnyAux>(
     pred: relationExpressionToPredicates(r.customRelation.expr),
   }))
 
-  return (rel: ExpandableRelation) => {
+  return (rel: ExpandableRelation, connection?: ExpandableConnection) => {
+    const source = (connection?.source ?? rel.source) as any
+    const target = (connection?.target ?? rel.target) as any
+
     if (falseRulePredicates.length > 0) {
-      const source = rel.source
-      const target = rel.target
       for (const { pred } of falseRulePredicates) {
         if (
           pred({
@@ -253,8 +254,6 @@ function buildExpandPredicate<A extends AnyAux>(
     }
 
     if (rulePredicates.length > 0) {
-      const source = rel.source
-      const target = rel.target
       for (const { pred } of rulePredicates) {
         if (
           pred({

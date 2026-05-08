@@ -81,6 +81,7 @@ test('Generated model from views has expected view ids', () => {
     'index',
     'mobile',
     'multiple-expanded',
+    'multiple-explicit',
     'multiple-merged',
     'view-with-custom-colors',
   ])
@@ -103,4 +104,13 @@ test('multiple-merged view has a single merged edge despite async specs', () => 
   expect(view.$view.edges).toHaveLength(1)
   expect(view.$view.edges[0]!.label).toBe('[...]')
   expect(view.$view.edges[0]!.relations).toHaveLength(4)
+})
+
+test('multiple-explicit view has separate edges for every relationship', () => {
+  const view = likec4model.view('multiple-explicit')
+  expect(view.$view.edges).toHaveLength(4)
+  expect(view.$view.edges.map(e => e.label).sort()).toEqual(['Mutation', 'Query', 'reads', 'writes'])
+  for (const edge of view.$view.edges) {
+    expect(edge.relations).toHaveLength(1)
+  }
 })

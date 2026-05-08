@@ -42,7 +42,7 @@ export function toComputedEdges<A extends AnyAux>(
     if (shouldExpand && relations.length > 1) {
       const [expanded, merged] = pipe(
         relations,
-        partition(r => shouldExpand(r)),
+        partition(r => shouldExpand(r, conn)),
       )
 
       if (expanded.length > 0) {
