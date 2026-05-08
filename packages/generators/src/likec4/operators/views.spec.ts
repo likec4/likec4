@@ -32,7 +32,9 @@ const builder = Builder
     )
   )
 
-const { views: { view, viewOf, views, $rules, $style, $include, $autoLayout, $exclude } } = builder.helpers()
+const {
+  views: { view, viewOf, deploymentView, views, $rules, $style, $include, $autoLayout, $exclude, $includeAncestors },
+} = builder.helpers()
 
 type T = typeof builder['Types']
 
@@ -300,5 +302,41 @@ describe('view', () => {
         }
       }"
     `)
+  })
+
+  describe('includeAncestors', () => {
+    it('should print includeAncestors true', () => {
+      expect(
+        deploymentView(
+          'deployment',
+          $rules(
+            $includeAncestors(true),
+          ),
+        ),
+      ).toMatchInlineSnapshot(`
+        "views {
+          deployment view deployment {
+            includeAncestors true
+          }
+        }"
+      `)
+    })
+
+    it('should print includeAncestors false', () => {
+      expect(
+        deploymentView(
+          'deployment',
+          $rules(
+            $includeAncestors(false),
+          ),
+        ),
+      ).toMatchInlineSnapshot(`
+        "views {
+          deployment view deployment {
+            includeAncestors false
+          }
+        }"
+      `)
+    })
   })
 })
