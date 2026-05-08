@@ -83,6 +83,7 @@ test('Model Codegen with valid types', () => {
     | 'index'
     | 'mobile'
     | 'multiple-expanded'
+    | 'multiple-explicit'
     | 'multiple-merged'
     | 'view-with-custom-colors'
   >()

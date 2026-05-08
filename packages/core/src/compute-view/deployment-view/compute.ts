@@ -13,7 +13,7 @@ import {
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { createRelationExpressionToPredicates } from '../utils/relationExpressionToPredicates'
-import type { ExpandableRelation } from '../utils/relationExpressionToPredicates'
+import type { ExpandableConnection, ExpandableRelation } from '../utils/relationExpressionToPredicates'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import { Memory } from './memory'
@@ -71,7 +71,7 @@ function buildExpandPredicate<A extends AnyAux>(
     pred: deploymentRelationExprToPredicate(r.customRelation.expr),
   }))
 
-  return (rel: ExpandableRelation) => {
+  return (rel: ExpandableRelation, connection?: ExpandableConnection) => {
     // Resolve source/target properties for deployment relation endpoints.
     // NestedElementOfDeployedInstanceModel lacks tags/kind/metadata,
     // so reach through to the instance's element.
@@ -91,10 +91,10 @@ function buildExpandPredicate<A extends AnyAux>(
       }
       return ep ?? {}
     }
+    const source = resolveEndpoint(connection?.source ?? rel.source)
+    const target = resolveEndpoint(connection?.target ?? rel.target)
 
     if (falseRulePredicates.length > 0) {
-      const source = resolveEndpoint(rel.source)
-      const target = resolveEndpoint(rel.target)
       for (const { pred } of falseRulePredicates) {
         if (
           pred({
@@ -118,8 +118,6 @@ function buildExpandPredicate<A extends AnyAux>(
     }
 
     if (rulePredicates.length > 0) {
-      const source = resolveEndpoint(rel.source)
-      const target = resolveEndpoint(rel.target)
       for (const { pred } of rulePredicates) {
         if (
           pred({

@@ -77,4 +77,13 @@ views {
         multiple false
       }
   }
+
+  view multiple-explicit {
+    include
+      cloud.next.graphql,
+      cloud.next.backend,
+      cloud.next.graphql -> cloud.next.backend with {
+        multiple true
+      }
+  }
 }

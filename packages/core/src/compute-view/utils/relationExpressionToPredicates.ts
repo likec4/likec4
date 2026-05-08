@@ -24,6 +24,11 @@ export interface ExpandableRelation {
   readonly metadata: unknown
 }
 
+export interface ExpandableConnection {
+  readonly source: unknown
+  readonly target: unknown
+}
+
 /**
  * Predicate that returns `true` when a single relation should be expanded into its
  * own dedicated edge instead of being merged into the connection's default edge.
@@ -33,7 +38,7 @@ export interface ExpandableRelation {
  * have incompatible interfaces (e.g. {@link NestedElementOfDeployedInstanceModel}
  * does not expose `tags`/`kind`/`metadata` unlike {@link ElementModel}).
  */
-export type ShouldExpandPredicate = (rel: any) => boolean
+export type ShouldExpandPredicate = (rel: any, connection?: ExpandableConnection) => boolean
 
 /**
  * Factory that creates a predicate function for relation expressions.
