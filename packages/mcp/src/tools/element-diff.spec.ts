@@ -2,16 +2,12 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { ProjectId } from '@likec4/core'
-import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { elementDiff } from './element-diff'
+import { createMCPTestPair, structured, textContent } from '../__tests__/test-utils'
 
 describe('element-diff tool', () => {
   it('should detect property differences', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -27,14 +23,13 @@ describe('element-diff tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = elementDiff(services.likec4.LanguageServices)
-    const result = await handler(
-      { element1Id: 'a', element2Id: 'b', project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'element-diff',
+      arguments: { element1Id: 'a', element2Id: 'b', project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const data = result.structuredContent!
+    const data = structured(result)
     const propertyDiffs = data['propertyDiffs'] as Array<any>
 
     expect(propertyDiffs.find((d: any) => d.property === 'title')).toEqual({
@@ -57,9 +52,7 @@ describe('element-diff tool', () => {
   })
 
   it('should detect tag differences', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         tag public
@@ -81,14 +74,13 @@ describe('element-diff tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = elementDiff(services.likec4.LanguageServices)
-    const result = await handler(
-      { element1Id: 'a', element2Id: 'b', project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'element-diff',
+      arguments: { element1Id: 'a', element2Id: 'b', project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const tags = result.structuredContent!['tags'] as any
+    const tags = structured(result)['tags'] as any
 
     expect(tags.common).toContain('public')
     expect(tags.common).toContain('api')
@@ -97,9 +89,7 @@ describe('element-diff tool', () => {
   })
 
   it('should detect metadata differences', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -121,14 +111,13 @@ describe('element-diff tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = elementDiff(services.likec4.LanguageServices)
-    const result = await handler(
-      { element1Id: 'a', element2Id: 'b', project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'element-diff',
+      arguments: { element1Id: 'a', element2Id: 'b', project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const metadata = result.structuredContent!['metadata'] as any
+    const metadata = structured(result)['metadata'] as any
 
     expect(metadata.common).toHaveProperty('tier', 'critical')
     expect(metadata.onlyInElement1).toHaveProperty('version', '1.0')
@@ -141,9 +130,7 @@ describe('element-diff tool', () => {
   })
 
   it('should compare relationship counts', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -164,14 +151,13 @@ describe('element-diff tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = elementDiff(services.likec4.LanguageServices)
-    const result = await handler(
-      { element1Id: 'a', element2Id: 'b', project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'element-diff',
+      arguments: { element1Id: 'a', element2Id: 'b', project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const relationships = result.structuredContent!['relationships'] as any
+    const relationships = structured(result)['relationships'] as any
 
     expect(relationships.incomingShared).toBe(1) // shared -> both
     expect(relationships.incomingOnlyElement1).toBe(1) // onlyA -> a
@@ -180,9 +166,7 @@ describe('element-diff tool', () => {
   })
 
   it('should error for non-existent elements', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -191,21 +175,18 @@ describe('element-diff tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = elementDiff(services.likec4.LanguageServices)
-    const result = await handler(
-      { element1Id: 'a', element2Id: 'nonexistent', project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'element-diff',
+      arguments: { element1Id: 'a', element2Id: 'nonexistent', project: 'default' },
+    })
 
     expect(result.isError).toBe(true)
-    const content = result.content![0]!
+    const content = textContent(result)[0]!
     expect('text' in content && content.text).toContain('not found')
   })
 
   it('should show no diffs for identical elements compared to themselves', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         tag public
@@ -220,14 +201,13 @@ describe('element-diff tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = elementDiff(services.likec4.LanguageServices)
-    const result = await handler(
-      { element1Id: 'a', element2Id: 'a', project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'element-diff',
+      arguments: { element1Id: 'a', element2Id: 'a', project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const data = result.structuredContent!
+    const data = structured(result)
 
     expect((data['propertyDiffs'] as any[]).length).toBe(0)
     expect((data['tags'] as any).onlyInElement1).toHaveLength(0)

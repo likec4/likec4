@@ -5,11 +5,8 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { ProjectId } from '@likec4/core'
-import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { readDeployment } from './read-deployment'
-import { readElement } from './read-element'
+import { createMCPTestPair, structured } from '../__tests__/test-utils'
 
 describe('MCP Tools - Links', () => {
   // These tests verify that MCP server tools correctly return link information
@@ -19,9 +16,7 @@ describe('MCP Tools - Links', () => {
 
   describe('read-element tool', () => {
     it('should include links in element response', async () => {
-      const { validate, buildLikeC4Model, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           element container
@@ -39,13 +34,13 @@ describe('MCP Tools - Links', () => {
         }
       `)
 
-      const likec4Model = await buildLikeC4Model()
-      const [_name, _config, readElementHandler] = readElement(services.likec4.LanguageServices)
-
-      const result = await readElementHandler({ id: 'cloud', project: 'default' as ProjectId }, {} as any)
+      const result = await pair.client.callTool({
+        name: 'read-element',
+        arguments: { id: 'cloud', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const links = result.structuredContent!['links'] as Array<{ url: string; title: string | null }>
+      const links = structured(result)['links'] as Array<{ url: string; title: string | null }>
       expect(links).toBeDefined()
       expect(links).toHaveLength(2)
 
@@ -58,9 +53,7 @@ describe('MCP Tools - Links', () => {
     })
 
     it('should have empty links array for elements without links', async () => {
-      const { validate, buildLikeC4Model, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -69,22 +62,20 @@ describe('MCP Tools - Links', () => {
         }
       `)
 
-      const likec4Model = await buildLikeC4Model()
-      const [_name, _config, readElementHandler] = readElement(services.likec4.LanguageServices)
-
-      const result = await readElementHandler({ id: 'cloud', project: 'default' as ProjectId }, {} as any)
+      const result = await pair.client.callTool({
+        name: 'read-element',
+        arguments: { id: 'cloud', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const links = result.structuredContent!['links'] as Array<{ url: string; title: string | null }>
+      const links = structured(result)['links'] as Array<{ url: string; title: string | null }>
       expect(links).toBeDefined()
       expect(links).toHaveLength(0)
     })
 
     it('should not crash when element.links is null/undefined', async () => {
-      const { validate, buildLikeC4Model, services } = createTestServices()
-
       // Test with minimal element that has no links property
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element component
         }
@@ -93,23 +84,21 @@ describe('MCP Tools - Links', () => {
         }
       `)
 
-      const likec4Model = await buildLikeC4Model()
-      const [_name, _config, readElementHandler] = readElement(services.likec4.LanguageServices)
-
       // This should not throw even if element.links is null/undefined
-      const result = await readElementHandler({ id: 'minimal', project: 'default' as ProjectId }, {} as any)
+      const result = await pair.client.callTool({
+        name: 'read-element',
+        arguments: { id: 'minimal', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const links = result.structuredContent!['links'] as Array<{ url: string; title: string | null }>
+      const links = structured(result)['links'] as Array<{ url: string; title: string | null }>
       expect(links).toBeDefined()
       expect(Array.isArray(links)).toBe(true)
       expect(links).toHaveLength(0)
     })
 
     it('should handle relative links correctly', async () => {
-      const { validate, buildLikeC4Model, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element container
         }
@@ -122,13 +111,13 @@ describe('MCP Tools - Links', () => {
         }
       `)
 
-      const likec4Model = await buildLikeC4Model()
-      const [_name, _config, readElementHandler] = readElement(services.likec4.LanguageServices)
-
-      const result = await readElementHandler({ id: 'ui', project: 'default' as ProjectId }, {} as any)
+      const result = await pair.client.callTool({
+        name: 'read-element',
+        arguments: { id: 'ui', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const links = result.structuredContent!['links'] as Array<{ url: string; title: string | null }>
+      const links = structured(result)['links'] as Array<{ url: string; title: string | null }>
       expect(links).toBeDefined()
       expect(links).toHaveLength(3)
 
@@ -144,9 +133,7 @@ describe('MCP Tools - Links', () => {
     })
 
     it('should preserve link order', async () => {
-      const { validate, buildLikeC4Model, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
         }
@@ -159,12 +146,12 @@ describe('MCP Tools - Links', () => {
         }
       `)
 
-      const likec4Model = await buildLikeC4Model()
-      const [_name, _config, readElementHandler] = readElement(services.likec4.LanguageServices)
+      const result = await pair.client.callTool({
+        name: 'read-element',
+        arguments: { id: 'cloud', project: 'default' },
+      })
 
-      const result = await readElementHandler({ id: 'cloud', project: 'default' as ProjectId }, {} as any)
-
-      const links = result.structuredContent!['links'] as Array<{ url: string; title: string | null }>
+      const links = structured(result)['links'] as Array<{ url: string; title: string | null }>
       expect(links).toHaveLength(3)
       expect(links[0]!.url).toBe('https://first.com')
       expect(links[1]!.url).toBe('https://second.com')
@@ -174,9 +161,7 @@ describe('MCP Tools - Links', () => {
 
   describe('read-deployment tool', () => {
     it('should include links in deployment nodes', async () => {
-      const { validate, buildLikeC4Model, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           deploymentNode cluster
         }
@@ -189,13 +174,13 @@ describe('MCP Tools - Links', () => {
         }
       `)
 
-      const likec4Model = await buildLikeC4Model()
-      const [_name, _config, readDeploymentHandler] = readDeployment(services.likec4.LanguageServices)
-
-      const result = await readDeploymentHandler({ id: 'datacenter', project: 'default' as ProjectId }, {} as any)
+      const result = await pair.client.callTool({
+        name: 'read-deployment',
+        arguments: { id: 'datacenter', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const links = result.structuredContent!['links'] as Array<{ url: string; title: string | null }>
+      const links = structured(result)['links'] as Array<{ url: string; title: string | null }>
       expect(links).toBeDefined()
       expect(links).toHaveLength(2)
 
@@ -207,9 +192,7 @@ describe('MCP Tools - Links', () => {
     })
 
     it('should have empty links array for deployment nodes without links', async () => {
-      const { validate, buildLikeC4Model, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           deploymentNode cluster
@@ -222,22 +205,20 @@ describe('MCP Tools - Links', () => {
         }
       `)
 
-      const likec4Model = await buildLikeC4Model()
-      const [_name, _config, readDeploymentHandler] = readDeployment(services.likec4.LanguageServices)
-
-      const result = await readDeploymentHandler({ id: 'datacenter', project: 'default' as ProjectId }, {} as any)
+      const result = await pair.client.callTool({
+        name: 'read-deployment',
+        arguments: { id: 'datacenter', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const links = result.structuredContent!['links'] as Array<{ url: string; title: string | null }>
+      const links = structured(result)['links'] as Array<{ url: string; title: string | null }>
       expect(links).toBeDefined()
       expect(links).toHaveLength(0)
     })
 
     it('should not crash when deployment node links is null/undefined', async () => {
-      const { validate, buildLikeC4Model, services } = createTestServices()
-
       // Test with minimal deployment node that has no links property
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           deploymentNode server
         }
@@ -247,23 +228,21 @@ describe('MCP Tools - Links', () => {
         }
       `)
 
-      const likec4Model = await buildLikeC4Model()
-      const [_name, _config, readDeploymentHandler] = readDeployment(services.likec4.LanguageServices)
-
       // This should not throw even if element.links is null/undefined
-      const result = await readDeploymentHandler({ id: 'minimal', project: 'default' as ProjectId }, {} as any)
+      const result = await pair.client.callTool({
+        name: 'read-deployment',
+        arguments: { id: 'minimal', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const links = result.structuredContent!['links'] as Array<{ url: string; title: string | null }>
+      const links = structured(result)['links'] as Array<{ url: string; title: string | null }>
       expect(links).toBeDefined()
       expect(Array.isArray(links)).toBe(true)
       expect(links).toHaveLength(0)
     })
 
     it('should include links in deployed instances', async () => {
-      const { validate, buildLikeC4Model, services } = createTestServices()
-
-      await validate(`
+      await using pair = await createMCPTestPair(`
         specification {
           element system
           deploymentNode server
@@ -281,16 +260,13 @@ describe('MCP Tools - Links', () => {
         }
       `)
 
-      const likec4Model = await buildLikeC4Model()
-      const [_name, _config, readDeploymentHandler] = readDeployment(services.likec4.LanguageServices)
-
-      const result = await readDeploymentHandler(
-        { id: 'server1.cloudInstance', project: 'default' as ProjectId },
-        {} as any,
-      )
+      const result = await pair.client.callTool({
+        name: 'read-deployment',
+        arguments: { id: 'server1.cloudInstance', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const links = result.structuredContent!['links'] as Array<{ url: string; title: string | null }>
+      const links = structured(result)['links'] as Array<{ url: string; title: string | null }>
       expect(links).toBeDefined()
       expect(links).toHaveLength(2)
 

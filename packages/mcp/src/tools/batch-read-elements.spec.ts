@@ -2,16 +2,12 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { ProjectId } from '@likec4/core'
-import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { batchReadElements } from './batch-read-elements'
+import { createMCPTestPair, structured } from '../__tests__/test-utils'
 
 describe('batch-read-elements tool', () => {
   it('should return details for multiple elements', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         element component
@@ -34,15 +30,14 @@ describe('batch-read-elements tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = batchReadElements(services.likec4.LanguageServices)
-    const result = await handler(
-      { ids: ['frontend', 'backend'], project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'batch-read-elements',
+      arguments: { ids: ['frontend', 'backend'], project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const elements = result.structuredContent!['elements'] as Array<any>
-    const notFound = result.structuredContent!['notFound'] as string[]
+    const elements = structured(result)['elements'] as Array<any>
+    const notFound = structured(result)['notFound'] as string[]
 
     expect(elements).toHaveLength(2)
     expect(notFound).toHaveLength(0)
@@ -63,9 +58,7 @@ describe('batch-read-elements tool', () => {
   })
 
   it('should report not found elements', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -74,15 +67,14 @@ describe('batch-read-elements tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = batchReadElements(services.likec4.LanguageServices)
-    const result = await handler(
-      { ids: ['frontend', 'nonexistent', 'also-missing'], project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'batch-read-elements',
+      arguments: { ids: ['frontend', 'nonexistent', 'also-missing'], project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const elements = result.structuredContent!['elements'] as Array<any>
-    const notFound = result.structuredContent!['notFound'] as string[]
+    const elements = structured(result)['elements'] as Array<any>
+    const notFound = structured(result)['notFound'] as string[]
 
     expect(elements).toHaveLength(1)
     expect(elements[0].id).toBe('frontend')
@@ -90,9 +82,7 @@ describe('batch-read-elements tool', () => {
   })
 
   it('should return empty results for all invalid ids', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -101,24 +91,21 @@ describe('batch-read-elements tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = batchReadElements(services.likec4.LanguageServices)
-    const result = await handler(
-      { ids: ['invalid1', 'invalid2'], project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'batch-read-elements',
+      arguments: { ids: ['invalid1', 'invalid2'], project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const elements = result.structuredContent!['elements'] as Array<any>
-    const notFound = result.structuredContent!['notFound'] as string[]
+    const elements = structured(result)['elements'] as Array<any>
+    const notFound = structured(result)['notFound'] as string[]
 
     expect(elements).toHaveLength(0)
     expect(notFound).toEqual(['invalid1', 'invalid2'])
   })
 
   it('should include relationship counts', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -132,14 +119,13 @@ describe('batch-read-elements tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = batchReadElements(services.likec4.LanguageServices)
-    const result = await handler(
-      { ids: ['a', 'b', 'c'], project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'batch-read-elements',
+      arguments: { ids: ['a', 'b', 'c'], project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const elements = result.structuredContent!['elements'] as Array<any>
+    const elements = structured(result)['elements'] as Array<any>
 
     const a = elements.find((e: any) => e.id === 'a')
     expect(a.outgoingCount).toBe(2)

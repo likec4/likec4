@@ -2,16 +2,12 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { ProjectId } from '@likec4/core'
-import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { queryOutgoersGraph } from './query-outgoers-graph'
+import { createMCPTestPair, structured, textContent } from '../__tests__/test-utils'
 
 describe('query-outgoers-graph', () => {
   it('should return complete outgoers graph', async () => {
-    const { validate, buildLikeC4Model, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -27,16 +23,13 @@ describe('query-outgoers-graph', () => {
       }
     `)
 
-    await buildLikeC4Model()
-
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'source', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'query-outgoers-graph',
+      arguments: { elementId: 'source', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const content = result.structuredContent!
+    const content = structured(result)
     const nodes = content['nodes'] as Record<string, { depth: number; outgoers: Array<{ elementId: string }> }>
 
     expect(content['target']).toBe('source')
@@ -59,9 +52,7 @@ describe('query-outgoers-graph', () => {
   })
 
   it('should handle cycles without infinite loop', async () => {
-    const { validate, buildLikeC4Model, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -76,22 +67,17 @@ describe('query-outgoers-graph', () => {
       }
     `)
 
-    await buildLikeC4Model()
-
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'a', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'query-outgoers-graph',
+      arguments: { elementId: 'a', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    expect(result.structuredContent!['totalNodes']).toBe(3)
+    expect(structured(result)['totalNodes']).toBe(3)
   })
 
   it('should respect maxDepth limit', async () => {
-    const { validate, buildLikeC4Model, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -109,25 +95,20 @@ describe('query-outgoers-graph', () => {
       }
     `)
 
-    await buildLikeC4Model()
-
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 's1', includeIndirect: true, maxDepth: 2, maxNodes: 1000, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'query-outgoers-graph',
+      arguments: { elementId: 's1', includeIndirect: true, maxDepth: 2, maxNodes: 1000, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const content = result.structuredContent!
+    const content = structured(result)
 
     expect(content['totalNodes']).toBe(3)
     expect(content['maxDepth']).toBe(2)
   })
 
   it('should return error for non-existent element', async () => {
-    const { validate, buildLikeC4Model, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -136,29 +117,24 @@ describe('query-outgoers-graph', () => {
       }
     `)
 
-    await buildLikeC4Model()
-
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
-    const result = await handler(
-      {
+    const result = await pair.client.callTool({
+      name: 'query-outgoers-graph',
+      arguments: {
         elementId: 'non-existent',
         includeIndirect: true,
         maxDepth: 50,
         maxNodes: 1000,
-        project: 'default' as ProjectId,
+        project: 'default',
       },
-      {} as any,
-    )
+    })
 
     expect(result.isError).toBe(true)
-    const content = result.content![0]!
+    const content = textContent(result)[0]!
     expect('text' in content && content.text).toContain('Element "non-existent" not found')
   })
 
   it('should have totalNodes match actual node count', async () => {
-    const { validate, buildLikeC4Model, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         element service
@@ -180,16 +156,13 @@ describe('query-outgoers-graph', () => {
       }
     `)
 
-    await buildLikeC4Model()
-
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'source.api', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'query-outgoers-graph',
+      arguments: { elementId: 'source.api', includeIndirect: true, maxDepth: 50, maxNodes: 1000, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const content = result.structuredContent!
+    const content = structured(result)
     const nodes = content['nodes'] as Record<string, { depth: number; outgoers: Array<{ elementId: string }> }>
     const actualNodeCount = Object.keys(nodes).length
 
@@ -203,9 +176,7 @@ describe('query-outgoers-graph', () => {
   })
 
   it('should handle maxNodes truncation correctly', async () => {
-    const { validate, buildLikeC4Model, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -225,16 +196,13 @@ describe('query-outgoers-graph', () => {
       }
     `)
 
-    await buildLikeC4Model()
-
-    const [, , handler] = queryOutgoersGraph(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'source', includeIndirect: true, maxDepth: 50, maxNodes: 3, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'query-outgoers-graph',
+      arguments: { elementId: 'source', includeIndirect: true, maxDepth: 50, maxNodes: 3, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const content = result.structuredContent!
+    const content = structured(result)
     const nodes = content['nodes'] as Record<string, { depth: number; outgoers: Array<{ elementId: string }> }>
 
     // Should be truncated to maxNodes

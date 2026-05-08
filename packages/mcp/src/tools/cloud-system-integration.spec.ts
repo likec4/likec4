@@ -2,13 +2,8 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { ProjectId } from '@likec4/core'
-import { createTestServices } from '@likec4/language-server/test'
-import { beforeAll, describe, expect, it } from 'vitest'
-import { batchReadElements } from './batch-read-elements'
-import { elementDiff } from './element-diff'
-import { queryByTagPattern } from './query-by-tag-pattern'
-import { subgraphSummary } from './subgraph-summary'
+import { describe, expect, it } from 'vitest'
+import { createMCPTestPair, structured } from '../__tests__/test-utils'
 
 /**
  * Integration tests using the official cloud-system example model.
@@ -337,36 +332,29 @@ model {
 }
 `
 
-describe('cloud-system integration tests', () => {
-  let services: ReturnType<typeof createTestServices>['services']
-
-  beforeAll(async () => {
-    const testServices = createTestServices()
-    services = testServices.services
-
-    // Load all cloud-system documents
-    await testServices.addDocument(SPEC, '_spec.c4')
-    await testServices.addDocument(MODEL, 'model.c4')
-    await testServices.addDocument(EXTERNALS, 'externals.c4')
-    await testServices.addDocument(CLOUD_NEXT, 'cloud/next.c4')
-    await testServices.addDocument(CLOUD_UI, 'cloud/ui.c4')
-    await testServices.addDocument(CLOUD_LEGACY, 'cloud/legacy.c4')
-
-    const { errors } = await testServices.validateAll()
-    // Allow warnings (e.g. icon resolution) but no errors
-    expect(errors, `Validation errors: ${errors.join(', ')}`).toHaveLength(0)
+const createCloudSystemPair = () =>
+  createMCPTestPair({
+    docs: {
+      '_spec.c4': SPEC,
+      'model.c4': MODEL,
+      'externals.c4': EXTERNALS,
+      'cloud/next.c4': CLOUD_NEXT,
+      'cloud/ui.c4': CLOUD_UI,
+      'cloud/legacy.c4': CLOUD_LEGACY,
+    },
   })
 
+describe('cloud-system integration tests', () => {
   describe('subgraph-summary', () => {
     it('should summarize cloud system descendants', async () => {
-      const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-      const result = await handler(
-        { elementId: 'cloud', maxDepth: 10, metadataKeys: undefined, project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'subgraph-summary',
+        arguments: { elementId: 'cloud', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const data = result.structuredContent!
+      const data = structured(result)
 
       // Root is the cloud system
       const root = data['root'] as any
@@ -403,18 +391,18 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should filter metadata keys for cloud.ui descendants', async () => {
-      const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-      const result = await handler(
-        { elementId: 'cloud.ui', maxDepth: 5, metadataKeys: ['version'], project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'subgraph-summary',
+        arguments: { elementId: 'cloud.ui', maxDepth: 5, metadataKeys: ['version'], project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const root = result.structuredContent!['root'] as any
+      const root = structured(result)['root'] as any
       expect(root.id).toBe('cloud.ui')
       expect(root.childCount).toBe(3) // dashboard, mobile, supportPanel
 
-      const descendants = result.structuredContent!['descendants'] as Array<any>
+      const descendants = structured(result)['descendants'] as Array<any>
       expect(descendants).toHaveLength(3)
 
       // None of the children have 'version' metadata (it's on the parent cloud.ui)
@@ -424,14 +412,14 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should respect maxDepth on amazon subtree', async () => {
-      const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-      const result = await handler(
-        { elementId: 'amazon', maxDepth: 1, metadataKeys: undefined, project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'subgraph-summary',
+        arguments: { elementId: 'amazon', maxDepth: 1, metadataKeys: undefined, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const data = result.structuredContent!
+      const data = structured(result)
 
       // Only depth 1: rds, sqs, lambdas
       const descendants = data['descendants'] as Array<any>
@@ -443,14 +431,14 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should include tags in amazon descendants', async () => {
-      const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-      const result = await handler(
-        { elementId: 'amazon', maxDepth: 10, metadataKeys: undefined, project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'subgraph-summary',
+        arguments: { elementId: 'amazon', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const descendants = result.structuredContent!['descendants'] as Array<any>
+      const descendants = structured(result)['descendants'] as Array<any>
 
       const lambdas = descendants.find((d: any) => d.id === 'amazon.lambdas')
       expect(lambdas).toBeDefined()
@@ -464,14 +452,14 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should include relationship counts for cloud.next children', async () => {
-      const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-      const result = await handler(
-        { elementId: 'cloud.next', maxDepth: 10, metadataKeys: undefined, project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'subgraph-summary',
+        arguments: { elementId: 'cloud.next', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const descendants = result.structuredContent!['descendants'] as Array<any>
+      const descendants = structured(result)['descendants'] as Array<any>
 
       const backend = descendants.find((d: any) => d.id === 'cloud.next.backend')
       expect(backend).toBeDefined()
@@ -484,14 +472,14 @@ describe('cloud-system integration tests', () => {
 
   describe('query-by-tag-pattern', () => {
     it('should find deprecated elements with prefix match', async () => {
-      const [_name, _config, handler] = queryByTagPattern(services.likec4.LanguageServices)
-      const result = await handler(
-        { pattern: 'deprec', matchMode: 'prefix', project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'query-by-tag-pattern',
+        arguments: { pattern: 'deprec', matchMode: 'prefix', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const data = result.structuredContent!
+      const data = structured(result)
 
       const results = data['results'] as Array<any>
       expect(results.length).toBeGreaterThanOrEqual(3)
@@ -506,14 +494,14 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should find api-tagged elements with contains match', async () => {
-      const [_name, _config, handler] = queryByTagPattern(services.likec4.LanguageServices)
-      const result = await handler(
-        { pattern: 'api', matchMode: 'contains', project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'query-by-tag-pattern',
+        arguments: { pattern: 'api', matchMode: 'contains', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<any>
+      const results = structured(result)['results'] as Array<any>
 
       const ids = results.map((r: any) => r.id)
       expect(ids).toContain('amazon.lambdas')
@@ -522,14 +510,14 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should find db-tagged elements with suffix match', async () => {
-      const [_name, _config, handler] = queryByTagPattern(services.likec4.LanguageServices)
-      const result = await handler(
-        { pattern: 'db', matchMode: 'suffix', project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'query-by-tag-pattern',
+        arguments: { pattern: 'db', matchMode: 'suffix', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<any>
+      const results = structured(result)['results'] as Array<any>
 
       const ids = results.map((r: any) => r.id)
       expect(ids).toContain('amazon.rds.pg')
@@ -538,14 +526,14 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should find next-tagged elements', async () => {
-      const [_name, _config, handler] = queryByTagPattern(services.likec4.LanguageServices)
-      const result = await handler(
-        { pattern: 'next', matchMode: 'prefix', project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'query-by-tag-pattern',
+        arguments: { pattern: 'next', matchMode: 'prefix', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<any>
+      const results = structured(result)['results'] as Array<any>
 
       const ids = results.map((r: any) => r.id)
       expect(ids).toContain('amazon.rds.aurora.tblUsers')
@@ -554,37 +542,37 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should return empty for non-matching pattern', async () => {
-      const [_name, _config, handler] = queryByTagPattern(services.likec4.LanguageServices)
-      const result = await handler(
-        { pattern: 'nonexistenttag', matchMode: 'prefix', project: 'default' as ProjectId },
-        {} as any,
-      )
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'query-by-tag-pattern',
+        arguments: { pattern: 'nonexistenttag', matchMode: 'prefix', project: 'default' },
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const results = result.structuredContent!['results'] as Array<any>
+      const results = structured(result)['results'] as Array<any>
       expect(results).toHaveLength(0)
-      expect(result.structuredContent!['truncated']).toBe(false)
+      expect(structured(result)['truncated']).toBe(false)
     })
   })
 
   describe('batch-read-elements', () => {
     it('should read multiple cloud system elements with correct details', async () => {
-      const [_name, _config, handler] = batchReadElements(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'batch-read-elements',
+        arguments: {
           ids: [
             'cloud.ui.dashboard',
             'cloud.next.backend',
             'amazon.lambdas',
             'nonexistent.element',
           ],
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const data = result.structuredContent!
+      const data = structured(result)
       const elements = data['elements'] as Array<any>
       const notFound = data['notFound'] as string[]
 
@@ -620,17 +608,17 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should read elements with metadata', async () => {
-      const [_name, _config, handler] = batchReadElements(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'batch-read-elements',
+        arguments: {
           ids: ['cloud.ui'],
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const elements = result.structuredContent!['elements'] as Array<any>
+      const elements = structured(result)['elements'] as Array<any>
 
       expect(elements).toHaveLength(1)
       const ui = elements[0]
@@ -644,18 +632,18 @@ describe('cloud-system integration tests', () => {
 
   describe('element-diff', () => {
     it('should diff dashboard vs mobile (different kinds, same parent)', async () => {
-      const [_name, _config, handler] = elementDiff(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'element-diff',
+        arguments: {
           element1Id: 'cloud.ui.dashboard',
           element2Id: 'cloud.ui.mobile',
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const data = result.structuredContent!
+      const data = structured(result)
 
       // Element snapshots
       expect((data['element1'] as any).id).toBe('cloud.ui.dashboard')
@@ -690,18 +678,18 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should diff elements with different tags (lambdas vs legacy services)', async () => {
-      const [_name, _config, handler] = elementDiff(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'element-diff',
+        arguments: {
           element1Id: 'amazon.lambdas',
           element2Id: 'cloud.legacy.backend.services',
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const data = result.structuredContent!
+      const data = structured(result)
 
       const tags = data['tags'] as any
       // Both have 'deprecated'
@@ -719,18 +707,18 @@ describe('cloud-system integration tests', () => {
     })
 
     it('should diff db-tagged elements (pg vs aurora)', async () => {
-      const [_name, _config, handler] = elementDiff(services.likec4.LanguageServices)
-      const result = await handler(
-        {
+      await using pair = await createCloudSystemPair()
+      const result = await pair.client.callTool({
+        name: 'element-diff',
+        arguments: {
           element1Id: 'amazon.rds.pg',
           element2Id: 'amazon.rds.aurora',
-          project: 'default' as ProjectId,
+          project: 'default',
         },
-        {} as any,
-      )
+      })
 
       expect(result.structuredContent).toBeDefined()
-      const data = result.structuredContent!
+      const data = structured(result)
 
       // Both are components with 'db' tag
       const tags = data['tags'] as any

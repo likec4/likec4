@@ -2,16 +2,12 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { ProjectId } from '@likec4/core'
-import { createTestServices } from '@likec4/language-server/test'
 import { describe, expect, it } from 'vitest'
-import { subgraphSummary } from './subgraph-summary'
+import { createMCPTestPair, structured, textContent } from '../__tests__/test-utils'
 
 describe('subgraph-summary tool', () => {
   it('should return all descendants with depth info', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         element component
@@ -27,14 +23,13 @@ describe('subgraph-summary tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'parent', maxDepth: 10, metadataKeys: undefined, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'subgraph-summary',
+      arguments: { elementId: 'parent', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const data = result.structuredContent!
+    const data = result.structuredContent as any
 
     const root = data['root'] as any
     expect(root.id).toBe('parent')
@@ -62,9 +57,7 @@ describe('subgraph-summary tool', () => {
   })
 
   it('should respect maxDepth', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         element component
@@ -79,27 +72,24 @@ describe('subgraph-summary tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'parent', maxDepth: 1, metadataKeys: undefined, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'subgraph-summary',
+      arguments: { elementId: 'parent', maxDepth: 1, metadataKeys: undefined, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const descendants = result.structuredContent!['descendants'] as Array<any>
+    const descendants = structured(result)['descendants'] as Array<any>
 
     // Only direct children (depth=1), not grandchildren
     expect(descendants).toHaveLength(1)
     expect(descendants[0].id).toBe('parent.child')
     expect(descendants[0].depth).toBe(1)
     // Grandchild exists beyond maxDepth=1
-    expect(result.structuredContent!['truncatedByDepth']).toBe(true)
+    expect(structured(result)['truncatedByDepth']).toBe(true)
   })
 
   it('should filter metadata by metadataKeys', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         element component
@@ -117,19 +107,18 @@ describe('subgraph-summary tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-    const result = await handler(
-      {
+    const result = await pair.client.callTool({
+      name: 'subgraph-summary',
+      arguments: {
         elementId: 'parent',
         maxDepth: 10,
         metadataKeys: ['owner', 'tier'],
-        project: 'default' as ProjectId,
+        project: 'default',
       },
-      {} as any,
-    )
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const descendants = result.structuredContent!['descendants'] as Array<any>
+    const descendants = structured(result)['descendants'] as Array<any>
     expect(descendants).toHaveLength(1)
 
     const child = descendants[0]
@@ -139,9 +128,7 @@ describe('subgraph-summary tool', () => {
   })
 
   it('should include all metadata when metadataKeys not specified', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         element component
@@ -158,23 +145,20 @@ describe('subgraph-summary tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'parent', maxDepth: 10, metadataKeys: undefined, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'subgraph-summary',
+      arguments: { elementId: 'parent', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const descendants = result.structuredContent!['descendants'] as Array<any>
+    const descendants = structured(result)['descendants'] as Array<any>
     const child = descendants[0]
     expect(child.metadata).toHaveProperty('owner', 'team-a')
     expect(child.metadata).toHaveProperty('tier', 'critical')
   })
 
   it('should include relationship counts', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         element component
@@ -190,14 +174,13 @@ describe('subgraph-summary tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'parent', maxDepth: 10, metadataKeys: undefined, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'subgraph-summary',
+      arguments: { elementId: 'parent', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const descendants = result.structuredContent!['descendants'] as Array<any>
+    const descendants = structured(result)['descendants'] as Array<any>
 
     const child1 = descendants.find((d: any) => d.id === 'parent.child1')
     expect(child1.incomingCount).toBe(1) // external -> child1
@@ -209,9 +192,7 @@ describe('subgraph-summary tool', () => {
   })
 
   it('should return empty descendants for leaf element', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -220,21 +201,18 @@ describe('subgraph-summary tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'leaf', maxDepth: 10, metadataKeys: undefined, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'subgraph-summary',
+      arguments: { elementId: 'leaf', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    expect(result.structuredContent!['descendants']).toHaveLength(0)
-    expect(result.structuredContent!['totalDescendants']).toBe(0)
+    expect(structured(result)['descendants']).toHaveLength(0)
+    expect(structured(result)['totalDescendants']).toBe(0)
   })
 
   it('should error for non-existent element', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
       }
@@ -243,23 +221,20 @@ describe('subgraph-summary tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'nonexistent', maxDepth: 10, metadataKeys: undefined, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'subgraph-summary',
+      arguments: { elementId: 'nonexistent', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+    })
 
     expect(result.isError).toBe(true)
     expect(result.content).toBeDefined()
-    expect(result.content!.length).toBeGreaterThan(0)
-    const content = result.content![0]!
+    expect(textContent(result).length).toBeGreaterThan(0)
+    const content = textContent(result)[0]!
     expect('text' in content && content.text).toContain('not found')
   })
 
   it('should include tags in descendants', async () => {
-    const { validate, services } = createTestServices()
-
-    await validate(`
+    await using pair = await createMCPTestPair(`
       specification {
         element system
         element component
@@ -278,14 +253,13 @@ describe('subgraph-summary tool', () => {
       }
     `)
 
-    const [_name, _config, handler] = subgraphSummary(services.likec4.LanguageServices)
-    const result = await handler(
-      { elementId: 'parent', maxDepth: 10, metadataKeys: undefined, project: 'default' as ProjectId },
-      {} as any,
-    )
+    const result = await pair.client.callTool({
+      name: 'subgraph-summary',
+      arguments: { elementId: 'parent', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+    })
 
     expect(result.structuredContent).toBeDefined()
-    const descendants = result.structuredContent!['descendants'] as Array<any>
+    const descendants = structured(result)['descendants'] as Array<any>
 
     const pub = descendants.find((d: any) => d.id === 'parent.public_child')
     expect(pub.tags).toContain('public')
