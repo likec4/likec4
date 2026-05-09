@@ -121,7 +121,7 @@ export async function viteDev({
         overlay: true,
         // needed for hmr to work over network aka WSL2
         // host,
-        port: resolvedHmrPort,
+        ...(resolvedHmrPort !== undefined ? { port: resolvedHmrPort } : {}),
       },
       fs: {
         strict: false,
