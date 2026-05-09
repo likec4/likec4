@@ -14,12 +14,34 @@ import { viteConfig } from './config-app'
 import { viteWebcomponentConfig } from './config-webcomponent'
 import { mkTempPublicDir } from './utils'
 
+/**
+ * Resolves the HMR WebSocket port to use.
+ * Priority: explicit argument > HMR_PORT env var > auto-discovered from 24678–24690.
+ * When HMR is disabled, returns `undefined`.
+ *
+ * Exported for testing.
+ */
+export async function resolveHmrPort(
+  explicitPort: number | undefined,
+  hmrEnabled: boolean,
+): Promise<number | undefined> {
+  if (!hmrEnabled) {
+    return undefined
+  }
+  const port = explicitPort ?? (env['HMR_PORT'] ? parseInt(env['HMR_PORT'], 10) : undefined)
+  if (port) {
+    return port
+  }
+  return getPort({ port: portNumbers(24678, 24690) })
+}
+
 type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
   buildWebcomponent?: boolean
   openBrowser?: boolean
   hmr?: boolean
   listen?: string | undefined
   port?: number | undefined
+  hmrPort?: number | undefined
 }
 
 export async function viteDev({
@@ -32,6 +54,7 @@ export async function viteDev({
   openBrowser,
   listen,
   port,
+  hmrPort,
   ...cfg
 }: Config): Promise<ViteDevServer> {
   likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
@@ -59,21 +82,18 @@ export async function viteDev({
       ],
     })
   }
-  let hmrPort = 24678
-
   const publicDir = await mkTempPublicDir()
 
   const host = listen ?? (isInsideContainer() ? '0.0.0.0' : 'localhost')
 
-  if (hmr) {
-    hmrPort = await getPort({
-      port: portNumbers(24678, 24690),
-    })
-    logger.info(`Enabling HMR: localhost:${hmrPort}`)
+  const resolvedHmrPort = await resolveHmrPort(hmrPort, hmr)
+  if (hmr && resolvedHmrPort !== undefined) {
+    const source = hmrPort ? ' (explicit)' : ''
+    logger.info(`Enabling HMR: localhost:${resolvedHmrPort}${source}`)
     if (isInsideContainer()) {
-      logger.info(k.yellow(`ensure port ${hmrPort} is published from container`))
+      logger.info(k.yellow(`ensure port ${resolvedHmrPort} is published from container`))
     }
-  } else {
+  } else if (!hmr) {
     logger.info(`Disabling HMR`)
   }
 
@@ -101,7 +121,7 @@ export async function viteDev({
         overlay: true,
         // needed for hmr to work over network aka WSL2
         // host,
-        port: hmrPort,
+        port: resolvedHmrPort,
       },
       fs: {
         strict: false,
