@@ -15,6 +15,19 @@ import { viteWebcomponentConfig } from './config-webcomponent'
 import { mkTempPublicDir } from './utils'
 
 /**
+ * Validates that a port is a valid integer between 1 and 65535.
+ * Throws an error if the port is invalid.
+ *
+ * @param port - The port number to validate
+ * @param source - The source of the port (e.g., 'explicitPort', 'HMR_PORT')
+ */
+function validatePort(port: number, source: string): void {
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error(`Invalid HMR port from ${source}: ${port}. Must be an integer between 1 and 65535.`)
+  }
+}
+
+/**
  * Resolves the HMR WebSocket port to use.
  * Priority: explicit argument > HMR_PORT env var > auto-discovered from 24678–24690.
  * When HMR is disabled, returns `undefined`.
@@ -29,16 +42,12 @@ export async function resolveHmrPort(
     return undefined
   }
   if (explicitPort !== undefined) {
-    if (!Number.isInteger(explicitPort) || explicitPort < 1 || explicitPort > 65535) {
-      throw new Error(`Invalid HMR port from explicitPort: ${explicitPort}. Must be an integer between 1 and 65535.`)
-    }
+    validatePort(explicitPort, 'explicitPort')
     return explicitPort
   }
   if (env['HMR_PORT']) {
     const envPort = Number.parseInt(env['HMR_PORT'], 10)
-    if (!Number.isInteger(envPort) || envPort < 1 || envPort > 65535) {
-      throw new Error(`Invalid HMR port from HMR_PORT: ${env['HMR_PORT']}. Must be an integer between 1 and 65535.`)
-    }
+    validatePort(envPort, 'HMR_PORT')
     return envPort
   }
   return getPort({ port: portNumbers(24678, 24690) })
