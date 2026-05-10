@@ -28,9 +28,18 @@ export async function resolveHmrPort(
   if (!hmrEnabled) {
     return undefined
   }
-  const port = explicitPort ?? (env['HMR_PORT'] ? parseInt(env['HMR_PORT'], 10) : undefined)
-  if (port) {
-    return port
+  if (explicitPort !== undefined) {
+    if (!Number.isInteger(explicitPort) || explicitPort < 1 || explicitPort > 65535) {
+      throw new Error(`Invalid HMR port from explicitPort: ${explicitPort}. Must be an integer between 1 and 65535.`)
+    }
+    return explicitPort
+  }
+  if (env['HMR_PORT']) {
+    const envPort = Number.parseInt(env['HMR_PORT'], 10)
+    if (!Number.isInteger(envPort) || envPort < 1 || envPort > 65535) {
+      throw new Error(`Invalid HMR port from HMR_PORT: ${env['HMR_PORT']}. Must be an integer between 1 and 65535.`)
+    }
+    return envPort
   }
   return getPort({ port: portNumbers(24678, 24690) })
 }
@@ -88,7 +97,7 @@ export async function viteDev({
 
   const resolvedHmrPort = await resolveHmrPort(hmrPort, hmr)
   if (hmr && resolvedHmrPort !== undefined) {
-    const source = hmrPort ? ' (explicit)' : ''
+    const source = hmrPort ? ' (explicit)' : env['HMR_PORT'] ? ' (env)' : ' (auto-discovered)'
     logger.info(`Enabling HMR: localhost:${resolvedHmrPort}${source}`)
     if (isInsideContainer()) {
       logger.info(k.yellow(`ensure port ${resolvedHmrPort} is published from container`))
