@@ -1,4 +1,5 @@
 import { describe } from 'vitest'
+import { testFileScope as it } from '../test'
 import { test } from './asserts'
 
 describe('model relation', () => {
@@ -12,6 +13,57 @@ describe('model relation', () => {
         user1 -> user2
       }
       `
+
+  test('valid bidirectional relation').valid`
+      specification {
+        element component
+      }
+      model {
+        component frontend
+        component backend
+        frontend <-> backend
+      }
+      `
+
+  test('valid bidirectional extend relation').valid`
+      specification {
+        element component
+      }
+      model {
+        component frontend
+        component backend
+        frontend <-> backend
+        extend frontend <-> backend {
+          link https://example.com/sync
+        }
+      }
+      `
+
+  it('builds a bidirectional relation with a tail arrow', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component frontend
+        component backend
+        frontend <-> backend
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    const model = await t.buildModel()
+    const relation = Object.values(model.relations)[0]
+    expect(relation).toMatchObject({
+      source: {
+        model: 'frontend',
+      },
+      target: {
+        model: 'backend',
+      },
+      tail: 'normal',
+    })
+  })
 
   test('fail if defined in model without source').invalid`
       specification {
