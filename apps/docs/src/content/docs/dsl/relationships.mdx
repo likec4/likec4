@@ -12,7 +12,7 @@ Relationships describe the connections, data flows and interactions within your 
 
 ## Relationship definition
 
-Relationships are defined with the **`->`** operator:
+Relationships are usually defined with the **`->`** operator:
 
 ```likec4
 model {
@@ -22,6 +22,21 @@ model {
   customer -> cloud
 }
 ```
+
+Use **`<->`** when both elements actively communicate with each other:
+
+```likec4
+model {
+  frontend = component 'Frontend'
+  backend = component 'Backend'
+
+  frontend <-> backend 'Sync'
+}
+```
+
+Bidirectional relationships render with arrows at both ends. Use them for mutual interactions, such as synchronized
+replication or protocols where both sides initiate meaningful communication. For request-response calls where one side
+initiates the interaction, prefer `->`.
 
 Relationships may be nested
 

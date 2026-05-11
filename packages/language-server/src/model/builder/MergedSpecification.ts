@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as c4 from '@likec4/core'
 import { assignTagColors } from '@likec4/core/styles'
 import { exact, FqnRef } from '@likec4/core/types'
@@ -186,26 +193,36 @@ export class MergedSpecification {
     kind,
     links,
     id,
+    isBidirectional,
     ...model
   }: ParsedAstRelation): c4.Relationship | null => {
+    const bidirectionalTail = (relationship: c4.Relationship): c4.Relationship =>
+      isBidirectional && !relationship.tail
+        ? { ...relationship, tail: relationship.head ?? 'normal' }
+        : relationship
+
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
-      return {
-        ...this.specs.relationships[kind],
-        ...model,
+      return bidirectionalTail(
+        {
+          ...this.specs.relationships[kind],
+          ...model,
+          ...(links && { links }),
+          source,
+          target,
+          kind,
+          id,
+        } satisfies c4.Relationship,
+      )
+    }
+    return bidirectionalTail(
+      {
         ...(links && { links }),
+        ...model,
         source,
         target,
-        kind,
         id,
-      } satisfies c4.Relationship
-    }
-    return {
-      ...(links && { links }),
-      ...model,
-      source,
-      target,
-      id,
-    } satisfies c4.Relationship
+      } satisfies c4.Relationship,
+    )
   }
 
   /**
