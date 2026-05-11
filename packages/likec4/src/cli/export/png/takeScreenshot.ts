@@ -1,4 +1,11 @@
 /// <reference lib="DOM" />
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { DiagramView, DynamicViewDisplayVariant, NonEmptyArray } from '@likec4/core'
 import { relative, resolve } from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
@@ -20,6 +27,37 @@ type TakeScreenshotParams = {
   theme: 'light' | 'dark'
   format?: 'png' | 'jpeg'
   quality?: number | undefined
+  notation?: boolean
+}
+
+/**
+ * Builds the SPA export URL for a view screenshot, encoding the view id and export query parameters.
+ *
+ * @param params - View id, padding, theme, and optional dynamic layout, image format, and notation settings.
+ * @returns Relative URL containing `padding`, `theme`, optional `dynamic`, `format`, and `notation` query parameters.
+ */
+export function createExportViewUrl({
+  viewId,
+  padding,
+  theme,
+  dynamicVariant,
+  format = 'png',
+  notation = false,
+}: {
+  viewId: string
+  padding: number
+  theme: 'light' | 'dark'
+  dynamicVariant?: DynamicViewDisplayVariant | undefined
+  format?: 'png' | 'jpeg'
+  notation?: boolean
+}): string {
+  return withQuery(`export/${encodeURIComponent(viewId)}/`, {
+    padding,
+    theme,
+    dynamic: dynamicVariant,
+    ...(notation ? { notation: true } : {}),
+    ...(format === 'jpeg' ? { format: 'jpeg' } : {}),
+  })
 }
 
 /**
@@ -39,6 +77,7 @@ export async function takeScreenshot({
   theme,
   format = 'png',
   quality,
+  notation = false,
 }: TakeScreenshotParams) {
   const padding = 20
 
@@ -95,23 +134,35 @@ export async function takeScreenshot({
         width: bounds.width + padding * 2 + extraPadding,
         height: bounds.height + padding * 2 + extraPadding,
       })
-      await page.goto(withQuery(url, {
+      await page.goto(createExportViewUrl({
+        viewId: view.id,
         padding,
         theme,
-        dynamic: dynamicVariant,
-        ...(format === 'jpeg' ? { format: 'jpeg' } : {}),
+        dynamicVariant,
+        format,
+        notation,
       }))
 
       logger.info(k.cyan(url) + k.dim(` -> ${relative(output, path)}`))
 
       await page.waitForSelector('.react-flow.initialized')
+      const exportPage = page.getByTestId('export-page')
+      const exportBox = await exportPage.boundingBox()
+      if (exportBox) {
+        const width = Math.ceil(exportBox.width)
+        const height = Math.ceil(exportBox.height)
+        const viewport = page.viewportSize()
+        if (!viewport || width > viewport.width || height > viewport.height) {
+          await page.setViewportSize({ width, height })
+        }
+      }
 
       const hasImages = view.nodes.some(n => isTruthy(n.icon) && n.icon.toLowerCase().startsWith('http'))
       if (hasImages) {
         await waitAllImages(page, timeout)
       }
 
-      await page.getByTestId('export-page').screenshot({
+      await exportPage.screenshot({
         animations: 'disabled',
         path,
         type: format === 'jpeg' ? 'jpeg' : 'png',

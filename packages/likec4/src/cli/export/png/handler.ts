@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { type DiagramView, type NonEmptyArray, invariant } from '@likec4/core'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { resolve } from 'node:path'
@@ -42,6 +49,8 @@ export type PngExportArgs = {
   format?: 'png' | 'jpeg'
   /** JPEG quality (1-100). Only used when format is 'jpeg'. Defaults to 80. */
   quality?: number
+  /** Include view notation in exported images. */
+  notation?: boolean
 }
 
 /** Launch headless Chromium, capture each view as PNG to output dir; returns list of succeeded view ids. */
@@ -59,6 +68,7 @@ export async function exportViewsToPNG(
     sequence = false,
     format = 'png',
     quality,
+    notation = false,
   }: {
     logger: ViteLogger
     serverUrl: string
@@ -72,6 +82,7 @@ export async function exportViewsToPNG(
     sequence?: boolean
     format?: 'png' | 'jpeg'
     quality?: number | undefined
+    notation?: boolean
   },
 ) {
   logger.info(`${k.dim('output')} ${output}`)
@@ -107,6 +118,7 @@ export async function exportViewsToPNG(
       theme,
       format,
       quality,
+      notation,
     })
   } finally {
     logger.info(k.cyan(`close chromium`))
@@ -133,6 +145,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     chromiumSandbox = false,
     format = 'png',
     quality,
+    notation = false,
   } = args
 
   await using likec4 = await fromWorkspace(workspacePath, {
@@ -216,6 +229,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
         chromiumSandbox,
         format,
         quality,
+        notation,
       })
       const { pretty } = inMillis(startTakeScreenshot)
 
@@ -331,6 +345,11 @@ export function pngCmd(yargs: Argv) {
             desc: 'enable chromium sandbox (see Playwright docs)',
             default: false,
           },
+          'notation': {
+            boolean: true,
+            desc: 'include view notation in exported PNG files',
+            default: false,
+          },
         })
         .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export png')}
@@ -366,6 +385,7 @@ export function pngCmd(yargs: Argv) {
           filter: args.filter,
           sequence: args.seq,
           chromiumSandbox: args['chromium-sandbox'],
+          notation: args.notation,
         } satisfies PngExportArgs,
       )
       showSupportUsMessage()

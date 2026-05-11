@@ -1,10 +1,27 @@
-import type { LayoutedView } from '@likec4/core'
-import { LikeC4Diagram, pickViewBounds } from '@likec4/diagram'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import type { LayoutedView, NodeNotation } from '@likec4/core'
+import { LikeC4Diagram, pickViewBounds, useLikeC4Styles } from '@likec4/diagram'
+import { ElementShape } from '@likec4/diagram/custom'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
+import type { CSSProperties } from 'react'
 import { useRef } from 'react'
 import { useCurrentView, useTransparentBackground } from '../hooks'
+import { computeExportPageLayout, EXPORT_NOTATION_ITEM_HEIGHT } from './export-layout'
+
+type PaletteCssVars =
+  & CSSProperties
+  & Record<
+    '--likec4-palette-fill' | '--likec4-palette-stroke' | '--likec4-palette-hiContrast' | '--likec4-palette-loContrast',
+    string
+  >
 
 function triggerDownload(url: string, filename: string) {
   const link = document.createElement('a')
@@ -95,6 +112,7 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
     download = false,
     quality,
     dynamic,
+    notation = false,
   } = useSearch({
     strict: false,
   })
@@ -105,6 +123,13 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
   const downloadedRef = useRef(false)
 
   const bounds = pickViewBounds(diagram, dynamic)
+  const notationEntries = diagram.notation?.nodes ?? []
+  const showNotation = notation === true && notationEntries.length > 0
+  const layout = computeExportPageLayout({
+    bounds,
+    padding,
+    notationEntries: showNotation ? notationEntries.length : 0,
+  })
 
   const downloadDiagram = () => {
     const viewport = viewportRef.current
@@ -130,11 +155,6 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
     }
   }
 
-  // @see https://github.com/likec4/likec4/issues/1857
-  const extraPadding = 16
-  const width = bounds.width + padding * 2 + extraPadding
-  const height = bounds.height + padding * 2 + extraPadding
-
   return (
     <Box
       ref={viewportRef}
@@ -151,56 +171,211 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
       style={{
         marginRight: 'auto',
         marginBottom: 'auto',
-        minWidth: width,
-        width: width,
-        minHeight: height,
-        height: height,
+        minWidth: layout.width,
+        width: layout.width,
+        minHeight: layout.height,
+        height: layout.height,
         background: isJpeg ? 'var(--mantine-color-body)' : 'transparent',
       }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
-      <LikeC4Diagram
-        view={diagram}
-        fitView={false}
-        fitViewPadding={{
-          top: '0px',
-          bottom: '0px',
-          left: '0px',
-          right: '0px',
+      <Box
+        data-testid="export-diagram-area"
+        css={{
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          overflow: 'hidden',
         }}
-        background={isJpeg ? 'solid' : 'transparent'}
-        reduceGraphics={false}
-        dynamicViewVariant={dynamic}
-        className={'likec4-static-view'}
-        pannable={false}
-        zoomable={false}
-        controls={false}
-        enableNotations={false}
-        enableElementDetails={false}
-        enableRelationshipDetails={false}
-        enableRelationshipBrowser={false}
-        enableDynamicViewWalkthrough={false}
-        enableFocusMode={false}
-        enableSearch={false}
-        nodesSelectable={false}
-        enableElementTags={false}
-        onInitialized={() => {
-          if (!viewportRef.current) {
-            console.error('viewportRef.current is null')
-            return
-          }
-          const x = Math.round(-bounds.x + padding)
-          const y = Math.round(-bounds.y + padding)
+        style={{
+          width: layout.diagram.width,
+          height: layout.height,
+        }}>
+        <LikeC4Diagram
+          view={diagram}
+          fitView={false}
+          fitViewPadding={{
+            top: '0px',
+            bottom: '0px',
+            left: '0px',
+            right: '0px',
+          }}
+          background={isJpeg ? 'solid' : 'transparent'}
+          reduceGraphics={false}
+          dynamicViewVariant={dynamic}
+          className={'likec4-static-view'}
+          pannable={false}
+          zoomable={false}
+          controls={false}
+          enableNotations={false}
+          enableElementDetails={false}
+          enableRelationshipDetails={false}
+          enableRelationshipBrowser={false}
+          enableDynamicViewWalkthrough={false}
+          enableFocusMode={false}
+          enableSearch={false}
+          nodesSelectable={false}
+          enableElementTags={false}
+          onInitialized={() => {
+            if (!viewportRef.current) {
+              console.error('viewportRef.current is null')
+              return
+            }
+            const x = Math.round(-bounds.x + padding)
+            const y = Math.round(-bounds.y + padding)
 
-          const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
-          viewports.forEach((el) => {
-            el.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
-          })
+            const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
+            viewports.forEach((el) => {
+              el.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+            })
 
-          if (download) {
-            window.setTimeout(downloadDiagram, 500)
-          }
-        }}
-      />
+            if (download) {
+              window.setTimeout(downloadDiagram, 500)
+            }
+          }}
+        />
+      </Box>
+      {layout.notation && (
+        <ExportNotationPanel
+          entries={notationEntries}
+          layout={layout.notation}
+        />
+      )}
+    </Box>
+  )
+}
+
+function ExportNotationPanel({
+  entries,
+  layout,
+}: Readonly<{
+  entries: readonly NodeNotation[]
+  layout: NonNullable<ReturnType<typeof computeExportPageLayout>['notation']>
+}>) {
+  const panelStyle: CSSProperties = {
+    ...layout,
+    position: 'absolute',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
+    border: '1px solid var(--mantine-color-default-border)',
+    borderRadius: 6,
+    background: 'var(--mantine-color-body)',
+    boxShadow: '0 4px 18px rgb(0 0 0 / 14%)',
+    color: 'var(--mantine-color-text)',
+  }
+  const headerStyle: CSSProperties = {
+    height: 36,
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: 12,
+    paddingRight: 12,
+    fontSize: 13,
+    fontWeight: 600,
+    borderBottom: '1px solid var(--mantine-color-default-border)',
+  }
+
+  return (
+    <Box
+      data-testid="export-notation"
+      style={panelStyle}>
+      <Box style={headerStyle}>Notation</Box>
+      <Box
+        style={{
+          padding: 12,
+        }}>
+        {entries.map((entry, index) => <ExportNotationItem key={`${entry.title}-${index}`} entry={entry} />)}
+      </Box>
+    </Box>
+  )
+}
+
+function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
+  const styles = useLikeC4Styles()
+  const elementColors = styles.colors(entry.color).elements
+  const colorVars: PaletteCssVars = {
+    '--likec4-palette-fill': elementColors.fill,
+    '--likec4-palette-stroke': elementColors.stroke,
+    '--likec4-palette-hiContrast': elementColors.hiContrast,
+    '--likec4-palette-loContrast': elementColors.loContrast,
+  }
+  const itemStyle: CSSProperties = {
+    ...colorVars,
+    display: 'grid',
+    gridTemplateColumns: '64px 1fr',
+    columnGap: 10,
+    alignItems: 'center',
+    height: EXPORT_NOTATION_ITEM_HEIGHT,
+    overflow: 'hidden',
+  }
+  const kindsStyle: CSSProperties = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 3,
+    marginBottom: 5,
+    maxHeight: 31,
+    overflow: 'hidden',
+  }
+  const kindStyle: CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    height: 14,
+    maxWidth: '100%',
+    paddingLeft: 4,
+    paddingRight: 4,
+    borderRadius: 2,
+    background: 'var(--likec4-palette-fill)',
+    color: 'var(--likec4-palette-hiContrast)',
+    fontSize: 9.5,
+    fontWeight: 500,
+    lineHeight: 1,
+    textTransform: 'lowercase',
+    whiteSpace: 'nowrap',
+  }
+  const titleStyle: CSSProperties = {
+    overflow: 'hidden',
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    fontSize: 13,
+    fontWeight: 500,
+    lineHeight: 1.2,
+  }
+
+  return (
+    <Box
+      data-likec4-color={entry.color}
+      style={itemStyle}>
+      <Box
+        style={{
+          position: 'relative',
+          width: 56,
+          height: 38,
+        }}>
+        <ElementShape
+          data={{
+            shape: entry.shape,
+            width: 300,
+            height: 200,
+          }}
+          showSelectionOutline={false}
+        />
+      </Box>
+      <Box
+        css={{
+          minWidth: 0,
+        }}>
+        <Box
+          style={kindsStyle}>
+          {entry.kinds.map(kind => (
+            <Box
+              key={kind}
+              as="span"
+              style={kindStyle}>
+              {kind}
+            </Box>
+          ))}
+        </Box>
+        <Box style={titleStyle}>{entry.title}</Box>
+      </Box>
     </Box>
   )
 }
