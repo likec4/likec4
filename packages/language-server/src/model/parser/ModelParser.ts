@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 //
 // Copyright (c) 2023-2026 Denis Davydkov
-// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
@@ -244,6 +244,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         astPath,
         source,
         target,
+        isBidirectional: astNode.isBidirectional || undefined,
         title,
         metadata,
         kind,
