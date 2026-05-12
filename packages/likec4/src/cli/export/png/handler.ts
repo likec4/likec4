@@ -51,6 +51,8 @@ export type PngExportArgs = {
   quality?: number
   /** Include view notation in exported images. */
   notation?: boolean
+  /** Include view description in exported images. */
+  description?: boolean
 }
 
 /** Launch headless Chromium, capture each view as PNG to output dir; returns list of succeeded view ids. */
@@ -69,6 +71,7 @@ export async function exportViewsToPNG(
     format = 'png',
     quality,
     notation = false,
+    description = false,
   }: {
     logger: ViteLogger
     serverUrl: string
@@ -83,6 +86,7 @@ export async function exportViewsToPNG(
     format?: 'png' | 'jpeg'
     quality?: number | undefined
     notation?: boolean
+    description?: boolean
   },
 ) {
   logger.info(`${k.dim('output')} ${output}`)
@@ -119,6 +123,7 @@ export async function exportViewsToPNG(
       format,
       quality,
       notation,
+      description,
     })
   } finally {
     logger.info(k.cyan(`close chromium`))
@@ -146,6 +151,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     format = 'png',
     quality,
     notation = false,
+    description = false,
   } = args
 
   await using likec4 = await fromWorkspace(workspacePath, {
@@ -230,6 +236,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
         format,
         quality,
         notation,
+        description,
       })
       const { pretty } = inMillis(startTakeScreenshot)
 
@@ -350,6 +357,11 @@ export function pngCmd(yargs: Argv) {
             desc: 'include view notation in exported PNG files',
             default: false,
           },
+          'description': {
+            boolean: true,
+            desc: 'include view description in exported PNG files',
+            default: false,
+          },
         })
         .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export png')}
@@ -386,6 +398,7 @@ export function pngCmd(yargs: Argv) {
           sequence: args.seq,
           chromiumSandbox: args['chromium-sandbox'],
           notation: args.notation,
+          description: args.description,
         } satisfies PngExportArgs,
       )
       showSupportUsMessage()

@@ -114,6 +114,11 @@ export function jpgCmd(yargs: Argv) {
             desc: 'include view notation in exported JPEG files',
             default: false,
           },
+          'description': {
+            boolean: true,
+            desc: 'include view description in exported JPEG files',
+            default: false,
+          },
         })
         .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export jpg')}
@@ -153,6 +158,7 @@ export function jpgCmd(yargs: Argv) {
           format: 'jpeg',
           quality: args.quality,
           notation: args.notation,
+          description: args.description,
         } satisfies PngExportArgs,
       )
       showSupportUsMessage()
