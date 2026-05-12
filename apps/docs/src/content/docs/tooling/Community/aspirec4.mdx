@@ -1,0 +1,163 @@
+---
+title: AspireC4
+description: Aspire extension that auto-generates live LikeC4 architecture diagrams from your .NET Aspire resource graph.
+sidebar:
+  label: 'AspireC4 - Aspire Integration'
+---
+
+import { LinkCard, CardGrid, LinkButton } from '@astrojs/starlight/components';
+
+:::caution[Community Project]
+AspireC4 is a community-maintained project, not an official LikeC4 package. APIs and behavior may change.
+:::
+
+[AspireC4](https://github.com/kjldev/aspirec4) is a .NET Aspire extension library that auto-generates live LikeC4 architecture diagrams from the Aspire resource graph. Diagrams update in real-time as resources start, stop, or produce errors — and each element links back to the corresponding Aspire dashboard page.
+
+<CardGrid>
+  <LinkCard title="GitHub" href="https://github.com/kjldev/aspirec4" />
+  <LinkCard title="NuGet Package" href="https://www.nuget.org/packages/AspireC4.Hosting/" />
+</CardGrid>
+
+## Prerequisites
+
+- **Docker** (required by default) — the LikeC4 server runs as a `ghcr.io/likec4/likec4` container sidecar.
+- Alternatively, use `.WithLocalCLI()` to run via a locally-installed Node.js CLI (`npx`, `pnpm`, `yarn`, `bun`, or `deno`).
+
+## Quick Start
+
+Add `AspireC4.Hosting` to your AppHost project, then call `AddAspireC4()`:
+
+```csharp
+// AppHost/Program.cs
+var builder = DistributedApplication.CreateBuilder(args);
+
+// Add your services ...
+var api = builder.AddProject<Projects.MyApi>("my-api");
+
+// Register the LikeC4 visualization sidecar.
+builder.AddAspireC4();
+
+builder.Build().Run();
+```
+
+This will:
+
+1. Write a `./likec4/model.gen.c4` file from the Aspire resource graph.
+2. Start a `ghcr.io/likec4/likec4` Docker container serving the live diagram.
+3. Watch for resource state changes and regenerate the file automatically.
+
+{/* Screenshot placeholder: Aspire dashboard showing AspireC4 sidecar and diagram link */}
+
+## How It Works
+
+### Data Flow
+
+```
+Aspire resources
+     │
+     ▼
+LikeC4ModelBuilder.Build()   ← resource states, dashboard URL
+     │
+     ▼
+LikeC4DSLGenerator.Generate()
+     │
+     ▼
+./likec4/model.gen.c4         ← written to disk (and Docker volume)
+     │
+     ▼
+ghcr.io/likec4/likec4        ← serves the diagram, hot-reloads on file change
+```
+
+### Resource State Colours
+
+Each Aspire resource is represented as a LikeC4 element. Its colour reflects the live runtime state:
+
+| State | Colour | Description |
+|-------|--------|-------------|
+| Unknown | default | Not yet started |
+| Starting | sky | Resource is initialising |
+| Running | green | Healthy and running |
+| Stopping | slate | Winding down (60% opacity) |
+| Exited | muted | Stopped cleanly (30% opacity) |
+| Failed | amber | Exited with a non-zero code |
+| Error | red | Reported an error state |
+
+{/* Screenshot placeholder: LikeC4 diagram showing resources in various states */}
+
+## Dashboard Deep-Links
+
+When `IncludeAspireDashboardLinks` is enabled (the default), each LikeC4 element receives two links:
+
+- **Dashboard: Console Logs** → `/consolelogs/resource/{name}`
+- **Dashboard: Structured Logs** → `/structuredlogs/resource/{name}`
+
+Links are built at runtime once the Aspire dashboard reaches the `Running` state. With a browser token (default Aspire setup), the links embed the token for seamless authentication.
+
+To disable dashboard links:
+
+```csharp
+builder.AddAspireC4(options =>
+{
+    options.IncludeAspireDashboardLinks = false;
+});
+```
+
+:::note[Security]
+The browser token is read from `IConfiguration` and is only embedded in the generated `.c4` file as part of link URLs. Do not commit the generated file to source control.
+:::
+
+## Configuration Reference
+
+All options are set on `AspireC4DiagramOptions`:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `Title` | `"Architecture"` | View title in the generated LikeC4 file |
+| `OutputDirectory` | `"./likec4"` | Directory where the `.c4` file is written |
+| `FileName` | `"model.gen"` | Generated file name (`.c4` appended if missing) |
+| `DisableHMR` | `false` | Disable Hot Module Replacement between the LikeC4 server and browser |
+| `ContainerImageTag` | `null` (latest) | Pin the `ghcr.io/likec4/likec4` image tag |
+| `AutoIconsEnabled` | `true` | Infer LikeC4 icons from resource type/name |
+| `HideFromDashboard` | `false` | Hide the LikeC4 sidecar from the Aspire dashboard |
+| `DashboardLinkDisplayName` | `"Architecture Diagram"` | Display name for the diagram link when `HideFromDashboard = true` |
+| `RelationshipKindSyntax` | `Dot` | `Dot` → `SOURCE .KIND TARGET`; `Bracket` → `SOURCE -[KIND]-> TARGET` |
+| `ValidateBeforeStart` | `false` | Run `npx likec4 validate` against the output directory at startup |
+| `ElementKindSpecs` | `[]` | Custom element kind specifications for the `specification {}` block |
+| `AutoIncludeAspireMetadata` | `All` | Which Aspire runtime metadata to inject (`None`, `Metadata`, `Links`, `All`) |
+| `AdditionalDSLFiles` | `[]` | Extra `.c4` files copied into the output directory alongside the generated file |
+| `IncludeAspireDashboardLinks` | `true` | Inject Aspire dashboard console/structured log links into each element |
+| `IconResolvers` | `[]` | Custom icon resolvers evaluated before built-in inference |
+
+## Alternative Modes
+
+### Local CLI (`WithLocalCLI`)
+
+Uses a locally-installed `likec4` CLI (via `npx`/`pnpm`/`yarn`/`bun`/`deno`) instead of the Docker container:
+
+```csharp
+builder.AddAspireC4().WithLocalCLI();
+```
+
+### Hide from Dashboard (`WithHideFromDashboard`)
+
+Removes the LikeC4 sidecar from the Aspire dashboard resource list and surfaces the diagram URL as a link and command on each `ProjectResource`:
+
+```csharp
+builder.AddAspireC4().WithHideFromDashboard();
+```
+
+## Excluding Resources
+
+A resource is excluded from the diagram if:
+
+- It carries an `ExcludeFromLikeC4Annotation`, or
+- Its `ResourceSnapshotAnnotation.InitialSnapshot.IsHidden == true` (Aspire internal resources).
+
+The LikeC4 sidecar resource itself is always excluded.
+
+## Limitations
+
+- **Static diagram tool**: LikeC4 renders a file-based diagram. State updates require an HMR refresh.
+- **Dashboard URL discovery**: If the Aspire dashboard hasn't started when the first diagram is generated, dashboard links will be absent until it reaches `Running` and triggers a regeneration.
+- **Browser token in generated file**: The Aspire browser token appears in the `.c4` file embedded in dashboard link URLs. Do not commit the generated file to source control.
+- **Windows HMR relay**: On Windows, a TCP relay bridges the fixed host port `24678` to the dynamically-allocated Docker port for Hot Module Replacement.
