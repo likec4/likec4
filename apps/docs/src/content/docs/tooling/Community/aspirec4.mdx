@@ -84,6 +84,7 @@ This will:
           .WithLabel("Web Host")
           .WithSummary(".NET 10/ ASP.NET Minimal API web app. Hosting APIs, and the Astro-based landing site and the MarkerStack SPA");
       })
+      # Note the reference to the database resource (db) here, to save you from calling .WithReference(db) as well...
       .WithLikeC4Reference(db, opts => {
         opts
           .WithLabel("Tabular Data Stream (TDS)")
