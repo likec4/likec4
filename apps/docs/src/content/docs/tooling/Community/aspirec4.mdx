@@ -5,7 +5,7 @@ sidebar:
   label: 'AspireC4 - Aspire Integration'
 ---
 
-import { LinkCard, CardGrid, LinkButton } from '@astrojs/starlight/components';
+import { CardGrid, LinkCard, TabItem, Tabs } from '@astrojs/starlight/components';
 
 :::caution[Community Project]
 AspireC4 is a community-maintained project, not an official LikeC4 package. APIs and behavior may change.
@@ -16,6 +16,7 @@ AspireC4 is a community-maintained project, not an official LikeC4 package. APIs
 <CardGrid>
   <LinkCard title="GitHub" href="https://github.com/kjldev/aspirec4" />
   <LinkCard title="NuGet Package" href="https://www.nuget.org/packages/AspireC4.Hosting/" />
+  <LinkCard title="Project" href="https://kjl.dev/projects/aspirec4" />
 </CardGrid>
 
 ## Prerequisites
@@ -46,7 +47,49 @@ This will:
 2. Start a `ghcr.io/likec4/likec4` Docker container serving the live diagram.
 3. Watch for resource state changes and regenerate the file automatically.
 
-{/* Screenshot placeholder: Aspire dashboard showing AspireC4 sidecar and diagram link */}
+<Tabs>
+  <TabItem label="Basic Setup">
+    This simply adds the AspireC4 hosting extension to the AppHost builder.    
+
+    ```csharp
+    // AppHost/Program.cs
+    var builder = DistributedApplication.CreateBuilder(args);
+    builder.AddAspireC4();
+
+    // ...add other projects/resources such as databases, services, etc.
+
+    builder
+      .AddProject<Projects.Web>("web")
+      .WithReference(db);    
+    ```
+
+    ![Out of the box integration](../../../../assets/tooling/community/aspirec4/makerstack-basic.png)
+  </TabItem>
+  <TabItem label="Enhanced Setup">
+    This simply adds the AspireC4 hosting extension to the AppHost builder.    
+
+    ```csharp
+    // AppHost/Program.cs
+    var builder = DistributedApplication.CreateBuilder(args);
+    builder.AddAspireC4(opts => {
+      opts.Title = "MakerStack Architecture";
+    });
+
+    // ...add other projects/resources such as databases, services, etc.
+
+    builder
+      .AddProject<Projects.Web>("web")
+      .WithLikeC4Reference(db, opts => {
+        opts
+          .WithLabel("Web Host")
+          .WithSummary(".NET 10/ ASP.NET Minimal API web app. Hosting APIs, and the Astro-based landing site and the MarkerStack SPA");
+      });
+    ```
+
+    ![Enhanced integration](../../../../assets/tooling/community/aspirec4/makerstack-enhanced.png)
+  </TabItem>
+</Tabs>
+
 
 ## How It Works
 
@@ -102,31 +145,7 @@ builder.AddAspireC4(options =>
 });
 ```
 
-:::note[Security]
-The browser token is read from `IConfiguration` and is only embedded in the generated `.c4` file as part of link URLs. Do not commit the generated file to source control.
-:::
 
-## Configuration Reference
-
-All options are set on `AspireC4DiagramOptions`:
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `Title` | `"Architecture"` | View title in the generated LikeC4 file |
-| `OutputDirectory` | `"./likec4"` | Directory where the `.c4` file is written |
-| `FileName` | `"model.gen"` | Generated file name (`.c4` appended if missing) |
-| `DisableHMR` | `false` | Disable Hot Module Replacement between the LikeC4 server and browser |
-| `ContainerImageTag` | `null` (latest) | Pin the `ghcr.io/likec4/likec4` image tag |
-| `AutoIconsEnabled` | `true` | Infer LikeC4 icons from resource type/name |
-| `HideFromDashboard` | `false` | Hide the LikeC4 sidecar from the Aspire dashboard |
-| `DashboardLinkDisplayName` | `"Architecture Diagram"` | Display name for the diagram link when `HideFromDashboard = true` |
-| `RelationshipKindSyntax` | `Dot` | `Dot` → `SOURCE .KIND TARGET`; `Bracket` → `SOURCE -[KIND]-> TARGET` |
-| `ValidateBeforeStart` | `false` | Run `npx likec4 validate` against the output directory at startup |
-| `ElementKindSpecs` | `[]` | Custom element kind specifications for the `specification {}` block |
-| `AutoIncludeAspireMetadata` | `All` | Which Aspire runtime metadata to inject (`None`, `Metadata`, `Links`, `All`) |
-| `AdditionalDSLFiles` | `[]` | Extra `.c4` files copied into the output directory alongside the generated file |
-| `IncludeAspireDashboardLinks` | `true` | Inject Aspire dashboard console/structured log links into each element |
-| `IconResolvers` | `[]` | Custom icon resolvers evaluated before built-in inference |
 
 ## Alternative Modes
 
