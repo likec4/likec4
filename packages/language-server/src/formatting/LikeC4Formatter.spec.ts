@@ -2011,7 +2011,7 @@ describe('formating', () => {
     dynamic view dynamic-view-1 {
       title 'Dynamic View Example'
 
-      link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
+      link https://docs.likec4.dev/dsl/views/dynamic/ 'Docs'
 
       customer -> ui.dashboard 'opens'
       ui.dashboard -> cloud.graphql 'requests'
