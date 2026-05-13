@@ -79,10 +79,15 @@ This will:
 
     builder
       .AddProject<Projects.Web>("web")
-      .WithLikeC4Reference(db, opts => {
+      .WithLikeC4Details(opts => {
         opts
           .WithLabel("Web Host")
           .WithSummary(".NET 10/ ASP.NET Minimal API web app. Hosting APIs, and the Astro-based landing site and the MarkerStack SPA");
+      })
+      .WithLikeC4Reference(db, opts => {
+        opts
+          .WithLabel("Tabular Data Stream (TDS)")
+          ... etc
       });
     ```
 
