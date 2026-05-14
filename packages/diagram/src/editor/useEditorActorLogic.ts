@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 import { isNullish } from 'remeda'
 import { fromPromise } from 'xstate'
 import { useCallbackRef } from '../hooks'
+import { type EditorActorLogic, editorActorLogic } from './actor/machine'
+import type { EditorCalls } from './actor/setup'
 import { applyChangesToManualLayout } from './applyChangesToManualLayout'
-import type { EditorCalls } from './editorActor.setup'
-import { type EditorActorLogic, editorActorLogic } from './editorActor.states'
 import { useOptionalLikeC4Editor } from './LikeC4EditorProvider'
 
 const promisify = <T>(fn: () => T | Promise<T>): Promise<T> => {

@@ -8,7 +8,7 @@ import { invariant, nonNullable } from '@likec4/core/utils'
 import type { RefObject } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName, TogglableFeature } from '../../context/DiagramFeatures'
-import type { EditorActorRef } from '../../editor/editorActor.states'
+import type { EditorActorRef } from '../../editor/actor/machine'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { Types } from '../types'
@@ -211,17 +211,17 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
     startEditing: (subject: 'node' | 'edge') => {
       const editorActor = typedSystem(actorRef.current.system).editorActorRef
       invariant(editorActor, 'No editor actor found in diagram actor system')
-      editorActor.send({ type: 'edit.start', subject })
+      editorActor.send({ type: 'edit.move.start', subject })
     },
     stopEditing: (wasChanged = false) => {
       const editorActor = typedSystem(actorRef.current.system).editorActorRef
       invariant(editorActor, 'No editor actor found in diagram actor system')
-      editorActor.send({ type: 'edit.finish', wasChanged })
+      editorActor.send({ type: wasChanged ? 'edit.move.end' : 'edit.move.cancel' })
     },
     undoEditing: () => {
       const editorActor = typedSystem(actorRef.current.system).editorActorRef
       invariant(editorActor, 'No editor actor found in diagram actor system')
-      const hasUndo = editorActor.getSnapshot().context.history.length > 0
+      const hasUndo = editorActor.getSnapshot().context.history !== null
       if (hasUndo) {
         editorActor.send({ type: 'undo' })
       }

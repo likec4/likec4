@@ -95,6 +95,9 @@ export default defineConfig([
 
 async function copySchema() {
   const schema = fileURLToPath(import.meta.resolve('@likec4/config/schema.json', import.meta.url))
+  if (!existsSync(schema)) {
+    throw new Error(`config schema not found: ${schema}`)
+  }
   console.info('Copy config schema: %s', schema)
   await cp(schema, './data/config.schema.json')
 }

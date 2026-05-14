@@ -1,4 +1,5 @@
-export type * from './editorActor.states'
+export type * from './actor/machine'
+export type * from './actor/types'
 export { createLikeC4Editor } from './LikeC4EditorCallbacks'
 export type { LikeC4EditorCallbacks } from './LikeC4EditorCallbacks'
 export {

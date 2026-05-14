@@ -61,6 +61,7 @@ const main = defineCommand({
           '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
           'react-dom/server': resolve(import.meta.dirname, 'src/react-dom-server-mock.ts'),
           // Local paths for dev
+          '@likec4/diagram/adhoc-editor': resolve(import.meta.dirname, '../diagram/src/adhoc-editor/index.ts'),
           '@likec4/diagram/custom': resolve(import.meta.dirname, '../diagram/src/custom/index.ts'),
           '@likec4/diagram': resolve(import.meta.dirname, '../diagram/src/index.ts'),
           'likec4/vite-plugin/internal': resolve(import.meta.dirname, '../vite-plugin/src/internal.ts'),

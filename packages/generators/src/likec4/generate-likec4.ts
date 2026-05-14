@@ -80,6 +80,10 @@ export function printOperation<Operation extends AnyOp>(
 export function printWithTabIndent<Operation extends AnyOp>(operation: Operation): string
 export function printWithTabIndent<Operation extends AnyOp>(
   operation: Operation,
+  data: ctxOf<Operation>,
+): string
+export function printWithTabIndent<Operation extends AnyOp>(
+  operation: Operation,
   data?: ctxOf<Operation>,
 ): string {
   return materialize(withctx(data ?? {}, operation), '\t')

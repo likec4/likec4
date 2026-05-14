@@ -6,7 +6,7 @@ export type HotKeyEvent = { type: 'undo' }
 
 export interface HotkeyActorLogic extends CallbackActorLogic<AnyEventObject, NonReducibleUnknown, HotKeyEvent> {}
 
-export const hotkeyActorLogic: HotkeyActorLogic = fromCallback(({ sendBack }: {
+export const hotkey: HotkeyActorLogic = fromCallback(({ sendBack }: {
   sendBack: (event: HotKeyEvent) => void
 }) => {
   const ctrlZHandler = getHotkeyHandler([

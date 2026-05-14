@@ -21,9 +21,10 @@ export class LikeC4ModelChanges {
   }
 
   public async applyChange(changeView: ChangeView.Params): Promise<ChangeView.Res> {
+    let { viewId, projectId: _projectId, change } = changeView
     const payload = preparePayload(changeView, this.services)
 
-    const res = await changePropertyHandler(payload)
+    const res = await Promise.resolve().then(() => changePropertyHandler(payload))
 
     if (res) {
       const edits = Array.isArray(res) ? res : [res]
@@ -39,11 +40,11 @@ export class LikeC4ModelChanges {
         location: null,
       }
     }
+    invariant(change.op !== 'change-property', 'Wrong state operation type, "change-property" must be handled first')
 
     const workspace = this.services.shared.workspace
 
     try {
-      let { viewId, projectId: _projectId, change } = changeView
       const project = workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
       logger.debug`Applying model change ${change.op} to view ${viewId} in project ${project.id}`
       const lookup = this.locator.locateViewAst(viewId, project.id)
@@ -120,7 +121,7 @@ export class LikeC4ModelChanges {
 
   protected convertToTextEdit({ lookup, change }: {
     lookup: ViewLocateResult
-    change: Exclude<ViewChange, ViewChange.SaveViewSnapshot | ViewChange.ResetManualLayout>
+    change: Exclude<ViewChange, ViewChange.SaveViewSnapshot | ViewChange.ResetManualLayout | ViewChange.ChangeProperty>
   }): {
     modifiedRange: Range
     edits: TextEdit[]

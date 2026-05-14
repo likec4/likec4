@@ -26,7 +26,7 @@ import {
   setup,
 } from 'xstate'
 import type { EnabledFeatures, TogglableFeature } from '../../context/DiagramFeatures'
-import { editorActorLogic } from '../../editor/editorActor.states'
+import { editorActorLogic } from '../../editor/actor/machine'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
