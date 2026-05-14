@@ -3,7 +3,7 @@
   "private": true,
   "license": "MIT",
   "version": "1.56.0",
-  "packageManager": "pnpm@10.33.3",
+  "packageManager": "pnpm@11.1.1",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -86,7 +86,6 @@
       "turbo": "catalog:",
       "sharp": "catalog:utils",
       "caniuse-lite": "catalog:utils",
-      "mnemonist": "0.40.3",
       "min-document": ">=2.19.2",
       "flatted": ">=3.4.2",
       "h3": ">=1.15.11",
@@ -124,7 +123,6 @@
       "zx": "8.8.5"
     },
     "patchedDependencies": {
-      "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch",
       "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
     },
     "onlyBuiltDependencies": [

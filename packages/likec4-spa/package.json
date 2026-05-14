@@ -14,7 +14,7 @@
   "target": false,
   "type": "module",
   "scripts": {
-    "build": "tsdown --config-loader unpun",
+    "build": "tsdown --config-loader tsx",
     "typecheck": "tsc --build --verbose",
     "generate": "tsr generate",
     "clean": "likec4ops clean",

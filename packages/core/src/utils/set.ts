@@ -1,10 +1,10 @@
-import {
-  intersection as _intersection,
-  symmetricDifference as _symmetricDifference,
-} from 'mnemonist/patch'
+import { set as mnemonistSet } from 'mnemonist'
 
 import { hasAtLeast } from 'remeda'
 import type { NonEmptyArray } from '../types/_common'
+
+const _intersection = mnemonistSet.intersection
+const _symmetricDifference = mnemonistSet.symmetricDifference
 
 /**
  * Returns new set as a union of given sets
