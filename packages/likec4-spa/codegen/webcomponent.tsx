@@ -15,6 +15,7 @@ const propsSchema = zObject({
   viewId: zDefault(zString(), 'index'),
   browser: zDefault(zStringBoolean(), true),
   dynamicViewVariant: zOptional(zLiteral(['diagram', 'sequence'])),
+  colorScheme: zOptional(zLiteral(['light', 'dark'])),
 })
 
 export class LikeC4View extends HTMLElement {
@@ -67,7 +68,7 @@ export class LikeC4View extends HTMLElement {
     this.hostCss = undefined
   }
 
-  static observedAttributes = ['view-id', 'browser', 'dynamic-variant']
+  static observedAttributes = ['view-id', 'browser', 'dynamic-variant', 'color-scheme']
 
   protected getProps() {
     const props = propsSchema.safeParse(
@@ -75,6 +76,7 @@ export class LikeC4View extends HTMLElement {
         viewId: this.getAttribute('view-id'),
         browser: this.getAttribute('browser') ?? undefined,
         dynamicViewVariant: this.getAttribute('dynamic-variant') ?? undefined,
+        colorScheme: this.getAttribute('color-scheme') ?? undefined,
       },
     )
     if (!props.success) {
