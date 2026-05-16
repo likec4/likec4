@@ -51,6 +51,12 @@ type HandlerParams = {
    * @default true
    */
   enableHMR?: boolean | undefined
+
+  /**
+   * port number for the HMR WebSocket server
+   * @default auto-discovered from 24678-24690
+   */
+  hmrPort?: number | undefined
 }
 
 /** Starts the LikeC4 dev server (Vite) for the given workspace path. */
@@ -65,6 +71,7 @@ export async function handler({
   base,
   listen,
   port,
+  hmrPort,
 }: HandlerParams) {
   // Explicitly set NODE_ENV to development
   if (enableHMR) {
@@ -89,6 +96,7 @@ export async function handler({
     likec4AssetsDir,
     listen,
     port,
+    hmrPort,
   })
 
   server.config.logger.clearScreen('info')
