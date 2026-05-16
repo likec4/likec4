@@ -1,0 +1,59 @@
+packages/likec4-spa/src/aichat/ui-state-data.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 1-349
+packages/likec4-spa/src/aichat/AIChat.tsx
+  s_9d49268b9f9845::t_9081cba859c8f1 1,7,22-23,36,94-101,204,279-293,321-340
+apps/docs/src/content/docs/tooling/ai-tools.mdx
+  s_9d49268b9f9845::t_9081cba859c8f1 43-87
+packages/vite-plugin/src/modules.d.ts
+  ai_agent 7-39,44
+packages/likec4-spa/src/aichat/useChat.tsx
+  s_9d49268b9f9845::t_9081cba859c8f1 1-9,21-28,31,35-43,74-76,86,88,90,95-129,131-135,143-144,177-179,185-187,190,203-219
+packages/config/src/schema.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 78-133,187
+packages/config/src/index.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 2
+packages/likec4-spa/src/aichat/chat-tool-status.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 3
+packages/vite-plugin/src/plugin.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 263
+packages/likec4-spa/src/aichat/chat-tool-status.spec.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 7
+packages/vite-plugin/src/virtuals/projects.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 12,15,53,57
+packages/likec4-spa/src/pages/ViewEditor.tsx
+  s_9d49268b9f9845::t_9081cba859c8f1 102
+apps/docs/src/content/docs/dsl/Config/index.mdx
+  s_9d49268b9f9845::t_9081cba859c8f1 65-107
+packages/likec4-spa/src/pages/ViewReact.tsx
+  s_9d49268b9f9845::t_9081cba859c8f1 25,29,94
+packages/vite-plugin/src/ai/server.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 5,61-63,70-72,78-79
+packages/vite-plugin/src/ai/tools.spec.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 1-57
+.changeset/ai-chat-context.md
+  s_9d49268b9f9845::t_1a101c1507882e 1-7
+packages/likec4-spa/src/aichat/ui-state-data.spec.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 1-326
+packages/config/src/schema.spec.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 278-354
+packages/vite-plugin/src/ai/tools.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 22-96,99-100,105-110,115,117,122-133,135-151,158-176
+packages/vite-plugin/src/virtuals/projects.spec.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "49f3adf2827ffb2d8d32c129f5a3018b20be4a7c",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
