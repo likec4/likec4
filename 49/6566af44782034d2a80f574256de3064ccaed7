@@ -1,0 +1,35 @@
+packages/likec4-spa/src/aichat/chat-tool-status.ts
+  s_9d49268b9f9845::t_1ee3bd96d701c0 1-9
+packages/likec4-spa/src/aichat/chat-window-size.spec.ts
+  s_9d49268b9f9845::t_1ee3bd96d701c0 1-41
+packages/likec4-spa/src/aichat/chat-tool-status.spec.ts
+  s_9d49268b9f9845::t_1ee3bd96d701c0 1-14
+packages/likec4-spa/src/aichat/chat-transcript.spec.ts
+  s_9d49268b9f9845::t_1ee3bd96d701c0 1-61
+packages/likec4-spa/src/aichat/chat-transcript.ts
+  s_9d49268b9f9845::t_1ee3bd96d701c0 1-29
+packages/likec4-spa/src/aichat/chat-window-size.ts
+  s_9d49268b9f9845::t_1ee3bd96d701c0 1-67
+.changeset/ai-chat-window.md
+  s_9d49268b9f9845::t_a8603fdf8fb330 1-5
+packages/likec4-spa/src/aichat/ChatMessage.tsx
+  s_9d49268b9f9845::t_1ee3bd96d701c0 4-7,11-14,47,49-136
+packages/likec4-spa/src/aichat/AIChat.tsx
+  s_9d49268b9f9845::t_1ee3bd96d701c0 7,9,13,16,19,21-29,61-89,92,105-120,125-126,128-129,131-132,135,137-139,173-179,192-199,202,205,208-252,258-259,271-278,283-291
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "496566af44782034d2a80f574256de3064ccaed7",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
