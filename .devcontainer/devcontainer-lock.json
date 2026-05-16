@@ -1,0 +1,19 @@
+{
+  "features": {
+    "ghcr.io/devcontainer-community/devcontainer-features/asdf-vm.com:1": {
+      "version": "1.0.4",
+      "resolved": "ghcr.io/devcontainer-community/devcontainer-features/asdf-vm.com@sha256:1a27bb6872f38e083c52358fdec89e187b79ee1bd0b76f83818aa63b170c173e",
+      "integrity": "sha256:1a27bb6872f38e083c52358fdec89e187b79ee1bd0b76f83818aa63b170c173e"
+    },
+    "ghcr.io/devcontainers-extra/features/tsx:1": {
+      "version": "1.0.2",
+      "resolved": "ghcr.io/devcontainers-extra/features/tsx@sha256:94274781625f34acafb721a253f758153852e830334e7d51b3a3013ce52a377b",
+      "integrity": "sha256:94274781625f34acafb721a253f758153852e830334e7d51b3a3013ce52a377b"
+    },
+    "ghcr.io/devcontainers-extra/features/turborepo-npm:1": {
+      "version": "1.0.12",
+      "resolved": "ghcr.io/devcontainers-extra/features/turborepo-npm@sha256:c6ed8b60b3554beadb85499deac36cd8c1dbafcb19452f6f8349fc6f791ba1d6",
+      "integrity": "sha256:c6ed8b60b3554beadb85499deac36cd8c1dbafcb19452f6f8349fc6f791ba1d6"
+    }
+  }
+}
