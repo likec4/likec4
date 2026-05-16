@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import type { LikeC4Project, NonEmptyArray, ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
@@ -19,22 +26,16 @@ export type ProjectsData = NonEmptyArray<ProjectData>
 
 export type VirtualModuleLoadResult = Rolldown.SourceDescription | string
 
-export type SharedVirtualModuleOptions =
-  & {
-    rpcEnabled: boolean
-    logger: ViteLogger
-    likec4: LikeC4LanguageServices
-    assetsDir: string
-  }
-  & (
-    {
-      isAIAvailable: false
-      ai: undefined
-    } | {
-      isAIAvailable: false
-      ai: AIOptions
-    }
-  )
+export type SharedVirtualModuleOptions = {
+  rpcEnabled: boolean
+  logger: ViteLogger
+  likec4: LikeC4LanguageServices
+  assetsDir: string
+  isAIAvailable: boolean
+  ai: AIOptions | undefined
+  aiEndpoint: string | undefined
+  aiAdapterName: string | undefined
+}
 
 export interface VirtualModule {
   id: string

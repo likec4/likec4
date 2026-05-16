@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 //
 // Copyright (c) 2023-2026 Denis Davydkov
@@ -14,6 +13,7 @@ import { createLikeC4Logger } from '../../logger'
 import { viteBuild } from '../../vite/vite-build'
 import { ensureReact } from '../ensure-libs'
 import {
+  aiEndpoint,
   base,
   outputSingleFile,
   path,
@@ -42,6 +42,7 @@ const buildCmd = (yargs: yargs.Argv) => {
             coerce: resolve,
           })
           .option('base', base)
+          .option('ai-endpoint', aiEndpoint)
           .option('use-hash-history', useHashHistory)
           .option('use-dot', useDotBin)
           .option('webcomponent-prefix', webcomponentPrefix)
@@ -82,6 +83,7 @@ const buildCmd = (yargs: yargs.Argv) => {
           customLogger: logger,
           webcomponentPrefix: params.webcomponentPrefix,
           title: args.title,
+          aiEndpoint: args['ai-endpoint'],
           theme: args.theme,
           languageServices,
           likec4AssetsDir,

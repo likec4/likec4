@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
@@ -9,6 +16,7 @@ import type {
   PluginOption,
 } from 'vite'
 import { detectAI } from './ai/detect-ai'
+import { LIKEC4_AI_ENDPOINT_PATH } from './ai/server'
 import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
@@ -79,6 +87,16 @@ type SharedOptions = {
    * ```
    */
   ai?: 'disabled' | 'auto' | AIOptions | undefined
+
+  /**
+   * Browser-facing endpoint used by the in-browser AI chat.
+   *
+   * By default, `likec4 start` serves an internal endpoint at `/__likec4_ai`
+   * when an AI provider is configured. Static builds do not have a server, so
+   * pass a URL to a LikeC4 AI proxy to enable the chat without embedding
+   * provider credentials in the generated assets.
+   */
+  aiEndpoint?: string | undefined
 
   /**
    * Define vite environments where this plugin should be active
@@ -188,6 +206,7 @@ export function LikeC4VitePlugin({
   environments,
   appConfig,
   ai: _ai = 'auto',
+  aiEndpoint: configuredAIEndpoint,
   ...pluginOpts
 }: LikeC4VitePluginOptions): PluginOption {
   let likec4: LikeC4LanguageServices
@@ -195,6 +214,7 @@ export function LikeC4VitePlugin({
   let rpcEnabled = false
   let ai: AIOptions | undefined = undefined
   let shouldDisposeOnStop = pluginOpts.watch ?? false
+  const externalAIEndpoint = configuredAIEndpoint?.trim() || undefined
 
   const virtuals = [
     ..._virtuals,
@@ -222,10 +242,13 @@ export function LikeC4VitePlugin({
   function moduleopts<T>(
     value: Omit<T, keyof SharedVirtualModuleOptions> & Partial<Record<keyof SharedVirtualModuleOptions, never>>,
   ): SharedVirtualModuleOptions & T {
-    const isAIAvailable = !!ai
+    const aiEndpoint = externalAIEndpoint ?? (rpcEnabled && ai ? LIKEC4_AI_ENDPOINT_PATH : undefined)
+    const isAIAvailable = !!aiEndpoint
     return {
       rpcEnabled,
       isAIAvailable,
+      aiEndpoint,
+      aiAdapterName: ai?.adapter.name ?? (aiEndpoint ? 'external' : undefined),
       ai,
       assetsDir,
       likec4,
@@ -289,8 +312,8 @@ export function LikeC4VitePlugin({
       }
       assetsDir = likec4.workspaceUri.fsPath
 
-      // Initialize AI only if RPC is enabled
-      if (rpcEnabled) {
+      // Initialize AI only for the dev-server endpoint. Static builds use a configured external proxy.
+      if (rpcEnabled && !externalAIEndpoint) {
         ai = await initAI()
       }
     },

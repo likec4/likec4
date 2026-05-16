@@ -40,6 +40,8 @@
         "default": "./dist/internal/index.mjs"
       }
     },
+    "./ai/detect": "./src/ai/detect-ai.ts",
+    "./ai/server": "./src/ai/server.ts",
     "./ai/tools": "./src/ai/tools.ts",
     "./modules": "./src/modules.d.ts",
     "./package.json": "./package.json"

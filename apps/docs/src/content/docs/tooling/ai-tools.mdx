@@ -12,6 +12,46 @@ import { Aside, CardGrid, LinkCard, TabItem as Tab, Tabs } from '@astrojs/starli
 
 LikeC4 provides two complementary tools for AI-powered development: **Agent Skills** for teaching AI assistants the DSL syntax, and an **MCP Server** for querying your architecture model.
 
+## AI chat
+
+The browser app can show an AI assistant when an AI provider is configured.
+`likec4 start` detects provider credentials from environment variables and serves the chat endpoint locally.
+For OpenAI, set `OPENAI_API_KEY` and optionally `OPENAI_CHAT_MODEL`.
+The OpenAI adapter uses the Responses API; compatible provider endpoints must support `/v1/responses`.
+Set `OPENAI_BASE_URL` when using an OpenAI SDK-compatible endpoint instead of the default OpenAI endpoint.
+
+```sh
+OPENAI_API_KEY=... \
+OPENAI_CHAT_MODEL=gpt-5.2 \
+likec4 start
+```
+
+For static builds, keep the provider key on a server-side proxy and point the static page at that proxy:
+
+Terminal 1:
+```sh
+OPENAI_API_KEY=... \
+OPENAI_CHAT_MODEL=gpt-5.2 \
+likec4 ai-proxy
+```
+
+Terminal 2:
+```sh
+likec4 build -o ./dist --ai-endpoint /__likec4_ai
+```
+
+Pass the LikeC4 proxy URL to `--ai-endpoint`, not the raw provider API URL.
+For OpenAI SDK-compatible endpoints, use the provider root URL in `OPENAI_BASE_URL`.
+The safest production setup is same-origin routing: serve the static files and proxy `/__likec4_ai` from the same authenticated host.
+If the proxy is on another browser origin, configure an explicit `--cors-origin`; do not use CORS as authentication.
+Production proxies should also enforce authorization, rate limits, quotas, TLS, and an audit/logging policy appropriate for architecture data.
+
+:::caution
+Chat messages and selected LikeC4 context are sent to the configured AI provider or proxy.
+Model metadata, links, relationships, and tool results may expose sensitive architecture or safety information.
+Review provider retention and compliance terms before using external or custom `OPENAI_BASE_URL` endpoints.
+:::
+
 ## Agent Skills
 
 Agent skills are DSL references that AI coding assistants load automatically when editing `.c4`/`.likec4` files.

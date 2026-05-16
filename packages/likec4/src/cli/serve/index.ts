@@ -1,6 +1,24 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as yargs from 'yargs'
 import { ensureReact } from '../ensure-libs'
-import { base, hmrPort, listen, path, port, title, useDotBin, useHashHistory, webcomponentPrefix } from '../options'
+import {
+  aiEndpoint,
+  base,
+  hmrPort,
+  listen,
+  path,
+  port,
+  title,
+  useDotBin,
+  useHashHistory,
+  webcomponentPrefix,
+} from '../options'
 import { handler } from './serve'
 
 const serveCmd = (yargs: yargs.Argv) => {
@@ -15,6 +33,7 @@ const serveCmd = (yargs: yargs.Argv) => {
           .option('base', base)
           .option('webcomponent-prefix', webcomponentPrefix)
           .option('title', title)
+          .option('ai-endpoint', aiEndpoint)
           .option('use-hash-history', useHashHistory)
           .option('use-dot', useDotBin)
           .option('listen', listen)
@@ -40,6 +59,7 @@ const serveCmd = (yargs: yargs.Argv) => {
           base: args.base,
           webcomponentPrefix: args['webcomponent-prefix'],
           title: args['title'],
+          aiEndpoint: args['ai-endpoint'],
           useHashHistory: args['use-hash-history'],
           listen: args['listen'],
           port: args['port'],

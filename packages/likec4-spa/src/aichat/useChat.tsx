@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { type Fqn, nonexhaustive } from '@likec4/core'
 import { useDiagram } from '@likec4/diagram'
 import type { Types, XYStoreState } from '@likec4/diagram/custom'
@@ -8,6 +15,7 @@ import {
 } from '@tanstack/ai-client'
 import { type UseChatOptions, fetchServerSentEvents, useChat as useTanstackChat } from '@tanstack/ai-react'
 import { useNavigate } from '@tanstack/react-router'
+import { aiEndpoint } from 'likec4:rpc'
 import { useEffect, useMemo } from 'react'
 import { find, map, pipe } from 'remeda'
 import { parse, stringify } from 'superjson'
@@ -146,10 +154,15 @@ const storage = {
 }
 
 export function useChat(options: Omit<UseChatOptions, 'connection' | 'tools' | 'initialMessages'>) {
-  const memoProps = useMemo(() => ({
-    connection: fetchServerSentEvents('/__likec4_ai'),
-    initialMessages: storage.read(),
-  }), [])
+  const memoProps = useMemo(() => {
+    if (!aiEndpoint) {
+      throw new Error('AI chat endpoint is not configured')
+    }
+    return {
+      connection: fetchServerSentEvents(aiEndpoint),
+      initialMessages: storage.read(),
+    }
+  }, [])
   const chat = useTanstackChat({
     ...memoProps,
     ...options,

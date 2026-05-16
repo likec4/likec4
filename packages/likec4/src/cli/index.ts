@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { ConfigureLanguageServerLoggerOptions } from '@likec4/language-server'
 import {
   configureLogger,
@@ -16,6 +23,7 @@ import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import pkg from '../../package.json' with { type: 'json' }
+import aiProxyCmd from './ai-proxy'
 import buildCmd from './build'
 import checkUpdateCmd, { notifyAvailableUpdate } from './check-update'
 import codegenCmd from './codegen'
@@ -64,6 +72,7 @@ async function main() {
   const y = pipe(
     yargs(hideBin(argv)),
     serveCmd,
+    aiProxyCmd,
     buildCmd,
     codegenCmd,
     exportCmd,
