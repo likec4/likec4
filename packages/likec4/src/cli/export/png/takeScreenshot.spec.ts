@@ -10,7 +10,7 @@ function parseExportUrl(url: string): URL {
 }
 
 describe('createExportViewUrl', () => {
-  it('omits notation query parameter by default', () => {
+  it('omits optional decoration query parameters by default', () => {
     const url = parseExportUrl(createExportViewUrl({
       viewId: 'customer view',
       padding: 20,
@@ -21,6 +21,7 @@ describe('createExportViewUrl', () => {
     expect(url.searchParams.get('padding')).toBe('20')
     expect(url.searchParams.get('theme')).toBe('light')
     expect(url.searchParams.has('notation')).toBe(false)
+    expect(url.searchParams.has('description')).toBe(false)
   })
 
   it('adds notation query parameter when requested', () => {
@@ -35,7 +36,19 @@ describe('createExportViewUrl', () => {
     expect(url.searchParams.get('notation')).toBe('true')
   })
 
-  it('keeps JPEG and dynamic export query parameters with notation', () => {
+  it('adds description query parameter when requested', () => {
+    const url = parseExportUrl(createExportViewUrl({
+      viewId: 'orders',
+      padding: 20,
+      theme: 'dark',
+      description: true,
+    }))
+
+    expect(url.pathname).toBe('/export/orders/')
+    expect(url.searchParams.get('description')).toBe('true')
+  })
+
+  it('keeps JPEG and dynamic export query parameters with decorations', () => {
     const url = parseExportUrl(createExportViewUrl({
       viewId: 'checkout',
       padding: 24,
@@ -43,6 +56,7 @@ describe('createExportViewUrl', () => {
       dynamicVariant: 'sequence',
       format: 'jpeg',
       notation: true,
+      description: true,
     }))
 
     expect(url.searchParams.get('padding')).toBe('24')
@@ -50,5 +64,6 @@ describe('createExportViewUrl', () => {
     expect(url.searchParams.get('dynamic')).toBe('sequence')
     expect(url.searchParams.get('format')).toBe('jpeg')
     expect(url.searchParams.get('notation')).toBe('true')
+    expect(url.searchParams.get('description')).toBe('true')
   })
 })

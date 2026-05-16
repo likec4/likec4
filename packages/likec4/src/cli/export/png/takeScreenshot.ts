@@ -28,13 +28,14 @@ type TakeScreenshotParams = {
   format?: 'png' | 'jpeg'
   quality?: number | undefined
   notation?: boolean
+  description?: boolean
 }
 
 /**
  * Builds the SPA export URL for a view screenshot, encoding the view id and export query parameters.
  *
- * @param params - View id, padding, theme, and optional dynamic layout, image format, and notation settings.
- * @returns Relative URL containing `padding`, `theme`, optional `dynamic`, `format`, and `notation` query parameters.
+ * @param params - View id, padding, theme, and optional dynamic layout, image format, notation, and description settings.
+ * @returns Relative URL containing `padding`, `theme`, optional `dynamic`, `format`, `notation`, and `description`.
  */
 export function createExportViewUrl({
   viewId,
@@ -43,6 +44,7 @@ export function createExportViewUrl({
   dynamicVariant,
   format = 'png',
   notation = false,
+  description = false,
 }: {
   viewId: string
   padding: number
@@ -50,12 +52,14 @@ export function createExportViewUrl({
   dynamicVariant?: DynamicViewDisplayVariant | undefined
   format?: 'png' | 'jpeg'
   notation?: boolean
+  description?: boolean
 }): string {
   return withQuery(`export/${encodeURIComponent(viewId)}/`, {
     padding,
     theme,
     dynamic: dynamicVariant,
     ...(notation ? { notation: true } : {}),
+    ...(description ? { description: true } : {}),
     ...(format === 'jpeg' ? { format: 'jpeg' } : {}),
   })
 }
@@ -78,6 +82,7 @@ export async function takeScreenshot({
   format = 'png',
   quality,
   notation = false,
+  description = false,
 }: TakeScreenshotParams) {
   const padding = 20
 
@@ -141,6 +146,7 @@ export async function takeScreenshot({
         dynamicVariant,
         format,
         notation,
+        description,
       }))
 
       logger.info(k.cyan(url) + k.dim(` -> ${relative(output, path)}`))
@@ -190,7 +196,9 @@ export async function takeScreenshot({
 }
 
 /**
- * https://stackoverflow.com/questions/77287441/how-to-wait-for-full-rendered-image-in-playwright
+ * Waits for images in the export page to either load or fail before the screenshot is captured.
+ *
+ * Based on https://stackoverflow.com/questions/77287441/how-to-wait-for-full-rendered-image-in-playwright.
  */
 async function waitAllImages(page: Page, timeout: number) {
   // Trigger loading of all images

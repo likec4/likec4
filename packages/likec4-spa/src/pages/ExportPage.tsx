@@ -5,16 +5,25 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { LayoutedView, NodeNotation } from '@likec4/core'
+import { type LayoutedView, type NodeNotation, type RichTextOrEmpty, RichText } from '@likec4/core'
 import { LikeC4Diagram, pickViewBounds, useLikeC4Styles } from '@likec4/diagram'
-import { ElementShape } from '@likec4/diagram/custom'
+import { ElementShape, Markdown } from '@likec4/diagram/custom'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
 import type { CSSProperties } from 'react'
 import { useRef } from 'react'
 import { useCurrentView, useTransparentBackground } from '../hooks'
-import { computeExportPageLayout, EXPORT_NOTATION_ITEM_HEIGHT } from './export-layout'
+import {
+  computeExportPageLayout,
+  EXPORT_DESCRIPTION_BODY_TOP_GAP,
+  EXPORT_DESCRIPTION_BOTTOM_PADDING,
+  EXPORT_DESCRIPTION_INSET,
+  EXPORT_DESCRIPTION_TITLE_LINE_HEIGHT,
+  EXPORT_DESCRIPTION_TOP_PADDING,
+  EXPORT_NOTATION_ITEM_HEIGHT,
+} from './export-layout'
+import { isExportSearchFlagEnabled } from './export-page-params'
 
 type PaletteCssVars =
   & CSSProperties
@@ -23,6 +32,9 @@ type PaletteCssVars =
     string
   >
 
+/**
+ * Downloads a generated object URL or data URL through a temporary browser link.
+ */
 function triggerDownload(url: string, filename: string) {
   const link = document.createElement('a')
   link.setAttribute('download', filename)
@@ -38,6 +50,9 @@ function triggerDownload(url: string, filename: string) {
   )
 }
 
+/**
+ * Converts the export viewport into a PNG file and starts a browser download.
+ */
 async function downloadAsPng({
   pngFilename,
   viewport,
@@ -65,6 +80,9 @@ async function downloadAsPng({
   }
 }
 
+/**
+ * Converts the export viewport into a JPEG file and starts a browser download.
+ */
 async function downloadAsJpeg({
   filename,
   viewport,
@@ -92,6 +110,9 @@ async function downloadAsJpeg({
   }
 }
 
+/**
+ * Renders the single-view export page used by browser downloads and CLI screenshots.
+ */
 export function ExportPage() {
   const [diagram] = useCurrentView()
   const { format } = useSearch({ strict: false })
@@ -106,10 +127,14 @@ export function ExportPage() {
   return <GuardedExportPage diagram={diagram} isJpeg={isJpeg} />
 }
 
+/**
+ * Renders the measured export viewport for a loaded diagram.
+ */
 function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg: boolean }) {
   const {
     padding = 20,
     download = false,
+    description = false,
     quality,
     dynamic,
     notation = false,
@@ -123,11 +148,15 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
   const downloadedRef = useRef(false)
 
   const bounds = pickViewBounds(diagram, dynamic)
+  const viewDescription = RichText.from(diagram.description)
+  const showDescription = isExportSearchFlagEnabled(description) && viewDescription.nonEmpty
+  const viewTitle = diagram.title ?? diagram.id
   const notationEntries = diagram.notation?.nodes ?? []
-  const showNotation = notation === true && notationEntries.length > 0
+  const showNotation = isExportSearchFlagEnabled(notation) && notationEntries.length > 0
   const layout = computeExportPageLayout({
     bounds,
     padding,
+    description: showDescription ? { title: viewTitle, text: viewDescription.text } : null,
     notationEntries: showNotation ? notationEntries.length : 0,
   })
 
@@ -182,13 +211,13 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
         data-testid="export-diagram-area"
         css={{
           position: 'absolute',
-          top: '0',
-          left: '0',
           overflow: 'hidden',
         }}
         style={{
+          top: layout.diagram.top,
+          left: layout.diagram.left,
           width: layout.diagram.width,
-          height: layout.height,
+          height: layout.height - layout.diagram.top,
         }}>
         <LikeC4Diagram
           view={diagram}
@@ -234,6 +263,13 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
           }}
         />
       </Box>
+      {layout.description && (
+        <ExportDescriptionPanel
+          title={viewTitle}
+          description={viewDescription}
+          layout={layout.description}
+        />
+      )}
       {layout.notation && (
         <ExportNotationPanel
           entries={notationEntries}
@@ -244,6 +280,72 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
   )
 }
 
+/**
+ * Renders the optional Markdown description panel above the exported diagram.
+ */
+function ExportDescriptionPanel({
+  title,
+  description,
+  layout,
+}: Readonly<{
+  title: string
+  description: RichTextOrEmpty
+  layout: NonNullable<ReturnType<typeof computeExportPageLayout>['description']>
+}>) {
+  const panelStyle: CSSProperties = {
+    ...layout,
+    position: 'absolute',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
+    border: '1px solid var(--mantine-color-default-border)',
+    borderRadius: 6,
+    background: 'var(--mantine-color-body)',
+    boxShadow: '0 4px 18px rgb(0 0 0 / 14%)',
+    color: 'var(--mantine-color-text)',
+  }
+  const titleStyle: CSSProperties = {
+    paddingTop: EXPORT_DESCRIPTION_TOP_PADDING,
+    paddingBottom: EXPORT_DESCRIPTION_BODY_TOP_GAP,
+    paddingLeft: EXPORT_DESCRIPTION_INSET,
+    paddingRight: EXPORT_DESCRIPTION_INSET,
+    fontSize: 15,
+    fontWeight: 600,
+    lineHeight: `${EXPORT_DESCRIPTION_TITLE_LINE_HEIGHT}px`,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }
+  const descriptionStyle: CSSProperties = {
+    maxHeight: layout.height
+      - EXPORT_DESCRIPTION_TOP_PADDING
+      - EXPORT_DESCRIPTION_TITLE_LINE_HEIGHT
+      - EXPORT_DESCRIPTION_BODY_TOP_GAP
+      - EXPORT_DESCRIPTION_BOTTOM_PADDING,
+    overflow: 'hidden',
+    paddingLeft: EXPORT_DESCRIPTION_INSET,
+    paddingRight: EXPORT_DESCRIPTION_INSET,
+    paddingBottom: EXPORT_DESCRIPTION_BOTTOM_PADDING,
+  }
+
+  return (
+    <Box
+      data-testid="export-description"
+      style={panelStyle}>
+      <Box style={titleStyle}>{title}</Box>
+      <Markdown
+        value={description}
+        hideIfEmpty
+        fontSize="sm"
+        textScale={0.9}
+        style={descriptionStyle}
+      />
+    </Box>
+  )
+}
+
+/**
+ * Renders the optional notation panel next to the exported diagram.
+ */
 function ExportNotationPanel({
   entries,
   layout,
@@ -288,6 +390,9 @@ function ExportNotationPanel({
   )
 }
 
+/**
+ * Renders one notation entry with its representative element shape and labels.
+ */
 function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
   const styles = useLikeC4Styles()
   const elementColors = styles.colors(entry.color).elements
