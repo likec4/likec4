@@ -79,10 +79,16 @@ This will:
 
     builder
       .AddProject<Projects.Web>("web")
-      .WithLikeC4Reference(db, opts => {
+      .WithLikeC4Details(opts => {
         opts
           .WithLabel("Web Host")
           .WithSummary(".NET 10/ ASP.NET Minimal API web app. Hosting APIs, and the Astro-based landing site and the MarkerStack SPA");
+      })
+      # Note the reference to the database resource (db) here, to save you from calling .WithReference(db) as well...
+      .WithLikeC4Reference(db, opts => {
+        opts
+          .WithLabel("Tabular Data Stream (TDS)")
+          ... etc
       });
     ```
 
@@ -111,14 +117,14 @@ LikeC4DSLGenerator.Generate()
 ghcr.io/likec4/likec4        ← serves the diagram, hot-reloads on file change
 ```
 
-### Resource State Colours
+### Resource State Colors
 
-Each Aspire resource is represented as a LikeC4 element. Its colour reflects the live runtime state:
+Each Aspire resource is represented as a LikeC4 element. Its color reflects the live runtime state:
 
-| State | Colour | Description |
-|-------|--------|-------------|
+| State | Color | Description |
+|-------|-------|-------------|
 | Unknown | default | Not yet started |
-| Starting | sky | Resource is initialising |
+| Starting | sky | Resource is initializing |
 | Running | green | Healthy and running |
 | Stopping | slate | Winding down (60% opacity) |
 | Exited | muted | Stopped cleanly (30% opacity) |
