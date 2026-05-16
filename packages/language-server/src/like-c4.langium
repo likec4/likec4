@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 grammar LikeC4
 
 entry LikeC4Grammar:
@@ -171,6 +178,7 @@ ExtendRelation:
   (
     dotKind=RelationKindDotRef |
     '-[' kind=[RelationshipKind] ']->' |
+    isBidirectional?='<->' |
     '->'
   )
   target=FqnRef
@@ -216,6 +224,7 @@ Relation<isExplicit>:
   (
     dotKind=RelationKindDotRef |
     '-[' kind=[RelationshipKind] ']->' |
+    isBidirectional?='<->' |
     '->'
   )
   target=FqnRef

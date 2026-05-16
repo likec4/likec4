@@ -1,4 +1,12 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, test } from 'vitest'
+import { createTestServices } from '../test'
 import { invalid, valid } from './asserts'
 
 describe('model relation', () => {
@@ -15,6 +23,64 @@ describe('model relation', () => {
       }
       `,
   )
+
+  test(
+    'valid bidirectional relation',
+    valid`
+      specification {
+        element component
+      }
+      model {
+        component frontend
+        component backend
+        frontend <-> backend
+      }
+      `,
+  )
+
+  test(
+    'valid bidirectional extend relation',
+    valid`
+      specification {
+        element component
+      }
+      model {
+        component frontend
+        component backend
+        frontend <-> backend
+        extend frontend <-> backend {
+          link https://example.com/sync
+        }
+      }
+      `,
+  )
+
+  test('builds bidirectional relation with a tail arrow', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component frontend
+        component backend
+        frontend <-> backend
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    const model = await buildModel()
+    const relation = Object.values(model.relations)[0]
+    expect(relation).toMatchObject({
+      source: {
+        model: 'frontend',
+      },
+      target: {
+        model: 'backend',
+      },
+      tail: 'normal',
+    })
+  })
 
   test(
     'fail if defined in model without source',
