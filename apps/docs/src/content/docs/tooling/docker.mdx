@@ -67,6 +67,23 @@ docker run --rm \
   start
 ```
 
+The HMR WebSocket port is auto-discovered from the range 24678–24690. To pin it to a specific port, use `--hmr-port` (or the `HMR_PORT` env var) and publish that exact port:
+
+```sh copy title="Pin the HMR port"
+docker run --rm \
+  -v $PWD:/data \
+  --init \
+  -t \
+  -p 5173:5173 \
+  -p 24700:24700 \
+  -e CHOKIDAR_USEPOLLING=1 \
+  -e CHOKIDAR_INTERVAL=200 \
+  likec4/likec4 \
+  start --hmr-port 24700
+# Or equivalently via env var:
+#   -e HMR_PORT=24700
+```
+
 :::note
 By default LikeC4 Docker sets `--use-dot` flag and uses local Graphviz binaries instead of bundled WASM (as it has [memory issues](https://github.com/likec4/likec4/issues?q=Memory%20type:Bug)).
 

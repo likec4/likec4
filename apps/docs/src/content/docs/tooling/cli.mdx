@@ -24,7 +24,7 @@ The `likec4` CLI is a tool for various operations and automation tasks, such as:
 
 - Start development server to preview diagrams (with hot-reload)
 - Build a static website for sharing and embedding diagrams
-- Export to PNG, JSON, Mermaid, Dot, D2, DrawIO
+- Export to PNG, JPEG, JSON, Mermaid, Dot, D2, DrawIO
 - Generate [source code artifacts](/tooling/code-generation/react/):
   - React components
   - Web Components
@@ -101,6 +101,14 @@ likec4 dev
 This recursively searches for `*.c4` and `*.likec4` files in the current folder, parses them, and serves diagrams via a local web server.  
 Any change in the source files triggers a hot update in the browser immediately.
 
+| Option              | Description                                                                                               |
+| ------------------- | --------------------------------------------------------------------------------------------------------- |
+| `--port`            | Port for the dev server (default: 5173, or `PORT` env var)                                                |
+| `--hmr-port`        | Port for the HMR WebSocket (default: auto-discovered from 24678–24690, or `HMR_PORT` env var)             |
+| `--listen, -l`      | IP address to listen on (default: `127.0.0.1`, or `0.0.0.0` inside a container)                          |
+| `--no-react-hmr`    | Disable React HMR (useful for CI or static previews)                                                      |
+| `--use-dot`         | Use local Graphviz (`dot`) binaries instead of bundled WASM                                               |
+
 :::tip
 You can start the process in a separate terminal window and keep it running while you're editing the model in your editor, or even serve multiple projects at once.
 :::
@@ -151,20 +159,23 @@ For example, this command can be used in CI to compare diagrams with ones from t
 
 ```sh
 likec4 export png -o ./assets
+likec4 export jpg -o ./assets --quality 90
 ```
 
 This command starts local web server and uses Playwright to take screenshots.  
 If you plan to use it in CI, refer to the [Playwright documentation](https://playwright.dev/docs/ci) for details
 or consider [LikeC4 GitHub Actions](/tooling/github)
 
+Use `likec4 export jpg` to export JPEG files. It supports the same screenshot options, plus `--quality`.
+
 :::note
-Exporting to PNG requires Playwright.  
+Exporting to PNG or JPEG requires Playwright.
 You will be prompted with a command to install if it's not found.
 :::
 
 | Option                  | Description                                                                                                   |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `--outdir, -o`          | Output directory for PNG files; if not specified, images are saved next to sources. `--output` is accepted as alias for compatibility. |
+| `--outdir, -o`          | Output directory for PNG/JPEG files; if not specified, images are saved next to sources. `--output` is accepted as alias for compatibility. |
 | `--project`             | select LikeC4 project to export from by name (e.g. "my-project") or by path<br/>If not specified, exports all |
 | `--theme`               | color-scheme to use, "light" (default), "dark"                                                                |
 | `--dark`                | use dark theme, shortcut for --theme=dark                                                                     |
@@ -173,11 +184,14 @@ You will be prompted with a command to install if it's not found.
 | `--seq, --sequence`     | use sequence layout for dynamic views                                                                         |
 | `--flat, --flatten`     | Flatten all images in outdir, ignoring source structure                                                       |
 | `-f, --filter`          | include views with ids matching given patterns<br/>(multiple patterns are combined with OR)                   |
+| `--quality, -q`         | JPEG quality from 1 to 100 (default is 80); only used by `likec4 export jpg`                                  |
 | `-i, --ignore`          | continue if export fails for some views                                                                       |
 | `-t, --timeout`         | timeout for playwright in seconds, default is 15                                                              |
 | `--max-attempts`        | max attempts to export failing view, 1 means no retry (default is 3)                                          |
 | `--server-url`          | use this url instead of starting new likec4 server                                                            |
 | `--chromium-sandbox`    | enable chromium sandbox (see Playwright docs)                                                                 |
+| `--notation`            | include view notation in exported PNG/JPEG files                                                              |
+| `--description`         | include the view title and Markdown description in exported PNG/JPEG files                                     |
 
 ### Export to JSON
 

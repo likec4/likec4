@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { invariant } from '@likec4/core'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
@@ -102,6 +109,16 @@ export function jpgCmd(yargs: Argv) {
             desc: 'enable chromium sandbox (see Playwright docs)',
             default: false,
           },
+          'notation': {
+            boolean: true,
+            desc: 'include view notation in exported JPEG files',
+            default: false,
+          },
+          'description': {
+            boolean: true,
+            desc: 'include view description in exported JPEG files',
+            default: false,
+          },
         })
         .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export jpg')}
@@ -140,6 +157,8 @@ export function jpgCmd(yargs: Argv) {
           chromiumSandbox: args['chromium-sandbox'],
           format: 'jpeg',
           quality: args.quality,
+          notation: args.notation,
+          description: args.description,
         } satisfies PngExportArgs,
       )
       showSupportUsMessage()
