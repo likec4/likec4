@@ -8,6 +8,8 @@ import { formatToolActivityLabel } from './chat-tool-status'
 describe('formatToolActivityLabel', () => {
   it('uses readable labels for LikeC4 UI tools', () => {
     expect(formatToolActivityLabel('read_ui')).toBe('Reading diagram state...')
+    expect(formatToolActivityLabel('read_connections')).toBe('Reading connections...')
+    expect(formatToolActivityLabel('read_element')).toBe('Reading element details...')
     expect(formatToolActivityLabel('update_ui')).toBe('Updating diagram...')
     expect(formatToolActivityLabel('navigate_to')).toBe('Opening view...')
   })

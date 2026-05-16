@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, it } from 'vitest'
 import { validateProjectConfig as validateConfig } from './schema'
 import { ImageAliasesSchema } from './schema.image-alias'
@@ -273,6 +280,95 @@ describe('ProjectConfig schema', () => {
       const result = validateConfig(config)
       expect(result.name).toBe('test')
       expect(result.landingPage).toEqual({ redirect: true })
+    })
+
+    describe('aiChat field', () => {
+      it('should accept safe AI Chat defaults', ({ expect }) => {
+        const result = validateConfig({
+          name: 'test',
+          aiChat: {
+            enabled: true,
+            systemPrompt: 'Answer from LikeC4 facts.',
+            suggestedQuestions: {
+              element: [
+                'What does {title} do?',
+                'What depends on {title}?',
+              ],
+            },
+            context: {
+              element: {
+                description: true,
+                metadata: false,
+                incoming: true,
+                outgoing: true,
+              },
+              relationships: {
+                title: true,
+                technology: true,
+                metadata: true,
+                links: false,
+              },
+              limits: {
+                children: 25,
+                relationships: 50,
+                views: 10,
+              },
+            },
+          },
+        })
+
+        expect(result.aiChat?.enabled).toBe(true)
+        expect(result.aiChat?.context?.limits?.relationships).toBe(50)
+      })
+
+      it('should reject empty AI Chat prompt and questions', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'test',
+            aiChat: {
+              systemPrompt: '',
+            },
+          })
+        ).toThrow('AI Chat system prompt cannot be empty')
+
+        expect(() =>
+          validateConfig({
+            name: 'test',
+            aiChat: {
+              suggestedQuestions: {
+                element: [''],
+              },
+            },
+          })
+        ).toThrow('Suggested question cannot be empty')
+      })
+
+      it('should reject non-positive AI Chat limits', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'test',
+            aiChat: {
+              context: {
+                limits: {
+                  relationships: 0,
+                },
+              },
+            },
+          })
+        ).toThrow()
+      })
+
+      it('should reject provider credentials in AI Chat config', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'test',
+            aiChat: {
+              apiKey: 'secret',
+              allowUnsafeApiKey: true,
+            },
+          })
+        ).toThrow()
+      })
     })
 
     // Skipped in Vitest: config object can arrive without landingPage key in this env. Behavior verified via:

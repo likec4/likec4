@@ -267,6 +267,7 @@ export function LikeC4VitePlugin({
       title: p.title,
       folder: p.folder.toString(),
       landingPage: p.config.landingPage,
+      aiChat: p.config.aiChat,
     })) satisfies (data: ProjectsData) => any
     let _last: any
     return <T extends ProjectsData>(update: T): boolean => {

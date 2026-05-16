@@ -52,6 +52,53 @@ Model metadata, links, relationships, and tool results may expose sensitive arch
 Review provider retention and compliance terms before using external or custom `OPENAI_BASE_URL` endpoints.
 :::
 
+### Configure project context
+
+Project config can tune the chat prompt, suggested questions, and which model details are exposed to AI context tools.
+It does not configure provider credentials; keep API keys in the dev server or proxy environment.
+
+```jsonc
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "my-project",
+  "aiChat": {
+    "systemPrompt": "Answer from the LikeC4 model. Call out unknowns instead of guessing.",
+    "suggestedQuestions": {
+      "element": [
+        "What does {title} do?",
+        "What depends on {title}?",
+        "What does {title} connect to?"
+      ]
+    },
+    "context": {
+      "element": {
+        "description": true,
+        "metadata": true,
+        "incoming": true,
+        "outgoing": true
+      },
+      "relationships": {
+        "metadata": true,
+        "links": false
+      },
+      "limits": {
+        "children": 50,
+        "relationships": 100,
+        "views": 20
+      }
+    }
+  }
+}
+```
+
+The chat reads context through tools:
+- `read_ui` for current view and layout state.
+- `read_connections` for current-view edges, ports, datatypes, and relationship metadata.
+- `read_element` for selected or focused element details, dependencies, dependents, children, metadata, and related views.
+
+Suggested questions and `systemPrompt` support element variables like `{title}`, `{kind}`, `{technology}`, `{view}`, `{dependencies}`, and `{dependents}`.
+Use `aiChat.context` to turn off metadata, links, relationship details, or related views before tool results are sent to the configured AI provider or proxy.
+
 ## Agent Skills
 
 Agent skills are DSL references that AI coding assistants load automatically when editing `.c4`/`.likec4` files.

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import type { NonEmptyArray } from '@likec4/core'
 import JSON5 from 'json5'
@@ -9,9 +16,10 @@ type ProjectData = {
   id: string
   title: string | undefined
   landingPage: LikeC4ProjectConfig['landingPage']
+  aiChat: LikeC4ProjectConfig['aiChat']
 }
 
-const code = (projects: NonEmptyArray<ProjectData>) => `
+export const generateProjectsModuleCode = (projects: NonEmptyArray<ProjectData>) => `
 import { atom, useStore } from 'likec4/vite-plugin/internal'
 
 export const isSingleProject = ${projects.length === 1};
@@ -49,10 +57,11 @@ export const projectsModule = {
   async load({ projects }) {
     logGenerating('projects')
     return {
-      code: code(map(projects, p => ({
+      code: generateProjectsModuleCode(map(projects, p => ({
         id: p.id,
         title: p.title,
         landingPage: p.config.landingPage,
+        aiChat: p.config.aiChat,
       }))),
       moduleType: 'js',
     }

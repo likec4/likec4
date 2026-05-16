@@ -4,6 +4,8 @@
 
 const toolLabels: Record<string, string> = {
   navigate_to: 'Opening view',
+  read_connections: 'Reading connections',
+  read_element: 'Reading element details',
   read_ui: 'Reading diagram state',
   update_ui: 'Updating diagram',
 }

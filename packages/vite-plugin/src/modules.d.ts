@@ -6,6 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 declare module 'likec4:projects' {
+  import type { AIChatConfig } from 'likec4/config'
   import type { ProjectId } from 'likec4/model'
   type LandingPageConfig =
     | { redirect: true }
@@ -15,6 +16,7 @@ declare module 'likec4:projects' {
     id: ProjectId
     title?: string
     landingPage?: LandingPageConfig
+    aiChat?: AIChatConfig
   }
   export const isSingleProject: boolean
   export const projects: readonly [Project, ...Project[]]
