@@ -1,0 +1,21 @@
+packages/likec4-spa/src/aichat/AIChat.tsx
+  s_9d49268b9f9845::t_6a4efb366d0b7a 338
+packages/likec4-spa/src/aichat/useChat.tsx
+  s_9d49268b9f9845::t_6a4efb366d0b7a 149-150,158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "1e83f2db2b3bc9770181da79946cab51e10db57a",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
