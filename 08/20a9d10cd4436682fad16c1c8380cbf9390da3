@@ -1,0 +1,73 @@
+packages/likec4/src/config/index.ts
+  s_9d49268b9f9845::t_27bcb5d4baa87e 9
+  s_9d49268b9f9845::t_747d1e75975536 1-7
+packages/likec4-spa/src/aichat/AIChat.tsx
+  s_9d49268b9f9845::t_12d3ad0a735585 8,14,29-30,43,101-108,216,291-305,333-351
+packages/vite-plugin/src/plugin.ts
+  s_9d49268b9f9845::t_cb7779fca56300 270
+.changeset/ai-chat-context.md
+  s_9d49268b9f9845::t_cb7779fca56300 1-7
+packages/vite-plugin/src/ai/tools.ts
+  s_9d49268b9f9845::t_3164afa088d13b 1-7
+  s_9d49268b9f9845::t_cb7779fca56300 29-103,106-107,112-117,122,124,129-140,142-158,165-183
+apps/docs/src/content/docs/tooling/ai-tools.mdx
+  s_9d49268b9f9845::t_cb7779fca56300 55-99
+  s_9d49268b9f9845::t_58f805531f96a8 100
+apps/docs/src/content/docs/dsl/Config/index.mdx
+  s_9d49268b9f9845::t_cb7779fca56300 65-106,108
+  s_9d49268b9f9845::t_58f805531f96a8 107
+packages/vite-plugin/src/ai/tools.spec.ts
+  s_9d49268b9f9845::t_cb7779fca56300 5-61
+  s_9d49268b9f9845::t_3164afa088d13b 1-4
+packages/likec4-spa/src/aichat/chat-tool-status.spec.ts
+  s_9d49268b9f9845::t_475f2686a7e225 11-12
+packages/vite-plugin/src/virtuals/projects.spec.ts
+  s_9d49268b9f9845::t_3164afa088d13b 1-4
+  s_9d49268b9f9845::t_cb7779fca56300 5-34
+packages/vite-plugin/src/modules.d.ts
+  s_9d49268b9f9845::t_747d1e75975536 9,19
+packages/vite-plugin/src/virtuals/projects.ts
+  s_9d49268b9f9845::t_3164afa088d13b 1-7
+  s_9d49268b9f9845::t_cb7779fca56300 19,22,60,64
+packages/config/src/schema.spec.ts
+  s_9d49268b9f9845::t_3164afa088d13b 1-7
+  s_9d49268b9f9845::t_12d3ad0a735585 360-371
+  s_9d49268b9f9845::t_cb7779fca56300 285-359,372-373
+packages/likec4-spa/src/pages/ViewEditor.tsx
+  s_9d49268b9f9845::t_cb7779fca56300 102
+packages/vite-plugin/src/ai/server.ts
+  s_9d49268b9f9845::t_cb7779fca56300 9,95-97,104-106,112-113
+packages/config/src/index.ts
+  s_9d49268b9f9845::t_cb7779fca56300 9
+  s_9d49268b9f9845::t_3164afa088d13b 1-7
+packages/likec4-spa/src/aichat/chat-tool-status.ts
+  s_9d49268b9f9845::t_475f2686a7e225 7-8
+packages/likec4-spa/src/aichat/ui-state-data.spec.ts
+  s_9d49268b9f9845::t_3164afa088d13b 1-4
+  s_9d49268b9f9845::t_cb7779fca56300 5-65,67-298,300-332
+  s_9d49268b9f9845::t_12d3ad0a735585 66,299
+packages/likec4-spa/src/aichat/ui-state-data.ts
+  s_9d49268b9f9845::t_cb7779fca56300 5-324,339-341,343-367
+  s_9d49268b9f9845::t_3164afa088d13b 1-4
+  s_9d49268b9f9845::t_12d3ad0a735585 325-338,342
+packages/config/src/schema.ts
+  s_9d49268b9f9845::t_cb7779fca56300 78-133,187
+packages/likec4-spa/src/pages/ViewReact.tsx
+  s_9d49268b9f9845::t_cb7779fca56300 25,29,94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "0820a9d10cd4436682fad16c1c8380cbf9390da3",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
