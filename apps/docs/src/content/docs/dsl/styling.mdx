@@ -231,6 +231,32 @@ pg = service 'PostgreSQL' {
 ```
 :::
 
+:::tip[Light and Dark mode SVG support]
+When using SVGs, you can bake the light and dark modes into a single file and use a `prefers-color-scheme` media query to switch between them.
+
+LikeC4 will render the correct version based on the current theme.
+
+```xml
+  <style>
+    .svg-dark { display: none; }
+    @media (prefers-color-scheme: dark) {
+      .svg-light { display: none; }
+      .svg-dark  { display: inline; }
+    }
+  </style>
+  <g class="svg-light">
+    <!-- Light mode icon version here -->
+  </g>
+  <g class="svg-dark">
+    <!-- Dark mode icon version here -->
+  </g>
+```
+
+Try changing the theme to see it in action!
+
+![Example of an icon with light and dark mode baked in](../../../assets/logo.svg)
+:::
+
 ### Bundled icons
 
 LikeC4 includes icons (over 5,000 in total) from these packs:

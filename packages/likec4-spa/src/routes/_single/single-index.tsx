@@ -33,9 +33,9 @@ export const Route = createFileRoute('/_single/single-index')({
 })
 
 function RouteComponent() {
-  useDocumentTitle(pageTitle)
   const allViews = useLikeC4Views()
-  const { landingPage } = useCurrentProject()
+  const { landingPage, title: projectTitle } = useCurrentProject()
+  useDocumentTitle(projectTitle ?? pageTitle)
   const views = filterLandingPageViews(allViews, landingPage)
   return (
     <Container size={'xl'}>
