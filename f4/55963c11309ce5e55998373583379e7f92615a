@@ -1,0 +1,36 @@
+apps/docs/src/content/docs/tooling/ai-tools.mdx
+  s_9d49268b9f9845::t_da1de5cc5943bb 47-53
+packages/vite-plugin/src/plugin.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-7
+packages/likec4-spa/src/aichat/AIChat.tsx
+  s_9d49268b9f9845::t_5eb8204f48bc7b 1-7,16,18,22,25,28,31-39,72-100,111,124-144,149-150,152-153,155-156,159,161-163,197-203,217-224,227,230,233-277,283-284,311-318,323-331
+  s_9d49268b9f9845::t_6a4efb366d0b7a 338
+packages/likec4-spa/src/aichat/useChat.tsx
+  s_9d49268b9f9845::t_3eac552628b700 1-7
+  s_9d49268b9f9845::t_6a4efb366d0b7a 149-150,158
+  s_9d49268b9f9845::t_5eb8204f48bc7b 225-227
+packages/likec4-spa/src/aichat/chat-tool-status.ts
+  s_9d49268b9f9845::t_0645cb37309095 1-4
+packages/vite-plugin/src/modules.d.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-7
+packages/vite-plugin/src/ai/server.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-4
+packages/likec4-spa/src/aichat/chat-tool-status.spec.ts
+  s_9d49268b9f9845::t_0645cb37309095 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "f455963c11309ce5e55998373583379e7f92615a",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
