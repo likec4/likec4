@@ -505,6 +505,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               }
               break
             }
+            case ast.isMultipleProperty(prop): {
+              break
+            }
             default:
               nonexhaustive(prop)
           }

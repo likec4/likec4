@@ -504,7 +504,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       autoLayout: {
         direction: 'TB',
       },
-      hash: 'ykq2WPc0IetM25FYiYzs1FmRH5g1vEU0YmHaP4NukL4',
+      hash: 'rDMRbxFKMFh9akVxQLycH55Ry-DkJKFOxIrh836WUYQ',
       edges: [
         {
           id: 'customer:cloud',
@@ -666,7 +666,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       autoLayout: {
         direction: 'TB',
       },
-      hash: 'iBSeEPna9JdWzQUa_5fJkdKno_anZ_TvZ5KdtgNM9UQ',
+      hash: 'TnulO-FSJurgTlLJwYiWWk1tXxWOWslWVfjwOvxDoG4',
       edges: [
         {
           id: 'cloud.backend:cloud.auth',
@@ -1017,7 +1017,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       autoLayout: {
         direction: 'TB',
       },
-      hash: 'UGxMpeZOwmVvGxXleHsD3L11us8xVQUXh9WRs6G19wo',
+      hash: 'Uwqu5Jwa9_2tyog-KaKnh_yXFMre96Qnnn6IglBJTqQ',
       edges: [
         {
           id: 'customer.instance:prod.eu.zone1.ui',

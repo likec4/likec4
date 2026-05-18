@@ -89,6 +89,9 @@ test('LikeC4Model in React types codegen', () => {
     | 'graphql'
     | 'index'
     | 'mobile'
+    | 'multiple-expanded'
+    | 'multiple-explicit'
+    | 'multiple-merged'
     | 'view-with-custom-colors'
 
   expectTypeOf<A['ViewId']>().toEqualTypeOf<ExpectedViewId>()

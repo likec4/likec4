@@ -82,6 +82,9 @@ test('Model Codegen with valid types', () => {
     | 'graphql'
     | 'index'
     | 'mobile'
+    | 'multiple-expanded'
+    | 'multiple-explicit'
+    | 'multiple-merged'
     | 'view-with-custom-colors'
   >()
   expectTypeOf(m1.view('cloud-to-amazon')).toEqualTypeOf<LikeC4ViewModel<A, LayoutedView<A>>>()

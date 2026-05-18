@@ -1,4 +1,16 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Element, ViewId } from '@likec4/core'
+import {
+  type ViewRulePredicate,
+  isViewRulePredicate,
+  ModelRelationExpr,
+} from '@likec4/core'
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
 import { describe, it } from 'vitest'
@@ -218,6 +230,51 @@ describe('LikeC4ModelBuilder', () => {
         },
       },
     })
+  })
+
+  it('builds model with group metadata key', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element system
+    }
+    model {
+      system test {
+        metadata {
+          team 'team name'
+          _group '_group name'
+          group 'group name'
+          other 'other name'
+        }
+      }
+      system skipped {
+        metadata {
+          group 'other group'
+        }
+      }
+    }
+    views {
+      view index {
+        include * where metadata.group is 'group name'
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      test: {
+        kind: 'system',
+        metadata: {
+          team: 'team name',
+          _group: '_group name',
+          group: 'group name',
+          other: 'other name',
+        },
+      },
+    })
+    const indexView = model.views['index' as ViewId]!
+    expect(indexView.nodes.map(node => node.id)).toStrictEqual(['test'])
   })
 
   it('builds model with array metadata using array syntax', async ({ expect }) => {
@@ -1454,6 +1511,94 @@ describe('LikeC4ModelBuilder', () => {
       },
       tags: {},
       metadataKeys: ['key1', 'key2', 'key3', 'key4'],
+    })
+  })
+
+  it('builds relationship spec with multiple', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element system
+      relationship async {
+        multiple true
+      }
+    }
+    model {
+      system s1
+      system s2
+      s1 -[async]-> s2
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model.specification.relationships).toMatchObject({
+      async: {
+        style: {
+          multiple: true,
+        },
+      },
+    })
+  })
+
+  it('parses include with multiple true', async ({ expect }) => {
+    const { parse, services } = await createTestServices()
+    const langiumDocument = await parse(`
+      specification {
+        element e
+        relationship r
+      }
+      model {
+        e a
+        e b
+        a -[r]-> b
+      }
+      views {
+        view index {
+          include a -> b with { multiple true }
+        }
+      }
+    `)
+
+    const doc = services.likec4.ModelParser.parse(langiumDocument)
+    const rules = doc.c4Views[0]?.rules!
+    const includeRule = rules[0] as ViewRulePredicate
+    const withPredicate = includeRule.include?.[0] as ModelRelationExpr.Custom
+
+    expect(isViewRulePredicate(includeRule)).toBe(true)
+    expect(ModelRelationExpr.isCustom(withPredicate)).toBe(true)
+    expect(withPredicate.customRelation).toMatchObject({
+      multiple: true,
+    })
+  })
+
+  it('parses include with multiple false', async ({ expect }) => {
+    const { parse, services } = await createTestServices()
+    const langiumDocument = await parse(`
+      specification {
+        element e
+        relationship r
+      }
+      model {
+        e a
+        e b
+        a -[r]-> b
+      }
+      views {
+        view index {
+          include a -> b with { multiple false }
+        }
+      }
+    `)
+
+    const doc = services.likec4.ModelParser.parse(langiumDocument)
+    const rules = doc.c4Views[0]?.rules!
+    const includeRule = rules[0] as ViewRulePredicate
+    const withPredicate = includeRule.include?.[0] as ModelRelationExpr.Custom
+
+    expect(isViewRulePredicate(includeRule)).toBe(true)
+    expect(ModelRelationExpr.isCustom(withPredicate)).toBe(true)
+    expect(withPredicate.customRelation).toMatchObject({
+      multiple: false,
     })
   })
 })

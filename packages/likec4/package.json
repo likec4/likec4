@@ -247,7 +247,7 @@
     "turbo": "catalog:",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
-    "tsdown": "catalog:",
+    "tsdown": "catalog:tsdown",
     "vite-plugin-dts": "catalog:vite",
     "vitest": "catalog:vitest",
     "vscode-jsonrpc": "catalog:vscode",

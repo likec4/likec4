@@ -25,7 +25,7 @@
     "defu": "catalog:utils",
     "pathe": "catalog:utils",
     "tsx": "catalog:",
-    "tsdown": "catalog:",
+    "tsdown": "catalog:tsdown",
     "zx": "catalog:"
   },
   "devDependencies": {

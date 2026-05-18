@@ -3,7 +3,7 @@
   "private": true,
   "license": "MIT",
   "version": "1.56.0",
-  "packageManager": "pnpm@11.1.1",
+  "packageManager": "pnpm@11.1.2",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -126,12 +126,11 @@
       "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
     },
     "onlyBuiltDependencies": [
-      "@google/genai",
+      "@openrouter/sdk",
       "@tailwindcss/oxide",
       "dprint",
       "esbuild",
       "oxlint",
-      "protobufjs",
       "sharp",
       "workerd",
       "wrangler"

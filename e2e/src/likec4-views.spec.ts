@@ -80,6 +80,37 @@ test('Generated model from views has expected view ids', () => {
     'graphql',
     'index',
     'mobile',
+    'multiple-expanded',
+    'multiple-explicit',
+    'multiple-merged',
     'view-with-custom-colors',
   ])
+})
+
+test('multiple-expanded view has separate edges for async relationships', () => {
+  const view = likec4model.view('multiple-expanded')
+  expect(view.$view.edges).toHaveLength(3)
+  const expanded = view.$view.edges.filter(e => e.label !== '[...]')
+  expect(expanded.map(e => e.label).sort()).toEqual(['Mutation', 'Query'])
+  for (const edge of expanded) {
+    expect(edge.relations).toHaveLength(1)
+  }
+  const merged = view.$view.edges.find(e => e.label === '[...]')!
+  expect(merged.relations).toHaveLength(2)
+})
+
+test('multiple-merged view has a single merged edge despite async specs', () => {
+  const view = likec4model.view('multiple-merged')
+  expect(view.$view.edges).toHaveLength(1)
+  expect(view.$view.edges[0]!.label).toBe('[...]')
+  expect(view.$view.edges[0]!.relations).toHaveLength(4)
+})
+
+test('multiple-explicit view has separate edges for every relationship', () => {
+  const view = likec4model.view('multiple-explicit')
+  expect(view.$view.edges).toHaveLength(4)
+  expect(view.$view.edges.map(e => e.label).sort()).toEqual(['Mutation', 'Query', 'reads', 'writes'])
+  for (const edge of view.$view.edges) {
+    expect(edge.relations).toHaveLength(1)
+  }
 })

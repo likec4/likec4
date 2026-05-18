@@ -6,7 +6,7 @@ packages:
   - "!packages/create-likec4"
 
 allowBuilds:
-  '@google/genai': falsex
+  '@google/genai': true
   '@openrouter/sdk': false
   dprint: true
   esbuild: true
@@ -148,6 +148,9 @@ catalogs:
     "@tanstack/react-router": ^1.114.13
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
+  tsdown:
+    tsdown: ^0.22.0
+    "@tsdown/css": ^0.22.0
   utils:
     "@logtape/logtape": ^2.0.5
     "@lume/kiwi": ^0.4.4

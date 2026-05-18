@@ -82,7 +82,7 @@
     "langium": "catalog:langium",
     "remeda": "catalog:utils",
     "tinyrainbow": "catalog:utils",
-    "tsdown": "catalog:",
+    "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
