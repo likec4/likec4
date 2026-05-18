@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Element, ViewId } from '@likec4/core'
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
@@ -218,6 +225,51 @@ describe('LikeC4ModelBuilder', () => {
         },
       },
     })
+  })
+
+  it('builds model with group metadata key', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element system
+    }
+    model {
+      system test {
+        metadata {
+          team 'team name'
+          _group '_group name'
+          group 'group name'
+          other 'other name'
+        }
+      }
+      system skipped {
+        metadata {
+          group 'other group'
+        }
+      }
+    }
+    views {
+      view index {
+        include * where metadata.group is 'group name'
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      test: {
+        kind: 'system',
+        metadata: {
+          team: 'team name',
+          _group: '_group name',
+          group: 'group name',
+          other: 'other name',
+        },
+      },
+    })
+    const indexView = model.views['index' as ViewId]!
+    expect(indexView.nodes.map(node => node.id)).toStrictEqual(['test'])
   })
 
   it('builds model with array metadata using array syntax', async ({ expect }) => {
