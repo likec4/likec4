@@ -1,13 +1,24 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { logGenerating } from '../logger'
 import type { SharedVirtualModuleOptions, VirtualModule } from './_shared'
 
-const code = ({ isAIAvailable, ai, rpcEnabled }: SharedVirtualModuleOptions) =>
+export const generateRpcModuleCode = (
+  { isAIAvailable, ai, aiAdapterName, aiEndpoint, rpcEnabled }: SharedVirtualModuleOptions,
+) =>
   ` 
 import { createRpc } from 'likec4/vite-plugin/internal'
 
 export const isRpcAvailable = !!import.meta.hot && ${rpcEnabled}
-export const isAIAvailable = isRpcAvailable && ${isAIAvailable}
-export const AIAdapter = ${JSON.stringify(ai?.adapter.name)}
+export const aiEndpoint = ${JSON.stringify(aiEndpoint)}
+export const isAIAvailable = ${isAIAvailable} && !!aiEndpoint
+export const isLocalAIAvailable = isRpcAvailable && ${!!ai}
+export const AIAdapter = ${JSON.stringify(aiAdapterName)}
 
 let rpc 
 if (isRpcAvailable) {
@@ -42,7 +53,7 @@ export const rpcModule: VirtualModule = {
   async load(opts) {
     logGenerating('rpc')
     return {
-      code: code(opts),
+      code: generateRpcModuleCode(opts),
       moduleType: 'js',
       moduleSideEffects: false,
     }

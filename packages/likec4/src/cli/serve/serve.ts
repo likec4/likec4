@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { fromWorkspace } from '@likec4/language-services/node'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -27,6 +34,11 @@ type HandlerParams = {
    * base title of the app pages
    */
   title: string | undefined
+
+  /**
+   * Public LikeC4 AI proxy endpoint used by the browser chat.
+   */
+  aiEndpoint?: string | undefined
 
   /**
    * ip address of the network interface to listen on
@@ -65,6 +77,7 @@ export async function handler({
   useDotBin,
   webcomponentPrefix,
   title,
+  aiEndpoint,
   useHashHistory,
   enableWebcomponent = true,
   enableHMR = true,
@@ -91,6 +104,7 @@ export async function handler({
     base,
     webcomponentPrefix,
     title,
+    aiEndpoint,
     languageServices,
     useHashHistory,
     likec4AssetsDir,

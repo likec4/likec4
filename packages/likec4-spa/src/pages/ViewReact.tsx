@@ -18,7 +18,9 @@ import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
 import { useIsMounted } from '@react-hookz/web'
 import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { pageTitle as defaultPageTitle } from 'likec4:app-config'
+import { isAIAvailable } from 'likec4:rpc'
 import { useRef } from 'react'
+import { AIChat } from '../aichat'
 import { NotFound } from '../components/NotFound'
 import { useCurrentView } from '../hooks'
 
@@ -88,6 +90,7 @@ export function ViewReact() {
       <ListenForDynamicVariantChange />
       <OpenRelationshipBrowserFromUrl />
       <FocusElementFromUrl />
+      {isAIAvailable && <AIChat />}
     </LikeC4Diagram>
   )
 }

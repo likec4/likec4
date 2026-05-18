@@ -1809,6 +1809,9 @@ importers:
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
+      '@tanstack/ai':
+        specifier: catalog:ai
+        version: 0.14.0
       '@tanstack/ai-anthropic':
         specifier: catalog:ai
         version: 0.8.3(@tanstack/ai@0.14.0)(zod@4.4.3)
@@ -1936,9 +1939,6 @@ importers:
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.40.0(react@19.2.4)
-      '@tanstack/ai':
-        specifier: catalog:ai
-        version: 0.14.0
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.114.27(react-dom@19.2.4(react@19.2.4))(react@19.2.4)

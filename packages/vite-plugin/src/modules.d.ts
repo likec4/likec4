@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 declare module 'likec4:projects' {
   import type { ProjectId } from 'likec4/model'
   type LandingPageConfig =
@@ -180,6 +187,10 @@ declare module 'likec4:rpc' {
   export const isRpcAvailable: boolean
 
   export const isAIAvailable: boolean
+
+  export const isLocalAIAvailable: boolean
+
+  export const aiEndpoint: string | undefined
 
   export const AIAdapter: string | undefined
 }

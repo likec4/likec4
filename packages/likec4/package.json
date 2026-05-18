@@ -124,6 +124,7 @@
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
+    "@tanstack/ai": "catalog:ai",
     "@vitejs/plugin-react": "catalog:vite",
     "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild",
@@ -139,7 +140,6 @@
     "nano-spawn": "catalog:externals"
   },
   "peerDependencies": {
-    "@tanstack/ai": "catalog:ai",
     "@tanstack/ai-anthropic": "catalog:ai",
     "@tanstack/ai-gemini": "catalog:ai",
     "@tanstack/ai-openai": "catalog:ai",
@@ -149,9 +149,6 @@
     "react-dom": "^18.x || ^19.x"
   },
   "peerDependenciesMeta": {
-    "@tanstack/ai": {
-      "optional": true
-    },
     "@tanstack/ai-anthropic": {
       "optional": true
     },

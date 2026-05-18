@@ -84,6 +84,12 @@ export const outputSingleFile = {
   desc: 'outputs a single self-contained HTML file with all required resources inlined',
 } as const satisfies Options
 
+export const aiEndpoint = {
+  string: true,
+  desc: 'LikeC4 AI proxy endpoint used by the browser chat',
+  nargs: 1,
+} as const satisfies Options
+
 export const listen = {
   alias: 'l',
   string: true,
@@ -106,7 +112,8 @@ export const port = {
 
 export const hmrPort = {
   number: true,
-  desc: 'port number for the HMR WebSocket server (default is auto-discovered from 24678-24690, or HMR_PORT environment variable)',
+  desc:
+    'port number for the HMR WebSocket server (default is auto-discovered from 24678-24690, or HMR_PORT environment variable)',
   nargs: 1,
 } as const satisfies Options
 

@@ -9,7 +9,7 @@ import { LikeC4Diagram, LikeC4EditorProvider } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { isDevelopment } from 'likec4:app-config'
-import { isAIAvailable, likec4rpc } from 'likec4:rpc'
+import { isAIAvailable, isLocalAIAvailable, likec4rpc } from 'likec4:rpc'
 import { AIChat, SemanticLayoutLog } from '../aichat'
 import { NotFound } from '../components/NotFound'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
@@ -57,7 +57,7 @@ export function ViewEditor() {
           }
           return likec4rpc.updateView(event)
         },
-        ...(isAIAvailable && {
+        ...(isLocalAIAvailable && {
           applySemanticLayout: (viewId) => {
             return likec4rpc.applySemanticLayout({
               projectId: project.id,
@@ -99,12 +99,8 @@ export function ViewEditor() {
         <ListenForDynamicVariantChange />
         <OpenRelationshipBrowserFromUrl />
         <FocusElementFromUrl />
-        {isAIAvailable && (
-          <>
-            <AIChat />
-            <SemanticLayoutLog />
-          </>
-        )}
+        {isAIAvailable && <AIChat />}
+        {isLocalAIAvailable && <SemanticLayoutLog />}
       </LikeC4Diagram>
     </LikeC4EditorProvider>
   )

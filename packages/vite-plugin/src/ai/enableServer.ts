@@ -1,32 +1,20 @@
-import { invariant } from '@likec4/core'
-import { chat, convertMessagesToModelMessages, toServerSentEventsResponse } from '@tanstack/ai'
-import type { ModelMessage, UIMessage } from '@tanstack/ai'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
 import { Readable } from 'node:stream'
-import type { MinimalPluginContextWithoutEnvironment, ViteDevServer } from 'vite'
-import { logger } from '../logger'
-import type { AIOptions } from '../plugin'
+import type { MinimalPluginContextWithoutEnvironment } from 'vite'
 import type { SharedVirtualModuleOptions } from '../virtuals/_shared'
-import { navigateToDef, readUiStateDef, updateUiStateDef } from './tools'
+import {
+  createLikeC4AIResponse,
+  LIKEC4_AI_ENDPOINT_PATH,
+  LikeC4AIRequestBodyTooLargeError,
+  LikeC4AIRequestBodyValidationError,
+  readLikeC4AIRequestBody,
+} from './server'
 
 export type AIServerParams = SharedVirtualModuleOptions & {
-  ai?: AIOptions | undefined
-  server: ViteDevServer
-}
-
-type ChatRequestBody = {
-  messages: Array<UIMessage | ModelMessage>
-  data: Record<string, any>
-}
-
-async function readJsonBody(req: ReadableStream): Promise<ChatRequestBody> {
-  const chunks = [] as string[]
-  logger.info('Reading request')
-  for await (const chunk of req) {
-    const str = Buffer.from(chunk).toString()
-    process.stdout.write(str)
-    chunks.push(str)
-  }
-  return JSON.parse(chunks.join(''))
+  server: import('vite').ViteDevServer
 }
 
 export function enableAIServer(
@@ -34,33 +22,15 @@ export function enableAIServer(
   params: AIServerParams,
 ) {
   const { ai, server, logger } = params
-  invariant(ai, 'AI is not configured')
 
-  server.middlewares.use('/__likec4_ai', async (req, res, next) => {
+  server.middlewares.use(LIKEC4_AI_ENDPOINT_PATH, async (req, res, next) => {
     if (req.method !== 'POST') {
       next()
       return
     }
     try {
-      const body = await readJsonBody(Readable.toWeb(req))
-      const messages = convertMessagesToModelMessages(body.messages ?? [])
-
-      const stream = chat({
-        ...ai,
-        messages,
-        debug: true,
-        conversationId: body.data['conversationId'],
-        systemPrompts: [
-          'You are a helpful assistant that can answer questions about LikeC4 model and update UI.',
-        ],
-        tools: [
-          navigateToDef,
-          updateUiStateDef,
-          readUiStateDef,
-        ],
-      })
-
-      const response = toServerSentEventsResponse(stream)
+      const body = await readLikeC4AIRequestBody(req)
+      const response = createLikeC4AIResponse({ ai, body })
       response.headers.forEach((value, key) => {
         res.setHeader(key, value)
       })
@@ -82,8 +52,22 @@ export function enableAIServer(
     } catch (err) {
       logger.error('AI request failed', { error: err })
       if (!res.headersSent) {
-        res.writeHead(500, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }))
+        const status = err instanceof LikeC4AIRequestBodyTooLargeError
+          ? err.statusCode
+          : err instanceof LikeC4AIRequestBodyValidationError
+          ? err.statusCode
+          : err instanceof SyntaxError
+          ? 400
+          : 500
+        const message = err instanceof LikeC4AIRequestBodyTooLargeError
+          ? err.message
+          : err instanceof LikeC4AIRequestBodyValidationError
+          ? err.message
+          : err instanceof SyntaxError
+          ? 'invalid JSON body'
+          : 'AI request failed'
+        res.writeHead(status, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: message }))
       } else {
         res.end()
       }

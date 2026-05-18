@@ -34,12 +34,41 @@ Available options:
 | `--use-dot`             | Use local binaries of Graphviz ("dot") instead of bundled WASM                                        |
 | `--title`               | Base title of the app pages (default is "LikeC4")                                                     |
 | `--output-single-file`  | Generates a single self-contained HTML file                                                           |
+| `--ai-endpoint`         | LikeC4 AI proxy endpoint used by the browser chat                                                     |
 
 To see all available options run:
 ```sh
 npx likec4 build -h
 ```
 
+## AI chat
+
+Static files cannot safely contain provider API keys. To enable the AI chat, run a LikeC4 AI proxy with the key in its server-side environment and build the site with the proxy URL:
+
+Terminal 1:
+```sh
+OPENAI_API_KEY=... \
+OPENAI_CHAT_MODEL=gpt-5.2 \
+npx likec4 ai-proxy
+```
+
+Terminal 2:
+```sh
+npx likec4 build -o ./dist --ai-endpoint /__likec4_ai
+```
+
+`--ai-endpoint` expects the LikeC4 proxy URL, not the raw provider API URL.
+The OpenAI adapter uses the Responses API; compatible provider endpoints must support `/v1/responses`.
+Set `OPENAI_BASE_URL` to the provider root when using an OpenAI SDK-compatible endpoint.
+For production, route the static files and `/__likec4_ai` through the same authenticated host when possible.
+If the static site and proxy use different browser origins, start the proxy with an explicit `--cors-origin https://your-site.example`.
+CORS only controls which browser origins may call the proxy; it is not authentication.
+Put production proxies behind authorization, rate limits, quotas, TLS, and an audit/logging policy that matches the data in your model.
+
+:::caution
+The AI proxy can spend tokens from the configured provider account. Do not expose it as an unauthenticated public endpoint; put it behind your normal authentication, network boundary, or gateway controls.
+Chat messages and selected LikeC4 context are sent to the configured provider or proxy. Review provider retention and compliance terms before using external or custom `OPENAI_BASE_URL` endpoints.
+:::
 
 ## Deploy
 

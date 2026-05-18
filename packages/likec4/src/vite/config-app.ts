@@ -29,6 +29,7 @@ export type LikeC4ViteConfig = {
   useHashHistory?: boolean | undefined
   likec4AssetsDir: string
   outputSingleFile?: boolean | undefined
+  aiEndpoint?: string | undefined
 }
 
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
@@ -111,6 +112,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       react(),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
+        aiEndpoint: cfg.aiEndpoint,
         appConfig: {
           webcomponentPrefix,
           pageTitle: title,

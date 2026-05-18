@@ -1,5 +1,12 @@
 #!/usr/bin/env -S pnpm tsx
 
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import postcssPanda from '@pandacss/dev/postcss'
 import babel from '@rolldown/plugin-babel'
@@ -61,6 +68,7 @@ const main = defineCommand({
           '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
           'react-dom/server': resolve(import.meta.dirname, 'src/react-dom-server-mock.ts'),
           // Local paths for dev
+          '@likec4/diagram/adhoc-editor': resolve(import.meta.dirname, '../diagram/src/adhoc-editor/index.ts'),
           '@likec4/diagram/custom': resolve(import.meta.dirname, '../diagram/src/custom/index.ts'),
           '@likec4/diagram': resolve(import.meta.dirname, '../diagram/src/index.ts'),
           'likec4/vite-plugin/internal': resolve(import.meta.dirname, '../vite-plugin/src/internal.ts'),
