@@ -5,11 +5,13 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import { useCurrentViewModel, useDiagramContext } from '@likec4/diagram'
 import { css } from '@likec4/styles/css'
 import { HStack, Txt, VStack } from '@likec4/styles/jsx'
 import {
   ActionIcon,
   Badge,
+  Button,
   CloseButton,
   CopyButton as MantineCopyButton,
   FloatingWindow,
@@ -24,7 +26,8 @@ import { IconCheck, IconCopy, IconDownload, IconSparkles } from '@tabler/icons-r
 import { AIAdapter } from 'likec4:rpc'
 import { AnimatePresence, m } from 'motion/react'
 import type { PanInfo } from 'motion/react'
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
+import { useCurrentProject } from '../hooks'
 import { formatChatTranscript } from './chat-transcript'
 import {
   type ChatWindowResizeDelta,
@@ -37,6 +40,7 @@ import {
 import { ChatContext } from './ChatContext'
 import { ChatInput } from './ChatInput'
 import { ChatMessages } from './ChatMessage'
+import { buildElementTemplateVariables, getSelectedElementId, interpolateChatTemplate } from './ui-state-data'
 import { useChat } from './useChat'
 
 type Position = { left?: number; top?: number; right?: number; bottom?: number }
@@ -92,6 +96,14 @@ const resizeHandleClassName = css({
     opacity: 1,
     borderColor: 'text.bright',
   },
+})
+
+const suggestedQuestionClassName = css({
+  maxWidth: '100%',
+  height: 'auto',
+  minHeight: '7',
+  whiteSpace: 'normal',
+  textAlign: 'left',
 })
 
 export default function AIChatComponent() {
@@ -201,6 +213,7 @@ function AIChatWindowContent({
   const chat = useChat({
     onChunk: scrollIntoView,
   })
+  const suggestedQuestions = useSuggestedQuestions()
   const transcript = formatChatTranscript(chat.messages)
   const hasTranscript = transcript.length > 0
   const resizeByDrag = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
@@ -275,6 +288,21 @@ function AIChatWindowContent({
             }),
           }}>
           <VStack>
+            {chat.messages.length === 0 && suggestedQuestions.length > 0 && (
+              <HStack flexWrap="wrap" gap="xs" alignSelf="stretch">
+                {suggestedQuestions.map(question => (
+                  <Button
+                    key={question}
+                    className={`${suggestedQuestionClassName} chat-action`}
+                    size="xs"
+                    variant="light"
+                    color="gray"
+                    onClick={() => chat.sendMessage(question)}>
+                    {question}
+                  </Button>
+                ))}
+              </HStack>
+            )}
             <ChatMessages />
             <div ref={scrollAnchorRef} style={{ height: 2 }}></div>
           </VStack>
@@ -301,4 +329,24 @@ function downloadTranscript(transcript: string) {
   link.download = `likec4-ai-chat-${new Date().toISOString().replace(/[:.]/g, '-')}.md`
   link.click()
   setTimeout(() => URL.revokeObjectURL(url), 0)
+}
+
+function useSuggestedQuestions(): string[] {
+  const project = useCurrentProject()
+  const currentViewModel = useCurrentViewModel()
+  const selectedElementId = useDiagramContext(getSelectedElementId)
+  const templates: readonly string[] = project.aiChat?.suggestedQuestions?.element ?? []
+
+  return useMemo(() => {
+    if (templates.length === 0) {
+      return []
+    }
+
+    const element = selectedElementId ? currentViewModel.$model.findElement(selectedElementId) : null
+    const variables = buildElementTemplateVariables(element, currentViewModel)
+
+    return templates
+      .map(template => interpolateChatTemplate(template, variables, { hideIfEmpty: true }))
+      .filter((question): question is string => !!question)
+  }, [currentViewModel, selectedElementId, templates])
 }

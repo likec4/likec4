@@ -99,7 +99,7 @@ export function ViewEditor() {
         <ListenForDynamicVariantChange />
         <OpenRelationshipBrowserFromUrl />
         <FocusElementFromUrl />
-        {isAIAvailable && <AIChat />}
+        {isAIAvailable && project.aiChat?.enabled !== false && <AIChat />}
         {isLocalAIAvailable && <SemanticLayoutLog />}
       </LikeC4Diagram>
     </LikeC4EditorProvider>

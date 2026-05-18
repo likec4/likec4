@@ -75,6 +75,62 @@ export const LandingPageSchema = z
       'Configure the landing page. Use redirect to go to the index view, or include/exclude to filter the view grid.',
   })
 
+const AIChatContextElementSchema = z.strictObject({
+  summary: z.boolean().optional(),
+  description: z.boolean().optional(),
+  technology: z.boolean().optional(),
+  tags: z.boolean().optional(),
+  links: z.boolean().optional(),
+  metadata: z.boolean().optional(),
+  parent: z.boolean().optional(),
+  children: z.boolean().optional(),
+  incoming: z.boolean().optional(),
+  outgoing: z.boolean().optional(),
+  alsoAppearsInViews: z.boolean().optional(),
+})
+
+const AIChatContextRelationshipsSchema = z.strictObject({
+  title: z.boolean().optional(),
+  technology: z.boolean().optional(),
+  metadata: z.boolean().optional(),
+  links: z.boolean().optional(),
+})
+
+const AIChatContextLimitsSchema = z.strictObject({
+  children: z.number().int().positive().optional(),
+  relationships: z.number().int().positive().optional(),
+  views: z.number().int().positive().optional(),
+})
+
+export const AIChatConfigSchema = z.strictObject({
+  enabled: z.boolean()
+    .optional()
+    .meta({ description: 'Enable or disable AI Chat for this project.' }),
+  systemPrompt: z.string()
+    .nonempty('AI Chat system prompt cannot be empty')
+    .optional()
+    .meta({
+      description: 'Additional project-specific instructions for the AI Chat assistant.',
+    }),
+  suggestedQuestions: z.strictObject({
+    element: z.array(z.string().nonempty('Suggested question cannot be empty')).optional(),
+  }).optional().meta({
+    description: 'Suggested starter questions shown by AI Chat. Element questions support template variables.',
+  }),
+  context: z.strictObject({
+    element: AIChatContextElementSchema.optional(),
+    relationships: AIChatContextRelationshipsSchema.optional(),
+    limits: AIChatContextLimitsSchema.optional(),
+  }).optional().meta({
+    description: 'Controls which model details AI Chat context tools expose to the assistant.',
+  }),
+}).meta({
+  id: 'AIChatConfig',
+  description: 'Safe AI Chat project defaults. Provider credentials are not configured here.',
+})
+
+export type AIChatConfig = z.infer<typeof AIChatConfigSchema>
+
 export const LikeC4ProjectJsonConfigSchema = z.object({
   name: z.string()
     .nonempty('Project name cannot be empty')
@@ -128,6 +184,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
       description: 'Auto-generate scoped views for elements without explicit views. Defaults to false.',
     }),
   landingPage: LandingPageSchema.optional(),
+  aiChat: AIChatConfigSchema.optional(),
 })
   .meta({
     id: 'LikeC4ProjectConfig',

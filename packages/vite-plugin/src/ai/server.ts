@@ -6,7 +6,7 @@ import { invariant } from '@likec4/core'
 import { chat, convertMessagesToModelMessages, toServerSentEventsResponse } from '@tanstack/ai'
 import type { ModelMessage, UIMessage } from '@tanstack/ai'
 import type { AIOptions } from '../plugin'
-import { navigateToDef, readUiStateDef, updateUiStateDef } from './tools'
+import { navigateToDef, readConnectionsDef, readElementDef, readUiStateDef, updateUiStateDef } from './tools'
 
 export const LIKEC4_AI_ENDPOINT_PATH = '/__likec4_ai'
 export const DEFAULT_LIKEC4_AI_REQUEST_MAX_BYTES = 4 * 1024 * 1024
@@ -92,17 +92,25 @@ export function createLikeC4AIResponse({
   invariant(ai, 'AI is not configured')
 
   const messages = convertMessagesToModelMessages(body.messages ?? [])
+  const projectSystemPrompt = typeof body.data?.['systemPrompt'] === 'string'
+    ? body.data['systemPrompt'].trim()
+    : ''
   const stream = chat({
     ...ai,
     messages,
     conversationId: typeof body.data?.['conversationId'] === 'string' ? body.data['conversationId'] : undefined,
     systemPrompts: [
       'You are a helpful assistant that can answer questions about LikeC4 model and update UI.',
+      'For questions about a specific element, component, system, parent, children, dependencies, or dependents, call read_element.',
+      'For questions about connections, inputs, outputs, edges, connection datatypes, ports, or metadata, call read_connections and answer from that tool result without repeating the same tool call.',
+      ...(projectSystemPrompt ? [projectSystemPrompt] : []),
     ],
     tools: [
       navigateToDef,
       updateUiStateDef,
       readUiStateDef,
+      readConnectionsDef,
+      readElementDef,
     ],
   })
 

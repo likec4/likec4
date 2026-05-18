@@ -6,9 +6,14 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { type Fqn, nonexhaustive } from '@likec4/core'
-import { useDiagram } from '@likec4/diagram'
-import type { Types, XYStoreState } from '@likec4/diagram/custom'
-import { type NodeData, navigateToDef, readUiStateDef, updateUiStateDef } from '@likec4/vite-plugin/ai/tools'
+import { useCurrentViewModel, useDiagram } from '@likec4/diagram'
+import {
+  navigateToDef,
+  readConnectionsDef,
+  readElementDef,
+  readUiStateDef,
+  updateUiStateDef,
+} from '@likec4/vite-plugin/ai/tools'
 import {
   type UIMessage,
   clientTools,
@@ -16,42 +21,39 @@ import {
 import { type UseChatOptions, fetchServerSentEvents, useChat as useTanstackChat } from '@tanstack/ai-react'
 import { useNavigate } from '@tanstack/react-router'
 import { aiEndpoint } from 'likec4:rpc'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { find, map, pipe } from 'remeda'
 import { parse, stringify } from 'superjson'
 import { useCurrentProject } from '../hooks'
+import {
+  buildElementTemplateVariables,
+  getSelectedElementId,
+  interpolateChatTemplate,
+  mapElementContextData,
+  mapToNodeData,
+  mapViewEdges,
+} from './ui-state-data'
 
-function mapToNodeData(storeState: XYStoreState) {
-  return <T extends Types.NodeType>({ id, data, ...node }: Types.Node<T>): NodeData => {
-    let icon = data.icon ?? undefined
-    if (icon === 'none') {
-      icon = undefined
-    }
-
-    let children = storeState.parentLookup.get(id)?.values().map(child => child.id).toArray()
-
-    return {
-      id,
-      title: data.title,
-      shape: data.shape,
-      color: data.color,
-      icon,
-      parentId: node.parentId,
-      children,
-      x: data.x,
-      y: data.y,
-      width: node.measured?.width ?? node.width ?? node.initialWidth ?? 0,
-      height: node.measured?.height ?? node.height ?? node.initialHeight ?? 0,
-      ...('modelFqn' in data && data.modelFqn && { modelFqn: data.modelFqn }),
-    }
-  }
+function useLatestRef<T>(value: T) {
+  const ref = useRef(value)
+  ref.current = value
+  return ref
 }
 
 function useChatTools() {
-  const { id: projectId } = useCurrentProject()
+  const projectRef = useLatestRef(useCurrentProject())
+  const diagramRef = useLatestRef(useDiagram())
+  const currentViewModelRef = useLatestRef(useCurrentViewModel())
   const navigate = useNavigate()
 
-  const diagram = useDiagram()
+  const getCurrentView = () => {
+    const { view } = diagramRef.current.getContext()
+    return {
+      id: view.id,
+      title: view.title ?? '',
+      type: view._type,
+    }
+  }
 
   return useMemo(() =>
     clientTools(
@@ -69,22 +71,22 @@ function useChatTools() {
       // -------------
       readUiStateDef.client((params) => {
         const {
-          view,
           focusedNode,
           xynodes,
           xystore,
           toggledFeatures,
           features,
-        } = diagram.getContext()
+        } = diagramRef.current.getContext()
 
+        const currentViewModel = currentViewModelRef.current
         const isReadOnly = toggledFeatures.enableReadOnly ?? features.enableReadOnly
-
         const toNodeData = mapToNodeData(xystore.getState())
 
-        // if include nodes
         const nodes = params.nodes === true && map(xynodes, toNodeData) || undefined
+        const edges = (params.edges === true || params.edgeRelations === true) &&
+            mapViewEdges(currentViewModel, { includeRelations: params.edgeRelations === true }) ||
+          undefined
 
-        // if include nodes
         const selectedNode = params.selectedNode === true && pipe(
           xynodes,
           find(n => !!n.selected || n.id === focusedNode),
@@ -92,20 +94,60 @@ function useChatTools() {
         )
 
         return {
-          projectId,
+          projectId: projectRef.current.id,
           editMode: !isReadOnly,
-          view: {
-            id: view.id,
-            title: view.title ?? '',
-            type: view._type,
-          },
+          view: getCurrentView(),
           ...(nodes && { nodes }),
+          ...(edges && { edges }),
           ...(selectedNode && { selectedNode }),
         }
       }),
       // -------------
+      readConnectionsDef.client(() => {
+        const currentViewModel = currentViewModelRef.current
+        return {
+          projectId: projectRef.current.id,
+          view: getCurrentView(),
+          edges: mapViewEdges(currentViewModel, { includeRelations: true }),
+        }
+      }),
+      // -------------
+      readElementDef.client(({ elementId }) => {
+        const diagram = diagramRef.current
+        const currentViewModel = currentViewModelRef.current
+        const project = projectRef.current
+        const target = elementId ?? getSelectedElementId(diagram.getContext())
+        const element = target ? currentViewModel.$model.findElement(target) : null
+
+        if (!target) {
+          return {
+            projectId: project.id,
+            view: getCurrentView(),
+            element: null,
+            reason: 'No selected or focused element',
+          }
+        }
+
+        if (!element) {
+          return {
+            projectId: project.id,
+            view: getCurrentView(),
+            element: null,
+            reason: `Element not found: ${target}`,
+          }
+        }
+
+        return {
+          projectId: project.id,
+          view: getCurrentView(),
+          element: mapElementContextData(element, currentViewModel, project.aiChat?.context),
+        }
+      }),
+      // -------------
       updateUiStateDef.client(({ command }) => {
-        switch (command.type) {
+        const diagram = diagramRef.current
+        const commandType = command.type
+        switch (commandType) {
           case 'focus':
             diagram.focusOnElement(command.elementId as Fqn)
             break
@@ -113,15 +155,16 @@ function useChatTools() {
             diagram.fitDiagram()
             break
           default:
-            nonexhaustive(command)
+            nonexhaustive(commandType)
         }
         return {}
       }),
     ), [
     // Dependencies
     navigate,
-    diagram,
-    projectId,
+    diagramRef,
+    currentViewModelRef,
+    projectRef,
   ])
 }
 
@@ -154,15 +197,25 @@ const storage = {
 }
 
 export function useChat(options: Omit<UseChatOptions, 'connection' | 'tools' | 'initialMessages'>) {
+  const projectRef = useLatestRef(useCurrentProject())
+  const diagramRef = useLatestRef(useDiagram())
+  const currentViewModelRef = useLatestRef(useCurrentViewModel())
+
   const memoProps = useMemo(() => {
     if (!aiEndpoint) {
       throw new Error('AI chat endpoint is not configured')
     }
     return {
-      connection: fetchServerSentEvents(aiEndpoint),
+      connection: fetchServerSentEvents(aiEndpoint, () => ({
+        body: buildAIRequestBody(
+          projectRef.current.aiChat?.systemPrompt,
+          diagramRef.current,
+          currentViewModelRef.current,
+        ),
+      })),
       initialMessages: storage.read(),
     }
-  }, [])
+  }, [currentViewModelRef, diagramRef, projectRef])
   const chat = useTanstackChat({
     ...memoProps,
     ...options,
@@ -181,3 +234,20 @@ export function useChat(options: Omit<UseChatOptions, 'connection' | 'tools' | '
 }
 
 export type UseChatReturn = ReturnType<typeof useChat>
+
+function buildAIRequestBody(
+  systemPrompt: string | undefined,
+  diagram: ReturnType<typeof useDiagram>,
+  currentViewModel: ReturnType<typeof useCurrentViewModel>,
+) {
+  if (!systemPrompt?.trim()) {
+    return {}
+  }
+
+  const selectedElementId = getSelectedElementId(diagram.getContext())
+  const element = selectedElementId ? currentViewModel.$model.findElement(selectedElementId) : null
+  const variables = buildElementTemplateVariables(element, currentViewModel)
+  const renderedSystemPrompt = interpolateChatTemplate(systemPrompt, variables, { hideIfEmpty: false })?.trim()
+
+  return renderedSystemPrompt ? { systemPrompt: renderedSystemPrompt } : {}
+}

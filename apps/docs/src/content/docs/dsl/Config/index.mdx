@@ -62,6 +62,50 @@ You can also use these names:
 See [Programmatic config](/dsl/config/programmatic) for more information.
 :::
 
+## AI chat
+
+Use `aiChat` to tune the browser AI assistant for this project.
+This config controls safe prompt and context defaults only.
+Provider credentials are configured on the dev server or AI proxy, not in project config.
+
+```jsonc
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "aiChat": {
+    "enabled": true,
+    "systemPrompt": "Answer from LikeC4 model facts. Say when the model does not contain enough context.",
+    "suggestedQuestions": {
+      "element": [
+        "What does {title} do?",
+        "What depends on {title}?"
+      ]
+    },
+    "context": {
+      "element": {
+        "description": true,
+        "metadata": true,
+        "incoming": true,
+        "outgoing": true
+      },
+      "relationships": {
+        "metadata": true,
+        "links": false
+      },
+      "limits": {
+        "children": 50,
+        "relationships": 100,
+        "views": 20
+      }
+    }
+  }
+}
+```
+
+Set `"enabled": false` to hide AI chat for a project even when an AI endpoint is available.
+Suggested questions and `systemPrompt` support element variables such as `{title}`, `{kind}`, `{technology}`, `{view}`, `{dependencies}`, and `{dependents}`.
+Use `context` to limit which metadata, links, relationships, and related views may be sent to the configured AI provider or proxy.
+
 ## Extend styles
 
 If you want to share styles across multiple projects, you can use `extends` in **JSON configs**.

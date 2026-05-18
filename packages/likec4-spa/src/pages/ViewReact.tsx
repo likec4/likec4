@@ -22,10 +22,11 @@ import { isAIAvailable } from 'likec4:rpc'
 import { useRef } from 'react'
 import { AIChat } from '../aichat'
 import { NotFound } from '../components/NotFound'
-import { useCurrentView } from '../hooks'
+import { useCurrentProject, useCurrentView } from '../hooks'
 
 export function ViewReact() {
   const navigate = useNavigate()
+  const project = useCurrentProject()
   const [view, setLayoutType] = useCurrentView()
   const model = useLikeC4Model()
   const { dynamic } = useSearch({
@@ -90,7 +91,7 @@ export function ViewReact() {
       <ListenForDynamicVariantChange />
       <OpenRelationshipBrowserFromUrl />
       <FocusElementFromUrl />
-      {isAIAvailable && <AIChat />}
+      {isAIAvailable && project.aiChat?.enabled !== false && <AIChat />}
     </LikeC4Diagram>
   )
 }
