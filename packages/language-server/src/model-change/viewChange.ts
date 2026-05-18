@@ -216,15 +216,13 @@ function removeTag(body: NonNullable<ast.LikeC4View['body']>, tagName: scalar.Ta
     return undefined
   }
 
-  // Only one tag — remove the entire tags line (including leading newline+indent)
+  // Only one tag — remove the entire tags line (including its trailing newline)
   if (allRefs.length === 1) {
     const tagsNode = body.tags
     if (tagsNode?.$cstNode) {
       const { start } = tagsNode.$cstNode.range
-      // Delete from end of previous line through start of next line,
-      // so the entire tags line (including its newline) disappears
       return TextEdit.del({
-        start: Position.create(Math.max(0, start.line - 1), Number.MAX_SAFE_INTEGER),
+        start: Position.create(start.line, 0),
         end: Position.create(start.line + 1, 0),
       })
     }

@@ -232,10 +232,10 @@ describe('viewChange', () => {
         views {
           view index {
             title 'Existing Title'
-
             description '''
               New Description
             '''
+
             include *
           }
         }"
