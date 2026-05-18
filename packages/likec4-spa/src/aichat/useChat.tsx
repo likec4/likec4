@@ -169,7 +169,13 @@ export function useChat(options: Omit<UseChatOptions, 'connection' | 'tools' | '
     tools: useChatTools(),
   })
   useEffect(() => {
-    storage.write(chat.messages)
+    const timeout = window.setTimeout(() => {
+      storage.write(chat.messages)
+    }, 250)
+    return () => {
+      window.clearTimeout(timeout)
+      storage.write(chat.messages)
+    }
   }, [chat.messages])
   return chat
 }
