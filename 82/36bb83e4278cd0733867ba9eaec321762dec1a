@@ -1,0 +1,60 @@
+pnpm-lock.yaml
+  ai_agent 1812-1814
+apps/docs/src/content/docs/tooling/ai-tools.mdx
+  s_9d49268b9f9845::t_da1de5cc5943bb 42-48
+packages/likec4/package.json
+  s_9d49268b9f9845::t_5417885998f605 127
+packages/vite-plugin/src/ai/server.spec.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-4
+packages/likec4-spa/start-dev.ts
+  s_9d49268b9f9845::t_3eac552628b700 3-9
+apps/docs/src/content/docs/guides/static-website.mdx
+  s_9d49268b9f9845::t_da1de5cc5943bb 60-65
+packages/vite-plugin/src/virtuals/rpc.spec.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-4
+packages/likec4/src/cli/serve/index.ts
+  s_9d49268b9f9845::t_3eac552628b700 1-7
+packages/vite-plugin/src/modules.d.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-7
+apps/docs/src/content/docs/tooling/cli.mdx
+  s_9d49268b9f9845::t_da1de5cc5943bb 164-169
+packages/vite-plugin/src/ai/server.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-4
+packages/likec4-spa/src/aichat/useChat.tsx
+  s_9d49268b9f9845::t_3eac552628b700 1-7
+packages/vite-plugin/src/ai/enableServer.ts
+  s_9d49268b9f9845::t_3d564e9e508086 1-4,6,8-13,59-65
+  s_9d49268b9f9845::t_746c918fb9a0d2 54-58
+packages/likec4/src/cli/serve/serve.ts
+  s_9d49268b9f9845::t_3eac552628b700 1-7
+packages/likec4/src/cli/ai-proxy/index.spec.ts
+  s_9d49268b9f9845::t_6ef83f70fe0002 29
+  s_9d49268b9f9845::t_859815027cedbd 1-28,30-176
+packages/vite-plugin/src/virtuals/_shared.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-7
+packages/likec4/src/cli/index.ts
+  s_9d49268b9f9845::t_3eac552628b700 3-9
+packages/vite-plugin/src/plugin.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-7
+packages/likec4/src/cli/ai-proxy/index.ts
+  s_9d49268b9f9845::t_bb7a64c688a493 1-27,30-217
+  s_9d49268b9f9845::t_6ef83f70fe0002 28-29
+packages/vite-plugin/src/virtuals/rpc.ts
+  s_9d49268b9f9845::t_f19584a721196c 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "8236bb83e4278cd0733867ba9eaec321762dec1a",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
