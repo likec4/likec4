@@ -1,0 +1,35 @@
+packages/likec4-spa/src/aichat/chat-transcript.ts
+  s_9d49268b9f9845::t_0645cb37309095 1-4
+packages/likec4-spa/src/aichat/AIChat.tsx
+  s_9d49268b9f9845::t_5eb8204f48bc7b 1-7,14,16,20,23,26,28-36,68-96,99,112-132,137-138,140-141,143-144,147,149-151,185-191,204-211,214,217,220-264,270-271,283-290,295-303
+packages/likec4-spa/src/aichat/chat-window-size.spec.ts
+  s_9d49268b9f9845::t_5eb8204f48bc7b 1-43
+packages/likec4-spa/src/aichat/chat-transcript.spec.ts
+  s_9d49268b9f9845::t_0645cb37309095 1-4
+packages/likec4-spa/src/aichat/chat-tool-status.ts
+  s_9d49268b9f9845::t_0645cb37309095 1-4
+packages/likec4-spa/src/aichat/useChat.tsx
+  s_9d49268b9f9845::t_5eb8204f48bc7b 172-175
+packages/likec4-spa/src/aichat/chat-tool-status.spec.ts
+  s_9d49268b9f9845::t_0645cb37309095 1-4
+packages/likec4-spa/src/aichat/chat-window-size.ts
+  s_9d49268b9f9845::t_5eb8204f48bc7b 1-52
+packages/likec4-spa/src/aichat/ChatMessage.tsx
+  s_9d49268b9f9845::t_0645cb37309095 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "6b213465744ac922a84b645876ba75808619ddcf",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
