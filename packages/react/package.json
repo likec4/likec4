@@ -52,7 +52,7 @@
     "@xstate/store": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
-    "rolldown": "catalog:",
+    "rolldown": "catalog:tsdown",
     "oxlint": "catalog:",
     "react": "catalog:react",
     "react-dom": "catalog:react",

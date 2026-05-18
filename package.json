@@ -124,17 +124,7 @@
     },
     "patchedDependencies": {
       "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
-    },
-    "onlyBuiltDependencies": [
-      "@openrouter/sdk",
-      "@tailwindcss/oxide",
-      "dprint",
-      "esbuild",
-      "oxlint",
-      "sharp",
-      "workerd",
-      "wrangler"
-    ]
+    }
   },
   "nano-staged": {
     "*.{ts,tsx,mjs,js,jsx,json,yaml,yml}": [

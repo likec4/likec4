@@ -154,9 +154,6 @@ catalogs:
     playwright:
       specifier: ^1.58.2
       version: 1.58.2
-    rolldown:
-      specifier: 1.0.1
-      version: 1.0.1
     tsx:
       specifier: 4.21.0
       version: 4.21.0
@@ -342,6 +339,9 @@ catalogs:
     '@tsdown/css':
       specifier: ^0.22.0
       version: 0.22.0
+    rolldown:
+      specifier: ^1.0.1
+      version: 1.0.1
     tsdown:
       specifier: ^0.22.0
       version: 0.22.0
@@ -2316,7 +2316,7 @@ importers:
         specifier: catalog:utils
         version: 2.33.7
       rolldown:
-        specifier: 'catalog:'
+        specifier: catalog:tsdown
         version: 1.0.1
       std-env:
         specifier: catalog:externals
@@ -2602,7 +2602,7 @@ importers:
         specifier: catalog:react
         version: 19.2.4(react@19.2.4)
       rolldown:
-        specifier: 'catalog:'
+        specifier: catalog:tsdown
         version: 1.0.1
       tsx:
         specifier: 'catalog:'

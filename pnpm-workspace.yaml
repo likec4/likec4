@@ -8,18 +8,20 @@ packages:
 allowBuilds:
   '@google/genai': true
   '@openrouter/sdk': false
+  '@tailwindcss/oxide': true
   dprint: true
   esbuild: true
   protobufjs: false
   sharp: false
   workerd: true
+  oxlint: true
+  wrangler: true
 
 catalog:
   "@changesets/changelog-github": ^0.6.0
   "@changesets/cli": ^2.30.0
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
-  "@tsdown/css": ^0.21.10
   "@types/node": ~22.19.17
   "@types/pako": ^2.0.4
   "@typescript/native-preview": 7.0.0-dev.20260504.1
@@ -32,9 +34,6 @@ catalog:
   oxlint-tsgolint: 0.20.0
   pako: ^2.1.0
   playwright: ^1.58.2
-  rolldown: 1.0.1
-  rolldown-plugin-dts: ^0.23.2
-  tsdown: ^0.22.0
   tsx: 4.21.0
   turbo: 2.9.12
   typescript: 5.9.3
@@ -151,6 +150,7 @@ catalogs:
   tsdown:
     tsdown: ^0.22.0
     "@tsdown/css": ^0.22.0
+    rolldown: ^1.0.1
   utils:
     "@logtape/logtape": ^2.0.5
     "@lume/kiwi": ^0.4.4

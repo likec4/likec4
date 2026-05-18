@@ -90,7 +90,7 @@
     "react-resizable-panels": "catalog:react",
     "react-shadow": "catalog:react",
     "remeda": "catalog:utils",
-    "rolldown": "catalog:",
+    "rolldown": "catalog:tsdown",
     "std-env": "catalog:externals",
     "strip-indent": "catalog:utils",
     "superjson": "catalog:utils",
