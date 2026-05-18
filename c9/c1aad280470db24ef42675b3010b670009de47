@@ -1,0 +1,69 @@
+packages/vite-plugin/src/virtuals/projects.spec.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 5-34
+apps/docs/src/content/docs/tooling/ai-tools.mdx
+  s_9d49268b9f9845::t_8943e8e541871c 15-41
+  s_9d49268b9f9845::t_9081cba859c8f1 50-94
+packages/likec4-spa/src/aichat/ui-state-data.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 5-353
+packages/vite-plugin/src/ai/tools.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 29-103,106-107,112-117,122,124,129-140,142-158,165-183
+packages/vite-plugin/src/plugin.ts
+  s_9d49268b9f9845::t_8943e8e541871c 19,91-100,209,217,245-246,250-251,316-317
+  s_9d49268b9f9845::t_9081cba859c8f1 270
+packages/likec4-spa/src/aichat/chat-tool-status.ts
+  s_9d49268b9f9845::t_1ee3bd96d701c0 5-6,9-15
+  s_9d49268b9f9845::t_9081cba859c8f1 7
+packages/vite-plugin/src/virtuals/projects.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 19,22,60,64
+packages/likec4-spa/src/aichat/useChat.tsx
+  s_9d49268b9f9845::t_9081cba859c8f1 9-16,28-35,49,51-56,86-88,99,101,114-115,119-146,158,208,214,233-249
+  s_9d49268b9f9845::t_482be0cc316478 23,203-207,215-216
+.changeset/ai-chat-context.md
+  s_9d49268b9f9845::t_1a101c1507882e 1-7
+packages/config/src/schema.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 78-133,187
+packages/likec4-spa/src/aichat/chat-tool-status.spec.ts
+  s_9d49268b9f9845::t_1ee3bd96d701c0 5-10,13-20
+  s_9d49268b9f9845::t_9081cba859c8f1 11
+packages/likec4-spa/src/pages/ViewReact.tsx
+  s_9d49268b9f9845::t_8943e8e541871c 21,23
+  s_9d49268b9f9845::t_9081cba859c8f1 25,29,94
+packages/vite-plugin/src/ai/server.ts
+  s_9d49268b9f9845::t_8943e8e541871c 5-8,10-64,68-73,77-81,84-88
+  s_9d49268b9f9845::t_9081cba859c8f1 9,65-67,74-76,82-83
+packages/likec4-spa/src/pages/ViewEditor.tsx
+  s_9d49268b9f9845::t_8943e8e541871c 12,60,103
+  s_9d49268b9f9845::t_9081cba859c8f1 102
+packages/config/src/index.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 9
+packages/config/src/schema.spec.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 285-361
+packages/likec4-spa/src/aichat/AIChat.tsx
+  s_9d49268b9f9845::t_9081cba859c8f1 8,14,29-30,43,101-108,216,291-305,333-352
+  s_9d49268b9f9845::t_1ee3bd96d701c0 16,18,22,25,28,31-39,72-100,111,124-131,138-139,142-144,149-150,152-153,155-156,159,161-163,197-203,217-224,227,230,233-277,283-284,311-318,323-330
+packages/vite-plugin/src/ai/tools.spec.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 5-61
+packages/likec4-spa/src/aichat/ui-state-data.spec.ts
+  s_9d49268b9f9845::t_9081cba859c8f1 5-330
+apps/docs/src/content/docs/dsl/Config/index.mdx
+  s_9d49268b9f9845::t_9081cba859c8f1 65-106,108
+packages/vite-plugin/src/modules.d.ts
+  ai_agent 19
+  s_9d49268b9f9845::t_fcf47e6895909e 193-195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "c9c1aad280470db24ef42675b3010b670009de47",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
