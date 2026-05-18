@@ -1,0 +1,33 @@
+apps/docs/src/content/docs/tooling/cli.mdx
+  s_9d49268b9f9845::t_be8c18616f0787 152-160
+packages/vite-plugin/src/ai/enableServer.ts
+  s_9d49268b9f9845::t_fa21b9d3022571 12-14,17,26,32-33,55-64
+packages/vite-plugin/src/ai/server.spec.ts
+  s_9d49268b9f9845::t_be8c18616f0787 32-41
+apps/docs/src/content/docs/guides/static-website.mdx
+  s_9d49268b9f9845::t_be8c18616f0787 48-56
+packages/likec4/src/cli/ai-proxy/index.ts
+  s_9d49268b9f9845::t_fa21b9d3022571 12-170
+packages/vite-plugin/src/ai/server.ts
+  s_9d49268b9f9845::t_fa21b9d3022571 19-80
+apps/docs/src/content/docs/tooling/ai-tools.mdx
+  s_9d49268b9f9845::t_be8c18616f0787 31-39
+packages/likec4/src/cli/ai-proxy/index.spec.ts
+  s_9d49268b9f9845::t_be8c18616f0787 178-194
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "3b9bb9cf7b5e873d4cfcb1021b816a6a381d5964",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
