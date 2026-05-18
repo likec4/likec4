@@ -102,6 +102,10 @@ export namespace FqnExpr {
       border?: BorderStyle
       opacity?: number
       navigateTo?: aux.StrictViewId<A>
+      /**
+       * If true, each matching element is rendered as multiple shapes.
+       * @default false
+       */
       multiple?: boolean
       size?: ShapeSize
       padding?: ShapeSize
@@ -222,6 +226,11 @@ export namespace RelationExpr {
       line?: RelationshipLineType
       head?: RelationshipArrowType
       tail?: RelationshipArrowType
+      /**
+       * If true, each matching relationship is rendered as a separate edge.
+       * @default false
+       */
+      multiple?: boolean
     }
   }
 

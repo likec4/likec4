@@ -51,9 +51,19 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             mapToObj(p => [p.key, removeIndent(parseMarkdownAsString(p.value))!] satisfies [string, string]),
             omitBy(isNullish),
           )
+          const multipleProps = props.filter(ast.isMultipleProperty)
+          if (multipleProps.length > 1) {
+            this.logError(
+              `Duplicate 'multiple' property for relationship "${kindName}", using the first one`,
+              kind,
+              'specification',
+            )
+          }
+          const multipleProp = multipleProps[0]
           c4Specification.relationships[kindName] = {
             ...bodyProps,
             ...toRelationshipStyle(props.filter(ast.isRelationshipStyleProperty), this.isValid),
+            ...(multipleProp && { multiple: multipleProp.value }),
           }
         } catch (e) {
           this.logError(e, kind, 'specification')

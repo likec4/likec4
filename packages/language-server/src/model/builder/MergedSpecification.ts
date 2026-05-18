@@ -189,8 +189,9 @@ export class MergedSpecification {
     ...model
   }: ParsedAstRelation): c4.Relationship | null => {
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
+      const { multiple: _multiple, ...spec } = this.specs.relationships[kind]
       return {
-        ...this.specs.relationships[kind],
+        ...spec,
         ...model,
         ...(links && { links }),
         source,
@@ -264,8 +265,10 @@ export class MergedSpecification {
     ...model
   }: ParsedAstDeploymentRelation): c4.DeploymentRelationship | null => {
     if (isNonNullish(kind) && this.specs.relationships[kind as c4.RelationshipKind]) {
+      const spec = this.specs.relationships[kind as c4.RelationshipKind]!
+      const { multiple: _multiple, ...restSpec } = spec
       return {
-        ...this.specs.relationships[kind as c4.RelationshipKind],
+        ...restSpec,
         ...model,
         ...(links && { links }),
         source,
