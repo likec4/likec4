@@ -1,0 +1,51 @@
+packages/likec4/src/cli/export/jpg/handler.ts
+  s_9d49268b9f9845::t_069b8f9a33eb0f 124
+  s_9d49268b9f9845::t_ec6aa6460d7ea4 125
+  s_9d49268b9f9845::t_f635dcd1c984e2 122-123,126-127,139-141,171
+packages/likec4-spa/src/routes/project.$projectId/export.$viewId.tsx
+  s_9d49268b9f9845::t_b2110535062ae9 14,24
+apps/docs/src/content/docs/tooling/cli.mdx
+  s_9d49268b9f9845::t_ec6aa6460d7ea4 171,189
+  s_9d49268b9f9845::t_a9a70ca572a906 162
+.changeset/export-background-option.md
+  s_9d49268b9f9845::t_6b0d4345d99a9d 5
+  s_9d49268b9f9845::t_ec6aa6460d7ea4 2
+  s_9d49268b9f9845::t_c627d38a7d6a99 1,3-4
+packages/likec4-spa/src/pages/export-page-params.spec.ts
+  s_9d49268b9f9845::t_387bcbcc69c3db 21-31
+  s_9d49268b9f9845::t_ec6aa6460d7ea4 6,32-41,46-55
+  s_9d49268b9f9845::t_6f386cdbb845ca 42-45,56
+packages/likec4/src/cli/export/png/takeScreenshot.ts
+  s_9d49268b9f9845::t_6d3bdb6f89134a 32,38-39,49,58,66,90,155
+packages/likec4-spa/src/pages/export-page-params.ts
+  s_9d49268b9f9845::t_6f386cdbb845ca 37-38,42,44-45
+  s_9d49268b9f9845::t_83803a757de2ad 11-17
+  s_9d49268b9f9845::t_ec6aa6460d7ea4 18-36,39-41,43,46-54
+packages/likec4/src/cli/export/png/takeScreenshot.spec.ts
+  s_9d49268b9f9845::t_18adb5b386c894 25,52-63,73,82
+packages/likec4/src/cli/export/png/handler.ts
+  s_9d49268b9f9845::t_d23d05026cd7b4 56-57,77,93,131,160,246,372-376,385-387,417
+packages/likec4-spa/src/routes/_single/export.$viewId.tsx
+  s_9d49268b9f9845::t_b2110535062ae9 14,24
+packages/likec4-spa/src/pages/ExportPage.tsx
+  s_9d49268b9f9845::t_eec95d2b2cab71 57,61,68,89,94,123-124,133,139-147,190,197,248
+  s_9d49268b9f9845::t_ec6aa6460d7ea4 26,176
+  s_9d49268b9f9845::t_874d83d52ea78e 224
+  s_9d49268b9f9845::t_069b8f9a33eb0f 101-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10",
+  "base_commit_sha": "22aed198e8b9d5f1d9cb036f2f5f84f988d06add",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
