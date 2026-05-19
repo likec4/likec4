@@ -53,6 +53,8 @@ export type PngExportArgs = {
   notation?: boolean
   /** Include view description in exported images. */
   description?: boolean
+  /** CSS background color for exported images. */
+  background?: string | undefined
 }
 
 /** Launch headless Chromium, capture each view as PNG to output dir; returns list of succeeded view ids. */
@@ -72,6 +74,7 @@ export async function exportViewsToPNG(
     quality,
     notation = false,
     description = false,
+    background,
   }: {
     logger: ViteLogger
     serverUrl: string
@@ -87,6 +90,7 @@ export async function exportViewsToPNG(
     quality?: number | undefined
     notation?: boolean
     description?: boolean
+    background?: string | undefined
   },
 ) {
   logger.info(`${k.dim('output')} ${output}`)
@@ -124,6 +128,7 @@ export async function exportViewsToPNG(
       quality,
       notation,
       description,
+      background,
     })
   } finally {
     logger.info(k.cyan(`close chromium`))
@@ -152,6 +157,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     quality,
     notation = false,
     description = false,
+    background,
   } = args
 
   await using likec4 = await fromWorkspace(workspacePath, {
@@ -237,6 +243,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
         quality,
         notation,
         description,
+        background,
       })
       const { pretty } = inMillis(startTakeScreenshot)
 
@@ -362,6 +369,11 @@ export function pngCmd(yargs: Argv) {
             desc: 'include view description in exported PNG files',
             default: false,
           },
+          'background': {
+            type: 'string',
+            desc: 'CSS background color for exported PNG files, e.g. "#fff" or "white"; defaults to transparent',
+            nargs: 1,
+          },
         })
         .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export png')}
@@ -369,6 +381,9 @@ export function pngCmd(yargs: Argv) {
 
   ${k.green('$0 export png --theme dark -o ./png src/likec4')}
     ${k.gray('Search for likec4 files in src/likec4 and output PNG with dark theme to png folder')}
+
+  ${k.green('$0 export png --background "#fff" -o ./png src/likec4')}
+    ${k.gray('Export PNG files with a solid background color')}
 
   ${k.green('$0 export png -f "team1*" -f "team2*" --flat -o ./png src/likec4')}
     ${k.gray('Export views matching team1* or team2* only')}
@@ -399,6 +414,7 @@ export function pngCmd(yargs: Argv) {
           chromiumSandbox: args['chromium-sandbox'],
           notation: args.notation,
           description: args.description,
+          background: args.background,
         } satisfies PngExportArgs,
       )
       showSupportUsMessage()

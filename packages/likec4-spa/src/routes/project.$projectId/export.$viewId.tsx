@@ -11,6 +11,7 @@ import { ExportPage } from '../../pages/ExportPage'
 
 export const Route = createFileRoute('/project/$projectId/export/$viewId')({
   validateSearch: z.object({
+    background: z.string().optional().catch(undefined),
     description: z.boolean().optional().catch(false),
     download: z.boolean().optional().catch(false),
     format: z.enum(['png', 'jpeg']).optional().catch('png'),
@@ -20,6 +21,7 @@ export const Route = createFileRoute('/project/$projectId/export/$viewId')({
   search: {
     middlewares: [
       stripSearchParams({
+        background: undefined,
         description: false,
         download: false,
         format: 'png',
