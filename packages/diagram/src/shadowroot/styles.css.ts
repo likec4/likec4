@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { css } from '@likec4/styles/css'
 import {
   useColorScheme as usePreferredColorScheme,
@@ -18,20 +25,23 @@ export const cssInteractive = css({
   },
 })
 
+export function scopeStylesToShadowRoot(styles: string): string {
+  return styles
+    // Order matters: rewrite the longest root selector before the plain `:root` token.
+    .replaceAll(/:where\(\s*:root\s*,\s*:host\s*\)/g, `:where(.likec4-shadow-root)`)
+    .replaceAll(':root', `.likec4-shadow-root`)
+    /**
+     * Replace only top-level body selectors, for example
+     * `body { }` should be replaced with `.likec4-shadow-root { }`
+     * but `.likec4-overlay-body { }` must stay unchanged.
+     */
+    .replaceAll(/(^|[{},;]|\*\/)(\s*)body(?=\s*[{,])/g, '$1$2.likec4-shadow-root')
+}
+
 export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
   const [styleSheets] = useState(() => {
     const css = new CSSStyleSheet()
-    css.replaceSync(
-      inlinedStyles,
-      // .replaceAll(':where(:root,:host)', `:where(.likec4-shadow-root)`)
-      // .replaceAll(':root', `.likec4-shadow-root`)
-      /**
-       * replace only top-level body selectors, for example
-       * `body { }` should be replaced with `.likec4-shadow-root { }`
-       * but `.likec4-overlay-body { }` - not
-       */
-      // .replaceAll(/(?<![-_])\bbody\s*\{/g, `.likec4-shadow-root{`),
-    )
+    css.replaceSync(scopeStylesToShadowRoot(inlinedStyles))
     return [css]
   })
 
