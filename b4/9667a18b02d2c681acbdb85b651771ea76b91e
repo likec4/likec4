@@ -1,0 +1,21 @@
+packages/diagram/src/shadowroot/styles.css.ts
+  s_9d49268b9f9845::t_f84d94fbb44a59 30-38
+packages/diagram/src/shadowroot/styles.css.spec.ts
+  s_9d49268b9f9845::t_11fe405d33c9b1 27-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10",
+  "base_commit_sha": "b49667a18b02d2c681acbdb85b651771ea76b91e",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
