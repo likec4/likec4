@@ -1,0 +1,24 @@
+packages/diagram/src/shadowroot/styles.css.ts
+  s_9d49268b9f9845::t_b9db58424be88c 23-30,36
+  s_9d49268b9f9845::t_c0349f02807d23 21-22,31-32
+packages/diagram/src/shadowroot/styles.css.spec.ts
+  s_9d49268b9f9845::t_c0349f02807d23 1-23
+.changeset/fix-embedded-view-overlay-background.md
+  s_9d49268b9f9845::t_90674948b58542 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10",
+  "base_commit_sha": "6e8b08b91af86b40fb5dea45892206c68180f82d",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
