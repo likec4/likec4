@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { pickViewBounds, StaticLikeC4Diagram } from '@likec4/diagram'
 import { useSearch } from '@tanstack/react-router'
 import { useCurrentView, useTransparentBackground } from '../hooks'
@@ -41,6 +47,8 @@ export function EmbedPage() {
         background={'transparent'}
         fitViewPadding={0}
         dynamicViewVariant={dynamic}
+        enableRelationshipDetails
+        enableRelationshipBrowser
         initialWidth={bounds.width}
         initialHeight={bounds.height} />
     </div>
