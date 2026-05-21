@@ -101,13 +101,14 @@ likec4 dev
 This recursively searches for `*.c4` and `*.likec4` files in the current folder, parses them, and serves diagrams via a local web server.  
 Any change in the source files triggers a hot update in the browser immediately.
 
-| Option              | Description                                                                                               |
-| ------------------- | --------------------------------------------------------------------------------------------------------- |
-| `--port`            | Port for the dev server (default: 5173, or `PORT` env var)                                                |
-| `--hmr-port`        | Port for the HMR WebSocket (default: auto-discovered from 24678–24690, or `HMR_PORT` env var)             |
-| `--listen, -l`      | IP address to listen on (default: `127.0.0.1`, or `0.0.0.0` inside a container)                          |
-| `--no-react-hmr`    | Disable React HMR (useful for CI or static previews)                                                      |
-| `--use-dot`         | Use local Graphviz (`dot`) binaries instead of bundled WASM                                               |
+| Option                    | Description                                                                                               |
+| ------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `--port`                  | Port for the dev server (default: 5173, or `PORT` env var)                                                |
+| `--hmr-port`              | Port for the HMR WebSocket (default: auto-discovered from 24678–24690, or `HMR_PORT` env var)             |
+| `--listen, -l`            | IP address to listen on (default: `127.0.0.1`, or `0.0.0.0` inside a container)                          |
+| `--no-react-hmr`          | Disable React HMR (useful for CI or static previews)                                                      |
+| `--use-dot`               | Use local Graphviz (`dot`) binaries instead of bundled WASM                                               |
+| `--public, --public-dir`  | Directory whose files are served as-is (Vite [`publicDir`](https://vite.dev/guide/assets#the-public-directory)) |
 
 :::tip
 You can start the process in a separate terminal window and keep it running while you're editing the model in your editor, or even serve multiple projects at once.
@@ -129,15 +130,16 @@ A relocatable app can be built with `--base "./"`.
 likec4 build -o ./dist
 ```
 
-| Option                  | Description                                                                                           |
-| ----------------------- | ----------------------------------------------------------------------------------------------------- |
-| `--output`              | Output directory                                                                                      |
-| `--base, --base-url`    | Base URL from which the app is being served, e.g., "/", "/pages/", or "./" for a relocatable app      |
-| `--use-hash-history`    | Hash-based navigation, e.g. "/#/view" instead of "/view"                                              |
-| `--use-dot`             | Use local binaries of Graphviz ("dot") instead of bundled WASM                                        |
-| `--webcomponent-prefix` | Prefix for web components, e.g. "c4" generates `<c4-view ../>`                                        |
-| `--title`               | Base title of the app pages (default is "LikeC4")                                                     |
-| `--output-single-file`  | Generates a single self-contained HTML file                                                           |
+| Option                   | Description                                                                                           |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `--output`               | Output directory                                                                                      |
+| `--base, --base-url`     | Base URL from which the app is being served, e.g., "/", "/pages/", or "./" for a relocatable app      |
+| `--use-hash-history`     | Hash-based navigation, e.g. "/#/view" instead of "/view"                                              |
+| `--use-dot`              | Use local binaries of Graphviz ("dot") instead of bundled WASM                                        |
+| `--webcomponent-prefix`  | Prefix for web components, e.g. "c4" generates `<c4-view ../>`                                        |
+| `--title`                | Base title of the app pages (default is "LikeC4")                                                     |
+| `--output-single-file`   | Generates a single self-contained HTML file                                                           |
+| `--public, --public-dir` | Directory whose files are copied into the output as-is (Vite [`publicDir`](https://vite.dev/guide/assets#the-public-directory)); preserved with `--output-single-file` |
 
 :::note
 Internally, CLI uses Vite to build the website, and `likec4 build` calls `vite build`.  

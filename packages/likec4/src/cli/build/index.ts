@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 //
 // Copyright (c) 2023-2026 Denis Davydkov
@@ -17,6 +16,7 @@ import {
   base,
   outputSingleFile,
   path,
+  publicDir,
   theme,
   title,
   useDotBin,
@@ -47,6 +47,7 @@ const buildCmd = (yargs: yargs.Argv) => {
           .option('webcomponent-prefix', webcomponentPrefix)
           .option('title', title)
           .option('output-single-file', outputSingleFile)
+          .option('public', publicDir)
           .option('theme', theme)
           .example(
             `${k.green('$0 build -o ./build ./src')}`,
@@ -55,6 +56,10 @@ const buildCmd = (yargs: yargs.Argv) => {
           .example(
             `${k.green('$0 build --theme dark -o ./build ./src')}`,
             k.gray('Build with dark color scheme as default'),
+          )
+          .example(
+            `${k.green('$0 build --public ./assets -o ./build ./src')}`,
+            k.gray('Copy files from \'assets\' to the output directory as-is'),
           ),
       handler: async (args) => {
         const params = {
@@ -87,6 +92,7 @@ const buildCmd = (yargs: yargs.Argv) => {
           likec4AssetsDir,
           outputDir,
           outputSingleFile: params.outputSingleFile,
+          userPublicDir: args.public,
         })
 
         showSupportUsMessage()

@@ -29,6 +29,12 @@ export type LikeC4ViteConfig = {
   useHashHistory?: boolean | undefined
   likec4AssetsDir: string
   outputSingleFile?: boolean | undefined
+  /**
+   * Optional user-provided directory whose files are copied as-is into the
+   * output (Vite publicDir). Useful for static assets like images referenced
+   * from likec4 views via absolute URLs.
+   */
+  userPublicDir?: string | undefined
 }
 
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
