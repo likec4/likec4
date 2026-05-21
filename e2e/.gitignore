@@ -17,8 +17,10 @@ tests/*.spec.ts
 !tests/overview-page.spec.ts
 !tests/search-params.spec.ts
 !tests/static-navigation.spec.ts
+!tests/static-build-relationship-popover.spec.ts
 !tests/markdown-image.spec.ts
 !tests/manual-layout-views.spec.ts
+!tests/webcomponent-overlay.spec.ts
 
 pnpm-lock.yaml
 package-lock.json

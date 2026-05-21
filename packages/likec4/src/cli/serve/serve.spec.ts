@@ -103,4 +103,25 @@ describe('serve handler', () => {
     expect(callArg.port).toBe(8080)
     expect(callArg.hmrPort).toBe(24705)
   })
+
+  it('propagates userPublicDir to viteDev', async () => {
+    const { handler } = await import('./serve')
+    const { viteDev } = await import('../../vite/vite-dev')
+    const viteDevMock = viteDev as ReturnType<typeof vi.fn>
+
+    await handler({
+      path: '/tmp/test',
+      useDotBin: false,
+      webcomponentPrefix: 'likec4',
+      title: undefined,
+      useHashHistory: undefined,
+      enableHMR: false,
+      enableWebcomponent: false,
+      userPublicDir: '/tmp/test/public',
+    })
+
+    expect(viteDevMock).toHaveBeenCalledOnce()
+    const callArg = viteDevMock.mock.calls[0]![0]
+    expect(callArg.userPublicDir).toBe('/tmp/test/public')
+  })
 })

@@ -9,13 +9,26 @@ import { build } from 'vite'
 import { viteConfig } from './config-app'
 import type { LikeC4ViteConfig } from './config-app'
 import { viteWebcomponentConfig } from './config-webcomponent'
-import { mkTempPublicDir } from './utils'
+import { copyUserPublicDir, mkTempPublicDir } from './utils'
 
 type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
   buildWebcomponent?: boolean
 }
 
 export const Assets = ['favicon.ico', 'robots.txt']
+
+/**
+ * Removes every top-level entry in `outDir` except the names in `preserved`.
+ * Used by the `--output-single-file` build to strip the temporary Vite assets
+ * once they have been inlined into `index.html`, while keeping `index.html`
+ * itself and any user-provided files (see `--public`).
+ */
+export function removeAllButPreserved(outDir: string, preserved: readonly string[]): void {
+  const keep = new Set<string>(preserved)
+  for (const extraFile of readdirSync(outDir).filter(f => !keep.has(f))) {
+    rmSync(resolve(outDir, extraFile), { recursive: true })
+  }
+}
 
 export async function viteBuild({
   buildWebcomponent = true,
@@ -24,6 +37,7 @@ export async function viteBuild({
   languageServices,
   likec4AssetsDir,
   outputSingleFile,
+  userPublicDir,
   ...cfg
 }: Config) {
   likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
@@ -40,6 +54,10 @@ export async function viteBuild({
   const outDirWasEmpty = !existsSync(config.build.outDir) || readdirSync(config.build.outDir).length === 0
 
   const publicDir = await mkTempPublicDir()
+
+  const userPublicEntries = userPublicDir
+    ? await copyUserPublicDir(userPublicDir, publicDir)
+    : []
 
   for (const asset of Assets) {
     const origin = resolve(config.root, asset)
@@ -139,10 +157,7 @@ export async function viteBuild({
       config.customLogger.warn(k.yellow('outDir was not empty, skipping cleanup'))
       return
     }
-    // Delete all files other than index.html
-    for (let extraFile of readdirSync(resolve(config.build.outDir)).filter(f => f !== 'index.html')) {
-      rmSync(resolve(config.build.outDir, extraFile), { recursive: true })
-    }
+    removeAllButPreserved(config.build.outDir, ['index.html', ...userPublicEntries])
   }
 
   // Copy index.html to 404.html

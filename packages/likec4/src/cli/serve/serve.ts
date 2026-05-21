@@ -57,6 +57,12 @@ type HandlerParams = {
    * @default auto-discovered from 24678-24690
    */
   hmrPort?: number | undefined
+
+  /**
+   * Optional user-provided directory whose files are copied to the dev server
+   * (Vite publicDir).
+   */
+  userPublicDir?: string | undefined
 }
 
 /** Starts the LikeC4 dev server (Vite) for the given workspace path. */
@@ -72,6 +78,7 @@ export async function handler({
   listen,
   port,
   hmrPort,
+  userPublicDir,
 }: HandlerParams) {
   // Explicitly set NODE_ENV to development
   if (enableHMR) {
@@ -97,6 +104,7 @@ export async function handler({
     listen,
     port,
     hmrPort,
+    userPublicDir,
   })
 
   server.config.logger.clearScreen('info')

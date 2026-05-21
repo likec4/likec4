@@ -1,6 +1,6 @@
 import { rootLogger } from '@likec4/log'
-import { existsSync } from 'node:fs'
-import { mkdtemp, writeFile } from 'node:fs/promises'
+import { existsSync, statSync } from 'node:fs'
+import { cp, mkdtemp, readdir, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
@@ -51,4 +51,28 @@ export async function mkTempPublicDir() {
 /** Returns the path relative to the current working directory. */
 export function relativeToCwd(path: string) {
   return relative(cwd(), path)
+}
+
+/**
+ * Copies the contents of a user-provided directory into the temporary publicDir
+ * (the directory Vite uses to serve / copy static assets). The directory must
+ * exist and be a directory — otherwise an error is thrown so the user notices
+ * a typo on the CLI instead of silently getting no assets.
+ *
+ * Returns the top-level entry names that were copied so callers can preserve
+ * them across post-build cleanup (see single-file build).
+ */
+export async function copyUserPublicDir(
+  userPublicDir: string,
+  destPublicDir: string,
+): Promise<string[]> {
+  if (!existsSync(userPublicDir)) {
+    throw new Error(`--public directory does not exist: ${userPublicDir}`)
+  }
+  if (!statSync(userPublicDir).isDirectory()) {
+    throw new Error(`--public path is not a directory: ${userPublicDir}`)
+  }
+  const entries = await readdir(userPublicDir)
+  await cp(userPublicDir, destPublicDir, { recursive: true, errorOnExist: false })
+  return entries
 }

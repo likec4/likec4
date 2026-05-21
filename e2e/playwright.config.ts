@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { defineConfig, devices } from '@playwright/test'
 import { isCI } from 'std-env'
 
@@ -57,7 +63,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'pnpm likec4 start --verbose --no-react-hmr --no-build-webcomponent',
+    command: 'pnpm likec4 start --verbose --no-react-hmr',
     port: 5173,
     stdout: 'pipe',
     timeout: 60 * 1000,

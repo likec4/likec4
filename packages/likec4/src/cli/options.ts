@@ -84,6 +84,15 @@ export const outputSingleFile = {
   desc: 'outputs a single self-contained HTML file with all required resources inlined',
 } as const satisfies Options
 
+export const publicDir = {
+  alias: 'public-dir',
+  string: true,
+  desc: 'directory whose files are copied to the output as-is (Vite publicDir, e.g. images linked from views)',
+  normalize: true,
+  nargs: 1,
+  coerce: resolve,
+} as const satisfies Options
+
 export const listen = {
   alias: 'l',
   string: true,
