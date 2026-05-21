@@ -29,7 +29,13 @@ const mimeTypes = new Map([
 ])
 
 function resolveRequest(pathname) {
-  const relative = decodeURIComponent(pathname).replace(/^\/+/, '')
+  let relative
+  try {
+    relative = decodeURIComponent(pathname).replace(/^\/+/, '')
+  } catch {
+    return null
+  }
+
   const candidate = resolve(root, relative)
   if (candidate !== root && !candidate.startsWith(root + sep)) {
     return resolve(root, 'index.html')
@@ -56,8 +62,22 @@ const server = createServer((request, response) => {
     return
   }
 
-  const url = new URL(request.url ?? '/', `http://${request.headers.host ?? '127.0.0.1'}`)
+  let url
+  try {
+    url = new URL(request.url ?? '/', 'http://127.0.0.1')
+  } catch {
+    response.writeHead(400)
+    response.end()
+    return
+  }
+
   const file = resolveRequest(url.pathname)
+  if (!file) {
+    response.writeHead(400)
+    response.end()
+    return
+  }
+
   response.setHeader('content-type', contentType(file))
 
   if (request.method === 'HEAD') {
