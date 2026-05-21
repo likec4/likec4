@@ -1,0 +1,31 @@
+e2e/serve-static-build.mjs
+  s_9d49268b9f9845::t_fb05c228f338ea 1-78
+e2e/tests/static-build-relationship-popover.spec.ts
+  s_9d49268b9f9845::t_fb05c228f338ea 1-13,16-17,20-28
+  s_9d49268b9f9845::t_17ee87c9490145 14-15,18-19
+e2e/.gitignore
+  s_9d49268b9f9845::t_fb05c228f338ea 20
+.changeset/fix-static-embed-relationship-popover.md
+  s_9d49268b9f9845::t_9e6596c1d5f902 1-6
+packages/likec4-spa/src/pages/EmbedPage.tsx
+  s_9d49268b9f9845::t_83e93e4b109f1c 1-6,50-51
+e2e/playwright.static-build.config.ts
+  s_9d49268b9f9845::t_45b9b1e08d03fd 17
+  s_9d49268b9f9845::t_fb05c228f338ea 1-16,18-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "7844fb1d5c7ac7712d15518189f5e85dfb096a5d",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
