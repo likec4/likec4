@@ -1,0 +1,19 @@
+e2e/serve-static-build.mjs
+  s_9d49268b9f9845::t_6adf9101c5103e 32-38,65-73,75-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "81d3bdded0a2647432e5d4b21f9d738e76a981a8",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
