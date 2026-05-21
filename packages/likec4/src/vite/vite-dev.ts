@@ -12,7 +12,7 @@ import { build, createServer } from 'vite'
 import type { LikeC4ViteConfig } from './config-app'
 import { viteConfig } from './config-app'
 import { viteWebcomponentConfig } from './config-webcomponent'
-import { mkTempPublicDir } from './utils'
+import { copyUserPublicDir, mkTempPublicDir } from './utils'
 
 /**
  * Validates that a port is a valid integer between 1 and 65535.
@@ -73,6 +73,7 @@ export async function viteDev({
   listen,
   port,
   hmrPort,
+  userPublicDir,
   ...cfg
 }: Config): Promise<ViteDevServer> {
   likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
@@ -101,6 +102,9 @@ export async function viteDev({
     })
   }
   const publicDir = await mkTempPublicDir()
+  if (userPublicDir) {
+    await copyUserPublicDir(userPublicDir, publicDir)
+  }
 
   const host = listen ?? (isInsideContainer() ? '0.0.0.0' : 'localhost')
 
