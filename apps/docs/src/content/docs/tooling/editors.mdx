@@ -91,15 +91,59 @@ Installation:
 
 ## Emacs
 
-Use `@likec4/lsp` with [lsp-mode](https://emacs-lsp.github.io/lsp-mode/) or [eglot](https://github.com/joaotavora/eglot):
+There's no MELPA package yet, but you can wire up the [`@likec4/lsp`](#standalone-language-server) standalone language server in a few lines.
+
+First, define a minor wrapper mode so the LSP client knows which buffers to attach to:
 
 ```elisp
-;; eglot
-(add-to-list 'eglot-server-programs
-             '((likec4-mode) . ("likec4-lsp" "--stdio")))
+;; Major mode for .c4 / .likec4 files
+(define-derived-mode likec4-mode prog-mode "LikeC4"
+  "Major mode for LikeC4 architecture diagram files."
+  (setq-local comment-start "// ")
+  (setq-local comment-start-skip "//+ *")
+  (setq-local comment-end ""))
+
+(add-to-list 'auto-mode-alist '("\\.c4\\'"     . likec4-mode))
+(add-to-list 'auto-mode-alist '("\\.likec4\\'" . likec4-mode))
 ```
 
-See [#2268](https://github.com/likec4/likec4/issues/2268) for discussion on Emacs support.
+Then pick one of the two LSP clients:
+
+### Eglot (built-in since Emacs 29)
+
+```elisp
+(use-package eglot
+  :ensure t
+  :hook ((likec4-mode . eglot-ensure)))
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(likec4-mode . ("likec4-lsp" "--stdio"))))
+```
+
+### lsp-mode
+
+```elisp
+(use-package lsp-mode
+  :ensure t
+  :commands lsp
+  :hook ((likec4-mode . lsp))
+  :init (setq lsp-keymap-prefix "C-c l")
+  :config (setq lsp-enable-snippet t))
+
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+               '(likec4-mode . "likec4"))
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection '("likec4-lsp" "--stdio"))
+    :activation-fn (lsp-activate-on "likec4")
+    :server-id 'likec4-lsp)))
+```
+
+Either approach gives you validation, semantic syntax highlighting, completion, go-to-definition, hover docs, and safe renames — same surface as the [Neovim plugin](#neovim).
+
+Thanks to [@vincent067](https://github.com/vincent067) for the original setup in [#2268](https://github.com/likec4/likec4/issues/2268).
 
 ## Zed
 
