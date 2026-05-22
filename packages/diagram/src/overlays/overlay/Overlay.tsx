@@ -5,7 +5,7 @@ import {
 } from '@mantine/core'
 import { useFocusTrap, useMergedRef } from '@mantine/hooks'
 import { useTimeoutEffect } from '@react-hookz/web'
-import { type TargetAndTransition, m, useIsPresent, useReducedMotionConfig } from 'motion/react'
+import { type TargetAndTransition, m, useIsPresent, usePresence, useReducedMotionConfig } from 'motion/react'
 import {
   type PropsWithChildren,
   forwardRef,
@@ -62,31 +62,30 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   const [opened, setOpened] = useState(false)
   const focusTrapRef = useFocusTrap(opened)
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const closeReasonRef = useRef<'cancel' | 'external' | null>(null)
+
+  const onCloseRef = useRef<OverlayProps['onClose']>(null)
 
   const motionNotReduced = useReducedMotionConfig() !== true
 
-  const isPresent = useIsPresent()
-
+  /**
+   * Close the overlay and call the onClose callback
+   */
   const cancelMe = () => {
-    closeReasonRef.current = 'cancel'
-    onClose()
+    onCloseRef.current = onClose
+    dialogRef.current?.close()
   }
+
+  const isPresent = useIsPresent()
 
   useEffect(() => {
     if (isPresent) {
       return
     }
-    closeReasonRef.current ??= 'external'
-    const dialog = dialogRef.current
-    return () => {
-      // Ensure the dialog is properly closed when unmounted, so the browser
-      // removes it from the top layer. Without this, AnimatePresence can
-      // remove the DOM node without calling dialog.close(), leaving a ghost
-      // entry in the top layer that traps focus and blocks interaction. (#2353)
-      if (dialog?.open) {
-        dialog.close()
-      }
+    if (dialogRef.current?.open) {
+      // Clear the onClose callback to prevent it from being called
+      // when the dialog is closed by the presence animation
+      onCloseRef.current = null
+      dialogRef.current.close()
     }
   }, [isPresent])
 
@@ -176,6 +175,9 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
         e.preventDefault()
         e.stopPropagation()
         cancelMe()
+      }}
+      onClose={() => {
+        onCloseRef.current?.()
       }}
     >
       <RemoveScroll forwardProps>

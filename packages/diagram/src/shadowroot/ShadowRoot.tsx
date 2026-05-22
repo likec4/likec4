@@ -1,28 +1,27 @@
+import type { ElementProps } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
-import { type HTMLAttributes, forwardRef, memo, useRef, useState } from 'react'
-import root from 'react-shadow'
+import { useIsomorphicLayoutEffect } from '@react-hookz/web'
+import type { current } from 'immer'
+import {
+  type HTMLAttributes,
+  type PropsWithChildren,
+  createContext,
+  forwardRef,
+  Fragment,
+  memo,
+  useContext,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
+import { createPortal } from 'react-dom'
 import { isDefined } from 'remeda'
 import { DefaultMantineProvider } from '../context/DefaultMantineProvider'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useId } from '../hooks/useId'
-import { useBundledStyleSheet, useColorScheme } from './styles.css'
-
-const Root = root['div']!
-
-type ShadowRootProps = HTMLAttributes<HTMLDivElement> & {
-  injectFontCss?: boolean | undefined
-  styleNonce?: string | (() => string) | undefined
-  mode?: 'open' | 'closed'
-  delegatesFocus?: boolean
-  colorScheme?: 'light' | 'dark' | undefined
-  keepAspectRatio?: false | undefined | { width: number; height: number }
-  /**
-   * Mantine theme override to apply within the shadow root
-   * @see https://mantine.dev/theming/mantine-provider/#theme-prop
-   */
-  theme?: any
-}
+import { appendFontToDocument, createShadowRootStyles, createShadowRootStylesheets, useColorScheme } from './styles.css'
 
 function useShadowRootStyle(
   instanceId: string,
@@ -73,24 +72,46 @@ function useShadowRootStyle(
 `.trim()
 }
 
-export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
-  {
-    children,
-    theme,
-    injectFontCss = true,
-    styleNonce,
-    colorScheme: explicitColorScheme,
-    keepAspectRatio = false,
-    ...props
-  },
-  ref,
-) => {
+const ShadowRootContext = createContext<ShadowRoot | null>(null)
+
+export function useShadowRoot(): ShadowRoot {
+  const context = useContext(ShadowRootContext)
+  if (!context) {
+    throw new Error('useShadowRoot must be used within a ShadowRoot')
+  }
+  return context
+}
+
+type ShadowRootProps = HTMLAttributes<HTMLDivElement> & {
+  injectFontCss?: boolean | undefined
+  styleNonce?: string | (() => string) | undefined
+  colorScheme?: 'light' | 'dark' | undefined
+  keepAspectRatio?: false | undefined | { width: number; height: number }
+  /**
+   * Mantine theme override to apply within the shadow root
+   * @see https://mantine.dev/theming/mantine-provider/#theme-prop
+   */
+  theme?: any
+}
+export function ShadowRoot({
+  children,
+  theme,
+  injectFontCss = true,
+  styleNonce,
+  colorScheme: explicitColorScheme,
+  keepAspectRatio = false,
+  ...props
+}: ShadowRootProps) {
   const colorScheme = useColorScheme(explicitColorScheme)
   const id = useId()
   const cssstyle = useShadowRootStyle(id, keepAspectRatio)
-  const rootRef = useRef<HTMLDivElement>(null)
-  const styleSheets = useBundledStyleSheet(injectFontCss, styleNonce)
-  const getRootElement = useCallbackRef(() => rootRef.current ?? undefined)
+  const mantineRootRef = useRef<HTMLDivElement>(null)
+
+  useIsomorphicLayoutEffect(
+    () => appendFontToDocument(injectFontCss, styleNonce),
+    [],
+  )
+  const getRootElement = useCallbackRef(() => mantineRootRef.current ?? undefined)
 
   const getStyleNonce = useCallbackRef(() => {
     if (isDefined(styleNonce)) {
@@ -107,12 +128,8 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
   return (
     <>
       <MemoizedStyle nonce={nonce} cssstyle={cssstyle} />
-      <Root ssr={false} {...props} styleSheets={styleSheets} data-likec4-instance={id}>
-        <div
-          ref={useMergedRef(rootRef, ref)}
-          data-mantine-color-scheme={colorScheme}
-          className={'likec4-shadow-root'}
-        >
+      <ShadowRootHost {...props} data-likec4-instance={id}>
+        <div ref={mantineRootRef} data-mantine-color-scheme={colorScheme} className={'likec4-shadow-root'}>
           <DefaultMantineProvider
             defaultColorScheme={colorScheme}
             getRootElement={getRootElement}
@@ -127,10 +144,10 @@ export const ShadowRoot = forwardRef<HTMLDivElement, ShadowRootProps>((
             </FramerMotionConfig>
           </DefaultMantineProvider>
         </div>
-      </Root>
+      </ShadowRootHost>
     </>
   )
-})
+}
 
 /**
  * @internal Memoized styles gives a performance boost during development
@@ -143,7 +160,55 @@ const MemoizedStyle = memo<{
 ) => (
   <style
     type="text/css"
-    nonce={nonce || undefined}
+    {...({ nonce })}
     dangerouslySetInnerHTML={{ __html: cssstyle }} />
 ))
 MemoizedStyle.displayName = 'MemoizedStyle'
+
+const ShadowRootHostPortal = ({ children, root }: PropsWithChildren<{ root: ShadowRoot }>) => {
+  return createPortal(children, root, 'likec4-shadow-root')
+}
+
+const ShadowRootHost = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) => {
+  const hostRef = useRef<HTMLDivElement>(null)
+  const [root, setRoot] = useState<globalThis.ShadowRoot | null>(null)
+
+  useLayoutEffect(() => {
+    const host = hostRef.current
+    if (!host) {
+      setRoot(null)
+      return
+    }
+    setRoot(current => {
+      try {
+        if (host.shadowRoot) {
+          host.shadowRoot.adoptedStyleSheets[0]!.replaceSync(createShadowRootStyles())
+          return host.shadowRoot
+        }
+        const shadowRoot = host.attachShadow({
+          mode: 'open',
+          delegatesFocus: false,
+        })
+        shadowRoot.adoptedStyleSheets = createShadowRootStylesheets()
+        return shadowRoot
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error(error)
+        }
+        return current
+      }
+    })
+  }, [])
+
+  return (
+    <div {...props} ref={hostRef}>
+      {root && (
+        <ShadowRootHostPortal root={root}>
+          <ShadowRootContext.Provider value={root}>
+            {children}
+          </ShadowRootContext.Provider>
+        </ShadowRootHostPortal>
+      )}
+    </div>
+  )
+}

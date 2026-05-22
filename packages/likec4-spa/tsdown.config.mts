@@ -19,8 +19,9 @@ export default defineConfig([{
   entry: [
     'src/main.tsx',
     'src/routeTree.gen.ts',
-    'src/routes/**/*.tsx',
+    'src/routes/**/*',
     'src/pages/*.tsx',
+    'src/aichat/index.tsx',
     '!**/*.d.ts',
     '!**/*.spec.{ts,tsx}',
   ],
@@ -33,13 +34,16 @@ export default defineConfig([{
     'public/*',
   ],
   plugins: [
+    esmExternalRequirePlugin({
+      external: [
+        'react',
+        'react-dom',
+      ],
+    }),
     pluginBabel({
       presets: [reactCompilerPreset({
         target: '18',
       })],
-    }),
-    esmExternalRequirePlugin({
-      external: ['react', 'react-dom'],
     }),
   ],
   outDir: 'dist',
@@ -47,9 +51,7 @@ export default defineConfig([{
   clean: true,
   platform: 'browser',
   minify: true,
-  cjsDefault: false,
   outputOptions: outputOptions({
-    polyfillRequire: false,
     codeSplitting: {
       groups: [
         {
@@ -73,15 +75,6 @@ export default defineConfig([{
       /@likec4\/core.*/,
       /likec4:/,
     ],
-  },
-  inputOptions: {
-    resolve: {
-      conditionNames: ['sources', 'import', 'default'],
-      alias: {
-        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        'react-dom/server': './src/react-dom-server-mock.ts',
-      },
-    },
   },
   hooks: {
     'build:prepare': async () => {

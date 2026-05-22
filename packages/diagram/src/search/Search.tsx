@@ -138,7 +138,7 @@ function SearchOverlayBody({ searchActorRef }: { searchActorRef: SearchActorRef 
     }
   }, 150)
 
-  return <SearchPanelContent />
+  return <SearchPanelContent ref={ref} />
 }
 
 /**
@@ -185,9 +185,9 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-elements">
-              <Suspense>
+              <AnimatePresence mode="popLayout" anchorY="top">
                 <ElementsColumn />
-              </Suspense>
+              </AnimatePresence>
             </LayoutGroup>
           </ScrollArea>
         </GridCol>
@@ -197,11 +197,9 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             className={scrollAreaCss}
             pr="xs"
             scrollbars="y">
-            <Suspense>
-              <LayoutGroup id="likec4-search-views">
-                <ViewsColumn />
-              </LayoutGroup>
-            </Suspense>
+            <LayoutGroup id="likec4-search-views">
+              <ViewsColumn />
+            </LayoutGroup>
           </ScrollArea>
         </GridCol>
       </Grid>

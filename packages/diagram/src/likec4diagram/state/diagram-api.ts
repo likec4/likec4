@@ -11,6 +11,7 @@ import type { FeatureName, TogglableFeature } from '../../context/DiagramFeature
 import type { EditorActorRef } from '../../editor/actor/machine'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
+import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import type {
@@ -47,7 +48,18 @@ export interface DiagramApi<A extends Any = Unknown> {
    */
   editorActor(): EditorActorRef
 
+  /**
+   * Overlays actor reference
+   * @warning Do not use in render phase
+   */
   overlays(): OverlaysActorRef
+
+  /**
+   * Search actor reference
+   * @warning Do not use in render phase
+   */
+  searchActor(): SearchActorRef
+
   /**
    * Send event to diagram actor
    */
@@ -169,6 +181,10 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
     overlays(): OverlaysActorRef {
       const overlaysActor = typedSystem(actorRef.current.system).overlaysActorRef
       return nonNullable(overlaysActor, 'Overlays actor not found in actor system')
+    },
+    searchActor(): SearchActorRef {
+      const searchActor = typedSystem(actorRef.current.system).searchActorRef
+      return nonNullable(searchActor, 'Search actor not found in actor system')
     },
     send: (event: DiagramEvents) => actorRef.current.send(event),
     navigateTo: (viewId: ViewId<A>, fromNode?: NodeId, focusOnElement?: Fqn<A>) => {

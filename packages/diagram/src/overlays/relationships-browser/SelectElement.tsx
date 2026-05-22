@@ -118,7 +118,7 @@ export const SelectElement = memo(() => {
                         paddingBottom: 6,
                       },
                     }}
-                    renderNode={({ node, selected, expanded, elementProps, hasChildren }) => (
+                    renderNode={({ node, selected, expanded, elementProps }) => (
                       <Group gap={2} wrap="nowrap" {...elementProps} py="3">
                         <ActionIcon
                           variant="subtle"
@@ -126,7 +126,7 @@ export const SelectElement = memo(() => {
                           // color={theme === 'light' ? 'gray' : 'gray'}
                           c={'dimmed'}
                           style={{
-                            visibility: hasChildren ? 'visible' : 'hidden',
+                            visibility: node.hasChildren ? 'visible' : 'hidden',
                           }}>
                           <IconChevronRight
                             stroke={3.5}

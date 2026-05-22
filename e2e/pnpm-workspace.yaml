@@ -2,3 +2,8 @@ allowBuilds:
   esbuild: true
   sharp: false
   workerd: true
+
+overrides:
+  "@likec4/core": "file:../packages/core/package.tgz"
+  "@likec4/icons": "file:../packages/icons/package.tgz"
+  "likec4": "file:../packages/likec4/package.tgz"

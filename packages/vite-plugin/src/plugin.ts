@@ -1,9 +1,10 @@
+import type { ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import type { AnyTextAdapter } from '@tanstack/ai'
 import pDebounce from 'p-debounce'
-import { hasAtLeast, isBoolean, isDeepEqual, map } from 'remeda'
+import { funnel, hasAtLeast, isBoolean, isDeepEqual, map } from 'remeda'
 import type {
   Plugin,
   PluginOption,
@@ -373,60 +374,84 @@ export function LikeC4VitePlugin({
 
         const isProjectsChange = projectsChangeDetector()
 
-        const reloadModule = async (id: string) => {
+        const reloadModule = async (id: string): Promise<boolean> => {
           const md = server.moduleGraph.getModuleById(id)
           if (!md || md.importers.size === 0) {
-            return
+            return false
           }
           try {
             await server.reloadModule(md)
+            return true
           } catch (err) {
             logger.error(loggable(err))
+            return false
           }
         }
 
-        likec4.builder.onModelParsed(
-          pDebounce(
-            async () => {
-              const [error] = likec4.getErrors()
-              if (error) {
-                hotChannel.send({
-                  type: 'error',
-                  err: {
-                    name: 'LikeC4ValidationError',
-                    ...splitErrorMessage(error.message),
-                    plugin: 'vite-plugin-likec4',
-                    loc: {
-                      file: error.sourceFsPath,
-                      line: error.line,
-                      column: error.range.start.character + 1,
-                    },
-                  },
-                })
-                return
-              }
-              const projects = likec4.projects()
-              // Update on project data change?
-              if (isProjectsChange(projects)) {
-                await reloadModule(projectsModule.virtualId)
-                await reloadModule(iconsModule.virtualId)
-                await reloadModule(modelModule.virtualId)
-                if (projects.length > 1) {
-                  await reloadModule(projectsOverviewModule.virtualId)
-                }
-                return
-              }
+        const hasErrors = () => {
+          const [error] = likec4.getErrors()
+          if (!error) {
+            return false
+          }
+          try {
+            hotChannel.send({
+              type: 'error',
+              err: {
+                name: 'LikeC4ValidationError',
+                ...splitErrorMessage(error.message),
+                plugin: 'vite-plugin-likec4',
+                loc: {
+                  file: error.sourceFsPath,
+                  line: error.line,
+                  column: error.range.start.character + 1,
+                },
+              },
+            })
+            logger.trace(
+              k.dim('sent LikeC4ValidationError'),
+            )
+          } catch (err) {
+            logger.error(loggable(err))
+          }
+          return true
+        }
 
-              // Reload project-specific Modules
-              for (const project of projects) {
-                for (const projectModule of hmrProjectVirtuals) {
-                  await reloadModule(projectModule.virtualId(project.id))
-                }
-              }
-            },
-            100,
-          ),
+        const reloadProjects = async () => {
+          const projects = likec4.projects()
+          // Update on project data change?
+          if (isProjectsChange(projects)) {
+            logger.trace(
+              k.dim('onProjectsUpdate - change detected'),
+            )
+            await reloadModule(projectsModule.virtualId)
+            await reloadModule(iconsModule.virtualId)
+            await reloadModule(modelModule.virtualId)
+            if (projects.length > 1) {
+              await reloadModule(projectsOverviewModule.virtualId)
+            }
+          } else {
+            logger.trace(
+              k.dim('onProjectsUpdate - no change'),
+            )
+          }
+        }
+        likec4.projectsManager.onProjectsUpdate(
+          pDebounce(reloadProjects, 100),
         )
+
+        likec4.builder.onModelParsed(onModelParsedBatched(async (projects) => {
+          if (hasErrors()) {
+            return
+          }
+          for (const projectId of projects) {
+            logger.trace(
+              k.dim('onModelParsed project') + ' ' + k.cyan(projectId),
+            )
+            for (const projectModule of hmrProjectVirtuals) {
+              await reloadModule(projectModule.virtualId(projectId))
+            }
+          }
+        }))
       }
     },
 
@@ -444,4 +469,26 @@ export function LikeC4VitePlugin({
     }),
     mainPlugin,
   ]
+}
+
+function onModelParsedBatched(
+  callback: (projects: ReadonlySet<ProjectId>) => Promise<void>,
+): (project: ProjectId) => void {
+  return funnel(
+    (accumulator: Set<ProjectId>) => {
+      callback(accumulator).catch((error) => {
+        logger.error(loggable(error))
+      })
+    },
+    {
+      reducer: (accumulator, project: ProjectId) => {
+        accumulator ??= new Set<ProjectId>()
+        accumulator.add(project)
+        return accumulator
+      },
+      triggerAt: 'end',
+      minQuietPeriodMs: 130,
+      maxBurstDurationMs: 500,
+    },
+  ).call
 }

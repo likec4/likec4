@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "immer": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react"
   },
@@ -88,7 +89,6 @@
     "react-compiler-runtime": "catalog:react",
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
-    "react-shadow": "catalog:react",
     "remeda": "catalog:utils",
     "rolldown": "catalog:tsdown",
     "std-env": "catalog:externals",
@@ -106,7 +106,6 @@
     "xstate": "catalog:xstate",
     "zod": "catalog:externals",
     "zx": "catalog:",
-    "immer": "catalog:utils",
     "type-fest": "catalog:externals"
   }
 }

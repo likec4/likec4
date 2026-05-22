@@ -39,9 +39,9 @@ export default defineConfig({
   },
   resolve: {
     conditions: ['sources'],
+    tsconfigPaths: true,
     alias: {
-      'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
-      '@likec4/styles': resolve('./styled-system/'),
+      '@likec4/styles': resolve('./styled-system'),
     },
   },
   css: {
@@ -53,23 +53,18 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'esnext',
     minify: true,
     sourcemap: false,
     lib: {
-      entry: {
-        index: 'src/index.ts',
-        // xyflow: 'src/xyflow.ts',
-      },
+      entry: 'src/index.ts',
       formats: ['es'],
     },
     rolldownOptions: {
       output: {
+        keepNames: true,
         entryFileNames: '[name].mjs',
       },
       external: [
-        'react/jsx-dev-runtime',
-        '@emotion/is-prop-valid', // dev-only import from motion
         /@likec4\/core.*/,
       ],
       plugins: [
@@ -77,32 +72,24 @@ export default defineConfig({
           external: [
             'react',
             'react-dom',
-            'react/jsx-runtime',
-            'react-dom/client',
           ],
         }),
       ],
     },
   },
   plugins: [
-    {
-      buildStart() {
-        this.info('pandacss')
-        execSync('pnpm pandacss codegen', {
-          stdio: 'inherit',
-          cwd: process.cwd(),
-        })
-      },
-    },
     dts({
-      rollupTypes: true,
-      bundledPackages: [
-        '@likec4/diagram',
-        '@likec4/diagram/custom',
-        '@xstate/react',
-        'xstate',
-        '@react-hookz/web',
-      ],
+      copyDtsFiles: true,
+      bundleTypes: {
+        bundledPackages: [
+          '@likec4/diagram',
+          '@likec4/diagram/custom',
+          '@react-hookz/web',
+          'xstate',
+          '@xstate/react',
+          '@xstate/store',
+        ],
+      },
 
       afterRollup(result) {
         if (result.errorCount > 0) {

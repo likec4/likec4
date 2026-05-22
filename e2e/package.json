@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@11.1.2",
+  "packageManager": "pnpm@11.2.2",
   "scripts": {
     "install:chromium": "playwright install chromium",
     "generate:png": "likec4 export png -o ./generated/images --flat",
@@ -30,12 +30,5 @@
     "vitest": "^4.0.16",
     "wrangler": "^4.80.0",
     "zx": "^8.8.5"
-  },
-  "pnpm": {
-    "overrides": {
-      "@likec4/core": "file:../packages/core/package.tgz",
-      "@likec4/icons": "file:../packages/icons/package.tgz",
-      "likec4": "file:../packages/likec4/package.tgz"
-    }
   }
 }

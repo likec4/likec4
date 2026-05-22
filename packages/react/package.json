@@ -27,6 +27,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "prebuild": "pandacss codegen",
     "build": "vite build",
     "clean": "likec4ops clean"
   },
@@ -43,13 +44,14 @@
     "@likec4/diagram": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@microsoft/api-extractor": "~7.58",
+    "@microsoft/api-extractor": "^7.58.7",
     "@pandacss/dev": "catalog:css",
     "@react-hookz/web": "catalog:react",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
+    "xstate": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "rolldown": "catalog:tsdown",

@@ -235,7 +235,7 @@ function ElementsTree({
       selectOnClick={false}
       tree={tree}
       data={roots}
-      levelOffset={'lg'}
+      levelOffset={'md'}
       classNames={{
         root: styles.treeRoot,
         node: cx(styles.focusable, styles.treeNode),
