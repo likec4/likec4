@@ -146,7 +146,6 @@ describe('viewChange', () => {
             description '''
               New Description
             '''
-
             include *
           }
         }"
@@ -179,7 +178,6 @@ describe('viewChange', () => {
             description '''
               Some Description
             '''
-
             include *
           }
         }"
@@ -198,9 +196,8 @@ describe('viewChange', () => {
         views {
           view index {
             description '''
-          Updated Description
-        '''
-
+              Updated Description
+            '''
             include *
           }
         }"
@@ -235,7 +232,6 @@ describe('viewChange', () => {
             description '''
               New Description
             '''
-
             include *
           }
         }"

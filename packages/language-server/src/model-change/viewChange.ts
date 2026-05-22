@@ -7,9 +7,10 @@ import {
   ops,
   print,
   printOperation,
+  space,
   withctx,
 } from '@likec4/generators/likec4'
-import { findLast, hasAtLeast, last, piped } from 'remeda'
+import { filter, findLast, hasAtLeast, isTruthy, last, map, pipe, piped } from 'remeda'
 import { Position, TextEdit } from 'vscode-languageserver-protocol'
 import { type ParsedLikeC4LangiumDocument, ast } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -80,7 +81,7 @@ export const changePropertyHandler = viewChangeHandler(
 
     if (description !== undefined) {
       edits.push(
-        updateViewDescription(viewAst, description),
+        ...updateViewDescription(viewAst, description),
       )
     }
 
@@ -272,34 +273,57 @@ function updateViewTags(
   return edits
 }
 
-function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.MarkdownOrString): TextEdit {
+function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.MarkdownOrString): TextEdit[] {
   const existing = findExistingViewProperty(viewAst, 'description')
 
-  const descriptionOut = withctx({ description })(
-    ops.props.descriptionProperty(),
+  const descriptionOut = withctx(
+    { description },
+    indent(
+      indent(
+        ops.props.descriptionProperty(),
+      ),
+    ),
   )
 
   // Replace existing description property
   if (existing) {
-    return TextEdit.replace(
-      existing.$cstNode.range,
-      printOperation(descriptionOut),
-    )
+    return [TextEdit.replace(
+      {
+        start: {
+          line: existing.$cstNode.range.start.line,
+          character: 0,
+        },
+        end: existing.$cstNode.range.end,
+      },
+      materialize(
+        descriptionOut,
+      ).trimEnd(),
+    )]
   }
-  // Insert new title property, after tags or at the body start
-  return TextEdit.insert(
-    findInsertPosition(
-      viewAst,
-      body =>
-        // After last property
-        last(body.props)?.$cstNode?.range.end
-          // or after tags
-          ?? body.tags?.$cstNode?.range.end
-          //  or after "{" (view body start)
-          ?? body.$cstNode?.range.start,
-    ),
-    materialize(
-      doubleIndent(descriptionOut),
-    ),
+  // Insert new view description
+  const insertPosition = findInsertPosition(
+    viewAst,
+    body =>
+      // After last property
+      pipe(
+        body.props,
+        map(p => p.$cstNode?.range.end),
+        filter(isTruthy),
+        last(),
+      )
+        // or after tags
+        ?? body.tags?.$cstNode?.range.end
+        //  or after "{" (view body start)
+        ?? body.$cstNode?.range.start,
   )
+  // Move to the next line and add the description
+  return [
+    TextEdit.insert(
+      {
+        line: insertPosition.line + 1,
+        character: 0,
+      },
+      materialize(descriptionOut),
+    ),
+  ]
 }
