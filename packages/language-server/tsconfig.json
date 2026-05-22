@@ -27,16 +27,19 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
-      "path": "../config/tsconfig.json"
+      "path": "../config/"
     },
     {
-      "path": "../layouts/tsconfig.json"
+      "path": "../generators/"
     },
     {
-      "path": "../log/tsconfig.json"
+      "path": "../layouts/"
+    },
+    {
+      "path": "../log/"
     }
   ]
 }

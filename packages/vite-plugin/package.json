@@ -132,7 +132,7 @@
     "fast-equals": "catalog:utils",
     "nanostores": "catalog:react",
     "oxlint": "catalog:",
-    "tsdown": "catalog:",
+    "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

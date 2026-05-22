@@ -1,33 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "target": "esnext",
-    "module": "esnext",
+    "module": "preserve",
     "moduleResolution": "bundler",
     "lib": [
       "ESNext",
       "DOM"
-    ]
+    ],
+    "rootDir": "src"
   },
-  "include": [
-    "src/"
-  ],
   "references": [
     {
       "path": "../core/"
     },
     {
       "path": "../diagram/tsconfig.src.json"
-    },
-    {
-      "path": "../vite-plugin/"
-    },
-    {
-      "path": "../../styled-system/preset/"
-    },
-    {
-      "path": "../../styled-system/styles/"
     }
   ]
 }

@@ -76,10 +76,10 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
-    "@dagrejs/dagre": "catalog:",
-    "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",
     "@likec4/styles": "workspace:*",
+    "@dagrejs/dagre": "catalog:",
+    "@floating-ui/dom": "catalog:react",
     "@lume/kiwi": "catalog:utils",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
@@ -101,21 +101,14 @@
     "motion": "catalog:react",
     "nanostores": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-shadow": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:externals",
     "xstate": "catalog:xstate",
     "@tabler/icons-react": "catalog:react"
   },
   "peerDependencies": {
-    "@pandacss/dev": "catalog:css",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
-  },
-  "peerDependenciesMeta": {
-    "@pandacss/dev": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",

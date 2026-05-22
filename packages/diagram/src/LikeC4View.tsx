@@ -3,14 +3,12 @@ import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { ActionIcon } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import { AnimatePresence } from 'motion/react'
 import type { CSSProperties, ReactNode } from 'react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
 import { ErrorMessage } from './components/ViewNotFound'
-import { useCallbackRef } from './hooks/useCallbackRef'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type {
@@ -391,23 +389,22 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   children,
   ...props
 }: LikeC4ViewProps<A>): JSX.Element {
-  const rootRef = useRef<HTMLDivElement>(null)
   const likec4model = useOptionalLikeC4Model()
   const [layoutType, setLayoutType] = useState(initialLayoutType)
   const [browserViewId, _onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
-  const onNavigateTo = useCallbackRef((viewId: t.aux.ViewId<t.aux.UnknownLayouted> | null) => {
+  const onNavigateTo = (viewId: t.aux.ViewId<t.aux.UnknownLayouted> | null) => {
     // reset layout type if we navigate to a different view
     if (viewId && viewId !== browserViewId) {
       setLayoutType(initialLayoutType)
     }
     _onNavigateTo(viewId)
-  })
-  const onNavigateToThisView = useCallbackRef(() => {
+  }
+  const onNavigateToThisView = () => {
     onNavigateTo(viewId)
-  })
-  const closeBrowser = useCallbackRef(() => {
+  }
+  const closeBrowser = () => {
     onNavigateTo(null)
-  })
+  }
 
   if (!likec4model) {
     return (
@@ -457,11 +454,8 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
 
   const bounds = pickViewBounds(view, props.dynamicViewVariant)
 
-  const root = rootRef.current ? { root: rootRef.current } : undefined
-
   return (
     <ShadowRoot
-      ref={rootRef}
       injectFontCss={injectFontCss}
       theme={mantineTheme}
       colorScheme={colorScheme}
@@ -508,45 +502,48 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
       >
         {children}
       </LikeC4Diagram>
-      <AnimatePresence {...root}>
-        {browserView && (
-          <Overlay openDelay={0} onClose={closeBrowser}>
-            <LikeC4Diagram
-              view={browserView}
-              pannable
-              zoomable
-              background="dots"
-              onNavigateTo={onNavigateTo}
-              showNavigationButtons
-              enableDynamicViewWalkthrough
-              enableFocusMode
-              enableRelationshipBrowser
-              enableElementDetails
-              enableRelationshipDetails
-              enableSearch
-              enableElementTags
-              enableNotes
-              enableCompareWithLatest
-              controls
-              fitView
-              {...props}
-              fitViewPadding={FitViewPaddings.withControls}
-              {...browserProps}
-              enableNotations={browserViewHasNotations && (browserProps.enableNotations ?? true)}
-              renderNodes={renderNodes}
-              onLayoutTypeChange={setLayoutType}
-            />
-            <Box pos="absolute" top={'4'} right={'4'} zIndex={'999'} onClick={stopPropagation}>
-              <ActionIcon
-                variant="default"
-                color="gray"
-                onClick={closeBrowser}>
-                <IconX />
-              </ActionIcon>
-            </Box>
-          </Overlay>
-        )}
-      </AnimatePresence>
+      {browserView && (
+        <Overlay openDelay={0} onClose={closeBrowser}>
+          <LikeC4Diagram
+            view={browserView}
+            pannable
+            zoomable
+            background="dots"
+            onNavigateTo={onNavigateTo}
+            showNavigationButtons
+            enableDynamicViewWalkthrough
+            enableFocusMode
+            enableRelationshipBrowser
+            enableElementDetails
+            enableRelationshipDetails
+            enableSearch
+            enableElementTags
+            enableNotes
+            enableCompareWithLatest
+            controls
+            fitView
+            {...props}
+            fitViewPadding={FitViewPaddings.withControls}
+            {...browserProps}
+            enableNotations={browserViewHasNotations && (browserProps.enableNotations ?? true)}
+            renderNodes={renderNodes}
+            onLayoutTypeChange={setLayoutType}
+          />
+          <Box
+            pos="absolute"
+            top={'4'}
+            right={'4'}
+            zIndex={'999'}
+            onClick={stopPropagation}>
+            <ActionIcon
+              variant="default"
+              color="gray"
+              onClick={closeBrowser}>
+              <IconX />
+            </ActionIcon>
+          </Box>
+        </Overlay>
+      )}
     </ShadowRoot>
   )
 }

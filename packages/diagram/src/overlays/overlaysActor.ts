@@ -76,9 +76,8 @@ const machine = setup({
   },
   guards: {
     'has overlays?': ({ context }) => context.overlays.length > 0,
-    'close specific overlay?': ({ context, event }) => {
-      assertEvent(event, 'close')
-      return isString(event.actorId) && context.overlays.some(o => o.id === event.actorId)
+    'close specific overlay?': ({ event }) => {
+      return event.type === 'close' && isString(event.actorId)
     },
     'last: is relationshipDetails?': ({ context }) => {
       const lastOverlay = last(context.overlays)
@@ -267,14 +266,6 @@ const listenToEsc = () =>
 
 const stopListeningToEsc = () => machine.stopChild('hotkey')
 
-const checkState = () =>
-  machine.enqueueActions(({ enqueue, context }) => {
-    if (context.overlays.length === 0) {
-      // No more overlays, go to idle by raising close again
-      enqueue.raise({ type: 'close' })
-    }
-  })
-
 const _overlaysActorLogic = machine.createMachine({
   id: 'overlays',
   context: () => ({
@@ -282,53 +273,58 @@ const _overlaysActorLogic = machine.createMachine({
     overlays: [],
   }),
   initial: 'idle',
+  on: {
+    'close.all': {
+      actions: closeAllOverlays(),
+      target: '#idle',
+    },
+  },
   states: {
     idle: {
+      id: 'idle',
       entry: [
         emitIdle(),
       ],
       on: {
         'open.*': {
           actions: openOverlay(),
-          target: 'active',
+          target: 'opened',
         },
       },
     },
-    active: {
-      entry: [
-        listenToEsc(),
-      ],
-      exit: [
-        stopListeningToEsc(),
-      ],
-      on: {
-        'open.*': {
-          actions: openOverlay(),
+    opened: {
+      entry: listenToEsc(),
+      exit: stopListeningToEsc(),
+      initial: 'hasOverlays',
+      states: {
+        hasOverlays: {
+          on: {
+            'open.*': {
+              actions: openOverlay(),
+            },
+            'close': [
+              {
+                guard: 'close specific overlay?',
+                actions: closeSpecificOverlay(),
+                target: 'decide',
+              },
+              {
+                actions: closeLastOverlay(),
+                target: 'decide',
+              },
+            ],
+          },
         },
-        'close': [
-          {
-            guard: not('has overlays?'),
-            target: 'idle',
-          },
-          {
-            guard: 'close specific overlay?',
-            actions: [
-              closeSpecificOverlay(),
-              checkState(),
-            ],
-          },
-          {
-            actions: [
-              closeLastOverlay(),
-              checkState(),
-            ],
-          },
-        ],
-        'close.all': {
-          actions: [
-            closeAllOverlays(),
+        decide: {
+          always: [
+            {
+              guard: 'has overlays?',
+              target: 'hasOverlays',
+            },
+            {
+              target: '#idle',
+            },
           ],
-          target: 'idle',
         },
       },
     },

@@ -1,9 +1,13 @@
 import type * as t from '@likec4/core/types'
-import type { NonReducibleUnknown } from 'xstate'
-import { fromPromise, setup } from 'xstate'
-import type { Types } from '../likec4diagram/types'
-import type { HotKeyEvent } from './hotkeyActor'
-import { hotkeyActorLogic as hotkey } from './hotkeyActor'
+import { type NonReducibleUnknown, fromPromise, setup } from 'xstate'
+import { hotkey } from './hotkey'
+import type {
+  EditorActorContext,
+  EditorActorEmitedEvent,
+  EditorActorEvent,
+  EditorActorInput,
+  EditorActorStateTag,
+} from './types'
 
 export namespace EditorCalls {
   export type ApplyLatestToManual = (
@@ -49,58 +53,6 @@ const applySemanticLayout = fromPromise<EditorCalls.ApplySemanticLayout.Output, 
   },
 )
 
-export type EditorActorEvent =
-  // Schedule a sync
-  | { type: 'sync' }
-  // Trigger a view change (apply change to server)
-  | { type: 'change'; change: t.ViewChange }
-  | { type: 'edit.start'; subject: 'node' | 'edge' }
-  | { type: 'edit.finish'; wasChanged?: boolean }
-  // triggers applying latest to manual layout
-  | { type: 'applyLatestToManual' }
-  // triggers applying semantic layout
-  | { type: 'applySemanticLayout' }
-  // view update has been received, consider synced
-  | { type: 'synced' }
-  // Cancel current editing or pending operations
-  | { type: 'cancel' }
-  // Reset history, pending changes, and editing state
-  | { type: 'reset' }
-  | HotKeyEvent
-
-export type HistorySnapshot = {
-  view: t.LayoutedView
-  change: t.ViewChange.SaveViewSnapshot
-  xynodes: Types.Node[]
-  xyedges: Types.Edge[]
-  synched: boolean
-}
-
-export interface EditorActorInput {
-  viewId: t.ViewId
-}
-
-export interface EditorActorContext {
-  viewId: t.ViewId
-
-  pendingChanges: t.ViewChange[]
-
-  history: ReadonlyArray<HistorySnapshot>
-  /**
-   * The state before editing started
-   */
-  beforeEditing: HistorySnapshot | null
-
-  /**
-   * The subject of the edit
-   */
-  editing: 'node' | 'edge' | null
-}
-
-export type EditorActorEmitedEvent = { type: 'idle' }
-
-export type EditorActorStateTag = 'pending' | 'busy' | 'ai-semantic-layout'
-
 export const machine = setup({
   types: {
     context: {} as EditorActorContext,
@@ -112,18 +64,18 @@ export const machine = setup({
     },
     tags: '' as EditorActorStateTag,
   },
-  delays: {
-    '500ms': 500,
-    'waitBeforeSync': 1_000,
-  },
   actors: {
     applyLatest,
     executeChange,
     applySemanticLayout,
     hotkey,
   },
+  delays: {
+    '500ms': 500,
+    'wait-after-edit': 1_000,
+  },
   guards: {
-    'has pending': ({ context }) => context.pendingChanges.length > 0,
-    'can undo': ({ context }) => context.history.length > 0,
+    'has pending': ({ context }) => context.syncQueue.length > 0 || !!context.processing,
+    'can undo': ({ context }) => context.history !== null,
   },
 })

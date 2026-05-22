@@ -59,8 +59,6 @@ export type { OverlayProps } from '../overlays/overlay/Overlay'
 
 export { PortalToContainer } from '../components/PortalToContainer'
 
-export { ShadowRoot } from '../shadowroot/ShadowRoot'
-
 export { FramerMotionConfig } from '../context/FramerMotionConfig'
 
 export { NavigationPanel } from '../components/NavigationPanel'

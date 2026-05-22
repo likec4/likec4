@@ -48,6 +48,7 @@ interface LikeC4ModelTreeNodeData {
   element: LikeC4Model.Element
   viewsCount: number
   children: LikeC4ModelTreeNodeData[]
+  hasChildren: boolean
 }
 
 function useElementsColumnData() {
@@ -65,6 +66,7 @@ function useElementsColumnData() {
         // searchTerms,
         viewsCount: [...element.views()].length,
         children: [],
+        hasChildren: false,
       })),
       toArray(),
     ), [model])
@@ -119,10 +121,12 @@ function useElementsColumnData() {
       elements,
       reduce((acc, treeItem) => {
         treeItem.children = []
+        treeItem.hasChildren = false
         byid[treeItem.value] = treeItem
         const parent = acc.all.findLast((root) => isAncestor(root.value, treeItem.value))
         if (parent) {
           parent.children.push(treeItem)
+          parent.hasChildren = true
         } else {
           acc.roots.push(treeItem)
         }
@@ -200,7 +204,7 @@ function ElementsTree({
     }
     if (e.key === 'ArrowRight') {
       const hasChildren = node.children.length > 0
-      if (hasChildren && tree.expandedState[id] === false) {
+      if (hasChildren && tree.expandedState[id] !== true) {
         return
       }
       const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
@@ -231,7 +235,7 @@ function ElementsTree({
       selectOnClick={false}
       tree={tree}
       data={roots}
-      levelOffset={'lg'}
+      levelOffset={'md'}
       classNames={{
         root: styles.treeRoot,
         node: cx(styles.focusable, styles.treeNode),
@@ -245,7 +249,7 @@ function ElementsTree({
 }
 
 function ElementTreeNode(
-  { node, elementProps, hasChildren, expanded, handleClick, searchTerms }: RenderTreeNodePayload & {
+  { node, elementProps, expanded, handleClick, searchTerms }: RenderTreeNodePayload & {
     searchTerms: NonEmptyArray<string>
     handleClick: (element: LikeC4Model.Element) => void
   },
@@ -270,7 +274,7 @@ function ElementTreeNode(
         tabIndex={-1}
         className={clsx(styles.elementExpandIcon)}
         style={{
-          visibility: hasChildren ? 'visible' : 'hidden',
+          visibility: node.hasChildren ? 'visible' : 'hidden',
         }}>
         <IconChevronRight
           stroke={3.5}
@@ -288,7 +292,7 @@ function ElementTreeNode(
         className={clsx(btn.root, 'group', 'likec4-element-button')}
         {...viewsCount > 0 && {
           onClick: (e) => {
-            if (!hasChildren || expanded) {
+            if (!node.hasChildren || expanded) {
               e.stopPropagation()
               handleClick(element)
             }

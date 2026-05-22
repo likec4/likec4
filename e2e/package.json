@@ -4,13 +4,14 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@10.33.3",
+  "packageManager": "pnpm@11.2.2",
   "scripts": {
     "install:chromium": "playwright install chromium",
     "generate:png": "likec4 export png -o ./generated/images --flat",
     "bootstrap": "node bootstrap.mjs",
     "test": "playwright test",
     "start": "likec4 start",
+    "build-and-preview": "likec4 build -o ./dist ./src && likec4 preview",
     "typecheck": "vitest run",
     "test:update-screenshots": "playwright test --update-snapshots",
     "test:playground": "playwright test -c playwright.playground.config.ts"
@@ -30,12 +31,5 @@
     "vitest": "^4.0.16",
     "wrangler": "^4.80.0",
     "zx": "^8.8.5"
-  },
-  "pnpm": {
-    "overrides": {
-      "@likec4/core": "file:../packages/core/package.tgz",
-      "@likec4/icons": "file:../packages/icons/package.tgz",
-      "likec4": "file:../packages/likec4/package.tgz"
-    }
   }
 }

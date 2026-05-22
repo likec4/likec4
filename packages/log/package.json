@@ -51,7 +51,7 @@
     "merge-error-cause": "^5.0.2",
     "safe-stringify": "catalog:utils",
     "typescript": "catalog:",
-    "tsdown": "catalog:",
+    "tsdown": "catalog:tsdown",
     "wrap-error-message": "^3.0.1"
   }
 }

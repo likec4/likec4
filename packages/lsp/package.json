@@ -63,7 +63,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "langium": "catalog:langium",
-    "tsdown": "catalog:",
+    "tsdown": "catalog:tsdown",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vscode-languageserver": "catalog:vscode"

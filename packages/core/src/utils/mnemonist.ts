@@ -6,4 +6,4 @@ export {
   MultiMap,
   Queue,
   Stack,
-} from 'mnemonist/patch'
+} from 'mnemonist'

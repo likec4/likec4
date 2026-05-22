@@ -1,15 +1,17 @@
 // @ts-nocheck
 
 import 'zx/globals'
-
 import { LikeC4 } from 'likec4'
 import assert from 'node:assert'
 
+$.stdio = 'inherit'
+$.verbose = true
+
 echo(chalk.greenBright('\n-------- Generate React component --------'))
-await $({ stdio: 'inherit' })`likec4 codegen react -o ./src/likec4-views.js ./src/likec4`
+await $`likec4 codegen react -o ./src/likec4-views.js ./src/likec4`
 
 echo(chalk.greenBright('\n-------- Generate Model --------'))
-await $({ stdio: 'inherit' })`likec4 codegen model -o ./src/likec4-model.ts ./src/likec4`
+await $`likec4 codegen model -o ./src/likec4-model.ts ./src/likec4`
 
 echo(chalk.greenBright('\n-------- Generate Tests --------'))
 

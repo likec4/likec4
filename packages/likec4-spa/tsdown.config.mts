@@ -2,10 +2,10 @@ import { outputOptions } from '@likec4/devops/tsdown'
 import postcssPanda from '@pandacss/dev/postcss'
 import pluginBabel from '@rolldown/plugin-babel'
 import { reactCompilerPreset } from '@vitejs/plugin-react'
-import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'tsdown'
 import { build as viteBuild } from 'vite'
 import { $ } from 'zx'
+import packageJson from './package.json' with { type: 'json' }
 
 $.quiet = false
 $.verbose = true
@@ -18,9 +18,8 @@ $.env = {
 export default defineConfig([{
   entry: [
     'src/main.tsx',
-    'src/routeTree.gen.ts',
-    'src/routes/**/*.tsx',
     'src/pages/*.tsx',
+    'src/aichat/index.tsx',
     '!**/*.d.ts',
     '!**/*.spec.{ts,tsx}',
   ],
@@ -32,33 +31,22 @@ export default defineConfig([{
     'index.html',
     'public/*',
   ],
+  define: {
+    'process.env.NODE_ENV': '"production"',
+  },
   plugins: [
     pluginBabel({
       presets: [reactCompilerPreset({
         target: '18',
       })],
     }),
-    esmExternalRequirePlugin({
-      external: ['react', 'react-dom'],
-    }),
   ],
   outDir: 'dist',
-  format: 'esm',
   clean: true,
   platform: 'browser',
   minify: true,
-  cjsDefault: false,
   outputOptions: outputOptions({
-    polyfillRequire: false,
-    codeSplitting: {
-      groups: [
-        {
-          name: 'styled-system',
-          test: /styled-system/,
-          priority: 5,
-        },
-      ],
-    },
+    keepNames: false,
   }),
   dts: false,
   tsconfig: 'tsconfig.src.json',
@@ -67,21 +55,10 @@ export default defineConfig([{
       '@likec4/vite-plugin/ai/tools',
     ],
     neverBundle: [
+      ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
       '@emotion/is-prop-valid',
-      'likec4/model',
-      'likec4/react',
-      /@likec4\/core.*/,
       /likec4:/,
     ],
-  },
-  inputOptions: {
-    resolve: {
-      conditionNames: ['sources', 'import', 'default'],
-      alias: {
-        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        'react-dom/server': './src/react-dom-server-mock.ts',
-      },
-    },
   },
   hooks: {
     'build:prepare': async () => {
@@ -114,9 +91,7 @@ async function buildStyles() {
     configFile: false,
     css: {
       postcss: {
-        plugins: [
-          postcssPanda() as any,
-        ],
+        plugins: [postcssPanda as any],
       },
     },
     build: {

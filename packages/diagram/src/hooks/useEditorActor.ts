@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import type { EditorActorStateTag } from '../editor/editorActor.setup'
-import type { EditorActorRef } from '../editor/editorActor.states'
+import type { EditorActorRef } from '../editor/actor/machine'
+import type { EditorActorStateTag } from '../editor/actor/types'
 import { selectDiagramActor, useDiagramSnapshot } from './useDiagram'
 
 const select = selectDiagramActor(s => {

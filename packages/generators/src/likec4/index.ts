@@ -1,11 +1,11 @@
 export {
   generateLikeC4 as generate,
-  operators,
-  print,
-  printTabIndent,
+  ops,
+  printOperation,
+  printWithTabIndent,
 } from './generate-likec4'
 
-export type * from './operators/base'
+export * from './operators/base'
 
 export type {
   schemas,

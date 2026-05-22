@@ -14,6 +14,8 @@ export default defineConfig({
     chaiConfig: {
       truncateThreshold: 100,
     },
+    maxWorkers: '90%',
+    maxConcurrency: 8,
     exclude: [
       ...configDefaults.exclude,
       '**/*.spec.js',

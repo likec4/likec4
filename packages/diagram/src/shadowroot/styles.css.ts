@@ -5,25 +5,15 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { css } from '@likec4/styles/css'
 import {
   useColorScheme as usePreferredColorScheme,
   useMutationObserverTarget,
 } from '@mantine/hooks'
-import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useState } from 'react'
 import { first, isFunction, isString } from 'remeda'
 import { useCallbackRef } from '../hooks'
 import fontsCss from '../styles-font.css?inline'
 import inlinedStyles from '../styles.css?inline'
-
-export const cssInteractive = css({
-  cursor: 'pointer',
-  ['--mantine-cursor-pointer']: 'pointer',
-  '& :where(.likec4-diagram, .likec4-compound-node, .likec4-element-node)': {
-    cursor: 'pointer',
-  },
-})
 
 export function scopeStylesToShadowRoot(styles: string): string {
   return styles
@@ -38,37 +28,40 @@ export function scopeStylesToShadowRoot(styles: string): string {
     .replaceAll(/(^|[{},;]|\*\/)(\s*)body(?=\s*[{,])/g, '$1$2.likec4-shadow-root')
 }
 
-export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
-  const [styleSheets] = useState(() => {
-    const css = new CSSStyleSheet()
-    css.replaceSync(scopeStylesToShadowRoot(inlinedStyles))
-    return [css]
-  })
+export function appendFontToDocument(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
+  if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
+    const style = document.createElement('style')
+    style.setAttribute('type', 'text/css')
+    style.setAttribute('data-likec4-font', '')
 
-  useIsomorphicLayoutEffect(() => {
-    // Inject font CSS into document head once
-    // DO NOT inject into shadow root to avoid FOUC
-    if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
-      const style = document.createElement('style')
-      style.setAttribute('type', 'text/css')
-      style.setAttribute('data-likec4-font', '')
-
-      let nonce: string | undefined
-      if (isString(styleNonce)) {
-        nonce = styleNonce
-      }
-      if (isFunction(styleNonce)) {
-        nonce = styleNonce()
-      }
-      if (nonce) {
-        style.setAttribute('nonce', nonce)
-      }
-      style.appendChild(document.createTextNode(fontsCss))
-      document.head.appendChild(style)
+    let nonce: string | undefined
+    if (isString(styleNonce)) {
+      nonce = styleNonce
     }
-  }, [injectFontCss])
+    if (isFunction(styleNonce)) {
+      nonce = styleNonce()
+    }
+    if (nonce) {
+      style.setAttribute('nonce', nonce)
+    }
 
-  return styleSheets
+    style.appendChild(document.createTextNode(scopeStylesToShadowRoot(fontsCss)))
+    document.head.appendChild(style)
+  }
+}
+/**
+ * Creates a CSS string with styles scoped to the shadow root
+ */
+export function createShadowRootStyles() {
+  return scopeStylesToShadowRoot(inlinedStyles)
+}
+/**
+ * Creates a CSSStyleSheet with styles scoped to the shadow root
+ */
+export function createShadowRootStylesheets() {
+  const css = new CSSStyleSheet()
+  css.replaceSync(createShadowRootStyles())
+  return [css] as [CSSStyleSheet]
 }
 
 const getComputedColorScheme = (): ColorScheme | null => {

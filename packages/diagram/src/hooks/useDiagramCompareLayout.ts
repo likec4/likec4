@@ -127,7 +127,7 @@ export function useDiagramCompareLayout(): [
       return
     }
     const editor = nonNullable(actorRef.system?.get('editor'), 'editor actor not found')
-    editor.send({ type: 'applyLatestToManual' })
+    editor.send({ type: 'change.latest-to-manual' })
 
     if (state.isActive) {
       actorRef.send({

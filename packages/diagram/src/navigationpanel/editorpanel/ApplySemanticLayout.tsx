@@ -27,7 +27,7 @@ export const ApplySemanticLayout = memo<{
         }}
         onClick={(e) => {
           e.stopPropagation()
-          diagram.editorActor().send({ type: 'applySemanticLayout' })
+          diagram.editorActor().send({ type: 'change.semantic-layout' })
         }}>
         <IconSparkles size={14} stroke={2} />
       </PanelActionIcon>

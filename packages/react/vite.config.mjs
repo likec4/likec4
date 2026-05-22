@@ -1,10 +1,12 @@
 import postcssPanda from '@pandacss/dev/postcss'
-import { execSync } from 'node:child_process'
+import babel from '@rolldown/plugin-babel'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import packageJson from './package.json' with { type: 'json' }
 
 /**
  * @type {import('postcss').AcceptedPlugin}
@@ -38,10 +40,10 @@ export default defineConfig({
     'process.env.NODE_ENV': '"production"',
   },
   resolve: {
-    conditions: ['sources'],
     alias: {
-      'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
-      '@likec4/styles': resolve('./styled-system/'),
+      // '@likec4/diagram/custom': resolve('../diagram/src/custom/index.ts'),
+      // '@likec4/diagram': resolve('../diagram/src/index.ts'),
+      '@likec4/styles': resolve('./styled-system'),
     },
   },
   css: {
@@ -53,56 +55,48 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'esnext',
     minify: true,
-    sourcemap: false,
     lib: {
-      entry: {
-        index: 'src/index.ts',
-        // xyflow: 'src/xyflow.ts',
-      },
+      entry: 'src/index.ts',
       formats: ['es'],
     },
     rolldownOptions: {
       output: {
+        keepNames: true,
         entryFileNames: '[name].mjs',
       },
       external: [
-        'react/jsx-dev-runtime',
-        '@emotion/is-prop-valid', // dev-only import from motion
-        /@likec4\/core.*/,
+        ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
+        ...Object.keys(packageJson.peerDependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
       ],
       plugins: [
         esmExternalRequirePlugin({
           external: [
             'react',
             'react-dom',
-            'react/jsx-runtime',
-            'react-dom/client',
           ],
         }),
       ],
     },
   },
   plugins: [
-    {
-      buildStart() {
-        this.info('pandacss')
-        execSync('pnpm pandacss codegen', {
-          stdio: 'inherit',
-          cwd: process.cwd(),
-        })
-      },
-    },
+    react(),
+    babel({
+      presets: [reactCompilerPreset({
+        target: '18',
+      })],
+    }),
     dts({
-      rollupTypes: true,
-      bundledPackages: [
-        '@likec4/diagram',
-        '@likec4/diagram/custom',
-        '@xstate/react',
-        'xstate',
-        '@react-hookz/web',
-      ],
+      bundleTypes: {
+        bundledPackages: [
+          '@likec4/diagram',
+          '@likec4/diagram/custom',
+          '@react-hookz/web',
+          'xstate',
+          '@xstate/react',
+          '@xstate/store',
+        ],
+      },
 
       afterRollup(result) {
         if (result.errorCount > 0) {

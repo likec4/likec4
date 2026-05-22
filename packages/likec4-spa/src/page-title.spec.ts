@@ -30,8 +30,7 @@ import { describe, expect, it } from 'vitest'
 
 // The resolve helper mirrors the expression used in single-index.tsx and ViewReact.tsx:
 //   `projectTitle ?? cliTitle`
-const resolveTitle = (projectTitle: string | undefined, cliTitle: string): string =>
-  projectTitle ?? cliTitle
+const resolveTitle = (projectTitle: string | undefined, cliTitle: string): string => projectTitle ?? cliTitle
 
 describe('page title resolution (single-project mode)', () => {
   it('uses project title from likec4.config.json when available', () => {

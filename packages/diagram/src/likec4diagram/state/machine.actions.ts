@@ -341,7 +341,7 @@ export const triggerChange = (viewChange?: ViewChange) =>
     enqueue.sendTo(
       typedSystem.editorActor,
       {
-        type: 'change',
+        type: 'change.view',
         change,
       },
     )
@@ -605,25 +605,28 @@ export const startEditing = (subject: 'node' | 'edge' = 'node') =>
   machine.sendTo(
     typedSystem.editorActor,
     {
-      type: 'edit.start',
+      type: 'edit.move.start',
       subject,
     },
   )
 
-export const sendSynced = () =>
-  machine.sendTo(
+export const sendSynced = () => {
+  if (import.meta.env.DEV) {
+    console.log('sendSynced')
+  }
+  return machine.sendTo(
     typedSystem.editorActor,
     {
-      type: 'synced',
+      type: 'view.synched',
     },
   )
+}
 
 export const stopEditing = (wasChanged = false) =>
   machine.sendTo(
     typedSystem.editorActor,
     {
-      type: 'edit.finish',
-      wasChanged,
+      type: wasChanged ? 'edit.move.end' : 'edit.move.cancel',
     },
   )
 

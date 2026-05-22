@@ -8,16 +8,17 @@ import type { LiteralUnion } from 'type-fest'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
-import { createLanguageServices } from '../module'
+import { type LanguageServicesContext, createLanguageServices } from '../module'
 
 export function createTestServices(options?: {
   workspace?: string
   projectConfig?: Partial<LikeC4ProjectJsonConfig>
+  context?: Partial<LanguageServicesContext>
 }) {
   const workspace = options?.workspace ?? 'file:///test/workspace'
   const projectConfig = options?.projectConfig
 
-  const services = createLanguageServices({}).likec4
+  const services = createLanguageServices(options?.context ?? {}).likec4
   const metaData = services.LanguageMetaData
   const langiumDocuments = services.shared.workspace.LangiumDocuments
   const documentBuilder = services.shared.workspace.DocumentBuilder

@@ -4,9 +4,17 @@ import {
   RemoveScroll,
 } from '@mantine/core'
 import { useFocusTrap, useMergedRef } from '@mantine/hooks'
-import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
-import { type TargetAndTransition, m, useReducedMotionConfig } from 'motion/react'
-import { type PropsWithChildren, forwardRef, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useTimeoutEffect } from '@react-hookz/web'
+import { type TargetAndTransition, m, useIsPresent, useReducedMotionConfig } from 'motion/react'
+import {
+  type PropsWithChildren,
+  forwardRef,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { stopPropagation } from '../../utils'
 
 const backdropBlur = '--_blur'
@@ -25,7 +33,15 @@ export type OverlayProps = PropsWithChildren<{
   backdrop?: {
     opacity?: number
   }
+  /**
+   * Delay before showing the overlay content (in milliseconds) - helps to avoid flickering
+   * Default: `130ms`
+   * If set to `0`, the content will be shown immediately
+   */
   openDelay?: number
+  /**
+   * Called when the overlay is closed by outside click or escape key
+   */
   onClose: () => void
   onClick?: never
 }>
@@ -42,40 +58,45 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   openDelay = 130,
   ...rest
 }, ref) => {
-  const [opened, setOpened] = useState(openDelay === 0)
+  // Initial state is false, will be set to true in useLayoutEffect if openDelay is 0
+  const [opened, setOpened] = useState(false)
   const focusTrapRef = useFocusTrap(opened)
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const isClosingRef = useRef(false)
+
+  const onCloseRef = useRef<OverlayProps['onClose']>(null)
 
   const motionNotReduced = useReducedMotionConfig() !== true
 
-  const onCloseRef = useRef(onClose)
-  onCloseRef.current = onClose
+  /**
+   * Close the overlay and call the onClose callback
+   */
+  const cancelMe = () => {
+    onCloseRef.current = onClose
+    dialogRef.current?.close()
+  }
 
-  const close = useDebouncedCallback(
-    () => {
-      if (isClosingRef.current) return
-      isClosingRef.current = true
-      onCloseRef.current()
-    },
-    [],
-    50,
-  )
+  const isPresent = useIsPresent()
+
+  useEffect(() => {
+    if (isPresent) {
+      return
+    }
+    if (dialogRef.current?.open) {
+      // Clear the onClose callback to prevent it from being called
+      // when the dialog is closed by the presence animation
+      onCloseRef.current = null
+      dialogRef.current.close()
+    }
+  }, [isPresent])
 
   useLayoutEffect(() => {
-    if (!dialogRef.current?.open) {
-      dialogRef.current?.showModal()
-    }
-    // Ensure the dialog is properly closed when unmounted, so the browser
-    // removes it from the top layer. Without this, AnimatePresence can
-    // remove the DOM node without calling dialog.close(), leaving a ghost
-    // entry in the top layer that traps focus and blocks interaction. (#2353)
     const dialog = dialogRef.current
-    return () => {
-      if (dialog?.open) {
-        isClosingRef.current = true
-        dialog.close()
-      }
+    if (dialog && !dialog.open) {
+      dialog.showModal()
+    }
+    // If openDelay is 0, open immediately
+    if (openDelay === 0) {
+      setOpened(true)
     }
   }, [])
 
@@ -95,11 +116,9 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
 
   const motionProps = useMemo(() => ({
     initial: {
-      [backdropBlur]: '0px',
-      [backdropOpacity]: '0%',
-      scale: 0.85,
-      // originY: 0.4,
-      // translateY: -10,
+      [backdropBlur]: '1px',
+      [backdropOpacity]: '10%',
+      scale: 0.95,
       opacity: 0,
     },
     animate: {
@@ -107,18 +126,10 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
       [backdropOpacity]: targetBackdropOpacity,
       scale: 1,
       opacity: 1,
-      translateY: 0,
-      // transition: {
-      //   delay: 0.075,
-      // },
     },
     exit: {
       opacity: 0,
-      scale: 0.98,
-      translateY: -20,
-      // transition: {
-      //   duration: 0.1,
-      // },
+      scale: 0.97,
       [backdropBlur]: '0px',
       [backdropOpacity]: '0%',
     },
@@ -149,25 +160,25 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
           [backdropOpacity]: targetBackdropOpacity,
         },
       }}
+      onDoubleClick={stopPropagation}
+      onPointerDown={stopPropagation}
+      {...rest}
       onClick={e => {
         e.stopPropagation()
-        if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
-          dialogRef.current?.close()
-          return
+        // Click on dialog backdrop (not the content) should close the overlay
+        if (e.target === e.currentTarget) {
+          cancelMe()
         }
       }}
       onCancel={e => {
+        // ESC key press - close the overlay
         e.preventDefault()
         e.stopPropagation()
-        close()
+        cancelMe()
       }}
-      onDoubleClick={stopPropagation}
-      onPointerDown={stopPropagation}
-      onClose={e => {
-        e.stopPropagation()
-        close()
+      onClose={() => {
+        onCloseRef.current?.()
       }}
-      {...rest}
     >
       <RemoveScroll forwardProps>
         <div

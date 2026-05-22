@@ -1,13 +1,15 @@
 import type { LikeC4Model } from '@likec4/core/model'
 import type { Fqn, ViewId } from '@likec4/core/types'
 import { compareNatural } from '@likec4/core/utils'
+import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { useLikeC4Model } from './useLikeC4Model'
 
-interface LikeC4ModelTreeNodeData {
+export interface LikeC4ModelTreeNodeData extends TreeNodeData {
   label: string
   value: Fqn
   children: LikeC4ModelTreeNodeData[]
+  hasChildren: boolean
 }
 
 export const sortByLabel = (a: LikeC4ModelTreeNodeData, b: LikeC4ModelTreeNodeData): number =>
@@ -16,10 +18,12 @@ export const sortByLabel = (a: LikeC4ModelTreeNodeData, b: LikeC4ModelTreeNodeDa
 function buildNode(
   element: LikeC4Model.Node | LikeC4Model.Element,
 ): LikeC4ModelTreeNodeData {
+  const children = [...element.children()].map(buildNode).sort(sortByLabel)
   return {
     label: element.title || element.id,
     value: element.id,
-    children: [...element.children()].map(buildNode).sort(sortByLabel),
+    children,
+    hasChildren: children.length > 0,
   }
 }
 

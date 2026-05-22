@@ -62,7 +62,7 @@ const viewportToTopLeft = (ctx: DiagramContext): Viewport => {
 const selectXYProps = selectDiagramActor(({ context: ctx, children }) => {
   const { enableReadOnly } = deriveToggledFeatures(ctx)
 
-  const isNotEditingEdge = enableReadOnly || children.editor?.getSnapshot().context.editing !== 'edge'
+  const isNotEditingEdge = enableReadOnly || children.editor?.getSnapshot().context.editing?.subject !== 'edge'
 
   let nodesDraggable = !enableReadOnly && ctx.nodesDraggable
   // if dynamic view display mode is sequence, disable nodes draggable

@@ -366,7 +366,7 @@
     "pretty-ms": "^9.3.0",
     "reactive-vscode": "^0.4.1",
     "remeda": "catalog:utils",
-    "tsdown": "catalog:",
+    "tsdown": "catalog:tsdown",
     "tslib": "^2.8.1",
     "tsx": "catalog:",
     "turbo": "catalog:",

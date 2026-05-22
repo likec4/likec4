@@ -39,15 +39,19 @@ export const ElementsTree = memo(() => {
           break
         }
         case 'ArrowUp': {
-          console.log('ArrowUp', {
-            selected: api.selectedValue,
-          })
+          if (import.meta.env.DEV) {
+            console.log('ArrowUp', {
+              selected: api.selectedValue,
+            })
+          }
           // e.stopPropagation()
           // e.preventDefault()
           break
         }
         default: {
-          console.log(e.key)
+          if (import.meta.env.DEV) {
+            console.log(e.key)
+          }
           return
         }
       }
