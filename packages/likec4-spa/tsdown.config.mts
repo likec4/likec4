@@ -18,8 +18,6 @@ $.env = {
 export default defineConfig([{
   entry: [
     'src/main.tsx',
-    'src/routeTree.gen.ts',
-    'src/routes/**/*',
     'src/pages/*.tsx',
     'src/aichat/index.tsx',
     '!**/*.d.ts',
@@ -33,6 +31,9 @@ export default defineConfig([{
     'index.html',
     'public/*',
   ],
+  define: {
+    'process.env.NODE_ENV': '"production"',
+  },
   plugins: [
     esmExternalRequirePlugin({
       external: [
@@ -48,20 +49,11 @@ export default defineConfig([{
     }),
   ],
   outDir: 'dist',
-  format: 'esm',
   clean: true,
   platform: 'browser',
   minify: true,
   outputOptions: outputOptions({
-    codeSplitting: {
-      groups: [
-        {
-          name: 'styled-system',
-          test: /styled-system/,
-          priority: 5,
-        },
-      ],
-    },
+    keepNames: false,
   }),
   dts: false,
   tsconfig: 'tsconfig.src.json',
@@ -71,8 +63,6 @@ export default defineConfig([{
     ],
     neverBundle: [
       '@emotion/is-prop-valid',
-      'likec4/model',
-      'likec4/react',
       /@likec4\/core.*/,
       /likec4:/,
     ],
@@ -108,9 +98,7 @@ async function buildStyles() {
     configFile: false,
     css: {
       postcss: {
-        plugins: [
-          postcssPanda() as any,
-        ],
+        plugins: [postcssPanda as any],
       },
     },
     build: {

@@ -9,16 +9,8 @@
       "ESNext",
       "DOM"
     ],
-    "rootDir": "src",
-    "paths": {
-      "@likec4/styles/*": [
-        "./styled-system/*"
-      ]
-    }
+    "rootDir": "src"
   },
-  "include": [
-    "src/"
-  ],
   "references": [
     {
       "path": "../core/"

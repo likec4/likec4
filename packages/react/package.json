@@ -33,6 +33,8 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "react-compiler-runtime": "catalog:react",
+    "use-sync-external-store": "catalog:react",
     "type-fest": "catalog:externals"
   },
   "peerDependencies": {
@@ -40,6 +42,7 @@
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
+    "@babel/core": "catalog:react",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/styles": "workspace:*",
@@ -51,6 +54,9 @@
     "@types/react-dom": "catalog:react",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
+    "@rolldown/plugin-babel": "catalog:vite",
+    "@vitejs/plugin-react": "catalog:vite",
+    "babel-plugin-react-compiler": "catalog:react",
     "xstate": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",

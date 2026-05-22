@@ -34,6 +34,7 @@
     "immer": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react",
+    "react-compiler-runtime": "catalog:react",
     "use-sync-external-store": "catalog:react"
   },
   "devDependencies": {
@@ -87,7 +88,6 @@
     "oxlint": "catalog:",
     "p-limit": "catalog:utils",
     "postcss": "catalog:css",
-    "react-compiler-runtime": "catalog:react",
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
     "remeda": "catalog:utils",

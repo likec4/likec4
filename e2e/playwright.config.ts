@@ -19,7 +19,7 @@ export default defineConfig({
   forbidOnly: isCI,
 
   // Timeout for each test
-  timeout: 15 * 1000,
+  timeout: 20 * 1000,
 
   maxFailures: 5,
 
@@ -63,8 +63,8 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'pnpm likec4 start --verbose --no-react-hmr',
-    port: 5173,
+    command: 'pnpm build-and-preview',
+    port: 62001,
     stdout: 'pipe',
     timeout: 60 * 1000,
     env: {

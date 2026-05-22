@@ -258,6 +258,9 @@ catalogs:
       specifier: 0.4.31
       version: 0.4.31
   react:
+    '@babel/core':
+      specifier: ^7.29.0
+      version: 7.29.0
     '@floating-ui/dom':
       specifier: ^1.7.6
       version: 1.7.6
@@ -1849,6 +1852,9 @@ importers:
       playwright:
         specifier: 'catalog:'
         version: 1.58.2
+      react-compiler-runtime:
+        specifier: catalog:react
+        version: 1.0.0(react@19.2.6)
       std-env:
         specifier: catalog:externals
         version: 3.10.0
@@ -2102,6 +2108,9 @@ importers:
       react:
         specifier: 19.2.6
         version: 19.2.6
+      react-compiler-runtime:
+        specifier: catalog:react
+        version: 1.0.0(react@19.2.6)
       react-dom:
         specifier: 19.2.6
         version: 19.2.6(react@19.2.6)
@@ -2259,9 +2268,6 @@ importers:
       postcss:
         specifier: catalog:css
         version: 8.5.15
-      react-compiler-runtime:
-        specifier: catalog:react
-        version: 1.0.0(react@19.2.6)
       react-error-boundary:
         specifier: catalog:react
         version: 6.1.1(react@19.2.6)
@@ -2505,10 +2511,19 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      react-compiler-runtime:
+        specifier: catalog:react
+        version: 1.0.0(react@19.2.6)
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      use-sync-external-store:
+        specifier: catalog:react
+        version: 1.6.0(react@19.2.6)
     devDependencies:
+      '@babel/core':
+        specifier: catalog:react
+        version: 7.29.0
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2530,12 +2545,18 @@ importers:
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@rolldown/plugin-babel':
+        specifier: catalog:vite
+        version: 0.2.3(@babel/core@7.29.0)(@babel/runtime@7.27.6)(rolldown@1.0.2)(vite@8.0.14(@types/node@22.19.17)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       '@types/react':
         specifier: 19.2.15
         version: 19.2.15
       '@types/react-dom':
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.15)
+      '@vitejs/plugin-react':
+        specifier: catalog:vite
+        version: 6.0.2(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.0)(@babel/runtime@7.27.6)(rolldown@1.0.2)(vite@8.0.14(@types/node@22.19.17)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.0.14(@types/node@22.19.17)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.1.0(@types/react@19.2.15)(react@19.2.6)(xstate@5.30.0)
@@ -2548,6 +2569,9 @@ importers:
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.76
+      babel-plugin-react-compiler:
+        specifier: catalog:react
+        version: 1.0.0
       oxlint:
         specifier: 'catalog:'
         version: 1.59.0(oxlint-tsgolint@0.20.0)

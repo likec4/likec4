@@ -11,6 +11,7 @@
     "bootstrap": "node bootstrap.mjs",
     "test": "playwright test",
     "start": "likec4 start",
+    "build-and-preview": "likec4 build -o ./dist ./src && likec4 preview",
     "typecheck": "vitest run",
     "test:update-screenshots": "playwright test --update-snapshots",
     "test:playground": "playwright test -c playwright.playground.config.ts"

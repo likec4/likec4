@@ -1,10 +1,12 @@
 import postcssPanda from '@pandacss/dev/postcss'
-import { execSync } from 'node:child_process'
+import babel from '@rolldown/plugin-babel'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import packageJson from './package.json' with { type: 'json' }
 
 /**
  * @type {import('postcss').AcceptedPlugin}
@@ -38,9 +40,9 @@ export default defineConfig({
     'process.env.NODE_ENV': '"production"',
   },
   resolve: {
-    conditions: ['sources'],
-    tsconfigPaths: true,
     alias: {
+      // '@likec4/diagram/custom': resolve('../diagram/src/custom/index.ts'),
+      // '@likec4/diagram': resolve('../diagram/src/index.ts'),
       '@likec4/styles': resolve('./styled-system'),
     },
   },
@@ -54,7 +56,6 @@ export default defineConfig({
   },
   build: {
     minify: true,
-    sourcemap: false,
     lib: {
       entry: 'src/index.ts',
       formats: ['es'],
@@ -65,7 +66,8 @@ export default defineConfig({
         entryFileNames: '[name].mjs',
       },
       external: [
-        /@likec4\/core.*/,
+        ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
+        ...Object.keys(packageJson.peerDependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
       ],
       plugins: [
         esmExternalRequirePlugin({
@@ -78,8 +80,13 @@ export default defineConfig({
     },
   },
   plugins: [
+    react(),
+    babel({
+      presets: [reactCompilerPreset({
+        target: '18',
+      })],
+    }),
     dts({
-      copyDtsFiles: true,
       bundleTypes: {
         bundledPackages: [
           '@likec4/diagram',
