@@ -610,5 +610,133 @@ describe('viewChange', () => {
         }"
       `)
     })
+
+    it('should add multiple tags from an array', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag a
+            tag b
+            tag c
+          }
+          views {
+            view index {
+              #a
+              include *
+            }
+          }
+        `,
+      )
+
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: { add: ['b', 'c'] as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag a
+          tag b
+          tag c
+        }
+        views {
+          view index {
+            #a, #b, #c
+            include *
+          }
+        }"
+      `)
+    })
+
+    it('should remove multiple tags from an array', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag a
+            tag b
+            tag c
+          }
+          views {
+            view index {
+              #a, #b, #c
+              include *
+            }
+          }
+        `,
+      )
+
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: { remove: ['a', 'c'] as any },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag a
+          tag b
+          tag c
+        }
+        views {
+          view index {
+            #b
+            include *
+          }
+        }"
+      `)
+    })
+
+    it('should add and remove tags in the same change', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          specification {
+            tag a
+            tag b
+            tag c
+            tag d
+          }
+          views {
+            view index {
+              #a, #b
+              include *
+            }
+          }
+        `,
+      )
+
+      await change({
+        viewId: 'index' as any,
+        change: {
+          op: 'change-property',
+          tag: {
+            add: ['c', 'd'] as any,
+            remove: ['a'] as any,
+          },
+        },
+      })
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        specification {
+          tag a
+          tag b
+          tag c
+          tag d
+        }
+        views {
+          view index {
+            #b, #c, #d
+            include *
+          }
+        }"
+      `)
+    })
   })
 })
