@@ -60,6 +60,11 @@ type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
   listen?: string | undefined
   port?: number | undefined
   hmrPort?: number | undefined
+  /**
+   * Hostnames allowed to respond to (Vite `server.allowedHosts`).
+   * When omitted, all hosts are allowed.
+   */
+  allowedHosts?: string[] | undefined
 }
 
 export async function viteDev({
@@ -74,6 +79,7 @@ export async function viteDev({
   port,
   hmrPort,
   userPublicDir,
+  allowedHosts,
   ...cfg
 }: Config): Promise<ViteDevServer> {
   likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
@@ -134,10 +140,7 @@ export async function viteDev({
     },
     server: {
       host,
-      // TODO: temprorary enable access to any host
-      // This is not recommended as it can be a security risk - https://vite.dev/config/server-options#server-allowedhosts
-      // Enabled after request in discord support just to check if it solves the problem
-      allowedHosts: true,
+      allowedHosts: allowedHosts && allowedHosts.length > 0 ? allowedHosts : true,
       port,
       hmr: hmr && {
         overlay: true,

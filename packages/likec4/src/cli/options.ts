@@ -93,6 +93,13 @@ export const publicDir = {
   coerce: resolve,
 } as const satisfies Options
 
+export const allowedHost = {
+  array: true,
+  string: true,
+  desc: 'hostname allowed to respond to (Vite server.allowedHosts); can be repeated. Defaults to allowing all hosts.',
+  requiresArg: true,
+} as const satisfies Options
+
 export const listen = {
   alias: 'l',
   string: true,

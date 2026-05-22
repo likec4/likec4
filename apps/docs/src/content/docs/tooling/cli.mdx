@@ -109,6 +109,7 @@ Any change in the source files triggers a hot update in the browser immediately.
 | `--no-react-hmr`          | Disable React HMR (useful for CI or static previews)                                                      |
 | `--use-dot`               | Use local Graphviz (`dot`) binaries instead of bundled WASM                                               |
 | `--public, --public-dir`  | Directory whose files are served as-is (Vite [`publicDir`](https://vite.dev/guide/assets#the-public-directory)) |
+| `--allowed-host`          | Hostname allowed to access the dev server (Vite [`server.allowedHosts`](https://vite.dev/config/server-options#server-allowedhosts)); repeatable. Defaults to allowing all hosts. |
 
 :::tip
 You can start the process in a separate terminal window and keep it running while you're editing the model in your editor, or even serve multiple projects at once.
