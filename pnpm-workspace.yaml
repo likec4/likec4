@@ -194,6 +194,7 @@ catalogs:
     react-dom: 19.2.6
     react-error-boundary: ^6.1.1
     react-resizable-panels: ^4.11.1
+    use-sync-external-store: ^1.6.0
   tanstack:
     "@tanstack/pacer": ^0.17.3
     "@tanstack/pacer-lite": ^0.2.1

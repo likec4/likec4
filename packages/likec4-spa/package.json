@@ -33,13 +33,10 @@
     "@likec4/core": "workspace:*",
     "immer": "catalog:utils",
     "react": "catalog:react",
-    "react-dom": "catalog:react"
+    "react-dom": "catalog:react",
+    "use-sync-external-store": "catalog:react"
   },
   "devDependencies": {
-    "@tanstack/ai": "catalog:ai",
-    "@tanstack/ai-client": "catalog:ai",
-    "@tanstack/ai-react": "catalog:ai",
-    "@tanstack/ai-react-ui": "catalog:ai",
     "@dagrejs/dagre": "catalog:",
     "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/config": "workspace:*",
@@ -59,6 +56,10 @@
     "@react-hookz/web": "catalog:react",
     "@rolldown/plugin-babel": "catalog:vite",
     "@tabler/icons-react": "catalog:react",
+    "@tanstack/ai": "catalog:ai",
+    "@tanstack/ai-client": "catalog:ai",
+    "@tanstack/ai-react": "catalog:ai",
+    "@tanstack/ai-react-ui": "catalog:ai",
     "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/router-cli": "catalog:tanstack",
     "@tanstack/router-vite-plugin": "catalog:tanstack",
@@ -98,6 +99,7 @@
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
+    "type-fest": "catalog:externals",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
     "vite": "catalog:vite",
@@ -105,7 +107,6 @@
     "vitest": "catalog:vitest",
     "xstate": "catalog:xstate",
     "zod": "catalog:externals",
-    "zx": "catalog:",
-    "type-fest": "catalog:externals"
+    "zx": "catalog:"
   }
 }

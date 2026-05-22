@@ -136,7 +136,8 @@
     "vite-plugin-singlefile": "^2.3.2",
     "vite": "catalog:vite",
     "yargs": "17.7.2",
-    "nano-spawn": "catalog:externals"
+    "nano-spawn": "catalog:externals",
+    "use-sync-external-store": "catalog:react"
   },
   "peerDependencies": {
     "@tanstack/ai": "catalog:ai",

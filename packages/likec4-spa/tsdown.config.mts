@@ -38,6 +38,7 @@ export default defineConfig([{
       external: [
         'react',
         'react-dom',
+        'use-sync-external-store',
       ],
     }),
     pluginBabel({
