@@ -34,14 +34,9 @@ export class LikeC4View extends HTMLElement {
   updateHostCss() {
     const hostCss = `
     :host {
-      display: block;
-      position: relative;
+      display: contents;
       background-color: transparent;
-      width: 100%;
-      height: 100%;
-      box-sizing: border-box;
-      overflow: hidden;
-      border: 0px solid transparent;
+      margin: 0;
       padding: 0;
     }`
     if (hostCss !== this.lastHostCss) {
