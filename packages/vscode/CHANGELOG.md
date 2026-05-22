@@ -1,5 +1,17 @@
 # likec4-vscode
 
+## 1.57.0
+
+### Minor Changes
+
+- [#2878](https://github.com/likec4/likec4/pull/2878) [`b7ff481`](https://github.com/likec4/likec4/commit/b7ff48171a0812978857af3f9edbffc6bdfeac9f) Thanks [@davydkov](https://github.com/davydkov)! - Experimental: AI-assisted semantic layout for diagrams
+
+  Add AI layout advisor that analyzes diagram semantics and suggests graphviz layout hints (rank constraints, edge weights, invisible edges) for more readable and visually balanced diagrams. Includes a VSCode chat participant and command for triggering AI layout enhancement.
+
+  This feature is experimental and may change in future releases.
+
+- [#2935](https://github.com/likec4/likec4/pull/2935) [`35ba3f6`](https://github.com/likec4/likec4/commit/35ba3f637e45fc1072646f646b3442b3235cc29d) Thanks [@Kiiv](https://github.com/Kiiv)! - feat: add `includeAncestors` property to deployment views to include all ancestors of visible nodes. Fix https://github.com/likec4/likec4/issues/1483
+
 ## 1.56.0
 
 ### Patch Changes

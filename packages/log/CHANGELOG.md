@@ -1,5 +1,7 @@
 # @likec4/log
 
+## 1.57.0
+
 ## 1.56.0
 
 ### Patch Changes

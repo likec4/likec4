@@ -1,5 +1,7 @@
 # @likec4/style-preset
 
+## 1.57.0
+
 ## 1.56.0
 
 ### Minor Changes

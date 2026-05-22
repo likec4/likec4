@@ -1,5 +1,26 @@
 # @likec4/language-server
 
+## 1.57.0
+
+### Minor Changes
+
+- [#2939](https://github.com/likec4/likec4/pull/2939) [`311b93d`](https://github.com/likec4/likec4/commit/311b93de360556b9583b901c5ad3d6692b9c9f03) Thanks [@galuszkak](https://github.com/galuszkak)! - Support expanding merged relationships into separate edges with the `multiple` flag. Set `multiple true` on a relationship kind in `specification`, or per-view via `with { multiple true }`, to show each relationship as its own edge with its own label instead of merging them into a single `[...]` edge. Resolves [#663](https://github.com/likec4/likec4/issues/663).
+
+- [#2935](https://github.com/likec4/likec4/pull/2935) [`35ba3f6`](https://github.com/likec4/likec4/commit/35ba3f637e45fc1072646f646b3442b3235cc29d) Thanks [@Kiiv](https://github.com/Kiiv)! - feat: add `includeAncestors` property to deployment views to include all ancestors of visible nodes. Fix https://github.com/likec4/likec4/issues/1483
+
+### Patch Changes
+
+- [#2944](https://github.com/likec4/likec4/pull/2944) [`1c70ea0`](https://github.com/likec4/likec4/commit/1c70ea023adb628457269d8a9d932b88d4bc2887) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix formatter preserving metadata arrays instead of converting them to strings.
+
+- [#2948](https://github.com/likec4/likec4/pull/2948) [`9637876`](https://github.com/likec4/likec4/commit/96378760c468d10810d769fcfc7dcf6fef0dfc03) Thanks [@ckeller42](https://github.com/ckeller42)! - Fixes [#2932](https://github.com/likec4/likec4/issues/2932) by allowing reserved keywords such as `group` as metadata keys.
+
+- Updated dependencies [[`b7ff481`](https://github.com/likec4/likec4/commit/b7ff48171a0812978857af3f9edbffc6bdfeac9f), [`783155b`](https://github.com/likec4/likec4/commit/783155bba49ec60485af2c7f420fbb28e893955c), [`311b93d`](https://github.com/likec4/likec4/commit/311b93de360556b9583b901c5ad3d6692b9c9f03), [`35ba3f6`](https://github.com/likec4/likec4/commit/35ba3f637e45fc1072646f646b3442b3235cc29d)]:
+  - @likec4/layouts@1.57.0
+  - @likec4/generators@1.57.0
+  - @likec4/core@1.57.0
+  - @likec4/config@1.57.0
+  - @likec4/log@1.57.0
+
 ## 1.56.0
 
 ### Minor Changes
