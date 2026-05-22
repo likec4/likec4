@@ -1,5 +1,16 @@
 # @likec4/react
 
+## 1.57.0
+
+### Patch Changes
+
+- [`1540465`](https://github.com/likec4/likec4/commit/1540465bc6a5b777d9611e08eba7a015aaa81bf6) Thanks [@davydkov](https://github.com/davydkov)! - Fix css bundling for react/webcomponents (when rendered in shadow root)
+
+- [#2976](https://github.com/likec4/likec4/pull/2976) [`783155b`](https://github.com/likec4/likec4/commit/783155bba49ec60485af2c7f420fbb28e893955c) Thanks [@davydkov](https://github.com/davydkov)! - Drop the `react-shadow` dependency and inline shadow-root rendering directly. Mark `use-sync-external-store` as external to avoid duplicate React internals.
+
+- Updated dependencies [[`311b93d`](https://github.com/likec4/likec4/commit/311b93de360556b9583b901c5ad3d6692b9c9f03), [`35ba3f6`](https://github.com/likec4/likec4/commit/35ba3f637e45fc1072646f646b3442b3235cc29d)]:
+  - @likec4/core@1.57.0
+
 ## 1.56.0
 
 ### Patch Changes

@@ -1,3 +1,55 @@
+## [1.57.0](https://github.com/likec4/likec4/compare/v1.56.0...v1.57.0) (2026-05-22)
+
+### 🚀 Features
+
+- **Multiple Relationships in Views**:\
+  Support expanding merged relationships into separate edges with the `multiple` flag. Set `multiple true` on a relationship kind in `specification`, or per-view via `with { multiple true }`, to show each relationship as its own edge with its own label instead of merging them into a single `[...]` edge. Thanks [@galuszkak](https://github.com/galuszkak), [#2939](https://github.com/likec4/likec4/pull/2939), resolves [#663](https://github.com/likec4/likec4/issues/663)
+
+- **`includeAncestors` for Deployment Views**:\
+  Add `includeAncestors` property to deployment views to include all ancestors of visible nodes. Thanks [@Kiiv](https://github.com/Kiiv), [#2935](https://github.com/likec4/likec4/pull/2935), fixes [#1483](https://github.com/likec4/likec4/issues/1483)
+
+- **`--public` option for `likec4 build` and `likec4 start`**:\
+  Specify a directory that Vite serves and copies as-is into the output (Vite's `publicDir`). Files in this directory are preserved in the build output, including when `--output-single-file` is used. Thanks [@farhan523](https://github.com/farhan523), [#2968](https://github.com/likec4/likec4/pull/2968), resolves [#1941](https://github.com/likec4/likec4/issues/1941)
+
+- **`color-scheme` Attribute for Web Component**:\
+  Add `color-scheme` attribute to the web component to force light or dark mode. Thanks [@dkapitan](https://github.com/dkapitan), [#2955](https://github.com/likec4/likec4/pull/2955)
+
+- **Experimental: AI-Assisted Semantic Layout**:\
+  Add AI layout advisor that analyzes diagram semantics and suggests graphviz layout hints (rank constraints, edge weights, invisible edges) for more readable and visually balanced diagrams. Includes a VSCode chat participant, command, and MCP tool for triggering AI layout enhancement. This feature is experimental and may change in future releases. Documentation is coming later; reach out to us on Discord. [#2878](https://github.com/likec4/likec4/pull/2878)
+
+- **Image Export Options**:\
+  Add `--description` and `--notation` options to PNG and JPEG exports to include the view title, Markdown description, and non-overlapping view notation in generated images. Thanks [@ckeller42](https://github.com/ckeller42), [#2950](https://github.com/likec4/likec4/pull/2950)
+
+- **`--hmr-port` option for `likec4 start`**:\
+  Specify the HMR WebSocket port via `--hmr-port` or the `HMR_PORT` environment variable. If neither is provided, a free port is auto-discovered in the range 24678–24690. Thanks [@kieronlanning](https://github.com/kieronlanning), [#2947](https://github.com/likec4/likec4/pull/2947)
+
+- **Emacs Setup Documentation**:\
+  Expand the Emacs section in the editors docs with a complete setup using `@likec4/lsp` -- covers both [Eglot](https://github.com/joaotavora/eglot) (Emacs 29+) and [lsp-mode](https://emacs-lsp.github.io/lsp-mode/), with a `likec4-mode` definition for `.c4` / `.likec4` files. Thanks [@farhan523](https://github.com/farhan523), [#2972](https://github.com/likec4/likec4/pull/2972), resolves [#2268](https://github.com/likec4/likec4/issues/2268)
+
+- **AspireC4 Community Docs**:\
+  Add community docs page for [AspireC4](https://github.com/kjldev/aspirec4) -- a .NET Aspire extension that auto-generates live LikeC4 architecture diagrams from the Aspire resource graph. Thanks [@kieronlanning](https://github.com/kieronlanning), [#2952](https://github.com/likec4/likec4/pull/2952)
+
+### 🐞 Bug Fixes
+
+- Fixed relationship popovers not showing in static embedded views generated with `likec4 build`. Thanks [@ckeller42](https://github.com/ckeller42), [#2969](https://github.com/likec4/likec4/pull/2969), fixes [#2962](https://github.com/likec4/likec4/issues/2962)
+
+- Fixed expanded embedded LikeC4 views rendering with a transparent overlay background. Thanks [@ckeller42](https://github.com/ckeller42), [#2967](https://github.com/likec4/likec4/pull/2967), fixes [#2965](https://github.com/likec4/likec4/issues/2965)
+
+- Fixed formatter to preserve metadata arrays instead of converting them to strings. Thanks [@ckeller42](https://github.com/ckeller42), [#2944](https://github.com/likec4/likec4/pull/2944)
+
+- Allow reserved keywords such as `group` as metadata keys. Thanks [@ckeller42](https://github.com/ckeller42), [#2948](https://github.com/likec4/likec4/pull/2948), fixes [#2932](https://github.com/likec4/likec4/issues/2932)
+
+- Fixed CSS bundling for react/webcomponents when rendered in shadow root.
+
+- Fixed single-project overview page always showing the CLI `--title` value instead of the `title` from `likec4.config.json`. Thanks [@kieronlanning](https://github.com/kieronlanning), [#2952](https://github.com/likec4/likec4/pull/2952)
+
+- Fixed validation of `browser` property in webcomponent (now accepts string values `"true"`/`"false"`/`"yes"`/`"no"`), closes [#2936](https://github.com/likec4/likec4/issues/2936)
+
+- Fixed overlay animations (relationships browser, element details, search) glitching on open/close. [#2976](https://github.com/likec4/likec4/pull/2976)
+
+- Upgraded `pnpm` to 11
+
+
 ## [1.56.0](https://github.com/likec4/likec4/compare/v1.55.1...v1.56.0) (2026-04-28)
 
 ### 🚀 Features

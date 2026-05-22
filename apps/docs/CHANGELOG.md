@@ -1,5 +1,13 @@
 # @likec4/docs-astro
 
+## 1.57.0
+
+### Patch Changes
+
+- [#2952](https://github.com/likec4/likec4/pull/2952) [`0a1b751`](https://github.com/likec4/likec4/commit/0a1b75166af24dc1024209b276cc984d428b751e) Thanks [@kieronlanning](https://github.com/kieronlanning)! - Add community docs page for [AspireC4](https://github.com/kjldev/aspirec4) — a .NET Aspire extension that auto-generates live LikeC4 architecture diagrams from the Aspire resource graph
+
+- [#2972](https://github.com/likec4/likec4/pull/2972) [`278d112`](https://github.com/likec4/likec4/commit/278d112601a20c87eb71497b487f57854c440b7d) Thanks [@farhan523](https://github.com/farhan523)! - Expand the Emacs section in the editors docs with a complete setup using `@likec4/lsp` — covers both [Eglot](https://github.com/joaotavora/eglot) (Emacs 29+) and [lsp-mode](https://emacs-lsp.github.io/lsp-mode/), with a `likec4-mode` definition for `.c4` / `.likec4` files. Resolves [#2268](https://github.com/likec4/likec4/issues/2268).
+
 ## 1.56.0
 
 ## 1.55.1
