@@ -93,7 +93,7 @@ Installation:
 
 There's no MELPA package yet, but you can wire up the [`@likec4/lsp`](#standalone-language-server) standalone language server in a few lines.
 
-First, define a minor wrapper mode so the LSP client knows which buffers to attach to:
+First, define a major wrapper mode (derived from `prog-mode`) so the LSP client knows which buffers to attach to:
 
 ```elisp
 ;; Major mode for .c4 / .likec4 files
