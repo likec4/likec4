@@ -22,7 +22,7 @@
     "directory": "packages/language-server"
   },
   "engines": {
-    "node": ">=22.22.1"
+    "node": ">=22.22.3"
   },
   "type": "module",
   "sideEffects": false,
