@@ -35,10 +35,14 @@ const _searchActorLogic = setup({
     context: {} as SearchContext,
     events: {} as SearchActorEvent,
   },
+  delays: {
+    // Maximum time to wait for animation
+    'MAX_WAIT_ANIMATION_END': 1000,
+  },
   actions: {
-    'reset navigateTo': assign({
-      navigateTo: () => null,
-    }),
+    'reset navigateTo': assign(() => ({
+      navigateTo: null,
+    })),
     'assign navigateTo': assign(({ event }) => {
       assertEvent(event, ['navigate.to'])
       return {
@@ -54,9 +58,9 @@ const _searchActorLogic = setup({
         return event.search ?? context.searchValue
       },
     }),
-    'reset pickViewFor': assign({
-      pickViewFor: () => null,
-    }),
+    'reset pickViewFor': assign(() => ({
+      pickViewFor: null,
+    })),
   },
 }).createMachine({
   id: 'search',
@@ -67,11 +71,6 @@ const _searchActorLogic = setup({
     navigateTo: null,
   },
   initial: 'inactive',
-  on: {
-    'close': {
-      target: '.inactive',
-    },
-  },
   states: {
     inactive: {
       entry: [
@@ -108,6 +107,9 @@ const _searchActorLogic = setup({
           target: 'waitAnimationEnd',
           actions: 'assign navigateTo',
         },
+        'close': {
+          target: 'inactive',
+        },
       },
     },
     pickView: {
@@ -119,6 +121,9 @@ const _searchActorLogic = setup({
         'navigate.to': {
           target: 'waitAnimationEnd',
           actions: 'assign navigateTo',
+        },
+        'close': {
+          target: 'inactive',
         },
       },
     },
@@ -133,8 +138,6 @@ const _searchActorLogic = setup({
           actions: enqueueActions(({ context, system, enqueue }) => {
             const navigateTo = context.navigateTo
             if (!navigateTo) return
-
-            enqueue('reset navigateTo')
 
             const diagramActor = typedSystem(system).diagramActorRef
             // If we need to focus on an element, we should not navigate to the view
@@ -154,6 +157,11 @@ const _searchActorLogic = setup({
               ...navigateTo,
             })
           }),
+        },
+      },
+      after: {
+        MAX_WAIT_ANIMATION_END: {
+          target: 'inactive',
         },
       },
     },

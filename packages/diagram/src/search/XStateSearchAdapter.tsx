@@ -48,6 +48,7 @@ export function XStateSearchAdapter({
   })
 
   const value = useMemo((): SearchContextValue => ({
+    searchActor: searchActorRef,
     searchValue,
     setSearchValue,
     normalizedSearch: normalizeSearch(searchValue),
@@ -59,6 +60,7 @@ export function XStateSearchAdapter({
     currentViewId,
     openedWithSearch,
   }), [
+    searchActorRef,
     searchValue,
     pickViewFor,
     currentViewId,

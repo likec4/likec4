@@ -8,14 +8,15 @@
 import { css } from '@likec4/styles/css'
 import { Box, VStack } from '@likec4/styles/jsx'
 import { Grid, GridCol, Group, ScrollArea, Title } from '@mantine/core'
-import { useHotkeys } from '@mantine/hooks'
+import { useHotkeys, useMergedRef } from '@mantine/hooks'
 import { useTimeoutEffect } from '@react-hookz/web'
 import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup, usePresence } from 'motion/react'
-import { memo, Suspense, useEffect, useMemo, useRef } from 'react'
+import { forwardRef, memo, Suspense, useEffect, useMemo, useRef } from 'react'
 import { isTruthy } from 'remeda'
 import { createEmptyActor } from 'xstate'
 import { useCallbackRef } from '../hooks/useCallbackRef'
+import { useDiagram } from '../hooks/useDiagram'
 import { useSearchActorRef } from '../hooks/useSearchActor'
 import { Overlay } from '../overlays/overlay/Overlay'
 import { ElementsColumn } from './components/ElementsColumn'
@@ -76,34 +77,35 @@ const selectIsOpened = (s: SearchActorSnapshot) => {
   }
 }
 
-export const Search = memo(() => {
-  const searchActorRef = useSearchActorRef()
-  const emptyActorRef = useRef(createEmptyActor() as SearchActorRef)
-  const isOpened = useSelector(searchActorRef ?? emptyActorRef.current, selectIsOpened)
+export const Search = memo(({ searchActorRef }: { searchActorRef: SearchActorRef }) => {
+  const diagram = useDiagram()
+  const isOpened = useSelector(searchActorRef, selectIsOpened)
 
-  const close = useCallbackRef(() => {
-    searchActorRef?.send({ type: 'close' })
-  })
+  const close = () => {
+    diagram.searchActor().send({ type: 'close' })
+  }
+  const open = (event: KeyboardEvent) => {
+    event.stopPropagation()
+    diagram.searchActor().send({ type: 'open' })
+  }
 
   useHotkeys(
-    useMemo(() => {
-      const openSearch = () => searchActorRef?.send({ type: 'open' })
-      return searchActorRef ?
-        [
-          ['mod+k', openSearch, {
-            preventDefault: true,
-          }],
-          ['mod+f', openSearch, {
-            preventDefault: true,
-          }],
-        ] :
-        []
-    }, [searchActorRef]),
+    isOpened ? [] : [
+      ['mod+k', open, {
+        preventDefault: true,
+      }],
+      ['mod+f', open, {
+        preventDefault: true,
+      }],
+    ],
   )
 
   return (
-    <AnimatePresence>
-      {searchActorRef && isOpened && (
+    <AnimatePresence
+      onExitComplete={() => {
+        diagram.searchActor().send({ type: 'animation.presence.end' })
+      }}>
+      {isOpened && (
         <Overlay
           fullscreen
           withBackdrop={false}
@@ -128,22 +130,33 @@ export const Search = memo(() => {
 })
 Search.displayName = 'Search'
 
+function SearchOverlayBody({ searchActorRef }: { searchActorRef: SearchActorRef }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useTimeoutEffect(() => {
+    if (isTruthy(searchActorRef.getSnapshot().context.openedWithSearch)) {
+      focusToFirstFoundElement(ref.current)
+    }
+  }, 150)
+
+  return <SearchPanelContent />
+}
+
 /**
  * The shared search panel content used by both diagram and overview search.
  * Must be rendered inside a SearchContext.Provider.
  */
-export const SearchPanelContent = memo(() => {
-  const ref = useRef<HTMLDivElement>(null)
+export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
+  const contentRef = useRef<HTMLDivElement>(null)
   const { pickViewFor } = useSearchContext()
 
   return (
-    <Box ref={ref} display={'contents'}>
+    <Box ref={useMergedRef(ref, contentRef)} display={'contents'}>
       <Group
         className={'group'}
         wrap="nowrap"
         onClick={e => {
           e.stopPropagation()
-          moveFocusToSearchInput(ref.current)
+          moveFocusToSearchInput(contentRef.current)
         }}>
         <VStack flex={1} px={'sm'}>
           <LikeC4SearchInput />
@@ -197,34 +210,3 @@ export const SearchPanelContent = memo(() => {
   )
 })
 SearchPanelContent.displayName = 'SearchPanelContent'
-
-const SearchOverlayBody = memo<{ searchActorRef: SearchActorRef }>(function SearchOverlayBody({ searchActorRef }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useTimeoutEffect(() => {
-    if (isTruthy(searchActorRef.getSnapshot().context.openedWithSearch)) {
-      focusToFirstFoundElement(ref.current)
-    }
-  }, 150)
-
-  const [isPresent, safeToRemove] = usePresence()
-
-  useEffect(() => {
-    if (isPresent) {
-      return
-    }
-    safeToRemove()
-    try {
-      // Actor might be stopped, so we need to catch the error
-      searchActorRef.send({ type: 'animation.presence.end' })
-    } catch (e) {
-      console.debug('SearchOverlayBody: animation.presence.end failed', e)
-    }
-  }, [isPresent, searchActorRef, safeToRemove])
-
-  return (
-    <Box ref={ref} display={'contents'}>
-      <SearchPanelContent />
-    </Box>
-  )
-})
