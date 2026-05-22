@@ -1,6 +1,7 @@
 import type * as yargs from 'yargs'
 import { ensureReact } from '../ensure-libs'
 import {
+  allowedHost,
   base,
   hmrPort,
   listen,
@@ -32,6 +33,7 @@ const serveCmd = (yargs: yargs.Argv) => {
           .option('port', port)
           .option('hmr-port', hmrPort)
           .option('public', publicDir)
+          .option('allowed-host', allowedHost)
           .options({
             'react-hmr': {
               type: 'boolean',
@@ -59,6 +61,7 @@ const serveCmd = (yargs: yargs.Argv) => {
           enableHMR: args['react-hmr'],
           enableWebcomponent: args['build-webcomponent'],
           userPublicDir: args.public,
+          allowedHosts: args['allowed-host'],
         })
       },
     })

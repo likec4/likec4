@@ -88,6 +88,7 @@ async function main() {
   await y
     .scriptName('likec4')
     .usage(`Usage: $0 <command>`)
+    .parserConfiguration({ 'greedy-arrays': false })
     .version(pkg.version)
     .alias('v', 'version')
     .alias('h', 'help')

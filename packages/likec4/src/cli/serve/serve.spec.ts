@@ -124,4 +124,45 @@ describe('serve handler', () => {
     const callArg = viteDevMock.mock.calls[0]![0]
     expect(callArg.userPublicDir).toBe('/tmp/test/public')
   })
+
+  it('propagates allowedHosts to viteDev', async () => {
+    const { handler } = await import('./serve')
+    const { viteDev } = await import('../../vite/vite-dev')
+    const viteDevMock = viteDev as ReturnType<typeof vi.fn>
+
+    await handler({
+      path: '/tmp/test',
+      useDotBin: false,
+      webcomponentPrefix: 'likec4',
+      title: undefined,
+      useHashHistory: undefined,
+      enableHMR: false,
+      enableWebcomponent: false,
+      allowedHosts: ['example.local', 'review.example.com'],
+    })
+
+    expect(viteDevMock).toHaveBeenCalledOnce()
+    const callArg = viteDevMock.mock.calls[0]![0]
+    expect(callArg.allowedHosts).toEqual(['example.local', 'review.example.com'])
+  })
+
+  it('propagates undefined allowedHosts when not provided (preserves "allow all" default)', async () => {
+    const { handler } = await import('./serve')
+    const { viteDev } = await import('../../vite/vite-dev')
+    const viteDevMock = viteDev as ReturnType<typeof vi.fn>
+
+    await handler({
+      path: '/tmp/test',
+      useDotBin: false,
+      webcomponentPrefix: 'likec4',
+      title: undefined,
+      useHashHistory: undefined,
+      enableHMR: false,
+      enableWebcomponent: false,
+    })
+
+    expect(viteDevMock).toHaveBeenCalledOnce()
+    const callArg = viteDevMock.mock.calls[0]![0]
+    expect(callArg.allowedHosts).toBeUndefined()
+  })
 })

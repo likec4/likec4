@@ -63,6 +63,13 @@ type HandlerParams = {
    * (Vite publicDir).
    */
   userPublicDir?: string | undefined
+
+  /**
+   * Hostnames allowed to access the dev server (maps to Vite's
+   * `server.allowedHosts`). When omitted, all hosts are allowed.
+   * @see https://vite.dev/config/server-options#server-allowedhosts
+   */
+  allowedHosts?: string[] | undefined
 }
 
 /** Starts the LikeC4 dev server (Vite) for the given workspace path. */
@@ -79,6 +86,7 @@ export async function handler({
   port,
   hmrPort,
   userPublicDir,
+  allowedHosts,
 }: HandlerParams) {
   // Explicitly set NODE_ENV to development
   if (enableHMR) {
@@ -105,6 +113,7 @@ export async function handler({
     port,
     hmrPort,
     userPublicDir,
+    allowedHosts,
   })
 
   server.config.logger.clearScreen('info')
