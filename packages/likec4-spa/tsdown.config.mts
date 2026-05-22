@@ -2,10 +2,10 @@ import { outputOptions } from '@likec4/devops/tsdown'
 import postcssPanda from '@pandacss/dev/postcss'
 import pluginBabel from '@rolldown/plugin-babel'
 import { reactCompilerPreset } from '@vitejs/plugin-react'
-import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'tsdown'
 import { build as viteBuild } from 'vite'
 import { $ } from 'zx'
+import packageJson from './package.json' with { type: 'json' }
 
 $.quiet = false
 $.verbose = true
@@ -35,13 +35,6 @@ export default defineConfig([{
     'process.env.NODE_ENV': '"production"',
   },
   plugins: [
-    esmExternalRequirePlugin({
-      external: [
-        'react',
-        'react-dom',
-        'use-sync-external-store',
-      ],
-    }),
     pluginBabel({
       presets: [reactCompilerPreset({
         target: '18',
@@ -62,8 +55,8 @@ export default defineConfig([{
       '@likec4/vite-plugin/ai/tools',
     ],
     neverBundle: [
+      ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
       '@emotion/is-prop-valid',
-      /@likec4\/core.*/,
       /likec4:/,
     ],
   },
