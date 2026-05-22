@@ -17,6 +17,7 @@ const shared = {
   outputOptions: {
     keepNames: true,
   },
+  dts: false,
   deps: {
     neverBundle: ['vscode'],
     alwaysBundle: [

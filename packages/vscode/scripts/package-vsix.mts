@@ -5,12 +5,13 @@ import { $, cd } from 'zx'
 
 $.verbose = true
 
+await $({ stdio: 'inherit' })`pnpm build`
+
 /**
  * vsce tool does not work with pnpm
  * so we need to prepare package.json for NPM
  */
-
-const [{ dependencies }] = await $`pnpm ls -P --json`.json<[{
+const [{ dependencies }] = await $`pnpm ls -P --json --filter likec4-vscode`.json<[{
   dependencies: Record<string, {
     from: string
     version: string
