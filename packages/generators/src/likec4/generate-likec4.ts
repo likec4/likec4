@@ -23,7 +23,7 @@ export function generateLikeC4(input: schemas.likec4data.Input, params?: Params)
  *
  * @example
  * ```ts
- * printOperation(operators.expression, {
+ * printOperation(ops.expression(), {
  *   ref: {
  *     model: 'some.el',
  *   },
@@ -34,7 +34,7 @@ export function generateLikeC4(input: schemas.likec4data.Input, params?: Params)
  *
  * @example
  * ```ts
- * printOperation(operators.model(), {
+ * printOperation(ops.model(), {
  *   elements: [
  *     {
  *       id: 'cloud',

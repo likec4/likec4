@@ -22,11 +22,16 @@ export class LikeC4ModelChanges {
 
   public async applyChange(changeView: ChangeView.Params): Promise<ChangeView.Res> {
     let { viewId, projectId: _projectId, change } = changeView
-    const payload = preparePayload(changeView, this.services)
 
-    const res = await Promise.resolve().then(() => changePropertyHandler(payload))
-
-    if (res) {
+    if (change.op === 'change-property') {
+      const payload = preparePayload(changeView, this.services)
+      const res = changePropertyHandler(payload)
+      if (!res) {
+        return {
+          success: false,
+          error: 'No changes to apply',
+        }
+      }
       const edits = Array.isArray(res) ? res : [res]
       const applyResult = await this.applyTextEdits(payload.doc, edits)
       if (!applyResult) {
@@ -40,7 +45,6 @@ export class LikeC4ModelChanges {
         location: null,
       }
     }
-    invariant(change.op !== 'change-property', 'Wrong state operation type, "change-property" must be handled first')
 
     const workspace = this.services.shared.workspace
 

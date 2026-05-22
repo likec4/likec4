@@ -1,11 +1,13 @@
 import type * as t from '@likec4/core/types'
 import { type NonReducibleUnknown, fromPromise, setup } from 'xstate'
 import { hotkey } from './hotkey'
-import type { EditorActorEvent } from './types'
-import type { EditorActorContext } from './types'
-import type { EditorActorEmitedEvent } from './types'
-import type { EditorActorInput } from './types'
-import type { EditorActorStateTag } from './types'
+import type {
+  EditorActorContext,
+  EditorActorEmitedEvent,
+  EditorActorEvent,
+  EditorActorInput,
+  EditorActorStateTag,
+} from './types'
 
 export namespace EditorCalls {
   export type ApplyLatestToManual = (

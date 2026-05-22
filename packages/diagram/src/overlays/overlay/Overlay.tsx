@@ -166,7 +166,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
       onClick={e => {
         e.stopPropagation()
         // Click on dialog backdrop (not the content) should close the overlay
-        if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
+        if (e.target === e.currentTarget) {
           cancelMe()
         }
       }}

@@ -7,7 +7,6 @@ import {
   ops,
   print,
   printOperation,
-  space,
   withctx,
 } from '@likec4/generators/likec4'
 import { filter, findLast, hasAtLeast, isTruthy, last, map, pipe, piped } from 'remeda'
@@ -257,16 +256,20 @@ function updateViewTags(
   const body = nonNullable(viewAst.body, 'View body is required')
 
   if (tag.add) {
-    const name = Array.isArray(tag.add) ? tag.add[0] : tag.add
-    if (name) {
-      edits.push(addTag(viewAst, body, name))
+    const names = Array.isArray(tag.add) ? tag.add : [tag.add]
+    for (const name of names) {
+      if (name) {
+        edits.push(addTag(viewAst, body, name))
+      }
     }
   }
   if (tag.remove) {
-    const name = Array.isArray(tag.remove) ? tag.remove[0] : tag.remove
-    const edit = name ? removeTag(body, name) : undefined
-    if (edit) {
-      edits.push(edit)
+    const names = Array.isArray(tag.remove) ? tag.remove : [tag.remove]
+    for (const name of names) {
+      const edit = name ? removeTag(body, name) : undefined
+      if (edit) {
+        edits.push(edit)
+      }
     }
   }
 

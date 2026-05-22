@@ -151,7 +151,7 @@ export const pushToSyncQueue = () =>
         throw new Error(`Invalid event type: ${event.type}`)
     }
 
-    if (syncQueue.length == 0) {
+    if (syncQueue.length === 0) {
       if (import.meta.env.DEV) {
         console.log('syncQueue is empty, adding', { nextOp })
       }

@@ -185,7 +185,7 @@ const process = machine.createStateConfig({
             input: ({ context }) => {
               const current = context.history?.head.change.layout
               return ({
-                current: current && current._layout === 'manual' ? current : undefined,
+                current: current?._layout === 'manual' ? current : undefined,
                 viewId: context.viewId,
               })
             },
@@ -267,20 +267,6 @@ const process = machine.createStateConfig({
             if (import.meta.env.DEV) {
               console.log('executeChanges onDone', { event })
             }
-            // const snapshot = find([
-            //   context.processing,
-            //   ...context.syncQueue,
-            // ], p => !!p && isViewChange(p) && p.op === 'save-view-snapshot')
-            // if (snapshot) {
-            //   console.log('sendTo update.view-bounds', { snapshot })
-            //   enqueue.sendTo(
-            //     typedSystem.diagramActor,
-            //     {
-            //       type: 'update.view-bounds',
-            //       bounds: snapshot.layout.bounds,
-            //     },
-            //   )
-            // }
             enqueue.assign({
               processing: null,
               syncQueue: context.syncQueue.filter(isNot(isViewChange)),

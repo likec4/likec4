@@ -1,7 +1,7 @@
 import { UriUtils } from 'langium'
 import { vol } from 'memfs'
 import stripIndent from 'strip-indent'
-import { type ExpectStatic, afterAll, describe, it, vi } from 'vitest'
+import { type ExpectStatic, describe, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
 import { WithFileSystem } from '../filesystem'
 import type { ChangeView } from '../protocol'
@@ -67,7 +67,7 @@ async function testDoc(expect: ExpectStatic, document: string) {
 describe('viewChange', () => {
   describe('change-property', () => {
     it('should update view title', async ({ expect }) => {
-      const { change, read, fs } = await testDoc(
+      const { change, read } = await testDoc(
         expect,
         `
       views {
