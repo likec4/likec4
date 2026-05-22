@@ -53,7 +53,7 @@ jobs:
       - name: 🚀 publish vsce
         if: ${{ startsWith(github.ref, 'refs/tags/v') || inputs.publish }}
         run: |
-          pnpx @vscode/vsce publish --skip-duplicate --packagePath likec4.vsix
+          pnpx @vscode/vsce publish --allow-all-proposed-apis --skip-duplicate --packagePath likec4.vsix
         working-directory: packages/vscode
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
