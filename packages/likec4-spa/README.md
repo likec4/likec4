@@ -18,3 +18,10 @@ pnpm dev
 ```
 
 The build artifacts are copied to the [`likec4`](https://www.npmjs.com/package/likec4).
+
+Additional routes:
+
+- [http://localhost:5173/codegen/react.html](http://localhost:5173/codegen/react.html)
+  - To test react component (that one is generated from `likec4 gen`)
+- [http://localhost:5173/codegen/webcomponent.html](http://localhost:5173/codegen/webcomponent.html)
+  - To test webcomponent (that one is generated from `likec4 gen`)

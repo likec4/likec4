@@ -66,7 +66,9 @@ export const cancelSync = () => {
  */
 export const saveBeforeEditing = machine.assign(({ system, event }) => {
   assertEvent(event, 'edit.move.start')
-  console.log('saveBeforeEditing', event)
+  if (import.meta.env.DEV) {
+    console.log('saveBeforeEditing', event)
+  }
   return {
     editing: {
       subject: event.subject,
@@ -81,7 +83,9 @@ export const saveBeforeEditing = machine.assign(({ system, event }) => {
 export const pushHistory = () =>
   machine.assign(({ context }) => {
     const editing = context.editing
-    console.log('pushHistory', editing)
+    if (import.meta.env.DEV) {
+      console.log('pushHistory', editing)
+    }
     if (editing) {
       return {
         editing: null,
@@ -98,7 +102,9 @@ export const reschedule = (delay = 300) => machine.raise(({ event }) => ({ ...ev
 
 export const undo = () =>
   machine.enqueueActions(({ context: { history }, enqueue }) => {
-    console.log('undo', { history })
+    if (import.meta.env.DEV) {
+      console.log('undo', { history })
+    }
     if (!history) {
       return
     }
@@ -146,7 +152,9 @@ export const pushToSyncQueue = () =>
     }
 
     if (syncQueue.length == 0) {
-      console.log('syncQueue is empty, adding', { nextOp })
+      if (import.meta.env.DEV) {
+        console.log('syncQueue is empty, adding', { nextOp })
+      }
       return {
         syncQueue: [nextOp],
       }
@@ -163,7 +171,9 @@ export const pushToSyncQueue = () =>
       // Otherwise keep the operation
       return true
     })
-    console.log('syncQueue is not empty, adding', { syncQueue, pending, nextOp })
+    if (import.meta.env.DEV) {
+      console.log('syncQueue is not empty, adding', { syncQueue, pending, nextOp })
+    }
     return {
       syncQueue: pending.length > 0 ? [...pending, nextOp] : [nextOp],
     }

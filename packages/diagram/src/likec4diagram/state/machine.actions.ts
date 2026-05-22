@@ -611,7 +611,9 @@ export const startEditing = (subject: 'node' | 'edge' = 'node') =>
   )
 
 export const sendSynced = () => {
-  console.log('sendSynced')
+  if (import.meta.env.DEV) {
+    console.log('sendSynced')
+  }
   return machine.sendTo(
     typedSystem.editorActor,
     {

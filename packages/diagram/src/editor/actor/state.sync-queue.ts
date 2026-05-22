@@ -75,7 +75,9 @@ const pending = machine.createStateConfig({
     'view.synched': {
       guard: 'has pending',
       actions: () => {
-        console.log('view.synched')
+        if (import.meta.env.DEV) {
+          console.log('view.synched')
+        }
       },
       ...to.process,
     },
@@ -118,14 +120,18 @@ const suspended = machine.createStateConfig({
 const peekFromQueue = () =>
   machine.assign(({ system, context: { syncQueue, processing } }) => {
     if (processing) {
-      console.log('Processing already in progress')
+      if (import.meta.env.DEV) {
+        console.log('Processing already in progress')
+      }
       return {}
     }
     let [head, ...tail] = syncQueue
     if (head === 'sync-snapshot') {
       head = makeSnapshot(system).change
     }
-    console.log('peekFromQueue', { head, tail, syncQueue })
+    if (import.meta.env.DEV) {
+      console.log('peekFromQueue', { head, tail, syncQueue })
+    }
     return {
       processing: head ?? null,
       syncQueue: tail,
@@ -161,9 +167,6 @@ const process = machine.createStateConfig({
           target: 'applySemanticLayout',
         },
         {
-          actions: () => {
-            console.log('executeChanges')
-          },
           target: 'executeChanges',
         },
       ],
@@ -319,7 +322,9 @@ const process = machine.createStateConfig({
     },
     'view.synched': {
       actions: () => {
-        console.log('view.synched')
+        if (import.meta.env.DEV) {
+          console.log('view.synched')
+        }
       },
     },
   },
