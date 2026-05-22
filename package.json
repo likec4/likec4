@@ -6,7 +6,7 @@
   "packageManager": "pnpm@11.2.2",
   "type": "module",
   "engines": {
-    "node": ">=22.22.1"
+    "node": ">=22.22.3"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",
