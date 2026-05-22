@@ -4,10 +4,8 @@
 
 import type { Fqn, ViewId } from '@likec4/core/types'
 import { createContext, useContext } from 'react'
-import type { SearchActorRef } from './searchActor'
 
 export interface SearchContextValue {
-  searchActor: SearchActorRef
   searchValue: string
   setSearchValue: (value: string) => void
   normalizedSearch: string

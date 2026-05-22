@@ -5,7 +5,7 @@ import {
 } from '@mantine/core'
 import { useFocusTrap, useMergedRef } from '@mantine/hooks'
 import { useTimeoutEffect } from '@react-hookz/web'
-import { type TargetAndTransition, m, useIsPresent, usePresence, useReducedMotionConfig } from 'motion/react'
+import { type TargetAndTransition, m, useIsPresent, useReducedMotionConfig } from 'motion/react'
 import {
   type PropsWithChildren,
   forwardRef,

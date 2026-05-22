@@ -1,11 +1,10 @@
 import type * as t from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
-import { ActionIcon, useMantineContext } from '@mantine/core'
+import { ActionIcon } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import { AnimatePresence, LayoutGroup, LayoutGroupContext } from 'motion/react'
-import type { CSSProperties, PropsWithChildren, ReactNode } from 'react'
-import { useRef, useState } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+import { useState } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
@@ -20,7 +19,7 @@ import type {
   ViewPadding,
 } from './LikeC4Diagram.props'
 import { Overlay } from './overlays/overlay/Overlay'
-import { ShadowRoot, useShadowRoot } from './shadowroot/ShadowRoot'
+import { ShadowRoot } from './shadowroot/ShadowRoot'
 import { stopPropagation } from './utils'
 import { pickViewBounds } from './utils/view-bounds'
 export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
@@ -390,7 +389,6 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   children,
   ...props
 }: LikeC4ViewProps<A>): JSX.Element {
-  const shadowRootRef = useRef<globalThis.ShadowRoot | null>(null)
   const likec4model = useOptionalLikeC4Model()
   const [layoutType, setLayoutType] = useState(initialLayoutType)
   const [browserViewId, _onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
