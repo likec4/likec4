@@ -84,6 +84,50 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   clone(): Builder<T>
 
   /**
+   * Returns a builder that allows re-declaring elements/deployments already
+   * present in the builder's state (typically seeded by {@link Builder.fromParsed}).
+   *
+   * In overwrite mode, calling `system('cloud.ui')` for an FQN that already exists
+   * is a no-op as long as the element kind matches — `.with(...)` still descends
+   * so children can be added under it. Different-kind redeclaration still throws.
+   *
+   * Default mode (without this opt-in) is strict: duplicate FQNs always throw.
+   *
+   * @example
+   * ```ts
+   * Builder.fromParsed(data)
+   *   .allowOverwrites()
+   *   .model(({ component }, _) =>
+   *     _(component('cloud.ui').with(component('react'))),
+   *   )
+   * ```
+   */
+  allowOverwrites(): Builder<T>
+
+  /**
+   * Extends the builder with additional specification — new element kinds,
+   * deployment kinds, relationship kinds, tags or metadata keys. Existing kinds
+   * with the same name are overridden by the new spec.
+   *
+   * The returned builder's `Types` are the *union* of the current types and the
+   * ones derived from `spec` (see {@link Types.Merge}), so element-kind helpers,
+   * tags, etc. accumulate rather than narrowing.
+   *
+   * @example
+   * ```ts
+   * Builder.fromParsed(data)
+   *   .specification({
+   *     elements: { database: { style: { shape: 'storage' } } },
+   *     tags: { experimental: { color: '#f00' } },
+   *   })
+   *   .model(({ database }, _) => _(database('warehouse', { tags: ['experimental'] })))
+   * ```
+   */
+  specification<const Spec extends BuilderSpecification>(
+    spec: Spec,
+  ): Builder<Types.Merge<T, Types.FromSpecification<Spec>>>
+
+  /**
    * Builders for each element kind
    */
   helpers(): {
@@ -229,7 +273,7 @@ function validateSpec({ tags, elements, deployments, relationships, ...specifica
       ensureObj(tags),
     )
   }
-  const _elements = ensureObj(elements)
+  const _elements = ensureObj(elements ?? {})
 
   for (const [kind, spec] of entries(_elements)) {
     if (spec.tags) {
@@ -283,6 +327,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
   _imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map()),
+  _allowOverwrites = false,
 ): Builder<T> {
   const spec = validateSpec(_spec)
 
@@ -363,6 +408,45 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     get Types(): T {
       throw new Error('Types are not available in runtime')
     },
+    allowOverwrites: () => {
+      const imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
+      for (const [key, value] of _imports) {
+        imports.set(key, structuredClone(value))
+      }
+      return builder(
+        structuredClone(spec),
+        structuredClone(_elements),
+        structuredClone(_relations),
+        structuredClone(_views),
+        structuredClone(_globals),
+        structuredClone(_deployments),
+        structuredClone(_deploymentRelations),
+        imports,
+        true,
+      )
+    },
+    specification: <NewSpec extends BuilderSpecification>(newSpec: NewSpec) => {
+      // `defu(target, ...defaults)` — keys in `target` win, others fall back.
+      // For metadataKeys (string[]) defu concatenates+dedups, which is exactly
+      // what we want.
+      const mergedSpec = defu(validateSpec(newSpec), spec) as BuilderSpecification
+
+      const imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
+      for (const [key, value] of _imports) {
+        imports.set(key, structuredClone(value))
+      }
+      return builder<BuilderSpecification, AnyTypes>(
+        mergedSpec,
+        structuredClone(_elements),
+        structuredClone(_relations),
+        structuredClone(_views),
+        structuredClone(_globals),
+        structuredClone(_deployments),
+        structuredClone(_deploymentRelations),
+        imports,
+        _allowOverwrites,
+      ) as unknown as Builder<Types.Merge<T, Types.FromSpecification<NewSpec>>>
+    },
     clone: () => {
       const imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
       for (const [key, value] of _imports) {
@@ -378,6 +462,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(_deployments),
         structuredClone(_deploymentRelations),
         imports,
+        _allowOverwrites,
       )
     },
 
@@ -391,8 +476,18 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           `Parent element with id "${parent}" not found for element with id "${element.id}"`,
         )
       }
-      if (lookup.has(fqn)) {
-        throw new Error(`Element with id "${element.id}" already exists`)
+      const existing = lookup.get(fqn)
+      if (existing) {
+        if (!_allowOverwrites) {
+          throw new Error(`Element with id "${element.id}" already exists`)
+        }
+        // In overwrite mode same-kind re-declaration replaces the existing
+        // element (so `.with(...)` can both edit and descend). Different-kind
+        // redeclaration is still a programmer error.
+        invariant(
+          existing.kind === element.kind,
+          `Element with id "${element.id}" already exists with kind "${existing.kind}", cannot redeclare as "${element.kind}"`,
+        )
       }
       lookup.set(fqn, project ? { ...element, id: fqn } : element)
       return self

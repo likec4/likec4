@@ -29,7 +29,7 @@ type ElementSpecification = Omit<ElementKindSpecification, 'tags'> & {
 }
 
 export type BuilderSpecification = {
-  elements: string[] | {
+  elements?: string[] | {
     [kind: string]: Partial<ElementSpecification>
   }
   relationships?: string[] | {
@@ -328,6 +328,37 @@ export namespace Types {
       >
     >
     : AnyAux
+
+  /**
+   * Merges two {@link Types} by unioning every slot (element kinds, FQNs,
+   * relationship kinds, tags, metadata keys, deployment kinds and FQNs).
+   *
+   * Used by `Builder.specification(...)` to combine the existing builder's
+   * types with a newly-declared specification. A plain `A & B` intersection
+   * would *narrow* the unions (e.g. `'a' | 'b' & 'c' | 'd'` = `never`), which
+   * is the opposite of what we want when adding new kinds.
+   */
+  export type Merge<A, B> = A extends Types<
+    infer AK extends string,
+    infer AF extends string,
+    infer AV extends string,
+    infer AR extends string,
+    infer AT extends string,
+    infer AM extends string,
+    infer ADK extends string,
+    infer ADF extends string
+  > ? B extends Types<
+      infer BK extends string,
+      infer BF extends string,
+      infer BV extends string,
+      infer BR extends string,
+      infer BT extends string,
+      infer BM extends string,
+      infer BDK extends string,
+      infer BDF extends string
+    > ? Types<AK | BK, AF | BF, AV | BV, AR | BR, AT | BT, AM | BM, ADK | BDK, ADF | BDF>
+    : A
+    : B
 
   /**
    * Inverse of {@link ToAux} — derives builder {@link Types} from an {@link Aux}.
