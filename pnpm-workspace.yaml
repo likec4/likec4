@@ -45,7 +45,7 @@ overrides:
   "diff": ">=8.0.4"
   "svgo": ">=4.0.1"
   "express-rate-limit": ">=8.2.2"
-  "express>qs": ">=6.14.2"
+  "express>qs": ">=6.15.2"
   "url>qs": ">=6.14.2"
   "vscode-languageclient>minimatch": "^5.1.9"
   "@ts-morph/common>minimatch": "^9.0.9"
