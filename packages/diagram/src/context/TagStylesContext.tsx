@@ -1,5 +1,5 @@
 import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
-import { DefaultTagColors, getContrastedColorsAPCA } from '@likec4/core/styles'
+import { DefaultTagColors, getContrastedColorsAPCA, isValidColor } from '@likec4/core/styles'
 import { useMantineStyleNonce } from '@mantine/core'
 import { type PropsWithChildren, createContext, memo, useContext } from 'react'
 import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
@@ -13,7 +13,9 @@ export const generateColorVars = (spec: TagSpecification): string => {
   const color = spec.color
   // Tag has a color defined in the specification — derive a high-contrast text
   // color from it (APCA) so the chip text stays legible on any background.
-  if (isTagColorSpecified(spec)) {
+  // `isTagColorSpecified` is only a prefix check; validate with chroma before
+  // we hand the value to APCA, which would otherwise throw on malformed input.
+  if (isTagColorSpecified(spec) && isValidColor(color)) {
     const text = getContrastedColorsAPCA(color).hiContrast
     return `
       --colors-likec4-tag-bg: ${color};

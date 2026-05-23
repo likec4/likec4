@@ -18,6 +18,15 @@ type ColorPalette = {
   rel_hiContrast: HexColor
 }
 
+/**
+ * Returns true when the input is a valid color literal parseable by chroma-js
+ * (e.g. `#ff0000`, `rgb(255, 0, 0)`, named CSS colors). Useful as a safety
+ * check before calling color-math helpers that throw on malformed input.
+ */
+export function isValidColor(color: string | chroma.Color): boolean {
+  return chroma.valid(color)
+}
+
 export function computeColorValues(color: ColorLiteral): ThemeColorValues {
   invariant(chroma.valid(color), `Invalid color: ${color}`)
   const normalizedRefColor = color.trim()

@@ -55,4 +55,15 @@ describe('generateColorVars', () => {
     const css = generateColorVars({ color: 'definitely-not-a-color' as TagSpecification['color'] })
     expect(css).toBe('')
   })
+
+  it('does not throw when a custom color value is malformed; emits no CSS instead', () => {
+    // `isTagColorSpecified` is a prefix check, so these slip past it but are
+    // not parseable by chroma. Without the chroma.valid guard, APCA would throw.
+    for (const malformed of ['#zzzzzz', '#12', 'rgb(garbage)']) {
+      expect(() => generateColorVars({ color: malformed as TagSpecification['color'] }))
+        .not.toThrow()
+      const css = generateColorVars({ color: malformed as TagSpecification['color'] })
+      expect(css).toBe('')
+    }
+  })
 })
