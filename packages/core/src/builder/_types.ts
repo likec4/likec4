@@ -329,6 +329,37 @@ export namespace Types {
     >
     : AnyAux
 
+  /**
+   * Inverse of {@link ToAux} — derives builder {@link Types} from an {@link Aux}.
+   *
+   * Useful when a `Builder` needs to be reconstructed from a runtime value whose
+   * Aux is already known statically (e.g. the result of `builder.build()`).
+   */
+  export type FromAux<A> = A extends Aux<
+    any,
+    infer Element extends string,
+    infer Deployment extends string,
+    infer View extends string,
+    any,
+    SpecAux<
+      infer ElementKind extends string,
+      infer DeploymentKind extends string,
+      infer RelationshipKind extends string,
+      infer Tag extends string,
+      infer MetadataKey extends string
+    >
+  > ? Types<
+      ElementKind,
+      Element,
+      View,
+      RelationshipKind,
+      Tag,
+      MetadataKey,
+      DeploymentKind,
+      Deployment
+    >
+    : AnyTypes
+
   export type ToExpression<T> = T extends AnyTypes ? Expression<ToAux<T>> : never
 
   export type From<B> = B extends Builder<infer T> ? B['Types'] extends AnyTypes ? T : AnyTypes : never

@@ -35,6 +35,7 @@ import type {
 import {
   type DeploymentElement,
   type DeploymentRelation,
+  type DeploymentRelationship,
   type Element,
   type Fqn,
   type IconUrl,
@@ -46,6 +47,7 @@ import {
   type ParsedDeploymentView as DeploymentView,
   type ParsedDynamicView as DynamicView,
   type RelationId,
+  type Relationship,
   _stage,
   _type,
   exact,
@@ -1037,6 +1039,48 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
   return self
 }
+function fromParsedImpl<T extends AnyTypes = AnyTypes>(data: ParsedLikeC4ModelData<Any>): Builder<T> {
+  const { specification } = data
+  const seedSpec = {
+    elements: specification.elements,
+    deployments: specification.deployments,
+    relationships: specification.relationships,
+    tags: specification.tags,
+    metadataKeys: (specification as { metadataKeys?: string[] }).metadataKeys,
+  } as unknown as BuilderSpecification
+
+  const seedElements = new Map<string, Element<Any>>(
+    Object.entries(structuredClone(data.elements)) as Array<[string, Element<Any>]>,
+  )
+  const seedRelations = Object.values(structuredClone(data.relations)) as Relationship[]
+  const seedViews = new Map<string, LikeC4View>(
+    Object.entries(structuredClone(data.views)) as Array<[string, LikeC4View]>,
+  )
+  const seedGlobals = structuredClone(data.globals)
+  const seedDeployments = new Map<string, DeploymentElement>(
+    Object.entries(structuredClone(data.deployments.elements)) as Array<[string, DeploymentElement]>,
+  )
+  const seedDeploymentRelations = Object.values(
+    structuredClone(data.deployments.relations),
+  ) as DeploymentRelationship[]
+  const seedImports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
+  for (const [projectId, els] of Object.entries(data.imports ?? {})) {
+    const cloned = structuredClone(els) as Element<Any>[]
+    seedImports.set(projectId, new Map(cloned.map(e => [e.id as string, e])))
+  }
+
+  return builder<BuilderSpecification, T>(
+    seedSpec,
+    seedElements,
+    seedRelations as unknown as ModelRelation[],
+    seedViews,
+    seedGlobals,
+    seedDeployments,
+    seedDeploymentRelations as unknown as DeploymentRelation[],
+    seedImports,
+  )
+}
+
 export const Builder = {
   /**
    * Creates a builder with compositional methods
@@ -1113,6 +1157,42 @@ export const Builder = {
     spec: Spec,
   ): Builder<Types.FromSpecification<Spec>> {
     return builder<Spec, Types.FromSpecification<Spec>>(spec)
+  },
+
+  /**
+   * Creates a builder seeded from an existing {@link ParsedLikeC4ModelData}.
+   *
+   * Use this to enrich a model that was loaded from disk (e.g. via
+   * `LikeC4.fromWorkspace(...).toBuilder()`) — the returned builder already
+   * contains the model's elements, relations, views, deployments, globals and
+   * imports, so calls to `.model(...)`, `.deployment(...)` and `.views(...)` will
+   * extend it.
+   *
+   * Type-safety:
+   * - When the data carries a typed {@link Aux} (e.g. the output of
+   *   `builder.build()`), the returned builder preserves those types — element
+   *   kinds, FQNs, view ids and tags are statically known.
+   * - When the data has an `Unknown` Aux (e.g. loaded from a workspace via
+   *   `LikeC4.toBuilder()`), the returned builder is `Builder<AnyTypes>` —
+   *   kinds and FQNs are only known at runtime.
+   * - You can also override the type explicitly via the generic parameter
+   *   (`Builder.fromParsed<typeof mySpec.Types>(data)`) — this is an unchecked
+   *   promise: the caller takes responsibility for the cast.
+   *
+   * @example
+   * ```ts
+   * const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+   * const builder = Builder.fromParsed((await likec4.parsedModel()).$data)
+   * const enriched = builder
+   *   .model(({ system, component, relTo }, _) =>
+   *     _(system('monitoring').with(component('grafana'))),
+   *   )
+   *   .toLikeC4Model()
+   * ```
+   */
+  fromParsed: fromParsedImpl as {
+    <A extends Any>(data: ParsedLikeC4ModelData<A>): Builder<Types.FromAux<A>>
+    <T extends AnyTypes>(data: ParsedLikeC4ModelData<Any>): Builder<T>
   },
 }
 
