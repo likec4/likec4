@@ -15,10 +15,7 @@ const seedSpec = Builder.specification({
     },
     api: {},
   },
-  deployments: {
-    env: {},
-    node: {},
-  },
+  deployments: ['env', 'node'],
   tags: {
     tag1: { color: '#FFF' },
     tag2: {},
@@ -31,7 +28,9 @@ const seedBuilder = seedSpec
       actor('customer', { tags: ['tag1'] }),
       system('cloud').with(
         component('ui'),
-        component('api'),
+        component('api', {
+          title: 'Original',
+        }),
       ),
       rel('customer', 'cloud.ui', { kind: 'like' }),
       rel('cloud.ui', 'cloud.api', { kind: 'api' }),
@@ -99,7 +98,7 @@ describe('Builder.fromParsed', () => {
     expect(rebuilt.globals).toEqual(original.globals)
   })
 
-  it('returns a builder that can be extended with new elements and views', () => {
+  it('returns a builder that can extend existing elements and views', () => {
     const original = seedBuilder.build()
     const enriched = Builder
       .fromParsed<typeof seedSpec['Types']>(original)
@@ -122,12 +121,54 @@ describe('Builder.fromParsed', () => {
     expect(enriched.elements).toMatchObject({
       'cloud': { id: 'cloud' },
       'cloud.ui': { id: 'cloud.ui' },
+      'cloud.api': { id: 'cloud.api', title: 'Original' },
       'monitoring': { id: 'monitoring' },
       'monitoring.grafana': { id: 'monitoring.grafana' },
     })
     expect(enriched.views).toMatchObject({
       'index': { id: 'index' },
       'monitoring': { id: 'monitoring' },
+    })
+  })
+
+  it('returns a builder that can extend existing elements', () => {
+    const original = seedBuilder.build()
+    const enriched = Builder
+      .fromParsed<typeof seedSpec['Types']>(original)
+      .model(({ component }, _) =>
+        _(
+          component('cloud.ui.react'),
+        )
+      )
+      .build()
+
+    expect(enriched.elements).toMatchObject({
+      'cloud': { id: 'cloud' },
+      'cloud.ui': { id: 'cloud.ui' },
+      'cloud.api': { id: 'cloud.api', title: 'Original' },
+      'cloud.ui.react': { id: 'cloud.ui.react' },
+    })
+  })
+
+  it('returns a builder that can edit existing elements', () => {
+    const original = seedBuilder.build()
+    const enriched = Builder
+      .fromParsed<typeof seedSpec['Types']>(original)
+      .allowOverwrites()
+      .model(({ component, system }, _) =>
+        _(
+          component('cloud.api', { title: 'Updated' }),
+          system('cloud').with(
+            component('ui', { title: 'Changed' }),
+          ),
+        )
+      )
+      .build()
+
+    expect(enriched.elements).toMatchObject({
+      'cloud': { id: 'cloud' },
+      'cloud.ui': { id: 'cloud.ui', title: 'Changed' },
+      'cloud.api': { id: 'cloud.api', title: 'Updated' },
     })
   })
 
@@ -151,5 +192,46 @@ describe('Builder.fromParsed', () => {
     const model = Builder.fromParsed(original).toLikeC4Model()
     expect(model.element('cloud.ui').id).toBe('cloud.ui')
     expect(model.view('index').id).toBe('index')
+  })
+
+  it('specification(spec) merges new kinds into a seeded builder', () => {
+    const original = seedBuilder.build()
+    const enriched = Builder
+      .fromParsed<typeof seedSpec['Types']>(original)
+      .specification({
+        elements: {
+          // new kind, plus override of `system` style
+          database: { style: { shape: 'storage' } },
+          system: { style: { shape: 'rectangle' } },
+        },
+        tags: {
+          // new tag
+          experimental: { color: '#f00' },
+        },
+      })
+      .model(({ database }, _) =>
+        _(
+          database('warehouse', { tags: ['experimental'] }),
+        )
+      )
+      .build()
+
+    // Original kinds preserved
+    expect(Object.keys(enriched.specification.elements ?? {}).sort()).toEqual([
+      'actor',
+      'component',
+      'database',
+      'system',
+    ])
+    // Original tags preserved + new tag added
+    expect(Object.keys(enriched.specification.tags ?? {}).sort()).toEqual([
+      'experimental',
+      'tag1',
+      'tag2',
+    ])
+    // New kind usable in model
+    expect(enriched.elements).toMatchObject({
+      'warehouse': { id: 'warehouse', kind: 'database', tags: ['experimental'] },
+    })
   })
 })

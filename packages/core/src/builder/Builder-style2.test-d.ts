@@ -1,6 +1,7 @@
 import { expectTypeOf, test } from 'vitest'
 import { LikeC4Model } from '../model/LikeC4Model'
 import type { Aux, ParsedLikeC4ModelData, SpecAux } from '../types'
+import type { AnyTypes, Types } from './_types'
 import { Builder } from './Builder'
 
 test('Builder types - style 2', () => {
@@ -477,6 +478,64 @@ test('Builder tags - style 2', () => {
           never
         >
       >
+    >
+  >()
+
+  const empybuilder = Builder.specification({})
+  expectTypeOf(empybuilder.Types).toEqualTypeOf<
+    Types<
+      never,
+      never,
+      never,
+      never,
+      never,
+      never,
+      never,
+      never
+    >
+  >()
+
+  expectTypeOf(
+    empybuilder.specification({
+      elements: {
+        el: {},
+        app: {},
+      },
+    }).Types,
+  ).toEqualTypeOf<
+    Types<
+      'el' | 'app',
+      never,
+      never,
+      never,
+      never,
+      never,
+      never,
+      never
+    >
+  >()
+
+  expectTypeOf(
+    Builder
+      .specification({
+        elements: ['el', 'app'],
+      })
+      .specification({
+        tags: ['tag1', 'tag2'],
+      })
+      .specification({
+        relationships: ['likes'],
+      }).Types,
+  ).toEqualTypeOf<
+    Types<
+      'el' | 'app',
+      never,
+      never,
+      'likes',
+      'tag1' | 'tag2',
+      never,
+      never,
+      never
     >
   >()
 })
