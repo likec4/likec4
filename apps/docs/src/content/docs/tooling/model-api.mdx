@@ -607,3 +607,193 @@ Check unit tests in our repository for examples:
 - <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style1.spec.ts">Builder-style1</a>
 - <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style2.spec.ts">Builder-style2</a>
 :::
+
+## Enriching a loaded workspace
+
+You can load an existing LikeC4 workspace, hand the parsed model back to the [Model Builder](#model-builder),
+add elements/relations/views programmatically, and either keep working with the resulting model in memory
+or emit DSL source back to disk.
+
+Typical use cases:
+
+- Overlay infrastructure pulled from Terraform state, AWS or Kubernetes onto a hand-written model.
+- Merge multiple teams' models and add cross-team relationships.
+- Generate views by convention (one view per team, per environment, etc.).
+- Patch a model from an external service catalogue and re-emit `.c4` source files.
+
+<Aside type='note'>
+The DSL round-trip (`fromWorkspace` → `toDSL` → `fromSource`) is intentionally **lossy** —
+comments, source positions and original formatting are not preserved. Treat `writeDSL` as
+one-way generation, not a formatter.
+</Aside>
+
+### Reading the parsed model
+
+`likec4.parsedModel(project?)` returns the parsed-stage model (elements, relations, views, deployments,
+globals and imports) *before* view computation:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+const parsed = await likec4.parsedModel()
+
+// element/relation lookups work the same as on computed models
+console.log(parsed.element('cloud.frontend').kind)
+console.log(Object.keys(parsed.$data.views))
+```
+
+### `LikeC4.toBuilder()` — get a Builder seeded from disk
+
+`likec4.toBuilder(project?)` returns a [Model Builder](#model-builder) pre-populated with the loaded
+workspace. You can then chain `.model(...)`, `.deployment(...)` and `.views(...)` to add new content,
+and call `.toLikeC4Model()` (or `.build()`) to get the enriched model.
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .model(({ system, component }, _) =>
+    _(
+      system('monitoring').with(
+        component('grafana'),
+        component('prometheus'),
+      ),
+    )
+  )
+  .views(({ view, $include }, _) =>
+    _(
+      view('monitoring', 'Monitoring').with(
+        $include('monitoring.*'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+```
+
+The same seeding entry is also available directly on the Builder for when you already have the parsed
+data in hand:
+
+```ts
+import { Builder } from "@likec4/core/builder"
+
+const builder = Builder.fromParsed(parsedData)
+```
+
+### `Builder.allowOverwrites()` — edit seeded elements
+
+By default the Builder is strict: re-declaring an FQN that is already present throws. Opt in with
+`.allowOverwrites()` when you want to *edit* seeded entries (for example, to update a title or merge in
+new children):
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const updated = (await likec4.toBuilder())
+  .allowOverwrites()
+  .model(({ component }, _) =>
+    _(
+      component('cloud.api', { title: 'Updated' }),
+      component('cloud.ui').with(
+        component('react'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+```
+
+In overwrite mode, same-FQN + same-kind redeclaration replaces the element's properties. Redeclaring
+with a *different kind* still throws (it's almost certainly a programmer error).
+
+### `Builder.specification()` — add new kinds and tags
+
+The instance method `.specification(spec)` extends an existing builder with extra element / deployment /
+relationship kinds, tags and metadata keys. Existing keys with the same name are overridden; new keys
+are added. Useful when the workspace's specification is a starting point and you want to introduce
+overlay-specific kinds:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const model = (await likec4.toBuilder())
+  .specification({
+    elements: {
+      database: { style: { shape: 'storage' } },
+    },
+    tags: {
+      experimental: { color: '#f00' },
+    },
+  })
+  .model(({ database }, _) =>
+    _(database('warehouse', { tags: ['experimental'] })),
+  )
+  .toLikeC4Model()
+```
+
+The returned builder's types are the **union** of the prior types and the newly-declared spec, so
+element-kind helpers, tags and metadata keys accumulate across chained `.specification(...)` calls
+instead of being narrowed.
+
+### `LikeC4.toDSL()` and `writeDSL()` — render DSL back
+
+`likec4.toDSL(project?)` renders the parsed model back to LikeC4 DSL source. To write that source to
+disk, use the Node-only `writeDSL` helper exported from `likec4`:
+
+```ts
+import { LikeC4, writeDSL } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+// Render to string
+const dsl = await likec4.toDSL()
+
+// Or write to a file (default: ${targetDir}/model.c4)
+const outPath = await writeDSL(likec4, './generated')
+console.log(`Wrote DSL to ${outPath}`)
+
+// Custom filename
+await writeDSL(likec4, './generated', { fileName: 'snapshot.c4' })
+```
+
+You can combine the pieces above to load, enrich, and re-emit in a single pipeline:
+
+```ts
+const enriched = (await likec4.toBuilder())
+  .specification({ tags: { autogenerated: { color: '#999' } } })
+  .model(({ component }, _) =>
+    _(component('cloud.new-service', { tags: ['autogenerated'] })),
+  )
+
+const data = enriched.build()
+const dsl = generateLikeC4(data)              // from @likec4/generators/likec4
+await writeFile('./generated/model.c4', dsl)  // or use writeDSL on the LikeC4 instance
+```
+
+:::caution
+**Type safety when loading from disk.** When the parsed model comes from a workspace, the element kinds
+and FQNs are only known at runtime — so the builder returned by `LikeC4.toBuilder()` has loose types.
+Callers who know the spec statically can supply it explicitly:
+
+```ts
+import type { Builder, Types } from "@likec4/core/builder"
+
+type MySpec = { elements: ['actor', 'system', 'component'] }
+const builder = (await likec4.toBuilder()) as unknown as Builder<Types.FromSpecification<MySpec>>
+```
+
+Cross-references to existing FQNs (e.g. `rel('cloud.api', 'cloud.ui')`) can't be statically validated
+either way — they're checked at builder-mutation time.
+:::
+
+:::tip
+For working examples, see
+[`Builder.fromParsed.spec.ts`](https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder.fromParsed.spec.ts)
+and
+[`LikeC4.toBuilder.spec.ts`](https://github.com/likec4/likec4/blob/main/packages/language-services/src/__tests__/LikeC4.toBuilder.spec.ts).
+:::
