@@ -1,4 +1,4 @@
-import { type NonEmptyReadonlyArray, isTagColorSpecified } from '@likec4/core'
+import type { NonEmptyReadonlyArray } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
@@ -9,7 +9,6 @@ import { deepEqual } from 'fast-equals'
 import { type ComponentPropsWithoutRef, forwardRef, memo, useCallback, useEffect } from 'react'
 import { hasAtLeast } from 'remeda'
 import type { BaseNodePropsWithData } from '../../base/types'
-import { useTagSpecification } from '../../context/TagStylesContext'
 import { useCurrentZoomAtLeast } from '../../hooks/useXYFlow'
 import { stopPropagation } from '../../utils/xyflow'
 
@@ -20,17 +19,11 @@ export type ElementTagProps = {
 
 export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
   ({ tag, cursor, className, style, ...props }, ref) => {
-    const spec = useTagSpecification(tag)
     return (
       <Box
         ref={ref}
         data-likec4-tag={tag}
-        className={cx(
-          likec4tag({
-            autoTextColor: isTagColorSpecified(spec),
-          }),
-          className,
-        )}
+        className={cx(likec4tag(), className)}
         {...props}
         style={{
           cursor,

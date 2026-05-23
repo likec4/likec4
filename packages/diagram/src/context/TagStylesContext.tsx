@@ -1,5 +1,5 @@
 import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
-import { DefaultTagColors } from '@likec4/core/styles'
+import { DefaultTagColors, getContrastedColorsAPCA } from '@likec4/core/styles'
 import { useMantineStyleNonce } from '@mantine/core'
 import { type PropsWithChildren, createContext, memo, useContext } from 'react'
 import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
@@ -9,13 +9,16 @@ const TagStylesContext = createContext<Record<string, TagSpecification>>({})
 
 const radixColors = DefaultTagColors as unknown as string[]
 
-const generateColorVars = (spec: TagSpecification) => {
+export const generateColorVars = (spec: TagSpecification): string => {
   const color = spec.color
-  // Tag has a color defined in the specification
+  // Tag has a color defined in the specification — derive a high-contrast text
+  // color from it (APCA) so the chip text stays legible on any background.
   if (isTagColorSpecified(spec)) {
+    const text = getContrastedColorsAPCA(color).hiContrast
     return `
       --colors-likec4-tag-bg: ${color};
       --colors-likec4-tag-bg-hover: color-mix(in oklab, ${color}, var(--colors-likec4-mix-color) 20%);
+      --colors-likec4-tag-text: ${text};
     `
   }
   if (!radixColors.includes(color)) {

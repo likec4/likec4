@@ -19,36 +19,14 @@ export const likec4tag = defineRecipe({
     whiteSpace: 'nowrap',
     px: '1',
     py: '0',
-  },
-  variants: {
-    autoTextColor: {
-      false: {
-        '& > span': {
-          color: 'likec4.tag.text',
-          _first: {
-            opacity: 0.65,
-          },
-        },
-      },
-      true: {
-        '& > span': {
-          color: 'transparent',
-          filter: 'invert(1) grayscale(1) brightness(1.3) contrast(1000)',
-          backgroundColor: 'likec4.tag.bg',
-          backgroundClip: 'text',
-          mixBlendMode: {
-            base: 'plus-lighter',
-            _print: 'normal!',
-          },
-        },
+    '& > span': {
+      color: 'likec4.tag.text',
+      _first: {
+        opacity: 0.65,
       },
     },
   },
-  defaultVariants: {
-    autoTextColor: false,
-  },
   staticCss: [{
-    autoTextColor: ['true', 'false'],
     conditions: ['hover'],
   }],
 })
