@@ -166,7 +166,11 @@ export async function writeDSL(
   options?: WriteDSLOptions,
 ): Promise<string> {
   const dsl = await likec4.toDSL(options?.project)
-  const fullPath = join(resolve(targetDir), options?.fileName ?? 'model.c4')
+  // Don't path.resolve() the targetDir — on Windows that prepends the current
+  // drive letter to POSIX-style paths (e.g. `/tmp/x` → `D:\tmp\x`), which both
+  // surprises callers and breaks platform-portable tests. writeFile resolves
+  // relative paths against cwd anyway.
+  const fullPath = join(targetDir, options?.fileName ?? 'model.c4')
   await writeFile(fullPath, dsl, 'utf-8')
   return fullPath
 }
