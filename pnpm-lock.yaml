@@ -1670,6 +1670,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
+      memfs:
+        specifier: 'catalog:'
+        version: 4.57.2(tslib@2.8.1)
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@8.6.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
