@@ -14,7 +14,6 @@ type EditorPanelState = {
   expandedValue: string[]
   collection: TreeCollection<TreeNodeData>
 }
-type EditorNodeState = TreeNodeData['state']
 
 const createEditorPanelStore = ({
   initial,

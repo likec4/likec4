@@ -18,10 +18,9 @@ import { ElementTag, Markdown } from '../../base-primitives'
 import { Link } from '../../components/Link'
 import { useDiagram, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
-import type { NavigationPanelActorSnapshot } from '../actor'
-import { useNavigationActorSnapshot } from '../hooks'
+import { selectNavigationContext, useNavigationActorSelector } from '../hooks'
 
-const selector = ({ context }: NavigationPanelActorSnapshot) => {
+const selector = selectNavigationContext(context => {
   const view = context.view
   return {
     id: view.id,
@@ -30,13 +29,13 @@ const selector = ({ context }: NavigationPanelActorSnapshot) => {
     tags: view.tags ?? [],
     links: view.links ?? [],
   }
-}
+}, deepEqual)
 
-type ViewDetailsCardData = ReturnType<typeof selector>
+type ViewDetailsCardData = ReturnType<typeof selector[0]>
 
 export const DetailsControls = (props: PopoverProps) => {
   const [opened, setOpened] = useState(false)
-  const data = useNavigationActorSnapshot(selector, deepEqual)
+  const data = useNavigationActorSelector(selector)
   const portalProps = useMantinePortalProps()
 
   return (

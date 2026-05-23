@@ -56,7 +56,7 @@ const main = defineCommand({
         allowedHosts: true,
       },
       resolve: {
-        conditions: ['sources'],
+        externalConditions: ['sources'],
         alias: {
           // Local paths for dev
           'likec4/react': resolve('../react/src/index.ts'),

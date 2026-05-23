@@ -88,6 +88,7 @@
     "@react-hookz/web": "catalog:react",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
+    "@xstate/store-react": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "@zag-js/collection": "catalog:zag",

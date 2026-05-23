@@ -22,10 +22,9 @@ import type { MouseEvent } from 'react'
 import { isTruthy, mapValues } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import {
-  type ActorRef,
-  type ActorRefFrom,
-  type AnyActorLogic,
-  type Snapshot,
+  type ActorRefFromLogic,
+  type StateMachine,
+  type StateValue,
   assertEvent,
   setup,
 } from 'xstate'
@@ -36,6 +35,7 @@ import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
 import { navigationPanelActorLogic } from '../../navigationpanel/actor'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import { searchActorLogic } from '../../search/searchActor'
+import { defineActors } from '../../utils/defineActors'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
@@ -298,10 +298,7 @@ export const deriveToggledFeatures = (context: Context): Required<ToggledFeature
 
 const isReadOnly = (context: Context) => deriveToggledFeatures(context).enableReadOnly
 
-/**
- * Nested actors inside the diagram
- */
-const actors = {
+const actors = defineActors({
   hotkey: hotkeyActorLogic,
   // Overlays actor manages overlay-related state and interactions
   overlays: overlaysActorLogic,
@@ -313,9 +310,7 @@ const actors = {
   editor: editorActorLogic,
   // Navigation panel actor manages navigation panel state and interactions
   navigationPanel: navigationPanelActorLogic,
-} satisfies Record<string, AnyActorLogic>
-
-type ChildrenLogic = typeof actors
+})
 
 export const machine = setup({
   types: {
@@ -405,10 +400,45 @@ export const machine = setup({
   },
 })
 
-export type BaseDiagramActorRef = ActorRef<Snapshot<{ context: Context }>, Events, EmittedEvents>
-export type BaseDiagramActorChildren = {
-  [K in keyof ChildrenLogic]: ActorRefFrom<ChildrenLogic[K]> | undefined
+type ChildrenActors = typeof actors
+type ActorLogicMap = {
+  [K in keyof ChildrenActors]: ActorRefFromLogic<ChildrenActors[K]> | undefined
 }
+type ChildrenActor = {
+  [K in keyof ChildrenActors]: {
+    id: K
+    logic: ChildrenActors[K]
+    src: K
+  }
+}[keyof ChildrenActors]
+
+/**
+ * Here is a trick to reduce inference types
+ */
+export interface BaseDiagramMachineLogic<
+  Actors extends Partial<ActorLogicMap> = ActorLogicMap,
+  State extends StateValue = never,
+> extends
+  StateMachine<
+    Context,
+    Events,
+    Actors & Omit<ActorLogicMap, keyof Actors>,
+    ChildrenActor,
+    never,
+    never,
+    never,
+    State,
+    never,
+    Input,
+    never,
+    EmittedEvents,
+    never,
+    never
+  >
+{
+}
+
+export type BaseDiagramActorRef = ActorRefFromLogic<BaseDiagramMachineLogic>
 
 export const targetState = {
   idle: '#idle',

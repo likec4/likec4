@@ -58,7 +58,9 @@ export const ready = machine.createStateConfig({
     stopChild(typedSystem.overlaysActor),
     stopChild(typedSystem.editorActor),
     stopChild(typedSystem.searchActor),
-    stopChild(typedSystem.navigationActor),
+    // WE don't stop navigation actor - otherwise
+    // UI will be re-rendered and panel will be closed
+    // stopChild(typedSystem.navigationActor),
   ],
   states: {
     idle,

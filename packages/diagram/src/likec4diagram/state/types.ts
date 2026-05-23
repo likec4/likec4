@@ -1,5 +1,5 @@
 import type { ActorSystem } from 'xstate'
-import type { EditorActorRef } from '../../editor/actor/machine'
+import type { BaseEditorActorRef } from '../../editor/actor/setup'
 import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
@@ -12,7 +12,7 @@ export type System = ActorSystem<{
     diagram: DiagramMachineRef
     overlays: OverlaysActorRef
     search: SearchActorRef
-    editor: EditorActorRef
+    editor: BaseEditorActorRef
     navigationPanel: NavigationPanelActorRef
   }
 }>

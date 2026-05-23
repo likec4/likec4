@@ -458,8 +458,11 @@ catalogs:
       specifier: 6.1.0
       version: 6.1.0
     '@xstate/store':
-      specifier: 3.17.1
-      version: 3.17.1
+      specifier: 3.17.5
+      version: 3.17.5
+    '@xstate/store-react':
+      specifier: 1.0.1
+      version: 1.0.1
     xstate:
       specifier: 5.30.0
       version: 5.30.0
@@ -1233,7 +1236,10 @@ importers:
         version: 6.1.0(@types/react@19.2.15)(react@19.2.6)(xstate@5.30.0)
       '@xstate/store':
         specifier: catalog:xstate
-        version: 3.17.1(react@19.2.6)
+        version: 3.17.5(react@19.2.6)
+      '@xstate/store-react':
+        specifier: catalog:xstate
+        version: 1.0.1(react@19.2.6)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.10.2(@types/react@19.2.15)(immer@11.1.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -2219,7 +2225,7 @@ importers:
         version: 6.1.0(@types/react@19.2.15)(react@19.2.6)(xstate@5.30.0)
       '@xstate/store':
         specifier: catalog:xstate
-        version: 3.17.1(react@19.2.6)
+        version: 3.17.5(react@19.2.6)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.10.2(@types/react@19.2.15)(immer@11.1.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -2562,7 +2568,7 @@ importers:
         version: 6.1.0(@types/react@19.2.15)(react@19.2.6)(xstate@5.30.0)
       '@xstate/store':
         specifier: catalog:xstate
-        version: 3.17.1(react@19.2.6)
+        version: 3.17.5(react@19.2.6)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.10.2(@types/react@19.2.15)(immer@11.1.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -6206,8 +6212,13 @@ packages:
       xstate:
         optional: true
 
-  '@xstate/store@3.17.1':
-    resolution: {integrity: sha512-jwNJ4nXM6WNXhW8IvrWuNqf7sMTBzfRXj2mHoxVkQDLCuZCjQ3xtXeykB4fLkdmWPAjh9dEZAjMAX43IlWq1LA==}
+  '@xstate/store-react@1.0.1':
+    resolution: {integrity: sha512-J/pShjtAXYNZDLVGdx1W0OSH8kon1/pFjaQYpXEJpqsG4jAdptO0YjguqAIHK+3UvMSBf5HYlO+gMS0rRhkz8A==}
+    peerDependencies:
+      react: 19.2.6
+
+  '@xstate/store@3.17.5':
+    resolution: {integrity: sha512-ITajQVRAMa1pgmgM0OdRFYQ6OQ8GK4ynh391p13GKtZnELXn9Hgs9pr4mqO1Z95HH9INcmczmWi5xk3O18GBWg==}
     peerDependencies:
       react: 19.2.6
       solid-js: ^1.7.6
@@ -14528,7 +14539,14 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xstate/store@3.17.1(react@19.2.6)':
+  '@xstate/store-react@1.0.1(react@19.2.6)':
+    dependencies:
+      '@xstate/store': 3.17.5(react@19.2.6)
+      react: 19.2.6
+    transitivePeerDependencies:
+      - solid-js
+
+  '@xstate/store@3.17.5(react@19.2.6)':
     optionalDependencies:
       react: 19.2.6
 

@@ -1,9 +1,8 @@
-import type { ActorRef, SnapshotFrom, StateMachine } from 'xstate'
-import { machine } from './setup'
+import type { ActorRef, SnapshotFrom } from 'xstate'
+import { type BaseEditorActorLogic, machine } from './setup'
 import { editor } from './state.editor'
 import { syncQueue } from './state.sync-queue'
-import type { EditorActorEvent } from './types'
-import type { EditorActorContext, EditorActorEmitedEvent, EditorActorInput, EditorActorStateTag } from './types'
+import type { EditorActorEmitedEvent, EditorActorEvent } from './types'
 
 const _editorActorLogic = machine.createMachine({
   id: 'editor',
@@ -22,30 +21,8 @@ const _editorActorLogic = machine.createMachine({
   },
 })
 
-// type InferredDiagramMachine = typeof _diagramMachine
-// export interface DiagramMachineLogic extends InferredDiagramMachine {}
-export interface EditorActorLogic extends
-  StateMachine<
-    EditorActorContext,
-    EditorActorEvent,
-    any,
-    any,
-    any,
-    any,
-    any,
-    {
-      editor: 'idle' | 'moving'
-      syncQueue: 'idle' | 'pending' | 'suspended' | 'process'
-    },
-    EditorActorStateTag,
-    EditorActorInput,
-    any,
-    EditorActorEmitedEvent,
-    any,
-    any
-  >
-{
-}
+export interface EditorActorLogic extends BaseEditorActorLogic {}
+
 export const editorActorLogic: EditorActorLogic = _editorActorLogic as any
 
 export type EditorActorSnapshot = SnapshotFrom<EditorActorLogic>

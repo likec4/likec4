@@ -1,185 +1,53 @@
-import type { LayoutedView, ViewId } from '@likec4/core/types'
-import { isEmpty } from 'remeda'
 import {
   type ActorRef,
   type SnapshotFrom,
   type StateMachine,
   type StateValueFrom,
-  assertEvent,
-  assign,
-  emit,
   raise,
-  setup,
 } from 'xstate'
-import type { CurrentViewModel } from '../hooks/useCurrentViewModel'
+import {
+  emitNavigateTo,
+  keepDropdownOpen,
+  resetSearchQuery,
+  resetSelectedFolder,
+  updateActivatedBy,
+  updateInputs,
+  updateSearchQuery,
+  updateSelectedFolder,
+} from './actor.actions'
+import {
+  actor,
+  Context as NavigationPanelActorContextFactory,
+} from './actor.setup'
+import type {
+  Context as NavigationPanelActorContext,
+  Events as NavigationPanelActorEvent,
+  Input as NavigationPanelActorInput,
+  Tags,
+} from './actor.setup'
 
-export interface NavigationPanelActorInput {
-  view: LayoutedView
-  viewModel: CurrentViewModel | null
+export type {
+  NavigationPanelActorContext,
+  NavigationPanelActorEvent,
+  NavigationPanelActorInput,
 }
-export type NavigationPanelActorEvent =
-  // Logic events
-  | { type: 'update.inputs'; inputs: NavigationPanelActorInput }
-  | { type: 'searchQuery.change'; value: string }
-  | { type: 'searchQuery.changed' }
-  | { type: 'select.folder'; folderPath: string }
-  | { type: 'select.view'; viewId: ViewId }
-  // Events from the UI
-  // - From breadcrumbs
-  | { type: 'breadcrumbs.mouseLeave' }
-  | { type: 'breadcrumbs.mouseEnter.root' }
-  | { type: 'breadcrumbs.mouseLeave.root' }
-  | { type: 'breadcrumbs.mouseEnter.folder'; folderPath: string }
-  | { type: 'breadcrumbs.mouseLeave.folder'; folderPath: string }
-  | { type: 'breadcrumbs.mouseEnter.viewtitle' }
-  | { type: 'breadcrumbs.mouseLeave.viewtitle' }
-  | { type: 'breadcrumbs.click.root' }
-  | { type: 'breadcrumbs.click.folder'; folderPath: string }
-  | { type: 'breadcrumbs.click.viewtitle' }
-  // - From dropdown
-  | { type: 'dropdown.mouseEnter' }
-  | { type: 'dropdown.mouseLeave' }
-  | { type: 'dropdown.dismiss' }
+export type { BreadcrumbItem, DropdownColumnItem } from './actor.setup'
 
-export type NavigationPanelActorEmitted = { type: 'navigateTo'; viewId: ViewId }
-
-export type BreadcrumbItem =
-  | { type: 'folder'; folderPath: string; title: string }
-  | { type: 'viewtitle'; title: string }
-
-export type DropdownColumnItem =
-  | {
-    type: 'folder'
-    folderPath: string
-    title: string
-    selected: boolean
-  }
-  | {
-    type: 'view'
-    viewType: 'element' | 'deployment' | 'dynamic' | 'index'
-    viewId: string
-    title: string
-    description: string | null
-    selected: boolean
-  }
-
-export interface NavigationPanelActorContext {
-  view: LayoutedView
-
-  viewModel: CurrentViewModel | null
-  /**
-   * Who activated the dropdown
-   * (if `click` then the dropdown is always open until dismissed)
-   * @default 'hover'
-   */
-  activatedBy: 'hover' | 'click'
-
-  /**
-   * The folder that is currently selected in the dropdown
-   * By default it is the root
-   */
-  selectedFolder: string
-
-  searchQuery: string
-}
-
-type Tags = 'active'
-
-const _actorLogic = setup({
-  types: {
-    context: {} as NavigationPanelActorContext,
-    events: {} as NavigationPanelActorEvent,
-    tags: '' as Tags,
-    input: {} as NavigationPanelActorInput,
-    emitted: {} as NavigationPanelActorEmitted,
-  },
-  delays: {
-    'open timeout': 500,
-    'close timeout': 350,
-  },
-  actions: {
-    'update activatedBy': assign({
-      activatedBy: ({ context, event }) => {
-        switch (true) {
-          case event.type.includes('click'):
-            return 'click'
-          case event.type.includes('mouseEnter'):
-            return 'hover'
-          default:
-            return context.activatedBy
-        }
-      },
-    }),
-    'keep dropdown open': assign({
-      activatedBy: 'click',
-    }),
-    'update selected folder': assign(({ event }) => {
-      if (event.type === 'breadcrumbs.click.root') {
-        return { selectedFolder: '' } // reset to root
-      }
-      assertEvent(event, ['breadcrumbs.click.folder', 'select.folder'])
-      return { selectedFolder: event.folderPath }
-    }),
-    'reset selected folder': assign({
-      selectedFolder: ({ context }) => context.viewModel?.folder.path ?? '',
-    }),
-    'update inputs': assign(({ context, event }) => {
-      assertEvent(event, 'update.inputs')
-      const viewChanged = event.inputs.viewModel?.id !== context.viewModel?.id
-      let selectedFolder = context.selectedFolder
-      if (!event.inputs.viewModel?.folder.path.startsWith(selectedFolder)) {
-        selectedFolder = event.inputs.viewModel?.folder.path ?? ''
-      }
-      return {
-        view: event.inputs.view,
-        viewModel: event.inputs.viewModel,
-        selectedFolder,
-        // allow dropdown to close on mouse leave if view changed
-        activatedBy: viewChanged ? 'hover' : context.activatedBy,
-      }
-    }),
-    'reset search query': assign({
-      searchQuery: '',
-    }),
-    'update search query': assign(({ event }) => {
-      assertEvent(event, 'searchQuery.change')
-      return { searchQuery: event.value ?? '' }
-    }),
-    'emit navigateTo': emit(({ event }) => {
-      assertEvent(event, 'select.view')
-      return {
-        type: 'navigateTo' as const,
-        viewId: event.viewId,
-      }
-    }),
-  },
-  guards: {
-    'was opened on hover': ({ context }) => context.activatedBy === 'hover',
-    'has search query': ({ context }) => !isEmpty(context.searchQuery),
-    'search query is empty': ({ context }) => isEmpty(context.searchQuery),
-  },
-}).createMachine({
+const _actorLogic = actor.createMachine({
   id: 'navigationPanel',
-  context: ({ input }) => ({
-    ...input,
-    breadcrumbs: [],
-    activatedBy: 'hover',
-    selectedFolder: '',
-    searchQuery: '',
-    folderColumns: [],
-  }),
+  context: ({ input }) => NavigationPanelActorContextFactory({ input }),
   initial: 'idle',
   entry: [
-    'update activatedBy',
-    'reset selected folder',
+    updateActivatedBy(),
+    resetSelectedFolder(),
   ],
   on: {
     'update.inputs': {
-      actions: 'update inputs',
+      actions: updateInputs(),
     },
     'searchQuery.change': {
       actions: [
-        'update search query',
+        updateSearchQuery(),
         raise({ type: 'searchQuery.changed' }),
       ],
     },
@@ -190,11 +58,11 @@ const _actorLogic = setup({
       on: {
         'breadcrumbs.mouseEnter.*': {
           target: 'pending',
-          actions: 'update activatedBy',
+          actions: updateActivatedBy(),
         },
         'breadcrumbs.click.*': {
           target: 'active',
-          actions: 'update activatedBy',
+          actions: updateActivatedBy(),
         },
       },
     },
@@ -202,14 +70,14 @@ const _actorLogic = setup({
     pending: {
       on: {
         'breadcrumbs.mouseEnter.*': {
-          actions: 'update activatedBy',
+          actions: updateActivatedBy(),
         },
         'breadcrumbs.mouseLeave.*': {
           target: 'idle',
         },
         'breadcrumbs.click.*': {
           target: 'active',
-          actions: 'update activatedBy',
+          actions: updateActivatedBy(),
         },
       },
       after: {
@@ -254,25 +122,23 @@ const _actorLogic = setup({
           on: {
             'searchQuery.changed': {
               guard: 'has search query',
-              actions: 'keep dropdown open',
+              actions: keepDropdownOpen(),
               target: 'search',
             },
             'breadcrumbs.click.viewtitle': {
-              actions: 'reset selected folder',
+              actions: resetSelectedFolder(),
             },
             'breadcrumbs.click.*': {
-              actions: 'update selected folder',
+              actions: updateSelectedFolder(),
             },
             'select.folder': {
               actions: [
-                'keep dropdown open',
-                'update selected folder',
+                keepDropdownOpen(),
+                updateSelectedFolder(),
               ],
             },
             'select.view': {
-              actions: [
-                'emit navigateTo',
-              ],
+              actions: emitNavigateTo(),
             },
           },
         },
@@ -280,22 +146,20 @@ const _actorLogic = setup({
           on: {
             'breadcrumbs.click.viewtitle': {
               actions: [
-                'reset search query',
-                'reset selected folder',
+                resetSearchQuery(),
+                resetSelectedFolder(),
               ],
               target: 'opened',
             },
             'breadcrumbs.click.*': {
               actions: [
-                'reset search query',
-                'update selected folder',
+                resetSearchQuery(),
+                updateSelectedFolder(),
               ],
               target: 'opened',
             },
             'select.view': {
-              actions: [
-                'emit navigateTo',
-              ],
+              actions: emitNavigateTo(),
             },
           },
         },
@@ -323,7 +187,7 @@ export interface NavigationPanelActorLogic extends
   StateMachine<
     NavigationPanelActorContext,
     NavigationPanelActorEvent,
-    {},
+    any,
     any,
     any,
     any,
@@ -332,7 +196,7 @@ export interface NavigationPanelActorLogic extends
     Tags,
     NavigationPanelActorInput,
     any,
-    NavigationPanelActorEmitted,
+    any,
     any,
     any
   >
@@ -342,10 +206,11 @@ export interface NavigationPanelActorLogic extends
 export const navigationPanelActorLogic: NavigationPanelActorLogic = _actorLogic as any
 
 export type NavigationPanelActorSnapshot = SnapshotFrom<NavigationPanelActorLogic>
+
 export interface NavigationPanelActorRef extends
   ActorRef<
     NavigationPanelActorSnapshot,
     NavigationPanelActorEvent,
-    NavigationPanelActorEmitted
+    never
   >
 {}

@@ -51,10 +51,10 @@ import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import type { NavigationPanelActorContext, NavigationPanelActorSnapshot } from './actor'
 import { ProjectsMenu } from './dropdown/ProjectsMenu'
 import {
+  selectNavigationContext,
   useNavigationActor,
-  useNavigationActorContext,
   useNavigationActorRef,
-  useNavigationActorSnapshot,
+  useNavigationActorSelector,
 } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 
@@ -66,13 +66,11 @@ const scopedKeydownHandler = createScopedKeydownHandler({
   orientation: 'vertical',
 })
 
-function hasSearchQuerySelector(s: NavigationPanelActorSnapshot) {
-  return s.context.searchQuery.trim().length >= 2
-}
+const hasSearchQuerySelector = selectNavigationContext(s => s.searchQuery.trim().length >= 2)
 
 export const NavigationPanelDropdown = memo(() => {
   const actor = useNavigationActor()
-  const hasSearchQuery = useNavigationActorSnapshot(hasSearchQuerySelector)
+  const hasSearchQuery = useNavigationActorSelector(hasSearchQuerySelector)
 
   useOnDiagramEvent('paneClick', () => {
     actor.closeDropdown()
@@ -430,26 +428,26 @@ function folderColumn(
   }
 }
 
-const selectColumns = (context: NavigationPanelActorContext): FolderColumnData[] => {
-  const viewModel = context.viewModel
+const selectColumns = selectNavigationContext((ctx): FolderColumnData[] => {
+  const viewModel = ctx.viewModel
   if (!viewModel) {
     return []
   }
   const likec4model = viewModel.$model
   const columns = [
-    folderColumn(likec4model.rootViewFolder, context),
+    folderColumn(likec4model.rootViewFolder, ctx),
   ]
-  const folder = likec4model.viewFolder(context.selectedFolder)
+  const folder = likec4model.viewFolder(ctx.selectedFolder)
   if (!folder.isRoot) {
     for (const b of folder.breadcrumbs) {
-      columns.push(folderColumn(b, context))
+      columns.push(folderColumn(b, ctx))
     }
   }
   return columns
-}
+}, deepEqual)
 
 const FolderColumns = memo(() => {
-  const columns = useNavigationActorContext(selectColumns, deepEqual)
+  const columns = useNavigationActorSelector(selectColumns)
   return (
     <HStack gap="xs" alignItems="stretch">
       {columns.flatMap((column, i) => [

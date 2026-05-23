@@ -9,8 +9,8 @@ import {
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { isTruthy } from 'remeda'
-import { selectDiagramContext, useDiagramState, useMantinePortalProps } from '../../hooks'
-import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { useMantinePortalProps } from '../../hooks'
+import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'
 import { TriggerWalkthroughButton } from './DynamicViewControls'
 
 const PrevNextButton = Button.withProps({
@@ -72,7 +72,7 @@ export function ActiveWalkthroughControls() {
     hasPrevious,
     currentStep,
     totalSteps,
-  } = useDiagramState(selectWalkthroughState)
+  } = useDiagramSelector(selectWalkthroughState)
 
   return (
     <AnimatePresence propagate mode="popLayout">

@@ -8,10 +8,9 @@ import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
-import { useDiagram } from '../hooks/safeContext'
 import { useCurrentView } from '../hooks/useCurrentView'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
-import { selectDiagramContext, useDiagramState } from '../hooks/useDiagram'
+import { selectDiagramContext, useDiagramSelector } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
 import type { NavigationPanelActorRef, NavigationPanelActorSnapshot } from './actor'
 import { ComparePanel } from './comparepanel'
@@ -23,16 +22,8 @@ import { ActiveWalkthroughControls } from './walkthrough'
 import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 
 export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
-  const diagram = useDiagram()
   const view = useCurrentView()
   const viewModel = useOptionalCurrentViewModel()
-
-  useEffect(() => {
-    const subscription = actorRef.on('navigateTo', (event) => {
-      diagram.navigateTo(event.viewId)
-    })
-    return () => subscription.unsubscribe()
-  }, [actorRef, diagram])
 
   useEffect(() => {
     actorRef.send({ type: 'update.inputs', inputs: { viewModel, view } })
@@ -101,8 +92,9 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
 }
 
 const selectIsActiveWalkthrough = selectDiagramContext(c => c.activeWalkthrough !== null)
+
 const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRef }) => {
-  const isActiveWalkthrough = useDiagramState(selectIsActiveWalkthrough)
+  const isActiveWalkthrough = useDiagramSelector(selectIsActiveWalkthrough)
 
   return (
     <LayoutGroup>

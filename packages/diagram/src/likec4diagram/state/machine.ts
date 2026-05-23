@@ -1,7 +1,7 @@
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
-import type { ActorRef, MachineSnapshot, StateMachine } from 'xstate'
+import type { ActorRef, SnapshotFrom, StateValueFrom } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'
-import type { EditorActorRef } from '../../editor/actor/machine'
+import type { BaseEditorActorRef } from '../../editor/actor/setup'
 import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
@@ -20,10 +20,9 @@ import {
   updateInputs,
 } from './machine.actions'
 import type {
-  BaseDiagramActorChildren,
+  BaseDiagramMachineLogic,
   EmittedEvents as DiagramEmittedEvents,
   Events as DiagramEvents,
-  Input,
 } from './machine.setup'
 import {
   Context as DiagramContext,
@@ -122,43 +121,23 @@ const _diagramMachine = machine.createMachine({
   },
 })
 
+export interface DiagramMachineLogic extends
+  BaseDiagramMachineLogic<
+    {
+      overlays: OverlaysActorRef | undefined
+      search: SearchActorRef | undefined
+      editor: BaseEditorActorRef | undefined
+      navigationPanel: NavigationPanelActorRef | undefined
+    },
+    StateValueFrom<typeof _diagramMachine>
+  > {}
+
 /**
  * Here is a trick to reduce inference types
  */
-// type InferredDiagramMachine = typeof _diagramMachine
-// export interface DiagramMachineLogic extends InferredDiagramMachine {}
-export interface DiagramMachineLogic extends
-  StateMachine<
-    DiagramContext,
-    DiagramEvents,
-    BaseDiagramActorChildren,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    Input,
-    any,
-    any,
-    any,
-    any
-  >
-{
-}
-
 export const diagramMachine: DiagramMachineLogic = _diagramMachine as any
 
-export type DiagramMachineSnapshot = MachineSnapshot<
-  DiagramContext,
-  DiagramEvents,
-  BaseDiagramActorChildren,
-  any,
-  any,
-  any,
-  {},
-  {}
->
+export type DiagramMachineSnapshot = SnapshotFrom<DiagramMachineLogic>
 
 export interface DiagramMachineRef extends ActorRef<DiagramMachineSnapshot, DiagramEvents, DiagramEmittedEvents> {}
 
