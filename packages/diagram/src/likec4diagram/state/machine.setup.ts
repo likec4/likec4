@@ -22,19 +22,25 @@ import type { MouseEvent } from 'react'
 import { isTruthy, mapValues } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import {
+  type ActorRef,
+  type ActorRefFrom,
+  type AnyActorLogic,
+  type Snapshot,
   assertEvent,
   setup,
 } from 'xstate'
-import type { EnabledFeatures, TogglableFeature } from '../../context/DiagramFeatures'
+import { type EnabledFeatures, type TogglableFeature, DefaultFeatures } from '../../context/DiagramFeatures'
 import { editorActorLogic } from '../../editor/actor/machine'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
+import { navigationPanelActorLogic } from '../../navigationpanel/actor'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import { searchActorLogic } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
+import { DiagramToggledFeaturesPersistence } from './persistence'
 
 /**
  * Navigation history entry represents a current view state,
@@ -130,6 +136,45 @@ export interface Context extends Input {
   activeWalkthrough: null | {
     stepId: StepEdgeId
     parallelPrefix: string | null
+  }
+}
+
+export function Context({ input }: { input: Input }): Context {
+  return {
+    ...input,
+    xynodes: [],
+    xyedges: [],
+    features: {
+      ...DefaultFeatures,
+      ...input.features,
+    },
+    toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
+      enableReadOnly: true,
+      enableCompareWithLatest: false,
+    },
+    initialized: {
+      xydata: false,
+      xyflow: false,
+    },
+    viewportChangedManually: false,
+    lastOnNavigate: null,
+    lastClickedNode: null,
+    focusedNode: null,
+    autoUnfocusTimer: false,
+    activeElementDetails: null,
+    viewportBefore: null,
+    viewportOnManualLayout: null,
+    viewportOnAutoLayout: null,
+    navigationHistory: {
+      currentIndex: 0,
+      history: [],
+    },
+    viewport: { x: 0, y: 0, zoom: 1 },
+    xyflow: null,
+    dynamicViewVariant: input.dynamicViewVariant ?? (
+      input.view._type === 'dynamic' ? input.view.variant : 'diagram'
+    ) ?? 'diagram',
+    activeWalkthrough: null,
   }
 }
 
@@ -253,27 +298,36 @@ export const deriveToggledFeatures = (context: Context): Required<ToggledFeature
 
 const isReadOnly = (context: Context) => deriveToggledFeatures(context).enableReadOnly
 
+/**
+ * Nested actors inside the diagram
+ */
+const actors = {
+  hotkey: hotkeyActorLogic,
+  // Overlays actor manages overlay-related state and interactions
+  overlays: overlaysActorLogic,
+  // Search actor handles search functionality
+  search: searchActorLogic,
+  // Media print actor manages print-related state
+  mediaPrint: mediaPrintActorLogic,
+  // Editor actor manages editor-related state and interactions
+  editor: editorActorLogic,
+  // Navigation panel actor manages navigation panel state and interactions
+  navigationPanel: navigationPanelActorLogic,
+} satisfies Record<string, AnyActorLogic>
+
+type ChildrenLogic = typeof actors
+
 export const machine = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
     children: {} as {
-      hotkey: 'hotkeyActorLogic'
-      overlays: 'overlaysActorLogic'
-      search: 'searchActorLogic'
-      mediaPrint: 'mediaPrintActorLogic'
-      editor: 'editorActor'
+      [K in keyof typeof actors]: K
     },
     events: {} as Events,
     emitted: {} as EmittedEvents,
   },
-  actors: {
-    hotkeyActorLogic,
-    overlaysActorLogic,
-    searchActorLogic,
-    mediaPrintActorLogic,
-    editorActor: editorActorLogic,
-  },
+  actors,
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
     'enabled: Editor': ({ context }) => context.features.enableEditor,
@@ -285,6 +339,7 @@ export const machine = setup({
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
     'enabled: OpenSource': ({ context }) => context.features.enableVscode,
     'enabled: DynamicViewWalkthrough': ({ context }) => context.features.enableDynamicViewWalkthrough,
+    'enabled: NavigationPanel': ({ context }) => context.features.enableControls, // TODO rename legacy
     'focus.node: autoUnfocus': ({ event }) => {
       assertEvent(event, 'focus.node')
       return event.autoUnfocus === true
@@ -349,6 +404,11 @@ export const machine = setup({
     },
   },
 })
+
+export type BaseDiagramActorRef = ActorRef<Snapshot<{ context: Context }>, Events, EmittedEvents>
+export type BaseDiagramActorChildren = {
+  [K in keyof ChildrenLogic]: ActorRefFrom<ChildrenLogic[K]> | undefined
+}
 
 export const targetState = {
   idle: '#idle',

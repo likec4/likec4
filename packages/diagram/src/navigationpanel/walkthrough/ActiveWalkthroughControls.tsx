@@ -9,7 +9,7 @@ import {
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { isTruthy } from 'remeda'
-import { useMantinePortalProps } from '../../hooks'
+import { selectDiagramContext, useDiagramState, useMantinePortalProps } from '../../hooks'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
 import { TriggerWalkthroughButton } from './DynamicViewControls'
 
@@ -51,6 +51,19 @@ const ParallelFrame = () => {
   )
 }
 
+const selectWalkthroughState = selectDiagramContext(s => {
+  const activeWalkthrough = s.activeWalkthrough
+  const currentStepIndex = activeWalkthrough
+    ? s.xyedges.findIndex(e => e.id === activeWalkthrough.stepId)
+    : -1
+  return {
+    isParallel: isTruthy(activeWalkthrough?.parallelPrefix),
+    hasNext: currentStepIndex < s.xyedges.length - 1,
+    hasPrevious: currentStepIndex > 0,
+    currentStep: currentStepIndex + 1,
+    totalSteps: s.xyedges.length,
+  }
+})
 export function ActiveWalkthroughControls() {
   const diagram = useDiagram()
   const {
@@ -59,16 +72,7 @@ export function ActiveWalkthroughControls() {
     hasPrevious,
     currentStep,
     totalSteps,
-  } = useDiagramContext(s => {
-    const currentStepIndex = s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId)
-    return ({
-      isParallel: isTruthy(s.activeWalkthrough?.parallelPrefix),
-      hasNext: currentStepIndex < s.xyedges.length - 1,
-      hasPrevious: currentStepIndex > 0,
-      currentStep: currentStepIndex + 1,
-      totalSteps: s.xyedges.length,
-    })
-  })
+  } = useDiagramState(selectWalkthroughState)
 
   return (
     <AnimatePresence propagate mode="popLayout">

@@ -1,6 +1,7 @@
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { type DependencyList, useCallback, useEffect, useRef } from 'react'
+import { hasAtLeast } from 'remeda'
 import type { Subscription } from 'xstate'
 import type { DiagramApi } from '../likec4diagram/state/diagram-api'
 import type {
@@ -43,6 +44,7 @@ export function selectDiagramActorContext<T = unknown>(
 
 /**
  * Read diagram context
+ * @deprecated Use {@link useDiagramState} instead
  */
 export function useDiagramContext<T = unknown>(
   selector: (context: DiagramContext) => T,
@@ -50,10 +52,12 @@ export function useDiagramContext<T = unknown>(
   deps: DependencyList = [],
 ): T {
   const actorRef = useDiagramActorRef()
-  const selectorRef = useCallbackRef(selector)
-  // oxlint-disable-next-line eslint-plugin-react-hooks/exhaustive-deps
-  const select = useCallback((s: DiagramActorSnapshot) => selectorRef(s.context), deps)
-  return useXstateSelector(actorRef, select, compare)
+  return useXstateSelector(
+    actorRef,
+    // oxlint-disable-next-line eslint-plugin-react-hooks/exhaustive-deps
+    useCallback((s: DiagramActorSnapshot) => selector(s.context), deps),
+    compare,
+  )
 }
 
 type PickEmittedEvent<T> = T extends DiagramEmittedEvents['type'] ? DiagramEmittedEvents & { type: T } : unknown
@@ -99,4 +103,79 @@ export function useOnDiagramEvent<T extends DiagramEmittedEvents['type'] | '*'>(
       subscription?.unsubscribe()
     }
   }, [callbackRef, actorRef, event, once])
+}
+
+/**
+ * Select from diagram context with default shallow equality comparator
+ * @example
+ * ```tsx
+ * const selectDiagram = selectDiagramContext(ctx => ctx.diagram)
+ * //...
+ * const diagram = useDiagramState(selectDiagram)
+ * ```
+ */
+export function selectDiagramContext<T>(
+  selector: (state: DiagramContext) => T,
+): [
+  selector: (snapshot: DiagramActorSnapshot) => T,
+  compare: (a: NoInfer<T> | undefined, b: NoInfer<T>) => boolean,
+]
+/**
+ * Select from diagram context with custom comparator
+ */
+export function selectDiagramContext<T>(
+  selector: (state: DiagramContext) => T,
+  compare: (a: NoInfer<T> | undefined, b: NoInfer<T>) => boolean,
+): [
+  selector: (snapshot: DiagramActorSnapshot) => T,
+  compare: (a: NoInfer<T> | undefined, b: NoInfer<T>) => boolean,
+]
+export function selectDiagramContext<T>(
+  selector: (state: DiagramContext) => T,
+  compare?: (a: NoInfer<T> | undefined, b: NoInfer<T>) => boolean,
+) {
+  return [
+    (snapshot: DiagramActorSnapshot) => selector(snapshot.context),
+    compare ?? shallowEqual,
+  ] as const
+}
+/**
+ * Read from diagram state
+ *
+ * @example
+ * ```tsx
+ * const selectDiagram = selectDiagramContext(ctx => ctx.diagram)
+ * //...
+ * const diagram = useDiagramState(selectDiagram)
+ * ```
+ */
+export function useDiagramState<T>(
+  arg1: readonly [
+    (snapshot: DiagramActorSnapshot) => T,
+    (a: NoInfer<T> | undefined, b: NoInfer<T>) => boolean,
+  ],
+): T
+export function useDiagramState<T>(
+  selector: (snapshot: DiagramActorSnapshot) => T,
+  compare?: (a: NoInfer<T> | undefined, b: NoInfer<T>) => boolean,
+): T
+export function useDiagramState(...args: unknown[]) {
+  let selector, compare
+  if (args.length === 2) {
+    ;[selector, compare] = args
+  } else if (args.length === 1 && Array.isArray(args[0]) && hasAtLeast(args[0], 2)) {
+    ;[selector, compare] = args[0] as any
+  } else if (args.length === 1 && Array.isArray(args[0]) && hasAtLeast(args[0], 1)) {
+    ;[selector, compare] = [args[0] as any, shallowEqual]
+  } else if (args.length === 1 && typeof args[0] === 'function') {
+    ;[selector, compare] = [args[0] as any, shallowEqual]
+  } else {
+    throw new Error('Invalid arguments for useDiagramState')
+  }
+  const actorRef = useDiagramActorRef()
+  return useXstateSelector(
+    actorRef,
+    selector,
+    compare,
+  )
 }

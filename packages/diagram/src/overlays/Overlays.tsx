@@ -128,7 +128,7 @@ export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActor
     <DiagramFeatures.Overlays>
       <ErrorBoundary onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
         <LayoutGroup>
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence propagate mode="popLayout">
             {overlaysReact}
           </AnimatePresence>
         </LayoutGroup>

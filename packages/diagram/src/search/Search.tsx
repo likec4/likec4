@@ -104,6 +104,7 @@ export const Search = memo(({ searchActorRef }: { searchActorRef: SearchActorRef
       }}>
       {isOpened && (
         <Overlay
+          key="search"
           fullscreen
           withBackdrop={false}
           backdrop={{

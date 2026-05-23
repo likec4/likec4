@@ -1,8 +1,8 @@
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import type { ActorRef, MachineSnapshot, StateMachine } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'
-import { DefaultFeatures } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
+import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import {
@@ -20,55 +20,22 @@ import {
   updateInputs,
 } from './machine.actions'
 import type {
-  Context as DiagramContext,
+  BaseDiagramActorChildren,
   EmittedEvents as DiagramEmittedEvents,
   Events as DiagramEvents,
   Input,
 } from './machine.setup'
-import { machine } from './machine.setup'
+import {
+  Context as DiagramContext,
+  machine,
+} from './machine.setup'
 import { initializing, isReady } from './machine.state.initializing'
 import { navigating } from './machine.state.navigating'
 import { ready } from './machine.state.ready'
-import { DiagramToggledFeaturesPersistence } from './persistence'
 
 const _diagramMachine = machine.createMachine({
   initial: 'initializing',
-  context: ({ input }): DiagramContext => ({
-    ...input,
-    xyedges: [],
-    xynodes: [],
-    features: {
-      ...DefaultFeatures,
-      ...input.features,
-    },
-    toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
-      enableReadOnly: true,
-      enableCompareWithLatest: false,
-    },
-    initialized: {
-      xydata: false,
-      xyflow: false,
-    },
-    viewportChangedManually: false,
-    lastOnNavigate: null,
-    lastClickedNode: null,
-    focusedNode: null,
-    autoUnfocusTimer: false,
-    activeElementDetails: null,
-    viewportBefore: null,
-    viewportOnManualLayout: null,
-    viewportOnAutoLayout: null,
-    navigationHistory: {
-      currentIndex: 0,
-      history: [],
-    },
-    viewport: { x: 0, y: 0, zoom: 1 },
-    xyflow: null,
-    dynamicViewVariant: input.dynamicViewVariant ?? (
-      input.view._type === 'dynamic' ? input.view.variant : 'diagram'
-    ) ?? 'diagram',
-    activeWalkthrough: null,
-  }),
+  context: DiagramContext,
   states: {
     initializing,
     isReady,
@@ -164,11 +131,7 @@ export interface DiagramMachineLogic extends
   StateMachine<
     DiagramContext,
     DiagramEvents,
-    {
-      overlays: OverlaysActorRef | undefined
-      search: SearchActorRef | undefined
-      editor: EditorActorRef | undefined
-    },
+    BaseDiagramActorChildren,
     any,
     any,
     any,
@@ -189,11 +152,7 @@ export const diagramMachine: DiagramMachineLogic = _diagramMachine as any
 export type DiagramMachineSnapshot = MachineSnapshot<
   DiagramContext,
   DiagramEvents,
-  {
-    overlays: OverlaysActorRef | undefined
-    search: SearchActorRef | undefined
-    editor: EditorActorRef | undefined
-  },
+  BaseDiagramActorChildren,
   any,
   any,
   any,

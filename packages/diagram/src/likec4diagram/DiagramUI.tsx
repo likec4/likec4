@@ -12,6 +12,7 @@ import { LayoutDriftFrame, NotationPanel } from './ui'
 const selectChildren = selectDiagramActor(s => ({
   overlays: s.children.overlays ?? null,
   search: s.children.search ?? null,
+  navigation: s.children.navigationPanel ?? null,
 }))
 
 export const LikeC4DiagramUI = memo(() => {
@@ -27,13 +28,15 @@ export const LikeC4DiagramUI = memo(() => {
   const actors = useDiagramSnapshot(selectChildren)
 
   const handleReset = useCallback(() => {
-    console.warn('DiagramUI: resetting error boundary and rerendering...')
+    if (import.meta.env.DEV) {
+      console.warn('DiagramUI: resetting error boundary and rerendering...')
+    }
     rerender()
   }, [])
 
   return (
     <ErrorBoundary onReset={handleReset}>
-      {enableControls && <NavigationPanel />}
+      {enableControls && actors.navigation && <NavigationPanel actorRef={actors.navigation} />}
       {actors.overlays && <Overlays overlaysActorRef={actors.overlays} />}
       {enableNotations && <NotationPanel />}
       {enableSearch && actors.search && <Search searchActorRef={actors.search} />}

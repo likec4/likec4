@@ -4,6 +4,7 @@ import {
   type ActorRef,
   type SnapshotFrom,
   type StateMachine,
+  type StateValueFrom,
   assertEvent,
   assign,
   emit,
@@ -158,7 +159,7 @@ const _actorLogic = setup({
     'search query is empty': ({ context }) => isEmpty(context.searchQuery),
   },
 }).createMachine({
-  id: 'breadcrumbs',
+  id: 'navigationPanel',
   context: ({ input }) => ({
     ...input,
     breadcrumbs: [],
@@ -327,7 +328,7 @@ export interface NavigationPanelActorLogic extends
     any,
     any,
     any,
-    any,
+    StateValueFrom<typeof _actorLogic>,
     Tags,
     NavigationPanelActorInput,
     any,

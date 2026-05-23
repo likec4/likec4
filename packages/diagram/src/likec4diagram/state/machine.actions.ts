@@ -18,6 +18,7 @@ import type {
 } from '@likec4/core/types'
 import { difference } from '@likec4/core/utils'
 import { type Rect, nodeToRect } from '@xyflow/system'
+import { shallowEqual } from 'fast-equals'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy } from 'remeda'
 import type { Writable } from 'type-fest'
@@ -154,7 +155,7 @@ export const updateInputs = () =>
 
 export const assignXYDataFromView = (view?: DiagramView) =>
   machine.assign(({ context, event }) => {
-    let xydata
+    let xydata: ReturnType<typeof convertToXYFlow>
     if (view) {
       xydata = convertToXYFlow({
         currentViewId: context.view.id,
@@ -590,7 +591,7 @@ export const ensureEditorActor = () =>
       return
     }
     if (hasEditor && !editor) {
-      enqueue.spawnChild('editorActor', {
+      enqueue.spawnChild('editor', {
         id: 'editor',
         systemId: 'editor',
         input: {
@@ -790,7 +791,7 @@ export const ensureOverlaysActor = () =>
     const enabled = check('enabled: Overlays')
     const running = typedSystem(system).overlaysActorRef
     if (enabled && !running) {
-      enqueue.spawnChild('overlaysActorLogic', {
+      enqueue.spawnChild('overlays', {
         id: 'overlays',
         systemId: 'overlays',
         syncSnapshot: true,
@@ -806,6 +807,30 @@ export const ensureOverlaysActor = () =>
   })
 
 /**
+ * Ensure that the navigation panel actor is running or stopped based on the current state
+ */
+export const ensureNavigationPanelActor = () =>
+  machine.enqueueActions(({ enqueue, check, system, context }) => {
+    const enabled = check('enabled: NavigationPanel')
+    const running = typedSystem(system).navigationActorRef
+    if (enabled && !running) {
+      enqueue.spawnChild('navigationPanel', {
+        id: 'navigationPanel',
+        systemId: 'navigationPanel',
+        input: {
+          view: context.view,
+          viewModel: null,
+        },
+        syncSnapshot: true,
+      })
+      return
+    }
+    if (!enabled && running) {
+      enqueue.stopChild(running)
+    }
+  })
+
+/**
  * Ensure that the search actor is running or stopped based on the current feature flags
  */
 export const ensureSearchActor = () =>
@@ -813,7 +838,7 @@ export const ensureSearchActor = () =>
     const enabled = check('enabled: Search')
     const running = typedSystem(system).searchActorRef
     if (enabled && !running) {
-      enqueue.spawnChild('searchActorLogic', {
+      enqueue.spawnChild('search', {
         id: 'search',
         systemId: 'search',
         syncSnapshot: true,
@@ -871,7 +896,8 @@ export const onEdgeMouseLeave = () =>
 
 export const reraise = () => machine.raise(({ event }) => event, { delay: 50 })
 
-export const startHotKeyActor = () => machine.spawnChild('hotkeyActorLogic', { id: 'hotkey' })
+export const startHotKeyActor = () =>
+  machine.spawnChild('hotkey', { id: 'hotkey', systemId: 'hotkey', syncSnapshot: true })
 export const stopHotKeyActor = () => machine.stopChild('hotkey')
 
 /**
@@ -990,6 +1016,10 @@ export const updateView = () =>
         console.warn('updateView called for another view - ignoring', { event })
         return
       }
+      if (shallowEqual(nextView, context.view)) {
+        console.log('updateView called for the same view - ignoring', { event })
+        return
+      }
 
       enqueue(assignXYDataFromView())
 
@@ -1045,3 +1075,14 @@ export const updateView = () =>
       }
     },
   )
+
+/**
+ * Ensures all child actors are started/stopped as needed
+ */
+export const ensureAllActors = () =>
+  machine.enqueueActions(({ enqueue }) => {
+    enqueue(ensureEditorActor())
+    enqueue(ensureOverlaysActor())
+    enqueue(ensureSearchActor())
+    enqueue(ensureNavigationPanelActor())
+  })

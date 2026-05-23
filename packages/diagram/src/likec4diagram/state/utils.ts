@@ -13,6 +13,7 @@ import type { ActorSystem } from 'xstate'
 import { MinZoom } from '../../base/const'
 import type { EditorActorRef } from '../../editor/actor/machine'
 import type { XYStoreState } from '../../hooks/useXYFlow'
+import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import { pickViewBounds } from '../../utils/view-bounds'
@@ -42,6 +43,9 @@ export function typedSystem(system: ActorSystem<any>) {
     get editorActorRef(): EditorActorRef | null {
       return (system as System).get('editor') ?? null
     },
+    get navigationActorRef(): NavigationPanelActorRef | null {
+      return (system as System).get('navigationPanel') ?? null
+    },
   }
 }
 typedSystem.editorActor = ({ system }: { system: ActorSystem<any> }): EditorActorRef => {
@@ -55,6 +59,9 @@ typedSystem.diagramActor = ({ system }: { system: ActorSystem<any> }): DiagramAc
 }
 typedSystem.searchActor = ({ system }: { system: ActorSystem<any> }): SearchActorRef => {
   return (system as System).get('search')!
+}
+typedSystem.navigationActor = ({ system }: { system: ActorSystem<any> }): NavigationPanelActorRef => {
+  return (system as System).get('navigationPanel')!
 }
 
 export function findDiagramNode(ctx: Context, xynodeId: string): DiagramNode | null {

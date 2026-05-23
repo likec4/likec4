@@ -55,24 +55,26 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   fullscreen = false,
   withBackdrop = true,
   backdrop,
-  openDelay = 130,
+  openDelay = 120,
   ...rest
 }, ref) => {
   // Initial state is false, will be set to true in useLayoutEffect if openDelay is 0
   const [opened, setOpened] = useState(false)
   const focusTrapRef = useFocusTrap(opened)
   const dialogRef = useRef<HTMLDialogElement>(null)
-
-  const onCloseRef = useRef<OverlayProps['onClose']>(null)
+  const onCloseCalledRef = useRef(false)
 
   const motionNotReduced = useReducedMotionConfig() !== true
 
   /**
-   * Close the overlay and call the onClose callback
+   * This function is called when the overlay is closed by outside click or escape key.
+   * It ensures that the onClose callback is only called once.
    */
-  const cancelMe = () => {
-    onCloseRef.current = onClose
-    dialogRef.current?.close()
+  const closeMe = () => {
+    if (!onCloseCalledRef.current) {
+      onCloseCalledRef.current = true
+      onClose()
+    }
   }
 
   const isPresent = useIsPresent()
@@ -81,11 +83,16 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
     if (isPresent) {
       return
     }
-    if (dialogRef.current?.open) {
-      // Clear the onClose callback to prevent it from being called
-      // when the dialog is closed by the presence animation
-      onCloseRef.current = null
-      dialogRef.current.close()
+    const dialog = dialogRef.current
+    return () => {
+      // We are about to unmount, so we don't need to call onClose
+      // The dialog will be closed by the presence animation
+      onCloseCalledRef.current = true
+      // But we need to close it manually (if dialog is still open)
+      // to avoid any rendering artifacts during the exit animation
+      if (dialog?.open) {
+        dialog.close()
+      }
     }
   }, [isPresent])
 
@@ -100,9 +107,11 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
     }
   }, [])
 
-  useTimeoutEffect(() => {
-    setOpened(true)
-  }, openDelay > 0 ? openDelay : undefined)
+  // Debounce opening to avoid flicker
+  useTimeoutEffect(
+    () => setOpened(true),
+    openDelay > 0 ? openDelay : undefined,
+  )
 
   const overlayRecipe = overlay({
     fullscreen,
@@ -116,22 +125,31 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
 
   const motionProps = useMemo(() => ({
     initial: {
-      [backdropBlur]: '1px',
-      [backdropOpacity]: '10%',
-      scale: 0.95,
+      [backdropBlur]: '2px',
+      [backdropOpacity]: '20%',
+      scaleX: 0.95,
+      scaleY: 0.85,
+      originY: 0,
+      translateY: -8,
       opacity: 0,
     },
     animate: {
       [backdropBlur]: overlayLevel > 0 ? '4px' : '8px',
       [backdropOpacity]: targetBackdropOpacity,
-      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+      originY: 0,
+      translateY: 0,
       opacity: 1,
     },
     exit: {
+      scaleX: 0.9,
+      scaleY: 0.8,
+      originY: 0,
+      translateY: -10,
       opacity: 0,
-      scale: 0.97,
-      [backdropBlur]: '0px',
-      [backdropOpacity]: '0%',
+      [backdropBlur]: '2px',
+      [backdropOpacity]: '20%',
     },
   } satisfies Record<string, TargetAndTransition>), [overlayLevel, targetBackdropOpacity])
 
@@ -146,7 +164,6 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
         classes?.dialog,
         className,
         overlayRecipe,
-        // styles.dialog,
         fullscreen && RemoveScroll.classNames.fullWidth,
       )}
       layout
@@ -160,6 +177,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
           [backdropOpacity]: targetBackdropOpacity,
         },
       }}
+      transition={{}}
       onDoubleClick={stopPropagation}
       onPointerDown={stopPropagation}
       {...rest}
@@ -167,18 +185,16 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
         e.stopPropagation()
         // Click on dialog backdrop (not the content) should close the overlay
         if (e.target === e.currentTarget) {
-          cancelMe()
+          closeMe()
         }
       }}
       onCancel={e => {
         // ESC key press - close the overlay
         e.preventDefault()
         e.stopPropagation()
-        cancelMe()
+        closeMe()
       }}
-      onClose={() => {
-        onCloseRef.current?.()
-      }}
+      onClose={closeMe}
     >
       <RemoveScroll forwardProps>
         <div

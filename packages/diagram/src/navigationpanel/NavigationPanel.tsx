@@ -4,16 +4,16 @@ import {
   Popover,
   PopoverTarget,
 } from '@mantine/core'
-import { useActorRef, useSelector } from '@xstate/react'
+import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
 import { useDiagram } from '../hooks/safeContext'
 import { useCurrentView } from '../hooks/useCurrentView'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
-import { useDiagramContext } from '../hooks/useDiagram'
+import { selectDiagramContext, useDiagramState } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
-import { type NavigationPanelActorRef, type NavigationPanelActorSnapshot, navigationPanelActorLogic } from './actor'
+import type { NavigationPanelActorRef, NavigationPanelActorSnapshot } from './actor'
 import { ComparePanel } from './comparepanel'
 import { EditorPanel } from './editorpanel'
 import { NavigationPanelActorContextProvider } from './hooks'
@@ -22,20 +22,11 @@ import { NavigationPanelDropdown } from './NavigationPanelDropdown'
 import { ActiveWalkthroughControls } from './walkthrough'
 import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 
-export const NavigationPanel = memo(() => {
+export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
   const diagram = useDiagram()
   const view = useCurrentView()
   const viewModel = useOptionalCurrentViewModel()
 
-  const actorRef = useActorRef(
-    navigationPanelActorLogic,
-    {
-      input: {
-        view,
-        viewModel,
-      },
-    },
-  )
   useEffect(() => {
     const subscription = actorRef.on('navigateTo', (event) => {
       diagram.navigateTo(event.viewId)
@@ -108,8 +99,10 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
     </Popover>
   )
 }
+
+const selectIsActiveWalkthrough = selectDiagramContext(c => c.activeWalkthrough !== null)
 const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRef }) => {
-  const isActiveWalkthrough = useDiagramContext(c => c.activeWalkthrough !== null)
+  const isActiveWalkthrough = useDiagramState(selectIsActiveWalkthrough)
 
   return (
     <LayoutGroup>
@@ -127,7 +120,7 @@ const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRe
           })}
           onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave' })}
         >
-          <AnimatePresence>
+          <AnimatePresence propagate>
             {isActiveWalkthrough ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}
           </AnimatePresence>
         </m.div>

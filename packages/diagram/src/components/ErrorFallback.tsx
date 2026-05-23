@@ -1,5 +1,5 @@
 import { css } from '@likec4/styles/css'
-import { HStack, VStack } from '@likec4/styles/jsx'
+import { HStack, Txt, VStack } from '@likec4/styles/jsx'
 import { Button, ScrollAreaAutosize, Text, ThemeIcon } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { useEffect, useRef } from 'react'
@@ -37,7 +37,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
         _backdrop: {
           cursor: 'zoom-out',
           backdropFilter: `blur(18px)`,
-          bg: '[color-mix(in oklab, {colors.likec4.overlay.backdrop} 60%, transparent)]',
+          bg: '[color-mix(in oklab, {colors.likec4.overlay.backdrop} 70%, transparent)]',
         },
       })}
       onClick={e => {
@@ -57,9 +57,9 @@ export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
           <IconX style={{ width: 20, height: 20 }} />
         </ThemeIcon>
         <VStack flex={'1'}>
-          <Text fz={'md'}>
+          <Txt size={'md'} css={{ fontWeight: 'medium' }}>
             Oops, something went wrong
-          </Text>
+          </Txt>
           <ScrollAreaAutosize maw={'100%'} mah={400} type="auto">
             <Text fz={'md'} c={'red'} style={{ whiteSpace: 'pre-wrap', userSelect: 'all' }}>
               {errorString}

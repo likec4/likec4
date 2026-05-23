@@ -10,6 +10,7 @@ import type { PartialDeep } from 'type-fest'
 import type { FeatureName, TogglableFeature } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
+import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
@@ -59,6 +60,12 @@ export interface DiagramApi<A extends Any = Unknown> {
    * @warning Do not use in render phase
    */
   searchActor(): SearchActorRef
+
+  /**
+   * Navigation panel actor reference
+   * @warning Do not use in render phase
+   */
+  navigationPanel(): NavigationPanelActorRef
 
   /**
    * Send event to diagram actor
@@ -185,6 +192,10 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
     searchActor(): SearchActorRef {
       const searchActor = typedSystem(actorRef.current.system).searchActorRef
       return nonNullable(searchActor, 'Search actor not found in actor system')
+    },
+    navigationPanel(): NavigationPanelActorRef {
+      const navigationPanelActor = typedSystem(actorRef.current.system).navigationActorRef
+      return nonNullable(navigationPanelActor, 'Navigation panel actor not found in actor system')
     },
     send: (event: DiagramEvents) => actorRef.current.send(event),
     navigateTo: (viewId: ViewId<A>, fromNode?: NodeId, focusOnElement?: Fqn<A>) => {

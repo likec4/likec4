@@ -3,7 +3,7 @@ import type { EnabledFeatures } from '../../context/DiagramFeatures'
 
 const key = `likec4:diagram:toggledFeatures`
 export const DiagramToggledFeaturesPersistence = {
-  read() {
+  read(): Partial<EnabledFeatures> | null {
     try {
       let fromStorage = sessionStorage.getItem(key)
       if (fromStorage) {
