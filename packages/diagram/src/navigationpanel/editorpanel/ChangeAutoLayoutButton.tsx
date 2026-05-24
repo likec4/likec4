@@ -22,16 +22,16 @@ import { IconLayoutDashboard } from '@tabler/icons-react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { forwardRef, useState } from 'react'
 import type { DiagramContext } from '../../hooks/useDiagram'
-import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'
 import { PanelActionIcon } from '../_common'
 import { Tooltip } from './_common'
 import * as css from './styles'
 
-const selector = (state: DiagramContext) => ({
+const selector = selectDiagramContext((state: DiagramContext) => ({
   viewId: state.view.id,
   isManualLayout: state.view._layout === 'manual',
   autoLayout: state.view.autoLayout,
-})
+}))
 
 export const ChangeAutoLayoutButton = () => {
   const diagram = useDiagram()
@@ -41,7 +41,7 @@ export const ChangeAutoLayoutButton = () => {
     autoLayout,
     viewId,
     isManualLayout,
-  } = useDiagramContext(selector)
+  } = useDiagramSelector(selector)
 
   const { ref, hovered: isSpacingHovered } = useHover()
 

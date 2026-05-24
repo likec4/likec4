@@ -9,8 +9,8 @@ export const compoundActionBtn = cva({
       true: {
         // Debounce CSS transition
         transitionDelay: {
-          base: '0.2s',
-          _hover: '0s',
+          base: 'normal',
+          _hover: '0',
         },
       },
     },

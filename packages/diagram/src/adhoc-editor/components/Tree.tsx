@@ -25,7 +25,7 @@ const statebtn = cva({
     px: '1.5',
     lineHeight: '1',
     rounded: 'sm',
-    minWidth: 32,
+    minWidth: '[32px]',
     transition: 'normal',
     _hover: {
       color: 'text.bright',

@@ -1,10 +1,11 @@
 import { cx } from '@likec4/styles/css'
+import { cva } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconZoomScan } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { Simplify } from 'type-fest'
 import type { BaseNodeProps } from '../../base/types'
 import { stopPropagation } from '../../utils/xyflow'
@@ -13,7 +14,7 @@ import { compoundActionBtn } from './actionbtns.css'
 type CompoundActionButtonProps = Simplify<
   BaseNodeProps & {
     icon?: ReactNode
-    onClick: (e: ReactMouseEvent) => void
+    onClick: (e: MouseEvent | PointerEvent | TouchEvent) => void
   }
 >
 
@@ -58,8 +59,10 @@ export function CompoundActionButton({
       animate={variant}
       whileHover="whileHover"
       whileTap="whileTap"
+      onTap={onClick}
       className="likec4-compound-navigation compound-action"
       onClick={stopPropagation}
+      onDoubleClick={stopPropagation}
       tabIndex={-1}
     >
       <ActionIcon
@@ -72,8 +75,6 @@ export function CompoundActionButton({
         )}
         tabIndex={-1}
         // Otherwise node receives click event and is selected
-        onClick={onClick}
-        onDoubleClick={stopPropagation}
       >
         {icon ?? <IconZoomScan stroke={2} />}
       </ActionIcon>

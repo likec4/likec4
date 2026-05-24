@@ -20,12 +20,6 @@
     },
     {
       "path": "../vite-plugin/"
-    },
-    {
-      "path": "../../styled-system/preset/"
-    },
-    {
-      "path": "../../styled-system/styles/"
     }
   ]
 }

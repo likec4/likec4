@@ -6,10 +6,10 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { isTruthy } from 'remeda'
 import type { DiagramContext } from '../../hooks/useDiagram'
-import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'
 import { deriveToggledFeatures } from '../../likec4diagram/state/machine.setup'
 
-const selector = (ctx: DiagramContext) => {
+const selector = selectDiagramContext((ctx: DiagramContext) => {
   const toggledFeatures = deriveToggledFeatures(ctx)
 
   // Disable readonly toggle, if any of these conditions is true:
@@ -27,10 +27,10 @@ const selector = (ctx: DiagramContext) => {
     disabled: comparingLatest,
     isReadOnly,
   })
-}
+})
 
 export const ToggleReadonly = () => {
-  const { visible, disabled, isReadOnly } = useDiagramContext(selector)
+  const { visible, disabled, isReadOnly } = useDiagramSelector(selector)
   const diagram = useDiagram()
 
   return (

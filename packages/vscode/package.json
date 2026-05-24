@@ -214,6 +214,10 @@
           "when": "chatIsEnabled && (resourceLangId == likec4 || activeWebviewPanelId == 'likec4-preview')"
         },
         {
+          "command": "likec4.print-dot-of-currentview",
+          "when": "activeWebviewPanelId == 'likec4-preview'"
+        },
+        {
           "command": "likec4.restart",
           "when": "likec4.activated"
         },
@@ -286,6 +290,7 @@
     ],
     "chatSkills": [
       {
+        "name": "likec4-dsl",
         "path": "./data/skills/likec4-dsl/SKILL.md",
         "when": "resourceLangId == likec4"
       }

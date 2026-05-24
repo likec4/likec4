@@ -1,7 +1,7 @@
 import type { Config } from '@pandacss/dev'
 import { capitalize, mapKeys, mapToObj, mapValues, pipe } from 'remeda'
 import { root } from './const.ts'
-import { defaultTheme, ElementShapes } from './defaults/index.ts'
+import { defaultTheme, ElementShapes } from './defaults/index.mts'
 
 type ExtendableConditions = NonNullable<Config['conditions']>
 

@@ -1,18 +1,24 @@
 import { defineSemanticTokens } from '@pandacss/dev'
-import { mantine } from './generated.ts'
-import { alpha } from './helpers.ts'
+import { mantine } from '../generated.ts'
+import { alpha } from '../helpers.ts'
+
+import type { SemanticToken } from '@pandacss/types'
+import { DefaultTagColors } from '../defaults/types.ts'
+
+function generateRadixColorToken(name: typeof DefaultTagColors[number]) {
+  return Array.from({ length: 12 }, (_, i) => String(i + 1)).reduce((acc, idx) => {
+    acc[idx] = {
+      description: `Radix color token for ${name}.${idx}`,
+      value: {
+        base: `{colors.${name}.light.${idx}}`,
+        _dark: `{colors.${name}.dark.${idx}}`,
+      },
+    } satisfies SemanticToken
+    return acc
+  }, {} as Record<string, SemanticToken>)
+}
 
 export const colors = defineSemanticTokens.colors({
-  white: {
-    value: '#fff',
-  },
-  black: {
-    value: '#000',
-  },
-  body: {
-    description: 'Background color',
-    value: mantine.colors.body,
-  },
   text: {
     DEFAULT: {
       description: 'Default text color',
@@ -64,17 +70,39 @@ export const colors = defineSemanticTokens.colors({
       value: mantine.colors.disabledBody,
     },
   },
+  diagram: {
+    background: {
+      DEFAULT: {
+        description: 'Diagram background color',
+        value: {
+          base: mantine.colors.body,
+          _dark: mantine.colors.dark[8],
+        },
+      },
+      pattern: {
+        description: 'Diagram background pattern color',
+        value: {
+          base: '#777',
+          _dark: alpha(mantine.colors.dark[4], 80),
+        },
+      },
+    },
+  },
   likec4: {
     background: {
       DEFAULT: {
-        description: 'Background color',
-        value: mantine.colors.body,
+        description: 'Main app background',
+        value: {
+          base: mantine.colors.body,
+          _dark: mantine.colors.dark[7],
+        },
       },
       pattern: {
         description: 'Background pattern color',
+        deprecated: true,
         value: {
           base: mantine.colors.gray[4],
-          _dark: alpha(mantine.colors.dark[4], 70),
+          _dark: alpha(mantine.colors.dark[4], 80),
         },
       },
     },
@@ -103,15 +131,15 @@ export const colors = defineSemanticTokens.colors({
           description: 'LikeC4 panel background color',
           value: {
             base: mantine.colors.body,
-            _dark: mantine.colors.dark[6],
+            _dark: mantine.colors.dark[7],
           },
         },
       },
       border: {
         description: 'LikeC4 panel border color',
         value: {
-          base: 'transparent',
-          _light: mantine.colors.gray[2],
+          base: mantine.colors.defaultBorder,
+          _dark: mantine.colors.dark[6],
         },
       },
       text: {
@@ -141,15 +169,15 @@ export const colors = defineSemanticTokens.colors({
           DEFAULT: {
             description: 'LikeC4 action icon background color',
             value: {
-              base: mantine.colors.gray[1],
-              _dark: alpha(mantine.colors.dark[7], 70),
+              base: mantine.colors.gray.light,
+              _dark: 'transparent',
             },
           },
           hover: {
             description: 'LikeC4 action icon background color on hover',
             value: {
-              base: mantine.colors.gray[2],
-              _dark: mantine.colors.dark[8],
+              base: mantine.colors.gray.lightHover,
+              _dark: mantine.colors.dark.lightHover,
             },
           },
         },
@@ -196,7 +224,10 @@ export const colors = defineSemanticTokens.colors({
       },
       border: {
         description: 'LikeC4 dropdown border color',
-        value: '{colors.likec4.panel.border}',
+        value: {
+          base: `{colors.likec4.panel.border}`,
+          _dark: mantine.colors.dark[4],
+        },
       },
     },
     overlay: {
@@ -214,7 +245,7 @@ export const colors = defineSemanticTokens.colors({
           description: 'LikeC4 overlay body color',
           value: {
             base: mantine.colors.body,
-            _dark: mantine.colors.dark[6],
+            _dark: mantine.colors.dark[7],
           },
         },
       },
@@ -255,4 +286,8 @@ export const colors = defineSemanticTokens.colors({
       },
     },
   },
+  ...DefaultTagColors.reduce((acc, color) => {
+    acc[color] = generateRadixColorToken(color)
+    return acc
+  }, {} as Record<string, any>),
 })

@@ -5,9 +5,13 @@ import postcssPanda from '@pandacss/dev/postcss'
 import babel from '@rolldown/plugin-babel'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
-import { defineCommand, runMain } from 'citty'
+import { type ArgsDef, defineCommand, runMain } from 'citty'
 import { resolve } from 'node:path'
 import { createServer } from 'vite'
+
+type CommandContextData = {
+  server?: import('vite').ViteDevServer
+}
 
 const main = defineCommand({
   meta: {
@@ -56,7 +60,8 @@ const main = defineCommand({
         allowedHosts: true,
       },
       resolve: {
-        externalConditions: ['sources'],
+        conditions: ['sources'],
+        mainFields: ['browser', 'module', 'jsnext:main', 'jsnext', 'import'],
         alias: {
           // Local paths for dev
           'likec4/react': resolve('../react/src/index.ts'),
@@ -87,10 +92,11 @@ const main = defineCommand({
       })
     })
   },
-  async cleanup(context) {
+  async cleanup({ data }) {
     console.info('\nStopping server...')
-    if (context.data?.server) {
-      await context.data.server.close()
+    const commandContextData = data as CommandContextData | undefined
+    if (commandContextData?.server) {
+      await commandContextData.server.close()
     }
   },
 })

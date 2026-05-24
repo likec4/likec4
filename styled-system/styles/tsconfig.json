@@ -4,7 +4,6 @@
   "compilerOptions": {
     "target": "es2024",
     "allowImportingTsExtensions": true,
-    "composite": true,
     "lib": [
       "esnext",
       "dom"
@@ -16,11 +15,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "*.ts"
-  ],
-  "references": [
-    {
-      "path": "../preset/tsconfig.json"
-    }
+    "*.ts",
+    "*.mts"
   ]
 }

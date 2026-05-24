@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
       extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+        '@likec4/styles': resolve('styled-system'),
       },
     },
     mode: isDev ? 'development' : 'production',

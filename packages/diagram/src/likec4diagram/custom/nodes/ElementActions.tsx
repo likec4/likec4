@@ -79,7 +79,9 @@ export function ElementActions({
         icon: <IconZoomScan />,
         onClick: (e) => {
           e.stopPropagation()
-          diagram.navigateTo(navigateTo, id)
+          requestAnimationFrame(() => {
+            diagram.navigateTo(navigateTo, id)
+          })
         },
       })
     }
@@ -89,7 +91,9 @@ export function ElementActions({
         icon: <IconTransform />,
         onClick: (e) => {
           e.stopPropagation()
-          diagram.openRelationshipsBrowser(modelFqn)
+          requestAnimationFrame(() => {
+            diagram.openRelationshipsBrowser(modelFqn)
+          })
         },
       })
     }

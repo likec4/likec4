@@ -23,7 +23,7 @@ import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'
 import { ElementShape } from '../../../base-primitives'
 import { useMantinePortalProps } from '../../../hooks'
-import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
+import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../../hooks/useDiagram'
 import { useXYStore } from '../../../hooks/useXYFlow'
 import type { DiagramContext } from '../../state/types'
 import * as styles from './NotationPanel.css'
@@ -116,17 +116,17 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
   )
 }
 
-const selector = (s: DiagramContext) => ({
+const selector = selectDiagramContext((s: DiagramContext) => ({
   id: s.view.id,
   notations: s.view.notation?.nodes ?? [],
-})
+}))
 
 export const NotationPanel = memo(() => {
   const height = useXYStore(s => s.height)
   const {
     id,
     notations,
-  } = useDiagramContext(selector)
+  } = useDiagramSelector(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'notation-webview-collapsed',
     defaultValue: true,

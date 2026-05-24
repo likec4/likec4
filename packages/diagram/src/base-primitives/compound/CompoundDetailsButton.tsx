@@ -4,7 +4,7 @@ import { ActionIcon } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { Simplify } from 'type-fest'
 import type { BaseNodeProps } from '../../base/types'
 import { stopPropagation } from '../../utils/xyflow'
@@ -13,7 +13,7 @@ import { compoundActionBtn } from './actionbtns.css'
 type CompoundDetailsButtonProps = Simplify<
   BaseNodeProps & {
     icon?: ReactNode
-    onClick: (e: ReactMouseEvent) => void
+    onClick: (e: MouseEvent | PointerEvent | TouchEvent) => void
   }
 >
 
@@ -54,8 +54,14 @@ export function CompoundDetailsButton({
       animate={variant}
       whileHover="whileHover"
       whileTap="whileTap"
+      onTap={onClick}
+      propagate={{
+        tap: false,
+      }}
       className="likec4-compound-details details-button"
       tabIndex={-1}
+      onClick={stopPropagation}
+      onDoubleClick={stopPropagation}
     >
       <ActionIcon
         className={cx(
@@ -65,9 +71,7 @@ export function CompoundDetailsButton({
           }),
           actionBtn({ variant: 'transparent' }),
         )}
-        tabIndex={-1}
-        onClick={onClick}
-        onDoubleClick={stopPropagation}>
+        tabIndex={-1}>
         {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
       </ActionIcon>
     </m.div>

@@ -1,6 +1,7 @@
 import type { ComputedNodeStyle, MarkdownOrString, NodeId } from '@likec4/core'
 import type { ColorLiteral, LikeC4Styles } from '@likec4/core/styles'
 import { type Color, RichText } from '@likec4/core/types'
+import { vars } from '@likec4/styles'
 import { cx } from '@likec4/styles/css'
 import { elementNodeData } from '@likec4/styles/recipes'
 import {
@@ -80,12 +81,10 @@ const Root = forwardRef<
       style={{
         ...style,
         ...(iconSize && {
-          // @ts-ignore
-          '--likec4-icon-size': `${iconSize}px`,
+          [vars.likec4.icon.size]: `${iconSize}px`,
         }),
         ...(resolvedIconColor && {
-          // @ts-ignore
-          '--likec4-icon-color': resolvedIconColor,
+          [vars.likec4.icon.color]: resolvedIconColor,
         }),
       }}
     />

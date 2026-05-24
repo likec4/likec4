@@ -5,7 +5,7 @@ import { useDebouncedValue } from '@mantine/hooks'
 import { type NodeToolbarProps, NodeToolbar } from '@xyflow/react'
 import type { ReactNode } from 'react'
 import type { BaseNodeProps } from '../../../../base/types'
-import { type DiagramContext, useDiagramContext } from '../../../../hooks/useDiagram'
+import { type DiagramContext, selectDiagramContext, useDiagramSelector } from '../../../../hooks/useDiagram'
 import { stopPropagation } from '../../../../utils/xyflow'
 import * as styles from './styles.css'
 
@@ -14,11 +14,11 @@ export type ToolbarProps = Omit<NodeToolbarProps, 'title'> & {
   title: ReactNode
 }
 
-const selectSelectedNodesCount = (context: DiagramContext): number => {
+const selectSelectedNodesCount = selectDiagramContext((context: DiagramContext): number => {
   return context.xynodes.filter(x => x.selected).length
-}
+})
 const useSelectedNodesCount = () => {
-  return useDiagramContext(selectSelectedNodesCount)
+  return useDiagramSelector(selectSelectedNodesCount)
 }
 
 export function Toolbar({ title, children, nodeProps, ...props }: ToolbarProps) {

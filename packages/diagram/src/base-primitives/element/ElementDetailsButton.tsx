@@ -4,7 +4,8 @@ import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
 import { IconId } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { ReactNode } from 'react'
+// import type { MouseEvent as ReactMouseEvent, PointerEvent, ReactNode, TouchEvent } from 'react'
 import type { BaseNodeData } from '../../base/types'
 import { stopPropagation } from '../../utils/xyflow'
 
@@ -12,7 +13,7 @@ type ElementDetailsButtonProps = {
   selected?: boolean
   data: BaseNodeData
   icon?: ReactNode
-  onClick: (e: ReactMouseEvent) => void
+  onClick: (e: MouseEvent | PointerEvent | TouchEvent) => void
 }
 
 const variants = {
@@ -88,7 +89,11 @@ export function ElementDetailsButton({
       variant = 'normal'
   }
   return (
-    <Box className={cx(container, 'details-button')}>
+    <Box
+      className={cx(container, 'details-button')}
+      onClick={stopPropagation}
+      onDoubleClick={stopPropagation}
+    >
       <ActionIcon
         className={cx(
           'nodrag nopan',
@@ -100,8 +105,8 @@ export function ElementDetailsButton({
         animate={variant}
         whileHover="whileHover"
         whileTap="whileTap"
-        onClick={onClick}
-        onDoubleClick={stopPropagation}
+        propagate={{ tap: false }}
+        onTap={onClick}
         tabIndex={-1}
       >
         {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}

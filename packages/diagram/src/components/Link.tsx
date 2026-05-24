@@ -2,6 +2,7 @@ import type { Link as LinkData } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { styled } from '@likec4/styles/jsx'
 import { type BadgeProps, ActionIcon, Badge, CopyButton } from '@mantine/core'
+import { useClipboard } from '@mantine/hooks'
 import { IconCheck, IconCopy } from '@tabler/icons-react'
 import { forwardRef } from 'react'
 import { GithubIcon } from './GithubIcon'
@@ -14,6 +15,7 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
     // Otherwise, it's a relative url and we need to make it absolute.
     const url = value.url.includes('://') ? value.url : new window.URL(value.url, window.location.href).toString()
     let isGithub = url.startsWith(GITHUB_PREFIX)
+    const clipboard = useClipboard()
 
     return (
       <Badge

@@ -96,6 +96,9 @@ catalogs:
     '@pandacss/types':
       specifier: ^1.11.1
       version: 1.11.1
+    '@radix-ui/colors':
+      specifier: ^3.0.0
+      version: 3.0.0
     '@tailwindcss/vite':
       specifier: ^4.1.18
       version: 4.1.18
@@ -1207,6 +1210,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/style-preset':
+        specifier: workspace:*
+        version: link:../../styled-system/preset
       '@likec4/styles':
         specifier: workspace:*
         version: link:../../styled-system/styles
@@ -3032,12 +3038,15 @@ importers:
 
   styled-system/preset:
     dependencies:
+      '@pandacss/dev':
+        specifier: catalog:css
+        version: 1.11.1(typescript@5.9.3)
+      '@pandacss/types':
+        specifier: catalog:css
+        version: 1.11.1
       '@radix-ui/colors':
-        specifier: ^3.0.0
+        specifier: catalog:css
         version: 3.0.0
-      pandacss-preset-radix-colors:
-        specifier: ^0.2.1
-        version: 0.2.1(@pandacss/dev@1.11.1(typescript@5.9.3))(@radix-ui/colors@3.0.0)
       remeda:
         specifier: catalog:utils
         version: 2.33.7
@@ -3054,12 +3063,6 @@ importers:
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
         version: 9.2.1(@mantine/core@9.2.1(@mantine/hooks@9.2.1(react@19.2.6))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
-      '@pandacss/dev':
-        specifier: catalog:css
-        version: 1.11.1(typescript@5.9.3)
-      '@pandacss/types':
-        specifier: catalog:css
-        version: 1.11.1
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -3075,15 +3078,18 @@ importers:
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
-      obuild:
-        specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@8.6.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
+      tsdown:
+        specifier: catalog:tsdown
+        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260504.1)(tsx@4.21.0)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
 
   styled-system/styles:
     dependencies:
+      '@pandacss/dev':
+        specifier: catalog:css
+        version: 1.11.1(typescript@5.9.3)
       '@pandacss/types':
         specifier: catalog:css
         version: 1.11.1
@@ -3105,13 +3111,13 @@ importers:
         version: 0.0.8
       '@pandabox/unplugin':
         specifier: ^0.2.2
-        version: 0.2.2(@pandacss/config@1.11.1)(@pandacss/core@1.11.1)(@pandacss/node@1.11.1(typescript@5.9.3))(esbuild@0.27.4)(rollup@4.60.1)(typescript@5.9.3)(vite@8.0.14(@types/node@22.19.19)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 0.2.2(@pandacss/config@1.11.1)(@pandacss/core@1.11.1)(@pandacss/node@1.11.1(typescript@5.9.3))(esbuild@0.27.4)(typescript@5.9.3)(vite@8.0.14(@types/node@22.19.19)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       '@pandabox/utils':
         specifier: ^0.0.5
         version: 0.0.5
-      '@pandacss/dev':
+      '@radix-ui/colors':
         specifier: catalog:css
-        version: 1.11.1(typescript@5.9.3)
+        version: 3.0.0
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -3124,15 +3130,15 @@ importers:
       nano-spawn:
         specifier: catalog:externals
         version: 2.0.0
-      obuild:
-        specifier: catalog:obuild
-        version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260504.1)(chokidar@5.0.0)(dotenv@8.6.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
       postcss:
         specifier: catalog:css
         version: 8.5.15
       remeda:
         specifier: catalog:utils
         version: 2.33.7
+      tsdown:
+        specifier: catalog:tsdown
+        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260504.1)(tsx@4.21.0)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -8869,12 +8875,6 @@ packages:
   pako@2.1.0:
     resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
 
-  pandacss-preset-radix-colors@0.2.1:
-    resolution: {integrity: sha512-KDHkPEXhHZQCd28zSLTUjIThmDrGFvXmre3OpSIyawwEIzt1yQ6MRFjLkQuAGsuBt4tyS4A5i7DsYR/+Ufg7bg==}
-    peerDependencies:
-      '@pandacss/dev': '>=0.0.1'
-      '@radix-ui/colors': '>=0.1.0'
-
   parse-asn1@5.1.7:
     resolution: {integrity: sha512-CTM5kuWR3sx9IFamcl5ErfPl6ea/N8IYwiJ+vpeB2g+1iknv7zBl5uPwbMbRVznRVbrNY6lGuDoE5b30grmbqg==}
     engines: {node: '>= 0.10'}
@@ -13264,7 +13264,7 @@ snapshots:
     dependencies:
       postcss: 8.5.15
 
-  '@pandabox/unplugin@0.2.2(@pandacss/config@1.11.1)(@pandacss/core@1.11.1)(@pandacss/node@1.11.1(typescript@5.9.3))(esbuild@0.27.4)(rollup@4.60.1)(typescript@5.9.3)(vite@8.0.14(@types/node@22.19.19)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))':
+  '@pandabox/unplugin@0.2.2(@pandacss/config@1.11.1)(@pandacss/core@1.11.1)(@pandacss/node@1.11.1(typescript@5.9.3))(esbuild@0.27.4)(typescript@5.9.3)(vite@8.0.14(@types/node@22.19.19)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@pandabox/postcss-plugins': 0.0.2(postcss@8.5.15)
       '@pandacss/config': 1.11.1
@@ -13280,7 +13280,6 @@ snapshots:
       unplugin: 1.16.1
     optionalDependencies:
       esbuild: 0.27.4
-      rollup: 4.60.1
       vite: 8.0.14(@types/node@22.19.19)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - jsdom
@@ -17724,11 +17723,6 @@ snapshots:
   pako@1.0.11: {}
 
   pako@2.1.0: {}
-
-  pandacss-preset-radix-colors@0.2.1(@pandacss/dev@1.11.1(typescript@5.9.3))(@radix-ui/colors@3.0.0):
-    dependencies:
-      '@pandacss/dev': 1.11.1(typescript@5.9.3)
-      '@radix-ui/colors': 3.0.0
 
   parse-asn1@5.1.7:
     dependencies:

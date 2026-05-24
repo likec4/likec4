@@ -1,5 +1,5 @@
 import { defineSemanticTokens } from '@pandacss/dev'
-import { colors } from './tokens-semantic.colors.ts'
+import { colors } from './semantic-colors.ts'
 
 export const semanticTokens = defineSemanticTokens({
   colors,

@@ -21,12 +21,6 @@
   "references": [
     {
       "path": "../core/"
-    },
-    {
-      "path": "../../styled-system/preset/"
-    },
-    {
-      "path": "../../styled-system/styles/"
     }
   ]
 }

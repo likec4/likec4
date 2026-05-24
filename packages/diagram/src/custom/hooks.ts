@@ -23,7 +23,6 @@ export {
   type DiagramApi,
   useDiagram,
   useDiagramActorRef,
-  useDiagramContext,
   useOnDiagramEvent,
 } from '../hooks/useDiagram'
 

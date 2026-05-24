@@ -52,8 +52,9 @@ export {
 export {
   type DiagramApi,
   type DiagramContext,
+  selectDiagramContext,
   useDiagram,
-  useDiagramContext,
+  useDiagramSelector,
   useOnDiagramEvent,
 } from './hooks/useDiagram'
 

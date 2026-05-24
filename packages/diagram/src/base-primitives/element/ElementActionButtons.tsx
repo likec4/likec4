@@ -4,7 +4,7 @@ import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import { IconBolt } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { stopPropagation } from '../../utils/xyflow'
 
 type ElementActionButtonsProps = {
@@ -108,8 +108,11 @@ export function ElementActionButtons({
             whileHover={{
               scale: 1.3,
             }}
+            propagate={{
+              tap: false,
+            }}
             tabIndex={-1}
-            onClick={button.onClick}
+            onTap={button.onClick}
             // Otherwise node receives click event and is selected
             onDoubleClick={stopPropagation}
           >
@@ -125,6 +128,6 @@ export namespace ElementActionButtons {
   export type Item = {
     key?: string
     icon?: ReactNode
-    onClick: (e: ReactMouseEvent) => void
+    onClick: (e: MouseEvent | PointerEvent | TouchEvent) => void
   }
 }

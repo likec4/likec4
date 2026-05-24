@@ -9,7 +9,7 @@ import { memo } from 'react'
 import { isNonNull, isTruthy } from 'remeda'
 import { Markdown } from '../../base-primitives'
 import type { DiagramContext } from '../../hooks/useDiagram'
-import { useDiagramContext } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagramSelector } from '../../hooks/useDiagram'
 
 const SectionHeader = styled('div', {
   base: {
@@ -21,7 +21,7 @@ const SectionHeader = styled('div', {
   },
 })
 
-function selectWalkthroughNotes(s: DiagramContext) {
+const selectWalkthroughNotes = selectDiagramContext((s: DiagramContext) => {
   const isActive = isNonNull(s.activeWalkthrough)
   const activeStepIndex = isActive ? s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId) : -1
   return {
@@ -31,10 +31,10 @@ function selectWalkthroughNotes(s: DiagramContext) {
     hasPrevious: isActive && activeStepIndex > 0,
     notes: isActive ? s.xyedges[activeStepIndex]?.data?.notes ?? null : null,
   }
-}
+})
 
 export const WalkthroughPanel = memo(() => {
-  const { isActive, notes: _notes } = useDiagramContext(selectWalkthroughNotes)
+  const { isActive, notes: _notes } = useDiagramSelector(selectWalkthroughNotes)
 
   const notes = _notes ? RichText.from(_notes) : RichText.EMPTY
 

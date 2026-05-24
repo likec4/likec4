@@ -9,7 +9,7 @@ import type { Fqn } from '@likec4/core'
 import {
   LikeC4Diagram,
   useDiagram,
-  useDiagramContext,
+  useDiagramSelector,
   useLikeC4Model,
   useOnDiagramEvent,
   useUpdateEffect,
@@ -199,7 +199,7 @@ export function FocusElementFromUrl() {
 
 export function ListenForDynamicVariantChange() {
   const router = useRouter()
-  const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
+  const dynamicViewVariant = useDiagramSelector(s => s.context.dynamicViewVariant)
 
   useUpdateEffect(() => {
     const search = router.latestLocation.search.dynamic ?? 'diagram'

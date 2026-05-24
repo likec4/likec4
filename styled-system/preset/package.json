@@ -8,10 +8,9 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
   "sideEffects": false,
-  "types": "dist/index.d.mts",
-  "module": "dist/index.mjs",
   "scripts": {
-    "generate": "obuild",
+    "generate": "tsdown",
+    "build": "tsdown",
     "typecheck": "tsc --noEmit",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
@@ -25,39 +24,40 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      },
+      "./defaults": {
+        "types": "./dist/defaults/index.d.mts",
+        "import": "./dist/defaults/index.mjs",
+        "default": "./dist/defaults/index.mjs"
+      }
+    }
   },
   "files": [
     "dist",
     "src"
   ],
+  "module": "src/index.mts",
   "exports": {
-    ".": {
-      "sources": "./src/index.ts",
-      "default": {
-        "types": "./dist/index.d.mts",
-        "import": "./dist/index.mjs",
-        "default": "./dist/index.mjs"
-      }
-    },
-    "./defaults": {
-      "sources": "./src/defaults/index.ts",
-      "default": {
-        "types": "./dist/defaults/index.d.mts",
-        "import": "./dist/defaults/index.mjs",
-        "default": "./dist/defaults/index.mjs"
-      }
-    },
-    "./src": "./src/index.ts"
+    ".": "./src/index.mts",
+    "./defaults": "./src/defaults/index.mts",
+    "./dev": {
+      "types": "./dev.d.mts",
+      "default": "./dev.mjs"
+    }
   },
   "dependencies": {
-    "@radix-ui/colors": "^3.0.0",
-    "pandacss-preset-radix-colors": "^0.2.1",
-    "remeda": "catalog:utils"
-  },
-  "peerDependencies": {
+    "remeda": "catalog:utils",
     "@pandacss/dev": "catalog:css",
-    "@pandacss/types": "catalog:css"
+    "@pandacss/types": "catalog:css",
+    "@radix-ui/colors": "catalog:css"
   },
   "devDependencies": {
     "@types/react": "catalog:react",
@@ -67,11 +67,9 @@
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/vanilla-extract": "catalog:mantine",
-    "@pandacss/dev": "catalog:css",
-    "@pandacss/types": "catalog:css",
     "json5": "catalog:utils",
     "nano-spawn": "catalog:externals",
     "typescript": "catalog:",
-    "obuild": "catalog:obuild"
+    "tsdown": "catalog:tsdown"
   }
 }

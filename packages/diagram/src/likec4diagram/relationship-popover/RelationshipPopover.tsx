@@ -44,15 +44,14 @@ import { PortalToContainer } from '../../components/PortalToContainer'
 import { useRootContainerRef } from '../../context'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import type { DiagramContext } from '../../hooks/useDiagram'
-import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagram, useDiagramSelector, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { roundDpr } from '../../utils'
 import { findDiagramEdge, findDiagramNode } from '../state/utils'
 import { RelationshipPopoverActorLogic } from './actor'
 import { Endpoint, RelationshipTitle } from './components'
 
-function selectDiagramContext(c: DiagramContext) {
+const selector = selectDiagramContext(c => {
   let selected: EdgeId | null = null
   for (const edge of c.xyedges) {
     if (edge.selected) {
@@ -67,13 +66,13 @@ function selectDiagramContext(c: DiagramContext) {
     viewId: c.view.id,
     selected,
   }
-}
+})
 
 export const RelationshipPopover = memo(() => {
   const likec4model = useLikeC4Model()
   const actorRef = useActorRef(RelationshipPopoverActorLogic)
   const diagram = useDiagram()
-  const { viewId, selected } = useDiagramContext(selectDiagramContext)
+  const { viewId, selected } = useDiagramSelector(selector)
 
   const openedEdgeId = useSelector(actorRef, s => s.hasTag('opened') ? s.context.edgeId : null)
 
@@ -123,8 +122,8 @@ export const RelationshipPopover = memo(() => {
     }
   }, [actorRef, diagram, openedEdgeId])
 
-  const { diagramEdge, sourceNode, targetNode } = useDiagramContext(
-    ctx => {
+  const { diagramEdge, sourceNode, targetNode } = useDiagramSelector(
+    useCallback(({ context: ctx }) => {
       const diagramEdge = openedEdgeId ? findDiagramEdge(ctx, openedEdgeId) : null
       const sourceNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.source) : null
       const targetNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.target) : null
@@ -133,9 +132,8 @@ export const RelationshipPopover = memo(() => {
         sourceNode,
         targetNode,
       })
-    },
+    }, [openedEdgeId]),
     shallowEqual,
-    [openedEdgeId],
   )
 
   if (!diagramEdge || !sourceNode || !targetNode || isEmpty(diagramEdge.relations)) {
@@ -494,8 +492,8 @@ const Relationship = forwardRef<
         rounded: 'sm',
         backgroundColor: {
           _hover: {
-            base: 'mantine.colors.gray[1]',
-            _dark: 'mantine.colors.dark[5]/70',
+            base: 'mantine.gray[1]',
+            _dark: 'mantine.dark[5]/70',
           },
         },
       })}
@@ -583,7 +581,7 @@ const Relationship = forwardRef<
       {r.kind && (
         <HStack gap="2">
           <Label>kind</Label>
-          <Text size="xs" className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: 0 })}>{r.kind}</Text>
+          <Text size="xs" className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: '0' })}>{r.kind}</Text>
         </HStack>
       )}
       {r.technology && (
@@ -591,7 +589,7 @@ const Relationship = forwardRef<
           <Label>technology</Label>
           <Text
             size="xs"
-            className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: 0 })}
+            className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: '0' })}
           >
             {r.technology}
           </Text>
@@ -604,10 +602,11 @@ const Relationship = forwardRef<
             css={{
               paddingLeft: '2.5',
               py: '1.5',
-              borderLeft: '2px dotted',
+              borderLeftWidth: '2px',
+              borderLeftStyle: 'dotted',
               borderLeftColor: {
-                base: 'mantine.colors.gray[3]',
-                _dark: 'mantine.colors.dark[4]',
+                base: 'mantine.gray[3]',
+                _dark: 'mantine.dark[4]',
               },
             }}
           >

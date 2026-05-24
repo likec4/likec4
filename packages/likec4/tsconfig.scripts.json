@@ -15,11 +15,7 @@
   "include": [
     "scripts",
     "*.config.ts",
+    "*.config.mts",
     "package.json"
-  ],
-  "references": [
-    {
-      "path": "../../styled-system/styles/"
-    }
   ]
 }

@@ -76,16 +76,18 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
-    "@likec4/core": "workspace:*",
-    "@likec4/styles": "workspace:*",
     "@dagrejs/dagre": "catalog:",
     "@floating-ui/dom": "catalog:react",
+    "@likec4/core": "workspace:*",
+    "@likec4/styles": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
     "@lume/kiwi": "catalog:utils",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/media-query": "catalog:react",
     "@nanostores/react": "catalog:react",
     "@react-hookz/web": "catalog:react",
+    "@tabler/icons-react": "catalog:react",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
     "@xstate/store-react": "catalog:xstate",
@@ -104,8 +106,7 @@
     "react-error-boundary": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:externals",
-    "xstate": "catalog:xstate",
-    "@tabler/icons-react": "catalog:react"
+    "xstate": "catalog:xstate"
   },
   "peerDependencies": {
     "react": "^18.x || ^19.x",
@@ -122,10 +123,10 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
-    "react-compiler-runtime": "catalog:react",
     "oxlint": "catalog:",
     "postcss": "catalog:css",
     "react": "catalog:react",
+    "react-compiler-runtime": "catalog:react",
     "react-dom": "catalog:react",
     "typescript": "catalog:",
     "vite": "catalog:vite",

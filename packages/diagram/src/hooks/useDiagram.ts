@@ -1,6 +1,6 @@
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { type DependencyList, useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import type { Subscription } from 'xstate'
 import type { DiagramApi } from '../likec4diagram/state/diagram-api'
 import type {
@@ -39,24 +39,6 @@ export function selectDiagramActorContext<T = unknown>(
   selector: (state: DiagramContext) => T,
 ): (state: DiagramActorSnapshot) => T {
   return (state: DiagramActorSnapshot) => selector(state.context)
-}
-
-/**
- * Read diagram context
- * @deprecated Use {@link useDiagramSelector} instead
- */
-export function useDiagramContext<T = unknown>(
-  selector: (context: DiagramContext) => T,
-  compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-  deps: DependencyList = [],
-): T {
-  const actorRef = useDiagramActorRef()
-  return useXstateSelector(
-    actorRef,
-    // oxlint-disable-next-line eslint-plugin-react-hooks/exhaustive-deps
-    useCallback((s: DiagramActorSnapshot) => selector(s.context), deps),
-    compare,
-  )
 }
 
 type PickEmittedEvent<T> = T extends DiagramEmittedEvents['type'] ? DiagramEmittedEvents & { type: T } : unknown

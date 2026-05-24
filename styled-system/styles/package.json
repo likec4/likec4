@@ -26,7 +26,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "generate": "obuild",
+    "generate": "tsdown",
+    "build": "tsdown",
     "emit-pkg": "panda emit-pkg --base dist",
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
@@ -35,77 +36,59 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "type": "module",
+  "module": "dist/pkg/index.mjs",
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.mts",
-      "default": "./dist/types/index.mjs"
+      "types": "./dist/pkg/index.d.mts",
+      "import": "./dist/pkg/index.mjs"
     },
     "./css": {
       "types": "./dist/css/index.d.mts",
-      "default": "./dist/css/index.mjs"
+      "import": "./dist/css/index.mjs"
     },
     "./tokens": {
       "types": "./dist/tokens/index.d.mts",
-      "default": "./dist/tokens/index.mjs"
+      "import": "./dist/tokens/index.mjs"
     },
-    "./types": {
-      "types": "./dist/types/index.d.mts",
-      "default": "./dist/types/index.mjs"
-    },
+    "./types": "./dist/types/index.d.mts",
     "./patterns": {
       "types": "./dist/patterns/index.d.mts",
-      "default": "./dist/patterns/index.mjs"
+      "import": "./dist/patterns/index.mjs"
     },
     "./jsx": {
       "types": "./dist/jsx/index.d.mts",
-      "default": "./dist/jsx/index.mjs"
+      "import": "./dist/jsx/index.mjs"
     },
     "./postcss": {
       "types": "./postcss.d.mts",
-      "default": "./postcss.mjs"
+      "import": "./postcss.mjs"
     },
     "./recipes": {
       "types": "./dist/recipes/index.d.mts",
-      "default": "./dist/recipes/index.mjs"
+      "import": "./dist/recipes/index.mjs"
     },
     "./preset": {
-      "sources": "./preset.ts",
-      "default": {
-        "types": "./preset/preset.d.mts",
-        "default": "./preset/preset.mjs"
-      }
-    },
-    "./vars": {
-      "sources": "./vars.ts",
-      "default": {
-        "types": "./vars/vars.d.mts",
-        "default": "./vars/vars.mjs"
-      }
-    },
-    "./dev": {
-      "types": "./dev.d.mts",
-      "default": "./dev.mjs"
+      "types": "./dist/pkg/preset.d.mts",
+      "import": "./dist/pkg/preset.mjs"
     }
   },
   "dependencies": {
-    "@pandacss/types": "catalog:css"
+    "@pandacss/types": "catalog:css",
+    "@pandacss/dev": "catalog:css"
   },
   "peerDependencies": {
-    "@pandacss/dev": "catalog:css",
     "react": "^18.x || ^19.x"
   },
   "peerDependenciesMeta": {
-    "@pandacss/dev": {
-      "optional": true
-    },
     "react": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@types/node": "catalog:",
     "@likec4/style-preset": "workspace:*",
+    "@radix-ui/colors": "catalog:css",
+    "@types/node": "catalog:",
     "@likec4/devops": "workspace:*",
     "@pandabox/panda-plugins": "^0.0.8",
     "@pandabox/utils": "^0.0.5",
@@ -117,7 +100,7 @@
     "postcss": "catalog:css",
     "remeda": "catalog:utils",
     "nano-spawn": "catalog:externals",
-    "obuild": "catalog:obuild",
+    "tsdown": "catalog:tsdown",
     "typescript": "catalog:"
   }
 }
