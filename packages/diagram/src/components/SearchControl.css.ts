@@ -1,24 +1,24 @@
 import { css } from '@likec4/styles/css'
 
 export const root = css({
-  height: '30px',
+  height: '[30px]',
   paddingLeft: 'sm',
   paddingRight: '1',
   borderRadius: 'sm',
   // TODO
   // color: fallbackVar('var(--search-color)', 'mantine.colors.placeholder)',
-  border: '1px solid',
+  border: 'default',
   borderColor: {
     base: 'default.border',
-    _light: 'mantine.colors.gray[4]',
-    _dark: 'mantine.colors.dark[4]',
+    _light: 'mantine.gray[4]',
+    _dark: 'mantine.dark[4]',
     _hover: 'default.border',
   },
   cursor: 'pointer',
   background: {
     base: 'default',
     _light: 'white',
-    _dark: 'mantine.colors.dark[6]',
+    _dark: 'mantine.dark[6]',
     _hover: 'default.hover',
   },
 
@@ -53,27 +53,27 @@ export const placeholder = css({
 })
 
 export const shortcut = css({
-  fontSize: '11px',
+  fontSize: '[11px]',
   fontWeight: 'bold',
-  lineHeight: 1,
+  lineHeight: '[1]',
   padding: '[4px 7px]',
   borderRadius: 'sm',
-  border: '1px solid',
+  border: 'default',
   transition: 'fast',
   _light: {
-    color: 'mantine.colors.gray[7]',
-    borderColor: 'mantine.colors.gray[2]',
+    color: 'mantine.gray[7]',
+    borderColor: 'mantine.gray[2]',
   },
   _dark: {
-    color: 'mantine.colors.dark[0]',
-    borderColor: 'mantine.colors.dark[7]',
+    color: 'mantine.dark[0]',
+    borderColor: 'mantine.dark[7]',
   },
   backgroundColor: {
-    _light: 'mantine.colors.gray[2]/70',
-    _dark: 'mantine.colors.dark[8]/70',
+    _light: 'mantine.gray[2]/70',
+    _dark: 'mantine.dark[8]/70',
     _groupHover: {
-      _light: 'mantine.colors.gray[2]',
-      _dark: 'mantine.colors.dark[8]',
+      _light: 'mantine.gray[2]',
+      _dark: 'mantine.dark[8]',
     },
   },
 })

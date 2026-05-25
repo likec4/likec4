@@ -2,6 +2,7 @@ import { useRerender } from '@react-hookz/web'
 import { memo, useCallback } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
+import { FloatingWindows } from '../floating-windows/FloatingWindows'
 import { selectDiagramActor, useDiagramSnapshot } from '../hooks/useDiagram'
 import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
@@ -13,6 +14,7 @@ const selectChildren = selectDiagramActor(s => ({
   overlays: s.children.overlays ?? null,
   search: s.children.search ?? null,
   navigation: s.children.navigationPanel ?? null,
+  windows: s.children.windows ?? null,
 }))
 
 export const LikeC4DiagramUI = memo(() => {
@@ -42,6 +44,7 @@ export const LikeC4DiagramUI = memo(() => {
       {enableSearch && actors.search && <Search searchActorRef={actors.search} />}
       {enableRelationshipDetails && enableReadOnly && <RelationshipPopover />}
       {enableCompareWithLatest && <LayoutDriftFrame />}
+      {actors.windows && <FloatingWindows actor={actors.windows} />}
     </ErrorBoundary>
   )
 })

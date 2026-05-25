@@ -6,7 +6,7 @@ export const node = css({
 
 export const label = css({
   _hover: {
-    backgroundColor: 'mantine.colors.gray[0]',
+    backgroundColor: 'mantine.gray[0]',
     _dark: {
       backgroundColor: 'default.hover',
       color: 'white',
@@ -16,7 +16,7 @@ export const label = css({
 
 export const scrollArea = css({
   maxHeight: [
-    '70vh',
-    'calc(100cqh - 70px)',
+    '[70vh]',
+    '[calc(100cqh - 70px)]',
   ],
 })

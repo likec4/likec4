@@ -41,16 +41,16 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
         width: '100%',
         gap: 'xxs',
         maxWidth: [
-          'calc(100vw)',
-          'calc(100cqw)',
+          '100vw',
+          'cq.100w',
         ],
         '@/sm': {
           margin: 'xs',
           gap: 'xs',
-          width: 'max-content',
+          width: 'max',
           maxWidth: [
-            'calc(100vw - 2 * {spacing.md})',
-            'calc(100cqw - 2 * {spacing.md})',
+            '[calc(100vw - 2 * {spacing.md})]',
+            '[calc(100cqw - 2 * {spacing.md})]',
           ],
         },
         _print: {

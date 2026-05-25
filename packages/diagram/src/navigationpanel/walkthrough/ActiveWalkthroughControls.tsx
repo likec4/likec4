@@ -38,7 +38,8 @@ const ParallelFrame = () => {
           left: '0',
           width: '100%',
           height: '100%',
-          border: `2px solid`,
+          border: `default`,
+          borderWidth: '2',
           borderColor: 'likec4.walkthrough.parallelFrame',
           pointerEvents: 'none',
           md: {

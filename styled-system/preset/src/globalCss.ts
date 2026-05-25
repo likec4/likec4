@@ -7,7 +7,7 @@ import type { Config } from '@pandacss/dev'
 import { defineGlobalStyles } from '@pandacss/dev'
 import { keys, mapToObj } from 'remeda'
 import { __v, vars } from './const.ts'
-import { defaultTheme } from './defaults/index.mts'
+import { defaultTheme } from './defaults/index.ts'
 import { alpha } from './helpers.ts'
 
 type ExtendableGlobalCss = NonNullable<Config['globalCss']>
@@ -99,6 +99,10 @@ export const globalCss = defineGlobalStyles({
         colorAdjust: 'exact!',
         printColorAdjust: 'exact!',
       },
+    },
+
+    '& .noselect *': {
+      userSelect: 'none',
     },
 
     '& .mantine-ActionIcon-icon .tabler-icon': {

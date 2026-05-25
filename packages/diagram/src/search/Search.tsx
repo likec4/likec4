@@ -54,7 +54,7 @@ export const bodyCss = css({
 export const scrollAreaCss = css({
   height: [
     '100%',
-    '100cqh',
+    'cq.100h',
   ],
   '& .mantine-ScrollArea-viewport': {
     minHeight: '100%',
@@ -156,7 +156,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
           e.stopPropagation()
           moveFocusToSearchInput(contentRef.current)
         }}>
-        <VStack flex={1} px={'sm'}>
+        <VStack flex={'1'} px={'sm'}>
           <LikeC4SearchInput />
           <SearchByTags />
         </VStack>

@@ -853,6 +853,23 @@ export const ensureSearchActor = () =>
     }
   })
 
+export const ensureWindowsActor = () =>
+  machine.enqueueActions(({ enqueue, check, system }) => {
+    const enabled = check('enabled: Overlays') && check('enabled: NavigationPanel')
+    const running = typedSystem(system).windowsActorRef
+    if (enabled && !running) {
+      enqueue.spawnChild('windows', {
+        id: 'windows',
+        systemId: 'windows',
+        syncSnapshot: true,
+      })
+      return
+    }
+    if (!enabled && running) {
+      enqueue.stopChild(running)
+    }
+  })
+
 export const onEdgeMouseEnter = () =>
   machine.enqueueActions(({ enqueue, context, event }) => {
     assertEvent(event, 'xyflow.edgeMouseEnter')
@@ -1085,4 +1102,5 @@ export const ensureAllActors = () =>
     enqueue(ensureOverlaysActor())
     enqueue(ensureSearchActor())
     enqueue(ensureNavigationPanelActor())
+    enqueue(ensureWindowsActor())
   })

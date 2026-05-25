@@ -98,18 +98,5 @@ export const layerStyles = /* @__PURE__ */ defineLayerStyles({
         borderRadius: 'md',
       },
     },
-    floatingWindow: {
-      description: 'LikeC4 floating window layer',
-      value: {
-        position: 'fixed',
-        paddingBlock: 'sm',
-        paddingInline: 'md',
-        width: 'max-content',
-        backgroundColor: 'likec4.panel.bg',
-        border: '1px solid {colors.likec4.dropdown.border}',
-        boxShadow: 'lg',
-        borderRadius: 'md',
-      },
-    },
   },
 })

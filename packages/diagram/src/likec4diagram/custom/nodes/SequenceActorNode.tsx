@@ -35,9 +35,9 @@ const ActorStepPort = ({
           backgroundColor: 'var(--likec4-palette-fill)',
           rounded: 'xs',
           width: {
-            base: '5px',
-            _whenHovered: '7px',
-            _whenSelected: '7px',
+            base: '[5px]',
+            _whenHovered: '[7px]',
+            _whenSelected: '[7px]',
           },
           transition: 'fast',
           translateX: '-1/2',
@@ -133,7 +133,7 @@ export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
         height: '100%',
         border: 'default',
         rounded: 'sm',
-        borderWidth: 1,
+        borderWidth: '1',
         '--_color': {
           base: 'var(--likec4-palette-stroke)',
           _dark: '[color-mix(in oklab, var(--likec4-palette-hiContrast) 40%, var(--likec4-palette-fill))]',

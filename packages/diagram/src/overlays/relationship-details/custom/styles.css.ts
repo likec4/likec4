@@ -1,9 +1,9 @@
 import { css } from '@likec4/styles/css'
 
 export const emptyNode = css({
-  w: '100%',
-  h: '100%',
-  borderWidth: '3px',
+  width: '100%',
+  height: '100%',
+  borderWidth: '3',
   borderStyle: 'dashed',
   borderColor: 'default.border',
   rounded: 'md',

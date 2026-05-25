@@ -30,6 +30,7 @@ import {
 } from 'xstate'
 import { type EnabledFeatures, type TogglableFeature, DefaultFeatures } from '../../context/DiagramFeatures'
 import { editorActorLogic } from '../../editor/actor/machine'
+import { floatingWindowsActorLogic } from '../../floating-windows/actor/actor'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
 import { navigationPanelActorLogic } from '../../navigationpanel/actor'
@@ -310,6 +311,7 @@ const actors = defineActors({
   editor: editorActorLogic,
   // Navigation panel actor manages navigation panel state and interactions
   navigationPanel: navigationPanelActorLogic,
+  windows: floatingWindowsActorLogic,
 })
 
 export const machine = setup({

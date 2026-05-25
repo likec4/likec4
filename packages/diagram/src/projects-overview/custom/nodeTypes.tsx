@@ -1,6 +1,6 @@
 import { useCallbackRef } from '@mantine/hooks'
 import { IconZoomScan } from '@tabler/icons-react'
-import type { MouseEvent } from 'react'
+import { type MouseEvent, useMemo } from 'react'
 import {
   DefaultHandles,
   ElementActionButtons,
@@ -14,10 +14,13 @@ import { useProjectsOverviewActor } from '../context'
 export function ProjectNode(props: ProjectsOverviewTypes.NodeProps<'project'>) {
   const actor = useProjectsOverviewActor()
 
-  const navigateTo = useCallbackRef((e: MouseEvent) => {
-    e.stopPropagation()
-    actor.send({ type: 'navigate.to', fromNode: props.data.id, projectId: props.data.projectId })
-  })
+  const buttons = useMemo(() => [
+    {
+      key: 'navigate',
+      icon: <IconZoomScan />,
+      onClick: () => actor.send({ type: 'navigate.to', fromNode: props.data.id, projectId: props.data.projectId }),
+    },
+  ], [actor])
 
   return (
     <ElementNodeContainer
@@ -29,13 +32,7 @@ export function ProjectNode(props: ProjectsOverviewTypes.NodeProps<'project'>) {
       <ElementData {...props} />
       <ElementActionButtons
         {...props}
-        buttons={[
-          {
-            key: 'navigate',
-            icon: <IconZoomScan />,
-            onClick: navigateTo,
-          },
-        ]} />
+        buttons={buttons} />
       <DefaultHandles />
       {/* <ElementActions {...props} /> */}
     </ElementNodeContainer>

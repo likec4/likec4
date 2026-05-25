@@ -51,12 +51,12 @@ function RouteComponent() {
           gap: 'xs',
           position: 'sticky',
           top: '0',
-          zIndex: '10',
+          zIndex: '[10]',
           backgroundColor: 'likec4.panel.bg/85',
-          backdropFilter: 'blur(8px)',
+          backdropFilter: '[blur(8px)]',
         })}
       >
-        <NavigationPanel.Root css={{ position: 'relative', width: 'max-content', margin: '0' }}>
+        <NavigationPanel.Root css={{ position: 'relative', width: 'max', margin: '0' }}>
           <NavigationPanel.Body>
             <div style={{ width: 0, height: 36 }} aria-hidden />
             <Burger size="sm" onClick={SidebarDrawerOps.open} aria-label="Toggle navigation" />

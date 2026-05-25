@@ -94,7 +94,7 @@ function ViewRule(
           originX: 0,
           scale: rule.enabled ? 1 : 0.9,
         }}
-        className={txt({ flex: 1, truncate: true })}>
+        className={txt({ flex: '1', truncate: true })}>
         {JSON.stringify(rule.expr)}
       </m.div>
       <ActionIcon

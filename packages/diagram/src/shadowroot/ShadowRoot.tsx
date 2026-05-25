@@ -19,6 +19,7 @@ import { useCallbackRef } from '../hooks'
 import { useId } from '../hooks/useId'
 import fontsCss from '../styles-font.css?inline'
 import inlinedStyles from '../styles.css?inline'
+import { scopeStylesToShadowRoot, useColorScheme } from './styles.css'
 
 function useShadowRootStyle(
   instanceId: string,
@@ -198,19 +199,6 @@ const ShadowRootHost = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) 
   )
 }
 
-function scopeStylesToShadowRoot(styles: string): string {
-  return styles
-    // Order matters: rewrite the longest root selector before the plain `:root` token.
-    .replaceAll(/:where\(\s*:root\s*,\s*:host\s*\)/g, `:where(.likec4-shadow-root)`)
-    .replaceAll(':root', `.likec4-shadow-root`)
-    /**
-     * Replace only top-level body selectors, for example
-     * `body { }` should be replaced with `.likec4-shadow-root { }`
-     * but `.likec4-overlay-body { }` must stay unchanged.
-     */
-    .replaceAll(/(^|[{},;]|\*\/)(\s*)body(?=\s*[{,])/g, '$1$2.likec4-shadow-root')
-}
-
 function appendFontToDocument(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
   if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
     const style = document.createElement('style')
@@ -234,46 +222,18 @@ function appendFontToDocument(injectFontCss: boolean, styleNonce?: string | (() 
 }
 /**
  * Creates a CSS string with styles scoped to the shadow root
+ * KEEP Private helps with HMR
  */
 function createShadowRootStyles() {
   return scopeStylesToShadowRoot(inlinedStyles)
 }
+
 /**
  * Creates a CSSStyleSheet with styles scoped to the shadow root
+ * KEEP Private helps with HMR
  */
 function createShadowRootStylesheets() {
   const css = new CSSStyleSheet()
   css.replaceSync(createShadowRootStyles())
   return [css] as [CSSStyleSheet]
-}
-
-const getComputedColorScheme = (): ColorScheme | null => {
-  try {
-    const htmlScheme = window.getComputedStyle(document.documentElement).colorScheme ?? ''
-    const colorScheme = first(htmlScheme.split(' '))
-    if (colorScheme === 'light' || colorScheme === 'dark') {
-      return colorScheme
-    }
-  } catch {
-    // noop
-  }
-  return null
-}
-
-const getDocumentElement = () => document.documentElement
-type ColorScheme = 'light' | 'dark'
-function useColorScheme(explicit?: ColorScheme): ColorScheme {
-  const preferred = usePreferredColorScheme()
-  const [computed, setComputed] = useState(getComputedColorScheme)
-  useMutationObserverTarget(
-    useCallbackRef(() => setComputed(getComputedColorScheme)),
-    {
-      attributes: true,
-      childList: false,
-      subtree: false,
-    },
-    getDocumentElement,
-  )
-
-  return explicit ?? computed ?? preferred
 }

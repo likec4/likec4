@@ -46,6 +46,7 @@
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/styles": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@microsoft/api-extractor": "^7.58.7",
     "@pandacss/dev": "catalog:css",

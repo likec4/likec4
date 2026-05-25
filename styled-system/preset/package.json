@@ -29,29 +29,39 @@
     "module": "dist/index.mjs",
     "exports": {
       ".": {
+        "sources": "./src/index.ts",
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       },
       "./defaults": {
+        "sources": "./src/defaults/index.ts",
         "types": "./dist/defaults/index.d.mts",
         "import": "./dist/defaults/index.mjs",
         "default": "./dist/defaults/index.mjs"
-      }
+      },
+      "./dev": "./dev.mjs"
     }
   },
   "files": [
     "dist",
     "src"
   ],
-  "module": "src/index.mts",
   "exports": {
-    ".": "./src/index.mts",
-    "./defaults": "./src/defaults/index.mts",
-    "./dev": {
-      "types": "./dev.d.mts",
-      "default": "./dev.mjs"
-    }
+    ".": {
+      "sources": "./src/index.ts",
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    },
+    "./defaults": {
+      "sources": "./src/defaults/index.ts",
+      "types": "./dist/defaults/index.d.mts",
+      "import": "./dist/defaults/index.mjs",
+      "default": "./dist/defaults/index.mjs"
+    },
+    "./src": "./src/index.ts",
+    "./dev": "./dev.mjs"
   },
   "dependencies": {
     "remeda": "catalog:utils",

@@ -39,8 +39,8 @@ const Action = ({
         root: 'action-icon',
         icon: css({
           '& > svg': {
-            width: '70%',
-            height: '70%',
+            width: '[70%]',
+            height: '[70%]',
           },
         }),
       }}

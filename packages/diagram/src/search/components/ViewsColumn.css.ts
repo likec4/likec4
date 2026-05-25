@@ -9,7 +9,7 @@ export const viewButton = cx(
     flexWrap: 'nowrap',
     display: 'flex',
     // '& .mantine-ThemeIcon-root': {
-    //   color: `[var(${iconColor}, {colors.mantine.colors.dark[2]})]`,
+    //   color: `[var(${iconColor}, {colors.mantine.dark[2]})]`,
     //   '--ti-size': '24px',
     // },
     '&[data-disabled] .mantine-ThemeIcon-root': {
@@ -26,8 +26,8 @@ export const viewButtonDescription = css({
   marginTop: '1',
   // transition: transitions.fast,
   // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: '13px',
-  lineHeight: '1.4',
+  fontSize: '[13px]',
+  lineHeight: '[1.4]',
   [`:where(.likec4-view-btn[data-disabled]) &`]: {
     opacity: 0.85,
   },

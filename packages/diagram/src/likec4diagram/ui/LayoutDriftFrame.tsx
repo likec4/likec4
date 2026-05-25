@@ -21,7 +21,7 @@ export const LayoutDriftFrame = memo(() => {
         width: 'full',
         height: 'full',
         border: `default`,
-        borderWidth: 4,
+        borderWidth: '4',
         pointerEvents: 'none',
         alignItems: 'flex-start',
         justifyContent: 'center',
@@ -56,7 +56,7 @@ const Btn = UnstyledButton.withProps({
     borderBottomRightRadius: 'sm',
     transform: 'translateY(-4px)',
     px: '4',
-    color: 'mantine.colors.gray[9]',
+    color: 'mantine.gray[9]',
     pointerEvents: 'all',
     _active: {
       transform: 'translateY(-3px)',

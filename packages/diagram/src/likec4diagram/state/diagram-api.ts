@@ -9,6 +9,7 @@ import type { RefObject } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName, TogglableFeature } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
+import type { WindowId } from '../../floating-windows/actor/types'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
@@ -173,6 +174,12 @@ export interface DiagramApi<A extends Any = Unknown> {
    * Switch dynamic view display variant
    */
   switchDynamicViewVariant(variant: DynamicViewDisplayVariant): void
+
+  /**
+   * Open floating window
+   */
+  openFloatingWindow(id: WindowId): void
+  toggleFloatingWindow(id: WindowId): void
 }
 
 export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<DiagramActorRef>): DiagramApi<A> {
@@ -354,6 +361,18 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
 
     centerViewportOnEdge: (edgeId: EdgeId) => {
       actorRef.current.send({ type: 'xyflow.centerViewport', edgeId })
+    },
+
+    openFloatingWindow: (id: WindowId) => {
+      const windowsActor = typedSystem(actorRef.current.system).windowsActorRef
+      invariant(windowsActor, 'No windows actor found in diagram actor system')
+      windowsActor.send({ type: 'window.open', id })
+    },
+
+    toggleFloatingWindow: (id: WindowId) => {
+      const windowsActor = typedSystem(actorRef.current.system).windowsActorRef
+      invariant(windowsActor, 'No windows actor found in diagram actor system')
+      windowsActor.send({ type: 'window.toggle', id })
     },
   }
 }

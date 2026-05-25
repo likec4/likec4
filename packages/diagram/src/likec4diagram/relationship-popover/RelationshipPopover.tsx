@@ -332,7 +332,7 @@ const RelationshipPopoverInternal = ({
           position: 'absolute',
           top: '0',
           left: '0',
-          width: 'max-content',
+          width: 'max',
           cursor: 'default',
         }),
       )}
@@ -602,7 +602,7 @@ const Relationship = forwardRef<
             css={{
               paddingLeft: '2.5',
               py: '1.5',
-              borderLeftWidth: '2px',
+              borderLeftWidth: '2',
               borderLeftStyle: 'dotted',
               borderLeftColor: {
                 base: 'mantine.gray[3]',

@@ -37,12 +37,12 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
           padding: 'xs',
           userSelect: 'all',
           color: 'text',
-          lineHeight: 1.4,
+          lineHeight: '[1.4]',
           whiteSpace: isExpanded ? 'pre-wrap' : 'nowrap',
           overflow: isExpanded ? 'visible' : 'hidden',
           textOverflow: isExpanded ? 'unset' : 'ellipsis',
           wordBreak: isExpanded ? 'break-word' : 'normal',
-          minWidth: 0,
+          minWidth: '0',
           width: '100%',
         })}
       >
@@ -67,11 +67,11 @@ function MultiValueDisplay({
             <Text
               className={css({
                 fontSize: 'xs',
-                color: 'mantine.colors.gray[5]',
+                color: 'mantine.gray[5]',
                 fontWeight: 'medium',
                 flexShrink: 0,
                 _dark: {
-                  color: 'mantine.colors.dark[3]',
+                  color: 'mantine.dark[3]',
                 },
               })}
             >
@@ -79,10 +79,10 @@ function MultiValueDisplay({
             </Text>
             <Box
               className={css({
-                minHeight: '32px',
+                minHeight: '[32px]',
                 display: 'flex',
                 alignItems: 'center',
-                flex: 1,
+                flex: '[1]',
               })}
             >
               <TruncatedValue value={value} isExpanded={true} />
@@ -96,13 +96,13 @@ function MultiValueDisplay({
   return (
     <Box
       className={css({
-        minHeight: '32px',
+        minHeight: '[32px]',
         display: 'flex',
         alignItems: 'center',
         padding: 'xs',
         gap: 'xs',
         flexWrap: 'wrap',
-        minWidth: 0, // Allow shrinking
+        minWidth: '0', // Allow shrinking
         overflow: 'hidden', // Prevent overflow
       })}
     >
@@ -115,18 +115,18 @@ function MultiValueDisplay({
               backgroundColor: 'white',
               color: 'text',
               borderRadius: 'sm',
-              border: '1px solid',
-              borderColor: 'mantine.colors.gray[3]',
+              border: 'default',
+              borderColor: 'mantine.gray[3]',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              maxWidth: 'min(200px, 100%)',
-              minWidth: '60px',
-              flex: '0 1 auto',
+              maxWidth: '[min(200px, 100%)]',
+              minWidth: '[60px]',
+              flex: '[0 1 auto]',
               userSelect: 'all',
               _dark: {
-                backgroundColor: 'mantine.colors.dark[9]',
-                borderColor: 'mantine.colors.dark[4]',
+                backgroundColor: 'mantine.dark[9]',
+                borderColor: 'mantine.dark[4]',
               },
             })}
             title={value}
@@ -137,11 +137,11 @@ function MultiValueDisplay({
             <Text
               className={css({
                 fontSize: 'xs',
-                color: 'mantine.colors.gray[5]',
+                color: 'mantine.gray[5]',
                 fontWeight: 'medium',
                 flexShrink: 0,
                 _dark: {
-                  color: 'mantine.colors.dark[3]',
+                  color: 'mantine.dark[3]',
                 },
               })}
             >
@@ -187,13 +187,13 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
               padding: '[4px 8px]',
               borderRadius: 'sm',
               whiteSpace: 'nowrap',
-              transition: 'all 150ms ease',
+              transition: '[all 150ms ease]',
               _hover: {
-                backgroundColor: 'mantine.colors.gray[1]',
-                color: 'mantine.colors.primary[6]',
+                backgroundColor: 'mantine.gray[1]',
+                color: 'mantine.primary[6]',
                 _dark: {
-                  backgroundColor: 'mantine.colors.dark[7]',
-                  color: 'mantine.colors.primary[4]',
+                  backgroundColor: 'mantine.dark[7]',
+                  color: 'mantine.primary[4]',
                 },
               },
             })}
@@ -207,13 +207,13 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
                 className={css({
                   fontSize: 'xs',
                   fontWeight: 'medium',
-                  color: 'mantine.colors.gray[6]',
-                  backgroundColor: 'mantine.colors.gray[1]',
+                  color: 'mantine.gray[6]',
+                  backgroundColor: 'mantine.gray[1]',
                   padding: '[1px 4px]',
                   borderRadius: 'xs',
                   _dark: {
-                    color: 'mantine.colors.dark[2]',
-                    backgroundColor: 'mantine.colors.dark[6]',
+                    color: 'mantine.dark[2]',
+                    backgroundColor: 'mantine.dark[6]',
                   },
                 })}
               >
@@ -257,7 +257,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
           : (
             <Box
               className={css({
-                minHeight: '32px',
+                minHeight: '[32px]',
                 display: 'flex',
                 alignItems: 'center',
               })}

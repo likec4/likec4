@@ -43,16 +43,16 @@ export const elementTitleAndId = css({
 // export const elementTitle = css(title)
 export const elementId = css({
   // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: '10px',
-  lineHeight: '1.3',
+  fontSize: '[10px]',
+  lineHeight: '[1.3]',
   display: 'block',
   fontWeight: 'medium',
   whiteSpace: 'nowrap',
   padding: '[1px 5px]',
   borderRadius: 'sm',
-  background: `mantine.colors.dark[9]/30`,
+  background: `mantine.dark[9]/30`,
   _light: {
-    background: `mantine.colors.gray[3]/20`,
+    background: `mantine.gray[3]/20`,
   },
 })
 
@@ -64,12 +64,12 @@ export const elementIcon = css({
 })
 
 export const elementViewsCount = css({
-  flex: 0,
+  flex: '[0]',
   // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: '10px',
+  fontSize: '[10px]',
   fontWeight: 'medium',
   whiteSpace: 'nowrap',
-  lineHeight: '1.1',
+  lineHeight: '[1.1]',
   [whenContainerIsNarrow]: {
     display: 'none',
   },

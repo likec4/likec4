@@ -52,7 +52,7 @@
   },
   "sideEffects": false,
   "type": "module",
-  "dependencies": {
+  "devDependencies": {
     "@cloudflare/vite-plugin": "catalog:cloudflare",
     "miniflare": "4.20260305.0",
     "@codingame/monaco-vscode-editor-api": "16.1.1",
@@ -74,6 +74,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/styles": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",

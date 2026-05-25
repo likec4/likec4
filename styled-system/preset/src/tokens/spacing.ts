@@ -1,5 +1,5 @@
 import { defineTokens } from '@pandacss/dev'
-import { defaultTheme } from '../defaults/index.mts'
+import { defaultTheme } from '../defaults'
 
 export const spacing = defineTokens.spacing({
   '0': {

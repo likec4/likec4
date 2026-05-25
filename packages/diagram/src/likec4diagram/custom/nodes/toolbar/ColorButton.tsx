@@ -105,7 +105,7 @@ export function ColorSwatches({
   return (
     <Stack gap={2} onMouseLeave={() => onColorPreview(null)}>
       <TooltipGroup openDelay={1000} closeDelay={300}>
-        <Flex maxW={'120px'} gap="1.5" justify="flex-start" align="flex-start" direction="row" wrap="wrap">
+        <Flex maxW={'[120px]'} gap="1.5" justify="flex-start" align="flex-start" direction="row" wrap="wrap">
           {SemanticColors.map(color => (
             <MantineTooltip
               key={color}
@@ -131,7 +131,7 @@ export function ColorSwatches({
 
         <Flex
           mt="sm"
-          maxW={'110px'}
+          maxW={'[110px]'}
           gap="1.5"
           justify="flex-start"
           align="flex-start"

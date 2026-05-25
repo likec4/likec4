@@ -1,10 +1,10 @@
 import { defineConfig } from '@likec4/style-preset'
 
 export default defineConfig({
-  clean: true,
   include: [
     'src/**/*.{ts,tsx}',
-    '../diagram/src/**/*.{js,jsx,ts,tsx}',
+    '../diagram/src/**/*.{ts,tsx}',
   ],
+  clean: true,
   outdir: 'styled-system',
 })

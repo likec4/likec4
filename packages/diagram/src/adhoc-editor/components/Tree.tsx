@@ -64,7 +64,7 @@ const statebtn = cva({
 })
 
 const icon = css.raw({
-  flex: 0,
+  flex: '[0]',
   display: 'flex',
   alignItems: 'center',
 
@@ -76,10 +76,10 @@ const icon = css.raw({
     color: 'text',
   },
   _groupFocusWithin: {
-    color: 'mantine.colors.primary.lightColor!',
+    color: 'mantine.primary.lightColor!',
   },
   _groupFocusVisible: {
-    color: 'mantine.colors.primary.lightColor!',
+    color: 'mantine.primary.lightColor!',
   },
 
   '& :where(.likec4-shape-icon, .likec4-element-icon)': {
@@ -87,19 +87,19 @@ const icon = css.raw({
   },
 
   '& :where(svg, img)': {
-    width: '10px',
-    height: '10px',
+    width: 'icon.xxs',
+    height: 'icon.xxs',
   },
   '@/md': {
     '& :where(svg, img)': {
-      width: '14px',
-      height: '14px',
+      width: 'icon.sm',
+      height: 'icon.sm',
     },
   },
   '@/lg': {
     '& :where(svg, img)': {
-      width: '16px',
-      height: '16px',
+      width: 'icon.md',
+      height: 'icon.md',
     },
   },
 
@@ -140,27 +140,27 @@ const control = css.raw({
   backgroundColor: {
     base: 'transparent',
     _hover: {
-      base: 'mantine.colors.gray[1]',
-      _dark: 'mantine.colors.dark[5]',
+      base: 'mantine.gray[1]',
+      _dark: 'mantine.dark[5]',
     },
-    _focusWithin: 'mantine.colors.primary.lightHover!',
-    _focusVisible: 'mantine.colors.primary.lightHover!',
+    _focusWithin: 'mantine.primary.lightHover!',
+    _focusVisible: 'mantine.primary.lightHover!',
   },
   color: {
     base: 'text',
     _hover: 'text.bright',
-    _focusWithin: 'mantine.colors.primary.lightColor!',
-    _focusVisible: 'mantine.colors.primary.lightColor!',
+    _focusWithin: 'mantine.primary.lightColor!',
+    _focusVisible: 'mantine.primary.lightColor!',
   },
   // _hover: {
   //   backgroundColor: {
-  //     base: 'mantine.colors.gray[1]',
-  //     _dark: 'mantine.colors.dark[5]',
+  //     base: 'mantine.gray[1]',
+  //     _dark: 'mantine.dark[5]',
   //   },
   // },
   _focusVisible: {
     outline: 'none',
-    // backgroundColor: 'mantine.colors.primary.lightHover!',
+    // backgroundColor: 'mantine.primary.lightHover!',
   },
 })
 
@@ -198,11 +198,11 @@ const tree = sva({
       // '& label': {
       //   color: 'text',
       //   _groupFocusVisible: {
-      //     backgroundColor: 'mantine.colors.primary.lightHover!',
+      //     backgroundColor: 'mantine.primary.lightHover!',
       //   },
       //   // backgroundColor: 'transparent',
       // },
-      transition: 'opacity 150ms ease-out',
+      transition: '[opacity 150ms ease-out]',
       // opacity: {
       //   base: 0.4,
       //   _checked: 1,
@@ -218,7 +218,7 @@ const tree = sva({
       color: 'inherit',
       userSelect: 'none',
       textStyle: 'xxs',
-      truncate: 'ellipsis',
+      truncate: true,
       '@/sm': {
         textStyle: 'xs',
       },
@@ -232,11 +232,11 @@ const tree = sva({
     },
     indicator: {
       color: 'inherit',
-      transition: 'transform 150ms ease-out',
-      width: '12px',
+      transition: '[transform 150ms ease-out]',
+      width: '[12px]',
       opacity: 0.75,
       '@/md': {
-        width: '14px',
+        width: '[14px]',
       },
       _open: {
         transform: 'rotate(90deg)',

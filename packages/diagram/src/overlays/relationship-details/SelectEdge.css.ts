@@ -8,7 +8,7 @@ const edgeEnpoint = css.raw({
     color: 'text/90',
     fontSize: 'xs',
     fontWeight: 'medium',
-    lineHeight: '1.2',
+    lineHeight: 'xs',
   },
 })
 
@@ -33,8 +33,7 @@ export const edgeLabel = cx(
     display: 'grid',
     gridColumnStart: 1,
     gridColumnEnd: 4,
-    borderBottom: `1px solid`,
-    borderBottomColor: 'default.border',
+    borderBottom: `default`,
     marginBottom: '0',
     padding: '[0 4px 5px 4px]',
     width: '100%',
@@ -54,10 +53,10 @@ export const edgeRow = css({
     marginBottom: '0',
   },
   '& > *': {
-    transition: 'all 0.15s ease-in',
+    transition: '[all 0.15s ease-in]',
   },
   '&:is(:hover, [data-selected=true]) > *': {
-    transition: 'all 0.15s ease-out',
+    transition: '[all 0.15s ease-out]',
     cursor: 'pointer',
     backgroundColor: 'default.hover',
   },
@@ -66,7 +65,7 @@ export const edgeRow = css({
 export const edgeGrid = css({
   display: 'grid',
   gridTemplateColumns: '1fr 30px 1fr',
-  gridAutoRows: 'min-content max-content',
+  gridAutoRows: '[min-content max-content]',
   gap: '0',
   alignItems: 'stretch',
 })
@@ -74,7 +73,7 @@ export const edgeGrid = css({
 export const edgeDataGrid = css({
   display: 'grid',
   gridTemplateColumns: 'min-content 1fr',
-  gridAutoRows: 'min-content max-content',
+  gridAutoRows: '[min-content max-content]',
   gap: '[10px 12px]',
   alignItems: 'baseline',
   justifyItems: 'start',
@@ -82,7 +81,7 @@ export const edgeDataGrid = css({
 
 export const scrollArea = css({
   maxHeight: [
-    '70vh',
-    'calc(100cqh - 70px)',
+    '[70vh]',
+    '[calc(100cqh - 70px)]',
   ],
 })

@@ -14,9 +14,9 @@ export const treeNodeLabel = css({
 
 const label = css({
   transition: 'fast',
-  color: 'mantine.colors.gray[7]',
+  color: 'mantine.gray[7]',
   _dark: {
-    color: 'mantine.colors.dark[1]',
+    color: 'mantine.dark[1]',
   },
   '& > *': {
     transition: 'fast',
@@ -43,21 +43,21 @@ export const instanceLabel = cx(
     width: '100%',
     justifyContent: 'stretch',
     flexWrap: 'nowrap',
-    height: '36px',
-    paddingInlineStart: '[16px]',
+    height: '[36px]',
+    paddingInlineStart: '4', // 16px
     paddingInlineEnd: '2.5', // 10px
     borderRadius: 'sm',
     alignItems: 'center',
-    color: 'mantine.colors.gray[7]',
+    color: 'mantine.gray[7]',
     _dark: {
-      color: 'mantine.colors.gray.lightColor',
+      color: 'mantine.gray.lightColor',
     },
     _hover: {
-      background: 'mantine.colors.gray.lightHover',
+      background: 'mantine.gray.lightHover',
     },
     '& .tabler-icon': {
       transition: 'fast',
-      width: '90%',
+      width: '[90%]',
       opacity: 0.65,
     },
   }),

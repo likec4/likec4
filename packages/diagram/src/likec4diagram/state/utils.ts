@@ -12,6 +12,7 @@ import { type Viewport, getEdgePosition, getNodeDimensions, getNodesBounds, getV
 import type { ActorSystem } from 'xstate'
 import { MinZoom } from '../../base/const'
 import type { EditorActorRef } from '../../editor/actor/machine'
+import type { FloatingWindowsActorRef } from '../../floating-windows/actor/actor'
 import type { XYStoreState } from '../../hooks/useXYFlow'
 import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
@@ -30,21 +31,25 @@ export const findNodeByModelFqn = <T extends NodeWithData>(
 }
 
 export function typedSystem(system: ActorSystem<any>) {
+  const sys = system as System
   return {
     get overlaysActorRef(): OverlaysActorRef | null {
-      return (system as System).get('overlays') ?? null
+      return sys.get('overlays') ?? null
     },
     get diagramActorRef(): DiagramActorRef {
-      return nonNullable((system as System).get('diagram'), 'Diagram actor not found')
+      return nonNullable(sys.get('diagram'), 'Diagram actor not found')
     },
     get searchActorRef(): SearchActorRef | null {
-      return (system as System).get('search') ?? null
+      return sys.get('search') ?? null
     },
     get editorActorRef(): EditorActorRef | null {
-      return (system as System).get('editor') ?? null
+      return sys.get('editor') ?? null
     },
     get navigationActorRef(): NavigationPanelActorRef | null {
-      return (system as System).get('navigationPanel') ?? null
+      return sys.get('navigationPanel') ?? null
+    },
+    get windowsActorRef(): FloatingWindowsActorRef | null {
+      return sys.get('windows') ?? null
     },
   }
 }
@@ -62,6 +67,9 @@ typedSystem.searchActor = ({ system }: { system: ActorSystem<any> }): SearchActo
 }
 typedSystem.navigationActor = ({ system }: { system: ActorSystem<any> }): NavigationPanelActorRef => {
   return (system as System).get('navigationPanel')!
+}
+typedSystem.windowsActor = ({ system }: { system: ActorSystem<any> }): FloatingWindowsActorRef => {
+  return (system as System).get('windows')!
 }
 
 export function findDiagramNode(ctx: Context, xynodeId: string): DiagramNode | null {

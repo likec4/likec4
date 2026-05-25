@@ -1,6 +1,6 @@
 import type { Config } from '@pandacss/dev'
 import { __v, vars } from './const.ts'
-import { defaultTheme } from './defaults/index.mts'
+import { defaultTheme } from './defaults/index.ts'
 import { rem } from './helpers.ts'
 
 type ExtendableGlobalVars = NonNullable<Config['globalVars']>

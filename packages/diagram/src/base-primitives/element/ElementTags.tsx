@@ -6,7 +6,7 @@ import { likec4tag } from '@likec4/styles/recipes'
 import { useDebouncedState, useHover } from '@mantine/hooks'
 import { NodeToolbar, Position, useStore } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
-import { type ComponentPropsWithoutRef, forwardRef, memo, useCallback, useEffect } from 'react'
+import { type ComponentPropsWithoutRef, type CSSProperties, forwardRef, memo, useCallback, useEffect } from 'react'
 import { hasAtLeast } from 'remeda'
 import type { BaseNodePropsWithData } from '../../base/types'
 import { useTagSpecification } from '../../context/TagStylesContext'
@@ -16,7 +16,7 @@ import { stopPropagation } from '../../utils/xyflow'
 export type ElementTagProps = {
   tag: string
   cursor?: 'pointer' | 'default'
-} & Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'color'>
+} & Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'color' | 'translate'>
 
 export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
   ({ tag, cursor, className, style, ...props }, ref) => {
@@ -33,9 +33,9 @@ export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
         )}
         {...props}
         style={{
-          cursor,
+          ...(cursor && { cursor }),
           ...style,
-        }}
+        } as CSSProperties}
       >
         <span>#</span>
         <span>{tag}</span>
@@ -142,7 +142,7 @@ function WithElementTags({
             alignItems: 'flex-end',
             justifyItems: 'stretch',
             position: 'absolute',
-            width: '100',
+            width: '100%',
             bottom: '0',
             left: '0',
             padding: '1',

@@ -50,18 +50,18 @@ export const WalkthroughPanel = memo(() => {
             padding: 'md',
             paddingTop: 'xxs',
             pointerEvents: 'all',
-            maxWidth: 300,
-            height: 'max-content',
-            maxHeight: 'calc(100cqh - 100px)',
-            width: 'max-content',
+            maxWidth: '[300px]',
+            height: 'max',
+            maxHeight: '[calc(100cqh - 100px)]',
+            width: 'max',
             cursor: 'default',
             overflow: 'hidden',
             '@/sm': {
-              minWidth: 400,
-              maxWidth: 550,
+              minWidth: '[400px]',
+              maxWidth: '[550px]',
             },
             '@/lg': {
-              maxWidth: 700,
+              maxWidth: '[700px]',
             },
           })}
           initial={{

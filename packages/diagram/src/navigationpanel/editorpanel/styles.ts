@@ -19,8 +19,8 @@ export const panel = css({
     ['--ai-size']: '2rem',
   },
   ['& .tabler-icon']: {
-    width: '65%',
-    height: '65%',
+    width: '[65%]',
+    height: '[65%]',
   },
   _reduceGraphics: {
     '& .action-icon': {
@@ -38,47 +38,47 @@ export const actionIconGroup = css({
 
 export const autolayoutIcon = css({
   ['& .tabler-icon']: {
-    width: '65%',
-    height: '65%',
+    width: '[65%]',
+    height: '[65%]',
   },
 })
 
 export const autolayoutButton = css({
-  flex: '1 1 40%',
+  flex: '[1 1 40%]',
   textAlign: 'center',
   fontWeight: 'medium',
   padding: '[4px 6px]',
-  fontSize: '11px',
-  zIndex: 1,
+  fontSize: '[11px]',
+  zIndex: '[1]',
 })
 
 export const autolayoutIndicator = css({
-  background: 'mantine.colors.gray[2]',
+  background: 'mantine.gray[2]',
   borderRadius: 'sm',
-  border: `1px solid`,
-  borderColor: 'mantine.colors.gray[4]',
+  border: 'default',
+  borderColor: 'mantine.gray[4]',
   _dark: {
-    background: 'mantine.colors.dark[5]',
-    borderColor: 'mantine.colors.dark[4]',
+    background: 'mantine.dark[5]',
+    borderColor: 'mantine.dark[4]',
   },
 })
 
 export const spacingSliderBody = css({
   position: 'relative',
   borderRadius: 'sm',
-  background: 'mantine.colors.gray[3]',
-  boxShadow: 'inset 1px 1px 3px 0px #00000024',
+  background: 'mantine.gray[3]',
+  boxShadow: '[inset 1px 1px 3px 0px #00000024]',
   _dark: {
-    background: 'mantine.colors.dark[7]',
+    background: 'mantine.dark[7]',
   },
 })
 
 export const spacingSliderThumb = css({
   position: 'absolute',
-  width: '8px',
-  height: '8px',
-  border: `2px solid`,
-  borderColor: 'mantine.colors.gray[5]',
+  width: '[8px]',
+  height: '[8px]',
+  border: '[2px solid]',
+  borderColor: 'mantine.gray[5]',
   borderRadius: 'sm',
   transform: 'translate(-50%, -50%)',
 })

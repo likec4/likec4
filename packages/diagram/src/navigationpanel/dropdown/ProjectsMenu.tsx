@@ -48,9 +48,9 @@ function WithProjectsMenu({
                 fontWeight: 'normal',
                 fontSize: 'xxs',
                 height: 'auto',
-                lineHeight: 1.1,
+                lineHeight: '[1.1]',
                 color: {
-                  _light: 'mantine.colors.gray[9]',
+                  _light: 'mantine.gray[9]',
                 },
               }),
               section: css({

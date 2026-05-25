@@ -1,5 +1,6 @@
 import type { ActorSystem } from 'xstate'
 import type { BaseEditorActorRef } from '../../editor/actor/setup'
+import type { FloatingWindowsActorRef } from '../../floating-windows/actor/actor'
 import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
@@ -14,6 +15,7 @@ export type System = ActorSystem<{
     search: SearchActorRef
     editor: BaseEditorActorRef
     navigationPanel: NavigationPanelActorRef
+    windows: FloatingWindowsActorRef
   }
 }>
 

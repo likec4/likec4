@@ -8,17 +8,17 @@ export const treeNodeLabel = css({
 export const elementLabel = css({
   display: 'inline-flex',
   transition: 'fast',
-  border: `1px dashed`,
+  border: '[1px dashed]',
   borderColor: 'default.border',
   borderRadius: 'sm',
   px: 'md',
   py: 'xs',
   alignItems: 'center',
   cursor: 'pointer',
-  color: 'mantine.colors.gray[7]',
+  color: 'mantine.gray[7]',
 
   _dark: {
-    color: 'mantine.colors.dark[1]',
+    color: 'mantine.dark[1]',
   },
   '& > *': {
     transition: 'fast',

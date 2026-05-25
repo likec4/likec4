@@ -195,7 +195,7 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
         padding: '0',
         margin: '0',
         overflow: 'hidden',
-        zIndex: 2,
+        zIndex: '[2]',
       }}
       style={{
         marginRight: 'auto',
@@ -466,7 +466,7 @@ function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
       </Box>
       <Box
         css={{
-          minWidth: 0,
+          minWidth: '0',
         }}>
         <Box
           style={kindsStyle}>

@@ -62,7 +62,7 @@ export const NavigationPanelControls = memo(() => {
         'mantine-active',
         css({
           userSelect: 'none',
-          maxWidth: '200px',
+          maxWidth: '[200px]',
           display: {
             base: 'none',
             '@/md': 'block',

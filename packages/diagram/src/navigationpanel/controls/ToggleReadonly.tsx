@@ -71,9 +71,9 @@ export const ToggleReadonly = () => {
           <IconLock size={14} stroke={2} style={{ display: !isReadOnly ? 'none' : undefined }} />
           <m.div
             className={css({
-              fontSize: '11px',
+              fontSize: 'xxs',
               fontWeight: 'bold',
-              lineHeight: 1,
+              lineHeight: '1',
               opacity: 0.8,
             })}
             style={{

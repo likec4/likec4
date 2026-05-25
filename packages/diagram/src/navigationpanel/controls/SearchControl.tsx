@@ -44,9 +44,9 @@ export function SearchControl() {
       <IconSearch size={14} stroke={2.5} />
       <Box
         css={{
-          fontSize: '11px',
+          fontSize: '[11px]',
           fontWeight: 'bold',
-          lineHeight: 1,
+          lineHeight: '[1]',
           opacity: 0.8,
           whiteSpace: 'nowrap',
         }}>

@@ -18,19 +18,19 @@ export const idBadge = defineRecipe({
     fontFamily: 'likec4',
     fontSize: 'xxs',
     lineHeight: 'xs',
-    fontWeight: 'medium',
+    fontWeight: 'bold',
     whiteSpace: 'nowrap',
+    color: {
+      base: 'text.dimmed',
+      _hover: 'text',
+    },
 
     padding: '[2px 5px]',
     borderRadius: 'sm',
 
     background: {
       base: alpha(mantine.colors.gray[3], 20),
-      _dark: alpha(mantine.colors.dark[9], 30),
-      _hover: {
-        base: alpha(mantine.colors.gray[3], 80),
-        _dark: alpha(mantine.colors.dark[9], 80),
-      },
+      _dark: mantine.colors.dark[9],
     },
   },
   staticCss: ['*'],

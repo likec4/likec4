@@ -24,7 +24,7 @@ export const stateAlert = css({
   position: 'fixed',
   top: '2',
   left: '2',
-  minHeight: '200px',
+  minHeight: '[200px]',
   userSelect: 'none',
-  zIndex: 400,
+  zIndex: 'likec4.floatingWindow',
 })

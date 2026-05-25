@@ -8,6 +8,7 @@ import { ErrorBoundary } from '../components/ErrorFallback'
 import { DiagramFeatures } from '../context'
 import { useDiagram } from '../hooks'
 import { ElementDetails } from './element-details/ElementDetails'
+import type { WindowId } from './floating/store'
 import { ViewDescriptionFloatingWindow } from './floating/ViewDescriptionWindow'
 import { OverlaysActorContext, selectOverlaysSnapshot, useSelectOverlaysActor } from './hooks'
 import { Overlay } from './overlay/Overlay'
@@ -137,7 +138,6 @@ function OverlaysSurface({ overlaysActorRef }: OverlaysProps) {
       <ErrorBoundary onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
         <LayoutGroup>
           <AnimatePresence propagate mode="popLayout">
-            <ViewDescriptionFloatingWindow id="123" />
             {overlaysReact}
           </AnimatePresence>
         </LayoutGroup>

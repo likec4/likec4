@@ -5,15 +5,15 @@ export const edgeNoteCloseButton = css({
   position: 'absolute',
   top: '[1px]',
   right: '[1px]',
-  zIndex: 9,
+  zIndex: '[9]',
 })
 
 export const edgeNoteText = css({
   userSelect: 'all',
   textAlign: 'left',
   whiteSpaceCollapse: 'preserve-breaks',
-  textWrap: 'pretty',
-  lineHeight: 1.25,
+  textWrap: '[pretty]',
+  lineHeight: '[1.25]',
   '--text-fz': '{fontSizes.sm}',
   md: {
     '--text-fz': '{fontSizes.md}',

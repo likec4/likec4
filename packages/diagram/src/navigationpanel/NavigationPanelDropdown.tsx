@@ -127,8 +127,8 @@ export const NavigationPanelDropdown = memo(() => {
         classNames={{
           root: css({
             maxWidth: [
-              'calc(100vw - 50px)',
-              'calc(100cqw - 50px)',
+              '[calc(100vw - 50px)]',
+              '[calc(100cqw - 50px)]',
             ],
           }),
         }}
@@ -192,12 +192,12 @@ const SearchResults = memo(() => {
       className={css({
         width: '100%',
         maxWidth: [
-          'calc(100vw - 250px)',
-          'calc(100cqw - 250px)',
+          '[calc(100vw - 250px)]',
+          '[calc(100cqw - 250px)]',
         ],
         maxHeight: [
-          'calc(100vh - 200px)',
-          'calc(100cqh - 200px)',
+          '[calc(100vh - 200px)]',
+          '[calc(100cqh - 200px)]',
         ],
       })}>
       <VStack gap="0.5">
@@ -231,14 +231,14 @@ const foundedViewClass = hstack({
   py: 'xxs',
   _hover: {
     backgroundColor: {
-      base: 'mantine.colors.gray[1]',
-      _dark: 'mantine.colors.dark[5]',
+      base: 'mantine.gray[1]',
+      _dark: 'mantine.dark[5]',
     },
   },
   _focus: {
     outline: 'none',
-    color: 'mantine.colors.primary.lightColor!',
-    backgroundColor: 'mantine.colors.primary.lightHover!',
+    color: 'mantine.primary.lightColor!',
+    backgroundColor: 'mantine.primary.lightHover!',
   },
 })
 const inheritColor = css({
@@ -264,8 +264,8 @@ function FoundedView(
         css({
           '& > mark': {
             backgroundColor: {
-              base: 'mantine.colors.yellow[2]/90',
-              _dark: 'mantine.colors.yellow[5]/80',
+              base: 'mantine.yellow[2]/90',
+              _dark: 'mantine.yellow[5]/80',
               _groupFocus: '[transparent]',
             },
             color: {
@@ -377,8 +377,8 @@ const ColumnScrollArea = ScrollAreaAutosize.withProps({
   scrollbars: 'y',
   className: css({
     maxHeight: [
-      'calc(100vh - 160px)',
-      'calc(100cqh - 160px)',
+      '[calc(100vh - 160px)]',
+      '[calc(100cqh - 160px)]',
     ],
   }),
 })
@@ -560,15 +560,15 @@ function SearchInput(props: {
         wrapper: css({
           flexGrow: 1,
           backgroundColor: {
-            base: 'mantine.colors.gray[1]',
-            _dark: 'mantine.colors.dark[5]/80',
+            base: 'mantine.gray[1]',
+            _dark: 'mantine.dark[5]/80',
             _hover: {
-              base: 'mantine.colors.gray[2]',
-              _dark: 'mantine.colors.dark[4]',
+              base: 'mantine.gray[2]',
+              _dark: 'mantine.dark[4]',
             },
             _focus: {
-              base: 'mantine.colors.gray[2]',
-              _dark: 'mantine.colors.dark[4]',
+              base: 'mantine.gray[2]',
+              _dark: 'mantine.dark[4]',
             },
           },
           rounded: 'sm',

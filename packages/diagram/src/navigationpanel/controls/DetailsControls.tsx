@@ -24,36 +24,72 @@ const selector = selectNavigationContext(context => {
   const view = context.view
   return {
     id: view.id,
-    title: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
-    description: context.viewModel?.description ?? RichText.from(view.description),
-    tags: view.tags ?? [],
-    links: view.links ?? [],
+    linksCount: view.links?.length ?? 0,
+    // title: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
+    // description: context.viewModel?.description ?? RichText.from(view.description),
+    // tags: view.tags ?? [],
+    // links: view.links ?? [],
   }
 }, deepEqual)
 
 type ViewDetailsCardData = ReturnType<typeof selector[0]>
 
 export const DetailsControls = (props: PopoverProps) => {
-  const [opened, setOpened] = useState(false)
   const data = useNavigationActorSelector(selector)
   const portalProps = useMantinePortalProps()
+  const diagram = useDiagram()
 
   return (
-    <Popover
-      position="bottom-end"
-      shadow="xl"
-      clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
-      offset={{
-        mainAxis: 4,
+    <UnstyledButton
+      component={m.button}
+      layout="position"
+      whileTap={{
+        scale: 0.95,
+        translateY: 1,
       }}
-      opened={opened}
-      onChange={setOpened}
-      {...portalProps}
-      {...props}
-    >
-      <ViewDetailsCardTrigger linksCount={data.links.length} onOpen={() => setOpened(true)} />
-      {opened && <ViewDetailsCardDropdown data={data} onClose={() => setOpened(false)} />}
-    </Popover>
+      onClick={e => {
+        e.stopPropagation()
+        diagram.toggleFloatingWindow('view-details')
+      }}
+      className={cx(
+        'group',
+        hstack({
+          gap: '2',
+          paddingInline: '2',
+          paddingBlock: '1',
+          rounded: 'sm',
+          userSelect: 'none',
+          cursor: 'pointer',
+          color: {
+            base: 'likec4.panel.action',
+            _hover: 'likec4.panel.action.hover',
+          },
+          backgroundColor: {
+            _hover: 'likec4.panel.action.bg.hover',
+          },
+          display: {
+            base: 'none',
+            '@/xs': 'flex',
+          },
+        }),
+        ``,
+      )}>
+      <IconId size={16} stroke={1.8} />
+      {data.linksCount > 0 && (
+        <HStack gap={'[1px]'}>
+          <IconLink size={14} stroke={2} />
+          <Box
+            css={{
+              fontSize: '[11px]',
+              fontWeight: 'bold',
+              lineHeight: '1',
+              opacity: 0.8,
+            }}>
+            {data.linksCount}
+          </Box>
+        </HStack>
+      )}
+    </UnstyledButton>
   )
 }
 
@@ -99,9 +135,9 @@ const ViewDetailsCardTrigger = ({ linksCount, onOpen }: { linksCount: number; on
           <IconLink size={14} stroke={2} />
           <Box
             css={{
-              fontSize: '11px',
+              fontSize: '[11px]',
               fontWeight: 'bold',
-              lineHeight: 1,
+              lineHeight: '1',
               opacity: 0.8,
             }}>
             {linksCount}
@@ -148,19 +184,19 @@ const ViewDetailsCardDropdown = ({
           padding: 'md',
           paddingBottom: 'lg',
           pointerEvents: 'all',
-          maxWidth: 'calc(100cqw - 52px)',
-          minWidth: '200px',
-          maxHeight: 'calc(100cqh - 100px)',
-          width: 'max-content',
+          maxWidth: '[calc(100cqw - 52px)]',
+          minWidth: '[200px]',
+          maxHeight: '[calc(100cqh - 100px)]',
+          width: 'max',
           cursor: 'default',
           overflow: 'auto',
           overscrollBehavior: 'contain',
           '@/sm': {
-            minWidth: 400,
-            maxWidth: 550,
+            minWidth: '[400px]',
+            maxWidth: '[550px]',
           },
           '@/lg': {
-            maxWidth: 700,
+            maxWidth: '[700px]',
           },
         }),
       )}>
@@ -229,12 +265,12 @@ const ViewBadge = ({
         fw={500}
         classNames={{
           root: css({
-            width: 'max-content',
+            width: 'max',
             overflow: 'visible',
             px: '1',
             color: {
-              _dark: 'mantine.colors.gray[4]',
-              _light: 'mantine.colors.gray[8]',
+              _dark: 'mantine.gray[4]',
+              _light: 'mantine.gray[8]',
             },
           }),
           label: css({

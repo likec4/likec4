@@ -1,5 +1,4 @@
 import { css } from '@likec4/styles/css'
-import { rem } from '@mantine/core'
 
 export const content = css({
   paddingTop: '[120px]',
@@ -26,7 +25,7 @@ export const root = css({
 })
 
 export const description = css({
-  maxWidth: rem(540),
+  maxWidth: '[540px]',
   margin: 'auto',
   marginTop: 'xl',
   marginBottom: '[calc({spacing.xl}*1.5)]',

@@ -31,5 +31,5 @@ export const previewBg = css({
 export const cardLink = css({
   position: 'absolute',
   inset: '0',
-  zIndex: 5,
+  zIndex: '[5]',
 })

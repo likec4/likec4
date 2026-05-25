@@ -12,8 +12,8 @@ export function EmptyNode({
       css={{
         width: '100%',
         height: '100%',
-        border: `3px dashed`,
-        borderColor: `default.border`,
+        border: 'default',
+        borderWidth: '3',
         borderRadius: 'md',
         display: 'flex',
         justifyContent: 'center',

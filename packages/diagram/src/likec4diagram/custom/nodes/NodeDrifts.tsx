@@ -20,7 +20,7 @@ export function NodeDrifts({
 
         '& + .likec4-element-shape': {
           outlineColor: 'likec4.compare.manual.outline',
-          outlineWidth: '4px',
+          outlineWidth: '4',
           outlineStyle: 'dashed',
           outlineOffset: '1.5',
         },

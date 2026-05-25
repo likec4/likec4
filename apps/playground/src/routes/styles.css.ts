@@ -3,24 +3,24 @@ import { css } from '@likec4/styles/css'
 // const bg = createVar()
 
 export const panel = css({
-  backgroundColor: 'mantine.colors.body',
+  backgroundColor: 'mantine.body',
 })
 
 export const resize = css({
   cursor: 'ew-resize',
   userSelect: 'none',
   boxSizing: 'border-box',
-  borderLeft: '0px solid transparent',
+  borderLeft: 'transparent',
   transition: 'all 175ms ease-in-out',
   backgroundColor: 'default.border',
   backgroundClip: 'content-box',
   outline: 'none',
   ['&:is([data-separator="active"],[data-separator="hover"])']: {
-    backgroundColor: 'mantine.colors.primary.filledHover',
+    backgroundColor: 'mantine.primary.filledHover',
   },
   _hover: {
     scaleX: 2.2,
-    backgroundColor: 'mantine.colors.primary.filledHover',
+    backgroundColor: 'mantine.primary.filledHover',
   },
 })
 
