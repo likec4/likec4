@@ -144,6 +144,81 @@ describe('DynamicView Checks', () => {
     })
   })
 
+  describe('parallel blocks', () => {
+    it('accepts a single, non-nested parallel block', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+        specification {
+          element component
+        }
+        model {
+          component a
+          component b
+          component c
+        }
+        views {
+          dynamic view index {
+            a -> b
+            parallel {
+              a -> c
+              b -> c
+            }
+          }
+        }
+      `)
+      expect(errors).toEqual([])
+    })
+
+    it('reports a clear diagnostic when a parallel block is nested inside another', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+        specification {
+          element component
+        }
+        model {
+          component a
+          component b
+          component c
+        }
+        views {
+          dynamic view index {
+            parallel {
+              a -> b
+              parallel {
+                a -> c
+                b -> c
+              }
+            }
+          }
+        }
+      `)
+      expect(errors).toContain('Nested parallel blocks are not allowed')
+    })
+
+    it('also reports nesting when using the `par` alias', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+        specification {
+          element component
+        }
+        model {
+          component a
+          component b
+        }
+        views {
+          dynamic view index {
+            par {
+              par {
+                a -> b
+              }
+            }
+          }
+        }
+      `)
+      expect(errors).toContain('Nested parallel blocks are not allowed')
+    })
+  })
+
   describe('display variant', () => {
     it('should report if invalid mode', async ({ expect }) => {
       const { validate } = createTestServices()

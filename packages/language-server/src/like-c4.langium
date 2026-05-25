@@ -414,7 +414,9 @@ DynamicViewRule:
 
 DynamicViewParallelSteps:
   ('parallel'|'par') '{'
-    (steps+=DynamicViewStep)*
+    // Accept nested ParallelSteps so we can report a clear validation error
+    // instead of leaving the user with a cryptic parser error. See #988.
+    (steps+=(DynamicViewParallelSteps | DynamicViewStep))*
   '}'
 ;
 
