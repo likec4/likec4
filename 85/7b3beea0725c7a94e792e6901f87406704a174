@@ -1,0 +1,33 @@
+.changeset/fix-deployment-metadata-filters.md
+  s_9d49268b9f9845::t_74d5b4ebed7879 1-5
+packages/core/src/compute-view/element-view/exclude-where.spec.ts
+  s_9d49268b9f9845::t_e4c37e21fa5e28 1-87,89-137
+  s_9d49268b9f9845::t_993d5f77bfe624 88
+packages/core/src/compute-view/deployment-view/predicates/__test__/exclude-metadata.filter.spec.ts
+  s_9d49268b9f9845::t_44eefe9327144e 78
+  s_9d49268b9f9845::t_d9c4986dc2af27 7-13
+  s_9d49268b9f9845::t_5964b6134f0b2e 75-77,79-80
+  s_9d49268b9f9845::t_f09cc25c3e67c1 1-6,14-74,81-105
+packages/core/src/compute-view/deployment-view/predicates/utils.ts
+  s_9d49268b9f9845::t_268ab65017f913 267
+apps/docs/src/content/docs/dsl/Views/predicates.mdx
+  s_9d49268b9f9845::t_c29e6fe39c5a95 490-501
+apps/docs/src/content/docs/dsl/Deployment/views.mdx
+  s_9d49268b9f9845::t_611282aac52bb1 71,79-81,132-154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "857b3beea0725c7a94e792e6901f87406704a174",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
