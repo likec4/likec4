@@ -162,6 +162,26 @@
       "id": 31,
       "prompt": "Assume existing relationships: `api -[async]-> service 'GetData'`, `api -[sync]-> service 'GetData'`, and `api -[async]-> service 'PostData'`. Classify each matcher as `correct`, `ambiguous`, or `wrong` (one line each): (1) `extend api -[async]-> service 'GetData' { metadata { timeout '5s' } }`; (2) `extend api -[async]-> service { metadata { timeout '5s' } }`; (3) `extend api -> service 'GetData' { metadata { timeout '5s' } }`. After classification lines, provide the single exact unambiguous extension snippet.",
       "files": []
+    },
+    {
+      "id": 32,
+      "prompt": "Assume these relationships already exist: `client -> api 'call' { metadata { protocol 'https' } }` and `api -> db 'write' { metadata { protocol 'http' } }`. Show a minimal view that includes all relationships but excludes only relationships whose own metadata has `protocol` equal to `http`. Use `metadata.protocol`, not `source.metadata` or `target.metadata`.",
+      "files": []
+    },
+    {
+      "id": 33,
+      "prompt": "Assume `api` has `metadata { zone 'public' }`, `db` has `metadata { zone 'restricted' }`, and relationships already connect them. Show a minimal view that includes all relationships but excludes relationships whose target element metadata has `zone` equal to `restricted`. Use an endpoint metadata filter.",
+      "files": []
+    },
+    {
+      "id": 34,
+      "prompt": "In a deployment view, logical `api` has `metadata { zone 'model-public' }`; one deployed `api` instance has no metadata, and another deployed `api` instance has `metadata { zone 'instance-private' }`. For relationship filters using `where source.metadata.zone is ...`, state which metadata value each instance uses and give one sentence with the deployment metadata rule. Be explicit about fallback versus replacement.",
+      "files": []
+    },
+    {
+      "id": 35,
+      "prompt": "Show one minimal element view that keeps only services with array metadata `regions` containing `eu` and then removes any included element without an `owner` metadata key. Use `metadata.regions is \"eu\"` and `not metadata.owner` exactly.",
+      "files": []
     }
   ]
 }
