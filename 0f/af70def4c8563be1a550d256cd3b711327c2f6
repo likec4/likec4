@@ -1,0 +1,69 @@
+packages/diagram/src/base-primitives/element/ElementDetailsButton.tsx
+  s_9d49268b9f9845::t_6c9204c9b9572b 15,78,107-108
+packages/diagram/src/likec4diagram/xyflow-diagram/diagram-view.ts
+  s_9d49268b9f9845::t_6c9204c9b9572b 22-23,26-71,162,308
+  s_9d49268b9f9845::t_3247153235f648 7,15,24-25
+packages/diagram/src/likec4diagram/xyflow-diagram/diagram-view.spec.ts
+  s_9d49268b9f9845::t_64bd4c30150dc0 1-4,6-12,14-34,39,41-42,49-110,137-159
+  s_9d49268b9f9845::t_cc2ec1d8d6d7b2 111-136
+  s_9d49268b9f9845::t_b7a00bacb7a0ad 35-36,40
+  s_9d49268b9f9845::t_10140c4ec918a2 5,43-48
+  s_9d49268b9f9845::t_9a071ba144091e 13,37-38
+packages/diagram/src/base/updateNodes.ts
+  s_9d49268b9f9845::t_6c9204c9b9572b 57-58
+packages/diagram/src/base/updateEdges.ts
+  s_9d49268b9f9845::t_6c9204c9b9572b 57-58
+packages/diagram/src/base-primitives/element/ElementActionButtons.tsx
+  s_9d49268b9f9845::t_6c9204c9b9572b 111-112,128
+packages/diagram/src/likec4diagram/custom/nodes/CompoundActions.tsx
+  s_9d49268b9f9845::t_6c9204c9b9572b 17
+packages/diagram/src/base-primitives/edge/EdgeActionButton.tsx
+  s_9d49268b9f9845::t_6c9204c9b9572b 10,14,21
+e2e/tests/diagram-a11y.spec.ts
+  s_9d49268b9f9845::t_64bd4c30150dc0 1-11,13,18-21,23-25,27-29,31-47,49-54
+  s_9d49268b9f9845::t_7de1e4c517abac 26,30,48
+  s_9d49268b9f9845::t_c93a1381a7a968 12,14-17,22
+packages/diagram/src/base/BaseXYFlow.tsx
+  s_9d49268b9f9845::t_10140c4ec918a2 36-38,56-59,64-66
+  s_9d49268b9f9845::t_6c9204c9b9572b 9,22-23,25-35,39-54,67-68,123-124,182-185,252-257
+  s_9d49268b9f9845::t_84b6aa4eb37eae 24,55,60-63,125-126,179-180
+packages/diagram/src/base/updateNodes.spec.ts
+  s_9d49268b9f9845::t_2e08a82aa00c12 414-425
+  s_9d49268b9f9845::t_1cf6684c93a073 402-413
+packages/diagram/src/likec4diagram/custom/edges/SequenceStepEdge.tsx
+  s_9d49268b9f9845::t_6c9204c9b9572b 59
+packages/diagram/src/LikeC4Diagram.props.ts
+  s_9d49268b9f9845::t_45c17304b31fd1 68
+packages/diagram/src/base/updateEdges.spec.ts
+  s_9d49268b9f9845::t_1cf6684c93a073 1-39,51
+  s_9d49268b9f9845::t_fa2baab3ce60e7 40-50
+packages/diagram/src/base-primitives/compound/CompoundDetailsButton.tsx
+  s_9d49268b9f9845::t_6c9204c9b9572b 16,39,44,50,72-73
+packages/diagram/src/likec4diagram/custom/nodes/ElementActions.tsx
+  s_9d49268b9f9845::t_b7040c3f75044f 175
+  s_9d49268b9f9845::t_6c9204c9b9572b 79,90,155,166
+packages/diagram/src/base-primitives/compound/CompoundActionButton.tsx
+  s_9d49268b9f9845::t_6c9204c9b9572b 16,43,48,54,77-78
+.changeset/fix-diagram-screen-reader-labels.md
+  s_9d49268b9f9845::t_d677fa62207d76 1-5
+e2e/.gitignore
+  s_9d49268b9f9845::t_60dfbc3d370232 24
+packages/diagram/src/likec4diagram/custom/edges/RelationshipEdge.tsx
+  s_9d49268b9f9845::t_6c9204c9b9572b 216
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "0faf70def4c8563be1a550d256cd3b711327c2f6",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
