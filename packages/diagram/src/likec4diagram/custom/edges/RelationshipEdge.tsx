@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { EdgeId } from '@likec4/core/types'
 import { css, cx as clsx } from '@likec4/styles/css'
 import { useRafEffect } from '@react-hookz/web'
@@ -213,6 +220,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
               edgeProps={props}>
               {navigateTo && (
                 <EdgeActionButton
+                  ariaLabel="Navigate to view"
                   onClick={e => {
                     e.stopPropagation()
                     diagram.navigateTo(navigateTo)

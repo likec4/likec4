@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import { hasAtLeast } from 'remeda'
@@ -6,6 +13,7 @@ import { ElementActionButtons } from '../../../base-primitives'
 import type { BaseNodeData } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { readableText } from '../../../utils'
 import type { Types } from '../../types'
 
 type WithExtraButtons = {
@@ -34,7 +42,7 @@ type WithExtraButtons = {
 export type ElementActionsProps =
   & SimplifyDeep<{
     selected?: boolean
-    data: Pick<Types.ElementNodeData, 'id' | 'modelFqn' | 'navigateTo'> & BaseNodeData
+    data: Pick<Types.ElementNodeData, 'id' | 'modelFqn' | 'navigateTo' | 'title'> & BaseNodeData
   }>
   & WithExtraButtons
 
@@ -69,13 +77,15 @@ export function ElementActions({
 }: ElementActionsProps) {
   const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeatures()
   const diagram = useDiagram()
-  const { id, navigateTo, modelFqn } = props.data
+  const { id, navigateTo, modelFqn, title } = props.data
   let buttons = useMemo(() => {
     const buttons = [] as ElementActionButtons.Item[]
+    const labelTitle = readableText(title) || id
 
     if (navigateTo && enableNavigateTo) {
       buttons.push({
         key: 'navigate',
+        ariaLabel: 'Navigate to view',
         icon: <IconZoomScan />,
         onClick: (e) => {
           e.stopPropagation()
@@ -86,6 +96,7 @@ export function ElementActions({
     if (enableRelationshipBrowser) {
       buttons.push({
         key: 'relationships',
+        ariaLabel: `Browse ${labelTitle} relationships`,
         icon: <IconTransform />,
         onClick: (e) => {
           e.stopPropagation()
@@ -94,7 +105,7 @@ export function ElementActions({
       })
     }
     return buttons
-  }, [enableNavigateTo, enableRelationshipBrowser, modelFqn, navigateTo, id, diagram])
+  }, [enableNavigateTo, enableRelationshipBrowser, modelFqn, navigateTo, id, title, diagram])
 
   if (extraButtons && hasAtLeast(extraButtons, 1)) {
     buttons = [...buttons, ...extraButtons]
@@ -107,7 +118,7 @@ export function ElementActions({
 export type DeploymentElementActionsProps =
   & SimplifyDeep<{
     selected?: boolean
-    data: Pick<Types.DeploymentElementNodeData, 'id' | 'modelFqn' | 'navigateTo'> & BaseNodeData
+    data: Pick<Types.DeploymentElementNodeData, 'id' | 'modelFqn' | 'navigateTo' | 'title'> & BaseNodeData
   }>
   & WithExtraButtons
 
@@ -142,14 +153,16 @@ export const DeploymentElementActions = ({
 }: DeploymentElementActionsProps) => {
   const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeatures()
   const diagram = useDiagram()
-  const { id, navigateTo, modelFqn } = props.data
+  const { id, navigateTo, modelFqn, title } = props.data
 
   let buttons = useMemo(() => {
     const buttons = [] as ElementActionButtons.Item[]
+    const labelTitle = readableText(title) || id
 
     if (navigateTo && enableNavigateTo) {
       buttons.push({
         key: 'navigate',
+        ariaLabel: 'Navigate to view',
         icon: <IconZoomScan />,
         onClick: (e) => {
           e.stopPropagation()
@@ -160,6 +173,7 @@ export const DeploymentElementActions = ({
     if (enableRelationshipBrowser && !!modelFqn) {
       buttons.push({
         key: 'relationships',
+        ariaLabel: `Browse ${labelTitle} relationships`,
         icon: <IconTransform />,
         onClick: (e) => {
           e.stopPropagation()
@@ -168,7 +182,7 @@ export const DeploymentElementActions = ({
       })
     }
     return buttons
-  }, [enableNavigateTo, enableRelationshipBrowser, modelFqn, navigateTo, id])
+  }, [enableNavigateTo, enableRelationshipBrowser, modelFqn, navigateTo, id, title, diagram])
 
   if (extraButtons && hasAtLeast(extraButtons, 1)) {
     buttons = [...buttons, ...extraButtons]
