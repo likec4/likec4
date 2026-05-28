@@ -1,0 +1,20 @@
+e2e/tests/markdown-image.spec.ts
+  s_9d49268b9f9845::t_07b2dbd5643702 17-20
+  s_9d49268b9f9845::t_f8899b313f93ea 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e16a7d48034b663ef2b4846721f5bf606c7dc995",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
