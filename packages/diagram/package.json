@@ -65,6 +65,7 @@
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
+    "prebuild": "pandacss codegen",
     "build": "vite build -m production",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
@@ -88,8 +89,6 @@
     "@react-hookz/web": "catalog:react",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "@zag-js/collection": "catalog:zag",
     "@zag-js/react": "catalog:zag",
     "@zag-js/tree-view": "catalog:zag",
@@ -107,8 +106,10 @@
     "@tabler/icons-react": "catalog:react"
   },
   "peerDependencies": {
-    "react": "^18.x || ^19.x",
-    "react-dom": "^18.x || ^19.x"
+    "react": "^19.x",
+    "react-dom": "^19.x",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
@@ -121,7 +122,8 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
-    "react-compiler-runtime": "catalog:react",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "oxlint": "catalog:",
     "postcss": "catalog:css",
     "react": "catalog:react",

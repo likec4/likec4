@@ -200,16 +200,25 @@ export function LikeC4DiagramXYFlow({
       // Fitview is handled in onInit
       fitView={false}
       onNodeClick={useCallbackRef((e, node) => {
+        if (e.isPropagationStopped()) {
+          return
+        }
         e.stopPropagation()
         diagram.send({ type: 'xyflow.nodeClick', node })
         onNodeClick?.(diagram.findDiagramNode(node.id as NodeId)!, e)
       })}
       onEdgeClick={useCallbackRef((e, edge) => {
+        if (e.isPropagationStopped()) {
+          return
+        }
         e.stopPropagation()
         diagram.send({ type: 'xyflow.edgeClick', edge })
         onEdgeClick?.(diagram.findDiagramEdge(edge.id as EdgeId)!, e)
       })}
       onEdgeDoubleClick={useCallbackRef((e, edge) => {
+        if (e.isPropagationStopped()) {
+          return
+        }
         e.stopPropagation()
         diagram.send({ type: 'xyflow.edgeDoubleClick', edge })
       })}

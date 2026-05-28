@@ -1,12 +1,19 @@
 import postcssPanda from '@pandacss/dev/postcss'
 import babel from '@rolldown/plugin-babel'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import { reactCompilerPreset } from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import packageJson from './package.json' with { type: 'json' }
+
+const externals = Object
+  .keys({
+    ...packageJson.dependencies,
+    ...packageJson.peerDependencies,
+  })
+  .filter((dep) => dep !== 'react' && dep !== 'react-dom')
 
 /**
  * @type {import('postcss').AcceptedPlugin}
@@ -40,11 +47,10 @@ export default defineConfig({
     'process.env.NODE_ENV': '"production"',
   },
   resolve: {
-    alias: {
-      // '@likec4/diagram/custom': resolve('../diagram/src/custom/index.ts'),
-      // '@likec4/diagram': resolve('../diagram/src/index.ts'),
-      '@likec4/styles': resolve('./styled-system'),
-    },
+    conditions: ['sources'],
+    alias: [
+      { find: /^@likec4\/styles\/(.+)$/, replacement: resolve('styled-system', '$1', 'index') },
+    ],
   },
   css: {
     postcss: {
@@ -65,36 +71,30 @@ export default defineConfig({
         keepNames: true,
         entryFileNames: '[name].mjs',
       },
-      external: [
-        ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
-        ...Object.keys(packageJson.peerDependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
-      ],
+      external: externals.map((dep) => new RegExp(`^${dep}(/.*)?$`)),
       plugins: [
         esmExternalRequirePlugin({
           external: [
-            'react',
-            'react-dom',
+            /^react(\/.*)?$/,
+            /^react-dom(\/.*)?$/,
           ],
         }),
       ],
     },
   },
   plugins: [
-    react(),
     babel({
-      presets: [reactCompilerPreset({
-        target: '18',
-      })],
+      presets: [reactCompilerPreset()],
     }),
     dts({
       bundleTypes: {
         bundledPackages: [
-          '@likec4/diagram',
           '@likec4/diagram/custom',
+          '@likec4/diagram',
           '@react-hookz/web',
-          'xstate',
           '@xstate/react',
           '@xstate/store',
+          'xstate',
         ],
       },
 

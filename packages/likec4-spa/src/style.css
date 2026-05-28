@@ -13,8 +13,6 @@
     "Segoe UI Symbol",
     "Noto Color Emoji";
   --mantine-default-font-family: var(--likec4-app-font);
-  --likec4-background-color: var(--mantine-color-body);
-  /* --xy-background-pattern-color: var(--mantine-color-dark-8); */
 }
 
 html, body {

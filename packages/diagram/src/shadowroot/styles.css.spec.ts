@@ -3,7 +3,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import { describe, expect, it } from 'vitest'
-import { scopeStylesToShadowRoot } from './styles.css'
+import { scopeStylesToShadowRoot } from './styles'
 
 describe('scopeStylesToShadowRoot', () => {
   it('moves root-level variables into the shadow root without rewriting overlay body selectors', () => {

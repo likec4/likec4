@@ -1,4 +1,5 @@
 import { loggable } from '@likec4/log'
+import react from '@vitejs/plugin-react'
 import getPort, { portNumbers } from 'get-port'
 import isInsideContainer from 'is-inside-container'
 import { mkdtemp } from 'node:fs/promises'
@@ -118,6 +119,10 @@ export async function viteDev({
   if (hmr && resolvedHmrPort !== undefined) {
     const source = hmrPort ? ' (explicit)' : env['HMR_PORT'] ? ' (env)' : ' (auto-discovered)'
     logger.info(`Enabling HMR: localhost:${resolvedHmrPort}${source}`)
+    config.plugins = [
+      react(),
+      ...config.plugins,
+    ]
     if (isInsideContainer()) {
       logger.info(k.yellow(`ensure port ${resolvedHmrPort} is published from container`))
     }
@@ -135,9 +140,6 @@ export async function viteDev({
       : config.define,
     mode: hmr ? 'development' : config.mode,
     publicDir,
-    optimizeDeps: {
-      force: true,
-    },
     server: {
       host,
       allowedHosts: allowedHosts && allowedHosts.length > 0 ? allowedHosts : true,
@@ -155,6 +157,8 @@ export async function viteDev({
     },
   })
 
+  await server.listen()
+
   if (buildWebcomponent) {
     const webcomponentConfig = viteWebcomponentConfig({
       webcomponentPrefix,
@@ -163,7 +167,7 @@ export async function viteDev({
       base: config.base,
     })
     logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
-    build({
+    await build({
       ...webcomponentConfig,
       logLevel: 'warn',
     }).catch(err => {
@@ -173,8 +177,6 @@ export async function viteDev({
   } else {
     logger.info(`Skip webcomponent build`)
   }
-
-  await server.listen()
 
   return server
 }

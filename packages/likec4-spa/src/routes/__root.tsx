@@ -6,13 +6,12 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { NonEmptyArray, ProjectId } from '@likec4/core/types'
-import { MantineProvider } from '@mantine/core'
+import { DefaultMantineProvider, FramerMotionConfig } from '@likec4/diagram'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { defaultTheme } from 'likec4:app-config'
 import { projects } from 'likec4:projects'
 import { map } from 'remeda'
 import { resolveForceColorScheme, searchParamsSchema } from '../searchParams'
-import { theme as mantineTheme } from '../theme'
 
 export type Context = {
   /**
@@ -61,12 +60,13 @@ function RootComponent() {
   // the build default is light or dark.
   const defaultColorScheme = theme === 'auto' ? 'auto' : defaultTheme
   return (
-    <MantineProvider
-      theme={mantineTheme}
+    <DefaultMantineProvider
       defaultColorScheme={defaultColorScheme}
       {...(forceColorScheme && { forceColorScheme })}
     >
-      <Outlet />
-    </MantineProvider>
+      <FramerMotionConfig>
+        <Outlet />
+      </FramerMotionConfig>
+    </DefaultMantineProvider>
   )
 }

@@ -1,13 +1,11 @@
 import { lazy, Suspense } from 'react'
 
-const LazyAIChat = lazy(() => import('./AIChat'))
+const AIChat = lazy(() => import('./AIChat'))
 
-export function AIChat() {
+export function LazyAIChat() {
   return (
     <Suspense>
-      <LazyAIChat />
+      <AIChat />
     </Suspense>
   )
 }
-
-export { SemanticLayoutLog } from './SemanticLayoutLog'

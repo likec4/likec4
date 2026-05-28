@@ -6,7 +6,7 @@ import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
-import { ShadowRoot } from './shadowroot/ShadowRoot'
+import { ShadowRoot } from './shadowroot'
 import { pickViewBounds } from './utils'
 
 export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =

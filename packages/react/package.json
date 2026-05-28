@@ -18,11 +18,16 @@
   },
   "type": "module",
   "sideEffects": false,
+  "types": "dist/index.d.mts",
+  "module": "dist/index.mjs",
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      }
     },
     "./package.json": "./package.json"
   },
@@ -33,13 +38,12 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "react-compiler-runtime": "catalog:react",
     "use-sync-external-store": "catalog:react",
     "type-fest": "catalog:externals"
   },
   "peerDependencies": {
-    "react": "^18.x || ^19.x",
-    "react-dom": "^18.x || ^19.x"
+    "react": "^19.x",
+    "react-dom": "^19.x"
   },
   "devDependencies": {
     "@babel/core": "catalog:react",
@@ -52,14 +56,12 @@
     "@react-hookz/web": "catalog:react",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "@xstate/react": "catalog:xstate",
-    "@xstate/store": "catalog:xstate",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "@rolldown/plugin-babel": "catalog:vite",
     "@vitejs/plugin-react": "catalog:vite",
     "babel-plugin-react-compiler": "catalog:react",
     "xstate": "catalog:xstate",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "rolldown": "catalog:tsdown",
     "oxlint": "catalog:",
     "react": "catalog:react",

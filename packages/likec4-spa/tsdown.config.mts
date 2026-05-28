@@ -20,8 +20,6 @@ export default defineConfig([{
     'src/main.tsx',
     'src/pages/*.tsx',
     'src/aichat/index.tsx',
-    '!**/*.d.ts',
-    '!**/*.spec.{ts,tsx}',
   ],
   root: '.',
   env: {
@@ -36,14 +34,13 @@ export default defineConfig([{
   },
   plugins: [
     pluginBabel({
-      presets: [reactCompilerPreset({
-        target: '18',
-      })],
+      presets: [reactCompilerPreset()],
     }),
   ],
   outDir: 'dist',
   clean: true,
   platform: 'browser',
+  target: false,
   minify: true,
   outputOptions: outputOptions({
     keepNames: false,
@@ -59,19 +56,19 @@ export default defineConfig([{
     },
   }),
   dts: false,
-  tsconfig: 'tsconfig.src.json',
+  tsconfig: false,
   deps: {
     alwaysBundle: [
       '@likec4/vite-plugin/ai/tools',
     ],
     neverBundle: [
       ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
-      '@emotion/is-prop-valid',
       /likec4:/,
     ],
   },
   hooks: {
     'build:prepare': async () => {
+      await $`pandacss codegen`
       await $`tsr generate`
     },
     'build:done': async () => {

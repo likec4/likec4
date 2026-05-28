@@ -2,7 +2,7 @@ import { useMantineStyleNonce } from '@mantine/core'
 import { domMax, LazyMotion, MotionConfig } from 'motion/react'
 import type { PropsWithChildren } from 'react'
 
-export const FramerMotionConfig = ({
+export function FramerMotionConfig({
   reducedMotion = 'user',
   children,
 }: PropsWithChildren<{
@@ -11,7 +11,7 @@ export const FramerMotionConfig = ({
    * transform animations off.
    */
   reducedMotion?: 'always' | 'never' | 'user' | undefined
-}>) => {
+}>) {
   const nonce = useMantineStyleNonce()?.()
   return (
     <LazyMotion features={domMax} strict>

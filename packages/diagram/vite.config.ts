@@ -1,50 +1,18 @@
 import postcssPanda from '@pandacss/dev/postcss'
+import react from '@vitejs/plugin-react'
 import { execSync } from 'node:child_process'
 import { resolve } from 'node:path'
-import type * as PostCSS from 'postcss'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import { fs } from 'zx'
 import packageJson from './package.json' with { type: 'json' }
-
-const rewriteRootSelector: PostCSS.AcceptedPlugin = {
-  postcssPlugin: 'postcss-rewrite-root',
-  Once(css) {
-    css.walkRules((rule) => {
-      let updated = false
-      let updatedSelectors = []
-      for (let val of rule.selectors) {
-        let _val = val.trim()
-        if (_val === ':root' || _val === 'body') {
-          // console.log('rewriting :root', rule.selectors)
-          updatedSelectors.push('.likec4-shadow-root')
-          updated = true
-          continue
-        }
-        updatedSelectors.push(val)
-      }
-
-      if (updated) {
-        rule.selectors = updatedSelectors
-      }
-    })
-  },
-}
 
 export default defineConfig({
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   mode: 'production',
-  resolve: {
-    conditions: ['sources'],
-    // Prefer .ts/.tsx over .js so build uses source (avoid CJS .js with JSX in src/)
-    extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
-    alias: {
-      '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-      'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
-    },
-  },
+  resolve: {},
   oxc: {
     jsx: {
       development: false,
@@ -54,7 +22,6 @@ export default defineConfig({
     postcss: {
       plugins: [
         postcssPanda() as any,
-        rewriteRootSelector,
       ],
     },
   },
@@ -93,6 +60,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    react(),
     dts({
       staticImport: true,
       tsconfigPath: 'tsconfig.src.json',

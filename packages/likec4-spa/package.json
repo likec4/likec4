@@ -11,8 +11,8 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/likec4-spa"
   },
-  "target": false,
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "build": "tsdown --config-loader tsx",
     "typecheck": "tsc --build --verbose",
@@ -34,7 +34,7 @@
     "immer": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "react-compiler-runtime": "catalog:react",
+    "type-fest": "catalog:externals",
     "use-sync-external-store": "catalog:react"
   },
   "devDependencies": {
@@ -99,7 +99,7 @@
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
-    "type-fest": "catalog:externals",
+
     "typescript": "catalog:",
     "ufo": "catalog:utils",
     "vite": "catalog:vite",

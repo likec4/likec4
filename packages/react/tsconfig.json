@@ -5,12 +5,17 @@
     "jsx": "react-jsx",
     "module": "preserve",
     "moduleResolution": "bundler",
+    "target": "esnext",
+    "outDir": "dist",
+    "allowJs": true,
     "lib": [
       "ESNext",
       "DOM"
-    ],
-    "rootDir": "src"
+    ]
   },
+  "files": [
+    "src/index.ts"
+  ],
   "references": [
     {
       "path": "../core/"

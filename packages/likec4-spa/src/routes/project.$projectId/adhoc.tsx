@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect, useRouteContext } from '@tanstack/react-router'
 import { isRpcAvailable } from 'likec4:rpc'
 import { AdHocViewEditor } from '../../pages/AdHocViewEditor'
 
@@ -13,10 +13,12 @@ export const Route = createFileRoute('/project/$projectId/adhoc')({
       })
     }
   },
-  component: Page,
+  component: isRpcAvailable ? Page : () => null,
 })
 
 function Page() {
-  const { projectId } = Route.useRouteContext()
+  const { projectId } = useRouteContext({
+    from: '/project/$projectId',
+  })
   return <AdHocViewEditor projectId={projectId} />
 }

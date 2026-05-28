@@ -10,11 +10,17 @@ import { useCallbackRef } from '@mantine/hooks'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { isDevelopment } from 'likec4:app-config'
 import { isAIAvailable, likec4rpc } from 'likec4:rpc'
-import { AIChat, SemanticLayoutLog } from '../aichat'
+import { LazyAIChat } from '../aichat'
 import { NotFound } from '../components/NotFound'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
 import { FocusElementFromUrl, ListenForDynamicVariantChange, OpenRelationshipBrowserFromUrl } from './ViewReact'
+
+/**
+ * AI Chat component that is conditionally rendered based on AI availability
+ * Uses lazy loading to avoid importing AI components in environments where AI is not available
+ */
+const AIChat = isAIAvailable ? LazyAIChat : () => null
 
 export function ViewEditor() {
   const navigate = useNavigate()
@@ -99,12 +105,7 @@ export function ViewEditor() {
         <ListenForDynamicVariantChange />
         <OpenRelationshipBrowserFromUrl />
         <FocusElementFromUrl />
-        {isAIAvailable && (
-          <>
-            <AIChat />
-            <SemanticLayoutLog />
-          </>
-        )}
+        <AIChat />
       </LikeC4Diagram>
     </LikeC4EditorProvider>
   )
