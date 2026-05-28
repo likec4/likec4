@@ -1,0 +1,42 @@
+packages/diagram/src/base-primitives/compound/CompoundActionButton.tsx
+  s_9d49268b9f9845::t_71f00d8c6f9895 78
+packages/diagram/src/base-primitives/element/ElementActionButtons.tsx
+  s_9d49268b9f9845::t_71f00d8c6f9895 113
+  s_9d49268b9f9845::t_985201e7c19e01 87,112
+packages/diagram/src/base-primitives/element/ElementDetailsButton.tsx
+  s_9d49268b9f9845::t_985201e7c19e01 92,108
+  s_9d49268b9f9845::t_71f00d8c6f9895 109
+packages/diagram/src/likec4diagram/custom/nodes/ElementActions.tsx
+  s_9d49268b9f9845::t_71f00d8c6f9895 37,72,100,113,148,177
+  s_9d49268b9f9845::t_56032c8376efcc 75,80,91,152,157,168
+packages/diagram/src/base-primitives/compound/CompoundDetailsButton.tsx
+  s_9d49268b9f9845::t_71f00d8c6f9895 73
+packages/diagram/src/base/BaseXYFlow.tsx
+  s_9d49268b9f9845::t_6b5f767fd8a5dd 29
+  s_9d49268b9f9845::t_eed296678e2571 54
+  s_9d49268b9f9845::t_56032c8376efcc 125-126
+.changeset/fix-diagram-screen-reader-labels.md
+  s_9d49268b9f9845::t_5ffa19db6a20e5 5
+packages/diagram/src/likec4diagram/DiagramXYFlow.tsx
+  s_9d49268b9f9845::t_56032c8376efcc 270-271
+e2e/tests/static-build-relationship-popover.spec.ts
+  s_9d49268b9f9845::t_56032c8376efcc 27-28
+e2e/tests/diagram-a11y.spec.ts
+  s_9d49268b9f9845::t_3b948cea57705a 44-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "047e8acd8d38b8a06f0f57e5bf1ad3bb4e0a79fa",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
