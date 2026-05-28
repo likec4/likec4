@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
 import { useDebouncedCallback, useTimeout } from '@mantine/hooks'
@@ -287,6 +294,8 @@ export function LikeC4DiagramXYFlow({
       }}
       nodesDraggable={nodesDraggable}
       nodesSelectable={nodesSelectable}
+      nodesFocusable
+      edgesFocusable
       elevateEdgesOnSelect={!enableReadOnly}
       zIndexMode="manual"
       {...(nodesDraggable && layoutConstraints)}

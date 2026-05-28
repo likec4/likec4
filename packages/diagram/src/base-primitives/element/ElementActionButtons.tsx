@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { cx } from '@likec4/styles/css'
 import { actionBtn, actionButtons } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
@@ -84,6 +91,7 @@ export function ElementActionButtons({
     default:
       variant = 'normal'
   }
+  const isActionVisible = isHovered || selected
 
   return (
     <div className={actionButtons()}>
@@ -108,7 +116,9 @@ export function ElementActionButtons({
             whileHover={{
               scale: 1.3,
             }}
-            tabIndex={-1}
+            tabIndex={isActionVisible ? 0 : -1}
+            inert={isActionVisible ? undefined : true}
+            aria-label={button.ariaLabel ?? button.key ?? 'Element action'}
             onClick={button.onClick}
             // Otherwise node receives click event and is selected
             onDoubleClick={stopPropagation}
@@ -124,6 +134,7 @@ export function ElementActionButtons({
 export namespace ElementActionButtons {
   export type Item = {
     key?: string
+    ariaLabel?: string
     icon?: ReactNode
     onClick: (e: ReactMouseEvent) => void
   }

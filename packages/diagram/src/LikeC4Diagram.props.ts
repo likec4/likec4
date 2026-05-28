@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as t from '@likec4/core/types'
 import type {
   DiagramEdge,
@@ -65,6 +72,7 @@ export type OverrideReactFlowProps = Pick<
   | 'panOnScrollMode'
   | 'zoomOnDoubleClick'
   | 'nodeDragThreshold'
+  | 'edgesFocusable'
 >
 
 export type PaddingUnit = 'px' | '%'
