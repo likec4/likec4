@@ -1,0 +1,20 @@
+e2e/tests/diagram-a11y.spec.ts
+  s_9d49268b9f9845::t_eba85748732e59 65
+  s_9d49268b9f9845::t_c837ad3c4aa559 56-64,66-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "721a755ef0c9c20194cc6bcfb48e26fefc34d9e9",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
