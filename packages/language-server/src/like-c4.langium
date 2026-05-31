@@ -325,14 +325,14 @@ DynamicViewBody: '{'
   tags=Tags?
   props+=DynamicViewProperty*
   (
-    steps+=(DynamicViewParallelSteps | DynamicViewStep) |
+    steps+=DynamicViewElement |
     rules+=DynamicViewRule
   )*
 '}'
 ;
 
 DynamicViewProperty:
-  DynamicViewDisplayVariantProperty | ViewProperty
+  DynamicViewDisplayVariantProperty | DynamicAutonumberProperty | ViewProperty
 ;
 
 DynamicViewDisplayVariantProperty:
@@ -412,12 +412,69 @@ DynamicViewRule:
   ViewRuleAutoLayout
 ;
 
+DynamicViewElement:
+  DynamicViewParallelSteps |
+  DynamicIfBlock |
+  DynamicOptionalBlock |
+  DynamicRepeatBlock |
+  DynamicGroupBlock |
+  DynamicCriticalBlock |
+  DynamicBreakBlock |
+  DynamicNote |
+  DynamicActivate | DynamicDeactivate |
+  DynamicCreate   | DynamicDestroy   |
+  DynamicViewStep
+;
+
+DynamicBlockBody: '{' ( elements+=DynamicViewElement )* '}' ;
+
 DynamicViewParallelSteps:
   ('parallel'|'par') '{'
-    // Accept nested ParallelSteps so we can report a clear validation error
-    // instead of leaving the user with a cryptic parser error. See #988.
-    (steps+=(DynamicViewParallelSteps | DynamicViewStep))*
+    // Labeled branches (feature) or flat steps. Nested ParallelSteps are accepted
+    // in `steps` so we can report a clear validation error instead of a cryptic
+    // parser error. See #988.
+    ( branches+=DynamicParallelBranch | steps+=(DynamicViewParallelSteps | DynamicViewStep) )*
   '}'
+;
+
+DynamicParallelBranch: 'branch' label=String? body=DynamicBlockBody ;
+
+DynamicIfBlock:
+  'if' condition=String thenBranch=DynamicBlockBody
+  elseIfBranches+=DynamicElseIfBranch*
+  ('else' elseBranch=DynamicBlockBody)?
+;
+DynamicElseIfBranch: 'else' 'if' condition=String body=DynamicBlockBody ;
+
+DynamicOptionalBlock: 'optional' condition=String body=DynamicBlockBody ;
+DynamicRepeatBlock:   'repeat'   label=String?   body=DynamicBlockBody ;
+DynamicGroupBlock:    'group'    label=String    body=DynamicBlockBody ;
+
+DynamicCriticalBlock:
+  'critical' label=String body=DynamicBlockBody
+  fallbacks+=DynamicCriticalFallback*
+;
+DynamicCriticalFallback: 'on' label=String body=DynamicBlockBody ;
+
+DynamicBreakBlock: 'break' condition=String body=DynamicBlockBody ;
+
+DynamicNote:
+  'note' (
+    placement='over' actors+=ElementRef (',' actors+=ElementRef)* |
+    placement=('left'|'right') 'of' actors+=ElementRef
+  ) text=String
+;
+
+DynamicActivate:   'activate'   actor=ElementRef ;
+DynamicDeactivate: 'deactivate' actor=ElementRef ;
+DynamicCreate:     'create'     actor=ElementRef ;
+DynamicDestroy:    'destroy'    actor=ElementRef ;
+
+DynamicAutonumberProperty:
+  key='autonumber' (
+    enabled=BOOLEAN |
+    'from' start=Number ('step' increment=Number)?
+  )?
 ;
 
 fragment DynamicViewStepTarget:
@@ -1024,7 +1081,11 @@ Id returns string:
   IconPositionValue |
   RankValue |
   // Allow reserved keywords as Id
-  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship';
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' |
+  // 'critical' must remain a valid Id so existing metadata keys like `metadata.critical` keep working.
+  // Other new dynamic-view keywords (if, break, optional, repeat, activate, note, etc.) are parse-context
+  // restricted and do NOT need to be in Id — adding them causes completion pollution.
+  'critical';
 
 fragment EqOperator:
   (

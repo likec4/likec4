@@ -1,6 +1,7 @@
 import { partition } from 'remeda'
 import type {
   DynamicStep,
+  DynamicViewElement,
   DynamicViewIncludeRule,
   DynamicViewRule,
   ElementViewPredicate,
@@ -58,9 +59,9 @@ export function compute(
     fakeModel,
     {
       ...emptyView,
-      steps,
+      steps: steps as DynamicViewElement<$Aux>[],
       rules: rules as DynamicViewRule[],
-    } as DynamicView,
+    } as unknown as DynamicView,
   )
   return Object.assign(view, {
     nodeIds: view.nodes.map((node) => node.id) as string[],

@@ -150,4 +150,36 @@ export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComp
    * - `sequence`: display as a sequence diagram
    */
   readonly variant: DynamicViewDisplayVariant
+  readonly autonumber?: { enabled: boolean; start?: number; step?: number }
+  readonly frames?: ReadonlyArray<ComputedFrame>
+  readonly markers?: ReadonlyArray<ComputedMarker<A>>
 }
+
+export interface ComputedFrame {
+  readonly id: string
+  readonly kind: 'if' | 'optional' | 'repeat' | 'parallel' | 'group' | 'critical' | 'break'
+  readonly label?: string
+  readonly condition?: string
+  readonly depth: number
+  readonly parent?: string
+  readonly branches: ReadonlyArray<{
+    readonly label?: string
+    readonly condition?: string
+    readonly stepIds: ReadonlyArray<aux.EdgeId>
+    readonly markerIds: ReadonlyArray<string>
+  }>
+}
+
+export type ComputedMarker<A extends AnyAux = AnyAux> =
+  | {
+    kind: 'note'
+    id: string
+    placement: 'over' | 'left' | 'right'
+    actors: ReadonlyArray<scalar.NodeId>
+    text: string
+    afterStep?: aux.EdgeId
+  }
+  | { kind: 'activate'; id: string; actor: scalar.NodeId; afterStep?: aux.EdgeId }
+  | { kind: 'deactivate'; id: string; actor: scalar.NodeId; afterStep?: aux.EdgeId }
+  | { kind: 'create'; id: string; actor: scalar.NodeId; afterStep?: aux.EdgeId }
+  | { kind: 'destroy'; id: string; actor: scalar.NodeId; afterStep?: aux.EdgeId }

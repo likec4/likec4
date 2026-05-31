@@ -8,6 +8,7 @@ import { getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, map } from 'remeda'
 import { calcViewBounds } from '../../utils/view-bounds'
 import { bezierControlPoints, isSamePoint } from '../../utils/xyflow'
+import type { Types } from '../types'
 import type { DiagramContext } from './types'
 
 export function createViewChange(
@@ -32,7 +33,9 @@ export function createViewChange(
       console.error(`Internal node not found for ${node.id}`)
       return node
     }
-    const xynodedata = xynodes.find(n => n.id === node.id)?.data ?? internal.data
+    const xynodedata = (xynodes.find(n => n.id === node.id)?.data ?? internal.data) as Types.Node<
+      Types.InteractiveNodeType
+    >['data']
     const position = internal.internals.positionAbsolute
     const { width, height } = getNodeDimensions(internal)
 

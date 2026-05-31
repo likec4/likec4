@@ -24,6 +24,27 @@ Homogeneity: Playwright specs use `test.describe` + `test()`/`test.beforeEach`; 
 - [x] Static site: navigation between views (`tests/static-navigation.spec.ts`; runs with main config, likec4 start 5173).
 - [x] Docs: smoke test for main pages (`tests/docs-smoke.spec.ts`; `pnpm test:docs` with `playwright.docs.config.ts`, port 4321).
 
+## Sequence-view block kinds (WI-11, dynamic-view-sequence-parity)
+
+Added `e2e/tests/sequence-view.spec.ts` and `e2e/src/likec4/views.c4` `sequence-showcase` dynamic view.
+
+| Block kind | Screenshot name | Assertion |
+|---|---|---|
+| Full view (smoke) | `e2e-sequence-showcase-full.png` | ≥3 `seq-actor` nodes, no error boundary |
+| `if / else if / else` | `e2e-sequence-showcase-if-else.png` | `seq-frame` node visible |
+| `optional` | `e2e-sequence-showcase-optional.png` | `seq-frame` node visible |
+| `repeat` | `e2e-sequence-showcase-repeat.png` | `seq-frame` node visible |
+| `parallel { branch … }` | `e2e-sequence-showcase-parallel.png` | `seq-parallel` or `seq-frame` node visible |
+| `group` | `e2e-sequence-showcase-group.png` | `seq-frame` node visible |
+| `critical / on` | `e2e-sequence-showcase-critical.png` | `seq-frame` node visible |
+| `break` | `e2e-sequence-showcase-break.png` | `seq-frame` node visible |
+| `note over / left of / right of` | `e2e-sequence-showcase-notes.png` | canvas intact |
+| `activate / deactivate` | `e2e-sequence-showcase-activation.png` | canvas intact |
+| `create / destroy` lifeline | `e2e-sequence-showcase-create-destroy.png` | `seq-actor` visible |
+| `autonumber` edge labels | `e2e-sequence-showcase-autonumber.png` | edges visible |
+
+**Baseline generation:** run `pnpm --filter=e2e test:update-screenshots` once after the first run to commit baseline PNGs.
+
 ## How to run
 
 - **Playwright (playground):** `cd e2e && pnpm test:playground` (requires `pnpm install` and, in CI, tarballs).

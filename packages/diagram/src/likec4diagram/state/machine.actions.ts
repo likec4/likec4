@@ -114,7 +114,7 @@ export const assignFocusedNode = () =>
     let autoUnfocusTimer = false
     switch (event.type) {
       case 'xyflow.nodeClick':
-        focusedNode = event.node.data.id
+        focusedNode = (event.node.data as Types.Node<Types.InteractiveNodeType>['data']).id
         break
       case 'focus.node': {
         focusedNode = event.nodeId
@@ -486,7 +486,7 @@ export const tagHighlight = () =>
     assertEvent(event, 'tag.highlight')
     return {
       xynodes: context.xynodes.map((n) => {
-        if (n.data.tags?.includes(event.tag)) {
+        if ((n.data as Types.Node<Types.InteractiveNodeType>['data']).tags?.includes(event.tag)) {
           return Base.setDimmed(n, false)
         }
         return Base.setDimmed(n, true)
@@ -663,7 +663,7 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
           return
         }
         subject = event.node.data.modelFqn
-        fromNodeId = event.node.data.id
+        fromNodeId = (event.node.data as Types.Node<Types.InteractiveNodeType>['data']).id
         break
       }
       case event.type === 'open.elementDetails': {

@@ -10,13 +10,22 @@ import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
 
-type Data = UndefinedOnPartialDeep<
-  Pick<
-    DiagramEdge,
-    | 'label'
-    | 'technology'
+type Data =
+  & UndefinedOnPartialDeep<
+    Pick<
+      DiagramEdge,
+      | 'label'
+      | 'technology'
+    >
   >
->
+  & {
+    /**
+     * Optional override for the step-number badge. When the key is present (number
+     * or null) it wins over the default `extractStep(id)` derivation. Sequence-step
+     * edges set this so nested frame ids don't all show the same top-level number.
+     */
+    stepNumber?: number | null
+  }
 
 type EdgeLabelProps =
   & HTMLMotionProps<'div'>
@@ -34,6 +43,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
         label,
         technology,
         hovered: isHovered = false,
+        stepNumber,
       },
       selected = false,
       selectable = false,
@@ -45,7 +55,12 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
   },
   ref,
 ) => {
-  const stepNum = isStepEdgeId(id) ? extractStep(id) : null
+  // An explicit `stepNumber` (number or null) overrides the id-derived number.
+  // `extractStep(id)` is wrong for nested sequence-frame ids (`step-03.alt.1.2` → 3
+  // for every nested step), so sequence-step edges pass an explicit value.
+  const stepNum = stepNumber !== undefined
+    ? stepNumber
+    : (isStepEdgeId(id) ? extractStep(id) : null)
   const isStepEdge = stepNum !== null
   const hasLabel = isTruthy(label) || isTruthy(technology)
 

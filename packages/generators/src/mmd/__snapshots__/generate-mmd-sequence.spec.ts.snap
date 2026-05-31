@@ -1,0 +1,310 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`autonumber > autonumber bare 1`] = `
+"sequenceDiagram
+autonumber
+  participant A as Alice
+  participant B as Bob
+  A->>B: call
+"
+`;
+
+exports[`autonumber > autonumber disabled — no autonumber line 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: call
+"
+`;
+
+exports[`autonumber > autonumber with start 1`] = `
+"sequenceDiagram
+autonumber 5
+  participant A as Alice
+  participant B as Bob
+  A->>B: call
+"
+`;
+
+exports[`autonumber > autonumber with start and step 1`] = `
+"sequenceDiagram
+autonumber 1 2
+  participant A as Alice
+  participant B as Bob
+  A->>B: call
+"
+`;
+
+exports[`basic steps > backward edge (dir=back) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  B->>A: response
+"
+`;
+
+exports[`basic steps > dashed arrow (line=dashed) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A-->>B: async call
+"
+`;
+
+exports[`basic steps > label escaping — colon in label 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: POST /api&#58; create
+"
+`;
+
+exports[`basic steps > label escaping — newline in label 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: line one<br/>line two
+"
+`;
+
+exports[`basic steps > open arrow (head=open) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->B: fire-and-forget
+"
+`;
+
+exports[`basic steps > self-loop (source === target) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>A: internal
+"
+`;
+
+exports[`basic steps > solid arrow (default) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: hello
+"
+`;
+
+exports[`frames > break 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  break empty cart
+    A->>B: abort
+  end
+"
+`;
+
+exports[`frames > critical/on (critical/option) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  critical payment success
+    A->>B: try
+  option insufficient funds
+    A->>B: fallback
+  end
+"
+`;
+
+exports[`frames > group (rect) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  rect rgb(220, 220, 250)
+    A->>B: grouped call
+  end
+"
+`;
+
+exports[`frames > if (alt) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  alt items in cart
+    A->>B: in if
+  end
+"
+`;
+
+exports[`frames > if/else if/else 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  alt c1
+    A->>B: branch 1
+  else c2
+    A->>B: branch 2
+  else 
+    A->>B: branch 3
+  end
+"
+`;
+
+exports[`frames > nested frames (frame inside frame) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  loop outer loop
+    A->>B: outer step
+    opt maybe
+      A->>B: inner step
+    end
+  end
+  A->>B: after outer
+"
+`;
+
+exports[`frames > optional (opt) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  opt address valid
+    A->>B: maybe
+  end
+"
+`;
+
+exports[`frames > parallel with labeled branches (par/and) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  participant C as Carol
+  par
+    A->>B: branch a work
+  and async
+    A->>C: branch b work
+  end
+"
+`;
+
+exports[`frames > repeat (loop) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  loop retry 3 times
+    A->>B: retry
+  end
+"
+`;
+
+exports[`markers > activate / deactivate 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  activate B
+  A->>B: call
+  deactivate B
+"
+`;
+
+exports[`markers > create participant — skips header declaration 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: first
+  create participant C as Carol
+  A->>C: to created
+"
+`;
+
+exports[`markers > destroy 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: last call
+  destroy B
+"
+`;
+
+exports[`markers > note left of 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: call
+  Note left of B: note on left
+"
+`;
+
+exports[`markers > note over two actors 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: call
+  Note over A,B: shopping phase
+"
+`;
+
+exports[`markers > note right of 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: call
+  Note right of A: note on right
+"
+`;
+
+exports[`participant declarations in node order 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  participant C as Carol
+  A->>B: x
+"
+`;
+
+exports[`showcase — all constructs end-to-end (paste into mermaid.live to verify) 1`] = `
+"sequenceDiagram
+autonumber 1 1
+  participant User as User
+  participant Web as Web
+  participant Api as API
+  participant Auth as Auth
+  participant Payment as Payment
+  participant Db as Database
+  activate User
+  User->>Web: browse
+  Note over User,Web: Shopping phase
+  alt items in cart
+    User->>Web: click checkout
+    Web->>Api: initiate checkout
+  else abandoned cart
+    User->>Web: reminder
+    break empty cart
+      User-->>Web: abort
+    end
+  else 
+    Web->Api: fallback
+  end
+  opt address valid
+    User->>Web: address
+    Note left of Web: Address validation
+  end
+  loop retry 3 times
+    rect rgb(220, 220, 250)
+      Api->>Payment: charge
+    end
+    critical payment success
+      Payment->>Api: confirmed
+    option insufficient funds
+      Payment->>Api: declined
+      create participant Notifier as Notifier
+    end
+  end
+  par
+    Api->>Db: insert
+  and async notify
+    Api->>Notifier: notify
+    Note right of Api: Payment confirmed
+    destroy Notifier
+  end
+  Web->>Done: order confirmation
+  deactivate User
+"
+`;

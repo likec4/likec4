@@ -164,6 +164,7 @@ export function sequenceViewToXY(
       data: {
         id,
         label: step.label?.text ?? null,
+        stepNumber: null,
         technology: edge.technology,
         notes: edge.notes ?? null,
         navigateTo: edge.navigateTo,
@@ -266,7 +267,7 @@ function toSeqParallelArea(
       parallelPrefix,
       drifts: null,
     },
-    zIndex: SeqZIndex.parallel,
+    zIndex: SeqZIndex.legacyParallel,
     position: {
       x,
       y,

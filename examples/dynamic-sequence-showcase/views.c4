@@ -1,0 +1,106 @@
+views {
+  dynamic view checkout-flow {
+    title 'E-Commerce Checkout with Sequence Constructs'
+    description 'Complete payment and fulfillment flow with control-flow blocks'
+    variant sequence
+    autonumber from 1 step 1
+
+    user -> web 'browse products'
+    note over user, web 'Customer shopping phase'
+
+    activate user
+    activate web
+
+    if 'items in cart' {
+      user -> web 'click checkout'
+      web -> api 'initiate checkout' {
+        notes 'POST /checkout with cart items'
+      }
+      group 'authentication block' {
+        api -> auth 'validate session'
+        auth <- auth 'check credentials'
+        api <- auth 'token valid'
+      }
+    } else if 'abandoned cart' {
+      web -> notifier 'send reminder'
+      notifier <- notifier 'email queued'
+      break 'empty cart' {
+        user <- web 'show empty state'
+      }
+    } else {
+      web -> api 'fallback to main page'
+    }
+
+    optional 'address valid' {
+      user -> web 'enter shipping address'
+      note left of web 'Address validation'
+      web -> api 'validate address'
+      api -> db 'check postal codes'
+    }
+
+    repeat 'retry up to 3 times' {
+      group 'payment processing' {
+        api -> payment 'charge card'
+        activate api
+        note over api, payment 'Critical transaction'
+      }
+      critical 'payment success' {
+        payment -> payment 'verify amount'
+        api <- payment 'charge confirmed'
+      } on 'insufficient funds' {
+        api <- payment 'decline code 51'
+        user <- web 'show error: insufficient funds'
+      } on 'timeout' {
+        user <- web 'payment timeout, retry later'
+      }
+    }
+
+    parallel { branch 'sync payment record' {
+      api -> db 'insert transaction'
+      db <- db 'record saved'
+      api <- db 'transaction id'
+    } branch 'async notifications' {
+      api -> notifier 'send confirmation'
+      notifier -> notifier 'queue email'
+      api <- notifier 'queued'
+    } branch 'cache invalidation' {
+      api -> cache 'invalidate user cart'
+      cache <- cache 'cleared'
+      api <- cache 'ack'
+    } }
+
+    deactivate api
+    note right of api 'Payment confirmed'
+
+    create notifier
+    api -> notifier 'request fulfillment'
+    notifier <- notifier 'order created'
+
+    activate notifier
+    group 'shipment preparation' {
+      notifier -> db 'lock inventory'
+      db <- db 'reserved'
+      notifier <- db 'success'
+    }
+    deactivate notifier
+
+    destroy notifier
+
+    user <- web 'show order confirmation'
+    deactivate web
+    deactivate user
+
+    note over user, api 'Flow complete'
+
+    include *
+    style * {
+      opacity 80%
+    }
+    style user {
+      color green
+    }
+    style payment {
+      color red
+    }
+  }
+}

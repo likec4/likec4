@@ -47,13 +47,6 @@ async function mkTestServices({ expect }: TestContext) {
       }
     `)
 
-  const validateRules = (rules: string) =>
-    validateView(`
-      view {
-        ${rules}
-      }
-    `)
-
   return {
     valid: async (view: string) => {
       const { errors, warnings } = await validateView(view)
@@ -260,6 +253,259 @@ describe('dynamic views', () => {
     await invalid(`
       dynamic view index2 {
         - asd - asd
+      }
+    `)
+  })
+
+  // --- WI-1: new sequence-parity constructs ---
+
+  it('valid dynamic view with if block', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        if 'inventory available' {
+          user -> system.frontend 'User uses System'
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with if-else block', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        if 'inventory available' {
+          user -> system.frontend 'success'
+        } else {
+          user -> system.frontend 'failure'
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with if-else if-else block', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        if 'cond A' {
+          user -> system.frontend 'A'
+        } else if 'cond B' {
+          user -> system.backend 'B'
+        } else {
+          user -> system.frontend 'fallback'
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with optional block', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        optional 'customer opted-in' {
+          user -> system.frontend 'send confirmation'
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with repeat block (with label)', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        repeat 'for each item' {
+          system.frontend -> system.backend 'process item'
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with repeat block (without label)', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        repeat {
+          system.frontend -> system.backend 'process item'
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with parallel labeled branches', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        parallel {
+          branch 'sync read' {
+            user -> system.frontend 'read'
+          }
+          branch 'cache refresh' {
+            system.frontend -> system.backend 'refresh'
+          }
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with group block', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        group 'Authentication flow' {
+          user -> system.frontend 'login'
+          system.frontend -> system.backend 'verify'
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with critical block', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        critical 'place order' {
+          user -> system.frontend 'submit'
+        } on 'timeout' {
+          system.frontend -> system.backend 'rollback'
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with break block', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        break 'rate limit exceeded' {
+          system.frontend -> system.backend 'error'
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with note over two actors', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        user -> system.frontend 'step'
+        note over user, system.frontend 'Session established'
+      }
+    `)
+  })
+
+  it('valid dynamic view with note left of actor', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        user -> system.frontend 'step'
+        note left of user 'User initiates'
+      }
+    `)
+  })
+
+  it('valid dynamic view with note right of actor', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        user -> system.frontend 'step'
+        note right of system.frontend 'Frontend responds'
+      }
+    `)
+  })
+
+  it('valid dynamic view with activate and deactivate', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        activate user
+        user -> system.frontend 'step'
+        deactivate user
+      }
+    `)
+  })
+
+  it('valid dynamic view with create and destroy', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        create system.frontend
+        user -> system.frontend 'step'
+        destroy system.frontend
+      }
+    `)
+  })
+
+  it('valid dynamic view with autonumber (bare)', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        autonumber
+        user -> system.frontend 'step'
+      }
+    `)
+  })
+
+  it('valid dynamic view with autonumber true', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        autonumber true
+        user -> system.frontend 'step'
+      }
+    `)
+  })
+
+  it('valid dynamic view with autonumber false', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        autonumber false
+        user -> system.frontend 'step'
+      }
+    `)
+  })
+
+  it('valid dynamic view with autonumber from N step M', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        autonumber from 1 step 2
+        user -> system.frontend 'step'
+      }
+    `)
+  })
+
+  it('valid dynamic view with deeply nested blocks', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view v1 {
+        if 'condition a' {
+          repeat 'for each item' {
+            parallel {
+              branch 'branch c' {
+                user -> system.frontend 'A'
+              }
+              branch 'branch d' {
+                system.frontend -> system.backend 'B'
+              }
+            }
+          }
+        }
+      }
+    `)
+  })
+
+  it('backward compat: legacy flat parallel { stepA stepB } still parses', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view parallelSteps {
+        parallel {
+          user -> system.frontend 'User uses System'
+          system.frontend -> system.backend 'frontend uses backend'
+        }
+        parallel {
+          system.frontend <- system.backend
+        }
       }
     `)
   })

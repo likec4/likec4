@@ -1,0 +1,12 @@
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system {
+    style {
+      shape rectangle
+    }
+  }
+}

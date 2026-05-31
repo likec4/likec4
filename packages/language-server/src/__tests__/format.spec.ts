@@ -3,6 +3,25 @@ import { describe, expect, it } from 'vitest'
 import { createMultiProjectTestServices, createTestServices } from '../test'
 
 /**
+ * Round-trip helper: formats a source string and returns the formatted text.
+ * Used by the dynamic-view sequence-construct tests below.
+ */
+async function roundTrip(source: string): Promise<string> {
+  const { validate, services } = createTestServices()
+  const { document, errors } = await validate(source)
+  if (errors.length > 0) {
+    throw new Error(`Validation errors in source:\n${errors.join('\n')}`)
+  }
+  const languageServices = services.likec4.LanguageServices
+  const result = await languageServices.format()
+  const formatted = result.get(document.uri.toString())
+  if (formatted === undefined) {
+    throw new Error('Formatter returned no result for document')
+  }
+  return formatted
+}
+
+/**
  * Tests for `LikeC4LanguageServices.format()` — the low-level formatting API
  * (as opposed to the single-document `format` helper exposed by `createTestServices`).
  * This API supports multi-document formatting, `documentUris`/`projectIds` filtering,
@@ -302,5 +321,185 @@ describe('LikeC4LanguageServices.format', () => {
       // Tabs: indentation should contain tab characters
       expect(formattedTabs).toMatch(/\t/)
     })
+  })
+})
+
+const BASE_SPEC = `specification {
+  element actor
+  element service
+}
+model {
+  actor user
+  service api
+}
+views {`
+
+describe('dynamic view sequence constructs — round-trip formatting', () => {
+  /**
+   * Formats `source`, then formats the result a second time and asserts both
+   * passes produce identical output (idempotency = zero diff on re-format).
+   */
+  async function assertRoundTrip(source: string) {
+    // First format pass
+    const { validate: validate1, services: services1 } = createTestServices()
+    const { document: doc1, errors: errors1 } = await validate1(source)
+    expect(errors1, `validation errors in source:\n${errors1.join('\n')}`).toHaveLength(0)
+    const ls1 = services1.likec4.LanguageServices
+    const result1 = await ls1.format()
+    const formatted1 = result1.get(doc1.uri.toString())
+    expect(formatted1, 'formatter produced no output').toBeDefined()
+
+    // Second format pass (idempotency check)
+    const { validate: validate2, services: services2 } = createTestServices()
+    const { document: doc2, errors: errors2 } = await validate2(formatted1!)
+    expect(errors2, `validation errors after first format:\n${errors2.join('\n')}`).toHaveLength(0)
+    const ls2 = services2.likec4.LanguageServices
+    const result2 = await ls2.format()
+    const formatted2 = result2.get(doc2.uri.toString())
+    expect(formatted2, 'second format must equal first (idempotent)').toBe(formatted1)
+  }
+
+  function wrap(body: string) {
+    return `${BASE_SPEC}\n  dynamic view test {\n${body}\n  }\n}`
+  }
+
+  it('formats if … else', async () => {
+    await assertRoundTrip(wrap(`    if 'inventory available' {
+      user -> api
+    } else {
+      user -> api 'fallback'
+    }`))
+  })
+
+  it('formats if … else if … else', async () => {
+    await assertRoundTrip(wrap(`    if 'step a' {
+      user -> api
+    } else if 'step b' {
+      api -> user
+    } else {
+      user -> api 'fallback'
+    }`))
+  })
+
+  it('formats optional', async () => {
+    await assertRoundTrip(wrap(`    optional 'customer opted-in' {
+      user -> api
+    }`))
+  })
+
+  it('formats repeat with label', async () => {
+    await assertRoundTrip(wrap(`    repeat 'until done' {
+      user -> api
+    }`))
+  })
+
+  it('formats repeat without label', async () => {
+    await assertRoundTrip(wrap(`    repeat {
+      user -> api
+    }`))
+  })
+
+  it('formats parallel with named branches', async () => {
+    await assertRoundTrip(wrap(`    parallel {
+      branch 'sync read' {
+        user -> api
+      }
+      branch 'cache refresh' {
+        api -> user
+      }
+    }`))
+  })
+
+  it('formats parallel with unnamed branch', async () => {
+    await assertRoundTrip(wrap(`    parallel {
+      branch {
+        user -> api
+      }
+    }`))
+  })
+
+  it('formats group', async () => {
+    await assertRoundTrip(wrap(`    group 'checkout flow' {
+      user -> api
+    }`))
+  })
+
+  it('formats critical … on …', async () => {
+    await assertRoundTrip(wrap(`    critical 'payment' {
+      user -> api
+    } on 'rollback' {
+      api -> user
+    }`))
+  })
+
+  it('formats break', async () => {
+    await assertRoundTrip(wrap(`    break 'error occurred' {
+      user -> api
+    }`))
+  })
+
+  it('formats note over A, B', async () => {
+    await assertRoundTrip(wrap(`    note over user, api 'hello'`))
+  })
+
+  it('formats note left of A', async () => {
+    await assertRoundTrip(wrap(`    note left of user 'hello'`))
+  })
+
+  it('formats note right of A', async () => {
+    await assertRoundTrip(wrap(`    note right of api 'hello'`))
+  })
+
+  it('formats activate and deactivate', async () => {
+    await assertRoundTrip(wrap(`    activate user
+    user -> api
+    deactivate user`))
+  })
+
+  it('formats create and destroy', async () => {
+    await assertRoundTrip(wrap(`    create user
+    user -> api
+    destroy user`))
+  })
+
+  it('formats autonumber (bare)', async () => {
+    await assertRoundTrip(wrap(`    autonumber
+    user -> api`))
+  })
+
+  it('formats autonumber true', async () => {
+    await assertRoundTrip(wrap(`    autonumber true
+    user -> api`))
+  })
+
+  it('formats autonumber false', async () => {
+    await assertRoundTrip(wrap(`    autonumber false
+    user -> api`))
+  })
+
+  it('formats autonumber from N step M', async () => {
+    await assertRoundTrip(wrap(`    autonumber from 1 step 2
+    user -> api`))
+  })
+
+  it('formats deeply nested: if inside repeat inside parallel branch', async () => {
+    await assertRoundTrip(wrap(`    parallel {
+      branch 'outer' {
+        repeat 'loop' {
+          if 'check' {
+            user -> api
+          } else {
+            api -> user
+          }
+        }
+      }
+    }`))
+  })
+
+  it('legacy flat parallel remains stable', async () => {
+    await assertRoundTrip(wrap(`    parallel {
+      user -> api
+      api -> user
+    }`))
   })
 })

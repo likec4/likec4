@@ -14,7 +14,7 @@ import { parse, stringify } from 'superjson'
 import { useCurrentProject } from '../hooks'
 
 function mapToNodeData(storeState: XYStoreState) {
-  return <T extends Types.NodeType>({ id, data, ...node }: Types.Node<T>): NodeData => {
+  return ({ id, data, ...node }: Types.Node<Types.InteractiveNodeType>): NodeData => {
     let icon = data.icon ?? undefined
     if (icon === 'none') {
       icon = undefined
@@ -73,12 +73,19 @@ function useChatTools() {
 
         const toNodeData = mapToNodeData(xystore.getState())
 
+        // Filter out sequence overlay nodes (seq-frame, seq-note, seq-activation) which have no
+        // title/shape/color/icon — only interactive element/deployment/compound/actor nodes carry model data.
+        const overlayTypes = new Set<string>(['seq-frame', 'seq-note', 'seq-activation'])
+        const interactiveNodes = xynodes.filter(
+          (n): n is Types.Node<Types.InteractiveNodeType> => !overlayTypes.has(n.type),
+        )
+
         // if include nodes
-        const nodes = params.nodes === true && map(xynodes, toNodeData) || undefined
+        const nodes = params.nodes === true && map(interactiveNodes, toNodeData) || undefined
 
         // if include nodes
         const selectedNode = params.selectedNode === true && pipe(
-          xynodes,
+          interactiveNodes,
           find(n => !!n.selected || n.id === focusedNode),
           n => n ? toNodeData(n) : undefined,
         )

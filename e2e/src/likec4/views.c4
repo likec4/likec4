@@ -86,4 +86,68 @@ views {
         multiple true
       }
   }
+
+  dynamic view sequence-showcase {
+    title 'Sequence Showcase'
+    description 'Exercises all new control-flow block kinds for WI-11 visual regression'
+    variant sequence
+    autonumber from 1 step 1
+
+    note over customer, cloud.ui 'Request phase'
+    activate customer
+
+    if 'user authenticated' {
+      customer -> cloud.ui 'browse'
+      cloud.ui -> cloud.next 'fetch data'
+    } else if 'session expired' {
+      customer -> cloud.ui 'redirect to login'
+    } else {
+      customer -> cloud.ui 'show error'
+    }
+
+    optional 'feature flag enabled' {
+      cloud.ui -> cloud.legacy 'fetch legacy data'
+      note left of cloud.legacy 'Legacy fallback'
+    }
+
+    repeat 'retry on failure' {
+      cloud.next -> amazon 'query'
+      cloud.next <- amazon 'result'
+    }
+
+    parallel { branch 'write path' {
+      cloud.next -> amazon.s3 'upload'
+      cloud.next <- amazon.s3 'ack'
+    } branch 'read path' {
+      cloud.next -> amazon.rds 'select'
+      cloud.next <- amazon.rds 'rows'
+    } }
+
+    group 'response assembly' {
+      cloud.next -> cloud.ui 'assemble response'
+      note right of cloud.next 'Assembled'
+    }
+
+    critical 'transaction safe' {
+      cloud.next -> amazon.rds 'commit'
+      cloud.next <- amazon.rds 'committed'
+    } on 'rollback' {
+      cloud.next <- amazon.rds 'rolled back'
+    }
+
+    break 'circuit open' {
+      customer <- cloud.ui 'service unavailable'
+    }
+
+    activate cloud.ui
+    customer <- cloud.ui 'response'
+    deactivate cloud.ui
+    deactivate customer
+
+    create cloud.legacy
+    cloud.ui -> cloud.legacy 'wake up'
+    destroy cloud.legacy
+
+    include *
+  }
 }

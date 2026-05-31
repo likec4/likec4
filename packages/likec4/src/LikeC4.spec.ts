@@ -298,6 +298,14 @@ describe('LikeC4', () => {
           ],
           "folder": "dyn-config",
         },
+        "dynamic-sequence-showcase": {
+          "documents": [
+            "model.c4",
+            "specification.c4",
+            "views.c4",
+          ],
+          "folder": "dynamic-sequence-showcase",
+        },
         "issue-1624": {
           "documents": [
             "model.c4",
