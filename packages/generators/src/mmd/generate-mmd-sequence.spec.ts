@@ -113,11 +113,17 @@ describe('basic steps', () => {
     expect(generateMermaidSequence(mockViewModel(view))).toMatchSnapshot()
   })
 
-  test('backward edge (dir=back)', ({ expect }) => {
+  test('backward edge (dir=back) keeps semantic source→target — never swapped', ({ expect }) => {
     const view = makeDynamicView({
       edges: [makeEdge('step-01', 'a', 'b', 'response', { dir: 'back' })],
     })
-    expect(generateMermaidSequence(mockViewModel(view))).toMatchSnapshot()
+    const out = generateMermaidSequence(mockViewModel(view))
+    // `dir: 'back'` is layout geometry, not a sender/receiver reversal. Mermaid derives
+    // visual direction itself, so the message must stay a → b, not b → a. Arrow lines use
+    // the FQN-derived participant id (A/B), titles (Alice/Bob) only appear in the header.
+    expect(out).toContain('A->>B: response')
+    expect(out).not.toContain('B->>A')
+    expect(out).toMatchSnapshot()
   })
 
   test('self-loop (source === target)', ({ expect }) => {
@@ -306,7 +312,37 @@ describe('frames', () => {
         } as unknown as ComputedFrame,
       ],
     })
-    expect(generateMermaidSequence(mockViewModel(view))).toMatchSnapshot()
+    const out = generateMermaidSequence(mockViewModel(view))
+    // First branch label is carried onto `par` (not a bare `par`), matching `and async`.
+    expect(out).toContain('par sync')
+    expect(out).toContain('and async')
+    expect(out).toMatchSnapshot()
+  })
+
+  test('parallel (legacy flat, no branch labels) → bare par', ({ expect }) => {
+    const view = makeDynamicView({
+      nodes: [NODE_A, NODE_B, NODE_C],
+      edges: [
+        makeEdge('step-01', 'a', 'b', 'work 1'),
+        makeEdge('step-02', 'a', 'c', 'work 2'),
+      ],
+      frames: [
+        {
+          id: 'f1',
+          kind: 'parallel',
+          depth: 0,
+          parent: undefined,
+          branches: [
+            { label: undefined, condition: undefined, stepIds: ['step-01' as any], markerIds: [] },
+            { label: undefined, condition: undefined, stepIds: ['step-02' as any], markerIds: [] },
+          ],
+        } as unknown as ComputedFrame,
+      ],
+    })
+    const out = generateMermaidSequence(mockViewModel(view))
+    // No branch labels → bare `par` (no trailing text), preserving legacy behavior.
+    expect(out).toMatch(/^\s*par\s*$/m)
+    expect(out).toMatchSnapshot()
   })
 
   test('group (rect)', ({ expect }) => {
@@ -501,7 +537,26 @@ describe('markers', () => {
     expect(out).toMatchSnapshot()
   })
 
-  test('destroy', ({ expect }) => {
+  test('destroy — emitted when a destroying message immediately follows', ({ expect }) => {
+    const view = makeDynamicView({
+      nodes: [NODE_A, NODE_B],
+      edges: [
+        makeEdge('step-01', 'a', 'b', 'last call'),
+        makeEdge('step-02', 'a', 'b', 'goodbye'), // destroying message involving b follows
+      ],
+      markers: [
+        { kind: 'destroy', id: 'm1', actor: 'b' as any, afterStep: 'step-01' as any },
+      ],
+    })
+    const out = generateMermaidSequence(mockViewModel(view))
+    expect(out).toContain('destroy B')
+    expect(out).toMatchSnapshot()
+  })
+
+  test('destroy — degrades (suppressed) when no destroying message follows', ({ expect }) => {
+    // Mermaid requires a message involving the destroyed actor AFTER `destroy X`. LikeC4
+    // `destroy` terminates the lifeline with no trailing message, so it must be dropped
+    // rather than emitting invalid Mermaid.
     const view = makeDynamicView({
       nodes: [NODE_A, NODE_B],
       edges: [makeEdge('step-01', 'a', 'b', 'last call')],
@@ -509,7 +564,77 @@ describe('markers', () => {
         { kind: 'destroy', id: 'm1', actor: 'b' as any, afterStep: 'step-01' as any },
       ],
     })
-    expect(generateMermaidSequence(mockViewModel(view))).toMatchSnapshot()
+    const out = generateMermaidSequence(mockViewModel(view))
+    expect(out).not.toContain('destroy')
+    expect(out).toMatchSnapshot()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Mermaid-validity regressions (each fixture would emit INVALID mermaid before the fix)
+// ---------------------------------------------------------------------------
+
+describe('mermaid validity', () => {
+  test('create degrades to a header participant when the actor is used before its create', ({ expect }) => {
+    // Carol is referenced at step-01, but the `create` marker sits after step-01 (afterStep).
+    // Mermaid auto-creates Carol on first use, so an explicit `create participant Carol` would
+    // throw "actors with the same id". The emitter must degrade: declare Carol in the header,
+    // skip the create line.
+    const view = makeDynamicView({
+      nodes: [NODE_A, NODE_B, NODE_C],
+      edges: [
+        makeEdge('step-01', 'a', 'c', 'use carol early'),
+        makeEdge('step-02', 'a', 'b', 'something'),
+      ],
+      markers: [
+        { kind: 'create', id: 'm1', actor: 'c' as any, afterStep: 'step-01' as any },
+      ],
+    })
+    const out = generateMermaidSequence(mockViewModel(view))
+    expect(out).not.toContain('create participant C')
+    expect(out).toContain('participant C as Carol') // declared normally in the header
+    expect(out).toMatchSnapshot()
+  })
+
+  test('outer-scope marker after a frame is emitted AFTER end, not inside the frame', ({ expect }) => {
+    // The note is a top-level marker, but its afterStep is the last step of the frame branch.
+    // It must be hoisted to after `end` — emitting it inside the frame is the leak bug.
+    const view = makeDynamicView({
+      nodes: [NODE_A, NODE_B],
+      edges: [
+        makeEdge('step-01', 'a', 'b', 'inside frame'),
+        makeEdge('step-02', 'a', 'b', 'after frame'),
+      ],
+      frames: [
+        {
+          id: 'f1',
+          kind: 'group',
+          label: 'work',
+          depth: 0,
+          parent: undefined,
+          branches: [
+            { label: 'work', condition: undefined, stepIds: ['step-01' as any], markerIds: [] },
+          ],
+        } as unknown as ComputedFrame,
+      ],
+      markers: [
+        {
+          kind: 'note',
+          id: 'm1',
+          placement: 'over',
+          actors: ['a' as any, 'b' as any],
+          text: 'done',
+          afterStep: 'step-01' as any,
+        },
+      ],
+    })
+    const out = generateMermaidSequence(mockViewModel(view))
+    const lines = out.split('\n').map(l => l.trim())
+    const endIdx = lines.indexOf('end')
+    const noteIdx = lines.findIndex(l => l.startsWith('Note over'))
+    expect(endIdx).toBeGreaterThan(-1)
+    expect(noteIdx).toBeGreaterThan(endIdx) // note appears after the frame closes
+    expect(out).toMatchSnapshot()
   })
 })
 

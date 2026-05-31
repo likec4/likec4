@@ -35,11 +35,11 @@ autonumber 1 2
 "
 `;
 
-exports[`basic steps > backward edge (dir=back) 1`] = `
+exports[`basic steps > backward edge (dir=back) keeps semantic source→target — never swapped 1`] = `
 "sequenceDiagram
   participant A as Alice
   participant B as Bob
-  B->>A: response
+  A->>B: response
 "
 `;
 
@@ -171,12 +171,25 @@ exports[`frames > optional (opt) 1`] = `
 "
 `;
 
-exports[`frames > parallel with labeled branches (par/and) 1`] = `
+exports[`frames > parallel (legacy flat, no branch labels) → bare par 1`] = `
 "sequenceDiagram
   participant A as Alice
   participant B as Bob
   participant C as Carol
   par
+    A->>B: work 1
+  and 
+    A->>C: work 2
+  end
+"
+`;
+
+exports[`frames > parallel with labeled branches (par/and) 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  participant C as Carol
+  par sync
     A->>B: branch a work
   and async
     A->>C: branch b work
@@ -214,12 +227,21 @@ exports[`markers > create participant — skips header declaration 1`] = `
 "
 `;
 
-exports[`markers > destroy 1`] = `
+exports[`markers > destroy — degrades (suppressed) when no destroying message follows 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  A->>B: last call
+"
+`;
+
+exports[`markers > destroy — emitted when a destroying message immediately follows 1`] = `
 "sequenceDiagram
   participant A as Alice
   participant B as Bob
   A->>B: last call
   destroy B
+  A->>B: goodbye
 "
 `;
 
@@ -250,6 +272,28 @@ exports[`markers > note right of 1`] = `
 "
 `;
 
+exports[`mermaid validity > create degrades to a header participant when the actor is used before its create 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  participant C as Carol
+  A->>C: use carol early
+  A->>B: something
+"
+`;
+
+exports[`mermaid validity > outer-scope marker after a frame is emitted AFTER end, not inside the frame 1`] = `
+"sequenceDiagram
+  participant A as Alice
+  participant B as Bob
+  rect rgb(220, 220, 250)
+    A->>B: inside frame
+  end
+  Note over A,B: done
+  A->>B: after frame
+"
+`;
+
 exports[`participant declarations in node order 1`] = `
 "sequenceDiagram
   participant A as Alice
@@ -267,6 +311,7 @@ autonumber 1 1
   participant Api as API
   participant Auth as Auth
   participant Payment as Payment
+  participant Notifier as Notifier
   participant Db as Database
   activate User
   User->>Web: browse
@@ -275,7 +320,7 @@ autonumber 1 1
     User->>Web: click checkout
     Web->>Api: initiate checkout
   else abandoned cart
-    User->>Web: reminder
+    Web->>User: reminder
     break empty cart
       User-->>Web: abort
     end
@@ -284,8 +329,8 @@ autonumber 1 1
   end
   opt address valid
     User->>Web: address
-    Note left of Web: Address validation
   end
+  Note left of Web: Address validation
   loop retry 3 times
     rect rgb(220, 220, 250)
       Api->>Payment: charge
@@ -294,16 +339,14 @@ autonumber 1 1
       Payment->>Api: confirmed
     option insufficient funds
       Payment->>Api: declined
-      create participant Notifier as Notifier
     end
   end
-  par
+  par sync record
     Api->>Db: insert
   and async notify
     Api->>Notifier: notify
-    Note right of Api: Payment confirmed
-    destroy Notifier
   end
+  Note right of Api: Payment confirmed
   Web->>Done: order confirmation
   deactivate User
 "

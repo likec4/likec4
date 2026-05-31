@@ -1,5 +1,5 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
-import type { ComputedDynamicView, ComputedEdge, ComputedFrame, ComputedMarker, ComputedNode } from '@likec4/core/types'
+import type { ComputedDynamicView, ComputedEdge, ComputedFrame, ComputedMarker } from '@likec4/core/types'
 import type { aux } from '@likec4/core/types'
 import { CompositeGeneratorNode, NL, toString } from 'langium/generate'
 
@@ -20,69 +20,22 @@ const actorName = (nodeId: string): string => fqnName(nodeId)
  */
 const escapeLabel = (label: string): string => label.replace(/:/g, '&#58;').replace(/\r?\n/g, '<br/>')
 
-/** Choose the arrow characters based on edge attributes. */
+/**
+ * Choose the arrow characters from edge STYLE only (line + head).
+ *
+ * `edge.dir` is deliberately NOT consulted: it is a LikeC4 layout/geometry
+ * attribute ("source column is right of target column"), not a semantic
+ * sender/receiver reversal. Mermaid derives the visual arrow direction from
+ * `source ->> target` plus participant declaration order on its own, so the
+ * emitter must always render `source -> target` and never swap.
+ */
 const arrowFor = (edge: ComputedEdge): string => {
   const isDashed = edge.line === 'dashed'
   const isOpen = edge.head === 'open'
-  const isBack = edge.dir === 'back'
-
-  if (isBack) {
-    return isDashed ? '-->>' : '->>' // Mermaid has no true "back" arrow; emit reverse order instead (handled at call site)
-  }
   if (isOpen) {
     return isDashed ? '-->' : '->'
   }
   return isDashed ? '-->>' : '->>'
-}
-
-/**
- * Emit one sequence step line.
- * For `dir === 'back'`, swap source/target so the arrow flows right-to-left
- * (Mermaid renders `B->>A:` as an arrow pointing from B to A).
- */
-const emitStep = (edge: ComputedEdge, node: CompositeGeneratorNode): void => {
-  const isBack = edge.dir === 'back'
-  const from = actorName(isBack ? edge.target : edge.source)
-  const to = actorName(isBack ? edge.source : edge.target)
-  const arrow = arrowFor(edge)
-  const label = edge.label ? escapeLabel(edge.label) : ''
-  node.append(from, arrow, to, ': ', label, NL)
-}
-
-/** Emit a single marker line. */
-const emitMarker = (
-  marker: ComputedMarker,
-  node: CompositeGeneratorNode,
-): void => {
-  switch (marker.kind) {
-    case 'note': {
-      const actors = marker.actors.map(a => actorName(a)).join(',')
-      switch (marker.placement) {
-        case 'over':
-          node.append(`Note over ${actors}: ${escapeLabel(marker.text)}`, NL)
-          break
-        case 'left':
-          node.append(`Note left of ${actors}: ${escapeLabel(marker.text)}`, NL)
-          break
-        case 'right':
-          node.append(`Note right of ${actors}: ${escapeLabel(marker.text)}`, NL)
-          break
-      }
-      break
-    }
-    case 'activate':
-      node.append(`activate ${actorName(marker.actor)}`, NL)
-      break
-    case 'deactivate':
-      node.append(`deactivate ${actorName(marker.actor)}`, NL)
-      break
-    case 'create':
-      node.append(`create participant ${actorName(marker.actor)}`, NL)
-      break
-    case 'destroy':
-      node.append(`destroy ${actorName(marker.actor)}`, NL)
-      break
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -101,7 +54,9 @@ const frameOpenKeyword = (kind: FrameKind, label?: string, condition?: string): 
     case 'repeat':
       return `loop ${text}`
     case 'parallel':
-      return `par`
+      // Labeled `parallel { branch 'x' … }` → `par x`; legacy flat `parallel { … }` (no
+      // branch label) → bare `par`. Mermaid `and`/`end` close it as usual.
+      return text ? `par ${text}` : `par`
     case 'group':
       return `rect rgb(220, 220, 250)`
     case 'critical':
@@ -274,6 +229,9 @@ function emitScope(
   out: CompositeGeneratorNode,
   indent: number,
   nodeTitleMap: Map<string, string>,
+  markerDeepestFrameId: ReadonlyMap<string, string>,
+  suppressed: ReadonlySet<string>,
+  edgeIndexMap: Map<string, number>,
 ): void {
   // Among the child frames of parentFrameId, find which ones start within
   // our stepIndices range so we can open/close them at the right positions.
@@ -285,6 +243,40 @@ function emitScope(
   }
   // Sort child frames by first-step index
   childFrames.sort((a, b) => a.firstStepIdx - b.firstStepIdx)
+
+  // A marker belongs to EXACTLY ONE scope — its deepest enclosing frame (or top-level when it
+  // has no frame). `branch.markerIds` is cumulative (a nested marker is also listed by every
+  // ancestor branch), so scope membership must be decided by deepest owner, not by set
+  // membership — otherwise an inner-frame marker is re-emitted at each enclosing scope.
+  const ownedHere = (markerId: string): boolean =>
+    !suppressed.has(markerId) && (markerDeepestFrameId.get(markerId) ?? undefined) === parentFrameId
+
+  // Emit markers owned by THIS scope that are attached to `stepId` (afterStep === stepId).
+  // This scoping prevents a top-level marker from leaking inside a frame just because its
+  // `afterStep` happens to be the last step of a branch.
+  const emitScopeMarkersAfterStep = (stepId: string): void => {
+    if (!view.markers) return
+    for (const marker of view.markers) {
+      if (marker.afterStep === stepId && ownedHere(marker.id)) {
+        emitMarkerIndented(marker, out, indent, nodeTitleMap)
+      }
+    }
+  }
+
+  // Hoist this scope's markers whose `afterStep` resolved to a step INSIDE a now-closed child
+  // frame. They were authored at this (outer) scope, so they must appear AFTER the frame's
+  // `end`, never inside it. Their afterStep step is never emitted in this scope's step loop
+  // (its deepest owner is the child frame), so this is the only place they are emitted.
+  const emitDeferredScopeMarkers = (lo: number, hi: number): void => {
+    if (!view.markers) return
+    const deferred = view.markers
+      .map(m => ({ marker: m, at: m.afterStep !== undefined ? edgeIndexMap.get(m.afterStep) : undefined }))
+      .filter(({ marker, at }) => at !== undefined && at >= lo && at <= hi && ownedHere(marker.id))
+      .sort((a, b) => (a.at ?? 0) - (b.at ?? 0))
+    for (const { marker } of deferred) {
+      emitMarkerIndented(marker, out, indent, nodeTitleMap)
+    }
+  }
 
   let i = 0
   while (i < stepIndices.length) {
@@ -330,16 +322,23 @@ function emitScope(
           )
           : []
 
-        // Emit branch markers BEFORE steps (markers with afterStep === undefined belong at the start)
+        // Emit this branch's OWN markers that have no afterStep (they belong at the branch
+        // start). `deepest === frame.id` filters out markers that actually belong to a nested
+        // child frame (cumulative markerIds would otherwise surface them here).
         for (const mid of branch.markerIds) {
           const marker = markerMap.get(mid)
           if (!marker) continue
-          if (marker.afterStep === undefined) {
+          if (
+            marker.afterStep === undefined && !suppressed.has(mid)
+            && markerDeepestFrameId.get(mid) === frame.id
+          ) {
             emitMarkerIndented(marker, out, indent + 2, nodeTitleMap)
           }
         }
 
-        // Recurse into branch content
+        // Recurse into branch content. Scope membership is carried by `markerDeepestFrameId`,
+        // so afterStep markers owned by this branch are emitted inline by the recursion's step
+        // loop, and nested-frame markers by the deeper recursion.
         emitScope(
           branchStepIndices,
           frameMetaMap,
@@ -351,21 +350,16 @@ function emitScope(
           out,
           indent + 2,
           nodeTitleMap,
+          markerDeepestFrameId,
+          suppressed,
+          edgeIndexMap,
         )
-
-        // Emit branch markers AFTER their afterStep
-        // (markers with afterStep inside this branch that haven't been emitted yet)
-        for (const mid of branch.markerIds) {
-          const marker = markerMap.get(mid)
-          if (!marker) continue
-          if (marker.afterStep !== undefined) {
-            // afterStep should have been emitted inline; skip here to avoid double-emit
-            // (already handled in emitScope's step loop below via the markersByAfterStep map)
-          }
-        }
       }
 
       emitIndented(out, indent, 'end\n')
+
+      // Outer-scope markers authored after a step inside this frame go AFTER `end`.
+      emitDeferredScopeMarkers(childFrame.firstStepIdx, childFrame.lastStepIdx)
 
       // Advance past all indices consumed by this child frame
       i = stepIndices.indexOf(childFrame.lastStepIdx, i) + 1
@@ -378,15 +372,7 @@ function emitScope(
       // Only emit the step here if its deepest owner is our parentFrameId (or no owner for top-level)
       if (deepestOwner === parentFrameId) {
         emitStepIndented(edge, out, indent)
-
-        // Emit any markers with afterStep === this stepId
-        if (view.markers) {
-          for (const marker of view.markers) {
-            if (marker.afterStep === stepId) {
-              emitMarkerIndented(marker, out, indent, nodeTitleMap)
-            }
-          }
-        }
+        emitScopeMarkersAfterStep(stepId)
       }
       i++
     }
@@ -401,9 +387,11 @@ function emitIndented(out: CompositeGeneratorNode, indentLevel: number, text: st
 }
 
 function emitStepIndented(edge: ComputedEdge, out: CompositeGeneratorNode, indent: number): void {
-  const isBack = edge.dir === 'back'
-  const from = actorName(isBack ? edge.target : edge.source)
-  const to = actorName(isBack ? edge.source : edge.target)
+  // Always semantic sender → receiver. `edge.source`/`edge.target` are normalized
+  // by the parser (`A <- B` is stored as source=B, target=A), so no swap is ever
+  // needed; swapping on `edge.dir === 'back'` (geometry) would invert the message.
+  const from = actorName(edge.source)
+  const to = actorName(edge.target)
   const arrow = arrowFor(edge)
   const label = edge.label ? escapeLabel(edge.label) : ''
   out.append(' '.repeat(indent) + `${from}${arrow}${to}: ${label}`, NL)
@@ -466,19 +454,67 @@ export function generateMermaidSequence(viewmodel: LikeC4ViewModel<aux.Unknown>)
     edgeIndexMap.set(edges[i]!.id, i)
   }
 
+  // First edge index that references each actor (as source or target).
+  const firstRefIndex = new Map<string, number>()
+  edges.forEach((e, i) => {
+    if (!firstRefIndex.has(e.source)) firstRefIndex.set(e.source, i)
+    if (!firstRefIndex.has(e.target)) firstRefIndex.set(e.target, i)
+  })
+
   // Build node-id → title lookup so `create participant <fqn> as <title>` matches header convention.
   const nodeTitleMap = new Map<string, string>()
   for (const node of nodes) {
     nodeTitleMap.set(node.id, node.title)
   }
 
-  // Determine which actors are introduced via `create participant` so we skip
-  // their default `participant` declaration in the header.
-  const createdActors = new Set<string>()
+  // Decide which create/destroy markers are valid Mermaid and which must be degraded.
+  //  - `create participant X` is only legal when the creating message is the IMMEDIATELY
+  //    following line and X does not already exist. We approximate that with
+  //    `firstRef(X) === createAfterStepIndex + 1`. Otherwise X is auto-created by its first
+  //    message and an explicit `create` would raise "actors with the same id" → suppress the
+  //    marker and declare X normally in the header instead.
+  //  - `destroy X` is only legal in Mermaid when a "destroying message" involving X is the
+  //    IMMEDIATELY following line. LikeC4 `destroy` instead terminates X's lifeline after its
+  //    last message, so a trailing message rarely exists → suppress unless one genuinely does.
+  const suppressedMarkerIds = new Set<string>()
   if (view.markers) {
     for (const m of view.markers) {
       if (m.kind === 'create') {
+        const afterIdx = m.afterStep !== undefined ? (edgeIndexMap.get(m.afterStep) ?? -1) : -1
+        const firstRef = firstRefIndex.get(m.actor) ?? Infinity
+        if (firstRef !== afterIdx + 1) suppressedMarkerIds.add(m.id)
+      } else if (m.kind === 'destroy') {
+        const afterIdx = m.afterStep !== undefined ? (edgeIndexMap.get(m.afterStep) ?? -1) : -1
+        const next = edges[afterIdx + 1]
+        const destroyingMsgFollows = next !== undefined && (next.source === m.actor || next.target === m.actor)
+        if (!destroyingMsgFollows) suppressedMarkerIds.add(m.id)
+      }
+    }
+  }
+
+  // Actors introduced via a VALID `create` are excluded from the header (they appear via
+  // `create participant`). Actors whose `create` was suppressed fall back to a header decl.
+  const createdActors = new Set<string>()
+  if (view.markers) {
+    for (const m of view.markers) {
+      if (m.kind === 'create' && !suppressedMarkerIds.has(m.id)) {
         createdActors.add(m.actor)
+      }
+    }
+  }
+
+  // Each marker's DEEPEST owning frame (absent = top-level). `branch.markerIds` is cumulative
+  // (a nested marker is also listed by every ancestor branch), so ownership is resolved by
+  // walking frames deepest-first and letting the first claimant win — the single source of
+  // truth for marker scope, preventing re-emission at each enclosing scope.
+  const markerDeepestFrameId = new Map<string, string>()
+  if (view.frames) {
+    const byDepthDesc = [...view.frames].sort((a, b) => b.depth - a.depth)
+    for (const f of byDepthDesc) {
+      for (const b of f.branches) {
+        for (const mid of b.markerIds) {
+          if (!markerDeepestFrameId.has(mid)) markerDeepestFrameId.set(mid, f.id)
+        }
       }
     }
   }
@@ -511,16 +547,15 @@ export function generateMermaidSequence(viewmodel: LikeC4ViewModel<aux.Unknown>)
     }
   }
 
-  // Emit markers that have no afterStep and are not inside any frame branch
-  // (i.e., top-level markers before any step)
+  // Emit top-level markers that have no afterStep (e.g. an `activate` before any step).
+  // Top-level = no deepest frame owner.
   if (view.markers) {
     for (const marker of view.markers) {
-      if (marker.afterStep === undefined) {
-        // Check it's not in any frame branch's markerIds
-        const inBranch = view.frames?.some(f => f.branches.some(b => b.markerIds.includes(marker.id))) ?? false
-        if (!inBranch) {
-          emitMarkerIndented(marker, out, 2, nodeTitleMap)
-        }
+      if (
+        marker.afterStep === undefined && !markerDeepestFrameId.has(marker.id)
+        && !suppressedMarkerIds.has(marker.id)
+      ) {
+        emitMarkerIndented(marker, out, 2, nodeTitleMap)
       }
     }
   }
@@ -542,6 +577,9 @@ export function generateMermaidSequence(viewmodel: LikeC4ViewModel<aux.Unknown>)
     out,
     2,
     nodeTitleMap,
+    markerDeepestFrameId,
+    suppressedMarkerIds,
+    edgeIndexMap,
   )
 
   return toString(out)
