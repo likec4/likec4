@@ -12,7 +12,6 @@ import type { Argv } from 'yargs'
 import { createLikeC4Logger } from '../../../logger'
 import { ensurePlaywright, ensureReact } from '../../ensure-libs'
 import { path, project, useDotBin } from '../../options'
-import { showSupportUsMessage } from '../../support-message'
 import { type PngExportArgs, runExportPng } from '../png/handler'
 
 /** CLI entry: create logger and delegate to runExportPng with format=jpeg. */
@@ -161,7 +160,6 @@ export function jpgCmd(yargs: Argv) {
           description: args.description,
         } satisfies PngExportArgs,
       )
-      showSupportUsMessage()
     },
   })
 }
