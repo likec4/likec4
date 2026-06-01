@@ -1,0 +1,23 @@
+packages/diagram/src/likec4diagram/xyflow-diagram/diagram-view.spec.ts
+  s_9d49268b9f9845::t_cedc71e443f9fd 137-159
+e2e/tests/diagram-a11y.spec.ts
+  s_9d49268b9f9845::t_d385a141f6f4f5 57-75
+packages/diagram/src/likec4diagram/xyflow-diagram/diagram-view.ts
+  s_9d49268b9f9845::t_7e13e65b8b2d26 61-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "af53a2df4cdd3a48a2c4ede1503a6302cffd3db8",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
