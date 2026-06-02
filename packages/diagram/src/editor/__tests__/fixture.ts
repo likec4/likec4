@@ -5,7 +5,7 @@ import { type WritableDraft, produce } from 'immer'
 import { filter, indexBy, isTruthy, map, pipe } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 
-import indexSnapshot from './index-snapshot.json' assert { type: 'json' }
+import indexSnapshot from './index-snapshot.json' with { type: 'json' }
 
 /**
   Snapshot {@link indexSnapshot} is built from the model below.

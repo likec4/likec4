@@ -3,7 +3,10 @@
   "compilerOptions": {
     "target": "es2024",
     "composite": true,
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "src"

@@ -113,5 +113,6 @@
     "connectionId": "likec4",
     "projectKey": "likec4_likec4"
   },
-  "references.preferredLocation": "peek"
+  "references.preferredLocation": "peek",
+  "js/ts.tsdk.path": "./node_modules/typescript/lib"
 }
