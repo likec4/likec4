@@ -206,7 +206,7 @@ catalogs:
     "@tanstack/router-vite-plugin": ^1.114.13
   tsdown:
     tsdown: ^0.22.0
-    "@tsdown/css": ^0.22.0
+    "@tsdown/css": ^0.22.1
     rolldown: ^1.0.2
   utils:
     "@logtape/logtape": ^2.0.5
