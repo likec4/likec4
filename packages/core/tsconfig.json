@@ -5,6 +5,10 @@
       "sources"
     ],
     "rootDir": "src",
+    "lib": [
+      "esnext",
+      "DOM"
+    ],
     "target": "es2024",
     "incremental": true,
     "composite": true

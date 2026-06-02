@@ -17,7 +17,6 @@ import {
   Highlight,
   Input,
   PopoverDropdown,
-  rem,
   ScrollAreaAutosize,
   UnstyledButton,
 } from '@mantine/core'
@@ -58,7 +57,7 @@ import {
 } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 
-const scopedKeydownHandler = createScopedKeydownHandler({
+const scopedKeydownHandler: KeyboardEventHandler<HTMLElement> = createScopedKeydownHandler({
   siblingSelector: '[data-likec4-focusable]',
   parentSelector: '[data-likec4-breadcrumbs-dropdown]',
   activateOnFocus: false,
@@ -553,9 +552,9 @@ function SearchInput(props: {
       size="xs"
       placeholder="Search by title or id"
       variant="unstyled"
-      height={rem(26)}
+      height={26}
       value={_value}
-      onKeyDown={scopedKeydownHandler as KeyboardEventHandler<HTMLInputElement>}
+      onKeyDown={scopedKeydownHandler}
       onChange={e => handleChange(e.currentTarget.value)}
       data-likec4-focusable
       classNames={{

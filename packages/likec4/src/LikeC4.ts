@@ -57,7 +57,7 @@ export namespace LikeC4 {
           ...opts,
           configureLogger,
         }),
-        { configureLogger: 'console' },
+        { configureLogger: 'console' as const },
       ),
     )
   }
@@ -75,7 +75,7 @@ export namespace LikeC4 {
           ...opts,
           configureLogger,
         }),
-        { configureLogger: 'console' },
+        { configureLogger: 'console' as const },
       ),
     )
   }

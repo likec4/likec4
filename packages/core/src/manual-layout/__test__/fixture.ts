@@ -1,11 +1,11 @@
 import { type WritableDraft, produce } from 'immer'
 import { filter, indexBy, isTruthy, map, pipe } from 'remeda'
-import type { IsEqual, IsLiteral, IsStringLiteral, LiteralUnion, SetRequired } from 'type-fest'
+import type { LiteralUnion } from 'type-fest'
 import type { Types } from '../../builder/_types'
 import { Builder } from '../../builder/Builder'
 import type { DiagramEdge, DiagramNode, EdgeId, LayoutedElementView, NodeId } from '../../types'
 import type { ViewManualLayoutSnapshot } from '../../types/view-manual-layout'
-import indexSnapshot from './index-snapshot.json' assert { type: 'json' }
+import indexSnapshot from './index-snapshot.json' with { type: 'json' }
 
 /**
   Snapshot {@link indexSnapshot} is built from the model below.
