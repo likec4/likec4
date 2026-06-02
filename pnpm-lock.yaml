@@ -190,8 +190,8 @@ catalogs:
       specifier: 6.4.0
       version: 6.4.0
     nano-spawn:
-      specifier: ^2.0.0
-      version: 2.0.0
+      specifier: ^2.1.0
+      version: 2.1.0
     picomatch:
       specifier: ^4.0.4
       version: 4.0.4
@@ -1031,7 +1031,7 @@ importers:
         version: 6.1.7
       nano-spawn:
         specifier: catalog:externals
-        version: 2.0.0
+        version: 2.1.0
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260527.2)(chokidar@5.0.0)(dotenv@8.6.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
@@ -1487,7 +1487,7 @@ importers:
         version: 3.5.0
       nano-spawn:
         specifier: catalog:externals
-        version: 2.0.0
+        version: 2.1.0
       p-limit:
         specifier: catalog:utils
         version: 7.3.0
@@ -1711,7 +1711,7 @@ importers:
         version: 2.1.0
       nano-spawn:
         specifier: catalog:externals
-        version: 2.0.0
+        version: 2.1.0
       p-limit:
         specifier: catalog:utils
         version: 7.3.0
@@ -1848,7 +1848,7 @@ importers:
         version: 11.1.4
       nano-spawn:
         specifier: catalog:externals
-        version: 2.0.0
+        version: 2.1.0
       playwright:
         specifier: 'catalog:'
         version: 1.58.2
@@ -2648,7 +2648,7 @@ importers:
         version: 3.5.0
       nano-spawn:
         specifier: catalog:externals
-        version: 2.0.0
+        version: 2.1.0
       p-debounce:
         specifier: catalog:utils
         version: 5.1.0
@@ -3065,7 +3065,7 @@ importers:
         version: 2.2.3
       nano-spawn:
         specifier: catalog:externals
-        version: 2.0.0
+        version: 2.1.0
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260527.2)(chokidar@5.0.0)(dotenv@8.6.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
@@ -3114,7 +3114,7 @@ importers:
         version: 19.2.15
       nano-spawn:
         specifier: catalog:externals
-        version: 2.0.0
+        version: 2.1.0
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260527.2)(chokidar@5.0.0)(dotenv@8.6.0)(jiti@2.6.1)(magicast@0.5.1)(picomatch@4.0.4)(rollup@4.60.1)(typescript@5.9.3)
@@ -8581,8 +8581,8 @@ packages:
   muggle-string@0.4.1:
     resolution: {integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==}
 
-  nano-spawn@2.0.0:
-    resolution: {integrity: sha512-tacvGzUY5o2D8CBh2rrwxyNojUsZNU2zjNTzKQrkgGJQTbGAfArVWXSKMBokBeeg6C7OLRGUEyoFlYbfeWQIqw==}
+  nano-spawn@2.1.0:
+    resolution: {integrity: sha512-yTW+2okrElHiH4fsiz/+/zc0EDo9BDDoC3iKk8dpv1GeRc9nUWzUZHx6TofMWErchhUQR8hY9/Eu1Uja9x1nqA==}
     engines: {node: '>=20.17'}
 
   nano-staged@1.0.2:
@@ -17418,7 +17418,7 @@ snapshots:
 
   muggle-string@0.4.1: {}
 
-  nano-spawn@2.0.0: {}
+  nano-spawn@2.1.0: {}
 
   nano-staged@1.0.2: {}
 

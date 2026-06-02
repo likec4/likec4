@@ -150,7 +150,7 @@ catalogs:
     bundle-require: ^5.1.0
     chokidar: ^5.0.0
     fdir: 6.4.0
-    nano-spawn: ^2.0.0
+    nano-spawn: ^2.1.0
     picomatch: ^4.0.4
     std-env: ^4.1.0
     type-fest: ^4.41.0
