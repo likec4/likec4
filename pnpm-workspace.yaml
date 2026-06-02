@@ -92,7 +92,7 @@ catalog:
   playwright: ^1.58.2
   tsx: 4.21.0
   turbo: 2.9.14
-  typescript: 5.9.3
+  typescript: 6.0.3
   wireit: 0.14.12
   zx: 8.8.5
 
