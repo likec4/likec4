@@ -315,8 +315,8 @@ catalogs:
       version: 1.114.17
   tsdown:
     '@tsdown/css':
-      specifier: ^0.22.0
-      version: 0.22.0
+      specifier: ^0.22.1
+      version: 0.22.1
     rolldown:
       specifier: ^1.0.2
       version: 1.0.2
@@ -963,7 +963,7 @@ importers:
         version: 4.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
+        version: 0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2053,7 +2053,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
+        version: 0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2198,7 +2198,7 @@ importers:
         version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@8.0.14(@types/node@22.19.19)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.22.0(jiti@2.6.1)(postcss@8.5.15)(tsdown@0.22.0)(tsx@4.21.0)(yaml@2.8.3)
+        version: 0.22.1(jiti@2.6.1)(postcss@8.5.15)(tsdown@0.22.0)(tsx@4.21.0)(yaml@2.8.3)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -2294,7 +2294,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
+        version: 0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2352,7 +2352,7 @@ importers:
         version: 1.3.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
+        version: 0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2395,7 +2395,7 @@ importers:
         version: 3.5.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
+        version: 0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
       turbo:
         specifier: 2.9.14
         version: 2.9.14
@@ -2480,7 +2480,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
+        version: 0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2733,7 +2733,7 @@ importers:
         version: 1.59.0(oxlint-tsgolint@0.20.0)
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
+        version: 0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -2851,7 +2851,7 @@ importers:
         version: 2.33.7
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
+        version: 0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -5818,8 +5818,8 @@ packages:
   '@ts-morph/common@0.29.0':
     resolution: {integrity: sha512-35oUmphHbJvQ/+UTwFNme/t2p3FoKiGJ5auTjjpNTop2dyREspirjMy82PLSC1pnDJ8ah1GU98hwpVt64YXQsg==}
 
-  '@tsdown/css@0.22.0':
-    resolution: {integrity: sha512-gpkuNYVwgibCotNlHqgn1TJ9qHcE8Tim1rwaiQR7Ee9Rjb9BDYLypraaGMxqZgR1gr8NGRLGtbIv3eJtt5MHbQ==}
+  '@tsdown/css@0.22.1':
+    resolution: {integrity: sha512-svCG1LXBEQl4I0rFzAcgL7eZ/2hU/qcJ7uAe1OYO/iThq0DioUqrJq54z0bjG8IdbNEV441IpupC7XTxDGUT0Q==}
     engines: {node: ^22.18.0 || >=24.0.0}
     peerDependencies:
       postcss: ^8.4.0
@@ -5827,7 +5827,7 @@ packages:
       postcss-modules: ^6.0.0
       sass: '*'
       sass-embedded: '*'
-      tsdown: 0.22.0
+      tsdown: 0.22.1
     peerDependenciesMeta:
       postcss:
         optional: true
@@ -14127,12 +14127,12 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.16
 
-  '@tsdown/css@0.22.0(jiti@2.6.1)(postcss@8.5.15)(tsdown@0.22.0)(tsx@4.21.0)(yaml@2.8.3)':
+  '@tsdown/css@0.22.1(jiti@2.6.1)(postcss@8.5.15)(tsdown@0.22.0)(tsx@4.21.0)(yaml@2.8.3)':
     dependencies:
       lightningcss: 1.32.0
       postcss-load-config: 6.0.1(jiti@2.6.1)(postcss@8.5.15)(tsx@4.21.0)(yaml@2.8.3)
       rolldown: 1.0.2
-      tsdown: 0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
+      tsdown: 0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3)
     optionalDependencies:
       postcss: 8.5.15
     transitivePeerDependencies:
@@ -18994,7 +18994,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  tsdown@0.22.0(@tsdown/css@0.22.0)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3):
+  tsdown@0.22.0(@tsdown/css@0.22.1)(@typescript/native-preview@7.0.0-dev.20260527.2)(tsx@4.21.0)(typescript@5.9.3):
     dependencies:
       ansis: 4.2.0
       cac: 7.0.0
@@ -19012,7 +19012,7 @@ snapshots:
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
     optionalDependencies:
-      '@tsdown/css': 0.22.0(jiti@2.6.1)(postcss@8.5.15)(tsdown@0.22.0)(tsx@4.21.0)(yaml@2.8.3)
+      '@tsdown/css': 0.22.1(jiti@2.6.1)(postcss@8.5.15)(tsdown@0.22.0)(tsx@4.21.0)(yaml@2.8.3)
       tsx: 4.21.0
       typescript: 5.9.3
     transitivePeerDependencies:
