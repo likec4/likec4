@@ -57,7 +57,7 @@ jobs:
           pnpm lint:package
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: tarballs
           compression-level: 0
@@ -173,7 +173,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 📦 download tarballs
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: tarballs
           path: packages
@@ -209,7 +209,7 @@ jobs:
         run: |
           echo "::warning::Report published at ${{ steps.cloudflare.outputs.deployment-url }}"
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
@@ -243,7 +243,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 📦 download tarballs
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: tarballs
           path: packages
@@ -262,7 +262,7 @@ jobs:
         working-directory: e2e
         run: pnpm typecheck
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: generated-e2e-types
