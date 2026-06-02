@@ -20,7 +20,12 @@ import {
   deploymentRelationChecks,
   extendDeploymentChecks,
 } from './deployment-checks'
-import { dynamicViewDisplayVariant, dynamicViewStepChain, dynamicViewStepSingle } from './dynamic-view'
+import {
+  dynamicViewDisplayVariant,
+  dynamicViewParallelSteps,
+  dynamicViewStepChain,
+  dynamicViewStepSingle,
+} from './dynamic-view'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImportsFromPoject } from './imports'
@@ -171,6 +176,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalStyleId: checkGlobalStyleId(services),
     DynamicStepSingle: dynamicViewStepSingle(services),
     DynamicStepChain: dynamicViewStepChain(services),
+    DynamicViewParallelSteps: dynamicViewParallelSteps(services),
     LikeC4View: viewChecks(services),
     Element: checkElement(services),
     ElementRef: checkElementRef(services),

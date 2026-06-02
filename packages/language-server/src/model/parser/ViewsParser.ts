@@ -339,7 +339,10 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicStepsParallel {
       const parallelId = pathInsideDynamicView(node)
-      const __parallel = this.tryMap('views', node.steps, s => this.parseDynamicStep(s))
+      // Nested parallel blocks are already flagged by the validator (#988);
+      // skip them here so we don't bubble a confusing internal error.
+      const stepNodes = node.steps.filter((s): s is ast.DynamicViewStep => !ast.isDynamicViewParallelSteps(s))
+      const __parallel = this.tryMap('views', stepNodes, s => this.parseDynamicStep(s))
       invariant(isNonEmptyArray(__parallel), 'Dynamic parallel steps must have at least one step')
       return {
         parallelId,
