@@ -207,7 +207,7 @@ catalogs:
   tsdown:
     tsdown: ^0.22.1
     "@tsdown/css": ^0.22.1
-    rolldown: ^1.0.2
+    rolldown: ^1.0.3
   utils:
     "@logtape/logtape": ^2.0.5
     "@lume/kiwi": ^0.4.4
