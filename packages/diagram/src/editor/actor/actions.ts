@@ -142,7 +142,7 @@ export const pushToSyncQueue = () =>
         nextOp = 'apply-semantic-layout'
         break
       case 'change.latest-to-manual':
-        nextOp = 'apply-semantic-layout'
+        nextOp = 'apply-latest-to-manual'
         break
       case 'change.sync-snapshot':
         nextOp = 'sync-snapshot'
