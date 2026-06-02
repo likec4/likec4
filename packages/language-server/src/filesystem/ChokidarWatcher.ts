@@ -47,7 +47,11 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
     if (this.watcher) {
       const watcher = this.watcher
       this.watcher = undefined
-      await watcher.close()
+      try {
+        await watcher.close()
+      } catch {
+        // Ignore errors during close
+      }
     }
     return
   }

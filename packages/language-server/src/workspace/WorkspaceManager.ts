@@ -235,7 +235,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * Force clean all caches
    */
   public forceCleanCaches() {
-    for (const listener of this.#cacheEvicters) {
+    for (const listener of [...this.#cacheEvicters]) {
       listener()
     }
     this.services.workspace.ManualLayouts.clearCaches()
@@ -248,7 +248,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   public onForceCleanCache(listener: () => void): Disposable {
     this.#cacheEvicters.push(listener)
     return Disposable.create(() => {
-      this.#cacheEvicters = this.#cacheEvicters.filter(l => l !== listener)
+      const index = this.#cacheEvicters.indexOf(listener)
+      if (index !== -1) {
+        this.#cacheEvicters.splice(index, 1)
+      }
     })
   }
 
