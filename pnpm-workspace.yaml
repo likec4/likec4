@@ -90,8 +90,8 @@ catalog:
   oxlint-tsgolint: 0.20.0
   pako: ^2.1.0
   playwright: ^1.58.2
-  tsx: 4.21.0
-  turbo: 2.9.14
+  tsx: 4.22.4
+  turbo: 2.9.16
   typescript: 6.0.3
   wireit: 0.14.12
   zx: 8.8.5
@@ -280,6 +280,3 @@ catalogs:
     "@zag-js/collection": ^1.33.1
     "@zag-js/react": ^1.33.1
     "@zag-js/tree-view": ^1.33.1
-
-minimumReleaseAgeExclude:
-  - vite@8.0.14
