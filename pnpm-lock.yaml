@@ -2805,8 +2805,8 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4
       '@vscode/extension-telemetry':
-        specifier: ^1.5.1
-        version: 1.5.1(tslib@2.8.1)
+        specifier: ^1.5.2
+        version: 1.5.2(tslib@2.8.1)
       esbuild-plugins-node-modules-polyfill:
         specifier: catalog:esbuild
         version: 1.8.1(esbuild@0.27.4)
@@ -4723,11 +4723,11 @@ packages:
   '@mdx-js/mdx@3.1.0':
     resolution: {integrity: sha512-/QxEhPAvGwbQmy1Px8F899L5Uc2KZ6JtXwlCgJmjSTBedwOZkByYcBG4GceIGPXRDsmfxhHazuS+hlOShRLeDw==}
 
-  '@microsoft/1ds-core-js@4.3.10':
-    resolution: {integrity: sha512-5fSZmkGwWkH+mrIA5M1GYPZdPM+SjXwCCl2Am7VhFoVwOBJNhRnwvIpAdzw6sFjiebN/rz+/YH0NdxztGZSa9Q==}
+  '@microsoft/1ds-core-js@4.4.1':
+    resolution: {integrity: sha512-utqwacfUkiGJROn4WC7aNdRBsRxwhNWXuqaJM2B0N0WHmv1+IhSuI7RQ3FHwxRP1dxZi/xn9aELMZ7HMStsW1w==}
 
-  '@microsoft/1ds-post-js@4.3.10':
-    resolution: {integrity: sha512-VSLjc9cT+Y+eTiSfYltJHJCejn8oYr0E6Pq2BMhOEO7F6IyLGYIxzKKvo78ze9x+iHX7KPTATcZ+PFgjGXuNqg==}
+  '@microsoft/1ds-post-js@4.4.1':
+    resolution: {integrity: sha512-CkFEhDY7X8E2JLr6HsEvRiC0DaLOCsA7vlbq/9DJP65gAumgw2NnFNIAOg6Je5Geq1LDu76/nb2hP34p8eGggw==}
 
   '@microsoft/api-extractor-model@7.33.8':
     resolution: {integrity: sha512-aIcoQggPyer3B6Ze3usz0YWC/oBwUHfRH5ETUsr+oT2BRA6SfTJl7IKPcPZkX4UR+PohowzW4uMxsvjrn8vm+w==}
@@ -4736,26 +4736,26 @@ packages:
     resolution: {integrity: sha512-yK6OycD46gIzLRpj6ueVUWPk1ACSpkN1LBo05gY1qPTylbWyUCanXfH7+VgkI5LJrJoRSQR5F04XuCffCXLOBw==}
     hasBin: true
 
-  '@microsoft/applicationinsights-channel-js@3.3.10':
-    resolution: {integrity: sha512-iolFLz1ocWAzIQqHIEjjov3gNTPkgFQ4ArHnBcJEYoffOGWlJt6copaevS5YPI5rHzmbySsengZ8cLJJBBrXzQ==}
+  '@microsoft/applicationinsights-channel-js@3.4.1':
+    resolution: {integrity: sha512-QS1k6iwVwR1MznGAB1H0F9raqpevbFNbadLS5O1419pz9OEWBfF9wRQLnENCyo8QS9Q0IdiqnGAON/D8IywpWg==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
-  '@microsoft/applicationinsights-common@3.3.10':
-    resolution: {integrity: sha512-RVIenPIvNgZCbjJdALvLM4rNHgAFuHI7faFzHCgnI6S2WCUNGHeXlQTs9EUUrL+n2TPp9/cd0KKMILU5VVyYiA==}
+  '@microsoft/applicationinsights-common@3.4.1':
+    resolution: {integrity: sha512-CTbD0g/68tiv2yCItsodDQBYxyHdfQkG7VhvVU8OHenukpl/7W4wEuxZuOntqhv5m9Nx/DFncbz+T83nvYTG3g==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
-  '@microsoft/applicationinsights-core-js@3.3.10':
-    resolution: {integrity: sha512-5yKeyassZTq2l+SAO4npu6LPnbS++UD+M+Ghjm9uRzoBwD8tumFx0/F8AkSVqbniSREd+ztH/2q2foewa2RZyg==}
+  '@microsoft/applicationinsights-core-js@3.4.1':
+    resolution: {integrity: sha512-eXIHZ1+nvBiJgVpufBiTP801Vtr5FEwjWZioUsb44NC/z/UcsZh2MDJ1mBpjaDO73LVYUw/ZZmDCCo6Pg/61kA==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
   '@microsoft/applicationinsights-shims@3.0.1':
     resolution: {integrity: sha512-DKwboF47H1nb33rSUfjqI6ryX29v+2QWcTrRvcQDA32AZr5Ilkr7whOOSsD1aBzwqX0RJEIP1Z81jfE3NBm/Lg==}
 
-  '@microsoft/applicationinsights-web-basic@3.3.10':
-    resolution: {integrity: sha512-AZib5DAT3NU0VT0nLWEwXrnoMDDgZ/5S4dso01CNU5ELNxLdg+1fvchstlVdMy4FrAnxzs8Wf/GIQNFYOVgpAw==}
+  '@microsoft/applicationinsights-web-basic@3.4.1':
+    resolution: {integrity: sha512-V/hSlauFp1thJa57+TMv5mAYinJAQUi4zOmDmpahnDgs8g1zrQ0D8QYDmu0Zfi+9GhoD80B4yJez2+ydJPJz2w==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
@@ -4797,11 +4797,11 @@ packages:
       '@emnapi/core': ^1.7.1
       '@emnapi/runtime': ^1.7.1
 
-  '@nevware21/ts-async@0.5.4':
-    resolution: {integrity: sha512-IBTyj29GwGlxfzXw2NPnzty+w0Adx61Eze1/lknH/XIVdxtF9UnOpk76tnrHXWa6j84a1RR9hsOcHQPFv9qJjA==}
+  '@nevware21/ts-async@0.6.0':
+    resolution: {integrity: sha512-pSc2Ynrz66bMDqs8Sw5qQOU4oeOLzFCeheAHJ6HZWpVz8yPGlZV4Ur03PiWli6qlFGR3Xls9Aov2TZRVb+izUA==}
 
-  '@nevware21/ts-utils@0.11.8':
-    resolution: {integrity: sha512-62Y1mHgSu99IK4BRKC3sxdj/uIBHy6SDof3WUd29jom2HQy8sGCUdbYtFwMOkbUS6rahkL11Eg/ImtwsQsCnyw==}
+  '@nevware21/ts-utils@0.15.0':
+    resolution: {integrity: sha512-+bUMKIiKAgoW5uNEb5xxzBzdwdLS9SKRcOy8SxLE+KqSlIdUYV5O9nxJVq1RUYcO2DtL5DlrK1GbgcVEHv6GVA==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -6169,8 +6169,8 @@ packages:
   '@vscode/emmet-helper@2.11.0':
     resolution: {integrity: sha512-QLxjQR3imPZPQltfbWRnHU6JecWTF1QSWhx3GAKQpslx7y3Dp6sIIXhKjiUJ/BR9FX8PVthjr9PD6pNwOJfAzw==}
 
-  '@vscode/extension-telemetry@1.5.1':
-    resolution: {integrity: sha512-rnRRQIRCwRdbcQ0QV5ajKJRz8noEIoQA2hX9VjAlVAVB85+ClbaPNhljobFXgW31ue69FRO6KPE4XJ/lLgKt/Q==}
+  '@vscode/extension-telemetry@1.5.2':
+    resolution: {integrity: sha512-fO4huHz5apb5RtddC8DuUeSbBqYQw1EiBaOOGngq57nGbsDgcvm0jAibTY/kigJyjY0fQ4Vx7owQcCJRUrkT4g==}
     engines: {vscode: ^1.75.0}
 
   '@vscode/iconv-lite-umd@0.7.0':
@@ -12985,23 +12985,23 @@ snapshots:
       - acorn
       - supports-color
 
-  '@microsoft/1ds-core-js@4.3.10(tslib@2.8.1)':
+  '@microsoft/1ds-core-js@4.4.1(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-core-js': 3.3.10(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.4.1(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.8
+      '@nevware21/ts-async': 0.6.0
+      '@nevware21/ts-utils': 0.15.0
     transitivePeerDependencies:
       - tslib
 
-  '@microsoft/1ds-post-js@4.3.10(tslib@2.8.1)':
+  '@microsoft/1ds-post-js@4.4.1(tslib@2.8.1)':
     dependencies:
-      '@microsoft/1ds-core-js': 4.3.10(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.4.1(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.8
+      '@nevware21/ts-async': 0.6.0
+      '@nevware21/ts-utils': 0.15.0
     transitivePeerDependencies:
       - tslib
 
@@ -13031,50 +13031,48 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/applicationinsights-channel-js@3.3.10(tslib@2.8.1)':
+  '@microsoft/applicationinsights-channel-js@3.4.1(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-common': 3.3.10(tslib@2.8.1)
-      '@microsoft/applicationinsights-core-js': 3.3.10(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.4.1(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.8
+      '@nevware21/ts-async': 0.6.0
+      '@nevware21/ts-utils': 0.15.0
       tslib: 2.8.1
 
-  '@microsoft/applicationinsights-common@3.3.10(tslib@2.8.1)':
+  '@microsoft/applicationinsights-common@3.4.1(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-core-js': 3.3.10(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.4.1(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-utils': 0.11.8
+      '@nevware21/ts-utils': 0.15.0
       tslib: 2.8.1
 
-  '@microsoft/applicationinsights-core-js@3.3.10(tslib@2.8.1)':
+  '@microsoft/applicationinsights-core-js@3.4.1(tslib@2.8.1)':
     dependencies:
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.8
+      '@nevware21/ts-async': 0.6.0
+      '@nevware21/ts-utils': 0.15.0
       tslib: 2.8.1
 
   '@microsoft/applicationinsights-shims@3.0.1':
     dependencies:
-      '@nevware21/ts-utils': 0.11.8
+      '@nevware21/ts-utils': 0.15.0
 
-  '@microsoft/applicationinsights-web-basic@3.3.10(tslib@2.8.1)':
+  '@microsoft/applicationinsights-web-basic@3.4.1(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-channel-js': 3.3.10(tslib@2.8.1)
-      '@microsoft/applicationinsights-common': 3.3.10(tslib@2.8.1)
-      '@microsoft/applicationinsights-core-js': 3.3.10(tslib@2.8.1)
+      '@microsoft/applicationinsights-channel-js': 3.4.1(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.4.1(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.8
+      '@nevware21/ts-async': 0.6.0
+      '@nevware21/ts-utils': 0.15.0
       tslib: 2.8.1
 
   '@microsoft/dynamicproto-js@2.0.3':
     dependencies:
-      '@nevware21/ts-utils': 0.11.8
+      '@nevware21/ts-utils': 0.15.0
 
   '@microsoft/tsdoc-config@0.18.1':
     dependencies:
@@ -13123,11 +13121,11 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@nevware21/ts-async@0.5.4':
+  '@nevware21/ts-async@0.6.0':
     dependencies:
-      '@nevware21/ts-utils': 0.11.8
+      '@nevware21/ts-utils': 0.15.0
 
-  '@nevware21/ts-utils@0.11.8': {}
+  '@nevware21/ts-utils@0.15.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -14472,11 +14470,13 @@ snapshots:
       vscode-languageserver-types: 3.17.5
       vscode-uri: 3.1.0
 
-  '@vscode/extension-telemetry@1.5.1(tslib@2.8.1)':
+  '@vscode/extension-telemetry@1.5.2(tslib@2.8.1)':
     dependencies:
-      '@microsoft/1ds-core-js': 4.3.10(tslib@2.8.1)
-      '@microsoft/1ds-post-js': 4.3.10(tslib@2.8.1)
-      '@microsoft/applicationinsights-web-basic': 3.3.10(tslib@2.8.1)
+      '@microsoft/1ds-core-js': 4.4.1(tslib@2.8.1)
+      '@microsoft/1ds-post-js': 4.4.1(tslib@2.8.1)
+      '@microsoft/applicationinsights-common': 3.4.1(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.4.1(tslib@2.8.1)
+      '@microsoft/applicationinsights-web-basic': 3.4.1(tslib@2.8.1)
     transitivePeerDependencies:
       - tslib
 
