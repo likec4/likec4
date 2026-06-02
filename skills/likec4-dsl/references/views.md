@@ -227,6 +227,7 @@ Parallel blocks can be nested and mixed with sequential steps.
 The `variant sequence` keyword renders the dynamic view as a UML sequence diagram. This is especially useful for API call sequences and protocol flows.
 
 **Key syntax points:**
+
 - Use `variant sequence` at the start of the dynamic view block
 - Use `->` for forward/call direction
 - Use `<-` for backward/return direction (not `->` with different semantics)
@@ -248,6 +249,7 @@ dynamic view api-sequence {
 ```
 
 **Common mistake:** Using `->` for returns instead of `<-`. The arrow direction indicates message flow:
+
 - `a -> b` means "a sends to b" (request/call)
 - `a <- b` means "b sends to a" (response/return)
 
@@ -269,7 +271,7 @@ dynamic view correct {
 
 ## Include in Dynamic Views
 
-Dynamic views support the same predicates as element views, used to add context elements that don't participate in steps:
+Dynamic views support element-view predicates for context elements that do not participate in steps. Predicates do not generate or filter the step sequence itself.
 
 ```likec4
 dynamic view flow {

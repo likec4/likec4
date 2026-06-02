@@ -131,6 +131,7 @@ dynamic view with-notes {
 ```
 
 **Available properties inside step body:**
+
 - `title` — alternative or longer title
 - `technology` — technology/protocol used
 - `description` — detailed description
@@ -181,12 +182,12 @@ dynamic view checkout-sequence {
 
 ### Comparing flow vs. sequence rendering
 
-| Aspect | Flow Diagram | Sequence Diagram (variant sequence) |
-|--------|--------------|-------------------------------------|
-| Layout | Left-to-right or top-down flow | Top-to-bottom lifelines |
-| Return arrows | Style varies | Dashed lines standard |
-| Parallel feel | Horizontal alignment | Time-based with spacing |
-| Best for | System interactions | Message exchange protocols |
+| Aspect        | Flow Diagram                   | Sequence Diagram (variant sequence) |
+| ------------- | ------------------------------ | ----------------------------------- |
+| Layout        | Left-to-right or top-down flow | Top-to-bottom lifelines             |
+| Return arrows | Style varies                   | Dashed lines standard               |
+| Parallel feel | Horizontal alignment           | Time-based with spacing             |
+| Best for      | System interactions            | Message exchange protocols          |
 
 ## Response Arrow Patterns (exactness)
 
@@ -262,27 +263,27 @@ dynamic view payment-decision {
 
 ## Anti-Patterns to Avoid
 
-| Anti-pattern | Problem | Solution |
-|---|---|---|
-| Nested `parallel { parallel { ... } }` | Syntax error; flatten as required | Put all concurrent steps in one `parallel {}` |
-| Chaining inside `parallel` | Ambiguous timing | Move chains to separate sequential steps |
-| Too many steps in one view | Diagram becomes unreadable | Split into sub-views with `navigateTo` |
-| Using `<-` for side-by-side actions | Implies return; violates sequence semantics | Use forward `->` or group with `parallel` |
-| Forgetting `variant sequence` when UML needed | Wrong rendering | Add `variant sequence` if sequence diagram required |
+| Anti-pattern                                  | Problem                                     | Solution                                            |
+| --------------------------------------------- | ------------------------------------------- | --------------------------------------------------- |
+| Nested `parallel { parallel { ... } }`        | Syntax error; flatten as required           | Put all concurrent steps in one `parallel {}`       |
+| Chaining inside `parallel`                    | Ambiguous timing                            | Move chains to separate sequential steps            |
+| Too many steps in one view                    | Diagram becomes unreadable                  | Split into sub-views with `navigateTo`              |
+| Using `<-` for side-by-side actions           | Implies return; violates sequence semantics | Use forward `->` or group with `parallel`           |
+| Forgetting `variant sequence` when UML needed | Wrong rendering                             | Add `variant sequence` if sequence diagram required |
 
 ## Predicate Filters in Dynamic Views
 
-Dynamic views do **not** directly support predicate filtering like element views do. Instead:
+Dynamic views do not use predicates to generate or filter interaction steps. Steps must be listed explicitly.
 
-1. **Explicitly list steps** — name each source and target.
-2. **Use tags/metadata for filtering decisions** — in notes or documentation.
-3. **Create separate flows** for different subsets of elements.
+You may still use normal include predicates to add context elements that do not participate in steps:
 
 ```likec4
 dynamic view critical-flow {
-  // Only include critical services (documented in spec)
   frontend -> api "request"
   api -> db "query"
+
+  include cloud.* where tag is #critical
+  include cloud.* where metadata.region is "eu"
 }
 
 dynamic view with-cache {
@@ -297,6 +298,7 @@ dynamic view with-cache {
 Full LikeC4 dynamic view docs: https://likec4.dev/dsl/views/dynamic/
 
 Common scenarios:
+
 - **Authentication flow** — customer → login → auth-service → database
 - **CQRS pattern** — command → service → write-db (parallel: query-handler → read-db)
 - **Webhook callback** — external-system → api (parallel within with navigateTo service-webhook-handler)

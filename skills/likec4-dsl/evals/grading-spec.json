@@ -452,6 +452,55 @@
         "The final snippet includes metadata field `timeout '5s'`."
       ],
       "grading_guidance": "Prioritize matcher-identity reasoning (source/target/kind/title). Answers that call (2) fully correct or call (3) acceptable should lose clearly, even if they provide a plausible final snippet."
+    },
+    {
+      "id": 32,
+      "expected_output": "The response provides a minimal view with `include * -> *` followed by `exclude * -> * where metadata.protocol is \"http\"` (quote style may vary), and it treats `metadata.protocol` as relationship-own metadata rather than endpoint metadata.",
+      "files": [],
+      "expectations": [
+        "The snippet includes all relationships with a relationship predicate such as `include * -> *`.",
+        "The exclusion uses `exclude * -> * where metadata.protocol is \"http\"` or an equivalent multi-line form.",
+        "The response does not use `source.metadata.protocol` or `target.metadata.protocol` for this own-relationship metadata case.",
+        "The response is primarily a usable LikeC4 view snippet."
+      ],
+      "grading_guidance": "The distinction between relationship metadata and endpoint metadata is the main signal. Do not give full credit if the answer filters `source.metadata` or `target.metadata` when the prompt explicitly asks for the relationship's own metadata."
+    },
+    {
+      "id": 33,
+      "expected_output": "The response provides a minimal view with `include * -> *` followed by `exclude * -> * where target.metadata.zone is \"restricted\"` (quote style may vary), using endpoint metadata on the target.",
+      "files": [],
+      "expectations": [
+        "The snippet includes relationships before excluding from them.",
+        "The exclusion uses `target.metadata.zone is \"restricted\"` or an equivalent multi-line form.",
+        "The response uses endpoint metadata rather than relationship-own `metadata.zone`.",
+        "The response is primarily a usable LikeC4 view snippet."
+      ],
+      "grading_guidance": "The target endpoint qualifier is required. Answers that use unqualified `metadata.zone` are filtering the relationship itself and should lose clearly."
+    },
+    {
+      "id": 34,
+      "expected_output": "The response states that the deployed instance without metadata falls back to logical metadata value `model-public`, while the instance with metadata uses `instance-private` and replaces the logical metadata for predicate filtering. It includes one clear rule sentence distinguishing fallback from replacement.",
+      "files": [],
+      "expectations": [
+        "The no-instance-metadata case uses `model-public`.",
+        "The instance-metadata case uses `instance-private`.",
+        "The response explicitly says instance metadata replaces logical element metadata when present.",
+        "The response explicitly says logical element metadata is used as fallback when the deployed instance has no metadata.",
+        "The rule is framed for deployment-view relationship endpoint filters such as `source.metadata.zone`."
+      ],
+      "grading_guidance": "Do not accept answers that claim deployment metadata merges key-by-key with logical metadata. The key contrast is fallback when absent versus replacement when present."
+    },
+    {
+      "id": 35,
+      "expected_output": "The response provides one minimal element view using `include * where kind is service and metadata.regions is \"eu\"` (or equivalent ordering) and `exclude * where not metadata.owner`.",
+      "files": [],
+      "expectations": [
+        "The view includes services using `kind is service`.",
+        "The include filter uses `metadata.regions is \"eu\"` to express array containment.",
+        "The view removes elements missing owner metadata with `exclude * where not metadata.owner`.",
+        "The response provides one minimal view snippet rather than prose-only guidance."
+      ],
+      "grading_guidance": "The eval checks both array containment syntax and missing-key syntax. Accept equivalent line breaks and quote style, but not invented operators such as `contains` or `exists`."
     }
   ],
   "default_execution_checks": [

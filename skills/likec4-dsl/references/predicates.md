@@ -6,7 +6,7 @@ Predicates are view rules that define what elements and relationships to include
 - Element predicates - used to select elements
 - Relationship predicates - used to select relationships
 - Filter predicates - used to apply filters to element and relationship predicates
-- Custom predicates - used to override properties of elements/relationships (can be used with `include` only)'
+- Custom predicates - used to override properties of elements/relationships (can be used with `include` only)
 
 Syntax:
 
@@ -46,47 +46,7 @@ Expressions inside `exclude` clause match against the accumulated result of prev
 - `<element_ref>._` - selects direct children of `<element_ref>` that have relationships with accumulated result
 - `<element_ref>.**` - selects **all recursive descendants** of `<element_ref>` that have relationships with accumulated result
 
-#### Wildcard depth selectors: `*` vs `**`
-
-Understanding the difference between `*` and `**` is crucial for correct view scoping:
-
-| Selector | Meaning | Example | Result |
-|----------|---------|---------|--------|
-| `*` | Direct children **only** (1 level) | `parent.*` | Selects immediate children of parent |
-| `**` | All descendants (recursive, all levels) | `parent.**` | Selects children, grandchildren, and all nested elements |
-
-```likec4
-// Example model structure:
-// backend
-//   ├── api (service)
-//   │   └── handlers (component)
-//   │       └── authHandler
-//   └── db (database)
-
-views {
-  // Selects ONLY: api, db (direct children of backend)
-  view direct-only {
-    include backend.*
-  }
-
-  // Selects: api, db, handlers, authHandler (all descendants)
-  view all-descendants {
-    include backend.**
-  }
-
-  // ❌ Common mistake: expecting * to include nested elements
-  view wrong-expectation {
-    include backend.*        // This does NOT include handlers or authHandler!
-    style backend.handlers { color red }  // handlers won't be styled
-  }
-
-  // ✅ Correct: use ** when you need all nested elements
-  view correct {
-    include backend.**       // Includes everything under backend
-    style backend.handlers { color red }  // Now handlers IS included
-  }
-}
-```
+For detailed wildcard edge cases (`*` vs `_` vs `**`), load `references/include-predicates-wildcards.md`.
 
 ### Wildcard expression
 
@@ -112,20 +72,36 @@ If expression matches, predicate adds matched relationships together with matchi
 
 After expression is evaluated and selected elements/relationships, filter conditions are applied to refine the selection.
 
-By tag: `* where tag is #primary` or `* where tag is not #primary`
-By kind: `* where kind is component` or `* where kind is not component`
+Core filters:
 
-Complex:
+- Tags: `* where tag is #primary` / `* where tag is not #primary`
+- Kind: `* where kind is component` / `* where kind is not component`
+- Metadata value: `* where metadata.region is "eu"`
+- Missing metadata key: `* where not metadata.owner`
+- Arrays: `metadata.regions is "eu"` matches if the array contains `"eu"`
+- Booleans: `metadata.critical is true`
+- Combine with `and`, `or`, and parentheses
 
-- `* where kind is component and tag is #primary`
-- `* where (tag is #primary or tag is #secondary) and kind is component`
+For relationship expressions:
 
-If filter applies to relationship expressions, you can filter source/target elements:
+- `* -> * where tag is #http` - relationship tag
+- `* -> * where metadata.protocol is "grpc"` - relationship metadata
+- `* -> * where source.tag is #primary` - source element tag
+- `* -> * where target.kind is component` - target element kind
+- `* -> * where source.metadata.zone is "public"` - source element metadata
+- `* -> * where target.metadata.zone is "restricted"` - target element metadata
 
-- `* -> * where tag is #http` - filters relationships by tag
-- `* -> * where source.tag is #primary` - filters relationships by tag on source element
-- `* -> * where target.tag is #primary` - filters relationships by tag on target element
-- `* -> * where source.kind is component or target.kind is component` - filters relationships by source or target kind
+The same filters work in `exclude`, for example:
+
+```likec4
+exclude * where not metadata.owner
+exclude * -> * where metadata.protocol is "http"
+exclude * -> * where target.metadata.zone is "restricted"
+```
+
+Use the same `where` forms with `include`.
+
+In deployment views, instance tags are cumulative; instance metadata replaces logical metadata as a whole when present, otherwise logical metadata is the fallback.
 
 ## Customize Predicates
 

@@ -3,10 +3,13 @@
 The `deployment` block maps logical model elements to physical infrastructure nodes using `instanceOf`. It uses `deploymentNode` kinds from the specification.
 
 **Key rules:**
+
 - Deployment inherits ALL relationships from the logical model automatically.
 - Additional deployment-level relationships can be defined inline (same syntax as in model).
 - Use named instances (`id = instanceOf ELEMENT`) when multiple instances of the same element exist within the same deployment node.
 - Anonymous `instanceOf ELEMENT` (no name) is fine when there is only one instance per node.
+- In deployment-view filters, instance tags are cumulative with logical element tags.
+- In deployment-view filters, instance metadata replaces logical element metadata when present; otherwise logical metadata is the fallback.
 
 ## Syntax
 
@@ -99,11 +102,36 @@ deployment {
 }
 ```
 
+## Deployment View Filtering
+
+Deployment views use normal `where` filters, with deployment-aware endpoint values:
+
+- Deployment instance tags = logical element tags + instance tags.
+- Deployment instance kind = logical element kind.
+- Deployment instance metadata replaces logical metadata as a whole when present, otherwise logical metadata is the fallback.
+- Nested children of a deployed instance use the logical child tags, kind, and metadata.
+- Deployment node tags, kind, and metadata come from the deployment model.
+- Tags are not inherited from parent deployment nodes.
+
+Relationship endpoint filters use those same rules:
+
+```likec4
+views {
+  deployment view prod {
+    include * -> *
+    exclude * -> *
+      where target.metadata.zone is "restricted"
+  }
+}
+```
+
+Use unqualified `metadata.*` for the relationship's own metadata; use `source.metadata.*` or `target.metadata.*` for endpoint metadata.
+
 ## Named vs. Anonymous: When It Matters
 
-| Scenario | Use |
-|---|---|
-| Single instance of element in node | Anonymous: `instanceOf cloud.api` |
-| Multiple instances of same element in same node | Named: `primary = instanceOf cloud.api` |
-| Strict eval requires named instance identifier | Named: `IDENTIFIER = instanceOf ELEMENT` |
-| Deployment view needs to distinguish replicas | Named: each gets a unique node in the diagram |
+| Scenario                                        | Use                                           |
+| ----------------------------------------------- | --------------------------------------------- |
+| Single instance of element in node              | Anonymous: `instanceOf cloud.api`             |
+| Multiple instances of same element in same node | Named: `primary = instanceOf cloud.api`       |
+| Strict eval requires named instance identifier  | Named: `IDENTIFIER = instanceOf ELEMENT`      |
+| Deployment view needs to distinguish replicas   | Named: each gets a unique node in the diagram |
