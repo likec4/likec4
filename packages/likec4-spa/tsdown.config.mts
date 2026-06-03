@@ -1,4 +1,4 @@
-import { outputOptions } from '@likec4/devops/tsdown'
+import { codeSplittingGroup, outputOptions } from '@likec4/devops/tsdown'
 import postcssPanda from '@pandacss/dev/postcss'
 import pluginBabel from '@rolldown/plugin-babel'
 import { reactCompilerPreset } from '@vitejs/plugin-react'
@@ -47,6 +47,16 @@ export default defineConfig([{
   minify: true,
   outputOptions: outputOptions({
     keepNames: false,
+    codeSplitting: {
+      groups: [
+        codeSplittingGroup(/styled-system/, 'styled-system', { priority: 10 }),
+        codeSplittingGroup(/node_modules\/d3-/, 'libs/d3', { priority: 10 }),
+        codeSplittingGroup(/node_modules\/@floating-ui/, 'libs/@floating-ui', { priority: 10 }),
+        codeSplittingGroup(/node_modules\/@mantine/, 'libs/@mantine', { priority: 10 }),
+        codeSplittingGroup(/node_modules\/@tanstack/, 'libs/@tanstack', { priority: 10 }),
+        codeSplittingGroup(/node_modules\/@?nanostores/, 'libs/nanostores', { priority: 10 }),
+      ],
+    },
   }),
   dts: false,
   tsconfig: 'tsconfig.src.json',
