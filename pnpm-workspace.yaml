@@ -129,12 +129,12 @@ catalogs:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 9.2.1
-    "@mantine/core": 9.2.1
-    "@mantine/hooks": 9.2.1
-    "@mantine/modals": 9.2.1
-    "@mantine/notifications": 9.2.1
-    "@mantine/vanilla-extract": 9.2.1
+    "@mantine/colors-generator": 9.2.2
+    "@mantine/core": 9.2.2
+    "@mantine/hooks": 9.2.2
+    "@mantine/modals": 9.2.2
+    "@mantine/notifications": 9.2.2
+    "@mantine/vanilla-extract": 9.2.2
   mcp:
     "@modelcontextprotocol/sdk": ^1.29.0
   obuild:
