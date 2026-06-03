@@ -206,7 +206,7 @@ catalogs:
       specifier: ^4.1.0
       version: 4.1.0
     zod:
-      specifier: ^4.3.6
+      specifier: ^4.4.3
       version: 4.4.3
   hono:
     '@hono/mcp':
