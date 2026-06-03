@@ -219,8 +219,8 @@ catalogs:
       specifier: ^0.8.5
       version: 0.8.5
     '@hono/zod-validator':
-      specifier: ^0.7.6
-      version: 0.7.6
+      specifier: ^0.8.0
+      version: 0.8.0
     hono:
       specifier: ^4.12.14
       version: 4.12.18
@@ -705,7 +705,7 @@ importers:
         version: 0.8.5(hono@4.12.18)
       '@hono/zod-validator':
         specifier: catalog:hono
-        version: 0.7.6(hono@4.12.18)(zod@4.4.3)
+        version: 0.8.0(hono@4.12.18)(zod@4.4.3)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.21.6
@@ -4802,10 +4802,10 @@ packages:
     peerDependencies:
       hono: '>=3.0.0'
 
-  '@hono/zod-validator@0.7.6':
-    resolution: {integrity: sha512-Io1B6d011Gj1KknV4rXYz4le5+5EubcWEU/speUjuw9XMMIaP3n78yXLhjd2A3PXaXaUwEAluOiAyLqhBEJgsw==}
+  '@hono/zod-validator@0.8.0':
+    resolution: {integrity: sha512-5uS4S1/LKtZQYvD4BtpPUFkOv8d1wNxHHrChm26buMiEYc1FrHWvDUaKVBwkiVtvSExHSpLGDvcnpI2Copyj9w==}
     peerDependencies:
-      hono: '>=3.9.0'
+      hono: '>=4.10.0'
       zod: ^3.25.0 || ^4.0.0
 
   '@hpcc-js/wasm-graphviz@1.21.6':
@@ -13488,7 +13488,7 @@ snapshots:
     dependencies:
       hono: 4.12.18
 
-  '@hono/zod-validator@0.7.6(hono@4.12.18)(zod@4.4.3)':
+  '@hono/zod-validator@0.8.0(hono@4.12.18)(zod@4.4.3)':
     dependencies:
       hono: 4.12.18
       zod: 4.4.3
