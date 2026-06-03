@@ -589,6 +589,9 @@ importers:
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
         version: 5.2.8
+      '@likec4/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@likec4/core':
         specifier: workspace:*
         version: link:../../packages/core

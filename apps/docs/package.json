@@ -26,6 +26,7 @@
     "@expressive-code/plugin-line-numbers": "catalog:astro",
     "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/core": "workspace:*",
+    "@likec4/config": "workspace:*",
     "@likec4/react": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/vite-plugin": "workspace:*",
