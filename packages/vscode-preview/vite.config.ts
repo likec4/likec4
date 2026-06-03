@@ -1,7 +1,6 @@
 import postcssPanda from '@pandacss/dev/postcss'
 import babel from '@rolldown/plugin-babel'
-import react from '@vitejs/plugin-react'
-import { reactCompilerPreset } from '@vitejs/plugin-react'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
@@ -13,9 +12,11 @@ export default defineConfig(({ mode }) => {
       conditions: ['sources'],
       // Prefer .ts/.tsx over .js so diagram src is used (avoid CJS .js in diagram/src)
       extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
-      alias: {
-        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-      },
+      alias: [
+        // { find: /^@likec4\/diagram\/(.+)$/, replacement: resolve('..', 'diagram', 'src', '$1', 'index') },
+        // { find: /^@likec4\/diagram$/, replacement: resolve('..', 'diagram', 'src', 'index') },
+        { find: /^@likec4\/styles\/(.+)$/, replacement: resolve('styled-system', '$1', 'index.mjs') },
+      ],
     },
     mode: isDev ? 'development' : 'production',
     define: {
