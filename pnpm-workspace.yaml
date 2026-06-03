@@ -119,7 +119,7 @@ catalogs:
     type-fest: ^4.41.0
     zod: ^4.4.3
   hono:
-    "@hono/mcp": ^0.2.5
+    "@hono/mcp": ^0.3.0
     "@hono/node-server": ^1.19.14
     "@hono/oauth-providers": ^0.8.5
     "@hono/zod-validator": ^0.7.6
