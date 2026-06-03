@@ -29,13 +29,9 @@
         "${workspaceFolder}/examples",
       ],
       "outFiles": [
-        "${workspaceFolder}/packages/**/*.js",
-        "${workspaceFolder}/packages/**/*.mjs"
+        "${workspaceFolder}/packages/vscode/dist/**/*"
       ],
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/packages/*/src",
-        "!**/node_modules/**"
-      ],
+      "sourceMaps": true,
       "autoAttachChildProcesses": true,
       "preLaunchTask": "build_extension",
     },
