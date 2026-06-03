@@ -133,7 +133,7 @@
     "immer": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
-    "vite-plugin-singlefile": "^2.3.2",
+    "vite-plugin-singlefile": "^2.3.3",
     "vite": "catalog:vite",
     "yargs": "17.7.2",
     "nano-spawn": "catalog:externals",
