@@ -374,8 +374,8 @@ catalogs:
       specifier: 2.1.0
       version: 2.1.0
     nanoid:
-      specifier: 5.1.7
-      version: 5.1.7
+      specifier: 5.1.11
+      version: 5.1.11
     natural-compare-lite:
       specifier: ^1.4.0
       version: 1.4.0
@@ -825,7 +825,7 @@ importers:
         version: 12.36.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       nanoid:
         specifier: catalog:utils
-        version: 5.1.7
+        version: 5.1.11
       nanostores:
         specifier: catalog:react
         version: 1.2.0
@@ -2803,7 +2803,7 @@ importers:
         version: 3.5.0
       nanoid:
         specifier: catalog:utils
-        version: 5.1.7
+        version: 5.1.11
       obuild:
         specifier: catalog:obuild
         version: 0.4.31(@typescript/native-preview@7.0.0-dev.20260527.2)(chokidar@5.0.0)(dotenv@8.6.0)(jiti@2.6.1)(magicast@0.5.3)(picomatch@4.0.4)(rollup@4.60.1)(typescript@6.0.3)
@@ -9201,8 +9201,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.1.7:
-    resolution: {integrity: sha512-ua3NDgISf6jdwezAheMOk4mbE1LXjm1DfMUDMuJf4AqxLFK3ccGpgWizwa5YV7Yz9EpXwEaWoRXSb/BnV0t5dQ==}
+  nanoid@5.1.11:
+    resolution: {integrity: sha512-v+KEsUv2ps74PaSKv0gHTxTCgMXOIfBEbaqa6w6ISIGC7ZsvHN4N9oJ8d4cmf0n5oTzQz2SLmThbQWhjd/8eKg==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -18532,7 +18532,7 @@ snapshots:
 
   nanoid@3.3.12: {}
 
-  nanoid@5.1.7: {}
+  nanoid@5.1.11: {}
 
   nanostores@1.2.0: {}
 
