@@ -1,6 +1,5 @@
 import { defu } from 'defu'
-import { type UserConfig, defineConfig as tsdownDefineConfig } from 'tsdown'
-import type { Rolldown } from 'tsdown'
+import { type UserConfig, defineConfig as tsdownDefineConfig, Rolldown } from 'tsdown'
 
 export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | UserConfig[] {
   const base: UserConfig = {
@@ -51,10 +50,43 @@ export function outputOptions(outputOptions?: Rolldown.OutputOptions): Rolldown.
               const isDts = /\.d\.[mc]?ts$/.test(moduleId)
               return `libs/${pkgName || 'common'}${isDts ? '.d' : ''}`
             },
-            priority: 10,
+            minShareCount: 2,
+            priority: 5,
           },
         ],
       },
     } satisfies Rolldown.OutputOptions,
   )
+}
+
+/**
+ * Creates a code splitting group for Rolldown
+ *
+ * @example
+ * ```ts
+ * outputOptions({
+ *   codeSplitting: {
+ *     groups: [
+ *       codeSplittingGroup(/node_modules\/d3-/, 'libs/d3'),
+ *       codeSplittingGroup(/node_modules\/@mantine/, 'libs/@mantine'),
+ *       codeSplittingGroup(/node_modules\/@?nanostores/, 'libs/nanostores'),
+ *     ],
+ *   },
+ * }),
+ * ```
+ */
+export function codeSplittingGroup(
+  test: RegExp,
+  name: string,
+  opts?: Partial<Omit<Rolldown.CodeSplittingGroup, 'test' | 'name'>>,
+): Rolldown.CodeSplittingGroup {
+  return {
+    test,
+    name: (moduleId: string) => {
+      const isDts = /\.d\.[mc]?ts$/.test(moduleId)
+      return `${name}${isDts ? '.d' : ''}`
+    },
+    priority: 10,
+    ...opts,
+  }
 }
