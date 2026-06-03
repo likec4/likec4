@@ -13,7 +13,7 @@ export const Route = createFileRoute('/project/$projectId/adhoc')({
       })
     }
   },
-  component: isRpcAvailable ? Page : () => null,
+  component: Page,
 })
 
 function Page() {

@@ -62,9 +62,13 @@ const viewportToTopLeft = (ctx: DiagramContext): Viewport => {
 const selectXYProps = selectDiagramActor(({ context: ctx, children }) => {
   const { enableReadOnly } = deriveToggledFeatures(ctx)
 
-  const isNotEditingEdge = enableReadOnly || children.editor?.getSnapshot().context.editing?.subject !== 'edge'
+  const editorSnapshot = enableReadOnly ? null : children.editor?.getSnapshot()
 
-  let nodesDraggable = !enableReadOnly && ctx.nodesDraggable
+  const isNotEditingEdge = enableReadOnly || editorSnapshot?.context.editing?.subject !== 'edge'
+
+  const isEditorBusy = editorSnapshot?.hasTag('busy') ?? false
+
+  let nodesDraggable = !enableReadOnly && ctx.nodesDraggable && !isEditorBusy
   // if dynamic view display mode is sequence, disable nodes draggable
   if ((ctx.dynamicViewVariant === 'sequence' && ctx.view._type === 'dynamic')) {
     nodesDraggable = false
@@ -78,7 +82,7 @@ const selectXYProps = selectDiagramActor(({ context: ctx, children }) => {
     pannable: ctx.pannable,
     zoomable: ctx.zoomable,
     nodesDraggable,
-    nodesSelectable: ctx.nodesSelectable && isNotEditingEdge,
+    nodesSelectable: ctx.nodesSelectable && isNotEditingEdge && !isEditorBusy,
     fitViewPadding: ctx.fitViewPadding,
     enableFitView: ctx.features.enableFitView,
     ...(!ctx.features.enableFitView && {
@@ -221,6 +225,13 @@ export function LikeC4DiagramXYFlow({
         }
         e.stopPropagation()
         diagram.send({ type: 'xyflow.edgeDoubleClick', edge })
+      })}
+      onDelete={useCallbackRef(({ nodes, edges }) => {
+        diagram.editorActor().send({
+          type: 'delete.nodes-edges',
+          nodeIds: nodes.map(node => node.data.id),
+          edgeIds: edges.map(edge => edge.data.id),
+        })
       })}
       onPaneClick={useCallbackRef((e) => {
         e.stopPropagation()

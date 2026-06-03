@@ -231,6 +231,7 @@ export namespace Types {
         | 'navigateTo'
         | 'astPath'
         | 'drifts'
+        | 'isLabelCustomized'
       >
     >
     & {
@@ -257,6 +258,7 @@ export namespace Types {
         | 'navigateTo'
         | 'astPath'
         | 'drifts'
+        | 'isLabelCustomized'
       >
     >
     & {

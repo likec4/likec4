@@ -35,6 +35,7 @@ export function applyCachedLayout(current: ComputedView, cached: LayoutedView): 
       label: cachedEdge.label,
       labelBBox: cachedEdge.labelBBox,
       ...(cachedEdge.controlPoints != null && { controlPoints: cachedEdge.controlPoints }),
+      ...(cachedEdge.isLabelCustomized != null && { isLabelCustomized: cachedEdge.isLabelCustomized }),
     } as DiagramEdge
   })
 

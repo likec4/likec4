@@ -1,5 +1,5 @@
 import type * as t from '@likec4/core/types'
-import { type NonReducibleUnknown, fromPromise, setup } from 'xstate'
+import { fromPromise, setup } from 'xstate'
 import { hotkey } from './hotkey'
 import type {
   EditorActorContext,
@@ -31,7 +31,10 @@ export namespace EditorCalls {
   ) => Promise<ExecuteChange.Output>
   export namespace ExecuteChange {
     export type Input = { viewId: t.ViewId; changes: t.ViewChange[] }
-    export type Output = NonReducibleUnknown
+    /**
+     * Returns the changes that were applied to the view
+     */
+    export type Output = { requested: t.ViewChange[]; applied: t.ViewChange[] }
   }
 }
 
@@ -75,7 +78,8 @@ export const machine = setup({
     'wait-after-edit': 1_000,
   },
   guards: {
-    'has pending': ({ context }) => context.syncQueue.length > 0 || !!context.processing,
+    'has pending': ({ context }) => context.syncQueue.length > 0,
     'can undo': ({ context }) => context.history !== null,
+    'can redo': ({ context }) => context.redo !== null,
   },
 })

@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_single/adhoc')({
       })
     }
   },
-  component: isRpcAvailable ? Page : () => null,
+  component: Page,
 })
 
 function Page() {

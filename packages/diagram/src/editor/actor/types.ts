@@ -8,6 +8,7 @@ export type EditorActorEvent =
   | { type: 'change.semantic-layout' }
   | { type: 'change.latest-to-manual' }
   | { type: 'change.sync-snapshot' }
+  | { type: 'delete.nodes-edges'; nodeIds: t.NodeId[]; edgeIds: t.EdgeId[] }
   // view update has been received, consider synced
   | { type: 'view.synched' }
   | { type: 'cancel' }
@@ -39,12 +40,17 @@ export type SyncOp =
   | 'apply-semantic-layout'
   | 'apply-latest-to-manual'
 
-export const isViewChange = (change: SyncOp): change is t.ViewChange => typeof change !== 'string'
+export const isViewChange = (change: SyncOp | null): change is t.ViewChange =>
+  change !== null && typeof change !== 'string'
 
 export interface EditorActorContext {
   viewId: t.ViewId
 
+  // Undo history
   history: LinkedSnapshot | null
+
+  // Redo history
+  redo: LinkedSnapshot | null
 
   editing: null | {
     /**

@@ -42,7 +42,12 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   const isControlPointDraggingRef = useRef(isControlPointDragging)
   isControlPointDraggingRef.current = isControlPointDragging
 
+  const [isLabelDragging, setIsLabelDragging] = useState(false)
+  const isLabelDraggingRef = useRef(isLabelDragging)
+  isLabelDraggingRef.current = isLabelDragging
+
   const xyflow = useXYFlow()
+  const xyflowStore = useXYStoreApi()
   const diagram = useDiagram()
   const {
     enableNavigateTo,
@@ -83,7 +88,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   }, isSamePoint)
 
   useUpdateEffect(() => {
-    if (isControlPointDraggingRef.current) {
+    if (isControlPointDraggingRef.current || isLabelDraggingRef.current) {
       return
     }
     setLabelPos({
@@ -94,20 +99,40 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const svgPathRef = useRef<SVGPathElement>(null)
 
+  // Offset of the label from the edge center, captured when an edge edit starts.
+  // Zero for auto-positioned labels (so they re-center), preserved for manually
+  // moved ones (so the label follows the edge while keeping its offset).
+  const labelOffsetRef = useRef<XYPosition>({ x: 0, y: 0 })
+  const captureLabelOffset = useCallbackRef(() => {
+    const path = svgPathRef.current
+    if (data.isLabelCustomized && path && labelBBox) {
+      const center = getEdgeCenter(path)
+      labelOffsetRef.current = { x: labelBBox.x - center.x, y: labelBBox.y - center.y }
+    } else {
+      labelOffsetRef.current = { x: 0, y: 0 }
+    }
+  })
+
   useRafEffect(() => {
     const path = svgPathRef.current
     if (!path || !isControlPointDragging) return
-    setLabelPos(getEdgeCenter(path))
+    // Move the label together with the edge, preserving its offset from the edge center
+    const center = getEdgeCenter(path)
+    const offset = labelOffsetRef.current
+    setLabelPos({ x: center.x + offset.x, y: center.y + offset.y })
   }, [edgePath, isControlPointDragging])
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
-    const point = labelBBox && svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
-    if (point) {
+    // Persist the label at the new edge center plus its captured offset
+    const center = labelBBox && svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
+    if (center) {
+      const offset = labelOffsetRef.current
       diagram.updateEdgeData(id as EdgeId, {
         controlPoints,
         labelBBox: {
           ...labelBBox,
-          ...point,
+          x: center.x + offset.x,
+          y: center.y + offset.y,
         },
       })
     } else {
@@ -118,6 +143,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   })
 
   const onControlPointerStartMove = useCallbackRef(() => {
+    captureLabelOffset()
     diagram.startEditing('edge')
     setIsControlPointDragging(true)
   })
@@ -133,6 +159,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     })
   })
   const onControlPointerDelete = useCallbackRef((points: XYPosition[]) => {
+    captureLabelOffset()
     diagram.startEditing('edge')
     setIsControlPointDragging(true)
     setControlPoints(points)
@@ -167,6 +194,82 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     )
     diagram.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
     diagram.stopEditing(true)
+  })
+
+  const updateLabelPosition = useCallbackRef((pos: XYPosition) => {
+    if (labelBBox) {
+      diagram.updateEdgeData(id as EdgeId, {
+        labelBBox: { ...labelBBox, x: pos.x, y: pos.y },
+        isLabelCustomized: true,
+      })
+    }
+    diagram.stopEditing(true)
+    setIsLabelDragging(false)
+  })
+
+  /**
+   * Handle pointer down on the edge label to drag it to a custom position.
+   * Mirrors the control-point LMB drag.
+   */
+  const onLabelPointerDown = useCallbackRef((e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0 || !labelBBox || isControlPointDraggingRef.current) {
+      return
+    }
+    const { domNode, edges, addSelectedEdges, unselectNodesAndEdges } = xyflowStore.getState()
+    if (!domNode) {
+      return
+    }
+    e.stopPropagation()
+
+    // Grabbing the label selects its edge, so no prior click is needed
+    if (!selected) {
+      unselectNodesAndEdges({ edges: edges.filter(ed => ed.selected && ed.id !== id) })
+      addSelectedEdges([id])
+    }
+
+    let hasMoved = false
+    const initialPoint = { x: e.clientX, y: e.clientY }
+    const clientPoint = { ...initialPoint }
+    // Offset between the pointer and the label's top-left, so the label doesn't jump to the cursor
+    const flowStart = xyflow.screenToFlowPosition(initialPoint, { snapToGrid: false })
+    const grab = { x: flowStart.x - labelBBox.x, y: flowStart.y - labelBBox.y }
+    let pos = { x: labelBBox.x, y: labelBBox.y }
+    let animationFrameId: number | null = null
+
+    const onPointerMove = (ev: PointerEvent) => {
+      clientPoint.x = ev.clientX
+      clientPoint.y = ev.clientY
+      if (!isSamePoint(initialPoint, clientPoint)) {
+        if (!hasMoved) {
+          hasMoved = true
+          diagram.startEditing('edge')
+          setIsLabelDragging(true)
+        }
+        animationFrameId ??= requestAnimationFrame(() => {
+          animationFrameId = null
+          const { x, y } = xyflow.screenToFlowPosition(clientPoint, { snapToGrid: false })
+          pos = { x: Math.round(x - grab.x), y: Math.round(y - grab.y) }
+          setLabelPos(pos)
+        })
+      }
+      ev.stopPropagation()
+    }
+
+    const onPointerUp = (ev: PointerEvent) => {
+      ev.stopPropagation()
+      domNode.removeEventListener('pointermove', onPointerMove, { capture: true })
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId)
+      }
+      if (hasMoved) {
+        // Swallow the trailing click so dragging the label doesn't trigger navigation
+        domNode.addEventListener('click', stopAndPrevent, { capture: true, once: true })
+        updateLabelPosition(pos)
+      }
+    }
+
+    domNode.addEventListener('pointermove', onPointerMove, { capture: true })
+    domNode.addEventListener('pointerup', onPointerUp, { once: true, capture: true })
   })
 
   // Force hovered state when dragging control point
@@ -206,10 +309,14 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
         {labelBBox && (
           <EdgeLabelContainer
             edgeProps={props}
-            labelPosition={isControlPointDragging ? labelPos : { x: labelX, y: labelY }}
+            labelPosition={isControlPointDragging || isLabelDragging ? labelPos : { x: labelX, y: labelY }}
+            {...enabledEditing && {
+              onPointerDown: onLabelPointerDown,
+            }}
           >
             <EdgeLabel
-              pointerEvents={enabledEditing ? 'none' : 'all'}
+              pointerEvents="all"
+              className={enabledEditing ? edgesCss.labelDraggable : undefined}
               edgeProps={props}>
               {navigateTo && (
                 <EdgeActionButton
