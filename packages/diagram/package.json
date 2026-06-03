@@ -128,7 +128,7 @@
     "react-dom": "catalog:react",
     "typescript": "catalog:",
     "vite": "catalog:vite",
-    "vite-plugin-dts": "5.0.0-beta.6",
+    "vite-plugin-dts": "5.0.1",
     "vitest": "catalog:vitest",
     "zx": "catalog:"
   }
