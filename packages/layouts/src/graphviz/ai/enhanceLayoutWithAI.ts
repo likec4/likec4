@@ -38,7 +38,7 @@ export async function enhanceLayoutWithAI<CancelToken = AbortSignal>(
     )
     return parseOutput(rawResponse, { mapping, view })
   } catch (error) {
-    logger.warn`AI layout enhancement failed: ${error}`
+    logger.warn('AI layout enhancement failed', { error })
     return undefined
   }
 }

@@ -9,7 +9,7 @@
 .pnpm-store/
 .dprint-cache/
 .wireit
-.windsurf
+.devin
 
 # Local test scripts (not committed to repo)
 test-mcp-local.ts
