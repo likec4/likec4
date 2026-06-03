@@ -227,7 +227,7 @@
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
     "remeda": "catalog:utils",
-    "semver": "^7.7.4",
+    "semver": "^7.8.1",
     "strip-indent": "catalog:utils",
     "tinyrainbow": "catalog:utils",
     "tsx": "catalog:",
