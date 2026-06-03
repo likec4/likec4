@@ -156,7 +156,7 @@ catalogs:
     react: 19.2.6
     react-compiler-runtime: ^1.0.0
     react-dom: 19.2.6
-    react-error-boundary: ^6.1.1
+    react-error-boundary: ^6.1.2
     react-resizable-panels: ^4.11.1
     use-sync-external-store: ^1.6.0
   tanstack:
