@@ -152,7 +152,7 @@ catalogs:
     babel-plugin-react-compiler: ^1.0.0
     clsx: ^2.1.1
     motion: ^12.36.0
-    nanostores: 1.2.0
+    nanostores: 1.3.0
     react: 19.2.6
     react-compiler-runtime: ^1.0.0
     react-dom: 19.2.6
