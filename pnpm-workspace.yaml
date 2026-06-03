@@ -205,7 +205,7 @@ catalogs:
     strip-indent: ^4.1.1
     superjson: ^2.2.6
     tinyrainbow: ^3.1.0
-    ufo: 1.6.3
+    ufo: 1.6.4
     unctx: ^2.5.0
     unstorage: ^1.17.5
   vite:
