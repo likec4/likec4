@@ -1,55 +1,33 @@
 {
-  "extends": "astro/tsconfigs/strictest",
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "moduleResolution": "Bundler",
-    "checkJs": false,
-    "skipLibCheck": true,
-    "emitDeclarationOnly": true,
-    "composite": true,
-    "incremental": true,
-    "tsBuildInfoFile": "lib/tsconfig.tsbuildinfo",
-    "outDir": "lib/",
+    "verbatimModuleSyntax": true,
     "paths": {
       "@components/*": [
         "./src/components/*"
       ],
       "@assets/*": [
         "./src/assets/*"
-      ],
-      "likec4/model": [
-        "../../packages/likec4/src/model/index.ts"
-      ],
-      "@likec4/core": [
-        "../../packages/core/src"
-      ],
-      "likec4/react": [
-        "../../packages/react/src"
       ]
-    },
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    }
   },
   "include": [
     ".astro/types.d.ts",
     "**/*"
   ],
   "exclude": [
-    "dist"
+    "dist",
+    "node_modules"
   ],
   "references": [
     {
       "path": "../../packages/core/"
     },
     {
+      "path": "../../packages/vite-plugin/"
+    },
+    {
       "path": "../../packages/likec4/tsconfig.cli.json"
-    },
-    {
-      "path": "../../packages/diagram/tsconfig.src.json"
-    },
-    {
-      "path": "../../packages/language-services/tsconfig.json"
     }
   ]
 }

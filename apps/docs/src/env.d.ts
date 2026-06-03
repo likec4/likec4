@@ -1,2 +1,2 @@
-/// <reference types="astro/client" />
-/// <reference types="likec4/vite-plugin-modules" />
+/// <reference types="@likec4/vite-plugin/modules" />
+/// <reference path="../.astro/types.d.ts" />

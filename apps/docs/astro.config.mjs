@@ -1,9 +1,9 @@
 import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
+import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import skills from 'astro-skills'
 import { defineConfig } from 'astro/config'
-import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 import starlightHeadingBadges from 'starlight-heading-badges'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
@@ -60,24 +60,19 @@ export default defineConfig({
         },
         {
           label: 'LikeC4',
-          autogenerate: { directory: 'dsl' },
+          items: [{ autogenerate: { directory: 'dsl' } }],
         },
         {
           label: 'Showcases',
-          autogenerate: {
-            directory: 'showcases',
-          },
+          items: [{ autogenerate: { directory: 'showcases' } }],
         },
         {
           label: 'Tooling',
-          autogenerate: { directory: 'tooling' },
+          items: [{ autogenerate: { directory: 'tooling' } }],
         },
         {
           label: 'Guides',
-          autogenerate: {
-            directory: 'guides',
-            collapsed: true,
-          },
+          items: [{ autogenerate: { directory: 'guides', collapsed: true } }],
         },
         {
           label: 'Changelog',
@@ -139,8 +134,8 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        '@likec4/icons': new URL('../../packages/icons', import.meta.url).pathname,
+        // '@likec4/icons': new URL('../../packages/icons', import.meta.url).pathname,
+        // '@likec4/core': new URL('../../packages/core/src', import.meta.url).pathname,
         'likec4/model': new URL('../../packages/likec4/src/model', import.meta.url).pathname,
         // Alias to bundled React components, can't use 'development' condition
         'likec4/react': new URL('../../packages/react/dist/index.mjs', import.meta.url).pathname,
