@@ -4,7 +4,7 @@
  * - views for each theme color
  * - nested shapes (6 levels)
  */
-import { LikeC4Styles } from '@likec4/core'
+import { LikeC4Styles } from '@likec4/core/styles'
 import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 
@@ -20,7 +20,7 @@ const shapes = [
   'mobile',
   'queue',
   'document',
-] as const
+]
 
 const likec4 = `// DO NOT EDIT MANUALLY
 

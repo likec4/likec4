@@ -18,8 +18,6 @@ allowBuilds:
   wrangler: true
 
 overrides:
-  "@pandacss/node>picomatch": "4.0.4"
-  "esbuild": "catalog:esbuild"
   "react": "catalog:react"
   "react-dom": "catalog:react"
   "@types/react": "catalog:react"
@@ -34,41 +32,6 @@ overrides:
   "vscode-uri": "catalog:vscode"
   "type-fest": "catalog:externals"
   "turbo": "catalog:"
-  "sharp": "catalog:utils"
-  "caniuse-lite": "catalog:utils"
-  "min-document": ">=2.19.2"
-  "flatted": ">=3.4.2"
-  "h3": ">=1.15.11"
-  "undici": ">=7.24.7"
-  "devalue": ">=5.8.1"
-  "diffie-hellman>bn.js": "4.12.3"
-  "diff": ">=8.0.4"
-  "svgo": ">=4.0.1"
-  "express-rate-limit": ">=8.2.2"
-  "express>qs": ">=6.15.2"
-  "url>qs": ">=6.14.2"
-  "vscode-languageclient>minimatch": "^5.1.9"
-  "@ts-morph/common>minimatch": "^9.0.9"
-  "@vue/language-core>minimatch": "^9.0.9"
-  "ajv": ">=8.18.0"
-  "asn1.js>bn.js": "4.12.3"
-  "browserify-rsa>bn.js": "5.2.3"
-  "browserify-sign>bn.js": "5.2.3"
-  "create-ecdh>bn.js": "4.12.3"
-  "elliptic>bn.js": "4.12.3"
-  "lodash": "4.18.1"
-  "lodash-es": "4.18.1"
-  "minimatch@10.2.4>brace-expansion": "5.0.5"
-  "minimatch@3.1.5>brace-expansion": "1.1.14"
-  "minimatch@5.1.9>brace-expansion": "2.0.3"
-  "minimatch@9.0.9>brace-expansion": "2.0.3"
-  "pbkdf2": ">=3.1.5"
-  "public-encrypt>bn.js": "4.12.3"
-  "router>path-to-regexp": "8.4.2"
-  "sha.js": ">=2.4.12"
-  "smol-toml": ">=1.6.1"
-  "wireit>brace-expansion": "5.0.5"
-  "yaml": ">=2.8.3"
 
 patchedDependencies:
   "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
@@ -111,22 +74,22 @@ catalogs:
     "@tanstack/ai-react": ^0.8.0
     "@tanstack/ai-react-ui": ^0.6.2
     '@types/ws': ^8.18.1
-    ws: ^8.20.0
+    ws: ^8.21.0
   astro:
-    "@astrojs/check": ^0.9.7
-    "@astrojs/react": 4.4.2
-    "@astrojs/starlight": 0.37.7
-    "@astrojs/starlight-tailwind": ^4.0.2
-    "@expressive-code/plugin-collapsible-sections": ^0.41.7
-    "@expressive-code/plugin-line-numbers": ^0.41.7
-    astro: 5.18.1
-    astro-og-canvas: ^0.7.2
-    astro-skills: ^0.0.5
-    shiki: ^4.0.2
-    starlight-heading-badges: ^0.6.1
-    starlight-image-zoom: ^0.13.2
-    starlight-links-validator: ^0.19.2
-    starlight-package-managers: ^0.12.0
+    "@astrojs/check": 0.9.9
+    "@astrojs/react": 5.0.7
+    "@astrojs/starlight": 0.39.3
+    "@astrojs/starlight-tailwind": 5.0.0
+    "@expressive-code/plugin-collapsible-sections": 0.42.0
+    "@expressive-code/plugin-line-numbers": 0.42.0
+    astro: 6.4.3
+    astro-og-canvas: 0.11.1
+    astro-skills: 0.1.0
+    shiki: 4.1.0
+    starlight-heading-badges: 0.7.0
+    starlight-image-zoom: 0.14.2
+    starlight-links-validator: 0.24.0
+    starlight-package-managers: 0.12.0
   cloudflare:
     "@cloudflare/vite-plugin": ~1.39.0
     wrangler: ~4.95.0
@@ -280,3 +243,8 @@ catalogs:
     "@zag-js/collection": ^1.33.1
     "@zag-js/react": ^1.33.1
     "@zag-js/tree-view": ^1.33.1
+
+minimumReleaseAgeExclude:
+  - '@astrojs/react@5.0.7'
+  - '@astrojs/starlight@0.39.3'
+  - astro@6.4.3
