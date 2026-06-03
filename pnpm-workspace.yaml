@@ -63,7 +63,7 @@ catalogMode: prefer
 
 catalogs:
   ai:
-    "@anthropic-ai/sdk": ^0.94.0
+    "@anthropic-ai/sdk": ^0.100.1
     "@tanstack/ai": ^0.14.0
     "@tanstack/ai-anthropic": ^0.8.3
     '@tanstack/ai-client': ^0.8.0
