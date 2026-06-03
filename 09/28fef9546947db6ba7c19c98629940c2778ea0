@@ -1,0 +1,19 @@
+e2e/tests/diagram-a11y.spec.ts
+  s_5faab91b7bb946::t_c76c5c91a9291e 33-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "0928fef9546947db6ba7c19c98629940c2778ea0",
+  "prompts": {},
+  "sessions": {
+    "s_5faab91b7bb946": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d04f7f0d-37c4-4aae-a89c-a3219da091af",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
