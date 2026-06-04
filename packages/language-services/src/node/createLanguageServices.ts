@@ -43,12 +43,15 @@ export function createLanguageServices(
 ): LikeC4Langium {
   const logger = rootLogger.getChild('lang')
 
-  const options = defu(opts, {
-    useFileSystem: true,
-    manualLayouts: true,
-    watch: false,
-    graphviz: 'wasm',
-  })
+  const options = defu(
+    opts,
+    <CreateLanguageServiceOptions> {
+      useFileSystem: true,
+      manualLayouts: true,
+      watch: false,
+      graphviz: 'wasm',
+    },
+  )
 
   const useDotBin = options.graphviz === 'binary'
 

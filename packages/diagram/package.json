@@ -23,7 +23,7 @@
     "!**/__*/**",
     "!**/*.d.ts.map"
   ],
-  "sideEffects": false,
+  "sideEffects": ["*.css"],
   "type": "module",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

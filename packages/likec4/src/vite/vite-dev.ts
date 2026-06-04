@@ -140,6 +140,38 @@ export async function viteDev({
       : config.define,
     mode: hmr ? 'development' : config.mode,
     publicDir,
+    optimizeDeps: {
+      holdUntilCrawlEnd: false,
+      needsInterop: [
+        'react/jsx-runtime',
+        'react/compiler-runtime',
+        'react-dom/client',
+        'react-dom',
+        'react',
+      ],
+      include: hmr ?
+        [
+          'react/jsx-runtime',
+          'react/compiler-runtime',
+          'react-dom/client',
+          'react-dom',
+          'react',
+          'immer',
+          'use-sync-external-store/shim/with-selector',
+          'use-sync-external-store/shim',
+          '@likec4/core/styles',
+          '@likec4/core/geometry',
+          '@likec4/core/utils',
+          '@likec4/core/compute-view',
+          '@likec4/core/types',
+          '@likec4/core/model',
+          '@likec4/core',
+          'likec4/react',
+          'likec4/vite-plugin/internal',
+        ] :
+        [],
+      noDiscovery: true,
+    },
     server: {
       host,
       allowedHosts: allowedHosts && allowedHosts.length > 0 ? allowedHosts : true,

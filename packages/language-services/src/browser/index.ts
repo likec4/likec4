@@ -83,6 +83,6 @@ export async function fromSources(sources: Record<string, string>): Promise<Like
 
  * @returns A Promise that resolves to a LikeC4 instance
  */
-export async function fromSource(source: string): Promise<LikeC4> {
+export function fromSource(source: string): Promise<LikeC4> {
   return fromSources({ 'source.c4': source })
 }

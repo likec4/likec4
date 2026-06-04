@@ -17,14 +17,12 @@ export async function handleInitOptions(
   const likec4 = new LikeC4(langium, logger)
 
   const throwIfInvalid = options?.throwIfInvalid ?? DefaultInitOptions.throwIfInvalid
-
-  if (throwIfInvalid === true && likec4.hasErrors()) {
-    await likec4.dispose()
-    return Promise.reject(validationErrorsToError(likec4))
-  }
-
   const printErrors = options?.printErrors ?? DefaultInitOptions.printErrors
-  if (printErrors && likec4.hasErrors()) {
+  if ((throwIfInvalid || printErrors) && likec4.hasErrors()) {
+    if (throwIfInvalid) {
+      await likec4.dispose()
+      return Promise.reject(validationErrorsToError(likec4))
+    }
     likec4.printErrors()
   }
 

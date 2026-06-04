@@ -31,7 +31,7 @@ export interface InitOptions {
   /**
    * Whether to configure the logger.
    *
-   * - `false` - don't configure the logger
+   * - `false` - don't configure the logger (assume it's already configured)
    * - `'console'` - configure the logger with console sink
    * - `'stderr'` - configure the logger with stderr (for LSP or MCP)
    *

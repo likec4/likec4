@@ -286,7 +286,9 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
   }
 
   private triggerUpdate(event: ManualLayoutUpdateEvent): void {
-    for (const listener of [...this.listeners]) {
+    // Copy to avoid modification during iteration
+    const listeners = [...this.listeners]
+    for (const listener of listeners) {
       safeCall(() => listener(event))
     }
   }

@@ -12,7 +12,7 @@
     "directory": "packages/likec4-spa"
   },
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": ["*.css"],
   "scripts": {
     "build": "tsdown --config-loader tsx",
     "typecheck": "tsc --build --verbose",
