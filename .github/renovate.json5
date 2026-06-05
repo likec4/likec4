@@ -51,6 +51,7 @@
         'terser',
         'caniuse-lite',
         'zx',
+        '@typescript/native-preview',
         '@fontsource-variable/**',
         '@fontsource/**',
       ]
