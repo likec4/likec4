@@ -96,5 +96,16 @@
       "}"
     ],
     "description": "inserts extend relation block with a relationship kind and no title"
+  },
+  "try-catch": {
+    "prefix": ["try", "try-catch"],
+    "body": [
+      "try {",
+      "\t$1",
+      "} catch {",
+      "\t$2",
+      "}"
+    ],
+    "description": "inserts try-catch flow block"
   }
 }

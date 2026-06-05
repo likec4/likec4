@@ -116,6 +116,12 @@
         }
       }
     ],
+    "snippets": [
+      {
+        "language": "likec4",
+        "path": "data/likec4-snippets.json"
+      }
+    ],
     "grammars": [
       {
         "language": "likec4",

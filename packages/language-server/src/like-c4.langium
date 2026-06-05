@@ -325,7 +325,7 @@ DynamicViewBody: '{'
   tags=Tags?
   props+=DynamicViewProperty*
   (
-    steps+=(DynamicViewParallelSteps | DynamicViewStep) |
+    steps+=(DynFlowStep) |
     rules+=DynamicViewRule
   )*
 '}'
@@ -412,13 +412,107 @@ DynamicViewRule:
   ViewRuleAutoLayout
 ;
 
-DynamicViewParallelSteps:
+// -----------------------------------------------
+// Dynamic view flow steps
+// -----------------------------------------------
+DynFlowStep:
+  DynFlowBlock |
+  DynamicViewStep  // rename
+;
+
+// Flow block - can contain nested steps
+DynFlowBlock:
+  DynFlowParallel |
+  DynFlowAlt |
+  DynFlowBranch | // allow single branch as flow step
+  DynFlowTry;
+
+
+DynFlowParallel:
   ('parallel'|'par') '{'
     // Accept nested ParallelSteps so we can report a clear validation error
     // instead of leaving the user with a cryptic parser error. See #988.
-    (steps+=(DynamicViewParallelSteps | DynamicViewStep))*
+    (steps+=(DynFlowStep))*
   '}'
 ;
+
+// -----------------------------------------------
+// Dynamic view block body - nested statements container
+DynFlowNested:
+  '{'
+    steps+=DynFlowStep*
+   '}'
+;
+
+// -----------------------------------------------
+// Dynamic view TRY block
+
+interface DynFlowTry_Only {
+  try: DynFlowNested
+  /// Optional title for the try block
+  title?: string
+}
+
+interface DynFlowTry_Catch {
+  try: DynFlowTry_Only
+  /// Optional title for the catch block
+  title?: string
+  catch: DynFlowNested
+}
+
+interface DynFlowTry_Finally {
+  tryCatch: DynFlowTry_Only | DynFlowTry_Catch
+  finally: DynFlowNested
+}
+
+type DynFlowTry =
+  DynFlowTry_Only |
+  DynFlowTry_Catch |
+  DynFlowTry_Finally;
+
+DynFlowTry returns DynFlowTry:
+  DynFlowTry_Finally;
+
+DynFlowTry_Finally returns DynFlowTry_Finally:
+  DynFlowTry_Catch ({DynFlowTry_Finally.tryCatch=current} 'finally' finally=DynFlowNested)?
+;
+
+DynFlowTry_Catch returns DynFlowTry_Catch:
+  DynFlowTry_Only ({DynFlowTry_Catch.try=current}
+     'catch' title=String?
+     catch=DynFlowNested
+  )?
+;
+
+DynFlowTry_Only returns DynFlowTry_Only:
+  'try' title=String? try=DynFlowNested
+;
+
+// -----------------------------------------------
+// Dynamic view ALT block
+
+interface DynFlowBranch {
+  kind: 'when' | 'if' | 'else' | 'opt'
+  /// Optional title for the branch
+  title?: string
+  flow: DynFlowNested
+}
+
+interface DynFlowAlt {
+  title?: string
+  branches: DynFlowBranch[]
+}
+
+DynFlowAlt returns DynFlowAlt:
+  'alt' title=String? ('{' branches+=DynFlowBranch* '}')?
+;
+
+DynFlowBranch returns DynFlowBranch:
+  kind=('when' | 'if' | 'else' | 'opt') title=String? flow=DynFlowNested
+;
+
+// -----------------------------------------------
+// Dynamic view step (from previous model)
 
 fragment DynamicViewStepTarget:
   target=ElementRef
