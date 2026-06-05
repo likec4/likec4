@@ -1,7 +1,7 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.57.0",
+  "version": "1.57.1",
   "private": true,
   "scripts": {
     "update-theme-c4": "tsx scripts/generate-theme-c4.mts",
@@ -51,5 +51,7 @@
     "typescript": "catalog:",
     "wrangler": "catalog:cloudflare"
   },
-  "overrides": { "vite": "^7" }
+  "overrides": {
+    "vite": "^7"
+  }
 }

@@ -1,5 +1,21 @@
 # @likec4/diagram
 
+## 1.57.1
+
+### Patch Changes
+
+- [`f2c0b57`](https://github.com/likec4/likec4/commit/f2c0b57485e912e85a986d5f89408a6039538ecc) Thanks [@davydkov](https://github.com/davydkov)! - Support deleting elements/edges in the diagram editor (except dynamic views). Selecting nodes (and/or edges) and pressing delete now removes them from the view, automatically dropping any edges connected to a deleted node. The change is added to undo/redo history.
+
+- [`f2c0b57`](https://github.com/likec4/likec4/commit/f2c0b57485e912e85a986d5f89408a6039538ecc) Thanks [@davydkov](https://github.com/davydkov)! - Edit edge label positions in the diagram editor. Select a relationship edge and drag its label to reposition it; the position is saved to the manual layout with undo/redo. A manually placed label moves together with the edge when its curve is reshaped, keeping its offset.
+
+- [#2995](https://github.com/likec4/likec4/pull/2995) [`e14bc24`](https://github.com/likec4/likec4/commit/e14bc24f4337de29c35fac6f7532fc99dd2904ad) Thanks [@davydkov](https://github.com/davydkov)! - fix: "apply latest" action tries to run the new AI layout enhancement
+
+- [#2978](https://github.com/likec4/likec4/pull/2978) [`75e1510`](https://github.com/likec4/likec4/commit/75e1510def804bf9931bf222b03d1034e1181d04) Thanks [@farhan523](https://github.com/farhan523)! - Tags with custom hex / rgb colors now get an accurate text color derived from the background via APCA contrast, instead of the previous CSS-filter workaround. `TagStylesProvider` emits `--colors-likec4-tag-text` for all tags (custom-colored and named), and the `autoTextColor` variant is removed from the `likec4tag` recipe. `getContrastedColorsAPCA` is now exported from `@likec4/core/styles`. Resolves [#2143](https://github.com/likec4/likec4/issues/2143).
+
+- Updated dependencies [[`f2c0b57`](https://github.com/likec4/likec4/commit/f2c0b57485e912e85a986d5f89408a6039538ecc), [`8ad28c7`](https://github.com/likec4/likec4/commit/8ad28c777c76f294483c352180c7e3ea037eddfd), [`75e1510`](https://github.com/likec4/likec4/commit/75e1510def804bf9931bf222b03d1034e1181d04)]:
+  - @likec4/core@1.57.1
+  - @likec4/styles@1.57.1
+
 ## 1.57.0
 
 ### Patch Changes

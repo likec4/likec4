@@ -1,5 +1,7 @@
 # likec4-vscode
 
+## 1.57.1
+
 ## 1.57.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @likec4/style-preset
 
+## 1.57.1
+
+### Patch Changes
+
+- [#2978](https://github.com/likec4/likec4/pull/2978) [`75e1510`](https://github.com/likec4/likec4/commit/75e1510def804bf9931bf222b03d1034e1181d04) Thanks [@farhan523](https://github.com/farhan523)! - Tags with custom hex / rgb colors now get an accurate text color derived from the background via APCA contrast, instead of the previous CSS-filter workaround. `TagStylesProvider` emits `--colors-likec4-tag-text` for all tags (custom-colored and named), and the `autoTextColor` variant is removed from the `likec4tag` recipe. `getContrastedColorsAPCA` is now exported from `@likec4/core/styles`. Resolves [#2143](https://github.com/likec4/likec4/issues/2143).
+
 ## 1.57.0
 
 ## 1.56.0
