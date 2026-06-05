@@ -31,12 +31,12 @@ describe('generateAux', () => {
 
     it('generate valid code', async ({ expect }) => {
       const aux = generateAux(m.toLikeC4Model({ id: 'aux-test' }))
-      await expect(aux).toMatchFileSnapshot('__snapshots__/aux.incomplete.generate-valid-code.snap')
+      await expect(aux).toMatchFileSnapshot('__snapshots__/_aux.incomplete.generate-valid-code.snap')
     })
 
     it('generate valid code with core package', async ({ expect }) => {
       const aux = generateAux(m.toLikeC4Model({ id: 'aux-test' }), { useCorePackage: true })
-      await expect(aux).toMatchFileSnapshot('__snapshots__/aux.incomplete.generate-valid-code-with-core.snap')
+      await expect(aux).toMatchFileSnapshot('__snapshots__/_aux.incomplete.generate-valid-code-with-core.snap')
     })
   })
 

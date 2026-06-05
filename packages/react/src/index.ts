@@ -13,13 +13,12 @@ import type { Types } from '@likec4/diagram'
 export * from '@likec4/diagram'
 export * from '@likec4/diagram/custom'
 
-export namespace xyflow {
-  export const ControlButton = XYControlButton
-
-  export const MiniMap = XYMiniMap<Types.AnyNode>
-  export const MiniMapNode = XYMiniMapNode
-  export const NodeToolbar = XYNodeToolbar
-  export const Panel = XYPanel
-  export const Position = XYPosition
-  export const ViewportPortal = XYViewportPortal
-}
+export const xyflow = {
+  ControlButton: XYControlButton,
+  MiniMap: XYMiniMap<Types.AnyNode>,
+  MiniMapNode: XYMiniMapNode,
+  NodeToolbar: XYNodeToolbar,
+  Panel: XYPanel,
+  Position: XYPosition,
+  ViewportPortal: XYViewportPortal,
+} as const

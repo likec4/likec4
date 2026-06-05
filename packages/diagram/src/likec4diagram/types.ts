@@ -231,12 +231,12 @@ export namespace Types {
         | 'navigateTo'
         | 'astPath'
         | 'drifts'
-        | 'isLabelCustomized'
       >
     >
     & {
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
+      isLabelCustomized?: boolean | undefined
       controlPoints: XYPosition[] | undefined | null
     }
   >
@@ -258,13 +258,13 @@ export namespace Types {
         | 'navigateTo'
         | 'astPath'
         | 'drifts'
-        | 'isLabelCustomized'
       >
     >
     & {
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
       labelBBox: BBox
+      isLabelCustomized?: boolean | undefined
       controlPoints: XYPosition[] | undefined | null
     }
   >

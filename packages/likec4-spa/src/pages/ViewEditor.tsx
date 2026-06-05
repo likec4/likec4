@@ -16,12 +16,6 @@ import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
 import { FocusElementFromUrl, ListenForDynamicVariantChange, OpenRelationshipBrowserFromUrl } from './ViewReact'
 
-/**
- * AI Chat component that is conditionally rendered based on AI availability
- * Uses lazy loading to avoid importing AI components in environments where AI is not available
- */
-const AIChat = isAIAvailable ? LazyAIChat : () => null
-
 export function ViewEditor() {
   const navigate = useNavigate()
   const project = useCurrentProject()
@@ -105,7 +99,7 @@ export function ViewEditor() {
         <ListenForDynamicVariantChange />
         <OpenRelationshipBrowserFromUrl />
         <FocusElementFromUrl />
-        <AIChat />
+        <LazyAIChat />
       </LikeC4Diagram>
     </LikeC4EditorProvider>
   )

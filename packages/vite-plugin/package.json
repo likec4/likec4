@@ -131,6 +131,7 @@
     "fast-equals": "catalog:utils",
     "nanostores": "catalog:react",
     "oxlint": "catalog:",
+    "rolldown": "catalog:tsdown",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",

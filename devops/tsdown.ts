@@ -32,31 +32,24 @@ export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | Us
   return tsdownDefineConfig({ ...base, ...config })
 }
 
-export function outputOptions(outputOptions?: Rolldown.OutputOptions): Rolldown.OutputOptions {
-  return defu(
-    outputOptions,
-    {
-      keepNames: true,
-      entryFileNames: '[name].mjs',
-      chunkFileNames: 'chunks/[name].mjs',
-
-      codeSplitting: {
-        groups: [
-          {
-            test: /node_modules/,
-            name: (moduleId: string) => {
-              const pkgName = moduleId.match(/.*\/node_modules\/(?<package>@[^/]+\/[^/]+|[^/]+)/)
-                ?.groups?.package
-              const isDts = /\.d\.[mc]?ts$/.test(moduleId)
-              return `libs/${pkgName || 'common'}${isDts ? '.d' : ''}`
-            },
-            minShareCount: 2,
-            priority: 5,
-          },
-        ],
-      },
-    } satisfies Rolldown.OutputOptions,
-  )
+/**
+ * Creates a code splitting group for node_modules
+ */
+export function nodeModulesCodeSplitting(
+  opts?: Partial<Omit<Rolldown.CodeSplittingGroup, 'test' | 'name'>>,
+): Rolldown.CodeSplittingGroup {
+  return {
+    test: /node_modules/,
+    name: (moduleId: string) => {
+      const pkgName = moduleId.match(/.*\/node_modules\/(?<package>@[^/]+\/[^/]+|[^/]+)/)
+        ?.groups?.package
+      const isDts = /\.d\.[mc]?ts$/.test(moduleId)
+      return `libs/${pkgName || 'common'}${isDts ? '.d' : ''}`
+    },
+    minShareCount: 2,
+    minSize: 5 * 1024, /* 5KB */
+    ...opts,
+  }
 }
 
 /**
@@ -89,4 +82,20 @@ export function codeSplittingGroup(
     priority: 10,
     ...opts,
   }
+}
+
+export function outputOptions(outputOptions?: Rolldown.OutputOptions): Rolldown.OutputOptions {
+  return defu(
+    outputOptions,
+    {
+      keepNames: true,
+      entryFileNames: '[name].mjs',
+      chunkFileNames: 'chunks/[name].mjs',
+      codeSplitting: {
+        groups: [
+          nodeModulesCodeSplitting(),
+        ],
+      },
+    } satisfies Rolldown.OutputOptions,
+  )
 }

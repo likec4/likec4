@@ -19,6 +19,7 @@ panda.buildinfo.json
 .claude/worktrees
 .claude/settings.local.json
 
+devops/lib
 apps/*/dist
 apps/*/lib
 apps/*/styled-system
@@ -53,7 +54,6 @@ apps/playground/src/**/*.js
 apps/playground/src/**/*.d.ts
 packages/*/src/**/*.js
 packages/*/src/**/*.d.ts
-packages/**/src/routeTree.gen.ts
 !packages/generators/src/drawio/dist-index.d.ts
 !packages/likec4-spa/src/global.d.ts
 

@@ -3,18 +3,18 @@
   "compilerOptions": {
     "target": "esnext",
     "lib": [
-      "esnext",
+      "esnext"
     ],
     "module": "NodeNext",
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "allowJs": true,
+    "composite": true,
     /* Bundler mode */
     "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     /* Linting */
     "strict": true,
     "noUncheckedIndexedAccess": false,
@@ -25,7 +25,7 @@
     ]
   },
   "include": [
-    "likec4ops.ts",
+    "*.ts",
     "commands/**/*"
   ]
 }

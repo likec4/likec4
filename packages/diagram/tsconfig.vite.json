@@ -6,12 +6,14 @@
     "tsBuildInfoFile": "lib/vite/.tsbuildinfo",
     "outDir": "lib/vite",
     "exactOptionalPropertyTypes": false,
+    "allowJs": true,
     "types": [
       "node"
     ]
   },
   "include": [
     "*.ts",
+    "*.mjs",
     "package.json"
   ],
   "references": [
@@ -20,6 +22,9 @@
     },
     {
       "path": "../../styled-system/styles/"
+    },
+    {
+      "path": "../../devops/"
     }
   ]
 }

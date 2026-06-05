@@ -49,8 +49,8 @@ catalog:
   graphology-types: ^0.24.8
   memfs: ^4.57.3
   nano-staged: ^1.0.2
-  oxlint: 1.59.0
-  oxlint-tsgolint: 0.20.0
+  oxlint: 1.68.0
+  oxlint-tsgolint: 0.23.0
   pako: ^2.1.0
   playwright: ^1.58.2
   tsx: 4.22.4

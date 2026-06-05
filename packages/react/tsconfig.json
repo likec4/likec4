@@ -6,15 +6,22 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "target": "esnext",
-    "outDir": "dist",
-    "allowJs": true,
+    "verbatimModuleSyntax": true,
+    "composite": true,
     "lib": [
       "ESNext",
       "DOM"
-    ]
+    ],
+    "allowJs": true,
+    "paths": {
+      "@likec4/styles/*": [
+        "./styled-system/*/index.mjs"
+      ]
+    }
   },
-  "files": [
-    "src/index.ts"
+  "include": [
+    "src",
+    "styled-system"
   ],
   "references": [
     {

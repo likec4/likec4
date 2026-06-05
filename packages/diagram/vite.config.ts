@@ -12,7 +12,14 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   mode: 'production',
-  resolve: {},
+  resolve: {
+    alias: {
+      '@likec4/styles': resolve('styled-system'),
+    },
+    // alias: [
+    //   { find: /^@likec4\/styles\/(.+)$/, replacement: resolve('styled-system', '$1', 'index') },
+    // ],
+  },
   oxc: {
     jsx: {
       development: false,
@@ -43,9 +50,9 @@ export default defineConfig({
       formats: ['es'],
     },
     rolldownOptions: {
+      tsconfig: 'tsconfig.src.json',
       external: [
-        ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
-        ...Object.keys(packageJson.peerDependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
+        ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(\\/.*)?$`)),
         /framer-motion/,
         /motion/,
         /motion-dom/,
@@ -72,13 +79,19 @@ export default defineConfig({
     }) as any,
     {
       name: 'ship-panda',
+      buildStart() {
+        execSync('pnpm pandacss codegen', {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        })
+      },
       async closeBundle(err) {
         if (err) {
           this.warn('skipped')
           return
         }
         this.info('shipping panda')
-        execSync('pnpm panda ship --outfile ./panda.buildinfo.json', {
+        execSync('pnpm pandacss ship --outfile ./panda.buildinfo.json', {
           stdio: 'inherit',
           cwd: process.cwd(),
         })

@@ -17,49 +17,59 @@ async function emptyDir(dir: string) {
   }
 }
 
-export default defineConfig([{
-  entry: [
-    'src/vite-plugin/index.ts',
-    'src/config/index.ts',
-    'src/model/builder.ts',
-    'src/model/index.ts',
-    'src/cli/index.ts',
-    'src/index.ts',
-  ],
-  tsconfig: 'tsconfig.cli.json',
-  dts: {
+export default defineConfig([
+  {
+    entry: [
+      'src/vite-plugin/index.ts',
+      'src/config/index.ts',
+      'src/model/builder.ts',
+      'src/model/index.ts',
+      'src/cli/index.ts',
+      'src/index.ts',
+    ],
     tsconfig: 'tsconfig.cli.json',
-  },
-  inputOptions: {
-    resolve: {
-      mainFields: ['module', 'main'],
-      conditionNames: ['production', 'sources', 'node', 'import', 'default'],
+    dts: {
+      tsconfig: 'tsconfig.cli.json',
     },
-  },
-  hooks: {
-    'build:done': async () => {
-      const vitePluginModulesPath = fileURLToPath(import.meta.resolve('@likec4/vite-plugin/modules'))
-      console.info('Copy vite-plugin-modules from %s', vitePluginModulesPath)
-      await copyFile(vitePluginModulesPath, './vite-plugin-modules.d.ts')
-      await mkdir('./config', { recursive: true })
-      await copyFile('../config/schema.json', './config/schema.json')
+    inputOptions: {
+      resolve: {
+        mainFields: ['module', 'main'],
+        conditionNames: ['production', 'sources', 'module', 'import', 'default'],
+      },
+    },
+    hooks: {
+      'build:done': async () => {
+        const vitePluginModulesPath = fileURLToPath(import.meta.resolve('@likec4/vite-plugin/modules'))
+        if (!existsSync(vitePluginModulesPath)) {
+          throw new Error(`vite-plugin modules not found: ${vitePluginModulesPath}`)
+        }
+        console.info('Copy vite-plugin-modules from %s', vitePluginModulesPath)
+        await copyFile(vitePluginModulesPath, './vite-plugin-modules.d.ts')
+        await mkdir('./config', { recursive: true })
+        await copyFile('../config/schema.json', './config/schema.json')
 
-      await copyReact()
-      await bundleApp()
+        await copyReact()
+        await bundleApp()
+      },
     },
   },
-}, {
-  entry: {
-    'index': './src/vite-plugin/internal.ts',
-  },
-  outDir: './dist/vite-plugin/internal',
-  platform: 'browser',
-  target: false,
-  tsconfig: 'tsconfig.cli.json',
-  dts: {
+  {
+    entry: {
+      'index': './src/vite-plugin/internal.ts',
+    },
+    outDir: './dist/vite-plugin/internal',
+    platform: 'neutral',
+    target: false,
+    minify: false,
+    outputOptions: {
+      entryFileNames: '[name].mjs',
+    },
     tsconfig: 'tsconfig.cli.json',
+    dts: {
+      tsconfig: 'tsconfig.cli.json',
+    },
   },
-}])
+])
 
 async function copyReact() {
   const from = resolve('../react/dist/')

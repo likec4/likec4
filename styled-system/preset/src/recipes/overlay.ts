@@ -39,6 +39,8 @@ export const overlay = defineRecipe({
       [borderRadius]: '0px',
       _backdrop: {
         cursor: 'zoom-out',
+        backdropFilter: `blur(var(${backdropBlur}))`,
+        background: `color-mix(in oklab, {colors.likec4.overlay.backdrop} var(${backdropOpacity}), transparent)`,
       },
       inset: '0',
       padding: '0',
@@ -94,25 +96,17 @@ export const overlay = defineRecipe({
         dialog: {
           _backdrop: {
             display: 'none',
+            backdropFilter: 'none',
+            background: '[transparent]',
           },
         },
       },
-      true: {
-        dialog: {
-          _backdrop: {
-            backdropFilter: `blur(var(${backdropBlur}))`,
-            background: `color-mix(in oklab, {colors.likec4.overlay.backdrop} var(${backdropOpacity}), transparent)`,
-          },
-        },
-      },
+      true: {},
     },
   },
   defaultVariants: {
     fullscreen: false,
     withBackdrop: true,
   },
-  staticCss: [{
-    fullscreen: ['*'],
-    withBackdrop: ['*'],
-  }],
+  staticCss: ['*'],
 })

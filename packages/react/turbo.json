@@ -6,14 +6,13 @@
   "tasks": {
     "build": {
       "dependsOn": [
-        "@likec4/core#build",
-        "@likec4/styles#build"
+        "@likec4/diagram#typecheck",
+        "@likec4/styles#build",
+        "sources"
       ],
       "outputs": [
         "dist/**",
-        "styled-system/**",
-        "*.css",
-        "panda.buildinfo.json"
+        "styled-system/**"
       ],
       "outputLogs": "new-only"
     }

@@ -64,6 +64,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "pretypecheck": "pandacss codegen",
     "typecheck": "tsc --build --verbose",
     "prebuild": "pandacss codegen",
     "build": "vite build -m production",
@@ -99,17 +100,15 @@
     "immer": "catalog:utils",
     "motion": "catalog:react",
     "nanostores": "catalog:react",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:externals",
     "xstate": "catalog:xstate",
-    "@tabler/icons-react": "catalog:react"
-  },
-  "peerDependencies": {
-    "react": "^19.x",
-    "react-dom": "^19.x",
     "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow"
+    "@xyflow/system": "catalog:xyflow",
+    "@tabler/icons-react": "catalog:react"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
@@ -122,12 +121,8 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "oxlint": "catalog:",
     "postcss": "catalog:css",
-    "react": "catalog:react",
-    "react-dom": "catalog:react",
     "typescript": "catalog:",
     "vite": "catalog:vite",
     "vite-plugin-dts": "5.0.1",
