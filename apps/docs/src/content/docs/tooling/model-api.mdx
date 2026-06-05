@@ -682,6 +682,13 @@ const enriched = (await likec4.toBuilder())
   .toLikeC4Model()
 ```
 
+:::note
+The helper names (`system`, `component`, …) are the **element kinds from the loaded specification** — one
+helper per `element <kind>` declared in your DSL. When seeding from disk these are only known at runtime,
+so `toBuilder()` returns a loosely-typed builder. To get them statically (with autocomplete and a check
+that they match the spec), use [`toTypedBuilder({ specification })`](#likec4totypedbuilder--get-a-typed-builder).
+:::
+
 The same seeding entry is also available directly on the Builder for when you already have the parsed
 data in hand:
 
@@ -717,6 +724,77 @@ In editable mode, same-FQN + same-kind redeclaration replaces the element's prop
 with a *different kind* still throws (it's almost certainly a programmer error). If you want
 re-declaring any existing FQN to throw, use the strict builder via `await likec4.toBuilder('strict')`
 (or `Builder.fromParsed(data, 'strict')`).
+
+:::caution
+Editing **replaces**, it does not **merge**. Re-declaring an element overwrites it with exactly the
+properties you pass — any property you omit falls back to its default, it is *not* carried over from the
+loaded element. To patch one property while keeping the rest, read the existing element first and spread
+the properties you want to preserve (see [Finding and patching existing elements](#finding-and-patching-existing-elements)).
+:::
+
+### Relating new elements to existing ones
+
+A common task is adding a new element and connecting it to something already in the DSL. Existing FQNs
+aren't in the static type set, but you can reference them as plain strings — the relationship is
+validated against the seeded model when you build:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .model(({ system, relTo }, _) =>
+    _(
+      system('monitoring').with(
+        // `cloud.backend` is an existing element loaded from the DSL
+        relTo('cloud.backend', 'observes'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+
+// or, equivalently, from the top level via `rel`:
+//   .model(({ system, rel }, _) =>
+//     _(
+//       system('monitoring'),
+//       rel('monitoring', 'cloud.backend', 'observes'),
+//     )
+//   )
+```
+
+Referencing an FQN that doesn't exist throws at build time, so typos surface immediately even though the
+compiler can't catch them.
+
+### Finding and patching existing elements
+
+To discover what's already in the model, walk it through the [LikeC4Model](#likec4model) returned by
+`computedModel()` (or inspect the parsed shape via `parsedModel()`):
+
+```ts
+const model = await likec4.computedModel()
+for (const element of model.elements()) {
+  console.log(element.id, element.kind, element.title)
+}
+```
+
+Because editing **replaces** rather than merges (see the note above), patching a single property means
+reading the existing element and passing back the values you want to keep alongside your change:
+
+```ts
+const existing = (await likec4.parsedModel()).element('customer')
+
+const updated = (await likec4.toBuilder())
+  .model(({ actor }, _) =>
+    _(
+      actor('customer', {
+        title: existing.title, // keep what you are not changing
+        metadata: { team: 'platform' }, // add / patch
+      }),
+    )
+  )
+  .toLikeC4Model()
+```
 
 ### `Builder.specification()` — add new kinds and tags
 

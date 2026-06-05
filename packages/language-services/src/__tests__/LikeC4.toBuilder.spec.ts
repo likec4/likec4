@@ -146,6 +146,89 @@ describe('LikeC4.toBuilder / toDSL / writeDSL', () => {
     ).rejects.toThrow(/element kind "database"/)
   })
 
+  describe('relating new elements to existing ones (review comment 3)', () => {
+    it('relates a new Builder element to an element loaded from the DSL', async () => {
+      const likec4 = await fromSource(sampleSource)
+      const updated = (await likec4.toBuilder())
+        // loose builder → helpers are `any` (existing FQNs aren't in the type set)
+        .model(({ system, relTo }: any, _: any) =>
+          _(
+            // `cloud.backend` is an existing element loaded from the DSL — it is
+            // not in the static type set, but referencing it as a string works
+            // and is validated against the seeded model at build time.
+            system('monitoring').with(
+              relTo('cloud.backend', 'observes'),
+            ),
+          )
+        )
+        .build()
+
+      const rel = Object.values(updated.relations).find(r => (r as { title?: string }).title === 'observes')
+      expect(rel, 'relation between new element and seeded element').toBeDefined()
+      expect(rel?.source).toMatchObject({ model: 'monitoring' })
+      expect(rel?.target).toMatchObject({ model: 'cloud.backend' })
+    })
+
+    it('rejects a relationship to a non-existing element', async () => {
+      const likec4 = await fromSource(sampleSource)
+      const builder = await likec4.toBuilder()
+      expect(() =>
+        builder.model(({ system, relTo }: any, _: any) =>
+          _(
+            system('monitoring').with(
+              relTo('cloud.does-not-exist'),
+            ),
+          )
+        )
+      ).toThrow(/not found/)
+    })
+  })
+
+  describe('finding and patching existing elements (review comment 2)', () => {
+    it('walks existing elements via the computed model', async () => {
+      const likec4 = await fromSource(sampleSource)
+      const model = await likec4.computedModel()
+      const ids = [...model.elements()].map(e => e.id)
+      expect(ids).toEqual(
+        expect.arrayContaining(['customer', 'cloud', 'cloud.backend', 'cloud.frontend']),
+      )
+    })
+
+    it('editable mode REPLACES properties — unspecified props reset to defaults', async () => {
+      const likec4 = await fromSource(sampleSource)
+      const updated = (await likec4.toBuilder())
+        .model(({ actor }: any, _: any) =>
+          _(
+            actor('customer', { metadata: { team: 'platform' } }),
+          )
+        )
+        .build()
+
+      // the metadata patch is applied...
+      expect(updated.elements['customer']?.metadata).toEqual({ team: 'platform' })
+      // ...but the original title `Customer` is gone — replaced by the FQN default.
+      expect(updated.elements['customer']?.title).toBe('customer')
+    })
+
+    it('preserves other properties by reading the existing element and spreading its props', async () => {
+      const likec4 = await fromSource(sampleSource)
+      const existing = (await likec4.parsedModel()).element('customer')
+      const updated = (await likec4.toBuilder())
+        .model(({ actor }: any, _: any) =>
+          _(
+            actor('customer', {
+              title: existing.title, // keep what you are not changing
+              metadata: { team: 'platform' }, // add / patch
+            }),
+          )
+        )
+        .build()
+
+      expect(updated.elements['customer']?.title).toBe('Customer')
+      expect(updated.elements['customer']?.metadata).toEqual({ team: 'platform' })
+    })
+  })
+
   it('renders the parsed model back to DSL via toDSL()', async () => {
     const likec4 = await fromSource(sampleSource)
     const dsl = await likec4.toDSL()
