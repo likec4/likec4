@@ -214,7 +214,7 @@ catalogs:
     birpc: ^4.0.0
     rollup: ^4.60.4
     vite: ^8.0.14
-    vite-plugin-dts: ^5.0.1
+    vite-plugin-dts: ^5.0.2
     vite-plugin-node-polyfills: ^0.26.0
     vite-tsconfig-paths: ^6.1.1
   vitest:
