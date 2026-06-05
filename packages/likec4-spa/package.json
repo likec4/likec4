@@ -72,7 +72,7 @@
     "@xstate/store": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
-    "autoprefixer": "^10.4.27",
+    "autoprefixer": "^10.5.0",
     "babel-plugin-react-compiler": "catalog:react",
     "citty": "catalog:utils",
     "clsx": "catalog:react",
