@@ -86,7 +86,17 @@ const ForkPlaygroundWorkspace = ({ workspace: { workspaceId: _id, ...workspace }
     createNew,
   }] = useWorkspaces()
   return (
-    <Box className="react-flow__panel top right">
+    <Box
+      className="react-flow__panel top right"
+      css={{
+        // On narrow screens the navigation toolbar spans the full width and would
+        // cover the Fork button, so push it below the toolbar. Once there is enough
+        // room (`@/md`) the toolbar no longer overlaps and the default offset is used.
+        marginTop: '[40px]',
+        '@/md': {
+          marginTop: '[15px]',
+        },
+      }}>
       <HStack gap="xs">
         <Button
           variant="default"
