@@ -152,8 +152,8 @@ catalogs:
       specifier: ^2.1.0
       version: 2.1.0
     playwright:
-      specifier: ^1.58.2
-      version: 1.58.2
+      specifier: 1.60.0
+      version: 1.60.0
     tsx:
       specifier: 4.22.4
       version: 4.22.4
@@ -1830,7 +1830,7 @@ importers:
         version: 2.1.0
       playwright:
         specifier: 'catalog:'
-        version: 1.58.2
+        version: 1.60.0
       react-compiler-runtime:
         specifier: catalog:react
         version: 1.0.0(react@19.2.6)
@@ -2818,7 +2818,7 @@ importers:
         version: 2.0.3
       playwright:
         specifier: 'catalog:'
-        version: 1.58.2
+        version: 1.60.0
       pretty-ms:
         specifier: ^9.3.0
         version: 9.3.0
@@ -9585,13 +9585,13 @@ packages:
   pkg-types@2.3.0:
     resolution: {integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==}
 
-  playwright-core@1.58.2:
-    resolution: {integrity: sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==}
+  playwright-core@1.60.0:
+    resolution: {integrity: sha512-9bW6zvX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.58.2:
-    resolution: {integrity: sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==}
+  playwright@1.60.0:
+    resolution: {integrity: sha512-hheHdokM8cdqCb0lcE3s+zT4t4W+vvjpGxsZlDnikarzx8tSzMebh3UiFtgqwFwnTnjYQcsyMF8ei2mCO/tpeA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -18954,11 +18954,11 @@ snapshots:
       exsolve: 1.0.8
       pathe: 2.0.3
 
-  playwright-core@1.58.2: {}
+  playwright-core@1.60.0: {}
 
-  playwright@1.58.2:
+  playwright@1.60.0:
     dependencies:
-      playwright-core: 1.58.2
+      playwright-core: 1.60.0
     optionalDependencies:
       fsevents: 2.3.2
 
