@@ -645,9 +645,18 @@ console.log(Object.keys(parsed.$data.views))
 
 ### `LikeC4.toBuilder()` — get a Builder seeded from disk
 
-`likec4.toBuilder(project?)` returns a [Model Builder](#model-builder) pre-populated with the loaded
-workspace. You can then chain `.model(...)`, `.deployment(...)` and `.views(...)` to add new content,
-and call `.toLikeC4Model()` (or `.build()`) to get the enriched model.
+`likec4.toBuilder(mode?, project?)` returns a [Model Builder](#model-builder) pre-populated with the
+loaded workspace. You can then chain `.model(...)`, `.deployment(...)` and `.views(...)` to add new
+content, and call `.toLikeC4Model()` (or `.build()`) to get the enriched model.
+
+The builder is **editable** by default — re-declaring an element that already exists (same FQN, same
+kind) edits it in place rather than throwing, which is what you usually want when patching a loaded
+model. Pass `'strict'` to get the strict builder where duplicate FQNs always throw:
+
+```ts
+const editable = await likec4.toBuilder()          // editable (default)
+const strict = await likec4.toBuilder('strict')    // strict
+```
 
 ```ts
 import { LikeC4 } from "likec4"
@@ -682,11 +691,10 @@ import { Builder } from "@likec4/core/builder"
 const builder = Builder.fromParsed(parsedData)
 ```
 
-### `Builder.allowOverwrites()` — edit seeded elements
+### Editable vs strict — editing seeded elements
 
-By default the Builder is strict: re-declaring an FQN that is already present throws. Opt in with
-`.allowOverwrites()` when you want to *edit* seeded entries (for example, to update a title or merge in
-new children):
+`toBuilder()` is editable by default, so you can *edit* seeded entries (for example, to update a title
+or merge in new children) just by re-declaring them:
 
 ```ts
 import { LikeC4 } from "likec4"
@@ -694,7 +702,6 @@ import { LikeC4 } from "likec4"
 const likec4 = await LikeC4.fromWorkspace('./')
 
 const updated = (await likec4.toBuilder())
-  .allowOverwrites()
   .model(({ component }, _) =>
     _(
       component('cloud.api', { title: 'Updated' }),
@@ -706,8 +713,10 @@ const updated = (await likec4.toBuilder())
   .toLikeC4Model()
 ```
 
-In overwrite mode, same-FQN + same-kind redeclaration replaces the element's properties. Redeclaring
-with a *different kind* still throws (it's almost certainly a programmer error).
+In editable mode, same-FQN + same-kind redeclaration replaces the element's properties. Redeclaring
+with a *different kind* still throws (it's almost certainly a programmer error). If you want
+re-declaring any existing FQN to throw, use the strict builder via `await likec4.toBuilder('strict')`
+(or `Builder.fromParsed(data, 'strict')`).
 
 ### `Builder.specification()` — add new kinds and tags
 

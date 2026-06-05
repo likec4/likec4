@@ -78,6 +78,34 @@ describe('LikeC4.toBuilder / toDSL / writeDSL', () => {
     expect(enriched.view('monitoring').id).toBe('monitoring')
   })
 
+  it('toBuilder() is editable by default — re-declaring a loaded element edits it', async () => {
+    const likec4 = await fromSource(sampleSource)
+    const builder = await likec4.toBuilder() as any
+
+    const enriched = builder
+      .model(({ component }: any, _: any) =>
+        _(
+          component('cloud.backend', { title: 'Patched backend' }),
+        )
+      )
+      .toLikeC4Model()
+
+    expect(enriched.element('cloud.backend').title).toBe('Patched backend')
+  })
+
+  it('toBuilder("strict") throws when re-declaring a loaded element', async () => {
+    const likec4 = await fromSource(sampleSource)
+    const builder = await likec4.toBuilder('strict') as any
+
+    expect(() =>
+      builder.model(({ component }: any, _: any) =>
+        _(
+          component('cloud.backend', { title: 'Patched backend' }),
+        )
+      )
+    ).toThrow(/already exists/)
+  })
+
   it('renders the parsed model back to DSL via toDSL()', async () => {
     const likec4 = await fromSource(sampleSource)
     const dsl = await likec4.toDSL()

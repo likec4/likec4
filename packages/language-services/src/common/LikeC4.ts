@@ -1,5 +1,5 @@
 import { Builder } from '@likec4/core/builder'
-import type { AnyTypes } from '@likec4/core/builder'
+import type { AnyTypes, BuilderMode } from '@likec4/core/builder'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { LayoutedView, NonEmptyArray, ProjectId } from '@likec4/core/types'
 import { generate as generateLikeC4Source } from '@likec4/generators/likec4'
@@ -150,6 +150,12 @@ Please specify a project folder`)
    * `.deployment(...)` and `.views(...)` on the returned builder to add new
    * elements, relations and views on top of what was loaded from DSL.
    *
+   * The builder is `editable` by default: re-declaring an element that already
+   * exists (same FQN, same kind) edits it in place rather than throwing — which
+   * is what you usually want when patching a loaded model. Pass `'strict'` to
+   * get the strict builder where duplicate FQNs always throw (see
+   * {@link BuilderMode}).
+   *
    * Type-safety note: the returned builder is `Builder<AnyTypes>` — element
    * kinds, FQNs, view ids and tags are only known at runtime. See
    * {@link Builder.fromParsed} for details.
@@ -162,11 +168,14 @@ Please specify a project folder`)
    *     _(system('monitoring').with(component('grafana'))),
    *   )
    *   .toLikeC4Model()
+   *
+   * // Strict builder — re-declaring an existing FQN throws:
+   * const strict = await likec4.toBuilder('strict')
    * ```
    */
-  async toBuilder(project?: string | undefined): Promise<Builder<AnyTypes>> {
+  async toBuilder(mode: BuilderMode = 'editable', project?: string | undefined): Promise<Builder<AnyTypes>> {
     const parsed = await this.parsedModel(project)
-    return Builder.fromParsed(parsed.$data)
+    return Builder.fromParsed(parsed.$data, mode)
   }
 
   /**
