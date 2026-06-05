@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Fqn, NodeId } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import {
@@ -95,7 +102,7 @@ export function ElementNode(props: Types.NodeProps<'element'>) {
     <ElementNodeContainer nodeProps={props}>
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
       <ElementShape {...props} />
-      <ElementData {...props} />
+      <ElementData {...props} aria-hidden />
       {enableElementTags && <ElementTags {...props} />}
       <ElementActions {...props} />
       {enableElementDetails && <ElementDetailsButtonWithHandler {...props} />}
@@ -113,7 +120,7 @@ export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
     <ElementNodeContainer nodeProps={props}>
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
       <ElementShape {...props} />
-      <ElementData {...props} />
+      <ElementData {...props} aria-hidden />
       {enableElementTags && <ElementTags {...props} />}
       <DeploymentElementActions {...props} />
       {enableElementDetails && <ElementDetailsButtonWithHandler {...props} />}
@@ -144,7 +151,7 @@ export function CompoundElementNode(props: Types.NodeProps<'compound-element'>) 
       nodeProps={props}
     >
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
-      <CompoundTitle {...props} />
+      <CompoundTitle {...props} aria-hidden />
       <CompoundActions {...props} />
       {enableElementDetails && <CompoundDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <CompoundElementToolbar {...props} />}
@@ -162,7 +169,7 @@ export function CompoundDeploymentNode(props: Types.NodeProps<'compound-deployme
       nodeProps={props}
     >
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
-      <CompoundTitle {...props} />
+      <CompoundTitle {...props} aria-hidden />
       <CompoundActions {...props} />
       {enableElementDetails && <CompoundDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <CompoundDeploymentToolbar {...props} />}
@@ -180,7 +187,7 @@ export function ViewGroupNode(props: Types.NodeProps<'view-group'>) {
       nodeProps={props}
     >
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
-      <CompoundTitle {...props} />
+      <CompoundTitle {...props} aria-hidden />
       <DefaultHandles direction={props.data.viewLayoutDir} />
     </CompoundNodeContainer>
   )

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { ComputedNodeStyle, MarkdownOrString, NodeId } from '@likec4/core'
 import type { ColorLiteral, LikeC4Styles } from '@likec4/core/styles'
 import { type Color, RichText } from '@likec4/core/types'
@@ -216,9 +223,14 @@ const Description = forwardRef<
  * </ElementData.Root>
  * ```
  */
-export function ElementData({ data }: ElementDataProps) {
+export function ElementData(
+  { data, 'aria-hidden': ariaHidden }: ElementDataProps & { 'aria-hidden'?: boolean | undefined },
+) {
   return (
-    <Root data={data}>
+    // `aria-hidden` is opt-in: the main diagram passes it because the node's
+    // accessible label already conveys this text, so re-exposing the visible
+    // title/description/icon would make a screen reader announce it twice.
+    <Root data={data} aria-hidden={ariaHidden}>
       <Icon data={data} />
       <Content>
         <Title data={data} />

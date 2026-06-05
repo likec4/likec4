@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { cx } from '@likec4/styles/css'
 import { useMantineColorScheme } from '@mantine/core'
 import {
@@ -6,7 +13,7 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
-import { useMemo } from 'react'
+import { type KeyboardEvent as ReactKeyboardEvent, useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
@@ -18,6 +25,58 @@ import { type XYBackground, Background } from './Background'
 import { Base } from './Base'
 import { MaxZoom, MinZoom } from './const'
 import type { BaseEdge, BaseNode } from './types'
+
+// React Flow renders a single, shared description element that every node (and
+// every edge) references via `aria-describedby`, so this wording must hold for
+// any focusable element. Enter/Space always selects the focused element and
+// reveals its contextual actions; per-element `aria-label`s describe what those
+// actions do (e.g. "Opens view ...").
+const likec4AriaLabelConfig = {
+  'node.a11yDescription.default': 'Press Enter or Space to select this node and reveal its actions.',
+  'node.a11yDescription.keyboardDisabled': 'Keyboard activation is disabled.',
+  'edge.a11yDescription.default': 'Press Enter or Space to select this relationship and reveal its actions.',
+}
+
+function activateFocusedElement(event: ReactKeyboardEvent) {
+  if (event.repeat || (event.key !== 'Enter' && event.key !== ' ')) {
+    return
+  }
+  const target = event.target
+  if (!(target instanceof Element)) {
+    return
+  }
+  const interactive = target.closest(
+    'a,button,input,textarea,select,[role="button"],[role="link"],[contenteditable="true"]',
+  )
+  if (
+    interactive
+    && !interactive.classList.contains('react-flow__node')
+    && !interactive.classList.contains('react-flow__edge')
+  ) {
+    return
+  }
+  const flowElement = target.closest<HTMLElement | SVGElement>(
+    '.react-flow__node[data-id], .react-flow__edge[data-id]',
+  )
+  const view = flowElement?.ownerDocument.defaultView
+  if (!flowElement || !view) {
+    return
+  }
+  event.preventDefault()
+  // Keep propagation so React Flow still updates selection and aria-live state.
+  const rect = flowElement.getBoundingClientRect()
+  flowElement.dispatchEvent(
+    new view.MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      button: 0,
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2,
+      detail: 1,
+      view,
+    }),
+  )
+}
 
 export type BaseXYFlowProps<NodeType extends BaseNode, EdgeType extends BaseEdge> = Simplify<
   & {
@@ -73,6 +132,10 @@ export function BaseXYFlow<
     onNodeMouseLeave,
     onEdgeMouseEnter,
     onEdgeMouseLeave,
+    onKeyDownCapture,
+    ariaLabelConfig,
+    nodesFocusable = nodesDraggable || nodesSelectable,
+    edgesFocusable = false,
     ...props
   }: BaseXYFlowProps<NodeType, EdgeType>,
 ) {
@@ -125,9 +188,13 @@ export function BaseXYFlow<
         selectionKeyCode: null,
       })}
       elementsSelectable={nodesSelectable}
-      nodesFocusable={nodesDraggable || nodesSelectable}
-      edgesFocusable={false}
+      nodesFocusable={nodesFocusable}
+      edgesFocusable={edgesFocusable}
       nodesDraggable={nodesDraggable}
+      ariaLabelConfig={{
+        ...likec4AriaLabelConfig,
+        ...ariaLabelConfig,
+      }}
       nodeDragThreshold={4}
       nodeClickDistance={3}
       paneClickDistance={3}
@@ -194,6 +261,12 @@ export function BaseXYFlow<
       })}
       onNodeDoubleClick={stopPropagation}
       onEdgeDoubleClick={stopPropagation}
+      onKeyDownCapture={useCallbackRef((event) => {
+        onKeyDownCapture?.(event)
+        if (!event.defaultPrevented) {
+          activateFocusedElement(event)
+        }
+      })}
       {...props}
     >
       {isBgWithPattern && <Background background={background} />}
