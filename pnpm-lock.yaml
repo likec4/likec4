@@ -332,8 +332,8 @@ catalogs:
       version: 0.22.1
   utils:
     '@logtape/logtape':
-      specifier: ^2.0.5
-      version: 2.0.5
+      specifier: ^2.1.1
+      version: 2.1.1
     '@lume/kiwi':
       specifier: ^0.4.4
       version: 0.4.4
@@ -2312,7 +2312,7 @@ importers:
     dependencies:
       '@logtape/logtape':
         specifier: catalog:utils
-        version: 2.0.5
+        version: 2.1.1
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -5119,8 +5119,8 @@ packages:
   '@jspm/core@2.1.0':
     resolution: {integrity: sha512-3sRl+pkyFY/kLmHl0cgHiFp2xEqErA8N3ECjMs7serSUBmoJ70lBa0PG5t0IM6WJgdZNyyI0R8YFfi5wM8+mzg==}
 
-  '@logtape/logtape@2.0.5':
-    resolution: {integrity: sha512-UizDkh20ZPJVOddRxG1F77WhHdlNl/sbQgoO8T534R7XvUBMAJ9En9f35u+meW2tRsNLvjz6R87Zanwf53tspQ==}
+  '@logtape/logtape@2.1.1':
+    resolution: {integrity: sha512-aULbCqUQGerfOsZ3CMvcKtueKzmdchluXYUd3bIHKmOIS93fx1ko0+hyRQ4flloGZ8EiyRPydZXiy8n1J/eAQA==}
 
   '@lume/kiwi@0.4.4':
     resolution: {integrity: sha512-ie0YTKgiZqD4TXlJ4eUbfi4UEoKs6YlLRYNTfPm5eUXwfudTBmPRs7Qcxz2SWKDpVTwThv3sWG6zwtyAA0nPpw==}
@@ -13755,7 +13755,7 @@ snapshots:
 
   '@jspm/core@2.1.0': {}
 
-  '@logtape/logtape@2.0.5': {}
+  '@logtape/logtape@2.1.1': {}
 
   '@lume/kiwi@0.4.4': {}
 

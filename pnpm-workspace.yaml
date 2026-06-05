@@ -172,7 +172,7 @@ catalogs:
     "@tsdown/css": ^0.22.1
     rolldown: ^1.0.3
   utils:
-    "@logtape/logtape": ^2.0.5
+    "@logtape/logtape": ^2.1.1
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
