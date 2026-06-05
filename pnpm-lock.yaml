@@ -210,8 +210,8 @@ catalogs:
       version: 4.4.3
   hono:
     '@hono/mcp':
-      specifier: ^0.2.5
-      version: 0.2.5
+      specifier: ^0.3.0
+      version: 0.3.0
     '@hono/node-server':
       specifier: ^1.19.14
       version: 1.19.14
@@ -2402,7 +2402,7 @@ importers:
     devDependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.2.5(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(hono-rate-limiter@0.4.2(hono@4.12.18))(hono@4.12.18)(zod@4.4.3)
+        version: 0.3.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(hono-rate-limiter@0.4.2(hono@4.12.18))(hono@4.12.18)(zod@4.4.3)
       '@hono/node-server':
         specifier: catalog:hono
         version: 1.19.14(hono@4.12.18)
@@ -4782,12 +4782,12 @@ packages:
       '@modelcontextprotocol/sdk':
         optional: true
 
-  '@hono/mcp@0.2.5':
-    resolution: {integrity: sha512-JsaJes7VlNvUrUQ9j2b9C13xjFLvyKQY515aWtsdJ9cwhBmWz5od2yUCbDu7cX38GeADmlLmpu4BKNNAV6G27w==}
+  '@hono/mcp@0.3.0':
+    resolution: {integrity: sha512-UhSWFbZwRxHBdptOn2r1HyB8Vt6gU+BL3AbTis2t8TBW69ZhG4soJQ09yEL/t/ymxszJnWp5Rq6tOXXOjuK1qg==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.25.1
       hono: '*'
-      hono-rate-limiter: ^0.4.2
+      hono-rate-limiter: ^0.5.3
       zod: ^3.25.0 || ^4.0.0
 
   '@hono/node-server@1.19.14':
@@ -13472,7 +13472,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@hono/mcp@0.2.5(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(hono-rate-limiter@0.4.2(hono@4.12.18))(hono@4.12.18)(zod@4.4.3)':
+  '@hono/mcp@0.3.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(hono-rate-limiter@0.4.2(hono@4.12.18))(hono@4.12.18)(zod@4.4.3)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
       hono: 4.12.18
