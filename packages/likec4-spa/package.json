@@ -2,7 +2,7 @@
   "name": "@likec4/spa",
   "private": true,
   "description": "Single-page application for rendering architecture diagrams",
-  "version": "1.57.1",
+  "version": "1.58.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",

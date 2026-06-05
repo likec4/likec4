@@ -1,3 +1,29 @@
+## [1.58.0](https://github.com/likec4/likec4/compare/v1.57.0...v1.58.0) (2026-06-05)
+
+### 🚀 Features
+
+- **Delete Elements/Edges in the Editor**:\
+  Select nodes and/or edges in the diagram editor and press delete to remove them from the view. Edges connected to a deleted node are dropped automatically, and the change is added to undo/redo history. Not available for dynamic views.
+
+- **Edit Edge Label Positions**:\
+  Select a relationship edge and drag its label to reposition it; the position is saved to the manual layout with undo/redo. A manually placed label moves together with the edge when its curve is reshaped, keeping its offset.
+
+- **Accurate Tag Text Color via APCA Contrast**:\
+  Tags with custom hex / rgb colors now get an accurate text color derived from the background via APCA contrast, instead of the previous CSS-filter workaround. Thanks [@farhan523](https://github.com/farhan523), [#2978](https://github.com/likec4/likec4/pull/2978), resolves [#2143](https://github.com/likec4/likec4/issues/2143)
+
+### 🐞 Bug Fixes
+
+- Fixed `export png` / `export jpg` failing in the Docker image with `browserType.launch: Executable doesn't exist`. The bundled Playwright and the installed Chromium browsers are now kept in sync. [#3032](https://github.com/likec4/likec4/pull/3032), fixes [#2961](https://github.com/likec4/likec4/issues/2961)
+
+- Fixed favicon 404 in `likec4 build --output-single-file` by inlining the favicon as a base64 data URI so the single HTML file stays self-contained. Thanks [@MichaelMcCodington](https://github.com/MichaelMcCodington), [#3030](https://github.com/likec4/likec4/pull/3030)
+
+- Fixed deployment relationship filters so source and target metadata predicates use deployed instance metadata. Thanks [@ckeller42](https://github.com/ckeller42), [#2986](https://github.com/likec4/likec4/pull/2986)
+
+- Nested `parallel` blocks in dynamic views now produce a clear validation error (`Nested parallel blocks are not allowed`) instead of a cryptic parser error. Thanks [@farhan523](https://github.com/farhan523), [#2985](https://github.com/likec4/likec4/pull/2985), resolves [#988](https://github.com/likec4/likec4/issues/988)
+
+- Fixed "apply latest" action incorrectly triggering the new AI layout enhancement. [#2995](https://github.com/likec4/likec4/pull/2995)
+
+
 ## [1.57.0](https://github.com/likec4/likec4/compare/v1.56.0...v1.57.0) (2026-05-22)
 
 ### 🚀 Features
