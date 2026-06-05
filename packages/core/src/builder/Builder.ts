@@ -35,6 +35,7 @@ import type {
 import {
   type DeploymentElement,
   type DeploymentRelation,
+  type DeploymentRelationship,
   type Element,
   type Fqn,
   type IconUrl,
@@ -45,6 +46,7 @@ import {
   type NonEmptyArray,
   type ParsedDeploymentView as DeploymentView,
   type RelationId,
+  type Relationship,
   _stage,
   _type,
   exact,
@@ -56,7 +58,7 @@ import {
 } from '../types'
 import { DefaultMap, invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
-import type { AnyTypes, BuilderProjectSpecification, BuilderSpecification, Types } from './_types'
+import type { AnyTypes, BuilderMode, BuilderProjectSpecification, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
 import type {
   AddDeploymentNodeHelpers,
@@ -80,6 +82,29 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   readonly Types: T
 
   clone(): Builder<T>
+
+  /**
+   * Extends the builder with additional specification — new element kinds,
+   * deployment kinds, relationship kinds, tags or metadata keys. Existing kinds
+   * with the same name are overridden by the new spec.
+   *
+   * The returned builder's `Types` are the *union* of the current types and the
+   * ones derived from `spec` (see {@link Types.Merge}), so element-kind helpers,
+   * tags, etc. accumulate rather than narrowing.
+   *
+   * @example
+   * ```ts
+   * Builder.fromParsed(data)
+   *   .specification({
+   *     elements: { database: { style: { shape: 'storage' } } },
+   *     tags: { experimental: { color: '#f00' } },
+   *   })
+   *   .model(({ database }, _) => _(database('warehouse', { tags: ['experimental'] })))
+   * ```
+   */
+  specification<const Spec extends BuilderSpecification>(
+    spec: Spec,
+  ): Builder<Types.Merge<T, Types.FromSpecification<Spec>>>
 
   /**
    * Builders for each element kind
@@ -227,7 +252,7 @@ function validateSpec({ tags, elements, deployments, relationships, ...specifica
       ensureObj(tags),
     )
   }
-  const _elements = ensureObj(elements)
+  const _elements = ensureObj(elements ?? {})
 
   for (const [kind, spec] of entries(_elements)) {
     if (spec.tags) {
@@ -258,6 +283,63 @@ function validateSpec({ tags, elements, deployments, relationships, ...specifica
   }
 }
 
+/**
+ * The shape of a {@link Specification} this module reads when checking
+ * compatibility — only the name-bearing slots that affect {@link Types.FromSpecification}.
+ */
+interface SpecificationShape {
+  elements?: string[] | Record<string, unknown>
+  deployments?: string[] | Record<string, unknown>
+  relationships?: string[] | Record<string, unknown>
+  tags?: string[] | Record<string, unknown>
+  metadataKeys?: readonly string[]
+}
+
+const specKeysOf = (value: string[] | Record<string, unknown> | undefined): readonly string[] =>
+  isNullish(value) ? [] : isArray(value) ? value : Object.keys(value)
+
+/**
+ * Asserts that `declared` is a subset of `loaded`: every element / deployment /
+ * relationship kind, tag and metadata key declared must be present in the loaded
+ * specification. The reverse is allowed — the loaded specification may contain
+ * extra kinds/tags that are not declared (you simply won't get typed helpers for
+ * them).
+ *
+ * Styles and other per-kind props are intentionally ignored — only the *names*
+ * that feed {@link Types.FromSpecification} are compared.
+ *
+ * Used by `LikeC4.toTypedBuilder` to back its typed cast with a runtime check:
+ * if a declared kind is missing from the loaded model, the produced types would
+ * lie, so we throw instead.
+ *
+ * @throws Error listing every declared-but-missing entry.
+ */
+export function assertSpecificationCompatible(
+  declared: BuilderSpecification,
+  loaded: SpecificationShape,
+): void {
+  const missing: string[] = []
+  const compare = (label: string, declaredKeys: readonly string[], loadedKeys: ReadonlySet<string>) => {
+    for (const key of declaredKeys) {
+      if (!loadedKeys.has(key)) {
+        missing.push(`${label} "${key}"`)
+      }
+    }
+  }
+
+  compare('element kind', specKeysOf(declared.elements), new Set(specKeysOf(loaded.elements)))
+  compare('deployment kind', specKeysOf(declared.deployments), new Set(specKeysOf(loaded.deployments)))
+  compare('relationship kind', specKeysOf(declared.relationships), new Set(specKeysOf(loaded.relationships)))
+  compare('tag', specKeysOf(declared.tags), new Set(specKeysOf(loaded.tags)))
+  compare('metadata key', declared.metadataKeys ?? [], new Set(loaded.metadataKeys ?? []))
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Specification mismatch — declared but not present in the loaded model:\n  - ${missing.join('\n  - ')}`,
+    )
+  }
+}
+
 function toMarkdownOrString(input: string | MarkdownOrString | null | undefined): MarkdownOrString | null {
   if (isNullish(input)) {
     return null
@@ -281,6 +363,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
   _imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map()),
+  _mode: BuilderMode = 'strict',
 ): Builder<T> {
   const spec = validateSpec(_spec)
 
@@ -361,6 +444,28 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     get Types(): T {
       throw new Error('Types are not available in runtime')
     },
+    specification: <NewSpec extends BuilderSpecification>(newSpec: NewSpec) => {
+      // `defu(target, ...defaults)` — keys in `target` win, others fall back.
+      // For metadataKeys (string[]) defu concatenates+dedups, which is exactly
+      // what we want.
+      const mergedSpec = defu(validateSpec(newSpec), spec) as BuilderSpecification
+
+      const imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
+      for (const [key, value] of _imports) {
+        imports.set(key, structuredClone(value))
+      }
+      return builder<BuilderSpecification, AnyTypes>(
+        mergedSpec,
+        structuredClone(_elements),
+        structuredClone(_relations),
+        structuredClone(_views),
+        structuredClone(_globals),
+        structuredClone(_deployments),
+        structuredClone(_deploymentRelations),
+        imports,
+        _mode,
+      ) as unknown as Builder<Types.Merge<T, Types.FromSpecification<NewSpec>>>
+    },
     clone: () => {
       const imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
       for (const [key, value] of _imports) {
@@ -376,6 +481,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(_deployments),
         structuredClone(_deploymentRelations),
         imports,
+        _mode,
       )
     },
 
@@ -389,8 +495,18 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           `Parent element with id "${parent}" not found for element with id "${element.id}"`,
         )
       }
-      if (lookup.has(fqn)) {
-        throw new Error(`Element with id "${element.id}" already exists`)
+      const existing = lookup.get(fqn)
+      if (existing) {
+        if (_mode === 'strict') {
+          throw new Error(`Element with id "${element.id}" already exists`)
+        }
+        // In editable mode same-kind re-declaration replaces the existing
+        // element (so `.with(...)` can both edit and descend). Different-kind
+        // redeclaration is still a programmer error.
+        invariant(
+          existing.kind === element.kind,
+          `Element with id "${element.id}" already exists with kind "${existing.kind}", cannot redeclare as "${element.kind}"`,
+        )
       }
       lookup.set(fqn, project ? { ...element, id: fqn } : element)
       return self
@@ -953,6 +1069,52 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
   return self
 }
+function fromParsedImpl<T extends AnyTypes = AnyTypes>(
+  data: ParsedLikeC4ModelData<Any>,
+  mode: BuilderMode = 'strict',
+): Builder<T> {
+  const { specification } = data
+  const seedSpec = {
+    elements: specification.elements,
+    deployments: specification.deployments,
+    relationships: specification.relationships,
+    tags: specification.tags,
+    metadataKeys: (specification as { metadataKeys?: string[] }).metadataKeys,
+  } as unknown as BuilderSpecification
+
+  const seedElements = new Map<string, Element<Any>>(
+    Object.entries(structuredClone(data.elements)) as Array<[string, Element<Any>]>,
+  )
+  const seedRelations = Object.values(structuredClone(data.relations)) as Relationship[]
+  const seedViews = new Map<string, LikeC4View>(
+    Object.entries(structuredClone(data.views)) as Array<[string, LikeC4View]>,
+  )
+  const seedGlobals = structuredClone(data.globals)
+  const seedDeployments = new Map<string, DeploymentElement>(
+    Object.entries(structuredClone(data.deployments.elements)) as Array<[string, DeploymentElement]>,
+  )
+  const seedDeploymentRelations = Object.values(
+    structuredClone(data.deployments.relations),
+  ) as DeploymentRelationship[]
+  const seedImports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
+  for (const [projectId, els] of Object.entries(data.imports ?? {})) {
+    const cloned = structuredClone(els) as Element<Any>[]
+    seedImports.set(projectId, new Map(cloned.map(e => [e.id as string, e])))
+  }
+
+  return builder<BuilderSpecification, T>(
+    seedSpec,
+    seedElements,
+    seedRelations as unknown as ModelRelation[],
+    seedViews,
+    seedGlobals,
+    seedDeployments,
+    seedDeploymentRelations as unknown as DeploymentRelation[],
+    seedImports,
+    mode,
+  )
+}
+
 export const Builder = {
   /**
    * Creates a builder with compositional methods
@@ -1029,6 +1191,47 @@ export const Builder = {
     spec: Spec,
   ): Builder<Types.FromSpecification<Spec>> {
     return builder<Spec, Types.FromSpecification<Spec>>(spec)
+  },
+
+  /**
+   * Creates a builder seeded from an existing {@link ParsedLikeC4ModelData}.
+   *
+   * Use this to enrich a model that was loaded from disk (e.g. via
+   * `LikeC4.fromWorkspace(...).toBuilder()`) — the returned builder already
+   * contains the model's elements, relations, views, deployments, globals and
+   * imports, so calls to `.model(...)`, `.deployment(...)` and `.views(...)` will
+   * extend it.
+   *
+   * Type-safety:
+   * - When the data carries a typed {@link Aux} (e.g. the output of
+   *   `builder.build()`), the returned builder preserves those types — element
+   *   kinds, FQNs, view ids and tags are statically known.
+   * - When the data has an `Unknown` Aux (e.g. loaded from a workspace via
+   *   `LikeC4.toBuilder()`), the returned builder is `Builder<AnyTypes>` —
+   *   kinds and FQNs are only known at runtime.
+   * - You can also override the type explicitly via the generic parameter
+   *   (`Builder.fromParsed<typeof mySpec.Types>(data)`) — this is an unchecked
+   *   promise: the caller takes responsibility for the cast.
+   *
+   * The optional `mode` controls duplicate handling (see {@link BuilderMode}):
+   * - `strict` (default): re-declaring an existing FQN throws.
+   * - `editable`: re-declaring an existing FQN with the same kind replaces it,
+   *   so loaded elements can be edited in place.
+   *
+   * @example
+   * ```ts
+   * const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+   * const builder = Builder.fromParsed((await likec4.parsedModel()).$data, 'editable')
+   * const enriched = builder
+   *   .model(({ system, component, relTo }, _) =>
+   *     _(system('monitoring').with(component('grafana'))),
+   *   )
+   *   .toLikeC4Model()
+   * ```
+   */
+  fromParsed: fromParsedImpl as {
+    <A extends Any>(data: ParsedLikeC4ModelData<A>, mode?: BuilderMode): Builder<Types.FromAux<A>>
+    <T extends AnyTypes>(data: ParsedLikeC4ModelData<Any>, mode?: BuilderMode): Builder<T>
   },
 }
 
