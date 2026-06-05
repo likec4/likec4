@@ -24,6 +24,19 @@ import type {
 import type { Builder } from './Builder'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 
+/**
+ * Duplicate-handling mode for a {@link Builder}.
+ *
+ * - `strict` (default): re-declaring an FQN that already exists throws.
+ * - `editable`: re-declaring an existing FQN with the **same kind** replaces the
+ *   existing entry (so `.with(...)` can both edit and descend). Different-kind
+ *   redeclaration still throws.
+ *
+ * Typically set when seeding a builder from a loaded model — see
+ * {@link Builder.fromParsed} and `LikeC4.toBuilder`.
+ */
+export type BuilderMode = 'strict' | 'editable'
+
 type ElementSpecification = Omit<ElementKindSpecification, 'tags'> & {
   tags?: string[]
 }

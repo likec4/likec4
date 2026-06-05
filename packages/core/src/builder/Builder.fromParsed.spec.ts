@@ -150,11 +150,10 @@ describe('Builder.fromParsed', () => {
     })
   })
 
-  it('returns a builder that can edit existing elements', () => {
+  it('returns a builder that can edit existing elements in editable mode', () => {
     const original = seedBuilder.build()
     const enriched = Builder
-      .fromParsed<typeof seedSpec['Types']>(original)
-      .allowOverwrites()
+      .fromParsed<typeof seedSpec['Types']>(original, 'editable')
       .model(({ component, system }, _) =>
         _(
           component('cloud.api', { title: 'Updated' }),
@@ -170,6 +169,20 @@ describe('Builder.fromParsed', () => {
       'cloud.ui': { id: 'cloud.ui', title: 'Changed' },
       'cloud.api': { id: 'cloud.api', title: 'Updated' },
     })
+  })
+
+  it('throws when re-declaring an existing element in strict mode (default)', () => {
+    const original = seedBuilder.build()
+    expect(() =>
+      Builder
+        .fromParsed<typeof seedSpec['Types']>(original)
+        .model(({ component }, _) =>
+          _(
+            component('cloud.api', { title: 'Updated' }),
+          )
+        )
+        .build()
+    ).toThrow(/already exists/)
   })
 
   it('cross-references to seeded FQNs work at runtime via helpers()', () => {

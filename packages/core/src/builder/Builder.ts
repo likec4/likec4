@@ -59,7 +59,7 @@ import {
 } from '../types'
 import { DefaultMap, invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
-import type { AnyTypes, BuilderProjectSpecification, BuilderSpecification, Types } from './_types'
+import type { AnyTypes, BuilderMode, BuilderProjectSpecification, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
 import type {
   AddDeploymentNodeHelpers,
@@ -84,27 +84,6 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   readonly Types: T
 
   clone(): Builder<T>
-
-  /**
-   * Returns a builder that allows re-declaring elements/deployments already
-   * present in the builder's state (typically seeded by {@link Builder.fromParsed}).
-   *
-   * In overwrite mode, calling `system('cloud.ui')` for an FQN that already exists
-   * is a no-op as long as the element kind matches — `.with(...)` still descends
-   * so children can be added under it. Different-kind redeclaration still throws.
-   *
-   * Default mode (without this opt-in) is strict: duplicate FQNs always throw.
-   *
-   * @example
-   * ```ts
-   * Builder.fromParsed(data)
-   *   .allowOverwrites()
-   *   .model(({ component }, _) =>
-   *     _(component('cloud.ui').with(component('react'))),
-   *   )
-   * ```
-   */
-  allowOverwrites(): Builder<T>
 
   /**
    * Extends the builder with additional specification — new element kinds,
@@ -378,7 +357,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
   _imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map()),
-  _allowOverwrites = false,
+  _mode: BuilderMode = 'strict',
 ): Builder<T> {
   const spec = validateSpec(_spec)
 
@@ -459,23 +438,6 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     get Types(): T {
       throw new Error('Types are not available in runtime')
     },
-    allowOverwrites: () => {
-      const imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map())
-      for (const [key, value] of _imports) {
-        imports.set(key, structuredClone(value))
-      }
-      return builder(
-        structuredClone(spec),
-        structuredClone(_elements),
-        structuredClone(_relations),
-        structuredClone(_views),
-        structuredClone(_globals),
-        structuredClone(_deployments),
-        structuredClone(_deploymentRelations),
-        imports,
-        true,
-      )
-    },
     specification: <NewSpec extends BuilderSpecification>(newSpec: NewSpec) => {
       // `defu(target, ...defaults)` — keys in `target` win, others fall back.
       // For metadataKeys (string[]) defu concatenates+dedups, which is exactly
@@ -495,7 +457,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(_deployments),
         structuredClone(_deploymentRelations),
         imports,
-        _allowOverwrites,
+        _mode,
       ) as unknown as Builder<Types.Merge<T, Types.FromSpecification<NewSpec>>>
     },
     clone: () => {
@@ -513,7 +475,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(_deployments),
         structuredClone(_deploymentRelations),
         imports,
-        _allowOverwrites,
+        _mode,
       )
     },
 
@@ -529,10 +491,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       }
       const existing = lookup.get(fqn)
       if (existing) {
-        if (!_allowOverwrites) {
+        if (_mode === 'strict') {
           throw new Error(`Element with id "${element.id}" already exists`)
         }
-        // In overwrite mode same-kind re-declaration replaces the existing
+        // In editable mode same-kind re-declaration replaces the existing
         // element (so `.with(...)` can both edit and descend). Different-kind
         // redeclaration is still a programmer error.
         invariant(
@@ -1134,7 +1096,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
   return self
 }
-function fromParsedImpl<T extends AnyTypes = AnyTypes>(data: ParsedLikeC4ModelData<Any>): Builder<T> {
+function fromParsedImpl<T extends AnyTypes = AnyTypes>(
+  data: ParsedLikeC4ModelData<Any>,
+  mode: BuilderMode = 'strict',
+): Builder<T> {
   const { specification } = data
   const seedSpec = {
     elements: specification.elements,
@@ -1173,6 +1138,7 @@ function fromParsedImpl<T extends AnyTypes = AnyTypes>(data: ParsedLikeC4ModelDa
     seedDeployments,
     seedDeploymentRelations as unknown as DeploymentRelation[],
     seedImports,
+    mode,
   )
 }
 
@@ -1274,10 +1240,15 @@ export const Builder = {
    *   (`Builder.fromParsed<typeof mySpec.Types>(data)`) — this is an unchecked
    *   promise: the caller takes responsibility for the cast.
    *
+   * The optional `mode` controls duplicate handling (see {@link BuilderMode}):
+   * - `strict` (default): re-declaring an existing FQN throws.
+   * - `editable`: re-declaring an existing FQN with the same kind replaces it,
+   *   so loaded elements can be edited in place.
+   *
    * @example
    * ```ts
    * const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
-   * const builder = Builder.fromParsed((await likec4.parsedModel()).$data)
+   * const builder = Builder.fromParsed((await likec4.parsedModel()).$data, 'editable')
    * const enriched = builder
    *   .model(({ system, component, relTo }, _) =>
    *     _(system('monitoring').with(component('grafana'))),
@@ -1286,8 +1257,8 @@ export const Builder = {
    * ```
    */
   fromParsed: fromParsedImpl as {
-    <A extends Any>(data: ParsedLikeC4ModelData<A>): Builder<Types.FromAux<A>>
-    <T extends AnyTypes>(data: ParsedLikeC4ModelData<Any>): Builder<T>
+    <A extends Any>(data: ParsedLikeC4ModelData<A>, mode?: BuilderMode): Builder<Types.FromAux<A>>
+    <T extends AnyTypes>(data: ParsedLikeC4ModelData<Any>, mode?: BuilderMode): Builder<T>
   },
 }
 
