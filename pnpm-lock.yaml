@@ -171,8 +171,8 @@ catalogs:
       specifier: 0.27.4
       version: 0.27.4
     esbuild-node-externals:
-      specifier: 1.20.1
-      version: 1.20.1
+      specifier: 1.22.0
+      version: 1.22.0
     esbuild-plugins-node-modules-polyfill:
       specifier: 1.8.1
       version: 1.8.1
@@ -1948,7 +1948,7 @@ importers:
         version: 6.1.7
       esbuild-node-externals:
         specifier: catalog:esbuild
-        version: 1.20.1(esbuild@0.27.4)
+        version: 1.22.0(esbuild@0.27.4)
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -7674,11 +7674,11 @@ packages:
   esast-util-from-js@2.0.1:
     resolution: {integrity: sha512-8Ja+rNJ0Lt56Pcf3TAmpBZjmx8ZcK5Ts4cAzIOjsjevg9oSXJnl6SUQ2EevU8tv3h6ZLWmoKL5H4fgWvdvfETw==}
 
-  esbuild-node-externals@1.20.1:
-    resolution: {integrity: sha512-uVs+TC+PBiav2LoTz8WZT/ootINw9Rns5JJyVznlfZH1qOyZxWCPzeXklY04UtZut5qUeFFaEWtcH7XoMwiTTQ==}
+  esbuild-node-externals@1.22.0:
+    resolution: {integrity: sha512-5MOqbBYAjGayiA6JPCDJ+QOvW1Xl6M9LlQbYMgwbE0DE/pv6NyXKzPzQhksU6lY1ZB8MWMn6Ov6IGooMAZnTyQ==}
     engines: {node: '>=12'}
     peerDependencies:
-      esbuild: 0.12 - 0.27
+      esbuild: 0.12 - 0.28
 
   esbuild-plugins-node-modules-polyfill@1.8.1:
     resolution: {integrity: sha512-7vxzmyTFDhYUNhjlciMPmp32eUafNIHiXvo8ZD22PzccnxMoGpPnsYn17gSBoFZgpRYNdCJcAWsQ60YVKgKg3A==}
@@ -16562,10 +16562,10 @@ snapshots:
       esast-util-from-estree: 2.0.0
       vfile-message: 4.0.2
 
-  esbuild-node-externals@1.20.1(esbuild@0.27.4):
+  esbuild-node-externals@1.22.0(esbuild@0.27.4):
     dependencies:
+      empathic: 2.0.1
       esbuild: 0.27.4
-      find-up: 5.0.0
 
   esbuild-plugins-node-modules-polyfill@1.8.1(esbuild-wasm@0.27.4):
     dependencies:
